@@ -5,14 +5,13 @@
 #ifndef COMPONENTS_AUTOFILL_CONTENT_BROWSER_CONTENT_AUTOFILL_DRIVER_H_
 #define COMPONENTS_AUTOFILL_CONTENT_BROWSER_CONTENT_AUTOFILL_DRIVER_H_
 
-#include <memory>
 #include <optional>
+#include <string>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/types/optional_ref.h"
-#include "build/build_config.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
@@ -25,10 +24,6 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-
-namespace content {
-class RenderFrameHost;
-}  // namespace content
 
 namespace autofill {
 
@@ -51,14 +46,14 @@ class AutofillDriverRouter;
 //
 // Events in AutofillDriver and mojom::AutofillDriver are passed on to
 // AutofillDriverRouter, which has one instance per WebContents. The naming
-// pattern is that for all of these events, there are three functions:
+// pattern is that for all of these events, there are two functions:
 //
-//   1. ReturnType ContentAutofillDriver::f(Args...)
-//   2. ReturnType AutofillDriverRouter::f(AutofillDriver*, Args..., callback)
-//   3. ReturnType callback(AutofillDriver*, Args...)
+//   1. ReturnType ContentAutofillDriver::Foo(Args...)
+//   2. ReturnType AutofillDriverRouter::Foo(RoutedCallback, Args...)
 //
-// The first function calls the second, and the second calls the third, perhaps
-// for a different AutofillDriver and with modified arguments.
+// The first function calls the second, and the second calls the callback.
+// That callback takes a target AutofillDriver, which may be different from the
+// first function's ContentAutofillDriver.
 //
 // Consider the following pseudo-HTML:
 //   <!-- frame name "ABC" -->
@@ -272,28 +267,8 @@ class ContentAutofillDriver : public AutofillDriver,
   void TextFieldDidScroll(const FormData& form,
                           FieldRendererId field_id) override;
 
-  // Sets parameters of |form| and |field| that can be extracted from
-  // |render_frame_host_|.
-  //
-  // These functions must be called for every FormData received from the
-  // renderer.
-  void SetFrameAndFormMetaData(FormData& form) const;
-  // Returns a copy of `form` after applying `SetFormAndFormMetaData` to it.
-  [[nodiscard]] FormData GetFormWithFrameAndFormMetaData(FormData form) const;
-  [[nodiscard]] std::optional<FormData> GetFormWithFrameAndFormMetaData(
-      base::optional_ref<const FormData> form) const;
+  void LiftForTest(FormData& form);
 
-  // Transform bounding box coordinates to real viewport coordinates. In the
-  // case of a page spanning multiple renderer processes, subframe renderers
-  // cannot do this transformation themselves.
-  [[nodiscard]] gfx::Rect TransformBoundingBoxToViewportCoordinates(
-      const gfx::Rect& bounding_box) const;
-  [[nodiscard]] gfx::RectF TransformBoundingBoxToViewportCoordinates(
-      const gfx::RectF& bounding_box) const;
-
-  // Returns the `AutofillDriverRouter` and confirms that it may be accessed (we
-  // should not be using the router if we're prerendering).
-  //
   // The router must only route among ContentAutofillDrivers because
   // ContentAutofillDriver casts AutofillDrivers to ContentAutofillDrivers.
   AutofillDriverRouter& router();

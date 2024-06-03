@@ -420,8 +420,7 @@ class ContentAutofillDriverTest : public content::RenderViewHostTestHarness {
         .renderer_events()
         .FormsSeen(/*updated_forms=*/{std::move(form)},
                    /*removed_forms=*/{});
-    // The augmented form has its metadata set
-    // (ContentAutofillDriver::SetFrameAndFormMetaData().
+    // The augmented form has its metadata set by ContentAutofillDriver::Lift().
     // It may be flattened.
     return augmented_forms.front();
   }
@@ -545,12 +544,11 @@ TEST_F(ContentAutofillDriverTest, NavigatedMainFramePrerenderedPageActivation) {
   Navigate(NavigationType::kPrerenderedPageActivation);
 }
 
-TEST_F(ContentAutofillDriverTest, SetFrameAndFormMetaDataOfForm) {
+TEST_F(ContentAutofillDriverTest, Lift_Form) {
   NavigateAndCommit(GURL("https://username:password@hostname/path?query#hash"));
   FormData form;
   form.fields.emplace_back();
-  FormData form2 = test_api(driver()).GetFormWithFrameAndFormMetaData(form);
-  test_api(driver()).SetFrameAndFormMetaData(form);
+  test_api(driver()).LiftForTest(form);
 
   EXPECT_EQ(form.host_frame(), frame_token());
   EXPECT_EQ(form.url(), GURL("https://hostname/path"));
@@ -561,51 +559,23 @@ TEST_F(ContentAutofillDriverTest, SetFrameAndFormMetaDataOfForm) {
             url::Origin::CreateFromNormalizedTuple("https", "hostname", 443));
   ASSERT_EQ(form.fields.size(), 1u);
   EXPECT_EQ(form.fields.front().host_frame(), frame_token());
-
-  EXPECT_EQ(form2.host_frame(), form.host_frame());
-  EXPECT_EQ(form2.url(), form.url());
-  EXPECT_EQ(form2.full_url(), form.full_url());
-  EXPECT_EQ(form2.main_frame_origin(), form.main_frame_origin());
-  ASSERT_EQ(form2.fields.size(), 1u);
-  EXPECT_EQ(form2.fields.front().host_frame(),
-            form2.fields.front().host_frame());
 }
 
 // Test that forms in "about:" without parents have an empty FormData::url.
-TEST_F(ContentAutofillDriverTest, SetFrameAndFormMetaDataOfForm_AboutScheme) {
+TEST_F(ContentAutofillDriverTest, Lift_Form_AboutScheme) {
   NavigateAndCommit(GURL("about:blank"));
   ASSERT_TRUE(main_rfh()->GetLastCommittedURL().IsAboutBlank());
 
   FormData form;
-  test_api(driver()).SetFrameAndFormMetaData(form);
+  test_api(driver()).LiftForTest(form);
 
   EXPECT_TRUE(form.url().is_empty());
-}
-
-// Tests that the FormData::version of forms passed to AutofillManager
-// increases.
-TEST_F(ContentAutofillDriverTest, SetFrameAndFormMetaDataOfForm_Version) {
-  FormData form = test::CreateTestAddressFormData();
-  std::vector<FormData> augmented_forms;
-  EXPECT_CALL(manager(), OnFormsSeen)
-      .WillOnce(DoAll(SaveArg<0>(&augmented_forms)));
-  driver().renderer_events().FormsSeen(/*updated_forms=*/{form},
-                                       /*removed_forms=*/{});
-  ASSERT_EQ(augmented_forms.size(), 1u);
-  FormVersion previous_version = augmented_forms[0].version();
-  EXPECT_CALL(
-      manager(),
-      OnFormsSeen(ElementsAre(Property("FormData::version", &FormData::version,
-                                       Gt(previous_version))),
-                  _));
-  driver().renderer_events().FormsSeen(/*updated_forms=*/{form},
-                                       /*removed_forms=*/{});
 }
 
 // Test that forms in "about:" subframes inherit the URL of their next
 // non-"about:" ancestor in FormData::url.
 TEST_F(ContentAutofillDriverTest,
-       SetFrameAndFormMetaDataOfForm_AboutSchemeInheritsFromGrandParent) {
+       Lift_Form_AboutSchemeInheritsFromGrandParent) {
   NavigateAndCommit(GURL("https://username:password@hostname/path?query#hash"));
   content::RenderFrameHost* child_rfh =
       content::NavigationSimulator::NavigateAndCommitFromDocument(
@@ -625,9 +595,29 @@ TEST_F(ContentAutofillDriverTest,
   ASSERT_TRUE(grandchild_rfh->GetLastCommittedURL().IsAboutBlank());
 
   FormData form;
-  test_api(*grandchild_driver).SetFrameAndFormMetaData(form);
+  test_api(*grandchild_driver).LiftForTest(form);
 
   EXPECT_EQ(form.url(), GURL("https://hostname"));
+}
+
+// Tests that the FormData::version of forms passed to AutofillManager
+// increases.
+TEST_F(ContentAutofillDriverTest, WithNewVersion) {
+  FormData form = test::CreateTestAddressFormData();
+  std::vector<FormData> augmented_forms;
+  EXPECT_CALL(manager(), OnFormsSeen)
+      .WillOnce(DoAll(SaveArg<0>(&augmented_forms)));
+  driver().renderer_events().FormsSeen(/*updated_forms=*/{form},
+                                       /*removed_forms=*/{});
+  ASSERT_EQ(augmented_forms.size(), 1u);
+  FormVersion previous_version = augmented_forms[0].version();
+  EXPECT_CALL(
+      manager(),
+      OnFormsSeen(ElementsAre(Property("FormData::version", &FormData::version,
+                                       Gt(previous_version))),
+                  _));
+  driver().renderer_events().FormsSeen(/*updated_forms=*/{form},
+                                       /*removed_forms=*/{});
 }
 
 // Tests that FormsSeen() for an updated form arrives in the AutofillManager.
@@ -745,7 +735,7 @@ TEST_F(ContentAutofillDriverTest, TypePredictionsSentToRendererWhenEnabled) {
   driver().renderer_events().FormsSeen(/*updated_forms=*/{form},
                                        /*removed_forms=*/{});
 
-  test_api(driver()).SetFrameAndFormMetaData(form);
+  test_api(driver()).LiftForTest(form);
   ASSERT_EQ(augmented_forms.size(), 1u);
   EXPECT_TRUE(augmented_forms.front().SameFormAs(form));
 

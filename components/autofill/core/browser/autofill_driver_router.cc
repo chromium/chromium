@@ -89,11 +89,11 @@ void AutofillDriverRouter::TriggerFormExtractionExcept(
 }
 
 void AutofillDriverRouter::FormsSeen(
+    RoutedCallback<const std::vector<FormData>&,
+                   const std::vector<FormGlobalId>&> callback,
     AutofillDriver& source,
     std::vector<FormData> renderer_forms,
-    const std::vector<FormGlobalId>& removed_forms,
-    RoutedCallback<const std::vector<FormData>&,
-                   const std::vector<FormGlobalId>&> callback) {
+    const std::vector<FormGlobalId>& removed_forms) {
   base::flat_set<FormGlobalId> forms_with_removed_fields =
       form_forest_.EraseForms(removed_forms);
 
@@ -147,11 +147,11 @@ void AutofillDriverRouter::FormsSeen(
 }
 
 void AutofillDriverRouter::FormSubmitted(
+    RoutedCallback<const FormData&, bool, mojom::SubmissionSource> callback,
     AutofillDriver& source,
     FormData form,
     bool known_success,
-    mojom::SubmissionSource submission_source,
-    RoutedCallback<const FormData&, bool, mojom::SubmissionSource> callback) {
+    mojom::SubmissionSource submission_source) {
   FormGlobalId form_id = form.global_id();
   form_forest_.UpdateTreeOfRendererForm(std::move(form), source);
 
@@ -161,12 +161,12 @@ void AutofillDriverRouter::FormSubmitted(
 }
 
 void AutofillDriverRouter::CaretMovedInFormField(
+    RoutedCallback<const FormData&, const FieldGlobalId&, const gfx::Rect&>
+        callback,
     AutofillDriver& source,
     FormData form,
     const FieldGlobalId& field_id,
-    const gfx::Rect& caret_bounds,
-    RoutedCallback<const FormData&, const FieldGlobalId&, const gfx::Rect&>
-        callback) {
+    const gfx::Rect& caret_bounds) {
   FormGlobalId form_id = form.global_id();
   form_forest_.UpdateTreeOfRendererForm(std::move(form), source);
 
@@ -176,12 +176,12 @@ void AutofillDriverRouter::CaretMovedInFormField(
 }
 
 void AutofillDriverRouter::TextFieldDidChange(
+    RoutedCallback<const FormData&, const FieldGlobalId&, base::TimeTicks>
+        callback,
     AutofillDriver& source,
     FormData form,
     const FieldGlobalId& field_id,
-    base::TimeTicks timestamp,
-    RoutedCallback<const FormData&, const FieldGlobalId&, base::TimeTicks>
-        callback) {
+    base::TimeTicks timestamp) {
   FormGlobalId form_id = form.global_id();
   form_forest_.UpdateTreeOfRendererForm(std::move(form), source);
 
@@ -193,10 +193,10 @@ void AutofillDriverRouter::TextFieldDidChange(
 }
 
 void AutofillDriverRouter::TextFieldDidScroll(
+    RoutedCallback<const FormData&, const FieldGlobalId&> callback,
     AutofillDriver& source,
     FormData form,
-    const FieldGlobalId& field_id,
-    RoutedCallback<const FormData&, const FieldGlobalId&> callback) {
+    const FieldGlobalId& field_id) {
   FormGlobalId form_id = form.global_id();
   form_forest_.UpdateTreeOfRendererForm(std::move(form), source);
 
@@ -208,10 +208,10 @@ void AutofillDriverRouter::TextFieldDidScroll(
 }
 
 void AutofillDriverRouter::SelectControlDidChange(
+    RoutedCallback<const FormData&, const FieldGlobalId&> callback,
     AutofillDriver& source,
     FormData form,
-    const FieldGlobalId& field_id,
-    RoutedCallback<const FormData&, const FieldGlobalId&> callback) {
+    const FieldGlobalId& field_id) {
   FormGlobalId form_id = form.global_id();
   form_forest_.UpdateTreeOfRendererForm(std::move(form), source);
 
@@ -223,15 +223,15 @@ void AutofillDriverRouter::SelectControlDidChange(
 }
 
 void AutofillDriverRouter::AskForValuesToFill(
+    RoutedCallback<const FormData&,
+                   const FieldGlobalId&,
+                   const gfx::Rect&,
+                   AutofillSuggestionTriggerSource> callback,
     AutofillDriver& source,
     FormData form,
     const FieldGlobalId& field_id,
     const gfx::Rect& caret_bounds,
-    AutofillSuggestionTriggerSource trigger_source,
-    RoutedCallback<const FormData&,
-                   const FieldGlobalId&,
-                   const gfx::Rect&,
-                   AutofillSuggestionTriggerSource> callback) {
+    AutofillSuggestionTriggerSource trigger_source) {
   FormGlobalId form_id = form.global_id();
   form_forest_.UpdateTreeOfRendererForm(std::move(form), source);
 
@@ -243,8 +243,8 @@ void AutofillDriverRouter::AskForValuesToFill(
            trigger_source);
 }
 
-void AutofillDriverRouter::HidePopup(AutofillDriver& source,
-                                     RoutedCallback<> callback) {
+void AutofillDriverRouter::HidePopup(RoutedCallback<> callback,
+                                     AutofillDriver& source) {
   // We don't know which AutofillManager is currently displaying the popup.
   // Since the the general approach of popup hiding in Autofill seems to be
   // "better safe than sorry", broadcasting this event is fine.
@@ -253,9 +253,9 @@ void AutofillDriverRouter::HidePopup(AutofillDriver& source,
   ForEachFrame(form_forest_, callback);
 }
 
-void AutofillDriverRouter::FocusOnNonFormField(AutofillDriver& source,
-                                               bool had_interacted_form,
-                                               RoutedCallback<bool> callback) {
+void AutofillDriverRouter::FocusOnNonFormField(RoutedCallback<bool> callback,
+                                               AutofillDriver& source,
+                                               bool had_interacted_form) {
   // Suppresses FocusOnNonFormField() if the focus has already moved to a
   // different frame.
   if (focused_frame_ != source.GetFrameToken()) {
@@ -279,10 +279,10 @@ void AutofillDriverRouter::FocusOnNonFormField(AutofillDriver& source,
 }
 
 void AutofillDriverRouter::FocusOnFormField(
+    RoutedCallback<const FormData&, const FieldGlobalId&> callback,
     AutofillDriver& source,
     FormData form,
     const FieldGlobalId& field_id,
-    RoutedCallback<const FormData&, const FieldGlobalId&> callback,
     RoutedCallback<> focus_no_longer_on_form) {
   FormGlobalId form_id = form.global_id();
   form_forest_.UpdateTreeOfRendererForm(std::move(form), source);
@@ -306,10 +306,10 @@ void AutofillDriverRouter::FocusOnFormField(
 }
 
 void AutofillDriverRouter::DidFillAutofillFormData(
+    RoutedCallback<const FormData&, base::TimeTicks> callback,
     AutofillDriver& source,
     FormData form,
-    base::TimeTicks timestamp,
-    RoutedCallback<const FormData&, base::TimeTicks> callback) {
+    base::TimeTicks timestamp) {
   FormGlobalId form_id = form.global_id();
   form_forest_.UpdateTreeOfRendererForm(std::move(form), source);
 
@@ -318,8 +318,8 @@ void AutofillDriverRouter::DidFillAutofillFormData(
   callback(CHECK_DEREF(target), browser_form, timestamp);
 }
 
-void AutofillDriverRouter::DidEndTextFieldEditing(AutofillDriver& source,
-                                                  RoutedCallback<> callback) {
+void AutofillDriverRouter::DidEndTextFieldEditing(RoutedCallback<> callback,
+                                                  AutofillDriver& source) {
   TriggerFormExtractionExcept(source);
 
   // The last-focused form is not known at this time. Even if
@@ -332,9 +332,9 @@ void AutofillDriverRouter::DidEndTextFieldEditing(AutofillDriver& source,
 }
 
 void AutofillDriverRouter::SelectOrSelectListFieldOptionsDidChange(
+    RoutedCallback<const FormData&> callback,
     AutofillDriver& source,
-    FormData form,
-    RoutedCallback<const FormData&> callback) {
+    FormData form) {
   FormGlobalId form_id = form.global_id();
   form_forest_.UpdateTreeOfRendererForm(std::move(form), source);
 
@@ -346,15 +346,15 @@ void AutofillDriverRouter::SelectOrSelectListFieldOptionsDidChange(
 }
 
 void AutofillDriverRouter::JavaScriptChangedAutofilledValue(
+    RoutedCallback<const FormData&,
+                   const FieldGlobalId&,
+                   const std::u16string&,
+                   bool> callback,
     AutofillDriver& source,
     FormData form,
     const FieldGlobalId& field_id,
     const std::u16string& old_value,
-    bool formatting_only,
-    RoutedCallback<const FormData&,
-                   const FieldGlobalId&,
-                   const std::u16string&,
-                   bool> callback) {
+    bool formatting_only) {
   FormGlobalId form_id = form.global_id();
   form_forest_.UpdateTreeOfRendererForm(std::move(form), source);
 
@@ -374,15 +374,14 @@ void AutofillDriverRouter::JavaScriptChangedAutofilledValue(
 // that do not exist anymore.
 
 base::flat_set<FieldGlobalId> AutofillDriverRouter::ApplyFormAction(
-    AutofillDriver& source,
+    RoutedCallback<mojom::FormActionType,
+                   mojom::ActionPersistence,
+                   const std::vector<FormFieldData::FillData>&> callback,
     mojom::FormActionType action_type,
     mojom::ActionPersistence action_persistence,
     const FormData& data,
     const url::Origin& triggered_origin,
-    const base::flat_map<FieldGlobalId, FieldType>& field_type_map,
-    RoutedCallback<mojom::FormActionType,
-                   mojom::ActionPersistence,
-                   const std::vector<FormFieldData::FillData>&> callback) {
+    const base::flat_map<FieldGlobalId, FieldType>& field_type_map) {
   // Since Undo only affects fields that were already filled, and only sets
   // values to fields to something that already existed in it prior to the
   // filling, it is okay to bypass the filling security checks and hence passing
@@ -416,15 +415,14 @@ base::flat_set<FieldGlobalId> AutofillDriverRouter::ApplyFormAction(
 }
 
 void AutofillDriverRouter::ApplyFieldAction(
-    AutofillDriver& source,
+    RoutedCallback<mojom::FieldActionType,
+                   mojom::ActionPersistence,
+                   FieldRendererId,
+                   const std::u16string&> callback,
     mojom::FieldActionType action_type,
     mojom::ActionPersistence action_persistence,
     const FieldGlobalId& field_id,
-    const std::u16string& value,
-    RoutedCallback<mojom::FieldActionType,
-                   mojom::ActionPersistence,
-                   const FieldRendererId&,
-                   const std::u16string&> callback) {
+    const std::u16string& value) {
   if (auto* target = DriverOfFrame(field_id.frame_token)) {
     callback(*target, action_type, action_persistence, field_id.renderer_id,
              value);
@@ -432,10 +430,9 @@ void AutofillDriverRouter::ApplyFieldAction(
 }
 
 void AutofillDriverRouter::ExtractForm(
-    AutofillDriver& source,
+    RoutedCallback<FormRendererId, RendererFormHandler> callback,
     FormGlobalId form_id,
-    BrowserFormHandler browser_form_handler,
-    RoutedCallback<const FormRendererId&, RendererFormHandler> callback) {
+    BrowserFormHandler browser_form_handler) {
   if (auto* target = DriverOfFrame(form_id.frame_token)) {
     // `renderer_form_handler` converts a received renderer `form` into a
     // browser form and passes that to `browser_form_handler`.
@@ -466,9 +463,8 @@ void AutofillDriverRouter::ExtractForm(
 }
 
 void AutofillDriverRouter::SendAutofillTypePredictionsToRenderer(
-    AutofillDriver& source,
-    const std::vector<FormDataPredictions>& browser_fdps,
-    RoutedCallback<const std::vector<FormDataPredictions>&> callback) {
+    RoutedCallback<const std::vector<FormDataPredictions>&> callback,
+    const std::vector<FormDataPredictions>& browser_fdps) {
   // Splits each FrameDataPredictions according to the respective FormData's
   // renderer forms, and groups these FormDataPredictions by the renderer form's
   // frame. We uso "fdp" as abbreviation of FormDataPredictions.
@@ -515,38 +511,33 @@ void AutofillDriverRouter::SendAutofillTypePredictionsToRenderer(
 }
 
 void AutofillDriverRouter::RendererShouldAcceptDataListSuggestion(
-    AutofillDriver& source,
+    RoutedCallback<FieldRendererId, const std::u16string&> callback,
     const FieldGlobalId& field_id,
-    const std::u16string& value,
-    RoutedCallback<const FieldRendererId&, const std::u16string&> callback) {
+    const std::u16string& value) {
   if (auto* target = DriverOfFrame(field_id.frame_token)) {
     callback(*target, field_id.renderer_id, value);
   }
 }
 
 void AutofillDriverRouter::RendererShouldClearPreviewedForm(
-    AutofillDriver& source,
     RoutedCallback<> callback) {
   ForEachFrame(form_forest_, callback);
 }
 
 void AutofillDriverRouter::RendererShouldTriggerSuggestions(
-    AutofillDriver& source,
+    RoutedCallback<FieldRendererId, AutofillSuggestionTriggerSource> callback,
     const FieldGlobalId& field_id,
-    AutofillSuggestionTriggerSource trigger_source,
-    RoutedCallback<const FieldRendererId&, AutofillSuggestionTriggerSource>
-        callback) {
+    AutofillSuggestionTriggerSource trigger_source) {
   if (AutofillDriver* target = DriverOfFrame(field_id.frame_token)) {
     callback(*target, field_id.renderer_id, trigger_source);
   }
 }
 
 void AutofillDriverRouter::RendererShouldSetSuggestionAvailability(
-    AutofillDriver& source,
+    RoutedCallback<FieldRendererId, mojom::AutofillSuggestionAvailability>
+        callback,
     const FieldGlobalId& field_id,
-    mojom::AutofillSuggestionAvailability suggestion_availability,
-    RoutedCallback<const FieldRendererId&,
-                   mojom::AutofillSuggestionAvailability> callback) {
+    mojom::AutofillSuggestionAvailability suggestion_availability) {
   if (auto* target = DriverOfFrame(field_id.frame_token)) {
     callback(*target, field_id.renderer_id, suggestion_availability);
   }
