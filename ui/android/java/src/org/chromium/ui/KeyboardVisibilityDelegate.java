@@ -4,33 +4,16 @@
 
 package org.chromium.ui;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
-import android.os.Handler;
-import android.os.StrictMode;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 
-import androidx.core.view.WindowInsetsCompat;
-
-import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
-import org.chromium.base.TraceEvent;
-
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * A delegate that can be overridden to change the methods to figure out and change the current
  * state of Android's soft keyboard.
  */
 public class KeyboardVisibilityDelegate {
-    private static final String TAG = "KeyboardVisibility";
-
-    /** Number of retries after a failed attempt of bringing up the keyboard. */
-    private static final int KEYBOARD_RETRY_ATTEMPTS = 10;
-
-    /** Waiting time between attempts to show the keyboard. */
-    private static final long KEYBOARD_RETRY_DELAY_MS = 100;
 
     /** The delegate to determine keyboard visibility. */
     private static KeyboardVisibilityDelegate sInstance = new KeyboardVisibilityDelegate();
@@ -86,43 +69,16 @@ public class KeyboardVisibilityDelegate {
 
     /**
      * Tries to show the soft keyboard by using the {@link Context#INPUT_METHOD_SERVICE}.
+     *
      * @param view The currently focused {@link View}, which would receive soft keyboard input.
      */
-    @SuppressLint("NewApi")
     public void showKeyboard(View view) {
-        final Handler handler = new Handler();
-        final AtomicInteger attempt = new AtomicInteger();
-        Runnable openRunnable =
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        // Not passing InputMethodManager.SHOW_IMPLICIT as it does not trigger the
-                        // keyboard in landscape mode.
-                        InputMethodManager imm =
-                                (InputMethodManager)
-                                        view.getContext()
-                                                .getSystemService(Context.INPUT_METHOD_SERVICE);
-                        // Third-party touches disk on showSoftInput call.
-                        // http://crbug.com/619824, http://crbug.com/635118
-                        StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskWrites();
-                        try {
-                            imm.showSoftInput(view, 0);
-                        } catch (IllegalArgumentException e) {
-                            if (attempt.incrementAndGet() <= KEYBOARD_RETRY_ATTEMPTS) {
-                                handler.postDelayed(this, KEYBOARD_RETRY_DELAY_MS);
-                            } else {
-                                Log.e(TAG, "Unable to open keyboard.  Giving up.", e);
-                            }
-                        } finally {
-                            StrictMode.setThreadPolicy(oldPolicy);
-                        }
-                    }
-                };
-        openRunnable.run();
+        KeyboardUtils.showKeyboard(view);
     }
 
     /**
      * Hides the soft keyboard.
+     *
      * @param view The {@link View} that is currently accepting input.
      * @return Whether the keyboard was visible before.
      */
@@ -131,46 +87,32 @@ public class KeyboardVisibilityDelegate {
     }
 
     /**
-     * Hides the soft keyboard by using the {@link Context#INPUT_METHOD_SERVICE}.
-     * This template method simplifies mocking and the access to the soft keyboard in subclasses.
+     * Hides the soft keyboard by using the {@link Context#INPUT_METHOD_SERVICE}. This template
+     * method simplifies mocking and the access to the soft keyboard in subclasses.
+     *
      * @param view The {@link View} that is currently accepting input.
      * @return Whether the keyboard was visible before.
      */
     protected boolean hideAndroidSoftKeyboard(View view) {
-        if (!view.isAttachedToWindow()) return false;
-        InputMethodManager imm =
-                (InputMethodManager)
-                        view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-        return imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        return KeyboardUtils.hideAndroidSoftKeyboard(view);
     }
 
     /**
-     * Calculates the keyboard height based on the bottom margin it causes for the given
-     * rootView. It is used to determine whether the keyboard is visible.
+     * Calculates the keyboard height based on the bottom margin it causes for the given rootView.
+     * It is used to determine whether the keyboard is visible.
+     *
      * @param rootView A {@link View}.
      * @return The size of the bottom margin which most likely is exactly the keyboard size.
      */
     public int calculateKeyboardHeight(View rootView) {
-        try (TraceEvent te =
-                TraceEvent.scoped("KeyboardVisibilityDelegate.calculateKeyboardHeight")) {
-            if (rootView == null || rootView.getRootWindowInsets() == null) return 0;
-            WindowInsetsCompat windowInsetsCompat =
-                    WindowInsetsCompat.toWindowInsetsCompat(
-                            rootView.getRootWindowInsets(), rootView);
-            int imeHeightIncludingSystemBars =
-                    windowInsetsCompat.getInsets(WindowInsetsCompat.Type.ime()).bottom;
-            if (imeHeightIncludingSystemBars == 0) return 0;
-            int bottomSystemBarsHeight =
-                    windowInsetsCompat.getInsets(WindowInsetsCompat.Type.systemBars()).bottom;
-            return imeHeightIncludingSystemBars - bottomSystemBarsHeight;
-        }
+        return KeyboardUtils.calculateKeyboardHeightFromWindowInsets(rootView);
     }
 
     /**
      * Returns the total keyboard widget height.
      *
-     * In addition to the keyboard itself, this may include accessory bars and related widgets that
-     * behave as-if they're part of the keyboard if the embedder supports them.
+     * <p>In addition to the keyboard itself, this may include accessory bars and related widgets
+     * that behave as-if they're part of the keyboard if the embedder supports them.
      */
     public int calculateTotalKeyboardHeight(View rootView) {
         return calculateKeyboardHeight(rootView);
@@ -187,21 +129,22 @@ public class KeyboardVisibilityDelegate {
     }
 
     /**
-     * Detects whether or not the keyboard is showing. This is a best guess based on the height
-     * of the keyboard as there is no standardized/foolproof way to do this.
-     * This template method simplifies mocking and the access to the soft keyboard in subclasses.
+     * Detects whether or not the keyboard is showing. This is a best guess based on the height of
+     * the keyboard as there is no standardized/foolproof way to do this. This template method
+     * simplifies mocking and the access to the soft keyboard in subclasses.
+     *
      * @param context A {@link Context} instance.
-     * @param view    A {@link View}.
-     * @return        Whether or not the software keyboard is visible.
+     * @param view A {@link View}.
+     * @return Whether or not the software keyboard is visible.
      */
     protected boolean isAndroidSoftKeyboardShowing(Context context, View view) {
-        View rootView = view.getRootView();
-        return rootView != null && calculateKeyboardHeight(rootView) > 0;
+        return KeyboardUtils.isAndroidSoftKeyboardShowing(view);
     }
 
     /**
      * To be called when the keyboard visibility state might have changed. Informs listeners of the
      * state change IFF there actually was a change.
+     *
      * @param isShowing The current (guesstimated) state of the keyboard.
      */
     protected void notifyListeners(boolean isShowing) {

@@ -21,7 +21,7 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.KeyboardUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -280,9 +280,7 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
     }
 
     private void updateKeyboardInset() {
-        int keyboardInset =
-                KeyboardVisibilityDelegate.getInstance().calculateKeyboardHeight(mRootView);
-
+        int keyboardInset = KeyboardUtils.calculateKeyboardHeightFromWindowInsets(mRootView);
         if (mKeyboardInset == keyboardInset) {
             return;
         }
