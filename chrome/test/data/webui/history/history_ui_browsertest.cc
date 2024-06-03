@@ -5,6 +5,8 @@
 #include "base/strings/stringprintf.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
+#include "components/commerce/core/commerce_constants.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/history_clusters/core/features.h"
 #include "components/history_embeddings/history_embeddings_features.h"
 #include "content/public/test/browser_test.h"
@@ -159,6 +161,24 @@ IN_PROC_BROWSER_TEST_F(HistoryListTest, SetsScrollTarget) {
 
 IN_PROC_BROWSER_TEST_F(HistoryListTest, SetsScrollOffset) {
   RunTestCase("SetsScrollOffset");
+}
+
+class HistoryProductSpecificationsListTest : public WebUIMochaBrowserTest {
+ protected:
+  HistoryProductSpecificationsListTest() {
+    set_test_loader_host(chrome::kChromeUIHistoryHost);
+    scoped_feature_list_.InitWithFeatures(
+        {commerce::kProductSpecifications,
+         commerce::kProductSpecificationsSync},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(HistoryProductSpecificationsListTest, Load) {
+  RunTest("history/history_product_specifications_tab_test.js", "mocha.run()");
 }
 
 class HistoryWithHistoryEmbeddingsTest : public WebUIMochaBrowserTest {

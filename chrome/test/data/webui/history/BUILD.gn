@@ -16,6 +16,7 @@ build_webui_tests("build") {
     "history_list_test.ts",
     "history_metrics_test.ts",
     "history_overflow_menu_test.ts",
+    "history_product_specifications_tab_test.ts",
     "history_routing_test.ts",
     "history_routing_with_query_param_test.ts",
     "history_supervised_user_test.ts",

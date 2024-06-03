@@ -1,3 +1,5 @@
-<div>
-  Product Specifications Lists!
-</div>
+<template is="dom-repeat"
+    items="[[allProductSpecificationsSet_]]" as="item">
+  <product-specifications-item product-set="[[item]]">
+  </product-specifications-item>
+</template>
