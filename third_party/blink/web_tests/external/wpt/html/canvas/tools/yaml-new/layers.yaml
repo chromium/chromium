@@ -43,7 +43,8 @@
     ctx2.fillRect(30, 5, 50, 40);
 
     ctx.drawImage(canvas2, 0, 0);
-  variants_layout: [single_file, multi_files, multi_files, multi_files]
+  variants_layout: [single_file, single_file, single_file, multi_files]
+  grid_width: 8
   variants: &global-state-variants
   - no-globalAlpha:
       alpha_statement: // No globalAlpha.
@@ -132,7 +133,8 @@
       ctx.drawImage(img, 0, 0);
     };
     img.src = 'data:image/svg+xml;base64,' + btoa(svg);
-  variants_layout: [single_file, multi_files, multi_files, multi_files]
+  variants_layout: [single_file, single_file, single_file, multi_files]
+  grid_width: 8
   variants: *global-state-variants
 
 - name: 2d.layer.globalCompositeOperation
