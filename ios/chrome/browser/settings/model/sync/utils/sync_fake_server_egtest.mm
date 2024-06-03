@@ -776,17 +776,15 @@ void ClearRelevantData() {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
+  // Set up a custom passphrase.
+  [ChromeEarlGrey addBookmarkWithSyncPassphrase:kPassphrase];
+
   // Sign in and turn on Sync-the-feature.
   [SigninEarlGrey signinAndEnableLegacySyncFeature:fakeIdentity];
   [ChromeEarlGrey waitForSyncFeatureEnabled:YES
                                 syncTimeout:kSyncOperationTimeout];
   [ChromeEarlGrey
       waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
-
-  // Set up a custom passphrase.
-  [ChromeEarlGrey addBookmarkWithSyncPassphrase:kPassphrase];
-  // Trigger a sync cycle to ensure Chrome knows about the passphrase.
-  [ChromeEarlGrey triggerSyncCycleForType:syncer::BOOKMARKS];
 
   // Now Sync is in the "passphrase required" state. Resolve the passphrase
   // error from Sync settings.
@@ -842,17 +840,15 @@ void ClearRelevantData() {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
+  // Set up a custom passphrase.
+  [ChromeEarlGrey addBookmarkWithSyncPassphrase:kPassphrase];
+
   // Sign in and turn on Sync-the-feature.
   [SigninEarlGrey signinAndEnableLegacySyncFeature:fakeIdentity];
   [ChromeEarlGrey waitForSyncFeatureEnabled:YES
                                 syncTimeout:kSyncOperationTimeout];
   [ChromeEarlGrey
       waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
-
-  // Set up a custom passphrase.
-  [ChromeEarlGrey addBookmarkWithSyncPassphrase:kPassphrase];
-  // Trigger a sync cycle to ensure Chrome knows about the passphrase.
-  [ChromeEarlGrey triggerSyncCycleForType:syncer::BOOKMARKS];
 
   // Now Sync is in the "passphrase required" state. Verify this in settings.
   [ChromeEarlGreyUI openSettingsMenu];
