@@ -412,6 +412,16 @@ class PasswordManagerClient {
   virtual safe_browsing::PasswordProtectionService*
   GetPasswordProtectionService() const = 0;
 
+  // Maybe triggers a hats survey that measures the user's perception of
+  // Autofill for passwords. When triggering happens, the survey dialog will be
+  // displayed with a 5s delay. This survey should be triggered after form
+  // submissions.
+  // `filling_assistance` will be logged together with the responses as
+  // in-product data and should be a string representation of the
+  // `FillingAssistance` enum, i.e "Manually filled".
+  virtual void TriggerUserPerceptionOfPasswordManagerSurvey(
+      const std::string& filling_assistance);
+
 #if defined(ON_FOCUS_PING_ENABLED)
   // Checks the safe browsing reputation of the webpage when the
   // user focuses on a username/password field. This is used for reporting

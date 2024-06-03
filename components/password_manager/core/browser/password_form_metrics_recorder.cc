@@ -954,4 +954,39 @@ void PasswordFormMetricsRecorder::RecordFillEvent(ManagerAutofillEvent event) {
   ukm_entry_builder_.SetManagerFill_Action(event);
 }
 
+std::string
+PasswordFormMetricsRecorder::FillingAssinstanceToHatsInProductDataString() {
+  if (!absl::holds_alternative<FillingAssistance>(filling_assistance_)) {
+    return std::string();
+  }
+
+  FillingAssistance filling_assistance =
+      absl::get<FillingAssistance>(filling_assistance_);
+  // These values are used for logging and should not be modified.
+  switch (filling_assistance) {
+    case FillingAssistance::kAutomatic:
+      return "Credentials were filled automatically";
+    case FillingAssistance::kManual:
+      return "Credentials were filled manually, without typing";
+    case FillingAssistance::kUsernameTypedPasswordFilled:
+      return "Password was filled (automatically or manually), known username "
+             "was typed";
+    case FillingAssistance::kKnownPasswordTyped:
+      return "Known password was typed";
+    case FillingAssistance::kNewPasswordTypedWhileCredentialsExisted:
+      return "Unknown password was typed while some credentials were stored.";
+    case FillingAssistance::kNoSavedCredentials:
+      return "No saved credentials.";
+    case FillingAssistance::kNoUserInputNoFillingInPasswordFields:
+      return "Neither user input nor filling.";
+    case FillingAssistance::kNoSavedCredentialsAndBlocklisted:
+      return "Domain is blocklisted and no other credentials exist.";
+    case FillingAssistance::kNoSavedCredentialsAndBlocklistedBySmartBubble:
+      return "No credentials exist and the user has ignored the save bubble "
+             "too often, meaning that they won't be asked to save credentials "
+             "anymore.";
+  };
+  NOTREACHED_NORETURN();
+}
+
 }  // namespace password_manager

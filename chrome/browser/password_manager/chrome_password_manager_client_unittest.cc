@@ -106,6 +106,9 @@
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/android/password_generation_controller.h"
 #include "chrome/common/chrome_switches.h"
+#else
+#include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/hats/mock_hats_service.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 using autofill::CalculateFormSignature;
@@ -1100,6 +1103,40 @@ TEST_F(ChromePasswordManagerClientTest, CanShowBubbleOnURL) {
               ChromePasswordManagerClient::CanShowBubbleOnURL(url));
   }
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+// Test that the hats service is called with the expected params.
+TEST_F(ChromePasswordManagerClientTest,
+       TriggerUserPerceptionOfAutofillPasswordSurvey) {
+  MockHatsService* mock_hats_service = static_cast<MockHatsService*>(
+      HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          profile(), base::BindRepeating(&BuildMockHatsService)));
+  EXPECT_CALL(*mock_hats_service, CanShowAnySurvey)
+      .WillRepeatedly(Return(true));
+
+  const std::string filling_assistane = "Automatically filled";
+  const SurveyStringData filling_assistance_in_product_data = {
+      {"Filling assistance", filling_assistane}};
+  EXPECT_CALL(*mock_hats_service,
+              LaunchDelayedSurveyForWebContents(
+                  kHatsSurveyTriggerAutofillPasswordUserPerception, _, _, _,
+                  filling_assistance_in_product_data, _, _, _, _, _));
+
+  GetClient()->TriggerUserPerceptionOfPasswordManagerSurvey(filling_assistane);
+}
+
+TEST_F(
+    ChromePasswordManagerClientTest,
+    TriggerUserPerceptionOfAutofillPasswordSurvey_EmptyFillingAssistanceString_DoNotCallHats) {
+  MockHatsService* mock_hats_service = static_cast<MockHatsService*>(
+      HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          profile(), base::BindRepeating(&BuildMockHatsService)));
+
+  EXPECT_CALL(*mock_hats_service, LaunchDelayedSurveyForWebContents).Times(0);
+
+  GetClient()->TriggerUserPerceptionOfPasswordManagerSurvey("");
+}
+#endif
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 TEST_F(ChromePasswordManagerClientTest,

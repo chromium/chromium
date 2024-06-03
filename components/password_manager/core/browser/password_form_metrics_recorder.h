@@ -35,7 +35,7 @@ namespace password_manager {
 
 struct InteractionsStats;
 
-// The pupose of this class is to record various types of metrics about the
+// The purpose of this class is to record various types of metrics about the
 // behavior of the PasswordFormManager and its interaction with the user and
 // the page. The recorder tracks events tied to the logical life of a password
 // form, from parsing to having been saved. These events happen on different
@@ -464,6 +464,12 @@ class PasswordFormMetricsRecorder
   // Calculates whether the password form was parsed in the same way
   // during parsing and saving.
   void CalculateParsingDifferenceOnSavingAndFilling(const PasswordForm& form);
+
+  // Returns a string representation of the calculated `FillingAssistance` to be
+  // used as part of hats survey answers information.
+  // If the assistance holds a different variant type (i.e
+  // `SingleUsernameFillingAssistance`), returns an empty string.
+  std::string FillingAssinstanceToHatsInProductDataString();
 
   void set_possible_username_used(bool value) {
     possible_username_used_ = value;

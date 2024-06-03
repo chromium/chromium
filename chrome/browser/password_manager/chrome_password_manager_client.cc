@@ -148,6 +148,9 @@
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/hats/hats_service.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/hats/survey_config.h"
 #include "components/policy/core/common/features.h"
 #endif
 
@@ -283,6 +286,26 @@ bool ChromePasswordManagerClient::IsAutoSignInEnabled() const {
       PasswordManagerSettingsServiceFactory::GetForProfile(profile_);
   return settings_service->IsSettingEnabled(
       PasswordManagerSetting::kAutoSignIn);
+}
+
+void ChromePasswordManagerClient::TriggerUserPerceptionOfPasswordManagerSurvey(
+    const std::string& filling_assistance) {
+#if !BUILDFLAG(IS_ANDROID)
+  if (filling_assistance.empty()) {
+    return;
+  }
+
+  HatsService* hats_service =
+      HatsServiceFactory::GetForProfile(profile_, /*create_if_necessary=*/true);
+  if (!hats_service) {
+    return;
+  }
+
+  hats_service->LaunchDelayedSurveyForWebContents(
+      kHatsSurveyTriggerAutofillPasswordUserPerception, web_contents(),
+      /*timeout_ms=*/5000, /*product_specific_bits_data=*/
+      {}, {{"Filling assistance", filling_assistance}});
+#endif
 }
 
 bool ChromePasswordManagerClient::PromptUserToSaveOrUpdatePassword(

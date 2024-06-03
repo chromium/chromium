@@ -177,6 +177,9 @@ PasswordManagerClient::GetWebAuthnCredentialsDelegateForDriver(
   return nullptr;
 }
 
+void PasswordManagerClient::TriggerUserPerceptionOfPasswordManagerSurvey(
+    const std::string& filling_assistance) {}
+
 #if BUILDFLAG(IS_ANDROID)
 webauthn::WebAuthnCredManDelegate*
 PasswordManagerClient::GetWebAuthnCredManDelegateForDriver(
