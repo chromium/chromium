@@ -7,6 +7,7 @@ include_rules = [
   "+ios/chrome/browser/autofill/model",
   "+ios/chrome/browser/translate/model",
   "+ios/chrome/browser/webdata_services/model",
+  "+ios/chrome/browser/webauthn/model",
 ]
 
 specific_include_rules = {

@@ -8,6 +8,7 @@
 #include "components/affiliations/core/browser/affiliation_service.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/password_manager/core/browser/affiliation/passkey_affiliation_source_adapter.h"
+#include "components/sync/base/features.h"
 #include "components/sync/model/model_type_store_service.h"
 #include "components/webauthn/core/browser/passkey_sync_bridge.h"
 #include "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
@@ -19,8 +20,11 @@
 // static
 webauthn::PasskeyModel* IOSPasskeyModelFactory::GetForBrowserState(
     ChromeBrowserState* browser_state) {
-  return static_cast<webauthn::PasskeyModel*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+  return base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials)
+             ? static_cast<webauthn::PasskeyModel*>(
+                   GetInstance()->GetServiceForBrowserState(browser_state,
+                                                            true))
+             : nullptr;
 }
 
 // static

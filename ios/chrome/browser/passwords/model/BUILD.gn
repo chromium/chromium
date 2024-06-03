@@ -96,6 +96,7 @@ source_set("model") {
     "//ios/chrome/browser/ui/infobars/coordinators",
     "//ios/chrome/browser/ui/ntp:logo",
     "//ios/chrome/browser/web/model",
+    "//ios/chrome/browser/webauthn/model",
     "//ios/chrome/browser/webdata_services/model",
     "//ios/chrome/common/ui/util",
     "//ios/third_party/material_components_ios",
