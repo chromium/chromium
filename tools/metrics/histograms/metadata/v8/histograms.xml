@@ -1366,6 +1366,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="V8.SandboxedCppHeapPointersCount" units="count"
+    expires_after="2024-09-30">
+  <owner>saelo@chromium.org</owner>
+  <owner>ishell@chromium.org</owner>
+  <summary>
+    The number of in-use entries in a CppHeapPointerTable.
+
+    When the V8 Sandbox is enabled, objects in the Cpp Heap (such as C++ DOM
+    objects) that are wrapped by a V8 object are referenced through a pointer
+    table indirection (via the CppHeapPointerTable) to ensure memory-safe access
+    to them. This histogram records the number of active entries in the
+    per-Isolate CppHeapPointerTable during garbage collection.
+  </summary>
+</histogram>
+
 <histogram name="V8.SandboxedExternalPointersCount" units="count"
     expires_after="2024-09-30">
   <owner>saelo@chromium.org</owner>
