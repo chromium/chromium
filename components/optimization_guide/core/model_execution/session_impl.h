@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/model_execution/safety_config.h"
 #include "components/optimization_guide/core/model_execution/substitution.h"
@@ -319,6 +320,11 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
       proto::Any success_response_metadata,
       OptimizationGuideModelExecutionResult result,
       std::unique_ptr<ModelQualityLogEntry> remote_log_entry);
+
+  // Called when a response has finished parsing.
+  void OnParsedResponse(
+      bool is_complete,
+      base::expected<proto::Any, ResponseParsingError> output);
 
   // Returns a new message created by merging `request` into `context_`. This
   // is a bit tricky since we don't know the type of MessageLite.

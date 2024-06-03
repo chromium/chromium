@@ -17,7 +17,7 @@ class RE2;
 
 namespace optimization_guide {
 
-enum RedactResult {
+enum class RedactResult {
   // Used if there was at least one rule that matched with a behavior of reject.
   kReject,
 

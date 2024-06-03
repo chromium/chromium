@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/types/expected.h"
 #include "components/optimization_guide/core/model_execution/redactor.h"
 #include "components/optimization_guide/core/model_execution/substitution.h"
 #include "components/optimization_guide/proto/features/text_safety.pb.h"
@@ -23,6 +24,14 @@
 namespace optimization_guide {
 
 class Redactor;
+
+// A reason why parsing a model response failed.
+enum class ResponseParsingError {
+  // Response did not have the expected structure, or similar parsing errors.
+  kFailed = 1,
+  // Response potentially contained disallowed PII.
+  kRejectedPii = 2,
+};
 
 // Adapts the on-device model to be used for a particular feature, based on
 // a configuration proto.
@@ -38,14 +47,14 @@ class OnDeviceModelFeatureAdapter final
       const google::protobuf::MessageLite& request,
       bool want_input_context) const;
 
-  // Constructs the output metadata for model `output`.
-  // Will return std::nullopt on error.
-  std::optional<proto::Any> ConstructOutputMetadata(
-      const std::string& output) const;
+  using ParseResponseCallback = base::OnceCallback<void(
+      base::expected<proto::Any, ResponseParsingError>)>;
 
-  // Redacts the content of current response, given the last executed message.
-  RedactResult Redact(const google::protobuf::MessageLite& last_message,
-                      std::string& current_response) const;
+  // Converts model response into this feature's expected response type.
+  // Replies with std::nullopt on error.
+  void ParseResponse(const google::protobuf::MessageLite& request,
+                     const std::string& model_response,
+                     ParseResponseCallback callback) const;
 
   // Constructs the request for text safety server fallback.
   // Will return std::nullopt on error or if the config does not allow for it.
@@ -58,6 +67,10 @@ class OnDeviceModelFeatureAdapter final
  private:
   friend class base::RefCounted<OnDeviceModelFeatureAdapter>;
   ~OnDeviceModelFeatureAdapter();
+
+  // Redacts the content of current response, given the last executed message.
+  RedactResult Redact(const google::protobuf::MessageLite& last_message,
+                      std::string& current_response) const;
 
   // Returns the string that is used for checking redaction against.
   std::string GetStringToCheckForRedacting(

@@ -4,11 +4,13 @@
 
 #include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
 
+#include <optional>
 #include <string>
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/types/expected.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_proto_descriptors.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_proto_value_utils.h"
 #include "components/optimization_guide/core/model_execution/redactor.h"
@@ -56,17 +58,6 @@ OnDeviceModelFeatureAdapter::ConstructInputString(
                                   : input_config.execute_substitutions());
 }
 
-std::optional<proto::Any> OnDeviceModelFeatureAdapter::ConstructOutputMetadata(
-    const std::string& output) const {
-  if (!config_.has_output_config()) {
-    return std::nullopt;
-  }
-  auto output_config = config_.output_config();
-
-  return SetProtoValue(output_config.proto_type(), output_config.proto_field(),
-                       output);
-}
-
 RedactResult OnDeviceModelFeatureAdapter::Redact(
     const google::protobuf::MessageLite& last_message,
     std::string& current_response) const {
@@ -78,6 +69,31 @@ RedactResult OnDeviceModelFeatureAdapter::Redact(
                     GetStringNameForModelExecutionFeature(config_.feature())}),
       elapsed_timer.Elapsed());
   return redact_result;
+}
+
+void OnDeviceModelFeatureAdapter::ParseResponse(
+    const google::protobuf::MessageLite& request,
+    const std::string& model_response,
+    ParseResponseCallback callback) const {
+  std::string redacted_response = model_response;
+  auto redact_result = Redact(request, redacted_response);
+  if (redact_result != RedactResult::kContinue) {
+    std::move(callback).Run(
+        base::unexpected(ResponseParsingError::kRejectedPii));
+    return;
+  }
+  if (!config_.has_output_config()) {
+    std::move(callback).Run(base::unexpected(ResponseParsingError::kFailed));
+    return;
+  }
+  auto parsed =
+      SetProtoValue(config_.output_config().proto_type(),
+                    config_.output_config().proto_field(), redacted_response);
+  if (!parsed.has_value()) {
+    std::move(callback).Run(base::unexpected(ResponseParsingError::kFailed));
+    return;
+  }
+  std::move(callback).Run(*parsed);
 }
 
 std::optional<proto::TextSafetyRequest>

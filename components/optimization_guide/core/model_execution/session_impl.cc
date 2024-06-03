@@ -720,29 +720,31 @@ void SessionImpl::SendResponse(ResponseType response_type) {
 
   std::string safe_response = on_device_state_->current_response.substr(
       0, on_device_state_->latest_safe_raw_output.length);
-  proto::OnDeviceModelServiceResponse* logged_response =
-      on_device_state_->MutableLoggedResponse();
+  on_device_state_->MutableLoggedResponse()->set_output_string(safe_response);
+  on_device_state_->opts.adapter->ParseResponse(
+      *last_message_, safe_response,
+      base::BindOnce(&SessionImpl::OnParsedResponse,
+                     on_device_state_->session_weak_ptr_factory_.GetWeakPtr(),
+                     is_complete));
+}
 
-  logged_response->set_output_string(safe_response);
-
-  std::string redacted_response = safe_response;
-  auto redact_result =
-      on_device_state_->opts.adapter->Redact(*last_message_, redacted_response);
-  if (redact_result == RedactResult::kReject) {
-    logged_response->set_status(
-        proto::ON_DEVICE_MODEL_SERVICE_RESPONSE_STATUS_RETRACTED);
-    CancelPendingResponse(ExecuteModelResult::kContainedPII,
-                          ModelExecutionError::kFiltered);
-    return;
-  }
-
-  auto output = on_device_state_->opts.adapter->ConstructOutputMetadata(
-      redacted_response);
-  if (!output) {
-    CancelPendingResponse(
-        ExecuteModelResult::kFailedConstructingResponseMessage,
-        ModelExecutionError::kGenericFailure);
-    return;
+void SessionImpl::OnParsedResponse(
+    bool is_complete,
+    base::expected<proto::Any, ResponseParsingError> output) {
+  if (!output.has_value()) {
+    switch (output.error()) {
+      case ResponseParsingError::kRejectedPii:
+        on_device_state_->MutableLoggedResponse()->set_status(
+            proto::ON_DEVICE_MODEL_SERVICE_RESPONSE_STATUS_RETRACTED);
+        CancelPendingResponse(ExecuteModelResult::kContainedPII,
+                              ModelExecutionError::kFiltered);
+        return;
+      case ResponseParsingError::kFailed:
+        CancelPendingResponse(
+            ExecuteModelResult::kFailedConstructingResponseMessage,
+            ModelExecutionError::kGenericFailure);
+        return;
+    }
   }
 
   if (!is_complete) {
