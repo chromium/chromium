@@ -380,11 +380,6 @@ enum CookiePrefix {
   COOKIE_PREFIX_LAST
 };
 
-// This command line switch provides a means to disable partitioned cookies in
-// WebView. WebView cannot disable partitioned cookies using a base::Feature
-// since some apps query the cookie store before Chromium has initialized.
-NET_EXPORT extern const char kDisablePartitionedCookiesSwitch[];
-
 }  // namespace net
 
 #endif  // NET_COOKIES_COOKIE_CONSTANTS_H_
