@@ -40,10 +40,11 @@
       icon-class="cr:help-outline"
       tooltip-text="[[i18n('TrafficCountersDataUsageResetDayTooltipText')]]">
     </cr-tooltip-icon>
-    <select class="md-select" id="resetDayList" value="{{resetDay_::change}}"
-        on-change="onResetDaySelected_">
-      <template is="dom-repeat" items="[[getDaysList_()]]">
-        <option selected="[[item]]">[[item]]</option>
+    <select class="md-select" id="resetDayList" on-change="onResetDaySelected_">
+      <template is="dom-repeat" items="[[getDaysList_()]]" as="day">
+        <option value="[[day]]" selected$="[[isSelected_(day, resetDay_)]]">
+          [[day]]
+        </option>
       </template>
     </select>
   </div>

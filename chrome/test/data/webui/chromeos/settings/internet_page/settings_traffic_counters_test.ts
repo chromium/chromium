@@ -186,14 +186,40 @@ suite('<settings-traffic-counters>', () => {
 
     // Reset the data usage.
     settingsTrafficCounters.$.resetDataUsageButton.click();
-    // Load the data post reset. Note we have to include the load() in tests
-    // and not in onResetDataUsageClicked_() because SettingTrafficCounters'
-    // parent element handles the reloading in prod.
-    settingsTrafficCounters.load();
     await flushTasks();
 
     assertEquals(EXPECTED_POST_RESET_DATA_USAGE_LABEL, getDataUsageLabel());
     assertEquals(
         EXPECTED_POST_RESET_DATA_USAGE_SUBLABEL, getDataUsageSubLabel());
+  });
+
+  test('Reset date functionality', async () => {
+    // Set managed properties for a connected cellular network.
+    const managedProperties = OncMojo.getDefaultManagedProperties(
+        NetworkType.kCellular, 'cellular_guid', 'cellular');
+    managedProperties.connectionState = ConnectionStateType.kConnected;
+    managedProperties.connectable = true;
+    managedProperties.trafficCounterProperties.userSpecifiedResetDay = 31;
+    networkConfigRemote.setManagedPropertiesForTest(managedProperties);
+    await flushTasks();
+
+    settingsTrafficCounters.guid = 'cellular_guid';
+    await flushTasks();
+
+    assertEquals('31', settingsTrafficCounters.$.resetDayList.value);
+
+    // Simulate an auto reset day update.
+    settingsTrafficCounters.$.resetDayList.value = '5';
+    settingsTrafficCounters.$.resetDayList.dispatchEvent(
+        new CustomEvent('change'));
+    await flushTasks();
+
+    await networkConfigRemote.whenCalled('setTrafficCountersResetDay');
+
+    const properties = await networkConfigRemote.getManagedProperties(
+        settingsTrafficCounters.guid);
+
+    assertEquals(
+        5, properties.result.trafficCounterProperties.userSpecifiedResetDay);
   });
 });
