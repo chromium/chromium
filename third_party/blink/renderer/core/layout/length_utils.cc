@@ -1226,15 +1226,17 @@ PhysicalBoxStrut ComputePhysicalMargins(
   percentage_resolution_size =
       percentage_resolution_size.ClampIndefiniteToZero();
 
+  PhysicalSize physical_resolution_size =
+      ToPhysicalSize(percentage_resolution_size, style.GetWritingMode());
+
   return PhysicalBoxStrut(
-      MinimumValueForLength(style.MarginTop(),
-                            percentage_resolution_size.block_size),
+      MinimumValueForLength(style.MarginTop(), physical_resolution_size.height),
       MinimumValueForLength(style.MarginRight(),
-                            percentage_resolution_size.inline_size),
+                            physical_resolution_size.width),
       MinimumValueForLength(style.MarginBottom(),
-                            percentage_resolution_size.block_size),
+                            physical_resolution_size.height),
       MinimumValueForLength(style.MarginLeft(),
-                            percentage_resolution_size.inline_size));
+                            physical_resolution_size.width));
 }
 
 BoxStrut ComputeMarginsFor(const ConstraintSpace& constraint_space,
