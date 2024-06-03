@@ -78,21 +78,6 @@ def _get_enums_from_files(files):
   return enums_used_in_file
 
 
-def _get_enums_from_ukm():
-  """Finds enums used by ukm.xml."""
-  ukm_xml_path = path_util.GetInputFile('tools/metrics/ukm/ukm.xml')
-  with open(ukm_xml_path, 'r', encoding='utf-8') as f:
-    document = minidom.parse(f)
-
-  enums_used_in_file = set()
-  for node in document.getElementsByTagName('metric'):
-    if not 'enum' in node.attributes:
-      continue
-    enums_used_in_file.add(node.attributes['enum'].value)
-
-  return enums_used_in_file
-
-
 def _extract_enum_nodes_by_names(enum_names):
   """Returns the <enum> nodes corresponding to the specified names."""
   with io.open(ENUMS_PATH, 'r', encoding='utf-8') as f:
@@ -151,7 +136,6 @@ def _split_enums(dir_name):
   # Only move enums that aren't referenced by other files.
   all_enum_names = _get_enums_from_files(
       [f for f in histogram_paths.ALL_XMLS if f != histograms_file])
-  all_enum_names.update(_get_enums_from_ukm())
   candidate_enum_names = enum_names - all_enum_names
   print(f'Found {len(candidate_enum_names)} candidate enums.')
 
