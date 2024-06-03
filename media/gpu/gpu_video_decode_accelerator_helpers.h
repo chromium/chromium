@@ -11,49 +11,13 @@
 #include "media/gpu/media_gpu_export.h"
 #include "media/video/video_decode_accelerator.h"
 
-namespace gl {
-class GLContext;
-}
-
 namespace media {
 
-// Helpers/defines for specific VideoDecodeAccelerator implementations in GPU
-// process. Which callbacks are required depends on the implementation.
-//
-// Note that these callbacks may be called more than once, and so must own/share
-// ownership of any objects bound to them.
-//
-// Unless specified otherwise, these callbacks must be executed on the GPU Child
-// thread (i.e. the thread which the VDAs are initialized on).
-
-// Return current GLContext.
-using GetGLContextCallback = base::RepeatingCallback<gl::GLContext*(void)>;
-
-// Make the applicable GL context current. To be called by VDAs before
-// executing any GL calls. Return true on success, false otherwise.
-using MakeGLContextCurrentCallback = base::RepeatingCallback<bool(void)>;
-
-// OpenGL callbacks made by VideoDecodeAccelerator sub-classes.
 struct MEDIA_GPU_EXPORT GpuVideoDecodeGLClient {
   GpuVideoDecodeGLClient();
   ~GpuVideoDecodeGLClient();
   GpuVideoDecodeGLClient(const GpuVideoDecodeGLClient&);
   GpuVideoDecodeGLClient& operator=(const GpuVideoDecodeGLClient&);
-
-#if !BUILDFLAG(IS_APPLE)
-  // Return current GLContext.
-  using GetGLContextCallback = base::RepeatingCallback<gl::GLContext*(void)>;
-
-  // Make the applicable GL context current. To be called by VDAs before
-  // executing any GL calls. Return true on success, false otherwise.
-  using MakeGLContextCurrentCallback = base::RepeatingCallback<bool(void)>;
-
-  // Callback to return current GLContext, if available.
-  GetGLContextCallback get_context;
-
-  // Callback for making the relevant context current for GL calls.
-  MakeGLContextCurrentCallback make_context_current;
-#endif
 
   // Whether or not ARB_texture_rectangle is present.
   bool supports_arb_texture_rectangle = false;

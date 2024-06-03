@@ -42,7 +42,6 @@
 #include "media/video/video_decode_accelerator.h"
 #include "media/video/video_encode_accelerator.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gl/gl_bindings.h"
 
 // This has not been accepted upstream.
 #ifndef V4L2_PIX_FMT_AV1

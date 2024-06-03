@@ -33,7 +33,6 @@
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/v4l2_queue.h"
 #include "media/gpu/v4l2/v4l2_utils.h"
-#include "ui/gl/egl_util.h"
 
 namespace media {
 

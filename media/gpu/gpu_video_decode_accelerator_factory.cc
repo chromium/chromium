@@ -148,9 +148,7 @@ GpuVideoDecodeAcceleratorFactory::CreateV4L2VDA(
     const gpu::GpuPreferences& /*gpu_preferences*/,
     MediaLog* /*media_log*/) const {
   std::unique_ptr<VideoDecodeAccelerator> decoder;
-  decoder.reset(new V4L2VideoDecodeAccelerator(
-      gl::GLSurfaceEGL::GetGLDisplayEGL()->GetDisplay(), gl_client_.get_context,
-      gl_client_.make_context_current, new V4L2Device()));
+  decoder.reset(new V4L2VideoDecodeAccelerator(new V4L2Device()));
   return decoder;
 }
 #endif
