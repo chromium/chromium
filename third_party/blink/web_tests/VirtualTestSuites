@@ -2695,8 +2695,15 @@
     ],
     "exclusive_tests": "ALL",
     "args": ["--use-gpu-in-tests", "--enable-features=WebMachineLearningNeuralNetwork"],
-    "expires": "Jun 1, 2024",
-    "owners": ["rafael.cintron@microsoft.com", "ningxin.hu@intel.com", "kbr@chromium.org"]
+    "expires": "Jun 1, 2025",
+    "owners": [
+      "rafael.cintron@microsoft.com",
+      "ningxin.hu@intel.com",
+      "asully@chromium.org",
+      "kbr@chromium.org",
+      "phillis@chromium.org",
+      "reillyg@chromium.org"
+    ]
   },
   "Run the WebNN WPTs with a CPU context with the WebNN service enabled.",
   {
@@ -2791,8 +2798,15 @@
     ],
     "exclusive_tests": "ALL",
     "args": ["--enable-features=WebMachineLearningNeuralNetwork"],
-    "expires": "Jun 1, 2024",
-    "owners": ["rafael.cintron@microsoft.com", "ningxin.hu@intel.com", "kbr@chromium.org"]
+    "expires": "Jun 1, 2025",
+    "owners": [
+      "rafael.cintron@microsoft.com",
+      "ningxin.hu@intel.com",
+      "asully@chromium.org",
+      "kbr@chromium.org",
+      "phillis@chromium.org",
+      "reillyg@chromium.org"
+    ]
   },
   {
     "prefix": "unload-allowed",
