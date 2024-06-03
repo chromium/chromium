@@ -222,39 +222,109 @@ std::vector<std::vector<Suggestion::Text>> GenerateLabelsFromCreditCard(
 #endif
   return suggestion_labels;
 }
-
+// TODO(crbug.com/342446796): Move suggestion related test coverage in
+// BrowserAutofillManagerUnittest to AutofillSuggestionGeneratorUnittest
 Suggestion GenerateSuggestionFromCardDetails(
     const std::string& network,
     const Suggestion::Icon icon,
     const std::string& last_four,
     std::string expiration_date_label,
-    const std::string& nickname = std::string()) {
-  const std::string& network_or_nickname =
+    const std::string& nickname = std::string(),
+    FieldType type = CREDIT_CARD_NUMBER) {
+  std::string network_or_nickname =
       nickname.empty()
           ? base::UTF16ToUTF8(CreditCard::NetworkForDisplay(network))
           : nickname;
-  if (ShouldSplitCardNameAndLastFourDigitsForMetadata()) {
-    return Suggestion(
-        network_or_nickname,
-        test::ObfuscatedCardDigitsAsUTF8(
-            last_four, ObfuscationLengthForCreditCardLastFourDigits()),
-        expiration_date_label, icon, SuggestionType::kCreditCardEntry);
-  } else {
+  std::string obfuscated_card_digits = test::ObfuscatedCardDigitsAsUTF8(
+      last_four, ObfuscationLengthForCreditCardLastFourDigits());
+  if (type == CREDIT_CARD_NUMBER) {
+    if (ShouldSplitCardNameAndLastFourDigitsForMetadata()) {
+      return Suggestion(
+          /*main_text=*/network_or_nickname,
+          /*minor_text=*/obfuscated_card_digits,
+          /*label=*/expiration_date_label, icon,
+          SuggestionType::kCreditCardEntry);
+    } else {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-    // We use a longer label on desktop platforms.
-    expiration_date_label = std::string("Expires on ") + expiration_date_label;
+      // We use a longer label on desktop platforms.
+      expiration_date_label =
+          std::string("Expires on ") + expiration_date_label;
 #endif
-    return Suggestion(
-        base::StrCat(
-            {network_or_nickname, std::string("  "),
-             test::ObfuscatedCardDigitsAsUTF8(
-                 last_four, ObfuscationLengthForCreditCardLastFourDigits())}),
-        expiration_date_label, icon, SuggestionType::kCreditCardEntry);
+      return Suggestion(
+          /*main_text=*/base::StrCat(
+              {network_or_nickname, std::string("  "), obfuscated_card_digits}),
+          /*label=*/expiration_date_label, icon,
+          SuggestionType::kCreditCardEntry);
+    }
+  } else if (type == CREDIT_CARD_NAME_FULL) {
+    std::vector<std::vector<Suggestion::Text>> labels;
+    std::u16string last_four_u16 = base::UTF8ToUTF16(last_four);
+    if constexpr (BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)) {
+      // The label is formatted as either "••••1234" or "••1234".
+      labels.push_back(
+          {Suggestion::Text(base::UTF8ToUTF16(obfuscated_card_digits))});
+    } else if (ShouldSplitCardNameAndLastFourDigitsForMetadata()) {
+      // The label is formatted as "Product Description/Nickname/Network
+      // ••••1234".
+      labels.push_back(
+          {Suggestion::Text(base::UTF8ToUTF16(network_or_nickname),
+                            Suggestion::Text::IsPrimary(false),
+                            Suggestion::Text::ShouldTruncate(true)),
+           Suggestion::Text(base::UTF8ToUTF16(obfuscated_card_digits))});
+    } else {
+      // The label is formatted as "Network/Nickname  ••••1234, expires on
+      // 01/25".
+      expiration_date_label =
+          std::string("expires on ") + expiration_date_label;
+      std::string descriptive_label = network_or_nickname + "  " +
+                                      obfuscated_card_digits + ", " +
+                                      expiration_date_label;
+      labels.push_back(
+          {Suggestion::Text(base::UTF8ToUTF16(descriptive_label))});
+    }
+    return Suggestion(/*main_text=*/"Elvis Presley", /*labels=*/labels, icon,
+                      SuggestionType::kCreditCardEntry);
   }
+  return Suggestion();
+}
+
+// Creates a virtual card suggestion for the associated FPAN `suggestion`.
+Suggestion GenerateVirtualCardSuggestionFromCreditCardSuggestion(
+    const Suggestion& suggestion,
+    FieldType field_type = UNKNOWN_TYPE) {
+  Suggestion virtual_card_suggestion = suggestion;
+  virtual_card_suggestion.type = SuggestionType::kVirtualCreditCardEntry;
+  const std::u16string& virtual_card_label = l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE);
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillEnableVirtualCardMetadata)) {
+    virtual_card_suggestion.minor_text.value =
+        virtual_card_suggestion.main_text.value;
+    virtual_card_suggestion.main_text.value = virtual_card_label;
+    return virtual_card_suggestion;
+  }
+  if (field_type == CREDIT_CARD_NUMBER) {
+    virtual_card_suggestion.labels.clear();
+  }
+#if BUILDFLAG(IS_ANDROID)
+  if (ShouldSplitCardNameAndLastFourDigitsForMetadata()) {
+    virtual_card_suggestion.main_text.value = base::StrCat(
+        {virtual_card_label, u"  ", virtual_card_suggestion.main_text.value});
+  } else {
+    virtual_card_suggestion.minor_text.value =
+        virtual_card_suggestion.main_text.value;
+    virtual_card_suggestion.main_text.value = virtual_card_label;
+  }
+#else
+  virtual_card_suggestion.labels.push_back(
+      std::vector<Suggestion::Text>{Suggestion::Text(virtual_card_label)});
+#endif
+  return virtual_card_suggestion;
 }
 
 Suggestion GetCardSuggestion(const std::string& network,
-                             const std::string& nickname = std::string()) {
+                             const std::string& nickname = std::string(),
+                             FieldType type = CREDIT_CARD_NUMBER) {
   Suggestion::Icon icon = Suggestion::Icon::kCardGeneric;
   std::string last_four;
   std::string expiration_date;
@@ -274,7 +344,7 @@ Suggestion GetCardSuggestion(const std::string& network,
     NOTREACHED_NORETURN();
   }
   return GenerateSuggestionFromCardDetails(network, icon, last_four,
-                                           expiration_date, nickname);
+                                           expiration_date, nickname, type);
 }
 
 struct TestAddressFillData {
@@ -5995,29 +6065,15 @@ TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_VirtualCard) {
   // Card number field.
   GetAutofillSuggestions(form, form.fields[1]);
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  std::string label = std::string("04/99");
-#else
-  std::string label = std::string("Expires on 04/99");
-#endif
-
-  Suggestion virtual_card_suggestion = Suggestion(
-      "Virtual card",
-      std::string("nickname  ") +
-          test::ObfuscatedCardDigitsAsUTF8(
-              "3456", ObfuscationLengthForCreditCardLastFourDigits()),
-      label, Suggestion::Icon::kCardVisa,
-      autofill::SuggestionType::kVirtualCreditCardEntry);
-
+  Suggestion expected_credit_card_number_suggestion =
+      GetCardSuggestion(kVisaCard, /*nickname=*/"nickname");
+  Suggestion expected_virtual_card_number_suggestion =
+      GenerateVirtualCardSuggestionFromCreditCardSuggestion(
+          expected_credit_card_number_suggestion, CREDIT_CARD_NUMBER);
   external_delegate()->CheckSuggestions(
       form.fields[1].global_id(),
-      {virtual_card_suggestion,
-       Suggestion(
-           std::string("nickname  ") +
-               test::ObfuscatedCardDigitsAsUTF8(
-                   "3456", ObfuscationLengthForCreditCardLastFourDigits()),
-           label, Suggestion::Icon::kCardVisa,
-           SuggestionType::kCreditCardEntry),
+      {expected_virtual_card_number_suggestion,
+       expected_credit_card_number_suggestion,
        AutofillSuggestionGenerator::CreateSeparator(),
        AutofillSuggestionGenerator::CreateManagePaymentMethodsEntry(
            /*with_gpay_logo=*/true)});
@@ -6025,38 +6081,75 @@ TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_VirtualCard) {
   // Non card number field (cardholder name field).
   GetAutofillSuggestions(form, form.fields[0]);
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  label = test::ObfuscatedCardDigitsAsUTF8(
-      "3456", ObfuscationLengthForCreditCardLastFourDigits());
-#else
-  label = std::string("nickname  ") +
-          test::ObfuscatedCardDigitsAsUTF8(
-              "3456", ObfuscationLengthForCreditCardLastFourDigits()) +
-          std::string(", expires on 04/99");
-#endif
-
-  virtual_card_suggestion =
-      Suggestion("Virtual card", std::string("Elvis Presley"), label,
-                 Suggestion::Icon::kCardVisa,
-                 autofill::SuggestionType::kVirtualCreditCardEntry);
+  Suggestion expected_credit_card_name_suggestion = GetCardSuggestion(
+      kVisaCard, /*nickname=*/"nickname", CREDIT_CARD_NAME_FULL);
+  Suggestion expected_virtual_card_name_suggestion =
+      GenerateVirtualCardSuggestionFromCreditCardSuggestion(
+          expected_credit_card_name_suggestion, CREDIT_CARD_NAME_FULL);
 
   external_delegate()->CheckSuggestions(
       form.fields[0].global_id(),
-      {virtual_card_suggestion,
-       Suggestion("Elvis Presley", label, Suggestion::Icon::kCardVisa,
-                  SuggestionType::kCreditCardEntry),
+      {expected_virtual_card_name_suggestion,
+       expected_credit_card_name_suggestion,
+       AutofillSuggestionGenerator::CreateSeparator(),
+       AutofillSuggestionGenerator::CreateManagePaymentMethodsEntry(
+           /*with_gpay_logo=*/true)});
+}
+
+TEST_F(BrowserAutofillManagerTest,
+       GetCreditCardSuggestions_VirtualCard_MetadataEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableVirtualCardMetadata,
+                            features::kAutofillEnableCardProductName,
+                            features::kAutofillEnableCardArtImage},
+      /*disabled_features=*/{});
+  personal_data().test_payments_data_manager().ClearCreditCards();
+  CreditCard masked_server_card(CreditCard::RecordType::kMaskedServerCard,
+                                /*server_id=*/"a123");
+  test::SetCreditCardInfo(&masked_server_card, "Elvis Presley",
+                          "4234567890123456",  // Visa
+                          "04", "2999", "1");
+  masked_server_card.SetNetworkForMaskedCard(kVisaCard);
+  masked_server_card.set_guid(MakeGuid(7));
+  masked_server_card.set_virtual_card_enrollment_state(
+      CreditCard::VirtualCardEnrollmentState::kEnrolled);
+  masked_server_card.SetNickname(u"nickname");
+  personal_data().test_payments_data_manager().AddServerCreditCard(
+      masked_server_card);
+
+  // Set up our form data.
+  FormData form =
+      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
+  FormsSeen({form});
+
+  // Card number field.
+  GetAutofillSuggestions(form, form.fields[1]);
+
+  Suggestion credit_card_number_suggestion =
+      GetCardSuggestion(kVisaCard, /*nickname=*/"nickname");
+  Suggestion virtual_card_number_suggestion =
+      GenerateVirtualCardSuggestionFromCreditCardSuggestion(
+          credit_card_number_suggestion, CREDIT_CARD_NUMBER);
+  external_delegate()->CheckSuggestions(
+      form.fields[1].global_id(),
+      {virtual_card_number_suggestion, credit_card_number_suggestion,
        AutofillSuggestionGenerator::CreateSeparator(),
        AutofillSuggestionGenerator::CreateManagePaymentMethodsEntry(
            /*with_gpay_logo=*/true)});
 
-  // Incomplete form.
+  // Non card number field (cardholder name field).
   GetAutofillSuggestions(form, form.fields[0]);
+
+  Suggestion credit_card_name_suggestion = GetCardSuggestion(
+      kVisaCard, /*nickname=*/"nickname", CREDIT_CARD_NAME_FULL);
+  Suggestion virtual_card_name_suggestion =
+      GenerateVirtualCardSuggestionFromCreditCardSuggestion(
+          credit_card_name_suggestion, CREDIT_CARD_NAME_FULL);
 
   external_delegate()->CheckSuggestions(
       form.fields[0].global_id(),
-      {virtual_card_suggestion,
-       Suggestion("Elvis Presley", label, Suggestion::Icon::kCardVisa,
-                  SuggestionType::kCreditCardEntry),
+      {virtual_card_name_suggestion, credit_card_name_suggestion,
        AutofillSuggestionGenerator::CreateSeparator(),
        AutofillSuggestionGenerator::CreateManagePaymentMethodsEntry(
            /*with_gpay_logo=*/true)});

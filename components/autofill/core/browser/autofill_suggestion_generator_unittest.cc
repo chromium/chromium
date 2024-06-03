@@ -4360,6 +4360,12 @@ INSTANTIATE_TEST_SUITE_P(All,
 // card has card linked offer available.
 TEST_P(AutofillSuggestionGeneratorTestForOffer,
        CreateCreditCardSuggestion_ServerCardWithOffer) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{features::kAutofillEnableVirtualCardMetadata,
+                             features::kAutofillEnableCardProductName,
+                             features::kAutofillEnableCardArtImage});
   // Create a server card.
   CreditCard server_card1 =
       CreateServerCard(/*guid=*/"00000000-0000-0000-0000-000000000001");
@@ -4375,8 +4381,69 @@ TEST_P(AutofillSuggestionGeneratorTestForOffer,
   EXPECT_EQ(virtual_card_suggestion.GetPayload<Suggestion::BackendId>(),
             Suggestion::BackendId(
                 Suggestion::Guid("00000000-0000-0000-0000-000000000001")));
-  // Ensures CLO text is not shown for virtual card option.
-  EXPECT_EQ(virtual_card_suggestion.labels.size(), 1U);
+  EXPECT_EQ(virtual_card_suggestion.labels.size(), 1u);
+
+  Suggestion real_card_suggestion =
+      test_api(suggestion_generator())
+          .CreateCreditCardSuggestion(server_card1, CREDIT_CARD_NUMBER,
+                                      /*virtual_card_option=*/false,
+                                      /*card_linked_offer_available=*/true);
+
+  EXPECT_EQ(real_card_suggestion.type, SuggestionType::kCreditCardEntry);
+  EXPECT_EQ(real_card_suggestion.GetPayload<Suggestion::BackendId>(),
+            Suggestion::BackendId(
+                Suggestion::Guid("00000000-0000-0000-0000-000000000001")));
+
+  if (keyboard_accessory_offer_enabled()) {
+#if BUILDFLAG(IS_ANDROID)
+    EXPECT_EQ(real_card_suggestion.labels.size(), 1U);
+    EXPECT_EQ(real_card_suggestion.feature_for_iph,
+              &feature_engagement::kIPHKeyboardAccessoryPaymentOfferFeature);
+#endif
+  } else {
+    ASSERT_EQ(real_card_suggestion.labels.size(), 2U);
+    ASSERT_EQ(real_card_suggestion.labels[1].size(), 1U);
+    EXPECT_EQ(real_card_suggestion.labels[1][0].value,
+              l10n_util::GetStringUTF16(IDS_AUTOFILL_OFFERS_CASHBACK));
+  }
+}
+
+// Test to make sure the suggestion gets populated with the right content if the
+// card has card linked offer available.
+TEST_P(AutofillSuggestionGeneratorTestForOffer,
+       CreateCreditCardSuggestion_ServerCardWithOffer_MetadataEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableVirtualCardMetadata,
+                            features::kAutofillEnableCardProductName,
+                            features::kAutofillEnableCardArtImage},
+      /*disabled_features=*/{});
+  // Create a server card.
+  CreditCard server_card1 =
+      CreateServerCard(/*guid=*/"00000000-0000-0000-0000-000000000001");
+
+  Suggestion virtual_card_suggestion =
+      test_api(suggestion_generator())
+          .CreateCreditCardSuggestion(server_card1, CREDIT_CARD_NUMBER,
+                                      /*virtual_card_option=*/true,
+                                      /*card_linked_offer_available=*/true);
+
+  EXPECT_EQ(virtual_card_suggestion.type,
+            SuggestionType::kVirtualCreditCardEntry);
+  EXPECT_EQ(virtual_card_suggestion.GetPayload<Suggestion::BackendId>(),
+            Suggestion::BackendId(
+                Suggestion::Guid("00000000-0000-0000-0000-000000000001")));
+
+  size_t expected_labels_size;
+#if BUILDFLAG(IS_ANDROID)
+  // For credit card number field, the expiration date is not shown as a
+  // suggestion label when the virtual card metadata flag is enabled on Android
+  // OS.
+  expected_labels_size = 0;
+#else
+  expected_labels_size = 1;
+#endif
+  EXPECT_EQ(virtual_card_suggestion.labels.size(), expected_labels_size);
 
   Suggestion real_card_suggestion =
       test_api(suggestion_generator())
