@@ -8,6 +8,8 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
+#include "base/debug/alias.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -257,25 +259,28 @@ void ScreenAIServiceRouter::BindMainContentExtractor(
 
 void ScreenAIServiceRouter::LaunchIfNotRunning() {
   ScreenAIInstallState::GetInstance()->SetLastUsageTime();
-  auto* state_instance = ScreenAIInstallState::GetInstance();
-  screen_ai::ScreenAIInstallState::State install_state =
-      state_instance->get_state();
-
   if (screen_ai_service_factory_.is_bound()) {
     return;
   }
 
-  // TODO(crbug.com/41493789): Remove when Reading Mode does not enable OCR
-  // without checking component availability.
-  if (install_state != screen_ai::ScreenAIInstallState::State::kDownloaded) {
-    return;
-  }
+  auto* state_instance = ScreenAIInstallState::GetInstance();
 
   // Callers of the service should ensure that the component is downloaded
   // before promising it to the users and triggering its launch.
-  CHECK(state_instance->IsComponentAvailable())
-      << "ScreenAI service launch triggered when component is not "
-         "available.";
+  // If it is not done, the calling feature will receive no reply when it tries
+  // to use this service.
+  // If the below check fails, look in to the client feature that is triggering
+  // the service and ensure it checks for service readiness before triggering
+  // it.
+  if (!state_instance->IsComponentAvailable()) {
+    LOG(ERROR) << "ScreenAI service launch triggered when component is not "
+                  "available.";
+    screen_ai::ScreenAIInstallState::State install_state =
+        state_instance->get_state();
+    base::debug::Alias(&install_state);
+    base::debug::DumpWithoutCrashing();
+    return;
+  }
 
   base::FilePath binary_path = state_instance->get_component_binary_path();
 #if BUILDFLAG(IS_WIN)
