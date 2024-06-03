@@ -7,9 +7,6 @@ package org.chromium.base.test.util;
 import android.app.Activity;
 import android.text.TextUtils;
 
-import org.junit.Assert;
-import org.junit.Rule;
-
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.CommandLine;
@@ -21,7 +18,6 @@ import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,40 +33,11 @@ import java.util.Set;
  * Provides annotations related to command-line flag handling.
  *
  * <p>This can be used in either an on-device instrumentation test or a junit (robolectric) test
- * running on the host. To use in an instrumentation test, just {@code RunWith} {@link
- * BaseJUnit4ClassRunner} (or a runner which extends that class). To use from a robolectric test,
- * add the following test rule to your class:
- *
- * <pre>
- * &#64Rule
- * TestRule mRule = CommandLineFlags.getTestRule();
- * </pre>
+ * running on the host.
  *
  * <p>Then you can annotate the test class, test methods, or test rules with {@code
- * CommandLineFlags.Add} or {@code CommandLineFlags.Remove}. Uses of these annotations on a derived
- * class will take precedence over uses on its base classes, so a derived class can add a
- * command-line flag that a base class has removed (or vice versa). Similarly, uses of these
- * annotations on a test method will take precedence over uses on the containing class.
- *
- * <p>These annotations may also be used on Junit4 Rule classes and on their base classes. Note,
- * however that the annotation processor only looks at the declared type of the Rule, not its actual
- * type, so in, for example:
- *
- * <pre>
- * &#64Rule
- * TestRule mRule = new ChromeActivityTestRule();
- * </pre>
- *
- * will only look for CommandLineFlags annotations on TestRule, not for CommandLineFlags annotations
- * on ChromeActivityTestRule.
- *
- * <p>In addition a rule may not remove flags added by an independently invoked rule, although it
- * may remove flags added by its base classes.
- *
- * <p>Uses of these annotations on the test class or methods take precedence over uses on Rule
- * classes.
- *
- * <p>Note that this class should never be instantiated.
+ * CommandLineFlags.Add} or {@code CommandLineFlags.Remove}. Uses of these annotations on a test
+ * method will take precedence over uses on the containing class.
  */
 public final class CommandLineFlags {
     private static final String TAG = "CommandLineFlags";
@@ -238,25 +205,6 @@ public final class CommandLineFlags {
     }
 
     private static void updateFlagsForClass(Class<?> clazz, Set<String> flags) {
-        // Get flags from rules within the class.
-        for (Field field : clazz.getFields()) {
-            if (field.isAnnotationPresent(Rule.class)) {
-                // The order in which fields are returned is undefined, so, for consistency,
-                // a rule must only ever add flags.
-                updateFlagsForClass(field.getType(), flags);
-            }
-        }
-        for (Method method : clazz.getMethods()) {
-            Assert.assertFalse(
-                    "@Rule annotations on methods are unsupported. Cause: "
-                            + method.toGenericString(),
-                    method.isAnnotationPresent(Rule.class));
-        }
-
-        // Add the flags from the parent. Override any flags defined by the rules.
-        Class<?> parent = clazz.getSuperclass();
-        if (parent != null) updateFlagsForClass(parent, flags);
-
         // Flags on the element itself override all other flag sources.
         if (clazz.isAnnotationPresent(CommandLineFlags.Add.class)) {
             flags.addAll(Arrays.asList(clazz.getAnnotation(CommandLineFlags.Add.class).value()));

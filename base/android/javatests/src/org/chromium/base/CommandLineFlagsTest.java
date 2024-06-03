@@ -8,12 +8,8 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
-import org.junit.runner.Description;
 import org.junit.runner.RunWith;
-import org.junit.runners.model.Statement;
 
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
@@ -26,39 +22,15 @@ import org.chromium.base.test.util.Feature;
 @Batch(Batch.UNIT_TESTS)
 @CommandLineFlags.Add({
     CommandLineFlagsTest.FLAG_1,
+    CommandLineFlagsTest.FLAG_2,
     "flagwithvalue=foo",
     "enable-features=feature1,feature2"
 })
 public class CommandLineFlagsTest {
     static final String FLAG_1 = "flag1";
-    private static final String FLAG_2 = "flag2";
+    static final String FLAG_2 = "flag2";
     private static final String FLAG_3 = "flag3";
     private static final String FLAG_4 = "flag4";
-    private static final String FLAG_5 = "flag5";
-    private static final String FLAG_6 = "flag6";
-    private static final String FLAG_7 = "flag7";
-
-    @CommandLineFlags.Add(FLAG_2)
-    private static class EmptyRule implements TestRule {
-        @Override
-        public Statement apply(Statement base, Description description) {
-            return base;
-        }
-    }
-
-    @CommandLineFlags.Add(FLAG_3)
-    private static class MyRule extends EmptyRule {
-        @CommandLineFlags.Add(FLAG_4)
-        private static class InnerRule extends EmptyRule {}
-
-        @SuppressWarnings("UnusedNestedClass")
-        @CommandLineFlags.Add(FLAG_5)
-        private static class UnusedRule extends EmptyRule {}
-
-        @Rule public InnerRule mInnerRule = new InnerRule();
-    }
-
-    @Rule public MyRule mRule = new MyRule();
 
     @Before
     public void setUp() {
@@ -66,33 +38,25 @@ public class CommandLineFlagsTest {
     }
 
     private static void verifyCommandLine(
-            boolean flag1,
-            boolean flag2,
-            boolean flag3,
-            boolean flag4,
-            boolean flag5,
-            boolean flag6,
-            boolean flag7) {
+            boolean flag1, boolean flag2, boolean flag3, boolean flag4) {
         CommandLine cmdLine = CommandLine.getInstance();
         Assert.assertEquals(flag1, cmdLine.hasSwitch(FLAG_1));
         Assert.assertEquals(flag2, cmdLine.hasSwitch(FLAG_2));
         Assert.assertEquals(flag3, cmdLine.hasSwitch(FLAG_3));
         Assert.assertEquals(flag4, cmdLine.hasSwitch(FLAG_4));
-        Assert.assertEquals(flag5, cmdLine.hasSwitch(FLAG_5));
-        Assert.assertEquals(flag6, cmdLine.hasSwitch(FLAG_6));
-        Assert.assertEquals(flag7, cmdLine.hasSwitch(FLAG_7));
     }
 
     private static void verifyClassLevelStateOnly() {
-        verifyCommandLine(true, true, true, true, false, false, false);
+        verifyCommandLine(true, true, false, false);
         Assert.assertEquals("foo", CommandLine.getInstance().getSwitchValue("flagwithvalue"));
         String enabledFeatures = CommandLine.getInstance().getSwitchValue("enable-features");
         Assert.assertTrue(enabledFeatures.contains("feature1"));
         Assert.assertTrue(enabledFeatures.contains("feature2"));
-        Assert.assertFalse(
-                CommandLine.getInstance().getSwitchValue("enable-features").contains("feature3"));
+        Assert.assertFalse(enabledFeatures.contains("feature3"));
         String disabledFeatures = CommandLine.getInstance().getSwitchValue("disable-features");
-        if (disabledFeatures != null) Assert.assertFalse(disabledFeatures.contains("feature2"));
+        if (disabledFeatures != null) {
+            Assert.assertFalse(disabledFeatures.contains("feature2"));
+        }
     }
 
     @Test
@@ -105,17 +69,17 @@ public class CommandLineFlagsTest {
     @Test
     @SmallTest
     @Feature({"CommandLine"})
-    @CommandLineFlags.Add({FLAG_1, FLAG_6})
+    @CommandLineFlags.Add({FLAG_1, FLAG_3})
     public void testMethodAdd() {
-        verifyCommandLine(true, true, true, true, false, true, false);
+        verifyCommandLine(true, true, true, false);
     }
 
     @Test
     @SmallTest
     @Feature({"CommandLine"})
-    @CommandLineFlags.Remove({FLAG_4, FLAG_7})
+    @CommandLineFlags.Remove(FLAG_1)
     public void testMethodRemove() {
-        verifyCommandLine(true, true, true, false, false, false, false);
+        verifyCommandLine(false, true, false, false);
     }
 
     @Test
