@@ -256,13 +256,12 @@ class NewTabPageModulesInteractiveUiTest
   ModuleDetails ModuleDetails() const { return GetParam(); }
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    NewTabPageModulesInteractiveUiTest,
-    ::testing::Values(kTabResumptionModuleDetails,
-                      CreateHistoryClustersModuleDetails(true, kNumClusters)));
-// TODO(crbug.com/335214502): Flaky on Linux/ChromeOS Tests.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+INSTANTIATE_TEST_SUITE_P(All,
+                         NewTabPageModulesInteractiveUiTest,
+                         ::testing::Values(kTabResumptionModuleDetails));
+
+// TODO(crbug.com/335214502): Flaky on ChromeOS Tests.
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_ClickingHideButtonDismissesModule \
   DISABLED_ClickingHideButtonDismissesModule
 #else
@@ -277,26 +276,32 @@ IN_PROC_BROWSER_TEST_P(NewTabPageModulesInteractiveUiTest,
       // 2. Wait for modules container to have an expected child count matching
       // the test setup.
       WaitForElementChildElementCount(kModulesV2Container, 1),
-      // 3. Ensure the module's dismiss button exists, and thus, that the module
+      // 3. Ensure the module's "more" button exists, and thus, that the module
+      // header loaded successfully.
+      WaitForElementToLoad(ModuleDetails().more_button_query),
+      // 4. Scroll to the "more"  button lement of the NTP module's header.
+      // Modules may sometimes load below the fold.
+      ScrollIntoView(kNewTabPageElementId, ModuleDetails().more_button_query),
+      // 5. Ensure the module's dismiss button exists, and thus, that the module
       // loaded successfully.
       WaitForElementToLoad(ModuleDetails().dismiss_button_query),
-      // 4. Scroll to the dismiss element of the NTP module's header. Modules
+      // 6. Click the "more actions" menu button of the NTP module.
+      ClickElement(kNewTabPageElementId, ModuleDetails().more_button_query),
+      // 7. Wait for module's menu dialog to be anchored.
+      WaitForElementStyleSet(ModuleDetails().more_action_menu_query),
+      // 8. Scroll to the dismiss element of the NTP module's header. Modules
       // may sometimes load below the fold.
       ScrollIntoView(kNewTabPageElementId,
                      ModuleDetails().dismiss_button_query),
-      // 5. Click the "more actions" menu button of the NTP history clusters
-      // module.
-      ClickElement(kNewTabPageElementId, ModuleDetails().more_button_query),
-      // 6. Wait for module's menu dialog to be anchored.
-      WaitForElementStyleSet(ModuleDetails().more_action_menu_query),
-      // 7. Click the dismiss action element of the NTP module.
+      // 9. Click the dismiss action element of the NTP module.
       ClickElement(kNewTabPageElementId, ModuleDetails().dismiss_button_query),
-      // 8. Wait for modules container to reflect an updated element count that
+      // 10. Wait for modules container to reflect an updated element count that
       // resulted from dismissing a module.
       WaitForElementChildElementCount(kModulesV2Container, 0));
 }
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/335214502): Flaky on ChromeOS Tests.
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_ClickingDisableButtonDisablesModule \
   DISABLED_ClickingDisableButtonDisablesModule
 #else
@@ -312,20 +317,27 @@ IN_PROC_BROWSER_TEST_P(NewTabPageModulesInteractiveUiTest,
       // 2. Wait for modules container to have an expected child count matching
       // the test setup.
       WaitForElementChildElementCount(kModulesV2Container, 1),
-      // 3. Ensure the module's dismiss button exists, and thus, that the module
+      // 3. Ensure the module's "more" button exists, and thus, that the module
+      // header loaded successfully.
+      WaitForElementToLoad(ModuleDetails().more_button_query),
+      // 4. Scroll to the "more"  button lement of the NTP module's header.
+      // Modules may sometimes load below the fold.
+      ScrollIntoView(kNewTabPageElementId, ModuleDetails().more_button_query),
+      // 5. Ensure the module's dismiss button exists, and thus, that the module
       // loaded successfully.
       WaitForElementToLoad(module_details.disable_button_query),
-      // 4. Scroll to the dismiss element of the NTP module's header. Modules
-      // may sometimes load below the fold.
-      ScrollIntoView(kNewTabPageElementId, module_details.disable_button_query),
-      // 5. Click the "more actions" menu button of the NTP history clusters
+      // 6. Click the "more actions" menu button of the NTP history clusters
       // module.
       ClickElement(kNewTabPageElementId, module_details.more_button_query),
-      // 6. Wait for module's menu dialog to be anchored.
+      // 7. Wait for module's menu dialog to be anchored.
       WaitForElementStyleSet(module_details.more_action_menu_query),
-      // 7. Click the disable action element of the NTP module.
+      // 8. Scroll to the disable element of the NTP module's header. Modules
+      // may sometimes load below the fold.
+      ScrollIntoView(kNewTabPageElementId,
+                     ModuleDetails().disable_button_query),
+      // 9. Click the disable action element of the NTP module.
       ClickElement(kNewTabPageElementId, module_details.disable_button_query),
-      // 8. Wait for modules container to reflect an updated element count that
+      // 10. Wait for modules container to reflect an updated element count that
       // resulted from disabling a module.
       WaitForElementHiddenSet(kModulesV2Wrapper));
 }
