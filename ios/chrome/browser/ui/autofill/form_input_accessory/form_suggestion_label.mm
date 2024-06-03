@@ -193,7 +193,7 @@ UILabel* TextLabel(NSString* text,
     [self setIsAccessibilityElement:YES];
     [self setAccessibilityLabel:l10n_util::GetNSStringF(
                                     IDS_IOS_AUTOFILL_ACCNAME_SUGGESTION,
-                                    base::SysNSStringToUTF16(suggestion.value),
+                                    base::SysNSStringToUTF16(suggestionText),
                                     base::SysNSStringToUTF16(
                                         suggestion.displayDescription))];
     [self setAccessibilityValue:l10n_util::GetNSStringF(
