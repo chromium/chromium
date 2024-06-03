@@ -105,11 +105,10 @@ FieldType GetStorableTypeCollapsingGroupsForPartialType(FieldType type) {
 // groups types which include address line 1.
 //
 // `GetStorableTypeCollapsingGroups()` serves this purpose:
-// If `ADDRESS_HOME_LINE2` is an excluded field, we also want to exclude
-// `ADDRESS_HOME_STREET_ADDRESS` and `ADDRESS_HOME_LINE1`, because they don't
-// add extra relevant information.
-// Names and phone numbers also behave like this for the same reason. i.e. if
-// `NAME_FIRST` is excluded, we also exclude `NAME_LAST`.
+// If `ADDRESS_HOME_STREET_ADDRESS` is an excluded field, we also want to
+// exclude `ADDRESS_HOME_LINE1`, because it doesn't add extra relevant
+// information. Names and phone numbers also behave like this for the same
+// reason. i.e. if `NAME_FIRST` is excluded, we also exclude `NAME_LAST`.
 //
 // `GetStorableTypeCollapsingGroupsForPartialType()` serves the purpose of
 // including `NAME_FULL` in the label candidates, as a last resort, if a partial
@@ -122,7 +121,6 @@ FieldType GetStorableTypeCollapsingGroups(FieldType type,
                                           bool use_improved_labels_order) {
   FieldType storable_type = AutofillType(type).GetStorableType();
   if ((storable_type == ADDRESS_HOME_LINE1 ||
-       storable_type == ADDRESS_HOME_LINE2 ||
        storable_type == ADDRESS_HOME_STREET_ADDRESS) &&
       use_improved_labels_order) {
     return ADDRESS_HOME_LINE1;

@@ -742,6 +742,32 @@ TEST(AutofillProfileTest, CreateInferredLabelsFlattensMultiLineValues) {
   EXPECT_EQ(u"88 Nowhere Ave., Apt. 42", labels[0]);
 }
 
+// Test that `ADDRESS_HOME_LINE2` is used as a differentiating label if
+// necessary.
+TEST(AutofillProfileTest, CreateInferredLabelsDifferentiateByAddressLine2) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillGranularFillingAvailable);
+  std::vector<std::unique_ptr<AutofillProfile>> profiles;
+  profiles.push_back(std::make_unique<AutofillProfile>(
+      i18n_model_definition::kLegacyHierarchyCountryCode));
+  test::SetProfileInfo(profiles[0].get(), "John", "", "Doe", "", "",
+                       "88 Nowhere Ave.", "Apt. 42", "", "", "", "", "");
+  profiles.push_back(std::make_unique<AutofillProfile>(
+      i18n_model_definition::kLegacyHierarchyCountryCode));
+  test::SetProfileInfo(profiles[1].get(), "John", "", "Doe", "", "",
+                       "88 Nowhere Ave.", "Apt. 43", "", "", "", "", "");
+
+  std::vector<std::u16string> labels;
+  AutofillProfile::CreateInferredLabels(
+      ToRawPointerVector(profiles), /*suggested_fields=*/std::nullopt,
+      /*triggering_field_type=*/NAME_FULL, {NAME_FULL},
+      /*minimal_fields_shown=*/1, "en-US", &labels,
+      /*use_improved_labels_order=*/true);
+  ASSERT_EQ(2U, labels.size());
+  EXPECT_EQ(u"88 Nowhere Ave., Apt. 42", labels[0]);
+  EXPECT_EQ(u"88 Nowhere Ave., Apt. 43", labels[1]);
+}
+
 TEST(AutofillProfileTest, IsSubsetOf) {
   AutofillProfileComparator comparator("en-US");
   const AutofillProfile standard_profile = test::StandardProfile();
