@@ -377,6 +377,7 @@ struct FormFieldData {
   bool is_enabled;
   bool is_readonly;
   mojo_base.mojom.String16 user_input;
+  bool allows_writing_suggestions;
 
   array<SelectOption> options;
 

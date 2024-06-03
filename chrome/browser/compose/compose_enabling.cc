@@ -197,6 +197,7 @@ base::expected<void, compose::ComposeShowStatus> ComposeEnabling::CheckEnabling(
 base::expected<void, compose::ComposeNudgeDenyReason>
 ComposeEnabling::ShouldTriggerPopup(
     std::string_view autocomplete_attribute,
+    bool allows_writing_suggestions,
     Profile* profile,
     PrefService* prefs,
     translate::TranslateManager* translate_manager,
@@ -211,7 +212,8 @@ ComposeEnabling::ShouldTriggerPopup(
   }
 
   base::expected<void, compose::ComposeShowStatus> show_status =
-      ShouldTriggerNoStatePopup(autocomplete_attribute, profile, prefs,
+      ShouldTriggerNoStatePopup(autocomplete_attribute,
+                                allows_writing_suggestions, profile, prefs,
                                 translate_manager, top_level_frame_origin,
                                 element_frame_origin, url, is_msbb_enabled);
   if (show_status.has_value()) {
@@ -244,6 +246,7 @@ ComposeEnabling::ShouldTriggerPopup(
 base::expected<void, compose::ComposeShowStatus>
 ComposeEnabling::ShouldTriggerNoStatePopup(
     std::string_view autocomplete_attribute,
+    bool allows_writing_suggestions,
     Profile* profile,
     PrefService* prefs,
     translate::TranslateManager* translate_manager,
@@ -293,6 +296,12 @@ ComposeEnabling::ShouldTriggerNoStatePopup(
   if (!AutocompleteAllowed(autocomplete_attribute)) {
     DVLOG(2) << "autocomplete=off";
     return base::unexpected(compose::ComposeShowStatus::kAutocompleteOff);
+  }
+
+  if (!allows_writing_suggestions) {
+    DVLOG(2) << "writingsuggestions=false";
+    return base::unexpected(
+        compose::ComposeShowStatus::kWritingSuggestionsFalse);
   }
 
   if (!prefs->GetBoolean(prefs::kEnableProactiveNudge)) {
