@@ -43,6 +43,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
+#include "ui/views/controls/theme_tracking_image_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/layout_provider.h"
@@ -52,8 +53,6 @@
 #include "ui/views/widget/widget.h"
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "components/plus_addresses/resources/vector_icons.h"
-#else
-#include "components/vector_icons/vector_icons.h"
 #endif
 
 namespace plus_addresses {
@@ -67,10 +66,13 @@ const int kPlusAddressIconColumnWidth = 64;
 const int kPlusAddressRefreshColumnWidth = 48;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 const gfx::VectorIcon& kGoogleGLogoIcon = vector_icons::kGoogleGLogoIcon;
+const gfx::VectorIcon& kDarkGoogleGLogoIcon =
+    vector_icons::kGoogleGLogoMonochromeIcon;
 const gfx::VectorIcon& kPlusAddressLogoIcon =
     plus_addresses::kPlusAddressesLogoIcon;
 #else
 const gfx::VectorIcon& kGoogleGLogoIcon = vector_icons::kProductIcon;
+const gfx::VectorIcon& kDarkGoogleGLogoIcon = vector_icons::kProductIcon;
 const gfx::VectorIcon& kPlusAddressLogoIcon = vector_icons::kProductIcon;
 #endif
 
@@ -123,10 +125,13 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
   // Create hero image.
   std::unique_ptr<views::ImageView> logo_image;
   if (base::FeatureList::IsEnabled(features::kPlusAddressUIRedesign)) {
-    logo_image = views::Builder<views::ImageView>()
-                     .SetImage(ui::ImageModel::FromVectorIcon(
-                         kGoogleGLogoIcon, ui::kColorIcon, kGoogleGLogoWidth))
-                     .Build();
+    logo_image = std::make_unique<views::ThemeTrackingImageView>(
+        ui::ImageModel::FromVectorIcon(kGoogleGLogoIcon, gfx::kPlaceholderColor,
+                                       kGoogleGLogoWidth),
+        ui::ImageModel::FromVectorIcon(kDarkGoogleGLogoIcon, ui::kColorIcon,
+                                       kGoogleGLogoWidth),
+        base::BindRepeating(&views::BubbleDialogDelegate::GetBackgroundColor,
+                            base::Unretained(this)));
     logo_image->SetProperty(
         views::kMarginsKey,
         gfx::Insets::VH(GetPlusAddressLabelVerticalMargin(), 0));
