@@ -77,6 +77,7 @@ PickerSearchFieldView::PickerSearchFieldView(
                   TypographyToken::kCrosBody2))
               .SetProperty(views::kFlexBehaviorKey,
                            views::FlexSpecification(
+                               views::LayoutOrientation::kHorizontal,
                                views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kUnbounded))
               // TODO(b/309706053): Replace this once the strings are finalized.

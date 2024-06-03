@@ -94,6 +94,7 @@ void PickerSectionView::AddTitleLabel(const std::u16string& title_text) {
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
           .SetProperty(views::kFlexBehaviorKey,
                        views::FlexSpecification(
+                           views::LayoutOrientation::kHorizontal,
                            views::MinimumFlexSizeRule::kScaleToMinimum,
                            views::MaximumFlexSizeRule::kUnbounded)
                            .WithWeight(1))

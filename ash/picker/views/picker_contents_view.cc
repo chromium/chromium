@@ -83,6 +83,11 @@ PickerContentsView::PickerContentsView(PickerLayoutType layout_type) {
   auto page_container = std::make_unique<views::FlexLayoutView>();
   page_container->SetOrientation(views::LayoutOrientation::kVertical);
   page_container->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
+
+  // TODO(crbug.com/40232718): When respecting size constraints, the layout
+  // manager has no layout cache, so multiple levels of FlexLayoutView nesting
+  // have performance issues here, consider switching to BoxLayoutView.
+  page_container->SetLayoutManagerUseConstrainedSpace(false);
   page_container->SetBorder(
       views::CreateEmptyBorder(GetScrollViewContentsBorderInsets(layout_type)));
   page_container_ = scroll_view->SetContents(std::move(page_container));
