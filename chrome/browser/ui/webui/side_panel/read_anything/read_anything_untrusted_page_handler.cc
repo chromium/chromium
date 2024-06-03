@@ -716,8 +716,10 @@ void ReadAnythingUntrustedPageHandler::SetUpPdfObserver() {
           inner_contents[0]->GetPrimaryMainFrame()->GetLastCommittedOrigin())) {
     pdf_observer_ = std::make_unique<ReadAnythingWebContentsObserver>(
         weak_factory_.GetSafeRef(), inner_contents[0], kReadAnythingAXMode);
-    screen_ai::PdfOcrControllerFactory::GetForProfile(browser_->profile())
-        ->Activate();
+    if (features::IsPdfOcrEnabled()) {
+      screen_ai::PdfOcrControllerFactory::GetForProfile(browser_->profile())
+          ->Activate();
+    }
   }
 }
 
