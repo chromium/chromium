@@ -48,17 +48,6 @@ class GpuMojoMediaClientMac final : public GpuMojoMediaClient {
         VideoDecodeAccelerator::Config::OutputMode::kAllocate);
   }
 
-  std::optional<SupportedAudioDecoderConfigs>
-  GetPlatformSupportedAudioDecoderConfigs() final {
-    SupportedAudioDecoderConfigs audio_configs;
-    audio_configs.emplace_back(AudioCodec::kAAC, AudioCodecProfile::kXHE_AAC);
-#if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
-    audio_configs.emplace_back(AudioCodec::kAC3, AudioCodecProfile::kUnknown);
-    audio_configs.emplace_back(AudioCodec::kEAC3, AudioCodecProfile::kUnknown);
-#endif  // BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
-    return audio_configs;
-  }
-
   std::optional<SupportedVideoDecoderConfigs>
   GetPlatformSupportedVideoDecoderConfigs(
       GetVdaConfigsCB get_vda_configs) final {

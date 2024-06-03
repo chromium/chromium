@@ -7,7 +7,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "media/base/media_switches.h"
-#include "media/mojo/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -260,20 +259,23 @@ TEST(SupportedTypesTest, IsSupportedAudioTypeWithSpatialRenderingBasics) {
 }
 
 TEST(SupportedTypesTest, XHE_AACSupported) {
-  AudioType aac{AudioCodec::kAAC, AudioCodecProfile::kXHE_AAC, false};
-  EXPECT_EQ(false, IsSupportedAudioType(aac));
+  bool is_supported = false;
 
-  UpdateDefaultSupportedAudioTypes({aac});
+#if BUILDFLAG(IS_ANDROID)
+  is_supported = kPropCodecsEnabled &&
+                 base::android::BuildInfo::GetInstance()->sdk_int() >=
+                     base::android::SDK_VERSION_P;
+#elif BUILDFLAG(USE_PROPRIETARY_CODECS)
+#if BUILDFLAG(IS_MAC)
+  is_supported = true;
+#elif BUILDFLAG(IS_WIN)
+  is_supported = base::win::GetVersion() >= base::win::Version::WIN11_22H2;
+#endif
+#endif
 
-  EXPECT_EQ(
-#if BUILDFLAG(ENABLE_MOJO_AUDIO_DECODER) && \
-    (BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN))
-      true,
-#else
-      false,
-#endif  // BUILDFLAG(ENABLE_MOJO_AUDIO_DECODER) && (BUILDFLAG(IS_ANDROID) ||
-        // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN))
-      IsSupportedAudioType(aac));
+  EXPECT_EQ(is_supported,
+            IsSupportedAudioType(
+                {AudioCodec::kAAC, AudioCodecProfile::kXHE_AAC, false}));
 }
 
 TEST(SupportedTypesTest, IsSupportedVideoTypeWithHdrMetadataBasics) {

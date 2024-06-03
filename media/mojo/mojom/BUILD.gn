@@ -447,20 +447,6 @@ mojom("mojom") {
     {
       types = [
         {
-          mojom = "media.mojom.SupportedAudioDecoderConfig"
-          cpp = "::media::SupportedAudioDecoderConfig"
-        },
-      ]
-      traits_headers = [ "supported_audio_decoder_config_mojom_traits.h" ]
-      traits_sources = [ "supported_audio_decoder_config_mojom_traits.cc" ]
-      traits_public_deps = [
-        "//base",
-        "//media",
-      ]
-    },
-    {
-      types = [
-        {
           mojom = "media.mojom.BitstreamBufferMetadata"
           cpp = "::media::BitstreamBufferMetadata"
         },

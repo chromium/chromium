@@ -45,7 +45,6 @@ class MEDIA_MOJO_EXPORT MojoAudioDecoderService final
   ~MojoAudioDecoderService() final;
 
   // mojom::AudioDecoder implementation
-  void GetSupportedConfigs(GetSupportedConfigsCallback callback) final;
   void Construct(
       mojo::PendingAssociatedRemote<mojom::AudioDecoderClient> client,
       mojo::PendingRemote<mojom::MediaLog> media_log) final;

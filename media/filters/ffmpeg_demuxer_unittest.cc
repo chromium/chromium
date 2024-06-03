@@ -1357,9 +1357,6 @@ TEST_F(FFmpegDemuxerTest, HEVC_in_MP4_container) {
 TEST_F(FFmpegDemuxerTest, Read_AC3_Audio) {
   CreateDemuxer("bear-ac3-only-frag.mp4");
 #if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
-  AudioType ac3{AudioCodec::kAC3, AudioCodecProfile::kUnknown, false};
-  UpdateDefaultSupportedAudioTypes({ac3});
-
   InitializeDemuxer();
 
   // Attempt a read from the audio stream and run the message loop until done.
@@ -1376,9 +1373,6 @@ TEST_F(FFmpegDemuxerTest, Read_AC3_Audio) {
 TEST_F(FFmpegDemuxerTest, Read_EAC3_Audio) {
   CreateDemuxer("bear-eac3-only-frag.mp4");
 #if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
-  AudioType eac3{AudioCodec::kEAC3, AudioCodecProfile::kUnknown, false};
-  UpdateDefaultSupportedAudioTypes({eac3});
-
   InitializeDemuxer();
 
   // Attempt a read from the audio stream and run the message loop until done.

@@ -33,11 +33,6 @@ std::unique_ptr<AudioEncoder> MojoMediaClient::CreateAudioEncoder(
   return nullptr;
 }
 
-SupportedAudioDecoderConfigs
-MojoMediaClient::GetSupportedAudioDecoderConfigs() {
-  return {};
-}
-
 SupportedVideoDecoderConfigs
 MojoMediaClient::GetSupportedVideoDecoderConfigs() {
   return {};

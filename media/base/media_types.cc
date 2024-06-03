@@ -66,8 +66,7 @@ bool operator!=(const AudioType& x, const AudioType& y) {
 }
 
 bool operator<(const AudioType& x, const AudioType& y) {
-  return std::tie(x.codec, x.profile, x.spatial_rendering) <
-         std::tie(y.codec, y.profile, y.spatial_rendering);
+  return x.codec < y.codec ? true : x.profile < y.profile;
 }
 
 bool operator==(const VideoType& x, const VideoType& y) {
