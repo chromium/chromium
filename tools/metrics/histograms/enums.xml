@@ -16213,6 +16213,8 @@ from previous Chrome versions.
   <int value="-2143328006"
       label="enable-fill-on-account-select-no-highlighting"/>
   <int value="-2143113994" label="enable-ephemeral-apps-in-webstore"/>
+  <int value="-2142729205"
+      label="PriceTrackingSubscriptionServiceLocaleKey:disabled"/>
   <int value="-2142665444" label="ScrollableTabStrip:disabled"/>
   <int value="-2141661938" label="AnimatedAppMenuIcon:enabled"/>
   <int value="-2141657384" label="AndroidAppIntegration:disabled"/>
@@ -25446,6 +25448,8 @@ from previous Chrome versions.
   <int value="1839005510" label="MutingCompromisedCredentials:enabled"/>
   <int value="1839740266" label="LocationHardReload:disabled"/>
   <int value="1840087820" label="NtpRealboxMatchSearchboxTheme:enabled"/>
+  <int value="1840756750"
+      label="PriceTrackingSubscriptionServiceLocaleKey:enabled"/>
   <int value="1840892133" label="StylusWritingToInput:enabled"/>
   <int value="1841051176" label="WindowsScrollingPersonality:disabled"/>
   <int value="1841793150" label="TwoPanesStartSurfaceAndroid:enabled"/>

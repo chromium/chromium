@@ -7009,6 +7009,11 @@
     "expiry_milestone": 128
   },
   {
+    "name": "price-tracking-subscription-service-locale-key",
+    "owners": [ "qib@google.com", "chrommerce-eng@google.com" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "print-preview-cros-app",
     "owners": [
       "//ash/webui/print_management/OWNERS"

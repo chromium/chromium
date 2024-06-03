@@ -56,6 +56,9 @@ extern const char kShoppingPageTypesDescription[];
 extern const char kTrackByDefaultOnMobileName[];
 extern const char kTrackByDefaultOnMobileDescription[];
 
+extern const char kPriceTrackingSubscriptionServiceLocaleKeyName[];
+extern const char kPriceTrackingSubscriptionServiceLocaleKeyDescription[];
+
 }  // namespace commerce::flag_descriptions
 
 #endif  // COMPONENTS_COMMERCE_CORE_FLAG_DESCRIPTIONS_H_

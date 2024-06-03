@@ -72,4 +72,10 @@ const char kTrackByDefaultOnMobileName[] =
 const char kTrackByDefaultOnMobileDescription[] =
     "Enable tracking a product by default when bookmarking on mobile devices.";
 
+const char kPriceTrackingSubscriptionServiceLocaleKeyName[] =
+    "Price Tracking Subscription Service Local Key";
+
+const char kPriceTrackingSubscriptionServiceLocaleKeyDescription[] =
+    "Enable the locale key for price tracking subscription service";
+
 }  // namespace commerce::flag_descriptions
