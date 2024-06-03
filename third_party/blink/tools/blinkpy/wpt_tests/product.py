@@ -41,7 +41,11 @@ def make_product_registry():
     """
     product_registry = {}
     product_classes = [
-        Chrome, HeadlessShell, ContentShell, ChromeiOS, ChromeAndroid, WebView
+        Chrome,
+        HeadlessShell,
+        ChromeiOS,
+        ChromeAndroid,
+        WebView,
     ]
     for product_cls in product_classes:
         names = [product_cls.name] + product_cls.aliases
@@ -133,10 +137,6 @@ class HeadlessShell(DesktopProduct):
             # default, so set an arbitrary one that some tests expect.
             '--accept-lang=en-US,en',
         ]
-
-
-class ContentShell(DesktopProduct):
-    name = 'content_shell'
 
 
 class ChromeiOS(Product):
