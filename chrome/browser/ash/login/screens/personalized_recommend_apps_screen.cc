@@ -42,7 +42,7 @@ constexpr const char kUserActionNext[] = "next";
 constexpr const char kUserActionSkip[] = "skip";
 constexpr const char kUserActionBack[] = "back";
 constexpr const char kUserActionLoaded[] = "loaded";
-constexpr const char kNoUseCasesSelectedIDName[] = "oobe_other";
+constexpr const char kNoUseCasesSelectedIDName[] = "oobe_none";
 
 constexpr const base::TimeDelta kDelaySetCategoriesAppsMapTime =
     base::Seconds(2);
