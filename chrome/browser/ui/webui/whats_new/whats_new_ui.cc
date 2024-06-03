@@ -53,10 +53,10 @@ void CreateAndAddWhatsNewUIHtmlSource(Profile* profile) {
 
 WhatsNewUI::WhatsNewUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true),
+      page_factory_receiver_(this),
       browser_command_factory_receiver_(this),
       profile_(Profile::FromWebUI(web_ui)) {
   CreateAndAddWhatsNewUIHtmlSource(profile_);
-  web_ui->AddMessageHandler(std::make_unique<WhatsNewHandler>());
 }
 
 // static
@@ -68,6 +68,21 @@ base::RefCountedMemory* WhatsNewUI::GetFaviconResourceBytes(
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(WhatsNewUI)
+
+void WhatsNewUI::BindInterface(
+    mojo::PendingReceiver<whats_new::mojom::PageHandlerFactory> receiver) {
+  page_factory_receiver_.reset();
+  page_factory_receiver_.Bind(std::move(receiver));
+}
+
+void WhatsNewUI::CreatePageHandler(
+    mojo::PendingRemote<whats_new::mojom::Page> page,
+    mojo::PendingReceiver<whats_new::mojom::PageHandler> receiver) {
+  DCHECK(page);
+  page_handler_ =
+      std::make_unique<WhatsNewHandler>(std::move(receiver), std::move(page),
+                                        profile_, web_ui()->GetWebContents());
+}
 
 void WhatsNewUI::BindInterface(
     mojo::PendingReceiver<browser_command::mojom::CommandHandlerFactory>

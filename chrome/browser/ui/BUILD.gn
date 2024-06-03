@@ -4341,6 +4341,7 @@ static_library("ui") {
     deps += [
       "//chrome/app:generated_resources",
       "//chrome/browser/ui/webui/app_home:mojo_bindings",
+      "//chrome/browser/ui/webui/whats_new:mojo_bindings",
     ]
   }
 

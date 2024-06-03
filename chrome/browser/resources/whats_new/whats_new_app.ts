@@ -10,6 +10,7 @@ import {BrowserCommandProxy} from 'chrome://resources/js/browser_command/browser
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {isChromeOS} from 'chrome://resources/js/platform.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {getCss} from './whats_new_app.css.js';
 import {getHtml} from './whats_new_app.html.js';
@@ -64,8 +65,8 @@ export class WhatsNewAppElement extends CrLitElement {
   override connectedCallback() {
     super.connectedCallback();
 
-    WhatsNewProxyImpl.getInstance().initialize().then(
-        url => this.handleUrlResult_(url));
+    WhatsNewProxyImpl.getInstance().handler.getServerUrl().then(
+        ({url}: {url: Url}) => this.handleUrlResult_(url.url));
   }
 
   override disconnectedCallback() {

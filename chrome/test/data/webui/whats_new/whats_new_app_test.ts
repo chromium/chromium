@@ -8,49 +8,28 @@ import {CommandHandlerRemote} from 'chrome://resources/js/browser_command.mojom-
 import {BrowserCommandProxy} from 'chrome://resources/js/browser_command/browser_command_proxy.js';
 import {isChromeOS} from 'chrome://resources/js/platform.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
-import type {WhatsNewProxy} from 'chrome://whats-new/whats_new_proxy.js';
 import {WhatsNewProxyImpl} from 'chrome://whats-new/whats_new_proxy.js';
 
+import {TestWhatsNewBrowserProxy} from './test_whats_new_browser_proxy.js';
+
 const whatsNewURL = 'chrome://webui-test/whats_new/test.html';
-
-class TestWhatsNewProxy extends TestBrowserProxy implements WhatsNewProxy {
-  private url_: string;
-
-  /**
-   * @param url The URL to load in the iframe.
-   */
-  constructor(url: string) {
-    super([
-      'initialize',
-    ]);
-
-    this.url_ = url;
-  }
-
-  initialize() {
-    this.methodCalled('initialize');
-    return Promise.resolve(this.url_);
-  }
-}
+const whatsNewWithCommandURL =
+    'chrome://webui-test/whats_new/test_with_command_3.html';
 
 suite('WhatsNewAppTest', function() {
-  const whatsNewWithCommandURL =
-      'chrome://webui-test/whats_new/test_with_command_3.html';
-
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
   test('with query parameters', async () => {
-    const proxy = new TestWhatsNewProxy(whatsNewURL);
+    const proxy = new TestWhatsNewBrowserProxy(whatsNewURL);
     WhatsNewProxyImpl.setInstance(proxy);
     window.history.replaceState({}, '', '?auto=true');
     const whatsNewApp = document.createElement('whats-new-app');
     document.body.appendChild(whatsNewApp);
-    await proxy.whenCalled('initialize');
+    await proxy.handler.whenCalled('getServerUrl');
     await microtasksFinished();
 
     const iframe =
@@ -63,12 +42,12 @@ suite('WhatsNewAppTest', function() {
   });
 
   test('with version as query parameter', async () => {
-    const proxy = new TestWhatsNewProxy(whatsNewURL + '?version=m98');
+    const proxy = new TestWhatsNewBrowserProxy(whatsNewURL + '?version=m98');
     WhatsNewProxyImpl.setInstance(proxy);
     window.history.replaceState({}, '', '?auto=true');
     const whatsNewApp = document.createElement('whats-new-app');
     document.body.appendChild(whatsNewApp);
-    await proxy.whenCalled('initialize');
+    await proxy.handler.whenCalled('getServerUrl');
     await microtasksFinished();
 
     const iframe =
@@ -82,12 +61,12 @@ suite('WhatsNewAppTest', function() {
   });
 
   test('no query parameters', async () => {
-    const proxy = new TestWhatsNewProxy(whatsNewURL);
+    const proxy = new TestWhatsNewBrowserProxy(whatsNewURL);
     WhatsNewProxyImpl.setInstance(proxy);
     window.history.replaceState({}, '', '/');
     const whatsNewApp = document.createElement('whats-new-app');
     document.body.appendChild(whatsNewApp);
-    await proxy.whenCalled('initialize');
+    await proxy.handler.whenCalled('getServerUrl');
     await microtasksFinished();
 
     const iframe =
@@ -97,7 +76,7 @@ suite('WhatsNewAppTest', function() {
   });
 
   test('with command', async () => {
-    const proxy = new TestWhatsNewProxy(whatsNewWithCommandURL);
+    const proxy = new TestWhatsNewBrowserProxy(whatsNewWithCommandURL);
     WhatsNewProxyImpl.setInstance(proxy);
     const browserCommandHandler = TestMock.fromClass(CommandHandlerRemote);
     BrowserCommandProxy.getInstance().handler = browserCommandHandler;

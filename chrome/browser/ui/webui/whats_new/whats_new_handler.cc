@@ -25,40 +25,37 @@
 #include "components/prefs/pref_service.h"
 #include "url/gurl.h"
 
-WhatsNewHandler::WhatsNewHandler() = default;
+WhatsNewHandler::WhatsNewHandler(
+    mojo::PendingReceiver<whats_new::mojom::PageHandler> receiver,
+    mojo::PendingRemote<whats_new::mojom::Page> page,
+    Profile* profile,
+    content::WebContents* web_contents)
+    : profile_(profile),
+      web_contents_(web_contents),
+      receiver_(this, std::move(receiver)),
+      page_(std::move(page)) {}
 
 WhatsNewHandler::~WhatsNewHandler() = default;
 
-void WhatsNewHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
-      "initialize", base::BindRepeating(&WhatsNewHandler::HandleInitialize,
-                                        base::Unretained(this)));
-}
-
-void WhatsNewHandler::HandleInitialize(const base::Value::List& args) {
-  CHECK_EQ(1U, args.size());
-  const std::string& callback_id = args[0].GetString();
-
-  AllowJavascript();
-
-  auto response = base::Value();
+void WhatsNewHandler::GetServerUrl(GetServerUrlCallback callback) {
+  GURL result = GURL("");
   if (!whats_new::IsRemoteContentDisabled()) {
-    response = base::Value(whats_new::GetServerURL(true).spec());
+    result = whats_new::GetServerURL(true);
   }
+  std::move(callback).Run(result);
 
-  ResolveJavascriptCallback(base::Value(callback_id), response);
   TryShowHatsSurveyWithTimeout();
 }
 
 void WhatsNewHandler::TryShowHatsSurveyWithTimeout() {
   HatsService* hats_service =
-      HatsServiceFactory::GetForProfile(Profile::FromWebUI(web_ui()),
+      HatsServiceFactory::GetForProfile(profile_,
                                         /* create_if_necessary = */ true);
   if (!hats_service)
     return;
 
   hats_service->LaunchDelayedSurveyForWebContents(
-      kHatsSurveyTriggerWhatsNew, web_ui()->GetWebContents(),
+      kHatsSurveyTriggerWhatsNew, web_contents_,
       features::kHappinessTrackingSurveysForDesktopWhatsNewTime.Get()
           .InMilliseconds(),
       /*product_specific_bits_data=*/{},

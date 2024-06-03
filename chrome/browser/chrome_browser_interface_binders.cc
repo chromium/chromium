@@ -1244,6 +1244,11 @@ void PopulateChromeWebUIFrameBinders(
       page_image_service::mojom::PageImageServiceHandler, HistoryUI,
       HistoryClustersSidePanelUI, NewTabPageUI, BookmarksSidePanelUI>(map);
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  RegisterWebUIControllerInterfaceBinder<whats_new::mojom::PageHandlerFactory,
+                                         WhatsNewUI>(map);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
   RegisterWebUIControllerInterfaceBinder<
       browser_command::mojom::CommandHandlerFactory,
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

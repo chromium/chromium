@@ -9966,6 +9966,7 @@ test("unit_tests") {
       "../browser/enterprise/signin/profile_token_web_signin_interceptor_unittest.cc",
       "../browser/enterprise/signin/token_managed_profile_creation_delegate_unittest.cc",
       "../browser/net/disk_cache_dir_policy_handler_unittest.cc",
+      "../browser/ui/webui/whats_new/whats_new_handler_unittest.cc",
       "../browser/ui/webui/whats_new/whats_new_util_unittest.cc",
     ]
 
@@ -9982,6 +9983,7 @@ test("unit_tests") {
       "../browser/enterprise/connectors/device_trust/key_management/core/persistence:unit_tests",
       "../browser/enterprise/connectors/device_trust/key_management/installer:unit_tests",
       "../browser/enterprise/connectors/device_trust/signals/decorators/browser:unit_tests",
+      "../browser/ui/webui/whats_new:mojo_bindings",
     ]
   }
 

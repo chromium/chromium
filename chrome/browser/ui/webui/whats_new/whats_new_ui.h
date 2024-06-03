@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_WHATS_NEW_WHATS_NEW_UI_H_
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/webui/whats_new/whats_new.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -21,11 +22,13 @@ namespace content {
 class WebUI;
 }
 
+class WhatsNewHandler;
 class BrowserCommandHandler;
 class Profile;
 
 // The Web UI controller for the chrome://whats-new page.
 class WhatsNewUI : public ui::MojoWebUIController,
+                   public whats_new::mojom::PageHandlerFactory,
                    public browser_command::mojom::CommandHandlerFactory {
  public:
   explicit WhatsNewUI(content::WebUI* web_ui);
@@ -33,6 +36,11 @@ class WhatsNewUI : public ui::MojoWebUIController,
 
   static base::RefCountedMemory* GetFaviconResourceBytes(
       ui::ResourceScaleFactor scale_factor);
+
+  // Instantiates the implementor of the
+  // whats_new::mojom::PageHandlerFactory mojo interface.
+  void BindInterface(
+      mojo::PendingReceiver<whats_new::mojom::PageHandlerFactory> receiver);
 
   // Instantiates the implementor of the
   // browser_command::mojom::CommandHandlerFactory mojo interface.
@@ -44,6 +52,15 @@ class WhatsNewUI : public ui::MojoWebUIController,
   WhatsNewUI& operator=(const WhatsNewUI&) = delete;
 
  private:
+  // whats_new::mojom::PageHandlerFactory:
+  void CreatePageHandler(
+      mojo::PendingRemote<whats_new::mojom::Page> page,
+      mojo::PendingReceiver<whats_new::mojom::PageHandler> receiver) override;
+
+  std::unique_ptr<WhatsNewHandler> page_handler_;
+  mojo::Receiver<whats_new::mojom::PageHandlerFactory> page_factory_receiver_{
+      this};
+
   // browser_command::mojom::CommandHandlerFactory
   void CreateBrowserCommandHandler(
       mojo::PendingReceiver<browser_command::mojom::CommandHandler>
