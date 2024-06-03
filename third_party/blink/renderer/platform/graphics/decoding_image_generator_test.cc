@@ -57,6 +57,20 @@ TEST_F(DecodingImageGeneratorTest, CreateWithNullImageDecoder) {
                     ->GetAsSkData()));
 }
 
+// This is a regression test for crbug.com/341812566 and passes if it does not
+// crash under ASAN.
+TEST_F(DecodingImageGeneratorTest, AdjustedGetPixels) {
+  scoped_refptr<SharedBuffer> reference_data =
+      ReadFile(kDecodersTestingDir, "radient.gif");
+  scoped_refptr<SegmentReader> reader =
+      SegmentReader::CreateFromSharedBuffer(std::move(reference_data));
+  std::unique_ptr<SkImageGenerator> generator =
+      DecodingImageGenerator::CreateAsSkImageGenerator(reader->GetAsSkData());
+  SkImageInfo info = SkImageInfo::MakeA8(32, 32);
+  std::vector<size_t> memory(info.computeMinByteSize());
+  EXPECT_TRUE(generator->getPixels(info, memory.data(), info.minRowBytes()));
+}
+
 // TODO(wkorman): Test Create with a null ImageFrameGenerator. We'd
 // need a way to intercept construction of the instance (and could do
 // same for ImageDecoder above to reduce fragility of knowing a short
