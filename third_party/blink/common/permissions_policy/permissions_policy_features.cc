@@ -12,7 +12,7 @@
 #include "url/origin.h"
 
 // This file contains static code that is combined with templated code of
-// permissions_policy_features.cc.tmpl.
+// permissions_policy_features_generated.cc.tmpl.
 
 namespace blink {
 
