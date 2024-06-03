@@ -183,6 +183,7 @@ All changes to this list should go through Blink's feature review process: http:
     font-optical-sizing
     font-palette
     font-size
+    font-size-adjust
     font-stretch
     font-style
     font-synthesis-small-caps
@@ -599,6 +600,7 @@ All changes to this list should go through Blink's feature review process: http:
         font-kerning
         font-optical-sizing
         font-size
+        font-size-adjust
         font-stretch
         font-style
         font-variant-alternates

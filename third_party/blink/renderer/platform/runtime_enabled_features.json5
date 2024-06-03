@@ -866,7 +866,7 @@
     },
     {
       name: "CSSFontSizeAdjust",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "CSSFunctions",
