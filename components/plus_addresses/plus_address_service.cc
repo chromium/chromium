@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
@@ -100,7 +101,7 @@ PlusAddressService::PlusAddressService(
     std::unique_ptr<PlusAddressHttpClient> plus_address_http_client,
     scoped_refptr<PlusAddressWebDataService> webdata_service,
     affiliations::AffiliationService* affiliation_service)
-    : identity_manager_(identity_manager),
+    : identity_manager_(CHECK_DEREF(identity_manager)),
       plus_address_http_client_(std::move(plus_address_http_client)),
       webdata_service_(std::move(webdata_service)),
       plus_address_allocator_(std::make_unique<PlusAddressJitAllocator>(
@@ -119,9 +120,7 @@ PlusAddressService::PlusAddressService(
     // Observing the identity manager is only necessary to clear data on
     // sign-out and start polling plus addresses for newly signed in accounts.
     // When plus addresses arrive via sync, this becomes unnecessary.
-    if (identity_manager) {
-      identity_manager_observation_.Observe(identity_manager);
-    }
+    identity_manager_observation_.Observe(identity_manager);
   }
 }
 
@@ -380,8 +379,7 @@ void PlusAddressService::HandleCreateOrConfirmResponse(
 }
 
 std::optional<std::string> PlusAddressService::GetPrimaryEmail() {
-  if (!identity_manager_ ||
-      !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+  if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     return std::nullopt;
   }
   // TODO(crbug.com/40276862): This is fine for prototyping, but eventually we
@@ -398,7 +396,6 @@ bool PlusAddressService::is_enabled() const {
   }
   return base::FeatureList::IsEnabled(features::kPlusAddressesEnabled) &&
          (features::kEnterprisePlusAddressServerUrl.Get() != "") &&
-         identity_manager_ != nullptr &&
          // Note that having a primary account implies that account's email will
          // be populated.
          identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin) &&

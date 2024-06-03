@@ -774,13 +774,12 @@ class PlusAddressServiceWebDataTest : public ::testing::Test {
     // it is still implemented using `PostTask()`.
     task_environment_.RunUntilIdle();
     // Initialize the `service_` using the `plus_webdata_service_`.
-    service_.emplace(
-        /*identity_manager=*/nullptr,
-        std::make_unique<PlusAddressHttpClientImpl>(
-            /*identity_manager=*/nullptr,
-            /*url_loader_factory=*/nullptr),
-        plus_webdata_service_,
-        /*affiliation_service=*/nullptr);
+    service_.emplace(identity_test_env_.identity_manager(),
+                     std::make_unique<PlusAddressHttpClientImpl>(
+                         /*identity_manager=*/nullptr,
+                         /*url_loader_factory=*/nullptr),
+                     plus_webdata_service_,
+                     /*affiliation_service=*/nullptr);
   }
 
   PlusAddressService& service() { return *service_; }
@@ -792,6 +791,7 @@ class PlusAddressServiceWebDataTest : public ::testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
+  signin::IdentityTestEnvironment identity_test_env_;
   scoped_refptr<WebDatabaseService> webdatabase_service_;
   scoped_refptr<PlusAddressWebDataService> plus_webdata_service_;
   // Except briefly during initialisation, it always has a value.

@@ -15,6 +15,7 @@
 #include "components/plus_addresses/plus_address_service.h"
 #include "components/plus_addresses/plus_address_test_utils.h"
 #include "components/plus_addresses/plus_address_types.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -33,7 +34,7 @@ class PlusAddressAffiliationSourceAdapterTest : public testing::Test {
  protected:
   PlusAddressAffiliationSourceAdapterTest() {
     service_ = std::make_unique<PlusAddressService>(
-        /*identity_manager=*/nullptr,
+        identity_test_env_.identity_manager(),
         std::make_unique<testing::NiceMock<MockPlusAddressHttpClient>>(),
         /*webdata_service=*/nullptr,
         /*affiliation_service=*/&mock_affiliation_service_);
@@ -63,6 +64,7 @@ class PlusAddressAffiliationSourceAdapterTest : public testing::Test {
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  signin::IdentityTestEnvironment identity_test_env_;
   testing::StrictMock<MockAffiliationSourceObserver> mock_source_observer_;
   testing::NiceMock<affiliations::MockAffiliationService>
       mock_affiliation_service_;

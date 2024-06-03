@@ -225,9 +225,7 @@ class PlusAddressService : public KeyedService,
   base::flat_set<std::string> plus_addresses_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // Stores pointer to IdentityManager instance. It must outlive the
-  // PlusAddressService and can be null during tests.
-  const raw_ptr<signin::IdentityManager> identity_manager_;
+  const raw_ref<signin::IdentityManager> identity_manager_;
 
   // A timer to periodically retrieve all plus addresses from a remote server
   // to keep this service in sync.

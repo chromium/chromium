@@ -15,9 +15,10 @@
 
 namespace plus_addresses {
 
-FakePlusAddressService::FakePlusAddressService()
+FakePlusAddressService::FakePlusAddressService(
+    signin::IdentityManager* identity_manager)
     : PlusAddressService(
-          /*identity_manager=*/nullptr,
+          identity_manager,
           std::make_unique<testing::NiceMock<MockPlusAddressHttpClient>>(),
           /*webdata_service=*/nullptr,
           /*affiliation_service=*/&mock_affiliation_service_) {}

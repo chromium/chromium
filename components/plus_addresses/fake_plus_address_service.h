@@ -15,11 +15,15 @@
 #include "components/plus_addresses/plus_address_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
 namespace plus_addresses {
 
 class FakePlusAddressService : public PlusAddressService {
  public:
-  FakePlusAddressService();
+  explicit FakePlusAddressService(signin::IdentityManager* identity_manager);
   ~FakePlusAddressService() override;
 
   static constexpr char kFakeProfileId[] = "123";

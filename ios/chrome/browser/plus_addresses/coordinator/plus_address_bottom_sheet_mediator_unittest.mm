@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/plus_addresses/ui/plus_address_bottom_sheet_consumer.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/url_loading/model/fake_url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
 #import "testing/platform_test.h"
@@ -39,6 +40,8 @@ class PlusAddressBottomSheetMediatorTest : public PlatformTest {
     FakeUrlLoadingBrowserAgent::InjectForBrowser(browser_.get());
     url_loader_ = FakeUrlLoadingBrowserAgent::FromUrlLoadingBrowserAgent(
         UrlLoadingBrowserAgent::FromBrowser(browser_.get()));
+    service_ = std::make_unique<FakePlusAddressService>(
+        IdentityManagerFactory::GetForBrowserState(browser_state_.get()));
     BOOL incognito = browser_state_.get()->IsOffTheRecord();
     mediator_ = [[PlusAddressBottomSheetMediator alloc]
         initWithPlusAddressService:&service()
@@ -49,7 +52,7 @@ class PlusAddressBottomSheetMediatorTest : public PlatformTest {
     mediator_.consumer = consumer_;
   }
 
-  FakePlusAddressService& service() { return service_; }
+  FakePlusAddressService& service() { return *service_; }
   PlusAddressBottomSheetMediator* mediator() { return mediator_; }
   FakeUrlLoadingBrowserAgent* url_loader() { return url_loader_.get(); }
 
@@ -60,7 +63,7 @@ class PlusAddressBottomSheetMediatorTest : public PlatformTest {
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<Browser> browser_;
   raw_ptr<FakeUrlLoadingBrowserAgent> url_loader_;
-  FakePlusAddressService service_;
+  std::unique_ptr<FakePlusAddressService> service_;
   PlusAddressBottomSheetMediator* mediator_ = nil;
 };
 

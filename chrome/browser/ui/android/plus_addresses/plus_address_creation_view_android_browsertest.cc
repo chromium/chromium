@@ -6,7 +6,9 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_test_util.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/android/plus_addresses/plus_address_creation_controller_android.h"
 #include "chrome/test/base/android/android_browser_test.h"
 #include "chrome/test/base/chrome_test_utils.h"
@@ -40,10 +42,16 @@ class PlusAddressCreationViewAndroidBrowserTest : public AndroidBrowserTest {
 
   std::unique_ptr<KeyedService> PlusAddressServiceTestFactory(
       content::BrowserContext* context) {
-    return std::make_unique<FakePlusAddressService>();
+    return std::make_unique<FakePlusAddressService>(
+        IdentityManagerFactory::GetForProfile(profile()));
   }
 
  protected:
+  Profile* profile() {
+    auto* web_contents = chrome_test_utils::GetActiveWebContents(this);
+    return Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  }
+
   base::test::ScopedFeatureList features_{features::kPlusAddressesEnabled};
   profiles::testing::ScopedProfileSelectionsForFactoryTesting
       override_profile_selections_;

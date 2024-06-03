@@ -19,6 +19,7 @@
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/plus_address_metrics.h"
 #include "components/plus_addresses/plus_address_types.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/web_contents_tester.h"
@@ -67,8 +68,8 @@ class PlusAddressCreationControllerAndroidEnabledTest
   }
   std::unique_ptr<KeyedService> PlusAddressServiceTestFactory(
       content::BrowserContext* context) {
-    std::unique_ptr<FakePlusAddressService> unique_service =
-        std::make_unique<FakePlusAddressService>();
+    auto unique_service = std::make_unique<FakePlusAddressService>(
+        identity_test_env_.identity_manager());
     fake_plus_address_service_ = unique_service.get();
     return unique_service;
   }
@@ -79,6 +80,7 @@ class PlusAddressCreationControllerAndroidEnabledTest
   // `PlusAddressServiceFactory` doesn't bail early with a null return.
   profiles::testing::ScopedProfileSelectionsForFactoryTesting
       override_profile_selections_;
+  signin::IdentityTestEnvironment identity_test_env_;
   base::HistogramTester histogram_tester_;
   raw_ptr<FakePlusAddressService> fake_plus_address_service_;
   base::SimpleTestClock test_clock_;
