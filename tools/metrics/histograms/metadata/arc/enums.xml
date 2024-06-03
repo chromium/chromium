@@ -177,14 +177,6 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="VM Concierge did not respond"/>
 </enum>
 
-<enum name="ArcCustomTabsSessionEndReason">
-  <obsolete>
-    Removed as of 05/2022
-  </obsolete>
-  <int value="0" label="Closed"/>
-  <int value="1" label="Forwarded to a normal tab"/>
-</enum>
-
 <enum name="ArcDataRestoreStatus">
   <summary>
     Tracks status of SELinux contexts restore flows of Android /data for ARC++ P

@@ -91,13 +91,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/ui/lens/lens_permission_bubble_controller.h:UserAction) -->
 
-<!-- TODO(crbug.com/336793181): `git cl format` deletes the ThenChange above
-     unless this enum is here. Fix the issue and delete this fake enum.  -->
-
-<enum name="ZZZZZZZ">
-  <int value="0" label="Z"/>
-</enum>
-
 </enums>
 
 </histogram-configuration>

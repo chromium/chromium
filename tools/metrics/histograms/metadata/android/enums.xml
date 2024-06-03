@@ -654,13 +654,6 @@ chromium-metrics-reviews@google.com.
   <int value="21" label="(06) HUB"/>
 </enum>
 
-<enum name="ChildAppInfoError">
-  <int value="0" label="No error (app info matches)"/>
-  <int value="1" label="sourceDir mismatch"/>
-  <int value="2" label="sharedLibraryFiles mismatch"/>
-  <int value="3" label="RemoteException when calling getAppInfo()"/>
-</enum>
-
 <enum name="ChromeActivityType">
   <int value="0" label="Tabbed Chrome"/>
   <int value="1" label="Custom Tab"/>

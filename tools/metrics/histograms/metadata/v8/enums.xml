@@ -187,20 +187,6 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
-<enum name="V8InitializerLoadV8SnapshotResult">
-  <int value="0" label="SUCCESS">Load succeeded</int>
-  <int value="1" label="FAILED_OPEN">Failure to open snapshot file</int>
-  <int value="2" label="FAILED_MAP">Failed to map snapshot</int>
-  <int value="3" label="FAILED_VERIFY">Failed to verify snapshot</int>
-</enum>
-
-<enum name="V8InitializerOpenV8FileResult">
-  <int value="0" label="OPENED">Opened without issue</int>
-  <int value="1" label="OPENED_RETRY">Opened after one or more retries</int>
-  <int value="2" label="FAILED_IN_USE">Failed because file in use</int>
-  <int value="3" label="FAILED_OTHER">Failed for other reason</int>
-</enum>
-
 <enum name="V8SandboxMode">
   <int value="0" label="kSecure">
     Using a default, securely-configured sandbox

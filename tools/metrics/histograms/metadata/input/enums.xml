@@ -410,20 +410,6 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="7" label="ARC"/>
 </enum>
 
-<enum name="InputMethodDecoderEvent">
-  <int value="3" label="WordCommitted"/>
-  <int value="4" label="SuggestionPickedManually"/>
-  <int value="5" label="TextDeleteBackspace"/>
-  <int value="6" label="WordDeleteBackspace"/>
-  <int value="7" label="RevertAutoCorrect"/>
-  <int value="11" label="WordAutoCorrection"/>
-  <int value="22" label="PredictionPicked"/>
-  <int value="25" label="WordDeleted"/>
-  <int value="26" label="WordEdited"/>
-  <int value="103" label="SpaceCommitted"/>
-  <int value="104" label="SpaceDeleted"/>
-</enum>
-
 <enum name="InputMethodID2">
 <!--
     Mappings for input method IDs of first-party Chrome OS IME extension ONLY
@@ -690,16 +676,6 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="4" label="HandheldFriendly meta"/>
   <int value="5" label="MobileOptimized meta"/>
   <int value="6" label="XHTML-MP document type"/>
-</enum>
-
-<enum name="ModeChangeKeyAction">
-  <summary>Result of pressing the mode change key</summary>
-  <int value="0" label="Show indicator">
-    Showed the indicator for the current input method.
-  </int>
-  <int value="1" label="Switch to next IME">
-    Switched to the next input method.
-  </int>
 </enum>
 
 <enum name="PhysicalKeyboardShortcut">

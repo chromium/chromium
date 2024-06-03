@@ -383,20 +383,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="BROWSER_REPLY_CALLBACK"/>
 </enum>
 
-<enum name="UmaCleanExitConsistency">
-  <obsolete>
-    Deprecated 07/2021 in favor of UmaCleanExitConsistency2. Version 2 re-orders
-    and adds new buckets to support measuring the frequency with which the Local
-    State data is missing.
-  </obsolete>
-  <int value="0" label="Dirty/Dirty (Registry/Local State)"/>
-  <int value="1" label="Dirty/Clean (Registry/Local State)"/>
-  <int value="2" label="Clean/Dirty (Registry/Local State)"/>
-  <int value="3" label="Clean/Clean (Registry/Local State)"/>
-  <int value="4" label="Missing/Dirty (Registry/Local State)"/>
-  <int value="5" label="Missing/Clean (Registry/Local State)"/>
-</enum>
-
 <enum name="UmaCleanExitConsistency3">
   <int value="0" label="Clean/Clean (Beacon File/Platform Specific)"/>
   <int value="1" label="Clean/Dirty (Beacon File/Platform Specific)"/>

@@ -91,4 +91,4 @@ def _remove_unused_enums():
 
 
 if __name__ == '__main__':
-  main()
+  _remove_unused_enums()

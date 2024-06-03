@@ -2041,52 +2041,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="AutocompleteActionPredictor.NavigationCount" units="units"
-    expires_after="M85">
-  <owner>tbansal@chromium.org</owner>
-  <summary>
-    The number of navigations triggered by the Omnibox and seen by the
-    AutocompleteActionPredictor. This triggers when the Omnibox is showing
-    Autocomplete results to the user and they select one with the mouse or by
-    pressing enter.
-  </summary>
-</histogram>
-
-<histogram name="Blimp.Compositor.CommitSizeKb" units="KB" expires_after="M85">
-  <owner>shaktisahu@chromium.org</owner>
-  <summary>
-    Records the size of the uncompressed commit messages received by Blimp
-    compositor.
-  </summary>
-</histogram>
-
-<histogram name="Blimp.Connected" enum="BooleanConnected" expires_after="M85">
-  <owner>shaktisahu@chromium.org</owner>
-  <summary>
-    Records whether connection attempt to the Blimp engine was successful.
-  </summary>
-</histogram>
-
-<histogram name="Blimp.Supported" enum="BooleanSupported" expires_after="M85">
-  <owner>shaktisahu@chromium.org</owner>
-  <summary>Records whether Blimp is supported.</summary>
-</histogram>
-
-<histogram name="Blimp.Tab.Visible" enum="BooleanVisible" expires_after="M85">
-  <owner>shaktisahu@chromium.org</owner>
-  <summary>Records whenever a Blimp tab toggles visibility.</summary>
-</histogram>
-
-<histogram name="BlueZ.AdapterLost" units="seconds" expires_after="2024-10-13">
-  <owner>mcchou@chromium.org</owner>
-  <owner>chromeos-bt-platform-sw-core@google.com</owner>
-  <summary>
-    This is specific to Chrome OS. Records a duration of a Bluetooth adapter
-    being lost. This helps us better understand the Bluetooth controller drop
-    issue in the field.
-  </summary>
-</histogram>
-
 <histogram name="BlueZ.ChipLost2" units="seconds" expires_after="2024-04-28">
   <owner>sonnysasaka@chromium.org</owner>
   <owner>chromeos-bt-platform-sw-core@google.com</owner>
@@ -4649,16 +4603,6 @@ chromium-metrics-reviews@google.com.
   <summary>Records key id when id is missing in an intermediate dump.</summary>
 </histogram>
 
-<histogram name="DefaultBrowser.ActivateSettings.ErrorHresult" enum="Hresult"
-    expires_after="M85">
-  <owner>pmonette@chromium.org</owner>
-  <owner>grt@chromium.org</owner>
-  <summary>
-    The HRESULT from ActivateApplication when opening the Win10+ settings page
-    fails.
-  </summary>
-</histogram>
-
 <histogram name="DefaultBrowser.AppMenu.DefaultChipShown" enum="BooleanShown"
     expires_after="2024-11-03">
   <owner>agale@chromium.org</owner>
@@ -4741,15 +4685,6 @@ chromium-metrics-reviews@google.com.
     For iOS, in the future Chrome will be allowed to be the default browser. How
     that will be logged is to be decided at the time of writing this
     description.
-  </summary>
-</histogram>
-
-<histogram name="DefaultProtocolClient.SetDefaultResult2"
-    enum="DefaultWebClientState" expires_after="M77">
-  <owner>pmonette@chromium.org</owner>
-  <summary>
-    The outcome of an attempt to set Chrome as the user's default client for a
-    protocol.
   </summary>
 </histogram>
 
@@ -5114,20 +5049,6 @@ chromium-metrics-reviews@google.com.
     not.
 
     Warning: this histogram was expired from M102 to M117; data may be missing.
-  </summary>
-</histogram>
-
-<histogram name="DNS.PrefetchResolution" units="ms" expires_after="M85">
-  <owner>mgersh@chromium.org</owner>
-  <summary>
-    The duration of time used by the DNS pre-resolving threads to resolve a host
-    name via the network. Any resolutions that are faster than 15ms are
-    considered to be local cache hits, not requiring network access, and are not
-    included in this histogram. This histogram is most useful for estimating the
-    typical cost of a name resolution, but it also estimates the total number of
-    network-based resolutions induced by this feature. Not all these resolutions
-    prove helpful (i.e., the user does not always actually visit the resolved
-    hostnames).
   </summary>
 </histogram>
 
@@ -5575,38 +5496,6 @@ chromium-metrics-reviews@google.com.
     after startup. This is different from History.MonthlyHostCount which is
     reported for a percentage of startups, to avoid bias toward more active
     users.
-  </summary>
-</histogram>
-
-<histogram name="ExploreSites.NavBackTime" units="ms" expires_after="M85">
-  <owner>chili@chromium.org</owner>
-  <owner>dewittj@chromium.org</owner>
-  <summary>
-    Recorded every time a user navigates out of the explore sites page and comes
-    back to it within 30 seconds on the same tab. This is used to measure
-    accidental clicks, where we expect users who navigate to the wrong page will
-    navigate back to the ExploreSites page immediately afterward.
-  </summary>
-</histogram>
-
-<histogram name="ExploreSites.RequestStatus" enum="ExploreSitesRequestStatus"
-    expires_after="2022-12-04">
-  <owner>dimich@chromium.org</owner>
-  <owner>freedjm@chromium.org</owner>
-  <summary>
-    Reported each time from the result callback of the ExploreSitesFetcher.
-    Values include Success and several failure codes.
-  </summary>
-</histogram>
-
-<histogram name="FactoryPingEmbargo.EndDateValidity"
-    enum="FactoryPingEmbargoEndDateValidity" expires_after="M77">
-  <owner>pmarko@chromium.org</owner>
-  <owner>rogerta@chromium.org</owner>
-  <summary>
-    Record the validity of |rlz_embargo_end_date| in RW_VPD. This is recorded
-    when the VPD value is accessed, which may be multiple times in the same
-    chrome invocation. This is not recorded when the VPD value is missing.
   </summary>
 </histogram>
 
@@ -7012,26 +6901,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IPC.AttachmentBrokerPrivileged.BrokerAttachmentError"
-    enum="IPCAttachmentBrokerPrivilegedBrokerAttachmentError"
-    expires_after="M85">
-  <owner>erikchen@chromium.org</owner>
-  <summary>
-    Errors that the privileged attachment broker encounters while trying to
-    broker attachments.
-  </summary>
-</histogram>
-
-<histogram name="IPC.AttachmentBrokerUnprivileged.BrokerAttachmentError"
-    enum="IPCAttachmentBrokerUnprivilegedBrokerAttachmentError"
-    expires_after="M85">
-  <owner>erikchen@chromium.org</owner>
-  <summary>
-    Errors that an unprivileged attachment broker encounters while trying to
-    broker attachments.
-  </summary>
-</histogram>
-
 <histogram name="Launch.FlagsAtStartup" enum="LoginCustomFlags"
     expires_after="never">
 <!-- expires-never: monitors use of all flags. -->
@@ -7083,44 +6952,6 @@ chromium-metrics-reviews@google.com.
     3. When the profile picker is shown on startup (which can only happen on
     Windows, Mac, and Linux), this metric is not recorded. See
     http://crbug.com/1380458
-  </summary>
-</histogram>
-
-<histogram name="Layout.ScrollAnchor.SerializedAnchorSelectorLength"
-    units="characters" expires_after="M77">
-  <owner>pnoland@chromium.org</owner>
-  <summary>
-    The number of characters in the selector computed for a serialized scroll
-    anchor. Recorded when a scroll anchor is serialized.
-  </summary>
-</histogram>
-
-<histogram name="Layout.ScrollAnchor.TimeToComputeAnchorNodeSelector"
-    units="microseconds" expires_after="M85">
-  <owner>pnoland@chromium.org</owner>
-  <summary>
-    The time it took to compute the selector of a serialized anchor element.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
-  </summary>
-</histogram>
-
-<histogram name="Layout.ScrollAnchor.TimeToRestoreAnchor" units="microseconds"
-    expires_after="2020-03-08">
-  <owner>pnoland@chromium.org</owner>
-  <summary>
-    The time it took to restore the scroll anchor using the serialized anchor
-    element.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
   </summary>
 </histogram>
 
@@ -8413,42 +8244,6 @@ chromium-metrics-reviews@google.com.
   <summary>Usage statistics for the confirm to quit feature.</summary>
 </histogram>
 
-<histogram name="OSX.ExceptionHandlerEvents" enum="OSXExceptionHandlerEvents"
-    expires_after="M85">
-  <owner>mark@chromium.org</owner>
-  <summary>Events seen by the OSX NSException swizzle.</summary>
-</histogram>
-
-<histogram name="OSX.Fullscreen.Enter.Source" enum="OSXFullscreenSource"
-    expires_after="M85">
-  <owner>spqchan@chromium.org</owner>
-  <summary>
-    This event is recorded each time a user triggers fullscreen for a browser
-    window. It indicates if the fullscreen is triggered for the browser or the
-    tab content.
-  </summary>
-</histogram>
-
-<histogram name="OSX.Fullscreen.Enter.Style" enum="OSXFullscreenStyle"
-    expires_after="2018-08-30">
-  <owner>erikchen@chromium.org</owner>
-  <summary>
-    This event is recorded each time a user triggers fullscreen for a browser
-    window. It indicates the mechanism (immersive vs. AppKit) and the type of
-    AppKit Fullscreen (Presentation Mode vs. Canonical Fullscreen).
-  </summary>
-</histogram>
-
-<histogram name="OSX.Fullscreen.Enter.WindowLocation"
-    enum="OSXFullscreenWindowLocation" expires_after="2018-08-30">
-  <owner>erikchen@chromium.org</owner>
-  <summary>
-    This event is recorded each time a user triggers fullscreen for a browser
-    window. It indicates the screen in which the window was fullscreened, and
-    the number of screens available.
-  </summary>
-</histogram>
-
 <histogram name="OSX.NSException" enum="OSXNSException" expires_after="M125">
   <owner>mark@chromium.org</owner>
   <summary>
@@ -8782,14 +8577,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Pepper.Graphics3DHasShareGroup" enum="BooleanShareGroup"
-    expires_after="M77">
-  <owner>jbauman@chromium.org</owner>
-  <summary>
-    True if a non-flash Pepper Graphics3D context has a share group.
-  </summary>
-</histogram>
-
 <histogram name="Pepper.InterfaceUsed" enum="PepperInterface"
     expires_after="2024-09-22">
   <owner>fabiansommer@chromium.org</owner>
@@ -8797,26 +8584,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The number of out-of-process plugin processes that have loaded a particular
     PPB interface version.
-  </summary>
-</histogram>
-
-<histogram name="Pepper.PluginContextSecurity.TCPConnect" enum="BooleanSecure"
-    expires_after="M77">
-  <owner>raymes@chromium.org</owner>
-  <owner>rsleevi@chromium.org</owner>
-  <summary>
-    Whether a Pepper TCP connect attempt comes from a plugin in a secure or an
-    insecure origin.
-  </summary>
-</histogram>
-
-<histogram name="Pepper.PluginContextSecurity.UDPBind" enum="BooleanSecure"
-    expires_after="M77">
-  <owner>raymes@chromium.org</owner>
-  <owner>rsleevi@chromium.org</owner>
-  <summary>
-    Whether a Pepper UDP bind attempt comes from a plugin in a secure or an
-    insecure origin.
   </summary>
 </histogram>
 
@@ -9608,53 +9375,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ResourceLoadingHints.ResourceLoadingBlocked"
-    units="loading blocked" expires_after="M85">
-  <owner>tbansal@chromium.org</owner>
-  <summary>
-    Records if the loading of a resource was blocked because the resource URL
-    matched the resource loading hints. Recorded every time a resource load is
-    requested.
-  </summary>
-</histogram>
-
-<histogram
-    name="ResourceLoadingHints.ResourceLoadingBlocked.ResourceLoadPriority.Allowed"
-    enum="WebURLRequestPriority" expires_after="M85">
-  <owner>tbansal@chromium.org</owner>
-  <summary>
-    Records the resource load priority of a resource when its loading is not
-    blocked due to the resource loading hints. Recorded every time a resource
-    load is requested, and the load is not blocked due to the resource loading
-    hints.
-  </summary>
-</histogram>
-
-<histogram
-    name="ResourceLoadingHints.ResourceLoadingBlocked.ResourceLoadPriority.Blocked"
-    enum="WebURLRequestPriority" expires_after="M85">
-  <owner>tbansal@chromium.org</owner>
-  <summary>
-    Records the resource load priority of a resource when its loading is blocked
-    due to the resource loading hints. Recorded every time a resource load is
-    requested and the resource load is blocked because the resource URL matched
-    the resource loading hints.
-  </summary>
-</histogram>
-
-<histogram
-    name="ResourceLoadingHints.ResourcePatternsAvailableAtCommitForRedirect"
-    enum="BooleanAvailable" expires_after="M85">
-  <owner>tbansal@chromium.org</owner>
-  <owner>dougarnett@chromium.org</owner>
-  <summary>
-    Records if the resource patterns were available at the time of page commit
-    if the committed previews type was RESOURCE_LOADING_HINTS and the navigation
-    was redirected. This is a subset of the ResourcePatternsAvailableAtCommit
-    histogram.
-  </summary>
-</histogram>
-
 <histogram name="ResourceScheduler.PeakObservedQueueingDelay" units="ms"
     expires_after="2021-09-01">
   <owner>tbansal@chromium.org</owner>
@@ -9696,72 +9416,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The time it takes for SafeBrowsing to check a download url. Warning: this
     histogram was expired from M78 to M91. Data may be missing.
-  </summary>
-</histogram>
-
-<histogram name="SB2.GetHashResponseOrErrorCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="M85">
-  <owner>vakh@google.com</owner>
-  <summary>
-    Response or error codes from the SafeBrowsing service. Logged after a
-    GetHash request finishes to capture the response code or error code for that
-    call. Split out from SB2.GetHashErrorResponseOrErrorCode in M49.
-  </summary>
-</histogram>
-
-<histogram name="SB2.PhishingInterstitialTimeClosed" units="ms"
-    expires_after="M85">
-  <owner>felt@chromium.org</owner>
-  <summary>
-    The time between when we show the SafeBrowsing phishing interstitial and the
-    user navigating away by for example, closing the tab, clicking the browser
-    back button or typing another URL in the address bar.
-  </summary>
-</histogram>
-
-<histogram name="SB2.PhishingInterstitialTimeExpandedSeeMore" units="ms"
-    expires_after="M85">
-  <owner>felt@chromium.org</owner>
-  <summary>
-    The time between when we show the SafeBrowsing phishing interstitial and the
-    user expanding the &quot;see more info&quot; section of the page. (Only
-    applies to field trial version 2 of the interstitial.)
-  </summary>
-</histogram>
-
-<histogram name="SB2.PhishingInterstitialTimeLearnMore" units="ms"
-    expires_after="M85">
-  <owner>felt@chromium.org</owner>
-  <summary>
-    The time between when we show the SafeBrowsing phishing interstitial and the
-    user clicking on the learn more link.
-  </summary>
-</histogram>
-
-<histogram name="SB2.PhishingInterstitialTimeProceed" units="ms"
-    expires_after="M85">
-  <owner>felt@chromium.org</owner>
-  <summary>
-    The time between when we show the SafeBrowsing phishing interstitial and the
-    user clicking on the proceed link.
-  </summary>
-</histogram>
-
-<histogram name="SB2.PhishingInterstitialTimeReportError" units="ms"
-    expires_after="M85">
-  <owner>felt@chromium.org</owner>
-  <summary>
-    The time between when we show the SafeBrowsing phishing interstitial and the
-    user clicking on the report error link.
-  </summary>
-</histogram>
-
-<histogram name="SB2.PhishingInterstitialTimeTakeMeBack" units="ms"
-    expires_after="M85">
-  <owner>felt@chromium.org</owner>
-  <summary>
-    The time between when we show the SafeBrowsing phishing interstitial and the
-    user clicking on the big green back button.
   </summary>
 </histogram>
 
@@ -10857,42 +10511,6 @@ should be kept until we remove incident reporting. -->
   </summary>
 </histogram>
 
-<histogram name="Suggestions.FailedRequestErrorCode" enum="NetErrorCodes"
-    expires_after="2020-02-23">
-  <owner>mathp@chromium.org</owner>
-  <summary>
-    The counts of network error codes encountered by SuggestionsService when an
-    attempt to fetch suggestions from the server fails.
-  </summary>
-</histogram>
-
-<histogram name="Suggestions.FetchResponseCode" enum="HttpResponseCode"
-    expires_after="2020-05-31">
-  <owner>mathp@chromium.org</owner>
-  <summary>
-    The counts of HTTP response codes encountered by SuggestionsService when
-    attempting to fetch suggestions from the server.
-  </summary>
-</histogram>
-
-<histogram name="Suggestions.FetchSuccessLatency" units="ms"
-    expires_after="M81">
-  <owner>mathp@chromium.org</owner>
-  <summary>
-    The latency of a SuggestionsService fetch that results in a success
-    response.
-  </summary>
-</histogram>
-
-<histogram name="Suggestions.ResponseState" enum="SuggestionsResponseState"
-    expires_after="M77">
-  <owner>mathp@chromium.org</owner>
-  <summary>
-    The counts of response states (such as empty or invalid) encountered by
-    SuggestionsService when attempting to fetch suggestions from the server.
-  </summary>
-</histogram>
-
 <histogram name="Tablet.CountOfVolumeAdjustType" units="numbers"
     expires_after="2023-02-12">
   <owner>minch@chromium.org</owner>
@@ -11205,22 +10823,6 @@ features through Chrome Labs. -->
     toolbar), and the actual appearance of the menu on screen. Includes the
     animation duration.
   </summary>
-</histogram>
-
-<histogram name="Toolbar.TabSwitcher.NewIncognitoTabPresentationDuration"
-    units="ms" expires_after="M85">
-  <owner>peterlaurens@chromium.org</owner>
-  <summary>
-    The number of millseconds between the user requesting a new incognito tab,
-    from within the tab switcher, e.g. by tapping the New Tab button from the
-    tab switcher UI, and it completing its animation on screen.
-  </summary>
-</histogram>
-
-<histogram name="Touchpad.Device" enum="TouchpadDeviceState"
-    expires_after="M85">
-  <owner>jhawkins@chromium.org</owner>
-  <summary>Tracks touchpad device state.</summary>
 </histogram>
 
 <histogram name="Touchpad.HapticClickSensitivity.Changed"
@@ -11962,15 +11564,6 @@ regressions. -->
   </summary>
 </histogram>
 
-<histogram name="VoiceInteraction.IllegalContextRequest" enum="BooleanHit"
-    expires_after="M85">
-  <owner>muyuanli@chromium.org</owner>
-  <summary>
-    Counts the number of requests to retrieve voice interaction context when no
-    user interaction is initiated.
-  </summary>
-</histogram>
-
 <histogram name="VoiceInteraction.QueryDuration.Android" units="ms"
     expires_after="2023-07-05">
   <owner>basiaz@google.com</owner>
@@ -12022,14 +11615,6 @@ regressions. -->
     Android: The source of an incoming result that doesn't align with an
     outgoing request from Chrome. This is recorded when the extraneous intent
     response is received.
-  </summary>
-</histogram>
-
-<histogram name="VoiceInteraction.UserInteractionToRequestArrival" units="ms"
-    expires_after="M85">
-  <owner>muyuanli@chromium.org</owner>
-  <summary>
-    Records the time between user interaction and the actual request arrival.
   </summary>
 </histogram>
 
@@ -12434,70 +12019,6 @@ regressions. -->
   <summary>
     Records when the user revokes permission for an origin to connect to a USB
     device using the WebUSB API.
-  </summary>
-</histogram>
-
-<histogram name="Welcome.Win10.DefaultPromptResult" enum="BooleanDefault"
-    expires_after="M85">
-  <owner>tmartino@chromium.org</owner>
-  <summary>
-    Records whether or not Chrome was the default browser when the user left the
-    Win10-specific Welcome page.
-  </summary>
-</histogram>
-
-<histogram name="Welcome.Win10.NewPromoPageAdded" enum="BooleanShown"
-    expires_after="M77">
-  <owner>pmonette@chromium.org</owner>
-  <owner>tmartino@chromium.org</owner>
-  <summary>
-    Emits a &quot;true&quot; sample when the revamped WebUI-based welcome page
-    is added to the startup tabs list. This means that barring an error on
-    startup, it was shown to the user. This histogram can only be recorded
-    during first-run flow, when the EnableWelcomeWin10 experiment is enabled.
-  </summary>
-</histogram>
-
-<histogram name="Welcome.Win10.OriginalPromoPageAdded" enum="BooleanShown"
-    expires_after="M85">
-  <owner>pmonette@chromium.org</owner>
-  <owner>tmartino@chromium.org</owner>
-  <summary>
-    Emits a &quot;true&quot; sample when the old external welcome page is added
-    to the startup tabs list. This means that barring an error on startup, it
-    was shown to the user. This histogram can only be recorded during first-run
-    flow, when the EnableWelcomeWin10 experiment is disabled.
-  </summary>
-</histogram>
-
-<histogram name="Welcome.Win10.PinCheckTimedOut" enum="BooleanTimedOut"
-    expires_after="M77">
-  <owner>pmonette@chromium.org</owner>
-  <owner>tmartino@chromium.org</owner>
-  <summary>
-    Records whether or not the check that verifies if Chrome is pinned to the
-    taskbar has timed out. This check is done when the welcome page is opened in
-    order to determine which instructions to display to the user.
-  </summary>
-</histogram>
-
-<histogram name="Welcome.Win10.PinnedPromptResult" enum="BooleanPinned"
-    expires_after="M85">
-  <owner>tmartino@chromium.org</owner>
-  <summary>
-    Records whether or not Chrome was pinned to the taskbar when the user left
-    the Win10-specific Welcome page.
-  </summary>
-</histogram>
-
-<histogram name="WheelScrolling.WasLatched" enum="BooleanLatched"
-    expires_after="M77">
-  <owner>flackr@chromium.org</owner>
-  <owner>input-dev@chromium.org</owner>
-  <summary>
-    Records whether or not a GSU event with wheel source is latched to the
-    current scrolling element. It is false for the first GSU event of every
-    scrolling sequence and true for the rest of the GSU events.
   </summary>
 </histogram>
 

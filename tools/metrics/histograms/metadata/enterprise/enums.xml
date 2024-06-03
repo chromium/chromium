@@ -607,15 +607,6 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="kShare"/>
 </enum>
 
-<enum name="EnterpriseDlpPolicyLevel">
-  <summary>Restriction level enforced by Data Leak Prevention policy.</summary>
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Report"/>
-  <int value="2" label="Warn"/>
-  <int value="3" label="Block"/>
-  <int value="4" label="Allow"/>
-</enum>
-
 <enum name="EnterpriseDlpPolicyRestriction">
   <summary>
     Type of restriction enforced by Data Leak Prevention policy.
@@ -898,14 +889,6 @@ chromium-metrics-reviews@google.com.
   <int value="5"
       label="DEP Enrollment (automatically grants UAMDM status / full
              management capabilities)"/>
-</enum>
-
-<enum name="EnterpriseMacMDMStatusOld">
-  <summary>The Mac MDM enrollment status (old API).</summary>
-  <int value="0" label="API unavailable"/>
-  <int value="1" label="Unable to parse result"/>
-  <int value="2" label="No enrollment"/>
-  <int value="3" label="MDM enrollment"/>
 </enum>
 
 <enum name="EnterprisePolicies">

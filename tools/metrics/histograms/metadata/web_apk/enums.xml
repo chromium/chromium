@@ -26,11 +26,6 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
-<enum name="BooleanWebApkNotificationPermission">
-  <int value="0" label="WebAPK notification permission disabled"/>
-  <int value="1" label="WebAPK notification permission enabled"/>
-</enum>
-
 <enum name="PwaInstallPath">
   <summary>The path taken by the user to reach install point for PWAs.</summary>
   <int value="0" label="Unknown metric (error case)"/>
@@ -172,12 +167,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="New install on device, and modification to Sync"/>
   <int value="2" label="Launch on device, and new addition to Sync"/>
   <int value="3" label="Launch on device, and modification to Sync"/>
-</enum>
-
-<enum name="WebApkUpdateRequestQueued">
-  <int value="0" label="Queued for the first time"/>
-  <int value="1" label="Queued for the second time"/>
-  <int value="2" label="Queued for the third time"/>
 </enum>
 
 <enum name="WebApkUpdateRequestSent">

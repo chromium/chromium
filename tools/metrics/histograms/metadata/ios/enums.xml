@@ -94,13 +94,6 @@ the generic promo launch. -->
   <int value="1" label="Apple Calendar"/>
 </enum>
 
-<enum name="FormInputAccessoryAction">
-  <int value="0" label="PreviousElement"/>
-  <int value="1" label="NextElement"/>
-  <int value="2" label="Done"/>
-  <int value="3" label="Unkown"/>
-</enum>
-
 <enum name="InactiveTabsThresholdSettingType">
   <int value="0" label="Unknown"/>
   <int value="1" label="Never Move"/>
@@ -835,19 +828,6 @@ the generic promo launch. -->
   <int value="3" label="Actions"/>
   <int value="4" label="Reading list"/>
   <int value="5" label="Open tab"/>
-</enum>
-
-<enum name="IOSStorageCapacity">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="0 GB"/>
-  <int value="2" label="16 GB"/>
-  <int value="3" label="32 GB"/>
-  <int value="4" label="64 GB"/>
-  <int value="5" label="128 GB"/>
-  <int value="6" label="256 GB"/>
-  <int value="7" label="512 GB"/>
-  <int value="8" label="1 TB"/>
-  <int value="9" label="2 TB"/>
 </enum>
 
 <enum name="IOSTabSwitcherDragDropTabs">

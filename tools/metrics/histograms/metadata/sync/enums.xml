@@ -1077,26 +1077,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/components/sync/protocol/sharing_message_specifics.proto:SyncSharingMessageCommitErrorCode) -->
 
-<!-- LINT.IfChange(SyncStopSource) -->
-
-<enum name="SyncStopSource">
-  <int value="0"
-      label="(Obsolete) Profile destruction. Supposedly meant that Sync was
-             stopped due to the profile being destroyed. However, it was
-             recorded during most profile destructions, even if Sync was
-             never enabled in the first place. We stopped recording this in
-             2018-06."/>
-  <int value="1" label="Sign out"/>
-  <int value="2" label="Birthday error"/>
-  <int value="3" label="Chrome sync settings"/>
-  <int value="4"
-      label="(Obsolete) Android Chrome sync setting. Removed on 01/2022."/>
-  <int value="5"
-      label="(Obsolete) Android main sync setting. Removed on 01/2022."/>
-</enum>
-
-<!-- LINT.ThenChange(/components/sync/base/stop_source.h:SyncStopSource) -->
-
 <!-- LINT.IfChange(SyncToSigninMigrationDataTypeDecision) -->
 
 <enum name="SyncToSigninMigrationDataTypeDecision">

@@ -114,16 +114,6 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="kFilesApp"/>
 </enum>
 
-<enum name="WelcomeTourTimeBucket">
-  <int value="0" label="kOneMinute"/>
-  <int value="1" label="kTenMinutes"/>
-  <int value="2" label="kOneHour"/>
-  <int value="3" label="kOneDay"/>
-  <int value="4" label="kOneWeek"/>
-  <int value="5" label="kTwoWeeks"/>
-  <int value="6" label="kOverTwoWeeks"/>
-</enum>
-
 </enums>
 
 </histogram-configuration>

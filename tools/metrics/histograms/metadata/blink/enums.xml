@@ -399,34 +399,6 @@ chromium-metrics-reviews@google.com.
              opted-in"/>
 </enum>
 
-<enum name="Gamma">
-  <int value="0" label="GammaLinear"/>
-  <int value="1" label="GammaSRGB"/>
-  <int value="2" label="Gamma2Dot2"/>
-  <int value="3" label="GammaNonStandard"/>
-  <int value="4" label="GammaNull"/>
-  <int value="5" label="GammaFail"/>
-  <int value="6" label="GammaInvalid"/>
-  <int value="7" label="GammaExponent"/>
-  <int value="8" label="GammaTable"/>
-  <int value="9" label="GammaParametric"/>
-  <int value="10" label="GammaNamed"/>
-</enum>
-
-<enum name="Gamut">
-  <int value="0" label="GamutUnknown"/>
-  <int value="1" label="GamutLessThanNTSC"/>
-  <int value="2" label="GamutNTSC"/>
-  <int value="3" label="GamutSRGB"/>
-  <int value="4" label="GamutAlmostP3"/>
-  <int value="5" label="GamutP3"/>
-  <int value="6" label="GamutAdobeRGB"/>
-  <int value="7" label="GamutWide"/>
-  <int value="8" label="GamutBT2020"/>
-  <int value="9" label="GamutProPhoto"/>
-  <int value="10" label="GamutUltraWide"/>
-</enum>
-
 <enum name="IdleTaskStatus">
   <int value="0" label="IdleTaskNotStarted"/>
   <int value="1" label="IdleTaskStarted"/>

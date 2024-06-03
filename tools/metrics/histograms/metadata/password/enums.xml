@@ -267,15 +267,6 @@ chromium-metrics-reviews@google.com.
   <int value="15" label="Symbols,Numerics,Letters,Length"/>
 </enum>
 
-<enum name="FormDataDeserializationStatus">
-  <int value="0" label="Login database success"/>
-  <int value="1" label="Login database failure"/>
-  <int value="2" label="Libsecret success"/>
-  <int value="3" label="Libsecret failure"/>
-  <int value="4" label="GNOME success"/>
-  <int value="5" label="GNOME failure"/>
-</enum>
-
 <enum name="GaiaPasswordHashChange">
   <int value="0" label="Saved on Chrome sign-in (syncing)"/>
   <int value="1" label="Saved in the content area"/>
@@ -436,21 +427,6 @@ chromium-metrics-reviews@google.com.
   <int value="20" label="Omnibox Pedal Suggestion"/>
   <int value="21" label="Default store changed bubble"/>
   <int value="22" label="Manage Password Details Bubble"/>
-</enum>
-
-<enum name="MigrationToOSCryptEnum">
-  <summary>
-    Display migration status of LoginDatabase to OSCrypt on IOS.
-  </summary>
-  <int value="0" label="Migration started"/>
-  <int value="1" label="Migration failed: can't copy password_value column"/>
-  <int value="2" label="Migration failed: can't read password from keychain"/>
-  <int value="3" label="Migration failed: can't encrypt password with OSCrypt"/>
-  <int value="4" label="Migration failed: can't update password value"/>
-  <int value="5" label="Migration succeeded"/>
-  <int value="6"
-      label="Migration failed: can't delete missing password from the
-             database"/>
 </enum>
 
 <enum name="OutdatedGMSDialogDismissalReason">
@@ -628,13 +604,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Passwords and generate new password"/>
 </enum>
 
-<enum name="PasswordEditUpdatedValues">
-  <int value="0" label="None"/>
-  <int value="1" label="Username"/>
-  <int value="2" label="Password"/>
-  <int value="3" label="Both"/>
-</enum>
-
 <enum name="PasswordExportEvent">
   <int value="0" label="The user selected password export option"/>
   <int value="1" label="Password export dismissed by the user"/>
@@ -709,12 +678,6 @@ chromium-metrics-reviews@google.com.
   <int value="17" label="Move password link clicked in details footer"/>
   <int value="18"
       label="Link redirecting to the specific password page clicked"/>
-</enum>
-
-<enum name="PasswordManager.AssistantStoppedBubble.CloseReason">
-  <int value="0" label="User restarted the flow."/>
-  <int value="1" label="User closed the bubble."/>
-  <int value="2" label="User moved or closed the tab, or closed the browser."/>
 </enum>
 
 <enum name="PasswordManager.MoveToAccountStoreTrigger">

@@ -2822,13 +2822,6 @@ Called by update_extension_histograms.py.-->
   <int value="2" label="Continue to install"/>
 </enum>
 
-<enum name="ExtensionLaunchType">
-  <int value="0" label="PINNED"/>
-  <int value="1" label="REGULAR"/>
-  <int value="2" label="FULLSCREEN"/>
-  <int value="3" label="WINDOW"/>
-</enum>
-
 <enum name="ExtensionLocation">
   <int value="0" label="INVALID"/>
   <int value="1" label="INTERNAL"/>

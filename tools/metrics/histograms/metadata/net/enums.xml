@@ -1900,21 +1900,6 @@ Called by update_net_trust_anchors.py.-->
   <int value="64" label="SCHEME_QUIC"/>
 </enum>
 
-<enum name="PushedStreamVaryResponseHeaderValues">
-  <int value="0" label="There is no Vary header."/>
-  <int value="1" label="The value of Vary is empty."/>
-  <int value="2" label="The value of Vary is &quot;*&quot;."/>
-  <int value="3"
-      label="The value of Vary is &quot;accept-encoding&quot; (case
-             insensitive)."/>
-  <int value="4"
-      label="The value of Vary contains &quot;accept-encoding&quot; (case
-             insensitive) and some other field names as well."/>
-  <int value="5"
-      label="The value of Vary does not contain &quot;accept-encoding&quot;,
-             is not empty, and is not &quot;*&quot;."/>
-</enum>
-
 <enum name="QuicAddressMismatch">
   <int value="0" label="Address mismatch: IPv4 IPv4"/>
   <int value="1" label="Address mismatch: IPv6 IPv6"/>
@@ -2526,31 +2511,6 @@ Called by update_net_trust_anchors.py.-->
   <int value="56" label="HPACK block ends in the middle of an instruction."/>
   <int value="57" label="Incoming data fragment exceeds buffer limit."/>
   <int value="58" label="Total compressed HPACK data size exceeds limit."/>
-</enum>
-
-<enum name="SpdyPushedStreamFate">
-  <int value="0" label="TOO_MANY_PUSHED_STREAMS"/>
-  <int value="1" label="TIMEOUT"/>
-  <int value="2" label="PROMISED_STREAM_ID_PARITY_ERROR"/>
-  <int value="3" label="ASSOCIATED_STREAM_ID_PARITY_ERROR"/>
-  <int value="4" label="STREAM_ID_OUT_OF_ORDER"/>
-  <int value="5" label="GOING_AWAY"/>
-  <int value="6" label="INVALID_URL"/>
-  <int value="7" label="INACTIVE_ASSOCIATED_STREAM"/>
-  <int value="8" label="NON_HTTP_SCHEME_FROM_TRUSTED_PROXY"/>
-  <int value="9" label="NON_HTTPS_PUSHED_SCHEME"/>
-  <int value="10" label="NON_HTTPS_ASSOCIATED_SCHEME"/>
-  <int value="11" label="CERTIFICATE_MISMATCH"/>
-  <int value="12" label="DUPLICATE_URL"/>
-  <int value="13" label="CLIENT_REQUEST_NOT_RANGE"/>
-  <int value="14" label="PUSHED_REQUEST_NOT_RANGE"/>
-  <int value="15" label="RANGE_MISMATCH"/>
-  <int value="16" label="VARY_MISMATCH"/>
-  <int value="17" label="ACCEPTED_NO_VARY"/>
-  <int value="18" label="ACCEPTED_MATCHING_VARY"/>
-  <int value="19" label="PUSH_DISABLED"/>
-  <int value="20" label="ALREADY_IN_CACHE"/>
-  <int value="21" label="UNSUPPORTED_STATUS_CODE"/>
 </enum>
 
 <enum name="SpdySessionGet">

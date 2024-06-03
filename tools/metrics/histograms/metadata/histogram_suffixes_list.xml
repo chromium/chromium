@@ -1472,14 +1472,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Net.QuicSession.PacketWriteTime"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="IPv6_Probe" separator="_">
-  <suffix name="IPv6_probe_done"
-      label="with IPv6 probed for and possibly disabled"/>
-  <suffix name="IPv6_probe_skipped"
-      label="with IPv6 not probed, and default OS settings used"/>
-  <affected-histogram name="DNS.PrefetchResolution"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="LeakDetectionDialogType" separator=".">
   <suffix name="Change" label="The user is asked to change their password"/>
   <suffix name="ChangeAutomatically"
@@ -4572,19 +4564,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="21_" label="21 or more tabs"/>
   <affected-histogram name="WebUITabStrip.TabCreation"/>
   <affected-histogram name="WebUITabStrip.TabDataReceived"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="WelcomeWin10Variant" separator="_">
-  <owner>tmartino@chromium.org</owner>
-  <suffix name="InlineCombined" label="Inline layout style, combined promo"/>
-  <suffix name="InlineDefault"
-      label="Inline layout style, default browser promo only"/>
-  <suffix name="SectionedCombined"
-      label="Sectioned layout style, combined promo"/>
-  <suffix name="SectionedDefault"
-      label="Sectioned layout style, default browser promo only"/>
-  <affected-histogram name="Welcome.Win10.DefaultPromptResult"/>
-  <affected-histogram name="Welcome.Win10.PinnedPromptResult"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="WindowsImageCaptureOutcomeCategories" separator=".">

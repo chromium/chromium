@@ -87,40 +87,11 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Dismissed Promo from secondary button"/>
 </enum>
 
-<enum name="ContentNotificationTopOfFeedPromoEvent">
-  <int value="0" label="OS prompt was shown to user"/>
-  <int value="1" label="Promo shown when OS notifications are active"/>
-  <int value="2" label="Error displaying the OS prompt"/>
-  <int value="3" label="Prompt shown but dismissed without interaction"/>
-</enum>
-
 <enum name="ContentSettingBubbleAction">
   <int value="1" label="kOpened"/>
   <int value="2" label="kPermissionAllowed"/>
   <int value="3" label="kPermissionBlocked"/>
   <int value="4" label="KManageButtonClicked"/>
-</enum>
-
-<enum name="ContentSettingImageType">
-  <int value="0" label="COOKIES"/>
-  <int value="1" label="IMAGES"/>
-  <int value="2" label="JAVASCRIPT"/>
-  <int value="3" label="PPAPI_BROKER"/>
-  <int value="4" label="PLUGINS"/>
-  <int value="5" label="POPUPS"/>
-  <int value="6" label="GEOLOCATION"/>
-  <int value="7" label="MIXEDSCRIPT"/>
-  <int value="8" label="PROTOCOL_HANDLERS"/>
-  <int value="9" label="MEDIASTREAM"/>
-  <int value="10" label="ADS"/>
-  <int value="11" label="AUTOMATIC_DOWNLOADS"/>
-  <int value="12" label="MIDI_SYSEX"/>
-  <int value="13" label="SOUND"/>
-  <int value="14" label="FRAMEBUST"/>
-  <int value="16" label="SENSORS"/>
-  <int value="18" label="CLIPBOARD_READ_WRITE"/>
-  <int value="19" label="STORAGE_ACCESS"/>
-  <int value="21" label="NOTIFICATIONS"/>
 </enum>
 
 <enum name="ContentSettingPopupAction">
@@ -235,21 +206,6 @@ chromium-metrics-reviews@google.com.
              account"/>
   <int value="28" label="Failed - account token fetch timed out"/>
   <int value="29" label="Failed - network fetch timed out"/>
-</enum>
-
-<enum name="FeedNoticeAcknowledgementPath">
-  <obsolete>
-    Deprecated in 05/2022 since we removed feed notice card related codes.
-  </obsolete>
-  <int value="0"
-      label="The acknowledgment is reached after the user views the notice
-             for a required number of times."/>
-  <int value="1"
-      label="The acknowledgment is reached after the user taps the notice to
-             perform an open action for a required number of times."/>
-  <int value="2"
-      label="The acknowledgment is reached after the user fter the user taps
-             X button to close the notice."/>
 </enum>
 
 <enum name="FeedRefreshTrigger">

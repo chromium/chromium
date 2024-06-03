@@ -154,14 +154,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Partial Custom Tab is full-size"/>
 </enum>
 
-<enum name="CustomTabsResizeType">
-  <obsolete>
-    Obsolete as of November 2022.
-  </obsolete>
-  <int value="0" label="Partial Custom Tab is expanded"/>
-  <int value="1" label="Partial Custom Tab is minimized"/>
-</enum>
-
 <enum name="CustomTabsResizeType2">
   <int value="0" label="Partial Custom Tab is manually expanded"/>
   <int value="1" label="Partial Custom Tab is manually minimized"/>

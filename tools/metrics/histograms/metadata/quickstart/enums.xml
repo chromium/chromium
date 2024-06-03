@@ -35,11 +35,6 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Add Child (Not supported in MVP)"/>
 </enum>
 
-<enum name="QuickStartAdvertisingMethod">
-  <int value="0" label="QR Code"/>
-  <int value="1" label="Pin"/>
-</enum>
-
 <enum name="QuickStartAttestationCertificateFetchFailureReason">
   <int value="0" label="Unknown error"/>
   <int value="1" label="Bad request"/>

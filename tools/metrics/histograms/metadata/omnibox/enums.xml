@@ -262,16 +262,6 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="Play install"/>
 </enum>
 
-<enum name="SuggestionGroupId">
-  <summary>
-    Suggestion group IDs toggled visible or hidden in the omnibox result list.
-    Based on the SuggestionGroupIds enum in suggestion_config.proto, contains
-    values currently known to Chrome.
-  </summary>
-  <int value="40001" label="Onboarding"/>
-  <int value="40009" label="Proactive zero-suggest"/>
-</enum>
-
 <enum name="SuggestionPedalType">
   <summary>
     Type of pedal shown or selected in the omnibox suggestion list.
@@ -346,24 +336,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Generally ineligible in current context">
     Zero-prefix suggestions are not eligible in the given context. E.g., due to
     the page classification, focus type, input type, or an invalid page URL.
-  </int>
-</enum>
-
-<enum name="ZeroSuggestEligibleOnFocus">
-  <obsolete>
-    Obsolete as of M106.
-  </obsolete>
-  <int value="0" label="Eligible">
-    URL can be currently sent to the suggest server.
-  </int>
-  <int value="1"
-      label="Generally eligible in current context but particular URL
-             ineligible">
-    URL cannot be sent to the suggest server but another URL would be eligible
-    at this time.
-  </int>
-  <int value="2" label="Generally ineligible in current context">
-    No URL can be sent to the suggest server at this time.
   </int>
 </enum>
 

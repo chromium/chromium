@@ -656,14 +656,6 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="0" label="Success"/>
 </enum>
 
-<enum name="ArcContinueBootImpulseStatus">
-<!-- To be kept in sync with ChromeOS enum ArcContinueBootImpulseStatus -->
-
-  <int value="0" label="Arc continue boot impulse succeeded."/>
-  <int value="1" label="Arc continue boot impulse failed."/>
-  <int value="2" label="Arc continue boot impulse timed out."/>
-</enum>
-
 <enum name="ArcInputOverlayRepositionOperationType">
   <summary>
     Defines how the view reposition operation is achieved for ARC input overlay.
@@ -706,18 +698,6 @@ uploading your change for review.  These are checked by presubmit scripts.
 <enum name="Assistant.LibassistantDlcLoadStatus">
   <int value="0" label="kNotLoaded"/>
   <int value="1" label="kLoaded"/>
-</enum>
-
-<enum name="AssistantBetterOnboardingType">
-  <int value="0" label="kUnspecified"/>
-  <int value="1" label="kMath"/>
-  <int value="2" label="kKnowledgeEdu"/>
-  <int value="3" label="kConversion"/>
-  <int value="4" label="kKnowledge"/>
-  <int value="5" label="kProductivity"/>
-  <int value="6" label="kPersonality"/>
-  <int value="7" label="kLanguage"/>
-  <int value="8" label="kTechnical"/>
 </enum>
 
 <enum name="AssistantButtonId">
@@ -952,14 +932,6 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="11" label="24 kHz"/>
   <int value="12" label="384 kHz"/>
   <int value="13" label="768 kHz"/>
-</enum>
-
-<enum name="AutocompleteActionPredictorPredictionStatus">
-  <int value="0" label="NSP/Prerender not started"/>
-  <int value="1" label="NSP/Prerender cancelled"/>
-  <int value="2" label="NSP/Prerender unused"/>
-  <int value="3" label="NSP/Prerender hit finished"/>
-  <int value="4" label="NSP/Prerender hit unfinished"/>
 </enum>
 
 <enum name="AutocompleteHtmlFieldMode">
@@ -2192,11 +2164,6 @@ Called by update_autofill_enums.py.-->
   <int value="1" label="Created"/>
 </enum>
 
-<enum name="BooleanDefault">
-  <int value="0" label="Not Default"/>
-  <int value="1" label="Default"/>
-</enum>
-
 <enum name="BooleanDeletedOrNot">
   <int value="0" label="Not deleted"/>
   <int value="1" label="Deleted"/>
@@ -2351,11 +2318,6 @@ Called by update_autofill_enums.py.-->
   <int value="1" label="Known"/>
 </enum>
 
-<enum name="BooleanLatched">
-  <int value="0" label="Not latched"/>
-  <int value="1" label="Latched"/>
-</enum>
-
 <enum name="BooleanLoaded">
   <int value="0" label="Not loaded"/>
   <int value="1" label="Loaded"/>
@@ -2379,11 +2341,6 @@ Called by update_autofill_enums.py.-->
 <enum name="BooleanOccurred">
   <int value="0" label="Did not occur"/>
   <int value="1" label="Occurred"/>
-</enum>
-
-<enum name="BooleanOnBattery">
-  <int value="0" label="Not on battery"/>
-  <int value="1" label="On Battery"/>
 </enum>
 
 <enum name="BooleanOptedIn">
@@ -2469,11 +2426,6 @@ Called by update_autofill_enums.py.-->
 <enum name="BooleanSent">
   <int value="0" label="Not Sent"/>
   <int value="1" label="Sent"/>
-</enum>
-
-<enum name="BooleanShareGroup">
-  <int value="0" label="No share group"/>
-  <int value="1" label="Using share group"/>
 </enum>
 
 <enum name="BooleanShown">
@@ -3049,18 +3001,6 @@ In case of new special images, values 3 to 9 can be used. -->
   <int value="3" label="Contact"/>
   <int value="4" label="OnDevice"/>
   <int value="5" label="Unknown"/>
-</enum>
-
-<enum name="CoalitionIDAvailability">
-  <summary>
-    Details about whether or not it's possible to get coalition resource usage
-    data on the system.
-  </summary>
-  <int value="0" label="Available"/>
-  <int value="1" label="Not available"/>
-  <int value="2" label="Unable to get resource usage data from coalition"/>
-  <int value="3" label="Unable to get parent coalition ID"/>
-  <int value="4" label="Not alone in coalition"/>
 </enum>
 
 <enum name="ColorCorrectionFilterTypes">
@@ -4265,18 +4205,6 @@ Called by update_net_error_codes.py.-->
   <int value="4" label="Ineligible: Enterprise user"/>
   <int value="5" label="Ineligible: PWA or TWA installed on Android"/>
   <int value="6" label="Eligible: Forced via kForceEligibleForTesting"/>
-</enum>
-
-<enum name="CookiesInUseDialogActions">
-  <summary>Actions done in &quot;Cookies in use&quot; dialog.</summary>
-  <int value="0" label="Dialog opened"/>
-  <int value="1" label="Single cookie deleted"/>
-  <int value="2" label="Cookies folder deleted"/>
-  <int value="3" label="Folder deleted"/>
-  <int value="4" label="Site deleted"/>
-  <int value="5" label="Site blocked"/>
-  <int value="6" label="Site allowed"/>
-  <int value="7" label="Site cleared on exit"/>
 </enum>
 
 <enum name="CopylessCacheHit">
@@ -6200,21 +6128,6 @@ Called by update_document_policy_enum.py.-->
   <int value="19" label="Science"/>
 </enum>
 
-<enum name="ExploreSitesRequestStatus">
-  <int value="0" label="Success">Request completed successfully.</int>
-  <int value="1" label="Failure">
-    Request failed even after all the retries.
-  </int>
-  <int value="2" label="ShouldSuspendBadRequest">
-    Request failed with error indicating that the request can not be serviced by
-    the server.
-  </int>
-  <int value="3" label="ShouldSuspendBlockedByAdministrator">
-    The request was blocked by a URL blacklist configured by the domain
-    administrator.
-  </int>
-</enum>
-
 <enum name="ExploreSitesStoreEvent">
   <int value="0" label="Store opened first time">
     Store was opened for this first time during this session.
@@ -6277,24 +6190,6 @@ Called by update_document_policy_enum.py.-->
   <int value="26" label="CRX_FETCH_URL_INVALID"/>
   <int value="27" label="OVERRIDEN_BY_SETTINGS"/>
   <int value="28" label="REPLACED_BY_SYSTEM_APP"/>
-</enum>
-
-<enum name="FactoryPingEmbargoEndDateValidity">
-  <summary>
-    Defines the validity of the factory ping embargo end date in RW_VPD.
-  </summary>
-  <int value="0" label="Malformed">
-    The value does not have a correct format.
-  </int>
-  <int value="1" label="Invalid">
-    The value has a correct format, but it is semantically invalid. This means
-    that it is more than 14 days in the future.
-  </int>
-  <int value="2" label="Valid">
-    The value is present and valid. This could either mean that the device is in
-    the factory ping embargo period, or that the factory ping embargo period has
-    passed.
-  </int>
 </enum>
 
 <enum name="FastCheckoutRunOutcome">
@@ -12669,23 +12564,6 @@ Called by update_permissions_policy_enum.py.-->
   <int value="12" label="Failure (invalid public key format)"/>
 </enum>
 
-<enum name="GCMLoadStatus">
-  <int value="0" label="Success"/>
-  <int value="1" label="Reloading open store"/>
-  <int value="2" label="Store open failed"/>
-  <int value="3" label="Loading device credentials failed"/>
-  <int value="4" label="Loading registrations failed"/>
-  <int value="5" label="Loading incoming messages failed"/>
-  <int value="6" label="Loading outgoing messages failed"/>
-  <int value="7" label="Loading last checkin info failed"/>
-  <int value="8" label="Loading gservice settings failed"/>
-  <int value="9" label="Loading account mapping failed"/>
-  <int value="10" label="Loading last token time failed"/>
-  <int value="11" label="Loading heartbeat intervals failed"/>
-  <int value="12" label="Loading Instance ID data failed"/>
-  <int value="13" label="Store does not exist"/>
-</enum>
-
 <enum name="GCMRegistrationCacheStatus">
   <int value="0" label="Registration not found"/>
   <int value="1" label="Registration found; Token fresh"/>
@@ -14159,75 +14037,6 @@ Called by update_permissions_policy_enum.py.-->
   <int value="9" label="MSC"/>
   <int value="10" label="Amazon"/>
   <int value="11" label="CarrierIParcel"/>
-</enum>
-
-<enum name="IPCAttachmentBrokerPrivilegedBrokerAttachmentError">
-  <int value="0" label="DESTINATION_FOUND">
-    The brokerable attachment had a valid destination. This is the success case.
-  </int>
-  <int value="1" label="DESTINATION_NOT_FOUND">
-    The brokerable attachment had a destination, but the broker did not have a
-    channel of communication with that process.
-  </int>
-  <int value="2" label="NO_DESTINATION">
-    The brokerable attachment did not have a destination process.
-  </int>
-  <int value="3" label="ERROR_MAKE_INTERMEDIATE">
-    Error making an intermediate Mach port.
-  </int>
-  <int value="4" label="ERROR_PARSE_DUPLICATE_MACH_PORT_MESSAGE">
-    Error parsing DuplicateMachPort message.
-  </int>
-  <int value="5" label="ERROR_TASK_FOR_PID">
-    Couldn't get a task port for the process with a given pid.
-  </int>
-  <int value="6" label="ERROR_MAKE_RECEIVE_PORT">
-    Couldn't make a port with receive rights in the destination process.
-  </int>
-  <int value="7" label="ERROR_SET_ATTRIBUTES">
-    Couldn't change the attributes of a Mach port.
-  </int>
-  <int value="8" label="ERROR_EXTRACT_RIGHT_DEST">
-    Couldn't extract a right from the destination process.
-  </int>
-  <int value="9" label="ERROR_SEND_MACH_PORT">
-    Couldn't send a Mach port in a call to mach_msg().
-  </int>
-  <int value="10" label="ERROR_DECREASE_REF">
-    Couldn't decrease the ref count on a Mach port.
-  </int>
-  <int value="11" label="ERROR_EXTRACT_RIGHT_SOURCE">
-    Couldn't extract a right from the source process.
-  </int>
-  <int value="12" label="ERROR_SOURCE_NOT_FOUND">
-    Broker didn't have a channel of communication with the source process.
-  </int>
-  <int value="13" label="ERROR_COULD_NOT_OPEN_SOURCE_OR_DEST">
-    Broker could not open the source or destination process with extra
-    privileges.
-  </int>
-  <int value="14" label="ERROR_INVALID_PERMISSIONS">
-    Broker was asked to transfer a HANDLE with invalid permissions.
-  </int>
-  <int value="15" label="DELAYED">
-    Broker was not immediately able to send an attachment.
-  </int>
-  <int value="16" label="DELAYED_SEND">
-    Broker successfully sent a delayed attachment.
-  </int>
-</enum>
-
-<enum name="IPCAttachmentBrokerUnprivilegedBrokerAttachmentError">
-  <int value="0" label="SUCCESS">
-    The brokerable attachment was successfully processed.
-  </int>
-  <int value="1" label="DESTINATION_NOT_FOUND">
-    The brokerable attachment's destination was not the process that received
-    the attachment.
-  </int>
-  <int value="2" label="ERR_RECEIVE_MACH_MESSAGE">
-    An error occurred while trying to receive a Mach port with mach_msg().
-  </int>
 </enum>
 
 <enum name="IsAdTagged">
@@ -28257,18 +28066,6 @@ Called by update_net_error_codes.py.-->
   <int value="2" label="Unknown"/>
 </enum>
 
-<enum name="OfflineIndicatorCTREvent">
-  <int value="0" label="Displayed"/>
-  <int value="1" label="Clicked"/>
-</enum>
-
-<enum name="OfflineIndicatorSurfaceState">
-  <int value="0" label="Can animate controls"/>
-  <int value="1" label="Can animate controls, omnibox focused"/>
-  <int value="2" label="Cannot animate controls"/>
-  <int value="3" label="Cannot animate controls, omnibox focused"/>
-</enum>
-
 <enum name="OfflineMeasurementsHttpProbeResult">
   <int value="0" label="Invalid"/>
   <int value="1" label="No internet"/>
@@ -28576,84 +28373,6 @@ Called by update_net_error_codes.py.-->
   </int>
 </enum>
 
-<enum name="OptimizationGuidePageEntityCollection">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Accommodations"/>
-  <int value="2" label="Actors"/>
-  <int value="3" label="Airports"/>
-  <int value="4" label="AnatomicalStructures"/>
-  <int value="5" label="Artworks"/>
-  <int value="6" label="Athletes"/>
-  <int value="7" label="Authors"/>
-  <int value="8" label="BookEditions"/>
-  <int value="9" label="BusinessOperations"/>
-  <int value="10" label="Cars"/>
-  <int value="11" label="CausesOfDeath"/>
-  <int value="12" label="CelestialObjectWithCoordinateSystems"/>
-  <int value="13" label="ChemicalCompounds"/>
-  <int value="14" label="ConsumerProducts"/>
-  <int value="15" label="Cuisines"/>
-  <int value="16" label="CulinaryMeasures"/>
-  <int value="17" label="Currencies"/>
-  <int value="18" label="Diets"/>
-  <int value="19" label="DiseaseOrMedicalConditions"/>
-  <int value="20" label="EducationalInstitutions"/>
-  <int value="21" label="Employers"/>
-  <int value="22" label="Events"/>
-  <int value="23" label="FictionalCharacters"/>
-  <int value="24" label="FilmActors"/>
-  <int value="25" label="FilmScreeningVenues"/>
-  <int value="26" label="FilmSeries"/>
-  <int value="27" label="Films"/>
-  <int value="28" label="Foods"/>
-  <int value="29" label="Garments"/>
-  <int value="30" label="GeoBusinessChain"/>
-  <int value="31" label="GeoEstablishment"/>
-  <int value="32" label="GeoLocality"/>
-  <int value="33" label="GeoNaturalFeature"/>
-  <int value="34" label="GeoPolitical"/>
-  <int value="35" label="Holidays"/>
-  <int value="36" label="HumanLanguages"/>
-  <int value="37" label="Software"/>
-  <int value="38" label="JobTitles"/>
-  <int value="39" label="LiterarySeries"/>
-  <int value="40" label="LocalShoppingBuyables"/>
-  <int value="41" label="Materials"/>
-  <int value="42" label="MedicalTreatments"/>
-  <int value="43" label="Models"/>
-  <int value="44" label="MusicGroupMembers"/>
-  <int value="45" label="MusicalAlbums"/>
-  <int value="46" label="MusicalArtists"/>
-  <int value="47" label="MusicalGenres"/>
-  <int value="48" label="MusicalGroups"/>
-  <int value="49" label="MusicalRecordings"/>
-  <int value="50" label="MusicalReleases"/>
-  <int value="51" label="Musicians"/>
-  <int value="52" label="OrganismClassifications"/>
-  <int value="53" label="Organizations"/>
-  <int value="54" label="People"/>
-  <int value="55" label="Periodicals"/>
-  <int value="56" label="Politicians"/>
-  <int value="57" label="RecordingClusters"/>
-  <int value="58" label="Religions"/>
-  <int value="59" label="Restaurants"/>
-  <int value="60" label="RideOfferingServices"/>
-  <int value="61" label="ShoppingCenters"/>
-  <int value="62" label="SocialNetworkServiceWebsites"/>
-  <int value="63" label="Sports"/>
-  <int value="64" label="SportsTeams"/>
-  <int value="65" label="Structures"/>
-  <int value="66" label="TouristAttractions"/>
-  <int value="67" label="TravelDestinations"/>
-  <int value="68" label="TvActors"/>
-  <int value="69" label="TvEpisodes"/>
-  <int value="70" label="TvPrograms"/>
-  <int value="71" label="Venues"/>
-  <int value="72" label="VideoGames"/>
-  <int value="73" label="Websites"/>
-  <int value="74" label="WrittenWorks"/>
-</enum>
-
 <enum name="OptimizationGuideRaceNavigationFetchAttemptStatus">
   <int value="0" label="Unknown"/>
   <int value="1" label="Fetch race not needed">
@@ -28704,71 +28423,6 @@ Called by update_net_error_codes.py.-->
   <int value="4" label="Invalid Key Header"/>
   <int value="5" label="DPAPI Decryption Failure"/>
   <int value="6" label="Invalid Key Length"/>
-</enum>
-
-<enum name="OSXExceptionHandlerEvents">
-  <int value="0" label="EXCEPTION_ACCESSIBILITY">
-    Object does not support accessibility attributes
-  </int>
-  <int value="1" label="EXCEPTION_MENU_ITEM_BOUNDS_CHECK">
-    Forced crash due to menu item bounds checking failure
-  </int>
-  <int value="2" label="EXCEPTION_VIEW_NOT_IN_WINDOW">
-    Forced crash due to view not in a window requiring a window
-  </int>
-  <int value="3" label="EXCEPTION_NSURL_INIT_NIL">
-    Whitelisted exception for bug 85463. Suspect ImageKit conversions for media
-    browser in open or save panel.
-  </int>
-  <int value="4" label="EXCEPTION_NSDATADETECTOR_NIL_STRING">
-    Whitelisted exception for bug 316759. Suspect background address detection,
-    field unknown.
-  </int>
-  <int value="5" label="EXCEPTION_NSREGULAREXPRESSION_NIL_STRING">
-    Whitelisted exception for bug 466076. Suspect background address detection,
-    field unknown.
-  </int>
-</enum>
-
-<enum name="OSXFullscreenSource">
-  <int value="0" label="BROWSER">
-    The window entered fullscreen for the browser.
-  </int>
-  <int value="1" label="TAB_CONTENT">
-    The window entered fullscreen for the tab contents.
-  </int>
-  <int value="2" label="EXTENSION">
-    The window entered fullscreen for an extension.
-  </int>
-</enum>
-
-<enum name="OSXFullscreenStyle">
-  <int value="0" label="IMMERSIVE">
-    The window was fullscreened using the immersive mechanism.
-  </int>
-  <int value="1" label="PRESENTATION_MODE">
-    The window was fullscreened using the AppKit mechanism, in Presentation
-    Mode.
-  </int>
-  <int value="2" label="CANONICAL_FULLSCREEN">
-    The window was fullscreened using the AppKit mechanism, in Canonical
-    Fullscreen.
-  </int>
-</enum>
-
-<enum name="OSXFullscreenWindowLocation">
-  <int value="0" label="PRIMARY_SINGLE_SCREEN">
-    The window was located on the primary screen, and there is only a single
-    screen available.
-  </int>
-  <int value="1" label="PRIMARY_MULTIPLE_SCREEN">
-    The window was located on the primary screen, and there are multiple screens
-    available.
-  </int>
-  <int value="2" label="SECONDARY_MULTIPLE_SCREEN">
-    The window was located on a secondary screen, and there are multiple screens
-    available.
-  </int>
 </enum>
 
 <enum name="OSXNSException">
@@ -29139,22 +28793,6 @@ Called by update_net_error_codes.py.-->
   <int value="2" label="Android intent"/>
 </enum>
 
-<enum name="PendingBeaconHostAction">
-  <int value="0" label="None"/>
-  <int value="1" label="Create"/>
-  <int value="2" label="Send"/>
-  <int value="3" label="Delete"/>
-  <int value="4" label="Network Send"/>
-  <int value="5" label="Network Complete"/>
-</enum>
-
-<enum name="PendingBeaconHostBatchAction">
-  <int value="0" label="None"/>
-  <int value="1" label="Send All on Host Destroy"/>
-  <int value="2" label="Send All on Navigation"/>
-  <int value="3" label="Send All on Process Exit"/>
-</enum>
-
 <enum name="PepperInterface">
 <!-- Generated by ppapi/tools/pepper_hash_for_uma.cc -->
 
@@ -29378,23 +29016,6 @@ Called by update_net_error_codes.py.-->
   <int value="11" label="Passive"/>
   <int value="12" label="Video capture"/>
   <int value="13" label="Zero Window"/>
-</enum>
-
-<enum name="PerformanceMonitor.UsageScenario.ShortInterval">
-  <int value="1" label="All Tabs Hidden Audio"/>
-  <int value="2" label="All Tabs Hidden No Video Capture or Audio"/>
-  <int value="3" label="All Tabs Hidden No Video Capture or Audio (Recent)"/>
-  <int value="4" label="All Tabs Hidden Video Capture"/>
-  <int value="5" label="Audio"/>
-  <int value="6" label="Embedded Video No Navigation"/>
-  <int value="7" label="Embedded Video With Navigation"/>
-  <int value="8" label="Fullscreen Video"/>
-  <int value="9" label="Interaction"/>
-  <int value="10" label="Navigation"/>
-  <int value="11" label="Passive"/>
-  <int value="12" label="Video capture"/>
-  <int value="13" label="Zero Window"/>
-  <int value="14" label="Zero Window (Recent)"/>
 </enum>
 
 <enum name="PermissionAutoRevocationHistory">
@@ -30207,12 +29828,6 @@ Called by update_net_error_codes.py.-->
   <int value="0"
       label="Tried to record metrics during a pending metrics recording task"/>
   <int value="1" label="Metrics were changed during recording"/>
-</enum>
-
-<enum name="PreloadBookmarkMetricsEvent">
-  <int value="0" label="MouseOver"/>
-  <int value="1" label="MouseDown"/>
-  <int value="2" label="MouseClick"/>
 </enum>
 
 <enum name="PreloadingTriggeringOutcome">
@@ -33863,12 +33478,6 @@ all of the types are launched in Chrome but if they're sent erroneously, it
 would be helpful to identify which type is being sent.
 -->
 
-<enum name="SuggestionsResponseState">
-  <int value="0" label="Empty response received from the server."/>
-  <int value="1" label="Invalid response received from the server."/>
-  <int value="2" label="Valid response received from the server."/>
-</enum>
-
 <enum name="SuggestTileType">
   <int value="0" label="Other"/>
   <int value="1" label="URL"/>
@@ -34002,29 +33611,6 @@ would be helpful to identify which type is being sent.
   <int value="1" label="Token stayed unchanged"/>
   <int value="2" label="Token has changed"/>
   <int value="3" label="Token was cleared"/>
-</enum>
-
-<enum name="TouchpadDeviceState">
-  <int value="0" label="NO_TP_PRESENT_NO_TP_EXPECTED">
-    No touchpad detected on a device without built-in touchpad
-  </int>
-  <int value="1" label="TP_PRESENT_NO_TP_EXPECTED">
-    External touchpad detected on a device without built-in touchpad
-  </int>
-  <int value="2" label="NO_TP_PRESENT_TP_EXPECTED_BOOT">
-    Built-in touchpad not detected at boot time on a device with built-in
-    touchpad (touchpad failure at boot time)
-  </int>
-  <int value="3" label="TP_PRESENT_TP_EXPECTED_BOOT">
-    Built-in touchpad detected at boot time on a device with built-in touchpad
-  </int>
-  <int value="4" label="NO_TP_PRESENT_TP_EXPECTED_RESUME">
-    Built-in touchpad not detected at resume time on a device with built-in
-    touchpad (touchpad failure at resume time)
-  </int>
-  <int value="5" label="TP_PRESENT_TP_EXPECTED_RESUME">
-    Built-in touchpad detected at resume time on a device with built-in touchpad
-  </int>
 </enum>
 
 <enum name="TouchscreenConfiguration">
@@ -34968,14 +34554,6 @@ would be helpful to identify which type is being sent.
   <int value="75" label=".tini"/>
 </enum>
 
-<enum name="VoiceIntentTarget">
-<!-- This must be kept in sync with the VoiceIntentTarget variants in
-others/histograms.xml -->
-
-  <int value="0" label="System"/>
-  <int value="1" label="Assistant"/>
-</enum>
-
 <enum name="VoiceInteractionEventSource">
 <!-- This must be kept in sync with VoiceInteraction.AssistantActionPerformed in
 others/histograms.xml -->
@@ -35770,14 +35348,6 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="2111953935" label="chrome://topics-internals/"/>
   <int value="2114840772" label="chrome://drive-internals/"/>
   <int value="2120829362" label="chrome://account-manager-welcome/"/>
-</enum>
-
-<enum name="WebURLRequestPriority">
-  <int value="0" label="VeryLow"/>
-  <int value="1" label="Low"/>
-  <int value="2" label="Medium"/>
-  <int value="3" label="High"/>
-  <int value="4" label="VeryHigh"/>
 </enum>
 
 <enum name="WebUsbChooserClosed">

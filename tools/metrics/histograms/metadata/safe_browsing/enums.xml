@@ -288,35 +288,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="URL was classified as unsafe."/>
 </enum>
 
-<enum name="SafeBrowsingDelayedWarningEvent">
-  <int value="0" label="User loaded a page with a delayed warning"/>
-  <int value="1" label="User left the page and the warning was never shown"/>
-  <int value="2" label="The warning is shown because the user pressed a key"/>
-  <int value="3"
-      label="User clicked on the page at least once but the feature isn't
-             configured to show warnings on mouse clicks."/>
-  <int value="4" label="User clicked on the page and the warning was shown."/>
-  <int value="5"
-      label="Page tried to enter fullscreen mode and the warning was shown."/>
-  <int value="6"
-      label="Page initiated a download and it was silently cancelled."/>
-  <int value="7"
-      label="The page triggered a permission request. It was denied and the
-             warning was shown."/>
-  <int value="8"
-      label="The page tried to display a JavaScript dialog
-             (alert/confirm/prompt). It was blocked and the warning was
-             shown."/>
-  <int value="9"
-      label="A password or autofill request was denied at least once and the
-             warning was never shown."/>
-  <int value="10"
-      label="The page triggered a desktop capture request. It was denied and
-             the warning was shown."/>
-  <int value="11"
-      label="User pasted something on the page and the warning was shown."/>
-</enum>
-
 <enum name="SafeBrowsingEnhancedProtegoPingType">
   <int value="0" label="UnknownType"/>
   <int value="1" label="None"/>

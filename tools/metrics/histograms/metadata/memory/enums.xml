@@ -65,13 +65,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Allocated via Freelist"/>
 </enum>
 
-<enum name="CachedMetadataHandlerState">
-  <int value="0" label="Present"/>
-  <int value="1" label="DataType mismatch"/>
-  <int value="2" label="Was never present"/>
-  <int value="3" label="Was discarded"/>
-</enum>
-
 <enum name="MappedAndResidentPagesDumpState">
   <int value="0" label="kAccessPagemapDenied"/>
   <int value="1" label="kFailure"/>

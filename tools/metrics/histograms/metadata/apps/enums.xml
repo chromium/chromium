@@ -292,16 +292,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Color order"/>
 </enum>
 
-<enum name="AppListUserEvent">
-  <obsolete>
-    Deprecated November 2021.
-  </obsolete>
-  <int value="0" label="Impression"/>
-  <int value="1" label="Launch"/>
-  <int value="2" label="Abandon"/>
-  <int value="3" label="Ignore"/>
-</enum>
-
 <enum name="AppListUserEventError">
   <int value="0" label="Missing notifier"/>
   <int value="1" label="Result not found"/>
@@ -363,15 +353,6 @@ chromium-metrics-reviews@google.com.
   <int value="30" label="File Handling turned off"/>
   <int value="31" label="File Handling overflow shown"/>
   <int value="32" label="App Store Link clicked"/>
-</enum>
-
-<enum name="AppPreloadServiceWebAppInstallResult">
-  <int value="0" label="Success"/>
-  <int value="1" label="Invalid manifest URL"/>
-  <int value="2" label="Network error while downloading manifest"/>
-  <int value="3" label="HTTP response error while downloading manifest"/>
-  <int value="4" label="Empty manifest response"/>
-  <int value="5" label="Web app installation error"/>
 </enum>
 
 <enum name="AppsCollectionsDismissedReason">
@@ -465,15 +446,6 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Ok"/>
   <int value="1" label="Drive unavailable"/>
   <int value="2" label="File error"/>
-</enum>
-
-<enum name="DriveZeroStateProviderStatus">
-  <int value="0" label="Ok"/>
-  <int value="1" label="Drive FS not mounted"/>
-  <int value="2" label="No results"/>
-  <int value="3" label="Path location failed"/>
-  <int value="4" label="All files errored"/>
-  <int value="5" label="Drive disabled"/>
 </enum>
 
 <enum name="FileHandlerRegistrationLinuxResult">

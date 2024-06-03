@@ -643,14 +643,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Refresh"/>
 </enum>
 
-<enum name="MdnsResponderServiceError">
-  <int value="0" label="Fail to start manager"/>
-  <int value="1" label="Fail to create responder"/>
-  <int value="2" label="Fatal socket handler error"/>
-  <int value="3" label="Invalid IP to register name"/>
-  <int value="4" label="Conflicting name resolution"/>
-</enum>
-
 <enum name="NeighborLinkMonitorFailureType">
   <int value="0" label="Unknown type of failure"/>
   <int value="1" label="IPv4 gateway neighbor lost"/>

@@ -131,21 +131,6 @@ chromium-metrics-reviews@google.com.
       label="Shortcut install, menu showed 'Install' (failure mode)"/>
 </enum>
 
-<enum name="CalculatorAppErasureScanResult">
-  <obsolete>
-    Code removed 2023-06.
-  </obsolete>
-  <int value="0" label="NoWebAppsForProcess"/>
-  <int value="1" label="BothAppsInstalled"/>
-  <int value="2" label="WebAppInstalled"/>
-  <int value="3" label="ChromeAppInstalled"/>
-  <int value="4" label="BothAppsNotUserUninstalled"/>
-  <int value="5" label="WebAppNotUserUninstalled"/>
-  <int value="6" label="ChromeAppNotUserUninstalled"/>
-  <int value="7" label="FixAlreadyAppliedAndWantedToApplyAgain"/>
-  <int value="8" label="FixApplied"/>
-</enum>
-
 <enum name="DefaultOfflineClosingReason">
   <int value="0" label="Network re-established"/>
   <int value="1" label="New navigation"/>
@@ -313,12 +298,6 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Completed"/>
   <int value="1" label="PrimaryPageChanged"/>
   <int value="2" label="AbortedDueToFailure"/>
-</enum>
-
-<enum name="WebAppInstallIphResult">
-  <int value="0" label="Installed"/>
-  <int value="1" label="Clicked Install icon then canceled install"/>
-  <int value="2" label="Ignored"/>
 </enum>
 
 <enum name="WebAppLauncherLaunchResult">

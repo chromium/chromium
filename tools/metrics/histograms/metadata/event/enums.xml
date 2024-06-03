@@ -254,11 +254,6 @@ chromium-metrics-reviews@google.com.
       label="Forced Non-Blocking Due to Unresponsive Main Thread (deprecated)"/>
 </enum>
 
-<enum name="JankyBoolean">
-  <int value="0" label="Non Janky"/>
-  <int value="1" label="Janky"/>
-</enum>
-
 <enum name="MotionEventToolType">
   <summary>The type of tool that triggers a pointer-type MotionEvent.</summary>
   <int value="0" label="Unknown">Unknown tool type.</int>

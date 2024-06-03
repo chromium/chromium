@@ -88,11 +88,6 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Expired because the device was suspended"/>
 </enum>
 
-<enum name="OsScreen">
-  <int value="0" label="OS_PROMPT"/>
-  <int value="1" label="OS_SYSTEM_SETTINGS"/>
-</enum>
-
 <enum name="OsScreenAction">
   <int value="0" label="SystemSettings"/>
   <int value="1" label="DismissXButton"/>
@@ -221,13 +216,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Permission granted"/>
   <int value="3" label="Ephemeral permission granted"/>
   <int value="4" label="Dismissed due to loss of focus"/>
-</enum>
-
-<enum name="WebSiteSettingsAllSitesAction">
-  <int value="0" label="All Sites Loaded"/>
-  <int value="1" label="Reset Permissions"/>
-  <int value="2" label="Clear Data"/>
-  <int value="3" label="Enter Site Details"/>
 </enum>
 
 <enum name="WebSiteSettingsAllSitesAction2">
