@@ -156,6 +156,7 @@ class Port(object):
 
     CONTENT_SHELL_NAME = 'content_shell'
     CHROME_NAME = 'chrome'
+    HEADLESS_SHELL_NAME = 'headless_shell'
 
     # Update the first line in third_party/blink/web_tests/TestExpectations and
     # the documentation in docs/testing/web_test_expectations.md when this list

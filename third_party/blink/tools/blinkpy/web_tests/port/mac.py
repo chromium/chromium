@@ -58,6 +58,8 @@ class MacPort(base.Port):
 
     CONTENT_SHELL_NAME = 'Content Shell'
     CHROME_NAME = 'Chromium'
+    # `//headless:headless_shell` is built as a plain executable, not as an
+    # `.app` bundle, so there's no need to override `HEADLESS_SHELL_NAME` here.
 
     BUILD_REQUIREMENTS_URL = 'https://chromium.googlesource.com/chromium/src/+/main/docs/mac_build_instructions.md'
 
@@ -117,6 +119,8 @@ class MacPort(base.Port):
         return self._filesystem.join(self.apache_config_directory(), config_file_basename)
 
     def path_to_driver(self, target=None):
+        if self.driver_name() == self.HEADLESS_SHELL_NAME:
+            return super().path_to_driver(target)
         return self.build_path(self.driver_name() + '.app',
                                'Contents',
                                'MacOS',

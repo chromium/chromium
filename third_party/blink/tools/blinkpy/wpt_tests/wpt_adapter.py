@@ -171,7 +171,9 @@ class WPTAdapter:
         else:
             port = host.port_factory.get(port_name, options)
 
-        if options.product in ['chrome', 'headless_shell']:
+        if options.product == 'headless_shell':
+            port.set_option_default('driver_name', port.HEADLESS_SHELL_NAME)
+        elif options.product == 'chrome':
             port.set_option_default('driver_name', port.CHROME_NAME)
         product = make_product(port, options)
         return WPTAdapter(product, port, options, tests)

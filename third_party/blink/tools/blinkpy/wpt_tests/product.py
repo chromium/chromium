@@ -138,7 +138,6 @@ class HeadlessShell(DesktopProduct):
         # the flag here.
         return [
             *super().additional_binary_args(),
-            '--headless=old',
             '--enable-bfcache',
             '--enable-field-trial-config',
             # `headless_shell` doesn't send the `Accept-Language` header by
