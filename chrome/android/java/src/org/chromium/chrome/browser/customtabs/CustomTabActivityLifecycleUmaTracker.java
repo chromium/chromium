@@ -112,7 +112,7 @@ public class CustomTabActivityLifecycleUmaTracker
     }
 
     private void recordMetrics() {
-        if (mIntentDataProvider.isOffTheRecord()) {
+        if (mIntentDataProvider.isIncognito()) {
             recordIncognitoLaunchReason();
         } else {
             @IntentHandler.ExternalAppId
