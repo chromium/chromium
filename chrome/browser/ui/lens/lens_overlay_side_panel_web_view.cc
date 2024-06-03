@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/side_panel/lens/lens_overlay_side_panel_web_view.h"
+#include "chrome/browser/ui/lens/lens_overlay_side_panel_web_view.h"
 
 #include "chrome/browser/file_select_helper.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
