@@ -32,8 +32,8 @@ TEST_F(PickerSearchFieldViewTest, DoesNotTriggerSearchOnConstruction) {
   base::test::TestFuture<const std::u16string&> future;
   PickerKeyEventHandler key_event_handler;
   PickerPerformanceMetrics metrics;
-  PickerSearchFieldView view(future.GetRepeatingCallback(), &key_event_handler,
-                             &metrics);
+  PickerSearchFieldView view(future.GetRepeatingCallback(), base::DoNothing(),
+                             &key_event_handler, &metrics);
 
   EXPECT_FALSE(future.IsReady());
 }
@@ -45,7 +45,8 @@ TEST_F(PickerSearchFieldViewTest, TriggersSearchOnContentsChange) {
   PickerKeyEventHandler key_event_handler;
   PickerPerformanceMetrics metrics;
   auto* view = widget->SetContentsView(std::make_unique<PickerSearchFieldView>(
-      future.GetRepeatingCallback(), &key_event_handler, &metrics));
+      future.GetRepeatingCallback(), base::DoNothing(), &key_event_handler,
+      &metrics));
 
   view->RequestFocus();
   PressAndReleaseKey(*widget, ui::KeyboardCode::VKEY_A);
@@ -56,7 +57,8 @@ TEST_F(PickerSearchFieldViewTest, TriggersSearchOnContentsChange) {
 TEST_F(PickerSearchFieldViewTest, SetPlaceholderText) {
   PickerKeyEventHandler key_event_handler;
   PickerPerformanceMetrics metrics;
-  PickerSearchFieldView view(base::DoNothing(), &key_event_handler, &metrics);
+  PickerSearchFieldView view(base::DoNothing(), base::DoNothing(),
+                             &key_event_handler, &metrics);
 
   view.SetPlaceholderText(u"hello");
 
@@ -66,7 +68,8 @@ TEST_F(PickerSearchFieldViewTest, SetPlaceholderText) {
 TEST_F(PickerSearchFieldViewTest, SetQueryText) {
   PickerKeyEventHandler key_event_handler;
   PickerPerformanceMetrics metrics;
-  PickerSearchFieldView view(base::DoNothing(), &key_event_handler, &metrics);
+  PickerSearchFieldView view(base::DoNothing(), base::DoNothing(),
+                             &key_event_handler, &metrics);
 
   view.SetQueryText(u"test");
 
@@ -77,8 +80,8 @@ TEST_F(PickerSearchFieldViewTest, SetQueryTextDoesNotTriggerSearch) {
   PickerKeyEventHandler key_event_handler;
   PickerPerformanceMetrics metrics;
   base::test::TestFuture<const std::u16string&> future;
-  PickerSearchFieldView view(future.GetRepeatingCallback(), &key_event_handler,
-                             &metrics);
+  PickerSearchFieldView view(future.GetRepeatingCallback(), base::DoNothing(),
+                             &key_event_handler, &metrics);
 
   view.SetQueryText(u"test");
 
@@ -88,9 +91,19 @@ TEST_F(PickerSearchFieldViewTest, SetQueryTextDoesNotTriggerSearch) {
 TEST_F(PickerSearchFieldViewTest, DoesNotShowClearButtonInitially) {
   PickerKeyEventHandler key_event_handler;
   PickerPerformanceMetrics metrics;
-  PickerSearchFieldView view(base::DoNothing(), &key_event_handler, &metrics);
+  PickerSearchFieldView view(base::DoNothing(), base::DoNothing(),
+                             &key_event_handler, &metrics);
 
   EXPECT_FALSE(view.clear_button_for_testing().GetVisible());
+}
+
+TEST_F(PickerSearchFieldViewTest, DoesNotShowBackButtonInitially) {
+  PickerKeyEventHandler key_event_handler;
+  PickerPerformanceMetrics metrics;
+  PickerSearchFieldView view(base::DoNothing(), base::DoNothing(),
+                             &key_event_handler, &metrics);
+
+  EXPECT_FALSE(view.back_button_for_testing().GetVisible());
 }
 
 TEST_F(PickerSearchFieldViewTest, ShowsClearButtonWithQuery) {
@@ -99,7 +112,7 @@ TEST_F(PickerSearchFieldViewTest, ShowsClearButtonWithQuery) {
   PickerKeyEventHandler key_event_handler;
   PickerPerformanceMetrics metrics;
   auto* view = widget->SetContentsView(std::make_unique<PickerSearchFieldView>(
-      base::DoNothing(), &key_event_handler, &metrics));
+      base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
 
   view->RequestFocus();
   PressAndReleaseKey(*widget, ui::KeyboardCode::VKEY_A);
@@ -113,7 +126,7 @@ TEST_F(PickerSearchFieldViewTest, HidesClearButtonWithEmptyQuery) {
   PickerKeyEventHandler key_event_handler;
   PickerPerformanceMetrics metrics;
   auto* view = widget->SetContentsView(std::make_unique<PickerSearchFieldView>(
-      base::DoNothing(), &key_event_handler, &metrics));
+      base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
 
   view->RequestFocus();
   PressAndReleaseKey(*widget, ui::KeyboardCode::VKEY_A);
@@ -131,7 +144,8 @@ TEST_F(PickerSearchFieldViewTest,
   PickerKeyEventHandler key_event_handler;
   PickerPerformanceMetrics metrics;
   auto* view = widget->SetContentsView(std::make_unique<PickerSearchFieldView>(
-      future.GetRepeatingCallback(), &key_event_handler, &metrics));
+      future.GetRepeatingCallback(), base::DoNothing(), &key_event_handler,
+      &metrics));
   view->RequestFocus();
   PressAndReleaseKey(*widget, ui::KeyboardCode::VKEY_A);
   ASSERT_EQ(future.Take(), u"a");
@@ -142,6 +156,23 @@ TEST_F(PickerSearchFieldViewTest,
   EXPECT_EQ(future.Get(), u"");
   EXPECT_EQ(view->textfield_for_testing().GetText(), u"");
   EXPECT_FALSE(view->clear_button_for_testing().GetVisible());
+}
+
+TEST_F(PickerSearchFieldViewTest, ClickingBackButtonTriggersCallback) {
+  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  widget->Show();
+  base::test::TestFuture<void> future;
+  PickerKeyEventHandler key_event_handler;
+  PickerPerformanceMetrics metrics;
+  auto* view = widget->SetContentsView(std::make_unique<PickerSearchFieldView>(
+      base::DoNothing(), future.GetRepeatingCallback(), &key_event_handler,
+      &metrics));
+  view->SetBackButtonVisible(true);
+
+  ViewDrawnWaiter().Wait(&view->back_button_for_testing());
+  LeftClickOn(view->back_button_for_testing());
+
+  EXPECT_TRUE(future.Wait());
 }
 
 }  // namespace

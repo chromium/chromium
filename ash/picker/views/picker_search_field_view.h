@@ -36,13 +36,17 @@ class ASH_EXPORT PickerSearchFieldView : public views::FlexLayoutView,
  public:
   using SearchCallback =
       base::RepeatingCallback<void(const std::u16string& query)>;
+  using BackCallback = base::RepeatingClosure;
 
   // `search_callback` is called asynchronously whenever the contents of the
   // search field changes (with debouncing logic to avoid unnecessary calls).
   // `key_event_handler` and `performance_metrics` must live as long as this
   // class. `delay` is the time to wait before calling `search_callback` for
   // debouncing.
+  //
+  // `back_callback` is called when clicking on the back button.
   explicit PickerSearchFieldView(SearchCallback search_callback,
+                                 BackCallback back_callback,
                                  PickerKeyEventHandler* key_event_handler,
                                  PickerPerformanceMetrics* performance_metrics);
   PickerSearchFieldView(const PickerSearchFieldView&) = delete;
@@ -77,7 +81,11 @@ class ASH_EXPORT PickerSearchFieldView : public views::FlexLayoutView,
   std::u16string_view GetQueryText() const;
   void SetQueryText(std::u16string text);
 
+  // Sets whether the back button is visible.
+  void SetBackButtonVisible(bool visible);
+
   const views::Textfield& textfield_for_testing() const { return *textfield_; }
+  views::ImageButton& back_button_for_testing() { return *back_button_; }
   views::ImageButton& clear_button_for_testing() { return *clear_button_; }
 
  private:
@@ -90,6 +98,7 @@ class ASH_EXPORT PickerSearchFieldView : public views::FlexLayoutView,
   raw_ptr<PickerKeyEventHandler> key_event_handler_ = nullptr;
   raw_ptr<PickerPerformanceMetrics> performance_metrics_ = nullptr;
   raw_ptr<views::Textfield> textfield_ = nullptr;
+  raw_ptr<views::ImageButton> back_button_ = nullptr;
   raw_ptr<views::ImageButton> clear_button_ = nullptr;
 };
 

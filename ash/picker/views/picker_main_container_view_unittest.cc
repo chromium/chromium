@@ -67,7 +67,7 @@ TEST_F(PickerMainContainerViewTest, LayoutWithContentsBelowSearchField) {
 
   auto* search_field =
       container->AddSearchFieldView(std::make_unique<PickerSearchFieldView>(
-          base::DoNothing(), &key_event_handler, &metrics));
+          base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
   PickerContentsView* contents = container->AddContentsView(
       PickerLayoutType::kMainResultsBelowSearchField);
 
@@ -85,7 +85,7 @@ TEST_F(PickerMainContainerViewTest, LayoutWithContentsAboveSearchField) {
 
   auto* search_field =
       container->AddSearchFieldView(std::make_unique<PickerSearchFieldView>(
-          base::DoNothing(), &key_event_handler, &metrics));
+          base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
   PickerContentsView* contents = container->AddContentsView(
       PickerLayoutType::kMainResultsAboveSearchField);
 

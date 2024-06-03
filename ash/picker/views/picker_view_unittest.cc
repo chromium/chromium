@@ -1245,5 +1245,40 @@ TEST_F(PickerViewTest,
   EXPECT_EQ(counter.GetCount(ax::mojom::Event::kActiveDescendantChanged), 2);
 }
 
+TEST_F(PickerViewTest, ResetsToZeroStateWhenClickingOnBackButton) {
+  base::test::TestFuture<void> future;
+  FakePickerViewDelegate delegate({
+      .search_function = base::BindLambdaForTesting(
+          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+            future.SetValue();
+            callback.Run({
+                PickerSearchResultsSection(
+                    PickerSectionType::kCategories,
+                    {{PickerSearchResult::Category(PickerCategory::kLinks)}},
+                    /*has_more_results=*/false),
+            });
+          }),
+  });
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+  ASSERT_TRUE(future.Wait());
+  PickerView* view = GetPickerViewFromWidget(*widget);
+  views::View* category_result = view->search_results_view_for_testing()
+                                     .section_list_view_for_testing()
+                                     ->GetTopItem();
+  ASSERT_TRUE(category_result);
+  ViewDrawnWaiter().Wait(category_result);
+  LeftClickOn(category_result);
+
+  PickerSearchFieldView& search_field_view =
+      view->search_field_view_for_testing();
+  ViewDrawnWaiter().Wait(&search_field_view.back_button_for_testing());
+  LeftClickOn(&search_field_view.back_button_for_testing());
+
+  EXPECT_TRUE(view->zero_state_view_for_testing().GetVisible());
+  EXPECT_EQ(search_field_view.textfield_for_testing().GetText(), u"");
+}
+
 }  // namespace
 }  // namespace ash

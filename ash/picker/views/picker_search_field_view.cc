@@ -14,6 +14,7 @@
 #include "ash/style/typography.h"
 #include "base/functional/bind.h"
 #include "base/time/time.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/geometry/insets.h"
@@ -36,7 +37,7 @@ namespace ash {
 namespace {
 
 constexpr auto kSearchFieldVerticalPadding = gfx::Insets::VH(6, 0);
-constexpr auto kClearButtonHorizontalMargin = gfx::Insets::VH(0, 8);
+constexpr auto kButtonHorizontalMargin = gfx::Insets::VH(0, 8);
 // The default horizontal margin for the textfield when surrounding icon buttons
 // are not visible.
 constexpr int kDefaultTextfieldHorizontalMargin = 16;
@@ -45,6 +46,7 @@ constexpr int kDefaultTextfieldHorizontalMargin = 16;
 
 PickerSearchFieldView::PickerSearchFieldView(
     SearchCallback search_callback,
+    BackCallback back_callback,
     PickerKeyEventHandler* key_event_handler,
     PickerPerformanceMetrics* performance_metrics)
     : search_callback_(std::move(search_callback)),
@@ -54,7 +56,17 @@ PickerSearchFieldView::PickerSearchFieldView(
       .SetOrientation(views::LayoutOrientation::kHorizontal)
       .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
       .SetProperty(views::kMarginsKey, kSearchFieldVerticalPadding)
-      .AddChild(
+      .AddChildren(
+          views::Builder<views::ImageButton>(
+              views::ImageButton::CreateIconButton(
+                  std::move(back_callback), vector_icons::kArrowBackIcon,
+                  // TODO(b/309706053): Replace this once the strings are
+                  // finalized.
+                  u"Placeholder",
+                  views::ImageButton::MaterialIconStyle::kSmall))
+              .CopyAddressTo(&back_button_)
+              .SetProperty(views::kMarginsKey, kButtonHorizontalMargin)
+              .SetVisible(false),
           views::Builder<views::Textfield>()
               .CopyAddressTo(&textfield_)
               .SetProperty(views::kElementIdentifierKey,
@@ -80,7 +92,7 @@ PickerSearchFieldView::PickerSearchFieldView(
                   views::kIcCloseIcon, u"placeholder",
                   views::ImageButton::MaterialIconStyle::kSmall))
               .CopyAddressTo(&clear_button_)
-              .SetProperty(views::kMarginsKey, kClearButtonHorizontalMargin)
+              .SetProperty(views::kMarginsKey, kButtonHorizontalMargin)
               .SetVisible(false)
               // TODO(b/309706053): Replace this once the strings are finalized.
               .SetAccessibleName(u"placeholder"))
@@ -158,6 +170,11 @@ void PickerSearchFieldView::SetQueryText(std::u16string text) {
   textfield_->SetText(std::move(text));
 }
 
+void PickerSearchFieldView::SetBackButtonVisible(bool visible) {
+  back_button_->SetVisible(visible);
+  UpdateTextfieldBorder();
+}
+
 void PickerSearchFieldView::ClearButtonPressed() {
   textfield_->SetText(u"");
   ContentsChanged(textfield_, u"");
@@ -165,7 +182,7 @@ void PickerSearchFieldView::ClearButtonPressed() {
 
 void PickerSearchFieldView::UpdateTextfieldBorder() {
   textfield_->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
-      0, kDefaultTextfieldHorizontalMargin, 0,
+      0, back_button_->GetVisible() ? 0 : kDefaultTextfieldHorizontalMargin, 0,
       clear_button_->GetVisible() ? 0 : kDefaultTextfieldHorizontalMargin)));
 }
 

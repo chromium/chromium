@@ -139,6 +139,9 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   // Sets `page_view` as the active page in `main_container_view_`.
   void SetActivePage(PickerPageView* page_view);
 
+  // Called when the search field back button is pressed.
+  void OnSearchBackButtonPressed();
+
   std::optional<PickerCategory> selected_category_;
 
   PickerKeyEventHandler key_event_handler_;

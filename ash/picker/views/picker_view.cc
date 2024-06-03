@@ -460,6 +460,8 @@ void PickerView::AddMainContainerView(PickerLayoutType layout_type) {
           std::make_unique<PickerSearchFieldView>(
               base::BindRepeating(&PickerView::StartSearch,
                                   base::Unretained(this)),
+              base::BindRepeating(&PickerView::OnSearchBackButtonPressed,
+                                  base::Unretained(this)),
               &key_event_handler_, &performance_metrics_))
           .SetPlaceholderText(GetSearchFieldPlaceholderText())
           .Build());
@@ -481,7 +483,14 @@ void PickerView::AddMainContainerView(PickerLayoutType layout_type) {
 }
 
 void PickerView::SetActivePage(PickerPageView* page_view) {
+  search_field_view_->SetBackButtonVisible(page_view == category_view_);
   main_container_view_->SetActivePage(page_view);
+}
+
+void PickerView::OnSearchBackButtonPressed() {
+  search_field_view_->SetPlaceholderText(GetSearchFieldPlaceholderText());
+  search_field_view_->SetQueryText(u"");
+  SetActivePage(zero_state_view_);
 }
 
 BEGIN_METADATA(PickerView)
