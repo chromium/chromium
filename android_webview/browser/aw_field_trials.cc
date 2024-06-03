@@ -193,12 +193,6 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // FedCM is not yet supported on WebView.
   aw_feature_overrides.DisableFeature(::features::kFedCm);
 
-  // Disable enhanced track-pad features until WebView's experiment
-  // is fully rolled out to stable.
-  aw_feature_overrides.DisableFeature(ui::kConvertTrackpadEventsToMouse);
-  aw_feature_overrides.DisableFeature(
-      ::features::kMouseAndTrackpadDropdownMenu);
-
   // TODO(crbug.com/40272633): Web MIDI permission prompt for all usage.
   aw_feature_overrides.DisableFeature(blink::features::kBlockMidiByDefault);
 
