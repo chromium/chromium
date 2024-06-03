@@ -1507,20 +1507,6 @@ TEST_F(FeaturePolicyMutationTest, TestAllowNewFeatureUnconditionally) {
       mojom::blink::PermissionsPolicyFeature::kPayment, test_policy));
 }
 
-class PermissionsPolicyViolationHistogramTest : public testing::Test {
- public:
-  PermissionsPolicyViolationHistogramTest(
-      const PermissionsPolicyViolationHistogramTest&) = delete;
-  PermissionsPolicyViolationHistogramTest& operator=(
-      const PermissionsPolicyViolationHistogramTest&) = delete;
-
- protected:
-  PermissionsPolicyViolationHistogramTest() = default;
-
-  ~PermissionsPolicyViolationHistogramTest() override = default;
-  test::TaskEnvironment task_environment_;
-};
-
 class FeaturePolicyVisibilityTest
     : public testing::Test,
       public testing::WithParamInterface</*is_isolated=*/bool> {
