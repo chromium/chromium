@@ -10,13 +10,10 @@
 #include "ash/ash_element_identifiers.h"
 #include "ash/picker/metrics/picker_performance_metrics.h"
 #include "ash/picker/views/picker_key_event_handler.h"
-#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/typography.h"
 #include "base/functional/bind.h"
 #include "base/time/time.h"
-#include "build/branding_buildflags.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/geometry/insets.h"
@@ -35,10 +32,6 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "chromeos/ash/resources/internal/strings/grit/ash_internal_strings.h"
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
 namespace ash {
 namespace {
 
@@ -47,16 +40,6 @@ constexpr auto kClearButtonHorizontalMargin = gfx::Insets::VH(0, 8);
 // The default horizontal margin for the textfield when surrounding icon buttons
 // are not visible.
 constexpr int kDefaultTextfieldHorizontalMargin = 16;
-
-// TODO: b/331285414 - Finalize the search field placeholder text.
-std::u16string GetSearchFieldPlaceholderText() {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return l10n_util::GetStringUTF16(IDS_PICKER_SEARCH_FIELD_PLACEHOLDER_TEXT);
-#else
-  return l10n_util::GetStringUTF16(
-      IDS_PICKER_ZERO_STATE_SEARCH_FIELD_PLACEHOLDER_TEXT);
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-}
 
 }  // namespace
 
@@ -80,7 +63,6 @@ PickerSearchFieldView::PickerSearchFieldView(
               .SetBackgroundColor(SK_ColorTRANSPARENT)
               .SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
                   TypographyToken::kCrosBody2))
-              .SetPlaceholderText(GetSearchFieldPlaceholderText())
               .SetProperty(views::kFlexBehaviorKey,
                            views::FlexSpecification(
                                views::MinimumFlexSizeRule::kScaleToZero,
@@ -148,9 +130,13 @@ void PickerSearchFieldView::OnDidChangeFocus(View* focused_before,
   }
 }
 
+const std::u16string& PickerSearchFieldView::GetPlaceholderText() const {
+  return textfield_->GetPlaceholderText();
+}
+
 void PickerSearchFieldView::SetPlaceholderText(
-    std::u16string_view new_placeholder_text) {
-  textfield_->SetPlaceholderText(std::u16string(new_placeholder_text));
+    const std::u16string& new_placeholder_text) {
+  textfield_->SetPlaceholderText(new_placeholder_text);
 }
 
 void PickerSearchFieldView::SetTextfieldActiveDescendant(views::View* view) {

@@ -24,11 +24,14 @@
 #include "ash/picker/views/picker_zero_state_view.h"
 #include "ash/public/cpp/picker/picker_category.h"
 #include "ash/public/cpp/picker/picker_search_result.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "build/branding_buildflags.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/emoji/emoji_panel_helper.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/display/screen.h"
@@ -47,6 +50,10 @@
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/non_client_view.h"
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chromeos/ash/resources/internal/strings/grit/ash_internal_strings.h"
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 namespace ash {
 namespace {
@@ -141,6 +148,16 @@ std::vector<PickerSearchResult> GetMostRecentResult(
     return {};
   }
   return {search_results[0]};
+}
+
+// TODO: b/331285414 - Finalize the search field placeholder text.
+std::u16string GetSearchFieldPlaceholderText() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return l10n_util::GetStringUTF16(IDS_PICKER_SEARCH_FIELD_PLACEHOLDER_TEXT);
+#else
+  return l10n_util::GetStringUTF16(
+      IDS_PICKER_ZERO_STATE_SEARCH_FIELD_PLACEHOLDER_TEXT);
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
 }  // namespace
@@ -439,9 +456,13 @@ void PickerView::AddMainContainerView(PickerLayoutType layout_type) {
   // `base::Unretained` is safe here because this class owns
   // `main_container_view_`, which owns `search_field_view_`.
   search_field_view_ = main_container_view_->AddSearchFieldView(
-      std::make_unique<PickerSearchFieldView>(
-          base::BindRepeating(&PickerView::StartSearch, base::Unretained(this)),
-          &key_event_handler_, &performance_metrics_));
+      views::Builder<PickerSearchFieldView>(
+          std::make_unique<PickerSearchFieldView>(
+              base::BindRepeating(&PickerView::StartSearch,
+                                  base::Unretained(this)),
+              &key_event_handler_, &performance_metrics_))
+          .SetPlaceholderText(GetSearchFieldPlaceholderText())
+          .Build());
   main_container_view_->AddContentsView(layout_type);
 
   zero_state_view_ =

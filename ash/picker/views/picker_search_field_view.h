@@ -64,8 +64,9 @@ class ASH_EXPORT PickerSearchFieldView : public views::FlexLayoutView,
   void OnWillChangeFocus(View* focused_before, View* focused_now) override;
   void OnDidChangeFocus(View* focused_before, View* focused_now) override;
 
-  // Set the placeholder text to show when the textfield is empty.
-  void SetPlaceholderText(std::u16string_view new_placeholder_text);
+  // Gets or sets the placeholder text to show when the textfield is empty.
+  const std::u16string& GetPlaceholderText() const;
+  void SetPlaceholderText(const std::u16string& new_placeholder_text);
 
   // Sets the active descendant of the underlying textfield to `view` for screen
   // readers. `view` may be null, in which case the active descendant is
@@ -93,6 +94,7 @@ class ASH_EXPORT PickerSearchFieldView : public views::FlexLayoutView,
 };
 
 BEGIN_VIEW_BUILDER(ASH_EXPORT, PickerSearchFieldView, views::FlexLayoutView)
+VIEW_BUILDER_PROPERTY(std::u16string, PlaceholderText)
 END_VIEW_BUILDER
 
 }  // namespace ash
