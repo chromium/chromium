@@ -54,6 +54,8 @@ BASE_FEATURE(kBreakoutBoxConversionWithoutSinkSignal,
 // If BreakoutBoxWriteVideoFrameCaptureTimestamp is enabled, the timestamp from
 // a blink::VideoFrame written to a MediaStreamVideoTrackUnderlyingSink is also
 // set as the capture timestamp for its underlying media::VideoFrame.
+// TODO(crbug.com/343870500): Remove this feature once WebCodec VideoFrames
+// expose the capture time as metadata.
 BASE_FEATURE(kBreakoutBoxWriteVideoFrameCaptureTimestamp,
              "BreakoutBoxWriteVideoFrameCaptureTimestamp",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -156,10 +158,22 @@ ScriptPromise<IDLUndefined> MediaStreamVideoTrackUnderlyingSink::write(
     return ScriptPromise<IDLUndefined>();
   }
 
+  static const base::TimeDelta kLongDelta = base::Minutes(1);
+  base::TimeDelta now = base::TimeTicks::Now() - base::TimeTicks();
   if (base::FeatureList::IsEnabled(
-          kBreakoutBoxWriteVideoFrameCaptureTimestamp)) {
-    media_frame->metadata().capture_begin_time =
-        base::TimeTicks() + video_frame->handle()->timestamp();
+          kBreakoutBoxWriteVideoFrameCaptureTimestamp) &&
+      should_try_to_write_capture_time_ &&
+      !media_frame->metadata().capture_begin_time && (now > kLongDelta)) {
+    // If the difference between now and the frame's timestamp is large,
+    // assume the stream is not using capture times as timestamps.
+    if ((media_frame->timestamp() - now).magnitude() > kLongDelta) {
+      should_try_to_write_capture_time_ = false;
+    }
+
+    if (should_try_to_write_capture_time_) {
+      media_frame->metadata().capture_begin_time =
+          base::TimeTicks() + video_frame->handle()->timestamp();
+    }
   }
 
   // Invalidate the JS |video_frame|. Otherwise, the media frames might not be

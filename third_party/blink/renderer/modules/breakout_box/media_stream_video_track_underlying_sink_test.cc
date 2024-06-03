@@ -36,6 +36,16 @@ using testing::_;
 
 namespace blink {
 
+namespace {
+// Some of these tests rely on Now() being at least 1 minute.
+// If this is not the case, affected tests might flake and should not run.
+// TODO(crbug.com/343870500): Remove this once capture timestamps are exposed
+// as part of WebCodecs VideoFrame metadata.
+bool IsTooEarlyForTest() {
+  return (base::TimeTicks::Now() - base::TimeTicks()) <= base::Minutes(2);
+}
+}  // namespace
+
 class MediaStreamVideoTrackUnderlyingSinkTest : public testing::Test {
  public:
   MediaStreamVideoTrackUnderlyingSinkTest() {
@@ -66,14 +76,16 @@ class MediaStreamVideoTrackUnderlyingSinkTest : public testing::Test {
         /*enabled=*/true);
   }
 
-  ScriptValue CreateVideoFrameChunk(ScriptState* script_state,
-                                    VideoFrame** video_frame_out = nullptr) {
+  ScriptValue CreateVideoFrameChunk(
+      ScriptState* script_state,
+      VideoFrame** video_frame_out = nullptr,
+      base::TimeDelta timestamp = base::Seconds(2)) {
     const scoped_refptr<media::VideoFrame> media_frame =
         media::VideoFrame::CreateBlackFrame(gfx::Size(100, 50));
     // Set a nonzero timestamp to make it easier to detect certain errors such
     // as unit conversions in Web-exposed VideoFrames which use integer
     // timestamps.
-    media_frame->set_timestamp(base::Seconds(2));
+    media_frame->set_timestamp(timestamp);
     VideoFrame* video_frame = MakeGarbageCollected<VideoFrame>(
         std::move(media_frame), ExecutionContext::From(script_state));
     if (video_frame_out)
@@ -193,7 +205,11 @@ TEST_F(MediaStreamVideoTrackUnderlyingSinkTest, GetGmbManager) {
                 IsGpuMemoryBufferReadbackFromTextureEnabled());
 }
 
-TEST_F(MediaStreamVideoTrackUnderlyingSinkTest, WriteCaptureTimestamp) {
+TEST_F(MediaStreamVideoTrackUnderlyingSinkTest,
+       DeltaTimestampDoesNotWriteCaptureBeginTime) {
+  if (IsTooEarlyForTest()) {
+    return;
+  }
   V8TestingScope v8_scope;
   ScriptState* script_state = v8_scope.GetScriptState();
   auto* underlying_sink = CreateUnderlyingSink(script_state);
@@ -205,7 +221,8 @@ TEST_F(MediaStreamVideoTrackUnderlyingSinkTest, WriteCaptureTimestamp) {
   auto* writer = writable_stream->getWriter(script_state, exception_state);
 
   VideoFrame* video_frame = nullptr;
-  auto video_frame_chunk = CreateVideoFrameChunk(script_state, &video_frame);
+  ScriptValue video_frame_chunk =
+      CreateVideoFrameChunk(script_state, &video_frame);
   int64_t web_exposed_timestamp = video_frame->timestamp();
   scoped_refptr<media::VideoFrame> media_frame = video_frame->frame();
   EXPECT_EQ(media_frame->timestamp().InMicroseconds(), web_exposed_timestamp);
@@ -216,10 +233,101 @@ TEST_F(MediaStreamVideoTrackUnderlyingSinkTest, WriteCaptureTimestamp) {
       writer->write(script_state, video_frame_chunk, exception_state));
   write_tester.WaitUntilSettled();
   EXPECT_EQ(media_frame->timestamp().InMicroseconds(), web_exposed_timestamp);
+  // No capture timestamp expected because the timestamp is a regular TimeDelta.
+  EXPECT_FALSE(media_frame->metadata().capture_begin_time.has_value());
+}
+
+TEST_F(MediaStreamVideoTrackUnderlyingSinkTest,
+       CaptureTimestampWritesCaptureBeginTime) {
+  if (IsTooEarlyForTest()) {
+    return;
+  }
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+  auto* underlying_sink = CreateUnderlyingSink(script_state);
+  auto* writable_stream = WritableStream::CreateWithCountQueueingStrategy(
+      script_state, underlying_sink, 1u);
+  auto track = CreateTrack();
+
+  NonThrowableExceptionState exception_state;
+  auto* writer = writable_stream->getWriter(script_state, exception_state);
+
+  VideoFrame* video_frame = nullptr;
+  ScriptValue video_frame_chunk = CreateVideoFrameChunk(
+      script_state, &video_frame,
+      /*timestamp=*/base::TimeTicks::Now() - base::TimeTicks());
+  int64_t web_exposed_timestamp = video_frame->timestamp();
+  scoped_refptr<media::VideoFrame> media_frame = video_frame->frame();
+  EXPECT_EQ(media_frame->timestamp().InMicroseconds(), web_exposed_timestamp);
+  EXPECT_FALSE(media_frame->metadata().capture_begin_time.has_value());
+
+  ScriptPromiseTester write_tester(
+      script_state,
+      writer->write(script_state, video_frame_chunk, exception_state));
+  write_tester.WaitUntilSettled();
+  EXPECT_EQ(media_frame->timestamp().InMicroseconds(), web_exposed_timestamp);
+  // Capture timestamp expected because the timestamp looks like a capture time.
   ASSERT_TRUE(media_frame->metadata().capture_begin_time.has_value());
   EXPECT_EQ((*media_frame->metadata().capture_begin_time - base::TimeTicks())
                 .InMicroseconds(),
             web_exposed_timestamp);
+}
+
+TEST_F(MediaStreamVideoTrackUnderlyingSinkTest,
+       DecisionToNotWriteCaptureTimeIsSticky) {
+  if (IsTooEarlyForTest()) {
+    return;
+  }
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+  auto* underlying_sink = CreateUnderlyingSink(script_state);
+  auto* writable_stream = WritableStream::CreateWithCountQueueingStrategy(
+      script_state, underlying_sink, 1u);
+  auto track = CreateTrack();
+
+  NonThrowableExceptionState exception_state;
+  auto* writer = writable_stream->getWriter(script_state, exception_state);
+
+  // Write a frame with a regular timestamp
+  {
+    VideoFrame* video_frame = nullptr;
+    ScriptValue video_frame_chunk =
+        CreateVideoFrameChunk(script_state, &video_frame);
+    int64_t web_exposed_timestamp = video_frame->timestamp();
+    scoped_refptr<media::VideoFrame> media_frame = video_frame->frame();
+    EXPECT_EQ(media_frame->timestamp().InMicroseconds(), web_exposed_timestamp);
+    EXPECT_FALSE(media_frame->metadata().capture_begin_time.has_value());
+
+    ScriptPromiseTester write_tester(
+        script_state,
+        writer->write(script_state, video_frame_chunk, exception_state));
+    write_tester.WaitUntilSettled();
+    EXPECT_EQ(media_frame->timestamp().InMicroseconds(), web_exposed_timestamp);
+    // No capture timestamp expected because the timestamp is a regular
+    // TimeDelta.
+    EXPECT_FALSE(media_frame->metadata().capture_begin_time.has_value());
+  }
+
+  // Write a frame with a timestamp that is a TimeTicks capture time.
+  {
+    VideoFrame* video_frame = nullptr;
+    ScriptValue video_frame_chunk = CreateVideoFrameChunk(
+        script_state, &video_frame,
+        /*timestamp=*/base::TimeTicks::Now() - base::TimeTicks());
+    int64_t web_exposed_timestamp = video_frame->timestamp();
+    scoped_refptr<media::VideoFrame> media_frame = video_frame->frame();
+    EXPECT_EQ(media_frame->timestamp().InMicroseconds(), web_exposed_timestamp);
+    EXPECT_FALSE(media_frame->metadata().capture_begin_time.has_value());
+
+    ScriptPromiseTester write_tester(
+        script_state,
+        writer->write(script_state, video_frame_chunk, exception_state));
+    write_tester.WaitUntilSettled();
+    EXPECT_EQ(media_frame->timestamp().InMicroseconds(), web_exposed_timestamp);
+    // Capture timestamp not expected despite the TimeTicks timestamp because
+    // the decision to not write capture times is sticky
+    EXPECT_FALSE(media_frame->metadata().capture_begin_time.has_value());
+  }
 }
 
 }  // namespace blink

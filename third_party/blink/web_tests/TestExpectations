@@ -2522,8 +2522,9 @@ crbug.com/626703 external/wpt/css/css-page/page-name-unnamed-trailing-001-print.
 crbug.com/626703 external/wpt/editing/other/insertparagraph-in-editing-host-cannot-have-div.tentative.html* [ Failure ]
 
 # Flaky output (https://crrev.com/c/5228398)
-crbug.com/626703 [ Mac ] external/wpt/mediacapture-insertable-streams/tentative/MediaStreamTrackProcessor-backpressure.https.html [ Failure ]
-crbug.com/626703 [ Mac ] external/wpt/mediacapture-insertable-streams/legacy/MediaStreamTrackProcessor-backpressure.https.html [ Failure ]
+crbug.com/626703 external/wpt/mediacapture-insertable-streams/tentative/MediaStreamTrackProcessor-backpressure.https.html [ Pass Failure ]
+crbug.com/626703 external/wpt/mediacapture-insertable-streams/legacy/MediaStreamTrackProcessor-backpressure.https.html [ Pass Failure ]
+crbug.com/626703 external/wpt/mediacapture-insertable-streams/tentative/VideoTrackGenerator.https.html [ Pass Failure ]
 
 # Flaky output on multiple platforms:
 # https://logs.chromium.org/logs/infra/buildbucket/cr-buildbucket/8757448685637289873/+/u/Import_changes_from_WPT_to_Chromium/stdout

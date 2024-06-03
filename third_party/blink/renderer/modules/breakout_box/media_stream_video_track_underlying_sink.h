@@ -82,6 +82,8 @@ class MODULES_EXPORT MediaStreamVideoTrackUnderlyingSink
       0;
   const raw_ptr<gpu::GpuMemoryBufferManager, DanglingUntriaged> gmb_manager_ = nullptr;
 
+  bool should_try_to_write_capture_time_ = true;
+
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
