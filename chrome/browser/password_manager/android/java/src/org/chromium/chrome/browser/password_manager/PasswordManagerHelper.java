@@ -376,22 +376,6 @@ public class PasswordManagerHelper {
     }
 
     /**
-     * Checks whether the sync feature is enabled, the user has chosen to sync passwords and they
-     * haven't set up a custom passphrase. The caller should make sure that the sync engine is
-     * initialized before calling this method.
-     *
-     * <p>Note that this doesn't mean that passwords are actively syncing.
-     *
-     * @param syncService the service to query about the sync status.
-     * @return true if syncing passwords is enabled without custom passphrase.
-     */
-    public static boolean hasChosenToSyncPasswordsWithNoCustomPassphrase(SyncService syncService) {
-        assert syncService.isEngineInitialized();
-        return PasswordManagerHelper.hasChosenToSyncPasswords(syncService)
-                && !syncService.isUsingExplicitPassphrase();
-    }
-
-    /**
      * Checks whether the user is actively syncing passwords without a custom passphrase. The caller
      * should make sure that the sync engine is initialized before calling this method.
      *
