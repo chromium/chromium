@@ -14,6 +14,7 @@ pub mod cvar;
 pub mod ebdt;
 pub mod eblc;
 pub mod fvar;
+pub mod gasp;
 pub mod gdef;
 pub mod glyf;
 pub mod gpos;
