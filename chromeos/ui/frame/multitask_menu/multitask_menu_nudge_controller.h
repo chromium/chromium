@@ -61,9 +61,9 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuNudgeController
     virtual void SetNudgePreferences(bool tablet_mode,
                                      int count,
                                      base::Time time) = 0;
-    // Returns true if the user has logged in for the first time. We don't want
-    // to show the nudge in this case.
-    virtual bool IsUserNew() const;
+    // Returns true if the user has logged in for the first time, or is a guest
+    // user. We don't want to show the nudge in this case.
+    virtual bool IsUserNewOrGuest() const;
 
    protected:
     Delegate();

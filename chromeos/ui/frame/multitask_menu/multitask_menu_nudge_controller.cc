@@ -127,11 +127,14 @@ MultitaskMenuNudgeController::Delegate::Delegate() {
   g_delegate_instance = this;
 }
 
-bool MultitaskMenuNudgeController::Delegate::IsUserNew() const {
+bool MultitaskMenuNudgeController::Delegate::IsUserNewOrGuest() const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  return user_manager::UserManager::IsInitialized()
-             ? user_manager::UserManager::Get()->IsCurrentUserNew()
-             : false;
+  if (!user_manager::UserManager::IsInitialized()) {
+    return false;
+  }
+
+  return user_manager::UserManager::Get()->IsCurrentUserNew() ||
+         user_manager::UserManager::Get()->IsLoggedInAsGuest();
 #else
   return false;
 #endif
@@ -165,7 +168,7 @@ void MultitaskMenuNudgeController::MaybeShowNudge(aura::Window* window) {
 void MultitaskMenuNudgeController::MaybeShowNudge(aura::Window* window,
                                                   views::View* anchor_view) {
   // Delegate could be null if the associated window was created during OOBE.
-  if (!g_delegate_instance || g_delegate_instance->IsUserNew()) {
+  if (!g_delegate_instance || g_delegate_instance->IsUserNewOrGuest()) {
     return;
   }
 
