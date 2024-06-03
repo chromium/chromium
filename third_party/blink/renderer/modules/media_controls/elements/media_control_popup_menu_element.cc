@@ -125,9 +125,10 @@ void MediaControlPopupMenuElement::SetIsWanted(bool wanted) {
 
   if (wanted) {
     ShowPopoverInternal(/*invoker*/ nullptr, /*exception_state*/ nullptr);
-    if (!RuntimeEnabledFeatures::CSSAnchorPositioningEnabled()) {
-      SetPosition();
-    }
+    // TODO(crbug.com/341741271): Remove this once anchor positioning, the
+    // anchor attribute, and the `anchor-scope` CSS property are stable enough
+    // to depend on for positioning here.
+    SetPosition();
 
     SelectFirstItem();
 
@@ -219,8 +220,9 @@ MediaControlPopupMenuElement::MediaControlPopupMenuElement(
 
 // TODO(crbug.com/1309178): This entire function and the one callsite can be
 // removed once anchor positioning is enabled by default.
+// TODO(crbug.com/341741271): Ensure all required APIs are stable, including
+// the anchor attribute and the `anchor-scope` CSS property.
 void MediaControlPopupMenuElement::SetPosition() {
-  DCHECK(!RuntimeEnabledFeatures::CSSAnchorPositioningEnabled());
   // The popup is positioned slightly on the inside of the bottom right
   // corner.
   static constexpr int kPopupMenuMarginPx = 4;
