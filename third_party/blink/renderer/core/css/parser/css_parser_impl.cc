@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_supports_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css/parser/css_variable_parser.h"
+#include "third_party/blink/renderer/core/css/parser/find_length_of_declaration_list-inl.h"
 #include "third_party/blink/renderer/core/css/parser/media_query_parser.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css/property_registry.h"
@@ -2362,43 +2363,69 @@ StyleRule* CSSParserImpl::ConsumeStyleRule(
   }
 
   DCHECK_EQ(stream.Peek().GetType(), kLeftBraceToken);
-  CSSParserTokenStream::BlockGuard guard(stream);
 
-  if (selector_vector.empty()) {
-    // Parse error, invalid selector list.
-    return nullptr;
-  }
-  if (custom_property_ambiguity) {
-    return nullptr;
-  }
-
-  // TODO(csharrison): How should we lazily parse css that needs the observer?
-  if (!observer_ && lazy_state_) {
-    DCHECK(style_sheet_);
-
-    wtf_size_t block_start_offset = stream.Offset() - 1;  // - 1 for the {.
-    guard.SkipToEndOfBlock();
-    wtf_size_t block_length = stream.Offset() - block_start_offset;
-
-    // Lazy parsing cannot deal with nested rules. We make a very quick check
-    // to see if there could possibly be any in there; if so, we need to go
-    // back to normal (non-lazy) parsing. If that happens, we've wasted some
-    // work; specifically, the SkipToEndOfBlock(), and potentially that we
-    // cannot use the CachedCSSTokenizer if that would otherwise be in use.
-    if (MayContainNestedRules(lazy_state_->SheetText(), block_start_offset,
-                              block_length)) {
-      CSSTokenizer tokenizer(lazy_state_->SheetText(), block_start_offset);
-      CSSParserTokenStream block_stream(tokenizer);
-      CSSParserTokenStream::BlockGuard sub_guard(
-          block_stream);  // Consume the {, and open the block stack.
-      return ConsumeStyleRuleContents(selector_vector, block_stream);
+  if (RuntimeEnabledFeatures::CSSLazyParsingFastPathEnabled()) {
+    if (selector_vector.empty() || custom_property_ambiguity) {
+      // Parse error, invalid selector list or ambiguous custom property.
+      CSSParserTokenStream::BlockGuard guard(stream);
+      return nullptr;
     }
 
-    return StyleRule::Create(selector_vector,
-                             MakeGarbageCollected<CSSLazyPropertyParserImpl>(
+    // TODO(csharrison): How should we lazily parse css that needs the observer?
+    if (!observer_ && lazy_state_) {
+      DCHECK(style_sheet_);
+
+      wtf_size_t len = static_cast<wtf_size_t>(
+          FindLengthOfDeclarationList(StringView(stream.RemainingText(), 1)));
+      if (len != 0) {
+        wtf_size_t block_start_offset = stream.Offset();
+        stream.SkipToEndOfBlock(len + 2);  // +2 for { and }.
+        return StyleRule::Create(
+            selector_vector, MakeGarbageCollected<CSSLazyPropertyParserImpl>(
                                  block_start_offset, lazy_state_));
+      }
+    }
+    CSSParserTokenStream::BlockGuard guard(stream);
+    return ConsumeStyleRuleContents(selector_vector, stream);
+  } else {
+    CSSParserTokenStream::BlockGuard guard(stream);
+
+    if (selector_vector.empty()) {
+      // Parse error, invalid selector list.
+      return nullptr;
+    }
+    if (custom_property_ambiguity) {
+      return nullptr;
+    }
+
+    // TODO(csharrison): How should we lazily parse css that needs the observer?
+    if (!observer_ && lazy_state_) {
+      DCHECK(style_sheet_);
+
+      wtf_size_t block_start_offset = stream.Offset() - 1;  // - 1 for the {.
+      guard.SkipToEndOfBlock();
+      wtf_size_t block_length = stream.Offset() - block_start_offset;
+
+      // Lazy parsing cannot deal with nested rules. We make a very quick check
+      // to see if there could possibly be any in there; if so, we need to go
+      // back to normal (non-lazy) parsing. If that happens, we've wasted some
+      // work; specifically, the SkipToEndOfBlock(), and potentially that we
+      // cannot use the CachedCSSTokenizer if that would otherwise be in use.
+      if (MayContainNestedRules(lazy_state_->SheetText(), block_start_offset,
+                                block_length)) {
+        CSSTokenizer tokenizer(lazy_state_->SheetText(), block_start_offset);
+        CSSParserTokenStream block_stream(tokenizer);
+        CSSParserTokenStream::BlockGuard sub_guard(
+            block_stream);  // Consume the {, and open the block stack.
+        return ConsumeStyleRuleContents(selector_vector, block_stream);
+      }
+
+      return StyleRule::Create(selector_vector,
+                               MakeGarbageCollected<CSSLazyPropertyParserImpl>(
+                                   block_start_offset, lazy_state_));
+    }
+    return ConsumeStyleRuleContents(selector_vector, stream);
   }
-  return ConsumeStyleRuleContents(selector_vector, stream);
 }
 
 StyleRule* CSSParserImpl::ConsumeStyleRuleContents(
