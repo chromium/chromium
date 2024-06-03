@@ -94,14 +94,7 @@ public class MinorModeHelper implements IdentityManager.Observer {
         int NUM_ENTRIES = 8;
     };
 
-    private static final int CAPABILITY_TIMEOUT_MS =
-            SigninFeatureMap.getInstance()
-                    .getFieldTrialParamByFeatureAsInt(
-                            SigninFeatures.MINOR_MODE_RESTRICTIONS_FOR_HISTORY_SYNC_OPT_IN,
-                            "MinorModeRestrictionsFetchDeadlineMs",
-                            1000);
-
-    private static boolean sDisableHistorySyncOptInTimeout;
+    private static boolean sDisableHistorySyncOptInTimeoutForTesting;
 
     private final long mCreated = SystemClock.elapsedRealtime();
 
@@ -115,8 +108,7 @@ public class MinorModeHelper implements IdentityManager.Observer {
     /**
      * Waits for the capability to be loaded. When this happens, the ui is updated in minor-mode
      * safe way by executing the {@link uiUpdater} callback. If the capability is not loaded in
-     * relatively short {@link CAPABILITY_TIMEOUT_MS} time then minor more is resolved with a
-     * default value.
+     * relatively short time then minor more is resolved with a default value.
      *
      * <p>Tracks the availability latency of {@link AccountCapabilities} for the signed-in primary
      * account.
@@ -189,11 +181,17 @@ public class MinorModeHelper implements IdentityManager.Observer {
         this.mPrimaryAccount = primaryAccount;
         mUiUpdater = uiUpdater;
 
-        // When the sDisableHistorySyncOptInTimeout is enabled in tests, the buttons should only be
-        // updated due to a capability change and not due to a timeout.
-        if (!sDisableHistorySyncOptInTimeout) {
-            PostTask.postDelayedTask(
-                    TaskTraits.UI_DEFAULT, this::defaultToRestricted, CAPABILITY_TIMEOUT_MS);
+        // When the sDisableHistorySyncOptInTimeoutForTesting is enabled in tests, the buttons
+        // should only be updated due to a capability change and not due to a timeout.
+        if (!sDisableHistorySyncOptInTimeoutForTesting) {
+            int timeoutMs =
+                    SigninFeatureMap.getInstance()
+                            .getFieldTrialParamByFeatureAsInt(
+                                    SigninFeatures.MINOR_MODE_RESTRICTIONS_FOR_HISTORY_SYNC_OPT_IN,
+                                    "MinorModeRestrictionsFetchDeadlineMs",
+                                    1000);
+
+            PostTask.postDelayedTask(TaskTraits.UI_DEFAULT, this::defaultToRestricted, timeoutMs);
         }
     }
 
@@ -248,6 +246,6 @@ public class MinorModeHelper implements IdentityManager.Observer {
 
     /** Disable timeout to show sync buttons on FRE for testing */
     public static void disableTimeoutForTesting() {
-        sDisableHistorySyncOptInTimeout = true;
+        sDisableHistorySyncOptInTimeoutForTesting = true;
     }
 }
