@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/fonts/win/dwrite_font_format_support.h"
 
 #include "skia/ext/font_utils.h"
+#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/core/SkFontStyle.h"
 #include "third_party/skia/include/core/SkTypeface.h"
@@ -22,17 +23,19 @@ bool DWriteVersionSupportsVariations() {
   // and we know DWrite on this system does not support OpenType variations. If
   // the response is 0 or larger, it means, DWrite was able to determine if this
   // is a variable font or not and Variations are supported.
-  static bool variations_supported = []() {
-    sk_sp<SkFontMgr> fm = skia::DefaultFontMgr();
-    sk_sp<SkTypeface> probe_typeface =
-        fm->legacyMakeTypeface(nullptr, SkFontStyle());
-    if (!probe_typeface)
-      return false;
-    int variation_design_position_result =
-        probe_typeface->getVariationDesignPosition(nullptr, 0);
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(
+      bool, variations_supported, ([]() {
+        sk_sp<SkFontMgr> fm = skia::DefaultFontMgr();
+        sk_sp<SkTypeface> probe_typeface =
+            fm->legacyMakeTypeface(nullptr, SkFontStyle());
+        if (!probe_typeface) {
+          return false;
+        }
+        int variation_design_position_result =
+            probe_typeface->getVariationDesignPosition(nullptr, 0);
 
-    return variation_design_position_result > -1;
-  }();
+        return variation_design_position_result > -1;
+      }()));
   return variations_supported;
 }
 
