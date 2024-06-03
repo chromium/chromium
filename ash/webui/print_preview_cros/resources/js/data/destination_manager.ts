@@ -2,13 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {EventTracker} from '//resources/js/event_tracker.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
 import {createCustomEvent} from '../utils/event_utils.js';
 import {getDestinationProvider} from '../utils/mojo_data_providers.js';
 import {Destination, DestinationProvider, FakeDestinationObserverInterface, SessionContext, type UiManagedDestinationFields} from '../utils/print_preview_cros_app_types.js';
+import {isValidDestination} from '../utils/validation_utils.js';
 
 import {PDF_DESTINATION} from './destination_constants.js';
+import {PRINT_TICKET_MANAGER_TICKET_CHANGED, PrintTicketManager} from './print_ticket_manager.js';
 
 /**
  * @fileoverview
@@ -50,6 +53,7 @@ export class DestinationManager extends EventTarget implements
   }
 
   static resetInstanceForTesting(): void {
+    DestinationManager.instance?.eventTracker.removeAll();
     DestinationManager.instance = null;
   }
 
@@ -62,6 +66,9 @@ export class DestinationManager extends EventTarget implements
   private initialDestinationsLoaded = false;
   private state = DestinationManagerState.NOT_LOADED;
   private sessionContext: SessionContext;
+  private eventTracker = new EventTracker();
+  // Managers need to be set after construction to avoid circular dependencies.
+  private printTicketManager: PrintTicketManager;
 
   // `initializeSession` is only intended to be called once from the
   // `PrintPreviewCrosAppController`.
@@ -71,6 +78,13 @@ export class DestinationManager extends EventTarget implements
     assert(
         !this.sessionContext, 'SessionContext should only be configured once');
     this.sessionContext = sessionContext;
+
+    // Setup event listeners.
+    this.printTicketManager = PrintTicketManager.getInstance();
+    this.eventTracker.add(
+        this.printTicketManager, PRINT_TICKET_MANAGER_TICKET_CHANGED,
+        () => this.onPrintTicketChanged());
+
     this.fetchInitialDestinations();
     this.dispatchEvent(
         createCustomEvent(DESTINATION_MANAGER_SESSION_INITIALIZED));
@@ -207,6 +221,23 @@ export class DestinationManager extends EventTarget implements
     this.addOrUpdateDestination(PDF_DESTINATION);
   }
 
+  // Handles active destination updates triggered by the UI. If update is to a
+  // different property (active destination already matches the print ticket)
+  // do not attempt to update the active destination.
+  private onPrintTicketChanged(): void {
+    assert(this.printTicketManager);
+    const currentPrintTicket = this.printTicketManager.getPrintTicket();
+    assert(currentPrintTicket);
+    const nextActiveDestinationId = currentPrintTicket.destination || '';
+    if (nextActiveDestinationId === this.activeDestinationId) {
+      return;
+    }
+    assert(
+        isValidDestination(nextActiveDestinationId),
+        'PrintTicket won\'t be set to an invalid ID');
+    this.updateActiveDestination(nextActiveDestinationId);
+  }
+
   // Determines the best fitting active destination from the available
   // destinations. Best fitting destination is determined in this order:
   //  1. The most recently used available destination from user preferences.
@@ -245,7 +276,7 @@ export class DestinationManager extends EventTarget implements
     destination.printerManuallySelected = uiFields.printerManuallySelected;
   }
 
-  // Updates destination ID and triggers event.
+  // Updates active destination ID and triggers event.
   private updateActiveDestination(destinationId: string): void {
     this.activeDestinationId = destinationId;
     this.dispatchEvent(

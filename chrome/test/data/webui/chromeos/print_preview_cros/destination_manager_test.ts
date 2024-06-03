@@ -6,8 +6,10 @@ import 'chrome://os-print/js/data/destination_manager.js';
 
 import {PDF_DESTINATION} from 'chrome://os-print/js/data/destination_constants.js';
 import {DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED, DESTINATION_MANAGER_DESTINATIONS_CHANGED, DESTINATION_MANAGER_SESSION_INITIALIZED, DESTINATION_MANAGER_STATE_CHANGED, DestinationManager, DestinationManagerState} from 'chrome://os-print/js/data/destination_manager.js';
+import {PRINT_TICKET_MANAGER_SESSION_INITIALIZED, PRINT_TICKET_MANAGER_TICKET_CHANGED, PrintTicketManager} from 'chrome://os-print/js/data/print_ticket_manager.js';
 import {FakeDestinationProvider, GET_LOCAL_DESTINATIONS_METHOD, OBSERVE_DESTINATION_CHANGES_METHOD} from 'chrome://os-print/js/fakes/fake_destination_provider.js';
 import {FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL} from 'chrome://os-print/js/fakes/fake_print_preview_page_handler.js';
+import {createCustomEvent} from 'chrome://os-print/js/utils/event_utils.js';
 import {getDestinationProvider} from 'chrome://os-print/js/utils/mojo_data_providers.js';
 import {Destination, PrinterStatusReason, PrinterType} from 'chrome://os-print/js/utils/print_preview_cros_app_types.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
@@ -42,6 +44,22 @@ suite('DestinationManager', () => {
     mockTimer.uninstall();
     mockController.reset();
   });
+
+  function waitForInitialActiveDestinationSet(): Promise<void> {
+    const activeDestChanged = eventToPromise(
+        DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED, instance);
+    instance.initializeSession(FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL);
+    mockTimer.tick(testDelay);
+    return activeDestChanged;
+  }
+
+  function waitForPrintTicketManagerInitialized(): Promise<void> {
+    const printTicketManager = PrintTicketManager.getInstance();
+    const initEvent = eventToPromise(
+        PRINT_TICKET_MANAGER_SESSION_INITIALIZED, printTicketManager);
+    printTicketManager.initializeSession(FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL);
+    return initEvent;
+  }
 
   test('is a singleton', () => {
     const instance1 = DestinationManager.getInstance();
@@ -359,5 +377,75 @@ suite('DestinationManager', () => {
         assertFalse(
             instance.destinationExists('unknownDestinationId'),
             'Unknown key should not exist');
+      });
+
+  // Verify onPrintTicketChanged handler called when event dispatched.
+  test(
+      `onPrintTicketChanged handler called when ${
+          PRINT_TICKET_MANAGER_TICKET_CHANGED} emitted`,
+      async () => {
+        // Initialize session to add event listener.
+        instance.initializeSession(FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL);
+        const onPrintTicketChangedFn =
+            mockController.createFunctionMock(instance, 'onPrintTicketChanged');
+        onPrintTicketChangedFn.addExpectation();
+        PrintTicketManager.getInstance().dispatchEvent(
+            createCustomEvent(PRINT_TICKET_MANAGER_TICKET_CHANGED));
+        onPrintTicketChangedFn.verifyMock();
+      });
+
+  // Verify active destination updates if updatePrintTicket changes the
+  // destination in the ticket.
+  test(
+      `active destination updated by ${PRINT_TICKET_MANAGER_TICKET_CHANGED}` +
+          'handler',
+      async () => {
+        // Ensure active destination set.
+        const testDestination = createTestDestination();
+        instance.setDestinationForTesting(testDestination);
+        await waitForInitialActiveDestinationSet();
+        await waitForPrintTicketManagerInitialized();
+        assertDeepEquals(
+            PDF_DESTINATION, instance.getActiveDestination(),
+            'Fallback active destination');
+
+        // Simulate changing active destination from UI.
+        const activeDestChanged = eventToPromise(
+            DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED, instance);
+        assertTrue(PrintTicketManager.getInstance().setPrintTicketDestination(
+            testDestination.id));
+        await activeDestChanged;
+
+        assertDeepEquals(
+            testDestination, instance.getActiveDestination(),
+            'Active destination updated');
+      });
+
+  // Verify no event fired if active destination matches print ticket
+  // destination (aka change was for different property).
+  test(
+      `active destination not updated if active ID matches ticket ID`,
+      async () => {
+        // Ensure active destination set.
+        await waitForInitialActiveDestinationSet();
+        await waitForPrintTicketManagerInitialized();
+        assertDeepEquals(
+            PDF_DESTINATION, instance.getActiveDestination(),
+            'Fallback active destination');
+        const printTicketManager = PrintTicketManager.getInstance();
+        assertEquals(
+            PDF_DESTINATION.id,
+            printTicketManager.getPrintTicket()!.destination);
+
+        // Simulate print ticket update that does not change the destination ID.
+        const ticketChanged = eventToPromise(
+            PRINT_TICKET_MANAGER_TICKET_CHANGED, printTicketManager);
+        printTicketManager.dispatchEvent(
+            createCustomEvent(PRINT_TICKET_MANAGER_TICKET_CHANGED));
+        await ticketChanged;
+
+        assertDeepEquals(
+            PDF_DESTINATION, instance.getActiveDestination(),
+            'Active destination not updated');
       });
 });
