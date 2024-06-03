@@ -74,17 +74,12 @@ void EmbeddedWorkerInstanceClientImpl::StartWorker(
   } else {
     // When the feature is not enabled, `cors_exempt_header_list_` and
     // `params->cors_exempt_header_list` should have same list of headers.
-    if (cors_exempt_header_list_ != params->cors_exempt_header_list) {
-      static bool has_dumped_without_crashing = false;
-      if (!has_dumped_without_crashing) {
-        has_dumped_without_crashing = true;
-        SCOPED_CRASH_KEY_NUMBER("SWInit", "header_list_size",
-                                cors_exempt_header_list_.size());
-        SCOPED_CRASH_KEY_NUMBER("SWInit", "header_list_size_via_mojo",
-                                params->cors_exempt_header_list.size());
-        base::debug::DumpWithoutCrashing();
-      }
-    }
+    //
+    // TODO(crbug.com/40753993): The length of `cors_exempt_header_list_` is
+    // often zero. We expect the header list is successfully passed from the
+    // storage partition. After investigating when the empty list is passed and
+    // what the intended behavior is, add CHECK(cors_exempt_header_list_ ==
+    // params->cors_exempt_header_list) here if it's suitable.
   }
 
   std::unique_ptr<blink::WebEmbeddedWorkerStartData> start_data =
