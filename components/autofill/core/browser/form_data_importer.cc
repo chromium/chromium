@@ -15,12 +15,14 @@
 #include <string>
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/address_profile_save_manager.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
@@ -46,12 +48,13 @@
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/profile_import_metrics.h"
 #include "components/autofill/core/browser/payments/credit_card_save_manager.h"
+#include "components/autofill/core/browser/payments/iban_save_manager.h"
+#include "components/autofill/core/browser/payments/local_card_migration_manager.h"
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/profile_requirement_utils.h"
 #include "components/autofill/core/browser/validation.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -161,42 +164,35 @@ FormDataImporter::ExtractedFormData::operator=(
 FormDataImporter::ExtractedFormData::~ExtractedFormData() = default;
 
 FormDataImporter::FormDataImporter(AutofillClient* client,
-                                   PersonalDataManager* personal_data_manager,
                                    history::HistoryService* history_service,
                                    const std::string& app_locale)
-    : client_(client),
-      credit_card_save_manager_(
-          std::make_unique<CreditCardSaveManager>(client,
-                                                  app_locale,
-                                                  personal_data_manager)),
-      address_profile_save_manager_(
-          std::make_unique<AddressProfileSaveManager>(client,
-                                                      personal_data_manager)),
+    : client_(CHECK_DEREF(client)),
+      credit_card_save_manager_(std::make_unique<CreditCardSaveManager>(
+          client,
+          app_locale,
+          client_->GetPersonalDataManager())),
+      address_profile_save_manager_(std::make_unique<AddressProfileSaveManager>(
+          client,
+          client_->GetPersonalDataManager())),
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
       iban_save_manager_(
-          std::make_unique<IbanSaveManager>(personal_data_manager, client)),
-      local_card_migration_manager_(
-          std::make_unique<LocalCardMigrationManager>(client,
-                                                      app_locale,
-                                                      personal_data_manager)),
+          std::make_unique<IbanSaveManager>(client_->GetPersonalDataManager(),
+                                            client)),
+      local_card_migration_manager_(std::make_unique<LocalCardMigrationManager>(
+          client,
+          app_locale,
+          client_->GetPersonalDataManager())),
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-      personal_data_manager_(personal_data_manager),
       app_locale_(app_locale),
       multistep_importer_(app_locale,
                           client_->GetVariationConfigCountryCode()) {
-  if (personal_data_manager_) {
-    personal_data_manager_->address_data_manager().AddObserver(this);
-  }
+  address_data_manager_observation_.Observe(&address_data_manager());
   if (history_service) {
     history_service_observation_.Observe(history_service);
   }
 }
 
-FormDataImporter::~FormDataImporter() {
-  if (personal_data_manager_) {
-    personal_data_manager_->address_data_manager().RemoveObserver(this);
-  }
-}
+FormDataImporter::~FormDataImporter() = default;
 
 FormDataImporter::AddressProfileImportCandidate::
     AddressProfileImportCandidate() = default;
@@ -250,9 +246,8 @@ bool FormDataImporter::ComplementCountry(AutofillProfile& profile,
   if (profile.HasRawInfo(ADDRESS_HOME_COUNTRY)) {
     return false;
   }
-  const std::string fallback = personal_data_manager_->address_data_manager()
-                                   .GetDefaultCountryCodeForNewAddress()
-                                   .value();
+  const std::string fallback =
+      address_data_manager().GetDefaultCountryCodeForNewAddress().value();
   if (import_log_buffer) {
     *import_log_buffer
         << LogMessage::kImportAddressProfileComplementedCountryCode << fallback
@@ -871,13 +866,12 @@ std::optional<CreditCard> FormDataImporter::ExtractCreditCard(
   // Attempt to merge with an existing local credit card without presenting a
   // prompt.
   for (const CreditCard* local_card :
-       personal_data_manager_->payments_data_manager().GetLocalCreditCards()) {
+       payments_data_manager().GetLocalCreditCards()) {
     // Make a local copy so that the data in `local_credit_cards_` isn't
     // modified directly by the UpdateFromImportedCard() call.
     CreditCard maybe_updated_card = *local_card;
     if (maybe_updated_card.UpdateFromImportedCard(candidate, app_locale_)) {
-      personal_data_manager_->payments_data_manager().UpdateCreditCard(
-          maybe_updated_card);
+      payments_data_manager().UpdateCreditCard(maybe_updated_card);
       credit_card_import_type_ = CreditCardImportType::kLocalCard;
       // Update `candidate` to reflect all the details of the updated card.
       // `UpdateFromImportedCard` has updated all values except for the
@@ -901,8 +895,7 @@ std::optional<CreditCard> FormDataImporter::TryMatchingExistingServerCard(
   // `candidate`, and we treat it as a new card.
   bool same_last_four_but_different_expiration_date = false;
 
-  for (auto* server_card :
-       personal_data_manager_->payments_data_manager().GetServerCreditCards()) {
+  for (auto* server_card : payments_data_manager().GetServerCreditCards()) {
     if (!server_card->HasSameNumberAs(candidate)) {
       continue;
     }
@@ -982,7 +975,7 @@ std::optional<Iban> FormDataImporter::ExtractIban(const FormStructure& form) {
   // with IBANs as a concept. We set the pref so that even if the user travels
   // to a country where IBAN functionality is not typically used, they will
   // still be able to save new IBANs from the settings page using this pref.
-  personal_data_manager_->payments_data_manager().SetAutofillHasSeenIban();
+  payments_data_manager().SetAutofillHasSeenIban();
 
   return candidate_iban;
 }
@@ -1137,11 +1130,7 @@ bool FormDataImporter::ShouldOfferCreditCardSave(
 }
 
 void FormDataImporter::OnAddressDataChanged() {
-  // `personal_data_manager_` cannot be null: The ADM is owned by the PDM, so
-  // the callback couldn't have been issued without a PDM.
-  DCHECK(personal_data_manager_);
-  multistep_importer_.OnAddressDataChanged(
-      personal_data_manager_->address_data_manager());
+  multistep_importer_.OnAddressDataChanged(address_data_manager());
 }
 
 void FormDataImporter::OnHistoryDeletions(
@@ -1157,6 +1146,14 @@ void FormDataImporter::
             payment_method_type_if_non_interactive_authentication_flow_completed) {
   payment_method_type_if_non_interactive_authentication_flow_completed_ =
       payment_method_type_if_non_interactive_authentication_flow_completed;
+}
+
+AddressDataManager& FormDataImporter::address_data_manager() {
+  return client_->GetPersonalDataManager()->address_data_manager();
+}
+
+PaymentsDataManager& FormDataImporter::payments_data_manager() {
+  return client_->GetPersonalDataManager()->payments_data_manager();
 }
 
 }  // namespace autofill

@@ -169,7 +169,7 @@ signin::IdentityManager* ChromeAutofillClientIOS::GetIdentityManager() {
 FormDataImporter* ChromeAutofillClientIOS::GetFormDataImporter() {
   if (!form_data_importer_) {
     form_data_importer_ = std::make_unique<FormDataImporter>(
-        this, personal_data_manager_,
+        this,
         ios::HistoryServiceFactory::GetForBrowserState(
             browser_state_, ServiceAccessType::EXPLICIT_ACCESS),
         GetApplicationContext()->GetApplicationLocale());

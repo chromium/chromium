@@ -168,7 +168,6 @@ class TestAutofillClientTemplate : public T {
     if (!form_data_importer_) {
       set_test_form_data_importer(std::make_unique<FormDataImporter>(
           /*client=*/this,
-          /*personal_data_manager=*/GetPersonalDataManager(),
           /*history_service=*/nullptr,
           /*app_locale=*/"en-US"));
     }

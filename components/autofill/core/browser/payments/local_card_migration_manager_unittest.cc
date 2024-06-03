@@ -28,6 +28,7 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/local_card_migration_metrics.h"
+#include "components/autofill/core/browser/payments/iban_save_manager.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/payments/test_credit_card_save_manager.h"
@@ -91,7 +92,7 @@ class LocalCardMigrationManagerTest : public testing::Test {
         new TestFormDataImporter(
             &autofill_client_,
             std::unique_ptr<CreditCardSaveManager>(credit_card_save_manager_),
-            /*iban_save_manager=*/nullptr, &personal_data(), "en-US",
+            /*iban_save_manager=*/nullptr, "en-US",
             std::unique_ptr<LocalCardMigrationManager>(
                 local_card_migration_manager_));
     autofill_client_.set_test_form_data_importer(

@@ -557,12 +557,6 @@ class FormDataImporterTest : public testing::Test {
     personal_data_manager_->SetPrefService(prefs_.get());
     personal_data_manager_->SetSyncServiceForTest(&sync_service_);
 
-    // Init the `form_data_importer()` with `personal_data_manager_`.
-    autofill_client_->set_test_form_data_importer(
-        std::make_unique<FormDataImporter>(
-            autofill_client_.get(), personal_data_manager_.get(),
-            /*history_service=*/nullptr, kLocale));
-
     auto virtual_card_enrollment_manager =
         std::make_unique<MockVirtualCardEnrollmentManager>(
             nullptr, nullptr, autofill_client_.get());

@@ -333,7 +333,7 @@ FormDataImporter* ChromeAutofillClient::GetFormDataImporter() {
     Profile* profile =
         Profile::FromBrowserContext(web_contents()->GetBrowserContext());
     form_data_importer_ = std::make_unique<FormDataImporter>(
-        this, GetPersonalDataManager(),
+        this,
         HistoryServiceFactory::GetForProfile(
             profile, ServiceAccessType::EXPLICIT_ACCESS),
         GetPersonalDataManager()->app_locale());

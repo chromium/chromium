@@ -17,25 +17,28 @@
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/address_data_manager.h"
-#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_profile_import_process.h"
 #include "components/autofill/core/browser/form_data_importer_utils.h"
 #include "components/autofill/core/browser/form_structure.h"
-#include "components/autofill/core/browser/payments/iban_save_manager.h"
-#include "components/autofill/core/browser/payments/local_card_migration_manager.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
+
+namespace history {
+class HistoryService;
+}  // namespace history
 
 namespace autofill {
 
 class AddressProfileSaveManager;
+class AutofillClient;
 class CreditCardSaveManager;
+class IbanSaveManager;
+class LocalCardMigrationManager;
+class PaymentsDataManager;
 enum class NonInteractivePaymentMethodType;
 
 // Manages logic for importing address profiles and credit card information from
-// web forms into the user's Autofill profile via the PersonalDataManager.
-// Owned by `ChromeAutofillClient`.
+// web forms into the user's Autofill profile via the `AddressDataManager` and
+// the `PaymentsDataManager`. Owned by `AutofillClient` implementations.
 class FormDataImporter : public AddressDataManager::Observer,
                          public history::HistoryServiceObserver {
  public:
@@ -60,7 +63,6 @@ class FormDataImporter : public AddressDataManager::Observer,
 
   // The parameters should outlive the FormDataImporter.
   FormDataImporter(AutofillClient* client,
-                   PersonalDataManager* personal_data_manager,
                    history::HistoryService* history_service,
                    const std::string& app_locale);
 
@@ -69,10 +71,9 @@ class FormDataImporter : public AddressDataManager::Observer,
 
   ~FormDataImporter() override;
 
-  // Imports the form data, submitted by the user, into
-  // `personal_data_manager_`. If a new credit card was detected and
-  // `payment_methods_autofill_enabled` is set to `true`, also begins the
-  // process to offer local or upload credit card save.
+  // Imports the form data submitted by the user. If a new credit card was
+  // detected and `payment_methods_autofill_enabled` is set to `true`, also
+  // begins the process to offer local or upload credit card save.
   void ImportAndProcessFormData(const FormStructure& submitted_form,
                                 bool profile_autofill_enabled,
                                 bool payment_methods_autofill_enabled);
@@ -316,8 +317,12 @@ class FormDataImporter : public AddressDataManager::Observer,
   // `kAutofillRemoveInaccessibleProfileValues` is enabled.
   void RemoveInaccessibleProfileValues(AutofillProfile& profile);
 
-  // The associated autofill client. Weak reference.
-  raw_ptr<AutofillClient> client_;
+  AddressDataManager& address_data_manager();
+
+  PaymentsDataManager& payments_data_manager();
+
+  // The associated autofill client.
+  const raw_ref<AutofillClient> client_;
 
   // Responsible for managing credit card save flows (local or upload).
   std::unique_ptr<CreditCardSaveManager> credit_card_save_manager_;
@@ -333,13 +338,11 @@ class FormDataImporter : public AddressDataManager::Observer,
   std::unique_ptr<LocalCardMigrationManager> local_card_migration_manager_;
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
-  // The personal data manager, used to save and load personal data to/from the
-  // web database.  This is overridden by the BrowserAutofillManagerTest.
-  // Weak reference.
-  raw_ptr<PersonalDataManager> personal_data_manager_;
-
   base::ScopedObservation<history::HistoryService, HistoryServiceObserver>
       history_service_observation_{this};
+
+  base::ScopedObservation<AddressDataManager, AddressDataManager::Observer>
+      address_data_manager_observation_{this};
 
   // Represents the type of the credit card import candidate from the submitted
   // form. It will be used to determine whether to offer upload save or card

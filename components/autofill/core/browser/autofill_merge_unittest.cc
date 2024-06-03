@@ -27,8 +27,8 @@
 #include "components/autofill/core/browser/form_data_importer.h"
 #include "components/autofill/core/browser/form_data_importer_test_api.h"
 #include "components/autofill/core/browser/form_structure.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
+#include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_data.h"
 #include "testing/data_driven_testing/data_driven_test.h"
@@ -145,10 +145,14 @@ class AutofillMergeTest : public testing::DataDrivenTest,
   // sequentially, and fills |merged_profiles| with the serialized result.
   void MergeProfiles(const std::string& profiles, std::string* merged_profiles);
 
+  TestAddressDataManager& test_address_data_manager() {
+    return autofill_client_.GetPersonalDataManager()
+        ->test_address_data_manager();
+  }
+
   base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
   TestAutofillClient autofill_client_;
-  TestPersonalDataManager personal_data_;
   std::unique_ptr<FormDataImporter> form_data_importer_;
 };
 
@@ -159,10 +163,9 @@ AutofillMergeTest::~AutofillMergeTest() = default;
 
 void AutofillMergeTest::SetUp() {
   test::DisableSystemServices(nullptr);
-  test_api(personal_data_.address_data_manager())
-      .set_auto_accept_address_imports(true);
+  test_api(test_address_data_manager()).set_auto_accept_address_imports(true);
   form_data_importer_ = std::make_unique<FormDataImporter>(
-      &autofill_client_, &personal_data_, /*history_service=*/nullptr, "en");
+      &autofill_client_, /*history_service=*/nullptr, "en");
   scoped_feature_list_.InitWithFeatures(
       {features::kAutofillConsiderPhoneNumberSeparatorsValidLabels,
        features::kAutofillEnableSupportForPhoneNumberTrunkTypes,
@@ -182,7 +185,7 @@ void AutofillMergeTest::GenerateResults(const std::string& input,
 void AutofillMergeTest::MergeProfiles(const std::string& profiles,
                                       std::string* merged_profiles) {
   // Start with no saved profiles.
-  personal_data_.test_address_data_manager().ClearProfiles();
+  test_address_data_manager().ClearProfiles();
 
   // Create a test form.
   FormData form;
@@ -249,7 +252,7 @@ void AutofillMergeTest::MergeProfiles(const std::string& profiles,
   }
 
   std::vector<const AutofillProfile*> imported_profiles =
-      personal_data_.address_data_manager().GetProfiles();
+      test_address_data_manager().GetProfiles();
   // To ensure a consistent order with the output files, sort the profiles by
   // modification date. This corresponds to the order in which the profiles
   // were imported (or updated).

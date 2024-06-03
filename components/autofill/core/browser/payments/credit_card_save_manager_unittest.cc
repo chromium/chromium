@@ -34,6 +34,7 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #include "components/autofill/core/browser/payments/client_behavior_constants.h"
+#include "components/autofill/core/browser/payments/iban_save_manager.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/payments/test_credit_card_save_manager.h"
@@ -227,7 +228,7 @@ class CreditCardSaveManagerTest : public testing::Test {
         std::make_unique<TestFormDataImporter>(
             &autofill_client_,
             std::unique_ptr<CreditCardSaveManager>(credit_card_save_manager_),
-            /*iban_save_manager=*/nullptr, &personal_data(), "en-US"));
+            /*iban_save_manager=*/nullptr, "en-US"));
     autofill_client_.GetStrikeDatabase();
     browser_autofill_manager_ =
         std::make_unique<TestBrowserAutofillManager>(autofill_driver_.get());
