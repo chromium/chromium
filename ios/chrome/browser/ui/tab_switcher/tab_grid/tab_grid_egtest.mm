@@ -2426,9 +2426,17 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 // Tests "search recent tabs" and "search open tabs" suggested actions switch
 // the tab grid page correctly while staying in the search mode.
 - (void)testSearchSuggestedActionsPageSwitch {
+  // When Tab Groups is the third panel (i.e. when Tab Group Sync is enabled),
+  // Recent Tabs is not reachable from the Tab Grid. So the test flow is not
+  // supported with Tab Group Sync enabled.
+  if ([ChromeEarlGrey isTabGroupSyncEnabled]) {
+    EARL_GREY_TEST_SKIPPED(@"Recent Tabs is not available in Tab Grid when Tab "
+                           @"Group Sync is enabled.");
+  }
+
   [self loadTestURLsInNewTabs];
   [ChromeEarlGreyUI openTabGrid];
-  // Enter search mode & perform a seach.
+  // Enter search mode & perform a search.
   [[EarlGrey selectElementWithMatcher:TabGridSearchTabsButton()]
       performAction:grey_tap()];
 
