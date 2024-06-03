@@ -6028,6 +6028,16 @@ domain Network
       # Set if another request triggered this request (e.g. preflight).
       optional RequestId requestId
 
+  # cookiePartitionKey object
+  # The representation of the components of the key that are created by the cookiePartitionKey class contained in net/cookies/cookie_partition_key.h.
+  experimental type CookiePartitionKey extends object
+    properties
+      # The site of the top-level URL the browser was visiting at the start
+      # of the request to the endpoint that set the cookie.
+      string topLevelSite
+      # Indicates if the cookie has any ancestors that are cross-site to the topLevelSite.
+      boolean hasCrossSiteAncestor
+
   # Cookie object
   type Cookie extends object
     properties
@@ -6061,9 +6071,8 @@ domain Network
       # An unspecified port value allows protocol clients to emulate legacy cookie scope for the port.
       # This is a temporary ability and it will be removed in the future.
       experimental integer sourcePort
-      # Cookie partition key. The site of the top-level URL the browser was visiting at the start
-      # of the request to the endpoint that set the cookie.
-      experimental optional string partitionKey
+      # Cookie partition key. 
+      experimental optional CookiePartitionKey partitionKey
       # True if cookie partition key is opaque.
       experimental optional boolean partitionKeyOpaque
 
@@ -6279,10 +6288,8 @@ domain Network
       # An unspecified port value allows protocol clients to emulate legacy cookie scope for the port.
       # This is a temporary ability and it will be removed in the future.
       experimental optional integer sourcePort
-      # Cookie partition key. The site of the top-level URL the browser was visiting at the start
-      # of the request to the endpoint that set the cookie.
-      # If not set, the cookie will be set as not partitioned.
-      experimental optional string partitionKey
+      # Cookie partition key. If not set, the cookie will be set as not partitioned.
+      experimental optional CookiePartitionKey partitionKey
 
   # Authorization challenge for HTTP status code 401 or 407.
   experimental type AuthChallenge extends object
@@ -6485,9 +6492,9 @@ domain Network
       optional string domain
       # If specified, deletes only cookies with the exact path.
       optional string path
-      # If specified, deletes only cookies with the the given name and partitionKey where domain
-      # matches provided URL.
-      experimental optional string partitionKey
+      # If specified, deletes only cookies with the the given name and partitionKey where 
+      # where all partition key attributes match the cookie partition key attribute.
+      experimental optional CookiePartitionKey partitionKey
 
   # Disables network tracking, prevents network events from being sent to the client.
   command disable
@@ -6664,10 +6671,8 @@ domain Network
       # An unspecified port value allows protocol clients to emulate legacy cookie scope for the port.
       # This is a temporary ability and it will be removed in the future.
       experimental optional integer sourcePort
-      # Cookie partition key. The site of the top-level URL the browser was visiting at the start
-      # of the request to the endpoint that set the cookie.
-      # If not set, the cookie will be set as not partitioned.
-      experimental optional string partitionKey
+      # Cookie partition key. If not set, the cookie will be set as not partitioned.
+      experimental optional CookiePartitionKey partitionKey
     returns
       # Always set to true. If an error occurs, the response indicates protocol error.
       deprecated boolean success
@@ -7059,7 +7064,7 @@ domain Network
       optional string headersText
       # The cookie partition key that will be used to store partitioned cookies set in this response.
       # Only sent when partitioned cookies are enabled.
-      optional string cookiePartitionKey
+      experimental optional CookiePartitionKey cookiePartitionKey
       # True if partitioned cookies are enabled, but the partition key is not serializable to string.
       optional boolean cookiePartitionKeyOpaque
       # A list of cookies which should have been blocked by 3PCD but are exempted and stored from
