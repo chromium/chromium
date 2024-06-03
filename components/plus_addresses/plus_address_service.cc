@@ -266,6 +266,13 @@ void PlusAddressService::OnGetAffiliatedPlusProfiles(
         SuggestionType::kCreateNewPlusAddress);
     RecordAutofillSuggestionEvent(AutofillPlusAddressDelegate::SuggestionEvent::
                                       kCreateNewPlusAddressSuggested);
+    if constexpr (!BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)) {
+      if (base::FeatureList::IsEnabled(features::kPlusAddressUIRedesign)) {
+        create_plus_address_suggestion.labels = {
+            {Suggestion::Text(l10n_util::GetStringUTF16(
+                IDS_PLUS_ADDRESS_CREATE_SUGGESTION_SECONDARY_TEXT))}};
+      }
+    }
     create_plus_address_suggestion.icon = Suggestion::Icon::kPlusAddress;
     std::move(callback).Run({std::move(create_plus_address_suggestion)});
     return;
@@ -277,6 +284,13 @@ void PlusAddressService::OnGetAffiliatedPlusProfiles(
     Suggestion suggestion =
         Suggestion(base::UTF8ToUTF16(profile.plus_address),
                    SuggestionType::kFillExistingPlusAddress);
+    // TODO(b/343153116): Implement iOS labels as well.
+    if constexpr (!BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)) {
+      if (base::FeatureList::IsEnabled(features::kPlusAddressUIRedesign)) {
+        suggestion.labels = {{Suggestion::Text(l10n_util::GetStringUTF16(
+            IDS_PLUS_ADDRESS_FILL_SUGGESTION_SECONDARY_TEXT))}};
+      }
+    }
     suggestion.icon = Suggestion::Icon::kPlusAddress;
 
     // Only suggest filling a plus address whose prefix matches the field's

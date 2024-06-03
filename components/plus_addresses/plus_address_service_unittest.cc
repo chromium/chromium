@@ -59,7 +59,9 @@ using autofill::AutofillSuggestionTriggerSource;
 using autofill::EqualsSuggestion;
 using autofill::Suggestion;
 using autofill::SuggestionType;
+using ::testing::AllOf;
 using ::testing::ElementsAre;
+using ::testing::Field;
 using ::testing::IsEmpty;
 using ::testing::Optional;
 
@@ -70,9 +72,19 @@ auto IsSingleCreatePlusAddressSuggestion() {
 }
 
 auto IsSingleFillPlusAddressSuggestion(std::string_view address) {
-  return ElementsAre(EqualsSuggestion(SuggestionType::kFillExistingPlusAddress,
-                                      /*main_text=*/base::UTF8ToUTF16(address),
-                                      Suggestion::Icon::kPlusAddress));
+  std::vector<std::vector<Suggestion::Text>> labels;
+  if constexpr (!BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)) {
+    if (base::FeatureList::IsEnabled(
+            plus_addresses::features::kPlusAddressUIRedesign)) {
+      labels = {{Suggestion::Text(l10n_util::GetStringUTF16(
+          IDS_PLUS_ADDRESS_FILL_SUGGESTION_SECONDARY_TEXT))}};
+    }
+  }
+  return ElementsAre(
+      AllOf(EqualsSuggestion(SuggestionType::kFillExistingPlusAddress,
+                             /*main_text=*/base::UTF8ToUTF16(address),
+                             Suggestion::Icon::kPlusAddress),
+            Field(&Suggestion::labels, labels)));
 }
 
 url::Origin OriginFromFacet(const plus_addresses::PlusProfile::facet_t& facet) {
@@ -1274,6 +1286,26 @@ TEST_F(PlusAddressSuggestionsTest, SuggestionsOnPasswordForms) {
       IsSingleFillPlusAddressSuggestion(profile.plus_address)));
   EXPECT_TRUE(get_suggestions_for_form_type(
       kSignupForm, IsSingleFillPlusAddressSuggestion(profile.plus_address)));
+}
+
+TEST_F(PlusAddressSuggestionsTest,
+       SuggestionsOnPasswordForms_UIRedesignEnabled) {
+  base::test::ScopedFeatureList feature_list(features::kPlusAddressUIRedesign);
+  const PlusProfile profile = test::CreatePlusProfile();
+  const url::Origin origin = OriginFromFacet(profile.facet);
+  auto get_suggestions_for_form_type = [&](PasswordFormType type,
+                                           const auto& matcher) {
+    return ExpectServiceToReturnSuggestions(
+        origin,
+        /*is_off_the_record=*/false, type,
+        /*focused_field_value=*/u"",
+        AutofillSuggestionTriggerSource::kFormControlElementClicked, matcher);
+  };
+
+  service().SavePlusProfile(profile);
+  EXPECT_TRUE(get_suggestions_for_form_type(
+      PasswordFormType::kLoginForm,
+      IsSingleFillPlusAddressSuggestion(profile.plus_address)));
 }
 
 // Tests that create suggestions are offered regardless of form type if the
