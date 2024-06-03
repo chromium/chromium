@@ -12,6 +12,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
 #include "chrome/browser/extensions/api/extension_action/test_extension_action_api_observer.h"
@@ -42,8 +43,8 @@
 #include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/api/extension_action/action_info_test_util.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
-#include "extensions/common/features/feature_channel.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
@@ -1878,22 +1879,26 @@ IN_PROC_BROWSER_TEST_P(ActionAndBrowserActionAPITest,
   EXPECT_EQ("", action->GetExplicitlySetBadgeText(tab_id2));
 }
 
-class ExtensionActionStableChannelApiTest : public ExtensionActionAPITest {
+class ExtensionActionWithOpenPopupFeatureDisabledTest
+    : public ExtensionActionAPITest {
  public:
-  ExtensionActionStableChannelApiTest() = default;
-  ~ExtensionActionStableChannelApiTest() override = default;
+  ExtensionActionWithOpenPopupFeatureDisabledTest() {
+    feature_list_.InitAndDisableFeature(
+        extensions_features::kApiActionOpenPopup);
+  }
+  ~ExtensionActionWithOpenPopupFeatureDisabledTest() override = default;
 
  private:
-  ScopedCurrentChannel scoped_current_channel_{version_info::Channel::STABLE};
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests that the action.openPopup() API is available to policy-installed
-// extensions on stable. Since this is controlled through our features files
-// (which are tested separately), this is more of a smoke test than an
-// end-to-end test.
+// extensions on even if the feature flag is disabled. Since this is controlled
+// through our features files (which are tested separately), this is more of a
+// smoke test than an end-to-end test.
 // TODO(crbug.com/40057101): Remove this test when the API is available
-// for all extensions on stable.
-IN_PROC_BROWSER_TEST_F(ExtensionActionStableChannelApiTest,
+// for all extensions on stable without a feature flag.
+IN_PROC_BROWSER_TEST_F(ExtensionActionWithOpenPopupFeatureDisabledTest,
                        OpenPopupAvailabilityOnStableChannel) {
   TestExtensionDir test_dir;
   static constexpr char kManifest[] =

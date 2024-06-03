@@ -11,6 +11,10 @@ namespace extensions_features {
 // API Features
 ///////////////////////////////////////////////////////////////////////////////
 
+BASE_FEATURE(kApiActionOpenPopup,
+             "ApiActionOpenPopup",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kApiContentSettingsClipboard,
              "ApiContentSettingsClipboard",
              base::FEATURE_ENABLED_BY_DEFAULT);
