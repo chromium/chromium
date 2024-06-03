@@ -1534,7 +1534,7 @@ static xmlEntityPtr GetEntityHandler(void* closure, const xmlChar* name) {
   xmlParserCtxtPtr ctxt = static_cast<xmlParserCtxtPtr>(closure);
   xmlEntityPtr ent = xmlGetPredefinedEntity(name);
   if (ent) {
-    ent->etype = XML_INTERNAL_PREDEFINED_ENTITY;
+    CHECK_EQ(ent->etype, XML_INTERNAL_PREDEFINED_ENTITY);
     return ent;
   }
 
