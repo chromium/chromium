@@ -10886,36 +10886,6 @@
             ]
         }
     ],
-    "IOSSegmentationPlatformIosModuleRankerCaching": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SegmentationPlatformIosModuleRankerCaching"
-                    ]
-                }
-            ]
-        }
-    ],
-    "IOSSegmentationPlatformIosModuleRankerSplitBySurface": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SegmentationPlatformIosModuleRankerSplitBySurface"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSSharedHighlightingColorChange": [
         {
             "platforms": [
@@ -18242,7 +18212,7 @@
             ]
         }
     ],
-    "SafetyCheckMagicStack": [
+    "SafetyCheckMagicStackWithCaching": [
         {
             "platforms": [
                 "ios"
@@ -18254,7 +18224,8 @@
                         "SafetyCheckMagicStackAutorunHoursThreshold": "720"
                     },
                     "enable_features": [
-                        "SafetyCheckMagicStack"
+                        "SafetyCheckMagicStack",
+                        "SegmentationPlatformIosModuleRankerSplitBySurface"
                     ]
                 }
             ]
