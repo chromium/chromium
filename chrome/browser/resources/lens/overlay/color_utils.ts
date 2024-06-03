@@ -4,6 +4,7 @@
 
 import {skColorToHexColor} from '//resources/js/color_utils.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
+import type {SkColor} from '//resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 
 import type {OverlayTheme} from './lens.mojom-webui.js';
 
@@ -43,6 +44,21 @@ export function getFallbackTheme(): OverlayTheme {
       value: loadTimeData.getInteger('colorFallbackSelectionElement'),
     },
   };
+}
+
+/**
+ * Converts an SkColor object to a string in the form
+ * "rgba(<red>, <green>, <blue>, <alpha>)", with a custom
+ * alpha value.
+ * @param skColor The input color.
+ * @return The rgba string.
+ */
+export function skColorToRgbaWithCustomAlpha(
+    skColor: SkColor, alpha: number): string {
+  const r = (skColor.value >> 16) & 0xff;
+  const g = (skColor.value >> 8) & 0xff;
+  const b = skColor.value & 0xff;
+  return `rgba(${r}, ${g}, ${b}, ${alpha.toFixed(2)})`;
 }
 
 // Returns an array of the Shader hex colors from the given theme.
