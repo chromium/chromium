@@ -628,9 +628,9 @@ chromium-metrics-reviews@google.com.
   <int value="200008" label="SearchSuggestEnabled_IOS"/>
   <int value="200009" label="TrackPricesOnTabsEnabled"/>
   <int value="200010" label="VoiceSearchLocale"/>
-</enum>
-
 <!-- LINT.ThenChange(/ios/chrome/browser/sync/model/prefs/ios_chrome_syncable_prefs_database.cc:IosSyncablePref)-->
+
+</enum>
 
 <!-- LINT.IfChange(SyncBookmarkModelMetadataCorruptionReason) -->
 
@@ -1265,13 +1265,6 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(/components/sync/service/sync_service_utils.h:TrustedVaultRecoverabilityStatus) -->
-
-<!-- TODO(crbug.com/338170016): `git cl format` deletes the ThenChange above
-     unless this enum is here. Fix the issue and delete this fake enum.  -->
-
-<enum name="ZZZZZZ">
-  <int value="0" label="Z"/>
-</enum>
 
 </enums>
 
