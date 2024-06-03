@@ -1203,6 +1203,21 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.FaceGaze.AverageFaceLandmarkerLatency"
+    units="ms" expires_after="2025-05-30">
+  <owner>akihiroota@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    The time it takes for the FaceLandmarker API to process a single video
+    frame. This histogram is recorded once every 100 frames and represents the
+    average latency of the FaceLandmarker API on those frames. The reason we use
+    the average is because there could be potentially thousands of calls to the
+    FaceLandmarker API during a FaceGaze session and we don't want to clutter
+    the histograms. Each call to record a histogram also takes work and we don't
+    want to spam the histograms API multiple times per second.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.FocusHighlight.ToggleEnabled"
     enum="BooleanEnabled" expires_after="never">
   <owner>aleventhal@chromium.org</owner>

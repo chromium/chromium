@@ -144,11 +144,13 @@ export class WebCamFaceLandmarker {
 
     const videoElement =
         document.getElementById('cameraStream') as HTMLVideoElement;
+    const startTime = performance.now();
     const result = this.faceLandmarker_.detectForVideo(
         /*videoFrame=*/ videoElement, /*timestamp=*/ performance.now());
+    const latency = performance.now() - startTime;
     // Send result to the background page for processing.
     chrome.runtime.sendMessage(
-        undefined, {type: 'faceLandmarkerResult', result});
+        undefined, {type: 'faceLandmarkerResult', result, latency});
 
     this.displayFaceLandmarkerResult_(result);
   }

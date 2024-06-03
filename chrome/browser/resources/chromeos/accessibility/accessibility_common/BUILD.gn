@@ -66,6 +66,7 @@ ts_modules = [
   "facegaze/facegaze.ts",
   "facegaze/gesture_detector.ts",
   "facegaze/gesture_handler.ts",
+  "facegaze/metrics_utils.ts",
   "facegaze/mouse_controller.ts",
   "facegaze/macros/reset_cursor_macro.ts",
   "magnifier/magnifier.ts",
@@ -224,6 +225,7 @@ js2gtest("accessibility_common_extjs_tests") {
     "facegaze/facegaze_mediapipe_test.js",
     "facegaze/facegaze_test.js",
     "facegaze/facegaze_test_base.js",
+    "facegaze/metrics_utils_test.js",
     "magnifier/magnifier_test.js",
   ]
 

@@ -182,11 +182,12 @@ FaceGazeTestBase = class extends E2ETestBase {
     assertNotNullNorUndefined(accessibilityCommon);
     assertNotNullNorUndefined(FaceGaze);
     assertNotNullNorUndefined(FacialGesture);
-    assertNotNullNorUndefined(GestureHandler);
-    assertNotNullNorUndefined(MediapipeFacialGesture);
     assertNotNullNorUndefined(FacialGesturesToMediapipeGestures);
-    assertNotNullNorUndefined(MouseController);
+    assertNotNullNorUndefined(GestureHandler);
     assertNotNullNorUndefined(MacroName);
+    assertNotNullNorUndefined(MediapipeFacialGesture);
+    assertNotNullNorUndefined(MetricsUtils);
+    assertNotNullNorUndefined(MouseController);
     await new Promise(resolve => {
       accessibilityCommon.setFeatureLoadCallbackForTest('facegaze', resolve);
     });

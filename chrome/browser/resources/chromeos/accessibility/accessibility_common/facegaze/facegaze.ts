@@ -6,6 +6,7 @@ import {TestImportManager} from '/common/testing/test_import_manager.js';
 import type {FaceLandmarkerResult} from '/third_party/mediapipe/vision.js';
 
 import {GestureHandler} from './gesture_handler.js';
+import {MetricsUtils} from './metrics_utils.js';
 import {MouseController} from './mouse_controller.js';
 
 type PrefObject = chrome.settingsPrivate.PrefObject;
@@ -24,10 +25,12 @@ export class FaceGaze {
   private cursorControlEnabled_ = false;
   private actionsEnabled_ = false;
   private prefsListener_: (prefs: PrefObject[]) => void;
+  private metricsUtils_: MetricsUtils;
 
   constructor() {
     this.mouseController_ = new MouseController();
     this.gestureHandler_ = new GestureHandler(this.mouseController_);
+    this.metricsUtils_ = new MetricsUtils();
     this.cameraStreamReadyPromise_ = new Promise(resolve => {
       this.cameraStreamReadyResolver_ = resolve;
     });
@@ -111,6 +114,7 @@ export class FaceGaze {
       this.cameraStreamWindowId_ = win.id;
       chrome.runtime.onMessage.addListener(message => {
         if (message.type === 'faceLandmarkerResult') {
+          this.metricsUtils_.addFaceLandmarkerResultLatency(message.latency);
           this.processFaceLandmarkerResult_(message.result);
         } else if (message.type === 'cameraStreamReadyForTesting') {
           this.cameraStreamReadyResolver_!();
