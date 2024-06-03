@@ -357,6 +357,12 @@ void AnimationFrameTimingMonitor::RecordLongAnimationFrameTrace(
     TRACE_EVENT_BEGIN("devtools.timeline", "AnimationFrame::Render", track_id,
                       info.RenderStartTime());
     TRACE_EVENT_END("devtools.timeline", track_id, info.RenderEndTime());
+
+    window.GetFrame()->GetChromeClient().NotifyPresentationTime(
+        *window.GetFrame(),
+        CrossThreadBindOnce(
+            &AnimationFrameTimingMonitor::ReportPresentationTimeToTrace,
+            WrapCrossThreadWeakPersistent(this), trace_id));
   }
   if (!info.StyleAndLayoutStartTime().is_null()) {
     TRACE_EVENT_BEGIN("devtools.timeline", "AnimationFrame::StyleAndLayout",
@@ -365,12 +371,6 @@ void AnimationFrameTimingMonitor::RecordLongAnimationFrameTrace(
   }
 
   TRACE_EVENT_END("devtools.timeline", track_id, info.RenderEndTime());
-
-  window.GetFrame()->GetChromeClient().NotifyPresentationTime(
-      *window.GetFrame(),
-      CrossThreadBindOnce(
-          &AnimationFrameTimingMonitor::ReportPresentationTimeToTrace,
-          WrapCrossThreadWeakPersistent(this), trace_id));
 }
 
 void AnimationFrameTimingMonitor::RecordLongAnimationFrameUKMAndTrace(
