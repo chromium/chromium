@@ -209,11 +209,6 @@ public class SectionHeaderView extends LinearLayout {
         }
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_CONTAINMENT)) {
-            int endLateralPadding =
-                    getResources()
-                            .getDimensionPixelSize(
-                                    R.dimen.feed_containment_feed_header_menu_end_margin);
-            mContent.setPadding(mContent.getPaddingStart(), 0, endLateralPadding, 0);
             MarginLayoutParams contentMarginLayoutParams =
                     (MarginLayoutParams) mContent.getLayoutParams();
             contentMarginLayoutParams.topMargin =
@@ -257,24 +252,32 @@ public class SectionHeaderView extends LinearLayout {
 
     /** Adds a blank tab. */
     void addTab() {
-        if (mTabLayout != null) {
-            TabLayout.Tab tab = mTabLayout.newTab();
-            tab.setCustomView(R.layout.new_tab_page_section_tab);
-            tab.setTag(new TabState());
-            mTabLayout.addTab(tab);
-            tab.view.setClipToPadding(false);
-            tab.view.setClipChildren(false);
-            tab.view.setForeground(
-                    ResourcesCompat.getDrawable(
-                            getResources(),
-                            R.drawable.header_title_tab_selected_ripple,
-                            getContext().getTheme()));
+        if (mTabLayout == null) {
+            return;
+        }
 
-            tab.view.setBackground(
-                    ResourcesCompat.getDrawable(
-                            getResources(),
-                            R.drawable.header_title_tab_selected_background,
-                            getContext().getTheme()));
+        TabLayout.Tab tab = mTabLayout.newTab();
+        tab.setCustomView(R.layout.new_tab_page_section_tab);
+        tab.setTag(new TabState());
+        mTabLayout.addTab(tab);
+        tab.view.setClipToPadding(false);
+        tab.view.setClipChildren(false);
+        tab.view.setForeground(
+                ResourcesCompat.getDrawable(
+                        getResources(),
+                        R.drawable.header_title_tab_selected_ripple,
+                        getContext().getTheme()));
+
+        tab.view.setBackground(
+                ResourcesCompat.getDrawable(
+                        getResources(),
+                        R.drawable.header_title_tab_selected_background,
+                        getContext().getTheme()));
+        if (mTabLayout.getTabCount() > 1) {
+            int startLateralPadding =
+                    getResources()
+                            .getDimensionPixelSize(R.dimen.multi_feed_header_menu_start_margin);
+            mContent.setPadding(startLateralPadding, 0, 0, 0);
         }
     }
 

@@ -40,7 +40,6 @@ found in the LICENSE file.
         android:scaleType="centerInside"
         android:layout_marginStart="15dp"
         android:layout_centerVertical="true"
-        android:paddingEnd="8dp"
         android:layout_alignParentEnd="true"
         android:background="@drawable/toolbar_menu_button_ripple"
         android:src="@drawable/ic_more_vert_24dp"
