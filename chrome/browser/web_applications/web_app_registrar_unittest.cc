@@ -483,11 +483,9 @@ TEST_F(WebAppRegistrarTest, GetAppDataFields) {
     EXPECT_FALSE(registrar().IsActivelyInstalled(app_id));
 
     EXPECT_FALSE(registrar().IsLocallyInstalled("unknown"));
-    {
-      ScopedRegistryUpdate update = sync_bridge().BeginUpdate();
-      update->UpdateApp(app_id)->SetIsLocallyInstalled(
-          /*is_locally_installed*/ true);
-    }
+    base::test::TestFuture<void> future;
+    fake_provider().scheduler().InstallAppLocally(app_id, future.GetCallback());
+    ASSERT_TRUE(future.Wait());
     EXPECT_TRUE(registrar().IsLocallyInstalled(app_id));
     EXPECT_TRUE(registrar().IsActivelyInstalled(app_id));
   }

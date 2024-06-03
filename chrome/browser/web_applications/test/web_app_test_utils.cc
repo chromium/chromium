@@ -558,6 +558,11 @@ std::unique_ptr<WebApp> CreateWebApp(const GURL& start_url,
   web_app->SetUserDisplayMode(mojom::UserDisplayMode::kStandalone);
   web_app->SetName("Name");
   web_app->SetIsLocallyInstalled(true);
+  // This is set to prevent the RunOnOsLoginCommand scheduled by the policy
+  // manager from synchronizing os integration
+  // TODO(crbug.com/341348401): Remove this after os integration isn't
+  // triggered.
+  web_app->SetRunOnOsLoginOsIntegrationState(RunOnOsLoginMode::kNotRun);
 
   return web_app;
 }

@@ -13,6 +13,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/containers/enum_set.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
@@ -27,6 +28,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/web_applications/install_state.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -405,134 +407,48 @@ size_t WebAppRegistrar::GetUrlInAppScopeScore(
 
 std::optional<webapps::AppId> WebAppRegistrar::FindAppWithUrlInScope(
     const GURL& url) const {
-  if (!url.is_valid())
-    return std::nullopt;
-
-  const std::string url_spec = url.spec();
-
-  std::optional<webapps::AppId> best_app_id;
-  size_t best_score = 0U;
-  bool best_app_is_shortcut = true;
-
-  for (const webapps::AppId& app_id : GetAppIdsForAppSet(GetApps())) {
-    // TODO(crbug.com/40277513): Consider treating shortcuts differently to
-    // PWAs.
-    bool app_is_shortcut = IsShortcutApp(app_id);
-    if (app_is_shortcut && !best_app_is_shortcut)
-      continue;
-
-    size_t score = GetUrlInAppScopeScore(url_spec, app_id);
-
-    if (score > 0 &&
-        (score > best_score || (best_app_is_shortcut && !app_is_shortcut))) {
-      best_app_id = app_id;
-      best_score = score;
-      best_app_is_shortcut = app_is_shortcut;
-    }
-  }
-  return best_app_id;
+  return FindBestAppWithUrlInScope(
+      url, {
+               InstallState::kSuggestedFromAnotherDevice,
+               InstallState::kInstalledWithOsIntegration,
+               InstallState::kInstalledWithoutOsIntegration,
+           });
 }
 
 bool WebAppRegistrar::DoesScopeContainAnyApp(const GURL& scope) const {
-  std::string scope_str = scope.spec();
-
-  for (const auto& app_id : GetAppIds()) {
-    if (!IsLocallyInstalled(app_id))
-      continue;
-
-    std::string app_scope = GetAppScope(app_id).spec();
-    DCHECK(!app_scope.empty());
-
-    if (base::StartsWith(app_scope, scope_str, base::CompareCase::SENSITIVE))
-      return true;
-  }
-
-  return false;
+  return DoesScopeContainAnyApp(scope,
+                                {InstallState::kInstalledWithOsIntegration,
+                                 InstallState::kInstalledWithoutOsIntegration});
 }
 
 std::vector<webapps::AppId> WebAppRegistrar::FindAppsInScope(
     const GURL& scope) const {
-  std::string scope_str = scope.spec();
-
-  std::vector<webapps::AppId> in_scope;
-  for (const auto& app_id : GetAppIds()) {
-    if (!IsLocallyInstalled(app_id))
-      continue;
-
-    std::string app_scope = GetAppScope(app_id).spec();
-    DCHECK(!app_scope.empty());
-
-    if (!base::StartsWith(app_scope, scope_str, base::CompareCase::SENSITIVE))
-      continue;
-
-    in_scope.push_back(app_id);
-  }
-
-  return in_scope;
+  return FindAllAppsNestedInUrl(
+      scope, {
+                 InstallState::kInstalledWithOsIntegration,
+                 InstallState::kInstalledWithoutOsIntegration,
+             });
 }
 
 std::optional<webapps::AppId> WebAppRegistrar::FindInstalledAppWithUrlInScope(
     const GURL& url,
     bool window_only,
     bool exclude_diy_apps) const {
-  const std::string url_spec = url.spec();
-
-  std::optional<webapps::AppId> best_app_id;
-  size_t best_score = 0U;
-  bool best_app_is_shortcut = true;
-
-  for (const webapps::AppId& app_id : GetAppIds()) {
-    // TODO(crbug.com/40277513): Consider treating shortcuts differently to
-    // PWAs.
-    bool app_is_shortcut = IsShortcutApp(app_id);
-    if (app_is_shortcut && !best_app_is_shortcut) {
-      continue;
-    }
-
-    if (!IsLocallyInstalled(app_id)) {
-      continue;
-    }
-
-    if (window_only &&
-        GetAppEffectiveDisplayMode(app_id) == DisplayMode::kBrowser) {
-      continue;
-    }
-
-    if (exclude_diy_apps && IsDiyApp(app_id)) {
-      continue;
-    }
-
-    size_t score = GetUrlInAppScopeScore(url_spec, app_id);
-
-    if (score > 0 &&
-        (score > best_score || (best_app_is_shortcut && !app_is_shortcut))) {
-      best_app_id = app_id;
-      best_score = score;
-      best_app_is_shortcut = app_is_shortcut;
-    }
-  }
-
-  return best_app_id;
+  return FindBestAppWithUrlInScope(
+      url,
+      {
+          InstallState::kInstalledWithOsIntegration,
+          InstallState::kInstalledWithoutOsIntegration,
+      },
+      {.include_open_in_browser_tab = !window_only,
+       .include_diy = !exclude_diy_apps});
 }
 
 bool WebAppRegistrar::IsNonLocallyInstalledAppWithUrlInScope(
     const GURL& url) const {
-  std::string scope_str = url.spec();
-
-  for (const auto& app_id : GetAppIds()) {
-    std::string app_scope = GetAppScope(app_id).spec();
-    CHECK(!app_scope.empty());
-
-    if (!base::StartsWith(scope_str, app_scope, base::CompareCase::SENSITIVE)) {
-      continue;
-    }
-
-    if (!IsLocallyInstalled(app_id)) {
-      return true;
-    }
-  }
-
-  return false;
+  return FindBestAppWithUrlInScope(url,
+                                   {InstallState::kSuggestedFromAnotherDevice})
+      .has_value();
 }
 
 bool WebAppRegistrar::IsShortcutApp(const webapps::AppId& app_id) const {
@@ -796,18 +712,196 @@ const WebApp* WebAppRegistrar::LookUpAppByInstallSourceInstallUrl(
   return nullptr;
 }
 
-bool WebAppRegistrar::IsInstalled(const webapps::AppId& app_id) const {
+bool WebAppRegistrar::IsNotInRegistrar(const webapps::AppId& app_id) const {
   const WebApp* web_app = GetAppById(app_id);
-  if (!web_app || web_app->is_uninstalling())
-    return false;
+  if (!web_app || web_app->is_uninstalling()) {
+    return true;
+  }
 
   // `is_from_sync_and_pending_installation()` should be treated as 'not
   // installed' only if there are no other sources that have installed the web
   // app.
   WebAppManagementTypes sources_except_sync = web_app->GetSources();
   sources_except_sync.Remove(WebAppManagement::kSync);
-  return !(web_app->is_from_sync_and_pending_installation() &&
-           sources_except_sync.empty());
+  if (web_app->is_from_sync_and_pending_installation() &&
+      sources_except_sync.empty()) {
+    return true;
+  }
+  return false;
+}
+
+bool WebAppRegistrar::IsInstallState(
+    const webapps::AppId& app_id,
+    std::initializer_list<InstallState> states) const {
+  CHECK_NE(states.size(), 0ul);
+  InstallStateSet state_set(states);
+
+  if (IsNotInRegistrar(app_id)) {
+    return false;
+  }
+  const WebApp* web_app = GetAppById(app_id);
+  CHECK(web_app);
+
+  // TODO(crbug.com/340952021): Use InstallState from web_app DB post migration.
+
+  if (web_app->is_locally_installed()) {
+    if (web_app->current_os_integration_states().has_shortcut()) {
+      return state_set.Has(InstallState::kInstalledWithOsIntegration);
+    } else {
+      return state_set.Has(InstallState::kInstalledWithoutOsIntegration);
+    }
+  } else {
+    return state_set.Has(InstallState::kSuggestedFromAnotherDevice);
+  }
+}
+
+std::optional<webapps::AppId> WebAppRegistrar::FindBestAppWithUrlInScope(
+    const GURL& url,
+    std::initializer_list<InstallState> states) const {
+  return FindBestAppWithUrlInScope(url, states, AppFilterOptions());
+}
+
+std::optional<webapps::AppId> WebAppRegistrar::FindBestAppWithUrlInScope(
+    const GURL& url,
+    std::initializer_list<InstallState> states,
+    AppFilterOptions options) const {
+  CHECK_NE(states.size(), 0ul);
+  if (!url.is_valid()) {
+    return std::nullopt;
+  }
+
+  const std::string url_spec = url.spec();
+
+  std::optional<webapps::AppId> best_app_id;
+  size_t best_score = 0U;
+  bool best_app_is_shortcut = true;
+
+  for (const webapps::AppId& app_id :
+       GetAppIdsForAppSet(GetAppsIncludingStubs())) {
+    if (!IsInstallState(app_id, states)) {
+      continue;
+    }
+    if (!options.include_open_in_browser_tab &&
+        GetAppEffectiveDisplayMode(app_id) == DisplayMode::kBrowser) {
+      continue;
+    }
+
+    if (!options.include_diy && IsDiyApp(app_id)) {
+      continue;
+    }
+    // TODO(crbug.com/40277513): Consider treating shortcuts differently to
+    // PWAs.
+    // TODO(crbug.com/341316725): Remove shortcut apps.
+    bool app_is_shortcut = IsShortcutApp(app_id);
+    if (app_is_shortcut && !best_app_is_shortcut) {
+      continue;
+    }
+
+    size_t score;
+    // TODO(crbug.com/341337420): Audit call sites and ideally have scope
+    // extensions be considered by default.
+    if (options.include_extended_scope) {
+      score = GetAppExtendedScopeScore(url, app_id);
+    } else {
+      score = GetUrlInAppScopeScore(url_spec, app_id);
+    }
+
+    if (score > 0 &&
+        (score > best_score || (best_app_is_shortcut && !app_is_shortcut))) {
+      best_app_id = app_id;
+      best_score = score;
+      best_app_is_shortcut = app_is_shortcut;
+    }
+  }
+  return best_app_id;
+}
+
+// Returns all apps that have the given `url` in scope and are in one of the
+// given `states`.
+std::vector<webapps::AppId> WebAppRegistrar::FindAllAppsWithUrlInScope(
+    const GURL& url,
+    std::initializer_list<InstallState> states) const {
+  CHECK_NE(states.size(), 0ul);
+  if (!url.is_valid()) {
+    return {};
+  }
+  std::string url_spec = url.spec();
+
+  std::vector<webapps::AppId> apps_with_url_in_scope;
+  for (const auto& app_id : GetAppIdsForAppSet(GetAppsIncludingStubs())) {
+    if (!IsInstallState(app_id, states)) {
+      continue;
+    }
+
+    std::string app_scope = GetAppScope(app_id).spec();
+    DCHECK(!app_scope.empty());
+
+    if (!base::StartsWith(app_scope, url_spec, base::CompareCase::SENSITIVE)) {
+      continue;
+    }
+
+    apps_with_url_in_scope.push_back(app_id);
+  }
+
+  return apps_with_url_in_scope;
+}
+
+// Returns all apps that have the given `url` in scope and are in one of the
+// given `states`.
+std::vector<webapps::AppId> WebAppRegistrar::FindAllAppsNestedInUrl(
+    const GURL& outer_scope,
+    std::initializer_list<InstallState> states) const {
+  CHECK_NE(states.size(), 0ul);
+  if (!outer_scope.is_valid()) {
+    return {};
+  }
+  std::string outer_scope_spec = outer_scope.spec();
+
+  std::vector<webapps::AppId> apps_in_outer_scope;
+  for (const auto& app_id : GetAppIdsForAppSet(GetAppsIncludingStubs())) {
+    if (!IsInstallState(app_id, states)) {
+      continue;
+    }
+
+    std::string app_scope = GetAppScope(app_id).spec();
+    DCHECK(!app_scope.empty());
+
+    if (!base::StartsWith(app_scope, outer_scope_spec,
+                          base::CompareCase::SENSITIVE)) {
+      continue;
+    }
+
+    apps_in_outer_scope.push_back(app_id);
+  }
+
+  return apps_in_outer_scope;
+}
+
+bool WebAppRegistrar::DoesScopeContainAnyApp(
+    const GURL& scope,
+    std::initializer_list<InstallState> allowed_states) const {
+  std::string scope_str = scope.spec();
+
+  for (const auto& app_id : GetAppIdsForAppSet(GetAppsIncludingStubs())) {
+    if (!IsInstallState(app_id, allowed_states)) {
+      continue;
+    }
+
+    std::string app_scope = GetAppScope(app_id).spec();
+    CHECK(!app_scope.empty());
+
+    if (base::StartsWith(app_scope, scope_str, base::CompareCase::SENSITIVE)) {
+      return true;
+    }
+    // TODO(crbug.com/341337420): Support scope extensions.
+  }
+  return false;
+}
+
+bool WebAppRegistrar::IsInstalled(const webapps::AppId& app_id) const {
+  return IsInstallState(app_id, {InstallState::kSuggestedFromAnotherDevice,
+                                 InstallState::kInstalledWithOsIntegration,
+                                 InstallState::kInstalledWithoutOsIntegration});
 }
 
 bool WebAppRegistrar::IsUninstalling(const webapps::AppId& app_id) const {
@@ -816,20 +910,12 @@ bool WebAppRegistrar::IsUninstalling(const webapps::AppId& app_id) const {
 }
 
 bool WebAppRegistrar::IsLocallyInstalled(const webapps::AppId& app_id) const {
-  auto* web_app = GetAppById(app_id);
-  return web_app
-             ? !web_app->is_uninstalling() && web_app->is_locally_installed()
-             : false;
+  return IsInstallState(app_id, {InstallState::kInstalledWithOsIntegration,
+                                 InstallState::kInstalledWithoutOsIntegration});
 }
 
 bool WebAppRegistrar::IsActivelyInstalled(const webapps::AppId& app_id) const {
-  if (!IsInstalled(app_id) || !IsLocallyInstalled(app_id))
-    return false;
-
-  auto* web_app = GetAppById(app_id);
-  DCHECK(web_app);
-  return !web_app->HasOnlySource(WebAppManagement::kDefault) ||
-         GetAppEffectiveDisplayMode(app_id) != DisplayMode::kBrowser;
+  return IsInstallState(app_id, {InstallState::kInstalledWithOsIntegration});
 }
 
 bool WebAppRegistrar::IsIsolated(const webapps::AppId& app_id) const {
@@ -1359,6 +1445,7 @@ std::optional<GURL> WebAppRegistrar::GetAppScopeInternal(
   // Shortcuts on the WebApp system have empty scopes, while the implementation
   // of IsShortcutApp just checks if the scope is |std::nullopt|, so make sure
   // we return |std::nullopt| rather than an empty scope.
+  // TODO(crbug.com/341316725): Remove shortcut apps.
   if (web_app->scope().is_empty())
     return std::nullopt;
 

@@ -56,13 +56,13 @@ RunOnOsLoginCommand::RunOnOsLoginCommand(
       app_id_(app_id),
       login_mode_(login_mode),
       set_or_sync_mode_(set_or_sync_mode) {
-  GetMutableDebugValue().Set("app_id: ", app_id_);
+  GetMutableDebugValue().Set("app_id", app_id_);
   switch (set_or_sync_mode_) {
     case RunOnOsLoginAction::kSetModeInDBAndOS:
       GetMutableDebugValue().Set("type_of_action", "set_db_os_value");
       break;
     case RunOnOsLoginAction::kSyncModeFromDBToOS:
-      GetMutableDebugValue().Set("Type of Action: ", "sync_db_os_value");
+      GetMutableDebugValue().Set("type_of_action", "sync_db_os_value");
       break;
     default:
       NOTREACHED_IN_MIGRATION();

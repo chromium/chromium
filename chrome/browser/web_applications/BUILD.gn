@@ -88,6 +88,8 @@ source_set("web_applications") {
     "generated_icon_fix_util.h",
     "install_bounce_metric.cc",
     "install_bounce_metric.h",
+    "install_state.cc",
+    "install_state.h",
     "isolated_web_apps/check_isolated_web_app_bundle_installability_command.cc",
     "isolated_web_apps/check_isolated_web_app_bundle_installability_command.h",
     "isolated_web_apps/chrome_content_browser_client_isolated_web_apps_part.cc",

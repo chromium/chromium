@@ -95,11 +95,14 @@ class PlatformNotificationServiceImpl
   friend class PushMessagingBrowserTest;
   FRIEND_TEST_ALL_PREFIXES(PlatformNotificationServiceTest,
                            CreateNotificationFromData);
+  FRIEND_TEST_ALL_PREFIXES(PlatformNotificationServiceTest_WebApps,
+                           CreateNotificationFromData);
   FRIEND_TEST_ALL_PREFIXES(PlatformNotificationServiceTest,
                            DisplayNameForContextMessage);
   FRIEND_TEST_ALL_PREFIXES(PlatformNotificationServiceTest,
                            RecordNotificationUkmEvent);
-  FRIEND_TEST_ALL_PREFIXES(PlatformNotificationServiceTest, IncomingCallWebApp);
+  FRIEND_TEST_ALL_PREFIXES(PlatformNotificationServiceTest_WebApps,
+                           IncomingCallWebApp);
   FRIEND_TEST_ALL_PREFIXES(
       PlatformNotificationServiceTest_WebAppNotificationIconAndTitle,
       FindWebAppIconAndTitle_NoApp);
