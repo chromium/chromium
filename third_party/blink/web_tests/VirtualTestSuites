@@ -450,7 +450,7 @@
               "fast/scrolling/"],
     "args": ["--enable-blink-features=FractionalScrollOffsets",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jul 1, 2023"
+    "expires": "Jun 1, 2025"
   },
   {
     "prefix": "compute-pressure",
@@ -562,7 +562,7 @@
     "args": ["--enable-features=WindowsScrollingPersonality",
              "--enable-threaded-compositing",
              "--enable-prefer-compositing-to-lcd-text"],
-    "expires": "Jul 1, 2023"
+    "expires": "Jun 1, 2025"
   },
   {
     "prefix": "main-threaded-percent-based-scrolling",
@@ -572,7 +572,7 @@
               "virtual/percent-based-scrolling"],
     "args": ["--enable-features=WindowsScrollingPersonality",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jul 1, 2023"
+    "expires": "Jun 1, 2025"
   },
   {
     "prefix": "compositor-threaded-percent-based-scrolling",
@@ -582,7 +582,7 @@
     "args": ["--enable-features=WindowsScrollingPersonality",
              "--enable-threaded-compositing",
              "--enable-prefer-compositing-to-lcd-text"],
-    "expires": "Jul 1, 2023"
+    "expires": "Jun 1, 2025"
   },
   {
     "prefix": "compositor-threaded-percent-based-scrolling-dsf-2",
@@ -593,7 +593,7 @@
              "--enable-threaded-compositing",
              "--enable-prefer-compositing-to-lcd-text",
              "--force-device-scale-factor=2"],
-    "expires": "Jul 1, 2023"
+    "expires": "Jun 1, 2025"
   },
   {
     "prefix": "hidpi",
@@ -602,7 +602,7 @@
     "args": ["--disable-smooth-scrolling",
              "--force-device-scale-factor=2",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jul 1, 2023"
+    "expires": "Jun 1, 2025"
   },
   {
     "prefix": "speech-with-unified-autoplay",
