@@ -1380,9 +1380,35 @@ public class SyncConsentFragmentTest {
 
     @Test
     @LargeTest
+    public void testSignedInWithMinorModeUnknownHasNoButtonsBeforeDeadline() {
+        // Disable timeouting mechanism that ultimately shows some buttons
+        MinorModeHelper.disableTimeoutForTesting();
+        mChromeActivityTestRule.startMainActivityOnBlankPage();
+
+        // Account Capabilities are intentionally empty - this account is waiting for capabilities
+        // to be fetched to determine buttons, but in this test they will never arrive.
+        mSigninTestRule.addAccount(AccountManagerTestRule.AADC_UNRESOLVED_ACCOUNT);
+
+        mSigninTestRule.waitForSeeding();
+        SigninTestUtil.signin(AccountManagerTestRule.AADC_UNRESOLVED_ACCOUNT);
+        mSyncConsentActivity =
+                waitForSyncConsentActivity(AccountManagerTestRule.AADC_UNRESOLVED_ACCOUNT);
+
+        // Since the capabilities never arrived, buttons should be still invisible
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Button primaryButton = mSyncConsentActivity.findViewById(R.id.button_primary);
+                    Button secondaryButton =
+                            mSyncConsentActivity.findViewById(R.id.button_secondary);
+                    Assert.assertEquals(View.GONE, primaryButton.getVisibility());
+                    Assert.assertEquals(View.GONE, secondaryButton.getVisibility());
+                });
+    }
+
+    @Test
+    @LargeTest
     public void testSignedInWithMinorModeUnknownHasEqualButtonsBeforeDeadline()
             throws InterruptedException {
-
         MinorModeHelper.disableTimeoutForTesting();
         mChromeActivityTestRule.startMainActivityOnBlankPage();
         // Account Capabilities are intentionally empty.
@@ -1393,16 +1419,6 @@ public class SyncConsentFragmentTest {
         mSyncConsentActivity =
                 waitForSyncConsentActivity(AccountManagerTestRule.AADC_UNRESOLVED_ACCOUNT);
 
-        // Buttons will not be visible before capability/deadline is reached.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    Button primaryButton = mSyncConsentActivity.findViewById(R.id.button_primary);
-                    Button secondaryButton =
-                            mSyncConsentActivity.findViewById(R.id.button_secondary);
-                    Assert.assertEquals(View.GONE, primaryButton.getVisibility());
-                    Assert.assertEquals(View.GONE, secondaryButton.getVisibility());
-                });
-
         // Capability is received as MINOR_MODE_REQUIRED after an arbitrary amount of time that is
         // less than the deadline {@link
         // org.chromium.chrome.browser.ui.signin.MinorModeHelper.CAPABILITY_TIMEOUT_MS}. Buttons
@@ -1412,8 +1428,8 @@ public class SyncConsentFragmentTest {
                     mSigninTestRule.resolveMinorModeToRestricted(
                             AccountManagerTestRule.AADC_UNRESOLVED_ACCOUNT.getId());
                 });
-        ViewUtils.waitForVisibleView(withText(R.string.signin_accept_button));
 
+        ViewUtils.waitForVisibleView(withText(R.string.signin_accept_button));
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Button primaryButton = mSyncConsentActivity.findViewById(R.id.button_primary);
@@ -1441,16 +1457,6 @@ public class SyncConsentFragmentTest {
         mSyncConsentActivity =
                 waitForSyncConsentActivity(AccountManagerTestRule.AADC_UNRESOLVED_ACCOUNT);
 
-        // Buttons will not be visible before capability/deadline is reached.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    Button primaryButton = mSyncConsentActivity.findViewById(R.id.button_primary);
-                    Button secondaryButton =
-                            mSyncConsentActivity.findViewById(R.id.button_secondary);
-                    Assert.assertEquals(View.GONE, primaryButton.getVisibility());
-                    Assert.assertEquals(View.GONE, secondaryButton.getVisibility());
-                });
-
         // Capability is received as MINOR_MODE_NOT_REQUIRED after an arbitrary amount of time that
         // is less than the deadline {@link
         // org.chromium.chrome.browser.ui.signin.MinorModeHelper.CAPABILITY_TIMEOUT_MS}. Buttons
@@ -1460,8 +1466,8 @@ public class SyncConsentFragmentTest {
                     mSigninTestRule.resolveMinorModeToUnrestricted(
                             AccountManagerTestRule.AADC_UNRESOLVED_ACCOUNT.getId());
                 });
-        ViewUtils.waitForVisibleView(withText(R.string.signin_accept_button));
 
+        ViewUtils.waitForVisibleView(withText(R.string.signin_accept_button));
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Button primaryButton = mSyncConsentActivity.findViewById(R.id.button_primary);
