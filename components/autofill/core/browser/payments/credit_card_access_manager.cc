@@ -947,17 +947,31 @@ bool CreditCardAccessManager::IsSelectedCardFidoAuthorized() {
 bool CreditCardAccessManager::ShouldRespondImmediately(
     const CreditCardCvcAuthenticator::CvcAuthenticationResponse& response) {
 #if BUILDFLAG(IS_ANDROID)
-  // GetRealPan did not return RequestOptions (user did not specify intent to
-  // opt-in) AND flow is not registering a new card, so fill the form
-  // directly.
-  if (response.request_options.empty() &&
+  // GetRealPan did not return valid RequestOptions (user did not specify intent
+  // to opt-in or the server returned invalid RequestOptions) AND flow is not
+  // registering a new card, so fill the form directly.
+  if (!GetOrCreateFidoAuthenticator()->IsValidRequestOptions(
+          response.request_options) &&
       unmask_auth_flow_type_ != UnmaskAuthFlowType::kCvcThenFido) {
     return true;
   }
 #else
-  if (unmask_auth_flow_type_ != UnmaskAuthFlowType::kCvcThenFido)
+  if (unmask_auth_flow_type_ != UnmaskAuthFlowType::kCvcThenFido) {
     return true;
-#endif
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if !BUILDFLAG(IS_IOS)
+  // If the current flow is `kCvcThenFido` and there are no valid FIDO request
+  // options present, fill the form immediately, as FIDO registration is not
+  // possible.
+  if (unmask_auth_flow_type_ == UnmaskAuthFlowType::kCvcThenFido &&
+      !GetOrCreateFidoAuthenticator()->IsValidRequestOptions(
+          unmask_details_.fido_request_options)) {
+    return true;
+  }
+#endif  // !BUILDFLAG(IS_IOS)
+
   // If the response did not succeed, report the error immediately. If
   // GetRealPan did not return a card authorization token (we can't call any
   // FIDO-related flows, either opt-in or register new card, without the token),
@@ -973,19 +987,26 @@ bool CreditCardAccessManager::ShouldRegisterCardWithFido(
   if (response.card_authorization_token.empty())
     return false;
 
-  // |unmask_auth_flow_type_| is kCvcThenFido, then the user is already opted-in
-  // and the new card must additionally be authorized through WebAuthn.
-  if (unmask_auth_flow_type_ == UnmaskAuthFlowType::kCvcThenFido)
+#if !BUILDFLAG(IS_IOS)
+  // `unmask_auth_flow_type_` is kCvcThenFido, and there are valid FIDO request
+  // options present, so the user is already opted-in and the new card must
+  // additionally be authorized through WebAuthn.
+  if (unmask_auth_flow_type_ == UnmaskAuthFlowType::kCvcThenFido &&
+      GetOrCreateFidoAuthenticator()->IsValidRequestOptions(
+          unmask_details_.fido_request_options)) {
     return true;
+  }
+#endif
 
 #if BUILDFLAG(IS_ANDROID)
   // For Android, we will delay the form filling for both intent-to-opt-in user
   // opting in and opted-in user registering a new card (kCvcThenFido). So we
   // check one more scenario for Android here. If the GetRealPan response
-  // includes `request_options`, that means the user showed intention to opt-in
-  // while unmasking and must complete the challenge before successfully
+  // includes valid `request_options`, that means the user showed intention to
+  // opt-in while unmasking and must complete the challenge before successfully
   // opting-in and filling the form.
-  if (!response.request_options.empty()) {
+  if (GetOrCreateFidoAuthenticator()->IsValidRequestOptions(
+          response.request_options)) {
     return true;
   }
 #endif

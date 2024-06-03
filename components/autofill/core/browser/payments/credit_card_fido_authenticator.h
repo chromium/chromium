@@ -150,6 +150,10 @@ class CreditCardFidoAuthenticator
   // Returns the current flow.
   Flow current_flow() { return current_flow_; }
 
+  // Returns true if `request_options` contains a challenge and has a non-empty
+  // list of keys that each have a Credential ID.
+  bool IsValidRequestOptions(const base::Value::Dict& request_options);
+
  private:
   friend class BrowserAutofillManagerTest;
   friend class CreditCardAccessManagerTest;
@@ -229,10 +233,6 @@ class CreditCardFidoAuthenticator
   base::Value::Dict ParseAttestationResponse(
       blink::mojom::MakeCredentialAuthenticatorResponsePtr
           attestation_response);
-
-  // Returns true if |request_options| contains a challenge and has a non-empty
-  // list of keys that each have a Credential ID.
-  bool IsValidRequestOptions(const base::Value::Dict& request_options);
 
   // Returns true if |request_options| contains a challenge.
   bool IsValidCreationOptions(const base::Value::Dict& creation_options);

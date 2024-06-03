@@ -102,6 +102,9 @@ class TestPaymentsNetworkInterface : public payments::PaymentsNetworkInterface {
                            std::string credential_id,
                            std::string relying_party_id);
 
+  void SetFidoRequestOptionsInUnmaskDetails(std::string_view credential_id,
+                                            std::string_view relying_party_id);
+
   void SetUploadCardResponseDetailsForUploadCard(
       const PaymentsNetworkInterface::UploadCardResponseDetails&
           upload_card_response_details);

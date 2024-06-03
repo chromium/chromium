@@ -289,6 +289,29 @@ CreditCardFidoAuthenticator::GetOrCreateFidoAuthenticationStrikeDatabase() {
   return fido_authentication_strike_database_.get();
 }
 
+bool CreditCardFidoAuthenticator::IsValidRequestOptions(
+    const base::Value::Dict& request_options) {
+  if (request_options.empty() || !request_options.contains("challenge") ||
+      !request_options.contains("key_info")) {
+    return false;
+  }
+
+  const auto* key_info_list = request_options.FindList("key_info");
+
+  if (key_info_list->empty()) {
+    return false;
+  }
+
+  for (const base::Value& key_info : *key_info_list) {
+    auto* dict = key_info.GetIfDict();
+    if (!dict || !dict->FindString("credential_id")) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 void CreditCardFidoAuthenticator::GetAssertion(
     blink::mojom::PublicKeyCredentialRequestOptionsPtr request_options) {
 #if !BUILDFLAG(IS_ANDROID)
@@ -681,29 +704,6 @@ base::Value::Dict CreditCardFidoAuthenticator::ParseAttestationResponse(
                std::move(authenticator_transport_list));
 
   return response;
-}
-
-bool CreditCardFidoAuthenticator::IsValidRequestOptions(
-    const base::Value::Dict& request_options) {
-  if (request_options.empty() || !request_options.contains("challenge") ||
-      !request_options.contains("key_info")) {
-    return false;
-  }
-
-  const auto* key_info_list = request_options.FindList("key_info");
-
-  if (key_info_list->empty()) {
-    return false;
-  }
-
-  for (const base::Value& key_info : *key_info_list) {
-    auto* dict = key_info.GetIfDict();
-    if (!dict || !dict->FindString("credential_id")) {
-      return false;
-    }
-  }
-
-  return true;
 }
 
 bool CreditCardFidoAuthenticator::IsValidCreationOptions(

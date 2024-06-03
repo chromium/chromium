@@ -157,6 +157,12 @@ void TestPaymentsNetworkInterface::AddFidoEligibleCard(std::string server_id,
   unmask_details_.unmask_auth_method = AutofillClient::UnmaskAuthMethod::kFido;
   unmask_details_.fido_eligible_card_ids.insert(server_id);
 
+  SetFidoRequestOptionsInUnmaskDetails(credential_id, relying_party_id);
+}
+
+void TestPaymentsNetworkInterface::SetFidoRequestOptionsInUnmaskDetails(
+    std::string_view credential_id,
+    std::string_view relying_party_id) {
   // Building the following JSON structure--
   // fido_request_options = {
   //   "challenge": kTestChallenge,
