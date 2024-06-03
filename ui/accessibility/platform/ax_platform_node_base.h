@@ -444,7 +444,6 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeBase : public AXPlatformNode {
   void Init(AXPlatformNodeDelegate* delegate) override;
 
   bool IsStructuredAnnotation() const;
-  bool IsSelectionItemSupported() const;
 
   // Get the role description from the node data or from the image annotation
   // status.

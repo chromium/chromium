@@ -905,55 +905,6 @@ bool AXPlatformNodeBase::IsStructuredAnnotation() const {
   return !reverse_relations.empty();
 }
 
-// TODO(accessibility): This is only used in AXPlatformNodeWin and therefore
-// should be moved there.
-bool AXPlatformNodeBase::IsSelectionItemSupported() const {
-  switch (GetRole()) {
-    // An ARIA 1.1+ role of "row" inside an ARIA 1.1 role of "table", should not
-    // be selectable. ARIA "table" is not interactable, ARIA "grid" is.
-    case ax::mojom::Role::kColumnHeader:
-    case ax::mojom::Role::kRow:
-    case ax::mojom::Role::kRowHeader: {
-      // An ARIA grid subwidget is only selectable if explicitly marked as
-      // selected (or not) with the aria-selected property.
-      if (!HasBoolAttribute(ax::mojom::BoolAttribute::kSelected))
-        return false;
-
-      AXPlatformNodeBase* table = GetTable();
-      if (!table)
-        return false;
-
-      return table->GetRole() == ax::mojom::Role::kGrid ||
-             table->GetRole() == ax::mojom::Role::kTreeGrid;
-    }
-    // https://www.w3.org/TR/core-aam-1.1/#mapping_state-property_table
-    // SelectionItem.IsSelected is exposed when aria-checked is True or False,
-    // for 'radio' and 'menuitemradio' roles.
-    case ax::mojom::Role::kRadioButton:
-    case ax::mojom::Role::kMenuItemRadio: {
-      if (GetData().GetCheckedState() == ax::mojom::CheckedState::kTrue ||
-          GetData().GetCheckedState() == ax::mojom::CheckedState::kFalse)
-        return true;
-      return false;
-    }
-    // https://www.w3.org/TR/wai-aria-1.1/#aria-selected
-    // SelectionItem.IsSelected is exposed when aria-select is True or False.
-    case ax::mojom::Role::kListBoxOption:
-    case ax::mojom::Role::kListItem:
-    case ax::mojom::Role::kMenuListOption:
-    case ax::mojom::Role::kTreeItem:
-      return HasBoolAttribute(ax::mojom::BoolAttribute::kSelected);
-    case ax::mojom::Role::kGridCell:
-    case ax::mojom::Role::kTab:
-      // According to the UIA documentation, this role should always support the
-      // SelectionItem control pattern:
-      // https://learn.microsoft.com/en-us/windows/win32/winauto/uiauto-supporttabitemcontroltype#required-control-patterns.
-      return true;
-    default:
-      return false;
-  }
-}
-
 bool AXPlatformNodeBase::IsTextField() const {
   return GetData().IsTextField();
 }
