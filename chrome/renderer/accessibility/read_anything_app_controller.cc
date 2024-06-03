@@ -1739,17 +1739,20 @@ int ReadAnythingAppController::GetNextWordHighlightLength(int index) {
   return model_.GetNextWordHighlightLength(index);
 }
 
-void ReadAnythingAppController::LogUmaHistogramTimes(int64_t time,
-                                                     std::string metric) {
+void ReadAnythingAppController::LogUmaHistogramTimes(
+    int64_t time,
+    const std::string& metric) {
   base::UmaHistogramTimes(metric, base::Milliseconds(time));
 }
 
-void ReadAnythingAppController::LogUmaHistogramLongTimes(int64_t time,
-                                                         std::string metric) {
+void ReadAnythingAppController::LogUmaHistogramLongTimes(
+    int64_t time,
+    const std::string& metric) {
   base::UmaHistogramLongTimes(metric, base::Milliseconds(time));
 }
 
-void ReadAnythingAppController::IncrementMetricCount(std::string metric) {
+void ReadAnythingAppController::IncrementMetricCount(
+    const std::string& metric) {
   model_.IncrementMetric(metric);
 }
 
@@ -1757,7 +1760,8 @@ void ReadAnythingAppController::LogSpeechEventCounts() {
   model_.LogSpeechEventCounts();
 }
 
-void ReadAnythingAppController::LogSpeechErrorEvent(std::string error_code) {
+void ReadAnythingAppController::LogSpeechErrorEvent(
+    const std::string& error_code) {
   std::optional<ReadAnythingSpeechError> error;
   if (error_code == "text-too-long") {
     error = ReadAnythingSpeechError::kTextTooLong;
