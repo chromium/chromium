@@ -118,6 +118,14 @@ TEST_F(PlusAddressSettingSyncBridgeTest, ModelReadyToSync_ExistingMetadata) {
   RecreateBridge();
 }
 
+TEST_F(PlusAddressSettingSyncBridgeTest, IsEntityDataValid) {
+  SettingSpecifics specifics = CreateSettingSpecifics("name", "value");
+  EXPECT_TRUE(bridge().IsEntityDataValid(EntityFromSpecifics(specifics)));
+  // Specifics with a missing name are invalid.
+  specifics.clear_name();
+  EXPECT_FALSE(bridge().IsEntityDataValid(EntityFromSpecifics(specifics)));
+}
+
 TEST_F(PlusAddressSettingSyncBridgeTest, GetStorageKey) {
   syncer::EntityData entity =
       EntityFromSpecifics(CreateSettingSpecifics("name", "value"));

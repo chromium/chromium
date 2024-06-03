@@ -43,6 +43,7 @@ class PlusAddressSettingSyncBridge : public syncer::ModelTypeSyncBridge {
                                    delete_metadata_change_list) override;
   void GetData(StorageKeyList storage_keys, DataCallback callback) override;
   void GetAllDataForDebugging(DataCallback callback) override;
+  bool IsEntityDataValid(const syncer::EntityData& entity_data) const override;
   std::string GetClientTag(const syncer::EntityData& entity_data) override;
   std::string GetStorageKey(const syncer::EntityData& entity_data) override;
 
