@@ -229,6 +229,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Success"/>
   <int value="1" label="Failure Unknown Reason"/>
   <int value="2" label="Failure IndexOutOfBoundsException"/>
+  <int value="3" label="Failure IllegalArgumentException"/>
 </enum>
 
 <enum name="TabStateRestoreMethod">

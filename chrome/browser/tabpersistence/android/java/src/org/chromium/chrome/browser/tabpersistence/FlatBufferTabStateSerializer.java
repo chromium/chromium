@@ -56,7 +56,10 @@ public class FlatBufferTabStateSerializer implements TabStateSerializer {
         /** FlatBuffer deserialization failed because of an index out of bounds exception. */
         int FAILURE_INDEX_OUT_OF_BOUNDS_EXCEPTION = 2;
 
-        int NUM_ENTRIES = 3;
+        /** FlatBuffer deserialization failed because of an illegal argument exception. */
+        int FAILURE_ILLEGAL_ARGUMENT_EXCEPTION = 3;
+
+        int NUM_ENTRIES = 4;
     }
 
     @Override
@@ -138,6 +141,11 @@ public class FlatBufferTabStateSerializer implements TabStateSerializer {
             RecordHistogram.recordEnumeratedHistogram(
                     "Tabs.TabState.FlatBufferDeserializeResult",
                     TabStateFlatBufferDeserializeResult.FAILURE_INDEX_OUT_OF_BOUNDS_EXCEPTION,
+                    TabStateFlatBufferDeserializeResult.NUM_ENTRIES);
+        } catch (IllegalArgumentException e) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Tabs.TabState.FlatBufferDeserializeResult",
+                    TabStateFlatBufferDeserializeResult.FAILURE_ILLEGAL_ARGUMENT_EXCEPTION,
                     TabStateFlatBufferDeserializeResult.NUM_ENTRIES);
         } catch (Exception e) {
             RecordHistogram.recordEnumeratedHistogram(
