@@ -107,6 +107,10 @@ const test::UIPath kFooterLearnMorePopUpClose = {
 const test::UIPath kAcceptButton = {kConsolidatedConsentId, "acceptButton"};
 const test::UIPath kReadMoreButton = {kConsolidatedConsentId, "loadedDialog",
                                       "readMoreButton"};
+const test::UIPath kTermsDescriptionArcEnabled = {kConsolidatedConsentId,
+                                                  "termsDescriptionArcEnabled"};
+const test::UIPath kTermsDescriptionArcDisabled = {
+    kConsolidatedConsentId, "termsDescriptionArcDisabled"};
 
 // Google EUlA Dialog
 const test::UIPath kGoogleEulaDialog = {kConsolidatedConsentId,
@@ -329,6 +333,7 @@ IN_PROC_BROWSER_TEST_P(ConsolidatedConsentScreenTest, OptinsVisibility) {
   OobeScreenWaiter(ConsolidatedConsentScreenView::kScreenId).Wait();
   test::OobeJS().CreateVisibilityWaiter(true, kLoadedDialog)->Wait();
 
+  test::OobeJS().ExpectVisiblePath(kTermsDescriptionArcDisabled);
   test::OobeJS().ExpectVisiblePath(kUsageStats);
   test::OobeJS().ExpectEnabledPath(kUsageStatsToggle);
   test::OobeJS().ExpectHiddenPath(kBackup);
@@ -483,6 +488,7 @@ IN_PROC_BROWSER_TEST_P(ConsolidatedConsentScreenArcEnabledTest,
   OobeScreenWaiter(ConsolidatedConsentScreenView::kScreenId).Wait();
   test::OobeJS().CreateVisibilityWaiter(true, kLoadedDialog)->Wait();
 
+  test::OobeJS().ExpectVisiblePath(kTermsDescriptionArcEnabled);
   test::OobeJS().ExpectVisiblePath(kUsageStats);
   test::OobeJS().ExpectEnabledPath(kUsageStatsToggle);
   test::OobeJS().ExpectVisiblePath(kBackup);
