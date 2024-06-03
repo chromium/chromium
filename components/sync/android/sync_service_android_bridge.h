@@ -40,7 +40,6 @@ class SyncServiceAndroidBridge : public syncer::SyncServiceObserver {
   // Please keep all methods below in the same order as the @NativeMethods in
   // SyncServiceImpl.java.
   void SetSyncRequested(JNIEnv* env);
-  jboolean CanSyncFeatureStart(JNIEnv* env);
   jboolean IsSyncFeatureEnabled(JNIEnv* env);
   jboolean IsSyncFeatureActive(JNIEnv* env);
   jboolean IsSyncDisabledByEnterprisePolicy(JNIEnv* env);

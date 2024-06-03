@@ -129,10 +129,6 @@ void SyncServiceAndroidBridge::SetSyncRequested(JNIEnv* env) {
   native_sync_service_->SetSyncFeatureRequested();
 }
 
-jboolean SyncServiceAndroidBridge::CanSyncFeatureStart(JNIEnv* env) {
-  return native_sync_service_->CanSyncFeatureStart();
-}
-
 jboolean SyncServiceAndroidBridge::IsSyncFeatureEnabled(JNIEnv* env) {
   return native_sync_service_->IsSyncFeatureEnabled();
 }

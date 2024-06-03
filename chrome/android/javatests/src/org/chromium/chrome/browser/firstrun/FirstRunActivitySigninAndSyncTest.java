@@ -427,7 +427,7 @@ public class FirstRunActivitySigninAndSyncTest {
 
         ApplicationTestUtils.waitForActivityState(mFirstRunActivity, Stage.DESTROYED);
 
-        assertFalse(SyncTestUtil.canSyncFeatureStart());
+        assertFalse(SyncTestUtil.hasSyncConsent());
     }
 
     @Test
@@ -447,7 +447,7 @@ public class FirstRunActivitySigninAndSyncTest {
 
         ApplicationTestUtils.waitForActivityState(mFirstRunActivity, Stage.DESTROYED);
 
-        assertFalse(SyncTestUtil.canSyncFeatureStart());
+        assertFalse(SyncTestUtil.hasSyncConsent());
     }
 
     @Test
@@ -486,9 +486,9 @@ public class FirstRunActivitySigninAndSyncTest {
 
         ApplicationTestUtils.waitForActivityState(mFirstRunActivity, Stage.DESTROYED);
 
-        // Sync-the-feature can start but won't become enabled until the user clicks the "Confirm"
-        // button in settings.
-        SyncTestUtil.waitForCanSyncFeatureStart();
+        // Sync consent is granted but sync-the-feature won't become enabled until the user clicks
+        // the "Confirm" button in settings.
+        SyncTestUtil.waitForSyncConsent();
     }
 
     @Test
@@ -534,7 +534,7 @@ public class FirstRunActivitySigninAndSyncTest {
 
         ApplicationTestUtils.waitForActivityState(mFirstRunActivity, Stage.DESTROYED);
 
-        assertFalse(SyncTestUtil.canSyncFeatureStart());
+        assertFalse(SyncTestUtil.hasSyncConsent());
     }
 
     @Test
@@ -559,7 +559,7 @@ public class FirstRunActivitySigninAndSyncTest {
 
         ApplicationTestUtils.waitForActivityState(mFirstRunActivity, Stage.DESTROYED);
 
-        assertFalse(SyncTestUtil.canSyncFeatureStart());
+        assertFalse(SyncTestUtil.hasSyncConsent());
     }
 
     @Test
@@ -581,9 +581,9 @@ public class FirstRunActivitySigninAndSyncTest {
 
         ApplicationTestUtils.waitForActivityState(mFirstRunActivity, Stage.DESTROYED);
 
-        // Sync-the-feature can start but won't become enabled until the user clicks the "Confirm"
-        // button in settings.
-        SyncTestUtil.waitForCanSyncFeatureStart();
+        // Sync consent is granted but sync-the-feature won't become enabled until the user clicks
+        // the "Confirm" button in settings.
+        SyncTestUtil.waitForSyncConsent();
 
         // Check that the sync consent has been cleared (but the user is still signed in), and that
         // the sync service state changes have been undone.

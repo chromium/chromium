@@ -48,10 +48,15 @@ public final class SyncTestUtil {
                 });
     }
 
-    /** Returns whether sync-the-feature can start. */
-    public static boolean canSyncFeatureStart() {
+    /**
+     * Returns whether the user has sync consent.
+     *
+     * <p>TODO(crbug.com/40066949): Remove once kSync becomes unreachable or is deleted from the
+     * codebase. See ConsentLevel::kSync documentation for details.
+     */
+    public static boolean hasSyncConsent() {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> getSyncServiceForLastUsedProfile().canSyncFeatureStart());
+                () -> getSyncServiceForLastUsedProfile().hasSyncConsent());
     }
 
     /** Returns whether sync-the-feature is enabled. */
@@ -90,11 +95,16 @@ public final class SyncTestUtil {
                 INTERVAL_MS);
     }
 
-    /** Waits for canSyncFeatureStart() to return true. */
-    public static void waitForCanSyncFeatureStart() {
+    /**
+     * Waits for hasSyncConsent() to return true.
+     *
+     * <p>TODO(crbug.com/40066949): Remove once kSync becomes unreachable or is deleted from the
+     * codebase. See ConsentLevel::kSync documentation for details.
+     */
+    public static void waitForSyncConsent() {
         CriteriaHelper.pollUiThread(
-                () -> getSyncServiceForLastUsedProfile().canSyncFeatureStart(),
-                "Timed out waiting for sync being able to start.",
+                () -> getSyncServiceForLastUsedProfile().hasSyncConsent(),
+                "Timed out waiting for sync consent.",
                 TIMEOUT_MS,
                 INTERVAL_MS);
     }

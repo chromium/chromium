@@ -101,13 +101,6 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
     }
 
     @Override
-    public boolean canSyncFeatureStart() {
-        ThreadUtils.assertOnUiThread();
-        assert mSyncServiceAndroidBridge != 0;
-        return SyncServiceImplJni.get().canSyncFeatureStart(mSyncServiceAndroidBridge);
-    }
-
-    @Override
     public boolean isSyncFeatureEnabled() {
         ThreadUtils.assertOnUiThread();
         assert mSyncServiceAndroidBridge != 0;
@@ -530,8 +523,6 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
     interface Natives {
         // Please keep all methods below in the same order as sync_service_android_bridge.h.
         void setSyncRequested(long nativeSyncServiceAndroidBridge);
-
-        boolean canSyncFeatureStart(long nativeSyncServiceAndroidBridge);
 
         boolean isSyncFeatureEnabled(long nativeSyncServiceAndroidBridge);
 

@@ -47,20 +47,6 @@ public interface SyncService {
     public boolean isTransportStateActive();
 
     /**
-     * Checks whether Sync-the-feature can (attempt to) start. This means that there is a
-     * ConsentLevel::kSync account and no disable reasons. It does *not* require first-time Sync
-     * setup to be complete.
-     *
-     * <p>Note: This refers to Sync-the-feature. Sync-the-transport may be running even if this is
-     * false.
-     *
-     * @return true if Sync can start, false otherwise.
-     */
-    // TODO(crbug.com/40066949): Remove once kSync becomes unreachable or is deleted from the
-    // codebase. See ConsentLevel::kSync documentation for details.
-    public boolean canSyncFeatureStart();
-
-    /**
      * Returns whether all conditions are satisfied for Sync-the-feature to start. This means that
      * there is a Sync-consented account, no disable reasons, and first-time Sync setup has been
      * completed by the user.
