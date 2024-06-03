@@ -11,6 +11,7 @@
 #include "components/viz/common/quads/compositor_frame_transition_directive.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_transition_directive.mojom-shared.h"
+#include "ui/gfx/display_color_spaces.h"
 
 namespace mojo {
 
@@ -71,6 +72,11 @@ struct StructTraits<viz::mojom::CompositorFrameTransitionDirectiveDataView,
   static std::vector<viz::CompositorFrameTransitionDirective::SharedElement>
   shared_elements(const viz::CompositorFrameTransitionDirective& directive) {
     return directive.shared_elements();
+  }
+
+  static const gfx::DisplayColorSpaces& display_color_spaces(
+      const viz::CompositorFrameTransitionDirective& directive) {
+    return directive.display_color_spaces();
   }
 
   static bool Read(viz::mojom::CompositorFrameTransitionDirectiveDataView data,

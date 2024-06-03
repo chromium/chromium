@@ -84,7 +84,7 @@ TEST(CompositorFrameMetadata, Clone) {
   metadata.transition_directives.emplace_back(
       CompositorFrameTransitionDirective::CreateSave(
           blink::ViewTransitionToken(), /*maybe_cross_frame_sink=*/false, 4u,
-          {}));
+          {}, {}));
 
   CompositorFrameMetadata clone = metadata.Clone();
   EXPECT_FLOAT_EQ(clone.device_scale_factor, metadata.device_scale_factor);

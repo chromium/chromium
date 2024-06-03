@@ -14,7 +14,7 @@ using Type = CompositorFrameTransitionDirective::Type;
 TEST(CompositorFrameTransitionDirective, GettersReflectParameters) {
   blink::ViewTransitionToken transition_token;
   auto save_directive = CompositorFrameTransitionDirective::CreateSave(
-      transition_token, /*maybe_cross_frame_sink=*/false, 1u, {});
+      transition_token, /*maybe_cross_frame_sink=*/false, 1u, {}, {});
 
   EXPECT_EQ(1u, save_directive.sequence_id());
   EXPECT_EQ(Type::kSave, save_directive.type());

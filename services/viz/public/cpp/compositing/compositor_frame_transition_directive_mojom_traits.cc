@@ -17,6 +17,8 @@
 #include "services/viz/public/cpp/compositing/view_transition_element_resource_id_mojom_traits.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_transition_directive.mojom-shared.h"
 #include "third_party/blink/public/common/tokens/tokens_mojom_traits.h"
+#include "ui/gfx/display_color_spaces.h"
+#include "ui/gfx/mojom/display_color_spaces_mojom_traits.h"
 
 namespace viz {
 using NavigationId = base::UnguessableToken;
@@ -85,8 +87,10 @@ bool StructTraits<viz::mojom::CompositorFrameTransitionDirectiveDataView,
   viz::CompositorFrameTransitionDirective::Type type;
   std::vector<viz::CompositorFrameTransitionDirective::SharedElement>
       shared_elements;
+  gfx::DisplayColorSpaces display_color_spaces;
   if (!data.ReadTransitionToken(&transition_token) || !data.ReadType(&type) ||
-      !data.ReadSharedElements(&shared_elements)) {
+      !data.ReadSharedElements(&shared_elements) ||
+      !data.ReadDisplayColorSpaces(&display_color_spaces)) {
     return false;
   }
 
@@ -101,7 +105,7 @@ bool StructTraits<viz::mojom::CompositorFrameTransitionDirectiveDataView,
     case viz::CompositorFrameTransitionDirective::Type::kSave:
       *out = viz::CompositorFrameTransitionDirective::CreateSave(
           transition_token, maybe_cross_frame_sink, sequence_id,
-          std::move(shared_elements));
+          std::move(shared_elements), display_color_spaces);
       break;
     case viz::CompositorFrameTransitionDirective::Type::kAnimateRenderer:
       *out = viz::CompositorFrameTransitionDirective::CreateAnimate(

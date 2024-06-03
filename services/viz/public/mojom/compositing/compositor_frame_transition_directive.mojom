@@ -8,6 +8,7 @@ module viz.mojom;
 import "services/viz/public/mojom/compositing/compositor_render_pass_id.mojom";
 import "services/viz/public/mojom/compositing/view_transition_element_resource_id.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
+import "ui/gfx/mojom/display_color_spaces.mojom";
 
 enum CompositorFrameTransitionDirectiveType {
   kSave,
@@ -56,4 +57,8 @@ struct CompositorFrameTransitionDirective {
 
   // A collection of shared elements.
   array<CompositorFrameTransitionDirectiveSharedElement> shared_elements;
+
+  // Display color spaces that the compositor expects are used for this
+  // directive.
+  gfx.mojom.DisplayColorSpaces display_color_spaces;
 };

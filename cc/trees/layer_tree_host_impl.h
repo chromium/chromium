@@ -1062,6 +1062,9 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // depending on whether or not it has a display tree.
   void SetNeedsRedrawOrUpdateDisplayTree();
 
+  // Returns the most up to date display color spaces.
+  gfx::DisplayColorSpaces GetDisplayColorSpaces() const;
+
   // Once bound, this instance owns the InputHandler. However, an InputHandler
   // need not be bound so this should be null-checked before dereferencing.
   std::unique_ptr<InputDelegateForCompositor> input_delegate_;

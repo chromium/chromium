@@ -85,7 +85,8 @@ ViewTransitionRequest::~ViewTransitionRequest() = default;
 
 viz::CompositorFrameTransitionDirective
 ViewTransitionRequest::ConstructDirective(
-    const ViewTransitionElementMap& shared_element_render_pass_id_map) const {
+    const ViewTransitionElementMap& shared_element_render_pass_id_map,
+    const gfx::DisplayColorSpaces& display_color_spaces) const {
   switch (type_) {
     case Type::kRelease:
       DCHECK(capture_resource_ids_.empty());
@@ -115,7 +116,7 @@ ViewTransitionRequest::ConstructDirective(
 
   return viz::CompositorFrameTransitionDirective::CreateSave(
       transition_token_, maybe_cross_frame_sink_, sequence_id_,
-      std::move(shared_elements));
+      std::move(shared_elements), display_color_spaces);
 }
 
 std::string ViewTransitionRequest::ToString() const {

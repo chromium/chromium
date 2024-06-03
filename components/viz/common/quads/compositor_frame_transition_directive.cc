@@ -17,10 +17,11 @@ CompositorFrameTransitionDirective::CreateSave(
     const blink::ViewTransitionToken& transition_token,
     bool maybe_cross_frame_sink,
     uint32_t sequence_id,
-    std::vector<SharedElement> shared_elements) {
+    std::vector<SharedElement> shared_elements,
+    const gfx::DisplayColorSpaces& display_color_spaces) {
   return CompositorFrameTransitionDirective(
       transition_token, maybe_cross_frame_sink, sequence_id, Type::kSave,
-      std::move(shared_elements));
+      std::move(shared_elements), display_color_spaces);
 }
 
 // static
@@ -52,12 +53,14 @@ CompositorFrameTransitionDirective::CompositorFrameTransitionDirective(
     bool maybe_cross_frame_sink,
     uint32_t sequence_id,
     Type type,
-    std::vector<SharedElement> shared_elements)
+    std::vector<SharedElement> shared_elements,
+    const gfx::DisplayColorSpaces& display_color_spaces)
     : transition_token_(transition_token),
       maybe_cross_frame_sink_(maybe_cross_frame_sink),
       sequence_id_(sequence_id),
       type_(type),
-      shared_elements_(std::move(shared_elements)) {}
+      shared_elements_(std::move(shared_elements)),
+      display_color_spaces_(display_color_spaces) {}
 
 CompositorFrameTransitionDirective::CompositorFrameTransitionDirective(
     const CompositorFrameTransitionDirective&) = default;

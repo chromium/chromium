@@ -12,6 +12,7 @@
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/view_transition_element_resource_id.h"
 #include "components/viz/common/viz_common_export.h"
+#include "ui/gfx/display_color_spaces.h"
 
 namespace viz {
 
@@ -67,7 +68,8 @@ class VIZ_COMMON_EXPORT CompositorFrameTransitionDirective {
       const blink::ViewTransitionToken& transition_token,
       bool maybe_cross_frame_sink,
       uint32_t sequence_id,
-      std::vector<SharedElement> shared_elements);
+      std::vector<SharedElement> shared_elements,
+      const gfx::DisplayColorSpaces& display_color_spaces);
   static CompositorFrameTransitionDirective CreateAnimate(
       const blink::ViewTransitionToken& transition_token,
       bool maybe_cross_frame_sink,
@@ -102,13 +104,18 @@ class VIZ_COMMON_EXPORT CompositorFrameTransitionDirective {
 
   bool maybe_cross_frame_sink() const { return maybe_cross_frame_sink_; }
 
+  const gfx::DisplayColorSpaces& display_color_spaces() const {
+    return display_color_spaces_;
+  }
+
  private:
   CompositorFrameTransitionDirective(
       const blink::ViewTransitionToken& transition_token,
       bool maybe_cross_frame_sink,
       uint32_t sequence_id,
       Type type,
-      std::vector<SharedElement> shared_elements = {});
+      std::vector<SharedElement> shared_elements = {},
+      const gfx::DisplayColorSpaces& display_color_spaces = {});
 
   blink::ViewTransitionToken transition_token_;
   bool maybe_cross_frame_sink_ = false;
@@ -118,6 +125,8 @@ class VIZ_COMMON_EXPORT CompositorFrameTransitionDirective {
   Type type_ = Type::kSave;
 
   std::vector<SharedElement> shared_elements_;
+
+  gfx::DisplayColorSpaces display_color_spaces_;
 };
 
 }  // namespace viz

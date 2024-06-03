@@ -16,6 +16,7 @@
 #include "components/viz/common/quads/compositor_frame_transition_directive.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "ui/gfx/display_color_spaces.h"
 
 namespace cc {
 
@@ -67,7 +68,8 @@ class CC_EXPORT ViewTransitionRequest {
   // would create a new sequence id for the directive, which means it would be
   // processed again by viz.
   viz::CompositorFrameTransitionDirective ConstructDirective(
-      const ViewTransitionElementMap& shared_element_render_pass_id_map) const;
+      const ViewTransitionElementMap& shared_element_render_pass_id_map,
+      const gfx::DisplayColorSpaces& display_color_spaces) const;
 
   // Returns the sequence id for this request.
   uint32_t sequence_id() const { return sequence_id_; }

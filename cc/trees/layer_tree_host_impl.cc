@@ -1884,6 +1884,18 @@ LayerTreeHostImpl::CreateTilesWithResourceIterator() {
       pending_tree_ ? &pending_tree_->picture_layers() : nullptr);
 }
 
+gfx::DisplayColorSpaces LayerTreeHostImpl::GetDisplayColorSpaces() const {
+  // The pending tree will has the most recently updated color space, so use it.
+  if (pending_tree_) {
+    return pending_tree_->display_color_spaces();
+  }
+
+  if (active_tree_) {
+    return active_tree_->display_color_spaces();
+  }
+  return gfx::DisplayColorSpaces();
+}
+
 void LayerTreeHostImpl::SetIsLikelyToRequireADraw(
     bool is_likely_to_require_a_draw) {
   // Proactively tell the scheduler that we expect to draw within each vsync
@@ -1902,12 +1914,7 @@ TargetColorParams LayerTreeHostImpl::GetTargetColorParams(
   if (!layer_tree_frame_sink_ || !layer_tree_frame_sink_->context_provider())
     return params;
 
-  // The pending tree will has the most recently updated color space, so use it.
-  gfx::DisplayColorSpaces display_cs;
-  if (pending_tree_)
-    display_cs = pending_tree_->display_color_spaces();
-  else if (active_tree_)
-    display_cs = active_tree_->display_color_spaces();
+  gfx::DisplayColorSpaces display_cs = GetDisplayColorSpaces();
   params.sdr_max_luminance_nits = display_cs.GetSDRMaxLuminanceNits();
 
   if (settings_.prefer_raster_in_srgb &&
@@ -2761,9 +2768,10 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
         render_surface->render_pass_id();
   }
 
+  auto display_color_spaces = GetDisplayColorSpaces();
   for (auto& request : active_tree_->TakeViewTransitionRequests()) {
-    metadata.transition_directives.push_back(
-        request->ConstructDirective(view_transition_element_map));
+    metadata.transition_directives.push_back(request->ConstructDirective(
+        view_transition_element_map, display_color_spaces));
   }
 
   PopulateMetadataContentColorUsage(frame, &metadata);

@@ -2060,9 +2060,9 @@ TEST_F(CompositorFrameSinkSupportTest,
 
   std::unique_ptr<SurfaceAnimationManager> animation_manager =
       SurfaceAnimationManager::CreateWithSave(
-          CompositorFrameTransitionDirective::CreateSave(transition_token,
-                                                         maybe_cross_frame_sink,
-                                                         /*sequence_id=*/1, {}),
+          CompositorFrameTransitionDirective::CreateSave(
+              transition_token, maybe_cross_frame_sink,
+              /*sequence_id=*/1, {}, {}),
           surface, &shared_bitmap_manager_, sii, &id_tracker,
           base::DoNothing());
   ASSERT_TRUE(animation_manager);

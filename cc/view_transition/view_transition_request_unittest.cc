@@ -24,12 +24,12 @@ TEST(ViewTransitionRequestTest, PrepareRequest) {
   EXPECT_TRUE(called);
   EXPECT_TRUE(request->TakeFinishedCallback().is_null());
 
-  auto directive = request->ConstructDirective({});
+  auto directive = request->ConstructDirective({}, {});
   EXPECT_GT(directive.sequence_id(), 0u);
   EXPECT_EQ(viz::CompositorFrameTransitionDirective::Type::kSave,
             directive.type());
 
-  auto duplicate = request->ConstructDirective({});
+  auto duplicate = request->ConstructDirective({}, {});
   EXPECT_EQ(duplicate.sequence_id(), directive.sequence_id());
   EXPECT_EQ(duplicate.type(), directive.type());
 }
@@ -41,7 +41,7 @@ TEST(ViewTransitionRequestTest, StartRequest) {
 
   EXPECT_TRUE(request->TakeFinishedCallback().is_null());
 
-  auto directive = request->ConstructDirective({});
+  auto directive = request->ConstructDirective({}, {});
   EXPECT_GT(directive.sequence_id(), 0u);
   EXPECT_EQ(viz::CompositorFrameTransitionDirective::Type::kAnimateRenderer,
             directive.type());
