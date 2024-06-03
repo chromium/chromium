@@ -29,6 +29,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -1442,5 +1443,186 @@ IN_PROC_BROWSER_TEST_P(RenderWidgetHostSameDocNavUpdatesLocalSurfaceIdTest,
 INSTANTIATE_TEST_SUITE_P(All,
                          RenderWidgetHostSameDocNavUpdatesLocalSurfaceIdTest,
                          ::testing::Bool());
+
+namespace {
+
+enum class TestConfig { kSameDoc = 0, kBFCacheEnabled, kBFCacheDisabled };
+
+static std::string DescribeTest(
+    const ::testing::TestParamInfo<TestConfig>& info) {
+  switch (info.param) {
+    case TestConfig::kSameDoc:
+      return "SameDoc";
+    case TestConfig::kBFCacheEnabled:
+      return "CrossDoc_BFCacheEnabled";
+    case TestConfig::kBFCacheDisabled:
+      return "CrossDoc_BFCacheDisabled";
+  }
+}
+
+class ItemSequenceNumberObserver : public RenderFrameMetadataProvider::Observer,
+                                   public WebContentsObserver {
+ public:
+  ItemSequenceNumberObserver(WebContents* web_contents,
+                             int64_t expected_sequence_number)
+      : WebContentsObserver(web_contents),
+        expected_sequence_number_(expected_sequence_number) {}
+  ~ItemSequenceNumberObserver() override {
+    if (provider_) {
+      provider_->RemoveObserver(this);
+    }
+  }
+
+  // `RenderFrameMetadataProvider::Observer`:
+  void OnRenderFrameMetadataChangedBeforeActivation(
+      const cc::RenderFrameMetadata& metadata) override {}
+  void OnRenderFrameMetadataChangedAfterActivation(
+      base::TimeTicks activation_time) override {
+    ASSERT_TRUE(provider_);
+    if (expected_sequence_number_ ==
+        provider_->LastRenderFrameMetadata()
+            .primary_main_frame_item_sequence_number) {
+      observed_expected_number_ = true;
+    } else {
+      return;
+    }
+    if (run_loop_) {
+      run_loop_->Quit();
+    }
+  }
+  void OnRenderFrameSubmission() override {}
+  void OnLocalSurfaceIdChanged(
+      const cc::RenderFrameMetadata& metadata) override {}
+
+  // `WebContentsObserver`:
+  void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override {
+    ASSERT_FALSE(navigation_handle->IsSameDocument());
+    auto* request = static_cast<NavigationRequest*>(navigation_handle);
+    RenderFrameHostImpl* rfhi = request->GetRenderFrameHost();
+    ASSERT_TRUE(rfhi);
+    provider_ = rfhi->GetView()->host()->render_frame_metadata_provider();
+    provider_->AddObserver(this);
+  }
+
+  // For same-doc navigations, we don't get `WCO::ReadyToCommitNavigation`.
+  // Since this is testing code, we just set the provider directly (instead of
+  // registering a new `CommitDeferringCondition`).
+  void SetProviderForSameDocNavigations(
+      RenderFrameMetadataProviderImpl* provider) {
+    ASSERT_FALSE(provider_);
+    provider_ = provider;
+    provider_->AddObserver(this);
+  }
+
+  [[nodiscard]] bool WaitForExpectedItemSequenceNumber() {
+    if (!provider_) {
+      return false;
+    }
+    // If `OnRenderFrameMetadataChangedAfterActivation()` is called before
+    // `WaitForExpectedItemSequenceNumber()`.
+    if (observed_expected_number_) {
+      return true;
+    }
+    CHECK(!run_loop_);
+    run_loop_ = std::make_unique<base::RunLoop>();
+    run_loop_->Run();
+    return observed_expected_number_;
+  }
+
+ private:
+  const int64_t expected_sequence_number_;
+
+  raw_ptr<RenderFrameMetadataProviderImpl> provider_;
+  std::unique_ptr<base::RunLoop> run_loop_;
+  bool observed_expected_number_ = false;
+};
+
+class RenderWidgetHostItemSequenceNumberInRenderFrameMetadataTest
+    : public RenderWidgetHostBrowserTest,
+      public ::testing::WithParamInterface<TestConfig> {
+ public:
+  RenderWidgetHostItemSequenceNumberInRenderFrameMetadataTest() = default;
+  ~RenderWidgetHostItemSequenceNumberInRenderFrameMetadataTest() override =
+      default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    auto test_config = GetParam();
+    switch (test_config) {
+      case TestConfig::kSameDoc: {
+        first_url_ = "/session_history/fragment.html";
+        second_url_ = "/session_history/fragment.html#a";
+        break;
+      }
+      case TestConfig::kBFCacheEnabled: {
+        first_url_ = "/empty.html";
+        second_url_ = "/title1.html";
+        scoped_feature_list_.InitWithFeaturesAndParameters(
+            GetDefaultEnabledBackForwardCacheFeaturesForTesting(),
+            GetDefaultDisabledBackForwardCacheFeaturesForTesting());
+        break;
+      }
+      case TestConfig::kBFCacheDisabled: {
+        first_url_ = "/empty.html";
+        second_url_ = "/title1.html";
+        command_line->AppendSwitch(switches::kDisableBackForwardCache);
+        break;
+      }
+    }
+    RenderWidgetHostBrowserTest::SetUpCommandLine(command_line);
+  }
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+  GURL FirstURL() { return embedded_test_server()->GetURL(first_url_); }
+
+  GURL SecondURL() { return embedded_test_server()->GetURL(second_url_); }
+
+ private:
+  std::string first_url_;
+  std::string second_url_;
+  std::vector<std::string> hosts_;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_P(
+    RenderWidgetHostItemSequenceNumberInRenderFrameMetadataTest,
+    ItemSequenceNumberExpected) {
+  ASSERT_TRUE(NavigateToURL(shell(), FirstURL()));
+  ASSERT_TRUE(NavigateToURL(shell(), SecondURL()));
+
+  auto* controller = static_cast<NavigationControllerImpl*>(
+      &(web_contents()->GetController()));
+  ASSERT_EQ(controller->GetEntryCount(), 2);
+  int64_t expected_sequence_number =
+      controller->GetEntryAtIndex(0)
+          ->GetFrameEntry(controller->frame_tree().root())
+          ->item_sequence_number();
+
+  ItemSequenceNumberObserver obs(web_contents(), expected_sequence_number);
+  if (GetParam() == TestConfig::kSameDoc) {
+    obs.SetProviderForSameDocNavigations(
+        view()->host()->render_frame_metadata_provider());
+  }
+
+  TestNavigationObserver nav_observer(web_contents(), 1);
+  ASSERT_TRUE(web_contents()->GetController().CanGoBack());
+  web_contents()->GetController().GoBack();
+
+  nav_observer.WaitForNavigationFinished();
+  ASSERT_TRUE(obs.WaitForExpectedItemSequenceNumber());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    RenderWidgetHostItemSequenceNumberInRenderFrameMetadataTest,
+    ::testing::ValuesIn({TestConfig::kSameDoc, TestConfig::kBFCacheEnabled,
+                         TestConfig::kBFCacheDisabled}),
+    &DescribeTest);
 
 }  // namespace content

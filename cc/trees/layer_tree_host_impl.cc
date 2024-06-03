@@ -2543,6 +2543,9 @@ RenderFrameMetadata LayerTreeHostImpl::MakeRenderFrameMetadata(
         child_local_surface_id_allocator_.GetCurrentLocalSurfaceId();
   }
 
+  metadata.primary_main_frame_item_sequence_number =
+      active_tree()->primary_main_frame_item_sequence_number();
+
   return metadata;
 }
 

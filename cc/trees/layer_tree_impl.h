@@ -424,6 +424,14 @@ class CC_EXPORT LayerTreeImpl {
   void SetScreenshotDestinationToken(base::UnguessableToken destination_token);
   base::UnguessableToken TakeScreenshotDestinationToken();
 
+  void set_primary_main_frame_item_sequence_number(
+      int64_t item_sequence_number) {
+    primary_main_frame_item_sequence_number_ = item_sequence_number;
+  }
+  uint64_t primary_main_frame_item_sequence_number() {
+    return primary_main_frame_item_sequence_number_;
+  }
+
   void SetDeviceViewportRect(const gfx::Rect& device_viewport_rect);
 
   // TODO(fsamuel): The reason this is not a trivial accessor is because it
@@ -988,6 +996,10 @@ class CC_EXPORT LayerTreeImpl {
 
   // See `CommitState::screenshot_destination_token`.
   base::UnguessableToken screenshot_destination_;
+
+  // See `CommitState::primary_main_frame_item_sequence_number`.
+  int64_t primary_main_frame_item_sequence_number_ =
+      RenderFrameMetadata::kInvalidItemSequenceNumber;
 };
 
 }  // namespace cc

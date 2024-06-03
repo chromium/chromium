@@ -592,6 +592,11 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   void RequestViewportScreenshot(
       const base::UnguessableToken& destination_token);
 
+  // Request to set `primary_main_frame_item_sequence_number` on the next
+  // frame's metadata.
+  void SetPrimaryMainFrameItemSequenceNumber(
+      int64_t primary_main_frame_item_sequence_number);
+
   // Returns the current state of the new LocalSurfaceId request and resets
   // the state.
   bool new_local_surface_id_request_for_testing() const {

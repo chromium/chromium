@@ -99,6 +99,11 @@ struct COMPONENT_EXPORT(CC_SHARED_MOJOM_TRAITS)
     return metadata.new_vertical_scroll_direction;
   }
 
+  static int64_t primary_main_frame_item_sequence_number(
+      const cc::RenderFrameMetadata& metadata) {
+    return metadata.primary_main_frame_item_sequence_number;
+  }
+
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   static float bottom_controls_height(const cc::RenderFrameMetadata& metadata) {
     return metadata.bottom_controls_height;

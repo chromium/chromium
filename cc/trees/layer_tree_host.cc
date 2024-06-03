@@ -1644,6 +1644,17 @@ void LayerTreeHost::RequestViewportScreenshot(
   SetNeedsCommit();
 }
 
+void LayerTreeHost::SetPrimaryMainFrameItemSequenceNumber(
+    int64_t primary_main_frame_item_sequence_number) {
+  if (pending_commit_state()->primary_main_frame_item_sequence_number ==
+      primary_main_frame_item_sequence_number) {
+    return;
+  }
+  pending_commit_state()->primary_main_frame_item_sequence_number =
+      primary_main_frame_item_sequence_number;
+  SetNeedsCommit();
+}
+
 void LayerTreeHost::RequestNewLocalSurfaceId() {
   // We can still request a new viz::LocalSurfaceId but that request will be
   // deferred until we have a valid viz::LocalSurfaceId from the parent.

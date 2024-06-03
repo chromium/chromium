@@ -34,6 +34,8 @@ bool StructTraits<
   out->external_page_scale_factor = data.external_page_scale_factor();
   out->top_controls_height = data.top_controls_height();
   out->top_controls_shown_ratio = data.top_controls_shown_ratio();
+  out->primary_main_frame_item_sequence_number =
+      data.primary_main_frame_item_sequence_number();
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   out->bottom_controls_height = data.bottom_controls_height();
   out->bottom_controls_shown_ratio = data.bottom_controls_shown_ratio();

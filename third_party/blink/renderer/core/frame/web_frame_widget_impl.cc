@@ -4955,9 +4955,15 @@ bool WebFrameWidgetImpl::HasPendingPageScaleAnimation() {
   return LayerTreeHost()->HasPendingPageScaleAnimation();
 }
 
-void WebFrameWidgetImpl::SetSourceURLForCompositor(ukm::SourceId source_id,
-                                                   const KURL& url) {
+void WebFrameWidgetImpl::UpdateNavigationStateForCompositor(
+    ukm::SourceId source_id,
+    const KURL& url) {
   LayerTreeHost()->SetSourceURL(source_id, GURL(url));
+  DocumentLoader* loader =
+      local_root_->GetFrame()->Loader().GetDocumentLoader();
+  CHECK(loader->GetHistoryItem());
+  LayerTreeHost()->SetPrimaryMainFrameItemSequenceNumber(
+      loader->GetHistoryItem()->ItemSequenceNumber());
 }
 
 base::ReadOnlySharedMemoryRegion

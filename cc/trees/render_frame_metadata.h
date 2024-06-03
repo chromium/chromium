@@ -115,6 +115,12 @@ class CC_EXPORT RenderFrameMetadata {
   viz::VerticalScrollDirection new_vertical_scroll_direction =
       viz::VerticalScrollDirection::kNull;
 
+  // Indicates that this frame is submitted after the primary main frame
+  // navigating to a session history item, identified by this item sequence
+  // number.
+  static constexpr int64_t kInvalidItemSequenceNumber = -1;
+  int64_t primary_main_frame_item_sequence_number = kInvalidItemSequenceNumber;
+
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // Used to position Android bottom bar, whose position is computed by the
   // renderer compositor.

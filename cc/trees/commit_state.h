@@ -30,6 +30,7 @@
 #include "cc/resources/ui_resource_request.h"
 #include "cc/trees/browser_controls_params.h"
 #include "cc/trees/presentation_time_callback_buffer.h"
+#include "cc/trees/render_frame_metadata.h"
 #include "cc/trees/swap_promise.h"
 #include "cc/trees/viewport_property_ids.h"
 #include "cc/view_transition/view_transition_request.h"
@@ -169,6 +170,12 @@ struct CC_EXPORT CommitState {
   // When non-empty, the next compositor frame also informs viz to issue a
   // screenshot against the previous surface.
   base::UnguessableToken screenshot_destination_token;
+
+  // Indicates the `item_sequence_number` for the primary main frame's
+  // `content::FrameNavigationEntry`. This is only set if the primary main frame
+  // is rendering to this compositor.
+  int64_t primary_main_frame_item_sequence_number =
+      RenderFrameMetadata::kInvalidItemSequenceNumber;
 };
 
 struct CC_EXPORT ThreadUnsafeCommitState {

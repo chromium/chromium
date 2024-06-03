@@ -696,8 +696,10 @@ class CORE_EXPORT WebFrameWidgetImpl
   // Return if there is a pending scale animation.
   bool HasPendingPageScaleAnimation();
 
-  // Set the source URL for the compositor.
-  void SetSourceURLForCompositor(ukm::SourceId source_id, const KURL& url);
+  // Set the source URL and the `primary_main_frame_item_sequence_number`
+  // (if the compositor is rendering the primary main frame) for the compositor.
+  void UpdateNavigationStateForCompositor(ukm::SourceId source_id,
+                                          const KURL& url);
 
   // Ask compositor to create the shared memory for smoothness ukm region.
   base::ReadOnlySharedMemoryRegion CreateSharedMemoryForSmoothnessUkm();

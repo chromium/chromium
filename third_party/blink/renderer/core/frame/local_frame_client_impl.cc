@@ -522,16 +522,17 @@ void LocalFrameClientImpl::DispatchDidCommitLoad(
 
       web_frame_->FrameWidgetImpl()->DidNavigate();
 
-      // UKM metrics are only collected for the outermost main frame. Ensure
-      // after a navigation on the main frame we setup the appropriate
-      // structures.
+      // The navigation state pushed to the compositor is limited to outermost
+      // main frames. This is particularly important for UKM metrics, since we
+      // only record URL keyed data if the URL is being displayed in the main
+      // frame.
       if (IsCompositedOutermostMainFrame(web_frame_)) {
         WebFrameWidgetImpl* frame_widget = web_frame_->FrameWidgetImpl();
 
-        // Update the URL and the document source id used to key UKM metrics in
-        // the compositor. Note that the metrics for all frames are keyed to the
-        // main frame's URL.
-        frame_widget->SetSourceURLForCompositor(
+        // Update the navigation states (URL, the document source id used to key
+        // UKM metrics in the compositor. Note that the metrics for all frames
+        // are keyed to the main frame's URL.
+        frame_widget->UpdateNavigationStateForCompositor(
             web_frame_->GetDocument().GetUkmSourceId(),
             KURL(web_frame_->Client()->LastCommittedUrlForUKM()));
 

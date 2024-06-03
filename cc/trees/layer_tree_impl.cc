@@ -736,6 +736,9 @@ void LayerTreeImpl::PullLayerTreePropertiesFrom(CommitState& commit_state) {
     SetScreenshotDestinationToken(commit_state.screenshot_destination_token);
   }
 
+  set_primary_main_frame_item_sequence_number(
+      commit_state.primary_main_frame_item_sequence_number);
+
   SetLocalSurfaceIdFromParent(commit_state.local_surface_id_from_parent);
 
   if (commit_state.pending_page_scale_animation) {
@@ -837,6 +840,9 @@ void LayerTreeImpl::PushPropertiesTo(LayerTreeImpl* target_tree) {
   if (auto token = TakeScreenshotDestinationToken(); !token.is_empty()) {
     target_tree->SetScreenshotDestinationToken(std::move(token));
   }
+
+  target_tree->set_primary_main_frame_item_sequence_number(
+      primary_main_frame_item_sequence_number());
 
   target_tree->pending_page_scale_animation_ =
       std::move(pending_page_scale_animation_);
