@@ -168,9 +168,16 @@ SavedTabGroup DataToSavedTabGroup(const proto::SavedTabGroupData& data) {
     originator_cache_guid = specific.group().originator_cache_guid();
   }
 
+  bool created_before_syncing_tab_groups = false;
+  if (data.has_local_tab_group_data()) {
+    created_before_syncing_tab_groups =
+        data.local_tab_group_data().created_before_syncing_tab_groups();
+  }
+
   SavedTabGroup group =
       SavedTabGroup(title, color, {}, position, guid, local_group_id,
-                    std::move(originator_cache_guid), creation_time);
+                    std::move(originator_cache_guid),
+                    created_before_syncing_tab_groups, creation_time);
   group.SetUpdateTimeWindowsEpochMicros(update_time);
 
   return group;
@@ -212,6 +219,8 @@ proto::SavedTabGroupData SavedTabGroupToData(const SavedTabGroup& group) {
   }
 #endif
 
+  pb_data.mutable_local_tab_group_data()->set_created_before_syncing_tab_groups(
+      group.created_before_syncing_tab_groups());
   pb_data.set_version(kCurrentSchemaVersion);
 
   // Note: When adding a new syncable field, also update IsSyncEquivalent().
@@ -422,14 +431,29 @@ SavedTabGroupSyncBridge::ApplyIncrementalSyncChanges(
 
 void SavedTabGroupSyncBridge::ApplyDisableSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
-  // Close all the groups locally. They should still exist in sync server.
-  std::vector<base::Uuid> group_ids;
+  // Close the local groups that were created before sign-in.
+  // They should still exist in sync server.
+  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch =
+      store_->CreateWriteBatch();
   for (const SavedTabGroup& group : model_->saved_tab_groups()) {
-    model_->RemovedFromSync(group.saved_guid());
+    if (group.created_before_syncing_tab_groups()) {
+      continue;
+    }
+
+    // This group should be closed locally. Remove it from model and storage and
+    // close all the tabs.
+    base::Uuid group_id = group.saved_guid();
+    for (const SavedTabGroupTab& tab : group.saved_tabs()) {
+      base::Uuid tab_id = tab.saved_tab_guid();
+      model_->RemoveTabFromGroupFromSync(group_id, tab_id);
+      write_batch->DeleteData(tab_id.AsLowercaseString());
+    }
+
+    model_->RemovedFromSync(group_id);
+    write_batch->DeleteData(group_id.AsLowercaseString());
   }
 
-  // Wipe out all the local data.
-  store_->DeleteAllDataAndMetadata(base::DoNothing());
+  store_->CommitWriteBatch(std::move(write_batch), base::DoNothing());
 }
 
 std::string SavedTabGroupSyncBridge::GetStorageKey(
@@ -603,6 +627,10 @@ std::optional<std::string> SavedTabGroupSyncBridge::GetLocalCacheGuid() {
     return std::nullopt;
   }
   return change_processor()->TrackedCacheGuid();
+}
+
+bool SavedTabGroupSyncBridge::IsSyncing() const {
+  return change_processor()->IsTrackingMetadata();
 }
 
 // static

@@ -63,10 +63,14 @@ class SavedTabGroupConversionTest : public testing::Test {
     EXPECT_EQ(group1.title(), group2.title());
     EXPECT_EQ(group1.color(), group2.color());
     EXPECT_EQ(group1.saved_guid(), group2.saved_guid());
+    EXPECT_EQ(group1.position(), group2.position());
     EXPECT_EQ(group1.creation_time_windows_epoch_micros(),
               group2.creation_time_windows_epoch_micros());
     EXPECT_EQ(group1.update_time_windows_epoch_micros(),
               group2.update_time_windows_epoch_micros());
+    EXPECT_EQ(group1.originator_cache_guid(), group2.originator_cache_guid());
+    EXPECT_EQ(group1.created_before_syncing_tab_groups(),
+              group2.created_before_syncing_tab_groups());
   }
 
   void CompareTabs(const SavedTabGroupTab& tab1, const SavedTabGroupTab& tab2) {
@@ -92,6 +96,7 @@ TEST_F(SavedTabGroupConversionTest, GroupToDataRetainsData) {
   SavedTabGroup group(
       title, color, {}, 0, saved_guid, test::GenerateRandomTabGroupID(),
       "originator_cache_guid_1",  // originator_cache_guid
+      /*created_before_syncing_tab_groups=*/true,
       creation_time_windows_epoch_micros, update_time_windows_epoch_micros);
 
   proto::SavedTabGroupData proto =
@@ -175,6 +180,7 @@ TEST_F(SavedTabGroupConversionTest, VerifyLocalFieldsOnProtoToGroupConversion) {
   proto::LocalTabGroupData* pb_local_group_data =
       pb_data.mutable_local_tab_group_data();
   DCHECK(pb_local_group_data);
+  pb_local_group_data->set_created_before_syncing_tab_groups(true);
 
 #if BUILDFLAG(IS_ANDROID)
   std::string serialized_local_id = base::Token::CreateRandom().ToString();
@@ -205,6 +211,7 @@ TEST_F(SavedTabGroupConversionTest, MergedGroupHoldsCorrectData) {
   std::optional<base::Time> update_time_windows_epoch_micros = time_;
   SavedTabGroup group1(
       title, color, {}, 0, saved_guid, std::nullopt, "originator_cache_guid",
+      /*created_before_syncing_tab_groups=*/false,
       creation_time_windows_epoch_micros, update_time_windows_epoch_micros);
 
   // Create a new group with the same data and update it. Calling set functions

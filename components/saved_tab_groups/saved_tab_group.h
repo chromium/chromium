@@ -33,6 +33,7 @@ class SavedTabGroup {
                 std::optional<base::Uuid> saved_guid = std::nullopt,
                 std::optional<LocalTabGroupID> local_group_id = std::nullopt,
                 std::optional<std::string> originator_cache_guid = std::nullopt,
+                bool created_before_syncing_tab_groups = false,
                 std::optional<base::Time> creation_time_windows_epoch_micros =
                     std::nullopt,
                 std::optional<base::Time> update_time_windows_epoch_micros =
@@ -54,6 +55,10 @@ class SavedTabGroup {
 
   const std::optional<std::string>& originator_cache_guid() const {
     return originator_cache_guid_;
+  }
+
+  bool created_before_syncing_tab_groups() const {
+    return created_before_syncing_tab_groups_;
   }
 
   const std::u16string& title() const { return title_; }
@@ -91,6 +96,8 @@ class SavedTabGroup {
   SavedTabGroup& SetLocalGroupId(std::optional<LocalTabGroupID> tab_group_id);
   SavedTabGroup& SetOriginatorCacheGuid(
       std::optional<std::string> new_cache_guid);
+  SavedTabGroup& SetCreatedBeforeSyncingTabGroups(
+      bool created_before_syncing_tab_groups);
   SavedTabGroup& SetUpdateTimeWindowsEpochMicros(
       base::Time update_time_windows_epoch_micros);
   SavedTabGroup& SetPosition(size_t position);
@@ -190,6 +197,9 @@ class SavedTabGroup {
   // will be null. The value could also be null if the group was created before
   // M127.
   std::optional<std::string> originator_cache_guid_;
+
+  // Whether the tab group was created when sync was disabled.
+  bool created_before_syncing_tab_groups_;
 
   // Timestamp for when the tab was created using windows epoch microseconds.
   base::Time creation_time_windows_epoch_micros_;

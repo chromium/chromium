@@ -31,6 +31,7 @@ SavedTabGroup::SavedTabGroup(
     std::optional<base::Uuid> saved_guid,
     std::optional<LocalTabGroupID> local_group_id,
     std::optional<std::string> originator_cache_guid,
+    bool created_before_syncing_tab_groups,
     std::optional<base::Time> creation_time_windows_epoch_micros,
     std::optional<base::Time> update_time_windows_epoch_micros)
     : saved_guid_(
@@ -41,6 +42,7 @@ SavedTabGroup::SavedTabGroup(
       saved_tabs_(urls),
       position_(position),
       originator_cache_guid_(std::move(originator_cache_guid)),
+      created_before_syncing_tab_groups_(created_before_syncing_tab_groups),
       creation_time_windows_epoch_micros_(
           creation_time_windows_epoch_micros.value_or(base::Time::Now())),
       update_time_windows_epoch_micros_(
@@ -137,6 +139,12 @@ SavedTabGroup& SavedTabGroup::SetOriginatorCacheGuid(
     std::optional<std::string> new_cache_guid) {
   originator_cache_guid_ = new_cache_guid;
   SetUpdateTimeWindowsEpochMicros(base::Time::Now());
+  return *this;
+}
+
+SavedTabGroup& SavedTabGroup::SetCreatedBeforeSyncingTabGroups(
+    bool created_before_syncing_tab_groups) {
+  created_before_syncing_tab_groups_ = created_before_syncing_tab_groups;
   return *this;
 }
 

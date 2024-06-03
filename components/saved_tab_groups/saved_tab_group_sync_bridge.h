@@ -89,6 +89,10 @@ class SavedTabGroupSyncBridge : public syncer::ModelTypeSyncBridge,
   // otherwise returns a nullopt.
   std::optional<std::string> GetLocalCacheGuid();
 
+  // Whether the sync is currently enabled and syncing for saved tab groups.
+  // False before bridge initialization is completed.
+  bool IsSyncing() const;
+
   static SavedTabGroup SpecificsToSavedTabGroupForTest(
       const sync_pb::SavedTabGroupSpecifics& specifics);
   static sync_pb::SavedTabGroupSpecifics SavedTabGroupToSpecificsForTest(

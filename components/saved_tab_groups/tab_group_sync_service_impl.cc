@@ -97,7 +97,10 @@ TabGroupSyncServiceImpl::GetSharedTabGroupControllerDelegate() {
 
 void TabGroupSyncServiceImpl::AddGroup(const SavedTabGroup& group) {
   VLOG(2) << __func__;
-  model_->Add(group);
+  // TODO(shaktisahu): Figure out a way to avoid copy.
+  SavedTabGroup group_copy(group);
+  group_copy.SetCreatedBeforeSyncingTabGroups(saved_bridge_.IsSyncing());
+  model_->Add(group_copy);
   tab_group_store_->StoreTabGroupIDMetadata(
       group.saved_guid(), TabGroupIDMetadata(group.local_group_id().value()));
 }

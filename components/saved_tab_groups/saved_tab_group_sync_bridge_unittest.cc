@@ -169,6 +169,19 @@ class SavedTabGroupSyncBridgeTest : public ::testing::Test {
     task_environment_.RunUntilIdle();
   }
 
+  void VerifyEntriesCount(size_t expected_count) {
+    std::unique_ptr<syncer::ModelTypeStore::RecordList> entries;
+    store_->ReadAllData(base::BindLambdaForTesting(
+        [&](const std::optional<syncer::ModelError>& error,
+            std::unique_ptr<syncer::ModelTypeStore::RecordList> data) {
+          entries = std::move(data);
+        }));
+    task_environment_.RunUntilIdle();
+
+    ASSERT_TRUE(entries);
+    EXPECT_EQ(expected_count, entries->size());
+  }
+
   base::test::TaskEnvironment task_environment_;
   SavedTabGroupModel saved_tab_group_model_;
   testing::NiceMock<syncer::MockModelTypeChangeProcessor> processor_;
@@ -250,6 +263,7 @@ TEST_F(SavedTabGroupSyncBridgeTest, MergeFullSyncDataWithExistingData) {
   SavedTabGroup updated_group(u"New Title", tab_groups::TabGroupColorId::kPink,
                               {}, /*position=*/0, /*saved_guid=*/group_guid,
                               /*local_group_guid=*/std::nullopt, cache_guid,
+                              /*created_before_syncing_tab_groups=*/false,
                               group_creation_time);
   SavedTabGroupTab updated_tab_1(GURL("https://support.google.com"), u"Support",
                                  group_guid, /*position=*/0, tab_1_guid,
@@ -288,30 +302,56 @@ TEST_F(SavedTabGroupSyncBridgeTest, MergeFullSyncDataWithExistingData) {
                                         *group_from_model->GetTab(tab_1_guid)));
 }
 
-// Verify that on sign-out, all data is locally deleted.
-TEST_F(SavedTabGroupSyncBridgeTest, DisableSyncDeletesAllLocalData) {
+// Verify that on sign-out, the groups created before sign-in are locally
+// deleted.
+TEST_F(SavedTabGroupSyncBridgeTest,
+       DisableSyncLocallyRemovesGroupsCreatedBeforeSignIn) {
   EXPECT_TRUE(saved_tab_group_model_.saved_tab_groups().empty());
 
-  SavedTabGroup group(u"Test Title", tab_groups::TabGroupColorId::kBlue, {}, 0);
-  SavedTabGroupTab tab_1(GURL("https://website.com"), u"Website Title",
-                         group.saved_guid(), /*position=*/std::nullopt);
-  group.AddTabLocally(tab_1);
-  bridge_->MergeFullSyncData(
-      bridge_->CreateMetadataChangeList(),
-      CreateEntityChangeListFromGroup(
-          group, syncer::EntityChange::ChangeType::ACTION_ADD));
-  EXPECT_TRUE(saved_tab_group_model_.Contains(group.saved_guid()));
-  EXPECT_EQ(saved_tab_group_model_.saved_tab_groups().size(), 1u);
+  // Create two groups: group1 before sign in and group2 after sign in.
+  SavedTabGroup group1(u"Test Title1", tab_groups::TabGroupColorId::kBlue, {},
+                       0, std::nullopt, std::nullopt, std::nullopt,
+                       /*created_before_syncing_tab_groups=*/true);
+  SavedTabGroupTab tab_1(GURL("https://website1.com"), u"Website Title1",
+                         group1.saved_guid(), /*position=*/std::nullopt);
+  group1.AddTabLocally(tab_1);
 
-  const SavedTabGroup* group_from_model =
-      saved_tab_group_model_.Get(group.saved_guid());
-  EXPECT_EQ(group_from_model->saved_tabs().size(), 1u);
+  SavedTabGroup group2(u"Test Title2", tab_groups::TabGroupColorId::kCyan, {},
+                       1, std::nullopt, std::nullopt, std::nullopt,
+                       /*created_before_syncing_tab_groups=*/false);
+  SavedTabGroupTab tab_2(GURL("https://website2.com"), u"Website Title2",
+                         group2.saved_guid(), /*position=*/std::nullopt);
+  group2.AddTabLocally(tab_2);
 
-  // Disable sync. Expect all groups to be deleted locally from the model, but
-  // not from sync.
+  base::Uuid group_id1 = group1.saved_guid();
+  base::Uuid group_id2 = group2.saved_guid();
+  saved_tab_group_model_.Add(std::move(group1));
+  saved_tab_group_model_.Add(std::move(group2));
+  VerifyEntriesCount(4u);
+
+  EXPECT_EQ(saved_tab_group_model_.saved_tab_groups().size(), 2u);
+
+  const SavedTabGroup* group1_from_model =
+      saved_tab_group_model_.Get(group_id1);
+  EXPECT_EQ(group1_from_model->saved_tabs().size(), 1u);
+
+  const SavedTabGroup* group2_from_model =
+      saved_tab_group_model_.Get(group2.saved_guid());
+  EXPECT_EQ(group2_from_model->saved_tabs().size(), 1u);
+
+  EXPECT_TRUE(group1_from_model->created_before_syncing_tab_groups());
+  EXPECT_FALSE(group2_from_model->created_before_syncing_tab_groups());
+
+  // Disable sync. Expect group 2 to be removed from model, and group 1 should
+  // still be in the model. None of them should be deleted from sync.
   EXPECT_CALL(processor_, Delete(_, _, _)).Times(0);
   bridge_->ApplyDisableSyncChanges(bridge_->CreateMetadataChangeList());
-  EXPECT_EQ(saved_tab_group_model_.saved_tab_groups().size(), 0u);
+  EXPECT_EQ(saved_tab_group_model_.saved_tab_groups().size(), 1u);
+  EXPECT_TRUE(saved_tab_group_model_.Contains(group_id1));
+  EXPECT_FALSE(saved_tab_group_model_.Contains(group_id2));
+
+  // DB should have only the two entries from group 1.
+  VerifyEntriesCount(2u);
 }
 
 // Verify orphaned tabs (tabs missing their group) are added into the correct
