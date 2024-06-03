@@ -69,7 +69,7 @@ ASH_EXPORT std::u16string GetFormattedClockString(const base::Time end_time);
 
 // Returns a string indicating that do not disturb will be turned off when the
 // focus session ends at `end_time`.
-ASH_EXPORT std::u16string GetNotificationTitleForFocusSession(
+ASH_EXPORT std::u16string GetNotificationDescriptionForFocusSession(
     const base::Time end_time);
 
 // Reads the `timer_textfield`'s text and converts it to an integer.

@@ -34,7 +34,7 @@ const char kDoNotDisturbNotifierId[] =
     "ash.do_not_disturb_notification_controller";
 
 // Returns true if we need to show specific Focus Mode text in the notification.
-bool ShowFocusText() {
+bool ShouldShowFocusModeText() {
   auto* focus_mode_controller =
       features::IsFocusModeEnabled() ? FocusModeController::Get() : nullptr;
 
@@ -50,17 +50,15 @@ bool ShowFocusText() {
 std::unique_ptr<message_center::Notification> CreateNotification() {
   // `should_show_focus_text` is true only when the notification needs to be
   // turned off when the focus session ends.
-  const bool should_show_focus_text = ShowFocusText();
+  const bool should_show_focus_text = ShouldShowFocusModeText();
   const std::u16string title =
+      l10n_util::GetStringUTF16(IDS_ASH_DO_NOT_DISTURB_NOTIFICATION_TITLE);
+  const std::u16string message =
       should_show_focus_text
-          ? focus_mode_util::GetNotificationTitleForFocusSession(
+          ? focus_mode_util::GetNotificationDescriptionForFocusSession(
                 FocusModeController::Get()->GetActualEndTime())
           : l10n_util::GetStringUTF16(
-                IDS_ASH_DO_NOT_DISTURB_NOTIFICATION_TITLE);
-  const std::u16string message = l10n_util::GetStringUTF16(
-      should_show_focus_text
-          ? IDS_ASH_DO_NOT_DISTURB_NOTIFICATION_IN_FOCUS_MODE_DESCRIPTION
-          : IDS_ASH_DO_NOT_DISTURB_NOTIFICATION_DESCRIPTION);
+                IDS_ASH_DO_NOT_DISTURB_NOTIFICATION_DESCRIPTION);
 
   message_center::RichNotificationData optional_fields;
   optional_fields.buttons.emplace_back(

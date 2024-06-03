@@ -75,9 +75,10 @@ std::u16string GetFormattedClockString(const base::Time end_time) {
       base::kKeepAmPm);
 }
 
-std::u16string GetNotificationTitleForFocusSession(const base::Time end_time) {
+std::u16string GetNotificationDescriptionForFocusSession(
+    const base::Time end_time) {
   return l10n_util::GetStringFUTF16(
-      IDS_ASH_DO_NOT_DISTURB_NOTIFICATION_IN_FOCUS_MODE_TITLE,
+      IDS_ASH_DO_NOT_DISTURB_NOTIFICATION_IN_FOCUS_MODE_DESCRIPTION,
       GetFormattedClockString(end_time));
 }
 
