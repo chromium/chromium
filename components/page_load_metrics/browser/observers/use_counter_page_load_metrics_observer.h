@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "components/page_load_metrics/browser/observers/use_counter/at_most_once_enum_uma_deferrer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
@@ -69,6 +70,18 @@ class UseCounterMetricsRecorder {
 
   // Returns a list of opt-in UKM features for the Web Dev Metrics use counter.
   static const UkmFeatureList& GetAllowedWebDevMetricsUkmFeatures();
+
+  // Getters for mappings of WebFeature and CSSSampleId's to WebDXFeature use
+  // counters.
+  static const base::flat_map<blink::mojom::WebFeature,
+                              blink::mojom::WebDXFeature>&
+  GetWebFeatureToWebDXFeatureMap();
+  static const base::flat_map<blink::mojom::CSSSampleId,
+                              blink::mojom::WebDXFeature>&
+  GetCSSProperties2WebDXFeatureMap();
+  static const base::flat_map<blink::mojom::CSSSampleId,
+                              blink::mojom::WebDXFeature>&
+  GetAnimatedCSSProperties2WebDXFeatureMap();
 
   // To keep tracks of which features have been measured.
   // `uma_features_` and `uma_main_frame_features_` are also used for UKMs.

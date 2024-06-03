@@ -192,6 +192,20 @@ TEST_P(UseCounterMetricsRecorderTest, CountFeatures) {
       });
 }
 
+TEST_P(UseCounterMetricsRecorderTest, CountMappedFeatures) {
+  HistogramBasicTest(
+      {{blink::mojom::UseCounterFeatureType::kWebFeature,
+        static_cast<uint32_t>(WebFeature::kInstantiateModuleScript)}});
+
+  // Check that counting WebFeature::kInstantiateModuleScript also counted the
+  // WebDXFeature::kJsModules counter that it is mapped to
+  blink::UseCounterFeature mapped_feature(
+      blink::mojom::UseCounterFeatureType::kWebDXFeature,
+      static_cast<uint32_t>(WebDXFeature::kJsModules));
+
+  ExpectBucketCount(mapped_feature, 1);
+}
+
 TEST_P(UseCounterMetricsRecorderTest, CountDuplicatedFeatures) {
   HistogramBasicTest(
       {

@@ -160,11 +160,20 @@ void UseCounterMetricsRecorder::RecordOrDeferUseCounterFeature(
     const blink::UseCounterFeature& feature) {
   switch (feature.type()) {
     case FeatureType::kWebFeature: {
-      WebFeature sample = static_cast<WebFeature>(feature.value());
+      auto web_feature = static_cast<WebFeature>(feature.value());
 
-      if (!uma_features_.IsRecordedOrDeferred(sample)) {
-        PossiblyWarnFeatureDeprecation(rfh, sample);
-        uma_features_.RecordOrDefer(sample);
+      if (!uma_features_.IsRecordedOrDeferred(web_feature)) {
+        PossiblyWarnFeatureDeprecation(rfh, web_feature);
+        uma_features_.RecordOrDefer(web_feature);
+
+        // For any WebFeature use counters that are mapped to a WebDXFeature,
+        // record the WebDXFeature use counter as well.
+        auto map = GetWebFeatureToWebDXFeatureMap();
+        auto entry = map.find(web_feature);
+
+        if (entry != map.end()) {
+          uma_webdx_features_.RecordOrDefer(entry->second);
+        }
       }
     } break;
     case FeatureType::kWebDXFeature:
@@ -182,14 +191,37 @@ void UseCounterMetricsRecorder::RecordOrDeferUseCounterFeature(
     // and merge and uses about same amount of memory.
     case FeatureType::kCssProperty:
       if (uma_css_properties_) {
-        uma_css_properties_->RecordOrDefer(
-            static_cast<CSSSampleId>(feature.value()));
+        auto css_property = static_cast<CSSSampleId>(feature.value());
+
+        if (!uma_css_properties_->IsRecordedOrDeferred(css_property)) {
+          uma_css_properties_->RecordOrDefer(css_property);
+
+          auto map = GetCSSProperties2WebDXFeatureMap();
+          auto entry = map.find(css_property);
+
+          if (entry != map.end() &&
+              !uma_webdx_features_.IsRecordedOrDeferred(entry->second)) {
+            uma_webdx_features_.RecordOrDefer(entry->second);
+          }
+        }
       }
       break;
     case FeatureType::kAnimatedCssProperty:
       if (uma_animated_css_properties_) {
-        uma_animated_css_properties_->RecordOrDefer(
-            static_cast<CSSSampleId>(feature.value()));
+        auto animated_css_property = static_cast<CSSSampleId>(feature.value());
+
+        if (!uma_animated_css_properties_->IsRecordedOrDeferred(
+                animated_css_property)) {
+          uma_animated_css_properties_->RecordOrDefer(animated_css_property);
+
+          auto map = GetAnimatedCSSProperties2WebDXFeatureMap();
+          auto entry = map.find(animated_css_property);
+
+          if (entry != map.end() &&
+              !uma_webdx_features_.IsRecordedOrDeferred(entry->second)) {
+            uma_webdx_features_.RecordOrDefer(entry->second);
+          }
+        }
       }
       break;
     case FeatureType::kPermissionsPolicyViolationEnforce:
@@ -260,13 +292,6 @@ void UseCounterMetricsRecorder::RecordWebFeatures(ukm::SourceId ukm_source_id) {
 
 void UseCounterMetricsRecorder::RecordWebDXFeatures(
     ukm::SourceId ukm_source_id) {
-  // For WebDXFeature use counter(s) where the actual use counter value can come
-  // from a WebFeature use counter, this is where those use counter values can
-  // be copied over to the matching WebDXFeature counters.
-
-  // TODO(crbug.com/339271460): Add mapping of existing use counters to their
-  // respective WebDXFeature use counters here.
-
   // Feed any used WebDXFeature counters to UKM. Due to our layering rules, we
   // can't easily use the WebDXFeature type in the UKM code, so pass our
   // WebDXFeatures as a set of int32_t's.
@@ -284,6 +309,158 @@ void UseCounterMetricsRecorder::RecordWebDXFeatures(
   ukm::UkmRecorder::Get()->RecordWebDXFeatures(
       ukm_source_id, webdx_features,
       static_cast<size_t>(WebDXFeature::kNumberOfFeatures) - 1);
+}
+
+const base::flat_map<blink::mojom::WebFeature, blink::mojom::WebDXFeature>&
+UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
+  static const base::NoDestructor<
+      const base::flat_map<WebFeature, WebDXFeature>>
+      kMap({
+          {WebFeature::kViewTransition, WebDXFeature::kViewTransitions},
+          {WebFeature::kValidPopoverAttribute, WebDXFeature::kPopover},
+          {WebFeature::kCSSSubgridLayout, WebDXFeature::kSubgrid},
+          {WebFeature::kCSSCascadeLayers, WebDXFeature::kCascadeLayers},
+          // If the compression or decompression stream constructors were
+          // invoked, WebDXFeature::count that as the CompressionStreams WebDX
+          // feature being used.
+          {WebFeature::kCompressionStreamConstructor,
+           WebDXFeature::kCompressionStreams},
+          {WebFeature::kDecompressionStreamConstructor,
+           WebDXFeature::kCompressionStreams},
+          {WebFeature::kAVIFImage, WebDXFeature::kAvif},
+          {WebFeature::kBlockingAttributeRenderToken,
+           WebDXFeature::kBlockingRender},
+          {WebFeature::kV8BroadcastChannel_Constructor,
+           WebDXFeature::kBroadcastChannel},
+          {WebFeature::kCanvasRenderingContext2DContextLostEvent,
+           WebDXFeature::kCanvasContextLost},
+          {WebFeature::kCSSCascadeLayers, WebDXFeature::kCascadeLayers},
+          {WebFeature::kPressureObserver_Constructor,
+           WebDXFeature::kComputePressure},
+          {WebFeature::kAdoptedStyleSheets,
+           WebDXFeature::kConstructedStylesheets},
+          {WebFeature::kCSSAtRuleContainer, WebDXFeature::kContainerQueries},
+          {WebFeature::kCSSStyleContainerQuery,
+           WebDXFeature::kContainerStyleQueries},
+          {WebFeature::kCSSAtRuleCounterStyle, WebDXFeature::kCounterStyle},
+          {WebFeature::kCreateCSSModuleScript, WebDXFeature::kCssModules},
+          {WebFeature::kStreamingDeclarativeShadowDOM,
+           WebDXFeature::kDeclarativeShadowDom},
+          {WebFeature::kDialogElement, WebDXFeature::kDialog},
+          {WebFeature::kV8DocumentPictureInPicture_RequestWindow_Method,
+           WebDXFeature::kDocumentPictureInPicture},
+          {WebFeature::kFlexGapSpecified, WebDXFeature::kFlexboxGap},
+          {WebFeature::kCSSFlexibleBox, WebDXFeature::kFlexbox},
+          {WebFeature::kCSSSelectorPseudoFocusVisible,
+           WebDXFeature::kFocusVisible},
+          {WebFeature::kCSSGridLayout, WebDXFeature::kGrid},
+          {WebFeature::kCSSSelectorPseudoHas, WebDXFeature::kHas},
+          {WebFeature::kIdleDetectionStart, WebDXFeature::kIdleDetection},
+          {WebFeature::kImportMap, WebDXFeature::kImportMaps},
+          {WebFeature::kIntersectionObserverV2,
+           WebDXFeature::kIntersectionObserverV2},
+          {WebFeature::kIntersectionObserver_Constructor,
+           WebDXFeature::kIntersectionObserver},
+          {WebFeature::kCSSSelectorPseudoIs, WebDXFeature::kIs},
+          {WebFeature::kPrepareModuleScript, WebDXFeature::kJsModules},
+          {WebFeature::kInstantiateModuleScript, WebDXFeature::kJsModules},
+          {WebFeature::kV8MediaSession_Metadata_AttributeSetter,
+           WebDXFeature::kMediaSession},
+          {WebFeature::kOffscreenCanvas, WebDXFeature::kOffscreenCanvas},
+          {WebFeature::kV8StorageManager_GetDirectory_Method,
+           WebDXFeature::kOriginPrivateFileSystem},
+          {WebFeature::kV8HTMLVideoElement_RequestPictureInPicture_Method,
+           WebDXFeature::kPictureInPicture},
+          {WebFeature::kElementRequestPointerLock, WebDXFeature::kPointerLock},
+          {WebFeature::kCSSRelativeColor, WebDXFeature::kRelativeColor},
+          {WebFeature::kCSSAtRuleScope, WebDXFeature::kScope},
+          {WebFeature::kScrollend, WebDXFeature::kScrollend},
+          {WebFeature::kTextFragmentAnchor,
+           WebDXFeature::kScrollToTextFragment},
+          {WebFeature::kV8HTMLInputElement_ShowPicker_Method,
+           WebDXFeature::kShowPickerInput},
+          {WebFeature::kHTMLSlotElement, WebDXFeature::kSlot},
+          {WebFeature::kV8SpeechRecognition_Start_Method,
+           WebDXFeature::kSpeechRecognition},
+          {WebFeature::kV8SpeechSynthesis_Speak_Method,
+           WebDXFeature::kSpeechSynthesis},
+          {WebFeature::kStorageAccessAPI_HasStorageAccess_Method,
+           WebDXFeature::kStorageAccess},
+          {WebFeature::kStorageAccessAPI_requestStorageAccess_Method,
+           WebDXFeature::kStorageAccess},
+          {WebFeature::kStorageBucketsOpen, WebDXFeature::kStorageBuckets},
+          {WebFeature::kCSSSelectorTargetText, WebDXFeature::kTargetText},
+          {WebFeature::kHTMLTemplateElement, WebDXFeature::kTemplate},
+          {WebFeature::kTextWrapBalance, WebDXFeature::kTextWrapBalance},
+          {WebFeature::kTextWrapPretty, WebDXFeature::kTextWrapPretty},
+          {WebFeature::kCSSSelectorUserValid, WebDXFeature::kUserPseudos},
+          {WebFeature::kCSSSelectorUserInvalid, WebDXFeature::kUserPseudos},
+          {WebFeature::kWebCodecs, WebDXFeature::kWebcodecs},
+          {WebFeature::kHidGetDevices, WebDXFeature::kWebhid},
+          {WebFeature::kV8LockManager_Request_Method, WebDXFeature::kWebLocks},
+          {WebFeature::kWebPImage, WebDXFeature::kWebp},
+          {WebFeature::kWebTransport, WebDXFeature::kWebtransport},
+          {WebFeature::kUsbGetDevices, WebDXFeature::kWebusb},
+          {WebFeature::kVTTCue, WebDXFeature::kWebvtt},
+          {WebFeature::kCSSSelectorPseudoWhere, WebDXFeature::kWhere},
+      });
+
+  return *kMap;
+}
+
+const base::flat_map<blink::mojom::CSSSampleId, blink::mojom::WebDXFeature>&
+UseCounterMetricsRecorder::GetCSSProperties2WebDXFeatureMap() {
+  static const base::NoDestructor<
+      const base::flat_map<CSSSampleId, WebDXFeature>>
+      kMap({
+          {CSSSampleId::kAccentColor, WebDXFeature::kAccentColor},
+          {CSSSampleId::kAnimationComposition,
+           WebDXFeature::kAnimationComposition},
+          {CSSSampleId::kAppearance, WebDXFeature::kAppearance},
+          {CSSSampleId::kAspectRatio, WebDXFeature::kAspectRatio},
+          {CSSSampleId::kBackdropFilter, WebDXFeature::kBackdropFilter},
+          {CSSSampleId::kBorderImage, WebDXFeature::kBorderImage},
+          {CSSSampleId::kColorScheme, WebDXFeature::kColorScheme},
+          {CSSSampleId::kContainIntrinsicSize,
+           WebDXFeature::kContainIntrinsicSize},
+          {CSSSampleId::kFontOpticalSizing, WebDXFeature::kFontOpticalSizing},
+          {CSSSampleId::kFontPalette, WebDXFeature::kFontPalette},
+          {CSSSampleId::kFontSynthesisSmallCaps,
+           WebDXFeature::kFontSynthesisSmallCaps},
+          {CSSSampleId::kFontSynthesisStyle, WebDXFeature::kFontSynthesisStyle},
+          {CSSSampleId::kFontSynthesisWeight,
+           WebDXFeature::kFontSynthesisWeight},
+          {CSSSampleId::kFontSynthesis, WebDXFeature::kFontSynthesis},
+          {CSSSampleId::kFontVariantAlternates,
+           WebDXFeature::kFontVariantAlternates},
+          {CSSSampleId::kHyphens, WebDXFeature::kHyphens},
+          {CSSSampleId::kScrollbarColor, WebDXFeature::kScrollbarColor},
+          {CSSSampleId::kScrollbarGutter, WebDXFeature::kScrollbarGutter},
+          {CSSSampleId::kScrollbarWidth, WebDXFeature::kScrollbarWidth},
+          {CSSSampleId::kScrollSnapType, WebDXFeature::kScrollSnap},
+          {CSSSampleId::kTextIndent, WebDXFeature::kTextIndent},
+          {CSSSampleId::kTextSpacingTrim, WebDXFeature::kTextSpacingTrim},
+          {CSSSampleId::kTransitionBehavior, WebDXFeature::kTransitionBehavior},
+          {CSSSampleId::kTranslate, WebDXFeature::kIndividualTransforms},
+          {CSSSampleId::kRotate, WebDXFeature::kIndividualTransforms},
+          {CSSSampleId::kScale, WebDXFeature::kIndividualTransforms},
+      });
+
+  return *kMap;
+}
+
+const base::flat_map<blink::mojom::CSSSampleId, blink::mojom::WebDXFeature>&
+UseCounterMetricsRecorder::GetAnimatedCSSProperties2WebDXFeatureMap() {
+  static const base::NoDestructor<
+      const base::flat_map<CSSSampleId, WebDXFeature>>
+      kMap({
+          // TODO(jstenback): This animated kFontPalette is being investigated.
+          // Uncomment this once that's resolved, or replace this with something
+          // else that matches the resolution of the investigation
+          // {CSSSampleId::kFontPalette, WebDXFeature::kFontPaletteAnimation}
+      });
+
+  return *kMap;
 }
 
 UseCounterPageLoadMetricsObserver::UseCounterPageLoadMetricsObserver() =
