@@ -361,7 +361,7 @@ class SpanFieldMatcher : public MatchFinder::MatchCallback {
   const RawPtrAndRefExclusionsOptions& exclusion_options_;
 };
 
-void FindBadRawPtrPatterns(Options options,
+void FindBadRawPtrPatterns(const Options& options,
                            clang::ASTContext& ast_context,
                            clang::CompilerInstance& compiler) {
   llvm::StringMap<llvm::TimeRecord> Records;

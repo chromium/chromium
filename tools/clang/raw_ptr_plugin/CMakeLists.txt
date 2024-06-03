@@ -1,7 +1,5 @@
 set(plugin_sources
-  ChromeClassTester.cpp
   RawPtrPlugin.cpp
-  RawPtrPluginConsumer.cpp
   FindBadRawPtrPatterns.cpp
   RawPtrHelpers.cpp
   StackAllocatedChecker.cpp

@@ -11,7 +11,7 @@
 
 namespace raw_ptr_plugin {
 
-void FindBadRawPtrPatterns(Options options,
+void FindBadRawPtrPatterns(const Options& options,
                            clang::ASTContext& ast_context,
                            clang::CompilerInstance& compiler);
 

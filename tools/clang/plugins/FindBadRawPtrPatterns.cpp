@@ -370,6 +370,7 @@ void FindBadRawPtrPatterns(Options options,
     FinderOptions.CheckProfiling.emplace(Records);
   }
   MatchFinder match_finder(std::move(FinderOptions));
+  bool matcher_registered = false;
 
   std::vector<std::string> paths_to_exclude_lines;
   std::vector<std::string> check_bad_raw_ptr_cast_exclude_paths;
@@ -405,27 +406,38 @@ void FindBadRawPtrPatterns(Options options,
                                   filter_check_bad_raw_ptr_cast_exclude_funcs);
   if (options.check_bad_raw_ptr_cast) {
     bad_cast_matcher.Register(match_finder);
+    matcher_registered = true;
   }
 
   RawPtrFieldMatcher field_matcher(compiler, exclusion_options);
   if (options.check_raw_ptr_fields) {
     field_matcher.Register(match_finder);
+    matcher_registered = true;
   }
 
   RawRefFieldMatcher ref_field_matcher(compiler, exclusion_options);
   if (options.check_raw_ref_fields) {
     ref_field_matcher.Register(match_finder);
+    matcher_registered = true;
   }
 
   RawPtrToStackAllocatedMatcher raw_ptr_to_stack(compiler);
   if (options.check_raw_ptr_to_stack_allocated &&
       !options.disable_check_raw_ptr_to_stack_allocated_error) {
     raw_ptr_to_stack.Register(match_finder);
+    matcher_registered = true;
   }
 
   SpanFieldMatcher raw_span_matcher(compiler, exclusion_options);
   if (options.check_span_fields) {
     raw_span_matcher.Register(match_finder);
+    matcher_registered = true;
+  }
+
+  // If no matcher is registered, we should not invoke matchAST. Because
+  // matchAST will still traverse the entire AST and it will cost lots.
+  if (!matcher_registered) {
+    return;
   }
 
   {

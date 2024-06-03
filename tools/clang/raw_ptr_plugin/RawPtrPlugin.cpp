@@ -4,7 +4,7 @@
 
 #include "RawPtrPlugin.h"
 
-#include "RawPtrPluginConsumer.h"
+#include "FindBadRawPtrPatterns.h"
 #include "clang/AST/ASTConsumer.h"
 #include "clang/Frontend/FrontendPluginRegistry.h"
 #include "llvm/Support/TimeProfiler.h"
@@ -47,15 +47,24 @@ namespace {
 class PluginConsumer : public ASTConsumer {
  public:
   PluginConsumer(CompilerInstance* instance, const Options& options)
-      : visitor_(*instance, options) {}
+      : options_(options), instance_(*instance) {}
 
   void HandleTranslationUnit(clang::ASTContext& context) override {
     llvm::TimeTraceScope TimeScope("HandleTranslationUnit for raw-ptr plugin");
-    visitor_.Traverse(context);
+    if (options_.check_bad_raw_ptr_cast || options_.check_raw_ptr_fields ||
+        options_.check_raw_ref_fields ||
+        (options_.check_raw_ptr_to_stack_allocated &&
+         !options_.disable_check_raw_ptr_to_stack_allocated_error) ||
+        options_.check_span_fields) {
+      FindBadRawPtrPatterns(options_, context, instance_);
+    }
   }
 
  private:
-  RawPtrPluginConsumer visitor_;
+  // Options.
+  const Options options_;
+
+  clang::CompilerInstance& instance_;
 };
 
 }  // namespace
@@ -83,8 +92,6 @@ bool RawPtrPlugin::ParseArgs(const CompilerInstance& instance,
     } else if (arg.starts_with(kBadRawPtrCastExcludePathArgPrefix)) {
       options_.check_bad_raw_ptr_cast_exclude_paths.push_back(
           arg.substr(strlen(kBadRawPtrCastExcludePathArgPrefix)).str());
-    } else if (arg == "raw-ref-template-as-trivial-member") {
-      options_.raw_ref_template_as_trivial_member = true;
     } else if (arg == "check-bad-raw-ptr-cast") {
       options_.check_bad_raw_ptr_cast = true;
     } else if (arg == "check-raw-ptr-fields") {
@@ -93,8 +100,6 @@ bool RawPtrPlugin::ParseArgs(const CompilerInstance& instance,
       options_.check_raw_ptr_to_stack_allocated = true;
     } else if (arg == "disable-check-raw-ptr-to-stack-allocated-error") {
       options_.disable_check_raw_ptr_to_stack_allocated_error = true;
-    } else if (arg == "check-stack-allocated") {
-      options_.check_stack_allocated = true;
     } else if (arg == "check-raw-ref-fields") {
       options_.check_raw_ref_fields = true;
     } else if (arg == "check-ptrs-to-non-string-literals") {

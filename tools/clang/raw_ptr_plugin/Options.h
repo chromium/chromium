@@ -11,11 +11,8 @@
 namespace raw_ptr_plugin {
 
 struct Options {
-  bool check_base_classes = false;
-  bool raw_ref_template_as_trivial_member = false;
   bool check_bad_raw_ptr_cast = false;
   bool check_raw_ptr_fields = false;
-  bool check_stack_allocated = false;
   bool check_raw_ref_fields = false;
   // `check_raw_ptr_to_stack_allocated` enables following features:
   // - Disallow `raw_ptr<StackAllocated>`
