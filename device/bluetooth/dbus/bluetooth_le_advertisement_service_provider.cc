@@ -446,12 +446,18 @@ class BluetoothAdvertisementServiceProviderImpl
       return false;
     }
 
-    // Don't use secondary channel if we are scannable and have advertising data.
-    // This is because according to the spec, if Adv mode is Scannable in the
-    // ADV_EXT_IND the Adv data field is reserved for future use.
-    return !((service_uuids_ || solicit_uuids_ || manufacturer_data_ ||
-              service_data_) &&
-             type_ == ADVERTISEMENT_TYPE_BROADCAST);
+    // Use |scan_response_data| to determine if upper layer wants to use ext adv
+    // because
+    // 1. chrome actually knows if it wants to use ext adv or legacy adv,
+    // but we are lack of interface to pass it to this object.
+    // 2. when chrome registers advertisements, if ext adv is used, it doesn't
+    // set scan response data (see
+    // BleV2Medium::StartAdvertising in
+    // /chrome/services/sharing/nearby/platform/ble_v2_medium.cc).
+    // 3. some combinations of adv data + parameters + type are reserved by
+    // the spec, which is usually disallowed by controllers, but it's not easy
+    // to find them all.
+    return !scan_response_data_;
   }
 
   // Origin thread (i.e. the UI thread in production).
