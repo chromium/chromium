@@ -598,18 +598,6 @@ class PortTest(LoggingTestCase):
         self.assertEqual(list(port.expectations_dict().values()),
                          ['content1\n', 'content2\n'])
 
-    def test_additional_driver_flags_for_chrome(self):
-        port = self.make_port()
-        port.set_option_default('driver_name', 'chrome')
-        flags = port.additional_driver_flags()
-        self.assertNotIn('--run-web-tests', flags)
-        self.assertIn('--enable-blink-test-features', flags)
-        ignore_certs_flags = [
-            flag for flag in flags
-            if flag.startswith('--ignore-certificate-errors-spki-list=')
-        ]
-        self.assertEqual(len(ignore_certs_flags), 1)
-
     def test_flag_specific_expectations(self):
         port = self.make_port(port_name='foo')
         port.host.filesystem.remove(MOCK_WEB_TESTS + 'TestExpectations')
@@ -2170,15 +2158,6 @@ class PortTest(LoggingTestCase):
             port.path_to_never_fix_tests_file(),
             '# results: [ Skip ]\nfailures/expected/image.html [ Skip ]\n')
         self.assertTrue(port.skips_test('failures/expected/image.html'))
-
-    def test_disable_system_font_check_and_nocheck_sys_deps(self):
-        port = self.make_port()
-        self.assertNotIn('--disable-system-font-check',
-                         port.additional_driver_flags())
-        port = self.make_port(
-            options=optparse.Values({'nocheck_sys_deps': True}))
-        self.assertIn('--disable-system-font-check',
-                      port.additional_driver_flags())
 
     def test_enable_tracing(self):
         options, _ = optparse.OptionParser().parse_args([])

@@ -43,7 +43,7 @@ import time
 from collections import defaultdict
 from copy import deepcopy
 from datetime import datetime
-from typing import Literal, Optional, Set, Tuple
+from typing import List, Literal, Optional, Set, Tuple
 
 import six
 from six.moves import zip_longest
@@ -396,45 +396,26 @@ class Port(object):
         flags += self.get_option('additional_driver_flag', [])
         return flags
 
-    def additional_driver_flags(self):
+    def additional_driver_flags(self) -> List[str]:
+        """Get extra switches to apply to all tests in this run.
+
+        Note on layering: Only hardcode switches here if they're useful for all
+        embedders and test scenarios (e.g., `//content/public/` switches).
+        Embedder-specific switches should be added to the corresponding
+        `Driver.cmd_line()` implementation.
+        """
         flags = self._specified_additional_driver_flags()
-        driver_name = self.driver_name()
-
-        # Enable "test" and "experimental" features by passing either
-        # `--run-web-tests` or `--enable-blink-test-features`.
-        if driver_name == self.CONTENT_SHELL_NAME:
-            flags.extend([
-                '--run-web-tests',
-                # `--ignore-certificate-errors-spki-list` requires
-                # `--user-data-dir` to take effect. `--user-data-dir` is an
-                # embedder-defined switch; it seems that we don't need to pass
-                # this for `chrome`, as `chromedriver` will supply its own
-                # value.
-                '--user-data-dir',
-            ])
-        elif driver_name == self.CHROME_NAME:
-            flags.extend([
-                '--enable-blink-test-features',
-                # Expose the non-standard `window.gc()` for `wpt_internal/`
-                # tests. See: crbug.com/1509657
-                '--js-flags=--expose-gc',
-            ])
-
-        if driver_name in {self.CONTENT_SHELL_NAME, self.CHROME_NAME}:
-            known_fingerprints = [
-                WPT_FINGERPRINT,
-                SXG_FINGERPRINT,
-                SXG_WPT_FINGERPRINT,
-            ]
-            flags.extend([
-                '--ignore-certificate-errors-spki-list=' +
-                ','.join(known_fingerprints),
-                # Required for WebTransport tests.
-                '--webtransport-developer-mode',
-            ])
-            if self.get_option('nocheck_sys_deps', False):
-                flags.append('--disable-system-font-check')
-
+        known_fingerprints = [
+            WPT_FINGERPRINT,
+            SXG_FINGERPRINT,
+            SXG_WPT_FINGERPRINT,
+        ]
+        flags.extend([
+            '--ignore-certificate-errors-spki-list=' +
+            ','.join(known_fingerprints),
+            # Required for WebTransport tests.
+            '--webtransport-developer-mode',
+        ])
         return flags
 
     def supports_per_test_timeout(self):

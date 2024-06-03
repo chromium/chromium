@@ -181,6 +181,13 @@ class WPTAdapterTest(unittest.TestCase):
             self.assertTrue(options.fully_parallel)
             self.assertIsNot(options.run_by_dir, 0)
             self.assertEqual(options.include, ['dir/reftest.html'])
+            self.assertNotIn('--run-web-tests', options.binary_args)
+            self.assertIn('--enable-blink-test-features', options.binary_args)
+            ignore_cert_flags = [
+                flag for flag in options.binary_args
+                if flag.startswith('--ignore-certificate-errors-spki-list=')
+            ]
+            self.assertEqual(len(ignore_cert_flags), 1)
 
             run_info = self._read_run_info(options)
             self.assertEqual(run_info['os'], 'linux')
@@ -264,14 +271,12 @@ class WPTAdapterTest(unittest.TestCase):
         adapter = WPTAdapter.from_args(self.host, [
             '--product=headless_shell',
             '--no-manifest-update',
-            '--enable-leak-detection',
             '--additional-driver-flag=--enable-features=FakeFeature',
             '--additional-driver-flag=--remote-debugging-address=0.0.0.0:8080',
         ])
         with adapter.test_env() as options:
             self.assertLessEqual(
                 {
-                    '--enable-leak-detection',
                     '--enable-features=FakeFeature',
                     '--remote-debugging-address=0.0.0.0:8080',
                 }, set(options.binary_args))

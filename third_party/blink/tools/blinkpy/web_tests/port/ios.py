@@ -218,6 +218,9 @@ class ChromiumIOSDriver(driver.Driver):
         super(ChromiumIOSDriver, self).__init__(port, worker_number,
                                                 no_timeout)
 
+    def _base_cmd_line(self):
+        return [self._port.path_to_driver()]
+
     def cmd_line(self, per_test_args):
         cmd = self._port.cmd_line()
         cmd += self._base_cmd_line()

@@ -118,7 +118,12 @@ class DesktopProduct(Product):
         options.binary_args.extend(self.additional_binary_args())
 
     def additional_binary_args(self) -> List[str]:
-        return []
+        # Base args applicable to all embedders.
+        return [
+            '--enable-blink-test-features',
+            # Expose the non-standard `window.gc()` for `wpt_internal/` tests.
+            '--js-flags=--expose-gc',
+        ]
 
 
 class Chrome(DesktopProduct):
@@ -129,7 +134,10 @@ class HeadlessShell(DesktopProduct):
     name = 'headless_shell'
 
     def additional_binary_args(self):
+        # TODO(crbug.com/40887057): Support `--enable-leak-detection` and plumb
+        # the flag here.
         return [
+            *super().additional_binary_args(),
             '--headless=old',
             '--enable-bfcache',
             '--enable-field-trial-config',

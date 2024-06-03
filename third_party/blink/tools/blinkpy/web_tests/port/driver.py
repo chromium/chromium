@@ -602,7 +602,13 @@ class Driver(TestURIMapper):
         self._current_cmd_line = None
 
     def _base_cmd_line(self):
-        return [self._port.path_to_driver()]
+        return [
+            self._port.path_to_driver(),
+            '--run-web-tests',
+            # To take effect, `--ignore-certificate-errors-spki-list` requires
+            # an embedder-defined `--user-data-dir`.
+            '--user-data-dir',
+        ]
 
     def cmd_line(self, per_test_args):
         cmd = list(self._port.get_option('wrapper', []))
@@ -612,6 +618,8 @@ class Driver(TestURIMapper):
         cmd.extend(self._port.additional_driver_flags())
         if self._port.get_option('enable_leak_detection'):
             cmd.append('--enable-leak-detection')
+        if self._port.get_option('nocheck_sys_deps', False):
+            cmd.append('--disable-system-font-check')
         cmd.extend(per_test_args)
         cmd = coalesce_repeated_switches(cmd)
         cmd.append('-')

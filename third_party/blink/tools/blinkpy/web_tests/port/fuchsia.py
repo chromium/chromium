@@ -295,9 +295,13 @@ class ChromiumFuchsiaDriver(driver.Driver):
 
     def _base_cmd_line(self):
         return [
-            '--use-vulkan', '--enable-gpu-rasterization',
-            '--force-device-scale-factor=1', '--enable-features=Vulkan',
-            '--gpu-watchdog-timeout-seconds=60'
+            '--run-web-tests',
+            '--user-data-dir',
+            '--use-vulkan',
+            '--enable-gpu-rasterization',
+            '--force-device-scale-factor=1',
+            '--enable-features=Vulkan',
+            '--gpu-watchdog-timeout-seconds=60',
         ]
 
     def _command_from_driver_input(self, driver_input):

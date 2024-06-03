@@ -338,9 +338,6 @@ class WPTAdapter:
             runner_options.config = self.finder.path_from_web_tests(
                 'wptrunner.blink.ini')
 
-        if self.options.enable_leak_detection:
-            runner_options.binary_args.append('--enable-leak-detection')
-
         if (self.options.enable_sanitizer
                 or self.options.configuration == 'Debug'):
             runner_options.timeout_multiplier = 5
