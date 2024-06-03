@@ -55,6 +55,7 @@ build_webui("build") {
     "app.css",
     "tab_group_shared_vars.css",
     "tab_organization_failure.css",
+    "tab_organization_group.css",
     "tab_organization_in_progress.css",
     "tab_organization_new_badge.css",
     "tab_organization_not_started.css",
