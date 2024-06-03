@@ -12,6 +12,7 @@
 #import "base/functional/bind.h"
 #import "base/hash/md5.h"
 #import "base/memory/raw_ptr.h"
+#import "base/numerics/byte_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/cancelable_task_tracker.h"
 #import "build/branding_buildflags.h"
@@ -294,8 +295,7 @@ UIImage* GetFallbackImageWithStringAndColor(NSString* string,
 
   base::MD5Digest hash;
   base::MD5Sum(base::as_byte_span(clipboard), &hash);
-  uint64_t md5 = *(reinterpret_cast<uint64_t*>(hash.a));
-  return md5;
+  return base::U64FromLittleEndian(base::span(hash.a).first<8u>());
 }
 
 @end

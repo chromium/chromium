@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/hash/md5.h"
 
 #include <string.h>
@@ -23,46 +18,27 @@
 namespace base {
 
 TEST(MD5, DigestToBase16) {
-  MD5Digest digest;
-
-  int data[] = {0xd4, 0x1d, 0x8c, 0xd9, 0x8f, 0x00, 0xb2, 0x04,
-                0xe9, 0x80, 0x09, 0x98, 0xec, 0xf8, 0x42, 0x7e};
-
-  for (int i = 0; i < 16; ++i)
-    digest.a[i] = data[i] & 0xff;
-
+  MD5Digest digest({0xd4, 0x1d, 0x8c, 0xd9, 0x8f, 0x00, 0xb2, 0x04,  //
+                    0xe9, 0x80, 0x09, 0x98, 0xec, 0xf8, 0x42, 0x7e});
   std::string actual = MD5DigestToBase16(digest);
   std::string expected = "d41d8cd98f00b204e9800998ecf8427e";
-
   EXPECT_EQ(expected, actual);
 }
 
 TEST(MD5, MD5SumEmptyData) {
   MD5Digest digest;
-  const char data[] = "";
-
-  MD5Sum(base::as_byte_span(std::string_view(data)), &digest);
-
+  MD5Sum(base::span<uint8_t>(), &digest);
   const uint8_t expected[] = {0xd4, 0x1d, 0x8c, 0xd9, 0x8f, 0x00, 0xb2, 0x04,
                               0xe9, 0x80, 0x09, 0x98, 0xec, 0xf8, 0x42, 0x7e};
-
-  for (size_t i = 0; i < 16; ++i) {
-    EXPECT_EQ(expected[i], digest.a[i]);
-  }
+  EXPECT_EQ(base::span(expected), digest.a);
 }
 
 TEST(MD5, MD5SumOneByteData) {
   MD5Digest digest;
-  const char data[] = "a";
-
-  MD5Sum(base::as_byte_span(std::string_view(data)), &digest);
-
+  MD5Sum(base::as_byte_span(std::string_view("a")), &digest);
   const uint8_t expected[] = {0x0c, 0xc1, 0x75, 0xb9, 0xc0, 0xf1, 0xb6, 0xa8,
                               0x31, 0xc3, 0x99, 0xe2, 0x69, 0x77, 0x26, 0x61};
-
-  for (size_t i = 0; i < 16; ++i) {
-    EXPECT_EQ(expected[i], digest.a[i]);
-  }
+  EXPECT_EQ(base::span(expected), digest.a);
 }
 
 TEST(MD5, MD5SumLongData) {
@@ -79,10 +55,7 @@ TEST(MD5, MD5SumLongData) {
 
   const uint8_t expected[] = {0x90, 0xbd, 0x6a, 0xd9, 0x0a, 0xce, 0xf5, 0xad,
                               0xaa, 0x92, 0x20, 0x3e, 0x21, 0xc7, 0xa1, 0x3e};
-
-  for (i = 0; i < 16; ++i) {
-    EXPECT_EQ(expected[i], digest.a[i]);
-  }
+  EXPECT_EQ(base::span(expected), digest.a);
 }
 
 TEST(MD5, ContextWithEmptyData) {
@@ -94,10 +67,7 @@ TEST(MD5, ContextWithEmptyData) {
 
   const uint8_t expected[] = {0xd4, 0x1d, 0x8c, 0xd9, 0x8f, 0x00, 0xb2, 0x04,
                               0xe9, 0x80, 0x09, 0x98, 0xec, 0xf8, 0x42, 0x7e};
-
-  for (size_t i = 0; i < 16; ++i) {
-    EXPECT_EQ(expected[i], digest.a[i]);
-  }
+  EXPECT_EQ(base::span(expected), digest.a);
 }
 
 TEST(MD5, ContextWithLongData) {
@@ -130,10 +100,7 @@ TEST(MD5, ContextWithLongData) {
 
   const uint8_t expected[] = {0x90, 0xbd, 0x6a, 0xd9, 0x0a, 0xce, 0xf5, 0xad,
                               0xaa, 0x92, 0x20, 0x3e, 0x21, 0xc7, 0xa1, 0x3e};
-
-  for (i = 0; i < 16; ++i) {
-    EXPECT_EQ(expected[i], digest.a[i]);
-  }
+  EXPECT_EQ(base::span(expected), digest.a);
 }
 
 // Example data from http://www.ietf.org/rfc/rfc1321.txt A.5 Test Suite

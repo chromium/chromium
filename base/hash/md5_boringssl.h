@@ -7,13 +7,15 @@
 
 #include <stdint.h>
 
+#include <array>
+
 #include "third_party/boringssl/src/include/openssl/md5.h"
 
 namespace base {
 
 // The output of an MD5 operation.
 struct MD5Digest {
-  uint8_t a[MD5_DIGEST_LENGTH];
+  std::array<uint8_t, MD5_DIGEST_LENGTH> a;
 };
 
 // Used for storing intermediate data during an MD5 computation. Callers

@@ -10,6 +10,7 @@
 
 #include "base/hash/md5.h"
 #include "base/memory/raw_ptr.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_checker.h"
@@ -233,7 +234,7 @@ uint64_t MediaStreamTrackMetrics::MakeUniqueIdImpl(uint64_t pc_id,
   base::MD5Final(&digest, &ctx);
 
   static_assert(sizeof(digest.a) > sizeof(uint64_t), "need a bigger digest");
-  return *reinterpret_cast<uint64_t*>(digest.a);
+  return base::numerics::U64FromLittleEndian(base::span(digest.a).first<8u>());
 }
 
 uint64_t MediaStreamTrackMetrics::MakeUniqueId(const std::string& track_id,

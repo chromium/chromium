@@ -9,6 +9,7 @@
 #include "base/containers/span.h"
 #include "base/hash/md5.h"
 #include "base/logging.h"
+#include "base/numerics/byte_conversions.h"
 #include "components/database_utils/url_converter.h"
 #include "sql/database.h"
 #include "sql/statement.h"
@@ -34,9 +35,8 @@ UrlId UkmUrlTable::GenerateUrlId(const GURL& url) {
   std::string db_url = GetDatabaseUrlString(url);
   base::MD5Digest digest;
   base::MD5Sum(base::as_byte_span(db_url), &digest);
-  int64_t hash;
-  memcpy(&hash, digest.a, sizeof(int64_t));
-  return UrlId::FromUnsafeValue(hash);
+  return UrlId::FromUnsafeValue(
+      base::I64FromLittleEndian(base::span(digest.a).first<8u>()));
 }
 
 bool UkmUrlTable::InitTable() {

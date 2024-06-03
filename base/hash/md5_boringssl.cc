@@ -28,15 +28,15 @@ void MD5Update(MD5Context* context, base::span<const uint8_t> data) {
 }
 
 void MD5Final(MD5Digest* digest, MD5Context* context) {
-  MD5_Final(digest->a, context);
+  MD5_Final(digest->a.data(), context);
 }
 
 std::string MD5DigestToBase16(const MD5Digest& digest) {
-  return ToLowerASCII(HexEncode(digest.a, MD5_DIGEST_LENGTH));
+  return ToLowerASCII(HexEncode(digest.a));
 }
 
 void MD5Sum(base::span<const uint8_t> data, MD5Digest* digest) {
-  MD5(data.data(), data.size(), digest->a);
+  MD5(data.data(), data.size(), digest->a.data());
 }
 
 std::string MD5String(std::string_view str) {
