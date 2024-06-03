@@ -17,13 +17,17 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/browser_instance/browser_app_instance_tracker.h"
+#include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
 #include "chrome/browser/chromeos/crosapi/test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_process.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -228,6 +232,33 @@ IN_PROC_BROWSER_TEST_P(AppInstallNavigationThrottleBrowserTest,
   histograms.ExpectBucketCount("Apps.AppInstallParentWindowFound", true, 1);
   histograms.ExpectBucketCount("Apps.AppInstallParentWindowFound", false, 0);
 #endif
+}
+
+IN_PROC_BROWSER_TEST_P(AppInstallNavigationThrottleBrowserTest,
+                       GeForceNowInstall) {
+  // Set up a mock GeForce NOW app.
+  webapps::AppId app_id =
+      web_app::test::InstallWebApp(browser()->profile(), []() {
+        auto info = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+            GURL("https://play.geforcenow.com/"));
+        info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
+        return info;
+      }());
+  ASSERT_EQ(apps::test::EnableLinkCapturingByUser(browser()->profile(), app_id),
+            base::ok());
+
+  ui_test_utils::BrowserChangeObserver browser_observer(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+
+  // Open install-app URI with gfn package.
+  EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
+  EXPECT_TRUE(content::ExecJs(
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      "window.open('cros-apps://install-app?package_id=gfn:1234');"));
+
+  // Expect GeForce NOW app to be opened.
+  EXPECT_TRUE(web_app::AppBrowserController::IsForWebApp(
+      browser_observer.Wait(), app_id));
 }
 
 IN_PROC_BROWSER_TEST_P(AppInstallNavigationThrottleBrowserTest,
