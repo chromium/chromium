@@ -24,6 +24,16 @@ constexpr int kImageCompressionQuality = 30;
 constexpr int kImageMaxArea = 1000000;
 constexpr int kImageMaxHeight = 1000;
 constexpr int kImageMaxWidth = 1000;
+constexpr int kImageMaxAreaTier3 = 3000000;
+constexpr int kImageMaxHeightTier3 = 3000;
+constexpr int kImageMaxWidthTier3 = 3000;
+constexpr int kImageMaxAreaTier2 = 2000000;
+constexpr int kImageMaxHeightTier2 = 1500;
+constexpr int kImageMaxWidthTier2 = 1500;
+constexpr int kImageMaxAreaTier1 = 400000;
+constexpr int kImageMaxHeightTier1 = 500;
+constexpr int kImageMaxWidthTier1 = 500;
+constexpr int kImageDownscaleUIScalingFactor = 2;
 
 class LensOverlayImageHelperTest : public testing::Test {
  public:
@@ -32,7 +42,8 @@ class LensOverlayImageHelperTest : public testing::Test {
     // default values are changed.
     feature_list_.InitAndEnableFeatureWithParameters(
         lens::features::kLensOverlay,
-        {{"image-compression-quality",
+        {{"enable-tiered-downscaling", "false"},
+         {"image-compression-quality",
           base::StringPrintf("%d", kImageCompressionQuality)},
          {"image-dimensions-max-area", base::StringPrintf("%d", kImageMaxArea)},
          {"image-dimensions-max-height",
@@ -63,13 +74,47 @@ class LensOverlayImageHelperTest : public testing::Test {
     return box;
   }
 
+  void EnableTieredDownscaling() {
+    feature_list_.Reset();
+    feature_list_.InitAndEnableFeatureWithParameters(
+        lens::features::kLensOverlay,
+        {{"enable-tiered-downscaling", "true"},
+         {"image-compression-quality",
+          base::StringPrintf("%d", kImageCompressionQuality)},
+         {"image-dimensions-max-area", base::StringPrintf("%d", kImageMaxArea)},
+         {"image-dimensions-max-height",
+          base::StringPrintf("%d", kImageMaxHeight)},
+         {"image-dimensions-max-width",
+          base::StringPrintf("%d", kImageMaxWidth)},
+         {"image-dimensions-max-area-tier-3",
+          base::StringPrintf("%d", kImageMaxAreaTier3)},
+         {"image-dimensions-max-height-tier-3",
+          base::StringPrintf("%d", kImageMaxHeightTier3)},
+         {"image-dimensions-max-width-tier-3",
+          base::StringPrintf("%d", kImageMaxWidthTier3)},
+         {"image-dimensions-max-area-tier-2",
+          base::StringPrintf("%d", kImageMaxAreaTier2)},
+         {"image-dimensions-max-height-tier-2",
+          base::StringPrintf("%d", kImageMaxHeightTier2)},
+         {"image-dimensions-max-width-tier-2",
+          base::StringPrintf("%d", kImageMaxWidthTier2)},
+         {"image-dimensions-max-area-tier-1",
+          base::StringPrintf("%d", kImageMaxAreaTier1)},
+         {"image-dimensions-max-height-tier-1",
+          base::StringPrintf("%d", kImageMaxHeightTier1)},
+         {"image-dimensions-max-width-tier-1",
+          base::StringPrintf("%d", kImageMaxWidthTier1)},
+         {"image-downscale-ui-scaling-factor",
+          base::StringPrintf("%d", kImageDownscaleUIScalingFactor)}});
+  }
+
  protected:
   base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(LensOverlayImageHelperTest, DownscaleAndEncodeBitmapMaxSize) {
   const SkBitmap bitmap = CreateNonEmptyBitmap(kImageMaxWidth, kImageMaxHeight);
-  lens::ImageData image_data = lens::DownscaleAndEncodeBitmap(bitmap);
+  lens::ImageData image_data = lens::DownscaleAndEncodeBitmap(bitmap, 2);
   std::string expected_output = GetJpegBytesForBitmap(bitmap);
 
   ASSERT_EQ(kImageMaxWidth, image_data.image_metadata().width());
@@ -79,7 +124,7 @@ TEST_F(LensOverlayImageHelperTest, DownscaleAndEncodeBitmapMaxSize) {
 
 TEST_F(LensOverlayImageHelperTest, DownscaleAndEncodeBitmapSmallSize) {
   const SkBitmap bitmap = CreateNonEmptyBitmap(/*width=*/100, /*height=*/100);
-  lens::ImageData image_data = lens::DownscaleAndEncodeBitmap(bitmap);
+  lens::ImageData image_data = lens::DownscaleAndEncodeBitmap(bitmap, 2);
   std::string expected_output = GetJpegBytesForBitmap(bitmap);
 
   ASSERT_EQ(bitmap.width(), image_data.image_metadata().width());
@@ -91,7 +136,7 @@ TEST_F(LensOverlayImageHelperTest, DownscaleAndEncodeBitmapLargeSize) {
   const int scale = 2;
   const SkBitmap bitmap =
       CreateNonEmptyBitmap(kImageMaxWidth * scale, kImageMaxHeight * scale);
-  lens::ImageData image_data = lens::DownscaleAndEncodeBitmap(bitmap);
+  lens::ImageData image_data = lens::DownscaleAndEncodeBitmap(bitmap, 2);
 
   const SkBitmap expected_bitmap =
       CreateNonEmptyBitmap(kImageMaxWidth, kImageMaxHeight);
@@ -107,7 +152,7 @@ TEST_F(LensOverlayImageHelperTest, DownscaleAndEncodeBitmapHeightTooLarge) {
   const int scale = 2;
   const SkBitmap bitmap =
       CreateNonEmptyBitmap(kImageMaxWidth, kImageMaxHeight * scale);
-  lens::ImageData image_data = lens::DownscaleAndEncodeBitmap(bitmap);
+  lens::ImageData image_data = lens::DownscaleAndEncodeBitmap(bitmap, 2);
 
   const SkBitmap expected_bitmap =
       CreateNonEmptyBitmap(kImageMaxWidth / scale, kImageMaxHeight);
@@ -123,7 +168,7 @@ TEST_F(LensOverlayImageHelperTest, DownscaleAndEncodeBitmapWidthTooLarge) {
   const int scale = 2;
   const SkBitmap bitmap =
       CreateNonEmptyBitmap(kImageMaxWidth * scale, kImageMaxHeight);
-  lens::ImageData image_data = lens::DownscaleAndEncodeBitmap(bitmap);
+  lens::ImageData image_data = lens::DownscaleAndEncodeBitmap(bitmap, 2);
 
   const SkBitmap expected_bitmap =
       CreateNonEmptyBitmap(kImageMaxWidth, kImageMaxHeight / scale);
@@ -529,4 +574,127 @@ TEST_F(LensOverlayImageHelperTest, FindBestMatchedColorOrTransparent) {
                 colors, SkColorSetRGB(0x48, 0x39, 0x12), 3.0f));
 }
 
+TEST_F(LensOverlayImageHelperTest, TieredDownscalingTier3) {
+  EnableTieredDownscaling();
+
+  int image_scale = 2;
+  int ui_scale = 1;
+  const SkBitmap bitmap = CreateNonEmptyBitmap(
+      kImageMaxWidthTier3 * image_scale, kImageMaxHeightTier3);
+  lens::ImageData image_data = lens::DownscaleAndEncodeBitmap(bitmap, ui_scale);
+
+  SkBitmap expected_bitmap = CreateNonEmptyBitmap(
+      kImageMaxWidthTier3, kImageMaxHeightTier3 / image_scale);
+  std::string expected_output = GetJpegBytesForBitmap(expected_bitmap);
+
+  // Downscales to Tier 3 when UI scale is less than finch defined UI scaling
+  // factor threshold (kImageDownscaleUIScalingFactor).
+  ASSERT_EQ(kImageMaxWidthTier3, image_data.image_metadata().width());
+  ASSERT_EQ(kImageMaxHeightTier3 / image_scale,
+            image_data.image_metadata().height());
+  ASSERT_EQ(expected_output, image_data.payload().image_bytes());
+
+  ui_scale = 2;
+  image_data = lens::DownscaleAndEncodeBitmap(bitmap, ui_scale);
+
+  expected_bitmap =
+      CreateNonEmptyBitmap(kImageMaxWidth, kImageMaxHeight / image_scale);
+  expected_output = GetJpegBytesForBitmap(expected_bitmap);
+
+  // Downscales to Tier 1.5 when UI scale is more than finch defined UI scaling
+  // factor threshold (kImageDownscaleUIScalingFactor).
+  ASSERT_EQ(kImageMaxWidth, image_data.image_metadata().width());
+  ASSERT_EQ(kImageMaxHeight / image_scale,
+            image_data.image_metadata().height());
+  ASSERT_EQ(expected_output, image_data.payload().image_bytes());
+}
+
+TEST_F(LensOverlayImageHelperTest, TieredDownscalingTier2) {
+  EnableTieredDownscaling();
+
+  int image_scale = 2;
+  int ui_scale = 1;
+  const SkBitmap bitmap = CreateNonEmptyBitmap(
+      kImageMaxWidthTier2, kImageMaxHeightTier2 * image_scale);
+  lens::ImageData image_data = lens::DownscaleAndEncodeBitmap(bitmap, ui_scale);
+
+  SkBitmap expected_bitmap = CreateNonEmptyBitmap(
+      kImageMaxWidthTier2 / image_scale, kImageMaxHeightTier2);
+  std::string expected_output = GetJpegBytesForBitmap(expected_bitmap);
+
+  // Downscales to Tier 2 when UI scale is less than finch defined UI scaling
+  // factor threshold (kImageDownscaleUIScalingFactor).
+  ASSERT_EQ(kImageMaxWidthTier2 / image_scale,
+            image_data.image_metadata().width());
+  ASSERT_EQ(kImageMaxHeightTier2, image_data.image_metadata().height());
+  ASSERT_EQ(expected_output, image_data.payload().image_bytes());
+
+  ui_scale = 2;
+  image_data = lens::DownscaleAndEncodeBitmap(bitmap, ui_scale);
+
+  expected_bitmap =
+      CreateNonEmptyBitmap(kImageMaxWidth / image_scale, kImageMaxHeight);
+  expected_output = GetJpegBytesForBitmap(expected_bitmap);
+
+  // Downscales to Tier 1.5 when UI scale is more than finch defined UI scaling
+  // factor threshold (kImageDownscaleUIScalingFactor).
+  ASSERT_EQ(kImageMaxWidth / image_scale, image_data.image_metadata().width());
+  ASSERT_EQ(kImageMaxHeight, image_data.image_metadata().height());
+  ASSERT_EQ(expected_output, image_data.payload().image_bytes());
+}
+
+TEST_F(LensOverlayImageHelperTest, TieredDownscalingTier1) {
+  EnableTieredDownscaling();
+
+  int image_scale = 2;
+  int ui_scale = 1;
+  const SkBitmap bitmap = CreateNonEmptyBitmap(
+      kImageMaxWidthTier1, kImageMaxHeightTier1 * image_scale);
+  lens::ImageData image_data = lens::DownscaleAndEncodeBitmap(bitmap, ui_scale);
+
+  SkBitmap expected_bitmap = CreateNonEmptyBitmap(
+      kImageMaxWidthTier1 / image_scale, kImageMaxHeightTier1);
+  std::string expected_output = GetJpegBytesForBitmap(expected_bitmap);
+
+  // Downscales to Tier 1 when UI scale is less than finch defined UI scaling
+  // factor threshold (kImageDownscaleUIScalingFactor).
+  ASSERT_EQ(kImageMaxWidthTier1 / image_scale,
+            image_data.image_metadata().width());
+  ASSERT_EQ(kImageMaxHeightTier1, image_data.image_metadata().height());
+  ASSERT_EQ(expected_output, image_data.payload().image_bytes());
+
+  ui_scale = 2;
+  image_data = lens::DownscaleAndEncodeBitmap(bitmap, ui_scale);
+
+  // Downscales to Tier 1 when UI scale is less than finch defined UI scaling
+  // factor threshold (kImageDownscaleUIScalingFactor). Essentially verify that
+  // ui_scale is ignored at Tier 1.
+  ASSERT_EQ(kImageMaxWidthTier1 / image_scale,
+            image_data.image_metadata().width());
+  ASSERT_EQ(kImageMaxHeightTier1, image_data.image_metadata().height());
+  ASSERT_EQ(expected_output, image_data.payload().image_bytes());
+}
+
+TEST_F(LensOverlayImageHelperTest, TieredDownscalingNoCompression) {
+  EnableTieredDownscaling();
+
+  int ui_scale = 1;
+  const SkBitmap bitmap = CreateNonEmptyBitmap(/*width=*/100, /*height=*/100);
+  lens::ImageData image_data = lens::DownscaleAndEncodeBitmap(bitmap, ui_scale);
+
+  std::string expected_output = GetJpegBytesForBitmap(bitmap);
+
+  // No downscaling when image is less than Tier 1.
+  ASSERT_EQ(100, image_data.image_metadata().width());
+  ASSERT_EQ(100, image_data.image_metadata().height());
+  ASSERT_EQ(expected_output, image_data.payload().image_bytes());
+
+  ui_scale = 2;
+  image_data = lens::DownscaleAndEncodeBitmap(bitmap, ui_scale);
+
+  // Verify that UI Scale does not change no compression flow
+  ASSERT_EQ(100, image_data.image_metadata().width());
+  ASSERT_EQ(100, image_data.image_metadata().height());
+  ASSERT_EQ(expected_output, image_data.payload().image_bytes());
+}
 }  // namespace lens

@@ -41,6 +41,7 @@
 #include "components/permissions/permission_request_manager.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/viz/common/frame_timing_details.h"
+#include "components/zoom/zoom_controller.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -456,9 +457,16 @@ void LensOverlayController::BindOverlay(
   // Only start the query flow again if we don't already have a full image
   // response.
   if (!initialization_data_->has_full_image_response()) {
+    int device_scale_factor =
+        tab_->GetContents()->GetRenderWidgetHostView()->GetDeviceScaleFactor();
+    float page_scale_factor =
+        zoom::ZoomController::FromWebContents(tab_->GetContents())
+            ->GetZoomPercent() /
+        100.0f;
     lens_overlay_query_controller_->StartQueryFlow(
         initialization_data_->current_screenshot_,
-        initialization_data_->page_url_, initialization_data_->page_title_);
+        initialization_data_->page_url_, initialization_data_->page_title_,
+        device_scale_factor * page_scale_factor);
   }
   if (pending_region_) {
     IssueLensRequest(std::move(pending_region_));

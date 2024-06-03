@@ -60,12 +60,34 @@ const base::FeatureParam<int> kLensOverlayScreenshotRenderQuality{
     &kLensOverlay, "overlay-screenshot-render-quality", 90};
 const base::FeatureParam<int> kLensOverlayImageCompressionQuality{
     &kLensOverlay, "image-compression-quality", 40};
+const base::FeatureParam<bool> kLensOverlayUseTieredDownscaling{
+    &kLensOverlay, "enable-tiered-downscaling", false};
 const base::FeatureParam<int> kLensOverlayImageMaxArea{
-    &kLensOverlay, "image-dimensions-max-area", 1440000};
+    &kLensOverlay, "image-dimensions-max-area", 1500000};
 const base::FeatureParam<int> kLensOverlayImageMaxHeight{
     &kLensOverlay, "image-dimensions-max-height", 1600};
 const base::FeatureParam<int> kLensOverlayImageMaxWidth{
     &kLensOverlay, "image-dimensions-max-width", 1600};
+const base::FeatureParam<int> kLensOverlayImageMaxAreaTier1{
+    &kLensOverlay, "image-dimensions-max-area-tier-1", 1000000};
+const base::FeatureParam<int> kLensOverlayImageMaxHeightTier1{
+    &kLensOverlay, "image-dimensions-max-height-tier-1", 1600};
+const base::FeatureParam<int> kLensOverlayImageMaxWidthTier1{
+    &kLensOverlay, "image-dimensions-max-width-tier-1", 1600};
+const base::FeatureParam<int> kLensOverlayImageMaxAreaTier2{
+    &kLensOverlay, "image-dimensions-max-area-tier-2", 2000000};
+const base::FeatureParam<int> kLensOverlayImageMaxHeightTier2{
+    &kLensOverlay, "image-dimensions-max-height-tier-2", 1890};
+const base::FeatureParam<int> kLensOverlayImageMaxWidthTier2{
+    &kLensOverlay, "image-dimensions-max-width-tier-2", 1890};
+const base::FeatureParam<int> kLensOverlayImageMaxAreaTier3{
+    &kLensOverlay, "image-dimensions-max-area-tier-3", 3000000};
+const base::FeatureParam<int> kLensOverlayImageMaxHeightTier3{
+    &kLensOverlay, "image-dimensions-max-height-tier-3", 2300};
+const base::FeatureParam<int> kLensOverlayImageMaxWidthTier3{
+    &kLensOverlay, "image-dimensions-max-width-tier-3", 2300};
+const base::FeatureParam<int> kLensOverlayImageDownscaleUiScalingFactor{
+    &kLensOverlay, "image-downscale-ui-scaling-factor", 2};
 const base::FeatureParam<bool> kLensOverlayDebuggingMode{
     &kLensOverlay, "debugging-mode", false};
 const base::FeatureParam<int> kLensOverlayVerticalTextMargin{
@@ -297,6 +319,18 @@ int GetLensOverlayScreenshotRenderQuality() {
   return kLensOverlayScreenshotRenderQuality.Get();
 }
 
+int GetLensOverlayImageMaxAreaTier1() {
+  return kLensOverlayImageMaxAreaTier1.Get();
+}
+
+int GetLensOverlayImageMaxHeightTier1() {
+  return kLensOverlayImageMaxHeightTier1.Get();
+}
+
+bool LensOverlayUseTieredDownscaling() {
+  return kLensOverlayUseTieredDownscaling.Get();
+}
+
 int GetLensOverlayImageMaxArea() {
   return kLensOverlayImageMaxArea.Get();
 }
@@ -307,6 +341,38 @@ int GetLensOverlayImageMaxHeight() {
 
 int GetLensOverlayImageMaxWidth() {
   return kLensOverlayImageMaxWidth.Get();
+}
+
+int GetLensOverlayImageMaxWidthTier1() {
+  return kLensOverlayImageMaxWidthTier1.Get();
+}
+
+int GetLensOverlayImageMaxAreaTier2() {
+  return kLensOverlayImageMaxAreaTier2.Get();
+}
+
+int GetLensOverlayImageMaxHeightTier2() {
+  return kLensOverlayImageMaxHeightTier2.Get();
+}
+
+int GetLensOverlayImageMaxWidthTier2() {
+  return kLensOverlayImageMaxWidthTier2.Get();
+}
+
+int GetLensOverlayImageMaxAreaTier3() {
+  return kLensOverlayImageMaxAreaTier3.Get();
+}
+
+int GetLensOverlayImageMaxHeightTier3() {
+  return kLensOverlayImageMaxHeightTier3.Get();
+}
+
+int GetLensOverlayImageMaxWidthTier3() {
+  return kLensOverlayImageMaxWidthTier3.Get();
+}
+
+int GetLensOverlayImageDownscaleUiScalingFactorThreshold() {
+  return kLensOverlayImageDownscaleUiScalingFactor.Get();
 }
 
 std::string GetLensOverlayEndpointURL() {

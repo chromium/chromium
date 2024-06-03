@@ -67,7 +67,8 @@ class LensOverlayQueryController {
   // testing.
   virtual void StartQueryFlow(const SkBitmap& screenshot,
                               std::optional<GURL> page_url,
-                              std::optional<std::string> page_title);
+                              std::optional<std::string> page_title,
+                              float ui_scale_factor);
 
   // Clears the state and resets stored values.
   void EndQuery();
@@ -225,6 +226,10 @@ class LensOverlayQueryController {
 
   // The page title, if it is allowed to be shared.
   std::optional<std::string> page_title_;
+
+  // The UI Scaling Factor of the underlying page, if it has been passed in.
+  // Else 0.
+  float ui_scale_factor_ = 0;
 
   // The current state.
   QueryControllerState query_controller_state_ = QueryControllerState::kOff;

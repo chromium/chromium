@@ -24,41 +24,114 @@
 
 namespace {
 
-bool ShouldDownscaleSize(const gfx::Size& size) {
+bool ShouldDownscaleSize(const gfx::Size& size,
+                         int max_area,
+                         int max_width,
+                         int max_height) {
   // This returns true if the area is larger than the max area AND one of the
   // width OR height exceeds the configured max values.
-  return size.GetArea() > lens::features::GetLensOverlayImageMaxArea() &&
-         (size.width() > lens::features::GetLensOverlayImageMaxWidth() ||
-          size.height() > lens::features::GetLensOverlayImageMaxHeight());
+  return size.GetArea() > max_area &&
+         (size.width() > max_width || size.height() > max_height);
 }
 
-double GetPreferredScale(const gfx::Size& original_size) {
+bool ShouldDownscaleSizeWithUiScaling(const gfx::Size& size,
+                                      int max_area,
+                                      int max_width,
+                                      int max_height,
+                                      int ui_scale_factor) {
+  if (ui_scale_factor <= 0) {
+    return ShouldDownscaleSize(size, max_area, max_width, max_height);
+  }
+  return ui_scale_factor <
+             lens::features::
+                 GetLensOverlayImageDownscaleUiScalingFactorThreshold() &&
+         ShouldDownscaleSize(size, max_area, max_width, max_height);
+}
+
+double GetPreferredScale(const gfx::Size& original_size,
+                         int target_width,
+                         int target_height) {
   return std::min(
-      base::ClampDiv(
-          static_cast<double>(lens::features::GetLensOverlayImageMaxWidth()),
-          original_size.width()),
-      base::ClampDiv(
-          static_cast<double>(lens::features::GetLensOverlayImageMaxHeight()),
-          original_size.height()));
+      base::ClampDiv(static_cast<double>(target_width), original_size.width()),
+      base::ClampDiv(static_cast<double>(target_height),
+                     original_size.height()));
 }
 
-gfx::Size GetPreferredSize(const gfx::Size& original_size) {
-  double scale = GetPreferredScale(original_size);
-  int width = std::clamp<int>(scale * original_size.width(), 1,
-                              lens::features::GetLensOverlayImageMaxWidth());
-  int height = std::clamp<int>(scale * original_size.height(), 1,
-                               lens::features::GetLensOverlayImageMaxHeight());
+gfx::Size GetPreferredSize(const gfx::Size& original_size,
+                           int target_width,
+                           int target_height) {
+  double scale = GetPreferredScale(original_size, target_width, target_height);
+  int width = std::clamp<int>(scale * original_size.width(), 1, target_width);
+  int height =
+      std::clamp<int>(scale * original_size.height(), 1, target_height);
   return gfx::Size(width, height);
 }
 
-SkBitmap DownscaleImageIfNeeded(const SkBitmap& image) {
+SkBitmap DownscaleImage(const SkBitmap& image,
+                        int target_width,
+                        int target_height) {
   auto size = gfx::Size(image.width(), image.height());
-  if (ShouldDownscaleSize(size)) {
-    auto preferred_size = GetPreferredSize(size);
-    return skia::ImageOperations::Resize(
-        image, skia::ImageOperations::RESIZE_BEST, preferred_size.width(),
-        preferred_size.height());
+  auto preferred_size = GetPreferredSize(size, target_width, target_height);
+  return skia::ImageOperations::Resize(
+      image, skia::ImageOperations::RESIZE_BEST, preferred_size.width(),
+      preferred_size.height());
+}
+
+SkBitmap DownscaleImageIfNeededWithTieredApproach(const SkBitmap& image,
+                                                  int ui_scale_factor) {
+  auto size = gfx::Size(image.width(), image.height());
+  // Tier 3 Downscaling.
+  if (ShouldDownscaleSizeWithUiScaling(
+          size, lens::features::GetLensOverlayImageMaxAreaTier3(),
+          lens::features::GetLensOverlayImageMaxWidthTier3(),
+          lens::features::GetLensOverlayImageMaxHeightTier3(),
+          ui_scale_factor)) {
+    return DownscaleImage(image,
+                          lens::features::GetLensOverlayImageMaxWidthTier3(),
+                          lens::features::GetLensOverlayImageMaxHeightTier3());
+    // Tier 2 Downscaling.
+  } else if (ShouldDownscaleSizeWithUiScaling(
+                 size, lens::features::GetLensOverlayImageMaxAreaTier2(),
+                 lens::features::GetLensOverlayImageMaxWidthTier2(),
+                 lens::features::GetLensOverlayImageMaxHeightTier2(),
+                 ui_scale_factor)) {
+    return DownscaleImage(image,
+                          lens::features::GetLensOverlayImageMaxWidthTier2(),
+                          lens::features::GetLensOverlayImageMaxHeightTier2());
+    // Tier 1.5 Downscaling.
+  } else if (ShouldDownscaleSize(
+                 size, lens::features::GetLensOverlayImageMaxAreaTier2(),
+                 lens::features::GetLensOverlayImageMaxWidthTier2(),
+                 lens::features::GetLensOverlayImageMaxHeightTier2())) {
+    return DownscaleImage(image, lens::features::GetLensOverlayImageMaxWidth(),
+                          lens::features::GetLensOverlayImageMaxHeight());
+    // Tier 1 Downscaling.
+  } else if (ShouldDownscaleSize(
+                 size, lens::features::GetLensOverlayImageMaxAreaTier1(),
+                 lens::features::GetLensOverlayImageMaxWidthTier1(),
+                 lens::features::GetLensOverlayImageMaxHeightTier1())) {
+    return DownscaleImage(image,
+                          lens::features::GetLensOverlayImageMaxWidthTier1(),
+                          lens::features::GetLensOverlayImageMaxHeightTier1());
   }
+
+  // No downscaling needed.
+  return image;
+}
+
+SkBitmap DownscaleImageIfNeeded(const SkBitmap& image, int ui_scale_factor) {
+  if (lens::features::LensOverlayUseTieredDownscaling()) {
+    return DownscaleImageIfNeededWithTieredApproach(image, ui_scale_factor);
+  }
+
+  auto size = gfx::Size(image.width(), image.height());
+  if (ShouldDownscaleSize(size, lens::features::GetLensOverlayImageMaxArea(),
+                          lens::features::GetLensOverlayImageMaxHeight(),
+                          lens::features::GetLensOverlayImageMaxHeight())) {
+    return DownscaleImage(image, lens::features::GetLensOverlayImageMaxHeight(),
+                          lens::features::GetLensOverlayImageMaxHeight());
+  }
+  // No downscaling needed.
   return image;
 }
 
@@ -66,9 +139,14 @@ SkBitmap CropAndDownscaleImageIfNeeded(const SkBitmap& image,
                                        gfx::Rect region) {
   auto full_image_size = gfx::Size(image.width(), image.height());
   auto region_size = gfx::Size(region.width(), region.height());
-  if (ShouldDownscaleSize(region_size)) {
-    double scale = GetPreferredScale(region_size);
-    auto downscaled_region_size = GetPreferredSize(region_size);
+  auto target_width = lens::features::GetLensOverlayImageMaxWidth();
+  auto target_height = lens::features::GetLensOverlayImageMaxHeight();
+  if (ShouldDownscaleSize(region_size,
+                          lens::features::GetLensOverlayImageMaxArea(),
+                          target_width, target_height)) {
+    double scale = GetPreferredScale(region_size, target_width, target_height);
+    auto downscaled_region_size =
+        GetPreferredSize(region_size, target_width, target_height);
     int scaled_full_image_width =
         std::max<int>(scale * full_image_size.width(), 1);
     int scaled_full_image_height =
@@ -103,10 +181,11 @@ bool EncodeImage(const SkBitmap& image,
                                 &(*output)->as_vector());
 }
 
-lens::ImageData DownscaleAndEncodeBitmap(const SkBitmap& image) {
+lens::ImageData DownscaleAndEncodeBitmap(const SkBitmap& image,
+                                         int ui_scale_factor) {
   lens::ImageData image_data;
   scoped_refptr<base::RefCountedBytes> data;
-  auto resized_bitmap = DownscaleImageIfNeeded(image);
+  auto resized_bitmap = DownscaleImageIfNeeded(image, ui_scale_factor);
   if (EncodeImage(resized_bitmap,
                   lens::features::GetLensOverlayImageCompressionQuality(),
                   &data)) {

@@ -23,9 +23,11 @@ bool EncodeImage(const SkBitmap& image,
 
 // Downscales and encodes the provided bitmap and then stores it in a
 // lens::ImageData object. Returns an empty object if encoding fails.
-// Downscaling only occurs if the bitmap dimensions exceed configured flag
-// values.
-lens::ImageData DownscaleAndEncodeBitmap(const SkBitmap& image);
+// Downscaling only occurs if the bitmap dimensions mixed with the
+// ui_scale_factor exceed configured flag values. ui_scale_factor will be
+// ignored if tiered downscaling is disabled.
+lens::ImageData DownscaleAndEncodeBitmap(const SkBitmap& image,
+                                         int ui_scale_factor);
 
 // Downscales and encodes the provided bitmap region and then stores it in a
 // lens::ImageCrop object if needed. Returns a nullopt if the region is not

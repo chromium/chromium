@@ -229,17 +229,83 @@ extern int GetLensOverlayImageCompressionQuality();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern int GetLensOverlayScreenshotRenderQuality();
 
-// Returns the finch configured max image area for the Lens overlay feature.
+// Returns whether to use the tiered downscaling approach. If false, defaults to
+// the normal since tier approach.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool LensOverlayUseTieredDownscaling();
+
+// Returns the finch configured max image height for the Lens overlay feature
+// when tiered downscaling approach is disabled.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern int GetLensOverlayImageMaxArea();
 
-// Returns the finch configured max image height for the Lens overlay feature.
+// Returns the finch configured max image height for the Lens overlay feature
+// between Tiers 1 and 2. With the UI scaling, there is a possibility the image
+// needs to be downscaled, but doesn't fit in a specific tier, which is when the
+// image gets downscaled to this value. Corresponds to Tier 1.5 in
+// go/lens-overlay-tiered-downscaling. This is also the value used if tier
+// downscaling approach is disabled.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern int GetLensOverlayImageMaxHeight();
 
-// Returns the finch configured max image width for the Lens overlay feature.
+// Returns the finch configured max image width for the Lens overlay feature
+// between Tiers 1 and 2. With the UI scaling, there is a possibility the image
+// needs to be downscaled, but doesn't fit in a specific tier, which is when the
+// image gets downscaled to this value. Corresponds to Tier 1.5 in
+// go/lens-overlay-tiered-downscaling.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern int GetLensOverlayImageMaxWidth();
+
+// Returns the finch configured max image area for the Lens overlay feature at
+// Tier 1. Tier 1 is the lower resolution we downscale to.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern int GetLensOverlayImageMaxAreaTier1();
+
+// Returns the finch configured max image height for the Lens overlay feature at
+// Tier 1. Tier 1 is the lower resolution we downscale to.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern int GetLensOverlayImageMaxHeightTier1();
+
+// Returns the finch configured max image width for the Lens overlay feature at
+// Tier 1. Tier 1 is the lower resolution we downscale to.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern int GetLensOverlayImageMaxWidthTier1();
+
+// Returns the finch configured max image area for the Lens overlay feature at
+// Tier 2. Tier 2 is the middle tier resolution we downscale to.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern int GetLensOverlayImageMaxAreaTier2();
+
+// Returns the finch configured max image height for the Lens overlay feature at
+// Tier 2. Tier 2 is the middle tier resolution we downscale to.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern int GetLensOverlayImageMaxHeightTier2();
+
+// Returns the finch configured max image width for the Lens overlay feature at
+// Tier 2. Tier 2 is the middle tier resolution we downscale to.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern int GetLensOverlayImageMaxWidthTier2();
+
+// Returns the finch configured max image area for the Lens overlay feature at
+// Tier 3. Tier 3 is the highest resolution we downscale to.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern int GetLensOverlayImageMaxAreaTier3();
+
+// Returns the finch configured max image height for the Lens overlay feature at
+// Tier 3. Tier 3 is the highest resolution we downscale to.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern int GetLensOverlayImageMaxHeightTier3();
+
+// Returns the finch configured max image width for the Lens overlay feature at
+// Tier 3. Tier 3 is the highest resolution we downscale to.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern int GetLensOverlayImageMaxWidthTier3();
+
+// Returns the finch configured UI scaling factor that is used to decide what
+// tier the captured screenshot should be downscaled to. A lower scaling factor
+// threshold leads to more downscaling at that threshold.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern int GetLensOverlayImageDownscaleUiScalingFactorThreshold();
 
 // Returns the finch configured endpoint URL for the Lens overlay.
 COMPONENT_EXPORT(LENS_FEATURES)

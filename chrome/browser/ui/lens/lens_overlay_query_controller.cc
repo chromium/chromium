@@ -176,11 +176,13 @@ LensOverlayQueryController::~LensOverlayQueryController() = default;
 void LensOverlayQueryController::StartQueryFlow(
     const SkBitmap& screenshot,
     std::optional<GURL> page_url,
-    std::optional<std::string> page_title) {
+    std::optional<std::string> page_title,
+    float ui_scale_factor) {
   DCHECK_EQ(query_controller_state_, QueryControllerState::kOff);
   original_screenshot_ = screenshot;
   page_url_ = page_url;
   page_title_ = page_title;
+  ui_scale_factor_ = ui_scale_factor;
 
   PrepareAndFetchFullImageRequest();
 }
@@ -190,7 +192,8 @@ void LensOverlayQueryController::PrepareAndFetchFullImageRequest() {
          QueryControllerState::kAwaitingFullImageResponse);
   query_controller_state_ = QueryControllerState::kAwaitingFullImageResponse;
   base::ThreadPool::PostTask(
-      base::BindOnce(&DownscaleAndEncodeBitmap, original_screenshot_)
+      base::BindOnce(&DownscaleAndEncodeBitmap, original_screenshot_,
+                     ui_scale_factor_)
           .Then(base::BindPostTask(
               base::SequencedTaskRunner::GetCurrentDefault(),
               base::BindOnce(&LensOverlayQueryController::FetchFullImageRequest,

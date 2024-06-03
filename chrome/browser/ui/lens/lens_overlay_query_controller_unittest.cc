@@ -213,7 +213,7 @@ TEST_F(LensOverlayQueryControllerTest, FetchInitialQuery_ReturnsResponse) {
   SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
   query_controller.StartQueryFlow(
       bitmap, std::make_optional<GURL>(kTestPageUrl),
-      std::make_optional<std::string>(kTestPageTitle));
+      std::make_optional<std::string>(kTestPageTitle), 0);
 
   task_environment_.RunUntilIdle();
   query_controller.EndQuery();
@@ -275,7 +275,7 @@ TEST_F(LensOverlayQueryControllerTest,
   std::map<std::string, std::string> additional_search_query_params;
   query_controller.StartQueryFlow(
       bitmap, std::make_optional<GURL>(kTestPageUrl),
-      std::make_optional<std::string>(kTestPageTitle));
+      std::make_optional<std::string>(kTestPageTitle), 0);
   task_environment_.RunUntilIdle();
 
   auto region = lens::mojom::CenterRotatedBox::New();
@@ -376,7 +376,7 @@ TEST_F(LensOverlayQueryControllerTest,
   std::map<std::string, std::string> additional_search_query_params;
   query_controller.StartQueryFlow(
       bitmap, std::make_optional<GURL>(kTestPageUrl),
-      std::make_optional<std::string>(kTestPageTitle));
+      std::make_optional<std::string>(kTestPageTitle), 0);
   task_environment_.RunUntilIdle();
 
   auto region = lens::mojom::CenterRotatedBox::New();
@@ -480,7 +480,7 @@ TEST_F(LensOverlayQueryControllerTest,
   std::map<std::string, std::string> additional_search_query_params;
   query_controller.StartQueryFlow(
       bitmap, std::make_optional<GURL>(kTestPageUrl),
-      std::make_optional<std::string>(kTestPageTitle));
+      std::make_optional<std::string>(kTestPageTitle), 0);
   task_environment_.RunUntilIdle();
 
   query_controller.SendTextOnlyQuery("", TextOnlyQueryType::kSearchBoxQuery,
@@ -538,7 +538,7 @@ TEST_F(LensOverlayQueryControllerTest,
 
   query_controller.StartQueryFlow(
       bitmap, std::make_optional<GURL>(kTestPageUrl),
-      std::make_optional<std::string>(kTestPageTitle));
+      std::make_optional<std::string>(kTestPageTitle), 0);
   task_environment_.RunUntilIdle();
 
   ASSERT_TRUE(full_image_response_future.IsReady());

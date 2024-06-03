@@ -267,7 +267,8 @@ class LensOverlayQueryControllerFake : public lens::LensOverlayQueryController {
 
   void StartQueryFlow(const SkBitmap& screenshot,
                       std::optional<GURL> page_url,
-                      std::optional<std::string> page_title) override {
+                      std::optional<std::string> page_title,
+                      float ui_scale_factor) override {
     // Send response for full image callback / HandleStartQueryResponse.
     std::vector<lens::mojom::OverlayObjectPtr> test_objects;
     test_objects.push_back(kTestOverlayObject->Clone());
