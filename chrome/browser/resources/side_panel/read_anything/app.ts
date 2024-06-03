@@ -952,14 +952,17 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     const newStatusCode = newVoicePackStatus.code;
     switch (newStatusCode) {
       case VoicePackServerStatusSuccessCode.NOT_INSTALLED:
-        // Install the voice if 1) it's not currently installed 2) there's no
-        // pending install request, and 3) it's marked as a language that should
-        // be installed
-        if (this.langMarkedForInstallation(lang)) {
-          this.setVoicePackLocalStatus_(
-              lang, VoiceClientSideStatusCode.SENT_INSTALL_REQUEST);
+        // Install the voice if it's not currently installed and it's marked as
+        // a language that should be installed
+        if (this.languagesForVoiceDownloads.has(lang)) {
+          // Don't re-send install request if it's already been sent
+          if (this.getVoicePackLocalStatus_(lang) !==
+              VoiceClientSideStatusCode.SENT_INSTALL_REQUEST) {
+            this.setVoicePackLocalStatus_(
+                lang, VoiceClientSideStatusCode.SENT_INSTALL_REQUEST);
 
-          chrome.readingMode.sendInstallVoicePackRequest(lang);
+            chrome.readingMode.sendInstallVoicePackRequest(lang);
+          }
         } else {
           this.setVoicePackLocalStatus_(
               lang, VoiceClientSideStatusCode.NOT_INSTALLED);
@@ -1017,11 +1020,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     }
   }
 
-  private langMarkedForInstallation(lang: string) {
-    return this.languagesForVoiceDownloads.has(lang) &&
-        this.getVoicePackLocalStatus_(lang) !==
-        VoiceClientSideStatusCode.SENT_INSTALL_REQUEST;
-  }
 
   private getLanguageDownloadedTitle_(lang: string) {
     const langDisplayName =
