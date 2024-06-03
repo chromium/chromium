@@ -3,17 +3,17 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/css/container_query_evaluator.h"
+
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/container_query.h"
-#include "third_party/blink/renderer/core/css/container_query_scroll_snapshot.h"
 #include "third_party/blink/renderer/core/css/css_container_values.h"
+#include "third_party/blink/renderer/core/css/media_values_cached.h"
 #include "third_party/blink/renderer/core/css/resolver/match_result.h"
+#include "third_party/blink/renderer/core/css/stuck_query_scroll_snapshot.h"
 #include "third_party/blink/renderer/core/css/style_recalc_context.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
-
-#include "third_party/blink/renderer/core/css/media_values_cached.h"
 
 namespace blink {
 
@@ -189,8 +189,7 @@ ContainerQueryEvaluator::Result ContainerQueryEvaluator::Eval(
   CHECK(media_query_evaluator_);
 
   if (container_query.Selector().HasUnknownFeature()) {
-    Element* container =
-        media_query_evaluator_->GetMediaValues().ContainerElement();
+    Element* container = ContainerElement();
     CHECK(container);
     container->GetDocument().CountUse(WebFeature::kContainerQueryEvalUnknown);
   }
@@ -257,15 +256,14 @@ bool ContainerQueryEvaluator::EvalAndAdd(const ContainerQuery& query,
   if (!depends_on_style_) {
     depends_on_style_ = query.Selector().SelectsStyleContainers();
   }
-  if (!depends_on_state_) {
-    depends_on_state_ = query.Selector().SelectsStateContainers();
-    if (depends_on_state_ && !snapshot_) {
+  if (!depends_on_stuck_) {
+    depends_on_stuck_ = query.Selector().SelectsStickyContainers();
+    if (depends_on_stuck_ && !stuck_snapshot_) {
       CHECK(media_query_evaluator_);
-      Element* container_element =
-          media_query_evaluator_->GetMediaValues().ContainerElement();
+      Element* container_element = ContainerElement();
       CHECK(container_element);
-      snapshot_ = MakeGarbageCollected<ContainerQueryScrollSnapshot>(
-          *container_element);
+      stuck_snapshot_ =
+          MakeGarbageCollected<StuckQueryScrollSnapshot>(*container_element);
     }
   }
   unit_flags_ |= result.unit_flags;
@@ -293,9 +291,9 @@ ContainerQueryEvaluator::Change ContainerQueryEvaluator::SizeContainerChanged(
 }
 
 ContainerQueryEvaluator::Change ContainerQueryEvaluator::ApplyScrollSnapshot() {
-  if (snapshot_) {
-    return StickyContainerChanged(snapshot_->StuckHorizontal(),
-                                  snapshot_->StuckVertical());
+  if (stuck_snapshot_) {
+    return StickyContainerChanged(stuck_snapshot_->StuckHorizontal(),
+                                  stuck_snapshot_->StuckVertical());
   }
   return ContainerQueryEvaluator::Change::kNone;
 }
@@ -335,7 +333,7 @@ ContainerQueryEvaluator::StyleContainerChanged() {
 void ContainerQueryEvaluator::Trace(Visitor* visitor) const {
   visitor->Trace(media_query_evaluator_);
   visitor->Trace(results_);
-  visitor->Trace(snapshot_);
+  visitor->Trace(stuck_snapshot_);
 }
 
 void ContainerQueryEvaluator::UpdateContainerSize(PhysicalSize size,
@@ -511,6 +509,11 @@ void ContainerQueryEvaluator::MarkFontDirtyIfNeeded(
     return;
   }
   font_dirty_ = old_style.GetFont() != new_style.GetFont();
+}
+
+Element* ContainerQueryEvaluator::ContainerElement() const {
+  CHECK(media_query_evaluator_);
+  return media_query_evaluator_->GetMediaValues().ContainerElement();
 }
 
 }  // namespace blink

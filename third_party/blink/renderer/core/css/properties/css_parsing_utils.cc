@@ -8317,7 +8317,7 @@ CSSValue* ConsumeContainerName(CSSParserTokenStream& stream,
 }
 
 CSSValue* ConsumeContainerType(CSSParserTokenStream& stream) {
-  // container-type: normal | [ [ size | inline-size ] || sticky || snap ]
+  // container-type: normal | [ [ size | inline-size ] || scroll-state ]
   if (CSSValue* value = ConsumeIdent<CSSValueID::kNormal>(stream)) {
     return value;
   }

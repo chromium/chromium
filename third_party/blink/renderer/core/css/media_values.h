@@ -98,21 +98,21 @@ class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues>,
   virtual int GetHorizontalViewportSegments() const = 0;
   virtual int GetVerticalViewportSegments() const = 0;
   virtual mojom::blink::DevicePostureType GetDevicePosture() const = 0;
-  // For evaluating state(stuck: left), state(stuck: right)
+  // For evaluating scroll-state(stuck: left), scroll-state(stuck: right)
   virtual ContainerStuckPhysical StuckHorizontal() const {
     return ContainerStuckPhysical::kNo;
   }
-  // For evaluating state(stuck: top), state(stuck: bottom)
+  // For evaluating scroll-state(stuck: top), scroll-state(stuck: bottom)
   virtual ContainerStuckPhysical StuckVertical() const {
     return ContainerStuckPhysical::kNo;
   }
-  // For evaluating state(stuck: inset-inline-start),
-  // state(stuck: inset-inline-end)
+  // For evaluating scroll-state(stuck: inset-inline-start),
+  // scroll-state(stuck: inset-inline-end)
   virtual ContainerStuckLogical StuckInline() const {
     return ContainerStuckLogical::kNo;
   }
-  // For evaluating state(stuck: inset-block-start),
-  // state(stuck: inset-block-end)
+  // For evaluating scroll-state(stuck: inset-block-start),
+  // scroll-state(stuck: inset-block-end)
   virtual ContainerStuckLogical StuckBlock() const {
     return ContainerStuckLogical::kNo;
   }
@@ -121,7 +121,7 @@ class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues>,
     return StuckHorizontal() != ContainerStuckPhysical::kNo ||
            StuckVertical() != ContainerStuckPhysical::kNo;
   }
-  // For evaluating state(snapped: block/inline)
+  // For evaluating scroll-state(snapped: block/inline)
   bool SnappedBlock() const {
     return SnappedFlags() &
            static_cast<ContainerSnappedFlags>(ContainerSnapped::kBlock);

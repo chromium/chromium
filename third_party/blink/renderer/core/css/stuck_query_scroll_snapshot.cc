@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/css/container_query_scroll_snapshot.h"
+#include "third_party/blink/renderer/core/css/stuck_query_scroll_snapshot.h"
 
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -12,11 +12,11 @@
 
 namespace blink {
 
-ContainerQueryScrollSnapshot::ContainerQueryScrollSnapshot(Element& container)
+StuckQueryScrollSnapshot::StuckQueryScrollSnapshot(Element& container)
     : ScrollSnapshotClient(container.GetDocument().GetFrame()),
       container_(container) {}
 
-bool ContainerQueryScrollSnapshot::UpdateStuckState() {
+bool StuckQueryScrollSnapshot::UpdateStuckState() {
   ContainerStuckPhysical stuck_horizontal = ContainerStuckPhysical::kNo;
   ContainerStuckPhysical stuck_vertical = ContainerStuckPhysical::kNo;
   LayoutBoxModelObject* layout_object =
@@ -39,8 +39,8 @@ bool ContainerQueryScrollSnapshot::UpdateStuckState() {
 
   if (stuck_horizontal_ != stuck_horizontal ||
       stuck_vertical_ != stuck_vertical) {
-    // TODO(crbug.com/1445189): The kLocalStyleChange is not necessary for the
-    // container itself, but it is a way to reach reach ApplyScrollSnapshot() in
+    // TODO(crbug.com/40268059): The kLocalStyleChange is not necessary for the
+    // container itself, but it is a way to reach reach ApplyScrollState() in
     // Element::RecalcOwnStyle() for the next lifecycle update.
     container_->SetNeedsStyleRecalc(kLocalStyleChange,
                                     StyleChangeReasonForTracing::Create(
@@ -50,22 +50,22 @@ bool ContainerQueryScrollSnapshot::UpdateStuckState() {
   return false;
 }
 
-void ContainerQueryScrollSnapshot::UpdateSnapshot() {
+void StuckQueryScrollSnapshot::UpdateSnapshot() {
   UpdateStuckState();
 }
 
-bool ContainerQueryScrollSnapshot::ValidateSnapshot() {
+bool StuckQueryScrollSnapshot::ValidateSnapshot() {
   if (UpdateStuckState()) {
     return false;
   }
   return true;
 }
 
-bool ContainerQueryScrollSnapshot::ShouldScheduleNextService() {
+bool StuckQueryScrollSnapshot::ShouldScheduleNextService() {
   return false;
 }
 
-void ContainerQueryScrollSnapshot::Trace(Visitor* visitor) const {
+void StuckQueryScrollSnapshot::Trace(Visitor* visitor) const {
   visitor->Trace(container_);
   ScrollSnapshotClient::Trace(visitor);
 }

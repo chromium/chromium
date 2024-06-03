@@ -21,9 +21,9 @@ namespace blink {
 
 class ComputedStyle;
 class ContainerQuery;
-class ContainerQueryScrollSnapshot;
 class Element;
 class MatchResult;
+class StuckQueryScrollSnapshot;
 class StyleRecalcContext;
 
 class CORE_EXPORT ContainerQueryEvaluator final
@@ -98,6 +98,8 @@ class CORE_EXPORT ContainerQueryEvaluator final
   void MarkFontDirtyIfNeeded(const ComputedStyle& old_style,
                              const ComputedStyle& new_style);
 
+  Element* ContainerElement() const;
+
   void Trace(Visitor*) const;
 
  private:
@@ -149,14 +151,14 @@ class CORE_EXPORT ContainerQueryEvaluator final
   ContainerStuckPhysical stuck_horizontal_ = ContainerStuckPhysical::kNo;
   ContainerStuckPhysical stuck_vertical_ = ContainerStuckPhysical::kNo;
   HeapHashMap<Member<const ContainerQuery>, Result> results_;
-  Member<ContainerQueryScrollSnapshot> snapshot_;
+  Member<StuckQueryScrollSnapshot> stuck_snapshot_;
   // The MediaQueryExpValue::UnitFlags of all queries evaluated against this
   // ContainerQueryEvaluator.
   unsigned unit_flags_ = 0;
   bool referenced_by_unit_ = false;
   bool font_dirty_ = false;
   bool depends_on_style_ = false;
-  bool depends_on_state_ = false;
+  bool depends_on_stuck_ = false;
 };
 
 }  // namespace blink

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CONTAINER_QUERY_SCROLL_SNAPSHOT_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CONTAINER_QUERY_SCROLL_SNAPSHOT_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STUCK_QUERY_SCROLL_SNAPSHOT_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STUCK_QUERY_SCROLL_SNAPSHOT_H_
 
 #include "third_party/blink/renderer/core/css/container_state.h"
 #include "third_party/blink/renderer/core/scroll/scroll_snapshot_client.h"
@@ -13,16 +13,17 @@ namespace blink {
 
 class Element;
 
-// Created for each container-type:sticky element. Stores a snapshot of whether
-// the sticky container is stuck or not by reading the sticky offset from the
-// layout object. The snapshot state is used to update the ContainerValues for
-// the query container so that @container queries with state(stuck: ...)
+// Created for container-type:scroll-state elements which are queried for
+// scroll-state(stuck). Stores a snapshot of whether the sticky container is
+// stuck or not by reading the sticky offset from the layout object. The
+// snapshot state is used to update the ContainerValues for
+// the query container so that @container queries with scroll-state(stuck)
 // evaluate correctly on the subsequent style update.
-class ContainerQueryScrollSnapshot
-    : public GarbageCollected<ContainerQueryScrollSnapshot>,
+class StuckQueryScrollSnapshot
+    : public GarbageCollected<StuckQueryScrollSnapshot>,
       public ScrollSnapshotClient {
  public:
-  explicit ContainerQueryScrollSnapshot(Element& container);
+  explicit StuckQueryScrollSnapshot(Element& container);
 
   ContainerStuckPhysical StuckHorizontal() const { return stuck_horizontal_; }
   ContainerStuckPhysical StuckVertical() const { return stuck_vertical_; }
@@ -44,4 +45,4 @@ class ContainerQueryScrollSnapshot
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CONTAINER_QUERY_SCROLL_SNAPSHOT_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STUCK_QUERY_SCROLL_SNAPSHOT_H_
