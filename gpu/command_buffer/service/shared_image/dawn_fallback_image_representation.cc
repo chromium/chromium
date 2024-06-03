@@ -295,7 +295,8 @@ bool DawnFallbackImageRepresentation::UploadToBacking() {
 }
 
 wgpu::Texture DawnFallbackImageRepresentation::BeginAccess(
-    wgpu::TextureUsage wgpu_texture_usage) {
+    wgpu::TextureUsage wgpu_texture_usage,
+    wgpu::TextureUsage internal_usage) {
   const std::string debug_label = "DawnFallbackSharedImageRep(" +
                                   CreateLabelForSharedImageUsage(usage()) + ")";
 

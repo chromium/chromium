@@ -37,7 +37,8 @@ class DawnOzoneImageRepresentation : public DawnImageRepresentation {
 
   ~DawnOzoneImageRepresentation() override;
 
-  wgpu::Texture BeginAccess(wgpu::TextureUsage usage) override;
+  wgpu::Texture BeginAccess(wgpu::TextureUsage usage,
+                            wgpu::TextureUsage internal_usage) override;
 
   void EndAccess() override;
 

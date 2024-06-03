@@ -98,8 +98,10 @@ class DawnRepresentationDXGISwapChain : public DawnImageRepresentation {
                                   wgpu::BackendType backend_type);
   ~DawnRepresentationDXGISwapChain() override;
 
-  wgpu::Texture BeginAccess(wgpu::TextureUsage usage) override;
   wgpu::Texture BeginAccess(wgpu::TextureUsage usage,
+                            wgpu::TextureUsage internal_usage) override;
+  wgpu::Texture BeginAccess(wgpu::TextureUsage usage,
+                            wgpu::TextureUsage internal_usage,
                             const gfx::Rect& update_rect) override;
   void EndAccess() override;
 

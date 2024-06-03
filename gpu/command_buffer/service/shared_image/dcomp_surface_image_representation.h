@@ -74,8 +74,10 @@ class DCompSurfaceDawnImageRepresentation : public DawnImageRepresentation {
   ~DCompSurfaceDawnImageRepresentation() override;
 
   wgpu::Texture BeginAccess(wgpu::TextureUsage usage,
+                            wgpu::TextureUsage internal_usage,
                             const gfx::Rect& update_rect) override;
-  wgpu::Texture BeginAccess(wgpu::TextureUsage usage) override;
+  wgpu::Texture BeginAccess(wgpu::TextureUsage usage,
+                            wgpu::TextureUsage internal_usage) override;
   void EndAccess() override;
 
  private:

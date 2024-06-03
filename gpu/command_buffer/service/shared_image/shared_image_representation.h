@@ -815,8 +815,10 @@ class GPU_GLES2_EXPORT DawnImageRepresentation
 
   // This can return null in case of a Dawn validation error, for example if
   // usage is invalid.
-  virtual wgpu::Texture BeginAccess(wgpu::TextureUsage usage) = 0;
   virtual wgpu::Texture BeginAccess(wgpu::TextureUsage usage,
+                                    wgpu::TextureUsage internal_usage) = 0;
+  virtual wgpu::Texture BeginAccess(wgpu::TextureUsage usage,
+                                    wgpu::TextureUsage internal_usage,
                                     const gfx::Rect& update_rect);
   virtual void EndAccess() = 0;
 };

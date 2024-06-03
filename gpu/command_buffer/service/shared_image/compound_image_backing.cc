@@ -288,12 +288,13 @@ class WrappedDawnCompoundImageRepresentation : public DawnImageRepresentation {
   }
 
   // DawnImageRepresentation implementation.
-  wgpu::Texture BeginAccess(wgpu::TextureUsage webgpu_usage) final {
+  wgpu::Texture BeginAccess(wgpu::TextureUsage webgpu_usage,
+                            wgpu::TextureUsage internal_usage) final {
     AccessMode access_mode =
         webgpu_usage & kWriteUsage ? AccessMode::kWrite : AccessMode::kRead;
     compound_backing()->NotifyBeginAccess(SharedImageAccessStream::kDawn,
                                           access_mode);
-    return wrapped_->BeginAccess(webgpu_usage);
+    return wrapped_->BeginAccess(webgpu_usage, internal_usage);
   }
   void EndAccess() final { wrapped_->EndAccess(); }
 

@@ -24,7 +24,8 @@ class GPU_GLES2_EXPORT DawnFallbackImageRepresentation
 
   ~DawnFallbackImageRepresentation() override;
 
-  wgpu::Texture BeginAccess(wgpu::TextureUsage usage) final;
+  wgpu::Texture BeginAccess(wgpu::TextureUsage usage,
+                            wgpu::TextureUsage internal_usage) final;
   void EndAccess() final;
 
  private:

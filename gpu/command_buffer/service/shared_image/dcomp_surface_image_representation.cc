@@ -120,6 +120,7 @@ DCompSurfaceDawnImageRepresentation::~DCompSurfaceDawnImageRepresentation() {
 
 wgpu::Texture DCompSurfaceDawnImageRepresentation::BeginAccess(
     wgpu::TextureUsage usage,
+    wgpu::TextureUsage internal_usage,
     const gfx::Rect& update_rect) {
   DCompSurfaceImageBacking* dcomp_backing =
       static_cast<DCompSurfaceImageBacking*>(backing());
@@ -128,7 +129,8 @@ wgpu::Texture DCompSurfaceDawnImageRepresentation::BeginAccess(
 }
 
 wgpu::Texture DCompSurfaceDawnImageRepresentation::BeginAccess(
-    wgpu::TextureUsage usage) {
+    wgpu::TextureUsage usage,
+    wgpu::TextureUsage internal_usage) {
   NOTREACHED_NORETURN();
 }
 

@@ -838,8 +838,7 @@ DawnImageRepresentation::BeginScopedAccess(wgpu::TextureUsage usage,
     return nullptr;
   }
 
-  // TODO(crbug.com/339171225): Pass `internal_usage` through to BeginAccess().
-  wgpu::Texture texture = BeginAccess(usage, update_rect);
+  wgpu::Texture texture = BeginAccess(usage, internal_usage, update_rect);
   if (!texture) {
     LOG(ERROR) << "Error creating wgpu::Texture";
     return nullptr;
@@ -861,6 +860,7 @@ DawnImageRepresentation::BeginScopedAccess(wgpu::TextureUsage usage,
 
 wgpu::Texture DawnImageRepresentation::BeginAccess(
     wgpu::TextureUsage usage,
+    wgpu::TextureUsage internal_usage,
     const gfx::Rect& update_rect) {
 #if BUILDFLAG(IS_WIN)
   // The `update_rect` is a hint to update only certain portion
@@ -870,7 +870,7 @@ wgpu::Texture DawnImageRepresentation::BeginAccess(
   // with DComp/DXGI cases.
   DCHECK_EQ(update_rect, gfx::Rect(size()));
 #endif
-  return this->BeginAccess(usage);
+  return this->BeginAccess(usage, internal_usage);
 }
 
 bool DawnImageRepresentation::SupportsMultipleConcurrentReadAccess() {

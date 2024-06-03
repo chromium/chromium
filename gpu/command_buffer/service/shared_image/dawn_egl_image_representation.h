@@ -32,7 +32,8 @@ class GPU_GLES2_EXPORT DawnEGLImageRepresentation
   ~DawnEGLImageRepresentation() override;
 
  private:
-  wgpu::Texture BeginAccess(wgpu::TextureUsage usage) override;
+  wgpu::Texture BeginAccess(wgpu::TextureUsage usage,
+                            wgpu::TextureUsage internal_usage) override;
   void EndAccess() override;
 
  private:

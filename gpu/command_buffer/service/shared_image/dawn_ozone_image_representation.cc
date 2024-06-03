@@ -40,7 +40,8 @@ DawnOzoneImageRepresentation::~DawnOzoneImageRepresentation() {
 }
 
 wgpu::Texture DawnOzoneImageRepresentation::BeginAccess(
-    wgpu::TextureUsage usage) {
+    wgpu::TextureUsage usage,
+    wgpu::TextureUsage internal_usage) {
   // It doesn't make sense to have two overlapping BeginAccess calls on the same
   // representation.
   if (texture_) {

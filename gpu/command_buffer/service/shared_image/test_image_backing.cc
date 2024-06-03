@@ -139,7 +139,8 @@ class TestDawnImageRepresentation : public DawnImageRepresentation {
                               MemoryTypeTracker* tracker)
       : DawnImageRepresentation(manager, backing, tracker) {}
 
-  wgpu::Texture BeginAccess(wgpu::TextureUsage usage) override {
+  wgpu::Texture BeginAccess(wgpu::TextureUsage usage,
+                            wgpu::TextureUsage internal_usage) override {
     if (!static_cast<TestImageBacking*>(backing())->can_access()) {
       return nullptr;
     }

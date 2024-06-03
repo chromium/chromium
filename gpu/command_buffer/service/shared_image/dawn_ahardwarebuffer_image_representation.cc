@@ -32,7 +32,8 @@ DawnAHardwareBufferImageRepresentation::
 }
 
 wgpu::Texture DawnAHardwareBufferImageRepresentation::BeginAccess(
-    wgpu::TextureUsage usage) {
+    wgpu::TextureUsage usage,
+    wgpu::TextureUsage internal_usage) {
   wgpu::TextureDescriptor texture_descriptor;
   texture_descriptor.format = format_;
   texture_descriptor.usage = static_cast<wgpu::TextureUsage>(usage);

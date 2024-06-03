@@ -751,7 +751,8 @@ class IOSurfaceImageBacking::DawnRepresentation final
   }
   ~DawnRepresentation() override { EndAccess(); }
 
-  wgpu::Texture BeginAccess(wgpu::TextureUsage usage) final;
+  wgpu::Texture BeginAccess(wgpu::TextureUsage usage,
+                            wgpu::TextureUsage internal_usage) final;
   void EndAccess() final;
   bool SupportsMultipleConcurrentReadAccess() final;
 
@@ -771,7 +772,8 @@ class IOSurfaceImageBacking::DawnRepresentation final
 };
 
 wgpu::Texture IOSurfaceImageBacking::DawnRepresentation::BeginAccess(
-    wgpu::TextureUsage wgpu_texture_usage) {
+    wgpu::TextureUsage wgpu_texture_usage,
+    wgpu::TextureUsage internal_usage) {
   const bool readonly = (wgpu_texture_usage & ~kReadOnlyUsage) == 0;
   IOSurfaceImageBacking* iosurface_backing =
       static_cast<IOSurfaceImageBacking*>(backing());

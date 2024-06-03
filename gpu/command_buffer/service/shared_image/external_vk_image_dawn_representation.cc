@@ -41,7 +41,8 @@ ExternalVkImageDawnImageRepresentation::
 }
 
 wgpu::Texture ExternalVkImageDawnImageRepresentation::BeginAccess(
-    wgpu::TextureUsage usage) {
+    wgpu::TextureUsage usage,
+    wgpu::TextureUsage internal_usage) {
   DCHECK(begin_access_semaphores_.empty());
   if (!backing_impl()->BeginAccess(false, &begin_access_semaphores_,
                                    /*is_gl=*/false)) {
