@@ -30,8 +30,7 @@ base::Lock& BorrowedTransliterator::GetLock() {
 }
 
 // static
-std::unique_ptr<icu::Transliterator>&
-BorrowedTransliterator::GetTransliterator() {
+icu::Transliterator* BorrowedTransliterator::GetTransliterator() {
   static base::NoDestructor<std::unique_ptr<icu::Transliterator>> instance([] {
     UErrorCode status = U_ZERO_ERROR;
     UParseError parse_error;
@@ -61,7 +60,7 @@ BorrowedTransliterator::GetTransliterator() {
     }
     return transliterator;
   }());
-  return *instance;
+  return instance->get();
 }
 
 std::u16string RemoveDiacriticsAndConvertToLowerCase(

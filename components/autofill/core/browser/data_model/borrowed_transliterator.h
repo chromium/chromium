@@ -29,7 +29,7 @@ class BorrowedTransliterator {
   // Use ICU transliteration to remove diacritics, fold case and transliterate
   // Latin to ASCII.
   // See http://userguide.icu-project.org/transforms/general
-  static std::unique_ptr<icu::Transliterator>& GetTransliterator();
+  static icu::Transliterator* GetTransliterator();
 
   base::AutoLock auto_lock_;
 };
