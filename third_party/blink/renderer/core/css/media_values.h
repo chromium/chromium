@@ -121,6 +121,9 @@ class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues>,
     return StuckHorizontal() != ContainerStuckPhysical::kNo ||
            StuckVertical() != ContainerStuckPhysical::kNo;
   }
+  virtual ContainerSnappedFlags SnappedFlags() const {
+    return static_cast<ContainerSnappedFlags>(ContainerSnapped::kNone);
+  }
   // For evaluating scroll-state(snapped: block/inline)
   bool SnappedBlock() const {
     return SnappedFlags() &
@@ -142,10 +145,6 @@ class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues>,
   void ReferenceAnchor() const override {}
 
  protected:
-  virtual ContainerSnappedFlags SnappedFlags() const {
-    return static_cast<ContainerSnappedFlags>(ContainerSnapped::kNone);
-  }
-
   static double CalculateViewportWidth(LocalFrame*);
   static double CalculateViewportHeight(LocalFrame*);
   static double CalculateSmallViewportWidth(LocalFrame*);

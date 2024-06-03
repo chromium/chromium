@@ -19,7 +19,8 @@ class CORE_EXPORT CSSContainerValues : public MediaValuesDynamic {
                               std::optional<double> width,
                               std::optional<double> height,
                               ContainerStuckPhysical stuck_horizontal,
-                              ContainerStuckPhysical stuck_vertical);
+                              ContainerStuckPhysical stuck_vertical,
+                              ContainerSnappedFlags snapped);
 
   // Returns std::nullopt if queries on the relevant axis is not
   // supported.

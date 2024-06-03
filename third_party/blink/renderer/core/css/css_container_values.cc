@@ -15,7 +15,8 @@ CSSContainerValues::CSSContainerValues(Document& document,
                                        std::optional<double> width,
                                        std::optional<double> height,
                                        ContainerStuckPhysical stuck_horizontal,
-                                       ContainerStuckPhysical stuck_vertical)
+                                       ContainerStuckPhysical stuck_vertical,
+                                       ContainerSnappedFlags snapped)
     : MediaValuesDynamic(document.GetFrame()),
       element_(&container),
       width_(width),
@@ -23,6 +24,7 @@ CSSContainerValues::CSSContainerValues(Document& document,
       writing_direction_(container.ComputedStyleRef().GetWritingDirection()),
       stuck_horizontal_(stuck_horizontal),
       stuck_vertical_(stuck_vertical),
+      snapped_(snapped),
       font_sizes_(CSSToLengthConversionData::FontSizes(
           container.ComputedStyleRef().GetFontSizeStyle(),
           document.documentElement()->GetComputedStyle())),

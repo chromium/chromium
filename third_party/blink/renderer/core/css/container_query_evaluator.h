@@ -52,6 +52,7 @@ class CORE_EXPORT ContainerQueryEvaluator final
   std::optional<double> Height() const;
   void SetReferencedByUnit() { referenced_by_unit_ = true; }
   bool DependsOnStyle() const { return depends_on_style_; }
+  bool DependsOnSnapped() const { return depends_on_snapped_; }
 
   enum class Change : uint8_t {
     // The update has no effect on the evaluation of queries associated with
@@ -85,6 +86,10 @@ class CORE_EXPORT ContainerQueryEvaluator final
   Change StickyContainerChanged(ContainerStuckPhysical stuck_horizontal,
                                 ContainerStuckPhysical stuck_vertical);
 
+  // Re-evaluate the cached results and clear any results which are affected by
+  // the snapped target changes.
+  Change SnapContainerChanged(ContainerSnappedFlags snapped);
+
   // We may need to update the internal CSSContainerValues of this evaluator
   // when e.g. the rem unit changes.
   void UpdateContainerValuesFromUnitChanges(StyleRecalcChange);
@@ -113,7 +118,15 @@ class CORE_EXPORT ContainerQueryEvaluator final
   void UpdateContainerStuck(ContainerStuckPhysical stuck_horizontal,
                             ContainerStuckPhysical stuck_vertical);
 
-  enum ContainerType { kSizeContainer, kStyleContainer, kStickyContainer };
+  // Update the CSSContainerValues with the new stuck state.
+  void UpdateContainerSnapped(ContainerSnappedFlags snapped);
+
+  enum ContainerType {
+    kSizeContainer,
+    kStyleContainer,
+    kStickyContainer,
+    kSnapContainer
+  };
   void ClearResults(Change change, ContainerType container_type);
 
   // Re-evaluate cached query results after a size change and return which
@@ -124,6 +137,7 @@ class CORE_EXPORT ContainerQueryEvaluator final
   // elements need to be invalidated if necessary.
   Change ComputeStyleChange() const;
   Change ComputeStickyChange() const;
+  Change ComputeSnapChange() const;
 
   struct Result {
     // Main evaluation result.
@@ -150,6 +164,8 @@ class CORE_EXPORT ContainerQueryEvaluator final
   PhysicalAxes contained_axes_;
   ContainerStuckPhysical stuck_horizontal_ = ContainerStuckPhysical::kNo;
   ContainerStuckPhysical stuck_vertical_ = ContainerStuckPhysical::kNo;
+  ContainerSnappedFlags snapped_ =
+      static_cast<ContainerSnappedFlags>(ContainerSnapped::kNone);
   HeapHashMap<Member<const ContainerQuery>, Result> results_;
   Member<StuckQueryScrollSnapshot> stuck_snapshot_;
   // The MediaQueryExpValue::UnitFlags of all queries evaluated against this
@@ -159,6 +175,7 @@ class CORE_EXPORT ContainerQueryEvaluator final
   bool font_dirty_ = false;
   bool depends_on_style_ = false;
   bool depends_on_stuck_ = false;
+  bool depends_on_snapped_ = false;
 };
 
 }  // namespace blink

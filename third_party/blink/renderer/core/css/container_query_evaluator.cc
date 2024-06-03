@@ -107,7 +107,8 @@ Element* CachedContainer(Element* starting_element,
 ContainerQueryEvaluator::ContainerQueryEvaluator(Element& container) {
   auto* query_values = MakeGarbageCollected<CSSContainerValues>(
       container.GetDocument(), container, std::nullopt, std::nullopt,
-      ContainerStuckPhysical::kNo, ContainerStuckPhysical::kNo);
+      ContainerStuckPhysical::kNo, ContainerStuckPhysical::kNo,
+      static_cast<ContainerSnappedFlags>(ContainerSnapped::kNone));
   media_query_evaluator_ =
       MakeGarbageCollected<MediaQueryEvaluator>(query_values);
 }
@@ -266,6 +267,9 @@ bool ContainerQueryEvaluator::EvalAndAdd(const ContainerQuery& query,
           MakeGarbageCollected<StuckQueryScrollSnapshot>(*container_element);
     }
   }
+  if (!depends_on_snapped_) {
+    depends_on_snapped_ = query.Selector().SelectsSnapContainers();
+  }
   unit_flags_ |= result.unit_flags;
 
   return result.value;
@@ -295,6 +299,8 @@ ContainerQueryEvaluator::Change ContainerQueryEvaluator::ApplyScrollSnapshot() {
     return StickyContainerChanged(stuck_snapshot_->StuckHorizontal(),
                                   stuck_snapshot_->StuckVertical());
   }
+  // TODO(crbug.com/40279568): Call SnapContainerChanged() based on snapshot for
+  // scroll snapping.
   return ContainerQueryEvaluator::Change::kNone;
 }
 
@@ -310,6 +316,21 @@ ContainerQueryEvaluator::Change ContainerQueryEvaluator::StickyContainerChanged(
   Change change = ComputeStickyChange();
   if (change != Change::kNone) {
     ClearResults(change, kStickyContainer);
+  }
+
+  return change;
+}
+
+ContainerQueryEvaluator::Change ContainerQueryEvaluator::SnapContainerChanged(
+    ContainerSnappedFlags snapped) {
+  if (snapped_ == snapped) {
+    return Change::kNone;
+  }
+
+  UpdateContainerSnapped(snapped);
+  Change change = ComputeSnapChange();
+  if (change != Change::kNone) {
+    ClearResults(change, kSnapContainer);
   }
 
   return change;
@@ -366,7 +387,8 @@ void ContainerQueryEvaluator::UpdateContainerSize(PhysicalSize size,
 
   auto* query_values = MakeGarbageCollected<CSSContainerValues>(
       container->GetDocument(), *container, width, height,
-      existing_values.StuckHorizontal(), existing_values.StuckVertical());
+      existing_values.StuckHorizontal(), existing_values.StuckVertical(),
+      existing_values.SnappedFlags());
   media_query_evaluator_ =
       MakeGarbageCollected<MediaQueryEvaluator>(query_values);
 }
@@ -382,7 +404,23 @@ void ContainerQueryEvaluator::UpdateContainerStuck(
 
   auto* query_values = MakeGarbageCollected<CSSContainerValues>(
       container->GetDocument(), *container, existing_values.Width(),
-      existing_values.Height(), stuck_horizontal, stuck_vertical);
+      existing_values.Height(), stuck_horizontal, stuck_vertical,
+      existing_values.SnappedFlags());
+  media_query_evaluator_ =
+      MakeGarbageCollected<MediaQueryEvaluator>(query_values);
+}
+
+void ContainerQueryEvaluator::UpdateContainerSnapped(
+    ContainerSnappedFlags snapped) {
+  snapped_ = snapped;
+
+  const MediaValues& existing_values = media_query_evaluator_->GetMediaValues();
+  Element* container = existing_values.ContainerElement();
+
+  auto* query_values = MakeGarbageCollected<CSSContainerValues>(
+      container->GetDocument(), *container, existing_values.Width(),
+      existing_values.Height(), existing_values.StuckHorizontal(),
+      existing_values.StuckVertical(), snapped);
   media_query_evaluator_ =
       MakeGarbageCollected<MediaQueryEvaluator>(query_values);
 }
@@ -408,6 +446,8 @@ void ContainerQueryEvaluator::ClearResults(Change change,
           pair.key->Selector().SelectsSizeContainers()) ||
          (container_type == kStickyContainer &&
           pair.key->Selector().SelectsStickyContainers()) ||
+         (container_type == kSnapContainer &&
+          pair.key->Selector().SelectsSnapContainers()) ||
          (container_type == kStyleContainer &&
           pair.key->Selector().SelectsStyleContainers()))) {
       continue;
@@ -476,6 +516,24 @@ ContainerQueryEvaluator::Change ContainerQueryEvaluator::ComputeStickyChange()
   return change;
 }
 
+ContainerQueryEvaluator::Change ContainerQueryEvaluator::ComputeSnapChange()
+    const {
+  Change change = Change::kNone;
+
+  for (const auto& result : results_) {
+    const ContainerQuery& query = *result.key;
+    if (!query.Selector().SelectsSnapContainers()) {
+      continue;
+    }
+    if (Eval(query).value == result.value.value) {
+      continue;
+    }
+    change = std::max(result.value.change, change);
+  }
+
+  return change;
+}
+
 void ContainerQueryEvaluator::UpdateContainerValuesFromUnitChanges(
     StyleRecalcChange change) {
   CHECK(media_query_evaluator_);
@@ -497,7 +555,7 @@ void ContainerQueryEvaluator::UpdateContainerValuesFromUnitChanges(
   auto* query_values = MakeGarbageCollected<CSSContainerValues>(
       container->GetDocument(), *container, existing_values.Width(),
       existing_values.Height(), existing_values.StuckHorizontal(),
-      existing_values.StuckVertical());
+      existing_values.StuckVertical(), existing_values.SnappedFlags());
   media_query_evaluator_ =
       MakeGarbageCollected<MediaQueryEvaluator>(query_values);
 }

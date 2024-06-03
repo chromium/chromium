@@ -33,7 +33,14 @@ class CSSContainerValuesTest : public PageTestBase {
                                          ContainerStuckPhysical vertical) {
     return MakeGarbageCollected<CSSContainerValues>(
         GetDocument(), ContainerElement(), std::nullopt, std::nullopt,
-        horizontal, vertical);
+        horizontal, vertical,
+        static_cast<ContainerSnappedFlags>(ContainerSnapped::kNone));
+  }
+
+  CSSContainerValues* CreateSnappedValues(ContainerSnappedFlags snapped) {
+    return MakeGarbageCollected<CSSContainerValues>(
+        GetDocument(), ContainerElement(), std::nullopt, std::nullopt,
+        ContainerStuckPhysical::kNo, ContainerStuckPhysical::kNo, snapped);
   }
 
  private:
@@ -88,6 +95,43 @@ TEST_F(CSSContainerValuesTest, StickyVerticalRlRtl) {
                                            ContainerStuckPhysical::kTop);
   EXPECT_EQ(values->StuckInline(), ContainerStuckLogical::kEnd);
   EXPECT_EQ(values->StuckBlock(), ContainerStuckLogical::kStart);
+}
+
+TEST_F(CSSContainerValuesTest, SnappedNone) {
+  SetContainerWritingDirection(WritingMode::kHorizontalTb, TextDirection::kLtr);
+  MediaValues* values = CreateSnappedValues(
+      static_cast<ContainerSnappedFlags>(ContainerSnapped::kNone));
+  EXPECT_FALSE(values->SnappedBlock());
+  EXPECT_FALSE(values->SnappedInline());
+  EXPECT_FALSE(values->Snapped());
+}
+
+TEST_F(CSSContainerValuesTest, SnappedBlock) {
+  SetContainerWritingDirection(WritingMode::kHorizontalTb, TextDirection::kLtr);
+  MediaValues* values = CreateSnappedValues(
+      static_cast<ContainerSnappedFlags>(ContainerSnapped::kBlock));
+  EXPECT_TRUE(values->SnappedBlock());
+  EXPECT_FALSE(values->SnappedInline());
+  EXPECT_TRUE(values->Snapped());
+}
+
+TEST_F(CSSContainerValuesTest, SnappedInline) {
+  SetContainerWritingDirection(WritingMode::kHorizontalTb, TextDirection::kLtr);
+  MediaValues* values = CreateSnappedValues(
+      static_cast<ContainerSnappedFlags>(ContainerSnapped::kInline));
+  EXPECT_FALSE(values->SnappedBlock());
+  EXPECT_TRUE(values->SnappedInline());
+  EXPECT_TRUE(values->Snapped());
+}
+
+TEST_F(CSSContainerValuesTest, SnappedBoth) {
+  SetContainerWritingDirection(WritingMode::kHorizontalTb, TextDirection::kLtr);
+  MediaValues* values = CreateSnappedValues(
+      static_cast<ContainerSnappedFlags>(ContainerSnapped::kBlock) |
+      static_cast<ContainerSnappedFlags>(ContainerSnapped::kInline));
+  EXPECT_TRUE(values->SnappedBlock());
+  EXPECT_TRUE(values->SnappedInline());
+  EXPECT_TRUE(values->Snapped());
 }
 
 }  // namespace blink
