@@ -219,7 +219,7 @@ def main():
     subprocess.run(cmd, check=True)
 
   # This needs to happen after upload_revision.py modifies update.py.
-  from update import PACKAGE_VERSION, RELEASE_VERSION, STAMP_FILE
+  from update import PACKAGE_VERSION, RELEASE_VERSION, STAMP_FILE, STAMP_FILENAME
 
   expected_stamp = PACKAGE_VERSION
   pdir = 'clang-' + expected_stamp
@@ -279,6 +279,7 @@ def main():
   # '$V' is replaced by RELEASE_VERSION further down.
   exe_ext = '.exe' if sys.platform == 'win32' else ''
   want = set([
+      STAMP_FILENAME,
       'bin/llvm-pdbutil' + exe_ext,
       'bin/llvm-symbolizer' + exe_ext,
       'bin/llvm-undname' + exe_ext,

@@ -37,7 +37,7 @@ import zlib
 # Reverting problematic clang rolls is safe, though.
 # This is the output of `git describe` and is usable as a commit-ish.
 CLANG_REVISION = 'llvmorg-19-init-10646-g084e2b53'
-CLANG_SUB_REVISION = 6
+CLANG_SUB_REVISION = 7
 
 PACKAGE_VERSION = '%s-%s' % (CLANG_REVISION, CLANG_SUB_REVISION)
 RELEASE_VERSION = '19'
@@ -51,12 +51,12 @@ CHROMIUM_DIR = os.path.abspath(os.path.join(THIS_DIR, '..', '..', '..'))
 LLVM_BUILD_DIR = os.path.join(CHROMIUM_DIR, 'third_party', 'llvm-build',
                               'Release+Asserts')
 
-STAMP_FILE = os.path.normpath(
-    os.path.join(LLVM_BUILD_DIR, 'cr_build_revision'))
+STAMP_FILENAME = 'cr_build_revision'
+STAMP_FILE = os.path.normpath(os.path.join(LLVM_BUILD_DIR, STAMP_FILENAME))
 OLD_STAMP_FILE = os.path.normpath(
-    os.path.join(LLVM_BUILD_DIR, '..', 'cr_build_revision'))
-FORCE_HEAD_REVISION_FILE = os.path.normpath(os.path.join(LLVM_BUILD_DIR, '..',
-                                                   'force_head_revision'))
+    os.path.join(LLVM_BUILD_DIR, '..', STAMP_FILENAME))
+FORCE_HEAD_REVISION_FILE = os.path.normpath(
+    os.path.join(LLVM_BUILD_DIR, '..', 'force_head_revision'))
 
 
 def RmTree(dir):
@@ -346,7 +346,7 @@ def main():
   if args.output_dir:
     global STAMP_FILE
     output_dir = os.path.abspath(args.output_dir)
-    STAMP_FILE = os.path.join(output_dir, 'cr_build_revision')
+    STAMP_FILE = os.path.join(output_dir, STAMP_FILENAME)
 
   if args.print_revision:
     if args.llvm_force_head_revision:
