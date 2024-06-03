@@ -2955,6 +2955,25 @@ std::optional<InterestGroupKanonUpdateParameter> DoJoinInterestGroup(
     return std::nullopt;
   }
 
+  if (data.ads) {
+    base::UmaHistogramCounts1000(
+        "Storage.InterestGroup.PerInterestGroup.NumAds", data.ads->size());
+    for (blink::InterestGroup::Ad ad : *data.ads) {
+      base::UmaHistogramCounts10000("Storage.InterestGroup.AdRenderURLSize",
+                                    ad.render_url().size());
+    }
+  }
+  if (data.ad_components) {
+    base::UmaHistogramCounts1000(
+        "Storage.InterestGroup.PerInterestGroup.NumAdComponents",
+        data.ad_components->size());
+    for (blink::InterestGroup::Ad ad_component : *data.ad_components) {
+      base::UmaHistogramCounts10000(
+          "Storage.InterestGroup.AdComponentRenderURLSize",
+          ad_component.render_url().size());
+    }
+  }
+
   return std::move(kanon_update);
 }
 

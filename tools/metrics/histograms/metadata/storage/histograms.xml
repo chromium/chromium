@@ -628,6 +628,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Storage.InterestGroup.AdComponentRenderURLSize" units="bytes"
+    expires_after="2024-11-03">
+  <owner>caraitto@chromium.org</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <summary>
+    Records the size of each ad component renderURL in bytes. Recorded for each
+    ad component, each time an interest group is successfully joined.
+  </summary>
+</histogram>
+
+<histogram name="Storage.InterestGroup.AdRenderURLSize" units="bytes"
+    expires_after="2024-11-03">
+  <owner>caraitto@chromium.org</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <summary>
+    Records the size of each ad renderURL in bytes. Recorded for each ad, each
+    time an interest group is successfully joined.
+  </summary>
+</histogram>
+
 <histogram name="Storage.InterestGroup.DBErrors" units="count"
     expires_after="2024-11-17">
   <owner>behamilton@google.com</owner>
@@ -658,6 +678,28 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the size of the InterestGroup database. Collected prior to database
     maintenance.
+  </summary>
+</histogram>
+
+<histogram name="Storage.InterestGroup.PerInterestGroup.NumAdComponents"
+    units="ad components" expires_after="2024-11-03">
+  <owner>caraitto@chromium.org</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <summary>
+    Records the number of ads components per interest group. Recorded each time
+    an interest group is successfully joined when a (potentially-empty) ad
+    components array was passed to joinAdInterestGroup().
+  </summary>
+</histogram>
+
+<histogram name="Storage.InterestGroup.PerInterestGroup.NumAds" units="ads"
+    expires_after="2024-11-03">
+  <owner>caraitto@chromium.org</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <summary>
+    Records the number of ads per interest group. Recorded each time an interest
+    group is successfully joined when a (potentially-empty) ads array was passed
+    to joinAdInterestGroup().
   </summary>
 </histogram>
 
