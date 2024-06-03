@@ -2706,12 +2706,16 @@ class TabListMediator {
 
     private void onMenuItemClicked(@IdRes int menuId, int tabId) {
         if (menuId == R.id.close_tab) {
+            RecordUserAction.record("TabGroupItemMenu.Close");
             closeTabGroup(tabId, /* hideTabGroups= */ true);
         } else if (menuId == R.id.edit_group_name) {
+            RecordUserAction.record("TabGroupItemMenu.Rename");
             renameTabGroup(tabId);
         } else if (menuId == R.id.ungroup_tab) {
+            RecordUserAction.record("TabGroupItemMenu.Ungroup");
             ungroupTabGroup(tabId);
         } else if (menuId == R.id.delete_tab) {
+            RecordUserAction.record("TabGroupItemMenu.Delete");
             closeTabGroup(tabId, /* hideTabGroups= */ false);
         }
     }

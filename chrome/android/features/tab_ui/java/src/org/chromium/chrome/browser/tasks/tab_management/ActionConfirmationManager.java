@@ -13,6 +13,7 @@ import androidx.annotation.StringRes;
 import androidx.core.util.Function;
 
 import org.chromium.base.Callback;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -38,6 +39,13 @@ import java.util.List;
  * we might want to warn the user that they're about to delete a tab group.
  */
 public class ActionConfirmationManager {
+    private static final String TAB_GROUP_CONFIRMATION = "TabGroupConfirmation.";
+    private static final String DELETE_GROUP_USER_ACTION = TAB_GROUP_CONFIRMATION + "DeleteGroup.";
+    private static final String UNGROUP_USER_ACTION = TAB_GROUP_CONFIRMATION + "Ungroup.";
+    private static final String REMOVE_TAB_USER_ACTION = TAB_GROUP_CONFIRMATION + "RemoveTab.";
+    private static final String REMOVE_TAB_FULL_GROUP_USER_ACTION =
+            TAB_GROUP_CONFIRMATION + "RemoveTabFullGroup.";
+
     // The result of processing an action.
     @IntDef({
         ConfirmationResult.IMMEDIATE_CONTINUE,
@@ -84,6 +92,7 @@ public class ActionConfirmationManager {
      */
     public void processDeleteGroupAttempt(Callback<Integer> onResult) {
         processGenericAction(
+                DELETE_GROUP_USER_ACTION,
                 Pref.STOP_SHOWING_TAB_GROUP_CONFIRMATION_ON_CLOSE,
                 R.string.delete_tab_group_dialog_title,
                 R.string.delete_tab_group_description,
@@ -95,6 +104,7 @@ public class ActionConfirmationManager {
     /** Ungroup is an action taken on tab groups that ungroups every tab within them. */
     public void processUngroupAttempt(Callback<Integer> onResult) {
         processGenericAction(
+                UNGROUP_USER_ACTION,
                 Pref.STOP_SHOWING_TAB_GROUP_CONFIRMATION_ON_UNGROUP,
                 R.string.ungroup_tab_group_dialog_title,
                 R.string.ungroup_tab_group_description,
@@ -109,6 +119,7 @@ public class ActionConfirmationManager {
      */
     public void processRemoveTabAttempt(Callback<Integer> onResult) {
         processGenericAction(
+                REMOVE_TAB_USER_ACTION,
                 Pref.STOP_SHOWING_TAB_GROUP_CONFIRMATION_ON_TAB_REMOVE,
                 R.string.remove_from_group_dialog_message,
                 R.string.remove_from_group_description,
@@ -124,6 +135,7 @@ public class ActionConfirmationManager {
     public void processRemoveTabAttempt(List<Integer> tabIdList, Callback<Integer> onResult) {
         if (isFullGroup(tabIdList)) {
             processGenericAction(
+                    REMOVE_TAB_FULL_GROUP_USER_ACTION,
                     Pref.STOP_SHOWING_TAB_GROUP_CONFIRMATION_ON_TAB_REMOVE,
                     R.string.remove_from_group_dialog_message,
                     R.string.remove_from_group_description,
@@ -141,6 +153,7 @@ public class ActionConfirmationManager {
     }
 
     private void processGenericAction(
+            String userActionBaseString,
             String stopShowingPref,
             @StringRes int titleRes,
             @StringRes int withSyncDescriptionRes,
@@ -179,8 +192,14 @@ public class ActionConfirmationManager {
                             shouldCloseTab
                                     ? ConfirmationResult.CONFIRMATION_POSITIVE
                                     : ConfirmationResult.CONFIRMATION_NEGATIVE;
+                    if (shouldCloseTab) {
+                        RecordUserAction.record(userActionBaseString + "Proceed");
+                    } else {
+                        RecordUserAction.record(userActionBaseString + "Abort");
+                    }
                     onResult.onResult(result);
                     if (resultStopShowing) {
+                        RecordUserAction.record(userActionBaseString + "StopShowing");
                         prefService.setBoolean(stopShowingPref, true);
                     }
                 };

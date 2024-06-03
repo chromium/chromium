@@ -39761,6 +39761,147 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="TabGroupConfirmation.DeleteGroup.Abort">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a user aborts deleting a tab group in the confirmation dialog.
+  </description>
+</action>
+
+<action name="TabGroupConfirmation.DeleteGroup.Proceed">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a user proceeds to delete a tab group in the confirmation
+    dialog.
+  </description>
+</action>
+
+<action name="TabGroupConfirmation.DeleteGroup.StopShowing">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a user requests to stop seeing a confirmation dialog when
+    deleting a tab group.
+  </description>
+</action>
+
+<action name="TabGroupConfirmation.RemoveTab.Abort">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a user aborts a tab removal in the confirmation dialog.
+  </description>
+</action>
+
+<action name="TabGroupConfirmation.RemoveTab.Proceed">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a user proceeds to remove a tab in the confirmation dialog.
+  </description>
+</action>
+
+<action name="TabGroupConfirmation.RemoveTab.StopShowing">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when user requests to stop seeing a confirmation dialog when
+    removing a tab.
+  </description>
+</action>
+
+<action name="TabGroupConfirmation.RemoveTabFullGroup.Abort">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a user aborts a full tab group removal in the confirmation
+    dialog.
+  </description>
+</action>
+
+<action name="TabGroupConfirmation.RemoveTabFullGroup.Proceed">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a user proceeds with a full tab group removal in the
+    confirmation dialog.
+  </description>
+</action>
+
+<action name="TabGroupConfirmation.RemoveTabFullGroup.StopShowing">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a user requests to stop seeing a confirmation dialog when
+    removing a full tab group.
+  </description>
+</action>
+
+<action name="TabGroupConfirmation.Ungroup.Abort">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a user aborts ungrouping a tab group in the confirmation
+    dialog.
+  </description>
+</action>
+
+<action name="TabGroupConfirmation.Ungroup.Proceed">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a user proceeds to ungroup a tab group in the confirmation
+    dialog.
+  </description>
+</action>
+
+<action name="TabGroupConfirmation.Ungroup.StopShowing">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a user requests to stop seeing a confirmation dialog when
+    ungrouping a tab group.
+  </description>
+</action>
+
+<action name="TabGroupItemMenu.Close">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a user clicks the close option on a tab group item in the tab
+    switcher.
+  </description>
+</action>
+
+<action name="TabGroupItemMenu.Delete">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a user clicks the delete option on a tab group item in the tab
+    switcher.
+  </description>
+</action>
+
+<action name="TabGroupItemMenu.Rename">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a user clicks the rename option on a tab group item in the tab
+    switcher.
+  </description>
+</action>
+
+<action name="TabGroupItemMenu.Ungroup">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a user clicks the ungroup option on a tab group item in the
+    tab switcher.
+  </description>
+</action>
+
 <action name="TabGroups_CannotCollapse">
   <obsolete>
     This action no longer occurs as of 11/2022. Tab groups can always collapse.
