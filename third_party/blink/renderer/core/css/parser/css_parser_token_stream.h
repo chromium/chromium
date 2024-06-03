@@ -135,20 +135,6 @@ class CORE_EXPORT CSSParserTokenStream {
     return next_;
   }
 
-  // Skips to the given offset, which _must_ be exactly the end of
-  // the current block. Leaves the stream explicitly without lookahead
-  // (because the only caller in question wants it so).
-  //
-  // See FindLengthOfDeclarationList() for how to get a value for
-  // “bytes” quickly.
-  inline void SkipToEndOfBlock(wtf_size_t bytes) {
-    DCHECK(HasLookAhead());
-    DCHECK_EQ(next_.GetBlockType(), CSSParserToken::BlockType::kBlockStart);
-
-    tokenizer_.SkipToEndOfBlock(LookAheadOffset() + bytes);
-    has_look_ahead_ = false;
-  }
-
   inline const CSSParserToken& UncheckedPeek() const {
     DCHECK(HasLookAhead());
     return next_;

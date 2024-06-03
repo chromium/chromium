@@ -70,37 +70,6 @@ class CORE_EXPORT CSSTokenizer {
   // all you can do is destroy it.
   void PersistStrings(CSSTokenizer& destination);
 
-  // Skips to the given offset, which _must_ be exactly the end of
-  // the current block. Does _not_ return a new token for lookahead
-  // (because the only caller in question does not want that).
-  //
-  // Leaves PreviousOffset() in an undefined state.
-  void SkipToEndOfBlock(wtf_size_t offset) {
-    DCHECK_GT(offset, input_.Offset());
-#if DCHECK_IS_ON()
-    // Verify that the offset is indeed going to be at the
-    // end of the current block.
-    wtf_size_t base_nesting_level = block_stack_.size();
-    DCHECK_GE(base_nesting_level, 1u);
-    while (input_.Offset() < offset - 1) {
-      TokenizeSingle();
-      DCHECK_GE(block_stack_.size(), base_nesting_level);
-    }
-
-    // The last token should be block-closing, and take us exactly
-    // to the desired offset and nesting level.
-    DCHECK_EQ(input_.Offset(), offset - 1);
-    DCHECK_EQ(block_stack_.size(), base_nesting_level);
-    TokenizeSingle();
-    DCHECK_EQ(input_.Offset(), offset);
-    DCHECK_EQ(block_stack_.size(), base_nesting_level - 1);
-#else
-    // Undo block stack mutation.
-    block_stack_.pop_back();
-#endif
-    input_.Restore(offset);
-  }
-
   // See documentation near CSSParserTokenStream.
   CSSParserToken Restore(const CSSParserToken& next, wtf_size_t offset) {
     // Undo block stack mutation.

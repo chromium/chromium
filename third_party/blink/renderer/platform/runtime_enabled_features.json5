@@ -889,12 +889,6 @@
       status: "experimental",
     },
     {
-      // Flag so that we can Finch the effects of our SIMD fast-path for
-      // skipping lazily-parsed CSS declaration blocks faster.
-      name: "CSSLazyParsingFastPath",
-      status: "experimental"
-    },
-    {
       // Support for 'light-dark()' function to select computed color values
       // based on the used color-scheme.
       name: "CSSLightDarkColors",
