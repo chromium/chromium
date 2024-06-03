@@ -100,6 +100,7 @@ SVGUseElement::~SVGUseElement() = default;
 
 void SVGUseElement::Trace(Visitor* visitor) const {
   visitor->Trace(document_content_);
+  visitor->Trace(external_resource_target_);
   visitor->Trace(x_);
   visitor->Trace(y_);
   visitor->Trace(width_);
@@ -328,6 +329,7 @@ void SVGUseElement::CancelShadowTreeRecreation() {
 }
 
 void SVGUseElement::ClearResourceReference() {
+  external_resource_target_.Clear();
   UnobserveTarget(target_id_observer_);
   RemoveAllOutgoingReferences();
 }
@@ -350,9 +352,15 @@ Element* SVGUseElement::ResolveTargetElement() {
                              WrapWeakPersistent(this)));
     }
   }
-  if (!document_content_ || !document_content_->GetDocument())
+  if (!document_content_) {
     return nullptr;
-  return document_content_->GetDocument()->getElementById(element_identifier);
+  }
+  external_resource_target_ =
+      document_content_->GetResourceTarget(element_identifier);
+  if (!external_resource_target_) {
+    return nullptr;
+  }
+  return external_resource_target_->target;
 }
 
 SVGElement* SVGUseElement::InstanceRoot() const {

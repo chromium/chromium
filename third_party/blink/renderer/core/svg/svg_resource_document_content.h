@@ -43,6 +43,8 @@ class IsolatedSVGDocumentHost;
 class KURL;
 class SVGResourceDocumentObserver;
 
+struct SVGResourceTarget;
+
 // Representation of an SVG resource document. Fed from an SVGDocumentResource
 // that update loading status and provide the document text content. Thus the
 // "complex" made up of these two classes manage the load cycle for the content
@@ -89,6 +91,7 @@ class CORE_EXPORT SVGResourceDocumentContent final
   void RemoveObserver(SVGResourceDocumentObserver*);
   void NotifyObservers();
 
+  SVGResourceTarget* GetResourceTarget(const AtomicString& element_id);
   void Trace(Visitor*) const;
 
  private:

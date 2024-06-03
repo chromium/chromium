@@ -54,6 +54,14 @@ class SVGUseElement;
 
 typedef HeapHashSet<Member<SVGElement>> SVGElementSet;
 
+// Structure for referencing/tracking a "resource target" (an element in an
+// external resource document that is targeted by a <use> element).
+struct SVGResourceTarget : public GarbageCollected<SVGResourceTarget> {
+  void Trace(Visitor* visitor) const { visitor->Trace(target); }
+
+  Member<SVGElement> target;
+};
+
 class CORE_EXPORT SVGElement : public Element {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -163,6 +171,9 @@ class CORE_EXPORT SVGElement : public Element {
   SVGElement* CorrespondingElement() const;
   void SetCorrespondingElement(SVGElement*);
   SVGUseElement* GeneratingUseElement() const;
+
+  SVGResourceTarget& EnsureResourceTarget();
+  bool IsResourceTarget() const;
 
   void SynchronizeSVGAttribute(const QualifiedName&) const;
   virtual void SynchronizeAllSVGAttributes() const;

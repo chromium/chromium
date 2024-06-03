@@ -120,6 +120,7 @@ class SVGUseElement final : public SVGGraphicsElement,
       MutableCSSPropertyValueSet* style) override;
 
   Member<SVGResourceDocumentContent> document_content_;
+  Member<SVGResourceTarget> external_resource_target_;
 
   Member<SVGAnimatedLength> x_;
   Member<SVGAnimatedLength> y_;

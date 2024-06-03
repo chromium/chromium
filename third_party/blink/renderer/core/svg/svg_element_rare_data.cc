@@ -68,6 +68,19 @@ SVGElementResourceClient& SVGElementRareData::EnsureSVGResourceClient(
   return *resource_client_;
 }
 
+SVGResourceTarget& SVGElementRareData::EnsureResourceTarget(
+    SVGElement& element) {
+  if (!resource_target_) {
+    resource_target_ = MakeGarbageCollected<SVGResourceTarget>();
+    resource_target_->target = element;
+  }
+  return *resource_target_;
+}
+
+bool SVGElementRareData::HasResourceTarget() const {
+  return resource_target_;
+}
+
 void SVGElementRareData::Trace(Visitor* visitor) const {
   visitor->Trace(outgoing_references_);
   visitor->Trace(incoming_references_);
@@ -77,6 +90,7 @@ void SVGElementRareData::Trace(Visitor* visitor) const {
   visitor->Trace(corresponding_element_);
   visitor->Trace(resource_client_);
   visitor->Trace(smil_animations_);
+  visitor->Trace(resource_target_);
 }
 
 AffineTransform* SVGElementRareData::AnimateMotionTransform() {
