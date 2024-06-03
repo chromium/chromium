@@ -5706,7 +5706,7 @@ Press an assigned switch or key to remove assignment.
     Sunset to sunrise
   </message>
   <message name="IDS_SETTINGS_DISPLAY_NIGHT_LIGHT_GEOLOCATION_WARNING_TEXT" desc="In Device Settings > Displays, the warning text that tells users that system geolocation permission is needed for scheduled night light.">
-    Current schedule is set to <ph name="SUNRISE">$1<ex>6am</ex></ph> - <ph name="SUNSET">$2<ex>6pm</ex></ph>. To automatically update the sunset and sunrise schedule, <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>turn on location access<ph name="END_LINK">&lt;/a&gt;</ph>
+    Current schedule is set to <ph name="SUNRISE">$1<ex>6am</ex></ph> - <ph name="SUNSET">$2<ex>6pm</ex></ph>. To automatically update the sunset and sunrise schedule, <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>turn on system location access<ph name="END_LINK">&lt;/a&gt;</ph>.
   </message>
   <message name="IDS_SETTINGS_DISPLAY_NIGHT_LIGHT_TEXT" desc="In Device Settings > Displays, text describing the Night Light feature.">
     Make it easier to look at your screen or read in dim light
@@ -5940,7 +5940,7 @@ Press an assigned switch or key to remove assignment.
     Use your IP address to determine location (default)
   </message>
   <message name="IDS_SETTINGS_TIME_ZONE_DETECTION_GEOLOCATION_WARNING_TEXT" desc="Displays the text notifying users that the system geolocation permission is required for the Automatic Time Zone Detection. Displaying the current status of Automatic Time Zone Detection with inline link to resolve the breakage.">
-    Time zone is currently set to <ph name="TIME_ZONE_ENTRY">$1<ex>(UTC+4:00) Georgia Standard Time (Tbilisi)</ex></ph>. Location access needed to automatically update the time zone. <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>Turn on Location access<ph name="END_LINK">&lt;/a&gt;</ph>
+    Time zone is currently set to <ph name="TIME_ZONE_ENTRY">$1<ex>(UTC+4:00) Georgia Standard Time (Tbilisi)</ex></ph>. To automatically update the time zone, <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>turn on system location access<ph name="END_LINK">&lt;/a&gt;</ph>.
   </message>
   <message name="IDS_OS_SETTINGS_REVAMP_TIME_ZONE_DETECTION_MODE_IP_ONLY_DEFAULT" desc="Display name for the automatic time zone detection mode which enables time zone detection sending unprecise location to Google servers.">
     Use your IP address to determine location
@@ -6711,21 +6711,19 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
     Blocked for all
   </message>
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_GEOLOCATION_ACCESS_LEVEL_DESCRIPTION_ALLOWED" desc="In Geolocation setting subpage (under Privacy Controls), Dropdown list item to set system-wide geolocation access level. ">
-    Apps, websites and system services with the location permission can use your location. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+    Apps and websites with the location permission, as well as system services, can use your location. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_GEOLOCATION_ACCESS_LEVEL_DESCRIPTION_ONLY_ALLOWED_FOR_SYSTEM" desc="In Geolocation setting subpage (under Privacy Controls), Dropdown list item to set system-wide geolocation access level. Blocks access to all clients but system-services (such as PWAs or Android apps).">
-    Only system services can use your location. However, your location may still be visible to apps and websites through your IP address. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+    Only system services can use your location. However, your general area may still be visible to apps and websites through things like your IP address. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_GEOLOCATION_ACCESS_LEVEL_DESCRIPTION_DISALLOWED" desc="In Geolocation setting subpage (under Privacy Controls), Dropdown list item to set system-wide geolocation access level. Blocks geolocation access to every geolocation client (including system services).">
-    Nothing can use your location. However, your location may still be visible to apps and websites through your IP address. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+    Location is off. Your ChromeOS device doesn't access your location. However, your general area may still be visible to apps and websites through things like your IP address. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_GEOLOCATION_ACCURACY_TOGGLE_TEXT" desc="In Geolocation setting advance subpage (under Privacy Controls), text description for the toggle settings that controls location accuracy toggle.">
-    <!-- TODO(vsomani): Figure out how we can add break in the below line. -->
-    Google’s location service improves location accuracy by using Wi-Fi, mobile networks, and sensors to help estimate your location. Google may collect location data periodically and use this data in an anonymous way to improve location accuracy and location-based services.
-    Turning this off will result in Android only using IP address for location. This may impact the accuracy of location used by apps such as Maps.
+    Location Accuracy provides more accurate location for apps and services. To do this, Google periodically processes information about device sensors and wireless signals from your device to crowdsource wireless signal locations. These are used without identifying you to improve location accuracy and location-based services and to generally improve, provide, and maintain Google's services based on Google's and third parties' legitimate interests to serve users' needs.
   </message>
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_GEOLOCATION_ACCURACY_TOGGLE_TITLE" desc="In Geolocation setting advance subpage (under Privacy Controls), title displayed for the toggle to control location accuracy toggle.">
-    Improve location accuracy (Android only)
+    Location Accuracy (Android only)
   </message>
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_GEOLOCATION_ADVANCED_AREA_TITLE" desc="The title of the advanced location settings page.">
     Advanced location settings
@@ -6743,34 +6741,34 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
     Websites
   </message>
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_MANAGE_CAMERA_PERMISSIONS_IN_CHROME_TEXT" desc="The label of the Chrome row in the Websites section of the camera subpage. This row is displayed when camera is allowed.">
-    Manage site camera permissions in Chrome
+    Manage website camera permissions in Chrome
   </message>
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_MANAGE_MIC_PERMISSIONS_IN_CHROME_TEXT" desc="The label of the Chrome row in the Websites section of the microphone subpage. This row is displayed when microphone is allowed.">
-    Manage site microphone permissions in Chrome
+    Manage website microphone permissions in Chrome
   </message>
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_MANAGE_LOCATION_PERMISSIONS_IN_CHROME_TEXT" desc="The label of the Chrome row in the Websites section of the location subpage. This row is displayed when location is allowed.">
-    Manage site location permissions in Chrome
+    Manage website location permissions in Chrome
   </message>
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_NO_WEBSITE_CAN_USE_CAMERA_TEXT" desc="The text displayed in the Websites section of the camera subpage when camera is not allowed.">
-    No websites are allowed to use your camera
+    Websites are not allowed to use your camera
   </message>
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_NO_WEBSITE_CAN_USE_MIC_TEXT" desc="The text displayed in the Websites section of the microphone subpage when microphone is not allowed.">
-    No websites are allowed to use your microphone
+    Websites are not allowed to use your microphone
   </message>
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_NO_WEBSITE_CAN_USE_LOCATION_TEXT" desc="The text displayed in the Websites section of the location subpage when location is not allowed for websites.">
-    No websites are allowed to use your location
+    Websites are not allowed to use your location
   </message>
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_APPS_SECTION_TITLE" desc="The title of the Apps section of the privacy hub sensor subpages.">
     Apps
   </message>
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_NO_APP_CAN_USE_CAMERA_TEXT" desc="The text displayed in the Apps section of the camera subpage when camera is not allowed.">
-    No apps are allowed use your camera
+    Apps are not allowed to use your camera
   </message>
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_NO_APP_CAN_USE_MIC_TEXT" desc="The text displayed in the Apps section of the microphone subpage when microphone is not allowed.">
-    No apps are allowed use your microphone
+    Apps are not allowed to use your microphone
   </message>
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_NO_APP_CAN_USE_LOCATION_TEXT" desc="The text displayed in the Apps section of the location subpage when location is not allowed.">
-    No apps are allowed to use your location
+    Apps are not allowed to use your location
   </message>
   <message name="IDS_OS_SETTINGS_SECURE_DNS_TITLE" desc="Text for secure DNS toggle in Privacy options for ChromeOS">
     Use secure connections to look up sites
@@ -6833,7 +6831,7 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
     Blocked. Schedule is currently set to <ph name="SUNRISE_TIME">$1<ex>6am</ex></ph> - <ph name="SUNSET_TIME">$2<ex>6pm</ex></ph> and can only be updated manually.
   </message>
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_SYSTEM_SERVICES_AUTOMATIC_TIME_ZONE_NAME" desc="The name label of the 'Automatic time zone' service displayed in the System services section of the privacy hub 'Location access' subpage.">
-    Automatic time zone based on Wi-Fi or mobile networks
+    Automatic time zone
   </message>
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_SYSTEM_SERVICES_SUNSET_SCHEDULE_NAME" desc="The name label of the 'Sunset schedule' service displayed in the System services section of the privacy hub 'Location access' subpage.">
     Automatic sunset schedule

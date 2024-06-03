@@ -815,6 +815,11 @@ inline constexpr char kSpeakOnMuteDetectionLearnMoreURL[] =
 inline constexpr char kPrivacyHubGeolocationLearnMoreURL[] =
     "https://support.google.com/chromebook/?p=manage_your_location";
 
+// The URL for the "Learn more" page for the Advanced Location setting under the
+// privacy hub location subpage.
+inline constexpr char16_t kPrivacyHubGeolocationAdvancedLocationLearnMoreURL[] =
+    u"https://support.google.com/android/?p=location_accuracy";
+
 // The URL for the "Learn more" page for Suggested Content in the privacy page.
 inline constexpr char kSuggestedContentLearnMoreURL[] =
     "https://support.google.com/chromebook?p=explorecontent";

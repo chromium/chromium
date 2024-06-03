@@ -77,6 +77,7 @@ include_rules = [
   "+chrome/common/net",
   "+chrome/common/pref_names.h",
   "+chrome/common/webui_url_constants.h",
+  "+chrome/common/url_constants.h",
   "+chrome/grit",
   "+chrome/services/printing/public/mojom",
   "+chrome/test/base",

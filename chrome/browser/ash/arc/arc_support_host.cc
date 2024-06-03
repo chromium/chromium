@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/webui/ash/diagnostics_dialog.h"
+#include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/consent_auditor/consent_auditor.h"
@@ -603,9 +604,10 @@ bool ArcSupportHost::Initialize() {
   if (ash::features::IsCrosPrivacyHubLocationEnabled()) {
     loadtime_data.Set(
         "learnMoreLocationServices",
-        l10n_util::GetStringUTF16(
+        l10n_util::GetStringFUTF16(
             is_child ? IDS_CROS_OPT_IN_LEARN_MORE_LOCATION_SERVICES_CHILD
-                     : IDS_CROS_OPT_IN_LEARN_MORE_LOCATION_SERVICES));
+                     : IDS_CROS_OPT_IN_LEARN_MORE_LOCATION_SERVICES,
+            chrome::kPrivacyHubGeolocationAdvancedLocationLearnMoreURL));
   } else {
     loadtime_data.Set(
         "learnMoreLocationServices",
