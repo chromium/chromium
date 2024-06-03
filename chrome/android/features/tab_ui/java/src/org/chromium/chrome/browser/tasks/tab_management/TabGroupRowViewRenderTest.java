@@ -94,6 +94,29 @@ public class TabGroupRowViewRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    public void testRenderWithVeryLongTitle() throws Exception {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PropertyModel.Builder builder = new PropertyModel.Builder(ALL_KEYS);
+                    builder.with(
+                            ASYNC_FAVICON_TOP_LEFT,
+                            callback -> callback.onResult(new ColorDrawable(Color.RED)));
+                    builder.with(TabGroupRowProperties.COLOR_INDEX, TabGroupColorId.GREY);
+                    builder.with(
+                            TITLE_DATA,
+                            new Pair<>(
+                                    "VeryLongTitleThatGetsTruncatedOrSplitOverMultipleLines", 1));
+                    builder.with(CREATION_MILLIS, Clock.systemUTC().millis());
+                    mPropertyModel = builder.build();
+                    PropertyModelChangeProcessor.create(
+                            mPropertyModel, mTabGroupRowView, new TabGroupRowViewBinder());
+                });
+        mRenderTestRule.render(mTabGroupRowView, "long_title");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
     public void testRenderWithVariousFaviconCounts() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
