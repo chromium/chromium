@@ -7403,10 +7403,15 @@ const CSSValue* Scale::ParseSingleValue(CSSParserTokenStream& stream,
   if (y_scale) {
     CSSPrimitiveValue* z_scale = css_parsing_utils::ConsumeNumberOrPercent(
         stream, context, CSSPrimitiveValue::ValueRange::kAll);
-    if (z_scale && z_scale->GetDoubleValue() != 1.0) {
+    if (z_scale &&
+        (!z_scale->IsNumericLiteralValue() ||
+         To<CSSNumericLiteralValue>(z_scale)->DoubleValue() != 1.0)) {
       list->Append(*y_scale);
       list->Append(*z_scale);
-    } else if (x_scale->GetDoubleValue() != y_scale->GetDoubleValue()) {
+    } else if (!x_scale->IsNumericLiteralValue() ||
+               !y_scale->IsNumericLiteralValue() ||
+               To<CSSNumericLiteralValue>(x_scale)->DoubleValue() !=
+                   To<CSSNumericLiteralValue>(y_scale)->DoubleValue()) {
       list->Append(*y_scale);
     }
   }
