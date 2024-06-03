@@ -40,6 +40,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_mock_clock_override.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "ui/base/models/image_model.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/views/controls/menu/menu_item_view.h"
@@ -194,6 +195,14 @@ class TestBirchClient : public BirchClient {
 
   void SetRecentTabsItems(const std::vector<BirchTabItem>& items) {
     tab_provider_->set_items(items);
+  }
+
+  void SetLastActiveItems(const std::vector<BirchLastActiveItem>& items) {
+    last_active_provider_->set_items(items);
+  }
+
+  void SetMostVisitedItems(const std::vector<BirchMostVisitedItem>& items) {
+    most_visited_provider_->set_items(items);
   }
 
   void SetReleaseNotesItems(const std::vector<BirchReleaseNotesItem>& items) {
@@ -400,6 +409,28 @@ class BirchBarTestBase : public AshTestBase {
     birch_client_->SetRecentTabsItems(item_list);
   }
 
+  // Adds `num` last active birch items to data source.
+  void SetLastActiveItems(size_t num) {
+    std::vector<BirchLastActiveItem> item_list;
+    for (size_t i = 0; i < num; ++i) {
+      item_list.emplace_back(u"last active", GURL("https://yahoo.com/"),
+                             ui::ImageModel());
+      item_list.back().set_ranking(1.0f);
+    }
+    birch_client_->SetLastActiveItems(item_list);
+  }
+
+  // Adds `num` most visited birch items to data source.
+  void SetMostVisitedItems(size_t num) {
+    std::vector<BirchMostVisitedItem> item_list;
+    for (size_t i = 0; i < num; ++i) {
+      item_list.emplace_back(u"most visited", GURL("https://google.com/"),
+                             ui::ImageModel());
+      item_list.back().set_ranking(1.0f);
+    }
+    birch_client_->SetMostVisitedItems(item_list);
+  }
+
   // Adds a number of `num` self share birch items to data source.
   GURL faviconUrl = GURL("https://www.favicon.com/");
   void SetSelfShareItems(size_t num) {
@@ -578,6 +609,8 @@ class BirchBarMenuTest : public BirchBarTestBase,
     BirchBarTestBase::SetUp();
     // Clear existing items.
     birch_client_->Reset();
+    // Ensure screen is large enough to be able to click on all menu items.
+    UpdateDisplay("1600x1200");
   }
 
  protected:
@@ -772,7 +805,7 @@ TEST_P(BirchBarMenuTest, ShowHideBar) {
 
 // Tests customizing suggestions from context menu.
 TEST_P(BirchBarMenuTest, CustomizeSuggestions) {
-  // Create 5 suggestions, one for each customizable suggestion type.
+  // Create 4 suggestions, as the bar shows a maximum of 4 chips.
   SetWeatherItems(/*num=*/1);
   SetCalendarItems(/*num=*/1);
   SetFileItems(/*num=*/1);
@@ -855,6 +888,67 @@ TEST_P(BirchBarMenuTest, CustomizeSuggestions) {
   }
 }
 
+// The bar shows a maximum of 4 suggestion chips. The above test verifies
+// customizing the first 4 suggestion types; this test verifies the rest.
+TEST_P(BirchBarMenuTest, CustomizeSuggestionsExtended) {
+  SetLastActiveItems(/*num=*/1);
+  SetMostVisitedItems(/*num=*/1);
+
+  // Set show suggestions initially.
+  GetPrefService()->SetBoolean(prefs::kBirchShowSuggestions, true);
+
+  // Enter Overview and check a bar view is created.
+  EnterOverview();
+
+  auto* root_window = Shell::GetPrimaryRootWindow();
+  auto grid_test_api = OverviewGridTestApi(root_window);
+  const auto& bar_chips = grid_test_api.GetBirchChips();
+
+  // At the beginning, all types should be shown on the bar.
+  EXPECT_TRUE(HasSuggestionTypes(
+      {BirchItemType::kLastActive, BirchItemType::kMostVisited}, bar_chips));
+
+  auto* root_window_controller = RootWindowController::ForWindow(root_window);
+  // Right clicking on the wallpaper of the first display to show the context
+  // menu.
+  RightClickOn(root_window_controller->wallpaper_widget_controller()
+                   ->GetWidget()
+                   ->GetContentsView());
+  auto* model_adapter =
+      root_window_controller->menu_model_adapter_for_testing();
+  EXPECT_TRUE(model_adapter->IsShowingMenu());
+
+  base::flat_map<BirchItemType, views::MenuItemView*> type_to_item;
+  auto* sub_menu = model_adapter->root_for_testing()->GetSubmenu();
+  auto* last_active_item = sub_menu->GetMenuItemAt(5);
+  EXPECT_EQ(last_active_item->GetCommand(),
+            base::to_underlying(
+                BirchBarContextMenuModel::CommandId::kLastActiveSuggestions));
+  type_to_item[BirchItemType::kLastActive] = last_active_item;
+
+  auto* most_visited_item = sub_menu->GetMenuItemAt(6);
+  EXPECT_EQ(most_visited_item->GetCommand(),
+            base::to_underlying(
+                BirchBarContextMenuModel::CommandId::kMostVisitedSuggestions));
+  type_to_item[BirchItemType::kMostVisited] = most_visited_item;
+
+  // Deselect all types of suggestions one by one.
+  for (auto type : {BirchItemType::kLastActive, BirchItemType::kMostVisited}) {
+    LeftClickOn(type_to_item[type]);
+    EXPECT_FALSE(HasSuggestionTypes({type}, bar_chips));
+  }
+
+  // There is no suggestions showing on the bar.
+  EXPECT_TRUE(bar_chips.empty());
+
+  // Re-select all types of suggestions one by one.
+  std::vector<BirchItemType> new_types;
+  for (auto type : {BirchItemType::kLastActive, BirchItemType::kMostVisited}) {
+    LeftClickOn(type_to_item[type]);
+    EXPECT_TRUE(HasSuggestionTypes(new_types, bar_chips));
+  }
+}
+
 // Tests resetting suggestions from context menu.
 TEST_P(BirchBarMenuTest, ResetSuggestions) {
   // Create 4 suggestions, one for each customizable suggestion type.
@@ -909,7 +1003,7 @@ TEST_P(BirchBarMenuTest, ResetSuggestions) {
   EXPECT_TRUE(model_adapter->IsShowingMenu());
 
   auto* sub_menu = model_adapter->root_for_testing()->GetSubmenu();
-  auto* reset_item = sub_menu->GetMenuItemAt(5);
+  auto* reset_item = sub_menu->GetMenuItemAt(7);
   EXPECT_EQ(reset_item->GetCommand(),
             base::to_underlying(BirchBarContextMenuModel::CommandId::kReset));
 
@@ -926,6 +1020,54 @@ TEST_P(BirchBarMenuTest, ResetSuggestions) {
       has_suggestion_types({BirchItemType::kCalendar, BirchItemType::kFile,
                             BirchItemType::kTab, BirchItemType::kSelfShare},
                            bar_chips));
+}
+
+// The bar shows a maximum of 4 suggestion chips. The above test verifies
+// resetting the first 4 suggestion types; this test verifies the rest.
+TEST_P(BirchBarMenuTest, ResetSuggestionsExtended) {
+  SetLastActiveItems(/*num=*/1);
+  SetMostVisitedItems(/*num=*/1);
+
+  // Enter Overview and check a bar view is created.
+  EnterOverview();
+
+  auto* root_window = Shell::GetPrimaryRootWindow();
+  auto grid_test_api = OverviewGridTestApi(root_window);
+  const auto& bar_chips = grid_test_api.GetBirchChips();
+
+  // Disable the last active suggestions such that only most visited suggestions
+  // are shown.
+  auto* pref_service = GetPrefService();
+  pref_service->SetBoolean(prefs::kBirchUseLastActive, false);
+
+  EXPECT_EQ(1u, bar_chips.size());
+  EXPECT_TRUE(HasSuggestionTypes({BirchItemType::kMostVisited}, bar_chips));
+
+  auto* root_window_controller = RootWindowController::ForWindow(root_window);
+  // Right clicking on the wallpaper of the first display to show the context
+  // menu.
+  RightClickOn(root_window_controller->wallpaper_widget_controller()
+                   ->GetWidget()
+                   ->GetContentsView());
+
+  auto* model_adapter =
+      root_window_controller->menu_model_adapter_for_testing();
+  EXPECT_TRUE(model_adapter->IsShowingMenu());
+
+  auto* sub_menu = model_adapter->root_for_testing()->GetSubmenu();
+  auto* reset_item = sub_menu->GetMenuItemAt(7);
+  EXPECT_EQ(reset_item->GetCommand(),
+            base::to_underlying(BirchBarContextMenuModel::CommandId::kReset));
+
+  // Clicking on the reset button to enable all suggestions pref and all types
+  // of suggestion chips should be shown on the bar.
+  LeftClickOn(reset_item);
+  EXPECT_TRUE(pref_service->GetBoolean(prefs::kBirchUseLastActive));
+  EXPECT_TRUE(pref_service->GetBoolean(prefs::kBirchUseMostVisited));
+
+  EXPECT_EQ(2u, bar_chips.size());
+  EXPECT_TRUE(HasSuggestionTypes(
+      {BirchItemType::kLastActive, BirchItemType::kMostVisited}, bar_chips));
 }
 
 // Tests that there is no crash if hiding the suggestions by toggle the switch

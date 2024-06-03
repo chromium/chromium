@@ -26,6 +26,8 @@ class BirchBarContextMenuModel : public ui::SimpleMenuModel {
     kCalendarSuggestions,     // Show/hide the Calendar related suggestions.
     kDriveSuggestions,        // Show/hide the Drive related suggestions.
     kOtherDeviceSuggestions,  // Show/hide the suggestions from other device.
+    kLastActiveSuggestions,   // Show/hide last active tab suggestions.
+    kMostVisitedSuggestions,  // Show/hide most visited tab suggestions.
     kReset,                   // Reset preferences of all types of suggestions.
     kBarMenuEnd,
   };

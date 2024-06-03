@@ -64,6 +64,10 @@ std::string GetPrefNameFromSuggestionType(BirchSuggestionType type) {
       return prefs::kBirchUseFileSuggest;
     case BirchSuggestionType::kTab:
       return prefs::kBirchUseRecentTabs;
+    case BirchSuggestionType::kLastActive:
+      return prefs::kBirchUseLastActive;
+    case BirchSuggestionType::kMostVisited:
+      return prefs::kBirchUseMostVisited;
     case BirchSuggestionType::kExplore:
     case BirchSuggestionType::kUndefined:
       NOTREACHED_NORETURN();
@@ -87,6 +91,7 @@ BirchBarController::BirchBarController(bool from_pine_service)
   for (const auto& suggestion_pref :
        {prefs::kBirchUseCalendar, prefs::kBirchUseWeather,
         prefs::kBirchUseFileSuggest, prefs::kBirchUseRecentTabs,
+        prefs::kBirchUseLastActive, prefs::kBirchUseMostVisited,
         prefs::kBirchUseSelfShare, prefs::kBirchUseReleaseNotes}) {
     customize_suggestions_pref_registrar_.Add(
         suggestion_pref,
@@ -211,7 +216,8 @@ void BirchBarController::ExecuteCommand(int command_id, int event_flags) {
           &hold_data_request_on_suggestion_pref_change_, true);
       for (const auto& pref_name :
            {prefs::kBirchUseWeather, prefs::kBirchUseCalendar,
-            prefs::kBirchUseFileSuggest, prefs::kBirchUseRecentTabs}) {
+            prefs::kBirchUseFileSuggest, prefs::kBirchUseRecentTabs,
+            prefs::kBirchUseLastActive, prefs::kBirchUseMostVisited}) {
         auto* pref_service = GetPrefService();
         suggestion_pref_changed |= !pref_service->GetBoolean(pref_name);
         pref_service->SetBoolean(pref_name, true);

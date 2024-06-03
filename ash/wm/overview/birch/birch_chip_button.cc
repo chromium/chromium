@@ -112,6 +112,10 @@ BirchSuggestionType GetSuggestionTypeFromItemType(BirchItemType item_type) {
       return BirchSuggestionType::kDrive;
     case BirchItemType::kTab:
       return BirchSuggestionType::kTab;
+    case BirchItemType::kLastActive:
+      return BirchSuggestionType::kLastActive;
+    case BirchItemType::kMostVisited:
+      return BirchSuggestionType::kMostVisited;
     case BirchItemType::kReleaseNotes:
       return BirchSuggestionType::kExplore;
     default:
@@ -279,6 +283,16 @@ void BirchChipButton::ExecuteCommand(int command_id, int event_flags) {
     case base::to_underlying(CommandId::kHideOtherDeviceSuggestions):
       birch_bar_controller->SetShowSuggestionType(BirchSuggestionType::kTab,
                                                   /*show=*/false);
+      break;
+    case base::to_underlying(CommandId::kHideLastActiveSuggestions):
+      birch_bar_controller->SetShowSuggestionType(
+          BirchSuggestionType::kLastActive,
+          /*show=*/false);
+      break;
+    case base::to_underlying(CommandId::kHideMostVisitedSuggestions):
+      birch_bar_controller->SetShowSuggestionType(
+          BirchSuggestionType::kMostVisited,
+          /*show=*/false);
       break;
     case base::to_underlying(CommandId::kFeedback):
       Shell::Get()->shell_delegate()->OpenFeedbackDialog(

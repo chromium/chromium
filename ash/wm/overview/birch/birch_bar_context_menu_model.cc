@@ -29,6 +29,10 @@ BirchBarContextMenuModel::BirchBarContextMenuModel(
     AddItem(base::to_underlying(CommandId::kDriveSuggestions), u"Google Drive");
     AddItem(base::to_underlying(CommandId::kOtherDeviceSuggestions),
             u"Chrome from other devices");
+    AddItem(base::to_underlying(CommandId::kLastActiveSuggestions),
+            u"Last tab opened");
+    AddItem(base::to_underlying(CommandId::kMostVisitedSuggestions),
+            u"Frequently visited tabs");
     AddSeparator(ui::MenuSeparatorType::NORMAL_SEPARATOR);
     AddItemWithIcon(base::to_underlying(CommandId::kReset), u"Reset",
                     CreateIconForMenuItem(kResetIcon));

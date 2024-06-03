@@ -14,6 +14,8 @@ enum class BirchSuggestionType {
   kDrive,
   kTab,
   kExplore,
+  kLastActive,
+  kMostVisited,
   kUndefined,
 };
 

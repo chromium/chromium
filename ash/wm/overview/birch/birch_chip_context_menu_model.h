@@ -30,6 +30,8 @@ class BirchChipContextMenuModel : public ui::SimpleMenuModel {
     kHideCalendarSuggestions,     // Hide all calendar related chips.
     kHideDriveSuggestions,        // Hide all Drive related chips.
     kHideOtherDeviceSuggestions,  // Hide all other device related chips.
+    kHideLastActiveSuggestions,   // Hide all last active tab chips.
+    kHideMostVisitedSuggestions,  // Hide all most visited tab chips.
     kCustomizeSuggestions,  // Pop out the expanded bar menu with customizing
                             // suggestions options.
     kFeedback,              // Send user feedback for birch bar.

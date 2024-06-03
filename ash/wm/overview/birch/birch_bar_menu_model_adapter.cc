@@ -57,6 +57,10 @@ BirchSuggestionType CommandIdToSuggestionType(int command_id) {
       return BirchSuggestionType::kDrive;
     case base::to_underlying(CommandId::kOtherDeviceSuggestions):
       return BirchSuggestionType::kTab;
+    case base::to_underlying(CommandId::kLastActiveSuggestions):
+      return BirchSuggestionType::kLastActive;
+    case base::to_underlying(CommandId::kMostVisitedSuggestions):
+      return BirchSuggestionType::kMostVisited;
     default:
       break;
   }
@@ -106,7 +110,9 @@ views::MenuItemView* BirchBarMenuModelAdapter::AppendMenuItem(
     case base::to_underlying(CommandId::kWeatherSuggestions):
     case base::to_underlying(CommandId::kCalendarSuggestions):
     case base::to_underlying(CommandId::kDriveSuggestions):
-    case base::to_underlying(CommandId::kOtherDeviceSuggestions): {
+    case base::to_underlying(CommandId::kOtherDeviceSuggestions):
+    case base::to_underlying(CommandId::kLastActiveSuggestions):
+    case base::to_underlying(CommandId::kMostVisitedSuggestions): {
       views::MenuItemView* item_view = menu->AppendMenuItem(command_id);
       // Note that we cannot directly added a checkbox, since `MenuItemView`
       // will align the newly added children to the right side of its label. We
