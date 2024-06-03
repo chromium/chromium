@@ -21,6 +21,7 @@
 #include "components/attribution_reporting/trigger_data_matching.mojom-forward.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/common/content_export.h"
+#include "third_party/abseil-cpp/absl/numeric/int128.h"
 
 namespace content {
 
@@ -66,7 +67,9 @@ class CONTENT_EXPORT StoredSource {
       int remaining_aggregatable_attribution_budget,
       double randomized_response_rate,
       attribution_reporting::mojom::TriggerDataMatching,
-      attribution_reporting::EventLevelEpsilon);
+      attribution_reporting::EventLevelEpsilon,
+      absl::uint128 aggregatable_debug_key_piece,
+      int remaining_aggregatable_debug_budget);
 
   ~StoredSource();
 
@@ -145,6 +148,14 @@ class CONTENT_EXPORT StoredSource {
     return event_level_epsilon_;
   }
 
+  absl::uint128 aggregatable_debug_key_piece() const {
+    return aggregatable_debug_key_piece_;
+  }
+
+  int remaining_aggregatable_debug_budget() const {
+    return remaining_aggregatable_debug_budget_;
+  }
+
  private:
   StoredSource(CommonSourceInfo common_info,
                uint64_t source_event_id,
@@ -164,7 +175,9 @@ class CONTENT_EXPORT StoredSource {
                int remaining_aggregatable_attribution_budget,
                double randomized_response_rate,
                attribution_reporting::mojom::TriggerDataMatching,
-               attribution_reporting::EventLevelEpsilon);
+               attribution_reporting::EventLevelEpsilon,
+               absl::uint128 aggregatable_debug_key_piece,
+               int remaining_aggregatable_debug_budget);
 
   CommonSourceInfo common_info_;
 
@@ -199,6 +212,10 @@ class CONTENT_EXPORT StoredSource {
   attribution_reporting::mojom::TriggerDataMatching trigger_data_matching_;
 
   attribution_reporting::EventLevelEpsilon event_level_epsilon_;
+
+  absl::uint128 aggregatable_debug_key_piece_;
+
+  int remaining_aggregatable_debug_budget_;
 
   // When adding new members, the corresponding `operator==()` definition in
   // `attribution_test_utils.h` should also be updated.

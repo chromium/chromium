@@ -26,6 +26,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/buildflag.h"
+#include "components/attribution_reporting/aggregatable_debug_reporting_config.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
 #include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
@@ -4295,6 +4296,26 @@ TEST_F(
                   kExclude),
           Field(&AttributionReport::NullAggregatableData::fake_source_time,
                 now)))));
+}
+
+TEST_F(AttributionResolverTest,
+       SourceAggregatableDebugReportingConfig_RoundTrips) {
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetAggregatableDebugReportingConfig(
+              *attribution_reporting::SourceAggregatableDebugReportingConfig::
+                  Create(
+                      /*budget=*/10,
+                      attribution_reporting::AggregatableDebugReportingConfig(
+                          /*key_piece=*/123, /*debug_data=*/{},
+                          /*aggregation_coordinator_origin=*/std::nullopt)))
+          .Build());
+  EXPECT_THAT(
+      storage()->GetActiveSources(),
+      ElementsAre(AllOf(
+          Property(&StoredSource::remaining_aggregatable_debug_budget, 10),
+          Property(&StoredSource::aggregatable_debug_key_piece, 123),
+          RemainingAggregatableAttributionBudgetIs(65536 - 10))));
 }
 
 }  // namespace content

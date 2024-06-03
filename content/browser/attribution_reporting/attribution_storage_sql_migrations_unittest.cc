@@ -548,4 +548,45 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion59ToCurrent) {
   histograms.ExpectTotalCount("Conversions.Storage.MigrationTime", 1);
 }
 
+TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion60ToCurrent) {
+  base::HistogramTester histograms;
+  LoadDatabase(GetVersionFilePath(60), DbPath());
+
+  // Verify pre-conditions.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(DbPath()));
+    ASSERT_FALSE(
+        db.DoesColumnExist("sources", "remaining_aggregatable_debug_budget"));
+    ASSERT_FALSE(
+        db.DoesColumnExist("sources", "num_aggregatable_debug_reports"));
+  }
+  MigrateDatabase();
+
+  // Verify schema is current.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(DbPath()));
+
+    CheckVersionNumbers(&db);
+
+    // Compare normalized schemas
+    EXPECT_EQ(NormalizeSchema(GetCurrentSchema()),
+              NormalizeSchema(db.GetSchema()));
+
+    sql::Statement s(
+        db.GetUniqueStatement("SELECT "
+                              "remaining_aggregatable_debug_budget,"
+                              "num_aggregatable_debug_reports FROM sources"));
+    ASSERT_TRUE(s.Step());
+    EXPECT_EQ(0, s.ColumnInt(0));
+    EXPECT_EQ(0, s.ColumnInt(1));
+    ASSERT_FALSE(s.Step());
+  }
+
+  // DB creation histograms should be recorded.
+  histograms.ExpectTotalCount("Conversions.Storage.CreationTime", 0);
+  histograms.ExpectTotalCount("Conversions.Storage.MigrationTime", 1);
+}
+
 }  // namespace content

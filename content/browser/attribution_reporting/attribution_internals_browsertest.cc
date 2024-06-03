@@ -15,6 +15,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
+#include "components/attribution_reporting/aggregatable_debug_reporting_config.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/os_registration.h"
@@ -325,11 +326,21 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
               .SetPriority(std::numeric_limits<int64_t>::max())
               .SetDedupKeys({13, 17})
               .SetRemainingAggregatableAttributionBudget(1300)
+              .SetRemainingAggregatableDebugBudget(100)
               .SetFilterData(*attribution_reporting::FilterData::Create(
                   {{"a", {"b", "c"}}}))
               .SetAggregationKeys(
                   *attribution_reporting::AggregationKeys::FromKeys({{"a", 1}}))
               .SetAggregatableDedupKeys({14, 18})
+              .SetAggregatableDebugReportingConfig(
+                  *attribution_reporting::
+                      SourceAggregatableDebugReportingConfig::Create(
+                          /*budget=*/10,
+                          attribution_reporting::
+                              AggregatableDebugReportingConfig(
+                                  /*key_piece=*/15, /*debug_data=*/{},
+                                  /*aggregation_coordinator_origin=*/
+                                  std::nullopt)))
               .BuildStored(),
           SourceBuilder(now + base::Hours(1))
               .SetSourceId(StoredSource::Id(2))
@@ -454,7 +465,9 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
         tds[19]?.innerText === '{\n "a": "0x1"\n}' &&
         // Aggregatable Dedup Keys
         tds[20]?.children[0]?.children[0]?.innerText === '14' &&
-        tds[20]?.children[0]?.children[1]?.innerText === '18'
+        tds[20]?.children[0]?.children[1]?.innerText === '18' &&
+        tds[21]?.innerText === '100 / 65536' &&
+        tds[22]?.innerText === '0xf'
       ) {
         if (obs) {
           obs.disconnect();

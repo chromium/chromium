@@ -54,6 +54,8 @@ message AttributionReadOnlySourceData {
 
   // If absent, will be deserialized using the defaults for the source type.
   optional TriggerData trigger_data = 8;
+
+  optional AttributionAggregationKey aggregatable_debug_key_piece = 9;
 }
 
 message AttributionEventLevelMetadata {

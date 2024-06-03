@@ -505,6 +505,91 @@ bool To60(sql::Database& db) {
   return true;
 }
 
+bool To61(sql::Database& db) {
+  static constexpr char kNewSourcesTableSql[] =
+      "CREATE TABLE new_sources("
+      "source_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+      "source_event_id INTEGER NOT NULL,"
+      "source_origin TEXT NOT NULL,"
+      "reporting_origin TEXT NOT NULL,"
+      "source_time INTEGER NOT NULL,"
+      "expiry_time INTEGER NOT NULL,"
+      "aggregatable_report_window_time INTEGER NOT NULL,"
+      "num_attributions INTEGER NOT NULL,"
+      "event_level_active INTEGER NOT NULL,"
+      "aggregatable_active INTEGER NOT NULL,"
+      "source_type INTEGER NOT NULL,"
+      "attribution_logic INTEGER NOT NULL,"
+      "priority INTEGER NOT NULL,"
+      "source_site TEXT NOT NULL,"
+      "debug_key INTEGER,"
+      "remaining_aggregatable_attribution_budget INTEGER NOT NULL,"
+      "num_aggregatable_attribution_reports INTEGER NOT NULL,"
+      "aggregatable_source BLOB NOT NULL,"
+      "filter_data BLOB NOT NULL,"
+      "read_only_source_data BLOB NOT NULL,"
+      "remaining_aggregatable_debug_budget INTEGER NOT NULL,"
+      "num_aggregatable_debug_reports INTEGER NOT NULL)";
+  if (!db.Execute(kNewSourcesTableSql)) {
+    return false;
+  }
+
+  static constexpr char kPopulateNewSourcesTableSql[] =
+      "INSERT INTO new_sources SELECT "
+      "source_id,source_event_id,source_origin,"
+      "reporting_origin,source_time,expiry_time,"
+      "aggregatable_report_window_time,"
+      "num_attributions,event_level_active,aggregatable_active,"
+      "source_type,attribution_logic,priority,source_site,debug_key,"
+      "remaining_aggregatable_attribution_budget,"
+      "num_aggregatable_attribution_reports,aggregatable_source,"
+      "filter_data,read_only_source_data,0,0 FROM sources";
+  if (!db.Execute(kPopulateNewSourcesTableSql)) {
+    return false;
+  }
+
+  if (!db.Execute("DROP TABLE sources")) {
+    return false;
+  }
+
+  if (!db.Execute("ALTER TABLE new_sources RENAME TO sources")) {
+    return false;
+  }
+
+  // Create the sources table indices on the new table.
+  static constexpr char kSourcesByActiveReportingOriginIndexSql[] =
+      "CREATE INDEX sources_by_active_reporting_origin "
+      "ON sources(event_level_active,"
+      "aggregatable_active,reporting_origin)";
+  if (!db.Execute(kSourcesByActiveReportingOriginIndexSql)) {
+    return false;
+  }
+
+  static constexpr char kImpressionExpiryIndexSql[] =
+      "CREATE INDEX sources_by_expiry_time "
+      "ON sources(expiry_time)";
+  if (!db.Execute(kImpressionExpiryIndexSql)) {
+    return false;
+  }
+
+  static constexpr char kImpressionOriginIndexSql[] =
+      "CREATE INDEX active_sources_by_source_origin "
+      "ON sources(source_origin)"
+      "WHERE event_level_active=1 OR aggregatable_active=1";
+  if (!db.Execute(kImpressionOriginIndexSql)) {
+    return false;
+  }
+
+  static constexpr char kSourcesSourceTimeIndexSql[] =
+      "CREATE INDEX sources_by_source_time "
+      "ON sources(source_time)";
+  if (!db.Execute(kSourcesSourceTimeIndexSql)) {
+    return false;
+  }
+
+  return true;
+}
+
 }  // namespace
 
 bool UpgradeAttributionStorageSqlSchema(AttributionStorageSql& storage,
@@ -525,14 +610,15 @@ bool UpgradeAttributionStorageSqlSchema(AttributionStorageSql& storage,
             MaybeMigrate(db, meta_table, 56, &To57) &&
             MaybeMigrate(db, meta_table, 57, &To58) &&
             MaybeMigrate(db, meta_table, 58, &To59) &&
-            MaybeMigrate(db, meta_table, 59, &To60);
+            MaybeMigrate(db, meta_table, 59, &To60) &&
+            MaybeMigrate(db, meta_table, 60, &To61);
   if (!ok) {
     return false;
   }
 
   DeleteCorruptedReports(storage);
 
-  static_assert(AttributionStorageSql::kCurrentVersionNumber == 60,
+  static_assert(AttributionStorageSql::kCurrentVersionNumber == 61,
                 "Add migration(s) above.");
 
   if (base::ThreadTicks::IsSupported()) {

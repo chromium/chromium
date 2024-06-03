@@ -222,6 +222,8 @@ interface Source {
   triggerDataMatching: string;
   eventLevelEpsilon: number;
   debugCookieSet: boolean;
+  remainingAggregatableDebugBudget: number;
+  aggregatableDebugKeyPiece: string;
 }
 
 function newSource(mojo: WebUISource): Source {
@@ -251,6 +253,8 @@ function newSource(mojo: WebUISource): Source {
     eventLevelEpsilon: mojo.eventLevelEpsilon,
     status: attributabilityText[mojo.attributability],
     debugCookieSet: mojo.debugCookieSet,
+    remainingAggregatableDebugBudget: mojo.remainingAggregatableDebugBudget,
+    aggregatableDebugKeyPiece: mojo.aggregatableDebugKeyPiece,
   };
 }
 
@@ -296,6 +300,13 @@ function initSourceTable(panel: HTMLElement):
             asCustomNumber((v) => `${v} / ${BUDGET_PER_SOURCE}`)),
         valueColumn('Aggregation Keys', 'aggregationKeys', asCode),
         valueColumn('Dedup Keys', 'aggregatableDedupKeys', asList(asNumber)),
+        valueColumn(
+            'Remaining Aggregatable Debug Budget',
+            'remainingAggregatableDebugBudget',
+            asCustomNumber((v) => `${v} / ${BUDGET_PER_SOURCE}`)),
+        valueColumn(
+            'Aggregatable Debug Key Piece', 'aggregatableDebugKeyPiece',
+            asStringOrBool),
       ]);
 }
 

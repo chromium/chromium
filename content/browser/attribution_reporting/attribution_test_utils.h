@@ -36,6 +36,7 @@
 namespace attribution_reporting {
 class AggregatableValues;
 class AggregationKeys;
+class SourceAggregatableDebugReportingConfig;
 class TriggerSpecs;
 }  // namespace attribution_reporting
 
@@ -105,6 +106,9 @@ class SourceBuilder {
   SourceBuilder& SetRemainingAggregatableAttributionBudget(
       int remaining_aggregatable_attribution_budget);
 
+  SourceBuilder& SetRemainingAggregatableDebugBudget(
+      int remaining_aggregatable_debug_budget);
+
   SourceBuilder& SetRandomizedResponseRate(double randomized_response_rate);
 
   SourceBuilder& SetAggregatableDedupKeys(
@@ -122,6 +126,9 @@ class SourceBuilder {
       attribution_reporting::mojom::TriggerDataMatching);
 
   SourceBuilder& SetDebugCookieSet(bool debug_cookie_set);
+
+  SourceBuilder& SetAggregatableDebugReportingConfig(
+      attribution_reporting::SourceAggregatableDebugReportingConfig);
 
   StorableSource Build() const;
 
@@ -147,6 +154,7 @@ class SourceBuilder {
   std::vector<uint64_t> aggregatable_dedup_keys_;
   bool is_within_fenced_frame_ = false;
   bool debug_cookie_set_ = false;
+  int remaining_aggregatable_debug_budget_ = 0;
 };
 
 // Returns a AttributionTrigger with default data which matches the default

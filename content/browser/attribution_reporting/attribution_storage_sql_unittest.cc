@@ -111,6 +111,8 @@ struct AttributionSourceRecord {
   std::string aggregation_keys;
   std::string filter_data;
   std::string read_only_source_data;
+  int remaining_aggregatable_debug_budget;
+  int num_aggregatable_debug_reports;
 };
 
 struct AttributionReportRecord {
@@ -328,7 +330,7 @@ class AttributionStorageSqlTest : public testing::Test {
 
     static constexpr char kStoreSourceSql[] =
         "INSERT INTO sources "
-        "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,0,?,?,?,?)";
+        "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,0,?,?,?,?,?,?)";
     sql::Statement statement(raw_db.GetUniqueStatement(kStoreSourceSql));
     statement.BindInt64(0, record.source_id);
     statement.BindInt64(1, record.source_event_id);
@@ -355,6 +357,8 @@ class AttributionStorageSqlTest : public testing::Test {
     statement.BindBlob(16, record.aggregation_keys);
     statement.BindBlob(17, record.filter_data);
     statement.BindBlob(18, record.read_only_source_data);
+    statement.BindInt(19, record.remaining_aggregatable_debug_budget);
+    statement.BindInt(20, record.num_aggregatable_debug_reports);
     ASSERT_TRUE(statement.Run());
   }
 
@@ -2687,6 +2691,92 @@ TEST_F(AttributionStorageSqlTest,
                                    kSourceInvalidEventLevelEpsilon,
                                1);
   histograms.ExpectTotalCount("Conversions.CorruptReportsInDatabase5", 27);
+}
+
+TEST_F(AttributionStorageSqlTest, SourceRemainingAggregatableBudget) {
+  const struct {
+    const char* desc;
+    int remaining_aggregatable_attribution_budget;
+    int remaining_aggregatable_debug_budget;
+    bool expected;
+  } kTestCases[] = {
+      {
+          .desc = "valid_attribution_only",
+          .remaining_aggregatable_attribution_budget = 65536,
+          .remaining_aggregatable_debug_budget = 0,
+          .expected = true,
+      },
+      {
+          .desc = "valid_debug_only",
+          .remaining_aggregatable_attribution_budget = 0,
+          .remaining_aggregatable_debug_budget = 65536,
+          .expected = true,
+      },
+      {
+          .desc = "attribution_below_0",
+          .remaining_aggregatable_attribution_budget = -1,
+          .remaining_aggregatable_debug_budget = 0,
+          .expected = false,
+      },
+      {
+          .desc = "attribution_above_max",
+          .remaining_aggregatable_attribution_budget = 65537,
+          .remaining_aggregatable_debug_budget = 0,
+          .expected = false,
+      },
+      {
+          .desc = "debug_below_0",
+          .remaining_aggregatable_attribution_budget = 0,
+          .remaining_aggregatable_debug_budget = -1,
+          .expected = false,
+      },
+      {
+          .desc = "debug_above_max",
+          .remaining_aggregatable_attribution_budget = 0,
+          .remaining_aggregatable_debug_budget = 65537,
+          .expected = false,
+      },
+      {
+          .desc = "total_above_max",
+          .remaining_aggregatable_attribution_budget = 1,
+          .remaining_aggregatable_debug_budget = 65536,
+          .expected = false,
+      },
+  };
+
+  constexpr char kUpdateSql[] =
+      "UPDATE sources SET "
+      "remaining_aggregatable_attribution_budget=?,"
+      "remaining_aggregatable_debug_budget=?";
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.desc);
+
+    OpenDatabase();
+
+    storage()->StoreSource(SourceBuilder().Build());
+    ASSERT_THAT(storage()->GetActiveSources(), SizeIs(1));
+
+    CloseDatabase();
+
+    {
+      sql::Database raw_db;
+      ASSERT_TRUE(raw_db.Open(db_path()));
+
+      sql::Statement update_statement(raw_db.GetUniqueStatement(kUpdateSql));
+      update_statement.BindInt(
+          0, test_case.remaining_aggregatable_attribution_budget);
+      update_statement.BindInt(1,
+                               test_case.remaining_aggregatable_debug_budget);
+      ASSERT_TRUE(update_statement.Run());
+    }
+
+    OpenDatabase();
+    ASSERT_THAT(storage()->GetActiveSources(), SizeIs(test_case.expected));
+    storage()->ClearData(base::Time::Min(), base::Time::Max(),
+                         base::NullCallback());
+    CloseDatabase();
+  }
 }
 
 TEST_F(AttributionStorageSqlTest, SourceDebugKeyAndDebugCookieSetCombination) {

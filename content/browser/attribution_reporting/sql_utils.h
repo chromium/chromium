@@ -15,6 +15,7 @@
 #include "components/attribution_reporting/trigger_data_matching.mojom-forward.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/common/content_export.h"
+#include "third_party/abseil-cpp/absl/numeric/int128.h"
 
 namespace attribution_reporting {
 class AggregationKeys;
@@ -54,7 +55,8 @@ std::string SerializeReadOnlySourceData(
     attribution_reporting::MaxEventLevelReports,
     double randomized_response_rate,
     attribution_reporting::mojom::TriggerDataMatching,
-    bool debug_cookie_set);
+    bool debug_cookie_set,
+    absl::uint128 aggregatable_debug_key_piece);
 
 CONTENT_EXPORT std::optional<proto::AttributionReadOnlySourceData>
 DeserializeReadOnlySourceDataAsProto(sql::Statement&, int col);

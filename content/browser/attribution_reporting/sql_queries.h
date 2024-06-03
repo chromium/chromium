@@ -126,6 +126,7 @@ inline constexpr const char kSetReportTimeSql[] =
   prefix "num_attributions,"                   \
   prefix "remaining_aggregatable_attribution_budget," \
   prefix "num_aggregatable_attribution_reports," \
+  prefix "remaining_aggregatable_debug_budget," \
   prefix "aggregatable_source,"                \
   prefix "filter_data,"                        \
   prefix "event_level_active,"                 \

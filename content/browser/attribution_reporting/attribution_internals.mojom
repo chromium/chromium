@@ -117,6 +117,9 @@ struct WebUISource {
   attribution_reporting.mojom.TriggerDataMatching trigger_data_matching;
   double event_level_epsilon;
   bool debug_cookie_set;
+  int32 remaining_aggregatable_debug_budget;
+  // A hex-encoded 128-bit integer.
+  string aggregatable_debug_key_piece;
 
   enum Attributability {
     kAttributable,

@@ -219,7 +219,7 @@ std::optional<uint64_t> ColumnUint64OrNull(sql::Statement& statement, int col) {
                    DeserializeUint64(statement.ColumnInt64(col)));
 }
 
-constexpr int kSourceColumnCount = 19;
+constexpr int kSourceColumnCount = 20;
 
 int64_t StorageFileSizeKB(const base::FilePath& path_to_database) {
   int64_t file_size = -1;
@@ -283,6 +283,7 @@ AttributionStorageSql::ReadSourceFromStatement(sql::Statement& statement) {
   int num_attributions = statement.ColumnInt(col++);
   int remaining_aggregatable_attribution_budget = statement.ColumnInt(col++);
   int num_aggregatable_attribution_reports = statement.ColumnInt(col++);
+  int remaining_aggregatable_debug_budget = statement.ColumnInt(col++);
   std::optional<attribution_reporting::AggregationKeys> aggregation_keys =
       DeserializeAggregationKeys(statement, col++);
 
@@ -414,6 +415,10 @@ AttributionStorageSql::ReadSourceFromStatement(sql::Statement& statement) {
                               ? read_only_source_data_msg->debug_cookie_set()
                               : debug_key.has_value();
 
+  absl::uint128 aggregatable_debug_key_piece = absl::MakeUint128(
+      read_only_source_data_msg->aggregatable_debug_key_piece().high_bits(),
+      read_only_source_data_msg->aggregatable_debug_key_piece().low_bits());
+
   double randomized_response_rate =
       read_only_source_data_msg->has_randomized_response_rate()
           ? read_only_source_data_msg->randomized_response_rate()
@@ -428,7 +433,8 @@ AttributionStorageSql::ReadSourceFromStatement(sql::Statement& statement) {
       max_event_level_reports, priority, std::move(*filter_data), debug_key,
       std::move(*aggregation_keys), *attribution_logic, *active_state,
       source_id, remaining_aggregatable_attribution_budget,
-      randomized_response_rate, trigger_data_matching, event_level_epsilon);
+      randomized_response_rate, trigger_data_matching, event_level_epsilon,
+      aggregatable_debug_key_piece, remaining_aggregatable_debug_budget);
   if (!stored_source.has_value()) {
     // TODO(crbug.com/40287459): Consider enumerating errors from StoredSource.
     return base::unexpected(ReportCorruptionStatusSetAndIds(
@@ -686,8 +692,9 @@ StoreSourceResult AttributionStorageSql::StoreSource(StorableSource source) {
       "num_attributions,event_level_active,aggregatable_active,debug_key,"
       "remaining_aggregatable_attribution_budget,"
       "num_aggregatable_attribution_reports,"
-      "aggregatable_source,filter_data,read_only_source_data)"
-      "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,0,?,?,?)";
+      "aggregatable_source,filter_data,read_only_source_data,"
+      "remaining_aggregatable_debug_budget,num_aggregatable_debug_reports)"
+      "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,0,?,?,?,?,0)";
   sql::Statement statement(
       db_.GetCachedStatement(SQL_FROM_HERE, kInsertImpressionSql));
   statement.BindInt64(0, SerializeUint64(reg.source_event_id));
@@ -710,8 +717,11 @@ StoreSourceResult AttributionStorageSql::StoreSource(StorableSource source) {
       GetSourceActiveState(event_level_active, aggregatable_active);
   DCHECK(active_state.has_value());
 
+  const int remaining_aggregatable_debug_budget =
+      reg.aggregatable_debug_reporting_config.budget();
   const int remaining_aggregatable_attribution_budget =
-      attribution_reporting::kMaxAggregatableValue;
+      attribution_reporting::kMaxAggregatableValue -
+      remaining_aggregatable_debug_budget;
 
   statement.BindInt(14, remaining_aggregatable_attribution_budget);
   statement.BindBlob(15, SerializeAggregationKeys(reg.aggregation_keys));
@@ -720,7 +730,9 @@ StoreSourceResult AttributionStorageSql::StoreSource(StorableSource source) {
       17, SerializeReadOnlySourceData(
               reg.trigger_specs, reg.max_event_level_reports,
               randomized_response_data.rate(), reg.trigger_data_matching,
-              common_info.debug_cookie_set()));
+              common_info.debug_cookie_set(),
+              reg.aggregatable_debug_reporting_config.config().key_piece));
+  statement.BindInt(18, remaining_aggregatable_debug_budget);
 
   if (!statement.Run()) {
     return make_result(StoreSourceResult::InternalError());
@@ -752,7 +764,9 @@ StoreSourceResult AttributionStorageSql::StoreSource(StorableSource source) {
       attribution_logic, *active_state, source_id,
       remaining_aggregatable_attribution_budget,
       randomized_response_data.rate(), reg.trigger_data_matching,
-      reg.event_level_epsilon);
+      reg.event_level_epsilon,
+      reg.aggregatable_debug_reporting_config.config().key_piece,
+      remaining_aggregatable_debug_budget);
 
   if (!stored_source.has_value() ||
       !rate_limit_table_.AddRateLimitForSource(&db_, *stored_source)) {
@@ -2472,13 +2486,18 @@ bool AttributionStorageSql::CreateSchema() {
   //
   // All of the columns in this table are designed to be "const" except for
   // |num_attributions|, |remaining_aggregatable_attribution_budget|,
-  // |num_aggregatable_attribution_reports|, |event_level_active|
-  // and |aggregatable_active| which are updated when a new trigger is
-  // received. |num_attributions| is the number of times an event-level report
-  // has been created for a given source.
-  // |remaining_aggregatable_attribution_budget| is the aggregatable budget that
-  // remains for a given source. |num_aggregatable_attribution_reports| is the
-  // number of times an aggregatable report has been created for a given source.
+  // |num_aggregatable_attribution_reports|, |num_aggregatable_debug_budget|,
+  // |num_aggregatable_debug_reports|, |event_level_active| and
+  // |aggregatable_active| which are updated when a new trigger is received.
+  // |num_attributions| is the number of times an event-level report has been
+  // created for a given source. |remaining_aggregatable_attribution_budget| is
+  // the aggregatable attribution budget that remains for a given source.
+  // |num_aggregatable_attribution_reports| is the number of times an
+  // aggregatable attribution report has been created for a given source.
+  // |remaining_aggregatable_debug_budget| is the aggregatable debug budget
+  // that remains for a given source. |num_aggregatable_debug_reports| is the
+  // number of times an aggregatable debug report has been created for a given
+  // source.
   // |delegate_| can choose to enforce a maximum limit on them.
   // |event_level_active| and |aggregatable_active| indicate whether a source is
   // able to create new associated event-level and aggregatable reports.
@@ -2505,6 +2524,9 @@ bool AttributionStorageSql::CreateSchema() {
   //
   // |source_id| uses AUTOINCREMENT to ensure that IDs aren't reused over
   // the lifetime of the DB.
+  //
+  // TODO(linnan): Read and update |num_aggregatable_debug_reports| when
+  // creating an aggregatable debug report for the source.
   static constexpr char kImpressionTableSql[] =
       "CREATE TABLE sources("
       "source_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
@@ -2526,7 +2548,9 @@ bool AttributionStorageSql::CreateSchema() {
       "num_aggregatable_attribution_reports INTEGER NOT NULL,"
       "aggregatable_source BLOB NOT NULL,"
       "filter_data BLOB NOT NULL,"
-      "read_only_source_data BLOB NOT NULL)";
+      "read_only_source_data BLOB NOT NULL,"
+      "remaining_aggregatable_debug_budget INTEGER NOT NULL,"
+      "num_aggregatable_debug_reports INTEGER NOT NULL)";
   if (!db_.Execute(kImpressionTableSql)) {
     return false;
   }
