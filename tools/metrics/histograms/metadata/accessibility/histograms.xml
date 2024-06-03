@@ -2397,6 +2397,16 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.ReadAnything.ReadAloud.Language"
+    enum="LocaleCodeISO639" expires_after="2025-02-28">
+  <owner>kristislee@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <summary>
+    Records which language the user is using to read aloud text in the Read
+    Anything panel.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.ReadAnything.ReadAloud.SettingsChange"
     enum="ReadAnythingReadAloudSettingsChange" expires_after="2025-02-28">
   <owner>lwinston@google.com</owner>

@@ -81,6 +81,7 @@ const minWidthOverflow = 'fit-content';
 
 // UMA logging constants.
 const NEW_PAGE_UMA = 'Accessibility.ReadAnything.NewPage';
+const LANGUAGE_UMA = 'Accessibility.ReadAnything.ReadAloud.Language';
 // Enum for logging when we play speech on a page.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -1329,6 +1330,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // sync and we call stopSpeech before playSpeech.
     assert(this.playSessionStartTime > 0, 'invalid speech playing start time');
     if (this.playSessionStartTime > 0) {
+      this.logLanguageUsedForReading();
       chrome.readingMode.logLongMetric(
           Date.now() - this.playSessionStartTime,
           'Accessibility.ReadAnything.SpeechPlaybackSession');
@@ -1363,6 +1365,24 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     if (!this.highlightAndPlayMessage()) {
       this.onSpeechFinished();
     }
+  }
+
+  private logLanguageUsedForReading() {
+    if (!this.selectedVoice) {
+      return;
+    }
+
+    // See tools/metrics/histograms/enums.xml enum LocaleCodeISO639. The enum
+    // there doesn't always have locales where the base lang and the locale
+    // are the same (e.g. they don't have id-id, but do have id). So if the
+    // base lang and the locale are the same, just use the base lang.
+    let langToLog = this.selectedVoice.lang;
+    const langSplit = this.selectedVoice.lang.toLowerCase().split('-');
+    if (langSplit.length === 2 && langSplit[0] === langSplit[1]) {
+      langToLog = langSplit[0];
+    }
+    chrome.metricsPrivate.recordSparseValueWithHashMetricName(
+        LANGUAGE_UMA, langToLog);
   }
 
   playSpeech() {
