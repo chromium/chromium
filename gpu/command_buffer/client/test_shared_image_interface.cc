@@ -21,6 +21,19 @@ namespace gpu {
 
 namespace {
 
+gfx::GpuMemoryBufferType GetNativeBufferType() {
+#if BUILDFLAG(IS_APPLE)
+  return gfx::IO_SURFACE_BUFFER;
+#elif BUILDFLAG(IS_ANDROID)
+  return gfx::ANDROID_HARDWARE_BUFFER;
+#elif BUILDFLAG(IS_WIN)
+  return gfx::DXGI_SHARED_HANDLE;
+#else
+  // Ozone
+  return gfx::NATIVE_PIXMAP;
+#endif
+}
+
 // Creates a shared memory region and returns a handle to it.
 gfx::GpuMemoryBufferHandle CreateGMBHandle(
     const gfx::BufferFormat& buffer_format,
@@ -58,8 +71,11 @@ TestSharedImageInterface::CreateSharedImage(const SharedImageInfo& si_info,
   auto mailbox = Mailbox::Generate();
   shared_images_.insert(mailbox);
   most_recent_size_ = si_info.meta.size;
+  auto gmb_handle_type = emulate_client_provided_native_buffer_
+                             ? GetNativeBufferType()
+                             : gfx::EMPTY_BUFFER;
   return base::MakeRefCounted<ClientSharedImage>(
-      mailbox, si_info.meta, sync_token, holder_, gfx::EMPTY_BUFFER);
+      mailbox, si_info.meta, sync_token, holder_, gmb_handle_type);
 }
 
 scoped_refptr<ClientSharedImage>

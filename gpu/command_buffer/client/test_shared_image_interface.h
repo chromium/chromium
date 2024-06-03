@@ -115,6 +115,16 @@ class TestSharedImageInterface : public SharedImageInterface {
     test_gmb_manager_ = std::make_unique<TestGpuMemoryBufferManager>();
   }
 
+  void emulate_client_provided_native_buffer() {
+    emulate_client_provided_native_buffer_ = true;
+  }
+
+#if BUILDFLAG(IS_MAC)
+  void set_macos_specific_texture_target(uint32_t target) {
+    shared_image_capabilities_.macos_specific_texture_target = target;
+  }
+#endif
+
  protected:
   ~TestSharedImageInterface() override;
 
@@ -126,6 +136,7 @@ class TestSharedImageInterface : public SharedImageInterface {
   SyncToken most_recent_generated_token_;
   SyncToken most_recent_destroy_token_;
   base::flat_set<Mailbox> shared_images_;
+  bool emulate_client_provided_native_buffer_ = false;
 
   SharedImageCapabilities shared_image_capabilities_;
   bool fail_shared_image_creation_with_buffer_usage_ = false;
