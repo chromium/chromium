@@ -17626,21 +17626,6 @@
             ]
         }
     ],
-    "RegisterAppBoundEncryptionProvider": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "RegisterAppBoundEncryptionProvider"
-                    ]
-                }
-            ]
-        }
-    ],
     "RelatedSearchesViaZPSPrefetchingDesktop": [
         {
             "platforms": [

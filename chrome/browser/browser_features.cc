@@ -159,7 +159,7 @@ BASE_FEATURE(kDoubleTapToZoomInTabletMode,
 // with Chrome.
 BASE_FEATURE(kRegisterAppBoundEncryptionProvider,
              "RegisterAppBoundEncryptionProvider",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
 // Enables usage of the FedCM API without third party cookies at the same time.
