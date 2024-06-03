@@ -150,6 +150,21 @@ TEST_F(AggregationServiceStorageSqlTest,
       AggregationServiceStorageSql::InitStatus::kSuccess, 1);
 }
 
+TEST_F(AggregationServiceStorageSqlTest, CantOpenDb_HistogramRecorded) {
+  ASSERT_TRUE(base::CreateDirectory(db_path()));
+
+  OpenDatabase();
+  GURL url(kExampleUrl);
+  PublicKeyset keyset(kExampleKeys, /*fetch_time=*/clock_.Now(),
+                      /*expiry_time=*/base::Time::Max());
+  storage_->SetPublicKeys(url, keyset);
+  CloseDatabase();
+
+  histograms_.ExpectUniqueSample(
+      "PrivacySandbox.AggregationService.Storage.Sql.InitStatus",
+      AggregationServiceStorageSql::InitStatus::kFailedToOpenDbFile, 1);
+}
+
 TEST_F(AggregationServiceStorageSqlTest,
        DatabaseInitialized_TablesAndIndexesLazilyInitialized) {
   OpenDatabase();

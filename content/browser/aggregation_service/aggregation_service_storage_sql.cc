@@ -1087,7 +1087,9 @@ void AggregationServiceStorageSql::DatabaseErrorCallback(int extended_error,
 
   // Prevent future uses of `db_` from having any effect until we unpoison it
   // with `db_.Close()`.
-  db_.Poison();
+  if (db_.is_open()) {
+    db_.Poison();
+  }
 
   base::UmaHistogramEnumeration(
       "PrivacySandbox.AggregationService.Storage.Sql.Error",
