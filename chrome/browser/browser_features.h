@@ -66,6 +66,7 @@ BASE_DECLARE_FEATURE(kDoubleTapToZoomInTabletMode);
 
 #if BUILDFLAG(IS_WIN)
 BASE_DECLARE_FEATURE(kRegisterAppBoundEncryptionProvider);
+BASE_DECLARE_FEATURE(kUseAppBoundEncryptionProviderForEncryption);
 #endif
 
 BASE_DECLARE_FEATURE(kFedCmWithoutThirdPartyCookies);

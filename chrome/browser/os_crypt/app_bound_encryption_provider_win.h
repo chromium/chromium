@@ -24,7 +24,8 @@ namespace os_crypt_async {
 
 class AppBoundEncryptionProviderWin : public os_crypt_async::KeyProvider {
  public:
-  explicit AppBoundEncryptionProviderWin(PrefService* local_state);
+  AppBoundEncryptionProviderWin(PrefService* local_state,
+                                bool use_for_encryption);
   ~AppBoundEncryptionProviderWin() override;
 
   // Not copyable.
@@ -33,10 +34,6 @@ class AppBoundEncryptionProviderWin : public os_crypt_async::KeyProvider {
       const AppBoundEncryptionProviderWin&) = delete;
 
   static void RegisterLocalPrefs(PrefRegistrySimple* registry);
-
-  // Set encryption enabled for testing. Should be called before creating any
-  // instances of the class.
-  static void SetEnableEncryptionForTesting(bool use_for_encryption);
 
  private:
   // These values are persisted to logs. Entries should not be renumbered and
@@ -67,6 +64,8 @@ class AppBoundEncryptionProviderWin : public os_crypt_async::KeyProvider {
 
   class COMWorker;
   base::SequenceBound<COMWorker> com_worker_;
+
+  const bool use_for_encryption_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

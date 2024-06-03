@@ -30,7 +30,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_WIN)
-#include "chrome/browser/os_crypt/app_bound_encryption_provider_win.h"
 #include "chrome/browser/os_crypt/app_bound_encryption_win.h"
 #include "chrome/browser/os_crypt/test_support.h"
 #include "chrome/install_static/test/scoped_install_details.h"
@@ -159,8 +158,8 @@ class CookieEncryptionProviderBrowserTest
             features::kUseOsCryptAsyncForCookieEncryption);
         enabled_features.push_back(
             features::kRegisterAppBoundEncryptionProvider);
-        os_crypt_async::AppBoundEncryptionProviderWin::
-            SetEnableEncryptionForTesting(false);
+        disabled_features.push_back(
+            features::kUseAppBoundEncryptionProviderForEncryption);
         break;
       case kOSCryptAsyncWithAppBoundProviderWithEncryption:
         maybe_uninstall_service_ = os_crypt::InstallService();
@@ -169,16 +168,16 @@ class CookieEncryptionProviderBrowserTest
             features::kUseOsCryptAsyncForCookieEncryption);
         enabled_features.push_back(
             features::kRegisterAppBoundEncryptionProvider);
-        os_crypt_async::AppBoundEncryptionProviderWin::
-            SetEnableEncryptionForTesting(true);
+        enabled_features.push_back(
+            features::kUseAppBoundEncryptionProviderForEncryption);
         break;
       case kOSCryptAsyncWithAppBoundProviderWithEncryptionNoService:
         enabled_features.push_back(
             features::kUseOsCryptAsyncForCookieEncryption);
         enabled_features.push_back(
             features::kRegisterAppBoundEncryptionProvider);
-        os_crypt_async::AppBoundEncryptionProviderWin::
-            SetEnableEncryptionForTesting(true);
+        enabled_features.push_back(
+            features::kUseAppBoundEncryptionProviderForEncryption);
         break;
       case kOSCryptAsyncWithAppBoundProviderWithEncryptionUnsupportedUserData:
         maybe_uninstall_service_ = os_crypt::InstallService();
@@ -187,8 +186,8 @@ class CookieEncryptionProviderBrowserTest
             features::kUseOsCryptAsyncForCookieEncryption);
         enabled_features.push_back(
             features::kRegisterAppBoundEncryptionProvider);
-        os_crypt_async::AppBoundEncryptionProviderWin::
-            SetEnableEncryptionForTesting(true);
+        enabled_features.push_back(
+            features::kUseAppBoundEncryptionProviderForEncryption);
         os_crypt::SetNonStandardUserDataDirSupportedForTesting(
             /*supported=*/false);
         break;
@@ -199,8 +198,8 @@ class CookieEncryptionProviderBrowserTest
             features::kUseOsCryptAsyncForCookieEncryption);
         enabled_features.push_back(
             features::kRegisterAppBoundEncryptionProvider);
-        os_crypt_async::AppBoundEncryptionProviderWin::
-            SetEnableEncryptionForTesting(false);
+        disabled_features.push_back(
+            features::kUseAppBoundEncryptionProviderForEncryption);
 
         policy_provider_.SetDefaultReturns(
             /*is_initialization_complete_return=*/true,

@@ -36,18 +36,14 @@ constexpr uint8_t kCryptAppBoundKeyPrefix[] = {'A', 'P', 'P', 'B'};
 // OSCryptAsync to identify that data has been encrypted with this key.
 constexpr char kAppBoundDataPrefix[] = "v20";
 
-// Whether or not this provider will be used for encryption. For now this is
-// only controlled by tests, but in the future this will be controlled
-// dynamically via variations.
-bool g_enable_encryption_for_testing = false;
-
 }  // namespace
 
 AppBoundEncryptionProviderWin::AppBoundEncryptionProviderWin(
-    PrefService* local_state)
+    PrefService* local_state,
+    bool use_for_encryption)
     : local_state_(local_state),
-      com_worker_(
-          base::ThreadPool::CreateCOMSTATaskRunner({base::MayBlock()})) {}
+      com_worker_(base::ThreadPool::CreateCOMSTATaskRunner({base::MayBlock()})),
+      use_for_encryption_(use_for_encryption) {}
 
 AppBoundEncryptionProviderWin::~AppBoundEncryptionProviderWin() = default;
 
@@ -122,11 +118,6 @@ void AppBoundEncryptionProviderWin::RegisterLocalPrefs(
   registry->RegisterStringPref(kEncryptedKeyPrefName, std::string());
 }
 
-void AppBoundEncryptionProviderWin::SetEnableEncryptionForTesting(
-    bool use_for_encryption) {
-  g_enable_encryption_for_testing = use_for_encryption;
-}
-
 void AppBoundEncryptionProviderWin::GetKey(KeyCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto encrypted_key_data = RetrieveEncryptedKey();
@@ -177,7 +168,7 @@ void AppBoundEncryptionProviderWin::GetKey(KeyCallback callback) {
 
 bool AppBoundEncryptionProviderWin::UseForEncryption() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return g_enable_encryption_for_testing;
+  return use_for_encryption_;
 }
 
 bool AppBoundEncryptionProviderWin::IsCompatibleWithOsCryptSync() {
