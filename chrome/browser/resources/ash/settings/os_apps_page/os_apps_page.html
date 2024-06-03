@@ -50,21 +50,25 @@
             </div>
           </div>
           <template is="dom-if"
-              if="[[!prefs.on_device_app_controls.setup_completed.value]]">
+              if="[[!prefs.on_device_app_controls.setup_completed.value]]"
+              restamp>
             <div class="separator"></div>
             <cr-button
                 on-click="setUpParentalControls_"
                 aria-label="$i18n{appParentalControlsTitle}"
-                aria-roledescription="$i18n{appParentalControlsSetUpButton}">
+                aria-roledescription="$i18n{appParentalControlsSetUpButton}"
+                deep-link-focus-id$="[[Setting.kAppParentalControls]]">
               $i18n{appParentalControlsSetUpButton}
             </cr-button>
           </template>
           <template is="dom-if"
-              if="[[prefs.on_device_app_controls.setup_completed.value]]">
+              if="[[prefs.on_device_app_controls.setup_completed.value]]"
+              restamp>
             <cr-icon-button class="subpage-arrow"
                 aria-label="$i18n{appParentalControlsTitle}"
                 aria-describedby="secondaryText"
-                aria-roledescription="$i18n{subpageArrowRoleDescription}">
+                aria-roledescription="$i18n{subpageArrowRoleDescription}"
+                deep-link-focus-id$="[[Setting.kAppParentalControls]]">
             </cr-icon-button>
             <div class="separator"></div>
             <cr-toggle id="toggle"

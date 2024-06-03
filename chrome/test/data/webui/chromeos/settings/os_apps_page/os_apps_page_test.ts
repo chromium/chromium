@@ -436,7 +436,7 @@ suite('AppsPageTests', () => {
             continuePinSetupButton.click();
 
             // Verify that the PIN keyboard has been reset.
-            assertTrue(pinKeyboard.value === '');
+            assertEquals('', pinKeyboard.value);
 
             // Re-enter the PIN to confirm it.
             pinKeyboard.value = pin;
@@ -492,7 +492,7 @@ suite('AppsPageTests', () => {
             continuePinSetupButton.click();
 
             // Verify that the PIN keyboard has been reset.
-            assertTrue(pinKeyboard.value === '');
+            assertEquals('', pinKeyboard.value);
 
             // Re-enter the PIN to confirm it.
             pinKeyboard.value = pin;
@@ -586,7 +586,7 @@ suite('AppsPageTests', () => {
             continuePinSetupButton.click();
 
             // Verify that the PIN keyboard has been reset.
-            assertTrue(pinKeyboard.value === '');
+            assertEquals('', pinKeyboard.value);
 
             // Re-enter the PIN to confirm it.
             pinKeyboard.value = pin;
@@ -658,7 +658,7 @@ suite('AppsPageTests', () => {
             assertTrue(!!parentalControlsRow);
             assertTrue(isVisible(parentalControlsRow));
 
-            const setUpButton =
+            let setUpButton =
                 parentalControlsRow.querySelector<HTMLElement>('cr-button');
             assertTrue(!!setUpButton);
             setUpButton.click();
@@ -687,7 +687,7 @@ suite('AppsPageTests', () => {
             continuePinSetupButton.click();
 
             // Verify that the PIN keyboard has been reset.
-            assertTrue(pinKeyboard.value === '');
+            assertEquals('', pinKeyboard.value);
 
             // Re-enter the PIN to confirm it.
             pinKeyboard.value = pin;
@@ -737,11 +737,78 @@ suite('AppsPageTests', () => {
                 new KeyboardEvent('keydown', {key: 'Enter', keyCode: 13}));
             await waitAfterNextRender(appsPage);
 
+            setUpButton =
+                parentalControlsRow.querySelector<HTMLElement>('cr-button');
             assertTrue(!!setUpButton);
             assertTrue(isVisible(setUpButton));
             assertFalse(
                 appsPage.prefs.on_device_app_controls.setup_completed.value);
             assertTrue(appsPage.prefs.on_device_app_controls.pin.value === '');
+          });
+
+      test(
+          'Searching parental controls deep links to parental controls row',
+          async () => {
+            const parentalControlsSettingId =
+                settingMojom.Setting.kAppParentalControls.toString();
+            const params = new URLSearchParams();
+            params.append('settingId', parentalControlsSettingId);
+            Router.getInstance().navigateTo(routes.APPS, params);
+
+            const parentalControlsRow = queryParentalControlsRow();
+            // Wait for the row to become visible.
+            assertTrue(!!parentalControlsRow);
+            assertTrue(isVisible(parentalControlsRow));
+
+            const setUpButton =
+                parentalControlsRow.querySelector<HTMLElement>('cr-button');
+            assertTrue(!!setUpButton);
+            assertTrue(isVisible(setUpButton));
+            await waitAfterNextRender(setUpButton);
+            assertEquals(setUpButton, getDeepActiveElement());
+
+            setUpButton.click();
+            await flushTasks();
+
+            const setupPinDialog =
+                appsPage.shadowRoot!.querySelector<HTMLElement>('#setupPin');
+            assertTrue(!!setupPinDialog);
+
+            // Simulate PIN entry.
+            const pin = '123456';
+            const setupPinKeyboard =
+                setupPinDialog.shadowRoot!.getElementById('setupPinKeyboard');
+            assertTrue(!!setupPinKeyboard);
+            const pinKeyboard =
+                setupPinKeyboard.shadowRoot!.getElementById('pinKeyboard');
+            assertTrue(!!pinKeyboard);
+            assertTrue(hasStringProperty(pinKeyboard, 'value'));
+            pinKeyboard.value = pin;
+
+            const continuePinSetupButton =
+                setupPinDialog.shadowRoot!
+                    .querySelector<HTMLElement>('#dialog')!
+                    .querySelector<HTMLElement>('.action-button');
+            assertTrue(!!continuePinSetupButton);
+            continuePinSetupButton.click();
+
+            // Verify that the PIN keyboard has been reset.
+            assertEquals('', pinKeyboard.value);
+
+            // Re-enter the PIN to confirm it.
+            pinKeyboard.value = pin;
+
+            assertTrue(!!continuePinSetupButton);
+            continuePinSetupButton.click();
+            await waitAfterNextRender(appsPage);
+
+            Router.getInstance().navigateTo(routes.APPS, params);
+            const subpageArrow =
+                parentalControlsRow.querySelector('cr-icon-button');
+            assertTrue(!!subpageArrow);
+            assertTrue(isVisible(subpageArrow));
+            await waitAfterNextRender(subpageArrow);
+            assertEquals(subpageArrow, getDeepActiveElement());
           });
     }
 

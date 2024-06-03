@@ -229,6 +229,7 @@ export class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
           Setting.kManageAndroidPreferences,
           Setting.kTurnOnPlayStore,
           Setting.kRestoreAppsAndPages,
+          Setting.kAppParentalControls,
         ]),
       },
 
@@ -410,11 +411,14 @@ export class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
 
   private onDisablePinDialogClose_(): void {
     this.showParentalControlsDisablePinDialog_ = false;
-    // Reset toggle in case the disable flow was cancelled prior to completion.
     const toggle =
         this.shadowRoot!.querySelector<HTMLElement>('#appParentalControls')!
-            .querySelector<CrToggleElement>('#toggle')!;
-    toggle.checked = this.isParentalControlsSetupCompleted_();
+            .querySelector<CrToggleElement>('#toggle');
+    // If the toggle is still on the page, reset toggle in case the disable flow
+    // was cancelled prior to completion.
+    if (toggle) {
+      toggle.checked = this.isParentalControlsSetupCompleted_();
+    }
   }
 
   private onClickManageIsolatedWebApps_(): void {

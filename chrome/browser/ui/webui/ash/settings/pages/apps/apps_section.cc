@@ -222,13 +222,16 @@ const std::vector<SearchConcept>& GetManageIsolatedWebAppsSearchConcepts() {
 }
 
 const std::vector<SearchConcept>& GetParentalControlsSearchConcepts() {
+  // Redirect search queries to the parental controls row in the Apps section
+  // because the app parental controls page should only be accessed after the
+  // user has entered their PIN, which is triggered from the settings row.
   static const base::NoDestructor<std::vector<SearchConcept>> tags(
       {{IDS_OS_SETTINGS_TAG_APPS_PARENTAL_CONTROLS,
-        mojom::kAppParentalControlsSubpagePath,
+        mojom::kAppsSectionPath,
         mojom::SearchResultIcon::kAppsParentalControls,
         mojom::SearchResultDefaultRank::kMedium,
-        mojom::SearchResultType::kSubpage,
-        {.subpage = mojom::Subpage::kAppParentalControls},
+        mojom::SearchResultType::kSetting,
+        {.setting = mojom::Setting::kAppParentalControls},
         {IDS_OS_SETTINGS_TAG_APPS_PARENTAL_CONTROLS_ALT1,
          SearchConcept::kAltTagEnd}}});
   return *tags;
@@ -708,6 +711,7 @@ bool AppsSection::LogMetric(mojom::Setting setting, base::Value& value) const {
 
 void AppsSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   generator->RegisterTopLevelSetting(mojom::Setting::kTurnOnPlayStore);
+  generator->RegisterTopLevelSetting(mojom::Setting::kAppParentalControls);
 
   // Manage apps.
   generator->RegisterTopLevelSubpage(IDS_SETTINGS_APPS_LINK_TEXT,

@@ -245,6 +245,7 @@ chromium-metrics-reviews@google.com.
   <int value="707" label="App Notification: On/Off"/>
   <int value="708" label="App Pin To Shelf: On/Off"/>
   <int value="709" label="App Resize Lock: On/Off"/>
+  <int value="710" label="App Parental Controls"/>
   <int value="800" label="Set Up Crostini"/>
   <int value="801" label="Uninstall Crostini"/>
   <int value="802" label="Backup Linux Apps And Files"/>

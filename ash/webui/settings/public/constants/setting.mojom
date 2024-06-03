@@ -189,6 +189,7 @@ enum Setting {
   kAppNotificationOnOff = 707,
   kAppPinToShelfOnOff = 708,
   kAppResizeLockOnOff = 709,
+  kAppParentalControls = 710,
 
   // Crostini section.
   kSetUpCrostini= 800,
