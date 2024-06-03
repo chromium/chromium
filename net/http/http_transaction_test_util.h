@@ -182,9 +182,7 @@ class MockNetworkLayer;
 // find data for the request URL.  It supports IO operations that complete
 // synchronously or asynchronously to help exercise different code paths in the
 // HttpCache implementation.
-class MockNetworkTransaction
-    : public HttpTransaction,
-      public base::SupportsWeakPtr<MockNetworkTransaction> {
+class MockNetworkTransaction final : public HttpTransaction {
   typedef WebSocketHandshakeStreamBase::CreateHelper CreateHelper;
 
  public:
@@ -261,6 +259,10 @@ class MockNetworkTransaction
   }
 
   RequestPriority priority() const { return priority_; }
+
+  base::WeakPtr<MockNetworkTransaction> AsWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
 
   // Bogus value that will be returned by GetTotalReceivedBytes() if the
   // MockNetworkTransaction was started.
