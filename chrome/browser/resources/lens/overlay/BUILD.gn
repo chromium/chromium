@@ -57,6 +57,7 @@ build_webui("build_overlay") {
     "color_utils.ts",
     "find_words_in_region.ts",
     "hit.ts",
+    "metrics_utils.ts",
     "post_selection_paint_worklet.ts",
     "selection_utils.ts",
     "shimmer_circle_paint_worklet.ts",
@@ -74,7 +75,10 @@ build_webui("build_overlay") {
     "//ui/webui/resources/mojo:build_ts",
   ]
 
-  ts_definitions = [ "paint_api.d.ts" ]
+  ts_definitions = [
+    "paint_api.d.ts",
+    "//tools/typescript/definitions/metrics_private.d.ts",
+  ]
 
   ts_composite = true
   mojo_files_deps =

@@ -7,9 +7,12 @@ import 'chrome-untrusted://lens/selection_overlay.js';
 import type {RectF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
 import {BrowserProxyImpl} from 'chrome-untrusted://lens/browser_proxy.js';
 import type {LensPageRemote} from 'chrome-untrusted://lens/lens.mojom-webui.js';
+import {UserAction} from 'chrome-untrusted://lens/metrics_utils.js';
 import type {SelectionOverlayElement} from 'chrome-untrusted://lens/selection_overlay.js';
 import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
 import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
+import type {MetricsTracker} from 'chrome-untrusted://webui-test/metrics_test_support.js';
+import {fakeMetricsPrivate} from 'chrome-untrusted://webui-test/metrics_test_support.js';
 import {flushTasks} from 'chrome-untrusted://webui-test/polymer_test_util.js';
 
 import {simulateClick, simulateDrag} from '../utils/selection_utils.js';
@@ -39,6 +42,7 @@ suite('TextSelection', function() {
   let testBrowserProxy: TestLensOverlayBrowserProxy;
   let selectionOverlayElement: SelectionOverlayElement;
   let callbackRouterRemote: LensPageRemote;
+  let metrics: MetricsTracker;
 
   setup(async () => {
     // Resetting the HTML needs to be the first thing we do in setup to
@@ -66,6 +70,7 @@ suite('TextSelection', function() {
     // viewport.
     selectionOverlayElement.$.selectionOverlay.style.width = '100%';
     selectionOverlayElement.$.selectionOverlay.style.height = '100%';
+    metrics = fakeMetricsPrivate();
     await flushTasks();
     await addWords();
   });
@@ -153,6 +158,11 @@ suite('TextSelection', function() {
     // Verify the correct request was made.
     const textQuery =
         await testBrowserProxy.handler.whenCalled('issueTextSelectionRequest');
+    assertEquals(1, metrics.count('Lens.Overlay.Overlay.UserAction'));
+    assertEquals(
+        1,
+        metrics.count(
+            'Lens.Overlay.Overlay.UserAction', UserAction.TEXT_SELECTION));
     assertEquals('hello', textQuery);
   });
 
@@ -310,6 +320,11 @@ suite('TextSelection', function() {
     assertEquals(0, highlightedLines.length);
     assertEquals(
         0, testBrowserProxy.handler.getCallCount('issueTextSelectionRequest'));
+    assertEquals(1, metrics.count('Lens.Overlay.Overlay.UserAction'));
+    assertEquals(
+        0,
+        metrics.count(
+            'Lens.Overlay.Overlay.UserAction', UserAction.TEXT_SELECTION));
   });
 
   test(

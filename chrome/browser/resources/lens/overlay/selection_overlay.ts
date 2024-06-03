@@ -21,6 +21,7 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 import {BrowserProxyImpl} from './browser_proxy.js';
 import {getFallbackTheme} from './color_utils.js';
 import {type CursorTooltipData, CursorTooltipType} from './cursor_tooltip.js';
+import {recordLensOverlayInteraction, UserAction} from './metrics_utils.js';
 import type {ObjectLayerElement} from './object_layer.js';
 import {focusShimmerOnRegion, ShimmerControlRequester, unfocusShimmer} from './overlay_shimmer.js';
 import type {OverlayShimmerElement} from './overlay_shimmer.js';
@@ -624,6 +625,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
 
   private async handleCopy() {
     navigator.clipboard.writeText(this.highlightedText);
+    recordLensOverlayInteraction(UserAction.COPY_TEXT);
     if (this.$.copyToast.open) {
       // If toast already open, wait after hiding so that animation is
       // smoother.
@@ -650,6 +652,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     BrowserProxyImpl.getInstance().handler.issueTranslateSelectionRequest(
         this.highlightedText, this.contentLanguage,
         this.textSelectionStartIndex, this.textSelectionEndIndex);
+    recordLensOverlayInteraction(UserAction.TRANSLATE_TEXT);
   }
 
   // Make the cursor disappear over the context menu, as if leaving the overlay.

@@ -8,9 +8,12 @@ import type {Point, RectF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry
 import {BrowserProxyImpl} from 'chrome-untrusted://lens/browser_proxy.js';
 import {CenterRotatedBox_CoordinateType} from 'chrome-untrusted://lens/geometry.mojom-webui.js';
 import type {CenterRotatedBox} from 'chrome-untrusted://lens/geometry.mojom-webui.js';
+import {UserAction} from 'chrome-untrusted://lens/metrics_utils.js';
 import type {SelectionOverlayElement} from 'chrome-untrusted://lens/selection_overlay.js';
 import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
+import type {MetricsTracker} from 'chrome-untrusted://webui-test/metrics_test_support.js';
+import {fakeMetricsPrivate} from 'chrome-untrusted://webui-test/metrics_test_support.js';
 import {waitAfterNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';
 
 import {getImageBoundingRect, simulateClick, simulateDrag} from '../utils/selection_utils.js';
@@ -23,6 +26,7 @@ const TAP_REGION_HEIGHT = 300;
 suite('ManualRegionSelection', function() {
   let testBrowserProxy: TestLensOverlayBrowserProxy;
   let selectionOverlayElement: SelectionOverlayElement;
+  let metrics: MetricsTracker;
 
   setup(() => {
     // Resetting the HTML needs to be the first thing we do in setup to
@@ -52,6 +56,7 @@ suite('ManualRegionSelection', function() {
         'calc(100vh - 100px)';
     selectionOverlayElement.$.backgroundImage.style.width =
         'calc(100vw - 100px)';
+    metrics = fakeMetricsPrivate();
 
     return waitAfterNextRender(selectionOverlayElement);
   });
@@ -77,6 +82,11 @@ suite('ManualRegionSelection', function() {
     await simulateDrag(selectionOverlayElement, fromPoint, toPoint);
     const rect = await testBrowserProxy.handler.whenCalled('issueLensRequest');
     assertDeepEquals(expectedRect, rect);
+    assertEquals(1, metrics.count('Lens.Overlay.Overlay.UserAction'));
+    assertEquals(
+        1,
+        metrics.count(
+            'Lens.Overlay.Overlay.UserAction', UserAction.REGION_SELECTION));
   }
 
   // Does a click and verifies that expectedRect is sent via mojo.
@@ -89,6 +99,11 @@ suite('ManualRegionSelection', function() {
     await simulateClick(selectionOverlayElement, point);
     const rect = await testBrowserProxy.handler.whenCalled('issueLensRequest');
     assertDeepEquals(expectedRect, rect);
+    assertEquals(1, metrics.count('Lens.Overlay.Overlay.UserAction'));
+    assertEquals(
+        1,
+        metrics.count(
+            'Lens.Overlay.Overlay.UserAction', UserAction.REGION_SELECTION));
   }
 
   test('ClickShowsRegion', async () => {

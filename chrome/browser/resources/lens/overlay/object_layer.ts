@@ -14,6 +14,7 @@ import {type CursorTooltipData, CursorTooltipType} from './cursor_tooltip.js';
 import {CenterRotatedBox_CoordinateType} from './geometry.mojom-webui.js';
 import type {CenterRotatedBox} from './geometry.mojom-webui.js';
 import type {LensPageCallbackRouter} from './lens.mojom-webui.js';
+import {recordLensOverlayInteraction, UserAction} from './metrics_utils.js';
 import {getTemplate} from './object_layer.html.js';
 import type {OverlayObject} from './overlay_object.mojom-webui.js';
 import {focusShimmerOnRegion, ShimmerControlRequester, unfocusShimmer} from './overlay_shimmer.js';
@@ -171,6 +172,8 @@ export class ObjectLayerElement extends PolymerElement {
       composed: true,
       detail: this.getPostSelectionRegion(selectionRegion),
     }));
+
+    recordLensOverlayInteraction(UserAction.OBJECT_CLICK);
 
     return true;
   }
