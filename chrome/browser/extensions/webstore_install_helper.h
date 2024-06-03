@@ -36,11 +36,7 @@ class WebstoreInstallHelper : public base::RefCounted<WebstoreInstallHelper>,
  public:
   class Delegate {
    public:
-    enum InstallHelperResultCode {
-      UNKNOWN_ERROR,
-      ICON_ERROR,
-      MANIFEST_ERROR
-    };
+    enum InstallHelperResultCode { UNKNOWN_ERROR, ICON_ERROR, kManifestError };
 
     // Called when we've successfully parsed the manifest and decoded the icon
     // in the utility process.

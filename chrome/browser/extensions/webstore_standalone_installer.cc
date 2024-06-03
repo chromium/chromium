@@ -393,7 +393,7 @@ void WebstoreStandaloneInstaller::OnWebstoreParseFailure(
     const std::string& error_message) {
   webstore_install::Result install_result = webstore_install::OTHER_ERROR;
   switch (result_code) {
-    case WebstoreInstallHelper::Delegate::MANIFEST_ERROR:
+    case WebstoreInstallHelper::Delegate::kManifestError:
       install_result = webstore_install::INVALID_MANIFEST;
       break;
     case WebstoreInstallHelper::Delegate::ICON_ERROR:

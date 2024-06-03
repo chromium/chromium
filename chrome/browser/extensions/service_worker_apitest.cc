@@ -412,7 +412,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, SyntaxError) {
   const ErrorList& error_list =
       ErrorConsole::Get(profile())->GetErrorsForExtension(extension->id());
   ASSERT_EQ(kErrorsExpected, error_list.size());
-  EXPECT_EQ(ExtensionError::RUNTIME_ERROR, error_list[0]->type());
+  EXPECT_EQ(ExtensionError::Type::kRuntimeError, error_list[0]->type());
   EXPECT_THAT(base::UTF16ToUTF8(error_list[0]->message()),
               HasSubstr("Error handling response: TypeError: "
                         "console.lg is not a function"));
@@ -438,7 +438,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, UndefinedVariable) {
   const ErrorList& error_list =
       ErrorConsole::Get(profile())->GetErrorsForExtension(extension->id());
   ASSERT_EQ(kErrorsExpected, error_list.size());
-  EXPECT_EQ(ExtensionError::RUNTIME_ERROR, error_list[0]->type());
+  EXPECT_EQ(ExtensionError::Type::kRuntimeError, error_list[0]->type());
   EXPECT_THAT(base::UTF16ToUTF8(error_list[0]->message()),
               HasSubstr("Error handling response: ReferenceError: "
                         "undefined_variable is not defined"));
@@ -460,7 +460,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, ConsoleError) {
       ErrorConsole::Get(profile())->GetErrorsForExtension(
           ExtensionBrowserTest::last_loaded_extension_id());
   ASSERT_EQ(kErrorsExpected, error_list.size());
-  EXPECT_EQ(ExtensionError::RUNTIME_ERROR, error_list[0]->type());
+  EXPECT_EQ(ExtensionError::Type::kRuntimeError, error_list[0]->type());
   EXPECT_THAT(base::UTF16ToUTF8(error_list[0]->message()),
               HasSubstr("Logged from MV3 service worker"));
 }

@@ -253,7 +253,7 @@ bool SafetyCheckShouldShowOffstoreExtension(
 template <typename ErrorType>
 void PopulateErrorBase(const ExtensionError& error, ErrorType* out) {
   CHECK(out);
-  out->type = error.type() == ExtensionError::MANIFEST_ERROR
+  out->type = error.type() == ExtensionError::Type::kManifestError
                   ? developer::ErrorType::kManifest
                   : developer::ErrorType::kRuntime;
   out->extension_id = error.extension_id();
@@ -868,19 +868,19 @@ void ExtensionInfoGenerator::CreateExtensionInfoHelper(
         error_console_->GetErrorsForExtension(extension.id());
     for (const auto& error : errors) {
       switch (error->type()) {
-        case ExtensionError::MANIFEST_ERROR:
+        case ExtensionError::Type::kManifestError:
           info->manifest_errors.push_back(ConstructManifestError(
               static_cast<const ManifestError&>(*error)));
           break;
-        case ExtensionError::RUNTIME_ERROR:
+        case ExtensionError::Type::kRuntimeError:
           info->runtime_errors.push_back(ConstructRuntimeError(
               static_cast<const RuntimeError&>(*error)));
           break;
-        case ExtensionError::INTERNAL_ERROR:
+        case ExtensionError::Type::kInternalError:
           // TODO(wittman): Support InternalError in developer tools:
           // https://crbug.com/503427.
           break;
-        case ExtensionError::NUM_ERROR_TYPES:
+        case ExtensionError::Type::kNumErrorTypes:
           NOTREACHED_IN_MIGRATION();
           break;
       }

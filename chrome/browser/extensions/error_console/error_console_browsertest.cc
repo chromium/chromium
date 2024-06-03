@@ -46,7 +46,7 @@ const char* const kBackgroundPageName =
     extensions::kGeneratedBackgroundPageFilename;
 
 const StackTrace& GetStackTraceFromError(const ExtensionError* error) {
-  CHECK(error->type() == ExtensionError::RUNTIME_ERROR);
+  CHECK(error->type() == ExtensionError::Type::kRuntimeError);
   return (static_cast<const RuntimeError*>(error))->stack_trace();
 }
 
@@ -95,12 +95,8 @@ void CheckRuntimeError(const ExtensionError* error,
                        logging::LogSeverity level,
                        const GURL& context,
                        size_t expected_stack_size) {
-  CheckError(error,
-             ExtensionError::RUNTIME_ERROR,
-             id,
-             source,
-             from_incognito,
-             message);
+  CheckError(error, ExtensionError::Type::kRuntimeError, id, source,
+             from_incognito, message);
 
   const RuntimeError* runtime_error = static_cast<const RuntimeError*>(error);
   EXPECT_EQ(level, runtime_error->level());
@@ -113,9 +109,7 @@ void CheckManifestError(const ExtensionError* error,
                         const std::string& message,
                         const std::string& manifest_key,
                         const std::string& manifest_specific) {
-  CheckError(error,
-             ExtensionError::MANIFEST_ERROR,
-             id,
+  CheckError(error, ExtensionError::Type::kManifestError, id,
              // source is always the manifest for ManifestErrors.
              base::FilePath(kManifestFilename).AsUTF8Unsafe(),
              false,  // manifest errors are never from incognito.
@@ -312,7 +306,7 @@ IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest, ReportManifestErrors) {
   const ExtensionError* unknown_key_error = nullptr;
   const char kFakeKey[] = "not_a_real_key";
   for (const auto& error : errors) {
-    ASSERT_EQ(ExtensionError::MANIFEST_ERROR, error->type());
+    ASSERT_EQ(ExtensionError::Type::kManifestError, error->type());
     const std::string& key =
         (static_cast<const ManifestError*>(error.get()))->manifest_key();
     if (key == manifest_keys::kPermissions) {

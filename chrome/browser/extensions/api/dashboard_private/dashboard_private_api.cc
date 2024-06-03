@@ -38,7 +38,7 @@ api::dashboard_private::Result WebstoreInstallHelperResultToDashboardApiResult(
       return api::dashboard_private::Result::kUnknownError;
     case WebstoreInstallHelper::Delegate::ICON_ERROR:
       return api::dashboard_private::Result::kIconError;
-    case WebstoreInstallHelper::Delegate::MANIFEST_ERROR:
+    case WebstoreInstallHelper::Delegate::kManifestError:
       return api::dashboard_private::Result::kManifestError;
   }
   NOTREACHED_IN_MIGRATION();
@@ -114,7 +114,7 @@ void DashboardPrivateShowPermissionPromptForDelegatedInstallFunction::
 
   if (!dummy_extension_.get()) {
     OnWebstoreParseFailure(params_->details.id,
-                           WebstoreInstallHelper::Delegate::MANIFEST_ERROR,
+                           WebstoreInstallHelper::Delegate::kManifestError,
                            kDashboardInvalidManifestError);
     return;
   }

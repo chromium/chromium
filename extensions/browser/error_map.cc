@@ -49,7 +49,7 @@ ErrorMap::Filter ErrorMap::Filter::ErrorsForExtension(
 ErrorMap::Filter ErrorMap::Filter::ErrorsForExtensionWithType(
     const ExtensionId& extension_id,
     ExtensionError::Type type) {
-  return Filter(extension_id, type, std::set<int>(), false);
+  return Filter(extension_id, static_cast<int>(type), std::set<int>(), false);
 }
 
 ErrorMap::Filter ErrorMap::Filter::ErrorsForExtensionWithIds(
@@ -62,7 +62,7 @@ ErrorMap::Filter ErrorMap::Filter::ErrorsForExtensionWithTypeAndIds(
     const ExtensionId& extension_id,
     ExtensionError::Type type,
     const std::set<int>& ids) {
-  return Filter(extension_id, type, ids, false);
+  return Filter(extension_id, static_cast<int>(type), ids, false);
 }
 
 ErrorMap::Filter ErrorMap::Filter::IncognitoErrors() {
@@ -70,15 +70,20 @@ ErrorMap::Filter ErrorMap::Filter::IncognitoErrors() {
 }
 
 bool ErrorMap::Filter::Matches(const ExtensionError* error) const {
-  if (restrict_to_type != -1 && restrict_to_type != error->type())
+  if (restrict_to_type != -1 &&
+      restrict_to_type != static_cast<int>(error->type())) {
     return false;
-  if (restrict_to_incognito && !error->from_incognito())
+  }
+  if (restrict_to_incognito && !error->from_incognito()) {
     return false;
+  }
   if (!restrict_to_extension_id.empty() &&
-      error->extension_id() != restrict_to_extension_id)
+      error->extension_id() != restrict_to_extension_id) {
     return false;
-  if (!restrict_to_ids.empty() && restrict_to_ids.count(error->id()) == 0)
+  }
+  if (!restrict_to_ids.empty() && restrict_to_ids.count(error->id()) == 0) {
     return false;
+  }
   return true;
 }
 

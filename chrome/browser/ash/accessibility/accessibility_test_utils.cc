@@ -38,10 +38,10 @@ ExtensionConsoleErrorObserver::ExtensionConsoleErrorObserver(
   error_console_ = extensions::ErrorConsole::Get(profile);
   profile->GetPrefs()->SetBoolean(prefs::kExtensionsUIDeveloperMode, true);
   error_console_->SetReportingForExtension(
-      extension_id, extensions::ExtensionError::Type::RUNTIME_ERROR,
+      extension_id, extensions::ExtensionError::Type::kRuntimeError,
       true /* enabled */);
   error_console_->SetReportingForExtension(
-      extension_id, extensions::ExtensionError::Type::INTERNAL_ERROR,
+      extension_id, extensions::ExtensionError::Type::kRuntimeError,
       true /* enabled */);
   error_console_->AddObserver(this);
 }

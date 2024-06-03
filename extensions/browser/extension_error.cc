@@ -59,7 +59,7 @@ ManifestError::ManifestError(const ExtensionId& extension_id,
                              const std::string& manifest_key,
                              const std::u16string& manifest_specific)
     : ExtensionError(
-          ExtensionError::MANIFEST_ERROR,
+          ExtensionError::Type::kManifestError,
           extension_id,
           false,  // extensions can't be installed while incognito.
           logging::LOGGING_WARNING,  // All manifest errors are warnings.
@@ -94,7 +94,7 @@ RuntimeError::RuntimeError(const ExtensionId& extension_id,
                            logging::LogSeverity level,
                            int render_frame_id,
                            int render_process_id)
-    : ExtensionError(ExtensionError::RUNTIME_ERROR,
+    : ExtensionError(ExtensionError::Type::kRuntimeError,
                      !extension_id.empty() ? extension_id : GURL(source).host(),
                      from_incognito,
                      level,
@@ -166,7 +166,7 @@ void RuntimeError::CleanUpInit() {
 InternalError::InternalError(const ExtensionId& extension_id,
                              const std::u16string& message,
                              logging::LogSeverity level)
-    : ExtensionError(ExtensionError::INTERNAL_ERROR,
+    : ExtensionError(ExtensionError::Type::kInternalError,
                      extension_id,
                      false,  // not incognito.
                      level,

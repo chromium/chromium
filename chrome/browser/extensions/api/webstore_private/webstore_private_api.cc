@@ -178,7 +178,7 @@ api::webstore_private::Result WebstoreInstallHelperResultToApiResult(
       return api::webstore_private::Result::kUnknownError;
     case WebstoreInstallHelper::Delegate::ICON_ERROR:
       return api::webstore_private::Result::kIconError;
-    case WebstoreInstallHelper::Delegate::MANIFEST_ERROR:
+    case WebstoreInstallHelper::Delegate::kManifestError:
       return api::webstore_private::Result::kManifestError;
   }
   NOTREACHED_IN_MIGRATION();
@@ -482,7 +482,7 @@ void WebstorePrivateBeginInstallWithManifest3Function::OnWebstoreParseSuccess(
 
   if (!dummy_extension_.get()) {
     OnWebstoreParseFailure(details().id,
-                           WebstoreInstallHelper::Delegate::MANIFEST_ERROR,
+                           WebstoreInstallHelper::Delegate::kManifestError,
                            kWebstoreInvalidManifestError);
     return;
   }

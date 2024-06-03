@@ -2074,8 +2074,8 @@ DeveloperPrivateDeleteExtensionErrorsFunction::Run() {
   int type = -1;
   if (properties.type != developer::ErrorType::kNone) {
     type = properties.type == developer::ErrorType::kManifest
-               ? ExtensionError::MANIFEST_ERROR
-               : ExtensionError::RUNTIME_ERROR;
+               ? static_cast<int>(ExtensionError::Type::kManifestError)
+               : static_cast<int>(ExtensionError::Type::kRuntimeError);
   }
   std::set<int> error_ids;
   if (properties.error_ids) {
