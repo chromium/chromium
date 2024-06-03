@@ -46,6 +46,11 @@ BASE_EXPORT ScopedJavaLocalRef<jbyteArray> ToJavaByteArray(
     JNIEnv* env,
     const std::string& str);
 
+// Returns a new Java boolean array converted from the given bool vector.
+BASE_EXPORT ScopedJavaLocalRef<jbooleanArray> ToJavaBooleanArray(
+    JNIEnv* env,
+    const std::vector<bool>& bool_vec);
+
 // Returns a new Java boolean array converted from the given bool array.
 BASE_EXPORT ScopedJavaLocalRef<jbooleanArray>
 ToJavaBooleanArray(JNIEnv* env, const bool* bools, size_t len);

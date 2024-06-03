@@ -401,7 +401,8 @@ void ChromeAutofillClientIOS::ScanCreditCard(CreditCardScanCallback callback) {
 
 bool ChromeAutofillClientIOS::ShowTouchToFillCreditCard(
     base::WeakPtr<TouchToFillDelegate> delegate,
-    base::span<const CreditCard> cards_to_suggest) {
+    base::span<const CreditCard> cards_to_suggest,
+    const std::vector<bool>& card_acceptabilities) {
   NOTREACHED_IN_MIGRATION();
   return false;
 }

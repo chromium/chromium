@@ -248,7 +248,8 @@ void WebViewAutofillClientIOS::ScanCreditCard(CreditCardScanCallback callback) {
 
 bool WebViewAutofillClientIOS::ShowTouchToFillCreditCard(
     base::WeakPtr<TouchToFillDelegate> delegate,
-    base::span<const autofill::CreditCard> cards_to_suggest) {
+    base::span<const autofill::CreditCard> cards_to_suggest,
+    const std::vector<bool>& card_acceptabilities) {
   NOTREACHED_IN_MIGRATION();
   return false;
 }

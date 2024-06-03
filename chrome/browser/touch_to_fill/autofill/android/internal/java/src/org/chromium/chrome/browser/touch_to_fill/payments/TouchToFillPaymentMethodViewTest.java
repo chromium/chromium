@@ -29,6 +29,7 @@ import static org.chromium.content_public.browser.test.util.TestThreadUtils.runO
 
 import android.view.MotionEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -334,7 +335,11 @@ public class TouchToFillPaymentMethodViewTest {
         runOnUiThreadBlocking(
                 () -> {
                     PropertyModel cardModel =
-                            createCardModel(NICKNAMED_VISA, mItemCollectionInfo, () -> fail());
+                            createCardModel(
+                                    NICKNAMED_VISA,
+                                    mItemCollectionInfo,
+                                    /* actionCallback= */ () -> fail(),
+                                    /* isAcceptable= */ true);
                     mTouchToFillPaymentMethodModel
                             .get(SHEET_ITEMS)
                             .add(new ListItem(CREDIT_CARD, cardModel));
@@ -551,6 +556,30 @@ public class TouchToFillPaymentMethodViewTest {
         assertThat(ibanNickname.getLayout().getText().toString(), is(LOCAL_IBAN.getNickname()));
     }
 
+    @Test
+    @MediumTest
+    public void testNonAcceptableVirtualCardSuggestion() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mTouchToFillPaymentMethodModel
+                            .get(SHEET_ITEMS)
+                            .add(
+                                    new ListItem(
+                                            CREDIT_CARD,
+                                            createCardModel(
+                                                    VIRTUAL_CARD,
+                                                    new FillableItemCollectionInfo(1, 1),
+                                                    () -> {},
+                                                    /* isAcceptable= */ false)));
+                    mTouchToFillPaymentMethodModel.set(VISIBLE, true);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        ImageView icon = mTouchToFillPaymentMethodView.getContentView().findViewById(R.id.favicon);
+        assertThat(icon.getAlpha(), is(0.38f));
+        assertThat(getCreditCards().getChildAt(0).isEnabled(), is(false));
+    }
+
     private RecyclerView getCreditCards() {
         return mTouchToFillPaymentMethodView.getContentView().findViewById(R.id.sheet_item_list);
     }
@@ -573,16 +602,19 @@ public class TouchToFillPaymentMethodViewTest {
 
     private static PropertyModel createCardModel(
             CreditCard card, FillableItemCollectionInfo collectionInfo) {
-        return createCardModel(card, collectionInfo, () -> {});
+        return createCardModel(card, collectionInfo, () -> {}, /* isAcceptable= */ true);
     }
 
     private static PropertyModel createCardModel(
-            CreditCard card, FillableItemCollectionInfo collectionInfo, Runnable actionCallback) {
+            CreditCard card,
+            FillableItemCollectionInfo collectionInfo,
+            Runnable actionCallback,
+            boolean isAcceptable) {
         PropertyModel.Builder creditCardModelBuilder =
                 new PropertyModel.Builder(
                                 TouchToFillPaymentMethodProperties.CreditCardProperties
                                         .NON_TRANSFORMING_CREDIT_CARD_KEYS)
-                       .with(
+                        .with(
                                 TouchToFillPaymentMethodProperties.CreditCardProperties.CARD_NAME,
                                 card.getCardNameForAutofillDisplay())
                         .with(
@@ -595,7 +627,11 @@ public class TouchToFillPaymentMethodViewTest {
                         .with(
                                 TouchToFillPaymentMethodProperties.CreditCardProperties
                                         .ON_CREDIT_CARD_CLICK_ACTION,
-                                actionCallback);
+                                actionCallback)
+                        .with(
+                                TouchToFillPaymentMethodProperties.CreditCardProperties
+                                        .IS_ACCEPTABLE,
+                                isAcceptable);
         if (!card.getBasicCardIssuerNetwork()
                 .equals(card.getCardNameForAutofillDisplay().toLowerCase())) {
             creditCardModelBuilder.with(

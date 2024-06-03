@@ -11,6 +11,7 @@ import static org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils.te
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.ui.base.LocalizationUtils.setRtlForTesting;
 
+import android.util.Pair;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -209,7 +210,7 @@ public class TouchToFillPaymentMethodRenderTest {
     public void testShowsOneCard() throws IOException {
         runOnUiThreadBlocking(
                 () -> {
-                    mCoordinator.showSheet(List.of(VISA), true);
+                    mCoordinator.showSheet(List.of(Pair.create(VISA, true)), true);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
@@ -223,7 +224,7 @@ public class TouchToFillPaymentMethodRenderTest {
     public void testShowsOneCardHalfState() throws IOException {
         runOnUiThreadBlocking(
                 () -> {
-                    mCoordinator.showSheet(List.of(VISA), true);
+                    mCoordinator.showSheet(List.of(Pair.create(VISA, true)), true);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
@@ -240,7 +241,8 @@ public class TouchToFillPaymentMethodRenderTest {
     public void testShowsTwoCards() throws IOException {
         runOnUiThreadBlocking(
                 () -> {
-                    mCoordinator.showSheet(List.of(VISA, MASTER_CARD), true);
+                    mCoordinator.showSheet(
+                            List.of(Pair.create(VISA, true), Pair.create(MASTER_CARD, true)), true);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
@@ -254,7 +256,8 @@ public class TouchToFillPaymentMethodRenderTest {
     public void testShowsTwoCardsHalfState() throws IOException {
         runOnUiThreadBlocking(
                 () -> {
-                    mCoordinator.showSheet(List.of(VISA, MASTER_CARD), true);
+                    mCoordinator.showSheet(
+                            List.of(Pair.create(VISA, true), Pair.create(MASTER_CARD, true)), true);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
@@ -271,7 +274,12 @@ public class TouchToFillPaymentMethodRenderTest {
     public void testShowsThreeCards() throws IOException {
         runOnUiThreadBlocking(
                 () -> {
-                    mCoordinator.showSheet(List.of(VISA, MASTER_CARD, DISCOVER), true);
+                    mCoordinator.showSheet(
+                            List.of(
+                                    Pair.create(VISA, true),
+                                    Pair.create(MASTER_CARD, true),
+                                    Pair.create(DISCOVER, true)),
+                            true);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
@@ -285,7 +293,12 @@ public class TouchToFillPaymentMethodRenderTest {
     public void testShowsThreeCardsHalfState() throws IOException {
         runOnUiThreadBlocking(
                 () -> {
-                    mCoordinator.showSheet(List.of(VISA, MASTER_CARD, DISCOVER), true);
+                    mCoordinator.showSheet(
+                            List.of(
+                                    Pair.create(VISA, true),
+                                    Pair.create(MASTER_CARD, true),
+                                    Pair.create(DISCOVER, true)),
+                            true);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
@@ -303,7 +316,12 @@ public class TouchToFillPaymentMethodRenderTest {
         runOnUiThreadBlocking(
                 () -> {
                     mCoordinator.showSheet(
-                            List.of(VISA, MASTER_CARD, DISCOVER, AMERICAN_EXPRESS), true);
+                            List.of(
+                                    Pair.create(VISA, true),
+                                    Pair.create(MASTER_CARD, true),
+                                    Pair.create(DISCOVER, true),
+                                    Pair.create(AMERICAN_EXPRESS, true)),
+                            true);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
@@ -318,7 +336,12 @@ public class TouchToFillPaymentMethodRenderTest {
         runOnUiThreadBlocking(
                 () -> {
                     mCoordinator.showSheet(
-                            List.of(VISA, MASTER_CARD, DISCOVER, AMERICAN_EXPRESS), true);
+                            List.of(
+                                    Pair.create(VISA, true),
+                                    Pair.create(MASTER_CARD, true),
+                                    Pair.create(DISCOVER, true),
+                                    Pair.create(AMERICAN_EXPRESS, true)),
+                            true);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
@@ -336,7 +359,11 @@ public class TouchToFillPaymentMethodRenderTest {
         runOnUiThreadBlocking(
                 () -> {
                     mCoordinator.showSheet(
-                            List.of(VISA, MASTERCARD_VIRTUAL_CARD, SERVER_MASTER_CARD), true);
+                            List.of(
+                                    Pair.create(VISA, true),
+                                    Pair.create(MASTERCARD_VIRTUAL_CARD, true),
+                                    Pair.create(SERVER_MASTER_CARD, true)),
+                            true);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
@@ -349,10 +376,31 @@ public class TouchToFillPaymentMethodRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    public void testShowsLocalAndServerAndNonAcceptableVirtualCards() throws IOException {
+        runOnUiThreadBlocking(
+                () -> {
+                    mCoordinator.showSheet(
+                            List.of(
+                                    Pair.create(VISA, true),
+                                    Pair.create(MASTERCARD_VIRTUAL_CARD, false),
+                                    Pair.create(SERVER_MASTER_CARD, true)),
+                            true);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        View bottomSheetView = mActivityTestRule.getActivity().findViewById(R.id.bottom_sheet);
+        mRenderTestRule.render(
+                bottomSheetView,
+                "touch_to_fill_credit_card_sheet_shows_local_and_server_and_non_acceptable_virtual_cards");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
     public void testScanNewCardButtonIsHidden() throws IOException {
         runOnUiThreadBlocking(
                 () -> {
-                    mCoordinator.showSheet(List.of(VISA), false);
+                    mCoordinator.showSheet(List.of(Pair.create(VISA, true)), false);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 

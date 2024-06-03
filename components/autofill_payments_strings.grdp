@@ -867,7 +867,7 @@
   <message name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_NAME_ON_CARD_LABEL_IOS" desc="Text shown above the virtual cardholder's name on card field in the manual fallback bubble on IOS. The bubble below shows the cahrdholder's name for the card available to fill the form. Clicking the bubble will populate the field with the cardholder's name.">
       Name on card:
   </message>
-  <message name="IDS_AUTOFILL_VIRTUAL_CARD_DISABLED_SUGGESTION_OPTION_VALUE" desc="Text to be displayed for a virtual card option in the credit card suggestion list when the virtual card is disabled (opted-out) by the merchant. This suggestion will be grayed-out and the user will not be able to preview or select this option.">
+  <message name="IDS_AUTOFILL_VIRTUAL_CARD_DISABLED_SUGGESTION_OPTION_VALUE" desc="Text to be displayed for a virtual card option in the credit card suggestion list when the virtual card is disabled(opted-out) by the merchant. This suggestion will be grayed-out and the user will not be able to preview or select this option." formatter_data="android_java">
       Merchant doesn't accept this virtual card
   </message>
   <!-- virtual cards related strings - end -->

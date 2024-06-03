@@ -19,6 +19,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -327,6 +328,7 @@ public class KeyboardAccessoryViewTest {
                                                         .setSuggestionType(
                                                                 SuggestionType.ADDRESS_ENTRY)
                                                         .setFeatureForIPH("")
+                                                        .setApplyDeactivatedStyle(false)
                                                         .build(),
                                                 new Action(
                                                         AUTOFILL_SUGGESTION,
@@ -444,6 +446,7 @@ public class KeyboardAccessoryViewTest {
                                 .setItemTag("")
                                 .setSuggestionType(SuggestionType.PASSWORD_ENTRY)
                                 .setFeatureForIPH("")
+                                .setApplyDeactivatedStyle(false)
                                 .build(),
                         new Action(AUTOFILL_SUGGESTION, unused -> {}));
         itemWithIPH.setFeatureForIPH(FeatureConstants.KEYBOARD_ACCESSORY_PASSWORD_FILLING_FEATURE);
@@ -481,6 +484,7 @@ public class KeyboardAccessoryViewTest {
                                 .setItemTag("")
                                 .setSuggestionType(SuggestionType.ADDRESS_ENTRY)
                                 .setFeatureForIPH("")
+                                .setApplyDeactivatedStyle(false)
                                 .build(),
                         new Action(AUTOFILL_SUGGESTION, unused -> {}));
         itemWithIPH.setFeatureForIPH(FeatureConstants.KEYBOARD_ACCESSORY_ADDRESS_FILL_FEATURE);
@@ -516,6 +520,7 @@ public class KeyboardAccessoryViewTest {
                                 .setItemTag("")
                                 .setSuggestionType(SuggestionType.CREDIT_CARD_ENTRY)
                                 .setFeatureForIPH("")
+                                .setApplyDeactivatedStyle(false)
                                 .build(),
                         new Action(AUTOFILL_SUGGESTION, unused -> {}));
         itemWithIPH.setFeatureForIPH(FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_FILLING_FEATURE);
@@ -589,6 +594,7 @@ public class KeyboardAccessoryViewTest {
                                 .setIconId(R.drawable.ic_offer_tag)
                                 .setSuggestionType(SuggestionType.CREDIT_CARD_ENTRY)
                                 .setFeatureForIPH("")
+                                .setApplyDeactivatedStyle(false)
                                 .build(),
                         new Action(AUTOFILL_SUGGESTION, unused -> {}));
         itemWithIPH.setFeatureForIPH(FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_OFFER_FEATURE);
@@ -750,6 +756,38 @@ public class KeyboardAccessoryViewTest {
                 });
     }
 
+    @Test
+    @MediumTest
+    public void testClickDisabledForNonAcceptableAutofillSuggestions() throws InterruptedException {
+        AtomicReference<Boolean> clickRecorded = new AtomicReference<>(false);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(VISIBLE, true);
+                    mModel.get(BAR_ITEMS)
+                            .set(
+                                    new BarItem[] {
+                                        new AutofillBarItem(
+                                                new AutofillSuggestion.Builder()
+                                                        .setLabel("Virtual Card")
+                                                        .setSubLabel("Disabled")
+                                                        .setItemTag("")
+                                                        .setSuggestionType(
+                                                                SuggestionType.CREDIT_CARD_ENTRY)
+                                                        .setFeatureForIPH("")
+                                                        .setApplyDeactivatedStyle(true)
+                                                        .build(),
+                                                new Action(
+                                                        AUTOFILL_SUGGESTION,
+                                                        result -> clickRecorded.set(true),
+                                                        result -> clickRecorded.set(true))),
+                                        createSheetOpener()
+                                    });
+                });
+
+        onView(withText("Virtual Card")).perform(click());
+        assertFalse(clickRecorded.get());
+    }
+
     private static AutofillSuggestion.Builder getDefaultAutofillSuggestionBuilder() {
         return new AutofillSuggestion.Builder()
                 .setLabel("Johnathan")
@@ -818,6 +856,7 @@ public class KeyboardAccessoryViewTest {
                         .setItemTag("")
                         .setSuggestionType(SuggestionType.ADDRESS_ENTRY)
                         .setFeatureForIPH("")
+                        .setApplyDeactivatedStyle(false)
                         .build(),
                 new Action(AUTOFILL_SUGGESTION, chipCallback));
     }

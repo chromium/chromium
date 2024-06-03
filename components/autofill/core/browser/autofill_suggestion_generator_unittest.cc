@@ -3953,19 +3953,15 @@ TEST_P(AutofillCreditCardSuggestionIOSObfuscationLengthContentTest,
 
 #endif  // BUILDFLAG(IS_IOS)
 
-#if !BUILDFLAG(IS_ANDROID)
-// The 2 boolean params denote if kAutofillEnableVcnGrayOutForMerchantOptOut
-// is turned on and if merchant accepts VCN.
+// The boolean param denotes if merchant has opted out of VCN.
 class AutofillCreditCardSuggestionContentVcnMerchantOptOutTest
     : public AutofillCreditCardSuggestionContentTest,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+      public testing::WithParamInterface<bool> {
  public:
-  bool is_flag_enabled() { return std::get<0>(GetParam()); }
-
-  bool is_merchant_opted_out() { return std::get<1>(GetParam()); }
+  bool is_merchant_opted_out() { return GetParam(); }
 
   int expected_message_id() {
-    return is_flag_enabled() && is_merchant_opted_out()
+    return is_merchant_opted_out()
                ? IDS_AUTOFILL_VIRTUAL_CARD_DISABLED_SUGGESTION_OPTION_VALUE
                : IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE;
   }
@@ -3973,9 +3969,10 @@ class AutofillCreditCardSuggestionContentVcnMerchantOptOutTest
  private:
   void SetUp() override {
     AutofillCreditCardSuggestionContentTest::SetUp();
+    // Content test is only needed when the gray-out feature is enabled.
+    // Otherwise user will not see a VCN for opted out merchants.
     scoped_feature_list_.InitWithFeatureState(
-        features::kAutofillEnableVcnGrayOutForMerchantOptOut,
-        is_flag_enabled());
+        features::kAutofillEnableVcnGrayOutForMerchantOptOut, true);
 
     ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
                 autofill_client()->GetAutofillOptimizationGuide()),
@@ -3988,11 +3985,11 @@ class AutofillCreditCardSuggestionContentVcnMerchantOptOutTest
 INSTANTIATE_TEST_SUITE_P(
     All,
     AutofillCreditCardSuggestionContentVcnMerchantOptOutTest,
-    testing::Combine(testing::Bool(), testing::Bool()));
+    testing::Bool());
 
 // Verify that the suggestion's texts are populated correctly for a virtual
-// card suggestion when the cardholder name field is focused and the merchant
-// has opted-out of virtual cards.
+// card suggestion when the cardholder name field is focused based on if
+// merchant accepts virtual cards.
 TEST_P(
     AutofillCreditCardSuggestionContentVcnMerchantOptOutTest,
     CreateCreditCardSuggestion_VirtualCardMetadata_MerchantOptOut_NameField) {
@@ -4005,24 +4002,31 @@ TEST_P(
                                       /*virtual_card_option=*/true,
                                       /*card_linked_offer_available=*/false);
 
-  // `is_acceptable` is false only when the flag is enabled and merchant has
-  // opted out of VCN.
+  // `is_acceptable` is false only when merchant has opted out of VCN.
   EXPECT_EQ(virtual_card_name_field_suggestion.is_acceptable,
-            (!is_merchant_opted_out() || !is_flag_enabled()));
-  // `apply_deactivated_style` is true only when flag is enabled and merchant
-  // has opted out of VCN.
+            !is_merchant_opted_out());
+
+  // `apply_deactivated_style` is true only when merchant has opted out of VCN.
   EXPECT_EQ(virtual_card_name_field_suggestion.apply_deactivated_style,
-            (is_merchant_opted_out() && is_flag_enabled()));
-  // The virtual card text should be populated in the labels to be shown in
-  // a new line.
-  ASSERT_EQ(virtual_card_name_field_suggestion.labels[1].size(), 1U);
-  EXPECT_EQ(virtual_card_name_field_suggestion.labels[1][0].value,
-            l10n_util::GetStringUTF16(expected_message_id()));
+            is_merchant_opted_out());
+
+  if (keyboard_accessory_enabled()) {
+    // There should be only 1 line of label: obfuscated last 4 digits "..4444".
+    EXPECT_THAT(virtual_card_name_field_suggestion,
+                EqualLabels({{CreditCard::GetObfuscatedStringForCardDigits(
+                    /*obfuscation_length=*/2, u"4444")}}));
+  } else {
+    // The virtual card text should be populated in the labels to be shown in a
+    // new line.
+    ASSERT_EQ(virtual_card_name_field_suggestion.labels[1].size(), 1U);
+    EXPECT_EQ(virtual_card_name_field_suggestion.labels[1][0].value,
+              l10n_util::GetStringUTF16(expected_message_id()));
+  }
 }
 
 // Verify that the suggestion's texts are populated correctly for a virtual
-// card suggestion when the card number field is focused and merchant has
-// opted-out of virtual cards.
+// card suggestion when the card number field is focused based on if
+// merchant accepts virtual cards.
 TEST_P(
     AutofillCreditCardSuggestionContentVcnMerchantOptOutTest,
     CreateCreditCardSuggestion_VirtualCardMetadata_MerchantOptOut_NumberField) {
@@ -4038,17 +4042,20 @@ TEST_P(
   // `is_acceptable` is false only when flag is enabled and merchant has opted
   // out of VCN.
   EXPECT_EQ(virtual_card_number_field_suggestion.is_acceptable,
-            (!is_merchant_opted_out() || !is_flag_enabled()));
-  // `apply_deactivated_style` is true only when flag is enabled and merchant
-  // has opted out of VCN.
+            !is_merchant_opted_out());
+  // `apply_deactivated_style` is true only when merchant has opted out of VCN.
   EXPECT_EQ(virtual_card_number_field_suggestion.apply_deactivated_style,
-            (is_merchant_opted_out() && is_flag_enabled()));
-  // For Desktop/Android dropdown, and on iOS, "Virtual card" is the label.
-  EXPECT_THAT(
-      virtual_card_number_field_suggestion,
-      EqualLabels({{l10n_util::GetStringUTF16(expected_message_id())}}));
+            is_merchant_opted_out());
+
+  if (keyboard_accessory_enabled()) {
+    // For the keyboard accessory, there is no label.
+    ASSERT_TRUE(virtual_card_number_field_suggestion.labels.empty());
+  } else {
+    EXPECT_THAT(
+        virtual_card_number_field_suggestion,
+        EqualLabels({{l10n_util::GetStringUTF16(expected_message_id())}}));
+  }
 }
-#endif  // BUILDFLAG(!IS_ANDROID)
 
 class AutofillSuggestionGeneratorTestForMetadata
     : public AutofillSuggestionGeneratorTest,

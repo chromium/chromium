@@ -113,7 +113,8 @@ class AndroidAutofillClient : public autofill::ContentAutofillClient {
   void ScanCreditCard(CreditCardScanCallback callback) override;
   bool ShowTouchToFillCreditCard(
       base::WeakPtr<autofill::TouchToFillDelegate> delegate,
-      base::span<const autofill::CreditCard> cards_to_suggest) override;
+      base::span<const autofill::CreditCard> cards_to_suggest,
+      const std::vector<bool>& card_acceptabilities) override;
   void HideTouchToFillCreditCard() override;
   void ShowAutofillSuggestions(
       const autofill::AutofillClient::PopupOpenArgs& open_args,

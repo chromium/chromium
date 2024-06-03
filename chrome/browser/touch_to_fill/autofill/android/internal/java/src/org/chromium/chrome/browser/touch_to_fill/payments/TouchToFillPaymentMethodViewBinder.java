@@ -8,18 +8,19 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardProperties.CARD_IMAGE;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardProperties.CARD_NAME;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardProperties.CARD_NUMBER;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardProperties.IS_ACCEPTABLE;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardProperties.ITEM_COLLECTION_INFO;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardProperties.NETWORK_NAME;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardProperties.ON_CREDIT_CARD_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardProperties.VIRTUAL_CARD_LABEL;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.IBAN_NICKNAME;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.IBAN_VALUE;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.ON_IBAN_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.DISMISS_HANDLER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FooterProperties.SCAN_CREDIT_CARD_CALLBACK;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FooterProperties.SHOULD_SHOW_SCAN_CREDIT_CARD;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FooterProperties.SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.HeaderProperties.IMAGE_DRAWABLE_ID;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.IBAN_NICKNAME;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.IBAN_VALUE;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.ON_IBAN_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.VISIBLE;
 
@@ -44,12 +45,14 @@ import org.chromium.ui.modelutil.PropertyModel;
  * PropertyModel} to the suitable method in {@link TouchToFillPaymentMethodView}.
  */
 class TouchToFillPaymentMethodViewBinder {
+    private static final float GRAYED_OUT_OPACITY_ALPHA = 0.38f;
+    private static final float COMPLETE_OPACITY_ALPHA = 1.0f;
+
     /**
      * The collection info is added by setting an instance of this delegate on the last text view
-     * (it is important to sound naturally and mimic the default message), so that the message
-     * which is built from item children gets a suffix like ", 1 of 3.".
-     * This delegate also assumes that its host sets text on {@link AccessibilityNodeInfo},
-     * which is true for {@link TextView}.
+     * (it is important to sound naturally and mimic the default message), so that the message which
+     * is built from item children gets a suffix like ", 1 of 3.". This delegate also assumes that
+     * its host sets text on {@link AccessibilityNodeInfo}, which is true for {@link TextView}.
      */
     private static class TextViewCollectionInfoAccessibilityDelegate
             extends View.AccessibilityDelegate {
@@ -130,7 +133,9 @@ class TouchToFillPaymentMethodViewBinder {
     /** Binds the item view to the model properties. */
     static void bindCardItemView(PropertyModel model, View view, PropertyKey propertyKey) {
         TextView cardName = view.findViewById(R.id.card_name);
+        TextView cardNumber = view.findViewById(R.id.card_number);
         ImageView icon = view.findViewById(R.id.favicon);
+        TextView descriptionLabel = view.findViewById(R.id.description_line_2);
         if (propertyKey == CARD_IMAGE) {
             icon.setImageDrawable(model.get(CARD_IMAGE));
         } else if (propertyKey == NETWORK_NAME) {
@@ -140,26 +145,38 @@ class TouchToFillPaymentMethodViewBinder {
             }
         } else if (propertyKey == CARD_NAME) {
             cardName.setText(model.get(CARD_NAME));
-            cardName.setTextAppearance(R.style.TextAppearance_TextMedium_Primary);
         } else if (propertyKey == CARD_NUMBER) {
-            TextView cardNumber = view.findViewById(R.id.card_number);
             cardNumber.setText(model.get(CARD_NUMBER));
-            cardNumber.setTextAppearance(R.style.TextAppearance_TextMedium_Primary);
         } else if (propertyKey == CARD_EXPIRATION) {
-            TextView expirationDate = view.findViewById(R.id.description_line_2);
-            expirationDate.setText(model.get(CARD_EXPIRATION));
+            descriptionLabel.setText(model.get(CARD_EXPIRATION));
         } else if (propertyKey == VIRTUAL_CARD_LABEL) {
-            TextView virtualCardLabel = view.findViewById(R.id.description_line_2);
-            virtualCardLabel.setText(model.get(VIRTUAL_CARD_LABEL));
+            descriptionLabel.setText(model.get(VIRTUAL_CARD_LABEL));
         } else if (propertyKey == ON_CREDIT_CARD_CLICK_ACTION) {
             view.setOnClickListener(unusedView -> model.get(ON_CREDIT_CARD_CLICK_ACTION).run());
         } else if (propertyKey == ITEM_COLLECTION_INFO) {
-            TextView lastItemTextview = view.findViewById(R.id.description_line_2);
             FillableItemCollectionInfo collectionInfo = model.get(ITEM_COLLECTION_INFO);
             if (collectionInfo != null) {
-                lastItemTextview.setAccessibilityDelegate(
+                descriptionLabel.setAccessibilityDelegate(
                         new TextViewCollectionInfoAccessibilityDelegate(collectionInfo));
             }
+        } else if (propertyKey == IS_ACCEPTABLE) {
+            if (model.get(IS_ACCEPTABLE)) {
+                view.setEnabled(true);
+                descriptionLabel.setMaxLines(1);
+                cardName.setTextAppearance(R.style.TextAppearance_TextMedium_Primary);
+                cardNumber.setTextAppearance(R.style.TextAppearance_TextMedium_Primary);
+                icon.setAlpha(COMPLETE_OPACITY_ALPHA);
+            } else {
+                view.setEnabled(false);
+                // When merchants have opted out of virtual cards, we convey it
+                // via a message in description. Since this message is
+                // important, we remove the max lines limit to avoid truncation.
+                descriptionLabel.setMaxLines(Integer.MAX_VALUE);
+                cardName.setTextAppearance(R.style.TextAppearance_TextMedium_Disabled);
+                cardNumber.setTextAppearance(R.style.TextAppearance_TextMedium_Disabled);
+                icon.setAlpha(GRAYED_OUT_OPACITY_ALPHA);
+            }
+
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }
@@ -234,7 +251,8 @@ class TouchToFillPaymentMethodViewBinder {
                 || propertyKey == VIRTUAL_CARD_LABEL
                 || propertyKey == IBAN_VALUE
                 || propertyKey == IBAN_NICKNAME
-                || propertyKey == ITEM_COLLECTION_INFO) {
+                || propertyKey == ITEM_COLLECTION_INFO
+                || propertyKey == IS_ACCEPTABLE) {
             // Skip, because none of these changes affect the button
         } else {
             assert false : "Unhandled update to property:" + propertyKey;

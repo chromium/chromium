@@ -177,7 +177,8 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
             @SuggestionType int suggestionType,
             boolean isDeletable,
             @JniType("std::string") String featureForIPH,
-            GURL customIconUrl) {
+            GURL customIconUrl,
+            boolean applyDeactivatedStyle) {
         int drawableId = iconId == 0 ? DropdownItem.NO_ICON : iconId;
         return new AutofillSuggestion.Builder()
                 .setLabel(label)
@@ -190,6 +191,7 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
                 .setIsBoldLabel(false)
                 .setFeatureForIPH(featureForIPH)
                 .setCustomIconUrl(customIconUrl)
+                .setApplyDeactivatedStyle(applyDeactivatedStyle)
                 .build();
     }
 

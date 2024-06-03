@@ -51,6 +51,9 @@ import java.util.function.Function;
  * the view accordingly.
  */
 class KeyboardAccessoryViewBinder {
+    private static final float GRAYED_OUT_OPACITY_ALPHA = 0.38f;
+    private static final float COMPLETE_OPACITY_ALPHA = 1.0f;
+
     static BarItemViewHolder create(
             KeyboardAccessoryView keyboarAccessory,
             UiConfiguration uiConfiguration,
@@ -211,9 +214,26 @@ class KeyboardAccessoryViewBinder {
                             return true; // Click event consumed!
                         });
             }
-            chipView.setIcon(
-                    mSuggestionDrawableFunction.apply(item.getSuggestion()),
-                    /* tintWithTextColor= */ false);
+
+            float iconAlpha;
+            int textAppearance;
+            if (item.getSuggestion().applyDeactivatedStyle()) {
+                iconAlpha = GRAYED_OUT_OPACITY_ALPHA;
+                textAppearance = R.style.TextAppearance_TextMedium_Disabled;
+                chipView.setOnClickListener(null);
+                chipView.setOnLongClickListener(null);
+            } else {
+                iconAlpha = COMPLETE_OPACITY_ALPHA;
+                textAppearance = R.style.TextAppearance_ChipText;
+            }
+            chipView.getPrimaryTextView().setTextAppearance(textAppearance);
+            chipView.getSecondaryTextView().setTextAppearance(textAppearance);
+            Drawable iconDrawable = mSuggestionDrawableFunction.apply(item.getSuggestion());
+            if (iconDrawable != null) {
+                iconDrawable.setAlpha((int) (255 * iconAlpha));
+            }
+            chipView.setIcon(iconDrawable, /* tintWithTextColor= */ false);
+
             TraceEvent.end("BarItemChipViewHolder#bind");
         }
 

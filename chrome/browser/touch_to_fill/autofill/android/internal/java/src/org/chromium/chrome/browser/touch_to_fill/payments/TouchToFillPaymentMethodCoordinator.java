@@ -16,6 +16,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.util.Pair;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -68,9 +69,11 @@ public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMe
     }
 
     @Override
-    public void showSheet(List<CreditCard> cards, boolean shouldShowScanCreditCard) {
+    public void showSheet(
+            List<Pair<CreditCard, Boolean>> cardsWithAcceptabilites,
+            boolean shouldShowScanCreditCard) {
         assert mCardImageFunction != null : "Attempting to call showSheet before initialize.";
-        mMediator.showSheet(cards, shouldShowScanCreditCard, mCardImageFunction);
+        mMediator.showSheet(cardsWithAcceptabilites, shouldShowScanCreditCard, mCardImageFunction);
     }
 
     @Override

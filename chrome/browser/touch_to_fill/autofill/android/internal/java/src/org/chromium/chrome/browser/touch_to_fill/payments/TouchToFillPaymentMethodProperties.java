@@ -83,6 +83,8 @@ class TouchToFillPaymentMethodProperties {
                 new PropertyModel.ReadableObjectPropertyKey<>("virtual_card_label");
         static final PropertyModel.ReadableObjectPropertyKey<Runnable> ON_CREDIT_CARD_CLICK_ACTION =
                 new PropertyModel.ReadableObjectPropertyKey<>("on_credit_card_click_action");
+        static final PropertyModel.ReadableBooleanPropertyKey IS_ACCEPTABLE =
+                new PropertyModel.ReadableBooleanPropertyKey("is_acceptable");
         static final PropertyModel.ReadableObjectPropertyKey<FillableItemCollectionInfo>
                 ITEM_COLLECTION_INFO =
                         new PropertyModel.ReadableObjectPropertyKey<>("item_collection_info");
@@ -94,6 +96,7 @@ class TouchToFillPaymentMethodProperties {
             CARD_EXPIRATION,
             VIRTUAL_CARD_LABEL,
             ON_CREDIT_CARD_CLICK_ACTION,
+            IS_ACCEPTABLE,
             ITEM_COLLECTION_INFO
         };
 

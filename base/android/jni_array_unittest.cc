@@ -107,6 +107,15 @@ TEST(JniArray, BoolConversions) {
   CheckBoolConversion(env, kBools, kLen, ToJavaBooleanArray(env, kBools, kLen));
 }
 
+TEST(JniArray, BoolVectorConversions) {
+  const bool kBools[] = {false, true, false};
+  const size_t kLen = std::size(kBools);
+  const std::vector<bool>& kBoolVector = {false, true, false};
+
+  JNIEnv* env = AttachCurrentThread();
+  CheckBoolConversion(env, kBools, kLen, ToJavaBooleanArray(env, kBoolVector));
+}
+
 void CheckIntConversion(
     JNIEnv* env,
     const int* int_array,

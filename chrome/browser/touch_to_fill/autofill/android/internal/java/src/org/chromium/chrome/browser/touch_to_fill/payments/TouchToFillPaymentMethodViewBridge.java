@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.touch_to_fill.payments;
 
 import android.content.Context;
+import android.util.Pair;
 
 import androidx.annotation.Nullable;
 
@@ -20,6 +21,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.ui.base.WindowAndroid;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -64,10 +66,17 @@ class TouchToFillPaymentMethodViewBridge {
 
     @CalledByNative
     private void showSheet(
-            @JniType("std::vector") Object[] cards, boolean shouldShowScanCreditCard) {
-        mComponent.showSheet(
-                (List<PersonalDataManager.CreditCard>) (List<?>) Arrays.asList(cards),
-                shouldShowScanCreditCard);
+            @JniType("std::vector") Object[] cards,
+            boolean[] cardAcceptabilities,
+            boolean shouldShowScanCreditCard) {
+        assert cards.length == cardAcceptabilities.length;
+        List<Pair<PersonalDataManager.CreditCard, Boolean>> cardsWithAcceptabilities =
+                new ArrayList<>();
+        for (int i = 0; i < cards.length; i++) {
+            cardsWithAcceptabilities.add(
+                    Pair.create((PersonalDataManager.CreditCard) cards[i], cardAcceptabilities[i]));
+        }
+        mComponent.showSheet(cardsWithAcceptabilities, shouldShowScanCreditCard);
     }
 
     @CalledByNative

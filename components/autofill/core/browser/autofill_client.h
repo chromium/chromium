@@ -577,10 +577,13 @@ class AutofillClient {
 
   // Shows the Touch To Fill surface for filling credit card information, if
   // possible, and returns |true| on success. |delegate| will be notified of
-  // events. Should be called only if the feature is supported by the platform.
+  // events. `card_acceptabilies` is a boolean list denoting if the virtual
+  // card in `cards_to_suggest` is acceptable on the merchant's platform.
+  // Should be called only if the feature is supported by the platform.
   virtual bool ShowTouchToFillCreditCard(
       base::WeakPtr<TouchToFillDelegate> delegate,
-      base::span<const autofill::CreditCard> cards_to_suggest) = 0;
+      base::span<const autofill::CreditCard> cards_to_suggest,
+      const std::vector<bool>& card_acceptabilies) = 0;
 
   // Shows the Touch To Fill surface for filling IBAN information, if
   // possible, returning `true` on success. `delegate` will be notified of

@@ -51,11 +51,13 @@ class TouchToFillPaymentMethodController
                                       ContentAutofillDriver& driver) override;
 
   // Shows the Touch To Fill `view`. `delegate` will provide the fillable credit
-  // cards and be notified of the user's decision. Returns whether the surface
-  // was successfully shown.
+  // cards and be notified of the user's decision. `cards_acceptabilities`
+  // will determine which cards are needed to be disabled & grayed-out for the
+  // current merchant. Returns whether the surface was successfully shown.
   bool Show(std::unique_ptr<TouchToFillPaymentMethodView> view,
             base::WeakPtr<TouchToFillDelegate> delegate,
-            base::span<const CreditCard> cards_to_suggest);
+            base::span<const CreditCard> cards_to_suggest,
+            const std::vector<bool>& card_acceptabilities);
 
   // Shows the Touch To Fill `view`. `delegate` will provide the fillable IBANs
   // and be notified of the user's decision. Returns whether the surface was

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_TOUCH_TO_FILL_AUTOFILL_ANDROID_TOUCH_TO_FILL_PAYMENT_METHOD_VIEW_H_
 #define CHROME_BROWSER_TOUCH_TO_FILL_AUTOFILL_ANDROID_TOUCH_TO_FILL_PAYMENT_METHOD_VIEW_H_
 
+#include <vector>
+
 #include "base/containers/span.h"
 
 namespace autofill {
@@ -21,6 +23,7 @@ class TouchToFillPaymentMethodView {
 
   virtual bool Show(TouchToFillPaymentMethodViewController* controller,
                     base::span<const CreditCard> cards_to_suggest,
+                    const std::vector<bool>& card_acceptabilities,
                     bool should_show_scan_credit_card) = 0;
   virtual bool Show(TouchToFillPaymentMethodViewController* controller,
                     base::span<const Iban> ibans_to_suggest) = 0;

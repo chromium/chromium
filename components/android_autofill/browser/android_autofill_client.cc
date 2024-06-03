@@ -191,7 +191,8 @@ void AndroidAutofillClient::ScanCreditCard(CreditCardScanCallback callback) {
 
 bool AndroidAutofillClient::ShowTouchToFillCreditCard(
     base::WeakPtr<autofill::TouchToFillDelegate> delegate,
-    base::span<const autofill::CreditCard> cards_to_suggest) {
+    base::span<const autofill::CreditCard> cards_to_suggest,
+    const std::vector<bool>& card_acceptabilities) {
   return false;
 }
 

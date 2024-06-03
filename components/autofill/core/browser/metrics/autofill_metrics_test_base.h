@@ -42,8 +42,9 @@ class MockAutofillClient : public TestAutofillClient {
   ~MockAutofillClient() override;
   MOCK_METHOD(bool,
               ShowTouchToFillCreditCard,
-              (base::WeakPtr<TouchToFillDelegate>,
-               base::span<const autofill::CreditCard>),
+              ((base::WeakPtr<TouchToFillDelegate>),
+               (base::span<const autofill::CreditCard>),
+               (const std::vector<bool>&)),
               (override));
 };
 

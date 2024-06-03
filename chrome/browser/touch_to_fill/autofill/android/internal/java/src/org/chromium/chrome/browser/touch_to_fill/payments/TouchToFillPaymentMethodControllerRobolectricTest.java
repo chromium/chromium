@@ -8,6 +8,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -26,6 +27,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodMediator.TOUCH_TO_FILL_NUMBER_OF_IBANS_SHOWN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardProperties.CARD_NAME;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardProperties.CARD_NUMBER;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardProperties.IS_ACCEPTABLE;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardProperties.NETWORK_NAME;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardProperties.ON_CREDIT_CARD_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.DISMISS_HANDLER;
@@ -44,6 +46,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Pair;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -194,7 +197,8 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
     @Test
     public void testAddsTheBottomSheetHelperToObserveTheSheetForCreditCard() {
-        mCoordinator.showSheet(List.of(VISA), false);
+        mCoordinator.showSheet(
+                List.of(Pair.create(VISA, true)), /* shouldShowScanCreditCard= */ false);
 
         verify(mBottomSheetFocusHelper, times(1)).registerForOneTimeUse();
     }
@@ -205,14 +209,16 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         assertNotNull(mTouchToFillPaymentMethodModel.get(DISMISS_HANDLER));
         assertThat(mTouchToFillPaymentMethodModel.get(VISIBLE), is(false));
 
-        mCoordinator.showSheet(List.of(VISA), false);
+        mCoordinator.showSheet(
+                List.of(Pair.create(VISA, true)), /* shouldShowScanCreditCard= */ false);
 
         assertThat(mTouchToFillPaymentMethodModel.get(VISIBLE), is(true));
     }
 
     @Test
     public void testShowCreditCardsWithOneEntry() throws TimeoutException {
-        mCoordinator.showSheet(List.of(VISA), false);
+        mCoordinator.showSheet(
+                List.of(Pair.create(VISA, true)), /* shouldShowScanCreditCard= */ false);
 
         assertEquals(
                 1,
@@ -227,11 +233,14 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         assertTrue(cardModel.isPresent());
         assertThat(cardModel.get().get(CARD_NAME), is(VISA.getCardNameForAutofillDisplay()));
         assertThat(cardModel.get().get(CARD_NUMBER), is(VISA.getObfuscatedLastFourDigits()));
+        assertTrue(cardModel.get().get(IS_ACCEPTABLE));
     }
 
     @Test
     public void testShowCreditCardsWithTwoEntries() throws TimeoutException {
-        mCoordinator.showSheet(List.of(VISA, MASTER_CARD), false);
+        mCoordinator.showSheet(
+                List.of(Pair.create(VISA, true), Pair.create(MASTER_CARD, true)),
+                /* shouldShowScanCreditCard= */ false);
 
         assertEquals(
                 1,
@@ -253,8 +262,34 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
     }
 
     @Test
+    public void testShowCreditCardsWithNonAcceptableEntries() throws TimeoutException {
+        HistogramWatcher metricsWatcher =
+                HistogramWatcher.newSingleRecordWatcher(TOUCH_TO_FILL_NUMBER_OF_CARDS_SHOWN, 2);
+
+        mCoordinator.showSheet(
+                List.of(Pair.create(VIRTUAL_CARD, false), Pair.create(MASTER_CARD, true)),
+                /* shouldShowScanCreditCard= */ false);
+
+        metricsWatcher.assertExpected();
+
+        ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
+        assertThat(getModelsOfType(itemList, CREDIT_CARD).size(), is(2));
+
+        assertThat(getModelsOfType(itemList, HEADER).size(), is(1));
+
+        Optional<PropertyModel> cardModel = getCardModelByAutofillName(itemList, VIRTUAL_CARD);
+        assertTrue(cardModel.isPresent());
+        assertFalse(cardModel.get().get(IS_ACCEPTABLE));
+
+        cardModel = getCardModelByAutofillName(itemList, MASTER_CARD);
+        assertTrue(cardModel.get().get(IS_ACCEPTABLE));
+    }
+
+    @Test
     public void testScanNewCardIsShownForCreditCards() {
-        mCoordinator.showSheet(List.of(VISA, MASTER_CARD), true);
+        mCoordinator.showSheet(
+                List.of(Pair.create(VISA, true), Pair.create(MASTER_CARD, true)),
+                /* shouldShowScanCreditCard= */ true);
         int lastItemPos = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS).size() - 1;
         mTouchToFillPaymentMethodModel
                 .get(SHEET_ITEMS)
@@ -272,7 +307,9 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
     @Test
     public void testShowPaymentMethodSettingsForCreditCards() {
-        mCoordinator.showSheet(List.of(VISA, MASTER_CARD), true);
+        mCoordinator.showSheet(
+                List.of(Pair.create(VISA, true), Pair.create(MASTER_CARD, true)),
+                /* shouldShowScanCreditCard= */ true);
         int lastItemPos = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS).size() - 1;
         mTouchToFillPaymentMethodModel
                 .get(SHEET_ITEMS)
@@ -290,7 +327,8 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
     @Test
     public void testNoCallbackForCreditCardOnSelectingItemBeforeInputTime() {
-        mCoordinator.showSheet(List.of(VISA), false);
+        mCoordinator.showSheet(
+                List.of(Pair.create(VISA, true)), /* shouldShowScanCreditCard= */ false);
         assertThat(mTouchToFillPaymentMethodModel.get(VISIBLE), is(true));
 
         Optional<PropertyModel> cardModel =
@@ -313,7 +351,8 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
     @Test
     public void testCallsCallbackForCreditCardOnSelectingItem() {
-        mCoordinator.showSheet(List.of(VISA), false);
+        mCoordinator.showSheet(
+                List.of(Pair.create(VISA, true)), /* shouldShowScanCreditCard= */ false);
         assertThat(mTouchToFillPaymentMethodModel.get(VISIBLE), is(true));
 
         Optional<PropertyModel> cardModel =
@@ -335,7 +374,8 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
     @Test
     public void testCallsCallbackForVirtualCardOnSelectingItem() {
-        mCoordinator.showSheet(List.of(VIRTUAL_CARD), false);
+        mCoordinator.showSheet(
+                List.of(Pair.create(VIRTUAL_CARD, true)), /* shouldShowScanCreditCard= */ false);
         assertThat(mTouchToFillPaymentMethodModel.get(VISIBLE), is(true));
 
         Optional<PropertyModel> cardModel =
@@ -359,7 +399,8 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
     @Test
     public void testShowsContinueButtonWhenOneCreditCard() {
-        mCoordinator.showSheet(List.of(VISA), true);
+        mCoordinator.showSheet(
+                List.of(Pair.create(VISA, true)), /* shouldShowScanCreditCard= */ true);
 
         ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
         assertEquals(getModelsOfType(itemList, FILL_BUTTON).size(), 1);
@@ -367,7 +408,9 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
     @Test
     public void testNoContinueButtonWhenManyCreditCards() {
-        mCoordinator.showSheet(List.of(VISA, MASTER_CARD), true);
+        mCoordinator.showSheet(
+                List.of(Pair.create(VISA, true), Pair.create(MASTER_CARD, true)),
+                /* shouldShowScanCreditCard= */ true);
 
         ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
         assertEquals(getModelsOfType(itemList, FILL_BUTTON).size(), 0);
@@ -375,7 +418,9 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
     @Test
     public void testDismissWithSwipeForCreditCard() {
-        mCoordinator.showSheet(List.of(VISA, MASTER_CARD), true);
+        mCoordinator.showSheet(
+                List.of(Pair.create(VISA, true), Pair.create(MASTER_CARD, true)),
+                /* shouldShowScanCreditCard= */ true);
 
         mTouchToFillPaymentMethodModel.get(DISMISS_HANDLER).onResult(StateChangeReason.SWIPE);
         assertEquals(
@@ -391,7 +436,9 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         TOUCH_TO_FILL_CREDIT_CARD_OUTCOME_HISTOGRAM,
                         TouchToFillCreditCardOutcome.DISMISS);
-        mCoordinator.showSheet(List.of(VISA, MASTER_CARD), true);
+        mCoordinator.showSheet(
+                List.of(Pair.create(VISA, true), Pair.create(MASTER_CARD, true)),
+                /* shouldShowScanCreditCard= */ true);
 
         mTouchToFillPaymentMethodModel.get(DISMISS_HANDLER).onResult(StateChangeReason.TAP_SCRIM);
 
@@ -400,7 +447,9 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
     @Test
     public void testScanNewCardClick() {
-        mCoordinator.showSheet(List.of(VISA, MASTER_CARD), true);
+        mCoordinator.showSheet(
+                List.of(Pair.create(VISA, true), Pair.create(MASTER_CARD, true)),
+                /* shouldShowScanCreditCard= */ true);
         ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
         getModelsOfType(itemList, FOOTER).get(0).get(SCAN_CREDIT_CARD_CALLBACK).run();
 
@@ -409,7 +458,9 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
     @Test
     public void testManagePaymentMethodsClickForCreditCard() {
-        mCoordinator.showSheet(List.of(VISA, MASTER_CARD), false);
+        mCoordinator.showSheet(
+                List.of(Pair.create(VISA, true), Pair.create(MASTER_CARD, true)),
+                /* shouldShowScanCreditCard= */ false);
         ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
         getModelsOfType(itemList, FOOTER).get(0).get(SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK).run();
 
@@ -418,7 +469,8 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
     @Test
     public void testContinueButtonClickForCreditCard() {
-        mCoordinator.showSheet(List.of(VISA), false);
+        mCoordinator.showSheet(
+                List.of(Pair.create(VISA, true)), /* shouldShowScanCreditCard= */ false);
         ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
         advanceClockAndClick(getModelsOfType(itemList, FILL_BUTTON).get(0));
         verify(mDelegateMock).creditCardSuggestionSelected(VISA.getGUID(), VISA.getIsVirtual());
@@ -426,7 +478,8 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
     @Test
     public void testCardModelForNicknamedCardContainsANetworkName() {
-        mCoordinator.showSheet(List.of(NICKNAMED_VISA), false);
+        mCoordinator.showSheet(
+                List.of(Pair.create(NICKNAMED_VISA, true)), /* shouldShowScanCreditCard= */ false);
 
         ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
 
@@ -437,7 +490,8 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
     @Test
     public void testCardModelForACardWithoutANicknameDoesNotContainANetworkName() {
-        mCoordinator.showSheet(List.of(VISA), false);
+        mCoordinator.showSheet(
+                List.of(Pair.create(VISA, true)), /* shouldShowScanCreditCard= */ false);
 
         ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
 

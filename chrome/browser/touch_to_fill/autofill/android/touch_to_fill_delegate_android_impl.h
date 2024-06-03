@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_TOUCH_TO_FILL_AUTOFILL_ANDROID_TOUCH_TO_FILL_DELEGATE_ANDROID_IMPL_H_
 #define CHROME_BROWSER_TOUCH_TO_FILL_AUTOFILL_ANDROID_TOUCH_TO_FILL_DELEGATE_ANDROID_IMPL_H_
 
+#include <vector>
+
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -196,6 +198,13 @@ class TouchToFillDelegateAndroidImpl : public TouchToFillDelegate {
   // TODO(crbug.com/40227496): FormData is used here to ensure that we check the
   // most recent form values. FormStructure knows only about the initial values.
   bool IsFormPrefilled(const FormData& form);
+
+  // Creates a list of booleans which denotes if credit cards are acceptable by
+  // the merchant. The list will be the same size as `credit_cards`, and the
+  // indices will match (the acceptability of credit_cards[i] ==
+  // card_acceptability[i]).
+  std::vector<bool> GetCardAcceptabilities(
+      base::span<const CreditCard> credit_cards);
 
   TouchToFillState ttf_payment_method_state_ = TouchToFillState::kShouldShow;
 

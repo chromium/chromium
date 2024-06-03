@@ -42,6 +42,15 @@ ScopedJavaLocalRef<jbyteArray> ToJavaByteArray(JNIEnv* env,
   return ToJavaByteArray(env, base::as_byte_span(str));
 }
 
+ScopedJavaLocalRef<jbooleanArray> ToJavaBooleanArray(
+    JNIEnv* env,
+    const std::vector<bool>& bool_vec) {
+  bool bool_arr[bool_vec.size()];
+  std::copy(bool_vec.begin(), bool_vec.end(), bool_arr);
+
+  return ToJavaBooleanArray(env, bool_arr, bool_vec.size());
+}
+
 ScopedJavaLocalRef<jbooleanArray> ToJavaBooleanArray(JNIEnv* env,
                                                      const bool* bools,
                                                      size_t len) {

@@ -1780,6 +1780,21 @@ std::u16string AutofillSuggestionGenerator::GetDisplayNicknameForCreditCard(
   return card.nickname();
 }
 
+bool AutofillSuggestionGenerator::IsCardAcceptable(
+    const CreditCard& card,
+    bool is_manual_fallback) const {
+  if (card.record_type() == CreditCard::RecordType::kVirtualCard) {
+    auto* optimization_guide = autofill_client_->GetAutofillOptimizationGuide();
+    return !(
+        optimization_guide &&
+        optimization_guide->ShouldBlockFormFieldSuggestion(
+            autofill_client_->GetLastCommittedPrimaryMainFrameOrigin().GetURL(),
+            card));
+  }
+
+  return !is_manual_fallback;
+}
+
 bool AutofillSuggestionGenerator::ShouldShowVirtualCardOption(
     const CreditCard* candidate_card) const {
   const CreditCard* candidate_server_card = nullptr;
@@ -2272,34 +2287,16 @@ bool AutofillSuggestionGenerator::ShouldShowVirtualCardOptionForServerCard(
   // optimization guide returns that this suggestion should be blocked.
   if (auto* autofill_optimization_guide =
           autofill_client_->GetAutofillOptimizationGuide()) {
-    bool blocked =
-        !base::FeatureList::IsEnabled(
-            features::kAutofillEnableVcnGrayOutForMerchantOptOut) &&
-        autofill_optimization_guide->ShouldBlockFormFieldSuggestion(
-            autofill_client_->GetLastCommittedPrimaryMainFrameOrigin().GetURL(),
-            card);
-    return !blocked;
+    return !autofill_optimization_guide->ShouldBlockFormFieldSuggestion(
+               autofill_client_->GetLastCommittedPrimaryMainFrameOrigin()
+                   .GetURL(),
+               card) ||
+           base::FeatureList::IsEnabled(
+               features::kAutofillEnableVcnGrayOutForMerchantOptOut);
   }
   // No conditions to prevent displaying a virtual card suggestion were
   // found, so return true.
   return true;
-}
-
-bool AutofillSuggestionGenerator::IsCardAcceptable(
-    const CreditCard& card,
-    bool is_manual_fallback) const {
-  if (card.record_type() != CreditCard::RecordType::kVirtualCard) {
-    return !is_manual_fallback;
-  }
-
-  auto* optimization_guide = autofill_client_->GetAutofillOptimizationGuide();
-  return !(
-      optimization_guide &&
-      optimization_guide->ShouldBlockFormFieldSuggestion(
-          autofill_client_->GetLastCommittedPrimaryMainFrameOrigin().GetURL(),
-          card) &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillEnableVcnGrayOutForMerchantOptOut));
 }
 
 }  // namespace autofill

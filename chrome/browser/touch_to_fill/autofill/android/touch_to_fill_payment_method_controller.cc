@@ -91,7 +91,8 @@ void TouchToFillPaymentMethodController::OnContentAutofillDriverCreated(
 bool TouchToFillPaymentMethodController::Show(
     std::unique_ptr<TouchToFillPaymentMethodView> view,
     base::WeakPtr<TouchToFillDelegate> delegate,
-    base::span<const CreditCard> cards_to_suggest) {
+    base::span<const CreditCard> cards_to_suggest,
+    const std::vector<bool>& card_acceptabilities) {
   if (!keyboard_suppressor_.is_suppressing()) {
     return false;
   }
@@ -100,7 +101,7 @@ bool TouchToFillPaymentMethodController::Show(
   if (view_)
     return false;
 
-  if (!view->Show(this, std::move(cards_to_suggest),
+  if (!view->Show(this, cards_to_suggest, card_acceptabilities,
                   delegate->ShouldShowScanCreditCard())) {
     java_object_.Reset();
     return false;

@@ -118,6 +118,11 @@ class AutofillSuggestionGenerator {
   // one copy has a nickname, take that.
   std::u16string GetDisplayNicknameForCreditCard(const CreditCard& card) const;
 
+  // Returns true if the suggestion created from the card is acceptable, returns
+  // false when merchant does not accept the given card for example when
+  // merchants opt-out of VCNs.
+  bool IsCardAcceptable(const CreditCard& card, bool is_manual_fallback) const;
+
  private:
   friend class AutofillSuggestionGeneratorTestApi;
 
@@ -301,9 +306,6 @@ class AutofillSuggestionGenerator {
   // Returns true if we should show a virtual card option for the server card
   // `card`, false otherwise.
   bool ShouldShowVirtualCardOptionForServerCard(const CreditCard& card) const;
-
-  // Returns the acceptability of the card suggestion.
-  bool IsCardAcceptable(const CreditCard& card, bool is_manual_fallback) const;
 
   const PersonalDataManager& personal_data() const {
     // The PDM outlives the ASG, hence this is safe.

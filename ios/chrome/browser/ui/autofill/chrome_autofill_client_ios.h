@@ -124,7 +124,8 @@ class ChromeAutofillClientIOS : public AutofillClient {
   void ScanCreditCard(CreditCardScanCallback callback) override;
   bool ShowTouchToFillCreditCard(
       base::WeakPtr<TouchToFillDelegate> delegate,
-      base::span<const CreditCard> cards_to_suggest) override;
+      base::span<const CreditCard> cards_to_suggest,
+      const std::vector<bool>& card_acceptabilities) override;
   void HideTouchToFillCreditCard() override;
   void ShowAutofillSuggestions(
       const PopupOpenArgs& open_args,
