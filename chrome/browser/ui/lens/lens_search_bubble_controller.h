@@ -5,21 +5,22 @@
 #ifndef CHROME_BROWSER_UI_LENS_LENS_SEARCH_BUBBLE_CONTROLLER_H_
 #define CHROME_BROWSER_UI_LENS_LENS_SEARCH_BUBBLE_CONTROLLER_H_
 
-#include "chrome/browser/ui/browser_user_data.h"
-#include "chrome/browser/ui/views/bubble/webui_bubble_manager.h"
-#include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/base/metadata/metadata_impl_macros.h"
+#include "base/memory/weak_ptr.h"
+
+class LensOverlayController;
+class WebUIBubbleDialogView;
 
 namespace lens {
 
-// Manages the SearchBubble instance for the associated browser.
-class LensSearchBubbleController
-  : public BrowserUserData<LensSearchBubbleController> {
+// Manages the SearchBubble instance for a lens overlay.
+class LensSearchBubbleController {
  public:
+  explicit LensSearchBubbleController(
+      LensOverlayController* lens_overlay_controller);
   LensSearchBubbleController(const LensSearchBubbleController&) = delete;
   LensSearchBubbleController& operator=(const LensSearchBubbleController&)
     = delete;
-  ~LensSearchBubbleController() override;
+  ~LensSearchBubbleController();
 
   // Shows an instance of the lens search bubble for this browser.
   void Show();
@@ -31,13 +32,10 @@ class LensSearchBubbleController
   }
 
  private:
-  friend class BrowserUserData<LensSearchBubbleController>;
-
-  explicit LensSearchBubbleController(Browser* browser);
-
   base::WeakPtr<WebUIBubbleDialogView> bubble_view_;
 
-  BROWSER_USER_DATA_KEY_DECL();
+  // Owns this.
+  raw_ptr<LensOverlayController> lens_overlay_controller_;
 };
 
 }  // namespace lens

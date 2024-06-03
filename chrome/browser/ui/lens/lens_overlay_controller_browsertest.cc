@@ -1605,7 +1605,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
 
   auto* bubble_controller =
-      lens::LensSearchBubbleController::FromBrowser(browser());
+      controller->GetLensSearchBubbleControllerForTesting();
   EXPECT_TRUE(!!bubble_controller->bubble_view_for_testing());
 
   // We need to flush the mojo receiver calls to make sure the screenshot was

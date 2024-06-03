@@ -44,6 +44,7 @@ namespace lens {
 class LensOverlayQueryController;
 class LensOverlaySidePanelCoordinator;
 class LensPermissionBubbleController;
+class LensSearchBubbleController;
 }  // namespace lens
 
 namespace views {
@@ -315,6 +316,8 @@ class LensOverlayController : public LensSearchboxClient,
       int selection_start_index,
       int selection_end_index);
 
+  tabs::TabInterface* GetTabInterface();
+
   // Gets the WebContents housed in the side panel for testing.
   content::WebContents* GetSidePanelWebContentsForTesting();
 
@@ -363,6 +366,8 @@ class LensOverlayController : public LensSearchboxClient,
   GetLensPermissionBubbleControllerForTesting() {
     return permission_bubble_controller_.get();
   }
+
+  lens::LensSearchBubbleController* GetLensSearchBubbleControllerForTesting();
 
  protected:
   // Override these methods to stub out network requests for testing.
@@ -755,6 +760,10 @@ class LensOverlayController : public LensSearchboxClient,
   raw_ptr<views::WebView> overlay_web_view_;
   // Stores the session ID for the window of the widget on creation.
   std::optional<const SessionID> overlay_widget_window_session_id_;
+
+  // Owns the search bubble that shows over the overlay, before the side panel
+  // is showing.
+  std::unique_ptr<lens::LensSearchBubbleController> search_bubble_controller_;
 
   // --------------------Browser window scoped state: END---------------------
 

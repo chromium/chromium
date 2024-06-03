@@ -192,6 +192,8 @@ LensOverlayController::LensOverlayController(
                           weak_factory_.GetWeakPtr())));
   tab_subscriptions_.push_back(tab_->RegisterWillDetach(base::BindRepeating(
       &LensOverlayController::WillDetach, weak_factory_.GetWeakPtr())));
+  search_bubble_controller_ =
+      std::make_unique<lens::LensSearchBubbleController>(this);
 
 #if BUILDFLAG(IS_MAC)
   corner_radii_ = {0, 0, 10, 10};
@@ -325,8 +327,7 @@ void LensOverlayController::ShowUI(
             tab_->GetContents());
   }
   if (lens::features::IsLensOverlaySearchBubbleEnabled()) {
-    lens::LensSearchBubbleController::GetOrCreateForBrowser(tab_browser)
-        ->Show();
+    search_bubble_controller_->Show();
   }
 
   // Create the query controller.
@@ -740,12 +741,21 @@ void LensOverlayController::IssueTranslateSelectionRequestForTesting(
                                  selection_start_index, selection_end_index);
 }
 
+tabs::TabInterface* LensOverlayController::GetTabInterface() {
+  return tab_;
+}
+
 content::WebContents*
 LensOverlayController::GetSidePanelWebContentsForTesting() {
   if (!results_side_panel_coordinator_) {
     return nullptr;
   }
   return results_side_panel_coordinator_->GetSidePanelWebContents();
+}
+
+lens::LensSearchBubbleController*
+LensOverlayController::GetLensSearchBubbleControllerForTesting() {
+  return search_bubble_controller_.get();
 }
 
 std::unique_ptr<lens::LensOverlayQueryController>
@@ -1516,12 +1526,7 @@ void LensOverlayController::IssueTextSelectionRequestInner(
 }
 
 void LensOverlayController::CloseSearchBubble() {
-  if (Browser* tab_browser = chrome::FindBrowserWithTab(tab_->GetContents())) {
-    if (auto* controller =
-            lens::LensSearchBubbleController::FromBrowser(tab_browser)) {
-      controller->Close();
-    }
-  }
+  search_bubble_controller_->Close();
 }
 
 void LensOverlayController::IssueSearchBoxRequest(

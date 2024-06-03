@@ -11105,7 +11105,6 @@ if (!is_android && !is_chromeos_device) {
       "../browser/ui/keyboard_lock_interactive_browsertest.cc",
       "../browser/ui/lens/lens_overlay_controller_interactive_uitest.cc",
       "../browser/ui/lens/lens_permission_bubble_controller_interactive_uitest.cc",
-      "../browser/ui/lens/lens_search_bubble_interactive_uitest.cc",
       "../browser/ui/omnibox/omnibox_view_browsertest.cc",
       "../browser/ui/passwords/manage_passwords_test.cc",
       "../browser/ui/passwords/manage_passwords_test.h",
