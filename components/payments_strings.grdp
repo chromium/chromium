@@ -471,10 +471,16 @@
   </message>
 
   <!-- Secure Payment Confirmation strings -->
+  <message name="IDS_SECURE_PAYMENT_CONFIRMATION_INLINE_TITLE" desc="The title string on a payment confirmation dialog that confirms the details of the payment that the user is about to verify. The user has the option to click 'Cancel' or 'Continue', and clicking 'Continue' will open the system interface to verify their identity, for example with their fingerprint.">
+    <ph name="PROVIDER_ORIGIN">$1<ex>bank.com</ex></ph> wants to verify it's you
+  </message>
   <if expr="not is_win and not is_macosx">
     <!-- Strings that don't refer to specific platform authenticator names -->
     <message name="IDS_SECURE_PAYMENT_CONFIRMATION_VERIFY_PURCHASE" desc="The title string on a payment confirmation dialog that confirms the details of the payment that the user is about to verify. The user has the option to click 'Cancel' or 'Continue', and clicking 'Continue' will open the system interface to verify their identity, for example with their fingerprint." formatter_data="android_java">
         Verify your purchase
+    </message>
+    <message name="IDS_SECURE_PAYMENT_CONFIRMATION_INLINE_DESCRIPTION" desc="The description string on a payment confirmation dialog that confirms the details of the payment that the user is about to verify. The user will verify the purchase using an OS-level system (e.g., Touch ID).">
+      Complete your purchase using your device
     </message>
     <if expr="is_android">
       <message name="IDS_SECURE_PAYMENT_CONFIRMATION_OPT_OUT_LABEL" desc="Text on a dialog that explains to the user that they previously opted into this behavior for a given provider. Includes link text that they can click to request that the provider deletes their data." formatter_data="android_java">
@@ -497,6 +503,9 @@
     <message name="IDS_SECURE_PAYMENT_CONFIRMATION_VERIFY_PURCHASE" desc="The title string on a payment confirmation dialog that confirms the details of the payment that the user is about to verify. The user has the option to click 'Cancel' or 'Verify', and clicking 'Verify' will open the system interface to verify their identity with the Touch ID fingerprint sensor.">
         Use Touch ID to verify and complete your purchase?
     </message>
+    <message name="IDS_SECURE_PAYMENT_CONFIRMATION_INLINE_DESCRIPTION" desc="The description string on a payment confirmation dialog that confirms the details of the payment that the user is about to verify. The user will verify the purchase using an OS-level system (e.g., Touch ID).">
+      Complete your purchase using Touch ID
+    </message>
     <message name="IDS_SECURE_PAYMENT_CONFIRMATION_OPT_OUT_LABEL" desc="Text on a dialog that explains to the user that they previously opted into this behavior for a given provider. Includes link text that they can click to request that the provider deletes their data.">
         You chose to verify with Touch ID on websites that use <ph name="PROVIDER_ORIGIN">$1<ex>example.com</ex></ph>. This provider may have stored information about your payment method, which you can <ph name="LINK_TEXT">$2<ex>request to be deleted</ex></ph>.
     </message>
@@ -504,6 +513,9 @@
   <if expr="is_win">
     <message name="IDS_SECURE_PAYMENT_CONFIRMATION_VERIFY_PURCHASE" desc="The title string on a payment confirmation dialog that confirms the details of the payment that the user is about to verify. The user has the option to click 'Cancel' or 'Verify', and clicking 'Verify' will open the system interface to verify their identity with the Windows Hello biometric sensor, such as fingerprint or face recognition.">
         Use Windows Hello to verify and complete your purchase?
+    </message>
+    <message name="IDS_SECURE_PAYMENT_CONFIRMATION_INLINE_DESCRIPTION" desc="The description string on a payment confirmation dialog that confirms the details of the payment that the user is about to verify. The user will verify the purchase using an OS-level system (e.g., Touch ID).">
+      Complete your purchase using Windows Hello
     </message>
     <message name="IDS_SECURE_PAYMENT_CONFIRMATION_OPT_OUT_LABEL" desc="Text on a dialog that explains to the user that they previously opted into this behavior for a given provider. Includes link text that they can click to request that the provider deletes their data.">
         You chose to verify with Windows Hello on websites that use <ph name="PROVIDER_ORIGIN">$1<ex>example.com</ex></ph>. This provider may have stored information about your payment method, which you can <ph name="LINK_TEXT">$2<ex>request to be deleted</ex></ph>.

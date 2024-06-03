@@ -48,6 +48,10 @@ BASE_FEATURE(kGPayAppDynamicUpdate,
              "GPayAppDynamicUpdate",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSecurePaymentConfirmationInlineNetworkAndIssuerIcons,
+             "SecurePaymentConfirmationInlineNetworkAndIssuerIcons",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSecurePaymentConfirmationUseCredentialStoreAPIs,
              "SecurePaymentConfirmationUseCredentialStoreAPIs",
 #if BUILDFLAG(IS_ANDROID)

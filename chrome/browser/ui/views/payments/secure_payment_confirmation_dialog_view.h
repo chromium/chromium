@@ -44,6 +44,7 @@ class SecurePaymentConfirmationDialogView
     HEADER_ICON,
     PROGRESS_BAR,
     TITLE,
+    DESCRIPTION,
     MERCHANT_LABEL,
     MERCHANT_VALUE,
     INSTRUMENT_LABEL,

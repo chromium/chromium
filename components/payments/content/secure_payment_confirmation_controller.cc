@@ -5,6 +5,7 @@
 #include "components/payments/content/secure_payment_confirmation_controller.h"
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/strings/strcat.h"
@@ -15,6 +16,7 @@
 #include "components/payments/content/payment_request.h"
 #include "components/payments/content/secure_payment_confirmation_app.h"
 #include "components/payments/core/currency_formatter.h"
+#include "components/payments/core/features.h"
 #include "components/payments/core/method_strings.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
@@ -99,8 +101,16 @@ void SecurePaymentConfirmationController::
   model_.set_cancel_button_label(l10n_util::GetStringUTF16(IDS_CANCEL));
   model_.set_progress_bar_visible(false);
 
-  model_.set_title(l10n_util::GetStringUTF16(
-      IDS_SECURE_PAYMENT_CONFIRMATION_VERIFY_PURCHASE));
+  if (base::FeatureList::IsEnabled(
+          features::kSecurePaymentConfirmationInlineNetworkAndIssuerIcons)) {
+    model_.set_title(l10n_util::GetStringUTF16(
+        IDS_SECURE_PAYMENT_CONFIRMATION_INLINE_TITLE));
+    model_.set_description(l10n_util::GetStringUTF16(
+        IDS_SECURE_PAYMENT_CONFIRMATION_INLINE_DESCRIPTION));
+  } else {
+    model_.set_title(l10n_util::GetStringUTF16(
+        IDS_SECURE_PAYMENT_CONFIRMATION_VERIFY_PURCHASE));
+  }
 
   model_.set_merchant_label(
       l10n_util::GetStringUTF16(IDS_SECURE_PAYMENT_CONFIRMATION_STORE_LABEL));

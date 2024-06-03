@@ -3207,6 +3207,15 @@ const char kSecurePaymentConfirmationNetworkAndIssuerIconsDescription[] =
     "Allow the passing in and display of card network and issuer icons for the "
     "Secure Payment Confirmation Web API.";
 
+const char kSecurePaymentConfirmationInlineNetworkAndIssuerIconsName[] =
+    "Secure Payment Confirmation Inline Network and Issuer Icons";
+const char kSecurePaymentConfirmationInlineNetworkAndIssuerIconsDescription[] =
+    "When set, inlines the network and issuer icons into the title of the "
+    "Secure Payment Confirmation Transaction UX dialog. Requires "
+    "chrome://"
+    "flags#enable-network-and-issuer-icons-for-secure-payment-confirmation "
+    "to be set as well.";
+
 #if BUILDFLAG(IS_ANDROID)
 const char kSeedAccountsRevampName[] = "Seed Accounts Revamp";
 const char kSeedAccountsRevampDescription[] =

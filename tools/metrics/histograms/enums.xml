@@ -19290,6 +19290,8 @@ from previous Chrome versions.
   <int value="-829498062" label="HttpsFirstModeV2:disabled"/>
   <int value="-826010284" label="EnterpriseReportingUI:disabled"/>
   <int value="-825942229" label="tab-management-experiment-type-elderberry"/>
+  <int value="-825692398"
+      label="SecurePaymentConfirmationInlineNetworkAndIssuerIcons:disabled"/>
   <int value="-825514105" label="TimeOfDayDlc:enabled"/>
   <int value="-825312041" label="CastStreamingAv1:enabled"/>
   <int value="-824199802" label="ContextualSearchSimplifiedServer:enabled"/>
@@ -24335,6 +24337,8 @@ from previous Chrome versions.
   <int value="1373777956" label="disable-threaded-gpu-rasterization"/>
   <int value="1374350431" label="WebViewEmptyComponentLoaderPolicy:enabled"/>
   <int value="1375165388" label="LazyFrameLoading:enabled"/>
+  <int value="1375497914"
+      label="SecurePaymentConfirmationInlineNetworkAndIssuerIcons:enabled"/>
   <int value="1376062044" label="StopAppIndexingReport:enabled"/>
   <int value="1376139800" label="SeaPen:enabled"/>
   <int value="1376279104" label="TrafficCountersEnabled:enabled"/>

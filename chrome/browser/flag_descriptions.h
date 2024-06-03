@@ -1858,6 +1858,10 @@ extern const char kSecurePaymentConfirmationDebugDescription[];
 extern const char kSecurePaymentConfirmationNetworkAndIssuerIconsName[];
 extern const char kSecurePaymentConfirmationNetworkAndIssuerIconsDescription[];
 
+extern const char kSecurePaymentConfirmationInlineNetworkAndIssuerIconsName[];
+extern const char
+    kSecurePaymentConfirmationInlineNetworkAndIssuerIconsDescription[];
+
 #if BUILDFLAG(IS_ANDROID)
 extern const char kSeedAccountsRevampName[];
 extern const char kSeedAccountsRevampDescription[];

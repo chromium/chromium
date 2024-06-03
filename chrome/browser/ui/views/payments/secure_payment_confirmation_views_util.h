@@ -23,6 +23,8 @@ namespace gfx {
 class ImageSkia;
 }
 
+class SkBitmap;
+
 namespace payments {
 
 // Height of the header icons.
@@ -37,6 +39,18 @@ inline constexpr int kProgressBarHeight = 4;
 
 // Line height of the title text.
 inline constexpr int kTitleLineHeight = 24;
+
+// Spacing between the icons in the inline title row.
+inline constexpr int kInlineTitleRowHorizontalSpacing = 5;
+
+// Required height of the icons in the inline title row.
+inline constexpr int kInlineTitleIconHeight = 24;
+
+// Max width of the icons in the inline title row.
+inline constexpr int kInlineTitleMaxIconWidth = 40;
+
+// Height of the separator between the icons in the inline title row.
+inline constexpr int kInlineTitleIconSeparatorHeight = 20;
 
 // Line height of the description text.
 inline constexpr int kDescriptionLineHeight = 20;
@@ -65,6 +79,22 @@ std::unique_ptr<views::View> CreateSecurePaymentConfirmationHeaderView(
     int progress_bar_id,
     int header_icon_id,
     bool use_cart_image = false);
+
+// Creates the 'inline' title view, where the network and issuer icons are
+// placed beside the title text. Either or both of the network and issuer icons
+// may be empty (i.e., drawsNothing returns true) in which case they are
+// omitted from the output view.
+//
+// +------------------------------------------+
+// | Title                        icon | icon |
+// +------------------------------------------+
+std::unique_ptr<views::View>
+CreateSecurePaymentConfirmationInlineImageTitleView(
+    std::unique_ptr<views::Label> title_text,
+    const SkBitmap& network_icon,
+    int network_icon_id,
+    const SkBitmap& issuer_icon,
+    int issuer_icon_id);
 
 // Creates the label view for the SPC title text.
 std::unique_ptr<views::Label> CreateSecurePaymentConfirmationTitleLabel(

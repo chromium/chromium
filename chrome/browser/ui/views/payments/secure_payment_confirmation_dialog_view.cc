@@ -12,6 +12,7 @@
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/payments/content/payment_ui_observer.h"
 #include "components/payments/content/secure_payment_confirmation_model.h"
+#include "components/payments/core/features.h"
 #include "components/payments/core/sizes.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -54,6 +55,15 @@ std::unique_ptr<views::View> CreateSpacer(
           /*width=*/1,
           views::LayoutProvider::Get()->GetDistanceMetric(vertical_distance)))
       .Build();
+}
+
+std::u16string GetTitleText(std::u16string title_text,
+                            std::u16string relying_party_id) {
+  if (!base::FeatureList::IsEnabled(
+          features::kSecurePaymentConfirmationInlineNetworkAndIssuerIcons)) {
+    return title_text;
+  }
+  return base::ReplaceStringPlaceholders(title_text, relying_party_id, nullptr);
 }
 
 }  // namespace
@@ -170,7 +180,8 @@ void SecurePaymentConfirmationDialogView::OnModelUpdated() {
   SetButtonEnabled(ui::DIALOG_BUTTON_CANCEL, model_->cancel_button_enabled());
 
   SetAccessibleTitle(model_->title());
-  UpdateLabelView(DialogViewID::TITLE, model_->title());
+  UpdateLabelView(DialogViewID::TITLE,
+                  GetTitleText(model_->title(), model_->relying_party_id()));
   UpdateLabelView(DialogViewID::MERCHANT_LABEL, model_->merchant_label());
   UpdateLabelView(
       DialogViewID::MERCHANT_VALUE,
@@ -303,9 +314,29 @@ SecurePaymentConfirmationDialogView::CreateBodyView() {
       views::BoxLayout::CrossAxisAlignment::kStretch);
 
   std::unique_ptr<views::Label> title_text =
-      CreateSecurePaymentConfirmationTitleLabel(model_->title());
+      CreateSecurePaymentConfirmationTitleLabel(
+          GetTitleText(model_->title(), model_->relying_party_id()));
   title_text->SetID(static_cast<int>(DialogViewID::TITLE));
-  body_view->AddChildView(std::move(title_text));
+  if (base::FeatureList::IsEnabled(
+          features::kSecurePaymentConfirmationInlineNetworkAndIssuerIcons)) {
+    body_view->AddChildView(CreateSecurePaymentConfirmationInlineImageTitleView(
+        std::move(title_text), *model_->network_icon(),
+        static_cast<int>(DialogViewID::NETWORK_ICON), *model_->issuer_icon(),
+        static_cast<int>(DialogViewID::ISSUER_ICON)));
+
+    body_view->AddChildView(
+        CreateSpacer(views::DISTANCE_UNRELATED_CONTROL_VERTICAL));
+
+    auto description_text = std::make_unique<views::Label>(
+        model_->description(), views::style::CONTEXT_DIALOG_BODY_TEXT,
+        views::style::STYLE_SECONDARY);
+    description_text->SetID(static_cast<int>(DialogViewID::DESCRIPTION));
+    description_text->SetLineHeight(kDescriptionLineHeight);
+    description_text->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
+    body_view->AddChildView(std::move(description_text));
+  } else {
+    body_view->AddChildView(std::move(title_text));
+  }
 
   body_view->AddChildView(
       CreateSpacer(views::DISTANCE_RELATED_CONTROL_VERTICAL));
@@ -338,7 +369,9 @@ SecurePaymentConfirmationDialogView::CreateBodyView() {
   // Add the Network and Issuer icons, if the flag is enabled and an icon was
   // specified and successfully downloaded.
   if (base::FeatureList::IsEnabled(
-          blink::features::kSecurePaymentConfirmationNetworkAndIssuerIcons)) {
+          blink::features::kSecurePaymentConfirmationNetworkAndIssuerIcons) &&
+      !base::FeatureList::IsEnabled(
+          features::kSecurePaymentConfirmationInlineNetworkAndIssuerIcons)) {
     if (!model_->network_icon()->drawsNothing()) {
       body_view->AddChildView(
           CreateRowView(model_->network_label(), DialogViewID::NETWORK_LABEL,

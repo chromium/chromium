@@ -5082,6 +5082,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "inline-network-and-issuer-icons-for-secure-payment-confirmation",
+    "owners": ["smcgruer@chromium.org", "chrome-payments-team@google.com" ],
+    "expiry_milestone": 143
+  },
+  {
     "name": "insecure-download-warnings",
     "owners": [ "jdeblasio@chromium.org", "trusty-transport@chromium.org" ],
     "expiry_milestone": 120
