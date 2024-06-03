@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2022 The Chromium Authors)
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,8 @@
 #include <deque>
 #include <sstream>
 #include <string>
+#include <string_view>
 
-#include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -30,24 +30,27 @@
   ::policy::PolicyLogger::LogHelper(                                  \
       ::policy::PolicyLogger::LogHelper::LogType::kVLog,              \
       ::policy::PolicyLogger::Log::Severity::kVerbose, log_verbosity, \
-      log_source, FROM_HERE)
+      log_source, std::string_view(__FILE__, std::size(__FILE__)), __LINE__)
 #define DVLOG_POLICY(log_verbosity, log_source)                       \
   ::policy::PolicyLogger::LogHelper(                                  \
       ::policy::PolicyLogger::LogHelper::LogType::kDLog,              \
       ::policy::PolicyLogger::Log::Severity::kVerbose, log_verbosity, \
-      log_source, FROM_HERE)
-#define LOG_POLICY_INFO(log_type, log_source)                 \
-  ::policy::PolicyLogger::LogHelper(                          \
-      log_type, ::policy::PolicyLogger::Log::Severity::kInfo, \
-      ::policy::PolicyLogger::LogHelper::kNoVerboseLog, log_source, FROM_HERE)
-#define LOG_POLICY_WARNING(log_type, log_source)                 \
-  ::policy::PolicyLogger::LogHelper(                             \
-      log_type, ::policy::PolicyLogger::Log::Severity::kWarning, \
-      ::policy::PolicyLogger::LogHelper::kNoVerboseLog, log_source, FROM_HERE)
-#define LOG_POLICY_ERROR(log_type, log_source)                 \
-  ::policy::PolicyLogger::LogHelper(                           \
-      log_type, ::policy::PolicyLogger::Log::Severity::kError, \
-      ::policy::PolicyLogger::LogHelper::kNoVerboseLog, log_source, FROM_HERE)
+      log_source, std::string_view(__FILE__, std::size(__FILE__)), __LINE__)
+#define LOG_POLICY_INFO(log_type, log_source)                       \
+  ::policy::PolicyLogger::LogHelper(                                \
+      log_type, ::policy::PolicyLogger::Log::Severity::kInfo,       \
+      ::policy::PolicyLogger::LogHelper::kNoVerboseLog, log_source, \
+      std::string_view(__FILE__, std::size(__FILE__)), __LINE__)
+#define LOG_POLICY_WARNING(log_type, log_source)                    \
+  ::policy::PolicyLogger::LogHelper(                                \
+      log_type, ::policy::PolicyLogger::Log::Severity::kWarning,    \
+      ::policy::PolicyLogger::LogHelper::kNoVerboseLog, log_source, \
+      std::string_view(__FILE__, std::size(__FILE__)), __LINE__)
+#define LOG_POLICY_ERROR(log_type, log_source)                      \
+  ::policy::PolicyLogger::LogHelper(                                \
+      log_type, ::policy::PolicyLogger::Log::Severity::kError,      \
+      ::policy::PolicyLogger::LogHelper::kNoVerboseLog, log_source, \
+      std::string_view(__FILE__, std::size(__FILE__)), __LINE__)
 
 #define POLICY_AUTH ::policy::PolicyLogger::Log::Source::kAuthentication
 #define POLICY_PROCESSING ::policy::PolicyLogger::Log::Source::kPolicyProcessing
@@ -81,7 +84,8 @@ class POLICY_EXPORT PolicyLogger {
     Log(const Severity log_severity,
         const Source log_source,
         const std::string& message,
-        const base::Location location);
+        const std::string_view file,
+        const int line);
     Log(const Log&) = delete;
     Log& operator=(const Log&) = delete;
     Log(Log&&) = default;
@@ -91,7 +95,8 @@ class POLICY_EXPORT PolicyLogger {
     Severity log_severity() const { return log_severity_; }
     Source log_source() const { return log_source_; }
     const std::string& message() const { return message_; }
-    base::Location location() const { return location_; }
+    const std::string_view& file() const { return file_; }
+    int line() const { return line_; }
     base::Time timestamp() const { return timestamp_; }
 
     base::Value::Dict GetAsDict() const;
@@ -100,7 +105,8 @@ class POLICY_EXPORT PolicyLogger {
     Severity log_severity_;
     Source log_source_;
     std::string message_;
-    base::Location location_;
+    std::string_view file_;
+    int line_;
     base::Time timestamp_;
   };
 
@@ -118,7 +124,8 @@ class POLICY_EXPORT PolicyLogger {
               const PolicyLogger::Log::Severity log_severity,
               const int log_verbosity,
               const PolicyLogger::Log::Source log_source,
-              const base::Location location);
+              const std::string_view file,
+              const int line);
     LogHelper(const LogHelper&) = delete;
     LogHelper& operator=(const LogHelper&) = delete;
     LogHelper(LogHelper&&) = delete;
@@ -141,7 +148,8 @@ class POLICY_EXPORT PolicyLogger {
     int log_verbosity_;
     PolicyLogger::Log::Source log_source_;
     std::ostringstream message_buffer_;
-    base::Location location_;
+    std::string_view file_;
+    int line_;
   };
 
   static constexpr base::TimeDelta kTimeToLive = base::Minutes(30);

@@ -78,13 +78,13 @@ int GetLogSeverityInt(const PolicyLogger::Log::Severity log_severity) {
 
 // Constructs the URL for Chromium Code Search that points to the line of code
 // that generated the log and the Chromium git revision hash.
-std::string GetLineURL(const base::Location location) {
+std::string GetLineURL(const char* file, int line) {
   std::string last_change(version_info::GetLastChange());
 
   // The substring separates the last change commit hash from the branch name on
   // the '-'.
   return base::StringPrintf(
-      kChromiumCSUrlFormat, location.file_name(), location.line_number(),
+      kChromiumCSUrlFormat, file, line,
       last_change.substr(0, last_change.find('-')).c_str());
 }
 
@@ -98,11 +98,13 @@ bool IsLogExpired(PolicyLogger::Log& log) {
 PolicyLogger::Log::Log(const Severity log_severity,
                        const Source log_source,
                        const std::string& message,
-                       const base::Location location)
+                       const std::string_view file,
+                       const int line)
     : log_severity_(log_severity),
       log_source_(log_source),
       message_(message),
-      location_(location),
+      file_(file),
+      line_(line),
       timestamp_(base::Time::Now()) {}
 PolicyLogger* PolicyLogger::GetInstance() {
   static base::NoDestructor<PolicyLogger> instance;
@@ -114,16 +116,18 @@ PolicyLogger::LogHelper::LogHelper(
     const PolicyLogger::Log::Severity log_severity,
     const int log_verbosity,
     const PolicyLogger::Log::Source log_source,
-    const base::Location location)
+    const std::string_view file,
+    const int line)
     : log_type_(log_type),
       log_severity_(log_severity),
       log_verbosity_(log_verbosity),
       log_source_(log_source),
-      location_(location) {}
+      file_(file),
+      line_(line) {}
 
 PolicyLogger::LogHelper::~LogHelper() {
-    policy::PolicyLogger::GetInstance()->AddLog(PolicyLogger::Log(
-        log_severity_, log_source_, message_buffer_.str(), location_));
+  policy::PolicyLogger::GetInstance()->AddLog(PolicyLogger::Log(
+      log_severity_, log_source_, message_buffer_.str(), file_, line_));
   StreamLog();
 }
 
@@ -137,22 +141,18 @@ void PolicyLogger::LogHelper::StreamLog() const {
   // Check for verbose logging.
   if (log_verbosity_ != policy::PolicyLogger::LogHelper::kNoVerboseLog) {
     LAZY_STREAM(
-        ::logging::LogMessage(location_.file_name(), location_.line_number(),
-                              -(log_verbosity_))
-            .stream(),
+        ::logging::LogMessage(file_.data(), line_, -(log_verbosity_)).stream(),
         log_verbosity_ <=
-            ::logging::GetVlogLevelHelper(location_.file_name(),
-                                          strlen(location_.file_name()) + 1))
+            ::logging::GetVlogLevelHelper(file_.data(), file_.size()))
         << message_buffer_.str();
     return;
   }
 
   int log_severity_int = GetLogSeverityInt(log_severity_);
 
-  LAZY_STREAM(::logging::LogMessage(location_.file_name(),
-                                    location_.line_number(), log_severity_int)
-                  .stream(),
-              ::logging::ShouldCreateLogMessage(log_severity_int))
+  LAZY_STREAM(
+      ::logging::LogMessage(file_.data(), line_, log_severity_int).stream(),
+      ::logging::ShouldCreateLogMessage(log_severity_int))
       << message_buffer_.str();
 }
 
@@ -161,7 +161,7 @@ base::Value::Dict PolicyLogger::Log::GetAsDict() const {
   log_dict.Set("message", base::EscapeForHTML(message_));
   log_dict.Set("logSeverity", GetLogSeverity(log_severity_));
   log_dict.Set("logSource", GetLogSourceValue(log_source_));
-  log_dict.Set("location", GetLineURL(location_));
+  log_dict.Set("location", GetLineURL(file_.data(), line_));
   log_dict.Set("timestamp", base::TimeFormatHTTP(timestamp_));
   return log_dict;
 }
