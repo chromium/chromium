@@ -273,6 +273,7 @@ class WebViewTest : public testing::Test {
     MemoryCache::Get()->EvictResources();
     // Clear lazily loaded style sheets.
     CSSDefaultStyleSheets::Instance().PrepareForLeakDetection();
+    ThreadState::Current()->CollectAllGarbageForTesting();
   }
 
  protected:

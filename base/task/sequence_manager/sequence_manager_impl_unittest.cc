@@ -663,6 +663,7 @@ TEST_P(SequenceManagerTest,
   // Now is called when we start work and then for each task when it's
   // completed. 1 + 6  = 7 calls.
   EXPECT_EQ(7 + GetExtraNowSampleCount(), GetNowTicksCallCount());
+  sequence_manager()->RemoveTaskTimeObserver(&time_observer);
 }
 
 TEST_P(SequenceManagerTest,
@@ -688,6 +689,7 @@ TEST_P(SequenceManagerTest,
   // Now is called each time a task is queued, when first task is started
   // running, and when a task is completed. 1 + 6 * 2 = 13 calls.
   EXPECT_EQ(13 + GetExtraNowSampleCount(), GetNowTicksCallCount());
+  sequence_manager()->RemoveTaskTimeObserver(&time_observer);
 }
 
 void NullTask() {}
@@ -4191,6 +4193,7 @@ TEST_P(SequenceManagerTest, ProcessTasksWithTaskTimeObservers) {
   EXPECT_TRUE(GetTaskQueueImpl(queue.get())->RequiresTaskTiming());
   EXPECT_THAT(run_order, ElementsAre(1u, 2u, 3u, 4u, 5u, 6u, 7u, 8u));
   UnsetOnTaskHandlers(queue.get());
+  sequence_manager()->RemoveTaskTimeObserver(&test_task_time_observer);
 }
 
 TEST_P(SequenceManagerTest, ObserverNotFiredAfterTaskQueueDestructed) {

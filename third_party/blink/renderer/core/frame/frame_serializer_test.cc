@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_error.h"
 #include "third_party/blink/renderer/platform/mhtml/serialized_resource.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
@@ -65,6 +66,10 @@ class FrameSerializerTest : public testing::Test,
       : folder_("frameserializer/"),
         base_url_(url_test_helpers::ToKURL("http://www.test.com")) {}
 
+  ~FrameSerializerTest() override {
+    ThreadState::Current()->CollectAllGarbageForTesting();
+  }
+
  protected:
   void SetUp() override {
     // We want the images to load.
@@ -74,6 +79,7 @@ class FrameSerializerTest : public testing::Test,
   void TearDown() override {
     URLLoaderMockFactory::GetSingletonInstance()
         ->UnregisterAllURLsAndClearMemoryCache();
+    helper_.Reset();
   }
 
   void SetBaseFolder(const char* folder) { folder_ = folder; }
