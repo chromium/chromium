@@ -39,7 +39,7 @@ using ::testing::Values;
 class MahiErrorStatusViewPixelTestBase : public AshTestBase {
  protected:
   void ShowMahiPanel() {
-    mahi_panel_widget_ = MahiPanelWidget::CreatePanelWidget(
+    mahi_panel_widget_ = MahiPanelWidget::CreateAndShowPanelWidget(
         GetPrimaryDisplay().id(), /*mahi_menu_bounds=*/gfx::Rect(),
         ui_controller());
     mahi_panel_widget_->Show();
@@ -100,7 +100,7 @@ TEST_P(MahiErrorStatusViewPixelTest, Basics) {
           mahi_constants::ViewId::kErrorStatusView);
   ASSERT_TRUE(error_status_view);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "basics", /*revision_number=*/3, error_status_view));
+      "basics", /*revision_number=*/4, error_status_view));
 }
 
 // MahiInappropriateQuestionPixelTest ------------------------------------------
@@ -132,7 +132,7 @@ TEST_F(MahiInappropriateQuestionPixelTest, InappropriateError) {
   LeftClickOn(send_button);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "basics", /*revision_number=*/0,
+      "basics", /*revision_number=*/1,
       mahi_contents_view->GetViewByID(mahi_constants::ViewId::kScrollView)));
 }
 

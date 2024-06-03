@@ -14,11 +14,16 @@
 #include "ash/system/mahi/mahi_ui_controller.h"
 #include "ash/system/mahi/refresh_banner_view.h"
 #include "ui/aura/window.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/outsets.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 
@@ -31,22 +36,57 @@ constexpr int kPanelBoundsPadding = 8;
 
 constexpr char kWidgetName[] = "MahiPanel";
 
-gfx::Rect CalculateInitialWidgetBounds(aura::Window* root_window) {
-  auto display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(root_window);
-  auto bottom_right = display.work_area().bottom_right();
+// TODO(b/319731776): Use panel bounds in size calculations instead of
+// `kPanelDefaultWidth` and `kPanelDefaultHeight` when the panel is resizable.
 
-  // The panel is positioned at the bottom right corner of the screen.
-  // TODO(b/319476980): Make sure Mahi main panel bounds work when shelf
-  // alignment changes.
-  // TODO(b/319731776): Use panel bounds here instead of `kPanelDefaultWidth`
-  // and `kPanelDefaultHeight` when the panel is resizable.
-  return gfx::Rect(bottom_right.x() - mahi_constants::kPanelDefaultWidth -
-                       kPanelBoundsPadding,
-                   bottom_right.y() - mahi_constants::kPanelDefaultHeight -
-                       kPanelBoundsPadding,
-                   mahi_constants::kPanelDefaultWidth,
-                   mahi_constants::kPanelDefaultHeight);
+bool IsSpaceAvailableOnRight(const gfx::Rect& screen_work_area,
+                             const gfx::Rect& mahi_menu_bounds) {
+  return mahi_menu_bounds.x() + mahi_constants::kPanelDefaultWidth <
+         screen_work_area.right();
+}
+
+int CalculateAvailableSpaceOnBottom(const gfx::Rect& screen_work_area,
+                                    const gfx::Rect& mahi_menu_bounds) {
+  return screen_work_area.bottom() - mahi_menu_bounds.y() -
+         mahi_constants::kPanelDefaultHeight - kPanelBoundsPadding;
+}
+
+gfx::Rect CalculateAnimationStartBounds(const gfx::Rect& mahi_menu_bounds) {
+  const gfx::Rect screen_work_area = display::Screen::GetScreen()
+                                         ->GetDisplayMatching(mahi_menu_bounds)
+                                         .work_area();
+
+  return gfx::Rect(
+      IsSpaceAvailableOnRight(screen_work_area, mahi_menu_bounds)
+          ? mahi_menu_bounds.x()
+          : mahi_menu_bounds.right() - mahi_constants::kPanelDefaultWidth,
+      CalculateAvailableSpaceOnBottom(screen_work_area, mahi_menu_bounds)
+          ? mahi_menu_bounds.y()
+          : mahi_menu_bounds.bottom() - mahi_menu_bounds.height(),
+      mahi_constants::kPanelDefaultWidth, mahi_menu_bounds.height());
+}
+
+gfx::Rect CalculateInitialWidgetBounds(const gfx::Rect& mahi_menu_bounds) {
+  const gfx::Rect screen_work_area = display::Screen::GetScreen()
+                                         ->GetDisplayMatching(mahi_menu_bounds)
+                                         .work_area();
+
+  int available_space_on_bottom =
+      CalculateAvailableSpaceOnBottom(screen_work_area, mahi_menu_bounds);
+
+  // The `MahiPanelWidget` will be aligned with the top of the
+  // mahi context menu when possible. Otherwise we will try to keep the top of
+  // the `MahiPanelWidget` as close to the top of the mahi context menu as
+  // possible. This is to provide a seamless transition between the context menu
+  // and the panel.
+  return gfx::Rect(
+      IsSpaceAvailableOnRight(screen_work_area, mahi_menu_bounds)
+          ? mahi_menu_bounds.x()
+          : mahi_menu_bounds.right() - mahi_constants::kPanelDefaultWidth,
+      available_space_on_bottom > 0
+          ? mahi_menu_bounds.y()
+          : mahi_menu_bounds.y() + available_space_on_bottom,
+      mahi_constants::kPanelDefaultWidth, mahi_constants::kPanelDefaultHeight);
 }
 
 }  // namespace
@@ -77,7 +117,7 @@ MahiPanelWidget::MahiPanelWidget(InitParams params,
 MahiPanelWidget::~MahiPanelWidget() = default;
 
 // static
-views::UniqueWidgetPtr MahiPanelWidget::CreatePanelWidget(
+views::UniqueWidgetPtr MahiPanelWidget::CreateAndShowPanelWidget(
     int64_t display_id,
     const gfx::Rect& mahi_menu_bounds,
     MahiUiController* ui_controller) {
@@ -96,8 +136,14 @@ views::UniqueWidgetPtr MahiPanelWidget::CreatePanelWidget(
 
   views::UniqueWidgetPtr widget =
       std::make_unique<MahiPanelWidget>(std::move(params), ui_controller);
+  widget->SetBounds(CalculateInitialWidgetBounds(mahi_menu_bounds));
 
-  widget->SetBounds(CalculateInitialWidgetBounds(root_window));
+  widget->Show();
+
+  views::AsViewClass<MahiPanelView>(widget->GetContentsView()->GetViewByID(
+                                        mahi_constants::ViewId::kMahiPanelView))
+      ->AnimatePopIn(CalculateAnimationStartBounds(mahi_menu_bounds));
+
   return widget;
 }
 

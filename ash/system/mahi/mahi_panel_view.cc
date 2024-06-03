@@ -32,6 +32,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "build/branding_buildflags.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "chromeos/components/mahi/public/cpp/views/experiment_badge.h"
@@ -48,6 +49,7 @@
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/text_constants.h"
+#include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -123,6 +125,9 @@ constexpr int kFeedbackButtonSpacing = kFeedbackButtonIconPaddingBetween - 4;
 constexpr int kScrollViewAndAskQuestionSpacing = 8;
 
 constexpr int kFooterSpacing = 1;
+
+constexpr base::TimeDelta kPanelShowAnimationDelay = base::Milliseconds(50);
+constexpr base::TimeDelta kPanelShowAnimationDuration = base::Milliseconds(300);
 
 // Sets focus ring for `question_textfield`. Insets need to be negative so it
 // can exceed the textfield bounds and cover the entire container.
@@ -507,14 +512,8 @@ MahiPanelView::MahiPanelView(MahiUiController* ui_controller)
       open_time_(base::TimeTicks::Now()) {
   CHECK(ui_controller_);
 
-  SetOrientation(views::LayoutOrientation::kVertical);
-  SetMainAxisAlignment(views::LayoutAlignment::kStart);
-  SetInteriorMargin(mahi_constants::kPanelPadding);
-  SetDefault(views::kMarginsKey, gfx::Insets::VH(kPanelChildSpacing, 0));
-  SetIgnoreDefaultMainAxisMargins(true);
-  SetCollapseMargins(true);
   SetID(mahi_constants::ViewId::kMahiPanelView);
-
+  SetUseDefaultFillLayout(true);
   SetBackground(views::CreateThemedRoundedRectBackground(
       cros_tokens::kCrosSysSystemBaseElevated,
       mahi_constants::kPanelCornerRadius));
@@ -532,16 +531,34 @@ MahiPanelView::MahiPanelView(MahiUiController* ui_controller)
       views::HighlightBorder::Type::kHighlightBorderOnShadow,
       /*insets_type=*/views::HighlightBorder::InsetsType::kHalfInsets));
 
-  AddChildView(CreateHeaderRow());
+  // The `main_container` is used to anchor the contents to the middle of the
+  // panel when its size is animating. The anchoring to middle effect is
+  // achieved by setting a transform on the `main_container`s layer and
+  // animating it.
+  main_container_ =
+      AddChildView(views::Builder<views::FlexLayoutView>()
+                       .SetID(mahi_constants::ViewId::kMahiPanelMainContainer)
+                       .SetOrientation(views::LayoutOrientation::kVertical)
+                       .SetMainAxisAlignment(views::LayoutAlignment::kStart)
+                       .SetInteriorMargin(mahi_constants::kPanelPadding)
+                       .SetIgnoreDefaultMainAxisMargins(true)
+                       .SetCollapseMargins(true)
+                       .SetPaintToLayer()
+                       .Build());
+  main_container_->layer()->SetFillsBoundsOpaquely(false);
+  main_container_->SetDefault(views::kMarginsKey,
+                              gfx::Insets::VH(kPanelChildSpacing, 0));
+  main_container_->AddChildView(CreateHeaderRow());
 
   // Add a button which shows the content source icon and title.
-  AddChildView(views::Builder<MahiContentSourceButton>()
-                   .CopyAddressTo(&content_source_button_)
-                   .SetID(mahi_constants::ViewId::kContentSourceButton)
-                   .Build());
+  main_container_->AddChildView(
+      views::Builder<MahiContentSourceButton>()
+          .CopyAddressTo(&content_source_button_)
+          .SetID(mahi_constants::ViewId::kContentSourceButton)
+          .Build());
 
   // Add a scrollable view of the panel's content, with a feedback section.
-  AddChildView(
+  main_container_->AddChildView(
       views::Builder<views::View>()
           .SetID(mahi_constants::ViewId::kPanelContentsContainer)
           .SetUseDefaultFillLayout(true)
@@ -602,7 +619,7 @@ MahiPanelView::MahiPanelView(MahiUiController* ui_controller)
   // Add a row for processing user input that includes a textfield, send button
   // and a back to Q&A button when in the summary section.
   views::FlexLayoutView* ask_question_container = nullptr;
-  AddChildView(
+  main_container_->AddChildView(
       views::Builder<views::FlexLayoutView>()
           .CustomConfigure(base::BindOnce([](views::FlexLayoutView* layout) {
             layout->SetDefault(
@@ -663,7 +680,7 @@ MahiPanelView::MahiPanelView(MahiUiController* ui_controller)
   question_textfield_->RemoveHoverEffect();
   InstallTextfieldFocusRing(question_textfield_, send_button_);
 
-  AddChildView(
+  main_container_->AddChildView(
       views::Builder<views::BoxLayoutView>()
           .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
           .SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kCenter)
@@ -699,6 +716,31 @@ void MahiPanelView::OnMouseEvent(ui::MouseEvent* event) {
 
 void MahiPanelView::OnGestureEvent(ui::GestureEvent* event) {
   HandleDragEventIfNeeded(event);
+}
+
+void MahiPanelView::AnimatePopIn(const gfx::Rect& start_bounds) {
+  gfx::Rect end_bounds = GetBoundsInScreen();
+
+  // Add a clip rect to reduce the panel's visible area to the provided
+  // `start_bounds`.
+  auto clip_rect = start_bounds - end_bounds.OffsetFromOrigin();
+  layer()->SetClipRect(clip_rect);
+
+  // Anchor the panel's contents to the center of the visible area.
+  auto y_offset = start_bounds.CenterPoint().y() -
+                  main_container_->GetBoundsInScreen().CenterPoint().y();
+  gfx::Transform transform;
+  transform.Translate(gfx::Vector2d(0, y_offset));
+  main_container_->layer()->SetTransform(transform);
+
+  views::AnimationBuilder()
+      .Once()
+      .At(kPanelShowAnimationDelay)
+      .SetDuration(kPanelShowAnimationDuration)
+      .SetTransform(main_container_, gfx::Transform(),
+                    gfx::Tween::ACCEL_40_DECEL_100_3)
+      .SetClipRect(this, gfx::Rect(gfx::Point(), end_bounds.size()),
+                   gfx::Tween::ACCEL_40_DECEL_100_3);
 }
 
 std::unique_ptr<views::View> MahiPanelView::CreateHeaderRow() {

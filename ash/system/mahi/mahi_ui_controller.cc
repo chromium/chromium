@@ -77,9 +77,8 @@ void MahiUiController::OpenMahiPanel(int64_t display_id,
     return;
   }
 
-  mahi_panel_widget_ = MahiPanelWidget::CreatePanelWidget(
+  mahi_panel_widget_ = MahiPanelWidget::CreateAndShowPanelWidget(
       display_id, mahi_menu_bounds, /*ui_controller=*/this);
-  mahi_panel_widget_->Show();
 }
 
 void MahiUiController::CloseMahiPanel() {

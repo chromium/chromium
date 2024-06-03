@@ -14,7 +14,11 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
+#include "ui/compositor/layer.h"
+#include "ui/compositor/layer_animator.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/display.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/view.h"
@@ -60,25 +64,72 @@ class MahiPanelWidgetTest : public AshTestBase {
 };
 
 TEST_F(MahiPanelWidgetTest, DefaultWidgetBounds) {
-  auto* root_window = GetContext();
-  auto widget = MahiPanelWidget::CreatePanelWidget(
-      GetPrimaryDisplay().id(), /*mahi_menu_bounds=*/gfx::Rect(),
-      &ui_controller_);
+  auto widget = MahiPanelWidget::CreateAndShowPanelWidget(
+      GetPrimaryDisplay().id(),
+      /*mahi_menu_bounds=*/gfx::Rect(10, 10, 300, 300), &ui_controller_);
 
-  auto bottom_right = root_window->bounds().bottom_right();
+  // The mahi panel should have the same origin as the mahi_menu_bounds when
+  // there is enough space for it.
+  EXPECT_EQ(gfx::Rect(gfx::Point(10, 10),
+                      gfx::Size(kPanelDefaultWidth, kPanelDefaultHeight)),
+            widget->GetRestoredBounds());
+}
+
+TEST_F(MahiPanelWidgetTest, WidgetPositionWithConstrainedBottomSpace) {
+  UpdateDisplay("800x700");
+  // Place the menu 200px above the screen's bottom to ensure there is not
+  // enough space for the panel to align with the top of the mahi menu.
+  auto widget = MahiPanelWidget::CreateAndShowPanelWidget(
+      GetPrimaryDisplay().id(),
+      /*mahi_menu_bounds=*/gfx::Rect(100, 500, 300, 300), &ui_controller_);
+
+  // The panel's bottom should be `kPanelBoundsShelfPadding` pixels above the
+  // work_area's bottom.
   EXPECT_EQ(
-      gfx::Rect(
-          bottom_right.x() - kPanelDefaultWidth - kPanelBoundsShelfPadding,
-          bottom_right.y() - kPanelDefaultHeight -
-              ShelfConfig::Get()->shelf_size() - kPanelBoundsShelfPadding,
-          kPanelDefaultWidth, kPanelDefaultHeight),
-      widget->GetRestoredBounds());
+      display::Screen::GetScreen()->GetPrimaryDisplay().work_area().bottom() -
+          kPanelBoundsShelfPadding,
+      widget->GetRestoredBounds().bottom());
+}
+
+TEST_F(MahiPanelWidgetTest, WidgetPositionWithConstrainedRightSpace) {
+  UpdateDisplay("800x700");
+
+  // Place the menu at the right edge of the screen to ensure there is not
+  // enough space for the panel to align with the left edge of the mahi menu.
+  auto widget = MahiPanelWidget::CreateAndShowPanelWidget(
+      GetPrimaryDisplay().id(),
+      /*mahi_menu_bounds=*/gfx::Rect(500, 100, 300, 300), &ui_controller_);
+
+  // The panel should be placed correctly within the work area.
+  EXPECT_EQ(
+      display::Screen::GetScreen()->GetPrimaryDisplay().work_area().right(),
+      widget->GetRestoredBounds().right());
+}
+
+TEST_F(MahiPanelWidgetTest, WidgetDestroyedDuringShowAnimation) {
+  // Enable animations.
+  ui::ScopedAnimationDurationScaleMode duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  auto widget = MahiPanelWidget::CreateAndShowPanelWidget(
+      GetPrimaryDisplay().id(),
+      /*mahi_menu_bounds=*/gfx::Rect(100, 100, 200, 200), &ui_controller_);
+
+  ASSERT_TRUE(widget->GetContentsView()
+                  ->GetViewByID(mahi_constants::ViewId::kMahiPanelView)
+                  ->layer()
+                  ->GetAnimator()
+                  ->is_animating());
+
+  // Expect the widget to close gracefully without a crash while an animation
+  // is in progress.
+  widget->CloseNow();
 }
 
 TEST_F(MahiPanelWidgetTest, WidgetBoundsAfterRefreshBannerUpdate) {
-  views::UniqueWidgetPtr panel_widget = MahiPanelWidget::CreatePanelWidget(
-      GetPrimaryDisplay().id(), /*mahi_menu_bounds=*/gfx::Rect(),
-      &ui_controller_);
+  views::UniqueWidgetPtr panel_widget =
+      MahiPanelWidget::CreateAndShowPanelWidget(
+          GetPrimaryDisplay().id(), /*mahi_menu_bounds=*/gfx::Rect(),
+          &ui_controller_);
   // Set the widget bounds to be different to the default bounds, so that we can
   // test that the panel location is preserved.
   panel_widget->SetBounds(gfx::Rect(100, 200, 300, 200));

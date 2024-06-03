@@ -27,8 +27,9 @@ class ASH_EXPORT MahiPanelWidget : public views::Widget, views::ViewObserver {
 
   ~MahiPanelWidget() override;
 
-  // Creates the Mahi panel widget within the display with `display_id`.
-  static views::UniqueWidgetPtr CreatePanelWidget(
+  // Creates and shows the panel widget with an animation. The widget is
+  // positioned based on the provided `mahi_menu_bounds` and `display_id`.
+  static views::UniqueWidgetPtr CreateAndShowPanelWidget(
       int64_t display_id,
       const gfx::Rect& mahi_menu_bounds,
       MahiUiController* ui_controller);
