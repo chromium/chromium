@@ -383,7 +383,7 @@ void CertificateManagerPageHandler::GetPolicyInformation(
   // TODO(crbug.com/40928765): figure out how this should be displayed for
   // ChromeOS
   cert_policy_info->include_system_trust_store = true;
-  cert_policy_info->system_import_policy_managed = false;
+  cert_policy_info->is_include_system_trust_store_managed = false;
 #endif
   std::move(callback).Run(std::move(cert_policy_info));
 }

@@ -87,17 +87,14 @@ suite('Main', function() {
   });
 
   test('ChromeRootStorePage', async function() {
+    // Chrome Root Store Help link should not be present since
+    // kEnableCertManagementUIV2 feature flag is enabled by
+    // SettingsSecurityPageTest constructor.
+    // TODO(crbug.com/40928765): remove this comment once the feature flag is
+    // set to default enabled.
     const row =
         page.shadowRoot!.querySelector<HTMLElement>('#chromeCertificates');
-    // <if expr="is_chromeos">
-    assertTrue(!!row, 'Chrome Root Store Help Center link not found');
-    row.click();
-    const url = await openWindowProxy.whenCalled('openUrl');
-    assertEquals(url, loadTimeData.getString('chromeRootStoreHelpCenterURL'));
-    // </if>
-    // <if expr="not is_chromeos">
     assertFalse(!!row, 'Chrome Root Store Help Center link unexpectedly found');
-    // </if>
   });
 
   // <if expr="not chromeos_lacros">

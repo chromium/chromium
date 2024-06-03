@@ -53,7 +53,8 @@ declare_args() {
   # shows the Chrome Root Store. This is specific to the v2 UI that is
   # supported on all desktop platforms, as opposed to the v1 UI which is only
   # supported on platforms using NSS (Linux and CrOS).
-  chrome_root_store_cert_management_ui = is_win || is_mac || is_linux
+  chrome_root_store_cert_management_ui =
+      is_win || is_mac || is_linux || is_chromeos
 
   # Enables support for background apps.
   enable_background_contents = !is_android

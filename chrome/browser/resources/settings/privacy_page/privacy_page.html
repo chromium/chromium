@@ -96,32 +96,17 @@
             role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
       </div>
 
-<if expr="is_chromeos">
+<if expr="use_nss_certs">
       <template is="dom-if" route-path="/certificates">
         <settings-subpage
             associated-control="[[$$('#securityLinkRow')]]"
             page-title="$i18n{manageCertificates}">
-          <certificate-manager></certificate-manager>
-        </settings-subpage>
-      </template>
-</if>
-
-<if expr="not is_chromeos and use_nss_certs">
-      <template is="dom-if" route-path="/certificates">
-        <settings-subpage
-            associated-control="[[$$('#securityLinkRow')]]"
-            page-title="$i18n{manageCertificates}">
-<if expr="chrome_root_store_cert_management_ui">
           <template is="dom-if" if="[[!enableCertManagementUIV2_]]">
             <certificate-manager></certificate-manager>
           </template>
           <template is="dom-if" if="[[enableCertManagementUIV2_]]">
             <certificate-manager-v2></certificate-manager-v2>
           </template>
-</if>
-<if expr="not chrome_root_store_cert_management_ui">
-          <certificate-manager></certificate-manager>
-</if>
         </settings-subpage>
       </template>
 </if>

@@ -108,22 +108,10 @@ suite('PrivacyPage', function() {
     Router.getInstance().navigateTo(routes.BASIC);
   });
 
-  // <if expr="is_chromeos">
-  // Old certificate manager shown on ChromeOS.
-  test('certificate_manager_visibility', function() {
-    Router.getInstance().navigateTo(routes.CERTIFICATES);
-    const certManager = page.shadowRoot!.querySelector('certificate-manager');
-    assertTrue(
-        !!certManager, 'did not find expected <certificate-manager> tag');
-    const certManagerV2 =
-        page.shadowRoot!.querySelector('certificate-manager-v2')!;
-    assertFalse(
-        !!certManagerV2, 'found unexpected <certificate-manager-v2> tag');
-  });
-  // </if>
-
-  // <if expr="not is_chromeos">
-  // New certificate manager shown on other desktop platforms.
+  // New certificate manager should be shown since kEnableCertManagementUIV2
+  // feature flag is enabled in SettingsSecurityPageTest constructor.
+  // TODO(crbug.com/40928765): remove this comment once the feature flag is
+  // set to default enabled.
   test('certificate_manager_visibility', function() {
     Router.getInstance().navigateTo(routes.CERTIFICATES);
     const certManager = page.shadowRoot!.querySelector('certificate-manager')!;
@@ -133,8 +121,6 @@ suite('PrivacyPage', function() {
     assertTrue(
         !!certManagerV2, 'did not find expected <certificate-manager-v2> tag');
   });
-  // </if>
-
 
   test('showClearBrowsingDataDialog', function() {
     assertFalse(!!page.shadowRoot!.querySelector(
