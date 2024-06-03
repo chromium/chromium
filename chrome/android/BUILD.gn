@@ -2686,6 +2686,7 @@ if (current_toolchain == default_toolchain) {
       "java/src/org/chromium/chrome/browser/media/ui/ChromeMediaNotificationControllerServices.java",
       "java/src/org/chromium/chrome/browser/metrics/SimpleStartupForegroundSessionDetector.java",
       "java/src/org/chromium/chrome/browser/metrics/UmaUtils.java",
+      "java/src/org/chromium/chrome/browser/notifications/NotificationIntentInterceptorService.java",
       "java/src/org/chromium/chrome/browser/notifications/NotificationJobService.java",
       "java/src/org/chromium/chrome/browser/notifications/NotificationService.java",
       "java/src/org/chromium/chrome/browser/photo_picker/DecoderService.java",

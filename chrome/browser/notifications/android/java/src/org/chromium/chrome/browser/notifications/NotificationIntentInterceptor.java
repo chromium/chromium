@@ -19,8 +19,6 @@ import androidx.annotation.Nullable;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
-import org.chromium.build.annotations.IdentifierNameString;
-import org.chromium.chrome.browser.base.SplitCompatIntentService;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
 
@@ -78,20 +76,10 @@ public class NotificationIntentInterceptor {
         }
     }
 
-    public static final class Service extends SplitCompatIntentService {
-        private static @IdentifierNameString String sImplClassName =
-                "org.chromium.chrome.browser.notifications."
-                        + "NotificationIntentInterceptor$Service$Impl";
-
-        public static final class Impl extends SplitCompatIntentService.Impl {
-            @Override
-            protected void onHandleIntent(Intent intent) {
-                processIntent(ContextUtils.getApplicationContext(), intent);
-            }
-        }
-
-        public Service() {
-            super(sImplClassName, TAG);
+    public static final class ServiceImpl extends NotificationIntentInterceptorService.Impl {
+        @Override
+        protected void onHandleIntent(Intent intent) {
+            processIntent(ContextUtils.getApplicationContext(), intent);
         }
     }
 
@@ -178,7 +166,7 @@ public class NotificationIntentInterceptor {
         Context applicationContext = ContextUtils.getApplicationContext();
         Intent intent = null;
         if (shouldUseService) {
-            intent = new Intent(applicationContext, Service.class);
+            intent = new Intent(applicationContext, NotificationIntentInterceptorService.class);
         } else if (shouldUseBroadcast) {
             intent = new Intent(applicationContext, Receiver.class);
         } else {
