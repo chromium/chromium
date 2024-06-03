@@ -1415,6 +1415,8 @@ chromium-metrics-reviews@google.com.
     architecture changes, the shortcut version number has been updated, and when
     the user denies use of protocol handlers or file handlers, which occurs on
     launch of those respective features.
+
+    Before 2024/06 on macOS some successes were incorrectly counted as failures.
   </summary>
 </histogram>
 

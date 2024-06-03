@@ -571,7 +571,7 @@ TEST_F(WebAppShortcutCreatorTest, UpdateShortcuts) {
   EXPECT_TRUE(base::DeletePathRecursively(other_shim_path.Append("Contents")));
 
   updated_paths.clear();
-  EXPECT_FALSE(shortcut_creator.UpdateShortcuts(false, &updated_paths));
+  EXPECT_TRUE(shortcut_creator.UpdateShortcuts(false, &updated_paths));
   EXPECT_TRUE(updated_paths.empty());
   EXPECT_FALSE(base::PathExists(shim_path_));
   EXPECT_FALSE(base::PathExists(other_shim_path.Append("Contents")));

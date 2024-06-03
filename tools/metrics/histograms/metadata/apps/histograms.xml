@@ -2311,10 +2311,10 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Apps.CreateShortcuts.Mac.Result"
+<histogram name="Apps.CreateShortcuts.Mac.Result2"
     enum="WebAppCreateShortcutMacResult" expires_after="2024-11-03">
-  <owner>phillis@chromium.org</owner>
-  <owner>cmumford@chromium.org</owner>
+  <owner>mek@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
   <summary>
     Records the result of creating shortcut for web app on MacOS.
   </summary>
