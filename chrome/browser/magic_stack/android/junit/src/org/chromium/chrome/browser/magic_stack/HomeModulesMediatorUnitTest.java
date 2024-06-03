@@ -576,7 +576,7 @@ public class HomeModulesMediatorUnitTest {
     @SmallTest
     @EnableFeatures({ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID})
     public void testGetFilteredEnabledModuleSet_CombineTabs_TabResumptionEnabled() {
-        HomeModulesMetricsUtils.HOME_MODULES_COMBINE_TABS.setForTesting(true);
+        HomeModulesMetricsUtils.TAB_RESUMPTION_COMBINE_TABS.setForTesting(true);
         when(mHomeModulesConfigManager.getEnabledModuleSet())
                 .thenReturn(
                         new HashSet<>(
@@ -598,7 +598,7 @@ public class HomeModulesMediatorUnitTest {
         ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID,
     })
     public void testGetFilteredEnabledModuleSet_CombineTabs_TabResumptionDisabled() {
-        HomeModulesMetricsUtils.HOME_MODULES_COMBINE_TABS.setForTesting(true);
+        HomeModulesMetricsUtils.TAB_RESUMPTION_COMBINE_TABS.setForTesting(true);
         when(mHomeModulesConfigManager.getEnabledModuleSet())
                 .thenReturn(new HashSet<>(Set.of(ModuleType.SINGLE_TAB, ModuleType.PRICE_CHANGE)));
 

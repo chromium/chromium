@@ -709,7 +709,7 @@ public class HomeModulesMediator {
 
     @VisibleForTesting
     boolean combinedTabModules() {
-        return HomeModulesMetricsUtils.HOME_MODULES_COMBINE_TABS.getValue()
+        return HomeModulesMetricsUtils.TAB_RESUMPTION_COMBINE_TABS.getValue()
                 && ChromeFeatureList.sTabResumptionModuleAndroid.isEnabled();
     }
 

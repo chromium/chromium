@@ -22,7 +22,7 @@ public class TabResumptionModuleEnablement {
 
     static class LocalTab {
         static boolean isFeatureEnabled() {
-            return HomeModulesMetricsUtils.HOME_MODULES_COMBINE_TABS.getValue();
+            return HomeModulesMetricsUtils.TAB_RESUMPTION_COMBINE_TABS.getValue();
         }
 
         static boolean isAllowedByConfig() {

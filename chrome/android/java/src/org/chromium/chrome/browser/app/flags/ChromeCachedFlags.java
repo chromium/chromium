@@ -125,7 +125,7 @@ public class ChromeCachedFlags {
                         StartSurfaceConfiguration.LOGO_POLISH_MEDIUM_SIZE,
                         TabManagementFieldTrial.DELAY_TEMP_STRIP_TIMEOUT_MS,
                         HomeModulesMetricsUtils.HOME_MODULES_SHOW_ALL_MODULES,
-                        HomeModulesMetricsUtils.HOME_MODULES_COMBINE_TABS,
+                        HomeModulesMetricsUtils.TAB_RESUMPTION_COMBINE_TABS,
                         TabResumptionModuleUtils.TAB_RESUMPTION_DISABLE_BLEND,
                         TabResumptionModuleUtils.TAB_RESUMPTION_FETCH_LOCAL_TABS_BACKEND,
                         TabResumptionModuleUtils.TAB_RESUMPTION_MAX_TILES_NUMBER,

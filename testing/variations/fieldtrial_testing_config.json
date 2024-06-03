@@ -4565,9 +4565,6 @@
             "experiments": [
                 {
                     "name": "Enabled",
-                    "params": {
-                        "show_tabs_in_one_module": "true"
-                    },
                     "enable_features": [
                         "MagicStackAndroid",
                         "PriceChangeModule",
@@ -4588,6 +4585,7 @@
                     "params": {
                         "max_tiles_number": "1",
                         "show_see_more": "true",
+                        "show_tabs_in_one_module": "true",
                         "use_default_app_filter": "true",
                         "use_salient_image": "true"
                     },
