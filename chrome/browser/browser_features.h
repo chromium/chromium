@@ -23,6 +23,7 @@ BASE_DECLARE_FEATURE(kAppBoundEncryptionMetrics);
 #endif
 
 BASE_DECLARE_FEATURE(kAutocompleteActionPredictorConfidenceCutoff);
+BASE_DECLARE_FEATURE(kBookmarksTreeView);
 BASE_DECLARE_FEATURE(kBookmarkTriggerForPrerender2);
 BASE_DECLARE_FEATURE(kCertificateTransparencyAskBeforeEnabling);
 BASE_DECLARE_FEATURE(kClosedTabCache);

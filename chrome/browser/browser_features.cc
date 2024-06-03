@@ -29,6 +29,12 @@ BASE_FEATURE(kAutocompleteActionPredictorConfidenceCutoff,
              "AutocompleteActionPredictorConfidenceCutoff",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// This is used to enable an experiment for the bookmarks tree view in the
+// side panel, providing users with a hierarchical view of their bookmarks.
+BASE_FEATURE(kBookmarksTreeView,
+             "BookmarksTreeView",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // This flag is used for enabling Bookmark triggered prerendering. See
 // crbug.com/1422819 for more details of Bookmark triggered prerendering.
 BASE_FEATURE(kBookmarkTriggerForPrerender2,

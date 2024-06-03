@@ -9,6 +9,7 @@
 
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/page_image_service/image_service_factory.h"
@@ -179,6 +180,9 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
   source->AddBoolean("guestMode", profile->IsGuestSession());
   source->AddBoolean("incognitoMode", profile->IsIncognitoProfile());
   source->AddBoolean("isIncognitoModeAvailable", IsIncognitoModeAvailable());
+  source->AddBoolean(
+      "bookmarksTreeViewEnabled",
+      base::FeatureList::IsEnabled(features::kBookmarksTreeView));
   source->AddInteger(
       "sortOrder",
       prefs->GetInteger(bookmarks_webui::prefs::kBookmarksSortOrder));
