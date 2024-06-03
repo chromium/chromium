@@ -964,6 +964,8 @@ void LensOverlayController::ShowOverlayWidget() {
       views::Widget::GetWidgetForNativeWindow(top_level_native_window);
   overlay_widget_->StackAboveWidget(top_level_widget);
 
+  SetWebViewCornerRadii(corner_radii_);
+
   overlay_widget_->Show();
   // The overlay needs to be focused on show to immediately begin
   // receiving key events.
