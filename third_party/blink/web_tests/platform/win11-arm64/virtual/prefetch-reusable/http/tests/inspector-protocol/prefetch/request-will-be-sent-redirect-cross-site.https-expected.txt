@@ -95,10 +95,7 @@ Network.responseReceived{
 Network.responseReceivedExtraInfo{
     blockedCookies : [
     ]
-    cookiePartitionKey : {
-        hasCrossSiteAncestor : false
-        topLevelSite : https://127.0.0.1
-    }    
+    cookiePartitionKey : https://127.0.0.1
     cookiePartitionKeyOpaque : false
     exemptedCookies : [
     ]
@@ -244,10 +241,7 @@ Network.requestWillBeSent{
 Network.responseReceivedExtraInfo{
     blockedCookies : [
     ]
-    cookiePartitionKey : {
-        hasCrossSiteAncestor : false
-        topLevelSite : https://127.0.0.1
-    }
+    cookiePartitionKey : https://127.0.0.1
     cookiePartitionKeyOpaque : false
     exemptedCookies : [
     ]
@@ -333,10 +327,7 @@ Network.responseReceived{
 Network.responseReceivedExtraInfo{
     blockedCookies : [
     ]
-    cookiePartitionKey : {
-        hasCrossSiteAncestor : false
-        topLevelSite : https://localhost
-    }
+    cookiePartitionKey : https://localhost
     cookiePartitionKeyOpaque : false
     exemptedCookies : [
     ]

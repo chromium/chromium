@@ -172,16 +172,6 @@ std::optional<Network::CookieSameSite> BuildCookieSameSite(
       return std::nullopt;
   }
 }
-
-std::unique_ptr<Network::CookiePartitionKey> BuildCookiePartitionKey(
-    const std::string& top_level_site,
-    bool has_cross_site_ancestor) {
-  return Network::CookiePartitionKey::Create()
-      .SetTopLevelSite(top_level_site)
-      .SetHasCrossSiteAncestor(has_cross_site_ancestor)
-      .Build();
-}
-
 }  // namespace
 
 std::unique_ptr<Network::Cookie> BuildCookie(
@@ -212,15 +202,15 @@ std::unique_ptr<Network::Cookie> BuildCookie(
   }
   std::optional<net::CookiePartitionKey> partition_key = cookie.PartitionKey();
   if (partition_key) {
+    // TODO (crbug.com/326605834) Once ancestor chain bit changes are
+    // implemented update this method utilize the ancestor bit.
     if (partition_key->IsSerializeable()) {
       base::expected<net::CookiePartitionKey::SerializedCookiePartitionKey,
                      std::string>
           key_serialized_result =
               net::CookiePartitionKey::Serialize(partition_key);
       CHECK(key_serialized_result.has_value());
-      devtools_cookie->SetPartitionKey(BuildCookiePartitionKey(
-          key_serialized_result->TopLevelSite(),
-          key_serialized_result->has_cross_site_ancestor()));
+      devtools_cookie->SetPartitionKey(key_serialized_result->TopLevelSite());
     } else {
       devtools_cookie->SetPartitionKeyOpaque(partition_key->site().opaque());
       // IsSerializeable may return false when the partition key's site is not
@@ -300,7 +290,7 @@ std::vector<net::CanonicalCookie> FilterCookies(
     const std::string& name,
     const std::string& normalized_domain,
     const std::string& path,
-    Maybe<Network::CookiePartitionKey> partition_key) {
+    const std::string& partition_key) {
   std::vector<net::CanonicalCookie> result;
 
   for (const auto& cookie : cookies) {
@@ -310,32 +300,16 @@ std::vector<net::CanonicalCookie> FilterCookies(
       continue;
     if (!path.empty() && cookie.Path() != path)
       continue;
-
-    if (cookie.PartitionKey().has_value() != partition_key.has_value()) {
+    // TODO (crbug.com/326605834) Once ancestor chain bit changes are
+    // implemented update this method utilize the ancestor bit.
+    base::expected<net::CookiePartitionKey::SerializedCookiePartitionKey,
+                   std::string>
+        serialized_result =
+            net::CookiePartitionKey::Serialize(cookie.PartitionKey());
+    if (!serialized_result.has_value() ||
+        serialized_result->TopLevelSite() != partition_key) {
       continue;
     }
-
-    if (cookie.PartitionKey().has_value()) {
-      base::expected<net::CookiePartitionKey::SerializedCookiePartitionKey,
-                     std::string>
-          serialized_result =
-              net::CookiePartitionKey::Serialize(cookie.PartitionKey());
-
-      if (!serialized_result.has_value() ||
-          (serialized_result->TopLevelSite() !=
-           partition_key->GetTopLevelSite())) {
-        continue;
-      }
-      // TODO(crbug.com/328043119): Remove checks for
-      // AncestorChainBitEnabledInPartitionedCookies after feature is removed.
-      if (base::FeatureList::IsEnabled(
-              net::features::kAncestorChainBitEnabledInPartitionedCookies) &&
-          (serialized_result->has_cross_site_ancestor() !=
-           partition_key->GetHasCrossSiteAncestor())) {
-        continue;
-      }
-    }
-
     result.push_back(cookie);
   }
 
@@ -346,11 +320,11 @@ void DeleteFilteredCookies(network::mojom::CookieManager* cookie_manager,
                            const std::string& name,
                            const std::string& normalized_domain,
                            const std::string& path,
-                           Maybe<Network::CookiePartitionKey> partition_key,
+                           const std::string& partition_key,
                            std::unique_ptr<DeleteCookiesCallback> callback,
                            const std::vector<net::CanonicalCookie>& cookies) {
-  std::vector<net::CanonicalCookie> filtered_list = FilterCookies(
-      cookies, name, normalized_domain, path, std::move(partition_key));
+  std::vector<net::CanonicalCookie> filtered_list =
+      FilterCookies(cookies, name, normalized_domain, path, partition_key);
 
   base::RepeatingClosure barrier_closure = base::BarrierClosure(
       filtered_list.size(),
@@ -389,20 +363,19 @@ absl::variant<int, Response> GetCookieSourcePort(int source_port) {
 }  // namespace
 
 absl::variant<std::unique_ptr<net::CanonicalCookie>, Response>
-MakeCookieFromProtocolValues(
-    const std::string& name,
-    const std::string& value,
-    const std::string& url_spec,
-    const std::string& domain,
-    const std::string& path,
-    bool secure,
-    bool http_only,
-    const std::string& same_site,
-    double expires,
-    const std::string& priority,
-    const Maybe<std::string>& source_scheme,
-    const Maybe<int>& source_port,
-    Maybe<Network::CookiePartitionKey>& partition_key) {
+MakeCookieFromProtocolValues(const std::string& name,
+                             const std::string& value,
+                             const std::string& url_spec,
+                             const std::string& domain,
+                             const std::string& path,
+                             bool secure,
+                             bool http_only,
+                             const std::string& same_site,
+                             double expires,
+                             const std::string& priority,
+                             const Maybe<std::string>& source_scheme,
+                             const Maybe<int>& source_port,
+                             const Maybe<std::string>& partition_key) {
   std::string normalized_domain = domain;
 
   if (url_spec.empty() && domain.empty()) {
@@ -459,13 +432,14 @@ MakeCookieFromProtocolValues(
     cp = net::CookiePriority::COOKIE_PRIORITY_LOW;
 
   std::optional<net::CookiePartitionKey> cookie_partition_key;
-  if (partition_key.has_value() &&
-      !partition_key.value().GetTopLevelSite().empty()) {
+  if (partition_key.has_value() && !partition_key.value().empty()) {
+    // TODO (crbug.com/326605834) Once ancestor chain bit changes are
+    // implemented update this method utilize the ancestor bit.
     base::expected<net::CookiePartitionKey, std::string>
         deserialized_partition_key =
             net::CookiePartitionKey::FromUntrustedInput(
-                partition_key->GetTopLevelSite(),
-                partition_key->GetHasCrossSiteAncestor());
+                partition_key.value(), /*has_cross_site_ancestor=*/
+                true);
     if (!deserialized_partition_key.has_value()) {
       return Response::InvalidParams(
           "Deserializing cookie partition key failed");
@@ -1714,7 +1688,7 @@ void NetworkHandler::SetCookie(const std::string& name,
                                Maybe<bool> same_party,
                                Maybe<std::string> source_scheme,
                                Maybe<int> source_port,
-                               Maybe<Network::CookiePartitionKey> partition_key,
+                               Maybe<std::string> partition_key,
                                std::unique_ptr<SetCookieCallback> callback) {
   if (!storage_partition_) {
     callback->sendFailure(Response::InternalError());
@@ -1764,19 +1738,10 @@ void NetworkHandler::SetCookies(
     const Maybe<int> source_port = cookie->HasSourcePort()
                                        ? Maybe<int>(cookie->GetSourcePort(0))
                                        : Maybe<int>();
-
-    Maybe<Network::CookiePartitionKey> partition_key;
-    if (cookie->HasPartitionKey()) {
-      protocol::Network::CookiePartitionKey* key =
-          cookie->GetPartitionKey(nullptr);
-      if (key) {
-        std::string site = key->GetTopLevelSite();
-        if (!site.empty()) {
-          partition_key =
-              BuildCookiePartitionKey(site, key->GetHasCrossSiteAncestor());
-        }
-      }
-    }
+    const Maybe<std::string> partition_key =
+        cookie->HasPartitionKey()
+            ? Maybe<std::string>(cookie->GetPartitionKey(""))
+            : Maybe<std::string>();
 
     auto net_cookie_or_error = MakeCookieFromProtocolValues(
         cookie->GetName(), cookie->GetValue(), cookie->GetUrl(""),
@@ -1840,7 +1805,7 @@ void NetworkHandler::DeleteCookies(
     Maybe<std::string> url_spec,
     Maybe<std::string> domain,
     Maybe<std::string> path,
-    Maybe<Network::CookiePartitionKey> partition_key,
+    Maybe<std::string> partition_key,
     std::unique_ptr<DeleteCookiesCallback> callback) {
   if (!storage_partition_) {
     callback->sendFailure(Response::InternalError());
@@ -1868,7 +1833,7 @@ void NetworkHandler::DeleteCookies(
   cookie_manager->GetAllCookies(
       base::BindOnce(&DeleteFilteredCookies, base::Unretained(cookie_manager),
                      name, normalized_domain, path.value_or(""),
-                     std::move(partition_key), std::move(callback)));
+                     partition_key.value_or(""), std::move(callback)));
 }
 
 Response NetworkHandler::SetExtraHTTPHeaders(
@@ -3365,7 +3330,7 @@ void NetworkHandler::OnResponseReceivedExtraInfo(
   if (!enabled_)
     return;
 
-  Maybe<Network::CookiePartitionKey> frontend_partition_key;
+  Maybe<std::string> frontend_partition_key;
   // TODO (crbug.com/326605834) Once ancestor chain bit changes are implemented
   // update this method utilize the ancestor bit.
   if (cookie_partition_key) {
@@ -3374,9 +3339,7 @@ void NetworkHandler::OnResponseReceivedExtraInfo(
         serialized_result =
             net::CookiePartitionKey::Serialize(cookie_partition_key);
     if (serialized_result.has_value()) {
-      frontend_partition_key =
-          BuildCookiePartitionKey(serialized_result->TopLevelSite(),
-                                  serialized_result->has_cross_site_ancestor());
+      frontend_partition_key = serialized_result->TopLevelSite();
     }
   }
 
