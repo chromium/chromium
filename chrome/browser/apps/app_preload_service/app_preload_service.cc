@@ -225,8 +225,8 @@ void AppPreloadService::OnGetAppsForFirstLoginCompleted(
       AppServiceProxyFactory::GetForProfile(profile_)->AppInstallService();
   for (const PreloadAppDefinition* app : apps_to_install) {
     install_service.InstallAppHeadless(
-        app->IsDefaultApp() ? AppInstallSurface::kAppPreloadServiceDefault
-                            : AppInstallSurface::kAppPreloadServiceOem,
+        app->IsOemApp() ? AppInstallSurface::kAppPreloadServiceOem
+                        : AppInstallSurface::kAppPreloadServiceDefault,
         app->ToAppInstallData(), install_barrier_callback);
   }
 }
@@ -277,7 +277,7 @@ bool AppPreloadService::ShouldInstallApp(const PreloadAppDefinition& app) {
   // need to reinstall it. This avoids extra work in the case where we are
   // retrying the flow after an install error for a different app.
   InstallReason expected_reason =
-      app.IsDefaultApp() ? InstallReason::kDefault : InstallReason::kOem;
+      app.IsOemApp() ? InstallReason::kOem : InstallReason::kDefault;
   AppServiceProxy* proxy = AppServiceProxyFactory::GetForProfile(profile_);
   bool installed = false;
 
