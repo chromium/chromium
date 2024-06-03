@@ -68,10 +68,6 @@
   --paper-spinner-color: var(--cros-icon-color-prominent);
 }
 
-:host-context([cros]) cr-tooltip-icon {
-  --cr-link-color: var(--cros-tooltip-link-color);
-}
-
 /** Jelly-specific styles below */
 
 /** General color overrides */
@@ -410,15 +406,13 @@
 }
 
 /* Tooltip */
-:host-context(body.jelly-enabled) paper-tooltip,
-:host-context(body.jelly-enabled) cr-tooltip-icon {
+:host-context(body.jelly-enabled) paper-tooltip {
   --paper-tooltip-background: var(--cros-sys-on_surface);
   --paper-tooltip-border-radius: 4px;
   --paper-tooltip-padding: 5px 8px;
   --paper-tooltip-text-color: var(--cros-sys-inverse_on_surface);
 }
 
-:host-context(body.jelly-enabled) paper-tooltip::part(tooltip),
-:host-context(body.jelly-enabled) cr-tooltip-icon::part(tooltip) {
+:host-context(body.jelly-enabled) paper-tooltip::part(tooltip) {
   font: var(--cros-annotation-1-font);
 }
