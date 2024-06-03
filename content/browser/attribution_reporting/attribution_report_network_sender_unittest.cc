@@ -846,7 +846,7 @@ TEST_F(AttributionReportNetworkSenderTest,
               .SetDebugReporting(true)
               .SetDebugCookieSet(true)
               .Build(),
-          /*is_noised=*/false,
+          /*is_noised=*/false, /*source_time=*/base::Time::Now(),
           StoreSourceResult::InsufficientUniqueDestinationCapacity(3)));
   ASSERT_TRUE(report);
 
@@ -880,7 +880,7 @@ TEST_F(AttributionReportNetworkSenderTest,
               .SetDebugReporting(true)
               .SetDebugCookieSet(true)
               .Build(),
-          /*is_noised=*/false,
+          /*is_noised=*/false, /*source_time=*/base::Time::Now(),
           StoreSourceResult::InsufficientUniqueDestinationCapacity(3)));
   ASSERT_TRUE(report);
 

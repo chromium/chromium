@@ -522,8 +522,11 @@ StoreSourceResult AttributionStorageSql::StoreSource(StorableSource source) {
 
   bool is_noised = false;
 
+  const base::Time source_time = base::Time::Now();
+
   const auto make_result = [&](StoreSourceResult::Result&& result) {
-    return StoreSourceResult(std::move(source), is_noised, std::move(result));
+    return StoreSourceResult(std::move(source), is_noised, source_time,
+                             std::move(result));
   };
 
   // TODO(crbug.com/40287976): Support multiple specs.
@@ -562,8 +565,6 @@ StoreSourceResult AttributionStorageSql::StoreSource(StorableSource source) {
   if (!LazyInit(DbCreationPolicy::kCreateIfAbsent)) {
     return make_result(StoreSourceResult::InternalError());
   }
-
-  const base::Time source_time = base::Time::Now();
 
   // Only delete expired impressions periodically to avoid excessive DB
   // operations.

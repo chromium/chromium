@@ -36,6 +36,9 @@ std::vector<NullAggregatableReport> GetNullAggregatableReports(
     std::optional<base::Time> attributed_source_time,
     GenerateNullAggregatableReportFunc);
 
+COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
+bool IsAggregatableValueInRange(int value);
+
 }  // namespace attribution_reporting
 
 #endif  // COMPONENTS_ATTRIBUTION_REPORTING_AGGREGATABLE_UTILS_H_

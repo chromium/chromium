@@ -99,4 +99,8 @@ std::vector<NullAggregatableReport> GetNullAggregatableReports(
   }
 }
 
+bool IsAggregatableValueInRange(int value) {
+  return value > 0 && value <= kMaxAggregatableValue;
+}
+
 }  // namespace attribution_reporting

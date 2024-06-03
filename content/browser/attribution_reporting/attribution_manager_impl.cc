@@ -807,6 +807,7 @@ void AttributionManagerImpl::ProcessNextEvent(bool registration_allowed,
                   StoreSourceResult(
                       std::move(source),
                       /*is_noised=*/false,
+                      /*source_time=*/base::Time::Now(),
                       StoreSourceResult::ProhibitedByBrowserPolicy()));
             }
           },

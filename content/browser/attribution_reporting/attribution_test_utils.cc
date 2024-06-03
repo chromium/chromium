@@ -390,6 +390,13 @@ TriggerBuilder& TriggerBuilder::SetTriggerContextId(
   return *this;
 }
 
+TriggerBuilder& TriggerBuilder::SetAggregatableDebugReportingConfig(
+    attribution_reporting::AggregatableDebugReportingConfig
+        aggregatable_trigger_config) {
+  aggregatable_debug_reporting_config_ = std::move(aggregatable_trigger_config);
+  return *this;
+}
+
 AttributionTrigger TriggerBuilder::Build(
     bool generate_event_trigger_data) const {
   attribution_reporting::TriggerRegistration reg;
@@ -411,6 +418,8 @@ AttributionTrigger TriggerBuilder::Build(
   reg.aggregatable_trigger_config =
       *attribution_reporting::AggregatableTriggerConfig::Create(
           source_registration_time_config_, trigger_context_id_);
+  reg.aggregatable_debug_reporting_config =
+      aggregatable_debug_reporting_config_;
 
   return AttributionTrigger(reporting_origin_, std::move(reg),
                             destination_origin_, verifications_,

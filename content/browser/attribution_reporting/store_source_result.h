@@ -81,7 +81,10 @@ class CONTENT_EXPORT StoreSourceResult {
                                ExceedsMaxChannelCapacity,
                                ExceedsMaxTriggerStateCardinality>;
 
-  StoreSourceResult(StorableSource, bool is_noised, Result);
+  StoreSourceResult(StorableSource,
+                    bool is_noised,
+                    base::Time source_time,
+                    Result);
 
   ~StoreSourceResult();
 
@@ -97,11 +100,14 @@ class CONTENT_EXPORT StoreSourceResult {
 
   bool is_noised() const { return is_noised_; }
 
+  base::Time source_time() const { return source_time_; }
+
   const Result& result() const { return result_; }
 
  private:
   StorableSource source_;
   bool is_noised_;
+  base::Time source_time_;
   Result result_;
 };
 

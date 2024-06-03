@@ -15,6 +15,7 @@
 #include "base/containers/flat_set.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
+#include "components/attribution_reporting/aggregatable_debug_reporting_config.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration.h"
@@ -36,7 +37,6 @@
 namespace attribution_reporting {
 class AggregatableValues;
 class AggregationKeys;
-class SourceAggregatableDebugReportingConfig;
 class TriggerSpecs;
 }  // namespace attribution_reporting
 
@@ -216,6 +216,9 @@ class TriggerBuilder {
 
   TriggerBuilder& SetTriggerContextId(std::string trigger_context_id);
 
+  TriggerBuilder& SetAggregatableDebugReportingConfig(
+      attribution_reporting::AggregatableDebugReportingConfig);
+
   AttributionTrigger Build(bool generate_event_trigger_data = true) const;
 
  private:
@@ -240,6 +243,8 @@ class TriggerBuilder {
       source_registration_time_config_ =
           attribution_reporting::mojom::SourceRegistrationTimeConfig::kInclude;
   std::optional<std::string> trigger_context_id_;
+  attribution_reporting::AggregatableDebugReportingConfig
+      aggregatable_debug_reporting_config_;
 };
 
 // Helper class to construct an `AttributionInfo` for tests using default data.

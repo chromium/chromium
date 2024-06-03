@@ -1413,7 +1413,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                             .SetDebugReporting(true)
                             .SetDebugCookieSet(true)
                             .Build(),
-                        /*is_noised=*/false,
+                        /*is_noised=*/false, /*source_time=*/base::Time::Now(),
                         StoreSourceResult::InternalError()));
   ASSERT_TRUE(report);
 

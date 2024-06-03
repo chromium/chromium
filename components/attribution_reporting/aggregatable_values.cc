@@ -15,6 +15,7 @@
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
+#include "components/attribution_reporting/aggregatable_utils.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/parsing_utils.h"
@@ -26,14 +27,10 @@ namespace {
 
 using ::attribution_reporting::mojom::TriggerRegistrationError;
 
-bool IsValueInRange(int value) {
-  return value > 0 && value <= kMaxAggregatableValue;
-}
-
 bool IsValid(const AggregatableValues::Values& values) {
   return base::ranges::all_of(values, [](const auto& value) {
     return AggregationKeyIdHasValidLength(value.first) &&
-           IsValueInRange(value.second);
+           IsAggregatableValueInRange(value.second);
   });
 }
 
@@ -49,7 +46,7 @@ ParseValues(const base::Value::Dict& dict,
     }
 
     std::optional<int> int_value = key_value.GetIfInt();
-    if (!int_value.has_value() || !IsValueInRange(*int_value)) {
+    if (!int_value.has_value() || !IsAggregatableValueInRange(*int_value)) {
       return base::unexpected(value_error);
     }
 
