@@ -66,6 +66,7 @@ LensUntrustedUI::LensUntrustedUI(content::WebUI* web_ui)
       "cursorTooltipLivePageMessage",
       IDS_LENS_OVERLAY_CURSOR_TOOLTIP_LIVE_PAGE_MESSAGE);
   html_source->AddLocalizedString("translate", IDS_LENS_OVERLAY_TRANSLATE);
+  html_source->AddLocalizedString("selectText", IDS_LENS_OVERLAY_SELECT_TEXT);
 
   // Add default theme colors.
   const auto& palette = lens::kPaletteColors.at(lens::PaletteId::kFallback);
