@@ -36,6 +36,7 @@ constexpr char kGateway[] = "192.168.0.1";
 constexpr char kNameServer1[] = "1.1.1.1";
 constexpr char kNameServer2[] = "2.2.2.2";
 constexpr char kNameServerIpv6[] = "2001:4860:4860::8888";
+constexpr char kFqdn[] = "www.example.com";
 constexpr int kPrefixLen = 16;
 constexpr int kHostMtu = 32;
 constexpr int kFrequency = 100;
@@ -165,6 +166,10 @@ class ArcNetUtilsTest : public testing::Test {
                                     base::Value(kSignalStrength));
     network_state_->PropertyChanged(shill::kWifiSignalStrengthRssiProperty,
                                     base::Value(kRssi));
+    network_state_->PropertyChanged(shill::kMeteredProperty, base::Value(true));
+    network_state_->PropertyChanged(shill::kPasspointFQDNProperty,
+                                    base::Value(kFqdn));
+    network_state_->PropertyChanged(shill::kWifiHiddenSsid, base::Value(true));
   }
 
   std::unique_ptr<ash::NetworkState> network_state_;
@@ -398,6 +403,8 @@ TEST_F(ArcNetUtilsTest, FillConfigurationsFromState) {
   EXPECT_EQ(arc::mojom::SecurityType::WPA_PSK, mojo->wifi->security);
   EXPECT_EQ(kFrequency, mojo->wifi->frequency);
   EXPECT_EQ(kSignalStrength, mojo->wifi->signal_strength);
+  EXPECT_EQ(kFqdn, mojo->wifi->fqdn);
+  EXPECT_EQ(true, mojo->wifi->hidden_ssid);
 }
 
 TEST_F(ArcNetUtilsTest, FillConfigurationsFromDevice) {
