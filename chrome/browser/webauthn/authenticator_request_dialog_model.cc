@@ -2261,10 +2261,11 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
   // synced phone name to use a non-discoverable credential from their synced
   // phone.
   bool all_matching_phone_creds_listed =
-      list_phone_passkeys && !enclave_passkeys_shown &&
+      list_phone_passkeys &&
       (specific_phones_listed || transport_availability_.has_empty_allow_list);
   if (base::Contains(transport_availability_.available_transports, kCable) &&
-      !all_matching_phone_creds_listed && !windows_handles_hybrid) {
+      !all_matching_phone_creds_listed && !enclave_passkeys_shown &&
+      !windows_handles_hybrid) {
     // List phones as transports.
     for (const auto& phone_name : model_->paired_phone_names) {
       const std::u16string name16 = base::UTF8ToUTF16(phone_name);
@@ -2296,6 +2297,8 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
         paired_phones_.size() == 1 && !use_conditional_mediation_ &&
         transport_availability_.is_only_hybrid_or_internal;
     if (skip_to_phone_confirmation) {
+      FIDO_LOG(EVENT)
+          << "Skipping to phone confirmation on discoverable credential match.";
       SetPriorityPhoneIndex(0);
       pending_step_ = Step::kPhoneConfirmationSheet;
     }
