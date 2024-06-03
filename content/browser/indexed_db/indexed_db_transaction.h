@@ -125,6 +125,9 @@ class CONTENT_EXPORT IndexedDBTransaction
   enum class RunTasksResult { kError, kNotFinished, kCommitted, kAborted };
   std::tuple<RunTasksResult, leveldb::Status> RunTasks();
 
+  // Returns metadata relevant to idb-internals.
+  storage::mojom::IdbTransactionMetadataPtr GetIdbInternalsMetadata() const;
+
   IndexedDBBackingStore::Transaction* BackingStoreTransaction() {
     return backing_store_transaction_.get();
   }

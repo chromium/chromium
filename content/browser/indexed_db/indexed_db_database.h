@@ -284,6 +284,9 @@ class CONTENT_EXPORT IndexedDBDatabase {
   bool IsObjectStoreIdInMetadataAndIndexNotInMetadata(int64_t object_store_id,
                                                       int64_t index_id) const;
 
+  // Returns metadata relevant to idb-internals.
+  storage::mojom::IdbDatabaseMetadataPtr GetIdbInternalsMetadata() const;
+
   base::WeakPtr<IndexedDBDatabase> AsWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }

@@ -1478,6 +1478,22 @@ bool IndexedDBDatabase::IsObjectStoreIdInMetadataAndIndexNotInMetadata(
   return true;
 }
 
+storage::mojom::IdbDatabaseMetadataPtr
+IndexedDBDatabase::GetIdbInternalsMetadata() const {
+  storage::mojom::IdbDatabaseMetadataPtr info =
+      storage::mojom::IdbDatabaseMetadata::New();
+  info->name = name();
+  info->connection_count = ConnectionCount();
+  info->active_open_delete = ActiveOpenDeleteCount();
+  info->pending_open_delete = PendingOpenDeleteCount();
+  for (const IndexedDBConnection* connection : connections()) {
+    for (const auto& [_, transaction] : connection->transactions()) {
+      info->transactions.push_back(transaction->GetIdbInternalsMetadata());
+    }
+  }
+  return info;
+}
+
 // kIDBMaxMessageSize is defined based on the original
 // IPC::Channel::kMaximumMessageSize value.  We use kIDBMaxMessageSize to limit
 // the size of arguments we pass into our Mojo calls.  We want to ensure this

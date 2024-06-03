@@ -816,6 +816,47 @@ IndexedDBTransaction::RunTasks() {
   return {RunTasksResult::kNotFinished, leveldb::Status::OK()};
 }
 
+storage::mojom::IdbTransactionMetadataPtr
+IndexedDBTransaction::GetIdbInternalsMetadata() const {
+  storage::mojom::IdbTransactionMetadataPtr info =
+      storage::mojom::IdbTransactionMetadata::New();
+  info->mode = static_cast<storage::mojom::IdbTransactionMode>(mode());
+  switch (state()) {
+    case IndexedDBTransaction::CREATED:
+      info->status = storage::mojom::IdbTransactionState::kBlocked;
+      break;
+    case IndexedDBTransaction::STARTED:
+      info->status = diagnostics().tasks_scheduled > 0
+                         ? storage::mojom::IdbTransactionState::kRunning
+                         : storage::mojom::IdbTransactionState::kStarted;
+      break;
+    case IndexedDBTransaction::COMMITTING:
+      info->status = storage::mojom::IdbTransactionState::kCommitting;
+      break;
+    case IndexedDBTransaction::FINISHED:
+      info->status = storage::mojom::IdbTransactionState::kFinished;
+      break;
+  }
+
+  info->tid = id();
+  info->client_id = connection()->client_id();
+  info->age =
+      (base::Time::Now() - diagnostics().creation_time).InMillisecondsF();
+  info->runtime =
+      (base::Time::Now() - diagnostics().start_time).InMillisecondsF();
+  info->tasks_scheduled = diagnostics().tasks_scheduled;
+  info->tasks_completed = diagnostics().tasks_completed;
+
+  for (int64_t id : scope()) {
+    auto stores_it = database_->metadata().object_stores.find(id);
+    if (stores_it != database_->metadata().object_stores.end()) {
+      info->scope.emplace_back(stores_it->second.name);
+    }
+  }
+
+  return info;
+}
+
 void IndexedDBTransaction::TimeoutFired() {
   if (!IsTransactionBlockingOtherClients()) {
     return;
