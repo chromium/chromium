@@ -396,6 +396,12 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
   CSSPrimitiveValue* MultiplyBy(const CSSPrimitiveValue& value) const;
   // this / value
   CSSPrimitiveValue* Divide(double value, UnitType unit_type) const;
+  // Note: value / this is not allowed until typed arithmetic is implemented.
+  CSSPrimitiveValue* DivideBy(double value, UnitType unit_type) const = delete;
+  // Note: this / value is not allowed until typed arithmetic is implemented.
+  CSSPrimitiveValue* Divide(const CSSPrimitiveValue& value) const = delete;
+  // Note: value / this is not allowed until typed arithmetic is implemented.
+  CSSPrimitiveValue* DivideBy(const CSSPrimitiveValue& value) const = delete;
 
   // TODO(crbug.com/979895): The semantics of these untyped getters are not very
   // clear if |this| is a math function. Do not add new callers before further
