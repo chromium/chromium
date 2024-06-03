@@ -7,7 +7,7 @@
 #include <memory>
 #include <optional>
 
-#include "ash/auth/views/login_textfield.h"
+#include "ash/auth/views/auth_textfield.h"
 #include "ash/login/ui/arrow_button_view.h"
 #include "ash/login/ui/non_accessible_view.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -41,7 +41,7 @@ namespace ash {
 views::Textfield* PasswordAuthView::TestApi::GetPasswordTextfield() {
   auto* password_auth_view =
       static_cast<PasswordAuthView*>(password_auth_view_);
-  return static_cast<LoginTextfield*>(password_auth_view->login_textfield_);
+  return static_cast<AuthTextfield*>(password_auth_view->auth_textfield_);
 }
 
 views::View* PasswordAuthView::TestApi::GetSubmitPasswordButton() {
@@ -136,12 +136,12 @@ void PasswordAuthView::CreateAndConfigureTextfieldContainer() {
 
   // Password textfield. We control the textfield size by sizing the parent
   // view, as the textfield will expand to fill it.
-  login_textfield_ = textfield_container->AddChildView(
-      std::make_unique<LoginTextfield>(LoginTextfield::AuthType::kPassword));
+  auth_textfield_ = textfield_container->AddChildView(
+      std::make_unique<AuthTextfield>(AuthTextfield::AuthType::kPassword));
 
-  login_textfield_->SetDelegate(this);
+  auth_textfield_->SetDelegate(this);
 
-  login_textfield_->SetPlaceholderText(
+  auth_textfield_->SetPlaceholderText(
       l10n_util::GetStringUTF16(IDS_ASH_IN_SESSION_AUTH_PASSWORD_PLACEHOLDER));
 
   password_row_layout_->SetFlexForView(textfield_container, 1);
@@ -210,7 +210,7 @@ PasswordAuthView::PasswordAuthView(AuthPanelEventDispatcher* dispatcher,
 }
 
 PasswordAuthView::~PasswordAuthView() {
-  login_textfield_->SetDelegate(nullptr);
+  auth_textfield_->SetDelegate(nullptr);
 }
 
 AshAuthFactor PasswordAuthView::GetFactor() {
@@ -248,7 +248,7 @@ void PasswordAuthView::OnContentsChanged(const std::u16string& new_contents) {
   dispatcher_->DispatchEvent(AuthPanelEventDispatcher::UserAction{
       AuthPanelEventDispatcher::UserAction::Type::
           kPasswordTextfieldContentsChanged,
-      base::UTF16ToUTF8(login_textfield_->GetText())});
+      base::UTF16ToUTF8(auth_textfield_->GetText())});
 }
 
 gfx::Size PasswordAuthView::CalculatePreferredSize(
@@ -265,14 +265,14 @@ void PasswordAuthView::OnStateChanged(const AuthFactorStore::State& state) {
   CHECK(state.password_view_state_.has_value());
   const auto& password_view_state = state.password_view_state_.value();
 
-  UpdateTextfield(password_view_state.login_textfield_state_);
+  UpdateTextfield(password_view_state.auth_textfield_state_);
 
-  const auto& password = password_view_state.login_textfield_state_.password_;
+  const auto& password = password_view_state.auth_textfield_state_.password_;
 
   bool is_display_password_button_enabled =
       password_view_state.is_factor_enabled_ && !password.empty();
   bool is_display_password_button_toggled =
-      password_view_state.login_textfield_state_.is_password_visible_;
+      password_view_state.auth_textfield_state_.is_password_visible_;
 
   display_password_button_->SetEnabled(is_display_password_button_enabled);
 
@@ -306,14 +306,13 @@ void PasswordAuthView::OnTextfieldFocus() {
 }
 
 void PasswordAuthView::UpdateTextfield(
-    const AuthFactorStore::State::LoginTextfieldState& login_textfield_state) {
-  login_textfield_->SetReadOnly(login_textfield_state.is_read_only);
-  login_textfield_->SetTextVisibility(
-      login_textfield_state.is_password_visible_);
+    const AuthFactorStore::State::AuthTextfieldState& auth_textfield_state) {
+  auth_textfield_->SetReadOnly(auth_textfield_state.is_read_only);
+  auth_textfield_->SetTextVisibility(auth_textfield_state.is_password_visible_);
 
-  if (auto new_text = base::UTF8ToUTF16(login_textfield_state.password_);
-      new_text != login_textfield_->GetText()) {
-    login_textfield_->SetText(new_text);
+  if (auto new_text = base::UTF8ToUTF16(auth_textfield_state.password_);
+      new_text != auth_textfield_->GetText()) {
+    auth_textfield_->SetText(new_text);
   }
 }
 

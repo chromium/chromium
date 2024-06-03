@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_AUTH_VIEWS_LOGIN_TEXTFIELD_H_
-#define ASH_AUTH_VIEWS_LOGIN_TEXTFIELD_H_
+#ifndef ASH_AUTH_VIEWS_AUTH_TEXTFIELD_H_
+#define ASH_AUTH_VIEWS_AUTH_TEXTFIELD_H_
 
 #include <string>
 
@@ -18,9 +18,9 @@ namespace ash {
 
 // A textfield that selects all text on focus and allows to switch between
 // show/hide password modes.
-class ASH_EXPORT LoginTextfield : public SystemTextfield,
+class ASH_EXPORT AuthTextfield : public SystemTextfield,
                                   public SystemTextfieldController {
-  METADATA_HEADER(LoginTextfield, SystemTextfield)
+  METADATA_HEADER(AuthTextfield, SystemTextfield)
  public:
   enum class AuthType {
     kPassword,
@@ -37,10 +37,10 @@ class ASH_EXPORT LoginTextfield : public SystemTextfield,
     virtual void OnEscape() {}
   };
 
-  LoginTextfield(AuthType auth_type);
-  LoginTextfield(const LoginTextfield&) = delete;
-  LoginTextfield& operator=(const LoginTextfield&) = delete;
-  ~LoginTextfield() override;
+  AuthTextfield(AuthType auth_type);
+  AuthTextfield(const AuthTextfield&) = delete;
+  AuthTextfield& operator=(const AuthTextfield&) = delete;
+  ~AuthTextfield() override;
 
   // views::Textfield:
   void AboutToRequestFocusFromTabTraversal(bool reverse) override;
@@ -78,4 +78,4 @@ class ASH_EXPORT LoginTextfield : public SystemTextfield,
 
 }  // namespace ash
 
-#endif  // ASH_AUTH_VIEWS_LOGIN_TEXTFIELD_H_
+#endif  // ASH_AUTH_VIEWS_AUTH_TEXTFIELD_H_

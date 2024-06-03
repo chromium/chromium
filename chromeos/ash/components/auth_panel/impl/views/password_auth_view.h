@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "ash/auth/views/login_textfield.h"
+#include "ash/auth/views/auth_textfield.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/login/ui/non_accessible_view.h"
 #include "ash/style/system_textfield_controller.h"
@@ -45,7 +45,7 @@ class AuthPanelEventDispatcher;
 // only handle UI behavior.
 class PasswordAuthView : public FactorAuthView,
                          public ImeControllerImpl::Observer,
-                         public LoginTextfield::Delegate {
+                         public AuthTextfield::Delegate {
   METADATA_HEADER(PasswordAuthView, FactorAuthView)
 
  public:
@@ -95,9 +95,9 @@ class PasswordAuthView : public FactorAuthView,
   void SetCapsLockIconHighlighted(bool highlight);
 
   void UpdateTextfield(
-      const AuthFactorStore::State::LoginTextfieldState& login_textfield_state);
+      const AuthFactorStore::State::AuthTextfieldState& auth_textfield_state);
 
-  // LoginTextfield::Delegate:
+  // AuthTextfield::Delegate:
   void OnTextfieldBlur() override;
   void OnTextfieldFocus() override;
   void OnContentsChanged(const std::u16string& new_contents) override;
@@ -114,7 +114,7 @@ class PasswordAuthView : public FactorAuthView,
 
   raw_ptr<ArrowButtonView> submit_button_ = nullptr;
 
-  raw_ptr<LoginTextfield> login_textfield_ = nullptr;
+  raw_ptr<AuthTextfield> auth_textfield_ = nullptr;
 
   base::CallbackListSubscription auth_factor_store_subscription_;
 

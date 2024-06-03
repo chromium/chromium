@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/auth/views/login_textfield.h"
+#include "ash/auth/views/auth_textfield.h"
 
 #include <string>
 
@@ -29,12 +29,12 @@ constexpr int kPasswordGlyphSpacing = 6;
 // (the display password icon and the caps lock icon).
 constexpr int kIconSizeDp = 20;
 
-// The max width of the LoginTextfield.
-constexpr int kLogintTextfieldMaxWidthDp = 293;
+// The max width of the AuthTextfield.
+constexpr int kAuthTextfieldMaxWidthDp = 293;
 
 }
 
-LoginTextfield::LoginTextfield(AuthType auth_type)
+AuthTextfield::AuthTextfield(AuthType auth_type)
     : SystemTextfield(Type::kMedium),
       SystemTextfieldController(this),
       auth_type_(auth_type) {
@@ -64,27 +64,27 @@ LoginTextfield::LoginTextfield(AuthType auth_type)
   SetPlaceholderTextColorId(cros_tokens::kCrosSysDisabled);
 }
 
-LoginTextfield::~LoginTextfield() = default;
+AuthTextfield::~AuthTextfield() = default;
 
-void LoginTextfield::AboutToRequestFocusFromTabTraversal(bool reverse) {
+void AuthTextfield::AboutToRequestFocusFromTabTraversal(bool reverse) {
   if (!GetText().empty()) {
     SelectAll(/*reversed=*/false);
   }
 }
 
-void LoginTextfield::OnBlur() {
+void AuthTextfield::OnBlur() {
   SystemTextfield::OnBlur();
   CHECK(delegate_);
   delegate_->OnTextfieldBlur();
 }
 
-void LoginTextfield::OnFocus() {
+void AuthTextfield::OnFocus() {
   SystemTextfield::OnFocus();
   CHECK(delegate_);
   delegate_->OnTextfieldFocus();
 }
 
-bool LoginTextfield::HandleKeyEvent(views::Textfield* sender,
+bool AuthTextfield::HandleKeyEvent(views::Textfield* sender,
                                     const ui::KeyEvent& key_event) {
   if (auth_type_ == AuthType::kPassword) {
     return SystemTextfieldController::HandleKeyEvent(sender, key_event);
@@ -137,18 +137,18 @@ bool LoginTextfield::HandleKeyEvent(views::Textfield* sender,
   return true;
 }
 
-void LoginTextfield::ContentsChanged(Textfield* sender,
+void AuthTextfield::ContentsChanged(Textfield* sender,
                                      const std::u16string& new_contents) {
   CHECK(delegate_);
   delegate_->OnContentsChanged(new_contents);
 }
 
-gfx::Size LoginTextfield::CalculatePreferredSize(
+gfx::Size AuthTextfield::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
-  return gfx::Size(kLogintTextfieldMaxWidthDp, kIconSizeDp);
+  return gfx::Size(kAuthTextfieldMaxWidthDp, kIconSizeDp);
 }
 
-void LoginTextfield::Reset() {
+void AuthTextfield::Reset() {
   CHECK(delegate_);
   SetText(std::u16string());
   delegate_->OnContentsChanged(GetText());
@@ -156,7 +156,7 @@ void LoginTextfield::Reset() {
   ClearEditHistory();
 }
 
-void LoginTextfield::InsertDigit(int digit) {
+void AuthTextfield::InsertDigit(int digit) {
   CHECK(auth_type_ == AuthType::kPin);
   CHECK(0 <= digit && digit <= 9);
   if (GetReadOnly()) {
@@ -170,7 +170,7 @@ void LoginTextfield::InsertDigit(int digit) {
   InsertOrReplaceText(base::NumberToString16(digit));
 }
 
-void LoginTextfield::Backspace() {
+void AuthTextfield::Backspace() {
   // Instead of just adjusting textfield_ text directly, fire a backspace key
   // event as this handles the various edge cases (ie, selected text).
 
@@ -182,7 +182,7 @@ void LoginTextfield::Backspace() {
                                   ui::DomCode::BACKSPACE, ui::EF_NONE));
 }
 
-void LoginTextfield::SetTextVisibility(bool visible) {
+void AuthTextfield::SetTextVisibility(bool visible) {
   if (visible) {
     ShowText();
   } else {
@@ -190,7 +190,7 @@ void LoginTextfield::SetTextVisibility(bool visible) {
   }
 }
 
-void LoginTextfield::ShowText() {
+void AuthTextfield::ShowText() {
   if (IsTextVisible()) {
     return;
   }
@@ -206,7 +206,7 @@ void LoginTextfield::ShowText() {
   delegate_->OnTextVisibleChanged(true);
 }
 
-void LoginTextfield::HideText() {
+void AuthTextfield::HideText() {
   if (!IsTextVisible()) {
     return;
   }
@@ -215,15 +215,15 @@ void LoginTextfield::HideText() {
   delegate_->OnTextVisibleChanged(false);
 }
 
-bool LoginTextfield::IsTextVisible() const {
+bool AuthTextfield::IsTextVisible() const {
   return GetTextInputType() != ui::TEXT_INPUT_TYPE_PASSWORD;
 }
 
-void LoginTextfield::SetDelegate(Delegate* delegate) {
+void AuthTextfield::SetDelegate(Delegate* delegate) {
   delegate_ = delegate;
 }
 
-BEGIN_METADATA(LoginTextfield)
+BEGIN_METADATA(AuthTextfield)
 END_METADATA
 
 }  // namespace ash

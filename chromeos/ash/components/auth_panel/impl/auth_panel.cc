@@ -7,7 +7,7 @@
 #include <memory>
 #include <vector>
 
-#include "ash/auth/views/login_textfield.h"
+#include "ash/auth/views/auth_textfield.h"
 #include "ash/login/ui/arrow_button_view.h"
 #include "ash/login/ui/non_accessible_view.h"
 #include "ash/strings/grit/ash_strings.h"

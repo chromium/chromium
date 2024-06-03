@@ -68,7 +68,7 @@ void AuthFactorStore::OnUserAction(
       CHECK(state_.password_view_state_.has_value());
 
       auto password =
-          state_.password_view_state_->login_textfield_state_.password_;
+          state_.password_view_state_->auth_textfield_state_.password_;
       if (!password.empty() &&
           state_.password_view_state_->is_factor_enabled_) {
         state_.authentication_stage_ =
@@ -85,7 +85,7 @@ void AuthFactorStore::OnUserAction(
     case AuthPanelEventDispatcher::UserAction::kDisplayPasswordButtonPressed: {
       CHECK(state_.password_view_state_.has_value());
 
-      bool& previous = state_.password_view_state_->login_textfield_state_
+      bool& previous = state_.password_view_state_->auth_textfield_state_
                            .is_password_visible_;
       previous = !previous;
 
@@ -97,7 +97,7 @@ void AuthFactorStore::OnUserAction(
       CHECK(state_.password_view_state_.has_value());
 
       auto new_field_contents = *action.payload_;
-      state_.password_view_state_->login_textfield_state_.password_ =
+      state_.password_view_state_->auth_textfield_state_.password_ =
           new_field_contents;
       break;
     }

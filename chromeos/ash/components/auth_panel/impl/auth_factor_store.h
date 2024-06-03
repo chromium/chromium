@@ -32,7 +32,7 @@ class AuthFactorStore {
       kMaxValue = kAuthenticated,
     };
 
-    struct LoginTextfieldState {
+    struct AuthTextfieldState {
       bool is_password_visible_ = false;
       bool is_read_only = false;
       std::string password_;
@@ -44,7 +44,7 @@ class AuthFactorStore {
       bool is_capslock_on_ = false;
       bool is_capslock_icon_highlighted_ = false;
       AuthFactorState factor_state_;
-      LoginTextfieldState login_textfield_state_;
+      AuthTextfieldState auth_textfield_state_;
 
       explicit PasswordViewState(bool is_capslock_on);
       ~PasswordViewState();
