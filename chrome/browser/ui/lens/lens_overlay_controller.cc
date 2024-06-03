@@ -1180,8 +1180,13 @@ bool LensOverlayController::HandleContextMenu(
 bool LensOverlayController::HandleKeyboardEvent(
     content::WebContents* source,
     const content::NativeWebKeyboardEvent& event) {
-  return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
-      event, overlay_web_view_->GetFocusManager());
+  // This can be called before the overlay web view is attached to the widget.
+  // In that case, the focus manager could be null.
+  if (overlay_web_view_ && overlay_web_view_->GetFocusManager()) {
+    return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
+        event, overlay_web_view_->GetFocusManager());
+  }
+  return false;
 }
 
 void LensOverlayController::OnFullscreenStateChanged() {
