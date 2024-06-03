@@ -352,10 +352,21 @@ Chrome has [built-in memory instrumentation](../memory-infra/README.md) that can
 be used to identify allocations and potential leaks.
 
 MacOS also provides several low-level command-line tools that can be used to
-inspect what's going on with memory inside a process.
+inspect what's going on with memory inside a process. Note that most of these
+tools only work effectively with system malloc and not PartitionAlloc. Since
+[PartitionAlloc Everywhere](https://docs.google.com/document/d/1R1H9z5IVUAnXJgDjnts3nTJVcRbufWWT9ByXLgecSUM/preview),
+you should additionally disable PartitionAlloc with these GN args:
 
-**`heap`** summarizes what's currently in the malloc heap(s) of a process. (It
-only works with regular malloc, of course, but Mac Chrome still uses that.) It
+```
+use_partition_alloc_as_malloc = false
+enable_backup_ref_ptr_support = false
+```
+
+Note that PartitionAlloc will still be used in Blink, just not for `malloc` in
+other places anymore. See [PartitionAlloc build config](../../base/allocator/partition_allocator/build_config.md)
+for disabling PartitionAlloc completely via GN arg `use_partition_alloc`.
+
+**`heap`** summarizes what's currently in the malloc heap(s) of a process. It
 shows a number of useful things:
 
 * How much of the heap is used or free
@@ -379,7 +390,7 @@ when it launches. The `env` command is handy for this:
 
 Then in another shell you run
 
-    $ malloc_history <pid> -all_by_size
+    $ malloc_history <pid> -allBySize
 
 Watch out: the output is *big*.
 
