@@ -149,7 +149,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // class will go away once GMB is removed. Clients can directly called a new
   // method like VideoFrame::MapSharedImage() to get a
   // ClientSharedImage::ScopedMapping object.
-  class ScopedMapping {
+  class MEDIA_EXPORT ScopedMapping {
    public:
     ~ScopedMapping();
 
