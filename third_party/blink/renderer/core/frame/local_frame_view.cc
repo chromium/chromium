@@ -4001,6 +4001,15 @@ PaintRecord LocalFrameView::GetPaintRecord(const gfx::Rect* cull_rect) const {
       PropertyTreeState::Root(), cull_rect);
 }
 
+const PaintArtifact* LocalFrameView::GetPaintArtifact() const {
+  CHECK_EQ(DocumentLifecycle::kPaintClean, Lifecycle().GetState());
+  return &GetFrame()
+              .LocalFrameRoot()
+              .View()
+              ->EnsurePaintController()
+              .GetPaintArtifact();
+}
+
 gfx::Rect LocalFrameView::ConvertToRootFrame(
     const gfx::Rect& local_rect) const {
   if (LocalFrameView* parent = ParentFrameView()) {

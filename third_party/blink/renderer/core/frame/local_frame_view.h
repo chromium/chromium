@@ -101,6 +101,7 @@ class LocalFrame;
 class MobileFriendlinessChecker;
 class Page;
 class PaginationState;
+class PaintArtifact;
 class PaintArtifactCompositor;
 class PaintController;
 class PaintLayer;
@@ -595,6 +596,10 @@ class CORE_EXPORT LocalFrameView final
   // Get the PaintRecord based on the cached paint artifact generated during
   // the last paint in lifecycle update.
   cc::PaintRecord GetPaintRecord(const gfx::Rect* cull_rect = nullptr) const;
+
+  // Get the PaintArtifact that was cached during the last paint lifecycle
+  // update.
+  const PaintArtifact* GetPaintArtifact() const;
 
   void Show() override;
   void Hide() override;

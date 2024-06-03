@@ -606,6 +606,27 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
                                         /*should_document_pip=*/false);
 }
 
+IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
+                       OpensAndClosesVideoAutopip_NonVisibleElementIgnored) {
+  // Load a page that registers for autopip and start video playback.
+  LoadAutoVideoVisibilityPipPage(browser());
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  PlayVideo(web_contents);
+  WaitForAudioFocusGained();
+  WaitForMediaSessionPlaying(web_contents);
+
+  // Add occluding overlay to video, followed by making the occluding overlay
+  // not visible.
+  AddOverlayToVideo(web_contents, /*should_occlude*/ true);
+  web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptWithUserGestureForTests(
+      u"makeOccludingOverlayInvisible()", base::NullCallback());
+
+  WaitForMeetsVisibilityThreshold(web_contents,
+                                  /*expected_meets_visibility_threshold*/ true);
+  SwitchToNewTabAndBackAndExpectAutopip(/*should_video_pip=*/true,
+                                        /*should_document_pip=*/false);
+}
+
 // TODO(crbug.com/40923043): Flaky on "Linux ASan LSan Tests (1)"
 #if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)
 #define MAYBE_OpensAndClosesDocumentAutopip_VideoSufficientlyVisible \
@@ -1347,6 +1368,14 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
       "Media.MediaVideoVisibilityTracker.ComputeOcclusion.ComputeOccludingArea."
       "TotalDuration",
       "Media.MediaVideoVisibilityTracker.ComputeOcclusion.TotalDuration",
+      "Media.MediaVideoVisibilityTracker.GetClientIdsSet.ItemsInSetCount."
+      "TotalCount",
+      "Media.MediaVideoVisibilityTracker.GetClientIdsSet.NotContentType."
+      "Percentage",
+      "Media.MediaVideoVisibilityTracker.GetClientIdsSet.NotContentTypeCount."
+      "TotalCount",
+      "Media.MediaVideoVisibilityTracker.GetClientIdsSet.SetConstruction."
+      "TotalDuration",
       "Media.MediaVideoVisibilityTracker."
       "HitTestedNodesContributingToOcclusionCount.ExponentialHistogram."
       "TotalCount",
@@ -1373,6 +1402,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
       "ExponentialHistogram.TotalCount",
       "Media.MediaVideoVisibilityTracker.OccludingRectsCount.LinearHistogram."
       "TotalCount",
+      "Media.MediaVideoVisibilityTracker.UpdateTime.TotalDuration",
   };
 
   for (const auto* histogram_name : histogram_names) {

@@ -4317,6 +4317,68 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Media.MediaVideoVisibilityTracker.GetClientIdsSet.ItemsInSetCount.TotalCount"
+    units="count" expires_after="2024-12-01">
+  <owner>bkeen@google.com</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Total number of entries in the MediaVideoVisibilityTracker ClientIdsSet.
+    Recorded every time the tracker requests the set.
+  </summary>
+</histogram>
+
+<histogram
+    name="Media.MediaVideoVisibilityTracker.GetClientIdsSet.NotContentType.Percentage"
+    units="%" expires_after="2024-12-01">
+  <owner>bkeen@google.com</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Records the percentage of the total ClientIdsSet entries that are ignored
+    due to their DisplayItem::Type not being of &quot;Content&quot; type.
+
+    This metric only accounts for non &quot;Content&quot; type entries that are
+    present at the end of the DisplayItemList. The count stops at the first
+    DisplayItem::Type that is of &quot;Content&quot; type, when traversing the
+    DisplayItemList from tail to head.
+
+    Recorded every time the tracker requests the set.
+  </summary>
+</histogram>
+
+<histogram
+    name="Media.MediaVideoVisibilityTracker.GetClientIdsSet.NotContentTypeCount.TotalCount"
+    units="count" expires_after="2024-12-01">
+  <owner>bkeen@google.com</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Total number of entries not added to the MediaVideoVisibilityTracker
+    ClientIdsSet, because their DisplayItem::Type is not of &quot;Content&quot;
+    type.
+
+    This metric only accounts for elements that are present at the end of the
+    DisplayItemList. The count stops at the first DisplayItem::Type that is of
+    &quot;Content&quot; type, when traversing the DisplayItemList from tail to
+    head.
+
+    Recorded every time the tracker requests the set.
+  </summary>
+</histogram>
+
+<histogram
+    name="Media.MediaVideoVisibilityTracker.GetClientIdsSet.SetConstruction.TotalDuration"
+    units="microseconds" expires_after="2024-12-01">
+  <owner>bkeen@google.com</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Total duration, in microseconds, taken by the MediaVideoVisibilityTracker to
+    construct a ClientIdsSet. Recorded every time the tracker requests the set.
+
+    Note that clients without high-resolution clocks will report 0 for very
+    short times.
+  </summary>
+</histogram>
+
+<histogram
     name="Media.MediaVideoVisibilityTracker.OccludingRectsCount.{BucketSizeIncreases}Histogram.TotalCount"
     units="rects" expires_after="2024-12-01">
   <owner>bkeen@google.com</owner>
@@ -4341,6 +4403,17 @@ chromium-metrics-reviews@google.com.
         summary="Histogram with linear bucket size increases, for fine
                  grained detail"/>
   </token>
+</histogram>
+
+<histogram name="Media.MediaVideoVisibilityTracker.UpdateTime.TotalDuration"
+    units="ms" expires_after="2024-12-01">
+  <owner>bkeen@google.com</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Total duration in milliseconds taken by the MediaVideoVisibilityTracker to
+    update HTMLVideoElement s visibility. The histogram is recorded when the
+    MediaVideoVisibilityTracker executes DidFinishLifecycleUpdate.
+  </summary>
 </histogram>
 
 <histogram

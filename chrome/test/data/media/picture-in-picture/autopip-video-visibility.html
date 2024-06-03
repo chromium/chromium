@@ -50,6 +50,11 @@
         videoContainer.appendChild(overlayDiv);
     }
 
+    function makeOccludingOverlayInvisible() {
+        let div = document.querySelector(".occluding-overlay")
+        div.style.backgroundColor = "transparent";
+    }
+
     function playVideo() {
         navigator.mediaSession.playbackState = "playing";
         video.play();

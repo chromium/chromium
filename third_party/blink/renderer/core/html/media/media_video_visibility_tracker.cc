@@ -15,6 +15,10 @@
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
+#include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
+#include "third_party/blink/renderer/platform/graphics/paint/display_item_list.h"
+#include "third_party/blink/renderer/platform/graphics/paint/paint_artifact.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
@@ -240,6 +244,18 @@ bool HasEventListenerRegistered(EventTarget& target,
   return false;
 }
 
+// Returns true if `type` is of content type, false otherwise.
+//
+// In the context of the `MediaVideoVisibilityTracker`, we consider a
+// `DisplayItem::Type` to be of content type if it is used to draw content that
+// is relevant to occlusion computations.
+bool IsContentType(DisplayItem::Type type) {
+  return !(type == DisplayItem::kFrameOverlay ||
+           type == DisplayItem::kForeignLayerLinkHighlight ||
+           type == DisplayItem::kForeignLayerViewportScroll ||
+           type == DisplayItem::kForeignLayerViewportScrollbar);
+}
+
 }  // anonymous namespace
 
 MediaVideoVisibilityTracker::MediaVideoVisibilityTracker(
@@ -373,7 +389,97 @@ void MediaVideoVisibilityTracker::MaybeRemoveFullscreenEventListeners() {
   }
 }
 
+const MediaVideoVisibilityTracker::ClientIdsSet
+MediaVideoVisibilityTracker::GetClientIdsSet(
+    DisplayItemClientId start_after_display_item_client_id) const {
+  SCOPED_UMA_HISTOGRAM_TIMER(
+      "Media.MediaVideoVisibilityTracker.GetClientIdsSet.SetConstruction."
+      "TotalDuration");
+
+  auto* document_view = VideoElement().GetDocument().View();
+
+  if (!document_view) {
+    return {};
+  }
+
+  LocalFrameView::InvalidationDisallowedScope invalidation_disallowed(
+      *document_view);
+
+  const auto* paint_artifact = document_view->GetPaintArtifact();
+  const DisplayItemList& display_item_list =
+      paint_artifact->GetDisplayItemList();
+  if (display_item_list.IsEmpty()) {
+    return {};
+  }
+
+  wtf_size_t begin_index = 0;
+  wtf_size_t end_index = display_item_list.size();
+  while (begin_index < end_index && display_item_list[begin_index].ClientId() !=
+                                        start_after_display_item_client_id) {
+    begin_index++;
+  }
+
+  // Skip DisplayItem with `start_after_display_item_client_id`
+  // DisplayItemClientId.
+  begin_index++;
+  if (begin_index == kNotFound || begin_index >= end_index) {
+    return {};
+  }
+
+  // TODO(crbug.com/40275580): Remove `IsContentType` method, if the set size is
+  // not significantly reduced.
+  //
+  // Ignore display items that are not of content type.
+  // This is strictly an optimization, in an attempt to reduce the resulting set
+  // size.
+  //
+  // We start at the end of the list, since the `DisplayItemList` entries are
+  // stored in paint order. `DisplayItem` s that are not of content type can
+  // still appear in other locations within the list, however for most cases,
+  // these `DisplayItem` types are painted last.
+  int not_content_type_count = 0;
+  while (end_index > begin_index &&
+         !IsContentType(display_item_list[end_index - 1].GetType())) {
+    not_content_type_count++;
+    end_index--;
+  }
+  UMA_HISTOGRAM_COUNTS_10000(
+      "Media.MediaVideoVisibilityTracker.GetClientIdsSet.NotContentTypeCount."
+      "TotalCount",
+      not_content_type_count);
+
+  if (begin_index == end_index) {
+    return {};
+  }
+
+  MediaVideoVisibilityTracker::ClientIdsSet set;
+  for (const auto& display_item :
+       display_item_list.ItemsInRange(begin_index, end_index)) {
+    if (display_item.ClientId() != kInvalidDisplayItemClientId) {
+      set.insert(display_item.ClientId());
+    }
+  }
+
+  int set_size = base::saturated_cast<int>(set.size());
+  UMA_HISTOGRAM_COUNTS_10000(
+      "Media.MediaVideoVisibilityTracker.GetClientIdsSet.ItemsInSetCount."
+      "TotalCount",
+      set_size);
+
+  int not_content_type_percentage = 0;
+  if (set_size > 0) {
+    not_content_type_percentage = 100 * not_content_type_count / set_size;
+  }
+  UMA_HISTOGRAM_PERCENTAGE(
+      "Media.MediaVideoVisibilityTracker.GetClientIdsSet.NotContentType."
+      "Percentage",
+      not_content_type_percentage);
+
+  return set;
+}
+
 ListBasedHitTestBehavior MediaVideoVisibilityTracker::ComputeOcclusion(
+    const ClientIdsSet& client_ids_set,
     Metrics& counts,
     const Node& node) {
   counts.total_hit_tested_nodes++;
@@ -397,7 +503,17 @@ ListBasedHitTestBehavior MediaVideoVisibilityTracker::ComputeOcclusion(
     return kContinueHitTesting;
   }
 
-  // Only account for the intersection of |node_rect| with |intersection_rect_|.
+  // Ignore nodes that do not produce any visual content.
+  if (!client_ids_set.empty() &&
+      !client_ids_set.Contains(node.GetLayoutObject()->Id())) {
+    return kContinueHitTesting;
+  }
+
+  // Only account for the intersection of |node_rect| BoundingBox with
+  // |intersection_rect_|. Note that BoundingBox represents an approximation of
+  // the total area that is painted. The actual painted area can be larger
+  // (e.g., if the object paints drop shadows), or smaller (e.g., if the object
+  // is clipped).
   PhysicalRect node_rect = node.BoundingBox();
   node_rect.Intersect(intersection_rect_);
 
@@ -420,6 +536,9 @@ ListBasedHitTestBehavior MediaVideoVisibilityTracker::ComputeOcclusion(
 bool MediaVideoVisibilityTracker::MeetsVisibilityThreshold(
     Metrics& counts,
     const PhysicalRect& rect) {
+  const ClientIdsSet client_ids_set =
+      GetClientIdsSet(VideoElement().GetLayoutObject()->Id());
+
   {
     // Record the total time spent computing occlusion.
     SCOPED_UMA_HISTOGRAM_TIMER(
@@ -428,7 +547,8 @@ bool MediaVideoVisibilityTracker::MeetsVisibilityThreshold(
     HitTestResult result(HitTestForOcclusionRatio(
         VideoElement(), rect,
         WTF::BindRepeating(&MediaVideoVisibilityTracker::ComputeOcclusion,
-                           WrapPersistent(this), std::ref(counts))));
+                           WrapPersistent(this), client_ids_set,
+                           std::ref(counts))));
   }
 
   return HasEnoughVisibleAreaRemaining(occluded_area_, video_element_rect_,
@@ -473,6 +593,9 @@ void MediaVideoVisibilityTracker::DidFinishLifecycleUpdate(
        hit_test_interval_)) {
     return;
   }
+
+  SCOPED_UMA_HISTOGRAM_TIMER(
+      "Media.MediaVideoVisibilityTracker.UpdateTime.TotalDuration");
   last_hit_test_timestamp_ = base::TimeTicks::Now();
 
   // Reset the various member variables used by `ComputeOcclusion()`.

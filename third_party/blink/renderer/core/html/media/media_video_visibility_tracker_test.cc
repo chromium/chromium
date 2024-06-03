@@ -73,6 +73,12 @@ class MediaVideoVisibilityTrackerTest : public SimTest {
     return tracker_->occluded_area_;
   }
 
+  const MediaVideoVisibilityTracker::ClientIdsSet GetClientIdsSet(
+      DisplayItemClientId start_after_display_item_client_id) const {
+    DCHECK(tracker_);
+    return tracker_->GetClientIdsSet(start_after_display_item_client_id);
+  }
+
  private:
   Persistent<MediaVideoVisibilityTracker> tracker_;
   base::MockRepeatingCallback<void(bool)> report_visibility_cb_;
@@ -860,6 +866,152 @@ TEST_F(MediaVideoVisibilityTrackerTest,
 
   expected_occludning_rect = {SkIRect::MakeXYWH(0, 0, 500, 500)};
   EXPECT_EQ(expected_occludning_rect, OccludingRects());
+}
+
+TEST_F(MediaVideoVisibilityTrackerTest, ClientIdsSetContents) {
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 800));
+  LoadMainResource(R"HTML(
+  <style>
+    body {
+      margin: 0;
+    }
+    video {
+      position: relative;
+      width: 500px;
+      height: 500px;
+      top:0;
+      left:0;
+    }
+    #ignored_div {
+      background-color: blue;
+      width: 50px;
+      height: 50px;
+      position: relative;
+    }
+    #visible_div {
+      background-color: yellow;
+      width: 50px;
+      height: 50px;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+    #invisible_div {
+      width: 50px;
+      height: 50px;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+  </style>
+  <video></video>
+  <div id="ignored_div"></div>
+  <div id="visible_div"></div>
+  <div id="invisible_div"></div>
+  )HTML");
+  EXPECT_CALL(ReportVisibilityCb(), Run(true));
+  CreateAndAttachVideoVisibilityTracker(0.5);
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  task_environment().FastForwardUntilNoTasksRemain();
+
+  // Verify that the DisplayItemClientId passed as a parameter to
+  // `GetClientIdsSet` is not in the set.
+  auto* ignored_div = GetDocument().getElementById(AtomicString("ignored_div"));
+  ASSERT_TRUE(ignored_div);
+  const auto set = GetClientIdsSet(ignored_div->GetLayoutObject()->Id());
+  EXPECT_FALSE(set.Contains(ignored_div->GetLayoutObject()->Id()));
+
+  // Verify that elements that do not produce visual output are not in the set.
+  auto* invisible_div =
+      GetDocument().getElementById(AtomicString("invisible_div"));
+  ASSERT_TRUE(invisible_div);
+  EXPECT_FALSE(set.Contains(invisible_div->GetLayoutObject()->Id()));
+
+  // Verify that elements that produce visual output are in the set.
+  auto* visible_div = GetDocument().getElementById(AtomicString("visible_div"));
+  ASSERT_TRUE(visible_div);
+  EXPECT_TRUE(set.Contains(visible_div->GetLayoutObject()->Id()));
+}
+
+TEST_F(MediaVideoVisibilityTrackerTest, ClientIdsSetEndIndexEqualToStartIndex) {
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 800));
+  LoadMainResource(R"HTML(
+  <style>
+    body {
+      margin: 0;
+    }
+    video {
+      position: relative;
+      width: 500px;
+      height: 500px;
+      top:0;
+      left:0;
+    }
+    div {
+      background-color: yellow;
+      width: 50px;
+      height: 50px;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+  </style>
+  <video></video>
+  <div id="target_div"></div>
+  )HTML");
+  EXPECT_CALL(ReportVisibilityCb(), Run(true));
+  CreateAndAttachVideoVisibilityTracker(0.5);
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  task_environment().FastForwardUntilNoTasksRemain();
+
+  auto* target_div = GetDocument().getElementById(AtomicString("target_div"));
+  ASSERT_TRUE(target_div);
+  const auto set = GetClientIdsSet(target_div->GetLayoutObject()->Id());
+
+  EXPECT_EQ(0u, set.size());
+}
+
+TEST_F(MediaVideoVisibilityTrackerTest,
+       ClientIdsSetBeginIndexGreaterThanEndIndex) {
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 800));
+  LoadMainResource(R"HTML(
+  <style>
+    body {
+      margin: 0;
+    }
+    video {
+      position: relative;
+      width: 500px;
+      height: 500px;
+      top:0;
+      left:0;
+    }
+    div {
+      background-color: yellow;
+      width: 50px;
+      height: 50px;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+  </style>
+  <video></video>
+  <div></div>
+  )HTML");
+  EXPECT_CALL(ReportVisibilityCb(), Run(true));
+  CreateAndAttachVideoVisibilityTracker(0.5);
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+  task_environment().FastForwardUntilNoTasksRemain();
+
+  const auto set = GetClientIdsSet(VideoElement()->GetLayoutObject()->Id());
+
+  EXPECT_EQ(0u, set.size());
 }
 
 }  // namespace blink
