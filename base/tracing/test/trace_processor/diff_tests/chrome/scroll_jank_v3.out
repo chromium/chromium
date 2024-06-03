@@ -1,2 +1,7 @@
 "cause_of_jank","sub_cause_of_jank","delay_since_last_frame","vsync_interval"
-"RendererCompositorQueueingDelay","[NULL]",22.331000,10.483000
+"SubmitCompositorFrameToPresentationCompositorFrame","StartDrawToSwapStart",22.219000,10.318000
+"SubmitCompositorFrameToPresentationCompositorFrame","StartDrawToSwapStart",22.240000,10.318000
+"SubmitCompositorFrameToPresentationCompositorFrame","StartDrawToSwapStart",22.242000,10.318000
+"SubmitCompositorFrameToPresentationCompositorFrame","BufferReadyToLatch",22.250000,10.318000
+"SubmitCompositorFrameToPresentationCompositorFrame","StartDrawToSwapStart",22.262000,10.318000
+"RendererCompositorQueueingDelay","[NULL]",22.331000,10.318000

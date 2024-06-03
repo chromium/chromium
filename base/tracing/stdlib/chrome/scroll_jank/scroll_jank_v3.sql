@@ -60,6 +60,8 @@ CREATE PERFETTO TABLE chrome_gesture_scroll_updates(
   is_presented BOOL,
   -- Frame presentation timestamp aka the timestamp of the
   -- SwapEndToPresentationCompositorFrame substage.
+  -- TODO(b/341047059): temporarily use LatchToSwapEnd as a workaround if
+  -- SwapEndToPresentationCompositorFrame is missing due to b/247542163.
   presentation_timestamp INT,
   -- EventLatency event type.
   event_type INT
@@ -72,7 +74,11 @@ SELECT
   chrome_get_most_recent_scroll_begin_id(slice.ts) AS scroll_id,
   has_descendant_slice_with_name(slice.id, "SubmitCompositorFrameToPresentationCompositorFrame")
   AS is_presented,
-  _descendant_slice_end(slice.id, "SwapEndToPresentationCompositorFrame") AS presentation_timestamp,
+  CASE WHEN has_descendant_slice_with_name(slice.id, "SwapEndToPresentationCompositorFrame")
+    THEN _descendant_slice_end(slice.id, "SwapEndToPresentationCompositorFrame")
+    ELSE _descendant_slice_end(slice.id, "LatchToSwapEnd")
+  END
+  AS presentation_timestamp,
   EXTRACT_ARG(arg_set_id, 'event_latency.event_type') AS event_type
 FROM slice JOIN args USING(arg_set_id)
 WHERE name = "EventLatency"
@@ -146,10 +152,7 @@ SELECT
   scroll_id,
   presentation_timestamp,
   event_type
-FROM _presented_gesture_scrolls
--- TODO(b/247542163): remove this condition when all stages
--- of EventLatency are recorded correctly.
-WHERE presentation_timestamp IS NOT NULL;
+FROM _presented_gesture_scrolls;
 
 -- Associate every trace_id with it's perceived delta_y on the screen after
 -- prediction.
@@ -165,8 +168,7 @@ SELECT
 FROM slice
 WHERE name = "InputHandlerProxy::HandleGestureScrollUpdate_Result";
 
--- Obtain the subset of input events that were fully presented, as indicated
--- by the presence of SwapEndToPresentationCompositorFrame.
+-- Obtain the subset of input events that were fully presented.
 CREATE PERFETTO TABLE chrome_full_frame_view(
   -- ID of the frame.
   id INT,
@@ -199,7 +201,7 @@ WHERE frames.event_type in (
           "GESTURE_SCROLL_UPDATE",
           "FIRST_GESTURE_SCROLL_UPDATE",
           "INERTIAL_GESTURE_SCROLL_UPDATE")
-    AND has_descendant_slice_with_name(frames.id, "SwapEndToPresentationCompositorFrame");
+AND frames.presentation_timestamp IS NOT NULL;
 
 -- Join deltas with EventLatency data.
 CREATE PERFETTO TABLE chrome_full_frame_delta_view(
@@ -324,15 +326,26 @@ SELECT
   LAG(event_latency_id, 1, -1) OVER (PARTITION BY scroll_id ORDER BY min_start_ts) AS prev_event_latency_id
 FROM chrome_merged_frame_view;
 
--- Calculate |VSYNC_INTERVAL| as the lowest delay between frames larger than
--- zero.
--- TODO(b/286222128): Emit this data from Chrome instead of calculating it.
+-- Calculate |VSYNC_INTERVAL| as the lowest vsync seen in the trace or the
+-- minimum delay between frames larger than zero.
+--
+-- TODO(~M130): Remove the lowest vsync since we should always have vsync_interval_ms.
 CREATE PERFETTO VIEW chrome_vsyncs(
   -- The lowest delay between frames larger than zero.
   vsync_interval INT
 ) AS
+WITH
+  trace_vsyncs AS (
+    SELECT EXTRACT_ARG(slice.arg_set_id, 'event_latency.vsync_interval_ms') AS vsync_interval_ms
+    FROM
+      slice JOIN chrome_frame_info_with_delay
+        ON chrome_frame_info_with_delay.event_latency_id = slice.id
+    WHERE EXTRACT_ARG(slice.arg_set_id, 'event_latency.vsync_interval_ms') > 0
+  )
 SELECT
-  MIN(delay_since_last_frame) AS vsync_interval
+  COALESCE(
+    (SELECT MIN(vsync_interval_ms) FROM trace_vsyncs),
+    MIN(delay_since_last_frame)) AS vsync_interval
 FROM chrome_frame_info_with_delay
 WHERE delay_since_last_frame > 0;
 
