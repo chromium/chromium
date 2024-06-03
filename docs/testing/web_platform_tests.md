@@ -289,7 +289,7 @@ can fix it manually.
 
 If you upload a CL with any changes in
 [third_party/blink/web_tests/external/wpt](../../third_party/blink/web_tests/external/wpt),
-once you add reviewers the exporter will create a provisional pull request with
+once your CL is ready to submit the exporter will create a provisional pull request with
 those changes in the [upstream WPT GitHub repository](https://github.com/web-platform-tests/wpt/).
 The exporter runs on [wpt-exporter builder][wpt-exporter].
 
