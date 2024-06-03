@@ -21,12 +21,12 @@ export function getHtml(this: ThemesElement) {
         @change="${this.onRefreshDailyToggleChange_}">
     </cr-toggle>
   </div>
-  <cr-grid columns="3" disable-arrow-navigation>
+  <cr-grid columns="3" disable-arrow-navigation role="radiogroup">
     ${this.themes_.map((item, index) => html`
-      <div class="tile theme" tabindex="0" role="button"
+      <div class="tile theme" tabindex="0" role="radio"
           data-index="${index}" @click="${this.onSelectTheme_}"
           title="${item.attribution1}"
-          aria-current="${this.isThemeSelected_(item.imageUrl.url)}">
+          aria-checked="${this.isThemeSelected_(item.imageUrl.url)}">
         <customize-chrome-check-mark-wrapper
             ?checked="${this.isThemeSelected_(item.imageUrl.url)}">
           <div class="image-container">

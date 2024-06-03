@@ -170,7 +170,7 @@ suite('WallpaperSearchTest', () => {
           $$(wallpaperSearchElement, '.default-color .color-check-mark'));
       assertEquals(checkedMarkedColors[0]!.parentElement!.title, 'Red');
       assertEquals(
-          checkedMarkedColors[0]!.parentElement!.getAttribute('aria-current'),
+          checkedMarkedColors[0]!.parentElement!.getAttribute('aria-checked'),
           'true');
 
       wallpaperSearchElement.$.hueSlider.dispatchEvent(
@@ -186,7 +186,7 @@ suite('WallpaperSearchTest', () => {
       assertEquals(
           checkedMarkedColors[0]!.parentElement!.title, 'Custom color');
       assertEquals(
-          checkedMarkedColors[0]!.parentElement!.getAttribute('aria-current'),
+          checkedMarkedColors[0]!.parentElement!.getAttribute('aria-checked'),
           'true');
     });
 
@@ -579,7 +579,7 @@ suite('WallpaperSearchTest', () => {
       assertEquals(checkedResults.length, 1);
       assertEquals(checkedResults[0], firstResult);
       assertEquals(
-          checkedResults[0]!.parentElement!.getAttribute('aria-current'),
+          checkedResults[0]!.parentElement!.getAttribute('aria-checked'),
           'true');
     });
 
@@ -913,7 +913,7 @@ suite('WallpaperSearchTest', () => {
       assertEquals(checkedResults.length, 1);
       assertEquals(checkedResults[0], firstResult);
       assertEquals(
-          checkedResults[0]!.parentElement!.getAttribute('aria-current'),
+          checkedResults[0]!.parentElement!.getAttribute('aria-checked'),
           'true');
     });
 
@@ -2359,7 +2359,7 @@ suite('WallpaperSearchTest', () => {
       assertEquals(firstResult, checkedResults[0]);
       assertEquals(
           'true',
-          checkedResults[0]!.parentElement!.getAttribute('aria-current'));
+          checkedResults[0]!.parentElement!.getAttribute('aria-checked'));
     });
   });
 });
