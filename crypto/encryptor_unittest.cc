@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/strings/string_number_conversions.h"
 #include "crypto/symmetric_key.h"
@@ -563,9 +564,9 @@ TEST(EncryptorTest, CipherTextNotMultipleOfBlockSize) {
   // Otherwise when using std::string as the other tests do, accesses several
   // bytes off the end of the buffer may fall inside the reservation of
   // the string and not be detected.
-  std::unique_ptr<char[]> ciphertext(new char[1]);
+  auto ciphertext = base::HeapArray<char>::Uninit(1);
 
   std::string plaintext;
   EXPECT_FALSE(
-      encryptor.Decrypt(std::string_view(ciphertext.get(), 1), &plaintext));
+      encryptor.Decrypt(base::as_string_view(ciphertext), &plaintext));
 }
