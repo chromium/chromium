@@ -22638,29 +22638,6 @@
             ]
         }
     ],
-    "V8ProfileGuidedOptimization": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows",
-                "android",
-                "android_weblayer",
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "V8ProfileGuidedOptimization"
-                    ]
-                }
-            ]
-        }
-    ],
     "V8SingleThreadedGCInBackground": [
         {
             "platforms": [

@@ -67,11 +67,6 @@ BASE_FEATURE(kV8PerContextMarkingWorklist,
              "V8PerContextMarkingWorklist",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables profile guided tiering heuristics in V8 GC.
-BASE_FEATURE(kV8ProfileGuidedOptimization,
-             "V8ProfileGuidedOptimization",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables flushing of the instruction cache for the embedded blob.
 BASE_FEATURE(kV8FlushEmbeddedBlobICache,
              "V8FlushEmbeddedBlobICache",
