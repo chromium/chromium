@@ -30,12 +30,6 @@ class ChromeUserEducationDelegate : public ash::UserEducationDelegate,
 
  private:
   // ash::UserEducationDelegate:
-  std::unique_ptr<user_education::HelpBubble> CreateHelpBubble(
-      const AccountId& account_id,
-      ash::HelpBubbleId help_bubble_id,
-      user_education::HelpBubbleParams help_bubble_params,
-      ui::ElementIdentifier element_id,
-      ui::ElementContext element_context) override;
   std::optional<ui::ElementIdentifier> GetElementIdentifierForAppId(
       const std::string& app_id) const override;
   const std::optional<bool>& IsNewUser(

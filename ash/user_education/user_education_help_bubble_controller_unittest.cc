@@ -112,16 +112,13 @@ class UserEducationHelpBubbleControllerTest : public UserEducationAshTestBase {
     // NOTE: The `UserEducationHelpBubbleController` exists only when a user
     // education feature is enabled. Controller existence is verified in test
     // coverage for the controller's owner.
-    std::vector<base::test::FeatureRef> enabled_features;
-    enabled_features.emplace_back(features::kHoldingSpaceWallpaperNudge);
-    enabled_features.emplace_back(features::kWelcomeTour);
-    scoped_feature_list_.InitWithFeatures(enabled_features, {});
+    scoped_feature_list_.InitAndEnableFeature(features::kWelcomeTour);
   }
 
   // Creates and returns a help bubble for the specified `help_bubble_params`,
   // anchored to the `help_bubble_anchor_widget()`.
   std::unique_ptr<HelpBubble> CreateHelpBubble(
-      HelpBubbleParams help_bubble_params) {
+      HelpBubbleParams help_bubble_params = HelpBubbleParams()) {
     // Set `help_bubble_id` in extended properties.
     help_bubble_params.extended_properties.values().Merge(std::move(
         user_education_util::CreateExtendedProperties(HelpBubbleId::kTest)
@@ -202,186 +199,18 @@ class UserEducationHelpBubbleControllerTest : public UserEducationAshTestBase {
 
 // Tests -----------------------------------------------------------------------
 
-// Verifies that `CreateHelpBubble()` can be used to create a help bubble for a
-// tracked element, and that `GetHelpBubbleId()` can be used to retrieve the ID
-// of the currently showing help bubble for a tracked element.
-TEST_F(UserEducationHelpBubbleControllerTest, CreateHelpBubble) {
-  // Cache the `element_context` to use for help bubble anchors.
-  const ui::ElementContext element_context = help_bubble_anchor_context();
-
-  // Help bubble creation is delegated. The delegate may opt *not* to return a
-  // help bubble in certain circumstances, e.g. if there is an ongoing tutorial.
-  EXPECT_CALL(*user_education_delegate(),
-              CreateHelpBubble(Eq(primary_user_account_id()),
-                               Eq(HelpBubbleId::kTest), A<HelpBubbleParams>(),
-                               Eq(kElementId), Eq(element_context)))
-      .WillOnce(Return(ByMove(nullptr)));
-
-  // When the delegate opts *not* to return a help bubble, the `controller()`
-  // should indicate to the caller that no help bubble was created.
-  EXPECT_FALSE(controller()->CreateHelpBubble(
-      HelpBubbleId::kTest, HelpBubbleParams(), kElementId, element_context));
-  Mock::VerifyAndClearExpectations(user_education_delegate());
-
-  // The `controller()` should not return a help bubble ID for `kElementId` and
-  // `element_context` since no help bubble was created; neither should it
-  // return a help bubble ID for any other context.
-  EXPECT_FALSE(controller()->GetHelpBubbleId(kElementId, element_context));
-  EXPECT_FALSE(controller()->GetHelpBubbleId(kElementId, ui::ElementContext()));
-
-  // When no circumstances exist which would otherwise prevent it from doing
-  // so, the delegate will return a `help_bubble` for the `controller()` to own.
-  HelpBubble* help_bubble = nullptr;
-  EXPECT_CALL(*user_education_delegate(),
-              CreateHelpBubble(Eq(primary_user_account_id()),
-                               Eq(HelpBubbleId::kTest), A<HelpBubbleParams>(),
-                               Eq(kElementId), Eq(element_context)))
-      .WillOnce(WithArgs<2>(InvokeAndCopyResultAddressTo(
-          this, &UserEducationHelpBubbleControllerTest::CreateHelpBubble,
-          &help_bubble)));
-
-  // When the delegate returns a `help_bubble`, the `controller()` should
-  // indicate to the caller that a `help_bubble` was created.
-  EXPECT_TRUE(controller()->CreateHelpBubble(
-      HelpBubbleId::kTest, HelpBubbleParams(), kElementId, element_context));
-  Mock::VerifyAndClearExpectations(user_education_delegate());
-
-  // The `controller()` should return the expected help bubble ID for
-  // `kElementId` and `element_context` since a `help_bubble` was created; it
-  // should not return a help bubble ID for any other context.
-  EXPECT_THAT(controller()->GetHelpBubbleId(kElementId, element_context),
-              Optional(HelpBubbleId::kTest));
-  EXPECT_FALSE(controller()->GetHelpBubbleId(kElementId, ui::ElementContext()));
-
-  // While a `help_bubble` is showing, no delegation should occur.
-  EXPECT_CALL(*user_education_delegate(), CreateHelpBubble).Times(0);
-
-  // Instead, the `controller()` should indicate to the caller that no help
-  // bubble was created since a `help_bubble` is already vying for the user's
-  // attention.
-  EXPECT_FALSE(controller()->CreateHelpBubble(
-      HelpBubbleId::kTest, HelpBubbleParams(), kElementId, element_context));
-  Mock::VerifyAndClearExpectations(user_education_delegate());
-
-  // Despite the fact that no new help bubble was created, the `controller()`
-  // should continue to return the expected help bubble ID for `kElementId` and
-  // `element_context` since a `help_bubble` already exists; it should not
-  // return a help bubble ID for any other context.
-  EXPECT_THAT(controller()->GetHelpBubbleId(kElementId, element_context),
-              Optional(HelpBubbleId::kTest));
-  EXPECT_FALSE(controller()->GetHelpBubbleId(kElementId, ui::ElementContext()));
-
-  // Close the `help_bubble`.
-  ASSERT_TRUE(help_bubble);
-  help_bubble->Close();
-  help_bubble = nullptr;
-
-  // The `controller()` should not return a help bubble ID for `kElementId` and
-  // `element_context` since the `help_bubble` was closed; neither should it
-  //  return a help bubble ID for any other context.
-  EXPECT_FALSE(controller()->GetHelpBubbleId(kElementId, element_context));
-  EXPECT_FALSE(controller()->GetHelpBubbleId(kElementId, ui::ElementContext()));
-
-  // Once the `help_bubble` has been closed, the delegate should again be tasked
-  // with subsequent `help_bubble` creation.
-  EXPECT_CALL(*user_education_delegate(),
-              CreateHelpBubble(Eq(primary_user_account_id()),
-                               Eq(HelpBubbleId::kTest), A<HelpBubbleParams>(),
-                               Eq(kElementId), Eq(element_context)))
-      .WillOnce(WithArgs<2>(InvokeAndCopyResultAddressTo(
-          this, &UserEducationHelpBubbleControllerTest::CreateHelpBubble,
-          &help_bubble)));
-
-  // The `controller()` should indicate to the caller success when attempting to
-  // create a new `help_bubble` since the previous `help_bubble` was closed.
-  // Note that this time a `close_callback` is provided.
-  base::MockOnceClosure close_callback;
-  EXPECT_TRUE(controller()->CreateHelpBubble(
-      HelpBubbleId::kTest, HelpBubbleParams(), kElementId, element_context,
-      close_callback.Get()));
-  Mock::VerifyAndClearExpectations(user_education_delegate());
-
-  // The `controller()` should return the expected help bubble ID for
-  // `kElementId` and `element_context` since a `help_bubble` was created; it
-  // should not return a help bubble ID for any other context.
-  EXPECT_THAT(controller()->GetHelpBubbleId(kElementId, element_context),
-              Optional(HelpBubbleId::kTest));
-  EXPECT_FALSE(controller()->GetHelpBubbleId(kElementId, ui::ElementContext()));
-
-  // Expect that closing the `help_bubble` will invoke `close_callback`.
-  EXPECT_CALL(close_callback, Run);
-
-  // Close the `help_bubble`.
-  ASSERT_TRUE(help_bubble);
-  help_bubble->Close();
-  help_bubble = nullptr;
-
-  // The `controller()` should not return a help bubble ID for `kElementId` and
-  // `element_context` since the `help_bubble` was closed; neither should it
-  //  return a help bubble ID for any other context.
-  EXPECT_FALSE(controller()->GetHelpBubbleId(kElementId, element_context));
-  EXPECT_FALSE(controller()->GetHelpBubbleId(kElementId, ui::ElementContext()));
-}
-
-// Verifies that `CreateScopedHelpBubble()` will create a help bubble that
-// closes when the returned `base::ScopedClosureRunner` falls out of scope.
-TEST_F(UserEducationHelpBubbleControllerTest, CreateScopedHelpBubble) {
-  // Cache the `element_context` to use for help bubble anchors.
-  const ui::ElementContext element_context = help_bubble_anchor_context();
-
-  HelpBubble* help_bubble = nullptr;
-  EXPECT_CALL(*user_education_delegate(),
-              CreateHelpBubble(Eq(primary_user_account_id()),
-                               Eq(HelpBubbleId::kTest), A<HelpBubbleParams>(),
-                               Eq(kElementId), Eq(element_context)))
-      .WillOnce(WithArgs<2>(InvokeAndCopyResultAddressTo(
-          this, &UserEducationHelpBubbleControllerTest::CreateHelpBubble,
-          &help_bubble)));
-
-  // Create scoped help bubble within a nested scope.
-  {
-    auto scoped_bubble_closer = controller()->CreateScopedHelpBubble(
-        HelpBubbleId::kTest,
-        [] {
-          HelpBubbleParams params;
-          params.timeout = base::TimeDelta();
-          return params;
-        }(),
-        kElementId, element_context);
-    EXPECT_TRUE(scoped_bubble_closer);
-
-    Mock::VerifyAndClearExpectations(user_education_delegate());
-    EXPECT_TRUE(help_bubble);
-    EXPECT_TRUE(controller()->GetHelpBubbleId(kElementId, element_context));
-  }
-
-  // Help bubble should be closed now that `scoped_bubble_closer` has fallen
-  // out of scope.
-  EXPECT_FALSE(controller()->GetHelpBubbleId(kElementId, element_context));
-}
-
 // Verifies that the `UserEducationHelpBubbleController` tracks/exposes metadata
 // for currently showing help bubbles as intended.
 TEST_F(UserEducationHelpBubbleControllerTest, Metadata) {
-  // When the `user_education_delegate()` is asked to create a help bubble, do
-  // so and cache a pointer to the result.
-  HelpBubble* help_bubble = nullptr;
-  ON_CALL(*user_education_delegate(), CreateHelpBubble)
-      .WillByDefault(WithArgs<2>(InvokeAndCopyResultAddressTo(
-          this, &UserEducationHelpBubbleControllerTest::CreateHelpBubble,
-          &help_bubble)));
-
   // Verify that cached help bubble metadata is empty.
   EXPECT_THAT(controller()->help_bubble_metadata_by_key(), IsEmpty());
 
   // Create a `help_bubble`.
-  EXPECT_TRUE(controller()->CreateHelpBubble(HelpBubbleId::kTest,
-                                             HelpBubbleParams(), kElementId,
-                                             help_bubble_anchor_context()));
+  std::unique_ptr<HelpBubble> help_bubble = CreateHelpBubble();
+  ASSERT_TRUE(help_bubble);
 
   // Verify that a `help_bubble_view` was created.
-  ASSERT_TRUE(help_bubble);
-  HelpBubbleViewAsh* help_bubble_view = GetHelpBubbleView(help_bubble);
+  HelpBubbleViewAsh* help_bubble_view = GetHelpBubbleView(help_bubble.get());
   ASSERT_TRUE(help_bubble_view);
 
   // Verify that cached help bubble metadata is populated as expected.
@@ -418,13 +247,7 @@ TEST_F(UserEducationHelpBubbleControllerTest, Metadata) {
 
 // Verifies that `UserEducationHelpBubbleController` subscriptions are WAI.
 TEST_F(UserEducationHelpBubbleControllerTest, Subscriptions) {
-  // When the `user_education_delegate()` is asked to create a help bubble, do
-  // so and cache a pointer to the result.
-  HelpBubble* help_bubble = nullptr;
-  ON_CALL(*user_education_delegate(), CreateHelpBubble)
-      .WillByDefault(WithArgs<2>(InvokeAndCopyResultAddressTo(
-          this, &UserEducationHelpBubbleControllerTest::CreateHelpBubble,
-          &help_bubble)));
+  std::unique_ptr<HelpBubble> help_bubble;
 
   {
     // Expect that subscribers will be notified of shown events.
@@ -434,9 +257,8 @@ TEST_F(UserEducationHelpBubbleControllerTest, Subscriptions) {
         controller()->AddHelpBubbleShownCallback(event_future.GetCallback());
 
     // Create the `help_bubble`.
-    EXPECT_TRUE(controller()->CreateHelpBubble(HelpBubbleId::kTest,
-                                               HelpBubbleParams(), kElementId,
-                                               help_bubble_anchor_context()));
+    help_bubble = CreateHelpBubble();
+    EXPECT_TRUE(help_bubble);
 
     // Verify expectations.
     EXPECT_TRUE(event_future.Wait());

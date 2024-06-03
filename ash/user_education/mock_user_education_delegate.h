@@ -33,14 +33,6 @@ class ASH_EXPORT MockUserEducationDelegate : public UserEducationDelegate {
   ~MockUserEducationDelegate() override;
 
   // UserEducationDelegate:
-  MOCK_METHOD(std::unique_ptr<user_education::HelpBubble>,
-              CreateHelpBubble,
-              (const AccountId& account_id,
-               HelpBubbleId help_bubble_id,
-               user_education::HelpBubbleParams help_bubble_params,
-               ui::ElementIdentifier element_id,
-               ui::ElementContext element_context),
-              (override));
   MOCK_METHOD(std::optional<ui::ElementIdentifier>,
               GetElementIdentifierForAppId,
               (const std::string& app_id),

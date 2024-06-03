@@ -107,41 +107,6 @@ class ChromeUserEducationDelegateTest : public BrowserWithTestWindowTest {
 
 // Tests -----------------------------------------------------------------------
 
-// Verifies `CreateHelpBubble()` is working as intended.
-TEST_F(ChromeUserEducationDelegateTest, CreateHelpBubble) {
-  // Create and show a `widget`.
-  views::Widget widget;
-  views::Widget::InitParams params(
-      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
-      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-  widget.Init(std::move(params));
-  widget.SetContentsView(std::make_unique<views::View>());
-  widget.CenterWindow(gfx::Size(100, 100));
-  widget.Show();
-
-  // Cache `element_context` for the widget.
-  const ui::ElementContext element_context =
-      views::ElementTrackerViews::GetContextForWidget(&widget);
-
-  // Verify that a help bubble is *not* created for the specified `kElementId`
-  // and `element_context` pair since no tracked element matching that pair has
-  // been registered with the element tracker framework.
-  EXPECT_FALSE(delegate()->CreateHelpBubble(
-      account_id(), ash::HelpBubbleId::kTest,
-      user_education::HelpBubbleParams(), kElementId, element_context));
-
-  // Register the `widget`s contents `view` with the element tracker framework.
-  views::View* const view = widget.GetContentsView();
-  view->SetProperty(ash::kHelpBubbleContextKey, ash::HelpBubbleContext::kAsh);
-  view->SetProperty(views::kElementIdentifierKey, kElementId);
-
-  // Verify that a help bubble *is* created for the specified `kElementId` and
-  // `element_context` pair.
-  EXPECT_TRUE(delegate()->CreateHelpBubble(
-      account_id(), ash::HelpBubbleId::kTest,
-      user_education::HelpBubbleParams(), kElementId, element_context));
-}
-
 // Verifies that `GetElementIdentifierForAppId()` is working as intended.
 TEST_F(ChromeUserEducationDelegateTest, GetElementIdentifierForAppId) {
   using AppIdWithElementIdentifier =
