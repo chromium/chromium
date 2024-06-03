@@ -7511,9 +7511,6 @@ crbug.com/339833760 [ Win ] http/tests/preload/meta-viewport-link-headers-images
 # Branch Gardener 2024-04-21
 crbug.com/331358162 [ Win ] http/tests/navigation/back-to-redirect-with-frame.php [ Failure Pass ]
 
-# TODO(crbug.com/343094170): Re-enable this test
-fast/events/scroll-event-handler-reused-window.html [ Failure Pass ]
-
 # Disabled to allow crrev.com/c/5582013 to land. TODO(crbug.com/342406608): re-enable and update.
 crbug.com/342406608 http/tests/devtools/throttling/mobile-throttling.js [ Failure Pass ]
 
