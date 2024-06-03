@@ -89,6 +89,10 @@ export class TableElement extends PolymerElement {
       },
     }));
   }
+
+  private shouldShowSummaryRow_(row: TableRow): boolean {
+    return row.summaries.some((summary) => summary.length > 0);
+  }
 }
 
 declare global {

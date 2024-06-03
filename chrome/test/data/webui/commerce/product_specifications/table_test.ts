@@ -282,5 +282,40 @@ suite('ProductSpecificationsTableTest', () => {
     rowSummary[1]!.dispatchEvent(new PointerEvent('pointerenter'));
     assertStyle(openTabButton1, 'display', 'none');
     assertNotStyle(openTabButton2, 'display', 'none');
+
+    const summaryElements =
+        tableElement.shadowRoot!.querySelectorAll('.row-summary');
+    assertEquals(3, summaryElements.length);
+  });
+
+  test('Summaries excluded if empty', async () => {
+    // Arrange
+    tableElement.columns = [
+      {
+        selectedItem: {
+          title: 'title',
+          url: 'https://example.com',
+          imageUrl: 'https://example.com/image',
+        },
+      },
+      {
+        selectedItem: {
+          title: 'title2',
+          url: 'https://example.com/2',
+          imageUrl: 'https://example.com/2/image',
+        },
+      },
+    ];
+    tableElement.rows = [
+      {
+        title: 'foo',
+        descriptions: ['foo1', 'foo2'],
+        summaries: ['', ''],
+      },
+    ];
+    await waitAfterNextRender(tableElement);
+    const summaryElements =
+        tableElement.shadowRoot!.querySelectorAll('.row-summary');
+    assertEquals(0, summaryElements.length);
   });
 });

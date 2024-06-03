@@ -77,13 +77,15 @@
           </td>
         </template>
       </tr>
-      <tr class="row">
-        <template is="dom-repeat" items="[[row.summaries]]" as="summary">
-          <td class="row-summary" on-pointerenter="onShowOpenTabButton_">
-            <div>[[summary]]</div>
-          </td>
-        </template>
-      </tr>
+      <template is="dom-if" if="[[shouldShowSummaryRow_(row)]]">
+        <tr class="row">
+          <template is="dom-repeat" items="[[row.summaries]]" as="summary">
+            <td class="row-summary" on-pointerenter="onShowOpenTabButton_">
+              <div>[[summary]]</div>
+            </td>
+          </template>
+        </tr>
+      </template>
     </template>
   </tbody>
 </table>
