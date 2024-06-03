@@ -1183,7 +1183,9 @@ AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
           ShouldUseNationalFormatPhoneNumber(trigger_field_type));
     }
     suggestions.emplace_back(main_text);
-    suggestions.back().labels.emplace_back(std::move(labels[i]));
+    if (!labels[i].empty()) {
+      suggestions.back().labels.emplace_back(std::move(labels[i]));
+    }
     suggestions.back().payload = Suggestion::Guid(profile->guid());
     suggestions.back().acceptance_a11y_announcement =
         l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM);

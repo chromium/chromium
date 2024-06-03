@@ -1423,7 +1423,7 @@ TEST_F(
 
   ASSERT_EQ(suggestions.size(), 1u);
   EXPECT_EQ(suggestions[0].labels,
-            std::vector<std::vector<Suggestion::Text>>({{}}));
+            std::vector<std::vector<Suggestion::Text>>({}));
 }
 
 TEST_F(AutofillChildrenSuggestionGeneratorTest,
@@ -1618,7 +1618,7 @@ TEST_F(
               EqualsFieldByFieldFillingSuggestion(
                   SuggestionType::kAddressFieldByFieldFilling,
                   profile().GetInfo(NAME_FIRST, app_locale()), NAME_FIRST,
-                  Suggestion::Guid(profile().guid()), {{}}));
+                  Suggestion::Guid(profile().guid()), {}));
 }
 
 TEST_F(AutofillChildrenSuggestionGeneratorTest,

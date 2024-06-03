@@ -57,7 +57,8 @@ Suggestion::Text CreateLabel(const Suggestion& suggestion) {
       suggestion.additional_label.substr(0, kMaxBulletCount);
   // The label contains the signon_realm or is empty. The additional_label can
   // never be empty since it must contain a password.
-  if (suggestion.labels.empty() || suggestion.labels[0][0].value.empty()) {
+  if (suggestion.labels.empty() || suggestion.labels[0].empty() ||
+      suggestion.labels[0][0].value.empty()) {
     return Suggestion::Text(password);
   }
 
