@@ -15,8 +15,10 @@ import {WhatsNewProxyImpl} from 'chrome://whats-new/whats_new_proxy.js';
 import {TestWhatsNewBrowserProxy} from './test_whats_new_browser_proxy.js';
 
 const whatsNewURL = 'chrome://webui-test/whats_new/test.html';
-const whatsNewWithCommandURL =
-    'chrome://webui-test/whats_new/test_with_command_3.html';
+
+function getUrlForFixture(filename: string): string {
+  return `chrome://webui-test/whats_new/${filename}.html`;
+}
 
 suite('WhatsNewAppTest', function() {
   setup(function() {
@@ -75,8 +77,9 @@ suite('WhatsNewAppTest', function() {
     assertEquals(whatsNewURL + '?latest=false', iframe.src);
   });
 
-  test('with command', async () => {
-    const proxy = new TestWhatsNewBrowserProxy(whatsNewWithCommandURL);
+  test('with legacy command format', async () => {
+    const proxy = new TestWhatsNewBrowserProxy(
+        getUrlForFixture('test_with_legacy_command_3'));
     WhatsNewProxyImpl.setInstance(proxy);
     const browserCommandHandler = TestMock.fromClass(CommandHandlerRemote);
     BrowserCommandProxy.getInstance().handler = browserCommandHandler;
@@ -93,5 +96,27 @@ suite('WhatsNewAppTest', function() {
 
     const {data} = await whenMessage;
     assertEquals(3, data.data.commandId);
+  });
+
+  test('with browser command format', async () => {
+    const proxy =
+        new TestWhatsNewBrowserProxy(getUrlForFixture('test_with_command_4'));
+    WhatsNewProxyImpl.setInstance(proxy);
+    const browserCommandHandler = TestMock.fromClass(CommandHandlerRemote);
+    BrowserCommandProxy.getInstance().handler = browserCommandHandler;
+    browserCommandHandler.setResultFor(
+        'canExecuteCommand', Promise.resolve({canExecute: true}));
+    window.history.replaceState({}, '', '/');
+    const whatsNewApp = document.createElement('whats-new-app');
+    document.body.appendChild(whatsNewApp);
+
+    const whenMessage = eventToPromise('message', window);
+    const commandId =
+        await browserCommandHandler.whenCalled('canExecuteCommand');
+    assertEquals(4, commandId);
+
+    const {data} = await whenMessage;
+    assertEquals('browser_command', data.data.event);
+    assertEquals(4, data.data.commandId);
   });
 });

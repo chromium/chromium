@@ -10,12 +10,14 @@ build_webui_tests("build") {
   files = [
     "whats_new_app_test.ts",
     "test_whats_new_browser_proxy.ts",
-    "test_with_command_3.ts",
+    "test_with_legacy_command_3.ts",
+    "test_with_command_4.ts",
   ]
 
   static_files = [
     "test.html",
-    "test_with_command_3.html",
+    "test_with_legacy_command_3.html",
+    "test_with_command_4.html",
   ]
 
   ts_path_mappings =

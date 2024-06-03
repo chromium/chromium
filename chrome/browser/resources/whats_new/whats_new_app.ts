@@ -16,15 +16,54 @@ import {getCss} from './whats_new_app.css.js';
 import {getHtml} from './whats_new_app.html.js';
 import {WhatsNewProxyImpl} from './whats_new_proxy.js';
 
-interface CommandData {
+enum EventType {
+  BROWSER_COMMAND = 'browser_command',
+}
+
+// TODO(crbug.com/342172972): Remove legacy browser command format.
+interface LegacyBrowserCommandData {
   commandId: number;
   clickInfo: ClickInfo;
 }
 
-// TODO (https://www.crbug.com/1219381): Add some additional parameters so
-// that we can filter the messages a bit better.
-interface BrowserCommandMessageData {
-  data: CommandData;
+interface BrowserCommandData {
+  event: EventType.BROWSER_COMMAND;
+  commandId: number;
+  clickInfo: ClickInfo;
+}
+
+type BrowserCommand = LegacyBrowserCommandData|BrowserCommandData;
+
+interface EventData {
+  data: BrowserCommand;
+}
+
+// Narrow the type of the message data. This is necessary for the
+// legacy message format that does not supply an event name.
+function isBrowserCommand(messageData: LegacyBrowserCommandData|
+                          BrowserCommandData): messageData is BrowserCommand {
+  // TODO(crbug.com/342172972): Remove legacy browser command format checks.
+  if (Object.hasOwn(messageData, 'event')) {
+    return (messageData as BrowserCommandData).event ===
+        EventType.BROWSER_COMMAND;
+  } else {
+    return Object.hasOwn(messageData, 'commandId');
+  }
+}
+
+function handleBrowserCommand(messageData: BrowserCommand) {
+  if (!Object.values(Command).includes(messageData.commandId)) {
+    return;
+  }
+  const {commandId} = messageData;
+  const handler = BrowserCommandProxy.getInstance().handler;
+  handler.canExecuteCommand(commandId).then(({canExecute}) => {
+    if (canExecute) {
+      handler.executeCommand(commandId, messageData.clickInfo);
+    } else {
+      console.warn('Received invalid command: ' + commandId);
+    }
+  });
 }
 
 export class WhatsNewAppElement extends CrLitElement {
@@ -99,29 +138,21 @@ export class WhatsNewAppElement extends CrLitElement {
       return;
     }
 
-    const {data, origin} = event;
     const iframeUrl = new URL(this.url_);
-    if (!data || origin !== iframeUrl.origin) {
+    if (!event.data || event.origin !== iframeUrl.origin) {
       return;
     }
 
-    const commandData = (data as BrowserCommandMessageData).data;
-    if (!commandData) {
+    const data = (event.data as EventData).data;
+    if (!data) {
       return;
     }
 
-    const commandId = Object.values(Command).includes(commandData.commandId) ?
-        commandData.commandId :
-        Command.kUnknownCommand;
-
-    const handler = BrowserCommandProxy.getInstance().handler;
-    handler.canExecuteCommand(commandId).then(({canExecute}) => {
-      if (canExecute) {
-        handler.executeCommand(commandId, commandData.clickInfo);
-      } else {
-        console.warn('Received invalid command: ' + commandId);
-      }
-    });
+    if (isBrowserCommand(data)) {
+      handleBrowserCommand(data);
+    } else {
+      console.warn('Received invalid message');
+    }
   }
 }
 customElements.define(WhatsNewAppElement.is, WhatsNewAppElement);
