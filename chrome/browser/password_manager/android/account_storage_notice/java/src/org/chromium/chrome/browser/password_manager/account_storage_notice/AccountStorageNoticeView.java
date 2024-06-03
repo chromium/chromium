@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.password_manager.account_storage_notice;
 import android.content.Context;
 import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
-import android.text.style.ClickableSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
@@ -15,6 +14,7 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.widget.ButtonCompat;
 
@@ -51,12 +51,8 @@ class AccountStorageNoticeView implements BottomSheetContent {
                         new SpanApplier.SpanInfo(
                                 "<link>",
                                 "</link>",
-                                new ClickableSpan() {
-                                    @Override
-                                    public void onClick(View unused) {
-                                        mSettingsLinkCallback.run();
-                                    }
-                                }));
+                                new NoUnderlineClickableSpan(
+                                        context, unused -> mSettingsLinkCallback.run())));
         linkView.setText(linkText);
         linkView.setMovementMethod(LinkMovementMethod.getInstance());
     }
