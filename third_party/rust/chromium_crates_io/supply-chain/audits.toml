@@ -796,6 +796,12 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 delta = "1.0.83 -> 1.0.84"
 notes = "Only doc comment changes in `src/lib.rs`."
 
+[[audits.proc-macro2]]
+who = "danakj@chromium.org"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "1.0.84 -> 1.0.85"
+notes = "Test-only changes."
+
 [[audits.prost]]
 who = "agl@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]

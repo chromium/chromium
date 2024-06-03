@@ -1,10 +1,12 @@
-#![cfg(not(randomize_layout))]
-
 extern crate proc_macro;
 
 use std::mem;
 
 #[rustversion::attr(before(1.64), ignore)]
+#[rustversion::attr(
+    since(1.64),
+    cfg_attr(any(randomize_layout, not(target_pointer_width = "64")), ignore)
+)]
 #[test]
 fn test_proc_macro_size() {
     assert_eq!(mem::size_of::<proc_macro::Span>(), 4);
@@ -16,7 +18,15 @@ fn test_proc_macro_size() {
     assert_eq!(mem::size_of::<proc_macro::TokenStream>(), 4);
 }
 
-#[cfg_attr(not(all(not(wrap_proc_macro), not(span_locations))), ignore)]
+#[cfg_attr(
+    any(
+        randomize_layout,
+        not(target_pointer_width = "64"),
+        wrap_proc_macro,
+        span_locations
+    ),
+    ignore
+)]
 #[test]
 fn test_proc_macro2_fallback_size_without_locations() {
     assert_eq!(mem::size_of::<proc_macro2::Span>(), 0);
@@ -28,7 +38,15 @@ fn test_proc_macro2_fallback_size_without_locations() {
     assert_eq!(mem::size_of::<proc_macro2::TokenStream>(), 8);
 }
 
-#[cfg_attr(not(all(not(wrap_proc_macro), span_locations)), ignore)]
+#[cfg_attr(
+    any(
+        randomize_layout,
+        not(target_pointer_width = "64"),
+        wrap_proc_macro,
+        not(span_locations)
+    ),
+    ignore
+)]
 #[test]
 fn test_proc_macro2_fallback_size_with_locations() {
     assert_eq!(mem::size_of::<proc_macro2::Span>(), 8);
@@ -43,7 +61,15 @@ fn test_proc_macro2_fallback_size_with_locations() {
 #[rustversion::attr(before(1.71), ignore)]
 #[rustversion::attr(
     since(1.71),
-    cfg_attr(not(all(wrap_proc_macro, not(span_locations))), ignore)
+    cfg_attr(
+        any(
+            randomize_layout,
+            not(target_pointer_width = "64"),
+            not(wrap_proc_macro),
+            span_locations
+        ),
+        ignore
+    )
 )]
 #[test]
 fn test_proc_macro2_wrapper_size_without_locations() {
@@ -59,7 +85,15 @@ fn test_proc_macro2_wrapper_size_without_locations() {
 #[rustversion::attr(before(1.65), ignore)]
 #[rustversion::attr(
     since(1.65),
-    cfg_attr(not(all(wrap_proc_macro, span_locations)), ignore)
+    cfg_attr(
+        any(
+            randomize_layout,
+            not(target_pointer_width = "64"),
+            not(wrap_proc_macro),
+            not(span_locations)
+        ),
+        ignore
+    )
 )]
 #[test]
 fn test_proc_macro2_wrapper_size_with_locations() {
