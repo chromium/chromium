@@ -16,8 +16,9 @@
 namespace ash {
 namespace {
 
-constexpr auto kCutoutSize = gfx::SizeF(24.f, 24.f);
-constexpr int kCutoutInnerCornerRadius = 8;
+constexpr auto kCutoutSize = gfx::SizeF(28.f, 28.f);
+constexpr int kCutoutInnerCornerRadius = 16;
+constexpr int kCutoutOuterCornerRadius = 10;
 constexpr int kSinglePlaylistViewWidth = 72;
 constexpr int kIconSize = 20;
 constexpr int kMediaActionIconSpacing = 6;
@@ -115,6 +116,7 @@ void PlaylistImageButton::SetIsSelected(bool is_selected) {
     builder
         .AddCutout(RoundedRectCutoutPathBuilder::Corner::kUpperLeft,
                    kCutoutSize)
+        .CutoutOuterCornerRadius(kCutoutOuterCornerRadius)
         .CutoutInnerCornerRadius(kCutoutInnerCornerRadius);
   }
   image_view_->SetClipPath(builder.Build());
