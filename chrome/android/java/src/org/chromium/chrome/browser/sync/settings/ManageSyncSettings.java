@@ -862,7 +862,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                 @UserSelectableType int type = entry.getKey();
                 boolean enabled = !mSyncService.isTypeManagedByCustodian(type);
                 boolean checked = selectedSyncTypes.contains(type);
-                boolean managed = mSyncService.isTypeManagedByPolicy(type);
+                final boolean managed;
 
                 if (type == UserSelectableType.TABS || type == UserSelectableType.HISTORY) {
                     // PREF_ACCOUNT_SECTION_HISTORY_TOGGLE toggle represents both History and Tabs
@@ -878,6 +878,12 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                     checked =
                             selectedSyncTypes.contains(UserSelectableType.TABS)
                                     || selectedSyncTypes.contains(UserSelectableType.HISTORY);
+                    managed =
+                            mSyncService.isTypeManagedByPolicy(UserSelectableType.TABS)
+                                    && mSyncService.isTypeManagedByPolicy(
+                                            UserSelectableType.HISTORY);
+                } else {
+                    managed = mSyncService.isTypeManagedByPolicy(type);
                 }
 
                 // Disable if sync is disabled by policy.
