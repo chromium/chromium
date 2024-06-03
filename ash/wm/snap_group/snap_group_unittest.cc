@@ -372,7 +372,6 @@ class FasterSplitScreenTest : public OverviewTestBase {
   // AshTestBase:
   void SetUp() override {
     OverviewTestBase::SetUp();
-    WindowCycleList::SetDisableInitialDelayForTesting(true);
   }
 
  protected:
@@ -2074,8 +2073,6 @@ class SnapGroupTest : public AshTestBase {
     AshTestBase::SetUp();
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kUseFirstDisplayAsInternal);
-
-    WindowCycleList::SetDisableInitialDelayForTesting(true);
   }
 
   void SnapTwoTestWindows(aura::Window* window1,
@@ -5352,7 +5349,30 @@ TEST_F(SnapGroupDesksTest, SaveDeskForSnapGroupWithAnotherSavedDesk) {
 // -----------------------------------------------------------------------------
 // SnapGroupWindowCycleTest:
 
-using SnapGroupWindowCycleTest = SnapGroupTest;
+class SnapGroupWindowCycleTest : public SnapGroupTest {
+ public:
+  SnapGroupWindowCycleTest() {
+    WindowCycleList::SetDisableInitialDelayForTesting(true);
+  }
+
+  ~SnapGroupWindowCycleTest() override = default;
+
+  void AltTabNTimes(int n) {
+    WindowCycleController* window_cycle_controller =
+        Shell::Get()->window_cycle_controller();
+
+    auto* event_generator = GetEventGenerator();
+
+    for (int i = 0; i < n; i++) {
+      event_generator->PressKey(ui::VKEY_TAB, ui::EF_ALT_DOWN);
+      event_generator->ReleaseKey(ui::VKEY_TAB, ui::EF_ALT_DOWN);
+      EXPECT_TRUE(window_cycle_controller->IsCycling());
+    }
+
+    event_generator->ReleaseKey(ui::VKEY_MENU, ui::EF_NONE);
+    EXPECT_FALSE(window_cycle_controller->IsCycling());
+  }
+};
 
 // Tests that the window list is reordered when there is snap group. The two
 // windows will be adjacent with each other with physically left/top snapped
@@ -5540,6 +5560,140 @@ TEST_F(SnapGroupWindowCycleTest, QuickSwitch) {
   EXPECT_FALSE(window_cycle_list1->cycle_view());
   event_generator->ReleaseKey(ui::VKEY_MENU, ui::EF_NONE);
   EXPECT_TRUE(wm::IsActiveWindow(w1.get()));
+}
+
+// Tests that window cycling correctly navigates across multiple Snap Groups on
+// different virtual desks. Upon completing a window cycle, the active desk is
+// switched to the one containing the activated window.
+TEST_F(SnapGroupWindowCycleTest, AllDesksWindowCycling) {
+  auto* desks_controller = DesksController::Get();
+  desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
+  ASSERT_EQ(2u, desks_controller->desks().size());
+  const Desk* desk0 = desks_controller->GetDeskAtIndex(0);
+  const Desk* desk1 = desks_controller->GetDeskAtIndex(1);
+  ASSERT_TRUE(desk0->is_active());
+
+  // Create 1st Snap Group on `desk0`.
+  std::unique_ptr<aura::Window> w0(CreateAppWindow());
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  SnapTwoTestWindows(w0.get(), w1.get());
+  SnapGroup* snap_group1 =
+      SnapGroupController::Get()->GetSnapGroupForGivenWindow(w0.get());
+  ASSERT_TRUE(snap_group1);
+  ASSERT_EQ(desks_util::GetDeskForContext(w0.get()), desk0);
+  ASSERT_EQ(desks_util::GetDeskForContext(w1.get()), desk0);
+
+  // Create 2nd Snap Group on `desk1`.
+  ActivateDesk(desk1);
+  ASSERT_TRUE(desk1->is_active());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  std::unique_ptr<aura::Window> w3(CreateAppWindow());
+  SnapTwoTestWindows(w2.get(), w3.get());
+  SnapGroup* snap_group2 =
+      SnapGroupController::Get()->GetSnapGroupForGivenWindow(w0.get());
+  ASSERT_TRUE(snap_group2);
+  ASSERT_EQ(desks_util::GetDeskForContext(w2.get()), desk1);
+  ASSERT_EQ(desks_util::GetDeskForContext(w3.get()), desk1);
+
+  EXPECT_TRUE(wm::IsActiveWindow(w3.get()));
+
+  // Initial window cycle UI for "All desks" is as follows:
+  //
+  //        desk1           |        desk0
+  //                        |
+  //     +------+------+    |    +------+------+
+  //     |      |      |    |    |      |      |
+  //     |  w2  | [w3] |    |    |  w0  |  w1  |
+  //     |      |      |    |    |      |      |
+  //     +------+------+    |    +------+------+
+
+  // Press 'Alt + Tab' 3 times to activate `w0`(cycling sequence:
+  // `w2`->`w3`->`w0`). Verify that the active desk is switched to `desk0`
+  // correspondingly.
+  AltTabNTimes(3);
+
+  EXPECT_TRUE(wm::IsActiveWindow(w0.get()));
+  DeskSwitchAnimationWaiter().Wait();
+  EXPECT_TRUE(desk0->is_active());
+
+  // Updated window cycle UI for "All desks" is as follows:
+  //
+  //        desk0           |        desk1
+  //                        |
+  //     +------+------+    |    +------+------+
+  //     |      |      |    |    |      |      |
+  //     | [w0] |  w1  |    |    |  w2  |  w3  |
+  //     |      |      |    |    |      |      |
+  //     +------+------+    |    +------+------+
+
+  // Press 'Alt + Tab' 2 times to activate `w2`(cycling sequence: `w1`->`w2`).
+  // Verify that the active desk is switched to `desk1` correspondingly.
+  AltTabNTimes(2);
+
+  EXPECT_TRUE(wm::IsActiveWindow(w2.get()));
+  DeskSwitchAnimationWaiter().Wait();
+  EXPECT_TRUE(desk1->is_active());
+}
+
+// Verifies that window cycling through Snap Groups on multiple virtual desks
+// only activates windows present on the currently active desk. Windows on
+// inactive desktops will not be cycled through or brought into focus.
+TEST_F(SnapGroupWindowCycleTest, PerDeskWindowCycling) {
+  PrefService* active_user_prefs =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  DCHECK(active_user_prefs);
+  active_user_prefs->SetBoolean(prefs::kAltTabPerDesk, true);
+
+  auto* desks_controller = DesksController::Get();
+  desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
+  ASSERT_EQ(2u, desks_controller->desks().size());
+  const Desk* desk0 = desks_controller->GetDeskAtIndex(0);
+  const Desk* desk1 = desks_controller->GetDeskAtIndex(1);
+  ASSERT_TRUE(desk0->is_active());
+
+  // Create 1st Snap Group on `desk0`.
+  std::unique_ptr<aura::Window> w0(CreateAppWindow());
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  SnapTwoTestWindows(w0.get(), w1.get());
+  SnapGroup* snap_group1 =
+      SnapGroupController::Get()->GetSnapGroupForGivenWindow(w0.get());
+  ASSERT_TRUE(snap_group1);
+  ASSERT_EQ(desks_util::GetDeskForContext(w0.get()), desk0);
+  ASSERT_EQ(desks_util::GetDeskForContext(w1.get()), desk0);
+
+  // Create 2nd Snap Group on `desk1`.
+  ActivateDesk(desk1);
+  ASSERT_TRUE(desk1->is_active());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  std::unique_ptr<aura::Window> w3(CreateAppWindow());
+  SnapTwoTestWindows(w2.get(), w3.get());
+  SnapGroup* snap_group2 =
+      SnapGroupController::Get()->GetSnapGroupForGivenWindow(w0.get());
+  ASSERT_TRUE(snap_group2);
+  ASSERT_EQ(desks_util::GetDeskForContext(w2.get()), desk1);
+  ASSERT_EQ(desks_util::GetDeskForContext(w3.get()), desk1);
+
+  EXPECT_TRUE(wm::IsActiveWindow(w3.get()));
+
+  // Tests per-desk focus cycling on `desk1`.
+  // Press 'Alt + Tab' 3 times to activate `w2`(cycling sequence:
+  // `w2`->`w3`->`w2`). Verify that the active desk will not be modified.
+  AltTabNTimes(3);
+
+  EXPECT_TRUE(wm::IsActiveWindow(w2.get()));
+  EXPECT_FALSE(desks_controller->AreDesksBeingModified());
+
+  // Tests per-desk focus cycling on `desk0`.
+  ActivateDesk(desk0);
+  ASSERT_TRUE(desk0->is_active());
+
+  // Press 'Alt + Tab' 5 times to activate `w2`(cycling sequence:
+  // `w0`->`w1`->`w0`->`w1`->`w0`). Verify that the active desk will not be
+  // modified.
+  AltTabNTimes(5);
+
+  EXPECT_TRUE(wm::IsActiveWindow(w0.get()));
+  EXPECT_FALSE(desks_controller->AreDesksBeingModified());
 }
 
 // Tests that the exposed rounded corners of the cycling items are rounded
