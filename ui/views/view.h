@@ -817,17 +817,12 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // Sets whether or not the layout manager need to respect the available space.
   //
-  // TODO(crbug.com/40232718): If the cross axis of the constraint space is
-  // constrained in FlexLayout, the cross axis of the host view will be
-  // stretched to the incoming constraint size by default. This results in
-  // incorrect calculations.
-  //
-  // When vertical BoxLayouts and other views are nested inside the horizontal
-  // BoxLayout, the width of the horizontal BoxLayout will be passed in as the
-  // cross axis of the vertical BoxLayout. At this time, if the vertical
-  // BoxLayout is set to stretch the cross axis (default), the first vertical
-  // BoxLayout will occupy all the space, which will cause the subsequent
-  // BoxLayout to be unable to be displayed.
+  // TODO(crbug.com/40232718): Remove this. When the vertical flexlayout with
+  // cross axis is stretched, it will be (width, GetHeightForWidth(width)) when
+  // calculating preferredsize, thus setting the width to an incorrect value.
+  // This will cause unexpected results in some client code. This problem also
+  // exists in BoxLayout. When we switch GetHeightForWidth in them to
+  // GetPreferredSize, this problem should be solved.
   void SetLayoutManagerUseConstrainedSpace(
       bool layout_manager_use_constrained_space);
 
