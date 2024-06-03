@@ -609,12 +609,10 @@ void CloudFileSystem::OnOpenFileCompleted(
           << "', metadata = " << metadata.get() << "}";
 
   if (result == base::File::FILE_OK) {
-    const std::string version_tag = GetVersionTag(metadata.get());
-    opened_files_.try_emplace(
-        file_handle, OpenedCloudFile(file_path, mode, file_handle, version_tag,
-                                     GetCloudSize(metadata.get())));
-    // Notify the cache with the observed version tag.
-    content_cache_->ObservedVersionTag(file_path, version_tag);
+    opened_files_.try_emplace(file_handle,
+                              OpenedCloudFile(file_path, mode, file_handle,
+                                              GetVersionTag(metadata.get()),
+                                              GetCloudSize(metadata.get())));
   } else if (content_cache_ && result == base::File::FILE_ERROR_NOT_FOUND) {
     // The file doesn't exist on the FSP, evict it from the cache.
     content_cache_->Evict(file_path);
@@ -649,15 +647,9 @@ void CloudFileSystem::OnGetMetadataCompleted(
           << ", entry_path = '" << entry_path << "', result = '" << result
           << "', metadata = " << entry_metadata.get() << "}";
 
-  if (content_cache_) {
-    if (result == base::File::FILE_ERROR_NOT_FOUND) {
-      // The file doesn't exist on the FSP, evict it from the cache.
-      content_cache_->Evict(entry_path);
-    } else if (result == base::File::FILE_OK) {
-      // Notify the cache with the observed version tag.
-      content_cache_->ObservedVersionTag(entry_path,
-                                         GetVersionTag(entry_metadata.get()));
-    }
+  if (content_cache_ && result == base::File::FILE_ERROR_NOT_FOUND) {
+    // The file doesn't exist on the FSP, evict it from the cache.
+    content_cache_->Evict(entry_path);
   }
   std::move(callback).Run(std::move(entry_metadata), result);
 }

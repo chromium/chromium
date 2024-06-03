@@ -60,9 +60,6 @@ class ContentCacheImpl : public ContentCache {
 
   void Notify(ProvidedFileSystemObserver::Changes& changes) override;
 
-  void ObservedVersionTag(const base::FilePath& entry_path,
-                          const std::string& version_tag) override;
-
   void Evict(const base::FilePath& file_path) override;
 
   const SizeInfo GetSize() const override;

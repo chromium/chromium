@@ -133,23 +133,6 @@ void ContentCacheImpl::Notify(ProvidedFileSystemObserver::Changes& changes) {
   EvictItems(to_evict);
 }
 
-void ContentCacheImpl::ObservedVersionTag(const base::FilePath& entry_path,
-                                          const std::string& version_tag) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  ContentLRUCache::iterator it = lru_cache_.Peek(entry_path);
-  if (it == lru_cache_.end()) {
-    VLOG(1) << "File is not in cache";
-    return;
-  }
-
-  CacheFileContext& ctx = it->second;
-  if (version_tag != ctx.version_tag()) {
-    VLOG(2) << "File version is out of date, evict from the cache";
-    Evict(entry_path);
-  }
-}
-
 void ContentCacheImpl::Evict(const base::FilePath& file_path) {
   std::vector<const base::FilePath> file_paths = {file_path};
   EvictItems(file_paths);
@@ -371,6 +354,10 @@ void ContentCacheImpl::ReadBytes(
     VLOG(1) << "Cache miss: not possible to read the file on disk";
     callback.Run(/*bytes_read=*/-1, /*has_more=*/false,
                  base::File::FILE_ERROR_NOT_FOUND);
+    if (file.version_tag != ctx.version_tag()) {
+      // The cached file is out of date.
+      Evict(file.file_path);
+    }
     return;
   }
 
