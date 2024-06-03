@@ -3,9 +3,13 @@
 //! [data types]: https://docs.microsoft.com/en-us/typography/opentype/spec/otff#data-types
 
 #![deny(rustdoc::broken_intra_doc_links)]
-#![cfg_attr(not(test), no_std)]
+#![cfg_attr(not(feature = "std"), no_std)]
 
-#[cfg(not(test))]
+#[cfg(feature = "std")]
+#[macro_use]
+extern crate std;
+
+#[cfg(not(feature = "std"))]
 #[macro_use]
 extern crate core as std;
 

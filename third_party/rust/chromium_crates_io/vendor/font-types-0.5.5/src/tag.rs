@@ -157,6 +157,9 @@ impl crate::raw::Scalar for Tag {
     }
 }
 
+#[cfg(feature = "std")]
+impl std::error::Error for InvalidTag {}
+
 impl Borrow<[u8; 4]> for Tag {
     fn borrow(&self) -> &[u8; 4] {
         &self.0
@@ -323,6 +326,7 @@ mod tests {
     }
 
     #[test]
+    #[cfg(feature = "std")]
     fn display() {
         let bad_tag = Tag::new(&[0x19, b'z', b'@', 0x7F]);
         assert_eq!(bad_tag.to_string(), "{0x19}z@{0x7F}");

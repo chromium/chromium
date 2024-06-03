@@ -12,7 +12,7 @@
 [package]
 edition = "2021"
 name = "font-types"
-version = "0.5.4"
+version = "0.5.5"
 description = "Scalar types used in fonts."
 readme = "README.md"
 categories = ["text-processing"]
@@ -34,3 +34,6 @@ optional = true
 
 [dev-dependencies.serde_json]
 version = "1.0"
+
+[features]
+std = []

@@ -1,12 +1,15 @@
 [package]
 name = "font-types"
-version = "0.5.4"
+version = "0.5.5"
 edition = "2021"
 license = "MIT/Apache-2.0"
 description = "Scalar types used in fonts."
 repository = "https://github.com/googlefonts/fontations"
 readme = "README.md"
 categories = ["text-processing"]
+
+[features]
+std = []
 
 [dependencies]
 # note: bytemuck version must be available in all deployment environments

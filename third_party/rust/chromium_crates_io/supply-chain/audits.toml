@@ -593,6 +593,12 @@ The delta just adds `impl From<GlyphId> for u32` - no impact on `unsafe impl`s
 elsewhere.
 """
 
+[[audits.font-types]]
+who = "danakj@chromium.org"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-1"]
+delta = "0.5.4 -> 0.5.5"
+notes = "No unsafe changes."
+
 [[audits.getrandom]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
