@@ -1357,6 +1357,16 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         return false;
     }
 
+    @Override
+    public boolean isOffTheRecord() {
+        return false;
+    }
+
+    @Override
+    public boolean isIncognitoBranded() {
+        return false;
+    }
+
     @Nullable
     @Override
     public TrustedWebActivityDisplayMode getTwaDisplayMode() {
@@ -1532,7 +1542,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     @Override
     public boolean isInteractiveOmniboxAllowed() {
         if (!ChromeFeatureList.sSearchInCCT.isEnabled()) return false;
-        if (isIncognito()) return false;
+        if (isOffTheRecord()) return false;
         if (isPartialCustomTab()) return false;
         if (BuildInfo.getInstance().isAutomotive) return false;
 

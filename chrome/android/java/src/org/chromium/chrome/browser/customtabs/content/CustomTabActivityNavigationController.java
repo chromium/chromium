@@ -362,7 +362,7 @@ public class CustomTabActivityNavigationController
         }
 
         boolean willChromeHandleIntent =
-                mIntentDataProvider.isOpenedByChrome() || mIntentDataProvider.isIncognito();
+                mIntentDataProvider.isOpenedByChrome() || mIntentDataProvider.isIncognitoBranded();
 
         // If the tab is opened by TWA or Webapp, do not reparent and finish the Custom Tab
         // activity because we still want to keep the app alive.
