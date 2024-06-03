@@ -1094,9 +1094,11 @@ reviewer.
   <owner>chrstne@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
-    Records whether or not the variation country is empty for profiles. This
-    histogram will be used to determine if the variation country being empty
-    leads to an increased spike of Privacy Sandbox notice APIs being disabled.
+    Records whether or not the variation country is empty for profiles. This can
+    occur if the country itself is empty, or if the variation service is null.
+    This histogram will be used to determine if the variation country being
+    empty leads to an increased spike of Privacy Sandbox notice APIs being
+    disabled.
   </summary>
 </histogram>
 
