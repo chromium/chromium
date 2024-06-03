@@ -17,7 +17,24 @@
 #  pragma GCC system_header
 #endif
 
-// TODO(hardening): in production, trap rather than abort.
-#define _LIBCPP_ASSERTION_HANDLER(message) _LIBCPP_VERBOSE_ABORT("%s", message)
+// Based on CHECK_WILL_STREAM() defined in base/check.h
+#if defined(OFFICIAL_BUILD) && !defined(DCHECK_ALWAYS_ON)
+
+_LIBCPP_BEGIN_NAMESPACE_STD
+
+_LIBCPP_NORETURN inline _LIBCPP_HIDE_FROM_ABI void __libcpp_hardening_failure() {
+  __builtin_trap();
+}
+
+_LIBCPP_END_NAMESPACE_STD
+
+// TODO(hardening): use `__builtin_verbose_trap(message)` once that becomes available.
+#  define _LIBCPP_ASSERTION_HANDLER(message) ((void)message, __libcpp_hardening_failure())
+
+#else
+
+#  define _LIBCPP_ASSERTION_HANDLER(message) _LIBCPP_VERBOSE_ABORT("%s", message)
+
+#endif // defined(NDEBUG) && defined(OFFICIAL_BUILD) && !defined(DCHECK_ALWAYS_ON) 
 
 #endif // _LIBCPP___ASSERTION_HANDLER

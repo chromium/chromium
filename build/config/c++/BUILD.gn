@@ -53,6 +53,13 @@ config("runtime_library") {
     defines += [ "TEMP_REBUILD_HACK" ]
   }
 
+  # Temporarily add a define to force a rebuild when changing
+  # buildtools/third_party/libc++/__assertion_handler which isn't picked up by
+  # dependency tracking (because it's an #include of headers included via
+  # -isysroot).
+  # TODO(crbug.com/40255003): remove after a few days.
+  defines += [ "TEMP_REBUILD_HACK_ASSERTION_HANDLER" ]
+
   if (is_win) {
     # Intentionally not using libc++abi on Windows because libc++abi only
     # implements the Itanium C++ ABI, and not the Microsoft ABI which we use on
