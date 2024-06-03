@@ -645,13 +645,13 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
   //
   // TODO(crbug.com/340584120): Consider reporting a consistent change
   // type when writing to a file via a WritableFileStream. On the local file
-  // system, changes are naively considered "moved" events because the swap file
-  // is moved over the target file. Meanwhile, the BucketFS intentionally
+  // system, changes are naively considered "created" events because the swap
+  // file is moved over the target file. Meanwhile, the BucketFS intentionally
   // reports the move as a modification if the move overwrote an existing file.
   const std::string expected_change_type =
       SupportsChangeInfo()
           ? (GetTestFileSystemType() == TestFileSystemType::kBucket ? "modified"
-                                                                    : "moved")
+                                                                    : "created")
           : "unknown";
   EXPECT_THAT(*records.GetList().front().GetDict().FindString("type"),
               testing::StrEq(expected_change_type));

@@ -175,7 +175,7 @@ class FakeChangeSource : public FileSystemAccessChangeSource {
 
   void Signal(base::FilePath relative_path = base::FilePath(),
               bool error = false,
-              ChangeInfo change_info = {}) {
+              ChangeInfo change_info = ChangeInfo()) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     NotifyOfChange(std::move(relative_path), error, change_info);
   }
@@ -737,9 +737,12 @@ TEST_F(FileSystemAccessWatcherManagerTest, ChangeType) {
   EXPECT_TRUE(
       watcher_manager().HasObservationForTesting(accumulator.observation()));
 
+  base::FilePath path;
   source.Signal(
-      /*relative_path=*/base::FilePath(), /*error=*/false,
-      {.change_type = FileSystemAccessChangeSource::ChangeType::kCreated});
+      /*relative_path=*/path, /*error=*/false,
+      FileSystemAccessChangeSource::ChangeInfo(
+          FileSystemAccessChangeSource::FilePathType::kUnknown,
+          FileSystemAccessChangeSource::ChangeType::kCreated, path));
 
   std::list<Change> expected_changes = {
       {file_url, ToMojoChangeTypePtr(FileSystemAccessChangeType::Tag::kCreated),
@@ -773,9 +776,12 @@ TEST_F(FileSystemAccessWatcherManagerTest, ErrorTakesPrecedenceOverChangeType) {
   EXPECT_TRUE(
       watcher_manager().HasObservationForTesting(accumulator.observation()));
 
+  base::FilePath path;
   source.Signal(
-      /*relative_path=*/base::FilePath(), /*error=*/true,
-      {.change_type = FileSystemAccessChangeSource::ChangeType::kCreated});
+      /*relative_path=*/path, /*error=*/true,
+      FileSystemAccessChangeSource::ChangeInfo(
+          FileSystemAccessChangeSource::FilePathType::kUnknown,
+          FileSystemAccessChangeSource::ChangeType::kCreated, path));
 
   std::list<Change> expected_changes = {
       {file_url, ToMojoChangeTypePtr(FileSystemAccessChangeType::Tag::kErrored),

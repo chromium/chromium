@@ -16,6 +16,37 @@
 
 namespace content {
 
+FilePathWatcher::ChangeInfo::ChangeInfo() = default;
+
+FilePathWatcher::ChangeInfo::ChangeInfo(
+    FilePathWatcher::FilePathType file_path_type,
+    FilePathWatcher::ChangeType change_type,
+    base::FilePath modified_path)
+    : file_path_type(file_path_type),
+      change_type(change_type),
+      modified_path(modified_path) {}
+
+FilePathWatcher::ChangeInfo::ChangeInfo(
+    FilePathWatcher::FilePathType file_path_type,
+    FilePathWatcher::ChangeType change_type,
+    base::FilePath modified_path,
+    std::optional<base::FilePath> moved_from_path)
+    : file_path_type(file_path_type),
+      change_type(change_type),
+      modified_path(modified_path),
+      moved_from_path(moved_from_path) {}
+
+FilePathWatcher::ChangeInfo::~ChangeInfo() = default;
+
+FilePathWatcher::ChangeInfo::ChangeInfo(const FilePathWatcher::ChangeInfo&) =
+    default;
+FilePathWatcher::ChangeInfo::ChangeInfo(FilePathWatcher::ChangeInfo&&) =
+    default;
+FilePathWatcher::ChangeInfo& FilePathWatcher::ChangeInfo::operator=(
+    const FilePathWatcher::ChangeInfo&) = default;
+FilePathWatcher::ChangeInfo& FilePathWatcher::ChangeInfo::operator=(
+    FilePathWatcher::ChangeInfo&&) noexcept = default;
+
 FilePathWatcher::~FilePathWatcher() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   impl_->Cancel();

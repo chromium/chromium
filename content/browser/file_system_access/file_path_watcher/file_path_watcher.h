@@ -63,19 +63,39 @@ class CONTENT_EXPORT FilePathWatcher {
   // is not always possible. Callers should treat this information a strong
   // hint, but still be capable of handling events where this information is not
   // known given the limitations on some platforms.
-  struct ChangeInfo {
+  struct CONTENT_EXPORT ChangeInfo {
+    ChangeInfo();
+    ChangeInfo(FilePathType file_path_type,
+               ChangeType change_type,
+               base::FilePath modified_path);
+    ChangeInfo(FilePathType file_path_type,
+               ChangeType change_type,
+               base::FilePath modified_path,
+               std::optional<base::FilePath> moved_from_path);
+    ~ChangeInfo();
+
+    // Copyable and movable.
+    ChangeInfo(const ChangeInfo&);
+    ChangeInfo(ChangeInfo&&);
+    ChangeInfo& operator=(const ChangeInfo&);
+    ChangeInfo& operator=(ChangeInfo&&) noexcept;
+
+    friend bool operator==(const ChangeInfo&, const ChangeInfo&) = default;
+
     FilePathType file_path_type = FilePathType::kUnknown;
     ChangeType change_type = ChangeType::kUnknown;
-    // Can be used to associate related events. For example, renaming a file may
-    // trigger separate "moved from" and "moved to" events with the same
-    // `cookie` value.
-    //
-    // TODO(crbug.com/40260973): This is currently only used to associate
-    // `kMoved` events, and requires all consumers to implement the same logic
-    // to coalesce these events. Consider upstreaming this event coalesing logic
-    // to the platform-specific implementations and then replacing `cookie` with
-    // the file path that the file was moved from, if this is known.
-    std::optional<uint32_t> cookie;
+
+    // Modified path of the changed file or directory. It is provided as
+    // best-effort, and may not exist if the underlying platform is unable to
+    // find information.
+    base::FilePath modified_path;
+
+    // Previous path that the file or the directory has been moved from. This
+    // field is only set for `ChangeType:kMoved`, and exists if the file or the
+    // directory is moved within the watched scope. It is provided as
+    // best-effort, and may not exist if the underlying platform is unable to
+    // find information.
+    std::optional<base::FilePath> moved_from_path;
   };
 
   // TODO(crbug.com/40260973): Rename this now that this class declares
@@ -121,6 +141,7 @@ class CONTENT_EXPORT FilePathWatcher {
   using Callback =
       base::RepeatingCallback<void(const base::FilePath& path, bool error)>;
   // Same as above, but includes more information about the change, if known.
+  // TODO(crbug.com/40105284): Remove path from this callback.
   using CallbackWithChangeInfo = base::RepeatingCallback<
       void(const ChangeInfo&, const base::FilePath& path, bool error)>;
 
