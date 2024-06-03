@@ -997,7 +997,9 @@ class WPTResultsProcessor:
             output.log = io.StringIO()
 
         if output and output.command:
-            uri = self._test_uri_mapper.test_to_uri(result.name)
+            test_name = (self.port.lookup_virtual_test_base(result.name)
+                         or result.name)
+            uri = self._test_uri_mapper.test_to_uri(test_name)
             command = shlex.join([*output.command, uri])
             self._write_log(result.name, artifacts, 'command',
                             test_failures.FILENAME_SUFFIX_CMD, command)

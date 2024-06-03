@@ -1128,7 +1128,6 @@ if (use_blink && !is_cronet_build) {
       script = "//third_party/blink/tools/run_wpt_tests.py"
       args = [
         "--product=headless_shell",
-        "--no-virtual-tests",
         "--no-wpt-internal",
         "--no-show-results",
         "--zero-tests-executed-ok",

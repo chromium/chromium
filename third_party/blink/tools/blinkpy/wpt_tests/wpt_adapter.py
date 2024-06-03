@@ -161,9 +161,9 @@ class WPTAdapter:
                   port_name: Optional[str] = None):
         options, tests = parse_arguments(args)
         cls._ensure_value(options, 'wpt_only', True)
-        # only run virtual tests for content shell
-        cls._ensure_value(options, 'no_virtual_tests',
-                          options.product != 'content_shell')
+        # only run virtual tests for headless shell
+        cls._ensure_value(options, 'no_virtual_tests', options.product
+                          != 'headless_shell')
 
         if options.product in cls.PORT_NAME_BY_PRODUCT:
             port = host.port_factory.get(

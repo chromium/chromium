@@ -47969,7 +47969,10 @@
           "testharness",
           "reftest",
           "crashtest",
-          "print-reftest"
+          "print-reftest",
+          "--exit-after-n-crashes-or-timeouts=10000",
+          "--exit-after-n-failures=10000",
+          "--no-retry-failures"
         ],
         "experiment_percentage": 100,
         "merge": {
@@ -47989,7 +47992,7 @@
             "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 10
+          "shards": 15
         },
         "test": "headless_shell_wpt",
         "test_id_prefix": "ninja://:headless_shell_wpt/"
@@ -49803,7 +49806,9 @@
         "args": [
           "--test-type",
           "testharness",
-          "crashtest"
+          "crashtest",
+          "--no-virtual-test",
+          "--no-retry-failures"
         ],
         "experiment_percentage": 100,
         "isolate_profile_data": true,
@@ -52300,9 +52305,10 @@
           "--test-type",
           "testharness",
           "crashtest",
+          "--no-virtual-test",
+          "--no-retry-failures",
           "--target",
-          "Release_x64",
-          "--no-retry-failures"
+          "Release_x64"
         ],
         "experiment_percentage": 100,
         "isolate_profile_data": true,
