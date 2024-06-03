@@ -18,11 +18,13 @@ import org.mockito.Mockito;
 
 import org.chromium.base.Log;
 import org.chromium.base.test.util.ScalableTimeout;
+import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
  * Custom ActivityTestRule for all instrumentation tests that require a {@link CustomTabActivity}.
@@ -38,7 +40,7 @@ public class CustomTabActivityTestRule extends ChromeActivityTestRule<CustomTabA
     }
 
     @Override
-    public Statement apply(Statement base, Description description) {
+    public Statement apply(final Statement base, Description description) {
         Statement statement =
                 new Statement() {
                     @Override
@@ -52,7 +54,16 @@ public class CustomTabActivityTestRule extends ChromeActivityTestRule<CustomTabA
                         // Disable IPH to prevent it from interfering with the tests.
                         when(tracker.shouldTriggerHelpUI(anyString())).thenReturn(false);
                         TrackerFactory.setTrackerForTests(tracker);
-                        base.evaluate();
+                        try {
+                            base.evaluate();
+                        } finally {
+                            TestThreadUtils.runOnUiThreadBlocking(
+                                    () -> {
+                                        WarmupManager.getInstance().destroySpareTab();
+                                        // Prevent further async spare tab creation.
+                                        CustomTabsConnection.sSkipTabPrewarmingForTesting = true;
+                                    });
+                        }
                     }
                 };
         return super.apply(statement, description);

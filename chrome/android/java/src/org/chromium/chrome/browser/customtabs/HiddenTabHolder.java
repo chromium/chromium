@@ -119,6 +119,9 @@ public class HiddenTabHolder {
         if (IntentHandler.getExtraHeadersFromIntent(extrasIntent) != null) return;
 
         WarmupManager warmupManager = WarmupManager.getInstance();
+        if (warmupManager.hasSpareTab(profile) && webContents != null) {
+            warmupManager.destroySpareTab();
+        }
         warmupManager.createRegularSpareTab(profile, webContents);
         // In case creating the tab fails for some reason.
         if (!warmupManager.hasSpareTab(profile)) return;

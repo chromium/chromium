@@ -235,10 +235,13 @@ public class CustomTabsConnection {
     @Nullable private List<String> mDynamicEnabledFeatures;
     @Nullable private List<String> mDynamicDisabledFeatures;
 
+    // Async tab prewarming can cause flakiness in tests when it runs after test shutdown and
+    // triggers LifetimeAsserts.
+    @VisibleForTesting public static boolean sSkipTabPrewarmingForTesting;
+
     /**
-     * <strong>DO NOT CALL</strong>
-     * Public to be instanciable from {@link ChromeApplicationImpl}. This is however
-     * intended to be private.
+     * <strong>DO NOT CALL</strong> Public to be instanciable from {@link ChromeApplicationImpl}.
+     * This is however intended to be private.
      */
     public CustomTabsConnection() {
         super();
@@ -1942,6 +1945,7 @@ public class CustomTabsConnection {
     }
 
     public static void createSpareWebContents(Profile profile) {
+        if (sSkipTabPrewarmingForTesting) return;
         if (SysUtils.isLowEndDevice()) return;
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_PREWARM_TAB)) {
             WarmupManager.getInstance().createRegularSpareTab(profile);
