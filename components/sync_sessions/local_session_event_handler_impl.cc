@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/debug/alias.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -188,6 +189,14 @@ void LocalSessionEventHandlerImpl::AssociateWindows(ReloadTabsOption option,
              << " windows from previous session.";
   }
 
+  // Added to debug reported slowness in https://crbug.com/41483250.
+  const size_t num_tracked_sessions = session_tracker_->num_synced_sessions();
+  const size_t num_window_delegates = window_delegates.size();
+  int total_processed_tab_count = 0;
+  base::debug::Alias(&num_tracked_sessions);
+  base::debug::Alias(&num_window_delegates);
+  base::debug::Alias(&total_processed_tab_count);
+
   for (auto& [window_id, window_delegate] : window_delegates) {
     // Make sure the window is viewable and is not about to be closed. The
     // viewable window check is necessary because, for example, when a browser
@@ -203,12 +212,18 @@ void LocalSessionEventHandlerImpl::AssociateWindows(ReloadTabsOption option,
       continue;
     }
 
+    const int tab_count_in_window = window_delegate->GetTabCount();
+    total_processed_tab_count += tab_count_in_window;
+
+    // Added to debug reported slowness in https://crbug.com/41483250.
+    base::debug::Alias(&tab_count_in_window);
+
     DCHECK_EQ(window_id, window_delegate->GetSessionId());
     DVLOG(1) << "Associating window " << window_id.id() << " with "
-             << window_delegate->GetTabCount() << " tabs.";
+             << tab_count_in_window << " tabs.";
 
     bool found_tabs = false;
-    for (int j = 0; j < window_delegate->GetTabCount(); ++j) {
+    for (int j = 0; j < tab_count_in_window; ++j) {
       SessionID tab_id = window_delegate->GetTabIdAt(j);
       SyncedTabDelegate* synced_tab = window_delegate->GetTabAt(j);
 
