@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "third_party/sqlite/fuzz/sql_queries.pb.h"
+#include "third_party/sqlite/fuzz/sql_queries.pb.h"  // IWYU pragma: export
 
 namespace sql_fuzzer {
 

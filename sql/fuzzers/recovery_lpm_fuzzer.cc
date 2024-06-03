@@ -9,32 +9,40 @@
 // with fuzzer-derived XOR masks before exercising recovery.
 
 #include <fuzzer/FuzzedDataProvider.h>
-#include <stdint.h>
 
+#include <cstdint>
+#include <cstdlib>
 #include <ios>
 #include <iostream>
+#include <string>
+#include <string_view>
+#include <tuple>
+#include <type_traits>
+#include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/span.h"
+#include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_logging_settings.h"
-#include "base/values.h"
+#include "build/buildflag.h"
 #include "sql/database.h"
 #include "sql/fuzzers/sql_disk_corruption.pb.h"
 #include "sql/recovery.h"
 #include "sql/statement.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
+#include "third_party/sqlite/fuzz/sql_query_grammar.pb.h"
 #include "third_party/sqlite/fuzz/sql_query_proto_to_string.h"
 
 namespace {
