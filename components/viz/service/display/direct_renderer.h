@@ -335,9 +335,6 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   bool ShouldApplyGradientMask(const DrawQuad* quad) const;
 
   float CurrentFrameSDRWhiteLevel() const;
-  gfx::ColorSpace RootRenderPassColorSpace() const;
-  gfx::ColorSpace RenderPassColorSpace(
-      const AggregatedRenderPass* render_pass) const;
   SharedImageFormat GetColorSpaceSharedImageFormat(
       gfx::ColorSpace color_space) const;
   // Return the SkColorSpace for rendering to the current render pass. Unlike
@@ -347,6 +344,9 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
     return RenderPassColorSpace(current_frame()->current_render_pass)
         .ToSkColorSpace(CurrentFrameSDRWhiteLevel());
   }
+
+  gfx::ColorSpace RenderPassColorSpace(
+      const AggregatedRenderPass* render_pass) const;
 
   const raw_ptr<const RendererSettings> settings_;
   // Points to the viz-global singleton.

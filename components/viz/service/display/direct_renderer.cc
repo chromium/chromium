@@ -21,6 +21,7 @@
 #include "build/build_config.h"
 #include "cc/base/math_util.h"
 #include "cc/paint/filter_operations.h"
+#include "components/viz/common/color_space_utils.h"
 #include "components/viz/common/display/renderer_settings.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
@@ -272,7 +273,8 @@ void DirectRenderer::DrawFrame(
 
   bool frame_has_alpha =
       current_frame()->root_render_pass->has_transparent_background;
-  gfx::ColorSpace frame_color_space = RootRenderPassColorSpace();
+  gfx::ColorSpace frame_color_space =
+      RenderPassColorSpace(current_frame()->root_render_pass);
   gfx::BufferFormat frame_buffer_format =
       current_frame()->display_color_spaces.GetOutputBufferFormat(
           current_frame()->root_render_pass->content_color_usage,
@@ -841,6 +843,20 @@ DirectRenderer::CalculateRenderPassRequirements(
   return requirements;
 }
 
+gfx::ColorSpace DirectRenderer::RenderPassColorSpace(
+    const AggregatedRenderPass* render_pass) const {
+  const auto& display_color_spaces = current_frame()->display_color_spaces;
+  auto content_color_usage = render_pass->content_color_usage;
+  bool has_transparent_background = render_pass->has_transparent_background;
+  return render_pass == current_frame()->root_render_pass
+             ? ColorSpaceUtils::OutputColorSpace(display_color_spaces,
+                                                 content_color_usage,
+                                                 has_transparent_background)
+             : ColorSpaceUtils::CompositingColorSpace(
+                   display_color_spaces, content_color_usage,
+                   has_transparent_background);
+}
+
 void DirectRenderer::EnsureRenderPassAllocated(
     const AggregatedRenderPass* render_pass) {
   const bool is_root = render_pass == current_frame()->root_render_pass;
@@ -1122,26 +1138,6 @@ bool DirectRenderer::ShouldApplyGradientMask(const DrawQuad* quad) const {
     return false;
 
   return true;
-}
-
-gfx::ColorSpace DirectRenderer::RootRenderPassColorSpace() const {
-  auto root_color_space =
-      current_frame()->display_color_spaces.GetOutputColorSpace(
-          current_frame()->root_render_pass->content_color_usage,
-          current_frame()->root_render_pass->has_transparent_background);
-  return root_color_space.GetWithSdrWhiteLevel(CurrentFrameSDRWhiteLevel());
-}
-
-gfx::ColorSpace DirectRenderer::RenderPassColorSpace(
-    const AggregatedRenderPass* render_pass) const {
-  if (render_pass == current_frame()->root_render_pass) {
-    return RootRenderPassColorSpace();
-  }
-  return current_frame()
-      ->display_color_spaces
-      .GetCompositingColorSpace(render_pass->has_transparent_background,
-                                render_pass->content_color_usage)
-      .GetWithSdrWhiteLevel(CurrentFrameSDRWhiteLevel());
 }
 
 SharedImageFormat DirectRenderer::GetColorSpaceSharedImageFormat(

@@ -1458,9 +1458,10 @@ bool SkiaRenderer::NeedsLayerForColorConversion(
 
   // If the color space of the render pass backing is suitable for blending, we
   // don't need to do any color conversion.
-  const gfx::ColorSpace& pass_color_space = it != render_pass_backings_.end()
-                                                ? it->second.color_space
-                                                : RootRenderPassColorSpace();
+  const gfx::ColorSpace& pass_color_space =
+      it != render_pass_backings_.end()
+          ? it->second.color_space
+          : RenderPassColorSpace(current_frame()->root_render_pass);
   if (pass_color_space.IsSuitableForBlending()) {
     return false;
   }
