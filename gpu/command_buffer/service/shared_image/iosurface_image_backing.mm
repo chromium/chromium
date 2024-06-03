@@ -25,6 +25,7 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_gl_utils.h"
 #include "gpu/command_buffer/service/shared_image/skia_graphite_dawn_image_representation.h"
 #include "gpu/command_buffer/service/skia_utils.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "third_party/libyuv/include/libyuv/planar_functions.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/gpu/GrContextThreadSafeProxy.h"
@@ -91,7 +92,8 @@ wgpu::Texture CreateWGPUTexture(wgpu::SharedTextureMemory shared_texture_memory,
                                 const gfx::Size& io_surface_size,
                                 wgpu::TextureFormat wgpu_format,
                                 std::vector<wgpu::TextureFormat> view_formats,
-                                wgpu::TextureUsage wgpu_texture_usage) {
+                                wgpu::TextureUsage wgpu_texture_usage,
+                                wgpu::TextureUsage internal_usage) {
   const std::string debug_label =
       "IOSurface(" + CreateLabelForSharedImageUsage(shared_image_usage) + ")";
 
@@ -109,16 +111,21 @@ wgpu::Texture CreateWGPUTexture(wgpu::SharedTextureMemory shared_texture_memory,
   texture_descriptor.viewFormatCount = view_formats.size();
   texture_descriptor.viewFormats = view_formats.data();
 
-  // We need to have internal usages of CopySrc for copies. If texture is not
-  // for video frame import, which has bi-planar format, we also need
-  // RenderAttachment usage for clears, and TextureBinding for
-  // copyTextureForBrowser.
   wgpu::DawnTextureInternalUsageDescriptor internalDesc;
-  internalDesc.internalUsage =
-      wgpu::TextureUsage::CopySrc | wgpu::TextureUsage::TextureBinding;
-  if (wgpu_format != wgpu::TextureFormat::R8BG8Biplanar420Unorm &&
-      wgpu_format != wgpu::TextureFormat::R10X6BG10X6Biplanar420Unorm) {
-    internalDesc.internalUsage |= wgpu::TextureUsage::RenderAttachment;
+  if (base::FeatureList::IsEnabled(
+          features::kDawnSIRepsUseClientProvidedInternalUsages)) {
+    internalDesc.internalUsage = internal_usage;
+  } else {
+    // We need to have internal usages of CopySrc for copies. If texture is not
+    // for video frame import, which has bi-planar format, we also need
+    // RenderAttachment usage for clears, and TextureBinding for
+    // copyTextureForBrowser.
+    internalDesc.internalUsage =
+        wgpu::TextureUsage::CopySrc | wgpu::TextureUsage::TextureBinding;
+    if (wgpu_format != wgpu::TextureFormat::R8BG8Biplanar420Unorm &&
+        wgpu_format != wgpu::TextureFormat::R10X6BG10X6Biplanar420Unorm) {
+      internalDesc.internalUsage |= wgpu::TextureUsage::RenderAttachment;
+    }
   }
 
   texture_descriptor.nextInChain = &internalDesc;
@@ -794,9 +801,9 @@ wgpu::Texture IOSurfaceImageBacking::DawnRepresentation::BeginAccess(
 
   texture_ = iosurface_backing->GetCachedWGPUTexture(device_, usage_);
   if (!texture_) {
-    texture_ =
-        CreateWGPUTexture(shared_texture_memory_, usage(), io_surface_size_,
-                          wgpu_format_, view_formats_, wgpu_texture_usage);
+    texture_ = CreateWGPUTexture(shared_texture_memory_, usage(),
+                                 io_surface_size_, wgpu_format_, view_formats_,
+                                 wgpu_texture_usage, internal_usage);
     iosurface_backing->MaybeCacheWGPUTexture(device_, texture_);
   }
 
