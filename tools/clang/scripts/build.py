@@ -1433,8 +1433,6 @@ def main():
   cmake_args.append('-DLLVM_BUILTIN_TARGETS=' + all_triples)
   cmake_args.append('-DLLVM_RUNTIME_TARGETS=' + all_triples)
 
-  # If we're bootstrapping, Goma doesn't know about the bootstrap compiler
-  # we're using as the host compiler.
   if not args.bootstrap:
     cmake_args.extend(ccache_cmake_args)
 
