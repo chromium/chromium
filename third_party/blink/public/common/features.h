@@ -564,13 +564,20 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgeAlwaysReuseBidderContext);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgeAlwaysReuseSellerContext);
 
 // Feature params for feature kFledgeRealTimeReporting.
-// Epsilon of Rappor noise algorithm.
+// Epsilon of FLEDGE real time reporting's Rappor noise algorithm.
 BLINK_COMMON_EXPORT extern const base::FeatureParam<double>
     kFledgeRealTimeReportingEpsilon;
-// Total number of buckets supported for real time reporting. Supported buckets
-// will be [0, kFledgeRealTimeReportingNumBuckets).
+// Total number of buckets supported for FLEDGE real time reporting. Supported
+// buckets will be [0, kFledgeRealTimeReportingNumBuckets).
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kFledgeRealTimeReportingNumBuckets;
+// The number of FLEDGE real time reports (`kFledgeRealTimeReportingMaxReports`)
+// allowed to be sent per reporting origin per page per
+// `kFledgeRealTimeReportingWindow`.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kFledgeRealTimeReportingWindow;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kFledgeRealTimeReportingMaxReports;
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kForceWebContentsDarkMode);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<ForceDarkInversionMethod>

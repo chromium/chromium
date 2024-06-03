@@ -1028,6 +1028,11 @@ const base::FeatureParam<int> kFledgeRealTimeReportingNumBuckets{
     &kFledgeRealTimeReporting, "FledgeRealTimeReportingNumBuckets", 1024};
 const base::FeatureParam<double> kFledgeRealTimeReportingEpsilon{
     &kFledgeRealTimeReporting, "FledgeRealTimeReportingEpsilon", 1};
+const base::FeatureParam<base::TimeDelta> kFledgeRealTimeReportingWindow{
+    &kFledgeRealTimeReporting, "FledgeRealTimeReportingWindow",
+    base::Seconds(20)};
+const base::FeatureParam<int> kFledgeRealTimeReportingMaxReports{
+    &kFledgeRealTimeReporting, "FledgeRealTimeReportingMaxReports", 10};
 
 BASE_FEATURE(kForceHighPerformanceGPUForWebGL,
              "ForceHighPerformanceGPUForWebGL",

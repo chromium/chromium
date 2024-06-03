@@ -60,10 +60,6 @@ constexpr int kMaxReportQueueLength = 1000;
 constexpr base::TimeDelta kMaxReportingRoundDuration = base::Minutes(10);
 // The time interval to wait before sending the next report after sending one.
 constexpr base::TimeDelta kReportingInterval = base::Milliseconds(50);
-// The number of real time reports (`kMaxRealTimeReports`) allowed to be sent
-// per reporting origin per page per `kRealTimeReportingWindow`.
-constexpr base::TimeDelta kRealTimeReportingWindow = base::Seconds(20);
-constexpr int kMaxRealTimeReports = 10;
 
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("auction_report_sender", R"(
@@ -232,8 +228,10 @@ InterestGroupManagerImpl::InterestGroupManagerImpl(
       max_report_queue_length_(kMaxReportQueueLength),
       reporting_interval_(kReportingInterval),
       max_reporting_round_duration_(kMaxReportingRoundDuration),
-      real_time_reporting_window_(kRealTimeReportingWindow),
-      max_real_time_reports_(static_cast<double>(kMaxRealTimeReports)),
+      real_time_reporting_window_(
+          blink::features::kFledgeRealTimeReportingWindow.Get()),
+      max_real_time_reports_(static_cast<double>(
+          blink::features::kFledgeRealTimeReportingMaxReports.Get())),
       ba_key_fetcher_(this) {}
 
 InterestGroupManagerImpl::~InterestGroupManagerImpl() = default;
