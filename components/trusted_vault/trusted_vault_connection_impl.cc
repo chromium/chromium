@@ -124,7 +124,7 @@ trusted_vault_pb::SecurityDomainMember CreateSecurityDomainMember(
           },
           [&member](const UnspecifiedAuthenticationFactorType&) {
             member.set_member_type(trusted_vault_pb::SecurityDomainMember::
-                                       MEMBER_TYPE_PHYSICAL_DEVICE);
+                                       MEMBER_TYPE_UNSPECIFIED);
             // The type hint field is in the request protobuf, not the security
             // domain member, and so is set in
             // `CreateJoinSecurityDomainsRequest`.
