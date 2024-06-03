@@ -917,7 +917,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, WatchLocalDirectoryRecursively) {
   EXPECT_TRUE(watcher_manager().HasSourceContainingScopeForTesting(
       accumulator.observation()->scope()));
 
-  // TODO(crbug.com/40263777): Ensure that no events are reported by this
+  // TODO(crbug.com/343801378): Ensure that no events are reported by this
   // point.
 
   // Delete a file in the sub-directory. This should be reported to
