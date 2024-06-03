@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <array>
 #include <map>
 #include <memory>
 #include <unordered_set>
@@ -20,6 +21,7 @@
 #include "base/sequence_checker.h"
 #include "components/performance_manager/execution_context/execution_context_registry_impl.h"
 #include "components/performance_manager/graph/initializing_frame_node_observer.h"
+#include "components/performance_manager/graph/node_type.h"
 #include "components/performance_manager/owned_objects.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/graph_registered.h"
@@ -139,8 +141,6 @@ class GraphImpl : public Graph {
   bool VisitAllPageNodeImpls(PageNodeImplVisitor visitor) const;
   bool VisitAllWorkerNodeImpls(WorkerNodeImplVisitor visitor) const;
 
-  const NodeSet& nodes() { return nodes_; }
-
   // Retrieves the process node with PID |pid|, if any.
   ProcessNodeImpl* GetProcessNodeByPid(base::ProcessId pid);
 
@@ -149,7 +149,7 @@ class GraphImpl : public Graph {
                                   int render_frame_id);
 
   // Returns true if |node| is in this graph.
-  bool NodeInGraph(const NodeBase* node);
+  bool NodeInGraph(const NodeBase* node) const;
 
   // Management functions for node owners, any node added to the graph must be
   // removed from the graph before it's deleted.
@@ -189,6 +189,10 @@ class GraphImpl : public Graph {
 
  protected:
   friend class NodeBase;
+
+  // Returns the underlying set holding all nodes of type `node_type`.
+  NodeSet& GetNodesOfType(NodeTypeEnum node_type);
+  const NodeSet& GetNodesOfType(NodeTypeEnum node_type) const;
 
   // Used to implement `NodeBase::GetNodeState()` and `Node::GetNodeState()`.
   NodeState GetNodeState(const NodeBase* node) const;
@@ -259,7 +263,8 @@ class GraphImpl : public Graph {
 
   std::unique_ptr<SystemNodeImpl> system_node_
       GUARDED_BY_CONTEXT(sequence_checker_);
-  NodeSet nodes_ GUARDED_BY_CONTEXT(sequence_checker_);
+  std::array<NodeSet, kValidNodeTypeCount> nodes_
+      GUARDED_BY_CONTEXT(sequence_checker_);
   ProcessByPidMap processes_by_pid_ GUARDED_BY_CONTEXT(sequence_checker_);
   FrameById frames_by_id_ GUARDED_BY_CONTEXT(sequence_checker_);
   raw_ptr<ukm::UkmRecorder> ukm_recorder_

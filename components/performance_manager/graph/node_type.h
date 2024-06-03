@@ -10,13 +10,16 @@
 namespace performance_manager {
 
 enum class NodeTypeEnum : uint8_t {
-  kInvalidType,
   kFrame,
   kPage,
   kProcess,
   kSystem,
   kWorker,
+  kInvalidType,
 };
+
+// Keep in sync with NodeTypeEnum above.
+inline constexpr uint8_t kValidNodeTypeCount = 5;
 
 }  // namespace performance_manager
 
