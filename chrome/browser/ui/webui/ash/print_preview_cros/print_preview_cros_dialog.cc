@@ -42,7 +42,9 @@ PrintPreviewCrosDialog* PrintPreviewCrosDialog::ShowDialog(
 PrintPreviewCrosDialog::PrintPreviewCrosDialog(base::UnguessableToken token)
     : SystemWebDialogDelegate(GURL(ash::kChromeUIPrintPreviewCrosURL),
                               kDialogTitle),
-      dialog_id_(token) {}
+      dialog_id_(token) {
+  set_dialog_args(token.ToString());
+}
 
 PrintPreviewCrosDialog::~PrintPreviewCrosDialog() = default;
 
