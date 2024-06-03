@@ -2256,11 +2256,18 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   //////////////////////////////////////////////////////////////////////////////
 
+  // Observers -----------------------------------------------------------------
+
+  base::ObserverList<ViewObserver>::Unchecked observers_;
+
   // Creation and lifetime -----------------------------------------------------
 
   // False if this View is owned by its parent - i.e. it will be deleted by its
   // parent during its parents destruction. False is the default.
   bool owned_by_client_ = false;
+
+  // http://crbug.com/1162949 : Instrumentation that indicates if this is alive.
+  LifeCycleState life_cycle_state_ = LifeCycleState::kAlive;
 
   // Attributes ----------------------------------------------------------------
 
@@ -2487,13 +2494,6 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 #if DCHECK_IS_ON()
   bool on_theme_changed_called_ = false;
 #endif
-
-  // Observers -----------------------------------------------------------------
-
-  base::ObserverList<ViewObserver>::Unchecked observers_;
-
-  // http://crbug.com/1162949 : Instrumentation that indicates if this is alive.
-  LifeCycleState life_cycle_state_ = LifeCycleState::kAlive;
 
   // Accessibility -------------------------------------------------------------
 
