@@ -10,7 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -20,23 +20,23 @@ static jlong JNI_ReauthenticatorBridge_Create(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& java_bridge,
     const base::android::JavaParamRef<jobject>& activity,
+    Profile* profile,
     jint source) {
   return reinterpret_cast<intptr_t>(
-      new ReauthenticatorBridge(java_bridge, activity, source));
+      new ReauthenticatorBridge(java_bridge, activity, profile, source));
 }
 
 ReauthenticatorBridge::ReauthenticatorBridge(
     const base::android::JavaParamRef<jobject>& java_bridge,
     const base::android::JavaParamRef<jobject>& activity,
+    Profile* profile,
     jint source)
-    : java_bridge_(java_bridge) {
+    : java_bridge_(java_bridge), profile_(profile) {
   device_reauth::DeviceAuthParams params(
       base::Seconds(0), static_cast<device_reauth::DeviceAuthSource>(source));
 
-  // TODO(crbug.com/40280856): Replace GetLastUsedProfile() when Android starts
-  // supporting multiple profiles.
   authenticator_ = ChromeDeviceAuthenticatorFactory::GetForProfile(
-      ProfileManager::GetLastUsedProfile(), activity, params);
+      profile, activity, params);
 }
 
 ReauthenticatorBridge::~ReauthenticatorBridge() {

@@ -11,6 +11,7 @@ android_library("java") {
     "//base:base_java",
     "//build/android:build_java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/profiles/android:java",
     "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//components/browser_ui/strings/android:browser_ui_strings_grd",
     "//components/device_reauth:device_reauth_java_enums",

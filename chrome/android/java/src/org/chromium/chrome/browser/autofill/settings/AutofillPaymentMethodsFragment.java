@@ -338,7 +338,8 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
     private void createReauthenticatorBridge() {
         if (mReauthenticatorBridge == null) {
             mReauthenticatorBridge =
-                    ReauthenticatorBridge.create(this.getActivity(), DeviceAuthSource.AUTOFILL);
+                    ReauthenticatorBridge.create(
+                            this.getActivity(), getProfile(), DeviceAuthSource.AUTOFILL);
         }
     }
 

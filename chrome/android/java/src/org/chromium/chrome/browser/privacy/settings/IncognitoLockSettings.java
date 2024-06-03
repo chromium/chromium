@@ -117,7 +117,7 @@ public class IncognitoLockSettings {
                 UserPrefs.get(mProfile).getBoolean(Pref.INCOGNITO_REAUTHENTICATION_FOR_ANDROID);
 
         if (mIncognitoReauthManager == null) {
-            mIncognitoReauthManager = new IncognitoReauthManager(activity);
+            mIncognitoReauthManager = new IncognitoReauthManager(activity, mProfile);
         }
 
         mIncognitoReauthManager.startReauthenticationFlow(

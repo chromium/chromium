@@ -6,17 +6,21 @@
 #define CHROME_BROWSER_DEVICE_REAUTH_ANDROID_REAUTHENTICATOR_BRIDGE_H_
 
 #include <jni.h>
+
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "components/device_reauth/device_authenticator.h"
+
+class Profile;
 
 // C++ counterpart of |ReauthenticatorBridge.java|. Used to mediate the
 // biometric authentication requests.
 class ReauthenticatorBridge {
  public:
-  explicit ReauthenticatorBridge(
-      const base::android::JavaParamRef<jobject>& java_bridge,
-      const base::android::JavaParamRef<jobject>& activity,
-      jint requester);
+  ReauthenticatorBridge(const base::android::JavaParamRef<jobject>& java_bridge,
+                        const base::android::JavaParamRef<jobject>& activity,
+                        Profile* profile,
+                        jint requester);
   ~ReauthenticatorBridge();
 
   ReauthenticatorBridge(const ReauthenticatorBridge&) = delete;
@@ -38,6 +42,8 @@ class ReauthenticatorBridge {
  private:
   // The corresponding java object.
   base::android::ScopedJavaGlobalRef<jobject> java_bridge_;
+
+  raw_ptr<Profile> profile_;
 
   // The authenticator used to trigger a biometric re-auth.
   std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator_;

@@ -739,7 +739,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
     /** Creates an instance of {@link IncognitoReauthCoordinatorFactory} for tabbed activity. */
     @Override
-    protected IncognitoReauthCoordinatorFactory getIncognitoReauthCoordinatorFactory() {
+    protected IncognitoReauthCoordinatorFactory getIncognitoReauthCoordinatorFactory(
+            Profile profile) {
         // TODO(crbug.com/1324211, crbug.com/1227656) : Refactor below to remove
         // IncognitoReauthTopToolbarDelegate and pass TopToolbarInteractabilityManager.
         IncognitoReauthTopToolbarDelegate incognitoReauthTopToolbarDelegate =
@@ -768,7 +769,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mActivity,
                         mTabModelSelectorSupplier.get(),
                         mModalDialogManagerSupplier.get(),
-                        new IncognitoReauthManager(mActivity),
+                        new IncognitoReauthManager(mActivity, profile),
                         new SettingsLauncherImpl(),
                         incognitoReauthTopToolbarDelegate,
                         mLayoutManager,

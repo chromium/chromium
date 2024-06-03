@@ -377,6 +377,7 @@ public abstract class SyncConsentFragmentBase extends Fragment
                                     new DeviceLockCoordinator(
                                             this,
                                             getWindowAndroid(),
+                                            getProfile(),
                                             getActivity(),
                                             CoreAccountInfo.getAndroidAccountFrom(
                                                     selectedCoreAccountInfo));

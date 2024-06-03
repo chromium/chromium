@@ -881,11 +881,6 @@ public class RootUiCoordinator
     @Override
     @CallSuper
     public void onFinishNativeInitialization() {
-        // Setup IncognitoReauthController as early as possible, to show the re-auth screen.
-        if (IncognitoReauthManager.isIncognitoReauthFeatureAvailable()) {
-            initIncognitoReauthController();
-        }
-
         if (mProfileSupplier.hasValue()) {
             initProfileDependentFeatures(mProfileSupplier.get());
         } else {
@@ -953,6 +948,12 @@ public class RootUiCoordinator
     @CallSuper
     protected void initProfileDependentFeatures(Profile currentlySelectedProfile) {
         Profile originalProfile = currentlySelectedProfile.getOriginalProfile();
+
+        // Setup IncognitoReauthController as early as possible, to show the re-auth screen.
+        if (IncognitoReauthManager.isIncognitoReauthFeatureAvailable()) {
+            initIncognitoReauthController(originalProfile);
+        }
+
         if (DeviceFormFactor.isWindowOnTablet(mWindowAndroid)
                 && (RequestDesktopUtils.maybeDefaultEnableGlobalSetting(
                         getPrimaryDisplaySizeInInches(), originalProfile, mActivity))) {
@@ -1010,9 +1011,9 @@ public class RootUiCoordinator
         MessagesFactory.attachMessageDispatcher(mWindowAndroid, mMessageDispatcher);
     }
 
-    private void initIncognitoReauthController() {
+    private void initIncognitoReauthController(Profile profile) {
         IncognitoReauthCoordinatorFactory incognitoReauthCoordinatorFactory =
-                getIncognitoReauthCoordinatorFactory();
+                getIncognitoReauthCoordinatorFactory(profile);
         assert incognitoReauthCoordinatorFactory != null
                 : "Sub-classes need to provide a valid factory instance.";
         mIncognitoReauthController =
@@ -1038,12 +1039,13 @@ public class RootUiCoordinator
     }
 
     /**
-     * This method is meant to be overridden for sub-classes which needs to provide an
-     * incognito re-auth view.
+     * This method is meant to be overridden for sub-classes which needs to provide an incognito
+     * re-auth view.
      *
      * @return {@link IncognitoReauthCoordiantorFactory} instance.
      */
-    protected IncognitoReauthCoordinatorFactory getIncognitoReauthCoordinatorFactory() {
+    protected IncognitoReauthCoordinatorFactory getIncognitoReauthCoordinatorFactory(
+            Profile profile) {
         return null;
     }
 

@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.firstrun.FirstRunUtils;
 import org.chromium.chrome.browser.firstrun.MobileFreProgress;
 import org.chromium.chrome.browser.firstrun.SkipTosDialogPolicyListener;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.ui.device_lock.DeviceLockCoordinator;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
@@ -287,9 +288,14 @@ public class SigninFirstRunFragment extends Fragment
     /** Implements {@link FullscreenSigninCoordinator.Delegate}. */
     @Override
     public void displayDeviceLockPage(Account selectedAccount) {
+        Profile profile = ProfileProvider.getOrCreateProfile(getProfileSupplier().get(), false);
         mDeviceLockCoordinator =
                 new DeviceLockCoordinator(
-                        this, getPageDelegate().getWindowAndroid(), getActivity(), selectedAccount);
+                        this,
+                        getPageDelegate().getWindowAndroid(),
+                        profile,
+                        getActivity(),
+                        selectedAccount);
     }
 
     /** Implements {@link DeviceLockCoordinator.Delegate}. */

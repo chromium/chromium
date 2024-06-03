@@ -261,7 +261,7 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
         if (IncognitoReauthManager.isIncognitoReauthFeatureAvailable()
                 && mIncognitoReauthPromoMessageService == null) {
             mIncognitoReauthManager =
-                    new IncognitoReauthManager(ContextUtils.activityFromContext(mContext));
+                    new IncognitoReauthManager(ContextUtils.activityFromContext(mContext), profile);
             mIncognitoReauthPromoMessageService =
                     new IncognitoReauthPromoMessageService(
                             MessageService.MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE,

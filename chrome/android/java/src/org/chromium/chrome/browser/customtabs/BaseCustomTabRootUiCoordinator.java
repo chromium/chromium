@@ -520,7 +520,8 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
     }
 
     @Override
-    protected IncognitoReauthCoordinatorFactory getIncognitoReauthCoordinatorFactory() {
+    protected IncognitoReauthCoordinatorFactory getIncognitoReauthCoordinatorFactory(
+            Profile profile) {
         // TODO(crbug.com/335609494): Disable this for ephemeral CCTs.
         Intent showRegularOverviewIntent = new Intent(Intent.ACTION_MAIN);
         showRegularOverviewIntent.setClass(mActivity, ChromeLauncherActivity.class);
@@ -531,7 +532,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 mActivity,
                 mTabModelSelectorSupplier.get(),
                 mModalDialogManagerSupplier.get(),
-                new IncognitoReauthManager(mActivity),
+                new IncognitoReauthManager(mActivity, profile),
                 new SettingsLauncherImpl(),
                 /* incognitoReauthTopToolbarDelegate= */ null,
                 /* layoutManager= */ null,
