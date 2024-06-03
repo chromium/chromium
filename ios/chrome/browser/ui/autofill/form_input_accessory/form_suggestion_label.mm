@@ -39,8 +39,12 @@ constexpr CGFloat kSpacing = 4;
 // The corner radius of the label.
 constexpr CGFloat kCornerRadius = 8;
 
+// The size adjustment for the subtitle font from the default font size.
+constexpr CGFloat kSubtitleFontPointSizeAdjustment = -1;
+// The size adjustment for the title font from the default font size.
+constexpr CGFloat kTitleFontPointSizeAdjustment = 1;
 // The extra space between the title label and the subtitle.
-constexpr CGFloat kVerticalSpacing = 3;
+constexpr CGFloat kVerticalSpacing = 2;
 
 // Shadow parameters.
 constexpr CGFloat kShadowRadius = 0.5;
@@ -57,17 +61,37 @@ constexpr CGFloat kSuggestionIconWidth = 40;
 constexpr CGFloat kHalfCreditCardIconOffset =
     2 * kSmallBorderWidth + 2 * kSpacing + 0.5 * kSuggestionIconWidth;
 
+// Returns the font for the title line of the suggestion.
+UIFont* TitleFont(CGFloat fontSize) {
+  return [UIFont systemFontOfSize:fontSize + kTitleFontPointSizeAdjustment
+                           weight:UIFontWeightMedium];
+}
+
+// Returns the font for the subtitle line of the suggestion.
+UIFont* SubtitleFont(CGFloat fontSize) {
+  UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1];
+  return [font fontWithSize:fontSize + kSubtitleFontPointSizeAdjustment];
+}
+
 // Creates a label with the given `text` and `alpha` suitable for use in a
 // suggestion button in the keyboard accessory view.
-UILabel* TextLabel(NSString* text, UIColor* textColor, BOOL bold) {
+UILabel* TextLabel(NSString* text,
+                   UIColor* textColor,
+                   BOOL bold,
+                   BOOL isTitle) {
   UILabel* label = [[UILabel alloc] init];
   [label setText:text];
   CGFloat fontSize =
       (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET)
           ? kIpadFontSize
           : kIphoneFontSize;
-  UIFont* font = bold ? [UIFont boldSystemFontOfSize:fontSize]
-                      : [UIFont systemFontOfSize:fontSize];
+  UIFont* font;
+  if (IsKeyboardAccessoryUpgradeEnabled()) {
+    font = isTitle ? TitleFont(fontSize) : SubtitleFont(fontSize);
+  } else {
+    font = bold ? [UIFont boldSystemFontOfSize:fontSize]
+                : [UIFont systemFontOfSize:fontSize];
+  }
   [label setFont:font];
   label.textColor = textColor;
   [label setBackgroundColor:[UIColor clearColor]];
@@ -144,25 +168,21 @@ UILabel* TextLabel(NSString* text, UIColor* textColor, BOOL bold) {
     }
 
     UILabel* valueLabel =
-        TextLabel(suggestionText, [UIColor colorNamed:kTextPrimaryColor], YES);
-    valueLabel.font = [UIFont systemFontOfSize:valueLabel.font.pointSize
-                                        weight:UIFontWeightMedium];
+        TextLabel(suggestionText, [UIColor colorNamed:kTextPrimaryColor],
+                  /*bold=*/YES, /*isTitle=*/YES);
     [stackView addArrangedSubview:valueLabel];
 
     if ([suggestion.minorValue length] > 0) {
       UILabel* minorValueLabel = TextLabel(
-          suggestion.minorValue, [UIColor colorNamed:kTextPrimaryColor], YES);
-      minorValueLabel.font =
-          [UIFont preferredFontForTextStyle:UIFontTextStyleCaption2];
+          suggestion.minorValue, [UIColor colorNamed:kTextPrimaryColor],
+          /*bold=*/YES, /*isTitle=*/NO);
       [stackView addArrangedSubview:minorValueLabel];
     }
 
     if ([suggestion.displayDescription length] > 0) {
-      UILabel* description =
-          TextLabel(suggestion.displayDescription,
-                    [UIColor colorNamed:kTextSecondaryColor], NO);
-      description.font =
-          [UIFont preferredFontForTextStyle:UIFontTextStyleCaption2];
+      UILabel* description = TextLabel(suggestion.displayDescription,
+                                       [UIColor colorNamed:kTextSecondaryColor],
+                                       /*bold=*/NO, /*isTitle=*/NO);
       [stackView addArrangedSubview:description];
     }
 
