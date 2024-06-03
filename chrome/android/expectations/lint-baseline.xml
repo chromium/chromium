@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<issues format="6" by="lint 8.6.0-alpha02" type="baseline" client="" dependencies="true" name="" variant="all" version="8.6.0-alpha02">
+<issues format="6" by="lint 8.6.0-alpha03" type="baseline" client="" dependencies="true" name="" variant="all" version="8.6.0-alpha03">
 
     <issue
         id="WrongCommentType"
@@ -217,7 +217,7 @@
         errorLine2="       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../media/base/android/java/src/org/chromium/media/MediaDrmBridge.java"
-            line="1506"
+            line="1519"
             column="8"/>
     </issue>
 
@@ -250,7 +250,7 @@
         errorLine2="                                          ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ntp/NewTabPage.java"
-            line="1277"
+            line="1256"
             column="43"/>
     </issue>
 
@@ -338,7 +338,7 @@
         errorLine2="                          ~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../content/public/android/java/src/org/chromium/content_public/browser/WebContents.java"
-            line="123"
+            line="120"
             column="27"/>
     </issue>
 
@@ -1009,7 +1009,7 @@
         errorLine2="                                                                       ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/init/ProcessInitializationHandler.java"
-            line="432"
+            line="532"
             column="72"/>
     </issue>
 
@@ -1603,7 +1603,7 @@
         errorLine2="    ^">
         <location
             file="gen/chrome/android/monochrome_public_bundle__lint/AndroidManifest.xml"
-            line="615"
+            line="624"
             column="5"/>
     </issue>
 
@@ -1647,7 +1647,7 @@
         errorLine2="                                                                                                                                                                                                                                                                                                                                                                                                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="gen/chrome/android/monochrome_public_bundle__lint/AndroidManifest.xml"
-            line="2317"
+            line="2325"
             column="399"/>
     </issue>
 
@@ -1658,7 +1658,7 @@
         errorLine2="                                                                                                                                                                                                                                                                                                                                                                                                                                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="gen/chrome/android/monochrome_public_bundle__lint/AndroidManifest.xml"
-            line="2317"
+            line="2325"
             column="434"/>
     </issue>
 

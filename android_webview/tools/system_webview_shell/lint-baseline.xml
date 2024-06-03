@@ -1,5 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<issues format="6" by="lint 8.6.0-alpha02" type="baseline" client="" dependencies="true" name="" variant="all" version="8.6.0-alpha02">
+<issues format="6" by="lint 8.6.0-alpha03" type="baseline" client="" dependencies="true" name="" variant="all" version="8.6.0-alpha03">
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 23 (current min is 21): `canGrant`"
+        errorLine1="            if (!canGrant(webkitPermission)) {"
+        errorLine2="                 ~~~~~~~~">
+        <location
+            file="../../android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewBrowserFragment.java"
+            line="512"
+            column="18"/>
+    </issue>
 
     <issue
         id="RequiresFeature"
@@ -57,50 +68,6 @@
     </issue>
 
     <issue
-        id="AppBundleLocaleChanges"
-        message="Found dynamic locale changes, but did not find corresponding Play Core library calls for downloading languages and splitting by language is not disabled in the `bundle` configuration"
-        errorLine1="            config.setLocale(Locale.forLanguageTag(languageTag));"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../base/android/java/src/org/chromium/base/LocaleUtils.java"
-            line="237"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="QueryPermissionsNeeded"
-        message="Consider adding a `&lt;queries>` declaration to your manifest when calling this method; see https://g.co/dev/packagevisibility for details"
-        errorLine1="            return pm.queryIntentActivities(intent, flags);"
-        errorLine2="                      ~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../base/android/java/src/org/chromium/base/PackageManagerUtils.java"
-            line="64"
-            column="23"/>
-    </issue>
-
-    <issue
-        id="UnspecifiedRegisterReceiverFlag"
-        message="`receiver` is missing `RECEIVER_EXPORTED` or `RECEIVER_NOT_EXPORTED` flag for unprotected broadcasts registered for an IntentFilter that cannot be inspected by lint"
-        errorLine1="            return context.registerReceiver(receiver, filter, permission, scheduler);"
-        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../base/android/java/src/org/chromium/base/ContextUtils.java"
-            line="319"
-            column="20"/>
-    </issue>
-
-    <issue
-        id="UnclosedTrace"
-        message="The `beginSection()` call is not always closed with a matching `endSection()` because the code in between may return early"
-        errorLine1="        Trace.beginSection(name);"
-        errorLine2="              ~~~~~~~~~~~~">
-        <location
-            file="../../base/android/java/src/org/chromium/base/metrics/ScopedSysTraceEvent.java"
-            line="33"
-            column="15"/>
-    </issue>
-
-    <issue
         id="UnclosedTrace"
         message="The `beginSection()` call is not always closed with a matching `endSection()` because the code in between may return early"
         errorLine1="        Trace.beginSection(startUpAndLoadUrlTraceTag);"
@@ -131,17 +98,6 @@
             file="../../android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/TelemetryActivity.java"
             line="112"
             column="15"/>
-    </issue>
-
-    <issue
-        id="UseCompatLoadingForDrawables"
-        message="Use `ResourcesCompat.getDrawable()`"
-        errorLine1="                return res.getDrawable(id, null);"
-        errorLine2="                       ~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../base/android/java/src/org/chromium/base/ApiCompatibilityUtils.java"
-            line="193"
-            column="24"/>
     </issue>
 
     <issue

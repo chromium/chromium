@@ -1147,11 +1147,6 @@ if (enable_java_templates) {
         ]
       }
 
-      if (defined(testonly) && testonly) {
-        # Allows us to ignore unnecessary checks when linting test targets.
-        args += [ "--testonly" ]
-      }
-
       if (defined(invoker.manifest_package)) {
         args += [ "--manifest-package=${invoker.manifest_package}" ]
       }

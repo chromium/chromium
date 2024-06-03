@@ -42,28 +42,6 @@ _DISABLED_ALWAYS = [
     "UnusedAttribute",  # Chromium apks have various minSdkVersion values.
 ]
 
-# These checks are not useful for test targets and adds an unnecessary burden
-# to suppress them.
-_DISABLED_FOR_TESTS = [
-    # We should not require test strings.xml files to explicitly add
-    # translatable=false since they are not translated and not used in
-    # production.
-    "MissingTranslation",
-    # Test strings.xml files often have simple names and are not translatable,
-    # so it may conflict with a production string and cause this error.
-    "Untranslatable",
-    # Test targets often use the same strings target and resources target as the
-    # production targets but may not use all of them.
-    "UnusedResources",
-    # TODO(wnwen): Turn this back on since to crash it would require running on
-    #     a device with all the various minSdkVersions.
-    # Real NewApi violations crash the app, so the only ones that lint catches
-    # but tests still succeed are false positives.
-    "NewApi",
-    # Tests should be allowed to access these methods/classes.
-    "VisibleForTests",
-]
-
 _RES_ZIP_DIR = 'RESZIPS'
 _SRCJAR_DIR = 'SRCJARS'
 _AAR_DIR = 'AARS'
@@ -220,7 +198,6 @@ def _RunLint(custom_lint_jar_path,
              android_sdk_root,
              lint_gen_dir,
              baseline,
-             testonly_target=False,
              warnings_as_errors=False):
   logging.info('Lint starting')
   if not cache_dir:
@@ -270,9 +247,6 @@ def _RunLint(custom_lint_jar_path,
       '--disable',
       ','.join(_DISABLED_ALWAYS),
   ]
-
-  if testonly_target:
-    cmd.extend(['--disable', ','.join(_DISABLED_FOR_TESTS)])
 
   if not manifest_path:
     manifest_path = os.path.join(build_utils.DIR_SOURCE_ROOT, 'build',
@@ -437,11 +411,6 @@ def _ParseArgs(argv):
   parser.add_argument('--android-sdk-root',
                       required=True,
                       help='Lint needs an explicit path to the android sdk.')
-  parser.add_argument('--testonly',
-                      action='store_true',
-                      help='If set, some checks like UnusedResources will be '
-                      'disabled since they are not helpful for test '
-                      'targets.')
   parser.add_argument('--create-cache',
                       action='store_true',
                       help='Whether this invocation is just warming the cache.')
@@ -541,7 +510,6 @@ def main():
            args.android_sdk_root,
            args.lint_gen_dir,
            args.baseline,
-           testonly_target=args.testonly,
            warnings_as_errors=args.warnings_as_errors)
   logging.info('Creating stamp file')
   build_utils.Touch(args.stamp)
