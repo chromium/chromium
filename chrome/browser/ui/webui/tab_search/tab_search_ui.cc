@@ -139,27 +139,6 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
   source->AddLocalizedStrings(kStrings);
   source->AddBoolean("useRipples", views::PlatformStyle::kUseRipples);
 
-  // Add the configuration parameters for fuzzy search.
-  source->AddBoolean("useFuzzySearch", base::FeatureList::IsEnabled(
-                                           features::kTabSearchFuzzySearch));
-
-  source->AddBoolean("searchIgnoreLocation",
-                     features::kTabSearchSearchIgnoreLocation.Get());
-  source->AddInteger("searchDistance",
-                     features::kTabSearchSearchDistance.Get());
-  source->AddDouble(
-      "searchThreshold",
-      std::clamp<double>(features::kTabSearchSearchThreshold.Get(),
-                         features::kTabSearchSearchThresholdMin,
-                         features::kTabSearchSearchThresholdMax));
-  source->AddDouble("searchTitleWeight", features::kTabSearchTitleWeight.Get());
-  source->AddDouble("searchHostnameWeight",
-                    features::kTabSearchHostnameWeight.Get());
-  source->AddDouble("searchGroupTitleWeight",
-                    features::kTabSearchGroupTitleWeight.Get());
-
-  source->AddBoolean("moveActiveTabToBottom",
-                     features::kTabSearchMoveActiveTabToBottom.Get());
   source->AddLocalizedString("close", IDS_CLOSE);
 
   source->AddInteger(

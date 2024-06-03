@@ -384,38 +384,7 @@ BASE_FEATURE(kTabSearchFeedback,
              "TabSearchFeedback",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls whether or not to use fuzzy search for tab search.
-BASE_FEATURE(kTabSearchFuzzySearch,
-             "TabSearchFuzzySearch",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const char kTabSearchSearchThresholdName[] = "TabSearchSearchThreshold";
-
-const base::FeatureParam<bool> kTabSearchSearchIgnoreLocation{
-    &kTabSearchFuzzySearch, "TabSearchSearchIgnoreLocation", false};
-
-// If this feature parameter is enabled, show media tabs in both "Audio & Video"
-// section and "Open Tabs" section.
-const char kTabSearchAlsoShowMediaTabsinOpenTabsSectionParameterName[] =
-    "Also show Media Tabs in Open Tabs Section";
-
-const base::FeatureParam<int> kTabSearchSearchDistance{
-    &kTabSearchFuzzySearch, "TabSearchSearchDistance", 200};
-
-const base::FeatureParam<double> kTabSearchSearchThreshold{
-    &kTabSearchFuzzySearch, kTabSearchSearchThresholdName, 0.6};
-
-const base::FeatureParam<double> kTabSearchTitleWeight{
-    &kTabSearchFuzzySearch, "TabSearchTitleWeight", 2.0};
-
-const base::FeatureParam<double> kTabSearchHostnameWeight{
-    &kTabSearchFuzzySearch, "TabSearchHostnameWeight", 1.0};
-
-const base::FeatureParam<double> kTabSearchGroupTitleWeight{
-    &kTabSearchFuzzySearch, "TabSearchGroupTitleWeight", 1.5};
-
-const base::FeatureParam<bool> kTabSearchMoveActiveTabToBottom{
-    &kTabSearchFuzzySearch, "TabSearchMoveActiveTabToBottom", true};
 
 // Controls feature parameters for Tab Search's `Recently Closed` entries.
 BASE_FEATURE(kTabSearchRecentlyClosed,

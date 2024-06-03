@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {FuzzySearchOptions, TabGroup} from 'chrome://tab-search.top-chrome/tab_search.js';
+import type {SearchOptions} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {fuzzySearch, TabData, TabItemType} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
 
-import {createTab, sampleToken} from './tab_search_test_data.js';
+import {createTab} from './tab_search_test_data.js';
 
 /**
  * Assert search results return in specific order.
  */
 function assertSearchOrders(
-    input: string, items: TabData[], options: FuzzySearchOptions<TabData>,
+    input: string, items: TabData[], options: SearchOptions,
     expectedIndices: number[]) {
   const results = fuzzySearch(input, items, options);
   assertEquals(results.length, expectedIndices.length);
@@ -38,169 +38,6 @@ function assertResults(expectedRecords: any[], actualRecords: TabData[]) {
 }
 
 suite('FuzzySearchTest', () => {
-  test('fuzzySearch', () => {
-    const records: TabData[] = [
-      new TabData(
-          createTab({title: 'OpenGL'}), TabItemType.OPEN_TAB, 'www.opengl.org'),
-      new TabData(
-          createTab({title: 'Google'}), TabItemType.OPEN_TAB, 'www.google.com'),
-    ];
-
-    const matchedRecords = [
-      {
-        tab: {
-          title: 'Google',
-        },
-        hostname: 'www.google.com',
-        highlightRanges: {
-          'tab.title': [{start: 0, length: 1}, {start: 3, length: 3}],
-          hostname: [{start: 4, length: 1}, {start: 7, length: 3}],
-        },
-      },
-      {
-        tab: {
-          title: 'OpenGL',
-        },
-        hostname: 'www.opengl.org',
-        highlightRanges: {
-          'tab.title': [{start: 2, length: 1}, {start: 4, length: 2}],
-          hostname: [
-            {start: 6, length: 1},
-            {start: 8, length: 2},
-            {start: 13, length: 1},
-          ],
-        },
-      },
-    ];
-
-    const options = {
-      useFuzzySearch: true,
-      includeScore: true,
-      includeMatches: true,
-      keys: [
-        {
-          name: 'tab.title',
-          weight: 2,
-        },
-        {
-          name: 'hostname',
-          weight: 1,
-        },
-      ],
-    };
-
-    assertResults(matchedRecords, fuzzySearch('gle', records, options));
-    assertResults(records, fuzzySearch('', records, options));
-    assertResults([], fuzzySearch('z', records, options));
-  });
-
-  test('fuzzy search title, hostname, and tab group title keys.', () => {
-    const tabDataWithGroup = new TabData(
-        createTab({title: 'Meet the cast'}), TabItemType.OPEN_TAB,
-        'meet the cast');
-
-    const tabGroup: TabGroup = {
-      title: 'Glee TV show',
-      color: 0,
-      id: sampleToken(1n, 1n),
-    };
-    tabDataWithGroup.tabGroup = tabGroup;
-
-    const records = [
-      new TabData(
-          createTab({title: 'OpenGL'}), TabItemType.OPEN_TAB, 'www.opengl.org'),
-      new TabData(
-          createTab({title: 'Google'}), TabItemType.OPEN_TAB, 'www.google.com'),
-      tabDataWithGroup,
-    ];
-
-    const matchedRecords = [
-      {
-        tab: {
-          title: 'Meet the cast',
-        },
-        hostname: 'meet the cast',
-        tabGroup: {title: 'Glee TV show'},
-        highlightRanges: {
-          'tabGroup.title': [{start: 0, length: 3}],
-        },
-      },
-      {
-        tab: {
-          title: 'Google',
-        },
-        hostname: 'www.google.com',
-        highlightRanges: {
-          'tab.title': [{start: 0, length: 1}, {start: 3, length: 3}],
-          hostname: [{start: 4, length: 1}, {start: 7, length: 3}],
-        },
-      },
-      {
-        tab: {
-          title: 'OpenGL',
-        },
-        hostname: 'www.opengl.org',
-        highlightRanges: {
-          'tab.title': [{start: 2, length: 1}, {start: 4, length: 2}],
-          hostname: [
-            {start: 6, length: 1},
-            {start: 8, length: 2},
-            {start: 13, length: 1},
-          ],
-        },
-      },
-    ];
-
-    const options = {
-      useFuzzySearch: true,
-      includeScore: true,
-      includeMatches: true,
-      keys: [
-        {
-          name: 'tab.title',
-          weight: 2,
-        },
-        {
-          name: 'hostname',
-          weight: 1,
-        },
-        {name: 'tabGroup.title', weight: 1.5},
-      ],
-    };
-
-    assertResults(matchedRecords, fuzzySearch('gle', records, options));
-    assertResults(records, fuzzySearch('', records, options));
-    assertResults([], fuzzySearch('z', records, options));
-  });
-
-  test(
-      'Test fuzzy search prioritize string start over word start over others',
-      () => {
-        const records = [
-          new TabData(
-              createTab({title: 'Asear'}), TabItemType.OPEN_TAB, 'asear'),
-          new TabData(
-              createTab({title: 'Tab Search'}), TabItemType.OPEN_TAB,
-              'tab search'),
-          new TabData(
-              createTab({title: 'Search Engine'}), TabItemType.OPEN_TAB,
-              'search engine'),
-        ];
-
-        const options = {
-          useFuzzySearch: true,
-          includeScore: true,
-          includeMatches: true,
-          keys: [
-            {
-              name: 'tab.title',
-              weight: 1,
-            },
-          ],
-        };
-        assertSearchOrders('sear', records, options, [2, 1, 0]);
-      });
-
   test('Test the exact match ranking order.', () => {
     const options = {
       useFuzzySearch: false,

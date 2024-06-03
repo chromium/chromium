@@ -20736,44 +20736,6 @@
             ]
         }
     ],
-    "TabSearchFuzzySearchStudy": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_FuzzyLevelMedium_20220405",
-                    "params": {
-                        "TabSearchSearchThreshold": "0.6"
-                    },
-                    "enable_features": [
-                        "TabSearchFuzzySearch"
-                    ]
-                },
-                {
-                    "name": "Enabled_FuzzyLevelSmall_20220405",
-                    "params": {
-                        "TabSearchSearchThreshold": "0.3"
-                    },
-                    "enable_features": [
-                        "TabSearchFuzzySearch"
-                    ]
-                },
-                {
-                    "name": "Control",
-                    "disable_features": [
-                        "TabSearchFuzzySearch"
-                    ]
-                }
-            ]
-        }
-    ],
     "TabSearchInProductHelp": [
         {
             "platforms": [

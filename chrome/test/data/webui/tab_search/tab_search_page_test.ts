@@ -141,12 +141,10 @@ suite('TabSearchAppTest', () => {
   });
 
   test('Search text changes tab items', async () => {
-    await setupTest(
-        createProfileData({
-          recentlyClosedTabs: SAMPLE_RECENTLY_CLOSED_DATA,
-          recentlyClosedSectionExpanded: true,
-        }),
-        {useFuzzySearch: false});
+    await setupTest(createProfileData({
+      recentlyClosedTabs: SAMPLE_RECENTLY_CLOSED_DATA,
+      recentlyClosedSectionExpanded: true,
+    }));
     setSearchText('bing');
     await flushTasks();
     verifyTabIds(queryRows(), [2]);
@@ -655,13 +653,6 @@ suite('TabSearchAppTest', () => {
       windows: [{active: true, height: SAMPLE_WINDOW_HEIGHT, tabs}],
     }));
     verifyTabIds(queryRows(), [3, 1, 2]);
-
-    await setupTest(
-        createProfileData({
-          windows: [{active: true, height: SAMPLE_WINDOW_HEIGHT, tabs}],
-        }),
-        {moveActiveTabToBottom: false});
-    verifyTabIds(queryRows(), [2, 3, 1]);
   });
 
   test('Tab associated with TabGroup data', async () => {

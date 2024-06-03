@@ -27,7 +27,7 @@ import type {Token} from 'chrome://resources/mojo/mojo/public/mojom/base/token.m
 import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import type {FuzzySearchOptions} from './fuzzy_search.js';
+import type {SearchOptions} from './fuzzy_search.js';
 import {fuzzySearch} from './fuzzy_search.js';
 import type {InfiniteList} from './infinite_list.js';
 import {NO_SELECTION, selectorNavigationKeys} from './infinite_list.js';
@@ -124,11 +124,6 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
         },
       },
 
-      moveActiveTabToBottom_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('moveActiveTabToBottom'),
-      },
-
       recentlyClosedDefaultItemDisplayCount_: {
         type: Number,
         value: () =>
@@ -146,8 +141,7 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
   private searchText_: string;
   private availableHeight_: number;
   private filteredItems_: Array<TitleItem|TabData|TabGroupData>;
-  private fuzzySearchOptions_: FuzzySearchOptions<TabData|TabGroupData>;
-  private moveActiveTabToBottom_: boolean;
+  private fuzzySearchOptions_: SearchOptions;
   private recentlyClosedDefaultItemDisplayCount_: number;
   private searchResultText_: string;
   private activeSelectionId_: string;
@@ -206,32 +200,6 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
       this.metricsReporter_ = MetricsReporterImpl.getInstance();
     }
     return this.metricsReporter_;
-  }
-
-  override ready() {
-    super.ready();
-
-    // Update option values for fuzzy search from feature params.
-    this.fuzzySearchOptions_ = Object.assign({}, this.fuzzySearchOptions_, {
-      useFuzzySearch: loadTimeData.getBoolean('useFuzzySearch'),
-      ignoreLocation: loadTimeData.getBoolean('searchIgnoreLocation'),
-      threshold: loadTimeData.getValue('searchThreshold'),
-      distance: loadTimeData.getInteger('searchDistance'),
-      keys: [
-        {
-          name: 'tab.title',
-          weight: loadTimeData.getValue('searchTitleWeight'),
-        },
-        {
-          name: 'hostname',
-          weight: loadTimeData.getValue('searchHostnameWeight'),
-        },
-        {
-          name: 'tabGroup.title',
-          weight: loadTimeData.getValue('searchGroupTitleWeight'),
-        },
-      ],
-    });
   }
 
   override connectedCallback() {
@@ -691,13 +659,11 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
       const tabB = b.tab as Tab;
       // Move the active tab to the bottom of the list
       // because it's not likely users want to click on it.
-      if (this.moveActiveTabToBottom_) {
-        if (a.inActiveWindow && tabA.active) {
-          return 1;
-        }
-        if (b.inActiveWindow && tabB.active) {
-          return -1;
-        }
+      if (a.inActiveWindow && tabA.active) {
+        return 1;
+      }
+      if (b.inActiveWindow && tabB.active) {
+        return -1;
       }
       return (tabB.lastActiveTimeTicks && tabA.lastActiveTimeTicks) ?
           Number(

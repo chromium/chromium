@@ -1897,21 +1897,6 @@ const FeatureEntry::FeatureVariation kScrollableTabStripOverflowVariations[] = {
      std::size(kScrollableTabStripOverflowShadow), nullptr},  // Shadow
 };
 
-const FeatureEntry::FeatureParam kTabSearchSearchThresholdSmall[] = {
-    {features::kTabSearchSearchThresholdName, "0.3"}};
-const FeatureEntry::FeatureParam kTabSearchSearchThresholdMedium[] = {
-    {features::kTabSearchSearchThresholdName, "0.6"}};
-const FeatureEntry::FeatureParam kTabSearchSearchThresholdLarge[] = {
-    {features::kTabSearchSearchThresholdName, "0.8"}};
-
-const FeatureEntry::FeatureVariation kTabSearchSearchThresholdVariations[] = {
-    {" - fuzzy level: small", kTabSearchSearchThresholdSmall,
-     std::size(kTabSearchSearchThresholdSmall), nullptr},
-    {" - fuzzy level: medium", kTabSearchSearchThresholdMedium,
-     std::size(kTabSearchSearchThresholdMedium), nullptr},
-    {" - fuzzy level: large", kTabSearchSearchThresholdLarge,
-     std::size(kTabSearchSearchThresholdLarge), nullptr}};
-
 const FeatureEntry::FeatureParam kChromeLabsEnabledInFlags[] = {
     {features::kChromeLabsActivationParameterName, "100"}};
 
@@ -9277,12 +9262,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"prerender2", flag_descriptions::kPrerender2Name,
      flag_descriptions::kPrerender2Description, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kPrerender2)},
-
-    {"tab-search-fuzzy-search", flag_descriptions::kTabSearchFuzzySearchName,
-     flag_descriptions::kTabSearchFuzzySearchDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kTabSearchFuzzySearch,
-                                    kTabSearchSearchThresholdVariations,
-                                    "TabSearchFuzzySearch")},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-phone-hub-call-notification",

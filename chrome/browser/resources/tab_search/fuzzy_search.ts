@@ -5,57 +5,29 @@
 import {quoteString} from 'chrome://resources/js/util.js';
 import {get as deepGet} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import Fuse from './fuse.js';
 import type {ItemData} from './tab_data.js';
 
-export type FuzzySearchOptions<T extends ItemData> =
-    Fuse.IFuseOptions<T>&{useFuzzySearch: boolean};
+export interface OptionKeyObject {
+  name: string|string[];
+  weight: number;
+}
+
+export interface SearchOptions {
+  distance?: number;
+  keys: OptionKeyObject[];
+}
 
 /**
  * @return A new array of entries satisfying the input. If no search input is
  *     present, returns a shallow copy of the records.
  */
 export function fuzzySearch<T extends ItemData>(
-    input: string, records: T[], options: FuzzySearchOptions<T>): T[] {
+    input: string, records: T[], options: SearchOptions): T[] {
   if (input.length === 0) {
     return [...records];
   }
-  // Fuse does not handle exact match searches well. It indiscriminately
-  // searches for direct matches that appear anywhere in the string. This
-  // results in a bad search experience as users expect matches at the beginning
-  // of the title / hostname, or at the beginning of words to receive
-  // preferential treatment. Matched ranges returned by Fuse also fail to
-  // highlight only the matching text, but instead match to any character
-  // present in the input string.
-  // To address these shortcomings we use the exactSearch implementation below
-  // if the options indicate an exact matching algorithm should be used.
   const searchStartTime = Date.now();
-  let result;
-  if (options.useFuzzySearch) {
-    const keyNames =
-        (options.keys as Fuse.FuseOptionKeyObject[]).reduce((acc, {name}) => {
-          acc.push(name as string);
-          return acc;
-        }, [] as string[]);
-    result = new Fuse<T>(records, options).search(input).map(result => {
-      const item = cloneTabDataObj<T>(result.item);
-      item.highlightRanges = keyNames.reduce((acc, key) => {
-        const match = result.matches!.find(e => e.key === key);
-        if (match) {
-          acc[key] = convertToRanges(match.indices);
-        }
-
-        return acc;
-      }, {} as {[key: string]: Array<{start: number, length: number}>});
-
-      return item;
-    });
-    // Reorder match result by priorities while retaining the
-    // rank fuse.js returns within the same priority.
-    result = prioritizeMatchResult(input, keyNames, result);
-  } else {
-    result = exactSearch(input, records, options);
-  }
+  const result = exactSearch(input, records, options);
   chrome.metricsPrivate.recordTime(
       'Tabs.TabSearch.WebUI.SearchAlgorithmDuration',
       Math.round(Date.now() - searchStartTime));
@@ -70,17 +42,6 @@ function cloneTabDataObj<T extends ItemData>(tabData: T): T {
   return clone;
 }
 
-/**
- * Convert fuse.js matches [start1, end1], [start2, end2] ... to
- * ranges {start:start1, length:length1}, {start:start2, length:length2} ...
- * to be used by search_highlight_utils.js
- */
-function convertToRanges(matches: readonly Fuse.RangeTuple[]):
-    Array<{start: number, length: number}> {
-  return matches.map(
-      ([start, end]) => ({start: start, length: end - start + 1}));
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 // Exact Match Implementation :
 
@@ -92,7 +53,7 @@ function convertToRanges(matches: readonly Fuse.RangeTuple[]):
  * priority.
  */
 function exactSearch<T extends ItemData>(
-    searchText: string, records: T[], options: Fuse.IFuseOptions<T>): T[] {
+    searchText: string, records: T[], options: SearchOptions): T[] {
   if (searchText.length === 0) {
     return records;
   }
@@ -104,11 +65,11 @@ function exactSearch<T extends ItemData>(
 
   // Controls how heavily weighted the search field weights are relative to each
   // other in the scoring function.
-  const searchFieldWeights = (options.keys as Fuse.FuseOptionKeyObject[])
-                                 .reduce((acc, {name, weight}) => {
-                                   acc[name as string] = weight;
-                                   return acc;
-                                 }, {} as {[key: string]: number});
+  const searchFieldWeights =
+      (options.keys as OptionKeyObject[]).reduce((acc, {name, weight}) => {
+        acc[name as string] = weight;
+        return acc;
+      }, {} as {[key: string]: number});
 
   // Perform an exact match search with range discovery.
   const exactMatches = [];
