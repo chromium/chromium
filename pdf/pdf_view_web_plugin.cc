@@ -1975,6 +1975,13 @@ SkBitmap PdfViewWebPlugin::GetImageForOcr(int32_t page_index,
   return engine_->GetImageForOcr(page_index, page_object_index);
 }
 
+#if BUILDFLAG(ENABLE_PDF_INK2)
+void PdfViewWebPlugin::InkStrokeFinished() {
+  base::Value::Dict message;
+  message.Set("type", "finishInkStroke");
+  client_->PostMessage(std::move(message));
+}
+
 int PdfViewWebPlugin::VisiblePageIndexFromPoint(const gfx::PointF& point) {
   gfx::Point rounded_point = gfx::ToRoundedPoint(point);
   for (int i = 0; i < engine_->GetNumberOfPages(); ++i) {
@@ -1989,6 +1996,7 @@ int PdfViewWebPlugin::VisiblePageIndexFromPoint(const gfx::PointF& point) {
   }
   return -1;
 }
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
 void PdfViewWebPlugin::HandleAccessibilityAction(
     const AccessibilityActionData& action_data) {

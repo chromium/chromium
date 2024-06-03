@@ -41,6 +41,9 @@ class InkModule {
    public:
     virtual ~Client() = default;
 
+    // Notifies the client that a stroke has finished drawing or erasing.
+    virtual void InkStrokeFinished() {}
+
     // Returns the 0-based page index for the given `point` if it is on a
     // visible page, or -1 if `point` is not on a visible page.
     virtual int VisiblePageIndexFromPoint(const gfx::PointF& point) = 0;

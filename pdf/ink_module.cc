@@ -197,6 +197,8 @@ bool InkModule::FinishInkStroke() {
   // Reset input fields.
   state.ink_inputs.clear();
   state.ink_start_time = std::nullopt;
+
+  client_->InkStrokeFinished();
   return true;
 }
 
@@ -215,6 +217,7 @@ bool InkModule::ContinueEraseInkStroke(const gfx::PointF& position) {
 bool InkModule::FinishEraseInkStroke() {
   CHECK(is_erasing_stroke());
   // TODO(crbug.com/335524381): Implement.
+  // Call client_->InkStrokeFinished() on success.
   return false;
 }
 

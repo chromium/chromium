@@ -38,6 +38,8 @@ class FakeClient : public InkModule::Client {
   ~FakeClient() override = default;
 
   // InkModule::Client:
+  void InkStrokeFinished() override { ++ink_stroke_finished_count_; }
+
   int VisiblePageIndexFromPoint(const gfx::PointF& point) override {
     // Assumes that all pages are visible.
     for (size_t i = 0; i < pages_layout_.size(); ++i) {
@@ -50,6 +52,8 @@ class FakeClient : public InkModule::Client {
     return -1;
   }
 
+  int ink_stroke_finished_count() const { return ink_stroke_finished_count_; }
+
   // Provide the sequence of pages and the coordinates and dimensions for how
   // they are laid out in a viewer plane.  It is upon the caller to ensure the
   // positioning makes sense (e.g., pages do not overlap).
@@ -58,6 +62,7 @@ class FakeClient : public InkModule::Client {
   }
 
  private:
+  int ink_stroke_finished_count_ = 0;
   std::vector<gfx::RectF> pages_layout_;
 };
 
@@ -277,6 +282,9 @@ class InkModuleStrokeTest : public InkModuleTest {
             .Build();
     EXPECT_EQ(annotation_mode_enabled,
               ink_module().HandleInputEvent(mouse_up_event));
+
+    const int expected_count = annotation_mode_enabled ? 1 : 0;
+    EXPECT_EQ(expected_count, client().ink_stroke_finished_count());
   }
 };
 

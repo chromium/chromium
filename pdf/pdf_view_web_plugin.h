@@ -401,6 +401,7 @@ class PdfViewWebPlugin final : public PDFEngine::Client,
                           int32_t page_object_index) override;
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
+  void InkStrokeFinished() override;
   int VisiblePageIndexFromPoint(const gfx::PointF& point) override;
 #endif
 
