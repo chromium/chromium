@@ -617,3 +617,10 @@ wheel: <
   name: "infra/python/wheels/google-cloud-secret-manager-py2_py3"
   version: "version:2.10.0"
 >
+
+# Used by:
+#   //third_party/crossbench
+wheel: <
+  name: "infra/python/wheels/immutabledict-py3"
+  version: "version:4.1.0"
+>
