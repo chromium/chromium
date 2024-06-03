@@ -227,7 +227,8 @@ SessionWindowIOS* OptimizedSession::ToLegacy() const {
         initWithRangeStart:group_storage.range().start()
                 rangeCount:group_storage.range().count()
                      title:base::SysUTF8ToNSString(group_storage.title())
-                   colorId:static_cast<NSInteger>(group_storage.color())];
+                   colorId:static_cast<NSInteger>(group_storage.color())
+            collapsedState:group_storage.collapsed()];
     [groups addObject:session_tab_group];
   }
 
@@ -304,6 +305,7 @@ void OptimizedSession::AddTabGroup(SessionTabGroup* legacy_tab_group) {
   group_storage.set_title(base::SysNSStringToUTF8(legacy_tab_group.title));
   group_storage.set_color(
       static_cast<ios::proto::TabGroupColorId>(legacy_tab_group.colorId));
+  group_storage.set_collapsed(legacy_tab_group.collapsedState);
 }
 
 void OptimizedSession::AddItem(CRWSessionStorage* legacy_item) {

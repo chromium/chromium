@@ -135,9 +135,15 @@ TabGroupRange OrderControllerSourceFromSessionWindowIOS::GetGroupRangeOfItemAt(
 
 std::set<int>
 OrderControllerSourceFromSessionWindowIOS::GetCollapsedGroupIndexes() const {
-  // TODO(crbug.com/343618597): Track the collapsed state of a groups in
-  // serialisation.
-  return std::set<int>();
+  std::set<int> collapsed_indexes;
+
+  for (SessionTabGroup* group in session_window_.tabGroups) {
+    if (group.collapsedState) {
+      const TabGroupRange group_range(group.rangeStart, group.rangeCount);
+      collapsed_indexes.insert(group_range.begin(), group_range.end());
+    }
+  }
+  return collapsed_indexes;
 }
 
 // Determines the new active index.

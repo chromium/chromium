@@ -37,4 +37,5 @@ message TabGroupStorage {
   RangeIndex range = 1;
   string title = 2;
   TabGroupColorId color = 3;
+  bool collapsed = 4;
 }

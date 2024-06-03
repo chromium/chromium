@@ -633,25 +633,29 @@ TEST_F(SessionRestorationBrowserAgentTest, FilterOutDuplicateItemsWithGroups) {
               rangeCount:2
                    title:@"group with duplicate at the end"
                  colorId:static_cast<NSInteger>(
-                             tab_groups::TabGroupColorId::kGrey)];
+                             tab_groups::TabGroupColorId::kGrey)
+          collapsedState:NO];
   SessionTabGroup* session_tab_group_2 = [[SessionTabGroup alloc]
       initWithRangeStart:4
               rangeCount:2
                    title:@"group with no duplicate"
                  colorId:static_cast<NSInteger>(
-                             tab_groups::TabGroupColorId::kPink)];
+                             tab_groups::TabGroupColorId::kPink)
+          collapsedState:NO];
   SessionTabGroup* session_tab_group_3 = [[SessionTabGroup alloc]
       initWithRangeStart:7
               rangeCount:1
                    title:@"group with only duplicate"
                  colorId:static_cast<NSInteger>(
-                             tab_groups::TabGroupColorId::kYellow)];
+                             tab_groups::TabGroupColorId::kYellow)
+          collapsedState:NO];
   SessionTabGroup* session_tab_group_4 = [[SessionTabGroup alloc]
       initWithRangeStart:7
               rangeCount:2
                    title:@"group with duplicate at the beginning"
                  colorId:static_cast<NSInteger>(
-                             tab_groups::TabGroupColorId::kOrange)];
+                             tab_groups::TabGroupColorId::kOrange)
+          collapsedState:NO];
   SessionWindowIOS* window = CreateSessionWindow(
       SessionInfo<9>{
           .active_index = 0,

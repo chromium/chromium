@@ -47,6 +47,7 @@ struct TabGroupInfo {
   const int range_count = 0;
   const std::u16string title = u"";
   const tab_groups::TabGroupColorId color = tab_groups::TabGroupColorId::kGrey;
+  const bool collapsed_state = false;
 };
 
 // Information about a session.
@@ -225,7 +226,8 @@ bool GenerateLegacySession(const base::FilePath& root,
         initWithRangeStart:group_info.range_start
                 rangeCount:group_info.range_count
                      title:base::SysUTF16ToNSString(group_info.title)
-                   colorId:static_cast<NSInteger>(group_info.color)];
+                   colorId:static_cast<NSInteger>(group_info.color)
+            collapsedState:group_info.collapsed_state];
     [groups addObject:session_tab_group];
   }
 
@@ -381,6 +383,7 @@ bool GenerateOptimizedSession(const base::FilePath& root,
 
     group_storage.set_title(base::UTF16ToUTF8(group_info.title));
     group_storage.set_color(tab_group_util::ColorForStorage(group_info.color));
+    group_storage.set_collapsed(group_info.collapsed_state);
   }
 
   // Write the session metadata file.
@@ -525,6 +528,7 @@ void CheckOptimizedSession(const base::FilePath& root,
     EXPECT_EQ(group_storage.title(), base::UTF16ToUTF8(group_info.title));
     EXPECT_EQ(group_storage.color(),
               tab_group_util::ColorForStorage(group_info.color));
+    EXPECT_EQ(group_storage.collapsed(), group_info.collapsed_state);
   }
 }
 

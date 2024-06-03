@@ -17,7 +17,7 @@ namespace tab_group_util {
 
 DeserializedGroup FromSerializedValue(ios::proto::TabGroupStorage group) {
   TabGroupVisualData visual_data = tab_groups::TabGroupVisualData(
-      base::UTF8ToUTF16(group.title()), group.color());
+      base::UTF8ToUTF16(group.title()), group.color(), group.collapsed());
   return DeserializedGroup{
       .range_start = group.range().start(),
       .range_count = group.range().count(),
@@ -26,8 +26,9 @@ DeserializedGroup FromSerializedValue(ios::proto::TabGroupStorage group) {
 }
 
 DeserializedGroup FromSerializedValue(SessionTabGroup* group) {
-  TabGroupVisualData visual_data = tab_groups::TabGroupVisualData(
-      base::SysNSStringToUTF16(group.title), group.colorId);
+  TabGroupVisualData visual_data =
+      tab_groups::TabGroupVisualData(base::SysNSStringToUTF16(group.title),
+                                     group.colorId, group.collapsedState);
   return DeserializedGroup{
       .range_start = static_cast<int>(group.rangeStart),
       .range_count = static_cast<int>(group.rangeCount),

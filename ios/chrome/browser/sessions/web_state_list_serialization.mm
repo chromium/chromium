@@ -497,7 +497,8 @@ SessionWindowIOS* SerializeWebStateList(const WebStateList* web_state_list) {
                        title:base::SysUTF16ToNSString(
                                  group->visual_data().title())
                      colorId:static_cast<NSInteger>(
-                                 group->visual_data().color())];
+                                 group->visual_data().color())
+              collapsedState:group->visual_data().is_collapsed()];
       [serialized_groups addObject:serialized_group];
     }
   }
@@ -570,6 +571,7 @@ void SerializeWebStateList(const WebStateList& web_state_list,
       group_storage.set_title(base::UTF16ToUTF8(group->visual_data().title()));
       group_storage.set_color(
           tab_group_util::ColorForStorage(group->visual_data().color()));
+      group_storage.set_collapsed(group->visual_data().is_collapsed());
     }
   }
 

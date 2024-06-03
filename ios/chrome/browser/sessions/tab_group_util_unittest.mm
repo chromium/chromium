@@ -28,6 +28,7 @@ TEST_F(TabSessionGroupUtil, FromSerializedValue) {
   group_storage.set_title("title");
   group_storage.set_color(
       tab_group_util::ColorForStorage(tab_groups::TabGroupColorId::kGrey));
+  group_storage.set_collapsed(true);
 
   DeserializedGroup group_deserialized =
       tab_group_util::FromSerializedValue(group_storage);
@@ -36,6 +37,7 @@ TEST_F(TabSessionGroupUtil, FromSerializedValue) {
   EXPECT_EQ(group_deserialized.visual_data.title(), u"title");
   EXPECT_EQ(group_deserialized.visual_data.color(),
             tab_groups::TabGroupColorId::kGrey);
+  EXPECT_TRUE(group_deserialized.visual_data.is_collapsed());
 }
 
 // Tests the legacy `FromSerializedValue:` method.
@@ -45,7 +47,8 @@ TEST_F(TabSessionGroupUtil, FromSerializedValueLegacy) {
               rangeCount:3
                    title:@"title"
                  colorId:static_cast<NSInteger>(
-                             tab_groups::TabGroupColorId::kGrey)];
+                             tab_groups::TabGroupColorId::kGrey)
+          collapsedState:YES];
 
   SessionWindowIOS* session_window =
       [[SessionWindowIOS alloc] initWithSessions:@[]
@@ -59,6 +62,7 @@ TEST_F(TabSessionGroupUtil, FromSerializedValueLegacy) {
   EXPECT_EQ(group_deserialized.visual_data.title(), u"title");
   EXPECT_EQ(group_deserialized.visual_data.color(),
             tab_groups::TabGroupColorId::kGrey);
+  EXPECT_TRUE(group_deserialized.visual_data.is_collapsed());
 }
 
 // Tests the `ColorForStorage:` method.

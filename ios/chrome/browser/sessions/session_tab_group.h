@@ -13,13 +13,16 @@
 - (instancetype)initWithRangeStart:(NSInteger)rangeStart
                         rangeCount:(NSInteger)rangeCount
                              title:(NSString*)title
-                           colorId:(NSInteger)colorId NS_DESIGNATED_INITIALIZER;
+                           colorId:(NSInteger)colorId
+                    collapsedState:(BOOL)collapsedState
+    NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 @property(nonatomic, assign) NSInteger rangeStart;
 @property(nonatomic, assign) NSInteger rangeCount;
 @property(nonatomic, copy) NSString* title;
 @property(nonatomic, assign) NSInteger colorId;
+@property(nonatomic, assign) BOOL collapsedState;
 
 @end
 

@@ -1286,6 +1286,7 @@ TEST_F(WebStateListSerializationTest, Deserialize_Proto_TabGroupsInvalid) {
   range.set_count(4);
   group_storage.set_title("Invalid");
   group_storage.set_color(ios::proto::TabGroupColorId::GREY);
+  group_storage.set_collapsed(false);
 
   EXPECT_EQ(storage.items_size(), 4);
   EXPECT_EQ(storage.active_index(), 1);
@@ -1332,7 +1333,8 @@ TEST_F(WebStateListSerializationTest, Deserialize_ObjC_TabGroupsInvalid) {
       [[SessionTabGroup alloc] initWithRangeStart:2
                                        rangeCount:4
                                             title:@"Invalid"
-                                          colorId:0];
+                                          colorId:0
+                                   collapsedState:NO];
   NSArray<SessionTabGroup*>* session_groups = [session_window.tabGroups
       arrayByAddingObjectsFromArray:@[ invalid_tab_group ]];
   session_window =
