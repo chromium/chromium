@@ -39,7 +39,8 @@ class ASH_EXPORT ModifierKeyComboRecorder
     kShiftLeft,
     kShiftRight,
     kAltGr,
-    kMaxValue = kAltGr,
+    kFunction,
+    kMaxValue = kFunction,
   };
 
   ModifierKeyComboRecorder();

@@ -45,7 +45,10 @@ enum class AcceleratorKeyInputType : uint8_t {
   // Misc buckets every other key on the keyboard which mostly consists of
   // non-standard keys.
   kMisc,
-  kMaxValue = kMisc,
+  kFunction,
+  kAssistant,
+  kRightAlt,
+  kMaxValue = kRightAlt,
 };
 
 // Returns the string of a DomKey for a given KeyboardCode. A keyboard code
