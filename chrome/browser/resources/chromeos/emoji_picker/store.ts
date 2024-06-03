@@ -82,6 +82,32 @@ export class RecentlyUsedStore {
   constructor(private readonly category: CategoryEnum) {
     this.store =
         new Store(`${category}-recently-used`, {history: [], preference: {}});
+    if (category !== CategoryEnum.GIF) {
+      this.mergeWithPrefsHistory();
+    }
+  }
+
+  private async mergeWithPrefsHistory() {
+    const prefsHistory =
+        await EmojiPickerApiProxy.getInstance().getHistoryFromPrefs(
+            convertCategoryEnum(this.category));
+    const mergedHistory: EmojiVariants[] =
+        prefsHistory.history.map((string) => ({
+                                   base: {string},
+                                   alternates: [],
+                                 }));
+    for (const item of this.store.data.history) {
+      const index = mergedHistory.findIndex(
+          (emoji) => emoji.base.string === item.base.string);
+      if (index >= 0) {
+        mergedHistory[index] = item;
+      } else if (mergedHistory.length < MAX_RECENTS) {
+        mergedHistory.push(item);
+      }
+    }
+    this.store.data.history = mergedHistory;
+    this.store.save();
+    this.updateHistoryInPrefs();
   }
 
   /**
