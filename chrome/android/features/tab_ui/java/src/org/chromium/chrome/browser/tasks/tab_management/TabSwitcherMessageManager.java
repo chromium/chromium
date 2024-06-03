@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
@@ -540,9 +541,13 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
         }
     }
 
-    private void dismissHandler(@MessageType int messageType) {
+    @VisibleForTesting
+    void dismissHandler(@MessageType int messageType) {
+        // `bind` and `unbind` to attach to a `TabListCoordinator` are independent of whether the
+        // `MessageCardProviderCoordinator`, has access to the `dismissHandler`. That means this
+        // may be called while unbound by one of the message services.
         TabListCoordinator tabListCoordinator = mTabListCoordinatorSupplier.get();
-        assert tabListCoordinator != null;
+        if (tabListCoordinator == null) return;
 
         if (messageType == MessageService.MessageType.PRICE_MESSAGE
                 || messageType == MessageService.MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE) {

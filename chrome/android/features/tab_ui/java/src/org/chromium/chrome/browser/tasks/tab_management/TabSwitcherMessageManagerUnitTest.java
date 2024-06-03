@@ -262,4 +262,23 @@ public class TabSwitcherMessageManagerUnitTest {
         mTabModelObserverCaptor.getValue().tabClosureCommitted(mTab1);
         verify(mPriceMessageService).invalidateMessage();
     }
+
+    @Test
+    @SmallTest
+    public void dismissHandlerSkipWhenUnbound() {
+        @MessageService.MessageType
+        int messageType = MessageService.MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE;
+        mMessageManager.dismissHandler(messageType);
+        verify(mTabListCoordinator)
+                .removeSpecialListItem(TabProperties.UiType.LARGE_MESSAGE, messageType);
+
+        mMessageManager.unbind(mTabListCoordinator);
+        verify(mTabListCoordinator, times(2))
+                .removeSpecialListItem(TabProperties.UiType.LARGE_MESSAGE, messageType);
+
+        mMessageManager.dismissHandler(messageType);
+        // Not called again and doesn't crash.
+        verify(mTabListCoordinator, times(2))
+                .removeSpecialListItem(TabProperties.UiType.LARGE_MESSAGE, messageType);
+    }
 }
