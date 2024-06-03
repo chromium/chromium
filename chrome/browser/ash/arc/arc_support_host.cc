@@ -763,23 +763,27 @@ void ArcSupportHost::OnMessage(const base::Value::Dict& message) {
     // If the user - not policy - controls Location Services setting, record
     // whether consent was given.
     if (!is_location_service_managed.value()) {
-      // TODO(b/327350824): Stop sending ARC controls to consent auditor.
-      if (!ash::features::IsCrosPrivacyHubLocationEnabled()) {
-        UserConsentTypes::ArcGoogleLocationServiceConsent
-            location_service_consent;
-        location_service_consent.set_confirmation_grd_id(
-            IDS_ARC_OPT_IN_DIALOG_BUTTON_AGREE);
+      UserConsentTypes::ArcGoogleLocationServiceConsent
+          location_service_consent;
+      location_service_consent.set_confirmation_grd_id(
+          IDS_ARC_OPT_IN_DIALOG_BUTTON_AGREE);
+
+      if (ash::features::IsCrosPrivacyHubLocationEnabled()) {
+        location_service_consent.add_description_grd_ids(
+            is_child ? IDS_CROS_OPT_IN_LOCATION_SETTING_CHILD
+                     : IDS_CROS_OPT_IN_LOCATION_SETTING);
+      } else {
         location_service_consent.add_description_grd_ids(
             is_child ? IDS_ARC_OPT_IN_LOCATION_SETTING_CHILD
                      : IDS_ARC_OPT_IN_LOCATION_SETTING);
-        location_service_consent.set_status(is_location_service_enabled.value()
-                                                ? UserConsentTypes::GIVEN
-                                                : UserConsentTypes::NOT_GIVEN);
-
-        ConsentAuditorFactory::GetForProfile(profile_)
-            ->RecordArcGoogleLocationServiceConsent(account_id,
-                                                    location_service_consent);
       }
+
+      location_service_consent.set_status(is_location_service_enabled.value()
+                                              ? UserConsentTypes::GIVEN
+                                              : UserConsentTypes::NOT_GIVEN);
+      ConsentAuditorFactory::GetForProfile(profile_)
+          ->RecordArcGoogleLocationServiceConsent(account_id,
+                                                  location_service_consent);
     }
 
     if (accepted) {
