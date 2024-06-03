@@ -112,6 +112,11 @@ export class RealboxDropdownElement extends PolymerElement {
             'canShowSecondarySide, result.matches.*, hiddenGroupIds_.*)',
       },
 
+      showThumbnail: {
+        type: Boolean,
+        value: false,
+      },
+
       //========================================================================
       // Private properties
       //========================================================================

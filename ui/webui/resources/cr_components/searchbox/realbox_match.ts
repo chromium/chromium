@@ -146,6 +146,11 @@ export class RealboxMatchElement extends PolymerElement {
         reflectToAttribute: true,
       },
 
+      showThumbnail: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
+
       sideType: Number,
 
       //========================================================================

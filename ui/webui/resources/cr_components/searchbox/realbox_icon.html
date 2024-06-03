@@ -111,6 +111,16 @@
     background-color: var(--color-realbox-answer-icon-foreground);
   }
 
+  /* TODO(b/343732131): Switch color token once UX direction is set. */
+  :host(:not([in-searchbox])[in-side-panel_]) #container {
+    background-color: #F1F3F4;
+    border-radius: 4000px;
+  }
+
+  :host-context([dark-mode]):host(:not([in-searchbox])[in-side-panel_]) #container {
+    background-color: #303134;
+  }
+
 </style>
 <div id="container" style="--container-bg-color:
     [[containerBgColor_(match.imageDominantColor, imageLoading_)]];">
