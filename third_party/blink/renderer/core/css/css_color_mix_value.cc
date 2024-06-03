@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/css/css_color_mix_value.h"
-#include "third_party/blink/renderer/core/css/css_primitive_value.h"
+
+#include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -67,20 +68,28 @@ String CSSColorMixValue::CustomCSSText() const {
   result.Append(", ");
   result.Append(color1_->CssText());
   bool percentagesNormalized = true;
-  if (percentage1_ && percentage2_ &&
-      (percentage1_->GetDoubleValue() + percentage2_->GetDoubleValue() !=
+  if (percentage1_ && percentage2_ && percentage1_->IsNumericLiteralValue() &&
+      percentage2_->IsNumericLiteralValue() &&
+      (To<CSSNumericLiteralValue>(*percentage1_).ComputePercentage() +
+           To<CSSNumericLiteralValue>(*percentage2_).ComputePercentage() !=
        100.0)) {
     percentagesNormalized = false;
   }
   if (percentage1_ &&
-      (percentage1_->GetDoubleValue() != 50.0 || !percentagesNormalized)) {
+      (!percentage1_->IsNumericLiteralValue() ||
+       To<CSSNumericLiteralValue>(*percentage1_).ComputePercentage() != 50.0 ||
+       !percentagesNormalized)) {
     result.Append(" ");
     result.Append(percentage1_->CssText());
   }
-  if (!percentage1_ && percentage2_ && percentage2_->GetDoubleValue() != 50.0) {
+  if (!percentage1_ && percentage2_ &&
+      (!percentage2_->IsNumericLiteralValue() ||
+       To<CSSNumericLiteralValue>(*percentage2_).ComputePercentage() != 50.0)) {
     result.Append(" ");
-    result.AppendNumber(100.0 - percentage2_->GetDoubleValue());
-    result.Append("%");
+    result.Append(
+        percentage2_
+            ->SubtractFrom(100.0, CSSPrimitiveValue::UnitType::kPercentage)
+            ->CustomCSSText());
   }
   result.Append(", ");
   result.Append(color2_->CssText());
