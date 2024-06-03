@@ -16,10 +16,6 @@ enum class AccountType { UNKNOWN, GOOGLE, ACTIVE_DIRECTORY };
 
 // Type that contains enough information to identify user.
 //
-// TODO(alemate): we are in the process of moving away from std::string as a
-// type for storing user identifier to AccountId. At this time GaiaId is mostly
-// empty, so this type is used as a replacement for e-mail string.
-// But in near future AccountId will become full feature user identifier.
 // TODO(alemate): Rename functions and fields to reflect different types of
 // accounts. (see crbug.com/672253)
 class AccountId {
@@ -44,7 +40,6 @@ class AccountId {
   bool operator!=(const AccountId& other) const;
   bool operator<(const AccountId& right) const;
 
-  // empty() is deprecated. Use !is_valid() instead.
   bool empty() const;
   bool is_valid() const;
   void clear();
