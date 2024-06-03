@@ -123,11 +123,14 @@ class SplitViewDivider::SplitViewDividerWidget : public views::Widget {
     if (!Widget::OnNativeWidgetActivationChanged(active)) {
       return false;
     }
-    if (active) {
-      auto* divider_view =
-          views::AsViewClass<SplitViewDividerView>(GetContentsView());
-      divider_view->SetPaneFocusAndFocusDefault();
+    // Only set focus and show the focus ring if `this` is being activated by
+    // the focus cycler.
+    if (!active || this != Shell::Get()->focus_cycler()->widget_activating()) {
+      return false;
     }
+    auto* divider_view =
+        views::AsViewClass<SplitViewDividerView>(GetContentsView());
+    divider_view->SetPaneFocusAndFocusDefault();
     return true;
   }
 };

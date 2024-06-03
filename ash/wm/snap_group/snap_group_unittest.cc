@@ -2931,6 +2931,8 @@ TEST_F(SnapGroupDividerTest, HoverToEnlargeDivider) {
   ASSERT_TRUE(divider_widget);
   auto* divider_view = divider->divider_view_for_testing();
   ASSERT_TRUE(divider_view);
+  auto* focus_ring = views::FocusRing::Get(divider_view);
+  ASSERT_TRUE(focus_ring);
   auto* handler_view = divider_view->handler_view_for_testing();
   ASSERT_TRUE(handler_view);
 
@@ -2960,6 +2962,7 @@ TEST_F(SnapGroupDividerTest, HoverToEnlargeDivider) {
             handler_view_bounds_on_hover.width());
   EXPECT_EQ(kDividerHandlerEnlargedLongSideLength,
             handler_view_bounds_on_hover.height());
+  EXPECT_FALSE(focus_ring->GetVisible());
 
   event_generator->MoveMouseBy(10, 0);
   EXPECT_EQ(kSplitviewDividerEnlargedShortSideLength, divider_view->width());
@@ -2969,6 +2972,7 @@ TEST_F(SnapGroupDividerTest, HoverToEnlargeDivider) {
             handler_view_bounds_on_drag.width());
   EXPECT_EQ(kDividerHandlerEnlargedLongSideLength,
             handler_view_bounds_on_drag.height());
+  EXPECT_FALSE(focus_ring->GetVisible());
 
   event_generator->MoveMouseTo(gfx::Point(0, 0));
   EXPECT_EQ(kSplitviewDividerShortSideLength, divider_view->width());
@@ -2978,6 +2982,7 @@ TEST_F(SnapGroupDividerTest, HoverToEnlargeDivider) {
             handler_view_bounds_after_hover.width());
   EXPECT_EQ(kDividerHandlerLongSideLength,
             handler_view_bounds_after_hover.height());
+  EXPECT_FALSE(focus_ring->GetVisible());
 }
 
 // Tests that the split view divider will be stacked on top of both windows in
