@@ -162,6 +162,10 @@ bool ShouldShowPostMigrationSheet(Profile* profile) {
     return false;
   }
 
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    return false;
+  }
+
   // The post password migration sheet should be shown for an active UPM user
   // that uses split stores only once, so
   // `kLocalPasswordMigrationWarningShownAtStartup` will be true only when the
