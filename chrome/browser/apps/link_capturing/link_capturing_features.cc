@@ -18,16 +18,6 @@ BASE_FEATURE(kLinkCapturingUiUpdate,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
-BASE_FEATURE(kAppToAppLinkCapturing,
-             "AppToAppLinkCapturing",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kAppToAppLinkCapturingWorkspaceApps,
-             "AppToAppLinkCapturingWorkspaceApps",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 bool ShouldShowLinkCapturingUX() {
 #if BUILDFLAG(IS_CHROMEOS)
   return base::FeatureList::IsEnabled(kLinkCapturingUiUpdate);

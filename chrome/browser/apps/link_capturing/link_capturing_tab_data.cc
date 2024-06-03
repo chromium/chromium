@@ -73,22 +73,4 @@ void SetLinkCapturingSourceDisposition(
   helper->set_source_disposition(source_disposition);
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-const webapps::AppId* GetLinkCapturingSourceAppId(
-    content::WebContents* contents) {
-  auto* helper = LinkCapturingUserData::FromWebContents(contents);
-  if (!helper) {
-    return nullptr;
-  }
-  return helper->source_app_id().empty() ? nullptr : &helper->source_app_id();
-}
-
-void SetLinkCapturingSourceAppId(content::WebContents* contents,
-                                 webapps::AppId source_app_id) {
-  LinkCapturingUserData::CreateForWebContents(contents);
-  auto* helper = LinkCapturingUserData::FromWebContents(contents);
-  helper->set_source_app_id(std::move(source_app_id));
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 }  // namespace apps

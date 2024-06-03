@@ -7637,18 +7637,6 @@ const char kAddPrinterViaPrintscanmgrName[] =
 const char kAddPrinterViaPrintscanmgrDescription[] =
     "Changes the daemon used to add printers from debugd to printscanmgr.";
 
-const char kAppToAppLinkCapturingName[] = "App-to-app link capturing";
-const char kAppToAppLinkCapturingDescription[] =
-    "Enables link capturing from one app to another, even when the target app "
-    "does not have link capturing enabled in settings";
-
-const char kAppToAppLinkCapturingWorkspaceAppsName[] =
-    "App-to-app link capturing for Workspace apps";
-const char kAppToAppLinkCapturingWorkspaceAppsDescription[] =
-    "Enables link capturing from one app to another, even when the target app "
-    "does not have link capturing enabled in settings. Only applies if the "
-    "target app is a Workspace app (Google Drive/Docs/Sheets/Slides).";
-
 const char kCrosAppsBackgroundEventHandlingName[] =
     "Experimental Background Events for CrOS Apps";
 const char kCrosAppsBackgroundEventHandlingDescription[] =

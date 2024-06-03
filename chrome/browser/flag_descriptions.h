@@ -4434,12 +4434,6 @@ extern const char kGetAllScreensMediaDescription[];
 extern const char kAddPrinterViaPrintscanmgrName[];
 extern const char kAddPrinterViaPrintscanmgrDescription[];
 
-extern const char kAppToAppLinkCapturingName[];
-extern const char kAppToAppLinkCapturingDescription[];
-
-extern const char kAppToAppLinkCapturingWorkspaceAppsName[];
-extern const char kAppToAppLinkCapturingWorkspaceAppsDescription[];
-
 extern const char kCrosAppsBackgroundEventHandlingName[];
 extern const char kCrosAppsBackgroundEventHandlingDescription[];
 

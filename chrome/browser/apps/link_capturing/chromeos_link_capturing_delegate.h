@@ -38,18 +38,12 @@ class ChromeOsLinkCapturingDelegate
   // Returns the app id to launch for a navigation, if any. Exposed for testing.
   static std::optional<std::string> GetLaunchAppId(
       const AppIdsToLaunchForUrl& app_ids_to_launch,
-      bool is_navigation_from_link,
-      std::optional<webapps::AppId> source_app_id);
+      bool is_navigation_from_link);
 
   // Method intended for testing purposes only.
   // Set clock used for timing to enable manipulation during tests.
   static base::AutoReset<const base::TickClock*> SetClockForTesting(
       const base::TickClock* tick_clock);
-
-  // Override the allowlist of Workspace app IDs, used for tests which can't
-  // install/interact with the real versions of these apps.
-  static base::AutoReset<base::flat_set<std::string>>
-  SetWorkspaceAppAllowlistForTesting(base::flat_set<std::string> allowlist);
 
   // apps::LinkCapturingNavigationThrottle::Delegate:
   bool ShouldCancelThrottleCreation(content::NavigationHandle* handle) override;

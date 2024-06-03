@@ -906,13 +906,6 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
     // navigation happens in a different tab to the link click.
     apps::SetLinkCapturingSourceDisposition(contents_to_insert.get(),
                                             params->disposition);
-#if BUILDFLAG(IS_CHROMEOS)
-    if (source_browser && source_browser != params->browser &&
-        source_browser->app_controller()) {
-      apps::SetLinkCapturingSourceAppId(
-          contents_to_insert.get(), source_browser->app_controller()->app_id());
-    }
-#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
   if (params->source_contents == contents_to_navigate_or_insert) {

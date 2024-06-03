@@ -127,10 +127,6 @@ source_set("app_service_browser_tests") {
 
   sources = [ "link_capturing_navigation_throttle_browsertest.cc" ]
 
-  if (is_chromeos) {
-    sources += [ "chromeos_link_capturing_delegate_browsertest.cc" ]
-  }
-
   deps = [
     ":link_capturing",
     ":test_support",
