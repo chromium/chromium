@@ -110,6 +110,18 @@ int AtspiInProcessFuzzer::Fuzz(
     const test::fuzzing::atspi_fuzzing::FuzzCase& fuzz_case) {
   for (const test::fuzzing::atspi_fuzzing::Action& action :
        fuzz_case.action()) {
+    if (action.path_to_control_size() < 2) {
+      // The first couple of levels deep in the accessibility tree are things
+      // like the application itself, which are not really interactive.
+      // The libfuzzer mutator seems to bias to producing small test cases
+      // which want to explore just those nodes. Shortcut things a bit by
+      // skipping those without pointlessly poking at the controls.
+      return -1;
+    }
+  }
+
+  for (const test::fuzzing::atspi_fuzzing::Action& action :
+       fuzz_case.action()) {
     // We make no attempt to reset the UI of the browser to any 'starting
     // position', because we can't - we don't know what controls have been
     // explored or what state the browser is in. This is problematic
@@ -146,15 +158,6 @@ int AtspiInProcessFuzzer::Fuzz(
       current_control = children[child_ordinal];
       current_control_path.push_back(child_ordinal);
       children = GetChildren(current_control);
-    }
-
-    if (action.path_to_control_size() < 2) {
-      // The first couple of levels deep in the accessibility tree are things
-      // like the application itself, which are not really interactive.
-      // The libfuzzer mutator seems to bias to producing small test cases
-      // which want to explore just those nodes. Shortcut things a bit by
-      // skipping those without pointlessly poking at the controls.
-      return 0;
     }
 
     std::string control_name = GetNodeName(current_control);
