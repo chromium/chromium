@@ -96,10 +96,12 @@ inline constexpr char kTimeOfLastMigrationAttempt[] =
 // their migration doesn't impact this pref.
 //
 // Do not renumber UseUpmLocalAndSeparateStoresState, values are persisted.
+// Values are also used for metrics recording.
 enum class UseUpmLocalAndSeparateStoresState {
   kOff = 0,
   kOffAndMigrationPending = 1,
   kOn = 2,
+  kMaxValue = kOn
 };
 inline constexpr char kPasswordsUseUPMLocalAndSeparateStores[] =
     "passwords_use_upm_local_and_separate_stores";
