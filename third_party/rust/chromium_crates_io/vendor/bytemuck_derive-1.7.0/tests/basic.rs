@@ -50,6 +50,14 @@ struct ZeroGeneric<T: bytemuck::Zeroable> {
   a: T,
 }
 
+#[derive(Zeroable)]
+#[repr(u8)]
+enum ZeroEnum {
+  A = 0,
+  B = 1,
+  C = 2,
+}
+
 #[derive(TransparentWrapper)]
 #[repr(transparent)]
 struct TransparentSingle {

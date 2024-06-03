@@ -377,7 +377,7 @@ pub fn derive_contiguous(
 /// also does not implement `StructuralPartialEq` / `StructuralEq` like
 /// `PartialEq` / `Eq` would. This means you can't pattern match on the values.
 ///
-/// ## Example
+/// ## Examples
 ///
 /// ```rust
 /// # use bytemuck_derive::{ByteEq, NoUninit};
@@ -389,6 +389,17 @@ pub fn derive_contiguous(
 ///   c: f32,
 /// }
 /// ```
+///
+/// ```rust
+/// # use bytemuck_derive::ByteEq;
+/// # use bytemuck::NoUninit;
+/// #[derive(Copy, Clone, ByteEq)]
+/// #[repr(C)]
+/// struct Test<const N: usize> {
+///   a: [u32; N],
+/// }
+/// unsafe impl<const N: usize> NoUninit for Test<N> {}
+/// ```
 #[proc_macro_derive(ByteEq)]
 pub fn derive_byte_eq(
   input: proc_macro::TokenStream,
@@ -396,16 +407,17 @@ pub fn derive_byte_eq(
   let input = parse_macro_input!(input as DeriveInput);
   let crate_name = bytemuck_crate_name(&input);
   let ident = input.ident;
+  let (impl_generics, ty_generics, where_clause) = input.generics.split_for_impl();
 
   proc_macro::TokenStream::from(quote! {
-    impl ::core::cmp::PartialEq for #ident {
+    impl #impl_generics ::core::cmp::PartialEq for #ident #ty_generics #where_clause {
       #[inline]
       #[must_use]
       fn eq(&self, other: &Self) -> bool {
         #crate_name::bytes_of(self) == #crate_name::bytes_of(other)
       }
     }
-    impl ::core::cmp::Eq for #ident { }
+    impl #impl_generics ::core::cmp::Eq for #ident #ty_generics #where_clause { }
   })
 }
 
@@ -418,7 +430,7 @@ pub fn derive_byte_eq(
 ///
 /// The hash does not match the standard library's `Hash` derive.
 ///
-/// ## Example
+/// ## Examples
 ///
 /// ```rust
 /// # use bytemuck_derive::{ByteHash, NoUninit};
@@ -430,6 +442,17 @@ pub fn derive_byte_eq(
 ///   c: f32,
 /// }
 /// ```
+///
+/// ```rust
+/// # use bytemuck_derive::ByteHash;
+/// # use bytemuck::NoUninit;
+/// #[derive(Copy, Clone, ByteHash)]
+/// #[repr(C)]
+/// struct Test<const N: usize> {
+///   a: [u32; N],
+/// }
+/// unsafe impl<const N: usize> NoUninit for Test<N> {}
+/// ```
 #[proc_macro_derive(ByteHash)]
 pub fn derive_byte_hash(
   input: proc_macro::TokenStream,
@@ -437,9 +460,10 @@ pub fn derive_byte_hash(
   let input = parse_macro_input!(input as DeriveInput);
   let crate_name = bytemuck_crate_name(&input);
   let ident = input.ident;
+  let (impl_generics, ty_generics, where_clause) = input.generics.split_for_impl();
 
   proc_macro::TokenStream::from(quote! {
-    impl ::core::hash::Hash for #ident {
+    impl #impl_generics ::core::hash::Hash for #ident #ty_generics #where_clause {
       #[inline]
       fn hash<H: ::core::hash::Hasher>(&self, state: &mut H) {
         ::core::hash::Hash::hash_slice(#crate_name::bytes_of(self), state)

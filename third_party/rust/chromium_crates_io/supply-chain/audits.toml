@@ -239,6 +239,16 @@ No behavior/code changes AFAICT - only adding
 some cosmetic changes in non-`.rs` files.
 """
 
+[[audits.bytemuck_derive]]
+who = "danakj <danakj@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "1.6.1 -> 1.7.0"
+notes = """
+Added support for Zeroable enums, which requires them to be represented as an integer and to have 0 as one of their values.
+
+Other trivial/formatting changes.
+"""
+
 [[audits.bytes]]
 who = "agl@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]

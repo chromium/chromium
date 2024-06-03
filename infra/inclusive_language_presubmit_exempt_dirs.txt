@@ -124,6 +124,7 @@ components/certificate_transparency 1 1
 components/domain_reliability 4 2
 components/gcm_driver 1 1
 components/infobars/android/java/src/org/chromium/components/infobars 1 1
+components/input 2 1
 components/media_router/common/providers/cast/channel 1 1
 components/metrics 1 1
 components/metrics/debug 2 1
@@ -154,7 +155,7 @@ components/url_formatter 1 1
 components/url_formatter/spoof_checks 1 1
 components/url_formatter/spoof_checks/common_words/data 2 1
 components/webapk/android/libs/client/src/org/chromium/components/webapk/lib/client 1 1
-components/webcrypto/algorithms 2 2
+components/webcrypto/algorithms 1 1
 components/zucchini/testdata 26 4
 content/browser 9 4
 content/browser/bluetooth 1 1
@@ -168,7 +169,6 @@ content/browser/sms 2 1
 content/browser/tracing 1 1
 content/child 1 1
 content/common 1 1
-content/common/input 2 1
 content/public/android/junit/src/org/chromium/content/browser/input 1 1
 content/public/common 1 1
 content/renderer 2 1
@@ -226,7 +226,8 @@ media/ffmpeg/scripts/robo_lib 1 1
 media/filters 1 1
 media/formats/mp4 3 1
 media/formats/webm 1 1
-media/gpu/vaapi 3 2
+media/gpu 1 1
+media/gpu/vaapi 2 2
 media/muxers 1 1
 media/test 1 1
 media/test/data 6 3
@@ -401,7 +402,6 @@ third_party/blink/renderer/modules/installedapp 2 2
 third_party/blink/renderer/modules/launch 1 1
 third_party/blink/renderer/modules/manifest 3 1
 third_party/blink/renderer/modules/mediarecorder 1 1
-third_party/blink/renderer/modules/ml/webnn 4 1
 third_party/blink/renderer/modules/peerconnection 3 3
 third_party/blink/renderer/modules/scheduler 1 1
 third_party/blink/renderer/modules/virtualkeyboard 6 3

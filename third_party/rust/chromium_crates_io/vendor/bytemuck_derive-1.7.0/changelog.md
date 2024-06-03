@@ -1,6 +1,10 @@
 
 ## `bytemuck_derive` changelog
 
+## 1.7.0
+
+* Allow generics in `derive(ByteEq, ByteHash)` https://github.com/Lokathor/bytemuck/pull/219
+
 ## 1.6.0
 
 * This allows `CheckedBitPattern` to be derived for enums with fields.
