@@ -22,7 +22,7 @@ import histogram_paths
 import merge_xml
 
 
-def _get_names(xml_files):
+def get_names(xml_files):
   """Returns all histogram names generated from a list of xml files.
 
   Args:
@@ -70,8 +70,8 @@ def _get_diff(revision):
       # Paths might not exist in the provided revision.
       continue
 
-  current_histogram_names = _get_names(histogram_xml_files())
-  prev_histogram_names = _get_names(prev_files)
+  current_histogram_names = get_names(histogram_xml_files())
+  prev_histogram_names = get_names(prev_files)
 
   added_names = sorted(list(current_histogram_names - prev_histogram_names))
   removed_names = sorted(list(prev_histogram_names - current_histogram_names))
@@ -98,7 +98,7 @@ def main(argv):
   if args.diff is not None:
     _print_diff_names(args.diff)
   else:
-    name_set, _ = _get_names(_histogram_xml_files())
+    name_set = get_names(_histogram_xml_files())
     for name in sorted(list(name_set)):
       print(name)
 
