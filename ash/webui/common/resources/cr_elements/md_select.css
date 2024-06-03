@@ -10,11 +10,11 @@
 
 .md-select {
   --md-arrow-width: 10px;
-  --md-select-bg-color: var(--google-grey-100);
-  --md-select-focus-shadow-color: rgba(var(--google-blue-600-rgb), .4);
-  --md-select-option-bg-color: white;
+  --md-select-bg-color: var(--cros-sys-input_field_on_base);
+  --md-select-focus-shadow-color: var(--cros-sys-primary);
+  --md-select-option-bg-color: var(--cros-sys-base_elevated);
   --md-select-side-padding: 8px;
-  --md-select-text-color: var(--cr-primary-text-color);
+  --md-select-text-color: var(--cros-sys-on_surface);
 
   -webkit-appearance: none;
   background: url(//resources/images/arrow_down.svg)
@@ -42,10 +42,6 @@
 
 @media (prefers-color-scheme: dark) {
   .md-select {
-    --md-select-bg-color: rgba(0, 0, 0, .3);
-    --md-select-focus-shadow-color:
-        rgba(var(--google-blue-300-rgb), .5);
-    --md-select-option-bg-color: var(--google-grey-900-white-4-percent);
     background-image: url(//resources/images/dark/arrow_down.svg);
   }
 }

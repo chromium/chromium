@@ -228,13 +228,6 @@
 }
 
 /* md-select */
-:host-context(body.jelly-enabled) .md-select {
-  --md-select-bg-color: var(--cros-sys-input_field_on_base);
-  --md-select-focus-shadow-color: var(--cros-sys-primary);
-  --md-select-option-bg-color: var(--cros-sys-base_elevated);
-  --md-select-text-color: var(--cros-sys-on_surface);
-}
-
 :host-context([cros][chrome-refresh-2023]) .md-select {
   --md-arrow-width: 7px;
   --md-select-bg-color: var(--cros-sys-input_field_on_base);
