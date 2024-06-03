@@ -842,22 +842,21 @@ net::handles::NetworkHandle CorsURLLoaderFactory::GetBoundNetworkForTesting()
 void CorsURLLoaderFactory::CancelRequestsIfNonceMatchesAndUrlNotExempted(
     const base::UnguessableToken& nonce,
     const std::set<GURL>& exemptions) {
-  // Cancelling the request may cause the URL loader to be deleted from the data
-  // structure, invalidating the iterator if it is currently pointing to that
-  // element. So advance to the next element first and delete the previous one.
-  for (auto loader_it = url_loaders_.begin(); loader_it != url_loaders_.end();
-       /* iteration performed inside the loop */) {
-    ++loader_it;
-    (*std::prev(loader_it))
-        ->CancelRequestIfNonceMatchesAndUrlNotExempted(nonce, exemptions);
-  }
-  for (auto loader_it = cors_url_loaders_.begin();
-       loader_it != cors_url_loaders_.end();
-       /* iteration performed inside the loop */) {
-    ++loader_it;
-    (*std::prev(loader_it))
-        ->CancelRequestIfNonceMatchesAndUrlNotExempted(nonce, exemptions);
-  }
+  auto iterate_over_set = [&nonce, &exemptions](auto& url_loaders) {
+    // Cancelling the request may cause the URL loader to be deleted from the
+    // data structure, invalidating the iterator if it is currently pointing to
+    // that element. So advance to the next element first and delete the
+    // previous one.
+    for (auto loader_it = url_loaders.begin(); loader_it != url_loaders.end();
+         /* iteration performed inside the loop */) {
+      auto* loader = loader_it->get();
+      ++loader_it;
+      loader->CancelRequestIfNonceMatchesAndUrlNotExempted(nonce, exemptions);
+    }
+  };
+
+  iterate_over_set(url_loaders_);
+  iterate_over_set(cors_url_loaders_);
 }
 
 }  // namespace network::cors
