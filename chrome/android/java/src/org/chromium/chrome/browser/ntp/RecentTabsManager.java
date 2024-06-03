@@ -10,6 +10,7 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.invalidation.SessionsInvalidationManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper;
@@ -435,6 +436,16 @@ public class RecentTabsManager
     }
 
     private @SyncPromoState int calculatePromoState() {
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
+            // If ReplaceSyncPromosWithSignInPromos is enabled, there's only one promo type.
+            //
+            // TODO(crbug.com/343908771): Revise SyncPromoState after launching
+            //     ReplaceSyncPromosWithSignInPromos.
+            return mSyncPromoController.canShowSyncPromo()
+                    ? SyncPromoState.PROMO_FOR_SIGNED_OUT_STATE
+                    : SyncPromoState.NO_PROMO;
+        }
         if (!mSignInManager.getIdentityManager().hasPrimaryAccount(ConsentLevel.SYNC)) {
             if (!mSyncPromoController.canShowSyncPromo()) {
                 return SyncPromoState.NO_PROMO;

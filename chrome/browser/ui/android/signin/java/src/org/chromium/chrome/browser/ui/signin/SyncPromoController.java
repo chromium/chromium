@@ -80,6 +80,8 @@ public class SyncPromoController {
     }
 
     /** Specifies the various states of sync promo. */
+    // TODO(crbug.com/343908771): Revise SyncPromoState after launching
+    //     ReplaceSyncPromosWithSignInPromos.
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({
         SyncPromoState.NO_PROMO,
