@@ -5503,6 +5503,45 @@ TEST_F(SnapGroupWindowCycleTest, SteppingInWindowCycleView) {
   EXPECT_TRUE(wm::IsActiveWindow(window3.get()));
 }
 
+// Tests that using 'Alt + Tab' for quick switch correctly cycles focus between
+// two snapped windows within a Snap Group, without showing the window cycling
+// UI.
+TEST_F(SnapGroupWindowCycleTest, QuickSwitch) {
+  WindowCycleList::SetDisableInitialDelayForTesting(false);
+
+  std::unique_ptr<aura::Window> w0(CreateAppWindow());
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindows(w0.get(), w1.get());
+  EXPECT_TRUE(wm::IsActiveWindow(w1.get()));
+
+  WindowCycleController* window_cycle_controller =
+      Shell::Get()->window_cycle_controller();
+
+  // Press 'Alt + Tab' keyboard shortcut to trigger window cycling, verify that
+  // the focus is switched to `w0` in the Snap Group.
+  auto* event_generator = GetEventGenerator();
+  event_generator->PressKey(ui::VKEY_TAB, ui::EF_ALT_DOWN);
+  event_generator->ReleaseKey(ui::VKEY_TAB, ui::EF_ALT_DOWN);
+  EXPECT_TRUE(window_cycle_controller->IsCycling());
+  const auto* window_cycle_list0 = window_cycle_controller->window_cycle_list();
+  ASSERT_TRUE(window_cycle_list0);
+  EXPECT_FALSE(window_cycle_list0->cycle_view());
+  event_generator->ReleaseKey(ui::VKEY_MENU, ui::EF_NONE);
+  EXPECT_TRUE(wm::IsActiveWindow(w0.get()));
+
+  // Press 'Alt + Tab' keyboard shortcut again to trigger window cycling ,
+  // verify that the focus is switched back to `w1` in the Snap Group.
+  event_generator->PressKey(ui::VKEY_TAB, ui::EF_ALT_DOWN);
+  event_generator->ReleaseKey(ui::VKEY_TAB, ui::EF_ALT_DOWN);
+  EXPECT_TRUE(window_cycle_controller->IsCycling());
+  const auto* window_cycle_list1 = window_cycle_controller->window_cycle_list();
+  ASSERT_TRUE(window_cycle_list1);
+  EXPECT_FALSE(window_cycle_list1->cycle_view());
+  event_generator->ReleaseKey(ui::VKEY_MENU, ui::EF_NONE);
+  EXPECT_TRUE(wm::IsActiveWindow(w1.get()));
+}
+
 // Tests that the exposed rounded corners of the cycling items are rounded
 // corners. The visuals will be refreshed on window destruction that belongs to
 // a snap group.
