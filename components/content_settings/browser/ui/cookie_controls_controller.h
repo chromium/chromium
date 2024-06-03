@@ -172,7 +172,9 @@ class CookieControlsController final
   // Updates user bypass visibility and/or highlighting.
   void UpdateUserBypass();
 
-  void OnPageReloadDetected(int recent_reloads_count);
+  void UpdateLastVisitedSitesMap();
+
+  void UpdatePageReloadStatus(int recent_reloads_count);
 
   void OnPageFinishedLoading();
 

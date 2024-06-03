@@ -55,6 +55,10 @@ class CookieControlsObserver : public base::CheckedObserver {
   // Called when the current page has finished reloading, after the effective
   // cookie setting was changed on the previous load via the controller.
   virtual void OnFinishedPageReloadWithChangedSettings() {}
+
+  // Called when the number of recent page reloads exceeds the highlight
+  // heuristic. Intended for use in Clank PWA logic.
+  virtual void OnReloadThresholdExceeded() {}
 };
 
 }  // namespace content_settings

@@ -96,6 +96,10 @@ void CookieControlsBridge::OnCookieControlsIconStatusChanged(
       env, jobject_, static_cast<bool>(should_highlight));
 }
 
+void CookieControlsBridge::OnReloadThresholdExceeded() {
+  // TODO(https://b/343220993): Clank implementation.
+}
+
 void CookieControlsBridge::SetThirdPartyCookieBlockingEnabledForSite(
     JNIEnv* env,
     bool block_cookies) {

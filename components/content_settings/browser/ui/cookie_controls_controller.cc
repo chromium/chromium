@@ -422,13 +422,7 @@ void CookieControlsController::UpdateUserBypass() {
   }
 }
 
-void CookieControlsController::OnPageReloadDetected(int recent_reloads_count) {
-  if (HasUserChangedCookieBlockingForSite() && recent_reloads_count > 0) {
-    waiting_for_page_load_finish_ = true;
-  }
-
-  SetUserChangedCookieBlockingForSite(false);
-
+void CookieControlsController::UpdateLastVisitedSitesMap() {
   // Cache whether the expiration has expired since last visit before updating
   // the last visited metadata.
   const GURL& url = GetWebContents()->GetLastCommittedURL();
@@ -446,8 +440,21 @@ void CookieControlsController::OnPageReloadDetected(int recent_reloads_count) {
     metadata.Remove(kLastVisitedActiveException);
   }
   ApplyMetadataChanges(settings_map_, url, std::move(metadata));
+}
 
+void CookieControlsController::UpdatePageReloadStatus(
+    int recent_reloads_count) {
+  if (HasUserChangedCookieBlockingForSite() && recent_reloads_count > 0) {
+    waiting_for_page_load_finish_ = true;
+  }
+  SetUserChangedCookieBlockingForSite(false);
   recent_reloads_count_ = recent_reloads_count;
+
+  if (recent_reloads_count_ >= features::kUserBypassUIReloadCount.Get()) {
+    for (auto& observer : observers_) {
+      observer.OnReloadThresholdExceeded();
+    }
+  }
 }
 
 void CookieControlsController::OnPageFinishedLoading() {
@@ -679,7 +686,8 @@ void CookieControlsController::TabObserver::PrimaryPageChanged(
     reload_count_++;
   }
   last_visited_url_ = current_url;
-  cookie_controls_->OnPageReloadDetected(reload_count_);
+  cookie_controls_->UpdatePageReloadStatus(reload_count_);
+  cookie_controls_->UpdateLastVisitedSitesMap();
 }
 
 void CookieControlsController::TabObserver::DidStopLoading() {

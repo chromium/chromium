@@ -64,6 +64,8 @@ class CookieControlsBridge : public CookieControlsObserver {
       CookieBlocking3pcdStatus blocking_status,
       bool should_highlight) override;
 
+  void OnReloadThresholdExceeded() override;
+
  private:
   base::android::ScopedJavaGlobalRef<jobject> jobject_;
   bool controls_visible_ = false;

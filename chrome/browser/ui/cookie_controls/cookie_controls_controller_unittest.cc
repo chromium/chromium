@@ -74,6 +74,7 @@ class MockCookieControlsObserver
                CookieBlocking3pcdStatus,
                /*should_highlight*/ bool));
   MOCK_METHOD(void, OnFinishedPageReloadWithChangedSettings, ());
+  MOCK_METHOD(void, OnReloadThresholdExceeded, ());
 };
 
 blink::StorageKey CreateUnpartitionedStorageKey(const GURL& url) {
@@ -106,7 +107,8 @@ class CookieControlsUserBypassTest : public ChromeRenderViewHostTestHarness {
     // NOTE: we make the exception short (hours rather than days) to prevent it
     // from timing out
     feature_list_.InitWithFeaturesAndParameters(
-        {{content_settings::features::kUserBypassUI, {{"expiration", "3h"}}}},
+        {{content_settings::features::kUserBypassUI,
+          {{"expiration", "3h"}, {"reload-count", "2"}}}},
         {});
   }
 
@@ -729,6 +731,7 @@ TEST_F(CookieControlsUserBypassTest, FrequentPageReloads) {
                            /*icon_visible=*/true, /*protections_on=*/true,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/true));
+
   NavigateAndCommit(GURL("https://example.com"));
   page_specific_content_settings()->OnBrowsingDataAccessed(
       CreateUnpartitionedStorageKey(GURL("https://thirdparty.com")),
@@ -743,6 +746,53 @@ TEST_F(CookieControlsUserBypassTest, FrequentPageReloads) {
                               ContentSettingsType::COOKIE_CONTROLS_METADATA);
   EXPECT_TRUE(stored_value.is_dict());
   EXPECT_TRUE(stored_value.GetDict().FindBool("entry_point_animated").value());
+}
+
+TEST_F(CookieControlsUserBypassTest,
+       HittingPageReloadThresholdTriggersOnReloadThresholdExceeded) {
+  // Update initial web contents to ensure the tab observer is set up.
+  cookie_controls()->Update(web_contents());
+
+  // Don't call observer when reload count = 0.
+  EXPECT_CALL(*mock(), OnReloadThresholdExceeded()).Times(0);
+
+  EXPECT_CALL(*mock(),
+              OnStatusChanged(
+                  /*controls_visible=*/true, /*protections_on=*/true,
+                  CookieControlsEnforcement::kNoEnforcement,
+                  CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration(),
+                  GetThirdPartyCookiesFeatureForEnforcement(
+                      CookieControlsEnforcement::kNoEnforcement,
+                      BlockingStatus::kBlocked)));
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
+                           /*icon_visible=*/false, /*protections_on=*/true,
+                           CookieBlocking3pcdStatus::kNotIn3pcd,
+                           /*should_highlight=*/false));
+  NavigateAndCommit(GURL("https://example.com"));
+  cookie_controls()->Update(web_contents());
+  testing::Mock::VerifyAndClearExpectations(mock());
+
+  // Don't call observer when reload count = 1.
+  EXPECT_CALL(*mock(), OnReloadThresholdExceeded()).Times(0);
+
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
+                           /*icon_visible=*/false, /*protections_on=*/true,
+                           CookieBlocking3pcdStatus::kNotIn3pcd,
+                           /*should_highlight=*/false));
+  NavigateAndCommit(GURL("https://example.com"));
+  cookie_controls()->Update(web_contents());
+  testing::Mock::VerifyAndClearExpectations(mock());
+
+  // Expect observer call when reload count hits threshold of 2.
+  EXPECT_CALL(*mock(), OnReloadThresholdExceeded());
+  // Expect that we attempt to highlight the user bypass icon.
+  EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
+                           /*icon_visible=*/false, /*protections_on=*/true,
+                           CookieBlocking3pcdStatus::kNotIn3pcd,
+                           /*should_highlight=*/true));
+  NavigateAndCommit(GURL("https://example.com"));
+  cookie_controls()->Update(web_contents());
+  testing::Mock::VerifyAndClearExpectations(mock());
 }
 
 TEST_F(CookieControlsUserBypassTest, FrequentPageReloadsMetrics) {
@@ -772,7 +822,6 @@ TEST_F(CookieControlsUserBypassTest, FrequentPageReloadsMetrics) {
                            CookieBlocking3pcdStatus::kNotIn3pcd,
                            /*should_highlight=*/false));
   page_specific_content_settings()->OnBrowsingDataAccessed(
-
       CreateUnpartitionedStorageKey(GURL("https://thirdparty.com")),
       BrowsingDataModel::StorageType::kQuotaStorage,
       /*blocked_by_policy=*/false);
