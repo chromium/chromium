@@ -14,6 +14,7 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/ui/safety_hub/card_data_helper.h"
 #include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
@@ -702,7 +703,7 @@ TrustSafetySentimentService::GetSafetyHubProductSpecificData() {
            "notification permissions"},
           {safety_hub::SafetyHubModuleType::PASSWORDS, "passwords"},
           {safety_hub::SafetyHubModuleType::UNUSED_SITE_PERMISSIONS,
-           "unused site permissions"},
+           "revoked permissions"},
           {safety_hub::SafetyHubModuleType::SAFE_BROWSING, "safe browsing"},
       };
   for (const auto& module : modules) {
@@ -729,14 +730,33 @@ TrustSafetySentimentService::GetSafetyHubProductSpecificData() {
 
 void TrustSafetySentimentService::SafetyHubModuleInteracted() {
   safety_hub_interaction_state_->has_interacted_with_module = true;
+  TriggerSafetyHubSurvey(FeatureArea::kSafetyHubInteracted);
 }
 
 void TrustSafetySentimentService::SafetyHubNotificationClicked() {
   safety_hub_interaction_state_->has_clicked_notification = true;
+  TriggerSafetyHubSurvey(FeatureArea::kSafetyHubInteracted);
 }
 
 void TrustSafetySentimentService::SafetyHubVisited() {
   safety_hub_interaction_state_->has_visited = true;
+  TriggerSafetyHubSurvey(FeatureArea::kSafetyHubInteracted);
+}
+
+void TrustSafetySentimentService::TriggerSafetyHubSurvey(
+    TrustSafetySentimentService::FeatureArea feature_area) {
+  if (!base::FeatureList::IsEnabled(
+          features::kSafetyHubTrustSafetySentimentSurvey)) {
+    return;
+  }
+  // Delay the trigger to determine whether the user interacted with Safety Hub
+  // soon after the trigger occurred.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&TrustSafetySentimentService::TriggerOccurred,
+                     weak_ptr_factory_.GetWeakPtr(), feature_area,
+                     GetSafetyHubProductSpecificData()),
+      kSafetyHubSurveyDelay);
 }
 
 // static
@@ -750,6 +770,8 @@ bool TrustSafetySentimentService::VersionCheck(FeatureArea feature_area) {
       return isV2 == false;
     // Version 2 only
     case (FeatureArea::kSafetyCheck):
+    case (FeatureArea::kSafetyHubInteracted):
+    case (FeatureArea::kSafetyHubNotification):
     case (FeatureArea::kPasswordCheck):
     case (FeatureArea::kBrowsingData):
     case (FeatureArea::kPrivacyGuide):
@@ -783,6 +805,10 @@ std::string TrustSafetySentimentService::GetHatsTriggerForFeatureArea(
         return kHatsSurveyTriggerTrustSafetyV2TrustedSurface;
       case (FeatureArea::kSafetyCheck):
         return kHatsSurveyTriggerTrustSafetyV2SafetyCheck;
+      case (FeatureArea::kSafetyHubInteracted):
+        return kHatsSurveyTriggerTrustSafetyV2SafetyHubInteraction;
+      case (FeatureArea::kSafetyHubNotification):
+        return kHatsSurveyTriggerTrustSafetyV2SafetyHubNotification;
       case (FeatureArea::kPasswordCheck):
         return kHatsSurveyTriggerTrustSafetyV2PasswordCheck;
       case (FeatureArea::kBrowsingData):
@@ -847,6 +873,16 @@ bool TrustSafetySentimentService::ProbabilityCheck(FeatureArea feature_area) {
         return base::RandDouble() <
                features::kTrustSafetySentimentSurveyV2SafetyCheckProbability
                    .Get();
+      case (FeatureArea::kSafetyHubInteracted):
+        return base::RandDouble() <
+               features::
+                   kTrustSafetySentimentSurveyV2SafetyHubInteractionProbability
+                       .Get();
+      case (FeatureArea::kSafetyHubNotification):
+        return base::RandDouble() <
+               features::
+                   kTrustSafetySentimentSurveyV2SafetyHubNotificationProbability
+                       .Get();
       case (FeatureArea::kPasswordCheck):
         return base::RandDouble() <
                features::kTrustSafetySentimentSurveyV2PasswordCheckProbability

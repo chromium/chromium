@@ -90,5 +90,9 @@ void AppMenuButton::RunMenu(std::unique_ptr<AppMenuModel> menu_model,
     observer.AppMenuShown();
 }
 
+void AppMenuButton::SetMenuTimerForTesting(base::ElapsedTimer timer) {
+  menu_->SetTimerForTesting(std::move(timer));  // IN-TEST
+}
+
 BEGIN_METADATA(AppMenuButton)
 END_METADATA

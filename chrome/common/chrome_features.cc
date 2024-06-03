@@ -1105,6 +1105,11 @@ BASE_FEATURE(kSafetyHub,
 #endif  // BUILDFLAG(IS_ANDROID)
 );
 
+// Enables or disables the Trust Safety Sentiment Survey for Safety Hub.
+BASE_FEATURE(kSafetyHubTrustSafetySentimentSurvey,
+             "TrustSafetySentimentSurveyForSafetyHub",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Time between automated runs of the password check.
 const base::FeatureParam<base::TimeDelta> kBackgroundPasswordCheckInterval{
     &kSafetyHub, "background-password-check-interval", base::Days(30)};
@@ -1436,6 +1441,14 @@ const base::FeatureParam<double>
     kTrustSafetySentimentSurveyV2SafetyCheckProbability{
         &kTrustSafetySentimentSurveyV2, "safety-check-probability", 0.0};
 const base::FeatureParam<double>
+    kTrustSafetySentimentSurveyV2SafetyHubNotificationProbability{
+        &kTrustSafetySentimentSurveyV2, "safety-hub-notification-probability",
+        0.0};
+const base::FeatureParam<double>
+    kTrustSafetySentimentSurveyV2SafetyHubInteractionProbability{
+        &kTrustSafetySentimentSurveyV2, "safety-hub-interaction-probability",
+        0.0};
+const base::FeatureParam<double>
     kTrustSafetySentimentSurveyV2TrustedSurfaceProbability{
         &kTrustSafetySentimentSurveyV2, "trusted-surface-probability", 0.0};
 const base::FeatureParam<double>
@@ -1482,6 +1495,14 @@ extern const base::FeatureParam<std::string>
 const base::FeatureParam<std::string>
     kTrustSafetySentimentSurveyV2SafetyCheckTriggerId{
         &kTrustSafetySentimentSurveyV2, "safety-check-trigger-id", ""};
+const base::FeatureParam<std::string>
+    kTrustSafetySentimentSurveyV2SafetyHubInteractionTriggerId{
+        &kTrustSafetySentimentSurveyV2, "safety-hub-interaction-trigger-id",
+        ""};
+const base::FeatureParam<std::string>
+    kTrustSafetySentimentSurveyV2SafetyHubNotificationTriggerId{
+        &kTrustSafetySentimentSurveyV2, "safety-hub-notification-trigger-id",
+        ""};
 const base::FeatureParam<std::string>
     kTrustSafetySentimentSurveyV2TrustedSurfaceTriggerId{
         &kTrustSafetySentimentSurveyV2, "trusted-surface-trigger-id", ""};

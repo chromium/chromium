@@ -135,6 +135,8 @@ class TrustSafetySentimentServiceTest : public testing::Test {
     std::string password_check_probability = "0.4";
     std::string password_protection_ui_probability = "0.0";
     std::string safety_check_probability = "0.4";
+    std::string safety_hub_notification_probability = "0.4";
+    std::string safety_hub_interaction_probability = "0.4";
     std::string trusted_surface_probability = "0.4";
     std::string privacy_guide_probability = "0.4";
     std::string privacy_sandbox_4_consent_accept_probability = "0.01";
@@ -181,6 +183,10 @@ class TrustSafetySentimentServiceTest : public testing::Test {
             {"password-protection-ui-probability",
              params.password_protection_ui_probability},
             {"safety-check-probability", params.safety_check_probability},
+            {"safety-hub-notification-probability",
+             params.safety_hub_notification_probability},
+            {"safety-hub-interaction-probability",
+             params.safety_hub_interaction_probability},
             {"trusted-surface-probability", params.trusted_surface_probability},
             {"privacy-guide-probability", params.privacy_guide_probability},
             {"privacy-sandbox-4-consent-accept-probability",
@@ -939,6 +945,8 @@ TEST_F(TrustSafetySentimentServiceTest, V2_AllFeatureAreasHaveProbabilities) {
   params.privacy_sandbox_4_notice_ok_probability = "1.0";
   params.privacy_sandbox_4_notice_settings_probability = "1.0";
   params.safe_browsing_interstitial_probability = "1.0";
+  params.safety_hub_notification_probability = "1.0";
+  params.safety_hub_interaction_probability = "1.0";
 
   SetupFeatureParametersV2(params);
   for (int enum_value = 0;

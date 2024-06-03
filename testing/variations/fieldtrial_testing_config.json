@@ -21374,6 +21374,10 @@
                         "safe-browsing-interstitial-trigger-id": "Z9pSWP53n0ugnJ3q1cK0Y6YkGRpU",
                         "safety-check-probability": "0.0",
                         "safety-check-trigger-id": "YSDfPVMnX0ugnJ3q1cK0RxEhwkay",
+                        "safety-hub-interaction-probability": "0.0",
+                        "safety-hub-interaction-trigger-id": "TZq2S4frt0ugnJ3q1cK0Q5Yd4YJM",
+                        "safety-hub-notification-probability": "0.0",
+                        "safety-hub-notification-trigger-id": "kJV17f8Lv0ugnJ3q1cK0Nptk37ct",
                         "trusted-surface-probability": "0.0",
                         "trusted-surface-time": "5s",
                         "trusted-surface-trigger-id": "CMniDmzgE0ugnJ3q1cK0U6PaEn1f"

@@ -68,6 +68,10 @@ class MockTrustSafetySentimentService : public TrustSafetySentimentService {
   MOCK_METHOD(void, SafetyHubModuleInteracted, (), (override));
   MOCK_METHOD(void, SafetyHubVisited, (), (override));
   MOCK_METHOD(void, SafetyHubNotificationClicked, (), (override));
+  MOCK_METHOD(void,
+              TriggerSafetyHubSurvey,
+              (TrustSafetySentimentService::FeatureArea),
+              (override));
 };
 
 std::unique_ptr<KeyedService> BuildMockTrustSafetySentimentService(

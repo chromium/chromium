@@ -39,6 +39,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
+#include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/profiles/profile_view_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
@@ -73,6 +74,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/models/simple_menu_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/themed_vector_icon.h"
 #include "ui/base/ui_base_features.h"
@@ -1330,6 +1332,24 @@ bool AppMenu::ShouldCloseOnDragComplete() {
 }
 
 void AppMenu::OnMenuClosed(views::MenuItemView* menu) {
+  // If the menu contained a Safety Hub notification, mark as trigger for HaTS
+  // survey if the menu was open for at least 5 seconds.
+  static constexpr auto kSafetyHubCommandIds =
+      std::array{IDC_OPEN_SAFETY_HUB, IDC_SAFETY_HUB_MANAGE_EXTENSIONS,
+                 IDC_SAFETY_HUB_SHOW_PASSWORD_CHECKUP};
+  const bool has_safety_hub_notification = base::ranges::any_of(
+      kSafetyHubCommandIds,
+      [&](int id) { return command_id_to_entry_.contains(id); });
+  if (has_safety_hub_notification &&
+      menu_opened_timer_.Elapsed() >= base::Seconds(5)) {
+    if (TrustSafetySentimentService* sentiment_service =
+            TrustSafetySentimentServiceFactory::GetForProfile(
+                browser_->profile())) {
+      sentiment_service->TriggerSafetyHubSurvey(
+          TrustSafetySentimentService::FeatureArea::kSafetyHubNotification);
+    }
+  }
+
   auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser_);
   browser_view->toolbar_button_provider()->GetAppMenuButton()->OnMenuClosed();
 
@@ -1585,4 +1605,8 @@ size_t AppMenu::ModelIndexFromCommandId(int command_id) const {
   auto ix = command_id_to_entry_.find(command_id);
   DCHECK(ix != command_id_to_entry_.end());
   return ix->second.second;
+}
+
+void AppMenu::SetTimerForTesting(base::ElapsedTimer timer) {
+  menu_opened_timer_ = std::move(timer);
 }

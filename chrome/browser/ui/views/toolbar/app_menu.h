@@ -57,6 +57,8 @@ class AppMenu final : public views::MenuDelegate,
 
   base::WeakPtr<AppMenu> AsWeakPtr() { return weak_ptr_factory_.GetWeakPtr(); }
 
+  void SetTimerForTesting(base::ElapsedTimer timer);
+
   // views::MenuDelegate:
   const gfx::FontList* GetLabelFontList(int command_id) const override;
   std::optional<SkColor> GetLabelColor(int command_id) const override;

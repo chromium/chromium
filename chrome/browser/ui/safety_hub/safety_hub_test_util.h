@@ -101,6 +101,10 @@ password_manager::PasswordForm MakeForm(std::u16string_view username,
 // provided url.
 bool IsUrlInSettingsList(ContentSettingsForOneType content_settings, GURL url);
 
+// Create a series of notifications on a site that has not been interacted with
+// that will result in a Safety Hub menu notification being shown.
+void GenerateSafetyHubMenuNotification(Profile* profile);
+
 }  // namespace safety_hub_test_util
 
 #endif  // CHROME_BROWSER_UI_SAFETY_HUB_SAFETY_HUB_TEST_UTIL_H_
