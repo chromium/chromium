@@ -215,11 +215,24 @@ WebGPUMailboxTexture::WebGPUMailboxTexture(
   wire_texture_generation_ = reservation.generation;
   texture_ = wgpu::Texture::Acquire(reservation.texture);
 
+  const wgpu::DawnTextureInternalUsageDescriptor* internal_usage_desc = nullptr;
+  if (const wgpu::ChainedStruct* next_in_chain = desc.nextInChain) {
+    // The internal usage descriptor is the only valid struct to chain.
+    CHECK_EQ(next_in_chain->sType,
+             wgpu::SType::DawnTextureInternalUsageDescriptor);
+    internal_usage_desc =
+        static_cast<const wgpu::DawnTextureInternalUsageDescriptor*>(
+            next_in_chain);
+  }
+  auto internal_usage = internal_usage_desc ? internal_usage_desc->internalUsage
+                                            : wgpu::TextureUsage::None;
+
   // This may fail because gl_backing resource cannot produce dawn
   // representation.
   webgpu->AssociateMailbox(
       wire_device_id_, wire_device_generation_, wire_texture_id_,
       wire_texture_generation_, static_cast<GLuint>(desc.usage),
+      static_cast<GLuint>(internal_usage),
       reinterpret_cast<const WGPUTextureFormat*>(desc.viewFormats),
       base::checked_cast<GLuint>(desc.viewFormatCount), mailbox_flags, mailbox);
 }
