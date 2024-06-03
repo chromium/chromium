@@ -5,6 +5,10 @@
 package org.chromium.chrome.browser.safety_hub;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,6 +17,7 @@ import androidx.preference.PreferenceCategory;
 
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.ui.widget.ButtonCompat;
 
 public class SafetyHubPermissionsFragment extends ChromeBaseSettingsFragment
         implements Preference.OnPreferenceClickListener, UnusedSitePermissionsBridge.Observer {
@@ -20,6 +25,8 @@ public class SafetyHubPermissionsFragment extends ChromeBaseSettingsFragment
 
     private UnusedSitePermissionsBridge mUnusedSitePermissionsBridge;
     private PreferenceCategory mPermissionsListCategory;
+    private ButtonCompat mBottomButton;
+    private boolean mPermissionsRevocationConfirmed;
 
     @Override
     public void onCreatePreferences(@Nullable Bundle bundle, @Nullable String s) {
@@ -29,6 +36,29 @@ public class SafetyHubPermissionsFragment extends ChromeBaseSettingsFragment
         mUnusedSitePermissionsBridge = UnusedSitePermissionsBridge.getForProfile(getProfile());
         mUnusedSitePermissionsBridge.addObserver(this);
         mPermissionsListCategory = findPreference(PERMISSIONS_LIST_PREFERENCE);
+    }
+
+    @NonNull
+    @Override
+    public View onCreateView(
+            @NonNull LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
+        LinearLayout view =
+                (LinearLayout) super.onCreateView(inflater, container, savedInstanceState);
+        LinearLayout bottomView =
+                (LinearLayout) inflater.inflate(R.layout.safety_hub_bottom_elements, view, false);
+        mBottomButton = bottomView.findViewById(R.id.safety_hub_permissions_button);
+        mBottomButton.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        mPermissionsRevocationConfirmed = true;
+                        getActivity().finish();
+                    }
+                });
+        view.addView(bottomView);
+        return view;
     }
 
     @Override
@@ -41,6 +71,10 @@ public class SafetyHubPermissionsFragment extends ChromeBaseSettingsFragment
     public void onDestroy() {
         super.onDestroy();
         mUnusedSitePermissionsBridge.removeObserver(this);
+
+        if (mPermissionsRevocationConfirmed) {
+            mUnusedSitePermissionsBridge.clearRevokedPermissionsReviewList();
+        }
     }
 
     @Override

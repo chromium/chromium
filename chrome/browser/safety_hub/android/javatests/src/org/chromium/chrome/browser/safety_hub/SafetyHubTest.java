@@ -7,13 +7,16 @@ package org.chromium.chrome.browser.safety_hub;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.hasSibling;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withChild;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.allOf;
+import static org.junit.Assert.assertEquals;
 
 import androidx.test.filters.SmallTest;
 
@@ -34,9 +37,18 @@ import org.chromium.components.content_settings.ContentSettingsType;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public final class SafetyHubTest {
-    private static final PermissionsData PERMISSIONS_DATA =
+    private static final PermissionsData PERMISSIONS_DATA_1 =
             PermissionsData.create(
-                    "http://example.com",
+                    "http://example1.com",
+                    new int[] {
+                        ContentSettingsType.MEDIASTREAM_CAMERA, ContentSettingsType.MEDIASTREAM_MIC
+                    },
+                    0,
+                    0);
+
+    private static final PermissionsData PERMISSIONS_DATA_2 =
+            PermissionsData.create(
+                    "http://example2.com",
                     new int[] {
                         ContentSettingsType.MEDIASTREAM_CAMERA, ContentSettingsType.MEDIASTREAM_MIC
                     },
@@ -63,11 +75,25 @@ public final class SafetyHubTest {
     @SmallTest
     public void testPermissionRegrant() {
         mUnusedPermissionsBridge.setPermissionsDataForReview(
-                new PermissionsData[] {PERMISSIONS_DATA});
+                new PermissionsData[] {PERMISSIONS_DATA_1});
         mPermissionsFragmentTestRule.startSettingsActivity();
 
-        clickOnButtonNextToText(PERMISSIONS_DATA.getOrigin());
-        onView(withText(PERMISSIONS_DATA.getOrigin())).check(doesNotExist());
+        clickOnButtonNextToText(PERMISSIONS_DATA_1.getOrigin());
+        onView(withText(PERMISSIONS_DATA_1.getOrigin())).check(doesNotExist());
+    }
+
+    @Test
+    @SmallTest
+    public void testClearPermissionsReviewList() {
+        mUnusedPermissionsBridge.setPermissionsDataForReview(
+                new PermissionsData[] {PERMISSIONS_DATA_1, PERMISSIONS_DATA_2});
+        mPermissionsFragmentTestRule.startSettingsActivity();
+
+        onView(withText(PERMISSIONS_DATA_1.getOrigin())).check(matches(isDisplayed()));
+        onView(withText(PERMISSIONS_DATA_2.getOrigin())).check(matches(isDisplayed()));
+
+        onView(withText(R.string.safety_hub_permissions_button_text)).perform(click());
+        assertEquals(mUnusedPermissionsBridge.getRevokedPermissions(null).length, 0);
     }
 
     private void clickOnButtonNextToText(String text) {

@@ -50,6 +50,11 @@ class UnusedSitePermissionsBridge {
         notifyRevokedPermissionsChanged();
     }
 
+    void clearRevokedPermissionsReviewList() {
+        UnusedSitePermissionsBridgeJni.get().clearRevokedPermissionsReviewList(mProfile);
+        notifyRevokedPermissionsChanged();
+    }
+
     private void notifyRevokedPermissionsChanged() {
         for (Observer observer : mObservers) {
             observer.revokedPermissionsChanged();
