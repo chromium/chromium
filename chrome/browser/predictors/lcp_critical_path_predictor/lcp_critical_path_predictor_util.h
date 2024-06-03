@@ -7,8 +7,8 @@
 
 #include <optional>
 
+#include "chrome/browser/predictors/lcp_critical_path_predictor/lcp_critical_path_predictor.pb.h"
 #include "chrome/browser/predictors/loading_predictor_config.h"
-#include "chrome/browser/predictors/resource_prefetch_predictor.pb.h"
 #include "components/sqlite_proto/key_value_data.h"
 #include "third_party/blink/public/mojom/lcp_critical_path_predictor/lcp_critical_path_predictor.mojom.h"
 

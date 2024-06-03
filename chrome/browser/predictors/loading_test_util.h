@@ -59,27 +59,6 @@ RedirectData CreateRedirectData(const std::string& primary_key,
                                 uint64_t last_visit_time = 0);
 OriginData CreateOriginData(const std::string& host,
                             uint64_t last_visit_time = 0);
-LcppData CreateLcppData(const std::string& host, uint64_t last_visit_time = 0);
-
-void InitializeLcpElementLocatorBucket(LcppData& lcpp_data,
-                                       const std::string& lcp_element_locator,
-                                       double frequency);
-void InitializeLcpInfluencerScriptUrlsBucket(LcppData& lcpp_data,
-                                             const std::vector<GURL>& urls,
-                                             double frequency);
-void InitializeFontUrlsBucket(LcppData& lcpp_data,
-                              const std::vector<GURL>& urls,
-                              double frequency);
-void InitializeSubresourceUrlsBucket(LcppData& lcpp_data,
-                                     const std::vector<GURL>& urls,
-                                     double frequency);
-void InitializeLcpElementLocatorOtherBucket(LcppData& lcpp_data,
-                                            double frequency);
-void InitializeLcpInfluencerScriptUrlsOtherBucket(LcppData& lcpp_data,
-                                                  double frequency);
-void InitializeFontUrlsOtherBucket(LcppData& lcpp_data, double frequency);
-void InitializeSubresourceUrlsOtherBucket(LcppData& lcpp_data,
-                                          double frequency);
 
 PageRequestSummary CreatePageRequestSummary(
     const std::string& main_frame_url,
@@ -122,13 +101,6 @@ std::ostream& operator<<(std::ostream& os, const OriginStat& redirect);
 std::ostream& operator<<(std::ostream& os, const PreconnectRequest& request);
 std::ostream& operator<<(std::ostream& os,
                          const PreconnectPrediction& prediction);
-std::ostream& operator<<(std::ostream& os, const LcppData& data);
-std::ostream& operator<<(std::ostream& os, const LcppKeyStat& key_stat);
-std::ostream& operator<<(std::ostream& os, const LcppStat& stat);
-std::ostream& operator<<(std::ostream& os,
-                         const LcpElementLocatorBucket& bucket);
-std::ostream& operator<<(std::ostream& os,
-                         const LcppStringFrequencyStatData& data);
 
 bool operator==(const RedirectData& lhs, const RedirectData& rhs);
 bool operator==(const RedirectStat& lhs, const RedirectStat& rhs);
@@ -136,14 +108,6 @@ bool operator==(const PageRequestSummary& lhs, const PageRequestSummary& rhs);
 bool operator==(const OriginRequestSummary& lhs,
                 const OriginRequestSummary& rhs);
 bool operator==(const OriginData& lhs, const OriginData& rhs);
-bool operator==(const LcpElementLocatorBucket& lhs,
-                const LcpElementLocatorBucket& rhs);
-bool operator==(const LcpElementLocatorStat& lhs,
-                const LcpElementLocatorStat& rhs);
-bool operator==(const LcppData& lhs, const LcppData& rhs);
-bool operator==(const LcppStat& lhs, const LcppStat& rhs);
-bool operator==(const LcppStringFrequencyStatData& lhs,
-                const LcppStringFrequencyStatData& rhs);
 bool operator==(const OriginStat& lhs, const OriginStat& rhs);
 bool operator==(const PreconnectRequest& lhs, const PreconnectRequest& rhs);
 bool operator==(const PreconnectPrediction& lhs,

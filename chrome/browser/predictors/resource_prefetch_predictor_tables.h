@@ -13,6 +13,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/predictors/lcp_critical_path_predictor/lcp_critical_path_predictor.pb.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor.pb.h"
 #include "components/sqlite_proto/key_value_table.h"
 #include "components/sqlite_proto/table_manager.h"
