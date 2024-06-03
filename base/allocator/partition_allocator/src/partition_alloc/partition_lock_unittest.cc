@@ -207,7 +207,7 @@ TEST(PartitionAllocLockTest, AssertAcquiredAnotherThreadHoldsTheLock) {
 #endif
 }
 
-#if BUILDFLAG(IS_APPLE)
+#if PA_BUILDFLAG(IS_APPLE)
 
 namespace {
 
@@ -239,7 +239,7 @@ TEST(PartitionAllocLockTest, ReinitInOtherThread) PA_NO_THREAD_SAFETY_ANALYSIS {
   base::PlatformThreadForTesting::Create(0, &delegate, &handle);
   base::PlatformThreadForTesting::Join(handle);
 }
-#endif  // BUILDFLAG(IS_APPLE)
+#endif  // PA_BUILDFLAG(IS_APPLE)
 
 #endif  // defined(GTEST_HAS_DEATH_TEST) && PA_BUILDFLAG(PA_DCHECK_IS_ON)
 

@@ -14,11 +14,11 @@
 #include "partition_alloc/partition_alloc_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_CHROMEOS)
+#if PA_BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_CHROMEOS)
 #include <malloc.h>
 #endif
 
-#if BUILDFLAG(IS_APPLE)
+#if PA_BUILDFLAG(IS_APPLE)
 #include <malloc/malloc.h>
 #endif
 
@@ -29,7 +29,7 @@ namespace allocator_shim::internal {
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 // Platforms on which we override weak libc symbols.
-#if BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_CHROMEOS)
+#if PA_BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_CHROMEOS)
 
 PA_NOINLINE void FreeForTest(void* data) {
   free(data);
@@ -89,7 +89,7 @@ TEST(PartitionAllocAsMalloc, Mallinfo) {
 #endif
 }
 
-#endif  // BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_CHROMEOS)
+#endif  // PA_BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_CHROMEOS)
 
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
@@ -187,7 +187,7 @@ TEST(PartitionAllocAsMalloc, Alignment) {
                     alignof(partition_alloc::PartitionRoot));
 }
 
-#if BUILDFLAG(IS_APPLE) && PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(IS_APPLE) && PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 // Make sure that a sequence a "good sizes" grows fast enough. This is
 // implicitly required by CoreFoundation, and to match Apple's implementation.
 // Non-regression test for crbug.com/1501312
@@ -200,7 +200,7 @@ TEST(PartitionAllocAsMalloc, GoodSize) {
   }
   EXPECT_LT(iterations, 100);
 }
-#endif  // BUILDFLAG(IS_APPLE) && PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#endif  // PA_BUILDFLAG(IS_APPLE) && PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 }  // namespace allocator_shim::internal
 #endif  // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR) &&

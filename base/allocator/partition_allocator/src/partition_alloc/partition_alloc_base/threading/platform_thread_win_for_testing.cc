@@ -90,7 +90,7 @@ bool CreateThreadInternal(size_t stack_size,
   unsigned int flags = 0;
   if (stack_size > 0) {
     flags = STACK_SIZE_PARAM_IS_A_RESERVATION;
-#if defined(ARCH_CPU_32_BITS)
+#if PA_BUILDFLAG(PA_ARCH_CPU_32_BITS)
   } else {
     // The process stack size is increased to give spaces to |RendererMain| in
     // |chrome/BUILD.gn|, but keep the default stack size of other threads to

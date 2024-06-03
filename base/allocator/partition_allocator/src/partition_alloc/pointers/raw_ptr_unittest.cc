@@ -1566,7 +1566,7 @@ TEST_F(RawPtrTest, EphemeralRawAddrPointerReference) {
 // InstanceTracer has additional fields, so just skip this test when instance
 // tracing is enabled.
 #if !PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER)
-#if defined(COMPILER_GCC) && !defined(__clang__)
+#if PA_BUILDFLAG(PA_COMPILER_GCC) && !defined(__clang__)
 // In GCC this test will optimize the return value of the constructor, so
 // assert fails. Disable optimizations to verify uninitialized attribute works
 // as expected.
@@ -1580,7 +1580,7 @@ TEST_F(RawPtrTest, AllowUninitialized) {
   new (&storage) CountingRawPtrUninitialized<int>;
   EXPECT_EQ(storage, kPattern);
 }
-#if defined(COMPILER_GCC) && !defined(__clang__)
+#if PA_BUILDFLAG(PA_COMPILER_GCC) && !defined(__clang__)
 #pragma GCC pop_options
 #endif
 #endif  // !PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER)

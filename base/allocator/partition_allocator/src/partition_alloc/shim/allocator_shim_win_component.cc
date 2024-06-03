@@ -37,7 +37,7 @@ void SetCallNewHandlerOnMallocFailure(bool value);
 #include "partition_alloc/shim/allocator_shim_override_ucrt_symbols_win.h"
 
 // Cross-checks.
-#if !defined(COMPONENT_BUILD) || !BUILDFLAG(IS_WIN)
+#if !defined(COMPONENT_BUILD) || !PA_BUILDFLAG(IS_WIN)
 #error This code is only for Windows component build.
 #endif
 

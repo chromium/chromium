@@ -24,13 +24,13 @@
 #include "partition_alloc/partition_alloc_base/strings/string_util.h"
 #include "partition_alloc/partition_alloc_base/strings/stringprintf.h"
 
-#if BUILDFLAG(IS_WIN)
+#if PA_BUILDFLAG(IS_WIN)
 #include <windows.h>
 
 #include <io.h>
 #endif
 
-#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+#if PA_BUILDFLAG(IS_POSIX) || PA_BUILDFLAG(IS_FUCHSIA)
 #include <unistd.h>
 
 #include <cerrno>
@@ -39,7 +39,7 @@
 #include <cstring>
 #endif
 
-#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+#if PA_BUILDFLAG(IS_POSIX) || PA_BUILDFLAG(IS_FUCHSIA)
 #include "partition_alloc/partition_alloc_base/posix/safe_strerror.h"
 #endif
 
@@ -111,8 +111,9 @@ LogMessage::~LogMessage() {
   RawLog(severity_, str_newline);
 
   // TODO(crbug.com/40213558): Enable a stack trace on a fatal on fuchsia.
-#if !defined(OFFICIAL_BUILD) && (BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_WIN)) && \
-    !defined(__UCLIBC__) && !BUILDFLAG(IS_AIX)
+#if !defined(OFFICIAL_BUILD) &&                         \
+    (PA_BUILDFLAG(IS_POSIX) || PA_BUILDFLAG(IS_WIN)) && \
+    !defined(__UCLIBC__) && !PA_BUILDFLAG(IS_AIX)
   // TODO(crbug.com/40213558): Show a stack trace on a fatal, unless a debugger
   // is attached.
   if (severity_ == LOGGING_FATAL) {
@@ -149,7 +150,7 @@ void LogMessage::Init(const char* file, int line) {
   message_start_ = strlen(stream_.c_str());
 }
 
-#if BUILDFLAG(IS_WIN)
+#if PA_BUILDFLAG(IS_WIN)
 // This has already been defined in the header, but defining it again as DWORD
 // ensures that the type used in the header is equivalent to DWORD. If not,
 // the redefinition is a compile error.
@@ -157,9 +158,9 @@ typedef DWORD SystemErrorCode;
 #endif
 
 SystemErrorCode GetLastSystemErrorCode() {
-#if BUILDFLAG(IS_WIN)
+#if PA_BUILDFLAG(IS_WIN)
   return ::GetLastError();
-#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+#elif PA_BUILDFLAG(IS_POSIX) || PA_BUILDFLAG(IS_FUCHSIA)
   return errno;
 #endif
 }
@@ -167,7 +168,7 @@ SystemErrorCode GetLastSystemErrorCode() {
 void SystemErrorCodeToStream(base::strings::CStringBuilder& os,
                              SystemErrorCode error_code) {
   char buffer[256];
-#if BUILDFLAG(IS_WIN)
+#if PA_BUILDFLAG(IS_WIN)
   const int kErrorMessageBufferSize = 256;
   char msgbuf[kErrorMessageBufferSize];
   DWORD flags = FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS;
@@ -188,13 +189,13 @@ void SystemErrorCodeToStream(base::strings::CStringBuilder& os,
                              "Error (0x%x) while retrieving error. (0x%x)",
                              GetLastError(), error_code);
   os << buffer;
-#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+#elif PA_BUILDFLAG(IS_POSIX) || PA_BUILDFLAG(IS_FUCHSIA)
   base::safe_strerror_r(error_code, buffer, sizeof(buffer));
   os << buffer << " (" << error_code << ")";
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // PA_BUILDFLAG(IS_WIN)
 }
 
-#if BUILDFLAG(IS_WIN)
+#if PA_BUILDFLAG(IS_WIN)
 Win32ErrorLogMessage::Win32ErrorLogMessage(const char* file,
                                            int line,
                                            LogSeverity severity,
@@ -209,7 +210,7 @@ Win32ErrorLogMessage::~Win32ErrorLogMessage() {
   DWORD last_error = err_;
   base::debug::Alias(&last_error);
 }
-#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+#elif PA_BUILDFLAG(IS_POSIX) || PA_BUILDFLAG(IS_FUCHSIA)
 ErrnoLogMessage::ErrnoLogMessage(const char* file,
                                  int line,
                                  LogSeverity severity,
@@ -224,6 +225,6 @@ ErrnoLogMessage::~ErrnoLogMessage() {
   int last_error = err_;
   base::debug::Alias(&last_error);
 }
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // PA_BUILDFLAG(IS_WIN)
 
 }  // namespace partition_alloc::internal::logging

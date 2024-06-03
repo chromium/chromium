@@ -50,7 +50,7 @@ TEST(PartitionAllocMemoryTaggingTest, TagMemoryRangeIncrementSafe) {
   FreePages(buffer, PageAllocationGranularity());
 }
 
-#if defined(ARCH_CPU_64_BITS)
+#if PA_BUILDFLAG(PA_ARCH_CPU_64_BITS)
 // Size / alignment constraints are only enforced on 64-bit architectures.
 TEST(PartitionAllocMemoryTaggingTest, TagMemoryRangeBadSz) {
   base::CPU cpu;
@@ -143,10 +143,10 @@ TEST(PartitionAllocMemoryTaggingTest, TagMemoryRangeIncrementBadAlign) {
   }
   FreePages(buffer, PageAllocationGranularity());
 }
-#endif  // defined(ARCH_CPU_64_BITS)
+#endif  // PA_BUILDFLAG(PA_ARCH_CPU_64_BITS)
 
 #if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
-#if BUILDFLAG(IS_ANDROID)
+#if PA_BUILDFLAG(IS_ANDROID)
 TEST(PartitionAllocMemoryTaggingTest,
      ChangeMemoryTaggingModeForAllThreadsPerProcess) {
   base::CPU cpu;
@@ -175,7 +175,7 @@ TEST(PartitionAllocMemoryTaggingTest,
   EXPECT_EQ(GetMemoryTaggingModeForCurrentThread(),
             TagViolationReportingMode::kSynchronous);
 }
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // PA_BUILDFLAG(IS_ANDROID)
 
 TEST(PartitionAllocMemoryTaggingTest, ChangeMemoryTaggingModeForCurrentThread) {
   base::CPU cpu;

@@ -15,15 +15,15 @@
 #include "partition_alloc/partition_alloc_check.h"
 #include "partition_alloc/partition_lock.h"
 
-#if BUILDFLAG(IS_WIN)
+#if PA_BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
-#if BUILDFLAG(IS_WIN)
+#if PA_BUILDFLAG(IS_WIN)
 #include "partition_alloc/page_allocator_internals_win.h"
-#elif BUILDFLAG(IS_POSIX)
+#elif PA_BUILDFLAG(IS_POSIX)
 #include "partition_alloc/page_allocator_internals_posix.h"
-#elif BUILDFLAG(IS_FUCHSIA)
+#elif PA_BUILDFLAG(IS_FUCHSIA)
 #include "partition_alloc/page_allocator_internals_fuchsia.h"
 #else
 #error Platform not supported.
@@ -197,7 +197,7 @@ uintptr_t AllocPagesWithAlignOffset(
   }
 
   // First try to force an exact-size, aligned allocation from our random base.
-#if defined(ARCH_CPU_32_BITS)
+#if PA_BUILDFLAG(PA_ARCH_CPU_32_BITS)
   // On 32 bit systems, first try one random aligned address, and then try an
   // aligned address derived from the value of |ret|.
   constexpr int kExactSizeTries = 2;
@@ -224,13 +224,13 @@ uintptr_t AllocPagesWithAlignOffset(
       }
     }
 
-#if defined(ARCH_CPU_32_BITS)
+#if PA_BUILDFLAG(PA_ARCH_CPU_32_BITS)
     // For small address spaces, try the first aligned address >= |ret|. Note
     // |ret| may be null, in which case |address| becomes null. If
     // |align_offset| is non-zero, this calculation may get us not the first,
     // but the next matching address.
     address = ((ret + align_offset_mask) & align_base_mask) + align_offset;
-#else  // defined(ARCH_CPU_64_BITS)
+#else  // PA_BUILDFLAG(PA_ARCH_CPU_64_BITS)
     // Keep trying random addresses on systems that have a large address space.
     address = NextAlignedWithOffset(GetRandomPageBase(), align, align_offset);
 #endif
@@ -409,7 +409,7 @@ size_t GetTotalMappedSize() {
   return g_total_mapped_address_space;
 }
 
-#if BUILDFLAG(IS_WIN)
+#if PA_BUILDFLAG(IS_WIN)
 namespace {
 bool g_retry_on_commit_failure = false;
 }

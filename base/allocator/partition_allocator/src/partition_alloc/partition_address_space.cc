@@ -23,13 +23,13 @@
 #include "partition_alloc/partition_alloc_constants.h"
 #include "partition_alloc/thread_isolation/thread_isolation.h"
 
-#if BUILDFLAG(IS_IOS)
+#if PA_BUILDFLAG(IS_IOS)
 #include <mach-o/dyld.h>
 #endif
 
-#if BUILDFLAG(IS_WIN)
+#if PA_BUILDFLAG(IS_WIN)
 #include <windows.h>
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // PA_BUILDFLAG(IS_WIN)
 
 #if PA_CONFIG(ENABLE_SHADOW_METADATA) || PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
 #include <sys/mman.h>
@@ -41,7 +41,7 @@ namespace partition_alloc::internal {
 
 namespace {
 
-#if BUILDFLAG(IS_WIN)
+#if PA_BUILDFLAG(IS_WIN)
 
 PA_NOINLINE void HandlePoolAllocFailureOutOfVASpace() {
   PA_NO_CODE_FOLDING();
@@ -52,7 +52,7 @@ PA_NOINLINE void HandlePoolAllocFailureOutOfCommitCharge() {
   PA_NO_CODE_FOLDING();
   PA_CHECK(false);
 }
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // PA_BUILDFLAG(IS_WIN)
 
 PA_NOINLINE void HandlePoolAllocFailure() {
   PA_NO_CODE_FOLDING();
@@ -60,7 +60,7 @@ PA_NOINLINE void HandlePoolAllocFailure() {
   PA_DEBUG_DATA_ON_STACK("error", static_cast<size_t>(alloc_page_error_code));
   // It's important to easily differentiate these two failures on Windows, so
   // crash with different stacks.
-#if BUILDFLAG(IS_WIN)
+#if PA_BUILDFLAG(IS_WIN)
   if (alloc_page_error_code == ERROR_NOT_ENOUGH_MEMORY) {
     // The error code says NOT_ENOUGH_MEMORY, but since we only do MEM_RESERVE,
     // it must be VA space exhaustion.
@@ -72,7 +72,7 @@ PA_NOINLINE void HandlePoolAllocFailure() {
     // amount per 64kiB block. Keep this path anyway, to check in crash reports.
     HandlePoolAllocFailureOutOfCommitCharge();
   } else
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // PA_BUILDFLAG(IS_WIN)
   {
     PA_CHECK(false);
   }
@@ -97,7 +97,7 @@ uintptr_t PartitionAddressSpace::pool_shadow_address_ =
 #endif  // PA_CONFIG(ENABLE_SHADOW_METADATA)
 
 #if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
-#if !BUILDFLAG(IS_IOS)
+#if !PA_BUILDFLAG(IS_IOS)
 #error Dynamic pool size is only supported on iOS.
 #endif
 
@@ -421,7 +421,7 @@ namespace {
 int CreateAnonymousFileForMapping([[maybe_unused]] const char* name,
                                   [[maybe_unused]] size_t size) {
   int fd = -1;
-#if BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_CHROMEOS)
+#if PA_BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_CHROMEOS)
   // TODO(crbug.com/40238514): if memfd_secret() is available, try
   // memfd_secret() first.
   fd = memfd_create(name, MFD_CLOEXEC);
@@ -429,7 +429,7 @@ int CreateAnonymousFileForMapping([[maybe_unused]] const char* name,
 #else
   // Not implemented yet.
   PA_NOTREACHED();
-#endif  // BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_CHROMEOS)
+#endif  // PA_BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_CHROMEOS)
   return fd;
 }
 
@@ -522,7 +522,7 @@ void PartitionAddressSpace::MapMetadata(uintptr_t super_page,
   size_t file_offset = (super_page - base_address) >> kSuperPageShift
                                                           << SystemPageShift();
 
-#if BUILDFLAG(IS_POSIX)
+#if PA_BUILDFLAG(IS_POSIX)
   uintptr_t writable_metadata = metadata + offset;
   void* ptr = mmap(reinterpret_cast<void*>(writable_metadata), SystemPageSize(),
                    PROT_READ | PROT_WRITE, MAP_FIXED | MAP_SHARED, pool_fd,
@@ -544,7 +544,7 @@ void PartitionAddressSpace::MapMetadata(uintptr_t super_page,
 #else
   // Not implemneted yet.
   PA_NOTREACHED();
-#endif  // BUILDFLAG(IS_POSIX)
+#endif  // PA_BUILDFLAG(IS_POSIX)
 }
 
 // Regarding normal buckets, metadata will not be decommitted. However,
@@ -590,7 +590,7 @@ void PartitionAddressSpace::UnmapShadowMetadata(uintptr_t super_page,
   // if the initialization is correctly done.
   memset(ptr, 0, SystemPageSize());
 
-#if BUILDFLAG(IS_POSIX)
+#if PA_BUILDFLAG(IS_POSIX)
   void* ret = mmap(ptr, SystemPageSize(), PROT_NONE,
                    MAP_FIXED | MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
   PA_CHECK(ret != MAP_FAILED);
@@ -598,7 +598,7 @@ void PartitionAddressSpace::UnmapShadowMetadata(uintptr_t super_page,
 #else
   // Not implemented yet.
   PA_NOTREACHED();
-#endif  // BUILDFLAG(IS_POSIX)
+#endif  // PA_BUILDFLAG(IS_POSIX)
 }
 
 #endif  // PA_CONFIG(ENABLE_SHADOW_METADATA)

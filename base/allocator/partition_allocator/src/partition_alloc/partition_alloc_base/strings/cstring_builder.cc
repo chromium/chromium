@@ -8,7 +8,7 @@
 #include "partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
 #include "partition_alloc/partition_alloc_base/strings/safe_sprintf.h"
 
-#if !BUILDFLAG(IS_WIN)
+#if !PA_BUILDFLAG(IS_WIN)
 #include <unistd.h>
 #endif
 

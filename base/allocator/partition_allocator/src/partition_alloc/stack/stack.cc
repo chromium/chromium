@@ -12,28 +12,28 @@
 #include "partition_alloc/partition_alloc_buildflags.h"
 #include "partition_alloc/partition_alloc_check.h"
 
-#if BUILDFLAG(IS_WIN)
+#if PA_BUILDFLAG(IS_WIN)
 #include <windows.h>
 #else
 #include <pthread.h>
 #endif
 
-#if defined(LIBC_GLIBC)
+#if PA_BUILDFLAG(PA_LIBC_GLIBC)
 extern "C" void* __libc_stack_end;
 #endif
 
 namespace partition_alloc::internal {
 
-#if BUILDFLAG(IS_WIN)
+#if PA_BUILDFLAG(IS_WIN)
 
 void* GetStackTop() {
-#if defined(ARCH_CPU_X86_64)
+#if PA_BUILDFLAG(PA_ARCH_CPU_X86_64)
   return reinterpret_cast<void*>(
       reinterpret_cast<NT_TIB64*>(NtCurrentTeb())->StackBase);
-#elif defined(ARCH_CPU_32_BITS)
+#elif PA_BUILDFLAG(PA_ARCH_CPU_32_BITS)
   return reinterpret_cast<void*>(
       reinterpret_cast<NT_TIB*>(NtCurrentTeb())->StackBase);
-#elif defined(ARCH_CPU_ARM64)
+#elif PA_BUILDFLAG(PA_ARCH_CPU_ARM64)
   // Windows 8 and later, see
   // https://docs.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-getcurrentthreadstacklimits
   ULONG_PTR lowLimit, highLimit;
@@ -44,13 +44,13 @@ void* GetStackTop() {
 #endif
 }
 
-#elif BUILDFLAG(IS_APPLE)
+#elif PA_BUILDFLAG(IS_APPLE)
 
 void* GetStackTop() {
   return pthread_get_stackaddr_np(pthread_self());
 }
 
-#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+#elif PA_BUILDFLAG(IS_POSIX) || PA_BUILDFLAG(IS_FUCHSIA)
 
 void* GetStackTop() {
   pthread_attr_t attr;
@@ -64,7 +64,7 @@ void* GetStackTop() {
     return reinterpret_cast<uint8_t*>(base) + size;
   }
 
-#if defined(LIBC_GLIBC)
+#if PA_BUILDFLAG(PA_LIBC_GLIBC)
   // pthread_getattr_np can fail for the main thread. In this case
   // just like NaCl we rely on the __libc_stack_end to give us
   // the start of the stack.
@@ -72,12 +72,12 @@ void* GetStackTop() {
   return __libc_stack_end;
 #else
   return nullptr;
-#endif  // defined(LIBC_GLIBC)
+#endif  // PA_BUILDFLAG(PA_LIBC_GLIBC)
 }
 
-#else  // BUILDFLAG(IS_WIN)
+#else  // PA_BUILDFLAG(IS_WIN)
 #error "Unsupported GetStackTop"
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // PA_BUILDFLAG(IS_WIN)
 
 using IterateStackCallback = void (*)(const Stack*, StackVisitor*, uintptr_t*);
 extern "C" void PAPushAllRegistersAndIterateStack(const Stack*,

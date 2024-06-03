@@ -9,7 +9,7 @@
 #include "partition_alloc/partition_alloc_check.h"
 #include "partition_alloc/random.h"
 
-#if BUILDFLAG(IS_WIN)
+#if PA_BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -27,7 +27,7 @@ uintptr_t GetRandomPageBase() {
   random &= internal::ASLRMask();
   random += internal::ASLROffset();
 #else  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
-#if BUILDFLAG(IS_WIN)
+#if PA_BUILDFLAG(IS_WIN)
   // On win32 host systems the randomization plus huge alignment causes
   // excessive fragmentation. Plus most of these systems lack ASLR, so the
   // randomization isn't buying anything. In that case we just skip it.
@@ -39,7 +39,7 @@ uintptr_t GetRandomPageBase() {
   if (!is_wow64) {
     return 0;
   }
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // PA_BUILDFLAG(IS_WIN)
   random &= internal::ASLRMask();
   random += internal::ASLROffset();
 #endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)

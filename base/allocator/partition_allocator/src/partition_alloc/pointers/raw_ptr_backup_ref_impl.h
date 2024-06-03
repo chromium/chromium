@@ -115,7 +115,7 @@ struct RawPtrBackupRefImpl {
 #if PA_BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
   // Out-Of-Bounds (OOB) poison bit is set when the pointer has overflowed by
   // one byte.
-#if defined(ARCH_CPU_X86_64)
+#if PA_BUILDFLAG(PA_ARCH_CPU_X86_64)
   // Bit 63 is the only pointer bit that will work as the poison bit across both
   // LAM48 and LAM57. It also works when all unused linear address bits are
   // checked for canonicality.

@@ -34,7 +34,7 @@ RefCountedThreadSafeBase::~RefCountedThreadSafeBase() {
 // these functions out-of-line. However, compilers are wily. Further testing may
 // show that `PA_NOINLINE` helps or hurts.
 //
-#if !defined(ARCH_CPU_X86_FAMILY)
+#if !PA_BUILDFLAG(PA_ARCH_CPU_X86_FAMILY)
 bool RefCountedThreadSafeBase::Release() const {
   return ReleaseImpl();
 }

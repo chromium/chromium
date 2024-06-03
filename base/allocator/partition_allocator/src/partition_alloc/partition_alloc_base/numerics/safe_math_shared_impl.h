@@ -17,7 +17,7 @@
 #include "partition_alloc/build_config.h"
 #include "partition_alloc/partition_alloc_base/numerics/safe_conversions.h"
 
-#if BUILDFLAG(IS_ASMJS)
+#if PA_BUILDFLAG(IS_ASMJS)
 // Optimized safe math instructions are incompatible with asmjs.
 #define PA_BASE_HAS_OPTIMIZED_SAFE_MATH (0)
 // Where available use builtin math overflow support on Clang and GCC.

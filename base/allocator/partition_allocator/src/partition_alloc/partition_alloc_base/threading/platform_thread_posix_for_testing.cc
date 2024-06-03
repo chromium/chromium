@@ -20,7 +20,7 @@
 #include "partition_alloc/partition_alloc_base/threading/platform_thread_internal_posix.h"
 #include "partition_alloc/partition_alloc_buildflags.h"
 
-#if BUILDFLAG(IS_FUCHSIA)
+#if PA_BUILDFLAG(IS_FUCHSIA)
 #include <zircon/process.h>
 #else
 #include <sys/resource.h>
@@ -109,12 +109,12 @@ bool CreateThread(size_t stack_size,
 
 }  // namespace
 
-#if !BUILDFLAG(IS_APPLE)
+#if !PA_BUILDFLAG(IS_APPLE)
 // static
 void PlatformThreadForTesting::YieldCurrentThread() {
   sched_yield();
 }
-#endif  // !BUILDFLAG(IS_APPLE)
+#endif  // !PA_BUILDFLAG(IS_APPLE)
 
 // static
 bool PlatformThreadForTesting::Create(size_t stack_size,

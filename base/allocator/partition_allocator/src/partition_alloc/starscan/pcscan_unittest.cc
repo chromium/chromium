@@ -438,7 +438,7 @@ struct ListWithInnerReference {
 };
 
 // Disabled due to consistent failure http://crbug.com/1242407
-#if BUILDFLAG(IS_ANDROID)
+#if PA_BUILDFLAG(IS_ANDROID)
 #define MAYBE_DanglingInnerReference DISABLED_DanglingInnerReference
 #else
 #define MAYBE_DanglingInnerReference DanglingInnerReference

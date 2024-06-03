@@ -16,7 +16,7 @@
 #include "partition_alloc/starscan/starscan_fwd.h"
 #include "partition_alloc/tagging.h"
 
-#if defined(ARCH_CPU_X86_64)
+#if PA_BUILDFLAG(PA_ARCH_CPU_X86_64)
 // Include order is important, so we disable formatting.
 // clang-format off
 // Including these headers directly should generally be avoided. For the
@@ -60,7 +60,7 @@ class ScanLoop {
   const Derived& derived() const { return static_cast<const Derived&>(*this); }
   Derived& derived() { return static_cast<Derived&>(*this); }
 
-#if defined(ARCH_CPU_X86_64)
+#if PA_BUILDFLAG(PA_ARCH_CPU_X86_64)
   __attribute__((target("avx2"))) void RunAVX2(uintptr_t, uintptr_t);
   __attribute__((target("sse4.1"))) void RunSSE4(uintptr_t, uintptr_t);
 #endif
@@ -78,7 +78,7 @@ void ScanLoop<Derived>::Run(uintptr_t begin, uintptr_t end) {
 // We allow vectorization only for 64bit since they require support of the
 // 64bit regular pool, and only for x86 because a special instruction set is
 // required.
-#if defined(ARCH_CPU_X86_64)
+#if PA_BUILDFLAG(PA_ARCH_CPU_X86_64)
   if (simd_type_ == SimdSupport::kAVX2) {
     return RunAVX2(begin, end);
   }
@@ -123,7 +123,7 @@ void ScanLoop<Derived>::RunUnvectorized(uintptr_t begin, uintptr_t end) {
   }
 }
 
-#if defined(ARCH_CPU_X86_64)
+#if PA_BUILDFLAG(PA_ARCH_CPU_X86_64)
 template <typename Derived>
 __attribute__((target("avx2"))) void ScanLoop<Derived>::RunAVX2(uintptr_t begin,
                                                                 uintptr_t end) {
@@ -212,7 +212,7 @@ __attribute__((target("sse4.1"))) void ScanLoop<Derived>::RunSSE4(
   // Run unvectorized on the remainder of the region.
   RunUnvectorized(begin, end);
 }
-#endif  // defined(ARCH_CPU_X86_64)
+#endif  // PA_BUILDFLAG(PA_ARCH_CPU_X86_64)
 
 #if PA_CONFIG(STARSCAN_NEON_SUPPORTED)
 template <typename Derived>

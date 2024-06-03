@@ -102,9 +102,9 @@ class LogMessageVoidify {
   void operator&(base::strings::CStringBuilder&) {}
 };
 
-#if BUILDFLAG(IS_WIN)
+#if PA_BUILDFLAG(IS_WIN)
 typedef unsigned long SystemErrorCode;
-#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+#elif PA_BUILDFLAG(IS_POSIX) || PA_BUILDFLAG(IS_FUCHSIA)
 typedef int SystemErrorCode;
 #endif
 
@@ -113,7 +113,7 @@ typedef int SystemErrorCode;
 PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE)
 SystemErrorCode GetLastSystemErrorCode();
 
-#if BUILDFLAG(IS_WIN)
+#if PA_BUILDFLAG(IS_WIN)
 // Appends a formatted system message of the GetLastError() type.
 class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) Win32ErrorLogMessage
     : public LogMessage {
@@ -130,7 +130,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) Win32ErrorLogMessage
  private:
   SystemErrorCode err_;
 };
-#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+#elif PA_BUILDFLAG(IS_POSIX) || PA_BUILDFLAG(IS_FUCHSIA)
 // Appends a formatted system message of the errno type
 class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) ErrnoLogMessage
     : public LogMessage {
@@ -147,7 +147,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) ErrnoLogMessage
  private:
   SystemErrorCode err_;
 };
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // PA_BUILDFLAG(IS_WIN)
 
 }  // namespace partition_alloc::internal::logging
 

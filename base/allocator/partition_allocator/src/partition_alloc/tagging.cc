@@ -24,7 +24,7 @@
 #define PR_GET_TAGGED_ADDR_CTRL 56
 #define PR_TAGGED_ADDR_ENABLE (1UL << 0)
 
-#if BUILDFLAG(IS_LINUX)
+#if PA_BUILDFLAG(IS_LINUX)
 #include <linux/version.h>
 
 // Linux headers already provide these since v5.10.
@@ -45,13 +45,13 @@
 #endif
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
+#if PA_BUILDFLAG(IS_ANDROID)
 #include "partition_alloc/partition_alloc_base/files/file_path.h"
 #include "partition_alloc/partition_alloc_base/native_library.h"
 #if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
 #include <malloc.h>
 #endif  // BUILDFLAGS(HAS_MEMORY_TAGGING)
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // PA_BUILDFLAG(IS_ANDROID)
 
 namespace partition_alloc {
 void ChangeMemoryTaggingModeForCurrentThreadNoOp(TagViolationReportingMode m) {}
@@ -98,7 +98,7 @@ void ChangeMemoryTaggingModeForCurrentThread(TagViolationReportingMode m)
 
 namespace internal {
 
-#if BUILDFLAG(IS_ANDROID)
+#if PA_BUILDFLAG(IS_ANDROID)
 bool ChangeMemoryTaggingModeForAllThreadsPerProcess(
     TagViolationReportingMode m) {
 #if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
@@ -136,7 +136,7 @@ bool ChangeMemoryTaggingModeForAllThreadsPerProcess(
   return false;
 #endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
 }
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // PA_BUILDFLAG(IS_ANDROID)
 
 namespace {
 [[maybe_unused]] static bool CheckTagRegionParameters(void* ptr, size_t sz) {
@@ -290,7 +290,7 @@ TagViolationReportingMode GetMemoryTaggingModeForCurrentThread()
 
 }  // namespace internal
 
-#if PA_BUILDFLAG(HAS_MEMORY_TAGGING) && BUILDFLAG(IS_ANDROID)
+#if PA_BUILDFLAG(HAS_MEMORY_TAGGING) && PA_BUILDFLAG(IS_ANDROID)
 bool PermissiveMte::enabled_ = false;
 
 // static
@@ -314,6 +314,6 @@ bool PermissiveMte::HandleCrash(int signo,
   }
   return false;
 }
-#endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING) && BUILDFLAG(IS_ANDROID)
+#endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING) && PA_BUILDFLAG(IS_ANDROID)
 
 }  // namespace partition_alloc

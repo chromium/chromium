@@ -537,8 +537,8 @@ TEST_P(PartitionAllocThreadCacheTest, ThreadCacheRegistry) {
   auto* parent_thread_tcache = root()->thread_cache_for_testing();
   ASSERT_TRUE(parent_thread_tcache);
 
-#if !(BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID) ||      \
-      PA_BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)) && \
+#if !(PA_BUILDFLAG(IS_APPLE) || PA_BUILDFLAG(IS_ANDROID) ||   \
+      PA_BUILDFLAG(IS_CHROMEOS) || PA_BUILDFLAG(IS_LINUX)) && \
     PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   // iOS and MacOS 15 create worker threads internally(start_wqthread).
   // So thread caches are created for the worker threads, because the threads
@@ -565,8 +565,8 @@ TEST_P(PartitionAllocThreadCacheTest, ThreadCacheRegistry) {
                                                    &thread_handle);
   internal::base::PlatformThreadForTesting::Join(thread_handle);
 
-#if !(BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID) ||      \
-      PA_BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)) && \
+#if !(PA_BUILDFLAG(IS_APPLE) || PA_BUILDFLAG(IS_ANDROID) ||   \
+      PA_BUILDFLAG(IS_CHROMEOS) || PA_BUILDFLAG(IS_LINUX)) && \
     PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   internal::ScopedGuard lock(ThreadCacheRegistry::GetLock());
   EXPECT_EQ(parent_thread_tcache->prev_for_testing(), nullptr);
@@ -674,8 +674,8 @@ class ThreadDelegateForMultipleThreadCachesAccounting
 
 TEST_P(PartitionAllocThreadCacheTest, MultipleThreadCachesAccounting) {
   ThreadCacheStats wqthread_stats{0};
-#if (BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID) ||      \
-     PA_BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)) && \
+#if (PA_BUILDFLAG(IS_APPLE) || PA_BUILDFLAG(IS_ANDROID) ||   \
+     PA_BUILDFLAG(IS_CHROMEOS) || PA_BUILDFLAG(IS_LINUX)) && \
     PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   {
     // iOS and MacOS 15 create worker threads internally(start_wqthread).
@@ -715,7 +715,7 @@ TEST_P(PartitionAllocThreadCacheTest, MultipleThreadCachesAccounting) {
 #endif  // PA_CONFIG(THREAD_CACHE_ENABLE_STATISTICS)
 
 // TODO(crbug.com/40816487): Flaky on IOS.
-#if BUILDFLAG(IS_IOS)
+#if PA_BUILDFLAG(IS_IOS)
 #define MAYBE_PurgeAll DISABLED_PurgeAll
 #else
 #define MAYBE_PurgeAll PurgeAll
@@ -966,7 +966,7 @@ TEST_P(PartitionAllocThreadCacheTest,
 }
 
 // TODO(crbug.com/40816487): Flaky on IOS.
-#if BUILDFLAG(IS_IOS)
+#if PA_BUILDFLAG(IS_IOS)
 #define MAYBE_DynamicCountPerBucket DISABLED_DynamicCountPerBucket
 #else
 #define MAYBE_DynamicCountPerBucket DynamicCountPerBucket
@@ -1039,7 +1039,7 @@ TEST_P(PartitionAllocThreadCacheTest, DynamicCountPerBucketClamping) {
 }
 
 // TODO(crbug.com/40816487): Flaky on IOS.
-#if BUILDFLAG(IS_IOS)
+#if PA_BUILDFLAG(IS_IOS)
 #define MAYBE_DynamicCountPerBucketMultipleThreads \
   DISABLED_DynamicCountPerBucketMultipleThreads
 #else
@@ -1231,7 +1231,7 @@ TEST_P(PartitionAllocThreadCacheTest, ClearFromTail) {
 }
 
 // TODO(crbug.com/40816487): Flaky on IOS.
-#if BUILDFLAG(IS_IOS)
+#if PA_BUILDFLAG(IS_IOS)
 #define MAYBE_Bookkeeping DISABLED_Bookkeeping
 #else
 #define MAYBE_Bookkeeping Bookkeeping

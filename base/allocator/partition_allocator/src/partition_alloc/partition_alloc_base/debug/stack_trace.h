@@ -28,7 +28,7 @@ size_t CollectStackTrace(const void** trace, size_t count);
 PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE)
 void PrintStackTrace(const void** trace, size_t count);
 
-#if BUILDFLAG(IS_POSIX)
+#if PA_BUILDFLAG(IS_POSIX)
 PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE)
 void OutputStackTrace(unsigned index,
                       uintptr_t address,
@@ -46,7 +46,7 @@ void OutputStackTrace(unsigned index,
 // scanning area at the origin of the stack, wasting time and not finding any
 // frames (since Android libraries don't have frame pointers). Scanning is not
 // enabled on other posix platforms due to legacy reasons.
-#if BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_CHROMEOS)
+#if PA_BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_CHROMEOS)
 constexpr bool kEnableScanningByDefault = true;
 #else
 constexpr bool kEnableScanningByDefault = false;

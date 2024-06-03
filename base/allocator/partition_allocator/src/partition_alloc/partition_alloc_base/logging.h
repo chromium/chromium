@@ -207,7 +207,7 @@ PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) int GetVlogVerbosity();
 #define PA_COMPACT_GOOGLE_LOG_DFATAL PA_COMPACT_GOOGLE_LOG_EX_DFATAL(LogMessage)
 #define PA_COMPACT_GOOGLE_LOG_DCHECK PA_COMPACT_GOOGLE_LOG_EX_DCHECK(LogMessage)
 
-#if BUILDFLAG(IS_WIN)
+#if PA_BUILDFLAG(IS_WIN)
 // wingdi.h defines ERROR to be 0. When we call PA_LOG(ERROR), it gets
 // substituted with 0, and it expands to PA_COMPACT_GOOGLE_LOG_0. To allow us
 // to keep using this syntax, we define this macro to do the same thing
@@ -270,13 +270,13 @@ constexpr LogSeverity LOGGING_0 = LOGGING_ERROR;
   PA_LAZY_STREAM(PA_VLOG_STREAM(verbose_level), \
                  PA_VLOG_IS_ON(verbose_level) && (condition))
 
-#if BUILDFLAG(IS_WIN)
+#if PA_BUILDFLAG(IS_WIN)
 #define PA_VPLOG_STREAM(verbose_level)                                \
   ::partition_alloc::internal::logging::Win32ErrorLogMessage(         \
       __FILE__, __LINE__, -(verbose_level),                           \
       ::partition_alloc::internal::logging::GetLastSystemErrorCode()) \
       .stream()
-#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+#elif PA_BUILDFLAG(IS_POSIX) || PA_BUILDFLAG(IS_FUCHSIA)
 #define PA_VPLOG_STREAM(verbose_level)                                \
   ::partition_alloc::internal::logging::ErrnoLogMessage(              \
       __FILE__, __LINE__, -(verbose_level),                           \
@@ -297,13 +297,13 @@ constexpr LogSeverity LOGGING_0 = LOGGING_ERROR;
   PA_LOG_IF(FATAL, !(PA_ANALYZER_ASSUME_TRUE(condition))) \
       << "Assert failed: " #condition ". "
 
-#if BUILDFLAG(IS_WIN)
+#if PA_BUILDFLAG(IS_WIN)
 #define PA_PLOG_STREAM(severity)                                      \
   PA_COMPACT_GOOGLE_PLOG_EX_##severity(                               \
       Win32ErrorLogMessage,                                           \
       ::partition_alloc::internal::logging::GetLastSystemErrorCode()) \
       .stream()
-#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+#elif PA_BUILDFLAG(IS_POSIX) || PA_BUILDFLAG(IS_FUCHSIA)
 #define PA_PLOG_STREAM(severity)                                      \
   PA_COMPACT_GOOGLE_PLOG_EX_##severity(                               \
       ErrnoLogMessage,                                                \

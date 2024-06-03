@@ -25,7 +25,7 @@ TimeTicks TimeTicks::FromUptimeMillis(int64_t uptime_millis_value) {
 
 // This file is included on chromeos_ash because it needs to interpret
 // UptimeMillis values from the Android container.
-#if BUILDFLAG(IS_ANDROID)
+#if PA_BUILDFLAG(IS_ANDROID)
 
 // static
 TimeTicks TimeTicks::FromJavaNanoTime(int64_t nano_time_value) {
@@ -60,6 +60,6 @@ jlong TimeTicks::ToUptimeMicros() const {
   return us_;
 }
 
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // PA_BUILDFLAG(IS_ANDROID)
 
 }  // namespace partition_alloc::internal::base

@@ -21,7 +21,7 @@
 #include "partition_alloc/reservation_offset_table.h"
 #include "partition_alloc/thread_isolation/alignment.h"
 
-#if BUILDFLAG(IS_APPLE) || PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
+#if PA_BUILDFLAG(IS_APPLE) || PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
 #include <sys/mman.h>
 #endif
 

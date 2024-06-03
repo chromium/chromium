@@ -56,7 +56,7 @@ namespace {
 // PartitionRoot can use it.
 static std::atomic<PartitionRoot*> g_thread_cache_root;
 
-#if BUILDFLAG(IS_WIN)
+#if PA_BUILDFLAG(IS_WIN)
 void OnDllProcessDetach() {
   // Very late allocations do occur (see crbug.com/1159411#c7 for instance),
   // including during CRT teardown. This is problematic for the thread cache
@@ -369,7 +369,7 @@ void ThreadCache::SwapForTesting(PartitionRoot* root) {
     Init(root);
     Create(root);
   } else {
-#if BUILDFLAG(IS_WIN)
+#if PA_BUILDFLAG(IS_WIN)
     // OnDllProcessDetach accesses g_thread_cache_root which is nullptr now.
     internal::PartitionTlsSetOnDllProcessDetach(nullptr);
 #endif
@@ -384,7 +384,7 @@ void ThreadCache::RemoveTombstoneForTesting() {
 
 // static
 void ThreadCache::Init(PartitionRoot* root) {
-#if BUILDFLAG(IS_NACL)
+#if PA_BUILDFLAG(IS_NACL)
   static_assert(false, "PartitionAlloc isn't supported for NaCl");
 #endif
   PA_CHECK(root->buckets[kBucketCount - 1].slot_size ==
@@ -403,7 +403,7 @@ void ThreadCache::Init(PartitionRoot* root) {
         << "Only one PartitionRoot is allowed to have a thread cache";
   }
 
-#if BUILDFLAG(IS_WIN)
+#if PA_BUILDFLAG(IS_WIN)
   internal::PartitionTlsSetOnDllProcessDetach(OnDllProcessDetach);
 #endif
 
@@ -552,7 +552,7 @@ void ThreadCache::Delete(void* tcache_ptr) {
   // Operator new is overloaded to route to internal partition.
   delete tcache;
 
-#if BUILDFLAG(IS_WIN)
+#if PA_BUILDFLAG(IS_WIN)
   // On Windows, allocations do occur during thread/process teardown, make sure
   // they don't resurrect the thread cache.
   //
@@ -565,7 +565,7 @@ void ThreadCache::Delete(void* tcache_ptr) {
   internal::g_thread_cache = reinterpret_cast<ThreadCache*>(kTombstone);
 #endif
 
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // PA_BUILDFLAG(IS_WIN)
 }
 
 // static

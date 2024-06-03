@@ -93,7 +93,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) CheckError {
 
   union {
     LogMessage log_message_;
-#if BUILDFLAG(IS_WIN)
+#if PA_BUILDFLAG(IS_WIN)
     Win32ErrorLogMessage errno_log_message_;
 #else
     ErrnoLogMessage errno_log_message_;

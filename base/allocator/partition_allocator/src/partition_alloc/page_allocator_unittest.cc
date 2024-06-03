@@ -27,19 +27,19 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_POSIX)
+#if PA_BUILDFLAG(IS_POSIX)
 #include <sys/mman.h>
 #include <sys/time.h>
 
 #include <csetjmp>
 #include <csignal>
-#endif  // BUILDFLAG(IS_POSIX)
+#endif  // PA_BUILDFLAG(IS_POSIX)
 
 #include "partition_alloc/arm_bti_test_functions.h"
 
 #if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
 #include <arm_acle.h>
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
+#if PA_BUILDFLAG(IS_ANDROID) || PA_BUILDFLAG(IS_LINUX)
 #define MTE_KILLED_BY_SIGNAL_AVAILABLE
 #endif
 #endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
@@ -141,11 +141,11 @@ TEST(PartitionAllocPageAllocatorTest, AllocFailure) {
 }
 
 // TODO(crbug.com/41344946): Test failed on chromium.win/Win10 Tests x64.
-#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_64_BITS)
+#if PA_BUILDFLAG(IS_WIN) && PA_BUILDFLAG(PA_ARCH_CPU_64_BITS)
 #define MAYBE_ReserveAddressSpace DISABLED_ReserveAddressSpace
 #else
 #define MAYBE_ReserveAddressSpace ReserveAddressSpace
-#endif  // BUILDFLAG(IS_WIN) && defined(ARCH_CPU_64_BITS)
+#endif  // PA_BUILDFLAG(IS_WIN) && PA_BUILDFLAG(PA_ARCH_CPU_64_BITS)
 
 // Test that reserving address space can fail.
 TEST(PartitionAllocPageAllocatorTest, MAYBE_ReserveAddressSpace) {
@@ -226,7 +226,7 @@ TEST(PartitionAllocPageAllocatorTest,
   // extension.
   base::CPU cpu;
   if (!cpu.has_bti()) {
-#if BUILDFLAG(IS_IOS)
+#if PA_BUILDFLAG(IS_IOS)
     // Workaround for incorrectly failed iOS tests with GTEST_SKIP,
     // see crbug.com/912138 for details.
     return;
@@ -282,7 +282,7 @@ TEST(PartitionAllocPageAllocatorTest,
   base::CPU cpu;
   if (!cpu.has_mte()) {
     // Skip this test if there's no MTE.
-#if BUILDFLAG(IS_IOS)
+#if PA_BUILDFLAG(IS_IOS)
     return;
 #else
     GTEST_SKIP();
@@ -310,14 +310,14 @@ TEST(PartitionAllocPageAllocatorTest,
   EXPECT_EXIT(
       {
   // Switch to synchronous mode.
-#if BUILDFLAG(IS_ANDROID)
+#if PA_BUILDFLAG(IS_ANDROID)
         bool success = ChangeMemoryTaggingModeForAllThreadsPerProcess(
             TagViolationReportingMode::kSynchronous);
         EXPECT_TRUE(success);
 #else
         ChangeMemoryTaggingModeForCurrentThread(
             TagViolationReportingMode::kSynchronous);
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // PA_BUILDFLAG(IS_ANDROID)
         EXPECT_EQ(GetMemoryTaggingModeForCurrentThread(),
                   TagViolationReportingMode::kSynchronous);
         // Write to the buffer using its previous tag. A segmentation fault
@@ -340,7 +340,7 @@ TEST(PartitionAllocPageAllocatorTest,
   base::CPU cpu;
   if (!cpu.has_mte()) {
     // Skip this test if there's no MTE.
-#if BUILDFLAG(IS_IOS)
+#if PA_BUILDFLAG(IS_IOS)
     return;
 #else
     GTEST_SKIP();
@@ -363,14 +363,14 @@ TEST(PartitionAllocPageAllocatorTest,
   EXPECT_EXIT(
       {
   // Switch to asynchronous mode.
-#if BUILDFLAG(IS_ANDROID)
+#if PA_BUILDFLAG(IS_ANDROID)
         bool success = ChangeMemoryTaggingModeForAllThreadsPerProcess(
             TagViolationReportingMode::kAsynchronous);
         EXPECT_TRUE(success);
 #else
         ChangeMemoryTaggingModeForCurrentThread(
             TagViolationReportingMode::kAsynchronous);
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // PA_BUILDFLAG(IS_ANDROID)
         EXPECT_EQ(GetMemoryTaggingModeForCurrentThread(),
                   TagViolationReportingMode::kAsynchronous);
         // Write to the buffer using its previous tag. A fault should be
@@ -389,7 +389,7 @@ TEST(PartitionAllocPageAllocatorTest,
 }
 
 // Test permission setting on POSIX, where we can set a trap handler.
-#if BUILDFLAG(IS_POSIX)
+#if PA_BUILDFLAG(IS_POSIX)
 
 namespace {
 sigjmp_buf g_continuation;
@@ -400,7 +400,7 @@ void SignalHandler(int signal, siginfo_t* info, void*) {
 }  // namespace
 
 // On Mac, sometimes we get SIGBUS instead of SIGSEGV, so handle that too.
-#if BUILDFLAG(IS_APPLE)
+#if PA_BUILDFLAG(IS_APPLE)
 #define EXTRA_FAULT_BEGIN_ACTION() \
   struct sigaction old_bus_action; \
   sigaction(SIGBUS, &action, &old_bus_action);
@@ -456,11 +456,11 @@ TEST(PartitionAllocPageAllocatorTest, InaccessiblePages) {
 
 // TODO(crbug.com/40212918): Understand why we can't read from Read-Execute
 // pages on iOS.
-#if BUILDFLAG(IS_IOS)
+#if PA_BUILDFLAG(IS_IOS)
 #define MAYBE_ReadExecutePages DISABLED_ReadExecutePages
 #else
 #define MAYBE_ReadExecutePages ReadExecutePages
-#endif  // BUILDFLAG(IS_IOS)
+#endif  // PA_BUILDFLAG(IS_IOS)
 TEST(PartitionAllocPageAllocatorTest, MAYBE_ReadExecutePages) {
   uintptr_t buffer =
       AllocPages(PageAllocationGranularity(), PageAllocationGranularity(),
@@ -485,7 +485,7 @@ TEST(PartitionAllocPageAllocatorTest, MAYBE_ReadExecutePages) {
   FreePages(buffer, PageAllocationGranularity());
 }
 
-#endif  // BUILDFLAG(IS_POSIX)
+#endif  // PA_BUILDFLAG(IS_POSIX)
 
 #if defined(LINUX_NAME_REGION)
 TEST(PartitionAllocPageAllocatorTest, PageTagging) {
@@ -518,7 +518,7 @@ TEST(PartitionAllocPageAllocatorTest, PageTagging) {
   DecommitAndZeroSystemPages(buffer, size);
   bool after = is_region_named(buffer);
 
-#if BUILDFLAG(IS_ANDROID)
+#if PA_BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(before) << "VMA tagging should always work on Android";
 #endif
   // When not running on Android, the prctl() command may be defined in the
@@ -573,7 +573,7 @@ TEST(PartitionAllocPageAllocatorTest, DecommitAndZero) {
   DecommitAndZeroSystemPages(buffer, size);
 
 // Test permission setting on POSIX, where we can set a trap handler.
-#if BUILDFLAG(IS_POSIX)
+#if PA_BUILDFLAG(IS_POSIX)
 
   FAULT_TEST_BEGIN()
 
@@ -652,14 +652,14 @@ TEST(PartitionAllocPageAllocatorTest, AllocInaccessibleWillJitLater) {
   FreePages(buffer, PageAllocationGranularity());
 }
 
-#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_MAC)
+#if PA_BUILDFLAG(IS_IOS) || PA_BUILDFLAG(IS_MAC)
 // TODO(crbug.com/40916148): Fix test to GTEST_SKIP() if MAP_JIT is in-use,
 // or to be run otherwise, since kReadWriteExecute is used in some other
 // configurations.
 #define MAYBE_AllocReadWriteExecute DISABLED_AllocReadWriteExecute
 #else
 #define MAYBE_AllocReadWriteExecute AllocReadWriteExecute
-#endif  // BUILDFLAG(IS_IOS) || BUILDFLAG(IS_MAC)
+#endif  // PA_BUILDFLAG(IS_IOS) || PA_BUILDFLAG(IS_MAC)
 TEST(PartitionAllocPageAllocatorTest, MAYBE_AllocReadWriteExecute) {
   // Verify that kReadWriteExecute is similarly functional.
   uintptr_t buffer =

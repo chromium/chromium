@@ -10,14 +10,14 @@
 
 namespace partition_alloc::internal::base::internal {
 
-#if BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_CHROMEOS)
+#if PA_BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_CHROMEOS)
 // Current thread id is cached in thread local storage for performance reasons.
 // In some rare cases it's important to invalidate that cache explicitly (e.g.
 // after going through clone() syscall which does not call pthread_atfork()
 // handlers).
 // This can only be called when the process is single-threaded.
 PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) void InvalidateTidCache();
-#endif  // BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_CHROMEOS)
+#endif  // PA_BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace partition_alloc::internal::base::internal
 

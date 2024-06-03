@@ -259,7 +259,7 @@ bool DecommitAndZeroSystemPages(void* address,
 // recommitted. Do not assume that this will not change over time.
 constexpr PA_COMPONENT_EXPORT(
     PARTITION_ALLOC) bool DecommittedMemoryIsAlwaysZeroed() {
-#if BUILDFLAG(IS_APPLE)
+#if PA_BUILDFLAG(IS_APPLE)
   return false;
 #else
   return true;
@@ -380,14 +380,14 @@ PA_COMPONENT_EXPORT(PARTITION_ALLOC) uint32_t GetAllocPageErrorCode();
 // to assess address space pressure.
 PA_COMPONENT_EXPORT(PARTITION_ALLOC) size_t GetTotalMappedSize();
 
-#if BUILDFLAG(IS_WIN)
+#if PA_BUILDFLAG(IS_WIN)
 // Sets whether to retry the allocation of pages when a commit failure
 // happens. This doesn't cover cases where the system is out of address space,
 // or reaches another limit.
 PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 void SetRetryOnCommitFailure(bool retry_on_commit_failure);
 bool GetRetryOnCommitFailure();
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // PA_BUILDFLAG(IS_WIN)
 
 }  // namespace partition_alloc
 

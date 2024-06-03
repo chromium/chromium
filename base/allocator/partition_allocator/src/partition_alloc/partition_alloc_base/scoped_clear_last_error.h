@@ -30,7 +30,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) ScopedClearLastErrorBase {
   const int last_errno_;
 };
 
-#if BUILDFLAG(IS_WIN)
+#if PA_BUILDFLAG(IS_WIN)
 
 // Windows specific implementation of ScopedClearLastError.
 class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) ScopedClearLastError
@@ -45,11 +45,11 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) ScopedClearLastError
   const unsigned long last_system_error_;
 };
 
-#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+#elif PA_BUILDFLAG(IS_POSIX) || PA_BUILDFLAG(IS_FUCHSIA)
 
 using ScopedClearLastError = ScopedClearLastErrorBase;
 
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // PA_BUILDFLAG(IS_WIN)
 
 }  // namespace partition_alloc::internal::base
 

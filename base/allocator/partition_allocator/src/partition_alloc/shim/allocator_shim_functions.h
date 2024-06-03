@@ -19,7 +19,7 @@
 #include "partition_alloc/shim/allocator_dispatch.h"
 #include "partition_alloc/shim/allocator_shim_internals.h"
 
-#if BUILDFLAG(IS_WIN)
+#if PA_BUILDFLAG(IS_WIN)
 #include "partition_alloc/shim/winheap_stubs_win.h"
 #endif
 
@@ -34,7 +34,7 @@ bool g_call_new_handler_on_malloc_failure = false;
 // Calls the std::new handler thread-safely. Returns true if a new_handler was
 // set and called, false if no new_handler was set.
 bool CallNewHandler(size_t size) {
-#if BUILDFLAG(IS_WIN)
+#if PA_BUILDFLAG(IS_WIN)
   return allocator_shim::WinCallNewHandler(size);
 #else
   std::new_handler nh = std::get_new_handler();
@@ -48,7 +48,7 @@ bool CallNewHandler(size_t size) {
 #endif
 }
 
-#if !(BUILDFLAG(IS_WIN) && defined(COMPONENT_BUILD))
+#if !(PA_BUILDFLAG(IS_WIN) && defined(COMPONENT_BUILD))
 PA_ALWAYS_INLINE
 #endif
 const allocator_shim::AllocatorDispatch* GetChainHead() {

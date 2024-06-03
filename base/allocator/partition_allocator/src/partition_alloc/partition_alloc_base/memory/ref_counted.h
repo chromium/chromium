@@ -42,7 +42,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) RefCountedThreadSafeBase {
 // Release and AddRef are suitable for inlining on X86 because they generate
 // very small code sequences. On other platforms (ARM), it causes a size
 // regression and is probably not worth it.
-#if defined(ARCH_CPU_X86_FAMILY)
+#if PA_BUILDFLAG(PA_ARCH_CPU_X86_FAMILY)
   // Returns true if the object should self-delete.
   bool Release() const { return ReleaseImpl(); }
   void AddRef() const { AddRefImpl(); }

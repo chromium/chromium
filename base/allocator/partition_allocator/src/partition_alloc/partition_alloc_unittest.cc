@@ -58,23 +58,23 @@
 #include <arm_acle.h>
 #endif
 
-#if BUILDFLAG(IS_POSIX)
-#if BUILDFLAG(IS_LINUX)
+#if PA_BUILDFLAG(IS_POSIX)
+#if PA_BUILDFLAG(IS_LINUX)
 // We need PKEY_DISABLE_WRITE in this file; glibc defines it in sys/mman.h but
 // it's actually Linux-specific and other Linux libcs define it in linux/mman.h.
 // We have to include both to be sure we get the definition.
 #include <linux/mman.h>
-#endif  // BUILDFLAG(IS_LINUX)
+#endif  // PA_BUILDFLAG(IS_LINUX)
 #include <sys/mman.h>
 #include <sys/resource.h>
 #include <sys/time.h>
-#endif  // BUILDFLAG(IS_POSIX)
+#endif  // PA_BUILDFLAG(IS_POSIX)
 
-#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(IS_MAC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && PA_BUILDFLAG(IS_MAC)
 #include <OpenCL/opencl.h>
 #endif
 
-#if BUILDFLAG(IS_MAC)
+#if PA_BUILDFLAG(IS_MAC)
 #include "partition_alloc/partition_alloc_base/mac/mac_util.h"
 #endif
 
@@ -105,10 +105,10 @@ bool IsLargeMemoryDevice() {
 }
 
 bool SetAddressSpaceLimit() {
-#if !defined(ARCH_CPU_64_BITS) || !BUILDFLAG(IS_POSIX)
+#if !PA_BUILDFLAG(PA_ARCH_CPU_64_BITS) || !PA_BUILDFLAG(IS_POSIX)
   // 32 bits => address space is limited already.
   return true;
-#elif BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
+#elif PA_BUILDFLAG(IS_POSIX) && !PA_BUILDFLAG(IS_APPLE)
   // macOS will accept, but not enforce, |RLIMIT_AS| changes. See
   // https://crbug.com/435269 and rdar://17576114.
   //
@@ -133,9 +133,9 @@ bool SetAddressSpaceLimit() {
 }
 
 bool ClearAddressSpaceLimit() {
-#if !defined(ARCH_CPU_64_BITS) || !BUILDFLAG(IS_POSIX)
+#if !PA_BUILDFLAG(PA_ARCH_CPU_64_BITS) || !PA_BUILDFLAG(IS_POSIX)
   return true;
-#elif BUILDFLAG(IS_POSIX)
+#elif PA_BUILDFLAG(IS_POSIX)
   struct rlimit limit;
   if (getrlimit(RLIMIT_DATA, &limit) != 0) {
     return false;
@@ -636,7 +636,7 @@ void FreeFullSlotSpan(PartitionRoot* root, SlotSpanMetadata* slot_span) {
   EXPECT_TRUE(slot_span->is_empty());
 }
 
-#if BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_CHROMEOS)
+#if PA_BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_CHROMEOS)
 bool CheckPageInCore(void* ptr, bool in_core) {
   unsigned char ret = 0;
   EXPECT_EQ(0, mincore(ptr, SystemPageSize(), &ret));
@@ -647,7 +647,7 @@ bool CheckPageInCore(void* ptr, bool in_core) {
   EXPECT_TRUE(CheckPageInCore(ptr, in_core))
 #else
 #define CHECK_PAGE_IN_CORE(ptr, in_core) (void)(0)
-#endif  // BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_CHROMEOS)
+#endif  // PA_BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_CHROMEOS)
 
 class MockPartitionStatsDumper : public PartitionStatsDumper {
  public:
@@ -2383,11 +2383,11 @@ TEST_P(PartitionAllocTest, LostFreeSlotSpansBug) {
 //
 // Disable these test on Windows, since they run slower, so tend to timout and
 // cause flake.
-#if !BUILDFLAG(IS_WIN) &&                                      \
-        (!defined(ARCH_CPU_64_BITS) ||                         \
-         (BUILDFLAG(IS_POSIX) &&                               \
-          !(BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID)))) || \
-    BUILDFLAG(IS_FUCHSIA)
+#if !PA_BUILDFLAG(IS_WIN) &&                                         \
+        (!PA_BUILDFLAG(PA_ARCH_CPU_64_BITS) ||                       \
+         (PA_BUILDFLAG(IS_POSIX) &&                                  \
+          !(PA_BUILDFLAG(IS_APPLE) || PA_BUILDFLAG(IS_ANDROID)))) || \
+    PA_BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_RepeatedAllocReturnNullDirect RepeatedAllocReturnNullDirect
 #define MAYBE_RepeatedReallocReturnNullDirect RepeatedReallocReturnNullDirect
 #else
@@ -2501,7 +2501,8 @@ TEST_P(PartitionAllocDeathTest, LargeAllocs) {
 // referenced, thus making it quarantine it and return early, before
 // PA_CHECK(slot_start != freelist_head) is reached.
 #if !PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) || \
-    (PA_BUILDFLAG(HAS_64_BIT_POINTERS) && defined(ARCH_CPU_LITTLE_ENDIAN))
+    (PA_BUILDFLAG(HAS_64_BIT_POINTERS) &&           \
+     PA_BUILDFLAG(PA_ARCH_CPU_LITTLE_ENDIAN))
 
 // Check that our immediate double-free detection works.
 TEST_P(PartitionAllocDeathTest, ImmediateDoubleFree) {
@@ -2542,7 +2543,7 @@ TEST_P(PartitionAllocDeathTest, NumAllocatedSlotsDoubleFree) {
 }
 
 #endif  // !PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) || \
-        // (PA_BUILDFLAG(HAS_64_BIT_POINTERS) && defined(ARCH_CPU_LITTLE_ENDIAN))
+        // (PA_BUILDFLAG(HAS_64_BIT_POINTERS) && PA_BUILDFLAG(PA_ARCH_CPU_LITTLE_ENDIAN))
 
 // Check that guard pages are present where expected.
 TEST_P(PartitionAllocDeathTest, DirectMapGuardPages) {
@@ -3084,7 +3085,7 @@ TEST_P(PartitionAllocTest, PurgeDiscardableFirstPage) {
     EXPECT_TRUE(stats);
     EXPECT_TRUE(stats->is_valid);
     EXPECT_EQ(0u, stats->decommittable_bytes);
-#if BUILDFLAG(IS_WIN)
+#if PA_BUILDFLAG(IS_WIN)
     EXPECT_EQ(0u, stats->discardable_bytes);
 #else
     EXPECT_EQ(SystemPageSize(), stats->discardable_bytes);
@@ -3124,7 +3125,7 @@ TEST_P(PartitionAllocTest, PurgeDiscardableNonPageSizedAlloc) {
     EXPECT_TRUE(stats);
     EXPECT_TRUE(stats->is_valid);
     EXPECT_EQ(0u, stats->decommittable_bytes);
-#if BUILDFLAG(IS_WIN)
+#if PA_BUILDFLAG(IS_WIN)
     EXPECT_EQ(3 * SystemPageSize(), stats->discardable_bytes);
 #else
     EXPECT_EQ(4 * SystemPageSize(), stats->discardable_bytes);
@@ -3176,7 +3177,7 @@ TEST_P(PartitionAllocTest, PurgeDiscardableNonPageSizedAllocOnSlotBoundary) {
     EXPECT_TRUE(stats);
     EXPECT_TRUE(stats->is_valid);
     EXPECT_EQ(0u, stats->decommittable_bytes);
-#if BUILDFLAG(IS_WIN)
+#if PA_BUILDFLAG(IS_WIN)
     EXPECT_EQ(3 * SystemPageSize(), stats->discardable_bytes);
 #else
     EXPECT_EQ(4 * SystemPageSize(), stats->discardable_bytes);
@@ -3285,7 +3286,7 @@ TEST_P(PartitionAllocTest, PurgeDiscardableWithFreeListStraightening) {
     EXPECT_TRUE(stats);
     EXPECT_TRUE(stats->is_valid);
     EXPECT_EQ(0u, stats->decommittable_bytes);
-#if BUILDFLAG(IS_WIN)
+#if PA_BUILDFLAG(IS_WIN)
     EXPECT_EQ(SystemPageSize(), stats->discardable_bytes);
 #else
     EXPECT_EQ(2 * SystemPageSize(), stats->discardable_bytes);
@@ -4891,12 +4892,12 @@ TEST_P(PartitionAllocTest, GetReservationStart) {
   allocator.root()->Free(ptr);
 }
 
-#if BUILDFLAG(IS_FUCHSIA)
+#if PA_BUILDFLAG(IS_FUCHSIA)
 // TODO: https://crbug.com/331366007 - re-enable on Fuchsia once bug is fixed.
 TEST_P(PartitionAllocTest, DISABLED_CheckReservationType) {
 #else
 TEST_P(PartitionAllocTest, CheckReservationType) {
-#endif  // BUILDFLAG(IS_FUCHSIA)
+#endif  // PA_BUILDFLAG(IS_FUCHSIA)
   void* ptr = allocator.root()->Alloc(kTestAllocSize, type_name);
   EXPECT_TRUE(ptr);
   uintptr_t address = UntagPtr(ptr);
@@ -5162,7 +5163,7 @@ TEST_P(PartitionAllocTest, ConfigurablePool) {
   EXPECT_FALSE(IsConfigurablePoolAvailable());
 
   // The rest is only applicable to 64-bit mode
-#if defined(ARCH_CPU_64_BITS)
+#if PA_BUILDFLAG(PA_ARCH_CPU_64_BITS)
   // Repeat the test for every possible Pool size
   const size_t max_pool_size = PartitionAddressSpace::ConfigurablePoolMaxSize();
   const size_t min_pool_size = PartitionAddressSpace::ConfigurablePoolMinSize();
@@ -5205,7 +5206,7 @@ TEST_P(PartitionAllocTest, ConfigurablePool) {
     FreePages(pool_base, pool_size);
   }
 
-#endif  // defined(ARCH_CPU_64_BITS)
+#endif  // PA_BUILDFLAG(PA_ARCH_CPU_64_BITS)
 }
 
 TEST_P(PartitionAllocTest, EmptySlotSpanSizeIsCapped) {
@@ -5408,16 +5409,16 @@ TEST_P(PartitionAllocTest, SortFreelist) {
   allocator.root()->Free(first_ptr);
 }
 
-#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(IS_LINUX) && \
-    defined(ARCH_CPU_64_BITS)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && PA_BUILDFLAG(IS_LINUX) && \
+    PA_BUILDFLAG(PA_ARCH_CPU_64_BITS)
 TEST_P(PartitionAllocTest, CrashOnUnknownPointer) {
   int not_a_heap_object = 42;
   EXPECT_DEATH(allocator.root()->Free(&not_a_heap_object), "");
 }
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
-        // BUILDFLAG(IS_LINUX) && defined(ARCH_CPU_64_BITS)
+        // PA_BUILDFLAG(IS_LINUX) && PA_BUILDFLAG(PA_ARCH_CPU_64_BITS)
 
-#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(IS_MAC)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && PA_BUILDFLAG(IS_MAC)
 
 // Adapted from crashpad tests.
 class ScopedOpenCLNoOpKernel {
@@ -5455,7 +5456,7 @@ class ScopedOpenCLNoOpKernel {
     cl_device_id device_id;
     rv =
         clGetDeviceIDs(platform_id, CL_DEVICE_TYPE_CPU, 1, &device_id, nullptr);
-#if defined(ARCH_CPU_ARM64)
+#if PA_BUILDFLAG(PA_ARCH_CPU_ARM64)
     // CL_DEVICE_TYPE_CPU doesn’t seem to work at all on arm64, meaning that
     // these weird OpenCL modules probably don’t show up there at all. Keep this
     // test even on arm64 in case this ever does start working.
@@ -5507,13 +5508,13 @@ class ScopedOpenCLNoOpKernel {
 TEST_P(PartitionAllocTest, OpenCL) {
   ScopedOpenCLNoOpKernel kernel;
   kernel.SetUp();
-#if !defined(ARCH_CPU_ARM64)
+#if !PA_BUILDFLAG(PA_ARCH_CPU_ARM64)
   ASSERT_TRUE(kernel.success());
 #endif
 }
 
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
-        // BUILDFLAG(IS_MAC)
+        // PA_BUILDFLAG(IS_MAC)
 
 TEST_P(PartitionAllocTest, SmallSlotSpanWaste) {
   for (PartitionRoot::Bucket& bucket : allocator.root()->buckets) {

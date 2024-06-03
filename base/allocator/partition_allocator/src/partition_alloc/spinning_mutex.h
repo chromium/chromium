@@ -16,21 +16,21 @@
 #include "partition_alloc/partition_alloc_config.h"
 #include "partition_alloc/yield_processor.h"
 
-#if BUILDFLAG(IS_WIN)
+#if PA_BUILDFLAG(IS_WIN)
 #include "partition_alloc/partition_alloc_base/win/windows_types.h"
 #endif
 
-#if BUILDFLAG(IS_POSIX)
+#if PA_BUILDFLAG(IS_POSIX)
 #include <pthread.h>
 
 #include <cerrno>
 #endif
 
-#if BUILDFLAG(IS_APPLE)
+#if PA_BUILDFLAG(IS_APPLE)
 #include <os/lock.h>
-#endif  // BUILDFLAG(IS_APPLE)
+#endif  // PA_BUILDFLAG(IS_APPLE)
 
-#if BUILDFLAG(IS_FUCHSIA)
+#if PA_BUILDFLAG(IS_FUCHSIA)
 #include <lib/sync/mutex.h>
 #endif
 
@@ -99,13 +99,13 @@ class PA_LOCKABLE PA_COMPONENT_EXPORT(PARTITION_ALLOC) SpinningMutex {
   static constexpr int kLockedContended = 2;
 
   std::atomic<int32_t> state_{kUnlocked};
-#elif BUILDFLAG(IS_WIN)
+#elif PA_BUILDFLAG(IS_WIN)
   PA_CHROME_SRWLOCK lock_ = SRWLOCK_INIT;
-#elif BUILDFLAG(IS_APPLE)
+#elif PA_BUILDFLAG(IS_APPLE)
   os_unfair_lock unfair_lock_ = OS_UNFAIR_LOCK_INIT;
-#elif BUILDFLAG(IS_POSIX)
+#elif PA_BUILDFLAG(IS_POSIX)
   pthread_mutex_t lock_ = PTHREAD_MUTEX_INITIALIZER;
-#elif BUILDFLAG(IS_FUCHSIA)
+#elif PA_BUILDFLAG(IS_FUCHSIA)
   sync_mutex lock_;
 #endif
 
@@ -172,7 +172,7 @@ PA_ALWAYS_INLINE void SpinningMutex::Release() {
   }
 }
 
-#elif BUILDFLAG(IS_WIN)
+#elif PA_BUILDFLAG(IS_WIN)
 
 PA_ALWAYS_INLINE bool SpinningMutex::Try() {
   return !!::TryAcquireSRWLockExclusive(reinterpret_cast<PSRWLOCK>(&lock_));
@@ -182,7 +182,7 @@ PA_ALWAYS_INLINE void SpinningMutex::Release() {
   ::ReleaseSRWLockExclusive(reinterpret_cast<PSRWLOCK>(&lock_));
 }
 
-#elif BUILDFLAG(IS_APPLE)
+#elif PA_BUILDFLAG(IS_APPLE)
 
 PA_ALWAYS_INLINE bool SpinningMutex::Try() {
   return os_unfair_lock_trylock(&unfair_lock_);
@@ -192,7 +192,7 @@ PA_ALWAYS_INLINE void SpinningMutex::Release() {
   return os_unfair_lock_unlock(&unfair_lock_);
 }
 
-#elif BUILDFLAG(IS_POSIX)
+#elif PA_BUILDFLAG(IS_POSIX)
 
 PA_ALWAYS_INLINE bool SpinningMutex::Try() {
   int retval = pthread_mutex_trylock(&lock_);
@@ -205,7 +205,7 @@ PA_ALWAYS_INLINE void SpinningMutex::Release() {
   PA_DCHECK(retval == 0);
 }
 
-#elif BUILDFLAG(IS_FUCHSIA)
+#elif PA_BUILDFLAG(IS_FUCHSIA)
 
 PA_ALWAYS_INLINE bool SpinningMutex::Try() {
   return sync_mutex_trylock(&lock_) == ZX_OK;

@@ -81,7 +81,7 @@ TEST(PartitionAllocScanLoopTest, UnvectorizedWithRegularPool) {
   }
 }
 
-#if defined(ARCH_CPU_X86_64)
+#if PA_BUILDFLAG(PA_ARCH_CPU_X86_64)
 TEST(PartitionAllocScanLoopTest, VectorizedSSE4) {
   base::CPU cpu;
   if (!cpu.has_sse41()) {
@@ -142,7 +142,7 @@ TEST(PartitionAllocScanLoopTest, VectorizedAVX2) {
                                  kValidPtr, kValidPtr);
   }
 }
-#endif  // defined(ARCH_CPU_X86_64)
+#endif  // PA_BUILDFLAG(PA_ARCH_CPU_X86_64)
 
 #if PA_CONFIG(STARSCAN_NEON_SUPPORTED)
 TEST(PartitionAllocScanLoopTest, VectorizedNEON) {

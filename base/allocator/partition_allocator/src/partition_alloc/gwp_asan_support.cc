@@ -64,14 +64,14 @@ void* GwpAsanSupport::MapRegion(size_t slot_count,
       return nullptr;
     }
 
-#if defined(ARCH_CPU_64_BITS)
+#if PA_BUILDFLAG(PA_ARCH_CPU_64_BITS)
     // Mapping the GWP-ASan region in to the lower 32-bits of address space
     // makes it much more likely that a bad pointer dereference points into
     // our region and triggers a false positive report. We rely on the fact
     // that PA address pools are never allocated in the first 4GB due to
     // their alignment requirements.
     PA_CHECK(super_page_span_start >= (1ULL << 32));
-#endif  // defined(ARCH_CPU_64_BITS)
+#endif  // PA_BUILDFLAG(PA_ARCH_CPU_64_BITS)
 
     uintptr_t super_page_span_end =
         super_page_span_start + super_page_count * kSuperPageSize;

@@ -15,7 +15,7 @@
 #include <cstdint>
 #include <ctime>
 
-#if BUILDFLAG(IS_IOS)
+#if PA_BUILDFLAG(IS_IOS)
 #include <cerrno>
 #endif
 

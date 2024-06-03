@@ -11,7 +11,7 @@
 
 #include "partition_alloc/build_config.h"
 
-#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+#if PA_BUILDFLAG(IS_POSIX) || PA_BUILDFLAG(IS_FUCHSIA)
 // For ssize_t
 #include <unistd.h>
 #endif
@@ -20,7 +20,7 @@
 
 namespace partition_alloc::internal::base::strings {
 
-#if defined(COMPILER_MSVC)
+#if PA_BUILDFLAG(PA_COMPILER_MSVC)
 // Define ssize_t inside of our namespace.
 #if defined(_WIN64)
 typedef int64_t ssize_t;

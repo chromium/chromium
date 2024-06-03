@@ -27,7 +27,7 @@
 // *  crbug.com/40785222
 // *  crbug.com/41372437
 #if defined(GTEST_HAS_DEATH_TEST)
-#define PA_USE_DEATH_TESTS() (!BUILDFLAG(IS_ANDROID))
+#define PA_USE_DEATH_TESTS() (!PA_BUILDFLAG(IS_ANDROID))
 #else
 #define PA_USE_DEATH_TESTS() 0
 #endif

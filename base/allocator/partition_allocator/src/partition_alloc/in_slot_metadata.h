@@ -24,9 +24,9 @@
 #include "partition_alloc/partition_alloc_forward.h"
 #include "partition_alloc/tagging.h"
 
-#if BUILDFLAG(IS_APPLE)
+#if PA_BUILDFLAG(IS_APPLE)
 #include "partition_alloc/partition_alloc_base/bits.h"
-#endif  // BUILDFLAG(IS_APPLE)
+#endif  // PA_BUILDFLAG(IS_APPLE)
 
 namespace partition_alloc::internal {
 
@@ -42,11 +42,11 @@ namespace partition_alloc::internal {
 // this gating.
 PA_ALWAYS_INLINE size_t
 AlignUpInSlotMetadataSizeForApple(size_t in_slot_metadata_size) {
-#if BUILDFLAG(IS_APPLE)
+#if PA_BUILDFLAG(IS_APPLE)
   return internal::base::bits::AlignUp<size_t>(in_slot_metadata_size, 8);
 #else
   return in_slot_metadata_size;
-#endif  // BUILDFLAG(IS_APPLE)
+#endif  // PA_BUILDFLAG(IS_APPLE)
 }
 
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)

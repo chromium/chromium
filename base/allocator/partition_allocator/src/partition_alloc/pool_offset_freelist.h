@@ -18,7 +18,7 @@
 #include "partition_alloc/partition_alloc_constants.h"
 #include "partition_alloc/tagging.h"
 
-#if !defined(ARCH_CPU_BIG_ENDIAN)
+#if !PA_BUILDFLAG(PA_ARCH_CPU_BIG_ENDIAN)
 #include "partition_alloc/reverse_bytes.h"
 #endif
 
@@ -31,7 +31,7 @@ using PoolInfo = PartitionAddressSpace::PoolInfo;
 class PoolOffsetFreelistEntry;
 
 class EncodedPoolOffset {
-#if defined(ARCH_CPU_BIG_ENDIAN)
+#if PA_BUILDFLAG(PA_ARCH_CPU_BIG_ENDIAN)
   static constexpr uintptr_t kEncodeedNullptr = ~uintptr_t{0};
 #else
   static constexpr uintptr_t kEncodeedNullptr = uintptr_t{0};
@@ -64,7 +64,7 @@ class EncodedPoolOffset {
     //    corrupt a freelist pointer, partial pointer overwrite attacks are
     //    thwarted.
     // For big endian, similar guarantees are arrived at with a negation.
-#if defined(ARCH_CPU_BIG_ENDIAN)
+#if PA_BUILDFLAG(PA_ARCH_CPU_BIG_ENDIAN)
     uintptr_t transformed = ~offset;
 #else
     uintptr_t transformed = ReverseBytes(offset);

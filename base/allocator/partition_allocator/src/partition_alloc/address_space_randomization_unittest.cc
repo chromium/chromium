@@ -14,7 +14,7 @@
 #include "partition_alloc/random.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_WIN)
+#if PA_BUILDFLAG(IS_WIN)
 #include <windows.h>
 
 #include "base/win/windows_version.h"
@@ -26,9 +26,9 @@ namespace {
 
 uintptr_t GetMask() {
   uintptr_t mask = internal::ASLRMask();
-#if defined(ARCH_CPU_64_BITS)
-#elif defined(ARCH_CPU_32_BITS)
-#if BUILDFLAG(IS_WIN)
+#if PA_BUILDFLAG(PA_ARCH_CPU_64_BITS)
+#elif PA_BUILDFLAG(PA_ARCH_CPU_32_BITS)
+#if PA_BUILDFLAG(IS_WIN)
   BOOL is_wow64 = FALSE;
   if (!IsWow64Process(GetCurrentProcess(), &is_wow64)) {
     is_wow64 = FALSE;
@@ -36,8 +36,8 @@ uintptr_t GetMask() {
   if (!is_wow64) {
     mask = 0;
   }
-#endif  // BUILDFLAG(IS_WIN)
-#endif  // defined(ARCH_CPU_32_BITS)
+#endif  // PA_BUILDFLAG(IS_WIN)
+#endif  // PA_BUILDFLAG(PA_ARCH_CPU_32_BITS)
   return mask;
 }
 
@@ -57,7 +57,7 @@ uintptr_t GetRandomBits() {
 TEST(PartitionAllocAddressSpaceRandomizationTest, DisabledASLR) {
   uintptr_t mask = GetMask();
   if (!mask) {
-#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_32_BITS)
+#if PA_BUILDFLAG(IS_WIN) && PA_BUILDFLAG(PA_ARCH_CPU_32_BITS)
     // ASLR should be turned off on 32-bit Windows.
     EXPECT_EQ(0u, GetRandomPageBase());
 #else
@@ -229,7 +229,7 @@ TEST_RANDOM_BIT(28)
 TEST_RANDOM_BIT(29)
 TEST_RANDOM_BIT(30)
 TEST_RANDOM_BIT(31)
-#if defined(ARCH_CPU_64_BITS)
+#if PA_BUILDFLAG(PA_ARCH_CPU_64_BITS)
 TEST_RANDOM_BIT(32)
 TEST_RANDOM_BIT(33)
 TEST_RANDOM_BIT(34)
@@ -248,14 +248,14 @@ TEST_RANDOM_BIT(46)
 TEST_RANDOM_BIT(47)
 TEST_RANDOM_BIT(48)
 // No platforms have more than 48 address bits.
-#endif  // defined(ARCH_CPU_64_BITS)
+#endif  // PA_BUILDFLAG(PA_ARCH_CPU_64_BITS)
 
 #undef TEST_RANDOM_BIT
 
 // Checks that we can actually map memory in the requested range.
 // TODO(crbug.com/40222892): Extend to all operating systems once they are
 // fixed.
-#if BUILDFLAG(IS_MAC)
+#if PA_BUILDFLAG(IS_MAC)
 TEST(PartitionAllocAddressSpaceRandomizationTest, CanMapInAslrRange) {
   int tries = 0;
   // This is overly generous, but we really don't want to make the test flaky.
@@ -280,6 +280,6 @@ TEST(PartitionAllocAddressSpaceRandomizationTest, CanMapInAslrRange) {
 
   EXPECT_LT(tries, kMaxTries);
 }
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // PA_BUILDFLAG(IS_MAC)
 
 }  // namespace partition_alloc

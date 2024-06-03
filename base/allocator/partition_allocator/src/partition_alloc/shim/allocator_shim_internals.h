@@ -9,7 +9,7 @@
 
 #if defined(__GNUC__)
 
-#if BUILDFLAG(IS_POSIX)
+#if PA_BUILDFLAG(IS_POSIX)
 #include <sys/cdefs.h>  // for __THROW
 #endif
 
@@ -43,7 +43,7 @@
 // impression that they can hook the allocator.
 #define SHIM_ALWAYS_EXPORT __attribute__((visibility("default"), noinline))
 
-#elif BUILDFLAG(IS_WIN)  // __GNUC__
+#elif PA_BUILDFLAG(IS_WIN)  // __GNUC__
 
 #define __THROW
 #define SHIM_ALWAYS_EXPORT __declspec(noinline)

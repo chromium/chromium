@@ -99,8 +99,8 @@
 
 // alignas(16) DebugKv causes breakpad_unittests and sandbox_linux_unittests
 // failures on android-marshmallow-x86-rel because of SIGSEGV.
-#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_X86_FAMILY) && \
-    defined(ARCH_CPU_32_BITS)
+#if PA_BUILDFLAG(IS_ANDROID) && PA_BUILDFLAG(PA_ARCH_CPU_X86_FAMILY) && \
+    PA_BUILDFLAG(PA_ARCH_CPU_32_BITS)
 #define PA_DEBUGKV_ALIGN alignas(8)
 #else
 #define PA_DEBUGKV_ALIGN alignas(16)

@@ -10,11 +10,11 @@
 #include "partition_alloc/build_config.h"
 #include "partition_alloc/partition_alloc_buildflags.h"
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
+#if PA_BUILDFLAG(IS_ANDROID) || PA_BUILDFLAG(IS_LINUX)
 #define HAS_HW_CAPS
 #endif
 
-#if defined(ARCH_CPU_ARM64) && defined(HAS_HW_CAPS)
+#if PA_BUILDFLAG(PA_ARCH_CPU_ARM64) && defined(HAS_HW_CAPS)
 #include <asm/hwcap.h>
 #include <sys/ifunc.h>
 #else
@@ -25,7 +25,7 @@ namespace partition_alloc::internal {
 
 constexpr bool IsBtiEnabled(uint64_t ifunc_hwcap,
                             struct __ifunc_arg_t* ifunc_hw) {
-#if defined(ARCH_CPU_ARM64) && defined(HAS_HW_CAPS)
+#if PA_BUILDFLAG(PA_ARCH_CPU_ARM64) && defined(HAS_HW_CAPS)
   return (ifunc_hwcap & _IFUNC_ARG_HWCAP) && (ifunc_hw->_hwcap2 & HWCAP2_BTI);
 #else
   return false;
@@ -34,7 +34,7 @@ constexpr bool IsBtiEnabled(uint64_t ifunc_hwcap,
 
 constexpr bool IsMteEnabled(uint64_t ifunc_hwcap,
                             struct __ifunc_arg_t* ifunc_hw) {
-#if defined(ARCH_CPU_ARM64) && defined(HAS_HW_CAPS) && \
+#if PA_BUILDFLAG(PA_ARCH_CPU_ARM64) && defined(HAS_HW_CAPS) && \
     PA_BUILDFLAG(HAS_MEMORY_TAGGING)
   return (ifunc_hwcap & _IFUNC_ARG_HWCAP) && (ifunc_hw->_hwcap2 & HWCAP2_MTE);
 #else

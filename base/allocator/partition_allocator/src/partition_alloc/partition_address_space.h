@@ -310,7 +310,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   // for iOS and confirm iOS EarlyGrey tests pass when the shadow metadata
   // is enabled, since IIRC iOS limits virtual address space too.
   static_assert(
-      !BUILDFLAG(IS_IOS),
+      !PA_BUILDFLAG(IS_IOS),
       "kConfigurablePoolMaxSize is too large to run iOS EarlyGrey tests, "
       "because the test process cannot use an extended virtual address space. "
       "Temporarily disable ShadowMetadata feature on iOS");
@@ -394,7 +394,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   static_assert(std::has_single_bit(kConfigurablePoolMaxSize));
   static_assert(std::has_single_bit(kConfigurablePoolMinSize));
 
-#if BUILDFLAG(IS_IOS)
+#if PA_BUILDFLAG(IS_IOS)
 
 #if !PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
 #error iOS is only supported with a dynamically sized GigaCase.

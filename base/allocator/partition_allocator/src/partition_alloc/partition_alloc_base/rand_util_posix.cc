@@ -20,7 +20,7 @@
 #include "partition_alloc/partition_alloc_base/no_destructor.h"
 #include "partition_alloc/partition_alloc_base/posix/eintr_wrapper.h"
 
-#if BUILDFLAG(IS_MAC)
+#if PA_BUILDFLAG(IS_MAC)
 // TODO(crbug.com/40641285): Waiting for this header to appear in the iOS SDK.
 // (See below.)
 #include <sys/random.h>
@@ -28,7 +28,7 @@
 
 namespace {
 
-#if BUILDFLAG(IS_AIX)
+#if PA_BUILDFLAG(IS_AIX)
 // AIX has no 64-bit support for O_CLOEXEC.
 static constexpr int kOpenFlags = O_RDONLY;
 #else
@@ -79,7 +79,7 @@ namespace partition_alloc::internal::base {
 // (https://chromium-review.googlesource.com/c/chromium/src/+/1545096) and land
 // it or some form of it.
 void RandBytes(void* output, size_t output_length) {
-#if BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_CHROMEOS)
+#if PA_BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_CHROMEOS)
   // Use `syscall(__NR_getrandom...` to avoid a dependency on
   // `third_party/linux_syscall_support.h`.
   //
@@ -96,7 +96,7 @@ void RandBytes(void* output, size_t output_length) {
     PA_MSAN_UNPOISON(output, output_length);
     return;
   }
-#elif BUILDFLAG(IS_MAC)
+#elif PA_BUILDFLAG(IS_MAC)
   // TODO(crbug.com/40641285): Enable this on iOS too, when sys/random.h arrives
   // in its SDK.
   if (getentropy(output, output_length) == 0) {
