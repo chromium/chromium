@@ -120,6 +120,7 @@ CONTENT_EXPORT extern const char kEnableCanvas2DLayers[];
 CONTENT_EXPORT extern const char kEnablePluginPlaceholderTesting[];
 CONTENT_EXPORT extern const char kEnablePreciseMemoryInfo[];
 CONTENT_EXPORT extern const char kEnablePrivacySandboxAdsApis[];
+CONTENT_EXPORT extern const char kEnableCustomAttributionApis[];
 CONTENT_EXPORT extern const char kEnableServiceBinaryLauncher[];
 extern const char kEnableSkiaBenchmarking[];
 CONTENT_EXPORT extern const char kEnableSmoothScrolling[];

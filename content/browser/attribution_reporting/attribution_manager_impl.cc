@@ -665,8 +665,25 @@ void AttributionManagerImpl::StoreTrigger(AttributionTrigger trigger,
         std::exchange(trigger.registration().debug_key, std::nullopt);
   }
 
-  attribution_storage_.AsyncCall(&AttributionStorage::MaybeCreateAndStoreReportM2M)
-      .WithArgs(trigger)
+  int api = 0;
+  if(base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kEnableCustomAttributionApis))
+  {
+    std::string flagValue = base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(switches::kEnableCustomAttributionApis);
+    if(!flagValue.empty())
+    {
+      if(std::all_of(flagValue.begin(),flagValue.end(),[](char c) { return std::isdigit(c); }))
+      {
+        api = stoi(flagValue);
+      }
+      else 
+      {
+        // Handle invalid value to the option
+      }
+    }
+  }
+
+  attribution_storage_.AsyncCall(&AttributionStorage::MaybeCreateAndStoreReport)
+      .WithArgs(trigger, api)
       .Then(base::BindOnce(&AttributionManagerImpl::OnReportStored,
                            weak_factory_.GetWeakPtr(), std::move(trigger),
                            cleared_debug_key, is_debug_cookie_set));

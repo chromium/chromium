@@ -1293,7 +1293,7 @@ AttributionStorageSql::MaybeCreateAggregatableAttributionReportM2M(
 }
 
 CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
-    const AttributionTrigger& trigger) {
+    const AttributionTrigger& trigger, const int apiFalg) {
   auto start = std::chrono::high_resolution_clock::now();
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

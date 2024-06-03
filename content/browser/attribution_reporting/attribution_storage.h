@@ -54,7 +54,7 @@ class AttributionStorage {
   // new associated report. Only active sources will receive new attributions.
   // Returns whether a new report has been scheduled/added to storage.
   virtual CreateReportResult MaybeCreateAndStoreReport(
-      const AttributionTrigger& trigger) = 0;
+      const AttributionTrigger& trigger, const int apiFlag = 0) = 0;
 
   virtual CreateReportResult MaybeCreateAndStoreReportM2M(
       const AttributionTrigger& trigger) = 0;
