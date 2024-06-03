@@ -605,6 +605,56 @@ BrowsingTopicsServiceImpl::GetTopTopicsForDisplay() const {
   return result;
 }
 
+void BrowsingTopicsServiceImpl::ValidateCalculationSchedule() {
+  if (!browsing_topics_state_loaded_ || topics_calculator_ ||
+      is_shutting_down_ || recorded_calculation_did_not_occur_metrics_) {
+    return;
+  }
+
+  // Verify the alignment of the calculation schedule with the topics state's
+  // scheduled time, allowing for a one-minute flex window to accommodate the
+  // timer's imprecision. In the event of a discrepancy, log metrics to aid in
+  // troubleshooting.
+  base::TimeDelta elapsed_since_scheduled_time =
+      base::Time::Now() -
+      browsing_topics_state_.next_scheduled_calculation_time();
+
+  if (elapsed_since_scheduled_time > base::Minutes(1)) {
+    base::UmaHistogramExactLinear(
+        "BrowsingTopics.EpochTopicsCalculation.DidNotOccurAtScheduledTime."
+        "DaysSinceSessionStart",
+        (base::Time::Now() - session_start_time_).InDays(),
+        /*exclusive_max=*/30);
+    base::UmaHistogramExactLinear(
+        "BrowsingTopics.EpochTopicsCalculation.DidNotOccurAtScheduledTime."
+        "HoursSinceScheduledTime",
+        elapsed_since_scheduled_time.InHours(),
+        /*exclusive_max=*/30);
+    base::UmaHistogramBoolean(
+        "BrowsingTopics.EpochTopicsCalculation.DidNotOccurAtScheduledTime."
+        "CalculationTimerIsRunning",
+        schedule_calculate_timer_.IsRunning());
+
+    base::TimeDelta remaining_time_in_calculator_timer =
+        schedule_calculate_timer_.desired_run_time() - base::TimeTicks::Now();
+
+    base::UmaHistogramBoolean(
+        "BrowsingTopics.EpochTopicsCalculation.DidNotOccurAtScheduledTime."
+        "RemainingTimeInCalculationTimerIsPositive",
+        remaining_time_in_calculator_timer.is_positive());
+
+    if (remaining_time_in_calculator_timer.is_positive()) {
+      base::UmaHistogramExactLinear(
+          "BrowsingTopics.EpochTopicsCalculation.DidNotOccurAtScheduledTime."
+          "RemainingDaysInCalculationTimer",
+          remaining_time_in_calculator_timer.InDays(),
+          /*exclusive_max=*/30);
+    }
+
+    recorded_calculation_did_not_occur_metrics_ = true;
+  }
+}
+
 Annotator* BrowsingTopicsServiceImpl::GetAnnotator() {
   return annotator_.get();
 }

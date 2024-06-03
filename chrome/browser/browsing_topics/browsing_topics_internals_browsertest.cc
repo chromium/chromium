@@ -75,6 +75,8 @@ class FixedBrowsingTopicsService
     return {};
   }
 
+  void ValidateCalculationSchedule() override {}
+
   Annotator* GetAnnotator() override { return &test_annotator_; }
 
   void ClearTopic(

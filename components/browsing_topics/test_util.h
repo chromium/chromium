@@ -133,6 +133,7 @@ class MockBrowsingTopicsService : public BrowsingTopicsService {
               GetTopTopicsForDisplay,
               (),
               (const override));
+  MOCK_METHOD(void, ValidateCalculationSchedule, (), (override));
   MOCK_METHOD(Annotator*, GetAnnotator, (), (override));
   MOCK_METHOD(void,
               ClearTopic,

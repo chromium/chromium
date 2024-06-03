@@ -59,6 +59,8 @@ class BrowsingTopicsServiceImpl
   std::vector<privacy_sandbox::CanonicalTopic> GetTopTopicsForDisplay()
       const override;
 
+  void ValidateCalculationSchedule() override;
+
   Annotator* GetAnnotator() override;
 
   void ClearTopic(
@@ -207,6 +209,8 @@ class BrowsingTopicsServiceImpl
   TopicAccessedCallback topic_accessed_callback_;
 
   base::Time session_start_time_;
+
+  bool recorded_calculation_did_not_occur_metrics_ = false;
 
   base::ScopedObservation<privacy_sandbox::PrivacySandboxSettings,
                           privacy_sandbox::PrivacySandboxSettings::Observer>
