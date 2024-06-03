@@ -25,6 +25,12 @@ const parentMessagePipe = new MessagePipe('chrome://media-app', window.parent);
 const PLACEHOLDER_BLOB = new Blob([]);
 
 /**
+ * On PDF loaded, try to get this byte size of text content to check whether
+ * this file contains text.
+ */
+const PDF_TEXT_CONTENT_PEEK_BYTE_SIZE = 100;
+
+/**
  * A file received from the privileged context, and decorated with IPC methods
  * added in the untrusted (this) context to communicate back.
  */
@@ -384,7 +390,21 @@ const DELEGATE: ClientApiDelegate = {
     await ocrUntrustedPageHandler?.viewportUpdated(viewportBox, scaleFactor);
   },
   async onPdfLoaded() {
-    await mahiUntrustedPageHandler?.onPdfLoaded();
+    let hasText = false;
+    const app = getApp();
+    if (app) {
+      const peekContent =
+          (await app.getPdfContent(PDF_TEXT_CONTENT_PEEK_BYTE_SIZE))
+              ?.toString() ??
+          '';
+      hasText = peekContent.trim() !== '';
+    }
+
+    if (!hasText) {
+      mahiUntrustedPageHandler?.$.close();
+    } else {
+      await mahiUntrustedPageHandler?.onPdfLoaded();
+    }
   },
   async onPdfContextMenuShow(anchor: RectF) {
     await mahiUntrustedPageHandler?.onPdfContextMenuShow(anchor);

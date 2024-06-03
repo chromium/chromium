@@ -72,6 +72,9 @@ MahiMediaAppClient::MahiMediaAppClient(
 }
 
 MahiMediaAppClient::~MahiMediaAppClient() {
+  // Broadcasts the PDF closed event.
+  chromeos::MahiMediaAppEventsProxy::Get()->OnPdfClosed(client_id_);
+
   // Manually calls `RemoveClient()` when disconnecting.
   chromeos::MahiMediaAppContentManager::Get()->RemoveClient(client_id_);
 }
@@ -163,7 +166,6 @@ void MahiMediaAppClient::OnWindowDestroying(aura::Window* window) {
   if (window == media_app_window_) {
     media_app_window_ = nullptr;
     window_observation_.Reset();
-    chromeos::MahiMediaAppEventsProxy::Get()->OnPdfWindowDestroying(client_id_);
   }
 }
 

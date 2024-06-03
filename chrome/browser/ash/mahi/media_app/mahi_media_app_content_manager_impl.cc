@@ -35,7 +35,7 @@ void MahiMediaAppContentManagerImpl::OnPdfGetFocus(
   }
 }
 
-void MahiMediaAppContentManagerImpl::OnPdfWindowDestroying(
+void MahiMediaAppContentManagerImpl::OnPdfClosed(
     const base::UnguessableToken client_id) {
   // Notifies Mahi manager.
   auto* manager = chromeos::MahiManager::Get();
@@ -43,7 +43,7 @@ void MahiMediaAppContentManagerImpl::OnPdfWindowDestroying(
     manager->MediaAppPDFClosed(client_id);
   } else {
     // TODO(b/335741382): UMA metrics
-    LOG(ERROR) << "No mahi manager to response OnPdfWindowDestroying";
+    LOG(ERROR) << "No mahi manager to response OnPdfClosed";
   }
 }
 

@@ -32,10 +32,10 @@ void MahiMediaAppEventsProxyImpl::OnPdfContextMenuHide() {
   }
 }
 
-void MahiMediaAppEventsProxyImpl::OnPdfWindowDestroying(
+void MahiMediaAppEventsProxyImpl::OnPdfClosed(
     const base::UnguessableToken client_id) {
   for (auto& observer : observers_) {
-    observer.OnPdfWindowDestroying(client_id);
+    observer.OnPdfClosed(client_id);
   }
 }
 
