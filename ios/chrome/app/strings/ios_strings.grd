@@ -6011,6 +6011,12 @@ While in Incognito, sites can't use cookies to see your browsing activity across
            =1 {{position} of {count} payment method}
            other {{position} of {count} payment methods}}
       </message>
+      <message name="IDS_IOS_MANUAL_FALLBACK_CHIP_ACCESSIBILITY_LABEL" desc="Accessibility label for the chip buttons displayed in the manual fallback screen and that are allowing the user to autofill a specific form field. This label will be followed by the title of the chip button (e.g., 'Autofill janedoe@google.com' for an email address chip).">
+        Autofill <ph name="VALUE">$1<ex>Jane</ex></ph>
+      </message>
+      <message name="IDS_IOS_MANUAL_FALLBACK_PASSWORD_CHIP_ACCESSIBILITY_LABEL" desc="Accessibility label for the password chip button displayed in the password manual fallback screen and that's allowing the user to autofill their password on a specific form field.">
+        Autofill the password
+      </message>
     </messages>
   </release>
 </grit>

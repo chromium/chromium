@@ -247,8 +247,13 @@ static const CGFloat kOffsetForConnectedCell = 16;
 
   // Username chip button.
   if (credential.username.length) {
-    [self.usernameButton setTitle:credential.username
-                         forState:UIControlStateNormal];
+    NSString* username = credential.username;
+    [self.usernameButton setTitle:username forState:UIControlStateNormal];
+    if (IsKeyboardAccessoryUpgradeEnabled()) {
+      self.usernameButton.accessibilityLabel = l10n_util::GetNSStringF(
+          IDS_IOS_MANUAL_FALLBACK_CHIP_ACCESSIBILITY_LABEL,
+          base::SysNSStringToUTF16(username));
+    }
   } else {
     NSString* titleString =
         l10n_util::GetNSString(IDS_IOS_MANUAL_FALLBACK_NO_USERNAME);
@@ -263,8 +268,10 @@ static const CGFloat kOffsetForConnectedCell = 16;
   if (credential.password.length) {
     [self.passwordButton setTitle:kMaskedPasswordTitle
                          forState:UIControlStateNormal];
-    self.passwordButton.accessibilityLabel =
-        l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORD_HIDDEN_LABEL);
+    self.passwordButton.accessibilityLabel = l10n_util::GetNSString(
+        IsKeyboardAccessoryUpgradeEnabled()
+            ? IDS_IOS_MANUAL_FALLBACK_PASSWORD_CHIP_ACCESSIBILITY_LABEL
+            : IDS_IOS_SETTINGS_PASSWORD_HIDDEN_LABEL);
     [credentialGroupVerticalLeadChips addObject:self.passwordButton];
     self.passwordButton.hidden = NO;
   } else {
