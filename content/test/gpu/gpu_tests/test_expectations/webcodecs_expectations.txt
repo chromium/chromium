@@ -143,10 +143,8 @@ crbug.com/1522954 [ mac intel graphite-enabled asan ] WebCodecs_EncodeDecode_off
 crbug.com/1522954 [ mac intel graphite-enabled asan ] WebCodecs_EncodeDecode_offscreen_vp8_prefer-software [ RetryOnFailure ]
 crbug.com/1522954 [ mac intel graphite-enabled asan ] WebCodecs_SVC_av01.0.04M.08_prefer-software_layers_2 [ RetryOnFailure ]
 crbug.com/1522954 [ mac intel graphite-enabled asan ] WebCodecs_SVC_av01.0.04M.08_prefer-software_layers_3 [ RetryOnFailure ]
-crbug.com/1522954 [ mac intel graphite-enabled asan ] WebCodecs_SVC_avc1.42001E_prefer-software_layers_3 [ RetryOnFailure ]
 crbug.com/1522954 [ mac intel graphite-enabled asan ] WebCodecs_SVC_vp09.00.10.08_prefer-software_layers_2 [ RetryOnFailure ]
 crbug.com/1522954 [ mac intel graphite-enabled asan ] WebCodecs_SVC_vp8_prefer-software_layers_2 [ RetryOnFailure ]
-crbug.com/1522954 [ mac intel graphite-enabled asan ] WebCodecs_SVC_vp8_prefer-software_layers_3 [ RetryOnFailure ]
 
 # finder:enable-unused
 
@@ -185,7 +183,6 @@ crbug.com/337665165 [ angle-d3d11 graphite-disabled nvidia-0x2184 nvidia_lt_31.0
 crbug.com/337665164 [ mac intel-0x3e9b angle-metal graphite-enabled asan passthrough release ] WebCodecs_EncodeDecode_offscreen_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
 crbug.com/337665164 [ mac intel-0x3e9b angle-metal graphite-enabled asan passthrough release ] WebCodecs_EncodeDecode_offscreen_av01.0.04M.08_prefer-software [ Failure ]
 crbug.com/337665164 [ mac intel-0x3e9b angle-metal graphite-enabled asan passthrough release ] WebCodecs_SVC_avc1.42001E_prefer-hardware_layers_2 [ Failure ]
-crbug.com/337665164 [ mac intel-0x3e9b angle-metal graphite-enabled asan passthrough release ] WebCodecs_convertToRGB_offscreen [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
