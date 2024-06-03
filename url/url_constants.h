@@ -26,7 +26,6 @@ inline constexpr char kAndroidScheme[] = "android";
 inline constexpr char kBlobScheme[] = "blob";
 inline constexpr char16_t kBlobScheme16[] = u"blob";
 inline constexpr char kChromeosSteamScheme[] = "chromeos-steam";
-inline constexpr char kChromiumXCallbackScheme[] = "chromium-x-callback";
 inline constexpr char kContentScheme[] = "content";
 inline constexpr char16_t kContentScheme16[] = u"content";
 inline constexpr char kContentIDScheme[] = "cid";
