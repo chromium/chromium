@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include <limits>
+
 #include "base/time/time.h"
 #include "components/attribution_reporting/constants.h"
 #include "content/common/content_export.h"
@@ -78,7 +80,8 @@ struct CONTENT_EXPORT AttributionConfig {
 
     // Controls the max number of report states allowed for a given source
     // registration.
-    absl::uint128 max_trigger_state_cardinality = absl::Uint128Max();
+    absl::uint128 max_trigger_state_cardinality =
+        std::numeric_limits<uint32_t>::max();
 
     friend bool operator==(const EventLevelLimit&,
                            const EventLevelLimit&) = default;
