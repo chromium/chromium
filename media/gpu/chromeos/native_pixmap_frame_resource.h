@@ -80,6 +80,9 @@ class NativePixmapFrameResource : public FrameResource {
   gfx::GpuMemoryBufferHandle CreateGpuMemoryBufferHandle() const override;
   // GetGpuMemoryBuffer() returns nullptr.
   gfx::GpuMemoryBuffer* GetGpuMemoryBuffer() const override;
+  // Always returns nullptr.
+  std::unique_ptr<VideoFrame::ScopedMapping> MapGMBOrSharedImage()
+      const override;
   gfx::GenericSharedMemoryId GetSharedMemoryId() const override;
   const VideoFrameLayout& layout() const override;
   VideoPixelFormat format() const override;

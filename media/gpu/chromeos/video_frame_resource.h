@@ -39,6 +39,8 @@ class VideoFrameResource : public FrameResource {
       const override;
   gfx::GpuMemoryBufferHandle CreateGpuMemoryBufferHandle() const override;
   gfx::GpuMemoryBuffer* GetGpuMemoryBuffer() const override;
+  std::unique_ptr<VideoFrame::ScopedMapping> MapGMBOrSharedImage()
+      const override;
   gfx::GenericSharedMemoryId GetSharedMemoryId() const override;
   const VideoFrameLayout& layout() const override;
   VideoPixelFormat format() const override;

@@ -98,6 +98,11 @@ class FrameResource : public base::RefCountedThreadSafe<FrameResource> {
   // Gets the GpuMemoryBuffer backing |this|.
   virtual gfx::GpuMemoryBuffer* GetGpuMemoryBuffer() const = 0;
 
+  // Gets the ScopedMapping object which clients can use to access the CPU
+  // visible memory and other metadata for the gpu buffer backing |this|
+  virtual std::unique_ptr<VideoFrame::ScopedMapping> MapGMBOrSharedImage()
+      const = 0;
+
   // Returns an identifier based on the frame data's underlying storage. This
   // returns consistent results even if the frame gets wrapped. Returns an
   // invalid GenericSharedMemoryId if an identifier cannot be determined.
