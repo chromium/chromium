@@ -108,7 +108,7 @@ void FakeFormFetcher::SetNonFederated(
     const std::vector<PasswordForm>& non_federated) {
   non_federated_ = non_federated;
   best_matches_ = password_manager_util::FindBestMatches(
-      non_federated_, scheme_, &non_federated_same_scheme_);
+      non_federated_, scheme_, non_federated_same_scheme_);
 }
 
 void FakeFormFetcher::SetBlocklisted(bool is_blocklisted) {

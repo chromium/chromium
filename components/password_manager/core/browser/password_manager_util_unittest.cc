@@ -370,7 +370,7 @@ TEST(PasswordManagerUtil, FindBestMatches) {
     std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
         same_scheme_matches;
     std::vector<PasswordForm> best_matches = FindBestMatches(
-        matches, PasswordForm::Scheme::kHtml, &same_scheme_matches);
+        matches, PasswordForm::Scheme::kHtml, same_scheme_matches);
     if (!best_matches.empty()) {
       preferred_match = &best_matches[0];
     }
@@ -440,7 +440,7 @@ TEST(PasswordManagerUtil, FindBestMatchesInProfileAndAccountStores) {
   std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
       same_scheme_matches;
   std::vector<PasswordForm> best_matches = FindBestMatches(
-      matches, PasswordForm::Scheme::kHtml, &same_scheme_matches);
+      matches, PasswordForm::Scheme::kHtml, same_scheme_matches);
   EXPECT_EQ(best_matches.size(), 3U);
   account_form1.in_store =
       password_manager::PasswordForm::Store::kProfileStore |

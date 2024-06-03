@@ -230,7 +230,7 @@ std::unique_ptr<FormFetcher> FormFetcherImpl::Clone() {
   result->is_blocklisted_in_profile_store_ = is_blocklisted_in_profile_store_;
   result->best_matches_ = password_manager_util::FindBestMatches(
       result->non_federated_, form_digest_.scheme,
-      &result->non_federated_same_scheme_);
+      result->non_federated_same_scheme_);
 
   result->interactions_stats_ = interactions_stats_;
   result->insecure_credentials_ = insecure_credentials_;
@@ -261,7 +261,7 @@ void FormFetcherImpl::FindMatchesAndNotifyConsumers(
   SplitResults(std::move(results));
 
   best_matches_ = password_manager_util::FindBestMatches(
-      non_federated_, form_digest_.scheme, &non_federated_same_scheme_);
+      non_federated_, form_digest_.scheme, non_federated_same_scheme_);
 
   state_ = State::NOT_WAITING;
   for (auto& consumer : consumers_) {

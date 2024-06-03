@@ -101,7 +101,7 @@ std::vector<password_manager::PasswordForm> FindBestMatches(
     base::span<const password_manager::PasswordForm> non_federated_matches,
     password_manager::PasswordForm::Scheme scheme,
     std::vector<raw_ptr<const password_manager::PasswordForm,
-                        VectorExperimental>>* non_federated_same_scheme);
+                        VectorExperimental>>& non_federated_same_scheme);
 
 // Returns a form with the given |username_value| from |forms|, or nullptr if
 // none exists. If multiple matches exist, returns the first one.

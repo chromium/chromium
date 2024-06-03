@@ -211,32 +211,31 @@ GetLoginMatchType GetMatchType(const password_manager::PasswordForm& form) {
 std::vector<PasswordForm> FindBestMatches(
     base::span<const PasswordForm> non_federated_matches,
     PasswordForm::Scheme scheme,
-    std::vector<raw_ptr<const PasswordForm, VectorExperimental>>*
+    std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
         non_federated_same_scheme) {
   CHECK(base::ranges::none_of(non_federated_matches,
                               &PasswordForm::blocked_by_user));
-  CHECK(non_federated_same_scheme);
 
   std::vector<PasswordForm> best_matches;
-  non_federated_same_scheme->clear();
+  non_federated_same_scheme.clear();
 
   for (const password_manager::PasswordForm& match : non_federated_matches) {
     if (match.scheme == scheme) {
-      non_federated_same_scheme->push_back(&match);
+      non_federated_same_scheme.push_back(&match);
     }
   }
 
-  if (non_federated_same_scheme->empty()) {
+  if (non_federated_same_scheme.empty()) {
     return best_matches;
   }
 
-  std::sort(non_federated_same_scheme->begin(),
-            non_federated_same_scheme->end(), IsBetterMatch);
+  std::sort(non_federated_same_scheme.begin(), non_federated_same_scheme.end(),
+            IsBetterMatch);
 
   // Map from usernames to the best matching password forms.
   std::map<std::u16string, std::vector<const PasswordForm*>>
       matches_per_username;
-  for (const PasswordForm* match : *non_federated_same_scheme) {
+  for (const PasswordForm* match : non_federated_same_scheme) {
     auto it = matches_per_username.find(match->username_value);
     // The first match for |username_value| in the sorted array is best
     // match.
