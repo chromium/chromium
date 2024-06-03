@@ -1,4 +1,4 @@
-from tests.support.asserts import assert_error, assert_success
+﻿from tests.support.asserts import assert_error, assert_success
 
 
 def get_title(session):
@@ -54,3 +54,17 @@ def test_strip_and_collapse(session, inline):
 
     result = get_title(session)
     assert_success(result, "a b c d e")
+
+
+def test_title_included_entity_references(session, inline):
+    session.url = inline("<title>&reg; &copy; &cent; &pound; &yen;</title>")
+
+    result = get_title(session)
+    assert_success(result, u'® © ¢ £ ¥')
+
+
+def test_title_included_multibyte_char(session, inline):
+    session.url = inline(u"<title>日本語</title>")
+
+    result = get_title(session)
+    assert_success(result, u"日本語")

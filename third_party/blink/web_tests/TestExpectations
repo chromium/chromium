@@ -7515,6 +7515,6 @@ crbug.com/342406608 http/tests/devtools/throttling/mobile-throttling.js [ Failur
 crbug.com/343473478 external/wpt/html/semantics/forms/the-input-element/click-user-gesture.html [ Failure Pass ]
 
 # Gardener 2024-06-03
-crbug.com/343749102 external/wpt/html/semantics/forms/the-input-element/show-picker-disabled-readonly.html [ Failure Skip Pass Timeout ]
+crbug.com/343749102 external/wpt/html/semantics/forms/the-input-element/show-picker-disabled-readonly.html [ Failure Pass Skip Timeout ]
 crbug.com/344437951 external/wpt/svg/painting/reftests/non-scaling-stroke-002.html [ Failure Pass ]
 

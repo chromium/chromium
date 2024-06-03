@@ -144102,6 +144102,58 @@
         {}
        ]
       ],
+      "text-box-trim-block-in-inline-end-001.html": [
+       "7b008a21f04396b8a1703e540d44600538f301aa",
+       [
+        null,
+        [
+         [
+          "/css/css-inline/text-box-trim/text-box-trim-block-in-inline-end-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-box-trim-block-in-inline-end-002.html": [
+       "a1711e309cc61efe0cde5b8c0058a1f72c7eb223",
+       [
+        null,
+        [
+         [
+          "/css/css-inline/text-box-trim/text-box-trim-block-in-inline-end-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-box-trim-block-in-inline-end-003.html": [
+       "8ace67f78f60df6cf5fd4f53613d9d21cb4e0ba0",
+       [
+        null,
+        [
+         [
+          "/css/css-inline/text-box-trim/text-box-trim-block-in-inline-end-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-box-trim-block-in-inline-end-004.html": [
+       "3c682a211f9ae45c2478876135a2c4e8a86b999a",
+       [
+        null,
+        [
+         [
+          "/css/css-inline/text-box-trim/text-box-trim-block-in-inline-end-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "text-box-trim-block-in-inline-start-001.html": [
        "9d14a08bc2ab509955cf5be11cc797ff9f59e48c",
        [
@@ -144117,6 +144169,19 @@
       ],
       "text-box-trim-block-in-inline-start-002.html": [
        "67bfa343781cf35b3ce74297b35ee09c0f89fc05",
+       [
+        null,
+        [
+         [
+          "/css/css-inline/text-box-trim/text-box-trim-block-in-inline-start-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-box-trim-block-in-inline-start-003.html": [
+       "5227a4d13aa4bc6513516da4dd963f1891bb3a3b",
        [
         null,
         [
@@ -325829,6 +325894,10 @@
        "7614329e2e5bd97b0334541b760b0a10138dfef4",
        []
       ],
+      "text-box-trim-block-in-inline-end-001-ref.html": [
+       "ef0c90d6644afc9c6b57f5cfdb8adf4e6360d069",
+       []
+      ],
       "text-box-trim-block-in-inline-start-001-ref.html": [
        "dd288036917d9a4a4e85e968b4b7486b0f22a039",
        []
@@ -399813,7 +399882,7 @@
       },
       "network": {
        "__init__.py": [
-        "2e6376287b91c27e6a42d19ad33674921d77f760",
+        "c1b4c1dd54bf0879259a7c1983f6ee9d697016cc",
         []
        ],
        "add_intercept": {
@@ -399929,6 +399998,14 @@
         ],
         "redirected.html": [
          "3732b218cff8de24ec7b313361715285822cfc3e",
+         []
+        ],
+        "serviceworker.html": [
+         "c7ca7448d052898462db02e9a58fc5029eb8a777",
+         []
+        ],
+        "serviceworker.js": [
+         "d58241a97edea5fa4f6b05816fa75b0f0aa0e2c1",
          []
         ]
        }
@@ -400540,7 +400617,7 @@
        []
       ],
       "fixtures_bidi.py": [
-       "c76b369f21c44bc071d8f045a9662aff1173ebd7",
+       "a9cefd004b14f622fcec8cca8cb2315d138698b9",
        []
       ],
       "fixtures_http.py": [
@@ -685654,7 +685731,7 @@
       ]
      ],
      "reduction.https.any.js": [
-      "e9643c0f8a591728274a5d8625fbb9ff83e3e589",
+      "219a60076af4d094f630edcf321b6ef0b29d0b6b",
       [
        "webnn/validation_tests/reduction.https.any.html",
        {
@@ -726483,7 +726560,7 @@
        },
        "before_request_sent": {
         "before_request_sent.py": [
-         "95a790e37cdd2201b85a2de9870c9d911101ad78",
+         "22588b7013a55b285e15d0ee52fa8ffe608bf02f",
          [
           null,
           {}
@@ -726656,7 +726733,7 @@
        },
        "response_completed": {
         "response_completed.py": [
-         "f17a522766e1f5d32555787d22818f830bf9d6ea",
+         "30b35ef7e0d03a1199bab744bf7eb0ca95cf0e85",
          [
           null,
           {}
@@ -726672,7 +726749,7 @@
        },
        "response_started": {
         "response_started.py": [
-         "9aa77739abcd9c74a5c5639af4d9dc7e60655888",
+         "030d9168a1d8fd6692ba28827689df8e1c6f4cc9",
          [
           null,
           {}
@@ -728107,7 +728184,7 @@
       },
       "get_title": {
        "get.py": [
-        "e696ec340339e64d68956c3ea3bcfa5e8fceb774",
+        "5eb30baccea0c3c23ec50e8b2bee8e47f81c3b0a",
         [
          null,
          {}
