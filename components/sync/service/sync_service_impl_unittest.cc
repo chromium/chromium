@@ -1347,7 +1347,7 @@ TEST_F(SyncServiceImplTest, DisableSyncOnClientClearsPassphrasePrefForAccount) {
   const PassphraseType kPassphraseType = PassphraseType::kCustomPassphrase;
 
   SignInWithoutSyncConsent();
-  InitializeService({{AUTOFILL, false}, {AUTOFILL_WALLET_DATA, false}});
+  InitializeService({{AUTOFILL, false}, {AUTOFILL_WALLET_DATA, true}});
   base::RunLoop().RunUntilIdle();
 
   // This call represents the initial passphrase type coming in from the server.
@@ -1382,7 +1382,7 @@ TEST_F(SyncServiceImplTest,
 
   PopulatePrefsForInitialSyncFeatureSetupComplete();
   SignInWithSyncConsent();
-  InitializeService({{AUTOFILL, false}, {AUTOFILL_WALLET_DATA, false}});
+  InitializeService({{AUTOFILL, false}, {AUTOFILL_WALLET_DATA, true}});
   base::RunLoop().RunUntilIdle();
 
   // This call represents the initial passphrase type coming in from the server.
@@ -1415,7 +1415,7 @@ TEST_F(SyncServiceImplTest, EncryptionObsoleteClearsPassphrasePrefForAccount) {
   const PassphraseType kPassphraseType = PassphraseType::kCustomPassphrase;
 
   SignInWithoutSyncConsent();
-  InitializeService({{AUTOFILL, false}, {AUTOFILL_WALLET_DATA, false}});
+  InitializeService({{AUTOFILL, false}, {AUTOFILL_WALLET_DATA, true}});
   base::RunLoop().RunUntilIdle();
 
   // This call represents the initial passphrase type coming in from the server.
@@ -2116,14 +2116,14 @@ TEST_F(SyncServiceImplTest,
   // Only DEVICE_INFO datatype is enabled for transport mode.
   InitializeService(
       /*registered_types_and_transport_mode_support=*/
-      {{DEVICE_INFO, true}, {AUTOFILL_WALLET_DATA, false}});
+      {{DEVICE_INFO, true}, {AUTOFILL, false}});
   base::RunLoop().RunUntilIdle();
 
   ASSERT_EQ(service()->GetActiveDataTypes(),
             ModelTypeSet({NIGORI, DEVICE_INFO}));
 
-  // DEVICE_INFO and AUTOFILL_WALLET_DATA are queried from the sync service.
-  ModelTypeSet requested_types{DEVICE_INFO, AUTOFILL_WALLET_DATA};
+  // DEVICE_INFO and AUTOFILL are queried from the sync service.
+  ModelTypeSet requested_types{DEVICE_INFO, AUTOFILL};
   // Only DEVICE_INFO is queried from the sync client.
   EXPECT_CALL(*sync_client(), GetLocalDataDescriptions(
                                   ModelTypeSet{DEVICE_INFO}, ::testing::_));
@@ -2223,16 +2223,16 @@ TEST_F(SyncServiceImplTest,
   SignInWithoutSyncConsent();
   InitializeService(
       /*registered_types_and_transport_mode_support=*/
-      {{DEVICE_INFO, true}, {AUTOFILL_WALLET_DATA, false}});
+      {{DEVICE_INFO, true}, {AUTOFILL, false}});
   base::RunLoop().RunUntilIdle();
 
-  // Only DEVICE_INFO is enabled since AUTOFILL_WALLET_DATA is not supported in
+  // Only DEVICE_INFO is enabled since AUTOFILL is not supported in
   // transport-only mode.
   ASSERT_EQ(service()->GetActiveDataTypes(),
             ModelTypeSet({NIGORI, DEVICE_INFO}));
 
-  // DEVICE_INFO and AUTOFILL_WALLET_DATA is queried from the sync service.
-  ModelTypeSet requested_types{DEVICE_INFO, AUTOFILL_WALLET_DATA};
+  // DEVICE_INFO and AUTOFILL are queried from the sync service.
+  ModelTypeSet requested_types{DEVICE_INFO, AUTOFILL};
   // Only DEVICE_INFO is queried from the sync client.
   EXPECT_CALL(*sync_client(),
               TriggerLocalDataMigration(ModelTypeSet{DEVICE_INFO}));

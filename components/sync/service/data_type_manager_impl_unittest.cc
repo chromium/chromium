@@ -840,7 +840,8 @@ TEST_F(SyncDataTypeManagerImplTest, ShouldPrioritizePasswordsOverInvitations) {
   // Passwords must be configured and downloaded before incoming password
   // sharing invitations.
   AddController(PASSWORDS);
-  AddController(INCOMING_PASSWORD_SHARING_INVITATION);
+  AddController(INCOMING_PASSWORD_SHARING_INVITATION,
+                /*enable_transport_mode=*/true);
 
   // Initial configure.
   SetConfigureStartExpectation();
