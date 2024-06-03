@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/screens/categories_selection_screen.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
@@ -63,6 +64,11 @@ CategoriesSelectionScreen::~CategoriesSelectionScreen() = default;
 
 bool CategoriesSelectionScreen::MaybeSkip(WizardContext& context) {
   if (context.skip_post_login_screens_for_tests) {
+    exit_callback_.Run(Result::kNotApplicable);
+    return true;
+  }
+
+  if (!features::IsOobePersonalizedOnboardingEnabled()) {
     exit_callback_.Run(Result::kNotApplicable);
     return true;
   }

@@ -606,11 +606,8 @@ void OobeUI::ConfigureOobeDisplay() {
     AddScreenHandler(std::make_unique<DisplaySizeScreenHandler>());
   }
 
-  if (features::IsOobePersonalizedOnboardingEnabled()) {
-    AddScreenHandler(std::make_unique<CategoriesSelectionScreenHandler>());
-    AddScreenHandler(
-        std::make_unique<PersonalizedRecommendAppsScreenHandler>());
-  }
+  AddScreenHandler(std::make_unique<CategoriesSelectionScreenHandler>());
+  AddScreenHandler(std::make_unique<PersonalizedRecommendAppsScreenHandler>());
 
   AddScreenHandler(std::make_unique<AddChildScreenHandler>());
 

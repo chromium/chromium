@@ -314,7 +314,9 @@ const StaticOobeScreenId kResumablePostLoginScreens[] = {
     ThemeSelectionScreenView::kScreenId,
     ChoobeScreenView::kScreenId,
     DisplaySizeScreenView::kScreenId,
-    TouchpadScrollScreenView::kScreenId};
+    TouchpadScrollScreenView::kScreenId,
+    CategoriesSelectionScreenView::kScreenId,
+};
 
 const StaticOobeScreenId kScreensWithHiddenStatusArea[] = {
     EnableAdbSideloadingScreenView::kScreenId,
@@ -955,17 +957,21 @@ WizardController::CreateScreens() {
                             weak_factory_.GetWeakPtr())));
   }
 
-  if (features::IsOobePersonalizedOnboardingEnabled()) {
-    append(std::make_unique<CategoriesSelectionScreen>(
-        oobe_ui->GetView<CategoriesSelectionScreenHandler>()->AsWeakPtr(),
-        base::BindRepeating(&WizardController::OnCategoriesSelectionScreenExit,
-                            weak_factory_.GetWeakPtr())));
-    append(std::make_unique<PersonalizedRecommendAppsScreen>(
-        oobe_ui->GetView<PersonalizedRecommendAppsScreenHandler>()->AsWeakPtr(),
-        base::BindRepeating(
-            &WizardController::OnPersonalizedRecomendAppsScreenExit,
-            weak_factory_.GetWeakPtr())));
-  }
+  // We don't guard creation of those screens via feature flag to prevent cases
+  // when we didn't apply Finch config, but user restarted their device
+  // and our screen being marked as resumable is expected to be shown, but Finch
+  // decided that feature should be turned off.
+  // Instead, we will check for feature flag inside each screen's `MaybeSkip()`.
+  append(std::make_unique<CategoriesSelectionScreen>(
+      oobe_ui->GetView<CategoriesSelectionScreenHandler>()->AsWeakPtr(),
+      base::BindRepeating(&WizardController::OnCategoriesSelectionScreenExit,
+                          weak_factory_.GetWeakPtr())));
+
+  append(std::make_unique<PersonalizedRecommendAppsScreen>(
+      oobe_ui->GetView<PersonalizedRecommendAppsScreenHandler>()->AsWeakPtr(),
+      base::BindRepeating(
+          &WizardController::OnPersonalizedRecomendAppsScreenExit,
+          weak_factory_.GetWeakPtr())));
 
   append(std::make_unique<PasswordSelectionScreen>(
       oobe_ui->GetView<PasswordSelectionScreenHandler>()->AsWeakPtr(),
@@ -1879,10 +1885,10 @@ void WizardController::OnCategoriesSelectionScreenExit(
                CategoriesSelectionScreen::GetResultString(result));
   switch (result) {
     case CategoriesSelectionScreen::Result::kError:
+    case CategoriesSelectionScreen::Result::kNotApplicable:
       ShowRecommendAppsScreen();
       break;
     case CategoriesSelectionScreen::Result::kNext:
-    case CategoriesSelectionScreen::Result::kNotApplicable:
     case CategoriesSelectionScreen::Result::kSkip:
       ShowPersonalizedRecomendAppsScreen();
       break;

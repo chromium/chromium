@@ -11,6 +11,7 @@
 #include <unordered_set>
 
 #include "ash/components/arc/arc_prefs.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/apps/app_service/app_install/app_install_service.h"
@@ -85,6 +86,11 @@ PersonalizedRecommendAppsScreen::~PersonalizedRecommendAppsScreen() = default;
 
 bool PersonalizedRecommendAppsScreen::MaybeSkip(WizardContext& context) {
   if (context.skip_post_login_screens_for_tests) {
+    exit_callback_.Run(Result::kNotApplicable);
+    return true;
+  }
+
+  if (!features::IsOobePersonalizedOnboardingEnabled()) {
     exit_callback_.Run(Result::kNotApplicable);
     return true;
   }
