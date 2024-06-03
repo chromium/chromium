@@ -76,9 +76,6 @@ BASIC_EMAIL_REGEXP = r'^[\w\-\+\%\.]+\@[\w\-\+\%\.]+$'
 
 MAX_HISTOGRAM_SUFFIX_DEPENDENCY_DEPTH = 5
 
-DEFAULT_BASE_HISTOGRAM_OBSOLETE_REASON = (
-    'Base histogram. Use suffixes of this histogram instead.')
-
 EXPIRY_DATE_PATTERN = "%Y-%m-%d"
 EXPIRY_MILESTONE_RE = re.compile(r'M[0-9]{2,3}\Z')
 
@@ -323,8 +320,6 @@ def _ProcessBaseHistogramAttribute(node, histogram_entry):
   if node.hasAttribute('base'):
     is_base = node.getAttribute('base').lower() == 'true'
     histogram_entry['base'] = is_base
-    if is_base and 'obsolete' not in histogram_entry:
-      histogram_entry['obsolete'] = DEFAULT_BASE_HISTOGRAM_OBSOLETE_REASON
 
 # The following code represents several concepts as JSON objects
 #
@@ -692,9 +687,6 @@ def _UpdateHistogramsWithSuffixes(tree, histograms):
             # histograms.
             if new_histogram.get('base', False):
               del new_histogram['base']
-              if (new_histogram.get(
-                  'obsolete', '') == DEFAULT_BASE_HISTOGRAM_OBSOLETE_REASON):
-                del new_histogram['obsolete']
             histograms[new_histogram_name] = new_histogram
 
           suffix_label = suffix_labels.get(suffix_name, '')
@@ -783,7 +775,6 @@ def _GenerateNewHistogramsFromTokens(histogram_name, histograms_dict,
   # Each |token_assignment| contains one of the cross-product combinations and
   # corresponds to one new generated histogram.
   for token_assignment in token_assignments:
-    new_obsolete_reason = ''
     new_owners = []
     # Dictionaries of pairings used for string formatting of histogram name and
     # summary.
@@ -793,11 +784,6 @@ def _GenerateNewHistogramsFromTokens(histogram_name, histograms_dict,
     for token_key, variant in token_assignment.pairings.items():
       token_name_pairings[token_key] = variant['name']
       token_summary_pairings[token_key] = variant['summary']
-
-      # If a variant has an obsolete reason, the new reason overwrites the
-      # obsolete reason of the original histogram.
-      if 'obsolete' in variant:
-        new_obsolete_reason = variant['obsolete']
 
       # If a variant has owner(s), append to |new_owners|, overwriting the
       # owners of the original histogram.
@@ -820,9 +806,6 @@ def _GenerateNewHistogramsFromTokens(histogram_name, histograms_dict,
     new_histogram_node = dict(histogram_node, summary=new_summary_text)
     # Do not copy the <token> nodes to the generated histograms.
     del new_histogram_node['tokens']
-
-    if new_obsolete_reason:
-      new_histogram_node['obsolete'] = new_obsolete_reason
 
     if new_owners:
       new_histogram_node['owners'] = new_owners
@@ -911,8 +894,3 @@ def ExtractHistograms(filename):
 
 def ExtractNames(histograms):
   return sorted(histograms.keys())
-
-
-def ExtractObsoleteNames(histograms):
-  return sorted(
-      filter(lambda name: histograms[name].get("obsolete"), histograms.keys()))

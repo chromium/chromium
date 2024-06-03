@@ -54,7 +54,7 @@ def _IsValidPrimaryOwnerEmail(owner_tag_text):
           or owner_tag_text.endswith('@google.com'))
 
 
-def _IsEmail(is_first_owner, owner_tag_text, histogram_name, is_obsolete):
+def _IsEmail(is_first_owner, owner_tag_text, histogram_name):
   """Returns true if owner_tag_text is an email.
 
   Also, for histograms that are not obsolete, verifies that a histogram's first
@@ -65,14 +65,13 @@ def _IsEmail(is_first_owner, owner_tag_text, histogram_name, is_obsolete):
     owner_tag_text: The text of the owner tag being checked, e.g.
       'julie@google.com' or 'src/ios/net/cookies/OWNERS'.
     histogram_name: The string name of the histogram.
-    is_obsolete: True if the histogram is obsolete.
 
   Raises:
     Error: Raised if (A) the text is from the first owner tag, (B) the histogram
     is not obsolete, and (C) the text is not a valid primary owner.
   """
   is_email = re.match(_EMAIL_PATTERN, owner_tag_text)
-  should_check_owner_email = (is_first_owner and not is_obsolete)
+  should_check_owner_email = is_first_owner
 
   if should_check_owner_email and not _IsValidPrimaryOwnerEmail(owner_tag_text):
     raise Error(
@@ -384,9 +383,7 @@ def ExpandHistogramsOWNERS(histograms):
     for index, owner in enumerate(owners):
       owner_text = owner.childNodes[0].data.strip()
       name = histogram.getAttribute('name')
-      obsolete_tags = [tag for tag in iter_matches(histogram, 'obsolete', 1)]
-      is_obsolete = len(obsolete_tags) > 0
-      if _IsEmail(index == 0, owner_text, name, is_obsolete):
+      if _IsEmail(index == 0, owner_text, name):
         continue
 
       path = _GetOwnersFilePath(owner_text)

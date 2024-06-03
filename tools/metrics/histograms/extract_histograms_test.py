@@ -10,59 +10,6 @@ import xml.dom.minidom
 import extract_histograms
 import histogram_configuration_model
 
-TEST_BASE_HISTOGRAM_XML_CONTENT = """
-<histogram-configuration>
-<histograms>
-  <histogram base="true" name="Test.Base" units="units"
-      expires_after="2211-11-22">
-    <owner>chrome-metrics-team@google.com</owner>
-    <summary>
-      Base histogram.
-    </summary>
-  </histogram>
-  <histogram base="true" name="Test.Base.Obsolete" units="units"
-      expires_after="2019-01-01">
-    <owner>chrome-metrics-team@google.com</owner>
-    <summary>
-      Obsolete base histogram.
-    </summary>
-    <obsolete>
-      The whole related set of histograms is obsolete!
-    </obsolete>
-  </histogram>
-  <histogram base="false" name="Test.NotBase.Explicit" units="units"
-      expires_after="2019-01-01">
-    <owner>chrome-metrics-team@google.com</owner>
-    <summary>
-      Not a base histogram: base attribute explicitly set to "false".
-    </summary>
-  </histogram>
-  <histogram name="Test.NotBase.Implicit" units="units"
-      expires_after="M100">
-    <owner>chrome-metrics-team@google.com</owner>
-    <summary>
-      Not a base histogram: no base attribute specified.
-    </summary>
-  </histogram>
-</histograms>
-<histogram_suffixes_list>
-  <histogram_suffixes name="Suffixes" separator=".">
-    <suffix base="true" name="BaseSuffix" label="A base suffix"/>
-    <suffix name="NonBaseSuffix" label="A non-base suffix"/>
-    <affected-histogram name="Test.Base"/>
-    <affected-histogram name="Test.Base.Obsolete"/>
-  </histogram_suffixes>
-
-  <histogram_suffixes name="SuffixesPlusPlus" separator=".">
-    <suffix name="One" label="One suffix"/>
-    <suffix name="Two" label="Another suffix"/>
-    <affected-histogram name="Test.Base.BaseSuffix"/>
-    <affected-histogram name="Test.Base.NonBaseSuffix"/>
-  </histogram_suffixes>
-</histogram_suffixes_list>
-</histogram-configuration>
-"""
-
 TEST_HISTOGRAM_WITH_TOKENS = """
 <histogram-configuration>
 <histograms>
@@ -199,33 +146,6 @@ TEST_HISTOGRAM_WITH_MIXED_VARIANTS = """
 """
 
 class ExtractHistogramsTest(unittest.TestCase):
-
-  def testBaseHistograms(self):
-    histograms, had_errors = extract_histograms.ExtractHistogramsFromDom(
-        xml.dom.minidom.parseString(TEST_BASE_HISTOGRAM_XML_CONTENT))
-    self.assertFalse(had_errors)
-    # Base histograms are implicitly marked as obsolete.
-    self.assertIn('obsolete', histograms['Test.Base'])
-    self.assertIn('obsolete', histograms['Test.Base.Obsolete'])
-
-    # Other histograms shouldn't be implicitly marked as obsolete.
-    self.assertNotIn('obsolete', histograms['Test.NotBase.Explicit'])
-    self.assertNotIn('obsolete', histograms['Test.NotBase.Implicit'])
-
-    # Suffixes applied to base histograms shouldn't be marked as obsolete...
-    self.assertNotIn('obsolete', histograms['Test.Base.NonBaseSuffix'])
-    # ... unless the suffix is a base suffix,
-    self.assertIn('obsolete', histograms['Test.Base.BaseSuffix'])
-    # ... or the base histogram is marked as obsolete,
-    self.assertIn('obsolete', histograms['Test.Base.Obsolete.BaseSuffix'])
-    self.assertIn('obsolete', histograms['Test.Base.Obsolete.NonBaseSuffix'])
-
-    # It should be possible to have multiple levels of suffixes for base
-    # histograms.
-    self.assertNotIn('obsolete', histograms['Test.Base.BaseSuffix.One'])
-    self.assertNotIn('obsolete', histograms['Test.Base.BaseSuffix.Two'])
-    self.assertNotIn('obsolete', histograms['Test.Base.NonBaseSuffix.One'])
-    self.assertNotIn('obsolete', histograms['Test.Base.NonBaseSuffix.Two'])
 
   def testExpiryFormat(self):
     chrome_histogram_pattern = """<histogram-configuration>

@@ -14,7 +14,7 @@ import histogram_configuration_model
 import merge_xml
 
 
-def ConstructHistogram(doc, name, histogram_dict):
+def _ConstructHistogram(doc, name, histogram_dict):
   """Constructs a histogram node based on the |histogram_dict|."""
   histogram = doc.createElement('histogram')
   # Set histogram node attributes.
@@ -27,11 +27,6 @@ def ConstructHistogram(doc, name, histogram_dict):
     histogram.setAttribute('expires_after', histogram_dict['expires_after'])
   if histogram_dict.get('base', False):
     histogram.setAttribute('base', 'true')
-  # Populate the obsolete node.
-  if 'obsolete' in histogram_dict:
-    obsolete_node = doc.createElement('obsolete')
-    obsolete_node.appendChild(doc.createTextNode(histogram_dict['obsolete']))
-    histogram.appendChild(obsolete_node)
   # Populate owner nodes.
   for owner in histogram_dict.get('owners', []):
     owner_node = doc.createElement('owner')
@@ -65,7 +60,7 @@ def main(args):
   histograms_node = doc.createElement('histograms')
   for name, histogram in histograms.items():
     if re.match(pattern, name):
-      histograms_node.appendChild(ConstructHistogram(doc, name, histogram))
+      histograms_node.appendChild(_ConstructHistogram(doc, name, histogram))
   configuration.appendChild(histograms_node)
   doc.appendChild(configuration)
   print(histogram_configuration_model.PrettifyTree(doc))
