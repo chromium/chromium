@@ -2990,6 +2990,12 @@ void View::AddChildViewAtImpl(View* view, size_t index) {
   // `view` is correct.
   view->GetViewAccessibility().UpdateFocusableStateRecursive();
 
+  if (widget) {
+    // There are scenarios where we might be reparenting a view from a widget
+    // that was closed to a widget that is not closed.
+    view->GetViewAccessibility().OnWidgetUpdated(widget, old_widget);
+  }
+
   // Need to notify the layout manager because one of the callbacks below might
   // want to know the view's new preferred size, minimum size, etc.
   if (HasLayoutManager()) {
@@ -3672,7 +3678,8 @@ void View::AdvanceFocusIfNecessary() {
   // unfocusable. If the view is still focusable or is not focused, we can
   // return early avoiding further unnecessary checks. Focusability check is
   // performed first as it tends to be faster.
-  if (GetViewAccessibility().IsAccessibilityFocusable() || !HasFocus()) {
+  if (GetViewAccessibility().ViewAccessibility::IsAccessibilityFocusable() ||
+      !HasFocus()) {
     return;
   }
 

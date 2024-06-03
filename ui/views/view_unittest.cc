@@ -3428,6 +3428,46 @@ TEST_F(ViewTest, TransformVisibleBound) {
   EXPECT_EQ(gfx::Rect(40, 0, 10, 50), child->GetVisibleBounds());
 }
 
+TEST_F(ViewTest, WidgetObserverViewWidgetClosedViewReparented) {
+  UniqueWidgetPtr widget = std::make_unique<Widget>();
+  Widget::InitParams params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+  widget->Init(std::move(params));
+  EXPECT_TRUE(widget->GetRootView());
+
+  View* contents_view =
+      widget->GetRootView()->AddChildView(std::make_unique<View>());
+  View* view_1 = contents_view->AddChildView(std::make_unique<View>());
+  View* child_view_1 = view_1->AddChildView(std::make_unique<View>());
+
+  EXPECT_TRUE(!contents_view->GetViewAccessibility().is_widget_closed_);
+  EXPECT_TRUE(!view_1->GetViewAccessibility().is_widget_closed_);
+  EXPECT_TRUE(!child_view_1->GetViewAccessibility().is_widget_closed_);
+
+  widget->CloseNow();
+
+  // Add a child view to the view that has a closed widget.
+  View* child_view_2 = view_1->AddChildView(std::make_unique<View>());
+  EXPECT_TRUE(child_view_2->GetViewAccessibility().is_widget_closed_);
+
+  EXPECT_TRUE(contents_view->GetViewAccessibility().is_widget_closed_);
+  EXPECT_TRUE(view_1->GetViewAccessibility().is_widget_closed_);
+  EXPECT_TRUE(child_view_1->GetViewAccessibility().is_widget_closed_);
+
+  widget = std::make_unique<Widget>();
+  params = CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+                        Widget::InitParams::TYPE_WINDOW);
+  widget->Init(std::move(params));
+  EXPECT_TRUE(widget->GetRootView());
+
+  // Reparent the views tree with the closed widget to a new widget.
+  widget->GetRootView()->AddChildView(contents_view);
+  EXPECT_TRUE(!contents_view->GetViewAccessibility().is_widget_closed_);
+  EXPECT_TRUE(!view_1->GetViewAccessibility().is_widget_closed_);
+  EXPECT_TRUE(!child_view_1->GetViewAccessibility().is_widget_closed_);
+  EXPECT_TRUE(!child_view_2->GetViewAccessibility().is_widget_closed_);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // OnVisibleBoundsChanged()
 

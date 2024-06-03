@@ -239,6 +239,8 @@ Widget::~Widget() {
     HandleWidgetDestroying();
     HandleWidgetDestroyed();
   }
+
+  RemoveObserver(&root_view_->GetViewAccessibility());
   // Destroy RootView after the native widget, so in case the WidgetDelegate is
   // a View in the RootView hierarchy it gets destroyed as a WidgetDelegate
   // first.
@@ -458,6 +460,10 @@ void Widget::Init(InitParams params) {
     owned_native_widget_ = base::WrapUnique(native_widget_raw_ptr);
   }
   root_view_.reset(CreateRootView());
+  // We need to add the RootView's ViewAccessibility as an observer of the
+  // widget, so that when the widget is closed, the accessible data is set
+  // accordingly.
+  AddObserver(&root_view_->GetViewAccessibility());
 
   // Copy the elements of params that will be used after it is moved.
   const InitParams::Type type = params.type;

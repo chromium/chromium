@@ -64,6 +64,10 @@ bool IsValidRoleForViews(ax::mojom::Role role) {
 
 }  // namespace
 
+#define RETURN_IF_UNAVAILABLE() \
+  if (is_widget_closed_)        \
+    return;
+
 #if !BUILDFLAG_INTERNAL_HAS_NATIVE_ACCESSIBILITY()
 // static
 std::unique_ptr<ViewAccessibility> ViewAccessibility::Create(View* view) {
@@ -152,33 +156,10 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
   data->AddStringAttribute(ax::mojom::StringAttribute::kClassName,
                            view_->GetClassName());
 
-  // Views may misbehave if their widget is closed; return an unknown role
-  // rather than possibly crashing.
-  const views::Widget* widget = view_->GetWidget();
-  if (!ignore_missing_widget_for_testing_ &&
-      (!widget || !widget->widget_delegate() || widget->IsClosed())) {
-    data->role = ax::mojom::Role::kUnknown;
-    data->SetRestriction(ax::mojom::Restriction::kDisabled);
-
-    // TODO(crbug.com/325137417): Returning early means that any custom data
-    // which had been set via the Override functions is not included. Preserving
-    // and exposing these properties might be worth doing, even in the case
-    // of object destruction.
-
-    // Ordinarily, a view cannot be focusable if its widget has already closed.
-    // So, it would have been appropriate to set the focusable state to false in
-    // this particular case. However, the `FocusManager` may sometimes try to
-    // retrieve the focusable state of this view via
-    // `View::IsAccessibilityFocusable()`, even after this view's widget has
-    // been closed. Returning the wrong result might cause a crash, because the
-    // focus manager might be expecting the result to be the same regardless of
-    // the state of the view's widget.
-    if (ViewAccessibility::IsAccessibilityFocusable()) {
-      data->AddState(ax::mojom::State::kFocusable);
-      // Set this node as intentionally nameless to avoid DCHECKs for a missing
-      // name of a focusable.
-      data->SetNameExplicitlyEmpty();
-    }
+  if (is_widget_closed_) {
+    // Views may misbehave if their widget is closed; set "null-like" attributes
+    // rather than possibly crashing.
+    SetDataForClosedWidget(data);
     return;
   }
 
@@ -210,6 +191,7 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
   if (child_tree_id_) {
     data->AddChildTreeId(child_tree_id_.value());
 
+    const views::Widget* widget = view_->GetWidget();
     if (widget && widget->GetNativeView() && display::Screen::GetScreen()) {
       const float scale_factor =
           display::Screen::GetScreen()
@@ -412,6 +394,7 @@ void ViewAccessibility::SetHasPopup(const ax::mojom::HasPopup has_popup) {
 }
 
 void ViewAccessibility::SetRole(const ax::mojom::Role role) {
+  RETURN_IF_UNAVAILABLE();
   DCHECK(IsValidRoleForViews(role)) << "Invalid role for Views.";
   if (role == GetCachedRole()) {
     return;
@@ -428,6 +411,7 @@ void ViewAccessibility::SetRole(const ax::mojom::Role role) {
 
 void ViewAccessibility::SetRole(const ax::mojom::Role role,
                                 const std::u16string& role_description) {
+  RETURN_IF_UNAVAILABLE();
   if (role_description == data_.GetString16Attribute(
                               ax::mojom::StringAttribute::kRoleDescription)) {
     // No changes to the role description, update the role and return early.
@@ -447,9 +431,12 @@ void ViewAccessibility::SetRole(const ax::mojom::Role role,
 
 void ViewAccessibility::SetName(std::u16string name,
                                 ax::mojom::NameFrom name_from) {
+  RETURN_IF_UNAVAILABLE();
+
   // TODO(crbug.com/325137417): Remove once we only initialize the cache when a
   // platform accessibility API is used.
   InitializeCacheIfNeeded();
+
   // Allow subclasses to adjust the name.
   view_->AdjustAccessibleName(name, name_from);
 
@@ -572,6 +559,7 @@ void ViewAccessibility::ClearActiveDescendant() {
 }
 
 void ViewAccessibility::SetIsEnabled(bool is_enabled) {
+  RETURN_IF_UNAVAILABLE();
   if (is_enabled == GetIsEnabled()) {
     return;
   }
@@ -813,6 +801,7 @@ void ViewAccessibility::set_accessibility_events_callback(
 }
 
 void ViewAccessibility::InitializeCacheIfNeeded() {
+  RETURN_IF_UNAVAILABLE();
   if (initialized_cache_ || initializing_cache_) {
     return;
   }
@@ -835,6 +824,41 @@ void ViewAccessibility::InitializeCacheIfNeeded() {
   UpdateFocusableState();
 
   initialized_cache_ = true;
+}
+
+void ViewAccessibility::OnWidgetClosing(Widget* widget) {
+  // The RootView's ViewAccessibility should be the only registered
+  // WidgetObserver.
+  CHECK_EQ(view_, widget->GetRootView());
+  SetWidgetClosedRecursive(widget, true);
+}
+
+void ViewAccessibility::OnWidgetDestroyed(Widget* widget) {
+  // The RootView's ViewAccessibility should be the only registered
+  // WidgetObserver.
+  CHECK(widget->GetRootView());
+  CHECK_EQ(view_, widget->GetRootView());
+  SetWidgetClosedRecursive(widget, true);
+}
+
+void ViewAccessibility::OnWidgetUpdated(Widget* widget, Widget* old_widget) {
+  CHECK(widget);
+  DCHECK_EQ(widget, view_->GetWidget());
+  if (widget == old_widget) {
+    return;
+  }
+
+  // There's a chance we are reparenting a view that was previously a root
+  // view in another widget, if so we need to remove it as an observer of the
+  // old widget.
+  if (old_widget && old_widget != widget) {
+    old_widget->RemoveObserver(this);
+  }
+
+  // If we have already marked `is_widget_closed_` as true, then there's a
+  // chance that the view was reparented to a non-closed widget. If so, we must
+  // update `is_widget_closed_` in case the new widget is not closed.
+  SetWidgetClosedRecursive(widget, widget->IsClosed());
 }
 
 void ViewAccessibility::PruneSubtree() {
@@ -874,6 +898,35 @@ void ViewAccessibility::UpdateIgnoredState() {
       should_be_ignored_ || pruned_ || data_.role == ax::mojom::Role::kNone;
   SetState(ax::mojom::State::kIgnored, is_ignored);
   UpdateFocusableState();
+}
+
+void ViewAccessibility::SetWidgetClosedRecursive(Widget* widget, bool value) {
+  is_widget_closed_ = value;
+
+  internal::ScopedChildrenLock lock(view_);
+  for (auto& child : view_->children()) {
+    child->GetViewAccessibility().SetWidgetClosedRecursive(widget, value);
+  }
+}
+
+void ViewAccessibility::SetDataForClosedWidget(ui::AXNodeData* data) const {
+  data->role = ax::mojom::Role::kUnknown;
+  data->SetRestriction(ax::mojom::Restriction::kDisabled);
+
+  // Ordinarily, a view cannot be focusable if its widget has already closed.
+  // So, it would have been appropriate to set the focusable state to false in
+  // this particular case. However, the `FocusManager` may sometimes try to
+  // retrieve the focusable state of this view via
+  // `View::IsAccessibilityFocusable()`, even after this view's widget has
+  // been closed. Returning the wrong result might cause a crash, because the
+  // focus manager might be expecting the result to be the same regardless of
+  // the state of the view's widget.
+  if (ViewAccessibility::IsAccessibilityFocusable()) {
+    data->AddState(ax::mojom::State::kFocusable);
+    // Set this node as intentionally nameless to avoid DCHECKs for a missing
+    // name of a focusable.
+    data->SetNameExplicitlyEmpty();
+  }
 }
 
 }  // namespace views

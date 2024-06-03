@@ -315,6 +315,15 @@ const ui::AXNodeData& ViewAXPlatformNodeDelegate::GetData() const {
 
   // Clear the data, then populate it.
   data_ = ui::AXNodeData();
+
+  if (!view()->GetWidget()) {
+    // This is to be consistent with what Views expect and what is being done in
+    // ViewAccessibility::GetAccessibleNodeData if the widget is null.
+    data_.role = ax::mojom::Role::kUnknown;
+    data_.SetRestriction(ax::mojom::Restriction::kDisabled);
+    return data_;
+  }
+
   GetAccessibleNodeData(&data_);
 
   // View::IsDrawn is true if a View is visible and all of its ancestors are
