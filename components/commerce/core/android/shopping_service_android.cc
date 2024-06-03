@@ -231,10 +231,13 @@ void ShoppingServiceAndroid::Subscribe(
   std::string id = ConvertJavaStringToUTF8(j_id);
   std::string seen_offer_id = ConvertJavaStringToUTF8(j_seen_offer_id);
   std::string seen_country = ConvertJavaStringToUTF8(j_seen_country);
+  // TODO(b/339305153): Set empty locale for subscription service on android. Will implement
+  // this with price tracking i18n mobile expansion.
+  std::string seen_locale = std::string();
   CHECK(!id.empty());
 
   auto user_seen_offer = std::make_optional<UserSeenOffer>(
-      seen_offer_id, j_seen_price, seen_country);
+      seen_offer_id, j_seen_price, seen_country, seen_locale);
   CommerceSubscription sub(SubscriptionType(j_type), IdentifierType(j_id_type),
                            id, ManagementType(j_management_type),
                            kUnknownSubscriptionTimestamp,

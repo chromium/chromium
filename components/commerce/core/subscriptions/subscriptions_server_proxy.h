@@ -105,6 +105,8 @@ class SubscriptionsServerProxy {
   GetSubscriptionsFromParsedJson(
       const data_decoder::DataDecoder::ValueOrError& result);
 
+  bool IsPriceTrackingLocaleKeyEnabled();
+
   base::Value::Dict Serialize(const CommerceSubscription& subscription);
 
   std::optional<CommerceSubscription> Deserialize(const base::Value& value);

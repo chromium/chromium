@@ -23,10 +23,12 @@ namespace commerce {
 
 UserSeenOffer::UserSeenOffer(std::string offer_id,
                              long user_seen_price,
-                             std::string country_code)
+                             std::string country_code,
+                             std::string locale)
     : offer_id(offer_id),
       user_seen_price(user_seen_price),
-      country_code(country_code) {}
+      country_code(country_code),
+      locale(locale) {}
 UserSeenOffer::UserSeenOffer(const UserSeenOffer&) = default;
 UserSeenOffer& UserSeenOffer::operator=(const UserSeenOffer&) = default;
 UserSeenOffer::~UserSeenOffer() = default;

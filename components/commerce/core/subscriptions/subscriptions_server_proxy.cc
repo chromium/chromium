@@ -62,6 +62,7 @@ const char kSubscriptionSeenOfferKey[] = "userSeenOffer";
 const char kSeenOfferIdKey[] = "offerId";
 const char kSeenOfferPriceKey[] = "seenPriceMicros";
 const char kSeenOfferCountryKey[] = "countryCode";
+const char kSeenOfferLocaleKey[] = "languageCode";
 
 }  // namespace
 
@@ -378,6 +379,10 @@ SubscriptionsServerProxy::GetSubscriptionsFromParsedJson(
   return subscriptions;
 }
 
+bool SubscriptionsServerProxy::IsPriceTrackingLocaleKeyEnabled() {
+  return base::FeatureList::IsEnabled(kPriceTrackingSubscriptionServiceLocaleKey);
+}
+
 base::Value::Dict SubscriptionsServerProxy::Serialize(
     const CommerceSubscription& subscription) {
   base::Value::Dict subscription_json;
@@ -395,6 +400,9 @@ base::Value::Dict SubscriptionsServerProxy::Serialize(
     seen_offer_json.Set(kSeenOfferPriceKey,
                         base::NumberToString(seen_offer->user_seen_price));
     seen_offer_json.Set(kSeenOfferCountryKey, seen_offer->country_code);
+    if (IsPriceTrackingLocaleKeyEnabled()) {
+      seen_offer_json.Set(kSeenOfferLocaleKey, seen_offer->locale);
+    }
     subscription_json.Set(kSubscriptionSeenOfferKey,
                           std::move(seen_offer_json));
   }

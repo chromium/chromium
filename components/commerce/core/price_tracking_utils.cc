@@ -209,7 +209,7 @@ void SetPriceTrackingStateForBookmark(
   if (enabled) {
     user_seen_offer.emplace(base::NumberToString(specifics->offer_id()),
                             specifics->current_price().amount_micros(),
-                            specifics->country_code());
+                            specifics->country_code(), specifics->locale());
   }
   CommerceSubscription sub(
       SubscriptionType::kPriceTrack, IdentifierType::kProductClusterId,

@@ -61,7 +61,8 @@ enum class ManagementType {
 struct UserSeenOffer {
   UserSeenOffer(std::string offer_id,
                 long user_seen_price,
-                std::string country_code);
+                std::string country_code,
+                std::string locale);
   UserSeenOffer(const UserSeenOffer&);
   UserSeenOffer& operator=(const UserSeenOffer&);
   ~UserSeenOffer();
@@ -72,6 +73,8 @@ struct UserSeenOffer {
   long user_seen_price;
   // Country code of the offer.
   std::string country_code;
+  // Locale of the offer.
+  std::string locale;
 };
 
 extern const int64_t kUnknownSubscriptionTimestamp;
