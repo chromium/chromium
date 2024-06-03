@@ -48,24 +48,6 @@ def _copy_coverage_files(test_runner: FfxTestRunner, dest: str) -> None:
     shutil.copytree(coverage_dir, dest, dirs_exist_ok=True)
 
 
-def _get_vulkan_args(use_vulkan: Optional[str]) -> List[str]:
-    """Helper function to set vulkan related flag."""
-
-    vulkan_args = []
-    if not use_vulkan:
-        if get_host_arch() == 'x64':
-            # TODO(crbug.com/40202294) Remove once Vulkan is enabled by
-            # default.
-            use_vulkan = 'native'
-        else:
-            # Use swiftshader on arm64 by default because most arm64 bots
-            # currently don't support Vulkan emulation.
-            use_vulkan = 'swiftshader'
-            vulkan_args.append('--ozone-platform=headless')
-    vulkan_args.append(f'--use-vulkan={use_vulkan}')
-    return vulkan_args
-
-
 class ExecutableTestRunner(TestRunner):
     """Test runner for running standalone test executables."""
 
@@ -126,8 +108,6 @@ class ExecutableTestRunner(TestRunner):
                             help='Legacy flag to pass in arguments for '
                             'the test process. These arguments can now be '
                             'passed in without a preceding "--" flag.')
-        parser.add_argument('--use-vulkan',
-                            help='\'native\', \'swiftshader\' or \'none\'.')
         args, child_args = parser.parse_known_args(self._test_args)
         if args.isolated_script_test_output:
             self._isolated_script_test_output = args.isolated_script_test_output
@@ -174,7 +154,15 @@ class ExecutableTestRunner(TestRunner):
                 self._target_id, test_concurrency)
             child_args.append('--remote-test-server-spawner-url-base=%s' %
                               spawner_url_base)
-        child_args.extend(_get_vulkan_args(args.use_vulkan))
+        if get_host_arch() == 'x64':
+            # TODO(crbug.com/40202294) Remove once Vulkan is enabled by
+            # default.
+            child_args.append('--use-vulkan=native')
+        else:
+            # TODO(crbug.com/42050042, crbug.com/42050537) Remove swiftshader
+            # once the vulkan is enabled by default.
+            child_args.extend(
+                ['--use-vulkan=swiftshader', '--ozone-platform=headless'])
         if args.test_args:
             child_args.extend(args.test_args)
         return child_args
