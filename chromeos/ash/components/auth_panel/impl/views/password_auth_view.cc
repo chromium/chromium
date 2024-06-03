@@ -136,8 +136,8 @@ void PasswordAuthView::CreateAndConfigureTextfieldContainer() {
 
   // Password textfield. We control the textfield size by sizing the parent
   // view, as the textfield will expand to fill it.
-  login_textfield_ =
-      textfield_container->AddChildView(std::make_unique<LoginTextfield>());
+  login_textfield_ = textfield_container->AddChildView(
+      std::make_unique<LoginTextfield>(LoginTextfield::AuthType::kPassword));
 
   login_textfield_->SetDelegate(this);
 
@@ -308,10 +308,8 @@ void PasswordAuthView::OnTextfieldFocus() {
 void PasswordAuthView::UpdateTextfield(
     const AuthFactorStore::State::LoginTextfieldState& login_textfield_state) {
   login_textfield_->SetReadOnly(login_textfield_state.is_read_only);
-
-  login_textfield_->SetTextInputType(login_textfield_state.is_password_visible_
-                                         ? ui::TEXT_INPUT_TYPE_NULL
-                                         : ui::TEXT_INPUT_TYPE_PASSWORD);
+  login_textfield_->SetTextVisibility(
+      login_textfield_state.is_password_visible_);
 
   if (auto new_text = base::UTF8ToUTF16(login_textfield_state.password_);
       new_text != login_textfield_->GetText()) {

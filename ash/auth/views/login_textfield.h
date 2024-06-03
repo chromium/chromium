@@ -22,14 +22,22 @@ class ASH_EXPORT LoginTextfield : public SystemTextfield,
                                   public SystemTextfieldController {
   METADATA_HEADER(LoginTextfield, SystemTextfield)
  public:
+  enum class AuthType {
+    kPassword,
+    kPin,
+  };
+
   class Delegate {
    public:
     virtual void OnTextfieldBlur() {}
     virtual void OnTextfieldFocus() {}
     virtual void OnContentsChanged(const std::u16string& new_contents) {}
+    virtual void OnTextVisibleChanged(bool visible) {}
+    virtual void OnSubmit() {}
+    virtual void OnEscape() {}
   };
 
-  LoginTextfield();
+  LoginTextfield(AuthType auth_type);
   LoginTextfield(const LoginTextfield&) = delete;
   LoginTextfield& operator=(const LoginTextfield&) = delete;
   ~LoginTextfield() override;
@@ -40,6 +48,8 @@ class ASH_EXPORT LoginTextfield : public SystemTextfield,
   void OnFocus() override;
 
   // SystemTextfieldController:
+  bool HandleKeyEvent(views::Textfield* sender,
+                      const ui::KeyEvent& key_event) override;
   void ContentsChanged(Textfield* sender,
                        const std::u16string& new_contents) override;
 
@@ -48,9 +58,21 @@ class ASH_EXPORT LoginTextfield : public SystemTextfield,
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
 
+  void Reset();
+
+  void InsertDigit(int digit);
+  void Backspace();
+
+  void SetTextVisibility(bool visible);
+  bool IsTextVisible() const;
+
   void SetDelegate(Delegate* delegate);
 
  private:
+  void ShowText();
+  void HideText();
+
+  const AuthType auth_type_;
   raw_ptr<Delegate> delegate_ = nullptr;
 };
 
