@@ -16,10 +16,6 @@ namespace gpu {
 class DecoderContext;
 }  // namespace gpu
 
-namespace gl {
-class GLContext;
-}  // namespace gl
-
 namespace media {
 
 // Utility methods to simplify working with a gpu::DecoderContext from
@@ -33,9 +29,6 @@ class MEDIA_GPU_EXPORT GLES2DecoderHelper {
 
   // TODO(sandersd): Provide scoped version?
   virtual bool MakeContextCurrent() = 0;
-
-  // Gets the associated GLContext.
-  virtual gl::GLContext* GetGLContext() = 0;
 };
 
 }  // namespace media

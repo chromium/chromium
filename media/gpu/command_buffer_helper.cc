@@ -92,16 +92,6 @@ class CommandBufferHelperImpl
   }
 
 #if !BUILDFLAG(IS_ANDROID)
-  gl::GLContext* GetGLContext() override {
-    DVLOG(2) << __func__;
-    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-    if (!decoder_helper_)
-      return nullptr;
-
-    return decoder_helper_->GetGLContext();
-  }
-
   gpu::SharedImageStub* GetSharedImageStub() override {
     return shared_image_stub();
   }

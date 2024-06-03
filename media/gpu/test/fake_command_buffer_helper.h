@@ -41,7 +41,6 @@ class FakeCommandBufferHelper : public CommandBufferHelper {
 
 #if !BUILDFLAG(IS_ANDROID)
   // CommandBufferHelper implementation.
-  gl::GLContext* GetGLContext() override;
   gpu::SharedImageStub* GetSharedImageStub() override;
 #if BUILDFLAG(IS_WIN)
   gpu::DXGISharedHandleManager* GetDXGISharedHandleManager() override;

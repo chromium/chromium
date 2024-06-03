@@ -146,8 +146,10 @@ class VdaVideoDecoder : public VideoDecoder,
   void NotifyFlushDone() override;
   void NotifyResetDone() override;
   void NotifyError(VideoDecodeAccelerator::Error error) override;
+
+#if BUILDFLAG(IS_APPLE)
   gpu::SharedImageStub* GetSharedImageStub() const override;
-  CommandBufferHelper* GetCommandBufferHelper() const override;
+#endif
 
   // Tasks and thread hopping.
   static void CleanupOnGpuThread(std::unique_ptr<VdaVideoDecoder>);
@@ -211,7 +213,9 @@ class VdaVideoDecoder : public VideoDecoder,
   // Only written on the GPU thread during initialization, which is mutually
   // exclusive with reads on the parent thread.
   std::unique_ptr<VideoDecodeAccelerator> vda_;
+#if BUILDFLAG(IS_APPLE)
   scoped_refptr<CommandBufferHelper> command_buffer_helper_;
+#endif
   bool vda_initialized_ = false;
   bool decode_on_parent_thread_ = false;
   bool reinitializing_ = false;

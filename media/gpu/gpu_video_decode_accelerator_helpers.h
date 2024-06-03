@@ -40,6 +40,7 @@ struct MEDIA_GPU_EXPORT GpuVideoDecodeGLClient {
   GpuVideoDecodeGLClient(const GpuVideoDecodeGLClient&);
   GpuVideoDecodeGLClient& operator=(const GpuVideoDecodeGLClient&);
 
+#if !BUILDFLAG(IS_APPLE)
   // Return current GLContext.
   using GetGLContextCallback = base::RepeatingCallback<gl::GLContext*(void)>;
 
@@ -52,6 +53,7 @@ struct MEDIA_GPU_EXPORT GpuVideoDecodeGLClient {
 
   // Callback for making the relevant context current for GL calls.
   MakeGLContextCurrentCallback make_context_current;
+#endif
 
   // Whether or not ARB_texture_rectangle is present.
   bool supports_arb_texture_rectangle = false;

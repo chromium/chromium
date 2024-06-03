@@ -2411,10 +2411,6 @@ bool VTVideoDecodeAccelerator::TryToSetupDecodeOnSeparateSequence(
   return false;
 }
 
-bool VTVideoDecodeAccelerator::SupportsSharedImagePictureBuffers() const {
-  return true;
-}
-
 // static
 VideoDecodeAccelerator::SupportedProfiles
 VTVideoDecodeAccelerator::GetSupportedProfiles(

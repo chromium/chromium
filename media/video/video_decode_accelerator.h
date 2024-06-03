@@ -38,8 +38,6 @@ class SharedImageStub;
 
 namespace media {
 
-class CommandBufferHelper;
-
 // Video decoder interface.
 // This interface is extended by the various components that ultimately
 // implement the backend of PPB_VideoDecoder_Dev.
@@ -247,13 +245,11 @@ class MEDIA_EXPORT VideoDecodeAccelerator {
     // a false return value there.
     virtual void NotifyError(Error error) = 0;
 
+#if BUILDFLAG(IS_APPLE)
     // Return the SharedImageStub through which SharedImages may be created.
     // Default implementation returns nullptr.
     virtual gpu::SharedImageStub* GetSharedImageStub() const;
-
-    // Return the CommandBufferHelper through which GL passthrough textures may
-    // be created. Default implementation returns nullptr.
-    virtual CommandBufferHelper* GetCommandBufferHelper() const;
+#endif
 
    protected:
     virtual ~Client() {}
@@ -402,14 +398,6 @@ class MEDIA_EXPORT VideoDecodeAccelerator {
   virtual bool TryToSetupDecodeOnSeparateSequence(
       const base::WeakPtr<Client>& decode_client,
       const scoped_refptr<base::SequencedTaskRunner>& decode_task_runner);
-
-  // Windows creates a BGRA texture.
-  // TODO(dshwang): after moving to D3D11, remove this. crbug.com/438691
-  virtual GLenum GetSurfaceInternalFormat() const;
-
-  // Returns true if the decoder supports SharedImage backed picture buffers.
-  // May be called on any thread at any time.
-  virtual bool SupportsSharedImagePictureBuffers() const;
 
  protected:
   // Do not delete directly; use Destroy() or own it with a scoped_ptr, which

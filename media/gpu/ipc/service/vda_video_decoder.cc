@@ -68,14 +68,13 @@ std::unique_ptr<VideoDecodeAccelerator> CreateAndInitializeVda(
   GpuVideoDecodeGLClient gl_client;
   // |command_buffer_helper| is nullptr in IMPORT mode in which case, we
   // shouldn't need to do any GL calls.
-  if (command_buffer_helper) {
-    gl_client.get_context = base::BindRepeating(
-        &CommandBufferHelper::GetGLContext, command_buffer_helper);
-    gl_client.make_context_current = base::BindRepeating(
-        &CommandBufferHelper::MakeContextCurrent, command_buffer_helper);
-    gl_client.supports_arb_texture_rectangle =
-        command_buffer_helper->SupportsTextureRectangle();
-  }
+#if BUILDFLAG(IS_APPLE)
+  CHECK(command_buffer_helper);
+  gl_client.supports_arb_texture_rectangle =
+      command_buffer_helper->SupportsTextureRectangle();
+#else
+  CHECK(!command_buffer_helper);
+#endif
 
   std::unique_ptr<GpuVideoDecodeAcceleratorFactory> factory =
       GpuVideoDecodeAcceleratorFactory::Create(gl_client);
@@ -348,20 +347,23 @@ void VdaVideoDecoder::InitializeOnGpuThread() {
 
   // Set up |command_buffer_helper_|.
   if (!reinitializing_) {
-    if (output_mode_ == VideoDecodeAccelerator::Config::OutputMode::kAllocate) {
-      command_buffer_helper_ =
-          std::move(create_command_buffer_helper_cb_).Run();
-      if (!command_buffer_helper_) {
-        parent_task_runner_->PostTask(
-            FROM_HERE,
-            base::BindOnce(&VdaVideoDecoder::InitializeDone, parent_weak_this_,
-                           DecoderStatus::Codes::kFailed));
-        return;
-      }
+#if BUILDFLAG(IS_APPLE)
+    CHECK_EQ(output_mode_,
+             VideoDecodeAccelerator::Config::OutputMode::kAllocate);
+    command_buffer_helper_ = std::move(create_command_buffer_helper_cb_).Run();
+    if (!command_buffer_helper_) {
+      parent_task_runner_->PostTask(
+          FROM_HERE,
+          base::BindOnce(&VdaVideoDecoder::InitializeDone, parent_weak_this_,
+                         DecoderStatus::Codes::kFailed));
+      return;
     }
-
     picture_buffer_manager_->Initialize(gpu_task_runner_,
                                         command_buffer_helper_);
+#else
+    CHECK_EQ(output_mode_, VideoDecodeAccelerator::Config::OutputMode::kImport);
+    picture_buffer_manager_->Initialize(gpu_task_runner_, nullptr);
+#endif
   }
 
   // Convert the configuration.
@@ -381,8 +383,14 @@ void VdaVideoDecoder::InitializeOnGpuThread() {
   // vda_config.supported_output_formats = [Only used by PPAPI]
 
   // Create and initialize the VDA.
+#if BUILDFLAG(IS_APPLE)
   vda_ = create_and_initialize_vda_cb_.Run(command_buffer_helper_, this,
                                            media_log_.get(), vda_config);
+#else
+  vda_ = create_and_initialize_vda_cb_.Run(nullptr, this, media_log_.get(),
+                                           vda_config);
+#endif
+
   if (!vda_) {
     parent_task_runner_->PostTask(
         FROM_HERE,
@@ -806,15 +814,12 @@ void VdaVideoDecoder::NotifyError(VideoDecodeAccelerator::Error error) {
                                 parent_weak_this_, error));
 }
 
+#if BUILDFLAG(IS_APPLE)
 gpu::SharedImageStub* VdaVideoDecoder::GetSharedImageStub() const {
   DCHECK_EQ(output_mode_, VideoDecodeAccelerator::Config::OutputMode::kAllocate);
   return command_buffer_helper_->GetSharedImageStub();
 }
-
-CommandBufferHelper* VdaVideoDecoder::GetCommandBufferHelper() const {
-  DCHECK_EQ(output_mode_, VideoDecodeAccelerator::Config::OutputMode::kAllocate);
-  return command_buffer_helper_.get();
-}
+#endif
 
 void VdaVideoDecoder::NotifyErrorOnParentThread(
     VideoDecodeAccelerator::Error error) {

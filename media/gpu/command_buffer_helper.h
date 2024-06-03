@@ -25,10 +25,6 @@ class SharedImageRepresentationFactoryRef;
 class SharedImageStub;
 }  // namespace gpu
 
-namespace gl {
-class GLContext;
-}  // namespace gl
-
 namespace media {
 
 // TODO(sandersd): CommandBufferHelper does not inherently need to be ref
@@ -64,12 +60,6 @@ class MEDIA_GPU_EXPORT CommandBufferHelper
                                 base::OnceClosure done_cb) = 0;
 
 #if !BUILDFLAG(IS_ANDROID)
-  // Gets the associated GLContext.
-  //
-  // Used by DXVAVDA to test for D3D11 support, and by V4L2VDA to create
-  // EGLImages. New clients should use more specialized accessors instead.
-  virtual gl::GLContext* GetGLContext() = 0;
-
   // Retrieve the interface through which to create shared images.
   virtual gpu::SharedImageStub* GetSharedImageStub() = 0;
 

@@ -68,12 +68,6 @@ void FakeCommandBufferHelper::WaitForSyncToken(gpu::SyncToken sync_token,
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-gl::GLContext* FakeCommandBufferHelper::GetGLContext() {
-  DVLOG(4) << __func__;
-  DCHECK(task_runner_->BelongsToCurrentThread());
-  return nullptr;
-}
-
 gpu::SharedImageStub* FakeCommandBufferHelper::GetSharedImageStub() {
   return nullptr;
 }

@@ -29,11 +29,6 @@ class GLES2DecoderHelperImpl : public GLES2DecoderHelper {
     return decoder_->MakeCurrent();
   }
 
-  gl::GLContext* GetGLContext() override {
-    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-    return decoder_->GetGLContext();
-  }
-
  private:
   raw_ptr<gpu::DecoderContext> decoder_;
   THREAD_CHECKER(thread_checker_);
