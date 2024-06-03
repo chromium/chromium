@@ -146,6 +146,12 @@ bool ShouldDelayMigrationUntillMigrationWarningIsAcknowledged(
           password_manager::prefs::kEmptyProfileStoreLoginDatabase)) {
     return false;
   }
+
+  // There is no warning shown on automotive.
+  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    return false;
+  }
+
   return !pref_service->GetBoolean(
       password_manager::prefs::kUserAcknowledgedLocalPasswordsMigrationWarning);
 }
