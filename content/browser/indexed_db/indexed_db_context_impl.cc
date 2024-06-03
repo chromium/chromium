@@ -756,8 +756,12 @@ IndexedDBContextImpl::~IndexedDBContextImpl() {
   }
   bucket_contexts_sharded_.clear();
 
-  base::UmaHistogramTimes("IndexedDB.ContextShutdownDuration",
-                          base::TimeTicks::Now() - shutdown_start_time_);
+  // Shutdown won't go through `ShutdownOnIDBSequence()` for in-memory DBs and
+  // in some tests.
+  if (!shutdown_start_time_.is_null()) {
+    base::UmaHistogramTimes("IndexedDB.ContextShutdownDuration",
+                            base::TimeTicks::Now() - shutdown_start_time_);
+  }
 }
 
 void IndexedDBContextImpl::ShutdownOnIDBSequence(base::TimeTicks start_time) {
