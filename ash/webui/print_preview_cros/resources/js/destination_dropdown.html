@@ -4,10 +4,20 @@
     --dropdown-border-radius: 8px;
     --dropdown-outline-ring-width: 2px;
     --dropdown-width: 216px;
+    --dropdown-disabled-opacity: .38;
 
     display: inline-block;
     font: var(--cros-button-2-font);
     width: var(--dropdown-width);
+  }
+
+  :host([disabled]) {
+    pointer-events: none;
+  }
+
+  :host([disabled]) .select,
+  :host([disabled]) .select-background {
+    opacity: var(--dropdown-disabled-opacity);
   }
 
   :host([hidden]) {

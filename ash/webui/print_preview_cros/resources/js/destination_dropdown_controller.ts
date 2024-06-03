@@ -16,6 +16,8 @@ import {Destination} from './utils/print_preview_cros_app_types.js';
  * `destination-dropdown` element to update.
  */
 
+export const DESTINATION_DROPDOWN_DROPDOWN_DISABLED_CHANGED =
+    'destination-dropdown.dropdown-disabled-changed';
 export const DESTINATION_DROPDOWN_UPDATE_DESTINATIONS =
     'destination-dropdown.update-destinations';
 export const DESTINATION_DROPDOWN_UPDATE_SELECTED_DESTINATION =
@@ -37,6 +39,12 @@ export class DestinationDropdownController extends EventTarget {
     eventTracker.add(
         this.destinationManager, DESTINATION_MANAGER_DESTINATIONS_CHANGED,
         (): void => this.onDestinationManagerDestinationsChanged());
+  }
+
+  shouldDisableDropdown(): boolean {
+    // TODO(b/323421684): Ensure disabled when request in progress or UI not
+    // initialized.
+    return false;
   }
 
   // Handles logic for updating the active destination in the print ticket.

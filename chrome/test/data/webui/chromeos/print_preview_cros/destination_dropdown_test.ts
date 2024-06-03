@@ -7,7 +7,7 @@ import 'chrome://os-print/js/destination_dropdown.js';
 import {PDF_DESTINATION} from 'chrome://os-print/js/data/destination_constants.js';
 import {DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED, DESTINATION_MANAGER_DESTINATIONS_CHANGED, DESTINATION_MANAGER_SESSION_INITIALIZED, DestinationManager} from 'chrome://os-print/js/data/destination_manager.js';
 import {DestinationDropdownElement} from 'chrome://os-print/js/destination_dropdown.js';
-import {DESTINATION_DROPDOWN_UPDATE_DESTINATIONS, DESTINATION_DROPDOWN_UPDATE_SELECTED_DESTINATION, DestinationDropdownController} from 'chrome://os-print/js/destination_dropdown_controller.js';
+import {DESTINATION_DROPDOWN_DROPDOWN_DISABLED_CHANGED, DESTINATION_DROPDOWN_UPDATE_DESTINATIONS, DESTINATION_DROPDOWN_UPDATE_SELECTED_DESTINATION, DestinationDropdownController} from 'chrome://os-print/js/destination_dropdown_controller.js';
 import {DestinationRowElement} from 'chrome://os-print/js/destination_row.js';
 import {type FakeDestinationProvider} from 'chrome://os-print/js/fakes/fake_destination_provider.js';
 import {FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL} from 'chrome://os-print/js/fakes/fake_print_preview_page_handler.js';
@@ -305,4 +305,38 @@ suite('DestinationDropdown', () => {
         assertEquals(
             PDF_DESTINATION.displayName, getSelectedDestinationRowLabel());
       });
+
+  // Verify click ignored if disabled is true.
+  test('cannot toggle open content when disabled', async () => {
+    assertFalse(element.disabled);
+
+    // Force disabled to true and emit change event to update UI.
+    const updateFn =
+        mockController.createFunctionMock(controller, 'shouldDisableDropdown');
+    updateFn.returnValue = true;
+    controller.dispatchEvent(
+        createCustomEvent(DESTINATION_DROPDOWN_DROPDOWN_DISABLED_CHANGED));
+    await toggleDropdown();
+
+    assertTrue(element.disabled);
+    assertFalse(isVisible(getDropdownContent()), 'Dropdown remains closed');
+  });
+
+  // Verify dropdown closed if open when disabled event returns true.
+  test('dropdown closed when disabled', async () => {
+    // Open dropdown.
+    assertFalse(element.disabled);
+    await toggleDropdown();
+    assertTrue(isVisible(getDropdownContent()), 'Dropdown open');
+
+    // Force disabled to true and emit change event to update UI.
+    const updateFn =
+        mockController.createFunctionMock(controller, 'shouldDisableDropdown');
+    updateFn.returnValue = true;
+    controller.dispatchEvent(
+        createCustomEvent(DESTINATION_DROPDOWN_DROPDOWN_DISABLED_CHANGED));
+
+    assertTrue(element.disabled);
+    assertFalse(isVisible(getDropdownContent()), 'Dropdown closed');
+  });
 });

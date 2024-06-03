@@ -10,7 +10,7 @@ import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './destination_dropdown.html.js';
-import {DESTINATION_DROPDOWN_UPDATE_DESTINATIONS, DESTINATION_DROPDOWN_UPDATE_SELECTED_DESTINATION, DestinationDropdownController} from './destination_dropdown_controller.js';
+import {DESTINATION_DROPDOWN_DROPDOWN_DISABLED_CHANGED, DESTINATION_DROPDOWN_UPDATE_DESTINATIONS, DESTINATION_DROPDOWN_UPDATE_SELECTED_DESTINATION, DestinationDropdownController} from './destination_dropdown_controller.js';
 import {type DestinationRowElement} from './destination_row.js';
 import {Destination} from './utils/print_preview_cros_app_types.js';
 
@@ -34,11 +34,16 @@ export class DestinationDropdownElement extends PolymerElement {
   static get properties() {
     return {
       destinations: Array,
+      disabled: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
       open: Boolean,
       selectedDestination: Object,
     };
   }
 
+  disabled: boolean;
   private controller: DestinationDropdownController;
   private eventTracker = new EventTracker();
   private destinations: Destination[] = [];
@@ -49,6 +54,10 @@ export class DestinationDropdownElement extends PolymerElement {
     super.connectedCallback();
     this.controller = new DestinationDropdownController(this.eventTracker);
 
+
+    this.eventTracker.add(
+        this.controller, DESTINATION_DROPDOWN_DROPDOWN_DISABLED_CHANGED,
+        (): void => this.onDestinationDropdownDisabledChanged());
     this.eventTracker.add(
         this.controller, DESTINATION_DROPDOWN_UPDATE_SELECTED_DESTINATION,
         (): void => this.onDestinationDropdownUpdateSelectedDestination());
@@ -59,6 +68,7 @@ export class DestinationDropdownElement extends PolymerElement {
     // Initialize properties using the controller.
     this.selectedDestination = this.controller.getSelectedDestination();
     this.destinations = this.controller.getDestinations();
+    this.disabled = this.controller.shouldDisableDropdown();
   }
 
   override disconnectedCallback(): void {
@@ -68,6 +78,10 @@ export class DestinationDropdownElement extends PolymerElement {
 
   // Handles toggling visibility of dropdown content.
   onSelectedClicked(): void {
+    if (this.disabled) {
+      return;
+    }
+
     this.open = !this.open;
   }
 
@@ -92,6 +106,17 @@ export class DestinationDropdownElement extends PolymerElement {
     }
 
     this.open = false;
+  }
+
+  // Handles updating disabled state.
+  private onDestinationDropdownDisabledChanged(): void {
+    this.disabled = this.controller.shouldDisableDropdown();
+
+    // Ensure content is closed if control disabled to avoid content being
+    // locked open.
+    if (this.disabled) {
+      this.open = false;
+    }
   }
 
   // Handles updating dropdown UI content when update content event occurs.
