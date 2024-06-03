@@ -263,7 +263,7 @@ void LocationIconView::SetAccessibleProperties(bool is_initialization) {
   if (is_initialization) {
     SetAccessibilityProperties(role, name, description);
   } else {
-    SetAccessibleRole(role);
+    GetViewAccessibility().SetRole(role);
     GetViewAccessibility().SetName(name);
     GetViewAccessibility().SetDescription(description);
   }

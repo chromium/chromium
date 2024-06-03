@@ -260,7 +260,7 @@ bool PermissionDashboardController::Update(
     indicator_chip->SetTooltipText(indicator_model->get_tooltip());
     indicator_chip->GetViewAccessibility().SetIsIgnored(false);
     // An alert role is required in order to fire the alert event.
-    indicator_chip->SetAccessibleRole(ax::mojom::Role::kAlert);
+    indicator_chip->GetViewAccessibility().SetRole(ax::mojom::Role::kAlert);
 
     auto name = l10n_util::GetStringUTF16(
         indicator_model->AccessibilityAnnouncementStringId());

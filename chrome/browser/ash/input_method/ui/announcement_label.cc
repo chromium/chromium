@@ -45,7 +45,7 @@ void AnnouncementLabel::AnnounceAfterDelay(const std::u16string& text,
 void AnnouncementLabel::DoAnnouncement(const std::u16string text) {
   announcement_text_ = text;
 
-  SetAccessibleRole(ax::mojom::Role::kStatus);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kStatus);
   SetAccessibleName(label_name_);
   GetViewAccessibility().SetDescription(announcement_text_);
 

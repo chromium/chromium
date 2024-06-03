@@ -428,7 +428,7 @@ void ZoomBubbleView::Init() {
   // Add zoom label with the new zoom percent.
   auto label = std::make_unique<ZoomValue>(web_contents());
   label->SetProperty(views::kMarginsKey, gfx::Insets(label_margin));
-  label->SetAccessibleRole(ax::mojom::Role::kAlert);
+  label->GetViewAccessibility().SetRole(ax::mojom::Role::kAlert);
   label_ = label.get();
   AddChildView(std::move(label));
 

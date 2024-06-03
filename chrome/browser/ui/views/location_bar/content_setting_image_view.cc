@@ -148,7 +148,7 @@ void ContentSettingImageView::Update() {
   SetVisible(true);
   GetViewAccessibility().SetIsIgnored(false);
   // An alert role is required in order to fire the alert event.
-  SetAccessibleRole(ax::mojom::Role::kAlert);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kAlert);
 
   if (content_setting_image_model_->ShouldNotifyAccessibility(web_contents)) {
     auto name = l10n_util::GetStringUTF16(

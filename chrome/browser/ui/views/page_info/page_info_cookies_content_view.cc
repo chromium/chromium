@@ -390,7 +390,8 @@ void PageInfoCookiesContentView::FpsSettingsButtonClicked(ui::Event const&) {
 void PageInfoCookiesContentView::AddThirdPartyCookiesContainer() {
   third_party_cookies_container_ =
       AddChildView(std::make_unique<views::BoxLayoutView>());
-  third_party_cookies_container_->SetAccessibleRole(ax::mojom::Role::kAlert);
+  third_party_cookies_container_->GetViewAccessibility().SetRole(
+      ax::mojom::Role::kAlert);
   third_party_cookies_container_->SetOrientation(
       views::BoxLayout::Orientation::kVertical);
   third_party_cookies_container_->SetVisible(false);

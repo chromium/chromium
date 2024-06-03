@@ -90,7 +90,8 @@ void ProgressBarDialogView::AddedToWidget() {
                 IDS_ASH_ARC_NEARBY_SHARE_FILES_PREPARATION_PROGRESS)
           : l10n_util::GetStringUTF16(
                 IDS_ASH_ARC_NEARBY_SHARE_FILE_PREPARATION_PROGRESS);
-  GetWidget()->GetRootView()->SetAccessibleRole(ax::mojom::Role::kDialog);
+  GetWidget()->GetRootView()->GetViewAccessibility().SetRole(
+      ax::mojom::Role::kDialog);
   GetWidget()->GetRootView()->SetAccessibleName(view_name);
 }
 

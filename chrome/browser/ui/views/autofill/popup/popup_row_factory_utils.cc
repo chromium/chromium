@@ -446,7 +446,7 @@ std::unique_ptr<PopupRowWithButtonView> CreateAutocompleteRowWithDeleteButton(
   button->SetPreferredSize(gfx::Size(radius * 2, radius * 2));
   button->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_AUTOFILL_DELETE_AUTOCOMPLETE_SUGGESTION_TOOLTIP));
-  button->SetAccessibleRole(ax::mojom::Role::kMenuItem);
+  button->GetViewAccessibility().SetRole(ax::mojom::Role::kMenuItem);
   button->GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
       IDS_AUTOFILL_DELETE_AUTOCOMPLETE_SUGGESTION_A11Y_HINT,
       popup_cell_utils::GetVoiceOverStringFromSuggestion(

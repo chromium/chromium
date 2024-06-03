@@ -28,6 +28,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/lottie/animation.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/animated_image_view.h"
 #include "ui/views/controls/image_view.h"
@@ -220,7 +221,7 @@ AuthenticatorRequestSheetView::CreateContentsBelowIllustration() {
         views::style::STYLE_HEADLINE_4);
     title_label->SetMultiLine(true);
     title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    title_label->SetAccessibleRole(ax::mojom::Role::kHeading);
+    title_label->GetViewAccessibility().SetRole(ax::mojom::Role::kHeading);
     title_label->SetAllowCharacterBreak(true);
     if (accessibility_state_utils::IsScreenReaderEnabled() &&
         should_focus_step_specific_content_ == AutoFocus::kNo) {

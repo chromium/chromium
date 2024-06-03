@@ -86,6 +86,7 @@
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/events/types/event_type.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -1513,7 +1514,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest,
   widget->Init(std::move(params));
 
   views::View* view = new views::View();
-  view->SetAccessibleRole(ax::mojom::Role::kButton);
+  view->GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
   view->SetAccessibleName(u"hello");
   view->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   widget->GetRootView()->AddChildView(view);
@@ -1592,7 +1593,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, TouchExploreSecondaryDisplay) {
   widget->Init(std::move(params));
 
   views::View* view = new views::View();
-  view->SetAccessibleRole(ax::mojom::Role::kButton);
+  view->GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
   view->SetAccessibleName(u"hello");
   view->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   widget->GetRootView()->AddChildView(view);

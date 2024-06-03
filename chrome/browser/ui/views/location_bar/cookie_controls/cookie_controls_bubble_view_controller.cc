@@ -78,7 +78,8 @@ CookieControlsBubbleViewController::CookieControlsBubbleViewController(
 
   bubble_view_->GetReloadingView()->SetVisible(false);
   bubble_view_->GetContentView()->SetVisible(true);
-  bubble_view_->GetContentView()->SetAccessibleRole(ax::mojom::Role::kAlert);
+  bubble_view_->GetContentView()->GetViewAccessibility().SetRole(
+      ax::mojom::Role::kAlert);
 }
 
 void CookieControlsBubbleViewController::OnUserClosedContentView() {
