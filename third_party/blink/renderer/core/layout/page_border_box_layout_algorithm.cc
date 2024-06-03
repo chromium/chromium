@@ -82,8 +82,13 @@ ConstraintSpace PageBorderBoxLayoutAlgorithm::CreateConstraintSpaceForPageArea()
   page_area_size.inline_size = LayoutUnit(page_area_size.inline_size.Ceil());
   page_area_size.block_size = LayoutUnit(page_area_size.block_size.Ceil());
 
+  // Use the writing mode of the document. The page context may have established
+  // its own writing mode, but that shouldn't affect the writing mode of the
+  // document contents.
   ConstraintSpaceBuilder space_builder(
-      GetConstraintSpace(), Style().GetWritingDirection(), /*is_new_fc=*/true);
+      GetConstraintSpace(), content_node_.Style().GetWritingDirection(),
+      /*is_new_fc=*/true);
+
   space_builder.SetAvailableSize(page_area_size);
   space_builder.SetPercentageResolutionSize(page_area_size);
   space_builder.SetInlineAutoBehavior(AutoSizeBehavior::kStretchImplicit);
@@ -91,7 +96,7 @@ ConstraintSpace PageBorderBoxLayoutAlgorithm::CreateConstraintSpaceForPageArea()
 
   space_builder.SetFragmentationType(kFragmentPage);
   space_builder.SetShouldPropagateChildBreakValues();
-  space_builder.SetFragmentainerBlockSize(page_area_size.block_size);
+  space_builder.SetFragmentainerBlockSizeFromAvailableSize();
   space_builder.SetIsAnonymous(true);
 
   return space_builder.ToConstraintSpace();

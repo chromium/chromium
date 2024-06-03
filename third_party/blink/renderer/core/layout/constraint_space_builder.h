@@ -136,6 +136,15 @@ class CORE_EXPORT ConstraintSpaceBuilder final {
       space_.EnsureRareData()->fragmentainer_block_size = size;
   }
 
+  // This function may be called after having set available size (and thus
+  // converted to the destination writing mode, if necessary).
+  void SetFragmentainerBlockSizeFromAvailableSize() {
+#if DCHECK_IS_ON()
+    DCHECK(is_available_size_set_);
+#endif
+    SetFragmentainerBlockSize(space_.AvailableSize().block_size);
+  }
+
   // Shrink the fragmentainer block-size, to reserve space for repeated table
   // headers and footers. If there's a repeated header, the argument to
   // SetFragmentainerOffset() also needs to be compensated for the block-size

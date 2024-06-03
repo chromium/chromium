@@ -1721,6 +1721,7 @@
       style_builder_custom_functions: ["initial", "inherit", "value"],
       priority: 1,
       valid_for_formatted_text: true,
+      valid_for_page_context: true,
       // Incremental code does not call DidChangeWritingMode(), which influences
       // the font.
       supports_incremental_style: false,
