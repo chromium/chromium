@@ -620,10 +620,10 @@ class TabStripLayout: UICollectionViewFlowLayout {
       attributes = selectedAttributes
     }
 
-    tabCell?.leadingSeparatorHidden = true
-    tabCell?.trailingSeparatorHidden = true
-
     if indexPathsOfDeletingItems.contains(itemIndexPath) {
+      tabCell?.leadingSeparatorHidden = true
+      tabCell?.trailingSeparatorHidden = true
+
       // Animate the disappearing item by fading it out and translating it down
       // by its height.
       attributes.alpha = 0
