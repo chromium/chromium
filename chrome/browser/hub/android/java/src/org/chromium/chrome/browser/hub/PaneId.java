@@ -13,6 +13,9 @@ import java.lang.annotation.RetentionPolicy;
  * ID values for each Pane in the Hub. New Panes must define a new unique PaneId. PaneId order does
  * not affect Pane order in the Hub. Add new entries to the end of the list before {@link
  * PaneId.COUNT}.
+ *
+ * <p>IMPORTANT: Do not delete or renumber entries. Keep this list in sync with HubPaneId in
+ * tools/metrics/histograms/metadata/android/enums.xml.
  */
 @IntDef({
     PaneId.TAB_SWITCHER,

@@ -1929,6 +1929,33 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Hub.PaneFocused" enum="HubPaneId"
+    expires_after="2024-11-17">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-hub-dev@google.com</owner>
+  <summary>
+    Reports which pane in the Hub becomes focused when a request to change focus
+    occurs. Focus may change either in response to user input on the pane
+    switcher or programmatically as a side-effect of another user action. For
+    example the see all tabs button on the Incognito reauth dialog. See
+    &quot;Android.Hub.PaneFocused.PaneSwitcher&quot; if only interested in user
+    actions on the pane switcher.
+  </summary>
+</histogram>
+
+<histogram name="Android.Hub.PaneFocused.PaneSwitcher" enum="HubPaneId"
+    expires_after="2024-11-17">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-hub-dev@google.com</owner>
+  <summary>
+    Reports which pane in the Hub becomes focused when a request to change focus
+    occurs in response to a user input on the pane switcher. This does not count
+    programmatic pane switches triggered as a side effect of other user actions
+    such as the back button, Incognito reauth dialog, etc. See
+    &quot;Android.Hub.PaneFocused&quot; for all pane focus events.
+  </summary>
+</histogram>
+
 <histogram name="Android.IncognitoNotification.FileNotDeleted" enum="Boolean"
     expires_after="2024-09-22">
   <owner>arabm@google.com</owner>

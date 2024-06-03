@@ -39339,6 +39339,38 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="SyncedTabGroup.DeleteWithLocal">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    User deleted a synced tab group along with the open local tab group.
+  </description>
+</action>
+
+<action name="SyncedTabGroup.DeleteWithoutLocal">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    User deleted a synced tab group that didn't have an open local tab group.
+  </description>
+</action>
+
+<action name="SyncedTabGroup.OpenExistingLocal">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    User opened a synced tab group that already had an existing local tab group.
+  </description>
+</action>
+
+<action name="SyncedTabGroup.OpenNewLocal">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    User opened a synced tab group in a new local tab group.
+  </description>
+</action>
+
 <action name="SyncPreferences_ManageGoogleAccountClicked">
   <owner>triploblastic@google.com</owner>
   <owner>msarda@chromium.org</owner>

@@ -22,6 +22,7 @@ import androidx.core.util.Pair;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.Token;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.bookmarks.PendingRunnable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -283,6 +284,12 @@ public class TabGroupListMediator {
             return;
         }
 
+        if (state == TabGroupState.HIDDEN) {
+            RecordUserAction.record("SyncedTabGroup.OpenNewLocal");
+        } else {
+            RecordUserAction.record("SyncedTabGroup.OpenExistingLocal");
+        }
+
         if (state == TabGroupState.IN_CURRENT_CLOSING) {
             for (SavedTabGroupTab savedTab : savedTabGroup.savedTabs) {
                 if (savedTab.localId != null) {
@@ -318,6 +325,12 @@ public class TabGroupListMediator {
         @TabGroupState int state = getState(savedTabGroup);
         if (state == TabGroupState.IN_ANOTHER) {
             return;
+        }
+
+        if (state == TabGroupState.HIDDEN) {
+            RecordUserAction.record("SyncedTabGroup.DeleteWithoutLocal");
+        } else {
+            RecordUserAction.record("SyncedTabGroup.DeleteWithLocal");
         }
 
         if (state == TabGroupState.IN_CURRENT_CLOSING) {

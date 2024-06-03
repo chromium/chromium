@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 import com.google.common.collect.ImmutableMap;
 
 import org.chromium.base.Callback;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -72,6 +73,8 @@ public class PaneManagerImpl implements PaneManager {
 
         Pane previousPane = mCurrentPaneSupplierImpl.get();
         if (nextPane == previousPane) return true;
+
+        RecordHistogram.recordEnumeratedHistogram("Android.Hub.PaneFocused", paneId, PaneId.COUNT);
 
         mCurrentPaneSupplierImpl.set(nextPane);
         if (isHubVisible()) {
