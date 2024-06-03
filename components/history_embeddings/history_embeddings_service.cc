@@ -453,6 +453,11 @@ QualityLogEntry HistoryEmbeddingsService::PrepareQualityLogEntry() {
 void HistoryEmbeddingsService::OnPassagesRetrieved(
     UrlPassages url_passages,
     std::vector<std::string> passages) {
+  VLOG(4) << "All " << passages.size() << " passages for url_id "
+          << url_passages.url_id << ":";
+  for (size_t i = 0; i < passages.size(); i++) {
+    VLOG(4) << i << ": \"" << passages[i] << '"';
+  }
   embedder_->ComputePassagesEmbeddings(
       PassageKind::PAGE_VISIT_PASSAGE, std::move(passages),
       base::BindOnce(&HistoryEmbeddingsService::OnPassagesEmbeddingsComputed,
