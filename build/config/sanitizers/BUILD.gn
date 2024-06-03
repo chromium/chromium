@@ -541,7 +541,7 @@ config("ubsan_flags") {
       "-fsanitize=object-size",
       "-fsanitize=return",
       "-fsanitize=returns-nonnull-attribute",
-      "-fsanitize=shift-exponent",
+      "-fsanitize=shift",
       "-fsanitize=signed-integer-overflow",
       "-fsanitize=unreachable",
       "-fsanitize=vla-bound",
