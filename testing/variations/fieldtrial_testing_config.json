@@ -4122,6 +4122,21 @@
             ]
         }
     ],
+    "ChromeOSOobePersonalizedOnboarding": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "OobePersonalizedOnboarding"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromeOSOobeQuickStart": [
         {
             "platforms": [
