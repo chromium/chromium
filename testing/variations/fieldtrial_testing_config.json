@@ -24471,8 +24471,7 @@
                     "enable_features": [
                         "BrowserThreadPoolAdjustment",
                         "InProcessGpuUseIOThread",
-                        "NetworkServiceDedicatedThread",
-                        "WebViewVizUseThreadPool"
+                        "NetworkServiceDedicatedThread"
                     ]
                 }
             ]
