@@ -20,6 +20,9 @@
 #include "ash/webui/shortcut_customization_ui/shortcuts_app_manager.h"
 #include "ash/webui/shortcut_customization_ui/shortcuts_app_manager_factory.h"
 #include "ash/webui/shortcut_customization_ui/url_constants.h"
+#include "build/branding_buildflags.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -31,6 +34,10 @@
 #include "ui/views/widget/widget.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/mojo_web_ui_controller.h"
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chromeos/ash/resources/internal/strings/grit/ash_internal_strings.h"
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 namespace ash {
 
@@ -69,7 +76,6 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
       {"restoreDefaultConflictMessage",
        IDS_SHORTCUT_CUSTOMIZATION_RESTORE_DEFAULT_ERROR_MESSAGE},
       {"resetAllShortcuts", IDS_SHORTCUT_CUSTOMIZATION_RESET_ALL_SHORTCUTS},
-      {"blockRightAltKey", IDS_SHORTCUT_CUSTOMIZATION_BLOCK_RIGHT_ALT_KEY},
       {"confirmResetAllShortcutsTitle",
        IDS_SHORTCUT_CUSTOMIZATION_CONFIRM_RESET_ALL_SHORTCUTS_TITLE},
       {"confirmResetAllShortcutsButton",
@@ -235,6 +241,20 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
        IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_ZOOM_TOGGLE},
   };
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  // For official builds, only add the real string if the feature is enabled.
+  if (Shell::Get()->keyboard_capability()->IsModifierSplitEnabled()) {
+    source->AddLocalizedString(
+        "blockRightAltKey",
+        IDS_SHORTCUT_CUSTOMIZATION_BLOCK_RIGHT_ALT_KEY_ERROR_MESSAGE);
+  } else {
+    source->AddLocalizedString("blockRightAltKey",
+                               IDS_SHORTCUT_CUSTOMIZATION_BLOCK_RIGHT_ALT_KEY);
+  }
+#else
+  source->AddLocalizedString("blockRightAltKey",
+                             IDS_SHORTCUT_CUSTOMIZATION_BLOCK_RIGHT_ALT_KEY);
+#endif
   source->AddLocalizedStrings(kLocalizedStrings);
   source->AddString("shortcutCustomizationLearnMoreUrl",
                     kShortcutCustomizationLearnMoreURL);

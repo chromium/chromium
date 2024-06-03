@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash, "Shortcut Customization App is ash-chrome only")
@@ -29,6 +30,7 @@ static_library("shortcut_customization_ui") {
     "//ash/webui/shortcut_customization_ui/mojom",
     "//ash/webui/shortcut_customization_ui/resources:resources",
     "//ash/webui/system_apps/public:system_web_app_config",
+    "//build:branding_buildflags",
     "//chromeos/ash/components/local_search_service/public/cpp",
     "//chromeos/strings",
     "//components/keyed_service/content:content",
@@ -37,6 +39,10 @@ static_library("shortcut_customization_ui") {
     "//ui/resources:webui_resources_grd_grit",
     "//ui/webui",
   ]
+
+  if (is_chrome_branded) {
+    deps += [ "//chromeos/ash/resources/internal/strings" ]
+  }
 }
 
 # Url constants pulled out to enable depending on production url constants in
