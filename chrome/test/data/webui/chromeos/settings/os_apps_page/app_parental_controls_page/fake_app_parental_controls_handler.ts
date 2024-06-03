@@ -39,6 +39,18 @@ export class FakeAppParentalControlsHandler extends TestBrowserProxy implements
     return Promise.resolve();
   }
 
+  onControlsDisabled(): Promise<void> {
+    this.methodCalled('onControlsDisabled');
+    // Unblock all apps.
+    for (const app of this.apps_) {
+      app.isBlocked = false;
+      if (this.observer_) {
+        this.observer_.onReadinessChanged(app);
+      }
+    }
+    return Promise.resolve();
+  }
+
   addAppForTesting(app: App) {
     this.apps_.push(app);
   }

@@ -29,6 +29,9 @@ interface AppParentalControlsHandler {
 
   // Binds remote and notifies receiver in app parental controls page UI.
   AddObserver(pending_remote<AppParentalControlsObserver> observer);
+
+  // Called when app controls are disabled in settings.
+  OnControlsDisabled();
 };
 
 // Observer interface that sends remote updates to the app parental controls UI

@@ -44,12 +44,14 @@ import {androidAppsVisible, isAppParentalControlsFeatureAvailable, isArcVmEnable
 import {RouteOriginMixin} from '../common/route_origin_mixin.js';
 import {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
 import {App as AppWithNotifications, AppNotificationsHandlerInterface, AppNotificationsObserverReceiver, Readiness} from '../mojom-webui/app_notification_handler.mojom-webui.js';
+import {AppParentalControlsHandlerInterface} from '../mojom-webui/app_parental_controls_handler.mojom-webui.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {Route, Router, routes} from '../router.js';
 
 import {AndroidAppsBrowserProxyImpl, AndroidAppsInfo} from './android_apps_browser_proxy.js';
 import {getAppNotificationProvider} from './app_notifications_page/mojo_interface_provider.js';
+import {getAppParentalControlsProvider} from './app_parental_controls/mojo_interface_provider.js';
 import {getTemplate} from './os_apps_page.html.js';
 
 export function isAppInstalled(app: AppWithNotifications): boolean {
@@ -281,6 +283,7 @@ export class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
   private isPluginVmAvailable_: boolean;
   private isRevampWayfindingEnabled_: boolean;
   private mojoInterfaceProvider_: AppNotificationsHandlerInterface;
+  private parentalControlsHandler_: AppParentalControlsHandlerInterface;
   private onStartupOptions_: DropdownMenuOptionList;
   private rowIcons_: Record<string, string>;
   private section_: Section;
@@ -323,6 +326,8 @@ export class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
     this.mojoInterfaceProvider_.getApps().then((result) => {
       this.appsWithNotifications_ = result.apps;
     });
+
+    this.parentalControlsHandler_ = getAppParentalControlsProvider();
   }
 
   override ready(): void {
@@ -399,6 +404,7 @@ export class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
   private onDisablePinVerified_(): void {
     this.setPrefValue('on_device_app_controls.setup_completed', false);
     this.setPrefValue('on_device_app_controls.pin', '');
+    this.parentalControlsHandler_.onControlsDisabled();
   }
 
   private onVerifyPinDialogClose_(): void {

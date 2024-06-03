@@ -80,6 +80,10 @@ void AppParentalControlsHandler::AddObserver(
   observer_list_.Add(std::move(observer));
 }
 
+void AppParentalControlsHandler::OnControlsDisabled() {
+  blocked_app_registry_->RemoveAllApps();
+}
+
 void AppParentalControlsHandler::OnAppUpdate(const apps::AppUpdate& update) {
   if (update.ReadinessChanged() && ShouldIncludeApp(update)) {
     NotifyAppChanged(CreateAppPtr(update));

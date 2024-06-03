@@ -40,6 +40,10 @@ class BlockedAppRegistry : public apps::AppRegistryCache::Observer {
   // Marks app as unblocked. Will have no effect if the app is not blocked.
   void RemoveApp(const std::string& app_id);
 
+  // Removes all apps from the registry and marks all blocked apps as unblocked.
+  // No effect if the registry is empty.
+  void RemoveAllApps();
+
   // Returns the set with ids for all blocked apps.
   std::set<std::string> GetBlockedApps();
 

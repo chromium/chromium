@@ -45,6 +45,7 @@ class AppParentalControlsHandler
   void AddObserver(mojo::PendingRemote<
                    app_parental_controls::mojom::AppParentalControlsObserver>
                        observer) override;
+  void OnControlsDisabled() override;
 
   void BindInterface(
       mojo::PendingReceiver<

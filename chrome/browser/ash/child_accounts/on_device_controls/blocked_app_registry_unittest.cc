@@ -117,6 +117,25 @@ TEST_F(BlockedAppRegistryTest, RemoveApp) {
   EXPECT_EQ(LocalAppState::kAvailable, registry()->GetAppState(app_ids[1]));
 }
 
+// Tests registry state when removing all apps.
+TEST_F(BlockedAppRegistryTest, RemoveAllApps) {
+  const std::vector<std::string> app_ids = {"abc", "def", "ghi"};
+
+  registry()->AddApp(app_ids[0]);
+  registry()->AddApp(app_ids[1]);
+  registry()->AddApp(app_ids[2]);
+  EXPECT_EQ(3UL, registry()->GetBlockedApps().size());
+  EXPECT_EQ(LocalAppState::kBlocked, registry()->GetAppState(app_ids[0]));
+  EXPECT_EQ(LocalAppState::kBlocked, registry()->GetAppState(app_ids[1]));
+  EXPECT_EQ(LocalAppState::kBlocked, registry()->GetAppState(app_ids[2]));
+
+  registry()->RemoveAllApps();
+  EXPECT_EQ(0UL, registry()->GetBlockedApps().size());
+  EXPECT_EQ(LocalAppState::kAvailable, registry()->GetAppState(app_ids[0]));
+  EXPECT_EQ(LocalAppState::kAvailable, registry()->GetAppState(app_ids[1]));
+  EXPECT_EQ(LocalAppState::kAvailable, registry()->GetAppState(app_ids[2]));
+}
+
 // Tests that available app is not blocked upon installation and reinstallation.
 TEST_F(BlockedAppRegistryTest, ReinstallAvailableApp) {
   const std::string package_name = "com.example.app1", app_name = "app1";

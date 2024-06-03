@@ -5,6 +5,8 @@
 #include "chrome/browser/ash/child_accounts/on_device_controls/blocked_app_registry.h"
 
 #include <algorithm>
+#include <set>
+#include <string>
 #include <utility>
 
 #include "app_controls_metrics_utils.h"
@@ -101,6 +103,18 @@ void BlockedAppRegistry::RemoveApp(const std::string& app_id) {
                                GetBlockedApps().size());
   base::UmaHistogramEnumeration(kOnDeviceControlsBlockAppActionHistogramName,
                                 OnDeviceControlsBlockAppAction::kUnblockApp);
+}
+
+void BlockedAppRegistry::RemoveAllApps() {
+  VLOG(1) << "app-controls: unblocking all apps";
+
+  // Registry must be cleared before apps are unblocked so that `GetAppState`
+  // correctly identifies that the apps are available.
+  const std::set<std::string> blocked_apps = GetBlockedApps();
+  registry_.clear();
+  app_service_->UnblockApps(blocked_apps);
+
+  store_.SaveToPref(registry_);
 }
 
 std::set<std::string> BlockedAppRegistry::GetBlockedApps() {
