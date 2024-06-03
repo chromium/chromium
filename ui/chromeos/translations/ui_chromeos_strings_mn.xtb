@@ -34,7 +34,7 @@
 <translation id="1249250836236328755">Төрөл</translation>
 <translation id="1254593899333212300">Интернетийн шууд холболт</translation>
 <translation id="1272293450992660632">ПИН кодын утга таарахгүй байна.</translation>
-<translation id="1280820357415527819">Мобайл сүлжээг хайж байна</translation>
+<translation id="1280820357415527819">Хөдөлгөөнт холбооны сүлжээг хайж байна</translation>
 <translation id="1293556467332435079">Файлууд</translation>
 <translation id="1297922636971898492">Google Drive одоогоор боломжгүй байна. Google Drive ажиллаж эхлэхэд байршуулалт автоматиар эхэлнэ.</translation>
 <translation id="1306130176943817227">Устгах боломжгүй. Зүйлийг ашиглаж байна.</translation>
@@ -331,7 +331,7 @@
 <translation id="3619115746895587757">Капучино</translation>
 <translation id="3619593063686672873">Саяхны видео байхгүй байна</translation>
 <translation id="3634507049637220048">Сүлжээ: <ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, таны администратор удирддаг, дэлгэрэнгүй мэдээлэл</translation>
-<translation id="36451918667380448">Мобайл сүлжээ нийлүүлэгчийг түгжсэн. Тусламж авах бол нийлүүлэгчтэйгээ холбогдоно уу.</translation>
+<translation id="36451918667380448">Хөдөлгөөнт холбооны сүлжээ нийлүүлэгчийг түгжсэн. Тусламж авах бол нийлүүлэгчтэйгээ холбогдоно уу.</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> зүйлийг зөөсөн.</translation>
 <translation id="3658269352872031728"><ph name="SELECTED_FILE_COUNT" /> файл сонгосон</translation>
 <translation id="3685122418104378273">Гар утасны мэдээллийг ашиглаж байх үед Google Drive синк нь автоматаар идэвхгүй болно.</translation>
@@ -402,7 +402,7 @@
 <translation id="4277536868133419688"><ph name="FILTER_NAME" /> шүүлтүүр асаалттай байна.</translation>
 <translation id="4290535918735525311">Linux-тай хуваалцсан 1 фолдер</translation>
 <translation id="4299729908419173967">Бразил хэл</translation>
-<translation id="4302605047395093221">Энэ төхөөрөмжийг ашиглаж буй дурын хүн энэ мобайл сүлжээнд холбогдохын тулд ПИН оруулах шаардлагатай болно</translation>
+<translation id="4302605047395093221">Энэ төхөөрөмжийг ашиглаж буй дурын хүн энэ хөдөлгөөнт холбооны сүлжээнд холбогдохын тулд ПИН оруулах шаардлагатай болно</translation>
 <translation id="4303531889494116116">Энэ сүлжээ завгүй байна. Дараа дахин оролдоно уу.</translation>
 <translation id="4309915981827077375">Ерөнхий мэдээлэл</translation>
 <translation id="432252891123397018">Стандарт гартай румын</translation>

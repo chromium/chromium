@@ -187,7 +187,7 @@
 <translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Нове сповіщення}one{# нове сповіщення}few{# нові сповіщення}many{# нових сповіщень}other{# нового сповіщення}}</translation>
 <translation id="1139923033416533844">Використання пам'яті</translation>
 <translation id="1140351953533677694">Отримувати доступ до пристроїв Bluetooth і серійних пристроїв</translation>
-<translation id="114036956334641753">Аудіо та субтитри</translation>
+<translation id="114036956334641753">Аудіо й субтитри</translation>
 <translation id="1142002900084379065">Останні фотографії</translation>
 <translation id="1142713751288681188">Тип паперу</translation>
 <translation id="1143142264369994168">Підписувач сертифіката</translation>
@@ -2414,7 +2414,7 @@
 <translation id="2754226775788136540">Пошук пристроїв для швидкої пари, збережених в обліковому записі <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="2754825024506485820">Знаходьте потрібні додатки (зокрема для роботи, розваг тощо) у магазині Google Play. Ви можете встановлювати додатки будь-коли.</translation>
 <translation id="2755349111255270002">Скинути налаштування цього пристрою <ph name="DEVICE_TYPE" /></translation>
-<translation id="2755367719610958252">Керувати спеціальними можливостями</translation>
+<translation id="2755367719610958252">Керувати функціями доступності</translation>
 <translation id="275662540872599901">екран вимкнено</translation>
 <translation id="2756936198272359372">Заборонено використовувати JavaScript</translation>
 <translation id="2757161511365746634">Переглянути відомості принтера</translation>
@@ -6018,7 +6018,7 @@
 <translation id="5548644592758170183">Показувати зліва</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="5549511085333906441">Виберіть налаштування</translation>
-<translation id="5551573675707792127">Клавіатура та введення тексту</translation>
+<translation id="5551573675707792127">Клавіатура й введення тексту</translation>
 <translation id="5553089923092577885">Зіставлення політик сертифікатів</translation>
 <translation id="5554240068773209752">Натисніть тут, щоб налаштувати елементи керування</translation>
 <translation id="5554403733534868102">Ви востаннє чекаєте, поки пристрій оновиться</translation>
