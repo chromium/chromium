@@ -86,7 +86,7 @@ suite('FakePrintPreviewPageHandler', () => {
   // Verify the fake PrintPreviewHandler returns a successful SessionContext by
   // default.
   test('start session returns SessionContext', async () => {
-    const result = await printPreviewPageHandler.startSession();
+    const result = await printPreviewPageHandler.startSession('fake-token');
     assertEquals(FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL, result);
   });
 

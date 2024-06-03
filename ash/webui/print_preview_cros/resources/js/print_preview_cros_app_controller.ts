@@ -17,6 +17,9 @@ import {SessionContext} from './utils/print_preview_cros_app_types.js';
  * the CrOS preview backend and required initialization information.
  */
 
+// WebUI property key used to store dialog args.
+export const DIALOG_ARG_PROPERTY_KEY = 'dialogArguments';
+
 export class PrintPreviewCrosAppController extends EventTarget {
   private printPreviewPageHandler = getPrintPreviewPageHandler();
   private sessionContext: SessionContext;
@@ -24,17 +27,23 @@ export class PrintPreviewCrosAppController extends EventTarget {
   private destinationManager = DestinationManager.getInstance();
   private previewTicketManager = PreviewTicketManager.getInstance();
   private printTicketManager = PrintTicketManager.getInstance();
+  private dialogArgs: string;
 
   constructor() {
     super();
 
-    this.printPreviewPageHandler.startSession().then(
-        (sessionContext: SessionContext): void => {
+    this.dialogArgs = chrome.getVariableValue(DIALOG_ARG_PROPERTY_KEY);
+    this.printPreviewPageHandler.startSession(this.dialogArgs)
+        .then((sessionContext: SessionContext): void => {
           this.sessionContext = sessionContext;
           this.capabilitiesManager.initializeSession(this.sessionContext);
           this.destinationManager.initializeSession(this.sessionContext);
           this.previewTicketManager.initializeSession(this.sessionContext);
           this.printTicketManager.initializeSession(this.sessionContext);
         });
+  }
+
+  getDialogArgsForTesting(): string {
+    return this.dialogArgs;
   }
 }

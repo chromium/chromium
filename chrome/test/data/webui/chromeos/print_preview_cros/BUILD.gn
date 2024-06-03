@@ -36,6 +36,8 @@ build_webui_tests("build_webui_tests") {
     "validation_utils_test.ts",
   ]
 
+  ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
+
   ts_deps = [
     "//ash/webui/common/resources:build_ts",
     "//ash/webui/print_preview_cros/resources:build_ts",

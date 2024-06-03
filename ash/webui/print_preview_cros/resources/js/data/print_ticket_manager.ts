@@ -72,7 +72,7 @@ export class PrintTicketManager extends EventTarget {
     this.printTicket = {
       // Set print ticket defaults.
       ...DEFAULT_PARTIAL_PRINT_TICKET,
-      printPreviewId: this.sessionContext.printPreviewId,
+      printPreviewId: this.sessionContext.printPreviewToken,
       previewModifiable: this.sessionContext.isModifiable,
       shouldPrintSelectionOnly: this.sessionContext.hasSelection,
       // Active printer selected during initialization is selected by system.

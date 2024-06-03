@@ -9,9 +9,10 @@ import {DESTINATION_MANAGER_SESSION_INITIALIZED, DestinationManager} from 'chrom
 import {PREVIEW_TICKET_MANAGER_SESSION_INITIALIZED, PreviewTicketManager} from 'chrome://os-print/js/data/preview_ticket_manager.js';
 import {PRINT_TICKET_MANAGER_SESSION_INITIALIZED, PrintTicketManager} from 'chrome://os-print/js/data/print_ticket_manager.js';
 import {FakePrintPreviewPageHandler} from 'chrome://os-print/js/fakes/fake_print_preview_page_handler.js';
-import {PrintPreviewCrosAppController} from 'chrome://os-print/js/print_preview_cros_app_controller.js';
+import {DIALOG_ARG_PROPERTY_KEY, PrintPreviewCrosAppController} from 'chrome://os-print/js/print_preview_cros_app_controller.js';
 import {getPrintPreviewPageHandler} from 'chrome://os-print/js/utils/mojo_data_providers.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {MockController, type MockMethod} from 'chrome://webui-test/chromeos/mock_controller.m.js';
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
@@ -20,11 +21,21 @@ import {resetDataManagersAndProviders} from './test_utils.js';
 suite('PrintPreviewCrosAppController', () => {
   let controller: PrintPreviewCrosAppController;
   let printPreviewPageHandler: FakePrintPreviewPageHandler;
+  let mockController: MockController;
   let mockTimer: MockTimer;
+  let getVariableValueFn: MockMethod;
 
   const testDelay = 1;
+  const dialogArgs = 'fake-token';
 
   setup(() => {
+    mockController = new MockController();
+    // Mock chrome function for looking up dialog args.
+    getVariableValueFn =
+        mockController.createFunctionMock(chrome, 'getVariableValue');
+    getVariableValueFn.returnValue = dialogArgs;
+    getVariableValueFn.addExpectation(DIALOG_ARG_PROPERTY_KEY);
+
     mockTimer = new MockTimer();
     mockTimer.install();
 
@@ -39,12 +50,19 @@ suite('PrintPreviewCrosAppController', () => {
     printPreviewPageHandler.reset();
     resetDataManagersAndProviders();
     mockTimer.uninstall();
+    mockController.reset();
   });
 
   // Verify controller is an event target.
   test('controller is an event target', () => {
     assertTrue(
         controller instanceof EventTarget, 'Controller is an event target');
+  });
+
+  // Verify getVariableValue is called.
+  test('controller retrieves token from dialog arguments', () => {
+    mockController.verifyMocks();
+    assertEquals(dialogArgs, controller.getDialogArgsForTesting());
   });
 
   // Verify `PrintPreviewPageHandler.startSession` is called when controller is
@@ -68,6 +86,9 @@ suite('PrintPreviewCrosAppController', () => {
     assertEquals(
         expectedCalls, printPreviewPageHandler.getCallCount(method),
         `Start session should be called once`);
+    assertEquals(
+        dialogArgs, printPreviewPageHandler.dialogArgs,
+        'Start session called with dialog args');
   });
 
   // Verify destination manager is initialized after start session resolves.

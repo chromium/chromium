@@ -255,7 +255,8 @@ suite('PrintTicketManager', () => {
 
         expectedTicket = {
           ...partialTicket,
-          printPreviewId: FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL.printPreviewId,
+          printPreviewId:
+              FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL.printPreviewToken,
           shouldPrintSelectionOnly:
               FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL.hasSelection,
         } as PrintTicket;
@@ -461,7 +462,8 @@ suite('PrintTicketManager', () => {
 
         expectedTicket = {
           ...partialTicket,
-          printPreviewId: FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL.printPreviewId,
+          printPreviewId:
+              FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL.printPreviewToken,
           shouldPrintSelectionOnly:
               FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL.hasSelection,
         } as PrintTicket;

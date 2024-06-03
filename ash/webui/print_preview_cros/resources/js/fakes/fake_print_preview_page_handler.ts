@@ -28,7 +28,7 @@ export const FAKE_PRINT_REQUEST_FAILURE_INVALID_SETTINGS_ERROR:
 const CANCEL_METHOD = 'cancel';
 const START_SESSION_METHOD = 'startSession';
 export const FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL: SessionContext = {
-  printPreviewId: new UnguessableToken(),
+  printPreviewToken: new UnguessableToken(),
   isModifiable: true,
   hasSelection: true,
 };
@@ -41,6 +41,7 @@ export class FakePrintPreviewPageHandler implements PrintPreviewPageHandler {
   private callCount: Map<string, number> = new Map<string, number>();
   private testDelayMs = 0;
   private previewTicket: PreviewTicket|null = null;
+  dialogArgs = '';
 
   constructor() {
     this.registerMethods();
@@ -67,6 +68,7 @@ export class FakePrintPreviewPageHandler implements PrintPreviewPageHandler {
     this.registerMethods();
     this.testDelayMs = 0;
     this.previewTicket = null;
+    this.dialogArgs = '';
   }
 
   setPrintResult(result: PrintRequestOutcome) {
@@ -86,7 +88,8 @@ export class FakePrintPreviewPageHandler implements PrintPreviewPageHandler {
   }
 
   // Mock implementation of startSession.
-  startSession(): Promise<SessionContext> {
+  startSession(dialogArgs: string): Promise<SessionContext> {
+    this.dialogArgs = dialogArgs;
     this.incrementCallCount(START_SESSION_METHOD);
     return this.methods.resolveMethodWithDelay(
         START_SESSION_METHOD, this.testDelayMs);

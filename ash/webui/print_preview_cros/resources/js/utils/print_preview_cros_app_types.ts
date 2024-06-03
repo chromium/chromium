@@ -489,7 +489,7 @@ export interface Capabilities {
 export interface SessionContext {
   // ID used to map a CrOS preview session to the responsible PrintViewManager
   // and related web contents.
-  printPreviewId: UnguessableToken;
+  printPreviewToken: UnguessableToken;
 
   // Print param which tells whether source is a PDF or HTML(modifiable).
   isModifiable: boolean;
@@ -504,7 +504,7 @@ export interface PrintPreviewPageHandler {
   // Completes initialization on the backend and provides immutable
   // configuration details for the current CrOS preview request in the form of
   // a SessionContext.
-  startSession(): Promise<SessionContext>;
+  startSession(dialogArgs: string): Promise<SessionContext>;
 
   // Start the print job and close the window. Requires a print ticket to detail
   // how print job should be configured.Needs to wait for result to display
