@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_PERMISSIONS_SYSTEM_PERMISSION_DELEGATE_H_
-#define CHROME_BROWSER_UI_VIEWS_PERMISSIONS_SYSTEM_PERMISSION_DELEGATE_H_
+#ifndef CHROME_BROWSER_PERMISSIONS_SYSTEM_PERMISSION_DELEGATE_H_
+#define CHROME_BROWSER_PERMISSIONS_SYSTEM_PERMISSION_DELEGATE_H_
 
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt.h"
 
@@ -25,14 +25,15 @@ class EmbeddedPermissionPrompt::SystemPermissionDelegate {
   SystemPermissionDelegate(const SystemPermissionDelegate&) = delete;
   SystemPermissionDelegate& operator=(const SystemPermissionDelegate&) = delete;
 
-  virtual bool ShouldShowSystemPermissionPrompt() = 0;
-  virtual bool ShouldShowSystemPermissionSettingsView() = 0;
+  virtual bool CanShowSystemPermissionPrompt() = 0;
 
   // Initiates a system permission request and invokes the provided callback
   // once the user's decision is made.
   virtual void RequestSystemPermission(
       SystemPermissionResponseCallback callback) = 0;
   virtual void ShowSystemPermissionSettingsView() = 0;
+  virtual bool IsSystemPermissionDenied() = 0;
+  virtual bool IsSystemPermissionAllowed() = 0;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_PERMISSIONS_SYSTEM_PERMISSION_DELEGATE_H_
+#endif  // CHROME_BROWSER_PERMISSIONS_SYSTEM_PERMISSION_DELEGATE_H_

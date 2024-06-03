@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/ui.gni")
 import("//components/optimization_guide/features.gni")
 import("//third_party/protobuf/proto_library.gni")
 
@@ -122,6 +123,25 @@ source_set("permissions") {
 
   if (is_chromeos_ash) {
     deps += [ "//chrome/browser/ash" ]
+  }
+
+  if (toolkit_views) {
+    sources += [
+      "default_system_permission_delegate.cc",
+      "default_system_permission_delegate.h",
+      "system_permission_delegate.h",
+      "system_permission_delegate_factory.cc",
+      "system_permission_delegate_factory.h",
+    ]
+
+    if (is_mac) {
+      sources += [
+        "camera_system_permission_delegate_mac.cc",
+        "camera_system_permission_delegate_mac.h",
+        "microphone_system_permission_delegate_mac.cc",
+        "microphone_system_permission_delegate_mac.h",
+      ]
+    }
   }
 
   if (build_with_tflite_lib) {
