@@ -89,6 +89,11 @@ public class AwServiceWorkerController {
         }
 
         @Override
+        public boolean shouldAcceptCookies() {
+            return mBrowserContext.getCookieManager().acceptCookie();
+        }
+
+        @Override
         public boolean shouldAcceptThirdPartyCookies() {
             // We currently don't allow third party cookies in service workers,
             // see e.g. AwCookieAccessPolicy::GetShouldAcceptThirdPartyCookies.

@@ -392,6 +392,19 @@ public class MultiProfileTest extends AwParameterizedTest {
         // Check that the default cookie manager still does not have cookies.
         Assert.assertFalse(defaultCookieManager.hasCookies());
         webServer.shutdown();
+
+        // Check that the cookie managers have different accept cookie settings.
+        defaultCookieManager.setAcceptCookie(true);
+        otherCookieManager.setAcceptCookie(false);
+
+        Assert.assertTrue(defaultCookieManager.acceptCookie());
+        Assert.assertFalse(otherCookieManager.acceptCookie());
+
+        defaultCookieManager.setAcceptCookie(false);
+        otherCookieManager.setAcceptCookie(true);
+
+        Assert.assertFalse(defaultCookieManager.acceptCookie());
+        Assert.assertTrue(otherCookieManager.acceptCookie());
     }
 
     @Test

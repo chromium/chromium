@@ -25,7 +25,8 @@ namespace android_webview {
 // or between reading vs. writing cookies.
 class AwCookieAccessPolicy {
  public:
-  static AwCookieAccessPolicy* GetInstance();
+  AwCookieAccessPolicy();
+  ~AwCookieAccessPolicy();
 
   AwCookieAccessPolicy(const AwCookieAccessPolicy&) = delete;
   AwCookieAccessPolicy& operator=(const AwCookieAccessPolicy&) = delete;
@@ -53,11 +54,7 @@ class AwCookieAccessPolicy {
       bool has_storage_access);
 
  private:
-  friend class base::NoDestructor<AwCookieAccessPolicy>;
   friend class AwCookieAccessPolicyTest;
-
-  AwCookieAccessPolicy();
-  ~AwCookieAccessPolicy();
 
   net::NetworkDelegate::PrivacySetting CanAccessCookies(
       const GURL& url,

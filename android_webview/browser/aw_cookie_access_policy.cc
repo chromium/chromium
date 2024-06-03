@@ -35,11 +35,6 @@ AwCookieAccessPolicy::~AwCookieAccessPolicy() = default;
 
 AwCookieAccessPolicy::AwCookieAccessPolicy() = default;
 
-AwCookieAccessPolicy* AwCookieAccessPolicy::GetInstance() {
-  static base::NoDestructor<AwCookieAccessPolicy> instance;
-  return instance.get();
-}
-
 bool AwCookieAccessPolicy::GetShouldAcceptCookies() {
   AutoLock lock(lock_);
   return accept_cookies_;

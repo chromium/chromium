@@ -9,11 +9,14 @@
 #include <utility>
 #include <vector>
 
+#include "android_webview/browser/aw_browser_context.h"
 #include "android_webview/browser/aw_cookie_access_policy.h"
+#include "android_webview/browser/cookie_manager.h"
 #include "base/memory/ptr_util.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -77,7 +80,8 @@ void AwProxyingRestrictedCookieManager::CreateAndBind(
     bool is_service_worker,
     int process_id,
     int frame_id,
-    mojo::PendingReceiver<network::mojom::RestrictedCookieManager> receiver) {
+    mojo::PendingReceiver<network::mojom::RestrictedCookieManager> receiver,
+    AwCookieAccessPolicy* aw_cookie_access_policy) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   std::optional<content::GlobalRenderFrameHostToken> frame_token;
@@ -92,7 +96,7 @@ void AwProxyingRestrictedCookieManager::CreateAndBind(
       base::BindOnce(
           &AwProxyingRestrictedCookieManager::CreateAndBindOnIoThread,
           std::move(underlying_rcm), is_service_worker, frame_token,
-          std::move(receiver)));
+          std::move(receiver), aw_cookie_access_policy));
 }
 
 AwProxyingRestrictedCookieManager::~AwProxyingRestrictedCookieManager() {
@@ -263,11 +267,13 @@ AwProxyingRestrictedCookieManager::AwProxyingRestrictedCookieManager(
         underlying_restricted_cookie_manager,
     bool is_service_worker,
     const std::optional<const content::GlobalRenderFrameHostToken>&
-        global_frame_token)
+        global_frame_token,
+    AwCookieAccessPolicy* cookie_access_policy)
     : underlying_restricted_cookie_manager_(
           std::move(underlying_restricted_cookie_manager)),
       is_service_worker_(is_service_worker),
-      global_frame_token_(global_frame_token) {
+      global_frame_token_(global_frame_token),
+      cookie_access_policy_(*cookie_access_policy) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 }
 
@@ -277,10 +283,12 @@ void AwProxyingRestrictedCookieManager::CreateAndBindOnIoThread(
     bool is_service_worker,
     const std::optional<const content::GlobalRenderFrameHostToken>&
         global_frame_token,
-    mojo::PendingReceiver<network::mojom::RestrictedCookieManager> receiver) {
+    mojo::PendingReceiver<network::mojom::RestrictedCookieManager> receiver,
+    AwCookieAccessPolicy* cookie_access_policy) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   auto wrapper = base::WrapUnique(new AwProxyingRestrictedCookieManager(
-      std::move(underlying_rcm), is_service_worker, global_frame_token));
+      std::move(underlying_rcm), is_service_worker, global_frame_token,
+      cookie_access_policy));
   mojo::MakeSelfOwnedReceiver(std::move(wrapper), std::move(receiver));
 }
 
@@ -291,11 +299,11 @@ PrivacySetting AwProxyingRestrictedCookieManager::AllowCookies(
   if (is_service_worker_) {
     // Service worker cookies are always first-party, so only need to check
     // the global toggle.
-    return AwCookieAccessPolicy::GetInstance()->GetShouldAcceptCookies()
+    return cookie_access_policy_->GetShouldAcceptCookies()
                ? PrivacySetting::kStateAllowed
                : PrivacySetting::kStateDisallowed;
   } else {
-    return AwCookieAccessPolicy::GetInstance()->AllowCookies(
+    return cookie_access_policy_->AllowCookies(
         url, site_for_cookies, global_frame_token_, has_storage_access);
   }
 }

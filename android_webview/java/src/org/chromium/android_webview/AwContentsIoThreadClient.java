@@ -31,6 +31,9 @@ public abstract class AwContentsIoThreadClient {
     public abstract boolean shouldBlockNetworkLoads();
 
     @CalledByNative
+    public abstract boolean shouldAcceptCookies();
+
+    @CalledByNative
     public abstract boolean shouldAcceptThirdPartyCookies();
 
     @CalledByNative

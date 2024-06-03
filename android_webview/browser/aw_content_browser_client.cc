@@ -1107,9 +1107,12 @@ uint32_t AwContentBrowserClient::GetWebSocketOptions(
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(frame);
   AwContents* aw_contents = AwContents::FromWebContents(web_contents);
+  AwBrowserContext* aw_context =
+      AwBrowserContext::FromWebContents(web_contents);
 
-  bool global_cookie_policy =
-      AwCookieAccessPolicy::GetInstance()->GetShouldAcceptCookies();
+  bool global_cookie_policy = aw_context->GetCookieManager()
+                                  ->cookie_access_policy()
+                                  ->GetShouldAcceptCookies();
   bool third_party_cookie_policy = aw_contents->AllowThirdPartyCookies();
   if (!global_cookie_policy) {
     options |= network::mojom::kWebSocketOptionBlockAllCookies;
@@ -1135,9 +1138,14 @@ bool AwContentBrowserClient::WillCreateRestrictedCookieManager(
       target_rcm_remote;
   *receiver = target_rcm_remote.InitWithNewPipeAndPassReceiver();
 
+  AwBrowserContext* aw_context =
+      static_cast<AwBrowserContext*>(browser_context);
+  AwCookieAccessPolicy* aw_cookie_access_policy =
+      aw_context->GetCookieManager()->cookie_access_policy();
+
   AwProxyingRestrictedCookieManager::CreateAndBind(
       std::move(target_rcm_remote), is_service_worker, process_id, routing_id,
-      std::move(orig_receiver));
+      std::move(orig_receiver), aw_cookie_access_policy);
 
   return false;  // only made a proxy, still need the actual impl to be made.
 }
@@ -1256,6 +1264,8 @@ bool AwContentBrowserClient::IsAttributionReportingOperationAllowed(
     const url::Origin* destination_origin,
     const url::Origin* reporting_origin,
     bool* can_bypass) {
+  AwBrowserContext* aw_context =
+      static_cast<AwBrowserContext*>(browser_context);
   // WebView only supports OS-level attribution and not web-attribution.
   // Note: We do not check here if attribution reporting has been disabled
   // for the associated WebView as this is checked at the start of processing
@@ -1277,7 +1287,9 @@ bool AwContentBrowserClient::IsAttributionReportingOperationAllowed(
       return false;
     case AttributionReportingOperation::kOsSourceTransitionalDebugReporting:
     case AttributionReportingOperation::kOsTriggerTransitionalDebugReporting: {
-      if (!AwCookieAccessPolicy::GetInstance()->GetShouldAcceptCookies()) {
+      if (!aw_context->GetCookieManager()
+               ->cookie_access_policy()
+               ->GetShouldAcceptCookies()) {
         return false;
       }
 

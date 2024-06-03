@@ -498,6 +498,13 @@ bool AwContentsIoThreadClient::ShouldBlockSpecialFileUrls() const {
                                                                   java_object_);
 }
 
+bool AwContentsIoThreadClient::ShouldAcceptCookies() const {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  JNIEnv* env = AttachCurrentThread();
+  return Java_AwContentsIoThreadClient_shouldAcceptCookies(env, java_object_);
+}
+
 bool AwContentsIoThreadClient::ShouldAcceptThirdPartyCookies() const {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 

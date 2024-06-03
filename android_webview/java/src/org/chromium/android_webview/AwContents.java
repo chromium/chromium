@@ -715,6 +715,11 @@ public class AwContents implements SmartClipProvider {
         }
 
         @Override
+        public boolean shouldAcceptCookies() {
+            return mBrowserContext.getCookieManager().acceptCookie();
+        }
+
+        @Override
         public boolean shouldAcceptThirdPartyCookies() {
             return mSettings.getAcceptThirdPartyCookies();
         }

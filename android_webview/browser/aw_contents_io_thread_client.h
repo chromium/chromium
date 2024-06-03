@@ -132,6 +132,9 @@ class AwContentsIoThreadClient {
   // This method is called on the IO thread only.
   bool ShouldBlockNetworkLoads() const;
 
+  // Retrieve the AcceptCookies setting value of this AwContents.
+  bool ShouldAcceptCookies() const;
+
   // Retrieve the AcceptThirdPartyCookies setting value of this AwContents.
   bool ShouldAcceptThirdPartyCookies() const;
 

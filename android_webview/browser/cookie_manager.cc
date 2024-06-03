@@ -445,13 +445,13 @@ void CookieManager::SetWorkaroundHttpSecureCookiesAsyncHelper(
 void CookieManager::SetShouldAcceptCookies(JNIEnv* env,
                                            const JavaParamRef<jobject>& obj,
                                            jboolean accept) {
-  AwCookieAccessPolicy::GetInstance()->SetShouldAcceptCookies(accept);
+  cookie_access_policy_.SetShouldAcceptCookies(accept);
 }
 
 jboolean CookieManager::GetShouldAcceptCookies(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj) {
-  return AwCookieAccessPolicy::GetInstance()->GetShouldAcceptCookies();
+  return cookie_access_policy_.GetShouldAcceptCookies();
 }
 
 void CookieManager::SetCookie(JNIEnv* env,
