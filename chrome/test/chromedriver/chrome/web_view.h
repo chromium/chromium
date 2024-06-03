@@ -76,6 +76,8 @@ class WebView {
   virtual Status PostBidiCommand(base::Value::Dict command) = 0;
 
   // Send the BiDi command to the BiDiMapper and receive the response
+  // Precondition: commdand.Find("id") != nullptr
+  // Precondition: commdand.FindString("channel") != nullptr
   virtual Status SendBidiCommand(base::Value::Dict command,
                                  const Timeout& timeout,
                                  base::Value::Dict& response) = 0;

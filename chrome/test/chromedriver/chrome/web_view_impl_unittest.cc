@@ -5,6 +5,7 @@
 #include "chrome/test/chromedriver/chrome/web_view_impl.h"
 
 #include <memory>
+#include <optional>
 #include <queue>
 #include <string>
 
@@ -37,6 +38,7 @@ const char kShadowRootKey[] = "shadow-6066-11e4-a52e-4f735466cecf";
 const int kNonExistingBackendNodeId = 1000'000'001;
 
 using testing::Eq;
+using testing::Optional;
 using testing::Pointee;
 
 std::string ElementReference(const char* frame_id,
@@ -1248,3 +1250,283 @@ INSTANTIATE_TEST_SUITE_P(
                       "Cannot find context with specified id",
                       "Execution context was destroyed.",
                       "Inspected target navigated or closed"));
+
+namespace {
+
+#if defined(MEMORY_SANITIZER)
+base::TimeDelta kErrorWaitDuration = base::Seconds(100);
+#elif defined(NDEBUG)
+base::TimeDelta kErrorWaitDuration = base::Seconds(3);
+#else
+base::TimeDelta kErrorWaitDuration = base::Seconds(100);
+#endif
+
+class BidiDevToolsClient : public StubDevToolsClient {
+ public:
+  explicit BidiDevToolsClient(const std::string& id) : StubDevToolsClient(id) {}
+
+  Status PostBidiCommand(base::Value::Dict command) override {
+    base::Value* id = command.Find("id");
+    EXPECT_NE(nullptr, id);
+    if (id == nullptr) {
+      return Status{kTestError,
+                    "[BidiDevToolsClient], no 'id' in the BiDi command"};
+    }
+    std::string* method = command.FindString("method");
+    EXPECT_NE(nullptr, method);
+    if (method == nullptr) {
+      return Status{kTestError,
+                    "[BidiDevToolsClient], no 'method' in the BiDi command"};
+    }
+    base::Value::Dict* params = command.FindDict("param");
+    EXPECT_NE(nullptr, params);
+    if (params == nullptr) {
+      return Status{kTestError,
+                    "[BidiDevToolsClient], no 'params' in the BiDi command"};
+    }
+
+    std::string* channel = command.FindString("channel");
+
+    base::Value::Dict result;
+    std::optional<int> ping = params->FindInt("ping");
+    if (ping) {
+      result.Set("pong", *ping);
+    } else {
+      result.Set("param", 1);
+    }
+
+    base::Value::Dict payload;
+    payload.Set("id", std::move(*id));
+    payload.Set("result", std::move(result));
+    if (channel != nullptr) {
+      payload.Set("channel", std::move(*channel));
+    }
+
+    base::Value::Dict event_params;
+    event_params.Set("name", "sendBidiResponse");
+    event_params.Set("payload", std::move(payload));
+
+    for (DevToolsEventListener* listener : listeners_) {
+      listener->OnEvent(this, "Runtime.bindingCalled", event_params);
+    }
+
+    return Status{kOk};
+  }
+
+  Status HandleEventsUntil(const ConditionalFunc& conditional_func,
+                           const Timeout& timeout) override {
+    bool is_condition_met = false;
+    Status status{kOk};
+    do {
+      status = conditional_func.Run(&is_condition_met);
+    } while (status.IsOk() && !is_condition_met && !timeout.IsExpired());
+    if (!is_condition_met && status.IsOk()) {
+      return Status{kTimeout, "timed out by BidiDevToolsClient"};
+    }
+    return status;
+  }
+
+  int EventListenerCount() const { return static_cast<int>(listeners_.size()); }
+};
+
+}  // namespace
+
+TEST(SendBidiCommandTest, Success) {
+  std::unique_ptr<BidiDevToolsClient> client_uptr =
+      std::make_unique<BidiDevToolsClient>("id");
+  BidiDevToolsClient* client_ptr = client_uptr.get();
+  BrowserInfo browser_info;
+  WebViewImpl view("root", true, nullptr, &browser_info, std::move(client_uptr),
+                   std::nullopt, PageLoadStrategy::kEager, true);
+
+  base::Value::Dict param;
+  param.Set("ping", 123);
+
+  base::Value::Dict command;
+  command.Set("id", 1);
+  command.Set("channel", "/test");
+  command.Set("method", "some");
+  command.Set("param", std::move(param));
+
+  Timeout timeout{base::Seconds(1)};
+  base::Value::Dict response;
+  const int initial_listener_count = client_ptr->EventListenerCount();
+  EXPECT_TRUE(
+      StatusOk(view.SendBidiCommand(std::move(command), timeout, response)));
+  EXPECT_THAT(response.FindIntByDottedPath("result.pong"), Optional(Eq(123)));
+  EXPECT_EQ(initial_listener_count, client_ptr->EventListenerCount());
+}
+
+TEST(SendBidiCommandTest, MaxJsUintId) {
+  // This test verifies that non-int32 ids are supported by the method.
+  std::unique_ptr<BidiDevToolsClient> client_uptr =
+      std::make_unique<BidiDevToolsClient>("id");
+  BidiDevToolsClient* client_ptr = client_uptr.get();
+  BrowserInfo browser_info;
+  WebViewImpl view("root", true, nullptr, &browser_info, std::move(client_uptr),
+                   std::nullopt, PageLoadStrategy::kEager, true);
+
+  base::Value::Dict param;
+  param.Set("ping", 123);
+
+  base::Value::Dict command;
+  command.Set("id", 9007199254740991.0);
+  command.Set("channel", "/test");
+  command.Set("method", "some");
+  command.Set("param", std::move(param));
+
+  Timeout timeout{base::Seconds(1)};
+  base::Value::Dict response;
+  const int initial_listener_count = client_ptr->EventListenerCount();
+  EXPECT_TRUE(
+      StatusOk(view.SendBidiCommand(std::move(command), timeout, response)));
+  EXPECT_THAT(response.FindIntByDottedPath("result.pong"), Optional(Eq(123)));
+  EXPECT_EQ(initial_listener_count, client_ptr->EventListenerCount());
+}
+
+TEST(SendBidiCommandTest, NoId) {
+  // This test verifies that the method won't loop forever or until the time is
+  // out waiting for the response if the command id is missing.
+  std::unique_ptr<BidiDevToolsClient> client_uptr =
+      std::make_unique<BidiDevToolsClient>("id");
+  BidiDevToolsClient* client_ptr = client_uptr.get();
+  BrowserInfo browser_info;
+  WebViewImpl view("root", true, nullptr, &browser_info, std::move(client_uptr),
+                   std::nullopt, PageLoadStrategy::kEager, true);
+
+  base::Value::Dict param;
+  param.Set("ping", 123);
+
+  base::Value::Dict command;
+  command.Set("channel", "/test");
+  command.Set("method", "some");
+  command.Set("param", std::move(param));
+
+  Timeout timeout{kErrorWaitDuration};
+  base::Value::Dict response;
+  const int initial_listener_count = client_ptr->EventListenerCount();
+  EXPECT_TRUE(StatusCodeIs<kUnknownError>(
+      view.SendBidiCommand(std::move(command), timeout, response)));
+  EXPECT_EQ(initial_listener_count, client_ptr->EventListenerCount());
+}
+
+class SendBidiCommandBadChannelTest
+    : public testing::TestWithParam<std::optional<std::string>> {
+ public:
+  const std::optional<std::string>& Channel() { return GetParam(); }
+};
+
+TEST_P(SendBidiCommandBadChannelTest, BadChannel) {
+  // This test checks that the command responds with kUnknownError to the
+  // violation of the precondition that "channel" must be set.
+  std::unique_ptr<BidiDevToolsClient> client_uptr =
+      std::make_unique<BidiDevToolsClient>("id");
+  BidiDevToolsClient* client_ptr = client_uptr.get();
+  BrowserInfo browser_info;
+  WebViewImpl view("root", true, nullptr, &browser_info, std::move(client_uptr),
+                   std::nullopt, PageLoadStrategy::kEager, true);
+
+  base::Value::Dict param;
+  param.Set("ping", 123);
+
+  base::Value::Dict command;
+  command.Set("id", 1);
+  command.Set("method", "some");
+  command.Set("param", std::move(param));
+  if (Channel().has_value()) {
+    command.Set("channel", *Channel());
+  }
+
+  Timeout timeout{kErrorWaitDuration};
+  base::Value::Dict response;
+  const int initial_listener_count = client_ptr->EventListenerCount();
+  Status status = view.SendBidiCommand(std::move(command), timeout, response);
+  EXPECT_TRUE(StatusCodeIs<kUnknownError>(status));
+  EXPECT_THAT(status.message(),
+              ::testing::ContainsRegex("non-empty string 'channel'"));
+  EXPECT_EQ(initial_listener_count, client_ptr->EventListenerCount());
+}
+
+INSTANTIATE_TEST_SUITE_P(BadChannels,
+                         SendBidiCommandBadChannelTest,
+                         ::testing::Values(std::nullopt,
+                                           "",
+                                           "no-leading-slash"));
+
+class SendBidiCommandSpecialChannelTest
+    : public testing::TestWithParam<std::string> {
+ public:
+  const std::string& Channel() { return GetParam(); }
+};
+
+TEST_P(SendBidiCommandSpecialChannelTest, ChannelValues) {
+  // This test verifies that any well formed channel string is supported
+  std::unique_ptr<BidiDevToolsClient> client_uptr =
+      std::make_unique<BidiDevToolsClient>("id");
+  BidiDevToolsClient* client_ptr = client_uptr.get();
+  BrowserInfo browser_info;
+  WebViewImpl view("root", true, nullptr, &browser_info, std::move(client_uptr),
+                   std::nullopt, PageLoadStrategy::kEager, true);
+
+  base::Value::Dict param;
+  param.Set("ping", 123);
+
+  base::Value::Dict command;
+  command.Set("id", 1);
+  command.Set("channel", Channel());
+  command.Set("method", "some");
+  command.Set("param", std::move(param));
+
+  Timeout timeout{base::Seconds(1)};
+  base::Value::Dict response;
+  const int initial_listener_count = client_ptr->EventListenerCount();
+  EXPECT_TRUE(
+      StatusOk(view.SendBidiCommand(std::move(command), timeout, response)));
+  EXPECT_THAT(response.FindIntByDottedPath("result.pong"), Optional(Eq(123)));
+  EXPECT_EQ(initial_listener_count, client_ptr->EventListenerCount());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    Channels,
+    SendBidiCommandSpecialChannelTest,
+    ::testing::Values(DevToolsClientImpl::kBidiChannelSuffix,
+                      DevToolsClientImpl::kCdpTunnelChannel));
+
+namespace {
+
+class NeverReturningBidiDevToolsClient : public BidiDevToolsClient {
+ public:
+  explicit NeverReturningBidiDevToolsClient(const std::string& id)
+      : BidiDevToolsClient(id) {}
+
+  Status PostBidiCommand(base::Value::Dict command) override {
+    return Status{kOk};
+  }
+};
+
+}  // namespace
+
+TEST(SendBidiCommandTest, NoResponse) {
+  std::unique_ptr<NeverReturningBidiDevToolsClient> client_uptr =
+      std::make_unique<NeverReturningBidiDevToolsClient>("id");
+  NeverReturningBidiDevToolsClient* client_ptr = client_uptr.get();
+  BrowserInfo browser_info;
+  WebViewImpl view("root", true, nullptr, &browser_info, std::move(client_uptr),
+                   std::nullopt, PageLoadStrategy::kEager, true);
+
+  base::Value::Dict param;
+  param.Set("ping", 123);
+
+  base::Value::Dict command;
+  command.Set("id", 1);
+  command.Set("channel", "/test");
+  command.Set("method", "some");
+  command.Set("param", std::move(param));
+
+  Timeout timeout{base::Milliseconds(10)};
+  base::Value::Dict response;
+  const int initial_listener_count = client_ptr->EventListenerCount();
+  EXPECT_TRUE(StatusCodeIs<kTimeout>(
+      view.SendBidiCommand(std::move(command), timeout, response)));
+  EXPECT_EQ(initial_listener_count, client_ptr->EventListenerCount());
+}

@@ -78,6 +78,8 @@ const char* StatusCodeToString(StatusCode code) {
       return "detached shadow root";
     case kNavigationDetectedByRemoteEnd:
       return "navigation detected by remote end";
+    case kTestError:
+      return "test error";
     default:
       return "<unknown>";
   }

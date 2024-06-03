@@ -45,6 +45,9 @@ enum StatusCode {
   kTargetDetached,
   kUnexpectedAlertOpen_Keep,
   kNavigationDetectedByRemoteEnd,
+  // This error differs from all other errors and is intended to be used in the
+  // unit tests.
+  kTestError,
 };
 
 // Represents a WebDriver status, which may be an error or ok.

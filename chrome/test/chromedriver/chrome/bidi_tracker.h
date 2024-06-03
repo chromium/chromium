@@ -14,7 +14,7 @@
 
 class DevToolsClient;
 class Status;
-typedef base::RepeatingCallback<Status(base::Value::Dict)> SendBidiPayloadFunc;
+using SendBidiPayloadFunc = base::RepeatingCallback<Status(base::Value::Dict)>;
 
 // Tracks the state of the DOM and BiDi messages coming from the browser
 class BidiTracker : public DevToolsEventListener {

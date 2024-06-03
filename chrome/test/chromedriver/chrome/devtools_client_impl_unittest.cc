@@ -3168,6 +3168,7 @@ struct BidiMapperState {
   bool subscribed_to_cdp = false;
   bool mapper_is_started_with_options = false;
 };
+
 class BidiServerMockSyncWebSocket : public BidiMockSyncWebSocket {
  public:
   explicit BidiServerMockSyncWebSocket(BidiMapperState* mapper_state)

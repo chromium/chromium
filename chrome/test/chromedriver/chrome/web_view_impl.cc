@@ -625,14 +625,15 @@ Status WebViewImpl::SendBidiCommand(base::Value::Dict command,
 
   base::Value* maybe_cmd_id = command.Find("id");
   if (maybe_cmd_id == nullptr) {
-    return Status{kUnknownError, "BiDi command has no 'id' of type integer"};
+    return Status{kUnknownError, "BiDi command has no 'id' of type js-uint"};
   }
   base::Value expected_id = maybe_cmd_id->Clone();
 
   std::string* maybe_channel = command.FindString("channel");
-  if (maybe_channel == nullptr) {
+  if (maybe_channel == nullptr || !maybe_channel->starts_with("/")) {
     return Status{kUnknownError,
-                  "BiDi command has no 'channel' of type string"};
+                  "BiDi command does not contain a non-empty string 'channel' "
+                  "with a leading '/'"};
   }
   bidi_tracker_guard.Tracker().SetChannelSuffix(*maybe_channel);
 
