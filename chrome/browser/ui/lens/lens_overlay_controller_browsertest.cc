@@ -882,14 +882,9 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, CloseSidePanel) {
       [&]() { return controller->state() == State::kOff; }));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS) && !BUILDFLAG(IS_CHROMEOS_DEVICE) && \
-    defined(MEMORY_SANTIZER)
-#define MAYBE_DelayPermissionsPrompt DISABLED_DelayPermissionsPrompt
-#else
-#define MAYBE_DelayPermissionsPrompt DelayPermissionsPrompt
-#endif
+// TODO(crbug.com/341383805): Enable once flakiness is fixed on all platforms.
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       MAYBE_DelayPermissionsPrompt) {
+                       DISABLED_DelayPermissionsPrompt) {
   // Navigate to a page so we can request permissions
   WaitForPaint();
 
