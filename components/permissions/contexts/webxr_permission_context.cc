@@ -68,7 +68,7 @@ void WebXrPermissionContext::NotifyPermissionSet(
       content_setting == ContentSetting::CONTENT_SETTING_ALLOW;
   const bool is_ar = content_settings_type_ == ContentSettingsType::AR;
   bool is_openxr = false;
-#if BUILDFLAG(ENABLE_VR)
+#if BUILDFLAG(ENABLE_OPENXR)
   is_openxr = content_settings_type_ == ContentSettingsType::VR &&
               device::features::IsOpenXrEnabled();
 #endif

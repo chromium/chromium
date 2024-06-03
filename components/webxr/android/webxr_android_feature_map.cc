@@ -13,7 +13,7 @@
 
 namespace webxr {
 static jboolean JNI_WebXrAndroidFeatureMap_IsOpenXrEnabled(JNIEnv* env) {
-#if BUILDFLAG(ENABLE_VR)
+#if BUILDFLAG(ENABLE_OPENXR)
   return device::features::IsOpenXrEnabled();
 #else
   return false;
