@@ -7,11 +7,18 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/test/mock_callback.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/common/dummy_auth_service.h"
+#include "google_apis/common/request_sender.h"
+#include "google_apis/common/test_util.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "services/network/test/test_shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -19,21 +26,38 @@ namespace {
 const char kGoogleCalendarLastDismissedTimePrefName[] =
     "NewTabPage.GoogleCalendar.LastDimissedTime";
 
+// Handles an HTTP request by returning a response from a json file in
+// google_apis/test/data/.
+std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
+    const net::test_server::HttpRequest& request) {
+  return google_apis::test_util::CreateHttpResponseFromFile(
+      google_apis::test_util::GetTestFilePath("calendar/events.json"));
+}
+
 }  // namespace
 
 class GoogleCalendarPageHandlerTest : public testing::Test {
  public:
-  GoogleCalendarPageHandlerTest() {
+  GoogleCalendarPageHandlerTest()
+      : test_shared_loader_factory_(
+            base::MakeRefCounted<network::TestSharedURLLoaderFactory>(
+                /*network_service=*/nullptr,
+                /*is_trusted=*/true)) {
     feature_list_.InitAndEnableFeature(ntp_features::kNtpCalendarModule);
     profile_ = std::make_unique<TestingProfile>();
     pref_service_ = profile_->GetPrefs();
+
+    test_server_.RegisterRequestHandler(base::BindRepeating(&HandleRequest));
+    test_server_handle_ = test_server_.StartAndReturnHandle();
   }
 
   void SetUp() override {
+    google_apis::calendar::CalendarApiUrlGenerator url_generator;
+    url_generator.SetBaseUrlForTesting(test_server_.base_url().spec());
     handler_ = std::make_unique<GoogleCalendarPageHandler>(
         mojo::PendingReceiver<
             ntp::calendar::mojom::GoogleCalendarPageHandler>(),
-        profile_.get());
+        profile_.get(), MakeRequestSender(), url_generator);
   }
 
   void TearDown() override { handler_.reset(); }
@@ -47,14 +71,36 @@ class GoogleCalendarPageHandlerTest : public testing::Test {
   base::test::ScopedFeatureList& feature_list() { return feature_list_; }
 
  private:
+  // Makes a request sender configured for testing.
+  std::unique_ptr<google_apis::RequestSender> MakeRequestSender() {
+    return std::make_unique<google_apis::RequestSender>(
+        std::make_unique<google_apis::DummyAuthService>(),
+        test_shared_loader_factory_,
+        task_environment_.GetMainThreadTaskRunner(), "test-user-agent",
+        TRAFFIC_ANNOTATION_FOR_TESTS);
+  }
+
   // NOTE: The initialization order of these members matters.
   content::BrowserTaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME,
+      base::test::TaskEnvironment::MainThreadType::IO};
   base::test::ScopedFeatureList feature_list_;
+  net::EmbeddedTestServer test_server_;
+  net::test_server::EmbeddedTestServerHandle test_server_handle_;
+  std::unique_ptr<google_apis::RequestSender> request_sender_;
+  scoped_refptr<network::TestSharedURLLoaderFactory>
+      test_shared_loader_factory_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<GoogleCalendarPageHandler> handler_;
   raw_ptr<PrefService> pref_service_;
 };
+
+// Simple test just to make sure the other constructor runs through.
+TEST_F(GoogleCalendarPageHandlerTest, ConstructorWithRealSender) {
+  GoogleCalendarPageHandler(
+      mojo::PendingReceiver<ntp::calendar::mojom::GoogleCalendarPageHandler>(),
+      &profile());
+}
 
 TEST_F(GoogleCalendarPageHandlerTest, DismissAndRestoreModule) {
   EXPECT_EQ(pref_service().GetTime(kGoogleCalendarLastDismissedTimePrefName),
@@ -133,4 +179,28 @@ TEST_F(GoogleCalendarPageHandlerTest, GetFakeEvents) {
     EXPECT_EQ(response[i]->start_time,
               base::Time::Now() + base::Minutes(i * 30));
   }
+}
+
+TEST_F(GoogleCalendarPageHandlerTest, GetEvents) {
+  std::vector<ntp::calendar::mojom::CalendarEventPtr> response;
+  base::MockCallback<GoogleCalendarPageHandler::GetEventsCallback> callback;
+  EXPECT_CALL(callback, Run(testing::_))
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [&](std::vector<ntp::calendar::mojom::CalendarEventPtr> events) {
+            response = std::move(events);
+          }));
+
+  base::RunLoop run_loop;
+  handler().GetEvents(
+      google_apis::test_util::CreateQuitCallback(&run_loop, callback.Get()));
+  run_loop.Run();
+
+  EXPECT_EQ(response.size(), 3u);
+  EXPECT_EQ(response[0]->title, "Mobile weekly team meeting ");
+  base::Time start_time;
+  bool success =
+      base::Time::FromString("2020-11-02T10:00:00-08:00", &start_time);
+  ASSERT_TRUE(success);
+  EXPECT_EQ(response[0]->start_time, start_time);
 }

@@ -9,15 +9,75 @@
 #include <vector>
 
 #include "base/strings/string_number_conversions.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "google_apis/calendar/calendar_api_requests.h"
+#include "google_apis/calendar/calendar_api_response_types.h"
+#include "google_apis/common/auth_service.h"
+#include "google_apis/common/request_sender.h"
+#include "google_apis/gaia/gaia_constants.h"
 
 namespace {
 
 const char kGoogleCalendarLastDismissedTimePrefName[] =
     "NewTabPage.GoogleCalendar.LastDimissedTime";
+
+// TODO(b/343738665): Update when more granular policy is added.
+constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
+    net::DefineNetworkTrafficAnnotation("google_calendar_page_handler", R"(
+       semantics {
+         sender: "Google Calendar Page Handler"
+         description:
+            "The Google Calendar Page Handler requests the signed in user's "
+            "calendar for the current day to display on the desktop NTP."
+          trigger:
+              "NTP is open with the Google Calendar card enabled by both the "
+              "user and Enterprise policy."
+          data:
+            "The request is authenticated with an OAuth2 access token "
+            "identifying the Google account."
+          destination: GOOGLE_OWNED_SERVICE
+          internal {
+            contacts {
+              email: "rtatum@google.com"
+            }
+            contacts {
+              email: "chrome-desktop-ntp@google.com"
+            }
+          }
+          user_data {
+            type: ACCESS_TOKEN
+          }
+          last_reviewed: "2024-05-16"
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "Users can control this feature by (1) selecting "
+            "a non-Google default search engine in Chrome "
+            "settings under 'Search Engine', (2) signing out, "
+            "or (3) disabling the Google Calendar module."
+          chrome_policy {
+            DefaultSearchProviderEnabled {
+              policy_options {mode: MANDATORY}
+              DefaultSearchProviderEnabled: false
+            }
+            BrowserSignin {
+              policy_options {mode: MANDATORY}
+              BrowserSignin: 0
+            }
+            NTPCardsVisible {
+              NTPCardsVisible: false
+            }
+          }
+        })");
 
 ntp::calendar::mojom::CalendarEventPtr GetFakeEvent(int index) {
   ntp::calendar::mojom::CalendarEventPtr event =
@@ -35,6 +95,24 @@ std::vector<ntp::calendar::mojom::CalendarEventPtr> GetFakeEvents() {
   return events;
 }
 
+std::unique_ptr<google_apis::RequestSender> MakeSender(Profile* profile) {
+  std::vector<std::string> scopes = {
+      GaiaConstants::kCalendarReadOnlyOAuth2Scope};
+  auto url_loader_factory = profile->GetURLLoaderFactory();
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
+  return std::make_unique<google_apis::RequestSender>(
+      std::make_unique<google_apis::AuthService>(
+          identity_manager,
+          identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
+          url_loader_factory, scopes),
+      url_loader_factory,
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})
+          .get(),
+      /*custom_user_agent=*/"", kTrafficAnnotation);
+}
+
 }  // namespace
 
 // static
@@ -49,10 +127,24 @@ void GoogleCalendarPageHandler::RegisterProfilePrefs(
 GoogleCalendarPageHandler::GoogleCalendarPageHandler(
     mojo::PendingReceiver<ntp::calendar::mojom::GoogleCalendarPageHandler>
         handler,
-    Profile* profile)
+    Profile* profile,
+    std::unique_ptr<google_apis::RequestSender> sender,
+    google_apis::calendar::CalendarApiUrlGenerator url_generator)
     : handler_(this, std::move(handler)),
       profile_(profile),
-      pref_service_(profile_->GetPrefs()) {}
+      pref_service_(profile_->GetPrefs()),
+      sender_(std::move(sender)),
+      url_generator_(std::move(url_generator)) {}
+
+GoogleCalendarPageHandler::GoogleCalendarPageHandler(
+    mojo::PendingReceiver<ntp::calendar::mojom::GoogleCalendarPageHandler>
+        handler,
+    Profile* profile)
+    : GoogleCalendarPageHandler(
+          std::move(handler),
+          std::move(profile),
+          MakeSender(profile),
+          google_apis::calendar::CalendarApiUrlGenerator()) {}
 
 GoogleCalendarPageHandler::~GoogleCalendarPageHandler() = default;
 
@@ -73,8 +165,18 @@ void GoogleCalendarPageHandler::GetEvents(GetEventsCallback callback) {
   if (!fake_data_param.empty()) {
     std::move(callback).Run(GetFakeEvents());
   } else {
-    std::move(callback).Run(
-        std::vector<ntp::calendar::mojom::CalendarEventPtr>());
+    std::vector<google_apis::calendar::EventType> event_types = {
+        google_apis::calendar::EventType::kDefault};
+    sender_->StartRequestWithAuthRetry(
+        std::make_unique<google_apis::calendar::CalendarApiEventsRequest>(
+            sender_.get(), url_generator_,
+            base::BindOnce(&GoogleCalendarPageHandler::OnRequestComplete,
+                           base::Unretained(this), std::move(callback)),
+            /*start_time=*/base::Time::Now(),
+            /*end_time=*/base::Time::Now() + base::Hours(12),
+            /*event_types=*/event_types,
+            /*experiment=*/"ntp-calendar",
+            /*order_by=*/"startTime"));
   }
 }
 
@@ -86,4 +188,21 @@ void GoogleCalendarPageHandler::DismissModule() {
 void GoogleCalendarPageHandler::RestoreModule() {
   pref_service_->SetTime(kGoogleCalendarLastDismissedTimePrefName,
                          base::Time());
+}
+
+void GoogleCalendarPageHandler::OnRequestComplete(
+    GetEventsCallback callback,
+    google_apis::ApiErrorCode response_code,
+    std::unique_ptr<google_apis::calendar::EventList> events) {
+  std::vector<ntp::calendar::mojom::CalendarEventPtr> result;
+  if (response_code == google_apis::ApiErrorCode::HTTP_SUCCESS) {
+    for (const auto& event : events->items()) {
+      ntp::calendar::mojom::CalendarEventPtr formatted_event =
+          ntp::calendar::mojom::CalendarEvent::New();
+      formatted_event->title = event->summary();
+      formatted_event->start_time = event->start_time().date_time();
+      result.push_back(std::move(formatted_event));
+    }
+  }
+  std::move(callback).Run(std::move(result));
 }

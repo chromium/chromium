@@ -7563,6 +7563,7 @@ static_library("browser") {
       "//components/mirroring/service:mirroring_service",
       "//extensions/common:common_constants",
       "//extensions/components/javascript_dialog_extensions_client",
+      "//google_apis/calendar",
       "//google_apis/common",
       "//google_apis/drive",
     ]
