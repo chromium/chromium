@@ -1168,12 +1168,9 @@ base::ScopedClosureRunner AvatarToolbarButtonDelegate::ShowExplicitText(
 std::pair<std::u16string, std::optional<SkColor>>
 AvatarToolbarButtonDelegate::GetTextAndColor(
     const ui::ColorProvider* const color_provider) const {
-  std::optional<SkColor> color;
+  std::optional<SkColor> color =
+      color_provider->GetColor(kColorAvatarButtonHighlightDefault);
   std::u16string text;
-
-  if (features::IsChromeRefresh2023()) {
-    color = color_provider->GetColor(kColorAvatarButtonHighlightDefault);
-  }
   switch (state_manager_->GetButtonActiveState()) {
     case ButtonState::kIncognitoProfile: {
       const int incognito_window_count = GetWindowCount();
@@ -1182,11 +1179,7 @@ AvatarToolbarButtonDelegate::GetTextAndColor(
               IDS_INCOGNITO_BUBBLE_ACCESSIBLE_TITLE, incognito_window_count));
       text = l10n_util::GetPluralStringFUTF16(IDS_AVATAR_BUTTON_INCOGNITO,
                                               incognito_window_count);
-      // TODO(shibalik): Remove this condition to make it generic by refactoring
-      // `ToolbarButton::HighlightColorAnimation`.
-      if (features::IsChromeRefresh2023()) {
-        color = color_provider->GetColor(kColorAvatarButtonHighlightIncognito);
-      }
+      color = color_provider->GetColor(kColorAvatarButtonHighlightIncognito);
       break;
     }
     case ButtonState::kShowIdentityName:
@@ -1341,8 +1334,6 @@ std::u16string AvatarToolbarButtonDelegate::GetAvatarTooltipText() const {
 
 std::pair<ChromeColorIds, ChromeColorIds>
 AvatarToolbarButtonDelegate::GetInkdropColors() const {
-  CHECK(features::IsChromeRefresh2023());
-
   ChromeColorIds hover_color_id = kColorToolbarInkDropHover;
   ChromeColorIds ripple_color_id = kColorToolbarInkDropRipple;
 
@@ -1384,9 +1375,7 @@ ui::ImageModel AvatarToolbarButtonDelegate::GetAvatarIcon(
     SkColor icon_color) const {
   switch (state_manager_->GetButtonActiveState()) {
     case ButtonState::kIncognitoProfile:
-      return ui::ImageModel::FromVectorIcon(features::IsChromeRefresh2023()
-                                                ? kIncognitoRefreshMenuIcon
-                                                : kIncognitoIcon,
+      return ui::ImageModel::FromVectorIcon(kIncognitoRefreshMenuIcon,
                                             icon_color, icon_size);
     case ButtonState::kGuestSession:
       return profiles::GetGuestAvatar(icon_size);

@@ -124,7 +124,6 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
   // only used for the sign-in promo for a web-only signed in account.
   void BuildSyncInfoWithCallToAction(const std::u16string& description,
                                      const std::u16string& button_text,
-                                     ui::ColorId background_color_id,
                                      const base::RepeatingClosure& action,
                                      bool show_sync_badge,
                                      AccountInfo account = AccountInfo());
@@ -196,7 +195,6 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
       const ui::ThemedVectorIcon& avatar_header_art);
 
   void BuildSyncInfoCallToActionBackground(
-      ui::ColorId background_color_id,
       const ui::ColorProvider* color_provider);
 
   // views::BubbleDialogDelegateView:

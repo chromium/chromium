@@ -125,8 +125,6 @@ class AvatarToolbarButton : public ToolbarButton {
   // ui::PropertyHandler:
   void AfterPropertyChange(const void* key, int64_t old_value) override;
 
-  void SetInsets();
-
   // Updates the layout insets depending on whether it is a chip or a button.
   void UpdateLayoutInsets();
 

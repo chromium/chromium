@@ -341,8 +341,8 @@ class ToolbarButton : public views::LabelButton,
 
   // Delta from regular toolbar-button insets. This is necessary for buttons
   // that use smaller or larger icons than regular ToolbarButton instances.
-  // AvatarToolbarButton for instance uses smaller insets to accommodate for a
-  // larger-than-16dp avatar avatar icon outside of touchable mode.
+  // CastToolbarButton for instance uses larger insets for touchable mode to
+  // match the expected touchable UI.
   gfx::Insets layout_inset_delta_;
 
   // Class responsible for animating highlight color (calling a callback on
