@@ -1722,6 +1722,7 @@ Jika kebijakan ini tidak disetel atau disetel ke Nonaktif, transfer file tidak a
 <translation id="2258126710006312594">Izinkan pengguna dengan akses jarak jauh untuk mentransfer file ke/dari host</translation>
 <translation id="225830954785359083">Cegah halaman menampilkan pop-up selama penghapusan muatan</translation>
 <translation id="2261648512244797294">Nonaktifkan pencetakan privet yang tidak digunakan lagi</translation>
+<translation id="2263881357524831360">Izinkan penggunaan Pengelola Sandi Pihak Ketiga di <ph name="PRODUCT_NAME" /> di <ph name="ANDROID_NAME" /></translation>
 <translation id="2264286153777425328">Daftar tindakan yang akan dijalankan saat waktu tunggu dari kebijakan <ph name="IDLE_TIMEOUT_POLICY_NAME" /> tercapai.
 
 Peringatan: Menyetel kebijakan ini dapat memengaruhi dan menghapus data pribadi lokal secara permanen. Sebaiknya uji setelan Anda sebelum men-deploy untuk mencegah penghapusan data pribadi secara tidak sengaja.
@@ -2647,6 +2648,7 @@ Kebijakan <ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_EXCEPTIONS_POLICY_NAME" /> leb
 <translation id="2960128438010718932">Jadwal persiapan untuk menerapkan update baru</translation>
 <translation id="2960691910306063964">Mengaktifkan atau menonaktifkan autentikasi tanpa PIN untuk host akses jarak jauh</translation>
 <translation id="2960999045613902792">Izinkan pengguna menambahkan, mengonfigurasi, dan mencetak dari printer yang bukan milik perusahaan</translation>
+<translation id="296100724744272922">Izinkan penggunaan pengelola sandi pihak ketiga di Chrome</translation>
 <translation id="2962972237615992440">Nonaktifkan proxy <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="2963292398266537394">Nonaktifkan dikte</translation>
 <translation id="2964373560810620158">Cegah pengguna menggunakan browser <ph name="LACROS_NAME" /></translation>
@@ -8136,6 +8138,23 @@ Jika Anda menyetel kebijakan ini, pengguna tidak dapat mengubah atau menggantiny
 Jika kebijakan ini tidak disetel, pembesar layar akan dinonaktifkan pada awalnya di layar login, tetapi dapat diaktifkan oleh pengguna kapan saja.</translation>
 <translation id="7109384070286741861">Nonaktifkan CECPQ2</translation>
 <translation id="7113439794629928551">Tampilkan kontrol media untuk sesi <ph name="PRODUCT_NAME" /> yang dimulai oleh perangkat lain</translation>
+<translation id="7113803652772945829">Jika kebijakan disetel ke benar (true), pengguna akan dapat menggunakan pengelola sandi pihak ketiga.
+Pengelola sandi tersebut akan menangani penyimpanan dan pengisian semua data sandi, pembayaran,
+dan isi otomatis.
+Jika kebijakan disetel ke benar (true) atau tidak disetel, setelan akan diizinkan untuk beralih antara
+pengelola sandi bawaan
+<ph name="PRODUCT_NAME" /> dan pengelola sandi yang dikonfigurasi di setelan Android.
+Karena <ph name="PRODUCT_NAME" /> menggunakan data yang sama
+seperti Isi Otomatis dengan Google, setelan hanya dapat diubah untuk menggunakan pengelola sandi
+pihak ketiga jika pengelola selain Isi Otomatis dengan Google dikonfigurasi
+di setelan sistem Android.
+
+Jika kebijakan disetel ke salah (false),
+<ph name="PRODUCT_NAME" /> akan selalu menggunakan
+pengelola sandi bawaan.
+
+Kebijakan ini tidak memengaruhi pengelola sandi pihak ketiga yang menggunakan
+API aksesibilitas.</translation>
 <translation id="7114169791477667553">Nonaktifkan penyedia penelusuran default</translation>
 <translation id="7121046543122812054">Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan <ph name="BROWSER_SIGNIN_POLICY_NAME" />.
 
@@ -10887,6 +10906,7 @@ Nilai 1 = Mengaktifkan fitur bagi pengguna, tetapi tidak mengirim data ke Google
 Nilai 2 = Menonaktifkan fitur. Nilai 2 adalah nilai default untuk akun Education yang dikelola oleh <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
 
 Untuk informasi selengkapnya tentang penanganan data untuk fitur AI generatif, lihat https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
+<translation id="949192525372487705">Blokir peralihan ke pengelola sandi pihak ketiga</translation>
 <translation id="957322141096206402">Resolusi DNS sistem dapat berjalan di dalam atau di luar proses jaringan, bergantung pada konfigurasi sistem dan tombol fitur.</translation>
 <translation id="957778406002650056">URL tempat gambar <ph name="PLUGIN_VM_NAME" /> dapat didownload.</translation>
 <translation id="957920984193041197">Izinkan halaman menampilkan pop-up selama penghapusan muatan</translation>

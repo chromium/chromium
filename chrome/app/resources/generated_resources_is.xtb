@@ -5238,6 +5238,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="4867433544163083783">Athugaðu núna hvort hægt sé að flokka flipa</translation>
 <translation id="4868281708609571334">Kenna Google-hjálpara að þekkja röddina í: <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="4868284252360267853">Þessi gluggi er ekki í fókus. Ýttu á Command-Shift-Option A til að setja þennan glugga í fókus.</translation>
+<translation id="4868351661310357223">Settu upp forrit og leiki af Google Play í <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4869170227080975044">Lesa netupplýsingar ChromeOS</translation>
 <translation id="4870724079713069532">Þú getur opnað og breytt studdum skrám með þessu forriti úr Skráavafra eða öðrum forritum. Til að stýra því hvaða skrár opnast sjálfgefið í þessu forriti skaltu opna <ph name="BEGIN_LINK" />stillingar Windows<ph name="END_LINK" />.</translation>
 <translation id="4870995365819149457">Sumir studdir tenglar munu áfram opnast í <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> og 1 forriti í viðbót.</translation>
@@ -8060,6 +8061,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7007648447224463482">Opna allt í nýjum glugga</translation>
 <translation id="7008815993384338777">Ekki í reiki sem stendur</translation>
 <translation id="7009709314043432820"><ph name="APP_NAME" /> er að nota myndavélina</translation>
+<translation id="701020165009334820">Þú getur sótt Android-forrit og -leiki í gegnum Play Store.</translation>
 <translation id="701080569351381435">Skoða frumkóða</translation>
 <translation id="7011797924920577670">leggur mat á áhugasvið þín</translation>
 <translation id="7012430956470647760">Barnalæsing forrita</translation>

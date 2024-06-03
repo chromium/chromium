@@ -107,6 +107,7 @@
 <translation id="1333308631814936910">已連結「<ph name="DISPLAY_NAME" />」</translation>
 <translation id="1340378040547539434">縮小網頁</translation>
 <translation id="1341651618736211726">溢位</translation>
+<translation id="1341926407152459446">使用「<ph name="DEVICE_NAME" />」做為音訊輸入和輸出裝置</translation>
 <translation id="1344141078024003905">你正在投放螢幕畫面。你隨時可以暫停或停止投放螢幕畫面。</translation>
 <translation id="1346748346194534595">向右</translation>
 <translation id="1351937230027495976">收合選單</translation>
@@ -145,6 +146,7 @@
 <translation id="1486307154719069822">語音輸入功能可讓你透過語音輸入文字。請在文字欄位中，按下語音輸入鍵或選取畫面底部的「麥克風」圖示。你的語音輸入語言目前設為<ph name="LANGUAGE" />。系統會將語音內容傳送給 Google 處理。你隨時可以依序前往「設定」&gt;「無障礙設定」變更語音輸入語言。</translation>
 <translation id="1487931858675166540">「<ph name="FIRST_ITEM_TITLE" />」已替換為「<ph name="SECOND_ITEM_TITLE" />」</translation>
 <translation id="1500926532737552529">顯示所有建議</translation>
+<translation id="1501946871587957338">要切換音訊來源嗎？</translation>
 <translation id="1510238584712386396">啟動器</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{顯示通知設定。已關閉一個應用程式的通知}other{顯示通知設定。已關閉 # 個應用程式的通知}}</translation>
 <translation id="1523032696246003">電池電量：<ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" />後充飽</translation>
@@ -771,6 +773,7 @@
 <translation id="397105322502079400">計算中…</translation>
 <translation id="397726367135689299">電池充電過程可能不穩定。</translation>
 <translation id="3977512764614765090">電池電量：<ph name="PERCENTAGE" />% (充電中)。</translation>
+<translation id="3982013579989864579">要切換音訊輸出裝置嗎？</translation>
 <translation id="3984536049089846927">下一頁</translation>
 <translation id="3986082989454912832">接聽</translation>
 <translation id="3990002060657467458">快速設定內含 Wi-Fi、藍牙和音量等常用控制選項，你也可以透過快速設定拍攝螢幕截圖。</translation>
@@ -813,6 +816,7 @@
 <translation id="4146833061457621061">播放音樂</translation>
 <translation id="4150201353443180367">顯示設定</translation>
 <translation id="4156293514828496577">剩餘電量：<ph name="PERCENTAGE" />% (約 <ph name="TIME_LEFT" />)。為延長電池續航力，某些功能會受到限制。</translation>
+<translation id="4160919062868802509">偵測到多個音訊來源</translation>
 <translation id="4165275524535002941">連接線可能不支援螢幕</translation>
 <translation id="4177415338862979658">按一下即可瞭解詳情</translation>
 <translation id="4177913004758410636">{0,plural, =1{請在 1 天內更新裝置}other{請在 # 天內更新裝置}}</translation>
@@ -1011,6 +1015,7 @@
 <translation id="4871905435473761992">顯示無線基地台詳細資料。你的行動網路不支援無線基地台。</translation>
 <translation id="4872237917498892622">Alt + 搜尋鍵或 Shift 鍵</translation>
 <translation id="4872852897273142380">將焦點移至書籤列或醒目顯示書籤列 (假設不是隱藏狀態)</translation>
+<translation id="4876935764454575645">音訊選項</translation>
 <translation id="4881323000405981760">Linux 應用程式不支援特效</translation>
 <translation id="4881695831933465202">開啟</translation>
 <translation id="4889868803215848840">(選填) 請提供寶貴意見，協助我們改善建議內容：</translation>
@@ -1087,6 +1092,7 @@
 <translation id="5121628974188116412">前往頁面底部</translation>
 <translation id="5122517996953421795">「<ph name="DESK_NAME" />」預覽。非使用中的桌面。</translation>
 <translation id="5136175204352732067">已連接其他鍵盤</translation>
+<translation id="5144005092084035179">要切換音訊輸入裝置嗎？</translation>
 <translation id="5147567197700016471">已解鎖</translation>
 <translation id="5150070631291639005">隱私權設定</translation>
 <translation id="5155897006997040331">朗讀速度</translation>
@@ -1785,6 +1791,7 @@
 <translation id="7780094051999721182">捷徑</translation>
 <translation id="7780159184141939021">旋轉螢幕</translation>
 <translation id="7781829728241885113">昨天</translation>
+<translation id="7787212146956232129">輸入和輸出裝置已設定完成。如要變更，請前往「設定」。</translation>
 <translation id="7792590255364786396">顯示</translation>
 <translation id="7796735576426975947">已隱藏新通知</translation>
 <translation id="7798302898096527229">按下搜尋鍵或 Shift 鍵即可取消。</translation>
@@ -2090,6 +2097,7 @@
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 個檔案}other{# 個檔案}}</translation>
 <translation id="8936501819958976551">已停用</translation>
 <translation id="8938800817013097409">USB-C 裝置 (背面右側連接埠)</translation>
+<translation id="8939855324412367560">音訊輸入裝置為「<ph name="INPUT_DEVICE_NAME" />」，音訊輸出裝置為「<ph name="OUTPUT_DEVICE_NAME" />」。如要變更，請前往「設定」。</translation>
 <translation id="8940956008527784070">電池電量不足 (<ph name="PERCENTAGE" />%)</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> (<ph name="EMAIL" />) 的核取方塊未勾選。</translation>
 <translation id="8949925099261528566">已連線，但沒有網際網路</translation>
@@ -2147,6 +2155,7 @@
 <translation id="9178475906033259337">目前正顯示 1 項與「<ph name="QUERY" />」相符的搜尋結果</translation>
 <translation id="9179259655489829027">這項功能可讓你快速存取任何已登入的使用者帳戶，不需提供密碼。使用這項功能時，請務必只存取你信任的帳戶。</translation>
 <translation id="9183456764293710005">全螢幕放大鏡</translation>
+<translation id="9192133205265227850">使用「<ph name="DEVICE_NAME" />」</translation>
 <translation id="9193626018745640770">正在透過不明接收器投放</translation>
 <translation id="9194617393863864469">登入其他使用者帳戶...</translation>
 <translation id="9195990613383871904">明天</translation>

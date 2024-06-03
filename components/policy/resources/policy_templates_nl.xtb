@@ -4952,6 +4952,7 @@ We raden je af videodecodering met hardwareversnelling uit te zetten. Dit leidt 
       Als hiervoor een waarde is opgegeven, wordt gedurende het opgegeven aantal seconden voorkomen dat de browser afsluit, zodat keepalive-verzoeken (https://fetch.spec.whatwg.org/#request-keepalive-flag) kunnen worden verwerkt.
 
       De standaardwaarde (0) betekent dat deze functie niet wordt gebruikt.</translation>
+<translation id="4933780993367313536">Verbindingen voor externe toegang van bedrijfsbeheerders voor deze machine toestaan</translation>
 <translation id="4937423591320233496">Voorgestelde content uitzetten</translation>
 <translation id="4942096314850617489">Extern attest voor de gebruiker uitzetten</translation>
 <translation id="4942681160308347946">Als je het beleid instelt op True, staat gesproken feedback aan op het inlogscherm. Als je het beleid instelt op False, staat gesproken feedback uit op het scherm.
@@ -6219,6 +6220,7 @@ Als beide beleidsregels niet zijn ingesteld, worden alle webserviceverificaties 
 <translation id="5966615072639944554">Extensies die toestemming hebben de API voor externe bevestiging te gebruiken</translation>
 <translation id="596732417280023843">De naam van het certificaatprofiel.</translation>
 <translation id="5972538402066550344">Opties voor gedetailleerde rapportage toestaan</translation>
+<translation id="5973437409890460481">Verbindingen voor externe zakelijke toegang voor deze machine toestaan</translation>
 <translation id="5975765799383881158">Als je het beleid toepast of niet instelt, kunnen gebruikers feedback naar Google sturen via Menu &gt; Hulp &gt; Een probleem melden of via een toetscombinatie.
 
       Als je het beleid niet toepast, kunnen gebruikers geen feedback naar Google sturen.</translation>
@@ -9587,6 +9589,11 @@ Als je dit beleid instelt, moet je het beleid <ph name="PRIVACY_SANDBOX_PROMPT_E
       Als dit beleid is ingesteld op 'True', moet de gebruiker inloggen bij <ph name="PRODUCT_NAME" /> met zijn profiel voordat hij de browser gebruikt. De standaardwaarde van BrowserGuestModeEnabled wordt ingesteld op 'False'. Houd er rekening mee dat bestaande, niet-ingelogde profielen worden vergrendeld en niet toegankelijk zijn na inschakeling van dit beleid. Bekijk het Helpcentrum-artikel voor meer informatie.
 
       Als dit beleid is ingesteld op 'False' of niet is geconfigureerd, kan de gebruiker de browser gebruiken zonder in te loggen bij <ph name="PRODUCT_NAME" />.</translation>
+<translation id="8575422604428646609">Als je dit beleid niet toepast, voorkomt dit beleid dat bedrijfsbeheerders verbinding kunnen maken met beheerde <ph name="PRODUCT_OS_NAME" />-apparaten als er geen gebruiker op het apparaat aanwezig is.
+
+Dit beleid heeft geen effect op andere scenario's voor externe toegang.
+
+Dit beleid is niet van kracht als je het toepast, leeg laat of niet instelt.</translation>
 <translation id="8575739761246140675">Vertrouwen in certificaten van de verouderde PKI van Symantec Corporation aanzetten</translation>
 <translation id="8575746110808109915">Stel het beleid in om de functie voor volledig herstel aan te zetten.
       Als je dit beleid instelt op True, worden apps en app-vensters wel of niet hersteld na een crash of opnieuw opstarten op basis van de instelling voor App herstellen.
@@ -10271,6 +10278,7 @@ Opmerking: Als het apparaat opnieuw wordt opgestart, wordt het cachegeheugen gew
 <translation id="9107635531763682565">Als je het beleid instelt op 1, kunnen websites bureaubladmeldingen tonen. Als je het beleid instelt op 2, worden bureaubladmeldingen geblokkeerd.
 
 Als je het beleid niet instelt, is <ph name="ASK_NOTIFICATIONS_POLICY_NAME" /> van toepassing maar kunnen gebruikers deze instelling wijzigen.</translation>
+<translation id="9110194749335632373">Verbindingen voor externe toegang van bedrijfsbeheerders voor deze machine voorkomen</translation>
 <translation id="9110251436602897914">Informatie rapporteren over randapparaten die zijn aangesloten op het apparaat</translation>
 <translation id="9110485853581788150">Een lijst met certificaten die niet worden vertrouwd in <ph name="PRODUCT_NAME" />, maar kunnen worden gebruikt als hints om paden te maken. Certificaten moeten base64-gecodeerd zijn.</translation>
 <translation id="9111850884577810507">Dit veld moet overeenkomen met een van de tekenreeksen die een door <ph name="PRODUCT_NAME" /> ondersteunde printer vertegenwoordigen. De tekenreeks wordt gebruikt om de juiste PPD voor de printer te identificeren en te installeren. Meer informatie hierover vind je op https://support.google.com/chrome?p=noncloudprint.</translation>

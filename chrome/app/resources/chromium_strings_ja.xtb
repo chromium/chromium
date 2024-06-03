@@ -184,6 +184,7 @@
 <translation id="4055805654398742145">パスワード マネージャー(&amp;A)</translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{1 分間使用しなかった場合、組織は Chromium を自動的に終了します。閲覧データは削除されます。これには、履歴、自動入力、ダウンロードが含まれます。}other{# 分間使用しなかった場合、組織は Chromium を自動的に終了します。閲覧データは削除されます。これには、履歴、自動入力、ダウンロードが含まれます。}}</translation>
 <translation id="4118474109249235144">Chromium のシークレット モード</translation>
+<translation id="4122186850977583290">Chromium についてのページに移動</translation>
 <translation id="4148957013307229264">インストール中...</translation>
 <translation id="4149336151887611710">あなたの組織は仕事用プロフィールの閲覧データ（ブックマーク、履歴、パスワードなど）を確認、管理できます。個人用の Chromium プロフィールの閲覧データを確認することはできません。</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - ネットワークにログイン - Chromium</translation>

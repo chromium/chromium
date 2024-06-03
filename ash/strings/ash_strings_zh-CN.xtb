@@ -107,6 +107,7 @@
 <translation id="1333308631814936910">已与“<ph name="DISPLAY_NAME" />”连接</translation>
 <translation id="1340378040547539434">缩小网页</translation>
 <translation id="1341651618736211726">溢出</translation>
+<translation id="1341926407152459446">使用“<ph name="DEVICE_NAME" />”来输入和输出音频</translation>
 <translation id="1344141078024003905">您正在投放屏幕画面。您可随时暂停或停止投屏。</translation>
 <translation id="1346748346194534595">向右</translation>
 <translation id="1351937230027495976">收起菜单</translation>
@@ -145,6 +146,7 @@
 <translation id="1486307154719069822">借助语音输入功能，您可以通过说话来输入内容。选中某个文本字段后，按语音输入键或选择屏幕底部的麦克风图标。您的语音输入语言已设置为<ph name="LANGUAGE" />。系统会将语音发送给 Google 以供处理。您可以随时在“设置”&gt;“无障碍”中更改语音输入语言。</translation>
 <translation id="1487931858675166540">“<ph name="FIRST_ITEM_TITLE" />”与“<ph name="SECOND_ITEM_TITLE" />”交换了位置</translation>
 <translation id="1500926532737552529">显示所有建议</translation>
+<translation id="1501946871587957338">要切换音频源吗？</translation>
 <translation id="1510238584712386396">启动器</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{显示通知设置。针对 1 个应用关闭通知}other{显示通知设置。针对 # 个应用关闭通知}}</translation>
 <translation id="1523032696246003">电池电量为 <ph name="BATTERY_PERCENTAGE" />% | 还需 <ph name="TIME" />才能充满</translation>
@@ -773,6 +775,7 @@
 <translation id="397105322502079400">正在计算...</translation>
 <translation id="397726367135689299">正在充电的电池可能会变得不稳定。</translation>
 <translation id="3977512764614765090">当前的电池电量为 <ph name="PERCENTAGE" />%，正在充电。</translation>
+<translation id="3982013579989864579">要切换音频输出设备吗？</translation>
 <translation id="3984536049089846927">下一页</translation>
 <translation id="3986082989454912832">接听</translation>
 <translation id="3990002060657467458">您可在“快捷设置”中找到常用控件（例如 Wi-Fi、蓝牙和音量），也可在那里执行截屏操作。</translation>
@@ -815,6 +818,7 @@
 <translation id="4146833061457621061">播放音乐</translation>
 <translation id="4150201353443180367">显示</translation>
 <translation id="4156293514828496577">电量剩余 <ph name="PERCENTAGE" />%（大约能维持 <ph name="TIME_LEFT" />）。为了延长电池续航时间，部分功能会受到限制。</translation>
+<translation id="4160919062868802509">检测到多个音频源</translation>
 <translation id="4165275524535002941">数据线可能不支持显示屏</translation>
 <translation id="4177415338862979658">点击即可查看详情</translation>
 <translation id="4177913004758410636">{0,plural, =1{请在 1 天内更新此设备}other{请在 # 天内更新此设备}}</translation>
@@ -1013,6 +1017,7 @@
 <translation id="4871905435473761992">显示热点详情。您的移动网络不支持热点。</translation>
 <translation id="4872237917498892622">Alt + 搜索键或 Shift</translation>
 <translation id="4872852897273142380">聚焦于或突出显示书签栏（若显示）</translation>
+<translation id="4876935764454575645">音频选择</translation>
 <translation id="4881323000405981760">Linux 应用不支持特效</translation>
 <translation id="4881695831933465202">打开</translation>
 <translation id="4889868803215848840">（可选）提供反馈来帮助改进建议：</translation>
@@ -1089,6 +1094,7 @@
 <translation id="5121628974188116412">转到网页底部</translation>
 <translation id="5122517996953421795">“<ph name="DESK_NAME" />”预览。非活动桌面。</translation>
 <translation id="5136175204352732067">所连接的键盘已不是原来的那个</translation>
+<translation id="5144005092084035179">要切换音频输入设备吗？</translation>
 <translation id="5147567197700016471">已解锁</translation>
 <translation id="5150070631291639005">隐私设置</translation>
 <translation id="5155897006997040331">朗读速度</translation>
@@ -1787,6 +1793,7 @@
 <translation id="7780094051999721182">快捷方式</translation>
 <translation id="7780159184141939021">旋转屏幕</translation>
 <translation id="7781829728241885113">昨天</translation>
+<translation id="7787212146956232129">输入和输出设备均已设置。如需更改，请前往“设置”。</translation>
 <translation id="7792590255364786396">可见</translation>
 <translation id="7796735576426975947">已隐藏新通知</translation>
 <translation id="7798302898096527229">按搜索键或按 Shift 键可取消。</translation>
@@ -2093,6 +2100,7 @@
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 个文件}other{# 个文件}}</translation>
 <translation id="8936501819958976551">已停用</translation>
 <translation id="8938800817013097409">USB-C 设备（背面右侧端口）</translation>
+<translation id="8939855324412367560">音频输入设备为“<ph name="INPUT_DEVICE_NAME" />”，音频输出设备为“<ph name="OUTPUT_DEVICE_NAME" />”。如需更改，请前往“设置”。</translation>
 <translation id="8940956008527784070">电池电量不足 (<ph name="PERCENTAGE" />%)</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> 复选框未选中。</translation>
 <translation id="8949925099261528566">已连接，但无法访问互联网</translation>
@@ -2150,6 +2158,7 @@
 <translation id="9178475906033259337">显示了 1 条与“<ph name="QUERY" />”相符的结果</translation>
 <translation id="9179259655489829027">借助此功能，您无需使用密码即可快速访问任何已登录的用户。请仅对您信任的账号使用此功能。</translation>
 <translation id="9183456764293710005">全屏放大镜</translation>
+<translation id="9192133205265227850">使用“<ph name="DEVICE_NAME" />”</translation>
 <translation id="9193626018745640770">正在投放至不明接收器</translation>
 <translation id="9194617393863864469">登录其他用户账号…</translation>
 <translation id="9195990613383871904">明天</translation>

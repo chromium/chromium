@@ -107,6 +107,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="1333308631814936910">Mae <ph name="DISPLAY_NAME" /> wedi cysylltu</translation>
 <translation id="1340378040547539434">Pellhau ar dudalen</translation>
 <translation id="1341651618736211726">Gorlif</translation>
+<translation id="1341926407152459446">Defnyddio "<ph name="DEVICE_NAME" />" ar gyfer mewnbwn ac allbwn sain</translation>
 <translation id="1344141078024003905">Rydych yn castio i'ch sgrîn. Gallwch oedi neu stopio castio eich sgrîn unrhyw bryd.</translation>
 <translation id="1346748346194534595">De</translation>
 <translation id="1351937230027495976">Crebachu'r ddewislen</translation>
@@ -145,6 +146,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="1486307154719069822">Gydag arddweud, gallwch deipio gan ddefnyddio'ch llais. Pwyswch y fysell arddweud neu dewiswch yr eicon meicroffon ar waelod y sgrîn pan fyddwch chi ar faes testun. Mae'ch iaith arddweud wedi'i gosod i <ph name="LANGUAGE" />. Anfonir lleferydd at Google i'w brosesu. Gallwch newid yr iaith arddweud unrhyw bryd yn y Gosodiadau &gt; Hygyrchedd.</translation>
 <translation id="1487931858675166540">Cyfnewidiwyd <ph name="FIRST_ITEM_TITLE" /> â <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Dangos yr holl awgrymiadau</translation>
+<translation id="1501946871587957338">Newid ffynhonnell sain?</translation>
 <translation id="1510238584712386396">Lansiwr</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Dangos gosodiadau hysbysiadau. Mae hysbysiadau wedi'u diffodd ar gyfer ap}zero{Dangos gosodiadau hysbysiadau. Mae hysbysiadau wedi'u diffodd ar gyfer # ap}two{Dangos gosodiadau hysbysiadau. Mae hysbysiadau wedi'u diffodd ar gyfer # ap}few{Dangos gosodiadau hysbysiadau. Mae hysbysiadau wedi'u diffodd ar gyfer # ap}many{Dangos gosodiadau hysbysiadau. Mae hysbysiadau wedi'u diffodd ar gyfer # ap}other{Dangos gosodiadau hysbysiadau. Mae hysbysiadau wedi'u diffodd ar gyfer # ap}}</translation>
 <translation id="1523032696246003">Batri <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> nes yn llawn</translation>
@@ -773,6 +775,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="397105322502079400">Wrthi'n cyfrifo…</translation>
 <translation id="397726367135689299">Gall gwefru batri fod yn annibynadwy.</translation>
 <translation id="3977512764614765090">Mae'r batri ar <ph name="PERCENTAGE" />% ac yn gwefru.</translation>
+<translation id="3982013579989864579">Newid allbwn sain?</translation>
 <translation id="3984536049089846927">Y dudalen nesaf</translation>
 <translation id="3986082989454912832">Ateb</translation>
 <translation id="3990002060657467458">Mae rheolyddion a ddefnyddir yn aml megis Wi-Fi, Bluetooth a lefel sain yn ymddangos yn y Gosodiadau Cyflym. Gallwch hefyd fynd yma i gymryd sgrinluniau.</translation>
@@ -816,6 +819,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="4150201353443180367">Sgrîn</translation>
 <translation id="4156293514828496577"><ph name="PERCENTAGE" />% o fatri ar ôl (tua <ph name="TIME_LEFT" />).
 Mae rhai nodweddion wedi'u cyfyngu i gynyddu oes y batri.</translation>
+<translation id="4160919062868802509">Wedi canfod mwy nag un ffynhonnell sain</translation>
 <translation id="4165275524535002941">Mae'n bosib na fydd cebl yn cefnogi sgriniau</translation>
 <translation id="4177415338862979658">Cliciwch i wirio am fanylion</translation>
 <translation id="4177913004758410636">{0,plural, =1{Diweddarwch y ddyfais o fewn diwrnod}zero{Diweddarwch y ddyfais o fewn # diwrnod}two{Diweddarwch y ddyfais o fewn # ddiwrnod}few{Diweddarwch y ddyfais o fewn # diwrnod}many{Diweddarwch y ddyfais o fewn # diwrnod}other{Diweddarwch y ddyfais o fewn # diwrnod}}</translation>
@@ -1014,6 +1018,7 @@ Mae 1 ddyfais yn gysylltiedig.</translation>
 <translation id="4871905435473761992">Dangos manylion y boethfan. Nid yw eich rhwydwaith symudol yn cefnogi poethfan.</translation>
 <translation id="4872237917498892622">Alt+Search neu Shift</translation>
 <translation id="4872852897273142380">Canolbwyntio ar neu amlygu'r bar nodau tudalen (os yw'n cael ei ddangos)</translation>
+<translation id="4876935764454575645">Dewis sain</translation>
 <translation id="4881323000405981760">Ni chefnogir effeithiau ar apiau linux</translation>
 <translation id="4881695831933465202">Agor</translation>
 <translation id="4889868803215848840">Rhowch adborth dewisol i wella awgrymiadau:</translation>
@@ -1090,6 +1095,7 @@ Mae 1 ddyfais yn gysylltiedig.</translation>
 <translation id="5121628974188116412">Mynd i waelod y dudalen</translation>
 <translation id="5122517996953421795">Rhagolwg <ph name="DESK_NAME" />. Desg anweithredol.</translation>
 <translation id="5136175204352732067">Mae bysellfwrdd gwahanol wedi'i gysylltu</translation>
+<translation id="5144005092084035179">Newid mewnbwn sain?</translation>
 <translation id="5147567197700016471">Wedi'i ddatgloi</translation>
 <translation id="5150070631291639005">Gosodiadau preifatrwydd</translation>
 <translation id="5155897006997040331">Cyflymder darllen</translation>
@@ -1789,6 +1795,7 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="7780094051999721182">llwybrau byr</translation>
 <translation id="7780159184141939021">Cylchdroi'r Sgrîn</translation>
 <translation id="7781829728241885113">Ddoe</translation>
+<translation id="7787212146956232129">Mae dyfeisiau mewnbwn ac allbwn wedi'u gosod. Ewch i'r Gosodiadau i newid.</translation>
 <translation id="7792590255364786396">Gweladwy</translation>
 <translation id="7796735576426975947">Hysbysiad newydd wedi'i guddio</translation>
 <translation id="7798302898096527229">Pwyswch Search neu Shift i ganslo.</translation>
@@ -2095,6 +2102,7 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ffeil}zero{# ffeil}two{# ffeil}few{# ffeil}many{# ffeil}other{# ffeil}}</translation>
 <translation id="8936501819958976551">wedi dadweithredu</translation>
 <translation id="8938800817013097409">Dyfais USB-C (porth de yn y cefn)</translation>
+<translation id="8939855324412367560">Sain mewnbwn yw "<ph name="INPUT_DEVICE_NAME" />" a sain allbwn yw "<ph name="OUTPUT_DEVICE_NAME" />". Ewch i'r Gosodiadau i newid.</translation>
 <translation id="8940956008527784070">Mae'r batri'n isel (<ph name="PERCENTAGE" />%)</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> Nid yw'r blwch ticio wedi'i dicio.</translation>
 <translation id="8949925099261528566">Cysylltwyd, dim rhyngrwyd</translation>
@@ -2152,6 +2160,7 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="9178475906033259337">Wrthi'n dangos 1 canlyniad am <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Mae'r nodwedd hon yn caniatáu i chi gyrchu unrhyw ddefnyddiwr sydd wedi mewngofnodi yn gyflym heb fod angen cyfrinair. Defnyddiwch y nodwedd hon gyda'r cyfrifon rydych yn ymddiried ynddynt yn unig.</translation>
 <translation id="9183456764293710005">Chwyddwr sgrîn lawn</translation>
+<translation id="9192133205265227850">Defnyddio "<ph name="DEVICE_NAME" />"</translation>
 <translation id="9193626018745640770">Wrthi'n castio i dderbynnydd anhysbys</translation>
 <translation id="9194617393863864469">Mewngofnodi defnyddiwr arall...</translation>
 <translation id="9195990613383871904">Yfory</translation>

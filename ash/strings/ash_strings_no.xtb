@@ -107,6 +107,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> er tilkoblet</translation>
 <translation id="1340378040547539434">Zoom ut på siden</translation>
 <translation id="1341651618736211726">Overflyt</translation>
+<translation id="1341926407152459446">Bruk «<ph name="DEVICE_NAME" />» som inn- og utenhet for lyd</translation>
 <translation id="1344141078024003905">Du caster skjermen. Du kan når som helst stoppe castingen av skjermen eller sette den på pause.</translation>
 <translation id="1346748346194534595">Høyre</translation>
 <translation id="1351937230027495976">Skjul menyen</translation>
@@ -145,6 +146,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1486307154719069822">Med diktering kan du skrive med stemmen. Trykk på dikteringstasten, eller velg mikrofonikonet nederst på skjermen når du er i et tekstfelt. Dikteringsspråket er satt til <ph name="LANGUAGE" />. Det som blir sagt, sendes til Google for behandling. Du kan bytte dikteringsspråk når som helst i Innstillinger &gt; Tilgjengelighet.</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> har byttet plass med <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Vis alle forslag</translation>
+<translation id="1501946871587957338">Vil du bytte lydkilde?</translation>
 <translation id="1510238584712386396">Appoversikt</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Vis innstillinger for varsler. Varsler er slått av for en app}other{Vis innstillinger for varsler. Varsler er slått av for # apper}}</translation>
 <translation id="1523032696246003">Batteri <ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> til batteriet er fullt</translation>
@@ -210,6 +212,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1747827819627189109">Skjermtastaturet er aktivert</translation>
 <translation id="1749109475624620922">Vinduet <ph name="WINDOW_TITLE" /> er tilordnet alle skrivebord</translation>
 <translation id="1750088060796401187">Kun <ph name="MAX_DESK_LIMIT" /> skrivebord er tillatt. Fjern et skrivebord for å åpne et nytt.</translation>
+<translation id="1755408179247123630">Vil du slå på tekstopplesing?</translation>
 <translation id="1755556344721611131">Diagnostikk-appen</translation>
 <translation id="1756833229520115364">Kunne ikke lagre malen. For mange vinduer eller faner.</translation>
 <translation id="1757857692711134412">Avslått til solnedgang</translation>
@@ -773,6 +776,7 @@ Koble enheten til strøm.</translation>
 <translation id="397105322502079400">Beregner …</translation>
 <translation id="397726367135689299">Batteriladingen kan være ustabil.</translation>
 <translation id="3977512764614765090">Batteriet er <ph name="PERCENTAGE" /> % fullt og lades.</translation>
+<translation id="3982013579989864579">Vil du bytte utenhet for lyd?</translation>
 <translation id="3984536049089846927">Neste side</translation>
 <translation id="3986082989454912832">Svar</translation>
 <translation id="3990002060657467458">Kontroller som ofte brukes, for eksempel wifi, Bluetooth og volum, er i hurtiginnstillingene. Du kan også gå hit for å ta skjermdumper.</translation>
@@ -816,6 +820,7 @@ Koble enheten til strøm.</translation>
 <translation id="4150201353443180367">Skjerm</translation>
 <translation id="4156293514828496577"><ph name="PERCENTAGE" /> % batteri gjenstår (ca. <ph name="TIME_LEFT" />).
 Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
+<translation id="4160919062868802509">Flere lydkilder er registrert</translation>
 <translation id="4165275524535002941">Kabelen støtter kanskje ikke skjermer</translation>
 <translation id="4177415338862979658">Klikk for å se etter detaljer</translation>
 <translation id="4177913004758410636">{0,plural, =1{Oppdater enheten innen en dag}other{Oppdater enheten innen # dager}}</translation>
@@ -947,6 +952,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="4628757576491864469">Enheter</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" /> – stjernevurdering <ph name="RATING_SCORE" /></translation>
 <translation id="4633636853437260449">Trykk på Ctrl + W for å slette</translation>
+<translation id="4635501805800894201">{0,plural, =0{Oppdater enheten til en tidligere versjon nå}=1{Oppdater enheten til en tidligere versjon innen 1 sekund}other{Oppdater enheten til en tidligere versjon innen # sekunder}}</translation>
 <translation id="4642092649622328492">Ta en delvis skjermdump</translation>
 <translation id="4644727592819780893">Regionen er for liten – det er ikke plass til kameraet</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" /> – appanbefaling</translation>
@@ -976,6 +982,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="4735944890391795473">Skrivebord 12</translation>
 <translation id="473775607612524610">Oppdater</translation>
 <translation id="4740516757091333363">Vil du slette det lagrede skrivebordet?</translation>
+<translation id="4746798685375253449">{0,plural, =1{Oppdater enheten til en tidligere versjon innen en dag}other{Oppdater enheten til en tidligere versjon innen # dager}}</translation>
 <translation id="4747410141429390146">Lås opp for å se varsler</translation>
 <translation id="4752784485658729358">Kun 6 lagrede skrivebord er tillatt. Fjern et skrivebord for å lagre et nytt.</translation>
 <translation id="4759238208242260848">Nedlastinger</translation>
@@ -1014,6 +1021,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="4871905435473761992">Vis detaljer for wifi-sonen. Mobilnettverket ditt støtter ikke wifi-soner.</translation>
 <translation id="4872237917498892622">Alt + Søk eller Shift</translation>
 <translation id="4872852897273142380">Flytt fokuset til eller fremhev bokmerkeraden (hvis den er synlig)</translation>
+<translation id="4876935764454575645">Lydvalg</translation>
 <translation id="4881323000405981760">Effekter støttes ikke i Linux-apper</translation>
 <translation id="4881695831933465202">Åpne</translation>
 <translation id="4889868803215848840">Gi en valgfri tilbakemelding for å gjøre forslagene bedre:</translation>
@@ -1080,6 +1088,9 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="5092436659250499817">Slå tastaturets bakgrunnsbelysning av eller på</translation>
 <translation id="5094577350232361255">omtrent</translation>
 <translation id="5095136268899496849">Tilpass og gi <ph name="PRODUCT_NAME" /> personlig preg i innstillingene. Prøv å endre bakgrunnen eller angi en skjermsparer.</translation>
+<translation id="5096125376090473584">For å få teksten lest høyt, velg tekstopplesing-ikonet nederst på skjermen, og marker teksten.
+
+Du kan også bruke hurtigtasten. Marker først teksten, og trykk deretter på <ph name="MODIFIER" /> + S.</translation>
 <translation id="509790653408515442">Når du strømmer appene på telefonen din, vises de her</translation>
 <translation id="5098537242461068432">Skrivebordet og vinduene er åpnet på nytt</translation>
 <translation id="5103975065730779239">Frem til <ph name="END_TIME_EXPRESSION" /></translation>
@@ -1090,6 +1101,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="5121628974188116412">Gå til bunnen av siden</translation>
 <translation id="5122517996953421795">Forhåndsvisning av <ph name="DESK_NAME" />. Inaktivt skrivebord.</translation>
 <translation id="5136175204352732067">Et annet tastatur er koblet til</translation>
+<translation id="5144005092084035179">Vil du bytte innenhet for lyd?</translation>
 <translation id="5147567197700016471">Ulåst</translation>
 <translation id="5150070631291639005">Personverninnstillinger</translation>
 <translation id="5155897006997040331">Lesehastighet</translation>
@@ -1309,6 +1321,7 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="5916646100036936191">Nytt varsel, <ph name="NOTIFICATION_COUNT" /> totalt</translation>
 <translation id="5916664084637901428">På</translation>
 <translation id="5920710855273935292">Lyden for mikrofonen er kuttet.</translation>
+<translation id="5928083197428724029">Oppdatering kreves av <ph name="MANAGER" /></translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> er på.</translation>
 <translation id="5947494881799873997">Tilbakestill</translation>
 <translation id="595202126637698455">Ytelsessporing er aktivert</translation>
@@ -1427,6 +1440,7 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="6376931439017688372">Bluetooth er på</translation>
 <translation id="6378515133128829137">Fest vinduet til høyre</translation>
 <translation id="6381109794406942707">For å låse opp enheten, skriv inn PIN-koden.</translation>
+<translation id="6381305031890976705">{0,plural, =1{Oppdater enheten til en tidligere versjon innen en time}other{Oppdater enheten til en tidligere versjon innen # timer}}</translation>
 <translation id="638716340450135524">Slå på kameratilgang</translation>
 <translation id="639644700271529076">CAPS LOCK er av</translation>
 <translation id="6406458002328242616">Endre nedtellingen. <ph name="FOCUS_DURATION" />.</translation>
@@ -1449,6 +1463,7 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="6459472438155181876">Utvider skjermen til <ph name="DISPLAY_NAME" /></translation>
 <translation id="6464094930452079790">bilder</translation>
 <translation id="6467290994038932560">På for <ph name="GAME_APP_NAME" /></translation>
+<translation id="6468406072297048412">{0,plural, =1{Oppdater enheten til en tidligere versjon innen 1 minutt}other{Oppdater enheten til en tidligere versjon innen # minutter}}</translation>
 <translation id="6469104339369989396">Slå av/på wifi-sonen</translation>
 <translation id="6477681113376365978">Kan ikke laste ned filen</translation>
 <translation id="6482559668224714696">Lupe for hele skjermen</translation>
@@ -1572,6 +1587,7 @@ Nylig installert</translation>
 <translation id="6917259695595127329">Gjøremålene ble sist oppdatert <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">Smartkortet ditt ble ikke gjenkjent. Prøv på nytt.</translation>
 <translation id="692135145298539227">slett</translation>
+<translation id="6921427376813842559">Oppdater enheten</translation>
 <translation id="6929081673585394903">Vis kontroller</translation>
 <translation id="6931576957638141829">Lagre i</translation>
 <translation id="6942518653766415536">Meny for opptaksformat</translation>
@@ -1659,6 +1675,7 @@ Nylig installert</translation>
 <translation id="7303365578352795231">Svarer på en annen enhet</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Administratoren holder på å tilbakestille eSIM-kortet ditt. Dette kan ta noen minutter.</translation>
+<translation id="7312761820869643657">Oppdater enheten til en tidligere versjon</translation>
 <translation id="7313193732017069507">Vis kameraet</translation>
 <translation id="7330397557116570022">Gå til et tekstfelt for å bruke diktering</translation>
 <translation id="7331646370422660166">alt + nedoverpil</translation>
@@ -1789,6 +1806,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="7780094051999721182">snarveier</translation>
 <translation id="7780159184141939021">Rotér skjermen</translation>
 <translation id="7781829728241885113">I går</translation>
+<translation id="7787212146956232129">Inn- og utenheter for lyd er angitt. Gå til innstillingene for å endre dem.</translation>
 <translation id="7792590255364786396">Synlig</translation>
 <translation id="7796735576426975947">Et nytt varsel er skjult</translation>
 <translation id="7798302898096527229">Trykk på Søk eller Shift for å avbryte</translation>
@@ -1807,6 +1825,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">For å bruke enheten som gjest må du logge av og velge Surf som gjest nederst på skjermen.</translation>
 <translation id="7866482334467279021">på</translation>
+<translation id="7866727328666668290">Den siste fanen ble åpnet</translation>
 <translation id="7872786842639831132">Av</translation>
 <translation id="7875575368831396199">Det ser ut til at Bluetooth er slått av på <ph name="DEVICE_TYPE" />. Slå på Bluetooth for å bruke Telefonstyring.</translation>
 <translation id="7884446017008693258">Innstillinger for wifi-sone</translation>
@@ -2095,6 +2114,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 fil}other{# filer}}</translation>
 <translation id="8936501819958976551">deaktivert</translation>
 <translation id="8938800817013097409">USB-C-enhet (høyre port på baksiden)</translation>
+<translation id="8939855324412367560">Innenheten for lyd er «<ph name="INPUT_DEVICE_NAME" />», og utenheten for lyd er «<ph name="OUTPUT_DEVICE_NAME" />». Gå til innstillingene for å endre dette.</translation>
 <translation id="8940956008527784070">Lavt batterinivå (<ph name="PERCENTAGE" /> %)</translation>
 <translation id="894774083269346314">Det er ikke merket av for <ph name="PROFILE_NAME" /> (<ph name="EMAIL" />).</translation>
 <translation id="8949925099261528566">Tilkoblet – ingen internettilgang</translation>
@@ -2152,6 +2172,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="9178475906033259337">Viser 1 resultat for <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Med denne funksjonen får du rask tilgang til påloggede brukere uten å måtte skrive inn passord. Du bør bare bruke denne funksjonen med kontoer du stoler på.</translation>
 <translation id="9183456764293710005">Lupe for hele skjermen</translation>
+<translation id="9192133205265227850">Bruk «<ph name="DEVICE_NAME" />»</translation>
 <translation id="9193626018745640770">Caster på en ukjent mottaker</translation>
 <translation id="9194617393863864469">Logg på en annen bruker</translation>
 <translation id="9195990613383871904">I morgen</translation>
@@ -2172,6 +2193,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="925832987464884575">Skjul forhåndsvisninger</translation>
 <translation id="938407504481277932">Gjeldende skrivebord: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> (<ph name="EMAIL" />). Skrivebord <ph name="DESK_INDEX" /> av <ph name="DESK_COUNT" />.</translation>
 <translation id="938963181863597773">Hva er i kalenderen min?</translation>
+<translation id="94468042118567862">Enheten er ikke oppdatert</translation>
 <translation id="945383118875625837">Dra linken til bokmerkeraden</translation>
 <translation id="945522503751344254">Send tilbakemelding</translation>
 <translation id="951991426597076286">Avvis</translation>

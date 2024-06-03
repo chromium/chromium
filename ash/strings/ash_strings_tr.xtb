@@ -107,6 +107,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> bağlandı</translation>
 <translation id="1340378040547539434">Sayfayı uzaklaştır</translation>
 <translation id="1341651618736211726">Taşma</translation>
+<translation id="1341926407152459446">Ses girişi ve çıkışı için "<ph name="DEVICE_NAME" />" adlı cihazı kullanın</translation>
 <translation id="1344141078024003905">Ekranınızı yayınlıyorsunuz. İstediğiniz zaman ekranınızı yayınlamayı duraklatabilir veya durdurabilirsiniz.</translation>
 <translation id="1346748346194534595">Sağa</translation>
 <translation id="1351937230027495976">Menüyü daralt</translation>
@@ -145,6 +146,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1486307154719069822">Dikte özelliğinde sesinizi kullanarak yazabilirsiniz. Metin alanındayken dikte tuşuna basın veya ekranın alt kısmındaki mikrofon simgesini seçin. Dikte diliniz <ph name="LANGUAGE" /> olarak ayarlandı. Konuşma, işlenmek üzere Google'a gönderilir Dikte dilini dilediğiniz zaman Ayarlar &gt; Erişilebilirlik bölümünden değiştirebilirsiniz.</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" />, <ph name="SECOND_ITEM_TITLE" /> ile değiştirildi</translation>
 <translation id="1500926532737552529">Tüm önerileri göster</translation>
+<translation id="1501946871587957338">Ses kaynağı değiştirilsin mi?</translation>
 <translation id="1510238584712386396">Başlatıcı</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Bildirim ayarlarını göster. Bildirimler bir uygulama için kapalı}other{Bildirim ayarlarını göster. Bildirimler # uygulama için kapalı}}</translation>
 <translation id="1523032696246003">Pil seviyesi %<ph name="BATTERY_PERCENTAGE" /> | Tamamen dolmasına <ph name="TIME" /> kaldı</translation>
@@ -773,6 +775,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="397105322502079400">Hesaplanıyor...</translation>
 <translation id="397726367135689299">Pil şarjı güvenilir olmayabilir.</translation>
 <translation id="3977512764614765090">Pil %<ph name="PERCENTAGE" /> dolu ve şarj oluyor.</translation>
+<translation id="3982013579989864579">Ses çıkışı değiştirilsin mi?</translation>
 <translation id="3984536049089846927">Sonraki sayfa</translation>
 <translation id="3986082989454912832">Cevapla</translation>
 <translation id="3990002060657467458">Kablosuz, Bluetooth ve ses seviyesi gibi sık kullanılan denetimler Hızlı Ayarlar'da yer alır. Ekran görüntüsü almak için de bu menüyü kullanabilirsiniz.</translation>
@@ -816,6 +819,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="4150201353443180367">Ekran</translation>
 <translation id="4156293514828496577">%<ph name="PERCENTAGE" /> pil kaldı (yaklaşık <ph name="TIME_LEFT" />).
 Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
+<translation id="4160919062868802509">Birden fazla ses kaynağı algılandı</translation>
 <translation id="4165275524535002941">Kablo, ekranları desteklemeyebilir</translation>
 <translation id="4177415338862979658">Ayrıntılara göz atmak için tıklayın</translation>
 <translation id="4177913004758410636">{0,plural, =1{Cihazı bir gün içinde güncelleyin}other{Cihazı # gün içinde güncelleyin}}</translation>
@@ -1014,6 +1018,7 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="4871905435473761992">Hotspot ayrıntılarını göster. Mobil ağınız hotspot'u desteklemiyor.</translation>
 <translation id="4872237917498892622">Alt+Arama veya Üst Karakter</translation>
 <translation id="4872852897273142380">Yer işaretleri çubuğunu vurgula veya çubuğa odaklan (görünür durumdaysa)</translation>
+<translation id="4876935764454575645">Ses seçimi</translation>
 <translation id="4881323000405981760">Efektler, Linux uygulamalarında desteklenmez</translation>
 <translation id="4881695831933465202">Aç</translation>
 <translation id="4889868803215848840">Önerileri iyileştirmek için isteğe bağlı geri bildirim sağlayın:</translation>
@@ -1090,6 +1095,7 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="5121628974188116412">Sayfanın sonuna gider</translation>
 <translation id="5122517996953421795"><ph name="DESK_NAME" /> önizlemesi. Masa etkin değil.</translation>
 <translation id="5136175204352732067">Farklı klavye bağlandı</translation>
+<translation id="5144005092084035179">Ses girişi değiştirilsin mi?</translation>
 <translation id="5147567197700016471">Kilitli değil</translation>
 <translation id="5150070631291639005">Gizlilik ayarları</translation>
 <translation id="5155897006997040331">Okuma hızı</translation>
@@ -1789,6 +1795,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="7780094051999721182">Kısayollar</translation>
 <translation id="7780159184141939021">Ekranı Döndür</translation>
 <translation id="7781829728241885113">Dün</translation>
+<translation id="7787212146956232129">Giriş ve çıkış cihazları ayarlandı. Değiştirmek için Ayarlar'a gidin.</translation>
 <translation id="7792590255364786396">Görünür</translation>
 <translation id="7796735576426975947">Yeni bildirim gösterilmiyor</translation>
 <translation id="7798302898096527229">İptal etmek için Ara veya Üst Karakter tuşuna basın.</translation>
@@ -2095,6 +2102,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 dosya}other{# dosya}}</translation>
 <translation id="8936501819958976551">devre dışı</translation>
 <translation id="8938800817013097409">USB-C cihaz (arkadaki sağ bağlantı noktası)</translation>
+<translation id="8939855324412367560">Giriş sesi "<ph name="INPUT_DEVICE_NAME" />", çıkış sesi "<ph name="OUTPUT_DEVICE_NAME" />". Değiştirmek için Ayarlar'a gidin.</translation>
 <translation id="8940956008527784070">Pil gücü az (%<ph name="PERCENTAGE" />)</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> Onay kutusu işaretli değil.</translation>
 <translation id="8949925099261528566">Bağlı, internet yok</translation>
@@ -2152,6 +2160,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="9178475906033259337"><ph name="QUERY" /> için 1 sonuç gösteriliyor</translation>
 <translation id="9179259655489829027">Bu özellik oturum açmış tüm kullanıcılara şifre gerektirmeden hızlı bir şekilde erişmenize olanak verir. Bu özelliği sadece güvendiğiniz hesaplarda kullanın.</translation>
 <translation id="9183456764293710005">Tam Ekran Büyüteci</translation>
+<translation id="9192133205265227850">"<ph name="DEVICE_NAME" />" hesabını kullan</translation>
 <translation id="9193626018745640770">Bilinmeyen bir alıcıya yayınlanıyor</translation>
 <translation id="9194617393863864469">Başka bir kullanıcı olarak oturum aç...</translation>
 <translation id="9195990613383871904">Yarın</translation>

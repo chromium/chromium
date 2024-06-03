@@ -107,6 +107,7 @@
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> туташты</translation>
 <translation id="1340378040547539434">Баракты алыстатуу</translation>
 <translation id="1341651618736211726">Кошумча</translation>
+<translation id="1341926407152459446">Аудиону киргизүү жана чыгаруу үчүн "<ph name="DEVICE_NAME" />" түзмөгүн колдонуңуз</translation>
 <translation id="1344141078024003905">Тышкы экранга чыгарып жатасыз. Тышкы экранга чыгарууну каалаган убакта улантып же токтотсоңуз болот.</translation>
 <translation id="1346748346194534595">Оң</translation>
 <translation id="1351937230027495976">Менюну жыйыштыруу</translation>
@@ -145,6 +146,7 @@
 <translation id="1486307154719069822">Текстти айтып тере аласыз. Текст жазылуучу жерге өтүп, текстти айтып терүү баскычын же экрандын ылдый жагындагы микрофон сүрөтчөсүн басыңыз. Текстти айтып терүү тили: <ph name="LANGUAGE" />. Кеп иштетүү үчүн Google'га жөнөтүлөт. Текстти айтып терүү тилин Параметрлер &gt; Атайын мүмкүнчүлүктөр бөлүмүнөн каалаган убакта өзгөртө аласыз.</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> <ph name="SECOND_ITEM_TITLE" /> менен алмаштырылды</translation>
 <translation id="1500926532737552529">Бардык сунуштарды көрсөтүү</translation>
+<translation id="1501946871587957338">Башка аудио булакка которуласызбы?</translation>
 <translation id="1510238584712386396">Жүргүзгүч</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Билдирмелердин параметрлерин көрсөтүү. Колдонмонун билдирмелери өчүк}other{Билдирмелердин параметрлерин көрсөтүү. # колдонмонун билдирмелери өчүк}}</translation>
 <translation id="1523032696246003">Батареянын кубаты: <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> кийин толот</translation>
@@ -773,6 +775,7 @@
 <translation id="397105322502079400">Эсептелүүдө…</translation>
 <translation id="397726367135689299">Батарея жакшы кубатталбашы мүмкүн.</translation>
 <translation id="3977512764614765090">Батареянын деңгээли – <ph name="PERCENTAGE" /> %, кубатталууда.</translation>
+<translation id="3982013579989864579">Башка аудио чыгаруучу түзмөккө которуласызбы?</translation>
 <translation id="3984536049089846927">Кийинки бет</translation>
 <translation id="3986082989454912832">Жооп берүү</translation>
 <translation id="3990002060657467458">Wi-Fi, Bluetooth жана үндүн катуулугу сыяктуу көп колдонулган башкаруу элементтери Ыкчам параметрлерде жеткиликтүү. Скриншотторду да ушул жерден тарта аласыз.</translation>
@@ -816,6 +819,7 @@
 <translation id="4150201353443180367">Көрсөтүү</translation>
 <translation id="4156293514828496577">Батареянын кубаты <ph name="PERCENTAGE" />% калды (болжол менен <ph name="TIME_LEFT" />).
 Батареяны көбүрөөк убакытка жеткирүү үчүн айрым функциялар чектелди.</translation>
+<translation id="4160919062868802509">Бир нече аудио булак табылды</translation>
 <translation id="4165275524535002941">Кабель дисплейлерди колдоого албашы мүмкүн</translation>
 <translation id="4177415338862979658">Маалыматты текшерүү үчүн басыңыз</translation>
 <translation id="4177913004758410636">{0,plural, =1{Түзмөктү бир күндүн ичинде жаңыртыңыз}other{Түзмөктү # күндүн ичинде жаңыртыңыз}}</translation>
@@ -1014,6 +1018,7 @@
 <translation id="4871905435473761992">Байланыш түйүнүнүн чоо-жайын көрүү. Мобилдик тармагыңызда байланыш түйүнү колдоого алынбайт.</translation>
 <translation id="4872237917498892622">Alt+Search же Shift</translation>
 <translation id="4872852897273142380">Кыстармалар тилкесине өтүү же бөлүп көрсөтүү (эгер көрсөтүлсө)</translation>
+<translation id="4876935764454575645">Аудиону тандоо</translation>
 <translation id="4881323000405981760">Linux колдонмолорунда эффекттер колдоого алынбайт</translation>
 <translation id="4881695831933465202">Ачуу</translation>
 <translation id="4889868803215848840">Сунуштарды жакшыртуу үчүн пикириңизди билдириңиз:</translation>
@@ -1090,6 +1095,7 @@
 <translation id="5121628974188116412">Барактын аягына өтүү</translation>
 <translation id="5122517996953421795"><ph name="DESK_NAME" /> алдын ала көрүү. Жигерсиз иш такта.</translation>
 <translation id="5136175204352732067">Башка баскычтоп туташтырылды</translation>
+<translation id="5144005092084035179">Башка аудио киргизүүчү түзмөккө которуласызбы?</translation>
 <translation id="5147567197700016471">Бекилген жок</translation>
 <translation id="5150070631291639005">Купуялык параметрлери</translation>
 <translation id="5155897006997040331">Окуу ылдамдыгы</translation>
@@ -1789,6 +1795,7 @@
 <translation id="7780094051999721182">ыкчам баскычтар</translation>
 <translation id="7780159184141939021">Экранды буруу</translation>
 <translation id="7781829728241885113">Кечээ</translation>
+<translation id="7787212146956232129">Киргизүүчү жана чыгаруучу түзмөктөр туураланды. Өзгөртүү үчүн параметрлерге өтүңүз.</translation>
 <translation id="7792590255364786396">Көрүнүп турат</translation>
 <translation id="7796735576426975947">Жаңы билдирме жашырылды</translation>
 <translation id="7798302898096527229">Өчүрүп коюу үчүн Search же Shift баскычтарын басыңыз.</translation>
@@ -2095,6 +2102,7 @@
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 файл}other{# файл}}</translation>
 <translation id="8936501819958976551">өчүрүлдү</translation>
 <translation id="8938800817013097409">USB-C түзмөгү (аркасындагы оң жактагы оюкча)</translation>
+<translation id="8939855324412367560">Киргизүүчү түзмөк – "<ph name="INPUT_DEVICE_NAME" />", ал эми чыгаруучу түзмөк – "<ph name="OUTPUT_DEVICE_NAME" />". Өзгөртүү үчүн параметрлерге өтүңүз.</translation>
 <translation id="8940956008527784070">Батарея аз (<ph name="PERCENTAGE" />%)</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" />, белгилөө кутучасы белгиленген жок.</translation>
 <translation id="8949925099261528566">Туташып турат, Интернет жок</translation>
@@ -2152,6 +2160,7 @@
 <translation id="9178475906033259337"><ph name="QUERY" /> сурамы боюнча 1 натыйжа көрсөтүлүүдө</translation>
 <translation id="9179259655489829027">Бул функция менен аккаунтка кирген бардык колдонуучуларга сырсөзсүз оңой өтө аласыз. Бул функцияны ишенимдүү аккаунттар менен гана колдонуңуз.</translation>
 <translation id="9183456764293710005">Толук экран лупасы</translation>
+<translation id="9192133205265227850">"<ph name="DEVICE_NAME" />" түзмөгүн колдонуңуз</translation>
 <translation id="9193626018745640770">Белгисиз алуучуга чыгарылууда</translation>
 <translation id="9194617393863864469">Башка колдонуучуну киргизүү…</translation>
 <translation id="9195990613383871904">Эртең</translation>

@@ -5223,6 +5223,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4867433544163083783">Comprobar ahora si se pueden organizar las pestañas</translation>
 <translation id="4868281708609571334">Enseñar al Asistente de Google a reconocer la voz de <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="4868284252360267853">Este cuadro de diálogo no está seleccionado actualmente. Pulsa Comando + Mayús + A para seleccionarlo.</translation>
+<translation id="4868351661310357223">Descarga aplicaciones y juegos de Google Play en tu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4869170227080975044">Leer la información de red de ChromeOS</translation>
 <translation id="4870724079713069532">Puedes abrir y editar archivos compatibles con esta aplicación desde el Explorador de archivos u otras aplicaciones. Para controlar qué archivos se abren con esta aplicación de forma predeterminada, ve a los <ph name="BEGIN_LINK" />ajustes de Windows<ph name="END_LINK" />.</translation>
 <translation id="4870995365819149457">Algunos enlaces compatibles se seguirán abriendo en <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> y en otra aplicación más.</translation>
@@ -8042,6 +8043,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7007648447224463482">Abrir todo en una ventana nueva</translation>
 <translation id="7008815993384338777">Sin roaming actualmente</translation>
 <translation id="7009709314043432820"><ph name="APP_NAME" /> está usando tu cámara</translation>
+<translation id="701020165009334820">Puedes descargar aplicaciones y juegos Android a través de Play Store.</translation>
 <translation id="701080569351381435">Ver código fuente</translation>
 <translation id="7011797924920577670">estima tus intereses</translation>
 <translation id="7012430956470647760">Controles parentales para aplicaciones</translation>

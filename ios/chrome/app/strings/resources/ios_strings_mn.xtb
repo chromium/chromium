@@ -1470,6 +1470,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8374977641764177587">Мэдэгдлүүдийг асаах уу?</translation>
 <translation id="8378714024927312812">Танай байгууллагаас удирддаг</translation>
 <translation id="8386068868580335421">Шинэчлэх</translation>
+<translation id="8386882774665382072">{count,plural, =1{{count}-н {position}-р нууц үг}other{{count}-н {position}-р нууц үг}}</translation>
 <translation id="838867811594159347">Нэвтрэх үг оруулна уу…</translation>
 <translation id="8393889347136007944"><ph name="THRESHOLD" /> хоногийн турш ашиглаагүй табууд</translation>
 <translation id="8395339334550012808">Удахгүй та <ph name="CHANNEL_NAME" />-с болон түүний талаарх контентыг Дагаж буй табд харна.</translation>
@@ -1653,6 +1654,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="96615566463761848">Бусад төхөөрөмжөөс табын зөвлөмжүүд харуулах</translation>
 <translation id="973493300226275298">Онлайн дэлгүүрүүдэд бүтээгдэхүүний үнэ хянана уу. Үнэ буурсан үед та сэрэмжлүүлэг авна.</translation>
 <translation id="981498610235328462">Танай байгууллага таныг зөвхөн тодорхой бүртгэлүүдэд нэвтрэхийг зөвшөөрнө. Зөвшөөрөөгүй бүртгэлүүдийг нуусан.</translation>
+<translation id="983800820186631385">{count,plural, =1{{count}-н {position}-р төлбөрийн хэрэгсэл}other{{count}-н {position}-р төлбөрийн хэрэгсэл}}</translation>
 <translation id="984275831282074731">Төлбөрийн хэрэгсэл</translation>
 <translation id="984509647832111802">Синк хийх ажиллахгүй байна.</translation>
 <translation id="988141524645182168">Бусад төхөөрөмжүүд</translation>

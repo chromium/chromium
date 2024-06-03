@@ -2894,6 +2894,7 @@
 <translation id="3090819949319990166">‏فایل خارجی crx در <ph name="TEMP_CRX_FILE" /> کپی نمی‌شود.</translation>
 <translation id="3090871774332213558">«<ph name="DEVICE_NAME" />» مرتبط شد</translation>
 <translation id="3093714882666365141">به سایت‌ها اجازه داده نشود کنترل‌كننده‌های پرداخت را نصب کنند</translation>
+<translation id="3094080575472025333">مسدود کردن برنامه‌ها</translation>
 <translation id="3094141017404513551">با این کار مرورتان از <ph name="EXISTING_USER" /> جدا خواهد شد</translation>
 <translation id="3094223846531205616">{COUNT,plural, =0{امروز منقضی می‌شود}=1{فردا منقضی می‌شود}one{# روز دیگر منقضی می‌شود}other{# روز دیگر منقضی می‌شود}}</translation>
 <translation id="3094521107841754472">قیمت از <ph name="PREVIOUS_PRICE" /> به <ph name="CURRENT_PRICE" /> تغییر کرده است.</translation>
@@ -3726,6 +3727,7 @@
 <translation id="372722114124766626">فقط یک‌بار</translation>
 <translation id="3727332897090187514">یادداشتی اضافه نشده است</translation>
 <translation id="3727473233247516571">قاب فرعی حافظه پنهان عقب-جلو: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
+<translation id="3727843212509629024">پین اشتباه است. امتحان مجدد</translation>
 <translation id="3727850735097852673">‏برای استفاده از «مدیر گذرواژه Google» با macOS Keychain، برنامه Chrome را مجدداً راه‌اندازی کنید و دسترسی به Keychain را مجاز کنید. پس‌از راه‌اندازی مجدد، برگه‌هایتان دوباره باز می‌شوند.</translation>
 <translation id="3728188878314831180">قرینه‌سازی اعلان‌ها از تلفنتان</translation>
 <translation id="3728681439294129328">پیکربندی نشانی شبکه</translation>
@@ -5234,6 +5236,7 @@
 <translation id="4867433544163083783">همین‌حالا امکان سازمان‌دهی شدن برگه‌ها را بررسی کنید</translation>
 <translation id="4868281708609571334">‏آموزش دادن به «دستیار Google» برای تشخیص صدای <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="4868284252360267853">‏درحال‌حاضر، این کادر گفتگو متمرکز نشده است. برای تمرکز کردن روی این کادر گفتگو، کلیدهای Command+Shift+Option A را فشار دهید.</translation>
+<translation id="4868351661310357223">‏برنامه‌ها و بازی‌ها را از Google Play در <ph name="DEVICE_TYPE" /> نصب کنید.</translation>
 <translation id="4869170227080975044">‏خواندن اطلاعات شبکه ChromeOS</translation>
 <translation id="4870724079713069532">می‌توانید فایل‌های پشتیبانی‌شده را با این برنامه ازطریق «کاوشگر فایل» یا برنامه‌های دیگر باز کنید و ویرایش کنید. برای کنترل اینکه کدام فایل‌ها به‌طور پیش‌فرض در این برنامه باز شود، به <ph name="BEGIN_LINK" />تنظیمات پنجره‌ها<ph name="END_LINK" /> بروید.</translation>
 <translation id="4870995365819149457">برخی‌از پیوندهای پشتیبانی‌شده همچنان در <ph name="APP_NAME" />، <ph name="APP_NAME_2" />، <ph name="APP_NAME_3" />، و یک برنامه دیگر باز خواهد شد.</translation>
@@ -5563,6 +5566,7 @@
 <translation id="5121052518313988218">‏سیستم‌عاملی که در محتوای Linux دارید دیگر پشتیبانی نمی‌شود. این سیستم‌عامل دیگر به‌روزرسانی امنیتی و رفع اشکال دریافت نخواهد کرد و ویژگی‌هایی که درحال‌حاضر اجرا می‌شوند ممکن است با خرابی غیرمنتظره مواجه شوند. برای ادامه استفاده از Linux، لطفاً به جدیدترین نسخه به‌روزرسانی کنید.</translation>
 <translation id="5121130586824819730">دیسک سخت پر است. لطفاً در محل دیگری ذخیره کنید یا فضای بیشتری در دیسک سخت ایجاد کنید.</translation>
 <translation id="5123433949759960244">بسکتبال</translation>
+<translation id="5125714798187802869">فعال کردن</translation>
 <translation id="5125751979347152379">نشانی وب نامعتبر است.</translation>
 <translation id="5125967981703109366">درباره این کارت</translation>
 <translation id="512642543295077915">جستجو + پس‌بَر</translation>
@@ -8056,6 +8060,7 @@
 <translation id="7007648447224463482">باز کردن همه در پنجره جدید</translation>
 <translation id="7008815993384338777">درحال‌حاضر فراگردی نمی‌شود</translation>
 <translation id="7009709314043432820"><ph name="APP_NAME" /> درحال استفاده از دوربین است</translation>
+<translation id="701020165009334820">‏می‌توانید برنامه‌ها و بازی‌های Android را ازطریق «فروشگاه Play» بارگیری کنید.</translation>
 <translation id="701080569351381435">مشاهده منبع</translation>
 <translation id="7011797924920577670">علایق شما را تخمین می‌زند</translation>
 <translation id="7012430956470647760">کنترل‌های والدین ویژه برنامه‌ها</translation>
@@ -8387,6 +8392,7 @@
 <translation id="7289049772085228972">‏شما قوی‌ترین امنیت Chrome را دارید</translation>
 <translation id="7289303553784750393">اگر آنلاین هستید اما این مشکل باز هم اتفاق افتاد، می‌توانید روش‌های دیگر را برای ادامه دادن در <ph name="SITE_ETLD_PLUS_ONE" /> امتحان کنید.</translation>
 <translation id="7289386924227731009">‏<ph name="WINDOW_TITLE" /> - درخواست اجازه ارائه شده است؛ برای پاسخ دادن، کلید F6 را فشار دهید</translation>
+<translation id="7290005709287747471">غیرفعال کردن</translation>
 <translation id="7290242001003353852">این سرویس ورود به سیستم با میزبانی <ph name="SAML_DOMAIN" /> در حال دسترسی به دوربین شما است.</translation>
 <translation id="7292067737327289208"><ph name="BEGIN_LINK" />مرورگرتان تحت مدیریت<ph name="END_LINK" /> سازمانتان و <ph name="BEGIN_LINK" />نمایه‌تان تحت مدیریت<ph name="END_LINK" /> <ph name="PROFILE_DOMAIN" /> است</translation>
 <translation id="7292147651179697920">از ولی‌تان بخواهید دسترسی را در «تنظیمات» مجاز کند</translation>

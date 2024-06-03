@@ -107,6 +107,7 @@
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> 기기가 연결됨</translation>
 <translation id="1340378040547539434">페이지 축소</translation>
 <translation id="1341651618736211726">더보기</translation>
+<translation id="1341926407152459446">오디오 입력 및 출력에 "<ph name="DEVICE_NAME" />" 기기입니다.</translation>
 <translation id="1344141078024003905">화면을 전송하고 있습니다. 언제든지 화면 전송을 일시중지하거나 중지할 수 있습니다.</translation>
 <translation id="1346748346194534595">오른쪽</translation>
 <translation id="1351937230027495976">메뉴 접기</translation>
@@ -145,6 +146,7 @@
 <translation id="1486307154719069822">음성기록을 사용하면 음성으로 입력할 수 있습니다. 텍스트 입력란에서 음성기록 키를 누르거나 화면 하단의 마이크 아이콘을 선택합니다. 음성기록 언어가 <ph name="LANGUAGE" />로 설정되어 있습니다. 처리를 위해 음성이 Google로 전송됩니다 언제든지 설정 &gt; 접근성에서 음성기록 언어를 변경할 수 있습니다.</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> 항목과 <ph name="SECOND_ITEM_TITLE" /> 항목의 위치를 서로 바꿈</translation>
 <translation id="1500926532737552529">모든 추천 표시</translation>
+<translation id="1501946871587957338">오디오 소스를 전환할까요?</translation>
 <translation id="1510238584712386396">런처</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{알림 설정을 표시합니다. 앱 1개의 알림이 사용 중지되어 있습니다.}other{알림 설정을 표시합니다. 앱 #개의 알림이 사용 중지되어 있습니다.}}</translation>
 <translation id="1523032696246003">배터리 <ph name="BATTERY_PERCENTAGE" />% | 충전 완료까지 <ph name="TIME" /> 남음</translation>
@@ -773,6 +775,7 @@
 <translation id="397105322502079400">계산 중...</translation>
 <translation id="397726367135689299">배터리 충전 상태가 불안정한 것 같습니다.</translation>
 <translation id="3977512764614765090">배터리가 <ph name="PERCENTAGE" />%이며 현재 충전 중입니다.</translation>
+<translation id="3982013579989864579">오디오 출력을 전환할까요?</translation>
 <translation id="3984536049089846927">다음 페이지</translation>
 <translation id="3986082989454912832">답변</translation>
 <translation id="3990002060657467458">Wi-Fi, 블루투스, 볼륨 등 자주 사용하는 제어 기능은 빠른 설정에 있습니다. 여기에서 스크린샷을 찍을 수도 있습니다.</translation>
@@ -816,6 +819,7 @@
 <translation id="4150201353443180367">디스플레이</translation>
 <translation id="4156293514828496577">배터리가 <ph name="PERCENTAGE" />% 남았습니다(약 <ph name="TIME_LEFT" />).
 배터리 수명을 늘리기 위해 일부 기능이 제한됩니다.</translation>
+<translation id="4160919062868802509">여러 오디오 소스가 감지되었습니다</translation>
 <translation id="4165275524535002941">케이블이 디스플레이를 지원하지 않을 수 있습니다</translation>
 <translation id="4177415338862979658">클릭하여 세부정보 확인</translation>
 <translation id="4177913004758410636">{0,plural, =1{1일 이내에 기기 업데이트}other{#일 이내에 기기 업데이트}}</translation>
@@ -1014,6 +1018,7 @@
 <translation id="4871905435473761992">핫스팟 세부정보를 표시합니다. 모바일 네트워크에서 핫스팟을 지원하지 않습니다.</translation>
 <translation id="4872237917498892622">Alt+검색 또는 Shift 키</translation>
 <translation id="4872852897273142380">북마크바에 초점 또는 강조 표시(표시되는 경우)</translation>
+<translation id="4876935764454575645">오디오 선택</translation>
 <translation id="4881323000405981760">Linux 앱에서는 효과가 지원되지 않습니다</translation>
 <translation id="4881695831933465202">열기</translation>
 <translation id="4889868803215848840">의견을 보내주시면 제안 기능이 개선됩니다.</translation>
@@ -1090,6 +1095,7 @@
 <translation id="5121628974188116412">페이지 맨 아래로 이동</translation>
 <translation id="5122517996953421795"><ph name="DESK_NAME" /> 미리보기입니다. 비활성 데스크입니다.</translation>
 <translation id="5136175204352732067">다른 키보드 연결됨</translation>
+<translation id="5144005092084035179">오디오 입력을 전환할까요?</translation>
 <translation id="5147567197700016471">잠금 해제됨</translation>
 <translation id="5150070631291639005">개인 정보 보호 설정</translation>
 <translation id="5155897006997040331">읽기 속도</translation>
@@ -1789,6 +1795,7 @@
 <translation id="7780094051999721182">바로가기</translation>
 <translation id="7780159184141939021">화면 회전</translation>
 <translation id="7781829728241885113">어제</translation>
+<translation id="7787212146956232129">입력 및 출력 장치가 설정되었습니다. 설정으로 이동하여 해당 설정을 변경하세요.</translation>
 <translation id="7792590255364786396">표시</translation>
 <translation id="7796735576426975947">새로운 알림 숨겨짐</translation>
 <translation id="7798302898096527229">취소하려면 검색 또는 Shift 키를 누르세요.</translation>
@@ -2095,6 +2102,7 @@
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{파일 1개}other{파일 #개}}</translation>
 <translation id="8936501819958976551">비활성화됨</translation>
 <translation id="8938800817013097409">USB-C 기기(우측 후면 포트)</translation>
+<translation id="8939855324412367560">입력 오디오와 출력 오디오가 각각 "<ph name="INPUT_DEVICE_NAME" />" 및 "<ph name="OUTPUT_DEVICE_NAME" />"입니다. 설정으로 이동하여 해당 설정을 변경하세요.</translation>
 <translation id="8940956008527784070">배터리 부족(<ph name="PERCENTAGE" />%)</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> 체크박스 선택되지 않음</translation>
 <translation id="8949925099261528566">연결됨, 인터넷 사용 불가</translation>
@@ -2152,6 +2160,7 @@
 <translation id="9178475906033259337"><ph name="QUERY" /> 검색결과 1개 표시 중</translation>
 <translation id="9179259655489829027">이 기능을 사용하면 로그인한 모든 사용자에게 비밀번호 없이 액세스할 수 있습니다. 이 기능은 신뢰할 수 있는 계정에만 사용하시기 바랍니다.</translation>
 <translation id="9183456764293710005">전체 화면 돋보기</translation>
+<translation id="9192133205265227850">"<ph name="DEVICE_NAME" />" 기기를 사용합니다.</translation>
 <translation id="9193626018745640770">알 수 없는 수신기에 전송 중</translation>
 <translation id="9194617393863864469">다른 사용자 추가...</translation>
 <translation id="9195990613383871904">내일</translation>

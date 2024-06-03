@@ -184,6 +184,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="4055805654398742145">Pengelola S&amp;andi</translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{Organisasi akan otomatis menutup Chromium jika tidak digunakan selama 1 menit. Data penjelajahan akan dihapus. Data ini dapat mencakup histori, isi otomatis, dan download.}other{Organisasi akan otomatis menutup Chromium jika tidak digunakan selama # menit. Data penjelajahan akan dihapus. Data ini dapat mencakup histori, isi otomatis, dan download.}}</translation>
 <translation id="4118474109249235144">Mode Samaran Chromium</translation>
+<translation id="4122186850977583290">Buka halaman Tentang Chromium</translation>
 <translation id="4148957013307229264">Memasang...</translation>
 <translation id="4149336151887611710">Organisasi Anda dapat melihat dan mengelola data penjelajahan di profil kerja Anda, seperti bookmark, histori, dan sandi. Organisasi Anda tidak dapat melihat data penjelajahan di profil Chromium pribadi.</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - Login Jaringan - Chromium</translation>

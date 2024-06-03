@@ -107,6 +107,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> s-a conectat</translation>
 <translation id="1340378040547539434">Micșorează în pagină</translation>
 <translation id="1341651618736211726">Suplimentar</translation>
+<translation id="1341926407152459446">Folosește <ph name="DEVICE_NAME" /> pentru intrare și ieșire audio</translation>
 <translation id="1344141078024003905">Proiectezi ecranul. Poți să întrerupi sau să oprești oricând proiectarea ecranului.</translation>
 <translation id="1346748346194534595">Dreapta</translation>
 <translation id="1351937230027495976">Restrânge meniul</translation>
@@ -145,6 +146,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1486307154719069822">Cu ajutorul dictării, poți să introduci text cu vocea. Apasă tasta de dictare sau selectează pictograma microfon din partea de jos a ecranului atunci când ești într-un câmp de text. Limba de dictare este setată la <ph name="LANGUAGE" />. Vorbirea este trimisă la Google spre procesare. Poți schimba limba de dictare oricând în Setări &gt; Accesibilitate.</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> a fost înlocuit cu <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Vezi toate sugestiile</translation>
+<translation id="1501946871587957338">Schimbi sursa audio?</translation>
 <translation id="1510238584712386396">Lansator</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Afișează setările pentru notificări. Notificările sunt dezactivate pentru o aplicație}few{Afișează setările pentru notificări. Notificările sunt dezactivate pentru # aplicații}other{Afișează setările pentru notificări. Notificările sunt dezactivate pentru # de aplicații}}</translation>
 <translation id="1523032696246003">Baterie <ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> până la încărcare completă</translation>
@@ -773,6 +775,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="397105322502079400">Se calculează...</translation>
 <translation id="397726367135689299">Încărcarea bateriei poate să nu fie fiabilă.</translation>
 <translation id="3977512764614765090">Nivelul bateriei este <ph name="PERCENTAGE" /> % și se încarcă.</translation>
+<translation id="3982013579989864579">Schimbi ieșirea audio?</translation>
 <translation id="3984536049089846927">Pagina următoare</translation>
 <translation id="3986082989454912832">Răspunde</translation>
 <translation id="3990002060657467458">Comenzile folosite frecvent, cum ar fi Wi-Fi, Bluetooth și volumul, se găsesc în Setări rapide. Aici poți și să faci capturi de ecran.</translation>
@@ -816,6 +819,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="4150201353443180367">Ecran</translation>
 <translation id="4156293514828496577">Baterie rămasă: <ph name="PERCENTAGE" /> % (aproximativ <ph name="TIME_LEFT" />).
 Unele funcții sunt limitate pentru a crește autonomia.</translation>
+<translation id="4160919062868802509">S-au detectat mai multe surse audio</translation>
 <translation id="4165275524535002941">Cablul poate să nu fie compatibil cu ecranele</translation>
 <translation id="4177415338862979658">Dă clic pentru a vedea detalii</translation>
 <translation id="4177913004758410636">{0,plural, =1{Actualizează dispozitivul în cel mult o zi}few{Actualizează dispozitivul în cel mult # zile}other{Actualizează dispozitivul în cel mult # de zile}}</translation>
@@ -1014,6 +1018,7 @@ Un dispozitiv conectat.</translation>
 <translation id="4871905435473761992">Afișează detaliile despre hotspot. Rețeaua mobilă nu acceptă hotspoturi.</translation>
 <translation id="4872237917498892622">Alt+Căutare sau Shift</translation>
 <translation id="4872852897273142380">Focalizează pe sau evidențiază bara de marcaje (dacă este afișată)</translation>
+<translation id="4876935764454575645">Selecție audio</translation>
 <translation id="4881323000405981760">Efectele nu sunt acceptate de aplicațiile Linux</translation>
 <translation id="4881695831933465202">Deschide</translation>
 <translation id="4889868803215848840">Trimite feedback opțional pentru a îmbunătăți sugestiile:</translation>
@@ -1090,6 +1095,7 @@ Un dispozitiv conectat.</translation>
 <translation id="5121628974188116412">Navighează la sfârșitul paginii</translation>
 <translation id="5122517996953421795">Previzualizare pentru <ph name="DESK_NAME" />. Desktop inactiv.</translation>
 <translation id="5136175204352732067">Altă tastatură conectată</translation>
+<translation id="5144005092084035179">Schimbi intrarea audio?</translation>
 <translation id="5147567197700016471">Deblocat</translation>
 <translation id="5150070631291639005">Setări de confidențialitate</translation>
 <translation id="5155897006997040331">Viteza de citire</translation>
@@ -1789,6 +1795,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="7780094051999721182">comenzi rapide</translation>
 <translation id="7780159184141939021">Rotește ecranul</translation>
 <translation id="7781829728241885113">Ieri</translation>
+<translation id="7787212146956232129">Dispozitivele de intrare și de ieșire sunt setate. Accesează Setările pentru a le modifica.</translation>
 <translation id="7792590255364786396">Vizibil</translation>
 <translation id="7796735576426975947">Notificare nouă ascunsă</translation>
 <translation id="7798302898096527229">Apasă pe tasta de căutare sau pe Shift pentru a anula.</translation>
@@ -2095,6 +2102,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{Un fișier}few{# fișiere}other{# de fișiere}}</translation>
 <translation id="8936501819958976551">dezactivată</translation>
 <translation id="8938800817013097409">Dispozitiv USB-C (portul din dreapta în spate)</translation>
+<translation id="8939855324412367560">Intrarea audio provine de la <ph name="INPUT_DEVICE_NAME" />, iar conținutul se redă pe <ph name="OUTPUT_DEVICE_NAME" />. Accesează Setările pentru a le modifica.</translation>
 <translation id="8940956008527784070">Baterie slabă (<ph name="PERCENTAGE" /> %)</translation>
 <translation id="894774083269346314">Caseta de selectare <ph name="PROFILE_NAME" /> <ph name="EMAIL" /> nebifată.</translation>
 <translation id="8949925099261528566">Conectat, fără internet</translation>
@@ -2152,6 +2160,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="9178475906033259337">Se afișează un rezultat pentru <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Cu această funcție poți să accesezi rapid orice utilizator conectat fără solicitarea parolei. Folosește funcția numai pentru conturile în care ai încredere.</translation>
 <translation id="9183456764293710005">Lupă de ecran complet</translation>
+<translation id="9192133205265227850">Folosește <ph name="DEVICE_NAME" /></translation>
 <translation id="9193626018745640770">Se proiectează pe un receiver necunoscut</translation>
 <translation id="9194617393863864469">Conectează-te cu alt nume de utilizator...</translation>
 <translation id="9195990613383871904">Mâine</translation>

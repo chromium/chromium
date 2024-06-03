@@ -5239,6 +5239,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4867433544163083783">Semak sekarang jika tab boleh disusun</translation>
 <translation id="4868281708609571334">Ajar Google Assistant untuk mengecam suara <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="4868284252360267853">Dialog ini tidak difokuskan pada masa ini. Tekan Command-Shift-Option A untuk fokus pada dialog ini.</translation>
+<translation id="4868351661310357223">Pasang apl dan permainan daripada Google Play pada <ph name="DEVICE_TYPE" /> anda.</translation>
 <translation id="4869170227080975044">Baca maklumat rangkaian ChromeOS</translation>
 <translation id="4870724079713069532">Anda boleh membuka dan mengedit fail yang disokong dengan apl ini daripada File Explorer atau apl lain. Untuk mengawal fail yang membuka apl ini secara lalai, pergi ke <ph name="BEGIN_LINK" />tetapan Windows<ph name="END_LINK" />.</translation>
 <translation id="4870995365819149457">Sesetengah pautan yang disokong masih akan dibuka dalam <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> dan 1 apl lain.</translation>
@@ -5568,6 +5569,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5121052518313988218">Sistem pengendalian dalam bekas Linux anda tidak disokong lagi. OS itu akan berhenti menerima kemaskinian keselamatan serta pembetulan pepijat dan ciri yang berfungsi pada masa ini mungkin akan rosak tanpa dijangka. Sila kemas kini kepada versi terbaharu untuk terus menggunakan Linux.</translation>
 <translation id="5121130586824819730">Cakera keras anda telah penuh. Sila simpan ke lokasi lain atau sediakan lagi ruang pada cakera keras.</translation>
 <translation id="5123433949759960244">Bola Keranjang</translation>
+<translation id="5125714798187802869">Aktifkan</translation>
 <translation id="5125751979347152379">URL tidak sah.</translation>
 <translation id="5125967981703109366">Perihal kad ini</translation>
 <translation id="512642543295077915">Search + undur ruang</translation>
@@ -8059,6 +8061,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7007648447224463482">Buka semua dalam tetingkap baharu</translation>
 <translation id="7008815993384338777">Bukan dalam perayauan pada masa ini</translation>
 <translation id="7009709314043432820"><ph name="APP_NAME" /> sedang menggunakan kamera anda</translation>
+<translation id="701020165009334820">Anda boleh memuat turun apl dan permainan Android melalui Play Store.</translation>
 <translation id="701080569351381435">Lihat Sumber</translation>
 <translation id="7011797924920577670">menganggarkan minat anda</translation>
 <translation id="7012430956470647760">Kawalan ibu bapa untuk apl</translation>
@@ -8390,6 +8393,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7289049772085228972">Anda mempunyai keselamatan paling kukuh Chrome</translation>
 <translation id="7289303553784750393">Jika anda dalam talian tetapi masalah ini tetap berlaku, anda boleh mencuba cara lain untuk meneruskan pada <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> - Kebenaran diminta, tekan F6 untuk memberikan respons</translation>
+<translation id="7290005709287747471">Nyahaktifkan</translation>
 <translation id="7290242001003353852">Perkhidmatan log masuk yang dihoskan oleh <ph name="SAML_DOMAIN" /> ini sedang mengakses kamera anda.</translation>
 <translation id="7292067737327289208"><ph name="BEGIN_LINK" />Penyemak imbas anda diuruskan<ph name="END_LINK" /> oleh organisasi anda dan <ph name="BEGIN_LINK" />profil anda diuruskan<ph name="END_LINK" /> oleh <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="7292147651179697920">Minta ibu bapa anda untuk membenarkan akses dalam Tetapan</translation>

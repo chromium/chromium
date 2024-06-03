@@ -1686,6 +1686,7 @@ Bu politika ayarlanmadan bırakılır veya devre dışı değerine ayarlanırsa 
 <translation id="2258126710006312594">Uzaktan erişim kullanıcılarının ana makineye/ana makineden dosya aktarımı yapmalarına izin ver</translation>
 <translation id="225830954785359083">Sayfaların yüklemesi kaldırılırken pop-up göstermesini engelle</translation>
 <translation id="2261648512244797294">Kullanımdan kaldırılan privet yazdırmayı devre dışı bırak</translation>
+<translation id="2263881357524831360"><ph name="ANDROID_NAME" /> sistemindeki <ph name="PRODUCT_NAME" /> içinde üçüncü taraf şifre yöneticileri kullanılmasına izin ver</translation>
 <translation id="2264286153777425328"><ph name="IDLE_TIMEOUT_POLICY_NAME" /> politikasındaki zaman aşımına ulaşıldığında gerçekleştirilecek işlemlerin listesi.
 
 Uyarı: Bu politikanın ayarlanması, yerel kişisel verileri etkileyebilir ve kalıcı olarak silebilir. Kişisel verilerin yanlışlıkla silinmesini önlemek için dağıtmadan önce ayarlarınızı test etmeniz önerilir.
@@ -2588,6 +2589,7 @@ Sağlanan filtrelerden biriyle eşleşen alan adları için ayarlanan çerezler,
 <translation id="2960128438010718932">Yeni bir güncellemenin uygulanmasına yönelik hazırlık programı</translation>
 <translation id="2960691910306063964">Uzaktan erişim ana makineleri için PIN'siz kimlik doğrulamayı etkinleştir veya devre dışı bırak</translation>
 <translation id="2960999045613902792">Kullanıcıların kuruma ait olmayan yazıcılar eklemesine, yapılandırmasına ve bu cihazlardan yazdırmasına izin ver</translation>
+<translation id="296100724744272922">Chrome'da üçüncü taraf şifre yöneticisi kullanılmasına izin ver</translation>
 <translation id="2962972237615992440"><ph name="CLOUD_PRINT_NAME" /> proxy'sini devre dışı bırak</translation>
 <translation id="2963292398266537394">Dikteyi devre dışı bırak</translation>
 <translation id="2964373560810620158">Kullanıcıların <ph name="LACROS_NAME" /> tarayıcıyı kullanmalarını engelle</translation>
@@ -7961,6 +7963,23 @@ Bu politikayı ayarlarsanız kullanıcılar değiştiremez veya geçersiz kılam
 Bu politika ayarlanmadan bırakılırsa giriş ekranında ekran büyüteci başlangıçta devre dışı bırakılır, ancak kullanıcılar istedikleri zaman etkinleştirebilirler.</translation>
 <translation id="7109384070286741861">CECPQ2'yi devre dışı bırak</translation>
 <translation id="7113439794629928551">Diğer cihazlar tarafından başlatılan <ph name="PRODUCT_NAME" /> oturumları için medya kontrollerini göster</translation>
+<translation id="7113803652772945829">Politika, Doğru değerine ayarlanırsa kullanıcılar üçüncü taraf şifre yöneticisi kullanabilir.
+Tüm şifre, ödeme ve otomatik doldurma verilerini ilgili şifre yöneticisi kaydedip
+doldurur.
+Politika, Doğru değerine ayarlanır veya ayarlanmadan bırakılırsa bir ayar, <ph name="PRODUCT_NAME" />
+içinde yerleşik şifre yöneticisi ile
+Android ayarlarında yapılandırılan şifre yöneticisi arasında geçiş yapılmasına olanak tanır.
+<ph name="PRODUCT_NAME" />, Google ile otomatik doldurma
+özelliğiyle aynı verileri kullandığından bu ayar yalnızca Android'in sistem ayarlarında
+Google ile otomatik doldurma dışında bir yönetici yapılandırılması şartıyla üçüncü taraf şifre yöneticilerini
+kullanacak şekilde değiştirilebilir.
+
+Politika, Yanlış değerine ayarlanırsa
+<ph name="PRODUCT_NAME" /> her zaman yerleşik
+şifre yöneticisini kullanır.
+
+Bu politika, erişilebilirlik API'lerini kullanan üçüncü taraf şifre yöneticilerini
+etkilemez.</translation>
 <translation id="7114169791477667553">Varsayılan arama sağlayıcıyı devre dışı bırak</translation>
 <translation id="7121046543122812054">Bu politika kullanımdan kaldırıldı. Bunun yerine <ph name="BROWSER_SIGNIN_POLICY_NAME" /> politikasını kullanabilirsiniz.
 
@@ -10686,6 +10705,7 @@ Aşağıdaki değerler belirtilmediği sürece varsayılan değer 0'dır.
 2 = Özelliği devre dışı bırakın. <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> tarafından yönetilen Education hesapları için varsayılan değer 2'dir.
 
 Üretken yapay zeka özelliklerinde verilerin nasıl işlendiği hakkında daha fazla bilgi için lütfen https://support.google.com/chrome/a?p=generative_ai_settings adresine göz atın.</translation>
+<translation id="949192525372487705">Üçüncü taraf şifre yöneticisine geçiş yapmayı engelle</translation>
 <translation id="957322141096206402">Sistem DNS çözümlemesi, sistem yapılandırmasına ve özellik bayraklarına bağlı olarak ağ işleminin içinde veya dışında çalıştırılabilir.</translation>
 <translation id="957778406002650056"><ph name="PLUGIN_VM_NAME" /> resminin indirilebileceği URL.</translation>
 <translation id="957920984193041197">Sayfaların yüklemesi kaldırılırken pop-up göstermesine izin ver</translation>

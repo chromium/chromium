@@ -2897,6 +2897,7 @@
 <translation id="3090819949319990166">Δεν είναι δυνατή η αντιγραφή του εξωτερικού αρχείου crx στο <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">Έγινε σύζευξη της συσκευής "<ph name="DEVICE_NAME" />"</translation>
 <translation id="3093714882666365141">Να μην επιτρέπεται στους ιστοτόπους να εγκαθιστούν δείκτες χειρισμού για πληρωμές</translation>
+<translation id="3094080575472025333">Αποκλεισμός εφαρμογών</translation>
 <translation id="3094141017404513551">Αυτό θα διαχωρίσει την περιήγησή σας από τον χρήστη <ph name="EXISTING_USER" />.</translation>
 <translation id="3094223846531205616">{COUNT,plural, =0{Λήγει σήμερα}=1{Λήγει αύριο}other{Λήγει σε # ημέρες}}</translation>
 <translation id="3094521107841754472">Η τιμή άλλαξε από <ph name="PREVIOUS_PRICE" /> σε <ph name="CURRENT_PRICE" />.</translation>
@@ -3729,6 +3730,7 @@
 <translation id="372722114124766626">Μόνο μία φορά</translation>
 <translation id="3727332897090187514">Δεν προστέθηκε σημείωση</translation>
 <translation id="3727473233247516571">Υποπλαίσιο αποθηκευμένο στην κρυφή μνήμη πίσω-εμπρός: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
+<translation id="3727843212509629024">Εσφαλμένο PIN. Δοκιμάστε ξανά</translation>
 <translation id="3727850735097852673">Για να χρησιμοποιήσετε τον Διαχειριστή κωδικών πρόσβασης Google με την Κλειδοθήκη macOS, επανεκκινήστε το Chrome και επιτρέψτε την πρόσβαση στην Κλειδοθήκη. Οι καρτέλες σας θα ανοίξουν ξανά μετά την επανεκκίνηση.</translation>
 <translation id="3728188878314831180">Αντικατοπτρισμός ειδοποιήσεων από το τηλέφωνό σας</translation>
 <translation id="3728681439294129328">Διαμόρφωση διεύθυνσης δικτύου</translation>

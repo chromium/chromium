@@ -952,6 +952,7 @@
 <translation id="4628757576491864469">Уређаји</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, оцена у звездицама <ph name="RATING_SCORE" /></translation>
 <translation id="4633636853437260449">Притисните Ctrl+W да бисте избрисали</translation>
+<translation id="4635501805800894201">{0,plural, =0{Промените верзију уређаја у претходну верзију}=1{Промените верзију уређаја у претходну верзију у року од 1 секунде}one{Промените верзију уређаја у претходну верзију у року од # секунде}few{Промените верзију уређаја у претходну верзију у року од # секунде}other{Промените верзију уређаја у претходну верзију у року од # секунди}}</translation>
 <translation id="4642092649622328492">Направите делимичан снимак екрана</translation>
 <translation id="4644727592819780893">Регион је премали да би стала камера</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, препоручена апликација</translation>
@@ -981,6 +982,7 @@
 <translation id="4735944890391795473">Радна површина 12</translation>
 <translation id="473775607612524610">Ажурирај</translation>
 <translation id="4740516757091333363">Желите да избришете сачувану радну површину?</translation>
+<translation id="4746798685375253449">{0,plural, =1{Промените верзију уређаја у претходну верзију у року од једног дана}one{Промените верзију уређаја у претходну верзију у року од # дана}few{Промените верзију уређаја у претходну верзију у року од # дана}other{Промените верзију уређаја у претходну верзију у року од # дана}}</translation>
 <translation id="4747410141429390146">Откључајте да бисте видели обавештења</translation>
 <translation id="4752784485658729358">Дозвољено је само 6 сачуваних радних површина. Уклоните неку радну површину да бисте сачували нову.</translation>
 <translation id="4759238208242260848">Преузимања</translation>
@@ -1316,6 +1318,7 @@
 <translation id="5916646100036936191">Ново обавештење, укупно <ph name="NOTIFICATION_COUNT" /></translation>
 <translation id="5916664084637901428">Укључено</translation>
 <translation id="5920710855273935292">Микрофон је искључен.</translation>
+<translation id="5928083197428724029">Ажурирање захтева <ph name="MANAGER" /></translation>
 <translation id="5946788582095584774">Функција <ph name="FEATURE_NAME" /> је укључена.</translation>
 <translation id="5947494881799873997">Врати</translation>
 <translation id="595202126637698455">Праћење учинка је омогућено</translation>
@@ -1434,6 +1437,7 @@
 <translation id="6376931439017688372">Bluetooth је укључен</translation>
 <translation id="6378515133128829137">Закачи прозор надесно</translation>
 <translation id="6381109794406942707">Да бисте откључали уређај, унесите PIN.</translation>
+<translation id="6381305031890976705">{0,plural, =1{Промените верзију уређаја у претходну верзију у року од једног сата}one{Промените верзију уређаја у претходну верзију у року од # сата}few{Промените верзију уређаја у претходну верзију у року од # сата}other{Промените верзију уређаја у претходну верзију у року од # сати}}</translation>
 <translation id="638716340450135524">Укључи приступ камери</translation>
 <translation id="639644700271529076">CAPS LOCK је искључен</translation>
 <translation id="6406458002328242616">Измените тајмер. <ph name="FOCUS_DURATION" />.</translation>
@@ -1456,6 +1460,7 @@
 <translation id="6459472438155181876">Проширивање екрана у <ph name="DISPLAY_NAME" /></translation>
 <translation id="6464094930452079790">слике</translation>
 <translation id="6467290994038932560">Укључено за: <ph name="GAME_APP_NAME" /></translation>
+<translation id="6468406072297048412">{0,plural, =1{Промените верзију уређаја у претходну верзију у року од 1 минута}one{Промените верзију уређаја у претходну верзију у року од # минута}few{Промените верзију уређаја у претходну верзију у року од # минута}other{Промените верзију уређаја у претходну верзију у року од # минута}}</translation>
 <translation id="6469104339369989396">Укључите или искључите хотспот</translation>
 <translation id="6477681113376365978">Преузимање фајла није успело</translation>
 <translation id="6482559668224714696">Лупа за цео екран</translation>
@@ -1579,6 +1584,7 @@
 <translation id="6917259695595127329">Време последњег ажурирања задатака: <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">Нисмо успели да препознамо паметну картицу. Пробајте поново.</translation>
 <translation id="692135145298539227">избриши</translation>
+<translation id="6921427376813842559">Ажурирајте уређај</translation>
 <translation id="6929081673585394903">Покажи контроле</translation>
 <translation id="6931576957638141829">Сачувајте у</translation>
 <translation id="6942518653766415536">Мени за формат снимања</translation>
@@ -1667,6 +1673,7 @@
 <translation id="7303365578352795231">Одговор се даје на другом уређају.</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Администратор ресетује eSIM. То може да потраје неколико минута.</translation>
+<translation id="7312761820869643657">Промените верзију уређаја у претходну верзију</translation>
 <translation id="7313193732017069507">Проширите камеру</translation>
 <translation id="7330397557116570022">Идите у поље за текст да бисте користили диктирање</translation>
 <translation id="7331646370422660166">alt + стрелица надоле</translation>
@@ -2183,6 +2190,7 @@
 <translation id="925832987464884575">Сакријте прегледе</translation>
 <translation id="938407504481277932">Актуелна радна површина: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. <ph name="DESK_INDEX" />. радна површина од <ph name="DESK_COUNT" />.</translation>
 <translation id="938963181863597773">Шта је у календару?</translation>
+<translation id="94468042118567862">Уређај није ажуриран</translation>
 <translation id="945383118875625837">Превуците линк на траку са обележивачима</translation>
 <translation id="945522503751344254">Пошаљи повратне информације</translation>
 <translation id="951991426597076286">Одбиј</translation>

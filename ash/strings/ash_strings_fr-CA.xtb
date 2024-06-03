@@ -107,6 +107,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> connecté</translation>
 <translation id="1340378040547539434">Dézoomer sur la page</translation>
 <translation id="1341651618736211726">Dépassement</translation>
+<translation id="1341926407152459446">Utilisez « <ph name="DEVICE_NAME" /> » pour l'entrée et la sortie audio</translation>
 <translation id="1344141078024003905">Vous diffusez votre écran. Vous pouvez suspendre ou arrêter la diffusion de votre écran à tout moment.</translation>
 <translation id="1346748346194534595">À droite</translation>
 <translation id="1351937230027495976">Réduire le menu</translation>
@@ -145,6 +146,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1486307154719069822">Grâce à la Dictée, vous pouvez entrer du texte en utilisant votre voix. Appuyez sur la touche de la Dictée ou sélectionnez l'icône du microphone en bas de l'écran lorsque vous êtes sur un champ de texte. Langue de la Dictée présentement définie à : <ph name="LANGUAGE" />. Le texte est envoyé à Google à des fins de traitement. Vous pouvez changer la langue de la Dictée en tout temps dans Paramètres &gt; Accessibilité.</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> a changé de place avec <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Afficher toutes les suggestions</translation>
+<translation id="1501946871587957338">Changer la source audio?</translation>
 <translation id="1510238584712386396">Lanceur</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Afficher les paramètres de notification. Les notifications sont désactivées pour une application}one{Afficher les paramètres de notification. Les notifications sont désactivées pour # application}other{Afficher les paramètres de notification. Les notifications sont désactivées pour # applications}}</translation>
 <translation id="1523032696246003">Pile à <ph name="BATTERY_PERCENTAGE" /> % | Recharge complète dans <ph name="TIME" /></translation>
@@ -773,6 +775,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="397105322502079400">Calcul en cours...</translation>
 <translation id="397726367135689299">Le recharge de la pile peut ne pas être fiable.</translation>
 <translation id="3977512764614765090">Pile chargée à <ph name="PERCENTAGE" /> % et en cours de recharge.</translation>
+<translation id="3982013579989864579">Changer la sortie audio?</translation>
 <translation id="3984536049089846927">Page suivante</translation>
 <translation id="3986082989454912832">Répondre</translation>
 <translation id="3990002060657467458">Les commandes fréquemment utilisées comme le Wi-Fi, le Bluetooth et le volume se trouvent dans les paramètres rapides. Vous pouvez également y accéder pour prendre des captures d'écran.</translation>
@@ -815,6 +818,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4146833061457621061">Faire jouer de la musique</translation>
 <translation id="4150201353443180367">Affichage</translation>
 <translation id="4156293514828496577">Il reste <ph name="PERCENTAGE" /> % de pile (environ <ph name="TIME_LEFT" />). Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la pile.</translation>
+<translation id="4160919062868802509">Plusieurs sources audio détectées</translation>
 <translation id="4165275524535002941">Le câble peut ne pas être compatible avec les écrans</translation>
 <translation id="4177415338862979658">Cliquez ici pour vérifier les détails</translation>
 <translation id="4177913004758410636">{0,plural, =1{Mettez à jour l'appareil d'ici un jour}one{Mettez à jour l'appareil d'ici # jour}other{Mettez à jour l'appareil d'ici # jours}}</translation>
@@ -1013,6 +1017,7 @@ Un appareil connecté.</translation>
 <translation id="4871905435473761992">Afficher les détails du point d'accès sans fil. Votre réseau mobile ne prend pas en charge les points d'accès sans fil.</translation>
 <translation id="4872237917498892622">Alt + Recherche ou Maj.</translation>
 <translation id="4872852897273142380">Sélectionner ou mettre en évidence la barre de favoris (si elle est visible)</translation>
+<translation id="4876935764454575645">Sélection audio</translation>
 <translation id="4881323000405981760">Les effets ne sont pas pris en charge dans les applications Linux</translation>
 <translation id="4881695831933465202">Ouvrir</translation>
 <translation id="4889868803215848840">Fournissez des commentaires facultatifs pour améliorer les suggestions :</translation>
@@ -1089,6 +1094,7 @@ Un appareil connecté.</translation>
 <translation id="5121628974188116412">Aller à la fin de la page</translation>
 <translation id="5122517996953421795">Aperçu du bureau <ph name="DESK_NAME" />. Bureau inactif.</translation>
 <translation id="5136175204352732067">Autre clavier branché</translation>
+<translation id="5144005092084035179">Changer l'entrée audio?</translation>
 <translation id="5147567197700016471">Déverrouillé</translation>
 <translation id="5150070631291639005">Paramètres de confidentialité</translation>
 <translation id="5155897006997040331">Vitesse de lecture</translation>
@@ -1788,6 +1794,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="7780094051999721182">raccourcis</translation>
 <translation id="7780159184141939021">Faire pivoter l'écran</translation>
 <translation id="7781829728241885113">Hier</translation>
+<translation id="7787212146956232129">Les périphériques d'entrée et de sortie sont définis. Accédez aux paramètres pour effectuer des modifications.</translation>
 <translation id="7792590255364786396">Visible</translation>
 <translation id="7796735576426975947">Nouvelle notification masquée</translation>
 <translation id="7798302898096527229">Appuyez sur Recherche ou Majuscule pour le désactiver.</translation>
@@ -2093,6 +2100,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 fichier}one{# fichier}other{# fichiers}}</translation>
 <translation id="8936501819958976551">désactivée</translation>
 <translation id="8938800817013097409">Appareil USB-C (port arrière-droit)</translation>
+<translation id="8939855324412367560">L'audio d'entrée est « <ph name="INPUT_DEVICE_NAME" /> » et l'audio de sortie est « <ph name="OUTPUT_DEVICE_NAME" /> ». Accédez aux paramètres pour effectuer des modifications.</translation>
 <translation id="8940956008527784070">Batterie faible (<ph name="PERCENTAGE" /> %)</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" />, case non cochée.</translation>
 <translation id="8949925099261528566">Connecté, aucun accès Internet</translation>
@@ -2150,6 +2158,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="9178475906033259337">Affichage de 1 résultat pour <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Cette fonctionnalité vous permet d'accéder rapidement à tout compte connecté sans mot de passe. N'utilisez cette fonctionnalité que lorsqu'il s'agit de comptes fiables.</translation>
 <translation id="9183456764293710005">Loupe en mode plein écran</translation>
+<translation id="9192133205265227850">Utilisez « <ph name="DEVICE_NAME" /> »</translation>
 <translation id="9193626018745640770">Diffusion sur un récepteur inconnu en cours…</translation>
 <translation id="9194617393863864469">Ouvrir une session avec un autre compte d'utilisateur...</translation>
 <translation id="9195990613383871904">Demain</translation>

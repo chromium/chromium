@@ -5554,6 +5554,7 @@
 <translation id="5121052518313988218">Оперативни систем у Linux контејнеру више није подржан. Престаће да добија безбедносна ажурирања и исправке грешака, а функције које тренутно раде могу неочекивано да откажу. Надоградите на најновију верзију да бисте наставили да користите Linux.</translation>
 <translation id="5121130586824819730">Хард-диск је пун. Сачувајте на другу локацију или направите више простора на хард-диску.</translation>
 <translation id="5123433949759960244">Кошаркашка лопта</translation>
+<translation id="5125714798187802869">Активирај</translation>
 <translation id="5125751979347152379">Неважећа URL адреса.</translation>
 <translation id="5125967981703109366">О овој картици</translation>
 <translation id="512642543295077915">тастер за претрагу + backspace</translation>
@@ -8380,6 +8381,7 @@
 <translation id="7289049772085228972">Имате најјачу Chrome заштиту</translation>
 <translation id="7289303553784750393">Ако сте онлајн, али овај проблем настави да се јавља, можете да пробате друге начине да бисте наставили на <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> – Затражена је дозвола. Притисните F6 да бисте одговорили</translation>
+<translation id="7290005709287747471">Деактивирај</translation>
 <translation id="7290242001003353852">Ова услуга пријављивања, коју хостује <ph name="SAML_DOMAIN" />, приступа вашој камери.</translation>
 <translation id="7292067737327289208"><ph name="BEGIN_LINK" />Прегледачем управља<ph name="END_LINK" /> организација, а <ph name="BEGIN_LINK" />профилом управља<ph name="END_LINK" /> <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="7292147651179697920">Затражи од родитеља да дозволи приступ у Подешавањима</translation>

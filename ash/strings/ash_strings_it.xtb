@@ -107,6 +107,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1333308631814936910">Dispositivo <ph name="DISPLAY_NAME" /> connesso</translation>
 <translation id="1340378040547539434">Diminuisci lo zoom sulla pagina</translation>
 <translation id="1341651618736211726">Overflow</translation>
+<translation id="1341926407152459446">Usa "<ph name="DEVICE_NAME" />" come dispositivo di input e output audio</translation>
 <translation id="1344141078024003905">Stai trasmettendo lo schermo. Puoi mettere in pausa la trasmissione dello schermo o interromperla in qualsiasi momento.</translation>
 <translation id="1346748346194534595">Destra</translation>
 <translation id="1351937230027495976">Comprimi il menu</translation>
@@ -145,6 +146,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1486307154719069822">Con la dettatura, puoi digitare usando la voce. Premi il tasto per la dettatura o seleziona l'icona a forma di microfono nella parte inferiore dello schermo quando è attivo un campo di testo. La lingua di dettatura è impostata su: <ph name="LANGUAGE" />. Il testo dettato viene inviato a Google per essere elaborato. Puoi cambiare la lingua di dettatura in qualsiasi momento in Impostazioni &gt; Accessibilità.</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> è stato scambiato con <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Mostra tutti i suggerimenti</translation>
+<translation id="1501946871587957338">Vuoi cambiare la sorgente audio?</translation>
 <translation id="1510238584712386396">Avvio app</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Mostra impostazioni di notifica. Le notifiche sono disattivate per un'app}other{Mostra impostazioni di notifica. Le notifiche sono disattivate per # app}}</translation>
 <translation id="1523032696246003">Batteria: <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> alla ricarica completa</translation>
@@ -770,6 +772,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="397105322502079400">Calcolo in corso...</translation>
 <translation id="397726367135689299">La ricarica della batteria potrebbe non essere affidabile.</translation>
 <translation id="3977512764614765090">Percentuale di carica della batteria: <ph name="PERCENTAGE" />%. La batteria è in carica.</translation>
+<translation id="3982013579989864579">Vuoi cambiare il dispositivo di output audio?</translation>
 <translation id="3984536049089846927">Pagina successiva</translation>
 <translation id="3986082989454912832">Rispondi</translation>
 <translation id="3990002060657467458">I controlli usati di frequente, come Wi-Fi, Bluetooth e volume, sono disponibili nelle Impostazioni rapide. Qui puoi anche acquisire degli screenshot.</translation>
@@ -813,6 +816,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="4150201353443180367">Display</translation>
 <translation id="4156293514828496577">Batteria rimanente: <ph name="PERCENTAGE" />% (circa <ph name="TIME_LEFT" />).
 Alcune funzionalità sono limitate per aumentare la durata della batteria.</translation>
+<translation id="4160919062868802509">Più sorgenti audio rilevate</translation>
 <translation id="4165275524535002941">Il cavo potrebbe non supportare i display</translation>
 <translation id="4177415338862979658">Fai clic per verificare i dettagli</translation>
 <translation id="4177913004758410636">{0,plural, =1{Aggiorna il dispositivo entro 1 giorno}other{Aggiorna il dispositivo entro # giorni}}</translation>
@@ -944,6 +948,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="4628757576491864469">Dispositivi</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, valutazione a stelle <ph name="RATING_SCORE" /></translation>
 <translation id="4633636853437260449">Premi Ctrl + W per eliminare</translation>
+<translation id="4635501805800894201">{0,plural, =0{Esegui il rollback del dispositivo alla versione precedente ora}=1{Esegui il rollback del dispositivo alla versione precedente entro 1 secondo}other{Esegui il rollback del dispositivo alla versione precedente entro # secondi}}</translation>
 <translation id="4642092649622328492">Acquisisce lo screenshot parziale</translation>
 <translation id="4644727592819780893">Area troppo piccola per mostrare l'anteprima della fotocamera</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, consiglio applicazione</translation>
@@ -973,6 +978,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="4735944890391795473">Scrivania 12</translation>
 <translation id="473775607612524610">Aggiorna</translation>
 <translation id="4740516757091333363">Vuoi eliminare la scrivania salvata?</translation>
+<translation id="4746798685375253449">{0,plural, =1{Esegui il rollback del dispositivo alla versione precedente entro 1 giorno}other{Esegui il rollback del dispositivo alla versione precedente entro # giorni}}</translation>
 <translation id="4747410141429390146">Sblocca per visualizzare le notifiche</translation>
 <translation id="4752784485658729358">Sono consentite solo 6 scrivanie salvate. Rimuovi una scrivania per salvarne una nuova.</translation>
 <translation id="4759238208242260848">Download</translation>
@@ -1011,6 +1017,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="4871905435473761992">Mostra i dettagli relativi all'hotspot. La tua rete mobile non supporta l'hotspot.</translation>
 <translation id="4872237917498892622">Alt+tasto per la ricerca o Maiusc</translation>
 <translation id="4872852897273142380">Consente di evidenziare o impostare lo stato attivo nella barra dei preferiti (se visibile)</translation>
+<translation id="4876935764454575645">Selezione audio</translation>
 <translation id="4881323000405981760">Gli effetti non sono supportati sulle app Linux</translation>
 <translation id="4881695831933465202">Apri</translation>
 <translation id="4889868803215848840">Fornisci un feedback facoltativo per migliorare i suggerimenti:</translation>
@@ -1087,6 +1094,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="5121628974188116412">Passa alla parte inferiore della pagina</translation>
 <translation id="5122517996953421795">Anteprima di <ph name="DESK_NAME" />. Scrivania non attiva.</translation>
 <translation id="5136175204352732067">Tastiera diversa collegata</translation>
+<translation id="5144005092084035179">Vuoi cambiare il dispositivo di input audio?</translation>
 <translation id="5147567197700016471">Sbloccato</translation>
 <translation id="5150070631291639005">Impostazioni privacy</translation>
 <translation id="5155897006997040331">Velocità di lettura</translation>
@@ -1306,6 +1314,7 @@ Nessun dispositivo connesso.</translation>
 <translation id="5916646100036936191">Nuova notifica, <ph name="NOTIFICATION_COUNT" /> in totale</translation>
 <translation id="5916664084637901428">On</translation>
 <translation id="5920710855273935292">L'audio del microfono è disattivato.</translation>
+<translation id="5928083197428724029">Aggiornamento richiesto da <ph name="MANAGER" /></translation>
 <translation id="5946788582095584774">La funzionalità <ph name="FEATURE_NAME" /> è attiva.</translation>
 <translation id="5947494881799873997">Ripristina</translation>
 <translation id="595202126637698455">Rilevamento del rendimento attivo</translation>
@@ -1424,6 +1433,7 @@ Nessun dispositivo connesso.</translation>
 <translation id="6376931439017688372">Bluetooth attivo.</translation>
 <translation id="6378515133128829137">Blocca la finestra a destra</translation>
 <translation id="6381109794406942707">Per sbloccare il dispositivo, inserisci il PIN.</translation>
+<translation id="6381305031890976705">{0,plural, =1{Esegui il rollback del dispositivo alla versione precedente entro 1 ora}other{Esegui il rollback del dispositivo alla versione precedente entro # ore}}</translation>
 <translation id="638716340450135524">Attiva l'accesso alla fotocamera</translation>
 <translation id="639644700271529076">Funzione BLOC MAIUSC non attiva</translation>
 <translation id="6406458002328242616">Modifica il timer. <ph name="FOCUS_DURATION" />.</translation>
@@ -1446,6 +1456,7 @@ Nessun dispositivo connesso.</translation>
 <translation id="6459472438155181876">Estensione dello schermo su <ph name="DISPLAY_NAME" /></translation>
 <translation id="6464094930452079790">immagini</translation>
 <translation id="6467290994038932560">Attivati per <ph name="GAME_APP_NAME" /></translation>
+<translation id="6468406072297048412">{0,plural, =1{Esegui il rollback del dispositivo alla versione precedente entro 1 minuto}other{Esegui il rollback del dispositivo alla versione precedente entro # minuti}}</translation>
 <translation id="6469104339369989396">Attiva/disattiva l'hotspot.</translation>
 <translation id="6477681113376365978">Impossibile scaricare il file</translation>
 <translation id="6482559668224714696">Lente d'ingrandimento a schermo intero</translation>
@@ -1569,6 +1580,7 @@ Nuova installazione</translation>
 <translation id="6917259695595127329">Ultimo aggiornamento attività: <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">Impossibile riconoscere la smart card. Riprova.</translation>
 <translation id="692135145298539227">elimina</translation>
+<translation id="6921427376813842559">Aggiorna il dispositivo</translation>
 <translation id="6929081673585394903">Mostra controlli</translation>
 <translation id="6931576957638141829">Salva in</translation>
 <translation id="6942518653766415536">Menu del formato di registrazione</translation>
@@ -1656,6 +1668,7 @@ Nuova installazione</translation>
 <translation id="7303365578352795231">Risposta su un altro dispositivo.</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Il tuo amministratore sta reimpostando l'eSIM. Questa operazione può richiedere alcuni minuti.</translation>
+<translation id="7312761820869643657">Esegui il rollback del dispositivo alla versione precedente</translation>
 <translation id="7313193732017069507">Espandi fotocamera</translation>
 <translation id="7330397557116570022">Vai a un campo di testo per utilizzare la dettatura</translation>
 <translation id="7331646370422660166">Alt + Freccia giù</translation>
@@ -1786,6 +1799,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="7780094051999721182">scorciatoie</translation>
 <translation id="7780159184141939021">Ruota lo schermo</translation>
 <translation id="7781829728241885113">Ieri</translation>
+<translation id="7787212146956232129">I dispositivi di input e output sono configurati. Vai a Impostazioni per modificare.</translation>
 <translation id="7792590255364786396">Visibile</translation>
 <translation id="7796735576426975947">Nuova notifica nascosta</translation>
 <translation id="7798302898096527229">Premi il tasto per la ricerca o MAIUSC per annullare.</translation>
@@ -2091,6 +2105,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 file}other{# file}}</translation>
 <translation id="8936501819958976551">disattivato</translation>
 <translation id="8938800817013097409">Dispositivo USB-C (porta posteriore destra)</translation>
+<translation id="8939855324412367560">Il dispositivo di input audio è "<ph name="INPUT_DEVICE_NAME" />" e il dispositivo di output audio è "<ph name="OUTPUT_DEVICE_NAME" />". Vai alle Impostazioni per modificare.</translation>
 <translation id="8940956008527784070">Batteria in esaurimento (<ph name="PERCENTAGE" />%)</translation>
 <translation id="894774083269346314">Casella di controllo <ph name="PROFILE_NAME" /> <ph name="EMAIL" /> non selezionata.</translation>
 <translation id="8949925099261528566">Connesso, senza Internet</translation>
@@ -2148,6 +2163,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="9178475906033259337">Visualizzazione di un risultato per <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Questa funzione consente di accedere rapidamente a qualsiasi utente che abbia effettuato l'accesso, senza bisogno di una password. Utilizza questa funzione solo con gli account che consideri attendibili.</translation>
 <translation id="9183456764293710005">Ingrandimento a schermo intero</translation>
+<translation id="9192133205265227850">Usa "<ph name="DEVICE_NAME" />"</translation>
 <translation id="9193626018745640770">Trasmissione a un ricevitore sconosciuto</translation>
 <translation id="9194617393863864469">Accedi con un altro account utente...</translation>
 <translation id="9195990613383871904">Domani</translation>
@@ -2168,6 +2184,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="925832987464884575">Nascondi anteprime</translation>
 <translation id="938407504481277932">Scrivania corrente: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. Scrivania <ph name="DESK_INDEX" /> di <ph name="DESK_COUNT" />.</translation>
 <translation id="938963181863597773">Cosa è segnato sul mio calendario?</translation>
+<translation id="94468042118567862">Dispositivo non aggiornato</translation>
 <translation id="945383118875625837">Trascina il link nella barra dei preferiti</translation>
 <translation id="945522503751344254">Invia feedback</translation>
 <translation id="951991426597076286">Rifiuta</translation>

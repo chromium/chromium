@@ -107,6 +107,7 @@
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> कनेक्ट गरियो</translation>
 <translation id="1340378040547539434">पेजमा जुम आउट गर्नुहोस्</translation>
 <translation id="1341651618736211726">ओभरफ्लो</translation>
+<translation id="1341926407152459446">अडियो इनपुट र आउटपुटका लागि "<ph name="DEVICE_NAME" />" प्रयोग गर्नुहोस्</translation>
 <translation id="1344141078024003905">तपाईं आफ्नो स्क्रिन कास्ट गर्दै हुनुहुन्छ। तपाईं जुनसुकै बेला आफ्नो स्क्रिन कास्ट गर्न छाड्न वा केही समयका लागि कास्ट गर्ने कार्य रोक्न सक्नुहुन्छ।</translation>
 <translation id="1346748346194534595">दायाँ</translation>
 <translation id="1351937230027495976">मेनु संक्षिप्त गर्नुहोस्</translation>
@@ -145,6 +146,7 @@
 <translation id="1486307154719069822">तपाईं "स्पिच-टु-टेक्स्ट" का सहायताले आफ्नो आवाज प्रयोग गरेर टाइप गर्न सक्नुहुन्छ। तपाईं टेक्स्ट फिल्डमा भएका बेला "स्पिच-टु-टेक्स्ट" की थिच्नुहोस् वा स्क्रिनको पुछारमा रहेको माइक्रोफोन जनाउने आइकन चयन गर्नुहोस्। तपाईंको "स्पिच-टु-टेक्स्ट" को भाषा सेट गरी <ph name="LANGUAGE" /> बनाइएको छ। बोलिएको कुरा प्रोसेस गर्नका निम्ति सो अडियो Google मा पठाइन्छ। तपाईं जुनसुकै बेला "सेटिङ &gt; एक्सेसिबिलिटी" मा गई "स्पिच-टु-टेक्स्ट" को भाषा परिवर्तन गर्न सक्नुहुन्छ।</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> लाई <ph name="SECOND_ITEM_TITLE" /> सँग साटियो</translation>
 <translation id="1500926532737552529">सबै सुझावहरू देखाउनुहोस्</translation>
+<translation id="1501946871587957338">अडियोको स्रोत बदल्ने हो?</translation>
 <translation id="1510238584712386396">लन्चर</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{सूचनासम्बन्धी सेटिङहरू देखाउनुहोस्। एउटा एपका लागि सूचनाहरू निष्क्रिय छन्}other{सूचनासम्बन्धी सेटिङहरू देखाउनुहोस्। # एपका लागि सूचनाहरू निष्क्रिय छन्}}</translation>
 <translation id="1523032696246003"><ph name="BATTERY_PERCENTAGE" />% ब्याट्री बाँकी छ | पूरा चार्ज हुन <ph name="TIME" /> लाग्छ</translation>
@@ -773,6 +775,7 @@
 <translation id="397105322502079400">हिसाब गर्दै...</translation>
 <translation id="397726367135689299">ब्याट्री राम्रोसँग चार्ज नहुन सक्छ।</translation>
 <translation id="3977512764614765090">ब्याट्री <ph name="PERCENTAGE" />% छ र चार्ज हुँदै छ।</translation>
+<translation id="3982013579989864579">अडियो आउटपुट बदल्ने हो?</translation>
 <translation id="3984536049089846927">अर्को पेज</translation>
 <translation id="3986082989454912832">कल उठाउनुहोस्</translation>
 <translation id="3990002060657467458">Wi-Fi, ब्लुटुथ र भोल्युमलगायतका प्रायः प्रयोग गरिने सेटिङ द्रुत सेटिङअन्तर्गत भेट्टाउन सकिन्छ। तपाईं यहाँ गएर पनि स्क्रिनसट लिन सक्नुहुन्छ।</translation>
@@ -816,6 +819,7 @@
 <translation id="4150201353443180367">प्रदर्शन</translation>
 <translation id="4156293514828496577"><ph name="PERCENTAGE" />% ब्याट्री बाँकी छ (लगभग <ph name="TIME_LEFT" />)।
 ब्याट्री अझ बढी टिकाउन केही सुविधाहरू सीमित गरिएका छन्।</translation>
+<translation id="4160919062868802509">एकभन्दा बढी अडियो स्रोतहरू पत्ता लागेका छन्</translation>
 <translation id="4165275524535002941">यो केबल डिस्प्लेहरूमा जोड्न मिल्दैन</translation>
 <translation id="4177415338862979658">थप जानकारीका लागि क्लिक गर्नुहोस्</translation>
 <translation id="4177913004758410636">{0,plural, =1{एक दिनभित्र डिभाइस रिस्टार्ट गर्नुहोस्}other{# दिनभित्र डिभाइस रिस्टार्ट गर्नुहोस्}}</translation>
@@ -1014,6 +1018,7 @@
 <translation id="4871905435473761992">हटस्पटसम्बन्धी विवरणहरू देखाउनुहोस्। तपाईंको मोबाइल नेटवर्कमा हटस्पट प्रयोग गर्न मिल्दैन।</translation>
 <translation id="4872237917498892622">Alt+खोज्नुहोस् वा Shift</translation>
 <translation id="4872852897273142380">बुकमार्क बारमा फोकस गर्नुहोस् वा बुकमार्क बार हाइलाइट गर्नुहोस् (बुकमार्क बार देखाइएको छ भने)</translation>
+<translation id="4876935764454575645">अडियोको चयन</translation>
 <translation id="4881323000405981760">इफेक्टहरू Linux एपहरूमा प्रयोग गर्न मिल्दैन</translation>
 <translation id="4881695831933465202">खोल्नुहोस्</translation>
 <translation id="4889868803215848840">सुझावको गुणस्तर सुधार गर्ने प्रयोजनका लागि प्रतिक्रिया दिनुहोस् (ऐच्छिक):</translation>
@@ -1090,6 +1095,7 @@
 <translation id="5121628974188116412">पृष्ठको फेदमा जानुहोस्‌</translation>
 <translation id="5122517996953421795"><ph name="DESK_NAME" /> को प्रिभ्यू। निष्क्रिय डेस्क।</translation>
 <translation id="5136175204352732067">भिन्न किबोर्ड जडान गरियो</translation>
+<translation id="5144005092084035179">अडियो इनपुट बदल्ने हो?</translation>
 <translation id="5147567197700016471">अनलक गरिएको छ</translation>
 <translation id="5150070631291639005">गोपनीयतासम्बन्धी सेटिङ</translation>
 <translation id="5155897006997040331">पढ्ने गति</translation>
@@ -1789,6 +1795,7 @@
 <translation id="7780094051999721182">सर्टकट</translation>
 <translation id="7780159184141939021">स्क्रिन घुमाउनुहोस्</translation>
 <translation id="7781829728241885113">हिजो</translation>
+<translation id="7787212146956232129">इनपुट र आउटपुट डिभाइसहरू सेट गरिएका छन्। बदल्न सेटिङमा जानुहोस्।</translation>
 <translation id="7792590255364786396">हेर्न मिल्छ</translation>
 <translation id="7796735576426975947">नयाँ सूचना लुकाइएको छ</translation>
 <translation id="7798302898096527229">रद्द गर्न Search वा Shift बटनमा थिच्नुहोस्।</translation>
@@ -2095,6 +2102,7 @@
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{एउटा फाइल}other{# वटा फाइल}}</translation>
 <translation id="8936501819958976551">निष्क्रिय पारियो</translation>
 <translation id="8938800817013097409">USB-C यन्त्र (पछाडिको दायाँ पोर्ट)</translation>
+<translation id="8939855324412367560">इनपुट अडियो "<ph name="INPUT_DEVICE_NAME" />" हो र आउटपुट अडियो "<ph name="OUTPUT_DEVICE_NAME" />" हो। परिवर्तन गर्न "सेटिङ" मा जानुहोस्।</translation>
 <translation id="8940956008527784070">ब्याटरी कम (<ph name="PERCENTAGE" />%)</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> जाँच बाकसमा चिन्ह लगाइएको छैन।</translation>
 <translation id="8949925099261528566">कनेक्ट भयो, इन्टरनेट छैन</translation>
@@ -2152,6 +2160,7 @@
 <translation id="9178475906033259337"><ph name="QUERY" /> सम्बन्धी १ परिणाम देखाउँदै</translation>
 <translation id="9179259655489829027">यस सुविधाले तपाईंलाई पासवर्ड प्रविष्ट नगरिकनै साइन इन भएका जुनसुकै प्रयोगकर्तामाथि द्रुत रूपमा पहुँच राख्न दिन्छ।आफूले विश्वास गर्ने खाताहरूमा मात्र यो सुविधाको प्रयोग गर्नुहोस्।</translation>
 <translation id="9183456764293710005">फुल स्क्रिन म्याग्निफायर</translation>
+<translation id="9192133205265227850">"<ph name="DEVICE_NAME" />" प्रयोग गर्नुहोस्</translation>
 <translation id="9193626018745640770">कुनै अज्ञात प्रापकमा cast गर्दै</translation>
 <translation id="9194617393863864469">अर्को प्रयोगकर्तालाई साइन इन गर्नुहोस् ...</translation>
 <translation id="9195990613383871904">भोलि</translation>

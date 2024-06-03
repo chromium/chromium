@@ -186,6 +186,7 @@
 <translation id="4055805654398742145">비밀번호 관리자(&amp;A)</translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{Chromium을 1분 동안 사용하지 않으면 조직에서 자동으로 종료합니다. 인터넷 사용 기록이 삭제됩니다. 여기에는 방문 기록, 자동 완성, 다운로드가 포함될 수 있습니다.}other{Chromium을 #분 동안 사용하지 않으면 조직에서 자동으로 종료합니다. 인터넷 사용 기록이 삭제됩니다. 여기에는 방문 기록, 자동 완성, 다운로드가 포함될 수 있습니다.}}</translation>
 <translation id="4118474109249235144">Chromium 시크릿 모드</translation>
+<translation id="4122186850977583290">Chromium 정보 페이지로 이동</translation>
 <translation id="4148957013307229264">설치 중...</translation>
 <translation id="4149336151887611710">조직에서 북마크, 방문 기록, 비밀번호와 같은 직장 프로필의 인터넷 사용 기록을 보고 관리할 수 있습니다. 개인 Chromium 프로필의 인터넷 사용 기록은 확인할 수 없습니다.</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - 네트워크 로그인 - Chromium</translation>

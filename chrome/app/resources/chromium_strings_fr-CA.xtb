@@ -186,6 +186,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="4055805654398742145">Gestionnaire de mots de passe</translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{Votre organisation ferme automatiquement Chromium lorsqu'il n'est pas utilisé pendant 1 minute. Les données de navigation sont supprimées. Cela peut inclure l'historique, le remplissage automatique et les téléchargements.}one{Votre organisation ferme automatiquement Chromium lorsqu'il n'est pas utilisé pendant # minutes. Les données de navigation sont supprimées. Cela peut inclure l'historique, le remplissage automatique et les téléchargements.}other{Votre organisation ferme automatiquement Chromium lorsqu'il n'est pas utilisé pendant # minutes. Les données de navigation sont supprimées. Cela peut inclure l'historique, le remplissage automatique et les téléchargements.}}</translation>
 <translation id="4118474109249235144">Navigation privée Chromium</translation>
+<translation id="4122186850977583290">Accéder à la page À propos de Chromium</translation>
 <translation id="4148957013307229264">Installation...</translation>
 <translation id="4149336151887611710">Votre organisation peut consulter et gérer les données de navigation dans votre profil professionnel, comme vos favoris, votre historique et vos mots de passe. Elle ne peut pas consulter les données de navigation dans les profils Chromium personnels.</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> – Connexion au réseau – Chromium</translation>

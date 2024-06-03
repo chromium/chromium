@@ -210,6 +210,7 @@
 <translation id="1747827819627189109">המקלדת שמופיעה במסך מופעלת</translation>
 <translation id="1749109475624620922">החלון <ph name="WINDOW_TITLE" /> מוקצה לכל שולחנות העבודה הווירטואליים</translation>
 <translation id="1750088060796401187">מותר להשתמש ב-<ph name="MAX_DESK_LIMIT" /> שולחנות עבודה וירטואליים לכל היותר. צריך להסיר שולחן עבודה וירטואלי כדי לפתוח אחד חדש.</translation>
+<translation id="1755408179247123630">להפעיל את התכונה 'הקראה'?</translation>
 <translation id="1755556344721611131">אפליקציית אבחון</translation>
 <translation id="1756833229520115364">לא ניתן היה לשמור את התבנית. יש יותר מדי חלונות או כרטיסיות.</translation>
 <translation id="1757857692711134412">התכונה כבויה עד השקיעה</translation>
@@ -947,6 +948,7 @@
 <translation id="4628757576491864469">מכשירים</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, דירוג כוכבים: <ph name="RATING_SCORE" /></translation>
 <translation id="4633636853437260449">‏כדי למחוק, מקישים על Ctrl+W.</translation>
+<translation id="4635501805800894201">{0,plural, =0{עליך לעדכן את המכשיר לגרסה הקודמת עכשיו}=1{עליך לעדכן את המכשיר לגרסה הקודמת בתוך שנייה}one{עליך לעדכן את המכשיר לגרסה הקודמת בתוך # שניות}two{עליך לעדכן את המכשיר לגרסה הקודמת בתוך # שניות}other{עליך לעדכן את המכשיר לגרסה הקודמת בתוך # שניות}}</translation>
 <translation id="4642092649622328492">צילום מסך חלקי</translation>
 <translation id="4644727592819780893">האזור קטן מדי ואי אפשר להציג אותו במצלמה</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, המלצה על אפליקציה</translation>
@@ -976,6 +978,7 @@
 <translation id="4735944890391795473">שולחן עבודה וירטואלי מספר 12</translation>
 <translation id="473775607612524610">עדכון</translation>
 <translation id="4740516757091333363">למחוק את שולחן העבודה השמור?</translation>
+<translation id="4746798685375253449">{0,plural, =1{עליך לעדכן את המכשיר לגרסה הקודמת בתוך יום אחד}one{עליך לעדכן את המכשיר לגרסה הקודמת בתוך # ימים}two{עליך לעדכן את המכשיר לגרסה הקודמת בתוך יומיים (#)}other{עליך לעדכן את המכשיר לגרסה הקודמת בתוך # ימים}}</translation>
 <translation id="4747410141429390146">צריך לבטל את הנעילה כדי להציג את ההתראות</translation>
 <translation id="4752784485658729358">ניתן לשמור רק 6 שולחנות עבודה וירטואליים. צריך להסיר שולחן עבודה וירטואלי כדי לשמור אחד חדש.</translation>
 <translation id="4759238208242260848">הורדות</translation>
@@ -1080,6 +1083,9 @@
 <translation id="5092436659250499817">הפעלה/כיבוי של התאורה האחורית של המקלדת</translation>
 <translation id="5094577350232361255">מידע</translation>
 <translation id="5095136268899496849">מתאימים אישית את מכשיר <ph name="PRODUCT_NAME" /> בהגדרות. כדאי לנסות להחליף את הטפט או להגדיר שומר מסך.</translation>
+<translation id="5096125376090473584">‏כדי לשמוע הקראה של הטקסט, לוחצים על סמל ההקראה בתחתית המסך ואז מדגישים את הטקסט.
+
+אפשר גם להשתמש במקשי הקיצור. קודם מדגישים את הטקסט ואז מקישים על <ph name="MODIFIER" /> + s.</translation>
 <translation id="509790653408515442">כשמשדרים את האפליקציות של הטלפון, הן מופיעות כאן</translation>
 <translation id="5098537242461068432">שולחן העבודה הווירטואלי והחלונות נפתחו מחדש</translation>
 <translation id="5103975065730779239">עד <ph name="END_TIME_EXPRESSION" /></translation>
@@ -1309,6 +1315,7 @@
 <translation id="5916646100036936191">התראה חדשה, <ph name="NOTIFICATION_COUNT" /> סה"כ</translation>
 <translation id="5916664084637901428">פועל</translation>
 <translation id="5920710855273935292">המיקרופון מושתק.</translation>
+<translation id="5928083197428724029">נדרש עדכון מ-<ph name="MANAGER" /></translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> פעילות.</translation>
 <translation id="5947494881799873997">חזרה לגרסה הקודמת</translation>
 <translation id="595202126637698455">מעקב אחר הביצועים מופעל</translation>
@@ -1427,6 +1434,7 @@
 <translation id="6376931439017688372">‏Bluetooth פועל</translation>
 <translation id="6378515133128829137">הצמדת החלון לצד ימין</translation>
 <translation id="6381109794406942707">כדי לבטל את הנעילה של המכשיר, יש להזין את קוד האימות.</translation>
+<translation id="6381305031890976705">{0,plural, =1{עליך לעדכן את המכשיר לגרסה הקודמת בתוך שעה}one{עליך לעדכן את המכשיר לגרסה הקודמת בתוך # שעות}two{עליך לעדכן את המכשיר לגרסה הקודמת בתוך שעתיים (#)}other{עליך לעדכן את המכשיר לגרסה הקודמת בתוך # שעות}}</translation>
 <translation id="638716340450135524">הפעלת הגישה למצלמה</translation>
 <translation id="639644700271529076">‏CAPS LOCK כבוי</translation>
 <translation id="6406458002328242616">עריכת הטיימר. <ph name="FOCUS_DURATION" />.</translation>
@@ -1449,6 +1457,7 @@
 <translation id="6459472438155181876">הרחבת המסך אל <ph name="DISPLAY_NAME" /> מתבצעת</translation>
 <translation id="6464094930452079790">תמונות</translation>
 <translation id="6467290994038932560">מופעלים למשחק <ph name="GAME_APP_NAME" /></translation>
+<translation id="6468406072297048412">{0,plural, =1{עליך לעדכן את המכשיר לגרסה הקודמת בתוך דקה}one{עליך לעדכן את המכשיר לגרסה הקודמת בתוך # דקות}two{עליך לעדכן את המכשיר לגרסה הקודמת בתוך # דקות}other{עליך לעדכן את המכשיר לגרסה הקודמת בתוך # דקות}}</translation>
 <translation id="6469104339369989396">החלפת המצב של הנקודה לשיתוף אינטרנט</translation>
 <translation id="6477681113376365978">לא ניתן להוריד את הקובץ</translation>
 <translation id="6482559668224714696">זכוכית מגדלת במסך מלא</translation>
@@ -1572,6 +1581,7 @@
 <translation id="6917259695595127329">העדכון האחרון של המשימות: <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">לא ניתן היה לזהות את הכרטיס החכם שלך. יש לנסות שוב.</translation>
 <translation id="692135145298539227">מחק</translation>
+<translation id="6921427376813842559">עדכון המכשיר</translation>
 <translation id="6929081673585394903">הצגת הפקדים</translation>
 <translation id="6931576957638141829">שמירה ב-</translation>
 <translation id="6942518653766415536">התפריט של פורמט הצילום</translation>
@@ -1659,6 +1669,7 @@
 <translation id="7303365578352795231">התשובה מתקבלת במכשיר אחר.</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">‏ה-eSIM הזה עובר איפוס בהוראת האדמין שלך. הפעולה עשויה להימשך מספר דקות.</translation>
+<translation id="7312761820869643657">עליך לעדכן את המכשיר לגרסה הקודמת</translation>
 <translation id="7313193732017069507">הרחבת המצלמה</translation>
 <translation id="7330397557116570022">כדי להשתמש בהכתבה, יש לעבור לשדה טקסט</translation>
 <translation id="7331646370422660166">‏Alt + חץ למטה</translation>
@@ -1809,6 +1820,7 @@
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">כדי להשתמש במכשיר כאורח, צריך לצאת מהחשבון ואז לבחור באפשרות 'גלישה כאורח' בתחתית המסך.</translation>
 <translation id="7866482334467279021">פועלת</translation>
+<translation id="7866727328666668290">הכרטיסייה האחרונה שנפתחה</translation>
 <translation id="7872786842639831132">כבוי</translation>
 <translation id="7875575368831396199">‏נראה שה-Bluetooth כבוי ב-<ph name="DEVICE_TYPE" /> שלך. יש להפעיל את Bluetooth כדי להשתמש ב-Phone Hub.</translation>
 <translation id="7884446017008693258">הגדרות הנקודה לשיתוף אינטרנט</translation>
@@ -2176,6 +2188,7 @@
 <translation id="925832987464884575">הסתרה של תצוגות מקדימות</translation>
 <translation id="938407504481277932">שולחן העבודה הווירטואלי הנוכחי: <ph name="DESK_NAME" />. ‫<ph name="PROFILE_NAME" /> ‏<ph name="EMAIL" />. שולחן עבודה וירטואלי <ph name="DESK_INDEX" /> מתוך <ph name="DESK_COUNT" />.</translation>
 <translation id="938963181863597773">אירועים קרובים ביומן שלי</translation>
+<translation id="94468042118567862">המכשיר לא מעודכן</translation>
 <translation id="945383118875625837">גרירת הקישור לסרגל הסימניות</translation>
 <translation id="945522503751344254"> שליחת משוב</translation>
 <translation id="951991426597076286">דחייה</translation>

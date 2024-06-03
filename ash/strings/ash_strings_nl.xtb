@@ -212,6 +212,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1747827819627189109">Schermtoetsenbord staat aan</translation>
 <translation id="1749109475624620922">Venster <ph name="WINDOW_TITLE" /> is toegewezen aan alle bureaus</translation>
 <translation id="1750088060796401187">Er zijn maar <ph name="MAX_DESK_LIMIT" /> bureaus toegestaan. Verwijder een om een nieuw bureau toe te voegen.</translation>
+<translation id="1755408179247123630">Selecteer om voor te lezen aanzetten?</translation>
 <translation id="1755556344721611131">App Diagnostische gegevens</translation>
 <translation id="1756833229520115364">Kan de template niet opslaan. Te veel vensters of tabbladen.</translation>
 <translation id="1757857692711134412">Uit tot zonsondergang</translation>
@@ -951,6 +952,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4628757576491864469">Apparaten</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, sterbeoordeling <ph name="RATING_SCORE" /></translation>
 <translation id="4633636853437260449">Druk op Ctrl + W om te verwijderen</translation>
+<translation id="4635501805800894201">{0,plural, =0{Update het apparaat nu naar een eerdere versie}=1{Update het apparaat binnen 1 seconde naar een eerdere versie}other{Update het apparaat binnen # seconden naar een eerdere versie}}</translation>
 <translation id="4642092649622328492">Gedeeltelijk screenshot maken</translation>
 <translation id="4644727592819780893">Gebied is te klein voor het cameravoorbeeld</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, app-aanbeveling</translation>
@@ -980,6 +982,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4735944890391795473">Bureau 12</translation>
 <translation id="473775607612524610">Updaten</translation>
 <translation id="4740516757091333363">Opgeslagen bureau verwijderen?</translation>
+<translation id="4746798685375253449">{0,plural, =1{Update het apparaat binnen een dag naar een eerdere versie}other{Update het apparaat binnen # dagen naar een eerdere versie}}</translation>
 <translation id="4747410141429390146">Ontgrendel om meldingen te bekijken</translation>
 <translation id="4752784485658729358">Er zijn maar 6 opgeslagen bureaus toegestaan. Verwijder een bureau om een nieuwe op te slaan.</translation>
 <translation id="4759238208242260848">Downloads</translation>
@@ -1085,6 +1088,9 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="5092436659250499817">Achtergrondverlichting van toetsenbord aan-/uitzetten</translation>
 <translation id="5094577350232361255">over</translation>
 <translation id="5095136268899496849">Pas je <ph name="PRODUCT_NAME" /> aan en personaliseer deze via Instellingen. Verander je achtergrond of stel een screensaver in.</translation>
+<translation id="5096125376090473584">Als je tekst wilt laten voorlezen, selecteer je het icoon Selecteer om voor te lezen onderaan het scherm en markeer je daarna de tekst.
+
+Je kunt ook de sneltoets gebruiken. Markeer eerst de tekst en druk dan op <ph name="MODIFIER" /> + s.</translation>
 <translation id="509790653408515442">Als je de apps van je telefoon streamt, zie je ze hier</translation>
 <translation id="5098537242461068432">Bureau en vensters weer geopend</translation>
 <translation id="5103975065730779239">Tot <ph name="END_TIME_EXPRESSION" /></translation>
@@ -1315,6 +1321,7 @@ Geen apparaten verbonden.</translation>
 <translation id="5916646100036936191">Nieuwe melding, <ph name="NOTIFICATION_COUNT" /> in totaal</translation>
 <translation id="5916664084637901428">Aan</translation>
 <translation id="5920710855273935292">Microfoon staat uit.</translation>
+<translation id="5928083197428724029">Update vereist door <ph name="MANAGER" /></translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> staat aan.</translation>
 <translation id="5947494881799873997">Terugzetten</translation>
 <translation id="595202126637698455">Bijhouden van prestaties staat aan</translation>
@@ -1433,6 +1440,7 @@ Geen apparaten verbonden.</translation>
 <translation id="6376931439017688372">Bluetooth staat aan</translation>
 <translation id="6378515133128829137">Venster rechts vastzetten</translation>
 <translation id="6381109794406942707">Geef je pincode op om het apparaat te ontgrendelen.</translation>
+<translation id="6381305031890976705">{0,plural, =1{Update het apparaat binnen een uur naar een eerdere versie}other{Update het apparaat binnen # uur naar een eerdere versie}}</translation>
 <translation id="638716340450135524">Cameratoegang aanzetten</translation>
 <translation id="639644700271529076">CAPS LOCK staat uit</translation>
 <translation id="6406458002328242616">Timer bewerken. <ph name="FOCUS_DURATION" />.</translation>
@@ -1455,6 +1463,7 @@ Geen apparaten verbonden.</translation>
 <translation id="6459472438155181876">Scherm uitbreiden naar <ph name="DISPLAY_NAME" /></translation>
 <translation id="6464094930452079790">afbeeldingen</translation>
 <translation id="6467290994038932560">Aan voor <ph name="GAME_APP_NAME" /></translation>
+<translation id="6468406072297048412">{0,plural, =1{Update het apparaat binnen 1 minuut naar een eerdere versie}other{Update het apparaat binnen # minuten naar een eerdere versie}}</translation>
 <translation id="6469104339369989396">Hotspot aan-/uitzetten</translation>
 <translation id="6477681113376365978">Kan bestand niet downloaden</translation>
 <translation id="6482559668224714696">Volledig scherm vergroten</translation>
@@ -1578,6 +1587,7 @@ Nieuwe installatie</translation>
 <translation id="6917259695595127329">Taken laatst geüpdatet: <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">Je smartkaart wordt niet herkend. Probeer het opnieuw.</translation>
 <translation id="692135145298539227">verwijderen</translation>
+<translation id="6921427376813842559">Apparaat updaten</translation>
 <translation id="6929081673585394903">Bedieningselementen tonen</translation>
 <translation id="6931576957638141829">Opslaan in</translation>
 <translation id="6942518653766415536">Menu voor opname-indelingen</translation>
@@ -1665,6 +1675,7 @@ Nieuwe installatie</translation>
 <translation id="7303365578352795231">Je vraag wordt beantwoord op een ander apparaat.</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Je beheerder reset je e-simkaart. Dit kan een paar minuten duren.</translation>
+<translation id="7312761820869643657">Apparaat updaten naar eerdere versie</translation>
 <translation id="7313193732017069507">Camera uitvouwen</translation>
 <translation id="7330397557116570022">Ga naar een tekstveld om dicteren te gebruiken</translation>
 <translation id="7331646370422660166">alt + pijl-omlaag</translation>
@@ -1814,6 +1825,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">Als je het apparaat wilt gebruiken als gast, log je uit en selecteer je onderaan het scherm Gebruiken als gast.</translation>
 <translation id="7866482334467279021">aan</translation>
+<translation id="7866727328666668290">Laatst geopend tabblad</translation>
 <translation id="7872786842639831132">Uit</translation>
 <translation id="7875575368831396199">Zo te zien staat bluetooth uit op je <ph name="DEVICE_TYPE" />. Zet bluetooth aan om Telefoonhub te gebruiken.</translation>
 <translation id="7884446017008693258">Hotspot-instellingen</translation>
@@ -2181,6 +2193,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="925832987464884575">Voorbeelden verbergen</translation>
 <translation id="938407504481277932">Huidig bureau: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. Bureau <ph name="DESK_INDEX" /> van <ph name="DESK_COUNT" />.</translation>
 <translation id="938963181863597773">Wat staat er in mijn agenda?</translation>
+<translation id="94468042118567862">Apparaat niet up-to-date</translation>
 <translation id="945383118875625837">Link naar bookmarkbalk slepen</translation>
 <translation id="945522503751344254">Feedback sturen</translation>
 <translation id="951991426597076286">Afwijzen</translation>

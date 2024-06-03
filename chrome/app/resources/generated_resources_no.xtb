@@ -2892,6 +2892,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3090819949319990166">Kunne ikke kopiere den eksterne crx-filen til <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">«<ph name="DEVICE_NAME" />» er tilkoblet</translation>
 <translation id="3093714882666365141">Ikke la nettsteder installere betalingsbehandlere</translation>
+<translation id="3094080575472025333">Blokker apper</translation>
 <translation id="3094141017404513551">Surfingen din blir atskilt fra <ph name="EXISTING_USER" /></translation>
 <translation id="3094223846531205616">{COUNT,plural, =0{Utløper i dag}=1{Utløper i morgen}other{Utløper om # dager}}</translation>
 <translation id="3094521107841754472">Prisen er endret fra <ph name="PREVIOUS_PRICE" /> til <ph name="CURRENT_PRICE" />.</translation>
@@ -3724,6 +3725,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="372722114124766626">Bare én gang</translation>
 <translation id="3727332897090187514">Det er ikke lagt til noe notat</translation>
 <translation id="3727473233247516571">Underramme i frem-og-tilbake-bufferen: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
+<translation id="3727843212509629024">Feil PIN-kode. Prøv igjen</translation>
 <translation id="3727850735097852673">For å bruke Google Passordlagring med en macOS-nøkkelring, start Chrome på nytt og gi tilgang til Nøkkelring. Fanene dine åpnes på nytt når du starter på nytt.</translation>
 <translation id="3728188878314831180">Speil varsler fra telefonen din</translation>
 <translation id="3728681439294129328">Konfigurer nettverksadressen</translation>
@@ -5230,6 +5232,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4867433544163083783">Sjekk om fanene kan organiseres, nå</translation>
 <translation id="4868281708609571334">Lær Google-assistenten å kjenne igjen stemmen til <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="4868284252360267853">Denne dialogboksen er ikke fokusert for øyeblikket. Trykk på Kommando + Shift + Tilvalg + A for å fokusere på denne dialogboksen.</translation>
+<translation id="4868351661310357223">Installer apper og spill fra Google Play på <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4869170227080975044">lese ChromeOS-nettverksinformasjon</translation>
 <translation id="4870724079713069532">Du kan åpne og redigere støttede filer med denne appen i Filutforsker eller andre apper. For å styre hvilke filer som åpner denne appen som standard, gå til <ph name="BEGIN_LINK" />Windows-innstillingene<ph name="END_LINK" />.</translation>
 <translation id="4870995365819149457">Noen støttede linker åpnes fremdeles i <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> og 1 app til.</translation>
@@ -5559,6 +5562,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5121052518313988218">Operativsystemet i Linux-beholderen støttes ikke lenger. Det får ikke flere sikkerhetsoppdateringer eller feilrettinger, og funksjoner som virker for øyeblikket, kan plutselig slutte å fungere. Oppgrader til den nyeste versjonen for å fortsette å bruke Linux.</translation>
 <translation id="5121130586824819730">Harddisken din er full. Lagre på et annet sted, eller frigjør plass på harddisken.</translation>
 <translation id="5123433949759960244">Basketball</translation>
+<translation id="5125714798187802869">Aktivér</translation>
 <translation id="5125751979347152379">Ugyldig nettadresse.</translation>
 <translation id="5125967981703109366">Om dette kortet</translation>
 <translation id="512642543295077915">søketasten + tilbaketasten</translation>
@@ -8048,6 +8052,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7007648447224463482">Åpne alt i et nytt vindu</translation>
 <translation id="7008815993384338777">Roamer ikke for øyeblikket</translation>
 <translation id="7009709314043432820"><ph name="APP_NAME" /> bruker kameraet ditt</translation>
+<translation id="701020165009334820">Du kan laste ned Android-apper og -spill via Play-butikken.</translation>
 <translation id="701080569351381435">Se kilde</translation>
 <translation id="7011797924920577670">beregner også interessene dine</translation>
 <translation id="7012430956470647760">Foreldrekontroll for apper</translation>
@@ -8379,6 +8384,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7289049772085228972">Du har den sterkeste sikkerheten i Chrome</translation>
 <translation id="7289303553784750393">Hvis du er på nett, men problemet vedvarer, kan du prøve å fortsette på <ph name="SITE_ETLD_PLUS_ONE" /> på andre måter.</translation>
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> ber om tillatelse. Trykk på F6 for å svare</translation>
+<translation id="7290005709287747471">Deaktiver</translation>
 <translation id="7290242001003353852">Denne påloggingstjenesten, som driftes av <ph name="SAML_DOMAIN" />, har tilgang til kameraet ditt</translation>
 <translation id="7292067737327289208"><ph name="BEGIN_LINK" />Nettleseren din administreres<ph name="END_LINK" /> av organisasjonen din, og <ph name="BEGIN_LINK" />profilen din administreres<ph name="END_LINK" /> av <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="7292147651179697920">Be forelderen din om å gi tilgang i innstillingene</translation>

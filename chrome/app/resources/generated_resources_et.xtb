@@ -2888,6 +2888,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3090819949319990166">Välist crx-faili ei saa faili <ph name="TEMP_CRX_FILE" /> kopeerida.</translation>
 <translation id="3090871774332213558">Seade „<ph name="DEVICE_NAME" />” on seotud</translation>
 <translation id="3093714882666365141">Ära luba saitidel maksetöötlejaid installida</translation>
+<translation id="3094080575472025333">Rakenduste blokeerimine</translation>
 <translation id="3094141017404513551">See eraldab teie sirvimise kasutaja <ph name="EXISTING_USER" /> omast</translation>
 <translation id="3094223846531205616">{COUNT,plural, =0{Aegub täna}=1{Aegub homme}other{Aegub # päeva pärast}}</translation>
 <translation id="3094521107841754472">Eelmine hind oli <ph name="PREVIOUS_PRICE" />, uus hind on <ph name="CURRENT_PRICE" />.</translation>
@@ -3720,6 +3721,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="372722114124766626">Ainult üks kord</translation>
 <translation id="3727332897090187514">Märkust pole lisatud</translation>
 <translation id="3727473233247516571">Vahemälu tagasi-edasiliikumiseks alamraamis: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
+<translation id="3727843212509629024">Vale PIN-kood. Proovige uuesti</translation>
 <translation id="3727850735097852673">Google'i paroolihalduri kasutamiseks koos macOS Keychainiga taaskäivitage Chrome ja lubage Keychainile juurdepääs. Teie vahelehed avanevad pärast taaskäivitamist uuesti.</translation>
 <translation id="3728188878314831180">Peegeldage märguandeid oma telefonist</translation>
 <translation id="3728681439294129328">Võrguaadressi seadistamine</translation>
@@ -5557,6 +5559,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5121052518313988218">Teie Linuxi konteineri operatsioonisüsteemi ei toetata enam. See ei saa enam turvavärskendusi ja veaparandusi ning funktsioonid, mis praegu töötavad, võivad töö ootamatult katkestada. Linuxi kasutamise jätkamiseks minge üle uusimale versioonile.</translation>
 <translation id="5121130586824819730">Teie kõvaketas on täis. Salvestage muusse asukohta või vabastage kõvakettaruumi.</translation>
 <translation id="5123433949759960244">Korvpall</translation>
+<translation id="5125714798187802869">Aktiveeri</translation>
 <translation id="5125751979347152379">Vale URL.</translation>
 <translation id="5125967981703109366">Teave selle kaardi kohta</translation>
 <translation id="512642543295077915">otsing + tagasilüke</translation>
@@ -8379,6 +8382,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7289049772085228972">Teil on Chrome'i tugevaim kaitse</translation>
 <translation id="7289303553784750393">Kui olete onlainis, kuid see probleem jääb korduma, võite proovida teisi viise, kuidas saidil <ph name="SITE_ETLD_PLUS_ONE" /> jätkata.</translation>
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> – taotleti luba, vastamiseks vajutage klahvi F6</translation>
+<translation id="7290005709287747471">Inaktiveeri</translation>
 <translation id="7290242001003353852">See domeeni <ph name="SAML_DOMAIN" /> hostitud sisselogimisteenus pääseb teie kaamerale juurde.</translation>
 <translation id="7292067737327289208">Teie <ph name="BEGIN_LINK" />brauserit haldab<ph name="END_LINK" /> teie organisatsioon ja teie <ph name="BEGIN_LINK" />profiili haldab<ph name="END_LINK" /> <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="7292147651179697920">Palu vanemal seadetes juurdepääs lubada</translation>

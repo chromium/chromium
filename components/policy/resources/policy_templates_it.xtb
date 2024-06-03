@@ -1692,6 +1692,7 @@ Se questo criterio non viene configurato o se viene disattivato, il trasferiment
 <translation id="2258126710006312594">Consenti l'accesso remoto agli utenti per trasferire file da/verso l'host</translation>
 <translation id="225830954785359083">Impedisci alle pagine di mostrare popup durante l'unload</translation>
 <translation id="2261648512244797294">Disattiva stampa Privet deprecata</translation>
+<translation id="2263881357524831360">Consenti l'utilizzo di gestori delle password di terze parti in <ph name="PRODUCT_NAME" /> su <ph name="ANDROID_NAME" /></translation>
 <translation id="2264286153777425328">Elenco di azioni da eseguire quando viene raggiunto il timeout del criterio <ph name="IDLE_TIMEOUT_POLICY_NAME" />.
 
 Avviso: l'impostazione di questo criterio può influire sulla rimozione definitiva dei dati personali locali. Ti consigliamo di testare le impostazioni prima del deployment per evitare l'eliminazione accidentale di dati personali.
@@ -2578,6 +2579,7 @@ Il criterio <ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_EXCEPTIONS_POLICY_NAME" /> h
 <translation id="2960128438010718932">Il programma di gestione temporanea per l'applicazione di nuovi aggiornamenti</translation>
 <translation id="2960691910306063964">Consente di attivare o disattivare l'autenticazione senza PIN per gli host di accesso remoto</translation>
 <translation id="2960999045613902792">Consenti agli utenti di aggiungere, configurare e stampare da stampanti non aziendali</translation>
+<translation id="296100724744272922">Consenti l'utilizzo di un gestore delle password di terze parti in Chrome</translation>
 <translation id="2962972237615992440">Viene disattivato il proxy <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="2963292398266537394">Disattiva la dettatura</translation>
 <translation id="2964373560810620158">Impedisci agli utenti di usare il browser <ph name="LACROS_NAME" /></translation>
@@ -7898,6 +7900,23 @@ Se configuri questo criterio, gli utenti non potranno modificarlo o ignorarlo.
 Se questo criterio non viene impostato, inizialmente la lente d'ingrandimento è disattivata nella schermata di accesso, ma l'utente può attivarla in qualsiasi momento.</translation>
 <translation id="7109384070286741861">CECPQ2 viene disattivato</translation>
 <translation id="7113439794629928551">Mostra i controlli multimediali per le sessioni <ph name="PRODUCT_NAME" /> avviate da altri dispositivi</translation>
+<translation id="7113803652772945829">Se il criterio viene impostato su true, gli utenti possono utilizzare un gestore delle password di terze parti.
+Questo gestore delle password si occuperà di salvare e inserire tutte le password, i dati di pagamento e
+di compilazione automatica.
+Se il criterio viene impostato su true o se non viene impostato, un'impostazione consentirà di passare dal
+gestore delle password
+integrato di <ph name="PRODUCT_NAME" /> a quello configurato nelle impostazioni del dispositivo Android.
+Poiché <ph name="PRODUCT_NAME" /> utilizza gli stessi dati
+di Compilazione automatica Google, l'impostazione può essere modificata per utilizzare gestori delle password
+di terze parti solo se un gestore diverso da Compilazione automatica Google è configurato
+nelle impostazioni di sistema del dispositivo Android.
+
+Se il criterio viene impostato su false,
+<ph name="PRODUCT_NAME" /> utilizzerà sempre
+il gestore delle password integrato.
+
+Questo criterio non influisce sui gestori delle password di terze parti che utilizzano
+API di accessibilità.</translation>
 <translation id="7114169791477667553">Disattiva il provider di ricerca predefinito</translation>
 <translation id="7121046543122812054">Questo criterio è deprecato. Potresti usare il criterio <ph name="BROWSER_SIGNIN_POLICY_NAME" />.
 
@@ -10572,6 +10591,7 @@ L'impostazione predefinita è RollbackDisabled.</translation>
 2 = Disattiva la funzionalità. 2 è il valore predefinito per gli account Education gestiti da <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
 
 Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI generativa, visita la pagina https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
+<translation id="949192525372487705">Blocca il passaggio a un gestore delle password di terze parti</translation>
 <translation id="957322141096206402">La risoluzione DNS di sistema può essere eseguita all'interno o all'esterno del processo di rete, a seconda della configurazione di sistema e dei flag funzionalità.</translation>
 <translation id="957778406002650056">L'URL da cui è possibile scaricare l'immagine <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="957920984193041197">Consenti alle pagine di mostrare popup durante l'unload</translation>

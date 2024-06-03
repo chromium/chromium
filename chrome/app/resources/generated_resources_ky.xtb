@@ -2897,6 +2897,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3090819949319990166">Тышкы crx файлы <ph name="TEMP_CRX_FILE" /> ичине көчүрүлбөй жатат.</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" жупташты</translation>
 <translation id="3093714882666365141">Сайттар төлөм иштеткичтерди орното албасын</translation>
+<translation id="3094080575472025333">Колдонмолорду бөгөттөө</translation>
 <translation id="3094141017404513551">Серептеген нерселериңиз <ph name="EXISTING_USER" /> аккаунтунан өзүнчө сакталат</translation>
 <translation id="3094223846531205616">{COUNT,plural, =0{Мөөнөтү бүгүн бүтөт}=1{Мөөнөтү эртең бүтөт}other{Мөөнөтү # күндөн кийин бүтөт}}</translation>
 <translation id="3094521107841754472">Баасы <ph name="PREVIOUS_PRICE" /> ордуна <ph name="CURRENT_PRICE" /> болуп калды.</translation>
@@ -3729,6 +3730,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="372722114124766626">Бир эле жолу</translation>
 <translation id="3727332897090187514">Эскертме кошулган жок</translation>
 <translation id="3727473233247516571">Кештелген көмөкчү фрейм: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
+<translation id="3727843212509629024">PIN код туура эмес. Кайталап көрүңүз</translation>
 <translation id="3727850735097852673">Сырсөздөрдү башкаргычты macOS Keychain менен колдонуу үчүн Chrome'ду кайра иштетип, Keychain'ге мүмкүнчүлүк бериңиз. Кайра иштеткенден кийин өтмөктөрүңүз кайрадан ачылат.</translation>
 <translation id="3728188878314831180">Телефонуңуздагы билдирмелерди алуу</translation>
 <translation id="3728681439294129328">Тармактын дарегин конфигурациялоо</translation>
@@ -5237,6 +5239,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4867433544163083783">Өтмөктөр иретке келтирилип же келтирилбей турганын азыр текшериңиз</translation>
 <translation id="4868281708609571334">Google Жардамчыга <ph name="SUPERVISED_USER_NAME" /> аттуу колдонуучунун үнүн тааныганды үйрөтүү</translation>
 <translation id="4868284252360267853">Учурда бул диалог тандалбай турат. Бул диалогду тандоо үчүн Command-Shift-Option A баскычын басыңыз.</translation>
+<translation id="4868351661310357223">Google Play'ден колдонмолор менен оюндарды <ph name="DEVICE_TYPE" /> түзмөгүңүзгө орнотуп аласыз.</translation>
 <translation id="4869170227080975044">ChromeOS тармагынын маалыматын окуу</translation>
 <translation id="4870724079713069532">Бул колдонмодо колдоого алынган файлдарды File Explorer же башка колдонмолордо ачып, түзөтө аласыз. Бул колдонмодо демейки шартта кайсы файлдар ачыларын көзөмөлдөө үчүн <ph name="BEGIN_LINK" />Терезелердин параметрлерине<ph name="END_LINK" /> өтүңүз.</translation>
 <translation id="4870995365819149457">Колдоого алынган айрым шилтемелер <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> жана дагы 1 колдонмодо ачыла берет.</translation>
@@ -8057,6 +8060,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7007648447224463482">Баарын жаңы терезеде ачуу</translation>
 <translation id="7008815993384338777">Учурда роумингде эмес</translation>
 <translation id="7009709314043432820"><ph name="APP_NAME" /> камераңызды колдонууда</translation>
+<translation id="701020165009334820">Android колдонмолорун жана оюндарын Play Store аркылуу жүктөп алсаңыз болот.</translation>
 <translation id="701080569351381435">Булакты карап көрүү</translation>
 <translation id="7011797924920577670">кызыккан нерселериңизди божомолдойт</translation>
 <translation id="7012430956470647760">Колдонмолор үчүн Ата-эненин көзөмөлү</translation>

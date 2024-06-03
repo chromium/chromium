@@ -2876,6 +2876,7 @@
 <translation id="3090819949319990166">无法将外部 crx 文件复制到 <ph name="TEMP_CRX_FILE" />。</translation>
 <translation id="3090871774332213558">“<ph name="DEVICE_NAME" />”已配对</translation>
 <translation id="3093714882666365141">不允许网站安装付款处理程序</translation>
+<translation id="3094080575472025333">屏蔽应用</translation>
 <translation id="3094141017404513551">这会将您的浏览数据与 <ph name="EXISTING_USER" /> 的浏览数据分隔开来</translation>
 <translation id="3094223846531205616">{COUNT,plural, =0{今天过期}=1{明天过期}other{# 天后过期}}</translation>
 <translation id="3094521107841754472">价格已从 <ph name="PREVIOUS_PRICE" /> 变为 <ph name="CURRENT_PRICE" />。</translation>
@@ -3706,6 +3707,7 @@
 <translation id="372722114124766626">仅一次</translation>
 <translation id="3727332897090187514">未添加任何备注</translation>
 <translation id="3727473233247516571">往返缓存版子框架：<ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
+<translation id="3727843212509629024">PIN 码不正确。请重试</translation>
 <translation id="3727850735097852673">若要将 Google 密码管理工具与 macOS 钥匙串搭配使用，请重新启动 Chrome 并允许访问钥匙串。您的标签页会在重新启动后重新打开。</translation>
 <translation id="3728188878314831180">通过镜像方式显示您手机上收到的通知</translation>
 <translation id="3728681439294129328">配置网络地址</translation>

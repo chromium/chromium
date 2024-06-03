@@ -2884,6 +2884,7 @@
 <translation id="3090819949319990166">無法將外部 crx 檔案複製到 <ph name="TEMP_CRX_FILE" />。</translation>
 <translation id="3090871774332213558">「<ph name="DEVICE_NAME" />」已配對</translation>
 <translation id="3093714882666365141">禁止網站安裝付款處理常式</translation>
+<translation id="3094080575472025333">封鎖應用程式</translation>
 <translation id="3094141017404513551">這會將你和 <ph name="EXISTING_USER" /> 的瀏覽資料分開保存</translation>
 <translation id="3094223846531205616">{COUNT,plural, =0{今天到期}=1{明天到期}other{# 天後到期}}</translation>
 <translation id="3094521107841754472">價格已從 <ph name="PREVIOUS_PRICE" /> 變更為 <ph name="CURRENT_PRICE" />。</translation>
@@ -3713,6 +3714,7 @@
 <translation id="372722114124766626">限用一次</translation>
 <translation id="3727332897090187514">未新增任何附註</translation>
 <translation id="3727473233247516571">往返快取子頁框：<ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
+<translation id="3727843212509629024">PIN 碼不正確，請再試一次</translation>
 <translation id="3727850735097852673">如要搭配 macOS 鑰匙圈使用 Google 密碼管理工具，請重新啟動 Chrome 並允許存取鑰匙圈。重新啟動之後，會重新開啟所有分頁。</translation>
 <translation id="3728188878314831180">鏡向投射手機的通知</translation>
 <translation id="3728681439294129328">設定網路位址</translation>
@@ -5220,6 +5222,7 @@
 <translation id="4867433544163083783">立即檢查能否整理分頁</translation>
 <translation id="4868281708609571334">訓練 Google 助理辨識<ph name="SUPERVISED_USER_NAME" />的聲音</translation>
 <translation id="4868284252360267853">這個對話方塊未處於聚焦狀態。按下 Command + Shift + Option + A 鍵即可聚焦這個對話方塊。</translation>
+<translation id="4868351661310357223">在 <ph name="DEVICE_TYPE" /> 上透過 Google Play 安裝應用程式和遊戲。</translation>
 <translation id="4869170227080975044">讀取 ChromeOS 網路資訊</translation>
 <translation id="4870724079713069532">你可以在檔案總管或其他應用程式中，透過這個應用程式開啟及編輯支援的檔案。如要控管要在這個應用程式預設開啟哪些檔案，請前往 <ph name="BEGIN_LINK" />Windows 設定<ph name="END_LINK" />。</translation>
 <translation id="4870995365819149457">某些支援連結仍會在「<ph name="APP_NAME" />」、「<ph name="APP_NAME_2" />」、「<ph name="APP_NAME_3" />」和另 1 個應用程式中開啟。</translation>
@@ -8035,6 +8038,7 @@
 <translation id="7007648447224463482">在新視窗中開啟所有書籤</translation>
 <translation id="7008815993384338777">目前未處於漫遊狀態</translation>
 <translation id="7009709314043432820">「<ph name="APP_NAME" />」正在使用攝影機</translation>
+<translation id="701020165009334820">你可以透過 Play 商店下載 Android 應用程式和遊戲。</translation>
 <translation id="701080569351381435">檢視原始碼</translation>
 <translation id="7011797924920577670">推測你的興趣喜好</translation>
 <translation id="7012430956470647760">適用於應用程式的家長監護設定</translation>

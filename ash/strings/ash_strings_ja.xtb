@@ -107,6 +107,7 @@
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" />を接続しました</translation>
 <translation id="1340378040547539434">ページを縮小する</translation>
 <translation id="1341651618736211726">オーバーフロー</translation>
+<translation id="1341926407152459446">オーディオの入出力に "<ph name="DEVICE_NAME" />" を使用する</translation>
 <translation id="1344141078024003905">画面をキャストしています。いつでも画面のキャストを一時停止または停止できます。</translation>
 <translation id="1346748346194534595">右</translation>
 <translation id="1351937230027495976">メニューを折りたたむ</translation>
@@ -145,6 +146,7 @@
 <translation id="1486307154719069822">音声入力では、声を使って入力できます。テキスト欄にカーソルを置いて、音声入力キーを押すか、画面下部のマイクアイコンを選択します。音声入力の言語は<ph name="LANGUAGE" />に設定されています。音声は Google に送信されて処理されます。音声入力の言語は [設定] &gt; [ユーザー補助] でいつでも変更できます。</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> と <ph name="SECOND_ITEM_TITLE" /> が置き換わりました</translation>
 <translation id="1500926532737552529">提案をすべて表示</translation>
+<translation id="1501946871587957338">オーディオ ソースを切り替えますか？</translation>
 <translation id="1510238584712386396">ランチャー</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{通知設定を表示します。1 件のアプリで通知がオフになっています}other{通知設定を表示します。# 件のアプリで通知がオフになっています}}</translation>
 <translation id="1523032696246003">バッテリー残量 <ph name="BATTERY_PERCENTAGE" />% | 充電完了まで <ph name="TIME" /></translation>
@@ -773,6 +775,7 @@
 <translation id="397105322502079400">計算しています...</translation>
 <translation id="397726367135689299">バッテリーの充電が不安定になっている可能性があります</translation>
 <translation id="3977512764614765090">電池残量は <ph name="PERCENTAGE" />% です（現在充電中）。</translation>
+<translation id="3982013579989864579">オーディオ出力を切り替えますか？</translation>
 <translation id="3984536049089846927">次のページ</translation>
 <translation id="3986082989454912832">応答</translation>
 <translation id="3990002060657467458">Wi-Fi、Bluetooth、音量など、よく使用するコントロールはクイック設定に表示されます。クイック設定からスクリーンショットを撮ることもできます。</translation>
@@ -816,6 +819,7 @@
 <translation id="4150201353443180367">ディスプレイ</translation>
 <translation id="4156293514828496577">バッテリー残量が <ph name="PERCENTAGE" />% です（約 <ph name="TIME_LEFT" />）。
 バッテリー駆動時間を延ばすため、一部の機能が制限されています。</translation>
+<translation id="4160919062868802509">複数のオーディオ ソースが検出されました</translation>
 <translation id="4165275524535002941">ケーブルはディスプレイに対応していない可能性があります</translation>
 <translation id="4177415338862979658">クリックして詳細を確認してください</translation>
 <translation id="4177913004758410636">{0,plural, =1{1 日以内にデバイスを更新してください}other{# 日以内にデバイスを更新してください}}</translation>
@@ -1014,6 +1018,7 @@
 <translation id="4871905435473761992">アクセス ポイントの詳細を表示します。ご利用のモバイル ネットワークはアクセス ポイントに対応していません。</translation>
 <translation id="4872237917498892622">Alt+ 検索/Shift</translation>
 <translation id="4872852897273142380">ブックマーク バーにフォーカスするかハイライト表示する（ブックマーク バーが表示されている場合）</translation>
+<translation id="4876935764454575645">オーディオの選択</translation>
 <translation id="4881323000405981760">エフェクトは Linux アプリでサポートされていません</translation>
 <translation id="4881695831933465202">開く</translation>
 <translation id="4889868803215848840">提案内容を改善するため、よろしければフィードバックをご提供ください:</translation>
@@ -1090,6 +1095,7 @@
 <translation id="5121628974188116412">ページの一番下に移動する</translation>
 <translation id="5122517996953421795"><ph name="DESK_NAME" /> のプレビュー。アクティブでないデスクです。</translation>
 <translation id="5136175204352732067">別のキーボードが接続されています</translation>
+<translation id="5144005092084035179">オーディオ入力を切り替えますか？</translation>
 <translation id="5147567197700016471">ロック解除済み</translation>
 <translation id="5150070631291639005">プライバシー設定</translation>
 <translation id="5155897006997040331">読み上げ速度</translation>
@@ -1790,6 +1796,7 @@
 <translation id="7780094051999721182">ショートカット</translation>
 <translation id="7780159184141939021">画面の回転</translation>
 <translation id="7781829728241885113">昨日</translation>
+<translation id="7787212146956232129">入力デバイスと出力デバイスが設定されています。変更するには [設定] に移動してください。</translation>
 <translation id="7792590255364786396">表示</translation>
 <translation id="7796735576426975947">新しい通知は表示されません</translation>
 <translation id="7798302898096527229">キャンセルするには検索キーまたは Shift キーを押します。</translation>
@@ -2095,6 +2102,7 @@
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 件のファイル}other{# 件のファイル}}</translation>
 <translation id="8936501819958976551">無効</translation>
 <translation id="8938800817013097409">USB-C デバイス（背面右のポート）</translation>
+<translation id="8939855324412367560">入力オーディオは "<ph name="INPUT_DEVICE_NAME" />"、出力オーディオは "<ph name="OUTPUT_DEVICE_NAME" />" です。変更するには [設定] に移動してください。</translation>
 <translation id="8940956008527784070">バッテリー残量: 少（<ph name="PERCENTAGE" />%）</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> チェックボックスはオフです。</translation>
 <translation id="8949925099261528566">接続済み、インターネット接続なし</translation>
@@ -2152,6 +2160,7 @@
 <translation id="9178475906033259337"><ph name="QUERY" /> の結果 1 件を表示しています</translation>
 <translation id="9179259655489829027">この機能を使用すると、パスワードを入力せずにログイン ユーザーにすばやくアクセスできます。この機能は信頼できるアカウントにのみ使用してください。</translation>
 <translation id="9183456764293710005">全画面拡大鏡</translation>
+<translation id="9192133205265227850">"<ph name="DEVICE_NAME" />" を使用する</translation>
 <translation id="9193626018745640770">不明な受信デバイスにキャストしています</translation>
 <translation id="9194617393863864469">別のユーザーとしてログイン...</translation>
 <translation id="9195990613383871904">明日</translation>

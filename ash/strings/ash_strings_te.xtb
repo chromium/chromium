@@ -107,6 +107,7 @@
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> కనెక్ట్ చేయబడింది</translation>
 <translation id="1340378040547539434">పేజీని జూమ్ - అవుట్ చేయండి</translation>
 <translation id="1341651618736211726">అతివ్యాప్తి అంశాలు</translation>
+<translation id="1341926407152459446">ఆడియో ఇన్‌పుట్, అవుట్‌పుట్‌కు "<ph name="DEVICE_NAME" />"‌ను ఉపయోగించండి</translation>
 <translation id="1344141078024003905">మీరు మీ స్క్రీన్‌ను ప్రసారం చేస్తున్నారు. మీరు స్క్రీన్‌ను ప్రసారం చేయడాన్ని ఎప్పుడైనా పాజ్ చేయవచ్చు లేదా ఆపివేయవచ్చు.</translation>
 <translation id="1346748346194534595">కుడి</translation>
 <translation id="1351937230027495976">మెనూను కుదించు</translation>
@@ -145,6 +146,7 @@
 <translation id="1486307154719069822">డిక్టేషన్ సహాయంతో, మీ వాయిస్‌ను ఉపయోగించి మీరు టైప్ చేయవచ్చు. మీరు టెక్స్ట్ ఫీల్డ్‌లో ఉన్నప్పుడు, డిక్టేషన్ కీని నొక్కండి, లేదా స్క్రీన్ దిగువున ఉండే మైక్రోఫోన్ చిహ్నాన్ని ఎంచుకోండి. మీ డిక్టేషన్ భాష <ph name="LANGUAGE" />‌కు సెట్ చేయబడింది. ప్రాసెసింగ్ కోసం స్పీచ్ Googleకు పంపబడుతుంది. 'సెట్టింగ్‌లు &gt; యాక్సెసిబిలిటీ'లో ఏ సమయంలోనైనా డిక్టేషన్ భాషను మీరు మార్చుకోవచ్చు.</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" />, <ph name="SECOND_ITEM_TITLE" />గా మార్చబడింది</translation>
 <translation id="1500926532737552529">అన్ని సూచనలను చూడండి</translation>
+<translation id="1501946871587957338">ఆడియో సోర్స్‌ను మార్చాలా?</translation>
 <translation id="1510238584712386396">లాంచర్</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{ నోటిఫికేషన్ సెట్టింగ్‌లను చూపుతుంది. యాప్ కోసం నోటిఫికేషన్‌లు ఆఫ్ చేయబడి ఉన్నాయి}other{ నోటిఫికేషన్ సెట్టింగ్‌లను చూపుతుంది. # యాప్‌ల కోసం నోటిఫికేషన్‌లు ఆఫ్ చేయబడి ఉన్నాయి}}</translation>
 <translation id="1523032696246003">బ్యాటరీ <ph name="BATTERY_PERCENTAGE" />% | పూర్తిగా ఛార్జ్ అవ్వడానికి <ph name="TIME" /> సమయం మిగిలి ఉంది</translation>
@@ -774,6 +776,7 @@
 <translation id="397105322502079400">గణిస్తోంది...</translation>
 <translation id="397726367135689299">బ్యాటరీ ఛార్జింగ్ అస్థిరంగా ఉండవచ్చు.</translation>
 <translation id="3977512764614765090">బ్యాటరీ <ph name="PERCENTAGE" />% ఉంది. ఛార్జ్ అవుతోంది.</translation>
+<translation id="3982013579989864579">ఆడియో అవుట్‌పుట్‌ను మార్చాలా?</translation>
 <translation id="3984536049089846927">తర్వాతి పేజీ</translation>
 <translation id="3986082989454912832">సమాధానం ఇవ్వండి</translation>
 <translation id="3990002060657467458">Wi-Fi, బ్లూటూత్ అలాగే వాల్యూమ్ వంటి తరచుగా ఉపయోగించే కంట్రోల్స్ క్విక్ సెట్టింగ్‌లలో ఉన్నాయి. ఇక్కడకు వెళ్లి స్క్రీన్‌షాట్ కూడా తీసుకోవచ్చు.</translation>
@@ -817,6 +820,7 @@
 <translation id="4150201353443180367">డిస్‌ప్లే</translation>
 <translation id="4156293514828496577">బ్యాటరీ <ph name="PERCENTAGE" />% మిగిలి ఉంది (<ph name="TIME_LEFT" /> సమయం మిగిలి ఉంది).
 కొన్ని ఫీచర్‌లు బ్యాటరీ లైఫ్‌ను పొడిగించడానికి పరిమితం చేయబడ్డాయి.</translation>
+<translation id="4160919062868802509">పలు ఆడియో సోర్స్‌లు గుర్తించబడ్డాయి</translation>
 <translation id="4165275524535002941">డిస్‌ప్లేలను కేబుల్ సపోర్ట్ చేయకపోవచ్చు</translation>
 <translation id="4177415338862979658">వివరాల కోసం చెక్ చేయడానికి క్లిక్ చేయండి</translation>
 <translation id="4177913004758410636">{0,plural, =1{ఒక రోజు లోపు పరికరాన్ని అప్‌డేట్ చేయండి}other{# రోజులలోపు పరికరాన్ని అప్‌డేట్ చేయండి}}</translation>
@@ -1015,6 +1019,7 @@
 <translation id="4871905435473761992">హాట్‌స్పాట్ వివరాలను చూడండి. మీ మొబైల్ నెట్‌వర్క్ హాట్‌స్పాట్‌ను సపోర్ట్ చేయదు.</translation>
 <translation id="4872237917498892622">Alt+Search లేదా Shift</translation>
 <translation id="4872852897273142380">బుక్‌మార్క్‌ల బార్‌ను (చూపించినట్లయితే) ఫోకస్ చేయండి లేదా దానిని హైలైట్ చేయండి</translation>
+<translation id="4876935764454575645">ఆడియో ఎంపిక</translation>
 <translation id="4881323000405981760">Linux యాప్‌లలో ఎఫెక్ట్‌లు పని చేయవు</translation>
 <translation id="4881695831933465202">తెరువు</translation>
 <translation id="4889868803215848840">సూచనలను మెరుగుపరచడానికి ఆప్షనల్ ఫీడ్‌బ్యాక్ ఇవ్వండి:</translation>
@@ -1091,6 +1096,7 @@
 <translation id="5121628974188116412">పేజీ దిగువకు వెళ్లండి</translation>
 <translation id="5122517996953421795"><ph name="DESK_NAME" /> ప్రివ్యూ. ఇన్‌యాక్టివ్ డెస్క్.</translation>
 <translation id="5136175204352732067">వేరే కీబోర్డ్ కనెక్ట్ చేయబడింది</translation>
+<translation id="5144005092084035179">ఆడియో ఇన్‌పుట్‌ను మార్చాలా?</translation>
 <translation id="5147567197700016471">అన్‌లాక్ చేయబడింది</translation>
 <translation id="5150070631291639005">గోప్యతా సెట్టింగ్‌లు</translation>
 <translation id="5155897006997040331">రీడింగ్ వేగం</translation>
@@ -1790,6 +1796,7 @@
 <translation id="7780094051999721182">షార్ట్‌కట్‌లు</translation>
 <translation id="7780159184141939021">స్క్రీన్‌ను తిప్పండి</translation>
 <translation id="7781829728241885113">నిన్న</translation>
+<translation id="7787212146956232129">ఇన్‌పుట్, అవుట్‌పుట్ పరికరాలు సెట్ చేయబడ్డాయి. మార్చడానికి సెట్టింగ్‌లకు వెళ్లండి.</translation>
 <translation id="7792590255364786396">కనిపిస్తుంది</translation>
 <translation id="7796735576426975947">కొత్త నోటిఫికేషన్ దాచబడింది</translation>
 <translation id="7798302898096527229">రద్దు చేయడానికి Search లేదా Shiftను నొక్కండి.</translation>
@@ -2096,6 +2103,7 @@
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ఫైల్}other{# ఫైళ్లు}}</translation>
 <translation id="8936501819958976551">డీయాక్టివేట్ చేయబడింది</translation>
 <translation id="8938800817013097409">USB-C పరికరం (వెనుక భాగంలో కుడి పోర్ట్)</translation>
+<translation id="8939855324412367560">ఇన్‌పుట్ ఆడియో "<ph name="INPUT_DEVICE_NAME" />", అవుట్‌పుట్ ఆడియో "<ph name="OUTPUT_DEVICE_NAME" />". మార్చడానికి సెట్టింగ్‌లకు వెళ్లండి.</translation>
 <translation id="8940956008527784070">బ్యాటరీ తక్కువగా ఉంది (<ph name="PERCENTAGE" />%)</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> చెక్‌బాక్స్ ఎంచుకోబడలేదు</translation>
 <translation id="8949925099261528566">కనెక్ట్ చేయబడింది, ఇంటర్నెట్ లేదు</translation>
@@ -2153,6 +2161,7 @@
 <translation id="9178475906033259337"><ph name="QUERY" /> కోసం 1 ఫలితాన్ని ప్రదర్శిస్తోంది</translation>
 <translation id="9179259655489829027">ఈ ఫీచర్ ద్వారా పాస్‌వర్డ్ అవసరం లేకుండానే మీరు సైన్ ఇన్ చేసిన ఏ వినియోగదారునైనా త్వరగా యాక్సెస్ చేయగలుగుతారు. ఈ ఫీచర్‌ను మీరు విశ్వసించే ఖాతాలతో మాత్రమే ఉపయోగించండి.</translation>
 <translation id="9183456764293710005">పూర్తి-స్క్రీన్‌ మ్యాగ్నిఫైయర్</translation>
+<translation id="9192133205265227850">"<ph name="DEVICE_NAME" />"‌ను ఉపయోగించండి</translation>
 <translation id="9193626018745640770">తెలియని రిసీవర్‌లో ప్రసారం చేస్తోంది</translation>
 <translation id="9194617393863864469">మరొక వినియోగదారుగా సైన్ ఇన్ చేయండి...</translation>
 <translation id="9195990613383871904">రేపు</translation>

@@ -107,6 +107,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1333308631814936910">Conectouse <ph name="DISPLAY_NAME" /></translation>
 <translation id="1340378040547539434">Afastar páxina</translation>
 <translation id="1341651618736211726">Menú adicional</translation>
+<translation id="1341926407152459446">Usa <ph name="DEVICE_NAME" /> para a entrada e a saída de audio</translation>
 <translation id="1344141078024003905">Estás emitindo a pantalla. Podes pór en pausa ou deter a emisión cando queiras.</translation>
 <translation id="1346748346194534595">Dereita</translation>
 <translation id="1351937230027495976">Contraer menú</translation>
@@ -145,6 +146,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1486307154719069822">A función de ditado permíteche escribir usando a voz. Cando esteas nun campo de texto, preme a tecla de ditado ou selecciona a icona do micrófono que está na parte inferior da pantalla. O <ph name="LANGUAGE" /> é o idioma que tes definido para o ditado. O ficheiro de voz enviarase a Google para o seu tratamento. Podes cambiar o idioma do ditado cando queiras en Configuración &gt; Accesibilidade.</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> cambiouse con <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Mostrar todas as suxestións</translation>
+<translation id="1501946871587957338">Queres cambiar a fonte de audio?</translation>
 <translation id="1510238584712386396">Menú de aplicacións</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Mostrar a configuración de notificacións. Están desactivadas para unha aplicación}other{Mostrar a configuración de notificacións. Están desactivadas para # aplicacións}}</translation>
 <translation id="1523032696246003">Batería: <ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> para completar a carga</translation>
@@ -774,6 +776,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="397105322502079400">Calculando...</translation>
 <translation id="397726367135689299">É posible que cargar a batería non sexa fiable.</translation>
 <translation id="3977512764614765090">Nivel de batería: <ph name="PERCENTAGE" /> % (cargando).</translation>
+<translation id="3982013579989864579">Queres cambiar a saída de audio?</translation>
 <translation id="3984536049089846927">Páxina seguinte</translation>
 <translation id="3986082989454912832">Responder</translation>
 <translation id="3990002060657467458">Os controis que se usan con frecuencia, como a wifi, o Bluetooth e o volume, están en Configuración rápida. Tamén podes facer capturas de pantalla desde aquí.</translation>
@@ -817,6 +820,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4150201353443180367">Pantalla</translation>
 <translation id="4156293514828496577">Queda un <ph name="PERCENTAGE" /> % de batería. Tempo restante aproximado: <ph name="TIME_LEFT" />.
 Limitáronse algunhas funcións para ampliar a duración da batería.</translation>
+<translation id="4160919062868802509">Detectáronse varias fontes de audio</translation>
 <translation id="4165275524535002941">O cable non é compatible coas pantallas</translation>
 <translation id="4177415338862979658">Fai clic para consultar os detalles</translation>
 <translation id="4177913004758410636">{0,plural, =1{Actualiza o dispositivo en 1 día}other{Actualiza o dispositivo en # días}}</translation>
@@ -1015,6 +1019,7 @@ Hai 1 dispositivo conectado.</translation>
 <translation id="4871905435473761992">Mostrar os detalles da zona wifi. A túa rede de telefonía móbil non é compatible co uso da zona wifi.</translation>
 <translation id="4872237917498892622">Alt+Busca ou Maiús</translation>
 <translation id="4872852897273142380">Enfocar ou destacar barra de marcadores (se aparece)</translation>
+<translation id="4876935764454575645">Selección de audio</translation>
 <translation id="4881323000405981760">Os efectos non son compatibles nas aplicacións de Linux</translation>
 <translation id="4881695831933465202">Abrir</translation>
 <translation id="4889868803215848840">Se queres, podes achegar máis comentarios para mellorar as suxestións:</translation>
@@ -1091,6 +1096,7 @@ Hai 1 dispositivo conectado.</translation>
 <translation id="5121628974188116412">Vai á parte inferior da páxina</translation>
 <translation id="5122517996953421795">Vista previa de <ph name="DESK_NAME" />. Escritorio inactivo.</translation>
 <translation id="5136175204352732067">Conectouse un teclado diferente</translation>
+<translation id="5144005092084035179">Queres cambiar a entrada de audio?</translation>
 <translation id="5147567197700016471">Desbloqueouse</translation>
 <translation id="5150070631291639005">Configuración de privacidade</translation>
 <translation id="5155897006997040331">Velocidade de lectura</translation>
@@ -1790,6 +1796,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="7780094051999721182">atallos</translation>
 <translation id="7780159184141939021">Xirar a pantalla</translation>
 <translation id="7781829728241885113">Onte</translation>
+<translation id="7787212146956232129">Definíronse os dispositivos de saída e entrada. Para cambialos, vai a Configuración.</translation>
 <translation id="7792590255364786396">Visible</translation>
 <translation id="7796735576426975947">Ocultouse unha nova notificación</translation>
 <translation id="7798302898096527229">Preme Buscar ou Maiúsculas para cancelar.</translation>
@@ -2096,6 +2103,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ficheiro}other{# ficheiros}}</translation>
 <translation id="8936501819958976551">desactivou</translation>
 <translation id="8938800817013097409">Dispositivo USB‑C (porto dereito posterior)</translation>
+<translation id="8939855324412367560">O dispositivo de entrada de audio é <ph name="INPUT_DEVICE_NAME" /> e o de saída, <ph name="OUTPUT_DEVICE_NAME" />. Vai a Configuración para cambialos.</translation>
 <translation id="8940956008527784070">Batería baixa (<ph name="PERCENTAGE" />%)</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" />, <ph name="EMAIL" />, caixa de verificación non marcada.</translation>
 <translation id="8949925099261528566">Con conexión, sen Internet</translation>
@@ -2153,6 +2161,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="9178475906033259337">Mostrando 1 resultado para "<ph name="QUERY" />"</translation>
 <translation id="9179259655489829027">Con esta función podes acceder rapidamente a calquera usuario que teña a sesión iniciada sen necesidade de introducir un contrasinal. Utiliza esta función só con contas nas que confíes.</translation>
 <translation id="9183456764293710005">Lupa de pantalla completa</translation>
+<translation id="9192133205265227850">Usa <ph name="DEVICE_NAME" /></translation>
 <translation id="9193626018745640770">Estase emitindo contido a un receptor descoñecido</translation>
 <translation id="9194617393863864469">Iniciar sesión con outro usuario...</translation>
 <translation id="9195990613383871904">Mañá</translation>

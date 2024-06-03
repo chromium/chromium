@@ -5237,6 +5237,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="4867433544163083783">Kontrollera nu om det går att ordna dina flikar</translation>
 <translation id="4868281708609571334">Lär Google Assistent att känna igen rösten för <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="4868284252360267853">Fokus ligger inte på den här dialogrutan för närvarande. Tryck på Command-Skift-Option A om du vill flytta fokus till dialogrutan.</translation>
+<translation id="4868351661310357223">Installera appar och spel från Google Play på din <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4869170227080975044">Läsa nätverksinformation för ChromeOS</translation>
 <translation id="4870724079713069532">Du kan öppna och redigera filer som stöds i den här appen via Utforskaren eller andra appar. Öppna <ph name="BEGIN_LINK" />Windows-inställningarna<ph name="END_LINK" /> om du vill styra vilka filer som öppnas i den här appen som standard.</translation>
 <translation id="4870995365819149457">Vissa länkar som stöds öppnas fortfarande i <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> och en annan app.</translation>
@@ -8057,6 +8058,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7007648447224463482">Öppna alla i ett nytt fönster</translation>
 <translation id="7008815993384338777">Roaming används inte för närvarande</translation>
 <translation id="7009709314043432820"><ph name="APP_NAME" /> använder kameran</translation>
+<translation id="701020165009334820">Du kan ladda ned appar och spel för Android via Play Butik.</translation>
 <translation id="701080569351381435">Visa källa</translation>
 <translation id="7011797924920577670">gissar dina intressen</translation>
 <translation id="7012430956470647760">Föräldrakontroller för appar</translation>

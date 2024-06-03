@@ -2896,6 +2896,7 @@
 <translation id="3090819949319990166">ပြင်ပရှိ crx ဖိုင်ကို <ph name="TEMP_CRX_FILE" /> သို့ ကူးယူမရပါ။</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" အတူတွဲပြီး</translation>
 <translation id="3093714882666365141">ငွေပေးချေမှုစီမံသူများ ထည့်သွင်းရန် ဝဘ်ဆိုက်များကို ခွင့်မပြုပါနှင့်</translation>
+<translation id="3094080575472025333">အက်ပ်များ ပိတ်ထားရန်</translation>
 <translation id="3094141017404513551">၎င်းက သင်၏ကြည့်ရှုမှုကို <ph name="EXISTING_USER" /> နှင့် သီးခြားခွဲပေးပါမည်။</translation>
 <translation id="3094223846531205616">{COUNT,plural, =0{ယနေ့ သက်တမ်းကုန်မည်}=1{မနက်ဖြန် သက်တမ်းကုန်မည်}other{# ရက်အတွင်း သက်တမ်းကုန်မည်}}</translation>
 <translation id="3094521107841754472"><ph name="PREVIOUS_PRICE" /> မှ <ph name="CURRENT_PRICE" /> အဖြစ် ဈေးနှုန်းပြောင်းသွားသည်။</translation>
@@ -3728,6 +3729,7 @@
 <translation id="372722114124766626">တစ်ကြိမ်သာ</translation>
 <translation id="3727332897090187514">မှတ်စုထည့်မထားပါ</translation>
 <translation id="3727473233247516571">ရှေ့/နောက် ကက်ရှ်သိမ်းထားသော ဖရိမ်ခွဲ- <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
+<translation id="3727843212509629024">ပင်နံပါတ် မမှန်ပါ။ ထပ်စမ်းကြည့်ပါ</translation>
 <translation id="3727850735097852673">macOS Keychain ဖြင့် Google Password Manager သုံးရန် Chrome ကို ပြန်ဖွင့်ပြီး Keychain သုံးခွင့်ပြုပါ။ ပြန်ဖွင့်ပြီးနောက် သင့်တဘ်များ ပြန်ပွင့်ပါမည်။</translation>
 <translation id="3728188878314831180">သင့်ဖုန်းမှ စကရင်ပွား အကြောင်းကြားချက်များ</translation>
 <translation id="3728681439294129328">ကွန်ရက်လိပ်စာကို စီစဉ်သတ်မှတ်ရန်</translation>

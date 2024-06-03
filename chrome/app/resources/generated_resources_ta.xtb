@@ -5237,6 +5237,7 @@
 <translation id="4867433544163083783">பக்கங்களை ஒழுங்கமைக்க முடியுமா என்று இப்போதே பார்க்கலாம்</translation>
 <translation id="4868281708609571334"><ph name="SUPERVISED_USER_NAME" /> இன் குரலை அடையாளம் காண Google Assistantடைப் பழக்கப்படுத்துங்கள்</translation>
 <translation id="4868284252360267853">இந்த உரையாடல் தற்போது ஃபோகஸ் செய்யப்படவில்லை. இதை ஃபோகஸ் செய்ய, Command+Shift+Option+A அழுத்தவும்.</translation>
+<translation id="4868351661310357223">Google Playயில் இருந்து உங்கள் <ph name="DEVICE_TYPE" /> சாதனத்தில் ஆப்ஸையும் கேம்களையும் நிறுவலாம்.</translation>
 <translation id="4869170227080975044">ChromeOS நெட்வொர்க் தகவல்களைப் படித்தல்</translation>
 <translation id="4870724079713069532">இந்த ஆப்ஸ் மூலம் File Explorerரில் இருந்தோ பிற ஆப்ஸில் இருந்தோ, ஆதரிக்கப்படும் ஃபைல்களைத் திறந்து அவற்றில் மாற்றம் செய்யலாம். எந்தெந்த ஃபைல்கள் இந்த ஆப்ஸில் இயல்பாகத் திறக்கப்பட வேண்டும் என்பதைக் கட்டுப்படுத்த, <ph name="BEGIN_LINK" />Windows அமைப்புகளுக்குச்<ph name="END_LINK" /> செல்லவும்.</translation>
 <translation id="4870995365819149457"><ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> மற்றும் மேலும் ஒரு ஆப்ஸில் சில ஆதரிக்கப்படும் இணைப்புகள் இப்போதும் திறக்கும்.</translation>
@@ -8058,6 +8059,7 @@
 <translation id="7007648447224463482">அனைத்தையும் புதிய சாளரத்தில் திற</translation>
 <translation id="7008815993384338777">தற்போது ரோமிங்கில் இல்லை</translation>
 <translation id="7009709314043432820">உங்கள் கேமராவை <ph name="APP_NAME" /> பயன்படுத்துகிறது</translation>
+<translation id="701020165009334820">Play Store மூலம் Android ஆப்ஸையும் கேம்களையும் பதிவிறக்கிக்கொள்ளலாம்.</translation>
 <translation id="701080569351381435">மூலத்தைப் பார்க்கவும்</translation>
 <translation id="7011797924920577670">உங்கள் ஆர்வங்களைக் கணிக்கும்</translation>
 <translation id="7012430956470647760">ஆப்ஸிற்கான பெற்றோர் கட்டுப்பாடுகள்</translation>

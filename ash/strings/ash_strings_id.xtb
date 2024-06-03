@@ -107,6 +107,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> terhubung</translation>
 <translation id="1340378040547539434">Perkecil halaman</translation>
 <translation id="1341651618736211726">Luapan</translation>
+<translation id="1341926407152459446">Gunakan "<ph name="DEVICE_NAME" />" untuk input dan output audio</translation>
 <translation id="1344141078024003905">Anda mentransmisikan layar Anda. Anda dapat menjeda atau menghentikan transmisi layar kapan saja.</translation>
 <translation id="1346748346194534595">Kanan</translation>
 <translation id="1351937230027495976">Ciutkan menu</translation>
@@ -144,6 +145,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1486307154719069822">Dengan dikte, Anda dapat mengetik menggunakan suara. Tekan tombol dikte atau pilih ikon mikrofon di bagian bawah layar saat Anda berada di kolom teks. Bahasa dikte Anda disetel ke <ph name="LANGUAGE" />. Ucapan akan dikirim ke Google untuk diproses Anda dapat mengubah bahasa dikte kapan saja di Setelan &gt; Aksesibilitas.</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> ditukar dengan <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Tampilkan semua saran</translation>
+<translation id="1501946871587957338">Ganti sumber audio?</translation>
 <translation id="1510238584712386396">Peluncur</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Tampilkan setelan notifikasi. Notifikasi nonaktif untuk satu aplikasi}other{Tampilkan setelan notifikasi. Notifikasi nonaktif untuk # aplikasi}}</translation>
 <translation id="1523032696246003">Baterai <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> sampai penuh</translation>
@@ -770,6 +772,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="397105322502079400">Menghitung...</translation>
 <translation id="397726367135689299">Pengisian daya baterai mungkin tidak stabil.</translation>
 <translation id="3977512764614765090">Baterai <ph name="PERCENTAGE" />% dan masih mengisi.</translation>
+<translation id="3982013579989864579">Ganti output audio?</translation>
 <translation id="3984536049089846927">Halaman berikutnya</translation>
 <translation id="3986082989454912832">Jawab</translation>
 <translation id="3990002060657467458">Kontrol yang sering digunakan seperti Wi-Fi, Bluetooth, dan volume ada di Setelan Cepat. Anda juga dapat membuka Setelan Cepat untuk mengambil screenshot.</translation>
@@ -813,6 +816,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="4150201353443180367">Tampilan</translation>
 <translation id="4156293514828496577">Daya baterai tersisa <ph name="PERCENTAGE" />% (sekitar <ph name="TIME_LEFT" />).
 Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
+<translation id="4160919062868802509">Beberapa sumber audio terdeteksi</translation>
 <translation id="4165275524535002941">Kabel mungkin tidak mendukung layar</translation>
 <translation id="4177415338862979658">Klik untuk memeriksa detailnya</translation>
 <translation id="4177913004758410636">{0,plural, =1{Update perangkat dalam 1 hari}other{Update perangkat dalam # hari}}</translation>
@@ -1011,6 +1015,7 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="4871905435473761992">Tampilkan detail hotspot. Jaringan seluler Anda tidak mendukung hotspot.</translation>
 <translation id="4872237917498892622">Alt+Telusuri atau Shift</translation>
 <translation id="4872852897273142380">Fokuskan atau tandai kolom bookmark (jika ditampilkan)</translation>
+<translation id="4876935764454575645">Pilihan audio</translation>
 <translation id="4881323000405981760">Efek tidak didukung di aplikasi Linux</translation>
 <translation id="4881695831933465202">Buka</translation>
 <translation id="4889868803215848840">Berikan masukan opsional untuk meningkatkan saran:</translation>
@@ -1087,6 +1092,7 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="5121628974188116412">Membuka bagian bawah halaman</translation>
 <translation id="5122517996953421795">Pratinjau <ph name="DESK_NAME" />. Desktop virtual tidak aktif.</translation>
 <translation id="5136175204352732067">Keyboard yang berbeda terhubung</translation>
+<translation id="5144005092084035179">Ganti input audio?</translation>
 <translation id="5147567197700016471">Kunci dibuka</translation>
 <translation id="5150070631291639005">Setelan privasi</translation>
 <translation id="5155897006997040331">Kecepatan baca</translation>
@@ -1784,6 +1790,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="7780094051999721182">pintasan</translation>
 <translation id="7780159184141939021">Memutar Layar</translation>
 <translation id="7781829728241885113">Kemarin</translation>
+<translation id="7787212146956232129">Perangkat input dan output disetel. Buka Setelan untuk mengubah.</translation>
 <translation id="7792590255364786396">Dapat dilihat</translation>
 <translation id="7796735576426975947">Notifikasi baru disembunyikan</translation>
 <translation id="7798302898096527229">Tekan Search atau Shift untuk membatalkan.</translation>
@@ -2089,6 +2096,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 file}other{# file}}</translation>
 <translation id="8936501819958976551">dinonaktifkan</translation>
 <translation id="8938800817013097409">Perangkat USB-C (port belakang sebelah kanan)</translation>
+<translation id="8939855324412367560">Audio input adalah "<ph name="INPUT_DEVICE_NAME" />" dan audio output adalah "<ph name="OUTPUT_DEVICE_NAME" />". Buka Setelan untuk mengubah.</translation>
 <translation id="8940956008527784070">Baterai lemah (<ph name="PERCENTAGE" />%)</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> Kotak centang tidak dicentang.</translation>
 <translation id="8949925099261528566">Terhubung, tidak ada internet</translation>
@@ -2144,6 +2152,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="9178475906033259337">Menampilkan 1 hasil untuk <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Dengan fitur ini, Anda dapat dengan cepat mengakses setiap pengguna yang sudah login, tanpa perlu menggunakan sandi. Hanya gunakan fitur ini dengan akun yang Anda percayai.</translation>
 <translation id="9183456764293710005">Kaca Pembesar Layar</translation>
+<translation id="9192133205265227850">Gunakan "<ph name="DEVICE_NAME" />"</translation>
 <translation id="9193626018745640770">Mentransmisi pada penerima yang tidak dikenal</translation>
 <translation id="9194617393863864469">Login pengguna lain...</translation>
 <translation id="9198992156681343238">Resolusi <ph name="DISPLAY_NAME" /> diubah ke <ph name="RESOLUTION" />. Klik konfirmasi untuk menyimpan perubahan. Setelan sebelumnya akan dipulihkan dalam <ph name="TIMEOUT_SECONDS" />.</translation>

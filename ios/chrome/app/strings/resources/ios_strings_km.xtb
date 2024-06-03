@@ -503,6 +503,7 @@
 <translation id="3575234738189584619">ស្វែងរកដោយប្រើ Lens</translation>
 <translation id="3575426792457739946">បញ្ជីនេះមានកម្រងព័ត៌មាន​ដែលបានផ្ទុកទាំងអស់។</translation>
 <translation id="3581564640715911333">ផ្តល់ជូន​ការ​បកប្រែ​ទំព័រ​ជាភាសា​ផ្សេងទៀត</translation>
+<translation id="3585696901179982416">{count,plural, =1{អាសយដ្ឋានទី {position} នៃ {count}}other{អាសយដ្ឋានទី {position} នៃ {count}}}</translation>
 <translation id="3587885837929752825">ស្ថាប័ន​របស់អ្នក​ដាក់កំហិត​លើអ្វីដែលអ្នកអាច​រក្សាទុក​នៅក្នុង​គណនី Google របស់អ្នក។</translation>
 <translation id="3588820906588687999">បើករូបភាពនៅក្នុងផ្ទាំងថ្មី</translation>
 <translation id="3595252146048399851">អ្នកអាចជ្រើសរើស​អ្វីដែលត្រូវធ្វើសមកាលកម្ម​នៅក្នុង​<ph name="BEGIN_LINK" />ការកំណត់<ph name="END_LINK" />បានជានិច្ច។ Google អាច​កំណត់​ម៉ាស៊ីន​​ស្វែងរក និង​សេវាកម្ម​ផ្សេង​ទៀតឱ្យមាន​លក្ខណៈ​ផ្ទាល់​ខ្លួន​ ផ្អែក​តាម​ប្រវត្តិ​របស់​អ្នក។</translation>
@@ -1195,6 +1196,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="69739764870135975">ប្រសិនបើ Google ក៏ជាម៉ាស៊ីន​ស្វែងរកលំនាំដើម​របស់អ្នកដែរ អ្នកនឹងមើលឃើញ​ការណែនាំ​ដែលពាក់ព័ន្ធ​តាមបរិបទកាន់តែប្រសើរ</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6983306615164277634">អ្នកក៏​អាចចុច​របារអាសយដ្ឋាន​ឱ្យជាប់ ដើម្បី​ប្ដូរទីតាំង​បានផងដែរ។</translation>
+<translation id="6986937292199604715">បើក...</translation>
 <translation id="6988572888918530647">គ្រប់គ្រង​គណនី Google របស់​អ្នក</translation>
 <translation id="6990519590575500580">Facetime</translation>
 <translation id="6998989275928107238">ទៅ</translation>
@@ -1301,6 +1303,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="7557508262441527045">បានចេញពីគណនី</translation>
 <translation id="7561196759112975576">ជានិច្ច</translation>
 <translation id="7564917801238348224">រក្សាទុក...</translation>
+<translation id="758132317817089442">បើកការការពារ​កម្រិត​ខ្ពស់...</translation>
 <translation id="7582857256643797524">ការកំណត់នេះត្រូវបានបើកនៅលើឧបករណ៍របស់អ្នក</translation>
 <translation id="7583004045319035904">ប្រើ <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ដើម្បីដោះសោផ្ទាំងឯកជនរបស់អ្នក។</translation>
 <translation id="7598439272585186139">ទទួលបាន​សុវត្ថិភាព​បន្ថែម</translation>

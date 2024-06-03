@@ -2899,6 +2899,7 @@
 <translation id="3090819949319990166">외부 crx 파일을 <ph name="TEMP_CRX_FILE" />에 복사할 수 없습니다.</translation>
 <translation id="3090871774332213558">'<ph name="DEVICE_NAME" />' 페어링됨</translation>
 <translation id="3093714882666365141">사이트에서 결제 핸들러를 설치하도록 허용하지 않음</translation>
+<translation id="3094080575472025333">앱 차단</translation>
 <translation id="3094141017404513551">그러면 <ph name="EXISTING_USER" /> 기록과 내 인터넷 사용 기록이 구분됩니다.</translation>
 <translation id="3094223846531205616">{COUNT,plural, =0{오늘 만료됨}=1{내일 만료됨}other{#일 후에 만료됨}}</translation>
 <translation id="3094521107841754472">가격이 <ph name="PREVIOUS_PRICE" />에서 <ph name="CURRENT_PRICE" />(으)로 변경되었습니다.</translation>
@@ -3731,6 +3732,7 @@
 <translation id="372722114124766626">한 번만</translation>
 <translation id="3727332897090187514">추가된 메모 없음</translation>
 <translation id="3727473233247516571">뒤로-앞으로 캐시 서브프레임: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
+<translation id="3727843212509629024">잘못된 PIN입니다. 다시 시도하세요.</translation>
 <translation id="3727850735097852673">Google 비밀번호 관리자를 MacOS 키체인과 함께 사용하려면 Chrome을 다시 실행한 다음 키체인 액세스를 허용하세요. 탭을 다시 실행하면 탭이 다시 열립니다.</translation>
 <translation id="3728188878314831180">휴대전화 알림 미러링</translation>
 <translation id="3728681439294129328">네트워크 주소 구성</translation>
@@ -5238,6 +5240,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4867433544163083783">탭을 정리할 수 있는지 확인</translation>
 <translation id="4868281708609571334">Google 어시스턴트가 <ph name="SUPERVISED_USER_NAME" />님의 음성을 인식하도록 학습시키기</translation>
 <translation id="4868284252360267853">현재 이 대화상자에 포커스가 지정되지 않았습니다. Command+Shift+Option A를 눌러 이 대화상자에 포커스를 지정하세요.</translation>
+<translation id="4868351661310357223"><ph name="DEVICE_TYPE" />에서 Google Play 앱 및 게임을 설치하세요.</translation>
 <translation id="4869170227080975044">ChromeOS 네트워크 정보를 읽습니다.</translation>
 <translation id="4870724079713069532">File Explorer 또는 다른 앱에서 이 앱이 지원하는 파일을 열고 수정할 수 있습니다. 기본적으로 이 앱에서 열 파일을 관리하려면 <ph name="BEGIN_LINK" />Windows 설정<ph name="END_LINK" />으로 이동하세요.</translation>
 <translation id="4870995365819149457">지원되는 링크 일부는 <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> 외 1개의 다른 앱에서 계속 열 수 있습니다.</translation>
@@ -8058,6 +8061,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7007648447224463482">모두 새 창에서 열기</translation>
 <translation id="7008815993384338777">현재 로밍 안함</translation>
 <translation id="7009709314043432820"><ph name="APP_NAME" />에서 카메라를 사용 중입니다.</translation>
+<translation id="701020165009334820">Play 스토어를 통해 Android 앱과 게임을 다운로드할 수 있습니다.</translation>
 <translation id="701080569351381435">소스 보기</translation>
 <translation id="7011797924920577670">관심분야를 예측</translation>
 <translation id="7012430956470647760">앱의 자녀 보호 기능</translation>

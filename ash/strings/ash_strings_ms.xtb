@@ -212,6 +212,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1747827819627189109">Papan kekunci pada skrin didayakan</translation>
 <translation id="1749109475624620922">Window <ph name="WINDOW_TITLE" /> ditetapkan kepada semua meja</translation>
 <translation id="1750088060796401187">Hanya <ph name="MAX_DESK_LIMIT" /> meja dibenarkan. Alih keluar satu meja untuk membuka meja baharu.</translation>
+<translation id="1755408179247123630">Hidupkan Pilih untuk bercakap?</translation>
 <translation id="1755556344721611131">Apl diagnostik</translation>
 <translation id="1756833229520115364">Tidak dapat menyimpan templat. Terlalu banyak tetingkap atau tab.</translation>
 <translation id="1757857692711134412">Dimatikan sehingga matahari terbenam</translation>
@@ -951,6 +952,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4628757576491864469">Peranti</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, Rating bintang <ph name="RATING_SCORE" /></translation>
 <translation id="4633636853437260449">Tekan Ctrl+W untuk memadam</translation>
+<translation id="4635501805800894201">{0,plural, =0{Kemas kinikan peranti kepada versi terdahulu sekarang}=1{Kemas kinikan peranti kepada versi terdahulu dalam masa 1 saat}other{Kemas kinikan peranti kepada versi terdahulu dalam masa # saat}}</translation>
 <translation id="4642092649622328492">Ambil tangkapan skrin separa</translation>
 <translation id="4644727592819780893">Rantau terlalu kecil untuk dimuatkan dengan kamera</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, Pengesyoran apl</translation>
@@ -980,6 +982,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4735944890391795473">Meja 12</translation>
 <translation id="473775607612524610">Kemas kini</translation>
 <translation id="4740516757091333363">Padamkan meja yang disimpan?</translation>
+<translation id="4746798685375253449">{0,plural, =1{Kemas kinikan peranti kepada versi terdahulu dalam masa sehari}other{Kemas kinikan peranti kepada versi terdahulu dalam masa # hari}}</translation>
 <translation id="4747410141429390146">Sila buka kunci untuk melihat pemberitahuan</translation>
 <translation id="4752784485658729358">6 meja sahaja dibenarkan. Alih keluar satu meja untuk menyimpan meja baharu.</translation>
 <translation id="4759238208242260848">Muat turun</translation>
@@ -1085,6 +1088,9 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="5092436659250499817">Hidupkan/matikan lampu latar papan kekunci</translation>
 <translation id="5094577350232361255">perihal</translation>
 <translation id="5095136268899496849">Sesuaikan dan peribadikan <ph name="PRODUCT_NAME" /> anda dalam Tetapan. Cuba tukar hiasan latar anda atau tetapkan penyelamat skrin.</translation>
+<translation id="5096125376090473584">Untuk mendengar teks dibaca dengan kuat, pilih ikon Pilih untuk bercakap pada bahagian bawah skrin anda, kemudian serlahkan teks.
+
+Anda juga boleh menggunakan pintasan papan kekunci. Mula-mula, serlahkan teks, kemudian tekan <ph name="MODIFIER" /> + s.</translation>
 <translation id="509790653408515442">Apabila anda menstrim apl telefon anda, apl itu akan dipaparkan di sini</translation>
 <translation id="5098537242461068432">Meja dan tingkap dibuka semula</translation>
 <translation id="5103975065730779239">Hingga <ph name="END_TIME_EXPRESSION" /></translation>
@@ -1315,6 +1321,7 @@ Tiada peranti disambungkan.</translation>
 <translation id="5916646100036936191">Pemberitahuan baharu, jumlah <ph name="NOTIFICATION_COUNT" /></translation>
 <translation id="5916664084637901428">Hidupkan</translation>
 <translation id="5920710855273935292">Mikrofon diredamkan.</translation>
+<translation id="5928083197428724029">Kemaskinian diperlukan oleh <ph name="MANAGER" /></translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> dihidupkan.</translation>
 <translation id="5947494881799873997">Berbalik</translation>
 <translation id="595202126637698455">Penjejakan prestasi didayakan</translation>
@@ -1433,6 +1440,7 @@ Tiada peranti disambungkan.</translation>
 <translation id="6376931439017688372">Bluetooth dihidupkan</translation>
 <translation id="6378515133128829137">Sematkan tetingkap pada bahagian kanan</translation>
 <translation id="6381109794406942707">Untuk membuka kunci peranti, masukkan PIN anda.</translation>
+<translation id="6381305031890976705">{0,plural, =1{Kemas kinikan peranti kepada versi terdahulu dalam masa sejam}other{Kemas kinikan peranti kepada versi terdahulu dalam masa # jam}}</translation>
 <translation id="638716340450135524">Hidupkan akses kamera</translation>
 <translation id="639644700271529076">Kekunci CAPS LOCK dimatikan</translation>
 <translation id="6406458002328242616">Edit pemasa. <ph name="FOCUS_DURATION" />.</translation>
@@ -1455,6 +1463,7 @@ Tiada peranti disambungkan.</translation>
 <translation id="6459472438155181876">Melanjutkan skrin ke <ph name="DISPLAY_NAME" /></translation>
 <translation id="6464094930452079790">imej</translation>
 <translation id="6467290994038932560">Dihidupkan untuk <ph name="GAME_APP_NAME" /></translation>
+<translation id="6468406072297048412">{0,plural, =1{Kemas kinikan peranti kepada versi terdahulu dalam masa 1 minit}other{Kemas kinikan peranti kepada versi terdahulu dalam masa # minit}}</translation>
 <translation id="6469104339369989396">Togol tempat liputan</translation>
 <translation id="6477681113376365978">Tidak dapat memuat turun fail</translation>
 <translation id="6482559668224714696">Penggadang skrin penuh</translation>
@@ -1578,6 +1587,7 @@ Pemasangan baharu</translation>
 <translation id="6917259695595127329">Kemaskinian terakhir tugasan: <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">Tidak dapat mengecam kad pintar anda. Cuba lagi.</translation>
 <translation id="692135145298539227">padam</translation>
+<translation id="6921427376813842559">Kemas kinikan peranti</translation>
 <translation id="6929081673585394903">Tunjukkan kawalan</translation>
 <translation id="6931576957638141829">Simpan pada</translation>
 <translation id="6942518653766415536">Menu format rakaman</translation>
@@ -1665,6 +1675,7 @@ Pemasangan baharu</translation>
 <translation id="7303365578352795231">Menjawab menggunakan peranti lain.</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Pentadbir sedang menetapkan semula eSIM anda. Proses ini mungkin mengambil masa beberapa minit.</translation>
+<translation id="7312761820869643657">Kemas kinikan peranti kepada versi terdahulu</translation>
 <translation id="7313193732017069507">Kembangkan kamera</translation>
 <translation id="7330397557116570022">Navigasi kepada medan teks untuk menggunakan Pengimlakan</translation>
 <translation id="7331646370422660166">alt + anak panah ke bawah</translation>
@@ -1814,6 +1825,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">Untuk menggunakan peranti sebagai tetamu, anda perlu log keluar dan pilih Semak imbas sebagai Tetamu pada bahagian bawah skrin.</translation>
 <translation id="7866482334467279021">dihidupkan</translation>
+<translation id="7866727328666668290">Tab terakhir yang dibuka</translation>
 <translation id="7872786842639831132">Mati</translation>
 <translation id="7875575368831396199">Nampaknya Bluetooth dimatikan pada <ph name="DEVICE_TYPE" /> anda. Sila hidupkan Bluetooth untuk menggunakan Hab Telefon.</translation>
 <translation id="7884446017008693258">Tetapan Tempat Liputan</translation>
@@ -2181,6 +2193,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="925832987464884575">Sembunyikan pratonton</translation>
 <translation id="938407504481277932">Meja semasa: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. Meja <ph name="DESK_INDEX" /> daripada <ph name="DESK_COUNT" />.</translation>
 <translation id="938963181863597773">Apakah acara dalam kalendar saya?</translation>
+<translation id="94468042118567862">Peranti tidak terkini</translation>
 <translation id="945383118875625837">Seret pautan ke bar penanda halaman</translation>
 <translation id="945522503751344254">Hantar maklum balas</translation>
 <translation id="951991426597076286">Tolak</translation>

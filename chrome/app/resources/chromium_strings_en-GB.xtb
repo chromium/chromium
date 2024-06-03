@@ -186,6 +186,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="4055805654398742145">P&amp;assword Manager</translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{Your organisation closes Chromium automatically when it isn't used for one minute. Browsing data is deleted. This could include history, autofill and downloads.}other{Your organisation closes Chromium automatically when it isn't used for # minutes. Browsing data is deleted. This could include history, autofill and downloads.}}</translation>
 <translation id="4118474109249235144">Chromium Incognito</translation>
+<translation id="4122186850977583290">Go to the About Chromium page</translation>
 <translation id="4148957013307229264">Installing...</translation>
 <translation id="4149336151887611710">Your organisation can see and manage browsing data in your work profile, such as your bookmarks, history and passwords. It can't see browsing data in personal Chromium profiles.</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> – Network sign-in – Chromium</translation>

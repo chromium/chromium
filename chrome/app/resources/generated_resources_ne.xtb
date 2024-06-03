@@ -2882,6 +2882,7 @@
 <translation id="3090819949319990166">बाह्य सिआरएक्स फाइललाई <ph name="TEMP_CRX_FILE" /> मा कपी गर्न सकिएन।</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" जोडि मिलाईयो</translation>
 <translation id="3093714882666365141">साइटहरूलाई भुक्तानी ह्यान्ड्लर इन्स्टल गर्ने अनुमति नदिनुहोस्</translation>
+<translation id="3094080575472025333">एपहरू ब्लक गर्नुहोस्</translation>
 <translation id="3094141017404513551">तपाईंले नयाँ Chromium प्रोफाइल प्रयोग गर्नुभयो भने तपाईंको ब्राउजिङ इतिहास र <ph name="EXISTING_USER" /> को ब्राउजिङ इतिहास छुट्टाछुट्टै सेभ गरिने छ</translation>
 <translation id="3094223846531205616">{COUNT,plural, =0{आज म्याद सकिन्छ}=1{भोलि म्याद सकिन्छ}other{# दिनमा म्याद सकिन्छ}}</translation>
 <translation id="3094521107841754472">मूल्य <ph name="PREVIOUS_PRICE" /> बाट परिवर्तन भई <ph name="CURRENT_PRICE" /> भएको छ।</translation>
@@ -3712,6 +3713,7 @@
 <translation id="372722114124766626">एक पटक मात्र</translation>
 <translation id="3727332897090187514">कुनै पनि नोट हालिएको छैन</translation>
 <translation id="3727473233247516571">ब्याक/फर्वार्ड क्यास गरिएको सबफ्रेम: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
+<translation id="3727843212509629024">PIN मिलेन। फेरि प्रयास गर्नुहोस्</translation>
 <translation id="3727850735097852673">macOS Keychain का सहायताले Google पासवर्ड म्यानेजर प्रयोग गर्न Chrome रिलन्च गर्नुहोस् र Keychain प्रयोग गर्ने अनुमति दिनुहोस्। रिलन्च गरेपछि तपाईंका ट्याबहरू फेरि खुल्ने छन्।</translation>
 <translation id="3728188878314831180">आफ्नो फोनमा प्राप्त हुने सूचनाहरू आफ्नो Chromebook मा पनि प्राप्त गर्नुहोस्</translation>
 <translation id="3728681439294129328">नेटवर्कको ठेगाना कन्फिगर गर्नुहोस्</translation>

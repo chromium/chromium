@@ -952,6 +952,7 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="4628757576491864469">Uređaji</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, ocena u zvezdicama <ph name="RATING_SCORE" /></translation>
 <translation id="4633636853437260449">Pritisnite Ctrl+W da biste izbrisali</translation>
+<translation id="4635501805800894201">{0,plural, =0{Promenite verziju uređaja u prethodnu verziju}=1{Promenite verziju uređaja u prethodnu verziju u roku od 1 sekunde}one{Promenite verziju uređaja u prethodnu verziju u roku od # sekunde}few{Promenite verziju uređaja u prethodnu verziju u roku od # sekunde}other{Promenite verziju uređaja u prethodnu verziju u roku od # sekundi}}</translation>
 <translation id="4642092649622328492">Napravite delimičan snimak ekrana</translation>
 <translation id="4644727592819780893">Region je premali da bi stala kamera</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, preporučena aplikacija</translation>
@@ -981,6 +982,7 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="4735944890391795473">Radna površina 12</translation>
 <translation id="473775607612524610">Ažuriraj</translation>
 <translation id="4740516757091333363">Želite da izbrišete sačuvanu radnu površinu?</translation>
+<translation id="4746798685375253449">{0,plural, =1{Promenite verziju uređaja u prethodnu verziju u roku od jednog dana}one{Promenite verziju uređaja u prethodnu verziju u roku od # dana}few{Promenite verziju uređaja u prethodnu verziju u roku od # dana}other{Promenite verziju uređaja u prethodnu verziju u roku od # dana}}</translation>
 <translation id="4747410141429390146">Otključajte da biste videli obaveštenja</translation>
 <translation id="4752784485658729358">Dozvoljeno je samo 6 sačuvanih radnih površina. Uklonite neku radnu površinu da biste sačuvali novu.</translation>
 <translation id="4759238208242260848">Preuzimanja</translation>
@@ -1316,6 +1318,7 @@ Nijedan uređaj nije povezan.</translation>
 <translation id="5916646100036936191">Novo obaveštenje, ukupno <ph name="NOTIFICATION_COUNT" /></translation>
 <translation id="5916664084637901428">Uključeno</translation>
 <translation id="5920710855273935292">Mikrofon je isključen.</translation>
+<translation id="5928083197428724029">Ažuriranje zahteva <ph name="MANAGER" /></translation>
 <translation id="5946788582095584774">Funkcija <ph name="FEATURE_NAME" /> je uključena.</translation>
 <translation id="5947494881799873997">Vrati</translation>
 <translation id="595202126637698455">Praćenje učinka je omogućeno</translation>
@@ -1434,6 +1437,7 @@ Nijedan uređaj nije povezan.</translation>
 <translation id="6376931439017688372">Bluetooth je uključen</translation>
 <translation id="6378515133128829137">Zakači prozor nadesno</translation>
 <translation id="6381109794406942707">Da biste otključali uređaj, unesite PIN.</translation>
+<translation id="6381305031890976705">{0,plural, =1{Promenite verziju uređaja u prethodnu verziju u roku od jednog sata}one{Promenite verziju uređaja u prethodnu verziju u roku od # sata}few{Promenite verziju uređaja u prethodnu verziju u roku od # sata}other{Promenite verziju uređaja u prethodnu verziju u roku od # sati}}</translation>
 <translation id="638716340450135524">Uključi pristup kameri</translation>
 <translation id="639644700271529076">CAPS LOCK je isključen</translation>
 <translation id="6406458002328242616">Izmenite tajmer. <ph name="FOCUS_DURATION" />.</translation>
@@ -1456,6 +1460,7 @@ Nijedan uređaj nije povezan.</translation>
 <translation id="6459472438155181876">Proširivanje ekrana u <ph name="DISPLAY_NAME" /></translation>
 <translation id="6464094930452079790">slike</translation>
 <translation id="6467290994038932560">Uključeno za: <ph name="GAME_APP_NAME" /></translation>
+<translation id="6468406072297048412">{0,plural, =1{Promenite verziju uređaja u prethodnu verziju u roku od 1 minuta}one{Promenite verziju uređaja u prethodnu verziju u roku od # minuta}few{Promenite verziju uređaja u prethodnu verziju u roku od # minuta}other{Promenite verziju uređaja u prethodnu verziju u roku od # minuta}}</translation>
 <translation id="6469104339369989396">Uključite ili isključite hotspot</translation>
 <translation id="6477681113376365978">Preuzimanje fajla nije uspelo</translation>
 <translation id="6482559668224714696">Lupa za ceo ekran</translation>
@@ -1579,6 +1584,7 @@ Novo instaliranje</translation>
 <translation id="6917259695595127329">Vreme poslednjeg ažuriranja zadataka: <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">Nismo uspeli da prepoznamo pametnu karticu. Probajte ponovo.</translation>
 <translation id="692135145298539227">izbriši</translation>
+<translation id="6921427376813842559">Ažurirajte uređaj</translation>
 <translation id="6929081673585394903">Pokaži kontrole</translation>
 <translation id="6931576957638141829">Sačuvajte u</translation>
 <translation id="6942518653766415536">Meni za format snimanja</translation>
@@ -1667,6 +1673,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="7303365578352795231">Odgovor se daje na drugom uređaju.</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Administrator resetuje eSIM. To može da potraje nekoliko minuta.</translation>
+<translation id="7312761820869643657">Promenite verziju uređaja u prethodnu verziju</translation>
 <translation id="7313193732017069507">Proširite kameru</translation>
 <translation id="7330397557116570022">Idite u polje za tekst da biste koristili diktiranje</translation>
 <translation id="7331646370422660166">alt + strelica nadole</translation>
@@ -2183,6 +2190,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="925832987464884575">Sakrijte preglede</translation>
 <translation id="938407504481277932">Aktuelna radna površina: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. <ph name="DESK_INDEX" />. radna površina od <ph name="DESK_COUNT" />.</translation>
 <translation id="938963181863597773">Šta je u kalendaru?</translation>
+<translation id="94468042118567862">Uređaj nije ažuriran</translation>
 <translation id="945383118875625837">Prevucite link na traku sa obeleživačima</translation>
 <translation id="945522503751344254">Pošalji povratne informacije</translation>
 <translation id="951991426597076286">Odbij</translation>

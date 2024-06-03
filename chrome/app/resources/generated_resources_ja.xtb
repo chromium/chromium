@@ -2878,6 +2878,7 @@
 <translation id="3090819949319990166">外部の crx ファイルは <ph name="TEMP_CRX_FILE" /> にコピーできません。</translation>
 <translation id="3090871774332213558">「<ph name="DEVICE_NAME" />」がペア設定されました</translation>
 <translation id="3093714882666365141">サイトに支払いハンドラのインストールを許可しない</translation>
+<translation id="3094080575472025333">アプリのブロック</translation>
 <translation id="3094141017404513551">続行すると、<ph name="EXISTING_USER" /> さんとは別のブラウジング環境が使用されるようになります</translation>
 <translation id="3094223846531205616">{COUNT,plural, =0{今日で期限切れ}=1{明日で期限切れ}other{あと # 日で期限切れ}}</translation>
 <translation id="3094521107841754472">価格が <ph name="PREVIOUS_PRICE" /> から <ph name="CURRENT_PRICE" /> に変更されました。</translation>
@@ -3707,6 +3708,7 @@
 <translation id="372722114124766626">今回のみ</translation>
 <translation id="3727332897090187514">メモは追加されていません</translation>
 <translation id="3727473233247516571">バックフォワード キャッシュのサブフレーム: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
+<translation id="3727843212509629024">PIN が正しくありません。もう一度お試しください</translation>
 <translation id="3727850735097852673">macOS キーチェーンで Google パスワード マネージャーを使用するには、Chrome を再起動してキーチェーンへのアクセスを許可してください。再起動すると、タブが再度開きます。</translation>
 <translation id="3728188878314831180">スマートフォンから通知をミラーリング</translation>
 <translation id="3728681439294129328">ネットワーク アドレスの設定</translation>

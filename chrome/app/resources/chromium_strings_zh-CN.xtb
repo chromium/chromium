@@ -184,6 +184,7 @@
 <translation id="4055805654398742145">密码管理工具(&amp;A)</translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{贵组织会在 Chromium 闲置 1 分钟后自动关闭它。浏览数据会被删除。这些数据可能包括历史记录、自动填充数据和下载内容。}other{贵组织会在 Chromium 闲置 # 分钟后自动关闭它。浏览数据会被删除。这些数据可能包括历史记录、自动填充数据和下载内容。}}</translation>
 <translation id="4118474109249235144">Chromium 无痕模式</translation>
+<translation id="4122186850977583290">前往“关于 Chromium”页面</translation>
 <translation id="4148957013307229264">正在安装...</translation>
 <translation id="4149336151887611710">贵组织可以查看和管理您工作资料中的浏览数据（例如您的书签、历史记录和密码），但无法查看 Chromium 个人资料中的浏览数据。</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - 网络登录 - Chromium</translation>

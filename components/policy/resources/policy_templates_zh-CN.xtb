@@ -1655,6 +1655,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="2258126710006312594">允许远程访问用户将文件传到主机或接收从主机传出的文件</translation>
 <translation id="225830954785359083">禁止页面在卸载期间显示弹出式窗口</translation>
 <translation id="2261648512244797294">停用已弃用的 Privet 本地打印</translation>
+<translation id="2263881357524831360">允许在 <ph name="ANDROID_NAME" /> 设备上的 <ph name="PRODUCT_NAME" /> 中使用第三方密码管理工具</translation>
 <translation id="2264286153777425328">在达到 <ph name="IDLE_TIMEOUT_POLICY_NAME" /> 政策所设的超时时限后要运行的一系列操作。
 
 警告：设置此政策可能会影响并永久移除本地个人数据。建议您在部署之前测试设置，以免意外删除个人数据。
@@ -2534,6 +2535,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="2960128438010718932">分阶段应用新更新的时间表</translation>
 <translation id="2960691910306063964">针对远程访问主机启用或停用无 PIN 码身份验证</translation>
 <translation id="2960999045613902792">允许用户添加/配置非企业打印机并用于打印</translation>
+<translation id="296100724744272922">允许在 Chrome 中使用第三方密码管理工具</translation>
 <translation id="2962972237615992440">停用 <ph name="CLOUD_PRINT_NAME" />代理</translation>
 <translation id="2963292398266537394">禁止输入语音</translation>
 <translation id="2964373560810620158">阻止用户使用 <ph name="LACROS_NAME" /> 浏览器</translation>
@@ -7765,6 +7767,14 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 如果您未设置此政策，屏幕放大镜在登录界面上最初会处于停用状态，但用户可随时启用它。</translation>
 <translation id="7109384070286741861">停用 CECPQ2</translation>
 <translation id="7113439794629928551">显示由其他设备启动的 <ph name="PRODUCT_NAME" /> 会话的媒体控件</translation>
+<translation id="7113803652772945829">如果此政策设为 true，用户可以使用第三方密码管理工具。
+该密码管理工具将负责处理所有密码、付款和自动填充数据的保存及填充操作。
+如果此政策设为 true 或未设置，系统会提供一项设置，允许用户在 <ph name="PRODUCT_NAME" /> 的内置密码管理工具和 Android 设置中配置的密码管理工具之间切换。
+由于 <ph name="PRODUCT_NAME" /> 与 Google 自动填充功能使用相同的数据，因此如果 Android 系统设置中配置的管理工具并非 Google 自动填充功能，此设置只能更改为使用第三方密码管理工具。
+
+如果此政策设为 false，<ph name="PRODUCT_NAME" /> 将一律使用内置的密码管理工具。
+
+此政策不会影响使用无障碍功能 API 的第三方密码管理工具。</translation>
 <translation id="7114169791477667553">停用默认搜索服务提供商</translation>
 <translation id="7121046543122812054">此政策已被弃用，请考虑改用 <ph name="BROWSER_SIGNIN_POLICY_NAME" />。
 
@@ -10411,6 +10421,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 2 = 停用此功能。对于由 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> 管理的教育版账号，2 是默认值。
 
 如需详细了解生成式 AI 功能的数据处理机制，请访问 https://support.google.com/chrome/a?p=generative_ai_settings。</translation>
+<translation id="949192525372487705">禁止切换到第三方密码管理工具</translation>
 <translation id="957322141096206402">系统 DNS 解析可能在网络进程中运行，也可能在网络进程外运行，具体取决于系统配置和功能标志。</translation>
 <translation id="957778406002650056">可供下载相应 <ph name="PLUGIN_VM_NAME" /> 图片的网址。</translation>
 <translation id="957920984193041197">允许页面在卸载期间显示弹出式窗口</translation>

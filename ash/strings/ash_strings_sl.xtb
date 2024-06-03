@@ -107,6 +107,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1333308631814936910">Zaslon <ph name="DISPLAY_NAME" /> je povezan</translation>
 <translation id="1340378040547539434">Pomanjšanje strani</translation>
 <translation id="1341651618736211726">Presežek</translation>
+<translation id="1341926407152459446">Uporabi »<ph name="DEVICE_NAME" />« za zvočni vhod in izhod</translation>
 <translation id="1344141078024003905">Predvajate zaslon. Predvajanje zaslona lahko kadar koli začasno zaustavite ali ustavite.</translation>
 <translation id="1346748346194534595">V desno</translation>
 <translation id="1351937230027495976">Strni meni</translation>
@@ -145,6 +146,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1486307154719069822">Z narekom lahko vnašate z glasom. Ko ste v polju z besedilom, pritisnite tipko za narek ali izberite ikono mikrofona na dnu zaslona. Jezik nareka je nastavljen na jezik <ph name="LANGUAGE" />. Govor je poslan Googlu zaradi obdelave. Jezik nareka lahko kadar koli spremenite v »Nastavitve &gt; Dostopnost«.</translation>
 <translation id="1487931858675166540">Element <ph name="FIRST_ITEM_TITLE" /> je zamenjan z elementom <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Pokaži vse predloge</translation>
+<translation id="1501946871587957338">Želite preklopiti vir zvoka?</translation>
 <translation id="1510238584712386396">Zaganjalnik</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Prikaz nastavitev obvestil. Obvestila so izklopljena za eno aplikacijo.}one{Prikaz nastavitev obvestil. Obvestila so izklopljena za # aplikacijo.}two{Prikaz nastavitev obvestil. Obvestila so izklopljena za # aplikaciji.}few{Prikaz nastavitev obvestil. Obvestila so izklopljena za # aplikacije.}other{Prikaz nastavitev obvestil. Obvestila so izklopljena za # aplikacij.}}</translation>
 <translation id="1523032696246003"><ph name="BATTERY_PERCENTAGE" /> % baterije | <ph name="TIME" /> do napolnjenosti</translation>
@@ -773,6 +775,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="397105322502079400">Izračunavanje …</translation>
 <translation id="397726367135689299">Polnjenje baterije je morda nezanesljivo.</translation>
 <translation id="3977512764614765090">Akumulator je <ph name="PERCENTAGE" />-% napolnjen in se polni.</translation>
+<translation id="3982013579989864579">Želite preklopiti zvočni izhod?</translation>
 <translation id="3984536049089846927">Naslednja stran</translation>
 <translation id="3986082989454912832">Odgovor</translation>
 <translation id="3990002060657467458">Pogosto uporabljeni kontrolniki, kot so Wi-Fi, Bluetooth in glasnost, so v hitrih nastavitvah. Tukaj lahko ustvarite tudi posnetke zaslona.</translation>
@@ -816,6 +819,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="4150201353443180367">Prikaz</translation>
 <translation id="4156293514828496577">Še <ph name="PERCENTAGE" /> % baterije (približno <ph name="TIME_LEFT" />).
 Nekatere funkcije so omejene za podaljšanje časa delovanja baterije.</translation>
+<translation id="4160919062868802509">Zaznanih je več virov zvoka</translation>
 <translation id="4165275524535002941">Kabel morda ne podpira zaslonov</translation>
 <translation id="4177415338862979658">Kliknite, če želite preveriti podrobnosti</translation>
 <translation id="4177913004758410636">{0,plural, =1{Napravo posodobite v enem dnevu}one{Napravo posodobite v # dnevu}two{Napravo posodobite v # dneh}few{Napravo posodobite v # dnevih}other{Napravo posodobite v # dnevih}}</translation>
@@ -1014,6 +1018,7 @@ Nekatere funkcije so omejene za podaljšanje časa delovanja baterije.</translat
 <translation id="4871905435473761992">Prikaz podrobnosti dostopne točke. Mobilno omrežje ne podpira dostopne točke.</translation>
 <translation id="4872237917498892622">Alt + iskanje ali Shift</translation>
 <translation id="4872852897273142380">Izbira ali označevanje vrstice z zaznamki (če je vidna)</translation>
+<translation id="4876935764454575645">Izbira zvoka</translation>
 <translation id="4881323000405981760">Učinki niso podprti v aplikacijah za Linux</translation>
 <translation id="4881695831933465202">Odpri</translation>
 <translation id="4889868803215848840">Navedite izbirne povratne informacije za izboljšanje predlogov:</translation>
@@ -1090,6 +1095,7 @@ Nekatere funkcije so omejene za podaljšanje časa delovanja baterije.</translat
 <translation id="5121628974188116412">Premik na dno strani</translation>
 <translation id="5122517996953421795">Predogled namizja »<ph name="DESK_NAME" />«. Neaktivno namizje.</translation>
 <translation id="5136175204352732067">Priklopljena je druga tipkovnica</translation>
+<translation id="5144005092084035179">Želite preklopiti zvočni vhod?</translation>
 <translation id="5147567197700016471">Odklenjeno</translation>
 <translation id="5150070631291639005">Nastavitve zasebnosti</translation>
 <translation id="5155897006997040331">Hitrost branja</translation>
@@ -1789,6 +1795,7 @@ Nova namestitev</translation>
 <translation id="7780094051999721182">bližnjicah</translation>
 <translation id="7780159184141939021">Zasuk zaslona</translation>
 <translation id="7781829728241885113">Včeraj</translation>
+<translation id="7787212146956232129">Vhodne in izhodne naprave so nastavljene. To lahko spremenite v nastavitvah.</translation>
 <translation id="7792590255364786396">Vidno</translation>
 <translation id="7796735576426975947">Novo obvestilo je skrito</translation>
 <translation id="7798302898096527229">Za preklic pritisnite tipko za iskanje ali Shift.</translation>
@@ -2095,6 +2102,7 @@ Nova namestitev</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 datoteka}one{# datoteka}two{# datoteki}few{# datoteke}other{# datotek}}</translation>
 <translation id="8936501819958976551">deaktivirano</translation>
 <translation id="8938800817013097409">Naprava USB-C (vrata desno zadaj)</translation>
+<translation id="8939855324412367560">Zvočni vhod je »<ph name="INPUT_DEVICE_NAME" />«, zvočni izhod pa »<ph name="OUTPUT_DEVICE_NAME" />«. To lahko spremenite v nastavitvah.</translation>
 <translation id="8940956008527784070">Akumulator je skoraj prazen (<ph name="PERCENTAGE" /> %)</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> Potrditveno polje ni označeno.</translation>
 <translation id="8949925099261528566">Vzpostavljena povezava, brez interneta</translation>
@@ -2152,6 +2160,7 @@ Nova namestitev</translation>
 <translation id="9178475906033259337">Prikaz 1 rezultata za poizvedbo <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">S to funkcijo lahko hitro dostopate do poljubnega prijavljenega uporabnika, ne da bi vam bilo treba vnesti geslo. Uporabljajte to funkcijo samo z računi, ki jim zaupate.</translation>
 <translation id="9183456764293710005">Celozaslonska lupa</translation>
+<translation id="9192133205265227850">Uporabi »<ph name="DEVICE_NAME" />«</translation>
 <translation id="9193626018745640770">Predvajanje v neznanem sprejemniku</translation>
 <translation id="9194617393863864469">Prijava drugega uporabnika ...</translation>
 <translation id="9195990613383871904">Jutri</translation>
