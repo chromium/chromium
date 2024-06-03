@@ -47,13 +47,12 @@ class StubSharedImageInterface : public SharedImageInterface {
   scoped_refptr<ClientSharedImage> CreateSharedImage(
       const SharedImageInfo& si_info,
       SurfaceHandle surface_handle) override {
-    mailbox_for_most_recently_created_shared_image_ = gpu::Mailbox::Generate();
     auto gmb_handle_type = emulate_client_provided_native_buffer_
                                ? GetNativeBufferType()
                                : gfx::EMPTY_BUFFER;
     return base::MakeRefCounted<gpu::ClientSharedImage>(
-        mailbox_for_most_recently_created_shared_image_, si_info.meta,
-        SyncToken(), holder_, gmb_handle_type);
+        Mailbox::Generate(), si_info.meta, SyncToken(), holder_,
+        gmb_handle_type);
   }
   scoped_refptr<ClientSharedImage> CreateSharedImage(
       const SharedImageInfo& si_info,
@@ -134,10 +133,6 @@ class StubSharedImageInterface : public SharedImageInterface {
   }
   void SetCapabilities(const SharedImageCapabilities& caps) {}
 
-  const Mailbox& GetMailboxForMostRecentlyCreatedSharedImage() {
-    return mailbox_for_most_recently_created_shared_image_;
-  }
-
   void emulate_client_provided_native_buffer() {
     emulate_client_provided_native_buffer_ = true;
   }
@@ -152,7 +147,6 @@ class StubSharedImageInterface : public SharedImageInterface {
   ~StubSharedImageInterface() override = default;
 
   SharedImageCapabilities shared_image_capabilities_;
-  Mailbox mailbox_for_most_recently_created_shared_image_;
   bool emulate_client_provided_native_buffer_ = false;
 };
 
@@ -202,10 +196,9 @@ TEST(ClientSharedImageTest, CreateViaSharedImageInterface) {
   auto client_si = sii->CreateSharedImage(si_info, kNullSurfaceHandle);
 
   EXPECT_TRUE(client_si->HasHolder());
+  EXPECT_FALSE(client_si->mailbox().IsZero());
 
   // Check that the ClientSI's state matches the input parameters.
-  EXPECT_EQ(client_si->mailbox(),
-            sii->GetMailboxForMostRecentlyCreatedSharedImage());
   EXPECT_EQ(client_si->format(), kFormat);
   EXPECT_EQ(client_si->size(), kSize);
   EXPECT_EQ(client_si->usage(), kUsage);
@@ -236,8 +229,7 @@ TEST(ClientSharedImageTest, ExportAndImport) {
   auto exported_si = client_si->Export();
   auto imported_client_si = ClientSharedImage::ImportUnowned(exported_si);
 
-  EXPECT_EQ(imported_client_si->mailbox(),
-            sii->GetMailboxForMostRecentlyCreatedSharedImage());
+  EXPECT_EQ(imported_client_si->mailbox(), client_si->mailbox());
   EXPECT_EQ(imported_client_si->format(), kFormat);
   EXPECT_EQ(imported_client_si->size(), kSize);
   EXPECT_EQ(imported_client_si->usage(), kUsage);
@@ -263,8 +255,7 @@ TEST(ClientSharedImageTest, MakeUnowned) {
   auto client_si = sii->CreateSharedImage(si_info, kNullSurfaceHandle);
   auto unowned_si = client_si->MakeUnowned();
 
-  EXPECT_EQ(unowned_si->mailbox(),
-            sii->GetMailboxForMostRecentlyCreatedSharedImage());
+  EXPECT_EQ(unowned_si->mailbox(), client_si->mailbox());
   EXPECT_EQ(unowned_si->format(), kFormat);
   EXPECT_EQ(unowned_si->size(), kSize);
   EXPECT_EQ(unowned_si->usage(), kUsage);
