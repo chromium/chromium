@@ -56,6 +56,27 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Unmuted"/>
 </enum>
 
+<enum name="AudioSelectionBeforeAndAfterDeviceSet">
+  <int value="5" label="System boots with internal and 3.5mm"/>
+  <int value="257" label="System boots with internal and HDMI"/>
+  <int value="16389" label="Internal PLUG 3.5mm"/>
+  <int value="16401" label="Internal PLUG USB"/>
+  <int value="16449" label="Internal PLUG bluetooth"/>
+  <int value="16641" label="Internal PLUG HDMI"/>
+  <int value="32774" label="Two internal PLUG 3.5mm"/>
+  <int value="32786" label="Two internal PLUG USB"/>
+  <int value="81941" label="Internal and 3.5mm PLUG USB"/>
+  <int value="81989" label="Internal and 3.5mm PLUG bluetooth"/>
+  <int value="82181" label="Internal and 3.5mm PLUG HDMI"/>
+  <int value="278549" label="Internal and USB PLUG 3.5mm"/>
+  <int value="278561" label="Internal and USB PLUG USB"/>
+  <int value="278609" label="Internal and USB PLUG bluetooth"/>
+  <int value="278801" label="Internal and USB PLUG HDMI"/>
+  <int value="1065029" label="Internal and bluetooth PLUG 3.5mm"/>
+  <int value="4210949" label="Internal and HDMI PLUG 3.5mm"/>
+  <int value="4211009" label="Internal and HDMI PLUG bluetooth"/>
+</enum>
+
 <enum name="AudioSelectionEvents">
   <int value="0" label="Input|System switched"/>
   <int value="1" label="Output|System switched"/>
