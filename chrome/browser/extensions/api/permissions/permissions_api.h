@@ -111,6 +111,19 @@ class PermissionsRequestFunction : public ExtensionFunction {
   std::unique_ptr<const PermissionSet> prompted_permissions_for_testing_;
 };
 
+// chrome.permissions.addSiteAccessRequest
+class PermissionsAddSiteAccessRequestFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("permissions.addSiteAccessRequest",
+                             PERMISSIONS_ADDSITEACCESSREQUEST)
+
+ protected:
+  ~PermissionsAddSiteAccessRequestFunction() override = default;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+};
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_PERMISSIONS_PERMISSIONS_API_H_

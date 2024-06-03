@@ -9,16 +9,22 @@
 
 #include "base/functional/bind.h"
 #include "base/notreached.h"
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/extensions/api/permissions/permissions_api_helpers.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
 #include "chrome/browser/extensions/extension_management.h"
+#include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/permissions.h"
+#include "content/public/browser/web_contents.h"
+#include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/permissions_manager.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/manifest_handlers/permissions_parser.h"
 #include "extensions/common/permissions/permission_message_provider.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -40,6 +46,18 @@ const char kNotInManifestPermissionsError[] =
     "Only permissions specified in the manifest may be requested.";
 const char kUserGestureRequiredError[] =
     "This function must be called during a user gesture";
+constexpr char kMustSpecifyDocumentIdOrTabIdError[] =
+    "Must specify either 'documentId' or 'tabId'.";
+constexpr char kTabNotFoundError[] = "No tab with ID '*'.";
+constexpr char kExtensionCantRequestSiteAccessError[] =
+    "Extension cannot add a site access request for a site it cannot be "
+    "granted access to. Extension must have previously requested host "
+    "permissions for the current site in the tab or document provided via "
+    "'host_permissions', 'optional_host_permissions', or 'matches' for static "
+    "content scripts.";
+constexpr char kExtensionHasSiteAccessError[] =
+    "Extension cannot add a site access request for a site it already has "
+    "access to.";
 
 PermissionsRequestFunction::DialogAction g_dialog_action =
     PermissionsRequestFunction::DialogAction::kDefault;
@@ -428,6 +446,68 @@ void PermissionsRequestFunction::RespondIfRequestsFinished() {
 std::unique_ptr<const PermissionSet>
 PermissionsRequestFunction::TakePromptedPermissionsForTesting() {
   return std::move(prompted_permissions_for_testing_);
+}
+
+ExtensionFunction::ResponseAction
+PermissionsAddSiteAccessRequestFunction::Run() {
+  CHECK(base::FeatureList::IsEnabled(
+      extensions_features::kApiPermissionsSiteAccessRequests));
+  std::optional<api::permissions::AddSiteAccessRequest::Params> params =
+      api::permissions::AddSiteAccessRequest::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  const std::optional<std::string>& document_id = params->request.document_id;
+  std::optional<int> tab_id = params->request.tab_id;
+  // TODO(crbug.com/330588494): Add `pattern` parameter.
+
+  if ((!document_id && !tab_id) || (document_id && tab_id)) {
+    return RespondNow(Error(kMustSpecifyDocumentIdOrTabIdError));
+  }
+
+  if (document_id) {
+    // TODO(crbug.com/330588494): Handle document id.
+    return RespondNow(Error("Not implemented, yet. See crbug.com/330588494"));
+  }
+
+  CHECK(tab_id);
+
+  // Request is invalid if tab id provided doesn't exist, or extension cannot
+  // access the tab's web contents.
+  content::WebContents* web_contents = nullptr;
+  bool valid_tab = ExtensionTabUtil::GetTabById(
+      tab_id.value(), browser_context(), include_incognito_information(),
+      &web_contents);
+  if (!valid_tab) {
+    return RespondNow(Error(ErrorUtils::FormatErrorMessage(
+        kTabNotFoundError, base::NumberToString(tab_id.value()))));
+  }
+
+  DCHECK(web_contents);
+  const GURL& url = web_contents->GetLastCommittedURL();
+  std::string error;
+  PermissionsData::PageAccess page_access =
+      extension()->permissions_data()->GetPageAccess(url, tab_id.value(),
+                                                     &error);
+
+  switch (page_access) {
+    case PermissionsData::PageAccess::kDenied:
+      // Request is invalid if extension cannot access the tab's current web
+      // contents.
+      return RespondNow(Error(kExtensionCantRequestSiteAccessError));
+    case PermissionsData::PageAccess::kAllowed:
+      // Request is invalid if extension has access to the tab's current web
+      // contents.
+      return RespondNow(Error(kExtensionHasSiteAccessError));
+    case PermissionsData::PageAccess::kWithheld:
+      // Request is valid if extension has withheld access to the tab's
+      // current web contents. This doesn't mean the request will be visible, as
+      // the user can block the extension's site access and/or their site access
+      // requests.
+      PermissionsManager::Get(browser_context())
+          ->AddSiteAccessRequest(web_contents, tab_id.value(), *extension());
+
+      return RespondNow(NoArguments());
+  }
 }
 
 }  // namespace extensions

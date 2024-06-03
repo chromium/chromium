@@ -22,6 +22,7 @@ namespace {
 const base::Feature* kFeatureFlags[] = {
     &extensions_features::kApiContentSettingsClipboard,
     &extensions_features::kApiEnterpriseKioskInput,
+    &extensions_features::kApiPermissionsSiteAccessRequests,
     &extensions_features::kApiReadingList,
     &extensions_features::kApiUserScriptsMultipleWorlds,
     &extensions_features::kApiOdfsConfigPrivate,

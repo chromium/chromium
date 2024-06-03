@@ -42,6 +42,10 @@ BASE_DECLARE_FEATURE(kApiContentSettingsClipboard);
 // Controls the availability of the enterprise.kioskInput API.
 BASE_DECLARE_FEATURE(kApiEnterpriseKioskInput);
 
+// Controls the availability of adding and removing site access requests with
+// the permissions API.
+BASE_DECLARE_FEATURE(kApiPermissionsSiteAccessRequests);
+
 // Controls the availability of the ReadingList API.
 BASE_DECLARE_FEATURE(kApiReadingList);
 

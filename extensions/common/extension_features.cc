@@ -19,6 +19,10 @@ BASE_FEATURE(kApiEnterpriseKioskInput,
              "ApiEnterpriseKioskInput",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kApiPermissionsSiteAccessRequests,
+             "ApiPermissionsSiteAccessRequests",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kApiReadingList,
              "ApiReadingList",
              base::FEATURE_ENABLED_BY_DEFAULT);
