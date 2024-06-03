@@ -192,12 +192,15 @@ static constexpr auto kFloatsAndInt32DataTypes =
          CoreML::Specification::MILSpec::DataType::FLOAT32,
          CoreML::Specification::MILSpec::DataType::INT32});
 
-static constexpr auto kFloatsAnd32BitsIntDataTypes =
+static constexpr auto k32BitIntegerDataTypes =
     base::MakeFixedFlatSet<CoreML::Specification::MILSpec::DataType>(
-        {CoreML::Specification::MILSpec::DataType::FLOAT16,
-         CoreML::Specification::MILSpec::DataType::FLOAT32,
-         CoreML::Specification::MILSpec::DataType::INT32,
+        {CoreML::Specification::MILSpec::DataType::INT32,
          CoreML::Specification::MILSpec::DataType::UINT32});
+
+static constexpr auto k64BitIntegerDataTypes =
+    base::MakeFixedFlatSet<CoreML::Specification::MILSpec::DataType>(
+        {CoreML::Specification::MILSpec::DataType::INT64,
+         CoreML::Specification::MILSpec::DataType::UINT64});
 
 // Maps to types defined in
 // https://github.com/apple/coremltools/blob/b416f36054af9ca9d10b2d74ba215d0454677ca0/mlmodel/src/MILBlob/Blob/BlobDataType.hpp#L14
@@ -2148,8 +2151,9 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForReduce(
 
   switch (operation.kind) {
     case mojom::Reduce::Kind::kL1:
-      CHECK(kFloatsAnd32BitsIntDataTypes.contains(
-          input_operand_info.mil_data_type));
+      CHECK(kFloatDataTypes.contains(input_operand_info.mil_data_type) ||
+            k32BitIntegerDataTypes.contains(input_operand_info.mil_data_type) ||
+            k64BitIntegerDataTypes.contains(input_operand_info.mil_data_type));
       op->set_type(kOpReduceL1);
       break;
     case mojom::Reduce::Kind::kL2:
@@ -2175,18 +2179,21 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForReduce(
       op->set_type(kOpReduceMin);
       break;
     case mojom::Reduce::Kind::kProduct:
-      CHECK(kFloatsAnd32BitsIntDataTypes.contains(
-          input_operand_info.mil_data_type));
+      CHECK(kFloatDataTypes.contains(input_operand_info.mil_data_type) ||
+            k32BitIntegerDataTypes.contains(input_operand_info.mil_data_type) ||
+            k64BitIntegerDataTypes.contains(input_operand_info.mil_data_type));
       op->set_type(kOpReduceProduct);
       break;
     case mojom::Reduce::Kind::kSum:
-      CHECK(kFloatsAnd32BitsIntDataTypes.contains(
-          input_operand_info.mil_data_type));
+      CHECK(kFloatDataTypes.contains(input_operand_info.mil_data_type) ||
+            k32BitIntegerDataTypes.contains(input_operand_info.mil_data_type) ||
+            k64BitIntegerDataTypes.contains(input_operand_info.mil_data_type));
       op->set_type(kOpReduceSum);
       break;
     case mojom::Reduce::Kind::kSumSquare:
-      CHECK(kFloatsAnd32BitsIntDataTypes.contains(
-          input_operand_info.mil_data_type));
+      CHECK(kFloatDataTypes.contains(input_operand_info.mil_data_type) ||
+            k32BitIntegerDataTypes.contains(input_operand_info.mil_data_type) ||
+            k64BitIntegerDataTypes.contains(input_operand_info.mil_data_type));
       op->set_type(kOpReduceSumSquare);
       break;
   }

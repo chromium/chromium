@@ -58,10 +58,13 @@ static constexpr auto kFloatDataTypes =
         {mojom::Operand::DataType::kFloat16,
          mojom::Operand::DataType::kFloat32});
 
-static constexpr auto kFloatAnd32BitIntDataTypes =
+static constexpr auto k32BitIntegerDataTypes =
     base::MakeFixedFlatSet<mojom::Operand::DataType>(
-        {mojom::Operand::DataType::kFloat16, mojom::Operand::DataType::kFloat32,
-         mojom::Operand::DataType::kInt32, mojom::Operand::DataType::kUint32});
+        {mojom::Operand::DataType::kInt32, mojom::Operand::DataType::kUint32});
+
+static constexpr auto k64BitIntegerDataTypes =
+    base::MakeFixedFlatSet<mojom::Operand::DataType>(
+        {mojom::Operand::DataType::kInt64, mojom::Operand::DataType::kUint64});
 
 // Useful for converting dimension arrays coming from mojo as uint32 to the
 // int32 vectors used by TFLite.
@@ -1874,11 +1877,15 @@ auto GraphBuilderTflite::SerializeReduce(const mojom::Reduce& reduce)
       operator_code = ::tflite::BuiltinOperator_REDUCE_MIN;
       break;
     case mojom::Reduce::Kind::kProduct:
-      CHECK(kFloatAnd32BitIntDataTypes.contains(input_operand.data_type));
+      CHECK(kFloatDataTypes.contains(input_operand.data_type) ||
+            k32BitIntegerDataTypes.contains(input_operand.data_type) ||
+            k64BitIntegerDataTypes.contains(input_operand.data_type));
       operator_code = ::tflite::BuiltinOperator_REDUCE_PROD;
       break;
     case mojom::Reduce::Kind::kSum:
-      CHECK(kFloatAnd32BitIntDataTypes.contains(input_operand.data_type));
+      CHECK(kFloatDataTypes.contains(input_operand.data_type) ||
+            k32BitIntegerDataTypes.contains(input_operand.data_type) ||
+            k64BitIntegerDataTypes.contains(input_operand.data_type));
       operator_code = ::tflite::BuiltinOperator_SUM;
       break;
     case mojom::Reduce::Kind::kLogSum:
@@ -1908,7 +1915,9 @@ auto GraphBuilderTflite::SerializeReduce(const mojom::Reduce& reduce)
     case mojom::Reduce::Kind::kSumSquare: {
       // The reduceSumSquare can be emulated with adding pow operation before
       // reduceSum.
-      CHECK(kFloatAnd32BitIntDataTypes.contains(input_operand.data_type));
+      CHECK(kFloatDataTypes.contains(input_operand.data_type) ||
+            k32BitIntegerDataTypes.contains(input_operand.data_type) ||
+            k64BitIntegerDataTypes.contains(input_operand.data_type));
       int32_t pow_constant_tensor_index;
       if (input_operand.data_type == mojom::Operand::DataType::kFloat32) {
         pow_constant_tensor_index = SerializeTensorWithBuffer<float>(
@@ -1932,7 +1941,9 @@ auto GraphBuilderTflite::SerializeReduce(const mojom::Reduce& reduce)
       break;
     }
     case mojom::Reduce::Kind::kL1:
-      CHECK(kFloatAnd32BitIntDataTypes.contains(input_operand.data_type));
+      CHECK(kFloatDataTypes.contains(input_operand.data_type) ||
+            k32BitIntegerDataTypes.contains(input_operand.data_type) ||
+            k64BitIntegerDataTypes.contains(input_operand.data_type));
       return base::unexpected(OpKindToString(reduce.kind) +
                               " is not implemented.");
   }

@@ -71,6 +71,14 @@ static constexpr auto kDmlFloatDataTypes =
     base::MakeFixedFlatSet<DML_TENSOR_DATA_TYPE>(
         {DML_TENSOR_DATA_TYPE_FLOAT32, DML_TENSOR_DATA_TYPE_FLOAT16});
 
+static constexpr auto kDml32BitIntegerDataTypes =
+    base::MakeFixedFlatSet<DML_TENSOR_DATA_TYPE>(
+        {DML_TENSOR_DATA_TYPE_INT32, DML_TENSOR_DATA_TYPE_UINT32});
+
+static constexpr auto kDml64BitIntegerDataTypes =
+    base::MakeFixedFlatSet<DML_TENSOR_DATA_TYPE>(
+        {DML_TENSOR_DATA_TYPE_INT64, DML_TENSOR_DATA_TYPE_UINT64});
+
 constexpr const uint32_t kNhwcToNchwPermutation[] = {0, 3, 1, 2};
 constexpr const uint32_t kNchwToNhwcPermutation[] = {0, 2, 3, 1};
 // The `nhwc` input layout of regular conv2d is `ohwi` filter layout by default
@@ -138,8 +146,8 @@ void CheckInputDataTypeForReduce(mojom::Reduce::Kind kind,
     case mojom::Reduce::Kind::kSum:
     case mojom::Reduce::Kind::kSumSquare: {
       CHECK(kDmlFloatDataTypes.contains(data_type) ||
-            data_type == DML_TENSOR_DATA_TYPE_INT32 ||
-            data_type == DML_TENSOR_DATA_TYPE_UINT32);
+            kDml32BitIntegerDataTypes.contains(data_type) ||
+            kDml64BitIntegerDataTypes.contains(data_type));
       break;
     }
     case mojom::Reduce::Kind::kL2:

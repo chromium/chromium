@@ -1975,10 +1975,12 @@ base::expected<Operand, std::string> ValidateReduceAndInferOutput(
     case ReduceKind::kSumSquare: {
       if (!IsFloatingPointType(input.data_type) &&
           input.data_type != Operand::DataType::kInt32 &&
-          input.data_type != Operand::DataType::kUint32) {
+          input.data_type != Operand::DataType::kUint32 &&
+          input.data_type != Operand::DataType::kInt64 &&
+          input.data_type != Operand::DataType::kUint64) {
         return base::unexpected(
             "The input data type must be one of {float32, float16, int32, "
-            "uint32}.");
+            "uint32, int64, uint64}.");
       }
       break;
     }
