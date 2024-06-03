@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 #include "content/browser/cache_storage/cache_storage_histogram_utils.h"
+
+#include <string_view>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/strings/string_piece.h"
 
 namespace content {
 

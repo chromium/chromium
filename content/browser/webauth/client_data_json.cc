@@ -10,7 +10,6 @@
 #include "base/check.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "content/public/common/content_features.h"
 

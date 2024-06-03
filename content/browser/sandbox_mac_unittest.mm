@@ -4,7 +4,6 @@
 
 #import <Cocoa/Cocoa.h>
 #import <Foundation/Foundation.h>
-
 #include <fcntl.h>
 
 #include "base/apple/foundation_util.h"
@@ -21,7 +20,6 @@
 #include "base/posix/eintr_wrapper.h"
 #include "base/process/kill.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
 #include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/path_service.h"
@@ -102,7 +104,7 @@ class PerformanceTimelineBrowserTest : public ContentBrowserTest {
   }
 
   // This method is to get the first UKM entry of a repeated event.
-  ukm::mojom::UkmEntryPtr GetFirstEntryValue(base::StringPiece entry_name) {
+  ukm::mojom::UkmEntryPtr GetFirstEntryValue(std::string_view entry_name) {
     auto merged_entries = ukm_recorder()->GetMergedEntriesByName(entry_name);
     EXPECT_EQ(1ul, merged_entries.size());
     const auto& kv = merged_entries.begin();
