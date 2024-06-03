@@ -109,10 +109,10 @@ void MaybeRecordFirstRequestMetrics(SBThreatType threat_type,
       break;
   }
 
-  base::UmaHistogramEnumeration("SafeBrowsing.CheckUrl.FirstRequestThreatType",
+  base::UmaHistogramEnumeration("SafeBrowsing.CheckUrl.FirstRequestThreatType2",
                                 threat_type);
   base::UmaHistogramEnumeration(
-      "SafeBrowsing.CheckUrl.FirstRequestThreatType." + threat_source_name,
+      "SafeBrowsing.CheckUrl.FirstRequestThreatType2." + threat_source_name,
       threat_type);
 }
 
@@ -475,6 +475,8 @@ void SafeBrowsingUrlCheckerImpl::ProcessUrlsAndMaybeDeleteSelf() {
     KickOffLookupMechanismResult result = KickOffLookupMechanism(url);
 
     if (result.start_check_result.is_safe_synchronously) {
+      MaybeRecordFirstRequestMetrics(SBThreatType::SB_THREAT_TYPE_SAFE,
+                                     result.start_check_result.threat_source);
       lookup_mechanism_runner_.reset();
       RecordCheckUrlTimeout(/*timed_out=*/false);
 
@@ -516,7 +518,7 @@ SafeBrowsingUrlCheckerImpl::KickOffLookupMechanism(const GURL& url) {
   } else if (!can_check_db_) {
     return KickOffLookupMechanismResult(
         SafeBrowsingLookupMechanism::StartCheckResult(
-            /*is_safe_synchronously=*/true),
+            /*is_safe_synchronously=*/true, /*threat_source=*/std::nullopt),
         PerformedCheck::kCheckSkipped);
   } else if (hash_realtime_selection_ ==
                  HashRealTimeSelection::kHashRealTimeService &&

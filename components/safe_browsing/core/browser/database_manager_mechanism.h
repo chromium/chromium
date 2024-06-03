@@ -38,6 +38,8 @@ class DatabaseManagerMechanism : public SafeBrowsingLookupMechanism,
                               SBThreatType threat_type,
                               const ThreatMetadata& metadata) override;
 
+  ThreatSource GetThreatSource() const;
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Tracks whether there is currently an async call into the database manager

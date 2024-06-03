@@ -27,6 +27,10 @@ DatabaseManagerMechanism::~DatabaseManagerMechanism() {
   }
 }
 
+ThreatSource DatabaseManagerMechanism::GetThreatSource() const {
+  return database_manager_->GetBrowseUrlThreatSource(check_type_);
+}
+
 SafeBrowsingLookupMechanism::StartCheckResult
 DatabaseManagerMechanism::StartCheckInternal() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -35,7 +39,7 @@ DatabaseManagerMechanism::StartCheckInternal() {
   if (!is_safe_synchronously) {
     is_async_database_manager_check_in_progress_ = true;
   }
-  return StartCheckResult(is_safe_synchronously);
+  return StartCheckResult(is_safe_synchronously, GetThreatSource());
 }
 
 void DatabaseManagerMechanism::OnCheckBrowseUrlResult(
@@ -45,9 +49,7 @@ void DatabaseManagerMechanism::OnCheckBrowseUrlResult(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   is_async_database_manager_check_in_progress_ = false;
   CompleteCheck(std::make_unique<CompleteCheckResult>(
-      url, threat_type, metadata,
-      /*threat_source=*/
-      database_manager_->GetBrowseUrlThreatSource(check_type_),
+      url, threat_type, metadata, GetThreatSource(),
       /*url_real_time_lookup_response=*/nullptr));
   // NOTE: Calling CompleteCheck results in the synchronous destruction of this
   // object, so there is nothing safe to do here but return.

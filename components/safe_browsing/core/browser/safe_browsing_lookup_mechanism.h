@@ -21,8 +21,13 @@ namespace safe_browsing {
 class SafeBrowsingLookupMechanism {
  public:
   struct StartCheckResult {
-    explicit StartCheckResult(bool is_safe_synchronously);
+    explicit StartCheckResult(bool is_safe_synchronously,
+                              std::optional<ThreatSource> threat_source);
     bool is_safe_synchronously;
+    // Indicates the kind of check that confirmed this is safe. Not
+    // guaranteed to be populated even if `is_safe_synchronously` is
+    // true (e.g. no checks could be applied).
+    std::optional<ThreatSource> threat_source;
   };
 
   // This is used by individual lookup mechanisms as the input for the
@@ -42,9 +47,7 @@ class SafeBrowsingLookupMechanism {
     // Specifies the threat source associated with the mechanism that provided
     // the threat type. In cases where a real-time mechanism falls back to the
     // hash database mechanism, the threat source will correspond to the hash
-    // database mechanism. This value only guaranteed to be non-null in cases
-    // where the threat type is not SB_THREAT_TYPE_SAFE; in cases where the hash
-    // database mechanism fallback completes synchronously, this is unset.
+    // database mechanism.
     std::optional<ThreatSource> threat_source;
     std::unique_ptr<RTLookupResponse> url_real_time_lookup_response;
   };

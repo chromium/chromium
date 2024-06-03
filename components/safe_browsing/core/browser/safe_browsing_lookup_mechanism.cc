@@ -18,8 +18,10 @@ SafeBrowsingLookupMechanism::SafeBrowsingLookupMechanism(
 SafeBrowsingLookupMechanism::~SafeBrowsingLookupMechanism() = default;
 
 SafeBrowsingLookupMechanism::StartCheckResult::StartCheckResult(
-    bool is_safe_synchronously)
-    : is_safe_synchronously(is_safe_synchronously) {}
+    bool is_safe_synchronously,
+    std::optional<ThreatSource> threat_source)
+    : is_safe_synchronously(is_safe_synchronously),
+      threat_source(threat_source) {}
 
 SafeBrowsingLookupMechanism::CompleteCheckResult::CompleteCheckResult(
     const GURL& url,
@@ -31,10 +33,7 @@ SafeBrowsingLookupMechanism::CompleteCheckResult::CompleteCheckResult(
       threat_type(threat_type),
       metadata(metadata),
       threat_source(threat_source),
-      url_real_time_lookup_response(std::move(url_real_time_lookup_response)) {
-  DCHECK(threat_source.has_value() ||
-         threat_type == SBThreatType::SB_THREAT_TYPE_SAFE);
-}
+      url_real_time_lookup_response(std::move(url_real_time_lookup_response)) {}
 
 SafeBrowsingLookupMechanism::CompleteCheckResult::~CompleteCheckResult() =
     default;
