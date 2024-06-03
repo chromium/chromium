@@ -20,6 +20,7 @@
 #include "cc/slim/frame_sink_impl.h"
 #include "cc/slim/layer.h"
 #include "cc/slim/layer_tree_client.h"
+#include "cc/slim/surface_layer.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/hit_test/hit_test_region_list.h"
 #include "components/viz/common/quads/compositor_frame.h"
@@ -28,6 +29,7 @@
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/quads/frame_deadline.h"
+#include "components/viz/common/quads/offset_tag.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
@@ -393,6 +395,19 @@ void LayerTreeImpl::RemoveSurfaceRange(const viz::SurfaceRange& range) {
   }
 }
 
+void LayerTreeImpl::RegisterOffsetTag(const viz::OffsetTag& tag,
+                                      SurfaceLayer* owner) {
+  bool inserted = registered_offset_tags_.insert({tag, owner}).second;
+  // There should only be a single SurfaceLayer owner for each tag.
+  CHECK(inserted);
+}
+
+void LayerTreeImpl::UnregisterOffsetTag(const viz::OffsetTag& tag,
+                                        SurfaceLayer* owner) {
+  size_t erased = registered_offset_tags_.erase(tag);
+  CHECK_EQ(erased, 1u);
+}
+
 void LayerTreeImpl::MaybeRequestFrameSink() {
   if (frame_sink_ || !visible_ || frame_sink_request_pending_) {
     return;
@@ -479,6 +494,10 @@ void LayerTreeImpl::GenerateCompositorFrame(
   out_frame.metadata.referenced_surfaces.reserve(referenced_surfaces_.size());
   for (const auto& [range, range_counts] : referenced_surfaces_) {
     out_frame.metadata.referenced_surfaces.emplace_back(range);
+  }
+  for (auto& [tag, layer] : registered_offset_tags_) {
+    out_frame.metadata.offset_tag_definitions.push_back(
+        layer->GetOffsetTagDefinition(tag));
   }
   out_frame.metadata.display_transform_hint = display_transform_hint_;
 
@@ -704,6 +723,12 @@ void LayerTreeImpl::Draw(Layer& layer,
   {
     SimpleEnclosedRegion parent_pass_occlusion = data.occlusion_in_target;
     data.occlusion_in_target.Clear();
+
+    // The OffsetTag will be applied to the RenderPassDrawQuad so reset it when
+    // drawing layers to the new render pass.
+    base::AutoReset<viz::OffsetTag> render_pass_offset_tag_reset(
+        &data.offset_tag, viz::OffsetTag());
+
     DrawChildrenAndAppendQuads(layer, *new_pass, data, transform_to_root,
                                transform_to_target, clip_in_target,
                                clip_in_layer,
@@ -761,6 +786,8 @@ void LayerTreeImpl::Draw(Layer& layer,
                             parent_opacity * layer.opacity(),
                             SkBlendMode::kSrcOver, /*sorting_context=*/0,
                             /*layer_id=*/0u, /*fast_rounded_corner=*/true);
+  shared_quad_state->offset_tag = data.offset_tag;
+
   auto* quad =
       parent_pass.CreateAndAppendDrawQuad<viz::CompositorRenderPassDrawQuad>();
 
@@ -811,6 +838,16 @@ void LayerTreeImpl::DrawChildrenAndAppendQuads(
     auto_reset_mask_filter_info.emplace(&data.mask_filter_info_in_target, info);
   }
 
+  std::optional<base::AutoReset<viz::OffsetTag>> offset_tag_reset;
+  if (layer.offset_tag()) {
+    // A child layer can't have a different OffsetTag.
+    CHECK(!data.offset_tag);
+    // The OffsetTag must be registered with a SurfaceLayer before tagging
+    // layers.
+    CHECK(registered_offset_tags_.contains(layer.offset_tag()));
+    offset_tag_reset.emplace(&data.offset_tag, layer.offset_tag());
+  }
+
   {
     base::AutoReset reset(&data.subtree_property_changed_from_parent,
                           subtree_property_changed);
@@ -852,6 +889,16 @@ bool LayerTreeImpl::UpdateOcclusionRect(
     float opacity,
     const gfx::RectF& visible_rectf_in_target,
     gfx::RectF& visible_rect) {
+  if (data.offset_tag) {
+    // If layer has an offset tag then it's not known where it will be drawn.
+    // Don't consider anything above it as occluding or anything below it as
+    // occluded.
+    // TODO(kylechar): It's possible to start a new "occlusion context" at the
+    // parent layer and compute occlusion between layers that have the same
+    // OffsetTag, since they all move together.
+    return true;
+  }
+
   // Skip occlusion calculations on non-axis aligned layers.
   // Note this is to reduce complexity of occlusion tracking (eg can use
   // Transform::MapRect on RectF directly and only need to worry about

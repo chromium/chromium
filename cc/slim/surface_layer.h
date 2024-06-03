@@ -8,8 +8,10 @@
 #include <optional>
 
 #include "base/component_export.h"
+#include "base/containers/flat_map.h"
 #include "cc/layers/deadline_policy.h"
 #include "cc/slim/layer.h"
+#include "components/viz/common/quads/offset_tag.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/common/surfaces/surface_range.h"
 
@@ -43,7 +45,23 @@ class COMPONENT_EXPORT(CC_SLIM) SurfaceLayer : public Layer {
     return surface_range_.start();
   }
 
+  // Registers `tag` so it can be used to tag layers to be moved by the display
+  // compositor. `constraints` provides limits to the possible offset. This
+  // should be called to register `tag` before any layers are tagged with it.
+  // It can be called repeatedly with the same tag to update constraints.
+  //
+  // When the display compositor draws it will lookup the OffsetTagValue from
+  // the same viz::Surface this surface layer embeds.
+  void RegisterOffsetTag(const viz::OffsetTag& tag,
+                         const viz::OffsetTagConstraints& constraints);
+  // Unregisters `tag`. Layers should have `tag` removed before unregistering.
+  // This must be called only once for a registered tag.
+  void UnregisterOffsetTag(const viz::OffsetTag& tag);
+
   void SetLayerTree(LayerTree* layer_tree) override;
+
+  // Internal methods called by LayerTreeImpl.
+  viz::OffsetTagDefinition GetOffsetTagDefinition(const viz::OffsetTag& tag);
 
  private:
   SurfaceLayer();
@@ -63,6 +81,7 @@ class COMPONENT_EXPORT(CC_SLIM) SurfaceLayer : public Layer {
   bool stretch_content_to_fill_bounds_ = false;
   viz::SurfaceRange surface_range_;
   std::optional<uint32_t> deadline_in_frames_;
+  base::flat_map<viz::OffsetTag, viz::OffsetTagConstraints> offset_tags_;
 };
 
 }  // namespace cc::slim

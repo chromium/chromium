@@ -57,6 +57,12 @@ std::string OffsetTagConstraints::ToString() const {
 
 OffsetTagDefinition::OffsetTagDefinition() = default;
 
+OffsetTagDefinition::OffsetTagDefinition(
+    const OffsetTag& tag,
+    const SurfaceRange& provider,
+    const OffsetTagConstraints& constraints)
+    : tag(tag), provider(provider), constraints(constraints) {}
+
 OffsetTagDefinition::OffsetTagDefinition(const OffsetTagDefinition& other) =
     default;
 

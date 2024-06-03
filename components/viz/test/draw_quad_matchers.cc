@@ -59,6 +59,10 @@ void PrintTo(DrawQuad::Material material, ::std::ostream* os) {
   *os << MaterialToString(material);
 }
 
+void PrintTo(const OffsetTag& offset_tag, ::std::ostream* os) {
+  *os << offset_tag.ToString();
+}
+
 testing::Matcher<const DrawQuad*> IsSolidColorQuad() {
   return IsQuadType(DrawQuad::Material::kSolidColor);
 }
@@ -123,6 +127,11 @@ testing::Matcher<const DrawQuad*> AreContentsOpaque(bool opaque) {
   return HasSharedQuadState(testing::Field(
       "are_contents_opaque", &SharedQuadState::are_contents_opaque,
       testing::Eq(opaque)));
+}
+
+testing::Matcher<const DrawQuad*> HasOffsetTag(OffsetTag offset_tag) {
+  return HasSharedQuadState(testing::Field(
+      "offset_tag", &SharedQuadState::offset_tag, testing::Eq(offset_tag)));
 }
 
 testing::Matcher<const DrawQuad*> HasLayerId(uint32_t layer_id) {

@@ -18,6 +18,7 @@
 #include "cc/slim/surface_layer.h"
 #include "cc/slim/test_layer_tree_client.h"
 #include "cc/slim/ui_resource_layer.h"
+#include "components/viz/common/quads/offset_tag.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -267,6 +268,26 @@ TEST(SlimLayerTest, NumDescendantsThatDrawContent) {
   EXPECT_EQ(layer0->NumDescendantsThatDrawContent(), 3);
   EXPECT_EQ(layer1->NumDescendantsThatDrawContent(), 1);
   EXPECT_EQ(layer2->NumDescendantsThatDrawContent(), 2);
+}
+
+TEST(SlimLayerTest, OffsetTag) {
+  auto layer0 = Layer::Create();
+  auto layer1 = SurfaceLayer::Create();
+  auto layer2 = Layer::Create();
+
+  layer0->AddChild(layer1);
+  layer0->AddChild(layer2);
+
+  const auto offset_tag = viz::OffsetTag::CreateRandom();
+  const viz::OffsetTagConstraints constraints(0, 0, -10.0f, 0);
+  layer1->RegisterOffsetTag(offset_tag, constraints);
+
+  layer0->SetOffsetTag(offset_tag);
+  EXPECT_EQ(layer0->offset_tag(), offset_tag);
+
+  // Unregister the OffsetTag and set zero tag on parent layer.
+  layer1->UnregisterOffsetTag(offset_tag);
+  layer0->SetOffsetTag({});
 }
 
 }  // namespace cc::slim

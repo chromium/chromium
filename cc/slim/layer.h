@@ -16,6 +16,7 @@
 #include "cc/paint/filter_operations.h"
 #include "cc/slim/filter.h"
 #include "cc/slim/frame_data.h"
+#include "components/viz/common/quads/offset_tag.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/linear_gradient.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -160,6 +161,19 @@ class COMPONENT_EXPORT(CC_SLIM) Layer : public base::RefCounted<Layer> {
   virtual void SetOpacity(float opacity);
   float opacity() const { return opacity_; }
 
+  // Sets or gets the OffsetTag for the layer. The tag allows the display
+  // compositor to move the layer contents based on an OffsetTagValue provided
+  // by another viz client.
+  //
+  // This property applies to the layer and its subtree. The translation will be
+  // in the render pass coordinate space that this layer is drawn in. It is an
+  // error for any layers in subtree to have non-empty tag.
+  //
+  // NOTE: Non-empty `offset_tag` must be registered with a SurfaceLayer before
+  // any layers that are tagged with it are drawn.
+  void SetOffsetTag(const viz::OffsetTag& offset_tag);
+  viz::OffsetTag offset_tag() const { return offset_tag_; }
+
   // Is true if the layer will contribute content to the compositor's output.
   // Will be false if SetIsDrawable(false) is called. But will also be false if
   // the layer itself has no content to contribute, even though the layer was
@@ -273,6 +287,7 @@ class COMPONENT_EXPORT(CC_SLIM) Layer : public base::RefCounted<Layer> {
   void RemoveFromParentSlim();
   void SetParentSlim(Layer* parent);
   void ChangeDrawableDescendantsBySlim(int num);
+  void ChangeOffsetTagDescendants(int num);
 
   const int id_;
   raw_ptr<Layer> parent_ = nullptr;
@@ -293,6 +308,7 @@ class COMPONENT_EXPORT(CC_SLIM) Layer : public base::RefCounted<Layer> {
 
   SkColor4f background_color_ = SkColors::kTransparent;
   float opacity_ = 1.0f;
+  viz::OffsetTag offset_tag_;
   bool is_drawable_ : 1 = false;
   bool contents_opaque_ : 1 = false;
   bool draws_content_ : 1 = false;

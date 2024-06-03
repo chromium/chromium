@@ -6,10 +6,12 @@
 
 #include <algorithm>
 #include <utility>
+#include <vector>
 
 #include "cc/slim/layer_tree_impl.h"
 #include "components/viz/common/hit_test/hit_test_region_list.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
+#include "components/viz/common/quads/offset_tag.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/surface_draw_quad.h"
 #include "components/viz/common/surfaces/surface_range.h"
@@ -63,18 +65,55 @@ void SurfaceLayer::SetOldestAcceptableFallback(
       surface_range_.end()));
 }
 
+void SurfaceLayer::RegisterOffsetTag(
+    const viz::OffsetTag& tag,
+    const viz::OffsetTagConstraints& constraints) {
+  CHECK(tag);
+  CHECK(constraints.IsValid());
+
+  bool inserted = offset_tags_.insert_or_assign(tag, constraints).second;
+
+  if (inserted && layer_tree()) {
+    static_cast<LayerTreeImpl*>(layer_tree())->RegisterOffsetTag(tag, this);
+  }
+}
+
+void SurfaceLayer::UnregisterOffsetTag(const viz::OffsetTag& tag) {
+  CHECK(tag);
+
+  size_t count = offset_tags_.erase(tag);
+  CHECK_EQ(count, 1u);
+  if (auto* layer_tree_impl = static_cast<LayerTreeImpl*>(layer_tree())) {
+    layer_tree_impl->UnregisterOffsetTag(tag, this);
+  }
+}
+
+viz::OffsetTagDefinition SurfaceLayer::GetOffsetTagDefinition(
+    const viz::OffsetTag& tag) {
+  return viz::OffsetTagDefinition(tag, surface_range_, offset_tags_.at(tag));
+}
+
 void SurfaceLayer::SetLayerTree(LayerTree* tree) {
   if (layer_tree() == tree) {
     return;
   }
 
-  if (layer_tree() && surface_range_.IsValid()) {
-    static_cast<LayerTreeImpl*>(layer_tree())
-        ->RemoveSurfaceRange(surface_range_);
+  if (auto* layer_tree_impl = static_cast<LayerTreeImpl*>(layer_tree())) {
+    if (surface_range_.IsValid()) {
+      layer_tree_impl->RemoveSurfaceRange(surface_range_);
+    }
+    for (auto& [tag, constraints] : offset_tags_) {
+      layer_tree_impl->UnregisterOffsetTag(tag, this);
+    }
   }
   Layer::SetLayerTree(tree);
-  if (layer_tree() && surface_range_.IsValid()) {
-    static_cast<LayerTreeImpl*>(layer_tree())->AddSurfaceRange(surface_range_);
+  if (auto* layer_tree_impl = static_cast<LayerTreeImpl*>(layer_tree())) {
+    if (surface_range_.IsValid()) {
+      layer_tree_impl->AddSurfaceRange(surface_range_);
+    }
+    for (auto& [tag, constraints] : offset_tags_) {
+      layer_tree_impl->RegisterOffsetTag(tag, this);
+    }
   }
 }
 

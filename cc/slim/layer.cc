@@ -40,6 +40,31 @@ cc::FilterOperations ToCcFilters(std::vector<cc::slim::Filter> filters) {
   return cc_filters;
 }
 
+bool DescendantLayerHasOffsetTag(const Layer* layer) {
+  for (auto& child : layer->children()) {
+    if (child->offset_tag() || DescendantLayerHasOffsetTag(child.get())) {
+      return true;
+    }
+  }
+  return false;
+}
+
+// Verifies that there are no overlapping `OffsetTag`s in the layer tree for all
+// descendants and ancestors of `layer`. This only validates the part of the
+// layer tree that contains `layer`.
+bool VerifyOffsetTagTree(const Layer* layer) {
+  bool subtree_has_offset_tag = DescendantLayerHasOffsetTag(layer);
+  for (const Layer* target = layer; target; target = target->parent()) {
+    if (target->offset_tag() && subtree_has_offset_tag) {
+      // The offset tag from this layer applies to the subtree so if this
+      // happens there are overlapping tags.
+      return false;
+    }
+    subtree_has_offset_tag = subtree_has_offset_tag || layer->offset_tag();
+  }
+  return true;
+}
+
 }  // namespace
 
 // static
@@ -166,6 +191,7 @@ void Layer::SetParentSlim(Layer* parent) {
   if (parent_) {
     parent_->ChangeDrawableDescendantsBySlim(drawing_layers_in_subtree);
   }
+  DCHECK(VerifyOffsetTagTree(this));
 }
 
 void Layer::ChangeDrawableDescendantsBySlim(int num) {
@@ -247,6 +273,15 @@ void Layer::SetOpacity(float opacity) {
     return;
   }
   opacity_ = opacity;
+  NotifySubtreeChanged();
+}
+
+void Layer::SetOffsetTag(const viz::OffsetTag& offset_tag) {
+  if (offset_tag_ == offset_tag) {
+    return;
+  }
+  offset_tag_ = offset_tag;
+  DCHECK(VerifyOffsetTagTree(this));
   NotifySubtreeChanged();
 }
 
@@ -395,6 +430,7 @@ viz::SharedQuadState* Layer::CreateAndAppendSharedQuadState(
                      /*sorting_context=*/0,
                      /*layer_id=*/0u, /*fast_rounded_corner=*/false);
   quad_state->is_fast_rounded_corner = true;
+  quad_state->offset_tag = data.offset_tag;
   return quad_state;
 }
 

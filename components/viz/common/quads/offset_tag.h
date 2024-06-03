@@ -45,6 +45,8 @@ class VIZ_COMMON_EXPORT OffsetTag {
 
   friend constexpr bool operator==(const OffsetTag& lhs,
                                    const OffsetTag& rhs) = default;
+  friend constexpr auto operator<=>(const OffsetTag& lhs,
+                                    const OffsetTag& rhs) = default;
 
  private:
   friend struct mojo::StructTraits<mojom::OffsetTagDataView, OffsetTag>;
@@ -93,6 +95,10 @@ struct VIZ_COMMON_EXPORT OffsetTagConstraints {
 // be clamped.
 struct VIZ_COMMON_EXPORT OffsetTagDefinition {
   OffsetTagDefinition();
+  OffsetTagDefinition(const OffsetTag& tag,
+                      const SurfaceRange& provider,
+                      const OffsetTagConstraints& constraints);
+
   OffsetTagDefinition(const OffsetTagDefinition& other);
   OffsetTagDefinition& operator=(const OffsetTagDefinition& other);
   ~OffsetTagDefinition();
