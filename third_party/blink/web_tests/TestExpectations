@@ -7519,3 +7519,6 @@ crbug.com/343749102 external/wpt/html/semantics/forms/the-input-element/show-pic
 crbug.com/344437951 external/wpt/svg/painting/reftests/non-scaling-stroke-002.html [ Failure Pass ]
 
 crbug.com/338299516 fast/forms/color/color-picker-top-left-selection-position-after-reopen.html [ Failure Pass ]
+
+# Flaky test on all builds.
+crbug.com/40279192 external/wpt/event-timing/mouseleave.html [ Failure Pass ]
