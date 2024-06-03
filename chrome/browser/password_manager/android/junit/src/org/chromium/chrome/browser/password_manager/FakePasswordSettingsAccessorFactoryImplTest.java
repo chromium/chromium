@@ -32,9 +32,4 @@ public class FakePasswordSettingsAccessorFactoryImplTest {
                 mFakePasswordSettingsAccessorFactoryImpl.createAccessor()
                         instanceof FakePasswordSettingsAccessor);
     }
-
-    @Test
-    public void testCanCreateAccessor() {
-        assertTrue(mFakePasswordSettingsAccessorFactoryImpl.canCreateAccessor());
-    }
 }

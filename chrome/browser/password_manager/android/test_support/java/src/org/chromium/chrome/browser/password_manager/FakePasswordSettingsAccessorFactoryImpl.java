@@ -14,9 +14,4 @@ public class FakePasswordSettingsAccessorFactoryImpl extends PasswordSettingsAcc
     public PasswordSettingsAccessor createAccessor() {
         return new FakePasswordSettingsAccessor();
     }
-
-    @Override
-    public boolean canCreateAccessor() {
-        return true;
-    }
 }

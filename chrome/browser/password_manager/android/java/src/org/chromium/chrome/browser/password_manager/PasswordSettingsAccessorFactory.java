@@ -38,16 +38,10 @@ public abstract class PasswordSettingsAccessorFactory {
         return null;
     }
 
-    // TODO (b/329100547): Remove after the downstream implementation is removed.
-    @Deprecated
-    public boolean canCreateAccessor() {
-        return false;
-    }
-
     /**
      * Creates and returns new instance of the downstream implementation provided by subclasses.
      *
-     * Downstream should override this method with actual implementation.
+     * <p>Downstream should override this method with actual implementation.
      *
      * @return An implementation of the {@link PasswordSettingsAccessor} if one exists.
      */

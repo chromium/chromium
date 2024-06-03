@@ -37,20 +37,9 @@ public abstract class PasswordStoreAndroidBackendFactory {
     }
 
     /**
-     * Returns whether a down-stream implementation can be instantiated. TODO (b/321223016): Remove
-     * this method after removing the internal implementation.
-     *
-     * @return True iff all preconditions for using the down-steam implementations are fulfilled.
-     */
-    @Deprecated
-    public boolean canCreateBackend() {
-        return false;
-    }
-
-    /**
      * Creates and returns new instance of the downstream implementation provided by subclasses.
      *
-     * Downstream should override this method with actual implementation.
+     * <p>Downstream should override this method with actual implementation.
      *
      * @return An implementation of the {@link PasswordStoreAndroidBackend} if one exists.
      */
