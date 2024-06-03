@@ -13,6 +13,7 @@ source_set("mall") {
     "mall_page_handler.h",
     "mall_ui.cc",
     "mall_ui.h",
+    "mall_ui_delegate.h",
   ]
 
   deps = [

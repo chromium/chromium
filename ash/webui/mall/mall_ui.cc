@@ -9,6 +9,7 @@
 #include "ash/webui/grit/ash_mall_cros_app_resources.h"
 #include "ash/webui/grit/ash_mall_cros_app_resources_map.h"
 #include "ash/webui/mall/mall_page_handler.h"
+#include "ash/webui/mall/mall_ui_delegate.h"
 #include "ash/webui/mall/url_constants.h"
 #include "base/strings/strcat.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -25,7 +26,8 @@ bool MallUIConfig::IsWebUIEnabled(content::BrowserContext* browser_context) {
          chromeos::features::IsCrosMallSwaEnabled();
 }
 
-MallUI::MallUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
+MallUI::MallUI(content::WebUI* web_ui, std::unique_ptr<MallUIDelegate> delegate)
+    : ui::MojoWebUIController(web_ui), delegate_(std::move(delegate)) {
   auto* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(), ash::kChromeUIMallHost);
   source->SetDefaultResource(IDR_ASH_MALL_CROS_APP_INDEX_HTML);
@@ -45,7 +47,8 @@ MallUI::~MallUI() = default;
 
 void MallUI::BindInterface(
     mojo::PendingReceiver<mall::mojom::PageHandler> receiver) {
-  page_handler_ = std::make_unique<MallPageHandler>(std::move(receiver));
+  page_handler_ =
+      std::make_unique<MallPageHandler>(std::move(receiver), *delegate_);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(MallUI)

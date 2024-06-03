@@ -16,12 +16,15 @@ namespace ash {
 
 class MallPageHandler;
 class MallUI;
+class MallUIDelegate;
 
 // WebUI configuration for chrome://mall.
 class MallUIConfig : public ChromeOSWebUIConfig<MallUI> {
  public:
-  MallUIConfig()
-      : ChromeOSWebUIConfig(content::kChromeUIScheme, ash::kChromeUIMallHost) {}
+  explicit MallUIConfig(CreateWebUIControllerFunc create_controller_func)
+      : ChromeOSWebUIConfig(content::kChromeUIScheme,
+                            ash::kChromeUIMallHost,
+                            create_controller_func) {}
 
   // ash::ChromeOSWebUIConfig:
   bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
@@ -30,7 +33,7 @@ class MallUIConfig : public ChromeOSWebUIConfig<MallUI> {
 // WebUI controller for chrome://mall.
 class MallUI : public ui::MojoWebUIController {
  public:
-  explicit MallUI(content::WebUI* web_ui);
+  MallUI(content::WebUI* web_ui, std::unique_ptr<MallUIDelegate> delegate);
   MallUI(const MallUI&) = delete;
   MallUI& operator=(const MallUI&) = delete;
   ~MallUI() override;
@@ -38,6 +41,7 @@ class MallUI : public ui::MojoWebUIController {
   void BindInterface(mojo::PendingReceiver<mall::mojom::PageHandler> receiver);
 
  private:
+  std::unique_ptr<MallUIDelegate> delegate_;
   std::unique_ptr<MallPageHandler> page_handler_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();

@@ -15,5 +15,6 @@ include_rules = [
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/apps/almanac_api_client",
+  "+chrome/browser/profiles",
   "+chrome/test/base",
 ]

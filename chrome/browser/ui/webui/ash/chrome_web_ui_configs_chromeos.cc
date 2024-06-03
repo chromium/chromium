@@ -45,6 +45,7 @@
 #include "ash/webui/status_area_internals/status_area_internals_ui.h"
 #include "ash/webui/vc_background_ui/vc_background_ui.h"
 #include "chrome/browser/ash/eche_app/eche_app_manager_factory.h"
+#include "chrome/browser/ash/mall/chrome_mall_ui_delegate.h"
 #include "chrome/browser/ash/multidevice_debug/proximity_auth_ui_config.h"
 #include "chrome/browser/ash/net/network_health/network_health_manager.h"
 #include "chrome/browser/ash/os_feedback/chrome_os_feedback_delegate.h"
@@ -278,7 +279,8 @@ void RegisterAshChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<LauncherInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<LockScreenNetworkUIConfig>());
   map.AddWebUIConfig(std::make_unique<LockScreenStartReauthUIConfig>());
-  map.AddWebUIConfig(std::make_unique<MallUIConfig>());
+  map.AddWebUIConfig(MakeComponentConfigWithDelegate<MallUIConfig, MallUI,
+                                                     ChromeMallUIDelegate>());
   map.AddWebUIConfig(std::make_unique<ManageMirrorSyncUIConfig>());
   map.AddWebUIConfig(
       MakeComponentConfigWithDelegate<MediaAppUIConfig, MediaAppUI,

@@ -6,15 +6,19 @@
 #define ASH_WEBUI_MALL_MALL_PAGE_HANDLER_H_
 
 #include "ash/webui/mall/mall_ui.mojom.h"
+#include "base/memory/raw_ref.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
 namespace ash {
 
+class MallUIDelegate;
+
 class MallPageHandler : public mall::mojom::PageHandler {
  public:
   explicit MallPageHandler(
-      mojo::PendingReceiver<mall::mojom::PageHandler> receiver);
+      mojo::PendingReceiver<mall::mojom::PageHandler> receiver,
+      MallUIDelegate& delegate);
   MallPageHandler(const MallPageHandler&) = delete;
   MallPageHandler& operator=(const MallPageHandler&) = delete;
   ~MallPageHandler() override;
@@ -23,6 +27,7 @@ class MallPageHandler : public mall::mojom::PageHandler {
 
  private:
   mojo::Receiver<mall::mojom::PageHandler> receiver_;
+  raw_ref<MallUIDelegate> delegate_;  // Owned by `MallUI`, which owns `this`.
 };
 
 }  // namespace ash
