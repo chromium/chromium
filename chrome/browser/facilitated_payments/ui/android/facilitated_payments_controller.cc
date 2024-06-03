@@ -17,13 +17,15 @@ FacilitatedPaymentsController::~FacilitatedPaymentsController() = default;
 bool FacilitatedPaymentsController::Show(
     std::unique_ptr<payments::facilitated::FacilitatedPaymentsBottomSheetBridge>
         view,
+    base::span<const autofill::BankAccount> bank_account_suggestions,
     content::WebContents* web_contents) {
-  // Abort if facilitated payments surface is already shown.
-  if (view_) {
+  // Abort if facilitated payments surface is already shown or no bank accounts.
+  if (view_ || bank_account_suggestions.empty()) {
     return false;
   }
 
-  if (!view->RequestShowContent(this, web_contents)) {
+  if (!view->RequestShowContent(std::move(bank_account_suggestions), this,
+                                web_contents)) {
     java_object_.Reset();
     return false;
   }

@@ -32,6 +32,10 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
+import org.chromium.components.autofill.payments.AccountType;
+import org.chromium.components.autofill.payments.BankAccount;
+import org.chromium.components.autofill.payments.PaymentInstrument;
+import org.chromium.components.autofill.payments.PaymentRail;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
 import org.chromium.content_public.browser.WebContents;
@@ -40,6 +44,31 @@ import org.chromium.ui.base.WindowAndroid;
 /** Unit tests for {@link FacilitatedPaymentsPaymentMethodsViewBridge}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class FacilitatedPaymentsPaymentMethodsViewBridgeTest {
+    private static final BankAccount[] BANK_ACCOUNTS = {
+        new BankAccount.Builder()
+                .setPaymentInstrument(
+                        new PaymentInstrument.Builder()
+                                .setInstrumentId(100)
+                                .setNickname("nickname1")
+                                .setSupportedPaymentRails(new int[] {PaymentRail.PIX})
+                                .build())
+                .setBankName("bankName1")
+                .setAccountNumberSuffix("1111")
+                .setAccountType(AccountType.CHECKING)
+                .build(),
+        new BankAccount.Builder()
+                .setPaymentInstrument(
+                        new PaymentInstrument.Builder()
+                                .setInstrumentId(200)
+                                .setNickname("nickname2")
+                                .setSupportedPaymentRails(new int[] {PaymentRail.PIX})
+                                .build())
+                .setBankName("bankName2")
+                .setAccountNumberSuffix("2222")
+                .setAccountType(AccountType.CHECKING)
+                .build()
+    };
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private WebContents mWebContents;
@@ -69,7 +98,7 @@ public class FacilitatedPaymentsPaymentMethodsViewBridgeTest {
     public void requestShowContent_callsControllerRequestShowContent() {
         when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindow);
 
-        mViewBridge.requestShowContent();
+        mViewBridge.requestShowContent(BANK_ACCOUNTS);
 
         verify(mBottomSheetController)
                 .requestShowContent(
@@ -81,7 +110,7 @@ public class FacilitatedPaymentsPaymentMethodsViewBridgeTest {
     public void requestShowContent_bottomSheetContentImplIsStubbed() {
         when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindow);
 
-        mViewBridge.requestShowContent();
+        mViewBridge.requestShowContent(BANK_ACCOUNTS);
 
         ArgumentCaptor<FacilitatedPaymentsPaymentMethodsView> contentCaptor =
                 ArgumentCaptor.forClass(FacilitatedPaymentsPaymentMethodsView.class);

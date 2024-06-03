@@ -8,6 +8,7 @@
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
+#include "components/autofill/core/browser/data_model/bank_account.h"
 #include "ui/android/window_android.h"
 
 class FacilitatedPaymentsController;
@@ -31,11 +32,13 @@ class FacilitatedPaymentsBottomSheetBridge {
 
   virtual ~FacilitatedPaymentsBottomSheetBridge();
 
-  // Request show the content of PIX bottom sheet.
+  // Show the payment prompt containing user's `bank_account_suggestions`.
   // Return true if a new bottom sheet is created and shown. Otherwise, return
   // false.
-  virtual bool RequestShowContent(FacilitatedPaymentsController* controller,
-                                  content::WebContents* web_contents);
+  virtual bool RequestShowContent(
+      base::span<const autofill::BankAccount> bank_account_suggestions,
+      FacilitatedPaymentsController* controller,
+      content::WebContents* web_contents);
 
  private:
   // The corresponding Java FacilitatedPaymentsPaymentMethodsViewBridge. This

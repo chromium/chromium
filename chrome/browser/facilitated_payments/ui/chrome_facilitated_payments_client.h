@@ -39,6 +39,9 @@ class ChromeFacilitatedPaymentsClient
   void LoadRiskData(base::OnceCallback<void(const std::string&)>
                         on_risk_data_loaded_callback) override;
 
+  virtual void SetFacilitatedPaymentsControllerForTesting(
+      std::unique_ptr<FacilitatedPaymentsController> controller);
+
  private:
   friend class content::WebContentsUserData<ChromeFacilitatedPaymentsClient>;
 
@@ -46,6 +49,12 @@ class ChromeFacilitatedPaymentsClient
                            GetPaymentsDataManager);
   FRIEND_TEST_ALL_PREFIXES(ChromeFacilitatedPaymentsClientTest,
                            GetFacilitatedPaymentsNetworkInterface);
+  FRIEND_TEST_ALL_PREFIXES(ChromeFacilitatedPaymentsClientTest,
+                           ShowPixPaymentPrompt_ControllerDefaultTrue);
+  FRIEND_TEST_ALL_PREFIXES(ChromeFacilitatedPaymentsClientTest,
+                           ShowPixPaymentPrompt_ControllerDefaultFalse);
+  FRIEND_TEST_ALL_PREFIXES(ChromeFacilitatedPaymentsClientTest,
+                           ShowPixPaymentPrompt_NoBankAccounts);
 
   // FacilitatedPaymentsClient:
   // This returns nullptr if the `Profile` associated is null.
@@ -67,7 +76,8 @@ class ChromeFacilitatedPaymentsClient
       facilitated_payments_network_interface_;
 
 #if BUILDFLAG(IS_ANDROID)
-  FacilitatedPaymentsController facilitated_payments_controller_;
+  std::unique_ptr<FacilitatedPaymentsController>
+      facilitated_payments_controller_;
 #endif
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();

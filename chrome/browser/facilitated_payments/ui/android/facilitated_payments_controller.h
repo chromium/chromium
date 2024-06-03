@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "chrome/browser/facilitated_payments/ui/android/facilitated_payments_bottom_sheet_bridge.h"
+#include "components/autofill/core/browser/data_model/bank_account.h"
 #include "content/public/browser/web_contents.h"
 
 // Controller of the bottom sheet surface for filling facilitated payments
@@ -21,13 +22,14 @@ class FacilitatedPaymentsController {
   FacilitatedPaymentsController& operator=(
       const FacilitatedPaymentsController&) = delete;
 
-  ~FacilitatedPaymentsController();
+  virtual ~FacilitatedPaymentsController();
 
   // Shows the facilitated payments `view`. Returns whether the surface was
   // successfully shown.
-  bool Show(
+  virtual bool Show(
       std::unique_ptr<
           payments::facilitated::FacilitatedPaymentsBottomSheetBridge> view,
+      base::span<const autofill::BankAccount> bank_account_suggestions,
       content::WebContents* web_contents);
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();

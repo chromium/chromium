@@ -5,6 +5,7 @@
 #include "chrome/browser/facilitated_payments/ui/android/facilitated_payments_bottom_sheet_bridge.h"
 
 #include "base/android/jni_android.h"
+#include "chrome/browser/autofill/android/personal_data_manager_android.h"
 #include "chrome/browser/facilitated_payments/ui/android/facilitated_payments_controller.h"
 #include "content/public/browser/web_contents.h"
 
@@ -20,6 +21,7 @@ FacilitatedPaymentsBottomSheetBridge::~FacilitatedPaymentsBottomSheetBridge() =
     default;
 
 bool FacilitatedPaymentsBottomSheetBridge::RequestShowContent(
+    base::span<const autofill::BankAccount> bank_account_suggestions,
     FacilitatedPaymentsController* controller,
     content::WebContents* web_contents) {
   if (java_bridge_) {
@@ -47,9 +49,15 @@ bool FacilitatedPaymentsBottomSheetBridge::RequestShowContent(
     return false;
   }
 
-  Java_FacilitatedPaymentsPaymentMethodsViewBridge_requestShowContent(
-      env, java_bridge_);
-  return true;
+  std::vector<base::android::ScopedJavaLocalRef<jobject>> bank_accounts_array;
+  bank_accounts_array.reserve(bank_account_suggestions.size());
+  for (const autofill::BankAccount& bank_account : bank_account_suggestions) {
+    bank_accounts_array.push_back(
+        autofill::PersonalDataManagerAndroid::CreateJavaBankAccountFromNative(
+            env, bank_account));
+  }
+  return Java_FacilitatedPaymentsPaymentMethodsViewBridge_requestShowContent(
+      env, java_bridge_, std::move(bank_accounts_array));
 }
 
 }  // namespace payments::facilitated

@@ -21,5 +21,5 @@ interface FacilitatedPaymentsPaymentMethodsComponent {
             Context context, BottomSheetController bottomSheetController, Delegate delegate);
 
     /** Displays a new bottom sheet. */
-    void showSheet(BankAccount[] bankAccounts);
+    boolean showSheet(BankAccount[] bankAccounts);
 }

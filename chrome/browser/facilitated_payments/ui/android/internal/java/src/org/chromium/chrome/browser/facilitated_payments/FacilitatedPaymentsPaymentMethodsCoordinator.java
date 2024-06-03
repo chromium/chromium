@@ -41,8 +41,8 @@ public class FacilitatedPaymentsPaymentMethodsCoordinator
     }
 
     @Override
-    public void showSheet(BankAccount[] bankAccounts) {
-        mMediator.showSheet(bankAccounts);
+    public boolean showSheet(BankAccount[] bankAccounts) {
+        return mMediator.showSheet(bankAccounts);
     }
 
     /**

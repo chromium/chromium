@@ -42,9 +42,9 @@ class FacilitatedPaymentsPaymentMethodsMediator {
         mDelegate = delegate;
     }
 
-    void showSheet(BankAccount[] bankAccounts) {
+    boolean showSheet(BankAccount[] bankAccounts) {
         if (bankAccounts == null || bankAccounts.length == 0) {
-            return;
+            return false;
         }
 
         ModelList sheetItems = mModel.get(SHEET_ITEMS);
@@ -57,6 +57,8 @@ class FacilitatedPaymentsPaymentMethodsMediator {
 
         sheetItems.add(0, buildHeader());
         mModel.set(VISIBLE, true);
+
+        return true;
     }
 
     private ListItem buildHeader() {

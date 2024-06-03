@@ -327,12 +327,12 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jbank_account);
 
- private:
-  ~PersonalDataManagerAndroid() override;
-
   // Create an object of Java BankAccount from native BankAccount.
   static base::android::ScopedJavaLocalRef<jobject>
   CreateJavaBankAccountFromNative(JNIEnv* env, const BankAccount& bank_account);
+
+ private:
+  ~PersonalDataManagerAndroid() override;
 
   // Create an object of native BankAccount from Java BankAccount.
   static BankAccount CreateNativeBankAccountFromJava(

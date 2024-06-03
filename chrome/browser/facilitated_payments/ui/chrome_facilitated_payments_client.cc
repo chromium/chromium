@@ -22,7 +22,9 @@ ChromeFacilitatedPaymentsClient::ChromeFacilitatedPaymentsClient(
           *web_contents),
       driver_factory_(web_contents,
                       /*client=*/this,
-                      optimization_guide_decider) {}
+                      optimization_guide_decider),
+      facilitated_payments_controller_(
+          std::make_unique<FacilitatedPaymentsController>()) {}
 
 ChromeFacilitatedPaymentsClient::~ChromeFacilitatedPaymentsClient() = default;
 
@@ -77,14 +79,20 @@ bool ChromeFacilitatedPaymentsClient::ShowPixPaymentPrompt(
     base::span<autofill::BankAccount> bank_account_suggestions,
     base::OnceCallback<void(bool, int64_t)> on_user_decision_callback) {
 #if BUILDFLAG(IS_ANDROID)
-  return facilitated_payments_controller_.Show(
+  return facilitated_payments_controller_->Show(
       std::make_unique<
           payments::facilitated::FacilitatedPaymentsBottomSheetBridge>(),
-      &GetWebContents());
+      std::move(bank_account_suggestions), &GetWebContents());
 #else
   // Facilitated Payments is not supported on Desktop.
   NOTREACHED_NORETURN();
 #endif
+}
+
+void ChromeFacilitatedPaymentsClient::
+    SetFacilitatedPaymentsControllerForTesting(
+        std::unique_ptr<FacilitatedPaymentsController> mock_controller) {
+  facilitated_payments_controller_ = std::move(mock_controller);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ChromeFacilitatedPaymentsClient);

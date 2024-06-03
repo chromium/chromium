@@ -6,6 +6,7 @@
 
 #include "chrome/browser/facilitated_payments/ui/android/facilitated_payments_controller.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -31,10 +32,14 @@ class FacilitatedPaymentsBottomSheetBridgeTest
 
 TEST_F(FacilitatedPaymentsBottomSheetBridgeTest, RequestShowContent) {
   FacilitatedPaymentsBottomSheetBridge bridge;
+  const std::vector<autofill::BankAccount> bank_accounts_ = {
+      autofill::test::CreatePixBankAccount(100L),
+      autofill::test::CreatePixBankAccount(200L)};
 
   FacilitatedPaymentsController controller;
 
-  bool did_show = bridge.RequestShowContent(&controller, web_contents());
+  bool did_show =
+      bridge.RequestShowContent(bank_accounts_, &controller, web_contents());
 
   // A Java BottomSheetController can't be initialized from the native side. So
   // no bottom sheet is shown.
