@@ -88,9 +88,11 @@ bool ChromeUnwinderAndroid::CanUnwindFrom(const Frame& current_frame) const {
          current_frame.module->GetBaseAddress() == chrome_module_base_address_;
 }
 
-UnwindResult ChromeUnwinderAndroid::TryUnwind(RegisterContext* thread_context,
-                                              uintptr_t stack_top,
-                                              std::vector<Frame>* stack) {
+UnwindResult ChromeUnwinderAndroid::TryUnwind(
+    UnwinderStateCapture* capture_state,
+    RegisterContext* thread_context,
+    uintptr_t stack_top,
+    std::vector<Frame>* stack) {
   DCHECK(CanUnwindFrom(stack->back()));
   uintptr_t frame_initial_sp = RegisterContextStackPointer(thread_context);
   const uintptr_t unwind_initial_pc =

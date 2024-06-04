@@ -6,9 +6,15 @@
 
 namespace base {
 
+UnwinderStateCapture::~UnwinderStateCapture() = default;
+
 void Unwinder::Initialize(ModuleCache* module_cache) {
   module_cache_ = module_cache;
   InitializeModules();
+}
+
+std::unique_ptr<UnwinderStateCapture> Unwinder::CreateUnwinderStateCapture() {
+  return nullptr;
 }
 
 }  // namespace base

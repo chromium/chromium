@@ -221,8 +221,9 @@ class TracingSampleProfilerTest : public testing::Test {
 class MockUnwinder : public base::Unwinder {
  public:
   MOCK_CONST_METHOD1(CanUnwindFrom, bool(const base::Frame& current_frame));
-  MOCK_METHOD3(TryUnwind,
-               base::UnwindResult(base::RegisterContext* thread_context,
+  MOCK_METHOD4(TryUnwind,
+               base::UnwindResult(base::UnwinderStateCapture* capture_state,
+                                  base::RegisterContext* thread_context,
                                   uintptr_t stack_top,
                                   std::vector<base::Frame>* stack));
 };
@@ -240,7 +241,7 @@ MakeMockUnwinderFactoryWithExpectations() {
     EXPECT_CALL(*mock_unwinder, CanUnwindFrom(_))
         .Times(AtLeast(1))
         .WillRepeatedly(Return(true));
-    EXPECT_CALL(*mock_unwinder, TryUnwind(_, _, _))
+    EXPECT_CALL(*mock_unwinder, TryUnwind(_, _, _, _))
         .Times(AtLeast(1))
         .WillRepeatedly(Return(base::UnwindResult::kCompleted));
 

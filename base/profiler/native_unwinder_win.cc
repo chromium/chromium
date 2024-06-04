@@ -20,7 +20,8 @@ bool NativeUnwinderWin::CanUnwindFrom(const Frame& current_frame) const {
 // Attempts to unwind the frame represented by the context values. If
 // successful appends frames onto the stack and returns true. Otherwise
 // returns false.
-UnwindResult NativeUnwinderWin::TryUnwind(RegisterContext* thread_context,
+UnwindResult NativeUnwinderWin::TryUnwind(UnwinderStateCapture* capture_state,
+                                          RegisterContext* thread_context,
                                           uintptr_t stack_top,
                                           std::vector<Frame>* stack) {
   // We expect the frame corresponding to the |thread_context| register state to
