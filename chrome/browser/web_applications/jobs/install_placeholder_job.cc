@@ -22,6 +22,7 @@
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/web_contents/web_app_url_loader.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -140,9 +141,12 @@ void InstallPlaceholderJob::FinalizeInstall(
     std::optional<std::reference_wrapper<const std::vector<SkBitmap>>>
         bitmaps) {
   // For placeholder installs, the install_url is treated as the start_url.
-  WebAppInstallInfo web_app_info(
-      GenerateManifestIdFromStartUrlOnly(install_options_.install_url));
-  web_app_info.title =
+  GURL start_url = install_options_.install_url;
+  webapps::ManifestId manifest_id =
+      GenerateManifestIdFromStartUrlOnly(start_url);
+  auto web_app_info =
+      std::make_unique<WebAppInstallInfo>(manifest_id, start_url);
+  web_app_info->title =
       install_options_.override_name
           ? base::UTF8ToUTF16(install_options_.override_name.value())
       : install_options_.fallback_app_name
@@ -153,13 +157,12 @@ void InstallPlaceholderJob::FinalizeInstall(
     IconsMap icons_map;
     icons_map.emplace(GURL(install_options_.override_icon_url.value()),
                       bitmaps.value());
-    PopulateProductIcons(&web_app_info, &icons_map);
+    PopulateProductIcons(web_app_info.get(), &icons_map);
   }
 
-  web_app_info.start_url = install_options_.install_url;
-  web_app_info.install_url = install_options_.install_url;
+  web_app_info->install_url = install_options_.install_url;
 
-  web_app_info.user_display_mode = install_options_.user_display_mode;
+  web_app_info->user_display_mode = install_options_.user_display_mode;
 
   WebAppInstallFinalizer::FinalizeOptions options(
       ConvertExternalInstallSourceToInstallSource(
@@ -172,10 +175,10 @@ void InstallPlaceholderJob::FinalizeInstall(
   options.add_to_desktop = install_options_.add_to_desktop;
   options.add_to_quick_launch_bar = install_options_.add_to_quick_launch_bar;
 
-  web_app_info.is_placeholder = true;
+  web_app_info->is_placeholder = true;
 
   lock_->install_finalizer().FinalizeInstall(
-      web_app_info, options,
+      *web_app_info, options,
       base::BindOnce(&InstallPlaceholderJob::OnInstallFinalized,
                      weak_factory_.GetWeakPtr()));
 }

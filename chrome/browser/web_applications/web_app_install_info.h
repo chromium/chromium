@@ -240,11 +240,6 @@ struct WebAppInstallInfo {
   static std::unique_ptr<WebAppInstallInfo> CreateWithStartUrlForTesting(
       const GURL& start_url);
 
-  // TODO(b/280862254): Remove this constructor to force users to use specify
-  // both the manifest_id and start_url (or call
-  // `CreateWithStartUrlForTesting`).
-  explicit WebAppInstallInfo(const webapps::ManifestId& manifest_id);
-
   // The `manifest_id` and the `start_url` MUST be valid. The `manifest_id` MUST
   // be created properly, and cannot contain refs (e.g. '#refs').
   WebAppInstallInfo(const webapps::ManifestId& manifest_id,

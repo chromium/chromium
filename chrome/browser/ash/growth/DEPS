@@ -36,6 +36,7 @@ include_rules = [
   "+chrome/browser/web_applications/test",
   "+chrome/browser/web_applications/web_app_command_scheduler.h",
   "+chrome/browser/web_applications/web_app_constants.h",
+  "+chrome/browser/web_applications/web_app_helpers.h",
   "+chrome/browser/web_applications/web_app_install_info.h",
   "+chrome/browser/web_applications/web_app_provider.h",
   "+chrome/browser/web_applications/web_app_registrar.h",

@@ -58,10 +58,8 @@ class WebAppCleanupHandlerBrowserTest : public WebAppBrowserTestBase {
                                GURL start_url,
                                GURL install_url,
                                webapps::WebappInstallSource install_source) {
-    auto app_info = std::make_unique<WebAppInstallInfo>(
-        GenerateManifestIdFromStartUrlOnly(start_url));
+    auto app_info = WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
     app_info->title = title;
-    app_info->start_url = start_url;
     app_info->install_url = install_url;
     return test::InstallWebApp(profile(), std::move(app_info),
                                /*overwrite_existing_manifest_fields=*/false,

@@ -439,13 +439,27 @@ IsolatedWebAppInstallCommandHelper::ValidateManifestAndCreateInstallInfo(
   const blink::mojom::Manifest& manifest = *manifest_and_url.manifest;
   const GURL& manifest_url = manifest_and_url.url;
 
+  // TODO(b/280862254): Ideally move this validation logic into a
+  // WebAppInstallInfo creator function.
   if (!manifest.id.is_valid()) {
     return base::unexpected(
         "Manifest `id` is not present or invalid. manifest_url: " +
         manifest_url.possibly_invalid_spec());
   }
+  if (!manifest.start_url.is_valid()) {
+    return base::unexpected(
+        "Manifest `start_url` is not present or invalid. manifest_url: " +
+        manifest_url.possibly_invalid_spec());
+  }
+  if (!url::Origin::Create(manifest.start_url)
+           .IsSameOriginWith(url::Origin::Create(manifest.id))) {
+    return base::unexpected(
+        "Manifest `id` and `start_url` must have the same origin. "
+        "manifest_url: " +
+        manifest_url.possibly_invalid_spec());
+  }
 
-  WebAppInstallInfo info(manifest.id);
+  WebAppInstallInfo info(manifest.id, manifest.start_url);
   UpdateWebAppInfoFromManifest(manifest, manifest_url, &info);
 
   if (!manifest.version.has_value()) {

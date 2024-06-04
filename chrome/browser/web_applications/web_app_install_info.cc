@@ -321,10 +321,9 @@ WebAppInstallInfo WebAppInstallInfo::CreateInstallInfoForCreateShortcut(
     const std::u16string& document_title,
     const WebAppInstallInfo& other) {
   WebAppInstallInfo create_shortcut_info(
-      GenerateManifestIdFromStartUrlOnly(document_url));
+      GenerateManifestIdFromStartUrlOnly(document_url), document_url);
   create_shortcut_info.title = document_title;
   create_shortcut_info.description = other.description;
-  create_shortcut_info.start_url = document_url;
   create_shortcut_info.manifest_url = other.manifest_url;
   create_shortcut_info.manifest_icons = other.manifest_icons;
   create_shortcut_info.icon_bitmaps = other.icon_bitmaps;
@@ -351,14 +350,11 @@ WebAppInstallInfo::CreateWithStartUrlForTesting(const GURL& start_url) {
   return info;
 }
 
-WebAppInstallInfo::WebAppInstallInfo(const webapps::ManifestId& manifest_id)
-    : manifest_id(manifest_id) {
-  CHECK(manifest_id.is_valid());
-}
-
 WebAppInstallInfo::WebAppInstallInfo(const webapps::ManifestId& manifest_id,
                                      const GURL& start_url)
     : manifest_id(manifest_id), start_url(start_url) {
+  // TODO(b/280862254): Ideally move this validation logic into a creator
+  // function that can return error messages.
   CHECK(manifest_id.is_valid());
   CHECK(!manifest_id.has_ref());
   CHECK(start_url.is_valid());

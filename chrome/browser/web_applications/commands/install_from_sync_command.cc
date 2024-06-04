@@ -104,9 +104,8 @@ InstallFromSyncCommand::InstallFromSyncCommand(
   DCHECK(AreAppsLocallyInstalledBySync());
 #endif
   DCHECK(params_.start_url.is_valid());
-  fallback_install_info_ =
-      std::make_unique<WebAppInstallInfo>(params_.manifest_id);
-  fallback_install_info_->start_url = params_.start_url;
+  fallback_install_info_ = std::make_unique<WebAppInstallInfo>(
+      params_.manifest_id, params_.start_url);
   fallback_install_info_->title = base::UTF8ToUTF16(params_.title);
   fallback_install_info_->user_display_mode = params_.user_display_mode;
   fallback_install_info_->scope = params_.scope;

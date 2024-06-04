@@ -245,8 +245,7 @@ class FakeWebContentsManager::FakeWebAppDataRetriever
     }
     std::unique_ptr<WebAppInstallInfo> install_info =
         std::make_unique<WebAppInstallInfo>(
-            GenerateManifestIdFromStartUrlOnly(url));
-    install_info->start_url = url;
+            GenerateManifestIdFromStartUrlOnly(url), url);
     install_info->title = page.title.value_or(base::UTF8ToUTF16(url.spec()));
     if (page.opt_metadata) {
       WebAppDataRetriever::PopulateWebAppInfoFromMetadata(install_info.get(),

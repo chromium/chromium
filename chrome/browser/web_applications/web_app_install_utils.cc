@@ -835,7 +835,7 @@ void UpdateWebAppInfoFromManifest(const blink::mojom::Manifest& manifest,
 WebAppInstallInfo CreateWebAppInfoFromManifest(
     const blink::mojom::Manifest& manifest,
     const GURL& manifest_url) {
-  WebAppInstallInfo info(manifest.id);
+  WebAppInstallInfo info(manifest.id, manifest.start_url);
   UpdateWebAppInfoFromManifest(manifest, manifest_url, &info);
   return info;
 }

@@ -32,11 +32,10 @@ class WebAppDetailedInstallDialogBrowserTest : public DialogBrowserTest {
  public:
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
-    auto install_info = std::make_unique<WebAppInstallInfo>(
-        GenerateManifestIdFromStartUrlOnly(GURL("https://example.com")));
+    auto install_info = WebAppInstallInfo::CreateWithStartUrlForTesting(
+        GURL("https://example.com"));
     install_info->title = u"test";
     install_info->description = u"This is a test app";
-    install_info->start_url = GURL("https://example.com");
 
     install_info->icon_bitmaps.any[kIconSize] =
         CreateSolidColorIcon(kIconSize, kIconSize, kIconColor);

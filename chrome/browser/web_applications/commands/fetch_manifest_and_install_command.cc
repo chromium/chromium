@@ -398,7 +398,8 @@ void FetchManifestAndInstallCommand::OnDidPerformInstallableCheck(
         Abort(webapps::InstallResultCode::kNotValidManifestForWebApp);
         return;
       }
-      web_app_info_ = std::make_unique<WebAppInstallInfo>(opt_manifest->id);
+      web_app_info_ = std::make_unique<WebAppInstallInfo>(
+          opt_manifest->id, opt_manifest->start_url);
       break;
     case FallbackBehavior::kUseFallbackInfoWhenNotInstallable: {
       webapps::InstallableStatusCode display_installable =
@@ -415,7 +416,8 @@ void FetchManifestAndInstallCommand::OnDidPerformInstallableCheck(
                             webapps::InstallableStatusCode::NO_ERROR_DETECTED;
       // If the manifest is crafted, override the fallback install info.
       if (promotable) {
-        web_app_info_ = std::make_unique<WebAppInstallInfo>(opt_manifest->id);
+        web_app_info_ = std::make_unique<WebAppInstallInfo>(
+            opt_manifest->id, opt_manifest->start_url);
       } else {
         web_app_info_->is_diy_app = true;
       }

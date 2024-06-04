@@ -34,9 +34,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTitleBrowserTest, ValidAppTitle) {
   const std::u16string app_title = u"A Web App";
   WebFeatureHistogramTester histogram_tester;
 
-  auto web_app_info = std::make_unique<WebAppInstallInfo>(
-      GenerateManifestIdFromStartUrlOnly(app_url));
-  web_app_info->start_url = app_url;
+  auto web_app_info = WebAppInstallInfo::CreateWithStartUrlForTesting(app_url);
   web_app_info->scope = app_url.GetWithoutFilename();
   web_app_info->title = app_title;
   const webapps::AppId app_id = InstallWebApp(std::move(web_app_info));
@@ -62,9 +60,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTitleBrowserTest, WithoutAppTitle) {
   const std::u16string app_title = u"A Web App";
   base::HistogramTester histogram_tester;
 
-  auto web_app_info = std::make_unique<WebAppInstallInfo>(
-      GenerateManifestIdFromStartUrlOnly(app_url));
-  web_app_info->start_url = app_url;
+  auto web_app_info = WebAppInstallInfo::CreateWithStartUrlForTesting(app_url);
   web_app_info->scope = app_url.GetWithoutFilename();
   web_app_info->title = app_title;
   const webapps::AppId app_id = InstallWebApp(std::move(web_app_info));
@@ -90,9 +86,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTitleBrowserTest, DynamicAppTitle) {
   const std::u16string app_title = u"A Web App";
   base::HistogramTester histogram_tester;
 
-  auto web_app_info = std::make_unique<WebAppInstallInfo>(
-      GenerateManifestIdFromStartUrlOnly(app_url));
-  web_app_info->start_url = app_url;
+  auto web_app_info = WebAppInstallInfo::CreateWithStartUrlForTesting(app_url);
   web_app_info->scope = app_url.GetWithoutFilename();
   web_app_info->title = app_title;
   const webapps::AppId app_id = InstallWebApp(std::move(web_app_info));
@@ -155,9 +149,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTitleBrowserTest, AppTitleNavigation) {
   const std::u16string app_title = u"A Web App";
   WebFeatureHistogramTester histogram_tester;
 
-  auto web_app_info = std::make_unique<WebAppInstallInfo>(
-      GenerateManifestIdFromStartUrlOnly(app_url));
-  web_app_info->start_url = app_url;
+  auto web_app_info = WebAppInstallInfo::CreateWithStartUrlForTesting(app_url);
   web_app_info->scope = app_url.GetWithoutFilename();
   web_app_info->title = app_title;
   const webapps::AppId app_id = InstallWebApp(std::move(web_app_info));

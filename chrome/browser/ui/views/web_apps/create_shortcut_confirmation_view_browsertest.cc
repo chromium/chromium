@@ -49,11 +49,9 @@ class CreateShortcutConfirmationViewBrowserTest
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
-    auto app_info = std::make_unique<web_app::WebAppInstallInfo>(
-        web_app::GenerateManifestIdFromStartUrlOnly(
-            GURL("https://example.com")));
+    auto app_info = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+        GURL("https://example.com"));
     app_info->title = u"Test app";
-    app_info->start_url = GURL("https://example.com");
 
     auto callback = [](bool result,
                        std::unique_ptr<web_app::WebAppInstallInfo>) {};
@@ -106,10 +104,9 @@ class CreateShortcutConfirmationViewBrowserTest
 
 IN_PROC_BROWSER_TEST_P(CreateShortcutConfirmationViewBrowserTest,
                        ShowCreateShortcutDialog) {
-  auto app_info = std::make_unique<web_app::WebAppInstallInfo>(
-      web_app::GenerateManifestIdFromStartUrlOnly(GURL("https://example.com")));
+  auto app_info = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example.com"));
   app_info->title = u"Test app";
-  app_info->start_url = GURL("https://example.com");
 
   web_app::SetAutoAcceptWebAppDialogForTesting(/*auto_accept=*/true,
                                                /*auto_open_in_window=*/true);
@@ -145,10 +142,9 @@ IN_PROC_BROWSER_TEST_P(CreateShortcutConfirmationViewBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(CreateShortcutConfirmationViewBrowserTest,
                        VerifyCreateShortcutDialogContents) {
-  auto app_info = std::make_unique<web_app::WebAppInstallInfo>(
-      web_app::GenerateManifestIdFromStartUrlOnly(GURL("https://example.com")));
+  auto app_info = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example.com"));
   app_info->title = u"Test app";
-  app_info->start_url = GURL("https://example.com");
 
   web_app::SetAutoAcceptWebAppDialogForTesting(/*auto_accept=*/false,
                                                /*auto_open_in_window=*/false);
@@ -208,11 +204,9 @@ IN_PROC_BROWSER_TEST_P(CreateShortcutConfirmationViewBrowserTest,
   };
 
   for (const TestCases& test_case : test_cases) {
-    auto app_info = std::make_unique<web_app::WebAppInstallInfo>(
-        web_app::GenerateManifestIdFromStartUrlOnly(
-            GURL("https://example.com")));
+    auto app_info = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+        GURL("https://example.com"));
     app_info->title = test_case.input;
-    app_info->start_url = GURL("https://example.com");
 
     bool is_accepted = false;
     std::u16string title;

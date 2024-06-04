@@ -146,7 +146,8 @@ void InstallAppFromVerifiedManifestCommand::OnManifestParsed(
   }
 
   GetMutableDebugValue().Set("manifest_parsed", true);
-  web_app_info_ = std::make_unique<WebAppInstallInfo>(manifest->id);
+  web_app_info_ =
+      std::make_unique<WebAppInstallInfo>(manifest->id, manifest->start_url);
   web_app_info_->user_display_mode = mojom::UserDisplayMode::kStandalone;
 
   UpdateWebAppInfoFromManifest(*manifest, verified_manifest_url_,

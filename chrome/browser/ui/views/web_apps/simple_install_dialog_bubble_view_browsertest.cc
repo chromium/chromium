@@ -94,14 +94,11 @@ class SimpleInstallDialogBubbleViewBrowserTest
 
 IN_PROC_BROWSER_TEST_P(SimpleInstallDialogBubbleViewBrowserTest,
                        ShowBubbleInPWAWindow) {
-  auto app_info = std::make_unique<WebAppInstallInfo>(
-      GenerateManifestIdFromStartUrlOnly(GURL("https://example.com")));
-  app_info->title = u"Test app";
-  app_info->start_url = GURL("https://example.com");
   Profile* profile = browser()->profile();
-  webapps::AppId app_id = test::InstallWebApp(profile, std::move(app_info));
+  webapps::AppId app_id = test::InstallDummyWebApp(profile, "Test app",
+                                                   GURL("https://example.com"));
   Browser* browser = ::web_app::LaunchWebAppBrowser(profile, app_id);
-  app_info = GetAppInfo();
+  auto app_info = GetAppInfo();
   std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker =
       GetInstallTracker(browser);
 

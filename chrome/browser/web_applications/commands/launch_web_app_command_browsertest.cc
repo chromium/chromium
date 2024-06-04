@@ -387,9 +387,8 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest, StandaloneLaunchAppConfig) {
 IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest, AppLaunchNoIntegration) {
   const GURL kStartUrl =
       https_server()->GetURL("/banners/manifest_test_page.html");
-  auto web_app_info = std::make_unique<WebAppInstallInfo>(
-      GenerateManifestIdFromStartUrlOnly(kStartUrl));
-  web_app_info->start_url = kStartUrl;
+  auto web_app_info =
+      WebAppInstallInfo::CreateWithStartUrlForTesting(kStartUrl);
   web_app_info->scope = kStartUrl.GetWithoutFilename();
   web_app_info->title = u"Name";
   web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
