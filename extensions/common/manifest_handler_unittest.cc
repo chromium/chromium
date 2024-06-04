@@ -17,6 +17,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/install_warning.h"
+#include "extensions/common/manifest_handler_registry.h"
 #include "extensions/common/scoped_testing_manifest_handler_registry.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

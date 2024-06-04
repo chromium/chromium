@@ -352,6 +352,8 @@ static_library("common") {
     "manifest_handler.h",
     "manifest_handler_helpers.cc",
     "manifest_handler_helpers.h",
+    "manifest_handler_registry.cc",
+    "manifest_handler_registry.h",
     "manifest_handlers/app_display_info.cc",
     "manifest_handlers/app_display_info.h",
     "manifest_handlers/automation.cc",

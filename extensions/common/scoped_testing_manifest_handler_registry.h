@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "extensions/common/manifest_handler.h"
+#include "extensions/common/manifest_handler_registry.h"
 
 namespace extensions {
 
