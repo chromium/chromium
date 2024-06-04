@@ -5,8 +5,9 @@
     position: relative;
     width: 100%;
   }
+
   #breadcrumbArea {
-    background-color: var(--cros-bg-color);
+    background-color: var(--cros-sys-app_base_shaded);
     display: grid;
     grid-template-areas:
       '. . breadcrumb . .';
@@ -20,21 +21,22 @@
     during scrolling in hub subpages */
     z-index: 3;
   }
-  :host-context(body.jelly-enabled) #breadcrumbArea {
-    background-color: var(--cros-sys-app_base_shaded);
-  }
+
   personalization-breadcrumb {
     grid-area: breadcrumb;
   }
+
   personalization-toast {
     bottom: 16px;
     left: 16px;
     max-width: 380px;
     position: sticky;
   }
+
   sea-pen-router {
     --sea-pen-router-min-height: var(--personalization-app-subpage-container-min-height);
   }
+
   wallpaper-fullscreen {
     bottom: 0;
     height: 100%;

@@ -20,26 +20,12 @@
     color: var(--cros-text-color-secondary);
     display: flex;
     flex-flow: row nowrap;
-    font: var(--cros-headline-1-font);
+    font: var(--cros-title-1-font);
     height: 100%;
     width: 100%;
   }
 
-  :host-context(body.jelly-enabled) #selector {
-    font: var(--cros-title-1-font);
-  }
-
-  /**
-   * TODO: After Jelly is launched, remove the cr-icon-button-fill-color
-   * references from #homeButton. The color will be inherited from
-   * cros_color_overrides.
-   */
-  :host-context(body.jelly-enabled) #homeButton {
-    --cr-icon-button-fill-color: var(--cros-sys-secondary);
-  }
-
   #homeButton {
-    --cr-icon-button-fill-color: var(--cros-text-color-primary);
     --cr-icon-button-size: 36px;
     margin-inline-end: 6px;
     margin-inline-start: -10px;
@@ -48,7 +34,15 @@
   .breadcrumb {
     --ink-color: rgba(var(--cros-ripple-color-rgb), 1);
     --paper-ripple-opacity: var(--cros-ripple-opacity);
-    --text-color: var(--cros-text-color-secondary);
+    /*
+     * Use |!important| to override the default styles defined in
+     * ash/webui/common/resources/cr_elements/cros_color_overrides.css.
+     *
+     * TODO: b/324903595 - Remove |!important| when CrOS color tokens are
+     * embedded into ash cr-button.
+     */
+    --text-color: var(--cros-sys-on_surface) !important;
+    background-color: transparent !important;
     border: none;
     min-width: 48px;
   }
@@ -58,17 +52,11 @@
   }
 
   .breadcrumb:last-of-type {
-    --text-color: var(--cros-text-color-primary);
     flex: 0 1 auto;
   }
 
   iron-icon[icon='cr:chevron-right'] {
     flex: 0 0 auto;
-  }
-
-  :host-context(body.jelly-enabled) cr-button {
-    --text-color: var(--cros-sys-on_surface);
-    background-color: transparent;
   }
 
   #seaPenDropdown {

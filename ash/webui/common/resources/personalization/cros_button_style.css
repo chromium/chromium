@@ -24,10 +24,6 @@ cr-button.primary {
 }
 
 cr-button.primary:active {
-  box-shadow: 0 1px 2px rgba(66, 133, 244, 0.3), 0 1px 3px rgba(66, 133, 244, 0.15);
-}
-
-:host-context(body.jelly-enabled) cr-button.primary:active {
   box-shadow: none;
 }
 

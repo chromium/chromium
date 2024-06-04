@@ -19,8 +19,10 @@
 
 :host {
   --personalization-app-breadcrumb-height: 56px;
-  --personalization-app-subpage-container-min-height: calc(100vh - var(--personalization-app-breadcrumb-height));
-  --personalization-app-grid-item-background-color: var(--google-grey-100);
+  --personalization-app-subpage-container-min-height:
+      calc(100vh - var(--personalization-app-breadcrumb-height));
+  --personalization-app-grid-item-background-color:
+      var(--cros-sys-secondary_container);
   --personalization-app-grid-item-border-radius: 16px;
   --personalization-app-grid-item-height: 120px;
   --personalization-app-grid-item-spacing: 20px;
@@ -32,25 +34,6 @@
   --personalization-app-second-tone-opacity: 0.3;
 
   --personalization-app-label-font: var(--cros-button-2-font);
-}
-
-:host-context(body.jelly-enabled) {
-  --personalization-app-grid-item-background-color:
-      var(--cros-sys-secondary_container);
-}
-
-@media (prefers-color-scheme: dark) {
-  :host {
-    --personalization-app-grid-item-background-color: rgba(var(--google-grey-700-rgb), 0.3);
-  }
-
-  :host-context(body.jelly-enabled) {
-    /* When Jelly is enabled, the
-     * |personalization-app-grid-item-background-color| is the same for light
-     * and dark mode. */
-    --personalization-app-grid-item-background-color:
-        var(--cros-sys-secondary_container);
-  }
 }
 
 @keyframes ripple {
@@ -81,12 +64,9 @@
 }
 
 .preview-container {
-  border: 1px solid var(--cros-separator-color);
-  border-radius: 16px;
-}
-
-:host-context(body.jelly-enabled) .preview-container {
+  background-color: var(--cros-bg-color);
   border: none;
+  border-radius: 16px;
 }
 
 .preview-text-container,
@@ -196,11 +176,11 @@
 .ambient-subpage-element-title {
   color: var(--cros-text-color-primary);
   font: var(--personalization-app-label-font);
-  margin: 34px 10px 16px 10px;
+  margin: 20px 10px 16px 10px;
 }
 
 .ambient-toggle-row-container {
-  border: 1px solid var(--cros-separator-color);
+  border: none;
   border-radius: 8px;
   display: flex;
   flex-flow: column nowrap;
@@ -214,7 +194,7 @@
   flex: 1;
   flex-flow: row nowrap;
   justify-content: space-between;
-  margin: 0 20px;
+  margin: 0;
 }
 
 .ambient-toggle-row + .ambient-toggle-row {
@@ -222,7 +202,8 @@
 }
 
 .ambient-toggle-row > p {
-  font: var(--cros-body-1-font);
+  color: var(--cros-text-color-secondary);
+  font: var(--cros-body-2-font);
   height: 20px;
   margin: 0;
 }
@@ -236,6 +217,7 @@
 }
 
 .leftspacerbottom {
+  border-radius: 12px 0 0 12px;
   grid-area: leftspacerbottom;
 }
 
@@ -244,44 +226,16 @@
 }
 
 .rightspacerbottom {
+  border-radius: 0 12px 12px 0;
   grid-area: rightspacerbottom;
 }
 
-:host-context(body.jelly-enabled) div[class$='spacertop'] {
+div[class$='spacertop'] {
   background-color: var(--cros-sys-app_base_shaded);
 }
 
-:host-context(body.jelly-enabled) div[class$='spacerbottom'] {
+div[class$='spacerbottom'] {
   background-color: var(--cros-bg-color);
-}
-
-:host-context(body.jelly-enabled) .leftspacerbottom {
-  border-radius: 12px 0 0 12px;
-}
-
-:host-context(body.jelly-enabled) .rightspacerbottom {
-  border-radius: 0 12px 12px 0;
-}
-
-:host-context(body.jelly-enabled) .preview-container {
-  background-color: var(--cros-bg-color);
-}
-
-:host-context(body.jelly-enabled) .ambient-toggle-row-container {
-  border: none;
-}
-
-:host-context(body.jelly-enabled) .ambient-toggle-row {
-  margin: 0;
-}
-
-:host-context(body.jelly-enabled) .ambient-toggle-row > p {
-  color: var(--cros-text-color-secondary);
-  font: var(--cros-body-2-font);
-}
-
-:host-context(body.jelly-enabled) .ambient-subpage-element-title {
-  margin-top: 20px;
 }
 
 :host-context([dir=rtl]) iron-icon[icon='cr:chevron-right'] {
