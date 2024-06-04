@@ -57,6 +57,7 @@ content::WebUIDataSource* CreateAndAddManagementUIHtmlSource(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS)
       {"learnMore", IDS_LEARN_MORE},
       {"localTrustRoots", IDS_MANAGEMENT_LOCAL_TRUST_ROOTS},
+      {"filesCloudUpload", IDS_MANAGEMENT_FILES_CLOUD_UPLOAD},
       {"managementTrustRootsConfigured", IDS_MANAGEMENT_TRUST_ROOTS_CONFIGURED},
       {"deviceConfiguration", IDS_MANAGEMENT_DEVICE_CONFIGURATION},
       {"deviceReporting", IDS_MANAGEMENT_DEVICE_REPORTING},
