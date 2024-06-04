@@ -20,6 +20,7 @@ void MapNativeColorsToCssSystemColors(ColorMixer& mixer, ColorProviderKey key) {
   const SkColor system_highlight_color =
       skia::NSSystemColorToSkColor(NSColor.selectedTextBackgroundColor);
   mixer[kColorCssSystemHighlight] = {system_highlight_color};
+  mixer[kColorCssSystemHighlightText] = {SK_ColorBLACK};
 }
 
 }  // namespace ui

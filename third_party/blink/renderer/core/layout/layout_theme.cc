@@ -717,9 +717,7 @@ Color LayoutTheme::SystemColorFromColorProvider(
           color_provider->GetColor(ui::kColorCssSystemGrayText);
       break;
     case CSSValueID::kHighlight:
-      system_theme_color =
-          color_provider->GetColor(ui::kColorCssSystemHighlight);
-      break;
+      return SystemHighlightFromColorProvider(color_scheme, color_provider);
     case CSSValueID::kHighlighttext:
       system_theme_color =
           color_provider->GetColor(ui::kColorCssSystemHighlightText);
@@ -752,6 +750,14 @@ Color LayoutTheme::SystemColorFromColorProvider(
   }
 
   return Color::FromSkColor(system_theme_color);
+}
+
+Color LayoutTheme::SystemHighlightFromColorProvider(
+    mojom::blink::ColorScheme color_scheme,
+    const ui::ColorProvider* color_provider) const {
+  SkColor system_highlight_color =
+      color_provider->GetColor(ui::kColorCssSystemHighlight);
+  return Color::FromSkColor(system_highlight_color).BlendWithWhite();
 }
 
 Color LayoutTheme::PlatformTextSearchHighlightColor(

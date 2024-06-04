@@ -200,6 +200,10 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
   // rendered with enough contrast on the result of GetAccentColorOrDefault.
   Color GetAccentColorText(mojom::blink::ColorScheme color_scheme) const;
 
+  virtual Color SystemHighlightFromColorProvider(
+      mojom::blink::ColorScheme color_scheme,
+      const ui::ColorProvider* color_provider) const;
+
  protected:
   // The platform selection color.
   virtual Color PlatformActiveSelectionBackgroundColor(

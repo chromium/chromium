@@ -715,7 +715,7 @@ void CompleteControlsForcedColorsDefinition(ui::ColorMixer& mixer) {
 void CompleteDefaultCssSystemColorDefinition(ui::ColorMixer& mixer,
                                              bool dark_mode) {
   mixer[kColorCssSystemGrayText] = {SkColorSetRGB(0x80, 0x80, 0x80)};
-  mixer[kColorCssSystemHighlight] = {SK_ColorBLUE};
+  mixer[kColorCssSystemHighlight] = {SkColorSetRGB(0x19, 0x67, 0xD2)};
   mixer[kColorCssSystemHighlightText] = {SK_ColorWHITE};
   if (dark_mode) {
     mixer[kColorCssSystemBtnFace] = {SkColorSetRGB(0x6B, 0x6B, 0x6B)};

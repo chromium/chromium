@@ -20,4 +20,12 @@ LayoutTheme& LayoutTheme::NativeTheme() {
   return *layout_theme;
 }
 
+Color LayoutThemeWin::SystemHighlightFromColorProvider(
+    mojom::blink::ColorScheme color_scheme,
+    const ui::ColorProvider* color_provider) const {
+  SkColor system_highlight_color =
+      color_provider->GetColor(ui::kColorCssSystemHighlight);
+  return Color::FromSkColor(system_highlight_color);
+}
+
 }  // namespace blink

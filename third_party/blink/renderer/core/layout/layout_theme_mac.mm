@@ -101,6 +101,21 @@ Color LayoutThemeMac::GetSystemAccentColor(
   return GetSystemColor(MacSystemColorID::kControlAccentColor, color_scheme);
 }
 
+Color LayoutThemeMac::SystemHighlightFromColorProvider(
+    mojom::blink::ColorScheme color_scheme,
+    const ui::ColorProvider* color_provider) const {
+  SkColor system_highlight_color =
+      color_provider->GetColor(ui::kColorCssSystemHighlight);
+  Color color = Color::FromSkColor(system_highlight_color);
+  // BlendWithWhite() darkens Mac system colors too much.
+  // Apply .8 (204/255) alpha instead, same as Safari.
+  if (color_scheme == mojom::blink::ColorScheme::kDark) {
+    return Color(color.Red(), color.Green(), color.Blue(), 204);
+  }
+
+  return color.BlendWithWhite();
+}
+
 Color LayoutThemeMac::GetCustomFocusRingColor(
     mojom::blink::ColorScheme color_scheme) const {
   return color_scheme == mojom::blink::ColorScheme::kDark

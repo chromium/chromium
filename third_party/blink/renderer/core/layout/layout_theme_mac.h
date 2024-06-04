@@ -54,6 +54,9 @@ class LayoutThemeMac final : public LayoutThemeDefault {
       mojom::blink::ColorScheme color_scheme) const override;
   Color GetSystemAccentColor(
       mojom::blink::ColorScheme color_scheme) const override;
+  Color SystemHighlightFromColorProvider(
+      mojom::blink::ColorScheme color_scheme,
+      const ui::ColorProvider* color_provider) const override;
 
  protected:
   // Controls color values returned from FocusRingColor().
