@@ -49,6 +49,8 @@ class ArcVmWorkingSetTrimExecutor {
   static void OnArcVmMemoryGuestReclaim(
       std::unique_ptr<base::ElapsedTimer> elapsed_timer,
       ResultCallback callback,
+      bool should_reclaim_from_host,
+      int page_limit,
       arc::mojom::ReclaimResultPtr result);
 
   static void LogErrorAndInvokeCallback(const char* error,
