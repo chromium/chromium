@@ -207,10 +207,10 @@
   <message name="IDS_APP_MANAGEMENT_PERMISSION_ALLOWED_BUT_NO_MICROPHONE_CONNECTED_TEXT_WITH_DETAILS" desc="Label explaining that access to microphone is allowed for an app but no microphone is connected to the device with details." translateable="false">
     Allowed – <ph name="PERMISSION_DETAILS">$1<ex>While in use</ex></ph>. Connect a microphone to your device.
   </message>
-  <message name="IDS_APP_MANAGEMENT_PERMISSION_ALLOWED_BUT_MICROPHONE_HW_SWITCH_ACTIVE_TEXT" desc="Label explaining that access to microphone is allowed for an app but microphone is blocked by hardware switch." translateable="false">
+  <message name="IDS_APP_MANAGEMENT_PERMISSION_ALLOWED_BUT_MICROPHONE_HW_SWITCH_ACTIVE_TEXT" desc="Label explaining that access to microphone is allowed for an app but microphone is blocked by hardware switch.">
     Allowed. Turn on microphone using physical switch.
   </message>
-  <message name="IDS_APP_MANAGEMENT_PERMISSION_ALLOWED_BUT_MICROPHONE_HW_SWITCH_ACTIVE_TEXT_WITH_DETAILS" desc="Label explaining that access to microphone is allowed for an app but microphone is blocked by hardware switch with details." translateable="false">
+  <message name="IDS_APP_MANAGEMENT_PERMISSION_ALLOWED_BUT_MICROPHONE_HW_SWITCH_ACTIVE_TEXT_WITH_DETAILS" desc="Label explaining that access to microphone is allowed for an app but microphone is blocked by hardware switch with details.">
     Allowed – <ph name="PERMISSION_DETAILS">$1<ex>While in use</ex></ph>. Turn on microphone using physical switch.
   </message>
 
