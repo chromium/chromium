@@ -20,11 +20,12 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * Default implementation of the NotificationManagerProxy, which passes through
- * all calls to the normal Android Notification Manager.
+ * Default implementation of the NotificationManagerProxy, which passes through all calls to the
+ * normal Android Notification Manager.
  */
 public class NotificationManagerProxyImpl implements NotificationManagerProxy {
     private static final String TAG = "NotifManagerProxy";
@@ -111,6 +112,18 @@ public class NotificationManagerProxyImpl implements NotificationManagerProxy {
         try (TraceEvent e =
                 TraceEvent.scoped("NotificationManagerProxyImpl.deleteNotificationChannel")) {
             mNotificationManager.deleteNotificationChannel(id);
+        }
+    }
+
+    @Override
+    public void deleteAllNotificationChannels(Function<String, Boolean> func) {
+        try (TraceEvent e =
+                TraceEvent.scoped("NotificationManagerProxyImpl.deleteAllNotificationChannels")) {
+            for (NotificationChannel channel : mNotificationManager.getNotificationChannels()) {
+                if (func.apply(channel.getId())) {
+                    mNotificationManager.deleteNotificationChannel(channel.getId());
+                }
+            }
         }
     }
 

@@ -18,6 +18,7 @@ import org.chromium.base.task.AsyncTask;
 
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -100,6 +101,21 @@ public class AsyncNotificationManagerProxyImpl implements AsyncNotificationManag
         runAsync(
                 TraceEvent.scoped("AsyncNotificationManagerProxyImpl.deleteNotificationChannel"),
                 () -> mNotificationManager.deleteNotificationChannel(id));
+    }
+
+    @Override
+    public void deleteAllNotificationChannels(Function<String, Boolean> func) {
+        runAsync(
+                TraceEvent.scoped(
+                        "AsyncNotificationManagerProxyImpl.deleteAllNotificationChannels"),
+                () -> {
+                    for (NotificationChannel channel :
+                            mNotificationManager.getNotificationChannels()) {
+                        if (func.apply(channel.getId())) {
+                            mNotificationManager.deleteNotificationChannel(channel.getId());
+                        }
+                    }
+                });
     }
 
     @Override

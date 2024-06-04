@@ -7,10 +7,8 @@ package org.chromium.components.browser_ui.notifications;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationChannelGroup;
-import android.os.Build;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 
 import org.chromium.base.Callback;
 import org.chromium.base.task.PostTask;
@@ -20,6 +18,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 /**
  * Mocked implementation of the NotificationManagerProxy. Imitates behavior of the Android
@@ -149,37 +148,33 @@ public class MockNotificationManagerProxy implements NotificationManagerProxy {
     // have compatibility issues (NotificationChannel is new in O), and we currently don't need them
     // where the MockNotificationManagerProxy is used in tests.
 
-    @RequiresApi(Build.VERSION_CODES.O)
     @Override
     public void createNotificationChannel(NotificationChannel channel) {}
 
-    @RequiresApi(Build.VERSION_CODES.O)
     @Override
     public void createNotificationChannelGroup(NotificationChannelGroup channelGroup) {}
 
-    @RequiresApi(Build.VERSION_CODES.O)
     @Override
     public List<NotificationChannel> getNotificationChannels() {
         return null;
     }
 
     @Override
-    @RequiresApi(Build.VERSION_CODES.O)
     public void getNotificationChannelGroups(Callback<List<NotificationChannelGroup>> callback) {
         callback.onResult(null);
     }
 
     @Override
-    @RequiresApi(Build.VERSION_CODES.O)
     public void getNotificationChannels(Callback<List<NotificationChannel>> callback) {
         callback.onResult(null);
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     @Override
     public void deleteNotificationChannel(String id) {}
 
-    @RequiresApi(Build.VERSION_CODES.O)
+    @Override
+    public void deleteAllNotificationChannels(Function<String, Boolean> func) {}
+
     @Override
     public NotificationChannel getNotificationChannel(String channelId) {
         return null;

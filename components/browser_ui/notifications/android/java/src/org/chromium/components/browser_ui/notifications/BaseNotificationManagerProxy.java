@@ -11,6 +11,7 @@ import android.app.NotificationChannelGroup;
 import org.chromium.base.Callback;
 
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * Base interface for NofificationManagerProxy that only supports simple functionalities. Remove
@@ -58,6 +59,13 @@ public interface BaseNotificationManagerProxy {
      *     https://developer.android.com/reference/android/app/NotificationManager#deleteNotificationChannel(java.lang.String)</a>
      */
     void deleteNotificationChannel(String id);
+
+    /**
+     * Delete all notification channels that satisfies a given function.
+     *
+     * @param func Function to determine whether a channel Id needs to be deleted.
+     */
+    void deleteAllNotificationChannels(Function<String, Boolean> func);
 
     /**
      * Post a Android notification to the notification bar.
