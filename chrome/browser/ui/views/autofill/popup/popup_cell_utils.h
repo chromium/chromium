@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_POPUP_CELL_UTILS_H_
 
 #include <memory>
-#include <optional>
+#include <string>
+#include <vector>
 
-#include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/vector_icon_types.h"
-#include "ui/views/style/typography.h"
 
 namespace views {
 class View;
@@ -104,9 +104,8 @@ void AddSuggestionContentToView(
     std::vector<std::unique_ptr<views::View>> subtext_views,
     PopupRowContentView& content_view);
 
-std::unique_ptr<views::ImageView> ImageViewFromVectorIcon(
-    const gfx::VectorIcon& vector_icon,
-    int icon_size);
+ui::ImageModel ImageModelFromVectorIcon(const gfx::VectorIcon& vector_icon,
+                                        int icon_size);
 
 // Appplies a grayed-out disabled style to views conveying that it is
 // deactivated and non-acceptable.
