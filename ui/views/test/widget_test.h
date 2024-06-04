@@ -17,6 +17,7 @@
 #include "build/chromecast_buildflags.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/test/views_test_base.h"
+#include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -34,8 +35,6 @@ class ImeKeyEventDispatcher;
 namespace views {
 
 class View;
-class Widget;
-
 namespace internal {
 
 class RootView;
@@ -83,25 +82,43 @@ class WidgetTest : public ViewsTestBase {
 
   ~WidgetTest() override;
 
+  // TODO(crbug.com/40232479): Once work on the referenced bug is complete,
+  // update the following functions to return a std::unique_ptr<Widget> and
+  // remove the ownership parameter.
+  //
   // Create Widgets with |native_widget| in InitParams set to an instance of
   // platform specific widget type that has stubbled capture calls. This will
   // create a non-desktop widget.
-  Widget* CreateTopLevelPlatformWidget();
-  Widget* CreateTopLevelFramelessPlatformWidget();
-  Widget* CreateChildPlatformWidget(gfx::NativeView parent_native_view);
+  Widget* CreateTopLevelPlatformWidget(
+      Widget::InitParams::Ownership ownership =
+          Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
+  Widget* CreateTopLevelFramelessPlatformWidget(
+      Widget::InitParams::Ownership ownership =
+          Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
+  Widget* CreateChildPlatformWidget(
+      gfx::NativeView parent_native_view,
+      Widget::InitParams::Ownership ownership =
+          Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
 
 #if BUILDFLAG(ENABLE_DESKTOP_AURA)
   // Create Widgets with |native_widget| in InitParams set to an instance of
   // platform specific widget type that has stubbled capture calls. This will
   // create a desktop widget.
-  Widget* CreateTopLevelPlatformDesktopWidget();
+  Widget* CreateTopLevelPlatformDesktopWidget(
+      Widget::InitParams::Ownership ownership =
+          Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
 #endif
 
   // Create Widgets initialized without a |native_widget| set in InitParams.
   // Depending on the test environment, ViewsDelegate::OnBeforeWidgetInit() may
   // provide a desktop or non-desktop NativeWidget.
-  Widget* CreateTopLevelNativeWidget();
-  Widget* CreateChildNativeWidgetWithParent(Widget* parent);
+  Widget* CreateTopLevelNativeWidget(
+      Widget::InitParams::Ownership ownership =
+          Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
+  Widget* CreateChildNativeWidgetWithParent(
+      Widget* parent,
+      Widget::InitParams::Ownership ownership =
+          Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
 
   View* GetMousePressedHandler(views::internal::RootView* root_view);
 

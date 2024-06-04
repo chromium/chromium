@@ -70,73 +70,74 @@ WidgetTest::WidgetTest(
 
 WidgetTest::~WidgetTest() = default;
 
-Widget* WidgetTest::CreateTopLevelPlatformWidget() {
-  Widget* widget = new Widget;
+Widget* WidgetTest::CreateTopLevelPlatformWidget(
+    Widget::InitParams::Ownership ownership) {
+  auto widget = std::make_unique<Widget>();
   Widget::InitParams params =
-      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
-                   Widget::InitParams::TYPE_WINDOW);
+      CreateParams(ownership, Widget::InitParams::TYPE_WINDOW);
   params.native_widget =
-      CreatePlatformNativeWidgetImpl(widget, kStubCapture, nullptr);
+      CreatePlatformNativeWidgetImpl(widget.get(), kStubCapture, nullptr);
   widget->Init(std::move(params));
-  return widget;
+  return widget.release();
 }
 
 #if BUILDFLAG(ENABLE_DESKTOP_AURA)
-Widget* WidgetTest::CreateTopLevelPlatformDesktopWidget() {
-  Widget* widget = new Widget;
+Widget* WidgetTest::CreateTopLevelPlatformDesktopWidget(
+    Widget::InitParams::Ownership ownership) {
+  auto widget = std::make_unique<Widget>();
   Widget::InitParams params =
-      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
-                   Widget::InitParams::TYPE_WINDOW);
+      CreateParams(ownership, Widget::InitParams::TYPE_WINDOW);
   params.native_widget = CreatePlatformDesktopNativeWidgetImpl(
-      widget, kStubCapture, base::DoNothing());
+      widget.get(), kStubCapture, base::DoNothing());
   widget->Init(std::move(params));
-  return widget;
+  return widget.release();
 }
 #endif
 
-Widget* WidgetTest::CreateTopLevelFramelessPlatformWidget() {
-  Widget* widget = new Widget;
+Widget* WidgetTest::CreateTopLevelFramelessPlatformWidget(
+    Widget::InitParams::Ownership ownership) {
+  auto widget = std::make_unique<Widget>();
   Widget::InitParams params =
-      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
-                   Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+      CreateParams(ownership, Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.native_widget =
-      CreatePlatformNativeWidgetImpl(widget, kStubCapture, nullptr);
+      CreatePlatformNativeWidgetImpl(widget.get(), kStubCapture, nullptr);
   widget->Init(std::move(params));
-  return widget;
+  return widget.release();
 }
 
 Widget* WidgetTest::CreateChildPlatformWidget(
-    gfx::NativeView parent_native_view) {
+    gfx::NativeView parent_native_view,
+    Widget::InitParams::Ownership ownership) {
   Widget::InitParams params =
-      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
-                   Widget::InitParams::TYPE_CONTROL);
+      CreateParams(ownership, Widget::InitParams::TYPE_CONTROL);
   params.parent = parent_native_view;
-  Widget* child = new Widget;
+  auto child = std::make_unique<Widget>();
   params.native_widget =
-      CreatePlatformNativeWidgetImpl(child, kStubCapture, nullptr);
+      CreatePlatformNativeWidgetImpl(child.get(), kStubCapture, nullptr);
   child->Init(std::move(params));
   child->SetContentsView(std::make_unique<View>());
-  return child;
+  return child.release();
 }
 
-Widget* WidgetTest::CreateTopLevelNativeWidget() {
-  Widget* toplevel = new Widget;
+Widget* WidgetTest::CreateTopLevelNativeWidget(
+    Widget::InitParams::Ownership ownership) {
+  auto toplevel = std::make_unique<Widget>();
   Widget::InitParams params =
-      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
-                   Widget::InitParams::TYPE_WINDOW);
+      CreateParams(ownership, Widget::InitParams::TYPE_WINDOW);
   toplevel->Init(std::move(params));
-  return toplevel;
+  return toplevel.release();
 }
 
-Widget* WidgetTest::CreateChildNativeWidgetWithParent(Widget* parent) {
-  Widget* child = new Widget;
+Widget* WidgetTest::CreateChildNativeWidgetWithParent(
+    Widget* parent,
+    Widget::InitParams::Ownership ownership) {
+  auto child = std::make_unique<Widget>();
   Widget::InitParams params =
-      CreateParams(Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
-                   Widget::InitParams::TYPE_CONTROL);
+      CreateParams(ownership, Widget::InitParams::TYPE_CONTROL);
   params.parent = parent->GetNativeView();
   child->Init(std::move(params));
   child->SetContentsView(std::make_unique<View>());
-  return child;
+  return child.release();
 }
 
 View* WidgetTest::GetMousePressedHandler(views::internal::RootView* root_view) {
