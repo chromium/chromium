@@ -52,6 +52,7 @@ import {Route, Router, routes} from '../router.js';
 import {AndroidAppsBrowserProxyImpl, AndroidAppsInfo} from './android_apps_browser_proxy.js';
 import {getAppNotificationProvider} from './app_notifications_page/mojo_interface_provider.js';
 import {getAppParentalControlsProvider} from './app_parental_controls/mojo_interface_provider.js';
+import {ParentalControlsDialogType, recordParentalControlsDialogFlowCompleted, recordParentalControlsDialogOpened} from './app_parental_controls/metrics_utils.js';
 import {getTemplate} from './os_apps_page.html.js';
 
 export function isAppInstalled(app: AppWithNotifications): boolean {
@@ -378,33 +379,45 @@ export class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
   private onClickParentalControls_(): void {
     if (this.isParentalControlsSetupCompleted_()) {
       this.showParentalControlsVerifyPinDialog_ = true;
+      recordParentalControlsDialogOpened(
+          ParentalControlsDialogType.ENTER_SUBPAGE_VERIFICATION);
     }
   }
 
   private setUpParentalControls_(e: Event): void {
     this.showParentalControlsSetupPinDialog_ = true;
+    recordParentalControlsDialogOpened(
+        ParentalControlsDialogType.SET_UP_CONTROLS);
     // Stop propagation to keep the subpage from opening.
     e.stopPropagation();
   }
 
   private disableParentalControls_(e: Event): void {
     this.showParentalControlsDisablePinDialog_ = true;
+    recordParentalControlsDialogOpened(
+        ParentalControlsDialogType.DISABLE_CONTROLS_VERIFICATION);
     // Stop propagation to keep the subpage from opening.
     e.stopPropagation();
   }
 
   private onAccessPinVerified_(): void {
     this.navigateToParentalControls_();
+    recordParentalControlsDialogFlowCompleted(
+        ParentalControlsDialogType.ENTER_SUBPAGE_VERIFICATION);
   }
 
   private onSetupPinSuccess_(): void {
     this.navigateToParentalControls_();
+    recordParentalControlsDialogFlowCompleted(
+        ParentalControlsDialogType.SET_UP_CONTROLS);
   }
 
   private onDisablePinVerified_(): void {
     this.setPrefValue('on_device_app_controls.setup_completed', false);
     this.setPrefValue('on_device_app_controls.pin', '');
     this.parentalControlsHandler_.onControlsDisabled();
+    recordParentalControlsDialogFlowCompleted(
+        ParentalControlsDialogType.DISABLE_CONTROLS_VERIFICATION);
   }
 
   private onVerifyPinDialogClose_(): void {

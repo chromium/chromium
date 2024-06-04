@@ -5,7 +5,7 @@
 import 'chrome://os-settings/lazy_load.js';
 import 'chrome://os-settings/os_settings.js';
 
-import {SettingsAndroidAppsSubpageElement} from 'chrome://os-settings/lazy_load.js';
+import {ParentalControlsDialogAction, SettingsAndroidAppsSubpageElement} from 'chrome://os-settings/lazy_load.js';
 import {AndroidAppsBrowserProxyImpl, appNotificationHandlerMojom, CrDialogElement, createRouterForTesting, CrLinkRowElement, OsSettingsAppsPageElement, OsSettingsRoutes, Router, routes, routesMojom, setAppNotificationProviderForTesting, settingMojom, SettingsDropdownMenuElement} from 'chrome://os-settings/os_settings.js';
 import {Permission} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {createBoolPermission} from 'chrome://resources/cr_components/app_management/permission_util.js';
@@ -16,6 +16,7 @@ import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
+import {FakeMetricsPrivate} from '../fake_metrics_private.js';
 import {clearBody, hasStringProperty} from '../utils.js';
 
 import {FakeAppNotificationHandler} from './app_notifications_page/fake_app_notification_handler.js';
@@ -307,7 +308,12 @@ suite('AppsPageTests', () => {
   });
 
   suite('Main Page', () => {
+    let fakeMetricsPrivate: FakeMetricsPrivate;
+
     setup(() => {
+      fakeMetricsPrivate = new FakeMetricsPrivate();
+      chrome.metricsPrivate = fakeMetricsPrivate;
+
       appsPage.prefs = getFakePrefs();
       appsPage.androidAppsInfo = {
         playStoreEnabled: false,
@@ -416,6 +422,11 @@ suite('AppsPageTests', () => {
             const setupPinDialog =
                 appsPage.shadowRoot!.querySelector<HTMLElement>('#setupPin');
             assertTrue(!!setupPinDialog);
+            assertEquals(
+                1,
+                fakeMetricsPrivate.countMetricValue(
+                    'ChromeOS.OnDeviceControls.DialogAction.SetUpControls',
+                    ParentalControlsDialogAction.OPEN_DIALOG));
 
             // Simulate PIN entry.
             const pin = '123456';
@@ -452,6 +463,11 @@ suite('AppsPageTests', () => {
             assertEquals(
                 routes.APP_PARENTAL_CONTROLS,
                 Router.getInstance().currentRoute);
+            assertEquals(
+                1,
+                fakeMetricsPrivate.countMetricValue(
+                    'ChromeOS.OnDeviceControls.DialogAction.SetUpControls',
+                    ParentalControlsDialogAction.FLOW_COMPLETED));
           });
 
       test(
@@ -525,6 +541,12 @@ suite('AppsPageTests', () => {
             const verifyPinDialog =
                 appsPage.shadowRoot!.querySelector<HTMLElement>('#verifyPin');
             assertTrue(!!verifyPinDialog);
+            assertEquals(
+                1,
+                fakeMetricsPrivate.countMetricValue(
+                    'ChromeOS.OnDeviceControls.DialogAction.' +
+                        'VerifyToEnterControlsPage',
+                    ParentalControlsDialogAction.OPEN_DIALOG));
 
             // Simulate PIN entry.
             const verifyPinKeyboard =
@@ -545,6 +567,12 @@ suite('AppsPageTests', () => {
             assertEquals(
                 routes.APP_PARENTAL_CONTROLS,
                 Router.getInstance().currentRoute);
+            assertEquals(
+                1,
+                fakeMetricsPrivate.countMetricValue(
+                    'ChromeOS.OnDeviceControls.DialogAction.' +
+                        'VerifyToEnterControlsPage',
+                    ParentalControlsDialogAction.FLOW_COMPLETED));
           });
 
       test(
@@ -721,6 +749,12 @@ suite('AppsPageTests', () => {
                 appsPage.shadowRoot!.querySelector<HTMLElement>(
                     '#disableDialog');
             assertTrue(!!disableDialog);
+            assertEquals(
+                1,
+                fakeMetricsPrivate.countMetricValue(
+                    'ChromeOS.OnDeviceControls.DialogAction.' +
+                        'VerifyToDisableControls',
+                    ParentalControlsDialogAction.OPEN_DIALOG));
 
             // Simulate PIN entry.
             const disablePinKeyboard =
@@ -744,6 +778,12 @@ suite('AppsPageTests', () => {
             assertFalse(
                 appsPage.prefs.on_device_app_controls.setup_completed.value);
             assertTrue(appsPage.prefs.on_device_app_controls.pin.value === '');
+            assertEquals(
+                1,
+                fakeMetricsPrivate.countMetricValue(
+                    'ChromeOS.OnDeviceControls.DialogAction.' +
+                        'VerifyToDisableControls',
+                    ParentalControlsDialogAction.FLOW_COMPLETED));
           });
 
       test(

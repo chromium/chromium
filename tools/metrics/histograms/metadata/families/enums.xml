@@ -251,6 +251,15 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<enum name="OnDeviceControlsDialogAction">
+  <int value="0" label="Dialog opened">
+    Recorded when the user opens the dialog.
+  </int>
+  <int value="1" label="Dialog flow completed">
+    Recorded when the user completes the dialog flow.
+  </int>
+</enum>
+
 <enum name="ParentAccessCodeAction">
   <summary>Action resulting from parent access code dialog</summary>
   <int value="0" label="Validation success"/>

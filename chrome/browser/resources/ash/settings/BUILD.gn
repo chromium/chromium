@@ -437,6 +437,7 @@ build_webui("build") {
     "os_apps_page/app_management_page/plugin_vm_page/plugin_vm_browser_proxy.ts",
     "os_apps_page/app_management_page/util.ts",
     "os_apps_page/app_notifications_page/mojo_interface_provider.ts",
+    "os_apps_page/app_parental_controls/metrics_utils.ts",
     "os_apps_page/app_parental_controls/mojo_interface_provider.ts",
     "os_bluetooth_page/os_bluetooth_devices_subpage_browser_proxy.ts",
     "os_bluetooth_page/settings_fast_pair_constants.ts",

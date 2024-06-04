@@ -280,6 +280,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.OnDeviceControls.DialogAction.{DialogType}"
+    enum="OnDeviceControlsDialogAction" expires_after="2024-12-12">
+  <owner>courtneywong@chromium.org</owner>
+  <owner>cros-families-eng@google.com</owner>
+  <summary>
+    Records user interactions with the dialogs related to the on-device parental
+    controls feature. Records actions such as the user opening the dialog and
+    the user completing the dialog flow.
+  </summary>
+  <token key="DialogType">
+    <variant name="SetUpControls"/>
+    <variant name="VerifyToDisableControls"/>
+    <variant name="VerifyToEnterControlsPage"/>
+  </token>
+</histogram>
+
 <histogram name="ChromeOS.OnDeviceControls.PinSetupCompleted" enum="Boolean"
     expires_after="2024-12-12">
   <owner>courtneywong@chromium.org</owner>
