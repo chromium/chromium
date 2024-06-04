@@ -155,7 +155,7 @@ void DeskButton::Layout(PassKey) {
 void DeskButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   // Avoid failing accessibility checks if we don't have a name.
   Button::GetAccessibleNodeData(node_data);
-  if (GetAccessibleName().empty()) {
+  if (GetViewAccessibility().GetCachedName().empty()) {
     node_data->SetNameExplicitlyEmpty();
   }
 

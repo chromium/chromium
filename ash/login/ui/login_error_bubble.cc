@@ -16,6 +16,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -62,7 +63,7 @@ void LoginErrorBubble::SetTextContent(const std::u16string& message) {
 
 void LoginErrorBubble::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kAlertDialog;
-  node_data->SetName(GetAccessibleName());
+  node_data->SetName(GetViewAccessibility().GetCachedName());
 }
 
 BEGIN_METADATA(LoginErrorBubble)

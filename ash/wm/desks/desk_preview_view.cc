@@ -46,6 +46,7 @@
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/geometry/vector2d_f.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/border.h"
 
@@ -528,7 +529,7 @@ void DeskPreviewView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   views::Button::GetAccessibleNodeData(node_data);
 
   // Avoid failing accessibility checks if we don't have a name.
-  if (GetAccessibleName().empty()) {
+  if (GetViewAccessibility().GetCachedName().empty()) {
     node_data->SetNameExplicitlyEmpty();
   }
 

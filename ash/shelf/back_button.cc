@@ -20,6 +20,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -48,7 +49,7 @@ void BackButton::PaintButtonContents(gfx::Canvas* canvas) {
 }
 
 std::u16string BackButton::GetTooltipText(const gfx::Point& p) const {
-  return GetAccessibleName();
+  return GetViewAccessibility().GetCachedName();
 }
 
 void BackButton::OnShelfButtonAboutToRequestFocusFromTabTraversal(

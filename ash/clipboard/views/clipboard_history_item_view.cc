@@ -423,7 +423,7 @@ void ClipboardHistoryItemView::GetAccessibleNodeData(ui::AXNodeData* data) {
   // TODO(crbug.com/325137417): Instead of retrieving the accessible name from
   // the accessibility cache, we will have to compute it here to initialize the
   // cache with it. This will be fixed on by the ViewsAX crew.
-  std::u16string ax_name = GetAccessibleName();
+  std::u16string ax_name = GetViewAccessibility().GetCachedName();
   if (ax_name.empty()) {
     data->SetNameExplicitlyEmpty();
   } else {

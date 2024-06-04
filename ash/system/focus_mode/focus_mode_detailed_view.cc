@@ -48,6 +48,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -522,7 +523,8 @@ void FocusModeDetailedView::UpdateToggleButtonAccessibility(
 
   toggle_button->SetAccessibleName(l10n_util::GetStringUTF16(
       IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_END_BUTTON_ACCESSIBLE_NAME));
-  toggle_button->SetTooltipText(toggle_button->GetAccessibleName());
+  toggle_button->SetTooltipText(
+      toggle_button->GetViewAccessibility().GetCachedName());
 }
 
 void FocusModeDetailedView::UpdateTimerAdjustmentButtonAccessibility() {

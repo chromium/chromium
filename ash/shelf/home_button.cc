@@ -452,7 +452,8 @@ void HomeButton::OnGestureEvent(ui::GestureEvent* event) {
 
 std::u16string HomeButton::GetTooltipText(const gfx::Point& p) const {
   // Don't show a tooltip if we're already showing the app list.
-  return IsShowingAppList() ? std::u16string() : GetAccessibleName();
+  return IsShowingAppList() ? std::u16string()
+                            : GetViewAccessibility().GetCachedName();
 }
 
 void HomeButton::OnShelfButtonAboutToRequestFocusFromTabTraversal(

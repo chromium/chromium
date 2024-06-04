@@ -84,7 +84,7 @@ void HoverHighlightView::AddRightView(views::View* view,
   tri_view_->SetContainerVisible(TriView::Container::END, true);
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kGenericContainer);
-  GetViewAccessibility().SetName(GetAccessibleName());
+  GetViewAccessibility().SetName(GetViewAccessibility().GetCachedName());
   GetViewAccessibility().SetDescription(
       l10n_util::GetStringUTF16(IDS_ASH_A11Y_ROLE_BUTTON));
 }
@@ -285,7 +285,7 @@ void HoverHighlightView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
     // Include "press search plus space to activate" when announcing.
     node_data->SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kClick);
 
-    node_data->SetName(GetAccessibleName());
+    node_data->SetName(GetViewAccessibility().GetCachedName());
     node_data->SetDescription(
         l10n_util::GetStringUTF16(IDS_ASH_A11Y_ROLE_BUTTON));
   } else {

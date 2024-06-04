@@ -16,6 +16,7 @@
 #include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/focus_ring.h"
@@ -94,7 +95,7 @@ gfx::Size ShelfControlButton::CalculatePreferredSize(
 
 void ShelfControlButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   ShelfButton::GetAccessibleNodeData(node_data);
-  node_data->SetNameChecked(GetAccessibleName());
+  node_data->SetNameChecked(GetViewAccessibility().GetCachedName());
 }
 
 BEGIN_METADATA(ShelfControlButton)

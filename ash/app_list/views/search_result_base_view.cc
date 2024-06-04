@@ -146,15 +146,16 @@ void SearchResultBaseView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kClick);
 
   // It is possible for the view to be visible but lack a result. When this
-  // happens, GetAccessibleName() will return an empty string. Because the
-  // focusable state is set in the constructor and not updated when the
-  // result is removed, the accessibility paint checks will fail.
+  // happens, `ViewAccessibility::GetCachedName` will return an empty
+  // string. Because the focusable state is set in the constructor and not
+  // updated when the result is removed, the accessibility paint checks will
+  // fail.
   if (!result()) {
     node_data->SetNameExplicitlyEmpty();
     return;
   }
 
-  node_data->SetName(GetAccessibleName());
+  node_data->SetName(GetViewAccessibility().GetCachedName());
 }
 
 void SearchResultBaseView::UpdateAccessibleName() {

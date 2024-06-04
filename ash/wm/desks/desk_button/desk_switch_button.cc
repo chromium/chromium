@@ -44,7 +44,7 @@ gfx::Size DeskSwitchButton::CalculatePreferredSize(
 void DeskSwitchButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   // Avoid failing accessibility checks if we don't have a name.
   views::ImageButton::GetAccessibleNodeData(node_data);
-  if (GetAccessibleName().empty()) {
+  if (GetViewAccessibility().GetCachedName().empty()) {
     node_data->SetNameExplicitlyEmpty();
   }
 }

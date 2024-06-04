@@ -39,6 +39,7 @@
 #include "ui/gfx/font_list.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/vector_icons.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/background.h"
@@ -468,8 +469,8 @@ void LockScreenMediaControlsView::GetAccessibleNodeData(
       l10n_util::GetStringUTF8(
           IDS_ASH_LOCK_SCREEN_MEDIA_CONTROLS_ACCESSIBLE_NAME));
 
-  if (!GetAccessibleName().empty()) {
-    node_data->SetName(GetAccessibleName());
+  if (!GetViewAccessibility().GetCachedName().empty()) {
+    node_data->SetName(GetViewAccessibility().GetCachedName());
   }
 }
 

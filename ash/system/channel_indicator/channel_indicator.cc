@@ -25,6 +25,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
@@ -98,7 +99,7 @@ ChannelIndicatorView::~ChannelIndicatorView() = default;
 
 void ChannelIndicatorView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kLabelText;
-  node_data->SetName(GetAccessibleName());
+  node_data->SetName(GetViewAccessibility().GetCachedName());
 }
 
 views::View* ChannelIndicatorView::GetTooltipHandlerForPoint(
@@ -306,10 +307,10 @@ bool ChannelIndicatorView::IsImageViewVisibleForTesting() {
 
 std::u16string ChannelIndicatorView::GetAccessibleNameString() const {
   if (image_view())
-    return image_view()->GetAccessibleName();
+    return image_view()->GetViewAccessibility().GetCachedName();
 
   if (label())
-    return label()->GetAccessibleName();
+    return label()->GetViewAccessibility().GetCachedName();
 
   return std::u16string();
 }

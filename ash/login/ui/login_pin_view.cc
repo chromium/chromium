@@ -15,8 +15,8 @@
 #include "ash/style/color_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/timer/timer.h"
 #include "ui/accessibility/ax_action_data.h"
@@ -29,6 +29,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
@@ -185,7 +186,7 @@ class BasePinButton : public views::View {
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
     node_data->role = ax::mojom::Role::kButton;
-    node_data->SetName(GetAccessibleName());
+    node_data->SetName(GetViewAccessibility().GetCachedName());
   }
 
  protected:
@@ -296,7 +297,7 @@ class LoginPinView::BackspacePinButton : public BasePinButton {
   }
 
   std::u16string GetTooltipText(const gfx::Point& p) const override {
-    return GetAccessibleName();
+    return GetViewAccessibility().GetCachedName();
   }
 
   void OnEnabledChanged() {

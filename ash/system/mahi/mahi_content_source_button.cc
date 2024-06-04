@@ -19,6 +19,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
@@ -66,7 +67,7 @@ void MahiContentSourceButton::RefreshContentSourceInfo() {
   SetText(mahi_manager->GetContentTitle());
 
   // TODO(b/331127382): Determine an appropriate a11y string.
-  if (GetAccessibleName().empty()) {
+  if (GetViewAccessibility().GetCachedName().empty()) {
     SetAccessibleName(u"Content source info");
   }
 }

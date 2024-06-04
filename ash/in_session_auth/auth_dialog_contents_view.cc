@@ -44,6 +44,7 @@
 #include "ui/gfx/font.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/text_constants.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -133,7 +134,7 @@ class AuthDialogContentsView::FingerprintView : public views::View {
     // views::View
     void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
       node_data->role = ax::mojom::Role::kStaticText;
-      node_data->SetNameChecked(GetAccessibleName());
+      node_data->SetNameChecked(GetViewAccessibility().GetCachedName());
     }
   };
 
@@ -368,7 +369,7 @@ class AuthDialogContentsView::TitleLabel : public views::Label {
   // views::View
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
     node_data->role = ax::mojom::Role::kStaticText;
-    node_data->SetNameChecked(GetAccessibleName());
+    node_data->SetNameChecked(GetViewAccessibility().GetCachedName());
   }
 
  private:

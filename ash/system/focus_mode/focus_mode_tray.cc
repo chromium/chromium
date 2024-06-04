@@ -31,6 +31,7 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/label.h"
@@ -117,7 +118,8 @@ class FocusModeTray::TaskItemView : public views::BoxLayoutView {
                                        kIconSize));
     radio_button_->SetAccessibleName(l10n_util::GetStringFUTF16(
         IDS_ASH_STATUS_TRAY_FOCUS_MODE_TRAY_RADIO_BUTTON, title));
-    radio_button_->SetTooltipText(radio_button_->GetAccessibleName());
+    radio_button_->SetTooltipText(
+        radio_button_->GetViewAccessibility().GetCachedName());
     radio_button_->SetEnabled(is_network_connected);
 
     task_title_ = AddChildView(std::make_unique<views::Label>());
