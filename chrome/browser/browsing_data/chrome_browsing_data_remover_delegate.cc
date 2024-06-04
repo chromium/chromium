@@ -664,8 +664,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
           ->OnCookiesDeleted();
     }
 
-    if (filter_builder->GetMode() ==
-        BrowsingDataFilterBuilder::Mode::kPreserve) {
+    if (filter_builder->MatchesMostOriginsAndDomains()) {
       auto* privacy_sandbox_settings =
           PrivacySandboxSettingsFactory::GetForProfile(profile_);
       if (privacy_sandbox_settings) {
@@ -1326,8 +1325,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
 #if BUILDFLAG(ENABLE_DOWNGRADE_PROCESSING)
   //////////////////////////////////////////////////////////////////////////////
   // Remove data for this profile contained in any snapshots.
-  if (remove_mask &&
-      filter_builder->GetMode() == BrowsingDataFilterBuilder::Mode::kPreserve) {
+  if (remove_mask && filter_builder->MatchesMostOriginsAndDomains()) {
     base::ThreadPool::PostTaskAndReply(
         FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
         base::BindOnce(&downgrade::RemoveDataForProfile, delete_begin_,
