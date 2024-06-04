@@ -25,7 +25,6 @@
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
 #include "chrome/browser/webauthn/proto/enclave_local_state.pb.h"
-#include "chrome/common/chrome_version.h"
 #include "components/cbor/diagnostic_writer.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
@@ -116,11 +115,6 @@ namespace {
 
 // Used so the EnclaveManager can be forced into invalid states for testing.
 static bool g_invariant_override_ = false;
-
-#if BUILDFLAG(IS_MAC)
-constexpr char kUserVerifyingKeyKeychainAccessGroup[] =
-    MAC_TEAM_IDENTIFIER_STRING "." MAC_BUNDLE_IDENTIFIER_STRING ".webauthn-uvk";
-#endif  // BUILDFLAG(IS_MAC)
 
 // The maximum number of bytes that will be downloaded from the above two URLs.
 constexpr size_t kMaxFetchBodyBytes = 128 * 1024;
@@ -863,7 +857,8 @@ std::unique_ptr<crypto::UnexportableKeyProvider> GetUnexportableKeyProvider() {
   }
   crypto::UnexportableKeyProvider::Config config;
 #if BUILDFLAG(IS_MAC)
-  config.keychain_access_group = kUserVerifyingKeyKeychainAccessGroup;
+  config.keychain_access_group =
+      EnclaveManager::kEnclaveKeysKeychainAccessGroup;
 #endif  // BUILDFLAG(IS_MAC)
   return crypto::GetUnexportableKeyProvider(std::move(config));
 }
@@ -872,7 +867,8 @@ crypto::UserVerifyingKeyProvider::Config MakeUserVerifyingKeyConfig(
     EnclaveManager::UVKeyOptions options) {
   crypto::UserVerifyingKeyProvider::Config config;
 #if BUILDFLAG(IS_MAC)
-  config.keychain_access_group = kUserVerifyingKeyKeychainAccessGroup;
+  config.keychain_access_group =
+      EnclaveManager::kEnclaveKeysKeychainAccessGroup;
   config.lacontext = std::move(options.lacontext);
 #endif  // BUILDFLAG(IS_MAC)
   return config;

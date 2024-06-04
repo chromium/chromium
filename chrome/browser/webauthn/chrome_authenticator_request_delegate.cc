@@ -40,6 +40,7 @@
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/browser/webauthn/cablev2_devices.h"
+#include "chrome/browser/webauthn/enclave_manager.h"
 #include "chrome/browser/webauthn/gpm_enclave_controller.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
 #include "chrome/browser/webauthn/webauthn_pref_names.h"
@@ -567,8 +568,7 @@ void ChromeWebAuthenticationDelegate::BrowserProvidedPasskeysAvailable(
     std::move(callback).Run(false);
     return;
   }
-#if BUILDFLAG(IS_WIN)
-  // Windows has to check for TPM availability.
+  // Check for TPM availability.
   if (tpm_available_.has_value()) {
     std::move(callback).Run(*tpm_available_);
     return;
@@ -576,8 +576,13 @@ void ChromeWebAuthenticationDelegate::BrowserProvidedPasskeysAvailable(
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
       base::BindOnce([]() -> bool {
+        crypto::UnexportableKeyProvider::Config config;
+#if BUILDFLAG(IS_MAC)
+        config.keychain_access_group =
+            EnclaveManager::kEnclaveKeysKeychainAccessGroup;
+#endif  // BUILDFLAG(IS_MAC)
         std::unique_ptr<crypto::UnexportableKeyProvider> provider =
-            crypto::GetUnexportableKeyProvider(/*config=*/{});
+            crypto::GetUnexportableKeyProvider(std::move(config));
         if (!provider) {
           FIDO_LOG(EVENT)
               << "Enclave authenticator disabled because no key provider";
@@ -600,9 +605,6 @@ void ChromeWebAuthenticationDelegate::BrowserProvidedPasskeysAvailable(
             std::move(callback).Run(available);
           },
           std::move(callback), weak_ptr_factory_.GetWeakPtr()));
-#else
-  std::move(callback).Run(true);
-#endif
 #endif
 }
 

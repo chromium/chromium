@@ -110,11 +110,9 @@ class ChromeWebAuthenticationDelegate final
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
  private:
-#if BUILDFLAG(IS_WIN)
   // Caches the result from looking up whether a TPM is available for Enclave
   // requests.
   std::optional<bool> tpm_available_;
-#endif
   base::WeakPtrFactory<ChromeWebAuthenticationDelegate> weak_ptr_factory_{this};
 };
 
