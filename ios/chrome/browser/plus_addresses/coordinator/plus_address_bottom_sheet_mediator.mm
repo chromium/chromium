@@ -8,7 +8,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/plus_addresses/features.h"
-#import "components/plus_addresses/plus_address_metrics.h"
+#import "components/plus_addresses/metrics/plus_address_metrics.h"
 #import "components/plus_addresses/plus_address_service.h"
 #import "components/plus_addresses/plus_address_types.h"
 #import "ios/chrome/browser/plus_addresses/ui/plus_address_bottom_sheet_constants.h"
@@ -64,7 +64,7 @@
       [weakSelf didReservePlusAddress:base::SysUTF8ToNSString(
                                           maybe_plus_profile->plus_address)];
     } else {
-      [weakSelf.consumer notifyError:plus_addresses::PlusAddressMetrics::
+      [weakSelf.consumer notifyError:plus_addresses::metrics::
                                          PlusAddressModalCompletionStatus::
                                              kReservePlusAddressError];
     }
@@ -83,7 +83,7 @@
           [weakSelf runAutofillCallback:base::SysUTF8ToNSString(
                                             maybe_plus_profile->plus_address)];
         } else {
-          [weakSelf.consumer notifyError:plus_addresses::PlusAddressMetrics::
+          [weakSelf.consumer notifyError:plus_addresses::metrics::
                                              PlusAddressModalCompletionStatus::
                                                  kConfirmPlusAddressError];
         }

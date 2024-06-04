@@ -11,7 +11,7 @@
 #import "base/types/expected.h"
 #import "build/branding_buildflags.h"
 #import "components/grit/components_resources.h"
-#import "components/plus_addresses/plus_address_metrics.h"
+#import "components/plus_addresses/metrics/plus_address_metrics.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/plus_addresses/ui/plus_address_bottom_sheet_constants.h"
 #import "ios/chrome/browser/plus_addresses/ui/plus_address_bottom_sheet_delegate.h"
@@ -120,8 +120,7 @@ UIImage* PlusAddressesLogo() {
   // Record of the time the bottom sheet is shown.
   base::Time _bottomSheetShownTime;
   // Error that occurred while bottom sheet is showing.
-  std::optional<
-      plus_addresses::PlusAddressMetrics::PlusAddressModalCompletionStatus>
+  std::optional<plus_addresses::metrics::PlusAddressModalCompletionStatus>
       _bottomSheetErrorStatus;
 }
 
@@ -187,8 +186,8 @@ UIImage* PlusAddressesLogo() {
   // fill any fields on the page.
   self.primaryActionButton.enabled = NO;
   [_delegate reservePlusAddress];
-  plus_addresses::PlusAddressMetrics::RecordModalEvent(
-      plus_addresses::PlusAddressMetrics::PlusAddressModalEvent::kModalShown);
+  plus_addresses::metrics::RecordModalEvent(
+      plus_addresses::metrics::PlusAddressModalEvent::kModalShown);
   _bottomSheetShownTime = base::Time::Now();
 }
 
@@ -199,9 +198,8 @@ UIImage* PlusAddressesLogo() {
   // Make sure the user perceives that something is happening via a spinner.
   [_activityIndicator startAnimating];
   [_delegate confirmPlusAddress];
-  plus_addresses::PlusAddressMetrics::RecordModalEvent(
-      plus_addresses::PlusAddressMetrics::PlusAddressModalEvent::
-          kModalConfirmed);
+  plus_addresses::metrics::RecordModalEvent(
+      plus_addresses::metrics::PlusAddressModalEvent::kModalConfirmed);
 }
 
 - (void)confirmationAlertSecondaryAction {
@@ -219,8 +217,8 @@ UIImage* PlusAddressesLogo() {
 }
 
 - (void)didConfirmPlusAddress {
-  plus_addresses::PlusAddressMetrics::RecordModalShownOutcome(
-      plus_addresses::PlusAddressMetrics::PlusAddressModalCompletionStatus::
+  plus_addresses::metrics::RecordModalShownOutcome(
+      plus_addresses::metrics::PlusAddressModalCompletionStatus::
           kModalConfirmed,
       base::Time::Now() - _bottomSheetShownTime, /*refresh_count=*/0);
   [_activityIndicator stopAnimating];
@@ -228,8 +226,7 @@ UIImage* PlusAddressesLogo() {
 }
 
 - (void)notifyError:
-    (plus_addresses::PlusAddressMetrics::PlusAddressModalCompletionStatus)
-        status {
+    (plus_addresses::metrics::PlusAddressModalCompletionStatus)status {
   // With any error, whether during the reservation step or the confirmation
   // step, disable submission of the modal.
   _bottomSheetErrorStatus = status;
@@ -357,16 +354,15 @@ UIImage* PlusAddressesLogo() {
 }
 
 - (void)dismiss {
-  plus_addresses::PlusAddressMetrics::RecordModalEvent(
-      plus_addresses::PlusAddressMetrics::PlusAddressModalEvent::
-          kModalCanceled);
+  plus_addresses::metrics::RecordModalEvent(
+      plus_addresses::metrics::PlusAddressModalEvent::kModalCanceled);
   if (_bottomSheetErrorStatus.has_value()) {
-    plus_addresses::PlusAddressMetrics::RecordModalShownOutcome(
+    plus_addresses::metrics::RecordModalShownOutcome(
         _bottomSheetErrorStatus.value(),
         base::Time::Now() - _bottomSheetShownTime, /*refresh_count=*/0);
   } else {
-    plus_addresses::PlusAddressMetrics::RecordModalShownOutcome(
-        plus_addresses::PlusAddressMetrics::PlusAddressModalCompletionStatus::
+    plus_addresses::metrics::RecordModalShownOutcome(
+        plus_addresses::metrics::PlusAddressModalCompletionStatus::
             kModalCanceled,
         base::Time::Now() - _bottomSheetShownTime, /*refresh_count=*/0);
   }

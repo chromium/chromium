@@ -7,7 +7,7 @@
 
 #include "base/time/default_clock.h"
 #include "chrome/browser/ui/plus_addresses/plus_address_creation_controller.h"
-#include "components/plus_addresses/plus_address_metrics.h"
+#include "components/plus_addresses/metrics/plus_address_metrics.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -74,13 +74,12 @@ class PlusAddressCreationControllerDesktop
   // duration and the number of refresh attempts. Resets both
   // `modal_shown_time_` and `reserve_response_count_`.
   void RecordModalShownOutcome(
-      const PlusAddressMetrics::PlusAddressModalCompletionStatus status);
+      metrics::PlusAddressModalCompletionStatus status);
 
   raw_ptr<base::Clock> clock_ = base::DefaultClock::GetInstance();
   // This is set on `OfferCreation`.
   std::optional<base::Time> modal_shown_time_;
-  std::optional<PlusAddressMetrics::PlusAddressModalCompletionStatus>
-      modal_error_status_;
+  std::optional<metrics::PlusAddressModalCompletionStatus> modal_error_status_;
   // The number of responses from calls to reserve a plus address that a user
   // has made. This equals 1 + number of refreshes.
   int reserve_response_count_ = 0;

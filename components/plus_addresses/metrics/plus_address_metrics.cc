@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/plus_addresses/plus_address_metrics.h"
+#include "components/plus_addresses/metrics/plus_address_metrics.h"
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
@@ -10,16 +10,15 @@
 #include "components/plus_addresses/plus_address_types.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
-namespace plus_addresses {
-// static
-void PlusAddressMetrics::RecordModalEvent(
+namespace plus_addresses::metrics {
+
+void RecordModalEvent(
     PlusAddressModalEvent plus_address_modal_event) {
   base::UmaHistogramEnumeration("Autofill.PlusAddresses.Modal.Events",
                                 plus_address_modal_event);
 }
 
-// static
-void PlusAddressMetrics::RecordModalShownOutcome(
+void RecordModalShownOutcome(
     PlusAddressModalCompletionStatus status,
     base::TimeDelta modal_shown_duration,
     int refresh_count) {
@@ -37,15 +36,14 @@ void PlusAddressMetrics::RecordModalShownOutcome(
       refresh_count, /*exclusive_max=*/31);
 }
 
-// static
-void PlusAddressMetrics::RecordAutofillSuggestionEvent(
+void RecordAutofillSuggestionEvent(
     autofill::AutofillPlusAddressDelegate::SuggestionEvent
         plus_address_autofill_suggestion_event) {
   base::UmaHistogramEnumeration("Autofill.PlusAddresses.Suggestion.Events",
                                 plus_address_autofill_suggestion_event);
 }
-// static
-void PlusAddressMetrics::RecordNetworkRequestLatency(
+
+void RecordNetworkRequestLatency(
     PlusAddressNetworkRequestType type,
     base::TimeDelta request_latency) {
   base::UmaHistogramTimes(
@@ -55,8 +53,8 @@ void PlusAddressMetrics::RecordNetworkRequestLatency(
           /*offsets=*/nullptr),
       request_latency);
 }
-// static
-void PlusAddressMetrics::RecordNetworkRequestResponseCode(
+
+void RecordNetworkRequestResponseCode(
     PlusAddressNetworkRequestType type,
     int response_code) {
   // Mapped to "HttpErrorCodes" in histograms.xml.
@@ -67,8 +65,8 @@ void PlusAddressMetrics::RecordNetworkRequestResponseCode(
           /*offsets=*/nullptr),
       response_code);
 }
-// static
-void PlusAddressMetrics::RecordNetworkRequestResponseSize(
+
+void RecordNetworkRequestResponseSize(
     PlusAddressNetworkRequestType type,
     int response_size) {
   base::UmaHistogramCounts10000(
@@ -78,15 +76,16 @@ void PlusAddressMetrics::RecordNetworkRequestResponseSize(
           /*offsets=*/nullptr),
       response_size);
 }
-// static
-void PlusAddressMetrics::RecordNetworkRequestOauthError(
+
+
+void RecordNetworkRequestOauthError(
     GoogleServiceAuthError error) {
   base::UmaHistogramEnumeration(
       "Autofill.PlusAddresses.NetworkRequest.OauthError", error.state(),
       GoogleServiceAuthError::NUM_STATES);
 }
-// static
-std::string PlusAddressMetrics::PlusAddressNetworkRequestTypeToString(
+
+std::string PlusAddressNetworkRequestTypeToString(
     PlusAddressNetworkRequestType type) {
   // Make sure to keep "AutofillPlusAddressNetworkRequestType" in
   // tools/metrics/histograms/metadata/autofill/histograms.xml in sync with
@@ -103,7 +102,7 @@ std::string PlusAddressMetrics::PlusAddressNetworkRequestTypeToString(
   }
 }
 
-std::string PlusAddressMetrics::PlusAddressModalCompletionStatusToString(
+std::string PlusAddressModalCompletionStatusToString(
     PlusAddressModalCompletionStatus status) {
   switch (status) {
     case PlusAddressModalCompletionStatus::kModalCanceled:
@@ -116,4 +115,5 @@ std::string PlusAddressMetrics::PlusAddressModalCompletionStatusToString(
       return "ConfirmError";
   }
 }
-}  // namespace plus_addresses
+
+}  // namespace plus_addresses::metrics

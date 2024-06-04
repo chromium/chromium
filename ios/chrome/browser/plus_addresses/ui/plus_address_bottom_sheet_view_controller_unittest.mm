@@ -8,7 +8,7 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_mock_clock_override.h"
 #import "base/time/time.h"
-#import "components/plus_addresses/plus_address_metrics.h"
+#import "components/plus_addresses/metrics/plus_address_metrics.h"
 #import "ios/chrome/browser/plus_addresses/ui/plus_address_bottom_sheet_delegate.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
@@ -22,12 +22,11 @@ const char kPlusAddressModalEventHistogram[] =
     "Autofill.PlusAddresses.Modal.Events";
 const base::TimeDelta kDuration = base::Milliseconds(3600);
 std::string FormatModalDurationMetrics(
-    plus_addresses::PlusAddressMetrics::PlusAddressModalCompletionStatus
-        status) {
+    plus_addresses::metrics::PlusAddressModalCompletionStatus status) {
   return base::ReplaceStringPlaceholders(
       "Autofill.PlusAddresses.Modal.$1.ShownDuration",
-      {plus_addresses::PlusAddressMetrics::
-           PlusAddressModalCompletionStatusToString(status)},
+      {plus_addresses::metrics::PlusAddressModalCompletionStatusToString(
+          status)},
       /*offsets=*/nullptr);
 }
 
@@ -75,15 +74,15 @@ TEST_F(PlusAddressBottomSheetViewControllerTest, ConfirmButtonTapped) {
 
   EXPECT_THAT(
       histogram_tester_.GetAllSamples(kPlusAddressModalEventHistogram),
-      BucketsAre(base::Bucket(plus_addresses::PlusAddressMetrics::
-                                  PlusAddressModalEvent::kModalShown,
-                              1),
-                 base::Bucket(plus_addresses::PlusAddressMetrics::
-                                  PlusAddressModalEvent::kModalConfirmed,
-                              1)));
+      BucketsAre(
+          base::Bucket(
+              plus_addresses::metrics::PlusAddressModalEvent::kModalShown, 1),
+          base::Bucket(
+              plus_addresses::metrics::PlusAddressModalEvent::kModalConfirmed,
+              1)));
   histogram_tester_.ExpectUniqueTimeSample(
       FormatModalDurationMetrics(
-          plus_addresses::PlusAddressMetrics::PlusAddressModalCompletionStatus::
+          plus_addresses::metrics::PlusAddressModalCompletionStatus::
               kModalConfirmed),
       kDuration, 1);
 }
@@ -105,16 +104,17 @@ TEST_F(PlusAddressBottomSheetViewControllerTest, CancelButtonTapped) {
 
   EXPECT_OCMOCK_VERIFY(delegate_);
   EXPECT_OCMOCK_VERIFY(browser_coordinator_commands_);
-  EXPECT_THAT(histogram_tester_.GetAllSamples(kPlusAddressModalEventHistogram),
-              BucketsAre(base::Bucket(plus_addresses::PlusAddressMetrics::
-                                          PlusAddressModalEvent::kModalShown,
-                                      1),
-                         base::Bucket(plus_addresses::PlusAddressMetrics::
-                                          PlusAddressModalEvent::kModalCanceled,
-                                      1)));
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kPlusAddressModalEventHistogram),
+      BucketsAre(
+          base::Bucket(
+              plus_addresses::metrics::PlusAddressModalEvent::kModalShown, 1),
+          base::Bucket(
+              plus_addresses::metrics::PlusAddressModalEvent::kModalCanceled,
+              1)));
   histogram_tester_.ExpectUniqueTimeSample(
       FormatModalDurationMetrics(
-          plus_addresses::PlusAddressMetrics::PlusAddressModalCompletionStatus::
+          plus_addresses::metrics::PlusAddressModalCompletionStatus::
               kModalCanceled),
       kDuration, 1);
 }
@@ -137,16 +137,17 @@ TEST_F(PlusAddressBottomSheetViewControllerTest, SwipeToDismiss) {
       presentationControllerDidDismiss:presentationController];
   EXPECT_OCMOCK_VERIFY(delegate_);
   EXPECT_OCMOCK_VERIFY(browser_coordinator_commands_);
-  EXPECT_THAT(histogram_tester_.GetAllSamples(kPlusAddressModalEventHistogram),
-              BucketsAre(base::Bucket(plus_addresses::PlusAddressMetrics::
-                                          PlusAddressModalEvent::kModalShown,
-                                      1),
-                         base::Bucket(plus_addresses::PlusAddressMetrics::
-                                          PlusAddressModalEvent::kModalCanceled,
-                                      1)));
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kPlusAddressModalEventHistogram),
+      BucketsAre(
+          base::Bucket(
+              plus_addresses::metrics::PlusAddressModalEvent::kModalShown, 1),
+          base::Bucket(
+              plus_addresses::metrics::PlusAddressModalEvent::kModalCanceled,
+              1)));
   histogram_tester_.ExpectUniqueTimeSample(
       FormatModalDurationMetrics(
-          plus_addresses::PlusAddressMetrics::PlusAddressModalCompletionStatus::
+          plus_addresses::metrics::PlusAddressModalCompletionStatus::
               kModalCanceled),
       kDuration, 1);
 }
@@ -168,9 +169,9 @@ TEST_F(PlusAddressBottomSheetViewControllerTest, CancelAfterConfirmError) {
   scoped_clock_.Advance(kDuration);
 
   // Simulate error occurring during plus address confirmation.
-  [view_controller_ notifyError:plus_addresses::PlusAddressMetrics::
-                                    PlusAddressModalCompletionStatus::
-                                        kConfirmPlusAddressError];
+  [view_controller_
+      notifyError:plus_addresses::metrics::PlusAddressModalCompletionStatus::
+                      kConfirmPlusAddressError];
 
   // Tap cancel button.
   [view_controller_.actionHandler confirmationAlertSecondaryAction];
@@ -178,18 +179,18 @@ TEST_F(PlusAddressBottomSheetViewControllerTest, CancelAfterConfirmError) {
   EXPECT_OCMOCK_VERIFY(browser_coordinator_commands_);
   EXPECT_THAT(
       histogram_tester_.GetAllSamples(kPlusAddressModalEventHistogram),
-      BucketsAre(base::Bucket(plus_addresses::PlusAddressMetrics::
-                                  PlusAddressModalEvent::kModalShown,
-                              1),
-                 base::Bucket(plus_addresses::PlusAddressMetrics::
-                                  PlusAddressModalEvent::kModalConfirmed,
-                              1),
-                 base::Bucket(plus_addresses::PlusAddressMetrics::
-                                  PlusAddressModalEvent::kModalCanceled,
-                              1)));
+      BucketsAre(
+          base::Bucket(
+              plus_addresses::metrics::PlusAddressModalEvent::kModalShown, 1),
+          base::Bucket(
+              plus_addresses::metrics::PlusAddressModalEvent::kModalConfirmed,
+              1),
+          base::Bucket(
+              plus_addresses::metrics::PlusAddressModalEvent::kModalCanceled,
+              1)));
   histogram_tester_.ExpectUniqueTimeSample(
       FormatModalDurationMetrics(
-          plus_addresses::PlusAddressMetrics::PlusAddressModalCompletionStatus::
+          plus_addresses::metrics::PlusAddressModalCompletionStatus::
               kConfirmPlusAddressError),
       kDuration, 1);
 }
@@ -205,24 +206,25 @@ TEST_F(PlusAddressBottomSheetViewControllerTest, CancelAfterReserveError) {
   scoped_clock_.Advance(kDuration);
 
   // Simulate error occurring during plus address reservation.
-  [view_controller_ notifyError:plus_addresses::PlusAddressMetrics::
-                                    PlusAddressModalCompletionStatus::
-                                        kReservePlusAddressError];
+  [view_controller_
+      notifyError:plus_addresses::metrics::PlusAddressModalCompletionStatus::
+                      kReservePlusAddressError];
 
   // Tap cancel button.
   [view_controller_.actionHandler confirmationAlertSecondaryAction];
 
   EXPECT_OCMOCK_VERIFY(browser_coordinator_commands_);
-  EXPECT_THAT(histogram_tester_.GetAllSamples(kPlusAddressModalEventHistogram),
-              BucketsAre(base::Bucket(plus_addresses::PlusAddressMetrics::
-                                          PlusAddressModalEvent::kModalShown,
-                                      1),
-                         base::Bucket(plus_addresses::PlusAddressMetrics::
-                                          PlusAddressModalEvent::kModalCanceled,
-                                      1)));
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kPlusAddressModalEventHistogram),
+      BucketsAre(
+          base::Bucket(
+              plus_addresses::metrics::PlusAddressModalEvent::kModalShown, 1),
+          base::Bucket(
+              plus_addresses::metrics::PlusAddressModalEvent::kModalCanceled,
+              1)));
   histogram_tester_.ExpectUniqueTimeSample(
       FormatModalDurationMetrics(
-          plus_addresses::PlusAddressMetrics::PlusAddressModalCompletionStatus::
+          plus_addresses::metrics::PlusAddressModalCompletionStatus::
               kReservePlusAddressError),
       kDuration, 1);
 }
@@ -244,9 +246,9 @@ TEST_F(PlusAddressBottomSheetViewControllerTest, DismissAfterConfirmError) {
   scoped_clock_.Advance(kDuration);
 
   // Simulate error occurring during plus address confirmation.
-  [view_controller_ notifyError:plus_addresses::PlusAddressMetrics::
-                                    PlusAddressModalCompletionStatus::
-                                        kConfirmPlusAddressError];
+  [view_controller_
+      notifyError:plus_addresses::metrics::PlusAddressModalCompletionStatus::
+                      kConfirmPlusAddressError];
 
   // Dismiss bottom sheet.
   UIPresentationController* presentationController =
@@ -259,18 +261,18 @@ TEST_F(PlusAddressBottomSheetViewControllerTest, DismissAfterConfirmError) {
   EXPECT_OCMOCK_VERIFY(browser_coordinator_commands_);
   EXPECT_THAT(
       histogram_tester_.GetAllSamples(kPlusAddressModalEventHistogram),
-      BucketsAre(base::Bucket(plus_addresses::PlusAddressMetrics::
-                                  PlusAddressModalEvent::kModalShown,
-                              1),
-                 base::Bucket(plus_addresses::PlusAddressMetrics::
-                                  PlusAddressModalEvent::kModalConfirmed,
-                              1),
-                 base::Bucket(plus_addresses::PlusAddressMetrics::
-                                  PlusAddressModalEvent::kModalCanceled,
-                              1)));
+      BucketsAre(
+          base::Bucket(
+              plus_addresses::metrics::PlusAddressModalEvent::kModalShown, 1),
+          base::Bucket(
+              plus_addresses::metrics::PlusAddressModalEvent::kModalConfirmed,
+              1),
+          base::Bucket(
+              plus_addresses::metrics::PlusAddressModalEvent::kModalCanceled,
+              1)));
   histogram_tester_.ExpectUniqueTimeSample(
       FormatModalDurationMetrics(
-          plus_addresses::PlusAddressMetrics::PlusAddressModalCompletionStatus::
+          plus_addresses::metrics::PlusAddressModalCompletionStatus::
               kConfirmPlusAddressError),
       kDuration, 1);
 }

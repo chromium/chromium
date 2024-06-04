@@ -10,7 +10,7 @@
 #import "base/types/expected.h"
 #import "components/plus_addresses/fake_plus_address_service.h"
 #import "components/plus_addresses/features.h"
-#import "components/plus_addresses/plus_address_metrics.h"
+#import "components/plus_addresses/metrics/plus_address_metrics.h"
 #import "components/plus_addresses/plus_address_service.h"
 #import "components/plus_addresses/plus_address_types.h"
 #import "ios/chrome/browser/plus_addresses/ui/plus_address_bottom_sheet_constants.h"
@@ -79,9 +79,9 @@ TEST_F(PlusAddressBottomSheetMediatorTest, ReservePlusAddress) {
 // mediator.
 TEST_F(PlusAddressBottomSheetMediatorTest, ReservePlusAddressError) {
   service().set_should_fail_to_reserve(true);
-  OCMExpect([consumer_ notifyError:plus_addresses::PlusAddressMetrics::
-                                       PlusAddressModalCompletionStatus::
-                                           kReservePlusAddressError]);
+  OCMExpect([consumer_
+      notifyError:plus_addresses::metrics::PlusAddressModalCompletionStatus::
+                      kReservePlusAddressError]);
   [mediator() reservePlusAddress];
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
@@ -105,9 +105,9 @@ TEST_F(PlusAddressBottomSheetMediatorTest, ConfirmPlusAddressError) {
                                 FakePlusAddressService::kFakePlusAddress)]);
   [mediator() reservePlusAddress];
   EXPECT_OCMOCK_VERIFY(consumer_);
-  OCMExpect([consumer_ notifyError:plus_addresses::PlusAddressMetrics::
-                                       PlusAddressModalCompletionStatus::
-                                           kConfirmPlusAddressError]);
+  OCMExpect([consumer_
+      notifyError:plus_addresses::metrics::PlusAddressModalCompletionStatus::
+                      kConfirmPlusAddressError]);
   service().set_should_fail_to_confirm(true);
   [mediator() confirmPlusAddress];
   EXPECT_OCMOCK_VERIFY(consumer_);

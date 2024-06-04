@@ -11,7 +11,7 @@
 #include "base/time/default_clock.h"
 #include "chrome/browser/ui/android/plus_addresses/plus_address_creation_view_android.h"
 #include "chrome/browser/ui/plus_addresses/plus_address_creation_controller.h"
-#include "components/plus_addresses/plus_address_metrics.h"
+#include "components/plus_addresses/metrics/plus_address_metrics.h"
 #include "components/plus_addresses/plus_address_service.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "content/public/browser/web_contents.h"
@@ -78,13 +78,12 @@ class PlusAddressCreationControllerAndroid
   // Record the time between `modal_shown_time_` and now as modal shown duration
   // and clear `modal_shown_time_`.
   void RecordModalShownDuration(
-      const PlusAddressMetrics::PlusAddressModalCompletionStatus status);
+      metrics::PlusAddressModalCompletionStatus status);
 
   raw_ptr<base::Clock> clock_ = base::DefaultClock::GetInstance();
   // This is set on `OfferCreation`.
   std::optional<base::Time> modal_shown_time_;
-  std::optional<PlusAddressMetrics::PlusAddressModalCompletionStatus>
-      modal_error_status_;
+  std::optional<metrics::PlusAddressModalCompletionStatus> modal_error_status_;
 
   base::WeakPtrFactory<PlusAddressCreationControllerAndroid> weak_ptr_factory_{
       this};

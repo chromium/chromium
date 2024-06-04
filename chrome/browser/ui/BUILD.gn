@@ -612,6 +612,7 @@ static_library("ui") {
     "//components/permissions",
     "//components/plus_addresses",
     "//components/plus_addresses:features",
+    "//components/plus_addresses/metrics",
     "//components/policy/content",
     "//components/policy/core/browser",
     "//components/pref_registry",

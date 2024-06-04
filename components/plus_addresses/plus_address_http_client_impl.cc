@@ -16,7 +16,7 @@
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
 #include "components/plus_addresses/features.h"
-#include "components/plus_addresses/plus_address_metrics.h"
+#include "components/plus_addresses/metrics/plus_address_metrics.h"
 #include "components/plus_addresses/plus_address_parsing_utils.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/signin/public/base/consent_level.h"
@@ -389,11 +389,11 @@ void PlusAddressHttpClientImpl::OnReserveOrConfirmPlusAddressComplete(
     std::unique_ptr<std::string> response) {
   // Record relevant metrics.
   std::unique_ptr<network::SimpleURLLoader> loader = std::move(*it);
-  PlusAddressMetrics::RecordNetworkRequestLatency(
-      type, base::TimeTicks::Now() - request_start);
+  metrics::RecordNetworkRequestLatency(type,
+                                       base::TimeTicks::Now() - request_start);
   std::optional<int> response_code = GetResponseCode(loader.get());
   if (response_code) {
-    PlusAddressMetrics::RecordNetworkRequestResponseCode(type, *response_code);
+    metrics::RecordNetworkRequestResponseCode(type, *response_code);
   }
   // Destroy the loader before returning.
   loaders_for_creation_.erase(it);
@@ -403,7 +403,7 @@ void PlusAddressHttpClientImpl::OnReserveOrConfirmPlusAddressComplete(
             PlusAddressRequestError::AsNetworkError(response_code)));
     return;
   }
-  PlusAddressMetrics::RecordNetworkRequestResponseSize(type, response->size());
+  metrics::RecordNetworkRequestResponseSize(type, response->size());
   // Parse the response & return it via callback.
   data_decoder::DataDecoder::ParseJsonIsolated(
       *response,
@@ -427,12 +427,11 @@ void PlusAddressHttpClientImpl::OnGetAllPlusAddressesComplete(
     PlusAddressMapRequestCallback on_completed,
     std::unique_ptr<std::string> response) {
   // Record relevant metrics.
-  PlusAddressMetrics::RecordNetworkRequestLatency(
-      PlusAddressNetworkRequestType::kList,
-      base::TimeTicks::Now() - request_start);
+  metrics::RecordNetworkRequestLatency(PlusAddressNetworkRequestType::kList,
+                                       base::TimeTicks::Now() - request_start);
   std::optional<int> response_code = GetResponseCode(loader_for_sync_.get());
   if (response_code) {
-    PlusAddressMetrics::RecordNetworkRequestResponseCode(
+    metrics::RecordNetworkRequestResponseCode(
         PlusAddressNetworkRequestType::kList, *response_code);
   }
   // Destroy the loader before returning.
@@ -443,7 +442,7 @@ void PlusAddressHttpClientImpl::OnGetAllPlusAddressesComplete(
             PlusAddressRequestError::AsNetworkError(response_code)));
     return;
   }
-  PlusAddressMetrics::RecordNetworkRequestResponseSize(
+  metrics::RecordNetworkRequestResponseSize(
       PlusAddressNetworkRequestType::kList, response->size());
   // Parse the response & return it via callback.
   data_decoder::DataDecoder::ParseJsonIsolated(
@@ -491,7 +490,7 @@ void PlusAddressHttpClientImpl::OnTokenFetched(
     signin::AccessTokenInfo access_token_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   access_token_fetcher_.reset();
-  PlusAddressMetrics::RecordNetworkRequestOauthError(error);
+  metrics::RecordNetworkRequestOauthError(error);
   std::optional<std::string> access_token;
   if (error.state() == GoogleServiceAuthError::NONE) {
     access_token = access_token_info.token;

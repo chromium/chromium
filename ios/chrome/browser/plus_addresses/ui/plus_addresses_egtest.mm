@@ -5,7 +5,7 @@
 #import "base/strings/escape.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/plus_addresses/plus_address_metrics.h"
+#import "components/plus_addresses/metrics/plus_address_metrics.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/plus_addresses/ui/plus_address_bottom_sheet_constants.h"
@@ -35,7 +35,7 @@ constexpr char kFakeSuggestionLabel[] = "Lorem Ipsum";
 // Assert that a given plus address modal event of type `event_type` occurred
 // `count` times.
 void ExpectModalHistogram(
-    plus_addresses::PlusAddressMetrics::PlusAddressModalEvent event_type,
+    plus_addresses::metrics::PlusAddressModalEvent event_type,
     int count) {
   NSError* error =
       [MetricsAppInterface expectCount:count
@@ -47,10 +47,10 @@ void ExpectModalHistogram(
 // Assert that the bottom sheet shown duration metrics is recorded.
 // Actual duration is not assessed to avoid unnecessary clock mocking.
 void ExpectModalTimeSample(
-    plus_addresses::PlusAddressMetrics::PlusAddressModalCompletionStatus status,
+    plus_addresses::metrics::PlusAddressModalCompletionStatus status,
     int count) {
   NSString* modalStatus = [NSString
-      stringWithUTF8String:plus_addresses::PlusAddressMetrics::
+      stringWithUTF8String:plus_addresses::metrics::
                                PlusAddressModalCompletionStatusToString(status)
                                    .c_str()];
   NSString* name = [NSString
@@ -181,16 +181,14 @@ id<GREYMatcher> GetMatcherForErrorReportLink() {
   [[EarlGrey selectElementWithMatcher:cancelButton] performAction:grey_tap()];
 
   ExpectModalHistogram(
-      plus_addresses::PlusAddressMetrics::PlusAddressModalEvent::kModalShown,
-      1);
+      plus_addresses::metrics::PlusAddressModalEvent::kModalShown, 1);
   ExpectModalHistogram(
-      plus_addresses::PlusAddressMetrics::PlusAddressModalEvent::kModalCanceled,
-      1);
+      plus_addresses::metrics::PlusAddressModalEvent::kModalCanceled, 1);
   // The test server currently only response with reserve error. Thus, closing
   // status is recorded as `kReservePlusAddressError`.
   // TODO(b/321072266) Expand coverage to other responses.
   ExpectModalTimeSample(
-      plus_addresses::PlusAddressMetrics::PlusAddressModalCompletionStatus::
+      plus_addresses::metrics::PlusAddressModalCompletionStatus::
           kReservePlusAddressError,
       1);
 }
@@ -292,15 +290,13 @@ id<GREYMatcher> GetMatcherForErrorReportLink() {
       assertWithMatcher:grey_notVisible()];
 
   ExpectModalHistogram(
-      plus_addresses::PlusAddressMetrics::PlusAddressModalEvent::kModalShown,
-      1);
+      plus_addresses::metrics::PlusAddressModalEvent::kModalShown, 1);
   // TODO(crbug.com/40276862): separate out the cancel click from other exit
   // patterns, on all platforms.
   ExpectModalHistogram(
-      plus_addresses::PlusAddressMetrics::PlusAddressModalEvent::kModalCanceled,
-      1);
+      plus_addresses::metrics::PlusAddressModalEvent::kModalCanceled, 1);
   ExpectModalTimeSample(
-      plus_addresses::PlusAddressMetrics::PlusAddressModalCompletionStatus::
+      plus_addresses::metrics::PlusAddressModalCompletionStatus::
           kReservePlusAddressError,
       1);
 }

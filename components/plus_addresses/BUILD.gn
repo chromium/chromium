@@ -45,14 +45,13 @@ source_set("plus_addresses") {
     "plus_address_http_client_impl.h",
     "plus_address_jit_allocator.cc",
     "plus_address_jit_allocator.h",
-    "plus_address_metrics.cc",
-    "plus_address_metrics.h",
     "plus_address_service.cc",
     "plus_address_service.h",
   ]
   deps = [
     ":parsing",
     "//components/affiliations/core/browser:affiliations",
+    "//components/plus_addresses/metrics",
     "//components/plus_addresses/webdata",
     "//components/signin/public/identity_manager",
     "//components/strings:components_strings_grit",
@@ -110,6 +109,7 @@ source_set("unit_tests") {
     "//components/affiliations/core/browser:affiliations",
     "//components/affiliations/core/browser:test_support",
     "//components/autofill/core/browser:test_support",
+    "//components/plus_addresses/metrics",
     "//components/plus_addresses/webdata",
     "//components/prefs:test_support",
     "//components/signin/public/identity_manager:test_support",
@@ -129,7 +129,6 @@ static_library("test_support") {
     "plus_address_http_client_impl_test_api.h",
     "plus_address_test_utils.cc",
     "plus_address_test_utils.h",
-    "plus_address_types.h",
   ]
   deps = [
     "//base",
@@ -138,5 +137,8 @@ static_library("test_support") {
     "//components/autofill/core/browser",
     "//testing/gmock",
   ]
-  public_deps = [ ":plus_addresses" ]
+  public_deps = [
+    ":plus_addresses",
+    ":types",
+  ]
 }

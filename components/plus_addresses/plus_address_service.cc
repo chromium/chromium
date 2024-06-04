@@ -23,10 +23,10 @@
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/plus_addresses/features.h"
+#include "components/plus_addresses/metrics/plus_address_metrics.h"
 #include "components/plus_addresses/plus_address_http_client.h"
 #include "components/plus_addresses/plus_address_http_client_impl.h"
 #include "components/plus_addresses/plus_address_jit_allocator.h"
-#include "components/plus_addresses/plus_address_metrics.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/plus_addresses/webdata/plus_address_sync_util.h"
 #include "components/plus_addresses/webdata/plus_address_webdata_service.h"
@@ -582,7 +582,7 @@ bool PlusAddressService::IsSupportedOrigin(const url::Origin& origin) const {
 
 void PlusAddressService::RecordAutofillSuggestionEvent(
     SuggestionEvent suggestion_event) {
-  PlusAddressMetrics::RecordAutofillSuggestionEvent(suggestion_event);
+  metrics::RecordAutofillSuggestionEvent(suggestion_event);
 }
 
 void PlusAddressService::OnPlusAddressSuggestionShown(

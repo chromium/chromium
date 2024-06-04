@@ -7057,6 +7057,7 @@ test("unit_tests") {
     "//components/performance_manager/test_support:test_support_common",
     "//components/plus_addresses",
     "//components/plus_addresses:test_support",
+    "//components/plus_addresses/metrics",
     "//components/policy:generated",
     "//components/policy/core/browser:test_support",
     "//components/policy/test_support:unittests",

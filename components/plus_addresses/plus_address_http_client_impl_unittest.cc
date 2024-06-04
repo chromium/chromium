@@ -19,8 +19,8 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "components/plus_addresses/features.h"
+#include "components/plus_addresses/metrics/plus_address_metrics.h"
 #include "components/plus_addresses/plus_address_http_client_impl_test_api.h"
-#include "components/plus_addresses/plus_address_metrics.h"
 #include "components/plus_addresses/plus_address_test_utils.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/signin/public/base/consent_level.h"
@@ -57,21 +57,21 @@ constexpr char kPlusAddressOauthErrorHistogram[] =
 std::string LatencyHistogramFor(PlusAddressNetworkRequestType type) {
   return base::ReplaceStringPlaceholders(
       "Autofill.PlusAddresses.NetworkRequest.$1.Latency",
-      {PlusAddressMetrics::PlusAddressNetworkRequestTypeToString(type)},
+      {metrics::PlusAddressNetworkRequestTypeToString(type)},
       /*offsets=*/nullptr);
 }
 
 std::string ResponseCodeHistogramFor(PlusAddressNetworkRequestType type) {
   return base::ReplaceStringPlaceholders(
       "Autofill.PlusAddresses.NetworkRequest.$1.ResponseCode",
-      {PlusAddressMetrics::PlusAddressNetworkRequestTypeToString(type)},
+      {metrics::PlusAddressNetworkRequestTypeToString(type)},
       /*offsets=*/nullptr);
 }
 
 std::string ResponseByteSizeHistogramFor(PlusAddressNetworkRequestType type) {
   return base::ReplaceStringPlaceholders(
       "Autofill.PlusAddresses.NetworkRequest.$1.ResponseByteSize",
-      {PlusAddressMetrics::PlusAddressNetworkRequestTypeToString(type)},
+      {metrics::PlusAddressNetworkRequestTypeToString(type)},
       /*offsets=*/nullptr);
 }
 
@@ -444,8 +444,7 @@ INSTANTIATE_TEST_SUITE_P(
                       PlusAddressNetworkRequestType::kCreate),
     [](const testing::TestParamInfo<PlusAddressCreationRequests::ParamType>&
            info) {
-      return PlusAddressMetrics::PlusAddressNetworkRequestTypeToString(
-          info.param);
+      return metrics::PlusAddressNetworkRequestTypeToString(info.param);
     });
 
 // Ensures the request sent by Chrome matches what we intended.

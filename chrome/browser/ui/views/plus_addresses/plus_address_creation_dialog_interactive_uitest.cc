@@ -39,7 +39,7 @@ namespace plus_addresses {
 namespace {
 
 using PlusAddressModalCompletionStatus =
-    PlusAddressMetrics::PlusAddressModalCompletionStatus;
+    metrics::PlusAddressModalCompletionStatus;
 
 constexpr char kFakeEmailAddress[] = "alice@email.example";
 constexpr char kFakeManagementUrl[] = "https://manage.example/";
@@ -60,23 +60,23 @@ constexpr char kPlusAddressModalEventHistogram[] =
 std::string FormatHistogramNameFor(PlusAddressNetworkRequestType type) {
   return base::ReplaceStringPlaceholders(
       "Autofill.PlusAddresses.NetworkRequest.$1.ResponseCode",
-      {PlusAddressMetrics::PlusAddressNetworkRequestTypeToString(type)},
+      {metrics::PlusAddressNetworkRequestTypeToString(type)},
       /*offsets=*/nullptr);
 }
 
 std::string FormatDurationHistogramNameFor(
-    PlusAddressMetrics::PlusAddressModalCompletionStatus status) {
+    metrics::PlusAddressModalCompletionStatus status) {
   return base::ReplaceStringPlaceholders(
       "Autofill.PlusAddresses.Modal.$1.ShownDuration",
-      {PlusAddressMetrics::PlusAddressModalCompletionStatusToString(status)},
+      {metrics::PlusAddressModalCompletionStatusToString(status)},
       /*offsets=*/nullptr);
 }
 
 std::string FormatRefreshHistogramNameFor(
-    PlusAddressMetrics::PlusAddressModalCompletionStatus status) {
+    metrics::PlusAddressModalCompletionStatus status) {
   return base::ReplaceStringPlaceholders(
       "Autofill.PlusAddresses.Modal.$1.Refreshes",
-      {PlusAddressMetrics::PlusAddressModalCompletionStatusToString(status)},
+      {metrics::PlusAddressModalCompletionStatusToString(status)},
       /*offsets=*/nullptr);
 }
 
@@ -243,15 +243,11 @@ class PlusAddressCreationDialogInteractiveTest : public InteractiveBrowserTest {
       EXPECT_THAT(
           histogram_tester_.GetAllSamples(kPlusAddressModalEventHistogram),
           base::BucketsAre(
-              base::Bucket(
-                  PlusAddressMetrics::PlusAddressModalEvent::kModalShown,
-                  shown),
-              base::Bucket(
-                  PlusAddressMetrics::PlusAddressModalEvent::kModalConfirmed,
-                  confirmed),
-              base::Bucket(
-                  PlusAddressMetrics::PlusAddressModalEvent::kModalCanceled,
-                  canceled)));
+              base::Bucket(metrics::PlusAddressModalEvent::kModalShown, shown),
+              base::Bucket(metrics::PlusAddressModalEvent::kModalConfirmed,
+                           confirmed),
+              base::Bucket(metrics::PlusAddressModalEvent::kModalCanceled,
+                           canceled)));
     });
   }
 
