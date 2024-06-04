@@ -580,22 +580,23 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
           device_(device),
           usage_(usage) {
       // Create a wgpu::Texture to hold the image contents.
-      // It should be internally copyable so Chrome can internally perform
-      // copies with it, but Javascript cannot (unless |usage| contains copy
-      // src/dst).
-      // We also need RenderAttachment usage for clears, and TextureBinding for
-      // copyTextureForBrowser.
-      // TODO(crbug.com/339171225): When changing Dawn reps to use
-      // client-provided internal usages under killswitch, change this code to
-      // use `internal_usage` together with CopyDst | CopySrc (since this class
-      // itself uses the texture as the dest and source of copies for transfer
-      // back and forth between Skia and Dawn).
+      // It must be internally copyable as this class itself uses the texture as
+      // the dest and source of copies for transfer back and forth between Skia
+      // and Dawn.
       wgpu::DawnTextureInternalUsageDescriptor internal_usage_desc;
-
-      internal_usage_desc.internalUsage = wgpu::TextureUsage::CopyDst |
-                                          wgpu::TextureUsage::CopySrc |
-                                          wgpu::TextureUsage::RenderAttachment |
-                                          wgpu::TextureUsage::TextureBinding;
+      if (base::FeatureList::IsEnabled(
+              features::kDawnSIRepsUseClientProvidedInternalUsages)) {
+        internal_usage_desc.internalUsage = internal_usage |
+                                            wgpu::TextureUsage::CopyDst |
+                                            wgpu::TextureUsage::CopySrc;
+      } else {
+        // We also need RenderAttachment usage for clears, and TextureBinding
+        // for copyTextureForBrowser.
+        internal_usage_desc.internalUsage =
+            wgpu::TextureUsage::CopyDst | wgpu::TextureUsage::CopySrc |
+            wgpu::TextureUsage::RenderAttachment |
+            wgpu::TextureUsage::TextureBinding;
+      }
       wgpu::TextureDescriptor texture_desc = {
           .nextInChain = &internal_usage_desc,
           .usage = usage,
