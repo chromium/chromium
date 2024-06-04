@@ -5,9 +5,13 @@
 #ifndef ASH_WEBUI_PRINT_PREVIEW_CROS_PRINT_PREVIEW_CROS_UI_H_
 #define ASH_WEBUI_PRINT_PREVIEW_CROS_PRINT_PREVIEW_CROS_UI_H_
 
+#include <memory>
+
 #include "ash/webui/common/chrome_os_webui_config.h"
+#include "ash/webui/print_preview_cros/mojom/destination_provider.mojom.h"
 #include "ash/webui/print_preview_cros/url_constants.h"
 #include "content/public/common/url_constants.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 
@@ -22,6 +26,7 @@ class ColorChangeHandler;
 
 namespace ash::printing::print_preview {
 
+class DestinationProvider;
 class PrintPreviewCrosUI;
 
 // The WebUI configuration for chrome://os-print.
@@ -48,7 +53,11 @@ class PrintPreviewCrosUI : public ui::MojoWebDialogUI {
       mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
           receiver);
 
+  void BindInterface(
+      mojo::PendingReceiver<mojom::DestinationProvider> receiver);
+
  private:
+  std::unique_ptr<DestinationProvider> destination_provider_;
   // The color change handler notifies the WebUI when the color provider
   // changes.
   std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;

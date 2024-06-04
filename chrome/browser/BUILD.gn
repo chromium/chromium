@@ -5348,6 +5348,8 @@ static_library("browser") {
       "//ash/webui/personalization_app/search:mojo_bindings",
       "//ash/webui/print_management",
       "//ash/webui/print_management/backend:backend",
+      "//ash/webui/print_preview_cros",
+      "//ash/webui/print_preview_cros/mojom",
       "//ash/webui/projector_app",
       "//ash/webui/projector_app/mojom:projector_mojo_bindings",
       "//ash/webui/sanitize_ui",

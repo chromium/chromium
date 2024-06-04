@@ -8,6 +8,9 @@ import("//printing/buildflags/buildflags.gni")
 mojom("mojom") {
   sources = [ "print.mojom" ]
 
+  webui_module_path = "/"
+  generate_legacy_js_bindings = true
+
   cpp_typemaps = [
     {
       types = [
