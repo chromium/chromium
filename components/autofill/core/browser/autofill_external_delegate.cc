@@ -44,6 +44,7 @@
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/payments/iban_access_manager.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
+#include "components/autofill/core/browser/ui/popup_open_enums.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/aliases.h"
@@ -308,11 +309,19 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
     const bool should_use_caret_bounds =
         show_proactive_nudge_at_caret && are_caret_bounds_valid;
 
+    const PopupAnchorType default_anchor_type =
+#if BUILDFLAG(IS_ANDROID)
+        PopupAnchorType::kKeyboardAccessory;
+#else
+        PopupAnchorType::kField;
+#endif
     AutofillClient::PopupOpenArgs open_args(
         should_use_caret_bounds ? gfx::RectF(caret_bounds_)
                                 : query_field_.bounds(),
         query_field_.text_direction(), suggestions, trigger_source_,
-        query_field_.form_control_ax_id());
+        query_field_.form_control_ax_id(),
+        should_use_caret_bounds ? PopupAnchorType::kCaret
+                                : default_anchor_type);
     manager_->client().ShowAutofillSuggestions(open_args, GetWeakPtr());
   }
 }

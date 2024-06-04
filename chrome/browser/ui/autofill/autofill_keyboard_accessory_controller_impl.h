@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/ui/popup_open_enums.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 
@@ -59,6 +60,10 @@ class AutofillKeyboardAccessoryControllerImpl
   gfx::NativeView container_view() const override;
   content::WebContents* GetWebContents() const override;
   const gfx::RectF& element_bounds() const override;
+  // TODO(b/b/342383222) Re-evaluate whether this method makes sense here.
+  // Today it is only needed on desktop.
+  PopupAnchorType anchor_type() const override;
+
   base::i18n::TextDirection GetElementTextDirection() const override;
 
   // AutofillSuggestionController:

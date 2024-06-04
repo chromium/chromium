@@ -2170,8 +2170,10 @@ TEST_F(AutofillExternalDelegateUnitTest,
 
   EXPECT_CALL(client(),
               ShowAutofillSuggestions(
-                  Field(&AutofillClient::PopupOpenArgs::element_bounds,
-                        gfx::RectF(caret_bounds)),
+                  AllOf(Field(&AutofillClient::PopupOpenArgs::element_bounds,
+                              gfx::RectF(caret_bounds)),
+                        Field(&AutofillClient::PopupOpenArgs::anchor_type,
+                              PopupAnchorType::kCaret)),
                   _));
   MockAutofillComposeDelegate compose_delegate;
   ON_CALL(client(), GetComposeDelegate)
@@ -2271,10 +2273,18 @@ TEST_F(
     NonComposeSuggestion_NonComposeProactiveNudge_DoNotForwardsCaretBoundsToClient) {
   IssueOnQuery(gfx::Rect(/*width=*/123, /*height=*/123));
 
+  const PopupAnchorType default_anchor_type =
+#if BUILDFLAG(IS_ANDROID)
+      PopupAnchorType::kKeyboardAccessory;
+#else
+      PopupAnchorType::kField;
+#endif
   EXPECT_CALL(client(),
               ShowAutofillSuggestions(
-                  Field(&AutofillClient::PopupOpenArgs::element_bounds,
-                        gfx::RectF(/*width=*/0, /*height=*/0)),
+                  AllOf(Field(&AutofillClient::PopupOpenArgs::element_bounds,
+                              gfx::RectF(/*width=*/0, /*height=*/0)),
+                        Field(&AutofillClient::PopupOpenArgs::anchor_type,
+                              default_anchor_type)),
                   _));
   MockAutofillComposeDelegate compose_delegate;
   ON_CALL(client(), GetComposeDelegate)

@@ -28,6 +28,7 @@
 #include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
+#include "components/autofill/core/browser/ui/popup_open_enums.h"
 #include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -207,6 +208,10 @@ content::WebContents* AutofillKeyboardAccessoryControllerImpl::GetWebContents()
 const gfx::RectF& AutofillKeyboardAccessoryControllerImpl::element_bounds()
     const {
   return controller_common_.element_bounds;
+}
+
+PopupAnchorType AutofillKeyboardAccessoryControllerImpl::anchor_type() const {
+  return controller_common_.anchor_type;
 }
 
 base::i18n::TextDirection

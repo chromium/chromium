@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
+#include "components/autofill/core/browser/ui/popup_open_enums.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
@@ -26,6 +27,7 @@ TEST(PopupViewsUtilsTest, GetOptimalArrowSide) {
     gfx::Size preferred_size;
     std::vector<views::BubbleArrowSide> preferred_sides =
         GetDefaultPopupSides();
+    PopupAnchorType anchor_type = PopupAnchorType::kField;
   } test_cases[]{
       // Default case where there is enough space on all sides.
       // In this case, the popup is placed below meaning that the arrow is on
@@ -35,6 +37,27 @@ TEST(PopupViewsUtilsTest, GetOptimalArrowSide) {
           gfx::Rect(0, 0, 1000, 2000),
           gfx::Rect(400, 0, 200, 200),
           default_preferred_size,
+      },
+      // There is enough space on all sides, however the `element_bounds` width
+      // is too small and the arrow is therefore placed on the left, as opposed
+      // to the top.
+      {
+          views::BubbleArrowSide::kLeft,
+          gfx::Rect(0, 0, 1000, 2000),
+          gfx::Rect(400, 0, 1, 200),
+          default_preferred_size,
+      },
+      // There is enough space on all sides, and even though the
+      // `element_bounds` width is too small the arrow is still placed on the
+      // top. This is because the `anchor_type` is
+      // `PopupAnchorType::kCaret`.
+      {
+          views::BubbleArrowSide::kTop,
+          gfx::Rect(0, 0, 1000, 2000),
+          gfx::Rect(400, 0, 1, 200),
+          default_preferred_size,
+          GetDefaultPopupSides(),
+          PopupAnchorType::kCaret,
       },
       // Default case where there is enough space on all sides.
       // A different set of the preferred sides.
@@ -92,10 +115,11 @@ TEST(PopupViewsUtilsTest, GetOptimalArrowSide) {
        {}}};
 
   for (auto& test_case : test_cases) {
-    EXPECT_EQ(test_case.expected_arrow_side,
-              GetOptimalArrowSide(
-                  test_case.content_area_bounds, test_case.element_bounds,
-                  test_case.preferred_size, test_case.preferred_sides));
+    EXPECT_EQ(
+        test_case.expected_arrow_side,
+        GetOptimalArrowSide(test_case.content_area_bounds,
+                            test_case.element_bounds, test_case.preferred_size,
+                            test_case.preferred_sides, test_case.anchor_type));
   }
 }
 
@@ -331,17 +355,29 @@ TEST(PopupViewsUtilsTest, GetOptimalPopupArrowSide) {
 
   struct TestCase {
     gfx::Rect element_bounds;
+    PopupAnchorType anchor_type;
     views::BubbleArrowSide expected_arrow_side;
   } test_cases[]{
-      {gfx::Rect{0, 0, 100, 800}, views::BubbleArrowSide::kLeft},
-      {gfx::Rect{600, 0, 100, 800}, views::BubbleArrowSide::kRight},
-      {gfx::Rect{0, 0, 100, 200}, views::BubbleArrowSide::kTop},
-      {gfx::Rect{0, 600, 100, 200}, views::BubbleArrowSide::kBottom},
+      {gfx::Rect{0, 0, 100, 800}, PopupAnchorType::kField,
+       views::BubbleArrowSide::kLeft},
+      {gfx::Rect{0, 0, 1, 100}, PopupAnchorType::kField,
+       views::BubbleArrowSide::kLeft},
+      // PopupAnchorType::kCaret can still have vertical arrows
+      // even though their width it small.
+      {gfx::Rect{0, 0, 1, 100}, PopupAnchorType::kCaret,
+       views::BubbleArrowSide::kTop},
+      {gfx::Rect{600, 0, 100, 800}, PopupAnchorType::kField,
+       views::BubbleArrowSide::kRight},
+      {gfx::Rect{0, 0, 100, 200}, PopupAnchorType::kField,
+       views::BubbleArrowSide::kTop},
+      {gfx::Rect{0, 600, 100, 200}, PopupAnchorType::kField,
+       views::BubbleArrowSide::kBottom},
   };
 
   for (TestCase& test_case : test_cases) {
     EXPECT_EQ(GetOptimalArrowSide(content_area_bounds, test_case.element_bounds,
-                                  preferred_popup_size, GetDefaultPopupSides()),
+                                  preferred_popup_size, GetDefaultPopupSides(),
+                                  test_case.anchor_type),
               test_case.expected_arrow_side);
   }
 }
@@ -361,8 +397,8 @@ TEST(PopupViewsUtilsTest, GetOptimalPopupPlacement) {
     bool right_to_left;
     gfx::Rect element_bounds;
     gfx::Rect expected_popup_bounds;
+    PopupAnchorType anchor_type;
     views::BubbleBorder::Arrow expected_arrow;
-
   } test_cases[]{
       // The element is placed in the top left corner and the popup should be
       // shown
@@ -370,6 +406,34 @@ TEST(PopupViewsUtilsTest, GetOptimalPopupPlacement) {
       {false,
        {0, 0, 100, 20},
        {50 - kHoriztontalPlacementOffsetToAlignArrow, 20, 200, 300},
+       PopupAnchorType::kField,
+       views::BubbleBorder::Arrow::TOP_LEFT},
+      // Because the width of the element is too narrow, the element is placed
+      // in the left and the popup should be shown
+      // on the right side of the element.
+      {false,
+       // Note that the width of the `element_bouds` is 1. Which leads to the
+       // popup being placed to the
+       // left of it.
+       {0, 0, 1, 20},
+       {1, 0, 200, 300},
+       PopupAnchorType::kField,
+       views::BubbleBorder::Arrow::LEFT_TOP},
+      // Even though the width of the element is too narrow, the element is
+      // still placed in the top and the popup should be shown.
+      // This because `PopupAnchorType::kCaret` elements
+      // are by design narrow.
+      {false,
+       // Note that the width of the `element_bouds` is 1.
+       {0, 0, 1, 20},
+       // The 8 matches the `kMinimalPopupDistanceToContentAreaEdge`. Because
+       // the width is too small, the popup would be aligned to left of the
+       // content area
+       // (by using a negative value to x axis offset). However, there is an
+       // inner check that does not allow this to happen and make sure that
+       // the x coordinate is at least `kMinimalPopupDistanceToContentAreaEdge`.
+       {8, 20, 200, 300},
+       PopupAnchorType::kCaret,
        views::BubbleBorder::Arrow::TOP_LEFT},
       // The element is placed in the top right corner and the popup needs to
       // be moved back into the view port honoring the minimal distance to the
@@ -377,6 +441,7 @@ TEST(PopupViewsUtilsTest, GetOptimalPopupPlacement) {
       {false,
        {760, 0, 100, 20},
        {592, 20, 200, 300},
+       PopupAnchorType::kField,
        views::BubbleBorder::Arrow::TOP_LEFT},
       // The element is placed in the top corner and the popup should be shown
       // below the element, displaced by maximum of 120 pixels.
@@ -385,24 +450,29 @@ TEST(PopupViewsUtilsTest, GetOptimalPopupPlacement) {
        {kMaximumPixelOffsetTowardsCenter -
             kHoriztontalPlacementOffsetToAlignArrow,
         20, 200, 300},
+       PopupAnchorType::kField,
+
        views::BubbleBorder::Arrow::TOP_LEFT},
       // The element is placed in the lower left corner which should create a
       // popup on top of the element.
       {false,
        {0, 780, 100, 20},
        {50 - kHoriztontalPlacementOffsetToAlignArrow, 480, 200, 300},
+       PopupAnchorType::kField,
        views::BubbleBorder::Arrow::BOTTOM_LEFT},
       // Test a basic right website with an element placed on the upper
       // right corner. The popup should be displaced to the left.
       {true,
        {700, 0, 100, 20},
        {550 + kHoriztontalPlacementOffsetToAlignArrow, 20, 200, 300},
+       PopupAnchorType::kField,
        views::BubbleBorder::Arrow::TOP_RIGHT},
       // Test a field that is barely visible. This should create a popup on the
       // side.
       {false,
        {-95, 300, 100, 20},
        {5, 300, 200, 300},
+       PopupAnchorType::kField,
        views::BubbleBorder::Arrow::LEFT_TOP},
   };
 
@@ -415,7 +485,7 @@ TEST(PopupViewsUtilsTest, GetOptimalPopupPlacement) {
                   kPreferredPopupSize, test_case.right_to_left, kScrollbarWidth,
                   kMaximumPixelOffsetTowardsCenter,
                   kMaximumWidthPercentageTowardsCenter, popup_bounds,
-                  GetDefaultPopupSides()));
+                  GetDefaultPopupSides(), test_case.anchor_type));
 
     EXPECT_EQ(popup_bounds, test_case.expected_popup_bounds);
   }

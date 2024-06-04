@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/browser_autofill_manager_test_api.h"
+#include "components/autofill/core/browser/ui/popup_open_enums.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
@@ -117,7 +118,7 @@ IN_PROC_BROWSER_TEST_F(ChromeAutofillClientBrowserTest,
       gfx::RectF(100, 100), base::i18n::TextDirection::LEFT_TO_RIGHT,
       {Suggestion(u"test")},
       AutofillSuggestionTriggerSource::kFormControlElementClicked,
-      /*form_control_ax_id=*/0);
+      /*form_control_ax_id=*/0, PopupAnchorType::kField);
   client()->ShowAutofillSuggestions(open_args, weak_delegate);
 
   // Showing the Autofill Popup and hiding the IPH are asynchronous tasks.

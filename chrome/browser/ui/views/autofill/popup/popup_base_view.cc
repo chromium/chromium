@@ -472,7 +472,8 @@ gfx::Rect PopupBaseView::GetOptionalPositionAndPlaceArrowOnPopup(
       maximum_pixel_offset_to_center,
       /*maximum_width_percentage_to_center=*/
       kMaximumWidthPercentageToMoveTheSuggestionToCenter,
-      /*popup_bounds=*/popup_bounds, preferred_popup_sides_);
+      /*popup_bounds=*/popup_bounds, preferred_popup_sides_,
+      /*anchor_type=*/delegate_->anchor_type());
 
   // Those values are not supported for adding an arrow.
   // Currently, they can not be returned by GetOptimalPopupPlacement().

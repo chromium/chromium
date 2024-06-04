@@ -24,6 +24,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/autofill/core/browser/ui/popup_open_enums.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/password_manager/core/browser/features/password_features.h"
@@ -456,6 +457,11 @@ content::WebContents* PasswordGenerationPopupControllerImpl::GetWebContents()
 const gfx::RectF& PasswordGenerationPopupControllerImpl::element_bounds()
     const {
   return controller_common_.element_bounds;
+}
+
+autofill::PopupAnchorType PasswordGenerationPopupControllerImpl::anchor_type()
+    const {
+  return controller_common_.anchor_type;
 }
 
 base::i18n::TextDirection

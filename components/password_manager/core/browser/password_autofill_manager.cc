@@ -23,6 +23,7 @@
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_driver.h"
+#include "components/autofill/core/browser/ui/popup_open_enums.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/autofill_constants.h"
@@ -515,7 +516,7 @@ bool PasswordAutofillManager::ShowPopup(
   last_popup_open_args_ = autofill::AutofillClient::PopupOpenArgs(
       bounds, text_direction, suggestions,
       autofill::AutofillSuggestionTriggerSource::kPasswordManager,
-      /*form_control_ax_id=*/0);
+      /*form_control_ax_id=*/0, autofill::PopupAnchorType::kField);
   autofill_client_->ShowAutofillSuggestions(last_popup_open_args_,
                                             weak_ptr_factory_.GetWeakPtr());
   return true;
