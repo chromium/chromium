@@ -38,16 +38,28 @@ def _gn_lines(output_dir, path):
             else:
                 yield line
 
+
 def _use_reclient(outdir):
+  use_remoteexec = False
+  use_reclient = None
   args_gn = os.path.join(outdir, 'args.gn')
   if not os.path.exists(args_gn):
     return False
   for line in _gn_lines(outdir, args_gn):
     line_without_comment = line.split('#')[0]
-    if re.search(r"(^|\s)(use_remoteexec)\s*=\s*true($|\s)",
-                 line_without_comment):
-      return True
-  return False
+    m = re.match(r"(^|\s*)use_remoteexec\s*=\s*(true|false)\s*$",
+                 line_without_comment)
+    if m:
+      use_remoteexec = m.group(2) == 'true'
+      continue
+    m = re.match(r"(^|\s*)use_reclient\s*=\s*(true|false)\s*$",
+                 line_without_comment)
+    if m:
+      use_reclient = m.group(2) == 'true'
+  if use_reclient == None:
+      use_reclient = use_remoteexec
+  return use_reclient
+
 
 def main():
   parser = argparse.ArgumentParser()
@@ -79,8 +91,8 @@ def main():
   if _use_reclient(options.out_dir):
     # b/335795623 ide_query compiler_arguments contain non-compiler arguments
     sys.stderr.write(
-        'ide_query won\`t work well with "use_remoteexec=true"\n'
-        'Drop "use_remoteexec=true" from args.gn.')
+        'ide_query won\'t work well with "use_reclient=true"\n'
+        'Set "use_reclient=false" in args.gn.\n')
     sys.exit(1)
   if options.perform_build:
     args = ['siso', 'ninja']
