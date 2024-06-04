@@ -102,10 +102,6 @@ class CONTENT_EXPORT IndexedDBDatabase {
   // IndexedDBBucketContextHandle while calling this methods.
   leveldb::Status ForceCloseAndRunTasks();
 
-  void TransactionCreated();
-  void TransactionFinished(blink::mojom::IDBTransactionMode mode,
-                           bool committed);
-
   void ScheduleOpenConnection(
       std::unique_ptr<IndexedDBPendingConnection> connection);
 
@@ -362,8 +358,6 @@ class CONTENT_EXPORT IndexedDBDatabase {
 
   // The object that owns `this`.
   raw_ref<IndexedDBBucketContext> bucket_context_;
-
-  int64_t transaction_count_ = 0;
 
   list_set<IndexedDBConnection*> connections_;
 

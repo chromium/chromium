@@ -133,7 +133,6 @@ class CONTENT_EXPORT IndexedDBTransaction
   }
   int64_t id() const { return id_; }
 
-  base::WeakPtr<IndexedDBDatabase> database() const { return database_; }
   IndexedDBDatabaseCallbacks* callbacks() const {
     return connection()->callbacks();
   }

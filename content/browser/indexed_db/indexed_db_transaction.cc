@@ -146,8 +146,6 @@ IndexedDBTransaction::IndexedDBTransaction(
 
   database_ = connection_->database();
   if (database_) {
-    database_->TransactionCreated();
-
     if (mode_ == blink::mojom::IDBTransactionMode::VersionChange) {
       lock_ids_.insert(GetDatabaseLockId(database_->name()));
     } else {
@@ -259,8 +257,6 @@ leveldb::Status IndexedDBTransaction::Abort(
 
   callbacks()->OnAbort(*this, error);
 
-  if (database_)
-    database_->TransactionFinished(mode_, false);
   bucket_context_->QueueRunTasks();
   bucket_context_.Release();
   return leveldb::Status::OK();
@@ -715,28 +711,23 @@ leveldb::Status IndexedDBTransaction::CommitPhaseTwo() {
               blink::mojom::IDBTransactionDurability::Strict;
       bucket_context_->delegate().on_files_written.Run(did_sync);
     }
-
-    if (database_) {
-      database_->TransactionFinished(mode_, true);
-    }
     return s;
-  } else {
-    while (!abort_task_stack_.empty())
-      abort_task_stack_.pop().Run();
-
-    IndexedDBDatabaseError error;
-    if (leveldb_env::IndicatesDiskFull(s)) {
-      error = IndexedDBDatabaseError(
-          blink::mojom::IDBException::kQuotaError,
-          "Encountered disk full while committing transaction.");
-    } else {
-      error = IndexedDBDatabaseError(blink::mojom::IDBException::kUnknownError,
-                                     "Internal error committing transaction.");
-    }
-    callbacks()->OnAbort(*this, error);
-    if (database_)
-      database_->TransactionFinished(mode_, false);
   }
+
+  while (!abort_task_stack_.empty()) {
+    abort_task_stack_.pop().Run();
+  }
+
+  IndexedDBDatabaseError error;
+  if (leveldb_env::IndicatesDiskFull(s)) {
+    error = IndexedDBDatabaseError(
+        blink::mojom::IDBException::kQuotaError,
+        "Encountered disk full while committing transaction.");
+  } else {
+    error = IndexedDBDatabaseError(blink::mojom::IDBException::kUnknownError,
+                                   "Internal error committing transaction.");
+  }
+  callbacks()->OnAbort(*this, error);
   return s;
 }
 

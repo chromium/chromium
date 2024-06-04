@@ -332,28 +332,6 @@ leveldb::Status IndexedDBDatabase::ForceCloseAndRunTasks() {
   return status;
 }
 
-void IndexedDBDatabase::TransactionCreated() {
-  ++transaction_count_;
-}
-
-void IndexedDBDatabase::TransactionFinished(
-    blink::mojom::IDBTransactionMode mode,
-    bool committed) {
-  --transaction_count_;
-  DCHECK_GE(transaction_count_, 0);
-
-  // TODO(dmurph): To help remove this integration with IndexedDBDatabase, make
-  // a 'committed' listener closure on all transactions. Then the request can
-  // just listen for that.
-
-  // This may be an unrelated transaction finishing while waiting for
-  // connections to close, or the actual upgrade transaction from an active
-  // request. Notify the active request if it's the latter.
-  if (mode == blink::mojom::IDBTransactionMode::VersionChange) {
-    connection_coordinator_.OnUpgradeTransactionFinished(committed);
-  }
-}
-
 void IndexedDBDatabase::ScheduleOpenConnection(
     std::unique_ptr<IndexedDBPendingConnection> connection) {
   connection_coordinator_.ScheduleOpenConnection(std::move(connection));
@@ -425,7 +403,6 @@ leveldb::Status IndexedDBDatabase::CreateObjectStoreOperation(
     bool auto_increment,
     IndexedDBTransaction* transaction) {
   DCHECK(transaction);
-  DCHECK_EQ(transaction->database().get(), this);
   TRACE_EVENT1("IndexedDB", "IndexedDBDatabase::CreateObjectStoreOperation",
                "txn.id", transaction->id());
   DCHECK_EQ(transaction->mode(),
@@ -483,8 +460,7 @@ Status IndexedDBDatabase::DeleteObjectStoreOperation(
 
   // Then remove object store contents.
   s = backing_store()->ClearObjectStore(transaction->BackingStoreTransaction(),
-                                        transaction->database()->id(),
-                                        object_store_id);
+                                        id(), object_store_id);
 
   if (!s.ok()) {
     AddObjectStoreToMetadata(std::move(object_store_metadata),
@@ -643,8 +619,7 @@ Status IndexedDBDatabase::DeleteIndexOperation(
   if (!s.ok())
     return s;
 
-  s = backing_store()->ClearIndex(transaction->BackingStoreTransaction(),
-                                  transaction->database()->id(),
+  s = backing_store()->ClearIndex(transaction->BackingStoreTransaction(), id(),
                                   object_store_id, index_id);
   if (!s.ok()) {
     AddIndexToMetadata(object_store_id, std::move(index_metadata),
