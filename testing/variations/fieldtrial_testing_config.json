@@ -380,7 +380,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_LooseSimilarityCheckWithCancellingSession_20240419",
+                    "name": "Enabled_LooseSimilarityCheckWithCancellingSession_20240604",
                     "enable_features": [
                         "AndroidAutofillCancelSessionOnNavigation",
                         "AndroidAutofillPrefillRequestsForLoginForms",
