@@ -18,23 +18,6 @@ namespace ash {
 
 class ProbeServiceAsh : public crosapi::mojom::TelemetryProbeService {
  public:
-  class Factory {
-   public:
-    static std::unique_ptr<crosapi::mojom::TelemetryProbeService> Create(
-        mojo::PendingReceiver<crosapi::mojom::TelemetryProbeService> receiver);
-    static void SetForTesting(Factory* test_factory);
-
-    virtual ~Factory();
-
-   protected:
-    virtual std::unique_ptr<crosapi::mojom::TelemetryProbeService>
-    CreateInstance(mojo::PendingReceiver<crosapi::mojom::TelemetryProbeService>
-                       receiver) = 0;
-
-   private:
-    static Factory* test_factory_;
-  };
-
   ProbeServiceAsh();
   ProbeServiceAsh(const ProbeServiceAsh&) = delete;
   ProbeServiceAsh& operator=(const ProbeServiceAsh&) = delete;

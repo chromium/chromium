@@ -56,20 +56,13 @@ source_set("browser_tests") {
 
   data = [ "//chrome/test/data" ]
 
-  if (is_chromeos_ash) {
-    sources += [
-      "fake_probe_service_factory.cc",
-      "fake_probe_service_factory.h",
-    ]
-
-    deps += [
-      "//chromeos/ash/components/telemetry_extension/telemetry",
-      "//chromeos/crosapi/cpp:test_support",
-    ]
-  }
-
   if (is_chromeos_lacros) {
     deps += [ "//chromeos/lacros" ]
+  }
+
+  if (is_chromeos_ash) {
+    deps +=
+        [ "//chromeos/ash/components/telemetry_extension/telemetry:telemetry" ]
   }
 }
 

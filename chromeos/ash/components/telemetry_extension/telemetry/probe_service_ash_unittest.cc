@@ -23,6 +23,8 @@ class ProbeServiceAshTest : public testing::Test {
   void SetUp() override {
     DebugDaemonClient::InitializeFake();
     cros_healthd::FakeCrosHealthd::Initialize();
+    probe_service_.BindReceiver(
+        remote_probe_service_.BindNewPipeAndPassReceiver());
   }
 
   void TearDown() override {
@@ -39,9 +41,7 @@ class ProbeServiceAshTest : public testing::Test {
   ::ash::mojo_service_manager::FakeMojoServiceManager fake_service_manager_;
 
   mojo::Remote<crosapi::mojom::TelemetryProbeService> remote_probe_service_;
-  std::unique_ptr<crosapi::mojom::TelemetryProbeService> probe_service_{
-      ProbeServiceAsh::Factory::Create(
-          remote_probe_service_.BindNewPipeAndPassReceiver())};
+  ProbeServiceAsh probe_service_;
 };
 
 // Tests that ProbeTelemetryInfo requests telemetry info in cros_healthd and

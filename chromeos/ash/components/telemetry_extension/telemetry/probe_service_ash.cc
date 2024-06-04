@@ -24,30 +24,6 @@ constexpr char kOemDataLogName[] = "oemdata";
 
 }  // namespace
 
-// static
-ProbeServiceAsh::Factory* ProbeServiceAsh::Factory::test_factory_ = nullptr;
-
-// static
-std::unique_ptr<crosapi::mojom::TelemetryProbeService>
-ProbeServiceAsh::Factory::Create(
-    mojo::PendingReceiver<crosapi::mojom::TelemetryProbeService> receiver) {
-  if (test_factory_) {
-    return test_factory_->CreateInstance(std::move(receiver));
-  }
-
-  auto probe_service = std::make_unique<ProbeServiceAsh>();
-  probe_service->BindReceiver(std::move(receiver));
-  return probe_service;
-}
-
-// static
-void ProbeServiceAsh::Factory::SetForTesting(
-    ProbeServiceAsh::Factory* test_factory) {
-  test_factory_ = test_factory;
-}
-
-ProbeServiceAsh::Factory::~Factory() = default;
-
 ProbeServiceAsh::ProbeServiceAsh() = default;
 
 ProbeServiceAsh::~ProbeServiceAsh() = default;
