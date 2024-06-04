@@ -51,6 +51,8 @@ constexpr char16_t kTestUnescapedHtmlMessage[] = u"<>&\"'";
 // Offset to first placeholder index for
 // IDS_DEEP_SCANNING_DIALOG_CUSTOM_MESSAGE.
 constexpr size_t kRuleMessageOffset = 26;
+constexpr char kTestLinkedMessage[] = "Learn More";
+constexpr char16_t kU16TestLinkedMessage[] = u"Learn More";
 
 ContentAnalysisResponse CreateContentAnalysisResponse(
     const std::vector<CustomMessageTestCase>& triggered_rules,
@@ -67,9 +69,11 @@ ContentAnalysisResponse CreateContentAnalysisResponse(
     if (!triggered_rule.message.empty()) {
       ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage
           custom_message;
-      auto* custom_segments = custom_message.add_message_segments();
-      custom_segments->set_text(triggered_rule.message);
-      custom_segments->set_link(url);
+      auto* custom_segment = custom_message.add_message_segments();
+      custom_segment->set_text(triggered_rule.message);
+      auto* custom_linked_segment = custom_message.add_message_segments();
+      custom_linked_segment->set_text(kTestLinkedMessage);
+      custom_linked_segment->set_link(url);
       *rule->mutable_custom_rule_message() = custom_message;
     }
   }
@@ -218,13 +222,19 @@ TEST_P(ContentAnalysisResponseCustomMessageTest, ValidUrlCustomMessage) {
   std::vector<std::pair<gfx::Range, GURL>> custom_ranges =
       GetCustomRuleStyles(result.custom_rule_message, kRuleMessageOffset);
 
-  EXPECT_EQ(custom_message, expected_message());
+  EXPECT_EQ(custom_message,
+            custom_message.empty()
+                ? std::u16string{}
+                : base::StrCat({expected_message(), kU16TestLinkedMessage}));
 
   if (custom_message.empty()) {
     EXPECT_TRUE(custom_ranges.empty());
   } else {
     EXPECT_EQ(1u, custom_ranges.size());
-    EXPECT_EQ(custom_message.size(), custom_ranges.begin()->first.length());
+    EXPECT_EQ(strlen(kTestLinkedMessage),
+              custom_ranges.begin()->first.length());
+    EXPECT_EQ(custom_ranges.begin()->first.start(),
+              expected_message().length() + kRuleMessageOffset);
   }
 }
 
@@ -241,7 +251,10 @@ TEST_P(ContentAnalysisResponseCustomMessageTest, InvalidUrlCustomMessage) {
   std::vector<std::pair<gfx::Range, GURL>> custom_ranges =
       GetCustomRuleStyles(result.custom_rule_message, kRuleMessageOffset);
 
-  EXPECT_EQ(custom_message, expected_message());
+  EXPECT_EQ(custom_message,
+            custom_message.empty()
+                ? std::u16string{}
+                : base::StrCat({expected_message(), kU16TestLinkedMessage}));
   EXPECT_TRUE(custom_ranges.empty());
 }
 
@@ -266,10 +279,12 @@ TEST_P(ContentAnalysisResponseCustomMessageTest, DownloadsItemCustomMessage) {
                    std::move(scan_result));
 
   auto custom_rule_message = GetDownloadsCustomRuleMessage(&item, danger_type);
-  EXPECT_EQ(custom_rule_message.has_value()
-                ? GetCustomRuleString(custom_rule_message.value())
-                : std::u16string{},
-            expected_message());
+  if (custom_rule_message.has_value()) {
+    EXPECT_EQ(GetCustomRuleString(custom_rule_message.value()),
+              base::StrCat({expected_message(), kU16TestLinkedMessage}));
+  } else {
+    EXPECT_EQ(std::u16string{}, expected_message());
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(
