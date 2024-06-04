@@ -28,6 +28,7 @@ class ScreenCapturePermissionCheckerMac
   void OnPermissionUpdate(bool has_permission);
 
   bool has_pending_task_ = false;
+  bool has_recorded_uma_ = false;
   scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_ =
       base::ThreadPool::CreateSequencedTaskRunner({});
   base::RepeatingCallback<void(bool)> callback_;

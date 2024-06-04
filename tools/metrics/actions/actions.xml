@@ -11236,6 +11236,44 @@ should be able to be added at any place in this file.
   <description>User cancelled the getDisplayMedia dialog.</description>
 </action>
 
+<action name="GetDisplayMedia.PermissionPane.Screen.ClickedButton">
+  <owner>tovep@chromium.org</owner>
+  <owner>eladalon@chromium.org</owner>
+  <owner>kron@chromium.org</owner>
+  <description>
+    User clicked on the permission button on the screen-sharing pane.
+  </description>
+</action>
+
+<action name="GetDisplayMedia.PermissionPane.Screen.Opened">
+  <owner>tovep@chromium.org</owner>
+  <owner>eladalon@chromium.org</owner>
+  <owner>kron@chromium.org</owner>
+  <description>
+    User navigated to the screen-sharing pane with the permission button
+    visible.
+  </description>
+</action>
+
+<action name="GetDisplayMedia.PermissionPane.Window.ClickedButton">
+  <owner>tovep@chromium.org</owner>
+  <owner>eladalon@chromium.org</owner>
+  <owner>kron@chromium.org</owner>
+  <description>
+    User clicked on the permission button on the window-sharing pane.
+  </description>
+</action>
+
+<action name="GetDisplayMedia.PermissionPane.Window.Opened">
+  <owner>tovep@chromium.org</owner>
+  <owner>eladalon@chromium.org</owner>
+  <owner>kron@chromium.org</owner>
+  <description>
+    User navigated to the window-sharing pane with the permission button
+    visible.
+  </description>
+</action>
+
 <action name="GetDisplayMedia.SelectCurrentTab">
   <owner>eladalon@chromium.org</owner>
   <owner>tovep@chromium.org</owner>

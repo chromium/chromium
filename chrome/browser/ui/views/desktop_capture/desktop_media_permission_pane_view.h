@@ -20,6 +20,14 @@ class DesktopMediaPermissionPaneView : public views::View {
   DesktopMediaPermissionPaneView& operator=(
       const DesktopMediaPermissionPaneView&) = delete;
   ~DesktopMediaPermissionPaneView() override;
+
+  bool WasPermissionButtonClicked() const;
+
+ private:
+  void OpenScreenRecordingSettingsPane();
+
+  const DesktopMediaList::Type type_;
+  bool clicked_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_DESKTOP_MEDIA_PERMISSION_PANE_VIEW_H_

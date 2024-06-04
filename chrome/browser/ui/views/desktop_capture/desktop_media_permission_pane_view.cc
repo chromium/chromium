@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_permission_pane_view.h"
 
+#include "base/metrics/user_metrics.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -37,7 +39,7 @@ std::u16string GetLabelText(DesktopMediaList::Type type) {
     case DesktopMediaList::Type::kNone:
     case DesktopMediaList::Type::kWebContents:
     case DesktopMediaList::Type::kCurrentTab:
-      NOTREACHED_NORETURN();
+      break;
   }
   NOTREACHED_NORETURN();
 }
@@ -45,7 +47,8 @@ std::u16string GetLabelText(DesktopMediaList::Type type) {
 }  // namespace
 
 DesktopMediaPermissionPaneView::DesktopMediaPermissionPaneView(
-    DesktopMediaList::Type type) {
+    DesktopMediaList::Type type)
+    : type_(type) {
   SetBackground(views::CreateThemedRoundedRectBackground(ui::kColorSysSurface4,
                                                          /*top_radius=*/0,
                                                          /*bottom_radius=*/8));
@@ -57,7 +60,7 @@ DesktopMediaPermissionPaneView::DesktopMediaPermissionPaneView(
               DISTANCE_UNRELATED_CONTROL_VERTICAL_LARGE)));
   layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);
 
-  AddChildView(std::make_unique<views::Label>(GetLabelText(type)));
+  AddChildView(std::make_unique<views::Label>(GetLabelText(type_)));
 
   View* button_container = AddChildView(std::make_unique<views::View>());
   views::BoxLayout* button_layout =
@@ -65,18 +68,47 @@ DesktopMediaPermissionPaneView::DesktopMediaPermissionPaneView(
           views::BoxLayout::Orientation::kHorizontal));
   button_layout->set_main_axis_alignment(
       views::BoxLayout::MainAxisAlignment::kCenter);
+  // Unretained safe because button is (transitively) owned by `this`.
   views::MdTextButton* button =
       button_container->AddChildView(std::make_unique<views::MdTextButton>(
           base::BindRepeating(
-              &base::mac::OpenSystemSettingsPane,
-              base::mac::SystemSettingsPane::kPrivacySecurity_ScreenRecording,
-              ""),
+              &DesktopMediaPermissionPaneView::OpenScreenRecordingSettingsPane,
+              base::Unretained(this)),
           l10n_util::GetStringUTF16(
               IDS_DESKTOP_MEDIA_PICKER_PERMISSION_BUTTON_MAC)));
   button->SetStyle(ui::ButtonStyle::kProminent);
 }
 
 DesktopMediaPermissionPaneView::~DesktopMediaPermissionPaneView() = default;
+
+bool DesktopMediaPermissionPaneView::WasPermissionButtonClicked() const {
+  return clicked_;
+}
+
+void DesktopMediaPermissionPaneView::OpenScreenRecordingSettingsPane() {
+  clicked_ = true;
+  switch (type_) {
+    case DesktopMediaList::Type::kScreen:
+    case DesktopMediaList::Type::kWindow:
+      RecordAction(base::UserMetricsAction(
+          type_ == DesktopMediaList::Type::kScreen
+              ? "GetDisplayMedia.PermissionPane.Screen.ClickedButton"
+              : "GetDisplayMedia.PermissionPane.Window.ClickedButton"));
+      base::ThreadPool::PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              &base::mac::OpenSystemSettingsPane,
+              base::mac::SystemSettingsPane::kPrivacySecurity_ScreenRecording,
+              ""));
+      return;
+
+    case DesktopMediaList::Type::kNone:
+    case DesktopMediaList::Type::kWebContents:
+    case DesktopMediaList::Type::kCurrentTab:
+      break;
+  }
+  NOTREACHED_NORETURN();
+}
 
 BEGIN_METADATA(DesktopMediaPermissionPaneView)
 END_METADATA
