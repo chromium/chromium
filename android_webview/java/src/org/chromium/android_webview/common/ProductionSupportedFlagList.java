@@ -696,6 +696,9 @@ public final class ProductionSupportedFlagList {
                 "Enables the CloseWatcher JS API and integrates behavior with dialog and popover"
                         + " elements."),
         Flag.baseFeature(
+                BlinkFeatures.CSS_LAZY_PARSING_FAST_PATH,
+                "Enables a fast-path for skipping lazily-parsed CSS declaration blocks"),
+        Flag.baseFeature(
                 ContentFeatures.QUEUE_NAVIGATIONS_WHILE_WAITING_FOR_COMMIT,
                 "If enabled, allows navigations to be queued when there is "
                         + "an existing pending commit navigation in progress."),
