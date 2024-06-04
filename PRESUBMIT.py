@@ -1997,6 +1997,18 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       ),
       treat_as_error = False,
     ),
+    BanRule(
+      pattern = 'BrowserUserData',
+      explanation = (
+        'Do not use BrowserUserData to store state on a Browser instance. '
+        'Instead use BrowserWindowFeatures. BrowserWindowFeatures is '
+        'functionally identical but has two benefits: it does not force a '
+        'dependency onto class Browser, and lifetime semantics are explicit '
+        'rather than implicit. See BrowserUserData header file for more '
+        'details.'
+      ),
+      treat_as_error = False,
+    ),
 )
 
 _DEPRECATED_SYNC_CONSENT_FUNCTION_WARNING = (
