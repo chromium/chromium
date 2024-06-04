@@ -33,7 +33,8 @@ class OneClickSigninDialogViewTest : public ChromeViewsTestBase,
     SetConstrainedWindowViewsClient(CreateChromeConstrainedWindowViewsClient());
 
     // Create a widget to host the anchor view.
-    anchor_widget_ = CreateTestWidget();
+    anchor_widget_ =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     anchor_widget_->Show();
   }
 

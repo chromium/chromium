@@ -184,7 +184,9 @@ class DownloadBubbleSecurityViewTest : public ChromeViewsTestBase {
     browser_ = std::unique_ptr<Browser>(Browser::Create(params));
 
     security_view_info_ = std::make_unique<DownloadBubbleSecurityViewInfo>();
-    anchor_widget_ = CreateTestWidget(views::Widget::InitParams::TYPE_WINDOW);
+    anchor_widget_ =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                         views::Widget::InitParams::TYPE_WINDOW);
     auto bubble_delegate = std::make_unique<views::BubbleDialogDelegate>(
         anchor_widget_->GetContentsView(), views::BubbleBorder::TOP_RIGHT);
     bubble_delegate_ = bubble_delegate.get();

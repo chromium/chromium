@@ -216,7 +216,8 @@ class BookmarkBarViewInWidgetTest : public BookmarkBarViewBaseTest {
     set_native_widget_type(NativeWidgetType::kDesktop);
     BookmarkBarViewBaseTest::SetUp();
 
-    widget_ = CreateTestWidget();
+    widget_ =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     bookmark_bar_view_ =
         widget_->SetContentsView(CreateBookmarkModelAndBookmarkBarView());
   }

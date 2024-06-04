@@ -59,7 +59,8 @@ class MediaItemUIFooterViewTest : public ChromeViewsTestBase {
   }
 
   void CreateView(bool is_cast_session) {
-    widget_ = CreateTestWidget();
+    widget_ =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     handler_ = std::make_unique<StopCastingHandler>();
     delegate_ = std::make_unique<NiceMock<MockFooterViewDelegate>>();
 

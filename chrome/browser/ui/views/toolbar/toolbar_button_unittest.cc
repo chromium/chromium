@@ -135,7 +135,8 @@ TEST_F(ToolbarButtonViewsTest, MenuDoesNotShowWhenTabStripIsEmpty) {
   ToolbarButton* button =
       parent_view->AddChildView(std::make_unique<ToolbarButton>(
           views::Button::PressedCallback(), std::move(model), &tab_strip));
-  std::unique_ptr<views::Widget> widget_ = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget_ =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   widget_->SetContentsView(std::move(parent_view));
 
   // Since |tab_strip| is empty, calling this does not do anything. This is the
@@ -160,7 +161,8 @@ class ToolbarButtonUITest : public ChromeViewsTestBase {
     auto model = std::make_unique<ui::SimpleMenuModel>(nullptr);
     model->AddItem(0, std::u16string());
 
-    widget_ = CreateTestWidget();
+    widget_ =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     button_ = widget_->SetContentsView(std::make_unique<TestToolbarButton>(
         views::Button::PressedCallback(), std::move(model), nullptr));
   }

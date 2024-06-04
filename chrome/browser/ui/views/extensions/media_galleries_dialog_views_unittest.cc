@@ -121,7 +121,8 @@ TEST_F(MediaGalleriesDialogTest, ToggleCheckboxes) {
   EXPECT_CALL(*controller(), GetSectionEntries(0)).
       WillRepeatedly(Return(attached_permissions));
 
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
 
   EXPECT_CALL(*controller(), DidToggleEntry(1, false));
   views::test::ButtonTestApi test_api(checkbox());

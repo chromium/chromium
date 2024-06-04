@@ -73,7 +73,8 @@ TEST_F(PermissionPromptBaseViewTest,
   delegate.set_requests(raw_requests);
 
   // Create a widget to parent the bubble.
-  std::unique_ptr<views::Widget> parent = CreateTestWidget();
+  std::unique_ptr<views::Widget> parent =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   parent->Show();
 
   // Create the bubble.
@@ -118,7 +119,8 @@ TEST_F(PermissionPromptBaseViewTest, IncludedInTrackedPictureInPictureWidgets) {
   delegate.set_requests(raw_requests);
 
   // Create a widget to parent the bubble.
-  std::unique_ptr<views::Widget> parent = CreateTestWidget();
+  std::unique_ptr<views::Widget> parent =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   parent->Show();
 
   // Create a picture-in-picture browser window to request the permission.

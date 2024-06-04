@@ -107,7 +107,8 @@ class ToolbarActionViewUnitTest : public ChromeViewsTestBase {
     controller_ =
         std::make_unique<TestToolbarActionViewController>("fake controller");
     action_view_delegate_ = std::make_unique<TestToolbarActionViewDelegate>();
-    widget_ = CreateTestWidget();
+    widget_ =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   }
 
   void TearDown() override {

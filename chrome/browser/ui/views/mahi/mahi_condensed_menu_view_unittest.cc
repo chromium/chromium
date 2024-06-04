@@ -52,7 +52,8 @@ TEST_F(MahiCondensedMenuViewTest, NotifiesWebContentsManagerOnClick) {
   MockMahiWebContentsManager mock_mahi_web_contents_manager;
   ::mahi::ScopedMahiWebContentsManagerForTesting
       scoped_mahi_web_contents_manager(&mock_mahi_web_contents_manager);
-  std::unique_ptr<views::Widget> menu_widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> menu_widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   auto* condensed_menu_view =
       menu_widget->SetContentsView(std::make_unique<MahiCondensedMenuView>());
   menu_widget->Show();

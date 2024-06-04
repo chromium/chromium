@@ -21,7 +21,8 @@ using DownloadInProgressDialogTest = ChromeViewsTestBase;
 TEST_F(DownloadInProgressDialogTest, CallbackIsRunOnClose) {
   SetConstrainedWindowViewsClient(CreateChromeConstrainedWindowViewsClient());
 
-  auto parent = CreateTestWidget();
+  auto parent =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   parent->Show();
 
   std::optional<bool> result;

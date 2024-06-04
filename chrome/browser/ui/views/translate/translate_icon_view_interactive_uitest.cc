@@ -44,12 +44,12 @@ class TranslateIconViewTest : public InProcessBrowserTest {
         ->GetPartialTranslateBubble();
   }
 
-  std::unique_ptr<views::Widget> CreateTestWidget() {
+  std::unique_ptr<views::Widget> CreateTestWidget(
+      views::Widget::InitParams::Ownership ownership) {
     auto widget = std::make_unique<views::Widget>();
 
-    views::Widget::InitParams params(
-        views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
-        views::Widget::InitParams::TYPE_WINDOW);
+    views::Widget::InitParams params(ownership,
+                                     views::Widget::InitParams::TYPE_WINDOW);
     widget->Init(std::move(params));
     // TODO(https://crbug.com/329235190): The bubble child of a widget that is
     // invisible will not be mapped through wayland and hence never shown so
@@ -79,7 +79,8 @@ IN_PROC_BROWSER_TEST_F(TranslateIconViewTest, ClosePartialTranslateBubble) {
   TranslateBubbleController* controller =
       TranslateBubbleController::GetOrCreate(
           browser()->tab_strip_model()->GetActiveWebContents());
-  auto anchor_widget = CreateTestWidget();
+  auto anchor_widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   views::View* anchor_view = anchor_widget->GetContentsView();
   controller->StartPartialTranslate(anchor_view, nullptr, "fr", "en",
                                     std::u16string());

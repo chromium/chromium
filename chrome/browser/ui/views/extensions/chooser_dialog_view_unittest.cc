@@ -39,7 +39,8 @@ class ChooserDialogViewTest : public ChromeViewsTestBase {
 #if BUILDFLAG(IS_MAC)
     // We need a native view parent for the dialog to avoid a DCHECK
     // on Mac.
-    parent_widget_ = CreateTestWidget();
+    parent_widget_ =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     parent = parent_widget_->GetNativeView();
 #endif
     widget_ = views::DialogDelegate::CreateDialogWidget(dialog_, GetContext(),

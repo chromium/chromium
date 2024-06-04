@@ -25,7 +25,8 @@ class TabStripScrollContainerTest : public ChromeViewsTestBase {
 
     tab_strip_ = tab_strip.get();
     controller_->set_tab_strip(tab_strip_);
-    root_widget_ = CreateTestWidget();
+    root_widget_ =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     root_widget_->Show();
 
     // root_widget_ takes ownership of the content_view

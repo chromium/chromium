@@ -286,7 +286,12 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
     delegate_ = std::make_unique<StubAccountSelectionViewDelegate>(
         test_web_contents_.get());
 
-    dialog_widget_.reset(CreateTestWidget().release());
+    // TODO(crbug.com/40232479) - We can probably clean this up and
+    // get rid of the need for a WidgetAutoClosePtr when we switch to
+    // CLIENT_OWNS_WIDGET.
+    dialog_widget_.reset(
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET)
+            .release());
     account_selection_view_ =
         std::make_unique<TestAccountSelectionView>(dialog_widget_.get());
     histogram_tester_ = std::make_unique<base::HistogramTester>();

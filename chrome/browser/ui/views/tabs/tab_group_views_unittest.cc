@@ -26,7 +26,8 @@ class TabGroupViewsTest : public ChromeViewsTestBase {
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
 
-    widget_ = CreateTestWidget();
+    widget_ =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     tab_container_ = widget_->SetContentsView(std::make_unique<views::View>());
     tab_container_->SetBounds(0, 0, 1000, 100);
     drag_context_ =

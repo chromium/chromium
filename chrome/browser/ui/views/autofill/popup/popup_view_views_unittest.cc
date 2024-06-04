@@ -175,9 +175,11 @@ class PopupViewViewsTest : public ChromeViewsTestBase {
     generator_.reset();
 
     widget_ = CreateTestWidget(
-        widget_params ? std::move(*widget_params)
-                      : CreateParamsForTestWidget(
-                            views::Widget::InitParams::Type::TYPE_POPUP));
+        widget_params
+            ? std::move(*widget_params)
+            : CreateParamsForTestWidget(
+                  views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                  views::Widget::InitParams::Type::TYPE_POPUP));
     generator_ = std::make_unique<ui::test::EventGenerator>(
         GetRootWindow(widget_.get()));
     view_ = new PopupViewViews(controller().GetWeakPtr(),
@@ -1054,9 +1056,7 @@ TEST_F(PopupViewViewsTest, ExpandableSuggestionA11yMessageTest) {
 
   // Verify that the accessibility layer gets the right string to read out.
   ui::AXNodeData node_data;
-  GetPopupRowViewAt(0)
-      .GetViewAccessibility()
-      .GetAccessibleNodeData(&node_data);
+  GetPopupRowViewAt(0).GetViewAccessibility().GetAccessibleNodeData(&node_data);
   EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
             base::JoinString(
                 {address_line,
@@ -1126,7 +1126,9 @@ TEST_F(PopupViewViewsTest, ChildWidgetRetriggersMouseMovesToParent) {
 TEST_F(PopupViewViewsTest, SubViewIsClosedWithParent) {
   controller().set_suggestions({SuggestionType::kAddressEntry});
   PopupViewViews view(controller().GetWeakPtr());
-  views::Widget* widget = CreateTestWidget().release();
+  views::Widget* widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET)
+          .release();
   ShowView(&view, *widget);
 
   auto [sub_controller, sub_view] = OpenSubView(view);
@@ -1198,7 +1200,8 @@ TEST_F(PopupViewViewsDeathTest, OpenSubPopupWithNoChildrenCheckCrash) {
       Suggestion(u"Suggestion #1"),
       Suggestion(u"Suggestion #2"),
   });
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   std::unique_ptr<PopupViewViews> view =
       std::make_unique<PopupViewViews>(controller.GetWeakPtr());
   raw_ptr<PopupViewViews> view_ptr = widget->SetContentsView(std::move(view));

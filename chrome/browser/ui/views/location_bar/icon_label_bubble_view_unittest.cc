@@ -148,7 +148,8 @@ class IconLabelBubbleViewTest : public IconLabelBubbleViewTestBase {
     ChromeViewsTestBase::SetUp();
     gfx::FontList font_list;
 
-    widget_ = CreateTestWidget();
+    widget_ =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     generator_ = std::make_unique<ui::test::EventGenerator>(
         GetRootWindow(widget_.get()));
     view_ = widget_->SetContentsView(
@@ -462,7 +463,8 @@ using IconLabelBubbleViewCrashTest = IconLabelBubbleViewTestBase;
 TEST_F(IconLabelBubbleViewCrashTest,
        GetPreferredSizeDoesntCrashWhenNoCompositor) {
   gfx::FontList font_list;
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   IconLabelBubbleView* icon_label_bubble_view = widget->SetContentsView(
       std::make_unique<TestIconLabelBubbleView>(font_list, this));
   icon_label_bubble_view->SetLabel(u"x");

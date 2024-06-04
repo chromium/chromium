@@ -59,7 +59,8 @@ class TabStripRegionViewTestBase : public ChromeViewsTestBase {
         std::unique_ptr<TabStripController>(controller.release()));
     tab_strip_ = tab_strip.get();
     controller_->set_tab_strip(tab_strip_);
-    widget_ = CreateTestWidget();
+    widget_ =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     tab_strip_region_view_ = widget_->SetContentsView(
         std::make_unique<TabStripRegionView>(std::move(tab_strip)));
 

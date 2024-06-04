@@ -109,7 +109,8 @@ class CastToolbarButtonTest : public ChromeViewsTestBase {
         browser_.get(), false, &context_menu_observer_);
 
     // Button needs to be in a widget to be able to access ColorProvider.
-    widget_ = CreateTestWidget();
+    widget_ =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     button_ = widget_->SetContentsView(std::make_unique<CastToolbarButton>(
         browser_.get(), media_router_, std::move(context_menu)));
 

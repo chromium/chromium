@@ -32,7 +32,8 @@ class CastDeviceSelectorViewTest : public ChromeViewsTestBase {
 
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
-    widget_ = CreateTestWidget();
+    widget_ =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     device_list_host_ = std::make_unique<MockDeviceListHost>();
   }
 

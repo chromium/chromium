@@ -92,7 +92,8 @@ TEST_F(MahiMenuViewTest, SettingsButtonClicked) {
   ::mahi::ScopedMahiWebContentsManagerForTesting
       scoped_mahi_web_contents_manager(&mock_mahi_web_contents_manager);
 
-  std::unique_ptr<views::Widget> menu_widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> menu_widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   auto* menu_view =
       menu_widget->SetContentsView(std::make_unique<MahiMenuView>());
 
@@ -123,7 +124,8 @@ TEST_F(MahiMenuViewTest, SummaryButtonClicked) {
       std::make_unique<::mahi::ScopedMahiWebContentsManagerForTesting>(
           &mock_mahi_web_contents_manager);
 
-  auto menu_widget = CreateTestWidget();
+  auto menu_widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   auto* menu_view =
       menu_widget->SetContentsView(std::make_unique<MahiMenuView>());
 
@@ -164,7 +166,8 @@ TEST_F(MahiMenuViewTest, SummaryButtonClicked) {
 
 // TODO(b/330643995): Remove this test after outlines are shown by default.
 TEST_F(MahiMenuViewTest, OutlineButtonHiddenByDefault) {
-  auto menu_widget = CreateTestWidget();
+  auto menu_widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   auto* menu_view =
       menu_widget->SetContentsView(std::make_unique<MahiMenuView>());
 
@@ -177,7 +180,8 @@ TEST_F(MahiMenuViewTest, OutlineButtonClicked) {
       std::make_unique<::mahi::ScopedMahiWebContentsManagerForTesting>(
           &mock_mahi_web_contents_manager);
 
-  auto menu_widget = CreateTestWidget();
+  auto menu_widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   auto* menu_view =
       menu_widget->SetContentsView(std::make_unique<MahiMenuView>());
   // TODO(b/330643995): After outlines are shown by default, remove this since
