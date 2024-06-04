@@ -105,7 +105,8 @@ bool LightweightQuarantineBranch::Quarantine(void* object,
 
 bool LightweightQuarantineBranch::IsQuarantinedForTesting(void* object) {
   ConditionalScopedGuard guard(lock_required_, lock_);
-  uintptr_t slot_start = root_.allocator_root_.ObjectToSlotStart(object);
+  uintptr_t slot_start =
+      root_.allocator_root_.ObjectToSlotStartUnchecked(object);
   for (const auto& slot : slots_) {
     if (slot.slot_start == slot_start) {
       return true;

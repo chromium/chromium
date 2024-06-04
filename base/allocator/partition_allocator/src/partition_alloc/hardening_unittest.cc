@@ -115,7 +115,7 @@ TEST(HardeningTest, SuccessfulCorruption) {
   root.Free(data);
 
   root.get_freelist_dispatcher()->EmplaceAndInitForTest(
-      root.ObjectToSlotStart(data), to_corrupt, true);
+      root.ObjectToSlotStartUnchecked(data), to_corrupt, true);
 
 #if PA_BUILDFLAG(USE_FREESLOT_BITMAP)
   // This part crashes with freeslot bitmap because it detects freelist

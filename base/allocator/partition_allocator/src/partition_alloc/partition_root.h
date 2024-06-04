@@ -851,6 +851,10 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
     // TODO(bartekn): Check that the result is indeed a slot start.
   }
 
+  PA_ALWAYS_INLINE uintptr_t ObjectToSlotStartUnchecked(void* object) const {
+    return UntagPtr(object);
+  }
+
   PA_ALWAYS_INLINE uintptr_t ObjectToTaggedSlotStart(void* object) const {
     return reinterpret_cast<uintptr_t>(object);
     // TODO(bartekn): Check that the result is indeed a slot start.
