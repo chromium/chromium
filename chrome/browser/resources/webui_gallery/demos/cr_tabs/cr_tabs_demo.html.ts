@@ -1,3 +1,13 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {CrTabsDemoElement} from './cr_tabs_demo.js';
+
+export function getHtml(this: CrTabsDemoElement) {
+  return html`
 <h1>cr-tabs</h1>
 <div class="demos">
   <cr-tabs id="tabs" .tabNames="${this.tabNames_}"
@@ -22,4 +32,5 @@
 <div>
   Tab Count: ${this.tabNames_.length},
   Selected Tab: ${this.selectedTabIndex_}
-</div>
+</div>`;
+}

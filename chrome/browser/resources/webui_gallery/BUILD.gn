@@ -41,13 +41,6 @@ build_webui("build") {
   # Files holding a Polymer or native custom element definition AND have an
   # equivalent .html template file.
   web_component_files = [
-    "demos/cr_radio/cr_radio_demo.ts",
-    "demos/cr_slider/cr_slider_demo.ts",
-    "demos/cr_tabs/cr_tabs_demo.ts",
-    "demos/cr_toast/cr_toast_demo.ts",
-    "demos/cr_toggle/cr_toggle_demo.ts",
-    "demos/cr_toolbar/cr_toolbar_demo.ts",
-    "demos/cr_tooltip/cr_tooltip_demo.ts",
     "demos/cr_url_list_item/cr_url_list_item_demo.ts",
     "demos/md_select/md_select_demo.ts",
     "demos/nav_menu/nav_menu_demo.ts",
@@ -80,6 +73,20 @@ build_webui("build") {
     "demos/cr_icons/cr_icons_demo.ts",
     "demos/cr_input/cr_input_demo.html.ts",
     "demos/cr_input/cr_input_demo.ts",
+    "demos/cr_radio/cr_radio_demo.html.ts",
+    "demos/cr_radio/cr_radio_demo.ts",
+    "demos/cr_slider/cr_slider_demo.html.ts",
+    "demos/cr_slider/cr_slider_demo.ts",
+    "demos/cr_tabs/cr_tabs_demo.html.ts",
+    "demos/cr_tabs/cr_tabs_demo.ts",
+    "demos/cr_toast/cr_toast_demo.html.ts",
+    "demos/cr_toast/cr_toast_demo.ts",
+    "demos/cr_toggle/cr_toggle_demo.html.ts",
+    "demos/cr_toggle/cr_toggle_demo.ts",
+    "demos/cr_toolbar/cr_toolbar_demo.html.ts",
+    "demos/cr_toolbar/cr_toolbar_demo.ts",
+    "demos/cr_tooltip/cr_tooltip_demo.html.ts",
+    "demos/cr_tooltip/cr_tooltip_demo.ts",
   ]
 
   html_to_wrapper_template = "detect"

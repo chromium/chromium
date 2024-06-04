@@ -1,3 +1,13 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {CrToolbarDemoElement} from './cr_toolbar_demo.js';
+
+export function getHtml(this: CrToolbarDemoElement) {
+  return html`
 <cr-toolbar
     .pageName="${this.pageName_}"
     .searchPrompt="${this.searchPrompt_}"
@@ -52,4 +62,5 @@
     <div>Is narrow? ${this.narrow_}</div>
     ${this.log_.map(item => html`<div>${item}</div>`)}
   </div>
-</div>
+</div>`;
+}

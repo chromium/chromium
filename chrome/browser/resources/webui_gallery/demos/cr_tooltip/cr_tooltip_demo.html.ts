@@ -1,3 +1,13 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {CrTooltipDemoElement} from './cr_tooltip_demo.js';
+
+export function getHtml(this: CrTooltipDemoElement) {
+  return html`
 <h1>Automatic Tooltip (shows when mouse over target)</h1>
 <div class="demos">
   <div class="target" id="target">This is a tooltip target</div>
@@ -34,4 +44,5 @@
     <option value="left">left</option>
     <option value="right">right</option>
   </select>
-</div>
+</div>`;
+}

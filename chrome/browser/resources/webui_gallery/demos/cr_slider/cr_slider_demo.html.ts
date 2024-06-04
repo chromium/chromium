@@ -1,3 +1,13 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {CrSliderDemoElement} from './cr_slider_demo.js';
+
+export function getHtml(this: CrSliderDemoElement) {
+  return html`
 <h1>cr-slider</h1>
 
 <h2>Indiscrete</h2>
@@ -26,4 +36,5 @@
 <h2>Disabled</h2>
 <div class="demos">
   <cr-slider min="0" max="20" value="12" disabled></cr-slider>
-</div>
+</div>`;
+}
