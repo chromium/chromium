@@ -17,11 +17,7 @@ BASE_FEATURE(kAutofillEnableAndroidNKeyForFidoAuthentication,
 // Payments Autofill UI.
 BASE_FEATURE(kAutofillEnableCardArtImage,
              "AutofillEnableCardArtImage",
-#if BUILDFLAG(IS_IOS)
              base::FEATURE_ENABLED_BY_DEFAULT);
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
 
 // When enabled, server will return card art images of the exact required
 // dimension.
@@ -51,11 +47,7 @@ BASE_FEATURE(kAutofillEnableCardBenefitsSync,
 // Payments Autofill UI.
 BASE_FEATURE(kAutofillEnableCardProductName,
              "AutofillEnableCardProductName",
-#if BUILDFLAG(IS_IOS)
              base::FEATURE_ENABLED_BY_DEFAULT);
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
 
 // When enabled, we will store CVC for both local and server credit cards. This
 // will also allow the users to autofill their CVCs on checkout pages.
@@ -194,7 +186,11 @@ BASE_FEATURE(kAutofillEnableVerveCardSupport,
 // when the virtual card is presented to users.
 BASE_FEATURE(kAutofillEnableVirtualCardMetadata,
              "AutofillEnableVirtualCardMetadata",
+#if BUILDFLAG(IS_IOS)
              base::FEATURE_DISABLED_BY_DEFAULT);
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
 
 // When enabled, Autofill will attempt to find standalone CVC fields for VCN
 // card on file when parsing forms.
