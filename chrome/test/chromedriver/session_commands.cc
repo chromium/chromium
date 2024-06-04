@@ -364,6 +364,25 @@ Status InitSessionHelper(const InitSessionParams& bound_params,
       return status;
     session->bidi_mapper_web_view_id = session->window;
 
+    // Create a new tab because the default one will be occupied by the
+    // mapper.
+    std::string web_view_id;
+    status = session->chrome->NewWindow(session->window,
+                                        Chrome::WindowType::kTab, &web_view_id);
+
+    if (status.IsError()) {
+      return status;
+    }
+
+    std::unique_ptr<base::Value> result;
+    base::Value::Dict body;
+    body.Set("handle", web_view_id);
+
+    status = ExecuteSwitchToWindow(session, body, &result);
+    if (status.IsError()) {
+      return status;
+    }
+
     // Wait until the default page navigation is over to prevent the mapper
     // from being evicted by the navigation.
     status = web_view->WaitForPendingNavigations(
@@ -373,6 +392,7 @@ Status InitSessionHelper(const InitSessionParams& bound_params,
       return status;
     }
 
+    // Start the mapper.
     base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
     base::FilePath bidi_mapper_path =
         cmd_line->GetSwitchValuePath("bidi-mapper-path");
@@ -396,48 +416,6 @@ Status InitSessionHelper(const InitSessionParams& bound_params,
     status = web_view->StartBidiServer(mapper_script, mapper_options);
     if (status.IsError()) {
       return status;
-    }
-    {
-      // Create a new tab because the default one is occupied by the BiDiMapper
-      std::string web_view_id;
-      status = session->chrome->NewWindow(
-          session->window, Chrome::WindowType::kTab, &web_view_id);
-
-      if (status.IsError())
-        return status;
-
-      std::unique_ptr<base::Value> result;
-      base::Value::Dict body;
-      body.Set("handle", web_view_id);
-
-      status = ExecuteSwitchToWindow(session, body, &result);
-      if (status.IsError()) {
-        return status;
-      }
-    }
-    {
-      Timeout timeout{session->page_load_timeout};
-      base::Value::Dict bidi_response;
-      const base::Value::List* context_list = nullptr;
-      do {
-        base::Value::Dict bidi_command;
-        bidi_command.Set("channel", "/init-bidi-session");
-        bidi_command.Set("id", 1);
-        bidi_command.Set("method", "browsingContext.getTree");
-        bidi_command.Set("params", base::Value::Dict());
-        bidi_response.clear();
-        status = web_view->SendBidiCommand(std::move(bidi_command), timeout,
-                                           bidi_response);
-        if (status.IsError()) {
-          return status;
-        }
-        context_list = bidi_response.FindListByDottedPath("result.contexts");
-        if (context_list == nullptr) {
-          return Status{kUnknownError,
-                        "browsingContext.getTree response does not contain "
-                        "'result.contexts' list"};
-        }
-      } while (context_list->empty());
     }
   }  // if (session->web_socket_url)
 

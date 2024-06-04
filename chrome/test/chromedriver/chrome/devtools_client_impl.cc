@@ -416,6 +416,7 @@ Status DevToolsClientImpl::StartBidiServer(
         "expression",
         base::StringPrintf("window.runMapperInstance(%s, %s)",
                            window_id.c_str(), mapper_options_str.c_str()));
+    params.Set("awaitPromise", true);
     status = SendCommandAndGetResultWithTimeout(
         "Runtime.evaluate", std::move(params), &timeout, &result);
     if (result.contains("exceptionDetails")) {

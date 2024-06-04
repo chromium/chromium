@@ -143,8 +143,6 @@ _OS_SPECIFIC_FILTER['mac'] = [
     # Flaky: https://crbug.com/1496826.
     'PureBidiTest.testParallelConnectionIsClosedOnSessionEnd',
     'PureBidiTest.testSessionCommandInEndedSession',
-    # Flaky: https://crbug.com/343891977
-    'PureBidiTest.testBrowsingContextTreeIsNotEmpty',
     # Flaky: https://crbug.com/1481915
     'ChromeDriverTest.testExecuteScriptStaleElement1',
     'ChromeDriverTest.testExecuteScriptStaleElement2',
