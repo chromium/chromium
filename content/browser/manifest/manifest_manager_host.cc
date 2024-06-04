@@ -108,10 +108,6 @@ void ManifestManagerHost::OnRequestManifestResponse(
     const GURL& url,
     blink::mojom::ManifestPtr manifest) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  GetContentClient()->browser()->MaybeOverrideManifest(
-      &page().GetMainDocument(), manifest);
-  auto callback = std::move(*callbacks_.Lookup(request_id));
-  callbacks_.Remove(request_id);
   // Note: An empty manifest signifies an error for callers. If a bad message
   // occurs, this can be used to not drop the callback & signify an error.
   if (!manifest) {
@@ -137,6 +133,17 @@ void ManifestManagerHost::OnRequestManifestResponse(
                         valid_to_string(scope_valid), ")."}));
     }
   }
+  // Empty manifests means it failed to parse or an unresolvable problem like
+  // the frame is destroying. Since AppBannerManager completely ignores these
+  // manifests, avoid overriding them as well to prevent the overriding
+  // infrastructure from seeing manifests without the default members.
+  if (!blink::IsEmptyManifest(manifest)) {
+    GetContentClient()->browser()->MaybeOverrideManifest(
+        &page().GetMainDocument(), manifest);
+  }
+  auto callback = std::move(*callbacks_.Lookup(request_id));
+  callbacks_.Remove(request_id);
+
   std::move(callback).Run(url, std::move(manifest));
 }
 
