@@ -443,7 +443,7 @@ class OrderfileUpdater:
       output_file = os.path.basename(filename)
       logging.info(output_file)
       # Load existing objects to avoid overwriting other arch's objects.
-      getdep_cmd = ['gclient', 'getdep', '-r', 'orderfiles']
+      getdep_cmd = ['gclient', 'getdep', '-r', 'orderfile_binaries']
       dep_str: str = self._step_recorder.RunCommand(getdep_cmd,
                                                     cwd=self._repository_root,
                                                     capture_output=True).stdout
@@ -459,7 +459,9 @@ class OrderfileUpdater:
           dep_object = json_object
           # For 'gcs' deps `gclient setdep` only allows these specific keys.
         values.append(','.join(str(dep_object[k]) for k in allowed_keys))
-      setdep_cmd = ['gclient', 'setdep', '-r', f'orderfiles@{"?".join(values)}']
+      setdep_cmd = [
+          'gclient', 'setdep', '-r', f'orderfile_binaries@{"?".join(values)}'
+      ]
       self._step_recorder.RunCommand(setdep_cmd, cwd=self._repository_root)
     print('Download: https://sandbox.google.com/storage/%s/%s' %
           (bucket, _GenerateHash(filename)))
@@ -1056,9 +1058,8 @@ class OrderfileGenerator:
       self._compiler.CompileLibchrome(instrumented=False,
                                       force_relink=True)
       if self._VerifySymbolOrder():
-        self._MaybeArchiveOrderfile(
-            self._GetPathToOrderfile(),
-            use_new_cloud=bool(self._options.arch == 'arm64'))
+        self._MaybeArchiveOrderfile(self._GetPathToOrderfile(),
+                                    use_new_cloud=True)
       else:
         self._SaveForDebugging(self._GetPathToOrderfile())
 
