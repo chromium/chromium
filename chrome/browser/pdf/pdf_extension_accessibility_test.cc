@@ -17,7 +17,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -1189,20 +1188,18 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityNavigationTest,
   EXPECT_EQ("https://bing.com/", expected_url.spec());
 }
 
-// TODO(b:289010799): Revisit using `crosapi` in `PDFOCRUmaTest` for Lacros.
+// TODO(crbug.com/289010799): Revisit using `crosapi` in `PdfOcrUmaTest` for
+// Lacros.
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 // This test suite contains simple tests for the PDF OCR feature.
-class PDFOCRUmaTest
-    : public PDFExtensionAccessibilityTest,
-      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
+class PdfOcrUmaTest : public PDFExtensionAccessibilityTest,
+                      public ::testing::WithParamInterface<bool> {
  public:
-  PDFOCRUmaTest() = default;
-  ~PDFOCRUmaTest() override = default;
-
-  bool IsPdfOcrSet() const { return std::get<0>(GetParam()); }
+  PdfOcrUmaTest() = default;
+  ~PdfOcrUmaTest() override = default;
 
   // PDFExtensionAccessibilityTest:
-  bool UseOopif() const override { return std::get<1>(GetParam()); }
+  bool UseOopif() const override { return GetParam(); }
 
  protected:
   std::vector<base::test::FeatureRef> GetEnabledFeatures() const override {
@@ -1228,8 +1225,9 @@ class PDFOCRUmaTest
   }
 };
 
-IN_PROC_BROWSER_TEST_P(PDFOCRUmaTest, CheckOpenedWithScreenReader) {
-  // TODO(b:289010799): Remove this once the metrics are added for OOPIF PDF.
+IN_PROC_BROWSER_TEST_P(PdfOcrUmaTest, CheckOpenedWithScreenReader) {
+  // TODO(crbug.com/289010799): Remove this once the metrics are added for OOPIF
+  // PDF.
   if (UseOopif()) {
     GTEST_SKIP();
   }
@@ -1239,12 +1237,10 @@ IN_PROC_BROWSER_TEST_P(PDFOCRUmaTest, CheckOpenedWithScreenReader) {
 #else
   EnableScreenReader(true);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  browser()->profile()->GetPrefs()->SetBoolean(
-      prefs::kAccessibilityPdfOcrAlwaysActive, IsPdfOcrSet());
 
   base::HistogramTester histograms;
   histograms.ExpectUniqueSample(
-      "Accessibility.PDF.OpenedWithScreenReader.PdfOcr", IsPdfOcrSet(),
+      "Accessibility.PDF.OpenedWithScreenReader.PdfOcr", true,
       /*expected_bucket_count=*/0);
 
   ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test.pdf")));
@@ -1256,24 +1252,23 @@ IN_PROC_BROWSER_TEST_P(PDFOCRUmaTest, CheckOpenedWithScreenReader) {
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   histograms.ExpectUniqueSample(
-      "Accessibility.PDF.OpenedWithScreenReader.PdfOcr", IsPdfOcrSet(),
+      "Accessibility.PDF.OpenedWithScreenReader.PdfOcr", true,
       /*expected_bucket_count=*/1);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-IN_PROC_BROWSER_TEST_P(PDFOCRUmaTest, CheckOpenedWithSelectToSpeak) {
-  // TODO(b:289010799): Remove this once the metrics are added for OOPIF PDF.
+IN_PROC_BROWSER_TEST_P(PdfOcrUmaTest, CheckOpenedWithSelectToSpeak) {
+  // TODO(crbug.com/289010799): Remove this once the metrics are added for OOPIF
+  // PDF.
   if (UseOopif()) {
     GTEST_SKIP();
   }
 
   ::ash::AccessibilityManager::Get()->SetSelectToSpeakEnabled(true);
-  browser()->profile()->GetPrefs()->SetBoolean(
-      prefs::kAccessibilityPdfOcrAlwaysActive, IsPdfOcrSet());
 
   base::HistogramTester histograms;
   histograms.ExpectUniqueSample(
-      "Accessibility.PDF.OpenedWithSelectToSpeak.PdfOcr", IsPdfOcrSet(),
+      "Accessibility.PDF.OpenedWithSelectToSpeak.PdfOcr", true,
       /*expected_bucket_count=*/0);
 
   ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test.pdf")));
@@ -1285,20 +1280,18 @@ IN_PROC_BROWSER_TEST_P(PDFOCRUmaTest, CheckOpenedWithSelectToSpeak) {
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   histograms.ExpectUniqueSample(
-      "Accessibility.PDF.OpenedWithSelectToSpeak.PdfOcr", IsPdfOcrSet(),
+      "Accessibility.PDF.OpenedWithSelectToSpeak.PdfOcr", true,
       /*expected_bucket_count=*/1);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    PDFOCRUmaTest,
-    ::testing::Combine(testing::Bool(), testing::Bool()),
-    [](const testing::TestParamInfo<std::tuple<bool, bool>>& info) {
-      return base::StringPrintf(
-          "PDFOCR_%s_OOPIF_%s", std::get<0>(info.param) ? "On" : "Off",
-          std::get<1>(info.param) ? "Enabled" : "Disabled");
-    });
+INSTANTIATE_TEST_SUITE_P(All,
+                         PdfOcrUmaTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return base::StringPrintf(
+                               "OOPIF_%s", info.param ? "Enabled" : "Disabled");
+                         });
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // TODO(crbug.com/40268279): Stop testing both modes after OOPIF PDF viewer
@@ -1312,13 +1305,13 @@ INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
 
 #if defined(PDF_OCR_INTEGRATION_TEST_ENABLED)
 
-class PDFOCRIntegrationTest
+class PdfOcrIntegrationTest
     : public PDFExtensionAccessibilityTest,
       public screen_ai::ScreenAIInstallState::Observer,
       public ::testing::WithParamInterface<std::tuple<bool, bool, bool>> {
  public:
-  PDFOCRIntegrationTest() = default;
-  ~PDFOCRIntegrationTest() override = default;
+  PdfOcrIntegrationTest() = default;
+  ~PdfOcrIntegrationTest() override = default;
 
   bool IsOcrServiceEnabled() const { return std::get<0>(GetParam()); }
   bool IsLibraryAvailable() const { return std::get<1>(GetParam()); }
@@ -1326,12 +1319,8 @@ class PDFOCRIntegrationTest
   // PDFExtensionAccessibilityTest:
   bool UseOopif() const override { return std::get<2>(GetParam()); }
 
-  bool IsPdfOcrPrefSet() const {
-    return browser()->profile()->GetPrefs()->GetBoolean(
-        prefs::kAccessibilityPdfOcrAlwaysActive);
-  }
   bool IsOcrAvailable() const {
-    return IsOcrServiceEnabled() && IsLibraryAvailable() && IsPdfOcrPrefSet();
+    return IsOcrServiceEnabled() && IsLibraryAvailable();
   }
 
   // PDFExtensionAccessibilityTest:
@@ -1488,31 +1477,18 @@ class PDFOCRIntegrationTest
       component_download_observer_{this};
 };
 
-IN_PROC_BROWSER_TEST_P(PDFOCRIntegrationTest, EnsureScreenAIInitializes) {
-  // Turn on PDF OCR by setting its pref to be true.
-  // Since screen reader is on, this will result in triggering library download
-  // and if it is successful, initialization of Screen AI OCR service.
-  browser()->profile()->GetPrefs()->SetBoolean(
-      prefs::kAccessibilityPdfOcrAlwaysActive, true);
+IN_PROC_BROWSER_TEST_P(PdfOcrIntegrationTest, EnsureScreenAIInitializes) {
+  // Since screen reader is on, library download is triggered and if it is
+  // successful, initialization of Screen AI OCR service will be successful.
 
   // Wait for Screen AI OCR service to either get ready or fail.
-  base::RunLoop run_loop;
+  base::test::TestFuture<bool> future;
   auto* router = screen_ai::ScreenAIServiceRouterFactory::GetForBrowserContext(
       browser()->profile());
-  router->GetServiceStateAsync(
-      screen_ai::ScreenAIServiceRouter::Service::kOCR,
-      base::BindOnce(
-          [](base::RunLoop* run_loop, bool expected_result, bool successful) {
-            EXPECT_EQ(expected_result, successful);
-            run_loop->Quit();
-          },
-          &run_loop, IsOcrAvailable()));
-  run_loop.Run();
-
-  // If OCR is not available, PdfOcrController sets the pref to false.
-  EXPECT_EQ(browser()->profile()->GetPrefs()->GetBoolean(
-                prefs::kAccessibilityPdfOcrAlwaysActive),
-            IsOcrAvailable());
+  router->GetServiceStateAsync(screen_ai::ScreenAIServiceRouter::Service::kOCR,
+                               future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+  ASSERT_EQ(future.Get(), IsOcrAvailable());
 
   // Library download state should not depend on OcrService availability.
   screen_ai::ScreenAIInstallState::State expected_state =
@@ -1523,51 +1499,25 @@ IN_PROC_BROWSER_TEST_P(PDFOCRIntegrationTest, EnsureScreenAIInitializes) {
             screen_ai::ScreenAIInstallState::GetInstance()->get_state());
 }
 
-IN_PROC_BROWSER_TEST_P(PDFOCRIntegrationTest, HelloWorld) {
-  // Turn on PDF OCR by setting its pref to be true.
-  browser()->profile()->GetPrefs()->SetBoolean(
-      prefs::kAccessibilityPdfOcrAlwaysActive, true);
-
+IN_PROC_BROWSER_TEST_P(PdfOcrIntegrationTest, HelloWorld) {
   RunPDFAXTreeDumpTest(
       "hello-world-in-image.pdf",
       IsOcrAvailable() ? IDS_PDF_OCR_COMPLETED : IDS_PDF_OCR_FEATURE_ALERT);
 }
 
-IN_PROC_BROWSER_TEST_P(PDFOCRIntegrationTest, ThreePagePDF) {
-  // Turn on PDF OCR by setting its pref to be true.
-  browser()->profile()->GetPrefs()->SetBoolean(
-      prefs::kAccessibilityPdfOcrAlwaysActive, true);
-
+IN_PROC_BROWSER_TEST_P(PdfOcrIntegrationTest, ThreePagePDF) {
   RunPDFAXTreeDumpTest(
       "inaccessible-text-in-three-page.pdf",
       IsOcrAvailable() ? IDS_PDF_OCR_COMPLETED : IDS_PDF_OCR_FEATURE_ALERT);
 }
 
-IN_PROC_BROWSER_TEST_P(PDFOCRIntegrationTest, FeatureNotificationWhenOff) {
-  // Turn off PDF OCR by setting its pref to be false.
-  browser()->profile()->GetPrefs()->SetBoolean(
-      prefs::kAccessibilityPdfOcrAlwaysActive, false);
-  EXPECT_FALSE(browser()->profile()->GetPrefs()->GetBoolean(
-      prefs::kAccessibilityPdfOcrAlwaysActive));
-
-  RunPDFAXTreeDumpTest("hello-world-in-image.pdf", IDS_PDF_OCR_FEATURE_ALERT);
-}
-
-IN_PROC_BROWSER_TEST_P(PDFOCRIntegrationTest, TestBatchingWithTwentyPagePDF) {
-  // Turn on PDF OCR by setting its pref to be true.
-  browser()->profile()->GetPrefs()->SetBoolean(
-      prefs::kAccessibilityPdfOcrAlwaysActive, true);
-
+IN_PROC_BROWSER_TEST_P(PdfOcrIntegrationTest, TestBatchingWithTwentyPagePDF) {
   RunPDFAXTreeDumpTest(
       "inaccessible-text-in-twenty-page.pdf",
       IsOcrAvailable() ? IDS_PDF_OCR_COMPLETED : IDS_PDF_OCR_FEATURE_ALERT);
 }
 
-IN_PROC_BROWSER_TEST_P(PDFOCRIntegrationTest, NoOcrResultOnBlankImagePdf) {
-  // Turn on PDF OCR by setting its pref to be true.
-  browser()->profile()->GetPrefs()->SetBoolean(
-      prefs::kAccessibilityPdfOcrAlwaysActive, true);
-
+IN_PROC_BROWSER_TEST_P(PdfOcrIntegrationTest, NoOcrResultOnBlankImagePdf) {
   RunPDFAXTreeDumpTest("blank_image.pdf", IsOcrAvailable()
                                               ? IDS_PDF_OCR_NO_RESULT
                                               : IDS_PDF_OCR_FEATURE_ALERT);
@@ -1575,7 +1525,7 @@ IN_PROC_BROWSER_TEST_P(PDFOCRIntegrationTest, NoOcrResultOnBlankImagePdf) {
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    PDFOCRIntegrationTest,
+    PdfOcrIntegrationTest,
     ::testing::Combine(testing::Bool(), testing::Bool(), testing::Bool()),
     [](const testing::TestParamInfo<std::tuple<bool, bool, bool>>& info) {
       return base::StringPrintf(

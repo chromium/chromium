@@ -1446,6 +1446,7 @@ inline constexpr char kOverscrollHistoryNavigationEnabled[] =
 
 // Whether the PDF OCR feature is set to be always active. The PDF OCR feature
 // is exposed to only screen reader users.
+// TODO(crbug.com/341856144): Deprecated, remove.
 inline constexpr char kAccessibilityPdfOcrAlwaysActive[] =
     "settings.a11y.pdf_ocr_always_active";
 
