@@ -1237,10 +1237,6 @@ public class NewTabPage
         }
     }
 
-    static boolean isScrollableMvtEnabled(Context context) {
-        return true;
-    }
-
     public boolean isSingleTabCardVisibleForTesting() {
         if (mSingleTabSwitcherCoordinator == null) return false;
 
@@ -1310,7 +1306,7 @@ public class NewTabPage
         int marginResourceId =
                 isInNarrowWindowOnTablet
                         ? R.dimen.search_box_lateral_margin
-                        : R.dimen.mvt_container_lateral_margin_polish;
+                        : R.dimen.mvt_container_lateral_margin;
         return mContext.getResources().getDimensionPixelSize(marginResourceId);
     }
 

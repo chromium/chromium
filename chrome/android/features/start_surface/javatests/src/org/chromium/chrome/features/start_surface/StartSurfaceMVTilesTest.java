@@ -362,7 +362,7 @@ public class StartSurfaceMVTilesTest {
         View mvTilesLayout = cta.findViewById(org.chromium.chrome.test.R.id.mv_tiles_layout);
 
         int expectedMvtLateralMargin =
-                res.getDimensionPixelSize(R.dimen.mvt_container_lateral_margin_polish);
+                res.getDimensionPixelSize(R.dimen.mvt_container_lateral_margin);
         Assert.assertEquals(
                 "The left margin of the most visited tiles container is wrong.",
                 expectedMvtLateralMargin,
@@ -376,8 +376,7 @@ public class StartSurfaceMVTilesTest {
                 expectedMvtLateralMargin * 2,
                 startSurfaceView.getWidth() - mvTilesContainer.getWidth());
 
-        int expectedMvtTopMargin =
-                res.getDimensionPixelSize(R.dimen.mvt_container_top_margin_polish);
+        int expectedMvtTopMargin = res.getDimensionPixelSize(R.dimen.mvt_container_top_margin);
         Assert.assertEquals(
                 "The top margin of the most visited tiles container is wrong.",
                 expectedMvtTopMargin,

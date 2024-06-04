@@ -301,9 +301,9 @@ public class MostVisitedMediatorUnitTest {
     @Test
     public void testUpdateTilesViewForCarouselLayout_Tablet() {
         int expectedTileViewEdgePadding =
-                mResources.getDimensionPixelSize(R.dimen.tile_view_padding_edge_tablet_polish);
+                mResources.getDimensionPixelSize(R.dimen.tile_view_padding_edge_tablet);
         int expectedTileViewIntervalPadding =
-                mResources.getDimensionPixelSize(R.dimen.tile_view_padding_interval_tablet_polish);
+                mResources.getDimensionPixelSize(R.dimen.tile_view_padding_interval_tablet);
         mConfiguration.orientation = Configuration.ORIENTATION_PORTRAIT;
         createMediator(/* isTablet= */ true);
         mMediator.onTileDataChanged();

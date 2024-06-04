@@ -604,9 +604,9 @@ public class ShowNtpAtStartupTest {
         Resources res = cta.getResources();
         int expectedContainerTwoSideMargin = 0;
         int expectedMvtLayoutEdgeMargin =
-                res.getDimensionPixelSize(R.dimen.tile_view_padding_edge_tablet_polish);
+                res.getDimensionPixelSize(R.dimen.tile_view_padding_edge_tablet);
         int expectedMvtLayoutIntervalMargin =
-                res.getDimensionPixelSize(R.dimen.tile_view_padding_interval_tablet_polish);
+                res.getDimensionPixelSize(R.dimen.tile_view_padding_interval_tablet);
 
         verifyMostVisitedTileMargin(
                 expectedContainerTwoSideMargin,

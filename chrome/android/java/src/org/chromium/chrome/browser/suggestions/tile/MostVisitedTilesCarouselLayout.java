@@ -52,12 +52,11 @@ public class MostVisitedTilesCarouselLayout extends LinearLayout {
         mIntervalPaddingsTabletForPolish =
                 getResources()
                         .getDimensionPixelSize(
-                                org.chromium.chrome.R.dimen
-                                        .tile_view_padding_interval_tablet_polish);
+                                org.chromium.chrome.R.dimen.tile_view_padding_interval_tablet);
         mEdgePaddingsTabletForPolish =
                 getResources()
                         .getDimensionPixelSize(
-                                org.chromium.chrome.R.dimen.tile_view_padding_edge_tablet_polish);
+                                org.chromium.chrome.R.dimen.tile_view_padding_edge_tablet);
     }
 
     void setIntervalPaddings(int padding) {

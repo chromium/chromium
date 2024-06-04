@@ -30,8 +30,7 @@ public class SearchBoxContainerView extends LinearLayout {
         mIsSurfacePolishEnabled = ChromeFeatureList.sSurfacePolish.isEnabled();
         mEndPadding = getResources().getDimensionPixelSize(R.dimen.fake_search_box_end_padding);
         mStartPadding = getResources().getDimensionPixelSize(R.dimen.fake_search_box_start_padding);
-        mLateralMargin =
-                getResources().getDimensionPixelSize(R.dimen.mvt_container_lateral_margin_polish);
+        mLateralMargin = getResources().getDimensionPixelSize(R.dimen.mvt_container_lateral_margin);
     }
 
     @Override

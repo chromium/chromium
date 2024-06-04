@@ -70,7 +70,7 @@ public final class MostVisitedTilesViewBinderUnitTest extends BlankUiTestActivit
                     mNoMvPlaceholder = new View(getActivity());
                     mNoMvPlaceholder.setId(R.id.tile_grid_placeholder);
                     mNoMvPlaceholderStub = new ViewStub(getActivity());
-                    mNoMvPlaceholderStub.setId(R.id.tile_grid_placeholder_stub);
+                    mNoMvPlaceholderStub.setId(R.id.mv_tiles_placeholder_stub);
                     mNoMvPlaceholderStub.setInflatedId(R.id.tile_grid_placeholder);
 
                     mMvTilesContainerLayout = new LinearLayout(getActivity());

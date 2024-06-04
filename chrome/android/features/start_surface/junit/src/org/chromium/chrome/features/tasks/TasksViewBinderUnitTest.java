@@ -295,7 +295,9 @@ public class TasksViewBinderUnitTest {
         ViewGroup.MarginLayoutParams params =
                 (ViewGroup.MarginLayoutParams)
                         mTasksView.findViewById(R.id.mv_tiles_container).getLayoutParams();
-        assertEquals(0, params.topMargin);
+        assertEquals(
+                mActivity.getResources().getDimensionPixelSize(R.dimen.mvt_container_top_margin),
+                params.topMargin);
 
         mTasksViewPropertyModel.set(MV_TILES_CONTAINER_TOP_MARGIN, 16);
 

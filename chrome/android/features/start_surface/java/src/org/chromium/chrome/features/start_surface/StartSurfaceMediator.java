@@ -244,8 +244,7 @@ class StartSurfaceMediator
         mProfileSupplier.addObserver(this::onProfileAvailable);
 
         mStartMargin =
-                context.getResources()
-                        .getDimensionPixelSize(R.dimen.mvt_container_lateral_margin_polish);
+                context.getResources().getDimensionPixelSize(R.dimen.mvt_container_lateral_margin);
 
         if (mPropertyModel != null) {
             assert mIsStartSurfaceEnabled;

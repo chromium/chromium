@@ -97,12 +97,12 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
         mTileViewPortraitEdgePadding =
                 mResources.getDimensionPixelSize(R.dimen.tile_view_padding_edge_portrait);
         mTileCarouselLayoutLateralMarginSumForPolish =
-                mResources.getDimensionPixelSize(R.dimen.mvt_container_lateral_margin_polish) * 2;
+                mResources.getDimensionPixelSize(R.dimen.mvt_container_lateral_margin) * 2;
 
         mTileViewEdgePaddingForTabletPolish =
-                mResources.getDimensionPixelSize(R.dimen.tile_view_padding_edge_tablet_polish);
+                mResources.getDimensionPixelSize(R.dimen.tile_view_padding_edge_tablet);
         mTileViewIntervalPaddingForTabletPolish =
-                mResources.getDimensionPixelSize(R.dimen.tile_view_padding_interval_tablet_polish);
+                mResources.getDimensionPixelSize(R.dimen.tile_view_padding_interval_tablet);
 
         maybeSetPortraitIntervalPaddingsForCarousel();
 

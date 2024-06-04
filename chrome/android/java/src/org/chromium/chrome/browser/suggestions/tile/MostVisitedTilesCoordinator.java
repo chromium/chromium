@@ -79,12 +79,7 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mWindowAndroid = windowAndroid;
 
-        ((ViewStub)
-                        mvTilesContainerLayout.findViewById(
-                                isScrollableMVTEnabled
-                                        ? R.id.mv_tiles_carousel_stub
-                                        : R.id.mv_tiles_grid_stub))
-                .inflate();
+        ((ViewStub) mvTilesContainerLayout.findViewById(R.id.mv_tiles_carousel_stub)).inflate();
         ViewGroup tilesLayout = mvTilesContainerLayout.findViewById(R.id.mv_tiles_layout);
 
         if (!isScrollableMVTEnabled) {
@@ -111,7 +106,7 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
                         activity.getResources(),
                         mUiConfig,
                         tilesLayout,
-                        mvTilesContainerLayout.findViewById(R.id.tile_grid_placeholder_stub),
+                        mvTilesContainerLayout.findViewById(R.id.mv_tiles_placeholder_stub),
                         mRenderer,
                         propertyModel,
                         isScrollableMVTEnabled,
