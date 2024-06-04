@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.components.browser_ui.widget;
+package org.chromium.ui;
 
 import android.graphics.Rect;
 import android.util.Size;
@@ -19,7 +19,7 @@ import androidx.core.view.WindowInsetsCompat.Type.InsetsType;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.build.BuildConfig;
-import org.chromium.components.browser_ui.widget.InsetObserver.WindowInsetsConsumer;
+import org.chromium.ui.InsetObserver.WindowInsetsConsumer;
 import org.chromium.ui.util.WindowInsetsUtils;
 
 import java.lang.reflect.InvocationTargetException;

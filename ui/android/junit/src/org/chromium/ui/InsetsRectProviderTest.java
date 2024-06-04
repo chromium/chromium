@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.components.browser_ui.widget;
+package org.chromium.ui;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.AdditionalMatchers.not;
@@ -32,10 +32,10 @@ import org.robolectric.annotation.Implements;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.components.browser_ui.widget.InsetsRectProvider.BoundingRectHelper;
-import org.chromium.components.browser_ui.widget.InsetsRectProviderTest.ShadowBoundingRectHelper;
-import org.chromium.components.browser_ui.widget.InsetsRectProviderTest.ShadowBuildCompat;
-import org.chromium.components.browser_ui.widget.InsetsRectProviderTest.ShadowWindowInsetsUtils;
+import org.chromium.ui.InsetsRectProvider.BoundingRectHelper;
+import org.chromium.ui.InsetsRectProviderTest.ShadowBoundingRectHelper;
+import org.chromium.ui.InsetsRectProviderTest.ShadowBuildCompat;
+import org.chromium.ui.InsetsRectProviderTest.ShadowWindowInsetsUtils;
 import org.chromium.ui.util.WindowInsetsUtils;
 
 import java.util.List;

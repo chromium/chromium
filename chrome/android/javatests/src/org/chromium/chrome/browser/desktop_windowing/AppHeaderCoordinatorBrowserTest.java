@@ -60,9 +60,9 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.components.browser_ui.widget.InsetObserver;
-import org.chromium.components.browser_ui.widget.InsetsRectProvider;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.InsetObserver;
+import org.chromium.ui.InsetsRectProvider;
 import org.chromium.ui.test.util.UiRestriction;
 
 /** Browser test for {@link AppHeaderCoordinator} */

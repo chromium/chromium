@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.components.browser_ui.widget;
+package org.chromium.ui;
 
 import android.graphics.Rect;
 import android.view.View;
@@ -21,7 +21,6 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.ui.KeyboardUtils;
 
 import java.util.ArrayList;
 import java.util.List;

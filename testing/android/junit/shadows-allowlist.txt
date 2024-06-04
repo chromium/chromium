@@ -67,7 +67,6 @@
 +org.chromium.components.browser_ui.share.ShareImageFileUtils
 +org.chromium.components.browser_ui.styles.SemanticColorUtils
 +org.chromium.components.browser_ui.widget.ContextMenuDialog
-+org.chromium.components.browser_ui.widget.InsetsRectProvider$BoundingRectHelper
 +org.chromium.components.embedder_support.util.UrlUtilities
 +org.chromium.components.media_router.caf.CastMediaSource
 +org.chromium.components.stylus_handwriting.DirectWritingSettingsHelper
@@ -75,6 +74,7 @@
 +org.chromium.components.user_prefs.UserPrefs
 +org.chromium.content_public.browser.WebContentsStatics
 +org.chromium.gms.ChromiumPlayServicesAvailability
++org.chromium.ui.InsetsRectProvider$BoundingRectHelper
 +org.chromium.ui.base.MimeTypeUtils
 +org.chromium.ui.display.DisplayAndroid
 +org.chromium.ui.display.DisplayAndroidManager
