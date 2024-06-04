@@ -20,6 +20,7 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -18154,7 +18155,8 @@ TEST_F(UnifiedScrollingTest, MainThreadHitTestLatchBubbling) {
 
 using UnifiedScrollingDeathTest = UnifiedScrollingTest;
 
-// A main thread hit test that with an empty target id should be dropped.
+// A main thread hit test that with an empty target id should be dropped. This
+// test makes sure that that's enforced with a CHECK.
 TEST_F(UnifiedScrollingDeathTest, EmptyMainThreadHitTest) {
   GTEST_FLAG_SET(death_test_style, "threadsafe");
   CreateUncompositedScrollerAndNonFastScrollableRegion();
@@ -18164,20 +18166,8 @@ TEST_F(UnifiedScrollingDeathTest, EmptyMainThreadHitTest) {
 
     ScrollStatus status = ScrollBegin(gfx::Vector2d(0, 10));
 
-    // Note, we have a NOTREACHED here to make sure this cannot happen. If
-    // DCHECKs are enabled we can just make sure we get killed when we end up
-    // in this situation.
-#if DCHECK_IS_ON()
-    EXPECT_DEATH_IF_SUPPORTED({ status = ContinuedScrollBegin(kInvalidId); },
-                              "");
-#else
-    status = ContinuedScrollBegin(kInvalidId);
-    EXPECT_EQ(ScrollThread::kScrollIgnored, status.thread);
-    EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-              status.main_thread_repaint_reasons);
-    EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
-              status.main_thread_hit_test_reasons);
-#endif
+    // Note, we have a CHECK in here to make sure this cannot happen.
+    EXPECT_CHECK_DEATH({ status = ContinuedScrollBegin(kInvalidId); });
   }
 }
 

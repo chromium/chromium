@@ -171,15 +171,9 @@ InputHandler::ScrollStatus InputHandler::ScrollBegin(ScrollState* scroll_state,
           gfx::ScalePoint(gfx::PointF(viewport_point),
                           compositor_delegate_->DeviceScaleFactor());
 
-      if (scroll_state->main_thread_hit_tested_reasons()) {
-        // The client should have discarded the scroll when the hit test came
-        // back with an invalid element id. If we somehow get here, we should
-        // drop the scroll as continuing could cause us to infinitely bounce
-        // back and forth between here and hit testing on the main thread.
-        NOTREACHED_IN_MIGRATION();
-        scroll_status.thread = InputHandler::ScrollThread::kScrollIgnored;
-        return scroll_status;
-      }
+      // The client should have discarded the scroll when the hit test came back
+      // with an invalid element id.
+      CHECK(!scroll_state->main_thread_hit_tested_reasons());
 
       ScrollHitTestResult scroll_hit_test =
           HitTestScrollNode(device_viewport_point);
