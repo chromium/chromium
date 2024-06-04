@@ -8394,18 +8394,18 @@ void ChromeContentBrowserClient::NotifyMultiCaptureStateChanged(
     content::GlobalRenderFrameHostId capturer_rfh_id,
     const std::string& label,
     MultiCaptureChanged state) {
-  content::WebContents* const web_contents = WebContents::FromRenderFrameHost(
-      RenderFrameHost::FromID(capturer_rfh_id));
-  if (!web_contents) {
-    return;
-  }
-
   switch (state) {
-    case MultiCaptureChanged::kStarted:
+    case MultiCaptureChanged::kStarted: {
+      content::WebContents* const web_contents =
+          WebContents::FromRenderFrameHost(
+              RenderFrameHost::FromID(capturer_rfh_id));
+      if (!web_contents) {
+        return;
+      }
       NotifyMultiCaptureStarted(
           label, web_contents,
           web_app::WebAppTabHelper::GetAppId(web_contents));
-      break;
+    } break;
     case MultiCaptureChanged::kStopped:
       NotifyMultiCaptureStopped(label);
       break;
