@@ -437,6 +437,9 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
     return context_core_.get();
   }
 
+  void SetForceUpdateOnPageLoadForTesting(
+      bool force_update_on_page_load) override;
+
  private:
   friend class BackgroundSyncManagerTest;
   friend class base::DeleteHelper<ServiceWorkerContextWrapper>;

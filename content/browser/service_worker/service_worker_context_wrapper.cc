@@ -1889,6 +1889,11 @@ void ServiceWorkerContextWrapper::SetStorageControlBinderForTest(
   storage_control_binder_for_test_ = std::move(binder);
 }
 
+void ServiceWorkerContextWrapper::SetForceUpdateOnPageLoadForTesting(
+    bool force_update_on_page_load) {
+  SetForceUpdateOnPageLoad(force_update_on_page_load);
+}
+
 void ServiceWorkerContextWrapper::SetLoaderFactoryForUpdateCheckForTest(
     scoped_refptr<network::SharedURLLoaderFactory> loader_factory) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
