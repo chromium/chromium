@@ -35,22 +35,6 @@ public class DseNewTabUrlManager {
             ChromeFeatureList.newBooleanCachedFieldTrialParameter(
                     ChromeFeatureList.NEW_TAB_SEARCH_ENGINE_URL_ANDROID, SWAP_OUT_NTP_PARAM, false);
 
-    // A parameter of whether to enable the feature for users in EEA countries only.
-    private static final String EEA_COUNTRY_ONLY_PARAM = "eea_country_only";
-    public static final BooleanCachedFieldTrialParameter EEA_COUNTRY_ONLY =
-            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.NEW_TAB_SEARCH_ENGINE_URL_ANDROID,
-                    EEA_COUNTRY_ONLY_PARAM,
-                    true);
-
-    // A parameter of whether to skip the check for users in EEA countries only.
-    private static final String SKIP_EEA_COUNTRY_CHECK_PARAM = "skip_eea_country_check";
-    public static final BooleanCachedFieldTrialParameter SKIP_EEA_COUNTRY_CHECK =
-            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.NEW_TAB_SEARCH_ENGINE_URL_ANDROID,
-                    SKIP_EEA_COUNTRY_CHECK_PARAM,
-                    false);
-
     public DseNewTabUrlManager(ObservableSupplier<Profile> profileSupplier) {
         mProfileSupplier = profileSupplier;
         mProfileCallback = this::onProfileAvailable;
@@ -72,12 +56,6 @@ public class DseNewTabUrlManager {
 
         String newTabUrl = getDSENewTabUrl(mTemplateUrlService);
         return newTabUrl != null ? new GURL(newTabUrl) : gurl;
-    }
-
-    /** Returns the new Tab URL of the default search engine. */
-    @Nullable
-    public String getDSENewTabUrl() {
-        return getDSENewTabUrl(mTemplateUrlService);
     }
 
     public void destroy() {
@@ -115,13 +93,8 @@ public class DseNewTabUrlManager {
 
     /** Returns whether the feature NewTabSearchEngineUrlAndroid is enabled. */
     public static boolean isNewTabSearchEngineUrlAndroidEnabled() {
-        return ChromeFeatureList.sNewTabSearchEngineUrlAndroid.isEnabled()
-                && (SKIP_EEA_COUNTRY_CHECK.getValue()
-                        || (EEA_COUNTRY_ONLY.getValue()
-                                && ChromeSharedPreferences.getInstance()
-                                        .readBoolean(
-                                                ChromePreferenceKeys.IS_EEA_CHOICE_COUNTRY,
-                                                false)));
+        return ChromeSharedPreferences.getInstance()
+                .readBoolean(ChromePreferenceKeys.IS_EEA_CHOICE_COUNTRY, false);
     }
 
     /**

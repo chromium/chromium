@@ -42,9 +42,6 @@
 
 namespace feed {
 const base::FilePath::CharType kFeedv2Folder[] = FILE_PATH_LITERAL("feedv2");
-#if BUILDFLAG(IS_ANDROID)
-const char kEeaCountryOnly[] = "eea_country_only";
-#endif
 
 namespace internal {
 const std::string_view GetFollowingFeedFollowCountGroupName(
@@ -214,12 +211,7 @@ FeedServiceFactory::BuildServiceInstanceForBrowserContext(
   chrome_info.start_surface =
       base::FeatureList::IsEnabled(chrome::android::kStartSurfaceAndroid);
   chrome_info.is_new_tab_search_engine_url_android_enabled =
-      base::FeatureList::IsEnabled(
-          chrome::android::kNewTabSearchEngineUrlAndroid) &&
-      (!base::GetFieldTrialParamByFeatureAsBool(
-           chrome::android::kNewTabSearchEngineUrlAndroid, kEeaCountryOnly,
-           false) ||
-       template_url_service->IsEeaChoiceCountry());
+      template_url_service->IsEeaChoiceCountry();
 #else
   chrome_info.start_surface = false;
   chrome_info.is_new_tab_search_engine_url_android_enabled = false;

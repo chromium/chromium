@@ -94,8 +94,6 @@ public class ChromeCachedFlags {
                         CustomTabIntentDataProvider.DENYLIST_ENTRIES,
                         CustomTabIntentDataProvider.ALLOWLIST_ENTRIES,
                         CustomTabIntentDataProvider.OMNIBOX_ALLOWED_PACKAGE_NAMES,
-                        DseNewTabUrlManager.EEA_COUNTRY_ONLY,
-                        DseNewTabUrlManager.SKIP_EEA_COUNTRY_CHECK,
                         DseNewTabUrlManager.SWAP_OUT_NTP,
                         GoogleBottomBarCoordinator.GOOGLE_BOTTOM_BAR_PARAM_BUTTON_LIST,
                         HubFieldTrial.PANE_SWITCHER_USES_TEXT,

@@ -469,7 +469,6 @@ public class FeedSurfaceMediatorTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.NEW_TAB_SEARCH_ENGINE_URL_ANDROID)
     public void testUpdateContent_DseFeedOnOff() {
         PropertyModel sectionHeaderModel = SectionHeaderListProperties.create(TOOLBAR_HEIGHT);
         mFeedSurfaceMediator =
@@ -489,7 +488,6 @@ public class FeedSurfaceMediatorTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.NEW_TAB_SEARCH_ENGINE_URL_ANDROID)
     public void testUpdateContent_DseFeedOffOn() {
         PropertyModel sectionHeaderModel = SectionHeaderListProperties.create(TOOLBAR_HEIGHT);
         mFeedSurfaceMediator =
@@ -510,7 +508,6 @@ public class FeedSurfaceMediatorTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.NEW_TAB_SEARCH_ENGINE_URL_ANDROID)
     public void testUpdateContent_DseOff() {
         PropertyModel sectionHeaderModel = SectionHeaderListProperties.create(TOOLBAR_HEIGHT);
         mFeedSurfaceMediator =
@@ -527,7 +524,6 @@ public class FeedSurfaceMediatorTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.NEW_TAB_SEARCH_ENGINE_URL_ANDROID)
     public void testObserveTemplateUrlService() {
         PropertyModel model = SectionHeaderListProperties.create(TOOLBAR_HEIGHT);
         DseNewTabUrlManager.setIsEeaChoiceCountryForTesting(true);
@@ -550,10 +546,8 @@ public class FeedSurfaceMediatorTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.NEW_TAB_SEARCH_ENGINE_URL_ANDROID)
     public void testWithEeaCountryOnlyEnabled() {
         PropertyModel model = SectionHeaderListProperties.create(TOOLBAR_HEIGHT);
-        DseNewTabUrlManager.EEA_COUNTRY_ONLY.setForTesting(true);
         doReturn(false).when(mUrlService).isDefaultSearchEngineGoogle();
         DseNewTabUrlManager.setIsEeaChoiceCountryForTesting(false);
 

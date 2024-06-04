@@ -2205,9 +2205,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         supportRequestWindowFeature(Window.FEATURE_ACTION_MODE_OVERLAY);
         IncognitoTabHostRegistry.getInstance().register(mIncognitoTabHost);
         mStartupPaintPreviewHelperSupplier.attach(getWindowAndroid().getUnownedUserDataHost());
-        if (ChromeFeatureList.sNewTabSearchEngineUrlAndroid.isEnabled()) {
-            mDseNewTabUrlManager = new DseNewTabUrlManager(mTabModelProfileSupplier);
-        }
+        mDseNewTabUrlManager = new DseNewTabUrlManager(mTabModelProfileSupplier);
 
         initHub();
     }

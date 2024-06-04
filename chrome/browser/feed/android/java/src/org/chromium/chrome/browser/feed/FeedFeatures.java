@@ -59,8 +59,7 @@ public final class FeedFeatures {
     }
 
     private static boolean isFeedEnabledByDSE(Profile profile) {
-        return !ChromeFeatureList.sNewTabSearchEngineUrlAndroid.isEnabled()
-                || getPrefService(profile).getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE);
+        return getPrefService(profile).getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE);
     }
 
     public static boolean shouldUseWebFeedAwarenessIPH() {

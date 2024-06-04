@@ -3495,11 +3495,6 @@
     "expiry_milestone": 98
   },
   {
-    "name": "enable-new-tab-search-engine-url-android",
-    "owners": [ "hanxi@chromium.org", "xinyiji@chromium.org", "clank-start@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "enable-notification-image-drag",
     "owners": ["andrewxu@chromium.org", "dmblack@chromium.org"],
     "expiry_milestone": 130

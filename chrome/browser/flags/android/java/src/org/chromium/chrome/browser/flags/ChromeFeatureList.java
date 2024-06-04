@@ -616,11 +616,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(MUlTI_INSTANCE_APPLICATION_STATUS_CLEANUP, false);
     public static final CachedFlag sNavBarColorMatchesTabBackground =
             newCachedFlag(NAV_BAR_COLOR_MATCHES_TAB_BACKGROUND, false);
-    public static final CachedFlag sNewTabSearchEngineUrlAndroid =
-            newCachedFlag(NEW_TAB_SEARCH_ENGINE_URL_ANDROID, true);
     public static final CachedFlag sPriceChangeModule = newCachedFlag(PRICE_CHANGE_MODULE, false);
-    public static final CachedFlag sPriceInsights =
-            newCachedFlag(PRICE_INSIGHTS, false);
+    public static final CachedFlag sPriceInsights = newCachedFlag(PRICE_INSIGHTS, false);
     public static final CachedFlag sPrivacyGuideAndroid3 =
             newCachedFlag(PRIVACY_GUIDE_ANDROID_3, false);
     public static final CachedFlag sPrivacyGuidePreloadAndroid =
@@ -746,7 +743,6 @@ public abstract class ChromeFeatureList {
                     sMagicStackAndroid,
                     sMultiInstanceApplicationStatusCleanup,
                     sNavBarColorMatchesTabBackground,
-                    sNewTabSearchEngineUrlAndroid,
                     sPriceChangeModule,
                     sPriceInsights,
                     sPrivacyGuideAndroid3,

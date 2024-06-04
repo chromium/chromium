@@ -26,9 +26,6 @@ import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -78,24 +75,13 @@ public class DseNewTabUrlManagerUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.NEW_TAB_SEARCH_ENGINE_URL_ANDROID})
     public void testIsNewTabSearchEngineUrlAndroidEnabled() {
         DseNewTabUrlManager.setIsEeaChoiceCountryForTesting(true);
         assertTrue(DseNewTabUrlManager.isNewTabSearchEngineUrlAndroidEnabled());
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.NEW_TAB_SEARCH_ENGINE_URL_ANDROID})
-    public void testIsNewTabSearchEngineUrlAndroidDisabled() {
-        DseNewTabUrlManager.setIsEeaChoiceCountryForTesting(true);
-        assertFalse(DseNewTabUrlManager.isNewTabSearchEngineUrlAndroidEnabled());
-    }
-
-    @Test
-    @EnableFeatures({ChromeFeatureList.NEW_TAB_SEARCH_ENGINE_URL_ANDROID})
     public void testIsNewTabSearchEngineUrlAndroidIgnoredForNonEeaCountry() {
-        DseNewTabUrlManager.EEA_COUNTRY_ONLY.setForTesting(true);
-        assertTrue(DseNewTabUrlManager.EEA_COUNTRY_ONLY.getValue());
         assertFalse(
                 ChromeSharedPreferences.getInstance()
                         .readBoolean(ChromePreferenceKeys.IS_EEA_CHOICE_COUNTRY, false));
@@ -104,25 +90,9 @@ public class DseNewTabUrlManagerUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.NEW_TAB_SEARCH_ENGINE_URL_ANDROID})
     public void testIsNewTabSearchEngineUrlAndroidEnabledForEeaCountry() {
-        DseNewTabUrlManager.EEA_COUNTRY_ONLY.setForTesting(true);
-        assertTrue(DseNewTabUrlManager.EEA_COUNTRY_ONLY.getValue());
         DseNewTabUrlManager.setIsEeaChoiceCountryForTesting(true);
         assertTrue(
-                ChromeSharedPreferences.getInstance()
-                        .readBoolean(ChromePreferenceKeys.IS_EEA_CHOICE_COUNTRY, false));
-
-        assertTrue(DseNewTabUrlManager.isNewTabSearchEngineUrlAndroidEnabled());
-    }
-
-    @Test
-    @EnableFeatures({ChromeFeatureList.NEW_TAB_SEARCH_ENGINE_URL_ANDROID})
-    public void testIsNewTabSearchEngineUrlAndroidSkipEeaCountryCheck() {
-        DseNewTabUrlManager.SKIP_EEA_COUNTRY_CHECK.setForTesting(true);
-        assertTrue(DseNewTabUrlManager.EEA_COUNTRY_ONLY.getValue());
-        assertTrue(DseNewTabUrlManager.SKIP_EEA_COUNTRY_CHECK.getValue());
-        assertFalse(
                 ChromeSharedPreferences.getInstance()
                         .readBoolean(ChromePreferenceKeys.IS_EEA_CHOICE_COUNTRY, false));
 
@@ -148,24 +118,6 @@ public class DseNewTabUrlManagerUnitTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.NEW_TAB_SEARCH_ENGINE_URL_ANDROID})
-    public void testShouldOverrideUrlWithNewTabSearchEngineUrlDisabled() {
-        // Verifies that the URL is not overridden when the feature flag is disabled.
-        assertFalse(DseNewTabUrlManager.isNewTabSearchEngineUrlAndroidEnabled());
-        assertEquals(
-                JUnitTestGURLs.NTP_URL,
-                mDseNewTabUrlManager.maybeGetOverrideUrl(/* gurl= */ JUnitTestGURLs.NTP_URL));
-
-        doReturn(false).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
-        doReturn(false).when(mProfile).isOffTheRecord();
-        mProfileSupplier.set(mProfile);
-        assertEquals(
-                JUnitTestGURLs.NTP_URL,
-                mDseNewTabUrlManager.maybeGetOverrideUrl(/* gurl= */ JUnitTestGURLs.NTP_URL));
-    }
-
-    @Test
-    @EnableFeatures({ChromeFeatureList.NEW_TAB_SEARCH_ENGINE_URL_ANDROID})
     public void testShouldOverrideUrlWithNewTabSearchEngineUrlEnabled() {
         DseNewTabUrlManager.setIsEeaChoiceCountryForTesting(true);
         assertTrue(DseNewTabUrlManager.isNewTabSearchEngineUrlAndroidEnabled());

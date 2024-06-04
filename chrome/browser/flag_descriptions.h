@@ -2587,9 +2587,6 @@ extern const char kMouseAndTrackpadDropdownMenuDescription[];
 extern const char kNavBarColorMatchesTabBackgroundName[];
 extern const char kNavBarColorMatchesTabBackgroundDescription[];
 
-extern const char kNewTabSearchEngineUrlAndroidName[];
-extern const char kNewTabSearchEngineUrlAndroidDescription[];
-
 extern const char kNotificationOneTapUnsubscribeName[];
 extern const char kNotificationOneTapUnsubscribeDescription[];
 

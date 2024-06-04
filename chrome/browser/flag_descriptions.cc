@@ -4382,12 +4382,6 @@ const char kNavBarColorMatchesTabBackgroundDescription[] =
     "Matches the OS navigation bar color to the background color of the "
     "active tab.";
 
-const char kNewTabSearchEngineUrlAndroidName[] =
-    "Enable new Tab Urls of customized search engines";
-const char kNewTabSearchEngineUrlAndroidDescription[] =
-    "Swap out NTP and Start surface according to a user's default search "
-    "engine.";
-
 const char kNotificationOneTapUnsubscribeName[] =
     "Notification one-tap unsubscribe";
 const char kNotificationOneTapUnsubscribeDescription[] =
