@@ -1896,6 +1896,11 @@ config("default_warnings") {
         "-Wno-thread-safety-reference-return",
       ]
 
+      if (llvm_force_head_revision) {
+        # TODO(crbug.com/344680447): Fix and re-enable.
+        cflags += [ "-Wno-missing-template-arg-list-after-template-kw" ]
+      }
+
       cflags_cc += [
         # TODO(crbug.com/328490295): Fix and re-enable for C flags.
         "-Wenum-compare-conditional",
