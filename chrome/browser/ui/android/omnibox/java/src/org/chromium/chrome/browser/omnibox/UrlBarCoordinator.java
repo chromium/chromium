@@ -68,7 +68,7 @@ public class UrlBarCoordinator
      * @param reportExceptionCallback A {@link Callback} to report exceptions.
      */
     public UrlBarCoordinator(
-            Context context,
+            @NonNull Context context,
             @NonNull UrlBar urlBar,
             @Nullable WindowDelegate windowDelegate,
             @NonNull ActionMode.Callback actionModeCallback,
@@ -113,12 +113,12 @@ public class UrlBarCoordinator
      * @see UrlBarMediator#setUrlBarData(UrlBarData, int, int)
      */
     public boolean setUrlBarData(
-            UrlBarData data, @ScrollType int scrollType, @SelectionState int state) {
+            @NonNull UrlBarData data, @ScrollType int scrollType, @SelectionState int state) {
         return mMediator.setUrlBarData(data, scrollType, state);
     }
 
     /** Returns the UrlBarData representing the current contents of the UrsssdddsssslBar. */
-    public UrlBarData getUrlBarData() {
+    public @NonNull UrlBarData getUrlBarData() {
         return mMediator.getUrlBarData();
     }
 

@@ -41,7 +41,7 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate, UrlBar.Url
 
     private boolean mHasFocus;
 
-    private UrlBarData mUrlBarData;
+    private @NonNull UrlBarData mUrlBarData = UrlBarData.EMPTY;
     private @ScrollType int mScrollType = UrlBar.ScrollType.NO_SCROLL;
     private @SelectionState int mSelectionState = UrlBarCoordinator.SelectionState.SELECT_ALL;
 
@@ -72,6 +72,7 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate, UrlBar.Url
         mModel.set(UrlBarProperties.URL_TEXT_CHANGE_LISTENER, this);
         mModel.set(UrlBarProperties.HAS_URL_SUGGESTIONS, false);
         setBrandedColorScheme(BrandedColorScheme.APP_DEFAULT);
+        pushTextToModel();
     }
 
     public void destroy() {
@@ -95,7 +96,11 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate, UrlBar.Url
      * @return Whether this data differs from the previously passed in values.
      */
     public boolean setUrlBarData(
-            UrlBarData data, @ScrollType int scrollType, @SelectionState int selectionState) {
+            @NonNull UrlBarData data,
+            @ScrollType int scrollType,
+            @SelectionState int selectionState) {
+        assert data != null;
+
         if (data.originEndIndex == data.originStartIndex) {
             scrollType = UrlBar.ScrollType.SCROLL_TO_BEGINNING;
         }
@@ -123,6 +128,7 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate, UrlBar.Url
         return true;
     }
 
+    @NonNull
     UrlBarData getUrlBarData() {
         return mUrlBarData;
     }
@@ -227,7 +233,7 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate, UrlBar.Url
         mOnFocusChangeCallback.onResult(focus);
         boolean textChangedInFocusCallback =
                 mModel.get(UrlBarProperties.TEXT_STATE) != preCallbackState;
-        if (mUrlBarData != null && !textChangedInFocusCallback) {
+        if (!textChangedInFocusCallback) {
             pushTextToModel();
         }
     }
@@ -280,7 +286,7 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate, UrlBar.Url
     @Override
     public String getReplacementCutCopyText(
             String currentText, int selectionStart, int selectionEnd) {
-        if (mUrlBarData == null || mUrlBarData.url == null) return null;
+        if (mUrlBarData.url == null) return null;
 
         // Replace the cut/copy text only applies if the user selected from the beginning of the
         // display text.

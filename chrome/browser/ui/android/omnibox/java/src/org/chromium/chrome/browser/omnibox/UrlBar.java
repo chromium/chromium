@@ -285,7 +285,6 @@ public abstract class UrlBar extends AutocompleteEditText {
      */
     @Override
     public void setIgnoreTextChangesForAutocomplete(boolean ignoreAutocomplete) {
-        assert mUrlBarDelegate != null;
         super.setIgnoreTextChangesForAutocomplete(ignoreAutocomplete);
     }
 
