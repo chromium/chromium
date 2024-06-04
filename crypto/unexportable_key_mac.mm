@@ -345,9 +345,6 @@ std::unique_ptr<UnexportableKeyProviderMac> GetUnexportableKeyProviderMac(
 #if !BUILDFLAG(IS_IOS)
   if (!ExecutableHasKeychainAccessGroupEntitlement(
           config.keychain_access_group)) {
-    LOG(ERROR) << "Unexportable keys unavailable because keychain-access-group "
-                  "entitlement missing or incorrect. Expected value: "
-               << config.keychain_access_group;
     return nullptr;
   }
 #endif  // !BUILDFLAG(IS_IOS)
