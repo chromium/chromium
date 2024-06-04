@@ -7,6 +7,7 @@ import("//third_party/jni_zero/jni_zero.gni")
 
 generate_jni("jni_headers") {
   sources = [
+    "java/src/org/chromium/chrome/browser/safety_hub/NotificationPermissionReviewBridge.java",
     "java/src/org/chromium/chrome/browser/safety_hub/NotificationPermissions.java",
     "java/src/org/chromium/chrome/browser/safety_hub/PermissionsData.java",
     "java/src/org/chromium/chrome/browser/safety_hub/UnusedSitePermissionsBridge.java",
@@ -15,6 +16,7 @@ generate_jni("jni_headers") {
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/safety_hub/NotificationPermissionReviewBridge.java",
     "java/src/org/chromium/chrome/browser/safety_hub/NotificationPermissions.java",
     "java/src/org/chromium/chrome/browser/safety_hub/PermissionsData.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubFetchService.java",
@@ -159,6 +161,7 @@ source_set("unit_tests") {
   deps = [
     ":android",
     "//base/test:test_support",
+    "//chrome/browser/permissions:permissions",
     "//chrome/browser/ui",
     "//chrome/test:test_support",
     "//components/content_settings/core/browser",

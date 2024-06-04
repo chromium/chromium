@@ -7,8 +7,13 @@
 
 #include <jni.h>
 
+#include <vector>
+
 #include "base/android/scoped_java_ref.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service.h"
+
+class Profile;
 
 // JNI helper methods to enable unit testing.
 NotificationPermissions FromJavaNotificationPermissions(
@@ -18,6 +23,24 @@ NotificationPermissions FromJavaNotificationPermissions(
 base::android::ScopedJavaLocalRef<jobject> ToJavaNotificationPermissions(
     JNIEnv* env,
     const NotificationPermissions& obj);
+
+std::vector<NotificationPermissions> GetNotificationPermissions(
+    Profile* profile);
+
+void IgnoreOriginForNotificationPermissionReview(Profile* profile,
+                                                 const std::string& origin);
+
+void UndoIgnoreOriginForNotificationPermissionReview(Profile* profile,
+                                                     const std::string& origin);
+
+void BlockNotificationPermissionForOrigin(Profile* profile,
+                                          const std::string& origin);
+
+void AllowNotificationPermissionForOrigin(Profile* profile,
+                                          const std::string& origin);
+
+void ResetNotificationPermissionForOrigin(Profile* profile,
+                                          const std::string& origin);
 
 namespace jni_zero {
 
