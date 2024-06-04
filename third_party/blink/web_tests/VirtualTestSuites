@@ -1472,9 +1472,9 @@
       "external/wpt/html/semantics/popovers/popover-shadow-dom.html",
       "external/wpt/html/semantics/popovers/popover-types-with-hints.tentative.html",
       "external/wpt/html/semantics/popovers/popover-types.html",
-      "external/wpt/html/semantics/popovers/popover-hint-crash.tentative.html",
       "external/wpt/html/semantics/popovers/popover-light-dismiss-hint.tentative.html",
-      "external/wpt/html/semantics/popovers/popover-open-in-beforetoggle.html"
+      "external/wpt/html/semantics/popovers/popover-open-in-beforetoggle.html",
+      "wpt_internal/html/semantics/popovers/popover-hint-crash.tentative.html"
     ],
     "args": ["--disable-blink-features=HTMLPopoverHint",
       "--disable-threaded-compositing", "--disable-threaded-animation"],
