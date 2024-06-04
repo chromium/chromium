@@ -8,7 +8,7 @@ import 'chrome://settings/lazy_load.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsPersonalizationOptionsElement} from 'chrome://settings/lazy_load.js';
 import type {CrLinkRowElement, PrivacyPageVisibility, SettingsPrefsElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, loadTimeData, PrivacyPageBrowserProxyImpl, Router, routes, SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, loadTimeData, PrivacyPageBrowserProxyImpl, resetRouterForTesting, Router, routes, SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 // <if expr="not is_chromeos">
@@ -371,6 +371,15 @@ suite('AllBuilds', function() {
     pageContentRow.click();
     assertEquals(routes.PAGE_CONTENT, Router.getInstance().getCurrentRoute());
   });
+
+  test('historySearchRow', () => {
+    const historySearchRow =
+        testElement.shadowRoot!.querySelector<HTMLElement>('#historySearchRow');
+    assertTrue(!!historySearchRow);
+    assertTrue(isVisible(historySearchRow));
+    historySearchRow.click();
+    assertEquals(routes.HISTORY_SEARCH, Router.getInstance().getCurrentRoute());
+  });
 });
 
 // TODO(crbug.com/40070860): Remove once crbug/1476887 launched.
@@ -399,6 +408,29 @@ suite('PageContentSettingOff', function() {
         isVisible(testElement.shadowRoot!.querySelector('#pageContentRow')));
   });
 });
+
+suite('HistorySearchSettingOff', function() {
+  let testElement: SettingsPersonalizationOptionsElement;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      enableHistorySearchSetting: false,
+    });
+    resetRouterForTesting();
+  });
+
+  setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    testElement = document.createElement('settings-personalization-options');
+    document.body.appendChild(testElement);
+    flush();
+  });
+
+  test('historySearchRowNotVisible', function() {
+    assertFalse(!!testElement.shadowRoot!.querySelector('#historySearchRow'));
+  });
+});
+
 
 // <if expr="_google_chrome">
 suite('OfficialBuild', function() {

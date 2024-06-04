@@ -12,6 +12,7 @@ import './autofill_page/payments_section.js';
 import './clear_browsing_data_dialog/clear_browsing_data_dialog.js';
 import './search_engines_page/search_engines_page.js';
 import './simple_confirmation_dialog.js';
+import './people_page/history_search_page.js';
 import './privacy_page/anti_abuse_page.js';
 import './privacy_page/privacy_guide/privacy_guide_description_item.js';
 import './privacy_page/privacy_guide/privacy_guide_dialog.js';

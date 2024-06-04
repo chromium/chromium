@@ -106,6 +106,15 @@
           on-click="onPageContentRowClick_">
       </cr-link-row>
     </template>
+    <template is="dom-if" if="[[enableHistorySearchSetting_]]" restamp>
+      <cr-link-row id="historySearchRow"
+          class="hr"
+          label="$i18n{historySearchSettingLabel}"
+          sub-label="$i18n{historySearchSettingSublabel}"
+          role-description="$i18n{subpageArrowRoleDescription}"
+          on-click="onHistorySearchRowClick_">
+      </cr-link-row>
+    </template>
 <if expr="_google_chrome">
 <if expr="not chromeos_ash">
     <settings-toggle-button id="spellCheckControl"

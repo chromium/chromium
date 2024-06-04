@@ -32,6 +32,7 @@ export interface SettingsRoutes {
   // <if expr="_google_chrome">
   GET_MOST_CHROME: Route;
   // </if>
+  HISTORY_SEARCH: Route;
   INCOMPATIBLE_APPLICATIONS: Route;
   LANGUAGES: Route;
   MANAGE_PROFILE: Route;

@@ -16,6 +16,7 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '../controls/settings_toggle_button.js';
+import './history_search_page.js';
 import './page_content_page.js';
 // <if expr="not chromeos_ash">
 import './sync_account_control.js';
@@ -196,6 +197,13 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
           return map;
         },
       },
+
+      enableHistorySearchSetting_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enableHistorySearchSetting');
+        },
+      },
     };
   }
 
@@ -207,6 +215,7 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
   private profileIconUrl_: string;
   private isProfileActionable_: boolean;
   private profileName_: string;
+  private enableHistorySearchSetting_: boolean;
 
   // <if expr="not chromeos_ash">
   storedAccounts: StoredAccount[]|null;

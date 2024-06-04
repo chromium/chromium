@@ -138,6 +138,13 @@ export class SettingsPersonalizationOptionsElement extends
           return loadTimeData.getBoolean('enablePageContentSetting');
         },
       },
+
+      enableHistorySearchSetting_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enableHistorySearchSetting');
+        },
+      },
     };
   }
 
@@ -160,6 +167,7 @@ export class SettingsPersonalizationOptionsElement extends
   // </if>
 
   private enablePageContentSetting_: boolean;
+  private enableHistorySearchSetting_: boolean;
 
   private browserProxy_: PrivacyPageBrowserProxy =
       PrivacyPageBrowserProxyImpl.getInstance();
@@ -376,6 +384,11 @@ export class SettingsPersonalizationOptionsElement extends
   private onPageContentRowClick_() {
     const router = Router.getInstance();
     router.navigateTo(router.getRoutes().PAGE_CONTENT);
+  }
+
+  private onHistorySearchRowClick_() {
+    const router = Router.getInstance();
+    router.navigateTo(router.getRoutes().HISTORY_SEARCH);
   }
 
   private computePageContentRowSublabel_() {

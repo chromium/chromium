@@ -1,0 +1,37 @@
+<style include="settings-shared settings-columned-section">
+  .bullet-one {
+    margin-bottom: 1lh;
+  }
+</style>
+<settings-toggle-button
+    label="$i18n{historySearchSettingLabel}"
+    sub-label="$i18n{historySearchSettingSublabel}">
+</settings-toggle-button>
+
+<div class="settings-columned-section">
+  <div class="column">
+    <h2 class="description-header">$i18n{columnHeadingWhenOn}</h2>
+    <ul class="icon-bulleted-list">
+      <li>
+        <cr-icon icon="settings20:astrophotography-mode" aria-hidden="true">
+        </cr-icon>
+        <div class="secondary">$i18n{historySearchWhenOnBulletOne}</div>
+      </li>
+    </ul>
+  </div>
+  <div class="column">
+    <h2 class="description-header">$i18n{columnHeadingConsider}</h2>
+    <ul class="icon-bulleted-list">
+      <li>
+        <cr-icon icon="settings20:find-in-path" aria-hidden="true"></cr-icon>
+        <div class="secondary">
+          <div class="bullet-one">$i18n{historySearchConsiderBulletOne}</div>
+          <div>$i18n{historySearchConsiderBulletTwo}</div>
+        </div>
+      </li>
+    </ul>
+  </div>
+</div>
+<div class="settings-box block continuation">
+  $i18nRaw{historySearchLearnMore}
+</div>

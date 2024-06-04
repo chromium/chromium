@@ -4083,6 +4083,30 @@
     This setting doesn't change the availability of Google Translate or Lens
   </message>
 
+  <!-- History search -->
+  <!-- TODO(b/328300718): Finalize strings. -->
+  <message name="IDS_SETTINGS_HISTORY_SEARCH_SETTING_LABEL" desc="Title of the page of the settings that enables history search." translateable="false">
+    History search
+  </message>
+  <message name="IDS_SETTINGS_HISTORY_SEARCH_SETTING_SUBLABEL" desc="Sublabel of the setting that enables history search." translateable="false">
+    Search through history
+  </message>
+  <message name="IDS_SETTINGS_HISTORY_SEARCH_WHEN_ON_BULLET_ONE" desc="Bullet point in the 'When on' column of the description of the setting that enables history search." translateable="false">
+    You can search through your history
+  </message>
+  <message name="IDS_SETTINGS_HISTORY_SEARCH_CONSIDER_BULLET_ONE" desc="Bullet point in the 'Things to consider' column of the description of the setting that enables history search." translateable="false">
+    You should consider this
+  </message>
+  <message name="IDS_SETTINGS_HISTORY_SEARCH_CONSIDER_BULLET_TWO" desc="Bullet point in the 'Things to consider' column of the description of the setting that enables history search." translateable="false">
+    You should consider this too
+  </message>
+  <message name="IDS_SETTINGS_HISTORY_SEARCH_LEARN_MORE" desc="Footer text for the setting that enables history search that links out to a help article." translateable="false">
+    <ph name="BEGIN_LINK">&lt;a href="$1" target="_blank" aria-label="$2"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph> about history searches
+  </message>
+  <message name="IDS_SETTINGS_HISTORY_SEARCH_LEARN_MORE_A11Y_LABEL" desc="Label for the 'Learn more' link in the footer text for teh setting that enables history search." translateable="false">
+    Learn more about history searches
+  </message>
+
   <!-- Web Content -->
   <message name="IDS_SETTINGS_PAGE_ZOOM_LABEL" desc="Label for the page zoom dropdown menu in settings.">
     Page zoom
