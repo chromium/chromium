@@ -2846,6 +2846,10 @@ bool AXNodeObject::IsNotUserSelectable() const {
     return false;
   }
 
+  if (IsA<PseudoElement>(GetClosestElement())) {
+    return true;
+  }
+
   const ComputedStyle* style = GetLayoutObject()->Style();
   if (!style) {
     return false;

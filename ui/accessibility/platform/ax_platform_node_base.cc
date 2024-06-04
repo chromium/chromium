@@ -2319,13 +2319,14 @@ ui::TextAttributeList AXPlatformNodeBase::ComputeTextAttributes() const {
   ui::TextAttributeList attributes;
 
   // From the IA2 Spec:
-  //
   // Occasionally, word processors will automatically generate characters which
   // appear on a line along with editable text. The characters are not
   // themselves editable, but are part of the document. The most common examples
   // of automatically inserted characters are in bulleted and numbered lists.
-  if (IsTextField() &&
-      HasBoolAttribute(ax::mojom::BoolAttribute::kNotUserSelectableStyle)) {
+  if (HasBoolAttribute(ax::mojom::BoolAttribute::kNotUserSelectableStyle)) {
+    // From IA2 text attribute guide:
+    // this attribute's value is “true” for list bullet/numbering prefix text or
+    // layout-inserted text such as via the CSS pseudo styles :before or :after.
     attributes.emplace_back("auto-generated", "true");
   }
 

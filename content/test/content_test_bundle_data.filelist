@@ -1839,6 +1839,7 @@ data/accessibility/css/before-after-code-expected-android-assist-data.txt
 data/accessibility/css/before-after-code-expected-android-external.txt
 data/accessibility/css/before-after-code-expected-blink.txt
 data/accessibility/css/before-after-code-expected-uia-win.txt
+data/accessibility/css/before-after-code-expected-win.txt
 data/accessibility/css/before-after-code.html
 data/accessibility/css/bullet.png
 data/accessibility/css/color-expected-android-assist-data.txt
@@ -3083,6 +3084,7 @@ data/accessibility/html/contenteditable-descendants-with-selection-expected-win.
 data/accessibility/html/contenteditable-descendants-with-selection.html
 data/accessibility/html/contenteditable-descendants.html
 data/accessibility/html/contenteditable-docs-li-expected-blink.txt
+data/accessibility/html/contenteditable-docs-li-expected-win.txt
 data/accessibility/html/contenteditable-docs-li.html
 data/accessibility/html/contenteditable-font-size-expected-blink.txt
 data/accessibility/html/contenteditable-font-size.html

@@ -7,12 +7,12 @@ rootWebArea isLineBreakingObject=true
 ++++++++++++inlineTextBox name='Beginning'
 ++++++++list isLineBreakingObject=true
 ++++++++++listItem isLineBreakingObject=true
-++++++++++++listMarker name='1. ' nextOnLineId=inlineTextBox:"A plain list item"
+++++++++++++listMarker name='1. ' nextOnLineId=inlineTextBox:"A plain list item" notUserSelectableStyle=true
 ++++++++++++++staticText ignored name='1. '
 ++++++++++++staticText name='A plain list item' previousOnLineId=staticText:"1. "
 ++++++++++++++inlineTextBox name='A plain list item' previousOnLineId=staticText:"1. "
 ++++++++++listItem isLineBreakingObject=true
-++++++++++++listMarker name='2. ' nextOnLineId=inlineTextBox:"A list item"
+++++++++++++listMarker name='2. ' nextOnLineId=inlineTextBox:"A list item" notUserSelectableStyle=true
 ++++++++++++++staticText ignored name='2. '
 ++++++++++++staticText name='A list item' nextOnLineId=inlineTextBox:"<newline>" previousOnLineId=staticText:"2. "
 ++++++++++++++inlineTextBox name='A list item' nextOnLineId=inlineTextBox:"<newline>" previousOnLineId=staticText:"2. "
@@ -21,12 +21,12 @@ rootWebArea isLineBreakingObject=true
 ++++++++++++staticText name='with a br (line break) inside it'
 ++++++++++++++inlineTextBox name='with a br (line break) inside it'
 ++++++++++listItem isLineBreakingObject=true
-++++++++++++listMarker name='3. ' nextOnLineId=inlineTextBox:"A list item with an inner p role=presentation"
+++++++++++++listMarker name='3. ' nextOnLineId=inlineTextBox:"A list item with an inner p role=presentation" notUserSelectableStyle=true
 ++++++++++++++staticText ignored name='3. '
 ++++++++++++staticText name='A list item with an inner p role=presentation' previousOnLineId=staticText:"3. "
 ++++++++++++++inlineTextBox name='A list item with an inner p role=presentation' previousOnLineId=staticText:"3. "
 ++++++++++listItem isLineBreakingObject=true
-++++++++++++listMarker name='4. ' nextOnLineId=inlineTextBox:"A list item with both a br and"
+++++++++++++listMarker name='4. ' nextOnLineId=inlineTextBox:"A list item with both a br and" notUserSelectableStyle=true
 ++++++++++++++staticText ignored name='4. '
 ++++++++++++staticText name='A list item with both a br and' nextOnLineId=inlineTextBox:"<newline>" previousOnLineId=staticText:"4. "
 ++++++++++++++inlineTextBox name='A list item with both a br and' nextOnLineId=inlineTextBox:"<newline>" previousOnLineId=staticText:"4. "
@@ -35,7 +35,7 @@ rootWebArea isLineBreakingObject=true
 ++++++++++++staticText name='an inner p role=presentation'
 ++++++++++++++inlineTextBox name='an inner p role=presentation'
 ++++++++++listItem isLineBreakingObject=true
-++++++++++++listMarker name='5. ' nextOnLineId=inlineTextBox:"A list item with "
+++++++++++++listMarker name='5. ' nextOnLineId=inlineTextBox:"A list item with " notUserSelectableStyle=true
 ++++++++++++++staticText ignored name='5. '
 ++++++++++++staticText name='A list item with ' nextOnLineId=inlineTextBox:"inner " previousOnLineId=staticText:"5. "
 ++++++++++++++inlineTextBox name='A list item with ' nextOnLineId=inlineTextBox:"inner " previousOnLineId=staticText:"5. "
@@ -52,14 +52,14 @@ rootWebArea isLineBreakingObject=true
 ++++++++++++staticText name='and separated by a br'
 ++++++++++++++inlineTextBox name='and separated by a br'
 ++++++++++listItem isLineBreakingObject=true
-++++++++++++listMarker name='6. ' nextOnLineId=inlineTextBox:"A list item with a role presentation, and two inner spans, "
+++++++++++++listMarker name='6. ' nextOnLineId=inlineTextBox:"A list item with a role presentation, and two inner spans, " notUserSelectableStyle=true
 ++++++++++++++staticText ignored name='6. '
 ++++++++++++staticText name='A list item with a role presentation, and two inner spans, ' nextOnLineId=inlineTextBox:"each separated by a space" previousOnLineId=staticText:"6. "
 ++++++++++++++inlineTextBox name='A list item with a role presentation, and two inner spans, ' nextOnLineId=inlineTextBox:"each separated by a space" previousOnLineId=staticText:"6. "
 ++++++++++++staticText name='each separated by a space' previousOnLineId=inlineTextBox:"A list item with a role presentation, and two inner spans, "
 ++++++++++++++inlineTextBox name='each separated by a space' previousOnLineId=inlineTextBox:"A list item with a role presentation, and two inner spans, "
 ++++++++++listItem isLineBreakingObject=true
-++++++++++++listMarker name='7. ' nextOnLineId=inlineTextBox:"A list item with a role presentation, and two inner spans,"
+++++++++++++listMarker name='7. ' nextOnLineId=inlineTextBox:"A list item with a role presentation, and two inner spans," notUserSelectableStyle=true
 ++++++++++++++staticText ignored name='7. '
 ++++++++++++staticText name='A list item with a role presentation, and two inner spans,' nextOnLineId=inlineTextBox:"<newline>" previousOnLineId=staticText:"7. "
 ++++++++++++++inlineTextBox name='A list item with a role presentation, and two inner spans,' nextOnLineId=inlineTextBox:"<newline>" previousOnLineId=staticText:"7. "
@@ -68,7 +68,7 @@ rootWebArea isLineBreakingObject=true
 ++++++++++++staticText name='each separated by a br'
 ++++++++++++++inlineTextBox name='each separated by a br'
 ++++++++++listItem isLineBreakingObject=true
-++++++++++++listMarker name='8. ' nextOnLineId=inlineTextBox:"Hello"
+++++++++++++listMarker name='8. ' nextOnLineId=inlineTextBox:"Hello" notUserSelectableStyle=true
 ++++++++++++++staticText ignored name='8. '
 ++++++++++++staticText name='Hello' nextOnLineId=inlineTextBox:" " previousOnLineId=staticText:"8. "
 ++++++++++++++inlineTextBox name='Hello' nextOnLineId=inlineTextBox:" " previousOnLineId=staticText:"8. "
@@ -81,7 +81,7 @@ rootWebArea isLineBreakingObject=true
 ++++++++++++staticText name='is like docs markup without the weird presentational br' previousOnLineId=inlineTextBox:" "
 ++++++++++++++inlineTextBox name='is like docs markup without the weird presentational br' previousOnLineId=inlineTextBox:" "
 ++++++++++listItem isLineBreakingObject=true
-++++++++++++listMarker name='9. ' nextOnLineId=inlineTextBox:"Hello"
+++++++++++++listMarker name='9. ' nextOnLineId=inlineTextBox:"Hello" notUserSelectableStyle=true
 ++++++++++++++staticText ignored name='9. '
 ++++++++++++staticText name='Hello' previousOnLineId=staticText:"9. "
 ++++++++++++++inlineTextBox name='Hello' previousOnLineId=staticText:"9. "
