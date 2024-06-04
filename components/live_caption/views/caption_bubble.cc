@@ -340,9 +340,6 @@ class CaptionBubbleLabel : public views::Label {
  public:
 #if defined(NEED_FOCUS_FOR_ACCESSIBILITY)
   CaptionBubbleLabel() {
-    SetAccessibleRole(ax::mojom::Role::kDocument);
-    SetAccessibleName(std::u16string(),
-                      ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
     ax_mode_observer_ =
         std::make_unique<CaptionBubbleLabelAXModeObserver>(this);
     SetFocusBehaviorForAccessibility();
