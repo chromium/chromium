@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_LENS_OVERLAY_PAGE_ACTION_ICON_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_LENS_OVERLAY_PAGE_ACTION_ICON_VIEW_H_
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -24,6 +25,10 @@ class LensOverlayPageActionIconView : public PageActionIconView {
       const LensOverlayPageActionIconView&) = delete;
   ~LensOverlayPageActionIconView() override;
 
+  void set_update_callback_for_testing(base::OnceClosure update_callback) {
+    update_callback_for_testing_ = std::move(update_callback);
+  }
+
  protected:
   // PageActionIconView:
   void UpdateImpl() override;
@@ -35,6 +40,7 @@ class LensOverlayPageActionIconView : public PageActionIconView {
 
  private:
   raw_ptr<Browser> browser_;
+  base::OnceClosure update_callback_for_testing_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_LENS_OVERLAY_PAGE_ACTION_ICON_VIEW_H_
