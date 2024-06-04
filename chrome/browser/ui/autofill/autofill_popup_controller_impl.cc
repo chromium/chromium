@@ -352,10 +352,6 @@ void AutofillPopupControllerImpl::AcceptSuggestion(int index) {
       !disable_threshold_for_testing_ &&
       !base::FeatureList::IsEnabled(
           features::kAutofillPopupImprovedTimingChecksV2)) {
-    base::UmaHistogramCustomTimes(
-        "Autofill.Popup.AcceptanceDelayThresholdNotMet", time_elapsed,
-        base::Milliseconds(0), kIgnoreEarlyClicksOnSuggestionsDuration,
-        /*buckets=*/50);
     return;
   }
 
