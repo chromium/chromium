@@ -5,6 +5,8 @@
 #include "chrome/services/sharing/nearby/platform/wifi_direct_server_socket.h"
 
 #include "base/threading/thread_restrictions.h"
+#include "chrome/services/sharing/nearby/platform/wifi_direct_socket.h"
+#include "net/socket/tcp_client_socket.h"
 
 namespace nearby::chrome {
 
@@ -17,6 +19,7 @@ WifiDirectServerSocket::WifiDirectServerSocket(
       handle_(std::move(handle)),
       firewall_hole_(std::move(firewall_hole)),
       tcp_server_socket_(std::move(tcp_server_socket)) {
+  CHECK(task_runner_);
   firewall_hole_.set_disconnect_handler(
       base::BindOnce(&WifiDirectServerSocket::OnFirewallHoleDisconnect,
                      base::Unretained(this)),
@@ -43,8 +46,27 @@ int WifiDirectServerSocket::GetPort() const {
 }
 
 std::unique_ptr<api::WifiDirectSocket> WifiDirectServerSocket::Accept() {
-  NOTIMPLEMENTED();
-  return nullptr;
+  // Ensure that the socket has not been closed.
+  if (!tcp_server_socket_) {
+    return nullptr;
+  }
+
+  bool success = false;
+  net::IPEndPoint accepted_address;
+  std::unique_ptr<net::StreamSocket> accepted_socket;
+  pending_accept_event_.Reset();
+  task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&WifiDirectServerSocket::DoAccept, base::Unretained(this),
+                     &accepted_address, &accepted_socket, &success));
+  pending_accept_event_.Wait();
+
+  if (!success) {
+    return nullptr;
+  }
+
+  return std::make_unique<WifiDirectSocket>(task_runner_,
+                                            std::move(accepted_socket));
 }
 
 Exception WifiDirectServerSocket::Close() {
@@ -53,6 +75,9 @@ Exception WifiDirectServerSocket::Close() {
   if (!tcp_server_socket_) {
     return {Exception::kFailed};
   }
+
+  // Cancel the pending `Accept` call, if it exists.
+  pending_accept_event_.Signal();
 
   // Directly call `CloseSocket` if the current sequence is on the appriroiate
   // task runner.
@@ -69,6 +94,51 @@ Exception WifiDirectServerSocket::Close() {
   waitable_event.Wait();
 
   return {Exception::kSuccess};
+}
+
+void WifiDirectServerSocket::DoAccept(
+    net::IPEndPoint* accepted_address,
+    std::unique_ptr<net::StreamSocket>* accepted_socket,
+    bool* did_succeed) {
+  // Ensure that the Accept call has not been cancelled.
+  if (pending_accept_event_.IsSignaled()) {
+    return;
+  }
+
+  // Ensure that the socket has not been closed.
+  if (!tcp_server_socket_) {
+    pending_accept_event_.Signal();
+    return;
+  }
+
+  // We cannot accept connections if the firewall hole has disconnected.
+  if (!firewall_hole_ || !firewall_hole_.is_bound()) {
+    pending_accept_event_.Signal();
+    return;
+  }
+
+  int result = tcp_server_socket_->Accept(
+      accepted_socket,
+      base::BindOnce(&WifiDirectServerSocket::OnAccept, base::Unretained(this),
+                     did_succeed),
+      accepted_address);
+  // In the case where there was not a pending connection request, this call
+  // will return `ERR_IO_PENDING`. This means the provided callback will be
+  // called with the result, when it occurs. In all other cases, we have the
+  // result immediately and should manually propagate this to the callback.
+  if (result != net::ERR_IO_PENDING) {
+    OnAccept(did_succeed, result);
+  }
+}
+
+void WifiDirectServerSocket::OnAccept(bool* did_succeed, int result) {
+  // Ensure that the Accept call has not been cancelled.
+  if (pending_accept_event_.IsSignaled()) {
+    return;
+  }
+
+  *did_succeed = (result == net::OK);
+  pending_accept_event_.Signal();
 }
 
 void WifiDirectServerSocket::CloseSocket(
