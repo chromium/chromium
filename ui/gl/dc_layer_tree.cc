@@ -269,12 +269,10 @@ void SolidColorSurfacePool::TrimAfterCommit() {
   // |kMaxSolidColorSurfacesToRetain|.
   trim_target_size = std::min(trim_target_size, tracked_surfaces_.size());
 
-  DVLOG(1) << "SolidColorSurfacePool stats before trim: "
-           << "requested=" << stats_since_last_trim_.num_surfaces_requested
-           << ", "
+  DVLOG(3) << "SolidColorSurfacePool stats before trim: " << "requested="
+           << stats_since_last_trim_.num_surfaces_requested << ", "
            << "recolored=" << stats_since_last_trim_.num_surfaces_recolored
-           << ", "
-           << "in-use/total=" << num_used_this_frame_ << "/"
+           << ", " << "in-use/total=" << num_used_this_frame_ << "/"
            << tracked_surfaces_.size()
            << (num_used_this_frame_ > kMaxSolidColorSurfacesToRetain
                    ? " (in-use exceeds kMaxSolidColorSurfacesToRetain)"
