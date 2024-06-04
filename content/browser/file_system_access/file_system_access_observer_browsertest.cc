@@ -57,6 +57,9 @@ enum class TestFileSystemType {
        let info = {}; \
        info.type = record.type; \
        info.relativePathComponents = record.relativePathComponents; \
+       if (record.relativePathMovedFrom) { \
+         info.relativePathMovedFrom = record.relativePathMovedFrom; \
+       } \
        return info; \
      }); \
      promiseResolve(serializedRecords); \
@@ -466,6 +469,16 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest, ObserveFileRename) {
   // clang-format on
   auto records = EvalJs(shell(), script).ExtractList();
   EXPECT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
+  // The `relativePathComponents` should be an empty array, since the change
+  // occurred on the path corresponding to the handle passed to `observe()`.
+  EXPECT_THAT(
+      *records.GetList().front().GetDict().FindList("relativePathComponents"),
+      testing::IsEmpty());
+  // Similarly, optional `relativePathMovedFrom` is not specified, since the
+  // change occurred on the path corresponding to the handle passed to
+  // `observe()`.
+  EXPECT_FALSE(
+      records.GetList().front().GetDict().FindList("relativePathMovedFrom"));
 }
 
 IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest, ObserveDirectory) {
@@ -789,6 +802,131 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
   EXPECT_THAT(
       *records.GetList().front().GetDict().FindList("relativePathComponents"),
       relative_path_component_matcher);
+}
+
+IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
+                       ObserveDirectoryReportsMoveChangeInfo) {
+  base::FilePath dir_path = CreateDirectoryToBePicked();
+
+  const std::string script =
+      // clang-format off
+      "(async () => {"
+         CREATE_PROMISE_AND_RESOLVERS
+         GET_DIRECTORY(GetTestFileSystemType())
+         // Move dir/subdir/oldFile.txt to dir/subdir/newFile.txt while watching
+         // dir/
+         "const subdir = "
+         "    await dir.getDirectoryHandle('subdir', { create: true });"
+         "const oldFile = "
+         "    await subdir.getFileHandle('oldFile.txt', { create: true });"
+         "const observer = new FileSystemObserver(onChange);"
+         "await observer.observe(dir, { recursive: true });"
+         "await oldFile.move(subdir, 'newFile.txt');"
+         SET_CHANGE_TIMEOUT
+      "})()";
+  // clang-format on
+  auto records = EvalJs(shell(), script).ExtractList();
+  ASSERT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
+  auto& record_dict = records.GetList().front().GetDict();
+  const std::string expected_change_type =
+      SupportsChangeInfo() ? "moved" : "unknown";
+  EXPECT_THAT(*record_dict.FindString("type"),
+              testing::StrEq(expected_change_type));
+  if (SupportsReportingModifiedPath()) {
+    EXPECT_THAT(*record_dict.FindList("relativePathComponents"),
+                testing::ElementsAre("subdir", "newFile.txt"));
+    EXPECT_THAT(*record_dict.FindList("relativePathMovedFrom"),
+                testing::ElementsAre("subdir", "oldFile.txt"));
+  } else {
+    EXPECT_THAT(*record_dict.FindList("relativePathComponents"),
+                testing::IsEmpty());
+    EXPECT_FALSE(record_dict.FindList("relativePathMovedFrom"));
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
+                       ObserveDirectoryReportsCreatedOnMoveIntoScope) {
+  base::FilePath dir_path = CreateDirectoryToBePicked();
+
+  const std::string script =
+      // clang-format off
+      "(async () => {"
+         CREATE_PROMISE_AND_RESOLVERS
+         GET_DIRECTORY(GetTestFileSystemType())
+         // Move dir/oldFile.txt to dir/subdir/newFile.txt while watching
+         // dir/subdir/
+         "const subdir = "
+         "    await dir.getDirectoryHandle('subdir', { create: true });"
+         "const oldFile = "
+         "    await dir.getFileHandle('oldFile.txt', { create: true });"
+         "const observer = new FileSystemObserver(onChange);"
+         "await observer.observe(subdir, { recursive: false });"
+         "await oldFile.move(subdir, 'newFile.txt');"
+         SET_CHANGE_TIMEOUT
+      "})()";
+  // clang-format on
+  auto records = EvalJs(shell(), script).ExtractList();
+  ASSERT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
+  auto& record_dict = records.GetList().front().GetDict();
+  const std::string expected_change_type =
+      SupportsChangeInfo()
+          ? (GetTestFileSystemType() == TestFileSystemType::kBucket ? "moved"
+                                                                    : "created")
+          : "unknown";
+  EXPECT_THAT(*record_dict.FindString("type"),
+              testing::StrEq(expected_change_type));
+  if (SupportsReportingModifiedPath()) {
+    EXPECT_THAT(*record_dict.FindList("relativePathComponents"),
+                testing::ElementsAre("newFile.txt"));
+  } else {
+    EXPECT_THAT(*record_dict.FindList("relativePathComponents"),
+                testing::IsEmpty());
+  }
+  EXPECT_FALSE(record_dict.FindList("relativePathMovedFrom"));
+}
+
+IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
+                       ObserveDirectoryReportsDeletedOnMoveOutsideScope) {
+  base::FilePath dir_path = CreateDirectoryToBePicked();
+
+  const std::string script =
+      // clang-format off
+      "(async () => {"
+         CREATE_PROMISE_AND_RESOLVERS
+         GET_DIRECTORY(GetTestFileSystemType())
+         // Move dir/subdir/oldFile.txt to dir/newFile.txt while watching
+         // dir/subdir/
+         "const subdir = "
+         "    await dir.getDirectoryHandle('subdir', { create: true });"
+         "const oldFile = "
+         "    await subdir.getFileHandle('oldFile.txt', { create: true });"
+         "const observer = new FileSystemObserver(onChange);"
+         "await observer.observe(subdir, { recursive: false });"
+         "await oldFile.move(dir, 'newFile.txt');"
+         SET_CHANGE_TIMEOUT
+      "})()";
+  // clang-format on
+  auto records = EvalJs(shell(), script).ExtractList();
+  ASSERT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
+  auto& record_dict = records.GetList().front().GetDict();
+  // TODO(crbug.com/40105284): Consider reporting a consistent change
+  // type when moving a file out of the watched scope. On the BucketFS,
+  // changes are considered "deleted" events while on local file system, it is
+  // reported as "moved".
+  const std::string expected_change_type =
+      SupportsChangeInfo() ? "deleted" : "unknown";
+  EXPECT_THAT(*record_dict.FindString("type"),
+              testing::StrEq(expected_change_type));
+  if (SupportsReportingModifiedPath()) {
+    // Moved-to path is out of the watched scope, so moved-from path is reported
+    // as `relativePathComponents`.
+    EXPECT_THAT(*record_dict.FindList("relativePathComponents"),
+                testing::ElementsAre("oldFile.txt"));
+  } else {
+    EXPECT_THAT(*record_dict.FindList("relativePathComponents"),
+                testing::IsEmpty());
+  }
+  EXPECT_FALSE(record_dict.FindList("relativePathMovedFrom"));
 }
 
 INSTANTIATE_TEST_SUITE_P(

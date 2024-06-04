@@ -51,8 +51,7 @@ class CONTENT_EXPORT FileSystemAccessWatcherManager
     // Describes a change to some location in a file system.
     struct CONTENT_EXPORT Change {
       Change(storage::FileSystemURL url,
-             blink::mojom::FileSystemAccessChangeTypePtr type,
-             FileSystemAccessChangeSource::FilePathType file_path_type);
+             FileSystemAccessChangeSource::ChangeInfo change_info);
       ~Change();
 
       // Copyable and movable.
@@ -60,12 +59,10 @@ class CONTENT_EXPORT FileSystemAccessWatcherManager
       Change(Change&&) noexcept;
 
       storage::FileSystemURL url;
-      blink::mojom::FileSystemAccessChangeTypePtr type;
-      FileSystemAccessChangeSource::FilePathType file_path_type;
+      FileSystemAccessChangeSource::ChangeInfo change_info;
 
       bool operator==(const Change& other) const {
-        return url == other.url && type == other.type &&
-               file_path_type == other.file_path_type;
+        return url == other.url && change_info == other.change_info;
       }
     };
 
