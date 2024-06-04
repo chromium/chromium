@@ -5,16 +5,24 @@
 #ifndef CHROME_SERVICES_SHARING_NEARBY_PLATFORM_WIFI_DIRECT_SOCKET_H_
 #define CHROME_SERVICES_SHARING_NEARBY_PLATFORM_WIFI_DIRECT_SOCKET_H_
 
-#include "base/synchronization/waitable_event.h"
+#include <memory>
+
+#include "base/memory/scoped_refptr.h"
 #include "base/threading/thread.h"
-#include "mojo/public/cpp/platform/platform_handle.h"
-#include "net/base/io_buffer.h"
-#include "net/socket/stream_socket.h"
 #include "third_party/nearby/src/internal/platform/byte_array.h"
 #include "third_party/nearby/src/internal/platform/exception.h"
 #include "third_party/nearby/src/internal/platform/implementation/wifi_direct.h"
 #include "third_party/nearby/src/internal/platform/input_stream.h"
 #include "third_party/nearby/src/internal/platform/output_stream.h"
+
+namespace net {
+class StreamSocket;
+}
+
+namespace base {
+class SequencedTaskRunner;
+class WaitableEvent;
+}  // namespace base
 
 namespace nearby::chrome {
 
@@ -36,9 +44,16 @@ class SocketOutputStream : public OutputStream {
   Exception Close() override;
 };
 
+// This class takes ownership of a socket that must be operated on the provided
+// `task_runner`. Specifically, socket operations (including destruction) on
+// ChromeOS need to occur on an IO thread on the same sequence the socket was
+// created on. There are no guarantees that Nearby Connections will call these
+// operations on the appropriate sequence, so this implementation needs to
+// ensure the required sequence is always used.
 class WifiDirectSocket : public api::WifiDirectSocket {
  public:
-  WifiDirectSocket();
+  WifiDirectSocket(scoped_refptr<base::SequencedTaskRunner> task_runner,
+                   std::unique_ptr<net::StreamSocket> stream_socket);
   ~WifiDirectSocket() override;
 
   // api::WifiDirectSocket
@@ -47,6 +62,12 @@ class WifiDirectSocket : public api::WifiDirectSocket {
   Exception Close() override;
 
  private:
+  // Called by `Close` to ensure the socket is closed on the sequence it was
+  // originally created on.
+  void CloseSocket(base::WaitableEvent* close_waitable_event);
+
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  std::unique_ptr<net::StreamSocket> stream_socket_;
   SocketInputStream input_stream_;
   SocketOutputStream output_stream_;
 };
