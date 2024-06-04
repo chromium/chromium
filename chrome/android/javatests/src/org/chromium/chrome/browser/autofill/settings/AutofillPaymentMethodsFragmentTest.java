@@ -1168,7 +1168,7 @@ public class AutofillPaymentMethodsFragmentTest {
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
         Preference ibanPreference = getFirstPaymentMethodPreference(activity);
 
-        assertThat(ibanPreference.getTitle().toString()).contains("BE71");
+        assertThat(ibanPreference.getTitle().toString()).contains("BE");
         assertThat(ibanPreference.getSummary().toString()).isEqualTo("My IBAN");
     }
 
@@ -1181,7 +1181,7 @@ public class AutofillPaymentMethodsFragmentTest {
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
         Preference ibanPreference = getFirstPaymentMethodPreference(activity);
 
-        assertThat(ibanPreference.getTitle().toString()).contains("RU02");
+        assertThat(ibanPreference.getTitle().toString()).contains("RU");
         assertThat(ibanPreference.getSummary().toString()).contains("");
     }
 

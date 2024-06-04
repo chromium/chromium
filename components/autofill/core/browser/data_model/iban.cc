@@ -24,7 +24,7 @@ namespace {
 // This prefix and suffix length are for local-based IBANs only. Server-based
 // IBANs should generally use the same value but the client will respect
 // whatever it receives from the server.
-static constexpr int kPrefixLength = 4;
+static constexpr int kPrefixLength = 2;
 static constexpr int kSuffixLength = 4;
 
 // This method does the following steps:

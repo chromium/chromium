@@ -230,7 +230,7 @@ class Iban : public AutofillDataModel {
 
   // Construct an IBAN identifier from `prefix_`, `suffix_`, `length_` (and
   // `value_` if it's a local-based IBAN) by the following rules:
-  // 1. Always reveal the first and the last four characters.
+  // 1. Always reveal the first two and the last four characters.
   // 2. Mask the remaining digits if `is_value_masked` is true, otherwise,
   //    display the digits. `is_value_masked` is true only for local IBANs
   //    because revealing a server IBAN needs an additional retrieval step from
@@ -241,9 +241,9 @@ class Iban : public AutofillDataModel {
   // Note: The condition "is_value_masked" being false will not function
   //       properly for IBANs with the "kServerIban" record type.
   // Here are some examples:
-  // BE71 0961 2345 6769 will be shown as: BE71 **** **** 6769.
-  // CH56 0483 5012 3456 7800 9 will be shown as: CH56 **** **** **** *800 9.
-  // DE91 1000 0000 0123 4567 89 will be shown as: DE91 **** **** **** **67 89.
+  // BE71 0961 2345 6769 will be shown as: BE** **** **** 6769.
+  // CH56 0483 5012 3456 7800 9 will be shown as: CH** **** **** **** *800 9.
+  // DE91 1000 0000 0123 4567 89 will be shown as: DE** **** **** **** **67 89.
   std::u16string GetIdentifierStringForAutofillDisplay(
       bool is_value_masked = true) const;
 
