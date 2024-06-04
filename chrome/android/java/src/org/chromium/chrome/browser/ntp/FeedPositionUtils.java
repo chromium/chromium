@@ -26,8 +26,6 @@ public class FeedPositionUtils {
     // |kFeedUserSegmentationKey| in config.h in components/segmentation_platform/.
     public static final String FEED_USER_SEGMENT_KEY = "feed_user_segment";
     public static final String FEED_ACTIVE_TARGETING = "feed_active_targeting";
-    public static final String PUSH_DOWN_FEED_SMALL = "push_down_feed_small";
-    public static final String PUSH_DOWN_FEED_LARGE = "push_down_feed_large";
     public static final String PULL_UP_FEED = "pull_up_feed";
 
     // Constants with FeedPositionSegmentationResult in enums.xml.
@@ -45,20 +43,6 @@ public class FeedPositionUtils {
         int IS_FEED_ACTIVE_USER = 1;
         int IS_NON_FEED_ACTIVE_USER = 2;
         int NUM_ENTRIES = 3;
-    }
-
-    /** Returns whether the pushing down (small) Feed experiment is enabled. */
-    public static boolean isFeedPushDownSmallEnabled() {
-        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        ChromeFeatureList.FEED_POSITION_ANDROID, PUSH_DOWN_FEED_SMALL, false)
-                && getBehaviourResultFromSegmentation();
-    }
-
-    /** Returns whether the pushing down (large) Feed experiment is enabled. */
-    public static boolean isFeedPushDownLargeEnabled() {
-        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        ChromeFeatureList.FEED_POSITION_ANDROID, PUSH_DOWN_FEED_LARGE, false)
-                && getBehaviourResultFromSegmentation();
     }
 
     /** Returns whether the pulling up Feed experiment is enabled. */

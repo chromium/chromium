@@ -2422,23 +2422,15 @@ const FeatureEntry::FeatureVariation kLogoPolishVariations[] = {
      nullptr},
 };
 
-const FeatureEntry::FeatureParam kFeedPositionAndroid_push_down_feed_small[] = {
-    {"push_down_feed_small", "true"}};
-
-const FeatureEntry::FeatureParam kFeedPositionAndroid_push_down_feed_large[] = {
-    {"push_down_feed_large", "true"}};
-
 const FeatureEntry::FeatureParam kFeedPositionAndroid_pull_up_feed[] = {
     {"pull_up_feed", "true"}};
 
 const FeatureEntry::FeatureParam
-    kFeedPositionAndroid_push_down_feed_large_target_feed_active[] = {
-        {"push_down_feed_large", "true"},
+    kFeedPositionAndroid_push_down_feed_target_feed_active[] = {
         {"feed_active_targeting", "active"}};
 
 const FeatureEntry::FeatureParam
-    kFeedPositionAndroid_push_down_feed_large_target_non_feed_active[] = {
-        {"push_down_feed_large", "true"},
+    kFeedPositionAndroid_push_down_feed_target_non_feed_active[] = {
         {"feed_active_targeting", "non-active"}};
 
 const FeatureEntry::FeatureParam
@@ -2452,20 +2444,15 @@ const FeatureEntry::FeatureParam
         {"feed_active_targeting", "non-active"}};
 
 const FeatureEntry::FeatureVariation kFeedPositionAndroidVariations[] = {
-    {"Push down Feed (small)", kFeedPositionAndroid_push_down_feed_small,
-     std::size(kFeedPositionAndroid_push_down_feed_small), nullptr},
-    {"Push down Feed (large)", kFeedPositionAndroid_push_down_feed_large,
-     std::size(kFeedPositionAndroid_push_down_feed_large), nullptr},
     {"Pull up Feed", kFeedPositionAndroid_pull_up_feed,
      std::size(kFeedPositionAndroid_pull_up_feed), nullptr},
-    {"Push down Feed (large) with targeting Feed active users",
-     kFeedPositionAndroid_push_down_feed_large_target_feed_active,
-     std::size(kFeedPositionAndroid_push_down_feed_large_target_feed_active),
+    {"Push down Feed with targeting Feed active users",
+     kFeedPositionAndroid_push_down_feed_target_feed_active,
+     std::size(kFeedPositionAndroid_push_down_feed_target_feed_active),
      nullptr},
-    {"Push down Feed (large) with targeting non-Feed active users",
-     kFeedPositionAndroid_push_down_feed_large_target_non_feed_active,
-     std::size(
-         kFeedPositionAndroid_push_down_feed_large_target_non_feed_active),
+    {"Push down Feed with targeting non-Feed active users",
+     kFeedPositionAndroid_push_down_feed_target_non_feed_active,
+     std::size(kFeedPositionAndroid_push_down_feed_target_non_feed_active),
      nullptr},
     {"Pull up Feed with targeting Feed active users",
      kFeedPositionAndroid_pull_up_feed_target_feed_active,

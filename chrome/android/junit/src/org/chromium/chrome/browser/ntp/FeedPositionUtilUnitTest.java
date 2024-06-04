@@ -73,34 +73,6 @@ public class FeedPositionUtilUnitTest {
 
     @Test
     @SmallTest
-    public void testIsFeedPushDownSmallEnabled() {
-        setFeedPositionFlags(FeedPositionUtils.PUSH_DOWN_FEED_SMALL, "");
-        Assert.assertTrue(FeedPositionUtils.isFeedPushDownSmallEnabled());
-
-        setFeedPositionFlags(FeedPositionUtils.PUSH_DOWN_FEED_SMALL, "active");
-        Assert.assertFalse(FeedPositionUtils.isFeedPushDownSmallEnabled());
-
-        setClassificationResult(
-                new ClassificationResult(PredictionStatus.SUCCEEDED, new String[] {"FeedUser"}));
-        Assert.assertTrue(FeedPositionUtils.isFeedPushDownSmallEnabled());
-    }
-
-    @Test
-    @SmallTest
-    public void testIsFeedPushDownLargeEnabled() {
-        setFeedPositionFlags(FeedPositionUtils.PUSH_DOWN_FEED_LARGE, "");
-        Assert.assertTrue(FeedPositionUtils.isFeedPushDownLargeEnabled());
-
-        setFeedPositionFlags(FeedPositionUtils.PUSH_DOWN_FEED_SMALL, "active");
-        Assert.assertFalse(FeedPositionUtils.isFeedPushDownLargeEnabled());
-
-        setClassificationResult(
-                new ClassificationResult(PredictionStatus.SUCCEEDED, new String[] {"FeedUser"}));
-        Assert.assertTrue(FeedPositionUtils.isFeedPushDownLargeEnabled());
-    }
-
-    @Test
-    @SmallTest
     public void testIsFeedPullUpEnabled() {
         setFeedPositionFlags(FeedPositionUtils.PULL_UP_FEED, "");
         Assert.assertTrue(FeedPositionUtils.isFeedPullUpEnabled());
