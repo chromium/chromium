@@ -73,45 +73,45 @@ SodaInstallerImplChromeOS::ConstructAvailableLanguages() const {
     return available_languages;
   }
   available_languages.insert(
-      {kUsEnglishLocale, {"libsoda-model-en-us-df23d1", LanguageCode::kEnUs}});
+      {kUsEnglishLocale, {"libsoda-model-en-us-df24d1", LanguageCode::kEnUs}});
   available_languages.insert(
-      {"ja-JP", {"libsoda-model-ja-jp-df23d1", LanguageCode::kJaJp}});
+      {"ja-JP", {"libsoda-model-ja-jp-df24d1", LanguageCode::kJaJp}});
   available_languages.insert(
-      {"de-DE", {"libsoda-model-de-de-df23d1", LanguageCode::kDeDe}});
+      {"de-DE", {"libsoda-model-de-de-df24d1", LanguageCode::kDeDe}});
   available_languages.insert(
-      {"fr-FR", {"libsoda-model-fr-fr-df23d1", LanguageCode::kFrFr}});
+      {"fr-FR", {"libsoda-model-fr-fr-df24d1", LanguageCode::kFrFr}});
   available_languages.insert(
-      {"it-IT", {"libsoda-model-it-it-df23d1", LanguageCode::kItIt}});
+      {"it-IT", {"libsoda-model-it-it-df24d1", LanguageCode::kItIt}});
   available_languages.insert(
-      {"en-CA", {"libsoda-model-en-ca-df23d1", LanguageCode::kEnCa}});
+      {"en-CA", {"libsoda-model-en-ca-df24d1", LanguageCode::kEnCa}});
   available_languages.insert(
-      {"en-AU", {"libsoda-model-en-au-df23d1", LanguageCode::kEnAu}});
+      {"en-AU", {"libsoda-model-en-au-df24d1", LanguageCode::kEnAu}});
   available_languages.insert(
-      {"en-GB", {"libsoda-model-en-gb-df23d1", LanguageCode::kEnGb}});
+      {"en-GB", {"libsoda-model-en-gb-df24d1", LanguageCode::kEnGb}});
   available_languages.insert(
-      {"en-IE", {"libsoda-model-en-ie-df23d1", LanguageCode::kEnIe}});
+      {"en-IE", {"libsoda-model-en-ie-df24d1", LanguageCode::kEnIe}});
   available_languages.insert(
-      {"en-SG", {"libsoda-model-en-sg-df23d1", LanguageCode::kEnSg}});
+      {"en-SG", {"libsoda-model-en-sg-df24d1", LanguageCode::kEnSg}});
   available_languages.insert(
-      {"fr-BE", {"libsoda-model-fr-be-df23d1", LanguageCode::kFrBe}});
+      {"fr-BE", {"libsoda-model-fr-be-df24d1", LanguageCode::kFrBe}});
   available_languages.insert(
-      {"fr-FR", {"libsoda-model-fr-fr-df23d1", LanguageCode::kFrFr}});
+      {"fr-FR", {"libsoda-model-fr-fr-df24d1", LanguageCode::kFrFr}});
   available_languages.insert(
-      {"fr-CH", {"libsoda-model-fr-ch-df23d1", LanguageCode::kFrCh}});
+      {"fr-CH", {"libsoda-model-fr-ch-df24d1", LanguageCode::kFrCh}});
   available_languages.insert(
-      {"en-IN", {"libsoda-model-en-in-df23d1", LanguageCode::kEnIn}});
+      {"en-IN", {"libsoda-model-en-in-df24d1", LanguageCode::kEnIn}});
   available_languages.insert(
-      {"it-CH", {"libsoda-model-it-ch-df23d1", LanguageCode::kItCh}});
+      {"it-CH", {"libsoda-model-it-ch-df24d1", LanguageCode::kItCh}});
   available_languages.insert(
-      {"de-AT", {"libsoda-model-de-at-df23d1", LanguageCode::kDeAt}});
+      {"de-AT", {"libsoda-model-de-at-df24d1", LanguageCode::kDeAt}});
   available_languages.insert(
-      {"de-BE", {"libsoda-model-de-be-df23d1", LanguageCode::kDeBe}});
+      {"de-BE", {"libsoda-model-de-be-df24d1", LanguageCode::kDeBe}});
   available_languages.insert(
-      {"de-CH", {"libsoda-model-de-ch-df23d1", LanguageCode::kDeCh}});
+      {"de-CH", {"libsoda-model-de-ch-df24d1", LanguageCode::kDeCh}});
   available_languages.insert(
-      {"es-US", {"libsoda-model-es-us-df23d1", LanguageCode::kEsUs}});
+      {"es-US", {"libsoda-model-es-us-df24d1", LanguageCode::kEsUs}});
   available_languages.insert(
-      {"es-ES", {"libsoda-model-es-us-df23d1", LanguageCode::kEsEs}});
+      {"es-ES", {"libsoda-model-es-us-df24d1", LanguageCode::kEsEs}});
   available_languages.insert({"da-DK", {"", LanguageCode::kDaDk}});
   available_languages.insert({"fr-CA", {"", LanguageCode::kFrCa}});
   available_languages.insert({"hi-IN", {"", LanguageCode::kHiIn}});
