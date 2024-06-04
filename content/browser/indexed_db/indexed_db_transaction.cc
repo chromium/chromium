@@ -159,6 +159,7 @@ IndexedDBTransaction::IndexedDBTransaction(
   diagnostics_.tasks_scheduled = 0;
   diagnostics_.tasks_completed = 0;
   diagnostics_.creation_time = base::Time::Now();
+  NotifyOfIdbInternalsRelevantChange();
 }
 
 IndexedDBTransaction::~IndexedDBTransaction() {
@@ -201,6 +202,7 @@ void IndexedDBTransaction::ScheduleTask(blink::mojom::IDBTaskType type,
   if (type == blink::mojom::IDBTaskType::Normal) {
     task_queue_.push(std::move(task));
     ++diagnostics_.tasks_scheduled;
+    NotifyOfIdbInternalsRelevantChange();
   } else {
     preemptive_task_queue_.push(std::move(task));
   }
@@ -226,7 +228,7 @@ leveldb::Status IndexedDBTransaction::Abort(
   aborted_ = true;
   ResetTimeoutTimer();
 
-  state_ = FINISHED;
+  SetState(FINISHED);
 
   if (backing_store_transaction_begun_) {
     backing_store_transaction_->Rollback();
@@ -323,7 +325,7 @@ void IndexedDBTransaction::Start() {
     return;
   }
   DCHECK_EQ(CREATED, state_);
-  state_ = STARTED;
+  SetState(STARTED);
   DCHECK(!locks_receiver_.locks.empty());
   diagnostics_.start_time = base::Time::Now();
 
@@ -596,7 +598,7 @@ leveldb::Status IndexedDBTransaction::DoPendingCommit() {
         IndexedDBDatabaseError(blink::mojom::IDBException::kUnknownError));
   }
 
-  state_ = COMMITTING;
+  SetState(COMMITTING);
 
   leveldb::Status s;
   if (!used_) {
@@ -625,7 +627,7 @@ leveldb::Status IndexedDBTransaction::CommitPhaseTwo() {
 
   DCHECK_EQ(state_, COMMITTING);
 
-  state_ = FINISHED;
+  SetState(FINISHED);
 
   leveldb::Status s;
   bool committed;
@@ -761,6 +763,7 @@ IndexedDBTransaction::RunTasks() {
     if (!run_preemptive_queue) {
       DCHECK(diagnostics_.tasks_completed < diagnostics_.tasks_scheduled);
       ++diagnostics_.tasks_completed;
+      NotifyOfIdbInternalsRelevantChange();
     }
     if (!result.ok()) {
       processing_event_queue_ = false;
@@ -833,8 +836,10 @@ IndexedDBTransaction::GetIdbInternalsMetadata() const {
   info->client_id = connection()->client_id();
   info->age =
       (base::Time::Now() - diagnostics().creation_time).InMillisecondsF();
-  info->runtime =
-      (base::Time::Now() - diagnostics().start_time).InMillisecondsF();
+ if (diagnostics().start_time.InMillisecondsSinceUnixEpoch() > 0) {
+    info->runtime =
+        (base::Time::Now() - diagnostics().start_time).InMillisecondsF();
+  }
   info->tasks_scheduled = diagnostics().tasks_scheduled;
   info->tasks_completed = diagnostics().tasks_completed;
 
@@ -846,6 +851,13 @@ IndexedDBTransaction::GetIdbInternalsMetadata() const {
   }
 
   return info;
+}
+
+void IndexedDBTransaction::NotifyOfIdbInternalsRelevantChange() {
+  // This metadata is included in the databases metadata, so call up the chain.
+  if (database_) {
+    database_->NotifyOfIdbInternalsRelevantChange();
+  }
 }
 
 void IndexedDBTransaction::TimeoutFired() {
@@ -867,6 +879,11 @@ void IndexedDBTransaction::TimeoutFired() {
 void IndexedDBTransaction::ResetTimeoutTimer() {
   timeout_timer_.Stop();
   timeout_strikes_ = 0;
+}
+
+void IndexedDBTransaction::SetState(State state) {
+  state_ = state;
+  NotifyOfIdbInternalsRelevantChange();
 }
 
 void IndexedDBTransaction::CloseOpenCursors() {

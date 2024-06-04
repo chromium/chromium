@@ -1469,6 +1469,11 @@ IndexedDBDatabase::GetIdbInternalsMetadata() const {
   return info;
 }
 
+void IndexedDBDatabase::NotifyOfIdbInternalsRelevantChange() {
+  // This metadata is included in the context metadata, so call up the chain.
+  bucket_context_->NotifyOfIdbInternalsRelevantChange();
+}
+
 // kIDBMaxMessageSize is defined based on the original
 // IPC::Channel::kMaximumMessageSize value.  We use kIDBMaxMessageSize to limit
 // the size of arguments we pass into our Mojo calls.  We want to ensure this

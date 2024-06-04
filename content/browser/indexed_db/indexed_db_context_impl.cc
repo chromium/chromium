@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <compare>
 #include <functional>
+#include <iterator>
 #include <memory>
 #include <ostream>
 #include <string>
@@ -111,6 +112,26 @@
       }                                                           \
       callback.Run();                                             \
     }                                                             \
+  }
+
+// Same as CALL_BUCKET_METHOD_THEN but `method` is parameterless.
+#define CALL_BUCKET_METHOD_THEN_NO_PARAMS(bucket_id, method, callback) \
+  {                                                                    \
+    if (ShardingEnabled()) {                                           \
+      auto iter = bucket_contexts_sharded_.find(bucket_id);            \
+      if (iter != bucket_contexts_sharded_.end()) {                    \
+        iter->second.AsyncCall(&IndexedDBBucketContext::method)        \
+            .Then(callback);                                           \
+      } else {                                                         \
+        callback.Run();                                                \
+      }                                                                \
+    } else {                                                           \
+      auto iter = bucket_contexts_.find(bucket_id);                    \
+      if (iter != bucket_contexts_.end()) {                            \
+        iter->second->method();                                        \
+      }                                                                \
+      callback.Run();                                                  \
+    }                                                                  \
   }
 
 namespace content {
@@ -401,6 +422,25 @@ void IndexedDBContextImpl::ForceClose(storage::BucketId bucket_id,
   const bool doom =
       reason == storage::mojom::ForceCloseReason::FORCE_CLOSE_DELETE_ORIGIN;
   CALL_BUCKET_METHOD_THEN(bucket_id, ForceClose, std::move(closure), doom);
+}
+
+void IndexedDBContextImpl::StartMetadataRecording(
+    storage::BucketId bucket_id,
+    StartMetadataRecordingCallback callback) {
+  CALL_BUCKET_METHOD_THEN_NO_PARAMS(bucket_id, StartMetadataRecording,
+                                    std::move(callback));
+}
+void IndexedDBContextImpl::StopMetadataRecording(
+    storage::BucketId bucket_id,
+    StopMetadataRecordingCallback callback) {
+  // If the bucket doesn't exist, run the callback to avoid a dangling callback.
+  if (bucket_contexts_sharded_.find(bucket_id) ==
+          bucket_contexts_sharded_.end() &&
+      bucket_contexts_.find(bucket_id) == bucket_contexts_.end()) {
+    std::move(callback).Run({});
+  }
+  CALL_BUCKET_METHOD(bucket_id, StopMetadataRecording,
+                     base::BindPostTask(IDBTaskRunner(), std::move(callback)));
 }
 
 void IndexedDBContextImpl::DownloadBucketData(

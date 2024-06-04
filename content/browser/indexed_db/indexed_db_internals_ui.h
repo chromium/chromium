@@ -58,6 +58,10 @@ class IndexedDBInternalsUI : public WebUIController,
                           DownloadBucketDataCallback callback) override;
   void ForceClose(storage::BucketId bucket_id,
                   ForceCloseCallback callback) override;
+  void StartMetadataRecording(storage::BucketId bucket_id,
+                              StartMetadataRecordingCallback callback) override;
+  void StopMetadataRecording(storage::BucketId bucket_id,
+                             StopMetadataRecordingCallback callback) override;
 
  private:
   void OnDownloadDataReady(DownloadBucketDataCallback callback,

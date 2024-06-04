@@ -282,6 +282,9 @@ class CONTENT_EXPORT IndexedDBDatabase {
 
   // Returns metadata relevant to idb-internals.
   storage::mojom::IdbDatabaseMetadataPtr GetIdbInternalsMetadata() const;
+  // Called when the data used to populate the struct in
+  // `GetIdbInternalsMetadata` is changed in a significant way.
+  void NotifyOfIdbInternalsRelevantChange();
 
   base::WeakPtr<IndexedDBDatabase> AsWeakPtr() {
     return weak_factory_.GetWeakPtr();

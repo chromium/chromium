@@ -1,93 +1,98 @@
 <!doctype html>
 <html dir="ltr" lang="en">
+
 <head>
-    <meta charset="utf-8">
-    <title>IndexedDB</title>
-    <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
-    <link rel="stylesheet" href="indexeddb_internals.css">
+  <meta charset="utf-8">
+  <title>IndexedDB</title>
+  <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
+  <link rel="stylesheet" href="indexeddb_internals.css">
 </head>
+
 <body>
-    <!-- templates -->
-    <div style="display:none">
-        <div id="indexeddb-list-template"
-             jsvars="stringifymojo:$this.stringifyMojo">
-          <div id="indexeddb-partition" jsselect="$this.partitions">
-            <div class="indexeddb-summary">
-                <span jsdisplay="partitionPath.path">
-                    <span>Instances in: </span>
-                    <span jscontent="partitionPath.path"></span>
-                </span>
-                <span jsdisplay="!partitionPath.path">
-                    <span>Instances: Incognito </span>
-                </span>
-                <span jscontent=
-                  "`(Bucket count = ${stringifymojo.partitionBucketCount($this)})`"
-                  ></span>
+  <!-- templates -->
+  <div style="display:none">
+    <div id="indexeddb-list-template" jsvars="stringifymojo:$this.stringifyMojo">
+      <div id="indexeddb-partition" jsselect="$this.partitions">
+        <div class="indexeddb-summary">
+          <span jsdisplay="partitionPath.path">
+            <span>Instances in: </span>
+            <span jscontent="partitionPath.path"></span>
+          </span>
+          <span jsdisplay="!partitionPath.path">
+            <span>Instances: Incognito </span>
+          </span>
+          <span jscontent="`(Bucket count = ${stringifymojo.partitionBucketCount($this)})`"></span>
+        </div>
+        <div class="indexeddb-origin" jsselect="originList">
+          <span jsvalues="$url:stringifymojo.origin(origin)">
+            Origin:
+            <a class="indexeddb-url" jscontent="$url" jsvalues="href:$url" target="_blank"></a>
+          </span>
+          <div class="metadata-list-item" jsselect="storageKeys">
+            <span>Storage partition - top level site:
+              <span jsvalues="$url:stringifymojo.schemefulSite(topLevelSite)">
+                <a class="indexeddb-url" jscontent="$url" jsvalues="href:$url" target="_blank"></a>
+              </span>
+            </span>
+            <div>
+              <span>Storage key:</span>
+              <span jscontent="serializedStorageKey"></span>
             </div>
-            <div class="indexeddb-origin" jsselect="originList">
-                <span jsvalues="$url:stringifymojo.origin(origin)">
-                    Origin:
-                    <a class="indexeddb-url" jscontent="$url"
-                        jsvalues="href:$url" target="_blank"></a>
+            <indexeddb-bucket class="metadata-list-item" jsselect="buckets" jsvalues=".idbBucketId:bucketLocator.id;">
+              <div>
+                <span>Bucket:</span>
+                <span jscontent="`'${name}'`"></span>
+              </div>
+              <div class="indexeddb-size">
+                <span>Size:</span>
+                <span jscontent="size"></span>
+              </div>
+              <div class="indexeddb-last-modified">
+                <span>Last modified:</span>
+                <span jscontent="stringifymojo.time(lastModified)"></span>
+              </div>
+              <div>
+                <span>Open connections:</span>
+                <span class="connection-count" jscontent="connectionCount">
+              </div>
+              <div class="indexeddb-paths">
+                <span>Paths:</span>
+                <span class="indexeddb-path" jsselect="$this.paths">
+                  <span jscontent="path"></span>
                 </span>
-                <div class="metadata-list-item" jsselect="storageKeys">
-                  <span>Storage partition - top level site:
-                    <span jsvalues="$url:stringifymojo.schemefulSite(topLevelSite)">
-                      <a class="indexeddb-url" jscontent="$url"
-                              jsvalues="href:$url" target="_blank"></a>
-                    </span>
-                  </span>
-                  <div>
-                      <span>Storage key:</span>
-                      <span jscontent="serializedStorageKey"></span>
-                  </div>
-                  <indexeddb-bucket class="metadata-list-item"
-                                    jsselect="buckets"
-                                    jsvalues=".idbBucketId:bucketLocator.id;">
-                      <div>
-                          <span>Bucket:</span>
-                          <span jscontent="`'${name}'`"></span>
-                      </div>
-                      <div class="indexeddb-size">
-                          <span>Size:</span>
-                          <span jscontent="size"></span>
-                      </div>
-                      <div class="indexeddb-last-modified">
-                          <span>Last modified:</span>
-                          <span jscontent="stringifymojo.time(lastModified)"></span>
-                      </div>
-                      <div>
-                          <span>Open connections:</span>
-                          <span class="connection-count"
-                                jscontent="connectionCount">
-                      </div>
-                      <div class="indexeddb-paths">
-                          <span>Paths:</span>
-                          <span class="indexeddb-path" jsselect="$this.paths">
-                              <span jscontent="path"></span>
-                          </span>
-                      </div>
-                      <div class="controls">
-                          <span class="control force-close">Force close</span>
-                          <span class="control download">Download</span>
-                          <a class="control" href="https://crbug.com/829141"
-                            target="_blank">?</a>
-                          <span class="download-status" style="display: none">Loading...</span>
-                      </div>
-                      <indexeddb-database class="metadata-list-item"
-                                          jsselect="$this.databases"
-                                          jsvalues=".data:$this;">
-                      </indexeddb-database>
-                  </div>
-                </div>
+              </div>
+              <div class="controls">
+                <span class="control force-close">Force close</span>
+                <span class="control download">Download</span>
+                <span class="control start-record">Start Recording</span>
+                <span class="control stop-record" hidden>Stop Recording</span>
+                <a class="control" href="https://crbug.com/829141" target="_blank">?</a>
+                <span class="download-status" style="display: none">Loading...</span>
+              </div>
+              <div class="series-scrubber" hidden>
+                <button class="prev">←</button>
+                <input type="range" min="0" max="100" value="50" class="slider">
+                <button class="next">→</button>
+                <span>Snapshot:
+                  <span class="current-snapshot"></span> /
+                  <span class="total-snapshots"></span>
+                  (<span class="snapshot-delta"></span>)</span>
+              </div>
+              <div class="database-view">
+                <indexeddb-database class="metadata-list-item" jsselect="$this.databases" jsvalues=".data:$this;">
+                </indexeddb-database>
               </div>
           </div>
         </div>
+      </div>
     </div>
-    <h1>IndexedDB</h1>
-    <div class="content">
-        <div id="indexeddb-list"></div>
-    </div>
-    <script type="module" src="indexeddb_internals.js"></script>
+  </div>
+  </div>
+  <h1>IndexedDB</h1>
+  <div class="content">
+    <div id="indexeddb-list"></div>
+  </div>
+  <script type="module" src="indexeddb_internals.js"></script>
 </body>
+
 </html>

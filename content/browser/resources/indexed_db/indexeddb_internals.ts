@@ -13,8 +13,10 @@ import type {Time} from 'chrome://resources/mojo/mojo/public/mojom/base/time.moj
 import type {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
 
 import type {BucketId} from './bucket_id.mojom-webui.js';
+import type {IndexedDbDatabase} from './database.js';
 import type {IdbInternalsHandlerInterface, IdbPartitionMetadata} from './indexed_db_internals.mojom-webui.js';
 import {IdbInternalsHandler} from './indexed_db_internals.mojom-webui.js';
+import type {IdbBucketMetadata} from './indexed_db_internals_types.mojom-webui.js';
 import type {SchemefulSite} from './schemeful_site.mojom-webui.js';
 
 // TODO: This comes from components/flags_ui/resources/flags.ts. It should be
@@ -97,6 +99,10 @@ class IdbInternalsRemote {
     return promisifyMojoResult(
         this.handler.getAllBucketsAcrossAllStorageKeys(), 'partitions');
   }
+  stopMetadataRecording(bucketId: BucketId): Promise<IdbBucketMetadata[]> {
+    return promisifyMojoResult(
+        this.handler.stopMetadataRecording(bucketId), 'metadata');
+  }
 }
 
 const internalsRemote = new IdbInternalsRemote();
@@ -113,6 +119,8 @@ class BucketElement extends HTMLElement {
 
   progressNode: HTMLElement;
   connectionCountNode: HTMLElement;
+  seriesCurrentSnapshotIndex: number|null;
+  seriesData: IdbBucketMetadata[]|null;
 
   constructor() {
     super();
@@ -136,12 +144,70 @@ class BucketElement extends HTMLElement {
           .catch(errorMsg => console.error(errorMsg));
     });
 
+    this.getNode(`.control.start-record`).addEventListener('click', () => {
+      this.getNode(`.control.stop-record`)!.hidden = false;
+      this.getNode(`.control.start-record`)!.hidden = true;
+
+      IdbInternalsHandler.getRemote()
+          .startMetadataRecording(this.idbBucketId)
+          .then(this.onLoadComplete.bind(this))
+          .catch(errorMsg => console.error(errorMsg));
+    });
+    this.getNode(`.control.stop-record`).addEventListener('click', () => {
+      // Show loading
+      this.progressNode.style.display = 'inline';
+      this.getNode(`.control.start-record`)!.hidden = true;
+      this.getNode(`.control.stop-record`)!.hidden = false;
+
+      new IdbInternalsRemote()
+          .stopMetadataRecording(this.idbBucketId)
+          .then(this.onMetadataRecordingReady.bind(this))
+          .catch(errorMsg => console.error(errorMsg));
+    });
+
+    this.getNode('.series-scrubber input.slider')
+        .addEventListener('input', (event: Event) => {
+          const input = event.target as HTMLInputElement;
+          this.setRecordingSnapshot(parseInt(input.value));
+        });
+    this.getNode('.series-scrubber .prev').addEventListener('click', () => {
+      this.setRecordingSnapshot((this.seriesCurrentSnapshotIndex || 0) - 1);
+    });
+    this.getNode('.series-scrubber .next').addEventListener('click', () => {
+      this.setRecordingSnapshot((this.seriesCurrentSnapshotIndex || 0) + 1);
+    });
+
     this.progressNode = this.getNode('.download-status');
     this.connectionCountNode = this.getNode('.connection-count');
   }
 
-  private getNode(selector: string) {
-    const controlNode = this.querySelector<HTMLElement>(`${selector}`);
+  private setRecordingSnapshot(idx: number) {
+    if (!this.seriesData || (idx < 0 || idx > this.seriesData.length - 1)) {
+      return;
+    }
+    const slider =
+        this.getNode<HTMLInputElement>('.series-scrubber input.slider');
+    this.seriesCurrentSnapshotIndex = idx;
+    const snapshot = this.seriesData[this.seriesCurrentSnapshotIndex];
+    slider.value = idx.toString();
+    slider.max = (this.seriesData.length - 1).toString();
+    this.getNode('.series-scrubber .current-snapshot')!.textContent =
+        slider.value;
+    this.getNode('.series-scrubber .total-snapshots')!.textContent = slider.max;
+    this.getNode('.series-scrubber .snapshot-delta')!.textContent =
+        `+${snapshot?.deltaRecordingStartMs}ms`;
+
+    this.getNode('.database-view').textContent = '';
+    for (const db of snapshot?.databases || []) {
+      const dbView = document.createElement('indexeddb-database');
+      const dbElement = this.getNode('.database-view').appendChild(dbView) as
+          IndexedDbDatabase;
+      dbElement.data = db;
+    }
+  }
+
+  private getNode<T extends HTMLElement>(selector: string) {
+    const controlNode = this.querySelector<T>(`${selector}`);
     assert(controlNode);
     return controlNode;
   }
@@ -149,6 +215,13 @@ class BucketElement extends HTMLElement {
   private onLoadComplete() {
     this.progressNode.style.display = 'none';
     this.connectionCountNode.innerText = '0';
+  }
+
+  private onMetadataRecordingReady(metadata: IdbBucketMetadata[]) {
+    this.seriesData = metadata;
+    this.setRecordingSnapshot(0);
+    this.getNode('.series-scrubber').hidden = false;
+    this.onLoadComplete();
   }
 }
 

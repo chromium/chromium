@@ -7,6 +7,7 @@
 #include <inttypes.h>
 #include <stddef.h>
 
+#include <algorithm>
 #include <atomic>
 #include <compare>
 #include <list>
@@ -43,6 +44,7 @@
 #include "base/task/task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/memory_allocator_dump.h"
@@ -619,6 +621,25 @@ void IndexedDBBucketContext::ForceClose(bool doom) {
   RunTasks();
 }
 
+void IndexedDBBucketContext::StartMetadataRecording() {
+  CHECK(!metadata_recording_enabled_);
+  metadata_recording_start_time_ = base::Time::Now();
+  metadata_recording_enabled_ = true;
+  RecordInternalsSnapshot();  // Capture the initial snapshot.
+}
+
+void IndexedDBBucketContext::StopMetadataRecording(
+    base::OnceCallback<void(std::vector<storage::mojom::IdbBucketMetadataPtr>)>
+        callback) {
+  metadata_recording_enabled_ = false;
+
+  std::vector<storage::mojom::IdbBucketMetadataPtr> result;
+  std::move(metadata_recording_buffer_.begin(),
+            metadata_recording_buffer_.end(), std::back_inserter(result));
+  metadata_recording_buffer_.clear();
+  std::move(callback).Run(std::move(result));
+}
+
 int64_t IndexedDBBucketContext::GetInMemorySize() {
   return backing_store_ ? backing_store_->GetInMemorySize() : 0;
 }
@@ -1016,6 +1037,12 @@ storage::mojom::IdbBucketMetadataPtr IndexedDBBucketContext::FillInMetadata(
   }
   info->databases = std::move(database_list);
   return info;
+}
+
+void IndexedDBBucketContext::NotifyOfIdbInternalsRelevantChange() {
+  if (metadata_recording_enabled_) {
+    RecordInternalsSnapshot();
+  }
 }
 
 IndexedDBBucketContext* IndexedDBBucketContext::GetReferenceForTesting() {
@@ -1686,6 +1713,16 @@ void IndexedDBBucketContext::OnReceiverDisconnected() {
       delegate().on_ready_for_destruction) {
     std::move(delegate().on_ready_for_destruction).Run();
   }
+}
+
+void IndexedDBBucketContext::RecordInternalsSnapshot() {
+  storage::mojom::IdbBucketMetadataPtr metadata =
+      storage::mojom::IdbBucketMetadata::New();
+  metadata->bucket_locator = bucket_locator();
+  metadata = FillInMetadata(std::move(metadata));
+  metadata->delta_recording_start_ms =
+      (base::Time::Now() - metadata_recording_start_time_).InMilliseconds();
+  metadata_recording_buffer_.push_back(std::move(metadata));
 }
 
 IndexedDBBucketContext::ReceiverContext::ReceiverContext(

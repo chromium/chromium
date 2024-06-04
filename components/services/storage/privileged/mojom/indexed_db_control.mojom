@@ -74,6 +74,16 @@ interface IndexedDBControl {
   // all buckets across all origins.
   GetAllBucketsDetails() => (bool incognito, array<IdbOriginMetadata> details);
 
+  // Starts a metadata recording session for a given bucket ID.
+  // Records metadata over time for all databases on the specified bucket until
+  // StopMetadataRecording is called.
+  StartMetadataRecording(storage.mojom.BucketId bucket_id) => ();
+
+  // Stops metadata recording session. Returns a list of metadata structs for
+  // each snapshot taken during the recording session.
+  StopMetadataRecording(storage.mojom.BucketId bucket_id) => (
+    array<IdbBucketMetadata> metadata);
+
   // Disables the exit-time deletion of session-only data, so that internal
   // restarts can preserve that data.
   SetForceKeepSessionState();

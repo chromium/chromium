@@ -93,6 +93,11 @@ class CONTENT_EXPORT IndexedDBContextImpl
   void ForceClose(storage::BucketId bucket_id,
                   storage::mojom::ForceCloseReason reason,
                   base::OnceClosure callback) override;
+  void StartMetadataRecording(storage::BucketId bucket_id,
+                              StartMetadataRecordingCallback callback) override;
+  void StopMetadataRecording(storage::BucketId bucket_id,
+                             StopMetadataRecordingCallback callback) override;
+
   void DownloadBucketData(storage::BucketId bucket_id,
                           DownloadBucketDataCallback callback) override;
   void GetAllBucketsDetails(GetAllBucketsDetailsCallback callback) override;
@@ -367,6 +372,7 @@ class CONTENT_EXPORT IndexedDBContextImpl
 
   bool force_single_thread_ = false;
 
+  std::vector<storage::mojom::IdbBucketMetadataPtr> metadata_record_buffer_;
   // When `Shutdown()` was called, or null if it's not been called. Used for
   // UMA.
   base::TimeTicks shutdown_start_time_;

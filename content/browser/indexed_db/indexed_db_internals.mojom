@@ -30,4 +30,13 @@ interface IdbInternalsHandler {
   // Closes the IDB for the given bucket.
   ForceClose(BucketId bucketId)
     => (string? error);
+
+  // Starts a metadata recording session for a given bucket ID.
+  // Records metadata over time for all databases on the specified bucket.
+  StartMetadataRecording(BucketId bucket_id) => (string? error);
+
+  // Stops metadata recording session. Returns an list of metadata structs for
+  // each snapshot taken during the recording session.
+  StopMetadataRecording(BucketId bucket_id) => (
+    string? error, array<IdbBucketMetadata> metadata);
 };

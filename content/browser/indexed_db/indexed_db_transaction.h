@@ -127,6 +127,9 @@ class CONTENT_EXPORT IndexedDBTransaction
 
   // Returns metadata relevant to idb-internals.
   storage::mojom::IdbTransactionMetadataPtr GetIdbInternalsMetadata() const;
+  // Called when the data used to populate the struct in
+  // `GetIdbInternalsMetadata` is changed in a significant way.
+  void NotifyOfIdbInternalsRelevantChange();
 
   IndexedDBBackingStore::Transaction* BackingStoreTransaction() {
     return backing_store_transaction_.get();
@@ -223,6 +226,7 @@ class CONTENT_EXPORT IndexedDBTransaction
   leveldb::Status CommitPhaseTwo();
   void TimeoutFired();
   void ResetTimeoutTimer();
+  void SetState(State state);
 
   const int64_t id_;
   const std::set<int64_t> object_store_ids_;
