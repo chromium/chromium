@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
@@ -27,6 +28,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/browser/api_test_utils.h"
+#include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/test_extension_registry_observer.h"
@@ -795,7 +797,7 @@ class PermissionsAPISiteAccessRequestsUnitTest : public PermissionsAPIUnitTest {
 
 // Tests extension can only add a site access request to a tab whose current
 // site has site access withheld.
-TEST_F(PermissionsAPISiteAccessRequestsUnitTest, AddSiteAccessRequest) {
+TEST_F(PermissionsAPISiteAccessRequestsUnitTest, AddSiteAccessRequest_TabId) {
   // Create an extension with required host permissions, and withhold those
   // permissions.
   scoped_refptr<const Extension> extension =
@@ -819,7 +821,7 @@ TEST_F(PermissionsAPISiteAccessRequestsUnitTest, AddSiteAccessRequest) {
                               base::NumberToString(tab_id).c_str());
   };
 
-  // Add site access request for non-requested.com.
+  // Add site access request for tab with non-requested.com.
   {
     // Function should fail since extension cannot be granted access.
     auto function =
@@ -842,10 +844,8 @@ TEST_F(PermissionsAPISiteAccessRequestsUnitTest, AddSiteAccessRequest) {
 
   // Navigate to url requested by the extension.
   NavigateTo("http://www.requested.com");
-  tab_id = ExtensionTabUtil::GetTabId(
-      browser()->tab_strip_model()->GetActiveWebContents());
 
-  // Add site access request for requested.com.
+  // Add site access request for tab with requested.com.
   {
     // Function should succeed since extension can be granted access.
     auto function =
@@ -853,6 +853,80 @@ TEST_F(PermissionsAPISiteAccessRequestsUnitTest, AddSiteAccessRequest) {
     function->set_extension(extension.get());
     EXPECT_TRUE(api_test_utils::RunFunction(
         function.get(), function_params(tab_id), profile(),
+        api_test_utils::FunctionMode::kNone));
+
+    // Verify site access request was added.
+    EXPECT_TRUE(permissions_manager->HasActiveSiteAccessRequest(
+        tab_id, extension->id()));
+  }
+}
+
+// Tests extension can only add a site access request to a document whose
+// current site has site access withheld.
+TEST_F(PermissionsAPISiteAccessRequestsUnitTest,
+       AddSiteAccessRequest_DocumentId) {
+  // Create an extension with required host permissions, and withhold those
+  // permissions.
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("Extension")
+          .SetManifestVersion(3)
+          .SetManifestKey("host_permissions",
+                          base::Value::List().Append("*://*.requested.com/*"))
+          .Build();
+  AddExtensionAndGrantPermissions(*extension);
+  ScriptingPermissionsModifier(profile(), extension)
+      .SetWithholdHostPermissions(true);
+
+  // Open tab on a url not requested by the extension.
+  NavigateTo("http://www.non-requested.com");
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  int tab_id = ExtensionTabUtil::GetTabId(web_contents);
+  std::string document_id =
+      ExtensionApiFrameIdMap::GetDocumentId(web_contents->GetPrimaryMainFrame())
+          .ToString();
+
+  auto* permissions_manager = PermissionsManager::Get(profile());
+  auto function_params = [](std::string document_id) {
+    return base::StringPrintf(R"([{"documentId": "%s"}])", document_id.c_str());
+  };
+
+  // Add site access request for document with non-requested.com.
+  {
+    // Function should fail since extension cannot be granted access.
+    auto function =
+        base::MakeRefCounted<PermissionsAddSiteAccessRequestFunction>();
+    function->set_extension(extension.get());
+    std::string error = api_test_utils::RunFunctionAndReturnError(
+        function.get(), function_params(document_id), profile());
+    EXPECT_EQ(
+        "Extension cannot add a site access request for a site it cannot be "
+        "granted access to. Extension must have previously requested host "
+        "permissions for the current site in the tab or document provided via "
+        "'host_permissions', 'optional_host_permissions', or 'matches' for "
+        "static content scripts.",
+        error);
+
+    // Verify site access request was not added.
+    EXPECT_FALSE(permissions_manager->HasActiveSiteAccessRequest(
+        tab_id, extension->id()));
+  }
+
+  // Navigate to url requested by the extension.
+  NavigateTo("http://www.requested.com");
+  web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  document_id =
+      ExtensionApiFrameIdMap::GetDocumentId(web_contents->GetPrimaryMainFrame())
+          .ToString();
+
+  // Add site access request for document with requested.com.
+  {
+    // Function should succeed since extension can be granted access.
+    auto function =
+        base::MakeRefCounted<PermissionsAddSiteAccessRequestFunction>();
+    function->set_extension(extension.get());
+    EXPECT_TRUE(api_test_utils::RunFunction(
+        function.get(), function_params(document_id), profile(),
         api_test_utils::FunctionMode::kNone));
 
     // Verify site access request was added.

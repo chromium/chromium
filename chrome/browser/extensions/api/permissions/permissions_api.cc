@@ -19,6 +19,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/permissions.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/permissions_manager.h"
@@ -49,6 +50,7 @@ const char kUserGestureRequiredError[] =
 constexpr char kMustSpecifyDocumentIdOrTabIdError[] =
     "Must specify either 'documentId' or 'tabId'.";
 constexpr char kTabNotFoundError[] = "No tab with ID '*'.";
+constexpr char kInvalidDocumentIdError[] = "No document with ID '*'.";
 constexpr char kExtensionCantRequestSiteAccessError[] =
     "Extension cannot add a site access request for a site it cannot be "
     "granted access to. Extension must have previously requested host "
@@ -456,38 +458,72 @@ PermissionsAddSiteAccessRequestFunction::Run() {
       api::permissions::AddSiteAccessRequest::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  const std::optional<std::string>& document_id = params->request.document_id;
-  std::optional<int> tab_id = params->request.tab_id;
+  const std::optional<std::string>& document_id_param =
+      params->request.document_id;
+  std::optional<int> tab_id_param = params->request.tab_id;
   // TODO(crbug.com/330588494): Add `pattern` parameter.
 
-  if ((!document_id && !tab_id) || (document_id && tab_id)) {
+  if ((!document_id_param && !tab_id_param) ||
+      (document_id_param && tab_id_param)) {
     return RespondNow(Error(kMustSpecifyDocumentIdOrTabIdError));
   }
 
-  if (document_id) {
-    // TODO(crbug.com/330588494): Handle document id.
-    return RespondNow(Error("Not implemented, yet. See crbug.com/330588494"));
-  }
-
-  CHECK(tab_id);
-
-  // Request is invalid if tab id provided doesn't exist, or extension cannot
-  // access the tab's web contents.
+  // Values to be computed for either tab id or document id.
   content::WebContents* web_contents = nullptr;
-  bool valid_tab = ExtensionTabUtil::GetTabById(
-      tab_id.value(), browser_context(), include_incognito_information(),
-      &web_contents);
-  if (!valid_tab) {
-    return RespondNow(Error(ErrorUtils::FormatErrorMessage(
-        kTabNotFoundError, base::NumberToString(tab_id.value()))));
+  int tab_id = -1;
+
+  if (tab_id_param) {
+    tab_id = tab_id_param.value();
+
+    // Request is invalid if tab id provided doesn't exist, or extension cannot
+    // access the tab's web contents.
+    bool valid_tab = ExtensionTabUtil::GetTabById(
+        tab_id, browser_context(), include_incognito_information(),
+        &web_contents);
+    if (!valid_tab) {
+      return RespondNow(Error(ErrorUtils::FormatErrorMessage(
+          kTabNotFoundError, base::NumberToString(tab_id))));
+    }
+  } else {
+    // document_id_param.
+    // Request is invalid if document id provided doesn't exist.
+    ExtensionApiFrameIdMap::DocumentId document_id =
+        ExtensionApiFrameIdMap::DocumentIdFromString(document_id_param.value());
+    if (!document_id) {
+      return RespondNow(Error(ErrorUtils::FormatErrorMessage(
+          kInvalidDocumentIdError, document_id_param.value())));
+    }
+
+    // Since site access requests will be tied to tab ids, we need to retrieve
+    // the one corresponding to the document id by looking at the frame.
+    content::RenderFrameHost* frame =
+        ExtensionApiFrameIdMap::Get()->GetRenderFrameHostByDocumentId(
+            document_id);
+    if (!frame) {
+      return RespondNow(Error(ErrorUtils::FormatErrorMessage(
+          kInvalidDocumentIdError, document_id_param.value())));
+    }
+
+    // Request is invalid if the web contents doesn't exist in our
+    // BrowserContext. We check for this since we found the RenderFrameHost
+    // through a generic lookup.
+    web_contents = content::WebContents::FromRenderFrameHost(frame);
+    if (!ExtensionTabUtil::IsWebContentsInContext(
+            web_contents, browser_context(), include_incognito_information())) {
+      return RespondNow(WithArguments(base::Value()));
+    }
+
+    tab_id = ExtensionTabUtil::GetTabId(web_contents);
   }
 
+  // Verify we properly retrieved the necessary information.
   DCHECK(web_contents);
+  DCHECK_NE(tab_id, -1);
+
   const GURL& url = web_contents->GetLastCommittedURL();
   std::string error;
   PermissionsData::PageAccess page_access =
-      extension()->permissions_data()->GetPageAccess(url, tab_id.value(),
-                                                     &error);
+      extension()->permissions_data()->GetPageAccess(url, tab_id, &error);
 
   switch (page_access) {
     case PermissionsData::PageAccess::kDenied:
@@ -504,8 +540,7 @@ PermissionsAddSiteAccessRequestFunction::Run() {
       // the user can block the extension's site access and/or their site access
       // requests.
       PermissionsManager::Get(browser_context())
-          ->AddSiteAccessRequest(web_contents, tab_id.value(), *extension());
-
+          ->AddSiteAccessRequest(web_contents, tab_id, *extension());
       return RespondNow(NoArguments());
   }
 }

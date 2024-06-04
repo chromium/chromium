@@ -7,6 +7,9 @@
     "service_worker": "worker.js",
     "type": "module"
   },
-  "permissions": [ "tabs" ],
+  "permissions": [
+    "tabs",
+    "webNavigation"
+  ],
   "host_permissions": [ "*://*.requested.com/*" ]
 }
