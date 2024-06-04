@@ -81,18 +81,42 @@ class AsyncWorkerTaskPool : public dawn::platform::WorkerTaskPool {
   }
 };
 
+void RecordDelayedUMA(scoped_refptr<DawnPlatform::CacheCountsMap> cache_map,
+                      std::string uma_prefix) {
+  base::AutoLock autolock(cache_map->lock);
+  for (auto [uma_name, cache_counts] : cache_map->counts) {
+    if (uma_name.find("Hit") != std::string::npos) {
+      base::UmaHistogramCounts10000(
+          uma_prefix + uma_name + ".Counts.90SecondsPostStartup",
+          cache_counts.cache_hit_count);
+    } else {
+      CHECK(uma_name.find("Miss") != std::string::npos);
+      base::UmaHistogramCounts10000(
+          uma_prefix + uma_name + ".Counts.90SecondsPostStartup",
+          cache_counts.cache_miss_count);
+    }
+  }
+}
+
 }  // anonymous namespace
 
-DawnPlatform::CacheCounts::CacheCounts() = default;
-DawnPlatform::CacheCounts::~CacheCounts() = default;
+DawnPlatform::CacheCountsMap::CacheCountsMap() = default;
+DawnPlatform::CacheCountsMap::~CacheCountsMap() = default;
 
 DawnPlatform::DawnPlatform(
     std::unique_ptr<DawnCachingInterface> dawn_caching_interface,
-    const char* uma_prefix)
+    const char* uma_prefix,
+    bool record_cache_count_uma)
     : dawn_caching_interface_(std::move(dawn_caching_interface)),
       uma_prefix_(uma_prefix),
-      cache_counts_(base::MakeRefCounted<CacheCounts>()),
-      startup_time_(base::Time::Now()) {}
+      cache_map_(base::MakeRefCounted<CacheCountsMap>()),
+      startup_time_(base::TimeTicks::Now()) {
+  if (record_cache_count_uma) {
+    base::ThreadPool::PostDelayedTask(
+        FROM_HERE, base::BindOnce(&RecordDelayedUMA, cache_map_, uma_prefix_),
+        base::Seconds(90));
+  }
+}
 
 DawnPlatform::~DawnPlatform() = default;
 
@@ -146,43 +170,21 @@ void DawnPlatform::HistogramCacheCountHelper(std::string name,
                                              int min,
                                              int max,
                                              int bucketCount) {
-  bool post_task = false;
   if (name.find("Cache") != std::string::npos) {
+    base::AutoLock autolock(cache_map_->lock);
+    auto& cache_counts = cache_map_->counts[name];
     if (name.find("Hit") != std::string::npos) {
-      cache_counts_->cache_hit_count.fetch_add(1, std::memory_order_release);
-    } else if (name.find("Miss") != std::string::npos) {
-      cache_counts_->cache_miss_count.fetch_add(1, std::memory_order_release);
+      ++cache_counts.cache_hit_count;
+    } else {
+      CHECK(name.find("Miss") != std::string::npos);
+      ++cache_counts.cache_miss_count;
     }
-    post_task = cache_counts_->did_schedule_log.exchange(
-                    true, std::memory_order_acq_rel) == false;
-  }
 
-  if (post_task) {
-    if ((base::Time::Now() - startup_time_).InSeconds() <= 90) {
+    if (base::TimeTicks::Now() - startup_time_ <= base::Seconds(90)) {
       base::UmaHistogramCustomCounts(
           uma_prefix_ + name + ".90SecondsPostStartup", sample, min, max,
           bucketCount);
     }
-
-    // Record the stats soonish after the first call.
-    // The 90 seconds comes from the 99 percentile of startup time on macos.
-    base::ThreadPool::PostDelayedTask(
-        FROM_HERE, {base::TaskPriority::BEST_EFFORT},
-        base::BindOnce(
-            [](const std::string& name,
-               scoped_refptr<CacheCounts> cache_counts) {
-              if (name.find("Hit") != std::string::npos) {
-                base::UmaHistogramCounts10000(
-                    name, cache_counts->cache_hit_count.load(
-                              std::memory_order_acquire));
-              } else {
-                base::UmaHistogramCounts10000(
-                    name, cache_counts->cache_miss_count.load(
-                              std::memory_order_acquire));
-              }
-            },
-            uma_prefix_ + name + ".Counts.90SecondsPostStartup", cache_counts_),
-        base::Seconds(90));
   }
 }
 

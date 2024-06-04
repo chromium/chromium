@@ -290,7 +290,8 @@ class DawnSharedState : public base::RefCountedThreadSafe<DawnSharedState>,
   std::unique_ptr<webgpu::DawnCachingInterface> caching_interface_;
 
   Platform platform_{/*dawn_caching_interface=*/nullptr,
-                     /*uma_prefix=*/"GPU.GraphiteDawn."};
+                     /*uma_prefix=*/"GPU.GraphiteDawn.",
+                     /*record_cache_count_uma=*/true};
   std::unique_ptr<webgpu::DawnInstance> instance_;
   wgpu::Adapter adapter_;
   wgpu::Device device_;

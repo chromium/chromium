@@ -9,6 +9,8 @@
 
 #include <memory>
 
+#include "base/containers/flat_map.h"
+#include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "gpu/command_buffer/service/dawn_caching_interface.h"
 
@@ -18,7 +20,8 @@ class DawnPlatform : public dawn::platform::Platform {
  public:
   explicit DawnPlatform(
       std::unique_ptr<DawnCachingInterface> dawn_caching_interface,
-      const char* uma_prefix);
+      const char* uma_prefix,
+      bool record_cache_count_uma);
   ~DawnPlatform() override;
 
   const unsigned char* GetTraceCategoryEnabledFlag(
@@ -64,19 +67,26 @@ class DawnPlatform : public dawn::platform::Platform {
 
   bool IsFeatureEnabled(dawn::platform::Features feature) override;
 
- private:
-  struct CacheCounts : public base::RefCountedThreadSafe<CacheCounts> {
-    CacheCounts();
+  struct CacheCountsMap : public base::RefCountedThreadSafe<CacheCountsMap> {
+    struct CacheCounts {
+      CacheCounts() = default;
+      ~CacheCounts() = default;
 
-    std::atomic<bool> did_schedule_log = false;
-    std::atomic<uint32_t> cache_miss_count = 0;
-    std::atomic<uint32_t> cache_hit_count = 0;
+      uint32_t cache_miss_count = 0;
+      uint32_t cache_hit_count = 0;
+    };
+
+    CacheCountsMap();
+
+    base::Lock lock;
+    base::flat_map<std::string, CacheCounts> counts GUARDED_BY(lock);
 
    private:
-    friend class base::RefCountedThreadSafe<CacheCounts>;
-    ~CacheCounts();
+    friend class base::RefCountedThreadSafe<CacheCountsMap>;
+    ~CacheCountsMap();
   };
 
+ private:
   void HistogramCacheCountHelper(std::string name,
                                  int sample,
                                  int min,
@@ -85,8 +95,8 @@ class DawnPlatform : public dawn::platform::Platform {
 
   std::unique_ptr<DawnCachingInterface> dawn_caching_interface_ = nullptr;
   std::string uma_prefix_;
-  scoped_refptr<CacheCounts> cache_counts_;
-  base::Time startup_time_;
+  scoped_refptr<CacheCountsMap> cache_map_;
+  base::TimeTicks startup_time_;
 };
 
 }  // namespace gpu::webgpu
