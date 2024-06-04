@@ -306,6 +306,12 @@ class BubbleDialogDelegate::AnchorWidgetObserver : public WidgetObserver,
     owner_->OnAnchorBoundsChanged();
   }
 
+  void OnWidgetThemeChanged(Widget* widget) override {
+    // TODO(dfried): Consider merging BubbleWidget with ThemeCopyingWidget
+    // instead of observing the theme here.
+    owner_->GetWidget()->ThemeChanged();
+  }
+
 #if !BUILDFLAG(IS_MAC)
   // aura::WindowObserver:
   void OnWindowTransformed(aura::Window* window,
