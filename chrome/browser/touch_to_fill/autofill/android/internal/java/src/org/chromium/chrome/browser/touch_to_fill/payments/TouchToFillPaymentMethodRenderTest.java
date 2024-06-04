@@ -31,9 +31,9 @@ import org.mockito.quality.Strictness;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.Iban;
@@ -57,7 +57,7 @@ import java.util.List;
  */
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@Batch(Batch.PER_CLASS)
+// TODO(crbug.com/344662597): Failing when batched, batch this again.
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class TouchToFillPaymentMethodRenderTest {
     @ParameterAnnotations.ClassParameter
@@ -207,6 +207,7 @@ public class TouchToFillPaymentMethodRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @RequiresRestart("crbug.com/344665938")
     public void testShowsOneCard() throws IOException {
         runOnUiThreadBlocking(
                 () -> {
@@ -397,6 +398,7 @@ public class TouchToFillPaymentMethodRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @RequiresRestart("crbug.com/344665938")
     public void testScanNewCardButtonIsHidden() throws IOException {
         runOnUiThreadBlocking(
                 () -> {

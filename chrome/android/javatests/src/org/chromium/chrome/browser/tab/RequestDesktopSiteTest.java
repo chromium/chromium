@@ -19,7 +19,6 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -46,7 +45,7 @@ import java.util.concurrent.TimeoutException;
 
 /** Test for user flows around {@link ContentSettingsType.REQUEST_DESKTOP_SITE}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@Batch(Batch.PER_CLASS)
+// TODO(crbug.com/344665252): Failing when batched, batch this again.
 @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class RequestDesktopSiteTest {

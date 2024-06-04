@@ -15,7 +15,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
@@ -42,7 +41,7 @@ import java.util.List;
 /** Testing the interaction with the runtime permission prompt (Android level prompt). */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Batch(Batch.PER_CLASS)
+// TODO(crbug.com/344665249): Failing when batched, batch this again.
 public class RuntimePermissionTest {
     @Rule public PermissionTestRule mPermissionTestRule = new PermissionTestRule();
 

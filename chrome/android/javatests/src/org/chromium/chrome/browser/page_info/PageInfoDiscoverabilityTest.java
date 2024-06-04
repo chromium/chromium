@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.page_info;
 
-import static org.chromium.base.test.util.Batch.PER_CLASS;
 import static org.chromium.components.permissions.PermissionDialogDelegate.getRequestTypeEnumSize;
 
 import android.Manifest;
@@ -28,7 +27,6 @@ import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
@@ -65,7 +63,7 @@ import java.util.List;
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Batch(PER_CLASS)
+// TODO(crbug.com/344672094): Failing when batched, batch this again.
 public class PageInfoDiscoverabilityTest {
     @ClassRule
     public static final PermissionTestRule sPermissionTestRule = new PermissionTestRule();

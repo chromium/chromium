@@ -31,7 +31,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.LocaleUtils;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.ProductConfig;
@@ -53,7 +52,7 @@ import java.util.Locale;
 
 /** Integration tests for IncognitoNewTabPage. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@Batch(Batch.PER_CLASS)
+// TODO(crbug.com/344662664): Failing when batched, batch this again.
 @DisableFeatures({ChromeFeatureList.TRACKING_PROTECTION_3PCD})
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class IncognitoNewTabPageTest {

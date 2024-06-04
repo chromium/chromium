@@ -46,7 +46,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features;
@@ -71,7 +70,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Tests for {@link TabGridDialogViewBinder}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@Batch(Batch.PER_CLASS)
+// TODO(crbug.com/344675717): Failing when batched, batch this again.
 public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
     private static final int CONTENT_TOP_MARGIN = 56;
 

@@ -15,7 +15,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.Callback;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
@@ -57,7 +56,7 @@ import java.util.Set;
 /** An integration test for the Android payment app finder. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Batch(Batch.PER_CLASS)
+// TODO(crbug.com/344662668): Failing when batched, batch this again.
 @MediumTest
 public class AndroidPaymentAppFinderTest
         implements PaymentAppFactoryDelegate, PaymentAppFactoryParams {

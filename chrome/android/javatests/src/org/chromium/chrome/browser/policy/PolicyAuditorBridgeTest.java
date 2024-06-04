@@ -16,7 +16,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.AppHooksImpl;
@@ -38,7 +37,7 @@ import java.util.ArrayList;
 
 /** PolicyAuditor integration test. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@Batch(Batch.PER_CLASS)
+// TODO(crbug.com/344672097): Failing when batched, batch this again.
 public class PolicyAuditorBridgeTest {
     static class FakePolicyAuditor extends PolicyAuditor {
         private static FakePolicyAuditor sInstance;

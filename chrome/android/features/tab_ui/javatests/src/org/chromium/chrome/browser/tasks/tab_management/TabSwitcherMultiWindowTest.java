@@ -34,7 +34,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.ApplicationTestUtils;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -58,7 +57,7 @@ import org.chromium.ui.test.util.UiRestriction;
 })
 @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 @DisableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
-@Batch(Batch.PER_CLASS)
+// TODO(crbug.com/344669867): Failing when batched, batch this again.
 public class TabSwitcherMultiWindowTest {
     @ClassRule
     public static ChromeTabbedActivityTestRule sActivityTestRule =

@@ -17,7 +17,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.util.Batch;
 import org.chromium.net.CronetTestRule.CronetImplementation;
 import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.apihelpers.UploadDataProviders;
@@ -30,7 +29,7 @@ import java.util.concurrent.Executors;
 
 /** Tests that making a large number of requests do not lead to crashes. */
 @RunWith(AndroidJUnit4.class)
-@Batch(Batch.UNIT_TESTS)
+// TODO(crbug.com/344675719): Failing when batched, batch this again.
 public class CronetStressTest {
     @Rule public final CronetTestRule mTestRule = CronetTestRule.withAutomaticEngineStartup();
 

@@ -37,6 +37,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.page_insights.proto.IntentParams.PageInsightsIntentParams;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -469,6 +470,7 @@ public class PageInsightsSheetContentTest {
 
     @Test
     @MediumTest
+    @RequiresRestart("crbug.com/344675716")
     public void privacyNoticeCloseButtonPressed() {
         createSheetContent();
         TestThreadUtils.runOnUiThreadBlocking(

@@ -30,6 +30,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils.CardIconSize;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils.CardIconSpecs;
@@ -302,6 +303,7 @@ public class FinancialAccountsManagementFragmentTest {
     // Test that Pix bank accounts are removed when the Pix toggle is turned off.
     @Test
     @MediumTest
+    @RequiresRestart("crbug.com/344671557")
     public void testPixSwitchDisabled_bankAccountPrefsRemoved() {
         AutofillTestHelper.addMaskedBankAccount(PIX_BANK_ACCOUNT);
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity(new Bundle());
@@ -360,6 +362,7 @@ public class FinancialAccountsManagementFragmentTest {
 
     @Test
     @MediumTest
+    @RequiresRestart("crbug.com/344671557")
     public void testPixToggleTurnedOn_histogramLogged() {
         AutofillTestHelper.addMaskedBankAccount(PIX_BANK_ACCOUNT);
         TestThreadUtils.runOnUiThreadBlocking(

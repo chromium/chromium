@@ -38,6 +38,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowProperties.ImageVisibility;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
@@ -200,6 +201,7 @@ public class ImprovedBookmarkRowRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @RequiresRestart("crbug.com/344662663")
     public void testNormal() throws IOException {
         mRenderTestRule.render(mContentView, "normal");
     }

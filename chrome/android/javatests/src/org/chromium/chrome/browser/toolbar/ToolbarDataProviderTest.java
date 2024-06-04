@@ -7,8 +7,6 @@ package org.chromium.chrome.browser.toolbar;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import static org.chromium.base.test.util.Batch.PER_CLASS;
-
 import androidx.test.filters.MediumTest;
 
 import org.junit.Rule;
@@ -16,7 +14,6 @@ import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Restriction;
@@ -34,7 +31,7 @@ import org.chromium.ui.test.util.UiRestriction;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-@Batch(PER_CLASS)
+// TODO(crbug.com/344665253): Failing when batched, batch this again.
 public class ToolbarDataProviderTest {
     @Rule public TestRule mProcessor = new Features.InstrumentationProcessor();
 

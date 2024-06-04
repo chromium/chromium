@@ -25,6 +25,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -200,6 +201,7 @@ public class OfflinePageAutoFetchTest {
     @Test
     @MediumTest
     @Feature({"OfflineAutoFetch"})
+    @RequiresRestart("crbug.com/344665757")
     public void testAutoFetchDoesNotTriggerOnDNSErrorWhenOnline() {
         forceConnectivityState(true);
         attemptLoadPage("http://does.not.resolve.com");

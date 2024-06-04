@@ -24,7 +24,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -48,7 +47,7 @@ import java.lang.ref.WeakReference;
 /** Tests for the UsbChooserDialog class. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Batch(BluetoothChooserDialogTest.DEVICE_DIALOG_BATCH_NAME)
+// TODO(crbug.com/344665244): Failing when batched, batch this again.
 public class UsbChooserDialogTest {
     @ClassRule
     public static final ChromeTabbedActivityTestRule sActivityTestRule =

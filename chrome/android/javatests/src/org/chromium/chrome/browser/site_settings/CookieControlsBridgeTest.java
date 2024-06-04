@@ -15,7 +15,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
@@ -50,7 +49,7 @@ import java.util.concurrent.TimeoutException;
 /** Integration tests for CookieControlsBridge. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Batch(CookieControlsBridgeTest.COOKIE_CONTROLS_BATCH_NAME)
+// TODO(crbug.com/344669865): Failing when batched, batch this again.
 public class CookieControlsBridgeTest {
     public static final String COOKIE_CONTROLS_BATCH_NAME = "cookie_controls";
 

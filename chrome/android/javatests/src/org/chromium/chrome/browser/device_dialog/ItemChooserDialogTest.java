@@ -27,7 +27,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -49,7 +48,7 @@ import org.chromium.ui.widget.TextViewWithClickableSpans;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Batch(BluetoothChooserDialogTest.DEVICE_DIALOG_BATCH_NAME)
+// TODO(crbug.com/344665244): Failing when batched, batch this again.
 public class ItemChooserDialogTest implements ItemChooserDialog.ItemSelectedCallback {
     @ClassRule
     public static final ChromeTabbedActivityTestRule sActivityTestRule =

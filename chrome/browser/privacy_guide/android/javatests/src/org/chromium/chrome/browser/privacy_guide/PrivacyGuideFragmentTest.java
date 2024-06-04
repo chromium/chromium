@@ -58,6 +58,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -340,6 +341,7 @@ public class PrivacyGuideFragmentTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
+    @RequiresRestart("crbug.com/344675713")
     public void testRenderHistorySyncCard() throws IOException {
         launchPrivacyGuide();
         goToCard(FragmentType.HISTORY_SYNC);
@@ -435,6 +437,7 @@ public class PrivacyGuideFragmentTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
+    @RequiresRestart("crbug.com/344675713")
     public void testRenderCookiesCard() throws IOException {
         launchPrivacyGuide();
         goToCard(FragmentType.COOKIES);

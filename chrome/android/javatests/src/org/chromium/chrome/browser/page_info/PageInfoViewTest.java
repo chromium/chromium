@@ -27,7 +27,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import static org.chromium.base.test.util.Batch.PER_CLASS;
 import static org.chromium.components.content_settings.PrefNames.COOKIE_CONTROLS_MODE;
 import static org.chromium.components.content_settings.PrefNames.IN_CONTEXT_COOKIE_CONTROLS_OPENED;
 import static org.chromium.ui.test.util.ViewUtils.hasBackgroundColor;
@@ -53,7 +52,6 @@ import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
@@ -123,7 +121,7 @@ import java.util.concurrent.TimeoutException;
     ChromeSwitches.DISABLE_STARTUP_PROMOS,
     ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"
 })
-@Batch(PER_CLASS)
+// TODO(crbug.com/344672095): Failing when batched, batch this again.
 // Disable TrackingProtection3pcd as we use prefs instead of the feature in these tests.
 @DisableFeatures(ChromeFeatureList.TRACKING_PROTECTION_3PCD)
 public class PageInfoViewTest {

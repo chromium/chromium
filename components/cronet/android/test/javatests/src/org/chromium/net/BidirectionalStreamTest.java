@@ -27,6 +27,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.Log;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.net.CronetTestRule.CronetImplementation;
 import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.CronetTestRule.RequiresMinAndroidApi;
@@ -1677,6 +1678,7 @@ public class BidirectionalStreamTest {
     @IgnoreFor(
             implementations = {CronetImplementation.AOSP_PLATFORM},
             reason = "ActiveRequestCount is not available in AOSP")
+    @RequiresRestart("crbug.com/344665939")
     public void testCronetEngineShutdownAfterStreamFailure() throws Exception {
         // Test that CronetEngine can be shut down after stream reports a failure.
         TestBidirectionalStreamCallback callback = new TestBidirectionalStreamCallback();

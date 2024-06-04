@@ -969,6 +969,7 @@ public class AwAutofillTest extends AwParameterizedTest {
     @CommandLineFlags.Add({
         "enable-features=AutofillAcrossIframes, AndroidAutofillCancelSessionOnNavigation"
     })
+    @RequiresRestart("crbug.com/344662605")
     public void testCrossFrameCommit() throws Throwable {
         // The only reason we use a <form> inside the iframe is that this makes it easiest to
         // trigger a form submission in that frame.
@@ -2424,6 +2425,7 @@ public class AwAutofillTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @RequiresRestart("crbug.com/344662605")
     public void testPageScrollTriggerViewExitAndEnter() throws Throwable {
         loadHTML(
                 """
@@ -2587,6 +2589,7 @@ public class AwAutofillTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @RequiresRestart("crbug.com/344662605")
     public void testHideDatalistPopup() throws Throwable {
         final String url = getAbsoluteTestPageUrl("form_with_datalist.html");
         loadUrlSync(url);
