@@ -637,10 +637,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
       CreateAdvertisementCallback callback,
       AdvertisementErrorCallback error_callback) = 0;
 
-#if BUILDFLAG(IS_CHROMEOS)
   // Indicates whether LE extended advertising is supported.
-  virtual bool IsExtendedAdvertisementsAvailable() const = 0;
-#endif  // BUILDFLAG(IS_CHROMEOS)
+  virtual bool IsExtendedAdvertisementsAvailable() const;
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Sets the interval between two consecutive advertisements. Valid ranges

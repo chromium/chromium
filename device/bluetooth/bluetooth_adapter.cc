@@ -291,6 +291,11 @@ BluetoothDevice::PairingDelegate* BluetoothAdapter::DefaultPairingDelegate() {
   return pairing_delegates_.front().first;
 }
 
+// Default to assume the controller doesn't supports ext adv.
+bool BluetoothAdapter::IsExtendedAdvertisementsAvailable() const {
+  return false;
+}
+
 std::vector<BluetoothAdvertisement*>
 BluetoothAdapter::GetPendingAdvertisementsForTesting() const {
   return {};

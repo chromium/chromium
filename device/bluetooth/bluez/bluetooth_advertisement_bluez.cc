@@ -85,7 +85,7 @@ BluetoothAdvertisementBlueZ::BluetoothAdvertisementBlueZ(
   DCHECK(bluez::BluezDBusManager::Get());
   provider_ = bluez::BluetoothLEAdvertisementServiceProvider::Create(
       bluez::BluezDBusManager::Get()->GetSystemBus(), advertisement_object_path,
-      this,
+      this, adapter->IsExtendedAdvertisementsAvailable(),
       static_cast<
           bluez::BluetoothLEAdvertisementServiceProvider::AdvertisementType>(
           data->type()),

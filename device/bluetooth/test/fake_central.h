@@ -182,9 +182,6 @@ class FakeCentral final : public mojom::FakeCentral,
       std::unique_ptr<device::BluetoothAdvertisement::Data> advertisement_data,
       CreateAdvertisementCallback callback,
       AdvertisementErrorCallback error_callback) override;
-#if BUILDFLAG(IS_CHROMEOS)
-  bool IsExtendedAdvertisementsAvailable() const override;
-#endif
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   void SetAdvertisingInterval(
       const base::TimeDelta& min,

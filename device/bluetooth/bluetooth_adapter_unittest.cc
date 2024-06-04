@@ -125,11 +125,6 @@ class TestBluetoothAdapter final : public BluetoothAdapter {
       CreateAdvertisementCallback callback,
       AdvertisementErrorCallback error_callback) override {}
 
-#if BUILDFLAG(IS_CHROMEOS)
-  // Indicates whether LE extended advertising is supported.
-  bool IsExtendedAdvertisementsAvailable() const override { return false; }
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   void SetAdvertisingInterval(
       const base::TimeDelta& min,
