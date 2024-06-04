@@ -142,7 +142,6 @@ public class LocationBarCoordinator
      * @param merchantTrustSignalsCoordinatorSupplier Supplier of {@link
      *     MerchantTrustSignalsCoordinator}. Can be null if a store icon shouldn't be shown, such as
      *     when called from a search activity.
-     * @param reportExceptionCallback A {@link Callback} to report exceptions.
      * @param backPressManager The {@link BackPressManager} for intercepting back press.
      * @param tabModelSelectorSupplier Supplier of the {@link TabModelSelector}.
      * @param uiOverrides embedder-specific UI overrides
@@ -178,7 +177,6 @@ public class LocationBarCoordinator
                             merchantTrustSignalsCoordinatorSupplier,
             @NonNull OmniboxActionDelegate omniboxActionDelegate,
             BrowserStateBrowserControlsVisibilityDelegate browserControlsVisibilityDelegate,
-            Callback<Throwable> reportExceptionCallback,
             @Nullable BackPressManager backPressManager,
             @Nullable
                     OmniboxSuggestionsDropdownScrollListener
@@ -244,8 +242,7 @@ public class LocationBarCoordinator
                         mCallbackController.makeCancelable(mLocationBarMediator::onUrlFocusChange),
                         mLocationBarMediator,
                         windowAndroid.getKeyboardDelegate(),
-                        isIncognito,
-                        reportExceptionCallback);
+                        isIncognito);
         mAutocompleteCoordinator =
                 new AutocompleteCoordinator(
                         mLocationBarLayout,

@@ -62,7 +62,6 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
-import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.customtabs.CustomTabFeatureOverridesManager;
 import org.chromium.chrome.browser.customtabs.features.branding.ToolbarBrandingDelegate;
 import org.chromium.chrome.browser.customtabs.features.branding.ToolbarBrandingOverlayCoordinator;
@@ -1290,8 +1289,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                             /* focusChangeCallback= */ (unused) -> {},
                             this,
                             new NoOpkeyboardVisibilityDelegate(),
-                            locationBarDataProvider.isIncognito(),
-                            ChromePureJavaExceptionReporter::reportJavaException);
+                            locationBarDataProvider.isIncognito());
             mTabCreator = tabCreator;
             mTouchTargetSize = getResources().getDimensionPixelSize(R.dimen.min_touch_target_size);
             updateColors();

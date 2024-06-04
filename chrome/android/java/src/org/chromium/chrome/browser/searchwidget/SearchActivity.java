@@ -40,7 +40,6 @@ import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.content.WebContentsFactory;
-import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ActivityType;
@@ -367,7 +366,6 @@ public class SearchActivity extends AsyncInitializationActivity
                                 // Open Quick Delete Dialog callback:
                                 null),
                         null,
-                        ChromePureJavaExceptionReporter::reportJavaException,
                         backPressManager,
                         /* OmniboxSuggestionsDropdownScrollListener= */ null,
                         /* tabModelSelectorSupplier= */ null,

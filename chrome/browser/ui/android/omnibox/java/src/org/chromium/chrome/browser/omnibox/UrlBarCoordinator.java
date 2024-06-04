@@ -65,7 +65,6 @@ public class UrlBarCoordinator
      *     visibility.
      * @param isIncognito Whether incognito mode is initially enabled. This can later be changed
      *     using {@link #setIncognitoColorsEnabled(boolean)}.
-     * @param reportExceptionCallback A {@link Callback} to report exceptions.
      */
     public UrlBarCoordinator(
             @NonNull Context context,
@@ -75,10 +74,8 @@ public class UrlBarCoordinator
             @NonNull Callback<Boolean> focusChangeCallback,
             @NonNull UrlBarDelegate delegate,
             @NonNull KeyboardVisibilityDelegate keyboardVisibilityDelegate,
-            boolean isIncognito,
-            Callback<Throwable> reportExceptionCallback) {
+            boolean isIncognito) {
         mUrlBar = urlBar;
-        urlBar.setTag(R.id.report_exception_callback, reportExceptionCallback);
         mKeyboardVisibilityDelegate = keyboardVisibilityDelegate;
         mFocusChangeCallback = focusChangeCallback;
 

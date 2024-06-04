@@ -57,7 +57,6 @@ import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager.Over
 import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
-import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.dom_distiller.DomDistillerTabUtils;
 import org.chromium.chrome.browser.download.DownloadUtils;
@@ -895,7 +894,6 @@ public class ToolbarManager
                             merchantTrustSignalsCoordinatorSupplier,
                             omniboxActionDelegate,
                             mControlsVisibilityDelegate,
-                            ChromePureJavaExceptionReporter::reportJavaException,
                             BackPressManager.isEnabled() ? backPressManager : null,
                             scrollListener,
                             tabModelSelectorSupplier,

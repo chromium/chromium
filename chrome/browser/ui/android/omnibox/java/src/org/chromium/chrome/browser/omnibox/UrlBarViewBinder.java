@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.omnibox;
 
-import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.TextUtils;
@@ -16,7 +15,6 @@ import androidx.annotation.RequiresApi;
 import com.google.android.material.color.MaterialColors;
 
 import org.chromium.base.Callback;
-import org.chromium.base.Log;
 import org.chromium.chrome.browser.omnibox.UrlBarProperties.AutocompleteText;
 import org.chromium.chrome.browser.omnibox.UrlBarProperties.UrlBarTextState;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -130,39 +128,21 @@ class UrlBarViewBinder {
 
     @RequiresApi(api = Build.VERSION_CODES.Q)
     private static void updateCursorAndSelectHandleColor(UrlBar view, boolean useIncognitoColors) {
-        try {
-            // These get* methods may fail on some devices, so we're calling all of them before
-            // applying tint to any of the drawables. See https://crbug.com/1263630.
-            final Drawable textCursor = view.getTextCursorDrawable();
-            final Drawable textSelectHandle = view.getTextSelectHandle();
-            final Drawable textSelectHandleLeft = view.getTextSelectHandleLeft();
-            final Drawable textSelectHandleRight = view.getTextSelectHandleRight();
+        // These get* methods may fail on some devices, so we're calling all of them before
+        // applying tint to any of the drawables. See https://crbug.com/1263630.
+        final Drawable textCursor = view.getTextCursorDrawable();
+        final Drawable textSelectHandle = view.getTextSelectHandle();
+        final Drawable textSelectHandleLeft = view.getTextSelectHandleLeft();
+        final Drawable textSelectHandleRight = view.getTextSelectHandleRight();
 
-            final int color =
-                    useIncognitoColors
-                            ? view.getContext().getColor(R.color.default_control_color_active_dark)
-                            : MaterialColors.getColor(view, R.attr.colorPrimary);
-            textCursor.mutate().setTint(color);
-            textSelectHandle.mutate().setTint(color);
-            textSelectHandleLeft.mutate().setTint(color);
-            textSelectHandleRight.mutate().setTint(color);
-        } catch (Resources.NotFoundException e) {
-            // Uploading the stack for APIs below 31 since we assume this doesn't happen on newer
-            // versions. We'll still throw the exception for APIs 31+ to keep track of any
-            // unexpected crashes.
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
-                Log.e(TAG, "Failed to access the cursor or handle drawable, skipped tinting.", e);
-                final Throwable throwable =
-                        new Throwable(
-                                "This is not a crash. See https://crbug.com/1263630 for details.",
-                                e);
-                final Callback<Throwable> reportExceptionCallback =
-                        ((Callback<Throwable>) view.getTag(R.id.report_exception_callback));
-                reportExceptionCallback.onResult(throwable);
-            } else {
-                throw e;
-            }
-        }
+        final int color =
+                useIncognitoColors
+                        ? view.getContext().getColor(R.color.default_control_color_active_dark)
+                        : MaterialColors.getColor(view, R.attr.colorPrimary);
+        textCursor.mutate().setTint(color);
+        textSelectHandle.mutate().setTint(color);
+        textSelectHandleLeft.mutate().setTint(color);
+        textSelectHandleRight.mutate().setTint(color);
     }
 
     private UrlBarViewBinder() {}
