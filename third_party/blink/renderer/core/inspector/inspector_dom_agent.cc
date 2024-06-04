@@ -1748,7 +1748,13 @@ protocol::Response InspectorDOMAgent::getAnchorElement(
     return protocol::Response::ServerError(
         "No layout object for node, perhaps orphan or hidden node");
   }
+
   const auto* box = To<LayoutBox>(querying_object);
+  if (!box || !box->Container()) {
+    return protocol::Response::ServerError(
+        "The box or the container of the box does not exist");
+  }
+
   const LayoutObject* target_object;
   if (anchor_specifier.has_value()) {
     target_object = box->FindTargetAnchor(*MakeGarbageCollected<ScopedCSSName>(
