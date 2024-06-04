@@ -6,7 +6,9 @@
 #define SERVICES_NETWORK_MASKED_DOMAIN_LIST_URL_MATCHER_WITH_BYPASS_H_
 
 #include <map>
+#include <memory>
 #include <string_view>
+#include <vector>
 
 #include "base/types/optional_ref.h"
 #include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
@@ -55,7 +57,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) UrlMatcherWithBypass {
   // See base/trace_event/memory_usage_estimator.h for more info.
   size_t EstimateMemoryUsage() const;
 
-  static net::SchemeHostPortMatcher BuildBypassMatcher(
+  static std::unique_ptr<net::SchemeHostPortMatcher> BuildBypassMatcher(
       const masked_domain_list::ResourceOwner& resource_owner);
 
   // Determine the partition of the `match_list_with_bypass_map_` that contains
@@ -63,11 +65,20 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) UrlMatcherWithBypass {
   static std::string PartitionMapKey(std::string_view domain);
 
  private:
+  // Contains a single bypass matcher for each ResourceOwner that is referenced
+  // by `match_list_with_bypass_map_`.
+  // TODO(crbug.com/344506511): Remove this when `net::SchemeHostPortMatcher` is
+  // replaced with a matcher that supports `scoped_refptr`.
+  std::vector<std::unique_ptr<net::SchemeHostPortMatcher>> bypass_matchers_;
+
+  // Empty matcher used by reference instead of creating new empty instances.
+  net::SchemeHostPortMatcher empty_bypass_matcher;
+
   // Maps partition map keys to smaller maps of domains eligible for the match
   // list and the top frame domains that allow the match list to be bypassed.
   std::map<std::string,
            std::vector<std::pair<net::SchemeHostPortMatcher,
-                                 net::SchemeHostPortMatcher>>>
+                                 raw_ptr<net::SchemeHostPortMatcher>>>>
       match_list_with_bypass_map_;
 };
 

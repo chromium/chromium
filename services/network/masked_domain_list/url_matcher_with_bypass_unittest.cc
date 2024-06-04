@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "services/network/masked_domain_list/url_matcher_with_bypass.h"
+
+#include <optional>
 #include <vector>
 
 #include "base/strings/strcat.h"
@@ -48,7 +50,26 @@ TEST_F(UrlMatcherWithBypassTest, BuildBypassMatcher_Dedupes) {
       UrlMatcherWithBypass::BuildBypassMatcher(resource_owner);
 
   // 2 distinct domains become 4 rules because of subdomain matching rules.
-  EXPECT_EQ(bypass_matcher.rules().size(), 4u);
+  EXPECT_EQ(bypass_matcher->rules().size(), 4u);
+}
+
+TEST_F(UrlMatcherWithBypassTest, AddRulesWithoutBypass_BypassCheckIsSkipped) {
+  UrlMatcherWithBypass matcher;
+
+  matcher.AddRulesWithoutBypass({"example.com"});
+  EXPECT_TRUE(matcher.Matches(GURL("http://example.com"),
+                              /*top_frame_site=*/std::nullopt,
+                              /*skip_bypass_check=*/true));
+}
+
+TEST_F(UrlMatcherWithBypassTest,
+       AddRulesWithoutBypass_BypassCheckIsNotSkipped) {
+  UrlMatcherWithBypass matcher;
+
+  matcher.AddRulesWithoutBypass({"example.com"});
+  EXPECT_TRUE(matcher.Matches(GURL("http://example.com"),
+                              net::SchemefulSite(GURL("http://top.frame.com")),
+                              /*skip_bypass_check=*/false));
 }
 
 class UrlMatcherWithBypassMatchTest : public testing::TestWithParam<MatchTest> {

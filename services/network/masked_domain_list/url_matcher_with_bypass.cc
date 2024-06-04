@@ -70,9 +70,10 @@ std::map<std::string, std::set<std::string>> PartitionDomains(
 }  // namespace
 
 // static
-net::SchemeHostPortMatcher UrlMatcherWithBypass::BuildBypassMatcher(
+std::unique_ptr<net::SchemeHostPortMatcher>
+UrlMatcherWithBypass::BuildBypassMatcher(
     const masked_domain_list::ResourceOwner& resource_owner) {
-  net::SchemeHostPortMatcher bypass_matcher;
+  auto bypass_matcher = std::make_unique<net::SchemeHostPortMatcher>();
 
   // De-dupe domains that are in owned_properties and owned_resources.
   std::set<std::string_view> domains;
@@ -85,7 +86,8 @@ net::SchemeHostPortMatcher UrlMatcherWithBypass::BuildBypassMatcher(
   }
 
   for (std::string_view domain : domains) {
-    AddRulesToMatcher(&bypass_matcher, domain, !HasSubdomainCoverage(domain));
+    AddRulesToMatcher(bypass_matcher.get(), domain,
+                      !HasSubdomainCoverage(domain));
   }
 
   return bypass_matcher;
@@ -109,6 +111,15 @@ UrlMatcherWithBypass::~UrlMatcherWithBypass() = default;
 void UrlMatcherWithBypass::AddMaskedDomainListRules(
     const std::set<std::string>& domains,
     base::optional_ref<masked_domain_list::ResourceOwner> resource_owner) {
+  net::SchemeHostPortMatcher* bypass_matcher = nullptr;
+
+  if (resource_owner.has_value()) {
+    bypass_matchers_.emplace_back(BuildBypassMatcher(resource_owner.value()));
+    bypass_matcher = bypass_matchers_.back().get();
+  } else {
+    bypass_matcher = &empty_bypass_matcher;
+  }
+
   for (const auto& [partition_key, partitioned_domains] :
        PartitionDomains(domains)) {
     net::SchemeHostPortMatcher matcher;
@@ -118,13 +129,8 @@ void UrlMatcherWithBypass::AddMaskedDomainListRules(
     }
 
     if (!matcher.rules().empty()) {
-      net::SchemeHostPortMatcher bypass_matcher =
-          resource_owner.has_value()
-              ? BuildBypassMatcher(resource_owner.value())
-              : net::SchemeHostPortMatcher();
-
       match_list_with_bypass_map_[partition_key].emplace_back(
-          std::make_pair(std::move(matcher), std::move(bypass_matcher)));
+          std::make_pair(std::move(matcher), bypass_matcher));
     }
   }
 }
@@ -136,10 +142,12 @@ void UrlMatcherWithBypass::AddRulesWithoutBypass(
 
 void UrlMatcherWithBypass::Clear() {
   match_list_with_bypass_map_.clear();
+  bypass_matchers_.clear();
 }
 
 size_t UrlMatcherWithBypass::EstimateMemoryUsage() const {
-  return base::trace_event::EstimateMemoryUsage(match_list_with_bypass_map_);
+  return base::trace_event::EstimateMemoryUsage(match_list_with_bypass_map_) +
+         base::trace_event::EstimateMemoryUsage(bypass_matchers_);
 }
 
 bool UrlMatcherWithBypass::IsPopulated() {
@@ -182,7 +190,7 @@ bool UrlMatcherWithBypass::Matches(
         dvlog("matched with skipped bypass check", true);
         return true;
       }
-      bool matches = bypass_matcher.Evaluate(top_frame_site->GetURL()) ==
+      bool matches = bypass_matcher->Evaluate(top_frame_site->GetURL()) ==
                      net::SchemeHostPortMatcherResult::kNoMatch;
       dvlog("bypass_matcher.Matches", matches);
       return matches;
