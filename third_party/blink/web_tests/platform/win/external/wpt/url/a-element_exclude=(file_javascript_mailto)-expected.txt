@@ -1,5 +1,7 @@
 This is a testharness.js-based test.
-Found 166 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 167 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Test that embedded 0x0A is stripped
+  assert_equals: expected "data:text/plain;charset=utf-8,first%20linesecond%20line" but got "data:text/plain;charset=utf-8,first%20line%0Asecond%20line"
 [FAIL] Parsing: <non-special://test:@test/x> against <about:blank>
   assert_equals: href expected "non-special://test@test/x" but got "non-special://test:@test/x"
 [FAIL] Parsing: <non-special://:@test/x> against <about:blank>
