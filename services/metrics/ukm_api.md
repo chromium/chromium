@@ -380,7 +380,7 @@ And in the UKM enum.xml:
 <enum name="WebFrameworkName">
   <int value="0" label="Unknown"/>
   <int value="1" label="WebFramework1"/>
-  <int value="1" label="WebFramework2"/>
+  <int value="2" label="WebFramework2"/>
   ...
 </enum>
 ```
