@@ -15,6 +15,5 @@ export const PDF_DESTINATION: Destination = {
   id: 'SAVE_AS_PDF',
   displayName: 'Save as PDF',
   printerType: PrinterType.PDF_PRINTER,
-  printerManuallySelected: false,
   printerStatusReason: null,
 };

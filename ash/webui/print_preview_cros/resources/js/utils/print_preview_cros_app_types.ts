@@ -22,18 +22,9 @@ export interface Destination {
   // Type of destination.
   printerType: PrinterType;
 
-  // Used for metrics, true when destination manually selected during CrOS
-  // preview session.
-  printerManuallySelected: boolean;
-
   // The printer status reason for a local Chrome OS printer.
   printerStatusReason: PrinterStatusReason|null;
 }
-
-// Used to track which fields are set by UI and values need to be maintained
-// during an update to destination.
-export type UiManagedDestinationFields =
-    Pick<Destination, 'printerManuallySelected'>;
 
 export interface PrintRequestOutcome {
   success: boolean;

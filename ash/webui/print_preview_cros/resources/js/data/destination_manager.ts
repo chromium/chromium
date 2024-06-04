@@ -7,7 +7,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 
 import {createCustomEvent} from '../utils/event_utils.js';
 import {getDestinationProvider} from '../utils/mojo_data_providers.js';
-import {Destination, DestinationProvider, FakeDestinationObserverInterface, SessionContext, type UiManagedDestinationFields} from '../utils/print_preview_cros_app_types.js';
+import {Destination, DestinationProvider, FakeDestinationObserverInterface, SessionContext} from '../utils/print_preview_cros_app_types.js';
 import {isValidDestination} from '../utils/validation_utils.js';
 
 import {PDF_DESTINATION} from './destination_constants.js';
@@ -185,9 +185,6 @@ export class DestinationManager extends EventTarget implements
       return;
     }
 
-    // Ensure fields managed by UI values are maintained.
-    this.overrideUiManagedFields(destination, existingDestination);
-
     // Update destination in list and cache.
     const index = this.destinations.findIndex(
         (d: Destination) => d.id === destination.id);
@@ -266,14 +263,6 @@ export class DestinationManager extends EventTarget implements
       return;
     }
     this.updateActiveDestination(this.destinations[0].id);
-  }
-
-  // Creates a merge of `destination` and UI managed fields from `uiFields`
-  // to ensure fields set by UI are not lost during update.
-  // Example field: `printerManuallySelected`.
-  private overrideUiManagedFields(
-      destination: Destination, uiFields: UiManagedDestinationFields): void {
-    destination.printerManuallySelected = uiFields.printerManuallySelected;
   }
 
   // Updates active destination ID and triggers event.

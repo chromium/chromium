@@ -314,11 +314,7 @@ suite('PrintTicketManager', () => {
         assertEquals(
             PDF_DESTINATION.printerType, ticket!.printerType,
             'printerType set from DestinationManager active destination');
-        assertEquals(
-            PDF_DESTINATION.printerManuallySelected,
-            ticket!.printerManuallySelected,
-            'printerManuallySelected set from DestinationManager active' +
-                ' destination');
+        assertFalse(ticket!.printerManuallySelected, 'not manually selected');
         assertEquals(
             PrinterStatusReason.UNKNOWN_REASON, ticket!.printerStatusReason,
             'printerStatusReason fallback to UNKNOWN_REASON if null');
@@ -426,11 +422,7 @@ suite('PrintTicketManager', () => {
         assertEquals(
             PDF_DESTINATION.printerType, ticket!.printerType,
             `printerType should be ${PDF_DESTINATION.printerType}`);
-        assertEquals(
-            PDF_DESTINATION.printerManuallySelected,
-            ticket!.printerManuallySelected,
-            `printerManuallySelected should be ${
-                PDF_DESTINATION.printerManuallySelected}`);
+        assertFalse(ticket!.printerManuallySelected, 'not manually selected');
         assertEquals(
             PrinterStatusReason.UNKNOWN_REASON, ticket!.printerStatusReason,
             `printerStatusReason should fall back to UNKNOWN_REASON when null`);

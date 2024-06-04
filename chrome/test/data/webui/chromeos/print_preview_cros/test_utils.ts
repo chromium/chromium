@@ -25,7 +25,6 @@ export function createTestDestination(
     displayName: displayName === '' ? `destination_${++destinationIdCounter}` :
                                       displayName,
     printerType,
-    printerManuallySelected: false,
     printerStatusReason: PrinterStatusReason.UNKNOWN_REASON,
   };
 }

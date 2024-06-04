@@ -42,6 +42,7 @@ export const DEFAULT_PARTIAL_PRINT_TICKET: Partial<PrintTicket> = {
   pagesPerSheet: 1,
   pageHeight: 0,
   pageWidth: 0,
+  printerManuallySelected: false,
   printerStatusReason: PrinterStatusReason.UNKNOWN_REASON,
   rasterizePDF: false,
   scaleFactor: 100,

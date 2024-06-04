@@ -244,7 +244,6 @@ suite('DestinationManager', () => {
         const destinationsChanged =
             eventToPromise(DESTINATION_MANAGER_DESTINATIONS_CHANGED, instance);
         const testDestination = createTestDestination();
-        testDestination.printerManuallySelected = true;
         instance.setDestinationForTesting(testDestination);
         let managerDestinations = instance.getDestinations();
         assertEquals(/* expected length*/ 2, managerDestinations.length);
@@ -264,10 +263,6 @@ suite('DestinationManager', () => {
         const mergedDestination = managerDestinations[1]!;
         assertEquals(
             testDestination.id, mergedDestination.id, 'Is merged destination');
-        // UI managed values are not updated.
-        assertTrue(
-            mergedDestination.printerManuallySelected,
-            'UI managed field printerManuallySelected not updated');
         // Backend managed fields are updated.
         assertEquals(
             testDestination2.displayName, mergedDestination.displayName,
@@ -308,7 +303,6 @@ suite('DestinationManager', () => {
       async () => {
         // Set an existing destination with UI updated fields to merge.
         const testDestination = createTestDestination();
-        testDestination.printerManuallySelected = true;
         instance.setDestinationForTesting(testDestination);
         instance.initializeSession(FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL);
         let managerDestinations = instance.getDestinations();
@@ -327,10 +321,7 @@ suite('DestinationManager', () => {
         await stateChanged;
 
         managerDestinations = instance.getDestinations();
-        expectedDestinations = [
-          PDF_DESTINATION,
-          {...testDestination2, printerManuallySelected: true},
-        ];
+        expectedDestinations = [PDF_DESTINATION, testDestination2];
         assertDeepEquals(expectedDestinations, managerDestinations);
       });
 
