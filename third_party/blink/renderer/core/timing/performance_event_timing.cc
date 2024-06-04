@@ -40,6 +40,8 @@ PerformanceEventTiming* PerformanceEventTiming::CreateFirstInputTiming(
           entry->startTime(), entry->processingStart(), entry->processingEnd(),
           entry->cancelable(), entry->target(), entry->source());
   first_input->SetDuration(entry->duration());
+  first_input->SetInteractionIdAndOffset(entry->interactionId(),
+                                         entry->interactionOffset());
   return first_input;
 }
 
