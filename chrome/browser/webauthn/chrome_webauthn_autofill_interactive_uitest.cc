@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/scoped_logging_settings.h"
 #include "build/build_config.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -237,6 +238,9 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
                 base::Unretained(this)));
 
     CertVerifierBrowserTest::SetUp();
+
+    // Log call `FIDO_LOG` messages.
+    scoped_vmodule_.InitWithSwitches("device_event_log_impl=2");
   }
 
   void SetUpOnMainThread() override {
@@ -448,6 +452,7 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
   device::FidoRequestHandlerBase::ScopedAlwaysAllowBLECalls always_allow_ble_;
   std::unique_ptr<DelegateObserver> delegate_observer_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  logging::ScopedVmoduleSwitches scoped_vmodule_;
 };
 
 // Autofill integration test using the devtools virtual environment.
