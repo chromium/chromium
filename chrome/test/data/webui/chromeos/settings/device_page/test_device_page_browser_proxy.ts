@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DevicePageBrowserProxy, IdleBehavior, LidClosedBehavior, NoteAppInfo, NoteAppLockScreenSupport} from 'chrome://os-settings/os_settings.js';
+import {BatteryStatus, DevicePageBrowserProxy, IdleBehavior, LidClosedBehavior, NoteAppInfo, NoteAppLockScreenSupport} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
@@ -23,6 +23,7 @@ export class TestDevicePageBrowserProxy extends TestBrowserProxy implements
   private hasMouse_ = true;
   private hasPointingStick_ = true;
   private hasTouchpad_ = true;
+  private fakeBatteryStatus_: BatteryStatus = {} as BatteryStatus;
   private onNoteTakingAppsUpdated_!:
       (apps: NoteAppInfo[], waitingForAndroid: boolean) => void;
 
@@ -60,6 +61,10 @@ export class TestDevicePageBrowserProxy extends TestBrowserProxy implements
         'has-haptic-touchpad-changed', this.hasHapticTouchpad_);
   }
 
+  setBatteryStatus(batteryStatus: BatteryStatus): void {
+    this.fakeBatteryStatus_ = batteryStatus;
+  }
+
   initializePointers(): void {
     webUIListenerCallback('has-mouse-changed', this.hasMouse_);
     webUIListenerCallback('has-touchpad-changed', this.hasTouchpad_);
@@ -88,6 +93,7 @@ export class TestDevicePageBrowserProxy extends TestBrowserProxy implements
 
   updatePowerStatus(): void {
     this.methodCalled('updatePowerStatus');
+    webUIListenerCallback('battery-status-changed', this.fakeBatteryStatus_);
   }
 
   setPowerSource(powerSourceId: string): void {

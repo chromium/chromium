@@ -34,7 +34,7 @@ import {Route, routes} from '../router.js';
 
 import {getTemplate} from './audio.html.js';
 import {CrosAudioConfigInterface, getCrosAudioConfig} from './cros_audio_config.js';
-import {BatteryStatus} from './device_page_browser_proxy.js';
+import {BatteryStatus, DevicePageBrowserProxy, DevicePageBrowserProxyImpl} from './device_page_browser_proxy.js';
 import {FakeCrosAudioConfig} from './fake_cros_audio_config.js';
 
 /** Utility for keeping percent in inclusive range of [0,100].  */
@@ -153,6 +153,7 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
   protected showStyleTransfer: boolean;
 
   private audioAndCaptionsBrowserProxy_: AudioAndCaptionsPageBrowserProxy;
+  private devicePageBrowserProxy_: DevicePageBrowserProxy;
   private audioSystemProperties_: AudioSystemProperties;
   private audioSystemPropertiesObserverReceiver_:
       AudioSystemPropertiesObserverReceiver;
@@ -178,6 +179,8 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
 
     this.audioAndCaptionsBrowserProxy_ =
         AudioAndCaptionsPageBrowserProxyImpl.getInstance();
+
+    this.devicePageBrowserProxy_ = DevicePageBrowserProxyImpl.getInstance();
   }
 
   override ready(): void {
@@ -191,6 +194,10 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
         });
     this.addWebUiListener(
         'battery-status-changed', this.set.bind(this, 'batteryStatus_'));
+
+    // Manually call updatePowerStatus to ensure batteryStatus_ is initialized
+    // and up to date.
+    this.devicePageBrowserProxy_.updatePowerStatus();
   }
 
   /**

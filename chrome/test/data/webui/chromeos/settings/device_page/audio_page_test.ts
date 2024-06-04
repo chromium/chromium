@@ -5,19 +5,36 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {AudioAndCaptionsPageBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
-import {CrToggleElement, Router, routes, SettingsAudioElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {CrToggleElement, DevicePageBrowserProxyImpl, Router, routes, SettingsAudioElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestAudioAndCaptionsPageBrowserProxy} from './test_audio_and_captions_page_browser_proxy.js';
+import {TestDevicePageBrowserProxy} from './test_device_page_browser_proxy.js';
+
+const fakeNotPresentBatteryStatus = {
+  present: false,
+  charging: false,
+  calculating: false,
+  percent: 100,
+  statusText: '',
+};
+
+const fakePresentBatteryStatus = {
+  present: true,
+  charging: false,
+  calculating: false,
+  percent: 50,
+  statusText: '5 hours left',
+};
 
 suite('<settings-audio>', () => {
   let page: SettingsAudioElement;
-  let browserProxy: TestAudioAndCaptionsPageBrowserProxy;
+  let audioAndCaptionsPageBrowserProxy: TestAudioAndCaptionsPageBrowserProxy;
+  let devicePageBrowserProxy: TestDevicePageBrowserProxy;
 
   function getFakePrefs() {
     return {
@@ -40,18 +57,28 @@ suite('<settings-audio>', () => {
     };
   }
 
-  async function initPage() {
-    // Set up test browser proxy.
-    browserProxy = new TestAudioAndCaptionsPageBrowserProxy();
-    AudioAndCaptionsPageBrowserProxyImpl.setInstanceForTesting(browserProxy);
+  async function initPage(isBatteryStatusPresent: boolean) {
+    devicePageBrowserProxy.setBatteryStatus(
+        isBatteryStatusPresent ? fakePresentBatteryStatus :
+                                 fakeNotPresentBatteryStatus);
 
     page = document.createElement('settings-audio');
     page.set('prefs', getFakePrefs());
     document.body.appendChild(page);
     await flushTasks();
+    assertEquals(1, devicePageBrowserProxy.getCallCount('updatePowerStatus'));
   }
 
   setup(() => {
+    // Set up test browser proxies.
+    audioAndCaptionsPageBrowserProxy =
+        new TestAudioAndCaptionsPageBrowserProxy();
+    AudioAndCaptionsPageBrowserProxyImpl.setInstanceForTesting(
+        audioAndCaptionsPageBrowserProxy);
+
+    devicePageBrowserProxy = new TestDevicePageBrowserProxy();
+    DevicePageBrowserProxyImpl.setInstanceForTesting(devicePageBrowserProxy);
+
     Router.getInstance().navigateTo(routes.AUDIO);
   });
 
@@ -60,24 +87,13 @@ suite('<settings-audio>', () => {
     Router.getInstance().resetRouteForTesting();
   });
 
-  suite('When battery status is present', () => {
+  suite('battery status is present', () => {
     setup(async () => {
-      const batteryStatus = {
-        present: true,
-        charging: false,
-        calculating: false,
-        percent: 50,
-        statusText: '5 hours left',
-      };
-      webUIListenerCallback('battery-status-changed', batteryStatus);
-      await flushTasks();
+      await initPage(/*isBatteryStatusPresent=*/ true);
     });
 
     test(
-        'low battery sound toggle button should reflect pref value',
-        async () => {
-          await initPage();
-
+        'low battery sound toggle button should reflect pref value', () => {
           const lowBatterySoundToggle =
               page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
                   '#lowBatterySoundToggle');
@@ -93,9 +109,7 @@ suite('<settings-audio>', () => {
         });
 
     test(
-        'charging sounds toggle button should reflect pref value', async () => {
-          await initPage();
-
+        'charging sounds toggle button should reflect pref value', () => {
           const chargingSoundsToggle =
               page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
                   '#chargingSoundsToggle');
@@ -109,24 +123,41 @@ suite('<settings-audio>', () => {
           assertTrue(chargingSoundsToggle.checked);
           assertTrue(page.prefs.ash.charging_sounds.enabled.value);
         });
+
+    test(
+        'clicking on the device startup sound toggle or row updates the state',
+        () => {
+          const deviceStartupSoundToggle = strictQuery(
+              '#deviceStartupSoundToggle', page.shadowRoot, CrToggleElement);
+          assertTrue(isVisible(deviceStartupSoundToggle));
+          assertFalse(deviceStartupSoundToggle.checked);
+
+          deviceStartupSoundToggle.click();
+          assertTrue(deviceStartupSoundToggle.checked);
+
+          deviceStartupSoundToggle.click();
+          assertFalse(deviceStartupSoundToggle.checked);
+
+          const deviceStartupSoundToggleRow = strictQuery(
+              '#deviceSoundsSection > .settings-box', page.shadowRoot,
+              HTMLDivElement);
+
+          // Clicking on the row should toggle the checkbox.
+          deviceStartupSoundToggleRow.click();
+          assertTrue(deviceStartupSoundToggle.checked);
+
+          deviceStartupSoundToggleRow.click();
+          assertFalse(deviceStartupSoundToggle.checked);
+        });
   });
 
-  suite('When battery status is not present', () => {
+  suite('battery status is not present', () => {
     setup(async () => {
-      const batteryStatus = {
-        present: false,
-        charging: false,
-        calculating: false,
-        percent: 100,
-        statusText: '',
-      };
-      webUIListenerCallback('battery-status-changed', batteryStatus);
-      await flushTasks();
+      await initPage(/*isBatteryStatusPresent=*/ false);
     });
 
     test(
-        'charging sounds toggle and low battery sound are not visible',
-        async () => {
+        'charging sounds toggle and low battery sound are not visible', () => {
           const chargingSoundsToggle =
               page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
                   '#chargingSoundsToggle');
@@ -138,32 +169,4 @@ suite('<settings-audio>', () => {
           assertFalse(isVisible(lowBatterySoundToggle));
         });
   });
-
-  test(
-      'Clicking on the device startup sound toggle or row updates the state',
-      async () => {
-        await initPage();
-
-        const deviceStartupSoundToggle = strictQuery(
-            '#deviceStartupSoundToggle', page.shadowRoot, CrToggleElement);
-        assertTrue(isVisible(deviceStartupSoundToggle));
-        assertFalse(deviceStartupSoundToggle.checked);
-
-        deviceStartupSoundToggle.click();
-        assertTrue(deviceStartupSoundToggle.checked);
-
-        deviceStartupSoundToggle.click();
-        assertFalse(deviceStartupSoundToggle.checked);
-
-        const deviceStartupSoundToggleRow = strictQuery(
-            '#deviceSoundsSection > .settings-box', page.shadowRoot,
-            HTMLDivElement);
-
-        // Clicking on the row should toggle the checkbox.
-        deviceStartupSoundToggleRow.click();
-        assertTrue(deviceStartupSoundToggle.checked);
-
-        deviceStartupSoundToggleRow.click();
-        assertFalse(deviceStartupSoundToggle.checked);
-      });
 });
