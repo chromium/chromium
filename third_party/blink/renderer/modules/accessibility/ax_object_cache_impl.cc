@@ -737,6 +737,72 @@ void LogNodeDataSizeDistribution(
 
 }  // namespace
 
+#if DCHECK_IS_ON()
+#define DEBUG_STRING_CASE(ReasonName)                   \
+  case AXObjectCacheImpl::TreeUpdateReason::ReasonName: \
+    return #ReasonName
+
+static std::string TreeUpdateReasonAsDebugString(
+    const AXObjectCacheImpl::TreeUpdateReason& reason) {
+  switch (reason) {
+    DEBUG_STRING_CASE(kActiveDescendantChanged);
+    DEBUG_STRING_CASE(kAriaExpandedChanged);
+    DEBUG_STRING_CASE(kAriaOwnsChanged);
+    DEBUG_STRING_CASE(kAriaPressedChanged);
+    DEBUG_STRING_CASE(kAriaSelectedChanged);
+    DEBUG_STRING_CASE(kDelayEventFromPostNotification);
+    DEBUG_STRING_CASE(kDidShowMenuListPopup);
+    DEBUG_STRING_CASE(kEditableTextContentChanged);
+    DEBUG_STRING_CASE(kFocusableChanged);
+    DEBUG_STRING_CASE(kIdChanged);
+    DEBUG_STRING_CASE(kMarkDirtyFromHandleScroll);
+    DEBUG_STRING_CASE(kNodeIsAttached);
+    DEBUG_STRING_CASE(kNodeGainedFocus);
+    DEBUG_STRING_CASE(kNodeLostFocus);
+    DEBUG_STRING_CASE(kPostNotificationFromHandleLoadComplete);
+    DEBUG_STRING_CASE(kPostNotificationFromHandleLoadStart);
+    DEBUG_STRING_CASE(kPostNotificationFromHandleScrolledToAnchor);
+    DEBUG_STRING_CASE(kRemoveValidationMessageObjectFromFocusedUIElement);
+    DEBUG_STRING_CASE(
+        kRemoveValidationMessageObjectFromValidationMessageObject);
+    DEBUG_STRING_CASE(kRoleChangeFromAriaHasPopup);
+    DEBUG_STRING_CASE(kRoleChangeFromImageMapName);
+    DEBUG_STRING_CASE(kRoleChangeFromRoleOrType);
+    DEBUG_STRING_CASE(kRoleMaybeChangedFromEventListener);
+    DEBUG_STRING_CASE(kRoleMaybeChangedFromHref);
+    DEBUG_STRING_CASE(kRoleMaybeChangedOnSelect);
+    DEBUG_STRING_CASE(kSectionOrRegionRoleMaybeChangedFromLabel);
+    DEBUG_STRING_CASE(kSectionOrRegionRoleMaybeChangedFromLabelledBy);
+    DEBUG_STRING_CASE(kSectionOrRegionRoleMaybeChangedFromTitle);
+    DEBUG_STRING_CASE(kTextChangedOnNode);
+    DEBUG_STRING_CASE(kTextChangedOnClosestNodeForLayoutObject);
+    DEBUG_STRING_CASE(kTextMarkerDataAdded);
+    DEBUG_STRING_CASE(kUpdateActiveMenuOption);
+    DEBUG_STRING_CASE(kUpdateAriaOwns);
+    DEBUG_STRING_CASE(kUpdateTableRole);
+    DEBUG_STRING_CASE(kUseMapAttributeChanged);
+    DEBUG_STRING_CASE(kValidationMessageVisibilityChanged);
+    DEBUG_STRING_CASE(kChildrenChanged);
+    DEBUG_STRING_CASE(kMarkAXObjectDirty);
+    DEBUG_STRING_CASE(kMarkAXSubtreeDirty);
+    DEBUG_STRING_CASE(kTextChangedOnLayoutObject);
+  }
+
+  NOTREACHED_IN_MIGRATION();
+  return "Unknown";
+}
+
+std::string AXObjectCacheImpl::TreeUpdateParams::ToString() {
+  std::ostringstream str;
+  str << "Tree update: " << TreeUpdateReasonAsDebugString(update_reason);
+  if (event != ax::mojom::blink::Event::kNone) {
+    str << " with event " << event;
+  }
+
+  return str.str();
+}
+#endif  // DCHECK_IS_ON()
+
 // static
 AXObjectCache* AXObjectCacheImpl::Create(Document& document,
                                          const ui::AXMode& ax_mode) {
@@ -3500,10 +3566,7 @@ void AXObjectCacheImpl::FireTreeUpdatedEventForAXID(
       tree_update->event_intents.AsVector(), ax_object->GetDocument());
 
   // Kept here for convenient debugging:
-  // DVLOG(1) << "\n**** Processing tree update:" << "\n* AXObject: "
-  //         << ax_object
-  //         << "\n* Event: " << tree_update->event
-  //         << "\n* Reason: " << static_cast<int>(tree_update->update_reason);
+  // LOG(ERROR) << tree_update->ToString() << " on " << ax_object;
 
   switch (tree_update->update_reason) {
     case TreeUpdateReason::kChildrenChanged:
@@ -3559,10 +3622,7 @@ void AXObjectCacheImpl::FireTreeUpdatedEventForNode(
       tree_update->event_intents.AsVector(), &node->GetDocument());
 
   // Kept here for convenient debugging:
-  // DVLOG(1) << "\n**** Processing tree update:" << "\n* Node: " << node
-  //         << "\n* Layout Object: " << node->GetLayoutObject()
-  //         << "\n* Event: " << tree_update->event
-  //         << "\n* Reason: " << static_cast<int>(tree_update->update_reason);
+  // LOG(ERROR) << tree_update->ToString() << " on " << ax_object;
 
   switch (tree_update->update_reason) {
     case TreeUpdateReason::kActiveDescendantChanged:

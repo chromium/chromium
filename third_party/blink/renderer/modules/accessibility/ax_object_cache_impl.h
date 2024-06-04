@@ -642,6 +642,99 @@ class MODULES_EXPORT AXObjectCacheImpl
   HeapHashMap<AXID, Member<AXObject>>& GetObjects() { return objects_; }
 #endif
 
+  // The following represent functions that could be used as callbacks for
+  // DeferTreeUpdate. Every enum value represents a function that would be
+  // called after a tree update is complete.
+  // Please don't reuse these enums in multiple callers to DeferTreeUpdate().
+  // Instead, add an enum where the suffix describes where it's being called
+  // from (this helps when debugging an issue apparent in clean layout, by
+  // helping clarify the code paths).
+  enum class TreeUpdateReason : uint8_t {
+    // These updates are always associated with a DOM Node:
+    kActiveDescendantChanged,
+    kAriaExpandedChanged,
+    kAriaOwnsChanged,
+    kAriaPressedChanged,
+    kAriaSelectedChanged,
+    kDelayEventFromPostNotification,
+    kDidShowMenuListPopup,
+    kEditableTextContentChanged,
+    kFocusableChanged,
+    kIdChanged,
+    kMarkDirtyFromHandleScroll,
+    kNodeIsAttached,
+    kNodeGainedFocus,
+    kNodeLostFocus,
+    kPostNotificationFromHandleLoadComplete,
+    kPostNotificationFromHandleLoadStart,
+    kPostNotificationFromHandleScrolledToAnchor,
+    kRemoveValidationMessageObjectFromFocusedUIElement,
+    kRemoveValidationMessageObjectFromValidationMessageObject,
+    kRoleChangeFromAriaHasPopup,
+    kRoleChangeFromImageMapName,
+    kRoleChangeFromRoleOrType,
+    kRoleMaybeChangedFromEventListener,
+    kRoleMaybeChangedFromHref,
+    kRoleMaybeChangedOnSelect,
+    kSectionOrRegionRoleMaybeChangedFromLabel,
+    kSectionOrRegionRoleMaybeChangedFromLabelledBy,
+    kSectionOrRegionRoleMaybeChangedFromTitle,
+    kTextChangedOnNode,
+    kTextChangedOnClosestNodeForLayoutObject,
+    kTextMarkerDataAdded,
+    kUpdateActiveMenuOption,
+    kUpdateAriaOwns,
+    kUpdateTableRole,
+    kUseMapAttributeChanged,
+    kValidationMessageVisibilityChanged,
+
+    // These updates are associated with an AXID:
+    kChildrenChanged,
+    kMarkAXObjectDirty,
+    kMarkAXSubtreeDirty,
+    kTextChangedOnLayoutObject
+  };
+
+  struct TreeUpdateParams final : public GarbageCollected<TreeUpdateParams> {
+    TreeUpdateParams(
+        Node* node_arg,
+        AXID axid_arg,
+        ax::mojom::blink::EventFrom event_from_arg,
+        ax::mojom::blink::Action event_from_action_arg,
+        const BlinkAXEventIntentsSet& intents_arg,
+        TreeUpdateReason update_reason_arg,
+        ax::mojom::blink::Event event_arg = ax::mojom::blink::Event::kNone)
+        : node(node_arg),
+          axid(axid_arg),
+          event(event_arg),
+          event_from(event_from_arg),
+          update_reason(update_reason_arg),
+          event_from_action(event_from_action_arg) {
+      for (const auto& intent : intents_arg) {
+        DCHECK(node || axid) << "Either a DOM Node or AXID is required.";
+        DCHECK(!node || !axid) << "Provide a DOM Node *or* AXID, not both.";
+        event_intents.insert(intent.key, intent.value);
+      }
+    }
+
+    // Only either node or AXID will be filled at a time. Some events use Node
+    // while others use AXObject.
+    WeakMember<Node> node;
+    AXID axid;
+
+    ax::mojom::blink::Event event;
+    ax::mojom::blink::EventFrom event_from;
+    TreeUpdateReason update_reason;
+    ax::mojom::blink::Action event_from_action;
+    BlinkAXEventIntentsSet event_intents;
+
+    virtual ~TreeUpdateParams() = default;
+    void Trace(Visitor* visitor) const { visitor->Trace(node); }
+#if DCHECK_IS_ON()
+    std::string ToString();
+#endif
+  };
+
  protected:
   void ScheduleImmediateSerialization() override;
 
@@ -764,96 +857,6 @@ class MODULES_EXPORT AXObjectCacheImpl
     BlinkAXEventIntentsSet event_intents;
 
     void Trace(Visitor* visitor) const { visitor->Trace(target); }
-  };
-
-  // The following represent functions that could be used as callbacks for
-  // DeferTreeUpdate. Every enum value represents a function that would be
-  // called after a tree update is complete.
-  // Please don't reuse these enums in multiple callers to DeferTreeUpdate().
-  // Instead, add an enum where the suffix describes where it's being called
-  // from (this helps when debugging an issue apparent in clean layout, by
-  // helping clarify the code paths).
-  enum class TreeUpdateReason : uint8_t {
-    // These updates are always associated with a DOM Node:
-    kActiveDescendantChanged = 1,
-    kAriaExpandedChanged = 2,
-    kAriaOwnsChanged = 3,
-    kAriaPressedChanged = 4,
-    kAriaSelectedChanged = 5,
-    kDelayEventFromPostNotification = 6,
-    kDidShowMenuListPopup = 7,
-    kEditableTextContentChanged = 8,
-    kFocusableChanged = 9,
-    kIdChanged = 10,
-    kMarkDirtyFromHandleScroll = 11,
-    kNodeGainedFocus = 12,
-    kNodeLostFocus = 13,
-    kPostNotificationFromHandleLoadComplete = 15,
-    kPostNotificationFromHandleLoadStart = 16,
-    kPostNotificationFromHandleScrolledToAnchor = 17,
-    kRemoveValidationMessageObjectFromFocusedUIElement = 18,
-    kRemoveValidationMessageObjectFromValidationMessageObject = 19,
-    kRoleChangeFromAriaHasPopup = 20,
-    kRoleChangeFromImageMapName = 21,
-    kRoleChangeFromRoleOrType = 22,
-    kRoleMaybeChangedFromEventListener = 23,
-    kRoleMaybeChangedFromHref = 24,
-    kRoleMaybeChangedOnSelect = 25,
-    kSectionOrRegionRoleMaybeChangedFromLabel = 26,
-    kSectionOrRegionRoleMaybeChangedFromLabelledBy = 27,
-    kSectionOrRegionRoleMaybeChangedFromTitle = 28,
-    kTextChangedOnNode = 29,
-    kTextChangedOnClosestNodeForLayoutObject = 30,
-    kTextMarkerDataAdded = 31,
-    kNodeIsAttached = 32,
-    kUpdateActiveMenuOption = 33,
-    kUpdateAriaOwns = 34,
-    kUpdateTableRole = 35,
-    kUseMapAttributeChanged = 36,
-    kValidationMessageVisibilityChanged = 37,
-
-    // These updates are associated with an AXID:
-    kChildrenChanged = 100,
-    kMarkAXObjectDirty = 101,
-    kMarkAXSubtreeDirty = 102,
-    kTextChangedOnLayoutObject = 103
-  };
-
-  struct TreeUpdateParams final : public GarbageCollected<TreeUpdateParams> {
-    TreeUpdateParams(
-        Node* node_arg,
-        AXID axid_arg,
-        ax::mojom::blink::EventFrom event_from_arg,
-        ax::mojom::blink::Action event_from_action_arg,
-        const BlinkAXEventIntentsSet& intents_arg,
-        TreeUpdateReason update_reason_arg,
-        ax::mojom::blink::Event event_arg = ax::mojom::blink::Event::kNone)
-        : node(node_arg),
-          axid(axid_arg),
-          event(event_arg),
-          event_from(event_from_arg),
-          update_reason(update_reason_arg),
-          event_from_action(event_from_action_arg) {
-      for (const auto& intent : intents_arg) {
-        DCHECK(node || axid) << "Either a DOM Node or AXID is required.";
-        DCHECK(!node || !axid) << "Provide a DOM Node *or* AXID, not both.";
-        event_intents.insert(intent.key, intent.value);
-      }
-    }
-
-    // Only either node or AXID will be filled at a time. Some events use Node
-    // while others use AXObject.
-    WeakMember<Node> node;
-    AXID axid;
-
-    ax::mojom::blink::Event event;
-    ax::mojom::blink::EventFrom event_from;
-    TreeUpdateReason update_reason;
-    ax::mojom::blink::Action event_from_action;
-    BlinkAXEventIntentsSet event_intents;
-
-    virtual ~TreeUpdateParams() = default;
-    void Trace(Visitor* visitor) const { visitor->Trace(node); }
   };
 
   typedef HeapVector<Member<TreeUpdateParams>> TreeUpdateCallbackQueue;
