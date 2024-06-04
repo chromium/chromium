@@ -1962,28 +1962,28 @@ void TabDragController::AttachTabsToNewBrowserOnDrop() {
 }
 
 void TabDragController::RevertDrag() {
-  std::vector<raw_ptr<TabSlotView, VectorExperimental>> views;
-  if (header_drag_) {
-    views.push_back(drag_data_[0].attached_view.get());
-  }
-
   // If we're dragging a saved tab group, suspend tracking during the revert.
   // Otherwise, the group will get emptied out as we revert all the tabs.
   MaybePauseTrackingSavedTabGroup();
-  for (size_t i = first_tab_index(); i < drag_data_.size(); ++i) {
-    if (drag_data_[i].contents) {
-      // Contents is NULL if a tab was destroyed while the drag was under way.
-      views.push_back(drag_data_[i].attached_view.get());
-      RevertDragAt(i);
+
+  if (header_drag_) {
+    RevertHeaderDrag(group_.value());
+  } else {
+    for (size_t i = first_tab_index(); i < drag_data_.size(); ++i) {
+      if (drag_data_[i].contents) {
+        // Contents is NULL if a tab was destroyed while the drag was under way.
+        RevertDragAt(i);
+      }
     }
   }
+
   MaybeResumeTrackingSavedTabGroup();
 
   if (attached_context_) {
     if (did_restore_window_)
       MaximizeAttachedWindow();
     if (attached_context_ == source_context_) {
-      source_context_->StoppedDragging(views);
+      source_context_->StoppedDragging();
       if (header_drag_)
         source_context_->GetTabStripModel()->MoveTabGroup(group_.value());
     } else {
@@ -2067,18 +2067,52 @@ void TabDragController::RestoreInitialSelection() {
   source_context_->GetTabStripModel()->SetSelectionFromModel(selection_model);
 }
 
+void TabDragController::RevertHeaderDrag(tab_groups::TabGroupId group_id) {
+  CHECK_NE(current_state_, DragState::kNotStarted);
+  CHECK(source_context_);
+
+  const size_t first_tab_in_group_index = first_tab_index();
+  CHECK(drag_data_[first_tab_in_group_index].contents);
+
+  if (attached_context_ && attached_context_ == source_context_) {
+    base::AutoReset<bool> setter(&is_mutating_, true);
+    attached_context_->GetTabStripModel()->MoveGroupTo(
+        group_id,
+        drag_data_[first_tab_in_group_index].source_model_index.value());
+  } else {
+    for (size_t i = first_tab_index(); i < drag_data_.size(); ++i) {
+      if (drag_data_[i].contents) {
+        // Contents is NULL if a tab was destroyed while the drag was under way.
+        RevertDragAt(i);
+      }
+    }
+  }
+}
+
 void TabDragController::RevertDragAt(size_t drag_index) {
-  DCHECK_NE(current_state_, DragState::kNotStarted);
-  DCHECK(source_context_);
+  CHECK_NE(current_state_, DragState::kNotStarted);
+  CHECK(source_context_);
   // We can't revert if `contents` was destroyed during the drag, or if this is
   // a group header.
-  DCHECK(drag_data_[drag_index].contents);
+  CHECK(drag_data_[drag_index].contents);
 
   base::AutoReset<bool> setter(&is_mutating_, true);
   TabDragData* data = &(drag_data_[drag_index]);
   // The index we will try to insert the tab at. It may or may not end up at
   // this index, if the source tabstrip has changed since the drag began.
   int target_index = data->source_model_index.value();
+
+  std::optional<TabDragData::TabGroupData> drag_data = data->tab_group_data;
+
+  // Create the group if not present in the group model.
+  const std::optional<tab_groups::TabGroupId> existing_group =
+      drag_data.has_value() &&
+              source_context_->GetTabStripModel()
+                  ->group_model()
+                  ->ContainsTabGroup(drag_data.value().group_id)
+          ? std::make_optional(drag_data.value().group_id)
+          : std::nullopt;
+
   if (attached_context_) {
     int index = attached_context_->GetTabStripModel()->GetIndexOfWebContents(
         data->contents);
@@ -2100,7 +2134,7 @@ void TabDragController::RevertDragAt(size_t drag_index) {
       //             somehow.
       source_context_->GetTabStripModel()->InsertDetachedTabAt(
           target_index, std::move(detached_tab),
-          (data->pinned ? AddTabTypes::ADD_PINNED : 0));
+          (data->pinned ? AddTabTypes::ADD_PINNED : 0), existing_group);
     } else {
       // The Tab was moved within the TabDragContext where the drag
       // was initiated. Move it back to the starting location.
@@ -2116,7 +2150,7 @@ void TabDragController::RevertDragAt(size_t drag_index) {
         }
       }
       source_context_->GetTabStripModel()->MoveWebContentsAt(
-          index, target_index, false);
+          index, target_index, false, existing_group);
     }
   } else {
     // The Tab was detached from the TabDragContext where the drag
@@ -2124,20 +2158,14 @@ void TabDragController::RevertDragAt(size_t drag_index) {
     // We need to put it back into the source TabDragContext.
     source_context_->GetTabStripModel()->InsertDetachedTabAt(
         target_index, std::move(data->owned_tab),
-        (data->pinned ? AddTabTypes::ADD_PINNED : 0));
+        (data->pinned ? AddTabTypes::ADD_PINNED : 0), existing_group);
   }
-  TabStripModel* source_model = source_context_->GetTabStripModel();
-  source_model->UpdateGroupForDragRevert(
-      source_model->GetIndexOfWebContents(data->contents),
-      data->tab_group_data.has_value()
-          ? std::optional<tab_groups::TabGroupId>{data->tab_group_data.value()
-                                                      .group_id}
-          : std::nullopt,
-      data->tab_group_data.has_value()
-          ? std::optional<
-                tab_groups::TabGroupVisualData>{data->tab_group_data.value()
-                                                    .group_visual_data}
-          : std::nullopt);
+
+  if (drag_data.has_value() && !existing_group.has_value()) {
+    source_context_->GetTabStripModel()->AddToNewGroup(
+        {target_index}, drag_data.value().group_id,
+        drag_data.value().group_visual_data);
+  }
 }
 
 void TabDragController::CompleteDrag() {
@@ -2164,8 +2192,7 @@ void TabDragController::CompleteDrag() {
         MaximizeAttachedWindow();
 #endif  // !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_MAC)
     }
-    attached_context_->StoppedDragging(
-        GetViewsMatchingDraggedContents(attached_context_));
+    attached_context_->StoppedDragging();
 
     // Tabbed PWAs with a home tab should have a home tab in every window.
     // This means when dragging tabs out to create a new window, a home tab

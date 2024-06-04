@@ -492,6 +492,9 @@ class TabDragController : public views::WidgetObserver,
   // Reverts a cancelled drag operation.
   void RevertDrag();
 
+  // Reverts the drag for all the tabs belonging to a group.
+  void RevertHeaderDrag(tab_groups::TabGroupId group_id);
+
   // Reverts the tab at |drag_index| in |drag_data_|.
   void RevertDragAt(size_t drag_index);
 

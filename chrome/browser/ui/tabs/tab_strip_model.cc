@@ -541,8 +541,9 @@ int TabStripModel::MoveWebContentsAt(int index,
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
 
   CHECK(ContainsIndex(index));
+  const bool pinned = IsTabPinned(index);
 
-  to_position = ConstrainMoveIndex(to_position, IsTabPinned(index));
+  to_position = ConstrainMoveIndex(to_position, pinned);
 
   if (index == to_position) {
     return to_position;
@@ -550,9 +551,24 @@ int TabStripModel::MoveWebContentsAt(int index,
 
   std::optional<tab_groups::TabGroupId> group =
       GetGroupToAssign(index, to_position);
+  MoveTabToIndexImpl(index, to_position, group, pinned, select_after_move);
+
+  return to_position;
+}
+
+int TabStripModel::MoveWebContentsAt(
+    int index,
+    int to_position,
+    bool select_after_move,
+    std::optional<tab_groups::TabGroupId> group) {
+  ReentrancyCheck reentrancy_check(&reentrancy_guard_);
+
+  CHECK(ContainsIndex(index));
+
+  to_position = ConstrainMoveIndex(to_position, IsTabPinned(index));
   MoveTabToIndexImpl(index, to_position, group, IsTabPinned(index),
                      select_after_move);
-
+  ValidateTabStripModel();
   return to_position;
 }
 
@@ -1077,14 +1093,33 @@ void TabStripModel::MoveTabPrevious() {
 }
 
 tab_groups::TabGroupId TabStripModel::AddToNewGroup(
-    const std::vector<int>& indices) {
+    const std::vector<int> indices,
+    const tab_groups::TabGroupId group_id,
+    tab_groups::TabGroupVisualData visual_data) {
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
   CHECK(SupportsTabGroups());
 
   // Ensure that the indices are nonempty, sorted, and unique.
-  DCHECK_GT(indices.size(), 0u);
-  DCHECK(base::ranges::is_sorted(indices));
-  DCHECK(base::ranges::adjacent_find(indices) == indices.end());
+  CHECK_GT(indices.size(), 0u);
+  CHECK(base::ranges::is_sorted(indices));
+  CHECK(base::ranges::adjacent_find(indices) == indices.end());
+  CHECK(!group_model_->ContainsTabGroup(group_id));
+
+  AddToNewGroupImpl(indices, group_id, visual_data);
+  delegate_->GroupAdded(group_id);
+
+  return group_id;
+}
+
+tab_groups::TabGroupId TabStripModel::AddToNewGroup(
+    const std::vector<int> indices) {
+  ReentrancyCheck reentrancy_check(&reentrancy_guard_);
+  CHECK(SupportsTabGroups());
+
+  // Ensure that the indices are nonempty, sorted, and unique.
+  CHECK_GT(indices.size(), 0u);
+  CHECK(base::ranges::is_sorted(indices));
+  CHECK(base::ranges::adjacent_find(indices) == indices.end());
 
   // The odds of |new_group| colliding with an existing group are astronomically
   // low. If there is a collision, a DCHECK will fail in |AddToNewGroupImpl()|,
@@ -1096,11 +1131,12 @@ tab_groups::TabGroupId TabStripModel::AddToNewGroup(
   // TODO(crbug.com/339858272) : Consolidate all default save logic to
   // TabStripModel::AddToNewGroupImpl.
   delegate_->GroupAdded(new_group);
+
   return new_group;
 }
 
-void TabStripModel::AddToExistingGroup(const std::vector<int>& indices,
-                                       const tab_groups::TabGroupId& group,
+void TabStripModel::AddToExistingGroup(const std::vector<int> indices,
+                                       const tab_groups::TabGroupId group,
                                        const bool add_to_end) {
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
 
@@ -1139,32 +1175,6 @@ void TabStripModel::AddToGroupForRestore(const std::vector<int>& indices,
     AddToExistingGroupImpl(indices, group);
   else
     AddToNewGroupImpl(indices, group);
-}
-
-void TabStripModel::UpdateGroupForDragRevert(
-    int index,
-    std::optional<tab_groups::TabGroupId> group_id,
-    std::optional<tab_groups::TabGroupVisualData> group_data) {
-  ReentrancyCheck reentrancy_check(&reentrancy_guard_);
-
-  if (!group_model_) {
-    return;
-  }
-
-  if (group_id.has_value()) {
-    const bool group_exists = group_model_->ContainsTabGroup(group_id.value());
-    if (!group_exists) {
-      group_model_->AddTabGroup(group_id.value(), group_data);
-    }
-    MoveTabToIndexImpl(index, index, group_id, IsTabPinned(index), false);
-    if (!group_exists) {
-      // TODO(crbug.com/339858272) : Consolidate all default save logic to
-      // TabStripModel::AddToNewGroupImpl.
-      delegate_->GroupAdded(group_id.value());
-    }
-  } else {
-    MoveTabToIndexImpl(index, index, std::nullopt, IsTabPinned(index), false);
-  }
 }
 
 void TabStripModel::RemoveFromGroup(const std::vector<int>& indices) {
@@ -2332,8 +2342,10 @@ void TabStripModel::MoveSelectedTabsToImpl(int index,
   }
 }
 
-void TabStripModel::AddToNewGroupImpl(const std::vector<int>& indices,
-                                      const tab_groups::TabGroupId& new_group) {
+void TabStripModel::AddToNewGroupImpl(
+    const std::vector<int>& indices,
+    const tab_groups::TabGroupId& new_group,
+    std::optional<tab_groups::TabGroupVisualData> visual_data) {
   if (!group_model_) {
     return;
   }
@@ -2348,7 +2360,7 @@ void TabStripModel::AddToNewGroupImpl(const std::vector<int>& indices,
     return true;
   }());
 
-  group_model_->AddTabGroup(new_group, std::nullopt);
+  group_model_->AddTabGroup(new_group, visual_data);
 
   // Find a destination for the first tab that's not pinned or inside another
   // group. We will stack the rest of the tabs up to its right.
@@ -2667,7 +2679,6 @@ void TabStripModel::AddTabToGroupModel(const tab_groups::TabGroupId& group) {
   if (!group_model_) {
     return;
   }
-
   TabGroup* tab_group = group_model_->GetTabGroup(group);
   tab_group->AddTab();
 }

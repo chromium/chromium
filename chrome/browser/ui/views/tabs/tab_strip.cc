@@ -615,19 +615,23 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
     tab_strip_->controller_->OnStoppedDragging();
   }
 
-  void StoppedDragging(
-      const std::vector<raw_ptr<TabSlotView, VectorExperimental>>& views)
-      override {
+  void StoppedDragging() override {
     // Let the controller know that the user stopped dragging tabs.
     tab_strip_->controller_->OnStoppedDragging();
     UpdateDragEventSourceCrashKey({});
 
     // Animate the dragged views to their ideal positions. We'll hand them back
     // to TabContainer when the animation ends.
-    for (TabSlotView* view : views) {
+    for (views::View* child : children()) {
       gfx::Rect ideal_bounds;
+      TabSlotView* const slot_view = views::AsViewClass<TabSlotView>(child);
 
-      TabGroupHeader* header = views::AsViewClass<TabGroupHeader>(view);
+      if (!slot_view) {
+        continue;
+      }
+
+      const TabGroupHeader* const header =
+          views::AsViewClass<TabGroupHeader>(slot_view);
       if (header) {
         // Disable the group highlight now that the drag is ended.
         tab_strip_->tab_container_->GetGroupViews(header->group().value())
@@ -637,13 +641,13 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
             tab_strip_->tab_container_->GetIdealBounds(header->group().value());
       } else {
         ideal_bounds = tab_strip_->tab_container_->GetIdealBounds(
-            tab_strip_->GetModelIndexOf(view).value());
+            tab_strip_->GetModelIndexOf(slot_view).value());
       }
 
       bounds_animator_.AnimateViewTo(
-          view, ideal_bounds,
+          slot_view, ideal_bounds,
           std::make_unique<ResetDraggingStateDelegate>(
-              *tab_strip_->tab_container_, *view));
+              *tab_strip_->tab_container_, *slot_view));
     }
   }
 

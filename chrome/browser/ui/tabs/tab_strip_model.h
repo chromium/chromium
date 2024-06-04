@@ -299,6 +299,15 @@ class TabStripModel : public TabGroupController {
   // one slot. It returns the index the web contents is actually moved to.
   int MoveWebContentsAt(int index, int to_position, bool select_after_move);
 
+  // This is similar to `MoveWebContentsAt` but takes in an additional `group`
+  // parameter that the tab is assigned to with the move. This does not make a
+  // best case effort to ensure group contiguity and would rather CHECK if it
+  // breaks group contiguity.
+  int MoveWebContentsAt(int index,
+                        int to_position,
+                        bool select_after_move,
+                        std::optional<tab_groups::TabGroupId> group);
+
   // Moves the selected tabs to |index|. |index| is treated as if the tab strip
   // did not contain any of the selected tabs. For example, if the tabstrip
   // contains [A b c D E f] (upper case selected) and this is invoked with 1 the
@@ -485,15 +494,23 @@ class TabStripModel : public TabGroupController {
   // it. Pins all of the tabs if any of them were pinned, and reorders the tabs
   // so they are contiguous and do not split an existing group in half. Returns
   // the new group. |indices| must be sorted in ascending order.
-  tab_groups::TabGroupId AddToNewGroup(const std::vector<int>& indices);
+  tab_groups::TabGroupId AddToNewGroup(const std::vector<int> indices);
+
+  // Creates a new group from an `group_id` and `visual_data`. This is used in
+  // cases to re-create a deleted group like restore and tab dragging. All the
+  // tabs at `indices` are moved to the group created.
+  tab_groups::TabGroupId AddToNewGroup(
+      const std::vector<int> indices,
+      const tab_groups::TabGroupId group_id,
+      tab_groups::TabGroupVisualData visual_data);
 
   // Add the set of tabs pointed to by |indices| to the given tab group |group|.
   // The tabs take on the pinnedness of the tabs already in the group. Tabs
   // before the group will move to the start, while tabs after the group will
   // move to the end. If |add_to_end| is true, all tabs will instead move to
   // the end. |indices| must be sorted in ascending order.
-  void AddToExistingGroup(const std::vector<int>& indices,
-                          const tab_groups::TabGroupId& group,
+  void AddToExistingGroup(const std::vector<int> indices,
+                          const tab_groups::TabGroupId group,
                           const bool add_to_end = false);
 
   // Moves the set of tabs indicated by |indices| to precede the tab at index
@@ -508,14 +525,6 @@ class TabStripModel : public TabGroupController {
   // code.
   void AddToGroupForRestore(const std::vector<int>& indices,
                             const tab_groups::TabGroupId& group);
-
-  // Updates the tab group of the tab at |index|. If |group| is nullopt, the tab
-  // will be removed from the current group. If |group| does not exist, it will
-  // create the group then add the tab to the group.
-  void UpdateGroupForDragRevert(
-      int index,
-      std::optional<tab_groups::TabGroupId> group_id,
-      std::optional<tab_groups::TabGroupVisualData> group_data);
 
   // Removes the set of tabs pointed to by |indices| from the the groups they
   // are in, if any. The tabs are moved out of the group if necessary. |indices|
@@ -817,8 +826,10 @@ class TabStripModel : public TabGroupController {
 
   // Adds tabs to newly-allocated group id |new_group|. This group must be new
   // and have no tabs in it.
-  void AddToNewGroupImpl(const std::vector<int>& indices,
-                         const tab_groups::TabGroupId& new_group);
+  void AddToNewGroupImpl(
+      const std::vector<int>& indices,
+      const tab_groups::TabGroupId& new_group,
+      std::optional<tab_groups::TabGroupVisualData> visual_data = std::nullopt);
 
   // Adds tabs to existing group |group|. This group must have been initialized
   // by a previous call to |AddToNewGroupImpl()|.
