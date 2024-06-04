@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.omnibox;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.anyInt;
+import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
@@ -74,6 +76,8 @@ public class SpannableAutocompleteEditTextModelUnitTest {
         assertFalse(SpannableAutocompleteEditTextModel.isNonCompositionalText("123네이버"));
     }
 
+    // Dispatch the key code and check that it committed the autocomplete suggestion without
+    // dispatching the key event to the delegate.
     private void confirmAutocompletionApplied(int keyCode) {
         var event = new KeyEvent(KeyEvent.ACTION_DOWN, keyCode);
 
@@ -89,6 +93,28 @@ public class SpannableAutocompleteEditTextModelUnitTest {
         verifyNoMoreInteractions(mConnection, mDelegate);
     }
 
+    // Dispatch the key code and check that it committed the autocomplete suggestion but also
+    // forwarded the key event to the delegate.
+    private void confirmAutocompletionAppliedWithKey(int keyCode) {
+        var event = new KeyEvent(KeyEvent.ACTION_DOWN, keyCode);
+
+        clearInvocations(mConnection, mDelegate);
+        mModel.dispatchKeyEvent(event);
+        verify(mDelegate).super_dispatchKeyEvent(event);
+        verify(mConnection).commitAutocomplete();
+
+        // Allow the handler to implement the action possibly by setting the selection or not.
+        verify(mDelegate, atLeast(0)).setSelection(anyInt(), anyInt());
+
+        // Secondary, not directly linked to the test.
+        verify(mConnection, atLeastOnce()).onBeginImeCommand();
+        verify(mConnection, atLeastOnce()).onEndImeCommand();
+        assertEquals(0, mImeCommandNestLevel.get());
+        verifyNoMoreInteractions(mConnection, mDelegate);
+    }
+
+    // Dispatch the key code and check that the even was forwarded to the delegate without
+    // committing the suggestion.
     private void confirmAutocompletionBypassed(int keyCode) {
         var event = new KeyEvent(KeyEvent.ACTION_DOWN, keyCode);
 
@@ -109,12 +135,10 @@ public class SpannableAutocompleteEditTextModelUnitTest {
         mModel.setLayoutDirectionIsLtr(true);
         mCurrentState.setAutocompleteText(Optional.of("google.com"));
 
-        confirmAutocompletionApplied(KeyEvent.KEYCODE_DPAD_RIGHT);
+        confirmAutocompletionAppliedWithKey(KeyEvent.KEYCODE_DPAD_RIGHT);
         confirmAutocompletionApplied(KeyEvent.KEYCODE_ENTER);
         confirmAutocompletionApplied(KeyEvent.KEYCODE_TAB);
-
-        // The following keys should not apply autocompletion.
-        confirmAutocompletionBypassed(KeyEvent.KEYCODE_DPAD_LEFT);
+        confirmAutocompletionAppliedWithKey(KeyEvent.KEYCODE_DPAD_LEFT);
     }
 
     @Test
@@ -122,12 +146,10 @@ public class SpannableAutocompleteEditTextModelUnitTest {
         mModel.setLayoutDirectionIsLtr(false);
         mCurrentState.setAutocompleteText(Optional.of("google.com"));
 
-        confirmAutocompletionApplied(KeyEvent.KEYCODE_DPAD_LEFT);
+        confirmAutocompletionAppliedWithKey(KeyEvent.KEYCODE_DPAD_LEFT);
         confirmAutocompletionApplied(KeyEvent.KEYCODE_ENTER);
         confirmAutocompletionApplied(KeyEvent.KEYCODE_TAB);
-
-        // The following keys should not apply autocompletion.
-        confirmAutocompletionBypassed(KeyEvent.KEYCODE_DPAD_RIGHT);
+        confirmAutocompletionAppliedWithKey(KeyEvent.KEYCODE_DPAD_RIGHT);
     }
 
     @Test

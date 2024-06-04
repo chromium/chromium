@@ -261,6 +261,15 @@ public class SpannableAutocompleteEditTextModel implements AutocompleteEditTextM
         }
     }
 
+    // These cursor movements commit the autocomplete and apply the movement.
+    private boolean cursorMovementCommitsAutocomplete(final KeyEvent event) {
+        int code = event.getKeyCode();
+        return code == KeyEvent.KEYCODE_MOVE_END
+                || code == KeyEvent.KEYCODE_MOVE_HOME
+                || code == KeyEvent.KEYCODE_DPAD_LEFT
+                || code == KeyEvent.KEYCODE_DPAD_RIGHT;
+    }
+
     @Override
     public boolean dispatchKeyEvent(final KeyEvent event) {
         if (DEBUG) Log.i(TAG, "dispatchKeyEvent");
@@ -270,16 +279,26 @@ public class SpannableAutocompleteEditTextModel implements AutocompleteEditTextM
 
         boolean retVal;
         mInputConnection.onBeginImeCommand();
-        if (hasAutocomplete()) {
+        if (hasAutocomplete() && event.getAction() == KeyEvent.ACTION_DOWN) {
             if (event.getKeyCode() == KeyEvent.KEYCODE_FORWARD_DEL) {
                 // The editor doesn't see the selected text so won't handle forward delete.
                 clearAutocompleteText();
                 mLastEditWasTyping = false;
+
                 retVal = true;
-            } else if (((mLayoutDirectionIsLtr && event.getKeyCode() == KeyEvent.KEYCODE_DPAD_RIGHT)
-                            || (!mLayoutDirectionIsLtr
-                                    && event.getKeyCode() == KeyEvent.KEYCODE_DPAD_LEFT)
-                            || (event.getKeyCode() == KeyEvent.KEYCODE_TAB)
+            } else if (cursorMovementCommitsAutocomplete(event)) {
+                // These commands treat the autocomplete suggestion as a selection and then apply
+                // the cursor movement.
+                int currentPos = mCurrentState.getSelStart();
+                int totalLength = mCurrentState.getUserText().length();
+                if (mCurrentState.getAutocompleteText().isPresent()) {
+                    totalLength += mCurrentState.getAutocompleteText().get().length();
+                }
+
+                mInputConnection.commitAutocomplete();
+                mDelegate.setSelection(currentPos, totalLength);
+                retVal = mDelegate.super_dispatchKeyEvent(event);
+            } else if (((event.getKeyCode() == KeyEvent.KEYCODE_TAB)
                             || (event.getKeyCode() == KeyEvent.KEYCODE_ENTER))
                     && event.getAction() == KeyEvent.ACTION_DOWN) {
                 mInputConnection.commitAutocomplete();
@@ -290,6 +309,7 @@ public class SpannableAutocompleteEditTextModel implements AutocompleteEditTextM
         } else {
             retVal = mDelegate.super_dispatchKeyEvent(event);
         }
+
         mInputConnection.onEndImeCommand();
         return retVal;
     }
