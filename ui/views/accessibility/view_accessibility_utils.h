@@ -26,6 +26,8 @@ class VIEWS_EXPORT ViewAccessibilityUtils {
   // should be handled separately.
   static bool IsFocusedChildWidget(Widget* widget, const View* focused_view);
 
+  // Copies the accessible attributes from `source` to `destination`. If
+  // attributes are set in both, the ones in source takes precedence.
   static void Merge(const ui::AXNodeData& source, ui::AXNodeData& destination);
 };
 

@@ -163,14 +163,19 @@ void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
     return;
   }
 
-  // Initialize the data with the attributes from the cache before updating it
-  // with the latest from the view. This is necessary to allow us to iteratively
-  // migrate the Views to use the new setters and reach the end goal of the
-  // ViewsAX project, which is to only return the cached data from here.
-  // TODO(ViewsAX): Remove this once the project is completed.
-  views::ViewAccessibilityUtils::Merge(/*source*/ data_, /*destination*/ *data);
+  data->role = data_.role;
+  data->SetNameFrom(GetCachedNameFrom());
+  if (!GetCachedName().empty()) {
+    data->SetName(GetCachedName());
+  }
 
   view_->GetAccessibleNodeData(data);
+
+  // Copy the attributes that are in the cache (`data_`) into the computed
+  // `data` object. This is done after the `data` object was initialized with
+  // the attributes computed by `View::GetAccessibleNodeData` to ensure that the
+  // cached attributes take precedence.
+  views::ViewAccessibilityUtils::Merge(/*source*/ data_, /*destination*/ *data);
 
   // TODO(crbug.com/325137417): This next check should be added to SetRole.
   if (data->role == ax::mojom::Role::kAlertDialog) {
@@ -302,10 +307,6 @@ void ViewAccessibility::SetProperties(
     }
   }
 
-  // TODO(crbug.com/325137417): Remove once we only initialize the cache when a
-  // platform accessibility API is used.
-  InitializeCacheIfNeeded();
-
   // Defining the NameFrom value without specifying the name doesn't make much
   // sense. The only exception might be if the NameFrom is setting the name to
   // explicitly empty. In order to prevent surprising/confusing behavior, we
@@ -403,10 +404,6 @@ void ViewAccessibility::SetRole(const ax::mojom::Role role) {
   data_.role = role;
   UpdateIgnoredState();
   UpdateInvisibleState();
-
-  // TODO(crbug.com/325137417): Remove once we only initialize the cache when a
-  // platform accessibility API is used.
-  InitializeCacheIfNeeded();
 }
 
 void ViewAccessibility::SetRole(const ax::mojom::Role role,
@@ -433,9 +430,9 @@ void ViewAccessibility::SetName(std::u16string name,
                                 ax::mojom::NameFrom name_from) {
   RETURN_IF_UNAVAILABLE();
 
-  // TODO(crbug.com/325137417): Remove once we only initialize the cache when a
+  // TODO(crbug.com/325137417): Remove once we initialize the cache when a
   // platform accessibility API is used.
-  InitializeCacheIfNeeded();
+  InitializeRoleIfNeeded();
 
   // Allow subclasses to adjust the name.
   view_->AdjustAccessibleName(name, name_from);
@@ -487,9 +484,9 @@ void ViewAccessibility::SetName(const std::u16string& name) {
 
 void ViewAccessibility::SetName(View& naming_view) {
   DCHECK_NE(view_, &naming_view);
-  // TODO(crbug.com/325137417): Remove once we only initialize the cache when a
+  // TODO(crbug.com/325137417): Remove once we initialize the cache when a
   // platform accessibility API is used.
-  InitializeCacheIfNeeded();
+  InitializeRoleIfNeeded();
 
   // TODO(crbug.com/325137417): This is a temporary workaround to avoid the
   // DCHECK below in the scenario where the View's accessible name is being set
@@ -590,9 +587,9 @@ bool ViewAccessibility::GetIsEnabled() const {
 void ViewAccessibility::SetDescription(
     const std::string& description,
     const ax::mojom::DescriptionFrom description_from) {
-  // TODO(crbug.com/325137417): Remove once we only initialize the cache when a
+  // TODO(crbug.com/325137417): Remove once we initialize the cache when a
   // platform accessibility API is used.
-  InitializeCacheIfNeeded();
+  InitializeRoleIfNeeded();
   if (description.empty() &&
       description_from !=
           ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty) {
@@ -613,9 +610,9 @@ void ViewAccessibility::SetDescription(
 
 void ViewAccessibility::SetDescription(View& describing_view) {
   DCHECK_NE(view_, &describing_view);
-  // TODO(crbug.com/325137417): Remove once we only initialize the cache when a
+  // TODO(crbug.com/325137417): Remove once we initialize the cache when a
   // platform accessibility API is used.
-  InitializeCacheIfNeeded();
+  InitializeRoleIfNeeded();
 
   std::u16string name = describing_view.GetViewAccessibility().GetCachedName();
   DCHECK(!name.empty())
@@ -800,30 +797,24 @@ void ViewAccessibility::set_accessibility_events_callback(
   accessibility_events_callback_ = std::move(callback);
 }
 
-void ViewAccessibility::InitializeCacheIfNeeded() {
+void ViewAccessibility::InitializeRoleIfNeeded() {
   RETURN_IF_UNAVAILABLE();
-  if (initialized_cache_ || initializing_cache_) {
+  if (data_.role != ax::mojom::Role::kUnknown) {
     return;
   }
-  base::AutoReset<bool> initializing(&initializing_cache_, true);
-
-  // There will always be a role set before we can initialize the cache.
-  ax::mojom::Role role = data_.role;
 
   // TODO(crbug.com/325137417): We should initialize the id and class name
   // attributes right here, but cannot do it at the moment because there are
   // setters called from views' constructors. Once all constructors are cleared
   // from accessibility setters (the initial state should be set from
   // `View::GetAccessibleNodeData`), add those missing attributes.
-  view_->GetAccessibleNodeData(&data_);
+  ui::AXNodeData data;
+  view_->GetAccessibleNodeData(&data);
 
-  data_.role = role;
+  data_.role = data.role;
 
   UpdateIgnoredState();
   UpdateInvisibleState();
-  UpdateFocusableState();
-
-  initialized_cache_ = true;
 }
 
 void ViewAccessibility::OnWidgetClosing(Widget* widget) {

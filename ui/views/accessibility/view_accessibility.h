@@ -415,13 +415,14 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   FRIEND_TEST_ALL_PREFIXES(ViewTest,
                            WidgetObserverViewWidgetClosedViewReparented);
 
-  // Initializes the `data_` object with the values returned from
-  // `View::GetAccessibleNodeData` called on the owning view.
+  // Initializes the role attribute on the `data_` object with the one returned
+  // from `View::GetAccessibleNodeData` called on the owning view to ensure that
+  // the role is set before calling `SetName` or `SetDescription`.
   //
   // TODO(crbug.com/325137417): This is currently called by the setters before
-  // they perform their operations, but it will eventually be called only when a
-  // platform accessibility API is trying to query the data.
-  void InitializeCacheIfNeeded();
+  // they perform their operations, but it won't be needed once we rely entirely
+  // on the cache and initialize it with the output of `GetAccessibleNodeData`.
+  void InitializeRoleIfNeeded();
 
   // Prune/Unprune all descendant views from the accessibility tree. We prune
   // for two reasons: 1) The view has been explicitly marked as a leaf node, 2)
@@ -463,9 +464,6 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   // unioning the data from both systems. This is done in
   // GetAccessibleNodeData().
   ui::AXNodeData data_;
-
-  bool initialized_cache_ = false;
-  bool initializing_cache_ = false;
 
   // If set to true, anything that is a descendant of this view will be hidden
   // from accessibility by 'pruning' it from the tree, and setting `pruned_` to
