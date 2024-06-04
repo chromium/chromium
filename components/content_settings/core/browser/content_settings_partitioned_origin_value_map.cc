@@ -25,7 +25,7 @@ namespace {
 class RuleIteratorWrapper : public RuleIterator {
  public:
   RuleIteratorWrapper(std::unique_ptr<RuleIterator> rule_iterator_impl,
-                      std::unique_ptr<base::AutoLock> auto_lock)
+                      base::MovableAutoLock auto_lock)
       : rule_iterator_impl_(std::move(rule_iterator_impl)),
         auto_lock_(std::move(auto_lock)) {}
 
@@ -35,7 +35,7 @@ class RuleIteratorWrapper : public RuleIterator {
 
  private:
   std::unique_ptr<RuleIterator> rule_iterator_impl_;
-  std::unique_ptr<base::AutoLock> auto_lock_;
+  base::MovableAutoLock auto_lock_;
 };
 
 }  // namespace
@@ -44,7 +44,7 @@ std::unique_ptr<RuleIterator>
 PartitionedOriginValueMap::GetRuleIterator(
     ContentSettingsType content_type,
     const PartitionKey& partition_key) const NO_THREAD_SAFETY_ANALYSIS {
-  auto auto_lock = std::make_unique<base::AutoLock>(lock_);
+  base::MovableAutoLock auto_lock(lock_);
   auto it = partitions_.find(partition_key);
   if (it == partitions_.end()) {
     return nullptr;

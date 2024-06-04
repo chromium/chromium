@@ -33,7 +33,7 @@ class RuleIteratorImpl : public RuleIterator {
  public:
   RuleIteratorImpl(const Iterator& current_rule,
                    const Iterator& rule_end,
-                   std::unique_ptr<base::AutoLock> auto_lock,
+                   base::MovableAutoLock&& auto_lock,
                    base::AutoReset<bool> iterating)
       : auto_lock_(std::move(auto_lock)),
         current_rule_(current_rule),
@@ -54,7 +54,7 @@ class RuleIteratorImpl : public RuleIterator {
   }
 
  private:
-  std::unique_ptr<base::AutoLock> auto_lock_;
+  base::MovableAutoLock auto_lock_;
   Iterator current_rule_;
   Iterator rule_end_;
   base::AutoReset<bool> iterating_;
@@ -68,17 +68,17 @@ std::unique_ptr<RuleIterator> OriginValueMap::GetRuleIterator(
   // must be passed to the |RuleIteratorImpl| in a locked state, so that nobody
   // can access |entries_| after |find()| but before the |RuleIteratorImpl| is
   // created.
-  auto auto_lock = std::make_unique<base::AutoLock>(lock_);
+  base::MovableAutoLock auto_lock(lock_);
   auto it = entry_index().find(content_type);
   if (it == entry_index().end()) {
     return nullptr;
   }
-    CHECK(!iterating_);
-    base::AutoReset<bool> iterating(&iterating_, true);
-    return std::make_unique<
-        RuleIteratorImpl<HostIndexedContentSettings::Iterator>>(
-        it->second.begin(), it->second.end(), std::move(auto_lock),
-        std::move(iterating));
+  CHECK(!iterating_);
+  base::AutoReset<bool> iterating(&iterating_, true);
+  return std::make_unique<
+      RuleIteratorImpl<HostIndexedContentSettings::Iterator>>(
+      it->second.begin(), it->second.end(), std::move(auto_lock),
+      std::move(iterating));
 }
 
 std::unique_ptr<Rule> OriginValueMap::GetRule(

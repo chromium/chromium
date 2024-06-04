@@ -113,6 +113,12 @@ class LOCKABLE BASE_EXPORT Lock {
 // A helper class that acquires the given Lock while the AutoLock is in scope.
 using AutoLock = internal::BasicAutoLock<Lock>;
 
+// A helper class that acquires the given Lock while the MovableAutoLock is in
+// scope. Unlike AutoLock, the lock can be moved out of MovableAutoLock. Unlike
+// AutoLockMaybe, the passed in lock is always valid, so need to check only on
+// destruction.
+using MovableAutoLock = internal::BasicMovableAutoLock<Lock>;
+
 // A helper class that tries to acquire the given Lock while the AutoTryLock is
 // in scope.
 using AutoTryLock = internal::BasicAutoTryLock<Lock>;
