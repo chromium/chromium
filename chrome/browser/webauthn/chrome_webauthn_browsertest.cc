@@ -371,6 +371,8 @@ class WebAuthnGpmPasskeyTest : public WebAuthnBrowserTest {
       return transport_availability_info_;
     }
 
+    void WaitForUI() { run_loop_.Run(); }
+
     // ChromeAuthenticatorRequestDelegate::TestObserver:
     void Created(ChromeAuthenticatorRequestDelegate* delegate) override {}
 
@@ -391,8 +393,7 @@ class WebAuthnGpmPasskeyTest : public WebAuthnBrowserTest {
     }
 
     void UIShown(ChromeAuthenticatorRequestDelegate* delegate) override {
-      delegate->dialog_controller()->OnAccountPreselected(
-          device::fido_parsing_utils::Materialize(kCredentialID));
+      run_loop_.Quit();
     }
 
     void CableV2ExtensionSeen(
@@ -403,6 +404,7 @@ class WebAuthnGpmPasskeyTest : public WebAuthnBrowserTest {
         override {}
 
    private:
+    base::RunLoop run_loop_;
     std::optional<device::FidoRequestHandlerBase::TransportAvailabilityInfo>
         transport_availability_info_;
   };
@@ -414,6 +416,7 @@ class WebAuthnGpmPasskeyTest : public WebAuthnBrowserTest {
 
   void SetUpOnMainThread() override {
     WebAuthnBrowserTest::SetUpOnMainThread();
+    observer_ = std::make_unique<Observer>();
     ChromeAuthenticatorRequestDelegate::SetGlobalObserverForTesting(
         observer_.get());
   }
@@ -424,7 +427,7 @@ class WebAuthnGpmPasskeyTest : public WebAuthnBrowserTest {
   }
 
  protected:
-  std::unique_ptr<Observer> observer_ = std::make_unique<Observer>();
+  std::unique_ptr<Observer> observer_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -464,10 +467,11 @@ IN_PROC_BROWSER_TEST_F(WebAuthnGpmPasskeyTest, FilterGPMPasskeys) {
           std::move(virtual_device_factory));
 
   // Request an assertion with a credential ID matching only the first passkey.
-  EXPECT_EQ(
-      "webauthn: OK",
-      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
-                      kGetAssertionCredID1234));
+  content::ExecuteScriptAsync(
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      kGetAssertionCredID1234);
+
+  observer_->WaitForUI();
 
   // Only the first passkey should be in the recognized credentials list.
   device::DiscoverableCredentialMetadata expected(

@@ -23613,6 +23613,22 @@
             ]
         }
     ],
+    "WebAuthenticationEnclaveAuthenticator": [
+        {
+            "platforms": [
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebAuthenticationEnclaveAuthenticator"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebContentsCaptureHiDPI": [
         {
             "platforms": [
