@@ -53,6 +53,8 @@ class ASH_EXPORT PickerListItemView : public PickerItemView {
   void SetBadgeAction(PickerActionType action);
   void SetBadgeVisible(bool visible);
 
+  // Starts to retrieve a thumbnail preview of `file_path` to be used as the
+  // icon and when the the item is hovered on.
   void SetPreview(PickerPreviewBubbleController* preview_bubble_controller,
                   base::FilePath file_path,
                   AsyncBitmapResolver async_bitmap_resolver);
@@ -74,6 +76,8 @@ class ASH_EXPORT PickerListItemView : public PickerItemView {
   ui::ImageModel GetPrimaryImageForTesting() const;
 
  private:
+  void UpdateIconWithPreview();
+
   raw_ptr<views::ImageView> leading_icon_view_ = nullptr;
 
   // Contains the item's primary contents, which can be text or an image.
@@ -86,8 +90,12 @@ class ASH_EXPORT PickerListItemView : public PickerItemView {
   raw_ptr<PickerBadgeView> trailing_badge_ = nullptr;
 
   // These are only used for file items.
+  // TODO: b/344457947 - Combine the two async images by allowing the
+  // placeholder image to be dynamically generated based on the size.
   std::unique_ptr<HoldingSpaceImage> async_preview_image_;
+  std::unique_ptr<HoldingSpaceImage> async_preview_icon_;
   raw_ptr<PickerPreviewBubbleController> preview_bubble_controller_;
+  base::CallbackListSubscription async_icon_subscription_;
 };
 
 }  // namespace ash

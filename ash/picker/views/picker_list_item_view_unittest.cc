@@ -9,16 +9,21 @@
 
 #include "ash/picker/model/picker_action_type.h"
 #include "ash/picker/views/picker_badge_view.h"
+#include "ash/picker/views/picker_preview_bubble_controller.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/style/ash_color_provider.h"
 #include "base/functional/callback_helpers.h"
+#include "base/test/bind.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/test/views_test_base.h"
+#include "ui/views/test/widget_test.h"
 #include "ui/views/view_utils.h"
 
 namespace ash {
@@ -27,7 +32,10 @@ namespace {
 using ::testing::Property;
 using ::testing::SizeIs;
 
-using PickerListItemViewTest = views::ViewsTestBase;
+class PickerListItemViewTest : public views::ViewsTestBase {
+ private:
+  AshColorProvider provider_;
+};
 
 TEST_F(PickerListItemViewTest, SetsPrimaryText) {
   PickerListItemView item_view(base::DoNothing());
@@ -98,6 +106,52 @@ TEST_F(PickerListItemViewTest, SetBadgeActionHasLabelText) {
 
   item_view.SetBadgeAction(PickerActionType::kCreate);
   EXPECT_NE(item_view.trailing_badge_for_testing().GetText(), u"");
+}
+
+TEST_F(PickerListItemViewTest, SetPreviewUpdatesIconWithPlaceholder) {
+  auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* item_view = widget->SetContentsView(
+      std::make_unique<PickerListItemView>(base::DoNothing()));
+  widget->Show();
+  PickerPreviewBubbleController preview_controller;
+
+  item_view->SetPreview(&preview_controller, base::FilePath(),
+                        base::DoNothing());
+
+  EXPECT_EQ(item_view->leading_icon_view_for_testing()
+                .GetImageModel()
+                .GetImage()
+                .AsBitmap()
+                .getColor(1, 1),
+            SK_ColorTRANSPARENT);
+}
+
+TEST_F(PickerListItemViewTest, SetPreviewUpdatesIconOncePreviewIconResolves) {
+  auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* item_view = widget->SetContentsView(
+      std::make_unique<PickerListItemView>(base::DoNothing()));
+  widget->Show();
+  base::RunLoop run_loop;
+  SkBitmap bitmap = gfx::test::CreateBitmap(100, SK_ColorBLUE);
+  PickerPreviewBubbleController preview_controller;
+
+  item_view->SetPrimaryText(u"abc");
+  item_view->SetPreview(
+      &preview_controller, base::FilePath(),
+      base::BindLambdaForTesting(
+          [&](const base::FilePath& file_path, const gfx::Size& size,
+              HoldingSpaceImage::BitmapCallback callback) {
+            std::move(callback).Run(&bitmap, base::File::Error::FILE_OK);
+            run_loop.Quit();
+          }));
+
+  run_loop.Run();
+  EXPECT_EQ(item_view->leading_icon_view_for_testing()
+                .GetImageModel()
+                .GetImage()
+                .AsBitmap()
+                .getColor(1, 1),
+            SK_ColorBLUE);
 }
 
 }  // namespace

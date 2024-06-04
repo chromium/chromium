@@ -271,8 +271,6 @@ PickerItemView* PickerSectionView::AddResult(
             auto item_view = std::make_unique<PickerListItemView>(
                 std::move(select_result_callback));
             item_view->SetPrimaryText(data.title);
-            item_view->SetLeadingIcon(ui::ImageModel::FromVectorIcon(
-                chromeos::kFiletypeImageIcon, cros_tokens::kCrosSysOnSurface));
             item_view->SetPreview(
                 preview_controller, data.file_path,
                 // base::Unretained is safe here since asset_fetcher_ outlives
@@ -286,7 +284,6 @@ PickerItemView* PickerSectionView::AddResult(
             auto item_view = std::make_unique<PickerListItemView>(
                 std::move(select_result_callback));
             item_view->SetPrimaryText(data.title);
-            item_view->SetLeadingIcon(data.icon);
             item_view->SetPreview(
                 preview_controller, data.file_path,
                 // base::Unretained is safe here since asset_fetcher_ outlives

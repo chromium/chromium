@@ -190,8 +190,18 @@ void PickerListItemView::SetPreview(
 
   async_preview_image_ = std::make_unique<ash::HoldingSpaceImage>(
       PickerPreviewBubbleView::kPreviewImageSize, file_path,
-      std::move(async_bitmap_resolver));
+      async_bitmap_resolver);
+  async_preview_icon_ = std::make_unique<ash::HoldingSpaceImage>(
+      kLeadingIconSizeDip, file_path, std::move(async_bitmap_resolver));
   preview_bubble_controller_ = preview_bubble_controller;
+
+  // base::Unretained is safe here since `async_icon_subscription_` is a member.
+  // During destruction, `async_icon_subscription_` will be destroyed before the
+  // other members, so the callback is guaranteed to be safe.
+  async_icon_subscription_ =
+      async_preview_icon_->AddImageSkiaChangedCallback(base::BindRepeating(
+          &PickerListItemView::UpdateIconWithPreview, base::Unretained(this)));
+  UpdateIconWithPreview();
 }
 
 void PickerListItemView::OnMouseEntered(const ui::MouseEvent&) {
@@ -226,6 +236,11 @@ ui::ImageModel PickerListItemView::GetPrimaryImageForTesting() const {
     return image->GetImageModel();
   }
   return ui::ImageModel();
+}
+
+void PickerListItemView::UpdateIconWithPreview() {
+  SetLeadingIcon(
+      ui::ImageModel::FromImageSkia(async_preview_icon_->GetImageSkia()));
 }
 
 BEGIN_METADATA(PickerListItemView)
