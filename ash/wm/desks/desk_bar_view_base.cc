@@ -951,6 +951,8 @@ void DeskBarViewBase::UpdateLibraryButtonVisibility() {
     if (type_ == Type::kOverview &&
         overview_grid_->IsShowingSavedDeskLibrary()) {
       library_button_->UpdateState(DeskIconButton::State::kActive);
+    } else if (state_ == State::kZero) {
+      library_button_->UpdateState(DeskIconButton::State::kZero);
     } else {
       library_button_->UpdateState(DeskIconButton::State::kExpanded);
     }
