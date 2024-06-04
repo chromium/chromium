@@ -100,6 +100,7 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
     public void tearDown() {
         mMediator.endSession();
         mMediator.destroy();
+        Assert.assertNull(mModel.get(TabResumptionModuleProperties.URL_IMAGE_PROVIDER));
         mModel = null;
         mMediator = null;
     }
