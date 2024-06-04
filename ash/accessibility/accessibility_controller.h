@@ -344,6 +344,9 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
   bool IsStickyKeysSettingVisibleInTray();
   bool IsEnterpriseIconVisibleForStickyKeys();
 
+  bool IsReducedAnimationsSettingVisibleInTray();
+  bool IsEnterpriseIconVisibleForReducedAnimations();
+
   // Switch access may be disabled in prefs but still running when the disable
   // dialog is displaying.
   bool IsSwitchAccessRunning() const;

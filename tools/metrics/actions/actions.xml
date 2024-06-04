@@ -38633,6 +38633,20 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="StatusArea_ReducedAnimationsDisabled">
+  <owner>katie@chromium.org</owner>
+  <description>
+    Ash system menu: Accessibility: Disable reduced animations.
+  </description>
+</action>
+
+<action name="StatusArea_ReducedAnimationsEnabled">
+  <owner>katie@chromium.org</owner>
+  <description>
+    Ash system menu: Accessibility: Enable reduced animations.
+  </description>
+</action>
+
 <action name="StatusArea_ScreenCapture_Change_Source">
   <owner>braveyao@chromium.org</owner>
   <owner>niklase@chromium.org</owner>

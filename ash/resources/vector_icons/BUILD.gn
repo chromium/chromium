@@ -365,6 +365,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "quick_settings_a11y_highlight_text_caret.icon",
     "quick_settings_a11y_large_mouse_cursor.icon",
     "quick_settings_a11y_mono_audio.icon",
+    "quick_settings_a11y_reduced_animations.icon",
     "quick_settings_a11y_sticky_keys.icon",
     "quick_settings_cast.icon",
     "quick_settings_cast_connected.icon",

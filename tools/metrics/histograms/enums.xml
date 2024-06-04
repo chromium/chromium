@@ -23054,6 +23054,8 @@ from previous Chrome versions.
   <int value="1187868655" label="FloatingWorkspaceV2:disabled"/>
   <int value="1188109510" label="AssistantAudioEraser:enabled"/>
   <int value="1190035852" label="MediaRemoting:enabled"/>
+  <int value="1190803434"
+      label="AccessibilityReducedAnimationsInKiosk:disabled"/>
   <int value="1191531211" label="RawClipboard:disabled"/>
   <int value="1192302892" label="gesture-typing"/>
   <int value="1192447565" label="SurfaceSyncFullscreenKillswitch:disabled"/>
@@ -24375,6 +24377,8 @@ from previous Chrome versions.
   <int value="1745053254" label="ClickToCallOpenDialerDirectly:enabled"/>
   <int value="1746253146" label="AdvancedDocumentScanAPI:enabled"/>
   <int value="1747279677" label="disable-delegated-renderer"/>
+  <int value="1747979127"
+      label="AccessibilityReducedAnimationsInKiosk:enabled"/>
   <int value="1748481830" label="AppManagement:enabled"/>
   <int value="1749028785" label="SubresourceRedirect:disabled"/>
   <int value="1750658031" label="OmniboxBookmarkPaths:enabled"/>

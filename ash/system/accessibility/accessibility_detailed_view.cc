@@ -256,6 +256,12 @@ void AccessibilityDetailedView::OnAccessibilityStatusChanged() {
     bool checked = controller->sticky_keys().enabled();
     UpdateFeatureState(checked, sticky_keys_view_, sticky_keys_top_view_);
   }
+
+  if (controller->IsReducedAnimationsSettingVisibleInTray()) {
+    bool checked = controller->reduced_animations().enabled();
+    UpdateFeatureState(checked, reduced_animations_view_,
+                       reduced_animations_top_view_);
+  }
 }
 
 void AccessibilityDetailedView::AppendAccessibilityList() {
@@ -353,6 +359,10 @@ void AccessibilityDetailedView::AddEnabledFeatures(views::View* container) {
       controller->sticky_keys().enabled()) {
     sticky_keys_top_view_ = AddStickyKeysView(container);
   }
+  if (controller->IsReducedAnimationsSettingVisibleInTray() &&
+      controller->reduced_animations().enabled()) {
+    reduced_animations_top_view_ = AddReducedAnimationsView(container);
+  }
 }
 
 void AccessibilityDetailedView::AddAllFeatures(views::View* container) {
@@ -432,6 +442,10 @@ void AccessibilityDetailedView::AddAllFeatures(views::View* container) {
 
   if (controller->IsStickyKeysSettingVisibleInTray()) {
     sticky_keys_view_ = AddStickyKeysView(container);
+  }
+
+  if (controller->IsReducedAnimationsSettingVisibleInTray()) {
+    reduced_animations_view_ = AddReducedAnimationsView(container);
   }
 }
 
@@ -627,6 +641,17 @@ HoverHighlightView* AccessibilityDetailedView::AddStickyKeysView(
       container, kQuickSettingsA11yStickyKeysIcon,
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_ACCESSIBILITY_STICKY_KEYS),
       checked, controller->IsEnterpriseIconVisibleForStickyKeys());
+}
+
+HoverHighlightView* AccessibilityDetailedView::AddReducedAnimationsView(
+    views::View* container) {
+  auto* controller = Shell::Get()->accessibility_controller();
+  bool checked = controller->reduced_animations().enabled();
+  return AddScrollListFeatureItem(
+      container, kQuickSettingsA11yReducedAnimationsIcon,
+      l10n_util::GetStringUTF16(
+          IDS_ASH_STATUS_TRAY_ACCESSIBILITY_REDUCED_ANIMATIONS),
+      checked, controller->IsEnterpriseIconVisibleForReducedAnimations());
 }
 
 HoverHighlightView* AccessibilityDetailedView::AddScrollListFeatureItem(
@@ -858,6 +883,16 @@ void AccessibilityDetailedView::HandleViewClicked(views::View* view) {
     base::UmaHistogramBoolean("Accessibility.CrosStatusArea.StickyKeys",
                               new_state);
     controller->sticky_keys().SetEnabled(new_state);
+  } else if ((view == reduced_animations_top_view_ ||
+              view == reduced_animations_view_) &&
+             !controller->IsEnterpriseIconVisibleForReducedAnimations()) {
+    bool new_state = !controller->reduced_animations().enabled();
+    RecordAction(
+        new_state ? UserMetricsAction("StatusArea_ReducedAnimationsEnabled")
+                  : UserMetricsAction("StatusArea_ReducedAnimationsDisabled"));
+    base::UmaHistogramBoolean("Accessibility.CrosStatusArea.ReducedAnimations",
+                              new_state);
+    controller->reduced_animations().SetEnabled(new_state);
   }
 }
 

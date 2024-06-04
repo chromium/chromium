@@ -1493,6 +1493,9 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
       <message name="IDS_ASH_STATUS_TRAY_ACCESSIBILITY_STICKY_KEYS" desc="The label used in the additional settings of accessibility menu of the system tray to toggle on/off sticky keys.">
         Sticky keys
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_ACCESSIBILITY_REDUCED_ANIMATIONS" desc="The label used in the additional settings of accessibility menu of the system tray to toggle on/off reduced animations.">
+        Reduced animations
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_ACCESSIBILITY_TAP_DRAGGING" desc="The label used in the additional settings of accessibility menu of the system tray to toggle on/off tap dragging.">
         Tap dragging
       </message>
