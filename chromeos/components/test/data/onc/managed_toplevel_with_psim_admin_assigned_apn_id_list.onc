@@ -1,0 +1,36 @@
+{
+  "GlobalNetworkConfiguration": {
+    "AllowAPNModification": true,
+    "AllowCellularHotspot": true,
+    "AllowCellularSimLock": true,
+    "AllowOnlyPolicyCellularNetworks": false,
+    "AllowOnlyPolicyNetworksToAutoconnect": false,
+    "PSIMAdminAssignedAPNIds": [
+      "admin-apn-id-y",
+      "admin-apn-id-x"
+    ]
+  },
+  "AdminAPNList": [
+    {
+      "Id": "admin-apn-id-x",
+      "AccessPointName": "test-apn-admin-x",
+      "Authentication": "",
+      "Username": "test-username-x",
+      "Password": "test-password-x"
+    },
+    {
+      "Id": "admin-apn-id-y",
+      "AccessPointName": "test-apn-admin-y",
+      "Authentication": "",
+      "Username": "test-username-y",
+      "Password": "test-password-y"
+    },
+    {
+      "Id": "admin-apn-id-z",
+      "AccessPointName": "test-apn-admin-z",
+      "Authentication": "",
+      "Username": "test-username-z",
+      "Password": "test-password-z"
+    },
+  ]
+}

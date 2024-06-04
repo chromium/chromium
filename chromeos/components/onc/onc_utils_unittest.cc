@@ -578,6 +578,77 @@ TEST(ONCUtils, ParseAndValidateOncForImport_AdminApnProvided) {
   EXPECT_TRUE(actual_custom_apns_4->GetList() == base::Value::List());
 }
 
+TEST(ONCUtils,
+     ParseAndValidateOncForImport_InvalidPSIMAdminAssignedApnIdsProvided) {
+  const auto onc_blob = test_utils::ReadTestData(
+      "managed_toplevel_with_invalid_psim_admin_assigned_apn_id_list.onc");
+  base::Value::List network_configs;
+  base::Value::Dict global_network_config;
+  base::Value::List certificates;
+
+  ASSERT_FALSE(ParseAndValidateOncForImport(
+      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, std::string(),
+      &network_configs, &global_network_config, &certificates));
+}
+
+TEST(ONCUtils, ParseAndValidateOncForImport_PSIMAdminAssignedApnIdsProvided) {
+  const auto onc_blob = test_utils::ReadTestData(
+      "managed_toplevel_with_psim_admin_assigned_apn_id_list.onc");
+  base::Value::List network_configs;
+  base::Value::Dict global_network_config;
+  base::Value::List certificates;
+
+  ASSERT_TRUE(ParseAndValidateOncForImport(
+      onc_blob, ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY, std::string(),
+      &network_configs, &global_network_config, &certificates));
+
+  // Expected PSIM Admin APN list
+  base::Value::List expected_psim_admin_assigned_apns;
+
+  // First expected admin assigned APN details.
+  base::Value::Dict first_psim_admin_assigned_apn;
+  first_psim_admin_assigned_apn.Set(::onc::cellular_apn::kId, "admin-apn-id-y");
+  first_psim_admin_assigned_apn.Set(::onc::cellular_apn::kAccessPointName,
+                                    "test-apn-admin-y");
+  first_psim_admin_assigned_apn.Set(::onc::cellular_apn::kAuthentication, "");
+  first_psim_admin_assigned_apn.Set(::onc::cellular_apn::kUsername,
+                                    "test-username-y");
+  first_psim_admin_assigned_apn.Set(::onc::cellular_apn::kPassword,
+                                    "test-password-y");
+  first_psim_admin_assigned_apn.Set(::onc::cellular_apn::kSource,
+                                    ::onc::cellular_apn::kSourceAdmin);
+
+  // Second expected admin assigned APN details.
+  base::Value::Dict second_psim_admin_assigned_apn;
+  second_psim_admin_assigned_apn.Set(::onc::cellular_apn::kId,
+                                     "admin-apn-id-x");
+  second_psim_admin_assigned_apn.Set(::onc::cellular_apn::kAccessPointName,
+                                     "test-apn-admin-x");
+  second_psim_admin_assigned_apn.Set(::onc::cellular_apn::kAuthentication, "");
+  second_psim_admin_assigned_apn.Set(::onc::cellular_apn::kUsername,
+                                     "test-username-x");
+  second_psim_admin_assigned_apn.Set(::onc::cellular_apn::kPassword,
+                                     "test-password-x");
+  second_psim_admin_assigned_apn.Set(::onc::cellular_apn::kSource,
+                                     ::onc::cellular_apn::kSourceAdmin);
+
+  // Add the APN details to the expected PSIM admin assigned APN list.
+  expected_psim_admin_assigned_apns.Append(
+      std::move(first_psim_admin_assigned_apn));
+  expected_psim_admin_assigned_apns.Append(
+      std::move(second_psim_admin_assigned_apn));
+
+  // Get the constructed PSIM admin assigned APN list from the global network
+  // configuration
+  const auto* actual_psim_admin_assigned_apns =
+      global_network_config.FindByDottedPath("PSIMAdminAssignedAPNs");
+
+  // Verify that the constructed PSIM admin assigned APN list matches the
+  // expected
+  EXPECT_TRUE(actual_psim_admin_assigned_apns->GetList() ==
+              expected_psim_admin_assigned_apns);
+}
+
 TEST(ONCUtils, ParseAndValidateOncForImport_AdminApnProvidedWithDuplicateIds) {
   const auto onc_blob = test_utils::ReadTestData("duplicate_admin_apn_ids.onc");
   base::Value::List network_configs;
