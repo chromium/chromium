@@ -48,7 +48,8 @@ class MediaItemUIListViewTest : public views::ViewsTestBase,
                                        UseUpdatedUI());
 #endif
 
-    widget_ = CreateTestWidget();
+    widget_ =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
 
     list_view_ =
         widget_->SetContentsView(std::make_unique<MediaItemUIListView>());

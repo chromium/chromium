@@ -56,7 +56,8 @@ class MediaItemUIViewTest : public views::ViewsTestBase {
     views::ViewsTestBase::SetUp();
     item_ = std::make_unique<
         NiceMock<media_message_center::test::MockMediaNotificationItem>>();
-    widget_ = CreateTestWidget();
+    widget_ =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
 
     auto footer = std::make_unique<NiceMock<test::MockMediaItemUIFooter>>();
     footer_ = footer.get();

@@ -34,7 +34,8 @@ class ChapterItemViewTest : public views::ViewsTestBase {
   void SetUp() override {
     ViewsTestBase::SetUp();
 
-    widget_ = CreateTestWidget();
+    widget_ =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
 
     media_session::MediaImage test_image;
     test_image.src = GURL("https://www.google.com");

@@ -45,7 +45,8 @@ class MediaItemUIUpdatedViewTest : public views::ViewsTestBase {
     views::ViewsTestBase::SetUp();
 
     item_ = std::make_unique<NiceMock<MockMediaNotificationItem>>();
-    widget_ = CreateTestWidget();
+    widget_ =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     auto device_selector =
         std::make_unique<NiceMock<MockMediaItemUIDeviceSelector>>();
     device_selector_ = device_selector.get();

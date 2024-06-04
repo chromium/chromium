@@ -210,7 +210,8 @@ TEST_F(MediaNotificationBackgroundImplTest,
 }
 
 TEST_F(MediaNotificationBackgroundImplTest, GetBackgroundColorRespectsTheme) {
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   auto* theme = widget->GetNativeTheme();
   theme->set_use_dark_colors(false);
   auto* owner = widget->SetContentsView(std::make_unique<views::View>());

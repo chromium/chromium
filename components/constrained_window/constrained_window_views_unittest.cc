@@ -100,7 +100,8 @@ class ConstrainedWindowViewsTest : public views::ViewsTestBase {
 
     // Create a dialog host sufficiently large enough to accommodate dialog
     // size changes during testing.
-    dialog_host_widget_ = CreateTestWidget();
+    dialog_host_widget_ =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     dialog_host_widget_->SetBounds(GetPrimaryDisplayWorkArea());
     dialog_host_ = std::make_unique<web_modal::TestWebContentsModalDialogHost>(
         dialog_host_widget_->GetNativeView());

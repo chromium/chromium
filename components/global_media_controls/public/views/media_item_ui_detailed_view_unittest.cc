@@ -83,7 +83,8 @@ class MediaItemUIDetailedViewTest : public views::ViewsTestBase {
 
     // Create a widget and add the view to show on the screen for testing screen
     // coordinates and focus.
-    widget_ = CreateTestWidget();
+    widget_ =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     view_ = widget_->SetContentsView(std::make_unique<MediaItemUIDetailedView>(
         container_.get(), item_->GetWeakPtr(), /*footer_view=*/nullptr,
         std::move(device_selector), /*dismiss_button=*/nullptr,
@@ -455,7 +456,8 @@ TEST_F(MediaItemUIDetailedViewTest, ProgressViewCheck) {
 TEST_F(MediaItemUIDetailedViewTest, ChapterList) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(media::kBackgroundListening);
-  auto widget = CreateTestWidget();
+  auto widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   auto* view = widget->SetContentsView(
       CreateView(MediaDisplayPage::kSystemShelfMediaDetailedView));
 
@@ -608,7 +610,8 @@ TEST_F(MediaItemUIDetailedViewTest, ShouldNotShowDeviceSelectorViewForAsh) {
 TEST_F(MediaItemUIDetailedViewTest, Forward10ButtonClick) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(media::kBackgroundListening);
-  auto widget = CreateTestWidget();
+  auto widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   auto* view = widget->SetContentsView(
       CreateView(MediaDisplayPage::kSystemShelfMediaDetailedView));
   view->UpdateWithMediaActions({MediaSessionAction::kSeekForward});
@@ -634,7 +637,8 @@ TEST_F(MediaItemUIDetailedViewTest, Forward10ButtonClick) {
 TEST_F(MediaItemUIDetailedViewTest, Backward10ButtonClick) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(media::kBackgroundListening);
-  auto widget = CreateTestWidget();
+  auto widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   auto* view = widget->SetContentsView(
       CreateView(MediaDisplayPage::kSystemShelfMediaDetailedView));
   view->UpdateWithMediaActions({MediaSessionAction::kSeekBackward});

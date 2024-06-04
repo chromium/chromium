@@ -111,7 +111,8 @@ class DOMAgentTest : public views::ViewsTestBase {
 
   std::unique_ptr<views::Widget> CreateNamedWidget(const std::string& name) {
     name_ = name;
-    std::unique_ptr<views::Widget> widget = CreateTestWidget();
+    std::unique_ptr<views::Widget> widget =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     name_.clear();
     widget->Show();
     return widget;
@@ -292,7 +293,8 @@ TEST_F(DOMAgentTest, GetDocumentWithWindowWidgetView) {
   //     (root/content views)
   //        child_view
   //   child_window
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   aura::Window* parent_window = widget->GetNativeWindow();
   parent_window->SetName("parent_window");
   std::unique_ptr<aura::Window> child_window = CreateChildWindow(parent_window);
@@ -345,8 +347,10 @@ TEST_F(DOMAgentTest, GetDocumentMultipleWidgets) {
   //          child_b121
   //          child_b122
 
-  std::unique_ptr<views::Widget> widget_a = CreateTestWidget();
-  std::unique_ptr<views::Widget> widget_b = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget_a =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+  std::unique_ptr<views::Widget> widget_b =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   widget_a->GetRootView()->AddChildView(std::make_unique<TestView>("child_a1"));
   widget_a->GetRootView()->AddChildView(std::make_unique<TestView>("child_a2"));
 
@@ -471,7 +475,8 @@ TEST_F(DOMAgentTest, WindowStackingChangedChildNodeRemovedAndInserted) {
 
 TEST_F(DOMAgentTest, ViewInserted) {
   std::unique_ptr<views::Widget> widget =
-      CreateTestWidget(views::Widget::InitParams::TYPE_WINDOW);
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                       views::Widget::InitParams::TYPE_WINDOW);
   widget->Show();
 
   // Initialize DOMAgent
@@ -486,7 +491,8 @@ TEST_F(DOMAgentTest, ViewInserted) {
 }
 
 TEST_F(DOMAgentTest, ViewRemoved) {
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   widget->Show();
   views::View* root_view = widget->GetRootView();
 
@@ -503,7 +509,8 @@ TEST_F(DOMAgentTest, ViewRemoved) {
 }
 
 TEST_F(DOMAgentTest, ViewRearranged) {
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
 
   widget->Show();
   views::View* root_view = widget->GetRootView();
@@ -542,7 +549,8 @@ TEST_F(DOMAgentTest, ViewRearranged) {
 }
 
 TEST_F(DOMAgentTest, ViewRearrangedRemovedAndInserted) {
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
 
   widget->Show();
   views::View* root_view = widget->GetRootView();
@@ -572,7 +580,8 @@ TEST_F(DOMAgentTest, NodeIdToUIElementTest) {
   //         child_a111
   //           child_a1111
   //         child_a112
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
 
   widget->Show();
   views::View* root_view = widget->GetRootView();
@@ -619,7 +628,8 @@ TEST_F(DOMAgentTest, NodeIdToUIElementTest) {
 
 // Tests to ensure dom search for native UI is working
 TEST_F(DOMAgentTest, SimpleDomSearch) {
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   widget->GetRootView()->AddChildView(std::make_unique<TestView>("child_a1"));
   widget->GetRootView()->AddChildView(std::make_unique<TestView>("child_a2"));
 
@@ -647,7 +657,8 @@ TEST_F(DOMAgentTest, SimpleDomSearch) {
 }
 
 TEST_F(DOMAgentTest, ExactDomSearch) {
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   widget->GetRootView()->AddChildView(std::make_unique<TestView>("child_a"));
   widget->GetRootView()->AddChildView(std::make_unique<TestView>("child_aa"));
 
@@ -713,7 +724,8 @@ TEST_F(DOMAgentTest, TagDomSearch) {
 }
 
 TEST_F(DOMAgentTest, DomSearchForStylesPanel) {
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   widget->GetRootView()->AddChildView(std::make_unique<TestView>("child_a1"));
 
   std::unique_ptr<DOM::Node> root;
@@ -744,7 +756,8 @@ DECLARE_ELEMENT_IDENTIFIER_VALUE(kTestElementID);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kTestElementID);
 
 TEST_F(DOMAgentTest, DomSearchForElementID) {
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   widget->GetRootView()->AddChildView(
       views::Builder<views::View>()
           .SetProperty(views::kElementIdentifierKey, kTestElementID)

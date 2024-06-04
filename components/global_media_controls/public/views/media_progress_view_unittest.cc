@@ -31,7 +31,8 @@ class MediaProgressViewTest : public views::ViewsTestBase {
 
   void SetUp() override {
     ViewsTestBase::SetUp();
-    widget_ = CreateTestWidget();
+    widget_ =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     // This test just needs to construct a progress view, without caring about
     // what specific color IDs are used, so just use an arbitrary value.
     ui::ColorId id = ui::kUiColorsStart;

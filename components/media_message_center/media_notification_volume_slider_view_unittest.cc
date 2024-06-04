@@ -22,7 +22,8 @@ class MediaNotificationVolumeSliderViewTest : public views::ViewsTestBase {
  public:
   void SetUp() override {
     views::ViewsTestBase::SetUp();
-    widget_ = CreateTestWidget();
+    widget_ =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     volume_slider_ = widget_->SetContentsView(
         std::make_unique<MediaNotificationVolumeSliderView>(base::BindRepeating(
             &MediaNotificationVolumeSliderViewTest::SetVolume,
