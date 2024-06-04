@@ -7,9 +7,89 @@ package org.chromium.chrome.browser.safety_hub;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.ObserverList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class NotificationPermissionReviewBridge {
+    interface Observer {
+        void notificationPermissionsChanged();
+    }
+
+    private static ProfileKeyedMap<NotificationPermissionReviewBridge> sProfileMap;
+
+    private final Profile mProfile;
+    private final ObserverList<Observer> mObservers = new ObserverList<>();
+
+    static NotificationPermissionReviewBridge getForProfile(Profile profile) {
+        if (sProfileMap == null) {
+            sProfileMap = new ProfileKeyedMap<>(ProfileKeyedMap.NO_REQUIRED_CLEANUP_ACTION);
+        }
+        return sProfileMap.getForProfile(profile, NotificationPermissionReviewBridge::new);
+    }
+
+    NotificationPermissionReviewBridge(Profile profile) {
+        mProfile = profile;
+    }
+
+    void addObserver(Observer observer) {
+        mObservers.addObserver(observer);
+    }
+
+    void removeObserver(Observer observer) {
+        mObservers.removeObserver(observer);
+    }
+
+    /** Returns a list of NotificationPermissions to review sorted by priority. */
+    List<NotificationPermissions> getNotificationPermissions() {
+        return Arrays.asList(
+                NotificationPermissionReviewBridgeJni.get().getNotificationPermissions(mProfile));
+    }
+
+    /** Ignores the given origin for notification permission review. */
+    void ignoreOriginForNotificationPermissionReview(String origin) {
+        NotificationPermissionReviewBridgeJni.get()
+                .ignoreOriginForNotificationPermissionReview(mProfile, origin);
+        notifyNotificationPermissionsChanged();
+    }
+
+    /** Reverts the action of ignoring the given origin for notification permission review. */
+    void undoIgnoreOriginForNotificationPermissionReview(String origin) {
+        NotificationPermissionReviewBridgeJni.get()
+                .undoIgnoreOriginForNotificationPermissionReview(mProfile, origin);
+        notifyNotificationPermissionsChanged();
+    }
+
+    /** Blocks the notification permission for the given origin. */
+    void blockNotificationPermissionForOrigin(String origin) {
+        NotificationPermissionReviewBridgeJni.get()
+                .blockNotificationPermissionForOrigin(mProfile, origin);
+        notifyNotificationPermissionsChanged();
+    }
+
+    /** Allows the notification permission for the given origin. */
+    void allowNotificationPermissionForOrigin(String origin) {
+        NotificationPermissionReviewBridgeJni.get()
+                .allowNotificationPermissionForOrigin(mProfile, origin);
+        notifyNotificationPermissionsChanged();
+    }
+
+    /** Resets the notification permission for the given origin. */
+    void resetNotificationPermissionForOrigin(String origin) {
+        NotificationPermissionReviewBridgeJni.get()
+                .resetNotificationPermissionForOrigin(mProfile, origin);
+        notifyNotificationPermissionsChanged();
+    }
+
+    private void notifyNotificationPermissionsChanged() {
+        for (Observer observer : mObservers) {
+            observer.notificationPermissionsChanged();
+        }
+    }
+
     @NativeMethods
     interface Natives {
         @JniType("std::vector<NotificationPermissions>")
