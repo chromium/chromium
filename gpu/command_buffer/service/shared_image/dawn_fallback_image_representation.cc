@@ -314,14 +314,17 @@ wgpu::Texture DawnFallbackImageRepresentation::BeginAccess(
   texture_descriptor.viewFormatCount = view_formats_.size();
   texture_descriptor.viewFormats = view_formats_.data();
 
+  // Note: The texture must be internally copyable as this class itself uses the
+  // texture as the dest and source of copies for readback from and upload to
+  // the backing respectively.
   wgpu::DawnTextureInternalUsageDescriptor internalDesc;
   if (base::FeatureList::IsEnabled(
           features::kDawnSIRepsUseClientProvidedInternalUsages)) {
-    internalDesc.internalUsage = internal_usage;
+    internalDesc.internalUsage = internal_usage | wgpu::TextureUsage::CopySrc |
+                                 wgpu::TextureUsage::CopyDst;
   } else {
-    // We need to have internal usages of CopySrc & CopyDst for copies. If
-    // texture is not for video frame import, we also need RenderAttachment
-    // usage for clears, and TextureBinding for copyTextureForBrowser.
+    // If texture is not for video frame import, we need RenderAttachment usage
+    // for clears, and TextureBinding for copyTextureForBrowser.
     internalDesc.internalUsage = wgpu::TextureUsage::CopySrc |
                                  wgpu::TextureUsage::CopyDst |
                                  wgpu::TextureUsage::TextureBinding;
