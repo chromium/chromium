@@ -84,3 +84,4 @@ apk_path=assets/stored-locales/zh-CN.pak, compress=False, alignment=4
 apk_path=assets/stored-locales/zh-HK.pak, compress=False, alignment=4
 apk_path=assets/stored-locales/zh-TW.pak, compress=False, alignment=4
 apk_path=assets/stored-locales/zu.pak, compress=False, alignment=4
+apk_path=assets/v8_context_snapshot_32.bin, compress=False, alignment=4
