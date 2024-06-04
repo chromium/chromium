@@ -4,10 +4,18 @@
 
 #include "base/task/sequence_manager/task_time_observer.h"
 
+#include "base/debug/stack_trace.h"
+#include "base/notreached.h"
+
 namespace base::sequence_manager {
 
+TaskTimeObserver::TaskTimeObserver()
+    : alloc_stack_(base::debug::StackTrace()) {}
+
 TaskTimeObserver::~TaskTimeObserver() {
-  CHECK(!IsInObserverList());
+  if (IsInObserverList()) {
+    NOTREACHED() << alloc_stack_;
+  }
 }
 
 }  // namespace base::sequence_manager
