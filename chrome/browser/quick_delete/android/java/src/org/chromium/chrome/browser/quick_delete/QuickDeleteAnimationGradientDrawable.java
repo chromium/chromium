@@ -32,6 +32,7 @@ import androidx.core.view.animation.PathInterpolatorCompat;
 import com.google.android.material.color.MaterialColors;
 
 import org.chromium.build.annotations.UsedByReflection;
+import org.chromium.chrome.browser.night_mode.GlobalNightModeStateProviderHolder;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.util.ColorUtils;
@@ -57,7 +58,10 @@ public class QuickDeleteAnimationGradientDrawable extends Drawable {
     private static final float QUICK_DELETE_ANIMATION_INTERSECTION_MULTIPLIER = 0.5F;
 
     @IntRange(from = 0L, to = 255L)
-    private static final int QUICK_DELETE_GRADIENT_MAX_ALPHA = 77;
+    private static final int QUICK_DELETE_GRADIENT_DARK_MODE_MAX_ALPHA = 77;
+
+    @IntRange(from = 0L, to = 255L)
+    private static final int QUICK_DELETE_GRADIENT_LIGHT_MODE_MAX_ALPHA = 64;
 
     private static final int QUICK_DELETE_GRADIENT_EASING_POINTS_NUM = 20;
     private static final Interpolator QUICK_DELETE_WIPE_ANIMATION_INTERPOLATOR =
@@ -80,9 +84,13 @@ public class QuickDeleteAnimationGradientDrawable extends Drawable {
     public static QuickDeleteAnimationGradientDrawable createQuickDeleteWipeAnimationDrawable(
             @NonNull Context context, int tabGridHeight) {
         int gradientColor = MaterialColors.getColor(context, R.attr.colorPrimary, TAG);
+        boolean useDarkTheme = GlobalNightModeStateProviderHolder.getInstance().isInNightMode();
 
         int h = QUICK_DELETE_GRADIENT_EASING_POINTS_NUM;
-        int k = QUICK_DELETE_GRADIENT_MAX_ALPHA;
+        int k =
+                useDarkTheme
+                        ? QUICK_DELETE_GRADIENT_DARK_MODE_MAX_ALPHA
+                        : QUICK_DELETE_GRADIENT_LIGHT_MODE_MAX_ALPHA;
         int[] colors = new int[h + 1];
         for (int i = 0; i <= h; ++i) {
             // Quadratic equation to calculate the alpha value at each easing point to achieve a

@@ -20,10 +20,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.RenderTestRule;
@@ -52,6 +54,7 @@ public class QuickDeleteAnimationGradientDrawableRenderTest {
 
     @BeforeClass
     public static void setupSuite() {
+        ThreadUtils.setThreadAssertsDisabledForTesting(true);
         sActivityTestRule.launchActivity(null);
     }
 
@@ -59,6 +62,10 @@ public class QuickDeleteAnimationGradientDrawableRenderTest {
     public void setUp() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    // Set to dark mode so the gradient animation is more visible in the
+                    // screenshots.
+                    ChromeNightModeTestUtils.setUpNightModeForChromeActivity(
+                            /* nightModeEnabled= */ true);
                     mActivity = sActivityTestRule.getActivity();
                     mFrameLayout = new FrameLayout(mActivity);
                     ViewGroup.LayoutParams layoutParams =
