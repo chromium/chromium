@@ -110136,7 +110136,7 @@
       ]
      ],
      "display-contents-details.html": [
-      "0dcda91ab380d8291e8aa3074794ee80866aaf3b",
+      "927621bba5148789c971dea8bdb5c15d4c0aabc4",
       [
        null,
        [
@@ -272804,7 +272804,7 @@
        ]
       ],
       "details-display-type-001.tentative.html": [
-       "81641355187ae465a02a775b274f7a7903e5d172",
+       "3188c1eafda1bbb4e43a5c048bc9d33647b6e444",
        [
         null,
         [
@@ -272817,7 +272817,7 @@
        ]
       ],
       "details-display-type-002.tentative.html": [
-       "716221f7c5c6f83f4b341e4affce90c2622cc40f",
+       "6426e1c524f0b12b88330678263951af1b1e42d7",
        [
         null,
         [
@@ -272830,7 +272830,7 @@
        ]
       ],
       "details-pseudo-elements-001.tentative.html": [
-       "1a9f7d6a023832c1b106d67579bfbbec34a5c4f2",
+       "8ea3d0f85af933b6202f15ee00b9fdac451ab0c9",
        [
         null,
         [
@@ -272843,12 +272843,25 @@
        ]
       ],
       "details-pseudo-elements-002.tentative.html": [
-       "e149395665171e1ba7068422857f11d75c54f566",
+       "0f1176a3316bb08f9a49c63544d4ae090d878e40",
        [
         null,
         [
          [
           "/html/rendering/the-details-element/details-pseudo-elements-002-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "details-pseudo-elements-003.tentative.html": [
+       "ee5b42f13ac166f65ee2884722ab76cf0e2a1ba1",
+       [
+        null,
+        [
+         [
+          "/html/rendering/the-details-element/details-pseudo-elements-003-ref.html",
           "=="
          ]
         ],
@@ -370196,6 +370209,10 @@
        "baf242291b5ef22370d99f5ff8c0dd1b06c5842a",
        []
       ],
+      "details-pseudo-elements-003-ref.html": [
+       "e6c55cc141a3f27748df46c0bac2b191c6f61a4c",
+       []
+      ],
       "details-revert-ref.html": [
        "dc46b159012fd80c39b66e94935c210a11826487",
        []
@@ -387556,7 +387573,7 @@
       []
      ],
      "webxr-test.js": [
-      "a0713e03cce229277a648c8c853b979849e5288d",
+      "49938dc3ec1e7609b9bc18e10f10217e6f9c88c3",
       []
      ],
      "webxr-test.js.headers": [
@@ -403754,7 +403771,7 @@
       []
      ],
      "webxr_test_constants_fake_depth.js": [
-      "36890d398ded9915ee502b0d2f1ba2fcb388b60d",
+      "c846d52de59c8392ef204332cc6ff22bda622d40",
       []
      ],
      "webxr_test_constants_fake_world.js": [
@@ -458590,6 +458607,13 @@
       ],
       "text-box-edge-valid.html": [
        "36f37715b9947b8195de1f036e880d8a96d30bfa",
+       [
+        null,
+        {}
+       ]
+      ],
+      "text-box-trim-om-001.html": [
+       "da66de0055546ef7e8a71bc115ffd170bc53f061",
        [
         null,
         {}
@@ -536471,7 +536495,7 @@
      ]
     ],
     "non-fully-active.https.html": [
-     "13853c0ef860a6d099172c91db960b720760662a",
+     "7b381be7fff68ecf42425af168c560f51f818842",
      [
       null,
       {
@@ -575381,7 +575405,7 @@
        ]
       ],
       "details-blockification.html": [
-       "960074854d8a4a2cc3a9c99f56e5d74e930e693b",
+       "2bd5aaf2e6259b52748776e077d3dfd5dbbf455b",
        [
         null,
         {}
@@ -703271,6 +703295,13 @@
      },
      "depth_sensing_notEnabled.https.html": [
       "23bae35493a651a6a2bd9c424d020825bdf12dcf",
+      [
+       null,
+       {}
+      ]
+     ],
+     "depth_sensing_preferences.https.html": [
+      "f6392016d40294552481ee36a43ad7f7b5d0161b",
       [
        null,
        {}
