@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_FACILITATED_PAYMENTS_UI_CHROME_FACILITATED_PAYMENTS_CLIENT_H_
 #define CHROME_BROWSER_FACILITATED_PAYMENTS_UI_CHROME_FACILITATED_PAYMENTS_CLIENT_H_
 
-#include "base/gtest_prod_util.h"
 #include "chrome/browser/facilitated_payments/ui/android/facilitated_payments_controller.h"
 #include "components/facilitated_payments/content/browser/content_facilitated_payments_driver_factory.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
@@ -44,17 +43,6 @@ class ChromeFacilitatedPaymentsClient
 
  private:
   friend class content::WebContentsUserData<ChromeFacilitatedPaymentsClient>;
-
-  FRIEND_TEST_ALL_PREFIXES(ChromeFacilitatedPaymentsClientTest,
-                           GetPaymentsDataManager);
-  FRIEND_TEST_ALL_PREFIXES(ChromeFacilitatedPaymentsClientTest,
-                           GetFacilitatedPaymentsNetworkInterface);
-  FRIEND_TEST_ALL_PREFIXES(ChromeFacilitatedPaymentsClientTest,
-                           ShowPixPaymentPrompt_ControllerDefaultTrue);
-  FRIEND_TEST_ALL_PREFIXES(ChromeFacilitatedPaymentsClientTest,
-                           ShowPixPaymentPrompt_ControllerDefaultFalse);
-  FRIEND_TEST_ALL_PREFIXES(ChromeFacilitatedPaymentsClientTest,
-                           ShowPixPaymentPrompt_NoBankAccounts);
 
   // FacilitatedPaymentsClient:
   // This returns nullptr if the `Profile` associated is null.

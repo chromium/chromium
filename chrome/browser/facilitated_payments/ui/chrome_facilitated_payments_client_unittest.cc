@@ -59,71 +59,65 @@ class MockFacilitatedPaymentsController : public FacilitatedPaymentsController {
       (override));
 };
 
-using ChromeFacilitatedPaymentsClientTest = ChromeRenderViewHostTestHarness;
+class ChromeFacilitatedPaymentsClientTest
+    : public ChromeRenderViewHostTestHarness {
+ public:
+  void SetUp() override {
+    ChromeRenderViewHostTestHarness::SetUp();
+    client_ = std::make_unique<ChromeFacilitatedPaymentsClient>(
+        web_contents(), &optimization_guide_decider_);
+    auto controller = std::make_unique<MockFacilitatedPaymentsController>();
+    controller_ = controller.get();
+    client().SetFacilitatedPaymentsControllerForTesting(std::move(controller));
+  }
+
+  void TearDown() override {
+    controller_ = nullptr;
+    client_.reset();
+    ChromeRenderViewHostTestHarness::TearDown();
+  }
+
+  auto& base_client() {
+    return static_cast<payments::facilitated::FacilitatedPaymentsClient&>(
+        client());
+  }
+  ChromeFacilitatedPaymentsClient& client() { return *client_; }
+  MockFacilitatedPaymentsController& controller() { return *controller_; }
+
+ private:
+  MockOptimizationGuideDecider optimization_guide_decider_;
+  std::unique_ptr<ChromeFacilitatedPaymentsClient> client_;
+  raw_ptr<MockFacilitatedPaymentsController> controller_;
+};
 
 TEST_F(ChromeFacilitatedPaymentsClientTest, GetPaymentsDataManager) {
-  MockOptimizationGuideDecider optimization_guide_decider;
-  auto client = std::make_unique<ChromeFacilitatedPaymentsClient>(
-      web_contents(), &optimization_guide_decider);
-
-  EXPECT_NE(nullptr, client->GetPaymentsDataManager());
+  EXPECT_NE(nullptr, base_client().GetPaymentsDataManager());
 }
 
 TEST_F(ChromeFacilitatedPaymentsClientTest,
        GetFacilitatedPaymentsNetworkInterface) {
-  MockOptimizationGuideDecider optimization_guide_decider;
-  auto client = std::make_unique<ChromeFacilitatedPaymentsClient>(
-      web_contents(), &optimization_guide_decider);
-
-  EXPECT_NE(nullptr, client->GetFacilitatedPaymentsNetworkInterface());
+  EXPECT_NE(nullptr, base_client().GetFacilitatedPaymentsNetworkInterface());
 }
 
 // Test ShowPixPaymentPrompt method returns true when
 // FacilitatedPaymentsController returns true.
 TEST_F(ChromeFacilitatedPaymentsClientTest,
        ShowPixPaymentPrompt_ControllerDefaultTrue) {
-  MockOptimizationGuideDecider optimization_guide_decider;
-  auto client = std::make_unique<ChromeFacilitatedPaymentsClient>(
-      web_contents(), &optimization_guide_decider);
-
-  std::unique_ptr<MockFacilitatedPaymentsController> mock_controller =
-      std::make_unique<MockFacilitatedPaymentsController>();
-  EXPECT_CALL(*mock_controller, Show(_, _, _)).WillOnce(Return(true));
-  client->SetFacilitatedPaymentsControllerForTesting(
-      std::move(mock_controller));
-
-  EXPECT_TRUE(client->ShowPixPaymentPrompt({}, base::DoNothing()));
+  EXPECT_CALL(controller(), Show).WillOnce(Return(true));
+  EXPECT_TRUE(base_client().ShowPixPaymentPrompt({}, base::DoNothing()));
 }
 
 // Test ShowPixPaymentPrompt method returns false when
 // FacilitatedPaymentsController returns false.
 TEST_F(ChromeFacilitatedPaymentsClientTest,
        ShowPixPaymentPrompt_ControllerDefaultFalse) {
-  MockOptimizationGuideDecider optimization_guide_decider;
-  auto client = std::make_unique<ChromeFacilitatedPaymentsClient>(
-      web_contents(), &optimization_guide_decider);
-
-  std::unique_ptr<MockFacilitatedPaymentsController> mock_controller =
-      std::make_unique<MockFacilitatedPaymentsController>();
-  EXPECT_CALL(*mock_controller, Show(_, _, _)).WillOnce(Return(false));
-  client->SetFacilitatedPaymentsControllerForTesting(
-      std::move(mock_controller));
-
-  EXPECT_FALSE(client->ShowPixPaymentPrompt({}, base::DoNothing()));
+  EXPECT_CALL(controller(), Show).WillOnce(Return(false));
+  EXPECT_FALSE(base_client().ShowPixPaymentPrompt({}, base::DoNothing()));
 }
 
 // Test ShowPixPaymentPrompt method returns false when there's no bank account.
 TEST_F(ChromeFacilitatedPaymentsClientTest,
        ShowPixPaymentPrompt_NoBankAccounts) {
-  MockOptimizationGuideDecider optimization_guide_decider;
-  auto client = std::make_unique<ChromeFacilitatedPaymentsClient>(
-      web_contents(), &optimization_guide_decider);
-
-  std::unique_ptr<MockFacilitatedPaymentsController> mock_controller =
-      std::make_unique<MockFacilitatedPaymentsController>();
-  EXPECT_CALL(*mock_controller, Show);
-  client->SetFacilitatedPaymentsControllerForTesting(
-      std::move(mock_controller));
-
-  EXPECT_FALSE(client->ShowPixPaymentPrompt({}, base::DoNothing()));
+  EXPECT_CALL(controller(), Show);
+  EXPECT_FALSE(base_client().ShowPixPaymentPrompt({}, base::DoNothing()));
 }
