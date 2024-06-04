@@ -67,9 +67,8 @@ class RealtimeAudioDestinationHandler final
               base::TimeDelta playout_delay,
               const media::AudioGlitchInfo& glitch_info) override;
 
-  // For AudioIOCallback. This is invoked by the `AudioDestination` to notify
-  // when an error has occurred in the lower layer in the stack. It may be
-  // called from either the main thread or non-main threads.
+  // For AudioIOCallback. This is invoked by AudioDestination to notify when
+  // an error has occurred in the audio infra.
   void OnRenderError() override;
 
   // Returns a hardware callback buffer size from audio infra.
@@ -89,6 +88,9 @@ class RealtimeAudioDestinationHandler final
   // `callback` when the recreation is completed.
   void SetSinkDescriptor(const WebAudioSinkDescriptor& sink_descriptor,
                          media::OutputDeviceStatusCB callback);
+
+  // Methods for unit tests.
+  void invoke_onrendererror_from_platform_for_testing();
 
  private:
   explicit RealtimeAudioDestinationHandler(AudioNode&,
@@ -117,8 +119,6 @@ class RealtimeAudioDestinationHandler final
   void DisablePullingAudioGraph() {
     allow_pulling_audio_graph_.store(false, std::memory_order_release);
   }
-
-  void NotifyAudioContext();
 
   // Stores a sink descriptor for sink transition.
   WebAudioSinkDescriptor sink_descriptor_;

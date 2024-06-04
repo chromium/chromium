@@ -1203,12 +1203,14 @@ void AudioContext::OnRenderError() {
   DCHECK(IsMainThread());
 
   CHECK(GetExecutionContext());
+  render_error_occoured_ = true;
   LocalDOMWindow* window = To<LocalDOMWindow>(GetExecutionContext());
   if (window && window->GetFrame()) {
     window->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kOther,
         mojom::blink::ConsoleMessageLevel::kError,
-        "The AudioContext encountered a render error."));
+        "The AudioContext encountered an error from the audio device or the "
+        "WebAudio renderer."));
   }
 }
 
@@ -1230,6 +1232,11 @@ void AudioContext::TransferAudioFrameStatsTo(
     AudioContext::AudioFrameStats& receiver) {
   DeferredTaskHandler::GraphAutoLocker locker(this);
   receiver.Absorb(audio_frame_stats_);
+}
+
+void AudioContext::invoke_onrendererror_from_platform_for_testing() {
+  GetRealtimeAudioDestinationNode()->GetOwnHandler()
+      .invoke_onrendererror_from_platform_for_testing();
 }
 
 }  // namespace blink

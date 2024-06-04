@@ -100,8 +100,6 @@ class MODULES_EXPORT AudioContext : public BaseAudioContext,
   // the AudioContext if it is now allowed to start.
   void NotifySourceNodeStart() final;
 
-  void set_was_audible_for_testing(bool value) { was_audible_ = value; }
-
   bool HandlePreRenderTasks(uint32_t frames_to_process,
                             const AudioIOPosition* output_position,
                             const AudioCallbackMetric* metric,
@@ -147,6 +145,10 @@ class MODULES_EXPORT AudioContext : public BaseAudioContext,
 
   void OnRenderError();
 
+  // Methods for unit tests
+  void set_was_audible_for_testing(bool value) { was_audible_ = value; }
+  void invoke_onrendererror_from_platform_for_testing();
+
  protected:
   void Uninitialize() final;
 
@@ -155,6 +157,8 @@ class MODULES_EXPORT AudioContext : public BaseAudioContext,
   friend class AudioContextAutoplayTest;
   friend class AudioContextTest;
   FRIEND_TEST_ALL_PREFIXES(AudioContextTest, MediaDevicesService);
+  FRIEND_TEST_ALL_PREFIXES(AudioContextTest,
+                           OnRenderErrorFromPlatformDestination);
 
   // Corresponds to
   // https://wicg.github.io/web_audio_playout/#audioplayoutstats-interface.
@@ -391,6 +395,10 @@ class MODULES_EXPORT AudioContext : public BaseAudioContext,
   // `wasRunning` flag for `setSinkId()` state transition. See the
   // implementation of `NotifySetSinkIdBegins()` for details.
   bool sink_transition_flag_was_running_ = false;
+
+  // To keep the record of any render errors reported from the infra during
+  // the life cycle of the context.
+  bool render_error_occoured_ = false;
 };
 
 }  // namespace blink

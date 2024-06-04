@@ -259,19 +259,20 @@ void RealtimeAudioDestinationHandler::Render(
 }
 
 void RealtimeAudioDestinationHandler::OnRenderError() {
+  DCHECK(IsMainThread());
+
   if (!RuntimeEnabledFeatures::AudioContextOnErrorEnabled()) {
     return;
   }
 
-  if (task_runner_->BelongsToCurrentThread()) {
-    RealtimeAudioDestinationHandler::NotifyAudioContext();
-  } else {
-    PostCrossThreadTask(
-        *task_runner_, FROM_HERE,
-        CrossThreadBindOnce(
-            &RealtimeAudioDestinationHandler::NotifyAudioContext,
-            AsWeakPtr()));
+  // When this method gets executed by the task runner, it is possible that
+  // the corresponding GC-managed objects are not valid anymore. Check the
+  // initialization state and stop if the disposition already happened.
+  if (!IsInitialized()) {
+    return;
   }
+
+  Context()->OnRenderError();
 }
 
 // A flag for using FakeAudioWorker when an AudioContext with "playback"
@@ -315,19 +316,6 @@ void RealtimeAudioDestinationHandler::SetDetectSilence(bool detect_silence) {
   DCHECK(IsMainThread());
 
   platform_destination_->SetDetectSilence(detect_silence);
-}
-
-void RealtimeAudioDestinationHandler::NotifyAudioContext() {
-  DCHECK(IsMainThread());
-
-  // When this method gets executed by the task runner, it is possible that
-  // the corresponding GC-managed objects are not valid anymore. Check the
-  // initialization state and stop if the disposition already happened.
-  if (!IsInitialized()) {
-    return;
-  }
-
-  Context()->OnRenderError();
 }
 
 uint32_t RealtimeAudioDestinationHandler::GetCallbackBufferSize() const {
@@ -476,6 +464,11 @@ void RealtimeAudioDestinationHandler::SetSinkDescriptor(
   }
 
   std::move(callback).Run(status);
+}
+
+void RealtimeAudioDestinationHandler::
+    invoke_onrendererror_from_platform_for_testing() {
+  platform_destination_->OnRenderError();
 }
 
 }  // namespace blink

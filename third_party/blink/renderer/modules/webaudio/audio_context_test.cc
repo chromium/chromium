@@ -265,6 +265,17 @@ TEST_F(AudioContextTest, MediaDevicesService) {
   EXPECT_FALSE(audio_context->media_device_service_receiver_.is_bound());
 }
 
+TEST_F(AudioContextTest, OnRenderErrorFromPlatformDestination) {
+  AudioContextOptions* options = AudioContextOptions::Create();
+  AudioContext* audio_context = AudioContext::Create(
+      GetFrame().DomWindow(), options, ASSERT_NO_EXCEPTION);
+  EXPECT_EQ(audio_context->ContextState(),
+            AudioContext::AudioContextState::kRunning);
+
+  audio_context->invoke_onrendererror_from_platform_for_testing();
+  EXPECT_TRUE(audio_context->render_error_occoured_);
+}
+
 class ContextRenderer : public GarbageCollected<ContextRenderer> {
  public:
   explicit ContextRenderer(AudioContext* context)

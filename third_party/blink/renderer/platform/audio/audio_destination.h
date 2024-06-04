@@ -103,8 +103,8 @@ class PLATFORM_EXPORT AudioDestination final
              const media::AudioGlitchInfo& glitch_info,
              media::AudioBus* dest) override;
 
-  // This callback method may be called from either the main thread or non-main
-  // threads.
+  // Although it implements AudioRendererSink::RenderCallback, this method
+  // only gets executed from the main thread.
   void OnRenderError() override;
 
   void Start();

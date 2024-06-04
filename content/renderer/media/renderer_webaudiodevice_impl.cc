@@ -179,11 +179,18 @@ RendererWebAudioDeviceImpl::RendererWebAudioDeviceImpl(
     // Inform the Blink client (e.g. AudioContext) that we have invalid device
     // parameters.
     if (base::FeatureList::IsEnabled(blink::features::kAudioContextOnError)) {
-      RenderFrame::FromWebFrame(WebLocalFrame::FromFrameToken(frame_token_))
-          ->GetTaskRunner(blink::TaskType::kInternalMediaRealTime)
-          ->PostTask(FROM_HERE,
-                     base::BindOnce(&RendererWebAudioDeviceImpl::OnRenderError,
-                                    weak_ptr_factory_.GetWeakPtr()));
+      // Store the reference to the main thread task runner for later use.
+      // This is guaranteed to be the main thread since this call runs on the
+      // main thread.
+      main_thread_task_runner_ =
+          RenderFrame::FromWebFrame(WebLocalFrame::FromFrameToken(frame_token_))
+              ->GetTaskRunner(blink::TaskType::kInternalMediaRealTime);
+      // Post a task on the same thread, and the posted task will be executed
+      // once the construction sequence is finished.
+      main_thread_task_runner_->PostTask(
+          FROM_HERE,
+          base::BindOnce(&RendererWebAudioDeviceImpl::NotifyRenderError,
+                         weak_ptr_factory_.GetWeakPtr()));
     }
   }
   SendLogMessage(base::StringPrintf(
@@ -315,8 +322,25 @@ int RendererWebAudioDeviceImpl::Render(
 }
 
 void RendererWebAudioDeviceImpl::OnRenderError() {
-  DCHECK(webaudio_callback_);
+  if (!base::FeatureList::IsEnabled(blink::features::kAudioContextOnError)) {
+    return;
+  }
 
+  // This function gets called from the audio infra, non-main thread, so this
+  // posts a cross-thread task to the main thread task runner.
+  CHECK(main_thread_task_runner_.get());
+  main_thread_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&RendererWebAudioDeviceImpl::NotifyRenderError,
+                       weak_ptr_factory_.GetWeakPtr()));
+}
+
+void RendererWebAudioDeviceImpl::NotifyRenderError() {
+  if (!base::FeatureList::IsEnabled(blink::features::kAudioContextOnError)) {
+    return;
+  }
+
+  DCHECK(thread_checker_.CalledOnValidThread());
   webaudio_callback_->OnRenderError();
 }
 

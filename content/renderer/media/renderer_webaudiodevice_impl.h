@@ -70,9 +70,14 @@ class CONTENT_EXPORT RendererWebAudioDeviceImpl
              const media::AudioGlitchInfo& glitch_info,
              media::AudioBus* dest) override;
 
-  // This callback method may be called from either the main thread or non-main
-  // threads.
+  // This callback method may be called in two different scenarios:
+  // 1) When the constructor's audio device activation fails. (main thread)
+  // 2) When the audio infra reports an device/render error. (audio thread)
   void OnRenderError() override;
+
+  // Notifies the client (e.g. Blink WebAudio) of device/renderer-related
+  // errors. Intended to be executed via a task runner asynchronously.
+  void NotifyRenderError();
 
   void SetSilentSinkTaskRunnerForTesting(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
@@ -142,6 +147,8 @@ class CONTENT_EXPORT RendererWebAudioDeviceImpl
   // An alternative task runner for `silent_sink_suspender_` or a silent audio
   // sink.
   scoped_refptr<base::SingleThreadTaskRunner> silent_sink_task_runner_;
+
+  scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
 
   // Used to trigger one single textlog indicating that rendering started as
   // intended. Set to true once in the first call to the Render callback.
