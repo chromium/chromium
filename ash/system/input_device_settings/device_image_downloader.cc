@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/image_downloader.h"
 #include "ash/system/input_device_settings/device_image.h"
+#include "base/strings/string_util.h"
 #include "components/account_id/account_id.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/gurl.h"
@@ -13,6 +14,11 @@
 namespace ash {
 
 namespace {
+
+inline constexpr char kGstaticBaseURL[] =
+    "https://www.gstatic.com/chromeos/peripherals/";
+
+inline constexpr char kFileFormat[] = ".png";
 
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("device_image_downloader",
@@ -51,9 +57,18 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
   }
 )");
 
-// TODO(b/329686601): Implement this.
 GURL GetResourceUrlFromDeviceKey(const std::string& device_key) {
-  return GURL();
+  CHECK(!device_key.empty());
+
+  // Format the device key for the URL:
+  // Image filenames use underscores instead of colons.
+  std::string formatted_key = device_key;
+  base::ReplaceChars(formatted_key, ":", "_", &formatted_key);
+
+  // Construct the full resource URL:
+  // Combine the base URL, formatted device key, and the file format extension.
+  const std::string url = kGstaticBaseURL + formatted_key + kFileFormat;
+  return GURL(url);
 }
 
 }  // namespace

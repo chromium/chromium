@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_INPUT_DEVICE_SETTINGS_DEVICE_IMAGE_H_
 
 #include "ash/ash_export.h"
+#include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace ash {
@@ -15,16 +16,17 @@ namespace ash {
 class ASH_EXPORT DeviceImage {
  public:
   explicit DeviceImage(const std::string& device_key,
-                       const gfx::ImageSkia& image = gfx::ImageSkia());
+                       const gfx::ImageSkia& image);
   DeviceImage(const std::string& device_key, const std::string& data_url);
 
   std::string device_key() const { return device_key_; }
   std::string data_url() const { return data_url_; }
+  gfx::Image gfx_image() const { return image_; }
 
  private:
   std::string device_key_;
   std::string data_url_;
-  gfx::ImageSkia image_;
+  gfx::Image image_;
 };
 
 }  // namespace ash

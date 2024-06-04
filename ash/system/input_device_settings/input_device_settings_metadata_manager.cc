@@ -37,9 +37,6 @@ void InputDeviceSettingsMetadataManager::GetDeviceImage(
   GetDeviceImagePreferringCache(device_key, account_id, std::move(callback));
 }
 
-// TODO(b/329686601): Notify any observers that a new image is available.
-// TODO(b/329686601): Implement error handling for cases where the image
-// download fails.
 void InputDeviceSettingsMetadataManager::OnDeviceImageFetched(
     const DeviceImage& device_image) {
   const auto device_key = device_image.device_key();

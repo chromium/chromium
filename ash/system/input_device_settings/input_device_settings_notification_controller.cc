@@ -596,7 +596,8 @@ void InputDeviceSettingsNotificationController::
 }
 
 void InputDeviceSettingsNotificationController::NotifyMouseFirstTimeConnected(
-    const mojom::Mouse& mouse) {
+    const mojom::Mouse& mouse,
+    const gfx::Image& device_image) {
   if (!IsActiveUserSession()) {
     return;
   }
@@ -631,12 +632,13 @@ void InputDeviceSettingsNotificationController::NotifyMouseFirstTimeConnected(
           mouse.settings->button_remappings)) {
     return;
   }
-  NotifyMouseIsCustomizable(mouse);
+  NotifyMouseIsCustomizable(mouse, device_image);
 }
 
 void InputDeviceSettingsNotificationController::
     NotifyGraphicsTabletFirstTimeConnected(
-        const mojom::GraphicsTablet& graphics_tablet) {
+        const mojom::GraphicsTablet& graphics_tablet,
+        const gfx::Image& device_image) {
   if (!IsActiveUserSession()) {
     return;
   }
@@ -672,7 +674,7 @@ void InputDeviceSettingsNotificationController::
           graphics_tablet.settings->tablet_button_remappings)) {
     return;
   }
-  NotifyGraphicsTabletIsCustomizable(graphics_tablet);
+  NotifyGraphicsTabletIsCustomizable(graphics_tablet, device_image);
 }
 
 void InputDeviceSettingsNotificationController::
@@ -818,7 +820,8 @@ void InputDeviceSettingsNotificationController::
 }
 
 void InputDeviceSettingsNotificationController::
-    NotifyKeyboardFirstTimeConnected(const mojom::Keyboard& keyboard) {
+    NotifyKeyboardFirstTimeConnected(const mojom::Keyboard& keyboard,
+                                     const gfx::Image& device_image) {
   if (!IsActiveUserSession()) {
     return;
   }
@@ -840,11 +843,12 @@ void InputDeviceSettingsNotificationController::
                  std::move(seen_keyboard_list));
 
   CHECK(keyboard.settings);
-  ShowKeyboardSettingsNotification(keyboard);
+  ShowKeyboardSettingsNotification(keyboard, device_image);
 }
 
 void InputDeviceSettingsNotificationController::
-    NotifyTouchpadFirstTimeConnected(const mojom::Touchpad& touchpad) {
+    NotifyTouchpadFirstTimeConnected(const mojom::Touchpad& touchpad,
+                                     const gfx::Image& device_image) {
   if (!IsActiveUserSession()) {
     return;
   }
@@ -866,7 +870,7 @@ void InputDeviceSettingsNotificationController::
                  std::move(seen_touchpad_list));
 
   CHECK(touchpad.settings);
-  ShowTouchpadSettingsNotification(touchpad);
+  ShowTouchpadSettingsNotification(touchpad, device_image);
 }
 
 void InputDeviceSettingsNotificationController::
@@ -927,7 +931,8 @@ void InputDeviceSettingsNotificationController::
 }
 
 void InputDeviceSettingsNotificationController::NotifyMouseIsCustomizable(
-    const mojom::Mouse& mouse) {
+    const mojom::Mouse& mouse,
+    const gfx::Image& device_image) {
   const auto peripheral_name = base::UTF8ToUTF16(mouse.name);
   const auto notification_id = GetMouseNotificationID(mouse.id);
   const auto message =
@@ -937,6 +942,9 @@ void InputDeviceSettingsNotificationController::NotifyMouseIsCustomizable(
                 peripheral_name)
           : GetBatteryLevelMessage(*mouse.battery_info);
   message_center::RichNotificationData rich_notification_data;
+  if (!device_image.IsEmpty()) {
+    rich_notification_data.image = device_image;
+  }
   rich_notification_data.buttons.emplace_back(l10n_util::GetStringUTF16(
       IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_OPEN_SETTINGS_BUTTON));
   auto notification = CreateSystemNotificationPtr(
@@ -956,7 +964,8 @@ void InputDeviceSettingsNotificationController::NotifyMouseIsCustomizable(
 }
 
 void InputDeviceSettingsNotificationController::
-    ShowKeyboardSettingsNotification(const mojom::Keyboard& keyboard) {
+    ShowKeyboardSettingsNotification(const mojom::Keyboard& keyboard,
+                                     const gfx::Image& device_image) {
   const auto peripheral_name = base::UTF8ToUTF16(keyboard.name);
   const auto notification_id = GetWelcomeExperienceNotificationId(
       kKeyboardNotificationPrefix, keyboard.id);
@@ -967,6 +976,9 @@ void InputDeviceSettingsNotificationController::
                 peripheral_name)
           : GetBatteryLevelMessage(*keyboard.battery_info);
   message_center::RichNotificationData rich_notification_data;
+  if (!device_image.IsEmpty()) {
+    rich_notification_data.image = device_image;
+  }
   rich_notification_data.buttons.emplace_back(l10n_util::GetStringUTF16(
       IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_OPEN_SETTINGS_BUTTON));
   auto notification = CreateSystemNotificationPtr(
@@ -986,7 +998,8 @@ void InputDeviceSettingsNotificationController::
 }
 
 void InputDeviceSettingsNotificationController::
-    ShowTouchpadSettingsNotification(const mojom::Touchpad& touchpad) {
+    ShowTouchpadSettingsNotification(const mojom::Touchpad& touchpad,
+                                     const gfx::Image& device_image) {
   const auto peripheral_name = base::UTF8ToUTF16(touchpad.name);
   const auto message =
       touchpad.battery_info.is_null()
@@ -997,6 +1010,9 @@ void InputDeviceSettingsNotificationController::
   const auto notification_id = GetWelcomeExperienceNotificationId(
       kTouchpadNotificationPrefix, touchpad.id);
   message_center::RichNotificationData rich_notification_data;
+  if (!device_image.IsEmpty()) {
+    rich_notification_data.image = device_image;
+  }
   rich_notification_data.buttons.emplace_back(l10n_util::GetStringUTF16(
       IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_OPEN_SETTINGS_BUTTON));
   auto notification = CreateSystemNotificationPtr(
@@ -1017,7 +1033,8 @@ void InputDeviceSettingsNotificationController::
 
 void InputDeviceSettingsNotificationController::
     NotifyGraphicsTabletIsCustomizable(
-        const mojom::GraphicsTablet& graphics_tablet) {
+        const mojom::GraphicsTablet& graphics_tablet,
+        const gfx::Image& device_image) {
   const auto peripheral_name = base::UTF8ToUTF16(graphics_tablet.name);
   const auto message =
       graphics_tablet.battery_info.is_null()
@@ -1028,6 +1045,9 @@ void InputDeviceSettingsNotificationController::
   const auto notification_id =
       GetGraphicsTabletNotificationID(graphics_tablet.id);
   message_center::RichNotificationData rich_notification_data;
+  if (!device_image.IsEmpty()) {
+    rich_notification_data.image = device_image;
+  }
   rich_notification_data.buttons.emplace_back(l10n_util::GetStringUTF16(
       IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_OPEN_SETTINGS_BUTTON));
   auto notification = CreateSystemNotificationPtr(
