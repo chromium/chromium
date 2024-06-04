@@ -65,6 +65,11 @@ KeyboardBrightnessController::~KeyboardBrightnessController() {
 void KeyboardBrightnessController::OnActiveUserSessionChanged(
     const AccountId& account_id) {
   active_account_id_ = account_id;
+
+  // On login, retrieve the current keyboard brightness and save it to prefs.
+  HandleGetKeyboardBrightness(base::BindOnce(
+      &KeyboardBrightnessController::OnReceiveKeyboardBrightnessAfterLogin,
+      weak_ptr_factory_.GetWeakPtr()));
 }
 
 // PowerManagerClient::Observer:
@@ -80,6 +85,28 @@ void KeyboardBrightnessController::KeyboardAmbientLightSensorEnabledChanged(
   known_user.SetPath(active_account_id_.value(),
                      prefs::kKeyboardAmbientLightSensorEnabled,
                      std::make_optional<base::Value>(change.sensor_enabled()));
+}
+
+// PowerManagerClient::Observer:
+void KeyboardBrightnessController::KeyboardBrightnessChanged(
+    const power_manager::BacklightBrightnessChange& change) {
+  // In tests, these may not be present.
+  if (!active_account_id_.has_value() || !local_state_) {
+    return;
+  }
+
+  // Save keyboard brightness change to Local State if it was caused by a user
+  // request.
+  if (change.cause() ==
+          power_manager::BacklightBrightnessChange_Cause_USER_REQUEST ||
+      change.cause() ==
+          power_manager::
+              BacklightBrightnessChange_Cause_USER_REQUEST_FROM_SETTINGS_APP) {
+    user_manager::KnownUser known_user(local_state_);
+    known_user.SetPath(active_account_id_.value(),
+                       prefs::kKeyboardBrightnessPercent,
+                       std::make_optional<base::Value>(change.percent()));
+  }
 }
 
 // LoginDataDispatcher::Observer:
@@ -145,6 +172,18 @@ void KeyboardBrightnessController::RestoreKeyboardBrightnessSettings(
           .FindBoolPath(account_id, prefs::kKeyboardAmbientLightSensorEnabled)
           .value_or(true);
 
+  if (!keyboard_ambient_light_sensor_enabled_for_account) {
+    // If the keyboard ambient light sensor is disabled, restore the user's
+    // preferred keyboard brightness level.
+    const std::optional<double> keyboard_brightness_for_account =
+        known_user.FindPath(account_id, prefs::kKeyboardBrightnessPercent)
+            ->GetIfDouble();
+    if (keyboard_brightness_for_account.has_value()) {
+      HandleSetKeyboardBrightness(keyboard_brightness_for_account.value(),
+                                  /*gradual=*/true);
+    }
+  }
+
   HandleSetKeyboardAmbientLightSensorEnabled(
       keyboard_ambient_light_sensor_enabled_for_account);
 }
@@ -158,6 +197,26 @@ void KeyboardBrightnessController::OnReceiveHasKeyboardBacklight(
   }
   LOG(ERROR) << "KeyboardBrightnessController: Failed to get the keyboard "
                 "backlight status";
+}
+
+void KeyboardBrightnessController::OnReceiveKeyboardBrightnessAfterLogin(
+    std::optional<double> keyboard_brightness) {
+  // In tests, these may not be present.
+  if (!active_account_id_.has_value() || !local_state_) {
+    return;
+  }
+
+  if (!keyboard_brightness.has_value()) {
+    LOG(ERROR) << "KeyboardBrightnessController: keyboard_brightness has no "
+                  "value, so cannot set prefs.";
+    return;
+  }
+
+  // Save keyboard brightness to local state after login.
+  user_manager::KnownUser known_user(local_state_);
+  known_user.SetPath(
+      active_account_id_.value(), prefs::kKeyboardBrightnessPercent,
+      std::make_optional<base::Value>(keyboard_brightness.value()));
 }
 
 }  // namespace ash

@@ -210,10 +210,17 @@ void FakePowerManagerClient::HasKeyboardBacklight(
       FROM_HERE, base::BindOnce(std::move(callback), has_keyboard_backlight_));
 }
 
-void FakePowerManagerClient::DecreaseKeyboardBrightness() {}
+void FakePowerManagerClient::DecreaseKeyboardBrightness() {
+  // Simulate the real behavior of the platform by disabling the keyboard
+  // ambient light sensor when the brightness is manually changed.
+  SetKeyboardAmbientLightSensorEnabled(false);
+}
 
 void FakePowerManagerClient::IncreaseKeyboardBrightness() {
   ++num_increase_keyboard_brightness_calls_;
+  // Simulate the real behavior of the platform by disabling the keyboard
+  // ambient light sensor when the brightness is manually changed.
+  SetKeyboardAmbientLightSensorEnabled(false);
 }
 
 void FakePowerManagerClient::GetKeyboardBrightnessPercent(
@@ -234,6 +241,9 @@ void FakePowerManagerClient::SetKeyboardBrightness(
       FROM_HERE,
       base::BindOnce(&FakePowerManagerClient::SendKeyboardBrightnessChanged,
                      weak_ptr_factory_.GetWeakPtr(), change));
+  // Simulate the real behavior of the platform by disabling the keyboard
+  // ambient light sensor when the brightness is manually changed.
+  SetKeyboardAmbientLightSensorEnabled(false);
 }
 
 void FakePowerManagerClient::ToggleKeyboardBacklight() {}

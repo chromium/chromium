@@ -46,6 +46,8 @@ class ASH_EXPORT KeyboardBrightnessController
   // PowerManagerClient::Observer:
   void KeyboardAmbientLightSensorEnabledChanged(
       const power_manager::AmbientLightSensorChange& change) override;
+  void KeyboardBrightnessChanged(
+      const power_manager::BacklightBrightnessChange& change) override;
 
   // LoginDataDispatcher::Observer:
   void OnFocusPod(const AccountId& account_id) override;
@@ -66,6 +68,8 @@ class ASH_EXPORT KeyboardBrightnessController
   void RestoreKeyboardBrightnessSettings(const AccountId& account_id);
 
   void OnReceiveHasKeyboardBacklight(std::optional<bool> has_backlight);
+  void OnReceiveKeyboardBrightnessAfterLogin(
+      std::optional<double> keyboard_brightness);
 
   // The current AccountId, used to set and retrieve prefs. Expected to be
   // nullopt on the login screen, but will be set on login.

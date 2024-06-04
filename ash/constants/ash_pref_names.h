@@ -962,6 +962,10 @@ inline constexpr char kDisplayAmbientLightSensorLastEnabled[] =
 inline constexpr char kAmbientLightSensorDisabledReason[] =
     "settings.display.ambient_light_sensor_disabled_reason";
 
+// A double pref which stores the current keyboard brightness.
+const char kKeyboardBrightnessPercent[] =
+    "settings.keyboard_brightness_percent";
+
 // A boolean pref which stores whether the keyboard ambient light sensor is
 // enabled.
 inline constexpr char kKeyboardAmbientLightSensorEnabled[] =
