@@ -967,6 +967,17 @@ PrefetchRequestHandler PrefetchContainer::Reader::CreateRequestHandler() {
   return handler;
 }
 
+bool PrefetchContainer::Reader::VariesOnCookieIndices() const {
+  return GetCurrentSinglePrefetchToServe()
+      .response_reader_->VariesOnCookieIndices();
+}
+
+bool PrefetchContainer::Reader::MatchesCookieIndices(
+    base::span<const std::pair<std::string, std::string>> cookies) const {
+  return GetCurrentSinglePrefetchToServe()
+      .response_reader_->MatchesCookieIndices(cookies);
+}
+
 void PrefetchContainer::CancelStreamingURLLoaderIfNotServing() {
   if (!streaming_loader_) {
     return;

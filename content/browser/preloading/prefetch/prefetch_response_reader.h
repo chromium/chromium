@@ -13,6 +13,7 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+#include "net/http/http_cookie_indices.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 
@@ -93,6 +94,16 @@ class CONTENT_EXPORT PrefetchResponseReader final
   }
   const network::mojom::URLResponseHead* GetHead() const { return head_.get(); }
 
+  // True if this response had Vary: Cookie (or Vary: *), and a Cookie-Indices
+  // header also applies.
+  bool VariesOnCookieIndices() const;
+
+  // True if the request cookies `cookies` match those originally used when the
+  // prefetch request was made, to the extent required by Cookie-Indices.
+  // Do not call this if |VariesOnCookieIndices()| returns false.
+  bool MatchesCookieIndices(
+      base::span<const std::pair<std::string, std::string>> cookies) const;
+
   base::WeakPtr<PrefetchResponseReader> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -146,6 +157,11 @@ class CONTENT_EXPORT PrefetchResponseReader final
   void OnServingURLLoaderMojoDisconnect();
 
   PrefetchStreamingURLLoaderStatus GetStatusForRecording() const;
+
+  // Stores info from the response head that will be needed later, before it is
+  // stored into `head_` (for non-redirect responses) or `event_queue_` (or
+  // redirect responses).
+  void StoreInfoFromResponseHead(const network::mojom::URLResponseHead& head);
 
   // All URLLoader events are queued up here.
   std::vector<base::RepeatingCallback<void(ServingUrlLoaderClientId)>>
@@ -206,6 +222,24 @@ class CONTENT_EXPORT PrefetchResponseReader final
   bool served_before_completion_{false};
   bool served_after_completion_{false};
   bool should_record_metrics_{true};
+
+  // If present, this includes the sorted and unique names of the cookies which
+  // were specified in the Cookie-Indices header, and a hash of their values as
+  // obtained from `net::HashCookieIndices`. This is not set unless the Vary
+  // header also specified Cookie (or *).
+  //
+  // As one quirk, we presently still don't vary on cookies if Vary is specified
+  // and Cookie-Indices isn't, both because that was the prior behavior and
+  // because doing so requires having the precise string value of the header
+  // (including whitespace).
+  struct CookieIndicesInfo {
+    CookieIndicesInfo();
+    ~CookieIndicesInfo();
+
+    std::vector<std::string> cookie_names;
+    net::CookieIndicesHash expected_hash;
+  };
+  std::optional<CookieIndicesInfo> cookie_indices_;
 
   // The prefetched data and metadata. Not set for a redirect response.
   network::mojom::URLResponseHeadPtr head_;

@@ -554,6 +554,13 @@ class CONTENT_EXPORT PrefetchContainer {
     // See the comment for `PrefetchResponseReader::CreateRequestHandler()`.
     PrefetchRequestHandler CreateRequestHandler();
 
+    // See the corresponding functions on `PrefetchResponseReader`.
+    // These apply to the current `SinglePrefetch` (and so, may change as the
+    // prefetch advances through a redirect change).
+    bool VariesOnCookieIndices() const;
+    bool MatchesCookieIndices(
+        base::span<const std::pair<std::string, std::string>> cookies) const;
+
    private:
     base::WeakPtr<PrefetchContainer> prefetch_container_;
 

@@ -74,6 +74,10 @@ BASE_DECLARE_FEATURE(kPrefetchProxy);
 // it's only here to make shipping aggressively safer.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchUnblockOnCancel);
 
+// If enabled, responses with an operative Cookie-Indices will not be used
+// if the relevant cookie values have changed.
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchCookieIndices);
+
 }  // namespace features
 
 #endif  // CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_FEATURES_H_

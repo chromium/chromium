@@ -7,6 +7,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
+#include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_origin_prober.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_probe_result.h"
@@ -17,6 +18,8 @@
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/public/browser/prefetch_metrics.h"
 #include "content/public/browser/web_contents.h"
+#include "net/cookies/canonical_cookie.h"
+#include "net/cookies/cookie_partition_key_collection.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
@@ -51,6 +54,11 @@ struct OnGotPrefetchToServeState {
   base::OnceCallback<void(PrefetchContainer::Reader)> callback;
   PrefetchContainer::Reader reader;
 
+  // True if we've validated that cookies match (to the extent required).
+  // False if they don't. Absent if we don't know yet.
+  // Unused if `features::kPrefetchCookieIndices` is disabled.
+  std::optional<bool> cookies_matched;
+
   // The probe result, once it has been determined.
   // If it is empty, then this will be the next thing
   // ContinueOnGotPrefetchToServe does.
@@ -65,6 +73,11 @@ struct OnGotPrefetchToServeState {
 // appearing in the order they occur.
 void ContinueOnGotPrefetchToServe(
     std::unique_ptr<OnGotPrefetchToServeState> state);
+void StartCookieValidation(std::unique_ptr<OnGotPrefetchToServeState>& state);
+void OnGotCookiesForValidation(
+    std::unique_ptr<OnGotPrefetchToServeState> state,
+    const std::vector<net::CookieWithAccessResult>& cookies,
+    const std::vector<net::CookieWithAccessResult>& excluded_cookies);
 void StartProbe(std::unique_ptr<OnGotPrefetchToServeState>& state);
 void OnProbeComplete(std::unique_ptr<OnGotPrefetchToServeState> state,
                      base::TimeTicks probe_start_time,
@@ -77,6 +90,24 @@ void OnCookieCopyComplete(std::unique_ptr<OnGotPrefetchToServeState> state,
 
 void ContinueOnGotPrefetchToServe(
     std::unique_ptr<OnGotPrefetchToServeState> state) {
+  // If the cookies need to be matched, fetch them and confirm that they're
+  // correct.
+  if (base::FeatureList::IsEnabled(features::kPrefetchCookieIndices)) {
+    if (!state->cookies_matched.has_value()) {
+      StartCookieValidation(state);
+      if (!state) {
+        // Fetching the cookies asynchronously. Continue later.
+        return;
+      }
+    }
+    CHECK(state->cookies_matched.has_value());
+    if (!state->cookies_matched.value()) {
+      // Cookies did not match, but needed to. We're done here.
+      std::move(state->callback).Run({});
+      return;
+    }
+  }
+
   // If probing hasn't happened yet, do it if necessary.
   if (!state->probe_result.has_value()) {
     StartProbe(state);
@@ -107,6 +138,8 @@ void ContinueOnGotPrefetchToServe(
   }
 
   // All prerequisites should now be complete.
+  CHECK(!base::FeatureList::IsEnabled(features::kPrefetchCookieIndices) ||
+        state->cookies_matched.value_or(false));
   CHECK(PrefetchProbeResultIsSuccess(state->probe_result.value()));
   CHECK(state->cookie_copy_complete_if_required);
 
@@ -137,6 +170,56 @@ void ContinueOnGotPrefetchToServe(
   }
 
   std::move(state->callback).Run(std::move(state->reader));
+}
+
+// COOKIE VALIDATION
+
+void StartCookieValidation(std::unique_ptr<OnGotPrefetchToServeState>& state) {
+  WebContents* web_contents =
+      WebContents::FromFrameTreeNodeId(state->frame_tree_node_id);
+  if (!web_contents || !state->reader) {
+    // We can't confirm that the cookies matched. But probably everything is
+    // being torn down, anyway.
+    state->cookies_matched = false;
+    return;
+  }
+  if (!state->reader.VariesOnCookieIndices()) {
+    state->cookies_matched = true;
+    return;
+  }
+  network::mojom::CookieManager* cookie_manager =
+      web_contents->GetBrowserContext()
+          ->GetDefaultStoragePartition()
+          ->GetCookieManagerForBrowserProcess();
+  // Note: This currently relies on this being for main frame use only.
+  // The partitioning below needs to be adjusted if a subframe use were
+  // possible.
+  CHECK(FrameTreeNode::GloballyFindByID(state->frame_tree_node_id)
+            ->IsMainFrame());
+  const GURL& url = state->reader.GetCurrentURLToServe();
+  net::SchemefulSite site(url);
+  cookie_manager->GetCookieList(
+      url, net::CookieOptions::MakeAllInclusive(),
+      net::CookiePartitionKeyCollection::FromOptional(
+          net::CookiePartitionKey::FromNetworkIsolationKey(
+              net::NetworkIsolationKey(site, site), net::SiteForCookies(site),
+              site, /*main_frame_navigation=*/true)),
+      base::BindOnce(&OnGotCookiesForValidation, std::move(state)));
+}
+
+void OnGotCookiesForValidation(
+    std::unique_ptr<OnGotPrefetchToServeState> state,
+    const std::vector<net::CookieWithAccessResult>& cookies,
+    const std::vector<net::CookieWithAccessResult>& excluded_cookies) {
+  std::vector<std::pair<std::string, std::string>> cookie_values;
+  cookie_values.reserve(cookies.size());
+  for (const net::CookieWithAccessResult& cookie : cookies) {
+    cookie_values.emplace_back(cookie.cookie.Name(), cookie.cookie.Value());
+  }
+
+  state->cookies_matched =
+      state->reader && state->reader.MatchesCookieIndices(cookie_values);
+  ContinueOnGotPrefetchToServe(std::move(state));
 }
 
 // ORIGIN PROBING
