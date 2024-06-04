@@ -436,51 +436,51 @@ bool ScopedLayerTreeSynchronizerBase::SynchronizeLayerTreeRoundedCornersImpl(
     const gfx::RRectF& reference_bounds,
     const gfx::Transform& transform) {
   CHECK(layer);
-  CHECK(transform.IsScaleOrTranslation());
+
+  // Currently, cc does not support rounded corners for layer whose transform
+  // does not preserve 2d-axis alignment and ignores the radii.
+  // (See `cc::Layer::SetRoundedCornerRadius()` comment).
+  const bool ignore_layer = !transform.Preserves2dAxisAlignment();
 
   bool layer_altered = false;
-  if (!layer->rounded_corner_radii().IsEmpty()) {
+  if (!ignore_layer && !layer->rounded_corner_radii().IsEmpty()) {
     // Get the `layer` bounds in the `root_layer_` coordinate space.
     // `transform` accounts for layer offset from its parent.
-    gfx::RRectF layer_rrectf(gfx::RectF(layer->bounds().size()),
-                             layer->rounded_corner_radii());
-    auto transformed_layer_bounds = ApplyTransform(layer_rrectf, transform);
+    const gfx::RRectF layer_rrectf(gfx::RectF(layer->bounds().size()),
+                                   layer->rounded_corner_radii());
+    const gfx::RRectF layer_bounds_in_root =
+        ApplyTransform(layer_rrectf, transform);
 
     // Finds the corners of the `layer` that either intersect with the corners
     // of the `reference_bounds` or are drawn outside the curvature (if any) of
     // the reference_bounds rounded corners. The function considers the
     // curvature (if any) of the layer corners as well.
     const Corners corners_to_update = FindCornersToOverrideRadius(
-        transformed_layer_bounds, reference_bounds, consider_curvature);
+        layer_bounds_in_root, reference_bounds, consider_curvature);
 
     if (!corners_to_update.empty()) {
-      // The inverse transform coverts from the coordinate space of `layer` to
-      // the coordinate space of 'root_layer_'.
+      // The inverse transform coverts from the coordinate space of
+      // `root_layer_` to the coordinate space of 'layer'.
       const gfx::Transform inverse_transform = transform.GetCheckedInverse();
+      const auto reference_bounds_in_local =
+          ApplyTransform(reference_bounds, inverse_transform);
 
-      const float scale_x = inverse_transform.rc(0, 0);
-
-      // The `reference_bounds` radii are scaled so that when the transformation
-      // of the `layer` is applied, the `layer` radii match the radii of the
-      // reference_bounds radii.
       gfx::RoundedCornersF radii = layer->rounded_corner_radii();
-
-      radii.Set(corners_to_update.contains(Corner::kUpperLeft)
-                    ? reference_bounds.GetCornerRadii(Corner::kUpperLeft).x() *
-                          scale_x
-                    : radii.upper_left(),
-                corners_to_update.contains(Corner::kUpperRight)
-                    ? reference_bounds.GetCornerRadii(Corner::kUpperRight).x() *
-                          scale_x
-                    : radii.upper_right(),
-                corners_to_update.contains(Corner::kLowerRight)
-                    ? reference_bounds.GetCornerRadii(Corner::kLowerRight).x() *
-                          scale_x
-                    : radii.lower_right(),
-                corners_to_update.contains(Corner::kLowerLeft)
-                    ? reference_bounds.GetCornerRadii(Corner::kLowerLeft).x() *
-                          scale_x
-                    : radii.lower_left());
+      radii.Set(
+          corners_to_update.contains(Corner::kUpperLeft)
+              ? reference_bounds_in_local.GetCornerRadii(Corner::kUpperLeft).x()
+              : radii.upper_left(),
+          corners_to_update.contains(Corner::kUpperRight)
+              ? reference_bounds_in_local.GetCornerRadii(Corner::kUpperRight)
+                    .x()
+              : radii.upper_right(),
+          corners_to_update.contains(Corner::kLowerRight)
+              ? reference_bounds_in_local.GetCornerRadii(Corner::kLowerRight)
+                    .x()
+              : radii.lower_right(),
+          corners_to_update.contains(Corner::kLowerLeft)
+              ? reference_bounds_in_local.GetCornerRadii(Corner::kLowerLeft).x()
+              : radii.lower_left());
 
       if (radii != layer->rounded_corner_radii()) {
         // If `original_layers_info_` has an entry, it means the layer
