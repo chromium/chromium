@@ -830,25 +830,27 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   }
 
   PA_ALWAYS_INLINE uintptr_t SlotStartToObjectAddr(uintptr_t slot_start) const {
-    // TODO(bartekn): Check that |slot_start| is indeed a slot start.
-    return slot_start;
+    return internal::SlotStart::FromUntaggedAddr(slot_start)
+        .untagged_slot_start;
   }
 
   PA_ALWAYS_INLINE void* SlotStartToObject(uintptr_t slot_start) const {
-    // TODO(bartekn): Check that |slot_start| is indeed a slot start.
     return internal::TagAddr(SlotStartToObjectAddr(slot_start));
   }
 
   PA_ALWAYS_INLINE void* TaggedSlotStartToObject(
       void* tagged_slot_start) const {
-    // TODO(bartekn): Check that |tagged_slot_start| is indeed a slot start.
     return reinterpret_cast<void*>(
-        SlotStartToObjectAddr(reinterpret_cast<uintptr_t>(tagged_slot_start)));
+        internal::TaggedSlotStart::FromTaggedAddr(
+            reinterpret_cast<uintptr_t>(tagged_slot_start))
+            .tagged_slot_start);
   }
 
   PA_ALWAYS_INLINE uintptr_t ObjectToSlotStart(void* object) const {
-    return UntagPtr(object);
-    // TODO(bartekn): Check that the result is indeed a slot start.
+    uintptr_t untagged_slot_start =
+        internal::UntagAddr(reinterpret_cast<uintptr_t>(object));
+    return internal::SlotStart::FromUntaggedAddr(untagged_slot_start)
+        .untagged_slot_start;
   }
 
   PA_ALWAYS_INLINE uintptr_t ObjectToSlotStartUnchecked(void* object) const {
@@ -856,8 +858,8 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   }
 
   PA_ALWAYS_INLINE uintptr_t ObjectToTaggedSlotStart(void* object) const {
-    return reinterpret_cast<uintptr_t>(object);
-    // TODO(bartekn): Check that the result is indeed a slot start.
+    return reinterpret_cast<uintptr_t>(
+        internal::TagAddr(ObjectToSlotStart(object)));
   }
 
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)

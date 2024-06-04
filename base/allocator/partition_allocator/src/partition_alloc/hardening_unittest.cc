@@ -128,10 +128,16 @@ TEST(HardeningTest, SuccessfulCorruption) {
   void* new_data = root.Alloc(kAllocSize);
   ASSERT_EQ(new_data, data);
 
+#if !PA_CONFIG(ENFORCE_SLOT_STARTS)
   // Not crashing, because a zeroed area is a "valid" freelist entry.
   void* new_data2 = root.Alloc(kAllocSize);
   // Now we have a pointer to the middle of an existing allocation.
   EXPECT_EQ(new_data2, to_corrupt);
+#else
+  // When `SlotStart` enforcement is on, `AllocInternalNoHooks()` will
+  // call `SlotStartToObject()` and `CHECK()` that it's a slot start.
+  EXPECT_DEATH_IF_SUPPORTED(root.Alloc(kAllocSize), "");
+#endif  // !PA_CONFIG(ENFORCE_SLOT_STARTS)
 #endif  // PA_BUILDFLAG(USE_FREESLOT_BITMAP)
 }
 #endif  // !PA_BUILDFLAG(IS_ANDROID)

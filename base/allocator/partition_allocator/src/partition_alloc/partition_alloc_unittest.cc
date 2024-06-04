@@ -5716,6 +5716,37 @@ TEST_P(PartitionAllocTest, FastReclaim) {
   allocator.root()->now_maybe_overridden_for_testing = base::TimeTicks::Now;
 }
 
+// `TaggedSlotStart` degrades gracefully to a slot start whose tags
+// happen to be zero when memory tagging is not supported - hence, no
+// real need to gate this behind `PA_BUILDFLAG(HAS_MEMORY_TAGGING)`.
+TEST_P(PartitionAllocTest, TaggedSlotStartDoesntCrash) {
+  void* buffer = allocator.root()->Alloc(16, "");
+
+  // `buffer` _is_ a slot start, so this must not crash.
+  TaggedSlotStart::FromTaggedAddr</*enforce=*/true>(
+      reinterpret_cast<uintptr_t>(buffer));
+
+  // This is _not_ a slot start, but with enforcement off, this also
+  // must not crash.
+  TaggedSlotStart::FromTaggedAddr</*enforce=*/false>(
+      reinterpret_cast<uintptr_t>(buffer) + 1);
+
+  allocator.root()->Free(buffer);
+}
+
+#if PA_USE_DEATH_TESTS()
+TEST_P(PartitionAllocTest, TaggedSlotStartCrashes) {
+  void* buffer = allocator.root()->Alloc(16, "");
+
+  // `buffer + 1` is not a slot start, so this must crash.
+  EXPECT_DEATH_IF_SUPPORTED(TaggedSlotStart::FromTaggedAddr</*enforce=*/true>(
+                                reinterpret_cast<uintptr_t>(buffer) + 1),
+                            "");
+
+  allocator.root()->Free(buffer);
+}
+#endif  // PA_USE_DEATH_TESTS()
+
 }  // namespace partition_alloc::internal
 
 #endif  // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)

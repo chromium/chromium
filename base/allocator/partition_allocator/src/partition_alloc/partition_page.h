@@ -19,6 +19,7 @@
 #include "partition_alloc/partition_alloc_base/thread_annotations.h"
 #include "partition_alloc/partition_alloc_buildflags.h"
 #include "partition_alloc/partition_alloc_check.h"
+#include "partition_alloc/partition_alloc_config.h"
 #include "partition_alloc/partition_alloc_constants.h"
 #include "partition_alloc/partition_alloc_forward.h"
 #include "partition_alloc/partition_bucket.h"
@@ -832,6 +833,62 @@ void IterateSlotSpans(uintptr_t super_page,
             reinterpret_cast<PartitionPageMetadata*>(slot_span) +
                 slot_span->bucket->get_pages_per_slot_span());
 }
+
+// Helper class derived from the implementation of `SlotSpanMetadata`
+// that can (but does not _have_ to) enforce that it is in fact a slot
+// start.
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC) SlotStart {
+ public:
+  template <bool enforce = PA_CONFIG(ENFORCE_SLOT_STARTS)>
+  PA_ALWAYS_INLINE static SlotStart FromUntaggedAddr(
+      uintptr_t untagged_slot_start) {
+    auto result = SlotStart(untagged_slot_start);
+    if constexpr (enforce) {
+      result.CheckIsSlotStart();
+    }
+    return result;
+  }
+
+  PA_ALWAYS_INLINE
+  void CheckIsSlotStart() {
+    auto* slot_span_metadata = SlotSpanMetadata::FromAddr(untagged_slot_start);
+    uintptr_t slot_span = SlotSpanMetadata::ToSlotSpanStart(slot_span_metadata);
+    PA_CHECK(!((untagged_slot_start - slot_span) %
+               slot_span_metadata->bucket->slot_size));
+  }
+
+  uintptr_t untagged_slot_start;
+
+ private:
+  PA_ALWAYS_INLINE
+  explicit SlotStart(uintptr_t untagged_slot_start)
+      : untagged_slot_start(untagged_slot_start) {}
+};
+
+// Helper class analogous to `SlotStart` and implemented in terms of
+// the same.
+//
+// Notably, no untag-tag is incurred if `enforce` is false.
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC) TaggedSlotStart {
+ public:
+  template <bool enforce = PA_CONFIG(ENFORCE_SLOT_STARTS)>
+  PA_ALWAYS_INLINE static TaggedSlotStart FromTaggedAddr(
+      uintptr_t tagged_slot_start) {
+    TaggedSlotStart result = TaggedSlotStart(tagged_slot_start);
+    if constexpr (enforce) {
+      SlotStart::FromUntaggedAddr<enforce>(
+          internal::UntagAddr(tagged_slot_start));
+    }
+    return result;
+  }
+
+  uintptr_t tagged_slot_start;
+
+ private:
+  PA_ALWAYS_INLINE
+  explicit TaggedSlotStart(uintptr_t tagged_slot_start)
+      : tagged_slot_start(tagged_slot_start) {}
+};
 
 }  // namespace partition_alloc::internal
 
