@@ -2747,13 +2747,13 @@ static_library("browser") {
     if (is_chromeos_ash) {
       deps += [ "//chrome/browser/screen_ai:screen_ai_dlc_installer" ]
     }
+  }
 
-    if (!is_chromeos) {
-      deps += [
-        "//components/reporting/storage:storage_configuration",
-        "//components/reporting/storage:storage_module",
-      ]
-    }
+  if (!is_chromeos) {
+    deps += [
+      "//components/reporting/storage:storage_configuration",
+      "//components/reporting/storage:storage_module",
+    ]
   }
 
   if (is_linux || is_chromeos) {
