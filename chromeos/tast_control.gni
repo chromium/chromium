@@ -125,6 +125,9 @@ tast_disabled_tests_from_chrome_all = [
   "nacl.Pnacl.lacros@jacuzzi",
   "nacl.Pnacl.lacros@volteer",
 
+  # b/344964853
+  "apps.LaunchHelpAppInBrowserMenu.stable_fieldtrial_testing_config_on@betty-pi-arc",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
