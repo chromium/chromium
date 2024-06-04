@@ -1,0 +1,18 @@
+This is a wdspec test.
+[FAIL] test_find_by_inner_text[ignore_case_true_full_match_max_depth_zero]
+  AssertionError
+[FAIL] test_find_by_inner_text[ignore_case_false_full_match_max_depth_zero]
+  AssertionError
+[FAIL] test_find_by_inner_text[ignore_case_true_partial_match_max_depth_zero]
+  AssertionError
+[FAIL] test_find_by_inner_text[ignore_case_false_partial_match_max_depth_zero]
+  AssertionError
+[FAIL] test_find_by_inner_text[ignore_case_true_full_match_max_depth_one]
+  AssertionError
+[FAIL] test_find_by_inner_text[ignore_case_false_full_match_max_depth_one]
+  AssertionError
+[FAIL] test_find_by_inner_text[ignore_case_true_partial_match_max_depth_one]
+  AssertionError
+[FAIL] test_find_by_inner_text[ignore_case_false_partial_match_max_depth_one]
+  AssertionError
+Harness: the test ran to completion.

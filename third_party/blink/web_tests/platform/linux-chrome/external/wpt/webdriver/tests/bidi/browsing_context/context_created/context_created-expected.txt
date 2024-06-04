@@ -1,6 +1,0 @@
-This is a wdspec test.
-[FAIL] test_existing_context[tab]
-  asyncio.exceptions.TimeoutError
-[FAIL] test_existing_context[window]
-  asyncio.exceptions.TimeoutError
-Harness: the test ran to completion.

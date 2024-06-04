@@ -1,10 +1,10 @@
 Name: Implementation of WebDriver BiDi standard
 Short Name: chromium-bidi
-URL: https://github.com/GoogleChromeLabs/chromium-bidi/archive/8e3a6c03ddfdc58c73d542d0bf960b890a1ba46b.zip
+URL: https://github.com/GoogleChromeLabs/chromium-bidi/archive/bd589a3c109413db069c95d8389355717745e312.zip
 Version: N/A
-Date: 2024-05-16
-Revision: 8e3a6c03ddfdc58c73d542d0bf960b890a1ba46b
-SHA-512: d687cc1590ca46793f92c2a904ec192a7cbe14b9612a9e6bbcd5b1839b501813f7ee36cfdde45d71c43b62d4fed442f7e77ef2b95f62fe20f66ee151f853aea7
+Date: 2024-06-04
+Revision: bd589a3c109413db069c95d8389355717745e312
+SHA-512: fa3c87891e1386e678d52600d736857cc83765c25d6f5fcf312a98ec2f954de0523a3b294c25a14c4ad83971bc2dcb119cd4314e760a3cf59022b42e01bc7e8c
 License: Apache 2.0
 License File: LICENSE
 Shipped: yes
@@ -56,7 +56,7 @@ License File: licenses/LICENSE.urlpattern_polyfill
 
 Name: zod
 URL: https://zod.dev
-Version: 3.23.5
+Version: 3.23.8
 License: MIT
 Security Critical: no
 Shipped: yes

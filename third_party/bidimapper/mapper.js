@@ -887,9 +887,12 @@ var mapperTab = (function () {
 	class BrowsingContextProcessor {
 	    #browserCdpClient;
 	    #browsingContextStorage;
-	    constructor(browserCdpClient, browsingContextStorage) {
+	    #eventManager;
+	    constructor(browserCdpClient, browsingContextStorage, eventManager) {
 	        this.#browserCdpClient = browserCdpClient;
 	        this.#browsingContextStorage = browsingContextStorage;
+	        this.#eventManager = eventManager;
+	        this.#eventManager.addSubscribeHook(protocol_js_1$l.ChromiumBidi.BrowsingContext.EventNames.ContextCreated, this.#onContextCreatedSubscribeHook.bind(this));
 	    }
 	    getTree(params) {
 	        const resultContexts = params.root === undefined
@@ -935,6 +938,7 @@ var mapperTab = (function () {
 	                url: 'about:blank',
 	                newWindow,
 	                browserContextId: userContext === 'default' ? undefined : userContext,
+	                background: params.background === true,
 	            });
 	        }
 	        catch (err) {
@@ -1053,6 +1057,21 @@ var mapperTab = (function () {
 	    async locateNodes(params) {
 	        const context = this.#browsingContextStorage.getContext(params.context);
 	        return await context.locateNodes(params);
+	    }
+	    #onContextCreatedSubscribeHook(contextId) {
+	        const context = this.#browsingContextStorage.getContext(contextId);
+	        const contextsToReport = [
+	            context,
+	            ...this.#browsingContextStorage.getContext(contextId).allChildren,
+	        ];
+	        contextsToReport.forEach((context) => {
+	            this.#eventManager.registerEvent({
+	                type: 'event',
+	                method: protocol_js_1$l.ChromiumBidi.BrowsingContext.EventNames.ContextCreated,
+	                params: context.serializeToBidiValue(),
+	            }, context.id);
+	        });
+	        return Promise.resolve();
 	    }
 	}
 	BrowsingContextProcessor$1.BrowsingContextProcessor = BrowsingContextProcessor;
@@ -2999,36 +3018,42 @@ var mapperTab = (function () {
 	        try {
 	            result = await realm.callFunction(String(function getFiles(fileListLength) {
 	                if (!(this instanceof HTMLInputElement)) {
-	                    return 0 /* ErrorCode.Object */;
+	                    if (this instanceof Element) {
+	                        return 1 /* ErrorCode.Element */;
+	                    }
+	                    return 0 /* ErrorCode.Node */;
 	                }
 	                if (this.type !== 'file') {
-	                    return 1 /* ErrorCode.Type */;
+	                    return 2 /* ErrorCode.Type */;
 	                }
 	                if (this.disabled) {
-	                    return 2 /* ErrorCode.Disabled */;
+	                    return 3 /* ErrorCode.Disabled */;
 	                }
 	                if (fileListLength > 1 && !this.multiple) {
-	                    return 3 /* ErrorCode.Multiple */;
+	                    return 4 /* ErrorCode.Multiple */;
 	                }
 	                return;
 	            }), false, params.element, [{ type: 'number', value: params.files.length }]);
 	        }
 	        catch {
-	            throw new protocol_js_1$i.NoSuchElementException(`Could not find element ${params.element.sharedId}`);
+	            throw new protocol_js_1$i.NoSuchNodeException(`Could not find element ${params.element.sharedId}`);
 	        }
 	        (0, assert_js_1$4.assert)(result.type === 'success');
 	        if (result.result.type === 'number') {
 	            switch (result.result.value) {
-	                case 0 /* ErrorCode.Object */: {
+	                case 0 /* ErrorCode.Node */: {
 	                    throw new protocol_js_1$i.NoSuchElementException(`Could not find element ${params.element.sharedId}`);
 	                }
-	                case 1 /* ErrorCode.Type */: {
-	                    throw new protocol_js_1$i.UnableToSetFileInputException(`Element ${params.element.sharedId} is not a file input`);
+	                case 1 /* ErrorCode.Element */: {
+	                    throw new protocol_js_1$i.UnableToSetFileInputException(`Element ${params.element.sharedId} is not a input`);
 	                }
-	                case 2 /* ErrorCode.Disabled */: {
+	                case 2 /* ErrorCode.Type */: {
+	                    throw new protocol_js_1$i.UnableToSetFileInputException(`Input element ${params.element.sharedId} is not a file type`);
+	                }
+	                case 3 /* ErrorCode.Disabled */: {
 	                    throw new protocol_js_1$i.UnableToSetFileInputException(`Input element ${params.element.sharedId} is disabled`);
 	                }
-	                case 3 /* ErrorCode.Multiple */: {
+	                case 4 /* ErrorCode.Multiple */: {
 	                    throw new protocol_js_1$i.UnableToSetFileInputException(`Cannot set multiple files on a non-multiple input element`);
 	                }
 	            }
@@ -3230,7 +3255,7 @@ var mapperTab = (function () {
 	 *
 	 */
 	Object.defineProperty(NetworkUtils, "__esModule", { value: true });
-	NetworkUtils.matchUrlPattern = NetworkUtils.isSpecialScheme = NetworkUtils.sameSiteBiDiToCdp = NetworkUtils.bidiToCdpCookie = NetworkUtils.deserializeByteValue = NetworkUtils.cdpToBiDiCookie = NetworkUtils.cdpAuthChallengeResponseFromBidiAuthContinueWithAuthAction = NetworkUtils.cdpFetchHeadersFromBidiNetworkHeaders = NetworkUtils.bidiNetworkHeadersFromCdpFetchHeaders = NetworkUtils.cdpNetworkHeadersFromBidiNetworkHeaders = NetworkUtils.bidiNetworkHeadersFromCdpNetworkHeaders = NetworkUtils.computeHeadersSize = void 0;
+	NetworkUtils.matchUrlPattern = NetworkUtils.isSpecialScheme = NetworkUtils.sameSiteBiDiToCdp = NetworkUtils.bidiToCdpCookie = NetworkUtils.deserializeByteValue = NetworkUtils.cdpToBiDiCookie = NetworkUtils.cdpAuthChallengeResponseFromBidiAuthContinueWithAuthAction = NetworkUtils.cdpFetchHeadersFromBidiNetworkHeaders = NetworkUtils.bidiNetworkHeadersFromCdpFetchHeaders = NetworkUtils.cdpNetworkHeadersFromBidiNetworkHeaders = NetworkUtils.bidiNetworkHeadersFromCdpNetworkHeadersEntries = NetworkUtils.bidiNetworkHeadersFromCdpNetworkHeaders = NetworkUtils.computeHeadersSize = void 0;
 	const ErrorResponse_js_1 = ErrorResponse;
 	const Base64_js_1 = Base64;
 	const UrlPattern_js_1 = UrlPattern;
@@ -3241,7 +3266,7 @@ var mapperTab = (function () {
 	    return new TextEncoder().encode(requestHeaders).length;
 	}
 	NetworkUtils.computeHeadersSize = computeHeadersSize;
-	/** Converts from CDP Network domain headers to Bidi network headers. */
+	/** Converts from CDP Network domain headers to BiDi network headers. */
 	function bidiNetworkHeadersFromCdpNetworkHeaders(headers) {
 	    if (!headers) {
 	        return [];
@@ -3255,6 +3280,20 @@ var mapperTab = (function () {
 	    }));
 	}
 	NetworkUtils.bidiNetworkHeadersFromCdpNetworkHeaders = bidiNetworkHeadersFromCdpNetworkHeaders;
+	/** Converts from CDP Fetch domain headers to BiDi network headers. */
+	function bidiNetworkHeadersFromCdpNetworkHeadersEntries(headers) {
+	    if (!headers) {
+	        return [];
+	    }
+	    return headers.map(({ name, value }) => ({
+	        name,
+	        value: {
+	            type: 'string',
+	            value,
+	        },
+	    }));
+	}
+	NetworkUtils.bidiNetworkHeadersFromCdpNetworkHeadersEntries = bidiNetworkHeadersFromCdpNetworkHeadersEntries;
 	/** Converts from Bidi network headers to CDP Network domain headers. */
 	function cdpNetworkHeadersFromBidiNetworkHeaders(headers) {
 	    if (headers === undefined) {
@@ -3484,22 +3523,33 @@ var mapperTab = (function () {
 	        if (params.url !== undefined) {
 	            NetworkProcessor.parseUrlString(params.url);
 	        }
+	        if (params.headers) {
+	            NetworkProcessor.validateHeaders(params.headers);
+	        }
 	        const request = this.#getBlockedRequestOrFail(networkId, [
 	            "beforeRequestSent" /* Network.InterceptPhase.BeforeRequestSent */,
 	        ]);
 	        const headers = (0, NetworkUtils_js_1$3.cdpFetchHeadersFromBidiNetworkHeaders)(commandHeaders);
 	        // TODO: Set / expand.
 	        // ; Step 9. cookies
-	        await request.continueRequest({
-	            url,
-	            method,
-	            headers,
-	            postData: getCdpBodyFromBiDiBytesValue(body),
-	        });
+	        try {
+	            await request.continueRequest({
+	                url,
+	                method,
+	                headers,
+	                postData: getCdpBodyFromBiDiBytesValue(body),
+	            });
+	        }
+	        catch (error) {
+	            throw NetworkProcessor.wrapInterceptionError(error);
+	        }
 	        return {};
 	    }
 	    async continueResponse(params) {
 	        const { request: networkId, statusCode, reasonPhrase, headers } = params;
+	        if (params.headers) {
+	            NetworkProcessor.validateHeaders(params.headers);
+	        }
 	        const responseHeaders = (0, NetworkUtils_js_1$3.cdpFetchHeadersFromBidiNetworkHeaders)(headers);
 	        const request = this.#getBlockedRequestOrFail(networkId, [
 	            "authRequired" /* Network.InterceptPhase.AuthRequired */,
@@ -3528,11 +3578,16 @@ var mapperTab = (function () {
 	        if (request.interceptPhase === "responseStarted" /* Network.InterceptPhase.ResponseStarted */) {
 	            // TODO: Set / expand.
 	            // ; Step 10. cookies
-	            await request.continueResponse({
-	                responseCode: statusCode,
-	                responsePhrase: reasonPhrase,
-	                responseHeaders,
-	            });
+	            try {
+	                await request.continueResponse({
+	                    responseCode: statusCode,
+	                    responsePhrase: reasonPhrase,
+	                    responseHeaders,
+	                });
+	            }
+	            catch (error) {
+	                throw NetworkProcessor.wrapInterceptionError(error);
+	            }
 	        }
 	        return {};
 	    }
@@ -3569,12 +3624,14 @@ var mapperTab = (function () {
 	    }
 	    async provideResponse(params) {
 	        const { statusCode, reasonPhrase: responsePhrase, headers, body, request: networkId, } = params;
+	        if (params.headers) {
+	            NetworkProcessor.validateHeaders(params.headers);
+	        }
 	        // TODO: Step 6
 	        // https://w3c.github.io/webdriver-bidi/#command-network-continueResponse
 	        const responseHeaders = (0, NetworkUtils_js_1$3.cdpFetchHeadersFromBidiNetworkHeaders)(headers);
 	        // TODO: Set / expand.
 	        // ; Step 10. cookies
-	        // ; Step 11. credentials
 	        const request = this.#getBlockedRequestOrFail(networkId, [
 	            "beforeRequestSent" /* Network.InterceptPhase.BeforeRequestSent */,
 	            "responseStarted" /* Network.InterceptPhase.ResponseStarted */,
@@ -3590,19 +3647,24 @@ var mapperTab = (function () {
 	            });
 	            return {};
 	        }
-	        // If we con't modify the response
-	        // Just continue the request
+	        // If we don't modify the response
+	        // just continue the request
 	        if (!body && !headers) {
 	            await request.continueRequest();
 	            return {};
 	        }
 	        const responseCode = statusCode ?? request.statusCode ?? 200;
-	        await request.provideResponse({
-	            responseCode,
-	            responsePhrase,
-	            responseHeaders,
-	            body: getCdpBodyFromBiDiBytesValue(body),
-	        });
+	        try {
+	            await request.provideResponse({
+	                responseCode,
+	                responsePhrase,
+	                responseHeaders,
+	                body: getCdpBodyFromBiDiBytesValue(body),
+	            });
+	        }
+	        catch (error) {
+	            throw NetworkProcessor.wrapInterceptionError(error);
+	        }
 	        return {};
 	    }
 	    async removeIntercept(params) {
@@ -3628,6 +3690,25 @@ var mapperTab = (function () {
 	            throw new protocol_js_1$h.InvalidArgumentException(`Blocked request for network id '${id}' is in '${request.interceptPhase}' phase`);
 	        }
 	        return request;
+	    }
+	    /**
+	     * Validate https://fetch.spec.whatwg.org/#header-value
+	     */
+	    static validateHeaders(headers) {
+	        for (const header of headers) {
+	            let headerValue;
+	            if (header.value.type === 'string') {
+	                headerValue = header.value.value;
+	            }
+	            else {
+	                headerValue = atob(header.value.value);
+	            }
+	            if (headerValue !== headerValue.trim() ||
+	                headerValue.includes('\n') ||
+	                headerValue.includes('\0')) {
+	                throw new protocol_js_1$h.InvalidArgumentException(`Header value '${headerValue}' is not acceptable value`);
+	            }
+	        }
 	    }
 	    /**
 	     * Attempts to parse the given url.
@@ -3717,6 +3798,13 @@ var mapperTab = (function () {
 	                    return urlPattern;
 	            }
 	        });
+	    }
+	    static wrapInterceptionError(error) {
+	        // https://source.chromium.org/chromium/chromium/src/+/main:content/browser/devtools/protocol/fetch_handler.cc;l=169
+	        if (error?.message.includes('Invalid header')) {
+	            return new protocol_js_1$h.InvalidArgumentException('Invalid header');
+	        }
+	        return error;
 	    }
 	}
 	NetworkProcessor$1.NetworkProcessor = NetworkProcessor;
@@ -4689,7 +4777,7 @@ var mapperTab = (function () {
 	        this.#logger = logger;
 	        // keep-sorted start block=yes
 	        this.#browserProcessor = new BrowserProcessor_js_1.BrowserProcessor(browserCdpClient);
-	        this.#browsingContextProcessor = new BrowsingContextProcessor_js_1.BrowsingContextProcessor(browserCdpClient, browsingContextStorage);
+	        this.#browsingContextProcessor = new BrowsingContextProcessor_js_1.BrowsingContextProcessor(browserCdpClient, browsingContextStorage, eventManager);
 	        this.#cdpProcessor = new CdpProcessor_js_1.CdpProcessor(browsingContextStorage, realmStorage, cdpConnection, browserCdpClient);
 	        this.#inputProcessor = new InputProcessor_js_1.InputProcessor(browsingContextStorage, realmStorage);
 	        this.#networkProcessor = new NetworkProcessor_js_1.NetworkProcessor(browsingContextStorage, networkStorage);
@@ -6029,8 +6117,9 @@ var mapperTab = (function () {
 	                    context: this.id,
 	                    type: params.type,
 	                    message: params.message,
-	                    // Don't set the value if empty string
-	                    defaultValue: params.defaultPrompt || undefined,
+	                    ...(params.type === 'prompt'
+	                        ? { defaultValue: params.defaultPrompt }
+	                        : {}),
 	                },
 	            }, this.id);
 	        });
@@ -6480,8 +6569,21 @@ var mapperTab = (function () {
 	                        const searchText = ignoreCase
 	                            ? innerTextSelector.toUpperCase()
 	                            : innerTextSelector;
-	                        const locateNodesUsingInnerText = (element, currentMaxDepth) => {
+	                        const locateNodesUsingInnerText = (node, currentMaxDepth) => {
 	                            const returnedNodes = [];
+	                            if (node instanceof DocumentFragment ||
+	                                node instanceof Document) {
+	                                const children = [...node.children];
+	                                children.forEach((child) => 
+	                                // `currentMaxDepth` is not decremented intentionally according to
+	                                // https://github.com/w3c/webdriver-bidi/pull/713.
+	                                returnedNodes.push(...locateNodesUsingInnerText(child, currentMaxDepth)));
+	                                return returnedNodes;
+	                            }
+	                            if (!(node instanceof HTMLElement)) {
+	                                return [];
+	                            }
+	                            const element = node;
 	                            const nodeInnerText = ignoreCase
 	                                ? element.innerText?.toUpperCase()
 	                                : element.innerText;
@@ -6508,7 +6610,7 @@ var mapperTab = (function () {
 	                            else {
 	                                const childNodeMatches = 
 	                                // Don't search deeper if `maxDepth` is reached.
-	                                currentMaxDepth === 0
+	                                currentMaxDepth <= 0
 	                                    ? []
 	                                    : childNodes
 	                                        .map((child) => locateNodesUsingInnerText(child, currentMaxDepth - 1))
@@ -6526,9 +6628,8 @@ var mapperTab = (function () {
 	                            // TODO: stop search early if `maxNodeCount` is reached.
 	                            return returnedNodes;
 	                        };
-	                        // TODO: add maxDepth.
 	                        // TODO: stop search early if `maxNodeCount` is reached.
-	                        startNodes = startNodes.length > 0 ? startNodes : [document.body];
+	                        startNodes = startNodes.length > 0 ? startNodes : [document];
 	                        const returnedNodes = startNodes
 	                            .map((startNode) => 
 	                        // TODO: stop search early if `maxNodeCount` is reached.
@@ -7725,6 +7826,7 @@ var mapperTab = (function () {
 	            '';
 	        const url = this.#response.info?.url ??
 	            this.#response.paused?.request.url ??
+	            this.#request.overrides?.url ??
 	            this.#request.auth?.request.url ??
 	            this.#request.info?.request.url ??
 	            this.#request.paused?.request.url ??
@@ -7732,7 +7834,8 @@ var mapperTab = (function () {
 	        return `${url}${fragment}`;
 	    }
 	    get method() {
-	        return (this.#request.info?.request.method ??
+	        return (this.#request.overrides?.method ??
+	            this.#request.info?.request.method ??
 	            this.#request.paused?.request.method ??
 	            this.#request.auth?.request.method ??
 	            this.#response.paused?.request.method ??
@@ -7927,15 +8030,21 @@ var mapperTab = (function () {
 	        });
 	    }
 	    /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-continueRequest */
-	    async continueRequest({ url, method, headers, postData, } = {}) {
+	    async continueRequest(overrides = {}) {
 	        (0, assert_js_1.assert)(this.#fetchId, 'Network Interception not set-up.');
 	        await this.cdpClient.sendCommand('Fetch.continueRequest', {
 	            requestId: this.#fetchId,
-	            url,
-	            method,
-	            headers,
-	            postData,
+	            url: overrides.url,
+	            method: overrides.method,
+	            headers: overrides.headers,
+	            postData: overrides.postData,
 	        });
+	        // TODO: Store postData's size only
+	        this.#request.overrides = {
+	            url: overrides.url,
+	            method: overrides.method,
+	            headers: overrides.headers,
+	        };
 	        this.#interceptPhase = undefined;
 	    }
 	    /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-continueResponse */
@@ -8035,8 +8144,14 @@ var mapperTab = (function () {
 	        if (this.#response.info?.fromDiskCache) {
 	            this.#response.extraInfo = undefined;
 	        }
-	        // TODO: get headers from Fetch.requestPaused
-	        const headers = (0, NetworkUtils_js_1$1.bidiNetworkHeadersFromCdpNetworkHeaders)(this.#response.info?.headers);
+	        const headers = [
+	            ...(0, NetworkUtils_js_1$1.bidiNetworkHeadersFromCdpNetworkHeaders)(this.#response.info?.headers),
+	            ...(0, NetworkUtils_js_1$1.bidiNetworkHeadersFromCdpNetworkHeaders)(this.#response.extraInfo?.headers),
+	            // TODO: Verify how to dedupe these
+	            // ...bidiNetworkHeadersFromCdpNetworkHeadersEntries(
+	            //   this.#response.paused?.responseHeaders
+	            // ),
+	        ];
 	        // TODO: get headers from Fetch.requestPaused
 	        const authChallenges = this.#authChallenges(this.#response.info?.headers ?? {});
 	        return {
@@ -8077,7 +8192,18 @@ var mapperTab = (function () {
 	        const cookies = this.#request.extraInfo
 	            ? NetworkRequest.#getCookies(this.#request.extraInfo.associatedCookies)
 	            : [];
-	        const headers = (0, NetworkUtils_js_1$1.bidiNetworkHeadersFromCdpNetworkHeaders)(this.#request.info?.request.headers);
+	        let headers = [];
+	        if (this.#request.overrides?.headers) {
+	            headers = [
+	                ...(0, NetworkUtils_js_1$1.bidiNetworkHeadersFromCdpNetworkHeadersEntries)(this.#request.overrides?.headers),
+	            ];
+	        }
+	        else {
+	            headers = [
+	                ...(0, NetworkUtils_js_1$1.bidiNetworkHeadersFromCdpNetworkHeaders)(this.#request.info?.request.headers),
+	                ...(0, NetworkUtils_js_1$1.bidiNetworkHeadersFromCdpNetworkHeaders)(this.#request.extraInfo?.headers),
+	            ];
+	        }
 	        return {
 	            request: this.#id,
 	            url: this.url,
@@ -8606,6 +8732,66 @@ var mapperTab = (function () {
 	}
 	DefaultMap$1.DefaultMap = DefaultMap;
 
+	var DistinctValues = {};
+
+	/*
+	 * Copyright 2024 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	Object.defineProperty(DistinctValues, "__esModule", { value: true });
+	DistinctValues.deterministicJSONStringify = DistinctValues.distinctValues = void 0;
+	/**
+	 * Returns an array of distinct values. Order is not guaranteed.
+	 * @param values - The values to filter. Should be JSON-serializable.
+	 * @return - An array of distinct values.
+	 */
+	function distinctValues(values) {
+	    const map = new Map();
+	    for (const value of values) {
+	        map.set(deterministicJSONStringify(value), value);
+	    }
+	    return Array.from(map.values());
+	}
+	DistinctValues.distinctValues = distinctValues;
+	/**
+	 * Returns a stringified version of the object with keys sorted. This is required to
+	 * ensure that the stringified version of an object is deterministic independent of the
+	 * order of keys.
+	 * @param obj
+	 * @return {string}
+	 */
+	function deterministicJSONStringify(obj) {
+	    return JSON.stringify(normalizeObject(obj));
+	}
+	DistinctValues.deterministicJSONStringify = deterministicJSONStringify;
+	function normalizeObject(obj) {
+	    if (obj === undefined ||
+	        obj === null ||
+	        Array.isArray(obj) ||
+	        typeof obj !== 'object') {
+	        return obj;
+	    }
+	    // Copy the original object key and values to a new object in sorted order.
+	    const newObj = {};
+	    for (const key of Object.keys(obj).sort()) {
+	        const value = obj[key];
+	        newObj[key] = normalizeObject(value); // Recursively sort nested objects
+	    }
+	    return newObj;
+	}
+
 	var IdWrapper$1 = {};
 
 	/**
@@ -8832,23 +9018,37 @@ var mapperTab = (function () {
 	        }
 	        return false;
 	    }
+	    /**
+	     * Subscribes to event in the given context and channel.
+	     * @param {EventNames} event
+	     * @param {BrowsingContext.BrowsingContext | null} contextId
+	     * @param {BidiPlusChannel} channel
+	     * @return {SubscriptionItem[]} List of
+	     * subscriptions. If the event is a whole module, it will return all the specific
+	     * events. If the contextId is null, it will return all the top-level contexts which were
+	     * not subscribed before the command.
+	     */
 	    subscribe(event, contextId, channel) {
 	        // All the subscriptions are handled on the top-level contexts.
 	        contextId = this.#browsingContextStorage.findTopLevelContextId(contextId);
 	        // Check if subscribed event is a whole module
 	        switch (event) {
 	            case protocol_js_1$2.ChromiumBidi.BiDiModule.BrowsingContext:
-	                Object.values(protocol_js_1$2.ChromiumBidi.BrowsingContext.EventNames).map((specificEvent) => this.subscribe(specificEvent, contextId, channel));
-	                return;
+	                return Object.values(protocol_js_1$2.ChromiumBidi.BrowsingContext.EventNames)
+	                    .map((specificEvent) => this.subscribe(specificEvent, contextId, channel))
+	                    .flat();
 	            case protocol_js_1$2.ChromiumBidi.BiDiModule.Log:
-	                Object.values(protocol_js_1$2.ChromiumBidi.Log.EventNames).map((specificEvent) => this.subscribe(specificEvent, contextId, channel));
-	                return;
+	                return Object.values(protocol_js_1$2.ChromiumBidi.Log.EventNames)
+	                    .map((specificEvent) => this.subscribe(specificEvent, contextId, channel))
+	                    .flat();
 	            case protocol_js_1$2.ChromiumBidi.BiDiModule.Network:
-	                Object.values(protocol_js_1$2.ChromiumBidi.Network.EventNames).map((specificEvent) => this.subscribe(specificEvent, contextId, channel));
-	                return;
+	                return Object.values(protocol_js_1$2.ChromiumBidi.Network.EventNames)
+	                    .map((specificEvent) => this.subscribe(specificEvent, contextId, channel))
+	                    .flat();
 	            case protocol_js_1$2.ChromiumBidi.BiDiModule.Script:
-	                Object.values(protocol_js_1$2.ChromiumBidi.Script.EventNames).map((specificEvent) => this.subscribe(specificEvent, contextId, channel));
-	                return;
+	                return Object.values(protocol_js_1$2.ChromiumBidi.Script.EventNames)
+	                    .map((specificEvent) => this.subscribe(specificEvent, contextId, channel))
+	                    .flat();
 	            // Intentionally left empty.
 	        }
 	        if (!this.#channelToContextToEventMap.has(channel)) {
@@ -8859,11 +9059,20 @@ var mapperTab = (function () {
 	            contextToEventMap.set(contextId, new Map());
 	        }
 	        const eventMap = contextToEventMap.get(contextId);
-	        // Do not re-subscribe to events to keep the priority.
-	        if (eventMap.has(event)) {
-	            return;
+	        const affectedContextIds = (contextId === null
+	            ? this.#browsingContextStorage.getTopLevelContexts().map((c) => c.id)
+	            : [contextId])
+	            // There can be contexts that are already subscribed to the event. Do not include
+	            // them to the output.
+	            .filter((contextId) => !this.isSubscribedTo(event, contextId));
+	        if (!eventMap.has(event)) {
+	            // Add subscription only if it's not already subscribed.
+	            eventMap.set(event, this.#subscriptionPriority++);
 	        }
-	        eventMap.set(event, this.#subscriptionPriority++);
+	        return affectedContextIds.map((contextId) => ({
+	            event,
+	            contextId,
+	        }));
 	    }
 	    /**
 	     * Unsubscribes atomically from all events in the given contexts and channel.
@@ -8938,6 +9147,7 @@ var mapperTab = (function () {
 	const protocol_js_1$1 = protocol;
 	const Buffer_js_1 = Buffer$2;
 	const DefaultMap_js_1 = DefaultMap$1;
+	const DistinctValues_js_1 = DistinctValues;
 	const EventEmitter_js_1$2 = EventEmitter$1;
 	const IdWrapper_js_1 = IdWrapper$1;
 	const OutgoingMessage_js_1 = OutgoingMessage$1;
@@ -8985,10 +9195,15 @@ var mapperTab = (function () {
 	    #lastMessageSent = new Map();
 	    #subscriptionManager;
 	    #browsingContextStorage;
+	    /**
+	     * Map of event name to hooks to be called when client is subscribed to the event.
+	     */
+	    #subscribeHooks;
 	    constructor(browsingContextStorage) {
 	        super();
 	        this.#browsingContextStorage = browsingContextStorage;
 	        this.#subscriptionManager = new SubscriptionManager_js_1.SubscriptionManager(browsingContextStorage);
+	        this.#subscribeHooks = new DefaultMap_js_1.DefaultMap(() => []);
 	    }
 	    get subscriptionManager() {
 	        return this.#subscriptionManager;
@@ -8998,6 +9213,9 @@ var mapperTab = (function () {
 	     */
 	    static #getMapKey(eventName, browsingContext, channel) {
 	        return JSON.stringify({ eventName, browsingContext, channel });
+	    }
+	    addSubscribeHook(event, hook) {
+	        this.#subscribeHooks.get(event).push(hook);
 	    }
 	    registerEvent(event, contextId) {
 	        this.registerPromiseEvent(Promise.resolve({
@@ -9029,9 +9247,13 @@ var mapperTab = (function () {
 	                this.#browsingContextStorage.getContext(contextId);
 	            }
 	        }
+	        // List of the subscription items that were actually added. Each contains a specific
+	        // event and context. No domain event (like "network") or global context subscription
+	        // (like null) are included.
+	        const addedSubscriptionItems = [];
 	        for (const eventName of eventNames) {
 	            for (const contextId of contextIds) {
-	                this.#subscriptionManager.subscribe(eventName, contextId, channel);
+	                addedSubscriptionItems.push(...this.#subscriptionManager.subscribe(eventName, contextId, channel));
 	                for (const eventWrapper of this.#getBufferedEvents(eventName, contextId, channel)) {
 	                    // The order of the events is important.
 	                    this.emit("event" /* EventManagerEvents.Event */, {
@@ -9042,6 +9264,13 @@ var mapperTab = (function () {
 	                }
 	            }
 	        }
+	        // Iterate over all new subscription items and call hooks if any. There can be
+	        // duplicates, e.g. when subscribing to the whole domain and some specific event in
+	        // the same time ("network", "network.responseCompleted"). `distinctValues` guarantees
+	        // that hooks are called only once per pair event + context.
+	        (0, DistinctValues_js_1.distinctValues)(addedSubscriptionItems).forEach(({ contextId, event }) => {
+	            this.#subscribeHooks.get(event).forEach((hook) => hook(contextId));
+	        });
 	        await this.toggleModulesIfNeeded();
 	    }
 	    async unsubscribe(eventNames, contextIds, channel) {
@@ -13509,10 +13738,15 @@ var mapperTab = (function () {
 		class ZodReadonly extends ZodType {
 		    _parse(input) {
 		        const result = this._def.innerType._parse(input);
-		        if ((0, parseUtil_1.isValid)(result)) {
-		            result.value = Object.freeze(result.value);
-		        }
-		        return result;
+		        const freeze = (data) => {
+		            if ((0, parseUtil_1.isValid)(data)) {
+		                data.value = Object.freeze(data.value);
+		            }
+		            return data;
+		        };
+		        return (0, parseUtil_1.isAsync)(result)
+		            ? result.then((data) => freeze(data))
+		            : freeze(result);
 		    }
 		    unwrap() {
 		        return this._def.innerType;
