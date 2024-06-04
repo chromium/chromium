@@ -231,6 +231,8 @@ String DepthDataFormatToString(device::mojom::XRDepthDataFormat data_format) {
       return "luminance-alpha";
     case device::mojom::XRDepthDataFormat::kFloat32:
       return "float32";
+    case device::mojom::XRDepthDataFormat::kUnsignedShort:
+      return "unsigned-short";
   }
 }
 

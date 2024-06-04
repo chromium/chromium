@@ -151,6 +151,8 @@ device::mojom::XRDepthDataFormat ParseDepthFormat(
       return device::mojom::XRDepthDataFormat::kLuminanceAlpha;
     case V8XRDepthDataFormat::Enum::kFloat32:
       return device::mojom::XRDepthDataFormat::kFloat32;
+    case V8XRDepthDataFormat::Enum::kUnsignedShort:
+      return device::mojom::XRDepthDataFormat::kUnsignedShort;
   }
 }
 

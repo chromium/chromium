@@ -26,6 +26,7 @@ constexpr char kArrayBufferDetached[] =
 size_t GetBytesPerElement(device::mojom::XRDepthDataFormat data_format) {
   switch (data_format) {
     case device::mojom::XRDepthDataFormat::kLuminanceAlpha:
+    case device::mojom::XRDepthDataFormat::kUnsignedShort:
       return 2;
     case device::mojom::XRDepthDataFormat::kFloat32:
       return 4;
@@ -124,11 +125,12 @@ float XRCPUDepthInformation::GetItem(size_t index) const {
   CHECK(!data_->IsDetached());
 
   switch (data_format_) {
+    case device::mojom::XRDepthDataFormat::kUnsignedShort:
     case device::mojom::XRDepthDataFormat::kLuminanceAlpha: {
-      // Luminance-alpha is 2 bytes per entry & base::make_span expects the
-      // length to be provided in the number of elements. The constructor
-      // enforces that |data_|'s byte length matches the size of the array,
-      // taking into account the number of bytes per element.
+      // Luminance-alpha and Unsigned-Short are 2 bytes per entry & make_span
+      // expects the length to be provided in the number of elements. The
+      // constructor enforces that |data_|'s byte length matches the size of the
+      // array, taking into account the number of bytes per element.
       base::span<const uint16_t> array =
           base::make_span(reinterpret_cast<const uint16_t*>(data_->Data()),
                           data_->ByteLength() / bytes_per_element_);

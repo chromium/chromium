@@ -87,6 +87,7 @@ enum XRDepthUsage {
 enum XRDepthDataFormat {
   kLuminanceAlpha = 1,
   kFloat32 = 2,
+  kUnsignedShort = 3,
 };
 
 // Structure used to configure depth sensing API at session creation.

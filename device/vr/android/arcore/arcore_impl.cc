@@ -305,6 +305,11 @@ device::mojom::XRReflectionProbePtr GetReflectionProbe(
 
 constexpr float kDefaultFloorHeightEstimation = 1.2;
 
+constexpr std::array<device::mojom::XRDepthDataFormat, 2>
+    kSupportedDepthFormats = {
+        device::mojom::XRDepthDataFormat::kLuminanceAlpha,
+        device::mojom::XRDepthDataFormat::kUnsignedShort,
+};
 }  // namespace
 
 namespace device {
@@ -753,10 +758,8 @@ bool ArCoreImpl::ConfigureDepthSensing(
     return false;
   }
 
-  // We only support CPU-optimized luminance-alpha depth data. If the preference
-  // array is empty, we are allowed to determine the type on our own. Otherwise,
-  // if an array was specified and doesn't allow for this combination, we will
-  // need to reject.
+  // We can only support cpu-optimized usage. If the preference list is empty we
+  // are allowed to return any supported depth usage.
   const auto& usage_preference = depth_sensing_config->depth_usage_preference;
   if (!usage_preference.empty() &&
       !base::Contains(usage_preference,
@@ -764,17 +767,36 @@ bool ArCoreImpl::ConfigureDepthSensing(
     return false;
   }
 
+  std::optional<device::mojom::XRDepthDataFormat> maybe_format;
   const auto& format_preference =
       depth_sensing_config->depth_data_format_preference;
-  if (!format_preference.empty() &&
-      !base::Contains(format_preference,
-                      device::mojom::XRDepthDataFormat::kLuminanceAlpha)) {
+  if (format_preference.empty()) {
+    // An empty preference list means we're allowed to use our preferred format.
+    maybe_format = device::mojom::XRDepthDataFormat::kLuminanceAlpha;
+  } else {
+    // Try and find the first format that we support in the preference list.
+    const auto format_it = base::ranges::find_if(
+        format_preference.begin(), format_preference.end(),
+        [](const device::mojom::XRDepthDataFormat& format) {
+          return base::Contains(kSupportedDepthFormats, format);
+        });
+
+    if (format_it != format_preference.end()) {
+      maybe_format = *format_it;
+    }
+  }
+
+  // If we were unable to find a format that we support, we cannot enable depth.
+  if (!maybe_format) {
     return false;
   }
 
+  // Note that since both of our supported formats are the same size, we don't
+  // currently need to store the value we return to the session since for our
+  // purposes they are interchangeable.
+  static_assert(kSupportedDepthFormats.size() == 2u);
   depth_configuration_ = device::mojom::XRDepthConfig(
-      device::mojom::XRDepthUsage::kCPUOptimized,
-      device::mojom::XRDepthDataFormat::kLuminanceAlpha);
+      device::mojom::XRDepthUsage::kCPUOptimized, *maybe_format);
 
   return true;
 }
