@@ -2076,7 +2076,8 @@ ServiceWorkerVersion::BuildClientSecurityState() const {
       policies.ip_address_space,
       DerivePrivateNetworkRequestPolicy(policies.ip_address_space,
                                         policies.is_web_secure_context,
-                                        PrivateNetworkRequestContext::kWorker));
+                                        PrivateNetworkRequestContext::kWorker),
+      policies.document_isolation_policy);
 }
 
 // static

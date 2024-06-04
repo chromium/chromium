@@ -31,6 +31,7 @@
 #include "services/network/network_service_memory_cache_writer.h"
 #include "services/network/private_network_access_checker.h"
 #include "services/network/public/cpp/cross_origin_resource_policy.h"
+#include "services/network/public/cpp/document_isolation_policy.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/orb/orb_api.h"
 #include "services/network/public/cpp/private_network_access_check_result.h"
@@ -453,12 +454,17 @@ std::optional<std::string> NetworkServiceMemoryCache::CanServe(
 
   const mojom::URLResponseHeadPtr& response = it->second->response_head;
 
+  DocumentIsolationPolicy document_isolation_policy;
+  if (factory_client_security_state) {
+    document_isolation_policy =
+        factory_client_security_state->document_isolation_policy;
+  }
   std::optional<mojom::BlockedByResponseReason> blocked_reason =
       CrossOriginResourcePolicy::IsBlocked(
           /*request_url=*/url, /*original_url=*/url,
           resource_request.request_initiator, *response, resource_request.mode,
           resource_request.destination, cross_origin_embedder_policy,
-          /*reporter=*/nullptr);
+          /*reporter=*/nullptr, document_isolation_policy);
   if (blocked_reason.has_value())
     return std::nullopt;
 

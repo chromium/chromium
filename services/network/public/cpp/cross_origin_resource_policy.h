@@ -23,6 +23,7 @@ class HttpResponseHeaders;
 namespace network {
 
 struct CrossOriginEmbedderPolicy;
+struct DocumentIsolationPolicy;
 
 // Implementation of Cross-Origin-Resource-Policy - see:
 // - https://fetch.spec.whatwg.org/#cross-origin-resource-policy-header
@@ -52,20 +53,23 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginResourcePolicy {
       mojom::RequestMode request_mode,
       mojom::RequestDestination request_destination,
       const CrossOriginEmbedderPolicy& embedder_policy,
-      mojom::CrossOriginEmbedderPolicyReporter* reporter);
+      mojom::CrossOriginEmbedderPolicyReporter* reporter,
+      const DocumentIsolationPolicy& document_isolation_policy);
 
   // Same as IsBlocked(), but this method can take a raw value of
   // Cross-Origin-Resource-Policy header instead of using a URLResponseHead.
   [[nodiscard]] static std::optional<mojom::BlockedByResponseReason>
-  IsBlockedByHeaderValue(const GURL& request_url,
-                         const GURL& original_url,
-                         const std::optional<url::Origin>& request_initiator,
-                         std::optional<std::string> corp_header_value,
-                         mojom::RequestMode request_mode,
-                         mojom::RequestDestination request_destination,
-                         bool request_include_credentials,
-                         const CrossOriginEmbedderPolicy& embedder_policy,
-                         mojom::CrossOriginEmbedderPolicyReporter* reporter);
+  IsBlockedByHeaderValue(
+      const GURL& request_url,
+      const GURL& original_url,
+      const std::optional<url::Origin>& request_initiator,
+      std::optional<std::string> corp_header_value,
+      mojom::RequestMode request_mode,
+      mojom::RequestDestination request_destination,
+      bool request_include_credentials,
+      const CrossOriginEmbedderPolicy& embedder_policy,
+      mojom::CrossOriginEmbedderPolicyReporter* reporter,
+      const DocumentIsolationPolicy& document_isolation_policy);
 
   // The CORP check for navigation requests. This is expected to be called
   // from the navigation algorithm.

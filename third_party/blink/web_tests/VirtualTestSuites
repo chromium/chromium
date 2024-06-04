@@ -3064,5 +3064,22 @@
       "syg@chromium.org",
       "samuelmaddock@electronjs.org"
     ]
+  },
+  {
+    "prefix": "document-isolation-policy",
+    "platforms": [
+      "Linux"
+    ],
+    "bases": [
+      "external/wpt/html/document-isolation-policy"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--enable-features=DocumentIsolationPolicy"
+    ],
+    "expires": "Nov 16, 2024",
+    "owners": [
+      "clamy@chromium.org"
+    ]
   }
 ]

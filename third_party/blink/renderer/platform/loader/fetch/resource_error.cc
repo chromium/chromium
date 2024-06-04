@@ -235,6 +235,14 @@ BlockedByResponseReasonToResourceRequestBlockedReason(
         kCorpNotSameOriginAfterDefaultedToSameOriginByCoep:
       return blink::ResourceRequestBlockedReason::
           kCorpNotSameOriginAfterDefaultedToSameOriginByCoep;
+    case network::mojom::BlockedByResponseReason::
+        kCorpNotSameOriginAfterDefaultedToSameOriginByDip:
+      return blink::ResourceRequestBlockedReason::
+          kCorpNotSameOriginAfterDefaultedToSameOriginByDip;
+    case network::mojom::BlockedByResponseReason::
+        kCorpNotSameOriginAfterDefaultedToSameOriginByCoepAndDip:
+      return blink::ResourceRequestBlockedReason::
+          kCorpNotSameOriginAfterDefaultedToSameOriginByCoepAndDip;
     case network::mojom::BlockedByResponseReason::kCorpNotSameSite:
       return blink::ResourceRequestBlockedReason::kCorpNotSameSite;
   }
@@ -313,6 +321,14 @@ String DescriptionForBlockedByClientOrResponse(
     case ResourceRequestBlockedReason::
         kCorpNotSameOriginAfterDefaultedToSameOriginByCoep:
       detail = "NotSameOriginAfterDefaultedToSameOriginByCoep";
+      break;
+    case ResourceRequestBlockedReason::
+        kCorpNotSameOriginAfterDefaultedToSameOriginByDip:
+      detail = "NotSameOriginAfterDefaultedToSameOriginByDip";
+      break;
+    case ResourceRequestBlockedReason::
+        kCorpNotSameOriginAfterDefaultedToSameOriginByCoepAndDip:
+      detail = "NotSameOriginAfterDefaultedToSameOriginByCoepAndDip";
       break;
     case ResourceRequestBlockedReason::kCorpNotSameSite:
       detail = "NotSameSite";

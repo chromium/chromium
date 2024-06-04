@@ -13148,18 +13148,22 @@ RenderFrameHostImpl::BuildClientSecurityState() const {
     // Omitted: reporting endpoint, report-only value and reporting endpoint.
     network::CrossOriginEmbedderPolicy coep;
     coep.value = network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp;
+    network::DocumentIsolationPolicy dip;
+    dip.value =
+        network::mojom::DocumentIsolationPolicyValue::kIsolateAndRequireCorp;
 
     return network::mojom::ClientSecurityState::New(
         std::move(coep),
         /*is_web_secure_context=*/false,
         network::mojom::IPAddressSpace::kUnknown,
-        network::mojom::PrivateNetworkRequestPolicy::kBlock);
+        network::mojom::PrivateNetworkRequestPolicy::kBlock, std::move(dip));
   }
 
   const PolicyContainerPolicies& policies = policy_container_host_->policies();
   return network::mojom::ClientSecurityState::New(
       policies.cross_origin_embedder_policy, policies.is_web_secure_context,
-      policies.ip_address_space, private_network_request_policy_);
+      policies.ip_address_space, private_network_request_policy_,
+      policies.document_isolation_policy);
 }
 
 network::mojom::ClientSecurityStatePtr

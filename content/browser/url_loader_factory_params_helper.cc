@@ -324,12 +324,16 @@ URLLoaderFactoryParamsHelper::CreateForEarlyHintsPreload(
       /*top_frame_origin=*/tentative_origin, /*frame_origin=*/tentative_origin,
       net::SiteForCookies::FromOrigin(tentative_origin));
 
+  // TODO(https://issues.chromium.org/issues/336754077):
+  // Support Document-Isolation-Policy in early hints headers instead of passing
+  // a default DocumentIsolationPolicy.
   network::mojom::ClientSecurityStatePtr client_security_state =
       network::mojom::ClientSecurityState::New(
           early_hints.headers->cross_origin_embedder_policy,
           network::IsOriginPotentiallyTrustworthy(tentative_origin),
           early_hints.ip_address_space,
-          network::mojom::PrivateNetworkRequestPolicy::kBlock);
+          network::mojom::PrivateNetworkRequestPolicy::kBlock,
+          network::DocumentIsolationPolicy());
 
   return CreateParams(
       process, /*origin=*/tentative_origin,

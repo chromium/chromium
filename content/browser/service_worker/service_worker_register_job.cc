@@ -509,7 +509,8 @@ void ServiceWorkerRegisterJob::StartScriptFetchForNewWorker(
               creator_policy_container_policies_.ip_address_space,
               DerivePrivateNetworkRequestPolicy(
                   creator_policy_container_policies_,
-                  PrivateNetworkRequestContext::kWorker)));
+                  PrivateNetworkRequestContext::kWorker),
+              creator_policy_container_policies_.document_isolation_policy));
 
   new_script_fetcher_ = std::make_unique<ServiceWorkerNewScriptFetcher>(
       *context_, version, std::move(loader_factory),
@@ -613,7 +614,8 @@ void ServiceWorkerRegisterJob::UpdateAndContinue() {
               creator_policy_container_policies_.ip_address_space,
               DerivePrivateNetworkRequestPolicy(
                   creator_policy_container_policies_,
-                  PrivateNetworkRequestContext::kWorker)));
+                  PrivateNetworkRequestContext::kWorker),
+              creator_policy_container_policies_.document_isolation_policy));
   if (!loader_factory) {
     // We can't continue with update checking appropriately without
     // |loader_factory|. Null |loader_factory| means that the storage partition

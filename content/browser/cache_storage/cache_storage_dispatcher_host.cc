@@ -155,12 +155,15 @@ bool ResponseBlockedByCrossOriginResourcePolicy(
   if (corp_header != response->headers.end())
     corp_header_value = corp_header->second;
 
+  // TODO(https://issues.chromium.org/issues/333029144):
+  // Pass the appropriate DocumentIsolationPolicy for the context.
   return CrossOriginResourcePolicy::IsBlockedByHeaderValue(
              response->url_list.back(), response->url_list.front(),
              document_origin, corp_header_value, RequestMode::kNoCors,
              network::mojom::RequestDestination::kEmpty,
              response->request_include_credentials, document_coep,
-             coep_reporter ? coep_reporter.get() : nullptr)
+             coep_reporter ? coep_reporter.get() : nullptr,
+             network::DocumentIsolationPolicy())
       .has_value();
 }
 

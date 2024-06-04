@@ -2203,6 +2203,14 @@ String blockedReason(blink::ResourceRequestBlockedReason reason) {
         kCorpNotSameOriginAfterDefaultedToSameOriginByCoep:
       return protocol::Network::BlockedReasonEnum::
           CorpNotSameOriginAfterDefaultedToSameOriginByCoep;
+    case blink::ResourceRequestBlockedReason::
+        kCorpNotSameOriginAfterDefaultedToSameOriginByDip:
+      return protocol::Network::BlockedReasonEnum::
+          CorpNotSameOriginAfterDefaultedToSameOriginByDip;
+    case blink::ResourceRequestBlockedReason::
+        kCorpNotSameOriginAfterDefaultedToSameOriginByCoepAndDip:
+      return protocol::Network::BlockedReasonEnum::
+          CorpNotSameOriginAfterDefaultedToSameOriginByCoep;
     case blink::ResourceRequestBlockedReason::kCorpNotSameSite:
       return protocol::Network::BlockedReasonEnum::CorpNotSameSite;
     case blink::ResourceRequestBlockedReason::kConversionRequest:
@@ -2233,6 +2241,14 @@ Maybe<String> GetBlockedReasonFor(
           kCorpNotSameOriginAfterDefaultedToSameOriginByCoep:
         return {protocol::Network::BlockedReasonEnum::
                     CorpNotSameOriginAfterDefaultedToSameOriginByCoep};
+      case network::mojom::BlockedByResponseReason::
+          kCorpNotSameOriginAfterDefaultedToSameOriginByDip:
+        return {protocol::Network::BlockedReasonEnum::
+                    CorpNotSameOriginAfterDefaultedToSameOriginByDip};
+      case network::mojom::BlockedByResponseReason::
+          kCorpNotSameOriginAfterDefaultedToSameOriginByCoepAndDip:
+        return {protocol::Network::BlockedReasonEnum::
+                    CorpNotSameOriginAfterDefaultedToSameOriginByCoepAndDip};
       case network::mojom::BlockedByResponseReason::kCorpNotSameOrigin:
         return {protocol::Network::BlockedReasonEnum::CorpNotSameOrigin};
       case network::mojom::BlockedByResponseReason::kCorpNotSameSite:

@@ -179,7 +179,8 @@ network::mojom::ClientSecurityStatePtr DeriveClientSecurityState(
       policies.cross_origin_embedder_policy, policies.is_web_secure_context,
       policies.ip_address_space,
       DerivePrivateNetworkRequestPolicy(policies,
-                                        private_network_request_context));
+                                        private_network_request_context),
+      policies.document_isolation_policy);
 }
 
 // Special chrome schemes cannot directly be categorized in public/private/local

@@ -44,6 +44,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
+#include "services/network/public/cpp/document_isolation_policy.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/mojom/client_security_state.mojom-shared.h"
 #include "services/network/public/mojom/ip_address_space.mojom-shared.h"
@@ -239,7 +240,10 @@ void SharedWorkerHost::Start(
           network::CrossOriginEmbedderPolicy(
               network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp),
           /*is_web_secure_context=*/false,
-          network::mojom::IPAddressSpace::kUnknown, policy);
+          network::mojom::IPAddressSpace::kUnknown, policy,
+          network::DocumentIsolationPolicy(
+              network::mojom::DocumentIsolationPolicyValue::
+                  kIsolateAndRequireCorp));
     }
 
     policy_container_host = std::move(creator_policy_container_host_);

@@ -43,7 +43,8 @@ bool CrossOriginResourcePolicyChecker::IsBlocked(
              GURL(response.InternalURLList().front()), initiator_origin,
              corp_header_value, request_mode, request_destination,
              response.GetResponse()->RequestIncludeCredentials(), policy_,
-             reporter_ ? reporter_.get() : nullptr)
+             reporter_ ? reporter_.get() : nullptr,
+             network::DocumentIsolationPolicy())
       .has_value();
 }
 
