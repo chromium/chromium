@@ -12,6 +12,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/services/bluetooth_config/public/cpp/cros_bluetooth_config_util.h"
 #include "device/bluetooth/chromeos/bluetooth_utils.h"
@@ -79,6 +80,8 @@ void BluetoothDeviceStatusUiHandler::OnDeviceConnected(
   ShowToast(std::move(toast_data));
   device::RecordUiSurfaceDisplayed(
       device::BluetoothUiSurface::kConnectionToast);
+  device::RecordTimeIntervalBetweenConnections(last_connection_timestamp_);
+  last_connection_timestamp_ = base::TimeTicks::Now();
 
   if (auto* hats_bluetooth_revamp_trigger = HatsBluetoothRevampTrigger::Get()) {
     hats_bluetooth_revamp_trigger->TryToShowSurvey();

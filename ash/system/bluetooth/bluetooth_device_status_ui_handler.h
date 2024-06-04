@@ -48,6 +48,8 @@ class ASH_EXPORT BluetoothDeviceStatusUiHandler
 
   void BindToCrosBluetoothConfig();
 
+  std::optional<base::TimeTicks> last_connection_timestamp_;
+
   mojo::Remote<bluetooth_config::mojom::CrosBluetoothConfig>
       remote_cros_bluetooth_config_;
   mojo::Receiver<bluetooth_config::mojom::BluetoothDeviceStatusObserver>

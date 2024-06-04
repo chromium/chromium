@@ -180,6 +180,10 @@ DEVICE_BLUETOOTH_EXPORT void RecordUserInitiatedReconnectionAttemptDuration(
 // Record each time a Bluetooth device nickname change is attempted.
 DEVICE_BLUETOOTH_EXPORT void RecordSetDeviceNickName(SetNicknameResult success);
 
+// Record the time interval between consecutive bluetooth connections.
+DEVICE_BLUETOOTH_EXPORT void RecordTimeIntervalBetweenConnections(
+    std::optional<base::TimeTicks> last_connection_timestamp);
+
 }  // namespace device
 
 #endif  // DEVICE_BLUETOOTH_CHROMEOS_BLUETOOTH_UTILS_H_

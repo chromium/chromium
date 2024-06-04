@@ -38,6 +38,8 @@ constexpr char kSecurityKeyServiceUUID[] = "FFFD";
 constexpr char kUnexpectedServiceUUID[] = "1234";
 constexpr uint8_t kLimitedDiscoveryFlag = 0x01;
 constexpr uint8_t kGeneralDiscoveryFlag = 0x02;
+constexpr char kTimeIntervalBetweenConnectionsHistogramName[] =
+    "Bluetooth.ChromeOS.TimeIntervalBetweenConnections";
 const BluetoothDevice::ServiceDataMap kTestServiceDataMap = {
     {BluetoothUUID(kHIDServiceUUID), {1}}};
 
@@ -493,6 +495,35 @@ TEST_F(BluetoothUtilsTest, TestDisconnectMetric) {
   RecordDeviceDisconnect(BluetoothDeviceType::MOUSE);
   histogram_tester.ExpectBucketCount("Bluetooth.ChromeOS.DeviceDisconnect",
                                      BluetoothDeviceType::MOUSE, 1);
+}
+
+TEST_F(BluetoothUtilsTest, TestTimeIntervalBetweenConnectionsMetric) {
+  // Verify no initial histogram entries.
+  histogram_tester.ExpectTotalCount(
+      kTimeIntervalBetweenConnectionsHistogramName, 0);
+
+  // Passing uninitialized time should not emit the metric.
+  RecordTimeIntervalBetweenConnections(base::TimeTicks());
+  histogram_tester.ExpectTotalCount(
+      kTimeIntervalBetweenConnectionsHistogramName, 0);
+
+  // Simulate first connection where last_connection_timestamp is std::nullopt.
+  RecordTimeIntervalBetweenConnections(std::nullopt);
+  histogram_tester.ExpectTotalCount(
+      kTimeIntervalBetweenConnectionsHistogramName, 0);
+
+  // Simulate a connection 1 hour ago and verify no metric is emitted.
+  RecordTimeIntervalBetweenConnections(base::TimeTicks::Now() - base::Hours(1));
+  histogram_tester.ExpectTotalCount(
+      kTimeIntervalBetweenConnectionsHistogramName, 0);
+
+  // Simulate a connection 1 second ago and check for histogram update.
+  RecordTimeIntervalBetweenConnections(base::TimeTicks::Now() -
+                                       base::Seconds(1));
+  histogram_tester.ExpectTotalCount(
+      kTimeIntervalBetweenConnectionsHistogramName, 1);
+  histogram_tester.ExpectTimeBucketCount(
+      kTimeIntervalBetweenConnectionsHistogramName, base::Seconds(1), 1);
 }
 
 }  // namespace device

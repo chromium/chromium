@@ -1704,6 +1704,18 @@ chromium-metrics-reviews@google.com.
   <summary>Emitted each time a nickname change attempt completes.</summary>
 </histogram>
 
+<histogram name="Bluetooth.ChromeOS.TimeIntervalBetweenConnections" units="ms"
+    expires_after="2025-05-30">
+  <owner>longbowei@google.com</owner>
+  <owner>dpad@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the time interval between consecutive Bluetooth connections. Fires
+    once for each successful, consecutive connection of any device when the time
+    interval is less than 15 minutes.
+  </summary>
+</histogram>
+
 <histogram name="Bluetooth.ChromeOS.UiSurfaceDisplayed"
     enum="BluetoothUiSurface" expires_after="2025-02-20">
   <owner>khorimoto@chromium.org</owner>

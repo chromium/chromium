@@ -44,6 +44,7 @@ const char kHIDServiceUUID[] = "1812";
 const char kSecurityKeyServiceUUID[] = "FFFD";
 
 constexpr base::TimeDelta kMaxDeviceSelectionDuration = base::Seconds(30);
+constexpr base::TimeDelta kConnectionTimeIntervalThreshold = base::Minutes(15);
 
 constexpr uint8_t kLimitedDiscoveryFlag = 0x01;
 constexpr uint8_t kGeneralDiscoveryFlag = 0x02;
@@ -516,6 +517,23 @@ void RecordUserInitiatedReconnectionAttemptDuration(
 void RecordSetDeviceNickName(SetNicknameResult set_nickname_result) {
   base::UmaHistogramEnumeration("Bluetooth.ChromeOS.SetNickname.Result",
                                 set_nickname_result);
+}
+
+void RecordTimeIntervalBetweenConnections(
+    std::optional<base::TimeTicks> last_connection_timestamp) {
+  if (!last_connection_timestamp.has_value()) {
+    return;
+  }
+  base::TimeDelta time_since_last_connection =
+      base::TimeTicks::Now() - last_connection_timestamp.value();
+  if (time_since_last_connection >= kConnectionTimeIntervalThreshold) {
+    return;
+  }
+  base::UmaHistogramCustomTimes(
+      "Bluetooth.ChromeOS.TimeIntervalBetweenConnections",
+      time_since_last_connection,
+      /*min=*/base::Milliseconds(0),
+      /*max=*/kConnectionTimeIntervalThreshold, 100);
 }
 
 }  // namespace device
