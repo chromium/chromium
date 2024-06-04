@@ -18,13 +18,13 @@
 namespace content_settings {
 
 using base::android::JavaParamRef;
+using base::android::ScopedJavaLocalRef;
 
 CookieControlsBridge::CookieControlsBridge(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
-    const base::android::JavaParamRef<jobject>& jweb_contents_android,
-    const base::android::JavaParamRef<jobject>&
-        joriginal_browser_context_handle)
+    const JavaParamRef<jobject>& jweb_contents_android,
+    const JavaParamRef<jobject>& joriginal_browser_context_handle)
     : jobject_(obj) {
   UpdateWebContents(env, jweb_contents_android,
                     joriginal_browser_context_handle);
@@ -32,9 +32,8 @@ CookieControlsBridge::CookieControlsBridge(
 
 void CookieControlsBridge::UpdateWebContents(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jweb_contents_android,
-    const base::android::JavaParamRef<jobject>&
-        joriginal_browser_context_handle) {
+    const JavaParamRef<jobject>& jweb_contents_android,
+    const JavaParamRef<jobject>& joriginal_browser_context_handle) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents_android);
 
@@ -75,11 +74,17 @@ void CookieControlsBridge::OnStatusChanged(
   enforcement_ = enforcement;
   expiration_ = expiration;
   JNIEnv* env = base::android::AttachCurrentThread();
+
+  ScopedJavaLocalRef<jobject> jfeatures = CreateTpFeaturesList(env);
+  for (auto& feature : features) {
+    CreateTpFeatureAndAddToList(env, jfeatures, feature);
+  }
+
   Java_CookieControlsBridge_onStatusChanged(
       env, jobject_, static_cast<bool>(controls_visible),
       static_cast<bool>(protections_on), static_cast<int>(enforcement_),
       static_cast<int>(blocking_status),
-      expiration.InMillisecondsSinceUnixEpoch());
+      expiration.InMillisecondsSinceUnixEpoch(), jfeatures);
 }
 
 void CookieControlsBridge::OnCookieControlsIconStatusChanged(
@@ -114,6 +119,22 @@ void CookieControlsBridge::OnEntryPointAnimated(JNIEnv* env) {
   controller_->OnEntryPointAnimated();
 }
 
+// static
+ScopedJavaLocalRef<jobject> CookieControlsBridge::CreateTpFeaturesList(
+    JNIEnv* env) {
+  return Java_CookieControlsBridge_createTpFeatureList(env);
+}
+
+// static
+void CookieControlsBridge::CreateTpFeatureAndAddToList(
+    JNIEnv* env,
+    base::android::ScopedJavaLocalRef<jobject> jfeatures,
+    TrackingProtectionFeature feature) {
+  Java_CookieControlsBridge_createTpFeatureAndAddToList(
+      env, jfeatures, static_cast<int>(feature.feature_type),
+      static_cast<int>(feature.enforcement), static_cast<int>(feature.status));
+}
+
 CookieControlsBridge::~CookieControlsBridge() = default;
 
 void CookieControlsBridge::Destroy(JNIEnv* env,
@@ -123,7 +144,7 @@ void CookieControlsBridge::Destroy(JNIEnv* env,
 
 jboolean JNI_CookieControlsBridge_IsCookieControlsEnabled(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jbrowser_context_handle) {
+    const JavaParamRef<jobject>& jbrowser_context_handle) {
   content::BrowserContext* context =
       content::BrowserContextFromJavaHandle(jbrowser_context_handle);
   return permissions::PermissionsClient::Get()
@@ -134,9 +155,8 @@ jboolean JNI_CookieControlsBridge_IsCookieControlsEnabled(
 static jlong JNI_CookieControlsBridge_Init(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
-    const base::android::JavaParamRef<jobject>& jweb_contents_android,
-    const base::android::JavaParamRef<jobject>&
-        joriginal_browser_context_handle) {
+    const JavaParamRef<jobject>& jweb_contents_android,
+    const JavaParamRef<jobject>& joriginal_browser_context_handle) {
   return reinterpret_cast<intptr_t>(new CookieControlsBridge(
       env, obj, jweb_contents_android, joriginal_browser_context_handle));
 }

@@ -49,6 +49,14 @@ class CookieControlsBridge : public CookieControlsObserver {
 
   void OnEntryPointAnimated(JNIEnv* env);
 
+  static base::android::ScopedJavaLocalRef<jobject> CreateTpFeaturesList(
+      JNIEnv* env);
+
+  static void CreateTpFeatureAndAddToList(
+      JNIEnv* env,
+      base::android::ScopedJavaLocalRef<jobject> jfeatures,
+      TrackingProtectionFeature feature);
+
   // CookieControlsObserver:
   void OnStatusChanged(
       bool controls_visible,

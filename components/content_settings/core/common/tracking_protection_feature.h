@@ -11,6 +11,7 @@
 namespace content_settings {
 
 // Enum to denote the type of an ACT feature.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.content_settings
 enum class TrackingProtectionFeatureType {
   kUnknownFeature = 0,
   kThirdPartyCookies = 1,
@@ -20,6 +21,7 @@ enum class TrackingProtectionFeatureType {
 };
 
 // Enum to denote blocking status for ACT features.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.content_settings
 enum class TrackingProtectionBlockingStatus {
   kUnknownState = 0,
   kAllowed = 1,  // 3PCs, digital fingerprinting

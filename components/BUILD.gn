@@ -615,6 +615,8 @@ test("components_unittests") {
       "//components/cdm/browser:unit_tests",
       "//components/component_updater/android:embedded_component_loader_java",
       "//components/component_updater/android:embedded_component_loader_unittests",
+      "//components/content_settings/android:native_java_unittests_java",
+      "//components/content_settings/android:unit_tests",
       "//components/crash/android:java",
       "//components/crash/android:unit_tests",
       "//components/data_sharing/internal:internal_java",
