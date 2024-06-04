@@ -184,6 +184,10 @@ BASE_FEATURE(kPrivacySandboxRelatedWebsiteSetsUi,
              "PrivacySandboxRelatedWebsiteSetsUi",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kTrackingProtectionContentSettingInSettings,
+             "TrackingProtectionContentSettingInSettings",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kTrackingProtectionContentSettingUbControl,
              "TrackingProtectionContentSettingUbControl",
              base::FEATURE_ENABLED_BY_DEFAULT);

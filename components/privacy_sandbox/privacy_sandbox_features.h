@@ -214,11 +214,15 @@ BASE_DECLARE_FEATURE(kPrivacySandboxRelatedWebsiteSetsUi);
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kTrackingProtectionSettingsLaunch);
 
-// Enables UserBypass to set/reset tracking protection content settings.
+// Enables TP settings page to display TRACKING_PROTECTION content settings.
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+BASE_DECLARE_FEATURE(kTrackingProtectionContentSettingInSettings);
+
+// Enables UserBypass to set/reset TRACKING_PROTECTION content settings.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kTrackingProtectionContentSettingUbControl);
 
-// Enables tracking protection content settings to control 3pcb.
+// Enables TRACKING_PROTECTION content settings to control 3pcb.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kTrackingProtectionContentSettingFor3pcb);
 

@@ -81,6 +81,7 @@
 #include "components/permissions/permission_util.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
@@ -1668,6 +1669,17 @@ void SiteSettingsHandler::HandleResetCategoryPermissionForPattern(
   if (content_type == ContentSettingsType::COOKIES &&
       primary_pattern.MatchesAllHosts() &&
       !secondary_pattern.MatchesAllHosts()) {
+    // Remove TP exceptions along with 3PC exceptions if we are not showing
+    // them explicitly in settings but are supporting adding/removing via UB.
+    // TODO(https://b/333527273): Remove post-3PCD launch.
+    if (base::FeatureList::IsEnabled(
+            privacy_sandbox::kTrackingProtectionContentSettingUbControl) &&
+        !base::FeatureList::IsEnabled(
+            privacy_sandbox::kTrackingProtectionContentSettingInSettings)) {
+      map->SetContentSettingCustomScope(
+          ContentSettingsPattern::Wildcard(), secondary_pattern,
+          ContentSettingsType::TRACKING_PROTECTION, CONTENT_SETTING_DEFAULT);
+    }
     base::RecordAction(base::UserMetricsAction(
         "ThirdPartyCookies.SettingsSiteException.Removed"));
   }
