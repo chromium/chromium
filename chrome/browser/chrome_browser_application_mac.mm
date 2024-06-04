@@ -223,6 +223,34 @@ std::string DescriptionForNSEvent(NSEvent* event) {
                         context:context];
 }
 
+// AppKit menu customization overriding
+
+- (void)_customizeFileMenuIfNeeded {
+  // Whenever the main menu is set or modified, AppKit modifies it before using
+  // it. AppKit calls -[NSApplication _customizeMainMenu], which calls out to a
+  // number of customization methods, including -[NSApplication
+  // _customizeFileMenuIfNeeded].
+  //
+  // -_customizeFileMenuIfNeeded does three things:
+  //   1. it adds the "Close All" menu item as an alternate for "Close Window",
+  //   2. for new-style document apps, it turns "Save" and "Save As..." into
+  //      "Save..." and "Duplicate" respectively,
+  //   3. depending on the "Close windows when quitting an application" system
+  //      setting, it adds either "Quit and Keep Windows" or "Quit and Close All
+  //      Windows" as an alternate for "Quit Chromium".
+  //
+  // While #1 is a nice-to-have, and #2 is irrelevant because Chromium isn't a
+  // new-style document app, #3 is a problem. Chromium has its own session
+  // management, and the menu item alternates that AppKit adds are making
+  // promises that Chromium can't fulfill.
+  //
+  // Therefore, override this method to prevent AppKit from doing these menu
+  // shenanigans. For #1, "Close All" is explicitly added to the File menu in
+  // main_menu_builder.mm, and there is nothing lost by preventing the other
+  // two.
+  return;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // HISTORICAL COMMENT (by viettrungluu, from
 // http://codereview.chromium.org/1520006 with mild editing):

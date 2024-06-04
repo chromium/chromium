@@ -36,9 +36,7 @@ NSMenuItem* BuildFileMenuForTesting(bool is_pwa);
 
 namespace internal {
 
-// Helper class that builds NSMenuItems from data. Instances of this class
-// should not outlive an autorelease pool scope as it does not retain any
-// Objective-C members.
+// Helper class that builds NSMenuItems from data.
 //
 // This builder follows a fluent-interface pattern where the setters are
 // not prefixed with the typical "set_" and they return a reference to this
@@ -54,7 +52,8 @@ class MenuItemBuilder {
 
   ~MenuItemBuilder();
 
-  // Converts the item to a separator. Only tag() is also applicable.
+  // Converts the item to a separator. Only tag() and hidden() are also
+  // applicable.
   MenuItemBuilder& is_separator() {
     DCHECK_EQ(string_id_, 0);
     is_separator_ = true;
@@ -100,7 +99,7 @@ class MenuItemBuilder {
   // the one specified here is used instead.
   MenuItemBuilder& key_equivalent(NSString* key_equivalent,
                                   NSEventModifierFlags flags) {
-    DCHECK((flags & NSEventModifierFlagShift) == 0)
+    CHECK((flags & NSEventModifierFlagShift) == 0)
         << "The shift modifier flag should be directly applied to the key "
            "equivalent.";
     key_equivalent_ = key_equivalent;
@@ -158,8 +157,6 @@ class MenuItemBuilder {
   bool is_hidden_ = false;
 
   bool is_section_header_ = false;
-
-  // Copy and assign allowed.
 };
 
 }  // namespace internal

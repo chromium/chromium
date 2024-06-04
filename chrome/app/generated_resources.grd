@@ -13857,6 +13857,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
         <message name="IDS_CLOSE_WINDOW_MAC" desc="The Mac menu item to close a window in the file menu.">
           Close Window
         </message>
+        <message name="IDS_CLOSE_ALL_WINDOWS_MAC" desc="The Mac menu item to close all windows in the file menu.">
+          Close All
+        </message>
         <message name="IDS_CLOSE_TAB_MAC" desc="The Mac menu item to close a browser tab in the file menu.">
           Close Tab
         </message>

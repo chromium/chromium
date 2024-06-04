@@ -2125,33 +2125,26 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
 
   if ([self windowHasBrowserTabs:[self windowForPerformClose]]) {
     // Close Window   ⇧⌘W
+    // Close All     ⌥⇧⌘W (alternate, replaces "Close Window" when ⌥ pressed)
     // Close Tab       ⌘W
     [self configureMenuItemForCloseWindow:shiftCmdWMenuItem];
     [self configureMenuItemForCloseTab:cmdWMenuItem];
   } else {
+    // (no ⇧⌘W menu item)
+    // Close All     ⌥⇧⌘W (alternate, appears when ⌥ pressed)
     // Close Window    ⌘W
-    // (no Close Tab)
-    [self configureMenuItemForCloseWindow:cmdWMenuItem];
+    //
+    // Having "Close All" appear out of nowhere when the ⌥ key is pressed is
+    // less than ideal, but "Close All" is a non-primary piece of UI and
+    // non-tabbed windows are significantly less common, so this will do for
+    // now. This may need to be revisited if it turns out to become an issue.
     [self hideMenuItem:shiftCmdWMenuItem];
-  }
-
-  // This menu item shuffling makes a "Close All" item appear. The AppKit wants
-  // to own the File menu, so this item's appearance is likely a result of
-  // magic code in the AppKit. However, we prefer to add and manage our own
-  // menu items (localization, for example). Also, this "Close All" menu item
-  // complicates the positioning of the "Close Window" and "Close Tab" items.
-  // Locate the "Close All" menu item and remove it.
-  NSMenu* fileMenu = [self fileMenu];
-  for (NSMenuItem* item in [[fileMenu itemArray] copy]) {
-    if (item.action == @selector(closeAll:)) {
-      [fileMenu removeItem:item];
-      break;
-    }
+    [self configureMenuItemForCloseWindow:cmdWMenuItem];
   }
 
   // Force no longer hidden items to appear, or newly hidden items to
   // disappear.
-  [fileMenu update];
+  [[self fileMenu] update];
 }
 
 // This only has an effect on macOS 12+, and requests any state restoration
