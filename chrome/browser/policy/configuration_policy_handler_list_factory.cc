@@ -1672,6 +1672,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kGenAIVcBackgroundSettings,
     ash::prefs::kGenAIVcBackgroundSettings,
     base::Value::Type::INTEGER },
+  { key::kLocalUserFilesMigrationEnabled,
+    prefs::kLocalUserFilesMigrationEnabled,
+    base::Value::Type::BOOLEAN },
 #endif // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_LINUX)

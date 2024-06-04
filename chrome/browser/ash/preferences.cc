@@ -174,6 +174,8 @@ void Preferences::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kDeviceSwitchFunctionKeysBehaviorEnabled,
                                 false);
   registry->RegisterBooleanPref(::prefs::kLocalUserFilesAllowed, true);
+  registry->RegisterBooleanPref(::prefs::kLocalUserFilesMigrationEnabled,
+                                false);
 
   RegisterLocalStatePrefs(registry);
 }

@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/policy/skyvault/local_user_files_policy_observer.h"
 #include "chrome/browser/ash/policy/skyvault/migration_notification_manager.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_dir_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -28,9 +29,18 @@
 namespace policy::local_user_files {
 
 LocalFilesMigrationManager::LocalFilesMigrationManager()
-    : notification_manager_(std::make_unique<MigrationNotificationManager>()) {}
+    : notification_manager_(std::make_unique<MigrationNotificationManager>()) {
+  pref_change_registrar_.Init(g_browser_process->local_state());
+  pref_change_registrar_.Add(
+      prefs::kLocalUserFilesMigrationEnabled,
+      base::BindRepeating(
+          &LocalFilesMigrationManager::OnLocalUserFilesPolicyChanged,
+          base::Unretained(this)));
+}
 
-LocalFilesMigrationManager::~LocalFilesMigrationManager() = default;
+LocalFilesMigrationManager::~LocalFilesMigrationManager() {
+  pref_change_registrar_.RemoveAll();
+}
 
 void LocalFilesMigrationManager::AddObserver(Observer* observer) {
   CHECK(observer);
@@ -46,19 +56,36 @@ void LocalFilesMigrationManager::OnLocalUserFilesPolicyChanged() {
   // TODO(aidazolic): Do not start migration immediately. When local files are
   // disabled, notify the user and trigger migration either 24 hours later or
   // upon the next system reboot.
-  // TODO(aidazolic): Stop ongoing migration if the policy resets to allow local
-  // files?
-  MaybeMigrateFiles(base::BindOnce(&LocalFilesMigrationManager::OnMigrationDone,
-                                   weak_factory_.GetWeakPtr()));
+  bool local_user_files_allowed = LocalUserFilesAllowed();
+  bool local_user_files_migration_enabled =
+      g_browser_process->local_state()->GetBoolean(
+          prefs::kLocalUserFilesMigrationEnabled);
+
+  if (local_user_files_allowed_ != local_user_files_allowed ||
+      local_user_files_migration_enabled_ !=
+          local_user_files_migration_enabled) {
+    local_user_files_allowed_ = local_user_files_allowed;
+    local_user_files_migration_enabled_ = local_user_files_migration_enabled;
+    MaybeMigrateFiles(
+        base::BindOnce(&LocalFilesMigrationManager::OnMigrationDone,
+                       weak_factory_.GetWeakPtr()));
+  }
 }
 
 bool LocalFilesMigrationManager::ShouldStart() {
-  if (!base::FeatureList::IsEnabled(features::kSkyVaultV2) || in_progress_) {
+  if (!base::FeatureList::IsEnabled(features::kSkyVaultV2)) {
     return false;
   }
-  if (LocalUserFilesAllowed()) {
+
+  // Migration is enabled only if local files are disabled and the migration
+  // policy is set to true...
+  if (local_user_files_allowed_ || !local_user_files_migration_enabled_) {
+    // TODO(aidazolic): Stop migration if the policy resets?
     return false;
   }
+
+  // ... and the FilesAppDefaultLocation (derived from DownloadDirectory) is set
+  // to Google Drive or OneDrive.
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
   CHECK(profile);
   const PrefService* const prefs = profile->GetPrefs();
@@ -68,13 +95,18 @@ bool LocalFilesMigrationManager::ShouldStart() {
   const bool download_directory_set =
       defaultLocation == download_dir_util::kLocationGoogleDrive ||
       defaultLocation == download_dir_util::kLocationOneDrive;
-  // Remove this when we can use the new policy?
   if (!download_directory_set) {
     // SkyVault is misconfigured.
+    // TODO(aidazolic): Stop migration if the policy resets?
     // TODO(aidazolic): Show an error notification if there are any files.
     return false;
   }
-  return true;  // Migration should start only if all conditions are met.
+
+  if (in_progress_) {
+    return false;
+  }
+
+  return true;
 }
 
 void LocalFilesMigrationManager::MaybeMigrateFiles(

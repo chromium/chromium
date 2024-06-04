@@ -46,11 +46,15 @@ class LocalFilesMigrationManagerTest : public policy::PolicyTest {
   ~LocalFilesMigrationManagerTest() override = default;
 
  protected:
-  void SetLocalFilesAllowed(bool local_user_files_allowed) {
+  void SetMigrationPolicies(bool local_user_files_allowed,
+                            bool local_user_files_migration_enabled) {
     policy::PolicyMap policies;
     policy::PolicyTest::SetPolicy(&policies,
                                   policy::key::kLocalUserFilesAllowed,
                                   base::Value(local_user_files_allowed));
+    policy::PolicyTest::SetPolicy(
+        &policies, policy::key::kLocalUserFilesMigrationEnabled,
+        base::Value(local_user_files_migration_enabled));
     provider_.UpdateChromePolicy(policies);
   }
 
@@ -83,7 +87,8 @@ IN_PROC_BROWSER_TEST_P(LocalFilesMigrationManagerLocationTest,
                                               GetParam());
   // Changing the LocalUserFilesAllowed policy should trigger the migration and
   // update.
-  SetLocalFilesAllowed(/*local_user_files_allowed=*/false);
+  SetMigrationPolicies(/*local_user_files_allowed=*/false,
+                       /*local_user_files_migration_enabled=*/true);
 }
 
 IN_PROC_BROWSER_TEST_P(LocalFilesMigrationManagerLocationTest,
@@ -95,7 +100,21 @@ IN_PROC_BROWSER_TEST_P(LocalFilesMigrationManagerLocationTest,
 
   browser()->profile()->GetPrefs()->SetString(prefs::kFilesAppDefaultLocation,
                                               DefaultLocation());
-  SetLocalFilesAllowed(/*local_user_files_allowed=*/true);
+  SetMigrationPolicies(/*local_user_files_allowed=*/true,
+                       /*local_user_files_migration_enabled=*/true);
+}
+
+IN_PROC_BROWSER_TEST_P(LocalFilesMigrationManagerLocationTest,
+                       NoMigrationIfDisabled) {
+  MockMigrationObserver observer;
+  EXPECT_CALL(observer, OnMigrationSucceeded).Times(0);
+  LocalFilesMigrationManager manager;
+  manager.AddObserver(&observer);
+
+  browser()->profile()->GetPrefs()->SetString(prefs::kFilesAppDefaultLocation,
+                                              DefaultLocation());
+  SetMigrationPolicies(/*local_user_files_allowed=*/false,
+                       /*local_user_files_migration_enabled=*/false);
 }
 
 IN_PROC_BROWSER_TEST_F(LocalFilesMigrationManagerTest,
@@ -107,7 +126,8 @@ IN_PROC_BROWSER_TEST_F(LocalFilesMigrationManagerTest,
 
   browser()->profile()->GetPrefs()->SetString(prefs::kFilesAppDefaultLocation,
                                               "");
-  SetLocalFilesAllowed(/*local_user_files_allowed=*/false);
+  SetMigrationPolicies(/*local_user_files_allowed=*/false,
+                       /*local_user_files_migration_enabled=*/true);
 }
 
 INSTANTIATE_TEST_SUITE_P(

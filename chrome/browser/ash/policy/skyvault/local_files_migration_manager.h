@@ -12,6 +12,7 @@
 #include "base/observer_list.h"
 #include "chrome/browser/ash/policy/skyvault/local_user_files_policy_observer.h"
 #include "chrome/browser/ash/policy/skyvault/migration_notification_manager.h"
+#include "components/prefs/pref_change_registrar.h"
 
 namespace policy::local_user_files {
 
@@ -54,6 +55,9 @@ class LocalFilesMigrationManager : public LocalUserFilesPolicyObserver {
   base::ObserverList<Observer>::Unchecked observers_;
   bool in_progress_ = false;  // Indicates if migration is currently running.
   std::optional<std::string> error_;  // Stores migration error, if any.
+  bool local_user_files_allowed_ = true;
+  bool local_user_files_migration_enabled_ = false;
+  PrefChangeRegistrar pref_change_registrar_;
 
   base::WeakPtrFactory<LocalFilesMigrationManager> weak_factory_{this};
 };
