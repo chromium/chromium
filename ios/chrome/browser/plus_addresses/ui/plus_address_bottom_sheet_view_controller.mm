@@ -11,6 +11,7 @@
 #import "base/types/expected.h"
 #import "build/branding_buildflags.h"
 #import "components/grit/components_resources.h"
+#import "components/plus_addresses/features.h"
 #import "components/plus_addresses/metrics/plus_address_metrics.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/plus_addresses/ui/plus_address_bottom_sheet_constants.h"
@@ -74,6 +75,20 @@ NSAttributedString* ErrorMessage() {
 
   return AttributedStringFromStringWithLink(message, text_attributes,
                                             link_attributes);
+}
+
+// Returns the image view with the branding image.
+UIImageView* BrandingImageView() {
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+  // Branding icon inside the container with the white background.
+  return [[UIImageView alloc]
+      initWithImage:MakeSymbolMulticolor(CustomSymbolWithPointSize(
+                        kGoogleIconSymbol, kBrandingIconSize))];
+#else
+  return [[UIImageView alloc]
+      initWithImage:DefaultSymbolTemplateWithPointSize(kMailFillSymbol,
+                                                       kBrandingIconSize)];
+#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
 }
 
 // Returns the image that should be used for the PlusAddress logo.
@@ -141,8 +156,15 @@ UIImage* PlusAddressesLogo() {
   // Set the properties read by the super when constructing the
   // views in `-[ConfirmationAlertViewController viewDidLoad]`.
   [self setupAboveTitleView];
-  self.image = PlusAddressesLogo();
-  self.imageHasFixedSize = YES;
+
+  if (base::FeatureList::IsEnabled(
+          plus_addresses::features::kPlusAddressUIRedesign)) {
+    self.aboveTitleView = [self brandingIconView];
+  } else {
+    self.image = PlusAddressesLogo();
+    self.imageHasFixedSize = YES;
+  }
+
   self.customScrollViewBottomInsets = kScrollViewBottomInsets;
   self.titleString = l10n_util::GetNSString(IDS_PLUS_ADDRESS_MODAL_TITLE);
   self.primaryActionString =
@@ -367,6 +389,42 @@ UIImage* PlusAddressesLogo() {
         base::Time::Now() - _bottomSheetShownTime, /*refresh_count=*/0);
   }
   [_browserCoordinatorHandler dismissPlusAddressBottomSheet];
+}
+
+// Returns a view of a branding icon with a white background with vertical
+// padding.
+- (UIView*)brandingIconView {
+  // Container of the trash icon that has the red background.
+  UIView* iconContainerView = [[UIView alloc] init];
+  iconContainerView.translatesAutoresizingMaskIntoConstraints = NO;
+  iconContainerView.layer.cornerRadius = kBrandingIconContainerViewCornerRadius;
+  // TODO(crbug.com/343153116): Fix the shadow.
+  iconContainerView.layer.shadowOpacity = 0.3;
+  iconContainerView.backgroundColor = [UIColor colorNamed:kSolidWhiteColor];
+
+  UIImageView* icon = BrandingImageView();
+  icon.clipsToBounds = YES;
+  icon.translatesAutoresizingMaskIntoConstraints = NO;
+  [iconContainerView addSubview:icon];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [iconContainerView.widthAnchor
+        constraintEqualToConstant:kBrandingIconContainerViewSize],
+    [iconContainerView.heightAnchor
+        constraintEqualToConstant:kBrandingIconContainerViewSize],
+  ]];
+  AddSameCenterConstraints(iconContainerView, icon);
+
+  // Padding for the icon container view.
+  UIView* outerView = [[UIView alloc] init];
+  [outerView addSubview:iconContainerView];
+  AddSameCenterXConstraint(outerView, iconContainerView);
+  AddSameConstraintsToSidesWithInsets(
+      iconContainerView, outerView, LayoutSides::kTop | LayoutSides::kBottom,
+      NSDirectionalEdgeInsetsMake(kBrandingIconContainerViewTopPadding, 0,
+                                  kBrandingIconContainerViewBottomPadding, 0));
+
+  return outerView;
 }
 
 @end

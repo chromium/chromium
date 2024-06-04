@@ -40,6 +40,21 @@ extern const CGFloat kBrandedImageWidth;
 // stack and is used to prevent content being hidden under buttons border.
 extern const CGFloat kScrollViewBottomInsets;
 
+// Branding icon view size.
+extern const CGFloat kBrandingIconContainerViewSize;
+
+// Branding icon view corner radius.
+extern const CGFloat kBrandingIconContainerViewCornerRadius;
+
+// Branding icon size that sits inside the entire view.
+extern const CGFloat kBrandingIconSize;
+
+// Bottom padding for the branding icon view.
+extern const CGFloat kBrandingIconContainerViewBottomPadding;
+
+// Top padding for the branding icon view.
+extern const CGFloat kBrandingIconContainerViewTopPadding;
+
 // Enum specifying the URL the bottom sheet should open.
 enum class PlusAddressURLType {
   kErrorReport = 0,
