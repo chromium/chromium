@@ -20235,7 +20235,7 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="Mobile.LensIOS.NewTabPageEntryPointTapped">
+<action name="Mobile.LensIOS.NewTabPageEntrypointTapped">
   <owner>hujasonx@google.com</owner>
   <owner>schechter@google.com</owner>
   <description>
