@@ -401,3 +401,8 @@ targets.compile_target(
     name = "web_engine_shell_pkg",
     label = "//fuchsia_web/shell:web_engine_shell_pkg",
 )
+
+targets.compile_target(
+    name = "chrome/enterprise_companion:all",
+    label = "//chrome/enterprise_companion:all",
+)

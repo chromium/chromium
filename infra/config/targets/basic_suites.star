@@ -1794,6 +1794,40 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
+    name = "enterprise_companion_gtests_linux",
+    tests = {
+        "enterprise_companion_tests": targets.legacy_test_config(
+            mixins = [
+                "updater-default-pool",
+            ],
+        ),
+    },
+)
+
+targets.legacy_basic_suite(
+    name = "enterprise_companion_gtests_mac",
+    tests = {
+        "enterprise_companion_tests": targets.legacy_test_config(
+            mixins = [
+                "updater-mac-pool",
+            ],
+        ),
+    },
+)
+
+targets.legacy_basic_suite(
+    name = "enterprise_companion_gtests_win",
+    tests = {
+        "enterprise_companion_tests": targets.legacy_test_config(
+            mixins = [
+                "integrity_high",
+                "updater-default-pool",
+            ],
+        ),
+    },
+)
+
+targets.legacy_basic_suite(
     name = "fieldtrial_android_tests",
     tests = {
         "android_browsertests_no_fieldtrial": targets.legacy_test_config(

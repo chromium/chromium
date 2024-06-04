@@ -3013,6 +3013,182 @@
     },
   },
   {
+    'name': 'chromium.enterprise_companion',
+    'mixins': ['chromium-tester-service-account'],
+    'machines': {
+      'linux-updater-tester-dbg': {
+        'mixins': [
+          'linux-jammy',
+          'x86-64',
+        ],
+        'test_suites': {
+          'gtest_tests': 'enterprise_companion_gtests_linux',
+        },
+      },
+      'linux-updater-tester-rel': {
+        'mixins': [
+          'linux-jammy',
+          'x86-64',
+        ],
+        'test_suites': {
+          'gtest_tests': 'enterprise_companion_gtests_linux',
+        },
+      },
+      'mac-updater-builder-arm64-dbg': {
+        'additional_compile_targets': ['chrome/enterprise_companion:all'],
+      },
+      'mac-updater-builder-arm64-rel': {
+        'additional_compile_targets': ['chrome/enterprise_companion:all'],
+      },
+      'mac-updater-builder-asan-dbg': {
+        'additional_compile_targets': ['chrome/enterprise_companion:all'],
+      },
+      'mac-updater-builder-dbg': {
+        'additional_compile_targets': ['chrome/enterprise_companion:all'],
+      },
+      'mac-updater-builder-rel': {
+        'additional_compile_targets': ['chrome/enterprise_companion:all'],
+      },
+      'mac10.15-updater-tester-dbg': {
+        'mixins': [
+          'mac_10.15',
+        ],
+        'test_suites': {
+          'gtest_tests': 'enterprise_companion_gtests_mac',
+        },
+      },
+      'mac10.15-updater-tester-rel': {
+        'mixins': [
+          'mac_10.15',
+        ],
+        'test_suites': {
+          'gtest_tests': 'enterprise_companion_gtests_mac',
+        },
+      },
+      'mac11-arm64-updater-tester-dbg': {
+        'mixins': [
+          'mac_11_arm64',
+        ],
+        'test_suites': {
+          'gtest_tests': 'enterprise_companion_gtests_mac',
+        },
+      },
+      'mac11-arm64-updater-tester-rel': {
+        'mixins': [
+          'mac_11_arm64',
+        ],
+        'test_suites': {
+          'gtest_tests': 'enterprise_companion_gtests_mac',
+        },
+      },
+      'mac11-x64-updater-tester-dbg': {
+        'mixins': [
+          'mac_11_x64',
+        ],
+        'test_suites': {
+          'gtest_tests': 'enterprise_companion_gtests_mac',
+        },
+      },
+      'mac11-x64-updater-tester-rel': {
+        'mixins': [
+          'mac_11_x64',
+        ],
+        'test_suites': {
+          'gtest_tests': 'enterprise_companion_gtests_mac',
+        },
+      },
+      'mac12-arm64-updater-tester-rel': {
+        'mixins': [
+          'mac_12_arm64',
+        ],
+        'test_suites': {
+          'gtest_tests': 'enterprise_companion_gtests_mac',
+        },
+      },
+      'mac12-x64-updater-tester-asan-dbg': {
+        'mixins': [
+          'mac_12_x64',
+        ],
+        'test_suites': {
+          'gtest_tests': 'enterprise_companion_gtests_mac',
+        },
+      },
+      'mac13-arm64-updater-tester-dbg': {
+        'mixins': [
+          'mac_13_arm64',
+        ],
+        'test_suites': {
+          'gtest_tests': 'enterprise_companion_gtests_mac',
+        },
+      },
+      'mac13-x64-updater-tester-rel': {
+        'mixins': [
+          'mac_13_x64',
+        ],
+        'test_suites': {
+          'gtest_tests': 'enterprise_companion_gtests_mac',
+        },
+      },
+      'win-updater-builder-dbg': {
+        'additional_compile_targets': ['chrome/enterprise_companion:all'],
+      },
+      'win-updater-builder-rel': {
+        'additional_compile_targets': ['chrome/enterprise_companion:all'],
+      },
+      'win10-32-on-64-updater-tester-dbg': {
+        'mixins': [
+          'win10',
+          'x86-64',
+        ],
+        'test_suites': {
+          'gtest_tests': 'enterprise_companion_gtests_win',
+        },
+      },
+      'win10-32-on-64-updater-tester-rel': {
+        'mixins': [
+          'win10',
+          'x86-64',
+        ],
+        'test_suites': {
+          'gtest_tests': 'enterprise_companion_gtests_win',
+        },
+      },
+      'win10-updater-tester-dbg': {
+        'mixins': [
+          'win10',
+          'x86-64',
+        ],
+        'test_suites': {
+          'gtest_tests': 'enterprise_companion_gtests_win',
+        },
+      },
+      'win10-updater-tester-rel': {
+        'mixins': [
+          'win10',
+          'x86-64',
+        ],
+        'test_suites': {
+          'gtest_tests': 'enterprise_companion_gtests_win',
+        },
+      },
+      'win11-updater-tester-rel': {
+        'mixins': [
+          'win11',
+          'x86-64',
+        ],
+        'test_suites': {
+          'gtest_tests': 'enterprise_companion_gtests_win',
+        },
+      },
+      'win32-updater-builder-dbg': {
+        'additional_compile_targets': ['chrome/enterprise_companion:all'],
+      },
+      'win32-updater-builder-rel': {
+        'additional_compile_targets': ['chrome/enterprise_companion:all'],
+      },
+    }
+  },
+  {
     'name': 'chromium.fuchsia',
     'mixins': ['chromium-tester-service-account'],
     'machines': {

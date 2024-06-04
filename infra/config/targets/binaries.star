@@ -787,6 +787,12 @@ targets.binaries.windowed_test_launcher(
 )
 
 targets.binaries.console_test_launcher(
+    name = "enterprise_companion_tests",
+    label = "//chrome/enterprise_companion:enterprise_companion_tests",
+    args = ["--gtest_shuffle"],
+)
+
+targets.binaries.console_test_launcher(
     name = "env_chromium_unittests",
     label = "//third_party/leveldatabase:env_chromium_unittests",
 )

@@ -62,3 +62,15 @@ if (!is_official_build) {
     }
   }
 }
+
+group("all") {
+  testonly = true
+
+  deps = [
+    ":client",
+    ":enterprise_companion_tests",
+  ]
+  if (!is_official_build) {
+    deps += [ ":enterprise_companion" ]
+  }
+}

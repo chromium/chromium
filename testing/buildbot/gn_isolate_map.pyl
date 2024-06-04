@@ -346,6 +346,10 @@
     "label": "//chrome/browser/media/router:unittests",
     "type": "additional_compile_target",
   },
+  "chrome/enterprise_companion:all": {
+    "label": "//chrome/enterprise_companion:all",
+    "type": "additional_compile_target",
+  },
   "chrome/installer/linux": {
     "label": "//chrome/installer/linux:linux",
     "type": "additional_compile_target",
@@ -770,6 +774,13 @@
   "empty_main": {
     "label": "//testing:empty_main",
     "type": "additional_compile_target",
+  },
+  "enterprise_companion_tests": {
+    "label": "//chrome/enterprise_companion:enterprise_companion_tests",
+    "type": "console_test_launcher",
+    "args": [
+      "--gtest_shuffle",
+    ],
   },
   "env_chromium_unittests": {
     "label": "//third_party/leveldatabase:env_chromium_unittests",
