@@ -68,7 +68,7 @@ export class BrowsingContextImpl {
     withinDocument: new Deferred<void>(),
   };
 
-  #url = 'about:blank';
+  #url: string;
   readonly #eventManager: EventManager;
   readonly #realmStorage: RealmStorage;
   #loaderId?: Protocol.Network.LoaderId;
@@ -86,6 +86,7 @@ export class BrowsingContextImpl {
     eventManager: EventManager,
     browsingContextStorage: BrowsingContextStorage,
     realmStorage: RealmStorage,
+    url: string,
     logger?: LoggerFn
   ) {
     this.#cdpTarget = cdpTarget;
@@ -96,6 +97,7 @@ export class BrowsingContextImpl {
     this.#browsingContextStorage = browsingContextStorage;
     this.#realmStorage = realmStorage;
     this.#logger = logger;
+    this.#url = url;
   }
 
   static create(
@@ -106,6 +108,7 @@ export class BrowsingContextImpl {
     eventManager: EventManager,
     browsingContextStorage: BrowsingContextStorage,
     realmStorage: RealmStorage,
+    url: string,
     logger?: LoggerFn
   ): BrowsingContextImpl {
     const context = new BrowsingContextImpl(
@@ -116,6 +119,7 @@ export class BrowsingContextImpl {
       eventManager,
       browsingContextStorage,
       realmStorage,
+      url,
       logger
     );
 
