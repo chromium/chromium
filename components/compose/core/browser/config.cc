@@ -94,6 +94,10 @@ Config::Config() {
           "proactive_nudge_delay_milliseconds",
           proactive_nudge_delay.InMilliseconds()));
 
+  nudge_field_change_event_max = base::GetFieldTrialParamByFeatureAsInt(
+      features::kEnableComposeProactiveNudge, "nudge_field_change_event_max",
+      nudge_field_change_event_max);
+
   proactive_nudge_segmentation = base::FeatureList::IsEnabled(
       segmentation_platform::features::kSegmentationPlatformComposePromotion);
 

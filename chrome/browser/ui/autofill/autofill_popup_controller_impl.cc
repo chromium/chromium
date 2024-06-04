@@ -174,12 +174,6 @@ void AutofillPopupControllerImpl::Show(
   }
 
   AutofillPopupHideHelper::HidingParams hiding_params = {
-      // It suffices if the root popup observes changes in form elements.
-      // Currently, this is only relevant for Compose.
-      .hide_on_text_field_change =
-          IsRootPopup() && suggestions.size() == 1 &&
-          GetFillingProductFromSuggestionType(suggestions[0].type) ==
-              FillingProduct::kCompose,
       .hide_on_web_contents_lost_focus = true};
 
   AutofillPopupHideHelper::HidingCallback hiding_callback = base::BindRepeating(

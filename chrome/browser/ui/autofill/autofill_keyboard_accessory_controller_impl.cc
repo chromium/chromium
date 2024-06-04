@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -447,8 +448,6 @@ void AutofillKeyboardAccessoryControllerImpl::Show(
   }
 
   AutofillPopupHideHelper::HidingParams hiding_params = {
-      // Currently, this is only relevant for Compose on Desktop.
-      .hide_on_text_field_change = false,
       .hide_on_web_contents_lost_focus = true};
   AutofillPopupHideHelper::HidingCallback hiding_callback = base::BindRepeating(
       &AutofillKeyboardAccessoryControllerImpl::Hide, base::Unretained(this));
