@@ -454,6 +454,13 @@ export class MenuManager {
         break;
       case 'Enter':
       case ' ':
+        if (!this.getCallbackForCurrentItem()) {
+          // If there's no callback for the current menu item, then we shouldn't
+          // perform any special logic. Return false here and let the key event
+          // propagate so that it can potentially be handled elsewhere.
+          return false;
+        }
+
         // TODO(b/314203187): Not null asserted, check that this is correct.
         PanelInterface.instance!.setPendingCallback(
             this.getCallbackForCurrentItem());

@@ -1035,10 +1035,6 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, OpenStatusTray) {
 
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, OpenSettingsFromPanel) {
   EnableChromeVox();
-
-  AutomationTestUtils test_utils(extension_misc::kChromeVoxExtensionId);
-  sm_.Call([&test_utils]() { test_utils.SetUpTestSupport(); });
-
   base::RunLoop waiter;
   AccessibilityManager::Get()->SetOpenSettingsSubpageObserverForTest(
       base::BindLambdaForTesting([&waiter]() { waiter.Quit(); }));
@@ -1053,14 +1049,9 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, OpenSettingsFromPanel) {
   sm_.ExpectSpeech("ChromeVox Menus collapse");
   sm_.Call([this]() { SendKeyPress(ui::VKEY_TAB); });
   sm_.ExpectSpeech("ChromeVox Options");
-
-  // TODO(b/316916793): We cannot click this button with ChromeVox directly, so
-  // using test utils for now.
-  sm_.Call(
-      [&test_utils]() { test_utils.DoDefault("ChromeVox Options", "button"); });
-
+  // Activate the settings button.
+  sm_.Call([this]() { SendKeyPress(ui::VKEY_SPACE); });
   sm_.Replay();
-
   // We should have tried to open the settings subpage.
   waiter.Run();
 }
