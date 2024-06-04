@@ -53,6 +53,9 @@ public class UrlConstants {
     public static final String NTP_NON_NATIVE_URL = "chrome://newtab/";
     public static final String NTP_ABOUT_URL = "about:newtab";
 
+    // Don't use this URL. The constant is added for legacy reasons.
+    public static final String NEW_TAB_PAGE_URL_LEGACY = "chrome://new-tab-page/";
+
     public static final String BOOKMARKS_HOST = "bookmarks";
     public static final String BOOKMARKS_URL = "chrome-native://bookmarks/";
     public static final String BOOKMARKS_FOLDER_URL = "chrome-native://bookmarks/folder/";

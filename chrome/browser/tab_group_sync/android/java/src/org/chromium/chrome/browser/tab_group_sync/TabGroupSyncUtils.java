@@ -78,12 +78,9 @@ public final class TabGroupSyncUtils {
     @VisibleForTesting
     static boolean isNtpOrAboutBlankUrl(GURL url) {
         String urlString = url.getValidSpecOrEmpty();
-        return TextUtils.equals(urlString, UrlConstants.NTP_URL)
-                || TextUtils.equals(urlString, UrlConstants.NTP_NON_NATIVE_URL)
-                || TextUtils.equals(urlString, UrlConstants.NTP_ABOUT_URL)
+        return UrlUtilities.isNtpUrl(url)
                 || TextUtils.equals(urlString, ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL)
-                || TextUtils.equals(urlString, ContentUrlConstants.ABOUT_BLANK_URL)
-                || TextUtils.equals(urlString, "chrome://new-tab-page/");
+                || TextUtils.equals(urlString, ContentUrlConstants.ABOUT_BLANK_URL);
     }
 
     /**

@@ -277,7 +277,8 @@ public class UrlUtilities {
      */
     public static boolean isNtpUrl(GURL gurl) {
         if (!gurl.isValid() || !isInternalScheme(gurl)) return false;
-        return UrlConstants.NTP_HOST.equals(gurl.getHost());
+        return UrlConstants.NTP_HOST.equals(gurl.getHost())
+                || UrlConstants.NEW_TAB_PAGE_URL_LEGACY.equals(gurl.getValidSpecOrEmpty());
     }
 
     /**
