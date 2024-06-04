@@ -5,6 +5,7 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 
 #include <inttypes.h>
+
 #include <memory>
 
 #include "base/containers/contains.h"
@@ -21,6 +22,7 @@
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/compound_image_backing.h"
+#include "gpu/command_buffer/service/shared_image/egl_image_backing_factory.h"
 #include "gpu/command_buffer/service/shared_image/gl_texture_image_backing_factory.h"
 #include "gpu/command_buffer/service/shared_image/raw_draw_image_backing_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
@@ -35,6 +37,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gl/gl_display.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/gl_utils.h"
@@ -77,11 +80,6 @@
 #include "base/android/android_hardware_buffer_compat.h"
 #include "gpu/command_buffer/service/shared_image/ahardwarebuffer_image_backing_factory.h"
 #endif  // BUILDFLAG(IS_ANDROID)
-
-#if defined(USE_EGL)
-#include "gpu/command_buffer/service/shared_image/egl_image_backing_factory.h"
-#include "ui/gl/gl_display.h"
-#endif  // defined(USE_EGL)
 
 namespace gpu {
 
@@ -351,7 +349,6 @@ SharedImageFactory::SharedImageFactory(
 #endif  // BUILDFLAG(IS_WIN)
 #endif  // BUILDFLAG(ENABLE_VULKAN)
 
-#if defined(USE_EGL)
   // Create EGLImageBackingFactory if egl images are supported. Note that the
   // factory creation is kept here to preserve the current preference of factory
   // to be used.
@@ -364,7 +361,6 @@ SharedImageFactory::SharedImageFactory(
         gpu_preferences_, workarounds_, feature_info.get());
     factories_.push_back(std::move(egl_backing_factory));
   }
-#endif  // defined(USE_EGL)
 
 #if BUILDFLAG(IS_ANDROID)
   bool is_ahb_supported = true;

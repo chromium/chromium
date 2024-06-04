@@ -23,10 +23,7 @@
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/gl_utils.h"
-
-#if defined(USE_EGL)
 #include "ui/gl/gl_surface_egl.h"
-#endif  // defined(USE_EGL)
 
 namespace gpu {
 namespace gles2 {

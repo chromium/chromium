@@ -124,11 +124,9 @@ void GLContextVirtual::FlushForDriverCrashWorkaround() {
 }
 #endif
 
-#if defined(USE_EGL)
 gl::GLDisplayEGL* GLContextVirtual::GetGLDisplayEGL() {
   return shared_context_->GetGLDisplayEGL();
 }
-#endif
 
 GLContextVirtual::~GLContextVirtual() {
   Destroy();
