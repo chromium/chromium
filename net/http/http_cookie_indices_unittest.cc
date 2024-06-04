@@ -147,5 +147,15 @@ TEST(CookieIndicesTest, HashDistinguishesEmptyAndAbsentCookies) {
       HashCookieIndices(cookie_indices, ParsedRequestCookies{}));
 }
 
+TEST(CookieIndicesTest, IgnoresOrderOfDuplicateCookies) {
+  const std::string cookie_indices[] = {"fruit"};
+  EXPECT_EQ(HashCookieIndices(
+                cookie_indices,
+                ParsedRequestCookies{{"fruit", "lime"}, {"fruit", "pear"}}),
+            HashCookieIndices(
+                cookie_indices,
+                ParsedRequestCookies{{"fruit", "pear"}, {"fruit", "lime"}}));
+}
+
 }  // namespace
 }  // namespace net

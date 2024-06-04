@@ -110,13 +110,13 @@ CookieIndicesHash HashCookieIndices(
            cookies_it->first < cookie_name) {
       ++cookies_it;
     }
-    if (cookies_it != cookies_sorted.end() &&
-        cookies_it->first == cookie_name) {
+    while (cookies_it != cookies_sorted.end() &&
+           cookies_it->first == cookie_name) {
       pickle.WriteBool(true);
       pickle.WriteString(cookies_it->second);
-    } else {
-      pickle.WriteBool(false);
+      ++cookies_it;
     }
+    pickle.WriteBool(false);
   }
   return crypto::SHA256Hash(pickle.payload_bytes());
 }
