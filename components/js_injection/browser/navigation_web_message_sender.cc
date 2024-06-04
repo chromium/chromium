@@ -18,9 +18,13 @@
 #include "net/http/http_response_headers.h"
 
 namespace features {
+// Temporarily enable this feature while we work on moving the API to AndroidX.
+// This should be safe as it is very unlikely for apps to accidentally register
+// listeners with the same name as `kNavigationListenerAllowBFCacheObjectName` /
+// `kNavigationListenerDisableBFCacheObjectName`.
 BASE_FEATURE(kEnableNavigationListener,
              "EnableNavigationListener",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace features
 
 namespace js_injection {
