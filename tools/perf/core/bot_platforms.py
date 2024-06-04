@@ -744,7 +744,7 @@ WIN_10 = PerfPlatform(
     'Windows Intel HD 630 towers, Core i7-7700 3.6 GHz, 16GB RAM,'
     ' Intel Kaby Lake HD Graphics 630',
     _WIN_10_BENCHMARK_CONFIGS,
-    20,
+    14,  # TODO(b/344927054): reset to 20 when the dimensions are updated.
     'win',
     executables=_WIN_10_EXECUTABLE_CONFIGS)
 WIN_10_PGO = PerfPlatform(
