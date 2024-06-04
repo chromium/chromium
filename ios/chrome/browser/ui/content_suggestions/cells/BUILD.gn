@@ -58,8 +58,14 @@ source_set("most_visited_tiles") {
   sources = [
     "content_suggestions_tile_saver.h",
     "content_suggestions_tile_saver.mm",
+    "most_visited_tiles_config.h",
+    "most_visited_tiles_config.mm",
     "most_visited_tiles_mediator.h",
     "most_visited_tiles_mediator.mm",
+    "most_visited_tiles_stack_view.h",
+    "most_visited_tiles_stack_view.mm",
+    "most_visited_tiles_stack_view_consumer.h",
+    "most_visited_tiles_stack_view_consumer_source.h",
   ]
   deps = [
     ":cells",
@@ -80,8 +86,7 @@ source_set("most_visited_tiles") {
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_ui_util",
     "//ios/chrome/browser/ui/content_suggestions:metrics",
     "//ios/chrome/browser/ui/content_suggestions:public",
-    "//ios/chrome/browser/ui/content_suggestions/magic_stack",
-    "//ios/chrome/browser/ui/content_suggestions/magic_stack:cells",
+    "//ios/chrome/browser/ui/content_suggestions/magic_stack:public",
     "//ios/chrome/browser/ui/favicon",
     "//ios/chrome/browser/ui/menu",
     "//ios/chrome/browser/ui/ntp",

@@ -40,6 +40,13 @@ class UrlLoadingBrowserAgent;
 // Logs a user Magic Stack engagement for module `type`.
 - (void)logMagicStackEngagementForType:(ContentSuggestionsModuleType)type;
 
+// Indicates to the receiver that the initial Most Visited Tiles list has been
+// received.
+- (void)didReceiveInitialMostVistedTiles;
+
+// Indicates to the receiver to remove the MostVisitedTiles module.
+- (void)removeMostVisitedTilesModule;
+
 @end
 
 // Mediator for managing the state of the MostVisitedTiles for the Magic Stack

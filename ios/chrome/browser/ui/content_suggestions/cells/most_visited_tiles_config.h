@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_MAGIC_STACK_MOST_VISITED_TILES_CONFIG_H_
-#define IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_MAGIC_STACK_MOST_VISITED_TILES_CONFIG_H_
+#ifndef IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CELLS_MOST_VISITED_TILES_CONFIG_H_
+#define IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CELLS_MOST_VISITED_TILES_CONFIG_H_
 
 #import <UIKit/UIKit.h>
 
 @protocol MostVisitedTilesCommands;
+@protocol MostVisitedTilesStackViewConsumerSource;
 @class ContentSuggestionsMostVisitedItem;
 @protocol ContentSuggestionsImageDataSource;
 
@@ -24,9 +25,13 @@
 @property(nonatomic, weak) id<ContentSuggestionsImageDataSource>
     imageDataSource;
 
+// Most Visited Tiles model.
+@property(nonatomic, weak)
+    id<MostVisitedTilesStackViewConsumerSource> consumerSource;
+
 // Command handler for user actions.
 @property(nonatomic, weak) id<MostVisitedTilesCommands> commandHandler;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_MAGIC_STACK_MOST_VISITED_TILES_CONFIG_H_
+#endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CELLS_MOST_VISITED_TILES_CONFIG_H_
