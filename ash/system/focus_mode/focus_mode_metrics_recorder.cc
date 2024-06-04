@@ -4,11 +4,14 @@
 
 #include "ash/system/focus_mode/focus_mode_metrics_recorder.h"
 
+#include "ash/constants/ash_pref_names.h"
+#include "ash/shell.h"
 #include "ash/system/focus_mode/focus_mode_controller.h"
 #include "ash/system/focus_mode/focus_mode_histogram_names.h"
 #include "ash/system/focus_mode/focus_mode_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
+#include "components/prefs/pref_service.h"
 #include "ui/message_center/message_center.h"
 
 namespace ash {
@@ -130,6 +133,48 @@ void RecordSessionDurationHistogram(const int time_elapsed) {
       /*buckets=*/50);
 }
 
+// Return true if the current selected task is the task selected in the
+// previous focus session.
+bool IsPreviouslySelectedTask(const PrefService* active_user_prefs,
+                              const std::string& current_selected_task_id) {
+  const auto& selected_task_dict =
+      active_user_prefs->GetDict(prefs::kFocusModeSelectedTask);
+
+  if (selected_task_dict.empty()) {
+    return false;
+  }
+
+  const auto* previously_selected_task_id =
+      selected_task_dict.FindString(focus_mode_util::kTaskIdKey);
+  return previously_selected_task_id &&
+         (*previously_selected_task_id == current_selected_task_id);
+}
+
+void RecordStartedWithTaskHistogram(const std::string& selected_task_id) {
+  if (selected_task_id.empty()) {
+    base::UmaHistogramEnumeration(
+        /*name=*/focus_mode_histogram_names::
+            kStartedWithTaskStatekHistogramName,
+        /*sample=*/focus_mode_histogram_names::StartedWithTaskState::kNoTask);
+    return;
+  }
+
+  PrefService* active_user_prefs =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  if (!active_user_prefs) {
+    // Can be null in tests.
+    return;
+  }
+
+  base::UmaHistogramEnumeration(
+      /*name=*/focus_mode_histogram_names::kStartedWithTaskStatekHistogramName,
+      /*sample=*/IsPreviouslySelectedTask(active_user_prefs, selected_task_id)
+          ? focus_mode_histogram_names::StartedWithTaskState::
+                kPreviouslySelectedTask
+          : focus_mode_histogram_names::StartedWithTaskState::
+                kNewlySelectedTask);
+}
+
 }  // namespace
 
 FocusModeMetricsRecorder::FocusModeMetricsRecorder(
@@ -162,11 +207,13 @@ void FocusModeMetricsRecorder::OnQuietModeChanged(bool in_quiet_mode) {
 }
 
 void FocusModeMetricsRecorder::RecordHistogramsOnStart(
-    focus_mode_histogram_names::ToggleSource source) {
+    focus_mode_histogram_names::ToggleSource source,
+    const std::string& selected_task_id) {
   RecordInitialDurationHistogram(
       /*session_duration=*/initial_session_duration_);
   RecordStartSessionSourceHistogram(source);
   RecordHasSelectedTaskOnSessionStartHistogram();
+  RecordStartedWithTaskHistogram(selected_task_id);
 }
 
 void FocusModeMetricsRecorder::RecordHistogramsOnEnd() {

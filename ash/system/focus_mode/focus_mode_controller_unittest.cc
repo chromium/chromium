@@ -856,4 +856,72 @@ TEST_F(FocusModeControllerMultiUserTest,
       /*expected_count=*/1);
 }
 
+// Verify the histogram will record the different state when a session starts.
+TEST_F(FocusModeControllerMultiUserTest, CheckStartedWithTaskHistogram) {
+  base::HistogramTester histogram_tester;
+
+  SimulateUserLogin(GetUser1AccountId());
+
+  auto* controller = FocusModeController::Get();
+
+  // 1. Start a session without a task selected.
+  controller->ToggleFocusMode();
+  EXPECT_TRUE(controller->in_focus_session());
+  EXPECT_FALSE(controller->HasSelectedTask());
+
+  histogram_tester.ExpectBucketCount(
+      /*name=*/focus_mode_histogram_names::kStartedWithTaskStatekHistogramName,
+      /*sample=*/focus_mode_histogram_names::StartedWithTaskState::kNoTask,
+      /*expected_count=*/1);
+
+  controller->ToggleFocusMode();
+  EXPECT_FALSE(controller->in_focus_session());
+
+  // 2. Start a session with a newly selected task.
+  auto& tasks_client = CreateFakeTasksClient(GetUser1AccountId());
+
+  FocusModeTask task;
+  task.task_list_id = "list0";
+  task.task_id = "task0";
+  task.title = "Focus Task";
+  task.updated = base::Time::Now();
+
+  AddFakeTaskList(tasks_client, task.task_list_id);
+  AddFakeTask(tasks_client, task.task_list_id, task.task_id, task.title);
+  controller->SetSelectedTask(task);
+
+  controller->ToggleFocusMode();
+  EXPECT_TRUE(controller->in_focus_session());
+  EXPECT_TRUE(controller->HasSelectedTask());
+  histogram_tester.ExpectBucketCount(
+      /*name=*/focus_mode_histogram_names::kStartedWithTaskStatekHistogramName,
+      /*sample=*/
+      focus_mode_histogram_names::StartedWithTaskState::kNewlySelectedTask,
+      /*expected_count=*/1);
+
+  // Mark this selected task as completed, and select a new task during this
+  // session. Don't finish this selected task until the next session.
+  task.task_list_id = "list1";
+  task.task_id = "task1";
+  task.title = "A New Focus Task";
+  task.updated = base::Time::Now();
+
+  AddFakeTaskList(tasks_client, task.task_list_id);
+  AddFakeTask(tasks_client, task.task_list_id, task.task_id, task.title);
+
+  controller->SetSelectedTask(task);
+  controller->ToggleFocusMode();
+  EXPECT_FALSE(controller->in_focus_session());
+  EXPECT_TRUE(controller->HasSelectedTask());
+
+  // 3. Start a session with the previously selected task.
+  controller->ToggleFocusMode();
+  EXPECT_TRUE(controller->in_focus_session());
+  histogram_tester.ExpectBucketCount(
+      /*name=*/focus_mode_histogram_names::kStartedWithTaskStatekHistogramName,
+      /*sample=*/
+      focus_mode_histogram_names::StartedWithTaskState::kPreviouslySelectedTask,
+      /*expected_count=*/1);
+}
+
 }  // namespace ash

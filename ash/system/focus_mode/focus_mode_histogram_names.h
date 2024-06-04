@@ -18,6 +18,8 @@ constexpr char kInitialDurationOnSessionStartsHistogramName[] =
     "Ash.FocusMode.StartSession.InitialDuration";
 constexpr char kStartSessionSourceHistogramName[] =
     "Ash.FocusMode.StartSession.ToggleSource";
+constexpr char kStartedWithTaskStatekHistogramName[] =
+    "Ash.FocusMode.StartSession.TaskState";
 
 // Histograms recorded during a session.
 constexpr char kToggleEndButtonDuringSessionHistogramName[] =
@@ -90,6 +92,22 @@ enum class EndingMomentBubbleClosedReason {
   kExtended = 1,  // Bubble was opened and minutes were added to the session.
   kOpended = 2,   // Bubble was opened but no action was taken.
   kMaxValue = kOpended,
+};
+
+// This enum is used for metrics, so enum values should not be changed. New enum
+// values can be added, but existing enums must never be renumbered or deleted
+// and reused.
+// This should be kept in sync with `FocusModeStartedWithTaskState` enum in
+// tools/metrics/histograms/metadata/ash/enums.xml.
+enum class StartedWithTaskState {
+  kNoTask = 0,  // Start a session without a selected task.
+  kPreviouslySelectedTask =
+      1,  // Start a session with a selected task which was selected in the
+          // previous focus session and hasn't been completed by the end of the
+          // previous session.
+  kNewlySelectedTask = 2,  // Start a session with a selected task which isn't
+                           // `kPreviouslySelectedTask` type.
+  kMaxValue = kNewlySelectedTask,
 };
 
 }  // namespace ash::focus_mode_histogram_names

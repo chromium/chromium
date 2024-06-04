@@ -425,7 +425,8 @@ void FocusModeController::StartFocusSession(
     focus_mode_histogram_names::ToggleSource source) {
   focus_mode_metrics_recorder_ =
       std::make_unique<FocusModeMetricsRecorder>(session_duration_);
-  focus_mode_metrics_recorder_->RecordHistogramsOnStart(source);
+  focus_mode_metrics_recorder_->RecordHistogramsOnStart(source,
+                                                        selected_task_.task_id);
   if (HasSelectedTask()) {
     focus_mode_metrics_recorder_->IncrementTasksSelectedCount();
   }
@@ -541,8 +542,8 @@ void FocusModeController::UpdateSelectedTaskFromUserPrefs() {
 
   // Get the selected task from the dict and also update `selected_task_` if
   // there is a task.
-  const auto selected_task_dict =
-      active_user_prefs->GetDict(prefs::kFocusModeSelectedTask).Clone();
+  const auto& selected_task_dict =
+      active_user_prefs->GetDict(prefs::kFocusModeSelectedTask);
   selected_task_ = {};
   if (!selected_task_dict.empty()) {
     // TODO(b/339914681): call the API to populate the rest of the

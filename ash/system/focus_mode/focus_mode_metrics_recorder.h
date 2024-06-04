@@ -27,7 +27,8 @@ class ASH_EXPORT FocusModeMetricsRecorder
   // message_center::MessageCenterObserver:
   void OnQuietModeChanged(bool in_quiet_mode) override;
 
-  void RecordHistogramsOnStart(focus_mode_histogram_names::ToggleSource source);
+  void RecordHistogramsOnStart(focus_mode_histogram_names::ToggleSource source,
+                               const std::string& selected_task_id);
 
   // Called by `FocusModeController::ResetFocusSession` to record the data on a
   // session completing.
