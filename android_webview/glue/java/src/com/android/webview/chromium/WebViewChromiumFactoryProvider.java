@@ -58,6 +58,7 @@ import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
+import org.chromium.base.version_info.Channel;
 import org.chromium.base.version_info.VersionConstants;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.NativeLibraries;
@@ -319,6 +320,10 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
             boolean useWebViewContext =
                     CommandLine.getInstance()
                             .hasSwitch(AwSwitches.WEBVIEW_USE_SEPARATE_RESOURCE_CONTEXT);
+            if (VersionConstants.CHANNEL == Channel.CANARY
+                    && Build.VERSION.SDK_INT <= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                useWebViewContext = true;
+            }
             if (useWebViewContext) {
                 try {
                     Context override =
