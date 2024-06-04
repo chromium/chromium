@@ -710,7 +710,7 @@ Button::Button(PressedCallback callback)
   // if one hasn't been set.
   InkDrop::Get(ink_drop_view_)->SetBaseColor(gfx::kPlaceholderColor);
 
-  SetAccessibilityProperties(ax::mojom::Role::kButton);
+  GetViewAccessibility().SetProperties(ax::mojom::Role::kButton);
 }
 
 void Button::RequestFocusFromEvent() {

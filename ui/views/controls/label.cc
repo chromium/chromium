@@ -1221,10 +1221,11 @@ void Label::Init(const std::u16string& text,
   UpdateFullTextElideBehavior();
   full_text_->SetDirectionalityMode(directionality_mode);
 
-  SetAccessibilityProperties(text_context_ == style::CONTEXT_DIALOG_TITLE
-                                 ? ax::mojom::Role::kTitleBar
-                                 : ax::mojom::Role::kStaticText,
-                             text);
+  GetViewAccessibility().SetProperties(
+      text_context_ == style::CONTEXT_DIALOG_TITLE
+          ? ax::mojom::Role::kTitleBar
+          : ax::mojom::Role::kStaticText,
+      text);
 
   SetText(text);
 

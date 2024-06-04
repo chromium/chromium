@@ -23,6 +23,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/text_constants.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -90,7 +91,7 @@ class MediaLabelButton : public views::Button {
                    ui::ColorId text_color_id,
                    ui::ColorId focus_ring_color_id)
       : views::Button(PressedCallback()) {
-    SetAccessibilityProperties(
+    GetViewAccessibility().SetProperties(
         ax::mojom::Role::kLabelText,
         l10n_util::GetStringUTF16(
             IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_LABEL));

@@ -11,6 +11,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/menu/menu_config.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -20,7 +21,7 @@
 namespace views {
 
 MenuSeparator::MenuSeparator(ui::MenuSeparatorType type) : type_(type) {
-  SetAccessibilityProperties(ax::mojom::Role::kSplitter);
+  GetViewAccessibility().SetProperties(ax::mojom::Role::kSplitter);
 }
 
 void MenuSeparator::OnPaint(gfx::Canvas* canvas) {

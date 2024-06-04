@@ -31,7 +31,7 @@ Link::Link(const std::u16string& title, int text_context, int text_style)
   enabled_changed_subscription_ = AddEnabledChangedCallback(
       base::BindRepeating(&Link::RecalculateFont, base::Unretained(this)));
 
-  SetAccessibilityProperties(ax::mojom::Role::kLink, title);
+  GetViewAccessibility().SetProperties(ax::mojom::Role::kLink, title);
   // Prevent invisible links from being announced by screen reader.
   GetViewAccessibility().SetIsIgnored(title.empty());
 

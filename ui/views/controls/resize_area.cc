@@ -8,12 +8,13 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/resize_area_delegate.h"
 
 namespace views {
 
 ResizeArea::ResizeArea(ResizeAreaDelegate* delegate) : delegate_(delegate) {
-  SetAccessibilityProperties(ax::mojom::Role::kSplitter);
+  GetViewAccessibility().SetProperties(ax::mojom::Role::kSplitter);
 }
 
 ResizeArea::~ResizeArea() = default;

@@ -13,6 +13,7 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/bubble/info_bubble.h"
 #include "ui/views/controls/focus_ring.h"
@@ -41,7 +42,7 @@ TooltipIcon::TooltipIcon(const std::u16string& tooltip, int tooltip_icon_size)
   // altering the bubble's layout when shown. As such, have it behave like
   // static text for screenreader users, since that's the role it serves here
   // anyway.
-  SetAccessibilityProperties(ax::mojom::Role::kStaticText, tooltip_);
+  GetViewAccessibility().SetProperties(ax::mojom::Role::kStaticText, tooltip_);
 }
 
 TooltipIcon::~TooltipIcon() {

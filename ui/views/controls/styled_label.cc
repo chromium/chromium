@@ -84,9 +84,10 @@ struct StyledLabel::LayoutViews {
 };
 
 StyledLabel::StyledLabel() {
-  SetAccessibilityProperties(text_context_ == style::CONTEXT_DIALOG_TITLE
-                                 ? ax::mojom::Role::kTitleBar
-                                 : ax::mojom::Role::kStaticText);
+  GetViewAccessibility().SetProperties(text_context_ ==
+                                               style::CONTEXT_DIALOG_TITLE
+                                           ? ax::mojom::Role::kTitleBar
+                                           : ax::mojom::Role::kStaticText);
 }
 
 StyledLabel::~StyledLabel() = default;

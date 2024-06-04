@@ -171,7 +171,7 @@ Combobox::Combobox(ui::ComboboxModel* model) {
   views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
                                                 GetCornerRadius());
 
-  SetAccessibilityProperties(ax::mojom::Role::kComboBoxSelect);
+  GetViewAccessibility().SetProperties(ax::mojom::Role::kComboBoxSelect);
 }
 
 Combobox::~Combobox() {

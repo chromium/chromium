@@ -8,6 +8,7 @@
 
 #include "ash/style/radio_button.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 namespace ash {
 
@@ -17,7 +18,7 @@ RadioButtonGroup::RadioButtonGroup(int group_width)
     : OptionButtonGroup(group_width),
       icon_direction_(RadioButton::IconDirection::kLeading),
       icon_type_(RadioButton::IconType::kCircle) {
-  SetAccessibilityProperties(ax::mojom::Role::kRadioGroup);
+  GetViewAccessibility().SetProperties(ax::mojom::Role::kRadioGroup);
 }
 
 RadioButtonGroup::RadioButtonGroup(int group_width,
@@ -34,7 +35,7 @@ RadioButtonGroup::RadioButtonGroup(int group_width,
                         image_label_spacing),
       icon_direction_(icon_direction),
       icon_type_(icon_type) {
-  SetAccessibilityProperties(ax::mojom::Role::kRadioGroup);
+  GetViewAccessibility().SetProperties(ax::mojom::Role::kRadioGroup);
 }
 
 RadioButtonGroup::~RadioButtonGroup() = default;

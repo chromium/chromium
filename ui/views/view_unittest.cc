@@ -373,7 +373,7 @@ class A11yTestView : public TestView {
   METADATA_HEADER(A11yTestView, TestView)
 
  public:
-  // Convenience constructor to test `View::SetAccessibilityProperties`
+  // Convenience constructor to test `ViewAccessibility::SetProperties`
   explicit A11yTestView(
       std::optional<ax::mojom::Role> role = std::nullopt,
       std::optional<std::u16string> name = std::nullopt,
@@ -382,7 +382,7 @@ class A11yTestView : public TestView {
       std::optional<ax::mojom::NameFrom> name_from = std::nullopt,
       std::optional<ax::mojom::DescriptionFrom> description_from =
           std::nullopt) {
-    SetAccessibilityProperties(
+    GetViewAccessibility().SetProperties(
         std::move(role), std::move(name), std::move(description),
         std::move(role_description), std::move(name_from),
         std::move(description_from));
@@ -535,9 +535,10 @@ TEST_F(ViewTest, PauseAccessibilityEvents) {
   EXPECT_EQ(v.last_a11y_event_, ax::mojom::Event::kNone);
   EXPECT_EQ(v.GetViewAccessibility().pause_accessibility_events_, true);
 
-  // A11yTestView views are constructed using `SetAccessibilityProperties`. By
-  // default, `pause_accessibility_events_` is false. It is temporarily set to
-  // true and then reset at the end of initialization.
+  // A11yTestView views are constructed using
+  // `ViewAccessibility::SetProperties`. By default,
+  // `pause_accessibility_events_` is false. It is temporarily set to true and
+  // then reset at the end of initialization.
   A11yTestView ax_v(ax::mojom::Role::kButton, u"Name", u"Description");
   EXPECT_EQ(ax_v.last_a11y_event_, ax::mojom::Event::kNone);
   EXPECT_EQ(ax_v.GetViewAccessibility().pause_accessibility_events_, false);
@@ -564,8 +565,8 @@ TEST_F(ViewTest, SetAccessibilityPropertiesRoleNameDescription) {
             ax::mojom::DescriptionFrom::kAriaDescription);
 
   // There should not be any accessibility events fired when properties are
-  // set within `SetAccessibilityProperties`. For the above properties, the only
-  // event type is `kTextChanged`.
+  // set within `ViewAccessibility::SetProperties`. For the above properties,
+  // the only event type is `kTextChanged`.
   EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kTextChanged, &v), 0);
 
   // Setting the accessible name after initialization should result in an event
@@ -597,8 +598,8 @@ TEST_F(ViewTest, SetAccessibilityPropertiesRoleNameDescriptionDetailed) {
             ax::mojom::DescriptionFrom::kTitle);
 
   // There should not be any accessibility events fired when properties are
-  // set within `SetAccessibilityProperties`. For the above properties, the only
-  // event type is `kTextChanged`.
+  // set within `ViewAccessibility::SetProperties`. For the above properties,
+  // the only event type is `kTextChanged`.
   EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kTextChanged, &v), 0);
 
   // Setting the accessible name after initialization should result in an event
@@ -626,8 +627,8 @@ TEST_F(ViewTest, SetAccessibilityPropertiesRoleRolenameNameDescription) {
             u"Description");
 
   // There should not be any accessibility events fired when properties are
-  // set within `SetAccessibilityProperties`. For the above properties, the only
-  // event type is `kTextChanged`.
+  // set within `ViewAccessibility::SetProperties`. For the above properties,
+  // the only event type is `kTextChanged`.
   EXPECT_EQ(ax_counter.GetCount(ax::mojom::Event::kTextChanged, &v), 0);
 
   // Setting the accessible name after initialization should result in an event

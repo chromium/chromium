@@ -97,7 +97,7 @@ class ComboboxMenuOption : public RadioButton {
     // pressed option will get selected for the combobox. For this reason, for
     // accessibility, treat the menu option as a list box option instead of
     // radio button.
-    SetAccessibilityProperties(ax::mojom::Role::kListBoxOption);
+    GetViewAccessibility().SetProperties(ax::mojom::Role::kListBoxOption);
   }
 
   // RadioButton:
@@ -129,7 +129,7 @@ class ComboboxMenuOptionGroup : public RadioButtonGroup {
                          RadioButton::IconType::kCheck,
                          kMenuItemInnerPadding,
                          kCheckmarkLabelSpacing) {
-    SetAccessibilityProperties(ax::mojom::Role::kListBox);
+    GetViewAccessibility().SetProperties(ax::mojom::Role::kListBox);
   }
 
   // RadioButtonGroup:
@@ -386,7 +386,7 @@ Combobox::Combobox(ui::ComboboxModel* model)
   // `ax::mojom::Role::kComboBox` is for UI elements with a dropdown and
   // an editable text field, which `views::Combobox` does not have. Use
   // `ax::mojom::Role::kPopUpButton` to match an HTML <select> element.
-  SetAccessibilityProperties(ax::mojom::Role::kPopUpButton);
+  GetViewAccessibility().SetProperties(ax::mojom::Role::kPopUpButton);
 }
 
 Combobox::~Combobox() = default;

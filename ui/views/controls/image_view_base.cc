@@ -15,7 +15,7 @@
 namespace views {
 
 ImageViewBase::ImageViewBase() {
-  SetAccessibilityProperties(ax::mojom::Role::kImage);
+  GetViewAccessibility().SetProperties(ax::mojom::Role::kImage);
 
   // The role of an object should not change over its lifetime. Therefore,
   // rather than changing the role to `kNone` when there is no presentable

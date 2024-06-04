@@ -12,6 +12,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/vector_icons.h"
 
 namespace ash {
@@ -32,7 +33,7 @@ RadioButton::RadioButton(int button_width,
                        image_label_spacing),
       icon_direction_(icon_direction),
       icon_type_(icon_type) {
-  SetAccessibilityProperties(ax::mojom::Role::kRadioButton);
+  GetViewAccessibility().SetProperties(ax::mojom::Role::kRadioButton);
 }
 
 RadioButton::~RadioButton() = default;

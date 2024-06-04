@@ -70,7 +70,7 @@ GameDashboardWelcomeDialog::GameDashboardWelcomeDialog() {
       this, SystemShadow::Type::kElevation12);
   shadow_->SetRoundedCornerRadius(kDialogCornerRadius);
 
-  SetAccessibilityProperties(
+  GetViewAccessibility().SetProperties(
       ax::mojom::Role::kDialog,
       l10n_util::GetStringUTF16(
           IDS_ASH_GAME_DASHBOARD_WELCOME_DIALOG_A11Y_LABEL));

@@ -24,6 +24,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/text_constants.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/focus_ring.h"
@@ -71,7 +72,8 @@ class SeeAllButton : public views::LabelButton {
     SetTextColorId(views::Button::STATE_NORMAL, cros_tokens::kCrosSysOnSurface);
     TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
                                           *label());
-    SetAccessibilityProperties(ax::mojom::Role::kLink, see_all_accessible_name);
+    GetViewAccessibility().SetProperties(ax::mojom::Role::kLink,
+                                         see_all_accessible_name);
     views::FocusRing::Get(this)->SetColorId(cros_tokens::kCrosSysFocusRing);
   }
 

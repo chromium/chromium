@@ -80,7 +80,7 @@ class CheckboxMenuOptionGroup : public CheckboxGroup {
                       0,
                       kMenuItemInnerPadding,
                       kCheckmarkLabelSpacing) {
-    SetAccessibilityProperties(ax::mojom::Role::kListBox);
+    GetViewAccessibility().SetProperties(ax::mojom::Role::kListBox);
   }
 
   // CheckboxGroup:
@@ -304,7 +304,7 @@ DropDownCheckbox::DropDownCheckbox(const std::u16string& title,
 
   event_handler_ = std::make_unique<EventHandler>(this);
 
-  SetAccessibilityProperties(ax::mojom::Role::kPopUpButton);
+  GetViewAccessibility().SetProperties(ax::mojom::Role::kPopUpButton);
 }
 
 DropDownCheckbox::~DropDownCheckbox() = default;
