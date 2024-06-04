@@ -180,9 +180,7 @@ void InputDeviceFactoryEvdev::AttachInputDevice(
                               base::Unretained(this)));
     }
 
-    if ((converter->type() == InputDeviceType::INPUT_DEVICE_USB ||
-         converter->type() == InputDeviceType::INPUT_DEVICE_BLUETOOTH) &&
-        (converter->HasKeyboard() || converter->HasMouse())) {
+    if (converter->HasKeyboard() || converter->HasMouse()) {
       converter->SetReceivedValidInputCallback(base::BindRepeating(
           &InputDeviceFactoryEvdev::UpdateDevicesOnImposterOverride,
           base::Unretained(this)));
