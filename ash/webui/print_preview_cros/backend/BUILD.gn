@@ -10,6 +10,8 @@ static_library("backend") {
   sources = [
     "destination_provider.cc",
     "destination_provider.h",
+    "pdf_printer_handler.cc",
+    "pdf_printer_handler.h",
   ]
 
   deps = [

@@ -42,7 +42,10 @@ source_set("url_constants") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "backend/destination_provider_unittest.cc" ]
+  sources = [
+    "backend/destination_provider_unittest.cc",
+    "backend/pdf_printer_handler_unittest.cc",
+  ]
 
   deps = [
     ":print_preview_cros",

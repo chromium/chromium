@@ -50,10 +50,10 @@ TEST_F(DestinationProviderTest, FetchPdfCapabilities) {
       FetchCapabilities(destination_id, ::printing::mojom::PrinterType::kPdf);
 
   EXPECT_EQ(destination_id, caps->destination_id);
-  EXPECT_EQ(3u, caps->page_orientation->options.size());
-  EXPECT_EQ(1u, caps->color->options.size());
-  EXPECT_EQ(1u, caps->media_size->options.size());
-  EXPECT_EQ(1u, caps->dpi->options.size());
+  EXPECT_FALSE(caps->page_orientation->options.empty());
+  EXPECT_FALSE(caps->color->options.empty());
+  EXPECT_FALSE(caps->media_size->options.empty());
+  EXPECT_FALSE(caps->dpi->options.empty());
 }
 
 }  // namespace ash::printing::print_preview

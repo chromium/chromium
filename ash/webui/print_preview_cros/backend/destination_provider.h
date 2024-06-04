@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "ash/webui/print_preview_cros/backend/pdf_printer_handler.h"
 #include "ash/webui/print_preview_cros/mojom/destination_provider.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -33,6 +34,9 @@ class DestinationProvider : public mojom::DestinationProvider {
   // Receives and dispatches method calls to this implementation of the
   // mojom::DestinationProvider interface.
   mojo::Receiver<mojom::DestinationProvider> receiver_{this};
+
+  // Handles PDF type print requests.
+  PdfPrinterHandler pdf_printer_handler_;
 };
 
 }  // namespace ash::printing::print_preview
