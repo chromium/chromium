@@ -66,6 +66,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Windows.DisplayIdFromDeviceId" enum="DisplayIdResult"
+    expires_after="2025-05-31">
+  <owner>msw@google.com</owner>
+  <owner>btriebw@google.com</owner>
+  <summary>
+    Records the result of deriving a display ID from DISPLAY_DEVICE::DeviceId.
+    Recorded once for each monitor detected by the OS during startup of chrome
+    and after any monitor topology changes (addition/removal) thereafter.
+  </summary>
+</histogram>
+
+<histogram name="Windows.DisplayIdFromDeviceKey" enum="DisplayIdResult"
+    expires_after="2025-05-31">
+  <owner>msw@google.com</owner>
+  <owner>btriebw@google.com</owner>
+  <summary>
+    Records the result of deriving a display ID from DISPLAY_DEVICE::DeviceKey.
+    Recorded once for each monitor detected by the OS during startup of chrome
+    and after any monitor topology changes (addition/removal) thereafter.
+  </summary>
+</histogram>
+
 <histogram name="Windows.Enclave.{Type}.Available" enum="BooleanAvailable"
     expires_after="2024-11-17">
   <owner>ajgo@chromium.org</owner>

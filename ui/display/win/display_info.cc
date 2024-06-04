@@ -51,9 +51,9 @@ DisplayInfo::~DisplayInfo() = default;
 
 // static
 int64_t DisplayInfo::DisplayIdFromMonitorInfo(const MONITORINFOEX& monitor) {
-  // Derive a display ID from the monitor adapter ID per-adapter monitor ID.
-  // This provides better ID stability when adding/removing displays vs
-  // MONITORINFOEX::szDevice which can cause subtle unexpected behavior.
+  // Derive a display ID from the adapter ID and per-adapter monitor ID.
+  // This seems to be broadly available, unique for each monitor of the device,
+  // and stable across display configuration changes, but not device restarts.
   std::optional<DISPLAYCONFIG_PATH_INFO> config_path =
       GetDisplayConfigPathInfo(monitor);
   // Record if DISPLAYCONFIG_PATH_INFO is available or not.
@@ -65,6 +65,10 @@ int64_t DisplayInfo::DisplayIdFromMonitorInfo(const MONITORINFOEX& monitor) {
         config_path->targetInfo.adapterId.HighPart,
         config_path->targetInfo.id)));
   }
+  // MONITORINFOEX::szDevice is a plausible backup with some notable drawbacks.
+  // This value (e.g. "\\.\DISPLAY1") may change when adding/removing displays,
+  // and even be reassigned between physical monitors during those changes,
+  // which can cause subtle unexpected behavior.
   return static_cast<int64_t>(
       base::PersistentHash(base::WideToUTF8(monitor.szDevice)));
 }

@@ -16,6 +16,7 @@
 #include "base/debug/alias.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/hash/hash.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
@@ -85,6 +86,7 @@ float GetMonitorScaleFactor(HMONITOR monitor,
 // Gets a user-friendly name for a given display using EDID data. Returns an
 // empty string if the provided path is unset/nullopt or EDID data is not
 // available for the device.
+// TODO(crbug.com/343872357): Check additional data sources when this is empty.
 std::string GetFriendlyDeviceName(
     const std::optional<DISPLAYCONFIG_PATH_INFO>& path) {
   if (!path)
@@ -120,7 +122,8 @@ DISPLAYCONFIG_VIDEO_OUTPUT_TECHNOLOGY GetOutputTechnology(
   return DISPLAYCONFIG_OUTPUT_TECHNOLOGY_OTHER;
 }
 
-// Returns true if |tech| represents an internal display (eg. a laptop screen).
+// Returns true if |tech| represents an internal display (e.g. a laptop screen).
+// DISPLAYCONFIG_TOPOLOGY_ID could be a more directly comparable data source.
 bool IsInternalOutputTechnology(DISPLAYCONFIG_VIDEO_OUTPUT_TECHNOLOGY tech) {
   switch (tech) {
     case DISPLAYCONFIG_OUTPUT_TECHNOLOGY_INTERNAL:
@@ -435,32 +438,86 @@ std::optional<gfx::Vector2dF> GetMonitorPixelsPerInch(HMONITOR monitor) {
   return std::nullopt;
 }
 
-BOOL CALLBACK EnumMonitorForDisplayInfoCallback(HMONITOR monitor,
-                                                HDC hdc,
-                                                LPRECT rect,
-                                                LPARAM data) {
-  const MONITORINFOEX monitor_info = MonitorInfoFromHMONITOR(monitor);
-  const auto display_settings =
-      GetDisplaySettingsForDevice(monitor_info.szDevice);
-  const gfx::Vector2dF pixels_per_inch =
-      GetMonitorPixelsPerInch(monitor).value_or(
-          GetDefaultMonitorPhysicalPixelsPerInch());
-  const auto path_info = GetDisplayConfigPathInfo(monitor);
-
-  auto* display_infos =
-      reinterpret_cast<std::vector<internal::DisplayInfo>*>(data);
-  DCHECK(display_infos);
-  display_infos->emplace_back(
-      monitor_info, GetMonitorScaleFactor(monitor), GetSDRWhiteLevel(path_info),
-      display_settings.rotation, display_settings.frequency, pixels_per_inch,
-      GetOutputTechnology(path_info), GetFriendlyDeviceName(path_info));
+BOOL CALLBACK EnumDisplayMonitorsCallback(HMONITOR monitor,
+                                          HDC hdc,
+                                          LPRECT rect,
+                                          LPARAM data) {
+  reinterpret_cast<std::vector<HMONITOR>*>(data)->push_back(monitor);
   return TRUE;
 }
 
 std::vector<internal::DisplayInfo> GetDisplayInfosFromSystem() {
+  std::vector<HMONITOR> monitors;
+  EnumDisplayMonitors(nullptr, nullptr, EnumDisplayMonitorsCallback,
+                      reinterpret_cast<LPARAM>(&monitors));
+
   std::vector<internal::DisplayInfo> display_infos;
-  EnumDisplayMonitors(nullptr, nullptr, EnumMonitorForDisplayInfoCallback,
-                      reinterpret_cast<LPARAM>(&display_infos));
+  base::flat_set<int64_t> hashed_ids;
+  base::flat_set<int64_t> hashed_keys;
+  for (HMONITOR monitor : monitors) {
+    const MONITORINFOEX monitor_info = MonitorInfoFromHMONITOR(monitor);
+    const auto display_settings =
+        GetDisplaySettingsForDevice(monitor_info.szDevice);
+    const gfx::Vector2dF pixels_per_inch =
+        GetMonitorPixelsPerInch(monitor).value_or(
+            GetDefaultMonitorPhysicalPixelsPerInch());
+    const auto path_info = GetDisplayConfigPathInfo(monitor);
+    display_infos.emplace_back(
+        monitor_info, GetMonitorScaleFactor(monitor),
+        GetSDRWhiteLevel(path_info), display_settings.rotation,
+        display_settings.frequency, pixels_per_inch,
+        GetOutputTechnology(path_info), GetFriendlyDeviceName(path_info));
+
+    // Gauge ids derived from DISPLAY_DEVICE's DeviceID and DeviceKey.
+    // TODO(crbug.com/40233353): Derive more stable and sufficiently unique ids.
+    DISPLAY_DEVICE device;
+    device.cb = sizeof(device);
+
+    // Results from id derivation techniques. These values are persisted to
+    // logs. Entries should not be renumbered and numeric values should never be
+    // reused.
+    enum class DisplayIdResult {
+      kError = 0,
+      kEmpty = 1,
+      kConflict = 2,
+      kValid = 3,
+      kMaxValue = kValid,
+    };
+    DisplayIdResult id_result = DisplayIdResult::kValid;
+    DisplayIdResult key_result = DisplayIdResult::kValid;
+    if (!EnumDisplayDevices(monitor_info.szDevice, 0, &device, 0)) {
+      id_result = DisplayIdResult::kError;
+      key_result = DisplayIdResult::kError;
+    } else {
+      if (base::WideToUTF8(device.DeviceID).empty()) {
+        id_result = DisplayIdResult::kEmpty;
+      } else {
+        const int64_t hashed_id = static_cast<int64_t>(
+            base::PersistentHash(base::as_byte_span(device.DeviceID)));
+        if (hashed_ids.contains(hashed_id)) {
+          id_result = DisplayIdResult::kConflict;
+        } else {
+          hashed_ids.insert(hashed_id);
+          id_result = DisplayIdResult::kValid;
+        }
+      }
+      if (base::WideToUTF8(device.DeviceKey).empty()) {
+        key_result = DisplayIdResult::kEmpty;
+      } else {
+        int64_t hashed_key = static_cast<int64_t>(
+            base::PersistentHash(base::as_byte_span(device.DeviceKey)));
+        if (hashed_keys.contains(hashed_key)) {
+          key_result = DisplayIdResult::kConflict;
+        } else {
+          hashed_keys.insert(hashed_key);
+          key_result = DisplayIdResult::kValid;
+        }
+      }
+    }
+    base::UmaHistogramEnumeration("Windows.DisplayIdFromDeviceId", id_result);
+    base::UmaHistogramEnumeration("Windows.DisplayIdFromDeviceKey", key_result);
+  }
+
   // Check that there are no duplicate display Ids generated.
   base::flat_set<int64_t> display_ids;
   for (const auto& display : display_infos) {

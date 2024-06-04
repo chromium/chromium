@@ -26,6 +26,13 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<enum name="DisplayIdResult">
+  <int value="0" label="Error">Error calling EnumDisplayDevices</int>
+  <int value="1" label="Empty">DISPLAY_DEVICE data was empty</int>
+  <int value="2" label="Conflict">Display ID conflict detected</int>
+  <int value="3" label="Valid">Display ID was not empty and unique</int>
+</enum>
+
 <enum name="IsPinnedToTaskbarResult">
   <int value="0" label="Not pinned"/>
   <int value="1" label="Pinned"/>
