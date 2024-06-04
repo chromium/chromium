@@ -307,6 +307,12 @@ public class SpannableAutocompleteEditTextModel implements AutocompleteEditTextM
                 retVal = mDelegate.super_dispatchKeyEvent(event);
             }
         } else {
+            if (event.getAction() == KeyEvent.ACTION_DOWN
+                    && event.getKeyCode() == KeyEvent.KEYCODE_FORWARD_DEL) {
+                // Delete key when there's no autocomplete suggestion. Use the normal behavior but
+                // inhibit suggestions.
+                mLastEditWasTyping = false;
+            }
             retVal = mDelegate.super_dispatchKeyEvent(event);
         }
 
