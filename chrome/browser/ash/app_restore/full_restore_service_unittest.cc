@@ -10,7 +10,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
-#include "ash/wm/window_restore/pine_contents_data.h"
+#include "ash/wm/window_restore/informed_restore_contents_data.h"
 #include "ash/wm/window_restore/window_restore_util.h"
 #include "base/command_line.h"
 #include "base/files/scoped_temp_dir.h"
@@ -111,7 +111,7 @@ class MockFullRestoreServiceDelegate : public FullRestoreService::Delegate {
 
   MOCK_METHOD(void,
               MaybeStartInformedRestoreOverviewSession,
-              (std::unique_ptr<ash::PineContentsData> contents_data),
+              (std::unique_ptr<ash::InformedRestoreContentsData> contents_data),
               (override));
   MOCK_METHOD(void, MaybeEndInformedRestoreOverviewSession, (), (override));
 };
@@ -1239,7 +1239,7 @@ TEST_F(ForestFullRestoreServiceTestHavingFullRestoreFile, Crash) {
   auto mock_delegate = std::make_unique<MockFullRestoreServiceDelegate>();
   EXPECT_CALL(*mock_delegate,
               MaybeStartInformedRestoreOverviewSession(testing::_))
-      .WillOnce([](std::unique_ptr<PineContentsData> data) {
+      .WillOnce([](std::unique_ptr<InformedRestoreContentsData> data) {
         ASSERT_TRUE(data);
         EXPECT_TRUE(data->last_session_crashed);
       });

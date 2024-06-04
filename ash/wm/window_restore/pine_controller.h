@@ -15,7 +15,7 @@
 
 namespace ash {
 
-struct PineContentsData;
+struct InformedRestoreContentsData;
 
 // Controls showing the pine dialog. Receives data from the full restore
 // service.
@@ -27,9 +27,9 @@ class ASH_EXPORT PineController : public OverviewObserver,
   PineController& operator=(const PineController&) = delete;
   ~PineController() override;
 
-  PineContentsData* pine_contents_data() { return pine_contents_data_.get(); }
-  const PineContentsData* pine_contents_data() const {
-    return pine_contents_data_.get();
+  InformedRestoreContentsData* contents_data() { return contents_data_.get(); }
+  const InformedRestoreContentsData* contents_data() const {
+    return contents_data_.get();
   }
 
   // Shows the onboarding message. If `restore_on` is true, only the
@@ -43,15 +43,15 @@ class ASH_EXPORT PineController : public OverviewObserver,
 
   // Starts an overview session with the pine contents view if certain
   // conditions are met. Triggered by developer accelerator or on login.
-  // `pine_contents_data` is stored in `pine_contents_data_` as we will support
+  // `contents_data` is stored in `contents_data_` as we will support
   // re-entering the pine session if no windows have opened for example. It will
   // be populated with a screenshot if possible and then referenced when an
   // overview pine session is entered.
   void MaybeStartPineOverviewSession(
-      std::unique_ptr<PineContentsData> pine_contents_data);
+      std::unique_ptr<InformedRestoreContentsData> contents_data);
 
   // Ends the overview session if it is active and deletes
-  // `pine_contents_data_`.
+  // `contents_data_`.
   void MaybeEndPineOverviewSession();
 
   // OverviewObserver:
@@ -64,7 +64,7 @@ class ASH_EXPORT PineController : public OverviewObserver,
                          aura::Window* lost_active) override;
 
  private:
-  friend class PineTestApi;
+  friend class InformedRestoreTestApi;
   FRIEND_TEST_ALL_PREFIXES(PineTest, OnboardingMetrics);
 
   // Callback function for when the pine image is finished decoding.
@@ -85,10 +85,10 @@ class ASH_EXPORT PineController : public OverviewObserver,
   // The first-time experience onboarding dialog.
   views::UniqueWidgetPtr onboarding_widget_;
 
-  // Stores the data needed to display the pine dialog. Created on login, and
+  // Stores the data needed to display the dialog. Created on login, and
   // deleted after the user interacts with the dialog. If the user exits
   // overview, this will persist until a window is opened.
-  std::unique_ptr<PineContentsData> pine_contents_data_;
+  std::unique_ptr<InformedRestoreContentsData> contents_data_;
 
   base::ScopedObservation<wm::ActivationClient, wm::ActivationChangeObserver>
       activation_change_observation_{this};

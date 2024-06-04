@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/window_restore/pine_contents_data.h"
+#include "ash/wm/window_restore/informed_restore_contents_data.h"
 
 namespace ash {
 
-PineContentsData::PineContentsData() = default;
+InformedRestoreContentsData::InformedRestoreContentsData() = default;
 
-PineContentsData::~PineContentsData() = default;
+InformedRestoreContentsData::~InformedRestoreContentsData() = default;
 
-PineContentsData::AppInfo::AppInfo(const std::string& app_id,
+InformedRestoreContentsData::AppInfo::AppInfo(const std::string& app_id,
                                    const std::string& title)
     : app_id(app_id), title(title) {}
 
-PineContentsData::AppInfo::AppInfo(const std::string& app_id,
+InformedRestoreContentsData::AppInfo::AppInfo(const std::string& app_id,
                                    const std::string& title,
                                    const std::vector<GURL>& tab_urls,
                                    const size_t tab_count,
@@ -25,8 +25,8 @@ PineContentsData::AppInfo::AppInfo(const std::string& app_id,
       tab_count(tab_count),
       lacros_profile_id(lacros_profile_id) {}
 
-PineContentsData::AppInfo::AppInfo(const AppInfo&) = default;
+InformedRestoreContentsData::AppInfo::AppInfo(const AppInfo&) = default;
 
-PineContentsData::AppInfo::~AppInfo() = default;
+InformedRestoreContentsData::AppInfo::~AppInfo() = default;
 
 }  // namespace ash

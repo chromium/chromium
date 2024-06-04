@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WM_WINDOW_RESTORE_PINE_CONTENTS_DATA_H_
-#define ASH_WM_WINDOW_RESTORE_PINE_CONTENTS_DATA_H_
+#ifndef ASH_WM_WINDOW_RESTORE_INFORMED_RESTORE_CONTENTS_DATA_H_
+#define ASH_WM_WINDOW_RESTORE_INFORMED_RESTORE_CONTENTS_DATA_H_
 
 #include <string>
 #include <vector>
@@ -15,13 +15,13 @@
 
 namespace ash {
 
-// Various data needed to populate the pine dialog.
-struct ASH_EXPORT PineContentsData {
+// Various data needed to populate the informed restore dialog.
+struct ASH_EXPORT InformedRestoreContentsData {
  public:
-  PineContentsData();
-  PineContentsData(const PineContentsData&) = delete;
-  PineContentsData& operator=(const PineContentsData&) = delete;
-  ~PineContentsData();
+  InformedRestoreContentsData();
+  InformedRestoreContentsData(const InformedRestoreContentsData&) = delete;
+  InformedRestoreContentsData& operator=(const InformedRestoreContentsData&) = delete;
+  ~InformedRestoreContentsData();
 
   struct AppInfo {
     explicit AppInfo(const std::string& id, const std::string& title);
@@ -57,15 +57,15 @@ struct ASH_EXPORT PineContentsData {
 
   using AppsInfos = std::vector<AppInfo>;
 
-  // Image read from the pine image file. Will be null if pine image file was
-  // missing or decoding failed.
+  // Image read from the image file. Will be null if image file was missing or
+  // decoding failed.
   gfx::ImageSkia image;
 
   // List of `AppInfo`'s. Each one representing an app window. There may be
   // multiple entries with the same app id.
   AppsInfos apps_infos;
 
-  // True if the previous session crashed. The pine dialog will have slightly
+  // True if the previous session crashed. The dialog will have slightly
   // different strings in this case.
   bool last_session_crashed = false;
 
@@ -76,4 +76,4 @@ struct ASH_EXPORT PineContentsData {
 
 }  // namespace ash
 
-#endif  // ASH_WM_WINDOW_RESTORE_PINE_CONTENTS_DATA_H_
+#endif  // ASH_WM_WINDOW_RESTORE_INFORMED_RESTORE_CONTENTS_DATA_H_

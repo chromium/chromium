@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/window_restore/pine_test_base.h"
+#include "ash/wm/window_restore/informed_restore_test_base.h"
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/ash_prefs.h"
@@ -18,16 +18,16 @@ constexpr char kTestUserEmail[] = "testuser@pine";
 
 }  // namespace
 
-PineTestBase::PineTestBase() = default;
+InformedRestoreTestBase::InformedRestoreTestBase() = default;
 
-PineTestBase::~PineTestBase() = default;
+InformedRestoreTestBase::~InformedRestoreTestBase() = default;
 
-PrefService* PineTestBase::GetTestPrefService() {
+PrefService* InformedRestoreTestBase::GetTestPrefService() {
   return GetSessionControllerClient()->GetUserPrefService(
       AccountId::FromUserEmail(kTestUserEmail));
 }
 
-void PineTestBase::SetUp() {
+void InformedRestoreTestBase::SetUp() {
   AshTestBase::SetUp();
 
   TestSessionControllerClient* session_controller =

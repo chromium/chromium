@@ -14,7 +14,7 @@
 namespace ash {
 
 PineItemsContainerView::PineItemsContainerView(
-    const PineContentsData::AppsInfos& apps_infos) {
+    const InformedRestoreContentsData::AppsInfos& apps_infos) {
   const int elements = static_cast<int>(apps_infos.size());
   CHECK_GT(elements, 0);
 
@@ -26,7 +26,7 @@ PineItemsContainerView::PineItemsContainerView(
   SetOrientation(views::BoxLayout::Orientation::kVertical);
 
   for (int i = 0; i < elements; ++i) {
-    const PineContentsData::AppInfo& app_info = apps_infos[i];
+    const InformedRestoreContentsData::AppInfo& app_info = apps_infos[i];
     // If there are more than four elements, we will need to save the last
     // space for the overflow view to condense the remaining info.
     if (elements > pine::kMaxItems && i >= pine::kOverflowMinThreshold) {

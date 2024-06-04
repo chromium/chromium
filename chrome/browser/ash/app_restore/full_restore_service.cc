@@ -15,7 +15,7 @@
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "ash/webui/settings/public/constants/setting.mojom-shared.h"
 #include "ash/wm/desks/templates/saved_desk_controller.h"
-#include "ash/wm/window_restore/pine_contents_data.h"
+#include "ash/wm/window_restore/informed_restore_contents_data.h"
 #include "ash/wm/window_restore/pine_controller.h"
 #include "ash/wm/window_restore/window_restore_util.h"
 #include "base/barrier_callback.h"
@@ -146,7 +146,7 @@ class DelegateImpl : public FullRestoreService::Delegate {
   ~DelegateImpl() override = default;
 
   void MaybeStartInformedRestoreOverviewSession(
-      std::unique_ptr<PineContentsData> contents_data) override {
+      std::unique_ptr<InformedRestoreContentsData> contents_data) override {
     // A unit test that does not override this default delegate may not have ash
     // shell.
     if (Shell::HasInstance()) {
@@ -740,7 +740,7 @@ void FullRestoreService::OnSessionInformationReceived(
     ::app_restore::RestoreData* restore_data,
     const SessionWindowsMap& session_windows_map,
     bool last_session_crashed) {
-  auto contents_data = std::make_unique<PineContentsData>();
+  auto contents_data = std::make_unique<InformedRestoreContentsData>();
   contents_data->last_session_crashed = last_session_crashed;
 
   contents_data->restore_callback = base::BindOnce(

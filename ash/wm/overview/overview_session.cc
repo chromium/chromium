@@ -1667,10 +1667,10 @@ void OverviewSession::OnSplitViewStateChanged(
     return;
   }
 
-  // Entering or exiting splitview is unexpected behavior in a pine overview
-  // session.
+  // Entering or exiting splitview is unexpected behavior in an informed restore
+  // overview session.
   if (IsForestFeatureEnabled()) {
-    CHECK(!Shell::Get()->pine_controller()->pine_contents_data());
+    CHECK(!Shell::Get()->pine_controller()->contents_data());
   }
 
   UpdateNoWindowsWidgetOnEachGrid(/*animate=*/false,

@@ -15,11 +15,11 @@
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_grid_test_api.h"
 #include "ash/wm/overview/overview_test_util.h"
+#include "ash/wm/window_restore/informed_restore_contents_data.h"
+#include "ash/wm/window_restore/informed_restore_test_api.h"
 #include "ash/wm/window_restore/pine_constants.h"
-#include "ash/wm/window_restore/pine_contents_data.h"
 #include "ash/wm/window_restore/pine_contents_view.h"
 #include "ash/wm/window_restore/pine_controller.h"
-#include "ash/wm/window_restore/pine_test_api.h"
 #include "ash/wm/window_restore/window_restore_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -432,11 +432,11 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, TabInfoWithinLimit) {
 
   // The informed restore dialog is built based on the values in this data
   // structure.
-  const PineContentsData* pine_contents_data =
-      Shell::Get()->pine_controller()->pine_contents_data();
-  ASSERT_TRUE(pine_contents_data);
-  const PineContentsData::AppsInfos& apps_infos =
-      pine_contents_data->apps_infos;
+  const InformedRestoreContentsData* contents_data =
+      Shell::Get()->pine_controller()->contents_data();
+  ASSERT_TRUE(contents_data);
+  const InformedRestoreContentsData::AppsInfos& apps_infos =
+      contents_data->apps_infos;
 
   ASSERT_EQ(1u, apps_infos.size());
   ASSERT_EQ(5u, apps_infos[0].tab_urls.size());
@@ -484,14 +484,14 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, TabInfoOutsideLimit) {
 
   // The informed restore dialog is built based on the values in this data
   // structure.
-  const PineContentsData* pine_contents_data =
-      Shell::Get()->pine_controller()->pine_contents_data();
-  ASSERT_TRUE(pine_contents_data);
-  const PineContentsData::AppsInfos& apps_infos =
-      pine_contents_data->apps_infos;
+  const InformedRestoreContentsData* contents_data =
+      Shell::Get()->pine_controller()->contents_data();
+  ASSERT_TRUE(contents_data);
+  const InformedRestoreContentsData::AppsInfos& apps_infos =
+      contents_data->apps_infos;
 
   // Even though there were seven tabs, we limit the number of tab URLs to five
-  // before `PineContentsData` is created.
+  // before `InformedRestoreContentsData` is created.
   ASSERT_EQ(1u, apps_infos.size());
   ASSERT_EQ(5u, apps_infos[0].tab_urls.size());
 
@@ -536,11 +536,11 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, AppInfo) {
 
   // The informed restore dialog is built based on the values in this data
   // structure.
-  const PineContentsData* pine_contents_data =
-      Shell::Get()->pine_controller()->pine_contents_data();
-  ASSERT_TRUE(pine_contents_data);
-  const PineContentsData::AppsInfos& apps_infos =
-      pine_contents_data->apps_infos;
+  const InformedRestoreContentsData* contents_data =
+      Shell::Get()->pine_controller()->contents_data();
+  ASSERT_TRUE(contents_data);
+  const InformedRestoreContentsData::AppsInfos& apps_infos =
+      contents_data->apps_infos;
 
   // The Camera app should appear first, and the rest of the apps should appear
   // in the reverse of the order they were created. We can check each entry
@@ -576,12 +576,12 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, ReenterOverviewPineSession) {
   WaitForOverviewEnterAnimation();
   ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
   EXPECT_TRUE(GetPineDialogRestoreButton());
-  EXPECT_TRUE(Shell::Get()->pine_controller()->pine_contents_data());
+  EXPECT_TRUE(Shell::Get()->pine_controller()->contents_data());
 
   // Exit overview without clicking restore or cancel.
   ToggleOverview();
   WaitForOverviewExitAnimation();
-  EXPECT_TRUE(Shell::Get()->pine_controller()->pine_contents_data());
+  EXPECT_TRUE(Shell::Get()->pine_controller()->contents_data());
 
   // Reenter overview. Test that the dialog is still visible.
   ToggleOverview();
@@ -596,7 +596,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, ReenterOverviewPineSession) {
   ASSERT_TRUE(Shell::Get()->accelerator_controller()->PerformActionIfEnabled(
       AcceleratorAction::kNewWindow, {}));
   waiter.Wait();
-  EXPECT_FALSE(Shell::Get()->pine_controller()->pine_contents_data());
+  EXPECT_FALSE(Shell::Get()->pine_controller()->contents_data());
 
   // Reentering overview this time should not show the dialog.
   ToggleOverview();
@@ -614,13 +614,13 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_RestoreOff) {
 // Tests that when Restore is off, we show the onboarding dialog.
 IN_PROC_BROWSER_TEST_F(InformedRestoreTest, RestoreOff) {
   // The first time after rebooting, we show the onboarding dialog.
-  auto* onboarding_dialog = PineTestApi().GetOnboardingDialog();
+  auto* onboarding_dialog = InformedRestoreTestApi().GetOnboardingDialog();
   ASSERT_TRUE(onboarding_dialog);
 
   // Press the accept button.
   test::Click(onboarding_dialog->GetAcceptButtonForTesting(), /*flag=*/0);
   views::test::WidgetDestroyedWaiter(onboarding_dialog->GetWidget()).Wait();
-  EXPECT_FALSE(PineTestApi().GetOnboardingDialog());
+  EXPECT_FALSE(InformedRestoreTestApi().GetOnboardingDialog());
 
   // Verify we do not enter overview.
   EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
@@ -642,13 +642,13 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_NoRestoreData) {
 // show the onboarding dialog.
 IN_PROC_BROWSER_TEST_F(InformedRestoreTest, NoRestoreData) {
   // The first time after rebooting, we show the onboarding dialog.
-  auto* onboarding_dialog = PineTestApi().GetOnboardingDialog();
+  auto* onboarding_dialog = InformedRestoreTestApi().GetOnboardingDialog();
   ASSERT_TRUE(onboarding_dialog);
 
   // Press the accept button.
   test::Click(onboarding_dialog->GetAcceptButtonForTesting(), /*flag=*/0);
   views::test::WidgetDestroyedWaiter(onboarding_dialog->GetWidget()).Wait();
-  EXPECT_FALSE(PineTestApi().GetOnboardingDialog());
+  EXPECT_FALSE(InformedRestoreTestApi().GetOnboardingDialog());
 
   // Verify we do not enter overview.
   EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
@@ -673,13 +673,13 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_Onboarding) {
 // show the onboarding dialog.
 IN_PROC_BROWSER_TEST_F(InformedRestoreTest, Onboarding) {
   // The first time after rebooting, we show the onboarding dialog.
-  auto* onboarding_dialog = PineTestApi().GetOnboardingDialog();
+  auto* onboarding_dialog = InformedRestoreTestApi().GetOnboardingDialog();
   ASSERT_TRUE(onboarding_dialog);
 
   // Press the accept button.
   test::Click(onboarding_dialog->GetAcceptButtonForTesting(), /*flag=*/0);
   views::test::WidgetDestroyedWaiter(onboarding_dialog->GetWidget()).Wait();
-  EXPECT_FALSE(PineTestApi().GetOnboardingDialog());
+  EXPECT_FALSE(InformedRestoreTestApi().GetOnboardingDialog());
 
   // Verify we have entered overview. The restore button will be null if
   // we failed to enter overview.
@@ -697,7 +697,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, Onboarding) {
   // don't show it again.
   Shell::Get()->pine_controller()->MaybeShowPineOnboardingMessage(
       /*restore_on=*/true);
-  EXPECT_FALSE(PineTestApi().GetOnboardingDialog());
+  EXPECT_FALSE(InformedRestoreTestApi().GetOnboardingDialog());
 }
 
 }  // namespace ash::full_restore

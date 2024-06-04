@@ -31,7 +31,7 @@ constexpr gfx::Size kOverflowCountPreferredSize(18, 18);
 }  // namespace
 
 PineItemsOverflowView::PineItemsOverflowView(
-    const PineContentsData::AppsInfos& apps_infos) {
+    const InformedRestoreContentsData::AppsInfos& apps_infos) {
   const int num_elements = static_cast<int>(apps_infos.size());
   CHECK_GT(num_elements, pine::kMaxItems);
 

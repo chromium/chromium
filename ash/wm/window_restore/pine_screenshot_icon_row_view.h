@@ -6,7 +6,7 @@
 #define ASH_WM_WINDOW_RESTORE_PINE_SCREENSHOT_ICON_ROW_VIEW_H_
 
 #include "ash/ash_export.h"
-#include "ash/wm/window_restore/pine_contents_data.h"
+#include "ash/wm/window_restore/informed_restore_contents_data.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/box_layout_view.h"
 
@@ -24,7 +24,7 @@ class ASH_EXPORT PineScreenshotIconRowView : public views::BoxLayoutView {
 
  public:
   explicit PineScreenshotIconRowView(
-      const PineContentsData::AppsInfos& apps_infos);
+      const InformedRestoreContentsData::AppsInfos& apps_infos);
   PineScreenshotIconRowView(const PineScreenshotIconRowView&) = delete;
   PineScreenshotIconRowView& operator=(const PineScreenshotIconRowView&) =
       delete;

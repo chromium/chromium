@@ -5,7 +5,7 @@
 #ifndef ASH_WM_WINDOW_RESTORE_PINE_ITEMS_CONTAINER_VIEW_H_
 #define ASH_WM_WINDOW_RESTORE_PINE_ITEMS_CONTAINER_VIEW_H_
 
-#include "ash/wm/window_restore/pine_contents_data.h"
+#include "ash/wm/window_restore/informed_restore_contents_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/layout/box_layout_view.h"
 
@@ -19,7 +19,7 @@ class PineItemsContainerView : public views::BoxLayoutView {
 
  public:
   explicit PineItemsContainerView(
-      const PineContentsData::AppsInfos& apps_infos);
+      const InformedRestoreContentsData::AppsInfos& apps_infos);
   PineItemsContainerView(const PineItemsContainerView&) = delete;
   PineItemsContainerView& operator=(const PineItemsContainerView&) = delete;
   ~PineItemsContainerView() override = default;

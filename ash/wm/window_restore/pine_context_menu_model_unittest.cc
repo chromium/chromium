@@ -14,11 +14,11 @@
 #include "ash/wm/overview/overview_grid_test_api.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_test_util.h"
-#include "ash/wm/window_restore/pine_contents_data.h"
+#include "ash/wm/window_restore/informed_restore_contents_data.h"
+#include "ash/wm/window_restore/informed_restore_test_base.h"
 #include "ash/wm/window_restore/pine_contents_view.h"
 #include "ash/wm/window_restore/pine_context_menu_model.h"
 #include "ash/wm/window_restore/pine_controller.h"
-#include "ash/wm/window_restore/pine_test_base.h"
 #include "ash/wm/window_restore/window_restore_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/app_constants/constants.h"
@@ -36,7 +36,7 @@ constexpr size_t kMenuItemCount = 5u;
 
 }  // namespace
 
-class PineContextMenuModelTest : public PineTestBase {
+class PineContextMenuModelTest : public InformedRestoreTestBase {
  public:
   PineContextMenuModelTest() = default;
   PineContextMenuModelTest(const PineContextMenuModelTest&) = delete;
@@ -68,7 +68,7 @@ TEST_F(PineContextMenuModelTest, LayoutAndCommands) {
 // Tests that pressing the settings button in Pine properly displays the inline
 // context menu.
 TEST_F(PineContextMenuModelTest, ShowContextMenuOnSettingsButtonClicked) {
-  auto contents_data = std::make_unique<PineContentsData>();
+  auto contents_data = std::make_unique<InformedRestoreContentsData>();
   contents_data->apps_infos.emplace_back(app_constants::kChromeAppId, "Title");
   Shell::Get()->pine_controller()->MaybeStartPineOverviewSession(
       std::move(contents_data));

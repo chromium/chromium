@@ -26,8 +26,8 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_session.h"
+#include "ash/wm/window_restore/informed_restore_contents_data.h"
 #include "ash/wm/window_restore/pine_constants.h"
-#include "ash/wm/window_restore/pine_contents_data.h"
 #include "ash/wm/window_restore/window_restore_metrics.h"
 #include "ash/wm/window_restore/window_restore_util.h"
 #include "ash/wm/window_util.h"
@@ -168,7 +168,7 @@ void PineController::MaybeShowPineOnboardingMessage(bool restore_on) {
 }
 
 void PineController::MaybeStartPineOverviewSessionDevAccelerator() {
-  auto data = std::make_unique<PineContentsData>();
+  auto data = std::make_unique<InformedRestoreContentsData>();
   data->last_session_crashed = false;
   std::pair<base::OnceClosure, base::OnceClosure> split =
       base::SplitOnceCallback(
@@ -213,7 +213,7 @@ void PineController::MaybeStartPineOverviewSessionDevAccelerator() {
 }
 
 void PineController::MaybeStartPineOverviewSession(
-    std::unique_ptr<PineContentsData> pine_contents_data) {
+    std::unique_ptr<InformedRestoreContentsData> contents_data) {
   CHECK(IsForestFeatureEnabled());
 
   if (OverviewController::Get()->InOverviewSession()) {
@@ -221,15 +221,15 @@ void PineController::MaybeStartPineOverviewSession(
   }
 
   // TODO(hewer|sammiequon): This function should only be called once in
-  // production code when `pine_contents_data_` is null. It can be called
-  // multiple times currently via dev accelerator. Remove this block when
+  // production code when `contents_data_` is null. It can be called multiple
+  // times currently via dev accelerator. Remove this block when
   // `MaybeStartPineOverviewSessionDevAccelerator()` is removed.
-  if (pine_contents_data_) {
+  if (contents_data_) {
     StartPineOverviewSession();
     return;
   }
 
-  pine_contents_data_ = std::move(pine_contents_data);
+  contents_data_ = std::move(contents_data);
 
   // If this is the first time starting pine, show the onboarding dialog
   // instead. Pine session will be started if the user hits 'Accept'.
@@ -238,7 +238,7 @@ void PineController::MaybeStartPineOverviewSession(
     return;
   }
 
-  if (!pine_contents_data_) {
+  if (!contents_data_) {
     return;
   }
 
@@ -250,7 +250,7 @@ void PineController::MaybeStartPineOverviewSession(
 }
 
 void PineController::MaybeEndPineOverviewSession() {
-  pine_contents_data_.reset();
+  contents_data_.reset();
   OverviewController::Get()->EndOverview(OverviewEndAction::kAccelerator,
                                          OverviewEnterExitType::kNormal);
 }
@@ -320,17 +320,17 @@ void PineController::OnWindowActivated(ActivationReason reason,
   if (gained_active && window_util::IsWindowUserPositionable(gained_active) &&
       gained_active->GetProperty(chromeos::kAppTypeKey) !=
           chromeos::AppType::NON_APP) {
-    pine_contents_data_.reset();
+    contents_data_.reset();
   }
 }
 
 void PineController::OnPineImageDecoded(base::TimeTicks start_time,
                                         const gfx::ImageSkia& pine_image) {
-  CHECK(pine_contents_data_);
+  CHECK(contents_data_);
   RecordScreenshotDecodeDuration(base::TimeTicks::Now() - start_time);
 
   if (ShouldShowPineImage(pine_image)) {
-    pine_contents_data_->image = pine_image;
+    contents_data_->image = pine_image;
   } else {
     RecordScreenshotOnShutdownStatus(
         ScreenshotOnShutdownStatus::kFailedOnDifferentOrientations);
@@ -376,7 +376,7 @@ void PineController::OnOnboardingAcceptPressed(bool restore_on) {
   // since we disallow entering overview while system modal windows are open.
   // Use a weak ptr since `this` can be deleted before we close all windows.
   // Only do this if we have pine contents data.
-  if (pine_contents_data_) {
+  if (contents_data_) {
     onboarding_widget_->widget_delegate()->RegisterDeleteDelegateCallback(
         base::BindOnce(
             [](const base::WeakPtr<PineController>& weak_this) {

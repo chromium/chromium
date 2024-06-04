@@ -5,7 +5,7 @@
 #ifndef ASH_WM_WINDOW_RESTORE_PINE_ITEMS_OVERFLOW_VIEW_H_
 #define ASH_WM_WINDOW_RESTORE_PINE_ITEMS_OVERFLOW_VIEW_H_
 
-#include "ash/wm/window_restore/pine_contents_data.h"
+#include "ash/wm/window_restore/informed_restore_contents_data.h"
 #include "ui/views/layout/box_layout_view.h"
 
 namespace ash {
@@ -16,7 +16,8 @@ class ASH_EXPORT PineItemsOverflowView : public views::BoxLayoutView {
   METADATA_HEADER(PineItemsOverflowView, views::BoxLayoutView)
 
  public:
-  explicit PineItemsOverflowView(const PineContentsData::AppsInfos& apps_infos);
+  explicit PineItemsOverflowView(
+      const InformedRestoreContentsData::AppsInfos& apps_infos);
 
   PineItemsOverflowView(const PineItemsOverflowView&) = delete;
   PineItemsOverflowView& operator=(const PineItemsOverflowView&) = delete;

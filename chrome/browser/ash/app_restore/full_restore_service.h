@@ -33,7 +33,7 @@ class Notification;
 
 namespace ash {
 
-struct PineContentsData;
+struct InformedRestoreContentsData;
 
 namespace full_restore {
 
@@ -85,7 +85,7 @@ class FullRestoreService : public KeyedService,
     // Starts overview with the informed restore dialog unless overview is
     // already active.
     virtual void MaybeStartInformedRestoreOverviewSession(
-        std::unique_ptr<PineContentsData> contents_data) = 0;
+        std::unique_ptr<InformedRestoreContentsData> contents_data) = 0;
     virtual void MaybeEndInformedRestoreOverviewSession() = 0;
   };
 

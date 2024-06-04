@@ -50,7 +50,7 @@ gfx::Size GetPreferredSizeOfTheRow(int child_number, bool one_browser_window) {
 }  // namespace
 
 PineScreenshotIconRowView::PineScreenshotIconRowView(
-    const PineContentsData::AppsInfos& apps_infos) {
+    const InformedRestoreContentsData::AppsInfos& apps_infos) {
   SetID(pine::kScreenshotIconRowViewID);
   SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStart);
   SetOrientation(views::BoxLayout::Orientation::kHorizontal);

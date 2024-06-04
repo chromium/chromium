@@ -38,7 +38,7 @@ constexpr int kTabCountRounding = 6;
 
 }  // namespace
 
-PineItemView::PineItemView(const PineContentsData::AppInfo& app_info,
+PineItemView::PineItemView(const InformedRestoreContentsData::AppInfo& app_info,
                            bool inside_screenshot)
     : app_id_(app_info.app_id),
       tab_count_(app_info.tab_count),
