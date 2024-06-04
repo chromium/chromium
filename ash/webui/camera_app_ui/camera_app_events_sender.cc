@@ -357,6 +357,22 @@ void CameraAppEventsSender::UpdateMemoryUsageEventParams(
   session_memory_usage_ = params.Clone();
 }
 
+void CameraAppEventsSender::SendOcrEvent(
+    camera_app::mojom::OcrEventParamsPtr params) {
+  if (!CanSendEvents()) {
+    return;
+  }
+
+  metrics::structured::StructuredMetricsClient::Record(std::move(
+      cros_events::CameraApp_Ocr()
+          .SetEventType(static_cast<cros_events::CameraAppOcrEventType>(
+              params->event_type))
+          .SetLineCount(static_cast<int64_t>(params->line_count))
+          .SetWordCount(static_cast<int64_t>(params->word_count))
+          .SetIsPrimaryLanguage(
+              static_cast<int64_t>(params->is_primary_language))));
+}
+
 void CameraAppEventsSender::OnMojoDisconnected() {
   if (!receivers_.empty()) {
     return;

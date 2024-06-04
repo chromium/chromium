@@ -61,6 +61,8 @@ class CameraAppEventsSender : public camera_app::mojom::EventsSender {
   void UpdateMemoryUsageEventParams(
       camera_app::mojom::MemoryUsageEventParamsPtr params) override;
 
+  void SendOcrEvent(camera_app::mojom::OcrEventParamsPtr params) override;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(CameraAppEventsSenderTest, EndSession);
   FRIEND_TEST_ALL_PREFIXES(CameraAppEventsSenderTest, MemoryUsage);

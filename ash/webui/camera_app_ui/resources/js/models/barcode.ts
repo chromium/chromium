@@ -2,15 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertInstanceof} from '../assert.js';
+import {assert, assertInstanceof} from '../assert.js';
 import * as Comlink from '../lib/comlink.js';
-import {BARCODE_SCAN_INTERVAL, ScanResult} from '../photo_mode_auto_scanner.js';
+import {BARCODE_SCAN_INTERVAL} from '../photo_mode_auto_scanner.js';
 import * as state from '../state.js';
 import {getSanitizedScriptUrl} from '../trusted_script_url_policy_util.js';
 import {lazySingleton} from '../util.js';
 
 import {AsyncIntervalRunner} from './async_interval.js';
 import {BarcodeWorker} from './barcode_worker.js';
+
+export interface ScanBarcodeResult {
+  barcode: DetectedBarcode;
+  imageWidth: number;
+  imageHeight: number;
+}
 
 type BoundingBox = DetectedBarcode['boundingBox'];
 
@@ -59,7 +65,7 @@ export class BarcodeScanner {
 
       const result = await this.scan();
       if (!stopped.isSignaled() && result !== null) {
-        this.callback(result.value);
+        this.callback(result.barcode.rawValue);
       }
     }, scanIntervalMs);
   }
@@ -104,11 +110,10 @@ export class BarcodeScanner {
   /**
    * Scans barcodes from the current frame.
    *
-   * @return `ScanResult` which contains the detected barcode value and the
-   * distance of the barcode to the center of the frame, or null if no barcode
-   * is detected.
+   * @return `ScanBarcodeResult` which contains the dimensions of the scanned
+   * image and the barcode closest to the center. `null` if nothing is detected.
    */
-  async scan(): Promise<ScanResult|null> {
+  async scan(): Promise<ScanBarcodeResult|null> {
     const frame = await this.grabFrameForScan();
     const {width, height} = frame;
     const codes =
@@ -116,31 +121,44 @@ export class BarcodeScanner {
     if (codes.length === 0) {
       return null;
     }
-    let minDistance = Infinity;
-    let valueWithMinDistance = '';
-    for (const code of codes) {
-      const distance =
-          getNormalizedDistanceToCenter(code.boundingBox, width, height);
-      if (distance < minDistance) {
-        minDistance = distance;
-        valueWithMinDistance = code.rawValue;
-      }
-    }
     return {
-      value: valueWithMinDistance,
-      distance: minDistance,
+      barcode: getBestBarcode(codes, width, height),
+      imageWidth: width,
+      imageHeight: height,
     };
   }
 }
 
-function getNormalizedDistanceToCenter(
+/**
+ * Returns the barcode that is closest to the center of the scanned image.
+ */
+function getBestBarcode(
+    barcodes: DetectedBarcode[], imageWidth: number,
+    imageHeight: number): DetectedBarcode {
+  assert(barcodes.length > 0);
+  let minDistance = Infinity;
+  let codeWithMinDistance = barcodes[0];
+  for (const code of barcodes) {
+    const distance =
+        getDistanceToCenter(code.boundingBox, imageWidth, imageHeight);
+    if (distance < minDistance) {
+      minDistance = distance;
+      codeWithMinDistance = code;
+    }
+  }
+  return codeWithMinDistance;
+}
+
+function getDistanceToCenter(
     boundingBox: BoundingBox, imageWidth: number, imageHeight: number) {
   const {top, right, bottom, left} = boundingBox;
-  const x = left + right / 2;
-  const y = top + bottom / 2;
+  const cx = imageWidth / 2;
+  const cy = imageHeight / 2;
+  const x = (left + right) / 2;
+  const y = (top + bottom) / 2;
   const distance = Math.hypot(
-      x / imageWidth - 0.5,
-      y / imageHeight - 0.5,
+      x - cx,
+      y - cy,
   );
   return distance;
 }

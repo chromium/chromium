@@ -877,3 +877,67 @@ export function updateMemoryUsageEventDimensions(
     });
   })();
 }
+
+export enum OcrEventType {
+  COPY_TEXT = 'copy-text',
+  TEXT_DETECTED = 'text-detected',
+}
+
+interface OcrEventParams {
+  eventType: OcrEventType;
+  result: mojoType.OcrResult;
+}
+
+/**
+ * Sends an OCR event.
+ */
+export function sendOcrEvent({eventType, result}: OcrEventParams): void {
+  assert(result.lines.length > 0);
+  const lineCount = result.lines.length;
+  const wordCount =
+      result.lines.reduce((acc, line) => acc + line.words.length, 0);
+  const isPrimaryLanguage =
+      getElementsWithMaxOccurrence(result.lines.map((line) => line.language))
+          // Drop subtags from `navigator.language`. For example, 'en-US'
+          // becomes 'en'.
+          .includes(navigator.language.split('-')[0]);
+  sendEvent(
+      {
+        eventCategory: 'ocr',
+        eventAction: eventType,
+      },
+      new Map([
+        [
+          GaMetricDimension.IS_PRIMARY_LANGUAGE,
+          boolToIntString(isPrimaryLanguage),
+        ],
+        [GaMetricDimension.LINE_COUNT, String(lineCount)],
+        [GaMetricDimension.WORD_COUNT, String(wordCount)],
+      ]));
+
+  void (async () => {
+    (await getEventsSender()).sendOcrEvent({
+      eventType: mojoTypeUtils.convertOcrEventTypeToMojo(eventType),
+      isPrimaryLanguage,
+      lineCount,
+      wordCount,
+    });
+  })();
+}
+
+function getElementsWithMaxOccurrence<T>(elements: T[]) {
+  const map = new Map<T, number>();
+  let elementsWithMaxOccurrence: T[] = [];
+  let maxOccurrence = 0;
+  for (const element of elements) {
+    const occurrence = (map.get(element) ?? 0) + 1;
+    if (maxOccurrence < occurrence) {
+      maxOccurrence = occurrence;
+      elementsWithMaxOccurrence = [element];
+    } else if (occurrence === maxOccurrence) {
+      elementsWithMaxOccurrence.push(element);
+    }
+    map.set(element, occurrence);
+  }
+  return elementsWithMaxOccurrence;
+}

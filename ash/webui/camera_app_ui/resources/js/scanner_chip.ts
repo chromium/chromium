@@ -9,12 +9,15 @@ import {Flag} from './flag.js';
 import {I18nString} from './i18n_string.js';
 import {
   BarcodeContentType,
+  OcrEventType,
   sendBarcodeDetectedEvent,
+  sendOcrEvent,
   sendUnsupportedProtocolEvent,
 } from './metrics.js';
 import * as loadTimeData from './models/load_time_data.js';
 import {ChromeHelper} from './mojo/chrome_helper.js';
 import {
+  OcrResult,
   WifiConfig,
   WifiEapMethod,
   WifiEapPhase2Method,
@@ -273,15 +276,17 @@ function strToWifiEapPhase2Method(phase2method: string): WifiEapPhase2Method|
  * @param content The content to be copied.
  * @param snackbarLabel The label to be displayed on snackbar when the content
  *     is copied.
+ * @param onCopy Called when the user clicks the copy button.
  */
 function createCopyButton(
-    container: HTMLElement, content: string,
-    snackbarLabel: I18nString): HTMLElement {
+    container: HTMLElement, content: string, snackbarLabel: I18nString,
+    onCopy?: () => void): HTMLElement {
   const copyButton =
       dom.getFrom(container, '.barcode-copy-button', HTMLButtonElement);
   copyButton.onclick = async () => {
     await navigator.clipboard.writeText(content);
     snackbar.show(snackbarLabel);
+    onCopy?.();
   };
   return copyButton;
 }
@@ -327,7 +332,7 @@ function showUrl(url: string): ChipMethods {
  * TODO(b/311592341): Rename related strings and classes since they are used by
  * both barcode and OCR.
  */
-function showText(text: string): ChipMethods {
+function showText(text: string, onCopy?: () => void): ChipMethods {
   const container = dom.get('#barcode-chip-text-container', HTMLDivElement);
   const expandEl = dom.get('#barcode-chip-text-expand', HTMLButtonElement);
   container.classList.remove('expanded');
@@ -346,8 +351,8 @@ function showText(text: string): ChipMethods {
     assertExists(currentChip).timer.resetTimeout();
   };
 
-  const copyButton =
-      createCopyButton(container, text, I18nString.SNACKBAR_TEXT_COPIED);
+  const copyButton = createCopyButton(
+      container, text, I18nString.SNACKBAR_TEXT_COPIED, onCopy);
   const label =
       loadTimeData.getI18nMessage(I18nString.BARCODE_COPY_TEXT_BUTTON, text);
   copyButton.setAttribute('aria-label', label);
@@ -400,32 +405,11 @@ function showWifi(wifiConfig: WifiConfig): ChipMethods {
 }
 
 /**
- * Shows an actionable chip for the string detected from various scanners.
+ * Show an actionable chip for content detected from barcode.
  */
-export function show(content: string, source: Source): void {
-  const isShowing = currentChip !== null;
-
-  if (isShowing) {
-    assert(currentChip !== null);
-    // Skip updating the chip if it's expanded.
-    if (currentChip.expanded?.() === true) {
-      return;
-    }
-    // Extend the duration by resetting the timeout.
-    if (currentChip.source === source && currentChip.content === content) {
-      currentChip.timer.resetTimeout();
-      return;
-    }
-  }
-
-  dismiss();
-
-  let chipMethods: ChipMethods|null = null;
-  if (source === Source.OCR) {
-    // TODO(b/311592341): Check if we can show Wifi and URL chip when the source
-    // is OCR.
-    chipMethods = showText(content);
-  } else {
+export function showBarcodeContent(content: string): void {
+  function setupChip() {
+    let chipMethods: ChipMethods|null = null;
     const wifiConfig = parseWifi(content);
     if (loadTimeData.getChromeFlag(Flag.AUTO_QR) && wifiConfig !== null) {
       chipMethods = showWifi(wifiConfig);
@@ -436,8 +420,68 @@ export function show(content: string, source: Source): void {
       sendBarcodeDetectedEvent({contentType: BarcodeContentType.TEXT});
       chipMethods = showText(content);
     }
+    return assertExists(chipMethods);
   }
-  assert(chipMethods !== null);
+  showChip({
+    setupChip,
+    content,
+    source: Source.BARCODE,
+  });
+}
+
+/**
+ * Show an actionable chip for content detected from OCR.
+ */
+export function showOcrContent(ocrResult: OcrResult): void {
+  const content = ocrResult.lines.map((line) => line.text).join('\n');
+  function setupChip() {
+    // TODO(b/311592341): Check if we can show Wifi and URL chip when the source
+    // is OCR.
+    return showText(content, () => {
+      sendOcrEvent({
+        eventType: OcrEventType.COPY_TEXT,
+        result: ocrResult,
+      });
+    });
+  }
+  showChip({
+    setupChip,
+    content,
+    source: Source.OCR,
+  });
+}
+
+interface ShowChipParams {
+  // Shows the chip and returns methods for controlling the chip.
+  setupChip(): ChipMethods;
+  // The detected `content` and `source` of the scanner. They are used to check
+  // if the same content is being shown.
+  content: string;
+  source: Source;
+}
+
+/**
+ * Shows an actionable chip for the string detected from various scanners.
+ */
+function showChip({setupChip, content, source}: ShowChipParams): void {
+  const isShowing = currentChip !== null;
+
+  if (isShowing) {
+    assert(currentChip !== null);
+    // Skip updating the chip if it's expanded.
+    if (currentChip.expanded?.() === true) {
+      return;
+    }
+    // Extend the duration by resetting the timeout if the same content is being
+    // shown.
+    if (currentChip.source === source && currentChip.content === content) {
+      currentChip.timer.resetTimeout();
+      return;
+    }
+  }
+
+  dismiss();
+  const chipMethods = setupChip();
 
   // Only focus on chip when newly shown.
   if (!isShowing) {

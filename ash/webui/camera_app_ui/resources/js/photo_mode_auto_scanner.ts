@@ -4,10 +4,11 @@
 
 import {assertExists} from './assert.js';
 import {Flag} from './flag.js';
+import {OcrEventType, sendOcrEvent} from './metrics.js';
 import {AsyncIntervalRunner} from './models/async_interval.js';
-import {BarcodeScanner} from './models/barcode.js';
+import {BarcodeScanner, ScanBarcodeResult} from './models/barcode.js';
 import {getChromeFlag} from './models/load_time_data.js';
-import {Ocr} from './ocr.js';
+import {Ocr, PerformOcrResult} from './ocr.js';
 import * as scannerChip from './scanner_chip.js';
 import {OneShotTimer} from './timer.js';
 
@@ -31,6 +32,18 @@ export interface ScanResult {
   // source image, meaning it's a value between 0 (center) and `Math.hypot(0.5,
   // 0.5)` (corner).
   distance: number;
+}
+
+type OcrResultLine = PerformOcrResult['result']['lines'][number];
+
+interface DetectedResult {
+  // Returns the minimal distance between the center of the detected content and
+  // the center of the image. The distance should be normalized by the
+  // dimensions of the source image, meaning it's a value between 0 (center) and
+  // `Math.hypot(0.5, 0.5)` (corner).
+  getNormalizedDistanceToCenter(): number;
+  // Shows the detected content on the preview.
+  show(): void;
 }
 
 // The last created `PhotoModeAutoScanner` instance.
@@ -138,7 +151,8 @@ export class PhotoModeAutoScanner {
       if (stopped.isSignaled()) {
         return;
       }
-      this.handleDetectedResult(result, scannerChip.Source.BARCODE);
+      this.handleDetectedResult(
+          processBarcodeResult(result), scannerChip.Source.BARCODE);
     }, interval);
   }
 
@@ -152,16 +166,10 @@ export class PhotoModeAutoScanner {
       }
       this.ocrScanCount += 1;
       this.ocrScanTime += performance.now() - startTime;
-      // TODO(b/341616441): Remove this once we find a way to prevent OCR from
-      // detecting content in barcodes. Set `distance` to `Infinity` to make
-      // it always larger than the `distance`s from barcode scanner.
-      if (result !== null) {
-        result.distance = Infinity;
-      }
-      this.handleDetectedResult(result, scannerChip.Source.OCR);
+      this.handleDetectedResult(
+          processOcrResult(result), scannerChip.Source.OCR);
     }, interval);
   }
-
 
   /**
    * Checks detected results from scanners and decides whether to show them.
@@ -179,14 +187,22 @@ export class PhotoModeAutoScanner {
    *   - `distance` is smaller than `closestContent.distance`.
    */
   private handleDetectedResult(
-      result: ScanResult|null, source: scannerChip.Source) {
-    if (result === null) {
+      detectedResult: DetectedResult|null, source: scannerChip.Source) {
+    if (detectedResult === null) {
       if (source === this.closestContent.source) {
         this.closestContent = INITIAL_CLOSEST_CONTENT;
       }
       return;
     }
-    const {value, distance} = result;
+
+    let distance = Infinity;
+    // TODO(b/341616441): Remove this once we find a way to prevent OCR from
+    // detecting content in barcodes. Set `distance` to `Infinity` for OCR to
+    // make it always larger than the `distance`s from barcode scanner.
+    if (source !== scannerChip.Source.OCR) {
+      distance = detectedResult.getNormalizedDistanceToCenter();
+    }
+
     if (this.closestContent === INITIAL_CLOSEST_CONTENT ||
         source === this.closestContent.source ||
         distance < this.closestContent.distance) {
@@ -194,7 +210,82 @@ export class PhotoModeAutoScanner {
         source,
         distance,
       };
-      scannerChip.show(value, source);
+      detectedResult.show();
     }
   }
+}
+
+function processBarcodeResult(scanBarcodeResult: ScanBarcodeResult|
+                              null): DetectedResult|null {
+  if (scanBarcodeResult === null) {
+    return null;
+  }
+  const {barcode, imageWidth, imageHeight} = scanBarcodeResult;
+  function getNormalizedDistanceToCenter() {
+    const {top, right, bottom, left} = barcode.boundingBox;
+    const x = (left + right) / 2;
+    const y = (top + bottom) / 2;
+    return Math.hypot(
+        x / imageWidth - 0.5,
+        y / imageHeight - 0.5,
+    );
+  }
+  function show() {
+    scannerChip.showBarcodeContent(barcode.rawValue);
+  }
+  return {
+    getNormalizedDistanceToCenter,
+    show,
+  };
+}
+
+function processOcrResult(performOcrResult: PerformOcrResult): DetectedResult|
+    null {
+  if (performOcrResult.result.lines.length === 0) {
+    return null;
+  }
+  const {result, imageWidth, imageHeight} = performOcrResult;
+  const {lines} = result;
+
+  function getMinNormalizedDistanceToCenter(
+      lines: OcrResultLine[], imageWidth: number, imageHeight: number): number {
+    let minDistance = Infinity;
+    for (const line of lines) {
+      const {x, y} = getCenterOfLine(line);
+      const distance = Math.hypot(
+          x / imageWidth - 0.5,
+          y / imageHeight - 0.5,
+      );
+      if (distance < minDistance) {
+        minDistance = distance;
+      }
+    }
+    return minDistance;
+  }
+  // Calculates the center point of the bounding box of the line. The origin of
+  // the coordinate system is at the top-left corner. The bounding box is
+  // rotated by `boundingBoxAngle` degrees in a clockwise direction.
+  function getCenterOfLine(line: OcrResultLine) {
+    const {x, y, width, height} = line.boundingBox;
+    const lineTheta = line.boundingBoxAngle / 180 * Math.PI;
+    const diagonalLength = Math.hypot(width, height) / 2;
+    const diagonalTheta = Math.atan(height / width) + lineTheta;
+    return {
+      x: x + diagonalLength * Math.cos(diagonalTheta),
+      y: y + diagonalLength * Math.sin(diagonalTheta),
+    };
+  }
+  function show() {
+    sendOcrEvent({
+      eventType: OcrEventType.TEXT_DETECTED,
+      result,
+    });
+    scannerChip.showOcrContent(result);
+  }
+  return {
+    getNormalizedDistanceToCenter() {
+      return getMinNormalizedDistanceToCenter(lines, imageWidth, imageHeight);
+    },
+    show,
+  };
 }

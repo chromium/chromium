@@ -283,6 +283,23 @@ struct MemoryUsageEventParams {
   uint64 memory_usage;
 };
 
+enum OcrEventType {
+  kCopyText,
+  kTextDetected,
+};
+
+struct OcrEventParams {
+  // The type of the event about the OCR feature.
+  OcrEventType event_type;
+  // Whether the language of detected text is the same as the user's primary
+  // language.
+  bool is_primary_language;
+  // The number of lines of the detected text.
+  uint32 line_count;
+  // The number of words of the detected text.
+  uint32 word_count;
+};
+
 // This interface is used by CCA to send metrics to CrOS Events.
 interface EventsSender {
   // Sends an event to indicate a CCA session is started.
@@ -321,4 +338,7 @@ interface EventsSender {
   // Update the memory usage events parameter of the current camera session
   // which will be sent when the camera session ends.
   UpdateMemoryUsageEventParams(MemoryUsageEventParams params);
+
+  // Sends an event when OCR detects text or users copy the detected text.
+  SendOcrEvent(OcrEventParams params);
 };

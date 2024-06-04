@@ -135,7 +135,7 @@ export class ScanOptions implements CameraUI {
     const video = this.cameraManager.getPreviewVideo();
     this.video = video;
     this.barcodeScanner = new BarcodeScanner(video.video, (value) => {
-      scannerChip.show(value, scannerChip.Source.BARCODE);
+      scannerChip.showBarcodeContent(value);
     });
     const {deviceId} = video.getVideoSettings();
     this.documentCornerOverlay.attach(deviceId);

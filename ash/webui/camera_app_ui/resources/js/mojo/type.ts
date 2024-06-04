@@ -50,6 +50,7 @@ export {
   LaunchType,
   LowStorageActionType,
   Mode,
+  OcrEventType,
   PerfEventType,
   RecordType,
   ResolutionLevel,

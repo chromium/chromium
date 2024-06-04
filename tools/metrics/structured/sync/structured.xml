@@ -1137,6 +1137,11 @@
     <variant value="11">VIDEO_CAPTURE_POST_PROCESSING</variant>
   </enum>
 
+  <enum name="CameraAppOcrEventType">
+    <variant value="0">COPY_TEXT</variant>
+    <variant value="1">TEXT_DETECTED</variant>
+  </enum>
+
   <enum name="CampaignButtonId">
     <variant value="0">PRIMARY</variant>
     <variant value="1">SECONDARY</variant>
@@ -1791,6 +1796,34 @@
     <metric name="MemoryUsage" type="int">
       <summary>
         Integer indicating the maximum memory usage within the session in bytes.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="CameraApp.Ocr">
+    <summary>
+      Event recorded when OCR detects text on the preview or users interact with
+      the detected text.
+    </summary>
+    <metric name="EventType" type="CameraAppOcrEventType">
+      <summary>
+        The type of the event about the OCR feature.
+      </summary>
+    </metric>
+    <metric name="IsPrimaryLanguage" type="int">
+      <summary>
+        Boolean indicating whether the language of detected text is the same as the
+        user's primary language.
+      </summary>
+    </metric>
+    <metric name="LineCount" type="int">
+      <summary>
+        The number of lines of the detected text.
+      </summary>
+    </metric>
+    <metric name="WordCount" type="int">
+      <summary>
+        The number of words of the detected text.
       </summary>
     </metric>
   </event>
