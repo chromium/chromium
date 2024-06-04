@@ -34,6 +34,7 @@ class OtpUnmaskDelegate;
 enum class OtpUnmaskResult;
 struct VirtualCardEnrollmentFields;
 class VirtualCardEnrollmentManager;
+struct VirtualCardManualFallbackBubbleOptions;
 enum class WebauthnDialogCallbackType;
 
 namespace payments {
@@ -172,6 +173,11 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // result to users. `is_vcn_enrolled` indicates if the card was successfully
   // enrolled as a virtual card.
   virtual void VirtualCardEnrollCompleted(bool is_vcn_enrolled);
+
+  // Called when the virtual card has been fetched successfully. Uses the
+  // necessary information in `options` to show the manual fallback bubble.
+  virtual void OnVirtualCardDataAvailable(
+      const VirtualCardManualFallbackBubbleOptions& options);
 
   // Runs `callback` once the user makes a decision with respect to the
   // offer-to-save prompt. On desktop, shows the offer-to-save bubble if

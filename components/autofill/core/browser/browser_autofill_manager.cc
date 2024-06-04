@@ -2524,7 +2524,7 @@ void BrowserAutofillManager::OnCreditCardFetchedSuccessfully(
     // VirtualCardManualFallbackBubbleOptions.
     options.virtual_card_cvc = credit_card.cvc();
     options.card_image = GetCardImage(credit_card);
-    client().OnVirtualCardDataAvailable(options);
+    client().GetPaymentsAutofillClient()->OnVirtualCardDataAvailable(options);
   }
 
   // After a server card is fetched, save its instrument id.

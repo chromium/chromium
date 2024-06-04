@@ -94,7 +94,6 @@ class PersonalDataManager;
 class StrikeDatabase;
 struct Suggestion;
 class TouchToFillDelegate;
-struct VirtualCardManualFallbackBubbleOptions;
 enum class WebauthnDialogState;
 
 namespace payments {
@@ -637,11 +636,6 @@ class AutofillClient {
 
   // Dismiss any visible offer notification on the current tab.
   virtual void DismissOfferNotification();
-
-  // Called when the virtual card has been fetched successfully. Uses the
-  // necessary information in `options` to show the manual fallback bubble.
-  virtual void OnVirtualCardDataAvailable(
-      const VirtualCardManualFallbackBubbleOptions& options);
 
   // Maybe triggers a hats survey that measures the user's perception of
   // Autofill. When triggering happens, the survey dialog will be displayed with

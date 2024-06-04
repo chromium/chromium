@@ -31,6 +31,7 @@
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/ui/payments/autofill_error_dialog_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller_impl.h"
+#include "components/autofill/core/browser/ui/payments/bubble_show_options.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_authentication_selection_dialog_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_otp_input_dialog_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller_impl.h"
@@ -49,6 +50,7 @@
 #include "chrome/browser/ui/autofill/payments/desktop_payments_window_manager.h"
 #include "chrome/browser/ui/autofill/payments/manage_migration_ui_controller.h"
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller_impl.h"
+#include "chrome/browser/ui/autofill/payments/virtual_card_manual_fallback_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/webauthn_dialog_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/webauthn_dialog_state.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
@@ -243,6 +245,20 @@ void ChromePaymentsAutofillClient::VirtualCardEnrollCompleted(
       controller->ShowConfirmationBubbleView(is_vcn_enrolled);
     }
   }
+}
+
+void ChromePaymentsAutofillClient::OnVirtualCardDataAvailable(
+    const VirtualCardManualFallbackBubbleOptions& options) {
+#if BUILDFLAG(IS_ANDROID)
+  GetAutofillSnackbarController()->Show(AutofillSnackbarType::kVirtualCard);
+#else
+  VirtualCardManualFallbackBubbleControllerImpl::CreateForWebContents(
+      web_contents());
+  VirtualCardManualFallbackBubbleControllerImpl* controller =
+      VirtualCardManualFallbackBubbleControllerImpl::FromWebContents(
+          web_contents());
+  controller->ShowBubble(options);
+#endif
 }
 
 void ChromePaymentsAutofillClient::ConfirmSaveIbanLocally(

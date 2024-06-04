@@ -53,7 +53,6 @@ class AutofillCvcSaveMessageDelegate;
 #endif  // BUILDFLAG(IS_ANDROID)
 class FormFieldData;
 struct OfferNotificationOptions;
-struct VirtualCardManualFallbackBubbleOptions;
 
 namespace payments {
 class MandatoryReauthManager;
@@ -190,8 +189,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
       const AutofillOfferData* offer,
       const OfferNotificationOptions& options) override;
   void DismissOfferNotification() override;
-  void OnVirtualCardDataAvailable(
-      const VirtualCardManualFallbackBubbleOptions& options) override;
   void TriggerUserPerceptionOfAutofillSurvey(
       FillingProduct filling_product,
       const std::map<std::string, std::string>& field_filling_stats_data)

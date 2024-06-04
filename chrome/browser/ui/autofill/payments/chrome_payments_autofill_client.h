@@ -38,6 +38,7 @@ class OtpUnmaskDelegate;
 enum class OtpUnmaskResult;
 struct VirtualCardEnrollmentFields;
 class VirtualCardEnrollmentManager;
+struct VirtualCardManualFallbackBubbleOptions;
 #if BUILDFLAG(IS_ANDROID)
 class AutofillSnackbarControllerImpl;
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -99,6 +100,8 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
       base::OnceClosure accept_virtual_card_callback,
       base::OnceClosure decline_virtual_card_callback) override;
   void VirtualCardEnrollCompleted(bool is_vcn_enrolled) override;
+  void OnVirtualCardDataAvailable(
+      const VirtualCardManualFallbackBubbleOptions& options) override;
   void ConfirmSaveIbanLocally(const Iban& iban,
                               bool should_show_prompt,
                               SaveIbanPromptCallback callback) override;

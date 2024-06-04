@@ -13,7 +13,6 @@
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
-#include "components/autofill/core/browser/ui/payments/bubble_show_options.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/version_info/channel.h"
@@ -161,10 +160,6 @@ void AutofillClient::UpdateOfferNotification(
 }
 
 void AutofillClient::DismissOfferNotification() {
-}
-
-void AutofillClient::OnVirtualCardDataAvailable(
-    const VirtualCardManualFallbackBubbleOptions& options) {
 }
 
 LogManager* AutofillClient::GetLogManager() const {

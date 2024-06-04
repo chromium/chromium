@@ -82,7 +82,6 @@
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/ui/payments/bubble_show_options.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_otp_input_dialog_controller_impl.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
 #include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
@@ -158,7 +157,6 @@
 #include "chrome/browser/ui/autofill/delete_address_profile_dialog_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/offer_notification_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller_impl.h"
-#include "chrome/browser/ui/autofill/payments/virtual_card_manual_fallback_bubble_controller_impl.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -883,21 +881,6 @@ void ChromeAutofillClient::DismissOfferNotification() {
     return;
 
   controller->DismissNotification();
-#endif
-}
-
-void ChromeAutofillClient::OnVirtualCardDataAvailable(
-    const VirtualCardManualFallbackBubbleOptions& options) {
-#if BUILDFLAG(IS_ANDROID)
-  GetPaymentsAutofillClient()->GetAutofillSnackbarController()->Show(
-      AutofillSnackbarType::kVirtualCard);
-#else
-  VirtualCardManualFallbackBubbleControllerImpl::CreateForWebContents(
-      web_contents());
-  VirtualCardManualFallbackBubbleControllerImpl* controller =
-      VirtualCardManualFallbackBubbleControllerImpl::FromWebContents(
-          web_contents());
-  controller->ShowBubble(options);
 #endif
 }
 

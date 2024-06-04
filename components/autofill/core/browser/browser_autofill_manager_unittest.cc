@@ -60,6 +60,7 @@
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/test_credit_card_save_manager.h"
+#include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/test_payments_network_interface.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -483,12 +484,26 @@ class MockCreditCardAccessManager : public CreditCardAccessManager {
   MOCK_METHOD(void, PrepareToFetchCreditCard, (), (override));
 };
 
+class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
+ public:
+  explicit MockPaymentsAutofillClient(AutofillClient* client)
+      : payments::TestPaymentsAutofillClient(client) {}
+  ~MockPaymentsAutofillClient() override = default;
+
+  MOCK_METHOD(void,
+              OnVirtualCardDataAvailable,
+              (const VirtualCardManualFallbackBubbleOptions&),
+              (override));
+};
+
 class MockAutofillClient : public TestAutofillClient {
  public:
   MockAutofillClient() {
     ON_CALL(*this, GetChannel())
         .WillByDefault(Return(version_info::Channel::UNKNOWN));
     ON_CALL(*this, IsPasswordManagerEnabled()).WillByDefault(Return(true));
+    set_payments_autofill_client(
+        std::make_unique<MockPaymentsAutofillClient>(this));
   }
   MockAutofillClient(const MockAutofillClient&) = delete;
   MockAutofillClient& operator=(const MockAutofillClient&) = delete;
@@ -520,10 +535,6 @@ class MockAutofillClient : public TestAutofillClient {
               (FillingProduct, (const std::map<std::string, std::string>&)),
               (override));
   MOCK_METHOD(AutofillComposeDelegate*, GetComposeDelegate, (), (override));
-  MOCK_METHOD(void,
-              OnVirtualCardDataAvailable,
-              (const VirtualCardManualFallbackBubbleOptions&),
-              (override));
   MOCK_METHOD(void,
               ShowAutofillFieldIphForManualFallbackFeature,
               (const FormFieldData& field),
@@ -837,6 +848,11 @@ class BrowserAutofillManagerTest : public testing::Test {
   MockFastCheckoutDelegate& fast_checkout_delegate() {
     return *static_cast<MockFastCheckoutDelegate*>(
         browser_autofill_manager_->fast_checkout_delegate());
+  }
+
+  MockPaymentsAutofillClient& payments_client() {
+    return static_cast<MockPaymentsAutofillClient&>(
+        *autofill_client_.GetPaymentsAutofillClient());
   }
 
   void GetAutofillSuggestions(
@@ -3681,7 +3697,7 @@ TEST_F(BrowserAutofillManagerTest, AutocompleteUnrecognizedFields_KeyMetrics) {
 TEST_F(BrowserAutofillManagerTest,
        OnCreditCardFetchedSuccessfully_LocalCreditCard) {
   const CreditCard local_card = test::GetCreditCard();
-  EXPECT_CALL(autofill_client_, OnVirtualCardDataAvailable).Times(0);
+  EXPECT_CALL(payments_client(), OnVirtualCardDataAvailable).Times(0);
 
   browser_autofill_manager_->OnCreditCardFetchedSuccessfully(local_card);
   EXPECT_THAT(test_api(form_data_importer()).fetched_card_instrument_id(),
@@ -3691,7 +3707,7 @@ TEST_F(BrowserAutofillManagerTest,
 TEST_F(BrowserAutofillManagerTest,
        OnCreditCardFetchedSuccessfully_ServerCreditCard) {
   const CreditCard server_card = test::GetMaskedServerCard();
-  EXPECT_CALL(autofill_client_, OnVirtualCardDataAvailable).Times(0);
+  EXPECT_CALL(payments_client(), OnVirtualCardDataAvailable).Times(0);
 
   browser_autofill_manager_->OnCreditCardFetchedSuccessfully(server_card);
   EXPECT_THAT(test_api(form_data_importer()).fetched_card_instrument_id(),
@@ -3703,7 +3719,7 @@ TEST_F(BrowserAutofillManagerTest,
   const CreditCard virtual_card = test::WithCvc(test::GetVirtualCard());
   using Options = VirtualCardManualFallbackBubbleOptions;
   EXPECT_CALL(
-      autofill_client_,
+      payments_client(),
       OnVirtualCardDataAvailable(
           AllOf(Field(&Options::masked_card_name,
                       virtual_card.CardNameForAutofillDisplay()),

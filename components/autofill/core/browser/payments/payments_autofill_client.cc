@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/payments/card_unmask_delegate.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
+#include "components/autofill/core/browser/ui/payments/bubble_show_options.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
 
 namespace autofill::payments {
@@ -66,6 +67,9 @@ void PaymentsAutofillClient::ShowVirtualCardEnrollDialog(
     base::OnceClosure decline_virtual_card_callback) {}
 
 void PaymentsAutofillClient::VirtualCardEnrollCompleted(bool is_vcn_enrolled) {}
+
+void PaymentsAutofillClient::OnVirtualCardDataAvailable(
+    const VirtualCardManualFallbackBubbleOptions& options) {}
 
 void PaymentsAutofillClient::ConfirmSaveIbanLocally(
     const Iban& iban,
