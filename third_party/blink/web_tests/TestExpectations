@@ -7522,5 +7522,7 @@ crbug.com/338299516 fast/forms/color/color-picker-top-left-selection-position-af
 # Flaky test on all builds.
 crbug.com/40279192 external/wpt/event-timing/mouseleave.html [ Failure Pass ]
 
+crbug.com/343845140 http/tests/devtools/components/throttler.js [ Failure Pass Timeout ]
+
 # Gardener 2024-06-04
 crbug.com/40899458 [ Linux ] virtual/gpu/fast/canvas/OffscreenCanvas-copyImage.html [ Failure Pass ]
