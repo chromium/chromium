@@ -58,7 +58,7 @@ TEST_F(PickerMainContainerViewTest, BackgroundColor) {
 
   EXPECT_EQ(container->background()->get_color(),
             container->GetColorProvider()->GetColor(
-                cros_tokens::kCrosSysSystemBaseElevated));
+                cros_tokens::kCrosSysSystemBaseElevatedOpaque));
 }
 
 TEST_F(PickerMainContainerViewTest, LayoutWithContentsBelowSearchField) {

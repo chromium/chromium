@@ -28,7 +28,7 @@ namespace {
 
 constexpr gfx::Size kPreviewImageSize(240, 135);
 constexpr ui::ColorId kBackgroundColor =
-    cros_tokens::kCrosSysSystemBaseElevated;
+    cros_tokens::kCrosSysSystemBaseElevatedOpaque;
 constexpr int kBubbleOverlapOverPicker = 8;
 constexpr int kPickerBubbleCornerRadius = 12;
 // TODO(b/322899031): Translate these strings.
