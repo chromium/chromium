@@ -50,7 +50,6 @@
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/platform_auth/platform_auth_policy_observer.h"
 #include "chrome/browser/first_run/first_run.h"
-#include "chrome/browser/os_crypt/app_bound_encryption_metrics_win.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_shortcut_manager.h"
 #include "chrome/browser/shell_integration_win.h"
@@ -607,16 +606,6 @@ void ChromeBrowserMainPartsWin::PostBrowserStart() {
     did_run_updater_.emplace();
   }
 #endif
-
-  if (base::FeatureList::IsEnabled(features::kAppBoundEncryptionMetrics)) {
-    // Only record full metrics if the App-Bound provider is not registered. The
-    // App-Bound provider records these itself, and only one place should record
-    // them to accurately reflect the final production environment.
-    os_crypt::MeasureAppBoundEncryptionStatus(
-        g_browser_process->local_state(),
-        /*record_full_metrics=*/!base::FeatureList::IsEnabled(
-            features::kRegisterAppBoundEncryptionProvider));
-  }
 
   // Record Processor Metrics. This is very low priority, hence posting as
   // BEST_EFFORT to start after Chrome startup has completed.

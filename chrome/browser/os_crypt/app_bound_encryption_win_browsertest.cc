@@ -65,8 +65,6 @@ class AppBoundEncryptionWinTest : public InProcessBrowserTest {
   void SetUp() override {
     if (base::GetCurrentProcessIntegrityLevel() != base::HIGH_INTEGRITY)
       GTEST_SKIP() << "Elevation is required for this test.";
-    enable_metrics_feature_.InitAndEnableFeature(
-        features::kAppBoundEncryptionMetrics);
     maybe_uninstall_service_ = InstallService();
     EXPECT_TRUE(maybe_uninstall_service_.has_value());
     InProcessBrowserTest::SetUp();
@@ -80,7 +78,6 @@ class AppBoundEncryptionWinTest : public InProcessBrowserTest {
 
  private:
   install_static::ScopedInstallDetails scoped_install_details_;
-  base::test::ScopedFeatureList enable_metrics_feature_;
   std::optional<base::ScopedClosureRunner> maybe_uninstall_service_;
 };
 
@@ -128,50 +125,38 @@ IN_PROC_BROWSER_TEST_F(AppBoundEncryptionWinTest, EncryptDecryptInvalid) {
 // browser in the PRE_ test stores the "Test Key" with app-bound encryption and
 // the second stage of the test verifies it can be retrieved successfully.
 IN_PROC_BROWSER_TEST_F(AppBoundEncryptionWinTest, PRE_MetricsTest) {
+  if (!base::FeatureList::IsEnabled(
+          features::kRegisterAppBoundEncryptionProvider)) {
+    GTEST_SKIP() << "Metrics only reported if provider is registered.";
+  }
+
   histogram_tester_.ExpectUniqueSample(
       "OSCrypt.AppBoundEncryption.SupportLevel", SupportLevel::kSupported, 1);
-  // If the App-Bound provider is enabled, it does the metrics logging.
-  if (base::FeatureList::IsEnabled(
-          features::kRegisterAppBoundEncryptionProvider)) {
-    // These histograms are recorded on a background worker thread, so the test
-    // needs to wait until this task completes and the histograms are recorded.
-    WaitForHistogram("OSCrypt.AppBoundProvider.Encrypt.ResultCode");
-    histogram_tester_.ExpectBucketCount(
-        "OSCrypt.AppBoundProvider.Encrypt.ResultCode", S_OK, 1);
 
-    WaitForHistogram("OSCrypt.AppBoundProvider.Encrypt.Time");
-  } else {
-    WaitForHistogram(
-        "OSCrypt.AppBoundEncryption.PathValidation.Encrypt.ResultCode2");
-    histogram_tester_.ExpectBucketCount(
-        "OSCrypt.AppBoundEncryption.PathValidation.Encrypt.ResultCode2", S_OK,
-        1);
+  // These histograms are recorded on a background worker thread, so the test
+  // needs to wait until this task completes and the histograms are recorded.
+  WaitForHistogram("OSCrypt.AppBoundProvider.Encrypt.ResultCode");
+  histogram_tester_.ExpectBucketCount(
+      "OSCrypt.AppBoundProvider.Encrypt.ResultCode", S_OK, 1);
 
-    WaitForHistogram("OSCrypt.AppBoundEncryption.PathValidation.Encrypt.Time2");
-  }
+  WaitForHistogram("OSCrypt.AppBoundProvider.Encrypt.Time");
 }
 
 IN_PROC_BROWSER_TEST_F(AppBoundEncryptionWinTest, MetricsTest) {
   ASSERT_TRUE(install_static::IsSystemInstall());
-  // If the App-Bound provider is enabled, it does the metrics logging.
-  if (base::FeatureList::IsEnabled(
+
+  if (!base::FeatureList::IsEnabled(
           features::kRegisterAppBoundEncryptionProvider)) {
-    // These histograms are recorded on a background worker thread, so the test
-    // needs to wait until this task completes and the histograms are recorded.
-    WaitForHistogram("OSCrypt.AppBoundProvider.Decrypt.ResultCode");
-    histogram_tester_.ExpectBucketCount(
-        "OSCrypt.AppBoundProvider.Decrypt.ResultCode", S_OK, 1);
-
-    WaitForHistogram("OSCrypt.AppBoundProvider.Decrypt.Time");
-  } else {
-    WaitForHistogram(
-        "OSCrypt.AppBoundEncryption.PathValidation.Decrypt.ResultCode2");
-    histogram_tester_.ExpectBucketCount(
-        "OSCrypt.AppBoundEncryption.PathValidation.Decrypt.ResultCode2", S_OK,
-        1);
-
-    WaitForHistogram("OSCrypt.AppBoundEncryption.PathValidation.Decrypt.Time2");
+    GTEST_SKIP() << "Metrics only reported if provider is registered.";
   }
+
+  // These histograms are recorded on a background worker thread, so the test
+  // needs to wait until this task completes and the histograms are recorded.
+  WaitForHistogram("OSCrypt.AppBoundProvider.Decrypt.ResultCode");
+  histogram_tester_.ExpectBucketCount(
+      "OSCrypt.AppBoundProvider.Decrypt.ResultCode", S_OK, 1);
+
+  WaitForHistogram("OSCrypt.AppBoundProvider.Decrypt.Time");
 }
 
 // Run this test manually to force uninstall the service using

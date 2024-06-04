@@ -472,7 +472,6 @@
 #include "chrome/browser/font_prewarmer_tab_helper.h"
 #include "chrome/browser/media/cdm_pref_service_helper.h"
 #include "chrome/browser/media/media_foundation_service_monitor.h"
-#include "chrome/browser/os_crypt/app_bound_encryption_metrics_win.h"
 #include "chrome/browser/os_crypt/app_bound_encryption_provider_win.h"
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/browser/win/conflicts/incompatible_applications_updater.h"
@@ -993,6 +992,9 @@ constexpr char kOsCryptAppBoundFixedDataPrefName[] =
 // Deprecated 03/2024
 constexpr char kOsCryptAppBoundFixedData2PrefName[] =
     "os_crypt.app_bound_fixed_data2";
+// Deprecated 06/2024
+constexpr char kOsCryptAppBoundFixedData3PrefName[] =
+    "os_crypt.app_bound_fixed_data3";
 #endif  // BUILDFLAG(IS_WIN)
 
 // Deprecated 02/2024.
@@ -1224,6 +1226,9 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
                                std::string());
   // Deprecated 03/2024.
   registry->RegisterStringPref(kOsCryptAppBoundFixedData2PrefName,
+                               std::string());
+  // Deprecated 06/2024.
+  registry->RegisterStringPref(kOsCryptAppBoundFixedData3PrefName,
                                std::string());
 #endif
 
@@ -1866,7 +1871,6 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(
       policy::policy_prefs::kNativeWindowOcclusionEnabled, true);
   MediaFoundationServiceMonitor::RegisterPrefs(registry);
-  os_crypt::RegisterLocalStatePrefs(registry);
   os_crypt_async::AppBoundEncryptionProviderWin::RegisterLocalPrefs(registry);
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   IncompatibleApplicationsUpdater::RegisterLocalStatePrefs(registry);
@@ -2511,6 +2515,8 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   local_state->ClearPref(kOsCryptAppBoundFixedDataPrefName);
   // Deprecated 03/2024.
   local_state->ClearPref(kOsCryptAppBoundFixedData2PrefName);
+  // Deprecated 06/2024.
+  local_state->ClearPref(kOsCryptAppBoundFixedData3PrefName);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

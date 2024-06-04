@@ -6,8 +6,6 @@ assert(is_win)
 
 source_set("os_crypt") {
   sources = [
-    "app_bound_encryption_metrics_win.cc",
-    "app_bound_encryption_metrics_win.h",
     "app_bound_encryption_provider_win.cc",
     "app_bound_encryption_provider_win.h",
   ]

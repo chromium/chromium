@@ -15,14 +15,6 @@
 
 namespace features {
 
-#if BUILDFLAG(IS_WIN)
-// When this feature is enabled, metrics are gathered regarding the performance
-// and reliability of app-bound encryption primitives on a background thread.
-BASE_FEATURE(kAppBoundEncryptionMetrics,
-             "AppBoundEncryptionMetrics",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_WIN)
-
 // This is used to enable an experiment for modifying confidence cutoff of
 // prerender and preconnect for autocomplete action predictor.
 BASE_FEATURE(kAutocompleteActionPredictorConfidenceCutoff,
