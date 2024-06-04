@@ -333,8 +333,15 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithRegistration(
     return;
   }
 
-  const bool need_to_update =
-      !force_update_started_ && context_->force_update_on_page_load();
+  // Some registrations can't update like a web service worker (e.g. extension
+  // service workers are updated separately through the extensions system, along
+  // with the rest of the extension).
+  const bool can_update =
+      GetContentClient()->browser()->ShouldTryToUpdateServiceWorkerRegistration(
+          registration->scope(), context_->wrapper()->browser_context());
+  const bool need_to_update = !force_update_started_ &&
+                              context_->force_update_on_page_load() &&
+                              can_update;
   if (need_to_update) {
     force_update_started_ = true;
     context_->UpdateServiceWorker(

@@ -127,6 +127,7 @@
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/offscreen_document_host.h"
+#include "extensions/browser/service_worker/service_worker_test_utils.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/manifest.h"
@@ -704,6 +705,8 @@ class DevToolsExtensionTest : public DevToolsTest {
     return extension_id;
   }
 
+  const base::FilePath test_extensions_dir_;
+
  private:
   const Extension* GetExtensionByPath(
       const extensions::ExtensionSet& extensions,
@@ -721,7 +724,6 @@ class DevToolsExtensionTest : public DevToolsTest {
 
   // Use std::deque to avoid dangling references to existing elements.
   std::deque<extensions::TestExtensionDir> test_extension_dirs_;
-  const base::FilePath test_extensions_dir_;
 };
 
 class DevToolsExperimentalExtensionTest : public DevToolsExtensionTest {
@@ -1059,6 +1061,86 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, TestDevToolsExtensionAPI) {
   LoadExtension("devtools_extension");
   RunTest("waitForTestResultsInConsole", kArbitraryPage);
 }
+
+class DevtoolsPanelForceUpdateTest : public DevToolsExtensionTest,
+                                     public testing::WithParamInterface<bool> {
+ public:
+  DevtoolsPanelForceUpdateTest() = default;
+};
+
+// Tests that, for a extension using the devtools api to create a custom
+// devtools panel, we can navigate to the panel successfully (whether devtools
+// force update is enabled or not). Also confirms that we can manually browse to
+// an extension resource file before and after loading devtools. Regression test
+// for crbug.com/333670353.
+IN_PROC_BROWSER_TEST_P(DevtoolsPanelForceUpdateTest, NavigateToDevtoolsPanel) {
+  // Install devtools panel extension.
+  const Extension* extension = LoadExtensionFromPath(
+      test_extensions_dir_.AppendASCII("devtools_extension_force_update"));
+  ASSERT_TRUE(extension) << "Failed to load extension.";
+
+  // Manually navigate to an extension resource page to confirm the extension
+  // resource can be loaded.
+  GURL extension_resource_url =
+      GURL(base::StringPrintf("chrome-extension://%s/extension_resource.html",
+                              extension->id().c_str()));
+  ExtensionTestMessageListener extension_resource_loaded_listener(
+      "extension_resource.html loaded");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), extension_resource_url));
+  {
+    SCOPED_TRACE("waiting for extension resource to load");
+    ASSERT_TRUE(extension_resource_loaded_listener.WaitUntilSatisfied());
+  }
+
+  // Set whether the devtools panel has the "Update on reload" checkbox checked.
+  bool force_update_service_workers = GetParam();
+  content::ServiceWorkerContext* service_worker_context =
+      extensions::service_worker_test_utils::GetServiceWorkerContext(
+          browser()->profile());
+  ASSERT_TRUE(service_worker_context);
+  service_worker_context->SetForceUpdateOnPageLoadForTesting(
+      force_update_service_workers);
+
+  // Open the devtools panel/window on an arbitrary page.
+  OpenDevToolsWindow(kDebuggerTestPage, /*is_docked=*/true);
+
+  // Navigate to the extension's custom devtools panel.
+  ExtensionTestMessageListener extension_test_panel_loaded_listener(
+      "extension devtools panel loaded");
+  SwitchToExtensionPanel(window_, extension, "TestPanel");
+  {
+    SCOPED_TRACE(
+        "Waiting for the panel extension to finish loading, it should output "
+        "\"PASS\" to the console");
+    RunTestFunction(window_, "waitForTestResultsInConsole");
+  }
+  // Verify the panel loaded successfully by checking that the extension
+  // service worker received a message from the panel.
+  {
+    SCOPED_TRACE("waiting for extension devtools panel to load");
+    EXPECT_TRUE(extension_test_panel_loaded_listener.WaitUntilSatisfied());
+  }
+
+  // Manually navigate to the extension resource page again to confirm the
+  // extension resource can be still be loaded.
+  ExtensionTestMessageListener
+      extension_resource_loaded_after_devtools_listener(
+          "extension_resource.html loaded");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), extension_resource_url));
+  {
+    SCOPED_TRACE(
+        "waiting for extension resource to load after loading devtools");
+    EXPECT_TRUE(
+        extension_resource_loaded_after_devtools_listener.WaitUntilSatisfied());
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(ForceUpdateOff,
+                         DevtoolsPanelForceUpdateTest,
+                         testing::Values(false));
+INSTANTIATE_TEST_SUITE_P(ForceUpdateOn,
+                         DevtoolsPanelForceUpdateTest,
+                         testing::Values(true));
 
 // Tests that http Iframes within the visible devtools panel for the devtools
 // extension are rendered in their own processes and not in the devtools process
