@@ -8,7 +8,6 @@
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/performance_manager.h"
-#include "components/performance_manager/public/web_contents_proxy.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -34,7 +33,7 @@ class FormInteractionTabHelper::GraphObserver
   // Should be called on the UI thread to dispatch the OnHadFormInteraction
   // signal received on the PM sequence.
   static void DispatchOnHadFormInteraction(
-      const performance_manager::WebContentsProxy& contents_proxy,
+      base::WeakPtr<content::WebContents> contents,
       bool had_form_interaction);
 
   // performance_manager::PageNode::ObserverDefaultImpl:
@@ -48,15 +47,15 @@ class FormInteractionTabHelper::GraphObserver
 
 // static
 void FormInteractionTabHelper::GraphObserver::DispatchOnHadFormInteraction(
-    const performance_manager::WebContentsProxy& contents_proxy,
+    base::WeakPtr<content::WebContents> contents,
     bool had_form_interaction) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // If the web contents is still alive then dispatch to the actual
   // implementation in TabLifecycleUnitSource.
-  if (auto* contents = contents_proxy.Get()) {
+  if (contents) {
     // Notifications can be emitted by extensions, ignore these.
     if (auto* tab_helper =
-            FormInteractionTabHelper::FromWebContents(contents)) {
+            FormInteractionTabHelper::FromWebContents(contents.get())) {
       // Sanity check against spurious changes.
       DCHECK_NE(tab_helper->had_form_interaction_, had_form_interaction);
       tab_helper->had_form_interaction_ = had_form_interaction;
@@ -69,7 +68,7 @@ void FormInteractionTabHelper::GraphObserver::OnHadFormInteractionChanged(
   // Forward the notification over to the UI thread.
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&GraphObserver::DispatchOnHadFormInteraction,
-                                page_node->GetContentsProxy(),
+                                page_node->GetWebContents(),
                                 page_node->HadFormInteraction()));
 }
 

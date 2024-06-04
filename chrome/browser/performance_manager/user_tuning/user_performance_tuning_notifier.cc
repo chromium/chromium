@@ -4,14 +4,21 @@
 
 #include "chrome/browser/performance_manager/user_tuning/user_performance_tuning_notifier.h"
 
+#include <memory>
 #include <utility>
 #include <vector>
 
+#include "base/check_op.h"
+#include "base/memory/weak_ptr.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/graph/process_node.h"
+#include "content/public/browser/web_contents.h"
 
 namespace performance_manager::user_tuning {
+
+using WebContentsAndPmf =
+    std::pair<base::WeakPtr<content::WebContents>, uint64_t>;
 
 const int UserPerformanceTuningNotifier::kTabCountThresholdForPromo = 10;
 const int UserPerformanceTuningNotifier::kMemoryPercentThresholdForPromo = 70;
@@ -84,11 +91,11 @@ void UserPerformanceTuningNotifier::OnProcessMemoryMetricsAvailable(
 
   previous_total_rss_ = total_rss;
 
-  ProxyAndPmfKbVector proxies_and_pmf;
-  proxies_and_pmf.reserve(graph_->GetPageNodeCount());
+  std::vector<WebContentsAndPmf> web_contents_and_pmf;
+  web_contents_and_pmf.reserve(graph_->GetPageNodeCount());
   graph_->VisitAllPageNodes([&](const PageNode* page_node) {
-    proxies_and_pmf.emplace_back(page_node->GetContentsProxy(),
-                                 page_node->EstimatePrivateFootprintSize());
+    web_contents_and_pmf.emplace_back(
+        page_node->GetWebContents(), page_node->EstimatePrivateFootprintSize());
     return true;
   });
 }

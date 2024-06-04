@@ -4,36 +4,31 @@
 
 #include "chrome/browser/performance_manager/mechanisms/page_loader.h"
 
+#include "base/check_op.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "components/performance_manager/public/graph/page_node.h"
-#include "components/performance_manager/public/web_contents_proxy.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 
 namespace performance_manager {
 
 namespace mechanism {
 
-namespace {
-
-// Load a page on the UI thread.
-void LoadPageOnUIThread(const WebContentsProxy& contents_proxy) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  content::WebContents* const contents = contents_proxy.Get();
-  if (!contents)
-    return;
-
-  contents->GetController().LoadIfNecessary();
-}
-
-}  // namespace
-
 void PageLoader::LoadPageNode(const PageNode* page_node) {
   DCHECK(page_node);
   DCHECK_EQ(page_node->GetType(), PageType::kTab);
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&LoadPageOnUIThread, page_node->GetContentsProxy()));
+      FROM_HERE, base::BindOnce(
+                     [](base::WeakPtr<content::WebContents> contents) {
+                       if (contents) {
+                         contents->GetController().LoadIfNecessary();
+                       }
+                     },
+                     page_node->GetWebContents()));
 }
 
 }  // namespace mechanism

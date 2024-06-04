@@ -10,6 +10,7 @@
 #include "base/base64.h"
 #include "base/functional/bind.h"
 #include "base/json/json_string_value_serializer.h"
+#include "base/memory/weak_ptr.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/task/sequenced_task_runner.h"
@@ -22,7 +23,6 @@
 #include "components/performance_manager/public/graph/node_data_describer.h"
 #include "components/performance_manager/public/graph/node_data_describer_registry.h"
 #include "components/performance_manager/public/performance_manager.h"
-#include "components/performance_manager/public/web_contents_proxy.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
@@ -54,7 +54,7 @@ class DiscardsGraphDumpImpl::FaviconRequestHelper {
   FaviconRequestHelper& operator=(const FaviconRequestHelper&) = delete;
 
   void RequestFavicon(GURL page_url,
-                      performance_manager::WebContentsProxy contents_proxy,
+                      base::WeakPtr<content::WebContents> web_contents,
                       FaviconAvailableCallback on_favicon_available);
   void FaviconDataAvailable(FaviconAvailableCallback on_favicon_available,
                             const favicon_base::FaviconRawBitmapResult& result);
@@ -66,10 +66,9 @@ class DiscardsGraphDumpImpl::FaviconRequestHelper {
 
 void DiscardsGraphDumpImpl::FaviconRequestHelper::RequestFavicon(
     GURL page_url,
-    performance_manager::WebContentsProxy contents_proxy,
+    base::WeakPtr<content::WebContents> web_contents,
     FaviconAvailableCallback on_favicon_available) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  content::WebContents* web_contents = contents_proxy.Get();
   if (!web_contents)
     return;
 
@@ -422,7 +421,7 @@ void DiscardsGraphDumpImpl::StartPageFaviconRequest(
 
   EnsureFaviconRequestHelper()
       .AsyncCall(&FaviconRequestHelper::RequestFavicon)
-      .WithArgs(page_node->GetMainFrameUrl(), page_node->GetContentsProxy(),
+      .WithArgs(page_node->GetMainFrameUrl(), page_node->GetWebContents(),
                 GetFaviconAvailableCallback(GetNodeId(page_node)));
 }
 
@@ -435,7 +434,7 @@ void DiscardsGraphDumpImpl::StartFrameFaviconRequest(
   EnsureFaviconRequestHelper()
       .AsyncCall(&FaviconRequestHelper::RequestFavicon)
       .WithArgs(frame_node->GetURL(),
-                frame_node->GetPageNode()->GetContentsProxy(),
+                frame_node->GetPageNode()->GetWebContents(),
                 GetFaviconAvailableCallback(GetNodeId(frame_node)));
 }
 

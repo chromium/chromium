@@ -194,7 +194,6 @@ static_library("performance_manager") {
     "public/v8_memory/web_memory.h",
     "public/voting/optional_voting_channel.h",
     "public/voting/voting.h",
-    "public/web_contents_proxy.h",
     "registered_objects.h",
     "render_frame_host_proxy.cc",
     "render_process_host_proxy.cc",
@@ -247,7 +246,6 @@ static_library("performance_manager") {
     "v8_memory/web_memory_aggregator.h",
     "v8_memory/web_memory_impl.cc",
     "v8_memory/web_memory_impl.h",
-    "web_contents_proxy.cc",
     "worker_watcher.cc",
     "worker_watcher.h",
   ]
@@ -405,7 +403,6 @@ source_set("unit_tests") {
     "v8_memory/web_memory_impl_unittest.cc",
     "voting/optional_voting_channel_unittest.cc",
     "voting/voting_unittest.cc",
-    "web_contents_proxy_unittest.cc",
     "worker_watcher_unittest.cc",
   ]
 

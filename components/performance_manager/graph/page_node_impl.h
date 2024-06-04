@@ -19,7 +19,6 @@
 #include "components/performance_manager/graph/node_attached_data.h"
 #include "components/performance_manager/graph/node_base.h"
 #include "components/performance_manager/public/graph/page_node.h"
-#include "components/performance_manager/public/web_contents_proxy.h"
 #include "url/gurl.h"
 
 namespace performance_manager {
@@ -98,7 +97,6 @@ class PageNodeImpl
   bool HadFormInteraction() const override;
   bool HadUserEdits() const override;
   base::WeakPtr<content::WebContents> GetWebContents() const override;
-  WebContentsProxy GetContentsProxy() const override;
   PageState GetPageState() const override;
   uint64_t EstimateResidentSetSize() const override;
   uint64_t EstimatePrivateFootprintSize() const override;

@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/resource_coordinator/discard_metrics_lifecycle_unit_observer.h"
@@ -28,6 +29,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace resource_coordinator {
@@ -72,7 +74,6 @@ class TabLifecycleStateObserver
  public:
   using Graph = performance_manager::Graph;
   using PageNode = performance_manager::PageNode;
-  using WebContentsProxy = performance_manager::WebContentsProxy;
 
   TabLifecycleStateObserver() = default;
 
@@ -84,13 +85,14 @@ class TabLifecycleStateObserver
 
  private:
   static void OnLifecycleStateChangedImpl(
-      const WebContentsProxy& contents_proxy,
+      base::WeakPtr<content::WebContents> contents,
       performance_manager::mojom::LifecycleState state) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     // If the web contents is still alive then dispatch to the actual
     // implementation in TabLifecycleUnitSource.
-    if (auto* contents = contents_proxy.Get())
-      TabLifecycleUnitSource::OnLifecycleStateChanged(contents, state);
+    if (contents) {
+      TabLifecycleUnitSource::OnLifecycleStateChanged(contents.get(), state);
+    }
   }
 
   // performance_manager::PageNode::ObserverDefaultImpl::
@@ -99,7 +101,7 @@ class TabLifecycleStateObserver
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&TabLifecycleStateObserver::OnLifecycleStateChangedImpl,
-                       page_node->GetContentsProxy(),
+                       page_node->GetWebContents(),
                        page_node->GetLifecycleState()));
   }
 

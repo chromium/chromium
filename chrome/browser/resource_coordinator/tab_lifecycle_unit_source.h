@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/performance_manager/public/mojom/coordination_unit.mojom.h"
 #include "components/performance_manager/public/mojom/lifecycle.mojom-forward.h"
-#include "components/performance_manager/public/web_contents_proxy.h"
 
 class TabStripModel;
 

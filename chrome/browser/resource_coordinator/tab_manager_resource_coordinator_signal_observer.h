@@ -5,11 +5,15 @@
 #ifndef CHROME_BROWSER_RESOURCE_COORDINATOR_TAB_MANAGER_RESOURCE_COORDINATOR_SIGNAL_OBSERVER_H_
 #define CHROME_BROWSER_RESOURCE_COORDINATOR_TAB_MANAGER_RESOURCE_COORDINATOR_SIGNAL_OBSERVER_H_
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/graph/process_node.h"
-#include "components/performance_manager/public/web_contents_proxy.h"
+
+namespace content {
+class WebContents;
+}
 
 namespace resource_coordinator {
 
@@ -25,7 +29,6 @@ class TabManager::ResourceCoordinatorSignalObserver
   using Graph = performance_manager::Graph;
   using PageNode = performance_manager::PageNode;
   using ProcessNode = performance_manager::ProcessNode;
-  using WebContentsProxy = performance_manager::WebContentsProxy;
 
   explicit ResourceCoordinatorSignalObserver(
       const base::WeakPtr<TabManager>& tab_manager);
@@ -48,7 +51,8 @@ class TabManager::ResourceCoordinatorSignalObserver
 
  private:
   // Posted to the UI thread from the GraphObserver functions above.
-  static void OnPageStoppedLoadingOnUi(const WebContentsProxy& contents_proxy);
+  static void OnPageStoppedLoadingOnUi(
+      base::WeakPtr<content::WebContents> contents);
 
   // Can only be dereferenced on the UI thread. When the tab manager dies this
   // is used to drop messages received from the performance manager. Ideally

@@ -231,10 +231,6 @@ base::WeakPtr<content::WebContents> PageNodeImpl::GetWebContents() const {
   return web_contents_;
 }
 
-WebContentsProxy PageNodeImpl::GetContentsProxy() const {
-  return WebContentsProxy(web_contents_);
-}
-
 PageState PageNodeImpl::GetPageState() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return page_state_.value();
@@ -280,8 +276,9 @@ void PageNodeImpl::AddFrame(base::PassKey<FrameNodeImpl>,
   DCHECK(graph()->NodeInGraph(frame_node));
 
   ++frame_node_count_;
-  if (frame_node->parent_frame_node() == nullptr)
+  if (frame_node->parent_frame_node() == nullptr) {
     main_frame_nodes_.insert(frame_node);
+  }
 }
 
 void PageNodeImpl::RemoveFrame(base::PassKey<FrameNodeImpl>,
@@ -390,8 +387,9 @@ void PageNodeImpl::OnMainFrameNavigationCommitted(
   main_frame_url_.SetAndMaybeNotify(this, url);
 
   // No mainframe document change notification on same-document navigations.
-  if (same_document)
+  if (same_document) {
     return;
+  }
 
   for (auto& observer : GetObservers()) {
     observer.OnMainFrameDocumentChanged(this);
@@ -417,8 +415,9 @@ FrameNodeImpl* PageNodeImpl::embedder_frame_node() const {
 
 FrameNodeImpl* PageNodeImpl::main_frame_node() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (main_frame_nodes_.empty())
+  if (main_frame_nodes_.empty()) {
     return nullptr;
+  }
 
   // Return the current frame node if there is one. Iterating over this set is
   // fine because it is almost always of length 1 or 2.
@@ -445,8 +444,9 @@ void PageNodeImpl::SetOpenerFrameNode(FrameNodeImpl* opener) {
   DCHECK_NE(this, opener->page_node());
 
   auto* previous_opener = opener_frame_node_.get();
-  if (previous_opener)
+  if (previous_opener) {
     previous_opener->RemoveOpenedPage(PassKey(), this);
+  }
   opener_frame_node_ = opener;
   opener->AddOpenedPage(PassKey(), this);
 
@@ -481,8 +481,9 @@ void PageNodeImpl::SetEmbedderFrameNodeAndEmbeddingType(
   auto* previous_embedder = embedder_frame_node_.get();
   auto previous_type = embedding_type_;
 
-  if (previous_embedder)
+  if (previous_embedder) {
     previous_embedder->RemoveEmbeddedPage(PassKey(), this);
+  }
   embedder_frame_node_ = embedder;
   embedding_type_ = embedding_type;
   embedder->AddEmbeddedPage(PassKey(), this);
@@ -534,12 +535,14 @@ void PageNodeImpl::OnBeforeLeavingGraph() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Sever opener relationships.
-  if (opener_frame_node_)
+  if (opener_frame_node_) {
     ClearOpenerFrameNode();
+  }
 
   // Sever embedder relationships.
-  if (embedder_frame_node_)
+  if (embedder_frame_node_) {
     ClearEmbedderFrameNodeAndEmbeddingType();
+  }
 
   DCHECK_EQ(0u, frame_node_count_);
 }

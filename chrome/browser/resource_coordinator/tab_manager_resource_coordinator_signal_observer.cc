@@ -12,6 +12,7 @@
 #include "components/performance_manager/public/graph/graph_operations.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/web_contents.h"
 
 namespace resource_coordinator {
 
@@ -39,8 +40,8 @@ void TabManager::ResourceCoordinatorSignalObserver::OnLoadingStateChanged(
   // Forward the notification over to the UI thread when the page stops loading.
   if (page_node->GetLoadingState() == PageNode::LoadingState::kLoadedIdle) {
     content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(&OnPageStoppedLoadingOnUi,
-                                  page_node->GetContentsProxy()));
+        FROM_HERE,
+        base::BindOnce(&OnPageStoppedLoadingOnUi, page_node->GetWebContents()));
   }
 }
 
@@ -58,11 +59,11 @@ void TabManager::ResourceCoordinatorSignalObserver::OnTakenFromGraph(
 
 // static
 void TabManager::ResourceCoordinatorSignalObserver::OnPageStoppedLoadingOnUi(
-    const WebContentsProxy& contents_proxy) {
+    base::WeakPtr<content::WebContents> contents) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (auto* contents = contents_proxy.Get()) {
+  if (contents) {
     TabManagerResourceCoordinatorSignalObserverHelper::OnPageStoppedLoading(
-        contents);
+        contents.get());
   }
 }
 

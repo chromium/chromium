@@ -16,7 +16,6 @@
 #include "components/performance_manager/public/mojom/coordination_unit.mojom.h"
 #include "components/performance_manager/public/mojom/lifecycle.mojom.h"
 #include "components/performance_manager/public/resource_attribution/page_context.h"
-#include "components/performance_manager/public/web_contents_proxy.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 
@@ -242,12 +241,6 @@ class PageNode : public Node {
   // call this function on any thread but the weak pointer must only be
   // dereferenced on the UI thread.
   virtual base::WeakPtr<content::WebContents> GetWebContents() const = 0;
-
-  // Returns the web contents associated with this page node. It is valid to
-  // call this function on any thread but the weak pointer must only be
-  // dereferenced on the UI thread.
-  // DEPRECATED: Prefer GetWebContents().
-  virtual WebContentsProxy GetContentsProxy() const = 0;
 
   // Returns the current page state. See "PageNodeObserver::OnPageStateChanged".
   virtual PageState GetPageState() const = 0;
