@@ -11233,6 +11233,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/ui/lens",
       "//chrome/browser/web_applications:interactive_ui_tests",
       "//chrome/browser/web_applications:web_applications_test_support",
+      "//chrome/browser/webauthn:test_support",
       "//chrome/common:version_header",
       "//chrome/common/notifications",
       "//chrome/renderer",
