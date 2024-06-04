@@ -979,6 +979,10 @@ void InputMethodController::SetComposition(
 
   SelectComposition();
 
+  // TODO(editing-dev): The use of UpdateStyleAndLayout
+  // needs to be audited. see http://crbug.com/590369 for more details.
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
+
   if (GetFrame().Selection().ComputeVisibleSelectionInDOMTree().IsNone()) {
     return;
   }
@@ -986,10 +990,6 @@ void InputMethodController::SetComposition(
   Element* target = GetDocument().FocusedElement();
   if (!target)
     return;
-
-  // TODO(editing-dev): The use of UpdateStyleAndLayout
-  // needs to be audited. see http://crbug.com/590369 for more details.
-  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
 
   PlainTextRange selected_range = CreateSelectionRangeForSetComposition(
       selection_start, selection_end, text.length());
