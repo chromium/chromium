@@ -13283,6 +13283,21 @@
             ]
         }
     ],
+    "NearbyBleV2": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableNearbyBleV2"
+                    ]
+                }
+            ]
+        }
+    ],
     "NearbyShareNameEnabled": [
         {
             "platforms": [
