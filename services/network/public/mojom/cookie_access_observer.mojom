@@ -9,6 +9,7 @@ import "url/mojom/url.mojom";
 import "services/network/public/mojom/site_for_cookies.mojom";
 import "services/network/public/mojom/cookie_manager.mojom";
 import "services/network/public/mojom/cookie_setting_overrides.mojom";
+import "services/network/public/mojom/source_location.mojom";
 
 struct CookieAccessDetails {
   enum Type {
@@ -51,6 +52,11 @@ struct CookieAccessDetails {
 
   // A set of enum values as a bitmask.
   CookieSettingOverrides cookie_setting_overrides;
+
+  // The source code location that triggered the cookie access attempt. If
+  // the access was not initiated from JavaScript, the source_location is empty.
+  // This data can be user controlled.
+  SourceLocation? source_location;
 };
 
 // Cloneable interface to observe the cookie reads or writes.
