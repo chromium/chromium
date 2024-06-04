@@ -84,7 +84,17 @@ inline constexpr char kCurrentMigrationVersionToGoogleMobileServices[] =
 // last time migrated, in milliseconds since UNIX epoch.
 inline constexpr char kTimeOfLastMigrationAttempt[] =
     "time_of_last_migration_attempt";
+#endif
 
+// The total amount of passwords available in Password Manager account store.
+inline constexpr char kTotalPasswordsAvailableForAccount[] =
+    "total_passwords_available_for_account";
+
+// The total amount of passwords available in Password Manager profile store.
+inline constexpr char kTotalPasswordsAvailableForProfile[] =
+    "total_passwords_available_for_profile";
+
+#if BUILDFLAG(IS_ANDROID)
 // Integer pref indicating whether the client is ready to use UPM for local
 // passwords and settings and split password stores for syncing users.
 // The preconditions for the pref to be set to true:

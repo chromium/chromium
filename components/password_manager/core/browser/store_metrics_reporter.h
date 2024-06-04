@@ -58,6 +58,8 @@ class StoreMetricsReporter : public PasswordStoreConsumer {
   scoped_refptr<PasswordStoreInterface> profile_store_;
   scoped_refptr<PasswordStoreInterface> account_store_;
 
+  raw_ptr<PrefService> prefs_ = nullptr;
+
   std::string sync_username_;
 
   bool custom_passphrase_enabled_;

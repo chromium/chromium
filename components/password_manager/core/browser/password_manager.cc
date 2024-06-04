@@ -380,6 +380,8 @@ void PasswordManager::RegisterProfilePrefs(
   registry->RegisterIntegerPref(prefs::kRelaunchChromeBubbleDismissedCounter,
                                 0);
 #endif
+  registry->RegisterIntegerPref(prefs::kTotalPasswordsAvailableForAccount, 0);
+  registry->RegisterIntegerPref(prefs::kTotalPasswordsAvailableForProfile, 0);
 }
 
 // static
