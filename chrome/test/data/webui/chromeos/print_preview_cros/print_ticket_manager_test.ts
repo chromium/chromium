@@ -29,7 +29,7 @@ suite('PrintTicketManager', () => {
 
   const partialTicket: Partial<PrintTicket> = {
     ...DEFAULT_PARTIAL_PRINT_TICKET,
-    destination: '',
+    destinationId: '',
     previewModifiable: true,  // Default to HTML document.
     shouldPrintSelectionOnly: false,
     printerManuallySelected: false,
@@ -309,7 +309,7 @@ suite('PrintTicketManager', () => {
         const ticket = ticketManager.getPrintTicket();
         assertNotEquals(null, ticket, 'Ticket configured');
         assertEquals(
-            PDF_DESTINATION.id, ticket!.destination,
+            PDF_DESTINATION.id, ticket!.destinationId,
             'destination set from DestinationManager active destination');
         assertEquals(
             PDF_DESTINATION.printerType, ticket!.printerType,
@@ -337,7 +337,7 @@ suite('PrintTicketManager', () => {
 
         const ticket = ticketManager.getPrintTicket();
         assertNotEquals(null, ticket, 'Ticket configured');
-        assertEquals('', ticket!.destination, 'destination should be empty');
+        assertEquals('', ticket!.destinationId, 'destination should be empty');
       });
 
   // Verify default setting for previewModifiable is based on session context.
@@ -407,7 +407,7 @@ suite('PrintTicketManager', () => {
         ticketManager.initializeSession(FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL);
 
         const ticket = ticketManager.getPrintTicket();
-        assertEquals('', ticket!.destination, 'destination should be empty');
+        assertEquals('', ticket!.destinationId, 'destination should be empty');
 
         getActiveDestinationFn.returnValue = PDF_DESTINATION;
         const changeEvent1 = eventToPromise(
@@ -417,7 +417,7 @@ suite('PrintTicketManager', () => {
         await changeEvent1;
 
         assertEquals(
-            PDF_DESTINATION.id, ticket!.destination,
+            PDF_DESTINATION.id, ticket!.destinationId,
             `destination should be ${PDF_DESTINATION.id}`);
         assertEquals(
             PDF_DESTINATION.printerType, ticket!.printerType,
@@ -436,7 +436,7 @@ suite('PrintTicketManager', () => {
             createCustomEvent(DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED));
         await changeEvent2;
         assertEquals(
-            PDF_DESTINATION.id, ticket!.destination,
+            PDF_DESTINATION.id, ticket!.destinationId,
             `destination should remain ${PDF_DESTINATION.id}`);
       });
 
@@ -585,7 +585,7 @@ suite('PrintTicketManager', () => {
         await ticketChanged;
         const ticket = ticketManager.getPrintTicket();
         assertEquals(
-            testDestination.id, ticket!.destination,
+            testDestination.id, ticket!.destinationId,
             'ticket destination should be updated');
         assertEquals(
             testDestination.printerType, ticket!.printerType,

@@ -225,7 +225,7 @@ export class DestinationManager extends EventTarget implements
     assert(this.printTicketManager);
     const currentPrintTicket = this.printTicketManager.getPrintTicket();
     assert(currentPrintTicket);
-    const nextActiveDestinationId = currentPrintTicket.destination || '';
+    const nextActiveDestinationId = currentPrintTicket.destinationId || '';
     if (nextActiveDestinationId === this.activeDestinationId) {
       return;
     }

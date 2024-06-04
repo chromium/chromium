@@ -138,7 +138,7 @@ export interface PrintTicket {
   printPreviewId: UnguessableToken;
 
   // ID of the destination print job will be sent to.
-  destination: string;
+  destinationId: string;
 
   // Whether source document is PDF or HTML.
   previewModifiable: boolean;
@@ -252,7 +252,7 @@ export interface PreviewTicket {
   requestId: number;
 
   // Id of destination.
-  deviceName: string;
+  destinationId: string;
 
   // Whether source document is PDF or HTML.
   previewModifiable: boolean;

@@ -85,13 +85,13 @@ export class PrintTicketManager extends EventTarget {
     this.destinationManager = DestinationManager.getInstance();
     const activeDest = this.destinationManager.getActiveDestination();
     if (activeDest === null) {
-      this.printTicket.destination = '';
+      this.printTicket.destinationId = '';
       this.eventTracker.add(
           this.destinationManager,
           DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED,
           (): void => this.onActiveDestinationChanged());
     } else {
-      this.printTicket.destination = activeDest.id;
+      this.printTicket.destinationId = activeDest.id;
       this.printTicket.printerType = activeDest.printerType;
       this.printTicket.printerStatusReason =
           activeDest.printerStatusReason || PrinterStatusReason.UNKNOWN_REASON;
@@ -167,7 +167,7 @@ export class PrintTicketManager extends EventTarget {
       return;
     }
 
-    if (this.printTicket!.destination === '') {
+    if (this.printTicket!.destinationId === '') {
       this.updateDestinationFields(activeDest.id, /*manuallySelected=*/ false);
     }
 
@@ -189,7 +189,7 @@ export class PrintTicketManager extends EventTarget {
     }
 
     if (!isValidDestination(destinationId) ||
-        destinationId === this.printTicket!.destination) {
+        destinationId === this.printTicket!.destinationId) {
       return false;
     }
 
@@ -206,7 +206,7 @@ export class PrintTicketManager extends EventTarget {
     assert(this.printTicket);
     const source: Destination =
         this.destinationManager.getDestination(destinationId);
-    this.printTicket.destination = destinationId;
+    this.printTicket.destinationId = destinationId;
     this.printTicket.printerType = source.printerType;
     this.printTicket.printerStatusReason =
         source.printerStatusReason || PrinterStatusReason.UNKNOWN_REASON;

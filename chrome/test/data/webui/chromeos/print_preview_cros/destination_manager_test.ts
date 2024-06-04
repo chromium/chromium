@@ -426,7 +426,7 @@ suite('DestinationManager', () => {
         const printTicketManager = PrintTicketManager.getInstance();
         assertEquals(
             PDF_DESTINATION.id,
-            printTicketManager.getPrintTicket()!.destination);
+            printTicketManager.getPrintTicket()!.destinationId);
 
         // Simulate print ticket update that does not change the destination ID.
         const ticketChanged = eventToPromise(

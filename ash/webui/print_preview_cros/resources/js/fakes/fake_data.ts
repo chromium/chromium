@@ -15,7 +15,7 @@ export function getFakePreviewTicket(): PreviewTicket {
   const previewTicket: PreviewTicket = {
     requestId: 1,
     printPreviewId: new UnguessableToken(),
-    deviceName: 'Default Printer',
+    destinationId: 'Default Printer',
     collate: true,
     color: ColorModel.COLOR,
     copies: 1,
