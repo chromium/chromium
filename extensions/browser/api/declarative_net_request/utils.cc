@@ -20,6 +20,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "components/url_pattern_index/url_pattern_index.h"
+#include "components/version_info/channel.h"
 #include "components/web_cache/browser/web_cache_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/api/declarative_net_request/composite_matcher.h"
@@ -33,6 +34,7 @@
 #include "extensions/common/api/declarative_net_request/dnr_manifest_data.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/features/feature_channel.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "third_party/flatbuffers/src/include/flatbuffers/flatbuffers.h"
@@ -888,6 +890,15 @@ bool IsRuleSafe(const flat::UrlRuleMetadata& url_rule_metadata) {
          action_type == flat::ActionType_allow ||
          action_type == flat::ActionType_allow_all_requests ||
          action_type == flat::ActionType_upgrade_scheme;
+}
+
+bool IsResponseHeaderMatchingEnabled() {
+  // Response header matching is enabled if the feature flag is enabled and the
+  // browser is on trunk, canary or dev..
+  return GetCurrentChannel() != version_info::Channel::STABLE &&
+         GetCurrentChannel() != version_info::Channel::BETA &&
+         base::FeatureList::IsEnabled(
+             extensions_features::kDeclarativeNetRequestResponseHeaderMatching);
 }
 
 }  // namespace extensions::declarative_net_request

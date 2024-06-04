@@ -67,6 +67,18 @@ ParseInfo RulesetSource::IndexRules(
         continue;
       }
 
+      // Ignore rules that specify response header matching conditions if the
+      // feature is disabled.
+      // TODO(crbug.com/40727004): Enable this feature for all versions once
+      // initial testing is complete.
+      bool has_response_header_conditions =
+          rule.condition.response_headers.has_value() ||
+          rule.condition.excluded_response_headers.has_value();
+      if (has_response_header_conditions &&
+          !IsResponseHeaderMatchingEnabled()) {
+        continue;
+      }
+
       IndexedRule indexed_rule;
       ParseResult parse_result = IndexedRule::CreateIndexedRule(
           std::move(rule), base_url, id(), &indexed_rule);

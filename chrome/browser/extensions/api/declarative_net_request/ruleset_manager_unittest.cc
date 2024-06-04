@@ -15,6 +15,7 @@
 #include "chrome/browser/extensions/api/declarative_net_request/dnr_test_base.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_util.h"
+#include "components/version_info/channel.h"
 #include "extensions/browser/api/declarative_net_request/composite_matcher.h"
 #include "extensions/browser/api/declarative_net_request/file_backed_ruleset_source.h"
 #include "extensions/browser/api/declarative_net_request/request_action.h"
@@ -29,6 +30,7 @@
 #include "extensions/common/api/declarative_net_request/constants.h"
 #include "extensions/common/api/declarative_net_request/test_utils.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/features/feature_channel.h"
 #include "extensions/common/file_util.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/url_pattern.h"
@@ -794,7 +796,11 @@ class RulesetManagerResponseHeadersTest : public RulesetManagerTest {
   }
 
  private:
+  // TODO(crbug.com/40727004): Once feature is launched to stable and feature
+  // flag can be removed, replace usages of this test class with just
+  // DeclarativeNetRequestBrowserTest.
   base::test::ScopedFeatureList scoped_feature_list_;
+  ScopedCurrentChannel current_channel_override_{version_info::Channel::DEV};
 };
 
 // Test that multiple lists of modify header actions can be merged into a single

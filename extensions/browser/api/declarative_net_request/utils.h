@@ -203,6 +203,11 @@ url_pattern_index::flat::RequestMethod GetRequestMethod(
 bool IsRuleSafe(const api::declarative_net_request::Rule& rule);
 bool IsRuleSafe(const flat::UrlRuleMetadata& rule);
 
+// Returns if the browser has enabled matching by response header conditions.
+// This looks at the `kDeclarativeNetRequestResponseHeaderMatching` feature flag
+// and the current browser channel.
+bool IsResponseHeaderMatchingEnabled();
+
 }  // namespace declarative_net_request
 }  // namespace extensions
 

@@ -68,6 +68,7 @@
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/proxy_config/proxy_config_dictionary.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
+#include "components/version_info/channel.h"
 #include "components/web_package/web_bundle_builder.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -114,6 +115,7 @@
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
+#include "extensions/common/features/feature_channel.h"
 #include "extensions/common/file_util.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/url_pattern.h"
@@ -7153,15 +7155,16 @@ class DNRMatchResponseHeadersBrowserTest
     : public DeclarativeNetRequestBrowserTest {
  public:
   DNRMatchResponseHeadersBrowserTest() {
-    // TODO(crbug.com/40727004): Once feature is launched to stable and feature
-    // flag can be removed, replace usages of this test class with just
-    // DeclarativeNetRequestBrowserTest.
     scoped_feature_list_.InitAndEnableFeature(
         extensions_features::kDeclarativeNetRequestResponseHeaderMatching);
   }
 
  private:
+  // TODO(crbug.com/40727004): Once feature is launched to stable and feature
+  // flag can be removed, replace usages of this test class with just
+  // DeclarativeNetRequestBrowserTest.
   base::test::ScopedFeatureList scoped_feature_list_;
+  ScopedCurrentChannel current_channel_override_{version_info::Channel::DEV};
 };
 
 // Test that requests matching rules' response header conditions will be

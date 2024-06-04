@@ -17,6 +17,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/url_pattern_index/flat/url_pattern_index_generated.h"
+#include "components/version_info/channel.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_navigation_handle.h"
@@ -34,6 +35,7 @@
 #include "extensions/common/api/declarative_net_request/constants.h"
 #include "extensions/common/api/declarative_net_request/test_utils.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/features/feature_channel.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -1503,7 +1505,11 @@ class RulesetMatcherResponseHeadersTest : public RulesetMatcherTest {
   }
 
  private:
+  // TODO(crbug.com/40727004): Once feature is launched to stable and feature
+  // flag can be removed, replace usages of this test class with just
+  // DeclarativeNetRequestBrowserTest.
   base::test::ScopedFeatureList scoped_feature_list_;
+  ScopedCurrentChannel current_channel_override_{version_info::Channel::DEV};
 };
 
 // Test that GetOnHeadersReceivedAction only matches rules with response header

@@ -763,8 +763,7 @@ ParseResult IndexedRule::CreateIndexedRule(dnr_api::Rule parsed_rule,
     }
   }
 
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kDeclarativeNetRequestResponseHeaderMatching)) {
+  if (IsResponseHeaderMatchingEnabled()) {
     if (parsed_rule.condition.response_headers) {
       if (parsed_rule.condition.response_headers->empty()) {
         return ParseResult::ERROR_EMPTY_RESPONSE_HEADER_MATCHING_LIST;

@@ -11,6 +11,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/version_info/channel.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
 #include "extensions/browser/api/declarative_net_request/file_backed_ruleset_source.h"
 #include "extensions/browser/api/declarative_net_request/request_action.h"
@@ -21,6 +22,7 @@
 #include "extensions/common/api/declarative_net_request/constants.h"
 #include "extensions/common/api/declarative_net_request/test_utils.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/features/feature_channel.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "net/http/http_request_headers.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -730,7 +732,11 @@ class CompositeMatcherResponseHeadersTest : public CompositeMatcherTest {
   }
 
  private:
+  // TODO(crbug.com/40727004): Once feature is launched to stable and feature
+  // flag can be removed, replace usages of this test class with just
+  // DeclarativeNetRequestBrowserTest.
   base::test::ScopedFeatureList scoped_feature_list_;
+  ScopedCurrentChannel current_channel_override_{version_info::Channel::DEV};
 };
 
 // Test that an allow rule matched in OnBeforeRequest can be returned when

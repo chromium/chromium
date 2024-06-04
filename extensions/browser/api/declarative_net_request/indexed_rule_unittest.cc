@@ -15,12 +15,14 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
+#include "components/version_info/channel.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
 #include "extensions/browser/api/declarative_net_request/test_utils.h"
 #include "extensions/common/api/declarative_net_request.h"
 #include "extensions/common/api/declarative_net_request/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/features/feature_channel.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -1085,7 +1087,11 @@ class IndexedResponseHeaderRuleTest : public IndexedRuleTest {
   }
 
  private:
+  // TODO(crbug.com/40727004): Once feature is launched to stable and feature
+  // flag can be removed, replace usages of this test class with just
+  // DeclarativeNetRequestBrowserTest.
   base::test::ScopedFeatureList scoped_feature_list_;
+  ScopedCurrentChannel current_channel_override_{version_info::Channel::DEV};
 };
 
 // Test the validation of rules that specify response header matching
