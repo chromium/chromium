@@ -105,6 +105,7 @@
 -third_party/
 -tools/
 -ui/
++ui/views/
 -url/
 -v8/
 -webkit/

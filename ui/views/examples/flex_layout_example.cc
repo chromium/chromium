@@ -2,6 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#if defined(UNSAFE_BUFFERS_BUILD)
+// TODO(https://crbug.com/344639839): fix the unsafe buffer errors in this file,
+// then remove this pragma.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/views/examples/flex_layout_example.h"
 
 #include <memory>
