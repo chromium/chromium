@@ -368,11 +368,15 @@ base::Time FocusModeController::GetActualEndTime() const {
 }
 
 void FocusModeController::SetSelectedTask(const FocusModeTask& task) {
-  if (selected_task_.task_id == task.task_id) {
+  const bool same_task = (selected_task_.task_id == task.task_id);
+
+  selected_task_ = task;
+
+  // Do not update metrics or user prefs if it is not a new task.
+  if (same_task) {
     return;
   }
 
-  selected_task_ = task;
   if (in_focus_session() || in_ending_moment()) {
     SaveSelectedTaskSettingsToUserPrefs();
   }

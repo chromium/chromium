@@ -144,6 +144,13 @@ class FocusModeTray::TaskItemView : public views::BoxLayoutView {
   const views::Label* GetTaskTitle() const { return task_title_; }
   bool GetWasCompleted() const { return was_completed_; }
 
+  void UpdateTitle(const std::u16string& title) {
+    radio_button_->SetAccessibleName(l10n_util::GetStringFUTF16(
+        IDS_ASH_STATUS_TRAY_FOCUS_MODE_TRAY_RADIO_BUTTON, title));
+    task_title_->SetText(title);
+    task_title_->SetTooltipText(title);
+  }
+
   // Sets `radio_button_` as toggled which will update the button with a check
   // icon, and adds a strike through on `task_title_`.
   void UpdateStyleToCompleted() {
@@ -477,6 +484,8 @@ void FocusModeTray::OnTaskFetched(const FocusModeTask& task_entry) {
     // We need to update the bubble after creating the `task_item_view_` so the
     // widget bounds are updated and shows the view.
     bubble_->bubble_view()->UpdateBubble();
+  } else {
+    task_item_view_->UpdateTitle(base::UTF8ToUTF16(task_entry.title));
   }
 }
 
