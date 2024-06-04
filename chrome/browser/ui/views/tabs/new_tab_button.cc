@@ -24,7 +24,6 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/base/theme_provider.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/scoped_canvas.h"
@@ -120,13 +119,10 @@ void NewTabButton::RemoveLayerFromRegions(ui::Layer* old_layer) {
 }
 
 SkColor NewTabButton::GetForegroundColor() const {
-  if (features::IsChromeRefresh2023()) {
     return GetColorProvider()->GetColor(
         GetWidget()->ShouldPaintAsActive()
             ? foreground_frame_active_color_id_
             : foreground_frame_inactive_color_id_);
-  }
-  return tab_strip_->GetTabForegroundColor(TabActive::kInactive);
 }
 
 int NewTabButton::GetCornerRadius() const {

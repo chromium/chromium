@@ -273,13 +273,6 @@ class Tab : public gfx::AnimationDelegate,
   // Whether the tab is currently animating from a pinned to an unpinned state.
   bool is_animating_from_pinned_ = false;
 
-  // If there's room, we add additional padding to the left of the favicon to
-  // balance the whitespace inside the non-hovered close button image;
-  // otherwise, the tab contents look too close to the left edge. Once the tabs
-  // get too small, we let the tab contents take the full width, to maximize
-  // visible area.
-  bool extra_padding_before_content_ = false;
-
   // When both the close button and alert indicator are visible, we add extra
   // padding between them to space them out visually.
   bool extra_alert_indicator_padding_ = false;
