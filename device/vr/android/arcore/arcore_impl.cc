@@ -718,6 +718,14 @@ bool ArCoreImpl::ConfigureFeatures(
     // the desired usage and data format.
     ArConfig_setDepthMode(ar_session, arcore_config.get(),
                           AR_DEPTH_MODE_AUTOMATIC);
+  } else if (depth_api_required) {
+    // If we couldn't support the desired usage/format and depth is required,
+    // reject the session.
+    return false;
+  } else if (depth_api_optional) {
+    // If we couldn't support the desired usage/format and depth is optional,
+    // remove it from our list of enabled features.
+    enabled_features.erase(device::mojom::XRSessionFeature::DEPTH);
   }
 
   ArStatus status = ArSession_configure(ar_session, arcore_config.get());
