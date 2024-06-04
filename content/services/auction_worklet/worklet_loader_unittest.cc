@@ -449,8 +449,8 @@ TEST_F(WorkletLoaderTest, LoadWasmSuccess) {
   WorkletWasmLoader worklet_loader(
       &url_loader_factory_,
       /*auction_network_events_handler=*/
-      auction_network_events_handler_.CreateRemote(), url_, v8_helpers_[0],
-      debug_ids_[0],
+      auction_network_events_handler_.CreateRemote(), url_, v8_helpers_,
+      debug_ids_,
       base::BindOnce(&WorkletLoaderTest::LoadWorkletCallback,
                      base::Unretained(this)));
   run_loop_.Run();
@@ -478,19 +478,89 @@ TEST_F(WorkletLoaderTest, LoadWasmSuccess) {
       v8_helpers_[0], std::move(results_[0])));
 }
 
+TEST_F(WorkletLoaderTest, TwoV8Helpers_LoadWasmSuccess) {
+  v8_helpers_.push_back(
+      AuctionV8Helper::Create(AuctionV8Helper::CreateTaskRunner()));
+  debug_ids_.push_back(scoped_refptr<AuctionV8Helper::DebugId>());
+
+  AddResponse(
+      &url_loader_factory_, url_, "application/wasm",
+      /*charset=*/std::nullopt,
+      std::string(kMinimalWasmModuleBytes, std::size(kMinimalWasmModuleBytes)));
+  WorkletWasmLoader worklet_loader(
+      &url_loader_factory_,
+      /*auction_network_events_handler=*/
+      auction_network_events_handler_.CreateRemote(), url_, v8_helpers_,
+      debug_ids_,
+      base::BindOnce(&WorkletLoaderTest::LoadWorkletCallback,
+                     base::Unretained(this)));
+  run_loop_.Run();
+  EXPECT_EQ(results_.size(), 2u);
+  EXPECT_TRUE(results_[0].success());
+  EXPECT_TRUE(results_[1].success());
+
+  for (size_t i : {0, 1}) {
+    RunOnV8ThreadAndWait(
+        base::BindOnce(
+            [](scoped_refptr<AuctionV8Helper> v8_helper,
+               WorkletLoaderBase::Result result) {
+              AuctionV8Helper::FullIsolateScope isolate_scope(v8_helper.get());
+              v8::Local<v8::Context> context = v8_helper->CreateContext();
+              v8::Context::Scope context_scope(context);
+
+              ASSERT_TRUE(result.success());
+              v8::MaybeLocal<v8::WasmModuleObject> module =
+                  WorkletWasmLoader::MakeModule(result);
+              ASSERT_FALSE(module.IsEmpty());
+
+              // MakeModule makes new ones, so `result` is still valid.
+              EXPECT_TRUE(result.success());
+              v8::MaybeLocal<v8::WasmModuleObject> module2 =
+                  WorkletWasmLoader::MakeModule(result);
+              ASSERT_FALSE(module2.IsEmpty());
+              EXPECT_NE(module.ToLocalChecked(), module2.ToLocalChecked());
+            },
+            v8_helpers_[i], std::move(results_[i])),
+        v8_helpers_[i]);
+  }
+}
+
 TEST_F(WorkletLoaderTest, LoadWasmError) {
   AddResponse(&url_loader_factory_, url_, "application/wasm",
               /*charset=*/std::nullopt, "not wasm");
   WorkletWasmLoader worklet_loader(
       &url_loader_factory_,
       /*auction_network_events_handler=*/
-      auction_network_events_handler_.CreateRemote(), url_, v8_helpers_[0],
-      debug_ids_[0],
+      auction_network_events_handler_.CreateRemote(), url_, v8_helpers_,
+      debug_ids_,
       base::BindOnce(&WorkletLoaderTest::LoadWorkletCallback,
                      base::Unretained(this)));
   run_loop_.Run();
   EXPECT_EQ(results_.size(), 1u);
   EXPECT_FALSE(results_[0].success());
+  EXPECT_THAT(last_error_msg(), StartsWith("https://foo.test/ "));
+  EXPECT_THAT(last_error_msg(),
+              HasSubstr("Uncaught CompileError: WasmModuleObject::Compile"));
+}
+
+TEST_F(WorkletLoaderTest, TwoV8Helpers_LoadWasmError) {
+  v8_helpers_.push_back(
+      AuctionV8Helper::Create(AuctionV8Helper::CreateTaskRunner()));
+  debug_ids_.push_back(scoped_refptr<AuctionV8Helper::DebugId>());
+
+  AddResponse(&url_loader_factory_, url_, "application/wasm",
+              /*charset=*/std::nullopt, "not wasm");
+  WorkletWasmLoader worklet_loader(
+      &url_loader_factory_,
+      /*auction_network_events_handler=*/
+      auction_network_events_handler_.CreateRemote(), url_, v8_helpers_,
+      debug_ids_,
+      base::BindOnce(&WorkletLoaderTest::LoadWorkletCallback,
+                     base::Unretained(this)));
+  run_loop_.Run();
+  EXPECT_EQ(results_.size(), 2u);
+  EXPECT_FALSE(results_[0].success());
+  EXPECT_FALSE(results_[1].success());
   EXPECT_THAT(last_error_msg(), StartsWith("https://foo.test/ "));
   EXPECT_THAT(last_error_msg(),
               HasSubstr("Uncaught CompileError: WasmModuleObject::Compile"));

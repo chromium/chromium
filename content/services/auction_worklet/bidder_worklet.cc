@@ -1884,7 +1884,8 @@ void BidderWorklet::Start() {
         /*auction_network_events_handler=*/
         CreateNewAuctionNetworkEventsHandlerRemote(
             auction_network_events_handler_),
-        wasm_helper_url_.value(), v8_helper_, debug_id_,
+        wasm_helper_url_.value(), std::vector{v8_helper_},
+        std::vector{debug_id_},
         base::BindOnce(&BidderWorklet::OnWasmDownloaded,
                        base::Unretained(this)));
   }

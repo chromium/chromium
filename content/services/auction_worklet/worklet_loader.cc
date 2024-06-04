@@ -361,18 +361,17 @@ WorkletWasmLoader::WorkletWasmLoader(
     mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
         auction_network_events_handler,
     const GURL& source_url,
-    scoped_refptr<AuctionV8Helper> v8_helper,
-    scoped_refptr<AuctionV8Helper::DebugId> debug_id,
+    std::vector<scoped_refptr<AuctionV8Helper>> v8_helpers,
+    std::vector<scoped_refptr<AuctionV8Helper::DebugId>> debug_ids,
     LoadWorkletCallback load_worklet_callback)
-    : WorkletLoaderBase(
-          url_loader_factory,
-          std::move(auction_network_events_handler),
-          source_url,
-          AuctionDownloader::MimeType::kWebAssembly,
-          std::vector<scoped_refptr<AuctionV8Helper>>({v8_helper}),
-          std::vector<scoped_refptr<AuctionV8Helper::DebugId>>({debug_id}),
-          AuctionDownloader::ResponseStartedCallback(),
-          std::move(load_worklet_callback)) {}
+    : WorkletLoaderBase(url_loader_factory,
+                        std::move(auction_network_events_handler),
+                        source_url,
+                        AuctionDownloader::MimeType::kWebAssembly,
+                        std::move(v8_helpers),
+                        std::move(debug_ids),
+                        AuctionDownloader::ResponseStartedCallback(),
+                        std::move(load_worklet_callback)) {}
 
 // static
 v8::MaybeLocal<v8::WasmModuleObject> WorkletWasmLoader::MakeModule(

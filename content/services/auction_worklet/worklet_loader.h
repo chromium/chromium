@@ -241,17 +241,18 @@ class CONTENT_EXPORT WorkletLoader : public WorkletLoaderBase {
 
 class CONTENT_EXPORT WorkletWasmLoader : public WorkletLoaderBase {
  public:
-  // Starts loading the resource on construction. Callback will be invoked
-  // asynchronously once the data has been fetched and compiled or an error has
-  // occurred, on the current thread. Destroying this is guaranteed to cancel
-  // the callback.
+  // Starts loading the resource on construction. The same resource will be
+  // loaded in each of the threads associated with `v8_helpers`. Callback will
+  // be invoked on the current thread asynchronously once the data has been
+  // fetched and compiled on all V8 threads, or an error has occurred.
+  // Destroying this is guaranteed to cancel the callback.
   WorkletWasmLoader(
       network::mojom::URLLoaderFactory* url_loader_factory,
       mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
           auction_network_events_handler,
       const GURL& source_url,
-      scoped_refptr<AuctionV8Helper> v8_helper,
-      scoped_refptr<AuctionV8Helper::DebugId> debug_id,
+      std::vector<scoped_refptr<AuctionV8Helper>> v8_helpers,
+      std::vector<scoped_refptr<AuctionV8Helper::DebugId>> debug_ids,
       LoadWorkletCallback load_worklet_callback);
 
   // The returned value is a module object. Since it's a JS object, it
