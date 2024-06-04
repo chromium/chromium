@@ -10,8 +10,9 @@ enum CommandBufferNamespace {
 
   GPU_IO,
   IN_PROCESS,
-  MOJO,
-  MOJO_LOCAL
+  VIZ_SKIA_OUTPUT_SURFACE,
+  VIZ_SKIA_OUTPUT_SURFACE_NON_DDL,
+  GPU_CHANNEL_SHARED_IMAGE_INTERFACE
 };
 
 // See gpu/command_buffer/common/sync_token.h

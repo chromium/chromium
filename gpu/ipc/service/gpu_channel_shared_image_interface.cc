@@ -32,9 +32,10 @@ GpuChannelSharedImageInterface::GpuChannelSharedImageInterface(
       sync_point_client_state_(
           shared_image_stub->channel()
               ->sync_point_manager()
-              ->CreateSyncPointClientState(CommandBufferNamespace::GPU_IO,
-                                           command_buffer_id_,
-                                           sequence_)),
+              ->CreateSyncPointClientState(
+                  CommandBufferNamespace::GPU_CHANNEL_SHARED_IMAGE_INTERFACE,
+                  command_buffer_id_,
+                  sequence_)),
       shared_image_capabilities_(
           shared_image_stub->factory()->MakeCapabilities()) {
   DETACH_FROM_SEQUENCE(gpu_sequence_checker_);

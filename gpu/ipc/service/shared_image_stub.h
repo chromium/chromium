@@ -58,7 +58,7 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub : public MemoryTracker {
   int ClientId() const override;
   uint64_t ContextGroupTracingId() const override;
 
-  SequenceId sequence() const;
+  SequenceId sequence() const { return sequence_; }
   SharedImageFactory* factory() const { return factory_.get(); }
   GpuChannel* channel() const { return channel_; }
   SharedContextState* shared_context_state() { return context_state_.get(); }
@@ -166,6 +166,7 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub : public MemoryTracker {
   CommandBufferId command_buffer_id_;
   scoped_refptr<GpuChannelSharedImageInterface>
       gpu_channel_shared_image_interface_;
+  const SequenceId sequence_;
   scoped_refptr<gpu::SyncPointClientState> sync_point_client_state_;
   scoped_refptr<SharedContextState> context_state_;
   std::unique_ptr<SharedImageFactory> factory_;

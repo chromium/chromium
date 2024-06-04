@@ -110,8 +110,8 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelSharedImageInterface
 
  private:
   SyncToken MakeSyncToken(uint64_t release_id) {
-    return SyncToken(CommandBufferNamespace::GPU_IO, command_buffer_id_,
-                     release_id);
+    return SyncToken(CommandBufferNamespace::GPU_CHANNEL_SHARED_IMAGE_INTERFACE,
+                     command_buffer_id_, release_id);
   }
 
   void ScheduleGpuTask(base::OnceClosure task,
