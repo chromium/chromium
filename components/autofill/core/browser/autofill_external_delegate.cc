@@ -305,7 +305,7 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
         (delegate && delegate->ShouldAnchorNudgeOnCaret());
     const bool are_caret_bounds_valid =
         caret_bounds_ != gfx::Rect() &&
-        query_field_.bounds().Contains(caret_bounds_.x(), caret_bounds_.y());
+        query_field_.bounds().Contains(gfx::RectF(caret_bounds_));
     const bool should_use_caret_bounds =
         show_proactive_nudge_at_caret && are_caret_bounds_valid;
 
