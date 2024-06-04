@@ -8,7 +8,6 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
-#include "components/performance_manager/public/decorators/tab_connectedness_decorator.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/permissions/permissions_client.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -53,10 +52,6 @@ class ActiveTabObserver : public TabStripModelObserver,
       const TabStripSelectionChange& selection) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (selection.active_tab_changed() && !tab_strip_model->empty()) {
-      if (selection.old_contents && selection.new_contents) {
-        TabConnectednessDecorator::NotifyOfTabSwitch(selection.old_contents,
-                                                     selection.new_contents);
-      }
       if (selection.old_contents) {
         PageLiveStateDecorator::SetIsActiveTab(selection.old_contents, false);
       }

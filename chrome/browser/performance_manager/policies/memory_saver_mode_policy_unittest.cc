@@ -8,7 +8,6 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/performance_manager/test_support/page_discarding_utils.h"
-#include "components/performance_manager/public/decorators/tab_connectedness_decorator.h"
 #include "components/performance_manager/public/decorators/tab_page_decorator.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
@@ -58,7 +57,6 @@ class MemorySaverModeTest : public testing::GraphTestHarnessWithMockDiscarder {
 
     graph()->PassToGraph(
         std::make_unique<performance_manager::TabPageDecorator>());
-    graph()->PassToGraph(std::make_unique<TabConnectednessDecorator>());
     std::unique_ptr<TestTabRevisitTracker> tab_revisit_tracker =
         std::make_unique<TestTabRevisitTracker>();
     tab_revisit_tracker_ = tab_revisit_tracker.get();

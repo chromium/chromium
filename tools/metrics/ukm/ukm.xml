@@ -27146,10 +27146,11 @@ be describing additional metrics about the same event.
     &quot;background&quot;, and &quot;closed&quot;.
   </summary>
   <metric name="ConnectednessToActiveTab">
+    <obsolete>
+      Deprecated as of 06/2024.
+    </obsolete>
     <summary>
-      How connected the tab is to the active tab, if `NewState` isn't `Active`.
-      Computed from tab switches in the current session, and represents a
-      probability in the range [0.0, 1.0].
+      Deprecated.
     </summary>
   </metric>
   <metric name="NewState" enum="TabRevisitTracker.TabState">

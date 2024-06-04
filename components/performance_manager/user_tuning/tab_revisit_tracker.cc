@@ -53,16 +53,6 @@ void DoRecordUkm(TabRevisitTracker::StateBundle previous_state,
       .SetTotalTimeActive(TabRevisitTracker::ExponentiallyBucketedSeconds(
           new_state.total_time_active));
 
-  if (previous_state.connectedness_to_last_switch_active_tab &&
-      new_state.state == TabRevisitTracker::State::kActive) {
-    // It's possible for this score to be nullopt if the first switch to this
-    // tab isn't from another tab (for instance, on startup a tab will be made
-    // active but there will be no "previous" active tab). This is also only
-    // meaningful (thus recorded) if the tab is becoming the active tab.
-    builder.SetConnectednessToActiveTab(
-        previous_state.connectedness_to_last_switch_active_tab.value());
-  }
-
   builder.Record(ukm::UkmRecorder::Get());
 }
 
@@ -185,11 +175,6 @@ void TabRevisitTracker::OnPassedToGraph(Graph* graph) {
   CHECK(tab_page_decorator);
   tab_page_decorator->AddObserver(this);
 
-  TabConnectednessDecorator* tab_connectedness_decorator =
-      graph->GetRegisteredObjectAs<TabConnectednessDecorator>();
-  CHECK(tab_connectedness_decorator);
-  tab_connectedness_decorator->AddObserver(this);
-
   graph->AddPageNodeObserver(this);
   graph->RegisterObject(this);
 }
@@ -200,12 +185,6 @@ void TabRevisitTracker::OnTakenFromGraph(Graph* graph) {
       graph->GetRegisteredObjectAs<TabPageDecorator>();
   if (tab_page_decorator) {
     tab_page_decorator->RemoveObserver(this);
-  }
-
-  TabConnectednessDecorator* tab_connectedness_decorator =
-      graph->GetRegisteredObjectAs<TabConnectednessDecorator>();
-  if (tab_connectedness_decorator) {
-    tab_connectedness_decorator->RemoveObserver(this);
   }
 
   graph->RemovePageNodeObserver(this);
@@ -294,27 +273,6 @@ void TabRevisitTracker::OnIsActiveTabChanged(const PageNode* page_node) {
   if (live_state_data->IsActiveTab()) {
     RecordRevisitHistograms(tab_handle);
   }
-}
-
-void TabRevisitTracker::OnBeforeTabSwitch(
-    TabPageDecorator::TabHandle* source,
-    TabPageDecorator::TabHandle* destination) {
-  // The score in the range [0, 1] is remapped to be in the range [0, 1000] to
-  // be represented as an integer in the histogram.
-  constexpr float kScaleFactor = 1000.0f;
-  // Compute the connectedness from `source` to `destination` and store it in
-  // `destination`'s StateBundle. We don't record the histograms/UKMs here,
-  // because this notification is received before the `PageLiveState` data is
-  // updated and that data needs to be up to date for some other signals to be
-  // recorded properly.
-  float connectedness = TabConnectednessDecorator::ComputeConnectednessBetween(
-      source, destination);
-
-  CHECK_GE(connectedness, 0.0f);
-  CHECK_LE(connectedness, 1.0f);
-
-  tab_states_[destination].connectedness_to_last_switch_active_tab =
-      base::ClampRound<int64_t, float>(connectedness * kScaleFactor);
 }
 
 void TabRevisitTracker::OnUkmSourceIdChanged(const PageNode* page_node) {

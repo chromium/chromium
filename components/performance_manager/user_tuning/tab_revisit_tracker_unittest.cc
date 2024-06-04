@@ -32,7 +32,6 @@ class TabRevisitTrackerTest : public GraphTestHarness {
     GraphTestHarness::SetUp();
 
     graph()->PassToGraph(std::make_unique<TabPageDecorator>());
-    graph()->PassToGraph(std::make_unique<TabConnectednessDecorator>());
     auto tracker = std::make_unique<TabRevisitTracker>();
     tab_revisit_tracker_ = tracker.get();
     graph()->PassToGraph(std::move(tracker));
@@ -47,8 +46,6 @@ class TabRevisitTrackerTest : public GraphTestHarness {
   }
 
   void SwitchTab(const PageNode* from, const PageNode* to) {
-    graph()->GetRegisteredObjectAs<TabConnectednessDecorator>()->OnTabSwitch(
-        from, to);
     SetIsActiveTab(from, false);
     SetIsActiveTab(to, true);
   }
@@ -204,60 +201,6 @@ TEST_F(TabRevisitTrackerTest, CloseWhileActiveDoesntRecordClose) {
                 /*num_total_revisits=*/0,
                 /*time_in_previous_state=*/base::Hours(1),
                 /*total_time_active=*/base::Hours(1));
-}
-
-TEST_F(TabRevisitTrackerTest, TabSwitchesRecordConnectedness) {
-  // This graph has 4 pages: `page` and `other_pages[0..2]`, hereafter referred
-  // to as `OP_N`
-  MockManyPagesInSingleProcessGraph mock_graph(graph(), 3);
-  mock_graph.page->SetUkmSourceId(kValidSourceId);
-
-  mock_graph.page->SetType(PageType::kTab);
-  for (auto& p : mock_graph.other_pages) {
-    p->SetType(PageType::kTab);
-    p->SetUkmSourceId(kValidSourceId);
-  }
-
-  SetIsActiveTab(mock_graph.page.get(), true);
-
-  // ConnectednessToActiveTab is always the value *before* the tab switch, since
-  // it's meant to help predict how likely a given switch is before it happens.
-  SwitchTab(mock_graph.page.get(), mock_graph.other_pages[0].get());
-  auto entries = test_ukm_recorder_->GetEntriesByName(
-      ukm::builders::TabRevisitTracker_TabStateChange::kEntryName);
-  // There is one event for the initial SetIsActiveTab, 1 for the tab going
-  // active, and 1 for the tab going inactive. When switching tabs, the "becomes
-  // inactive" events are always recorded first and the "becomes active" events
-  // second.
-  EXPECT_EQ(entries.size(), 3UL);
-  EXPECT_EQ(test_ukm_recorder_->GetEntryMetric(entries[1],
-                                               "ConnectednessToActiveTab"),
-            nullptr);
-  test_ukm_recorder_->ExpectEntryMetric(entries[2], "ConnectednessToActiveTab",
-                                        0);
-
-  SwitchTab(mock_graph.other_pages[0].get(), mock_graph.page.get());
-  entries = test_ukm_recorder_->GetEntriesByName(
-      ukm::builders::TabRevisitTracker_TabStateChange::kEntryName);
-  EXPECT_EQ(entries.size(), 5UL);
-  EXPECT_EQ(test_ukm_recorder_->GetEntryMetric(entries[3],
-                                               "ConnectednessToActiveTab"),
-            nullptr);
-  test_ukm_recorder_->ExpectEntryMetric(entries[4], "ConnectednessToActiveTab",
-                                        0);
-
-  // Switch from `page` to `other_pages[0]`. Because there was previously such a
-  // switch, and `page` never switched to another page besides `other_page[0]`,
-  // `page`'s connectedness to `other_page[0]` is 1, reported as 1000.
-  SwitchTab(mock_graph.page.get(), mock_graph.other_pages[0].get());
-  entries = test_ukm_recorder_->GetEntriesByName(
-      ukm::builders::TabRevisitTracker_TabStateChange::kEntryName);
-  EXPECT_EQ(entries.size(), 7UL);
-  EXPECT_EQ(test_ukm_recorder_->GetEntryMetric(entries[5],
-                                               "ConnectednessToActiveTab"),
-            nullptr);
-  test_ukm_recorder_->ExpectEntryMetric(entries[6], "ConnectednessToActiveTab",
-                                        1000);
 }
 
 TEST_F(TabRevisitTrackerTest, TestSwitchToDiscardedTab) {
