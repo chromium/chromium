@@ -320,7 +320,6 @@ class VdaVideoDecoderTest : public testing::TestWithParam<bool> {
   }
 
   std::unique_ptr<VideoDecodeAccelerator> CreateAndInitializeVda(
-      scoped_refptr<CommandBufferHelper> command_buffer_helper,
       VideoDecodeAccelerator::Client* client,
       MediaLog* media_log,
       const VideoDecodeAccelerator::Config& config) {

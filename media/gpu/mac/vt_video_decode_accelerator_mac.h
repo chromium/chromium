@@ -26,7 +26,6 @@
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "media/base/media_log.h"
-#include "media/gpu/gpu_video_decode_accelerator_helpers.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/video/h264_parser.h"
 #include "media/video/h264_poc.h"
@@ -60,8 +59,7 @@ MEDIA_GPU_EXPORT void InitializeVideoToolbox();
 class VTVideoDecodeAccelerator : public VideoDecodeAccelerator,
                                  public base::trace_event::MemoryDumpProvider {
  public:
-  VTVideoDecodeAccelerator(const GpuVideoDecodeGLClient& gl_client_,
-                           const gpu::GpuDriverBugWorkarounds& workarounds,
+  VTVideoDecodeAccelerator(const gpu::GpuDriverBugWorkarounds& workarounds,
                            MediaLog* media_log);
 
   VTVideoDecodeAccelerator(const VTVideoDecodeAccelerator&) = delete;
@@ -231,7 +229,6 @@ class VTVideoDecodeAccelerator : public VideoDecodeAccelerator,
   //
   // GPU thread state.
   //
-  const GpuVideoDecodeGLClient gl_client_;
   const gpu::GpuDriverBugWorkarounds workarounds_;
   std::unique_ptr<MediaLog> media_log_;
 
@@ -345,6 +342,9 @@ class VTVideoDecodeAccelerator : public VideoDecodeAccelerator,
   bool has_alpha_ = false;
 
   uint8_t bit_depth_ = 0;
+
+  // Texture target to use with IOSurfaces.
+  uint32_t texture_target_ = 0;
 
   // Used to accumulate the output picture count as a workaround to solve
   // the VT CRA/RASL bug

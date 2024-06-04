@@ -53,7 +53,6 @@ class FakeCommandBufferHelper : public CommandBufferHelper {
   std::unique_ptr<gpu::SharedImageRepresentationFactoryRef> Register(
       std::unique_ptr<gpu::SharedImageBacking> backing) override;
   void AddWillDestroyStubCB(WillDestroyStubCB callback) override;
-  bool SupportsTextureRectangle() const override;
 #endif
 
  private:

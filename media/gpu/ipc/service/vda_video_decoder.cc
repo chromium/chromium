@@ -61,23 +61,11 @@ scoped_refptr<CommandBufferHelper> CreateCommandBufferHelper(
 std::unique_ptr<VideoDecodeAccelerator> CreateAndInitializeVda(
     const gpu::GpuPreferences& gpu_preferences,
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
-    scoped_refptr<CommandBufferHelper> command_buffer_helper,
     VideoDecodeAccelerator::Client* client,
     MediaLog* media_log,
     const VideoDecodeAccelerator::Config& config) {
-  GpuVideoDecodeGLClient gl_client;
-  // |command_buffer_helper| is nullptr in IMPORT mode in which case, we
-  // shouldn't need to do any GL calls.
-#if BUILDFLAG(IS_APPLE)
-  CHECK(command_buffer_helper);
-  gl_client.supports_arb_texture_rectangle =
-      command_buffer_helper->SupportsTextureRectangle();
-#else
-  CHECK(!command_buffer_helper);
-#endif
-
   std::unique_ptr<GpuVideoDecodeAcceleratorFactory> factory =
-      GpuVideoDecodeAcceleratorFactory::Create(gl_client);
+      GpuVideoDecodeAcceleratorFactory::Create();
   // Note: GpuVideoDecodeAcceleratorFactory may create and initialize more than
   // one VDA. It is therefore important that VDAs do not call client methods
   // from Initialize().
@@ -383,13 +371,7 @@ void VdaVideoDecoder::InitializeOnGpuThread() {
   // vda_config.supported_output_formats = [Only used by PPAPI]
 
   // Create and initialize the VDA.
-#if BUILDFLAG(IS_APPLE)
-  vda_ = create_and_initialize_vda_cb_.Run(command_buffer_helper_, this,
-                                           media_log_.get(), vda_config);
-#else
-  vda_ = create_and_initialize_vda_cb_.Run(nullptr, this, media_log_.get(),
-                                           vda_config);
-#endif
+  vda_ = create_and_initialize_vda_cb_.Run(this, media_log_.get(), vda_config);
 
   if (!vda_) {
     parent_task_runner_->PostTask(

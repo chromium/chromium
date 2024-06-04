@@ -403,8 +403,7 @@ void GpuArcVideoDecodeAccelerator::InitializeTask(
         this, vda_config, base::SequencedTaskRunner::GetCurrentDefault());
   } else {
     VLOGF(2) << "Using original VDA";
-    auto vda_factory = media::GpuVideoDecodeAcceleratorFactory::Create(
-        media::GpuVideoDecodeGLClient());
+    auto vda_factory = media::GpuVideoDecodeAcceleratorFactory::Create();
     vda_ = vda_factory->CreateVDA(this, vda_config, gpu_workarounds_,
                                   gpu_preferences_);
   }

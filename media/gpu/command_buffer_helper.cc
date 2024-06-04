@@ -148,15 +148,6 @@ class CommandBufferHelperImpl
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     will_destroy_stub_callbacks_.push_back(std::move(callback));
   }
-
-  bool SupportsTextureRectangle() const override {
-    if (!stub_)
-      return false;
-    return stub_->decoder_context()
-        ->GetFeatureInfo()
-        ->feature_flags()
-        .arb_texture_rectangle;
-  }
 #endif
 
  private:

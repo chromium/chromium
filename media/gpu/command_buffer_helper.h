@@ -84,9 +84,6 @@ class MEDIA_GPU_EXPORT CommandBufferHelper
   // Add a callback to be called when our stub is destroyed. This callback
   // may not change the current context.
   virtual void AddWillDestroyStubCB(WillDestroyStubCB callback) = 0;
-
-  // Does this command buffer support ARB_texture_rectangle.
-  virtual bool SupportsTextureRectangle() const = 0;
 #endif
 
  protected:

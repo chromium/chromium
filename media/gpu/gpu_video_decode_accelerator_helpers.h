@@ -13,16 +13,6 @@
 
 namespace media {
 
-struct MEDIA_GPU_EXPORT GpuVideoDecodeGLClient {
-  GpuVideoDecodeGLClient();
-  ~GpuVideoDecodeGLClient();
-  GpuVideoDecodeGLClient(const GpuVideoDecodeGLClient&);
-  GpuVideoDecodeGLClient& operator=(const GpuVideoDecodeGLClient&);
-
-  // Whether or not ARB_texture_rectangle is present.
-  bool supports_arb_texture_rectangle = false;
-};
-
 // Convert vector of VDA::SupportedProfile to vector of
 // SupportedVideoDecoderConfig.
 MEDIA_GPU_EXPORT SupportedVideoDecoderConfigs ConvertFromSupportedProfiles(

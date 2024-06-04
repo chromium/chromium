@@ -15,20 +15,11 @@
 #include "gpu/config/gpu_preferences.h"
 #include "media/base/android_overlay_mojo_factory.h"
 #include "media/gpu/buildflags.h"
-#include "media/gpu/gpu_video_decode_accelerator_helpers.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/video/video_decode_accelerator.h"
 
-namespace gl {
-class GLContext;
-}
-
 namespace gpu {
 struct GpuPreferences;
-
-namespace gles2 {
-class ContextGroup;
-}
 }  // namespace gpu
 
 namespace media {
@@ -37,7 +28,6 @@ class MediaLog;
 
 class MEDIA_GPU_EXPORT GpuVideoDecodeAcceleratorFactory {
  public:
-  GpuVideoDecodeAcceleratorFactory() = delete;
   GpuVideoDecodeAcceleratorFactory(const GpuVideoDecodeAcceleratorFactory&) =
       delete;
   GpuVideoDecodeAcceleratorFactory& operator=(
@@ -45,19 +35,7 @@ class MEDIA_GPU_EXPORT GpuVideoDecodeAcceleratorFactory {
 
   ~GpuVideoDecodeAcceleratorFactory();
 
-  // Return current GLContext.
-  using GetGLContextCallback = base::RepeatingCallback<gl::GLContext*(void)>;
-
-  // Make the applicable GL context current. To be called by VDAs before
-  // executing any GL calls. Return true on success, false otherwise.
-  using MakeGLContextCurrentCallback = base::RepeatingCallback<bool(void)>;
-
-  // Return a ContextGroup*, if one is available.
-  using GetContextGroupCallback =
-      base::RepeatingCallback<gpu::gles2::ContextGroup*(void)>;
-
-  static std::unique_ptr<GpuVideoDecodeAcceleratorFactory> Create(
-      const GpuVideoDecodeGLClient& gl_client);
+  static std::unique_ptr<GpuVideoDecodeAcceleratorFactory> Create();
 
   static gpu::VideoDecodeAcceleratorCapabilities GetDecoderCapabilities(
       const gpu::GpuPreferences& gpu_preferences,
@@ -71,7 +49,7 @@ class MEDIA_GPU_EXPORT GpuVideoDecodeAcceleratorFactory {
       MediaLog* media_log = nullptr);
 
  private:
-  GpuVideoDecodeAcceleratorFactory(const GpuVideoDecodeGLClient& gl_client);
+  GpuVideoDecodeAcceleratorFactory();
 
 #if BUILDFLAG(IS_WIN)
   std::unique_ptr<VideoDecodeAccelerator> CreateD3D11VDA(
@@ -112,7 +90,6 @@ class MEDIA_GPU_EXPORT GpuVideoDecodeAcceleratorFactory {
       MediaLog* media_log) const;
 #endif
 
-  const GpuVideoDecodeGLClient gl_client_;
   const AndroidOverlayMojoFactoryCB overlay_factory_cb_;
   base::ThreadChecker thread_checker_;
 };

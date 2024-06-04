@@ -109,10 +109,6 @@ FakeCommandBufferHelper::Register(
 void FakeCommandBufferHelper::AddWillDestroyStubCB(WillDestroyStubCB callback) {
   will_destroy_stub_callbacks_.push_back(std::move(callback));
 }
-
-bool FakeCommandBufferHelper::SupportsTextureRectangle() const {
-  return false;
-}
 #endif
 
 }  // namespace media

@@ -91,8 +91,7 @@ void TestVDAVideoDecoder::Initialize(const VideoDecoderConfig& config,
 
   // Create decoder factory.
   std::unique_ptr<GpuVideoDecodeAcceleratorFactory> decoder_factory;
-  GpuVideoDecodeGLClient gl_client;
-  decoder_factory = GpuVideoDecodeAcceleratorFactory::Create(gl_client);
+  decoder_factory = GpuVideoDecodeAcceleratorFactory::Create();
 
   if (!decoder_factory) {
     ASSERT_TRUE(decoder_) << "Failed to create VideoDecodeAccelerator factory";

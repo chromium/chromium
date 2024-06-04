@@ -64,9 +64,8 @@ gpu::VideoDecodeAcceleratorCapabilities GetDecoderCapabilitiesInternal(
 
 // static
 MEDIA_GPU_EXPORT std::unique_ptr<GpuVideoDecodeAcceleratorFactory>
-GpuVideoDecodeAcceleratorFactory::Create(
-    const GpuVideoDecodeGLClient& gl_client) {
-  return base::WrapUnique(new GpuVideoDecodeAcceleratorFactory(gl_client));
+GpuVideoDecodeAcceleratorFactory::Create() {
+  return base::WrapUnique(new GpuVideoDecodeAcceleratorFactory());
 }
 
 // static
@@ -160,15 +159,12 @@ GpuVideoDecodeAcceleratorFactory::CreateVTVDA(
     const gpu::GpuPreferences& gpu_preferences,
     MediaLog* media_log) const {
   std::unique_ptr<VideoDecodeAccelerator> decoder;
-  decoder.reset(
-      new VTVideoDecodeAccelerator(gl_client_, workarounds, media_log));
+  decoder.reset(new VTVideoDecodeAccelerator(workarounds, media_log));
   return decoder;
 }
 #endif
 
-GpuVideoDecodeAcceleratorFactory::GpuVideoDecodeAcceleratorFactory(
-    const GpuVideoDecodeGLClient& gl_client)
-    : gl_client_(gl_client) {}
+GpuVideoDecodeAcceleratorFactory::GpuVideoDecodeAcceleratorFactory() = default;
 GpuVideoDecodeAcceleratorFactory::~GpuVideoDecodeAcceleratorFactory() = default;
 
 }  // namespace media

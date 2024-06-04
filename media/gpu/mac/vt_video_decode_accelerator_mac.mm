@@ -589,11 +589,9 @@ bool VTVideoDecodeAccelerator::FrameOrder::operator()(
 }
 
 VTVideoDecodeAccelerator::VTVideoDecodeAccelerator(
-    const GpuVideoDecodeGLClient& gl_client,
     const gpu::GpuDriverBugWorkarounds& workarounds,
     MediaLog* media_log)
-    : gl_client_(gl_client),
-      workarounds_(workarounds),
+    : workarounds_(workarounds),
       // Non media/ use cases like PPAPI may not provide a MediaLog.
       media_log_(media_log ? media_log->Clone() : nullptr),
       gpu_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
@@ -715,6 +713,15 @@ bool VTVideoDecodeAccelerator::Initialize(const Config& config,
 
   client_ = client;
   config_ = config;
+
+#if BUILDFLAG(IS_MAC)
+  texture_target_ = client_->GetSharedImageStub()
+                        ->factory()
+                        ->MakeCapabilities()
+                        .macos_specific_texture_target;
+#else
+  texture_target_ = GL_TEXTURE_2D;
+#endif
 
   // Count the session as successfully initialized.
   UMA_HISTOGRAM_ENUMERATION("Media.VTVDA.SessionFailureReason",
@@ -2264,9 +2271,6 @@ bool VTVideoDecodeAccelerator::SendFrame(const Frame& frame) {
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT |
       gpu::SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX |
       gpu::SHARED_IMAGE_USAGE_RASTER_READ | gpu::SHARED_IMAGE_USAGE_GLES2_READ;
-  GLenum target = gl_client_.supports_arb_texture_rectangle
-                      ? GL_TEXTURE_RECTANGLE_ARB
-                      : GL_TEXTURE_2D;
 
   gfx::GpuMemoryBufferHandle handle;
   handle.id = gfx::GpuMemoryBufferHandle::kInvalidId;
@@ -2299,7 +2303,7 @@ bool VTVideoDecodeAccelerator::SendFrame(const Frame& frame) {
       frame.image, gpu_task_runner_);
   picture_info->scoped_shared_image =
       base::MakeRefCounted<Picture::ScopedSharedImage>(
-          mailbox, target, std::move(destroy_shared_image_callback));
+          mailbox, texture_target_, std::move(destroy_shared_image_callback));
 
   picture_info->bitstream_id = frame.bitstream_id;
   available_picture_ids_.pop_back();

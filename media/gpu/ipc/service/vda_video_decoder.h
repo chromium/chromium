@@ -46,7 +46,6 @@ class VdaVideoDecoder : public VideoDecoder,
       base::OnceCallback<scoped_refptr<CommandBufferHelper>()>;
   using CreateAndInitializeVdaCB =
       base::RepeatingCallback<std::unique_ptr<VideoDecodeAccelerator>(
-          scoped_refptr<CommandBufferHelper>,
           VideoDecodeAccelerator::Client*,
           MediaLog*,
           const VideoDecodeAccelerator::Config&)>;
