@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ash/birch/birch_model.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
 #include "ash/system/geolocation/test_geolocation_url_loader_factory.h"
 #include "base/test/scoped_feature_list.h"
@@ -16,6 +17,8 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
+#include "components/prefs/pref_service.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -74,10 +77,11 @@ class BirchWeatherV2ProviderTest : public testing::Test {
     SimpleGeolocationProvider::Initialize(
         base::MakeRefCounted<TestGeolocationUrlLoaderFactory>());
 
+    profile_ = profile_manager_.CreateTestingProfile("profile@example.com",
+                                                     /*is_main_profile=*/true,
+                                                     url_loader_factory_);
     weather_provider_ = std::make_unique<BirchWeatherV2Provider>(
-        profile_manager_.CreateTestingProfile("profile@example.com",
-                                              /*is_main_profile=*/true,
-                                              url_loader_factory_),
+        profile_,
         base::BindRepeating(&BirchWeatherV2ProviderTest::WeatherItemsUpdated,
                             base::Unretained(this)));
 
@@ -101,6 +105,8 @@ class BirchWeatherV2ProviderTest : public testing::Test {
 
   BirchWeatherV2Provider* weather_provider() { return weather_provider_.get(); }
 
+  PrefService* GetPrefService() { return profile_->GetTestingPrefService(); }
+
  private:
   void WeatherItemsUpdated(std::vector<BirchWeatherItem> items) {
     if (items_callback_) {
@@ -122,6 +128,8 @@ class BirchWeatherV2ProviderTest : public testing::Test {
   std::unique_ptr<BirchWeatherV2Provider> weather_provider_;
 
   ItemsCallback items_callback_;
+
+  raw_ptr<TestingProfile> profile_;
 };
 
 TEST_F(BirchWeatherV2ProviderTest, WeatherWithTemp) {
@@ -323,6 +331,26 @@ TEST_F(BirchWeatherV2ProviderTest, GeolocationDisabled) {
   // Disable geolocation.
   SimpleGeolocationProvider::GetInstance()->SetGeolocationAccessLevel(
       GeolocationAccessLevel::kDisallowed);
+
+  TestFuture<std::vector<BirchWeatherItem>> items_future;
+  SetItemsCallback(items_future.GetCallback());
+
+  weather_provider()->RequestBirchDataFetch();
+
+  ASSERT_TRUE(items_future.Wait());
+  auto weather_items = items_future.Take();
+  EXPECT_EQ(0u, weather_items.size());
+}
+
+TEST_F(BirchWeatherV2ProviderTest, DisabledByPolicy) {
+  EXPECT_CALL(request_handler(),
+              HandleRequest(Field(&HttpRequest::relative_url,
+                                  "/v1/weather?feature_id=1")))
+      .Times(0);
+
+  // Disable by policy.
+  GetPrefService()->SetList(prefs::kContextualGoogleIntegrationsConfiguration,
+                            {});
 
   TestFuture<std::vector<BirchWeatherItem>> items_future;
   SetItemsCallback(items_future.GetCallback());

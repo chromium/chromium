@@ -12,6 +12,7 @@
 #include "ash/birch/birch_icon_cache.h"
 #include "ash/birch/birch_model.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/geolocation_access_level.h"
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "ash/public/cpp/ambient/fake_ambient_backend_controller_impl.h"
@@ -21,6 +22,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
+#include "components/prefs/pref_service.h"
 
 namespace ash {
 
@@ -390,6 +392,28 @@ TEST_F(BirchWeatherProviderTest, AllowOneFetchAtATime) {
   provider.RequestBirchDataFetch();
 
   // The backend only received one request to fetch weather.
+  EXPECT_EQ(ambient_backend_controller_->fetch_weather_count(), 1);
+}
+
+TEST_F(BirchWeatherProviderTest, DisabledByPolicy) {
+  auto* birch_model = Shell::Get()->birch_model();
+  BirchWeatherProvider provider(birch_model);
+
+  // Disable weather integration by policy, no weather should be fetched.
+  auto* pref_service =
+      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+  pref_service->SetList(prefs::kContextualGoogleIntegrationsConfiguration, {});
+
+  provider.RequestBirchDataFetch();
+  EXPECT_EQ(ambient_backend_controller_->fetch_weather_count(), 0);
+
+  // Enable weather integration by policy, weather should be fetched.
+  base::Value::List enabled_integrations;
+  enabled_integrations.Append(prefs::kWeatherIntegrationName);
+  pref_service->SetList(prefs::kContextualGoogleIntegrationsConfiguration,
+                        std::move(enabled_integrations));
+
+  provider.RequestBirchDataFetch();
   EXPECT_EQ(ambient_backend_controller_->fetch_weather_count(), 1);
 }
 

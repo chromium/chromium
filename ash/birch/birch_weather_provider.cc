@@ -10,6 +10,7 @@
 #include "ash/birch/birch_icon_cache.h"
 #include "ash/birch/birch_item.h"
 #include "ash/birch/birch_model.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "ash/public/cpp/image_downloader.h"
 #include "ash/public/cpp/session/session_types.h"
@@ -19,6 +20,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
+#include "components/prefs/pref_service.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -86,6 +88,16 @@ BirchWeatherProvider::BirchWeatherProvider(BirchModel* birch_model)
 BirchWeatherProvider::~BirchWeatherProvider() = default;
 
 void BirchWeatherProvider::RequestBirchDataFetch() {
+  const auto* pref_service =
+      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+  if (!pref_service ||
+      !base::Contains(pref_service->GetList(
+                          prefs::kContextualGoogleIntegrationsConfiguration),
+                      prefs::kWeatherIntegrationName)) {
+    // Weather integration is disabled by policy.
+    Shell::Get()->birch_model()->SetWeatherItems({});
+    return;
+  }
   if (!SimpleGeolocationProvider::GetInstance()
            ->IsGeolocationUsageAllowedForSystem()) {
     // Weather is not allowed if geolocation is off.

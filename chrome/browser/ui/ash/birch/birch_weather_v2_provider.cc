@@ -8,6 +8,7 @@
 
 #include "ash/birch/birch_item.h"
 #include "ash/birch/birch_model.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/image_downloader.h"
 #include "ash/public/cpp/session/session_types.h"
 #include "ash/session/session_controller_impl.h"
@@ -17,6 +18,7 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
+#include "components/prefs/pref_service.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -86,6 +88,15 @@ BirchWeatherV2Provider::BirchWeatherV2Provider(
 BirchWeatherV2Provider::~BirchWeatherV2Provider() = default;
 
 void BirchWeatherV2Provider::RequestBirchDataFetch() {
+  const auto* const pref_service = profile_->GetPrefs();
+  if (!pref_service ||
+      !base::Contains(pref_service->GetList(
+                          prefs::kContextualGoogleIntegrationsConfiguration),
+                      prefs::kWeatherIntegrationName)) {
+    // Weather integration is disabled by policy.
+    model_updater_.Run({});
+    return;
+  }
   if (!SimpleGeolocationProvider::GetInstance()
            ->IsGeolocationUsageAllowedForSystem()) {
     // Weather is not allowed if geolocation is off.
