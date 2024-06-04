@@ -513,6 +513,8 @@ void StyleCascade::AddExplicitDefaults() {
     //   word-spacing
     //
     // (And maybe more).
+    map_.Add(CSSPropertyID::kLetterSpacing,
+             CascadePriority(CascadeOrigin::kNone));
     map_.Add(CSSPropertyID::kLineHeight, CascadePriority(CascadeOrigin::kNone));
   }
 }

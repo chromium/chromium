@@ -3566,6 +3566,7 @@
       valid_for_marker: true,
       valid_for_permission_element: true,
       valid_for_page_context: true,
+      affected_by_zoom: true,
     },
     {
       name: "lighting-color",
