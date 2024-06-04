@@ -8222,6 +8222,21 @@
             ]
         }
     ],
+    "EventTimingFallbackToModalDialogStart": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EventTimingFallbackToModalDialogStart"
+                    ]
+                }
+            ]
+        }
+    ],
     "EventTimingHandleOrphanPointerup": [
         {
             "platforms": [
@@ -8240,6 +8255,21 @@
                     "name": "Enabled",
                     "enable_features": [
                         "EventTimingHandleOrphanPointerup"
+                    ]
+                }
+            ]
+        }
+    ],
+    "EventTimingKeypressAndCompositionInteractionId": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EventTimingKeypressAndCompositionInteractionId"
                     ]
                 }
             ]
