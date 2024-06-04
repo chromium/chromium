@@ -101,6 +101,12 @@ Config::Config() {
   proactive_nudge_segmentation = base::FeatureList::IsEnabled(
       segmentation_platform::features::kSegmentationPlatformComposePromotion);
 
+  proactive_nudge_field_per_navigation =
+      base::GetFieldTrialParamByFeatureAsBool(
+          features::kEnableComposeProactiveNudge,
+          "proactive_nudge_field_per_navigation",
+          proactive_nudge_field_per_navigation);
+
   saved_state_timeout_milliseconds = base::GetFieldTrialParamByFeatureAsInt(
       features::kEnableComposeSavedStateNotification,
       "saved_state_timeout_milliseconds", saved_state_timeout_milliseconds);

@@ -116,7 +116,7 @@ class ChromeComposeClient
   void AddSiteToNeverPromptList(const url::Origin& origin) override;
 
   // ComposeSession::Observer:
-  void OnSessionComplete(autofill::FieldRendererId field_renderer_id,
+  void OnSessionComplete(autofill::FieldGlobalId field_global_id,
                          compose::ComposeSessionCloseReason close_reason,
                          const compose::ComposeSessionEvents& events) override;
 

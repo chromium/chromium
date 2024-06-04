@@ -142,7 +142,8 @@ class ProactiveNudgeTrackerTestBase : public testing::Test {
                   segmentation_platform::PredictionStatus::kSucceeded);
               result.request_id = TrainingRequestId(training_request_number_++);
               result.ordered_labels = {label};
-              std::move(callback).Run(result);
+              base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+                  FROM_HERE, base::BindOnce(std::move(callback), result));
             })));
   }
 
@@ -227,33 +228,6 @@ TEST_P(ProactiveNudgeTrackerTest, TestWait) {
       nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
 }
 
-TEST_P(ProactiveNudgeTrackerTest, TestWaitSegmentationFirst) {
-  base::test::TestFuture<segmentation_platform::ClassificationResultCallback>
-      future;
-  BindFutureToSegmentationRequest(future);
-
-  auto field = CreateTestFormFieldData();
-  EXPECT_CALL(delegate(),
-              ShowProactiveNudge(field.renderer_form_id(), field.global_id()))
-      .Times(1);
-
-  EXPECT_FALSE(
-      nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
-  if (uses_segmentation()) {
-    auto result = segmentation_platform::ClassificationResult(
-        segmentation_platform::PredictionStatus::kSucceeded);
-    result.ordered_labels = {"Show"};
-    future.Take().Run(result);
-  }
-  // Should not nudge if nudge is requested too soon.
-  EXPECT_FALSE(
-      nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
-
-  task_environment().FastForwardBy(GetComposeConfig().proactive_nudge_delay);
-  EXPECT_TRUE(
-      nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
-}
-
 TEST_P(ProactiveNudgeTrackerTest, TestFocusChangePreventsNudge) {
   auto field = CreateTestFormFieldData();
   EXPECT_CALL(delegate(),
@@ -326,6 +300,69 @@ TEST_P(ProactiveNudgeTrackerTest, TestNoNudgeDelay) {
     // Wait just in case the timer could be pending.
     task_environment().FastForwardBy(GetComposeConfig().proactive_nudge_delay);
   }
+}
+
+TEST_P(ProactiveNudgeTrackerTest, TestOneNudgeUntilCleared) {
+  compose::Config& config = compose::GetMutableConfigForTesting();
+  config.proactive_nudge_field_per_navigation = true;
+  auto field = CreateTestFormFieldData();
+  EXPECT_CALL(delegate(),
+              ShowProactiveNudge(field.renderer_form_id(), field.global_id()))
+      .Times(1);
+
+  ASSERT_FALSE(
+      nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
+  task_environment().FastForwardBy(GetComposeConfig().proactive_nudge_delay);
+  ASSERT_TRUE(
+      nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
+  nudge_tracker().FocusChangedInPage();
+  ASSERT_FALSE(
+      nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
+  task_environment().FastForwardBy(GetComposeConfig().proactive_nudge_delay);
+  EXPECT_FALSE(
+      nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
+  task_environment().FastForwardBy(GetComposeConfig().proactive_nudge_delay);
+
+  nudge_tracker().Clear();
+  EXPECT_CALL(delegate(),
+              ShowProactiveNudge(field.renderer_form_id(), field.global_id()))
+      .Times(1);
+
+  ASSERT_FALSE(
+      nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
+  task_environment().FastForwardBy(GetComposeConfig().proactive_nudge_delay);
+  ASSERT_TRUE(
+      nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
+  nudge_tracker().FocusChangedInPage();
+  ASSERT_FALSE(
+      nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
+  task_environment().FastForwardBy(GetComposeConfig().proactive_nudge_delay);
+  EXPECT_FALSE(
+      nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
+  task_environment().FastForwardBy(GetComposeConfig().proactive_nudge_delay);
+}
+
+TEST_P(ProactiveNudgeTrackerTest, TestOneNudgePerFocus) {
+  compose::Config& config = compose::GetMutableConfigForTesting();
+  config.proactive_nudge_field_per_navigation = false;
+
+  auto field = CreateTestFormFieldData();
+  EXPECT_CALL(delegate(),
+              ShowProactiveNudge(field.renderer_form_id(), field.global_id()))
+      .Times(2);
+
+  ASSERT_FALSE(
+      nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
+  task_environment().FastForwardBy(GetComposeConfig().proactive_nudge_delay);
+  ASSERT_TRUE(
+      nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
+  nudge_tracker().FocusChangedInPage();
+  ASSERT_FALSE(
+      nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
+  task_environment().FastForwardBy(GetComposeConfig().proactive_nudge_delay);
+  EXPECT_TRUE(
+      nudge_tracker().ProactiveNudgeRequestedForFormField(TestSignals(field)));
+  task_environment().FastForwardBy(GetComposeConfig().proactive_nudge_delay);
 }
 
 INSTANTIATE_TEST_SUITE_P(,
@@ -547,7 +584,9 @@ TEST_F(ProactiveNudgeTrackerSegmentationTest, InputContext) {
                Val(static_cast<float>(autofill::FormControlType::kTextArea))),
           Pair("total_field_count", Val(2.0f)),
           Pair("multiline_field_count", Val(1.0f)),
-          Pair("time_spent_on_page", Val(63.0f)),
+          Pair("time_spent_on_page",
+               Val(63.0f +
+                   GetComposeConfig().proactive_nudge_delay.InSeconds())),
           Pair("field_signature",
                Val(autofill::HashFieldSignature(
                    autofill::CalculateFieldSignatureForField(field)))),
@@ -627,11 +666,13 @@ TEST_F(ProactiveNudgeTrackerDerivedEngagementTest, NoEngagement) {
 }
 
 TEST_F(ProactiveNudgeTrackerDerivedEngagementTest, MinimalUse) {
+  auto form_field_data = CreateTestFormFieldData();
   TestFuture<segmentation_platform::TrainingLabels>& training_labels =
-      TriggerNudgeForField(0, CreateTestFormFieldData());
+      TriggerNudgeForField(0, form_field_data);
   compose::ComposeSessionEvents events;
   nudge_tracker().ComposeSessionCompleted(
-      kFieldRendererId, ComposeSessionCloseReason::kCloseButtonPressed, events);
+      form_field_data.global_id(),
+      ComposeSessionCloseReason::kCloseButtonPressed, events);
   Reset();
 
   EXPECT_EQ(
@@ -644,12 +685,14 @@ TEST_F(ProactiveNudgeTrackerDerivedEngagementTest, MinimalUse) {
 
 TEST_F(ProactiveNudgeTrackerDerivedEngagementTest, SuggestionGenerated) {
   base::HistogramTester histograms;
+  auto form_field_data = CreateTestFormFieldData();
   TestFuture<segmentation_platform::TrainingLabels>& training_labels =
-      TriggerNudgeForField(0, CreateTestFormFieldData());
+      TriggerNudgeForField(0, form_field_data);
   compose::ComposeSessionEvents events;
   events.compose_count = 1;
   nudge_tracker().ComposeSessionCompleted(
-      kFieldRendererId, ComposeSessionCloseReason::kCloseButtonPressed, events);
+      form_field_data.global_id(),
+      ComposeSessionCloseReason::kCloseButtonPressed, events);
   // This test should work with or without deleting the tracker.
   Reset();
 
@@ -665,13 +708,15 @@ TEST_F(ProactiveNudgeTrackerDerivedEngagementTest, SuggestionGenerated) {
 }
 
 TEST_F(ProactiveNudgeTrackerDerivedEngagementTest, AcceptedSuggestion) {
+  auto form_field_data = CreateTestFormFieldData();
   TestFuture<segmentation_platform::TrainingLabels>& training_labels =
-      TriggerNudgeForField(0, CreateTestFormFieldData());
+      TriggerNudgeForField(0, form_field_data);
   compose::ComposeSessionEvents events;
   events.compose_count = 1;
   events.inserted_results = true;
   nudge_tracker().ComposeSessionCompleted(
-      kFieldRendererId, ComposeSessionCloseReason::kAcceptedSuggestion, events);
+      form_field_data.global_id(),
+      ComposeSessionCloseReason::kAcceptedSuggestion, events);
 
   EXPECT_EQ(
       training_labels.Get().output_metric,
@@ -683,18 +728,22 @@ TEST_F(ProactiveNudgeTrackerDerivedEngagementTest, AcceptedSuggestion) {
 
 TEST_F(ProactiveNudgeTrackerDerivedEngagementTest,
        IgnoresSessionForDifferentField) {
+  auto form_field_data = CreateTestFormFieldData();
+  auto form_field_data_2 =
+      CreateTestFormFieldData(autofill::FieldRendererId(999));
   TestFuture<segmentation_platform::TrainingLabels>& training_labels =
-      TriggerNudgeForField(0, CreateTestFormFieldData());
+      TriggerNudgeForField(0, form_field_data);
   compose::ComposeSessionEvents events;
   // This one is ignored because it has the wrong field id.
   nudge_tracker().ComposeSessionCompleted(
-      autofill::FieldRendererId(999),
+      form_field_data_2.global_id(),
       ComposeSessionCloseReason::kEndedImplicitly, events);
 
   events.compose_count = 1;
   events.inserted_results = true;
   nudge_tracker().ComposeSessionCompleted(
-      kFieldRendererId, ComposeSessionCloseReason::kAcceptedSuggestion, events);
+      form_field_data.global_id(),
+      ComposeSessionCloseReason::kAcceptedSuggestion, events);
 
   EXPECT_EQ(
       training_labels.Get().output_metric,
@@ -705,15 +754,17 @@ TEST_F(ProactiveNudgeTrackerDerivedEngagementTest,
 }
 
 TEST_F(ProactiveNudgeTrackerDerivedEngagementTest, TwoSessions) {
+  auto form_field_data = CreateTestFormFieldData();
   TestFuture<segmentation_platform::TrainingLabels>& training_labels1 =
-      TriggerNudgeForField(0, CreateTestFormFieldData());
+      TriggerNudgeForField(0, form_field_data);
   TestFuture<segmentation_platform::TrainingLabels>& training_labels2 =
       TriggerNudgeForField(1, CreateTestFormFieldData(kFieldRendererId2));
   compose::ComposeSessionEvents events;
   events.compose_count = 1;
   events.inserted_results = true;
   nudge_tracker().ComposeSessionCompleted(
-      kFieldRendererId, ComposeSessionCloseReason::kAcceptedSuggestion, events);
+      form_field_data.global_id(),
+      ComposeSessionCloseReason::kAcceptedSuggestion, events);
   Reset();
 
   EXPECT_EQ(

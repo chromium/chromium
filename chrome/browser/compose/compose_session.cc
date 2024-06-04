@@ -201,7 +201,7 @@ ComposeSession::ComposeSession(
     optimization_guide::ModelQualityLogsUploader* model_quality_logs_uploader,
     base::Token session_id,
     InnerTextProvider* inner_text,
-    autofill::FieldRendererId node_id,
+    autofill::FieldGlobalId node_id,
     Observer* observer,
     ComposeCallback callback)
     : executor_(executor),
@@ -1102,7 +1102,7 @@ void ComposeSession::RefreshInnerText() {
       // This unsafeValue call is acceptable ehre because node_id is a
       // FieldRendererId which while being an U64 type is based one the int
       // DOMid which we are querying here.
-      node_id_.GetUnsafeValue(),
+      node_id_.renderer_id.GetUnsafeValue(),
       base::BindOnce(
           &ComposeSession::UpdateInnerTextAndContinueComposeIfNecessary,
           weak_ptr_factory_.GetWeakPtr(), current_inner_text_request_id_));

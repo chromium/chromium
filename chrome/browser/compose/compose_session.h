@@ -79,7 +79,7 @@ class ComposeSession
   class Observer {
    public:
     virtual void OnSessionComplete(
-        autofill::FieldRendererId node_id,
+        autofill::FieldGlobalId node_id,
         compose::ComposeSessionCloseReason close_reason,
         const compose::ComposeSessionEvents& events) = 0;
   };
@@ -89,7 +89,7 @@ class ComposeSession
       optimization_guide::ModelQualityLogsUploader* model_quality_logs_uploader,
       base::Token session_id,
       InnerTextProvider* inner_text,
-      autofill::FieldRendererId node_id,
+      autofill::FieldGlobalId node_id,
       Observer* observer,
       ComposeCallback callback = base::NullCallback());
   ~ComposeSession() override;
@@ -373,7 +373,7 @@ class ComposeSession
   // If true, the inner-text was received.
   bool got_inner_text_ = false;
 
-  autofill::FieldRendererId node_id_;
+  autofill::FieldGlobalId node_id_;
 
   base::OnceClosure continue_compose_;
 

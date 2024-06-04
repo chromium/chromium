@@ -63,7 +63,12 @@ class ProactiveNudgeTracker : public autofill::AutofillManager::Observer {
     virtual float SegmentationForceShowResult();
   };
 
-  enum class ShowState { kWaiting, kCanBeShown, kShown };
+  enum class ShowState {
+    kWaitingForTimer,
+    kWaitingForSegmentation,
+    kCanBeShown,
+    kShown
+  };
 
   // Signals that determine whether the nudge should be shown.
   struct Signals {
@@ -85,8 +90,7 @@ class ProactiveNudgeTracker : public autofill::AutofillManager::Observer {
     State();
     virtual ~State();
 
-    autofill::FormGlobalId form;
-    autofill::FieldGlobalId field;
+    Signals signals;
     std::u16string initial_text_value;
     std::optional<segmentation_platform::ClassificationResult>
         segmentation_result = std::nullopt;
@@ -94,7 +98,7 @@ class ProactiveNudgeTracker : public autofill::AutofillManager::Observer {
     base::OneShotTimer timer;
     bool timer_complete = false;
 
-    ShowState show_state = ShowState::kWaiting;
+    ShowState show_state = ShowState::kWaitingForTimer;
   };
 
   ProactiveNudgeTracker(
@@ -122,7 +126,7 @@ class ProactiveNudgeTracker : public autofill::AutofillManager::Observer {
 
   void Clear();
 
-  void ComposeSessionCompleted(autofill::FieldRendererId field_renderer_id,
+  void ComposeSessionCompleted(autofill::FieldGlobalId field_renderer_id,
                                ComposeSessionCloseReason session_close_reason,
                                const compose::ComposeSessionEvents& events);
   void OnUserDisabledNudge(bool single_site_only);
@@ -140,6 +144,7 @@ class ProactiveNudgeTracker : public autofill::AutofillManager::Observer {
   class EngagementTracker;
   bool SegmentationStateIsValid();
   void ResetState();
+  void BeginSegmentationIfRequired();
   void ShowTimerElapsed();
   void GotClassificationResult(
       base::WeakPtr<State> state,
@@ -154,7 +159,10 @@ class ProactiveNudgeTracker : public autofill::AutofillManager::Observer {
 
   std::unique_ptr<State> state_;
 
-  std::map<autofill::FieldRendererId, std::unique_ptr<EngagementTracker>>
+  // Fields on which the nudge has been shown.
+  std::set<autofill::FieldGlobalId> seen_fields_;
+
+  std::map<autofill::FieldGlobalId, std::unique_ptr<EngagementTracker>>
       engagement_trackers_;
 
   raw_ptr<segmentation_platform::SegmentationPlatformService>
