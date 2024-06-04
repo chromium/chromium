@@ -4,6 +4,7 @@ Tracing complete
 FrameCommittedInBrowser [
     [0] : {
         frame : <string>
+        isInPrimaryMainFrame : true
         isOutermostMainFrame : true
         name : 
         processId : <number>

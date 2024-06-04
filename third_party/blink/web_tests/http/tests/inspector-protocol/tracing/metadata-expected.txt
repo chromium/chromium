@@ -9,6 +9,7 @@ Object: {
 			frames: [
 				{
 					frame: string
+					isInPrimaryMainFrame: boolean
 					isOutermostMainFrame: boolean
 					name: string
 					processId: number
