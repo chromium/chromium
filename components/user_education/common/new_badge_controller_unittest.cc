@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "components/user_education/common/feature_promo_data.h"
 #include "components/user_education/common/feature_promo_registry.h"
+#include "components/user_education/common/feature_promo_storage_service.h"
 #include "components/user_education/common/new_badge_policy.h"
 #include "components/user_education/common/new_badge_specification.h"
 #include "components/user_education/common/user_education_features.h"
@@ -40,7 +41,7 @@ class MockNewBadgePolicy : public NewBadgePolicy {
 
   MOCK_METHOD(bool,
               ShouldShowNewBadge,
-              (const base::Feature&, int, int, base::TimeDelta),
+              (const NewBadgeData&, const FeaturePromoStorageService&),
               (const, override));
   MOCK_METHOD(void,
               RecordNewBadgeShown,
@@ -60,10 +61,12 @@ class TestNewBadgePolicy : public NewBadgePolicy {
  public:
   TestNewBadgePolicy(int times_shown_before_dismiss,
                      int uses_before_dismiss,
-                     base::TimeDelta show_window)
+                     base::TimeDelta show_window,
+                     base::TimeDelta new_profile_grace_period)
       : NewBadgePolicy(times_shown_before_dismiss,
                        uses_before_dismiss,
-                       show_window) {}
+                       show_window,
+                       new_profile_grace_period) {}
   ~TestNewBadgePolicy() override = default;
 };
 
@@ -77,19 +80,23 @@ class NewBadgeControllerTest : public testing::Test {
   static constexpr int kMaxShows = 5;
   static constexpr int kMaxUsed = 2;
   static constexpr base::TimeDelta kShowWindow = base::Days(1);
+  static constexpr base::TimeDelta kGracePeriod = base::Hours(8);
+  static constexpr base::TimeDelta kDefaultProfileAge = base::Days(7);
 
   void SetUp() override {
     registry_.RegisterFeature({kNewBadgeTestFeature, Metadata()});
     storage_service_.set_clock_for_testing(&test_clock_);
     test_clock_.SetNow(base::Time::Now());
+    storage_service_.set_profile_creation_time_for_testing(test_clock_.Now() -
+                                                           kDefaultProfileAge);
   }
 
   void CreateWithTestPolicy(bool enable_feature = true) {
     if (enable_feature) {
       feature_list_.InitAndEnableFeature(kNewBadgeTestFeature);
     }
-    auto policy =
-        std::make_unique<TestNewBadgePolicy>(kMaxShows, kMaxUsed, kShowWindow);
+    auto policy = std::make_unique<TestNewBadgePolicy>(
+        kMaxShows, kMaxUsed, kShowWindow, kGracePeriod);
     controller_ = std::make_unique<NewBadgeController>(
         registry_, storage_service_, std::move(policy));
     controller_->InitData();
@@ -124,9 +131,7 @@ class NewBadgeControllerTest : public testing::Test {
 
 TEST_F(NewBadgeControllerTest, MaybeShowNewBadgeCallsPolicyReturnsTrue) {
   CreateWithMockPolicy();
-  EXPECT_CALL(
-      *mock_policy_,
-      ShouldShowNewBadge(testing::Ref(kNewBadgeTestFeature), 0, 0, testing::_))
+  EXPECT_CALL(*mock_policy_, ShouldShowNewBadge)
       .WillOnce(testing::Return(true));
   EXPECT_CALL(*mock_policy_,
               RecordNewBadgeShown(testing::Ref(kNewBadgeTestFeature), 1));
@@ -136,9 +141,7 @@ TEST_F(NewBadgeControllerTest, MaybeShowNewBadgeCallsPolicyReturnsTrue) {
 
 TEST_F(NewBadgeControllerTest, MaybeShowNewBadgeCallsPolicyReturnsFalse) {
   CreateWithMockPolicy();
-  EXPECT_CALL(
-      *mock_policy_,
-      ShouldShowNewBadge(testing::Ref(kNewBadgeTestFeature), 0, 0, testing::_))
+  EXPECT_CALL(*mock_policy_, ShouldShowNewBadge)
       .WillOnce(testing::Return(false));
   EXPECT_FALSE(controller_->MaybeShowNewBadge(kNewBadgeTestFeature));
   CheckData(kNewBadgeTestFeature, NewBadgeData{0, 0});
@@ -204,6 +207,19 @@ TEST_F(NewBadgeControllerTest, DoesNotShowIfFeatureDisabled) {
   CreateWithTestPolicy(/*enable_feature=*/false);
   EXPECT_FALSE(controller_->MaybeShowNewBadge(kNewBadgeTestFeature));
   CheckData(kNewBadgeTestFeature, NewBadgeData{0, 0});
+}
+
+TEST_F(NewBadgeControllerTest, DoesNotShowIfFeatureEnabledDuringGracePeriod) {
+  CreateWithTestPolicy();
+  storage_service_.set_profile_creation_time_for_testing(
+      storage_service_.GetCurrentTime() - base::Hours(1));
+  EXPECT_FALSE(controller_->MaybeShowNewBadge(kNewBadgeTestFeature));
+  CheckData(kNewBadgeTestFeature, NewBadgeData{0, 0});
+
+  // Even if time is advanced, because the feature launched during the grace
+  // period, it does not show a "New" Badge.
+  test_clock_.Advance(base::Hours(8));
+  EXPECT_FALSE(controller_->MaybeShowNewBadge(kNewBadgeTestFeature));
 }
 
 TEST_F(NewBadgeControllerTest, ShowsUntilMaxCount) {

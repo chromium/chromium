@@ -6,6 +6,7 @@
 
 #include "components/user_education/common/feature_promo_data.h"
 #include "components/user_education/common/feature_promo_storage_service.h"
+#include "components/user_education/common/user_education_features.h"
 #include "ui/base/models/simple_menu_model.h"
 
 namespace user_education {
@@ -52,10 +53,9 @@ DisplayNewBadge NewBadgeController::MaybeShowNewBadge(
       << "Feature enabled time for " << feature.name
       << " is null; this value should have been set during initialization.";
 
-  if (!policy_->ShouldShowNewBadge(
-          feature, data.show_count, data.used_count,
-          storage_service_->GetCurrentTime() - data.feature_enabled_time)) {
-    return DisplayNewBadge();
+  // Check the policy.
+  if (!policy_->ShouldShowNewBadge(data, *storage_service_)) {
+    return ui::IsNewFeatureAtValue();
   }
 
   ++data.show_count;

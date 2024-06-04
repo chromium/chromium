@@ -630,6 +630,18 @@ class BrowserUserEducationServiceNewBadgeBrowserTest
 
   ~BrowserUserEducationServiceNewBadgeBrowserTest() override = default;
 
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+
+    // Make this seem like an old profile so we are not in the new profile
+    // grace period.
+    auto& storage_service =
+        UserEducationServiceFactory::GetForBrowserContext(browser()->profile())
+            ->feature_promo_storage_service();
+    storage_service.set_profile_creation_time_for_testing(
+        storage_service.GetCurrentTime() - base::Days(365));
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };

@@ -6,9 +6,12 @@
 #define COMPONENTS_USER_EDUCATION_COMMON_NEW_BADGE_POLICY_H_
 
 #include "base/feature_list.h"
-#include "components/user_education/common/feature_promo_data.h"
+#include "base/time/time.h"
 
 namespace user_education {
+
+class FeaturePromoStorageService;
+struct NewBadgeData;
 
 // Describes when a "New" Badge can be shown for a given feature.
 class NewBadgePolicy {
@@ -18,11 +21,10 @@ class NewBadgePolicy {
   void operator=(const NewBadgePolicy&) = delete;
   virtual ~NewBadgePolicy();
 
-  // Returns whether a "New" Badge for `feature` should be shown.
-  virtual bool ShouldShowNewBadge(const base::Feature& feature,
-                                  int show_count,
-                                  int used_count,
-                                  base::TimeDelta time_since_enabled) const;
+  // Returns whether a "New" Badge should be shown.
+  virtual bool ShouldShowNewBadge(
+      const NewBadgeData& data,
+      const FeaturePromoStorageService& storage_service) const;
 
   // Records metrics for "New" Badge. Call when the badge will be shown.
   virtual void RecordNewBadgeShown(const base::Feature& feature, int count);
@@ -41,12 +43,14 @@ class NewBadgePolicy {
   // its associated entry point used before the badge disappears.
   NewBadgePolicy(int times_shown_before_dismiss,
                  int uses_before_dismiss,
-                 base::TimeDelta display_window);
+                 base::TimeDelta display_window,
+                 base::TimeDelta new_profile_grace_period);
 
  private:
   const int times_shown_before_dismiss_;
   const int uses_before_dismiss_;
   const base::TimeDelta display_window_;
+  const base::TimeDelta new_profile_grace_period_;
 };
 
 }  // namespace user_education
