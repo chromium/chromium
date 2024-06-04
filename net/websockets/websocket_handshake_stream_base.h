@@ -166,9 +166,11 @@ class NET_EXPORT WebSocketHandshakeStreamBase : public HttpStream {
     WebSocketDeflateParameters deflate_parameters;
   };
 
-  static void AddVectorHeaderIfNonEmpty(const char* name,
-                                        const std::vector<std::string>& value,
-                                        HttpRequestHeaders* headers);
+  // Add the Sec-WebSocket-Extensions and Sec-WebSocket-Protocol headers to
+  // `headers`.
+  static void AddVectorHeaders(const std::vector<std::string>& extensions,
+                               const std::vector<std::string>& protocols,
+                               HttpRequestHeaders* headers);
 
   static bool ValidateSubProtocol(
       const HttpResponseHeaders* headers,

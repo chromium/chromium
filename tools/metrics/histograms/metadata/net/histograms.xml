@@ -5649,6 +5649,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.WebSocket.ProtocolHeaderSize" units="bytes"
+    expires_after="2024-12-03">
+  <owner>ricea@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    The size of the value of the Sec-WebSocket-Protocol header in the WebSocket
+    handshake request, in bytes. Recorded once for every WebSocket handshake
+    request sent, regardless of HTTP version.
+  </summary>
+</histogram>
+
 <histogram name="Net.WebSocket.ResponseCode" enum="HttpResponseCode"
     expires_after="never">
 <!-- expires-never: needed for long-term tracking of ecosystem -->

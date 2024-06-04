@@ -262,12 +262,8 @@ int WebSocketBasicHandshakeStream::SendRequest(
   }
   enriched_headers.SetHeader(websockets::kSecWebSocketKey, handshake_challenge);
 
-  AddVectorHeaderIfNonEmpty(websockets::kSecWebSocketExtensions,
-                            requested_extensions_,
-                            &enriched_headers);
-  AddVectorHeaderIfNonEmpty(websockets::kSecWebSocketProtocol,
-                            requested_sub_protocols_,
-                            &enriched_headers);
+  AddVectorHeaders(requested_extensions_, requested_sub_protocols_,
+                   &enriched_headers);
 
   handshake_challenge_response_ =
       ComputeSecWebSocketAccept(handshake_challenge);
