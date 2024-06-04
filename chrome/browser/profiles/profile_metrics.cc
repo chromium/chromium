@@ -35,7 +35,7 @@ enum class ProfileNetUserCounts {
   kMaxValue = PROFILE_DELETED
 };
 
-int GetTotalKeyedServiceCount(Profile* profile) {
+size_t GetTotalKeyedServiceCount(Profile* profile) {
   return KeyedServiceFactory::GetServicesCount(profile) +
          RefcountedKeyedServiceFactory::GetServicesCount(profile);
 }

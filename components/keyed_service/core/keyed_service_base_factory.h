@@ -119,7 +119,7 @@ class KEYED_SERVICE_EXPORT KeyedServiceBaseFactory : public DependencyNode {
   virtual void SetEmptyTestingFactory(void* context) = 0;
 
   // Returns true if a testing factory function has been set for |context|.
-  virtual bool HasTestingFactory(void* context) = 0;
+  virtual bool HasTestingFactory(void* context) const = 0;
 
   // Create the service associated with |context|.
   virtual void CreateServiceNow(void* context) = 0;

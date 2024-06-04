@@ -106,7 +106,7 @@ void SimpleKeyedServiceFactory::RegisterPrefs(
 
 void SimpleKeyedServiceFactory::SetEmptyTestingFactory(void* context) {}
 
-bool SimpleKeyedServiceFactory::HasTestingFactory(void* context) {
+bool SimpleKeyedServiceFactory::HasTestingFactory(void* context) const {
   return false;
 }
 

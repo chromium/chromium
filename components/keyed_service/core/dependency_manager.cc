@@ -142,13 +142,13 @@ void DependencyManager::DestroyContextServices(void* context) {
   MarkContextDead(context);
   DestroyFactoriesInOrder(context, destruction_order);
 
-  int context_service_count =
+  const size_t context_service_count =
       KeyedServiceFactory::GetServicesCount(context) +
       RefcountedKeyedServiceFactory::GetServicesCount(context);
   // At this point all services for a specific context should be destroyed.
   // If this is not the case, it means that a service was created but not
   // destroyed properly, potentially due to a wrong dependency declaration
-  DCHECK_EQ(context_service_count, 0);
+  DCHECK_EQ(context_service_count, 0u);
 }
 
 // static
