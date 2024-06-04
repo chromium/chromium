@@ -3601,7 +3601,7 @@ TEST_F(BrowserAutofillManagerTest,
   GetAutofillSuggestions(form, form.fields[2]);
   external_delegate()->CheckSuggestions(
       form.fields[2].global_id(),
-      {Suggestion("test@example.com", "Natty Bumppo", kAddressEntryIcon,
+      {Suggestion("test@example.com", "Natty Bumppo", Suggestion::Icon::kEmail,
                   SuggestionType::kAddressEntry),
        AutofillSuggestionGenerator::CreateSeparator(),
        AutofillSuggestionGenerator::CreateManageAddressesEntry()});

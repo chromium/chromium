@@ -85,6 +85,7 @@ struct Suggestion {
     kDelete,
     kDevice,
     kEdit,
+    kEmail,
     kEmpty,
     kGlobe,
     kGoogle,

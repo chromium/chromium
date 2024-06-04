@@ -1168,8 +1168,12 @@ AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
           std::optional(trigger_field_type);
     }
     // We add an icon to the address (profile) suggestion if there is more than
-    // one profile related field in the form.
-    if (contains_profile_related_fields) {
+    // one profile related field in the form. For email fields, the email icon
+    // is used unconditionally to create consistency with plus address
+    // suggestions.
+    if (GroupTypeOfFieldType(trigger_field_type) == FieldTypeGroup::kEmail) {
+      suggestions.back().icon = Suggestion::Icon::kEmail;
+    } else if (contains_profile_related_fields) {
       const bool fill_full_form =
           suggestions.back().type == SuggestionType::kAddressEntry;
       if (base::FeatureList::IsEnabled(

@@ -95,6 +95,8 @@ std::string_view ConvertIconToPrintableString(Suggestion::Icon icon) {
       return "kDevice";
     case Suggestion::Icon::kEdit:
       return "kEdit";
+    case Suggestion::Icon::kEmail:
+      return "kEmail";
     case Suggestion::Icon::kEmpty:
       return "kEmpty";
     case Suggestion::Icon::kGlobe:

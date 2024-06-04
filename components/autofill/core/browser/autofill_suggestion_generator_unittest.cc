@@ -1711,6 +1711,31 @@ TEST_F(AutofillChildrenSuggestionGeneratorTest,
   EXPECT_EQ(suggestions[0].icon, Suggestion::Icon::kLocation);
 }
 
+TEST_F(
+    AutofillChildrenSuggestionGeneratorTest,
+    CreateSuggestionsFromProfiles_LastTargetedFieldsContainOnlyEmail_FieldByField) {
+  std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
+      profile(), SuggestionType::kAddressFieldByFieldFilling, EMAIL_ADDRESS,
+      {EMAIL_ADDRESS});
+
+  ASSERT_EQ(1U, suggestions.size());
+  EXPECT_EQ(suggestions[0].type, SuggestionType::kAddressFieldByFieldFilling);
+  // Email icon is used to create consistency with plus address suggestions.
+  EXPECT_EQ(suggestions[0].icon, Suggestion::Icon::kEmail);
+}
+
+TEST_F(AutofillChildrenSuggestionGeneratorTest,
+       CreateSuggestionsFromProfiles_LastTargetedFieldsAreNone_FieldByField) {
+  std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
+      profile(), SuggestionType::kAddressFieldByFieldFilling, EMAIL_ADDRESS,
+      {});
+
+  ASSERT_EQ(1U, suggestions.size());
+  EXPECT_EQ(suggestions[0].type, SuggestionType::kAddressFieldByFieldFilling);
+  // Email icon is used to create consistency with plus address suggestions.
+  EXPECT_EQ(suggestions[0].icon, Suggestion::Icon::kEmail);
+}
+
 // Asserts that when the triggering field is a phone field, the phone number
 // suggestion is of type `SuggestionType::kFillFullPhoneNumber`. In other
 // scenarios, phone number is of type

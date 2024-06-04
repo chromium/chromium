@@ -118,6 +118,7 @@ std::u16string GetIconAccessibleName(Suggestion::Icon icon) {
     case Suggestion::Icon::kDelete:
     case Suggestion::Icon::kDevice:
     case Suggestion::Icon::kEdit:
+    case Suggestion::Icon::kEmail:
     case Suggestion::Icon::kEmpty:
     case Suggestion::Icon::kGlobe:
     case Suggestion::Icon::kGoogle:
@@ -190,6 +191,9 @@ std::optional<ui::ImageModel> GetIconImageModelFromIcon(Suggestion::Icon icon) {
       return ImageModelFromVectorIcon(kAccountCircleIcon, kIconSize);
     case Suggestion::Icon::kSettings:
       return ImageModelFromVectorIcon(omnibox::kProductIcon, kIconSize);
+    case Suggestion::Icon::kEmail:
+      return ImageModelFromVectorIcon(vector_icons::kEmailOutlineIcon,
+                                      kIconSize);
     case Suggestion::Icon::kEmpty:
       return ImageModelFromVectorIcon(omnibox::kHttpIcon, kIconSize);
     case Suggestion::Icon::kDevice:
