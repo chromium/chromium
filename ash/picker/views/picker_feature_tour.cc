@@ -12,6 +12,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/typography.h"
+#include "base/functional/callback.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -30,6 +31,7 @@
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
 namespace ash {
@@ -53,7 +55,7 @@ class FeatureTourBubbleView : public views::WidgetDelegate,
   METADATA_HEADER(FeatureTourBubbleView, views::FlexLayoutView)
 
  public:
-  FeatureTourBubbleView() {
+  FeatureTourBubbleView(base::RepeatingClosure completion_callback) {
     // TODO: b/343599950 - Replace placeholder strings.
     views::Builder<views::FlexLayoutView>(this)
         .SetOrientation(views::LayoutOrientation::kVertical)
@@ -91,10 +93,16 @@ class FeatureTourBubbleView : public views::WidgetDelegate,
                         PillButton::Type::kSecondaryWithoutIcon)),
                     views::Builder<PillButton>(
                         std::make_unique<PillButton>(
-                            PillButton::PressedCallback(),
+                            // base::Unretained is safe here since the Widget
+                            // owns the View.
+                            base::BindRepeating(
+                                &FeatureTourBubbleView::CloseWidget,
+                                base::Unretained(this))
+                                .Then(std::move(completion_callback)),
                             l10n_util::GetStringUTF16(
                                 IDS_PICKER_FEATURE_TOUR_GOT_IT_BUTTON_LABEL),
                             PillButton::Type::kPrimaryWithoutIcon))
+                        .CopyAddressTo(&complete_button_)
                         .SetProperty(
                             views::kMarginsKey,
                             gfx::Insets::TLBR(0, kBetweenButtonMargin, 0, 0))))
@@ -104,6 +112,8 @@ class FeatureTourBubbleView : public views::WidgetDelegate,
   FeatureTourBubbleView(const FeatureTourBubbleView&) = delete;
   FeatureTourBubbleView& operator=(const FeatureTourBubbleView&) = delete;
   ~FeatureTourBubbleView() override = default;
+
+  views::Button* complete_button() { return complete_button_; }
 
   View* GetContentsView() override { return this; }
 
@@ -117,6 +127,16 @@ class FeatureTourBubbleView : public views::WidgetDelegate,
     frame->SetBubbleBorder(std::move(border));
     return frame;
   }
+
+ private:
+  void CloseWidget() {
+    if (views::Widget* widget = views::View::GetWidget(); widget != nullptr) {
+      widget->CloseWithReason(
+          views::Widget::ClosedReason::kAcceptButtonClicked);
+    }
+  }
+
+  raw_ptr<views::Button> complete_button_ = nullptr;
 };
 
 BEGIN_METADATA(FeatureTourBubbleView)
@@ -133,9 +153,10 @@ DEFINE_VIEW_BUILDER(/* no export */, ash::FeatureTourBubbleView)
 namespace ash {
 namespace {
 
-std::unique_ptr<views::Widget> CreateWidget() {
+std::unique_ptr<views::Widget> CreateWidget(
+    base::RepeatingClosure completion_callback) {
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
-  params.delegate = new FeatureTourBubbleView;
+  params.delegate = new FeatureTourBubbleView(std::move(completion_callback));
   params.name = "PickerFeatureTourWidget";
 
   auto widget = std::make_unique<views::Widget>(std::move(params));
@@ -153,9 +174,19 @@ PickerFeatureTour::~PickerFeatureTour() {
   }
 }
 
-void PickerFeatureTour::Show() {
-  widget_ = CreateWidget();
+void PickerFeatureTour::Show(base::RepeatingClosure completion_callback) {
+  widget_ = CreateWidget(std::move(completion_callback));
   widget_->Show();
+}
+
+views::Button* PickerFeatureTour::complete_button_for_testing() {
+  if (!widget_) {
+    return nullptr;
+  }
+
+  auto* bubble_view =
+      static_cast<FeatureTourBubbleView*>(widget_->GetContentsView());
+  return bubble_view ? bubble_view->complete_button() : nullptr;
 }
 
 views::Widget* PickerFeatureTour::widget_for_testing() {
