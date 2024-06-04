@@ -23,15 +23,18 @@ class FakeDiskSpaceInstance : public mojom::DiskSpaceInstance {
   void Init(::mojo::PendingRemote<mojom::DiskSpaceHost> host_remote,
             InitCallback callback) override;
   void GetApplicationsSize(GetApplicationsSizeCallback callback) override;
+  void ResizeStorageBalloon(int64_t free_space_bytes) override;
 
   size_t num_get_applications_size_called() const {
     return num_get_applications_size_called_;
   }
+  int64_t free_space_bytes() const { return free_space_bytes_; }
 
  private:
   mojo::Remote<mojom::DiskSpaceHost> host_remote_;
 
   size_t num_get_applications_size_called_ = 0;
+  int64_t free_space_bytes_ = 0;
 };
 
 }  // namespace arc

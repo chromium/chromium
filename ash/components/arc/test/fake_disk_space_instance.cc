@@ -27,4 +27,8 @@ void FakeDiskSpaceInstance::GetApplicationsSize(
   std::move(callback).Run(/*succeeded=*/true, std::move(size));
 }
 
+void FakeDiskSpaceInstance::ResizeStorageBalloon(int64_t free_space_bytes) {
+  free_space_bytes_ = free_space_bytes;
+}
+
 }  // namespace arc

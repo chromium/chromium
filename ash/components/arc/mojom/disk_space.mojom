@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 4
+// Next MinVersion: 5
 
 module arc.mojom;
 
@@ -43,7 +43,7 @@ interface DiskSpaceHost {
   [MinVersion=2] GetFreeDiskSpace@5() => (DiskSpace? free_space);
 };
 
-// Next Method ID: 2
+// Next Method ID: 3
 interface DiskSpaceInstance {
   // Establishes full-duplex communication with the host.
   Init@0(pending_remote<DiskSpaceHost> host_remote) => ();
@@ -54,4 +54,10 @@ interface DiskSpaceInstance {
   // When `succeeded` is false, `applications_size` is null.
   [MinVersion=3] GetApplicationsSize@1()
       => (bool succeeded, ApplicationsSize? applications_size);
+
+  // Requests ARC to resize storage balloon so that the free space in ARC
+  // becomes `free_space_bytes`. If `free_space_bytes` is larger than the total
+  // disk size minus the space used by ARC, the balloon just becomes its minimum
+  // size.
+  [MinVersion=4] ResizeStorageBalloon@2(int64 free_space_bytes);
 };

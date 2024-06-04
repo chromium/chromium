@@ -96,4 +96,11 @@ void FakeSpacedClient::GetQuotaCurrentSpacesForIds(
       ConstructSpaceMap(project_ids, quota_current_space_project_id_)));
 }
 
+void FakeSpacedClient::SendStatefulDiskSpaceUpdate(
+    const Observer::SpaceEvent& event) {
+  for (Observer& observer : observers_) {
+    observer.OnSpaceUpdate(event);
+  }
+}
+
 }  // namespace ash

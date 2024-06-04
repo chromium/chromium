@@ -55,6 +55,8 @@ class COMPONENT_EXPORT(SPACED_CLIENT) FakeSpacedClient : public SpacedClient {
                                    const std::vector<uint32_t>& project_ids,
                                    GetSpacesForIdsCallback callback) override;
 
+  void SendStatefulDiskSpaceUpdate(const Observer::SpaceEvent& event);
+
   void set_free_disk_space(std::optional<int64_t> space) {
     free_disk_space_ = space;
   }

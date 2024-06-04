@@ -15,6 +15,7 @@
 #include "base/test/scoped_chromeos_version_info.h"
 #include "base/test/test_future.h"
 #include "chromeos/ash/components/dbus/spaced/fake_spaced_client.h"
+#include "chromeos/ash/components/dbus/spaced/spaced.pb.h"
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
@@ -25,6 +26,9 @@
 namespace arc {
 namespace {
 
+constexpr int64_t kGiB = 1024 * 1024 * 1024;
+constexpr int64_t kInitialFreeDiskSpace = 30 * kGiB;
+
 base::test::ScopedChromeOSVersionInfo SetArcAndroidSdkVersionForTesting(
     int version) {
   return base::test::ScopedChromeOSVersionInfo(
@@ -34,13 +38,7 @@ base::test::ScopedChromeOSVersionInfo SetArcAndroidSdkVersionForTesting(
 
 class ArcDiskSpaceBridgeTest : public testing::Test {
  protected:
-  ArcDiskSpaceBridgeTest()
-      : bridge_(ArcDiskSpaceBridge::GetForBrowserContextForTesting(&context_)) {
-    ArcServiceManager::Get()->arc_bridge_service()->disk_space()->SetInstance(
-        &disk_space_instance_);
-    WaitForInstanceReady(
-        ArcServiceManager::Get()->arc_bridge_service()->disk_space());
-  }
+  ArcDiskSpaceBridgeTest() = default;
   ArcDiskSpaceBridgeTest(const ArcDiskSpaceBridgeTest&) = delete;
   ArcDiskSpaceBridgeTest& operator=(const ArcDiskSpaceBridgeTest&) = delete;
   ~ArcDiskSpaceBridgeTest() override = default;
@@ -48,14 +46,24 @@ class ArcDiskSpaceBridgeTest : public testing::Test {
   const FakeDiskSpaceInstance* disk_space_instance() const {
     return &disk_space_instance_;
   }
-  ArcDiskSpaceBridge* bridge() { return bridge_; }
+  ArcDiskSpaceBridge* bridge() { return bridge_.get(); }
 
   void SetUp() override {
     ash::SpacedClient::InitializeFake();
+    ash::FakeSpacedClient::Get()->set_free_disk_space(kInitialFreeDiskSpace);
     ash::UserDataAuthClient::InitializeFake();
+
+    bridge_ = std::make_unique<ArcDiskSpaceBridge>(
+        &context_, arc_service_manager_.arc_bridge_service());
+
+    ArcServiceManager::Get()->arc_bridge_service()->disk_space()->SetInstance(
+        &disk_space_instance_);
+    WaitForInstanceReady(
+        ArcServiceManager::Get()->arc_bridge_service()->disk_space());
   }
 
   void TearDown() override {
+    bridge_.reset();
     ash::UserDataAuthClient::Shutdown();
     ash::SpacedClient::Shutdown();
   }
@@ -65,7 +73,7 @@ class ArcDiskSpaceBridgeTest : public testing::Test {
   ArcServiceManager arc_service_manager_;
   FakeDiskSpaceInstance disk_space_instance_;
   user_prefs::TestBrowserContextWithPrefs context_;
-  const raw_ptr<ArcDiskSpaceBridge> bridge_;
+  std::unique_ptr<ArcDiskSpaceBridge> bridge_;
 };
 
 TEST_F(ArcDiskSpaceBridgeTest, IsQuotaSupported_Supported) {
@@ -244,6 +252,24 @@ TEST_F(ArcDiskSpaceBridgeTest, GetApplicationsSize) {
   EXPECT_TRUE(bridge()->GetApplicationsSize(future.GetCallback()));
   EXPECT_EQ(1u, disk_space_instance()->num_get_applications_size_called());
   EXPECT_TRUE(future.Get<0>());
+}
+
+TEST_F(ArcDiskSpaceBridgeTest, SendResizeStorageBalloon) {
+  // After the instance is ready, the bridge sets the initial balloon size.
+  EXPECT_EQ(disk_space_instance()->free_space_bytes(),
+            kInitialFreeDiskSpace - kStorageBalloonFreeSpaceBufferSizeInBytes);
+
+  // Chrome receives StatefulDiskSpaceUpdate D-Bus signal with an updated
+  // host-side free disk space.
+  constexpr int64_t kNewFreeDiskSpace = 29 * kGiB;
+  spaced::StatefulDiskSpaceUpdate update;
+  update.set_free_space_bytes(kNewFreeDiskSpace);
+  update.set_state(spaced::StatefulDiskSpaceState::NORMAL);
+  ash::FakeSpacedClient::Get()->SendStatefulDiskSpaceUpdate(update);
+
+  // After receiving the signal, the balloon size is updated accordingly.
+  EXPECT_EQ(disk_space_instance()->free_space_bytes(),
+            kNewFreeDiskSpace - kStorageBalloonFreeSpaceBufferSizeInBytes);
 }
 
 }  // namespace

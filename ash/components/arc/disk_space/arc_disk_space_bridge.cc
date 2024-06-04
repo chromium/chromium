@@ -93,11 +93,13 @@ ArcDiskSpaceBridge* ArcDiskSpaceBridge::GetForBrowserContextForTesting(
 ArcDiskSpaceBridge::ArcDiskSpaceBridge(content::BrowserContext* context,
                                        ArcBridgeService* bridge_service)
     : arc_bridge_service_(bridge_service) {
+  arc_bridge_service_->disk_space()->AddObserver(this);
   arc_bridge_service_->disk_space()->SetHost(this);
 }
 
 ArcDiskSpaceBridge::~ArcDiskSpaceBridge() {
   arc_bridge_service_->disk_space()->SetHost(nullptr);
+  arc_bridge_service_->disk_space()->RemoveObserver(this);
 }
 
 void ArcDiskSpaceBridge::IsQuotaSupported(IsQuotaSupportedCallback callback) {
@@ -195,21 +197,19 @@ void ArcDiskSpaceBridge::GetQuotaCurrentSpaceForProjectId(
 void ArcDiskSpaceBridge::GetFreeDiskSpace(GetFreeDiskSpaceCallback callback) {
   ash::SpacedClient::Get()->GetFreeDiskSpace(
       kArcDiskHome,
-      base::BindOnce(&ArcDiskSpaceBridge::OnGetFreeDiskSpace,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
-}
+      base::BindOnce(
+          [](GetFreeDiskSpaceCallback callback, std::optional<int64_t> reply) {
+            if (!reply.has_value()) {
+              LOG(ERROR) << "spaced::GetFreeDiskSpace failed";
+              std::move(callback).Run(nullptr);
+              return;
+            }
 
-void ArcDiskSpaceBridge::OnGetFreeDiskSpace(GetFreeDiskSpaceCallback callback,
-                                            std::optional<int64_t> reply) {
-  if (!reply.has_value()) {
-    LOG(ERROR) << "spaced::GetFreeDiskSpace failed";
-    std::move(callback).Run(nullptr);
-    return;
-  }
-
-  mojom::DiskSpacePtr disk_space = mojom::DiskSpace::New();
-  disk_space->space_in_bytes = reply.value();
-  std::move(callback).Run(std::move(disk_space));
+            mojom::DiskSpacePtr disk_space = mojom::DiskSpace::New();
+            disk_space->space_in_bytes = reply.value();
+            std::move(callback).Run(std::move(disk_space));
+          },
+          std::move(callback)));
 }
 
 bool ArcDiskSpaceBridge::GetApplicationsSize(
@@ -221,6 +221,40 @@ bool ArcDiskSpaceBridge::GetApplicationsSize(
   }
   disk_space_instance->GetApplicationsSize(std::move(callback));
   return true;
+}
+
+void ArcDiskSpaceBridge::OnConnectionReady() {
+  ash::SpacedClient::Get()->AddObserver(this);
+  ash::SpacedClient::Get()->GetFreeDiskSpace(
+      kArcDiskHome, base::BindOnce(&ArcDiskSpaceBridge::OnGetFreeDiskSpace,
+                                   weak_factory_.GetWeakPtr()));
+}
+
+void ArcDiskSpaceBridge::OnConnectionClosed() {
+  ash::SpacedClient::Get()->RemoveObserver(this);
+}
+
+void ArcDiskSpaceBridge::OnGetFreeDiskSpace(std::optional<int64_t> reply) {
+  if (!reply.has_value()) {
+    LOG(ERROR) << "Failed to call GetFreeDiskSpace from ArcDiskSpaceBridge";
+    return;
+  }
+  SendResizeStorageBalloon(reply.value());
+}
+
+void ArcDiskSpaceBridge::OnSpaceUpdate(const SpaceEvent& event) {
+  SendResizeStorageBalloon(event.free_space_bytes());
+}
+
+void ArcDiskSpaceBridge::SendResizeStorageBalloon(int64_t free_space_bytes) {
+  auto* disk_space_instance = ARC_GET_INSTANCE_FOR_METHOD(
+      arc_bridge_service_->disk_space(), ResizeStorageBalloon);
+  if (!disk_space_instance) {
+    return;
+  }
+  disk_space_instance->ResizeStorageBalloon(std::max(
+      int64_t(free_space_bytes - kStorageBalloonFreeSpaceBufferSizeInBytes),
+      int64_t(0)));
 }
 
 // static
