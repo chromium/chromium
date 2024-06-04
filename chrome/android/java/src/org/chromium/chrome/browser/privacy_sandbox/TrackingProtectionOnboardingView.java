@@ -6,13 +6,10 @@ package org.chromium.chrome.browser.privacy_sandbox;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.os.Bundle;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
-import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
-import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
@@ -29,18 +26,16 @@ import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
- * View responsible for displaying the Tracking Protection notice UI for Mode B (Tracking protection
- * launch for 1% of users).
+ * View responsible for displaying the Tracking Protection notice UI (Tracking protection launch for
+ * 100% of users).
  */
-class TrackingProtectionModeBOnboardingView {
+class TrackingProtectionOnboardingView {
     private static final String TRACKING_PROTECTION_HELP_CENTER =
             "https://support.google.com/chrome/?p=tracking_protection";
     private static final int AUTODISMISS_DURATION_ONE_DAY = 24 * 60 * 60 * 1000;
-    private static final int AUTODISMISS_DURATION_8_SECONDS = 8 * 1000;
     private final Context mContext;
     private final MessageDispatcher mMessageDispatcher;
     private final SettingsLauncher mSettingsLauncher;
-    private final TrackingProtectionBridge mTrackingProtectionBridge;
 
     private PropertyModel mMessage;
 
@@ -50,18 +45,15 @@ class TrackingProtectionModeBOnboardingView {
      * @param context The application context.
      * @param messageDispatcher The message dispatcher for enqueuing messages.
      * @param settingsLauncher The settings launcher for opening tracking protection settings.
-     * @param trackingProtectionBridge The bridge to interact with Tracking Protection business
      *     logic.
      */
-    public TrackingProtectionModeBOnboardingView(
+    public TrackingProtectionOnboardingView(
             Context context,
             MessageDispatcher messageDispatcher,
-            SettingsLauncher settingsLauncher,
-            TrackingProtectionBridge trackingProtectionBridge) {
+            SettingsLauncher settingsLauncher) {
         mContext = context;
         mMessageDispatcher = messageDispatcher;
         mSettingsLauncher = settingsLauncher;
-        mTrackingProtectionBridge = trackingProtectionBridge;
     }
 
     /**
@@ -78,7 +70,6 @@ class TrackingProtectionModeBOnboardingView {
             Callback<Integer> noticeDismissedCallback,
             Supplier<Integer> noticePrimaryActioSupplier) {
         Resources resources = mContext.getResources();
-        int noticeType = mTrackingProtectionBridge.getRequiredNotice();
         mMessage =
                 new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
                         .with(
@@ -87,27 +78,16 @@ class TrackingProtectionModeBOnboardingView {
                         .with(
                                 MessageBannerProperties.TITLE,
                                 resources.getString(
-                                        noticeType == NoticeType.ONBOARDING
-                                                ? R.string
-                                                        .tracking_protection_onboarding_notice_title
-                                                : R.string
-                                                        .tracking_protection_offboarding_notice_title))
+                                        R.string.tracking_protection_full_onboarding_notice_title))
                         .with(
                                 MessageBannerProperties.DESCRIPTION,
                                 resources.getString(
-                                        noticeType == NoticeType.ONBOARDING
-                                                ? R.string
-                                                        .tracking_protection_onboarding_notice_body
-                                                : R.string
-                                                        .tracking_protection_offboarding_notice_body))
+                                        R.string.tracking_protection_full_onboarding_notice_body))
                         .with(
                                 MessageBannerProperties.PRIMARY_BUTTON_TEXT,
                                 resources.getString(
-                                        noticeType == NoticeType.ONBOARDING
-                                                ? R.string
-                                                        .tracking_protection_onboarding_notice_ack_button_label
-                                                : R.string
-                                                        .tracking_protection_offboarding_notice_ack_button_label))
+                                        R.string
+                                                .tracking_protection_full_onboarding_notice_ack_button_label))
                         .with(
                                 MessageBannerProperties.SECONDARY_MENU_BUTTON_DELEGATE,
                                 new SecondaryMenuButtonDelegate())
@@ -117,9 +97,7 @@ class TrackingProtectionModeBOnboardingView {
                                 R.drawable.ic_settings_gear_24dp)
                         .with(
                                 MessageBannerProperties.DISMISSAL_DURATION,
-                                noticeType == NoticeType.ONBOARDING
-                                        ? AUTODISMISS_DURATION_ONE_DAY
-                                        : AUTODISMISS_DURATION_8_SECONDS)
+                                AUTODISMISS_DURATION_ONE_DAY)
                         .with(
                                 MessageBannerProperties.ON_PRIMARY_ACTION,
                                 noticePrimaryActioSupplier::get)
@@ -150,31 +128,21 @@ class TrackingProtectionModeBOnboardingView {
         @Override
         public ListMenu getListMenu() {
             Resources res = mContext.getResources();
-            int noticeType = mTrackingProtectionBridge.getRequiredNotice();
             ListItem settingsItem =
                     getMenuItem(
                             SETTINGS_ITEM_ID,
                             res.getString(
-                                    noticeType == NoticeType.ONBOARDING
-                                            ? R.string
-                                                    .tracking_protection_onboarding_notice_settings_button_label
-                                            : R.string
-                                                    .tracking_protection_offboarding_notice_settings_button_label));
+                                    R.string
+                                            .tracking_protection_full_onboarding_notice_settings_button_label));
             ListItem learnMoreItem =
                     getMenuItem(
                             LEARN_MORE_ITEM_ID,
                             res.getString(
-                                    noticeType == NoticeType.ONBOARDING
-                                            ? R.string
-                                                    .tracking_protection_onboarding_notice_learn_more_button_label
-                                            : R.string
-                                                    .tracking_protection_offboarding_notice_learn_more_button_label),
+                                    R.string
+                                            .tracking_protection_full_onboarding_notice_learn_more_button_label),
                             res.getString(
-                                    noticeType == NoticeType.ONBOARDING
-                                            ? R.string
-                                                    .tracking_protection_onboarding_notice_learn_more_button_a11y_label
-                                            : R.string
-                                                    .tracking_protection_offboarding_notice_learn_more_button_a11y_label));
+                                    R.string
+                                            .tracking_protection_full_onboarding_notice_learn_more_button_a11y_label));
 
             MVCListAdapter.ModelList menuItems = new MVCListAdapter.ModelList();
             menuItems.add(settingsItem);
@@ -196,35 +164,16 @@ class TrackingProtectionModeBOnboardingView {
         }
 
         private Delegate onClickDelegate() {
-            int noticeType = mTrackingProtectionBridge.getRequiredNotice();
             return (clickedItem) -> {
                 int clickedItemID = clickedItem.get(ListMenuItemProperties.MENU_ITEM_ID);
 
                 if (clickedItemID == SETTINGS_ITEM_ID) {
-                    if (noticeType == NoticeType.ONBOARDING) {
-                        mSettingsLauncher.launchSettingsActivity(
-                                mContext, TrackingProtectionSettings.class);
-                    } else {
-                        Bundle fragmentArguments = new Bundle();
-                        fragmentArguments.putString(
-                                SingleCategorySettings.EXTRA_CATEGORY,
-                                SiteSettingsCategory.preferenceKey(
-                                        SiteSettingsCategory.Type.THIRD_PARTY_COOKIES));
-                        fragmentArguments.putString(
-                                SingleCategorySettings.EXTRA_TITLE,
-                                mContext.getResources()
-                                        .getString(R.string.third_party_cookies_page_title));
-                        mSettingsLauncher.launchSettingsActivity(
-                                mContext, SingleCategorySettings.class, fragmentArguments);
-                    }
-
-                    mTrackingProtectionBridge.noticeActionTaken(noticeType, NoticeAction.SETTINGS);
+                    mSettingsLauncher.launchSettingsActivity(
+                            mContext, TrackingProtectionSettings.class);
                 } else if (clickedItemID == LEARN_MORE_ITEM_ID) {
                     new CctHandler(mContext)
                             .prepareIntent(TRACKING_PROTECTION_HELP_CENTER)
                             .openUrlInCct();
-                    mTrackingProtectionBridge.noticeActionTaken(
-                            noticeType, NoticeAction.LEARN_MORE);
                 }
 
                 mMessageDispatcher.dismissMessage(mMessage, DismissReason.SECONDARY_ACTION);

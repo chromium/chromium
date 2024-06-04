@@ -166,6 +166,11 @@ COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kTrackingProtectionSettingsPageRollbackNotice);
 
 #if BUILDFLAG(IS_ANDROID)
+// Triggers Tracking Protection Onboarding notice for 100% launch.
+// TODO(b/341975190): This flag is for testing only and will be replaced by
+// proper onboarding flag once onboarding service is done.
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+BASE_DECLARE_FEATURE(kTrackingProtectionFullOnboardingMobileTrigger);
 // Forces Tracking Protection Onboarding notice to be shown on all kind of pages
 // (not only the ones with secure connection).
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)

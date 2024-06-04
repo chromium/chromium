@@ -50,6 +50,7 @@ public class TrackingProtectionOnboardingControllerTest {
     private TrackingProtectionOnboardingController mController;
 
     @Mock TrackingProtectionModeBOnboardingView mTrackingProtectionModeBOnboardingView;
+    @Mock TrackingProtectionOnboardingView mTrackingProtectionOnboardingView;
     @Mock private Context mContext;
 
     @Rule public JniMocker mJniMocker = new JniMocker();
@@ -75,6 +76,14 @@ public class TrackingProtectionOnboardingControllerTest {
                 mTrackingProtectionModeBOnboardingView);
 
         mJniMocker.mock(SecurityStateModelJni.TEST_HOOKS, mSecurityStateModelNatives);
+    }
+
+    @Test
+    public void testMaybeOnboardFullOnboardingType_ShowsNotice() {
+        mController.setTrackingProtectionOnboardingView(mTrackingProtectionOnboardingView);
+
+        mController.maybeOnboard(mTab, TrackingProtectionOnboardingType.TP_FULL_LAUNCH);
+        verify(mTrackingProtectionOnboardingView).showNotice(any(), any(), any());
     }
 
     @Test

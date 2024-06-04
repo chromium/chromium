@@ -88,7 +88,10 @@ import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxDialogController;
+import org.chromium.chrome.browser.privacy_sandbox.TrackingProtectionBridge;
 import org.chromium.chrome.browser.privacy_sandbox.TrackingProtectionNoticeController;
+import org.chromium.chrome.browser.privacy_sandbox.TrackingProtectionOnboardingController;
+import org.chromium.chrome.browser.privacy_sandbox.TrackingProtectionOnboardingType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.read_later.ReadLaterIPHController;
 import org.chromium.chrome.browser.readaloud.ReadAloudIPHController;
@@ -921,6 +924,17 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             // Promo will be triggered eventually. We don't want for this promo to clash with other
             // promos in the same run.
             didTriggerPromo = true;
+        }
+
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.TRACKING_PROTECTION_FULL_ONBOARDING_MOBILE_TRIGGER)) {
+            TrackingProtectionOnboardingController.create(
+                    mActivity,
+                    new TrackingProtectionBridge(profile),
+                    mActivityTabProvider,
+                    mMessageDispatcher,
+                    new SettingsLauncherImpl(),
+                    TrackingProtectionOnboardingType.TP_FULL_LAUNCH);
         }
 
         if (!didTriggerPromo) {

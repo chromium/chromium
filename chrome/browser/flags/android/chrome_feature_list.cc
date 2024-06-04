@@ -332,6 +332,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &privacy_sandbox::kPrivacySandboxRelatedWebsiteSetsUi,
     &privacy_sandbox::kPrivacySandboxSettings4,
     &privacy_sandbox::kPrivacySandboxProactiveTopicsBlocking,
+    &privacy_sandbox::kTrackingProtectionFullOnboardingMobileTrigger,
     &privacy_sandbox::kTrackingProtectionOnboardingSkipSecurePageCheck,
     &privacy_sandbox::kTrackingProtectionSettingsLaunch,
     &privacy_sandbox::kTrackingProtectionSettingsPageRollbackNotice,

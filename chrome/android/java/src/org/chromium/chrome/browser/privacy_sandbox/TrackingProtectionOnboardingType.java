@@ -5,7 +5,7 @@
 package org.chromium.chrome.browser.privacy_sandbox;
 
 /** Enum representing different onboarding types for tracking protection. */
-enum TrackingProtectionOnboardingType {
+public enum TrackingProtectionOnboardingType {
     /** Mode B onboarding type. */
     MODE_B,
 

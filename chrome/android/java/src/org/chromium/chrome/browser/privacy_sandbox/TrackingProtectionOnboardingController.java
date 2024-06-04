@@ -38,6 +38,7 @@ public class TrackingProtectionOnboardingController {
 
     private ActivityTabTabObserver mActivityTabTabObserver;
     private TrackingProtectionModeBOnboardingView mTrackingProtectionModeBOnboardingView;
+    private TrackingProtectionOnboardingView mTrackingProtectionOnboardingView;
 
     /**
      * Creates a TrackingProtectionNoticeController.
@@ -100,6 +101,19 @@ public class TrackingProtectionOnboardingController {
     public void maybeOnboard(Tab tab, TrackingProtectionOnboardingType onboardingType) {
         if (onboardingType == TrackingProtectionOnboardingType.MODE_B) {
             maybeOnboardModeB(tab);
+        } else if (onboardingType == TrackingProtectionOnboardingType.TP_FULL_LAUNCH) {
+            maybeOnboardFullLaunch();
+        }
+    }
+
+    // TODO(b/341968245): Add proper logic once b/341975190 is finished.
+    private void maybeOnboardFullLaunch() {
+        try {
+            TrackingProtectionOnboardingView onboardingView = getTrackingProtectionOnboardingView();
+            onboardingView.showNotice(
+                    (b) -> {}, (i) -> {}, () -> PrimaryActionClickBehavior.DISMISS_IMMEDIATELY);
+        } finally {
+            destroy();
         }
     }
 
@@ -152,6 +166,20 @@ public class TrackingProtectionOnboardingController {
                             mTrackingProtectionBridge);
         }
         return mTrackingProtectionModeBOnboardingView;
+    }
+
+    void setTrackingProtectionOnboardingView(
+            TrackingProtectionOnboardingView trackingProtectionOnboardingView) {
+        mTrackingProtectionOnboardingView = trackingProtectionOnboardingView;
+    }
+
+    TrackingProtectionOnboardingView getTrackingProtectionOnboardingView() {
+        if (mTrackingProtectionOnboardingView == null) {
+            mTrackingProtectionOnboardingView =
+                    new TrackingProtectionOnboardingView(
+                            mContext, mMessageDispatcher, mSettingsLauncher);
+        }
+        return mTrackingProtectionOnboardingView;
     }
 
     void setTrackingProtectionModeBOnboardingView(
