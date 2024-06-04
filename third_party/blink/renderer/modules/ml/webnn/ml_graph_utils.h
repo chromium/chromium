@@ -37,10 +37,9 @@ GetOperatorsInTopologicalOrder(const MLNamedOperands& named_outputs);
 //
 // The `NamedArrayBufferViewsInfo` returned by `TransferNamedArrayBufferViews()`
 // doesn't contain any GC objects, so it is safe to be posted to a background
-// thread that invokes the XNNPACK Runtime. After that,
-// `NamedArrayBufferViewsInfo` should be posted back to the calling thread and
-// call `CreateNamedArrayBufferViews()` to create `MLNamedArrayBufferViews` from
-// the info.
+// thread. After that, the `NamedArrayBufferViewsInfo` should be posted back to
+// the calling thread and call `CreateNamedArrayBufferViews()` to create
+// `MLNamedArrayBufferViews` from the info.
 //
 // If it fails to transfer an `ArrayBufferView` of the
 // `MLNamedArrayBufferViews`, the current implementation leaves the
@@ -94,10 +93,6 @@ webnn::Size2d<uint32_t> CalculateConvTransposeOutputSize2D(
     uint32_t dilation_width,
     uint32_t output_padding_height,
     uint32_t output_padding_width);
-
-// Helper to validate gemm options.
-base::expected<void, String> ValidateGemmOptions(const MLGemmOptions* options,
-                                                 uint32_t output_channels);
 
 }  // namespace blink
 

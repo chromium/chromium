@@ -263,42 +263,6 @@ base::expected<void, String> ValidateFilterLayout(
   return base::ok();
 }
 
-base::expected<void, String> ValidateGemmOptions(const MLGemmOptions* options,
-                                                 uint32_t output_channels) {
-  CHECK(options);
-  if (options->hasC()) {
-    // TODO: update this comment
-    //
-    // Both XNNPACK and TFLite fully connected operator only supports 1-D bias
-    // tensor (operand c of WebNN gemm operator) with [output_channels]
-    // dimensions.
-    const auto* bias = options->c();
-    if (bias->Dimensions().size() != 1u ||
-        bias->Dimensions()[0] != output_channels) {
-      // TODO(crbug.com/1273291): Support the bias with other dimensions by
-      // element-wise addition operator.
-      return base::unexpected(String::Format(
-          "The dimensions of bias must be [%u].", output_channels));
-    }
-  }
-  if (options->alpha() != 1.0f) {
-    // TODO(crbug.com/1273291): Support alpha by using element-wise
-    // multiplication operator.
-    return base::unexpected("gemm doesn't support alpha option.");
-  }
-  if (options->beta() != 1.0f) {
-    // TODO(crbug.com/1273291): Support beta by using element-wise
-    // multiplication operator.
-    return base::unexpected("gemm doesn't support beta option.");
-  }
-  if (options->aTranspose()) {
-    // TODO(crbug.com/1273291): Support aTranspose by using transpose operator.
-    return base::unexpected("gemm doesn't support aTranspose option.");
-  }
-
-  return base::ok();
-}
-
 webnn::Size2d<uint32_t> CalculateConvTransposeOutputSize2D(
     const blink::MLConvTranspose2dOptions* options,
     uint32_t input_height,

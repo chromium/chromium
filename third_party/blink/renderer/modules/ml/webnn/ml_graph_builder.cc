@@ -2297,11 +2297,6 @@ HeapVector<Member<const MLOperand>> MLGraphBuilder::split(
   return outputs;
 }
 
-// TODO: update this comment
-//
-// There are some backends don't support "split into sizes" variant, e.g.
-// XNNPACK, and there is an ongoing discussion in WG:
-// https://github.com/webmachinelearning/webnn/issues/392
 HeapVector<Member<const MLOperand>> MLGraphBuilder::split(
     const MLOperand* input,
     const Vector<uint32_t>& splits,
