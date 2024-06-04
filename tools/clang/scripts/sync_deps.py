@@ -13,12 +13,43 @@ import subprocess
 import sys
 import tempfile
 
-from update import DownloadUrl, CDS_URL, CLANG_REVISION
+from update import DownloadUrl, CDS_URL, CLANG_REVISION, CLANG_SUB_REVISION
 
 sys.path.append(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..',
                  'rust'))
 from update_rust import RUST_REVISION, RUST_SUB_REVISION
+
+CLANG_PLATFORM_TO_PACKAGE_FILES = {
+    'Linux_x64': [
+        'clang',
+        'clangd',
+        'clang-tidy',
+        'llvmobjdump',
+        'llvm-code-coverage',
+    ],
+    'Mac': [
+        'clang',
+        #'clang-mac-runtime-library',
+        'clangd',
+        'clang-tidy',
+        'llvm-code-coverage',
+    ],
+    'Mac_arm64': [
+        'clang',
+        'clangd',
+        'clang-tidy',
+        'llvm-code-coverage',
+    ],
+    'Win': [
+        'clang',
+        #'clang-win-runtime-library',
+        'clangd',
+        'clang-tidy',
+        'llvmobjdump',
+        'llvm-code-coverage',
+    ],
+}
 
 
 def GetDepsObjectInfo(object_name: str) -> str:
@@ -61,17 +92,36 @@ def GetRustObjectNames() -> list:
   return object_names
 
 
+def GetClangObjectNames() -> list:
+  object_names = []
+  clang_version = f'{CLANG_REVISION}-{CLANG_SUB_REVISION}'
+  for platform, package_file_list in CLANG_PLATFORM_TO_PACKAGE_FILES.items():
+    for package_file in package_file_list:
+      object_names.append(f'{platform}/{package_file}-{clang_version}.tar.xz')
+
+  return object_names
+
+
 def main():
+  setdep_revisions = []
+
   rust_object_infos = [
       GetDepsObjectInfo(o) for o in sorted(GetRustObjectNames())
   ]
-
   rust_object_infos_string = '?'.join(rust_object_infos)
   rust_deps_entry_path = 'src/third_party/rust-toolchain'
-  rust_setdep_string = f'{rust_deps_entry_path}@{rust_object_infos_string}'
+  setdep_revisions.append(
+      f'--revision={rust_deps_entry_path}@{rust_object_infos_string}')
 
-  rust_setdep_args = ['gclient', 'setdep', f'--revision={rust_setdep_string}']
-  subprocess.run(rust_setdep_args)
+  clang_object_infos = [
+      GetDepsObjectInfo(o) for o in sorted(GetClangObjectNames())
+  ]
+  clang_object_infos_string = '?'.join(clang_object_infos)
+  clang_deps_entry_path = 'src/third_party/llvm-build/Release+Asserts'
+  setdep_revisions.append(
+      f'--revision={clang_deps_entry_path}@{clang_object_infos_string}')
+
+  subprocess.run(['gclient', 'setdep'] + setdep_revisions)
 
 
 if __name__ == '__main__':

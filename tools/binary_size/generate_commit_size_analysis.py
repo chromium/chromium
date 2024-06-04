@@ -56,7 +56,6 @@ def _generate_resource_sizes(to_resource_sizes_py, make_chromium_output_path,
 def _generate_supersize_archive(supersize_input_file, make_chromium_output_path,
                                 make_staging_path):
   """Creates a .size file for the given .apk or .minimal.apks"""
-  subprocess.run([_CLANG_UPDATE_PATH, '--package=objdump'], check=True)
   supersize_input_path = make_chromium_output_path(supersize_input_file)
   size_path = make_staging_path(supersize_input_file) + '.size'
 
