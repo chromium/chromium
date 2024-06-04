@@ -23,6 +23,8 @@ import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.Related
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchFakeServer.FakeResolveSearch;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -36,6 +38,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 public class ContextualSearchHistogramTest extends ContextualSearchInstrumentationBase {
     private HistogramWatcher mResultsSeenHistogramWatcher;
     private HistogramWatcher mAllSearchesHistogramWatcher;
+    private HistogramWatcher mTapResultsSeenHistogramWatcher;
     private HistogramWatcher mNumberOfSuggestionsClicked2HistogramWatcher;
     private HistogramWatcher mSelectedCarouselIndexHistogramWatcher;
     private HistogramWatcher mSelectedSuggestionIndexHistogramWatcher;
@@ -58,9 +61,11 @@ public class ContextualSearchHistogramTest extends ContextualSearchInstrumentati
     /**
      * Create HistogramWatcher for a sequence of user actions that peek and expand the panel with
      * Related Searches showing and then close the panel without selecting any suggestion.
+     *
+     * @param isUKMEnabled Whether UKM is enabled and whether related histograms should be recorded.
      */
-    private void createHistogramWatcherForPeekAndExpandForRSearches() {
-        createHistogramWatcherForPeekAndExpandForRSearches(-1);
+    private void createHistogramWatcherForPeekAndExpandForRSearches(boolean isUKMEnabled) {
+        createHistogramWatcherForPeekAndExpandForRSearches(-1, isUKMEnabled);
     }
 
     /**
@@ -68,8 +73,10 @@ public class ContextualSearchHistogramTest extends ContextualSearchInstrumentati
      * Related Searches showing and then close the panel.
      *
      * @param whichSuggestion Which suggestion was selected. A value of -1 means none.
+     * @param isUKMEnabled Whether UKM is enabled and whether related histograms should be recorded.
      */
-    private void createHistogramWatcherForPeekAndExpandForRSearches(int whichSuggestion) {
+    private void createHistogramWatcherForPeekAndExpandForRSearches(
+            int whichSuggestion, boolean isUKMEnabled) {
         final int relatedSearchesCount = whichSuggestion > -1 ? 1 : 0;
         mResultsSeenHistogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -84,6 +91,19 @@ public class ContextualSearchHistogramTest extends ContextualSearchInstrumentati
                     "Search.ContextualSearch.All.Searches", true, relatedSearchesCount);
         }
         mAllSearchesHistogramWatcher = histogramWatcherBuilder.build();
+
+        histogramWatcherBuilder =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecordTimes(
+                                "Search.ContextualSearch.Tap.ResultsSeen", true, 1);
+        if (isUKMEnabled) {
+            histogramWatcherBuilder.expectBooleanRecordTimes(
+                    "Search.ContextualSearch.Tap.SyncEnabled.ResultsSeen", true, 1);
+        } else {
+            histogramWatcherBuilder.expectNoRecords(
+                    "Search.ContextualSearch.Tap.SyncEnabled.ResultsSeen");
+        }
+        mTapResultsSeenHistogramWatcher = histogramWatcherBuilder.build();
 
         if (relatedSearchesCount > 0) {
             mNumberOfSuggestionsClicked2HistogramWatcher =
@@ -163,6 +183,9 @@ public class ContextualSearchHistogramTest extends ContextualSearchInstrumentati
         mAllSearchesHistogramWatcher.assertExpected(
                 "Failed to log if a search was seen in the Search.ContextualSearch.All.Searches"
                         + " histogram!");
+        mTapResultsSeenHistogramWatcher.assertExpected(
+                "Some entry in the Search.ContextualSearch.Tap histograms was not logged as"
+                        + " expected!");
         mNumberOfSuggestionsClicked2HistogramWatcher.assertExpected(
                 "Failed to log the correct count of Related Searches suggestions clicked in the"
                         + " Search.RelatedSearches.NumberOfSuggestionsClicked2 histogram!");
@@ -191,9 +214,10 @@ public class ContextualSearchHistogramTest extends ContextualSearchInstrumentati
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
+    @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
     public void testRelatedSearchesItemNotSelected() throws Exception {
         mPolicy.overrideAllowSendingPageUrlForTesting(true);
-        createHistogramWatcherForPeekAndExpandForRSearches();
+        createHistogramWatcherForPeekAndExpandForRSearches(/* isUKMEnabled= */ false);
         FakeResolveSearch fakeSearch = simulateResolveSearch("intelligence");
         Assert.assertFalse(
                 "Related Searches should have been requested but were not!",
@@ -205,6 +229,25 @@ public class ContextualSearchHistogramTest extends ContextualSearchInstrumentati
         // Expand the panel and assert that it ends up in the right place.
         expandPanelAndAssert();
 
+        // Don't select any Related Searches suggestion, and close the panel
+        closePanel();
+        assertHistogramWatcherForPeekAndExpandForRSearches();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"ContextualSearch"})
+    @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
+    public void testRelatedSearchesItemNotSelectedUKMEnabled() throws Exception {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(
+                                ProfileManager.getLastUsedRegularProfile(), true));
+        mPolicy.overrideAllowSendingPageUrlForTesting(true);
+        createHistogramWatcherForPeekAndExpandForRSearches(/* isUKMEnabled= */ true);
+        simulateResolveSearch("intelligence");
+        // Expand the panel and assert that it ends up in the right place.
+        expandPanelAndAssert();
         // Don't select any Related Searches suggestion, and close the panel
         closePanel();
         assertHistogramWatcherForPeekAndExpandForRSearches();
@@ -225,7 +268,7 @@ public class ContextualSearchHistogramTest extends ContextualSearchInstrumentati
         // Select a Related Searches suggestion.
         RelatedSearchesControl relatedSearchesControl = mPanel.getRelatedSearchesInBarControl();
         final int chipToSelect = 3;
-        createHistogramWatcherForPeekAndExpandForRSearches(chipToSelect);
+        createHistogramWatcherForPeekAndExpandForRSearches(chipToSelect, /* isUKMEnabled= */ false);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> relatedSearchesControl.selectChipForTest(chipToSelect));
         Assert.assertEquals(
