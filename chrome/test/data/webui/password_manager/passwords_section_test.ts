@@ -452,31 +452,70 @@ suite('PasswordsSectionTest', function() {
     assertTrue(section.$.importPasswords.hidden);
   });
 
-  test('add button hidden when pref disabled', async function() {
+  test(
+      'add button visible when policy disabled and controlled by extension',
+      async function() {
+        const section: PasswordsSectionElement =
+            document.createElement('passwords-section');
+        section.prefs = makePasswordManagerPrefs();
+        section.prefs.credentials_enable_service.value = false;
+        section.prefs.credentials_enable_service.enforcement =
+            chrome.settingsPrivate.Enforcement.ENFORCED;
+        section.prefs.credentials_enable_service.controlledBy =
+            chrome.settingsPrivate.ControlledBy.EXTENSION;
+
+        document.body.appendChild(section);
+        await flushTasks();
+
+        assertTrue(isVisible(section.$.addPasswordButton));
+      });
+
+  test(
+      'add button hidden when policy disabled and not controlled by extension',
+      async function() {
+        const section: PasswordsSectionElement =
+            document.createElement('passwords-section');
+        section.prefs = makePasswordManagerPrefs();
+        section.prefs.credentials_enable_service.value = false;
+        section.prefs.credentials_enable_service.enforcement =
+            chrome.settingsPrivate.Enforcement.ENFORCED;
+        section.prefs.credentials_enable_service.controlledBy =
+            chrome.settingsPrivate.ControlledBy.DEVICE_POLICY;
+
+        document.body.appendChild(section);
+        await flushTasks();
+
+        assertFalse(isVisible(section.$.addPasswordButton));
+      });
+
+  test('add button visible when policy enabled', async function() {
     const section: PasswordsSectionElement =
         document.createElement('passwords-section');
     section.prefs = makePasswordManagerPrefs();
-    section.prefs.credentials_enable_service.value = false;
-    section.prefs.credentials_enable_service.enforcement =
-        chrome.settingsPrivate.Enforcement.ENFORCED;
+    section.prefs.credentials_enable_service.value = true;
     document.body.appendChild(section);
     await flushTasks();
 
-    assertFalse(isVisible(section.$.addPasswordButton));
+    assertTrue(isVisible(section.$.addPasswordButton));
   });
 
-  test('import hidden when policy disabled', async function() {
-    const section: PasswordsSectionElement =
-        document.createElement('passwords-section');
-    section.prefs = makePasswordManagerPrefs();
-    section.prefs.credentials_enable_service.value = false;
-    section.prefs.credentials_enable_service.enforcement =
-        chrome.settingsPrivate.Enforcement.ENFORCED;
-    document.body.appendChild(section);
-    await flushTasks();
+  test(
+      'import hidden when policy disabled and not controlled by extension',
+      async function() {
+        const section: PasswordsSectionElement =
+            document.createElement('passwords-section');
+        section.prefs = makePasswordManagerPrefs();
+        section.prefs.credentials_enable_service.value = false;
+        section.prefs.credentials_enable_service.enforcement =
+            chrome.settingsPrivate.Enforcement.ENFORCED;
+        section.prefs.credentials_enable_service.controlledBy =
+            chrome.settingsPrivate.ControlledBy.DEVICE_POLICY;
 
-    assertFalse(isVisible(section.$.importPasswords));
-  });
+        document.body.appendChild(section);
+        await flushTasks();
+
+        assertFalse(isVisible(section.$.importPasswords));
+      });
 
   test('clicking move passwords opens move passwords dialog', async function() {
     loadTimeData.overrideValues({enableButterOnDesktopFollowup: false});

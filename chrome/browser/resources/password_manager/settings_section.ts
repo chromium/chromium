@@ -372,8 +372,18 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
 
   private computePasswordManagerDisabled_(): boolean {
     const pref = this.getPref('credentials_enable_service');
-    return pref.enforcement === chrome.settingsPrivate.Enforcement.ENFORCED &&
-        !pref.value;
+
+    const isPolicyEnforced =
+        pref.enforcement === chrome.settingsPrivate.Enforcement.ENFORCED;
+
+    const isPolicyControlledByExtension =
+        pref.controlledBy === chrome.settingsPrivate.ControlledBy.EXTENSION;
+
+    if (isPolicyControlledByExtension) {
+      return false;
+    }
+
+    return !pref.value && isPolicyEnforced;
   }
 
   private onMovePasswordsClicked_(e: Event) {
