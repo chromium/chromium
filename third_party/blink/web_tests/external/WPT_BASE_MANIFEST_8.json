@@ -171314,7 +171314,7 @@
       ]
      ],
      "ruby-align-001.html": [
-      "13c96f53f2f30ecef1a9017cd7f63159dfd9a6e7",
+      "c611a56532cef538def6236f62ca9282f62d4694",
       [
        null,
        [
@@ -171327,7 +171327,7 @@
       ]
      ],
      "ruby-align-001a.html": [
-      "6e652f172653867d8a9fce5930463fb7fd1832e5",
+      "a2c492bbce5a99243f65fcba8eb0084e292f7a55",
       [
        null,
        [
@@ -171340,7 +171340,7 @@
       ]
      ],
      "ruby-align-002.html": [
-      "ec40be5e105b5e1e64802b56b465a5f3286a761b",
+      "22e43e44018a350874d4e21216b1e833d014b4a7",
       [
        null,
        [
@@ -171353,12 +171353,25 @@
       ]
      ],
      "ruby-align-002a.html": [
-      "dfb7ae37ed90232164728b0d47e2273a9e794b48",
+      "21838c989ada5a1fce2c0196bc985a08c6e24070",
       [
        null,
        [
         [
          "/css/css-ruby/ruby-align-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "ruby-align-space-around.html": [
+      "dfc1b6a894b8aaf5bbb953111036c6ab20e31aa0",
+      [
+       null,
+       [
+        [
+         "/css/css-ruby/ruby-align-space-around-ref.html",
          "=="
         ]
        ],
@@ -330843,11 +330856,15 @@
       []
      ],
      "ruby-align-001-ref.html": [
-      "eb368b3ae6141ecfa12d57c4c1ed06f388b82b53",
+      "4497858d8057ea463fcd50b84a112009935ff34e",
       []
      ],
      "ruby-align-002-ref.html": [
-      "e4dd3c8bbe80a8cbe81bae39a626509bf87206f0",
+      "b0d7ec4efe54400c6c6c4d074a3d7ddd73993769",
+      []
+     ],
+     "ruby-align-space-around-ref.html": [
+      "8eec06f10c38aee103a264d5748f28fdccc234b1",
       []
      ],
      "ruby-autohide-001-ref.html": [
@@ -358969,6 +358986,14 @@
      "26bfbc2496488e113641a8d015b7b03494ac4c83",
      []
     ],
+    "enabled-by-permission-policy-attribute-redirect-on-load.https.sub-expected.txt": [
+     "19ac246a013c7c018666845aa001659c702bce75",
+     []
+    ],
+    "enabled-by-permission-policy-attribute.https.sub-expected.txt": [
+     "2de51b28ae78c11fda0e2f7ec3335b4858f1c11f",
+     []
+    ],
     "enabled-by-permissions-policy.https.sub.html.headers": [
      "774f4819e9b6cd9c5d4847bef043791720844b3e",
      []
@@ -384233,7 +384258,7 @@
       []
      ],
      "permissions-policy-geolocation.html": [
-      "b858a52392b168fd42baf85631b7e18212b9e2e7",
+      "e32dde3845b415643f3cdd5cc193bbf5e6a02d67",
       []
      ],
      "permissions-policy-idle-detection-worker.html": [
@@ -536403,7 +536428,7 @@
      ]
     ],
     "disabled-by-permissions-policy.https.sub.html": [
-     "d3d94e1d3d74ba121ca169e9cb6689382f23f018",
+     "ec34a4998da7c76437981c42ecc688ef6b5374ac",
      [
       null,
       {
