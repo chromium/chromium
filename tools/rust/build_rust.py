@@ -799,9 +799,10 @@ def main():
     building_on_host_triple = RustTargetTriple()
     xpy_args = ['--build', building_on_host_triple]
 
+    # Delete the build directory.
     if not args.skip_clean:
-        print('Cleaning build artifacts...')
-        xpy.run('clean', xpy_args)
+        print('Clearing build directory...')
+        shutil.rmtree(os.path.join(RUST_SRC_DIR, "build"))
 
     if not args.skip_test:
         print(f'Building stage 2 artifacts and running tests...')
