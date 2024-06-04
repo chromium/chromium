@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 namespace blink {
@@ -43,6 +44,7 @@ SimTest::~SimTest() {
   Document::SetForceSynchronousParsingForTesting(false);
   content::TestBlinkWebUnitTestSupport::SetThreadedAnimationEnabled(true);
   WebCache::Clear();
+  ThreadState::Current()->CollectAllGarbageForTesting();
 }
 
 void SimTest::SetUp() {

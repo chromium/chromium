@@ -50,6 +50,8 @@ class AutoAdvancingVirtualTimeDomainTest : public testing::Test {
   }
 
   void TearDown() override {
+    scheduler_helper_->RemoveTaskTimeObserver(&test_task_time_observer_);
+    task_queue_ = scheduler_helper_->DefaultNonMainThreadTaskQueue();
     task_queue_->ShutdownTaskQueue();
     scheduler_helper_->ResetTimeDomain();
   }

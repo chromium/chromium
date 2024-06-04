@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/paint/paint_controller_paint_test.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/testing/empty_web_media_player.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
@@ -174,6 +175,7 @@ class VideoPaintPreviewTest : public testing::Test,
  public:
   ~VideoPaintPreviewTest() {
     CSSDefaultStyleSheets::Instance().PrepareForLeakDetection();
+    ThreadState::Current()->CollectAllGarbageForTesting();
   }
 
   void SetUp() override {
@@ -187,6 +189,8 @@ class VideoPaintPreviewTest : public testing::Test,
     GetDocument().View()->SetParentVisible(true);
     GetDocument().View()->SetSelfVisible(true);
   }
+
+  void TearDown() override { web_view_helper_.Reset(); }
 
   void SetBodyInnerHTML(const std::string& content) {
     frame_test_helpers::LoadHTMLString(&GetLocalMainFrame(), content,

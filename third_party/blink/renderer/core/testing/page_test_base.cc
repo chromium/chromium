@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/testing/mock_policy_container_host.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
@@ -111,6 +112,9 @@ PageTestBase::~PageTestBase() {
   MemoryCache::Get()->EvictResources();
   // Clear lazily loaded style sheets.
   CSSDefaultStyleSheets::Instance().PrepareForLeakDetection();
+  // Run garbage collection before the task environment is destroyed so task
+  // time observers shutdown during GC can unregister themselves.
+  ThreadState::Current()->CollectAllGarbageForTesting();
 }
 
 void PageTestBase::EnableCompositing() {
