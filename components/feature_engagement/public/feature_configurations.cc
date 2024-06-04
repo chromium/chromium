@@ -2027,12 +2027,32 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
   }
 
   if (kIPHiOSTabGridSwipeRightForIncognito.name == feature->name) {
-    // The IPH of the tab grid swipe feature.
-    return CreateNewUserGestureInProductHelpConfig(
-        *feature, /*action_event=*/
-        feature_engagement::events::kIOSIncognitoPageControlTapped,
-        /*trigger_event=*/"swipe_left_for_incognito_trigger", /*used_event=*/
-        feature_engagement::events::kIOSSwipeRightForIncognitoUsed);
+    // Maximum storage days for iOS gesture IPHs in days. Note that they only
+    // triggered for users who installed Chrome on iOS in the last specific
+    // number of days, so this could be used as the maximum storage period of
+    // respective events.
+    const uint32_t kMaxStorageDays = 61;
+    std::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(EQUAL, 0);
+    // The user hasn't done the action suggested by the IPH.
+    config->used =
+        EventConfig(feature_engagement::events::kIOSSwipeRightForIncognitoUsed,
+                    Comparator(EQUAL, 0), kMaxStorageDays, kMaxStorageDays);
+    // The IPH shows at most once per week, twice in a lifetime.
+    config->trigger = EventConfig("swipe_left_for_incognito_trigger",
+                                  Comparator(EQUAL, 0), 7, 7);
+    config->event_configs.insert(EventConfig("swipe_left_for_incognito_trigger",
+                                             Comparator(LESS_THAN, 2),
+                                             kMaxStorageDays, kMaxStorageDays));
+    // The IPH only shows when user performs the action that should trigger the
+    // IPH at least twice since the last time the IPH shows, or since
+    // installation if it hasn't.
+    config->event_configs.insert(
+        EventConfig(feature_engagement::events::kIOSIncognitoPageControlTapped,
+                    Comparator(GREATER_THAN_OR_EQUAL, 2), 7, 7));
+    return config;
   }
 
   if (kIPHiOSSwipeBackForwardFeature.name == feature->name) {

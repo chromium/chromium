@@ -678,12 +678,6 @@ const char kIPHiOSSwipeToolbarToChangeTabFeatureDescription[] =
     "Enables displaying the gesture IPH instructing users to swipe the toolbar "
     "to navigate to the previous or next tab in the tab list.";
 
-const char kIPHiOSTabGridSwipeRightForIncognitoName[] =
-    "IPH for Swipe Right for Incognito on Tab Grid";
-const char kIPHiOSTabGridSwipeRightForIncognitoDescription[] =
-    "Enables displaying the gesture IPH instructing users to swipe right on "
-    "regular tab grid to view incognito tabs to new users.";
-
 const char kLensCircleToSearchEnabledName[] = "Lens Circle to Search";
 const char kLensCircleToSearchEnabledDescription[] =
     "When enabled, circle to search is available in Lens.";

@@ -1525,12 +1525,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          feature_engagement::kIPHiOSSwipeToolbarToChangeTabFeature)},
-    {"ios-iph-tab-grid-swipe-right-for-incognito",
-     flag_descriptions::kIPHiOSTabGridSwipeRightForIncognitoName,
-     flag_descriptions::kIPHiOSTabGridSwipeRightForIncognitoDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         feature_engagement::kIPHiOSTabGridSwipeRightForIncognito)},
     {"ios-magic-stack-collection-view",
      flag_descriptions::kIOSMagicStackCollectionViewName,
      flag_descriptions::kIOSMagicStackCollectionViewDescription,

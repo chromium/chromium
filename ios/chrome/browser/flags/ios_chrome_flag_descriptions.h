@@ -583,11 +583,6 @@ extern const char kIPHiOSSwipeBackForwardFeatureDescription[];
 extern const char kIPHiOSSwipeToolbarToChangeTabFeatureName[];
 extern const char kIPHiOSSwipeToolbarToChangeTabFeatureDescription[];
 
-// Title and description for the flag to enable the swipe-to-incognito IPH on
-// the tab grid.
-extern const char kIPHiOSTabGridSwipeRightForIncognitoName[];
-extern const char kIPHiOSTabGridSwipeRightForIncognitoDescription[];
-
 // Title and description for the flag to enable Lens circle to search feature.
 extern const char kLensCircleToSearchEnabledName[];
 extern const char kLensCircleToSearchEnabledDescription[];
