@@ -15,8 +15,6 @@
 
 namespace {
 
-constexpr gfx::Size kPreferredSize{370, 0};
-
 constexpr int kBackgroundBorderThickness = 1;
 constexpr int kBackgroundCornerRadius = 8;
 constexpr int kStopCastingButtonCornerRadius = 10;
@@ -34,7 +32,6 @@ CastDeviceFooterView::CastDeviceFooterView(
     base::RepeatingClosure stop_casting_callback,
     media_message_center::MediaColorTheme media_color_theme)
     : stop_casting_callback_(std::move(stop_casting_callback)) {
-  SetPreferredSize(kPreferredSize);
   SetBorder(views::CreateThemedRoundedRectBorder(
       kBackgroundBorderThickness, kBackgroundCornerRadius,
       media_color_theme.device_selector_border_color_id));

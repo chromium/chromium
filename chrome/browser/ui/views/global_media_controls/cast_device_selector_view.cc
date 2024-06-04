@@ -19,7 +19,6 @@
 
 namespace {
 
-constexpr gfx::Size kPreferredSize{370, 0};
 constexpr gfx::Size kCloseButtonSize{20, 20};
 
 constexpr int kBackgroundBorderThickness = 1;
@@ -46,7 +45,6 @@ CastDeviceSelectorView::CastDeviceSelectorView(
     : device_list_host_(std::move(device_list_host)),
       device_list_client_(this, std::move(device_list_client)),
       media_color_theme_(media_color_theme) {
-  SetPreferredSize(kPreferredSize);
   SetBorder(views::CreateThemedRoundedRectBorder(
       kBackgroundBorderThickness, kBackgroundCornerRadius,
       media_color_theme_.device_selector_border_color_id));

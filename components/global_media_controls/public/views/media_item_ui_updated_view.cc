@@ -26,6 +26,8 @@ using media_session::mojom::MediaSessionAction;
 
 namespace {
 
+constexpr int kFixedWidth = 400;
+
 constexpr gfx::Insets kBackgroundInsets = gfx::Insets::VH(16, 16);
 constexpr gfx::Insets kInfoColumnInsets = gfx::Insets::TLBR(4, 0, 0, 0);
 
@@ -46,7 +48,6 @@ constexpr int kMediaActionButtonIconSize = 20;
 
 constexpr float kFocusRingHaloInset = -3.0f;
 
-constexpr gfx::Size kBackgroundSize = gfx::Size(400, 150);
 constexpr gfx::Size kArtworkSize = gfx::Size(80, 80);
 constexpr gfx::Size kPlayPauseButtonSize = gfx::Size(48, 48);
 constexpr gfx::Size kMediaActionButtonSize = gfx::Size(24, 24);
@@ -68,7 +69,6 @@ MediaItemUIUpdatedView::MediaItemUIUpdatedView(
     : id_(id), item_(std::move(item)), media_color_theme_(media_color_theme) {
   CHECK(item_);
 
-  SetPreferredSize(kBackgroundSize);
   SetBackground(views::CreateThemedRoundedRectBackground(
       media_color_theme_.background_color_id, kBackgroundCornerRadius));
   SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -261,6 +261,12 @@ MediaItemUIUpdatedView::~MediaItemUIUpdatedView() {
 
 ///////////////////////////////////////////////////////////////////////////////
 // views::View implementations:
+
+gfx::Size MediaItemUIUpdatedView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  auto size = GetLayoutManager()->GetPreferredSize(this);
+  return gfx::Size(kFixedWidth, size.height());
+}
 
 void MediaItemUIUpdatedView::AddedToWidget() {
   // Ink drop on the start casting button requires color provider to be ready,
