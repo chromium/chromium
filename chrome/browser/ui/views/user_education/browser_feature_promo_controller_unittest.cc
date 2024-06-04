@@ -64,7 +64,10 @@
 #include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/base/interaction/state_observer.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/events/event_modifiers.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
@@ -1404,6 +1407,7 @@ TEST_F(BrowserFeaturePromoControllerTest, GetFocusHelpBubbleScreenReaderHint) {
 }
 
 namespace {
+const int kStringWithNoSubstitution = IDS_OK;
 const int kStringWithSingleSubstitution =
     IDS_APP_TABLE_COLUMN_SORTED_ASC_ACCNAME;
 const int kStringWithMultipleSubstitutions =
@@ -1435,6 +1439,28 @@ class BrowserFeaturePromoControllerViewsTest
       }
       registry()->RegisterFeature(std::move(spec));
     });
+  }
+
+  auto RegisterAccessiblePromo(
+      int screenreader_string,
+      FeaturePromoSpecification::AcceleratorInfo accelerator =
+          FeaturePromoSpecification::AcceleratorInfo()) {
+    return Do([this, screenreader_string, accelerator]() {
+      auto spec = FeaturePromoSpecification::CreateForToastPromo(
+          kStringTestIPHFeature, kToolbarAppMenuButtonElementId,
+          kStringWithNoSubstitution, screenreader_string, accelerator);
+      registry()->RegisterFeature(std::move(spec));
+    });
+  }
+
+  auto CheckAccessibleText(std::u16string expected_text) {
+    return CheckView(
+        HelpBubbleView::kHelpBubbleElementIdForTesting,
+        [](HelpBubbleView* bubble) {
+          return static_cast<views::BubbleDialogDelegate*>(bubble)
+              ->GetAccessibleWindowTitle();
+        },
+        expected_text);
   }
 
   auto MaybeShowPromo(
@@ -1589,6 +1615,66 @@ TEST_F(BrowserFeaturePromoControllerViewsTest, TitleTextSubstitution_Plural) {
           user_education::HelpBubbleView::kTitleTextIdForTesting,
           &views::Label::GetText,
           l10n_util::GetPluralStringFUTF16(kStringWithPluralSubstitution, 3)));
+}
+
+TEST_F(BrowserFeaturePromoControllerViewsTest,
+       ScreenreaderTextSubstitution_Accelerator) {
+  static const ui::Accelerator kAccelerator(ui::VKEY_ESCAPE, ui::MODIFIER_NONE);
+  user_education::FeaturePromoParams params(kStringTestIPHFeature);
+
+  RunTestSequence(RegisterAccessiblePromo(
+      kStringWithSingleSubstitution,
+      FeaturePromoSpecification::AcceleratorInfo(kAccelerator))),
+      MaybeShowPromo(std::move(params)),
+      CheckAccessibleText(l10n_util::GetStringFUTF16(
+          kStringWithSingleSubstitution, kAccelerator.GetShortcutText()));
+}
+
+TEST_F(BrowserFeaturePromoControllerViewsTest,
+       ScreenreaderTextSubstitution_SingleString) {
+  user_education::FeaturePromoParams params(kStringTestIPHFeature);
+  params.screen_reader_params = kSubstitution1;
+
+  RunTestSequence(RegisterAccessiblePromo(kStringWithSingleSubstitution),
+                  MaybeShowPromo(std::move(params)),
+                  CheckAccessibleText(l10n_util::GetStringFUTF16(
+                      kStringWithSingleSubstitution, kSubstitution1)));
+}
+
+TEST_F(BrowserFeaturePromoControllerViewsTest,
+       ScreenreaderTextSubstitution_MultipleStrings) {
+  user_education::FeaturePromoParams params(kStringTestIPHFeature);
+  params.screen_reader_params =
+      user_education::FeaturePromoSpecification::StringSubstitutions{
+          kSubstitution1, kSubstitution2, kSubstitution3};
+
+  RunTestSequence(RegisterAccessiblePromo(kStringWithMultipleSubstitutions),
+                  MaybeShowPromo(std::move(params)),
+                  CheckAccessibleText(l10n_util::GetStringFUTF16(
+                      kStringWithMultipleSubstitutions, kSubstitution1,
+                      kSubstitution2, kSubstitution3)));
+}
+
+TEST_F(BrowserFeaturePromoControllerViewsTest,
+       ScreenreaderTextSubstitution_Singular) {
+  user_education::FeaturePromoParams params(kStringTestIPHFeature);
+  params.screen_reader_params = 1;
+
+  RunTestSequence(RegisterAccessiblePromo(kStringWithPluralSubstitution),
+                  MaybeShowPromo(std::move(params)),
+                  CheckAccessibleText(l10n_util::GetPluralStringFUTF16(
+                      kStringWithPluralSubstitution, 1)));
+}
+
+TEST_F(BrowserFeaturePromoControllerViewsTest,
+       ScreenreaderTextSubstitution_Plural) {
+  user_education::FeaturePromoParams params(kStringTestIPHFeature);
+  params.screen_reader_params = 3;
+
+  RunTestSequence(RegisterAccessiblePromo(kStringWithPluralSubstitution),
+                  MaybeShowPromo(std::move(params)),
+                  CheckAccessibleText(l10n_util::GetPluralStringFUTF16(
+                      kStringWithPluralSubstitution, 3)));
 }
 
 namespace {

@@ -53,6 +53,7 @@ struct FeaturePromoControllerCommon::ShowPromoBubbleParams {
   raw_ptr<const FeaturePromoSpecification> spec = nullptr;
   raw_ptr<ui::TrackedElement> anchor_element = nullptr;
   FeaturePromoSpecification::FormatParameters body_format;
+  FeaturePromoSpecification::FormatParameters screen_reader_format;
   FeaturePromoSpecification::FormatParameters title_format;
   bool screen_reader_prompt_available = false;
   bool can_snooze = false;
@@ -216,13 +217,13 @@ FeaturePromoResult FeaturePromoControllerCommon::MaybeShowPromoCommon(
   // currently showing, there is a bug somewhere in here.
   DCHECK(!current_promo_);
   current_promo_ = std::move(lifecycle);
-
   // Construct the parameters for the promotion.
   ShowPromoBubbleParams show_params;
   show_params.spec = display_spec;
   show_params.anchor_element = anchor_element;
   show_params.screen_reader_prompt_available = screen_reader_available;
   show_params.body_format = std::move(params.body_params);
+  show_params.screen_reader_format = std::move(params.screen_reader_params);
   show_params.title_format = std::move(params.title_params);
   show_params.can_snooze = current_promo_->CanSnooze();
 
@@ -807,15 +808,20 @@ std::unique_ptr<HelpBubble> FeaturePromoControllerCommon::ShowPromoBubbleImpl(
       spec.bubble_body_string_id(), std::move(params.body_format));
   bubble_params.title_text = FeaturePromoSpecification::FormatString(
       spec.bubble_title_string_id(), std::move(params.title_format));
-  if (spec.screen_reader_string_id()) {
+  if (spec.screen_reader_accelerator()) {
+    CHECK(spec.screen_reader_string_id());
+    CHECK(std::holds_alternative<FeaturePromoSpecification::NoSubstitution>(
+        params.screen_reader_format))
+        << "Accelerator and substitution are not compatible for screen "
+           "reader text.";
     bubble_params.screenreader_text =
-        spec.screen_reader_accelerator()
-            ? l10n_util::GetStringFUTF16(
-                  spec.screen_reader_string_id(),
-                  spec.screen_reader_accelerator()
-                      .GetAccelerator(GetAcceleratorProvider())
-                      .GetShortcutText())
-            : l10n_util::GetStringUTF16(spec.screen_reader_string_id());
+        l10n_util::GetStringFUTF16(spec.screen_reader_string_id(),
+                                   spec.screen_reader_accelerator()
+                                       .GetAccelerator(GetAcceleratorProvider())
+                                       .GetShortcutText());
+  } else {
+    bubble_params.screenreader_text = FeaturePromoSpecification::FormatString(
+        spec.screen_reader_string_id(), std::move(params.screen_reader_format));
   }
   bubble_params.close_button_alt_text =
       l10n_util::GetStringUTF16(IDS_CLOSE_PROMO);

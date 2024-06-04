@@ -606,6 +606,10 @@ struct FeaturePromoParams {
   FeaturePromoSpecification::FormatParameters body_params =
       FeaturePromoSpecification::NoSubstitution();
 
+  // If the accessible text is parameterized, pass parameters here.
+  FeaturePromoSpecification::FormatParameters screen_reader_params =
+      FeaturePromoSpecification::NoSubstitution();
+
   // If the title text is parameterized, pass parameters here.
   FeaturePromoSpecification::FormatParameters title_params =
       FeaturePromoSpecification::NoSubstitution();
