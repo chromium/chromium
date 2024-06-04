@@ -815,6 +815,7 @@ void DownloadProtectionService::RemovePendingDownloadRequests(
   context_download_requests_.erase(browser_context);
 }
 
+// static
 int DownloadProtectionService::GetDownloadAttributionUserGestureLimit(
     download::DownloadItem* item) {
   if (!item) {

@@ -267,7 +267,7 @@ class DownloadProtectionService {
   // Returns the maximum number of user gestures for a download referrer
   // chain. If `item` is non-null, information about that download may
   // change the limit.
-  int GetDownloadAttributionUserGestureLimit(
+  static int GetDownloadAttributionUserGestureLimit(
       download::DownloadItem* item = nullptr);
 
  private:

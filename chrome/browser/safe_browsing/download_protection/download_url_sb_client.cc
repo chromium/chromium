@@ -147,7 +147,9 @@ void DownloadUrlSBClient::IdentifyReferrerChain() {
 
   std::unique_ptr<ReferrerChainData> data =
       safe_browsing::IdentifyReferrerChain(
-          *item_, service_->GetDownloadAttributionUserGestureLimit(item_));
+          *item_,
+          DownloadProtectionService::GetDownloadAttributionUserGestureLimit(
+              item_));
   if (!data) {
     return;
   }

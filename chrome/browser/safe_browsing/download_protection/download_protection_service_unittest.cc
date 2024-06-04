@@ -3394,7 +3394,8 @@ TEST_F(DownloadProtectionServiceTest,
   std::unique_ptr<ReferrerChainData> referrer_chain_data =
       IdentifyReferrerChain(
           item,
-          download_service_->GetDownloadAttributionUserGestureLimit(&item));
+          DownloadProtectionService::GetDownloadAttributionUserGestureLimit(
+              &item));
   ReferrerChain* referrer_chain = referrer_chain_data->GetReferrerChain();
 
   ASSERT_EQ(1u, referrer_chain_data->referrer_chain_length());
@@ -3436,13 +3437,15 @@ TEST_F(DownloadProtectionServiceTest,
   std::unique_ptr<ReferrerChainData> referrer_chain_data =
       IdentifyReferrerChain(
           item,
-          download_service_->GetDownloadAttributionUserGestureLimit(&item));
+          DownloadProtectionService::GetDownloadAttributionUserGestureLimit(
+              &item));
   // 6 entries means 5 interactions between entries.
   EXPECT_EQ(referrer_chain_data->referrer_chain_length(), 6u);
 
   SetExtendedReportingPrefForTests(profile()->GetPrefs(), false);
   referrer_chain_data = IdentifyReferrerChain(
-      item, download_service_->GetDownloadAttributionUserGestureLimit(&item));
+      item,
+      DownloadProtectionService::GetDownloadAttributionUserGestureLimit(&item));
   // 3 entries means 2 interactions between entries.
   EXPECT_EQ(referrer_chain_data->referrer_chain_length(), 3u);
 }

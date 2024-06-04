@@ -45,9 +45,10 @@ CheckFileSystemAccessWriteRequest::CheckFileSystemAccessWriteRequest(
               service,
               *item)),
       item_(std::move(item)),
-      referrer_chain_data_(IdentifyReferrerChain(
-          *item_,
-          service->GetDownloadAttributionUserGestureLimit())) {
+      referrer_chain_data_(
+          IdentifyReferrerChain(*item_,
+                                DownloadProtectionService::
+                                    GetDownloadAttributionUserGestureLimit())) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
 
