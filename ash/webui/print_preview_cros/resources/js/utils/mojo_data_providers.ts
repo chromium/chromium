@@ -32,8 +32,8 @@ export function getPrintPreviewPageHandler(): PrintPreviewPageHandler {
 // Returns shared instance of DestinationProvider.
 export function getDestinationProvider():
     DestinationProviderCompositeInterface {
-  if (destinationProvider === null && useFakeProviders) {
-    destinationProvider = new DestinationProviderComposite();
+  if (destinationProvider === null) {
+    destinationProvider = new DestinationProviderComposite(useFakeProviders);
   }
 
   assert(destinationProvider);

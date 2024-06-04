@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {DestinationProvider, DestinationProviderInterface} from '../../destination_provider.mojom-webui.js';
+import {PrinterType} from '../../print.mojom-webui.js';
+import {Capabilities} from '../../printer_capabilities.mojom-webui.js';
 import {FakeDestinationProvider} from '../fakes/fake_destination_provider.js';
-import {Capabilities, Destination, DestinationProviderCompositeInterface, FakeDestinationObserverInterface, PrinterType} from '../utils/print_preview_cros_app_types.js';
+import {Destination, DestinationProviderCompositeInterface, FakeDestinationObserverInterface} from '../utils/print_preview_cros_app_types.js';
 
 /**
  * @fileoverview
@@ -16,10 +19,21 @@ export class DestinationProviderComposite implements
     DestinationProviderCompositeInterface {
   readonly fakeDestinationProvider: FakeDestinationProvider =
       new FakeDestinationProvider();
+  private destinationProviderInterface: DestinationProviderInterface|null =
+      null;
+
+  constructor(useFakeProviders: boolean) {
+    if (useFakeProviders) {
+      this.destinationProviderInterface = this.fakeDestinationProvider;
+      return;
+    }
+
+    this.destinationProviderInterface = DestinationProvider.getRemote();
+  }
 
   fetchCapabilities(destinationId: string, printerType: PrinterType):
-      Promise<Capabilities> {
-    return this.fakeDestinationProvider.fetchCapabilities(
+      Promise<{capabilities: Capabilities}> {
+    return this.destinationProviderInterface!.fetchCapabilities(
         destinationId, printerType);
   }
 

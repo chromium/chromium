@@ -5,9 +5,9 @@
 import 'chrome://os-print/js/fakes/fake_destination_provider.js';
 
 import {PDF_DESTINATION} from 'chrome://os-print/js/data/destination_constants.js';
-import {getFakeCapabilities} from 'chrome://os-print/js/fakes/fake_data.js';
-import {FAKE_GET_LOCAL_DESTINATIONS_SUCCESSFUL_EMPTY, FakeDestinationProvider, GET_LOCAL_DESTINATIONS_METHOD, OBSERVE_DESTINATION_CHANGES_METHOD} from 'chrome://os-print/js/fakes/fake_destination_provider.js';
-import {Destination, FakeDestinationObserverInterface, PrinterType} from 'chrome://os-print/js/utils/print_preview_cros_app_types.js';
+import {FAKE_GET_LOCAL_DESTINATIONS_SUCCESSFUL_EMPTY, FakeDestinationProvider, GET_LOCAL_DESTINATIONS_METHOD, getFakeCapabilitiesResponse, OBSERVE_DESTINATION_CHANGES_METHOD} from 'chrome://os-print/js/fakes/fake_destination_provider.js';
+import {Destination, FakeDestinationObserverInterface} from 'chrome://os-print/js/utils/print_preview_cros_app_types.js';
+import {PrinterType} from 'chrome://os-print/print.mojom-webui.js';
 import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 // Test implementation of FakeDestinationObserverInterface used to verify
@@ -113,17 +113,18 @@ suite('FakeDestinationProvider', () => {
   // when fetchCapabilities() is called.
   test('call fetch capabilities', async () => {
     const capabilities = await destinationProvider.fetchCapabilities(
-        /*destinationId=*/ '', PrinterType.LOCAL_PRINTER);
-    assertDeepEquals(getFakeCapabilities(), capabilities);
+        /*destinationId=*/ '', PrinterType.kLocal);
+    assertDeepEquals(getFakeCapabilitiesResponse(), capabilities);
   });
 
   // Verify the fetchCapabilities() returns the set capabilities.
   test('set capabilities', async () => {
-    const expectedCapabilities = getFakeCapabilities('New Destination');
+    const expectedCapabilities =
+        getFakeCapabilitiesResponse('New Destination').capabilities;
     destinationProvider.setCapabilities(expectedCapabilities);
 
     const capabilities = await destinationProvider.fetchCapabilities(
-        /*destinationId=*/ '', PrinterType.LOCAL_PRINTER);
-    assertDeepEquals(expectedCapabilities, capabilities);
+        /*destinationId=*/ '', PrinterType.kLocal);
+    assertDeepEquals(expectedCapabilities, capabilities.capabilities);
   });
 });

@@ -4,6 +4,8 @@
 
 import {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 
+import {DestinationProviderInterface} from '../../destination_provider.mojom-webui.js';
+
 /**
  * @fileoverview
  * 'print_preview_cros_app_types' contains app specific and mojo placeholder
@@ -522,10 +524,6 @@ export interface DestinationProvider {
   // destinations are appended or updated;
   // TODO(b/323421684): Replace observer type with observer mojo interface.
   observeDestinationChanges(observer: FakeDestinationObserverInterface): void;
-
-  // Fetch the printing capabilities for a specific destination.
-  fetchCapabilities(destinationId: string, printerType: PrinterType):
-      Promise<Capabilities>;
 }
 
 // This is a temporary interface with the purpose of combining methods from the
@@ -535,4 +533,4 @@ export interface DestinationProvider {
 // TODO(b/323421684): Remove the interface once all mojo methods are
 // implemented.
 export interface DestinationProviderCompositeInterface extends
-    DestinationProvider {}
+    DestinationProviderInterface, DestinationProvider {}
