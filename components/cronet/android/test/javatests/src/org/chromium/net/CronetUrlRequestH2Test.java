@@ -19,7 +19,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.util.Batch;
 import org.chromium.net.CronetTestRule.CronetImplementation;
 import org.chromium.net.CronetTestRule.IgnoreFor;
 
@@ -29,7 +28,7 @@ import org.chromium.net.CronetTestRule.IgnoreFor;
  * <p>Ideally, we should only have a single test class that can parameterize the underlying HTTP
  * servers.
  */
-@Batch(Batch.UNIT_TESTS)
+// TODO(crbug.com/344966124): Failing when batched, batch this again.
 @RunWith(AndroidJUnit4.class)
 @IgnoreFor(
         implementations = {CronetImplementation.FALLBACK},

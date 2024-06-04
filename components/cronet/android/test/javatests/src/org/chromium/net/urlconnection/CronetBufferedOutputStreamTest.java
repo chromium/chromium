@@ -18,6 +18,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.net.CronetEngine;
 import org.chromium.net.CronetTestRule;
 import org.chromium.net.CronetTestRule.CronetImplementation;
@@ -150,6 +151,7 @@ public class CronetBufferedOutputStreamTest {
 
     @Test
     @SmallTest
+    @RequiresRestart("crbug.com/344966615")
     public void testPostWithContentLengthWriteOneByte() throws Exception {
         URL url = new URL(NativeTestServer.getEchoBodyURL());
         mConnection = (HttpURLConnection) mCronetEngine.openConnection(url);
