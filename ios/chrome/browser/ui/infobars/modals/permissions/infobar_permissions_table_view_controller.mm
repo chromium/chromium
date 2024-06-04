@@ -42,7 +42,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   BOOL _modelLoaded;
 
   // Delegate for this ViewController.
-  id<InfobarModalDelegate, PermissionsDelegate> _infobarModalDelegate;
+  __weak id<InfobarModalDelegate, PermissionsDelegate> _infobarModalDelegate;
 
   // Used to build and record metrics.
   InfobarMetricsRecorder* _metricsRecorder;
