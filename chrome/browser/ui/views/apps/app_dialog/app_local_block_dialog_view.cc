@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/apps/app_dialog/app_local_block_dialog_view.h"
 
+#include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -25,6 +26,11 @@ constexpr int32_t kIconSize = 48;
 // static
 void apps::AppServiceProxy::CreateLocalBlockDialog(
     const std::string& app_name) {
+  if (g_app_local_block_dialog_view) {
+    g_app_local_block_dialog_view->AddApp(app_name);
+    return;
+  }
+
   views::DialogDelegate::CreateDialogWidget(
       new AppLocalBlockDialogView(app_name), nullptr, nullptr)
       ->Show();
@@ -34,23 +40,45 @@ AppLocalBlockDialogView::AppLocalBlockDialogView(const std::string& app_name)
     : AppDialogView(ui::ImageModel::FromVectorIcon(kGuardianIcon,
                                                    ui::kColorIcon,
                                                    kIconSize)) {
-  SetTitle(l10n_util::GetStringFUTF16(IDS_APP_LOCAL_BLOCK_PROMPT_TITLE,
-                                      base::UTF8ToUTF16(app_name),
-                                      ui::GetChromeOSDeviceName()));
+  AddApp(app_name);
 
   std::u16string heading_text =
       l10n_util::GetStringUTF16(IDS_APP_LOCAL_BLOCK_HEADING);
 
   InitializeView(heading_text);
 
+  DCHECK_EQ(nullptr, g_app_local_block_dialog_view);
   g_app_local_block_dialog_view = this;
 }
 
 AppLocalBlockDialogView::~AppLocalBlockDialogView() {
+  DCHECK_EQ(this, g_app_local_block_dialog_view);
   g_app_local_block_dialog_view = nullptr;
 }
 
 // static
 AppLocalBlockDialogView* AppLocalBlockDialogView::GetActiveViewForTesting() {
   return g_app_local_block_dialog_view;
+}
+
+void AppLocalBlockDialogView::AddApp(const std::string& app_name) {
+  if (base::Contains(app_names_, app_name)) {
+    return;
+  }
+
+  app_names_.emplace_back(app_name);
+
+  // There are only 2 different title strings. Skip unnecessary updates when
+  // more than 2 apps are blocked.
+  const size_t num_of_blocked_apps = app_names_.size();
+  if (num_of_blocked_apps > 2) {
+    return;
+  }
+
+  const int tile_string_id = num_of_blocked_apps == 1
+                                 ? IDS_APP_LOCAL_BLOCK_PROMPT_TITLE
+                                 : IDS_APP_LOCAL_BLOCK_PROMPT_MULTIPLE_TITLE;
+  SetTitle(l10n_util::GetStringFUTF16(tile_string_id,
+                                      base::UTF8ToUTF16(app_names_[0]),
+                                      ui::GetChromeOSDeviceName()));
 }

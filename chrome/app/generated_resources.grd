@@ -16723,6 +16723,10 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_APP_LOCAL_BLOCK_PROMPT_TITLE" desc="Titlebar of the app local block prompt window">
       <ph name="APP_NAME">$1<ex>Google Photos</ex></ph> is blocked on your <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph>
     </message>
+    <message name="IDS_APP_LOCAL_BLOCK_PROMPT_MULTIPLE_TITLE" desc="Titlebar of the app local block prompt window with multiple blocked apps.">
+      <ph name="APP_NAME">$1<ex>Google Photos</ex></ph> and a few more apps are blocked on your <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph>
+    </message>
+
 
     <message name="IDS_APP_LOCAL_BLOCK_HEADING" desc="Tells the child that parent can unblock the app in the settings.">
       Ask your parent to allow access in Settings

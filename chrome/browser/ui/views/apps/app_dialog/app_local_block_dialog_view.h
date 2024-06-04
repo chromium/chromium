@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_APPS_APP_DIALOG_APP_LOCAL_BLOCK_DIALOG_VIEW_H_
 
 #include <string>
+#include <vector>
 
 #include "chrome/browser/ui/views/apps/app_dialog/app_dialog_view.h"
 
@@ -16,6 +17,12 @@ class AppLocalBlockDialogView : public AppDialogView {
   ~AppLocalBlockDialogView() override;
 
   static AppLocalBlockDialogView* GetActiveViewForTesting();
+
+  // Add a new blocked app to be shown on the dialog.
+  void AddApp(const std::string& app_name);
+
+ private:
+  std::vector<std::string> app_names_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_APPS_APP_DIALOG_APP_LOCAL_BLOCK_DIALOG_VIEW_H_
