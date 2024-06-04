@@ -73,6 +73,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalInt;
 
 /** Handles updating the model state for the currently visible omnibox suggestions. */
 class AutocompleteMediator
@@ -122,6 +123,7 @@ class AutocompleteMediator
     // When set, specifies the time when the suggestion list was shown the first time.
     // Suggestions are refreshed several times per keystroke.
     private Long mFirstSuggestionListModelCreatedTime;
+    private OptionalInt mPageClassification;
 
     @IntDef({
         EditSessionState.INACTIVE,
@@ -413,6 +415,10 @@ class AutocompleteMediator
             mRefineActionUsage = RefineActionUsage.NOT_USED;
             mOmniboxFocusResultedInNavigation = false;
             mSuggestionsListScrolled = false;
+            mPageClassification =
+                    OptionalInt.of(
+                            mDataProvider.getPageClassification(
+                                    mDelegate.didFocusUrlFromFakebox(), /* isPrefetch= */ false));
             mUrlFocusTime = System.currentTimeMillis();
 
             // Ask directly for zero-suggestions related to current input, unless the user is
@@ -433,9 +439,8 @@ class AutocompleteMediator
                     mOmniboxFocusResultedInNavigation);
             OmniboxMetrics.recordRefineActionUsage(mRefineActionUsage);
             OmniboxMetrics.recordSuggestionsListScrolled(
-                    mDataProvider.getPageClassification(
-                            mDelegate.didFocusUrlFromFakebox(), /* isPrefetch= */ false),
-                    mSuggestionsListScrolled);
+                    mPageClassification.getAsInt(), mSuggestionsListScrolled);
+            mPageClassification = OptionalInt.empty();
 
             // Reset the per omnibox session state of touch down prefetch.
             OmniboxMetrics.recordNumPrefetchesStartedInOmniboxSession(
@@ -831,9 +836,6 @@ class AutocompleteMediator
                                         == mUrlBarEditingTextProvider.getSelectionEnd()
                                 ? mUrlBarEditingTextProvider.getSelectionStart()
                                 : -1;
-                int pageClassification =
-                        mDataProvider.getPageClassification(
-                                mDelegate.didFocusUrlFromFakebox(), /* isPrefetch= */ false);
                 GURL currentUrl = mDataProvider.getCurrentGurl();
 
                 postAutocompleteRequest(
@@ -843,7 +845,7 @@ class AutocompleteMediator
                                     a ->
                                             a.start(
                                                     currentUrl,
-                                                    pageClassification,
+                                                    mPageClassification.getAsInt(),
                                                     textWithoutAutocomplete,
                                                     cursorPosition,
                                                     preventAutocomplete));
@@ -1056,15 +1058,12 @@ class AutocompleteMediator
 
         if (mDelegate.isUrlBarFocused()
                 && (mDataProvider.hasTab() || mDataProvider.isInOverviewAndShowingOmnibox())) {
-            int pageClassification =
-                    mDataProvider.getPageClassification(
-                            mDelegate.didFocusUrlFromFakebox(), /* isPrefetch= */ false);
             mAutocomplete.ifPresent(
                     a ->
                             a.startZeroSuggest(
                                     mUrlBarEditingTextProvider.getTextWithAutocomplete(),
                                     mDataProvider.getCurrentGurl(),
-                                    pageClassification,
+                                    mPageClassification.getAsInt(),
                                     mDataProvider.getTitle()));
         }
     }
@@ -1184,9 +1183,6 @@ class AutocompleteMediator
         if (autocompleteResultIsFromCache) return;
 
         GURL currentPageUrl = mDataProvider.getCurrentGurl();
-        int pageClassification =
-                mDataProvider.getPageClassification(
-                        mDelegate.didFocusUrlFromFakebox(), /* isPrefetch= */ false);
         long elapsedTimeSinceModified = getElapsedTimeSinceInputChange();
         int autocompleteLength =
                 mUrlBarEditingTextProvider.getTextWithAutocomplete().length()
@@ -1201,7 +1197,7 @@ class AutocompleteMediator
                                 suggestionLine,
                                 disposition,
                                 currentPageUrl,
-                                pageClassification,
+                                mPageClassification.getAsInt(),
                                 elapsedTimeSinceModified,
                                 autocompleteLength,
                                 webContents));

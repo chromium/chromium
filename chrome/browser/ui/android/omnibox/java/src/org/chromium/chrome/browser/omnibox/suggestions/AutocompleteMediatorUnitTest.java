@@ -453,6 +453,7 @@ public class AutocompleteMediatorUnitTest {
         String title = "Title";
         int pageClassification = PageClassification.BLANK_VALUE;
         setUpLocationBarDataProvider(url, title, pageClassification);
+        mMediator.onOmniboxSessionStateChange(true);
 
         when(mTextStateProvider.getTextWithAutocomplete()).thenReturn("");
 
@@ -469,6 +470,7 @@ public class AutocompleteMediatorUnitTest {
         GURL url = JUnitTestGURLs.BLUE_1;
         int pageClassification = PageClassification.BLANK_VALUE;
         setUpLocationBarDataProvider(url, url.getSpec(), pageClassification);
+        mMediator.onOmniboxSessionStateChange(true);
 
         when(mTextStateProvider.shouldAutocomplete()).thenReturn(true);
         when(mTextStateProvider.getSelectionStart()).thenReturn(4);
@@ -488,6 +490,7 @@ public class AutocompleteMediatorUnitTest {
         GURL url = JUnitTestGURLs.BLUE_1;
         int pageClassification = PageClassification.BLANK_VALUE;
         setUpLocationBarDataProvider(url, url.getSpec(), pageClassification);
+        mMediator.onOmniboxSessionStateChange(true);
 
         when(mTextStateProvider.shouldAutocomplete()).thenReturn(true);
         when(mTextStateProvider.getSelectionStart()).thenReturn(4);
@@ -605,6 +608,7 @@ public class AutocompleteMediatorUnitTest {
         String title = "Title";
         int pageClassification = PageClassification.BLANK_VALUE;
         setUpLocationBarDataProvider(url, title, pageClassification);
+        mMediator.onOmniboxSessionStateChange(true);
 
         when(mTextStateProvider.getTextWithAutocomplete()).thenReturn("");
 
