@@ -83,13 +83,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
-/** Instrumentation tests for the {@link MostVisitedTilesCarouselLayout} on the New Tab Page. */
+/** Instrumentation tests for the {@link MostVisitedTilesLayout} on the New Tab Page. */
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 @Batch(Batch.PER_CLASS)
 public class MostVisitedTilesLayoutTest {
-    public final int TILE_GRID_ROWS = 2;
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -155,7 +154,7 @@ public class MostVisitedTilesLayoutTest {
     @DisableFeatures(ChromeFeatureList.QUERY_TILES)
     public void testTilesLayoutAppearance(boolean nightModeEnabled) throws Exception {
         NewTabPage ntp = setUpFakeDataToShowOnNtp(FAKE_MOST_VISITED_URLS.length);
-        mRenderTestRule.render(getTilesLayout(ntp), "ntp_tile_carousel_layout");
+        mRenderTestRule.render(getTilesLayout(ntp), "ntp_tile_layout");
     }
 
     @Test
@@ -176,7 +175,7 @@ public class MostVisitedTilesLayoutTest {
                             activity.getResources().getConfiguration().orientation,
                             is(ORIENTATION_PORTRAIT));
                 });
-        mRenderTestRule.render(tilesLayout, "modern_full_carousel_portrait");
+        mRenderTestRule.render(tilesLayout, "modern_tiles_layout_full_portrait");
 
         activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         CriteriaHelper.pollUiThread(
@@ -185,7 +184,7 @@ public class MostVisitedTilesLayoutTest {
                             activity.getResources().getConfiguration().orientation,
                             is(ORIENTATION_LANDSCAPE));
                 });
-        mRenderTestRule.render(tilesLayout, "modern_full_carousel_landscape");
+        mRenderTestRule.render(tilesLayout, "modern_tiles_layout_full_landscape");
 
         // Reset device orientation.
         ActivityTestUtils.clearActivityOrientation(activity);
@@ -214,7 +213,7 @@ public class MostVisitedTilesLayoutTest {
                             activity.getResources().getConfiguration().orientation,
                             is(ORIENTATION_PORTRAIT));
                 });
-        mRenderTestRule.render(tilesLayout, "modern_two_tiles_carousel_portrait");
+        mRenderTestRule.render(tilesLayout, "modern_tiles_layout_two_tiles_portrait");
 
         activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         CriteriaHelper.pollUiThread(
@@ -223,7 +222,7 @@ public class MostVisitedTilesLayoutTest {
                             activity.getResources().getConfiguration().orientation,
                             is(ORIENTATION_LANDSCAPE));
                 });
-        mRenderTestRule.render(tilesLayout, "modern_two_tiles_carousel_landscape");
+        mRenderTestRule.render(tilesLayout, "modern_tiles_layout_two_tiles_landscape");
 
         // Reset device orientation.
         ActivityTestUtils.clearActivityOrientation(activity);
@@ -282,7 +281,7 @@ public class MostVisitedTilesLayoutTest {
 
     private ViewGroup getTilesLayout(NewTabPage ntp) {
         ViewGroup mostVisitedTilesLayout = ntp.getView().findViewById(R.id.mv_tiles_layout);
-        assertNotNull("Unable to retrieve the tile_carousel_layout.", mostVisitedTilesLayout);
+        assertNotNull("Unable to retrieve the mv_tiles_layout.", mostVisitedTilesLayout);
         return mostVisitedTilesLayout;
     }
 
@@ -369,8 +368,6 @@ public class MostVisitedTilesLayoutTest {
                         mActivityLifecycleDispatcher,
                         containerLayout,
                         mWindowAndroid,
-                        /* isScrollableMvtEnabled= */ true,
-                        TILE_GRID_ROWS,
                         null,
                         null);
         coordinator.initWithNative(profile, uiDelegate, delegate, mTouchEnabledDelegate);

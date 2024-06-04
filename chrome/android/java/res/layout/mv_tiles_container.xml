@@ -23,10 +23,10 @@ found in the LICENSE file.
     app:layout_scrollFlags="scroll">
 
   <ViewStub
-      android:id="@+id/mv_tiles_carousel_stub"
+      android:id="@+id/mv_tiles_layout_stub"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout="@layout/mv_tiles_carousel" />
+      android:layout="@layout/mv_tiles_layout" />
 
   <!-- Site suggestion tile grid placeholder -->
   <ViewStub

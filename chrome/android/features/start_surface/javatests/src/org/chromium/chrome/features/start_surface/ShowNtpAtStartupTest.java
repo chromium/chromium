@@ -55,7 +55,6 @@ import org.chromium.chrome.browser.logo.LogoBridge.Logo;
 import org.chromium.chrome.browser.logo.LogoUtils;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.ntp.NewTabPageLayout;
-import org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesCarouselLayout;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -190,31 +189,6 @@ public class ShowNtpAtStartupTest {
                 /* expectHomeSurfaceUiShown= */ false,
                 /* magicStackEnabled= */ false);
         histogram.assertExpected();
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"StartSurface"})
-    @Restriction({UiRestriction.RESTRICTION_TYPE_TABLET})
-    @CommandLineFlags.Add({IMMEDIATE_RETURN_TEST_PARAMS})
-    public void testScrollableMvTilesEnabledOnTablet() throws IOException {
-        StartSurfaceTestUtils.prepareTabStateMetadataFile(new int[] {0}, new String[] {TAB_URL}, 0);
-        StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        StartSurfaceTestUtils.waitForTabModel(cta);
-        // Verifies that a NTP is created and set as the current Tab.
-        verifyTabCountAndActiveTabUrl(
-                cta,
-                2,
-                UrlConstants.NTP_URL,
-                /* expectHomeSurfaceUiShown= */ true,
-                /* magicStackEnabled= */ false);
-
-        waitForNtpLoaded(cta.getActivityTab());
-        NewTabPage ntp = (NewTabPage) cta.getActivityTab().getNativePage();
-        ViewGroup mvTilesLayout = ntp.getView().findViewById(R.id.mv_tiles_layout);
-        // Verifies that 1 row MV tiles are shown when "Start surface on tablet" flag is enabled.
-        Assert.assertTrue(mvTilesLayout instanceof MostVisitedTilesCarouselLayout);
     }
 
     @Test
@@ -573,9 +547,6 @@ public class ShowNtpAtStartupTest {
         waitForNtpLoaded(cta.getActivityTab());
 
         NewTabPage ntp = (NewTabPage) cta.getActivityTab().getNativePage();
-        ViewGroup mvTilesLayout = ntp.getView().findViewById(R.id.mv_tiles_layout);
-        // Verifies that 1 row MV tiles are shown when "Start surface on tablet" flag is enabled.
-        Assert.assertTrue(mvTilesLayout instanceof MostVisitedTilesCarouselLayout);
 
         Resources res = cta.getResources();
         int expectedTwoSideMargin =
@@ -597,9 +568,6 @@ public class ShowNtpAtStartupTest {
         waitForNtpLoaded(cta.getActivityTab());
 
         NewTabPage ntp = (NewTabPage) cta.getActivityTab().getNativePage();
-        ViewGroup mvTilesLayout = ntp.getView().findViewById(R.id.mv_tiles_layout);
-        // Verifies that 1 row MV tiles are shown when "Start surface on tablet" flag is enabled.
-        Assert.assertTrue(mvTilesLayout instanceof MostVisitedTilesCarouselLayout);
 
         Resources res = cta.getResources();
         int expectedContainerTwoSideMargin = 0;

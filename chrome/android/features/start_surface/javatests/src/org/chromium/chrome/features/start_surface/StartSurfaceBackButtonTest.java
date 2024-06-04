@@ -51,7 +51,7 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
-import org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesCarouselLayout;
+import org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesLayout;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
@@ -404,7 +404,7 @@ public class StartSurfaceBackButtonTest {
         onViewWaiting(withId(R.id.logo));
 
         // Open an incognito tab from Start.
-        MostVisitedTilesCarouselLayout mvTilesLayout =
+        MostVisitedTilesLayout mvTilesLayout =
                 mActivityTestRule.getActivity().findViewById(R.id.mv_tiles_layout);
         View tileView =
                 mvTilesLayout.findTileViewForTesting(mMostVisitedSites.getCurrentSites().get(1));

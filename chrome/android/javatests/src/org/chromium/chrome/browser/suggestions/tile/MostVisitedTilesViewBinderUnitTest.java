@@ -4,16 +4,11 @@
 
 package org.chromium.chrome.browser.suggestions.tile;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.HORIZONTAL_EDGE_PADDINGS;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.HORIZONTAL_INTERVAL_PADDINGS;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.IS_CONTAINER_VISIBLE;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.IS_MVT_LAYOUT_VISIBLE;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.PLACEHOLDER_VIEW;
-import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.UPDATE_INTERVAL_PADDINGS_TABLET;
 
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
@@ -43,14 +38,14 @@ public final class MostVisitedTilesViewBinderUnitTest extends BlankUiTestActivit
     private ViewStub mNoMvPlaceholderStub;
     private View mNoMvPlaceholder;
     private LinearLayout mMvTilesContainerLayout;
-    private MostVisitedTilesCarouselLayout mMvTilesLayout;
+    private MostVisitedTilesLayout mMvTilesLayout;
     private TileView mFirstChildView;
     private TileView mSecondChildView;
     private TileView mThirdChildView;
 
     private PropertyModel mModel;
 
-    @Mock private MostVisitedTilesCarouselLayout mMockMvTilesLayout;
+    @Mock private MostVisitedTilesLayout mMockMvTilesLayout;
 
     @Override
     public void setUpTest() throws Exception {
@@ -58,7 +53,7 @@ public final class MostVisitedTilesViewBinderUnitTest extends BlankUiTestActivit
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mMvTilesLayout = new MostVisitedTilesCarouselLayout(getActivity(), null);
+                    mMvTilesLayout = new MostVisitedTilesLayout(getActivity(), null);
                     mMvTilesLayout.setId(R.id.mv_tiles_layout);
                     mFirstChildView = new TileView(getActivity(), null);
                     mSecondChildView = new TileView(getActivity(), null);
@@ -133,30 +128,5 @@ public final class MostVisitedTilesViewBinderUnitTest extends BlankUiTestActivit
         Assert.assertEquals(11, params.leftMargin);
         params = (MarginLayoutParams) mThirdChildView.getLayoutParams();
         Assert.assertEquals(11, params.rightMargin);
-    }
-
-    @Test
-    @UiThreadTest
-    @SmallTest
-    public void testUpdateIntervalPaddingsTablet() {
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mMockMvTilesLayout = mock(MostVisitedTilesCarouselLayout.class);
-                    LinearLayout mvTilesContainerLayout = new LinearLayout(getActivity());
-                    PropertyModel model = new PropertyModel(MostVisitedTilesProperties.ALL_KEYS);
-                    PropertyModelChangeProcessor.create(
-                            model,
-                            new ViewHolder(mvTilesContainerLayout, mMockMvTilesLayout),
-                            MostVisitedTilesViewBinder::bind);
-
-                    model.set(UPDATE_INTERVAL_PADDINGS_TABLET, true);
-                    verify(mMockMvTilesLayout, times(1)).updateIntervalPaddingsTablet(true);
-
-                    model.set(UPDATE_INTERVAL_PADDINGS_TABLET, true);
-                    verify(mMockMvTilesLayout, times(2)).updateIntervalPaddingsTablet(true);
-
-                    model.set(UPDATE_INTERVAL_PADDINGS_TABLET, false);
-                    verify(mMockMvTilesLayout, times(1)).updateIntervalPaddingsTablet(false);
-                });
     }
 }

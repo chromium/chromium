@@ -55,7 +55,7 @@ import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
-import org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesCarouselLayout;
+import org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesLayout;
 import org.chromium.chrome.browser.suggestions.tile.SuggestionsTileView;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -279,16 +279,16 @@ public class StartSurfaceMVTilesTest {
         return tileView;
     }
 
-    private MostVisitedTilesCarouselLayout getMvTilesLayout() {
+    private MostVisitedTilesLayout getMvTilesLayout() {
         onViewWaiting(withId(R.id.mv_tiles_layout));
-        MostVisitedTilesCarouselLayout mvTilesLayout =
+        MostVisitedTilesLayout mvTilesLayout =
                 mActivityTestRule.getActivity().findViewById(R.id.mv_tiles_layout);
         Assert.assertNotNull("Unable to retrieve the MvTilesLayout.", mvTilesLayout);
         return mvTilesLayout;
     }
 
     private void waitForTileRemoved(final SiteSuggestion suggestion) throws TimeoutException {
-        MostVisitedTilesCarouselLayout mvTilesLayout = getMvTilesLayout();
+        MostVisitedTilesLayout mvTilesLayout = getMvTilesLayout();
         final SuggestionsTileView removedTile = mvTilesLayout.findTileViewForTesting(suggestion);
         if (removedTile == null) return;
 

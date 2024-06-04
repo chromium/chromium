@@ -18,8 +18,6 @@ public final class MostVisitedTilesProperties {
             new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel.WritableBooleanPropertyKey IS_MVT_LAYOUT_VISIBLE =
             new PropertyModel.WritableBooleanPropertyKey();
-    public static final PropertyModel.WritableBooleanPropertyKey IS_PLACEHOLDER_VISIBLE =
-            new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel.WritableObjectPropertyKey<View> PLACEHOLDER_VIEW =
             new WritableObjectPropertyKey<>();
 
@@ -30,13 +28,6 @@ public final class MostVisitedTilesProperties {
             HORIZONTAL_INTERVAL_PADDINGS = new WritableObjectPropertyKey<>(true);
     public static final PropertyModel.WritableObjectPropertyKey<Integer> HORIZONTAL_EDGE_PADDINGS =
             new WritableObjectPropertyKey<>(true);
-    public static final PropertyModel.WritableBooleanPropertyKey IS_SURFACE_POLISH_ENABLED =
-            new PropertyModel.WritableBooleanPropertyKey();
-
-    // {@code true} if the orientation of the tablet is landscape.
-    public static final PropertyModel.WritableObjectPropertyKey<Boolean>
-            UPDATE_INTERVAL_PADDINGS_TABLET =
-                    new PropertyModel.WritableObjectPropertyKey<>(/* skipEquality= */ true);
 
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
@@ -45,7 +36,5 @@ public final class MostVisitedTilesProperties {
                 PLACEHOLDER_VIEW,
                 HORIZONTAL_INTERVAL_PADDINGS,
                 HORIZONTAL_EDGE_PADDINGS,
-                IS_SURFACE_POLISH_ENABLED,
-                UPDATE_INTERVAL_PADDINGS_TABLET
             };
 }

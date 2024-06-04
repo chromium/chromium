@@ -333,7 +333,7 @@ public class TileGroupUnitTest {
                         mOfflinePageBridge);
         tileGroup.startObserving(MAX_TILES_TO_FETCH);
 
-        MostVisitedTilesGridLayout layout = setupView();
+        MostVisitedTilesLayout layout = setupView();
 
         // Initialise the internal list of tiles
         mMostVisitedSites.setTileSuggestions(URLS);
@@ -361,7 +361,7 @@ public class TileGroupUnitTest {
                         mTileGroupObserver,
                         mOfflinePageBridge);
         tileGroup.startObserving(MAX_TILES_TO_FETCH);
-        MostVisitedTilesGridLayout layout = setupView();
+        MostVisitedTilesLayout layout = setupView();
 
         // Initialise the internal list of tiles
         mMostVisitedSites.setTileSuggestions(URLS[0], URLS[1], URLS[0]);
@@ -389,7 +389,7 @@ public class TileGroupUnitTest {
         mMostVisitedSites.setTileSuggestions(URLS);
 
         // Initialise the layout with views whose URLs don't match the ones of the new tiles.
-        MostVisitedTilesGridLayout layout = setupView();
+        MostVisitedTilesLayout layout = setupView();
         SuggestionsTileView view1 = mSuggestionsTileView1;
         layout.addView(view1);
 
@@ -420,7 +420,7 @@ public class TileGroupUnitTest {
         tileGroup.startObserving(MAX_TILES_TO_FETCH);
 
         // Initialise the layout with views whose URLs match the ones of the new tiles.
-        MostVisitedTilesGridLayout layout = new MostVisitedTilesGridLayout(mContext, null);
+        MostVisitedTilesLayout layout = new MostVisitedTilesLayout(mContext, null);
         SuggestionsTileView view1 = mSuggestionsTileView1;
         when(view1.getData()).thenReturn(sites.get(0));
         layout.addView(view1);
@@ -535,12 +535,12 @@ public class TileGroupUnitTest {
         verify(mTileGroupDelegate).onLoadingComplete(any());
     }
 
-    private MostVisitedTilesGridLayout setupView() {
-        return new MostVisitedTilesGridLayout(mContext, null);
+    private MostVisitedTilesLayout setupView() {
+        return new MostVisitedTilesLayout(mContext, null);
     }
 
     private void refreshData(TileGroup tileGroup) {
-        MostVisitedTilesGridLayout layout = setupView();
+        MostVisitedTilesLayout layout = setupView();
         refreshData(tileGroup, layout);
     }
 

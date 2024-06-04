@@ -54,5 +54,4 @@ found in the LICENSE file.
 
     <!-- NewTabPage dimensions -->
     <dimen name="search_box_lateral_margin">16dp</dimen>
-    <dimen name="tile_grid_layout_bleed">8dp</dimen>
 </resources>

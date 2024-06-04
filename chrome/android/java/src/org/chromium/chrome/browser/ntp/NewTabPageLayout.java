@@ -470,8 +470,6 @@ public class NewTabPageLayout extends LinearLayout {
                         activityLifecycleDispatcher,
                         mMvTilesContainerLayout,
                         mWindowAndroid,
-                        /* isScrollableMVTEnabled= */ true,
-                        /* maxRows= */ 2,
                         () -> mSnapshotTileGridChanged = true,
                         () -> {
                             if (mUrlFocusChangePercent == 1f) mTileCountChanged = true;
@@ -663,7 +661,7 @@ public class NewTabPageLayout extends LinearLayout {
 
         updateTilesLayoutMargins();
 
-        // Hide or show the views above the tile grid as needed, including search box, and
+        // Hide or show the views above the most visited tiles as needed, including search box, and
         // spacers. The visibility of Logo is handled by LogoCoordinator.
         mSearchBoxCoordinator.setVisibility(mSearchProviderHasLogo);
 
@@ -695,7 +693,7 @@ public class NewTabPageLayout extends LinearLayout {
         return true;
     }
 
-    /** Updates the margins for the tile grid based on what is shown above it. */
+    /** Updates the margins for the most visited tiles layout based on what is shown above it. */
     private void updateTilesLayoutMargins() {
         if (!mIsTablet) {
             return;

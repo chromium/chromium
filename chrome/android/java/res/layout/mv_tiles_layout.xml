@@ -10,7 +10,7 @@ found in the LICENSE file.
     android:layout_height="wrap_content"
     android:scrollbars="none">
 
-  <org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesCarouselLayout
+  <org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesLayout
       android:id="@+id/mv_tiles_layout"
       android:layout_width="wrap_content"
       android:layout_height="match_parent"

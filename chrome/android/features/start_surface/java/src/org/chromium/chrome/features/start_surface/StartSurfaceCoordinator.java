@@ -543,8 +543,6 @@ public class StartSurfaceCoordinator implements StartSurface {
                         mActivityLifecycleDispatcher,
                         mvTilesContainer,
                         mWindowAndroid,
-                        /* isScrollableMVTEnabled= */ true,
-                        Integer.MAX_VALUE,
                         /* snapshotTileGridChangedRunnable= */ null,
                         /* tileCountChangedRunnable= */ null);
 

@@ -198,20 +198,19 @@ public class TileGroupTest {
         Assert.assertEquals(3, tileContainer.getChildCount());
     }
 
-    private ViewGroup getTileLayout() {
+    private MostVisitedTilesLayout getTileLayout() {
         ViewGroup newTabPageLayout = mNtp.getNewTabPageLayout();
         Assert.assertNotNull("Unable to retrieve the NewTabPageLayout.", newTabPageLayout);
 
-        ViewGroup viewGroup = newTabPageLayout.findViewById(R.id.mv_tiles_layout);
-        Assert.assertNotNull("Unable to retrieve the MvTilesLayout.", viewGroup);
-        return viewGroup;
+        MostVisitedTilesLayout mostVisitedTilesLayout =
+                newTabPageLayout.findViewById(R.id.mv_tiles_layout);
+        Assert.assertNotNull("Unable to retrieve the MvTilesLayout.", mostVisitedTilesLayout);
+        return mostVisitedTilesLayout;
     }
 
     private View getTileViewFor(SiteSuggestion suggestion) {
         View tileView;
-        tileView =
-                ((MostVisitedTilesCarouselLayout) getTileLayout())
-                        .findTileViewForTesting(suggestion);
+        tileView = getTileLayout().findTileViewForTesting(suggestion);
         return tileView;
     }
 
