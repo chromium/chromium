@@ -4191,7 +4191,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForTranspose(
   return base::ok();
 }
 
-// For DirectML feature levels before 6.1, we need to compose triangular
+// For DirectML feature levels before 5.1, we need to compose triangular
 // from smaller operators: identity, slice, bitwise and.
 //
 //  1. expand the basic mask into an expanded mask big enough for the input
@@ -4221,9 +4221,8 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForTranspose(
 // [ 2, 3              [0,      0,]           [0, 0,
 //   4, 5,   bit_and   [0xFFFF, 0,]      =>    4, 0,
 //   6, 7]             [0xFFFF, 0xFFFF]        6, 7]
-// TODO(crbug.com/332574921): Use DirectML DML_DIAGONAL_MATRIX1 operator rather
-// than compositing when possible.
 base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForTriangular(
+    Adapter* adapter,
     const mojom::TriangularPtr& triangular,
     mojom::GraphInfoPtr& graph_info,
     GraphBuilderDml& graph_builder,
@@ -4238,21 +4237,60 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForTriangular(
   uint64_t output_id = triangular->output_operand_id;
   auto output_tensor_desc =
       CreateOutputTensorDesc(id_to_operand_map, output_id);
-  const OperandPtr& output_operand = id_to_operand_map.at(output_id);
-  Operand::DataType data_type = output_operand->data_type;
-
   CHECK_EQ(input_tensor_desc.GetDimensions().size(),
            output_tensor_desc.GetDimensions().size());
 
   const auto& input_dimensions = input_tensor_desc.GetDimensions();
   const auto input_rank = input_dimensions.size();
   CHECK_GE(input_rank, 2U);
-  const uint32_t height = input_dimensions[input_rank - 2];
-  const uint32_t width = input_dimensions[input_rank - 1];
   bool upper = triangular->upper;
   int32_t diagonal = triangular->diagonal;
-  uint32_t longest_dimension_length = std::max(height, width);
+  // Initialize scale union with a zero value.
+  DML_SCALAR_UNION scalar_union = {};
+  // DML_DIAGONAL_MATRIX1_OPERATOR_DESC was introduced in DML_FEATURE_LEVEL_5_1
+  // and supported input dimension count is from 2 to 4.
+  if (adapter->IsDMLFeatureLevelSupported(DML_FEATURE_LEVEL_5_1) &&
+      input_rank <= 4) {
+    // DML_DIAGONAL_MATRIX1_OPERATOR_DESC will generate an identity-like matrix
+    // with zero between the given diagonal span, with other elements being
+    // filled with the input values. The diagonal values may be shifted anywhere
+    // between DiagonalFillBegin and DiagonalFillEnd, where a value greater than
+    // zero shifts all values to the right, and less than zero shifts them to
+    // the left.
+    DML_DIAGONAL_MATRIX1_OPERATOR_DESC diagonal_matrix1_desc{
+        .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
+        .OutputTensor = &output_tensor_desc.GetDMLTensorDesc(),
+        .ValueDataType = output_tensor_desc.GetDataType(),
+        .Value = scalar_union,
+        .DiagonalFillBegin =
+            upper ? std::numeric_limits<int32_t>::min() : diagonal + 1,
+        .DiagonalFillEnd =
+            upper ? diagonal : std::numeric_limits<int32_t>::max()};
 
+    std::array<const NodeOutput*, 1> inputs = {input};
+    const OperatorNode* diagonal_matrix1_node =
+        graph_builder.CreateOperatorNode(DML_OPERATOR_DIAGONAL_MATRIX1,
+                                         &diagonal_matrix1_desc, inputs);
+    if (!diagonal_matrix1_node) {
+      return base::unexpected(
+          CreateError(mojom::Error::Code::kUnknownError,
+                      "Failed to create diagonal matrix1 operator."));
+    }
+
+    const NodeOutput* node_output = graph_builder.CreateNodeOutput(
+        diagonal_matrix1_node, std::move(output_tensor_desc));
+    // The output id must be unique in the map.
+    CHECK(id_to_node_output_map.try_emplace(output_id, node_output).second);
+    return base::ok();
+  }
+
+  // For DirectML feature levels before 5.1, we need to compose triangular
+  // from smaller operators: identity, slice, bitwise and.
+  const OperandPtr& output_operand = id_to_operand_map.at(output_id);
+  Operand::DataType data_type = output_operand->data_type;
+  const uint32_t height = input_dimensions[input_rank - 2];
+  const uint32_t width = input_dimensions[input_rank - 1];
+  uint32_t longest_dimension_length = std::max(height, width);
   // Check the case where the diagonal shift value shifts all the values
   // too far above when keeping the top triangle or too far below when keeping
   // the bottom triangle, yielding all zeros.
@@ -4270,7 +4308,6 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForTriangular(
       (diagonal < 0 &&
        (base::checked_cast<uint32_t>(-diagonal) >= longest_dimension_length) &&
        !upper)) {
-    DML_SCALAR_UNION scalar_union = {};
     DML_FILL_VALUE_CONSTANT_OPERATOR_DESC fill_constant_operator_desc{
         .OutputTensor = &output_tensor_desc.GetDMLTensorDesc(),
         .ValueDataType = output_tensor_desc.GetDataType(),
@@ -4305,10 +4342,8 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForTriangular(
         graph_builder.CreateNodeOutput(mul_node, output_tensor_desc);
     // The output id must be unique in the map.
     CHECK(id_to_node_output_map.try_emplace(output_id, output).second);
-
     return base::ok();
   }
-
   // Check the case where the diagonal shift value shifts all the values
   // too far above when keeping the bottom triangle or too far below when
   // keeping the top triangle, returning the input tensor.
@@ -4379,8 +4414,8 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForTriangular(
     // The current spec doesn't restrict the input data type of triangular. An
     // issue has been filed to track it:
     // https://github.com/webmachinelearning/webnn/issues/654.
-    // TODO(crbug.com/336841827): Delete the cases of uint64 and int64 after the
-    // spec drops the support of int64 and uint64 for triangular.
+    // TODO(crbug.com/336841827): Delete the cases of uint64 and int64 after
+    // the spec drops the support of int64 and uint64 for triangular.
     case Operand::DataType::kInt64:
     case Operand::DataType::kUint64: {
       // DML_ELEMENT_WISE_BIT_AND_OPERATOR_DESC can't support uint64 when
@@ -4557,7 +4592,6 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForTriangular(
   // The output id must be unique in the map.
   CHECK(id_to_node_output_map.try_emplace(output_id, bit_and_operator_output)
             .second);
-
   return base::ok();
 }
 
@@ -5631,9 +5665,9 @@ void GraphImplDml::CreateAndBuild(
       }
       case mojom::Operation::Tag::kTriangular: {
         create_operator_result = CreateOperatorNodeForTriangular(
-            operation->get_triangular(), graph_info, graph_builder,
-            id_to_node_output_map, constant_id_to_input_index_map,
-            next_operand_id);
+            adapter.get(), operation->get_triangular(), graph_info,
+            graph_builder, id_to_node_output_map,
+            constant_id_to_input_index_map, next_operand_id);
         break;
       }
       case Operation::Tag::kWhere: {
