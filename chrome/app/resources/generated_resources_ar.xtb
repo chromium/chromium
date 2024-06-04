@@ -1225,6 +1225,7 @@
 <translation id="1878885068166344708">‏يتم تمييز العنصر عند نقل التركيز إليه. اضغط على مفتاح التبويب (Tab) أو اختَر عنصرًا للتركيز عليه.</translation>
 <translation id="1879000426787380528">تسجيل الدخول باسم</translation>
 <translation id="18802377548000045">عرض علامات التبويب بحجم كبير</translation>
+<translation id="1880677175115548835">اختيار نص</translation>
 <translation id="1880905663253319515">هل تريد حذف الشهادة "<ph name="CERTIFICATE_NAME" />"؟</translation>
 <translation id="1881445033931614352">تنسيق لوحة المفاتيح</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{عنصر واحد}zero{# عناصر}two{عنصران}few{# عناصر}many{# عنصرًا}other{# عنصر}}</translation>

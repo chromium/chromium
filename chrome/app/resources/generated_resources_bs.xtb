@@ -1232,6 +1232,7 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="1878885068166344708">Stavka se istakne kada pomjerite fokus. Da promijenite fokus, pritisnite tipku tab ili odaberite stavku.</translation>
 <translation id="1879000426787380528">Prijavi se kao</translation>
 <translation id="18802377548000045">Kartice će se smanjiti na veliku širinu</translation>
+<translation id="1880677175115548835">Odaberite tekst</translation>
 <translation id="1880905663253319515">Izbrisati potvrdu "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="1881445033931614352">Raspored tastature</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{Stavka}one{# stavka}few{# stavke}other{# stavki}}</translation>

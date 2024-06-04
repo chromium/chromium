@@ -15,7 +15,7 @@
 <translation id="1006873397406093306">Esta extensión puede leer y cambiar tus datos en los sitios. Puedes controlar a qué sitios puede acceder la extensión.</translation>
 <translation id="1007057452468855774">Activar Google Play Store</translation>
 <translation id="1008186147501209563">Exportar marcadores</translation>
-<translation id="1008209036711323236">Por este motivo, Chrome tiene previsto eliminar gradualmente el uso de cookies de terceros una vez que hayamos abordado las cuestiones planteadas por parte de la <ph name="BEGIN_LINK" />autoridad de los mercados y la competencia (CMA) del Reino Unido<ph name="END_LINK" /> relacionadas con la competencia.</translation>
+<translation id="1008209036711323236">Por este motivo, Chrome tiene previsto eliminar gradualmente el uso de cookies de terceros una vez que hayamos abordado las cuestiones planteadas por parte de la <ph name="BEGIN_LINK" />autoridad de competencia y mercados (CMA) del Reino Unido<ph name="END_LINK" /> relacionadas con la competencia.</translation>
 <translation id="1008261151167010035"><ph name="BRAND" /> recuerda cómo has iniciado sesión e inicia tu sesión automáticamente cuando sea posible. Si esta opción está desactivada, se te pedirá confirmación siempre.</translation>
 <translation id="1008544602823861396">no puede usar tu información en</translation>
 <translation id="1008557486741366299">Ahora no</translation>
@@ -1221,6 +1221,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1878885068166344708">El elemento se destaca cuando mueves el enfoque. Pulsa el tabulador o selecciona un elemento para cambiar el enfoque.</translation>
 <translation id="1879000426787380528">Iniciar sesión como</translation>
 <translation id="18802377548000045">el tamaño de las pestañas se ajusta a un ancho grande</translation>
+<translation id="1880677175115548835">Seleccionar texto</translation>
 <translation id="1880905663253319515">¿Eliminar el certificado "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="1881445033931614352">Diseño de teclado</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{Elemento}other{# elementos}}</translation>

@@ -1233,6 +1233,7 @@
 <translation id="1878885068166344708">포커스를 이동하면 항목이 강조표시됩니다. 포커스를 변경하려면 Tab 키를 누르거나 항목을 선택하세요</translation>
 <translation id="1879000426787380528">다음 사용자로 로그인</translation>
 <translation id="18802377548000045">탭이 넓은 폭으로 줄어듦</translation>
+<translation id="1880677175115548835">텍스트 선택</translation>
 <translation id="1880905663253319515">인증서 '<ph name="CERTIFICATE_NAME" />'을(를) 삭제하시겠습니까?</translation>
 <translation id="1881445033931614352">키보드 레이아웃</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{항목}other{항목 #개}}</translation>
