@@ -146,9 +146,6 @@ constexpr auto kTimeStampInCollapsedStatePadding =
 
 constexpr char kGoogleSansFont[] = "Google Sans";
 
-constexpr int kTitleCharacterLimit =
-    message_center::kNotificationWidth * message_center::kMaxTitleLines /
-    message_center::kMinPixelsPerTitleCharacter;
 constexpr int kTitleLabelExpandedMaxLines = 2;
 constexpr int kTitleLabelCollapsedMaxLines = 1;
 
@@ -168,6 +165,12 @@ constexpr int kSmallImageBackgroundThreshold = 6;
 // The size of an icon within a control button. Note that this is not the size
 // of a control button itself.
 constexpr int kControlButtonsIconSize = 14;
+
+int GetTitleCharacterLimit() {
+  return message_center::GetNotificationWidth() *
+         message_center::kMaxTitleLines /
+         message_center::kMinPixelsPerTitleCharacter;
+}
 
 // Helpers ---------------------------------------------------------------------
 
@@ -1236,7 +1239,7 @@ void AshNotificationView::CreateOrUpdateTitleView(
   }
 
   const std::u16string& title = gfx::TruncateString(
-      notification.title(), kTitleCharacterLimit, gfx::WORD_BREAK);
+      notification.title(), GetTitleCharacterLimit(), gfx::WORD_BREAK);
 
   if (!title_row_) {
     title_row_ =
@@ -1252,8 +1255,8 @@ void AshNotificationView::CreateOrUpdateTitleView(
                                 ? kTitleRowMinimumWidth
                                 : kTitleRowMinimumWidthWithIcon;
   if (shown_in_popup_) {
-    max_available_width -=
-        message_center::kNotificationWidth - kNotificationInMessageCenterWidth;
+    max_available_width -= message_center::GetNotificationWidth() -
+                           GetNotificationInMessageCenterWidth();
   }
   title_row_->SetMaxAvailableWidth(max_available_width);
 
@@ -1476,8 +1479,9 @@ gfx::Size AshNotificationView::GetIconViewSize() const {
 }
 
 int AshNotificationView::GetLargeImageViewMaxWidth() const {
-  return message_center::kNotificationWidth - kNotificationViewPadding.width() -
-         kNotificationAppIconViewSize - kMainRightViewChildPadding.width();
+  return message_center::GetNotificationWidth() -
+         kNotificationViewPadding.width() - kNotificationAppIconViewSize -
+         kMainRightViewChildPadding.width();
 }
 
 void AshNotificationView::ToggleInlineSettings(const ui::Event& event) {
@@ -1661,15 +1665,16 @@ void AshNotificationView::UpdateMessageLabelInExpandedState(
     return;
   }
   message_label_in_expanded_state_->SetText(gfx::TruncateString(
-      notification.message(), message_center::kMessageCharacterLimit,
+      notification.message(), message_center::GetMessageCharacterLimit(),
       gfx::WORD_BREAK));
 
   message_label_in_expanded_state_->SetVisible(true);
 }
 
 int AshNotificationView::GetExpandedMessageLabelWidth() {
-  int notification_width = shown_in_popup_ ? message_center::kNotificationWidth
-                                           : kNotificationInMessageCenterWidth;
+  int notification_width = shown_in_popup_
+                               ? message_center::GetNotificationWidth()
+                               : GetNotificationInMessageCenterWidth();
 
   return notification_width - kNotificationViewPadding.width() -
          kNotificationAppIconViewSize - kMainRightViewChildPadding.width() -

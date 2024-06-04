@@ -267,7 +267,7 @@ class ArcNotificationContentView::SlideHelper {
 
 // static
 int ArcNotificationContentView::GetNotificationContentViewWidth() {
-  return kNotificationInMessageCenterWidth;
+  return GetNotificationInMessageCenterWidth();
 }
 
 ArcNotificationContentView::ArcNotificationContentView(
@@ -284,9 +284,11 @@ ArcNotificationContentView::ArcNotificationContentView(
   control_buttons_view_.SetNotificationControlButtonFactory(
       std::make_unique<AshNotificationControlButtonFactory>());
 
-  // `kNotificationInMessageCenterWidth` must be 344 since this value is
-  // separately defined in `ArcNotificationWrapperView` class in Android side.
-  static_assert(kNotificationInMessageCenterWidth == 344);
+  // `GetNotificationInMessageCenterWidth()` must be the the same as what is
+  // defined in `ArcNotificationWrapperView` class in Android side.
+  assert(
+      GetNotificationInMessageCenterWidth() ==
+      (chromeos::features::IsNotificationWidthIncreaseEnabled() ? 400 : 344));
 
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetNotifyEnterExitOnChild(true);
@@ -515,10 +517,11 @@ void ArcNotificationContentView::UpdatePreferredSize() {
   if (preferred_size.IsEmpty())
     return;
 
-  if (preferred_size.width() != kNotificationInMessageCenterWidth) {
-    const float scale = static_cast<float>(kNotificationInMessageCenterWidth) /
-                        preferred_size.width();
-    preferred_size.SetSize(kNotificationInMessageCenterWidth,
+  const int notification_width = GetNotificationInMessageCenterWidth();
+  if (preferred_size.width() != notification_width) {
+    const float scale =
+        static_cast<float>(notification_width) / preferred_size.width();
+    preferred_size.SetSize((notification_width),
                            preferred_size.height() * scale);
   }
 
@@ -708,7 +711,7 @@ void ArcNotificationContentView::Layout(PassKey) {
     const gfx::Size surface_size = surface_->GetSize();
     if (!surface_size.IsEmpty()) {
       const float factor =
-          static_cast<float>(kNotificationInMessageCenterWidth) /
+          static_cast<float>(GetNotificationInMessageCenterWidth()) /
           surface_size.width();
       transform.Scale(factor, factor);
     }

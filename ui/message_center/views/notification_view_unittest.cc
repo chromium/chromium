@@ -639,12 +639,12 @@ TEST_F(NotificationViewTest, PreferredSize) {
 
   // Collapsed preferred width is determined by the header view.
   notification_view()->SetExpanded(false);
-  EXPECT_EQ(kNotificationWidth,
+  EXPECT_EQ(GetNotificationWidth(),
             notification_view()->GetPreferredSize({}).width());
 
   // Ensure expanded preferred width is not extended by the image view.
   notification_view()->SetExpanded(true);
-  EXPECT_EQ(kNotificationWidth,
+  EXPECT_EQ(GetNotificationWidth(),
             notification_view()->GetPreferredSize({}).width());
 }
 

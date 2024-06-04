@@ -5,7 +5,9 @@
 #ifndef ASH_SYSTEM_NOTIFICATION_CENTER_MESSAGE_CENTER_CONSTANTS_H_
 #define ASH_SYSTEM_NOTIFICATION_CENTER_MESSAGE_CENTER_CONSTANTS_H_
 
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/message_center/public/cpp/message_center_constants.h"
 
 namespace ash {
 
@@ -60,7 +62,8 @@ inline constexpr float kDarkModeMinContrastRatio = 6.0;
 // Constants for `ash_notification_view`.
 
 // The width of notification that displayed inside the message center.
-inline constexpr int kNotificationInMessageCenterWidth = 344;
+// (Deprecated)
+inline constexpr int kDeprecatedNotificationInMessageCenterWidth = 344;
 
 inline constexpr int kProgressBarWithActionButtonsBottomPadding = 16;
 inline constexpr int kProgressBarExpandedBottomPadding =
@@ -158,6 +161,13 @@ inline constexpr int kSlideOutGroupedNotificationAnimationDurationMs = 200;
 
 // System notification notifier ids.
 const char kLockScreenNotifierId[] = "ash.lockscreen_notification_controller";
+
+// Returns the width of the notification in the message center.
+inline int GetNotificationInMessageCenterWidth() {
+  return chromeos::features::IsNotificationWidthIncreaseEnabled()
+             ? message_center::kChromeOSNotificationWidth
+             : kDeprecatedNotificationInMessageCenterWidth;
+}
 
 }  // namespace ash
 

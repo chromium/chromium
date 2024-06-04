@@ -137,7 +137,7 @@ class MockMessagePopupView : public MessagePopupView {
         title_(base::UTF16ToUTF8(
             MessageCenter::Get()->FindVisibleNotificationById(id)->title())) {
     auto* view = new views::View;
-    view->SetPreferredSize(gfx::Size(kNotificationWidth, init_height));
+    view->SetPreferredSize(gfx::Size(GetNotificationWidth(), init_height));
     AddChildView(view);
   }
 
@@ -166,11 +166,13 @@ class MockMessagePopupView : public MessagePopupView {
 
   void AutoCollapse() override {
     if (expandable_)
-      children().front()->SetPreferredSize(gfx::Size(kNotificationWidth, 42));
+      children().front()->SetPreferredSize(
+          gfx::Size(GetNotificationWidth(), 42));
   }
 
   void SetPreferredHeight(int height) {
-    children().front()->SetPreferredSize(gfx::Size(kNotificationWidth, height));
+    children().front()->SetPreferredSize(
+        gfx::Size(GetNotificationWidth(), height));
   }
 
   void SetHovered(bool is_hovered) {
@@ -933,7 +935,7 @@ TEST_F(MessagePopupCollectionTest, PopupCollectionBounds) {
   int expected_height = r0.height() + kMarginBetweenPopups + r1.height() +
                         kMarginBetweenPopups + r2.height();
 
-  EXPECT_EQ(gfx::Rect(r2.x(), r2.y(), kNotificationWidth, expected_height),
+  EXPECT_EQ(gfx::Rect(r2.x(), r2.y(), GetNotificationWidth(), expected_height),
             popup_collection()->popup_collection_bounds());
 
   MessageCenter::Get()->RemoveNotification(id0, true);
@@ -942,7 +944,7 @@ TEST_F(MessagePopupCollectionTest, PopupCollectionBounds) {
   r1 = GetPopup(id1)->GetBoundsInScreen();
   r2 = GetPopup(id2)->GetBoundsInScreen();
 
-  EXPECT_EQ(gfx::Rect(r2.x(), r2.y(), kNotificationWidth,
+  EXPECT_EQ(gfx::Rect(r2.x(), r2.y(), GetNotificationWidth(),
                       r1.height() + kMarginBetweenPopups + r2.height()),
             popup_collection()->popup_collection_bounds());
 }

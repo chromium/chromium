@@ -499,8 +499,8 @@ void NotificationViewBase::CreateOrUpdateMessageLabel(
     return;
   }
 
-  const std::u16string& text = gfx::TruncateString(
-      notification.message(), kMessageCharacterLimit, gfx::WORD_BREAK);
+  const std::u16string text = gfx::TruncateString(
+      notification.message(), GetMessageCharacterLimit(), gfx::WORD_BREAK);
 
   if (!message_label_) {
     auto message_label = std::make_unique<views::Label>(

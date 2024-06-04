@@ -230,7 +230,7 @@ NotificationHeaderView::NotificationHeaderView(PressedCallback callback)
   spacer->SetProperty(views::kFlexBehaviorKey, kSpacerFlex);
   spacer_ = AddChildView(std::move(spacer));
 
-  SetPreferredSize(gfx::Size(kNotificationWidth, kHeaderHeight));
+  SetPreferredSize(gfx::Size(GetNotificationWidth(), kHeaderHeight));
 
   // Not focusable by default, only for accessibility.
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
@@ -405,7 +405,7 @@ void NotificationHeaderView::SetIsInAshNotificationView(
   spacer_->SetPreferredSize(
       gfx::Size(kControlButtonSpacing,
                 kHeaderHeightInAsh - kHeaderOuterPadding.height()));
-  SetPreferredSize(gfx::Size(kNotificationWidth, kHeaderHeightInAsh));
+  SetPreferredSize(gfx::Size(GetNotificationWidth(), kHeaderHeightInAsh));
 }
 
 void NotificationHeaderView::SetIsInGroupChildNotification(
