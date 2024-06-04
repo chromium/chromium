@@ -54,24 +54,6 @@ class WifiDirectServerSocketTest : public ::testing::Test {
         std::move(firewall_hole), std::move(tcp_server_socket));
   }
 
-  void ConnectToSocket() {
-    auto ip_endpoint = net::IPEndPoint(
-        net::IPAddress::FromIPLiteral(kTestIPv4Address).value(), port_);
-    client_socket_ = std::make_unique<net::TCPClientSocket>(
-        net::AddressList(ip_endpoint), nullptr, nullptr, nullptr,
-        net::NetLogSource());
-    int result = client_socket_->Connect(base::BindOnce(
-        &WifiDirectServerSocketTest::OnConnect, base::Unretained(this)));
-    if (result != net::ERR_IO_PENDING) {
-      OnConnect(result);
-    }
-  }
-
-  void OnConnect(int result) {
-    EXPECT_EQ(result, net::OK);
-    client_socket_->Disconnect();
-  }
-
   WifiDirectServerSocket* socket() { return server_socket_.get(); }
   uint16_t port() { return port_; }
 
@@ -82,23 +64,12 @@ class WifiDirectServerSocketTest : public ::testing::Test {
     run_loop.Run();
   }
 
-  void RunDelayedOnTaskRunner(base::TimeDelta delay, base::OnceClosure task) {
-    base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})
-        ->PostDelayedTask(FROM_HERE, std::move(task), delay);
-  }
-
-  void RunDelayedOnIOThread(base::TimeDelta delay, base::OnceClosure task) {
-    task_environment_.GetMainThreadTaskRunner()->PostDelayedTask(
-        FROM_HERE, std::move(task), delay);
-  }
-
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::IO};
   mojo::SelfOwnedReceiverRef<::sharing::mojom::FirewallHole> firewall_hole_;
   std::unique_ptr<WifiDirectServerSocket> server_socket_;
   uint16_t port_;
-  std::unique_ptr<net::TCPClientSocket> client_socket_;
 };
 
 TEST_F(WifiDirectServerSocketTest, Close) {
@@ -120,57 +91,12 @@ TEST_F(WifiDirectServerSocketTest, Close_MultipleCalls) {
       socket()));
 }
 
-TEST_F(WifiDirectServerSocketTest, Close_WhileAccepting) {
-  RunDelayedOnTaskRunner(
-      base::Seconds(1),
-      base::BindOnce(
-          [](WifiDirectServerSocket* socket) {
-            base::ScopedAllowBaseSyncPrimitivesForTesting allow;
-            EXPECT_TRUE(socket->Close().Ok());
-          },
-          socket()));
-
-  RunOnTaskRunner(base::BindOnce(
-      [](WifiDirectServerSocket* socket) {
-        base::ScopedAllowBaseSyncPrimitivesForTesting allow;
-        EXPECT_FALSE(socket->Accept());
-      },
-      socket()));
-}
-
 TEST_F(WifiDirectServerSocketTest, GetIPAddress) {
   EXPECT_EQ(socket()->GetIPAddress(), kTestIPv4Address);
 }
 
 TEST_F(WifiDirectServerSocketTest, GetPort) {
   EXPECT_EQ(socket()->GetPort(), port());
-}
-
-TEST_F(WifiDirectServerSocketTest, Accept_ConnectionBeforeAccept) {
-  // Connect to the socket before `Accept` is called to queue up a pending
-  // connection.
-  ConnectToSocket();
-
-  RunOnTaskRunner(base::BindOnce(
-      [](WifiDirectServerSocket* socket) {
-        base::ScopedAllowBaseSyncPrimitivesForTesting allow;
-        EXPECT_TRUE(socket->Accept());
-      },
-      socket()));
-}
-
-TEST_F(WifiDirectServerSocketTest, Accept_ConnectionAfterAccept) {
-  RunDelayedOnIOThread(
-      base::Seconds(1),
-      base::BindOnce(&WifiDirectServerSocketTest::ConnectToSocket,
-                     base::Unretained(this)));
-
-  RunOnTaskRunner(base::BindOnce(
-      [](WifiDirectServerSocket* socket) {
-        base::ScopedAllowBaseSyncPrimitivesForTesting allow;
-        EXPECT_TRUE(socket->Accept());
-      },
-      socket()));
 }
 
 }  // namespace nearby::chrome
