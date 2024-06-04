@@ -262,12 +262,14 @@ void FileSystemAccessObserverObservation::OnChanges(
             blink::mojom::FileSystemAccessChangeTypeUnknown::New());
         break;
       case FileSystemAccessChangeSource::ChangeType::kCreated:
-        mojo_change_type = blink::mojom::FileSystemAccessChangeType::NewCreated(
-            blink::mojom::FileSystemAccessChangeTypeCreated::New());
+        mojo_change_type =
+            blink::mojom::FileSystemAccessChangeType::NewAppeared(
+                blink::mojom::FileSystemAccessChangeTypeAppeared::New());
         break;
       case FileSystemAccessChangeSource::ChangeType::kDeleted:
-        mojo_change_type = blink::mojom::FileSystemAccessChangeType::NewDeleted(
-            blink::mojom::FileSystemAccessChangeTypeDeleted::New());
+        mojo_change_type =
+            blink::mojom::FileSystemAccessChangeType::NewDisappeared(
+                blink::mojom::FileSystemAccessChangeTypeDisappeared::New());
         break;
       case FileSystemAccessChangeSource::ChangeType::kModified:
         mojo_change_type =

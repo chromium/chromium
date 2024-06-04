@@ -658,13 +658,14 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
   //
   // TODO(crbug.com/340584120): Consider reporting a consistent change
   // type when writing to a file via a WritableFileStream. On the local file
-  // system, changes are naively considered "created" events because the swap
+  // system, changes are naively considered "appeared" events because the swap
   // file is moved over the target file. Meanwhile, the BucketFS intentionally
   // reports the move as a modification if the move overwrote an existing file.
   const std::string expected_change_type =
       SupportsChangeInfo()
-          ? (GetTestFileSystemType() == TestFileSystemType::kBucket ? "modified"
-                                                                    : "created")
+          ? (GetTestFileSystemType() == TestFileSystemType::kBucket
+                 ? "modified"
+                 : "appeared")
           : "unknown";
   EXPECT_THAT(*records.GetList().front().GetDict().FindString("type"),
               testing::StrEq(expected_change_type));
@@ -845,7 +846,7 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
-                       ObserveDirectoryReportsCreatedOnMoveIntoScope) {
+                       ObserveDirectoryReportsAppearedOnMoveIntoScope) {
   base::FilePath dir_path = CreateDirectoryToBePicked();
 
   const std::string script =
@@ -870,8 +871,9 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
   auto& record_dict = records.GetList().front().GetDict();
   const std::string expected_change_type =
       SupportsChangeInfo()
-          ? (GetTestFileSystemType() == TestFileSystemType::kBucket ? "moved"
-                                                                    : "created")
+          ? (GetTestFileSystemType() == TestFileSystemType::kBucket
+                 ? "moved"
+                 : "appeared")
           : "unknown";
   EXPECT_THAT(*record_dict.FindString("type"),
               testing::StrEq(expected_change_type));
@@ -886,7 +888,7 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
-                       ObserveDirectoryReportsDeletedOnMoveOutsideScope) {
+                       ObserveDirectoryReportsDisappearedOnMoveOutsideScope) {
   base::FilePath dir_path = CreateDirectoryToBePicked();
 
   const std::string script =
@@ -911,10 +913,10 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
   auto& record_dict = records.GetList().front().GetDict();
   // TODO(crbug.com/40105284): Consider reporting a consistent change
   // type when moving a file out of the watched scope. On the BucketFS,
-  // changes are considered "deleted" events while on local file system, it is
-  // reported as "moved".
+  // changes are considered "disappeared" events while on local file system, it
+  // is reported as "moved".
   const std::string expected_change_type =
-      SupportsChangeInfo() ? "deleted" : "unknown";
+      SupportsChangeInfo() ? "disappeared" : "unknown";
   EXPECT_THAT(*record_dict.FindString("type"),
               testing::StrEq(expected_change_type));
   if (SupportsReportingModifiedPath()) {

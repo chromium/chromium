@@ -25,11 +25,11 @@ constexpr V8FileSystemChangeType::Enum ToChangeTypeEnum(
 
   switch (tag) {
     case mojom::blink::FileSystemAccessChangeType::Data_::
-        FileSystemAccessChangeType_Tag::kCreated:
-      return V8FileSystemChangeType::Enum::kCreated;
+        FileSystemAccessChangeType_Tag::kAppeared:
+      return V8FileSystemChangeType::Enum::kAppeared;
     case mojom::blink::FileSystemAccessChangeType::Data_::
-        FileSystemAccessChangeType_Tag::kDeleted:
-      return V8FileSystemChangeType::Enum::kDeleted;
+        FileSystemAccessChangeType_Tag::kDisappeared:
+      return V8FileSystemChangeType::Enum::kDisappeared;
     case mojom::blink::FileSystemAccessChangeType::Data_::
         FileSystemAccessChangeType_Tag::kErrored:
       return V8FileSystemChangeType::Enum::kErrored;

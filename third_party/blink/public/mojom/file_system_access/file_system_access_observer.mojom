@@ -8,8 +8,8 @@ import "third_party/blink/public/mojom/file_system_access/file_system_access_dir
 
 // Each of the below types represents a type of file system change. Each type
 // may provide extra information specific to that type.
-struct FileSystemAccessChangeTypeCreated {};
-struct FileSystemAccessChangeTypeDeleted {};
+struct FileSystemAccessChangeTypeAppeared {};
+struct FileSystemAccessChangeTypeDisappeared {};
 struct FileSystemAccessChangeTypeErrored {};
 struct FileSystemAccessChangeTypeModified {};
 struct FileSystemAccessChangeTypeMoved {
@@ -24,8 +24,8 @@ struct FileSystemAccessChangeTypeUnknown {};
 // sync with the `FileSystemChangeType` enum in
 // t/b/r/m/file_system_access/file_system_change_record.idl
 union FileSystemAccessChangeType {
-  FileSystemAccessChangeTypeCreated created;
-  FileSystemAccessChangeTypeDeleted deleted;
+  FileSystemAccessChangeTypeAppeared appeared;
+  FileSystemAccessChangeTypeDisappeared disappeared;
   FileSystemAccessChangeTypeErrored errored;
   FileSystemAccessChangeTypeModified modified;
   FileSystemAccessChangeTypeMoved moved;
