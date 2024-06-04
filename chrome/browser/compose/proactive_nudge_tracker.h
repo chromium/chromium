@@ -52,6 +52,8 @@ class ProactiveNudgeTracker : public autofill::AutofillManager::Observer {
     virtual void ShowProactiveNudge(autofill::FormGlobalId form,
                                     autofill::FieldGlobalId field) = 0;
 
+    virtual compose::PageUkmTracker* GetPageUkmTracker() = 0;
+
     // Compared with compose's Config random nudge probability to determine if
     // we should show the nudge if segmentation fails.
     virtual float SegmentationFallbackShowResult();

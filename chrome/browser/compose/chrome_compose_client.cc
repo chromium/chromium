@@ -73,6 +73,21 @@ std::u16string RemoveLastCharIfInvalid(std::u16string str) {
   return str;
 }
 
+bool ComposeNudgeShowStatusDisabledByConfig(compose::ComposeShowStatus status) {
+  switch (status) {
+    case compose::ComposeShowStatus::
+        kProactiveNudgeDisabledGloballyByUserPreference:
+    case compose::ComposeShowStatus::
+        kProactiveNudgeDisabledForSiteByUserPreference:
+    case compose::ComposeShowStatus::kProactiveNudgeFeatureDisabled:
+    case compose::ComposeShowStatus::kRandomlyBlocked:
+    case compose::ComposeShowStatus::kProactiveNudgeDisabledByMSBB:
+      return true;
+    default:
+      return false;
+  }
+}
+
 }  // namespace
 
 ChromeComposeClient::ChromeComposeClient(content::WebContents* web_contents)
@@ -495,7 +510,7 @@ ComposeEnabling& ChromeComposeClient::GetComposeEnabling() {
   return *compose_enabling_;
 }
 
-compose::PageUkmTracker* ChromeComposeClient::getPageUkmTracker() {
+compose::PageUkmTracker* ChromeComposeClient::GetPageUkmTracker() {
   return page_ukm_tracker_.get();
 }
 
@@ -510,38 +525,30 @@ bool ChromeComposeClient::ShouldTriggerPopup(
       std::pair<autofill::FieldGlobalId, autofill::FormGlobalId>>(
       form_field_data.global_id(), form_field_data.renderer_form_id());
 
-  translate::TranslateManager* translate_manager =
-      ChromeTranslateClient::GetManagerFromWebContents(&GetWebContents());
-  content::RenderFrameHost* top_level_frame =
-      GetWebContents().GetPrimaryMainFrame();
-
-  GURL url = GetWebContents().GetPrimaryMainFrame()->GetLastCommittedURL();
-
   bool ongoing_session = HasSession(form_field_data.global_id());
 
-  auto should_show_nudge = compose_enabling_->ShouldTriggerPopup(
+  if (ongoing_session) {
+    return compose_enabling_->ShouldTriggerSavedStatePopup(trigger_source);
+  }
+
+  auto proactive_nudge_status = compose_enabling_->ShouldTriggerNoStatePopup(
       form_field_data.autocomplete_attribute(),
       form_field_data.allows_writing_suggestions(), profile_, pref_service_,
-      translate_manager, ongoing_session,
-      top_level_frame->GetLastCommittedOrigin(), form_field_data.origin(), url,
-      trigger_source, GetMSBBStateFromPrefs());
+      ChromeTranslateClient::GetManagerFromWebContents(&GetWebContents()),
+      GetWebContents().GetPrimaryMainFrame()->GetLastCommittedOrigin(),
+      form_field_data.origin(),
+      GetWebContents().GetPrimaryMainFrame()->GetLastCommittedURL(),
+      GetMSBBStateFromPrefs());
 
-  // Record ukm only if the proactive nudge would show or is disabled by the
-  // flag. TODO(b/337125331): update metrics to reflect that the nudge may not
-  // be shown immediately.
-  if (!ongoing_session &&
-      (should_show_nudge.has_value() ||
-       should_show_nudge.error() ==
-           compose::ComposeNudgeDenyReason::kProactiveNudgeDisabled)) {
-    page_ukm_tracker_->ComposeProactiveNudgeShouldShow();
-  }
-
-  if (!should_show_nudge.has_value()) {
+  if (!proactive_nudge_status.has_value()) {
+    compose::LogComposeProactiveNudgeShowStatus(proactive_nudge_status.error());
+    // Record that the nudge could have shown if it was disabled by
+    // configuration or flags.
+    if (ComposeNudgeShowStatusDisabledByConfig(
+            proactive_nudge_status.error())) {
+      page_ukm_tracker_->ComposeProactiveNudgeShouldShow();
+    }
     return false;
-  }
-
-  if (ongoing_session) {
-    return true;
   }
 
   // Time since page load, or time since page has changed if it's not loaded
@@ -553,14 +560,9 @@ bool ChromeComposeClient::ShouldTriggerPopup(
   nudge_signals.form = form_data;
   nudge_signals.field = form_field_data;
   nudge_signals.page_change_time = page_change_time_;
-  bool nudge_can_show = nudge_tracker_.ProactiveNudgeRequestedForFormField(
+  // PractiveNudgeRequestForFormField logs metrics for showing the nudge.
+  return nudge_tracker_.ProactiveNudgeRequestedForFormField(
       std::move(nudge_signals));
-  if (nudge_can_show) {
-    compose::LogComposeProactiveNudgeCtr(
-        compose::ComposeProactiveNudgeCtrEvent::kNudgeDisplayed);
-    page_ukm_tracker_->ProactiveNudgeShown();
-  }
-  return nudge_can_show;
 }
 
 void ChromeComposeClient::DisableProactiveNudge() {

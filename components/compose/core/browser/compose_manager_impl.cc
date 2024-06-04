@@ -66,7 +66,7 @@ void ComposeManagerImpl::OpenCompose(AutofillDriver& driver,
                                      FieldGlobalId field_id,
                                      UiEntryPoint entry_point) {
   if (entry_point == UiEntryPoint::kContextMenu) {
-    client_->getPageUkmTracker()->MenuItemClicked();
+    client_->GetPageUkmTracker()->MenuItemClicked();
     LogComposeContextMenuCtr(ComposeContextMenuCtrEvent::kMenuItemClicked);
   }
   driver.ExtractForm(
@@ -83,7 +83,7 @@ void ComposeManagerImpl::OpenComposeWithUpdatedSelection(
   if (!form_data) {
     LogOpenComposeDialogResult(
         OpenComposeDialogResult::kAutofillFormDataNotFound);
-    client_->getPageUkmTracker()->ShowDialogAbortedDueToMissingFormData();
+    client_->GetPageUkmTracker()->ShowDialogAbortedDueToMissingFormData();
     return;
   }
 
@@ -92,7 +92,7 @@ void ComposeManagerImpl::OpenComposeWithUpdatedSelection(
   if (!form_field_data) {
     LogOpenComposeDialogResult(
         OpenComposeDialogResult::kAutofillFormFieldDataNotFound);
-    client_->getPageUkmTracker()->ShowDialogAbortedDueToMissingFormFieldData();
+    client_->GetPageUkmTracker()->ShowDialogAbortedDueToMissingFormFieldData();
     return;
   }
 
@@ -128,7 +128,7 @@ void ComposeManagerImpl::OpenComposeWithFormData(
   if (!form_data) {
     LogOpenComposeDialogResult(
         OpenComposeDialogResult::kAutofillFormDataNotFoundAfterSelectAll);
-    client_->getPageUkmTracker()->ShowDialogAbortedDueToMissingFormData();
+    client_->GetPageUkmTracker()->ShowDialogAbortedDueToMissingFormData();
     return;
   }
 
@@ -137,7 +137,7 @@ void ComposeManagerImpl::OpenComposeWithFormData(
   if (!form_field_data) {
     LogOpenComposeDialogResult(
         OpenComposeDialogResult::kAutofillFormFieldDataNotFound);
-    client_->getPageUkmTracker()->ShowDialogAbortedDueToMissingFormFieldData();
+    client_->GetPageUkmTracker()->ShowDialogAbortedDueToMissingFormFieldData();
     return;
   }
 
@@ -224,14 +224,14 @@ std::optional<Suggestion> ComposeManagerImpl::GetSuggestion(
 void ComposeManagerImpl::NeverShowComposeForOrigin(const url::Origin& origin) {
   client_->AddSiteToNeverPromptList(origin);
   LogComposeProactiveNudgeCtr(ComposeProactiveNudgeCtrEvent::kUserDisabledSite);
-  client_->getPageUkmTracker()->ProactiveNudgeDisabledForSite();
+  client_->GetPageUkmTracker()->ProactiveNudgeDisabledForSite();
 }
 
 void ComposeManagerImpl::DisableCompose() {
   client_->DisableProactiveNudge();
   LogComposeProactiveNudgeCtr(
       ComposeProactiveNudgeCtrEvent::kUserDisabledProactiveNudge);
-  client_->getPageUkmTracker()->ProactiveNudgeDisabledGlobally();
+  client_->GetPageUkmTracker()->ProactiveNudgeDisabledGlobally();
 }
 
 void ComposeManagerImpl::GoToSettings() {

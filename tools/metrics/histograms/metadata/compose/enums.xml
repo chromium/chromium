@@ -182,7 +182,10 @@ chromium-metrics-reviews@google.com.
   <int value="20"
       label="Proactive nudge disabled for unset optimization guide"/>
   <int value="21" label="Proactive nudge disabled randomly"/>
-  <int value="22" label="Practive nudge disabled by MSBB"/>
+  <int value="22" label="Proactive nudge disabled by MSBB"/>
+  <int value="23" label="Practive nudge blocked by Segmentation Platform"/>
+  <int value="24"
+      label="Proactive nudge blocked for invalid Segmentation Platform"/>
 </enum>
 
 <enum name="OpenComposeDialogResult">

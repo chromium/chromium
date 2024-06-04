@@ -825,6 +825,90 @@ TEST_F(ChromeComposeClientTest, TestProactiveNudgeEngagementIsRecorded) {
                                    kAcceptedComposeSuggestion)));
 }
 
+TEST_F(ChromeComposeClientTest,
+       TestShouldTriggerProactiveNudgeBlockedBySegmentation) {
+  // Enable and trigger the proactive nudge.
+  compose::Config& config = compose::GetMutableConfigForTesting();
+  config.proactive_nudge_enabled = true;
+  config.proactive_nudge_show_probability = 1.0;
+  config.proactive_nudge_delay = base::Microseconds(1);
+  config.proactive_nudge_segmentation = true;
+
+  autofill::FormData form_data;
+  form_data.url = web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL();
+  form_data.fields = {autofill::test::CreateTestFormField(
+      "label0", "name0", "value0", autofill::FormControlType::kTextArea)};
+
+  autofill::FormFieldData selected_field_data = form_data.fields[0];
+  selected_field_data.set_origin(
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
+
+  ON_CALL(GetSegmentationPlatformService(), GetClassificationResult(_, _, _, _))
+      .WillByDefault(testing::WithArg<3>(testing::Invoke(
+          [](segmentation_platform::ClassificationResultCallback callback) {
+            auto result = segmentation_platform::ClassificationResult(
+                segmentation_platform::PredictionStatus::kSucceeded);
+            result.request_id = kTrainingRequestId;
+            result.ordered_labels = {
+                segmentation_platform::kComposePrmotionLabelDontShow};
+            std::move(callback).Run(result);
+          })));
+
+  // The initial trigger request comes from a text field change.
+  EXPECT_FALSE(client().ShouldTriggerPopup(
+      form_data, selected_field_data,
+      autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange));
+
+  // All remaining popup trigger requests come from the delayed nudge.
+  const autofill::AutofillSuggestionTriggerSource trigger_source =
+      autofill::AutofillSuggestionTriggerSource::kComposeDelayedProactiveNudge;
+
+  // Check that the nudge is eventually blocked by segmentation platform.
+  while (histograms().GetBucketCount(
+             compose::kComposeProactiveNudgeShowStatus,
+             compose::ComposeShowStatus::
+                 kProactiveNudgeBlockedBySegmentationPlatform) == 0) {
+    ASSERT_FALSE(client().ShouldTriggerPopup(form_data, selected_field_data,
+                                             trigger_source));
+    task_environment()->RunUntilIdle();
+  }
+
+  // Commit metrics on page navigation.
+  NavigateAndCommitActiveTab(GURL("about:blank"));
+
+  // Check that the proactive nudge UKM was still captured.
+  auto ukm_entries = ukm_recorder().GetEntries(
+      ukm::builders::Compose_PageEvents::kEntryName,
+      {ukm::builders::Compose_PageEvents::kMenuItemShownName,
+       ukm::builders::Compose_PageEvents::kComposeTextInsertedName,
+       ukm::builders::Compose_PageEvents::kProactiveNudgeShouldShowName,
+       ukm::builders::Compose_PageEvents::kProactiveNudgeShownName});
+
+  ASSERT_EQ(ukm_entries.size(), 1UL);
+
+  EXPECT_THAT(
+      ukm_entries[0].metrics,
+      testing::UnorderedElementsAre(
+          testing::Pair(ukm::builders::Compose_PageEvents::kMenuItemShownName,
+                        0),
+          testing::Pair(
+              ukm::builders::Compose_PageEvents::kComposeTextInsertedName, 0),
+
+          testing::Pair(
+              ukm::builders::Compose_PageEvents::kProactiveNudgeShouldShowName,
+              1),
+          testing::Pair(
+              ukm::builders::Compose_PageEvents::kProactiveNudgeShownName, 0)));
+
+  // Check that even after a second call only one show status UMA was recorded.
+  EXPECT_FALSE(client().ShouldTriggerPopup(form_data, selected_field_data,
+                                           trigger_source));
+  histograms().ExpectBucketCount(
+      compose::kComposeProactiveNudgeShowStatus,
+      compose::ComposeShowStatus::kProactiveNudgeBlockedBySegmentationPlatform,
+      1);
+}
+
 TEST_F(ChromeComposeClientTest, TestShouldTriggerProactiveNudgeDisabledUKM) {
   autofill::FormData form_data;
   form_data.url = web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL();
