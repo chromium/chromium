@@ -1950,6 +1950,7 @@ void RenderProcessHostImpl::BindFileBackedBlobFactory(
 
 void RenderProcessHostImpl::GetSandboxedFileSystemForBucket(
     const storage::BucketLocator& bucket,
+    const std::vector<std::string>& directory_path_components,
     blink::mojom::FileSystemAccessManager::GetSandboxedFileSystemCallback
         callback) {
   auto* manager = storage_partition_impl_->GetFileSystemAccessManager();
@@ -1961,7 +1962,7 @@ void RenderProcessHostImpl::GetSandboxedFileSystemForBucket(
           // This URL will be used for SafeBrowsing checks and for
           // the Quarantine Service.
           bucket.storage_key.origin().GetURL(), GetID()),
-      bucket, std::move(callback));
+      bucket, directory_path_components, std::move(callback));
 }
 
 void RenderProcessHostImpl::BindRestrictedCookieManagerForServiceWorker(

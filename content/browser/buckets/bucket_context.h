@@ -42,9 +42,11 @@ class CONTENT_EXPORT BucketContext {
       const storage::BucketInfo& bucket,
       mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) = 0;
 
-  // Returns an OPFS file system associated with `bucket`.
+  // Returns an OPFS file system associated with `bucket`. An empty
+  // `directory_path_components` means that the root directory will be returned.
   virtual void GetSandboxedFileSystemForBucket(
       const storage::BucketInfo& bucket,
+      const std::vector<std::string>& directory_path_components,
       blink::mojom::FileSystemAccessManager::GetSandboxedFileSystemCallback
           callback) = 0;
 

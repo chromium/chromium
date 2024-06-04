@@ -62,6 +62,9 @@ class BucketHost : public blink::mojom::BucketHost {
   void GetCaches(
       mojo::PendingReceiver<blink::mojom::CacheStorage> caches) override;
   void GetDirectory(GetDirectoryCallback callback) override;
+  void GetDirectoryForDevtools(
+      const std::vector<std::string>& directory_path_components,
+      GetDirectoryCallback callback) override;
 
   const storage::BucketId bucket_id() { return bucket_id_; }
 

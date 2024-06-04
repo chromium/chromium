@@ -54,8 +54,10 @@ class StorageBucket final : public ScriptWrappable,
   ScriptPromise<FileSystemDirectoryHandle> getDirectory(ScriptState*,
                                                         ExceptionState&);
 
+  // An empty `directory_path_components` array will retrieve the root.
   void GetDirectoryForDevTools(
       ExecutionContext* context,
+      Vector<String> directory_path_components,
       base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr,
                               FileSystemDirectoryHandle*)> callback);
 
@@ -86,6 +88,7 @@ class StorageBucket final : public ScriptWrappable,
       ScriptPromiseResolver<FileSystemDirectoryHandle>* resolver);
   void GetSandboxedFileSystemForDevtools(
       ExecutionContext* context,
+      const Vector<String>& directory_path_components,
       base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr,
                               FileSystemDirectoryHandle*)> callback,
       mojom::blink::FileSystemAccessErrorPtr result);

@@ -110,6 +110,7 @@ class BucketManagerHostTest : public testing::Test {
 
     void GetSandboxedFileSystemForBucket(
         const storage::BucketInfo& bucket,
+        const std::vector<std::string>& directory_path_components,
         blink::mojom::FileSystemAccessManager::GetSandboxedFileSystemCallback
             callback) override {
       std::move(callback).Run(file_system_access_error::Ok(), {});

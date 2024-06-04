@@ -107,7 +107,8 @@ void StorageAccessHandle::GetDirectory(GetDirectoryCallback callback) {
                   render_frame_host().GetStorageKey().origin()),
               render_frame_host().GetLastCommittedURL(),
               render_frame_host().GetGlobalId()),
-          /*bucket=*/std::nullopt, std::move(callback));
+          /*bucket=*/std::nullopt,
+          /*directory_path_components=*/{}, std::move(callback));
 }
 
 void StorageAccessHandle::Estimate(EstimateCallback callback) {

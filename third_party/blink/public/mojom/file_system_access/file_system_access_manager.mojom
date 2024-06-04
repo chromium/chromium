@@ -97,16 +97,31 @@ struct FilePickerOptions {
 // tell what operations are being done by which document or worker.
 interface FileSystemAccessManager {
   // Opens the sandboxed filesystem for the origin of the current document or worker.
-  // TODO(https://crbug.com/1327821): Replace this with expected<T, E> if/when
+  // TODO(https://crbug.com/40841428): Replace this with expected<T, E> if/when
   // it becomes available for mojom.
   GetSandboxedFileSystem() =>
+      (FileSystemAccessError result,
+       pending_remote<FileSystemAccessDirectoryHandle>? directory);
+
+  // Opens the sandboxed filesystem for the origin of the current document
+  // or worker. An empty `directory_path_components` array will return the
+  // root directory.
+  // Note: This method is equivalent to the `GetSandboxedFileSystem` method
+  // but allows DevTools to pass a path (avoiding multiple roundtrips).
+  // The `GetSandboxedFileSystem` method requires starting at the root and
+  // iterating through directories using additional calls.
+  // TODO(https://crbug.com/40841428): Replace this with expected<T, E>
+  // if/when it becomes available for mojom.
+  GetSandboxedFileSystemForDevtools(
+    array<string> directory_path_components
+    ) =>
       (FileSystemAccessError result,
        pending_remote<FileSystemAccessDirectoryHandle>? directory);
 
   // Prompts the user to select a file from the local filesystem. Returns an
   // error code if something failed, or a list of the selected entries on
   // success.
-  // TODO(https://crbug.com/1327821): Replace this with expected<T, E> if/when
+  // TODO(https://crbug.com/40841428): Replace this with expected<T, E> if/when
   // it becomes available for mojom.
   ChooseEntries(FilePickerOptions options) =>
       (FileSystemAccessError result,
@@ -139,7 +154,7 @@ interface FileSystemAccessManager {
   // synchronously while handling the drop event (i.e. as a direct result of
   // some user interaction, and at the time of the interaction).
   // Returns an error code if something failed, or a valid entry on success.
-  // TODO(https://crbug.com/1327821): Replace this with expected<T, E> if/when
+  // TODO(https://crbug.com/40841428): Replace this with expected<T, E> if/when
   // it becomes available for mojom.
   GetEntryFromDataTransferToken(
     pending_remote<FileSystemAccessDataTransferToken> token

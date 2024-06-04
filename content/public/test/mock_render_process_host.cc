@@ -555,6 +555,7 @@ void MockRenderProcessHost::BindIndexedDB(
 
 void MockRenderProcessHost::GetSandboxedFileSystemForBucket(
     const storage::BucketLocator& bucket,
+    const std::vector<std::string>& directory_path_components,
     blink::mojom::FileSystemAccessManager::GetSandboxedFileSystemCallback
         callback) {
   std::move(callback).Run(file_system_access_error::Ok(), {});

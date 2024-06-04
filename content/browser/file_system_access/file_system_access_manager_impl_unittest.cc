@@ -495,6 +495,7 @@ TEST_F(FileSystemAccessManagerImplTest, GetSandboxedFileSystem_CustomBucket) {
       mojo::PendingRemote<blink::mojom::FileSystemAccessDirectoryHandle>>
       handle_future;
   manager_->GetSandboxedFileSystem(binding_context, bucket.ToBucketLocator(),
+                                   /*directory_path_components=*/{},
                                    handle_future.GetCallback());
   EXPECT_EQ(handle_future.Get<0>()->status,
             blink::mojom::FileSystemAccessStatus::kOk);
@@ -506,6 +507,58 @@ TEST_F(FileSystemAccessManagerImplTest, GetSandboxedFileSystem_CustomBucket) {
   // locator was actually used.
   // TODO(crbug.com/40224463): Ensure the bucket override is actually used.
   ASSERT_TRUE(root);
+
+  base::test::TestFuture<
+      blink::mojom::FileSystemAccessErrorPtr,
+      mojo::PendingRemote<blink::mojom::FileSystemAccessDirectoryHandle>>
+      nested_handle_future;
+
+  // Create a directory that we will then retrieve directly from the
+  // `GetSandboxedFileSystem` method.
+  root->GetDirectory("test_directory", true,
+                     nested_handle_future.GetCallback());
+
+  EXPECT_EQ(nested_handle_future.Get<0>()->status,
+            blink::mojom::FileSystemAccessStatus::kOk);
+
+  base::test::TestFuture<
+      blink::mojom::FileSystemAccessErrorPtr,
+      mojo::PendingRemote<blink::mojom::FileSystemAccessDirectoryHandle>>
+      nested_directory_handle_future;
+  // Retrieve the directory from the `GetSandboxedFileSystem` method.
+  manager_->GetSandboxedFileSystem(
+      binding_context, bucket.ToBucketLocator(), {"test_directory"},
+      nested_directory_handle_future.GetCallback());
+
+  EXPECT_EQ(nested_directory_handle_future.Get<0>()->status,
+            blink::mojom::FileSystemAccessStatus::kOk);
+}
+
+TEST_F(FileSystemAccessManagerImplTest,
+       GetSandboxedFileSystem_CustomBucketInvalidPath) {
+  mojo::PendingRemote<blink::mojom::FileSystemAccessDirectoryHandle>
+      directory_remote;
+  FileSystemAccessManagerImpl::BindingContext binding_context = {
+      kTestStorageKey, kTestURL,
+      web_contents_->GetPrimaryMainFrame()->GetGlobalId()};
+  base::test::TestFuture<storage::QuotaErrorOr<storage::BucketInfo>>
+      bucket_future;
+  quota_manager_proxy_->CreateBucketForTesting(
+      kTestStorageKey, "custom_bucket", blink::mojom::StorageType::kTemporary,
+      base::SequencedTaskRunner::GetCurrentDefault(),
+      bucket_future.GetCallback());
+  ASSERT_OK_AND_ASSIGN(auto bucket, bucket_future.Take());
+
+  base::test::TestFuture<
+      blink::mojom::FileSystemAccessErrorPtr,
+      mojo::PendingRemote<blink::mojom::FileSystemAccessDirectoryHandle>>
+      handle_future;
+  manager_->GetSandboxedFileSystem(
+      binding_context, bucket.ToBucketLocator(),
+      /*directory_path_components=*/{"invalid_path"},
+      handle_future.GetCallback());
+  EXPECT_EQ(handle_future.Get<0>()->status,
+            blink::mojom::FileSystemAccessStatus::kFileError);
 }
 
 TEST_F(FileSystemAccessManagerImplTest, GetSandboxedFileSystem_BadBucket) {
@@ -523,6 +576,7 @@ TEST_F(FileSystemAccessManagerImplTest, GetSandboxedFileSystem_BadBucket) {
       mojo::PendingRemote<blink::mojom::FileSystemAccessDirectoryHandle>>
       handle_future;
   manager_->GetSandboxedFileSystem(binding_context, bucket,
+                                   /*directory_path_components=*/{},
                                    handle_future.GetCallback());
   EXPECT_EQ(blink::mojom::FileSystemAccessStatus::kFileError,
             handle_future.Get<0>()->status);

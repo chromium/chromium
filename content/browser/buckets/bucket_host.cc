@@ -195,8 +195,20 @@ void BucketHost::GetDirectory(GetDirectoryCallback callback) {
     return;
   }
 
-  bucket_context->GetSandboxedFileSystemForBucket(bucket_info_,
-                                                  std::move(callback));
+  bucket_context->GetSandboxedFileSystemForBucket(
+      bucket_info_, /*directory_path_components=*/{}, std::move(callback));
+}
+
+void BucketHost::GetDirectoryForDevtools(
+    const std::vector<std::string>& directory_path_components,
+    GetDirectoryCallback callback) {
+  auto bucket_context = receivers_.current_context();
+  if (!bucket_context) {
+    return;
+  }
+
+  bucket_context->GetSandboxedFileSystemForBucket(
+      bucket_info_, directory_path_components, std::move(callback));
 }
 
 void BucketHost::GetLockManager(

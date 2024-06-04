@@ -694,6 +694,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // `bucket_locator`.
   void GetSandboxedFileSystemForBucket(
       const storage::BucketLocator& bucket_locator,
+      const std::vector<std::string>& directory_path_components,
       blink::mojom::FileSystemAccessManager::GetSandboxedFileSystemCallback
           callback) override;
 

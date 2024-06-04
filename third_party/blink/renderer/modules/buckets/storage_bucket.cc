@@ -206,12 +206,14 @@ ScriptPromise<FileSystemDirectoryHandle> StorageBucket::getDirectory(
 
 void StorageBucket::GetDirectoryForDevTools(
     ExecutionContext* context,
+    Vector<String> directory_path_components,
     base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr,
                             FileSystemDirectoryHandle*)> callback) {
   StorageManagerFileSystemAccess::CheckStorageAccessIsAllowed(
-      context, WTF::BindOnce(&StorageBucket::GetSandboxedFileSystemForDevtools,
-                             WrapWeakPersistent(this),
-                             WrapWeakPersistent(context), std::move(callback)));
+      context,
+      WTF::BindOnce(&StorageBucket::GetSandboxedFileSystemForDevtools,
+                    WrapWeakPersistent(this), WrapWeakPersistent(context),
+                    std::move(directory_path_components), std::move(callback)));
 }
 
 void StorageBucket::Trace(Visitor* visitor) const {
@@ -332,6 +334,7 @@ void StorageBucket::GetSandboxedFileSystem(
 
 void StorageBucket::GetSandboxedFileSystemForDevtools(
     ExecutionContext* context,
+    const Vector<String>& directory_path_components,
     base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr,
                             FileSystemDirectoryHandle*)> callback,
     mojom::blink::FileSystemAccessErrorPtr result) {
@@ -344,12 +347,15 @@ void StorageBucket::GetSandboxedFileSystemForDevtools(
     std::move(callback).Run(
         mojom::blink::FileSystemAccessError::New(
             mojom::blink::FileSystemAccessStatus::kInvalidState,
-            base::File::Error::FILE_ERROR_FAILED, "Invalid state Error."), nullptr);
+            base::File::Error::FILE_ERROR_FAILED, "Invalid state Error."),
+        nullptr);
     return;
   }
 
-  remote_->GetDirectory(WTF::BindOnce(
-      &StorageManagerFileSystemAccess::DidGetSandboxedFileSystemForDevtools,
-      WrapWeakPersistent(context), std::move(callback)));
+  remote_->GetDirectoryForDevtools(
+      directory_path_components,
+      WTF::BindOnce(
+          &StorageManagerFileSystemAccess::DidGetSandboxedFileSystemForDevtools,
+          WrapWeakPersistent(context), std::move(callback)));
 }
 }  // namespace blink

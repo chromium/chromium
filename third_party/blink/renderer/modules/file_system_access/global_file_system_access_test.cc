@@ -62,6 +62,10 @@ class MockFileSystemAccessManager
   void GetSandboxedFileSystem(
       GetSandboxedFileSystemCallback callback) override {}
 
+  void GetSandboxedFileSystemForDevtools(
+      const Vector<String>& directory_path_components,
+      GetSandboxedFileSystemCallback callback) override {}
+
   void ChooseEntries(mojom::blink::FilePickerOptionsPtr options,
                      ChooseEntriesCallback callback) override {
     if (choose_entries_response_callback_) {

@@ -107,13 +107,15 @@ class SharedWorkerHost::ScopedProcessHostRef {
  public:
   explicit ScopedProcessHostRef(RenderProcessHost* render_process_host)
       : render_process_host_(render_process_host) {
-    if (!render_process_host_->AreRefCountsDisabled())
+    if (!render_process_host_->AreRefCountsDisabled()) {
       render_process_host_->IncrementWorkerRefCount();
+    }
   }
 
   ~ScopedProcessHostRef() {
-    if (!render_process_host_->AreRefCountsDisabled())
+    if (!render_process_host_->AreRefCountsDisabled()) {
       render_process_host_->DecrementWorkerRefCount();
+    }
   }
 
   ScopedProcessHostRef(const ScopedProcessHostRef& other) = delete;
@@ -168,8 +170,9 @@ SharedWorkerHost::~SharedWorkerHost() {
     }
   } else {
     // Tell clients that this worker failed to start.
-    for (const ClientInfo& info : clients_)
+    for (const ClientInfo& info : clients_) {
       info.client->OnScriptLoadFailed(/*error_message=*/"");
+    }
   }
 
   if (site_instance_->HasProcess()) {
@@ -471,9 +474,10 @@ void SharedWorkerHost::BindCacheStorageInternal(
 
 void SharedWorkerHost::GetSandboxedFileSystemForBucket(
     const storage::BucketInfo& bucket,
+    const std::vector<std::string>& directory_path_components,
     blink::mojom::BucketHost::GetDirectoryCallback callback) {
-  GetProcessHost()->GetSandboxedFileSystemForBucket(bucket.ToBucketLocator(),
-                                                    std::move(callback));
+  GetProcessHost()->GetSandboxedFileSystemForBucket(
+      bucket.ToBucketLocator(), directory_path_components, std::move(callback));
 }
 
 GlobalRenderFrameHostId SharedWorkerHost::GetAssociatedRenderFrameHostId()
@@ -639,8 +643,9 @@ SharedWorkerHost::ClientInfo::~ClientInfo() {}
 
 void SharedWorkerHost::OnConnected(int connection_request_id) {
   for (const ClientInfo& info : clients_) {
-    if (info.connection_request_id != connection_request_id)
+    if (info.connection_request_id != connection_request_id) {
       continue;
+    }
     info.client->OnConnected(std::vector<blink::mojom::WebFeature>(
         used_features_.begin(), used_features_.end()));
     return;
@@ -664,8 +669,9 @@ void SharedWorkerHost::OnReadyForInspection(
 }
 
 void SharedWorkerHost::OnScriptLoadFailed(const std::string& error_message) {
-  for (const ClientInfo& info : clients_)
+  for (const ClientInfo& info : clients_) {
     info.client->OnScriptLoadFailed(error_message);
+  }
 }
 
 // [spec]:
@@ -696,10 +702,12 @@ bool SharedWorkerHost::CheckCrossOriginEmbedderPolicy(
 void SharedWorkerHost::OnFeatureUsed(blink::mojom::WebFeature feature) {
   // Avoid reporting a feature more than once, and enable any new clients to
   // observe features that were historically used.
-  if (!used_features_.insert(feature).second)
+  if (!used_features_.insert(feature).second) {
     return;
-  for (const ClientInfo& info : clients_)
+  }
+  for (const ClientInfo& info : clients_) {
     info.client->OnFeatureUsed(feature);
+  }
 }
 
 void SharedWorkerHost::RenderProcessHostDestroyed(RenderProcessHost* host) {
@@ -714,8 +722,9 @@ std::vector<GlobalRenderFrameHostId>
 SharedWorkerHost::GetRenderFrameIDsForWorker() {
   std::vector<GlobalRenderFrameHostId> result;
   result.reserve(clients_.size());
-  for (const ClientInfo& info : clients_)
+  for (const ClientInfo& info : clients_) {
     result.push_back(info.render_frame_host_id);
+  }
   return result;
 }
 
@@ -874,8 +883,9 @@ void SharedWorkerHost::OnClientConnectionLost() {
     }
   }
   // If there are no clients left, then it's cleanup time.
-  if (clients_.empty())
+  if (clients_.empty()) {
     Destruct();
+  }
 }
 
 void SharedWorkerHost::OnWorkerConnectionLost() {

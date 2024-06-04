@@ -125,10 +125,14 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
   void GetSandboxedFileSystem(
       const BindingContext& binding_context,
       const std::optional<storage::BucketLocator>& bucket,
+      const std::vector<std::string>& directory_path_components,
       GetSandboxedFileSystemCallback callback);
 
   // blink::mojom::FileSystemAccessManager:
   void GetSandboxedFileSystem(GetSandboxedFileSystemCallback callback) override;
+  void GetSandboxedFileSystemForDevtools(
+      const std::vector<std::string>& directory_path_components,
+      GetSandboxedFileSystemCallback callback) override;
   void ChooseEntries(blink::mojom::FilePickerOptionsPtr options,
                      ChooseEntriesCallback callback) override;
   void GetFileHandleFromToken(
@@ -471,11 +475,18 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
                                    base::FilePath default_directory,
                                    ChooseEntriesCallback callback,
                                    bool default_directory_exists);
-  void DidOpenSandboxedFileSystem(const BindingContext& binding_context,
-                                  GetSandboxedFileSystemCallback callback,
-                                  const storage::FileSystemURL& root,
-                                  const std::string& filesystem_name,
-                                  base::File::Error result);
+  void DidOpenSandboxedFileSystem(
+      const BindingContext& binding_context,
+      GetSandboxedFileSystemCallback callback,
+      const storage::FileSystemURL& root,
+      const std::string& filesystem_name,
+      base::File::Error result,
+      const std::vector<std::string>& directory_path_components);
+  void DidResolveUrlAfterOpeningSandboxedFileSystem(
+      const BindingContext& binding_context,
+      GetSandboxedFileSystemCallback callback,
+      const storage::FileSystemURL& url,
+      base::File::Error result);
 
   void DidChooseEntries(const BindingContext& binding_context,
                         const FileSystemChooser::Options& options,

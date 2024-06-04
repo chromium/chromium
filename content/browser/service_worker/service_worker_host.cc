@@ -99,12 +99,14 @@ void ServiceWorkerHost::BindCacheStorage(
 
 void ServiceWorkerHost::GetSandboxedFileSystemForBucket(
     const storage::BucketInfo& bucket,
+    const std::vector<std::string>& directory_path_components,
     blink::mojom::FileSystemAccessManager::GetSandboxedFileSystemCallback
         callback) {
   auto* process =
       RenderProcessHost::FromID(version_->embedded_worker()->process_id());
   if (process) {
     process->GetSandboxedFileSystemForBucket(bucket.ToBucketLocator(),
+                                             directory_path_components,
                                              std::move(callback));
   } else {
     std::move(callback).Run(
@@ -163,8 +165,9 @@ StoragePartition* ServiceWorkerHost::GetStoragePartition() const {
   // we are about to stop the service worker.
   auto* process =
       RenderProcessHost::FromID(version_->embedded_worker()->process_id());
-  if (process == nullptr)
+  if (process == nullptr) {
     return nullptr;
+  }
 
   return process->GetStoragePartition();
 }
@@ -251,8 +254,9 @@ blink::mojom::PermissionStatus ServiceWorkerHost::GetPermissionStatus(
     blink::PermissionType permission_type) {
   auto* process =
       RenderProcessHost::FromID(version_->embedded_worker()->process_id());
-  if (!process)
+  if (!process) {
     return blink::mojom::PermissionStatus::DENIED;
+  }
 
   return process->GetBrowserContext()
       ->GetPermissionController()
