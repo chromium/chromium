@@ -62,12 +62,16 @@ def GetClangFormatPath():
     buildtools_platform_dir = os.path.join(root_src_dir, 'buildtools', platform)
     new_buildtools_platform_dir = os.path.join(
         root_src_dir, 'buildtools', platform + new_path_platform_suffix)
-    # TODO(b/328065301): Remove old_path once clang hooks are migrated
-    old_path = os.path.join(
-        buildtools_platform_dir, 'clang-format' + exe_suffix)
-    new_path = os.path.join(
-        new_buildtools_platform_dir, 'format', 'clang-format' + exe_suffix)
-    for path in [new_path, old_path]:
+    # TODO(b/328065301): Remove old paths once clang hooks are migrated
+    possible_paths = [
+     os.path.join(
+        buildtools_platform_dir, 'clang-format' + exe_suffix),
+     os.path.join(
+        new_buildtools_platform_dir, 'format', 'clang-format' + exe_suffix),
+     os.path.join(
+        f'{new_buildtools_platform_dir}-format', 'clang-format' + exe_suffix),
+    ]
+    for path in possible_paths:
       if os.path.isfile(path):
         return path
 

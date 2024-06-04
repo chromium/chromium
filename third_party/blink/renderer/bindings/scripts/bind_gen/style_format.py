@@ -49,14 +49,19 @@ def init(root_src_dir, enable_style_format=True):
     new_buildtools_platform_dir = os.path.join(
         root_src_dir, "buildtools", platform + new_path_platform_suffix)
 
-    # TODO(b/328065301): Remove old_path once clang hooks are migrated
+    # TODO(b/328065301): Remove old paths once clang hooks are migrated
     # //buildtools/<platform>/clang-format
-    old_path = os.path.join(buildtools_platform_dir,
-                            "clang-format{}".format(exe_suffix))
-    # //buildtools/<platform>/format/clang-format
-    new_path = os.path.join(new_buildtools_platform_dir, "format",
-                            "clang-format{}".format(exe_suffix))
-    for path in [new_path, old_path]:
+    possible_paths = [
+        os.path.join(buildtools_platform_dir,
+                     "clang-format{}".format(exe_suffix)),
+        # //buildtools/<platform>/format/clang-format
+        os.path.join(new_buildtools_platform_dir, "format",
+                     "clang-format{}".format(exe_suffix)),
+        # //buildtools/<platform>-format/clang-format
+        os.path.join(f"{new_buildtools_platform_dir}-format",
+                     "clang-format{}".format(exe_suffix)),
+    ]
+    for path in possible_paths:
         if os.path.isfile(path):
             _clang_format_command_path = path
 
