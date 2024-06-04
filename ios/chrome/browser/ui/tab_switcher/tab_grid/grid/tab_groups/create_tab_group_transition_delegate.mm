@@ -69,7 +69,7 @@ UIView* ViewWithTag(NSInteger tag, UIView* superview) {
       blurEffectView.frame = backgroundView.bounds;
       blurEffectView.autoresizingMask =
           UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-      backgroundView.backgroundColor = [[UIColor colorNamed:kSolidBlackColor]
+      backgroundView.backgroundColor = [[UIColor colorNamed:kGrey200Color]
           colorWithAlphaComponent:kBackgroundAlpha];
       [backgroundView addSubview:blurEffectView];
     } else {
@@ -100,8 +100,7 @@ UIView* ViewWithTag(NSInteger tag, UIView* superview) {
                         options:UIViewAnimationCurveEaseOut
                      animations:^{
                        UIBlurEffect* blurEffect = [UIBlurEffect
-                           effectWithStyle:
-                               UIBlurEffectStyleSystemUltraThinMaterial];
+                           effectWithStyle:UIBlurEffectStyleSystemMaterial];
                        blurEffectView.effect = blurEffect;
                        backgroundView.alpha = 1;
                      }
