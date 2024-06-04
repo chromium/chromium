@@ -118,6 +118,10 @@ tast_disabled_tests_from_chrome_all = [
   "arc.IntentForward.lacros",
   "login.Chrome.lacros",
 
+  # b/344945274
+  "nacl.Pnacl.lacros@jacuzzi",
+  "nacl.Pnacl.lacros@volteer",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
