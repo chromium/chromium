@@ -8,8 +8,10 @@
 #include <memory>
 #include <optional>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/timer/wall_clock_timer.h"
 #include "chrome/browser/ash/policy/skyvault/local_user_files_policy_observer.h"
 #include "chrome/browser/ash/policy/skyvault/migration_notification_manager.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -46,17 +48,34 @@ class LocalFilesMigrationManager : public LocalUserFilesPolicyObserver {
   bool ShouldStart();
 
   // Initiates the file migration to the cloud if conditions are met.
-  void MaybeMigrateFiles(base::OnceCallback<void()> callback);
+  void MaybeMigrateFiles(base::OnceClosure callback);
+
+  void StartMigration(base::OnceClosure callback);
 
   // Handles the completion of the migration process (success or failure).
   void OnMigrationDone();
 
-  std::unique_ptr<MigrationNotificationManager> notification_manager_;
+  // Observers for migration events.
   base::ObserverList<Observer>::Unchecked observers_;
-  bool in_progress_ = false;  // Indicates if migration is currently running.
-  std::optional<std::string> error_;  // Stores migration error, if any.
+
+  // Indicates if migration is currently running.
+  bool in_progress_ = false;
+
+  // Whether local user files are allowed by policy.
   bool local_user_files_allowed_ = true;
+
+  // Whether migration is enabled by policy.
   bool local_user_files_migration_enabled_ = false;
+
+  // Stores any error that occurred during migration.
+  std::optional<std::string> error_;
+
+  // Shows and manages migration notifications and dialogs.
+  std::unique_ptr<MigrationNotificationManager> notification_manager_;
+
+  // Timer for delaying the start of migration.
+  std::unique_ptr<base::WallClockTimer> start_delay_timer_;
+
   PrefChangeRegistrar pref_change_registrar_;
 
   base::WeakPtrFactory<LocalFilesMigrationManager> weak_factory_{this};

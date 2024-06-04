@@ -13,8 +13,11 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/time/time.h"
+#include "base/timer/wall_clock_timer.h"
 #include "chrome/browser/ash/policy/skyvault/local_user_files_policy_observer.h"
 #include "chrome/browser/ash/policy/skyvault/migration_notification_manager.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
@@ -28,8 +31,16 @@
 
 namespace policy::local_user_files {
 
+namespace {
+
+// Delay the migration for 24 hours.
+const base::TimeDelta kMigrationTimeout = base::Hours(24);
+
+}  // namespace
+
 LocalFilesMigrationManager::LocalFilesMigrationManager()
-    : notification_manager_(std::make_unique<MigrationNotificationManager>()) {
+    : notification_manager_(std::make_unique<MigrationNotificationManager>()),
+      start_delay_timer_(std::make_unique<base::WallClockTimer>()) {
   pref_change_registrar_.Init(g_browser_process->local_state());
   pref_change_registrar_.Add(
       prefs::kLocalUserFilesMigrationEnabled,
@@ -53,9 +64,6 @@ void LocalFilesMigrationManager::RemoveObserver(Observer* observer) {
 }
 
 void LocalFilesMigrationManager::OnLocalUserFilesPolicyChanged() {
-  // TODO(aidazolic): Do not start migration immediately. When local files are
-  // disabled, notify the user and trigger migration either 24 hours later or
-  // upon the next system reboot.
   bool local_user_files_allowed = LocalUserFilesAllowed();
   bool local_user_files_migration_enabled =
       g_browser_process->local_state()->GetBoolean(
@@ -109,11 +117,18 @@ bool LocalFilesMigrationManager::ShouldStart() {
   return true;
 }
 
-void LocalFilesMigrationManager::MaybeMigrateFiles(
-    base::OnceCallback<void()> callback) {
+void LocalFilesMigrationManager::MaybeMigrateFiles(base::OnceClosure callback) {
   if (!ShouldStart()) {
     return;
   }
+  // TODO(aidazolic): Show the dialog.
+  start_delay_timer_->Start(
+      FROM_HERE, base::Time::Now() + kMigrationTimeout,
+      base::BindOnce(&LocalFilesMigrationManager::StartMigration,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void LocalFilesMigrationManager::StartMigration(base::OnceClosure callback) {
   in_progress_ = true;
   notification_manager_->ShowMigrationProgressNotification();
   // TODO(aidazolic): Upload everything under My files.

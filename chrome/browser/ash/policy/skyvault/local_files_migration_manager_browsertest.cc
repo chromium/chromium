@@ -7,6 +7,8 @@
 #include <memory>
 
 #include "base/test/scoped_feature_list.h"
+#include "base/test/scoped_mock_time_message_loop_task_runner.h"
+#include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_dir_util.h"
 #include "chrome/browser/policy/policy_test_utils.h"
@@ -78,6 +80,7 @@ class LocalFilesMigrationManagerLocationTest
 
 IN_PROC_BROWSER_TEST_P(LocalFilesMigrationManagerLocationTest,
                        MigrationNotifiesObservers) {
+  base::ScopedMockTimeMessageLoopTaskRunner task_runner;
   MockMigrationObserver observer;
   EXPECT_CALL(observer, OnMigrationSucceeded).Times(1);
   LocalFilesMigrationManager manager;
@@ -86,9 +89,10 @@ IN_PROC_BROWSER_TEST_P(LocalFilesMigrationManagerLocationTest,
   browser()->profile()->GetPrefs()->SetString(prefs::kFilesAppDefaultLocation,
                                               GetParam());
   // Changing the LocalUserFilesAllowed policy should trigger the migration and
-  // update.
+  // update, after the timeout.
   SetMigrationPolicies(/*local_user_files_allowed=*/false,
                        /*local_user_files_migration_enabled=*/true);
+  task_runner->FastForwardBy(base::TimeDelta(base::Hours(24)));
 }
 
 IN_PROC_BROWSER_TEST_P(LocalFilesMigrationManagerLocationTest,
