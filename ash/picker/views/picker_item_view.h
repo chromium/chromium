@@ -6,7 +6,6 @@
 #define ASH_PICKER_VIEWS_PICKER_ITEM_VIEW_H_
 
 #include "ash/ash_export.h"
-#include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
@@ -14,7 +13,6 @@
 
 namespace ash {
 
-class PickerPreviewBubbleController;
 enum class PickerActionType;
 
 // View for a Picker item which can be selected.
@@ -55,13 +53,8 @@ class ASH_EXPORT PickerItemView : public views::Button {
   PickerItemView& operator=(const PickerItemView&) = delete;
   ~PickerItemView() override;
 
-  void SetPreview(PickerPreviewBubbleController* preview_bubble_controller,
-                  base::FilePath file_path);
-
   // views::Button:
   void PaintButtonContents(gfx::Canvas* canvas) override;
-  void OnMouseEntered(const ui::MouseEvent& event) override;
-  void OnMouseExited(const ui::MouseEvent& event) override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
   void SelectItem();
@@ -82,10 +75,6 @@ class ASH_EXPORT PickerItemView : public views::Button {
 
   // Corner radius of the item background and highlight.
   int corner_radius_ = 0;
-
-  // These are only used for file items.
-  raw_ptr<PickerPreviewBubbleController> preview_bubble_controller_;
-  base::FilePath preview_file_path_;
 };
 
 }  // namespace ash

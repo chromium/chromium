@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "ash/picker/model/picker_action_type.h"
 #include "ash/picker/views/picker_item_view.h"
+#include "base/files/file_path.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ui {
@@ -24,6 +25,7 @@ class View;
 namespace ash {
 
 class PickerBadgeView;
+class PickerPreviewBubbleController;
 
 // View for a Picker list item with text or an image as its primary contents.
 // Can optionally have other parts such as a leading icon and secondary text.
@@ -47,6 +49,13 @@ class ASH_EXPORT PickerListItemView : public PickerItemView {
 
   void SetBadgeAction(PickerActionType action);
   void SetBadgeVisible(bool visible);
+
+  void SetPreview(PickerPreviewBubbleController* preview_bubble_controller,
+                  base::FilePath file_path);
+
+  // views::Button:
+  void OnMouseEntered(const ui::MouseEvent& event) override;
+  void OnMouseExited(const ui::MouseEvent& event) override;
 
   const views::View* leading_container_for_testing() const {
     return leading_container_;
@@ -72,6 +81,10 @@ class ASH_EXPORT PickerListItemView : public PickerItemView {
 
   // Contains the item's trailing badge if it has been set.
   raw_ptr<PickerBadgeView> trailing_badge_ = nullptr;
+
+  // These are only used for file items.
+  raw_ptr<PickerPreviewBubbleController> preview_bubble_controller_;
+  base::FilePath preview_file_path_;
 };
 
 }  // namespace ash

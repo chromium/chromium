@@ -12,6 +12,7 @@
 #include "ash/bubble/bubble_utils.h"
 #include "ash/picker/views/picker_badge_view.h"
 #include "ash/picker/views/picker_item_view.h"
+#include "ash/picker/views/picker_preview_bubble_controller.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/style_util.h"
 #include "ash/style/typography.h"
@@ -95,7 +96,11 @@ PickerListItemView::PickerListItemView(SelectItemCallback select_item_callback)
               kPickerSearchResultsListItemElementId);
 }
 
-PickerListItemView::~PickerListItemView() = default;
+PickerListItemView::~PickerListItemView() {
+  if (preview_bubble_controller_ != nullptr) {
+    preview_bubble_controller_->CloseBubble();
+  }
+}
 
 void PickerListItemView::SetPrimaryText(const std::u16string& primary_text) {
   primary_container_->RemoveAllChildViews();
@@ -177,6 +182,29 @@ void PickerListItemView::SetBadgeVisible(bool visible) {
     SetBorder(views::CreateEmptyBorder(kBorderInsetsWithBadge));
   } else {
     SetBorder(views::CreateEmptyBorder(kBorderInsetsWithoutBadge));
+  }
+}
+
+void PickerListItemView::SetPreview(
+    PickerPreviewBubbleController* preview_bubble_controller,
+    base::FilePath file_path) {
+  if (preview_bubble_controller_ != nullptr) {
+    preview_bubble_controller_->CloseBubble();
+  }
+
+  preview_bubble_controller_ = preview_bubble_controller;
+  preview_file_path_ = file_path;
+}
+
+void PickerListItemView::OnMouseEntered(const ui::MouseEvent&) {
+  if (preview_bubble_controller_ != nullptr) {
+    preview_bubble_controller_->ShowBubbleForFile(this, preview_file_path_);
+  }
+}
+
+void PickerListItemView::OnMouseExited(const ui::MouseEvent&) {
+  if (preview_bubble_controller_ != nullptr) {
+    preview_bubble_controller_->CloseBubble();
   }
 }
 

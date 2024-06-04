@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "ash/picker/views/picker_focus_indicator.h"
-#include "ash/picker/views/picker_preview_bubble_controller.h"
 #include "ash/style/style_util.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
@@ -86,22 +85,7 @@ PickerItemView::PickerItemView(SelectItemCallback select_item_callback,
   }
 }
 
-PickerItemView::~PickerItemView() {
-  if (preview_bubble_controller_ != nullptr) {
-    preview_bubble_controller_->CloseBubble();
-  }
-}
-
-void PickerItemView::SetPreview(
-    PickerPreviewBubbleController* preview_bubble_controller,
-    base::FilePath file_path) {
-  if (preview_bubble_controller_ != nullptr) {
-    preview_bubble_controller_->CloseBubble();
-  }
-
-  preview_bubble_controller_ = preview_bubble_controller;
-  preview_file_path_ = file_path;
-}
+PickerItemView::~PickerItemView() = default;
 
 void PickerItemView::PaintButtonContents(gfx::Canvas* canvas) {
   views::Button::PaintButtonContents(canvas);
@@ -117,18 +101,6 @@ void PickerItemView::PaintButtonContents(gfx::Canvas* canvas) {
 
 void PickerItemView::SelectItem() {
   select_item_callback_.Run();
-}
-
-void PickerItemView::OnMouseEntered(const ui::MouseEvent&) {
-  if (preview_bubble_controller_ != nullptr) {
-    preview_bubble_controller_->ShowBubbleForFile(this, preview_file_path_);
-  }
-}
-
-void PickerItemView::OnMouseExited(const ui::MouseEvent&) {
-  if (preview_bubble_controller_ != nullptr) {
-    preview_bubble_controller_->CloseBubble();
-  }
 }
 
 void PickerItemView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
