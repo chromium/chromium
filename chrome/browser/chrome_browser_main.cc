@@ -596,6 +596,7 @@ void StartWatchingForProcessShutdownHangs() {
   // This HangWatcher scope is covering the shutdown phase up to the end of the
   // process. Intentionally leak this instance so that it is not destroyed
   // before process termination.
+  base::HangWatcher::SetShuttingDown();
   auto* watcher = new base::WatchHangsInScope(base::Seconds(30));
   ANNOTATE_LEAKING_OBJECT_PTR(watcher);
   std::ignore = watcher;

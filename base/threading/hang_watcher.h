@@ -193,6 +193,10 @@ class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate {
   //
   static void InvalidateActiveExpectations();
 
+  // Marks the current process as "shutting down". This changes the histograms
+  // emitted every interval for all threads.
+  static void SetShuttingDown();
+
   // Sets up the calling thread to be monitored for threads. Returns a
   // ScopedClosureRunner that unregisters the thread. This closure has to be
   // called from the registered thread before it's joined. Returns a null

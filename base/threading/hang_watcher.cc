@@ -57,16 +57,23 @@ std::atomic<LoggingLevel> g_main_thread_log_level{LoggingLevel::kNone};
 // Indicates whether HangWatcher::Run() should return after the next monitoring.
 std::atomic<bool> g_keep_monitoring{true};
 
+// If true, indicates that this process's shutdown sequence has started. Once
+// flipped to true, cannot be un-flipped.
+std::atomic<bool> g_shutting_down{false};
+
 // Emits the hung thread count histogram. |count| is the number of threads
 // of type |thread_type| that were hung or became hung during the last
 // monitoring window. This function should be invoked for each thread type
 // encountered on each call to Monitor().
-void LogHungThreadCountHistogram(HangWatcher::ThreadType thread_type,
-                                 int count) {
+void LogStatusHistogram(HangWatcher::ThreadType thread_type, int count) {
   // In the case of unique threads like the IO or UI/Main thread a count does
   // not make sense.
   const bool any_thread_hung = count >= 1;
+  const bool shutting_down = g_shutting_down.load(std::memory_order_relaxed);
 
+  // Uses histogram macros instead of functions. This increases binary size
+  // slightly, but runs slightly faster. These histograms are logged pretty
+  // often, so we prefer improving runtime.
   const HangWatcher::ProcessType process_type =
       g_hang_watcher_process_type.load(std::memory_order_relaxed);
   switch (process_type) {
@@ -76,16 +83,26 @@ void LogHungThreadCountHistogram(HangWatcher::ThreadType thread_type,
     case HangWatcher::ProcessType::kBrowserProcess:
       switch (thread_type) {
         case HangWatcher::ThreadType::kIOThread:
-          UMA_HISTOGRAM_BOOLEAN(
-              "HangWatcher.IsThreadHung.BrowserProcess."
-              "IOThread",
-              any_thread_hung);
+          if (shutting_down) {
+            UMA_HISTOGRAM_BOOLEAN(
+                "HangWatcher.IsThreadHung.BrowserProcess.IOThread.Shutdown",
+                any_thread_hung);
+          } else {
+            UMA_HISTOGRAM_BOOLEAN(
+                "HangWatcher.IsThreadHung.BrowserProcess.IOThread.Normal",
+                any_thread_hung);
+          }
           break;
         case HangWatcher::ThreadType::kMainThread:
-          UMA_HISTOGRAM_BOOLEAN(
-              "HangWatcher.IsThreadHung.BrowserProcess."
-              "UIThread",
-              any_thread_hung);
+          if (shutting_down) {
+            UMA_HISTOGRAM_BOOLEAN(
+                "HangWatcher.IsThreadHung.BrowserProcess.UIThread.Shutdown",
+                any_thread_hung);
+          } else {
+            UMA_HISTOGRAM_BOOLEAN(
+                "HangWatcher.IsThreadHung.BrowserProcess.UIThread.Normal",
+                any_thread_hung);
+          }
           break;
         case HangWatcher::ThreadType::kThreadPoolThread:
           // Not recorded for now.
@@ -95,20 +112,20 @@ void LogHungThreadCountHistogram(HangWatcher::ThreadType thread_type,
 
     case HangWatcher::ProcessType::kGPUProcess:
       // Not recorded for now.
+      CHECK(!shutting_down);
       break;
 
     case HangWatcher::ProcessType::kRendererProcess:
+      CHECK(!shutting_down);
       switch (thread_type) {
         case HangWatcher::ThreadType::kIOThread:
           UMA_HISTOGRAM_BOOLEAN(
-              "HangWatcher.IsThreadHung.RendererProcess."
-              "IOThread",
+              "HangWatcher.IsThreadHung.RendererProcess.IOThread",
               any_thread_hung);
           break;
         case HangWatcher::ThreadType::kMainThread:
           UMA_HISTOGRAM_BOOLEAN(
-              "HangWatcher.IsThreadHung.RendererProcess."
-              "MainThread",
+              "HangWatcher.IsThreadHung.RendererProcess.MainThread",
               any_thread_hung);
           break;
         case HangWatcher::ThreadType::kThreadPoolThread:
@@ -118,17 +135,16 @@ void LogHungThreadCountHistogram(HangWatcher::ThreadType thread_type,
       break;
 
     case HangWatcher::ProcessType::kUtilityProcess:
+      CHECK(!shutting_down);
       switch (thread_type) {
         case HangWatcher::ThreadType::kIOThread:
           UMA_HISTOGRAM_BOOLEAN(
-              "HangWatcher.IsThreadHung.UtilityProcess."
-              "IOThread",
+              "HangWatcher.IsThreadHung.UtilityProcess.IOThread",
               any_thread_hung);
           break;
         case HangWatcher::ThreadType::kMainThread:
           UMA_HISTOGRAM_BOOLEAN(
-              "HangWatcher.IsThreadHung.UtilityProcess."
-              "MainThread",
+              "HangWatcher.IsThreadHung.UtilityProcess.MainThread",
               any_thread_hung);
           break;
         case HangWatcher::ThreadType::kThreadPoolThread:
@@ -416,6 +432,7 @@ void HangWatcher::UnitializeOnMainThreadForTesting() {
   g_threadpool_log_level.store(LoggingLevel::kNone, std::memory_order_relaxed);
   g_io_thread_log_level.store(LoggingLevel::kNone, std::memory_order_relaxed);
   g_main_thread_log_level.store(LoggingLevel::kNone, std::memory_order_relaxed);
+  g_shutting_down.store(false, std::memory_order_relaxed);
 }
 
 // static
@@ -461,6 +478,16 @@ void HangWatcher::InvalidateActiveExpectations() {
     return;
   }
   state->SetIgnoreCurrentWatchHangsInScope();
+}
+
+// static
+void HangWatcher::SetShuttingDown() {
+  // memory_order_relaxed offers no memory order guarantees. In rare cases, we
+  // could falsely log to BrowserProcess.Normal instead of
+  // BrowserProcess.Shutdown. This is OK in practice.
+  bool was_shutting_down =
+      g_shutting_down.exchange(true, std::memory_order_relaxed);
+  DCHECK(!was_shutting_down);
 }
 
 HangWatcher::HangWatcher()
@@ -797,7 +824,7 @@ void HangWatcher::WatchStateSnapShot::Init(
     if (hang_count != kInvalidHangCount &&
         ThreadTypeLoggingLevelGreaterOrEqual(thread_type,
                                              LoggingLevel::kUmaOnly)) {
-      LogHungThreadCountHistogram(thread_type, hang_count);
+      LogStatusHistogram(thread_type, hang_count);
     }
   }
 
@@ -918,6 +945,9 @@ void HangWatcher::DoDumpWithoutCrashing(
 
   SCOPED_CRASH_KEY_STRING32("HangWatcher", "seconds-since-last-resume",
                             GetTimeSinceLastSystemPowerResumeCrashKeyValue());
+
+  SCOPED_CRASH_KEY_BOOL("HangWatcher", "shutting-down",
+                        g_shutting_down.load(std::memory_order_relaxed));
 #endif
 
   // To avoid capturing more than one hang that blames a subset of the same

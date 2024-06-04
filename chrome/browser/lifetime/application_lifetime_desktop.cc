@@ -215,6 +215,7 @@ void SessionEnding() {
   if (base::HangWatcher::IsCrashReportingEnabled()) {
     // TODO(crbug.com/40840897): Migrate away from ShutdownWatcher and its old
     // timing.
+    base::HangWatcher::SetShuttingDown();
     constexpr base::TimeDelta kShutdownHangDelay{base::Seconds(30)};
     watch_hangs_scope.emplace(kShutdownHangDelay);
   } else {
