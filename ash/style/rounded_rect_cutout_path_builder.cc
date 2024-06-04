@@ -201,12 +201,12 @@ void AddRoundedCorner(RoundedRectCutoutPathBuilder::Corner corner,
 // corners and `inner_corner_radius` for the interior corner. A line will be
 // drawn to the first conic will be drawn from the location of `builder`.
 // The path will end at the end of the last conic.
-void AddCutoutPaths(RoundedRectCutoutPathBuilder::Corner corner,
-                    SkPathBuilder& builder,
-                    const SkRect& view,
-                    const SkSize& cutout_size,
-                    int outer_corner_radius,
-                    int inner_corner_radius) {
+SkRect AddCutoutPaths(RoundedRectCutoutPathBuilder::Corner corner,
+                      SkPathBuilder& builder,
+                      const SkRect& view,
+                      const SkSize& cutout_size,
+                      int outer_corner_radius,
+                      int inner_corner_radius) {
   // Create rectangles that enclose each of the curves.
   std::array<SkRect, 3> rects = PlaceRects(
       corner, view, cutout_size, outer_corner_radius, inner_corner_radius);
@@ -222,6 +222,13 @@ void AddCutoutPaths(RoundedRectCutoutPathBuilder::Corner corner,
 
   // Draw the other outer corner.
   AddRoundedCorner(corner, rects[2], builder);
+
+  // A rectangle enclosing all the rectangles to conservatively check for
+  // overlap.
+  SkRect union_rect = rects[0];
+  union_rect.join(rects[1]);
+  union_rect.join(rects[2]);
+  return union_rect;
 }
 
 }  // namespace
@@ -255,13 +262,6 @@ RoundedRectCutoutPathBuilder& RoundedRectCutoutPathBuilder::AddCutout(
     return *this;
   }
 
-  // Cutouts must be less than half the size of the view so that they don't
-  // overlap.
-  CHECK_GE(bounds_.width(), size.width() * 2.f)
-      << "Cutout width is too large for shape";
-  CHECK_GE(bounds_.height(), size.height() * 2.f)
-      << "Cutout height is too large for shape";
-
   cutouts_[corner] = size;
   return *this;
 }
@@ -289,6 +289,10 @@ SkPath RoundedRectCutoutPathBuilder::Build() {
   // Start at the top center of the rectangle.
   builder.moveTo(view.width() / 2.f, view.top());
 
+  // Save cutout bounds to check for overlap.
+  std::vector<SkRect> drawn_cutouts;
+  drawn_cutouts.reserve(4);
+
   // Build paths counter clockwise around view.
   CornersSequence around(RoundedRectCutoutPathBuilder::Corner::kUpperLeft,
                          Direction::kCounterClockwise);
@@ -299,17 +303,18 @@ SkPath RoundedRectCutoutPathBuilder::Build() {
       // Adds the paths for the cutout.
       gfx::SizeF size = iter->second;
       CHECK_GE(bounds_.width(),
-               (size.width() + cutout_outer_corner_radius_) * 2.f)
-          << "Cutout width + outer corner radius must be less than half of "
-             "bounds width";
+               (size.width() + cutout_outer_corner_radius_ + corner_radius_))
+          << "Cutout width + outer corner radius + corner radius must be less "
+             "than or equal to bounds width";
       CHECK_GE(bounds_.height(),
-               (size.height() + cutout_outer_corner_radius_) * 2.f)
-          << "Cutout height + outer corner radius must be less than half of "
-             "bounds height";
+               (size.height() + cutout_outer_corner_radius_ + corner_radius_))
+          << "Cutout height + outer corner radius + corner radius must be less "
+             "than or equal to bounds height";
 
-      AddCutoutPaths(cur_corner, builder, view,
-                     SkSize::Make(size.width(), size.height()),
-                     cutout_outer_corner_radius_, cutout_inner_corner_radius_);
+      SkRect rect = AddCutoutPaths(
+          cur_corner, builder, view, SkSize::Make(size.width(), size.height()),
+          cutout_outer_corner_radius_, cutout_inner_corner_radius_);
+      drawn_cutouts.push_back(rect);
     } else {
       if (corner_radius_ == 0) {
         // If corner radius is 0, it's a point so just draw a line.
@@ -324,6 +329,16 @@ SkPath RoundedRectCutoutPathBuilder::Build() {
     }
     cur_corner = around.Next();
   } while (cur_corner != RoundedRectCutoutPathBuilder::Corner::kUpperLeft);
+
+  // Verify that none of the cutouts intersect or the drawn shape will not work.
+  // This is checking all pairs so it's O(n^2) but n<4.
+  for (size_t i = 0; i < drawn_cutouts.size(); i++) {
+    const SkRect& cutout = drawn_cutouts[i];
+    for (size_t j = i + 1; j < drawn_cutouts.size(); j++) {
+      CHECK(!cutout.intersects(drawn_cutouts[j]))
+          << "At least two cutouts intersect and the path is invalid";
+    }
+  }
 
   // `close()` will draw a line from the last point to the start (top middle of
   // the shape).

@@ -6,6 +6,7 @@
 
 #include <ostream>
 
+#include "base/test/gtest_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -93,6 +94,73 @@ TEST(RoundedRectCutoutPathBuilderTest, RemoveCutout) {
   EXPECT_THAT(
       bounds,
       testing::Eq(SkRect::MakeSize({kViewSize.width(), kViewSize.height()})));
+}
+
+TEST(RoundedRectCutoutPathBuilderTest, ExtraLargeCutout) {
+  RoundedRectCutoutPathBuilder builder(gfx::SizeF{100.0f, 100.0f});
+
+  // Add cutout that is more than half the height.
+  builder.AddCutout(RoundedRectCutoutPathBuilder::Corner::kUpperLeft,
+                    gfx::SizeF(55.0f, 55.0f));
+
+  SkPath path = builder.Build();
+  // 3 * 3 points for the rounded corners. 9 points in the cutout. 1 starting
+  // point.
+  EXPECT_EQ(path.countPoints(), 9 + 9 + 1);
+
+  SkRect bounds = path.getBounds();
+  EXPECT_THAT(bounds, testing::Eq(SkRect::MakeSize({100.0f, 100.0f})));
+}
+
+TEST(RoundedRectCutoutPathBuilderDeathTest, MaximumCutout) {
+  RoundedRectCutoutPathBuilder builder(gfx::SizeF{100.0f, 100.0f});
+  builder.CornerRadius(4);
+  builder.CutoutOuterCornerRadius(8);
+
+  // cutout + outer corner + corner radius is allowed to equal the bounds.
+  // 4 + 8 + 88 = 100.
+  builder.AddCutout(RoundedRectCutoutPathBuilder::Corner::kUpperLeft,
+                    gfx::SizeF(88.0f, 55.0f));
+
+  SkPath path = builder.Build();
+  EXPECT_FALSE(path.isEmpty());
+}
+
+TEST(RoundedRectCutoutPathBuilderDeathTest, CutoutTooLarge) {
+  RoundedRectCutoutPathBuilder builder(gfx::SizeF{100.0f, 100.0f});
+  builder.CornerRadius(4);
+  builder.CutoutOuterCornerRadius(8);
+
+  // When cutout + outer corner + corner radius is larger than the
+  // bounds, we expect a crash. 4 + 8 + 89 = 101.
+  builder.AddCutout(RoundedRectCutoutPathBuilder::Corner::kUpperLeft,
+                    gfx::SizeF(89.0f, 55.0f));
+
+  EXPECT_CHECK_DEATH_WITH(
+      {
+        // This should crash because the cutout is larger than the bounds.
+        SkPath path = builder.Build();
+      },
+      "must be less than or equal to bounds");
+}
+
+TEST(RoundedRectCutoutPathBuilderDeathTest, CutoutsIntersect) {
+  RoundedRectCutoutPathBuilder builder(gfx::SizeF{100.0f, 100.0f});
+  builder.CornerRadius(8);
+  // Technically, this can be drawn but looks strange. So this crashes because
+  // we require that there is at least `outer_corner_radius * 2` between
+  // cutouts.
+  builder.AddCutout(RoundedRectCutoutPathBuilder::Corner::kUpperLeft,
+                    gfx::SizeF(70.0f, 70.0f));
+  builder.AddCutout(RoundedRectCutoutPathBuilder::Corner::kUpperRight,
+                    gfx::SizeF(30.0f, 70.0f));
+
+  EXPECT_CHECK_DEATH_WITH(
+      {
+        // Cutouts overlap so this should crash.
+        SkPath path = builder.Build();
+      },
+      "cutouts intersect");
 }
 
 }  // namespace
