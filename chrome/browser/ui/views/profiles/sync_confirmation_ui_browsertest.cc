@@ -320,14 +320,7 @@ class SyncConfirmationUIDialogPixelTest
   base::test::ScopedFeatureList scoped_feature_list;
 };
 
-// TODO(crbug.com/343757710): Enable this test again.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_InvokeUi_default DISABLED_InvokeUi_default
-#else
-#define MAYBE_InvokeUi_default InvokeUi_default
-#endif
-IN_PROC_BROWSER_TEST_P(SyncConfirmationUIDialogPixelTest,
-                       MAYBE_InvokeUi_default) {
+IN_PROC_BROWSER_TEST_P(SyncConfirmationUIDialogPixelTest, InvokeUi_default) {
   ShowAndVerifyUi();
 }
 
