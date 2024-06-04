@@ -14,6 +14,7 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_pixmap.h"
 
@@ -63,11 +64,24 @@ wgpu::Texture DawnOzoneImageRepresentation::BeginAccess(
 
   std::vector<gfx::GpuFenceHandle> fences;
   bool need_end_fence;
-  // We will treat this access as a write if the client 'usage' implies write
-  // access and if the image has been initialized (cleared). The latter test is
-  // necessary because internally dawn will initialize (clear) the buffer if it
-  // has not yet been cleared.
-  is_readonly_ = (usage & kWriteUsage) == 0 && IsCleared();
+  if (base::FeatureList::IsEnabled(
+          features::kDawnSIRepsUseClientProvidedInternalUsages)) {
+    is_readonly_ =
+        (usage & kWriteUsage) == 0 && (internal_usage & kWriteUsage) == 0;
+    if (is_readonly_ && !IsCleared()) {
+      // Read-only access of an uncleared texture is not allowed: clients
+      // relying on Dawn's lazy clearing of uninitialized textures must make
+      // this reliance explicit by passing a write usage.
+      return nullptr;
+    }
+  } else {
+    // We will treat this access as a write if the client 'usage' implies write
+    // access and if the image has been initialized (cleared). The latter test
+    // is necessary because internally dawn will initialize (clear) the buffer
+    // if it has not yet been cleared.
+    is_readonly_ = (usage & kWriteUsage) == 0 && IsCleared();
+  }
+
   if (!ozone_backing()->BeginAccess(
           /*readonly=*/is_readonly_, OzoneImageBacking::AccessStream::kWebGPU,
           &fences, need_end_fence)) {
@@ -87,18 +101,24 @@ wgpu::Texture DawnOzoneImageRepresentation::BeginAccess(
   texture_descriptor.mipLevelCount = 1;
   texture_descriptor.sampleCount = 1;
 
-  // We need to have internal usages of CopySrc for copies and TextureBinding
-  // for copyTextureForBrowser.
   wgpu::DawnTextureInternalUsageDescriptor internalDesc;
-  internalDesc.internalUsage = wgpu::TextureUsage::CopySrc;
-  // No write access to multi-planar pixmaps.
-  if (pixmap_->GetNumberOfPlanes() == 1) {
-    internalDesc.internalUsage |= wgpu::TextureUsage::TextureBinding;
-    if (!IsCleared()) {
-      // RenderAttachment for (lazy) clears.
-      internalDesc.internalUsage |= wgpu::TextureUsage::RenderAttachment;
+  if (base::FeatureList::IsEnabled(
+          features::kDawnSIRepsUseClientProvidedInternalUsages)) {
+    internalDesc.internalUsage = internal_usage;
+  } else {
+    // We need to have internal usages of CopySrc for copies and TextureBinding
+    // for copyTextureForBrowser.
+    internalDesc.internalUsage = wgpu::TextureUsage::CopySrc;
+    // No write access to multi-planar pixmaps.
+    if (pixmap_->GetNumberOfPlanes() == 1) {
+      internalDesc.internalUsage |= wgpu::TextureUsage::TextureBinding;
+      if (!IsCleared()) {
+        // RenderAttachment for (lazy) clears.
+        internalDesc.internalUsage |= wgpu::TextureUsage::RenderAttachment;
+      }
     }
   }
+
   texture_descriptor.nextInChain = &internalDesc;
 
   dawn::native::vulkan::ExternalImageDescriptorDmaBuf descriptor = {};
