@@ -607,9 +607,13 @@ IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
                   trusted_vault::SecurityDomainId::kChromeSync, FakeAccount()),
               IsEmpty());
 }
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+#else
 IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
                        ShouldNotSetPasskeysEncryptionKeys) {
+  // When default-enabling `kWebAuthnEnclaveAuthenticator` this test should
+  // only be run for BUILDFLAG(IS_CHROMEOS_LACROS).
+  CHECK(!base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator));
+
   const GURL initial_url =
       https_server()->GetURL("accounts.google.com", "/title1.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), initial_url));
@@ -663,7 +667,7 @@ IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
                   trusted_vault::SecurityDomainId::kChromeSync, FakeAccount()),
               IsEmpty());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(

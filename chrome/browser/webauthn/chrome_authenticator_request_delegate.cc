@@ -1338,6 +1338,7 @@ content::BrowserContext* ChromeAuthenticatorRequestDelegate::GetBrowserContext()
 void ChromeAuthenticatorRequestDelegate::ShowUI(
     device::FidoRequestHandlerBase::TransportAvailabilityInfo tai) {
   if (base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials) &&
+      !IsVirtualEnvironmentEnabled() &&
       (can_use_synced_phone_passkeys_ ||
        (enclave_controller_ && enclave_controller_->is_active())
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1441,8 +1442,7 @@ void ChromeAuthenticatorRequestDelegate::GetPhoneContactableGpmPasskeysForRpId(
                      "enclave; have controller: "
                   << static_cast<bool>(enclave_controller_)
                   << " bootstrap limit: " << enclave_bootstrap_limit_reached;
-  if (enclave_controller_ && !enclave_bootstrap_limit_reached &&
-      enclave_controller_->is_active()) {
+  if (enclave_controller_ && !enclave_bootstrap_limit_reached) {
     credentials = enclave_controller_->creds();
     type = device::AuthenticatorType::kEnclave;
 #endif
