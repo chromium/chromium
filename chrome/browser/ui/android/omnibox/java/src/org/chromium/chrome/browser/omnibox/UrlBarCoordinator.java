@@ -24,6 +24,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Optional;
 
 /** Coordinates the interactions with the UrlBar text component. */
 public class UrlBarCoordinator
@@ -31,9 +32,6 @@ public class UrlBarCoordinator
                 UrlFocusChangeListener,
                 KeyboardVisibilityDelegate.KeyboardVisibilityListener {
     private static final int KEYBOARD_HIDE_DELAY_MS = 150;
-    private static final int KEYBOARD_MODE_CHANGE_DELAY_MS = 300;
-
-    private static final Runnable NO_OP_RUNNABLE = () -> {};
 
     /** Specified how the text should be selected when focused. */
     @IntDef({SelectionState.SELECT_ALL, SelectionState.SELECT_END})
@@ -46,14 +44,11 @@ public class UrlBarCoordinator
         int SELECT_END = 1;
     }
 
-    private final Context mContext;
-    private UrlBar mUrlBar;
-    private UrlBarMediator mMediator;
-    private KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
-    private WindowDelegate mWindowDelegate;
-    private Runnable mKeyboardResizeModeTask = NO_OP_RUNNABLE;
-    private Runnable mKeyboardHideTask = NO_OP_RUNNABLE;
-    private Callback<Boolean> mFocusChangeCallback;
+    private final @NonNull UrlBar mUrlBar;
+    private final @NonNull UrlBarMediator mMediator;
+    private final @NonNull KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
+    private final @NonNull Callback<Boolean> mFocusChangeCallback;
+    private @NonNull Optional<Runnable> mKeyboardHideTask = Optional.empty();
 
     /**
      * Constructs a coordinator for the given UrlBar view.
@@ -82,11 +77,9 @@ public class UrlBarCoordinator
             @NonNull KeyboardVisibilityDelegate keyboardVisibilityDelegate,
             boolean isIncognito,
             Callback<Throwable> reportExceptionCallback) {
-        mContext = context;
         mUrlBar = urlBar;
         urlBar.setTag(R.id.report_exception_callback, reportExceptionCallback);
         mKeyboardVisibilityDelegate = keyboardVisibilityDelegate;
-        mWindowDelegate = windowDelegate;
         mFocusChangeCallback = focusChangeCallback;
 
         PropertyModel model =
@@ -98,19 +91,15 @@ public class UrlBarCoordinator
                         .build();
         PropertyModelChangeProcessor.create(model, urlBar, UrlBarViewBinder::bind);
 
-        mMediator = new UrlBarMediator(mContext, model, this::onUrlFocusChangeInternal);
+        mMediator = new UrlBarMediator(context, model, this::onUrlFocusChangeInternal);
         mKeyboardVisibilityDelegate.addKeyboardVisibilityListener(this);
     }
 
     public void destroy() {
         mMediator.destroy();
-        mMediator = null;
         mKeyboardVisibilityDelegate.removeKeyboardVisibilityListener(this);
-        mUrlBar.removeCallbacks(mKeyboardResizeModeTask);
-        mUrlBar.removeCallbacks(mKeyboardHideTask);
+        mKeyboardHideTask.ifPresent(r -> mUrlBar.removeCallbacks(r));
         mUrlBar.destroy();
-        mUrlBar = null;
-        mFocusChangeCallback = null;
     }
 
     /**
@@ -215,9 +204,7 @@ public class UrlBarCoordinator
 
     // LocationBarLayout.UrlFocusChangeListener implementation.
     @Override
-    public void onUrlFocusChange(boolean hasFocus) {
-        mUrlBar.removeCallbacks(mKeyboardResizeModeTask);
-    }
+    public void onUrlFocusChange(boolean hasFocus) {}
 
     // KeyboardVisibilityDelegate.KeyboardVisibilityListener implementation.
     @Override
@@ -252,7 +239,8 @@ public class UrlBarCoordinator
      */
     public void setKeyboardVisibility(boolean showKeyboard, boolean shouldDelayHiding) {
         // Cancel pending jobs to prevent any possibility of keyboard flicker.
-        mUrlBar.removeCallbacks(mKeyboardHideTask);
+        mKeyboardHideTask.ifPresent(r -> mUrlBar.removeCallbacks(r));
+        mKeyboardHideTask = Optional.empty();
 
         // Note: due to nature of this mechanism, we may occasionally experience subsequent requests
         // to show or hide keyboard anyway. This may happen when we schedule keyboard hide, and
@@ -263,11 +251,13 @@ public class UrlBarCoordinator
             // The animation rendering may not yet be 100% complete and hiding the keyboard makes
             // the animation quite choppy.
             mKeyboardHideTask =
-                    () -> {
-                        mKeyboardVisibilityDelegate.hideKeyboard(mUrlBar);
-                        mKeyboardHideTask = NO_OP_RUNNABLE;
-                    };
-            mUrlBar.postDelayed(mKeyboardHideTask, shouldDelayHiding ? KEYBOARD_HIDE_DELAY_MS : 0);
+                    Optional.of(
+                            () -> {
+                                mKeyboardVisibilityDelegate.hideKeyboard(mUrlBar);
+                                mKeyboardHideTask = Optional.empty();
+                            });
+            mUrlBar.postDelayed(
+                    mKeyboardHideTask.get(), shouldDelayHiding ? KEYBOARD_HIDE_DELAY_MS : 0);
             // Convert the keyboard back to resize mode (delay the change for an arbitrary amount
             // of time in hopes the keyboard will be completely hidden before making this change).
         }
