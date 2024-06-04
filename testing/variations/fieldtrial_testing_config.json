@@ -3980,6 +3980,42 @@
             ]
         }
     ],
+    "ChromeOSGrowthFrameworkFileAppGamgee": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "exp_tag": "file_app_gamgee_exp"
+                    },
+                    "enable_features": [
+                        "GrowthCampaignsExperiment2"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ChromeOSGrowthFrameworkSpark": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "exp_tag": "spark_exp"
+                    },
+                    "enable_features": [
+                        "GrowthCampaignsExperiment1"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromeOSGrowthG1Nudge": [
         {
             "platforms": [
