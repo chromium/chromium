@@ -33,6 +33,8 @@ found in the LICENSE file.
       android:layout_gravity="center_horizontal"
       android:layout_marginBottom="@dimen/list_item_default_margin"
       android:src="@drawable/ic_logo_googleg_20dp"
+      app:tint="@color/plus_address_google_logo_tint_color"
+      android:tintMode="src_atop"
       android:importantForAccessibility="no"
       android:adjustViewBounds="true"
       android:scaleType="fitXY" />
