@@ -217,6 +217,7 @@ class EmbeddedPermissionPromptInteractiveTest : public InteractiveBrowserTest {
       const std::string& element_id,
       const std::vector<ContentSettingsType>& content_settings_types,
       // Deliberately passing through value to make a locally modifiable copy.
+      std::queue<std::u16string> expected_titles = std::queue<std::u16string>(),
       std::queue<std::u16string> expected_labels1 =
           std::queue<std::u16string>(),
       std::queue<std::u16string> expected_labels2 =
@@ -229,6 +230,8 @@ class EmbeddedPermissionPromptInteractiveTest : public InteractiveBrowserTest {
         ClickOnPEPCElement(element_id),
         InAnyContext(
             WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId)),
+        CheckLabel(EmbeddedPermissionPromptBaseView::kTitleViewId,
+                   expected_titles),
         CheckLabel(EmbeddedPermissionPromptBaseView::kLabelViewId1,
                    expected_labels1),
         CheckLabel(EmbeddedPermissionPromptBaseView::kLabelViewId2,
@@ -244,6 +247,8 @@ class EmbeddedPermissionPromptInteractiveTest : public InteractiveBrowserTest {
         ClickOnPEPCElement(element_id),
         InAnyContext(
             WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId)),
+        CheckLabel(EmbeddedPermissionPromptBaseView::kTitleViewId,
+                   expected_titles),
         CheckLabel(EmbeddedPermissionPromptBaseView::kLabelViewId1,
                    expected_labels1),
         CheckLabel(EmbeddedPermissionPromptBaseView::kLabelViewId2,
@@ -262,6 +267,8 @@ class EmbeddedPermissionPromptInteractiveTest : public InteractiveBrowserTest {
         ClickOnPEPCElement(element_id),
         InAnyContext(
             WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId)),
+        CheckLabel(EmbeddedPermissionPromptBaseView::kTitleViewId,
+                   expected_titles),
         CheckLabel(EmbeddedPermissionPromptBaseView::kLabelViewId1,
                    expected_labels1),
         CheckLabel(EmbeddedPermissionPromptBaseView::kLabelViewId2,
@@ -328,9 +335,10 @@ class EmbeddedPermissionPromptInteractiveTest : public InteractiveBrowserTest {
 
   void TestPartialPermissionsLabel(ContentSetting camera_setting,
                                    ContentSetting mic_setting,
+                                   ui::ElementIdentifier id,
                                    const std::u16string expected_label1) {
     std::map<ui::ElementIdentifier, const std::u16string> expected_labels = {
-        {EmbeddedPermissionPromptBaseView::kLabelViewId1, expected_label1}};
+        {id, expected_label1}};
     TestPromptElementText(camera_setting, mic_setting, expected_labels,
                           /*check_buttons=*/false);
   }
@@ -397,10 +405,11 @@ IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
   TestAskBlockAllowFlow(
       "microphone", {ContentSettingsType::MEDIASTREAM_MIC},
       std::queue<std::u16string>(
-          {u"Use your microphones",
+          {u"a.test:" + base::UTF8ToUTF16(GetOrigin().port()) + u" wants to",
            u"You have allowed microphone on a.test:" +
                base::UTF8ToUTF16(GetOrigin().port()),
-           u"You previously chose don’t allow for this site"}));
+           u"You previously chose don’t allow for this site"}),
+      std::queue<std::u16string>({u"Use your microphones"}));
 }
 
 IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
@@ -408,10 +417,11 @@ IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
   TestAskBlockAllowFlow(
       "camera", {ContentSettingsType::MEDIASTREAM_CAMERA},
       std::queue<std::u16string>(
-          {u"Use your cameras",
+          {u"a.test:" + base::UTF8ToUTF16(GetOrigin().port()) + u" wants to",
            u"You have allowed camera on a.test:" +
                base::UTF8ToUTF16(GetOrigin().port()),
-           u"You previously chose don’t allow for this site"}));
+           u"You previously chose don’t allow for this site"}),
+      std::queue<std::u16string>({u"Use your cameras"}));
 }
 
 IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
@@ -421,10 +431,11 @@ IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
       {ContentSettingsType::MEDIASTREAM_CAMERA,
        ContentSettingsType::MEDIASTREAM_MIC},
       std::queue<std::u16string>(
-          {u"Use your cameras",
+          {u"a.test:" + base::UTF8ToUTF16(GetOrigin().port()) + u" wants to",
            u"You have allowed camera and microphone on a.test:" +
                base::UTF8ToUTF16(GetOrigin().port()),
            u"You previously chose don’t allow for this site"}),
+      std::queue<std::u16string>({u"Use your cameras"}),
       std::queue<std::u16string>({u"Use your microphones"}));
 }
 
@@ -434,22 +445,28 @@ IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
                   NavigateWebContents(kWebContentsElementId, GetURL()));
 
   TestPartialPermissionsLabel(CONTENT_SETTING_ALLOW, CONTENT_SETTING_ASK,
+                              EmbeddedPermissionPromptBaseView::kLabelViewId1,
                               u"Use your microphones");
   TestPartialPermissionsLabel(CONTENT_SETTING_ASK, CONTENT_SETTING_ALLOW,
+                              EmbeddedPermissionPromptBaseView::kLabelViewId1,
                               u"Use your cameras");
 
   TestPartialPermissionsLabel(
       CONTENT_SETTING_BLOCK, CONTENT_SETTING_ASK,
+      EmbeddedPermissionPromptBaseView::kTitleViewId,
       u"You previously chose don’t allow for this site");
   TestPartialPermissionsLabel(
       CONTENT_SETTING_ASK, CONTENT_SETTING_BLOCK,
+      EmbeddedPermissionPromptBaseView::kTitleViewId,
       u"You previously chose don’t allow for this site");
 
   TestPartialPermissionsLabel(
       CONTENT_SETTING_BLOCK, CONTENT_SETTING_ALLOW,
+      EmbeddedPermissionPromptBaseView::kTitleViewId,
       u"You previously chose don’t allow for this site");
   TestPartialPermissionsLabel(
       CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK,
+      EmbeddedPermissionPromptBaseView::kTitleViewId,
       u"You previously chose don’t allow for this site");
 }
 

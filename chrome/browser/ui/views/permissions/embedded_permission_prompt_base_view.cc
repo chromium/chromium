@@ -37,6 +37,8 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(EmbeddedPermissionPromptBaseView,
                                       kLabelViewId1);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(EmbeddedPermissionPromptBaseView,
                                       kLabelViewId2);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(EmbeddedPermissionPromptBaseView,
+                                      kTitleViewId);
 
 namespace {
 
@@ -133,10 +135,6 @@ EmbeddedPermissionPromptBaseView::CreateLoadingIcon() {
 void EmbeddedPermissionPromptBaseView::AddedToWidget() {
   StartTrackingPictureInPictureOcclusion();
 
-  if (!GetRequestLinesConfiguration().empty()) {
-    return;
-  }
-
   auto title_container = std::make_unique<views::FlexLayoutView>();
   title_container->SetOrientation(views::LayoutOrientation::kHorizontal);
 
@@ -164,7 +162,8 @@ void EmbeddedPermissionPromptBaseView::AddedToWidget() {
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kScaleToMaximum,
                                /*adjust_height_for_width=*/true));
-  AddElementIdentifierToLabel(*label, /*index*/ 0);
+  label->SetProperty(views::kElementIdentifierKey,
+                     EmbeddedPermissionPromptBaseView::kTitleViewId);
 
   if (ShowLoadingIcon()) {
     title_container->AddChildView(CreateLoadingIcon());
