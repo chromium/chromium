@@ -502,6 +502,9 @@ TEST_P(TrustedVaultConnectionImplTest,
   ASSERT_TRUE(deserialized_body.ParseFromString(
       network::GetUploadData(resource_request)));
   EXPECT_THAT(deserialized_body.member_type_hint(), Eq(kTypeHint));
+  EXPECT_THAT(
+      deserialized_body.security_domain_member().member_type(),
+      Eq(trusted_vault_pb::SecurityDomainMember::MEMBER_TYPE_UNSPECIFIED));
 }
 
 TEST_P(TrustedVaultConnectionImplTest,

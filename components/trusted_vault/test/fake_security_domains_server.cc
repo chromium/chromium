@@ -98,6 +98,14 @@ bool ValidateJoinSecurityDomainsRequest(
     }
   }
 
+  if (member.member_type() !=
+          trusted_vault_pb::SecurityDomainMember::MEMBER_TYPE_UNSPECIFIED &&
+      request.member_type_hint() != 0 &&
+      static_cast<int>(member.member_type()) != request.member_type_hint()) {
+    DVLOG(1) << "JoinSecurityDomains request has inconsistent member type hint";
+    return false;
+  }
+
   return true;
 }
 
