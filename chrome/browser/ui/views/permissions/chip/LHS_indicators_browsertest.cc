@@ -210,8 +210,14 @@ IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest, InvokeUi_microphone) {
   ShowAndVerifyUi();
 }
 
+// TODO(crbug.com/344706072): re-enable this flaky test.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_InvokeUi_cameraandmicrophone DISABLED_InvokeUi_cameraandmicrophone
+#else
+#define MAYBE_InvokeUi_cameraandmicrophone InvokeUi_cameraandmicrophone
+#endif
 IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest,
-                       InvokeUi_cameraandmicrophone) {
+                       MAYBE_InvokeUi_cameraandmicrophone) {
   SetPermission(ContentSettingsType::MEDIASTREAM_CAMERA,
                 ContentSetting::CONTENT_SETTING_ALLOW);
   SetPermission(ContentSettingsType::MEDIASTREAM_MIC,
@@ -223,7 +229,14 @@ IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest,
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest, InvokeUi_camera_blocked) {
+// TODO(crbug.com/344706072): re-enable this flaky test.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_InvokeUi_camera_blocked DISABLED_InvokeUi_camera_blocked
+#else
+#define MAYBE_InvokeUi_camera_blocked InvokeUi_camera_blocked
+#endif
+IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest,
+                       MAYBE_InvokeUi_camera_blocked) {
   SetPermission(ContentSettingsType::MEDIASTREAM_CAMERA,
                 ContentSetting::CONTENT_SETTING_BLOCK);
 
