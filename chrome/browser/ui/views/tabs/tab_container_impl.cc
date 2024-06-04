@@ -1277,6 +1277,9 @@ void TabContainerImpl::StartInsertTabAnimation(int model_index) {
 
 void TabContainerImpl::StartRemoveTabAnimation(Tab* tab,
                                                int former_model_index) {
+  // Update ideal bounds before using them to check if we should stay in tab
+  // closing mode. See crbug.com/40838229.
+  UpdateIdealBounds();
   if (in_tab_close_ && GetTabCount() > 0 &&
       override_available_width_for_tabs_ >
           tabs_view_model_.ideal_bounds(GetTabCount() - 1).right()) {
