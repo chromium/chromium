@@ -108,6 +108,12 @@ class FeaturePromoLifecycleTest : public testing::Test {
                : FeaturePromoResult::Success();
   }
 
+  FeaturePromoResult GetNewProfileResult() const {
+    return promo_subtype() == PromoSubtype::kNormal
+               ? FeaturePromoResult::kBlockedByNewProfile
+               : FeaturePromoResult::Success();
+  }
+
   std::unique_ptr<FeaturePromoLifecycle> CreateLifecycle(
       const base::Feature& feature,
       const char* app_id = nullptr) {
@@ -581,6 +587,15 @@ TEST_P(FeaturePromoLifecycleTypesTest, SnoozeNonInteractedIPH) {
 
   lifecycle = CreateLifecycle(kTestIPHFeature);
   EXPECT_TRUE(lifecycle->CanShow());
+}
+
+TEST_P(FeaturePromoLifecycleTypesTest, NewProfile) {
+  // Set the new profile grace period end into the future by making the profile
+  // very new.
+  storage_service_.set_profile_creation_time_for_testing(
+      storage_service_.GetCurrentTime() - base::Hours(12));
+  auto lifecycle = CreateLifecycle(kTestIPHFeature);
+  EXPECT_EQ(GetNewProfileResult(), lifecycle->CanShow());
 }
 
 TEST_P(FeaturePromoLifecycleTypesTest, MaxShowCountReached) {

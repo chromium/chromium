@@ -31,6 +31,12 @@ FeaturePromoSessionTestUtil::FeaturePromoSessionTestUtil(
   storage_service_->SaveSessionData(session_data);
   storage_service_->SavePolicyData(policy_data);
 
+  // Have to do this so that promos aren't blocked by the new session grace
+  // period (at least by default). Set this to be a fairly mature profile,
+  // active for an entire year.
+  storage_service_->set_profile_creation_time_for_testing(
+      storage_service_->GetCurrentTime() - base::Days(365));
+
   // Have to do this last so that the update happens after the session data is
   // saved.
   idle_observer_ = session_manager.ReplaceIdleObserverForTesting(

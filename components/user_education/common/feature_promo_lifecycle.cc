@@ -72,6 +72,14 @@ FeaturePromoLifecycle::~FeaturePromoLifecycle() {
 FeaturePromoResult FeaturePromoLifecycle::CanShow() const {
   DCHECK(promo_subtype_ != PromoSubtype::kKeyedNotice || !promo_key_.empty());
 
+  // If inside the new profile grace period, the promo cannot show and would
+  // also not have shown yet.
+  if (promo_subtype_ == PromoSubtype::kNormal &&
+      GetCurrentTime() < storage_service_->profile_creation_time() +
+                             features::GetNewProfileGracePeriod()) {
+    return FeaturePromoResult::kBlockedByNewProfile;
+  }
+
   const auto data = storage_service_->ReadPromoData(*iph_feature_);
   if (!data.has_value()) {
     return FeaturePromoResult::Success();
@@ -79,6 +87,7 @@ FeaturePromoResult FeaturePromoLifecycle::CanShow() const {
 
   switch (promo_subtype_) {
     case PromoSubtype::kNormal: {
+      // Check dismissed/snoozed state.
       FeaturePromoResult result;
       switch (promo_type_) {
         case PromoType::kLegacy:
@@ -102,6 +111,7 @@ FeaturePromoResult FeaturePromoLifecycle::CanShow() const {
           result = FeaturePromoResult::kPermanentlyDismissed;
           break;
       }
+
       // Even if the promo could show, it may have exceeded its maximum show
       // count. This is always the last consideration since it is the least
       // descriptive return value.

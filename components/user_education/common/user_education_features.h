@@ -32,6 +32,10 @@ extern base::TimeDelta GetSessionStartGracePeriod();
 // low-priority heavyweight promo can be shown.
 extern base::TimeDelta GetLowPriorityCooldown();
 
+// Gets the amount of time after a new profile is created on a device before
+// most low-priority user education primitives can be displayed.
+extern base::TimeDelta GetNewProfileGracePeriod();
+
 // Gets the minimum amount of time from when an IPH is snoozed until it can be
 // shown again. For low-priority IPH, if this is shorter than
 // `GetLowPriorityCooldown()` then it will have no additional effect.

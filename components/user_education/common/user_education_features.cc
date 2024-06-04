@@ -27,6 +27,10 @@ inline constexpr char kSessionStartGracePeriodParamName[] =
 inline constexpr base::TimeDelta kDefaultSessionStartGracePeriod =
     base::Minutes(10);
 
+inline constexpr char kNewProfileGracePeriodParamName[] =
+    "new_profile_grace_period";
+inline constexpr base::TimeDelta kDefaultNewProfileGracePeriod = base::Days(7);
+
 inline constexpr char kLowPriorityCooldownParamName[] = "low_priority_cooldown";
 inline constexpr base::TimeDelta kDefaultLowPriorityCooldown = base::Days(8);
 
@@ -88,6 +92,12 @@ base::TimeDelta GetLowPriorityCooldown() {
   return base::GetFieldTrialParamByFeatureAsTimeDelta(
       kUserEducationExperienceVersion2, kLowPriorityCooldownParamName,
       kDefaultLowPriorityCooldown);
+}
+
+base::TimeDelta GetNewProfileGracePeriod() {
+  return base::GetFieldTrialParamByFeatureAsTimeDelta(
+      kUserEducationExperienceVersion2, kNewProfileGracePeriodParamName,
+      kDefaultNewProfileGracePeriod);
 }
 
 base::TimeDelta GetSnoozeDuration() {

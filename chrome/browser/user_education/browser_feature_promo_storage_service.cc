@@ -90,7 +90,10 @@ RecentSessionData::~RecentSessionData() = default;
 
 BrowserFeaturePromoStorageService::BrowserFeaturePromoStorageService(
     Profile* profile)
-    : profile_(profile) {}
+    : profile_(profile) {
+  set_profile_creation_time(profile->GetCreationTime());
+}
+
 BrowserFeaturePromoStorageService::~BrowserFeaturePromoStorageService() =
     default;
 

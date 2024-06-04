@@ -41432,6 +41432,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="UserEducation.MessageNotShown.BlockedByNewProfile">
+  <owner>dfried@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <description>
+    An IPH was not shown to the user because it is too soon after profile
+    creation.
+  </description>
+</action>
+
 <action name="UserEducation.MessageNotShown.BlockedByPromo">
   <owner>mickeyburks@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>

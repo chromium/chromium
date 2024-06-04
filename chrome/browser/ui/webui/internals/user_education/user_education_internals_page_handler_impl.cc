@@ -547,6 +547,7 @@ void UserEducationInternalsPageHandlerImpl::ShowFeaturePromo(
       case Failure::kBlockedByCooldown:
       case Failure::kRecentlyAborted:
       case Failure::kExceededMaxShowCount:
+      case Failure::kBlockedByNewProfile:
         reason = "Unexpected failure (should not happen for demo).";
     }
   }

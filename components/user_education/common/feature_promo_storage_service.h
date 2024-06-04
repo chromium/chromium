@@ -79,10 +79,28 @@ class FeaturePromoStorageService {
   // `base::DefaultClock`.
   virtual base::Time GetCurrentTime() const;
 
+  // Gets the time when the current profile was created.
+  base::Time profile_creation_time() const { return profile_creation_time_; }
+
+  void set_profile_creation_time_for_testing(base::Time profile_creation_time) {
+    set_profile_creation_time(profile_creation_time);
+  }
+
   // Sets the clock used across user education for session logic.
   void set_clock_for_testing(const base::Clock* clock) { clock_ = clock; }
 
+ protected:
+  // Sets the profile creation time; used by derived classes.
+  void set_profile_creation_time(base::Time profile_creation_time) {
+    profile_creation_time_ = profile_creation_time;
+  }
+
  private:
+  // Time the current user's profile was created on this device; used to
+  // determine if low-priority promos should show (there is a grace period after
+  // new profile creation).
+  base::Time profile_creation_time_;
+
   raw_ptr<const base::Clock> clock_;
 };
 

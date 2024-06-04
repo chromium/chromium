@@ -168,6 +168,12 @@ class BrowserFeaturePromoControllerTest : public TestWithBrowserView {
     auto* const user_education_service =
         UserEducationServiceFactory::GetForBrowserContext(browser()->profile());
 
+    // Ensure that the new profile grace period has ended by default.
+    auto& storage_service =
+        user_education_service->feature_promo_storage_service();
+    storage_service.set_profile_creation_time_for_testing(
+        storage_service.GetCurrentTime() - base::Days(365));
+
     // Create a dummy tutorial.
     // This is just the first two steps of the "create tab group" tutorial.
     TutorialDescription desc;
@@ -336,6 +342,9 @@ class BrowserFeaturePromoControllerTest : public TestWithBrowserView {
         break;
       case FeaturePromoResult::kExceededMaxShowCount:
         failure_action_name.append("ExceededMaxShowCount");
+        break;
+      case FeaturePromoResult::kBlockedByNewProfile:
+        failure_action_name.append("BlockedByNewProfile");
         break;
       default:
         NOTREACHED_IN_MIGRATION();
@@ -825,6 +834,20 @@ TEST_F(BrowserFeaturePromoControllerTest, RequiredNoticeBlocksPromo) {
 
   // Run the loop, clearing the notice.
   run_loop.Run();
+}
+
+TEST_F(BrowserFeaturePromoControllerTest, NewProfileBlocksPromo) {
+  EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kTutorialIPHFeature)))
+      .Times(0);
+  // Simulate a new profile.
+  storage_service()->set_profile_creation_time_for_testing(
+      storage_service()->GetCurrentTime() - base::Hours(12));
+
+  auto result = controller_->MaybeShowPromo(kTutorialIPHFeature);
+  EXPECT_FALSE(result);
+  CheckNotShownMetrics(kTutorialIPHFeature, result, /*not_shown_count=*/1);
+  EXPECT_FALSE(controller_->IsPromoActive(kTutorialIPHFeature));
+  EXPECT_FALSE(GetPromoBubble());
 }
 
 TEST_F(BrowserFeaturePromoControllerTest, SnoozeServiceBlocksPromo) {

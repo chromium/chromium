@@ -1205,6 +1205,9 @@ void FeaturePromoControllerCommon::RecordPromoNotShown(
     case FeaturePromoResult::kExceededMaxShowCount:
       failure_action_name.append("ExceededMaxShowCount");
       break;
+    case FeaturePromoResult::kBlockedByNewProfile:
+      failure_action_name.append("BlockedByNewProfile");
+      break;
     default:
       NOTREACHED_IN_MIGRATION();
   }

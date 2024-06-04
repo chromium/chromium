@@ -30083,6 +30083,7 @@ Called by update_net_error_codes.py.-->
   <int value="10" label="BlockedByCooldown"/>
   <int value="11" label="RecentlyAborted"/>
   <int value="12" label="ExceededMaxShowCount"/>
+  <int value="13" label="BlockedByNewProfile"/>
 </enum>
 
 <enum name="PromoSubtype">
