@@ -3461,22 +3461,6 @@
       'win-rel-cft',
     ],
   },
-  'ios_chrome_integration_eg2tests_module iPhone 14 16.4': {
-    'modifications': {
-      'ios-simulator': {
-        # irm/i_5zRNhCkVFoPkz3cJ81sh
-        'ci_only': True,
-      },
-    },
-  },
-  'ios_chrome_integration_eg2tests_module iPhone 14 17.5': {
-    'modifications': {
-      'ios-simulator': {
-        # irm/i_5zRNhCkVFoPkz3cJ81sh
-        'ci_only': True,
-      },
-    },
-  },
   'ipc_tests': {
     'modifications': {
       'android-asan': {
