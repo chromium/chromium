@@ -53,6 +53,30 @@ VkDeviceSize GetPreferredVMALargeHeapBlockSize() {
   DCHECK(std::has_single_bit(block_size));
   return block_size;
 }
+
+#if BUILDFLAG(IS_ANDROID)
+class VulkanMetric final
+    : public base::android::PreFreezeBackgroundMemoryTrimmer::PreFreezeMetric {
+ public:
+  explicit VulkanMetric(VmaAllocator vma_allocator)
+      : PreFreezeMetric("Vulkan"), vma_allocator_(vma_allocator) {
+    base::android::PreFreezeBackgroundMemoryTrimmer::RegisterMemoryMetric(this);
+  }
+
+  ~VulkanMetric() override {
+    base::android::PreFreezeBackgroundMemoryTrimmer::UnregisterMemoryMetric(
+        this);
+  }
+
+ private:
+  std::optional<uint64_t> Measure() const override {
+    auto allocated_used = vma::GetTotalAllocatedAndUsedMemory(vma_allocator_);
+    return allocated_used.first;
+  }
+  VmaAllocator vma_allocator_;
+};
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // anonymous namespace
 
 VulkanDeviceQueue::VulkanDeviceQueue(VkInstance vk_instance)
@@ -352,6 +376,12 @@ bool VulkanDeviceQueue::Initialize(
 
   allow_protected_memory_ = allow_protected_memory;
 
+#if BUILDFLAG(IS_ANDROID)
+  if (!metric_) {
+    metric_ = std::make_unique<VulkanMetric>(vma_allocator());
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
   if (base::SingleThreadTaskRunner::HasCurrentDefault()) {
     base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
         this, "vulkan", base::SingleThreadTaskRunner::GetCurrentDefault());
@@ -384,6 +414,11 @@ bool VulkanDeviceQueue::InitCommon(VkPhysicalDevice vk_physical_device,
                          /*heap_size_limit=*/nullptr,
                          /*is_thread_safe =*/false, &owned_vma_allocator_);
     vma_allocator_ = owned_vma_allocator_;
+#if BUILDFLAG(IS_ANDROID)
+    if (!metric_) {
+      metric_ = std::make_unique<VulkanMetric>(vma_allocator());
+    }
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 
   cleanup_helper_ = std::make_unique<VulkanFenceHelper>(this);
@@ -481,6 +516,9 @@ bool VulkanDeviceQueue::InitializeForCompositorGpuThread(
 void VulkanDeviceQueue::Destroy() {
   base::trace_event::MemoryDumpManager::GetInstance()->UnregisterDumpProvider(
       this);
+#if BUILDFLAG(IS_ANDROID)
+  metric_ = nullptr;
+#endif
 
   if (cleanup_helper_) {
     cleanup_helper_->Destroy();

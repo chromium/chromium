@@ -1742,6 +1742,20 @@ chromium-metrics-reviews@google.com.
   <token key="Timing" variants="RecordedTiming"/>
 </histogram>
 
+<histogram name="Memory.PreFreeze2{Process}.Vulkan.{Timing}" units="MiB"
+    expires_after="2025-02-01">
+  <owner>thiabaud@google.com</owner>
+  <owner>lizeb@google.com</owner>
+  <summary>
+    The Vulkan memory usage of {Process}, recorded when we get a notification
+    that the application is about to be frozen. {Timing} Recorded only on
+    Android 14+, and only recorded if at least one task has been registered with
+    PreFreeze, and only if Vulkan is being used.
+  </summary>
+  <token key="Process" variants="ProfiledProcess"/>
+  <token key="Timing" variants="RecordedTiming"/>
+</histogram>
+
 <histogram name="Memory.PressureLevel2" enum="MemoryPressureLevel"
     expires_after="never">
 <!-- expires-never: Generic system health metric used to diagnose various performance issues. -->
