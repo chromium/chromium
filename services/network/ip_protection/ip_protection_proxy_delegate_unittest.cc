@@ -282,6 +282,34 @@ TEST_F(IpProtectionProxyDelegateTest, ErrorIfConnectionWithNoTokens) {
               IsError(net::ERR_TUNNEL_CONNECTION_FAILED));
 }
 
+TEST_F(IpProtectionProxyDelegateTest, AddsDebugExperimentArm) {
+  std::map<std::string, std::string> parameters;
+  parameters[net::features::kIpPrivacyDebugExperimentArm.name] = "13";
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      net::features::kEnableIpProtectionProxy, std::move(parameters));
+  for (int chain_index : {0, 1}) {
+    auto network_service_proxy_allow_list =
+        NetworkServiceProxyAllowList::CreateForTesting(/*first_party_map=*/{});
+    auto ipp_config_cache = std::make_unique<MockIpProtectionConfigCache>();
+    ipp_config_cache->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
+    ipp_config_cache->SetProxyList({MakeChain({"proxya", "proxyb"})});
+    auto delegate = CreateDelegate(&network_service_proxy_allow_list,
+                                   std::move(ipp_config_cache));
+
+    net::HttpRequestHeaders headers;
+    auto ip_protection_proxy_chain = net::ProxyChain::ForIpProtection(
+        {net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
+                                                 "proxya", std::nullopt),
+         net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
+                                                 "proxyb", std::nullopt)});
+    EXPECT_THAT(delegate->OnBeforeTunnelRequest(ip_protection_proxy_chain,
+                                                chain_index, &headers),
+                IsOk());
+    EXPECT_THAT(headers, Contain("Ip-Protection-Debug-Experiment-Arm", "13"));
+  }
+}
+
 TEST_F(IpProtectionProxyDelegateTest, OnResolveProxyDeprioritizesBadProxies) {
   std::map<std::string, std::set<std::string>> first_party_map;
   first_party_map["example.com"] = {};

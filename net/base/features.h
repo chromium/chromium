@@ -414,6 +414,11 @@ NET_EXPORT extern const base::FeatureParam<std::string> kIpPrivacyAlwaysProxy;
 // defaults to true and is intended for development of the QUIC functionality.
 NET_EXPORT extern const base::FeatureParam<bool> kIpPrivacyFallbackToDirect;
 
+// Identifier for an experiment arm, to be sent to IP Protection proxies in the
+// `Ip-Protection-Debug-Experiment-Arm` header. The default value, 0, is not
+// sent.
+NET_EXPORT extern const base::FeatureParam<int> kIpPrivacyDebugExperimentArm;
+
 // Whether QuicParams::migrate_sessions_on_network_change_v2 defaults to true or
 // false. This is needed as a workaround to set this value to true on Android
 // but not on WebView (until crbug.com/1430082 has been fixed).
