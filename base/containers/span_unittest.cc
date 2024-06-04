@@ -24,6 +24,7 @@
 
 #include "base/containers/adapters.h"
 #include "base/containers/checked_iterators.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/gtest_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -2322,6 +2323,158 @@ TEST(SpanTest, CompareEquality) {
   static_assert(span<int>() == span<int, 0u>());
   static_assert(span(arr2_c) == span(arr3_c).first(2u));
   static_assert(span(arr2_c) == span(arr3_lc).first(2u));
+}
+
+// These are all examples from //docs/unsafe_buffers.md, copied here to ensure
+// they compile.
+TEST(SpanTest, Example_UnsafeBuffersPatterns) {
+  struct Object {
+    int a;
+  };
+  auto func_with_const_ptr_size = [](const uint8_t*, size_t) {};
+  auto func_with_mut_ptr_size = [](uint8_t*, size_t) {};
+  auto func_with_const_span = [](span<const uint8_t>) {};
+  auto func_with_mut_span = [](span<uint8_t>) {};
+  auto two_byte_arrays = [](const uint8_t*, const uint8_t*) {};
+  auto two_byte_spans = [](span<const uint8_t>, span<const uint8_t>) {};
+
+  UNSAFE_BUFFERS({
+    uint8_t array1[12];
+    uint8_t array2[16];
+    uint64_t array3[2];
+    memcpy(array1, array2 + 8, 4);
+    memcpy(array1 + 4, array3, 8);
+  })
+
+  {
+    uint8_t array1[12];
+    uint8_t array2[16];
+    uint64_t array3[2];
+    base::span(array1).first(4u).copy_from(base::span(array2).subspan(8u, 4u));
+    base::span(array1).subspan(4u).copy_from(
+        base::as_byte_span(array3).first(8u));
+
+    {
+      // Use `split_at()` to ensure `array1` is fully written.
+      auto [from2, from3] = base::span(array1).split_at(4u);
+      from2.copy_from(base::span(array2).subspan(8u, 4u));
+      from3.copy_from(base::as_byte_span(array3).first(8u));
+    }
+    {
+      // This can even be ensured at compile time (if sizes and offsets are all
+      // constants).
+      auto [from2, from3] = base::span(array1).split_at<4u>();
+      from2.copy_from(base::span(array2).subspan<8u, 4u>());
+      from3.copy_from(base::as_byte_span(array3).first<8u>());
+    }
+  }
+
+  UNSAFE_BUFFERS({
+    uint8_t array1[12];
+    uint64_t array2[2];
+    Object array3[4];
+    memset(array1, 0, 12);
+    memset(array2, 0, 2 * sizeof(uint64_t));
+    memset(array3, 0, 4 * sizeof(Object));
+  })
+
+  {
+    uint8_t array1[12];
+    uint64_t array2[2];
+    Object array3[4];
+    std::ranges::fill(array1, 0u);
+    std::ranges::fill(array2, 0u);
+    std::ranges::fill(base::as_writable_byte_span(array3), 0u);
+  }
+
+  UNSAFE_BUFFERS({
+    uint8_t array1[12] = {};
+    uint8_t array2[12] = {};
+    [[maybe_unused]] bool eq = memcmp(array1, array2, sizeof(array1)) == 0;
+
+    // In tests.
+    for (size_t i = 0; i < sizeof(array1); ++i) {
+      SCOPED_TRACE(i);
+      EXPECT_EQ(array1[i], array2[i]);
+    }
+  })
+
+  {
+    uint8_t array1[12] = {};
+    uint8_t array2[12] = {};
+    // If one side is a span, the other will convert to span too.
+    [[maybe_unused]] bool eq = base::span(array1) == array2;
+
+    // In tests.
+    EXPECT_EQ(base::span(array1), array2);
+  }
+
+  UNSAFE_BUFFERS({
+    uint8_t array[44] = {};
+    uint32_t v1;
+    memcpy(&v1, array, sizeof(v1));  // Front.
+    uint64_t v2;
+    memcpy(&v2, array + 6, sizeof(v2));  // Middle.
+  })
+
+  {
+    uint8_t array[44] = {};
+    [[maybe_unused]] uint32_t v1 =
+        base::U32FromLittleEndian(base::span(array).first<4u>());  // Front.
+    [[maybe_unused]] uint64_t v2 = base::U64FromLittleEndian(
+        base::span(array).subspan<6u, 8u>());  // Middle.
+  }
+
+  UNSAFE_BUFFERS({
+    uint8_t array[44] = {};
+    [[maybe_unused]] uint32_t v1 =
+        *reinterpret_cast<const uint32_t*>(array);  // Front.
+    [[maybe_unused]] uint64_t v2 =
+        *reinterpret_cast<const uint64_t*>(array + 6);  // Middle.
+  })
+
+  {
+    uint8_t array[44] = {};
+    [[maybe_unused]] uint32_t v1 =
+        base::U32FromLittleEndian(base::span(array).first<4u>());  // Front.
+    [[maybe_unused]] uint64_t v2 = base::U64FromLittleEndian(
+        base::span(array).subspan<6u, 8u>());  // Middle.
+  }
+
+  UNSAFE_BUFFERS({
+    std::string str = "hello world";
+    func_with_const_ptr_size(reinterpret_cast<const uint8_t*>(str.data()),
+                             str.size());
+    func_with_mut_ptr_size(reinterpret_cast<uint8_t*>(str.data()), str.size());
+  })
+
+  {
+    std::string str = "hello world";
+    base::span<const uint8_t> bytes = base::as_byte_span(str);
+    func_with_const_ptr_size(bytes.data(), bytes.size());
+    base::span<uint8_t> mut_bytes = base::as_writable_byte_span(str);
+    func_with_mut_ptr_size(mut_bytes.data(), mut_bytes.size());
+
+    // Replace pointer and size with a span, though.
+    func_with_const_span(base::as_byte_span(str));
+    func_with_mut_span(base::as_writable_byte_span(str));
+  }
+
+  UNSAFE_BUFFERS({
+    uint8_t array[8];
+    uint64_t val;
+    two_byte_arrays(array, reinterpret_cast<const uint8_t*>(&val));
+  })
+
+  {
+    uint8_t array[8];
+    uint64_t val;
+    base::span<uint8_t> val_span = base::byte_span_from_ref(val);
+    two_byte_arrays(array, val_span.data());
+
+    // Replace an unbounded pointer a span, though.
+    two_byte_spans(base::span(array), base::byte_span_from_ref(val));
+  }
 }
 
 }  // namespace base
