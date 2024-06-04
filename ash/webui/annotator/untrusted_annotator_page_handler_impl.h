@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WEBUI_PROJECTOR_APP_UNTRUSTED_ANNOTATOR_PAGE_HANDLER_IMPL_H_
-#define ASH_WEBUI_PROJECTOR_APP_UNTRUSTED_ANNOTATOR_PAGE_HANDLER_IMPL_H_
+#ifndef ASH_WEBUI_ANNOTATOR_UNTRUSTED_ANNOTATOR_PAGE_HANDLER_IMPL_H_
+#define ASH_WEBUI_ANNOTATOR_UNTRUSTED_ANNOTATOR_PAGE_HANDLER_IMPL_H_
 
-#include "ash/webui/projector_app/mojom/untrusted_annotator.mojom.h"
+#include "ash/webui/annotator/mojom/untrusted_annotator.mojom.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
@@ -63,4 +63,4 @@ class UntrustedAnnotatorPageHandlerImpl
 
 }  // namespace ash
 
-#endif  // ASH_WEBUI_PROJECTOR_APP_UNTRUSTED_ANNOTATOR_PAGE_HANDLER_IMPL_H_
+#endif  // ASH_WEBUI_ANNOTATOR_UNTRUSTED_ANNOTATOR_PAGE_HANDLER_IMPL_H_

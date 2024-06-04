@@ -4,9 +4,9 @@
 
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/projector/projector_controller_impl.h"
+#include "ash/webui/annotator/annotator_client.h"
 #include "ash/webui/media_app_ui/buildflags.h"
 #include "ash/webui/media_app_ui/test/media_app_ui_browsertest.h"
-#include "ash/webui/projector_app/annotator_client.h"
 #include "ash/webui/projector_app/buildflags.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "base/files/safe_base_name.h"

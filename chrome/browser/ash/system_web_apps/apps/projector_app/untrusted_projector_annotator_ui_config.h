@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_PROJECTOR_APP_UNTRUSTED_PROJECTOR_ANNOTATOR_UI_CONFIG_H_
 #define CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_PROJECTOR_APP_UNTRUSTED_PROJECTOR_ANNOTATOR_UI_CONFIG_H_
 
-#include "ash/webui/projector_app/untrusted_projector_annotator_ui.h"
+#include "ash/webui/annotator/untrusted_annotator_ui.h"
 #include "content/public/browser/webui_config.h"
 
 namespace content {
@@ -14,10 +14,10 @@ class WebUIController;
 class WebUI;
 }  // namespace content
 
-// Implementation of the chromeos::UntrustedProjectorAnnotatorUIDelegate to
+// Implementation of the chromeos::UntrustedAnnotatorUIDelegate to
 // expose some //chrome functions to //chromeos.
 class ChromeUntrustedProjectorAnnotatorUIDelegate
-    : public ash::UntrustedProjectorAnnotatorUIDelegate {
+    : public ash::UntrustedAnnotatorUIDelegate {
  public:
   ChromeUntrustedProjectorAnnotatorUIDelegate();
   ChromeUntrustedProjectorAnnotatorUIDelegate(

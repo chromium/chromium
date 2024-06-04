@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/ash/annotator/annotator_client_impl.h"
 
-#include "ash/webui/projector_app/untrusted_annotator_page_handler_impl.h"
+#include "ash/webui/annotator/untrusted_annotator_page_handler_impl.h"
 
 AnnotatorClientImpl::AnnotatorClientImpl() = default;
 

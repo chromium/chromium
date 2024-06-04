@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WEBUI_PROJECTOR_APP_TEST_MOCK_UNTRUSTED_ANNOTATOR_PAGE_H_
-#define ASH_WEBUI_PROJECTOR_APP_TEST_MOCK_UNTRUSTED_ANNOTATOR_PAGE_H_
+#ifndef ASH_WEBUI_ANNOTATOR_TEST_MOCK_UNTRUSTED_ANNOTATOR_PAGE_H_
+#define ASH_WEBUI_ANNOTATOR_TEST_MOCK_UNTRUSTED_ANNOTATOR_PAGE_H_
 
-#include "ash/webui/projector_app/mojom/untrusted_annotator.mojom.h"
-#include "ash/webui/projector_app/public/mojom/annotator_structs.mojom.h"
+#include "ash/webui/annotator/mojom/untrusted_annotator.mojom.h"
+#include "ash/webui/annotator/public/mojom/annotator_structs.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -45,4 +45,4 @@ class MockUntrustedAnnotatorPage
 
 }  // namespace ash
 
-#endif  // ASH_WEBUI_PROJECTOR_APP_TEST_MOCK_UNTRUSTED_ANNOTATOR_PAGE_H_
+#endif  // ASH_WEBUI_ANNOTATOR_TEST_MOCK_UNTRUSTED_ANNOTATOR_PAGE_H_

@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_UI_ASH_ANNOTATOR_ANNOTATOR_CLIENT_IMPL_H_
 
 #include "ash/public/cpp/annotator/annotator_tool.h"
-#include "ash/webui/projector_app/annotator_client.h"
-#include "ash/webui/projector_app/untrusted_annotator_page_handler_impl.h"
+#include "ash/webui/annotator/annotator_client.h"
+#include "ash/webui/annotator/untrusted_annotator_page_handler_impl.h"
 #include "base/memory/raw_ptr.h"
 
 // Implements the interface for the Annotator tool.

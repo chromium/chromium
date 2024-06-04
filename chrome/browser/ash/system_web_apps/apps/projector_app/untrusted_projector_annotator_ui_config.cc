@@ -40,6 +40,5 @@ UntrustedProjectorAnnotatorUIConfig::CreateWebUIController(
     content::WebUI* web_ui,
     const GURL& url) {
   ChromeUntrustedProjectorAnnotatorUIDelegate delegate;
-  return std::make_unique<ash::UntrustedProjectorAnnotatorUI>(web_ui,
-                                                              &delegate);
+  return std::make_unique<ash::UntrustedAnnotatorUI>(web_ui, &delegate);
 }

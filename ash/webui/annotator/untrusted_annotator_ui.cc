@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/webui/projector_app/untrusted_projector_annotator_ui.h"
+#include "ash/webui/annotator/untrusted_annotator_ui.h"
 
-#include "ash/webui/grit/ash_projector_annotator_untrusted_resources.h"
-#include "ash/webui/grit/ash_projector_annotator_untrusted_resources_map.h"
+#include "ash/webui/grit/ash_annotator_untrusted_resources.h"
+#include "ash/webui/grit/ash_annotator_untrusted_resources_map.h"
 #include "ash/webui/grit/ash_projector_common_resources.h"
 #include "ash/webui/grit/ash_projector_common_resources_map.h"
 #include "ash/webui/media_app_ui/buildflags.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
-#include "ash/webui/projector_app/untrusted_annotator_page_handler_impl.h"
+#include "ash/webui/annotator/untrusted_annotator_page_handler_impl.h"
 #include "chromeos/grit/chromeos_projector_app_bundle_resources.h"
 #include "chromeos/grit/chromeos_projector_app_bundle_resources_map.h"
 #include "content/public/browser/web_contents.h"
@@ -27,9 +27,9 @@ namespace ash {
 
 namespace {
 
-void CreateAndAddProjectorAnnotatorHTMLSource(
+void CreateAndAddAnnotatorHTMLSource(
     content::WebUI* web_ui,
-    UntrustedProjectorAnnotatorUIDelegate* delegate) {
+    UntrustedAnnotatorUIDelegate* delegate) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
       kChromeUIUntrustedAnnotatorUrl);
@@ -37,15 +37,15 @@ void CreateAndAddProjectorAnnotatorHTMLSource(
   // TODO(b/216523790): Split untrusted annotator resources into a separate
   // bundle.
   source->AddResourcePaths(
-      base::make_span(kAshProjectorAnnotatorUntrustedResources,
-                      kAshProjectorAnnotatorUntrustedResourcesSize));
+      base::make_span(kAshAnnotatorUntrustedResources,
+                      kAshAnnotatorUntrustedResourcesSize));
   source->AddResourcePaths(
       base::make_span(kChromeosProjectorAppBundleResources,
                       kChromeosProjectorAppBundleResourcesSize));
   source->AddResourcePaths(base::make_span(kAshProjectorCommonResources,
                                            kAshProjectorCommonResourcesSize));
   source->AddResourcePath("",
-                          IDR_ASH_PROJECTOR_ANNOTATOR_UNTRUSTED_ANNOTATOR_HTML);
+                          IDR_ASH_ANNOTATOR_UNTRUSTED_ANNOTATOR_HTML);
 
 #if BUILDFLAG(ENABLE_CROS_MEDIA_APP)
   // Loads WASM resources shipped to Chromium by chrome://media-app.
@@ -94,16 +94,16 @@ void CreateAndAddProjectorAnnotatorHTMLSource(
 
 }  // namespace
 
-UntrustedProjectorAnnotatorUI::UntrustedProjectorAnnotatorUI(
+UntrustedAnnotatorUI::UntrustedAnnotatorUI(
     content::WebUI* web_ui,
-    UntrustedProjectorAnnotatorUIDelegate* delegate)
+    UntrustedAnnotatorUIDelegate* delegate)
     : UntrustedWebUIController(web_ui) {
-  CreateAndAddProjectorAnnotatorHTMLSource(web_ui, delegate);
+  CreateAndAddAnnotatorHTMLSource(web_ui, delegate);
 }
 
-UntrustedProjectorAnnotatorUI::~UntrustedProjectorAnnotatorUI() = default;
+UntrustedAnnotatorUI::~UntrustedAnnotatorUI() = default;
 
-void UntrustedProjectorAnnotatorUI::BindInterface(
+void UntrustedAnnotatorUI::BindInterface(
     mojo::PendingReceiver<
         annotator::mojom::UntrustedAnnotatorPageHandlerFactory> factory) {
   if (receiver_.is_bound()) {
@@ -112,7 +112,7 @@ void UntrustedProjectorAnnotatorUI::BindInterface(
   receiver_.Bind(std::move(factory));
 }
 
-void UntrustedProjectorAnnotatorUI::Create(
+void UntrustedAnnotatorUI::Create(
     mojo::PendingReceiver<annotator::mojom::UntrustedAnnotatorPageHandler>
         annotator_handler,
     mojo::PendingRemote<annotator::mojom::UntrustedAnnotatorPage> annotator) {
@@ -120,6 +120,6 @@ void UntrustedProjectorAnnotatorUI::Create(
       std::move(annotator_handler), std::move(annotator), web_ui());
 }
 
-WEB_UI_CONTROLLER_TYPE_IMPL(UntrustedProjectorAnnotatorUI)
+WEB_UI_CONTROLLER_TYPE_IMPL(UntrustedAnnotatorUI)
 
 }  // namespace ash

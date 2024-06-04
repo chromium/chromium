@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WEBUI_PROJECTOR_APP_UNTRUSTED_PROJECTOR_ANNOTATOR_UI_H_
-#define ASH_WEBUI_PROJECTOR_APP_UNTRUSTED_PROJECTOR_ANNOTATOR_UI_H_
+#ifndef ASH_WEBUI_ANNOTATOR_UNTRUSTED_ANNOTATOR_UI_H_
+#define ASH_WEBUI_ANNOTATOR_UNTRUSTED_ANNOTATOR_UI_H_
 
-#include "ash/webui/projector_app/mojom/untrusted_annotator.mojom.h"
+#include "ash/webui/annotator/mojom/untrusted_annotator.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -21,27 +21,27 @@ class UntrustedAnnotatorPageHandlerImpl;
 
 // A delegate used during data source creation to expose some //chrome
 // functionality to the data source
-class UntrustedProjectorAnnotatorUIDelegate {
+class UntrustedAnnotatorUIDelegate {
  public:
-  virtual ~UntrustedProjectorAnnotatorUIDelegate() {}
+  virtual ~UntrustedAnnotatorUIDelegate() {}
   // Takes a WebUIDataSource, and populates its load-time data.
   virtual void PopulateLoadTimeData(content::WebUIDataSource* source) = 0;
 };
 
 // The webui for chrome-untrusted://projector-annotator.
-class UntrustedProjectorAnnotatorUI
+class UntrustedAnnotatorUI
     : public ui::UntrustedWebUIController,
       public annotator::mojom::UntrustedAnnotatorPageHandlerFactory {
  public:
-  // UntrustedProjectorAnnotatorUI does not store the passed in
-  // `UntrustedProjectorAnnotatorUIDelegate`.
-  UntrustedProjectorAnnotatorUI(
+  // UntrustedAnnotatorUI does not store the passed in
+  // `UntrustedAnnotatorUIDelegate`.
+  UntrustedAnnotatorUI(
       content::WebUI* web_ui,
-      UntrustedProjectorAnnotatorUIDelegate* delegate);
-  UntrustedProjectorAnnotatorUI(const UntrustedProjectorAnnotatorUI&) = delete;
-  UntrustedProjectorAnnotatorUI& operator=(
-      const UntrustedProjectorAnnotatorUI&) = delete;
-  ~UntrustedProjectorAnnotatorUI() override;
+      UntrustedAnnotatorUIDelegate* delegate);
+  UntrustedAnnotatorUI(const UntrustedAnnotatorUI&) = delete;
+  UntrustedAnnotatorUI& operator=(
+      const UntrustedAnnotatorUI&) = delete;
+  ~UntrustedAnnotatorUI() override;
 
   void BindInterface(
       mojo::PendingReceiver<
@@ -66,4 +66,4 @@ class UntrustedProjectorAnnotatorUI
 
 }  // namespace ash
 
-#endif  // ASH_WEBUI_PROJECTOR_APP_UNTRUSTED_PROJECTOR_ANNOTATOR_UI_H_
+#endif  // ASH_WEBUI_ANNOTATOR_UNTRUSTED_ANNOTATOR_UI_H_

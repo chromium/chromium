@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/webui/projector_app/untrusted_annotator_page_handler_impl.h"
+#include "ash/webui/annotator/untrusted_annotator_page_handler_impl.h"
 
 #include "ash/public/cpp/annotator/annotator_tool.h"
 #include "ash/public/cpp/test/mock_projector_controller.h"
-#include "ash/webui/projector_app/mojom/untrusted_annotator.mojom.h"
-#include "ash/webui/projector_app/public/mojom/annotator_structs.mojom.h"
-#include "ash/webui/projector_app/test/mock_annotator_client.h"
-#include "ash/webui/projector_app/test/mock_untrusted_annotator_page.h"
+#include "ash/webui/annotator/test/mock_annotator_client.h"
+#include "ash/webui/annotator/test/mock_untrusted_annotator_page.h"
+#include "ash/webui/annotator/mojom/untrusted_annotator.mojom.h"
+#include "ash/webui/annotator/public/mojom/annotator_structs.mojom.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "content/public/test/test_web_ui.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/webui/projector_app/test/mock_untrusted_annotator_page.h"
+#include "ash/webui/annotator/test/mock_untrusted_annotator_page.h"
 
 namespace ash {
 MockUntrustedAnnotatorPage::MockUntrustedAnnotatorPage() = default;

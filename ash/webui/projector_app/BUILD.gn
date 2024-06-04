@@ -10,8 +10,6 @@ assert(is_chromeos_ash, "Projector App is ash-chrome only")
 
 static_library("projector_app") {
   sources = [
-    "annotator_client.cc",
-    "annotator_client.h",
     "pending_screencast.cc",
     "pending_screencast.h",
     "projector_app_client.cc",
@@ -20,10 +18,6 @@ static_library("projector_app") {
     "projector_oauth_token_fetcher.h",
     "projector_xhr_sender.cc",
     "projector_xhr_sender.h",
-    "untrusted_annotator_page_handler_impl.cc",
-    "untrusted_annotator_page_handler_impl.h",
-    "untrusted_projector_annotator_ui.cc",
-    "untrusted_projector_annotator_ui.h",
     "untrusted_projector_page_handler_impl.cc",
     "untrusted_projector_page_handler_impl.h",
     "untrusted_projector_ui.cc",
@@ -33,13 +27,12 @@ static_library("projector_app") {
   deps = [
     "//ash/public/cpp",
     "//ash/strings",
+    "//ash/webui/annotator",
     "//ash/webui/media_app_ui:buildflags",
-    "//ash/webui/projector_app/mojom:annotator_mojo_bindings",
     "//ash/webui/projector_app/mojom:projector_mojo_bindings",
-    "//ash/webui/projector_app/public/mojom:annotator_mojo_bindings",
     "//ash/webui/projector_app/public/mojom:projector_mojo_bindings",
+    "//ash/webui/resources:annotator_untrusted_resources",
     "//ash/webui/resources:media_app_bundle_resources",
-    "//ash/webui/resources:projector_annotator_untrusted_resources",
     "//ash/webui/resources:projector_app_bundle_resources",
     "//ash/webui/resources:projector_app_untrusted_resources",
     "//ash/webui/resources:projector_common_resources",
@@ -58,12 +51,8 @@ static_library("projector_app") {
 source_set("test_support") {
   testonly = true
   sources = [
-    "test/mock_annotator_client.cc",
-    "test/mock_annotator_client.h",
     "test/mock_app_client.cc",
     "test/mock_app_client.h",
-    "test/mock_untrusted_annotator_page.cc",
-    "test/mock_untrusted_annotator_page.h",
     "test/mock_xhr_sender.cc",
     "test/mock_xhr_sender.h",
   ]
@@ -72,8 +61,7 @@ source_set("test_support") {
     ":projector_app",
     "//ash/public/cpp:cpp",
     "//ash/public/cpp:test_support",
-    "//ash/webui/projector_app/mojom:annotator_mojo_bindings",
-    "//ash/webui/projector_app/public/mojom:annotator_mojo_bindings",
+    "//ash/webui/annotator",
     "//ash/webui/projector_app/public/mojom:projector_mojo_bindings",
     "//base/test:test_support",
     "//components/signin/public/identity_manager",
@@ -88,15 +76,12 @@ source_set("unit_tests") {
   sources = [
     "test/projector_oauth_token_fetcher_unittest.cc",
     "test/projector_xhr_sender_unittest.cc",
-    "test/untrusted_annotator_page_handler_impl_unittest.cc",
     "test/untrusted_projector_page_handler_impl_unittest.cc",
   ]
 
   deps = [
     ":test_support",
-    "//ash/webui/projector_app/mojom:annotator_mojo_bindings",
     "//ash/webui/projector_app/mojom:projector_mojo_bindings",
-    "//ash/webui/projector_app/public/mojom:annotator_mojo_bindings",
     "//ash/webui/projector_app/public/mojom:projector_mojo_bindings",
     "//base",
     "//components/prefs:test_support",

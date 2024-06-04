@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/webui/annotator/untrusted_annotator_page_handler_impl.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"

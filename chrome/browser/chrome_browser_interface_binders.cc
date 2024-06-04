@@ -261,6 +261,8 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #include "ash/public/mojom/hid_preserving_bluetooth_state_controller.mojom.h"
+#include "ash/webui/annotator/mojom/untrusted_annotator.mojom.h"
+#include "ash/webui/annotator/untrusted_annotator_ui.h"
 #include "ash/webui/camera_app_ui/camera_app_helper.mojom.h"
 #include "ash/webui/camera_app_ui/camera_app_ui.h"
 #include "ash/webui/color_internals/color_internals_ui.h"
@@ -303,9 +305,7 @@
 #include "ash/webui/personalization_app/search/search.mojom.h"
 #include "ash/webui/print_management/print_management_ui.h"
 #include "ash/webui/print_preview_cros/print_preview_cros_ui.h"
-#include "ash/webui/projector_app/mojom/untrusted_annotator.mojom.h"
 #include "ash/webui/projector_app/mojom/untrusted_projector.mojom.h"
-#include "ash/webui/projector_app/untrusted_projector_annotator_ui.h"
 #include "ash/webui/projector_app/untrusted_projector_ui.h"
 #include "ash/webui/scanning/mojom/scanning.mojom.h"
 #include "ash/webui/scanning/scanning_ui.h"
@@ -1904,7 +1904,7 @@ void PopulateChromeWebUIFrameInterfaceBrokers(
   registry.ForWebUI<ash::DemoModeAppUntrustedUI>()
       .Add<ash::mojom::demo_mode::UntrustedPageHandlerFactory>();
 
-  registry.ForWebUI<ash::UntrustedProjectorAnnotatorUI>()
+  registry.ForWebUI<ash::UntrustedAnnotatorUI>()
       .Add<ash::annotator::mojom::UntrustedAnnotatorPageHandlerFactory>();
 
   registry.ForWebUI<ash::UntrustedProjectorUI>()

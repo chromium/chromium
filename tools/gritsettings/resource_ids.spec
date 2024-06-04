@@ -947,7 +947,7 @@
     "META": {"sizes": {"includes": [50],}},
     "includes": [6360],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/projector_app/resources/annotator/untrusted/ash_projector_annotator_untrusted_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/annotator/resources/untrusted/ash_annotator_untrusted_resources.grd": {
     "META": {"sizes": {"includes": [50],}},
     "includes": [6380],
   },

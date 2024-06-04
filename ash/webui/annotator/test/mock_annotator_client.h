@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WEBUI_PROJECTOR_APP_TEST_MOCK_ANNOTATOR_CLIENT_H_
-#define ASH_WEBUI_PROJECTOR_APP_TEST_MOCK_ANNOTATOR_CLIENT_H_
+#ifndef ASH_WEBUI_ANNOTATOR_TEST_MOCK_ANNOTATOR_CLIENT_H_
+#define ASH_WEBUI_ANNOTATOR_TEST_MOCK_ANNOTATOR_CLIENT_H_
 
-#include "ash/webui/projector_app/annotator_client.h"
+#include "ash/webui/annotator/annotator_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace ash {
@@ -28,4 +28,4 @@ class MockAnnotatorClient : public AnnotatorClient {
 
 }  // namespace ash
 
-#endif  // ASH_WEBUI_PROJECTOR_APP_TEST_MOCK_ANNOTATOR_CLIENT_H_
+#endif  // ASH_WEBUI_ANNOTATOR_TEST_MOCK_ANNOTATOR_CLIENT_H_
