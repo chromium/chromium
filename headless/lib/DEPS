@@ -9,13 +9,14 @@ specific_include_rules = {
     "+services/device/public/cpp/geolocation/geolocation_manager_impl_mac.h",
   ],
   "headless_content_client.cc": [
-      "+components/embedder_support/origin_trials",
+    "+components/embedder_support/origin_trials",
   ],
   "headless_content_main_delegate.cc": [
+    "+gpu/config/gpu_switches.h",
     "+cc/base/switches.h",
     "+components/viz/common/switches.h",
     "+components/devtools/devtools_pipe/devtools_pipe.h",
-    "+gpu/config/gpu_switches.h",
+    "+components/prefs",
     "+third_party/blink/public/common/switches.h",
   ],
 }

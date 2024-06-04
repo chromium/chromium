@@ -69,6 +69,16 @@
 #include <signal.h>
 #endif
 
+#if defined(HEADLESS_USE_PREFS)
+#include "components/prefs/pref_service.h"
+#endif
+
+#if defined(HEADLESS_SUPPORT_FIELD_TRIALS)
+#include "content/public/app/initialize_mojo_core.h"
+#include "headless/lib/browser/headless_field_trials.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
+#endif
+
 namespace headless {
 
 namespace features {
@@ -172,6 +182,33 @@ void InitializeResourceBundle(const base::CommandLine& command_line) {
 void InitApplicationLocale(const base::CommandLine& command_line) {
   l10n_util::GetApplicationLocale(
       command_line.GetSwitchValueASCII(::switches::kLang));
+}
+
+void AddSwitchesForVirtualTime() {
+  // Only pass viz flags into the virtual time mode.
+  const char* const switches[] = {
+      // TODO(eseckler): Make --run-all-compositor-stages-before-draw a
+      // per-BeginFrame mode so that we can activate it for individual
+      // requests
+      // only. With surface sync becoming the default, we can then make
+      // virtual_time_enabled a per-request option, too.
+      // We control BeginFrames ourselves and need all compositing stages to
+      // run.
+      ::switches::kRunAllCompositorStagesBeforeDraw,
+      ::switches::kDisableNewContentRenderingTimeout,
+      cc::switches::kDisableThreadedAnimation,
+      // Animtion-only BeginFrames are only supported when updates from the
+      // impl-thread are disabled, see go/headless-rendering.
+      cc::switches::kDisableCheckerImaging,
+      // Ensure that image animations don't resync their animation timestamps
+      // when looping back around.
+      blink::switches::kDisableImageAnimationResync,
+  };
+
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  for (const auto* flag : switches) {
+    command_line->AppendSwitch(flag);
+  }
 }
 
 }  // namespace
@@ -528,31 +565,58 @@ std::optional<int> HeadlessContentMainDelegate::PostEarlyInitialization(
   if (absl::holds_alternative<InvokedInChildProcess>(invoked_in))
     return std::nullopt;
 
+#if defined(HEADLESS_USE_PREFS)
+  browser_->CreatePrefService();
+#endif
+
+#if defined(HEADLESS_SUPPORT_FIELD_TRIALS)
+  // Check if we're telling content to not to create the feature list and do it
+  // here if so. Content can create default feature list on its own however here
+  // we want the feature list to be created by field trial machinery.
+  if (!ShouldCreateFeatureList(invoked_in)) {
+    SetUpFieldTrials(browser()->GetPrefs(),
+                     browser()->options()->user_data_dir);
+    // Schedule a Local State write since the above function may have resulted
+    // in some prefs being updated. Headless shell runs are typically short and
+    // often end in crashes, so it helps to commit early.
+    browser_->GetPrefs()->CommitPendingWrite();
+  }
+
+  // Check if we're telling content to not to initialize Mojo and do it here
+  // since we want it do be done after the feature list is created.
+  if (!ShouldInitializeMojo(invoked_in)) {
+    content::InitializeMojoCore();
+  }
+#endif  // defined(HEADLESS_SUPPORT_FIELD_TRIALS)
+
   if (base::FeatureList::IsEnabled(features::kVirtualTime)) {
-    // Only pass viz flags into the virtual time mode.
-    const char* const switches[] = {
-        // TODO(eseckler): Make --run-all-compositor-stages-before-draw a
-        // per-BeginFrame mode so that we can activate it for individual
-        // requests
-        // only. With surface sync becoming the default, we can then make
-        // virtual_time_enabled a per-request option, too.
-        // We control BeginFrames ourselves and need all compositing stages to
-        // run.
-        ::switches::kRunAllCompositorStagesBeforeDraw,
-        ::switches::kDisableNewContentRenderingTimeout,
-        cc::switches::kDisableThreadedAnimation,
-        // Animtion-only BeginFrames are only supported when updates from the
-        // impl-thread are disabled, see go/headless-rendering.
-        cc::switches::kDisableCheckerImaging,
-        // Ensure that image animations don't resync their animation timestamps
-        // when looping back around.
-        blink::switches::kDisableImageAnimationResync,
-    };
-    for (const auto* flag : switches)
-      base::CommandLine::ForCurrentProcess()->AppendSwitch(flag);
+    AddSwitchesForVirtualTime();
   }
 
   return std::nullopt;
 }
+
+#if defined(HEADLESS_SUPPORT_FIELD_TRIALS)
+bool HeadlessContentMainDelegate::ShouldCreateFeatureList(
+    InvokedIn invoked_in) {
+  // The content layer is always responsible for creating the FeatureList in
+  // child processes.
+  if (absl::holds_alternative<InvokedInChildProcess>(invoked_in)) {
+    return true;
+  }
+
+  // VariationsFieldTrialCreator::SetUpFieldTrials() instantiates its own
+  // feature list so prevent content from instantiating a default one if we're
+  // going to set up field trials.
+  return !ShouldEnableFieldTrials();
+}
+
+bool HeadlessContentMainDelegate::ShouldInitializeMojo(InvokedIn invoked_in) {
+  // Mojo cannot be initialized without a feature list instance available so
+  // postpone its initialization until after feature list is instantiated by
+  // field trials setup if field trials are enabled.
+  return ShouldCreateFeatureList(invoked_in);
+}
+#endif  // defined(HEADLESS_SUPPORT_FIELD_TRIALS)
 
 }  // namespace headless

@@ -33,6 +33,9 @@ if (headless_enable_commands) {
 
 bundle_hyphen_data = (is_linux || is_win) && !headless_use_embedded_resources
 
+# If supported, field trials need to be enabled by --enable-field-trial-config switch.
+headless_support_field_trials = headless_use_prefs
+
 # Headless defines config applied to every target below.
 config("headless_defines_config") {
   defines = []
@@ -51,6 +54,10 @@ config("headless_defines_config") {
 
   if (headless_mode_policy_supported) {
     defines += [ "HEADLESS_MODE_POLICY_SUPPORTED" ]
+  }
+
+  if (headless_support_field_trials) {
+    defines += [ "HEADLESS_SUPPORT_FIELD_TRIALS" ]
   }
 }
 
@@ -386,6 +393,18 @@ component("headless_non_renderer") {
       "//components/policy/content",
       "//components/policy/core/browser",
       "//components/policy/core/common:policy_path_constants",
+    ]
+  }
+
+  if (headless_support_field_trials) {
+    sources += [
+      "lib/browser/headless_field_trials.cc",
+      "lib/browser/headless_field_trials.h",
+    ]
+    deps += [
+      "//components/metrics",
+      "//components/variations",
+      "//components/variations/service",
     ]
   }
 

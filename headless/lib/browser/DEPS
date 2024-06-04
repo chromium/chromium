@@ -38,6 +38,8 @@ specific_include_rules = {
     "+components/prefs",
     "+components/pref_registry",
     "+components/keyed_service/content",
+    "+components/metrics",
+    "+components/variations",
   ],
   "headless_browser_impl_unittest.cc": [
     "+third_party/blink/public/common/features.h",
@@ -58,5 +60,10 @@ specific_include_rules = {
   ],
   "command_line_handler.cc": [
     "+third_party/blink/public/common/switches.h",
+  ],
+  "headless_field_trials.cc": [
+    "+components/prefs",
+    "+components/metrics",
+    "+components/variations",
   ]
 }

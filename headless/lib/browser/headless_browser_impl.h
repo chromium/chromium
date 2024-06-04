@@ -113,6 +113,7 @@ class HEADLESS_EXPORT HeadlessBrowserImpl : public HeadlessBrowser {
   int exit_code() const { return exit_code_; }
 
 #if defined(HEADLESS_USE_PREFS)
+  void CreatePrefService();
   PrefService* GetPrefs();
 #endif
 
@@ -129,10 +130,6 @@ class HEADLESS_EXPORT HeadlessBrowserImpl : public HeadlessBrowser {
 #endif
 
  private:
-#if defined(HEADLESS_USE_PREFS)
-  void CreatePrefService();
-#endif
-
   base::OnceCallback<void(HeadlessBrowser*)> on_start_callback_;
   std::optional<HeadlessBrowser::Options> options_;
 
