@@ -253,3 +253,30 @@ class ChromeScrollJankStdlib(TestSuite):
         out=Csv("""
         "event_latency_stage"
         """))
+
+  def test_chrome_scroll_jank_with_pinches(self):
+    return DiffTestBlueprint(
+        trace=DataPath('scroll_jank_with_pinch.pftrace'),
+        query="""
+        INCLUDE PERFETTO MODULE chrome.scroll_jank.scroll_jank_v3;
+
+        SELECT
+          janks.cause_of_jank,
+          janks.sub_cause_of_jank,
+          janks.delay_since_last_frame,
+          janks.event_latency_id,
+          presented_frames.event_type
+        FROM chrome_janky_frames janks
+        LEFT JOIN chrome_presented_gesture_scrolls presented_frames
+          ON janks.event_latency_id = presented_frames.id
+        ORDER by event_latency_id;
+        """,
+        out=Csv("""
+        "cause_of_jank","sub_cause_of_jank","delay_since_last_frame","event_latency_id","event_type"
+        "SubmitCompositorFrameToPresentationCompositorFrame","StartDrawToSwapStart",22.252000,754,"GESTURE_SCROLL_UPDATE"
+        "SubmitCompositorFrameToPresentationCompositorFrame","SubmitToReceiveCompositorFrame",22.263000,25683,"GESTURE_SCROLL_UPDATE"
+        "SubmitCompositorFrameToPresentationCompositorFrame","ReceiveCompositorFrameToStartDraw",22.266000,26098,"GESTURE_SCROLL_UPDATE"
+        "SubmitCompositorFrameToPresentationCompositorFrame","BufferReadyToLatch",22.262000,40846,"GESTURE_SCROLL_UPDATE"
+        "BrowserMainToRendererCompositor","[NULL]",22.250000,50230,"GESTURE_SCROLL_UPDATE"
+        "SubmitCompositorFrameToPresentationCompositorFrame","BufferReadyToLatch",22.267000,50517,"GESTURE_SCROLL_UPDATE"
+        """))

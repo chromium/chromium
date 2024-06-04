@@ -70,9 +70,9 @@ SELECT
   slice.ts,
   slice.dur,
   slice.id,
-  EXTRACT_arg(arg_set_id, "event_latency.event_latency_id") AS scroll_update_id,
+  EXTRACT_arg(arg_set_id, 'event_latency.event_latency_id') AS scroll_update_id,
   chrome_get_most_recent_scroll_begin_id(slice.ts) AS scroll_id,
-  has_descendant_slice_with_name(slice.id, "SubmitCompositorFrameToPresentationCompositorFrame")
+  has_descendant_slice_with_name(slice.id, 'SubmitCompositorFrameToPresentationCompositorFrame')
   AS is_presented,
   CASE WHEN has_descendant_slice_with_name(slice.id, "SwapEndToPresentationCompositorFrame")
     THEN _descendant_slice_end(slice.id, "SwapEndToPresentationCompositorFrame")
@@ -82,7 +82,15 @@ SELECT
   EXTRACT_ARG(arg_set_id, 'event_latency.event_type') AS event_type
 FROM slice JOIN args USING(arg_set_id)
 WHERE name = "EventLatency"
-AND args.string_value GLOB "*GESTURE_SCROLL_UPDATE";
+AND (
+  args.string_value GLOB '*GESTURE_SCROLL_UPDATE'
+  -- Pinches are only relevant if the frame was presented.
+  OR (args.string_value GLOB '*GESTURE_PINCH_UPDATE'
+    AND has_descendant_slice_with_name(
+      slice.id,
+      'SubmitCompositorFrameToPresentationCompositorFrame')
+  )
+);
 
 CREATE PERFETTO TABLE _presented_gesture_scrolls AS
 SELECT
@@ -198,9 +206,10 @@ SELECT
   frames.presentation_timestamp
 FROM chrome_presented_gesture_scrolls frames
 WHERE frames.event_type in (
-          "GESTURE_SCROLL_UPDATE",
-          "FIRST_GESTURE_SCROLL_UPDATE",
-          "INERTIAL_GESTURE_SCROLL_UPDATE")
+          'GESTURE_SCROLL_UPDATE',
+          'FIRST_GESTURE_SCROLL_UPDATE',
+          'INERTIAL_GESTURE_SCROLL_UPDATE',
+          'GESTURE_PINCH_UPDATE')
 AND frames.presentation_timestamp IS NOT NULL;
 
 -- Join deltas with EventLatency data.
