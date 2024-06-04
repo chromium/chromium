@@ -312,12 +312,11 @@ base::Value::Dict ManagedUserProfileNoticeHandler::GetProfileInfoValue() {
       dict.Set("proceedLabel", l10n_util::GetStringUTF8(IDS_DONE));
       break;
     case ManagedUserProfileNoticeUI::ScreenType::kEnterpriseOIDC:
-      title = l10n_util::GetStringUTF8(
-          IDS_ENTERPRISE_WELCOME_PROFILE_REQUIRED_TITLE);
+      title =
+          l10n_util::GetStringUTF8(IDS_ENTERPRISE_WELCOME_PROFILE_SETUP_TITLE);
       dict.Set("showEnterpriseBadge", true);
-      subtitle = l10n_util::GetStringFUTF8(
-          IDS_ENTERPRISE_PROFILE_WELCOME_PROFILE_SEPARATION_DEVICE_MANAGED,
-          email_);
+      subtitle = l10n_util::GetStringUTF8(
+          IDS_ENTERPRISE_PROFILE_WELCOME_PROFILE_SEPARATION_ACCOUNT_MANAGED);
       enterprise_info = l10n_util::GetStringUTF8(
           IDS_ENTERPRISE_PROFILE_WELCOME_MANAGED_DESCRIPTION_WITH_SYNC);
       dict.Set("proceedLabel",

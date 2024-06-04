@@ -124,9 +124,9 @@ void ManagedUserProfileNoticeUI::Initialize(
     update_data.Set("showLinkDataCheckbox", show_link_data_option);
   } else if (type == ManagedUserProfileNoticeUI::ScreenType::kEnterpriseOIDC) {
     update_data.Set("isModalDialog", true);
-    update_data.Set("enterpriseProfileWelcomeTitle",
-                    l10n_util::GetStringUTF16(
-                        IDS_ENTERPRISE_WELCOME_PROFILE_REQUIRED_TITLE));
+    update_data.Set(
+        "enterpriseProfileWelcomeTitle",
+        l10n_util::GetStringUTF16(IDS_ENTERPRISE_WELCOME_PROFILE_SETUP_TITLE));
 
     update_data.Set("showLinkDataCheckbox", false);
 #if !BUILDFLAG(IS_CHROMEOS)

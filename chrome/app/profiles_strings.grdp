@@ -583,6 +583,9 @@
     <message name="IDS_ENTERPRISE_PROFILE_WELCOME_PROFILE_SEPARATION_DEVICE_MANAGED" desc="Subtitle of the enterprise profile welcome screen for a signin interception, informing that the device is managed by an administrator that requires a new profile for managed accounts.">
       This device is managed. A new profile is required for account <ph name="USER_EMAIL_ADDRESS">$1<ex>john.doe@example.com</ex></ph> by your device administrator
     </message>
+    <message name="IDS_ENTERPRISE_PROFILE_WELCOME_PROFILE_SEPARATION_ACCOUNT_MANAGED" desc="Subtitle of the enterprise profile welcome screen for a signin interception, informing that the device is managed by an administrator that requires a new profile for managed accounts.">
+      Your organization manages your account
+    </message>
     <message name="IDS_ENTERPRISE_PROFILE_WELCOME_PROFILE_SEPARATION_DEVICE_MANAGED_BY" desc="Subtitle of the enterprise profile welcome screen for a signin interception, informing that the device is managed by an administrator that requires a new profile for managed accounts.">
       This device is managed by <ph name="DEVICE_MANAGER">$1<ex>example.com</ex></ph>. A new profile is required for account <ph name="USER_EMAIL_ADDRESS">$2<ex>john.doe@example.com</ex></ph> by <ph name="DEVICE_MANAGER">$1<ex>example.com</ex></ph>
     </message>
@@ -603,6 +606,9 @@
     </message>
     <message name="IDS_ENTERPRISE_WELCOME_PROFILE_REQUIRED_TITLE" desc="Title of the enterprise profile welcome screen when a profile is required. It is shown after a user signs into a managed account outside of the profile creation flow.">
       Your organization requires a profile
+    </message>
+    <message name="IDS_ENTERPRISE_WELCOME_PROFILE_SETUP_TITLE" desc="Title of the enterprise profile welcome screen when a profile is required. It is shown after a user signs into a managed account outside of the profile creation flow.">
+      Set up your work profile
     </message>
     <message name="IDS_ENTERPRISE_WELCOME_PROFILE_WILL_BE_MANAGED_TITLE" desc="Title of the enterprise profile welcome screen when a managed profile will be created. It is shown after a user signs into a managed account outside of the profile creation flow.">
       Your organization will manage this profile
