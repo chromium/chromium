@@ -52,8 +52,12 @@ IntentPickerAppInfo AppInfoForAppUrl(NSURL* app_url) {
   if (![app_url getResourceValue:&app_icon
                           forKey:NSURLEffectiveIconKey
                            error:nil]) {
-    // This shouldn't happen but just in case.
-    app_icon = [NSImage imageNamed:NSImageNameApplicationIcon];
+    // This shouldn't happen, but just in case. (Note that, despite its name,
+    // NSImageNameApplicationIcon is the icon of "this app". There is no
+    // constant for "generic app icon", only this string value. This value has
+    // been verified to exist from macOS 10.15 through macOS 14; see -[NSImage
+    // _systemImageNamed:].)
+    app_icon = [NSImage imageNamed:@"NSDefaultApplicationIcon"];
   }
   if (UseFakeAppForTesting()) {            // IN-TEST
     app_icon = CreateRedIconForTesting();  // IN-TEST

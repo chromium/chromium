@@ -38,14 +38,14 @@ constexpr int64_t kUpdateFrequencyMs = 200;
 @interface DockTileView : NSView
 
 // Indicates how many downloads are in progress.
-@property (nonatomic) int downloads;
+@property(nonatomic) int downloads;
 
 // Indicates whether the progress indicator should be in an indeterminate state
 // or not.
-@property (nonatomic) BOOL indeterminate;
+@property(nonatomic) BOOL indeterminate;
 
 // Indicates the amount of progress made of the download. Ranges from [0..1].
-@property (nonatomic) float progress;
+@property(nonatomic) float progress;
 
 @end
 
@@ -56,17 +56,30 @@ constexpr int64_t kUpdateFrequencyMs = 200;
 @synthesize progress = _progress;
 
 - (void)drawRect:(NSRect)dirtyRect {
-  // Not -[NSApplication applicationIconImage]; that fails to return a pasted
-  // custom icon.
-  NSString* appPath = [base::apple::MainBundle() bundlePath];
-  NSImage* appIcon = [[NSWorkspace sharedWorkspace] iconForFile:appPath];
+  // This needs to draw the current app icon, whether it's using the default
+  // icon shipped or a custom icon.
+  //
+  // -[NSWorkspace iconForFile:] works, but it's NSString path-based, and APIs
+  // that use those tend to be on the deprecation chopping block.
+  //
+  // The NSURLEffectiveIconKey resource value works, but it has an error path
+  // that needs to be handled.
+  //
+  // -[NSApplication applicationIconImage] used to fail to return a custom icon
+  // if set, which was fixed a while ago, but it returns an NSImage with a
+  // single image rep, 32 pixels wide, which isn't good enough for detail work.
+  //
+  // Therefore, use [NSImage imageNamed:NSImageNameApplicationIcon].
+
+  NSImage* appIcon = [NSImage imageNamed:NSImageNameApplicationIcon];
   [appIcon drawInRect:self.bounds
              fromRect:NSZeroRect
             operation:NSCompositingOperationSourceOver
              fraction:1.0];
 
-  if (_downloads == 0)
+  if (_downloads == 0) {
     return;
+  }
 
   const CGFloat badgeSize = NSWidth(self.bounds) * kBadgeFraction;
   const NSRect badgeRect =
@@ -103,8 +116,9 @@ constexpr int64_t kUpdateFrequencyMs = 200;
       strokePath = [NSBezierPath bezierPathWithOvalInRect:badgeRect];
     } else {
       CGFloat endAngle = 90.0 - 360.0 * _progress;
-      if (endAngle < 0.0)
+      if (endAngle < 0.0) {
         endAngle += 360.0;
+      }
       strokePath = [NSBezierPath bezierPath];
       [strokePath
           appendBezierPathWithArcWithCenter:badgeCenter
@@ -135,12 +149,14 @@ constexpr int64_t kUpdateFrequencyMs = 200;
                                           weight:NSFontWeightMedium];
 
     // This will generally be plain Helvetica.
-    if (!countFont)
+    if (!countFont) {
       countFont = [NSFont userFontOfSize:countFontSize];
+    }
 
     // Continued failure would generate an NSException.
-    if (!countFont)
+    if (!countFont) {
       break;
+    }
 
     countAttrString = [[NSAttributedString alloc]
         initWithString:countString
@@ -195,8 +211,9 @@ constexpr int64_t kUpdateFrequencyMs = 200;
 
   base::TimeTicks now = base::TimeTicks::Now();
   base::TimeDelta timeSinceLastUpdate = now - _lastUpdate;
-  if (!_forceUpdate && timeSinceLastUpdate < updateFrequency)
+  if (!_forceUpdate && timeSinceLastUpdate < updateFrequency) {
     return;
+  }
 
   _lastUpdate = now;
   _forceUpdate = NO;
