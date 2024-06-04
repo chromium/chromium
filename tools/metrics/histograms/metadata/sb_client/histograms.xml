@@ -561,7 +561,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SBClientPhishing.CancelImageEmbeddingReason"
     enum="SBClientPhishingCancelImageEmbeddingReason"
-    expires_after="2024-07-05">
+    expires_after="2025-07-05">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
