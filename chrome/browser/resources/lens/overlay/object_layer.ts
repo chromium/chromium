@@ -415,6 +415,11 @@ export class ObjectLayerElement extends PolymerElement {
       return '';
     }
 
+    // If the object has a segmentation mask, then we want to use a pointer
+    // cursor. Otherwise, use a crosshair pointer.
+    const hasSegmentationMask = object.geometry!.segmentationPolygon.length > 0;
+    const cursorStyle = hasSegmentationMask ? 'pointer' : 'crosshair';
+
     // Put into an array instead of a long string to keep this code readable.
     const styles: string[] = [
       `width: ${toPercent(objectBoundingBox.box.width)}`,
@@ -426,6 +431,7 @@ export class ObjectLayerElement extends PolymerElement {
           toPercent(
               objectBoundingBox.box.x - (objectBoundingBox.box.width / 2))}`,
       `transform: rotate(${objectBoundingBox.rotation}rad)`,
+      `cursor: ${cursorStyle}`,
     ];
     return styles.join(';');
   }
