@@ -173,7 +173,7 @@
 // These should *not* be used if you are interested in exact counts, i.e. a
 // bucket range of 1. In these cases, you should use the ENUMERATION macros
 // defined later. These should also not be used to capture the number of some
-// event, i.e. "button X was clicked N times". In this cases, an enum should be
+// event, i.e. "button X was clicked N times". In this case, an enum should be
 // used, ideally with an appropriate baseline enum entry included.
 // All of these macros must be called with |name| as a runtime constant.
 
