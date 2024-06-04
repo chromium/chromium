@@ -120,6 +120,11 @@ class MockContentCache : public ContentCache {
               Notify,
               (ProvidedFileSystemObserver::Changes & changes),
               (override));
+  MOCK_METHOD(void,
+              ObservedVersionTag,
+              (const base::FilePath& entry_path,
+               const std::string& version_tag),
+              (override));
   MOCK_METHOD(void, Evict, (const base::FilePath& file_path), (override));
   MOCK_METHOD(const SizeInfo, GetSize, (), (const override));
   MOCK_METHOD(void, SetMaxBytesOnDisk, (int64_t), (override));
@@ -307,13 +312,13 @@ class MockProvidedFileSystem : public ProvidedFileSystemInterface {
 // Holder for the constructed mock content cache and the cloud file system.
 struct MockContentCacheAndCloudFileSystemAndFakeFsp {
   base::WeakPtr<MockContentCache> mock_content_cache;
-  base::WeakPtr<ProvidedFileSystemInterface> fake_fsp;
+  base::WeakPtr<FakeProvidedFileSystem> fake_fsp;
   std::unique_ptr<CloudFileSystem> cloud_file_system;
 };
 
 struct MockContentCacheObserverAndCloudFileSystemAndFakeFsp {
   std::unique_ptr<MockContentCacheObserver> mock_content_cache_observer;
-  base::WeakPtr<ProvidedFileSystemInterface> fake_fsp;
+  base::WeakPtr<FakeProvidedFileSystem> fake_fsp;
   std::unique_ptr<CloudFileSystem> cloud_file_system;
 };
 
@@ -398,7 +403,7 @@ class FileSystemProviderCloudFileSystemTest : public testing::Test,
             GetFileSystemInfo(/*with_mock_cache_manager=*/true));
     return MockContentCacheObserverAndCloudFileSystemAndFakeFsp{
         .mock_content_cache_observer = CreateContentCacheAndMockObserver(),
-        .fake_fsp = provided_file_system->GetWeakPtr(),
+        .fake_fsp = provided_file_system->GetFakeWeakPtr(),
         .cloud_file_system = CreateCloudFileSystem(
             std::move(provided_file_system), /*with_mock_cache_manager=*/true)};
   }
@@ -410,7 +415,7 @@ class FileSystemProviderCloudFileSystemTest : public testing::Test,
             GetFileSystemInfo(/*with_mock_cache_manager=*/true));
     return MockContentCacheAndCloudFileSystemAndFakeFsp{
         .mock_content_cache = CreateMockContentCache(),
-        .fake_fsp = provided_file_system->GetWeakPtr(),
+        .fake_fsp = provided_file_system->GetFakeWeakPtr(),
         .cloud_file_system = CreateCloudFileSystem(
             std::move(provided_file_system), /*with_mock_cache_manager=*/true)};
   }
@@ -464,12 +469,20 @@ class FileSystemProviderCloudFileSystemTest : public testing::Test,
   }
 
   void DeleteEntryOnFakeFileSystem(
-      base::WeakPtr<ProvidedFileSystemInterface> fake_fsp,
+      base::WeakPtr<FakeProvidedFileSystem> fake_fsp,
       const base::FilePath& entry_path) {
     FileErrorFuture delete_entry_future;
     fake_fsp->DeleteEntry(entry_path, /*recursive=*/true,
                           delete_entry_future.GetCallback());
     EXPECT_EQ(delete_entry_future.Get(), base::File::FILE_OK);
+  }
+
+  void UpdateEntryWithVersionTagOnFakeFileSystem(
+      base::WeakPtr<FakeProvidedFileSystem> fake_fsp,
+      const base::FilePath& entry_path,
+      const std::string& version_tag) {
+    fake_fsp->GetEntry(entry_path)->metadata->cloud_file_info->version_tag =
+        version_tag;
   }
 
   MockCacheManager mock_cache_manager_;
@@ -989,6 +1002,81 @@ TEST_F(FileSystemProviderCloudFileSystemTest, CurrentReaderCanReadEvictedFile) {
   base::RunLoop run_loop;
   EXPECT_CALL(*mock_content_cache_observer,
               OnItemRemovedFromDisk(fake_file_path, /*bytes_removed=*/2))
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
+  CloseFileSuccessfully(*cloud_file_system, file_handle);
+  run_loop.Run();
+}
+
+TEST_F(FileSystemProviderCloudFileSystemTest,
+       GetMetadataCallsObservedVersionTag) {
+  // Underlying FakeProvidedFileSystem is (always) initialised with fake file
+  // with kFakeFilePath.
+  const base::FilePath fake_file_path(kFakeFilePath);
+  auto [mock_content_cache, fake_fsp, cloud_file_system] =
+      CreateMockContentCacheAndCloudFileSystemWithFakeFsp();
+
+  // Expect the successful GetMetadata request for a CloudFileInfo triggers a
+  // `ObservedVersionTag()` call.
+  EXPECT_CALL(*mock_content_cache,
+              ObservedVersionTag(fake_file_path, kFakeFileVersionTag))
+      .Times(1);
+  GetMetadataFuture get_metadata_future;
+  cloud_file_system->GetMetadata(
+      fake_file_path,
+      /*fields*/ ProvidedFileSystemInterface::METADATA_FIELD_CLOUD_FILE_INFO,
+      get_metadata_future.GetRepeatingCallback());
+  EXPECT_EQ(get_metadata_future.Get<base::File::Error>(), base::File::FILE_OK);
+}
+
+TEST_F(FileSystemProviderCloudFileSystemTest, OpenFileCallsObservedVersionTag) {
+  // Underlying FakeProvidedFileSystem is (always) initialised with fake file
+  // with kFakeFilePath.
+  const base::FilePath fake_file_path(kFakeFilePath);
+  auto [mock_content_cache, fake_fsp, cloud_file_system] =
+      CreateMockContentCacheAndCloudFileSystemWithFakeFsp();
+
+  // Expect the successful OpenFile request triggers a `ObservedVersionTag()`
+  // call.
+  EXPECT_CALL(*mock_content_cache,
+              ObservedVersionTag(fake_file_path, kFakeFileVersionTag))
+      .Times(1);
+  OpenFileFuture open_file_future1;
+  cloud_file_system->OpenFile(fake_file_path, OPEN_FILE_MODE_READ,
+                              open_file_future1.GetRepeatingCallback());
+  EXPECT_EQ(open_file_future1.Get<base::File::Error>(), base::File::FILE_OK);
+}
+
+TEST_F(FileSystemProviderCloudFileSystemTest,
+       OpenFileForNewVersionEvictsStaleCachedFile) {
+  // Underlying FakeProvidedFileSystem is (always) initialised with fake file
+  // with kFakeFilePath.
+  const base::FilePath fake_file_path(kFakeFilePath);
+  auto [mock_content_cache_observer, fake_fsp, cloud_file_system] =
+      CreateContentCacheAndObserverAndCloudFileSystemWithFakeFsp();
+
+  // Read 1 byte of the `kFakeFilePath` file and insert it into the cache.
+  int file_handle = GetFileHandleFromSuccessfulOpenFile(
+      *cloud_file_system, base::FilePath(kFakeFilePath));
+  scoped_refptr<net::IOBuffer> buffer =
+      base::MakeRefCounted<net::IOBufferWithSize>(1);
+
+  ReadFileSuccessfully(*cloud_file_system, file_handle, buffer, /*offset=*/0,
+                       /*length=*/1);
+  CloseFileSuccessfully(*cloud_file_system, file_handle);
+
+  // Update the version tag.
+  UpdateEntryWithVersionTagOnFakeFileSystem(fake_fsp, fake_file_path,
+                                            "new version");
+
+  // Expect that opening the file causes the stale cache version to be evicted.
+  EXPECT_CALL(*mock_content_cache_observer, OnItemEvicted(fake_file_path));
+  file_handle = GetFileHandleFromSuccessfulOpenFile(
+      *cloud_file_system, base::FilePath(kFakeFilePath));
+
+  // Close the file, expect that it now gets removed.
+  base::RunLoop run_loop;
+  EXPECT_CALL(*mock_content_cache_observer,
+              OnItemRemovedFromDisk(fake_file_path, /*bytes_removed=*/1))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
   CloseFileSuccessfully(*cloud_file_system, file_handle);
   run_loop.Run();
