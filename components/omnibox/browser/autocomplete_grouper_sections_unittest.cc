@@ -1891,8 +1891,8 @@ TEST(AutocompleteGrouperSectionsTest,
   auto make_rich_card = [](int score) {
     auto match = CreateMatch(score, omnibox::GROUP_MOBILE_RICH_ANSWER);
     match.type = AutocompleteMatchType::SEARCH_HISTORY;
-    SuggestionAnswer answer;
-    match.answer = answer;
+    omnibox::RichAnswerTemplate answer_template;
+    match.answer_template = answer_template;
     return match;
   };
 

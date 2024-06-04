@@ -4109,6 +4109,26 @@ TEST_F(SearchProviderTest, RemoveExtraAnswers) {
   EXPECT_FALSE(matches[4].answer);
 }
 
+TEST_F(SearchProviderTest, DuplicateCardAnswer) {
+  ACMatches matches;
+  AutocompleteMatch match1, match2, match3;
+  match1.contents = u"match 1";
+  match1.type = AutocompleteMatchType::SEARCH_SUGGEST;
+  match1.answer_template = omnibox::RichAnswerTemplate();
+
+  matches.push_back(match1);
+  matches.push_back(match2);
+  matches.push_back(match3);
+
+  SearchProvider::DuplicateCardAnswer(&matches);
+
+  EXPECT_EQ(4u, matches.size());
+  EXPECT_TRUE(matches[0].answer_template);
+  EXPECT_FALSE(matches[3].answer_template);
+  EXPECT_EQ(matches[0].contents, matches[3].contents);
+  EXPECT_EQ(matches[0].type, matches[3].type);
+}
+
 TEST_F(SearchProviderTest, DoesNotProvideOnFocus) {
   AutocompleteInput input(u"f", metrics::OmniboxEventProto::OTHER,
                           ChromeAutocompleteSchemeClassifier(profile_.get()));

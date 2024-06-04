@@ -107,6 +107,7 @@ class SearchProvider : public BaseSearchProvider,
   FRIEND_TEST_ALL_PREFIXES(SearchProviderTest, SuggestQueryUsesToken);
   FRIEND_TEST_ALL_PREFIXES(SearchProviderTest, AnswersCache);
   FRIEND_TEST_ALL_PREFIXES(SearchProviderTest, RemoveExtraAnswers);
+  FRIEND_TEST_ALL_PREFIXES(SearchProviderTest, DuplicateCardAnswer);
   FRIEND_TEST_ALL_PREFIXES(SearchProviderTest, DoesNotProvideOnFocus);
   FRIEND_TEST_ALL_PREFIXES(SearchProviderTest, SendsWarmUpRequestOnFocus);
   FRIEND_TEST_ALL_PREFIXES(SearchProviderTest, DoTrimHttpScheme);
@@ -296,6 +297,11 @@ class SearchProvider : public BaseSearchProvider,
   // Remove answer contents from each match in |matches| other than the first
   // that appears.
   static void RemoveExtraAnswers(ACMatches* matches);
+
+  // Add a copy of an answer suggestion presented as a rich card, sans answer
+  // data. This gives an "escape hatch" if, e.g. the user wants the verbatim
+  // query associated with the answer suggestion.
+  static void DuplicateCardAnswer(ACMatches* matches);
 
   // Checks if suggested relevances violate an expected constraint.
   // See UpdateMatches() for the use and explanation of this constraint

@@ -163,7 +163,7 @@ void AndroidNonZPSSection::InitFromMatches(ACMatches& matches) {
 
   auto& above_keyboard_group = groups_[1];
   bool has_answer = base::ranges::any_of(
-      matches, [&](const auto& match) { return match.answer; });
+      matches, [](const auto& match) { return match.answer_template; });
   if (has_answer) {
     above_keyboard_group.set_limit(above_keyboard_group.limit() - 1);
   }

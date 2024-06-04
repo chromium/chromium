@@ -127,7 +127,7 @@ AutocompleteMatch BaseSearchProvider::CreateSearchSuggestion(
   match.contents = suggestion.match_contents();
   match.contents_class = suggestion.match_contents_class();
   if (OmniboxFieldTrial::kAnswerActionsShowRichCard.Get() &&
-      suggestion.answer()) {
+      suggestion.answer_template()) {
     match.suggestion_group_id = omnibox::GROUP_MOBILE_RICH_ANSWER;
   } else {
     match.suggestion_group_id = suggestion.suggestion_group_id();

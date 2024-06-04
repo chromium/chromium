@@ -1059,6 +1059,9 @@ void SearchProvider::ConvertResultsToAutocompleteMatches() {
                                   &matches);
   }
 
+  if (OmniboxFieldTrial::kAnswerActionsShowAboveKeyboard.Get()) {
+    DuplicateCardAnswer(&matches);
+  }
   // Now add the most relevant matches to |matches_|.  We take up to
   // provider_max_matches_ suggest/navsuggest matches, regardless of origin.  We
   // always include in that set a legal default match if possible. If we have
@@ -1124,6 +1127,18 @@ void SearchProvider::RemoveExtraAnswers(ACMatches* matches) {
       }
     }
   }
+}
+
+void SearchProvider::DuplicateCardAnswer(ACMatches* matches) {
+  auto iter = base::ranges::find_if(*matches, [](const auto& match) {
+    return match.answer_template.has_value();
+  });
+
+  if (iter == matches->end()) {
+    return;
+  }
+
+  matches->emplace_back(*iter).answer_template.reset();
 }
 
 bool SearchProvider::IsTopMatchSearchWithURLInput() const {
