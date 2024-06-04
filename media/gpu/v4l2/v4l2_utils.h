@@ -161,6 +161,9 @@ std::optional<SupportedVideoDecoderConfigs> GetSupportedV4L2DecoderConfigs();
 // Queries the driver to see if it supports stateful decoding.
 bool IsV4L2DecoderStateful();
 
+// Returns a readable description of |ctrls|.
+std::string V4L2ControlsToString(const struct v4l2_ext_controls* ctrls);
+
 }  // namespace media
 
 #endif  // MEDIA_GPU_V4L2_V4L2_UTILS_H_

@@ -7,6 +7,8 @@
 #include <fcntl.h>
 #include <sys/ioctl.h>
 
+#include <iomanip>
+#include <iostream>
 #include <map>
 #include <sstream>
 
@@ -573,4 +575,566 @@ bool IsV4L2DecoderStateful() {
          v4l2_codecs.end();
 }
 
+#ifndef NDEBUG
+template <class T>
+std::string ControlToString(const T& a, const std::string control) {
+  std::ostringstream s;
+  constexpr uint32_t kPadding = 40;
+  const uint32_t len = kPadding - control.size();
+  s << control << std::setw(len) << ": ";
+  if (control.compare("flags") == 0) {
+    s << "0x" << std::hex << +a << std::endl;
+  } else {
+    s << std::dec << +a << std::endl;
+  }
+
+  return s.str();
+}
+
+template <typename T, size_t N>
+std::string ControlToString(const T (&arr)[N], const std::string control) {
+  std::ostringstream s;
+  const uint32_t pad = sizeof(arr[0]) * 2;
+  s << control << "[" << N << "]:" << std::endl;
+  for (const auto& x : arr) {
+    s << std::setw(pad) << std::dec << +x << " ";
+  }
+  s << std::endl;
+  return s.str();
+}
+
+template <typename T, size_t N, size_t M>
+std::string ControlToString(const T (&arr)[N][M], const std::string control) {
+  std::ostringstream s;
+  const uint32_t pad = sizeof(arr[0][0]) * 2;
+  s << control << "[" << N << "][" << M << "]:" << std::endl;
+  for (const auto& inner : arr) {
+    for (const auto& x : inner) {
+      s << std::setw(pad) << std::dec << +x;
+    }
+    s << std::endl;
+  }
+
+  return s.str();
+}
+
+#define CONTROL(base, control)                     \
+  do {                                             \
+    s << ControlToString(base->control, #control); \
+  } while (0)
+
+static std::string PrintStatelessAV1Control(
+    const struct v4l2_ext_control* ext_ctrls) {
+  std::ostringstream s;
+  s << "av1" << std::endl;
+  switch (ext_ctrls->id) {
+    case V4L2_CID_STATELESS_AV1_SEQUENCE: {
+      s << "V4L2_CID_STATELESS_AV1_SEQUENCE" << std::endl;
+      const struct v4l2_ctrl_av1_sequence* ctrl =
+          static_cast<const struct v4l2_ctrl_av1_sequence*>(ext_ctrls->ptr);
+      CONTROL(ctrl, flags);
+      CONTROL(ctrl, seq_profile);
+      CONTROL(ctrl, order_hint_bits);
+      CONTROL(ctrl, bit_depth);
+      CONTROL(ctrl, reserved);
+      CONTROL(ctrl, max_frame_width_minus_1);
+      CONTROL(ctrl, max_frame_height_minus_1);
+    } break;
+    case V4L2_CID_STATELESS_AV1_TILE_GROUP_ENTRY: {
+      s << "V4L2_CID_STATELESS_AV1_TILE_GROUP_ENTRY" << std::endl;
+      const struct v4l2_ctrl_av1_tile_group_entry* group_entry =
+          static_cast<const struct v4l2_ctrl_av1_tile_group_entry*>(
+              ext_ctrls->ptr);
+      CONTROL(group_entry, tile_offset);
+      CONTROL(group_entry, tile_size);
+      CONTROL(group_entry, tile_row);
+      CONTROL(group_entry, tile_col);
+    } break;
+    case V4L2_CID_STATELESS_AV1_FRAME: {
+      s << "V4L2_CID_STATELESS_AV1_FRAME" << std::endl;
+      const struct v4l2_ctrl_av1_frame* frame =
+          static_cast<const struct v4l2_ctrl_av1_frame*>(ext_ctrls->ptr);
+
+      const struct v4l2_av1_tile_info* tile_info =
+          static_cast<const struct v4l2_av1_tile_info*>(&frame->tile_info);
+      CONTROL(tile_info, flags);
+      CONTROL(tile_info, context_update_tile_id);
+      CONTROL(tile_info, tile_cols);
+      CONTROL(tile_info, tile_rows);
+      CONTROL(tile_info, mi_col_starts);
+      CONTROL(tile_info, mi_row_starts);
+      CONTROL(tile_info, width_in_sbs_minus_1);
+      CONTROL(tile_info, height_in_sbs_minus_1);
+      CONTROL(tile_info, tile_size_bytes);
+      CONTROL(tile_info, reserved);
+
+      const struct v4l2_av1_quantization* quantization =
+          static_cast<const struct v4l2_av1_quantization*>(
+              &frame->quantization);
+      CONTROL(quantization, flags);
+      CONTROL(quantization, base_q_idx);
+      CONTROL(quantization, delta_q_y_dc);
+      CONTROL(quantization, delta_q_u_dc);
+      CONTROL(quantization, delta_q_u_ac);
+      CONTROL(quantization, delta_q_v_dc);
+      CONTROL(quantization, delta_q_v_ac);
+      CONTROL(quantization, qm_y);
+      CONTROL(quantization, qm_u);
+      CONTROL(quantization, qm_v);
+      CONTROL(quantization, delta_q_res);
+
+      CONTROL(frame, superres_denom);
+
+      const struct v4l2_av1_segmentation* segmentation =
+          static_cast<const struct v4l2_av1_segmentation*>(
+              &frame->segmentation);
+      CONTROL(segmentation, flags);
+      CONTROL(segmentation, last_active_seg_id);
+      CONTROL(segmentation, feature_enabled);
+      CONTROL(segmentation, feature_data);
+
+      const struct v4l2_av1_loop_filter* loop_filter =
+          static_cast<const struct v4l2_av1_loop_filter*>(&frame->loop_filter);
+      CONTROL(loop_filter, flags);
+      CONTROL(loop_filter, level);
+      CONTROL(loop_filter, sharpness);
+      CONTROL(loop_filter, ref_deltas);
+      CONTROL(loop_filter, mode_deltas);
+      CONTROL(loop_filter, delta_lf_res);
+
+      const struct v4l2_av1_cdef* cdef =
+          static_cast<const struct v4l2_av1_cdef*>(&frame->cdef);
+      CONTROL(cdef, damping_minus_3);
+      CONTROL(cdef, bits);
+      CONTROL(cdef, y_pri_strength);
+      CONTROL(cdef, y_sec_strength);
+      CONTROL(cdef, uv_pri_strength);
+      CONTROL(cdef, uv_sec_strength);
+
+      CONTROL(frame, skip_mode_frame);
+      CONTROL(frame, primary_ref_frame);
+
+      const struct v4l2_av1_loop_restoration* loop_restoration =
+          static_cast<const struct v4l2_av1_loop_restoration*>(
+              &frame->loop_restoration);
+      CONTROL(loop_restoration, flags);
+      CONTROL(loop_restoration, lr_unit_shift);
+      CONTROL(loop_restoration, lr_uv_shift);
+      CONTROL(loop_restoration, reserved);
+      CONTROL(loop_restoration, frame_restoration_type);
+      CONTROL(loop_restoration, loop_restoration_size);
+
+      const struct v4l2_av1_global_motion* global_motion =
+          static_cast<const struct v4l2_av1_global_motion*>(
+              &frame->global_motion);
+      CONTROL(global_motion, flags);
+      CONTROL(global_motion, type);
+      CONTROL(global_motion, params);
+      CONTROL(global_motion, invalid);
+      CONTROL(global_motion, reserved);
+
+      CONTROL(frame, flags);
+      CONTROL(frame, frame_type);
+      CONTROL(frame, order_hint);
+      CONTROL(frame, upscaled_width);
+      CONTROL(frame, interpolation_filter);
+      CONTROL(frame, tx_mode);
+      CONTROL(frame, frame_width_minus_1);
+      CONTROL(frame, frame_height_minus_1);
+      CONTROL(frame, render_width_minus_1);
+      CONTROL(frame, render_height_minus_1);
+      CONTROL(frame, current_frame_id);
+      CONTROL(frame, buffer_removal_time);
+      CONTROL(frame, reserved);
+      CONTROL(frame, order_hints);
+      CONTROL(frame, reference_frame_ts);
+      CONTROL(frame, ref_frame_idx);
+      CONTROL(frame, refresh_frame_flags);
+    } break;
+  }
+  return s.str();
+}
+
+static std::string PrintStatelessVP8Control(
+    const struct v4l2_ext_control* ext_ctrls) {
+  DCHECK_EQ(ext_ctrls->id, static_cast<uint32_t>(V4L2_CID_STATELESS_VP8_FRAME));
+
+  std::ostringstream s;
+  s << "vp8" << std::endl;
+  s << "V4L2_CID_STATELESS_VP8_FRAME" << std::endl;
+  const struct v4l2_ctrl_vp8_frame* ctrl =
+      static_cast<const struct v4l2_ctrl_vp8_frame*>(ext_ctrls->ptr);
+
+  const struct v4l2_vp8_segment* segment =
+      static_cast<const struct v4l2_vp8_segment*>(&ctrl->segment);
+  CONTROL(segment, quant_update);
+  CONTROL(segment, lf_update);
+  CONTROL(segment, segment_probs);
+  CONTROL(segment, padding);
+  CONTROL(segment, flags);
+
+  const struct v4l2_vp8_loop_filter* lf =
+      static_cast<const struct v4l2_vp8_loop_filter*>(&ctrl->lf);
+  CONTROL(lf, ref_frm_delta);
+  CONTROL(lf, mb_mode_delta);
+  CONTROL(lf, sharpness_level);
+  CONTROL(lf, level);
+  CONTROL(lf, padding);
+  CONTROL(lf, flags);
+
+  const struct v4l2_vp8_quantization* quant =
+      static_cast<const struct v4l2_vp8_quantization*>(&ctrl->quant);
+  CONTROL(quant, y_ac_qi);
+  CONTROL(quant, y_dc_delta);
+  CONTROL(quant, y2_dc_delta);
+  CONTROL(quant, y2_ac_delta);
+  CONTROL(quant, uv_dc_delta);
+  CONTROL(quant, uv_ac_delta);
+  CONTROL(quant, padding);
+
+  const struct v4l2_vp8_entropy* entropy =
+      static_cast<const struct v4l2_vp8_entropy*>(&ctrl->entropy);
+  // TODO(frkoenig): how should this be displayed?
+  // coeff_probs[4][8][3][11]
+  CONTROL(entropy, y_mode_probs);
+  CONTROL(entropy, uv_mode_probs);
+  CONTROL(entropy, mv_probs);
+  CONTROL(entropy, padding);
+
+  const struct v4l2_vp8_entropy_coder_state* coder_state =
+      static_cast<const struct v4l2_vp8_entropy_coder_state*>(
+          &ctrl->coder_state);
+  CONTROL(coder_state, range);
+  CONTROL(coder_state, value);
+  CONTROL(coder_state, bit_count);
+  CONTROL(coder_state, padding);
+
+  CONTROL(ctrl, width);
+  CONTROL(ctrl, height);
+  CONTROL(ctrl, horizontal_scale);
+  CONTROL(ctrl, vertical_scale);
+  CONTROL(ctrl, version);
+  CONTROL(ctrl, prob_skip_false);
+  CONTROL(ctrl, prob_intra);
+  CONTROL(ctrl, prob_last);
+  CONTROL(ctrl, prob_gf);
+  CONTROL(ctrl, num_dct_parts);
+  CONTROL(ctrl, first_part_size);
+  CONTROL(ctrl, first_part_header_bits);
+  CONTROL(ctrl, dct_part_sizes);
+  CONTROL(ctrl, last_frame_ts);
+  CONTROL(ctrl, golden_frame_ts);
+  CONTROL(ctrl, alt_frame_ts);
+  CONTROL(ctrl, flags);
+
+  return s.str();
+}
+
+static std::string PrintStatelessVP9Control(
+    const struct v4l2_ext_control* ext_ctrls) {
+  DCHECK_EQ(ext_ctrls->id, static_cast<uint32_t>(V4L2_CID_STATELESS_VP9_FRAME));
+
+  std::ostringstream s;
+  s << "vp9" << std::endl;
+  s << "V4L2_CID_STATELESS_VP9_FRAME" << std::endl;
+  const struct v4l2_ctrl_vp9_frame* ctrl =
+      static_cast<const struct v4l2_ctrl_vp9_frame*>(ext_ctrls->ptr);
+
+  const struct v4l2_vp9_loop_filter* lf =
+      static_cast<const struct v4l2_vp9_loop_filter*>(&ctrl->lf);
+  CONTROL(lf, ref_deltas);
+  CONTROL(lf, mode_deltas);
+  CONTROL(lf, level);
+  CONTROL(lf, sharpness);
+  CONTROL(lf, flags);
+  CONTROL(lf, reserved);
+
+  const struct v4l2_vp9_quantization* quant =
+      static_cast<const struct v4l2_vp9_quantization*>(&ctrl->quant);
+  CONTROL(quant, base_q_idx);
+  CONTROL(quant, delta_q_y_dc);
+  CONTROL(quant, delta_q_uv_dc);
+  CONTROL(quant, delta_q_uv_ac);
+  CONTROL(quant, reserved);
+
+  const struct v4l2_vp9_segmentation* seg =
+      static_cast<const struct v4l2_vp9_segmentation*>(&ctrl->seg);
+  CONTROL(seg, feature_data);
+  CONTROL(seg, feature_enabled);
+  CONTROL(seg, tree_probs);
+  CONTROL(seg, pred_probs);
+  CONTROL(seg, flags);
+  CONTROL(seg, reserved);
+
+  CONTROL(ctrl, flags);
+  CONTROL(ctrl, compressed_header_size);
+  CONTROL(ctrl, uncompressed_header_size);
+  CONTROL(ctrl, frame_width_minus_1);
+  CONTROL(ctrl, frame_height_minus_1);
+  CONTROL(ctrl, render_width_minus_1);
+  CONTROL(ctrl, render_height_minus_1);
+  CONTROL(ctrl, last_frame_ts);
+  CONTROL(ctrl, golden_frame_ts);
+  CONTROL(ctrl, alt_frame_ts);
+  CONTROL(ctrl, ref_frame_sign_bias);
+  CONTROL(ctrl, reset_frame_context);
+  CONTROL(ctrl, frame_context_idx);
+  CONTROL(ctrl, profile);
+  CONTROL(ctrl, bit_depth);
+  CONTROL(ctrl, interpolation_filter);
+  CONTROL(ctrl, tile_cols_log2);
+  CONTROL(ctrl, tile_rows_log2);
+  CONTROL(ctrl, reference_mode);
+  CONTROL(ctrl, reserved);
+
+  return s.str();
+}
+
+static std::string PrintStatelessH264Control(
+    const struct v4l2_ext_control* ext_ctrls) {
+  std::ostringstream s;
+  s << "h.264" << std::endl;
+  switch (ext_ctrls->id) {
+    case V4L2_CID_STATELESS_H264_SPS: {
+      s << "V4L2_CID_STATELESS_H264_SPS" << std::endl;
+      const struct v4l2_ctrl_h264_sps* sps =
+          static_cast<const struct v4l2_ctrl_h264_sps*>(ext_ctrls->ptr);
+      CONTROL(sps, profile_idc);
+      CONTROL(sps, constraint_set_flags);
+      CONTROL(sps, level_idc);
+      CONTROL(sps, seq_parameter_set_id);
+      CONTROL(sps, chroma_format_idc);
+      CONTROL(sps, bit_depth_luma_minus8);
+      CONTROL(sps, bit_depth_chroma_minus8);
+      CONTROL(sps, log2_max_frame_num_minus4);
+      CONTROL(sps, pic_order_cnt_type);
+      CONTROL(sps, log2_max_pic_order_cnt_lsb_minus4);
+      CONTROL(sps, max_num_ref_frames);
+      CONTROL(sps, num_ref_frames_in_pic_order_cnt_cycle);
+      CONTROL(sps, offset_for_ref_frame);
+      CONTROL(sps, offset_for_non_ref_pic);
+      CONTROL(sps, offset_for_top_to_bottom_field);
+      CONTROL(sps, pic_width_in_mbs_minus1);
+      CONTROL(sps, pic_height_in_map_units_minus1);
+      CONTROL(sps, flags);
+    } break;
+    case V4L2_CID_STATELESS_H264_PPS: {
+      s << "V4L2_CID_STATELESS_H264_PPS" << std::endl;
+      const struct v4l2_ctrl_h264_pps* pps =
+          static_cast<const struct v4l2_ctrl_h264_pps*>(ext_ctrls->ptr);
+      CONTROL(pps, pic_parameter_set_id);
+      CONTROL(pps, seq_parameter_set_id);
+      CONTROL(pps, num_slice_groups_minus1);
+      CONTROL(pps, num_ref_idx_l0_default_active_minus1);
+      CONTROL(pps, num_ref_idx_l1_default_active_minus1);
+      CONTROL(pps, weighted_bipred_idc);
+      CONTROL(pps, pic_init_qp_minus26);
+      CONTROL(pps, pic_init_qs_minus26);
+      CONTROL(pps, chroma_qp_index_offset);
+      CONTROL(pps, second_chroma_qp_index_offset);
+      CONTROL(pps, flags);
+    } break;
+    case V4L2_CID_STATELESS_H264_SCALING_MATRIX: {
+      s << "V4L2_CID_STATELESS_H264_SCALING_MATRIX" << std::endl;
+      const struct v4l2_ctrl_h264_scaling_matrix* sm =
+          static_cast<const struct v4l2_ctrl_h264_scaling_matrix*>(
+              ext_ctrls->ptr);
+      CONTROL(sm, scaling_list_4x4);
+      CONTROL(sm, scaling_list_8x8);
+    } break;
+    case V4L2_CID_STATELESS_H264_DECODE_PARAMS: {
+      s << "V4L2_CID_STATELESS_H264_DECODE_PARAMS" << std::endl;
+      const struct v4l2_ctrl_h264_decode_params* dp =
+          static_cast<const struct v4l2_ctrl_h264_decode_params*>(
+              ext_ctrls->ptr);
+      for (uint32_t i = 0; i < 16; ++i) {
+        s << "dbp entry " << +i << std::endl;
+        const struct v4l2_h264_dpb_entry* dpb =
+            static_cast<const struct v4l2_h264_dpb_entry*>(&dp->dpb[i]);
+        CONTROL(dpb, reference_ts);
+        CONTROL(dpb, pic_num);
+        CONTROL(dpb, frame_num);
+        CONTROL(dpb, fields);
+        CONTROL(dpb, top_field_order_cnt);
+        CONTROL(dpb, bottom_field_order_cnt);
+        CONTROL(dpb, flags);
+      }
+
+      CONTROL(dp, nal_ref_idc);
+      CONTROL(dp, frame_num);
+      CONTROL(dp, top_field_order_cnt);
+      CONTROL(dp, bottom_field_order_cnt);
+      CONTROL(dp, idr_pic_id);
+      CONTROL(dp, pic_order_cnt_lsb);
+      CONTROL(dp, delta_pic_order_cnt_bottom);
+      CONTROL(dp, delta_pic_order_cnt0);
+      CONTROL(dp, delta_pic_order_cnt1);
+      CONTROL(dp, dec_ref_pic_marking_bit_size);
+      CONTROL(dp, pic_order_cnt_bit_size);
+      CONTROL(dp, slice_group_change_cycle);
+      CONTROL(dp, flags);
+    } break;
+    case V4L2_CID_STATELESS_H264_DECODE_MODE: {
+      const enum v4l2_stateless_h264_decode_mode dm =
+          static_cast<const enum v4l2_stateless_h264_decode_mode>(
+              ext_ctrls->value);
+      s << "V4L2_CID_STATELESS_H264_DECODE_MODE: "
+        << (dm == V4L2_STATELESS_H264_DECODE_MODE_SLICE_BASED
+                ? "V4L2_STATELESS_H264_DECODE_MODE_SLICE_BASED"
+                : "V4L2_STATELESS_H264_DECODE_MODE_FRAME_BASED")
+        << std::endl;
+    } break;
+  }
+
+  return s.str();
+}
+
+static std::string PrintStatelessHEVCControl(
+    const struct v4l2_ext_control* ext_ctrls) {
+  std::ostringstream s;
+  s << "hevc" << std::endl;
+  switch (ext_ctrls->id) {
+    case V4L2_CID_STATELESS_HEVC_SPS: {
+      const struct v4l2_ctrl_hevc_sps* sps =
+          static_cast<const struct v4l2_ctrl_hevc_sps*>(ext_ctrls->ptr);
+      CONTROL(sps, video_parameter_set_id);
+      CONTROL(sps, seq_parameter_set_id);
+      CONTROL(sps, pic_width_in_luma_samples);
+      CONTROL(sps, pic_height_in_luma_samples);
+      CONTROL(sps, bit_depth_luma_minus8);
+      CONTROL(sps, bit_depth_chroma_minus8);
+      CONTROL(sps, log2_max_pic_order_cnt_lsb_minus4);
+      CONTROL(sps, sps_max_dec_pic_buffering_minus1);
+      CONTROL(sps, sps_max_num_reorder_pics);
+      CONTROL(sps, sps_max_latency_increase_plus1);
+      CONTROL(sps, log2_min_luma_coding_block_size_minus3);
+      CONTROL(sps, log2_diff_max_min_luma_coding_block_size);
+      CONTROL(sps, log2_min_luma_transform_block_size_minus2);
+      CONTROL(sps, log2_diff_max_min_luma_transform_block_size);
+      CONTROL(sps, max_transform_hierarchy_depth_inter);
+      CONTROL(sps, max_transform_hierarchy_depth_intra);
+      CONTROL(sps, pcm_sample_bit_depth_luma_minus1);
+      CONTROL(sps, pcm_sample_bit_depth_chroma_minus1);
+      CONTROL(sps, log2_min_pcm_luma_coding_block_size_minus3);
+      CONTROL(sps, log2_diff_max_min_pcm_luma_coding_block_size);
+      CONTROL(sps, num_short_term_ref_pic_sets);
+      CONTROL(sps, num_long_term_ref_pics_sps);
+      CONTROL(sps, chroma_format_idc);
+      CONTROL(sps, sps_max_sub_layers_minus1);
+      CONTROL(sps, flags);
+    } break;
+    case V4L2_CID_STATELESS_HEVC_PPS: {
+      const struct v4l2_ctrl_hevc_pps* pps =
+          static_cast<const struct v4l2_ctrl_hevc_pps*>(ext_ctrls->ptr);
+      CONTROL(pps, pic_parameter_set_id);
+      CONTROL(pps, num_extra_slice_header_bits);
+      CONTROL(pps, num_ref_idx_l0_default_active_minus1);
+      CONTROL(pps, num_ref_idx_l1_default_active_minus1);
+      CONTROL(pps, init_qp_minus26);
+      CONTROL(pps, diff_cu_qp_delta_depth);
+      CONTROL(pps, pps_cb_qp_offset);
+      CONTROL(pps, pps_cr_qp_offset);
+      CONTROL(pps, num_tile_columns_minus1);
+      CONTROL(pps, num_tile_rows_minus1);
+      CONTROL(pps, column_width_minus1);
+      CONTROL(pps, row_height_minus1);
+      CONTROL(pps, pps_beta_offset_div2);
+      CONTROL(pps, pps_tc_offset_div2);
+      CONTROL(pps, log2_parallel_merge_level_minus2);
+      CONTROL(pps, reserved);
+      CONTROL(pps, flags);
+    } break;
+    case V4L2_CID_STATELESS_HEVC_SCALING_MATRIX: {
+      const struct v4l2_ctrl_hevc_scaling_matrix* sm =
+          static_cast<const struct v4l2_ctrl_hevc_scaling_matrix*>(
+              ext_ctrls->ptr);
+      CONTROL(sm, scaling_list_4x4);
+      CONTROL(sm, scaling_list_8x8);
+      CONTROL(sm, scaling_list_16x16);
+      CONTROL(sm, scaling_list_32x32);
+      CONTROL(sm, scaling_list_dc_coef_16x16);
+      CONTROL(sm, scaling_list_dc_coef_32x32);
+    } break;
+    case V4L2_CID_STATELESS_HEVC_DECODE_PARAMS: {
+      const struct v4l2_ctrl_hevc_decode_params* dp =
+          static_cast<const struct v4l2_ctrl_hevc_decode_params*>(
+              ext_ctrls->ptr);
+      CONTROL(dp, pic_order_cnt_val);
+      CONTROL(dp, short_term_ref_pic_set_size);
+      CONTROL(dp, long_term_ref_pic_set_size);
+      CONTROL(dp, num_active_dpb_entries);
+      CONTROL(dp, num_poc_st_curr_before);
+      CONTROL(dp, num_poc_st_curr_after);
+      CONTROL(dp, num_poc_lt_curr);
+      CONTROL(dp, poc_st_curr_before);
+      CONTROL(dp, poc_st_curr_after);
+      CONTROL(dp, poc_lt_curr);
+      CONTROL(dp, num_delta_pocs_of_ref_rps_idx);
+      for (uint32_t i = 0; i < V4L2_HEVC_DPB_ENTRIES_NUM_MAX; ++i) {
+        s << "dbp entry " << +i << std::endl;
+        const struct v4l2_hevc_dpb_entry* dpb =
+            static_cast<const struct v4l2_hevc_dpb_entry*>(&dp->dpb[i]);
+        CONTROL(dpb, timestamp);
+        CONTROL(dpb, flags);
+        CONTROL(dpb, field_pic);
+        CONTROL(dpb, reserved);
+        CONTROL(dpb, pic_order_cnt_val);
+      }
+      CONTROL(dp, flags);
+    } break;
+  }
+
+  return s.str();
+}
+
+std::string V4L2ControlsToString(const struct v4l2_ext_controls* ctrls) {
+  const struct v4l2_ext_control* ext_ctrls = ctrls->controls;
+  std::ostringstream s;
+
+  CONTROL(ctrls, which);
+  CONTROL(ctrls, count);
+  CONTROL(ctrls, error_idx);
+  CONTROL(ctrls, request_fd);
+  CONTROL(ctrls, reserved);
+
+  for (uint32_t i = 0; i < ctrls->count; ++i) {
+    switch (ext_ctrls->id) {
+      case V4L2_CID_STATELESS_AV1_SEQUENCE:
+      case V4L2_CID_STATELESS_AV1_TILE_GROUP_ENTRY:
+      case V4L2_CID_STATELESS_AV1_FRAME:
+        s << PrintStatelessAV1Control(ext_ctrls);
+        break;
+      case V4L2_CID_STATELESS_VP8_FRAME:
+        s << PrintStatelessVP8Control(ext_ctrls);
+        break;
+      case V4L2_CID_STATELESS_VP9_FRAME:
+        s << PrintStatelessVP9Control(ext_ctrls);
+        break;
+      case V4L2_CID_STATELESS_H264_SPS:
+      case V4L2_CID_STATELESS_H264_PPS:
+      case V4L2_CID_STATELESS_H264_SCALING_MATRIX:
+      case V4L2_CID_STATELESS_H264_DECODE_PARAMS:
+      case V4L2_CID_STATELESS_H264_DECODE_MODE:
+        s << PrintStatelessH264Control(ext_ctrls);
+        break;
+      case V4L2_CID_STATELESS_HEVC_SPS:
+      case V4L2_CID_STATELESS_HEVC_PPS:
+      case V4L2_CID_STATELESS_HEVC_SCALING_MATRIX:
+      case V4L2_CID_STATELESS_HEVC_DECODE_PARAMS:
+        s << PrintStatelessHEVCControl(ext_ctrls);
+        break;
+      default:
+        s << "Unknown Control: 0x" << std::hex << ext_ctrls->id << std::endl;
+    }
+
+    ext_ctrls++;
+  }
+
+  return s.str();
+}
+#else
+std::string V4L2ControlsToString(const struct v4l2_ext_controls* ctrls) {
+  return "Use a debug build to see controls.";
+}
+#endif
 }  // namespace media
