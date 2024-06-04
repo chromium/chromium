@@ -39,7 +39,7 @@ _GSUTIL = os.path.join(_DIR_SOURCE_ROOT, 'third_party', 'depot_tools',
 
 _PUSH_URL = 'gs://chrome-supersize/milestones/'
 
-_DESIRED_CPUS = ['arm', 'arm_64']
+_DESIRED_CPUS = ['arm', 'arm_64', 'high-arm_64']
 _DESIRED_APKS = ['Monochrome.apk', 'AndroidWebview.apk', 'TrichromeGoogle']
 
 # Versions are manually gathered from
@@ -111,6 +111,7 @@ _DESIRED_VERSIONS = [
     '123.0.6312.54',
     '124.0.6367.47',
     '125.0.6422.3',
+    '126.0.6478.16',
 ]
 
 
@@ -130,8 +131,12 @@ def _IsBundle(apk, version):
 def _EnumerateReports():
   for cpu, apk in itertools.product(_DESIRED_CPUS, _DESIRED_APKS):
     versions = _DESIRED_VERSIONS
-    # Webview .size files do not exist before M71.
-    if apk == 'AndroidWebview.apk':
+    if cpu == 'high-arm_64':
+      if apk != 'TrichromeGoogle':
+        continue
+      versions = [v for v in versions if _VersionMajor(v) >= 126]
+    elif apk == 'AndroidWebview.apk':
+      # Webview .size files do not exist before M71.
       versions = [v for v in versions if _VersionMajor(v) >= 71]
     elif apk == 'TrichromeGoogle':
       versions = [v for v in versions if _VersionMajor(v) >= 88]
@@ -147,6 +152,8 @@ class Report(collections.namedtuple('Report', 'cpu,apk,version')):
     if not local and self.apk == 'TrichromeGoogle' and _VersionMajor(
         self.version) < 91:
       template = '{version}/{cpu}/for-signing-only/{apk}.size'
+    elif self.cpu == 'high-arm_64':
+      template = '{version}/{cpu}/{apk}6432.size'
     else:
       template = '{version}/{cpu}/{apk}.size'
 
