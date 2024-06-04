@@ -67,7 +67,7 @@ TEST_F(PerformanceManagerImplTest, InstantiateNodes) {
   EXPECT_NE(nullptr, process_node.get());
   std::unique_ptr<PageNodeImpl> page_node =
       PerformanceManagerImpl::CreatePageNode(
-          WebContentsProxy(), std::string(), GURL(), PagePropertyFlags{},
+          nullptr, std::string(), GURL(), PagePropertyFlags{},
           base::TimeTicks::Now(), PageNode::PageState::kActive);
   EXPECT_NE(nullptr, page_node.get());
 
@@ -113,7 +113,7 @@ TEST_F(PerformanceManagerImplTest, BatchDeleteNodes) {
           base::TaskPriority::HIGHEST);
   std::unique_ptr<PageNodeImpl> page_node =
       PerformanceManagerImpl::CreatePageNode(
-          WebContentsProxy(), std::string(), GURL(), PagePropertyFlags{},
+          nullptr, std::string(), GURL(), PagePropertyFlags{},
           base::TimeTicks::Now(), PageNode::PageState::kActive);
 
   std::unique_ptr<FrameNodeImpl> parent1_frame =
@@ -170,7 +170,7 @@ TEST_F(PerformanceManagerImplTest, CallOnGraphImpl) {
   // Create a page node for something to target.
   std::unique_ptr<PageNodeImpl> page_node =
       PerformanceManagerImpl::CreatePageNode(
-          WebContentsProxy(), std::string(), GURL(), PagePropertyFlags{},
+          nullptr, std::string(), GURL(), PagePropertyFlags{},
           base::TimeTicks::Now(), PageNode::PageState::kActive);
   base::RunLoop run_loop;
   base::OnceClosure quit_closure = run_loop.QuitClosure();
@@ -192,7 +192,7 @@ TEST_F(PerformanceManagerImplTest, CallOnGraphAndReplyWithResult) {
   // Create a page node for something to target.
   std::unique_ptr<PageNodeImpl> page_node =
       PerformanceManagerImpl::CreatePageNode(
-          WebContentsProxy(), std::string(), GURL(), PagePropertyFlags{},
+          nullptr, std::string(), GURL(), PagePropertyFlags{},
           base::TimeTicks::Now(), PageNode::PageState::kActive);
   base::RunLoop run_loop;
 

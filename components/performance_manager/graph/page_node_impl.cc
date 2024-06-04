@@ -5,6 +5,7 @@
 #include "components/performance_manager/graph/page_node_impl.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
@@ -16,6 +17,7 @@
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/public/graph/graph_operations.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/web_contents.h"
 
 namespace performance_manager {
 
@@ -51,13 +53,13 @@ bool IsValidPageStateTransition(PageState old_state, PageState new_state) {
 
 }  // namespace
 
-PageNodeImpl::PageNodeImpl(const WebContentsProxy& contents_proxy,
+PageNodeImpl::PageNodeImpl(base::WeakPtr<content::WebContents> web_contents,
                            const std::string& browser_context_id,
                            const GURL& visible_url,
                            PagePropertyFlags initial_properties,
                            base::TimeTicks visibility_change_time,
                            PageState page_state)
-    : contents_proxy_(contents_proxy),
+    : web_contents_(std::move(web_contents)),
       visibility_change_time_(visibility_change_time),
       main_frame_url_(visible_url),
       browser_context_id_(browser_context_id),
@@ -225,8 +227,12 @@ bool PageNodeImpl::HadUserEdits() const {
   return had_user_edits_.value();
 }
 
-const WebContentsProxy& PageNodeImpl::GetContentsProxy() const {
-  return contents_proxy();
+base::WeakPtr<content::WebContents> PageNodeImpl::GetWebContents() const {
+  return web_contents_;
+}
+
+WebContentsProxy PageNodeImpl::GetContentsProxy() const {
+  return WebContentsProxy(web_contents_);
 }
 
 PageState PageNodeImpl::GetPageState() const {
@@ -254,10 +260,6 @@ uint64_t PageNodeImpl::EstimatePrivateFootprintSize() const {
         return true;
       });
   return total;
-}
-
-const WebContentsProxy& PageNodeImpl::contents_proxy() const {
-  return contents_proxy_;
 }
 
 base::WeakPtr<PageNodeImpl> PageNodeImpl::GetWeakPtrOnUIThread() {

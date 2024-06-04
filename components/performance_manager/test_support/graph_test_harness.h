@@ -13,6 +13,7 @@
 
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/test/task_environment.h"
 #include "components/performance_manager/embedder/graph_features.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
@@ -31,6 +32,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "url/origin.h"
+
+namespace content {
+class WebContents;
+}
 
 namespace performance_manager {
 
@@ -173,15 +178,15 @@ struct TestNodeWrapper<ProcessNodeImpl>::Factory {
 template <>
 struct TestNodeWrapper<PageNodeImpl>::Factory {
   static std::unique_ptr<PageNodeImpl> Create(
-      const WebContentsProxy& wc_proxy = WebContentsProxy(),
+      base::WeakPtr<content::WebContents> web_contents = nullptr,
       const std::string& browser_context_id = std::string(),
       const GURL& url = GURL(),
       PagePropertyFlags initial_property_flags = {},
       base::TimeTicks visibility_change_time = base::TimeTicks::Now(),
       PageNode::PageState page_state = PageNode::PageState::kActive) {
-    return std::make_unique<PageNodeImpl>(wc_proxy, browser_context_id, url,
-                                          initial_property_flags,
-                                          visibility_change_time, page_state);
+    return std::make_unique<PageNodeImpl>(
+        std::move(web_contents), browser_context_id, url,
+        initial_property_flags, visibility_change_time, page_state);
   }
 };
 

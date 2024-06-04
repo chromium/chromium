@@ -107,8 +107,7 @@ PerformanceManagerTabHelper::PerformanceManagerTabHelper(
   // Create the page node.
   std::unique_ptr<PageData> page = std::make_unique<PageData>();
   page->page_node = PerformanceManagerImpl::CreatePageNode(
-      WebContentsProxy(web_contents->GetWeakPtr()),
-      web_contents->GetBrowserContext()->UniqueId(),
+      web_contents->GetWeakPtr(), web_contents->GetBrowserContext()->UniqueId(),
       web_contents->GetVisibleURL(), initial_property_flags,
       web_contents->GetLastActiveTime(),
       // TODO(crbug.com/40182881): Support MPArch fully!

@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "components/performance_manager/public/graph/frame_node.h"
@@ -76,10 +77,12 @@ TEST_F(PerformanceManagerTest, NodeAccessors) {
   // will ensure that the nodes are really associated with the content objects.
 
   base::RunLoop run_loop;
-  auto check_proxies_on_main_thread =
-      base::BindLambdaForTesting([&](const WebContentsProxy& wc_proxy,
-                                     const RenderFrameHostProxy& rfh_proxy,
-                                     const RenderProcessHostProxy& rph_proxy) {
+  auto check_proxies_on_main_thread = base::BindLambdaForTesting(
+      [&](base::WeakPtr<content::WebContents> weak_contents,
+          const WebContentsProxy& wc_proxy,
+          const RenderFrameHostProxy& rfh_proxy,
+          const RenderProcessHostProxy& rph_proxy) {
+        EXPECT_EQ(contents.get(), weak_contents.get());
         EXPECT_EQ(contents.get(), wc_proxy.Get());
         EXPECT_EQ(rfh, rfh_proxy.Get());
         EXPECT_EQ(rph, rph_proxy.Get());
@@ -92,6 +95,7 @@ TEST_F(PerformanceManagerTest, NodeAccessors) {
     EXPECT_TRUE(process_node.get());
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(std::move(check_proxies_on_main_thread),
+                                  page_node->GetWebContents(),
                                   page_node->GetContentsProxy(),
                                   frame_node->GetRenderFrameHostProxy(),
                                   process_node->GetRenderProcessHostProxy()));

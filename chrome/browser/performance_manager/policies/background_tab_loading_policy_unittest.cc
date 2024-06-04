@@ -344,8 +344,7 @@ TEST_F(BackgroundTabLoadingPolicyTest, ShouldLoad_OldTab) {
   PageNode* raw_page_node;
 
   page_node = CreateNode<performance_manager::PageNodeImpl>(
-      WebContentsProxy(), std::string(), GURL(),
-      performance_manager::PagePropertyFlags{},
+      nullptr, std::string(), GURL(), performance_manager::PagePropertyFlags{},
       base::TimeTicks::Now() -
           (base::Seconds(1) + policy()->kMaxTimeSinceLastUseToLoad));
   raw_page_node = page_node.get();
@@ -368,7 +367,7 @@ TEST_F(BackgroundTabLoadingPolicyTest, RemoveTabWithNotificationPermission) {
   // Tab without notification permission.
   auto page_node_without_notification_permission =
       CreateNode<performance_manager::PageNodeImpl>(
-          WebContentsProxy(), std::string(), GURL(),
+          nullptr, std::string(), GURL(),
           performance_manager::PagePropertyFlags{},
           base::TimeTicks::Now() - base::Days(1));
   policy()->SetSiteDataReaderForPageNode(
@@ -382,7 +381,7 @@ TEST_F(BackgroundTabLoadingPolicyTest, RemoveTabWithNotificationPermission) {
   // Tab with notification permission.
   auto page_node_with_notification_permission =
       CreateNode<performance_manager::PageNodeImpl>(
-          WebContentsProxy(), std::string(), GURL(),
+          nullptr, std::string(), GURL(),
           performance_manager::PagePropertyFlags{},
           base::TimeTicks::Now() - base::Days(1));
   policy()->SetSiteDataReaderForPageNode(
@@ -430,8 +429,7 @@ TEST_F(BackgroundTabLoadingPolicyTest, ScoreAndScheduleTabLoad) {
 
   // Old
   page_nodes.push_back(CreateNode<performance_manager::PageNodeImpl>(
-      WebContentsProxy(), std::string(), GURL(),
-      performance_manager::PagePropertyFlags{},
+      nullptr, std::string(), GURL(), performance_manager::PagePropertyFlags{},
       base::TimeTicks::Now() - base::Days(30)));
   policy()->SetSiteDataReaderForPageNode(page_nodes.back().get(),
                                          &site_data_reader_default);
@@ -441,8 +439,7 @@ TEST_F(BackgroundTabLoadingPolicyTest, ScoreAndScheduleTabLoad) {
 
   // Recent
   page_nodes.push_back(CreateNode<performance_manager::PageNodeImpl>(
-      WebContentsProxy(), std::string(), GURL(),
-      performance_manager::PagePropertyFlags{},
+      nullptr, std::string(), GURL(), performance_manager::PagePropertyFlags{},
       base::TimeTicks::Now() - base::Seconds(1)));
   policy()->SetSiteDataReaderForPageNode(page_nodes.back().get(),
                                          &site_data_reader_default);
@@ -453,8 +450,7 @@ TEST_F(BackgroundTabLoadingPolicyTest, ScoreAndScheduleTabLoad) {
   // Slightly older tabs which were observed updating their title or favicon or
   // playing audio in the background
   page_nodes.push_back(CreateNode<performance_manager::PageNodeImpl>(
-      WebContentsProxy(), std::string(), GURL(),
-      performance_manager::PagePropertyFlags{},
+      nullptr, std::string(), GURL(), performance_manager::PagePropertyFlags{},
       base::TimeTicks::Now() - base::Seconds(2)));
   policy()->SetSiteDataReaderForPageNode(page_nodes.back().get(),
                                          &site_data_reader_title);
@@ -463,8 +459,7 @@ TEST_F(BackgroundTabLoadingPolicyTest, ScoreAndScheduleTabLoad) {
   to_load.push_back(title);
 
   page_nodes.push_back(CreateNode<performance_manager::PageNodeImpl>(
-      WebContentsProxy(), std::string(), GURL(),
-      performance_manager::PagePropertyFlags{},
+      nullptr, std::string(), GURL(), performance_manager::PagePropertyFlags{},
       base::TimeTicks::Now() - base::Seconds(3)));
   policy()->SetSiteDataReaderForPageNode(page_nodes.back().get(),
                                          &site_data_reader_favicon);
@@ -473,8 +468,7 @@ TEST_F(BackgroundTabLoadingPolicyTest, ScoreAndScheduleTabLoad) {
   to_load.push_back(favicon);
 
   page_nodes.push_back(CreateNode<performance_manager::PageNodeImpl>(
-      WebContentsProxy(), std::string(), GURL(),
-      performance_manager::PagePropertyFlags{},
+      nullptr, std::string(), GURL(), performance_manager::PagePropertyFlags{},
       base::TimeTicks::Now() - base::Seconds(4)));
   policy()->SetSiteDataReaderForPageNode(page_nodes.back().get(),
                                          &site_data_reader_audio);
@@ -484,7 +478,7 @@ TEST_F(BackgroundTabLoadingPolicyTest, ScoreAndScheduleTabLoad) {
 
   //  Internal page
   page_nodes.push_back(CreateNode<performance_manager::PageNodeImpl>(
-      WebContentsProxy(), std::string(), GURL("chrome://newtab"),
+      nullptr, std::string(), GURL("chrome://newtab"),
       performance_manager::PagePropertyFlags{},
       base::TimeTicks::Now() - base::Seconds(1)));
   policy()->SetSiteDataReaderForPageNode(page_nodes.back().get(),
@@ -495,7 +489,7 @@ TEST_F(BackgroundTabLoadingPolicyTest, ScoreAndScheduleTabLoad) {
 
   //  Page with notification permission
   page_nodes.push_back(CreateNode<performance_manager::PageNodeImpl>(
-      WebContentsProxy(), std::string(), GURL("chrome://newtab"),
+      nullptr, std::string(), GURL("chrome://newtab"),
       performance_manager::PagePropertyFlags{},
       base::TimeTicks::Now() - base::Seconds(1)));
   policy()->SetSiteDataReaderForPageNode(page_nodes.back().get(),

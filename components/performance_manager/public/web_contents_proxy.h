@@ -33,7 +33,7 @@ class WebContentsProxy {
   content::WebContents* Get() const;
 
  protected:
-  friend class PerformanceManagerTabHelper;
+  friend class PageNodeImpl;
 
   explicit WebContentsProxy(base::WeakPtr<content::WebContents> web_contents);
 

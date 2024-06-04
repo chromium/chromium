@@ -22,6 +22,10 @@
 
 class GURL;
 
+namespace content {
+class WebContents;
+}
+
 namespace performance_manager {
 
 class FrameNode;
@@ -237,7 +241,13 @@ class PageNode : public Node {
   // Returns the web contents associated with this page node. It is valid to
   // call this function on any thread but the weak pointer must only be
   // dereferenced on the UI thread.
-  virtual const WebContentsProxy& GetContentsProxy() const = 0;
+  virtual base::WeakPtr<content::WebContents> GetWebContents() const = 0;
+
+  // Returns the web contents associated with this page node. It is valid to
+  // call this function on any thread but the weak pointer must only be
+  // dereferenced on the UI thread.
+  // DEPRECATED: Prefer GetWebContents().
+  virtual WebContentsProxy GetContentsProxy() const = 0;
 
   // Returns the current page state. See "PageNodeObserver::OnPageStateChanged".
   virtual PageState GetPageState() const = 0;

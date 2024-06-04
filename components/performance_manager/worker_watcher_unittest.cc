@@ -622,7 +622,7 @@ class TestFrameNodeSource : public FrameNodeSource {
 
 TestFrameNodeSource::TestFrameNodeSource()
     : page_node_(PerformanceManagerImpl::CreatePageNode(
-          WebContentsProxy(),
+          nullptr,
           "page_node_context_id",
           GURL(),
           PagePropertyFlags{},

@@ -14,7 +14,6 @@
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/public/freezing/freezing.h"
 #include "components/performance_manager/public/graph/page_node.h"
-#include "components/performance_manager/public/web_contents_proxy.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/mock_graphs.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -125,7 +124,7 @@ TEST_F(PageNodeImplTest, GetTimeSinceLastAudibleChange) {
 
   // Test a page that's audible at creation.
   auto audible_page = CreateNode<PageNodeImpl>(
-      WebContentsProxy(), /*browser_context_id=*/std::string(), GURL(),
+      nullptr, /*browser_context_id=*/std::string(), GURL(),
       PagePropertyFlags{PagePropertyFlag::kIsAudible});
   AdvanceClock(base::Seconds(56));
   EXPECT_EQ(base::Seconds(56), audible_page->GetTimeSinceLastAudibleChange());
@@ -185,8 +184,7 @@ TEST_F(PageNodeImplTest, GetTimeSinceLastNavigation) {
 TEST_F(PageNodeImplTest, BrowserContextID) {
   const std::string kTestBrowserContextId =
       base::UnguessableToken::Create().ToString();
-  auto page_node =
-      CreateNode<PageNodeImpl>(WebContentsProxy(), kTestBrowserContextId);
+  auto page_node = CreateNode<PageNodeImpl>(nullptr, kTestBrowserContextId);
 
   EXPECT_EQ(page_node->GetBrowserContextID(), kTestBrowserContextId);
 }
@@ -498,7 +496,7 @@ TEST_F(PageNodeImplTest, BackForwardCache) {
 TEST_F(PageNodeImplTest, Prerendering) {
   auto process = CreateNode<ProcessNodeImpl>();
   auto page = CreateNode<PageNodeImpl>(
-      WebContentsProxy(),                   // wc_proxy
+      nullptr,                              // web_contents
       std::string(),                        // browser_context_id
       GURL(),                               // url
       PagePropertyFlags{},                  // initial_property_flags

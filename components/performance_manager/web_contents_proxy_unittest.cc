@@ -58,7 +58,7 @@ TEST_F(WebContentsProxyTest, EndToEnd) {
             [&deref_proxy, page_node, quit_loop = run_loop.QuitClosure()]() {
               content::GetUIThreadTaskRunner({})->PostTask(
                   FROM_HERE,
-                  base::BindOnce(deref_proxy, page_node->contents_proxy(),
+                  base::BindOnce(deref_proxy, page_node->GetContentsProxy(),
                                  std::move(quit_loop)));
             }));
     run_loop.Run();
@@ -79,7 +79,7 @@ TEST_F(WebContentsProxyTest, EndToEnd) {
               base::BindLambdaForTesting([&contents]() { contents.reset(); }));
           content::GetUIThreadTaskRunner({})->PostTask(
               FROM_HERE,
-              base::BindOnce(deref_proxy, page_node->contents_proxy(),
+              base::BindOnce(deref_proxy, page_node->GetContentsProxy(),
                              std::move(quit_loop)));
         }));
     run_loop.Run();

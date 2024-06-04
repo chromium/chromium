@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/performance_manager/graph/graph_impl.h"
@@ -23,13 +24,16 @@
 #include "components/performance_manager/public/graph/worker_node.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/public/render_process_host_proxy.h"
-#include "components/performance_manager/public/web_contents_proxy.h"
 #include "content/public/browser/browsing_instance_id.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/common/process_type.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
 class GURL;
+
+namespace content {
+class WebContents;
+}
 
 namespace url {
 class Origin;
@@ -111,7 +115,7 @@ class PerformanceManagerImpl : public PerformanceManager {
       FrameNodeCreationCallback creation_callback =
           FrameNodeCreationCallback());
   static std::unique_ptr<PageNodeImpl> CreatePageNode(
-      const WebContentsProxy& contents_proxy,
+      base::WeakPtr<content::WebContents> web_contents,
       const std::string& browser_context_id,
       const GURL& visible_url,
       PagePropertyFlags initial_properties,

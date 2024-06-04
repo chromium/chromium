@@ -32,6 +32,7 @@
 #include "components/performance_manager/public/features.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/web_contents.h"
 #include "url/origin.h"
 
 namespace performance_manager {
@@ -246,16 +247,16 @@ std::unique_ptr<FrameNodeImpl> PerformanceManagerImpl::CreateFrameNode(
 
 // static
 std::unique_ptr<PageNodeImpl> PerformanceManagerImpl::CreatePageNode(
-    const WebContentsProxy& contents_proxy,
+    base::WeakPtr<content::WebContents> web_contents,
     const std::string& browser_context_id,
     const GURL& visible_url,
     PagePropertyFlags initial_property_flags,
     base::TimeTicks visibility_change_time,
     PageNode::PageState page_state) {
-  return CreateNodeImpl<PageNodeImpl>(base::OnceCallback<void(PageNodeImpl*)>(),
-                                      contents_proxy, browser_context_id,
-                                      visible_url, initial_property_flags,
-                                      visibility_change_time, page_state);
+  return CreateNodeImpl<PageNodeImpl>(
+      base::OnceCallback<void(PageNodeImpl*)>(), std::move(web_contents),
+      browser_context_id, visible_url, initial_property_flags,
+      visibility_change_time, page_state);
 }
 
 // static

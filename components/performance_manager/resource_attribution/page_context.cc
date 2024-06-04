@@ -54,7 +54,7 @@ std::optional<PageContext> PageContext::FromWebContents(
   PageNodeImpl* node_impl = tab_helper->primary_page_node();
   CHECK(node_impl);
   return PageContext(node_impl->page_token().value(),
-                     node_impl->contents_proxy(),
+                     node_impl->GetContentsProxy(),
                      node_impl->GetWeakPtrOnUIThread());
 }
 
@@ -75,7 +75,7 @@ PageContext PageContext::FromPageNode(const PageNode* node) {
   auto* node_impl = PageNodeImpl::FromNode(node);
 
   return PageContext(node_impl->page_token().value(),
-                     node_impl->contents_proxy(), node_impl->GetWeakPtr());
+                     node_impl->GetContentsProxy(), node_impl->GetWeakPtr());
 }
 
 // static
