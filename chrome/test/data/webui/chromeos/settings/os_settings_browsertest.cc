@@ -1528,6 +1528,14 @@ IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTestAppParentalControlsEnabled,
 }
 
 IN_PROC_BROWSER_TEST_P(
+    OSSettingsRevampMochaTestAppParentalControlsEnabled,
+    OsAppsPageAppParentalControlsPageAppVerifyPinDialogTest) {
+  RunSettingsTest(
+      "os_apps_page/app_parental_controls_page/"
+      "app_verify_pin_dialog_test.js");
+}
+
+IN_PROC_BROWSER_TEST_P(
     OSSettingsRevampMochaTest,
     OsAppsPageManageIsolatedWebAppsPageManageIsolatedWebAppsSubpage) {
   RunSettingsTest(

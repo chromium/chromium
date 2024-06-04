@@ -20,18 +20,19 @@ import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js
 import {PinKeyboardElement} from 'chrome://resources/ash/common/quick_unlock/pin_keyboard.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {PIN_LENGTH} from './app_setup_pin_keyboard.js';
 import {getTemplate} from './app_verify_pin_dialog.html.js';
 
 const AppVerifyPinDialogElementBase = PrefsMixin(I18nMixin(PolymerElement));
 
-interface AppVerifyPinDialogElement {
+export interface AppVerifyPinDialogElement {
   $: {
     dialog: CrDialogElement,
     pinKeyboard: PinKeyboardElement,
   };
 }
 
-class AppVerifyPinDialogElement extends AppVerifyPinDialogElementBase {
+export class AppVerifyPinDialogElement extends AppVerifyPinDialogElementBase {
   static get is() {
     return 'app-verify-pin-dialog' as const;
   }
@@ -44,7 +45,7 @@ class AppVerifyPinDialogElement extends AppVerifyPinDialogElementBase {
     return {
       /**
        * Whether verification of the entered PIN is in progress.
-       * If true, the PIN keyboard input should be disabled.
+       * If true, the PIN keyboard input and confirm button should be disabled.
        */
       isVerificationPending_: {
         type: Boolean,
@@ -56,6 +57,7 @@ class AppVerifyPinDialogElement extends AppVerifyPinDialogElementBase {
        */
       pinValue_: {
         type: String,
+        value: '',
       },
 
       /**
@@ -97,6 +99,10 @@ class AppVerifyPinDialogElement extends AppVerifyPinDialogElementBase {
     // Stop propagation to keep the subpage from opening.
     e.stopPropagation();
     this.close();
+  }
+
+  private isConfirmDisabled_(): boolean {
+    return this.isVerificationPending_ || this.pinValue_.length !== PIN_LENGTH;
   }
 
   /**

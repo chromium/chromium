@@ -29,7 +29,7 @@ enum MessageType {
   NUMBERS_ONLY = 'appParentalControlsPinNumericErrorText',
 }
 
-const PIN_LENGTH = 6;
+export const PIN_LENGTH = 6;
 
 const AppSetupPinKeyboardElementBase = (PrefsMixin(I18nMixin(PolymerElement)));
 

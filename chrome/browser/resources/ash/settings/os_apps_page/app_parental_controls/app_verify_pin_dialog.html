@@ -71,8 +71,14 @@
         target="_blank">
       $i18n{appParentalControlsForgotPinLinkName}
     </a>
-    <cr-button class="cancel-button" on-click="onCancelClick_">
-      $i18n{cancel}
-    </cr-button>
+    <div>
+      <cr-button class="cancel-button" on-click="onCancelClick_">
+        $i18n{cancel}
+      </cr-button>
+      <cr-button class="action-button" on-click="onPinSubmit_"
+          disabled="[[isConfirmDisabled_(pinValue_, isVerificationPending_)]]">
+        $i18n{confirm}
+      </cr-button>
+    </div>
   </div>
 </cr-dialog>
