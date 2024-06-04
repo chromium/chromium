@@ -440,7 +440,7 @@ BASE_FEATURE(kSharedZstd, "SharedZstd", base::FEATURE_ENABLED_BY_DEFAULT);
 // to observers via OnCookiesAccessed.
 BASE_FEATURE(kCookieAccessDetailsNotificationDeDuping,
              "CookieAccessDetailsNotificationDeDuping",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // This feature will reduce TransferSizeUpdated IPC from the network service.
 // When enabled, the network service will send the IPC only when DevTools is
