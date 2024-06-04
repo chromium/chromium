@@ -2897,11 +2897,6 @@ Called by update_net_error_codes.py.-->
   <int value="1" label="Update"/>
 </enum>
 
-<enum name="CompositorType">
-  <int value="0" label="Software compositor"/>
-  <int value="1" label="GPU compositor"/>
-</enum>
-
 <enum name="ConfigParsingEvent">
   <int value="0" label="SUCCESS"/>
   <int value="1" label="FAILURE"/>
@@ -5598,19 +5593,6 @@ Called by update_document_policy_enum.py.-->
   <int value="17" label="Books"/>
   <int value="18" label="Technology"/>
   <int value="19" label="Science"/>
-</enum>
-
-<enum name="ExploreSitesStoreEvent">
-  <int value="0" label="Store opened first time">
-    Store was opened for this first time during this session.
-  </int>
-  <int value="1" label="Store reopened">
-    Store was opened after closing at least once during this session.
-  </int>
-  <int value="2" label="Store closed">Store was closed.</int>
-  <int value="3" label="Store closing skipped">
-    Store closing was skipped, because it was not opened at the time of closing.
-  </int>
 </enum>
 
 <enum name="ExtensionInProgressRequestState">
@@ -34972,14 +34954,6 @@ Called by update_use_counter_feature_enum.py.-->
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/ui/toolbar/app_menu_model.h:AppMenuAction) -->
-
-<enum name="XHRPageDismissalState">
-  <int value="0" label="No page dismissal."/>
-  <int value="1" label="Page dismissal: beforeunload."/>
-  <int value="2" label="Page dismissal: pagehide."/>
-  <int value="3" label="Page dismissal: visibility change (during unload)."/>
-  <int value="4" label="Page dismissal: unload."/>
-</enum>
 
 <enum name="XRFeatureRequestStatus">
   <int value="0" label="NotRequested"/>

@@ -2033,14 +2033,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Aura.CreatedGpuBrowserCompositor" enum="CompositorType"
-    expires_after="2020-04-05">
-  <owner>jbauman@chromium.org</owner>
-  <summary>
-    Whether the browser compositor uses GPU or the software renderer.
-  </summary>
-</histogram>
-
 <histogram name="BlueZ.ChipLost2" units="seconds" expires_after="2024-04-28">
   <owner>sonnysasaka@chromium.org</owner>
   <owner>chromeos-bt-platform-sw-core@google.com</owner>
@@ -2793,95 +2785,6 @@ chromium-metrics-reviews@google.com.
     Time to complete an Install or an Update component update call. Warning:
     this histogram was expired from 2022-12-20 to 2023-12-04; data may be
     missing.
-  </summary>
-</histogram>
-
-<histogram name="Conflicts.ConfirmedBadModules" units="modules"
-    expires_after="2018-08-30">
-  <owner>chrisha@chromium.org</owner>
-  <summary>
-    The number of confirmed bad modules found during module enumeration.
-  </summary>
-</histogram>
-
-<histogram name="Conflicts.EnumerateLoadedModules" units="ms"
-    expires_after="2018-08-30">
-  <owner>chrisha@chromium.org</owner>
-  <summary>
-    The length of time it takes to enumerate the loaded modules in the browser
-    process.
-  </summary>
-</histogram>
-
-<histogram name="Conflicts.EnumerateShellExtensions" units="ms"
-    expires_after="2018-08-30">
-  <owner>chrisha@chromium.org</owner>
-  <summary>
-    The length of time it takes to enumerate the shell extensions.
-  </summary>
-</histogram>
-
-<histogram name="Conflicts.EnumerateWinsockModules" units="ms"
-    expires_after="2018-08-30">
-  <owner>chrisha@chromium.org</owner>
-  <summary>
-    The length of time it takes to enumerate the Winsock LSP modules.
-  </summary>
-</histogram>
-
-<histogram name="Conflicts.EnumerationInspectionTime" units="ms"
-    expires_after="2018-08-30">
-  <owner>chrisha@chromium.org</owner>
-  <summary>
-    The cumulative length of time it takes to inspect all modules on disk,
-    extracting their certificates and version information. This work is actually
-    spread out over a much longer period of time so as not to impact the user.
-  </summary>
-</histogram>
-
-<histogram name="Conflicts.EnumerationTotalTime" units="ms"
-    expires_after="2018-08-30">
-  <owner>chrisha@chromium.org</owner>
-  <summary>
-    The cumulative length of time it takes to enumerate and inspect all modules.
-    This work is actually spread out over a much longer period of time so as not
-    to impact the user.
-  </summary>
-</histogram>
-
-<histogram name="Conflicts.SuspectedBadModules" units="modules"
-    expires_after="2018-08-30">
-  <owner>chrisha@chromium.org</owner>
-  <summary>
-    The number of suspected bad modules found during module enumeration.
-  </summary>
-</histogram>
-
-<histogram name="ConnectivityDiagnostics.ChromeOsSignalStrength" units="%"
-    expires_after="2020-06-28">
-  <owner>ebeach@google.com</owner>
-  <summary>
-    Connectivity Diagnostics App: WiFi signal strength recorded during
-    NIC_SIGNAL_STRENGTH test.
-
-    The &quot;Strength&quot; property of a WiFi signal is a partially-reversible
-    function that linearly maps the RSSI range -120dBm to -20dBm to Strength
-    values from 0 to 100.
-  </summary>
-</histogram>
-
-<histogram name="ConnectivityDiagnostics.RESOLVER_LATENCY" units="ms"
-    expires_after="M83">
-  <owner>ebeach@google.com</owner>
-  <summary>
-    Resolution latency seen by the Connectivity Diagnostics.
-
-    Resolver latency is computed by using the chrome.dns API to query three
-    randomly generated Google hostnames (*-ccd-testing-v4.metric.gstatic.com).
-    The random hostnames guarantees that there will be no caching of DNS
-    hostnames. The time taken from issuing the DNS request to receiving a
-    response is clocked in JavaScript and the arithmetic mean of the three times
-    is used as the resolver latency.
   </summary>
 </histogram>
 
@@ -5351,29 +5254,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ExploreSites.ClickedNTPCategoryIndex"
-    enum="MostVisitedTileIndex" expires_after="2020-04-05">
-  <owner>dimich@chromium.org</owner>
-  <summary>
-    0-based index of a category tile on NTP which was clicked by the user.
-    Indices are assigned by counting category tiles left-to-right, top-to-bottom
-    as they appear on NTP. Recorded on click.
-  </summary>
-</histogram>
-
-<histogram name="ExploreSites.ExploreSitesStore.StoreEvent"
-    enum="ExploreSitesStoreEvent" expires_after="M81">
-  <owner>dewittj@chromium.org</owner>
-  <summary>Counts when the explore sites store is opened or closed.</summary>
-</histogram>
-
-<histogram name="ExploreSites.ImageDecoded" enum="Boolean"
-    expires_after="2020-06-30">
-  <owner>freedjm@chromium.org</owner>
-  <owner>chrome-explore-team@google.com</owner>
-  <summary>Tracks the result of image decoding for the favicons.</summary>
-</histogram>
-
 <histogram name="ExploreSites.MonthlyHostCount" units="hosts"
     expires_after="2023-11-12">
   <owner>dimich@chromium.org</owner>
@@ -6296,29 +6176,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="FontFallback.GetLinkedFonts.CacheMissTiming" units="ms"
-    expires_after="2021-01-01">
-  <owner>drott@chromium.org</owner>
-  <owner>etienneb@chromium.org</owner>
-  <summary>
-    Time to retrieve the fallback fonts on the system when not found in cache.
-  </summary>
-</histogram>
-
-<histogram name="FontFallback.GetLinkedFonts.FontCount" units="count"
-    expires_after="2021-01-01">
-  <owner>drott@chromium.org</owner>
-  <owner>etienneb@chromium.org</owner>
-  <summary>The amount of font returned for a given font family.</summary>
-</histogram>
-
-<histogram name="FontFallback.GetLinkedFonts.Timing" units="ms"
-    expires_after="2021-01-01">
-  <owner>drott@chromium.org</owner>
-  <owner>etienneb@chromium.org</owner>
-  <summary>Time to retrieve the fallback fonts on the system.</summary>
-</histogram>
-
 <histogram name="Gaia.AuthFetcher.ListAccounts.NetErrorCodes"
     enum="NetErrorCodes" expires_after="never">
 <!-- expires-never: used to monitor and troubleshoot the signin component -->
@@ -6933,17 +6790,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Linux.ProxyLocaltimeCallToBrowserUs" units="microseconds"
-    expires_after="2021-09-01">
-  <owner>kylechar@chromium.org</owner>
-  <owner>mpdenton@chromium.org</owner>
-  <summary>
-    The time taken for localtime_r() call to proxied from a sandboxed process to
-    the browser and a response returned back in microseconds. This histogram is
-    only recorded on Linux, where all users have high-resolution clocks.
-  </summary>
-</histogram>
-
 <histogram name="Linux.SandboxStatus" enum="LinuxSandboxStatus"
     expires_after="2024-11-03">
   <owner>mpdenton@google.com</owner>
@@ -7284,16 +7130,6 @@ chromium-metrics-reviews@google.com.
   <owner>bgeffon@chromium.org</owner>
   <owner>rockot@google.com</owner>
   <summary>The size of a message written to a channel.</summary>
-</histogram>
-
-<histogram name="Mojo.Channel.WriteQueued" enum="Boolean"
-    expires_after="2021-07-01">
-  <owner>amistry@chromium.org</owner>
-  <owner>bgeffon@chromium.org</owner>
-  <owner>rockot@google.com</owner>
-  <summary>
-    Tracks whether or not a message is written directly to a channel or queued.
-  </summary>
 </histogram>
 
 <histogram name="Mojo.Channel.WriteQueuePendingMessages" units="count"
@@ -9175,18 +9011,6 @@ chromium-metrics-reviews@google.com.
     database initialization fails when the DB initialization attempt is made,
     which typically occurs upon the first network request after startup.
     Catastrophic errors are defined in sql::IsErrorCatastrophic.
-  </summary>
-</histogram>
-
-<histogram name="ResourceScheduler.PeakObservedQueueingDelay" units="ms"
-    expires_after="2021-09-01">
-  <owner>tbansal@chromium.org</owner>
-  <owner>dougarnett@chromium.org</owner>
-  <summary>
-    Within a request's lifetime, the peak observed queueing delay tells whether
-    the request was affected by the network congestion. Records the maximum
-    network queueing delay when the given request was in-flight. This is emitted
-    when the request is completed.
   </summary>
 </histogram>
 
@@ -11257,11 +11081,6 @@ features through Chrome Labs. -->
   </summary>
 </histogram>
 
-<histogram name="UserImage.ProfileDownloadTime" units="ms" expires_after="M81">
-  <owner>achuith@chromium.org</owner>
-  <summary>The time it took to download user's profile picture.</summary>
-</histogram>
-
 <histogram name="UserManager.LoginUserType" enum="UserType"
     expires_after="2025-04-24">
   <owner>achuith@chromium.org</owner>
@@ -11309,13 +11128,6 @@ regressions. -->
     This is logged when new user type reported by Gaia is different from the old
     one (for existing user).
   </summary>
-</histogram>
-
-<histogram name="ViewResourceAdapter.GetBitmapInterval" units="ms"
-    expires_after="M82">
-  <owner>wychen@chromium.org</owner>
-  <owner>dtrainor@chromium.org</owner>
-  <summary>The interval between ViewResourceAdapter#getBitmap calls.</summary>
 </histogram>
 
 <histogram name="VoiceInteraction.AudioPermissionEvent{Timing}"
@@ -11450,18 +11262,6 @@ regressions. -->
     method {Method}. Logged every time the method is called.
   </summary>
   <token key="Method" variants="WebContentsObserverMethods"/>
-</histogram>
-
-<histogram name="WebContextFetcher.Time.RunJavaScript" units="ms"
-    expires_after="2021-11-01">
-  <owner>benwgold@chromium.org</owner>
-  <owner>mdjones@chromium.org</owner>
-  <summary>
-    Records the number of milliseconds that it takes for a web context fetch to
-    complete. Recorded when the javascript execution completes. To start will be
-    used for Google Lens image queries to track time to retrieve page context,
-    but may extend to other features over time.
-  </summary>
 </histogram>
 
 <histogram name="WebController.CertVerificationErrorsCacheHit"
@@ -11925,34 +11725,6 @@ regressions. -->
     <variant name="ZoomMinus"/>
     <variant name="ZoomPlus"/>
   </token>
-</histogram>
-
-<histogram name="XHR.Async.PageDismissal" enum="XHRPageDismissalState"
-    expires_after="M81">
-  <owner>panicker@chromium.org</owner>
-  <summary>
-    Records occurence of async XHR during page dismissal state (unload,
-    beforeunload, pagehide etc).
-  </summary>
-</histogram>
-
-<histogram name="XHR.Sync.PageDismissal" enum="XHRPageDismissalState"
-    expires_after="2020-06-28">
-  <owner>panicker@chromium.org</owner>
-  <summary>
-    Records occurence of sync XHR during page dismissal state (unload,
-    beforeunload, pagehide etc).
-  </summary>
-</histogram>
-
-<histogram name="XHR.Sync.PageDismissal_forbidden" enum="XHRPageDismissalState"
-    expires_after="2020-05-24">
-  <owner>kdillon@chromium.org</owner>
-  <owner>panicker@chromium.org</owner>
-  <summary>
-    Records occurence of sync XHR requests during page dismissal state (unload,
-    beforeunload, pagehide etc) that were forbidden.
-  </summary>
 </histogram>
 
 </histograms>

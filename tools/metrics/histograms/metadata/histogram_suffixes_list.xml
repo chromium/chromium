@@ -1900,7 +1900,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="Priority4" label="MEDIUM"/>
   <suffix name="Priority5" label="HIGHEST or MAXIMUM_PRIORITY"/>
   <affected-histogram name="Net.HttpJob.TotalTimeSuccess"/>
-  <affected-histogram name="ResourceScheduler.PeakObservedQueueingDelay"/>
   <affected-histogram name="ResourceScheduler.RequestQueuingDuration"/>
 </histogram_suffixes>
 
@@ -3546,19 +3545,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Platform.Memory.Gpu"/>
   <affected-histogram name="Platform.Memory.Renderers"/>
   <affected-histogram name="Platform.Memory.VMs"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="ProfilePictureDownload" separator=".">
-  <suffix name="Default.LoggedIn" label="default picture, after login"/>
-  <suffix name="Default.OOBE" label="default picture, in OOBE"/>
-  <suffix name="Default.Preferences" label="default picture, in Prefs"/>
-  <suffix name="Failure.LoggedIn" label="download has failed, after login"/>
-  <suffix name="Failure.OOBE" label="download has failed, in OOBE"/>
-  <suffix name="Failure.Preferences" label="download has failed, in Prefs"/>
-  <suffix name="Success.LoggedIn" label="download was successful, after login"/>
-  <suffix name="Success.OOBE" label="download was successful, in OOBE"/>
-  <suffix name="Success.Preferences" label="download was successful, in Prefs"/>
-  <affected-histogram name="UserImage.ProfileDownloadTime"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="ProfileStateGroup" separator="_">
