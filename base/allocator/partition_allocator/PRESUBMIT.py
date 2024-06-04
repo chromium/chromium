@@ -9,8 +9,9 @@ for more details on the presubmit API built into depot_tools.
 
 PRESUBMIT_VERSION = '2.0.0'
 
+# This is the base path of the partition_alloc directory when stored inside the
+# chromium repository. PRESUBMIT.py is executed from chromium.
 _PARTITION_ALLOC_BASE_PATH = 'base/allocator/partition_allocator/src/'
-
 
 # This is adapted from Chromium's PRESUBMIT.py. The differences are:
 # - Base path: It is relative to the partition_alloc's source directory instead
@@ -142,5 +143,35 @@ def CheckBuildConfigMacrosWithoutInclude(input_api, output_api):
         return [output_api.PresubmitPromptWarning('\n'.join(errors))]
     return []
 
-# TODO(crbug.com/41481467) Check we aren't introducing a dependency on chromium.
-# In particular, we should ban the string "//build/" in any file.
+# In .gn and .gni files, check there are no unexpected dependencies on files
+# located outside of the partition_alloc repository.
+#
+# This is important, because partition_alloc has no CQ bots on its own, but only
+# through the chromium's CQ.
+#
+# Only //build_overrides/ is allowed, as it provides embedders, a way to
+# overrides the default build settings and forward the dependencies to
+# partition_alloc.
+def CheckNoExternalImportInGn(input_api, output_api):
+    def gn_files(file):
+        return file.LocalPath().endswith('.gn') or \
+               file.LocalPath().endswith('.gni')
+
+    # Match and capture <path> from import("<path>").
+    import_re = input_api.re.compile(r'^ *import\("([^"]+)"\)')
+
+    errors = []
+    for f in input_api.AffectedSourceFiles(gn_files):
+        for line_number, line in enumerate(input_api.ReadFile(f).splitlines()):
+            match = import_re.search(line)
+            if not match:
+                continue
+            import_path = match.group(1)
+            if import_path.startswith('//build_overrides/'):
+                continue;
+            if not import_path.startswith('//'):
+                continue;
+            errors.append(output_api.PresubmitError(
+                '%s:%d\nPartitionAlloc disallow external import: %s' %
+                (f.LocalPath(), line_number + 1, import_path)))
+    return errors;
