@@ -272,8 +272,7 @@ TEST_F(ExtensionRegistryTest, TerminatedExtensionStoredVersion) {
   const ExtensionId extension_id = extension->id();
 
   EXPECT_TRUE(registry.AddEnabled(extension));
-  EXPECT_FALSE(
-      registry.GetExtensionById(extension_id, ExtensionRegistry::TERMINATED));
+  EXPECT_FALSE(registry.terminated_extensions().GetByID(extension_id));
   {
     base::Version version = registry.GetStoredVersion(extension_id);
     ASSERT_TRUE(version.IsValid());
@@ -284,8 +283,7 @@ TEST_F(ExtensionRegistryTest, TerminatedExtensionStoredVersion) {
   // Simulate terminating |extension|.
   EXPECT_TRUE(registry.RemoveEnabled(extension_id));
   EXPECT_TRUE(registry.AddTerminated(extension));
-  EXPECT_TRUE(
-      registry.GetExtensionById(extension_id, ExtensionRegistry::TERMINATED));
+  EXPECT_TRUE(registry.terminated_extensions().GetByID(extension_id));
   {
     base::Version version = registry.GetStoredVersion(extension_id);
     ASSERT_TRUE(version.IsValid());
