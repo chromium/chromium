@@ -669,34 +669,6 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         }
     }
 
-    public class PasteActionModeCallback extends ActionMode.Callback2 {
-        @Override
-        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-            SelectionPopupControllerImpl.this.onCreateActionMode(mode, menu);
-            return true;
-        }
-
-        @Override
-        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-            return SelectionPopupControllerImpl.this.onPrepareActionMode(mode, menu);
-        }
-
-        @Override
-        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            return SelectionPopupControllerImpl.this.onActionItemClicked(mode, item);
-        }
-
-        @Override
-        public void onDestroyActionMode(ActionMode mode) {
-            SelectionPopupControllerImpl.this.onDestroyActionMode();
-        }
-
-        @Override
-        public void onGetContentRect(ActionMode mode, View view, Rect outRect) {
-            SelectionPopupControllerImpl.this.onGetContentRect(mode, view, outRect);
-        }
-    }
-
     @VisibleForTesting
     protected void createAndShowPastePopup() {
         if (mView == null
@@ -723,8 +695,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
             }
 
             assert mWebContents != null;
-            ActionMode actionMode =
-                    mView.startActionMode(new PasteActionModeCallback(), ActionMode.TYPE_FLOATING);
+            ActionMode actionMode = mView.startActionMode(mCallback, ActionMode.TYPE_FLOATING);
             if (actionMode != null) {
                 // crbug.com/651706
                 LGEmailActionModeWorkaroundImpl.runIfNecessary(mContext, actionMode);
@@ -855,7 +826,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     }
 
     public void destroyPastePopup() {
-        if (isPastePopupShowing()) {
+        if (isPasteActionModeValid()) {
             mPasteActionMode.finish();
             mPasteActionMode = null;
         }
@@ -867,8 +838,8 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         }
     }
 
-    @VisibleForTesting
-    public boolean isPastePopupShowing() {
+    @Override
+    public boolean isPasteActionModeValid() {
         return mPasteActionMode != null;
     }
 
@@ -884,7 +855,6 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
 
         if (isActionModeValid()) {
             mActionMode.finish();
-
             // Should be nulled out in case #onDestroyActionMode() is not invoked in response.
             setActionMode(null);
         }
@@ -1327,7 +1297,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
 
     @Override
     public void onDestroyActionMode() {
-        if (isPastePopupShowing()) mPasteActionMode = null;
+        if (isPasteActionModeValid()) mPasteActionMode = null;
         if (isActionModeValid()) {
             setActionMode(null);
             if (mUnselectAllOnDismiss) {
@@ -1712,7 +1682,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
 
             case SelectionEventType.INSERTION_HANDLE_MOVED:
                 mSelectionRect.set(left, top, right, bottom);
-                if (!getGestureListenerManager().isScrollInProgress() && isPastePopupShowing()) {
+                if (!getGestureListenerManager().isScrollInProgress() && isPasteActionModeValid()) {
                     showPastePopup();
                 } else {
                     destroyPastePopup();
@@ -1738,8 +1708,8 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
                 break;
 
             case SelectionEventType.INSERTION_HANDLE_DRAG_STARTED:
-                mWasPastePopupShowingOnInsertionDragStart = isPastePopupShowing();
-                destroyPastePopup();
+                mWasPastePopupShowingOnInsertionDragStart = isPasteActionModeValid();
+                hidePopupsAndPreserveSelection();
                 mIsInHandleDragging = true;
                 break;
 

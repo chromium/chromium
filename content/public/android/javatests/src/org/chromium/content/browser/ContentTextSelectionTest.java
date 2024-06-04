@@ -952,7 +952,7 @@ public class ContentTextSelectionTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     Criteria.checkThat(
-                            mSelectionPopupController.isPastePopupShowing(), Matchers.is(show));
+                            mSelectionPopupController.isPasteActionModeValid(), Matchers.is(show));
                 });
     }
 

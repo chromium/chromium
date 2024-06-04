@@ -1491,7 +1491,7 @@ public class ImeTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     Criteria.checkThat(
-                            mRule.getSelectionPopupController().isPastePopupShowing(),
+                            mRule.getSelectionPopupController().isPasteActionModeValid(),
                             Matchers.is(true));
                     Criteria.checkThat(
                             mRule.getSelectionPopupController().isInsertionForTesting(),
@@ -1502,7 +1502,7 @@ public class ImeTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     Criteria.checkThat(
-                            mRule.getSelectionPopupController().isPastePopupShowing(),
+                            mRule.getSelectionPopupController().isPasteActionModeValid(),
                             Matchers.is(false));
                 });
         Assert.assertFalse(mRule.getSelectionPopupController().isInsertionForTesting());
