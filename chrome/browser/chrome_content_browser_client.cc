@@ -2499,7 +2499,7 @@ void ChromeContentBrowserClient::CheckGetAllScreensMediaAllowed(
     base::OnceCallback<void(bool)> callback) {
   capture_policy::CheckGetAllScreensMediaAllowed(
       render_frame_host->GetBrowserContext(),
-      render_frame_host->GetLastCommittedOrigin().GetURL(),
+      render_frame_host->GetMainFrame()->GetLastCommittedOrigin().GetURL(),
       std::move(callback));
 }
 
