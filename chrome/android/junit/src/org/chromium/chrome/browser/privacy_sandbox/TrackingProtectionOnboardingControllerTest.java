@@ -79,7 +79,6 @@ public class TrackingProtectionOnboardingControllerTest {
 
     @Test
     @DisableFeatures(ChromeFeatureList.TRACKING_PROTECTION_ONBOARDING_SKIP_SECURE_PAGE_CHECK)
-    @EnableFeatures(ChromeFeatureList.TRACKING_PROTECTION_NOTICE_REQUEST_TRACKING)
     public void testMaybeOnboard_ShowsNotice() {
         when(mSecurityStateModelNatives.getSecurityLevelForWebContents(any()))
                 .thenReturn(ConnectionSecurityLevel.SECURE);
@@ -90,7 +89,6 @@ public class TrackingProtectionOnboardingControllerTest {
     @Test
     @Features.EnableFeatures({
         ChromeFeatureList.TRACKING_PROTECTION_ONBOARDING_SKIP_SECURE_PAGE_CHECK,
-        ChromeFeatureList.TRACKING_PROTECTION_NOTICE_REQUEST_TRACKING
     })
     public void testMaybeOnboard_SecureConnection_ShowsNotice() {
         when(mSecurityStateModelNatives.getSecurityLevelForWebContents(any()))
@@ -101,7 +99,6 @@ public class TrackingProtectionOnboardingControllerTest {
 
     @Test
     @DisableFeatures(ChromeFeatureList.TRACKING_PROTECTION_ONBOARDING_SKIP_SECURE_PAGE_CHECK)
-    @EnableFeatures(ChromeFeatureList.TRACKING_PROTECTION_NOTICE_REQUEST_TRACKING)
     public void testMaybeOnboard_NotSecureConnection_DoesNotShowNotice() {
         when(mSecurityStateModelNatives.getSecurityLevelForWebContents(any()))
                 .thenReturn(ConnectionSecurityLevel.NONE);

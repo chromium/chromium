@@ -131,12 +131,6 @@ public class TrackingProtectionOnboardingController {
                 return;
             }
 
-            if (ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.TRACKING_PROTECTION_NOTICE_REQUEST_TRACKING)) {
-                // At this point, we're enqueuing the message, aka requesting the notice.
-                mTrackingProtectionBridge.noticeRequested(getNoticeType());
-            }
-
             trackingProtectionModeBOnboardingView.showNotice(
                     getOnNoticeShownCallback(),
                     getOnNoticeDismissedCallback(),

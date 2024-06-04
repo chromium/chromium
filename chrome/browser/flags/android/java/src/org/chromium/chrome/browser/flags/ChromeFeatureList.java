@@ -484,8 +484,6 @@ public abstract class ChromeFeatureList {
     public static final String TEST_DEFAULT_ENABLED = "TestDefaultEnabled";
     public static final String TOOLBAR_SCROLL_ABLATION = "AndroidToolbarScrollAblation";
     public static final String TOTALLY_EDGE_TO_EDGE = "TotallyEdgeToEdge";
-    public static final String TRACKING_PROTECTION_NOTICE_REQUEST_TRACKING =
-            "TrackingProtectionNoticeRequestTracking";
     public static final String TRACKING_PROTECTION_SETTINGS_PAGE_ROLLBACK_NOTICE =
             "TrackingProtectionSettingsPageRollbackNotice";
     public static final String TRACKING_PROTECTION_ONBOARDING_SKIP_SECURE_PAGE_CHECK =

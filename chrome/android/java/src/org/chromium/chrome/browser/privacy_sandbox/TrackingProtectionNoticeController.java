@@ -168,12 +168,6 @@ public class TrackingProtectionNoticeController {
             return;
         }
 
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.TRACKING_PROTECTION_NOTICE_REQUEST_TRACKING)) {
-            // At this point, we're enqueuing the message, aka requesting the notice.
-            mTrackingProtectionBridge.noticeRequested(getNoticeType());
-        }
-
         mMessage =
                 new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
                         .with(

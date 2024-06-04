@@ -25,10 +25,6 @@ public class TrackingProtectionBridge {
         TrackingProtectionBridgeJni.get().noticeActionTaken(mProfile, noticeType, action);
     }
 
-    public void noticeRequested(@NoticeType int noticeType) {
-        TrackingProtectionBridgeJni.get().noticeRequested(mProfile, noticeType);
-    }
-
     public void noticeShown(@NoticeType int noticeType) {
         TrackingProtectionBridgeJni.get().noticeShown(mProfile, noticeType);
     }
@@ -39,8 +35,6 @@ public class TrackingProtectionBridge {
 
     @NativeMethods
     public interface Natives {
-        void noticeRequested(@JniType("Profile*") Profile profile, int noticeType);
-
         void noticeShown(@JniType("Profile*") Profile profile, int noticeType);
 
         void noticeActionTaken(@JniType("Profile*") Profile profile, int noticeType, int action);
