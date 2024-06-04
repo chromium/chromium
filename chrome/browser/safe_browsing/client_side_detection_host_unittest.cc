@@ -24,6 +24,7 @@
 #include "chrome/browser/safe_browsing/chrome_safe_browsing_blocking_page_factory.h"
 #include "chrome/browser/safe_browsing/chrome_ui_manager_delegate.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
+#include "chrome/browser/safe_browsing/verdict_cache_manager_factory.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -1325,6 +1326,87 @@ TEST_F(ClientSideDetectionHostTest,
   EXPECT_NE(verdict_from_cache, nullptr);
   EXPECT_EQ(verdict_from_cache->is_phishing(), verdict.is_phishing());
   EXPECT_EQ(verdict_from_cache->client_score(), verdict.client_score());
+}
+
+TEST_F(ClientSideDetectionHostTest,
+       RTLookupResponseForceRequestSendsCSPPPingWhenVerdictNotPhishing) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  base::HistogramTester histogram_tester;
+
+  SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
+
+  GURL example_url("http://suspiciousurl.com/");
+
+  ExpectPreClassificationChecks(
+      /*url=*/example_url, /*is_private=*/&kFalse,
+      /*match_csd_allowlist=*/&kFalse, /*get_valid_cached_result=*/&kFalse,
+      /*over_phishing_report_limit=*/&kFalse, /*is_local=*/&kFalse);
+  NavigateAndCommit(example_url);
+  WaitAndCheckPreClassificationChecks();
+
+  VerdictCacheManager* cache_manager =
+      VerdictCacheManagerFactory::GetForProfile(
+          Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
+
+  RTLookupResponse response;
+
+  RTLookupResponse::ThreatInfo* new_threat_info2 = response.add_threat_info();
+  new_threat_info2->set_verdict_type(RTLookupResponse::ThreatInfo::DANGEROUS);
+  new_threat_info2->set_threat_type(
+      RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING);
+  new_threat_info2->set_cache_duration_sec(60);
+  new_threat_info2->set_cache_expression_using_match_type("suspiciousurl.com/");
+  new_threat_info2->set_cache_expression_match_type(
+      RTLookupResponse::ThreatInfo::EXACT_MATCH);
+
+  response.set_client_side_detection_type(
+      safe_browsing::ClientSideDetectionType::FORCE_REQUEST);
+  cache_manager->CacheRealTimeUrlVerdict(response, base::Time::Now());
+  EXPECT_EQ(
+      static_cast<int>(safe_browsing::ClientSideDetectionType::FORCE_REQUEST),
+      cache_manager->GetCachedRealTimeUrlClientSideDetectionType(example_url));
+
+  ClientSideDetectionService::ClientReportPhishingRequestCallback cb;
+
+  // The verdict's is_phishing is false, but we will still send a ping!
+  ClientPhishingRequest verdict;
+  verdict.set_url(example_url.spec());
+  verdict.set_client_score(0.8f);
+  verdict.set_is_phishing(false);
+  EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(
+                                 PartiallyEqualVerdict(verdict), _,
+                                 "fake_access_token_for_force_request"))
+      .WillOnce(MoveArg<1>(&cb));
+
+  // Set up mock call to token fetcher.
+  SafeBrowsingTokenFetcher::Callback token_cb;
+  EXPECT_CALL(*raw_token_fetcher_, Start(_))
+      .Times(1)
+      .WillRepeatedly(MoveArg<0>(&token_cb));
+  PhishingDetectionDone(mojo_base::ProtoWrapper(verdict));
+
+  // Wait for token fetcher to be called.
+  EXPECT_TRUE(Mock::VerifyAndClear(raw_token_fetcher_));
+
+  ASSERT_FALSE(token_cb.is_null());
+  std::move(token_cb).Run("fake_access_token_for_force_request");
+
+  // Token is now fetched, so we will now callback on
+  // ClientReportPhishingRequest.
+  EXPECT_TRUE(Mock::VerifyAndClear(csd_host_.get()));
+  EXPECT_TRUE(Mock::VerifyAndClear(csd_service_.get()));
+
+  ASSERT_FALSE(cb.is_null());
+  std::move(cb).Run(example_url, false, net::HTTP_OK);
+
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.ClientSideDetectionTypeRequest",
+      ClientSideDetectionType::FORCE_REQUEST, 1);
+  histogram_tester.ExpectBucketCount("SBClientPhishing.RTLookupForceRequest",
+                                     true, 1);
 }
 
 class ClientSideDetectionHostNotificationTest
