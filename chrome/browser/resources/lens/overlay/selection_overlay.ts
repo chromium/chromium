@@ -142,6 +142,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
       disableShimmer: {
         type: Boolean,
         readOnly: true,
+        value: !loadTimeData.getBoolean('enableShimmer'),
       },
       useShimmerCanvas: {
         type: Boolean,
@@ -184,7 +185,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   // The current gesture event. The coordinate values are only accurate if a
   // gesture has started.
   private currentGesture: GestureEvent = emptyGestureEvent();
-  private disableShimmer: boolean = !loadTimeData.getBoolean('enableShimmer');
+  private disableShimmer: boolean;
   private useShimmerCanvas: boolean;
   // Whether the overlay is being shut down.
   private isClosing: boolean = false;
