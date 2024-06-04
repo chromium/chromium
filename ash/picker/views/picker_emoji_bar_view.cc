@@ -12,6 +12,8 @@
 #include "ash/picker/views/picker_emoji_item_view.h"
 #include "ash/picker/views/picker_emoticon_item_view.h"
 #include "ash/picker/views/picker_item_view.h"
+#include "ash/picker/views/picker_pseudo_focus.h"
+#include "ash/picker/views/picker_pseudo_focus_handler.h"
 #include "ash/picker/views/picker_search_results_view_delegate.h"
 #include "ash/picker/views/picker_style.h"
 #include "ash/picker/views/picker_symbol_item_view.h"
@@ -29,6 +31,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/background.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/highlight_border.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
@@ -142,7 +145,64 @@ gfx::Size PickerEmojiBarView::CalculatePreferredSize(
   return gfx::Size(picker_view_width_, kPickerEmojiBarHeight);
 }
 
+bool PickerEmojiBarView::DoPseudoFocusedAction() {
+  if (pseudo_focused_view_ == nullptr) {
+    return false;
+  }
+  return DoPickerPseudoFocusedActionOnView(pseudo_focused_view_);
+}
+
+bool PickerEmojiBarView::MovePseudoFocusUp() {
+  return false;
+}
+
+bool PickerEmojiBarView::MovePseudoFocusDown() {
+  return false;
+}
+
+bool PickerEmojiBarView::MovePseudoFocusLeft() {
+  return AdvancePseudoFocus(PseudoFocusDirection::kBackward);
+}
+
+bool PickerEmojiBarView::MovePseudoFocusRight() {
+  return AdvancePseudoFocus(PseudoFocusDirection::kForward);
+}
+
+bool PickerEmojiBarView::AdvancePseudoFocus(PseudoFocusDirection direction) {
+  if (pseudo_focused_view_ == nullptr) {
+    return false;
+  }
+
+  views::View* view = GetFocusManager()->GetNextFocusableView(
+      pseudo_focused_view_, GetWidget(),
+      direction == PseudoFocusDirection::kBackward,
+      /*dont_loop=*/false);
+  if (view == nullptr || !Contains(view)) {
+    return false;
+  }
+  SetPseudoFocusedView(view);
+  return true;
+}
+
+bool PickerEmojiBarView::GainPseudoFocus(PseudoFocusDirection direction) {
+  // Let the first view in the emoji bar gain pseudo focus, regardless of the
+  // direction from which pseudo focus was passed from.
+  views::View* view = GetFocusManager()->GetNextFocusableView(
+      this, GetWidget(), /*reverse=*/false,
+      /*dont_loop=*/false);
+  if (view == nullptr || !Contains(view)) {
+    return false;
+  }
+  SetPseudoFocusedView(view);
+  return true;
+}
+
+void PickerEmojiBarView::LosePseudoFocus() {
+  SetPseudoFocusedView(nullptr);
+}
+
 void PickerEmojiBarView::ClearSearchResults() {
+  SetPseudoFocusedView(nullptr);
   item_row_->RemoveAllChildViews();
 }
 
@@ -173,6 +233,17 @@ void PickerEmojiBarView::OpenMoreEmojis() {
 int PickerEmojiBarView::CalculateAvailableWidthForItemRow() {
   return picker_view_width_ - more_emojis_button_->GetPreferredSize().width() -
          kMoreEmojisIconButtonPadding.width();
+}
+
+void PickerEmojiBarView::SetPseudoFocusedView(views::View* view) {
+  if (pseudo_focused_view_ == view) {
+    return;
+  }
+
+  RemovePickerPseudoFocusFromView(pseudo_focused_view_);
+  pseudo_focused_view_ = view;
+  ApplyPickerPseudoFocusToView(pseudo_focused_view_);
+  delegate_->NotifyPseudoFocusChanged(view);
 }
 
 BEGIN_METADATA(PickerEmojiBarView)

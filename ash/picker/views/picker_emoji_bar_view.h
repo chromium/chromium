@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/picker/model/picker_search_results_section.h"
+#include "ash/picker/views/picker_pseudo_focus_handler.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
@@ -23,7 +24,8 @@ class SystemShadow;
 // View for the Picker emoji bar, which is a small bar above the main Picker
 // container that shows expression search results (i.e. emojis, symbols and
 // emoticons).
-class ASH_EXPORT PickerEmojiBarView : public views::View {
+class ASH_EXPORT PickerEmojiBarView : public views::View,
+                                      public PickerPseudoFocusHandler {
   METADATA_HEADER(PickerEmojiBarView, views::View)
 
  public:
@@ -37,6 +39,16 @@ class ASH_EXPORT PickerEmojiBarView : public views::View {
   // views::View:
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
+
+  // PickerPseudoFocusHandler:
+  bool DoPseudoFocusedAction() override;
+  bool MovePseudoFocusUp() override;
+  bool MovePseudoFocusDown() override;
+  bool MovePseudoFocusLeft() override;
+  bool MovePseudoFocusRight() override;
+  bool AdvancePseudoFocus(PseudoFocusDirection direction) override;
+  bool GainPseudoFocus(PseudoFocusDirection direction) override;
+  void LosePseudoFocus() override;
 
   // Clears the emoji bar's search results.
   void ClearSearchResults();
@@ -55,6 +67,8 @@ class ASH_EXPORT PickerEmojiBarView : public views::View {
 
   int CalculateAvailableWidthForItemRow();
 
+  void SetPseudoFocusedView(views::View* view);
+
   std::unique_ptr<SystemShadow> shadow_;
 
   // `delegate_` outlives `this`.
@@ -68,6 +82,10 @@ class ASH_EXPORT PickerEmojiBarView : public views::View {
 
   // The button for opening more emojis.
   raw_ptr<IconButton> more_emojis_button_ = nullptr;
+
+  // The currently pseudo focused view, which responds to user actions that
+  // trigger `DoPseudoFocusedAction`.
+  raw_ptr<views::View> pseudo_focused_view_ = nullptr;
 };
 
 }  // namespace ash
