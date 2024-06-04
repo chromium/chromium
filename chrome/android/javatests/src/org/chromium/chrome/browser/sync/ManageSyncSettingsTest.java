@@ -68,6 +68,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -123,6 +124,7 @@ import java.util.Set;
 /** Tests for ManageSyncSettings. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@DoNotBatch(reason = "TODO(crbug.com/40743432): SyncTestRule doesn't support batching.")
 public class ManageSyncSettingsTest {
     private static final int RENDER_TEST_REVISION = 6;
 
@@ -428,7 +430,7 @@ public class ManageSyncSettingsTest {
         Assert.assertNotNull(
                 mSyncTestRule.getSigninTestRule().getPrimaryAccount(ConsentLevel.SIGNIN));
 
-        ManageSyncSettings fragment = startManageSyncPreferences();
+        startManageSyncPreferences();
 
         onView(withId(R.id.recycler_view)).perform(RecyclerViewActions.scrollToLastPosition());
         onView(withText(R.string.sign_out)).perform(click());
@@ -444,7 +446,7 @@ public class ManageSyncSettingsTest {
 
         mSyncTestRule.setUpAccountAndSignInForTesting();
         SyncTestUtil.waitForSyncTransportActive();
-        SyncService syncService = mSyncTestRule.getSyncService();
+        mSyncTestRule.getSyncService();
 
         ManageSyncSettings fragment = startManageSyncPreferences();
 
@@ -659,7 +661,7 @@ public class ManageSyncSettingsTest {
         Preference encryption = getEncryption(fragment);
         clickPreference(encryption);
 
-        final PassphraseTypeDialogFragment typeFragment = getPassphraseTypeDialogFragment();
+        getPassphraseTypeDialogFragment();
         mSyncTestRule.signOut();
 
         // Mimic the user clicking on the explicit passphrase checkbox immediately after signing
@@ -799,8 +801,8 @@ public class ManageSyncSettingsTest {
         SyncTestUtil.waitForTrustedVaultKeyRequired(true);
 
         final ManageSyncSettings fragment = startManageSyncPreferences();
-        // Mimic the user tapping on Encryption. This should start DummyKeyRetrievalActivity and
-        // notify native client that keys were changed. Right before DummyKeyRetrievalActivity
+        // Mimic the user tapping on Encryption. This should start FakeKeyRetrievalActivity and
+        // notify native client that keys were changed. Right before FakeKeyRetrievalActivity
         // completion FakeTrustedVaultClientBackend will start populate keys.
         Preference encryption = fragment.findPreference(ManageSyncSettings.PREF_ENCRYPTION);
         clickPreference(encryption);
@@ -834,8 +836,8 @@ public class ManageSyncSettingsTest {
         SyncTestUtil.waitForTrustedVaultRecoverabilityDegraded(true);
 
         // Mimic the user tapping on the error card's button. This should start
-        // DummyRecoverabilityDegradedFixActivity and notify native client that recoverability has
-        // changed. Right before DummyRecoverabilityDegradedFixActivity completion
+        // FakeRecoverabilityDegradedFixActivity and notify native client that recoverability has
+        // changed. Right before FakeRecoverabilityDegradedFixActivity completion
         // FakeTrustedVaultClientBackend will exit the recoverability degraded state.
         final ManageSyncSettings fragment = startManageSyncPreferences();
         TestThreadUtils.runOnUiThreadBlocking(

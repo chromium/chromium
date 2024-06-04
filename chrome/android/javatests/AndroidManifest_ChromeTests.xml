@@ -38,10 +38,10 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="org.chromium.chrome.browser.sync.SyncTestRule$DummyKeyRetrievalActivity"
+        <activity android:name="org.chromium.chrome.browser.sync.SyncTestRule$FakeKeyRetrievalActivity"
             android:exported="true"/>
 
-        <activity android:name="org.chromium.chrome.browser.sync.SyncTestRule$DummyRecoverabilityDegradedFixActivity"
+        <activity android:name="org.chromium.chrome.browser.sync.SyncTestRule$FakeRecoverabilityDegradedFixActivity"
             android:exported="true"/>
     </application>
 </manifest>
