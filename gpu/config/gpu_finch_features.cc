@@ -190,12 +190,6 @@ BASE_FEATURE(kEnableMSAAOnNewIntelGPUs,
              "EnableMSAAOnNewIntelGPUs",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables canvas to free its resources by default when it's running in
-// the background.
-BASE_FEATURE(kCanvasContextLostInBackground,
-             "CanvasContextLostInBackground",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled, Dawn SharedImage representations use the internal usages passed
 // by their clients when creating textures rather than using custom hardcoded
 // internal usages. Serves as killswitch while we roll out this transition.

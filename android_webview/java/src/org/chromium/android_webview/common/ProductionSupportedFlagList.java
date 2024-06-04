@@ -454,9 +454,6 @@ public final class ProductionSupportedFlagList {
                 BlinkFeatures.VIEWPORT_HEIGHT_CLIENT_HINT_HEADER,
                 "Enables the use of sec-ch-viewport-height client hint."),
         Flag.baseFeature(
-                GpuFeatures.CANVAS_CONTEXT_LOST_IN_BACKGROUND,
-                "Free Canvas2D resources when the webview is in the background."),
-        Flag.baseFeature(
                 GpuFeatures.USE_GPU_SCHEDULER_DFS, "Uses the new SchedulerDFS GPU job scheduler."),
         Flag.baseFeature(
                 BlinkFeatures.UACH_OVERRIDE_BLANK,

@@ -68,9 +68,6 @@ class PLATFORM_EXPORT Canvas2DLayerBridge {
   void SetCanvasResourceHost(CanvasResourceHost* host);
 
   void Hibernate();
-  // This is used for a memory usage experiment: frees canvas resource when
-  // canvas is in an invisible tab.
-  void LoseContext();
   bool IsHibernating() const { return hibernation_handler_.IsHibernating(); }
 
   scoped_refptr<StaticBitmapImage> NewImageSnapshot(FlushReason);
@@ -128,10 +125,6 @@ class PLATFORM_EXPORT Canvas2DLayerBridge {
 
   std::unique_ptr<Logger> logger_;
   bool hibernation_scheduled_ = false;
-  bool context_lost_ = false;
-  bool lose_context_in_background_ = false;
-  bool lose_context_in_background_scheduled_ = false;
-
 
   enum SnapshotState {
     kInitialSnapshotState,
