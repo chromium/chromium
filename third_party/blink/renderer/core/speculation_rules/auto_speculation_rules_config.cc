@@ -70,8 +70,20 @@ AutoSpeculationRulesConfig::AutoSpeculationRulesConfig(
     }
   }
 
+  ParseUrlMatchPatternConfig(config.get(),
+                             "url_match_pattern_to_speculation_rules",
+                             BrowserInjectedSpeculationRuleOptOut::kRespect);
+  ParseUrlMatchPatternConfig(
+      config.get(), "url_match_pattern_to_speculation_rules_ignore_opt_out",
+      BrowserInjectedSpeculationRuleOptOut::kIgnore);
+}
+
+void AutoSpeculationRulesConfig::ParseUrlMatchPatternConfig(
+    const JSONObject* config,
+    const String& json_key_name,
+    BrowserInjectedSpeculationRuleOptOut opt_out) {
   const JSONObject* url_match_pattern_to_speculation_rules =
-      config->GetJSONObject("url_match_pattern_to_speculation_rules");
+      config->GetJSONObject(json_key_name);
   if (url_match_pattern_to_speculation_rules) {
     for (wtf_size_t i = 0; i < url_match_pattern_to_speculation_rules->size();
          ++i) {
@@ -82,18 +94,18 @@ AutoSpeculationRulesConfig::AutoSpeculationRulesConfig(
       bool value_is_string = entry.second->AsString(&speculation_rules);
       if (!value_is_string) {
         LOG(ERROR) << "Non-string value " << entry.second->ToJSONString()
-                   << " inside url_match_pattern_to_speculation_rules";
+                   << " inside " << json_key_name;
         continue;
       }
 
       if (!entry.first.ContainsOnlyASCIIOrEmpty()) {
-        LOG(ERROR) << "Non-ASCII key " << entry.first
-                   << " inside url_match_pattern_to_speculation_rules";
+        LOG(ERROR) << "Non-ASCII key " << entry.first << " inside "
+                   << json_key_name;
         continue;
       }
 
-      url_match_pattern_to_speculation_rules_.emplace_back(entry.first.Ascii(),
-                                                           speculation_rules);
+      url_match_pattern_to_speculation_rules_.emplace_back(
+          entry.first.Ascii(), std::make_pair(speculation_rules, opt_out));
     }
   }
 }
@@ -131,9 +143,10 @@ String AutoSpeculationRulesConfig::ForFramework(
   return String();
 }
 
-Vector<String> AutoSpeculationRulesConfig::ForUrl(const KURL& url) const {
+Vector<std::pair<String, BrowserInjectedSpeculationRuleOptOut>>
+AutoSpeculationRulesConfig::ForUrl(const KURL& url) const {
   const std::string url_string = url.GetString().Ascii();
-  Vector<String> result;
+  Vector<std::pair<String, BrowserInjectedSpeculationRuleOptOut>> result;
 
   for (const auto& entry : url_match_pattern_to_speculation_rules_) {
     if (base::MatchPattern(url_string, entry.first)) {

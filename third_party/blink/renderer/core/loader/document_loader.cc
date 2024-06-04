@@ -858,21 +858,27 @@ void DocumentLoader::InjectAutoSpeculationRules(
 
   const auto& config = AutoSpeculationRulesConfig::GetInstance();
 
-  const Vector<String> from_url_speculation_rules = config.ForUrl(Url());
+  const Vector<std::pair<String, BrowserInjectedSpeculationRuleOptOut>>
+      from_url_speculation_rules = config.ForUrl(Url());
   for (const auto& speculation_rules : from_url_speculation_rules) {
-    InjectSpeculationRulesFromString(speculation_rules);
+    InjectSpeculationRulesFromString(speculation_rules.first,
+                                     speculation_rules.second);
   }
 
   for (const auto& detected_version : result.detected_versions) {
     if (String speculation_rules =
             config.ForFramework(detected_version.first)) {
-      InjectSpeculationRulesFromString(speculation_rules);
+      InjectSpeculationRulesFromString(
+          speculation_rules, BrowserInjectedSpeculationRuleOptOut::kRespect);
     }
   }
 }
 
-void DocumentLoader::InjectSpeculationRulesFromString(const String& string) {
-  auto* source = SpeculationRuleSet::Source::FromBrowserInjected(string, Url());
+void DocumentLoader::InjectSpeculationRulesFromString(
+    const String& string,
+    BrowserInjectedSpeculationRuleOptOut opt_out) {
+  auto* source =
+      SpeculationRuleSet::Source::FromBrowserInjected(string, Url(), opt_out);
   auto* rule_set = SpeculationRuleSet::Parse(source, frame_->DomWindow());
   CHECK(rule_set);
 

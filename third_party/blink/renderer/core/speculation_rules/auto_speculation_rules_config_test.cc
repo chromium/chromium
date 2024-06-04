@@ -134,24 +134,43 @@ TEST_F(AutoSpeculationRulesConfigTest, ValidUrlMatchPattern) {
   }
   )");
 
-  EXPECT_THAT(config.ForUrl(KURL("https://example.com/")),
-              ElementsAre("speculation_rules_1", "speculation_rules_5"));
+  EXPECT_THAT(
+      config.ForUrl(KURL("https://example.com/")),
+      ElementsAre(
+          std::make_pair("speculation_rules_1",
+                         BrowserInjectedSpeculationRuleOptOut::kRespect),
+          std::make_pair("speculation_rules_5",
+                         BrowserInjectedSpeculationRuleOptOut::kRespect)));
 
   EXPECT_THAT(config.ForUrl(KURL("https://example.com/path")), ElementsAre());
 
-  EXPECT_THAT(config.ForUrl(KURL("https://other.example.com/path")),
-              ElementsAre("speculation_rules_2", "speculation_rules_4"));
+  EXPECT_THAT(
+      config.ForUrl(KURL("https://other.example.com/path")),
+      ElementsAre(
+          std::make_pair("speculation_rules_2",
+                         BrowserInjectedSpeculationRuleOptOut::kRespect),
+          std::make_pair("speculation_rules_4",
+                         BrowserInjectedSpeculationRuleOptOut::kRespect)));
 
   EXPECT_THAT(config.ForUrl(KURL("https://example.org/")), ElementsAre());
 
-  EXPECT_THAT(config.ForUrl(KURL("https://www.example.org/path")),
-              ElementsAre("speculation_rules_3", "speculation_rules_4"));
+  EXPECT_THAT(
+      config.ForUrl(KURL("https://www.example.org/path")),
+      ElementsAre(
+          std::make_pair("speculation_rules_3",
+                         BrowserInjectedSpeculationRuleOptOut::kRespect),
+          std::make_pair("speculation_rules_4",
+                         BrowserInjectedSpeculationRuleOptOut::kRespect)));
 
   EXPECT_THAT(config.ForUrl(KURL("https://example.co/")),
-              ElementsAre("speculation_rules_5"));
+              ElementsAre(std::make_pair(
+                  "speculation_rules_5",
+                  BrowserInjectedSpeculationRuleOptOut::kRespect)));
 
   EXPECT_THAT(config.ForUrl(KURL("https://www.example.xyz/")),
-              ElementsAre("speculation_rules_4"));
+              ElementsAre(std::make_pair(
+                  "speculation_rules_4",
+                  BrowserInjectedSpeculationRuleOptOut::kRespect)));
 }
 
 TEST_F(AutoSpeculationRulesConfigTest, NonObjectUrlMatchPatterns) {
@@ -191,7 +210,9 @@ TEST_F(AutoSpeculationRulesConfigTest,
 
   ExpectNoFrameworkSpeculationRules(config);
   EXPECT_THAT(config.ForUrl(KURL("https://example.com/")),
-              ElementsAre("speculation_rules_1"));
+              ElementsAre(std::make_pair(
+                  "speculation_rules_1",
+                  BrowserInjectedSpeculationRuleOptOut::kRespect)));
 }
 
 TEST_F(AutoSpeculationRulesConfigTest,
@@ -227,7 +248,24 @@ TEST_F(AutoSpeculationRulesConfigTest, ValidFrameworkValidUrlMatchPatterns) {
       config.ForFramework(mojom::JavaScriptFramework::kVuePress /* = 1 */),
       "speculation_rules_1");
   EXPECT_THAT(config.ForUrl(KURL("https://example.com/")),
-              ElementsAre("speculation_rules_2"));
+              ElementsAre(std::make_pair(
+                  "speculation_rules_2",
+                  BrowserInjectedSpeculationRuleOptOut::kRespect)));
+}
+
+TEST_F(AutoSpeculationRulesConfigTest, ValidUrlMatchPatternsIgnoreOptOut) {
+  AutoSpeculationRulesConfig config(R"(
+  {
+    "url_match_pattern_to_speculation_rules_ignore_opt_out": {
+      "https://example.com/": "speculation_rules_2"
+    }
+  }
+  )");
+
+  EXPECT_THAT(config.ForUrl(KURL("https://example.com/")),
+              ElementsAre(std::make_pair(
+                  "speculation_rules_2",
+                  BrowserInjectedSpeculationRuleOptOut::kIgnore)));
 }
 
 }  // namespace

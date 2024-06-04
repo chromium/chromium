@@ -219,6 +219,43 @@ TEST_P(DocumentLoaderAutoSpeculationRulesOptOutTest, ExistingRuleSetOptsOut) {
       /*expected_bucket_count=*/2);
 }
 
+TEST_P(DocumentLoaderAutoSpeculationRulesOptOutTest,
+       ExistingRuleSetOptOutIgnored) {
+  test::AutoSpeculationRulesConfigOverride override(R"(
+  {
+    "url_match_pattern_to_speculation_rules_ignore_opt_out": {
+      "https://start.example.com/foo.html": "{\"prefetch\":[{\"source\":\"list\", \"urls\":[\"https://example.com/1.html\"]}]}"
+    }
+  }
+  )");
+
+  auto& rules = GetDocumentSpeculationRules();
+  CHECK_EQ(rules.rule_sets().size(), 0u);
+
+  auto* rule_set = GetOptOutRuleSet();
+  rules.AddRuleSet(rule_set);
+
+  EXPECT_EQ(rules.rule_sets().size(), 1u);
+  EXPECT_FALSE(rules.rule_sets()[0]->source()->IsFromBrowserInjected());
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kAutoSpeculationRulesOptedOut));
+
+  base::HistogramTester histogram_tester;
+
+  GetDocumentLoader().DidObserveJavaScriptFrameworks({});
+
+  // The rule set is added, the UseCounter has not triggered, and the only
+  // histogram update is +1 success.
+  EXPECT_EQ(rules.rule_sets().size(), 2u);
+  EXPECT_FALSE(rules.rule_sets().at(0)->source()->IsFromBrowserInjected());
+  EXPECT_TRUE(rules.rule_sets().at(1)->source()->IsFromBrowserInjected());
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kAutoSpeculationRulesOptedOut));
+  histogram_tester.ExpectUniqueSample("Blink.SpeculationRules.LoadOutcome",
+                                      SpeculationRulesLoadOutcome::kSuccess,
+                                      /*expected_bucket_count=*/1);
+}
+
 TEST_P(DocumentLoaderAutoSpeculationRulesOptOutTest, AddedLaterRuleSetOptsOut) {
   // Test 2 auto speculation rule sets per type to ensure we remove both of them
   // correctly.
@@ -266,6 +303,43 @@ TEST_P(DocumentLoaderAutoSpeculationRulesOptOutTest, AddedLaterRuleSetOptsOut) {
   histogram_tester.ExpectUniqueSample("Blink.SpeculationRules.LoadOutcome",
                                       SpeculationRulesLoadOutcome::kSuccess,
                                       /*expected_bucket_count=*/5);
+}
+
+TEST_P(DocumentLoaderAutoSpeculationRulesOptOutTest,
+       AddedLaterRuleSetOptOutIgnored) {
+  test::AutoSpeculationRulesConfigOverride override(R"(
+  {
+    "url_match_pattern_to_speculation_rules_ignore_opt_out": {
+      "https://start.example.com/foo.html": "{\"prefetch\":[{\"source\":\"list\", \"urls\":[\"https://example.com/1.html\"]}]}",
+      "https://*.example.com/*": "{\"prefetch\":[{\"source\":\"list\", \"urls\":[\"https://example.com/2.html\"]}]}"
+    }
+  }
+  )");
+
+  base::HistogramTester histogram_tester;
+
+  auto& rules = GetDocumentSpeculationRules();
+  CHECK_EQ(rules.rule_sets().size(), 0u);
+
+  GetDocumentLoader().DidObserveJavaScriptFrameworks({});
+
+  EXPECT_EQ(rules.rule_sets().size(), 2u);
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kAutoSpeculationRulesOptedOut));
+
+  auto* manually_added_rule_set = GetOptOutRuleSet();
+  rules.AddRuleSet(manually_added_rule_set);
+
+  EXPECT_EQ(rules.rule_sets().size(), 3u);
+  EXPECT_EQ(rules.rule_sets().at(2), manually_added_rule_set);
+
+  // The UseCounter has not triggered, and the histogram is at 3 successes: 2
+  // auto speculation rules + 1 normal speculation rule.
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kAutoSpeculationRulesOptedOut));
+  histogram_tester.ExpectUniqueSample("Blink.SpeculationRules.LoadOutcome",
+                                      SpeculationRulesLoadOutcome::kSuccess,
+                                      /*expected_bucket_count=*/3);
 }
 
 INSTANTIATE_TEST_SUITE_P(FromInlineOrExternal,

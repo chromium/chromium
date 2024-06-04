@@ -79,6 +79,7 @@
 #include "third_party/blink/renderer/core/loader/preload_helper.h"
 #include "third_party/blink/renderer/core/page/viewport_description.h"
 #include "third_party/blink/renderer/core/permissions_policy/policy_helper.h"
+#include "third_party/blink/renderer/core/speculation_rules/speculation_rule_set.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_response.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -628,7 +629,8 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // contents (currently only detected JavaScript frameworks). Configured by the
   // AutoSpeculationRules feature.
   void InjectAutoSpeculationRules(const JavaScriptFrameworkDetectionResult&);
-  void InjectSpeculationRulesFromString(const String&);
+  void InjectSpeculationRulesFromString(const String&,
+                                        BrowserInjectedSpeculationRuleOptOut);
 
   // Params are saved in constructor and are cleared after StartLoading().
   // TODO(dgozman): remove once StartLoading is merged with constructor.

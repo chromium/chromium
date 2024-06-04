@@ -4608,7 +4608,8 @@ TEST_F(SpeculationRuleSetTest, DocumentReportsParseErrorFromBrowserInjection) {
   DummyPageHolder page_holder;
   Document& document = page_holder.GetDocument();
   SpeculationRuleSet* rule_set = SpeculationRuleSet::Parse(
-      SpeculationRuleSet::Source::FromBrowserInjected("{---}", KURL()),
+      SpeculationRuleSet::Source::FromBrowserInjected(
+          "{---}", KURL(), BrowserInjectedSpeculationRuleOptOut::kRespect),
       document.GetExecutionContext());
   DocumentSpeculationRules::From(document).AddRuleSet(rule_set);
   histogram_tester.ExpectUniqueSample(

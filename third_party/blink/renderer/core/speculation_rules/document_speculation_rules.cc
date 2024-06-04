@@ -254,8 +254,9 @@ void DocumentSpeculationRules::AddRuleSet(SpeculationRuleSet* rule_set) {
     } else {
       NOTREACHED_IN_MIGRATION() << "error with unknown rule source";
     }
-  } else if (rule_set->source()->IsFromBrowserInjected()) {
-    // Don't insert browser-injected rule sets on pages that have other rules.
+  } else if (rule_set->source()->IsFromBrowserInjectedAndRespectsOptOut()) {
+    // Don't insert browser-injected rule sets that respect the opt-out on pages
+    // that have other rules.
     for (const auto& other_rule_set : rule_sets_) {
       if (!other_rule_set->source()->IsFromBrowserInjected()) {
         CountSpeculationRulesLoadOutcome(
@@ -306,10 +307,12 @@ void DocumentSpeculationRules::AddRuleSet(SpeculationRuleSet* rule_set) {
                           : WebFeature::kSpeculationRulesAuthorPrerenderRule);
   }
 
+  // If non-browser-injected speculation rules are injected, then remove all
+  // opt-out respecting browser-injected speculation rules.
   if (!rule_set->source()->IsFromBrowserInjected()) {
     HeapVector<Member<SpeculationRuleSet>> to_remove;
     for (const auto& other_rule_set : rule_sets_) {
-      if (other_rule_set->source()->IsFromBrowserInjected()) {
+      if (other_rule_set->source()->IsFromBrowserInjectedAndRespectsOptOut()) {
         to_remove.push_back(other_rule_set);
       }
     }

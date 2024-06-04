@@ -34,6 +34,8 @@ enum class SpeculationRuleSetErrorType {
   kMaxValue = kInvalidRulesSkipped,
 };
 
+enum class BrowserInjectedSpeculationRuleOptOut { kRespect, kIgnore };
+
 // A set of rules generated from a single <script type=speculationrules>, which
 // provides rules to identify URLs and corresponding conditions for speculation,
 // grouped by the action that is suggested.
@@ -52,7 +54,8 @@ class CORE_EXPORT SpeculationRuleSet final
            Document*,
            std::optional<DOMNodeId> node_id,
            std::optional<KURL> base_url,
-           std::optional<uint64_t> request_id);
+           std::optional<uint64_t> request_id,
+           bool ignore_opt_out);
 
     static Source* FromInlineScript(const String& source_text,
                                     Document&,
@@ -60,8 +63,10 @@ class CORE_EXPORT SpeculationRuleSet final
     static Source* FromRequest(const String& source_text,
                                const KURL& base_url,
                                uint64_t request_id);
-    static Source* FromBrowserInjected(const String& source_text,
-                                       const KURL& base_url);
+    static Source* FromBrowserInjected(
+        const String& source_text,
+        const KURL& base_url,
+        BrowserInjectedSpeculationRuleOptOut opt_out);
 
     const String& GetSourceText() const;
 
@@ -77,6 +82,7 @@ class CORE_EXPORT SpeculationRuleSet final
     bool IsFromInlineScript() const;
     bool IsFromRequest() const;
     bool IsFromBrowserInjected() const;
+    bool IsFromBrowserInjectedAndRespectsOptOut() const;
 
     void Trace(Visitor*) const;
 
@@ -93,6 +99,9 @@ class CORE_EXPORT SpeculationRuleSet final
 
     // Set by FromRequest()
     std::optional<uint64_t> request_id_;
+
+    // Set by FromBrowserInjected();
+    bool ignore_opt_out_ = false;
   };
 
   SpeculationRuleSet(base::PassKey<SpeculationRuleSet>, Source* source);

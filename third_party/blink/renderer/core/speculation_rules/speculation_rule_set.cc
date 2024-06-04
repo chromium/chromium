@@ -484,12 +484,14 @@ SpeculationRuleSet::Source::Source(base::PassKey<SpeculationRuleSet::Source>,
                                    Document* document,
                                    std::optional<DOMNodeId> node_id,
                                    std::optional<KURL> base_url,
-                                   std::optional<uint64_t> request_id)
+                                   std::optional<uint64_t> request_id,
+                                   bool ignore_opt_out)
     : source_text_(source_text),
       document_(document),
       node_id_(node_id),
       base_url_(base_url),
-      request_id_(request_id) {}
+      request_id_(request_id),
+      ignore_opt_out_(ignore_opt_out) {}
 
 SpeculationRuleSet::Source* SpeculationRuleSet::Source::FromInlineScript(
     const String& source_text,
@@ -497,7 +499,7 @@ SpeculationRuleSet::Source* SpeculationRuleSet::Source::FromInlineScript(
     DOMNodeId node_id) {
   return MakeGarbageCollected<Source>(base::PassKey<Source>(), source_text,
                                       &document, node_id, std::nullopt,
-                                      std::nullopt);
+                                      std::nullopt, false);
 }
 
 SpeculationRuleSet::Source* SpeculationRuleSet::Source::FromRequest(
@@ -506,15 +508,19 @@ SpeculationRuleSet::Source* SpeculationRuleSet::Source::FromRequest(
     uint64_t request_id) {
   return MakeGarbageCollected<Source>(base::PassKey<Source>(), source_text,
                                       nullptr, std::nullopt, base_url,
-                                      request_id);
+                                      request_id, false);
 }
 
 SpeculationRuleSet::Source* SpeculationRuleSet::Source::FromBrowserInjected(
     const String& source_text,
-    const KURL& base_url) {
+    const KURL& base_url,
+    BrowserInjectedSpeculationRuleOptOut opt_out) {
+  const bool ignore_opt_out =
+      opt_out == BrowserInjectedSpeculationRuleOptOut::kIgnore;
+
   return MakeGarbageCollected<Source>(base::PassKey<Source>(), source_text,
                                       nullptr, std::nullopt, base_url,
-                                      std::nullopt);
+                                      std::nullopt, ignore_opt_out);
 }
 
 bool SpeculationRuleSet::Source::IsFromInlineScript() const {
@@ -527,6 +533,11 @@ bool SpeculationRuleSet::Source::IsFromRequest() const {
 
 bool SpeculationRuleSet::Source::IsFromBrowserInjected() const {
   return !IsFromInlineScript() && !IsFromRequest();
+}
+
+bool SpeculationRuleSet::Source::IsFromBrowserInjectedAndRespectsOptOut()
+    const {
+  return IsFromBrowserInjected() && !ignore_opt_out_;
 }
 
 const String& SpeculationRuleSet::Source::GetSourceText() const {
