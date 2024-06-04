@@ -25,6 +25,7 @@ import {isUndoKeyboardEvent} from 'chrome://resources/js/util.js';
 import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {loadTimeData} from '../i18n_setup.js';
 import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
 import {MetricsBrowserProxyImpl, SafetyCheckUnusedSitePermissionsModuleInteractions} from '../metrics_browser_proxy.js';
 import {routes} from '../route.js';
@@ -118,6 +119,14 @@ export class SettingsUnusedSitePermissionsElement extends
         computed: 'computeShouldShowCompletionInfo_(sites_.*)',
       },
 
+      // Indicates whether the abusive notification revocation feature
+      // is enabled.
+      safetyHubAbusiveNotificationRevocationEnabled_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean(
+            'safetyHubAbusiveNotificationRevocationEnabled'),
+      },
+
       /** Text below primary header label. */
       subtitleString_: String,
 
@@ -144,6 +153,7 @@ export class SettingsUnusedSitePermissionsElement extends
   private modelUpdateDelayMsForTesting_: number|null = null;
   private sites_: UnusedSitePermissionsDisplay[]|null;
   private shouldShowCompletionInfo_: boolean;
+  private safetyHubAbusiveNotificationRevocationEnabled_: boolean;
   private subtitleString_: string;
   private toastText_: string|null;
   private unusedSitePermissionsReviewListExpanded_: boolean;
@@ -318,9 +328,12 @@ export class SettingsUnusedSitePermissionsElement extends
     this.headerString_ =
         await PluralStringProxyImpl.getInstance().getPluralString(
             'safetyCheckUnusedSitePermissionsPrimaryLabel', this.sites_.length);
+    // TODO(crbug/342210522): Add test for this.
     this.subtitleString_ =
         await PluralStringProxyImpl.getInstance().getPluralString(
-            'safetyCheckUnusedSitePermissionsSecondaryLabel',
+            this.safetyHubAbusiveNotificationRevocationEnabled_ ?
+                'safetyHubRevokedPermissionsSecondaryLabel' :
+                'safetyCheckUnusedSitePermissionsSecondaryLabel',
             this.sites_.length);
     // Focus on the expand button after the undo button is clicked and sites are
     // loaded again.
