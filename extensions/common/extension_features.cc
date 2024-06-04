@@ -27,10 +27,6 @@ BASE_FEATURE(kApiPermissionsSiteAccessRequests,
              "ApiPermissionsSiteAccessRequests",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kApiReadingList,
-             "ApiReadingList",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kApiUserScriptsMultipleWorlds,
              "ApiUserScriptsMultipleWorlds",
              base::FEATURE_DISABLED_BY_DEFAULT);

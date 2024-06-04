@@ -794,8 +794,7 @@
   },
   "readingList": {
     "dependencies": ["permission:readingList"],
-    "contexts": ["privileged_extension"],
-    "feature_flag": "ApiReadingList"
+    "contexts": ["privileged_extension"]
   },
   "resourcesPrivate": [{
     "dependencies": ["permission:resourcesPrivate"],

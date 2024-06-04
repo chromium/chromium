@@ -49,9 +49,6 @@ BASE_DECLARE_FEATURE(kApiEnterpriseKioskInput);
 // the permissions API.
 BASE_DECLARE_FEATURE(kApiPermissionsSiteAccessRequests);
 
-// Controls the availability of the ReadingList API.
-BASE_DECLARE_FEATURE(kApiReadingList);
-
 // Controls the availability of specifying different world IDs in the
 // userScripts API.
 BASE_DECLARE_FEATURE(kApiUserScriptsMultipleWorlds);
