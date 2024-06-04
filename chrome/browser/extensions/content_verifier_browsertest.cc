@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "extensions/browser/content_verifier/content_verifier.h"
+
 #include <list>
 #include <memory>
 #include <set>
@@ -33,7 +35,7 @@
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
-#include "extensions/browser/content_verifier/content_verifier.h"
+#include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/content_verifier/content_verify_job.h"
 #include "extensions/browser/content_verifier/test_utils.h"
 #include "extensions/browser/crx_file_info.h"
@@ -483,6 +485,164 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierTestWithForcedHashes,
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
   int reasons = prefs->GetDisableReasons(extension->id());
   EXPECT_EQ(disable_reason::DISABLE_CORRUPTED, reasons);
+
+  // ... And we should have recorded metrics for where we found the corruption.
+  histogram_tester.ExpectUniqueSample(
+      "Extensions.ContentVerification.VerifyFailedOnFileMV3."
+      "ServiceWorkerScript",
+      ContentVerifyJob::HASH_MISMATCH, 1);
+  // We hard-code the script type here to avoid exposing it publicly from the
+  // class.
+  constexpr int kServiceWorkerScriptFileType = 3;
+  histogram_tester.ExpectUniqueSample(
+      "Extensions.ContentVerification.VerifyFailedOnFileTypeMV3",
+      kServiceWorkerScriptFileType, 1);
+}
+
+// Tests service worker corruption detection across browser starts.
+IN_PROC_BROWSER_TEST_F(ContentVerifierTest,
+                       PRE_TestServiceWorker_AcrossSession) {
+  // Force-enable content verification for every extension.
+  ChromeContentVerifierDelegate::GetVerifyInfoTestOverride verify_info_override(
+      base::BindRepeating([](const Extension& extension) {
+        return ChromeContentVerifierDelegate::VerifyInfo(
+            ChromeContentVerifierDelegate::VerifyInfo::Mode::ENFORCE_STRICT,
+            extension.from_webstore(), false);
+      }));
+
+  static constexpr char kManifest[] =
+      R"({
+           "name": "TestServiceWorker_AcrossSession extension",
+           "manifest_version": 3,
+           "version": "0.1",
+           "background": {"service_worker": "background.js"}
+         })";
+  static constexpr char kBackgroundJs[] =
+      R"(chrome.tabs.onCreated.addListener(() => {
+           chrome.test.sendMessage('listener fired');
+         });
+         chrome.test.sendMessage('ready');)";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
+
+  ExtensionTestMessageListener event_listener("listener fired");
+  ExtensionTestMessageListener ready_listener("ready");
+  VerifierObserver verifier_observer;
+
+  scoped_refptr<const Extension> extension(
+      InstallExtension(test_dir.Pack(), /*expected_change=*/1));
+
+  ASSERT_TRUE(extension);
+
+  // Wait for the content verification code to finish processing the hashes and
+  // for the extension to register the listener.
+  verifier_observer.EnsureFetchCompleted(extension->id());
+  ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
+
+  // Navigate to a new tab. This should fire the event listener (ensuring the
+  // extension was active).
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("chrome://newtab"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  ASSERT_TRUE(event_listener.WaitUntilSatisfied());
+
+  // Now alter the contents of the background script.
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_TRUE(
+        base::AppendToFile(extension->path().AppendASCII("background.js"),
+                           "\nself.didModifyScript = true;"));
+  }
+
+  // Restart Chrome...
+  // (This is handled by the continuation of this test below, since the profile
+  // is preserved by the PRE_ test.)
+}
+
+IN_PROC_BROWSER_TEST_F(ContentVerifierTest, TestServiceWorker_AcrossSession) {
+  // Force-enable content verification for every extension.
+  ChromeContentVerifierDelegate::GetVerifyInfoTestOverride verify_info_override(
+      base::BindRepeating([](const Extension& extension) {
+        return ChromeContentVerifierDelegate::VerifyInfo(
+            ChromeContentVerifierDelegate::VerifyInfo::Mode::ENFORCE_STRICT,
+            extension.from_webstore(), false);
+      }));
+
+  // Find the previously-installed extension.
+  const Extension* extension = nullptr;
+  ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
+  for (const auto& e : registry->GenerateInstalledExtensionsSet()) {
+    if (e->name() == "TestServiceWorker_AcrossSession extension") {
+      extension = e.get();
+      break;
+    }
+  }
+  ASSERT_TRUE(extension);
+
+  // Currently, the extension is enabled. That's because it hasn't started
+  // running yet, so we haven't detected corruption in the extension.
+  EXPECT_TRUE(registry->enabled_extensions().Contains(extension->id()));
+  EXPECT_FALSE(registry->disabled_extensions().Contains(extension->id()));
+
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
+  EXPECT_EQ(0, prefs->GetDisableReasons(extension->id()));
+
+  {
+    // Sanity check: The file on disk was still modified.
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    std::string file_contents;
+    ASSERT_TRUE(base::ReadFileToString(
+        extension->path().AppendASCII("background.js"), &file_contents));
+    EXPECT_TRUE(base::Contains(file_contents, "self.didModifyScript = true;"));
+  }
+
+  // Now for the fun part. Start up the extension by opening a new tab,
+  // forcing the listener to fire. This should *succeed*, and the extension
+  // should remain enabled. This is because the service worker is cached at
+  // the //content layer, so the new contents aren't read from disk -- they're
+  // retrieved from the cache.
+  ExtensionTestMessageListener listener("listener fired");
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("chrome://newtab"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  ASSERT_TRUE(listener.WaitUntilSatisfied());
+  // Verify the extension is still enabled.
+  EXPECT_TRUE(registry->enabled_extensions().Contains(extension->id()));
+  EXPECT_EQ(0, prefs->GetDisableReasons(extension->id()));
+
+  // Verify that the modified worker did *not* run (the original worker did).
+  base::Value script_value = BackgroundScriptExecutor::ExecuteScript(
+      profile(), extension->id(),
+      "chrome.test.sendScriptResult('' + self.didModifyScript);",
+      BackgroundScriptExecutor::ResultCapture::kSendScriptResult);
+  EXPECT_EQ("undefined", script_value);
+
+  // Disable and re-enable the extension. This clears the worker from the cache
+  // and forces it to reload from disk. When doing this, it will be detected as
+  // corrupted.
+  DisableExtension(extension->id());
+
+  base::HistogramTester histogram_tester;
+  TestContentVerifyJobObserver job_observer;
+  base::FilePath background_script_relative_path =
+      base::FilePath().AppendASCII("background.js");
+  job_observer.ExpectJobResult(extension->id(), background_script_relative_path,
+                               TestContentVerifyJobObserver::Result::FAILURE);
+
+  EnableExtension(extension->id());
+  EXPECT_TRUE(job_observer.WaitForExpectedJobs());
+
+  // The extension should be disabled...
+  EXPECT_FALSE(registry->enabled_extensions().Contains(extension->id()));
+  EXPECT_TRUE(registry->disabled_extensions().Contains(extension->id()));
+
+  // ... for the reason of being corrupted...
+  EXPECT_EQ(disable_reason::DISABLE_CORRUPTED,
+            prefs->GetDisableReasons(extension->id()));
 
   // ... And we should have recorded metrics for where we found the corruption.
   histogram_tester.ExpectUniqueSample(
