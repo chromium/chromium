@@ -421,6 +421,9 @@ class BrowserAutofillManager : public AutofillManager {
   void OnFormSubmittedImpl(const FormData& form,
                            bool known_success,
                            mojom::SubmissionSource source) override;
+  void OnCaretMovedInFormFieldImpl(const FormData& form,
+                                   const FormFieldData& field,
+                                   const gfx::Rect& caret_bounds) override {}
   void OnTextFieldDidChangeImpl(const FormData& form,
                                 const FormFieldData& field,
                                 const base::TimeTicks timestamp) override;

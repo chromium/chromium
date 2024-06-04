@@ -440,6 +440,26 @@ void ContentAutofillDriver::FormSubmitted(
       });
 }
 
+void ContentAutofillDriver::CaretMovedInFormField(
+    const FormData& raw_form,
+    const FormFieldData& raw_field,
+    const gfx::Rect& caret_bounds) {
+  if (!bad_message::CheckFrameNotPrerendering(render_frame_host())) {
+    return;
+  }
+  FormData form = raw_form;
+  FormFieldData field = raw_field;
+  SetFrameAndFormMetaData(form, field);
+  router().CaretMovedInFormField(
+      this, std::move(form), field,
+      TransformBoundingBoxToViewportCoordinates(caret_bounds),
+      [](autofill::AutofillDriver* target, const FormData& form,
+         const FormFieldData& field, const gfx::Rect& caret_bounds) {
+        target->GetAutofillManager().OnCaretMovedInFormField(
+            WithNewVersion(form), field, caret_bounds);
+      });
+}
+
 void ContentAutofillDriver::TextFieldDidChange(const FormData& raw_form,
                                                const FormFieldData& raw_field,
                                                base::TimeTicks timestamp) {

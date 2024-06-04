@@ -27,6 +27,18 @@ interface AutofillDriver {
                 bool known_success,
                 SubmissionSource source);
 
+  // Notification that a form field's caret moved or selection has changed.
+  //
+  // `caret_bounds` is the bounds of the caret if the selection is empty and
+  // otherwise the bounds of the focus
+  // (https://w3c.github.io/selection-api/#dfn-focus). That is, its width is
+  // typically zero or near-zero, and its height is about one line. It is not
+  // validated in any way; in particular, the coordinates may be negative or
+  // otherwise outside of the bounds of the viewport.
+  CaretMovedInFormField(FormData form,
+                        FormFieldData field,
+                        gfx.mojom.Rect caret_bounds);
+
   // Notification that a form field's value has changed by a user edit.
   //
   // Similarly to JavaScript's "input" event, and unlike JavaScript's "change"

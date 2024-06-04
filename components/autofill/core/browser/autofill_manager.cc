@@ -359,6 +359,22 @@ void AutofillManager::OnFormsParsed(const std::vector<FormData>& forms) {
   }
 }
 
+void AutofillManager::OnCaretMovedInFormField(const FormData& form,
+                                              const FormFieldData& field,
+                                              const gfx::Rect& caret_bounds) {
+  if (!IsValidFormData(form)) {
+    return;
+  }
+  NotifyObservers(&Observer::OnBeforeCaretMovedInFormField, form.global_id(),
+                  field.global_id(), caret_bounds);
+  ParseFormAsync(
+      form, ParsingCallback(&AutofillManager::OnCaretMovedInFormFieldImpl,
+                            field, caret_bounds)
+                .Then(NotifyObserversCallback(
+                    &Observer::OnAfterCaretMovedInFormField, form.global_id(),
+                    field.global_id(), caret_bounds)));
+}
+
 void AutofillManager::OnTextFieldDidChange(const FormData& form,
                                            const FormFieldData& field,
                                            const base::TimeTicks timestamp) {

@@ -86,6 +86,15 @@ class AutofillManager
     virtual void OnAfterFormsSeen(AutofillManager& manager,
                                   base::span<const FormGlobalId> forms) {}
 
+    virtual void OnBeforeCaretMovedInFormField(AutofillManager& manager,
+                                               const FormGlobalId& form,
+                                               const FieldGlobalId& field,
+                                               const gfx::Rect& caret_bounds) {}
+    virtual void OnAfterCaretMovedInFormField(AutofillManager& manager,
+                                              const FormGlobalId& form,
+                                              const FieldGlobalId& field,
+                                              const gfx::Rect& caret_bounds) {}
+
     virtual void OnBeforeTextFieldDidChange(AutofillManager& manager,
                                             FormGlobalId form,
                                             FieldGlobalId field) {}
@@ -229,6 +238,9 @@ class AutofillManager
       const gfx::Rect& caret_bounds,
       AutofillSuggestionTriggerSource trigger_source);
   void OnHidePopup();
+  virtual void OnCaretMovedInFormField(const FormData& form,
+                                       const FormFieldData& field,
+                                       const gfx::Rect& caret_bounds);
   virtual void OnDidFillAutofillFormData(const FormData& form,
                                          const base::TimeTicks timestamp);
   virtual void OnJavaScriptChangedAutofilledValue(
@@ -323,6 +335,9 @@ class AutofillManager
   virtual void OnFormSubmittedImpl(const FormData& form,
                                    bool known_success,
                                    mojom::SubmissionSource source) = 0;
+  virtual void OnCaretMovedInFormFieldImpl(const FormData& form,
+                                           const FormFieldData& field,
+                                           const gfx::Rect& caret_bounds) = 0;
   virtual void OnTextFieldDidChangeImpl(const FormData& form,
                                         const FormFieldData& field,
                                         const base::TimeTicks timestamp) = 0;

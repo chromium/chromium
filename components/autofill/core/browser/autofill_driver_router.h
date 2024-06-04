@@ -168,6 +168,14 @@ class AutofillDriverRouter {
                        const FormData& form,
                        bool known_success,
                        mojom::SubmissionSource submission_source));
+  void CaretMovedInFormField(AutofillDriver* source,
+                             FormData form,
+                             const FormFieldData& field,
+                             const gfx::Rect& caret_bounds,
+                             void (*callback)(AutofillDriver* target,
+                                              const FormData& form,
+                                              const FormFieldData& field,
+                                              const gfx::Rect& caret_bounds));
   void TextFieldDidChange(AutofillDriver* source,
                           FormData form,
                           const FormFieldData& field,

@@ -304,6 +304,12 @@ void AutofillDriverIOS::FormSubmitted(
   ClearLastInteractedForm();
 }
 
+void AutofillDriverIOS::CaretMovedInFormField(const FormData& form,
+                                              const FormFieldData& field,
+                                              const gfx::Rect& caret_bounds) {
+  GetAutofillManager().OnCaretMovedInFormField(form, field, caret_bounds);
+}
+
 void AutofillDriverIOS::TextFieldDidChange(const FormData& form,
                                            const FormFieldData& field,
                                            base::TimeTicks timestamp) {

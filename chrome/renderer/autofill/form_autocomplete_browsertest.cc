@@ -85,6 +85,10 @@ class FakeContentAutofillDriver : public mojom::AutofillDriver {
     submission_source_ = source;
   }
 
+  void CaretMovedInFormField(const FormData& form,
+                             const FormFieldData& field,
+                             const gfx::Rect& caret_bounds) override {}
+
   void TextFieldDidChange(const FormData& form,
                           const FormFieldData& field,
                           base::TimeTicks timestamp) override {}
