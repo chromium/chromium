@@ -58,6 +58,8 @@ extern const int kMaxBucketsCount;
 
 class AutofillMetrics {
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum DeveloperEngagementMetric {
     // Parsed a form that is potentially autofillable and does not contain any
     // web developer-specified field type hint.
@@ -70,14 +72,16 @@ class AutofillMetrics {
     NUM_DEVELOPER_ENGAGEMENT_METRICS,
   };
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum InfoBarMetric {
     INFOBAR_SHOWN = 0,  // We showed an infobar, e.g. prompting to save credit
     // card info.
-    INFOBAR_ACCEPTED,  // The user explicitly accepted the infobar.
-    INFOBAR_DENIED,    // The user explicitly denied the infobar.
-    INFOBAR_IGNORED,   // The user completely ignored the infobar (logged on
+    INFOBAR_ACCEPTED = 1,  // The user explicitly accepted the infobar.
+    INFOBAR_DENIED = 2,    // The user explicitly denied the infobar.
+    INFOBAR_IGNORED = 3,   // The user completely ignored the infobar (logged on
     // tab close).
-    INFOBAR_NOT_SHOWN_INVALID_LEGAL_MESSAGE,  // We didn't show the infobar
+    INFOBAR_NOT_SHOWN_INVALID_LEGAL_MESSAGE = 4,  // We didn't show the infobar
     // because the provided legal
     // message was invalid.
     NUM_INFO_BAR_METRICS,
