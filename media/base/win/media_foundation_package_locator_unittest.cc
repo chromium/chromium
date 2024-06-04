@@ -7,6 +7,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/path_service.h"
 #include "base/win/scoped_co_mem.h"
 #include "base/win/windows_version.h"
 #include "media/base/test_helpers.h"
@@ -156,8 +157,10 @@ TEST_F(MediaFoundationPackageLocatorTest, EAC3) {
   // MS preloaded Dolby's AC3,EAC3 decoder into Windows image, but from
   // Windows 11 build 25992, all of them will be removed and provided by Dolby
   // as codec packs.
-  auto& version = base::win::OSInfo::GetInstance()->version_number();
-  bool is_inbox_decoder_present = version.major >= 10 && version.build < 25992;
+  base::FilePath dolby_dec_mft_path =
+      base::PathService::CheckedGet(base::DIR_SYSTEM);
+  dolby_dec_mft_path = dolby_dec_mft_path.AppendASCII("DolbyDecMFT.dll");
+  bool is_inbox_decoder_present = base::PathExists(dolby_dec_mft_path);
   bool can_decode =
       CanMfDecodeCodec(AudioCodec::kEAC3, MFMediaType_Audio,
                        MFT_CATEGORY_AUDIO_DECODER, GetAudioCodecsMap);

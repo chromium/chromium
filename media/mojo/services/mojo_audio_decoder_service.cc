@@ -33,6 +33,14 @@ MojoAudioDecoderService::MojoAudioDecoderService(
 
 MojoAudioDecoderService::~MojoAudioDecoderService() = default;
 
+void MojoAudioDecoderService::GetSupportedConfigs(
+    GetSupportedConfigsCallback callback) {
+  DVLOG(3) << __func__;
+  TRACE_EVENT0("media", "MojoAudioDecoderService::GetSupportedConfigs");
+  std::move(callback).Run(
+      mojo_media_client_->GetSupportedAudioDecoderConfigs());
+}
+
 void MojoAudioDecoderService::Construct(
     mojo::PendingAssociatedRemote<mojom::AudioDecoderClient> client,
     mojo::PendingRemote<mojom::MediaLog> media_log) {

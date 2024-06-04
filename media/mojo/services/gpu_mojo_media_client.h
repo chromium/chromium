@@ -98,8 +98,10 @@ class MEDIA_MOJO_EXPORT GpuMojoMediaClient : public MojoMediaClient {
   const gpu::GPUInfo& gpu_info() const { return gpu_info_; }
 
   // MojoMediaClient implementation.
+  SupportedAudioDecoderConfigs GetSupportedAudioDecoderConfigs() final;
   SupportedVideoDecoderConfigs GetSupportedVideoDecoderConfigs() final;
   VideoDecoderType GetDecoderImplementationType() final;
+
   std::unique_ptr<AudioDecoder> CreateAudioDecoder(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       std::unique_ptr<MediaLog> media_log) final;
@@ -180,6 +182,11 @@ class MEDIA_MOJO_EXPORT GpuMojoMediaClient : public MojoMediaClient {
   // Creates a CDM factory, right now only used on android and chromeos.
   virtual std::unique_ptr<CdmFactory> CreatePlatformCdmFactory(
       mojom::FrameInterfaceFactory* frame_interfaces);
+
+  // Queries the platform-specific AudioDecoder implementation for its
+  // supported codecs.
+  virtual std::optional<SupportedAudioDecoderConfigs>
+  GetPlatformSupportedAudioDecoderConfigs();
 
   const gpu::GpuPreferences gpu_preferences_;
   const gpu::GpuDriverBugWorkarounds gpu_workarounds_;

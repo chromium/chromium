@@ -11,6 +11,7 @@
 namespace media {
 
 MEDIA_EXPORT bool LoadMediaFoundationPackageDecoder(AudioCodec codec);
+MEDIA_EXPORT bool FindMediaFoundationPackageDecoder(AudioCodec codec);
 
 }  // namespace media
 
