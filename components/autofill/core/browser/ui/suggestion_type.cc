@@ -4,155 +4,118 @@
 
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 
+#include "base/notreached.h"
+
 namespace autofill {
 
-std::ostream& operator<<(std::ostream& os, SuggestionType type) {
+std::string_view SuggestionTypeToStringView(SuggestionType type) {
   switch (type) {
     case SuggestionType::kAutocompleteEntry:
-      os << "kAutocompleteEntry";
-      break;
+      return "kAutocompleteEntry";
     case SuggestionType::kAddressEntry:
-      os << "kAddressEntry";
-      break;
+      return "kAddressEntry";
     case SuggestionType::kFillFullAddress:
-      os << "kFillFullAddress";
-      break;
+      return "kFillFullAddress";
     case SuggestionType::kFillFullName:
-      os << "kFillFullName";
-      break;
+      return "kFillFullName";
     case SuggestionType::kFillEverythingFromAddressProfile:
-      os << "kFillEverythingFromAddressProfile";
-      break;
+      return "kFillEverythingFromAddressProfile";
     case SuggestionType::kFillFullPhoneNumber:
-      os << "kFillFullPhoneNumber";
-      break;
+      return "kFillFullPhoneNumber";
     case SuggestionType::kFillFullEmail:
-      os << "kFillFullEmail";
-      break;
+      return "kFillFullEmail";
     case SuggestionType::kAddressFieldByFieldFilling:
-      os << "kAddressFieldByFieldFilling";
-      break;
+      return "kAddressFieldByFieldFilling";
     case SuggestionType::kEditAddressProfile:
-      os << "kEditAddressProfile";
-      break;
+      return "kEditAddressProfile";
     case SuggestionType::kDeleteAddressProfile:
-      os << "kDeleteAddressProfile";
-      break;
+      return "kDeleteAddressProfile";
     case SuggestionType::kAutofillOptions:
-      os << "kAutofillOptions";
-      break;
+      return "kAutofillOptions";
     case SuggestionType::kComposeResumeNudge:
-      os << "kComposeResumeNudge";
-      break;
+      return "kComposeResumeNudge";
     case SuggestionType::kComposeDisable:
-      os << "kComposeDisable";
-      break;
+      return "kComposeDisable";
     case SuggestionType::kComposeGoToSettings:
-      os << "kComposeGoToSettings";
-      break;
+      return "kComposeGoToSettings";
     case SuggestionType::kComposeNeverShowOnThisSiteAgain:
-      os << "kComposeNeverShowOnThisSiteAgain";
-      break;
+      return "kComposeNeverShowOnThisSiteAgain";
     case SuggestionType::kComposeProactiveNudge:
-      os << "kComposeProactiveNudge";
-      break;
+      return "kComposeProactiveNudge";
     case SuggestionType::kComposeSavedStateNotification:
-      os << "kComposeSavedStateNotification";
-      break;
+      return "kComposeSavedStateNotification";
     case SuggestionType::kDatalistEntry:
-      os << "kDatalistEntry";
-      break;
+      return "kDatalistEntry";
     case SuggestionType::kPasswordEntry:
-      os << "kPasswordEntry";
-      break;
+      return "kPasswordEntry";
     case SuggestionType::kAllSavedPasswordsEntry:
-      os << "kAllSavedPasswordsEntry";
-      break;
+      return "kAllSavedPasswordsEntry";
     case SuggestionType::kGeneratePasswordEntry:
-      os << "kGeneratePasswordEntry";
-      break;
+      return "kGeneratePasswordEntry";
     case SuggestionType::kShowAccountCards:
-      os << "kShowAccountCards";
-      break;
+      return "kShowAccountCards";
     case SuggestionType::kPasswordAccountStorageOptIn:
-      os << "kPasswordAccountStorageOptIn";
-      break;
+      return "kPasswordAccountStorageOptIn";
     case SuggestionType::kPasswordAccountStorageOptInAndGenerate:
-      os << "kPasswordAccountStorageOptInAndGenerate";
-      break;
+      return "kPasswordAccountStorageOptInAndGenerate";
     case SuggestionType::kAccountStoragePasswordEntry:
-      os << "kAccountStoragePasswordEntry";
-      break;
+      return "kAccountStoragePasswordEntry";
     case SuggestionType::kPasswordAccountStorageReSignin:
-      os << "kPasswordAccountStorageReSignin";
-      break;
+      return "kPasswordAccountStorageReSignin";
     case SuggestionType::kPasswordAccountStorageEmpty:
-      os << "kPasswordAccountStorageEmpty";
-      break;
+      return "kPasswordAccountStorageEmpty";
     case SuggestionType::kPasswordFieldByFieldFilling:
-      os << "kPasswordFieldByFieldFilling";
-      break;
+      return "kPasswordFieldByFieldFilling";
     case SuggestionType::kFillPassword:
-      os << "kFillPassword";
-      break;
+      return "kFillPassword";
     case SuggestionType::kViewPasswordDetails:
-      os << "kViewPasswordDetails";
-      break;
+      return "kViewPasswordDetails";
     case SuggestionType::kCreditCardEntry:
-      os << "kCreditCardEntry";
-      break;
+      return "kCreditCardEntry";
     case SuggestionType::kInsecureContextPaymentDisabledMessage:
-      os << "kInsecureContextPaymentDisabledMessage";
-      break;
+      return "kInsecureContextPaymentDisabledMessage";
     case SuggestionType::kScanCreditCard:
-      os << "kScanCreditCard";
-      break;
+      return "kScanCreditCard";
     case SuggestionType::kVirtualCreditCardEntry:
-      os << "kVirtualCreditCardEntry";
-      break;
+      return "kVirtualCreditCardEntry";
     case SuggestionType::kCreditCardFieldByFieldFilling:
-      os << "kCreditCardFieldByFieldFilling";
-      break;
+      return "kCreditCardFieldByFieldFilling";
     case SuggestionType::kIbanEntry:
-      os << "kIbanEntry";
-      break;
+      return "kIbanEntry";
     case SuggestionType::kCreateNewPlusAddress:
-      os << "kCreateNewPlusAddress";
-      break;
+      return "kCreateNewPlusAddress";
     case SuggestionType::kFillExistingPlusAddress:
-      os << "kFillExistingPlusAddress";
-      break;
+      return "kFillExistingPlusAddress";
     case SuggestionType::kMerchantPromoCodeEntry:
-      os << "kMerchantPromoCodeEntry";
-      break;
+      return "kMerchantPromoCodeEntry";
     case SuggestionType::kSeePromoCodeDetails:
-      os << "kSeePromoCodeDetails";
-      break;
+      return "kSeePromoCodeDetails";
     case SuggestionType::kWebauthnCredential:
-      os << "kWebauthnCredential";
-      break;
+      return "kWebauthnCredential";
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
-      os << "kWebauthnSignInWithAnotherDevice";
-      break;
+      return "kWebauthnSignInWithAnotherDevice";
     case SuggestionType::kTitle:
-      os << "kTitle";
-      break;
+      return "kTitle";
     case SuggestionType::kSeparator:
-      os << "kSeparator";
-      break;
+      return "kSeparator";
     case SuggestionType::kClearForm:
-      os << "kClearForm";
-      break;
+      return "kClearForm";
     case SuggestionType::kMixedFormMessage:
-      os << "kMixedFormMessage";
-      break;
+      return "kMixedFormMessage";
     case SuggestionType::kDevtoolsTestAddresses:
-      os << "kDevtoolsTestAddresses";
-      break;
+      return "kDevtoolsTestAddresses";
     case SuggestionType::kDevtoolsTestAddressEntry:
-      os << "kDevtoolsTestAddressEntry";
-      break;
+      return "kDevtoolsTestAddressEntry";
   }
+  NOTREACHED_NORETURN();
+}
+
+std::string SuggestionTypeToString(SuggestionType type) {
+  return std::string(SuggestionTypeToStringView(type));
+}
+
+std::ostream& operator<<(std::ostream& os, SuggestionType type) {
+  os << SuggestionTypeToStringView(type);
   return os;
 }
 

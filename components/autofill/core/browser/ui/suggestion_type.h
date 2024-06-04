@@ -107,6 +107,9 @@ enum class SuggestionType {
   kMaxValue = kDevtoolsTestAddressEntry
 };
 
+std::string_view SuggestionTypeToStringView(SuggestionType type);
+std::string SuggestionTypeToString(SuggestionType type);
+
 std::ostream& operator<<(std::ostream& os, SuggestionType type);
 
 }  // namespace autofill
