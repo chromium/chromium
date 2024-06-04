@@ -56,6 +56,30 @@ TEST(PrintBackendUtilsTest, ParsePaperSizeBadOneDimension) {
 
 #if BUILDFLAG(USE_CUPS)
 
+TEST(PrintBackendUtilsTest, GetDisplayName) {
+#if BUILDFLAG(IS_MAC)
+  EXPECT_EQ(GetDisplayName("HP Printer", "Detailed Printer Info"),
+            "Detailed Printer Info");
+  EXPECT_EQ(GetDisplayName("HP Printer", ""), "HP Printer");
+#else
+  EXPECT_EQ(GetDisplayName("HP Printer", "Detailed Printer Info"),
+            "HP Printer");
+  EXPECT_EQ(GetDisplayName("HP Printer", ""), "HP Printer");
+#endif
+}
+
+TEST(PrintBackendUtilsTest, GetPrinterDescription) {
+#if BUILDFLAG(IS_MAC)
+  EXPECT_EQ(GetPrinterDescription("Driver Info", "Some Description"),
+            "Driver Info");
+  EXPECT_EQ(GetPrinterDescription("", "Some Description"), "");
+#else
+  EXPECT_EQ(GetPrinterDescription("Driver Info", "Some Description"),
+            "Some Description");
+  EXPECT_EQ(GetPrinterDescription("Driver Info", ""), "");
+#endif
+}
+
 TEST(PrintBackendUtilsCupsTest, PrintableAreaFromMarginsA4) {
   // margins in PWG units (1 PWG unit = 1/100 mm = 10 um)
   int bottom = 100;

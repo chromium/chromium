@@ -23,6 +23,7 @@
 #include "build/build_config.h"
 #include "printing/backend/cups_helper.h"
 #include "printing/backend/print_backend_consts.h"
+#include "printing/backend/print_backend_utils.h"
 #include "printing/mojom/print.mojom.h"
 #include "url/gurl.h"
 
@@ -86,7 +87,7 @@ mojom::ResultCode PrintBackendCUPS::PrinterBasicInfoFromCUPS(
   printer_info->printer_name = printer.name;
   printer_info->is_default = printer.is_default;
 
-  const char* info =
+  const char* info_option =
       cupsGetOption(kCUPSOptPrinterInfo, printer.num_options, printer.options);
 
   const char* state =
@@ -104,28 +105,11 @@ mojom::ResultCode PrintBackendCUPS::PrinterBasicInfoFromCUPS(
     printer_info->options[printer.options[opt_index].name] =
         printer.options[opt_index].value;
   }
-
-#if BUILDFLAG(IS_MAC)
-  // On Mac, "printer-info" option specifies the printer name and
-  // "printer-make-and-model" specifies the printer description.
-  if (info)
-    printer_info->display_name = info;
-
-  // It is possible to create a printer with a blank display name, so just
-  // use the printer name in such a case.
-  if (printer_info->display_name.empty()) {
-    printer_info->display_name = printer.name;
-  }
-
-  if (drv_info)
-    printer_info->printer_description = drv_info;
-#else
-  // On Linux destination name specifies the printer name and "printer-info"
-  // specifies the printer description.
-  printer_info->display_name = printer.name;
-  if (info)
-    printer_info->printer_description = info;
-#endif
+  std::string_view info =
+      info_option ? std::string_view(info_option) : std::string_view();
+  printer_info->display_name = GetDisplayName(printer_info->printer_name, info);
+  printer_info->printer_description = GetPrinterDescription(
+      drv_info ? std::string_view(drv_info) : std::string_view(), info);
   return mojom::ResultCode::kSuccess;
 }
 

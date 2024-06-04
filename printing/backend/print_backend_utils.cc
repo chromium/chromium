@@ -152,4 +152,33 @@ void PwgMarginsFromSizeAndPrintableArea(const gfx::Size& size_um,
 }
 #endif  // BUILDFLAG(USE_CUPS)
 
+COMPONENT_EXPORT(PRINT_BACKEND)
+std::string GetDisplayName(const std::string& printer_name,
+                           std::string_view info) {
+#if BUILDFLAG(IS_MAC)
+  // It is possible to create a printer with a blank display name, so just
+  // use the printer name in such a case.
+  if (!info.empty()) {
+    return std::string(info);
+  }
+#endif
+  return printer_name;
+}
+
+COMPONENT_EXPORT(PRINT_BACKEND)
+std::string_view GetPrinterDescription(std::string_view drv_info,
+                                       std::string_view info) {
+#if BUILDFLAG(IS_MAC)
+  // On Mac, `drv_info` specifies the printer description
+  if (!drv_info.empty()) {
+    return drv_info;
+  }
+#else
+  if (!info.empty()) {
+    return info;
+  }
+#endif
+  return std::string_view();
+}
+
 }  // namespace printing
