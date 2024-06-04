@@ -1,0 +1,21 @@
+Verifies that calling getInnerHTML() triggers a deprecation issue.
+Inspector issue: {
+    issue : {
+        code : DeprecationIssue
+        details : {
+            deprecationIssueDetails : {
+                affectedFrame : {
+                    frameId : <string>
+                }
+                sourceCodeLocation : {
+                    columnNumber : 15
+                    lineNumber : 0
+                    scriptId : <string>
+                    url : 
+                }
+                type : GetInnerHTML
+            }
+        }
+    }
+}
+
