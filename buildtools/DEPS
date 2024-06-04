@@ -1,7 +1,13 @@
 use_relative_paths = True
 
+# Only these hosts are allowed for dependencies in this DEPS file.
+# If you need to add a new host, contact chrome infrastracture team.
+allowed_hosts = [
+  'chromium-clang-format',
+]
+
 deps = {
-  'win/format': {
+  'win-format': {
     'bucket': 'chromium-clang-format',
     'condition': 'host_os == "win"',
     'dep_type': 'gcs',
@@ -15,7 +21,7 @@ deps = {
       },
     ],
   },
-  'mac/format': {
+  'mac-format': {
     'bucket': 'chromium-clang-format',
     'condition': 'host_os == "mac" and host_cpu == "x64"',
     'dep_type': 'gcs',
@@ -29,7 +35,7 @@ deps = {
       },
     ],
   },
-  'mac_arm64/format': {
+  'mac_arm64-format': {
     'bucket': 'chromium-clang-format',
     'condition': 'host_os == "mac" and host_cpu == "arm64"',
     'dep_type': 'gcs',
@@ -43,7 +49,7 @@ deps = {
       },
     ],
   },
-  'linux64/format': {
+  'linux64-format': {
     'bucket': 'chromium-clang-format',
     'condition': 'host_os == "linux"',
     'dep_type': 'gcs',

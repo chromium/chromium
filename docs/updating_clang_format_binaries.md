@@ -77,10 +77,10 @@ function upload_and_set {
 	set_deps $2 $object_info
 }
 
-upload_and_set buildtools/linux64/clang-format linux64/format
-upload_and_set buildtools/win/clang-format.exe win/format
-upload_and_set buildtools/mac/clang-format.x64 mac/format
-upload_and_set buildtools/mac/clang-format.arm64 mac_arm64/format
+upload_and_set buildtools/linux64/clang-format linux64-format
+upload_and_set buildtools/win/clang-format.exe win-format
+upload_and_set buildtools/mac/clang-format.x64 mac-format
+upload_and_set buildtools/mac/clang-format.arm64 mac_arm64-format
 
 # Clean up
 rm /tmp/clang-format-$CLANG_REV.tgz
@@ -100,7 +100,7 @@ clang-format differences by choosing patchset 1 as the base for the gerrit diff.
 ```shell
 ## New gerrit CL with results of old clang-format.
 # use old clang-format
-find base -name '*.cc' -o -name '*.c' -o -name '*.h' -o -name '*.mm' | xargs ./buildtools/linux64/format/clang-format -i
+find base -name '*.cc' -o -name '*.c' -o -name '*.h' -o -name '*.mm' | xargs ./buildtools/linux64-format/clang-format -i
 git commit -a
 git cl upload --bypass-hooks
 ## New patchset on gerrit CL with results of new clang-format.

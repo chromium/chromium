@@ -648,7 +648,7 @@ deps = {
       },
     ],
   },
-  'src/buildtools/win/format': {
+  'src/buildtools/win-format': {
     'bucket': 'chromium-clang-format',
     'condition': 'host_os == "win" and non_git_source',
     'dep_type': 'gcs',
@@ -662,7 +662,7 @@ deps = {
       },
     ],
   },
-  'src/buildtools/mac/format': {
+  'src/buildtools/mac-format': {
     'bucket': 'chromium-clang-format',
     'condition': 'host_os == "mac" and host_cpu == "x64" and non_git_source',
     'dep_type': 'gcs',
@@ -676,7 +676,7 @@ deps = {
       },
     ],
   },
-  'src/buildtools/mac_arm64/format': {
+  'src/buildtools/mac_arm64-format': {
     'bucket': 'chromium-clang-format',
     'condition': 'host_os == "mac" and host_cpu == "arm64" and non_git_source',
     'dep_type': 'gcs',
@@ -690,7 +690,7 @@ deps = {
       },
     ],
   },
-  'src/buildtools/linux64/format': {
+  'src/buildtools/linux64-format': {
     'bucket': 'chromium-clang-format',
     'condition': 'host_os == "linux" and non_git_source',
     'dep_type': 'gcs',
