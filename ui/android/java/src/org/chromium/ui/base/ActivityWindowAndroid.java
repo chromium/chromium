@@ -97,6 +97,8 @@ public class ActivityWindowAndroid extends WindowAndroid
         }
 
         setRootView(activity.getWindow().getDecorView().getRootView());
+        activityKeyboardVisibilityDelegate.setKeyboardInsetSupplier(
+                getInsetObserver().getSupplierForKeyboardInset());
         setKeyboardDelegate(activityKeyboardVisibilityDelegate);
         setAndroidPermissionDelegate(activityAndroidPermissionDelegate);
     }

@@ -30,6 +30,10 @@ public class KeyboardVisibilityDelegate {
     private final ObserverList<KeyboardVisibilityListener> mKeyboardVisibilityListeners =
             new ObserverList<>();
 
+    protected boolean hasKeyboardVisibilityListeners() {
+        return !mKeyboardVisibilityListeners.isEmpty();
+    }
+
     protected void registerKeyboardVisibilityCallbacks() {}
 
     protected void unregisterKeyboardVisibilityCallbacks() {}
@@ -104,6 +108,8 @@ public class KeyboardVisibilityDelegate {
      * @param rootView A {@link View}.
      * @return The size of the bottom margin which most likely is exactly the keyboard size.
      */
+    // TODO(crbug.com/343950171): Refactor this method to be static so we don't need a circular
+    // dependency between ActivityKeyboardVisibilityDelegate and InsetObserver.
     public int calculateKeyboardHeight(View rootView) {
         return KeyboardUtils.calculateKeyboardHeightFromWindowInsets(rootView);
     }

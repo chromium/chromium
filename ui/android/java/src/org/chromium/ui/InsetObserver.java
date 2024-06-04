@@ -280,6 +280,7 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
 
     private void updateKeyboardInset() {
         int keyboardInset = KeyboardUtils.calculateKeyboardHeightFromWindowInsets(mRootView);
+
         if (mKeyboardInset == keyboardInset) {
             return;
         }

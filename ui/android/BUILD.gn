@@ -570,6 +570,7 @@ robolectric_library("ui_android_junit_tests") {
     "junit/src/org/chromium/ui/InsetObserverTest.java",
     "junit/src/org/chromium/ui/InsetsRectProviderTest.java",
     "junit/src/org/chromium/ui/animation/AnimationPerformanceTrackerUnitTest.java",
+    "junit/src/org/chromium/ui/base/ActivityKeyboardVisibilityDelegateUnitTest.java",
     "junit/src/org/chromium/ui/base/ApplicationViewportInsetSupplierTest.java",
     "junit/src/org/chromium/ui/base/ClipboardTest.java",
     "junit/src/org/chromium/ui/base/EventForwarderTest.java",
