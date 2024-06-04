@@ -5568,22 +5568,6 @@
           'shards': 12,
         },
       },
-      'android-14-x64-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.webview_instrumentation_test_apk.filter',
-        ],
-        'swarming': {
-          'shards': 12,
-        },
-      },
-      'android-15-x64-fyi-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.webview_instrumentation_test_apk.filter',
-        ],
-        'swarming': {
-          'shards': 12,
-        },
-      },
       'android-code-coverage-native': {
         'args': [
           '--use-persistent-shell',

@@ -12779,7 +12779,6 @@
       {
         "args": [
           "--avd-config=../../tools/android/avd/proto/android_v_google_apis_x64.textpb",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.webview_instrumentation_test_apk.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -12819,7 +12818,7 @@
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 12
+          "shards": 7
         },
         "test": "webview_instrumentation_test_apk",
         "test_id_prefix": "ninja://android_webview/test:webview_instrumentation_test_apk/"
