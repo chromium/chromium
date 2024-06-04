@@ -358,19 +358,19 @@ void WallpaperSearchHandler::GetWallpaperSearchResults(
   optimization_guide::proto::WallpaperSearchRequest request;
   auto& descriptors = *request.mutable_descriptors();
   CHECK(result_descriptors->subject);
-  descriptors.set_descriptor_a(*result_descriptors->subject);
+  descriptors.set_subject(*result_descriptors->subject);
   if (result_descriptors->style.has_value()) {
-    descriptors.set_descriptor_b(*result_descriptors->style);
+    descriptors.set_style(*result_descriptors->style);
   }
   if (result_descriptors->mood.has_value()) {
-    descriptors.set_descriptor_c(*result_descriptors->mood);
+    descriptors.set_mood(*result_descriptors->mood);
   }
   if (result_descriptors->color) {
     if (result_descriptors->color->is_color()) {
-      descriptors.set_descriptor_d(
+      descriptors.set_color(
           skia::SkColorToHexString(result_descriptors->color->get_color()));
     } else if (result_descriptors->color->is_hue()) {
-      descriptors.set_descriptor_d(skia::SkColorToHexString(
+      descriptors.set_color(skia::SkColorToHexString(
           HueToSkColor(result_descriptors->color->get_hue())));
     }
   }

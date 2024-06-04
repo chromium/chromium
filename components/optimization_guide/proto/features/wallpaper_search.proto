@@ -23,6 +23,7 @@ message WallpaperSearchLoggingData {
 
 // Next ID: 3
 message WallpaperSearchRequest {
+  // The prompt built by selectors.
   Descriptors descriptors = 2;
 
   reserved 1;
@@ -30,13 +31,17 @@ message WallpaperSearchRequest {
 
 // Next ID: 5
 message Descriptors {
-  string descriptor_a = 1;
+  // The subject to be featured.
+  string subject = 1;
 
-  string descriptor_b = 2;
+  // The art style of the image.
+  string style = 2;
 
-  string descriptor_c = 3;
+  // The general mood of the image.
+  string mood = 3;
 
-  string descriptor_d = 4;
+  // A color to be featured in the image.
+  string color = 4;
 }
 
 // Next ID: 3
