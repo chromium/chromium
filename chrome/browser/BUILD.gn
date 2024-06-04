@@ -4894,6 +4894,7 @@ static_library("browser") {
     if (enable_extensions) {
       deps += [
         "//extensions/browser",
+        "//extensions/browser/api/content_settings:content_settings",
         "//extensions/common:mojom",
       ]
     }
