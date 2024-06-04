@@ -135,18 +135,12 @@ UIImage* DefaultFavicon() {
 
     UIView* contentView = self.contentView;
     contentView.layer.masksToBounds = YES;
-    contentView.layer.cornerRadius = kCornerSize;
-    contentView.translatesAutoresizingMaskIntoConstraints = NO;
 
     _accessibilityContainerView = [[UIView alloc] init];
     _accessibilityContainerView.isAccessibilityElement = YES;
     _accessibilityContainerView.translatesAutoresizingMaskIntoConstraints = NO;
+    _accessibilityContainerView.layer.cornerRadius = kCornerSize;
     [contentView addSubview:_accessibilityContainerView];
-    AddSameConstraints(contentView, _accessibilityContainerView);
-
-    // Needed for the drop animation.
-    self.layer.cornerRadius = kCornerSize;
-    self.backgroundColor = [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
 
     _faviconView = [self createFaviconView];
     [_accessibilityContainerView addSubview:_faviconView];
@@ -213,7 +207,7 @@ UIImage* DefaultFavicon() {
 
 - (UIDragPreviewParameters*)dragPreviewParameters {
   UIBezierPath* visiblePath =
-      [UIBezierPath bezierPathWithRoundedRect:self.contentView.bounds
+      [UIBezierPath bezierPathWithRoundedRect:_accessibilityContainerView.frame
                                  cornerRadius:kCornerSize];
   UIDragPreviewParameters* params = [[UIDragPreviewParameters alloc] init];
   params.visiblePath = visiblePath;
@@ -525,7 +519,7 @@ UIImage* DefaultFavicon() {
   backgroundColor =
       [backgroundColor resolvedColorWithTraitCollection:self.traitCollection];
 
-  self.contentView.backgroundColor = backgroundColor;
+  _accessibilityContainerView.backgroundColor = backgroundColor;
   _faviconView.tintColor = self.selected
                                ? [UIColor colorNamed:kCloseButtonColor]
                                : [UIColor colorNamed:kGrey500Color];
@@ -689,20 +683,24 @@ UIImage* DefaultFavicon() {
 
   /// `contentView` constraints.
   [NSLayoutConstraint activateConstraints:@[
-    [contentView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
-    [contentView.trailingAnchor constraintEqualToAnchor:self.trailingAnchor],
-    [contentView.topAnchor constraintEqualToAnchor:self.topAnchor],
-    [contentView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor
-                                             constant:-kContentViewBottomInset]
+    [_accessibilityContainerView.leadingAnchor
+        constraintEqualToAnchor:contentView.leadingAnchor],
+    [_accessibilityContainerView.trailingAnchor
+        constraintEqualToAnchor:contentView.trailingAnchor],
+    [_accessibilityContainerView.topAnchor
+        constraintEqualToAnchor:contentView.topAnchor],
+    [_accessibilityContainerView.bottomAnchor
+        constraintEqualToAnchor:contentView.bottomAnchor
+                       constant:-kContentViewBottomInset]
   ]];
 
   /// `leadingImageGuide` constraints.
   [NSLayoutConstraint activateConstraints:@[
     [leadingImageGuide.leadingAnchor
-        constraintEqualToAnchor:contentView.leadingAnchor
+        constraintEqualToAnchor:_accessibilityContainerView.leadingAnchor
                        constant:kFaviconLeadingMargin],
     [leadingImageGuide.centerYAnchor
-        constraintEqualToAnchor:contentView.centerYAnchor],
+        constraintEqualToAnchor:_accessibilityContainerView.centerYAnchor],
     [leadingImageGuide.widthAnchor constraintEqualToConstant:kFaviconSize],
     [leadingImageGuide.heightAnchor
         constraintEqualToAnchor:leadingImageGuide.widthAnchor],
@@ -713,12 +711,12 @@ UIImage* DefaultFavicon() {
   /// `_closeButton` constraints.
   [NSLayoutConstraint activateConstraints:@[
     [_closeButton.trailingAnchor
-        constraintEqualToAnchor:contentView.trailingAnchor
+        constraintEqualToAnchor:_accessibilityContainerView.trailingAnchor
                        constant:-kCloseButtonMargin],
     [_closeButton.widthAnchor constraintEqualToConstant:kCloseButtonSize],
     [_closeButton.heightAnchor constraintEqualToConstant:kCloseButtonSize],
     [_closeButton.centerYAnchor
-        constraintEqualToAnchor:contentView.centerYAnchor],
+        constraintEqualToAnchor:_accessibilityContainerView.centerYAnchor],
   ]];
 
   /// `_titleLabel` constraints.
@@ -727,7 +725,7 @@ UIImage* DefaultFavicon() {
                      constant:-kTitleInset];
   _titleContainerTrailingConstraint.priority = UILayoutPriorityDefaultLow;
   _titleContainerCollapsedTrailingConstraint = [_titleContainer.trailingAnchor
-      constraintEqualToAnchor:contentView.trailingAnchor
+      constraintEqualToAnchor:_accessibilityContainerView.trailingAnchor
                      constant:-kTitleInset];
   _titleContainerCollapsedTrailingConstraint.priority =
       UILayoutPriorityDefaultLow;
@@ -741,9 +739,9 @@ UIImage* DefaultFavicon() {
                        constant:kTitleInset],
     _titleContainerTrailingConstraint,
     [_titleContainer.heightAnchor
-        constraintEqualToAnchor:contentView.heightAnchor],
+        constraintEqualToAnchor:_accessibilityContainerView.heightAnchor],
     [_titleContainer.centerYAnchor
-        constraintEqualToAnchor:contentView.centerYAnchor],
+        constraintEqualToAnchor:_accessibilityContainerView.centerYAnchor],
     _titleLabelLeadingConstraint,
     [_titleLabel.centerYAnchor
         constraintEqualToAnchor:_titleContainer.centerYAnchor],
@@ -768,22 +766,22 @@ UIImage* DefaultFavicon() {
   /// `_trailingSelectedBorderBackgroundView constraints.
   [NSLayoutConstraint activateConstraints:@[
     [_leadingSelectedBorderBackgroundView.trailingAnchor
-        constraintEqualToAnchor:contentView.leadingAnchor],
+        constraintEqualToAnchor:_accessibilityContainerView.leadingAnchor],
     [_leadingSelectedBorderBackgroundView.widthAnchor
         constraintEqualToConstant:kSelectedBorderBackgroundViewWidth],
     [_leadingSelectedBorderBackgroundView.heightAnchor
-        constraintEqualToAnchor:contentView.heightAnchor],
+        constraintEqualToAnchor:_accessibilityContainerView.heightAnchor],
     [_leadingSelectedBorderBackgroundView.centerYAnchor
-        constraintEqualToAnchor:contentView.centerYAnchor],
+        constraintEqualToAnchor:_accessibilityContainerView.centerYAnchor],
 
     [_trailingSelectedBorderBackgroundView.leadingAnchor
-        constraintEqualToAnchor:contentView.trailingAnchor],
+        constraintEqualToAnchor:_accessibilityContainerView.trailingAnchor],
     [_trailingSelectedBorderBackgroundView.widthAnchor
         constraintEqualToConstant:kSelectedBorderBackgroundViewWidth],
     [_trailingSelectedBorderBackgroundView.heightAnchor
-        constraintEqualToAnchor:contentView.heightAnchor],
+        constraintEqualToAnchor:_accessibilityContainerView.heightAnchor],
     [_trailingSelectedBorderBackgroundView.centerYAnchor
-        constraintEqualToAnchor:contentView.centerYAnchor],
+        constraintEqualToAnchor:_accessibilityContainerView.centerYAnchor],
   ]];
 
   /// `_leftTailView`, `_rightTailView` and `_bottomTailView` constraints.
@@ -840,9 +838,9 @@ UIImage* DefaultFavicon() {
     [_leadingSeparatorGradientView.widthAnchor
         constraintEqualToConstant:kSeparatorGradientWidth],
     [_leadingSeparatorGradientView.heightAnchor
-        constraintEqualToAnchor:contentView.heightAnchor],
+        constraintEqualToAnchor:_accessibilityContainerView.heightAnchor],
     [_leadingSeparatorGradientView.centerYAnchor
-        constraintEqualToAnchor:contentView.centerYAnchor],
+        constraintEqualToAnchor:_accessibilityContainerView.centerYAnchor],
   ]];
 
   /// `_trailingSeparatorGradientView` constraints.
@@ -852,9 +850,9 @@ UIImage* DefaultFavicon() {
     [_trailingSeparatorGradientView.widthAnchor
         constraintEqualToConstant:kSeparatorGradientWidth],
     [_trailingSeparatorGradientView.heightAnchor
-        constraintEqualToAnchor:contentView.heightAnchor],
+        constraintEqualToAnchor:_accessibilityContainerView.heightAnchor],
     [_trailingSeparatorGradientView.centerYAnchor
-        constraintEqualToAnchor:contentView.centerYAnchor],
+        constraintEqualToAnchor:_accessibilityContainerView.centerYAnchor],
   ]];
 
   /// `_groupStrokeView` constraints.
@@ -865,6 +863,7 @@ UIImage* DefaultFavicon() {
       [_groupStrokeView.bottomAnchor constraintEqualToAnchor:self.topAnchor];
   _groupStrokeViewWidthConstraint =
       [_groupStrokeView.widthAnchor constraintEqualToAnchor:self.widthAnchor];
+  _groupStrokeViewWidthConstraint.priority = UILayoutPriorityDefaultHigh;
   _groupStrokeViewWidthConstraint.active = YES;
   AddSameCenterXConstraint(_groupStrokeView, self);
 }
