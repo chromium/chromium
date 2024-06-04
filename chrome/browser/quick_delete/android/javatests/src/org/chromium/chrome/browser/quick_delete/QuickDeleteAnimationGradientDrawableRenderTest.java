@@ -24,6 +24,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -79,6 +80,7 @@ public class QuickDeleteAnimationGradientDrawableRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisabledTest(message = "crbug.com/344953217")
     public void testWipeAnimation() throws Exception {
         View testView = setUpTestView();
         QuickDeleteAnimationGradientDrawable drawable =
