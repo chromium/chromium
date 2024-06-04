@@ -1765,7 +1765,7 @@
     ],
     "args": ["--enable-features=BrowsingTopics,PrivacySandboxAdsAPIsOverride",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Aug 10, 2023"
+    "expires": "Dec 3, 2024"
   },
   {
     "prefix": "private-aggregation",
