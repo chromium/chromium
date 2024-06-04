@@ -10272,6 +10272,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(features::kIOSPromoBookmarkBubble,
                                     kIOSPromoBookmarkBubbleVariations,
                                     "IOSPromoBookmarkBubble")},
+
+    {"ios-promo-payment-bubble", flag_descriptions::kIOSPromoPaymentBubbleName,
+     flag_descriptions::kIOSPromoPaymentBubbleDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kIOSPromoPaymentBubble)},
 #endif
 
     {"enable-file-backed-blob-factory",

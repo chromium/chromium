@@ -3082,6 +3082,9 @@ extern const char kIOSPromoAddressBubbleDescription[];
 
 extern const char kIOSPromoBookmarkBubbleName[];
 extern const char kIOSPromoBookmarkBubbleDescription[];
+
+extern const char kIOSPromoPaymentBubbleName[];
+extern const char kIOSPromoPaymentBubbleDescription[];
 #endif
 
 extern const char kWebAppSyncGeneratedIconBackgroundFixName[];

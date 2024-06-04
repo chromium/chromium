@@ -5288,6 +5288,11 @@ const char kIOSPromoBookmarkBubbleDescription[] =
     "When enabled, the Contextual Chrome for iOS promo will be shown to"
     "the eligible users when they add/update their bookmarks.";
 
+const char kIOSPromoPaymentBubbleName[] = "Chrome for iOS promo : payments";
+const char kIOSPromoPaymentBubbleDescription[] =
+    "When enabled, the Contextual Chrome for iOS promo will be shown to"
+    "the eligible users when they save/update their payments.";
+
 #endif
 
 const char kWebAppSyncGeneratedIconBackgroundFixName[] =

@@ -101,6 +101,8 @@ enum class IOSPromoBookmarkBubbleActivation {
 };
 extern const base::FeatureParam<IOSPromoBookmarkBubbleActivation>
     kIOSPromoBookmarkBubbleActivationParam;
+
+BASE_DECLARE_FEATURE(kIOSPromoPaymentBubble);
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)

@@ -144,6 +144,12 @@ BASE_FEATURE(kIOSPromoBookmarkBubble,
              "IOSPromoBookmarkBubble",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// This feature controls whether the user can be shown the Chrome for iOS promo
+// when saving or updating payments.
+BASE_FEATURE(kIOSPromoPaymentBubble,
+             "IOSPromoPaymentBubble",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // This array lists the different activation params that can be passed in the
 // experiment config, with their corresponding string.
 constexpr base::FeatureParam<IOSPromoBookmarkBubbleActivation>::Option
