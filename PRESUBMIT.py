@@ -2017,7 +2017,7 @@ _DEPRECATED_SYNC_CONSENT_FUNCTION_WARNING = (
   'that also supports signin::ConsentLevel::kSignin when appropriate. It is '
   'safe to ignore this warning if you are just moving an existing call, or if '
   'you want special handling for users in the legacy state. In doubt, reach '
-  'out to //components/sync/OWNERS.'
+  'out to //components/sync/OWNERS.',
 )
 
 # C++ functions related to signin::ConsentLevel::kSync which are deprecated.
@@ -2034,16 +2034,12 @@ _DEPRECATED_SYNC_CONSENT_CPP_FUNCTIONS : Sequence[BanRule] = (
     ),
     BanRule(
       'IsSyncFeatureEnabled',
-      (
       _DEPRECATED_SYNC_CONSENT_FUNCTION_WARNING,
-      ),
       False,
     ),
     BanRule(
       'IsSyncFeatureActive',
-      (
       _DEPRECATED_SYNC_CONSENT_FUNCTION_WARNING,
-      ),
       False,
     ),
 )
