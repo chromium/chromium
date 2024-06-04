@@ -310,8 +310,7 @@ class BASE_EXPORT SequenceManagerImpl
 
     internal::TaskQueueSelector selector;
     ObserverList<TaskObserver>::UncheckedAndDanglingUntriaged task_observers;
-    ObserverList<TaskTimeObserver>::UncheckedAndDanglingUntriaged
-        task_time_observers;
+    ObserverList<TaskTimeObserver> task_time_observers;
     const raw_ptr<const base::TickClock> default_clock;
     raw_ptr<TimeDomain> time_domain = nullptr;
 
