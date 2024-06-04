@@ -107,6 +107,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> yhdistetty</translation>
 <translation id="1340378040547539434">Loitonna sivua</translation>
 <translation id="1341651618736211726">Ylivuoto</translation>
+<translation id="1341926407152459446">Valitse "<ph name="DEVICE_NAME" />" äänitulolle ja ‐toistolle</translation>
 <translation id="1344141078024003905">Striimaat näyttöä. Voit keskeyttää tai lopettaa näytön striimauksen milloin tahansa.</translation>
 <translation id="1346748346194534595">Oikealla</translation>
 <translation id="1351937230027495976">Tiivistä valikko</translation>
@@ -145,6 +146,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1486307154719069822">Kun käytät sanelua, voit kirjoittaa puhumalla. Paina sanelunäppäintä tai valitse mikrofonikuvake näytön alareunasta, kun olet tekstikentässä. Sanelukieleksi on asetettu <ph name="LANGUAGE" />. Puhe lähetetään Googlelle käsiteltäväksi. Voit muuttaa sanelukieltä milloin tahansa valitsemalla Asetukset &gt; Saavutettavuus.</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> vaihdettiin: <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Näytä kaikki ehdotukset</translation>
+<translation id="1501946871587957338">Vaihdetaanko audiolähdettä?</translation>
 <translation id="1510238584712386396">Käynnistysohjelma</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Näytä ilmoitusasetukset. Ilmoitukset on poistettu 1 sovelluksen käytöstä.}other{Näytä ilmoitusasetukset. Ilmoitukset on poistettu # sovelluksen käytöstä.}}</translation>
 <translation id="1523032696246003">Akku <ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> täyteen lataukseen</translation>
@@ -773,6 +775,7 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="397105322502079400">Lasketaan...</translation>
 <translation id="397726367135689299">Akun lataus ei välttämättä toimi oikein.</translation>
 <translation id="3977512764614765090">Akkua ladataan, varaus nyt <ph name="PERCENTAGE" /> %</translation>
+<translation id="3982013579989864579">Vaihdetaanko äänen ulostuloa?</translation>
 <translation id="3984536049089846927">Seuraava sivu</translation>
 <translation id="3986082989454912832">Vastaa</translation>
 <translation id="3990002060657467458">Pika-asetuksista löydät usein käytetyt valinnat, esim. Wi-Fin, Bluetoothin ja äänenvoimakkuuden. Voit myös ottaa kuvakaappauksia.</translation>
@@ -816,6 +819,7 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="4150201353443180367">Näyttö</translation>
 <translation id="4156293514828496577">Akkua jäljellä <ph name="PERCENTAGE" /> % (noin <ph name="TIME_LEFT" />).
 Joitakin ominaisuuksia on rajoitettu akunkeston parantamiseksi.</translation>
+<translation id="4160919062868802509">Useita äänilähteitä havaittu</translation>
 <translation id="4165275524535002941">Johto ei ehkä tue näyttöjä</translation>
 <translation id="4177415338862979658">Katso tiedot klikkaamalla</translation>
 <translation id="4177913004758410636">{0,plural, =1{Päivitä laite vuorokauden kuluessa}other{Päivitä laite # vuorokauden kuluessa}}</translation>
@@ -1014,6 +1018,7 @@ Yksi laite yhdistetty.</translation>
 <translation id="4871905435473761992">Näytä hotspotin tiedot. Mobiiliverkko ei tue hotspotia.</translation>
 <translation id="4872237917498892622">Alt + haku tai Shift</translation>
 <translation id="4872852897273142380">Kohdista kirjanmerkkipalkkiin tai korosta se (jos näkyvissä)</translation>
+<translation id="4876935764454575645">Audion valinta</translation>
 <translation id="4881323000405981760">Linux-sovelluksissa ei tueta tehosteita</translation>
 <translation id="4881695831933465202">Avaa</translation>
 <translation id="4889868803215848840">Anna valinnaista palautetta ehdotusten parantamiseksi:</translation>
@@ -1090,6 +1095,7 @@ Yksi laite yhdistetty.</translation>
 <translation id="5121628974188116412">Siirry sivun alareunaan</translation>
 <translation id="5122517996953421795">Esikatselu: <ph name="DESK_NAME" />. Työpöytä ei aktiivinen.</translation>
 <translation id="5136175204352732067">Eri näppäimistö kytketty</translation>
+<translation id="5144005092084035179">Vaihdetaanko äänituloa?</translation>
 <translation id="5147567197700016471">Avattu</translation>
 <translation id="5150070631291639005">Tietosuoja-asetukset</translation>
 <translation id="5155897006997040331">Lukunopeus</translation>
@@ -1398,7 +1404,6 @@ Ei liitettyjä laitteita.</translation>
 <translation id="6232416233079464213">Lähde: <ph name="SESSION_NAME" /></translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> käyttää tällä hetkellä kameraa ja mikrofonia</translation>
 <translation id="6237231532760393653">1X</translation>
-<translation id="62380141479352646">Akku vähissä. Virransäästö on laitettu päälle.</translation>
 <translation id="6240603910551255087">Ylin painike</translation>
 <translation id="6247728804802644171">Avaa ilmoitukset</translation>
 <translation id="6249795363855770621">Valmiiksi merkitseminen epäonnistui. Yritä uudelleen, kun olet yhteydessä verkkoon.</translation>
@@ -1789,6 +1794,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="7780094051999721182">pikakuvakkeista</translation>
 <translation id="7780159184141939021">Käännä näyttö</translation>
 <translation id="7781829728241885113">Eilen</translation>
+<translation id="7787212146956232129">Äänitulolaitteet on asetettu. Muuta siirtymällä asetuksiin.</translation>
 <translation id="7792590255364786396">Näkyy</translation>
 <translation id="7796735576426975947">Uusi ilmoitus piilotettu</translation>
 <translation id="7798302898096527229">Peru painamalla haku- tai vaihtonäppäintä.</translation>
@@ -2094,6 +2100,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 tiedosto}other{# tiedostoa}}</translation>
 <translation id="8936501819958976551">poistettu käytöstä</translation>
 <translation id="8938800817013097409">C-tyypin USB-laite (oikeanpuoleinen takaportti)</translation>
+<translation id="8939855324412367560">Äänitulo on "<ph name="INPUT_DEVICE_NAME" />" ja äänentoisto on "<ph name="OUTPUT_DEVICE_NAME" />". Muuta sitä asetuksista.</translation>
 <translation id="8940956008527784070">Akku vähissä (<ph name="PERCENTAGE" /> %)</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> (<ph name="EMAIL" />), valintaruutua ei valittu.</translation>
 <translation id="8949925099261528566">Yhdistetty, ei internetyhteyttä</translation>
@@ -2131,7 +2138,6 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="9080132581049224423">Siirry aloitusnäytölle pyyhkäisemällä ylös</translation>
 <translation id="9080206825613744995">Mikrofoni on käytössä.</translation>
 <translation id="9083324773537346962">Käyttöjärjestelmäversio</translation>
-<translation id="908451241440060346">Ilmoitukset mykistetään, kun Älä häiritse ‐tila on päällä</translation>
 <translation id="9084606467167974638">Vaihda valikon paikkaa</translation>
 <translation id="9085962983642906571">Akunkestoa pidennetään pitämällä akun varaustaso 80 %:ssa, kun laite on latauspistokkeessa.</translation>
 <translation id="9089416786594320554">Syöttötavat</translation>
@@ -2151,6 +2157,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="9178475906033259337">Näytetään 1 tulos haulla <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Tämän ominaisuuden avulla kaikkia kirjautuneita käyttäjätilejä voi käyttää ilman salasanaa. Käytä tätä ominaisuutta vain luotettavien tilien kanssa.</translation>
 <translation id="9183456764293710005">Koko näytön suurennus</translation>
+<translation id="9192133205265227850">Ota "<ph name="DEVICE_NAME" />" käyttöön</translation>
 <translation id="9193626018745640770">Suoratoistetaan tuntemattomaan vastaanottimeen</translation>
 <translation id="9194617393863864469">Kirjaa sisään toinen käyttäjä…</translation>
 <translation id="9195990613383871904">Huomenna</translation>

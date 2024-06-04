@@ -503,6 +503,7 @@
 <translation id="3575234738189584619">用「智能鏡頭」搜尋</translation>
 <translation id="3575426792457739946">此清單包含所有已載入的個人檔案。</translation>
 <translation id="3581564640715911333">詢問是否將網頁內容翻譯成其他語言</translation>
+<translation id="3585696901179982416">{count,plural, =1{{count} 個地址入面嘅第 {position} 個}other{{count} 個地址入面嘅第 {position} 個}}</translation>
 <translation id="3587885837929752825">你的機構已限制你可儲存在 Google 帳戶中的內容。</translation>
 <translation id="3588820906588687999">在新分頁中開啟圖片</translation>
 <translation id="3595252146048399851">您隨時可在<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />中選擇要同步的資料。Google 可能會根據您的記錄，提供個人化「搜尋」和其他服務。</translation>
@@ -1195,6 +1196,7 @@
 <translation id="69739764870135975">如果 Google 亦是預設的搜尋引擎，您將能取得更實用、更符合需要的建議</translation>
 <translation id="6979158407327259162">Google 雲端硬碟</translation>
 <translation id="6983306615164277634">你亦可按住網址列以變更位置。</translation>
+<translation id="6986937292199604715">開啟…</translation>
 <translation id="6988572888918530647">管理您的 Google 帳戶</translation>
 <translation id="6990519590575500580">FaceTime</translation>
 <translation id="6998989275928107238">收件者︰</translation>
@@ -1301,6 +1303,7 @@
 <translation id="7557508262441527045">已登出</translation>
 <translation id="7561196759112975576">永遠使用</translation>
 <translation id="7564917801238348224">儲存…</translation>
+<translation id="758132317817089442">開啟強化保護功能…</translation>
 <translation id="7582857256643797524">裝置已啟用此設定</translation>
 <translation id="7583004045319035904">使用 <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> 解鎖無痕式分頁。</translation>
 <translation id="7598439272585186139">提升安全性</translation>

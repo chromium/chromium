@@ -107,6 +107,7 @@
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> कनेक्‍ट केले</translation>
 <translation id="1340378040547539434">पेजवर झूम आउट करा</translation>
 <translation id="1341651618736211726">ओव्हरफ्लो</translation>
+<translation id="1341926407152459446">ऑडिओ इनपुट आणि आउटपुटसाठी "<ph name="DEVICE_NAME" />" वापरा</translation>
 <translation id="1344141078024003905">तुम्ही तुमची स्क्रीन कास्ट करत आहात. तुम्ही तुमची स्क्रीन कास्ट करणे कधीही थांबवू किंवा बंद करू शकता.</translation>
 <translation id="1346748346194534595">उजवे</translation>
 <translation id="1351937230027495976">मेनू कोलॅप्स करा</translation>
@@ -145,6 +146,7 @@
 <translation id="1486307154719069822">डिक्टेशनसह तुम्ही तुमचा आवाज वापरून टाइप करू शकता. तुम्ही मजकूर फील्डवर असताना डिक्टेशन की प्रेस करा किंवा स्क्रीनच्या तळाशी असलेला मायक्रोफोन आयकन निवडा. तुमची डिक्टेशन भाषा <ph name="LANGUAGE" /> वर सेट केली आहे. प्रक्रिया करण्यासाठी स्पीच Google ला पाठवली आहे. तुम्ही सेटिंग्ज &gt; अ‍ॅक्सेसिबिलिटी मध्ये डिक्टेशन भाषा कधीही बदलू शकता.</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> हा <ph name="SECOND_ITEM_TITLE" /> सोबत स्वॅप केला</translation>
 <translation id="1500926532737552529">सर्व सूचना दाखवा</translation>
+<translation id="1501946871587957338">ऑडिओ स्रोत स्विच करायचा आहे का?</translation>
 <translation id="1510238584712386396">लाँचर</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{सूचना सेटिंग्ज दाखवा. ॲपसाठी सूचना बंद आहेत}other{सूचना सेटिंग्ज दाखवा. # ॲप्ससाठी सूचना बंद आहेत}}</translation>
 <translation id="1523032696246003">बॅटरी <ph name="BATTERY_PERCENTAGE" />% | पूर्ण होण्यासाठी <ph name="TIME" /></translation>
@@ -210,6 +212,7 @@
 <translation id="1747827819627189109">ऑन-स्क्रीन कीबोर्ड सक्षम</translation>
 <translation id="1749109475624620922">विंडो <ph name="WINDOW_TITLE" /> सर्व डेस्कना असाइन केले</translation>
 <translation id="1750088060796401187">फक्त <ph name="MAX_DESK_LIMIT" /> डेस्कना अनुमती आहे. नवीन डेस्क उघडण्यासाठी एक डेस्क काढून टाका.</translation>
+<translation id="1755408179247123630">बोलण्यासाठी निवडा सुरू करायचे आहे का?</translation>
 <translation id="1755556344721611131">निदान करण्यासाठी अ‍ॅप</translation>
 <translation id="1756833229520115364">टेंप्लेट सेव्ह करता आले नाही. खूप जास्त विंडो किंवा टॅब आहेत.</translation>
 <translation id="1757857692711134412">सूर्यास्तापर्यंत बंद</translation>
@@ -773,6 +776,7 @@
 <translation id="397105322502079400">गणना करत आहे...</translation>
 <translation id="397726367135689299">बॅटरी चार्जिंग बेभरवशाचे असू शकते.</translation>
 <translation id="3977512764614765090">बॅटरी <ph name="PERCENTAGE" />% वर आहे आणि चार्ज होत आहे.</translation>
+<translation id="3982013579989864579">ऑडिओ आउटपुट स्विच करायचे आहे का?</translation>
 <translation id="3984536049089846927">पुढील पेज</translation>
 <translation id="3986082989454912832">उत्तर</translation>
 <translation id="3990002060657467458">वाय-फाय, ब्लूटूथ आणि व्हॉल्यूम यांसारखी वारंवार वापरली जाणारी नियंत्रणे क्विक सेटिंग्जमध्ये आहेत. तुम्ही येथे जाऊन स्क्रीनशॉटदेखील घेऊ शकता.</translation>
@@ -816,6 +820,7 @@
 <translation id="4150201353443180367">डिस्प्ले करा</translation>
 <translation id="4156293514828496577"><ph name="PERCENTAGE" />% बॅटरी शिल्लक आहे (सुमारे <ph name="TIME_LEFT" />).
 बॅटरी लाइफ वाढवण्यासाठी काही वैशिष्ट्ये मर्यादित केलेली आहेत.</translation>
+<translation id="4160919062868802509">एकाहून अधिक ऑडिओ स्रोत डिटेक्ट केले आहेत</translation>
 <translation id="4165275524535002941">केबल कदाचित डिस्प्लेला सपोर्ट करणार नाही</translation>
 <translation id="4177415338862979658">तपशील तपासण्यासाठी क्लिक करा</translation>
 <translation id="4177913004758410636">{0,plural, =1{डिव्हाइस एका दिवसाच्या आत अपडेट करा}other{डिव्हाइस # दिवसांच्या आत अपडेट करा}}</translation>
@@ -947,6 +952,7 @@
 <translation id="4628757576491864469">डिव्हाइस</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, तारा रेटिंग <ph name="RATING_SCORE" /></translation>
 <translation id="4633636853437260449">हटवण्यासाठी Ctrl+W प्रेस करा</translation>
+<translation id="4635501805800894201">{0,plural, =0{Update device to previous version now}=1{१ सेकंदामध्ये मागील आवृत्तीवर डिव्हाइस अपडेट करा}other{# सेकंदांमध्ये मागील आवृत्तीवर डिव्हाइस अपडेट करा}}</translation>
 <translation id="4642092649622328492">अर्धा स्क्रीनशॉट घ्या</translation>
 <translation id="4644727592819780893">कॅमेरा बसवण्यासाठी जागा खूप लहान आहे</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, ॲप शिफारस</translation>
@@ -976,6 +982,7 @@
 <translation id="4735944890391795473">डेस्‍क १२</translation>
 <translation id="473775607612524610">अपडेट करा</translation>
 <translation id="4740516757091333363">सेव्ह केलेले डेस्क हटवायचे आहे का?</translation>
+<translation id="4746798685375253449">{0,plural, =1{एका दिवसामध्ये मागील आवृत्तीवर डिव्हाइस अपडेट करा}other{# दिवसांमध्ये मागील आवृत्तीवर डिव्हाइस अपडेट करा}}</translation>
 <translation id="4747410141429390146">कृपया सूचना पाहण्यासाठी अनलॉक करा</translation>
 <translation id="4752784485658729358">फक्त सहा सेव्ह केलेल्या डेस्कना अनुमती आहे. नवीन डेस्‍क सेव्ह करण्यासाठी एखादा डेस्क काढून टाका.</translation>
 <translation id="4759238208242260848">डाउनलोड</translation>
@@ -1014,6 +1021,7 @@
 <translation id="4871905435473761992">हॉटस्पॉटचे तपशील दाखवा. तुमचे मोबाइल नेटवर्क हे हॉटस्पॉटला सपोर्ट करत नाही.</translation>
 <translation id="4872237917498892622">Alt+Search किंवा Shift</translation>
 <translation id="4872852897273142380">बुकमार्क बारवर फोकस करा किंवा हायलाइट करा (दाखवले असल्यास)</translation>
+<translation id="4876935764454575645">ऑडिओची निवड</translation>
 <translation id="4881323000405981760">Linux अ‍ॅप्सवर इफेक्टना सपोर्ट नाही</translation>
 <translation id="4881695831933465202">उघडा</translation>
 <translation id="4889868803215848840">सूचनांमध्ये सुधारणा करण्यासाठी पर्यायी फीडबॅक द्या:</translation>
@@ -1080,6 +1088,9 @@
 <translation id="5092436659250499817">कीबोर्ड बॅकलाइट सुरू/बंद करा</translation>
 <translation id="5094577350232361255">याविषयी</translation>
 <translation id="5095136268899496849">सेटिंग्ज मध्ये तुमचे <ph name="PRODUCT_NAME" /> कस्टमाइझ आणि पर्सनलाइझ करा. तुमचा वॉलपेपर बदलणे किंवा स्क्रीन सेव्हर सेट करणे हे करून पहा.</translation>
+<translation id="5096125376090473584">मजकूर मोठ्याने वाचलेला ऐकण्यासाठी, तुमच्या स्क्रीनच्या तळाशी असलेला बोलण्यासाठी निवडा आयकनची निवड करा, त्यानंतर मजकूर हायलाइट करा.
+
+तुम्ही कीबोर्ड शॉर्टकटदेखील वापरू शकता. सर्वप्रथम मजकूर हायलाइट करा, त्यानंतर <ph name="MODIFIER" /> + s प्रेस करा.</translation>
 <translation id="509790653408515442">तुम्ही तुमच्या फोनची अ‍ॅप्स स्ट्रीम कराल, तेव्हा ती येथे दिसतील</translation>
 <translation id="5098537242461068432">डेस्‍क आणि विंडो पुन्हा उघडल्या</translation>
 <translation id="5103975065730779239"><ph name="END_TIME_EXPRESSION" /> पर्यंत</translation>
@@ -1090,6 +1101,7 @@
 <translation id="5121628974188116412">पेजच्या तळाशी जा</translation>
 <translation id="5122517996953421795"><ph name="DESK_NAME" /> चे पूर्वावलोकन करा. इनॅक्टिव्ह डेस्‍क.</translation>
 <translation id="5136175204352732067">वेगळा कीबोर्ड कनेक्ट केला आहे</translation>
+<translation id="5144005092084035179">ऑडिओ इनपुट स्विच करायचे आहे का?</translation>
 <translation id="5147567197700016471">अनलॉक केली</translation>
 <translation id="5150070631291639005">गोपनीयता सेटिंग्ज</translation>
 <translation id="5155897006997040331">वाचनाचा वेग</translation>
@@ -1309,6 +1321,7 @@
 <translation id="5916646100036936191">नवीन सूचना, एकूण <ph name="NOTIFICATION_COUNT" /></translation>
 <translation id="5916664084637901428">सुरू</translation>
 <translation id="5920710855273935292">माइक म्यूट केलेला आहे.</translation>
+<translation id="5928083197428724029"><ph name="MANAGER" /> नुसार अपडेट आवश्यक आहे</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> सुरू आहे.</translation>
 <translation id="5947494881799873997">परत करा</translation>
 <translation id="595202126637698455">कार्यप्रदर्शन ट्रेसिंग सक्षम केले</translation>
@@ -1398,7 +1411,6 @@
 <translation id="6232416233079464213"><ph name="SESSION_NAME" /> मधून</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> हे सध्या तुमचा कॅमेरा आणि मायक्रोफोन वापरत आहे</translation>
 <translation id="6237231532760393653">१X</translation>
-<translation id="62380141479352646">बॅटरी कमी आहे. बॅटरी सेव्हर सुरू केले आहे.</translation>
 <translation id="6240603910551255087">सर्वात वरील बटण</translation>
 <translation id="6247728804802644171">सूचना उघडा</translation>
 <translation id="6249795363855770621">पूर्ण झाले म्हणून मार्क करता आले नाही. ऑनलाइन असताना पुन्हा प्रयत्न करा.</translation>
@@ -1427,6 +1439,7 @@
 <translation id="6376931439017688372">ब्लूटूथ सुरू आहे</translation>
 <translation id="6378515133128829137">विंडो उजवीकडे पिन करा</translation>
 <translation id="6381109794406942707">डिव्हाइस अनलॉक करण्यासाठी, तुमचा पिन एंटर करा.</translation>
+<translation id="6381305031890976705">{0,plural, =1{एका तासामध्ये मागील आवृत्तीवर डिव्हाइस अपडेट करा}other{# तासांमध्ये मागील आवृत्तीवर डिव्हाइस अपडेट करा}}</translation>
 <translation id="638716340450135524">कॅमेराचा अ‍ॅक्सेस सुरू करा</translation>
 <translation id="639644700271529076">CAPS LOCK बंद आहे</translation>
 <translation id="6406458002328242616">टायमर संपादित करा <ph name="FOCUS_DURATION" />.</translation>
@@ -1449,6 +1462,7 @@
 <translation id="6459472438155181876"><ph name="DISPLAY_NAME" /> मध्ये स्क्रीन विस्तृत करत आहे</translation>
 <translation id="6464094930452079790">इमेज</translation>
 <translation id="6467290994038932560"><ph name="GAME_APP_NAME" /> साठी सुरू आहे</translation>
+<translation id="6468406072297048412">{0,plural, =1{१ मिनिटामध्ये मागील आवृत्तीवर डिव्हाइस अपडेट करा}other{# मिनिटांमध्ये मागील आवृत्तीवर डिव्हाइस अपडेट करा}}</translation>
 <translation id="6469104339369989396">हॉटस्पॉट टॉगल करा</translation>
 <translation id="6477681113376365978">फाइल डाउनलोड करू शकत नाही</translation>
 <translation id="6482559668224714696">फुल-स्क्रीन मॅग्निफायर</translation>
@@ -1572,6 +1586,7 @@
 <translation id="6917259695595127329">टास्क शेवटच्या अपडेट केल्या आहेत: <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">तुमचे स्मार्ट कार्ड ओळखू शकलो नाही. पुन्हा प्रयत्न करा.</translation>
 <translation id="692135145298539227">हटवा</translation>
+<translation id="6921427376813842559">डिव्हाइस अपडेट करा</translation>
 <translation id="6929081673585394903">नियंत्रणे दाखवा</translation>
 <translation id="6931576957638141829">येथे सेव्ह करा</translation>
 <translation id="6942518653766415536">रेकॉर्डिंग फॉरमॅट मेनू</translation>
@@ -1659,6 +1674,7 @@
 <translation id="7303365578352795231">दुसऱ्या डिव्हाइसवर उत्तर देत आहे.</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">तुमचा ॲडमिनिस्ट्रेटर तुमचा eSIM रीसेट करत आहे. याला काही मिनिटे लागू शकतात.</translation>
+<translation id="7312761820869643657">मागील आवृत्तीवर डिव्हाइस अपडेट करा</translation>
 <translation id="7313193732017069507">कॅमेराचा विस्तार करा</translation>
 <translation id="7330397557116570022">डिक्टेशन वापरण्यासाठी मजकूर फील्डवर जा</translation>
 <translation id="7331646370422660166">alt + down arrow</translation>
@@ -1789,6 +1805,7 @@
 <translation id="7780094051999721182">शॉर्टकट</translation>
 <translation id="7780159184141939021">स्क्रीन फिरवा</translation>
 <translation id="7781829728241885113">काल</translation>
+<translation id="7787212146956232129">इनपुट आणि आउटपुट डिव्हाइस सेट केलेली आहेत. बदलण्यासाठी सेटिंग्ज वर जा.</translation>
 <translation id="7792590255364786396">दृश्यमान</translation>
 <translation id="7796735576426975947">नवीन सूचना लपवलेल्या आहेत</translation>
 <translation id="7798302898096527229">रद्द करण्यासाठी Search किंवा Shift प्रेस करा.</translation>
@@ -1807,6 +1824,7 @@
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">अतिथी म्हणून डिव्हाइस वापरण्यासाठी, तुम्हाला साइन आउट करून नंतर स्क्रीनच्या तळाशी अतिथी म्हणून ब्राउझ करणे निवडावे लागेल.</translation>
 <translation id="7866482334467279021">सुरू</translation>
+<translation id="7866727328666668290">शेवटचा उघडलेला टॅब</translation>
 <translation id="7872786842639831132">बंद करा</translation>
 <translation id="7875575368831396199">तुमच्या <ph name="DEVICE_TYPE" /> चा ब्लूटूथ बंद असल्याचे दिसते. कृपया फोन हब वापरण्यासाठी ब्लूटूथ सुरू करा.</translation>
 <translation id="7884446017008693258">हॉटस्पॉट सेटिंग्ज</translation>
@@ -2095,6 +2113,7 @@
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{१ फाइल}other{# फाइल}}</translation>
 <translation id="8936501819958976551">डीॲक्टिव्हेट केले आहे</translation>
 <translation id="8938800817013097409">USB-C डिव्‍हाइस (मागील बाजूचे उजवे पोर्ट)</translation>
+<translation id="8939855324412367560">"<ph name="INPUT_DEVICE_NAME" />" हा इनपुट ऑडिओ आहे आणि "<ph name="OUTPUT_DEVICE_NAME" />" हा आउटपुट ऑडिओ आहे. बदलण्यासाठी सेटिंग्ज वर जा.</translation>
 <translation id="8940956008527784070">बॅटरी कमी झाली (<ph name="PERCENTAGE" />%)</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> चेक बॉक्स निवडलेला नाही.</translation>
 <translation id="8949925099261528566">कनेक्‍ट केले, इंटरनेट नाही</translation>
@@ -2132,7 +2151,6 @@
 <translation id="9080132581049224423">होमवर जाण्यासाठी वर स्वाइप करा</translation>
 <translation id="9080206825613744995">मायक्रोफोन वापरात आहे.</translation>
 <translation id="9083324773537346962">OS आवृत्ती</translation>
-<translation id="908451241440060346">व्यत्यय आणू नका सुरू असते, तेव्हा सूचना म्यूट केल्या जातात</translation>
 <translation id="9084606467167974638">मेनूची जागा टॉगल करा</translation>
 <translation id="9085962983642906571">बॅटरी लाइफ वाढवण्यासाठी प्लग इन केलेले असताना तुमची बॅटरी ८०% वर ठेवली जाते.</translation>
 <translation id="9089416786594320554">इनपुट पद्धती</translation>
@@ -2152,6 +2170,7 @@
 <translation id="9178475906033259337"><ph name="QUERY" /> साठी एक परिणाम दाखवत आहे</translation>
 <translation id="9179259655489829027">हे वैशिष्ट्य तुम्हाला पासवर्ड शिवाय कोणत्याही साइन-इन केलेल्या वापरकर्त्यास जलदपणे ॲक्सेस करण्याची परवानगी  देते. तुमचा विश्वास असलेल्या खात्यांसाठीच फक्त या वैशिष्ट्याचा वापर करा.</translation>
 <translation id="9183456764293710005">फुल-स्क्रीन मॅग्निफायर</translation>
+<translation id="9192133205265227850">"<ph name="DEVICE_NAME" />" वापरा</translation>
 <translation id="9193626018745640770">एका अज्ञात मिळवणाऱ्यावर कास्ट करत आहे</translation>
 <translation id="9194617393863864469">दुसरा वापरकर्ता साइन इन करा...</translation>
 <translation id="9195990613383871904">उद्या</translation>
@@ -2172,6 +2191,7 @@
 <translation id="925832987464884575">पूर्वावलोकने लपवा</translation>
 <translation id="938407504481277932">सध्याचा डेस्क: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. <ph name="DESK_COUNT" /> पैकी <ph name="DESK_INDEX" /> डेस्‍क.</translation>
 <translation id="938963181863597773">माझ्या कॅलेंडरमधील इव्हेंट काय आहेत?</translation>
+<translation id="94468042118567862">डिव्हाइस अप टू डेट नाही</translation>
 <translation id="945383118875625837">लिंक बुकमार्क बारवर ड्रॅग करा</translation>
 <translation id="945522503751344254">अभिप्राय पाठवा</translation>
 <translation id="951991426597076286">नकार द्या</translation>

@@ -5165,6 +5165,7 @@ Penonaktifan decoding video dengan akselerasi hardware tidak disarankan karena a
       untuk memproses permintaan keepalive (https://fetch.spec.whatwg.org/#request-keepalive-flag).
 
       Nilai default (0) berarti fitur ini dinonaktifkan.</translation>
+<translation id="4933780993367313536">Mengizinkan koneksi akses jarak jauh dari admin perusahaan ke perangkat ini</translation>
 <translation id="4937423591320233496">Nonaktifkan konten yang disarankan</translation>
 <translation id="4942096314850617489">Nonaktifkan pengesahan jarak jauh untuk pengguna</translation>
 <translation id="4942681160308347946">Jika kebijakan ditetapkan ke Benar (True), respons lisan akan diaktifkan di layar login. Jika kebijakan ditetapkan ke Salah (False), respons lisan akan dinonaktifkan di layar login.
@@ -6489,6 +6490,7 @@ pengguna tidak dapat mengubah atau menggantinya.</translation>
 <translation id="5966615072639944554">Ekstensi yang diizinkan untuk menggunakan API pengesahan jarak jauh</translation>
 <translation id="596732417280023843">Nama profil sertifikat.</translation>
 <translation id="5972538402066550344">Izinkan kontrol pelaporan terperinci</translation>
+<translation id="5973437409890460481">Mengizinkan koneksi akses jarak jauh perusahaan ke perangkat ini</translation>
 <translation id="5975765799383881158">Jika kebijakan disetel ke Aktif atau tidak disetel, pengguna akan dapat mengirimkan masukan ke Google melalui Menu &gt; Bantuan &gt; Laporkan Masalah atau kombinasi tombol.
 
       Jika kebijakan disetel ke Nonaktif, pengguna tidak akan dapat mengirimkan masukan ke Google.</translation>
@@ -10004,6 +10006,11 @@ Jika kebijakan ini disetel, kebijakan <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_P
       Jika kebijakan ini ditetapkan ke true, pengguna harus login ke <ph name="PRODUCT_NAME" /> dengan profilnya sebelum menggunakan browser. Nilai default BrowserGuestModeEnabled akan ditetapkan ke false. Harap diperhatikan bahwa profil yang ada dan belum ditandatangani akan dikunci dan tidak dapat diakses setelah kebijakan ini diaktifkan. Untuk informasi selengkapnya, lihat artikel pusat bantuan.
 
       Jika kebijakan ini ditetapkan ke false atau tidak dikonfigurasi, pengguna dapat menggunakan browser tanpa harus login ke <ph name="PRODUCT_NAME" />.</translation>
+<translation id="8575422604428646609">Jika kebijakan ini disetel ke nonaktif, kebijakan ini akan mencegah admin perusahaan terhubung ke perangkat <ph name="PRODUCT_OS_NAME" /> terkelola saat tidak ada pengguna yang login ke perangkat.
+
+Kebijakan ini tidak memengaruhi skenario akses jarak jauh lainnya.
+
+Kebijakan ini tidak berlaku jika diaktifkan, dibiarkan kosong, atau tidak dikonfigurasi.</translation>
 <translation id="8575739761246140675">Aktifkan kepercayaan pada sertifikat yang dikeluarkan oleh IKP Lama Symantec Corporation</translation>
 <translation id="8575746110808109915">Menyetel kebijakan akan mengaktifkan fitur pemulihan penuh.
       Jika kebijakan ini disetel ke benar (true), aplikasi dan jendela aplikasi akan dipulihkan atau tidak dipulihkan setelah terjadi error atau dimulai ulang berdasarkan setelan aplikasi pemulihan.
@@ -10715,6 +10722,7 @@ Catatan: Memulai ulang perangkat akan menghapus cache. Bahkan, data realm penggu
 <translation id="9107635531763682565">Jika kebijakan disetel ke 1, situs akan dapat menampilkan notifikasi desktop. Jika kebijakan disetel ke 2, situs tidak akan dapat menampilkan notifikasi desktop.
 
 Jika kebijakan tidak disetel, <ph name="ASK_NOTIFICATIONS_POLICY_NAME" /> akan berlaku, tetapi pengguna dapat mengubah setelan ini.</translation>
+<translation id="9110194749335632373">Mencegah koneksi akses jarak jauh dari admin perusahaan ke perangkat ini</translation>
 <translation id="9110251436602897914">Laporkan informasi tentang periferal yang dicolokkan ke perangkat</translation>
 <translation id="9110485853581788150">Daftar sertifikat yang tidak tepercaya di <ph name="PRODUCT_NAME" />,
 tetapi dapat digunakan sebagai petunjuk untuk membuat jalur. Sertifikat harus dienkode dengan base64.</translation>

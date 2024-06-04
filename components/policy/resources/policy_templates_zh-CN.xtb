@@ -4944,6 +4944,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
       如果您指定了此政策，系统在关闭浏览器时便可延迟所设秒数之久，以处理 keepalive (https://fetch.spec.whatwg.org/#request-keepalive-flag) 请求。
 
       默认值 (0) 表示此功能已停用。</translation>
+<translation id="4933780993367313536">允许企业管理员与这台计算机建立远程访问连接</translation>
 <translation id="4937423591320233496">停用建议的内容</translation>
 <translation id="4942096314850617489">禁止远程认证用户</translation>
 <translation id="4942681160308347946">将此政策设为 True 时，系统会在登录屏幕上开启语音反馈。将此政策设为 False 时，系统会在登录屏幕上关闭语音反馈。
@@ -6209,6 +6210,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="5966615072639944554">允许扩展程序使用 Remote Attestation API</translation>
 <translation id="596732417280023843">证书资料的名称。</translation>
 <translation id="5972538402066550344">允许使用精细报告控件</translation>
+<translation id="5973437409890460481">允许企业与这台计算机建立远程访问连接</translation>
 <translation id="5975765799383881158">如果此政策已启用或未设置，用户便可通过依次转到“菜单”&gt;“帮助”&gt;“报告问题”或按下组合键来向 Google 发送反馈。
 
       如果此政策已停用，用户将无法向 Google 发送反馈。</translation>
@@ -9566,6 +9568,11 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       如果此政策设为 true，用户必须先使用其个人资料登录 <ph name="PRODUCT_NAME" />，然后才能使用该浏览器。此外，BrowserGuestModeEnabled 的默认值会设为 false。请注意，启用此政策后，现有的未登录个人资料将处于锁定且不可访问的状态。有关详情，请参阅帮助中心文章。
 
       如果此政策设为 false 或未配置，用户无需登录 <ph name="PRODUCT_NAME" /> 即可使用该浏览器。</translation>
+<translation id="8575422604428646609">如果此政策已停用，当设备上没有用户时，此政策会阻止企业管理员连接到受管 <ph name="PRODUCT_OS_NAME" /> 设备。
+
+此政策不会影响其他远程访问场景。
+
+如果此政策已启用、留空或未配置，则不会产生任何影响。</translation>
 <translation id="8575739761246140675">信任 Symantec Corporation 旧版 PKI 颁发的证书</translation>
 <translation id="8575746110808109915">通过设置此政策，您可以启用“完全还原”功能。
       如果此政策设为 true，系统在发生崩溃或重新启动后是否会还原应用和应用窗口将取决于“还原应用”设置。
@@ -10248,6 +10255,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="9107635531763682565">如果此政策设为 1，系统会允许网站显示桌面通知；如果设为 2，系统会禁止网站显示桌面通知；
 
 如果未设置，则意味着 <ph name="ASK_NOTIFICATIONS_POLICY_NAME" /> 政策适用，但用户可以更改此设置。</translation>
+<translation id="9110194749335632373">禁止企业管理员与这台计算机建立远程访问连接</translation>
 <translation id="9110251436602897914">报告相应设备所插接的外围设备的相关信息</translation>
 <translation id="9110485853581788150">在 <ph name="PRODUCT_NAME" /> 中不受信任或不可信但可用作路径构建提示的证书的列表。证书应采用 base64 编码。</translation>
 <translation id="9111850884577810507">此字段必须与某个代表 <ph name="PRODUCT_NAME" />所支持打印机的字符串匹配。该字符串将用于识别和为打印机安装相应的 PPD。如需了解详情，请访问：https://support.google.com/chrome?p=noncloudprint。</translation>

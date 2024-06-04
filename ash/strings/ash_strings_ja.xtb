@@ -212,6 +212,7 @@
 <translation id="1747827819627189109">画面キーボードが有効です</translation>
 <translation id="1749109475624620922">ウィンドウ <ph name="WINDOW_TITLE" /> をすべてのデスクに割り当てました</translation>
 <translation id="1750088060796401187">表示できるデスクは最大 <ph name="MAX_DESK_LIMIT" /> 件です。新しいデスクを開くには、デスクを削除してください。</translation>
+<translation id="1755408179247123630">「選択して読み上げ」をオンにしますか？</translation>
 <translation id="1755556344721611131">診断アプリ</translation>
 <translation id="1756833229520115364">テンプレートを保存できませんでした。ウィンドウまたはタブの数が多すぎます。</translation>
 <translation id="1757857692711134412">日の入りまでオフ</translation>
@@ -951,6 +952,7 @@
 <translation id="4628757576491864469">デバイス</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />、評価 <ph name="RATING_SCORE" /></translation>
 <translation id="4633636853437260449">Ctrl+W キーを押して削除します</translation>
+<translation id="4635501805800894201">{0,plural, =0{今すぐデバイスを以前のバージョンに更新してください}=1{1 秒以内にデバイスを以前のバージョンに更新してください}other{# 秒以内にデバイスを以前のバージョンに更新してください}}</translation>
 <translation id="4642092649622328492">画面の一部のスクリーンショットを撮影する</translation>
 <translation id="4644727592819780893">領域が小さすぎてカメラに合いません</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />、おすすめのアプリ</translation>
@@ -980,6 +982,7 @@
 <translation id="4735944890391795473">デスク 12</translation>
 <translation id="473775607612524610">更新</translation>
 <translation id="4740516757091333363">保存済みのデスクを削除しますか？</translation>
+<translation id="4746798685375253449">{0,plural, =1{1 日以内にデバイスを以前のバージョンに更新してください}other{# 日以内にデバイスを以前のバージョンに更新してください}}</translation>
 <translation id="4747410141429390146">通知を表示するには、ロックを解除してください</translation>
 <translation id="4752784485658729358">保存できるデスクは 6 つまでです。新しいデスクを保存するには、デスクを削除してください。</translation>
 <translation id="4759238208242260848">ダウンロード</translation>
@@ -1085,6 +1088,9 @@
 <translation id="5092436659250499817">キーボード バックライトのオン / オフを切り替える</translation>
 <translation id="5094577350232361255">基本情報</translation>
 <translation id="5095136268899496849">[設定] で <ph name="PRODUCT_NAME" /> をカスタマイズできます。壁紙を変更したり、スクリーン セーバーを設定したりしてみてください。</translation>
+<translation id="5096125376090473584">テキストを読み上げるには、画面下部の「選択して読み上げ」アイコンを選択してから、テキストを選択します。
+
+キーボード ショートカットを使用することもできます。まずテキストを選択してから、<ph name="MODIFIER" />+S キーを押します。</translation>
 <translation id="509790653408515442">スマートフォンのアプリでストリーミングした場合、そのアプリがここに表示されます</translation>
 <translation id="5098537242461068432">デスクとウィンドウが再度開かれました</translation>
 <translation id="5103975065730779239"><ph name="END_TIME_EXPRESSION" /> まで</translation>
@@ -1315,6 +1321,7 @@
 <translation id="5916646100036936191">新しい通知、合計 <ph name="NOTIFICATION_COUNT" /> 件</translation>
 <translation id="5916664084637901428">ON</translation>
 <translation id="5920710855273935292">マイクはミュートです。</translation>
+<translation id="5928083197428724029"><ph name="MANAGER" /> が更新するよう求めています</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> はオンになっています。</translation>
 <translation id="5947494881799873997">元に戻す</translation>
 <translation id="595202126637698455">パフォーマンス追跡機能が有効です</translation>
@@ -1404,7 +1411,6 @@
 <translation id="6232416233079464213"><ph name="SESSION_NAME" /> から</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> がカメラとマイクを使用しています</translation>
 <translation id="6237231532760393653">1X</translation>
-<translation id="62380141479352646">バッテリー残量が低下しています。バッテリー セーバーがオンになりました。</translation>
 <translation id="6240603910551255087">上部ボタン</translation>
 <translation id="6247728804802644171">通知を開きます</translation>
 <translation id="6249795363855770621">完了としてマークできませんでした。オンラインになったらもう一度お試しください。</translation>
@@ -1433,6 +1439,7 @@
 <translation id="6376931439017688372">Bluetooth はオンです</translation>
 <translation id="6378515133128829137">ウィンドウを右に固定する</translation>
 <translation id="6381109794406942707">デバイスのロックを解除するには PIN を入力してください。</translation>
+<translation id="6381305031890976705">{0,plural, =1{1 時間以内にデバイスを以前のバージョンに更新してください}other{# 時間以内にデバイスを以前のバージョンに更新してください}}</translation>
 <translation id="638716340450135524">カメラへのアクセスをオンにする</translation>
 <translation id="639644700271529076">CapsLock 機能はオフになっています</translation>
 <translation id="6406458002328242616">タイマーを編集します。<ph name="FOCUS_DURATION" />。</translation>
@@ -1455,6 +1462,7 @@
 <translation id="6459472438155181876"><ph name="DISPLAY_NAME" /> へ画面を拡張しています</translation>
 <translation id="6464094930452079790">画像</translation>
 <translation id="6467290994038932560"><ph name="GAME_APP_NAME" /> でオン</translation>
+<translation id="6468406072297048412">{0,plural, =1{1 分以内にデバイスを以前のバージョンに更新してください}other{# 分以内にデバイスを以前のバージョンに更新してください}}</translation>
 <translation id="6469104339369989396">アクセス ポイントを切り替えます</translation>
 <translation id="6477681113376365978">ファイルをダウンロードできません</translation>
 <translation id="6482559668224714696">全画面拡大鏡</translation>
@@ -1578,6 +1586,7 @@
 <translation id="6917259695595127329">ToDo リストの最終更新日: <ph name="TIME" /></translation>
 <translation id="6919251195245069855">スマートカードを認識できませんでした。もう一度お試しください。</translation>
 <translation id="692135145298539227">削除</translation>
+<translation id="6921427376813842559">デバイスを更新してください</translation>
 <translation id="6929081673585394903">コントロールを表示</translation>
 <translation id="6931576957638141829">保存先</translation>
 <translation id="6942518653766415536">録画形式メニュー</translation>
@@ -1665,6 +1674,7 @@
 <translation id="7303365578352795231">別のデバイスで応答しています。</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">管理者が eSIM をリセットしています。この処理には数分かかることがあります。</translation>
+<translation id="7312761820869643657">デバイスを以前のバージョンに更新してください</translation>
 <translation id="7313193732017069507">カメラを展開</translation>
 <translation id="7330397557116570022">音声入力を使用するには、テキスト フィールドに移動してください</translation>
 <translation id="7331646370422660166">Alt+下矢印</translation>
@@ -1815,6 +1825,7 @@
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">このデバイスをゲストとして使用するには、ログアウトして、画面の下部にある [ゲストとしてブラウジング] を選択する必要があります。</translation>
 <translation id="7866482334467279021">オン</translation>
+<translation id="7866727328666668290">最後に開いたタブ</translation>
 <translation id="7872786842639831132">オフ</translation>
 <translation id="7875575368831396199"><ph name="DEVICE_TYPE" /> で Bluetooth がオフになっているようです。スマートフォン ハブを使用するには、Bluetooth をオンにしてください。</translation>
 <translation id="7884446017008693258">アクセス ポイント設定</translation>
@@ -2140,7 +2151,6 @@
 <translation id="9080132581049224423">ホームに移動するには上にスワイプしてください</translation>
 <translation id="9080206825613744995">マイクは使用中です。</translation>
 <translation id="9083324773537346962">OS のバージョン</translation>
-<translation id="908451241440060346">サイレント モードがオンになっている場合、通知はミュートされます</translation>
 <translation id="9084606467167974638">メニューの位置を切り替え</translation>
 <translation id="9085962983642906571">バッテリー寿命を延ばすため、電源接続時は残量が 80% に保たれます。</translation>
 <translation id="9089416786594320554">入力方法</translation>
@@ -2181,6 +2191,7 @@
 <translation id="925832987464884575">プレビューを非表示</translation>
 <translation id="938407504481277932">現在のデスク: <ph name="DESK_NAME" />。<ph name="PROFILE_NAME" /> <ph name="EMAIL" />。デスク <ph name="DESK_INDEX" />/<ph name="DESK_COUNT" />。</translation>
 <translation id="938963181863597773">カレンダーに予定は入ってる？</translation>
+<translation id="94468042118567862">デバイスは最新の状態ではありません</translation>
 <translation id="945383118875625837">リンクをブックマーク バーにドラッグする</translation>
 <translation id="945522503751344254">フィードバックを送信</translation>
 <translation id="951991426597076286">同意しない</translation>

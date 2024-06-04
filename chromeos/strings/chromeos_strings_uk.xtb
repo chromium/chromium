@@ -631,7 +631,6 @@
 <translation id="458794348635939462">Не вдалося розпізнати всі хости</translation>
 <translation id="4593212453765072419">Потрібна автентифікація проксі-сервера</translation>
 <translation id="4609350030397390689">Зменшити яскравість клавіатури</translation>
-<translation id="4617553623719764431">Погода не відображається, оскільки системі не вдалося визначити ваше місцезнаходження. Щоб переглянути інформацію про місцеву погоду, <ph name="BEGIN_LINK" />надайте доступ до геоданих<ph name="END_LINK" />.</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> з <ph name="TOTAL_PAGE_NUMBER" />. Натисніть Enter, щоб скасувати завдання друку.</translation>
 <translation id="463791356324567266">Сканування скасовується…</translation>
 <translation id="4646949265910132906">Надійне з'єднання Wi-Fi</translation>

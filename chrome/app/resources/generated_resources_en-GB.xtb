@@ -61,6 +61,7 @@
 <translation id="1040761927998636252">Unnamed bookmark for <ph name="URL" /></translation>
 <translation id="1041175011127912238">This page isn't responding</translation>
 <translation id="1041263367839475438">Available devices</translation>
+<translation id="1041607257468256895">Manage website location permissions in Chrome</translation>
 <translation id="1042174272890264476">Your computer also comes with <ph name="SHORT_PRODUCT_NAME" />'s RLZ library built in. RLZ assigns a non-unique, non-personally identifiable tag to measure the searches and <ph name="SHORT_PRODUCT_NAME" /> usage driven by a particular promotional campaign. These labels sometimes appear in Google Search queries in <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1042248468362992359">Connect to mobile data to use hotspot. <ph name="BEGIN_LINK_LEARN_MORE" />Learn more<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1043505821207197890">Something went wrong. Linux may only be partially upgraded. Review logs for more information. Logs have been saved in Files &gt; My files &gt; <ph name="LOG_FILE" /></translation>
@@ -1257,7 +1258,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1901213235765457754">Ask your admin to update this app</translation>
 <translation id="1901303067676059328">Select &amp;all</translation>
 <translation id="1904580727789512086">The URLs that you visit are saved to your Google Account</translation>
-<translation id="1904603806662441960">Manage site camera permissions in Chrome</translation>
 <translation id="1906181697255754968">Sites usually access files and folders on your device for features like automatically saving your work</translation>
 <translation id="1906488504371069394">Discover more extensions and themes on the <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
 <translation id="1907044622262489040">Type with your voice. Use Search + D, then start speaking.</translation>
@@ -2028,6 +2028,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2454206500483040640">Partitioned</translation>
 <translation id="2454247629720664989">Keyword</translation>
 <translation id="2454524890947537054">Approve web request?</translation>
+<translation id="2454913962395846391">Automatic time zone</translation>
 <translation id="245650153866130664">To automatically refresh a ticket, tick 'Remember password'. Your password will be stored on your device only.</translation>
 <translation id="2456794251167091176">Import complete</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" /> wants to copy files from <ph name="VOLUME_NAME" />.</translation>
@@ -2043,7 +2044,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2462332841984057083">Steam is already being set up. Wait for setup to complete.</translation>
 <translation id="2462724976360937186">Certification Authority Key ID</translation>
 <translation id="2462752602710430187">Added <ph name="PRINTER_NAME" /></translation>
-<translation id="2465517991293145960">Time zone is currently set to <ph name="TIME_ZONE_ENTRY" />. Location access needed to automatically update the time zone. <ph name="BEGIN_LINK" />Turn on location access<ph name="END_LINK" /></translation>
 <translation id="2467755475704469005">No device detected. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">Touchpad scroll acceleration</translation>
 <translation id="2468205691404969808">Uses cookies to remember your preferences, even if you don’t visit those pages</translation>
@@ -2098,7 +2098,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2497852260688568942">Sync is disabled by your administrator</translation>
 <translation id="2498539833203011245">Minimise</translation>
 <translation id="2498765460639677199">Huge</translation>
-<translation id="2499065671910214321">Use location. Allow ChromeOS and Android apps, websites and services with location permission to use this device's location. Google may collect location data periodically and use this data anonymously to improve location accuracy and location-based services. <ph name="BEGIN_LINK1" />Learn more about location<ph name="BEGIN_LINK1_END" />Learn more<ph name="END_LINK1" /></translation>
 <translation id="2500471369733289700">Blocked to protect your privacy</translation>
 <translation id="2501173422421700905">Certificate on Hold</translation>
 <translation id="2501278716633472235">Go back</translation>
@@ -2724,6 +2723,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2963151496262057773">The following plug-in is unresponsive: <ph name="PLUGIN_NAME" />Would you like to stop it?</translation>
 <translation id="2964193600955408481">Disable Wi-Fi</translation>
 <translation id="2964245677645334031">Nearby Share visibility</translation>
+<translation id="2965227184985674128">Turn on microphone access?</translation>
 <translation id="2966705348606485669">More options for <ph name="FOLDER_TITLE" /> bookmark folder</translation>
 <translation id="2966937470348689686">Manage Android preferences</translation>
 <translation id="2967791329697639454">Faster, encrypted sign-in</translation>
@@ -3400,7 +3400,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3491669675709357988">You child's account isn't set up for Family Link parental controls. You can add parental controls once you finish setup. You'll find information on parental controls in the Explore app.</translation>
 <translation id="3491678231052507920">Sites usually use your virtual reality devices and data to let you enter VR sessions</translation>
 <translation id="3493043608231401654">Remove <ph name="TAB_TITLE" /> from tab group</translation>
-<translation id="3493463599276143766">No websites are allowed to use your camera</translation>
 <translation id="3493486281776271508">Internet connection required</translation>
 <translation id="3493881266323043047">Validity</translation>
 <translation id="3495496470825196617">Idle power while charging</translation>
@@ -3795,8 +3794,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3765055238058255342">this type of card</translation>
 <translation id="3765246971671567135">Could not read offline demo mode policy.</translation>
 <translation id="3765696567014520261">Sites can't use your cookies to see your browsing activity across different sites, for example, to personalise ads. Features on some sites may not work</translation>
-<translation id="3766265338450715550"><ph name="BEGIN_PARAGRAPH1" />Google's location service uses sources like Wi-Fi, mobile networks and sensors to help estimate your device's location.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />You can turn off ChromeOS and Android location on your device at any time by going to Settings &gt; Privacy and security &gt; Privacy controls &gt; Location access. You can also turn off the use of Wi-Fi, mobile networks and sensors for Android location by turning off 'Improve Location Accuracy' under 'Advanced location settings' in the same menu.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3766687283066842296">Learn more about Phone Hub</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
 <translation id="3767835232661747729">For now, you can only share passwords with family members. <ph name="BEGIN_LINK" />Invite family members<ph name="END_LINK" /> to join your group and get more from your products and subscriptions across Google.</translation>
@@ -4135,7 +4132,6 @@ This can include information about installed software, files, your browser and t
 <translation id="4001540981461989979">Highlight mouse cursor when moving</translation>
 <translation id="4002347779798688515">Downloaded profile may not be usable if mobile network provider is locked. Contact your provider for support.</translation>
 <translation id="4002440992267487163">Pin setup</translation>
-<translation id="4003647532210142956">Current schedule is set to <ph name="SUNRISE" /> – <ph name="SUNSET" />. To automatically update the sunset and sunrise schedule, <ph name="BEGIN_LINK" />turn on location access<ph name="END_LINK" /></translation>
 <translation id="4005817994523282006">Time zone detection method</translation>
 <translation id="4007856537951125667">Hide shortcuts</translation>
 <translation id="4010036441048359843">Turn on highlight</translation>
@@ -4227,7 +4223,6 @@ This can include information about installed software, files, your browser and t
 <translation id="4078738236287221428">Aggressive</translation>
 <translation id="4078903002989614318">Sorting and list options</translation>
 <translation id="4079140982534148664">Use Enhanced Spell Check</translation>
-<translation id="4082333918978320301">No websites are allowed to use your microphone</translation>
 <translation id="4083735423615351075">The tabs will remain open on this device but the group will be deleted from all devices signed in to Chrome with this Google Account.</translation>
 <translation id="4084682180776658562">Bookmark</translation>
 <translation id="4084835346725913160">Close <ph name="TAB_NAME" /></translation>
@@ -4476,7 +4471,6 @@ This can include information about installed software, files, your browser and t
 <translation id="4278779213160967034">This process may take a few minutes. Downloading files.</translation>
 <translation id="4279129444466079448">You can install up to <ph name="PROFILE_LIMIT" /> eSIM profiles on this device. To add another profile, first remove an existing profile.</translation>
 <translation id="4280325816108262082">Device will disconnect automatically when it's turned off or isn't being used</translation>
-<translation id="4281637354026226955">Allow ChromeOS and Android apps and services with location permission to use your device's location. Google may collect location data periodically and use this data in an anonymous way to improve location accuracy and location-based services.</translation>
 <translation id="4281789858103154731">Create</translation>
 <translation id="4281844954008187215">Terms of Service</translation>
 <translation id="4281849573951338030">Customise pen buttons</translation>
@@ -5569,6 +5563,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5121052518313988218">The operating system in your Linux container is no longer supported. It will stop receiving security updates and bug fixes, and features that currently work may break unexpectedly. Please upgrade to the latest version to continue using Linux.</translation>
 <translation id="5121130586824819730">Your hard disk is full.  Please save to another location or make more room on the hard disk.</translation>
 <translation id="5123433949759960244">Basketball</translation>
+<translation id="5125714798187802869">Activate</translation>
 <translation id="5125751979347152379">Invalid URL.</translation>
 <translation id="5125967981703109366">About this card</translation>
 <translation id="512642543295077915">search + backspace</translation>
@@ -5894,6 +5889,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5376094717770783089">Requests access</translation>
 <translation id="5376169624176189338">Click to go back, hold to see history</translation>
 <translation id="5376931455988532197">File too large</translation>
+<translation id="5377367976106153749">Turn on camera access?</translation>
 <translation id="5379140238605961210">Continue blocking microphone access</translation>
 <translation id="5380424552031517043">Removed <ph name="PERMISSION" /></translation>
 <translation id="5380526436444479273">Wait a few minutes and try again</translation>
@@ -6271,7 +6267,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5646558797914161501">Businessman</translation>
 <translation id="5648021990716966815">Mic jack</translation>
 <translation id="5648166631817621825">Last 7 days</translation>
-<translation id="5649182603113127372">Use location. Allow ChromeOS and Android apps, websites and services with location permission to use your device's location. Google may collect location data periodically and use this data anonymously to improve location accuracy and location-based services. <ph name="BEGIN_LINK1" />Learn more about location<ph name="BEGIN_LINK1_END" />Learn more<ph name="END_LINK1" /></translation>
 <translation id="5650537073531199882">Fill in form</translation>
 <translation id="5651308944918885595">Nearby Share discoverability</translation>
 <translation id="5653154844073528838">You have <ph name="PRINTER_COUNT" /> saved printers.</translation>
@@ -6295,7 +6290,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5667546120811588575">Setting up Google Play…</translation>
 <translation id="5668351004957198136">Fail</translation>
 <translation id="5669863904928111203">ChromeOS is out of date</translation>
-<translation id="5670011773727436698">Manage site location permissions in Chrome</translation>
 <translation id="5671641761787789573">Images blocked</translation>
 <translation id="5671658447180261823">Remove the suggestion <ph name="SUGGESTION_NAME" /></translation>
 <translation id="567210741546439261">Bookmarks and lists</translation>
@@ -6324,7 +6318,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="56907980372820799">Link data</translation>
 <translation id="5691581861107245578">Get emoji suggestions based on what you're typing</translation>
 <translation id="5691772641933328258">Fingerprint not recognised</translation>
-<translation id="5693237475389615913">Manage site microphone permissions in Chrome</translation>
 <translation id="5693255400847650006">Microphone in use</translation>
 <translation id="5695184138696833495">Linux Android app ADB</translation>
 <translation id="5696143504434933566">Report abuse from '<ph name="EXTENSION_NAME" />'</translation>
@@ -6347,7 +6340,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5708171344853220004">Microsoft Principal Name</translation>
 <translation id="5709557627224531708">Set Chrome as your default browser</translation>
 <translation id="5711010025974903573">Service logs</translation>
-<translation id="5711324642850167289">No apps are allowed use your microphone</translation>
 <translation id="5711983031544731014">Unable to unlock. Enter your password.</translation>
 <translation id="5712153969432126546">Sites sometimes publish PDFs, like documents, contracts and forms</translation>
 <translation id="571222594670061844">Sites can show sign-in prompts from identity services</translation>
@@ -6422,8 +6414,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5776415697119024904"><ph name="DEVICE_NAME" /> (System default)</translation>
 <translation id="5776450228446082914">The list of websites that can open in either browser.</translation>
 <translation id="5776571780337000608">You can open and edit supported files with this app from your file browser or other apps. To control which files open this app by default, <ph name="BEGIN_LINK" />learn how to set default apps on your device<ph name="END_LINK" />.</translation>
-<translation id="5776884611062957102">Google's location service improves location accuracy by using Wi-Fi, mobile networks and sensors to help estimate your location. Google may collect location data periodically and use this data in an anonymous way to improve location accuracy and location-based services.
-    Turning this off will result in Android only using your IP address for location. This may impact the accuracy of location used by apps, such as Maps.</translation>
 <translation id="5778491106820461378">You can manage signed-in Google Accounts from <ph name="LINK_BEGIN" />Settings<ph name="LINK_END" />. Permissions that you have granted to websites and apps may apply to all accounts. If you don't want sites or apps to access your account info, you can sign into your <ph name="DEVICE_TYPE" /> as a guest.</translation>
 <translation id="5780011244986845107">The folder that you selected contains sensitive files. Are you sure that you want to grant '<ph name="APP_NAME" />' permanent read access to this folder?</translation>
 <translation id="5780940414249100901">Send usage and diagnostic data. This device is currently automatically sending diagnostic, device and app usage data to Google. This won't be used to identify your child and will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. This <ph name="BEGIN_LINK1" />setting<ph name="END_LINK1" /> is enforced by the owner. If the additional Web &amp; App Activity setting is turned on for your child, this data may be saved to their Google Account. <ph name="BEGIN_LINK2" />Learn more about metrics<ph name="BEGIN_LINK2_END" />Learn more<ph name="END_LINK2" /></translation>
@@ -6513,7 +6503,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5836999627049108525">Language to translate from</translation>
 <translation id="583756221537636748">Case</translation>
 <translation id="5840680448799937675">Files will always be shared offline</translation>
-<translation id="5841167715783969407">Automatic time zone based on Wi-Fi or mobile networks</translation>
 <translation id="5841270259333717135">Configure Ethernet</translation>
 <translation id="5842497610951477805">Bluetooth enable</translation>
 <translation id="5844284118433003733">When you're signed in, this data is linked to your Google Account to protect you across Google services, for example increased protection in Gmail after a security incident.</translation>
@@ -6804,7 +6793,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6059652578941944813">Certificate Hierarchy</translation>
 <translation id="6059925163896151826">USB devices</translation>
 <translation id="6061408389284235459">A notification was sent to <ph name="DEVICE_NAME" /></translation>
-<translation id="6062513606899361544">No apps are allowed to use your location</translation>
 <translation id="6063284707309177505">Create QR code</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Note:<ph name="END_BOLD" /> A similar voice or recording might be able to access <ph name="SUPERVISED_USER_NAME" />’s personal results. To save battery, you can select in <ph name="SUPERVISED_USER_NAME" />’s Assistant settings to have ‘Hey Google’ on only when this device is connected to a power source.</translation>
 <translation id="6064217302520318294">Screen lock</translation>
@@ -7544,7 +7532,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6636623428211296678">Explore more settings below or finish now</translation>
 <translation id="6639554308659482635">SQLite memory</translation>
 <translation id="6640268266988685324">Open tab</translation>
-<translation id="6642424629311432059">Allow ChromeOS and Android apps and services with location permission to use this device's location. Google may collect location data periodically and use this data in an anonymous way to improve location accuracy and location-based services.</translation>
 <translation id="6642720633335369752">To see all open app windows, swipe up from the bottom and hold.</translation>
 <translation id="664290675870910564">Network select</translation>
 <translation id="6643016212128521049">Clear</translation>
@@ -7647,7 +7634,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6713441551032149301">Hold the launcher key to change between function keys and system top-row keys</translation>
 <translation id="6713668088933662563">Never offer to translate these languages</translation>
 <translation id="6715803357256707211">An error occurred during installation of your Linux application. Click on the notification for details.</translation>
-<translation id="6716049856796700977">Nothing can use your location. However, your location may still be visible to apps and websites through your IP address. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">Network connection was lost. Check your network connection or try another Wi-Fi network.</translation>
 <translation id="6718849325281682232">Chrome theme colours have been refreshed to work better for everyone, whether you’re in dark or light mode</translation>
 <translation id="671928215901716392">Lock screen</translation>
@@ -7678,7 +7664,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6740234557573873150">Paused <ph name="FILE_NAME" /></translation>
 <translation id="6741063444351041466"><ph name="BEGIN_LINK" />Your administrator<ph name="END_LINK" /> has turned off Safe Browsing</translation>
 <translation id="6742629250739345159">Automatically creates captions for media in Chrome Browser. Audio and captions are processed locally and never leave the device.</translation>
-<translation id="6742971109086735351">Location access is turned off in ChromeOS settings</translation>
 <translation id="6743841972744298686">Sync settings</translation>
 <translation id="6745592621698551453">Update now</translation>
 <translation id="6746124502594467657">Move down</translation>
@@ -8392,6 +8377,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7289049772085228972">You have Chrome's strongest security</translation>
 <translation id="7289303553784750393">If you're online but this issue keeps happening, you can try other ways to continue on <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> – Permission requested, press F6 to respond</translation>
+<translation id="7290005709287747471">Deactivate</translation>
 <translation id="7290242001003353852">This sign-in service, hosted by <ph name="SAML_DOMAIN" />, is accessing your camera.</translation>
 <translation id="7292067737327289208">Your <ph name="BEGIN_LINK" />browser is managed<ph name="END_LINK" /> by your organisation and your <ph name="BEGIN_LINK" />profile is managed<ph name="END_LINK" /> by <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="7292147651179697920">Ask your parent to allow access in Settings</translation>
@@ -8531,7 +8517,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7396017167185131589">Shared folders will appear here</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> will launch at system startup and continue to run in the background, even once you've closed all other <ph name="PRODUCT_NAME" /> windows.</translation>
 <translation id="7399045143794278225">Customise sync</translation>
-<translation id="7399155934146900496">No websites are allowed to use your location</translation>
 <translation id="7399616692258236448">Location requests are automatically blocked for all sites except ones you allow</translation>
 <translation id="7399802613464275309">Safety check</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -8658,8 +8643,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7478658909253570368">Don't allow sites to connect to serial ports</translation>
 <translation id="7479221278376295180">Storage Usage Overview</translation>
 <translation id="747981547666531654">Connected to Bluetooth devices named <ph name="FIRST_DEVICE" /> and <ph name="SECOND_DEVICE" /></translation>
-<translation id="7480299112230998727"><ph name="BEGIN_PARAGRAPH1" />Google's location service uses sources like Wi-Fi, mobile networks and sensors to help estimate this device's location.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />You can turn off ChromeOS and Android location on this device at any time by going to Settings &gt; Privacy and security &gt; Privacy controls &gt; Location access. You can also turn off the use of Wi-Fi, mobile networks and sensors for Android location by turning off 'Improve Location Accuracy' under 'Advanced location settings' in the same menu.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7481312909269577407">Forward</translation>
 <translation id="7481358317100446445">Ready</translation>
 <translation id="748138892655239008">Certificate Basic Constraints</translation>
@@ -8751,7 +8734,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7552846755917812628">Try the following tips:</translation>
 <translation id="7553012839257224005">Checking the Linux container</translation>
 <translation id="7553242001898162573">Enter your password</translation>
-<translation id="7553487223484420820">Apps, websites and system services with location permission can use your location. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="755472745191515939">Your administrator doesn't allow this language</translation>
 <translation id="7554791636758816595">New Tab</translation>
 <translation id="7556033326131260574">Smart Lock couldn’t verify your account. Type your password to enter.</translation>
@@ -9684,7 +9666,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8224427620313426549">Your <ph name="DOMAIN_LINK" /> account won't be deleted</translation>
 <translation id="8225046344534779393">Check Internet connection</translation>
 <translation id="8225265270453771718">Share an application window</translation>
-<translation id="8225516926291976401">Only system services can use your location. However, your location may still be visible to apps and websites through your IP address. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="8226222018808695353">Forbidden</translation>
 <translation id="8226619461731305576">Queue</translation>
 <translation id="8227119283605456246">Attach file</translation>
@@ -9766,7 +9747,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8275038454117074363">Import</translation>
 <translation id="8275080796245127762">Call from Your Device</translation>
 <translation id="8275339871947079271">Move your password to your Google Account to access it securely wherever you're signed in</translation>
-<translation id="8276242035951017580">No apps are allowed use your camera</translation>
 <translation id="8276560076771292512">Empty cache and hard reload</translation>
 <translation id="8276850948802942358">Learn more about giving a site temporary permission to use third-party cookies</translation>
 <translation id="8277907305629781277">You created this passkey on <ph name="DATE" /></translation>
@@ -10156,7 +10136,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8573111744706778015">Type 'uo7' to get 'ươ'</translation>
 <translation id="8574990355410201600">Always allow sound on <ph name="HOST" /></translation>
 <translation id="8575286410928791436">Hold <ph name="KEY_EQUIVALENT" /> to Quit</translation>
-<translation id="8575608435630445689">Improve location accuracy (Android only)</translation>
 <translation id="8576359558126669548">More about blocking third-party cookies in Incognito mode</translation>
 <translation id="8576885347118332789">{NUM_TABS,plural, =1{Add tab to reading list}other{Add tabs to reading list}}</translation>
 <translation id="8577052309681449949">Automatic clicks, cursor size, cursor colour and more</translation>

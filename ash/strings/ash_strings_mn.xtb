@@ -212,6 +212,7 @@
 <translation id="1747827819627189109">Дэлгэцэн дээрх гарыг идэвхжүүлсэн байна</translation>
 <translation id="1749109475624620922"><ph name="WINDOW_TITLE" /> цонхыг бүх дэлгэцэд оноосон</translation>
 <translation id="1750088060796401187">Зөвхөн <ph name="MAX_DESK_LIMIT" /> дэлгэцийг зөвшөөрсөн. Шинэ дэлгэц нээхийн тулд дэлгэц хасна уу.</translation>
+<translation id="1755408179247123630">Ярихаар сонгохыг асаах уу?</translation>
 <translation id="1755556344721611131">Оношилгооны апп</translation>
 <translation id="1756833229520115364">Загварыг хадгалж чадсангүй. Хэт олон цонх эсвэл таб байна.</translation>
 <translation id="1757857692711134412">Нар жаргах хүртэл унтраалттай</translation>
@@ -952,6 +953,7 @@
 <translation id="4628757576491864469">Төхөөрөмжүүд</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, <ph name="RATING_SCORE" /> одтой үнэлгээ</translation>
 <translation id="4633636853437260449">Устгахын тулд Ctrl + W дээр дарна уу</translation>
+<translation id="4635501805800894201">{0,plural, =0{Төхөөрөмжийг одоо өмнөх хувилбар луу нь шинэчилнэ үү}=1{Төхөөрөмжийг 1 секундийн дотор өмнөх хувилбар луу нь шинэчилнэ үү}other{Төхөөрөмжийг # секундийн дотор өмнөх хувилбар луу нь шинэчилнэ үү}}</translation>
 <translation id="4642092649622328492">Дэлгэцийн зургийг хэсэгчлэн дарах</translation>
 <translation id="4644727592819780893">Бүс нь камерыг багтаахад хэт жижиг байна</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, аппын зөвлөмж</translation>
@@ -981,6 +983,7 @@
 <translation id="4735944890391795473">12-р дэлгэц</translation>
 <translation id="473775607612524610">Шинэчлэх</translation>
 <translation id="4740516757091333363">Хадгалсан дэлгэцийг устгах уу?</translation>
+<translation id="4746798685375253449">{0,plural, =1{Төхөөрөмжийг 1 хоногийн дотор өмнөх хувилбар луу нь шинэчилнэ үү}other{Төхөөрөмжийг # хоногийн дотор өмнөх хувилбар луу нь шинэчилнэ үү}}</translation>
 <translation id="4747410141429390146">Мэдэгдэл харахын тулд түгжээг тайлна уу</translation>
 <translation id="4752784485658729358">Зөвхөн 6 хадгалсан дэлгэц боломжтой. Шинэ дэлгэц хадгалахын тулд аль нэгийг нь хасна уу.</translation>
 <translation id="4759238208242260848">Таталтууд:</translation>
@@ -1086,6 +1089,9 @@
 <translation id="5092436659250499817">Гарын арын гэрлийг асаах/унтраах</translation>
 <translation id="5094577350232361255">тухай</translation>
 <translation id="5095136268899496849">Тохиргоонд өөрийн <ph name="PRODUCT_NAME" />-г өөрчилж, хувийн болгоно уу. Дэлгэцийн зургаа өөрчлөх эсвэл дэлгэц амраагч тохируулж үзнэ үү.</translation>
+<translation id="5096125376090473584">Текстийг чангаар уншихыг сонсохын тулд дэлгэцийнхээ доороос Ярихаар сонгох дүрс тэмдгийг сонгоод, дараа нь текстийг тодруулна уу.
+
+Та мөн товчлуурын шууд холбоосыг ашиглах боломжтой. Эхлээд текстийг тодруулж, дараа нь <ph name="MODIFIER" /> + s дээр дарна уу.</translation>
 <translation id="509790653408515442">Та утасныхаа аппыг дамжуулах үед тэдгээр нь энд гарч ирэх болно</translation>
 <translation id="5098537242461068432">Дэлгэц болон цонхнуудыг дахин нээсэн</translation>
 <translation id="5103975065730779239"><ph name="END_TIME_EXPRESSION" /> хүртэл</translation>
@@ -1316,6 +1322,7 @@
 <translation id="5916646100036936191">Шинэ мэдэгдэл, нийт <ph name="NOTIFICATION_COUNT" /></translation>
 <translation id="5916664084637901428">Асаах</translation>
 <translation id="5920710855273935292">Микрофоны дууг хаасан.</translation>
+<translation id="5928083197428724029"><ph name="MANAGER" />-с шинэчлэхийг шаардаж байна</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> асаалттай байна.</translation>
 <translation id="5947494881799873997">Буцаах</translation>
 <translation id="595202126637698455">Гүйцэтгэлийн ажиглалтыг идэвхжүүлсэн</translation>
@@ -1405,7 +1412,6 @@
 <translation id="6232416233079464213"><ph name="SESSION_NAME" />-с</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> одоогоор таны камер болон микрофоныг ашиглаж байна</translation>
 <translation id="6237231532760393653">1X</translation>
-<translation id="62380141479352646">Батарей бага байна. Батарей хэмнэгчийг асаасан.</translation>
 <translation id="6240603910551255087">Дээд талын товч</translation>
 <translation id="6247728804802644171">Мэдэгдэл нээх</translation>
 <translation id="6249795363855770621">Дууссан гэж тэмдэглэж чадсангүй. Онлайн үед дахин оролдоно уу.</translation>
@@ -1434,6 +1440,7 @@
 <translation id="6376931439017688372">Bluetooth асаалттай байна</translation>
 <translation id="6378515133128829137">Цонхыг баруун талд бэхлэх</translation>
 <translation id="6381109794406942707">Төхөөрөмжийн түгжээг тайлахын тулд ПИН-ээ оруулна уу.</translation>
+<translation id="6381305031890976705">{0,plural, =1{Төхөөрөмжийг 1 цагийн дотор өмнөх хувилбар луу нь шинэчилнэ үү}other{Төхөөрөмжийг # цагийн дотор өмнөх хувилбар луу нь шинэчилнэ үү}}</translation>
 <translation id="638716340450135524">Камерын хандалтыг асаах</translation>
 <translation id="639644700271529076">CAPS LOCK идэвхгүй байна</translation>
 <translation id="6406458002328242616">Цаг хэмжигчийг засна уу. <ph name="FOCUS_DURATION" />.</translation>
@@ -1456,6 +1463,7 @@
 <translation id="6459472438155181876">Дэлгэцийг <ph name="DISPLAY_NAME" /> руу сунгаж байна</translation>
 <translation id="6464094930452079790">зураг</translation>
 <translation id="6467290994038932560"><ph name="GAME_APP_NAME" />-д асаасан</translation>
+<translation id="6468406072297048412">{0,plural, =1{Төхөөрөмжийг 1 минутын дотор өмнөх хувилбар луу нь шинэчилнэ үү}other{Төхөөрөмжийг # минутын дотор өмнөх хувилбар луу нь шинэчилнэ үү}}</translation>
 <translation id="6469104339369989396">Сүлжээний цэгийг асаана уу/унтраана уу</translation>
 <translation id="6477681113376365978">Файлыг татах боломжгүй</translation>
 <translation id="6482559668224714696">Бүтэн дэлгэц томруулагч</translation>
@@ -1579,6 +1587,7 @@
 <translation id="6917259695595127329">Tasks-г сүүлд шинэчилсэн хугацаа: <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">Таны ухаалаг картыг таньж чадсангүй. Дахин оролдоно уу.</translation>
 <translation id="692135145298539227">устгах</translation>
+<translation id="6921427376813842559">Төхөөрөмжийг шинэчилнэ үү</translation>
 <translation id="6929081673585394903">Тохиргоог харуулах</translation>
 <translation id="6931576957638141829">Дараахад хадгалах</translation>
 <translation id="6942518653766415536">Бичлэгийн форматын цэс</translation>
@@ -1666,6 +1675,7 @@
 <translation id="7303365578352795231">Өөр төхөөрөмж дээр хариулж байна.</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Таны администратор eSIM-г тань шинэчилж байна. Үүнд хэдэн минут шаардлагатай.</translation>
+<translation id="7312761820869643657">Төхөөрөмжийг өмнөх хувилбар луу нь шинэчилнэ үү</translation>
 <translation id="7313193732017069507">Камерыг дэлгэх</translation>
 <translation id="7330397557116570022">Дуу хоолойгоор бичихийг ашиглахын тулд текстийн талбар луу очно уу</translation>
 <translation id="7331646370422660166">alt + доош сум</translation>
@@ -1815,6 +1825,7 @@
 <translation id="7851768487828137624">Канар</translation>
 <translation id="7862292329216937261">Төхөөрөмжийг зочноор ашиглахын тулд та гараад дараа нь дэлгэцийн доор байх Зочноор үзэхийг сонгох шаардлагатай.</translation>
 <translation id="7866482334467279021">асаалттай</translation>
+<translation id="7866727328666668290">Сүүлд нээсэн таб</translation>
 <translation id="7872786842639831132">Унтраалттай</translation>
 <translation id="7875575368831396199">Таны <ph name="DEVICE_TYPE" /> дээр Bluetooth-г унтраасан бололтой. Phone Hub-г ашиглахын тулд Bluetooth-г асаана уу.</translation>
 <translation id="7884446017008693258">Сүлжээний цэгийн тохиргоо</translation>
@@ -2142,7 +2153,6 @@
 <translation id="9080132581049224423">Нүүр хуудас руу очихын тулд дээш шударна уу</translation>
 <translation id="9080206825613744995">Микрофоныг ашиглаж байна.</translation>
 <translation id="9083324773537346962">OS хувилбар</translation>
-<translation id="908451241440060346">Бүү саад бол онцлогийг асаалттай үед мэдэгдлийн дууг хаадаг</translation>
 <translation id="9084606467167974638">Цэсийн байршлыг асаах/унтраах</translation>
 <translation id="9085962983642906571">Батарейн ажиллах хугацааг уртасгахаар залгасан үед таны батарейг 80%-тай байлгана.</translation>
 <translation id="9089416786594320554">Оролтын аргууд</translation>
@@ -2183,6 +2193,7 @@
 <translation id="925832987464884575">Урьдчилан үзэлтийг нуух</translation>
 <translation id="938407504481277932">Одоогийн дэлгэц: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. <ph name="DESK_COUNT" />-н <ph name="DESK_INDEX" />-р дэлгэц.</translation>
 <translation id="938963181863597773">Миний календарьд юу байна вэ?</translation>
+<translation id="94468042118567862">Төхөөрөмжийг шинэчлээгүй байна</translation>
 <translation id="945383118875625837">Холбоосыг хавчуургын хэсэг рүү чирэх</translation>
 <translation id="945522503751344254">Санал хүсэлт илгээх</translation>
 <translation id="951991426597076286">Татгалзах</translation>

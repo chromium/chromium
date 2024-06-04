@@ -801,6 +801,7 @@ Ist die Richtlinie auf "False" gesetzt, können Nutzer keine eigenen Drucker hin
 <translation id="1635748761015837179">Schreiben auf externen Speichergeräten zulassen</translation>
 <translation id="1639468541408865385">Globales HTTP-Authentication-Cache aktivieren</translation>
 <translation id="1639673466479276550">Bildschirmschoner auf dem Anmeldebildschirm aktivieren.</translation>
+<translation id="1640447222731279244">Aktivierung der Hintergrundfunktion „Mit KI erstellen“ in ChromeOS steuern</translation>
 <translation id="1640824698339859203">Floating-SSO aktivieren und die Webdienstauthentifizierungen des Nutzers auf ein neues Gerät verschieben</translation>
 <translation id="1641117061932613266">Dienst <ph name="PRODUCT_NAME" /> Version 2 aktivieren</translation>
 <translation id="1641394008743444477">Ermöglicht die Zusammenstellung einer Liste mit <ph name="PRODUCT_OS_NAME" />-Funktionen, die deaktiviert werden sollen.
@@ -854,6 +855,12 @@ Für Ursprünge, die nicht durch eine Richtlinie oder Nutzereinstellungen angege
 
 Ist die Richtlinie auf „False“ gesetzt oder nicht konfiguriert, werden keine Ereignisse erfasst.</translation>
 <translation id="1692990221685273468">Mit dieser Richtlinie kann festgelegt werden, ob die integrierte Zertifikatsprüfung die Einschränkungen der Trust-Anchors, die aus dem Trust-Shop geladen wurden, erzwingt.</translation>
+<translation id="1693528798631913178">Mit dieser Richtlinie wird die VC‑Hintergrundfunktion „Mit KI erstellen“ in ChromeOS aktiviert oder deaktiviert.
+„0“ = Die Funktion wird für Nutzer deaktiviert.
+
+1 = Die Funktion wird für Nutzer aktiviert. Es werden keine Daten an Google gesendet, um KI‑Modelle zu trainieren oder zu verbessern.
+
+Wenn diese Richtlinie nicht konfiguriert ist, wird die VC‑Hintergrundfunktion „Mit KI erstellen“ für Unternehmensnutzer deaktiviert.</translation>
 <translation id="169467210981344373">Globales HTTP-Authentication-Cache deaktivieren</translation>
 <translation id="1696501581280568361">Dadurch wird die Profiltrennung vorgeschlagen</translation>
 <translation id="1698810555265314018">Steuert beim Drucken gerasteter PDFs in <ph name="PRODUCT_NAME" /> die Druckbildauflösung.
@@ -1653,6 +1660,7 @@ Wenn die Richtlinie nicht konfiguriert oder deaktiviert ist, ist eine Dateiüber
 <translation id="2258126710006312594">Nutzern mit Remotezugriff die Übertragung von Dateien vom/zum Host gestatten</translation>
 <translation id="225830954785359083">Verhindern, dass Seiten beim Entfernen Pop-ups anzeigen</translation>
 <translation id="2261648512244797294">Veraltetes Drucken über Privet deaktivieren</translation>
+<translation id="2263881357524831360">Verwendung von Drittanbieter-Passwortmanagern in <ph name="PRODUCT_NAME" /> unter <ph name="ANDROID_NAME" /> erlauben</translation>
 <translation id="2264286153777425328">Liste der Aktionen, die ausgeführt werden sollen, wenn das Zeitlimit in der Richtlinie <ph name="IDLE_TIMEOUT_POLICY_NAME" /> erreicht ist.
 
 Warnung: Das Festlegen dieser Richtlinie kann sich auf lokale private Daten auswirken und diese dauerhaft entfernen. Wir empfehlen, die Einstellungen vor der Bereitstellung zu testen, um das versehentliche Löschen von privaten Daten zu verhindern.
@@ -1766,6 +1774,7 @@ Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
 <translation id="2326031114717677574">Häufigkeit, mit der Audiodaten analysiert und erhoben werden. Die geringste zulässige Häufigkeit beträgt 1 Minute.
 
       Wenn die Richtlinie nicht konfiguriert ist, beträgt die Häufigkeit standardmäßig 15 Minuten.</translation>
+<translation id="2331028134545182024">Aktivierung der VC‑Hintergrundfunktion „Mit KI erstellen“ in ChromeOS steuern</translation>
 <translation id="2333228572393176330">Mit dieser Richtlinie wird eine Sicherheitsfunktion in TLS 1.3 konfiguriert, die Verbindungen gegen Downgrade-Angriffe schützt. Sie ist abwärtskompatibel und beeinträchtigt keine Verbindungen zu konformen TLS-1.2-Servern oder -Proxys. Ältere Versionen einiger Proxys, die TLS-Verbindungen abfangen, weisen jedoch einen Implementierungsfehler auf, der eine Inkompatibilität verursacht.
 
       Wenn diese Richtlinie auf "true" gesetzt oder nicht konfiguriert ist, wird <ph name="PRODUCT_NAME" /> diese Sicherheitsmaßnahmen für alle Verbindungen aktivieren.
@@ -2532,6 +2541,7 @@ Die Richtlinie „<ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_EXCEPTIONS_POLICY_NAME
 <translation id="2960128438010718932">Staging-Zeitplan zum Anwenden eines neuen Updates</translation>
 <translation id="2960691910306063964">Authentifizierung ohne PIN für Hosts für den Remotezugriff aktivieren oder deaktivieren</translation>
 <translation id="2960999045613902792">Zulassen, dass Nutzer Drucker außerhalb des Unternehmens hinzufügen, konfigurieren oder damit drucken dürfen</translation>
+<translation id="296100724744272922">Verwendung eines Drittanbieter-Passwortmanagers in Chrome zulassen</translation>
 <translation id="2962972237615992440"><ph name="CLOUD_PRINT_NAME" />-Proxy deaktivieren</translation>
 <translation id="2963292398266537394">Spracheingabe deaktivieren</translation>
 <translation id="2964373560810620158">Verhindern, dass Nutzer den <ph name="LACROS_NAME" />-Browser verwenden</translation>
@@ -4892,6 +4902,17 @@ Ist die Richtlinie nicht konfiguriert, folgt <ph name="PRODUCT_NAME" /> dem stan
       – Wenn die Richtlinie auf <ph name="SKIP_TOS_DIALOG" /> gesetzt ist, sind die Browserfunktionen eingeschränkt.
 
       – Wenn die Richtlinie auf <ph name="SKIP_TOS_DIALOG" /> gesetzt ist, müssen Administratoren Endnutzer dieses Geräts darüber informieren.</translation>
+<translation id="489760181463331251">Mit dieser Richtlinie wird der Arbeitsspeicher-Sparmodus reguliert.
+
+Sie ist nur wirksam, wenn der Arbeitsspeicher-Sparmodus über die Einstellungen oder die Richtlinie „<ph name="HIGH_EFFICIENCY_MODE_ENABLED_POLICY_NAME" />“ aktiviert wurde. Außerdem wirkt sie sich darauf aus, wie anhand von Heuristiken bestimmt wird, wann Tabs verworfen werden. Wenn du beispielsweise die Lebensdauer eines inaktiven Tabs reduzierst, bevor du ihn verwirfst, wird Arbeitsspeicher gespart. Allerdings werden Tabs dann auch häufiger aktualisiert, was sich negativ auf die Nutzerfreundlichkeit auswirken und zu mehr Netzwerkverkehr führen kann.
+
+Wenn du die Richtlinie auf „0“ setzt, sorgt der Arbeitsspeicher-Sparmodus für mäßige Arbeitsspeichereinsparungen. Tabs werden nach längerer Zeit inaktiv.
+
+Wenn du die Richtlinie auf „1“ setzt, sorgt der Arbeitsspeicher-Sparmodus für ausgewogene Arbeitsspeichereinsparungen. Tabs werden nach einer optimalen Zeitspanne inaktiv.
+
+Wenn du die Richtlinie auf „2“ setzt, sorgt der Arbeitsspeicher-Sparmodus für maximale Arbeitsspeichereinsparungen. Tabs werden nach kürzerer Zeit inaktiv.
+
+Wenn die Richtlinie nicht konfiguriert ist, kann der Endnutzer diese Einstellung unter chrome://settings/performance verwalten.</translation>
 <translation id="489803897780524242">Parameter zur Steuerung der Suchbegriffersetzung für den Standardsuchanbieter</translation>
 <translation id="4899708173828500852">Safe Browsing aktivieren</translation>
 <translation id="4906194810004762807">Aktualisierungsrate für Geräterichtlinien</translation>
@@ -5247,6 +5268,12 @@ Wenn diese Richtlinie nicht konfiguriert ist oder die Liste keine gültigen Bild
       Wenn die Richtlinie nicht konfiguriert ist, gilt der standardmäßige Zeitraum von 604.800.000 Millisekunden (eine Woche).</translation>
 <translation id="5212810195096589189">Berechtigung für VM-Befehlszeile festlegen</translation>
 <translation id="5213038356678567351">Websites, die unter keinen Umständen einen Browserwechsel auslösen sollten.</translation>
+<translation id="5215621993623612880">Mit dieser Richtlinie wird die Hintergrundfunktion „Mit KI erstellen“ für ChromeOS aktiviert oder deaktiviert.
+„0“ = Die Funktion wird für Nutzer deaktiviert.
+
+1 = Die Funktion wird für Nutzer aktiviert. Es werden keine Daten an Google gesendet, um KI‑Modelle zu trainieren oder zu verbessern.
+
+Wenn die Richtlinie nicht konfiguriert ist, ist die Hintergrundfunktion „Mit KI erstellen“ für Unternehmensnutzer deaktiviert.</translation>
 <translation id="5216815237712190041">Du kannst ein Hintergrundbild auf Geräteebene konfigurieren, das auf dem Anmeldebildschirm angezeigt wird, wenn sich noch kein Nutzer auf dem Gerät angemeldet hat. Zum Festlegen der Richtlinie muss die URL, über die das Chrome OS-Gerät das Hintergrundbild herunterladen kann, sowie ein kryptografischer Hash angegeben werden, um die Integrität des Downloads zu verifizieren. Das Bild muss im JPEG-Format vorliegen und darf nicht größer als 16 MB sein. Der Zugriff auf die URL muss ohne Authentifizierung möglich sein. Das Hintergrundbild wird heruntergeladen und im Cache gespeichert. Immer, wenn sich die URL oder der Hash ändert, wird es noch einmal heruntergeladen.
 
       Ist die Richtlinie für den Gerätehintergrund konfiguriert, lädt das Chrome OS-Gerät das Hintergrundbild herunter und zeigt es auf dem Anmeldebildschirm an, wenn sich noch kein Nutzer auf dem Gerät angemeldet hat. Sobald sich der Nutzer anmeldet, wird seine Hintergrundrichtlinie wirksam.
@@ -6783,6 +6810,7 @@ Wenn die Richtlinie nicht konfiguriert ist, verwendet <ph name="PRODUCT_OS_NAME"
       Schnelles Pairing ist ein neuer Bluetooth-Kopplungsprozess, bei dem gekoppelte Peripheriegeräte mit einem GAIA-Konto verknüpft werden.
       Dies ermöglicht Geräten unter Chrome OS (und Android), die im selben GAIA-Konto angemeldet sind, sich automatisch zu koppeln.
       Wenn diese Richtlinie nicht konfiguriert ist, wird der Standardwert für Unternehmensnutzer deaktiviert. Für nicht verwaltete Konten wird er aktiviert.</translation>
+<translation id="6400959027108936283">Funktion aktivieren</translation>
 <translation id="6401669939808766804">Nutzer abmelden</translation>
 <translation id="640244877779556713">Emoji-Vorschläge aktivieren</translation>
 <translation id="6403114173011456561">Steuert die Touch-Bildschirmtastatur und ist eine Ergänzung zur Richtlinie <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" />.
@@ -7123,6 +7151,7 @@ Hinweis: Durch einen Neustart oder eine Abmeldung wird der Cache geleert.</trans
 
       Hinweis: Verwende diese Richtlinie mit <ph name="REMOTE_ACCESS_HOST_TOKEN_URL_POLICY_NAME" />.</translation>
 <translation id="6625136649067113817">Boolescher Parameter, der angibt, ob für die Bildschirmtastatur die Rechtschreibprüfung aktiviert ist.</translation>
+<translation id="6626319579493977784">Einstellungen für dynamischen Code</translation>
 <translation id="66265932317331474">CPU-Informationen ausgeben</translation>
 <translation id="6628120204569232711">Speicherstatus melden</translation>
 <translation id="662991036483361836">Nutzer dürfen Nearby Share nicht aktivieren</translation>
@@ -7755,6 +7784,16 @@ Wenn sie konfiguriert ist, kann sie von Nutzern nicht geändert oder überschrie
 Ist die Richtlinie nicht konfiguriert, ist die Lupe auf dem Anmeldebildschirm anfangs deaktiviert, kann aber jederzeit vom Nutzer aktiviert werden.</translation>
 <translation id="7109384070286741861">CECPQ2 deaktivieren</translation>
 <translation id="7113439794629928551">Mediensteuerelemente für <ph name="PRODUCT_NAME" />-Sitzungen anzeigen, die von anderen Geräten gestartet werden</translation>
+<translation id="7113803652772945829">Wenn die Richtlinie auf „true“ gesetzt ist, können Nutzer einen Passwortmanager eines Drittanbieters verwenden.
+Dieser Passwortmanager übernimmt das Speichern und Ausfüllen aller Passwort-, Zahlungs- und Autofill-Daten.
+Wenn die Richtlinie auf „true“ gesetzt oder nicht konfiguriert ist, kann zwischen dem integrierten Passwortmanager von <ph name="PRODUCT_NAME" /> und dem in den Android-Einstellungen konfigurierten Passwortmanager gewechselt werden.
+Da <ph name="PRODUCT_NAME" /> dieselben Daten wie „Autofill mit Google“ verwendet, kann ein Passwortmanager eines Drittanbieters nur dann genutzt werden, wenn in den Systemeinstellungen von Android ein anderer Manager als „Autofill mit Google“ konfiguriert ist.
+
+Wenn die Richtlinie auf „false“ gesetzt ist,
+wird für <ph name="PRODUCT_NAME" /> immer der
+integrierte Passwortmanager verwendet.
+
+Diese Richtlinie wirkt sich nicht auf Passwortmanager von Drittanbietern aus, die APIs für Barrierefreiheit verwenden.</translation>
 <translation id="7114169791477667553">Standardsuchmaschine deaktivieren</translation>
 <translation id="7121046543122812054">Diese Richtlinie ist veraltet. Du kannst stattdessen <ph name="BROWSER_SIGNIN_POLICY_NAME" /> verwenden.
 
@@ -8118,6 +8157,7 @@ Dies ersetzt die eingestellte Richtlinie <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_
       Ist die Richtlinie deaktiviert oder nicht konfiguriert, zeichnen angemeldete Geräte den TPM-Sicherheitsstatus nicht auf und melden ihn auch nicht.
       Ausnahme: TPM-Informationen werden für M95 und niedriger von <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> gesteuert.</translation>
 <translation id="739556497251174388">Verwenden der <ph name="PRODUCT_OS_NAME" />-Anmeldedaten für die Netzwerkauthentifizierung zulassen</translation>
+<translation id="7402257017733669351">Erstellen von dynamischem Code im Browserprozess verhindern</translation>
 <translation id="7402772023599097052">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, werden Sicherheitswarnungen angezeigt, wenn Chrome mit potenziell schädlichen Befehlszeilen-Flags gestartet wird.
 
 Ist diese Richtlinie deaktiviert, werden keine Sicherheitswarnungen angezeigt, wenn Chrome mit potenziell schädlichen Befehlszeilen-Flags gestartet wird.
@@ -9395,6 +9435,7 @@ Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, werden nur die re
 <translation id="8429593528367808164">Wortvorschläge bei Nutzung der physischen Tastatur beim Tippen aktivieren</translation>
 <translation id="8433186206711564395">Netzwerkeinstellungen</translation>
 <translation id="8433769814000220721">Vorschläge zur Entdeckung neuer Inhalte aktivieren</translation>
+<translation id="8435304381855818385">Standardeinstellungen für dynamischen Code</translation>
 <translation id="843609873781525167">Wenn die Richtlinie auf "True" gesetzt ist, prüft <ph name="PRODUCT_NAME" /> beim Start immer, ob es der Standardbrowser ist. Nach Möglichkeit legt sich die Anwendung dann automatisch als Standard fest. Ist die Richtlinie auf "False" gesetzt, prüft <ph name="PRODUCT_NAME" /> nie, ob es der Standardbrowser ist. Außerdem werden alle Nutzersteuerelemente zum Einstellen dieser Option deaktiviert.
 
       Wenn die Richtlinie nicht konfiguriert ist, kann der Nutzer festlegen, ob <ph name="PRODUCT_NAME" /> der Standardbrowser ist und ob (falls nicht) entsprechende Benachrichtigungen angezeigt werden sollen.
@@ -10437,6 +10478,7 @@ Standardwert ist RollbackDisabled.</translation>
 „2“ = Die Funktion wird deaktiviert. „2“ ist der Standardwert für Konten einer Bildungseinrichtung, die über <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> verwaltet werden.
 
 Weitere Informationen zur Datenverarbeitung bei Funktionen für generative KI findest du unter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
+<translation id="949192525372487705">Wechsel zu einem Drittanbieter-Passwortmanager blockieren</translation>
 <translation id="957322141096206402">Die DNS-Auflösung des Systems kann je nach Systemkonfiguration und Funktions-Flags innerhalb oder außerhalb des Netzwerkprozesses ausgeführt werden.</translation>
 <translation id="957778406002650056">URL, über die das <ph name="PLUGIN_VM_NAME" />-Image heruntergeladen werden kann.</translation>
 <translation id="957920984193041197">Zulassen, dass Seiten beim Entfernen Pop-ups anzeigen</translation>

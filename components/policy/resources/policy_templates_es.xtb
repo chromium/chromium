@@ -1665,6 +1665,7 @@ Si no se establece esta política o se inhabilita, no se permitirá la transfere
 <translation id="2258126710006312594">Permite que los usuarios con acceso remoto transfieran archivos al host y desde el host</translation>
 <translation id="225830954785359083">Impedir que las páginas muestren ventanas emergentes durante la descarga</translation>
 <translation id="2261648512244797294">Inhabilitar el protocolo Privet de impresión obsoleto</translation>
+<translation id="2263881357524831360">Permitir el uso de gestores de contraseñas de terceros en <ph name="PRODUCT_NAME" /> para <ph name="ANDROID_NAME" /></translation>
 <translation id="2264286153777425328">Lista de acciones que se ejecutarán cuando se agote el tiempo de espera de la política <ph name="IDLE_TIMEOUT_POLICY_NAME" />.
 
 Advertencia: Si se establece esta política, los datos personales locales pueden verse afectados y eliminarse de forma permanente. Te recomendamos probar la configuración antes de implementarla para evitar la eliminación accidental de datos personales.
@@ -2547,6 +2548,7 @@ La política <ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_EXCEPTIONS_POLICY_NAME" /> 
 <translation id="2960128438010718932">La programación de lanzamiento progresivo para aplicar una nueva actualización</translation>
 <translation id="2960691910306063964">Habilitar o inhabilitar la autenticación sin PIN para host de acceso remoto</translation>
 <translation id="2960999045613902792">Permitir que los usuarios añadan, configuren e impriman desde impresoras que no sean de empresa</translation>
+<translation id="296100724744272922">Permitir el uso de un gestor de contraseñas de terceros en Chrome</translation>
 <translation id="2962972237615992440">Inhabilitar el proxy <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="2963292398266537394">Inhabilitar el dictado</translation>
 <translation id="2964373560810620158">Evitar que los usuarios usen el navegador <ph name="LACROS_NAME" /></translation>
@@ -4985,6 +4987,7 @@ No se recomienda inhabilitar la decodificación de vídeo acelerada por hardware
       indicado para procesar las solicitudes keepalive (https://fetch.spec.whatwg.org/#request-keepalive-flag).
 
       El valor predeterminado (0) significa que esta función está inhabilitada.</translation>
+<translation id="4933780993367313536">Permitir conexiones de acceso remoto de administradores de empresa en este equipo</translation>
 <translation id="4937423591320233496">Inhabilitar sugerencias de contenido</translation>
 <translation id="4942096314850617489">Inhabilitar la atestación remota para el usuario</translation>
 <translation id="4942681160308347946">Si se le asigna el valor "true" a esta política, los mensajes de voz se activan en la pantalla de inicio de sesión. Si se le asigna el valor "false", los mensajes de voz se desactivan en la pantalla de inicio de sesión.
@@ -6269,6 +6272,7 @@ Si no se define ninguna de estas políticas, se moverán todas las autenticacion
 <translation id="5966615072639944554">Extensiones con permiso para utilizar la API de confirmación remota</translation>
 <translation id="596732417280023843">El nombre del perfil del certificado.</translation>
 <translation id="5972538402066550344">Permitir los controles de informes granulares</translation>
+<translation id="5973437409890460481">Permitir conexiones de acceso remoto empresarial a este equipo</translation>
 <translation id="5975765799383881158">Si se habilita la política o no se establece, los usuarios podrán enviar comentarios a Google usando una combinación de teclas o mediante la opción que está en Menú &gt; Ayuda &gt; Notificar un problema.
 
       Si se inhabilita la política, los usuarios no podrán enviar comentarios a Google.</translation>
@@ -7843,6 +7847,14 @@ Si defines esta política, los usuarios no podrán cambiarla ni anularla.
 Si no se define, la lupa estará inhabilitada inicialmente en la pantalla de inicio de sesión, pero el usuario podrá habilitarla en cualquier momento.</translation>
 <translation id="7109384070286741861">Inhabilitar CECPQ2</translation>
 <translation id="7113439794629928551">Mostrar controles multimedia para las sesiones de <ph name="PRODUCT_NAME" /> iniciadas por otros dispositivos</translation>
+<translation id="7113803652772945829">Si se le asigna el valor true a esta política, los usuarios podrán usar un gestor de contraseñas de terceros.
+Ese gestor de contraseñas se encargará de guardar y rellenar todas las contraseñas, los datos de pago y los datos de autocompletado.
+Si se le asigna el valor true a esta política o no se define, una opción permitirá cambiar entre el gestor de contraseñas integrado de <ph name="PRODUCT_NAME" /> y el gestor de contraseñas configurado en los ajustes de Android.
+Como <ph name="PRODUCT_NAME" /> usa los mismos datos que Autocompletar de Google, la opción solo se puede cambiar para usar gestores de contraseñas de terceros si se configura un gestor distinto que no sea Autocompletar con Google en los ajustes del sistema de Android.
+
+Si se le asigna el valor false a esta política, <ph name="PRODUCT_NAME" /> siempre usará el gestor de contraseñas integrado.
+
+Esta política no afecta a los gestores de contraseñas de terceros que usan APIs de accesibilidad.</translation>
 <translation id="7114169791477667553">Inhabilitar el proveedor de búsqueda predeterminado</translation>
 <translation id="7121046543122812054">Esta política está obsoleta. Te recomendamos que uses <ph name="BROWSER_SIGNIN_POLICY_NAME" /> en su lugar.
 
@@ -9668,6 +9680,11 @@ Para definir esta política, se debe inhabilitar la política <ph name="PRIVACY_
       Si se asigna el valor "True" a esta política, el usuario deberá iniciar sesión en <ph name="PRODUCT_NAME" /> con su perfil antes de usar el navegador. El valor predeterminado que se asignará a BrowserGuestModeEnabled es "False". Ten en cuenta que, después de habilitar esta política, los perfiles con los que no se haya iniciado sesión se bloquearán y no se podrá acceder a ellos. Para obtener más información, consulta el artículo del Centro de Ayuda.
 
       Si se asigna el valor "False" a esta política o no se configura, el usuario podrá utilizar el navegador sin iniciar sesión en <ph name="PRODUCT_NAME" />.</translation>
+<translation id="8575422604428646609">Si se inhabilita esta política, los administradores de empresa no podrán conectarse a dispositivos <ph name="PRODUCT_OS_NAME" /> gestionados cuando no haya ningún usuario activo en el dispositivo.
+
+Esta política no afecta a otros accesos remotos.
+
+Esta política no tendrá ningún efecto si se habilita, se deja en blanco o no se define.</translation>
 <translation id="8575739761246140675">Habilitar la confianza en los certificados emitidos por la PKI antigua de Symantec Corporation</translation>
 <translation id="8575746110808109915">Configura la política para habilitar la función de restauración completa.
       Si se le asigna el valor true a esta política, las aplicaciones y ventanas de aplicaciones se restaurarán o no tras un fallo o reinicio basándose en el ajuste de restauración de la aplicación.
@@ -10356,6 +10373,7 @@ Nota: La caché se borra al reiniciar el dispositivo. Los datos de dominio de lo
 <translation id="9107635531763682565">Si se asigna el valor 1 a esta política, los sitios web podrán mostrar notificaciones de escritorio. Si se le asigna el valor 2, no se permitirán las notificaciones de escritorio.
 
 Si no se establece, se aplicará la política <ph name="ASK_NOTIFICATIONS_POLICY_NAME" />, pero los usuarios podrán cambiar esta opción.</translation>
+<translation id="9110194749335632373">Impedir conexiones de acceso remoto de administradores de empresa en este equipo</translation>
 <translation id="9110251436602897914">Proporcionar información sobre los periféricos conectados al dispositivo</translation>
 <translation id="9110485853581788150">Lista de certificados que no son de confianza en <ph name="PRODUCT_NAME" />,
 pero que se pueden usar como sugerencias para la creación de rutas. Los certificados deben estar codificados en Base64.</translation>
@@ -10555,6 +10573,7 @@ El valor predeterminado es RollbackDisabled.</translation>
 2 = Inhabilitar la función. 2 es el valor predeterminado de las cuentas de centro educativo que se gestionan en <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
 
 Para obtener más información sobre el tratamiento de datos en las funciones de IA generativa, consulta https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
+<translation id="949192525372487705">Bloquear el cambio a un gestor de contraseñas de terceros</translation>
 <translation id="957322141096206402">La resolución de DNS del sistema se puede ejecutar dentro o fuera del proceso de red, en función de la configuración del sistema y las marcas de funciones.</translation>
 <translation id="957778406002650056">La URL desde la que se puede descargar la imagen de <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="957920984193041197">Permitir que las páginas muestren ventanas emergentes durante la descarga</translation>

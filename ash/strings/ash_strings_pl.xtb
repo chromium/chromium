@@ -107,6 +107,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1333308631814936910">Połączono: <ph name="DISPLAY_NAME" /></translation>
 <translation id="1340378040547539434">Pomniejsz na stronie</translation>
 <translation id="1341651618736211726">Rozwiń menu</translation>
+<translation id="1341926407152459446">Użyj urządzenia „<ph name="DEVICE_NAME" />” jako wejścia i wyjścia audio</translation>
 <translation id="1344141078024003905">Przesyłasz ekran. Przesyłanie ekranu możesz w każdej chwili wstrzymać lub zakończyć.</translation>
 <translation id="1346748346194534595">W prawo</translation>
 <translation id="1351937230027495976">Zwiń menu</translation>
@@ -145,6 +146,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1486307154719069822">Dzięki dyktowaniu możesz pisać głosowo. Naciśnij klawisz dyktowania lub wybierz ikonę mikrofonu u dołu ekranu, jeśli jesteś w polu tekstowym. Twój język dyktowania to <ph name="LANGUAGE" />. Mowa jest wysyłana do Google w celu przetworzenia. W każdej chwili możesz zmienić język dyktowania. W tym celu wybierz Ustawienia &gt; Ułatwienia dostępu.</translation>
 <translation id="1487931858675166540">Element <ph name="FIRST_ITEM_TITLE" /> został zastąpiony elementem <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Pokaż wszystkie sugestie</translation>
+<translation id="1501946871587957338">Przełączyć źródło dźwięku?</translation>
 <translation id="1510238584712386396">Menu z aplikacjami</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Pokaż ustawienia powiadomień. Jedna aplikacja ma wyłączone powiadomienia.}few{Pokaż ustawienia powiadomień. # aplikacje mają wyłączone powiadomienia.}many{Pokaż ustawienia powiadomień. # aplikacji ma wyłączone powiadomienia.}other{Pokaż ustawienia powiadomień. # aplikacji ma wyłączone powiadomienia.}}</translation>
 <translation id="1523032696246003">Bateria: <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> do pełnego naładowania</translation>
@@ -210,6 +212,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1747827819627189109">Klawiatura ekranowa włączona</translation>
 <translation id="1749109475624620922">Okno <ph name="WINDOW_TITLE" /> zostało przypisane do wszystkich biurek</translation>
 <translation id="1750088060796401187">Dopuszczalna liczba biurek to <ph name="MAX_DESK_LIMIT" />. Jeśli chcesz otworzyć nowe, usuń jedno z dotychczasowych.</translation>
+<translation id="1755408179247123630">Włączyć funkcję Przeczytaj na głos?</translation>
 <translation id="1755556344721611131">Aplikacja diagnostyczna</translation>
 <translation id="1756833229520115364">Nie udało się zapisać szablonu. Zbyt wiele okien lub kart.</translation>
 <translation id="1757857692711134412">Wyłączone do zachodu słońca</translation>
@@ -773,6 +776,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="397105322502079400">Obliczanie...</translation>
 <translation id="397726367135689299">Ładowanie baterii może przebiegać nieprawidłowo.</translation>
 <translation id="3977512764614765090">Naładowanie baterii: <ph name="PERCENTAGE" />%. Trwa ładowanie.</translation>
+<translation id="3982013579989864579">Przełączyć wyjście audio?</translation>
 <translation id="3984536049089846927">Następna strona</translation>
 <translation id="3986082989454912832">Odpowiedz</translation>
 <translation id="3990002060657467458">Często używane elementy sterujące dotyczące np. Wi-Fi, Bluetootha czy głośności znajdziesz w Szybkich ustawieniach. Możesz tam też robić zrzuty ekranu.</translation>
@@ -816,6 +820,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="4150201353443180367">Wyświetlacz</translation>
 <translation id="4156293514828496577">Bateria: pozostało <ph name="PERCENTAGE" />% (około <ph name="TIME_LEFT" />).
 W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczone.</translation>
+<translation id="4160919062868802509">Wykryto wiele źródeł dźwięku</translation>
 <translation id="4165275524535002941">Kabel może nie działać z wyświetlaczami</translation>
 <translation id="4177415338862979658">Kliknij, aby sprawdzić szczegóły</translation>
 <translation id="4177913004758410636">{0,plural, =1{Aktualizacja urządzenia nastąpi w ciągu 1 dnia}few{Aktualizacja urządzenia nastąpi w ciągu # dni}many{Aktualizacja urządzenia nastąpi w ciągu # dni}other{Aktualizacja urządzenia nastąpi w ciągu # dnia}}</translation>
@@ -947,6 +952,7 @@ Połączono 1 urządzenie.</translation>
 <translation id="4628757576491864469">Urządzenia</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, liczba gwiazdek <ph name="RATING_SCORE" /></translation>
 <translation id="4633636853437260449">Aby usunąć, naciśnij Ctrl+W</translation>
+<translation id="4635501805800894201">{0,plural, =0{Zaktualizuj urządzenie do poprzedniej wersji systemu operacyjnego teraz}=1{Zaktualizuj urządzenie do poprzedniej wersji systemu operacyjnego w ciągu 1 sekundy}few{Zaktualizuj urządzenie do poprzedniej wersji systemu operacyjnego w ciągu # sekund}many{Zaktualizuj urządzenie do poprzedniej wersji systemu operacyjnego w ciągu # sekund}other{Zaktualizuj urządzenie do poprzedniej wersji systemu operacyjnego w ciągu # sekundy}}</translation>
 <translation id="4642092649622328492">Zrób zrzut części ekranu</translation>
 <translation id="4644727592819780893">Region jest za mały i nie można go pokazać na podglądzie z aparatu</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, rekomendowana aplikacja</translation>
@@ -976,6 +982,7 @@ Połączono 1 urządzenie.</translation>
 <translation id="4735944890391795473">Biurko 12</translation>
 <translation id="473775607612524610">Aktualizuj</translation>
 <translation id="4740516757091333363">Usunąć zapisane biurko?</translation>
+<translation id="4746798685375253449">{0,plural, =1{Zaktualizuj urządzenie do poprzedniej wersji systemu operacyjnego w ciągu 1 dnia}few{Zaktualizuj urządzenie do poprzedniej wersji systemu operacyjnego w ciągu # dni}many{Zaktualizuj urządzenie do poprzedniej wersji systemu operacyjnego w ciągu # dni}other{Zaktualizuj urządzenie do poprzedniej wersji systemu operacyjnego w ciągu # dnia}}</translation>
 <translation id="4747410141429390146">Odblokuj, aby wyświetlić powiadomienia</translation>
 <translation id="4752784485658729358">Zapisać można tylko 6 biurek. Usuń biurko, aby zapisać nowe.</translation>
 <translation id="4759238208242260848">Pobrane pliki</translation>
@@ -1014,6 +1021,7 @@ Połączono 1 urządzenie.</translation>
 <translation id="4871905435473761992">Pokaż szczegóły hotspota. Twoja sieć komórkowa go nie obsługuje.</translation>
 <translation id="4872237917498892622">Alt+Szukaj lub Shift</translation>
 <translation id="4872852897273142380">Przenieś zaznaczenie na pasek zakładek (jeśli jest widoczny)</translation>
+<translation id="4876935764454575645">Wybór dźwięku</translation>
 <translation id="4881323000405981760">Efekty nie są obsługiwane w aplikacjach na Linuksa</translation>
 <translation id="4881695831933465202">Otwórz</translation>
 <translation id="4889868803215848840">Podaj opcjonalną opinię, żeby ulepszyć sugestie:</translation>
@@ -1080,6 +1088,9 @@ Połączono 1 urządzenie.</translation>
 <translation id="5092436659250499817">Włącz/wyłącz podświetlenie klawiatury</translation>
 <translation id="5094577350232361255">informacje</translation>
 <translation id="5095136268899496849">Jeśli chcesz spersonalizować swoje urządzenie <ph name="PRODUCT_NAME" />, otwórz Ustawienia. Możesz na przykład zmienić tapetę albo ustawić wygaszacz ekranu.</translation>
+<translation id="5096125376090473584">Aby usłyszeć tekst odczytywany na głos, kliknij ikonę Przeczytaj na głos u dołu ekranu, a potem zaznacz tekst.
+
+Możesz też użyć skrótu klawiszowego. Zaznacz tekst, a potem naciśnij <ph name="MODIFIER" /> + S.</translation>
 <translation id="509790653408515442">Tutaj będą się pojawiać aplikacje przesyłane strumieniowo z telefonu</translation>
 <translation id="5098537242461068432">Biurko i okna ponownie otwarte</translation>
 <translation id="5103975065730779239">Do <ph name="END_TIME_EXPRESSION" /></translation>
@@ -1090,6 +1101,7 @@ Połączono 1 urządzenie.</translation>
 <translation id="5121628974188116412">Przejdź na dół strony</translation>
 <translation id="5122517996953421795"><ph name="DESK_NAME" /> – podgląd. Biurko nieaktywne.</translation>
 <translation id="5136175204352732067">Podłączono inną klawiaturę</translation>
+<translation id="5144005092084035179">Przełączyć wejście audio?</translation>
 <translation id="5147567197700016471">Odblokowano</translation>
 <translation id="5150070631291639005">Ustawienia prywatności</translation>
 <translation id="5155897006997040331">Szybkość czytania</translation>
@@ -1309,6 +1321,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="5916646100036936191">Nowe powiadomienie, łącznie <ph name="NOTIFICATION_COUNT" /></translation>
 <translation id="5916664084637901428">Włączone</translation>
 <translation id="5920710855273935292">Mikrofon jest wyciszony.</translation>
+<translation id="5928083197428724029">Aktualizacja wymagana przez: <ph name="MANAGER" /></translation>
 <translation id="5946788582095584774">Funkcja <ph name="FEATURE_NAME" /> jest włączona.</translation>
 <translation id="5947494881799873997">Przywróć</translation>
 <translation id="595202126637698455">Śledzenie wydajności jest włączone</translation>
@@ -1398,7 +1411,6 @@ Brak połączonych urządzeń.</translation>
 <translation id="6232416233079464213">Z: <ph name="SESSION_NAME" /></translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> używa teraz kamery i mikrofonu</translation>
 <translation id="6237231532760393653">1X</translation>
-<translation id="62380141479352646">Słaba bateria. Zostało włączone Oszczędzanie baterii.</translation>
 <translation id="6240603910551255087">Górny przycisk</translation>
 <translation id="6247728804802644171">Otwórz powiadomienia</translation>
 <translation id="6249795363855770621">Nie udało się oznaczyć jako ukończonego. Spróbuj ponownie, gdy połączysz się z internetem.</translation>
@@ -1427,6 +1439,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="6376931439017688372">Bluetooth jest włączony</translation>
 <translation id="6378515133128829137">Przypnij okno z prawej strony</translation>
 <translation id="6381109794406942707">Aby odblokować urządzenie, wpisz kod PIN.</translation>
+<translation id="6381305031890976705">{0,plural, =1{Zaktualizuj urządzenie do poprzedniej wersji systemu operacyjnego w ciągu 1 godziny}few{Zaktualizuj urządzenie do poprzedniej wersji systemu operacyjnego w ciągu # godzin}many{Zaktualizuj urządzenie do poprzedniej wersji systemu operacyjnego w ciągu # godzin}other{Zaktualizuj urządzenie do poprzedniej wersji systemu operacyjnego w ciągu # godziny}}</translation>
 <translation id="638716340450135524">Włącz dostęp do aparatu</translation>
 <translation id="639644700271529076">CAPS LOCK jest wyłączony</translation>
 <translation id="6406458002328242616">Edytuj czas. <ph name="FOCUS_DURATION" />.</translation>
@@ -1449,6 +1462,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="6459472438155181876">Rozszerzanie ekranu na <ph name="DISPLAY_NAME" /></translation>
 <translation id="6464094930452079790">obrazy</translation>
 <translation id="6467290994038932560">Włączono dla: <ph name="GAME_APP_NAME" /></translation>
+<translation id="6468406072297048412">{0,plural, =1{Zaktualizuj urządzenie do poprzedniej wersji systemu operacyjnego w ciągu 1 minuty}few{Zaktualizuj urządzenie do poprzedniej wersji systemu operacyjnego w ciągu # minut}many{Zaktualizuj urządzenie do poprzedniej wersji systemu operacyjnego w ciągu # minut}other{Zaktualizuj urządzenie do poprzedniej wersji systemu operacyjnego w ciągu # minuty}}</translation>
 <translation id="6469104339369989396">Przełącz hotspota</translation>
 <translation id="6477681113376365978">Nie można pobrać pliku</translation>
 <translation id="6482559668224714696">Lupa pełnoekranowa</translation>
@@ -1571,6 +1585,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="6917259695595127329">Ostatnia aktualizacja zadań: <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">Nie udało się rozpoznać karty elektronicznej. Spróbuj ponownie.</translation>
 <translation id="692135145298539227">usuń</translation>
+<translation id="6921427376813842559">Zaktualizuj urządzenie</translation>
 <translation id="6929081673585394903">Pokaż elementy sterujące</translation>
 <translation id="6931576957638141829">Zapisz w</translation>
 <translation id="6942518653766415536">Menu formatu nagrywania</translation>
@@ -1658,6 +1673,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="7303365578352795231">Odpowiem na innym urządzeniu.</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Administrator resetuje Twoją kartę eSIM. Może to potrwać kilka minut.</translation>
+<translation id="7312761820869643657">Zaktualizuj urządzenie do poprzedniej wersji systemu operacyjnego</translation>
 <translation id="7313193732017069507">Otwórz aparat</translation>
 <translation id="7330397557116570022">Aby używać dyktowania, przejdź do pola tekstowego</translation>
 <translation id="7331646370422660166">Alt + strzałka w dół</translation>
@@ -1788,6 +1804,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="7780094051999721182">skróty</translation>
 <translation id="7780159184141939021">Obróć ekran</translation>
 <translation id="7781829728241885113">Wczoraj</translation>
+<translation id="7787212146956232129">Urządzenia wejściowe i wyjściowe są ustawione. Możesz to zmienić w Ustawieniach.</translation>
 <translation id="7792590255364786396">Widoczne</translation>
 <translation id="7796735576426975947">Nowe powiadomienie zostało ukryte</translation>
 <translation id="7798302898096527229">Aby anulować, naciśnij Szukaj lub Shift.</translation>
@@ -1806,6 +1823,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">Aby korzystać z urządzenia jako gość, musisz się wylogować i kliknąć Przeglądaj jako gość u dołu ekranu.</translation>
 <translation id="7866482334467279021">włączono</translation>
+<translation id="7866727328666668290">Ostatnio otwarta karta</translation>
 <translation id="7872786842639831132">Wyłączono</translation>
 <translation id="7875575368831396199">Wygląda na to, że Twoje urządzenie (<ph name="DEVICE_TYPE" />) ma wyłączony Bluetooth. Włącz go, by korzystać ze sterowania telefonem.</translation>
 <translation id="7884446017008693258">Ustawienia hotspota</translation>
@@ -2094,6 +2112,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 plik}few{# pliki}many{# plików}other{# pliku}}</translation>
 <translation id="8936501819958976551">dezaktywowana</translation>
 <translation id="8938800817013097409">Urządzenie USB-C (prawy port z tyłu)</translation>
+<translation id="8939855324412367560">Wejście audio to „<ph name="INPUT_DEVICE_NAME" />”, a wyjście audio to „<ph name="OUTPUT_DEVICE_NAME" />”. Aby to zmienić, otwórz Ustawienia.</translation>
 <translation id="8940956008527784070">Niski stan baterii (<ph name="PERCENTAGE" />%)</translation>
 <translation id="894774083269346314">Niezaznaczone pole wyboru <ph name="PROFILE_NAME" /> <ph name="EMAIL" />.</translation>
 <translation id="8949925099261528566">Połączono, brak internetu</translation>
@@ -2131,7 +2150,6 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="9080132581049224423">Aby przejść na ekran główny, przesuń w górę</translation>
 <translation id="9080206825613744995">Mikrofon jest używany.</translation>
 <translation id="9083324773537346962">Wersja systemu operacyjnego</translation>
-<translation id="908451241440060346">Po włączeniu trybu Nie przeszkadzać powiadomienia są wyciszone</translation>
 <translation id="9084606467167974638">Zmień położenie menu</translation>
 <translation id="9085962983642906571">Urządzenie jest podłączone, a bateria jest naładowana do 80%, aby wydłużyć jej żywotność.</translation>
 <translation id="9089416786594320554">Wprowadzanie tekstu</translation>
@@ -2151,6 +2169,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="9178475906033259337">Wyświetlam 1 wynik dla zapytania <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Ta funkcja umożliwia szybki dostęp do każdego konta zalogowanego użytkownika bez konieczności podawania hasła. Używaj jej tylko w przypadku kont, którym ufasz.</translation>
 <translation id="9183456764293710005">Lupa pełnego ekranu</translation>
+<translation id="9192133205265227850">Użyj urządzenia „<ph name="DEVICE_NAME" />”</translation>
 <translation id="9193626018745640770">Przesyłam do nieznanego odbiornika</translation>
 <translation id="9194617393863864469">Zaloguj innego użytkownika...</translation>
 <translation id="9195990613383871904">Jutro</translation>
@@ -2171,6 +2190,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="925832987464884575">Ukryj podglądy</translation>
 <translation id="938407504481277932">Bieżące biurko: <ph name="DESK_NAME" /> <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. Biurko <ph name="DESK_INDEX" /> z <ph name="DESK_COUNT" />.</translation>
 <translation id="938963181863597773">Co mam w kalendarzu?</translation>
+<translation id="94468042118567862">Urządzenie nie jest aktualne</translation>
 <translation id="945383118875625837">Przeciągnij link na pasek zakładek</translation>
 <translation id="945522503751344254">Prześlij opinię</translation>
 <translation id="951991426597076286">Odrzuć</translation>

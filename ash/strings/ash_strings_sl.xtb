@@ -212,6 +212,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1747827819627189109">Zaslonska tipkovnica omogočena</translation>
 <translation id="1749109475624620922">Okno <ph name="WINDOW_TITLE" /> je dodeljeno vsem namizjem.</translation>
 <translation id="1750088060796401187">Dovoljenih je samo toliko namizij: <ph name="MAX_DESK_LIMIT" />. Odstranite namizje, če želite odpreti novega.</translation>
+<translation id="1755408179247123630">Želite vklopiti storitev Izberite in poslušajte?</translation>
 <translation id="1755556344721611131">Aplikacija za diagnostiko</translation>
 <translation id="1756833229520115364">Predloge ni bilo mogoče shraniti. Preveč je oken ali zavihkov.</translation>
 <translation id="1757857692711134412">Izklopljeno do sončnega zahoda</translation>
@@ -951,6 +952,7 @@ Nekatere funkcije so omejene za podaljšanje časa delovanja baterije.</translat
 <translation id="4628757576491864469">Naprave</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, ocena z zvezdicami (<ph name="RATING_SCORE" />)</translation>
 <translation id="4633636853437260449">Pritisnite Ctrl + W, če želite izbrisati.</translation>
+<translation id="4635501805800894201">{0,plural, =0{Posodobite napravo na prejšnjo različico}=1{Posodobite napravo na prejšnjo različico v 1 sekundi}one{Posodobite napravo na prejšnjo različico v # sekundi}two{Posodobite napravo na prejšnjo različico v # sekundah}few{Posodobite napravo na prejšnjo različico v # sekundah}other{Posodobite napravo na prejšnjo različico v # sekundah}}</translation>
 <translation id="4642092649622328492">Ustvarjanje delnega posnetka zaslona</translation>
 <translation id="4644727592819780893">Območje je premajhno za prikaz kamere</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, priporočilo aplikacije</translation>
@@ -980,6 +982,7 @@ Nekatere funkcije so omejene za podaljšanje časa delovanja baterije.</translat
 <translation id="4735944890391795473">Namizje 12</translation>
 <translation id="473775607612524610">Posodobi</translation>
 <translation id="4740516757091333363">Želite izbrisati shranjeno namizje?</translation>
+<translation id="4746798685375253449">{0,plural, =1{Posodobite napravo na prejšnjo različico v enem dnevu}one{Posodobite napravo na prejšnjo različico v # dnevu}two{Posodobite napravo na prejšnjo različico v # dnevih}few{Posodobite napravo na prejšnjo različico v # dneh}other{Posodobite napravo na prejšnjo različico v # dneh}}</translation>
 <translation id="4747410141429390146">Če si želite ogledati obvestila, odklenite zaslon.</translation>
 <translation id="4752784485658729358">Dovoljenih je samo 6 shranjenih namizij. Če želite shraniti novo, odstranite eno.</translation>
 <translation id="4759238208242260848">Prenosi</translation>
@@ -1085,6 +1088,9 @@ Nekatere funkcije so omejene za podaljšanje časa delovanja baterije.</translat
 <translation id="5092436659250499817">Vklop/izklop osvetlitve tipkovnice</translation>
 <translation id="5094577350232361255">vizitka</translation>
 <translation id="5095136268899496849">Prilagodite in osebno prilagodite napravo <ph name="PRODUCT_NAME" /> v nastavitvah. Poskusite spremeniti zaslonsko ozadje ali nastaviti ohranjevalnik zaslona.</translation>
+<translation id="5096125376090473584">Če želite, da je besedilo prebrano na glas, na dnu zaslona izberite ikono storitve Izberite in poslušajte, nato označite besedilo.
+
+Uporabite lahko tudi bližnjično tipko. Najprej označite besedilo in nato pritisnite tipko <ph name="MODIFIER" /> + s.</translation>
 <translation id="509790653408515442">Ko pretočno predvajate aplikacije v telefonu, so prikazane tukaj.</translation>
 <translation id="5098537242461068432">Namizje in okna so znova odprti</translation>
 <translation id="5103975065730779239">Do <ph name="END_TIME_EXPRESSION" /></translation>
@@ -1315,6 +1321,7 @@ Nobena naprava ni povezana.</translation>
 <translation id="5916646100036936191">Novo obvestilo, skupno <ph name="NOTIFICATION_COUNT" /></translation>
 <translation id="5916664084637901428">Vklopljeno</translation>
 <translation id="5920710855273935292">Zvok mikrofona je izklopljen.</translation>
+<translation id="5928083197428724029">Posodobitev zahteva <ph name="MANAGER" />.</translation>
 <translation id="5946788582095584774">Funkcija <ph name="FEATURE_NAME" /> je vklopljena.</translation>
 <translation id="5947494881799873997">Razveljavi</translation>
 <translation id="595202126637698455">Sledenje učinkovitosti delovanja je omogočeno</translation>
@@ -1404,7 +1411,6 @@ Nobena naprava ni povezana.</translation>
 <translation id="6232416233079464213">Od <ph name="SESSION_NAME" /></translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> trenutno uporablja vašo kamero in mikrofon.</translation>
 <translation id="6237231532760393653">1x</translation>
-<translation id="62380141479352646">Baterija je skoraj izpraznjena. Varčevanje z energijo baterije je vklopljeno.</translation>
 <translation id="6240603910551255087">Zgornji gumb</translation>
 <translation id="6247728804802644171">Odpiranje obvestil</translation>
 <translation id="6249795363855770621">Ni bilo mogoče označiti kot dokončano. Poskusite znova z vzpostavljeno povezavo.</translation>
@@ -1433,6 +1439,7 @@ Nobena naprava ni povezana.</translation>
 <translation id="6376931439017688372">Bluetooth je vklopljen</translation>
 <translation id="6378515133128829137">Pripenjanje okna na desno</translation>
 <translation id="6381109794406942707">Če želite odkleniti napravo, vnesite kodo PIN.</translation>
+<translation id="6381305031890976705">{0,plural, =1{Posodobite napravo na prejšnjo različico v eni uri}one{Posodobite napravo na prejšnjo različico v # uri}two{Posodobite napravo na prejšnjo različico v # urah}few{Posodobite napravo na prejšnjo različico v # urah}other{Posodobite napravo na prejšnjo različico v # urah}}</translation>
 <translation id="638716340450135524">Vklopi dostop do kamere</translation>
 <translation id="639644700271529076">Tipka CAPS LOCK je izklopljena</translation>
 <translation id="6406458002328242616">Urejanje časovnika. <ph name="FOCUS_DURATION" />.</translation>
@@ -1455,6 +1462,7 @@ Nobena naprava ni povezana.</translation>
 <translation id="6459472438155181876">Razširitev zaslon na <ph name="DISPLAY_NAME" /></translation>
 <translation id="6464094930452079790">slike</translation>
 <translation id="6467290994038932560">Vklopljeno za igro <ph name="GAME_APP_NAME" /></translation>
+<translation id="6468406072297048412">{0,plural, =1{Posodobite napravo na prejšnjo različico v 1 minuti}one{Posodobite napravo na prejšnjo različico v # minuti}two{Posodobite napravo na prejšnjo različico v # minutah}few{Posodobite napravo na prejšnjo različico v # minutah}other{Posodobite napravo na prejšnjo različico v # minutah}}</translation>
 <translation id="6469104339369989396">Preklop dostopne točke</translation>
 <translation id="6477681113376365978">Datoteke ni mogoče prenesti</translation>
 <translation id="6482559668224714696">Celozaslonska lupa</translation>
@@ -1578,6 +1586,7 @@ Nova namestitev</translation>
 <translation id="6917259695595127329">Opravila so bila nazadnje posodobljena: <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">Pametne kartice ni bilo mogoče prepoznati. Poskusite znova.</translation>
 <translation id="692135145298539227">izbriši</translation>
+<translation id="6921427376813842559">Posodobitev naprave</translation>
 <translation id="6929081673585394903">Prikaz kontrolnikov</translation>
 <translation id="6931576957638141829">Shrani v</translation>
 <translation id="6942518653766415536">Meni oblike zapisa posnetka</translation>
@@ -1665,6 +1674,7 @@ Nova namestitev</translation>
 <translation id="7303365578352795231">Odgovor v drugi napravi.</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Skrbnik ponastavlja vašo kartico eSIM. To lahko traja nekaj minut.</translation>
+<translation id="7312761820869643657">Posodobite napravo na prejšnjo različico</translation>
 <translation id="7313193732017069507">Razširi fotoaparat</translation>
 <translation id="7330397557116570022">Če želite uporabiti narek, se pomaknite v besedilno polje</translation>
 <translation id="7331646370422660166">alt + puščica dol</translation>
@@ -1814,6 +1824,7 @@ Nova namestitev</translation>
 <translation id="7851768487828137624">Delovna različica</translation>
 <translation id="7862292329216937261">Če želite napravo uporabljati kot gost, se odjavite in na dnu zaslona izberite »Brskajte kot gost«.</translation>
 <translation id="7866482334467279021">vklopljeno</translation>
+<translation id="7866727328666668290">Nazadnje odprt zavihek</translation>
 <translation id="7872786842639831132">Izklopljeno</translation>
 <translation id="7875575368831396199">Videti je, da je v napravi <ph name="DEVICE_TYPE" /> izklopljen Bluetooth. Vklopite Bluetooth, če želite uporabljati telefonsko središče.</translation>
 <translation id="7884446017008693258">Nastavitve dostopne točke</translation>
@@ -2140,7 +2151,6 @@ Nova namestitev</translation>
 <translation id="9080132581049224423">Povlecite navzgor za začetni zaslon</translation>
 <translation id="9080206825613744995">Mikrofon je v uporabi.</translation>
 <translation id="9083324773537346962">Različica OS</translation>
-<translation id="908451241440060346">Obvestila so utišana, ko je vklopljen način »Ne moti«</translation>
 <translation id="9084606467167974638">Preklop položaja menija</translation>
 <translation id="9085962983642906571">Baterija se med tem, ko je naprava priklopljena na vir napajanja, zaradi podaljšanja časa delovanja baterije ohranja pri 80 %.</translation>
 <translation id="9089416786594320554">Načini vnosa</translation>
@@ -2181,6 +2191,7 @@ Nova namestitev</translation>
 <translation id="925832987464884575">Skrivanje predogledov</translation>
 <translation id="938407504481277932">Trenutno namizje: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. Namizje <ph name="DESK_INDEX" /> od <ph name="DESK_COUNT" />.</translation>
 <translation id="938963181863597773">Kaj je v mojem koledarju?</translation>
+<translation id="94468042118567862">Naprava ni posodobljena</translation>
 <translation id="945383118875625837">Povlecite povezavo v vrstico z zaznamki</translation>
 <translation id="945522503751344254">Pošiljanje povratnih informacij</translation>
 <translation id="951991426597076286">Zavrni</translation>

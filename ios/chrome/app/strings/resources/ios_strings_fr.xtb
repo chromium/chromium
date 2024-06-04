@@ -1471,6 +1471,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8374977641764177587">Activer les notifications ?</translation>
 <translation id="8378714024927312812">Géré par votre organisation</translation>
 <translation id="8386068868580335421">Réinitialiser</translation>
+<translation id="8386882774665382072">{count,plural, =1{{position} mot de passe sur {count}}one{{position} mot de passe sur {count}}other{{position} mots de passe sur {count}}}</translation>
 <translation id="838867811594159347">Saisissez la phrase secrète…</translation>
 <translation id="8393889347136007944">Onglets non utilisés pendant <ph name="THRESHOLD" /> jours</translation>
 <translation id="8395339334550012808">Vous verrez bientôt des contenus provenant de <ph name="CHANNEL_NAME" /> ou la concernant dans "Suivis".</translation>
@@ -1654,6 +1655,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="96615566463761848">Afficher les suggestions d'onglets d'autres appareils</translation>
 <translation id="973493300226275298">Suivez le prix d'un produit sur toutes les boutiques en ligne. Vous serez averti en cas de baisse.</translation>
 <translation id="981498610235328462">Votre organisation ne vous autorise à vous connecter qu'avec certains comptes. Ceux qui ne sont pas autorisés sont masqués.</translation>
+<translation id="983800820186631385">{count,plural, =1{{position} mode de paiement sur {count}}one{{position} mode de paiement sur {count}}other{{position} modes de paiement sur {count}}}</translation>
 <translation id="984275831282074731">Modes de paiement</translation>
 <translation id="984509647832111802">La synchronisation ne fonctionne pas.</translation>
 <translation id="988141524645182168">Autres appareils</translation>

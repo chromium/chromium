@@ -61,6 +61,7 @@
 <translation id="1040761927998636252">Отметка без име за <ph name="URL" /></translation>
 <translation id="1041175011127912238">Страницата не реагира</translation>
 <translation id="1041263367839475438">Налични устройства</translation>
+<translation id="1041607257468256895">Управление на разрешенията за достъп до местоположението за уебсайтове в Chrome</translation>
 <translation id="1042174272890264476">Компютърът ви също се предлага с библиотеката RLZ на <ph name="SHORT_PRODUCT_NAME" />, която е вградена. Тя задава неуникален и непозволяващ лично идентифициране маркер за измерване на търсенията и използването на <ph name="SHORT_PRODUCT_NAME" />, стимулирани от определена промоционална кампания. Тези етикети понякога се показват в заявките за търсене с Google в <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1042248468362992359">Свържете се с мобилна мрежа за данни, за да използвате точка за достъп. <ph name="BEGIN_LINK_LEARN_MORE" />Научете повече<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1043505821207197890">Нещо се обърка. Възможно е надстройването на Linux да е завършено само частично. За повече информация прегледайте регистрационните файлове. Те са запазени във „Файлове &gt; Моите файлове &gt; <ph name="LOG_FILE" />“</translation>
@@ -1253,7 +1254,6 @@
 <translation id="1901213235765457754">Помолете администратора си да актуализира това приложение</translation>
 <translation id="1901303067676059328">&amp;Избиране на всички</translation>
 <translation id="1904580727789512086">URL адресите, които посещавате, се запазват в профила ви в Google</translation>
-<translation id="1904603806662441960">Управление на разрешенията за достъп до камерата за сайтовете в Chrome</translation>
 <translation id="1906181697255754968">Сайтовете обикновено осъществяват достъп до файловете и папките на устройството ви, за да осигуряват функции като автоматично запазване на работата ви</translation>
 <translation id="1906488504371069394">Открийте още разширения и теми в <ph name="BEGIN_LINK" />уеб магазина на Chrome<ph name="END_LINK" /></translation>
 <translation id="1907044622262489040">Въвеждайте текст с гласа си. Натиснете клавиша „търсене“ + D, след което започнете да говорите.</translation>
@@ -2024,6 +2024,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2454206500483040640">Отделени</translation>
 <translation id="2454247629720664989">Ключова дума</translation>
 <translation id="2454524890947537054">Да се одобри ли заявката за мрежата?</translation>
+<translation id="2454913962395846391">Автоматична часова зона</translation>
 <translation id="245650153866130664">За да се опреснява пропускът автоматично, поставете отметка за „Запомняне на паролата“. Паролата ще бъде съхранена само на устройството ви.</translation>
 <translation id="2456794251167091176">Импортирането завърши</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" /> иска да копира файлове от „<ph name="VOLUME_NAME" />“.</translation>
@@ -2039,7 +2040,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2462332841984057083">Steam вече се настройва. Изчакайте процесът да завърши.</translation>
 <translation id="2462724976360937186">Идентификатор (ИД) на ключ на сертифициращия орган</translation>
 <translation id="2462752602710430187">Добавихте <ph name="PRINTER_NAME" /></translation>
-<translation id="2465517991293145960">Понастоящем зададената часова зона е <ph name="TIME_ZONE_ENTRY" />. За автоматичното ѝ актуализиране е необходим достъп до местоположението. <ph name="BEGIN_LINK" />Включване на достъпа до местоположението<ph name="END_LINK" /></translation>
 <translation id="2467755475704469005">Няма открити устройства. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">Ускоряване на превъртането със сензорния панел</translation>
 <translation id="2468205691404969808">Използва „бисквитки“ за запомняне на предпочитанията ви дори ако не посещавате тези страници</translation>
@@ -2094,7 +2094,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2497852260688568942">Синхронизирането е деактивирано от администратора ви</translation>
 <translation id="2498539833203011245">Намаляване</translation>
 <translation id="2498765460639677199">Огромен</translation>
-<translation id="2499065671910214321">Използване на местоположението. Позволете на ChromeOS, приложенията за Android, уебсайтовете и услугите да ползват местоположението на това устройство, ако имат съответното разрешение. Google може периодично да събира данни за местоположението и да ги използва по анонимен начин с цел подобряване на точността му и базиращите се на него услуги. <ph name="BEGIN_LINK1" />Научете повече за местоположението<ph name="BEGIN_LINK1_END" />Научете повече<ph name="END_LINK1" /></translation>
 <translation id="2500471369733289700">Блокирано с цел защита на поверителността ви</translation>
 <translation id="2501173422421700905">Сертификатът не е активен</translation>
 <translation id="2501278716633472235">Назад</translation>
@@ -2720,6 +2719,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2963151496262057773">Следната приставка е блокирала: <ph name="PLUGIN_NAME" />. Искате ли да я спрете?</translation>
 <translation id="2964193600955408481">Деактивиране на Wi-Fi</translation>
 <translation id="2964245677645334031">Видимост за „Споделяне наблизо“</translation>
+<translation id="2965227184985674128">Да се включи ли достъпът до микрофона?</translation>
 <translation id="2966705348606485669">Още опции за папката с отметки „<ph name="FOLDER_TITLE" />“</translation>
 <translation id="2966937470348689686">Управление на предпочитанията за Android</translation>
 <translation id="2967791329697639454">По-бърз и шифрован вход</translation>
@@ -3396,7 +3396,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3491669675709357988">Профилът на детето ви не е настроен за работа с родителски контроли във Family Link. Можете да добавите родителски контроли, след като завършите настройването. Ще намерите информация за тях в приложението Explore.</translation>
 <translation id="3491678231052507920">Сайтовете обикновено използват устройствата и данните ви за виртуална реалност, за да можете да се присъединявате към сесии за VR</translation>
 <translation id="3493043608231401654">Премахване на „<ph name="TAB_TITLE" />“ от групата раздели</translation>
-<translation id="3493463599276143766">Нито един уебсайт няма разрешение да използва камерата ви</translation>
 <translation id="3493486281776271508">Необходима е връзка с интернет</translation>
 <translation id="3493881266323043047">Валидност</translation>
 <translation id="3495496470825196617">Неактивност при зареждане</translation>
@@ -3791,8 +3790,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3765055238058255342">този тип карта</translation>
 <translation id="3765246971671567135">Правилото за офлайн демонстрационен режим не можа да бъде прочетено.</translation>
 <translation id="3765696567014520261">Сайтовете не могат да използват „бисквитките“ ви, за да следят активността ви при сърфиране в различни сайтове, например за да персонализират реклами. Някои функции в някои сайтове може да не работят</translation>
-<translation id="3766265338450715550"><ph name="BEGIN_PARAGRAPH1" />Услугата на Google за местоположение използва източници като Wi-Fi, мобилни мрежи и сензори, за да определя къде се намира устройството ви.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />По всяко време можете да забраните достъпа до местоположението за ChromeOS и Android на устройството си, като отворите „Настройки &gt; Поверителност и сигурност &gt; Контроли за поверителност &gt; Достъп до местоположението“. Също така имате възможност да изключите функцията за определяне на местоположението за Android чрез Wi-Fi, мобилни мрежи и сензори, като деактивирате настройката „Подобряване на точността на местоположението“, която се намира в същото меню под „Разширени настройки за местоположението“.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3766687283066842296">Научете повече за Phone Hub</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Хц</translation>
 <translation id="3767835232661747729">Засега можете да споделяте пароли само с членове на семейството. <ph name="BEGIN_LINK" />Поканете членове на семейството<ph name="END_LINK" /> в групата си и се възползвайте в по-голяма степен от продуктите и абонаментите си във всички услуги на Google.</translation>
@@ -4132,7 +4129,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4001540981461989979">Открояване на курсора на мишката при преместване</translation>
 <translation id="4002347779798688515">Изтегленият потребителски профил може да не е използваем, ако доставчикът на мрежови услуги е заключен. Обърнете се към него за поддръжка.</translation>
 <translation id="4002440992267487163">Настройване на ПИН код</translation>
-<translation id="4003647532210142956">Текущият график е зададен на <ph name="SUNRISE" /> – <ph name="SUNSET" />. Ако искате графикът за залеза и изгрева да се актуализира автоматично, <ph name="BEGIN_LINK" />предоставете достъп до местоположението<ph name="END_LINK" /></translation>
 <translation id="4005817994523282006">Метод за установяване на часовата зона</translation>
 <translation id="4007856537951125667">Скриване на преките пътища</translation>
 <translation id="4010036441048359843">Включване на открояването</translation>
@@ -4224,7 +4220,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4078738236287221428">Агресивно</translation>
 <translation id="4078903002989614318">Опции за сортиране и списъчен изглед</translation>
 <translation id="4079140982534148664">Използване на подобрената проверка на правописа</translation>
-<translation id="4082333918978320301">Нито един уебсайт няма разрешение да използва микрофона ви</translation>
 <translation id="4083735423615351075">Разделите ще останат отворени на това устройство, но групата ще бъде изтрита от всички устройства, на които сте влезли в Chrome с този профил в Google.</translation>
 <translation id="4084682180776658562">Отметка</translation>
 <translation id="4084835346725913160">Затваряне на „<ph name="TAB_NAME" />“</translation>
@@ -4473,7 +4468,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4278779213160967034">Този процес може да отнеме няколко минути. Файловете се изтеглят.</translation>
 <translation id="4279129444466079448">На това устройство можете да инсталирате до <ph name="PROFILE_LIMIT" /> профила на електронната SIM карта. За да добавите друг такъв профил, първо премахнете съществуващ.</translation>
 <translation id="4280325816108262082">Връзката на устройството ще бъде прекратена автоматично, когато бъде изключено или не се използва</translation>
-<translation id="4281637354026226955">Позволете на ChromeOS и на приложенията и услугите за Android да ползват местоположението на устройството ви, ако имат съответното разрешение. Google може периодично да събира данни за местоположението и да ги използва по анонимен начин с цел подобряване на точността му и базиращите се на него услуги.</translation>
 <translation id="4281789858103154731">Създаване</translation>
 <translation id="4281844954008187215">Условия за ползване</translation>
 <translation id="4281849573951338030">Персонализиране на бутоните на писалката</translation>
@@ -5566,6 +5560,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5121052518313988218">Операционната система в контейнера ви за Linux вече не се поддържа. Тя ще престане да получава актуализации на сигурността и поправки на програмни грешки и функции, които сега работят, може неочаквано да престанат да функционират. За да продължите да използвате Linux, моля, надстройте до най-новата версия.</translation>
 <translation id="5121130586824819730">Твърдият ви диск е пълен.  Моля, запазете на друго място или освободете още пространство на диска.</translation>
 <translation id="5123433949759960244">Баскетболна топка</translation>
+<translation id="5125714798187802869">Активиране</translation>
 <translation id="5125751979347152379">Невалиден URL адрес.</translation>
 <translation id="5125967981703109366">Всичко за тази карта</translation>
 <translation id="512642543295077915">Клавиш „търсене“ + Backspace</translation>
@@ -5891,6 +5886,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5376094717770783089">Иска достъп</translation>
 <translation id="5376169624176189338">Кликнете, за да се върнете назад. Задръжте, за да видите историята.</translation>
 <translation id="5376931455988532197">Файлът е твърде голям</translation>
+<translation id="5377367976106153749">Да се включи ли достъпът до камерата?</translation>
 <translation id="5379140238605961210">Достъпът до микрофона да продължи да се блокира</translation>
 <translation id="5380424552031517043">Разрешението „<ph name="PERMISSION" />“ бе премахнато</translation>
 <translation id="5380526436444479273">Изчакайте няколко минути и опитайте отново</translation>
@@ -6269,7 +6265,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5646558797914161501">Бизнесмен</translation>
 <translation id="5648021990716966815">Жак за микрофон</translation>
 <translation id="5648166631817621825">Последните 7 дни</translation>
-<translation id="5649182603113127372">Използване на местоположението. Позволете на ChromeOS, приложенията за Android, уебсайтовете и услугите да ползват местоположението на устройството ви, ако имат съответното разрешение. Google може периодично да събира данни за местоположението и да ги използва по анонимен начин с цел подобряване на точността му и базиращите се на него услуги. <ph name="BEGIN_LINK1" />Научете повече за местоположението<ph name="BEGIN_LINK1_END" />Научете повече<ph name="END_LINK1" /></translation>
 <translation id="5650537073531199882">Попълване на формуляра</translation>
 <translation id="5651308944918885595">Откриваемост за „Споделяне наблизо“</translation>
 <translation id="5653154844073528838">Имате <ph name="PRINTER_COUNT" /> запазени принтера.</translation>
@@ -6293,7 +6288,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5667546120811588575">Google Play се настройва...</translation>
 <translation id="5668351004957198136">Не отговаря на условията</translation>
 <translation id="5669863904928111203">ChromeOS не е актуална</translation>
-<translation id="5670011773727436698">Управление на разрешенията за достъп до местоположението за сайтовете в Chrome</translation>
 <translation id="5671641761787789573">Изображенията са блокирани</translation>
 <translation id="5671658447180261823">Премахване на предложението <ph name="SUGGESTION_NAME" /></translation>
 <translation id="567210741546439261">&amp;Отметки и списъци</translation>
@@ -6322,7 +6316,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="56907980372820799">Свързване на данните</translation>
 <translation id="5691581861107245578">Получавайте предложения за емоджи въз основа на това, което въвеждате</translation>
 <translation id="5691772641933328258">Отпечатъкът не бе разпознат</translation>
-<translation id="5693237475389615913">Управление на разрешенията за достъп до микрофона за сайтовете в Chrome</translation>
 <translation id="5693255400847650006">Микрофонът се използва</translation>
 <translation id="5695184138696833495">Отстраняване на грешки в приложения за Android през ADB за Linux</translation>
 <translation id="5696143504434933566">Подаване на сигнал за злоупотреба за <ph name="EXTENSION_NAME" /></translation>
@@ -6345,7 +6338,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5708171344853220004">Основно име от Microsoft</translation>
 <translation id="5709557627224531708">Задаване на Chrome като браузър по подразбиране</translation>
 <translation id="5711010025974903573">Регистрационни файлове за услугата</translation>
-<translation id="5711324642850167289">Нито едно приложение няма разрешение да използва микрофона ви</translation>
 <translation id="5711983031544731014">Не може да се отключи. Въведете паролата си.</translation>
 <translation id="5712153969432126546">Сайтовете понякога публикуват PDF файлове, като например документи, договори и формуляри</translation>
 <translation id="571222594670061844">Сайтовете могат да показват подкани за вход от услуги за идентифициране</translation>
@@ -6420,8 +6412,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5776415697119024904"><ph name="DEVICE_NAME" /> (стандартно за системата)</translation>
 <translation id="5776450228446082914">Списъкът с уебсайтове, които могат да се отварят във всеки от двата браузъра.</translation>
 <translation id="5776571780337000608">От файловия мениджър или други приложения можете да отваряте и редактирате поддържани файлове с това приложение. За да контролирате кои файлове да се отварят с него по подразбиране, <ph name="BEGIN_LINK" />научете как да зададете стандартни приложения на устройството си<ph name="END_LINK" />.</translation>
-<translation id="5776884611062957102">Услугата на Google за местоположение подобрява точността на местоположението, като използва Wi‑Fi, мобилни мрежи и сензори, за да определи къде се намирате. Може периодично да събираме данни за местоположението и да ги използваме по анонимен начин с цел подобряване на точността му и базиращите се на него услуги.
-    При изключване на тази функция Android ще определя местоположението само посредством IP адреса. Това може да се отрази на точността на местоположението, използвано от приложения като Карти.</translation>
 <translation id="5778491106820461378">Можете да управлявате профилите в Google, в които сте влезли, от <ph name="LINK_BEGIN" />настройките<ph name="LINK_END" />. Разрешенията, които сте предоставили на уебсайтове и приложения, може да важат за всички профили. Ако не искате сайтове или приложения да имат достъп до информацията в профила ви, можете да влезете в <ph name="DEVICE_TYPE" /> като гост.</translation>
 <translation id="5780011244986845107">Избраната от вас папка съдържа поверителни файлове. Наистина ли искате да предоставите на <ph name="APP_NAME" /> постоянен достъп за четене от тази папка?</translation>
 <translation id="5780940414249100901">Изпращане на данни за употребата и диагностиката. Понастоящем това устройство автоматично изпраща до Google диагностична информация и данни за употребата на устройството и приложенията. Тази информация няма да се използва за идентифициране на детето ви, а ще послужи за подобряване на стабилността на системата и приложенията и др. Някои обобщени данни също така ще подпомогнат приложенията и партньорите на Google, напр. програмистите за Android. Тази <ph name="BEGIN_LINK1" />настройка<ph name="END_LINK1" /> е наложена от собственика. Ако настройката „Допълнителна активност в мрежата и приложенията“ е включена за детето ви, тези данни може да се запазват в профила му в Google. <ph name="BEGIN_LINK2" />Научете повече за показателите<ph name="BEGIN_LINK2_END" />Научете повече<ph name="END_LINK2" /></translation>
@@ -6511,7 +6501,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5836999627049108525">Изходен език</translation>
 <translation id="583756221537636748">Кутия</translation>
 <translation id="5840680448799937675">Файловете винаги ще се споделят офлайн</translation>
-<translation id="5841167715783969407">Автоматична часова зона въз основа на Wi-Fi или мобилни мрежи</translation>
 <translation id="5841270259333717135">Конфигуриране на Ethernet</translation>
 <translation id="5842497610951477805">Активиране на Bluetooth</translation>
 <translation id="5844284118433003733">Тези данни се свързват с профила ви в Google, когато сте влезли в него, с цел защита в услугите ни (например повишаване на нивото на защита в Gmail след инцидент, свързан със сигурността).</translation>
@@ -6802,7 +6791,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6059652578941944813">Йерархия на сертификатите</translation>
 <translation id="6059925163896151826">USB устройства</translation>
 <translation id="6061408389284235459">До <ph name="DEVICE_NAME" /> бе изпратено известие</translation>
-<translation id="6062513606899361544">Нито едно приложение няма разрешение да използва местоположението ви</translation>
 <translation id="6063284707309177505">Създаване на QR код</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Забележка<ph name="END_BOLD" />: Възможно е да бъде осъществен достъп до персоналните резултати на <ph name="SUPERVISED_USER_NAME" /> и от човек с подобен глас или чрез запис. С цел икономия на батерията от настройките на Асистент в профила на <ph name="SUPERVISED_USER_NAME" /> можете да изберете „Ok Google“ да активира услугата само когато устройството е свързано с източник на захранване.</translation>
 <translation id="6064217302520318294">Заключване на екрана</translation>
@@ -7542,7 +7530,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6636623428211296678">Разгледайте още настройки по-долу или завършете сега</translation>
 <translation id="6639554308659482635">Памет за SQLite</translation>
 <translation id="6640268266988685324">Отворен раздел</translation>
-<translation id="6642424629311432059">Позволете на ChromeOS и на приложенията и услугите за Android да ползват местоположението на това устройство, ако имат съответното разрешение. Google може периодично да събира данни за местоположението и да ги използва по анонимен начин с цел подобряване на точността му и базиращите се на него услуги.</translation>
 <translation id="6642720633335369752">За да видите всички отворени прозорци на приложения, прекарайте пръст нагоре от долната част на екрана и задръжте.</translation>
 <translation id="664290675870910564">Избиране на мрежа</translation>
 <translation id="6643016212128521049">Изчистване</translation>
@@ -7645,7 +7632,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6713441551032149301">Натиснете и задръжте клавиша за стартовия панел, за да превключвате между функционалните клавиши и системните клавиши от най-горния ред</translation>
 <translation id="6713668088933662563">Никога да не се предлага превод за тези езици</translation>
 <translation id="6715803357256707211">Възникна грешка при инсталирането на приложението за Linux. За подробности кликнете върху известието.</translation>
-<translation id="6716049856796700977">Местоположението ви не може да се използва, но е възможно да е видимо за приложенията и уебсайтовете чрез IP адреса ви. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">Връзката с мрежата бе прекъсната. Проверете я или опитайте с друга Wi-Fi мрежа.</translation>
 <translation id="6718849325281682232">Цветовете на темите за Chrome са обновени, за да работят по-добре за всички – както в тъмен, така и в светъл режим</translation>
 <translation id="671928215901716392">Заключване на екрана</translation>
@@ -7676,7 +7662,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6740234557573873150">„<ph name="FILE_NAME" />“ е на пауза</translation>
 <translation id="6741063444351041466"><ph name="BEGIN_LINK" />Администраторът ви<ph name="END_LINK" /> е изключил „Безопасно сърфиране“</translation>
 <translation id="6742629250739345159">Автоматично създава надписи за мултимедията в браузъра Chrome. Аудиозаписите и надписите се обработват локално и остават на устройството ви.</translation>
-<translation id="6742971109086735351">Достъпът до местоположението е изключен от настройките на ChromeOS</translation>
 <translation id="6743841972744298686">Настройки за синхронизиране</translation>
 <translation id="6745592621698551453">Актуализиране сега</translation>
 <translation id="6746124502594467657">Придвижване надолу</translation>
@@ -8390,6 +8375,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7289049772085228972">Разполагате с най-високото ниво на сигурност на Chrome</translation>
 <translation id="7289303553784750393">Ако сте онлайн, но проблемът не се отстрани, можете да изпробвате други начини за продължаване към <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> иска разрешение. Натиснете F6, за да отговорите</translation>
+<translation id="7290005709287747471">Деактивиране</translation>
 <translation id="7290242001003353852">Тази услуга за вход, хоствана от <ph name="SAML_DOMAIN" />, осъществява достъп до камерата ви.</translation>
 <translation id="7292067737327289208"><ph name="BEGIN_LINK" />Браузърът ви се управлява<ph name="END_LINK" /> от организацията ви, а <ph name="BEGIN_LINK" />потребителският ви профил<ph name="END_LINK" /> – от <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="7292147651179697920">Помолете родителя си да разреши достъпа от настройките</translation>
@@ -8529,7 +8515,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7396017167185131589">Споделените папки ще се показват тук</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> ще се изпълнява при стартиране на системата и ще продължи да работи на заден план дори след като затворите всички други прозорци на <ph name="PRODUCT_NAME" />.</translation>
 <translation id="7399045143794278225">Персонализиране на синхронизирането</translation>
-<translation id="7399155934146900496">Нито един уебсайт няма разрешение да използва местоположението ви</translation>
 <translation id="7399616692258236448">Заявките за местоположение се блокират автоматично за всички сайтове освен за онези, за които ги разрешите</translation>
 <translation id="7399802613464275309">Проверка на безопасността</translation>
 <translation id="7400418766976504921">URL адрес</translation>
@@ -8656,8 +8641,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7478658909253570368">Да не се разрешава на сайтовете да се свързват със серийни портове</translation>
 <translation id="7479221278376295180">Общ преглед на използваното място в хранилището</translation>
 <translation id="747981547666531654">Установена е връзка с устройства с Bluetooth на име <ph name="FIRST_DEVICE" /> и <ph name="SECOND_DEVICE" /></translation>
-<translation id="7480299112230998727"><ph name="BEGIN_PARAGRAPH1" />Услугата на Google за местоположение използва източници като Wi-Fi, мобилни мрежи и сензори, за да определя къде се намира това устройство.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />По всяко време можете да забраните достъпа до местоположението за ChromeOS и Android на това устройство, като отворите „Настройки &gt; Поверителност и сигурност &gt; Контроли за поверителност &gt; Достъп до местоположението“. Също така имате възможност да изключите функцията за определяне на местоположението за Android чрез Wi-Fi, мобилни мрежи и сензори, като деактивирате настройката „Подобряване на точността на местоположението“, която се намира в същото меню под „Разширени настройки за местоположението“.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7481312909269577407">Напред</translation>
 <translation id="7481358317100446445">Готова</translation>
 <translation id="748138892655239008">Основни ограничения на сертификата</translation>
@@ -8749,7 +8732,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7552846755917812628">Изпробвайте следните съвети:</translation>
 <translation id="7553012839257224005">Контейнерът за Linux се проверява</translation>
 <translation id="7553242001898162573">Въведете паролата си</translation>
-<translation id="7553487223484420820">Местоположението ви може да се използва от приложенията, уебсайтовете и системните услуги, които имат разрешение за достъп до него. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="755472745191515939">Администраторът ви не разрешава този език</translation>
 <translation id="7554791636758816595">Нов раздел</translation>
 <translation id="7556033326131260574">Smart Lock не можа да потвърди профила ви. Въведете паролата си, за да влезете.</translation>
@@ -9682,7 +9664,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8224427620313426549">Профилът ви в(ъв) <ph name="DOMAIN_LINK" /> няма да бъде изтрит</translation>
 <translation id="8225046344534779393">Проверете връзката с интернет</translation>
 <translation id="8225265270453771718">Споделяне на прозорец на приложение</translation>
-<translation id="8225516926291976401">Местоположението ви може да се използва само от системните услуги, но е възможно да е видимо за приложенията и уебсайтовете чрез IP адреса ви. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="8226222018808695353">Забранено</translation>
 <translation id="8226619461731305576">Опашка</translation>
 <translation id="8227119283605456246">Прикачване на файл</translation>
@@ -9764,7 +9745,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8275038454117074363">Импортиране</translation>
 <translation id="8275080796245127762">Обаждане от устройството ви</translation>
 <translation id="8275339871947079271">Преместете паролата в профила си в Google, за да имате сигурен достъп до нея, когато сте влезли в него</translation>
-<translation id="8276242035951017580">Нито едно приложение няма разрешение да използва камерата ви</translation>
 <translation id="8276560076771292512">Изпразване на кеша и твърдо презареждане</translation>
 <translation id="8276850948802942358">Научете повече за предоставянето на временно разрешение на даден сайт да използва „бисквитки“ на трети страни</translation>
 <translation id="8277907305629781277">Създадохте този ключ за достъп на <ph name="DATE" /></translation>
@@ -10154,7 +10134,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8573111744706778015">Въведете uo7, за да изпишете ươ</translation>
 <translation id="8574990355410201600">Разрешаване винаги на звука от <ph name="HOST" /></translation>
 <translation id="8575286410928791436">Натиснете и задръжте <ph name="KEY_EQUIVALENT" /> за изход</translation>
-<translation id="8575608435630445689">Подобряване на точността на местоположението (само за Android)</translation>
 <translation id="8576359558126669548">Още за блокирането на „бисквитките“ на трети страни в режим „инкогнито“</translation>
 <translation id="8576885347118332789">{NUM_TABS,plural, =1{Добавяне на раздела към списъка за четене}other{Добавяне на разделите към списъка за четене}}</translation>
 <translation id="8577052309681449949">Автоматични кликвания, размер и цвят на курсора и др.</translation>

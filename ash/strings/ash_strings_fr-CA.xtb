@@ -212,6 +212,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1747827819627189109">Clavier à l'écran activé</translation>
 <translation id="1749109475624620922">La fenêtre <ph name="WINDOW_TITLE" /> est attribuée à tous les bureaux</translation>
 <translation id="1750088060796401187">Uniquement <ph name="MAX_DESK_LIMIT" /> bureaux sont autorisés. Retirez un bureau pour en ouvrir un nouveau.</translation>
+<translation id="1755408179247123630">Activer Sélectionner pour énoncer?</translation>
 <translation id="1755556344721611131">Application de diagnostics</translation>
 <translation id="1756833229520115364">Impossible d'enregistrer ce modèle. Trop de fenêtres ou d'onglets sont ouverts.</translation>
 <translation id="1757857692711134412">Désactivée jusqu'au couchant</translation>
@@ -950,6 +951,7 @@ Un appareil connecté.</translation>
 <translation id="4628757576491864469">Appareils</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, note <ph name="RATING_SCORE" /></translation>
 <translation id="4633636853437260449">Appuyez sur Ctrl+W pour supprimer</translation>
+<translation id="4635501805800894201">{0,plural, =0{Mettez à jour l'appareil vers la version précédente maintenant}=1{Mettez à jour l'appareil vers la version précédente dans un délai d'une seconde}one{Mettez à jour l'appareil vers la version précédente dans un délai de # seconde}other{Mettez à jour l'appareil vers la version précédente dans un délai de # secondes}}</translation>
 <translation id="4642092649622328492">Effectuer une capture d'écran partielle</translation>
 <translation id="4644727592819780893">La surface de capture est trop petite pour remplir l'aperçu de la caméra</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, recommandation d'application</translation>
@@ -979,6 +981,7 @@ Un appareil connecté.</translation>
 <translation id="4735944890391795473">Bureau 12</translation>
 <translation id="473775607612524610">Mise à jour</translation>
 <translation id="4740516757091333363">Supprimer le bureau enregistré?</translation>
+<translation id="4746798685375253449">{0,plural, =1{Mettez à jour l'appareil vers la version précédente dans un délai d'un jour}one{Mettez à jour l'appareil vers la version précédente dans un délai de # jour}other{Mettez à jour l'appareil vers la version précédente dans un délai de # jours}}</translation>
 <translation id="4747410141429390146">Veuillez déverrouiller pour afficher les notifications</translation>
 <translation id="4752784485658729358">Vous pouvez utiliser jusqu'à six bureaux. Retirez un bureau pour en enregistrer un nouveau.</translation>
 <translation id="4759238208242260848">Téléchargements</translation>
@@ -1084,6 +1087,9 @@ Un appareil connecté.</translation>
 <translation id="5092436659250499817">Activer ou désactiver le rétroéclairage du clavier</translation>
 <translation id="5094577350232361255">à propos de</translation>
 <translation id="5095136268899496849">Personnalisez votre <ph name="PRODUCT_NAME" /> dans les paramètres. Essayez de modifier votre fond d'écran ou de définir un écran de veille.</translation>
+<translation id="5096125376090473584">Pour entendre le texte lu à voix haute, sélectionnez l'icône Sélectionner pour énoncer dans la partie inférieure de l'écran, puis mettez du texte en évidence.
+
+Vous pouvez également utiliser le raccourci-clavier. Tout d'abord, mettez le texte en évidence, puis appuyez sur <ph name="MODIFIER" />+s.</translation>
 <translation id="509790653408515442">Lorsque vous diffusez les applications de votre téléphone, elles apparaissent ici</translation>
 <translation id="5098537242461068432">Bureau et fenêtres rouvertes</translation>
 <translation id="5103975065730779239">Jusqu'à <ph name="END_TIME_EXPRESSION" /></translation>
@@ -1314,6 +1320,7 @@ Aucun appareil n'est connecté.</translation>
 <translation id="5916646100036936191">Nouvelle notification, <ph name="NOTIFICATION_COUNT" /> au total</translation>
 <translation id="5916664084637901428">Activé</translation>
 <translation id="5920710855273935292">Le microphone est désactivé.</translation>
+<translation id="5928083197428724029">Mise à jour requise par <ph name="MANAGER" /></translation>
 <translation id="5946788582095584774">La fonctionnalité <ph name="FEATURE_NAME" /> est activée.</translation>
 <translation id="5947494881799873997">Rétablir</translation>
 <translation id="595202126637698455">Suivi des performances activé</translation>
@@ -1403,7 +1410,6 @@ Aucun appareil n'est connecté.</translation>
 <translation id="6232416233079464213">De <ph name="SESSION_NAME" /></translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> utilise actuellement votre appareil photo et votre microphone</translation>
 <translation id="6237231532760393653">1X</translation>
-<translation id="62380141479352646">Pile faible. L'Économiseur de pile est activé.</translation>
 <translation id="6240603910551255087">Le bouton du haut</translation>
 <translation id="6247728804802644171">Ouvrir les notifications</translation>
 <translation id="6249795363855770621">Impossible de marquer la tâche comme terminée. Réessayez une fois en ligne.</translation>
@@ -1432,6 +1438,7 @@ Aucun appareil n'est connecté.</translation>
 <translation id="6376931439017688372">Le Bluetooth est activé</translation>
 <translation id="6378515133128829137">Épingler la fenêtre à droite</translation>
 <translation id="6381109794406942707">Pour déverrouiller l'appareil, entrez votre NIP.</translation>
+<translation id="6381305031890976705">{0,plural, =1{Mettez à jour l'appareil vers la version précédente dans un délai d'une heure}one{Mettez à jour l'appareil vers la version précédente dans un délai de # heure}other{Mettez à jour l'appareil vers la version précédente dans un délai de # heures}}</translation>
 <translation id="638716340450135524">Activer l'accès à l'appareil photo</translation>
 <translation id="639644700271529076">Touche de verrouillage des majuscules désactivée</translation>
 <translation id="6406458002328242616">Modifier la minuterie. <ph name="FOCUS_DURATION" />.</translation>
@@ -1454,6 +1461,7 @@ Aucun appareil n'est connecté.</translation>
 <translation id="6459472438155181876">Extension de l'écran à <ph name="DISPLAY_NAME" /></translation>
 <translation id="6464094930452079790">Images</translation>
 <translation id="6467290994038932560">Activées pour <ph name="GAME_APP_NAME" /></translation>
+<translation id="6468406072297048412">{0,plural, =1{Mettez à jour l'appareil vers la version précédente dans un délai d'une minute}one{Mettez à jour l'appareil vers la version précédente dans un délai de # minute}other{Mettez à jour l'appareil vers la version précédente dans un délai de # minutes}}</translation>
 <translation id="6469104339369989396">Basculer le point d'accès</translation>
 <translation id="6477681113376365978">Impossible de télécharger le fichier</translation>
 <translation id="6482559668224714696">Loupe en mode plein écran</translation>
@@ -1577,6 +1585,7 @@ Nouvelle installation</translation>
 <translation id="6917259695595127329">Dernière mise à jour des tâches : <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">Votre carte à puce n'a pas été reconnue. Réessayez.</translation>
 <translation id="692135145298539227">supprimer</translation>
+<translation id="6921427376813842559">Mettez à jour l'appareil</translation>
 <translation id="6929081673585394903">Afficher les commandes</translation>
 <translation id="6931576957638141829">Enregistrer dans</translation>
 <translation id="6942518653766415536">Menu du format d'enregistrement</translation>
@@ -1664,6 +1673,7 @@ Nouvelle installation</translation>
 <translation id="7303365578352795231">Réponse sur un autre appareil.</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Votre administrateur est en train de réinitialiser votre carte eSIM. Cette opération peut prendre quelques minutes.</translation>
+<translation id="7312761820869643657">Mettre à jour l'appareil vers la version précédente</translation>
 <translation id="7313193732017069507">Développer le bouton caméra</translation>
 <translation id="7330397557116570022">Accédez à un champ de texte pour utiliser la dictée</translation>
 <translation id="7331646370422660166">alt+flèche vers le bas</translation>
@@ -1813,6 +1823,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">Pour utiliser l'appareil en tant qu'invité, vous devez vous déconnecter, puis sélectionner Naviguer en tant qu'invité en bas de l'écran.</translation>
 <translation id="7866482334467279021">activé</translation>
+<translation id="7866727328666668290">Dernier onglet ouvert</translation>
 <translation id="7872786842639831132">Désactivé</translation>
 <translation id="7875575368831396199">Il semble que le Bluetooth est désactivé sur votre <ph name="DEVICE_TYPE" />. Veuillez activer le Bluetooth pour utiliser Phone Hub.</translation>
 <translation id="7884446017008693258">Paramètres du point d’accès</translation>
@@ -2138,7 +2149,6 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="9080132581049224423">Balayez l'écran vers le haut pour accéder à l'écran d'accueil</translation>
 <translation id="9080206825613744995">Le microphone est en cours d'utilisation.</translation>
 <translation id="9083324773537346962">Version système d'exploitation</translation>
-<translation id="908451241440060346">Les notifications sont mises en sourdine lorsque le mode Ne pas déranger est activé</translation>
 <translation id="9084606467167974638">Basculer la position du menu</translation>
 <translation id="9085962983642906571">Votre pile reste à 80 % pour prolonger son autonomie tant que l'appareil est branché.</translation>
 <translation id="9089416786594320554">Méthodes d'entrée</translation>
@@ -2179,6 +2189,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="925832987464884575">Masquer les aperçus</translation>
 <translation id="938407504481277932">Bureau actuel : <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. Bureau <ph name="DESK_INDEX" /> de <ph name="DESK_COUNT" />.</translation>
 <translation id="938963181863597773">Qu'y a-t-il dans mon agenda?</translation>
+<translation id="94468042118567862">L'appareil n'est pas à jour</translation>
 <translation id="945383118875625837">Faites glisser le lien vers la barre de favoris</translation>
 <translation id="945522503751344254">Envoyer un commentaire à Google</translation>
 <translation id="951991426597076286">Refuser</translation>

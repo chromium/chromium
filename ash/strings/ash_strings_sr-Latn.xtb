@@ -212,6 +212,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1747827819627189109">Tastatura na ekranu je omogućena</translation>
 <translation id="1749109475624620922">Prozor <ph name="WINDOW_TITLE" /> je dodeljen svim radnim površinama</translation>
 <translation id="1750088060796401187">Maksimalni broj radnih površina je <ph name="MAX_DESK_LIMIT" />. Uklonite radnu površinu da biste otvorili novu.</translation>
+<translation id="1755408179247123630">Želite da uključite uslugu Izaberite za govor?</translation>
 <translation id="1755556344721611131">Aplikacija Dijagnostika</translation>
 <translation id="1756833229520115364">Čuvanje šablona nije uspelo. Ima previše prozora ili kartica.</translation>
 <translation id="1757857692711134412">Isključeno do sumraka</translation>
@@ -1088,6 +1089,9 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="5092436659250499817">Uključi/isključi pozadinsko osvetljenje tastature</translation>
 <translation id="5094577350232361255">osnovni podaci</translation>
 <translation id="5095136268899496849">Prilagodite i personalizujte <ph name="PRODUCT_NAME" /> u Podešavanjima. Probajte da promenite pozadinu ili podesite čuvar ekrana.</translation>
+<translation id="5096125376090473584">Da biste čuli čitanje teksta naglas, izaberite ikonu Izaberite za govor u dnu ekrana, pa istaknite tekst.
+
+Možete da koristite i tastersku prečicu. Prvo istaknite tekst, pa pritisnite <ph name="MODIFIER" /> + s.</translation>
 <translation id="509790653408515442">Kada strimujete aplikacije sa telefona, one se prikazuju ovde</translation>
 <translation id="5098537242461068432">Radna površina i prozori su ponovo otvoreni</translation>
 <translation id="5103975065730779239">Do <ph name="END_TIME_EXPRESSION" /></translation>
@@ -1408,7 +1412,6 @@ Nijedan uređaj nije povezan.</translation>
 <translation id="6232416233079464213">Izvor: <ph name="SESSION_NAME" /></translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> trenutno koristi kameru i mikrofon</translation>
 <translation id="6237231532760393653">1X</translation>
-<translation id="62380141479352646">Slaba baterija. Ušteda baterije je uključena.</translation>
 <translation id="6240603910551255087">Gornje dugme</translation>
 <translation id="6247728804802644171">Otvorite obaveštenja</translation>
 <translation id="6249795363855770621">Označavanje stavke kao da je dovršena nije uspelo. Probajte ponovo kada budete onlajn.</translation>
@@ -1823,6 +1826,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">Da biste koristili uređaj kao gost, treba da se odjavite, pa da izaberete Pregledaj kao gost u dnu ekrana.</translation>
 <translation id="7866482334467279021">uključeno</translation>
+<translation id="7866727328666668290">Poslednja otvorena kartica</translation>
 <translation id="7872786842639831132">Isključeno</translation>
 <translation id="7875575368831396199">Izgleda da je isključen Bluetooth na uređaju <ph name="DEVICE_TYPE" />. Uključite Bluetooth da biste koristili Phone Hub.</translation>
 <translation id="7884446017008693258">Podešavanja hotspota</translation>
@@ -2149,7 +2153,6 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="9080132581049224423">Prevucite nagore da biste otišli na početni ekran</translation>
 <translation id="9080206825613744995">Mikrofon se koristi.</translation>
 <translation id="9083324773537346962">Verzija operativnog sistema</translation>
-<translation id="908451241440060346">Obaveštenja se ignorišu kada je uključen režim Ne uznemiravaj</translation>
 <translation id="9084606467167974638">Promenite položaj menija</translation>
 <translation id="9085962983642906571">Baterija se održava na nivou od 80% dok je priključena da bi se produžilo trajanje baterije.</translation>
 <translation id="9089416786594320554">Metodi unosa</translation>

@@ -952,6 +952,7 @@
 <translation id="4628757576491864469">ડિવાઇસ</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, સ્ટાર રેટિંગ <ph name="RATING_SCORE" /></translation>
 <translation id="4633636853437260449">ડિલીટ કરવા માટે Ctrl+W દબાવો</translation>
+<translation id="4635501805800894201">{0,plural, =0{હવે પાછલા વર્ઝન પર ડિવાઇસ અપડેટ કરો}=1{1 સેકન્ડની અંદર પાછલા વર્ઝન પર ડિવાઇસ અપડેટ કરો}one{# સેકન્ડની અંદર પાછલા વર્ઝન પર ડિવાઇસ અપડેટ કરો}other{# સેકન્ડની અંદર પાછલા વર્ઝન પર ડિવાઇસ અપડેટ કરો}}</translation>
 <translation id="4642092649622328492">આંશિક સ્ક્રીનશૉટ લો</translation>
 <translation id="4644727592819780893">વિસ્તાર ઘણો નાનો હોવાને કારણે કૅમેરામાં બંધ બેસી શકે તેમ નથી</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, ઍપ માટે સુઝાવ</translation>
@@ -981,6 +982,7 @@
 <translation id="4735944890391795473">ડેસ્ક 12</translation>
 <translation id="473775607612524610">અપડેટ કરો</translation>
 <translation id="4740516757091333363">શું સાચવેલી ડેસ્ક ડિલીટ કરીએ?</translation>
+<translation id="4746798685375253449">{0,plural, =1{એક દિવસની અંદર પાછલા વર્ઝન પર ડિવાઇસ અપડેટ કરો}one{# દિવસની અંદર પાછલા વર્ઝન પર ડિવાઇસ અપડેટ કરો}other{# દિવસની અંદર પાછલા વર્ઝન પર ડિવાઇસ અપડેટ કરો}}</translation>
 <translation id="4747410141429390146">નોટિફિકેશન જોવા માટે, કૃપા કરીને તેમને અનલૉક કરો</translation>
 <translation id="4752784485658729358">માત્ર 6 ડેસ્ક સાચવવાની મંજૂરી છે. કોઈ નવી ડેસ્ક સાચવવા માટે, કોઈ એક ડેસ્ક કાઢી નાખો.</translation>
 <translation id="4759238208242260848">ડાઉનલોડ્સ</translation>
@@ -1319,6 +1321,7 @@
 <translation id="5916646100036936191">નવા નોટિફિકેશન, કુલ <ph name="NOTIFICATION_COUNT" /></translation>
 <translation id="5916664084637901428">ચાલુ</translation>
 <translation id="5920710855273935292">માઇક્રોફોન મ્યૂટ કરેલો છે.</translation>
+<translation id="5928083197428724029"><ph name="MANAGER" /> દ્વારા અપડેટ આવશ્યક છે</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> ચાલુ છે.</translation>
 <translation id="5947494881799873997">પાછા ફરો</translation>
 <translation id="595202126637698455">ભજવણી ટ્રેસિંગ સક્ષમ</translation>
@@ -1408,7 +1411,6 @@
 <translation id="6232416233079464213"><ph name="SESSION_NAME" />માંથી</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> દ્વારા હાલમાં તમારા કૅમેરા અને માઇક્રોફોનનો ઉપયોગ કરવામાં આવી રહ્યો છે</translation>
 <translation id="6237231532760393653">1X</translation>
-<translation id="62380141479352646">ઓછી બૅટરી. બૅટરી સેવર ચાલુ કર્યું.</translation>
 <translation id="6240603910551255087">'સૌથી ઉપર' બટન</translation>
 <translation id="6247728804802644171">નોટિફિકેશન ખોલો</translation>
 <translation id="6249795363855770621">પૂર્ણ તરીકે માર્ક કરી શક્યા નથી. જ્યારે ઑનલાઇન થાઓ, ત્યારે ફરી પ્રયાસ કરો.</translation>
@@ -1437,6 +1439,7 @@
 <translation id="6376931439017688372">બ્લૂટૂથ ચાલુ છે</translation>
 <translation id="6378515133128829137">વિન્ડોને જમણી બાજુ પિન કરો</translation>
 <translation id="6381109794406942707">ડિવાઇસને અનલૉક કરવા માટે. તમારો પિન દાખલ કરો.</translation>
+<translation id="6381305031890976705">{0,plural, =1{એક કલાકની અંદર પાછલા વર્ઝન પર ડિવાઇસ અપડેટ કરો}one{# કલાકની અંદર પાછલા વર્ઝન પર ડિવાઇસ અપડેટ કરો}other{# કલાકની અંદર પાછલા વર્ઝન પર ડિવાઇસ અપડેટ કરો}}</translation>
 <translation id="638716340450135524">કૅમેરાનો ઍક્સેસ ચાલુ કરો</translation>
 <translation id="639644700271529076">CAPS LOCK બંધ છે</translation>
 <translation id="6406458002328242616">ટાઇમરમાં ફેરફાર કરો. <ph name="FOCUS_DURATION" />.</translation>
@@ -1459,6 +1462,7 @@
 <translation id="6459472438155181876">સ્ક્રીનને <ph name="DISPLAY_NAME" /> પર વિસ્તૃત કરી રહ્યાં છે</translation>
 <translation id="6464094930452079790">છબીઓ</translation>
 <translation id="6467290994038932560"><ph name="GAME_APP_NAME" /> માટે ચાલુ</translation>
+<translation id="6468406072297048412">{0,plural, =1{1 મિનિટની અંદર પાછલા વર્ઝન પર ડિવાઇસ અપડેટ કરો}one{# મિનિટની અંદર પાછલા વર્ઝન પર ડિવાઇસ અપડેટ કરો}other{# મિનિટની અંદર પાછલા વર્ઝન પર ડિવાઇસ અપડેટ કરો}}</translation>
 <translation id="6469104339369989396">હૉટસ્પૉટ ટૉગલ કરો</translation>
 <translation id="6477681113376365978">ફાઇલ ડાઉનલોડ કરી શકાતી નથી</translation>
 <translation id="6482559668224714696">પૂર્ણ-સ્ક્રીન મૅગ્નિફાયર</translation>
@@ -1582,6 +1586,7 @@
 <translation id="6917259695595127329">છેલ્લે કાર્યો અપડેટ કર્યાનો સમય: <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">તમારું સ્માર્ટ કાર્ડ ઓળખી શક્યાં નથી. ફરી પ્રયાસ કરો.</translation>
 <translation id="692135145298539227">કાઢી નાખો</translation>
+<translation id="6921427376813842559">ડિવાઇસ અપડેટ કરો</translation>
 <translation id="6929081673585394903">નિયંત્રણો બતાવો</translation>
 <translation id="6931576957638141829">આમાં સાચવો</translation>
 <translation id="6942518653766415536">રેકોર્ડિંગ ફૉર્મેટનું મેનૂ</translation>
@@ -1669,6 +1674,7 @@
 <translation id="7303365578352795231">અન્ય ઉપકરણ પર જવાબ આપી રહ્યાં છે.</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">તમારા ઍડમિનિસ્ટ્રેટર તમારા ઇ-સિમને રીસેટ કરી રહ્યાં છે. આમાં થોડો સમય લાગી શકે છે.</translation>
+<translation id="7312761820869643657">પાછલા વર્ઝન પર ડિવાઇસ અપડેટ કરો</translation>
 <translation id="7313193732017069507">કૅમેરાને મોટો કરો</translation>
 <translation id="7330397557116570022">ડિક્ટેશનનો ઉપયોગ કરવા માટે, ટેક્સ્ટ ફીલ્ડ પર જાઓ</translation>
 <translation id="7331646370422660166">alt + નીચેની ઍરો કી</translation>
@@ -2145,7 +2151,6 @@
 <translation id="9080132581049224423">હોમ પર જવા માટે ઉપર સ્વાઇપ કરો</translation>
 <translation id="9080206825613744995">માઇકોફોન ઉપયોગમાં છે.</translation>
 <translation id="9083324773537346962">OS વર્ઝન</translation>
-<translation id="908451241440060346">'ખલેલ પાડશો નહીં' સુવિધા ચાલુ હોય ત્યારે નોટિફિકેશન મ્યૂટ કરેલા હોય છે</translation>
 <translation id="9084606467167974638">મેનૂની સ્થિતિને ટૉગલ કરો</translation>
 <translation id="9085962983642906571">તમારી બૅટરીની આવરદા વધારવા માટે તે પ્લગ-ઇન કરેલી હોય ત્યારે તેને 80% ચાર્જ થયેલી રાખવામાં આવે છે.</translation>
 <translation id="9089416786594320554">ઇનપુટ પદ્ધતિઓ</translation>
@@ -2186,6 +2191,7 @@
 <translation id="925832987464884575">પ્રીવ્યૂ છુપાવો</translation>
 <translation id="938407504481277932">વર્તમાન ડેસ્ક: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. <ph name="DESK_COUNT" />માંથી ડેસ્ક <ph name="DESK_INDEX" />.</translation>
 <translation id="938963181863597773">મારા કૅલેન્ડરમાં શું છે?</translation>
+<translation id="94468042118567862">ડિવાઇસ અપ ટૂ ડેટ નથી</translation>
 <translation id="945383118875625837">લિંકને બુકમાર્ક બાર પર ખેંચો</translation>
 <translation id="945522503751344254">પ્રતિસાદ મોકલો</translation>
 <translation id="951991426597076286">નકારો</translation>

@@ -107,6 +107,7 @@
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> қосылған</translation>
 <translation id="1340378040547539434">Бетті кішірейту</translation>
 <translation id="1341651618736211726">Қосымша мәзір</translation>
+<translation id="1341926407152459446">Аудио кірісі және шығысы ретінде "<ph name="DEVICE_NAME" />" құрылғысын пайдаланыңыз.</translation>
 <translation id="1344141078024003905">Экраныңызды трансляциялап жатырсыз. Экраныңызды трансляциялауды кез келген уақытта кідіртуге немесе тоқтатуға болады.</translation>
 <translation id="1346748346194534595">Оңға</translation>
 <translation id="1351937230027495976">Мәзірді жию</translation>
@@ -145,6 +146,7 @@
 <translation id="1486307154719069822">Мәтінді дауыспен енгізу арқылы дауысыңызбен тере аласыз. Мәтін өрісінде болған кезде мәтінді дауыспен енгізу пернесін басыңыз немесе экранның төменгі жағындағы микрофон белгішесін таңдаңыз. Мәтінді дауыспен енгізу тілі <ph name="LANGUAGE" /> тіліне орнатылған. Сөз өңдеу үшін Google-ға жіберілді. Мәтінді дауыспен енгізу тілін кез келген уақытта "Параметрлер &gt; Арнайы мүмкіндіктер" тармағында өзгертуге болады.</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> және <ph name="SECOND_ITEM_TITLE" /> өзара ауыстырылды.</translation>
 <translation id="1500926532737552529">Барлық ұсынысты көрсету</translation>
+<translation id="1501946871587957338">Аудио дереккөзін ауыстыру қажет пе?</translation>
 <translation id="1510238584712386396">Іске қосу құрылғысы</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Хабарландыру параметрлерін көрсету. Қолданбаның хабарландырулары өшірулі}other{Хабарландыру параметрлерін көрсету. # қолданбаның хабарландырулары өшірулі}}</translation>
 <translation id="1523032696246003">Батарея заряды: <ph name="BATTERY_PERCENTAGE" />% | Толуға <ph name="TIME" /> қалды</translation>
@@ -773,6 +775,7 @@
 <translation id="397105322502079400">Есептелуде…</translation>
 <translation id="397726367135689299">Батарея дұрыс зарядталмауы мүмкін.</translation>
 <translation id="3977512764614765090">Батарея қуаты – <ph name="PERCENTAGE" />%. Зарядталып жатыр.</translation>
+<translation id="3982013579989864579">Аудио шығысын ауыстыру қажет пе?</translation>
 <translation id="3984536049089846927">Келесі бет</translation>
 <translation id="3986082989454912832">Жауап беру</translation>
 <translation id="3990002060657467458">Wi-Fi, Bluetooth және дыбыс деңгейі сияқты жиі пайдаланылатын басқару элементтері Жылдам параметрлерде орналасқан. Сонымен қатар скриншоттар түсіру үшін осы жерге өтуге болады.</translation>
@@ -816,6 +819,7 @@
 <translation id="4150201353443180367">Дисплей</translation>
 <translation id="4156293514828496577">Батарея заряды — <ph name="PERCENTAGE" />% (шамамен <ph name="TIME_LEFT" /> қалды).
 Батарея жұмысын ұзарту үшін кейбір функцияларға шектеу қойылды.</translation>
+<translation id="4160919062868802509">Бірнеше аудио дереккөзі анықталды</translation>
 <translation id="4165275524535002941">Кабель дисплейлерді қолдамауы мүмкін</translation>
 <translation id="4177415338862979658">Мәліметтерді тексеру үшін басыңыз.</translation>
 <translation id="4177913004758410636">{0,plural, =1{Құрылғыны бір күнде жаңарту керек}other{Құрылғыны # күнде жаңарту керек}}</translation>
@@ -1014,6 +1018,7 @@
 <translation id="4871905435473761992">Хотспот мәліметтерін көрсету. Мобильдік желі хотспотты қолдамайды.</translation>
 <translation id="4872237917498892622">Alt+іздеу немесе Shift</translation>
 <translation id="4872852897273142380">Бетбелгілер жолағын (көрсетіліп тұрса) ерекшелеу немесе бөлектеу</translation>
+<translation id="4876935764454575645">Аудио таңдау</translation>
 <translation id="4881323000405981760">Linux қолданбаларында әсерлерге қолдау көрсетілмейді</translation>
 <translation id="4881695831933465202">Ашу</translation>
 <translation id="4889868803215848840">Ұсыныстарды жақсарту үшін пікір қалдырыңыз:</translation>
@@ -1090,6 +1095,7 @@
 <translation id="5121628974188116412">Беттің соңына өту</translation>
 <translation id="5122517996953421795"><ph name="DESK_NAME" /> алғы көрінісі. Жұмыс үстелі белсенді емес.</translation>
 <translation id="5136175204352732067">Басқа пернетақта жалғанды</translation>
+<translation id="5144005092084035179">Аудио кірісін ауыстыру қажет пе?</translation>
 <translation id="5147567197700016471">Құлып ашылды.</translation>
 <translation id="5150070631291639005">Құпиялық параметрлері</translation>
 <translation id="5155897006997040331">Оқу жылдамдығы</translation>
@@ -1398,7 +1404,6 @@
 <translation id="6232416233079464213"><ph name="SESSION_NAME" /> сеансынан</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> қолданбасы камера мен микрофонды пайдаланып жатыр.</translation>
 <translation id="6237231532760393653">1X</translation>
-<translation id="62380141479352646">Батарея заряды аз. Батареяны үнемдеу режимі қосылды.</translation>
 <translation id="6240603910551255087">Үстіңгі түйме</translation>
 <translation id="6247728804802644171">Хабарландыруларды ашу</translation>
 <translation id="6249795363855770621">Аяқталған деп белгілеу мүмкін емес. Онлайн болғанда қайталап көріңіз.</translation>
@@ -1789,6 +1794,7 @@
 <translation id="7780094051999721182">таңбашалар</translation>
 <translation id="7780159184141939021">Экранды бұру</translation>
 <translation id="7781829728241885113">Кеше</translation>
+<translation id="7787212146956232129">Кіріс және шығыс құрылғылар орнатылды. Өзгерту үшін "Параметрлер" бөліміне өтіңіз.</translation>
 <translation id="7792590255364786396">Көрінеді</translation>
 <translation id="7796735576426975947">Жаңа хабарландыру жасырылған</translation>
 <translation id="7798302898096527229">Бас тарту үшін Іздеу не Shift пернесін басыңыз.</translation>
@@ -2095,6 +2101,7 @@
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 файл}other{# файл}}</translation>
 <translation id="8936501819958976551">өшірілді</translation>
 <translation id="8938800817013097409">USB-C құрылғысы (артқы оң жақ порты)</translation>
+<translation id="8939855324412367560">Кіріс аудио — "<ph name="INPUT_DEVICE_NAME" />" және шығыс аудио — "<ph name="OUTPUT_DEVICE_NAME" />". Өзгерту үшін "Параметрлер" бөліміне өтіңіз.</translation>
 <translation id="8940956008527784070">Батарея заряды төмен (<ph name="PERCENTAGE" />%)</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> құсбелгі ұяшығы таңдалмаған.</translation>
 <translation id="8949925099261528566">Қосылған, интернет жоқ</translation>
@@ -2132,7 +2139,6 @@
 <translation id="9080132581049224423">Негізгі экранға өту үшін жоғары қарай сипаңыз.</translation>
 <translation id="9080206825613744995">Микрофон пайдаланылуда.</translation>
 <translation id="9083324773537346962">OЖ нұсқасы</translation>
-<translation id="908451241440060346">Мазаламау режимі қосулы кезде, хабарландырулар дыбысы өшіріледі.</translation>
 <translation id="9084606467167974638">Мәзірдің орнын ауыстыру</translation>
 <translation id="9085962983642906571">Батарея қуат көзіне жалғанған кезде, оның жұмысының ұзақтығы артуы үшін заряд 80% болып тұрады.</translation>
 <translation id="9089416786594320554">Енгізу әдістері</translation>
@@ -2152,6 +2158,7 @@
 <translation id="9178475906033259337"><ph name="QUERY" /> бойынша 1 нәтиже көрсетілуде</translation>
 <translation id="9179259655489829027">Бұл функция аккаунтқа кірген кез келген пайдаланушыға құпия сөзсіз жылдам кіруге мүмкіндік береді. Оны тек сенімді аккаунттармен пайдаланыңыз.</translation>
 <translation id="9183456764293710005">Толық экран ұлғайтқышы</translation>
+<translation id="9192133205265227850">"<ph name="DEVICE_NAME" />" құрылғысын пайдаланыңыз.</translation>
 <translation id="9193626018745640770">Белгісіз қабылдағышта трансляциялауда</translation>
 <translation id="9194617393863864469">Басқа пайдаланушыны кіргізу…</translation>
 <translation id="9195990613383871904">Ертең</translation>

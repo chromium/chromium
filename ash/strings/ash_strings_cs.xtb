@@ -107,6 +107,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1333308631814936910">Zařízení <ph name="DISPLAY_NAME" /> je připojeno</translation>
 <translation id="1340378040547539434">Oddálit stránku</translation>
 <translation id="1341651618736211726">Přetečení</translation>
+<translation id="1341926407152459446">Pro vstup a výstup zvuku používat zařízení <ph name="DEVICE_NAME" /></translation>
 <translation id="1344141078024003905">Odesíláte obrazovku. Odesílání obrazovky můžete kdykoli pozastavit nebo ukončit.</translation>
 <translation id="1346748346194534595">Doprava</translation>
 <translation id="1351937230027495976">Sbalit nabídku</translation>
@@ -145,6 +146,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1486307154719069822">Pomocí diktování můžete psát hlasově. Když jste v textovém poli, stiskněte klávesu diktování nebo vyberte ikonu mikrofonu v dolní části obrazovky. Váš jazyk diktování je nastaven na <ph name="LANGUAGE" />. Řeč se odesílá do Googlu ke zpracování. Jazyk diktování můžete kdykoli změnit v Nastavení &gt; Usnadnění.</translation>
 <translation id="1487931858675166540">Položka <ph name="FIRST_ITEM_TITLE" /> byla prohozená s položkou <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Zobrazit všechny návrhy</translation>
+<translation id="1501946871587957338">Přepnout zdroj zvuku?</translation>
 <translation id="1510238584712386396">Spouštěč</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Zobrazit nastavení oznámení. U jedné aplikace jsou oznámení vypnutá}few{Zobrazit nastavení oznámení. U # aplikací jsou oznámení vypnutá}many{Zobrazit nastavení oznámení. U # aplikace jsou oznámení vypnutá}other{Zobrazit nastavení oznámení. U # aplikací jsou oznámení vypnutá}}</translation>
 <translation id="1523032696246003">Baterie: <ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> do úplného nabití</translation>
@@ -773,6 +775,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="397105322502079400">Probíhá výpočet…</translation>
 <translation id="397726367135689299">Nabíjení baterie může být nespolehlivé.</translation>
 <translation id="3977512764614765090">Baterie je nabitá na <ph name="PERCENTAGE" /> % a nabíjí se.</translation>
+<translation id="3982013579989864579">Přepnout zvukový výstup?</translation>
 <translation id="3984536049089846927">Další stránka</translation>
 <translation id="3986082989454912832">Přijmout</translation>
 <translation id="3990002060657467458">Často používané ovládací prvky, jako jsou Wi-Fi, Bluetooth a hlasitost, jsou v Rychlém nastavení. Můžete pomocí něj také pořídit snímky obrazovky.</translation>
@@ -816,6 +819,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="4150201353443180367">Displej</translation>
 <translation id="4156293514828496577">Stav baterie: <ph name="PERCENTAGE" /> % (přibližně na <ph name="TIME_LEFT" />).
 Některé funkce jsou za účelem prodloužení výdrže baterie omezeny.</translation>
+<translation id="4160919062868802509">Bylo zjištěno několik zdrojů zvuku</translation>
 <translation id="4165275524535002941">Kabel možná nepodporuje displeje</translation>
 <translation id="4177415338862979658">Kliknutím zobrazíte podrobnosti</translation>
 <translation id="4177913004758410636">{0,plural, =1{Do jednoho dne zařízení aktualizujte}few{Do # dní zařízení aktualizujte}many{Do # dne zařízení aktualizujte}other{Do # dní zařízení aktualizujte}}</translation>
@@ -1014,6 +1018,7 @@ Je připojeno 1 zařízení.</translation>
 <translation id="4871905435473761992">Zobrazit podrobnosti o hotspotu. Vaše mobilní síť hotspot nepodporuje.</translation>
 <translation id="4872237917498892622">Alt + Vyhledávání nebo Shift</translation>
 <translation id="4872852897273142380">Vybrat nebo zvýraznit lištu záložek (pokud je zobrazena)</translation>
+<translation id="4876935764454575645">Výběr zvuku</translation>
 <translation id="4881323000405981760">V linuxových aplikacích nejsou efekty podporovány</translation>
 <translation id="4881695831933465202">Otevřít</translation>
 <translation id="4889868803215848840">Poskytněte dobrovolnou zpětnou vazbu za účelem vylepšení návrhů:</translation>
@@ -1090,6 +1095,7 @@ Je připojeno 1 zařízení.</translation>
 <translation id="5121628974188116412">Přejít na konec stránky</translation>
 <translation id="5122517996953421795">Náhled plochy <ph name="DESK_NAME" />. Neaktivní plocha.</translation>
 <translation id="5136175204352732067">Je připojena jiná klávesnice</translation>
+<translation id="5144005092084035179">Přepnout zvukový vstup?</translation>
 <translation id="5147567197700016471">Odemknuto</translation>
 <translation id="5150070631291639005">Nastavení soukromí</translation>
 <translation id="5155897006997040331">Rychlost čtení</translation>
@@ -1398,7 +1404,6 @@ Nejsou připojena žádná zařízení.</translation>
 <translation id="6232416233079464213">Zdroj: <ph name="SESSION_NAME" /></translation>
 <translation id="6232891689835436217">Aplikace <ph name="APP_NAME" /> používá vaši kameru a mikrofon</translation>
 <translation id="6237231532760393653">1X</translation>
-<translation id="62380141479352646">Baterie je téměř vybitá. Zapnul se spořič baterie.</translation>
 <translation id="6240603910551255087">Horní tlačítko</translation>
 <translation id="6247728804802644171">Otevřít oznámení</translation>
 <translation id="6249795363855770621">Nelze označit jako dokončené. Zkuste to, až budete online.</translation>
@@ -1788,6 +1793,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="7780094051999721182">zkratky</translation>
 <translation id="7780159184141939021">Otočit obrazovku</translation>
 <translation id="7781829728241885113">Včera</translation>
+<translation id="7787212146956232129">Vstupní a výstupní zařízení jsou nastavena. Můžete je změnit v nastavení.</translation>
 <translation id="7792590255364786396">Viditelné</translation>
 <translation id="7796735576426975947">Nové upozornění bylo skryto</translation>
 <translation id="7798302898096527229">Vypnete jej stisknutím klávesy Hledat nebo Shift.</translation>
@@ -2093,6 +2099,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 soubor}few{# soubory}many{# souboru}other{# souborů}}</translation>
 <translation id="8936501819958976551">deaktivovala</translation>
 <translation id="8938800817013097409">Zařízení USB Type-C (pravý zadní port)</translation>
+<translation id="8939855324412367560">Vstupní zvukové zařízení je <ph name="INPUT_DEVICE_NAME" /> a výstupní zvukové zařízení je <ph name="OUTPUT_DEVICE_NAME" />. Můžete je změnit v nastavení.</translation>
 <translation id="8940956008527784070">Slabá baterie (<ph name="PERCENTAGE" /> %)</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> Zaškrtávací políčko není zaškrtnuto.</translation>
 <translation id="8949925099261528566">Připojeno, není k dispozici internet</translation>
@@ -2130,7 +2137,6 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="9080132581049224423">Přejetím nahoru se vrátíte na plochu</translation>
 <translation id="9080206825613744995">Mikrofon je používán.</translation>
 <translation id="9083324773537346962">Verze operačního systému</translation>
-<translation id="908451241440060346">Když je zapnutý režim Nerušit, jsou vypnuta oznámení</translation>
 <translation id="9084606467167974638">Přepnout pozici nabídky</translation>
 <translation id="9085962983642906571">Baterie je udržována na 80 %, aby se prodloužila její životnost.</translation>
 <translation id="9089416786594320554">Metody zadávání</translation>
@@ -2150,6 +2156,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="9178475906033259337">Zobrazuje se 1 výsledek pro dotaz <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Tato funkce umožňuje rychle získat přístup ke kterémukoliv přihlášenému uživateli, aniž by bylo potřeba zadávat heslo. Tuto funkci používejte pouze s účty, kterým důvěřujete.</translation>
 <translation id="9183456764293710005">Zvětšení obrazovky</translation>
+<translation id="9192133205265227850">Použít zařízení <ph name="DEVICE_NAME" /></translation>
 <translation id="9193626018745640770">Odesílání do neznámého přijímače</translation>
 <translation id="9194617393863864469">Přihlásit dalšího uživatele...</translation>
 <translation id="9195990613383871904">Zítra</translation>

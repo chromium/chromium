@@ -1664,6 +1664,7 @@ Si cette règle est désactivée ou qu'elle n'est pas configurée, le transfert 
 <translation id="2258126710006312594">Autoriser le transfert de fichiers vers et depuis l'hôte pour les utilisateurs connectés à distance</translation>
 <translation id="225830954785359083">Empêcher les pages d'afficher des pop-ups pendant le déchargement</translation>
 <translation id="2261648512244797294">Désactiver l'impression Privet (obsolète)</translation>
+<translation id="2263881357524831360">Autoriser l'utilisation de gestionnaires de mots de passe tiers dans <ph name="PRODUCT_NAME" /> sous <ph name="ANDROID_NAME" /></translation>
 <translation id="2264286153777425328">Liste des actions à exécuter lorsque le délai d'inactivité de la règle <ph name="IDLE_TIMEOUT_POLICY_NAME" /> est atteint.
 
 Avertissement : La définition de cette règle peut affecter les données personnelles locales et entraîner leur suppression définitive. Nous vous recommandons de tester vos paramètres avant de les déployer pour éviter toute suppression accidentelle de données personnelles.
@@ -2544,6 +2545,7 @@ La règle <ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_EXCEPTIONS_POLICY_NAME" /> est
 <translation id="2960128438010718932">Calendrier d'échelonnement pour l'application d'une nouvelle mise à jour</translation>
 <translation id="2960691910306063964">Activer ou désactiver l'authentification sans code d'accès pour les hôtes d'accès à distance</translation>
 <translation id="2960999045613902792">Autoriser les utilisateurs à ajouter et configurer des imprimantes n'appartenant pas à l'entreprise, et à y lancer des impressions</translation>
+<translation id="296100724744272922">Autoriser l'utilisation d'un gestionnaire de mots de passe tiers dans Chrome</translation>
 <translation id="2962972237615992440">Désactivez le proxy <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="2963292398266537394">Désactiver la dictée</translation>
 <translation id="2964373560810620158">Empêcher les utilisateurs de se servir du navigateur <ph name="LACROS_NAME" /></translation>
@@ -7807,6 +7809,14 @@ Si vous la configurez, les utilisateurs ne peuvent pas la modifier ni l'ignorer.
 Si cette règle n'est pas configurée, la loupe est initialement désactivée sur l'écran de connexion, mais les utilisateurs peuvent l'activer à tout moment.</translation>
 <translation id="7109384070286741861">Désactiver CECPQ2</translation>
 <translation id="7113439794629928551">Afficher les commandes multimédias pour les sessions <ph name="PRODUCT_NAME" /> lancées par d'autres appareils</translation>
+<translation id="7113803652772945829">Si cette règle est définie sur "True", les utilisateurs peuvent utiliser un gestionnaire de mots de passe tiers.
+Celui-ci gèrera l'enregistrement et la saisie de toutes les données liées aux mots de passe, aux paiements et à la saisie automatique.
+Lorsque la règle est définie sur "True" ou n'est pas configurée, un paramètre permet de basculer entre le gestionnaire de mots de passe intégré de <ph name="PRODUCT_NAME" /> et le gestionnaire de mots de passe configuré dans les paramètres Android.
+Compte tenu que <ph name="PRODUCT_NAME" /> utilise les mêmes données que la saisie automatique avec Google, le paramètre ne peut être modifié pour utiliser des gestionnaires de mots de passe tiers que si un gestionnaire autre que la saisie automatique avec Google est configuré dans les paramètres système d'Android.
+
+Si cette règle est définie sur "False", <ph name="PRODUCT_NAME" /> utilisera toujours le gestionnaire de mots de passe intégré.
+
+Cette règle ne concerne pas les gestionnaires de mots de passe tiers qui utilisent des API d'accessibilité.</translation>
 <translation id="7114169791477667553">Désactiver le moteur de recherche par défaut</translation>
 <translation id="7121046543122812054">Cette règle étant obsolète, vous pouvez utiliser <ph name="BROWSER_SIGNIN_POLICY_NAME" /> à la place.
 
@@ -10492,6 +10502,7 @@ La valeur par défaut est "RollbackDisabled".</translation>
 2 = Désactiver la fonctionnalité. 2 est la valeur par défaut pour les comptes Education gérés par <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
 
 Pour en savoir plus sur la gestion des données pour les fonctionnalités d'IA générative, veuillez consulter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
+<translation id="949192525372487705">Bloquer le passage à un gestionnaire de mots de passe tiers</translation>
 <translation id="957322141096206402">La résolution DNS du système peut être exécutée dans le processus réseau ou en dehors de celui-ci, en fonction de la configuration système et des flags de fonctionnalité.</translation>
 <translation id="957778406002650056">URL depuis laquelle l'image de <ph name="PLUGIN_VM_NAME" /> peut être téléchargée.</translation>
 <translation id="957920984193041197">Autoriser les pages à afficher des pop-ups pendant le déchargement</translation>

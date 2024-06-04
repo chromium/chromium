@@ -631,7 +631,6 @@
 <translation id="458794348635939462">Ikke alle hosts kunne identificeres</translation>
 <translation id="4593212453765072419">Proxygodkendelse påkrævet</translation>
 <translation id="4609350030397390689">Reducer tastaturets lysstyrke</translation>
-<translation id="4617553623719764431">Vejrudsigten vises ikke, fordi din lokation er ukendt. Hvis du vil se den lokale vejrudsigt, skal du <ph name="BEGIN_LINK" />aktivere Lokationsadgang<ph name="END_LINK" /></translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> ud af <ph name="TOTAL_PAGE_NUMBER" />. Tryk på Enter for at annullere udskriftsjobbet.</translation>
 <translation id="463791356324567266">Annullerer scanning...</translation>
 <translation id="4646949265910132906">Sikker Wi-Fi-forbindelse</translation>

@@ -61,6 +61,7 @@
 <translation id="1040761927998636252"><ph name="URL" /> 嘅未命名書籤</translation>
 <translation id="1041175011127912238">此網頁沒有回應</translation>
 <translation id="1041263367839475438">可用的裝置</translation>
+<translation id="1041607257468256895">在 Chrome 中管理網站位置存取權</translation>
 <translation id="1042174272890264476">您的電腦也內置了 <ph name="SHORT_PRODUCT_NAME" /> 的 RLZ 資料庫。RLZ 可指定非重複、非個人的可識別標記，以評估特定宣傳廣告活動所提升的搜尋數量與 <ph name="SHORT_PRODUCT_NAME" /> 使用量。這些標籤有時也會顯示在 <ph name="PRODUCT_NAME" /> 的 Google 搜尋查詢中。</translation>
 <translation id="1042248468362992359">連接至流動數據即可使用熱點。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1043505821207197890">發生錯誤，Linux 可能只完成部分升級。詳情請查看記錄。記錄已儲存至「檔案」&gt;「我的檔案」&gt; <ph name="LOG_FILE" /></translation>
@@ -1257,7 +1258,6 @@
 <translation id="1901213235765457754">要求管理員更新此應用程式</translation>
 <translation id="1901303067676059328">全部選取(&amp;A)</translation>
 <translation id="1904580727789512086">系統會將您瀏覽的網址儲存至 Google 帳戶</translation>
-<translation id="1904603806662441960">在 Chrome 中管理網站的相機權限</translation>
 <translation id="1906181697255754968">網站通常會存取裝置上的檔案和資料夾，以提供自動儲存作業等功能</translation>
 <translation id="1906488504371069394">在「<ph name="BEGIN_LINK" />Chrome 網上應用程式商店<ph name="END_LINK" />」探索更多擴充程式和主題</translation>
 <translation id="1907044622262489040">使用語音輸入。按下搜尋鍵 + D 鍵，然後開始說話。</translation>
@@ -2028,6 +2028,7 @@
 <translation id="2454206500483040640">已分割</translation>
 <translation id="2454247629720664989">關鍵字</translation>
 <translation id="2454524890947537054">要核准網絡要求嗎？</translation>
+<translation id="2454913962395846391">自動設定時區</translation>
 <translation id="245650153866130664">如要自動重新整理票證，請勾選「記住密碼」。密碼只會儲存在您的裝置上。</translation>
 <translation id="2456794251167091176">匯入完成</translation>
 <translation id="2457246892030921239">「<ph name="APP_NAME" />」想要從 <ph name="VOLUME_NAME" />複製檔案。</translation>
@@ -2043,7 +2044,6 @@
 <translation id="2462332841984057083">已有其他程序正在設定 Steam，請等待設定完成。</translation>
 <translation id="2462724976360937186">憑證授權單位金鑰識別碼</translation>
 <translation id="2462752602710430187">已新增「<ph name="PRINTER_NAME" />」</translation>
-<translation id="2465517991293145960">時區目前設定為 <ph name="TIME_ZONE_ENTRY" />。需要授予位置資料存取權，系統才能自動更新時區。<ph name="BEGIN_LINK" />開啟位置資料存取權<ph name="END_LINK" /></translation>
 <translation id="2467755475704469005">未偵測到任何裝置。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="2468178265280335214">觸控板捲動加速</translation>
 <translation id="2468205691404969808">使用 Cookie 記住您的偏好設定 (即使你沒有瀏覽這些網頁)</translation>
@@ -2098,7 +2098,6 @@
 <translation id="2497852260688568942">您的管理員已停用同步功能</translation>
 <translation id="2498539833203011245">縮到最小</translation>
 <translation id="2498765460639677199">最大</translation>
-<translation id="2499065671910214321">使用位置資訊。允許有位置權限的 ChromeOS 和 Android 應用程式、網站和服務使用此裝置的位置。Google 可能會定期收集並以匿名方式使用這些位置資料，以提高定位精確度和適地性服務。<ph name="BEGIN_LINK1" />進一步瞭解位置<ph name="BEGIN_LINK1_END" />瞭解詳情<ph name="END_LINK1" /></translation>
 <translation id="2500471369733289700">已封鎖相關權限以保障您的私隱</translation>
 <translation id="2501173422421700905">憑證暫時保留</translation>
 <translation id="2501278716633472235">返回</translation>
@@ -2724,6 +2723,7 @@
 <translation id="2963151496262057773">下列外掛程式無回應：<ph name="PLUGIN_NAME" />　您要中止嗎？</translation>
 <translation id="2964193600955408481">停用 WiFi</translation>
 <translation id="2964245677645334031">「咫尺共享」分享設定</translation>
+<translation id="2965227184985674128">要開啟麥克風存取權嗎？</translation>
 <translation id="2966705348606485669">「<ph name="FOLDER_TITLE" />」書籤資料夾嘅其他選項</translation>
 <translation id="2966937470348689686">管理 Android 偏好設定</translation>
 <translation id="2967791329697639454">登入更快速，加密更安全</translation>
@@ -3398,7 +3398,6 @@
 <translation id="3491669675709357988">您子女的帳戶尚未設定 Family Link 家長監控設定。設定完成後，即可新增家長監控設定。您可在「探索」應用程式中找到家長監控設定的相關資料。</translation>
 <translation id="3491678231052507920">網站通常會使用虛擬實境﻿裝置和資料，讓您進入 VR 工作階段</translation>
 <translation id="3493043608231401654">將「<ph name="TAB_TITLE" />」喺分頁群組度移除</translation>
-<translation id="3493463599276143766">所有網站都不能使用相機</translation>
 <translation id="3493486281776271508">需要互聯網連線</translation>
 <translation id="3493881266323043047">有效性</translation>
 <translation id="3495496470825196617">充電時閒置電源</translation>
@@ -3793,8 +3792,6 @@
 <translation id="3765055238058255342">這類資訊卡</translation>
 <translation id="3765246971671567135">無法讀取離線示範模式的政策。</translation>
 <translation id="3765696567014520261">網站不能使用 Cookie 查看您在其他網站的瀏覽活動，例如放送個人化廣告。部分網站的功能可能會無法正常運作</translation>
-<translation id="3766265338450715550"><ph name="BEGIN_PARAGRAPH1" />Google 的定位服務會透過 Wi-Fi、流動網絡及感應器等來源協助估計裝置位置。<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />你可隨時前往 [設定] &gt; [私隱權和安全性] &gt; [私隱權設定] &gt; [位置存取權]，關閉裝置上的 ChromeOS 和 Android 位置。你亦可透過相同選單關閉「進階位置設定」下的「改善定位精確度」，禁止 Android 定位服務使用 Wi-Fi、流動網絡和感應器。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3766687283066842296">進一步了解 Phone Hub</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
 <translation id="3767835232661747729">目前只能與家庭成員分享密碼。你可<ph name="BEGIN_LINK" />邀請家庭成員<ph name="END_LINK" />加入群組，充分發揮 Google 的產品和訂閱服務的功用。</translation>
@@ -4131,7 +4128,6 @@
 <translation id="4001540981461989979">移動時突顯滑鼠游標</translation>
 <translation id="4002347779798688515">如果已鎖定流動網絡供應商，已下載的設定檔便可能無法使用。請向供應商尋求支援。</translation>
 <translation id="4002440992267487163">PIN 設定</translation>
-<translation id="4003647532210142956">目前的時間表已設定為<ph name="SUNRISE" />至<ph name="SUNSET" />。如要自動更新日落和日出時間表，請<ph name="BEGIN_LINK" />開啟位置存取權<ph name="END_LINK" /></translation>
 <translation id="4005817994523282006">時區偵測方法</translation>
 <translation id="4007856537951125667">隱藏捷徑</translation>
 <translation id="4010036441048359843">開啟突顯功能</translation>
@@ -4221,7 +4217,6 @@
 <translation id="4078738236287221428">積極</translation>
 <translation id="4078903002989614318">排序同埋清單選項</translation>
 <translation id="4079140982534148664">使用進階拼字檢查功能</translation>
-<translation id="4082333918978320301">所有網站都不能使用麥克風</translation>
 <translation id="4083735423615351075">這些分頁會在此裝置上保持開啟，但該群組會從所有使用此 Google 帳戶登入 Chrome 的裝置刪除。</translation>
 <translation id="4084682180776658562">書籤</translation>
 <translation id="4084835346725913160">關閉 <ph name="TAB_NAME" /></translation>
@@ -4470,7 +4465,6 @@
 <translation id="4278779213160967034">此程序可能需時幾分鐘。正在下載檔案。</translation>
 <translation id="4279129444466079448">您在此裝置上最多可安裝 <ph name="PROFILE_LIMIT" /> 個 eSIM 卡設定檔。如要新增其他設定檔，請先移除現有的設定檔。</translation>
 <translation id="4280325816108262082">當裝置關閉或處於閒置狀態時，裝置將會自動中斷連線</translation>
-<translation id="4281637354026226955">允許擁有位置存取權的 ChromeOS 和 Android 應用程式和服務使用裝置位置。Google 可能會定期收集並以匿名方式使用位置資料，以提高定位精確度及改善適地性服務。</translation>
 <translation id="4281789858103154731">建立</translation>
 <translation id="4281844954008187215">服務條款</translation>
 <translation id="4281849573951338030">自訂觸控筆按鈕</translation>
@@ -5563,6 +5557,7 @@
 <translation id="5121052518313988218">系統已不再支援您 Linux 容器中的作業系統。作業系統將不再收到安全更新和錯誤修正項目，目前執行的功能亦可能無預警停止運作。如要繼續使用 Linux，請升級至最新版本。</translation>
 <translation id="5121130586824819730">您的硬碟已滿。請儲存至其他位置或在硬碟上騰出更多空間。</translation>
 <translation id="5123433949759960244">籃球</translation>
+<translation id="5125714798187802869">啟用</translation>
 <translation id="5125751979347152379">網址無效。</translation>
 <translation id="5125967981703109366">關於此資訊卡</translation>
 <translation id="512642543295077915">搜尋鍵 + Backspace 鍵</translation>
@@ -5887,6 +5882,7 @@
 <translation id="5376094717770783089">要求存取權</translation>
 <translation id="5376169624176189338">輕按即可返回上一頁，按住可查看記錄</translation>
 <translation id="5376931455988532197">檔案太大</translation>
+<translation id="5377367976106153749">要允許存取相機嗎？</translation>
 <translation id="5379140238605961210">繼續封鎖存取麥克風</translation>
 <translation id="5380424552031517043">已移除「<ph name="PERMISSION" />」</translation>
 <translation id="5380526436444479273">請等候數分鐘，然後再試一次</translation>
@@ -6262,7 +6258,6 @@
 <translation id="5646558797914161501">商人</translation>
 <translation id="5648021990716966815">麥克風插孔</translation>
 <translation id="5648166631817621825">最近 7 天</translation>
-<translation id="5649182603113127372">使用位置資訊。允許有位置權限的 ChromeOS 和 Android 應用程式、網站和服務使用裝置位置。Google 可能會定期收集並以匿名方式使用這些位置資料，以提高定位精確度和適地性服務。<ph name="BEGIN_LINK1" />進一步瞭解位置<ph name="BEGIN_LINK1_END" />瞭解詳情<ph name="END_LINK1" /></translation>
 <translation id="5650537073531199882">填寫表格</translation>
 <translation id="5651308944918885595">「咫尺共享」可偵測度</translation>
 <translation id="5653154844073528838">你有 <ph name="PRINTER_COUNT" /> 部儲存咗嘅打印機。</translation>
@@ -6286,7 +6281,6 @@
 <translation id="5667546120811588575">正在設定 Google Play…</translation>
 <translation id="5668351004957198136">未通過</translation>
 <translation id="5669863904928111203">ChromeOS 版本已過期</translation>
-<translation id="5670011773727436698">在 Chrome 中管理網站的位置權限</translation>
 <translation id="5671641761787789573">已封鎖圖片</translation>
 <translation id="5671658447180261823">移除此建議：<ph name="SUGGESTION_NAME" /></translation>
 <translation id="567210741546439261">書籤和清單(&amp;B)</translation>
@@ -6315,7 +6309,6 @@
 <translation id="56907980372820799">連結數據</translation>
 <translation id="5691581861107245578">根據輸入內容取得 Emoji 建議</translation>
 <translation id="5691772641933328258">識別唔到指紋</translation>
-<translation id="5693237475389615913">在 Chrome 中管理網站的麥克風權限</translation>
 <translation id="5693255400847650006">麥克風正在使用中</translation>
 <translation id="5695184138696833495">Linux 的 Android 應用程式 ADB</translation>
 <translation id="5696143504434933566">舉報「<ph name="EXTENSION_NAME" />」的濫用行為</translation>
@@ -6338,7 +6331,6 @@
 <translation id="5708171344853220004">Microsoft 主要名稱</translation>
 <translation id="5709557627224531708">將 Chrome 設為預設瀏覽器</translation>
 <translation id="5711010025974903573">服務紀錄</translation>
-<translation id="5711324642850167289">所有應用程式都不能使用麥克風</translation>
 <translation id="5711983031544731014">無法解鎖，請輸入您的密碼。</translation>
 <translation id="5712153969432126546">網站有時會發佈文件、合約和表格等 PDF</translation>
 <translation id="571222594670061844">網站可顯示來自身分服務的登入提示</translation>
@@ -6413,8 +6405,6 @@
 <translation id="5776415697119024904"><ph name="DEVICE_NAME" /> (系統預設)</translation>
 <translation id="5776450228446082914">可在任何一個瀏覽器中開啟的網站清單。</translation>
 <translation id="5776571780337000608">您可在檔案瀏覽器或其他應用程式中，透過此應用程式開啟及編輯支援的檔案。如要控制在此應用程式預設開啟哪些檔案，請<ph name="BEGIN_LINK" />進一步瞭解如何在裝置上設定預設應用程式<ph name="END_LINK" />。</translation>
-<translation id="5776884611062957102">Google 的定位服務使用 Wi-Fi、流動網絡和感應器來偵測你的位置，以提高定位精確度。Google 可能會定期收集並以匿名方式使用位置資料，以提高定位精確度及改善適地性服務。
-    關閉此功能後，Android 就只會使用 IP 位址來偵測你的位置，因此可能會影響「地圖」等應用程式所使用的定位功能的精確度。</translation>
 <translation id="5778491106820461378">您可透過<ph name="LINK_BEGIN" />設定<ph name="LINK_END" />管理已登入的 Google 帳戶。您向網站和應用程式授予的權限，可能會套用到所有帳戶。如果您不想網站和應用程式存取您的帳戶資料，請以訪客身分登入您的 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="5780011244986845107">您選取的資料夾包含敏感檔案。確定要將此資料夾的讀取權限永久授予「<ph name="APP_NAME" />」嗎？</translation>
 <translation id="5780940414249100901">傳送使用情況和診斷資料。此裝置目前會將診斷、裝置及應用程式使用情況資料自動傳送至 Google。這些資料不會用來識別你子女的身分，而是用於改善系統和應用程式的穩定性和其他效能。部分彙整資料亦會用於協助 Google 應用程式與合作夥伴 (例如 Android 開發人員)。擁有者可強制執行此<ph name="BEGIN_LINK1" />設定<ph name="END_LINK1" />。如果你為子女開啟「其他網絡和應用程式活動記錄」設定，此資料可能會儲存在他們的 Google 帳戶中。<ph name="BEGIN_LINK2" />進一步瞭解數據<ph name="BEGIN_LINK2_END" />瞭解詳情<ph name="END_LINK2" /></translation>
@@ -6504,7 +6494,6 @@
 <translation id="5836999627049108525">要翻譯的語言</translation>
 <translation id="583756221537636748">充電盒</translation>
 <translation id="5840680448799937675">一律在離線時分享檔案</translation>
-<translation id="5841167715783969407">根據 Wi-Fi 或流動網絡自動變更時區</translation>
 <translation id="5841270259333717135">設定以太網絡</translation>
 <translation id="5842497610951477805">藍牙開關</translation>
 <translation id="5844284118433003733">當你登入後，這類資料會連結至 Google 帳戶，保護你在各項 Google 服務中的安全，例如在安全事件發生後提升 Gmail 的保護功能。</translation>
@@ -6794,7 +6783,6 @@
 <translation id="6059652578941944813">憑證階層</translation>
 <translation id="6059925163896151826">USB 裝置</translation>
 <translation id="6061408389284235459">已傳送通知給 <ph name="DEVICE_NAME" /></translation>
-<translation id="6062513606899361544">沒有應用程式可以使用你的位置</translation>
 <translation id="6063284707309177505">建立 QR 碼</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />注意：<ph name="END_BOLD" />如果有人與<ph name="SUPERVISED_USER_NAME" />的聲音相似，或有該人的錄音，便有可能存取該人的個人化結果。為節省電量，您可在<ph name="SUPERVISED_USER_NAME" />的「Google 助理」設定中選取，讓系統只有在裝置連接到電源時才啟動「Ok Google」。</translation>
 <translation id="6064217302520318294">螢幕鎖定</translation>
@@ -7535,7 +7523,6 @@
 <translation id="6636623428211296678">探索下方更多設定或立即結束審核</translation>
 <translation id="6639554308659482635">SQLite 記憶體使用量</translation>
 <translation id="6640268266988685324">開啟分頁</translation>
-<translation id="6642424629311432059">允許擁有位置存取權的 ChromeOS 和 Android 應用程式和服務使用此裝置的位置資訊。Google 可能會定期收集並以匿名方式使用位置資訊，以提升定位的精確度及改善適地性服務。</translation>
 <translation id="6642720633335369752">如要查看所有已開啟的應用程式視窗，請從底部向上滑動，然後長按。</translation>
 <translation id="664290675870910564">選取網絡</translation>
 <translation id="6643016212128521049">清除</translation>
@@ -7638,7 +7625,6 @@
 <translation id="6713441551032149301">按住啟動器按鍵即可切換功能鍵和系統最上排按鍵</translation>
 <translation id="6713668088933662563">一律不顯示翻譯以下語言</translation>
 <translation id="6715803357256707211">安裝 Linux 應用程式時發生錯誤。按一下通知即可瞭解詳情。</translation>
-<translation id="6716049856796700977">所有應用程式、網站和系統服務都無法使用你的位置。不過，應用程式和網站仍可透過 IP 位址取得你的位置。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">網絡連線已中斷。請檢查您的網絡連線，或改用其他 Wi-Fi 網絡。</translation>
 <translation id="6718849325281682232">Chrome 主題顏色已更新，不論是使用暗光模式還是明亮模式，都可為所有使用者提供更完善的功能</translation>
 <translation id="671928215901716392">鎖定螢幕</translation>
@@ -7669,7 +7655,6 @@
 <translation id="6740234557573873150">已暫停下載「<ph name="FILE_NAME" />」</translation>
 <translation id="6741063444351041466"><ph name="BEGIN_LINK" />您的管理員<ph name="END_LINK" />已停用「安全瀏覽」功能</translation>
 <translation id="6742629250739345159">在 Chrome 瀏覽器中自動建立媒體字幕。系統只會在裝置中處理音訊和字幕，絕對不會外洩。</translation>
-<translation id="6742971109086735351">在「ChromeOS 設定」的位置資料存取權已關閉</translation>
 <translation id="6743841972744298686">同步處理設定</translation>
 <translation id="6745592621698551453">立即更新</translation>
 <translation id="6746124502594467657">向下移</translation>
@@ -8383,6 +8368,7 @@
 <translation id="7289049772085228972">Chrome 提供最強大的安全功能保護</translation>
 <translation id="7289303553784750393">如果已連接網絡，但此問題持續發生，你可嘗試在「<ph name="SITE_ETLD_PLUS_ONE" />」上透過其他方法繼續操作。</translation>
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> - 要求咗權限，㩒 F6 掣就可以回覆</translation>
+<translation id="7290005709287747471">停用</translation>
 <translation id="7290242001003353852">此登入服務商 (由 <ph name="SAML_DOMAIN" /> 代管) 正在存取您的相機。</translation>
 <translation id="7292067737327289208">你的<ph name="BEGIN_LINK" />瀏覽器<ph name="END_LINK" />由機構管理，<ph name="BEGIN_LINK" />個人檔案<ph name="END_LINK" />則由 <ph name="PROFILE_DOMAIN" /> 管理</translation>
 <translation id="7292147651179697920">請家長前往「設定」授予存取權</translation>
@@ -8522,7 +8508,6 @@
 <translation id="7396017167185131589">共用資料夾將會在這裡顯示</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> 會隨著系統一併啟動，即使在所有 <ph name="PRODUCT_NAME" /> 視窗都關閉後，仍會在背景繼續執行。</translation>
 <translation id="7399045143794278225">自訂同步處理功能</translation>
-<translation id="7399155934146900496">所有網站都不能使用你的位置</translation>
 <translation id="7399616692258236448">系統會自動封鎖所有網站的位置要求 (你允許的網站除外)</translation>
 <translation id="7399802613464275309">安全檢查</translation>
 <translation id="7400418766976504921">網址</translation>
@@ -8648,8 +8633,6 @@
 <translation id="7478658909253570368">不允許網站連接至序列連接埠</translation>
 <translation id="7479221278376295180">儲存空間用量概覽</translation>
 <translation id="747981547666531654">已連線至藍牙裝置，裝置名稱：「<ph name="FIRST_DEVICE" />」和「<ph name="SECOND_DEVICE" />」</translation>
-<translation id="7480299112230998727"><ph name="BEGIN_PARAGRAPH1" />Google 的定位服務會透過 Wi-Fi、流動網絡及感應器等來源協助估計此裝置的位置。<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />你可隨時前往 [設定] &gt; [私隱權和安全性] &gt; [私隱權設定] &gt; [位置存取權]，關閉裝置上的 ChromeOS 和 Android 位置。你亦可透過相同選單關閉「進階位置設定」下的「改善定位精確度」，禁止 Android 定位服務使用 Wi-Fi、流動網絡和感應器。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7481312909269577407">向前</translation>
 <translation id="7481358317100446445">準備就緒</translation>
 <translation id="748138892655239008">憑證基本限制</translation>
@@ -8741,7 +8724,6 @@
 <translation id="7552846755917812628">請嘗試按照以下提示操作：</translation>
 <translation id="7553012839257224005">正在檢查 Linux 容器</translation>
 <translation id="7553242001898162573">輸入您的密碼</translation>
-<translation id="7553487223484420820">具有位置存取權的應用程式、網站和系統服務可使用你的位置。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="755472745191515939">管理員已禁止使用此語言</translation>
 <translation id="7554791636758816595">新分頁</translation>
 <translation id="7556033326131260574">Smart Lock 無法驗證您的帳戶。請輸入您的密碼以進入。</translation>
@@ -9674,7 +9656,6 @@
 <translation id="8224427620313426549">系統不會刪除你的 <ph name="DOMAIN_LINK" /> 帳戶</translation>
 <translation id="8225046344534779393">檢查互聯網連線</translation>
 <translation id="8225265270453771718">分享應用程式視窗</translation>
-<translation id="8225516926291976401">只有系統服務可使用你的位置。不過，應用程式和網站仍可透過 IP 位址取得你的位置。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="8226222018808695353">禁止</translation>
 <translation id="8226619461731305576">佇列</translation>
 <translation id="8227119283605456246">附加檔案</translation>
@@ -9756,7 +9737,6 @@
 <translation id="8275038454117074363">匯入</translation>
 <translation id="8275080796245127762">透過您的裝置撥打電話</translation>
 <translation id="8275339871947079271">將密碼移至 Google 帳戶後，無論您從何處登入帳戶，都可安全存取密碼</translation>
-<translation id="8276242035951017580">所有應用程式都不能使用相機</translation>
 <translation id="8276560076771292512">清除快取並強制重新載入</translation>
 <translation id="8276850948802942358">進一步了解點樣暫時批准網站用第三方 Cookie</translation>
 <translation id="8277907305629781277">你已在 <ph name="DATE" />建立此密鑰</translation>
@@ -10146,7 +10126,6 @@
 <translation id="8573111744706778015">輸入「uo7」會得到「ươ」</translation>
 <translation id="8574990355410201600">一律允許 <ph name="HOST" /> 播放聲音</translation>
 <translation id="8575286410928791436">按住 <ph name="KEY_EQUIVALENT" /> 即可離開</translation>
-<translation id="8575608435630445689">改善定位精確度 (只限 Android)</translation>
 <translation id="8576359558126669548">進一步了解喺無痕模式入面封鎖第三方 Cookie</translation>
 <translation id="8576885347118332789">{NUM_TABS,plural, =1{將分頁新增至閱讀清單}other{將分頁新增至閱讀清單}}</translation>
 <translation id="8577052309681449949">自動點擊、游標大小、游標顏色等等</translation>

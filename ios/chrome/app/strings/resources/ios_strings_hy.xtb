@@ -503,6 +503,7 @@
 <translation id="3575234738189584619">Որոնել Տեսապակու միջոցով</translation>
 <translation id="3575426792457739946">Այս ցանկը պարունակում է բոլոր բեռնված պրոֆիլները։</translation>
 <translation id="3581564640715911333">Առաջարկել էջերի թարգմանությունն այլ լեզուներով</translation>
+<translation id="3585696901179982416">{count,plural, =1{Հասցե {position}՝ {count}-ից}one{Հասցե {position}՝ {count}-ից}other{Հասցե {position}՝ {count}-ից}}</translation>
 <translation id="3587885837929752825">Ձեր կազմակերպությունը սահմանափակել է տվյալները, որոնք կարող եք պահել ձեր Google հաշվում։</translation>
 <translation id="3588820906588687999">Բացել պատկերը նոր ներդիրում</translation>
 <translation id="3595252146048399851">Դուք ցանկացած ժամանակ կարող եք անցնել <ph name="BEGIN_LINK" />կարգավորումներ<ph name="END_LINK" /> և ընտրել, թե ինչն եք ուզում համաժամացնել։ Google-ը կարող է ձեր պատմության հիման վրա անհատականացնել Որոնումը և այլ ծառայությունները։</translation>
@@ -1195,6 +1196,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="69739764870135975">Եթե Google-ը նաև ձեր կանխադրված որոնողական համակարգն է, դուք կտեսնեք ավելի լավ և համապատասխան առաջարկներ։</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6983306615164277634">Կարող եք նաև հպել հասցեագոտուն և պահել՝ դիրքը փոխելու համար։</translation>
+<translation id="6986937292199604715">Միացնել</translation>
 <translation id="6988572888918530647">Կառավարել Google հաշիվը</translation>
 <translation id="6990519590575500580">FaceTime</translation>
 <translation id="6998989275928107238">Ում</translation>
@@ -1301,6 +1303,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7557508262441527045">Դուք դուրս եք գրվել հաշվից</translation>
 <translation id="7561196759112975576">Միշտ</translation>
 <translation id="7564917801238348224">ՊԱՀԵԼ…</translation>
+<translation id="758132317817089442">Միացնել բարելավված պաշտպանությունը</translation>
 <translation id="7582857256643797524">Այս կարգավորումը միացված է ձեր սարքում</translation>
 <translation id="7583004045319035904">Ապակողպեք ձեր ինկոգնիտո ներդիրները՝ օգտագործելով <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />։</translation>
 <translation id="7598439272585186139">Ստացեք ավելի շատ անվտանգություն</translation>
@@ -1470,6 +1473,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8374977641764177587">Միացնե՞լ ծանուցումները</translation>
 <translation id="8378714024927312812">Կառավարվում է ձեր կազմակերպության կողմից</translation>
 <translation id="8386068868580335421">Վերակայել</translation>
+<translation id="8386882774665382072">{count,plural, =1{{position} գաղտնաբառ՝ {count}-ից}one{{position} գաղտնաբառ՝ {count}-ից}other{{position} գաղտնաբառ՝ {count}-ից}}</translation>
 <translation id="838867811594159347">Մուտքագրել անցաբառը…</translation>
 <translation id="8393889347136007944">Ներդիրները <ph name="THRESHOLD" /> օր չեն օգտագործվել</translation>
 <translation id="8395339334550012808">Շուտով «Բաժանորդագրություններ» բաժնում կցուցադրվի բովանդակություն <ph name="CHANNEL_NAME" /> ալիքից և դրա մասին։</translation>
@@ -1653,6 +1657,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="96615566463761848">Ցույց տալ ներդիրների համար հուշումներ այլ սարքերից</translation>
 <translation id="973493300226275298">Հետագծեք ապրանքի գները տարբեր առցանց խանութներում։ Երբ գնիջեցում լինի, դուք ծանուցում կստանաք այդ մասին։</translation>
 <translation id="981498610235328462">Ձեր կազմակերպությունում հնարավոր է մուտք գործել միայն որոշակի հաշիվներ։ Հաշիվները, որոնց մուտքն արգելված է, կթաքցվեն։</translation>
+<translation id="983800820186631385">{count,plural, =1{Վճարման {position} եղանակ՝ {count}-ից}one{Վճարման {position} եղանակ՝ {count}-ից}other{Վճարման {position} եղանակ՝ {count}-ից}}</translation>
 <translation id="984275831282074731">Վճարման եղանակներ</translation>
 <translation id="984509647832111802">Համաժամացումը չի աշխատում։</translation>
 <translation id="988141524645182168">Այլ սարքեր</translation>

@@ -212,6 +212,7 @@
 <translation id="1747827819627189109">터치 키보드 사용 설정됨</translation>
 <translation id="1749109475624620922"><ph name="WINDOW_TITLE" /> 창이 모든 데스크에 할당됨</translation>
 <translation id="1750088060796401187">데스크는 최대 <ph name="MAX_DESK_LIMIT" />개만 허용됩니다. 새로운 데스크를 열려면 기존 데스크를 1개 삭제하세요.</translation>
+<translation id="1755408179247123630">텍스트 읽어주기를 사용 설정하시겠습니까?</translation>
 <translation id="1755556344721611131">진단 앱</translation>
 <translation id="1756833229520115364">템플릿을 저장할 수 없습니다. 창 또는 탭이 너무 많습니다.</translation>
 <translation id="1757857692711134412">일몰까지 끄기</translation>
@@ -951,6 +952,7 @@
 <translation id="4628757576491864469">기기</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, 별표 평점 <ph name="RATING_SCORE" />점</translation>
 <translation id="4633636853437260449">Ctrl+W를 눌러 삭제</translation>
+<translation id="4635501805800894201">{0,plural, =0{지금 기기를 이전 버전으로 업데이트하세요}=1{1초 이내에 기기를 이전 버전으로 업데이트하세요}other{#초 이내에 기기를 이전 버전으로 업데이트하세요}}</translation>
 <translation id="4642092649622328492">부분 스크린샷 찍기</translation>
 <translation id="4644727592819780893">영역이 너무 작아서 카메라 미리보기를 표시할 수 없습니다.</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, 앱 추천</translation>
@@ -980,6 +982,7 @@
 <translation id="4735944890391795473">데스크 12</translation>
 <translation id="473775607612524610">업데이트</translation>
 <translation id="4740516757091333363">저장된 데스크를 삭제하시겠습니까?</translation>
+<translation id="4746798685375253449">{0,plural, =1{하루 안에 기기를 이전 버전으로 업데이트하세요}other{#일 이내에 기기를 이전 버전으로 업데이트하세요}}</translation>
 <translation id="4747410141429390146">알림을 보려면 잠금 해제하세요.</translation>
 <translation id="4752784485658729358">데스크는 6개까지만 저장할 수 있습니다. 새 데스크를 저장하려면 이전 데스크를 삭제하세요.</translation>
 <translation id="4759238208242260848">다운로드</translation>
@@ -1085,6 +1088,9 @@
 <translation id="5092436659250499817">키보드 백라이트 켜기/끄기</translation>
 <translation id="5094577350232361255">정보</translation>
 <translation id="5095136268899496849">설정에서 <ph name="PRODUCT_NAME" />을 맞춤설정할 수 있습니다. 배경화면을 변경하거나 화면 보호기를 설정해 보세요.</translation>
+<translation id="5096125376090473584">소리 내어 읽어 주는 텍스트를 들으려면 화면 하단에 있는 텍스트 읽어주기 아이콘을 선택한 후 텍스트를 강조 표시하세요.
+
+단축키를 사용할 수도 있습니다. 먼저 텍스트를 강조 표시한 다음 <ph name="MODIFIER" /> + s를 누릅니다.</translation>
 <translation id="509790653408515442">휴대전화의 앱을 스트리밍하면 여기 표시됩니다.</translation>
 <translation id="5098537242461068432">데스크 및 창 다시 열림</translation>
 <translation id="5103975065730779239"><ph name="END_TIME_EXPRESSION" />까지</translation>
@@ -1315,6 +1321,7 @@
 <translation id="5916646100036936191">새 알림, 총 <ph name="NOTIFICATION_COUNT" />개</translation>
 <translation id="5916664084637901428">사용</translation>
 <translation id="5920710855273935292">마이크가 음소거되어 있습니다.</translation>
+<translation id="5928083197428724029"><ph name="MANAGER" />의 업데이트가 필요합니다.</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> 기능이 켜져 있습니다.</translation>
 <translation id="5947494881799873997">되돌리기</translation>
 <translation id="595202126637698455">성능 추적 사용 중</translation>
@@ -1404,7 +1411,6 @@
 <translation id="6232416233079464213">출처: <ph name="SESSION_NAME" /></translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" />에서 카메라와 마이크를 사용 중입니다.</translation>
 <translation id="6237231532760393653">1X</translation>
-<translation id="62380141479352646">배터리가 부족합니다. 절전 모드가 사용 설정되었습니다.</translation>
 <translation id="6240603910551255087">상단 버튼</translation>
 <translation id="6247728804802644171">알림 열기</translation>
 <translation id="6249795363855770621">완료로 표시할 수 없습니다. 온라인 상태일 때 다시 시도해 보세요.</translation>
@@ -1433,6 +1439,7 @@
 <translation id="6376931439017688372">블루투스 사용 중</translation>
 <translation id="6378515133128829137">오른쪽에 창 고정</translation>
 <translation id="6381109794406942707">기기의 잠금을 해제하려면 PIN을 입력하세요.</translation>
+<translation id="6381305031890976705">{0,plural, =1{1시간 이내에 기기를 이전 버전으로 업데이트하세요}other{#시간 이내에 기기를 이전 버전으로 업데이트하세요}}</translation>
 <translation id="638716340450135524">카메라 액세스 권한 부여</translation>
 <translation id="639644700271529076">CAPS LOCK이 꺼져 있음</translation>
 <translation id="6406458002328242616">타이머를 수정합니다. <ph name="FOCUS_DURATION" />.</translation>
@@ -1455,6 +1462,7 @@
 <translation id="6459472438155181876">화면을 <ph name="DISPLAY_NAME" />(으)로 확장</translation>
 <translation id="6464094930452079790">이미지</translation>
 <translation id="6467290994038932560"><ph name="GAME_APP_NAME" />에 사용 설정됨</translation>
+<translation id="6468406072297048412">{0,plural, =1{1분 이내에 기기를 이전 버전으로 업데이트하세요}other{#분 이내에 기기를 이전 버전으로 업데이트하세요}}</translation>
 <translation id="6469104339369989396">핫스팟을 전환합니다.</translation>
 <translation id="6477681113376365978">파일을 다운로드할 수 없음</translation>
 <translation id="6482559668224714696">전체 화면 돋보기</translation>
@@ -1578,6 +1586,7 @@
 <translation id="6917259695595127329">할 일 목록 최종 업데이트: <ph name="TIME" /></translation>
 <translation id="6919251195245069855">스마트 카드를 인식할 수 없습니다. 다시 시도해 보세요.</translation>
 <translation id="692135145298539227">삭제</translation>
+<translation id="6921427376813842559">기기 업데이트</translation>
 <translation id="6929081673585394903">컨트롤 표시</translation>
 <translation id="6931576957638141829">저장 위치</translation>
 <translation id="6942518653766415536">녹화 형식 메뉴</translation>
@@ -1665,6 +1674,7 @@
 <translation id="7303365578352795231">다른 기기에서 응답 중입니다.</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">관리자가 eSIM을 재설정하는 중입니다. 몇 분 정도 소요될 수 있습니다.</translation>
+<translation id="7312761820869643657">기기를 이전 버전으로 업데이트</translation>
 <translation id="7313193732017069507">카메라 펼치기</translation>
 <translation id="7330397557116570022">음성기록을 사용하려면 텍스트 필드로 이동하세요.</translation>
 <translation id="7331646370422660166">Alt + 아래쪽 화살표</translation>
@@ -1814,6 +1824,7 @@
 <translation id="7851768487828137624">카나리아 </translation>
 <translation id="7862292329216937261">게스트로 기기를 사용하려면 로그아웃한 다음 화면 하단에서 게스트로 로그인을 선택해야 합니다.</translation>
 <translation id="7866482334467279021">사용</translation>
+<translation id="7866727328666668290">마지막으로 연 탭</translation>
 <translation id="7872786842639831132">꺼짐</translation>
 <translation id="7875575368831396199"><ph name="DEVICE_TYPE" />의 블루투스가 꺼져 있는 것 같습니다. 휴대전화 허브를 사용하려면 블루투스를 사용 설정하세요.</translation>
 <translation id="7884446017008693258">핫스팟 설정</translation>
@@ -2140,7 +2151,6 @@
 <translation id="9080132581049224423">위로 스와이프하여 홈으로 이동</translation>
 <translation id="9080206825613744995">마이크가 사용 중입니다.</translation>
 <translation id="9083324773537346962">OS 버전</translation>
-<translation id="908451241440060346">방해 금지 모드가 사용 설정되어 있으면 알림이 음소거됩니다.</translation>
 <translation id="9084606467167974638">메뉴 위치 전환</translation>
 <translation id="9085962983642906571">전원에 연결된 상태에서 배터리 수명 연장을 위해 충전량이 80%로 유지됩니다.</translation>
 <translation id="9089416786594320554">입력 방법</translation>
@@ -2181,6 +2191,7 @@
 <translation id="925832987464884575">미리보기 숨기기</translation>
 <translation id="938407504481277932">현재 데스크는 <ph name="DESK_NAME" />입니다. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. 데스크 <ph name="DESK_COUNT" />개 중 <ph name="DESK_INDEX" />번째입니다.</translation>
 <translation id="938963181863597773">오늘 내 일정이 어떻게 돼?</translation>
+<translation id="94468042118567862">기기가 최신 상태가 아닙니다</translation>
 <translation id="945383118875625837">링크를 북마크바로 드래그</translation>
 <translation id="945522503751344254">의견 보내기</translation>
 <translation id="951991426597076286">거부</translation>

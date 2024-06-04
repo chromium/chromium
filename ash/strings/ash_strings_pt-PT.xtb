@@ -212,6 +212,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1747827819627189109">Teclado no ecrã ativado</translation>
 <translation id="1749109475624620922">Janela <ph name="WINDOW_TITLE" /> atribuída a todos os espaços de trabalho</translation>
 <translation id="1750088060796401187">Apenas são permitidos <ph name="MAX_DESK_LIMIT" /> espaços de trabalho. Remova um espaço de trabalho para abrir um novo.</translation>
+<translation id="1755408179247123630">Ativar a funcionalidade Selecionar para falar?</translation>
 <translation id="1755556344721611131">App Diagnósticos</translation>
 <translation id="1756833229520115364">Não foi possível guardar o modelo. Existem demasiadas janelas ou separadores.</translation>
 <translation id="1757857692711134412">Desativada até ao nascer do sol</translation>
@@ -1087,6 +1088,9 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="5092436659250499817">Ativar/desativar a retroiluminação do teclado</translation>
 <translation id="5094577350232361255">sobre</translation>
 <translation id="5095136268899496849">Personalize o <ph name="PRODUCT_NAME" /> nas Definições. Experimente alterar a imagem de fundo ou definir uma proteção de ecrã.</translation>
+<translation id="5096125376090473584">Para ouvir o texto lido em voz alta, selecione o ícone Selecionar para falar na parte inferior do ecrã e, em seguida, realce o texto.
+
+Também pode usar o atalho de teclado. Primeiro, realce o texto e, em seguida, prima <ph name="MODIFIER" /> + s.</translation>
 <translation id="509790653408515442">Quando fizer stream das apps do telemóvel, as mesmas vão ser apresentadas aqui</translation>
 <translation id="5098537242461068432">O espaço de trabalho e as janelas foram reabertos</translation>
 <translation id="5103975065730779239">Até à(s) <ph name="END_TIME_EXPRESSION" /></translation>
@@ -1407,7 +1411,6 @@ Nenhum dispositivo ligado.</translation>
 <translation id="6232416233079464213">Do <ph name="SESSION_NAME" /></translation>
 <translation id="6232891689835436217">A app <ph name="APP_NAME" /> está a usar a câmara e o microfone neste momento</translation>
 <translation id="6237231532760393653">1X</translation>
-<translation id="62380141479352646">Bateria fraca. Poupança de bateria ativada,</translation>
 <translation id="6240603910551255087">Botão superior</translation>
 <translation id="6247728804802644171">Abrir as notificações</translation>
 <translation id="6249795363855770621">Não foi possível marcá-la como concluída. Tente novamente quando estiver online.</translation>
@@ -1821,6 +1824,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">Para usar o dispositivo como convidado, tem de terminar sessão e, de seguida, selecionar Navegar como convidado na parte inferior do ecrã.</translation>
 <translation id="7866482334467279021">ativado</translation>
+<translation id="7866727328666668290">Último separador aberto</translation>
 <translation id="7872786842639831132">Desativado</translation>
 <translation id="7875575368831396199">O Bluetooth está desativado no seu <ph name="DEVICE_TYPE" />. Ative o Bluetooth para utilizar o Phone Hub.</translation>
 <translation id="7884446017008693258">Definições da zona Wi-Fi</translation>
@@ -2147,7 +2151,6 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="9080132581049224423">Deslize rapidamente para cima para aceder à página inicial</translation>
 <translation id="9080206825613744995">O microfone está a ser utilizado.</translation>
 <translation id="9083324773537346962">Versão SO</translation>
-<translation id="908451241440060346">O som das notificações está desativado quando o modo Não incomodar está ativado</translation>
 <translation id="9084606467167974638">Alternar a posição do menu</translation>
 <translation id="9085962983642906571">A bateria é mantida a 80% quando ligada à corrente para prolongar a autonomia da bateria.</translation>
 <translation id="9089416786594320554">Métodos de introd.</translation>

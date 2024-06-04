@@ -107,6 +107,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1333308631814936910">El dispositivo <ph name="DISPLAY_NAME" /> está conectado.</translation>
 <translation id="1340378040547539434">Alejar la página</translation>
 <translation id="1341651618736211726">Ampliado</translation>
+<translation id="1341926407152459446">Usar "<ph name="DEVICE_NAME" />" para la entrada y la salida de audio</translation>
 <translation id="1344141078024003905">Estás transmitiendo la pantalla. Puedes pausar o detener la transmisión de la pantalla en cualquier momento.</translation>
 <translation id="1346748346194534595">Derecha</translation>
 <translation id="1351937230027495976">Contraer menú</translation>
@@ -145,6 +146,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1486307154719069822">Con el dictado, puedes escribir con tu voz. Presiona la tecla de dictado o selecciona el ícono de micrófono en la parte inferior de la pantalla cuando estés en un campo de texto. El idioma de dictado está configurado en <ph name="LANGUAGE" />. La voz se envía a Google para su procesamiento. Puedes cambiar el idioma de dictado en cualquier momento en Configuración &gt; Accesibilidad.</translation>
 <translation id="1487931858675166540">Se intercambió <ph name="FIRST_ITEM_TITLE" /> con <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Mostrar todas las sugerencias</translation>
+<translation id="1501946871587957338">¿Quieres cambiar la fuente de audio?</translation>
 <translation id="1510238584712386396">Selector</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Mostrar la configuración de las notificaciones: Están desactivadas para una app}other{Mostrar la configuración de las notificaciones: Están desactivadas para # apps}}</translation>
 <translation id="1523032696246003"><ph name="BATTERY_PERCENTAGE" />% de batería | <ph name="TIME" /> para completar</translation>
@@ -774,6 +776,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="397105322502079400">Calculando...</translation>
 <translation id="397726367135689299">Es posible que la carga de la batería no sea confiable.</translation>
 <translation id="3977512764614765090">Nivel de la batería: <ph name="PERCENTAGE" />% y cargando</translation>
+<translation id="3982013579989864579">¿Quieres cambiar la salida de audio?</translation>
 <translation id="3984536049089846927">Página siguiente</translation>
 <translation id="3986082989454912832">Responder</translation>
 <translation id="3990002060657467458">Los controles que usas con frecuencia, como Wi-Fi, Bluetooth y volumen, se encuentran en la Configuración rápida. También puedes ir aquí para tomar capturas de pantalla.</translation>
@@ -817,6 +820,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4150201353443180367">Pantalla</translation>
 <translation id="4156293514828496577"><ph name="PERCENTAGE" />% restante de batería (aproximadamente <ph name="TIME_LEFT" />).
 Algunas funciones están limitadas para aumentar la duración de la batería.</translation>
+<translation id="4160919062868802509">Se detectaron varias fuentes de audio</translation>
 <translation id="4165275524535002941">Es posible que el cable no admita pantallas</translation>
 <translation id="4177415338862979658">Haz clic para ver los detalles</translation>
 <translation id="4177913004758410636">{0,plural, =1{Actualiza el dispositivo en el transcurso de 1 día}other{Actualiza el dispositivo dentro de los próximos # días}}</translation>
@@ -1015,6 +1019,7 @@ Se conectó un dispositivo.</translation>
 <translation id="4871905435473761992">Mostrar detalles del hotspot. Tu red móvil no es compatible con el hotspot.</translation>
 <translation id="4872237917498892622">Alt+tecla de búsqueda o Mayús</translation>
 <translation id="4872852897273142380">Enfocar o destacar la barra de favoritos (si está visible)</translation>
+<translation id="4876935764454575645">Selección de audio</translation>
 <translation id="4881323000405981760">No se admiten efectos en las apps de Linux</translation>
 <translation id="4881695831933465202">Abrir</translation>
 <translation id="4889868803215848840">Envía comentarios opcionales para mejorar las sugerencias:</translation>
@@ -1091,6 +1096,7 @@ Se conectó un dispositivo.</translation>
 <translation id="5121628974188116412">Ir a la parte inferior de la página</translation>
 <translation id="5122517996953421795">Vista previa de <ph name="DESK_NAME" />. Escritorio inactivo.</translation>
 <translation id="5136175204352732067">Se conectó otro teclado</translation>
+<translation id="5144005092084035179">¿Quieres cambiar la entrada de audio?</translation>
 <translation id="5147567197700016471">Desbloqueada</translation>
 <translation id="5150070631291639005">Configuración de privacidad</translation>
 <translation id="5155897006997040331">Velocidad de lectura</translation>
@@ -1399,7 +1405,6 @@ No hay dispositivos conectados.</translation>
 <translation id="6232416233079464213">De <ph name="SESSION_NAME" /></translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> está utilizando tu cámara y micrófono</translation>
 <translation id="6237231532760393653">1X</translation>
-<translation id="62380141479352646">Batería baja. Se activó el Ahorro de batería.</translation>
 <translation id="6240603910551255087">Botón superior</translation>
 <translation id="6247728804802644171">Abrir notificaciones</translation>
 <translation id="6249795363855770621">No se pudo marcar como completada. Vuelve a intentarlo cuando estés en línea.</translation>
@@ -1790,6 +1795,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="7780094051999721182">accesos directos</translation>
 <translation id="7780159184141939021">Girar pantalla</translation>
 <translation id="7781829728241885113">Ayer</translation>
+<translation id="7787212146956232129">Se establecieron los dispositivos de entrada y salida. Ve a Configuración para cambiarlos.</translation>
 <translation id="7792590255364786396">Visible</translation>
 <translation id="7796735576426975947">Se ocultó una nueva notificación</translation>
 <translation id="7798302898096527229">Presiona mayúscula o la tecla de búsqueda para cancelarlo.</translation>
@@ -2096,6 +2102,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 archivo}other{# archivos}}</translation>
 <translation id="8936501819958976551">desactivada</translation>
 <translation id="8938800817013097409">Dispositivo USB-C (puerto derecho en la parte posterior)</translation>
+<translation id="8939855324412367560">La entrada de audio es "<ph name="INPUT_DEVICE_NAME" />" y la salida es "<ph name="OUTPUT_DEVICE_NAME" />". Ve a Configuración para cambiarlas.</translation>
 <translation id="8940956008527784070">Batería baja (<ph name="PERCENTAGE" />%)</translation>
 <translation id="894774083269346314">Casilla de verificación de <ph name="PROFILE_NAME" /> <ph name="EMAIL" /> no marcada.</translation>
 <translation id="8949925099261528566">Conectado, pero sin conexión a Internet</translation>
@@ -2133,7 +2140,6 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="9080132581049224423">Desliza hacia arriba para ir a la pantalla principal</translation>
 <translation id="9080206825613744995">El micrófono está en uso.</translation>
 <translation id="9083324773537346962">Versión OS </translation>
-<translation id="908451241440060346">Se silencian las notificaciones cuando está activada la función No interrumpir</translation>
 <translation id="9084606467167974638">Cambiar la posición del menú</translation>
 <translation id="9085962983642906571">El nivel de la batería se mantiene al 80% cuando el dispositivo está enchufado para extender la duración de batería.</translation>
 <translation id="9089416786594320554">Métodos de entrada</translation>
@@ -2153,6 +2159,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="9178475906033259337">Mostrando 1 resultado para <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Esta función te permite alternar de forma rápida entre los usuarios que hayan accedido a su cuenta, sin necesidad de escribir la contraseña. Usa esta función solo con cuentas de confianza.</translation>
 <translation id="9183456764293710005">Lupa de pantalla completa</translation>
+<translation id="9192133205265227850">Usar "<ph name="DEVICE_NAME" />"</translation>
 <translation id="9193626018745640770">Transmitiendo en un receptor desconocido</translation>
 <translation id="9194617393863864469">Acceder con otro usuario…</translation>
 <translation id="9195990613383871904">Mañana</translation>

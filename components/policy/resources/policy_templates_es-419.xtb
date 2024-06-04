@@ -1721,6 +1721,7 @@ Si no estableces esta política o la inhabilitas, no se permitirá la transferen
 <translation id="2258126710006312594">Permite que los usuarios con acceso remoto transfieran archivos hacia y desde el host</translation>
 <translation id="225830954785359083">Impedir que las páginas muestren ventanas emergentes durante las descargas</translation>
 <translation id="2261648512244797294">Inhabilita la impresión Privet obsoleta</translation>
+<translation id="2263881357524831360">Permitir el uso de administradores de contraseñas de terceros en <ph name="PRODUCT_NAME" /> el <ph name="ANDROID_NAME" /></translation>
 <translation id="2264286153777425328">Lista de acciones para ejecutar cuando se alcanza el tiempo de espera de la política <ph name="IDLE_TIMEOUT_POLICY_NAME" />.
 
 Advertencia: Si estableces esta política, es posible que se vean afectados los datos personales locales y que se quiten de forma permanente. Se recomienda probar la configuración antes de la implementación para evitar la eliminación accidental de datos personales.
@@ -2641,6 +2642,7 @@ La política <ph name="FLOATING_SSO_DOMAIN_BLOCKLIST_EXCEPTIONS_POLICY_NAME" /> 
 <translation id="2960128438010718932">El programa de etapas para aplicar una actualización nueva</translation>
 <translation id="2960691910306063964">Habilitar o inhabilitar la autenticación sin PIN para hosts de acceso remoto</translation>
 <translation id="2960999045613902792">Permitir que los usuarios agreguen impresoras no empresariales, las configuren y hagan impresiones en ellas</translation>
+<translation id="296100724744272922">Permitir el uso de un administrador de contraseñas de terceros en Chrome</translation>
 <translation id="2962972237615992440">Inhabilitar el proxy <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="2963292398266537394">Inhabilitar el dictado</translation>
 <translation id="2964373560810620158">Evitar que los usuarios utilicen el navegador <ph name="LACROS_NAME" /></translation>
@@ -8124,6 +8126,23 @@ Si estableces esta política, los usuarios no podrán cambiarla ni anularla.
 Si no la estableces, inicialmente la lupa estará inhabilitada en la pantalla de acceso, pero el usuario podrá habilitarla en cualquier momento.</translation>
 <translation id="7109384070286741861">Inhabilitar CECPQ2</translation>
 <translation id="7113439794629928551">Mostrar los controles multimedia de las sesiones de <ph name="PRODUCT_NAME" /> que iniciaron otros dispositivos</translation>
+<translation id="7113803652772945829">Si estableces la política como verdadera, los usuarios podrán usar un administrador de contraseñas de terceros.
+Este administrador de contraseñas se encargará de guardar y completar todas las contraseñas, así como los datos de
+pagos y autocompletar.
+Si estableces la política como verdadera o no la estableces, un parámetro de configuración permitirá cambiar entre
+el administrador de contraseñas integrado
+de <ph name="PRODUCT_NAME" /> y el administrador de contraseñas establecido en la configuración de Android.
+Dado que <ph name="PRODUCT_NAME" /> usa los mismos datos
+que Autocompletar con Google, el parámetro de configuración solo se puede cambiar para usar
+administradores de contraseñas de terceros si se estableció un administrador distinto a Autocompletar con Google
+en la configuración del sistema de Android.
+
+Si estableces la política como falsa,
+<ph name="PRODUCT_NAME" /> siempre usará el
+administrador de contraseñas integrado.
+
+Esta política no afecta a los administradores de contraseñas de terceros que usan
+APIs de accesibilidad.</translation>
 <translation id="7114169791477667553">Inhabilitar el proveedor de búsqueda predeterminado</translation>
 <translation id="7121046543122812054">Esta política dejó de estar disponible. Puedes usar <ph name="BROWSER_SIGNIN_POLICY_NAME" /> en su lugar.
 
@@ -10901,6 +10920,7 @@ El valor predeterminado es RollbackDisabled.</translation>
 2 = Inhabilita la función 2 es el valor predeterminado de las cuentas de institución educativa que administra <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
 
 Para obtener más información sobre el manejo de datos de las funciones de IA generativa, consulta https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
+<translation id="949192525372487705">Bloquear el cambio a un administrador de contraseñas de terceros</translation>
 <translation id="957322141096206402">Ejecutar la resolución de DNS del sistema dentro o fuera del proceso de red según la configuración del sistema y las marcas de función</translation>
 <translation id="957778406002650056">La URL desde la cual se puede descargar la imagen de <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="957920984193041197">Permitir que las páginas muestren ventanas emergentes durante las descargas</translation>

@@ -107,6 +107,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> connectada</translation>
 <translation id="1340378040547539434">Redueix la pàgina</translation>
 <translation id="1341651618736211726">Menú de desbordament</translation>
+<translation id="1341926407152459446">Utilitza "<ph name="DEVICE_NAME" />" per a l'entrada i la sortida d'àudio</translation>
 <translation id="1344141078024003905">Estàs emetent la teva pantalla. Pots posar en pausa o aturar l'emissió de la pantalla en qualsevol moment.</translation>
 <translation id="1346748346194534595">Dreta</translation>
 <translation id="1351937230027495976">Replega el menú</translation>
@@ -145,6 +146,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1486307154719069822">Amb la funció de dictat, pots escriure utilitzant la veu. Prem la tecla de dictat o selecciona la icona de micròfon que hi ha a la part inferior de la pantalla quan siguis en un camp de text. L'idioma del dictat s'ha configurat en <ph name="LANGUAGE" />. La parla s'envia a Google perquè la processi. Pots canviar l'idioma del dictat en qualsevol moment a Configuració &gt; Accessibilitat.</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> s'ha intercanviat amb <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Mostra tots els suggeriments</translation>
+<translation id="1501946871587957338">Vols canviar la font d'àudio?</translation>
 <translation id="1510238584712386396">Menú d'aplicacions</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Mostra la configuració de les notificacions. Les notificacions estan desactivades per a una aplicació.}other{Mostra la configuració de les notificacions. Les notificacions estan desactivades per a # aplicacions.}}</translation>
 <translation id="1523032696246003">Bateria: <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> per completar la càrrega</translation>
@@ -210,6 +212,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1747827819627189109">Teclat en pantalla activat</translation>
 <translation id="1749109475624620922">La finestra <ph name="WINDOW_TITLE" /> s'ha assignat a tots els escriptoris</translation>
 <translation id="1750088060796401187">Només es permeten <ph name="MAX_DESK_LIMIT" /> escriptoris. Suprimeix un escriptori per obrir-ne un altre.</translation>
+<translation id="1755408179247123630">Vols activar la funció Escolta la selecció?</translation>
 <translation id="1755556344721611131">Aplicació de diagnòstic</translation>
 <translation id="1756833229520115364">No s'ha pogut desar la plantilla. Hi ha massa finestres o pestanyes.</translation>
 <translation id="1757857692711134412">Desactivada fins al vespre</translation>
@@ -773,6 +776,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="397105322502079400">S’està calculant...</translation>
 <translation id="397726367135689299">És possible que la càrrega de la bateria sigui poc fiable.</translation>
 <translation id="3977512764614765090">La bateria s'està carregant i està a un <ph name="PERCENTAGE" />%.</translation>
+<translation id="3982013579989864579">Vols canviar la sortida d'àudio?</translation>
 <translation id="3984536049089846927">Pàgina següent</translation>
 <translation id="3986082989454912832">Respon</translation>
 <translation id="3990002060657467458">Trobaràs els controls utilitzats amb més freqüència, com ara la Wi‐Fi, el Bluetooth i el volum, a la configuració ràpida. Des d'aquí també podràs fer captures de pantalla.</translation>
@@ -816,6 +820,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="4150201353443180367">Pantalla</translation>
 <translation id="4156293514828496577">Queda un <ph name="PERCENTAGE" /> % de bateria (aproximadament <ph name="TIME_LEFT" />).
 Algunes funcions estan limitades per allargar la durada de la bateria.</translation>
+<translation id="4160919062868802509">S'han detectat diverses fonts d'àudio</translation>
 <translation id="4165275524535002941">És possible que el cable no sigui compatible amb pantalles</translation>
 <translation id="4177415338862979658">Fes clic per veure'n els detalls</translation>
 <translation id="4177913004758410636">{0,plural, =1{Actualitza el dispositiu en 1 dia}other{Actualitza el dispositiu en # dies}}</translation>
@@ -947,6 +952,7 @@ Hi ha 1 dispositiu connectat.</translation>
 <translation id="4628757576491864469">Dispositius</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />; puntuació en estrelles: <ph name="RATING_SCORE" /></translation>
 <translation id="4633636853437260449">Prem Ctrl+W per suprimir</translation>
+<translation id="4635501805800894201">{0,plural, =0{Actualitza el dispositiu a la versió anterior ara}=1{Actualitza el dispositiu a la versió anterior en el termini d'1 segon}other{Actualitza el dispositiu a la versió anterior en el termini de # segons}}</translation>
 <translation id="4642092649622328492">Fes una captura de pantalla parcial</translation>
 <translation id="4644727592819780893">La zona és massa petita perquè s'ajusti a la càmera</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, recomanació d'aplicació</translation>
@@ -976,6 +982,7 @@ Hi ha 1 dispositiu connectat.</translation>
 <translation id="4735944890391795473">Escriptori 12</translation>
 <translation id="473775607612524610">Actualitza</translation>
 <translation id="4740516757091333363">Vols suprimir l'escriptori desat?</translation>
+<translation id="4746798685375253449">{0,plural, =1{Actualitza el dispositiu a la versió anterior en el termini d'1 dia}other{Actualitza el dispositiu a la versió anterior en el termini de # dies}}</translation>
 <translation id="4747410141429390146">Desbloqueja per veure les notificacions</translation>
 <translation id="4752784485658729358">Només s'admeten 6 escriptoris desats. Suprimeix-ne un per desar-ne un de nou.</translation>
 <translation id="4759238208242260848">Baixades</translation>
@@ -1014,6 +1021,7 @@ Hi ha 1 dispositiu connectat.</translation>
 <translation id="4871905435473761992">Mostra els detalls del punt d'accés Wi‐Fi. La teva xarxa mòbil no l'admet.</translation>
 <translation id="4872237917498892622">Alt+Cerca o Maj</translation>
 <translation id="4872852897273142380">Situa el focus a la barra d'adreces d'interès o la marca (si es mostra)</translation>
+<translation id="4876935764454575645">Selecció d'àudio</translation>
 <translation id="4881323000405981760">Les aplicacions de Linux no admeten efectes</translation>
 <translation id="4881695831933465202">Obre</translation>
 <translation id="4889868803215848840">Proporciona comentaris opcionals per millorar els suggeriments:</translation>
@@ -1080,6 +1088,9 @@ Hi ha 1 dispositiu connectat.</translation>
 <translation id="5092436659250499817">Activa/desactiva la retroil·luminació del teclat</translation>
 <translation id="5094577350232361255">informació</translation>
 <translation id="5095136268899496849">Personalitza el teu <ph name="PRODUCT_NAME" /> a Configuració. Prova de canviar el fons de pantalla o d'establir un estalvi de pantalla.</translation>
+<translation id="5096125376090473584">Per escoltar el text llegit en veu alta, selecciona la icona d'Escolta la selecció que hi ha a la part inferior de la pantalla i, a continuació, marca el text.
+
+També pots utilitzar les tecles de drecera. Primer, marca el text i, a continuació, prem <ph name="MODIFIER" /> + s.</translation>
 <translation id="509790653408515442">Quan reprodueixis en continu aplicacions del telèfon, apareixeran aquí</translation>
 <translation id="5098537242461068432">S'han tornat a obrir l'escriptori i les finestres</translation>
 <translation id="5103975065730779239">Fins a les <ph name="END_TIME_EXPRESSION" /></translation>
@@ -1090,6 +1101,7 @@ Hi ha 1 dispositiu connectat.</translation>
 <translation id="5121628974188116412">Ves a la part inferior de la pàgina</translation>
 <translation id="5122517996953421795">Previsualització de <ph name="DESK_NAME" />. Escriptori inactiu.</translation>
 <translation id="5136175204352732067">S'ha connectat un altre teclat</translation>
+<translation id="5144005092084035179">Vols canviar l'entrada d'àudio?</translation>
 <translation id="5147567197700016471">Desbloquejat</translation>
 <translation id="5150070631291639005">Configuració de la privadesa</translation>
 <translation id="5155897006997040331">Velocitat de lectura</translation>
@@ -1309,6 +1321,7 @@ No hi ha cap dispositiu connectat.</translation>
 <translation id="5916646100036936191">Notificació nova, <ph name="NOTIFICATION_COUNT" /> en total</translation>
 <translation id="5916664084637901428">Activat</translation>
 <translation id="5920710855273935292">El micròfon està silenciat.</translation>
+<translation id="5928083197428724029">Actualització requerida per <ph name="MANAGER" /></translation>
 <translation id="5946788582095584774">La funció <ph name="FEATURE_NAME" /> està activada.</translation>
 <translation id="5947494881799873997">Reverteix</translation>
 <translation id="595202126637698455">Traça del rendiment activada</translation>
@@ -1398,7 +1411,6 @@ No hi ha cap dispositiu connectat.</translation>
 <translation id="6232416233079464213">De <ph name="SESSION_NAME" /></translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> està utilitzant la càmera i el micròfon</translation>
 <translation id="6237231532760393653">1X</translation>
-<translation id="62380141479352646">Bateria baixa. Estalvi de bateria s'ha activat.</translation>
 <translation id="6240603910551255087">Botó superior</translation>
 <translation id="6247728804802644171">Obre les notificacions</translation>
 <translation id="6249795363855770621">No s'ha pogut marcar com a completada. Torna-ho a provar quan estiguis en línia.</translation>
@@ -1427,6 +1439,7 @@ No hi ha cap dispositiu connectat.</translation>
 <translation id="6376931439017688372">El Bluetooth està activat</translation>
 <translation id="6378515133128829137">Fixa la finestra a la dreta</translation>
 <translation id="6381109794406942707">Per desbloquejar el dispositiu, introdueix el PIN.</translation>
+<translation id="6381305031890976705">{0,plural, =1{Actualitza el dispositiu a la versió anterior en el termini d'1 hora}other{Actualitza el dispositiu a la versió anterior en el termini de # hores}}</translation>
 <translation id="638716340450135524">Activa l'accés a la càmera</translation>
 <translation id="639644700271529076">Bloq Maj està desactivat</translation>
 <translation id="6406458002328242616">Edita el temporitzador. <ph name="FOCUS_DURATION" />.</translation>
@@ -1449,6 +1462,7 @@ No hi ha cap dispositiu connectat.</translation>
 <translation id="6459472438155181876">S'està ampliant la pantalla a <ph name="DISPLAY_NAME" /></translation>
 <translation id="6464094930452079790">imatges</translation>
 <translation id="6467290994038932560">Activats per a <ph name="GAME_APP_NAME" /></translation>
+<translation id="6468406072297048412">{0,plural, =1{Actualitza el dispositiu a la versió anterior en el termini d'1 minut}other{Actualitza el dispositiu a la versió anterior en el termini de # minuts}}</translation>
 <translation id="6469104339369989396">Commuta el punt d'accés Wi‐Fi</translation>
 <translation id="6477681113376365978">No es pot baixar el fitxer</translation>
 <translation id="6482559668224714696">Lupa de pantalla completa</translation>
@@ -1572,6 +1586,7 @@ Instal·lació nova</translation>
 <translation id="6917259695595127329">Darrera actualització de les tasques: <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">No s'ha reconegut la targeta intel·ligent. Torna-ho a provar.</translation>
 <translation id="692135145298539227">suprimeix</translation>
+<translation id="6921427376813842559">Actualitza el dispositiu</translation>
 <translation id="6929081673585394903">Mostra els controls</translation>
 <translation id="6931576957638141829">Desa a</translation>
 <translation id="6942518653766415536">Menú de format de gravació</translation>
@@ -1659,6 +1674,7 @@ Instal·lació nova</translation>
 <translation id="7303365578352795231">S'està responent en un altre dispositiu.</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">L'administrador està restablint l'eSIM. Aquest procés pot tardar uns minuts.</translation>
+<translation id="7312761820869643657">Actualitza el dispositiu a la versió anterior</translation>
 <translation id="7313193732017069507">Desplega la càmera</translation>
 <translation id="7330397557116570022">Ves a un camp de text per utilitzar el dictat</translation>
 <translation id="7331646370422660166">Alt+fletxa avall</translation>
@@ -1789,6 +1805,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="7780094051999721182">dreceres</translation>
 <translation id="7780159184141939021">Gira la pantalla</translation>
 <translation id="7781829728241885113">Ahir</translation>
+<translation id="7787212146956232129">Els dispositius d'entrada i de sortida estan definits. Per canviar-ho, ves a Configuració.</translation>
 <translation id="7792590255364786396">Visible</translation>
 <translation id="7796735576426975947">S'ha amagat una altra notificació</translation>
 <translation id="7798302898096527229">Prem Cerca o Maj per cancel·lar.</translation>
@@ -1807,6 +1824,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">Per utilitzar el dispositiu com a convidat, tanca la sessió i, a la part inferior de la pantalla, selecciona Navega com a convidat.</translation>
 <translation id="7866482334467279021">activat</translation>
+<translation id="7866727328666668290">S'ha obert la darrera pestanya</translation>
 <translation id="7872786842639831132">Desactivat</translation>
 <translation id="7875575368831396199">Sembla que el Bluetooth està desactivat al teu <ph name="DEVICE_TYPE" />. Activa el Bluetooth per utilitzar El meu telèfon.</translation>
 <translation id="7884446017008693258">Configuració del punt d'accés Wi‐Fi</translation>
@@ -2095,6 +2113,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 fitxer}other{# fitxers}}</translation>
 <translation id="8936501819958976551">desactivada</translation>
 <translation id="8938800817013097409">Dispositiu USB-C (port posterior dret)</translation>
+<translation id="8939855324412367560">L'àudio d'entrada és "<ph name="INPUT_DEVICE_NAME" />" i el de sortida, "<ph name="OUTPUT_DEVICE_NAME" />". Per canviar-ho, ves a Configuració.</translation>
 <translation id="8940956008527784070">Bateria baixa (<ph name="PERCENTAGE" />%)</translation>
 <translation id="894774083269346314">No s'ha marcat la casella de selecció de <ph name="PROFILE_NAME" /> (<ph name="EMAIL" />).</translation>
 <translation id="8949925099261528566">Connectat, sense Internet</translation>
@@ -2132,7 +2151,6 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="9080132581049224423">Llisca cap amunt per anar a la pàgina d'inici</translation>
 <translation id="9080206825613744995">S'està fent servir el micròfon.</translation>
 <translation id="9083324773537346962">versió de l'SO</translation>
-<translation id="908451241440060346">Les notificacions estan silenciades quan el mode No molestis està activat</translation>
 <translation id="9084606467167974638">Commuta la posició del menú</translation>
 <translation id="9085962983642906571">La bateria es manté al 80% mentre el dispositiu està connectat per allargar la durada de la bateria.</translation>
 <translation id="9089416786594320554">Mètodes d'introducció</translation>
@@ -2152,6 +2170,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="9178475906033259337">S'està mostrant 1 resultat per a "<ph name="QUERY" />"</translation>
 <translation id="9179259655489829027">Aquesta funció et permet accedir ràpidament als usuaris que han iniciat la sessió sense haver d'introduir la contrasenya. Utilitza aquesta funció només amb comptes de confiança.</translation>
 <translation id="9183456764293710005">Lupa de pantalla completa</translation>
+<translation id="9192133205265227850">Fes servir "<ph name="DEVICE_NAME" />"</translation>
 <translation id="9193626018745640770">S'està emetent contingut en un receptor desconegut</translation>
 <translation id="9194617393863864469">Inicia la sessió amb un altre usuari...</translation>
 <translation id="9195990613383871904">Demà</translation>
@@ -2172,6 +2191,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="925832987464884575">Amaga les previsualitzacions</translation>
 <translation id="938407504481277932">Escriptori actual: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> (<ph name="EMAIL" />). Escriptori <ph name="DESK_INDEX" /> de <ph name="DESK_COUNT" />.</translation>
 <translation id="938963181863597773">Què tinc programat al calendari?</translation>
+<translation id="94468042118567862">El dispositiu no està actualitzat</translation>
 <translation id="945383118875625837">Arrossega l'enllaç a la barra d'adreces d'interès</translation>
 <translation id="945522503751344254">Envia suggeriments</translation>
 <translation id="951991426597076286">Rebutja</translation>

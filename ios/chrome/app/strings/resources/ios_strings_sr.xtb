@@ -503,6 +503,7 @@
 <translation id="3575234738189584619">Претражујте помоћу Објектива</translation>
 <translation id="3575426792457739946">Ова листа садржи све учитане профиле.</translation>
 <translation id="3581564640715911333">Понуди превод страница на другим језицима</translation>
+<translation id="3585696901179982416">{count,plural, =1{{position}. од {count} адресе}one{{position}. од {count} адресе}few{{position}. од {count} адресе}other{{position}. од {count} адреса}}</translation>
 <translation id="3587885837929752825">Организација ограничава садржај који можете да чувате на Google налогу.</translation>
 <translation id="3588820906588687999">Отвори слику на новој картици</translation>
 <translation id="3595252146048399851">Увек можете да одаберете шта ћете синхронизовати у <ph name="BEGIN_LINK" />подешавањима<ph name="END_LINK" />. Google може да персонализује Претрагу и друге услуге на основу историје.</translation>
@@ -1195,6 +1196,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="69739764870135975">Ако вам је Google и подразумевани претраживач, видећете боље, контекстуално релевантне предлоге</translation>
 <translation id="6979158407327259162">Google диск</translation>
 <translation id="6983306615164277634">Можете и да додирнете и задржите траку за адресу да бисте променили позицију.</translation>
+<translation id="6986937292199604715">Укључи</translation>
 <translation id="6988572888918530647">Управљајте Google налогом</translation>
 <translation id="6990519590575500580">FaceTime</translation>
 <translation id="6998989275928107238">До</translation>
@@ -1301,6 +1303,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7557508262441527045">Одјављени сте</translation>
 <translation id="7561196759112975576">Увек</translation>
 <translation id="7564917801238348224">САЧУВАЈ…</translation>
+<translation id="758132317817089442">Укључи побољшану заштиту…</translation>
 <translation id="7582857256643797524">Ово подешавање је омогућено на уређају</translation>
 <translation id="7583004045319035904">Откључајте картице без архивирања помоћу опције <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7598439272585186139">Побољшајте безбедност</translation>

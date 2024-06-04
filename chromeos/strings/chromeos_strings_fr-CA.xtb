@@ -631,7 +631,6 @@
 <translation id="458794348635939462">Impossible de résoudre tous les hôtes</translation>
 <translation id="4593212453765072419">Authentification requise du mandataire</translation>
 <translation id="4609350030397390689">Diminuer la luminosité du clavier</translation>
-<translation id="4617553623719764431">La météo ne s'affiche pas car elle ne connaît pas votre position. Pour afficher la météo locale, <ph name="BEGIN_LINK" />activez l'accès à la position<ph name="END_LINK" />.</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> sur <ph name="TOTAL_PAGE_NUMBER" />. Appuyez sur Entrée pour annuler la tâche d'impression.</translation>
 <translation id="463791356324567266">Annulation de la numérisation en cours…</translation>
 <translation id="4646949265910132906">Connexion Wi-Fi sécurisée</translation>

@@ -951,6 +951,7 @@ One device connected.</translation>
 <translation id="4628757576491864469">Devices</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, star rating <ph name="RATING_SCORE" /></translation>
 <translation id="4633636853437260449">Press Ctrl+W to delete</translation>
+<translation id="4635501805800894201">{0,plural, =0{Update device to previous version now}=1{Update device to previous version within 1 second}other{Update device to previous version within # seconds}}</translation>
 <translation id="4642092649622328492">Take partial screenshot</translation>
 <translation id="4644727592819780893">Region is too small to fit camera</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, app recommendation</translation>
@@ -980,6 +981,7 @@ One device connected.</translation>
 <translation id="4735944890391795473">Desk 12</translation>
 <translation id="473775607612524610">Update</translation>
 <translation id="4740516757091333363">Delete saved desk?</translation>
+<translation id="4746798685375253449">{0,plural, =1{Update device to previous version within a day}other{Update device to previous version within # days}}</translation>
 <translation id="4747410141429390146">Please unlock to view notifications</translation>
 <translation id="4752784485658729358">Only six saved desks allowed. Remove a desk to save a new one.</translation>
 <translation id="4759238208242260848">Downloads</translation>
@@ -1315,6 +1317,7 @@ No devices connected.</translation>
 <translation id="5916646100036936191">New notification, <ph name="NOTIFICATION_COUNT" /> total</translation>
 <translation id="5916664084637901428">On</translation>
 <translation id="5920710855273935292">Mic is muted.</translation>
+<translation id="5928083197428724029">Update required by <ph name="MANAGER" /></translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> is on.</translation>
 <translation id="5947494881799873997">Revert</translation>
 <translation id="595202126637698455">Performance tracing enabled</translation>
@@ -1404,7 +1407,6 @@ No devices connected.</translation>
 <translation id="6232416233079464213">From <ph name="SESSION_NAME" /></translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> is currently using your camera and microphone</translation>
 <translation id="6237231532760393653">1X</translation>
-<translation id="62380141479352646">Low battery. Battery Saver turned on.</translation>
 <translation id="6240603910551255087">Top button</translation>
 <translation id="6247728804802644171">Open notifications</translation>
 <translation id="6249795363855770621">Couldn't mark as complete. Please try again when online.</translation>
@@ -1433,6 +1435,7 @@ No devices connected.</translation>
 <translation id="6376931439017688372">Bluetooth is on</translation>
 <translation id="6378515133128829137">Pin window to right</translation>
 <translation id="6381109794406942707">To unlock the device, enter your PIN.</translation>
+<translation id="6381305031890976705">{0,plural, =1{Update device to previous version within an hour}other{Update device to previous version within # hours}}</translation>
 <translation id="638716340450135524">Turn on camera access</translation>
 <translation id="639644700271529076">CAPS LOCK is off</translation>
 <translation id="6406458002328242616">Edit timer. <ph name="FOCUS_DURATION" />.</translation>
@@ -1455,6 +1458,7 @@ No devices connected.</translation>
 <translation id="6459472438155181876">Extending screen to <ph name="DISPLAY_NAME" /></translation>
 <translation id="6464094930452079790">images</translation>
 <translation id="6467290994038932560">On for <ph name="GAME_APP_NAME" /></translation>
+<translation id="6468406072297048412">{0,plural, =1{Update device to previous version within 1 minute}other{Update device to previous version within # minutes}}</translation>
 <translation id="6469104339369989396">Toggle hotspot.</translation>
 <translation id="6477681113376365978">Can’t download file</translation>
 <translation id="6482559668224714696">Full-screen magnifier</translation>
@@ -1578,6 +1582,7 @@ New install</translation>
 <translation id="6917259695595127329">Tasks last updated: <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">Couldn’t recognise your smart card. Try again.</translation>
 <translation id="692135145298539227">delete</translation>
+<translation id="6921427376813842559">Update device</translation>
 <translation id="6929081673585394903">Show controls</translation>
 <translation id="6931576957638141829">Save to</translation>
 <translation id="6942518653766415536">Recording format menu</translation>
@@ -1665,6 +1670,7 @@ New install</translation>
 <translation id="7303365578352795231">Answering on another device.</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Your administrator is resetting your eSIM. This may take a few minutes.</translation>
+<translation id="7312761820869643657">Update device to previous version</translation>
 <translation id="7313193732017069507">Expand camera</translation>
 <translation id="7330397557116570022">Go to a text field to use dictation</translation>
 <translation id="7331646370422660166">alt + down arrow</translation>
@@ -2140,7 +2146,6 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="9080132581049224423">Swipe up to go home</translation>
 <translation id="9080206825613744995">Microphone is in use.</translation>
 <translation id="9083324773537346962">OS version</translation>
-<translation id="908451241440060346">Notifications are muted when Do Not Disturb is on</translation>
 <translation id="9084606467167974638">Toggle menu position</translation>
 <translation id="9085962983642906571">Your battery is kept at 80% while plugged in to extend battery life.</translation>
 <translation id="9089416786594320554">Input methods</translation>
@@ -2181,6 +2186,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="925832987464884575">Hide previews</translation>
 <translation id="938407504481277932">Current desk: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. Desk <ph name="DESK_INDEX" /> of <ph name="DESK_COUNT" />.</translation>
 <translation id="938963181863597773">What's on my calendar?</translation>
+<translation id="94468042118567862">Device not up to date</translation>
 <translation id="945383118875625837">Drag link to bookmarks bar</translation>
 <translation id="945522503751344254">Send feedback</translation>
 <translation id="951991426597076286">Decline</translation>

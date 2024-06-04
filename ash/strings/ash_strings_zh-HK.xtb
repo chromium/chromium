@@ -212,6 +212,7 @@
 <translation id="1747827819627189109">屏幕鍵盤已啟用</translation>
 <translation id="1749109475624620922">「<ph name="WINDOW_TITLE" />」視窗已指派給所有桌面</translation>
 <translation id="1750088060796401187">系統最多允許 <ph name="MAX_DESK_LIMIT" /> 個桌面。請移除一個桌面再開啟新桌面。</translation>
+<translation id="1755408179247123630">要開啟「揀選朗讀內容」嗎？</translation>
 <translation id="1755556344721611131">診斷應用程式</translation>
 <translation id="1756833229520115364">無法儲存範本，可能是視窗或分頁過多。</translation>
 <translation id="1757857692711134412">關閉，直到日落</translation>
@@ -951,6 +952,7 @@
 <translation id="4628757576491864469">裝置</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />，<ph name="RATING_SCORE" /> 星</translation>
 <translation id="4633636853437260449">㩒一下 Ctrl+W 就可以刪除</translation>
+<translation id="4635501805800894201">{0,plural, =0{立即將裝置更新為先前的版本}=1{在 1 秒內將裝置更新為先前的版本}other{在 # 秒內將裝置更新為先前的版本}}</translation>
 <translation id="4642092649622328492">擷取部分螢幕畫面</translation>
 <translation id="4644727592819780893">區域太小，無法顯示攝錄機預覽畫面</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />，推薦應用程式</translation>
@@ -980,6 +982,7 @@
 <translation id="4735944890391795473">桌面 12</translation>
 <translation id="473775607612524610">更新</translation>
 <translation id="4740516757091333363">要刪除已儲存的桌面嗎？</translation>
+<translation id="4746798685375253449">{0,plural, =1{在 1 天內將裝置更新為先前的版本}other{在 # 天內將裝置更新為先前的版本}}</translation>
 <translation id="4747410141429390146">如要查看通知，請解鎖裝置</translation>
 <translation id="4752784485658729358">只允許儲存 6 個桌面。請移除一個桌面以儲存新桌面。</translation>
 <translation id="4759238208242260848">下載</translation>
@@ -1084,6 +1087,9 @@
 <translation id="5092436659250499817">開啟/關閉鍵盤背光</translation>
 <translation id="5094577350232361255">關於</translation>
 <translation id="5095136268899496849">你可在「設定」中自訂並個人化 <ph name="PRODUCT_NAME" />，嘗試變更桌布或設定螢幕保護程式。</translation>
+<translation id="5096125376090473584">如要聆聽系統朗讀文字，請選取畫面底部的「選取以朗讀」圖示，然後突顯所需文字。
+
+你亦可使用鍵盤快速鍵。首先，突顯所需文字，然後按一下<ph name="MODIFIER" />鍵 + S 鍵。</translation>
 <translation id="509790653408515442">串流手機的應用程式時，這些應用程式將會在這裡顯示</translation>
 <translation id="5098537242461068432">已經重新開番桌面同視窗</translation>
 <translation id="5103975065730779239">直至<ph name="END_TIME_EXPRESSION" />為止</translation>
@@ -1314,6 +1320,7 @@
 <translation id="5916646100036936191">新通知，總共 <ph name="NOTIFICATION_COUNT" /> 個</translation>
 <translation id="5916664084637901428">開啟</translation>
 <translation id="5920710855273935292">咪高風校咗靜音。</translation>
+<translation id="5928083197428724029">需要由 <ph name="MANAGER" /> 更新</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" />功能已開啟。</translation>
 <translation id="5947494881799873997">還原</translation>
 <translation id="595202126637698455">效能追蹤已啟用</translation>
@@ -1403,7 +1410,6 @@
 <translation id="6232416233079464213">來自 <ph name="SESSION_NAME" /></translation>
 <translation id="6232891689835436217">「<ph name="APP_NAME" />」目前正在使用您的相機和麥克風</translation>
 <translation id="6237231532760393653">1X</translation>
-<translation id="62380141479352646">電量不足，已開啟「慳電模式」。</translation>
 <translation id="6240603910551255087">頂部按鈕</translation>
 <translation id="6247728804802644171">開啟通知</translation>
 <translation id="6249795363855770621">無法標示為完成。請在連線後再試一次。</translation>
@@ -1432,6 +1438,7 @@
 <translation id="6376931439017688372">藍牙已開啟</translation>
 <translation id="6378515133128829137">將視窗固定至右邊</translation>
 <translation id="6381109794406942707">如要解鎖裝置，請輸入 PIN。</translation>
+<translation id="6381305031890976705">{0,plural, =1{在 1 小時內將裝置更新為先前的版本}other{在 # 小時內將裝置更新為先前的版本}}</translation>
 <translation id="638716340450135524">開啟相機存取權</translation>
 <translation id="639644700271529076">大寫鍵已關閉</translation>
 <translation id="6406458002328242616">修改計時器。<ph name="FOCUS_DURATION" />。</translation>
@@ -1454,6 +1461,7 @@
 <translation id="6459472438155181876">正在擴充 <ph name="DISPLAY_NAME" /> 螢幕</translation>
 <translation id="6464094930452079790">圖片</translation>
 <translation id="6467290994038932560">已為《<ph name="GAME_APP_NAME" />》開啟</translation>
+<translation id="6468406072297048412">{0,plural, =1{在 1 分鐘內將裝置更新為先前的版本}other{在 # 分鐘內將裝置更新為先前的版本}}</translation>
 <translation id="6469104339369989396">切換熱點</translation>
 <translation id="6477681113376365978">無法下載檔案</translation>
 <translation id="6482559668224714696">全螢幕放大鏡</translation>
@@ -1576,6 +1584,7 @@
 <translation id="6917259695595127329">工作上次更新時間：<ph name="TIME" />。</translation>
 <translation id="6919251195245069855">無法辨識智能卡，請再試一次。</translation>
 <translation id="692135145298539227">刪除</translation>
+<translation id="6921427376813842559">更新裝置</translation>
 <translation id="6929081673585394903">顯示控制項</translation>
 <translation id="6931576957638141829">儲存至</translation>
 <translation id="6942518653766415536">錄製內容格式選單</translation>
@@ -1663,6 +1672,7 @@
 <translation id="7303365578352795231">正在透過其他裝置回應。</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">管理員正在重設您的 eSIM 卡。這項操作可能需時數分鐘。</translation>
+<translation id="7312761820869643657">將裝置更新為先前的版本</translation>
 <translation id="7313193732017069507">展開相機調整大小的按鈕</translation>
 <translation id="7330397557116570022">將焦點放到文字欄位以使用「語音聽寫」</translation>
 <translation id="7331646370422660166">Alt 鍵 + 向下箭咀鍵</translation>
@@ -1812,6 +1822,7 @@
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">如要透過訪客身分使用這部置，請務必登出並選取畫面底部的 [以訪客身分瀏覽]。</translation>
 <translation id="7866482334467279021">開啟</translation>
+<translation id="7866727328666668290">上次開啟的分頁</translation>
 <translation id="7872786842639831132">關閉</translation>
 <translation id="7875575368831396199"><ph name="DEVICE_TYPE" /> 上的藍牙似乎已關閉。請開啟藍牙，才能使用 Phone Hub。</translation>
 <translation id="7884446017008693258">熱點設定</translation>
@@ -2138,7 +2149,6 @@
 <translation id="9080132581049224423">向上滑動即可開啟主畫面</translation>
 <translation id="9080206825613744995">麥克風正在使用中。</translation>
 <translation id="9083324773537346962">OS 版本</translation>
-<translation id="908451241440060346">「請勿騷擾」功能開啟時，系統會忽略通知</translation>
 <translation id="9084606467167974638">切換選單位置</translation>
 <translation id="9085962983642906571">插上電源時，電池電量會維持在 80% 以延長電池壽命。</translation>
 <translation id="9089416786594320554">輸入法</translation>
@@ -2179,6 +2189,7 @@
 <translation id="925832987464884575">隱藏預覽</translation>
 <translation id="938407504481277932">目前的桌面：<ph name="DESK_NAME" />。<ph name="PROFILE_NAME" /> (<ph name="EMAIL" />)。第 <ph name="DESK_INDEX" /> 個桌面，共 <ph name="DESK_COUNT" /> 個。</translation>
 <translation id="938963181863597773">我日曆有咩活動？</translation>
+<translation id="94468042118567862">裝置並非最新版本</translation>
 <translation id="945383118875625837">將連結拖曳至書籤列</translation>
 <translation id="945522503751344254">提供意見反映</translation>
 <translation id="951991426597076286">拒絕</translation>

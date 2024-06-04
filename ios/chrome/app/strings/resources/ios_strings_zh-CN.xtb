@@ -503,6 +503,7 @@
 <translation id="3575234738189584619">使用智能镜头搜索</translation>
 <translation id="3575426792457739946">此列表包含所有已加载的个人资料。</translation>
 <translation id="3581564640715911333">询问是否翻译其他语言版本的网页</translation>
+<translation id="3585696901179982416">{count,plural, =1{第 {position} 个地址（共 {count} 个）}other{第 {position} 个地址（共 {count} 个）}}</translation>
 <translation id="3587885837929752825">贵组织限制了您可在 Google 账号中保存的内容。</translation>
 <translation id="3588820906588687999">在新标签页中打开图片</translation>
 <translation id="3595252146048399851">您随时可在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中选择要同步的内容。Google 可能会根据您的历史记录在 Google 搜索及其他服务中为您提供个性化的体验。</translation>
@@ -1195,6 +1196,7 @@
 <translation id="69739764870135975">如果 Google 也是您的默认搜索引擎，您将会看到更实用、与上下文更相关的建议</translation>
 <translation id="6979158407327259162">Google 云端硬盘</translation>
 <translation id="6983306615164277634">您也可轻触并按住地址栏来更改其位置。</translation>
+<translation id="6986937292199604715">开启…</translation>
 <translation id="6988572888918530647">管理 Google 账号</translation>
 <translation id="6990519590575500580">FaceTime</translation>
 <translation id="6998989275928107238">至</translation>
@@ -1301,6 +1303,7 @@
 <translation id="7557508262441527045">已退出账号</translation>
 <translation id="7561196759112975576">永远</translation>
 <translation id="7564917801238348224">保存…</translation>
+<translation id="758132317817089442">开启增强型保护…</translation>
 <translation id="7582857256643797524">您的设备已启用此设置</translation>
 <translation id="7583004045319035904">请使用<ph name="BIOMETRIC_AUTHENITCATION_TYPE" />解锁您的无痕式标签页。</translation>
 <translation id="7598439272585186139">获享更高的安全性</translation>

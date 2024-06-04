@@ -213,6 +213,7 @@
 <translation id="1747827819627189109">تم تفعيل لوحة المفاتيح على الشاشة</translation>
 <translation id="1749109475624620922">تم تخصيص النافذة <ph name="WINDOW_TITLE" /> لجميع أسطح المكتب.</translation>
 <translation id="1750088060796401187">لا يُسمح باستخدام سوى <ph name="MAX_DESK_LIMIT" /> سطح مكتب. يجب إزالة أحد أسطح المكتب لفتح سطح مكتب جديد.</translation>
+<translation id="1755408179247123630">هل تريد تفعيل ميزة "سماع الاختيار"؟</translation>
 <translation id="1755556344721611131">تطبيق "بيانات التشخيص"</translation>
 <translation id="1756833229520115364">لا يمكن حفظ النموذج بسبب تخطّي عدد النوافذ أو علامات التبويب الحد المسموح به.</translation>
 <translation id="1757857692711134412">إيقاف الميزة حتى غروب الشمس</translation>
@@ -953,6 +954,7 @@
 <translation id="4628757576491864469">الأجهزة</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />، التقييم بالنجوم <ph name="RATING_SCORE" /></translation>
 <translation id="4633636853437260449">‏اضغط على Ctrl+W للحذف.</translation>
+<translation id="4635501805800894201">{0,plural, =0{إعادة الجهاز إلى الإصدار السابق الآن}=1{إعادة الجهاز إلى الإصدار السابق في غضون ثانية واحدة}two{إعادة الجهاز إلى الإصدار السابق في غضون ثانيتَين}few{إعادة الجهاز إلى الإصدار السابق في غضون # ثوانٍ}many{إعادة الجهاز إلى الإصدار السابق في غضون # ثانية}other{إعادة الجهاز إلى الإصدار السابق في غضون # ثانية}}</translation>
 <translation id="4642092649622328492">أخذ لقطة شاشة جزئية</translation>
 <translation id="4644727592819780893">مساحة عرض اللقطة الحالية صغيرة جدًا ولا تناسب معاينة الكاميرا.</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />، اقتراح تطبيق</translation>
@@ -982,6 +984,7 @@
 <translation id="4735944890391795473">سطح المكتب 12</translation>
 <translation id="473775607612524610">تحديث</translation>
 <translation id="4740516757091333363">هل تريد حذف سطح المكتب المحفوظ؟</translation>
+<translation id="4746798685375253449">{0,plural, =1{إعادة الجهاز إلى الإصدار السابق في غضون يوم واحد}zero{إعادة الجهاز إلى الإصدار السابق في غضون # يوم}two{إعادة الجهاز إلى الإصدار السابق في غضون يومَين}few{إعادة الجهاز إلى الإصدار السابق في غضون # أيام}many{إعادة الجهاز إلى الإصدار السابق في غضون # يومًا}other{إعادة الجهاز إلى الإصدار السابق في غضون # يوم}}</translation>
 <translation id="4747410141429390146">يُرجى فتح القفل لعرض الإشعارات.</translation>
 <translation id="4752784485658729358">لا يمكن حفظ أكثر من 6 أسطح مكتب. يُرجى إزالة أحدها لحفظ سطح مكتب جديد.</translation>
 <translation id="4759238208242260848">عمليات التنزيل</translation>
@@ -1087,6 +1090,9 @@
 <translation id="5092436659250499817">تشغيل/إيقاف الإضاءة الخلفية في لوحة المفاتيح</translation>
 <translation id="5094577350232361255">لمحة</translation>
 <translation id="5095136268899496849">لاختيار الإعدادات التي تناسبك، انتقِل إلى "الإعدادات" على <ph name="PRODUCT_NAME" />. يمكنك مثلاً تغيير الخلفية أو ضبط شاشة استراحة.</translation>
+<translation id="5096125376090473584">‏لسماع النص بصوت عالٍ، انقر على رمز "سماع الاختيار" في أسفل الشاشة، ثم حدِّد النص الذي تريد سماعه.
+
+يمكنك أيضًا استخدام اختصار لوحة المفاتيح. حدِّد النص أولاً، ثم اضغط على <ph name="MODIFIER" /> + s.</translation>
 <translation id="509790653408515442">عند تشغيل تطبيقات هاتفك، سيتم عرضها هنا.</translation>
 <translation id="5098537242461068432">تمت إعادة فتح سطح المكتب والنوافذ.</translation>
 <translation id="5103975065730779239">حتى <ph name="END_TIME_EXPRESSION" /></translation>
@@ -1317,6 +1323,7 @@
 <translation id="5916646100036936191">تم تلقي إشعار جديد من إجمالي "<ph name="NOTIFICATION_COUNT" />".</translation>
 <translation id="5916664084637901428">مفعّل</translation>
 <translation id="5920710855273935292">تم كتم صوت الميكروفون.</translation>
+<translation id="5928083197428724029">يجب تحديث الجهاز بناءً على طلب <ph name="MANAGER" /></translation>
 <translation id="5946788582095584774">ميزة <ph name="FEATURE_NAME" /> مُفعَّلة.</translation>
 <translation id="5947494881799873997">التراجع عن الإجراء</translation>
 <translation id="595202126637698455">تم تفعيل تتبع مستوى الأداء</translation>
@@ -1406,7 +1413,6 @@
 <translation id="6232416233079464213">من "<ph name="SESSION_NAME" />"</translation>
 <translation id="6232891689835436217">يستخدم "<ph name="APP_NAME" />" الكاميرا والميكروفون حاليًا.</translation>
 <translation id="6237231532760393653">1X</translation>
-<translation id="62380141479352646">تم تفعيل "توفير شحن البطارية" بسبب انخفاض طاقتها</translation>
 <translation id="6240603910551255087">الزر الأعلى</translation>
 <translation id="6247728804802644171">فتح الإشعارات</translation>
 <translation id="6249795363855770621">تعذَّر وضع علامة "مكتمل". يُرجى إعادة المحاولة عند الاتصال بالإنترنت.</translation>
@@ -1435,6 +1441,7 @@
 <translation id="6376931439017688372">تم تفعيل البلوتوث</translation>
 <translation id="6378515133128829137">تثبيت النافذة على اليسار</translation>
 <translation id="6381109794406942707">لفتح قفل الجهاز، أدخِل رقم التعريف الشخصي.</translation>
+<translation id="6381305031890976705">{0,plural, =1{إعادة الجهاز إلى الإصدار السابق في غضون ساعة واحدة}zero{إعادة الجهاز إلى الإصدار السابق في غضون # ساعة}two{إعادة الجهاز إلى الإصدار السابق في غضون ساعتَين}few{إعادة الجهاز إلى الإصدار السابق في غضون # ساعات}many{إعادة الجهاز إلى الإصدار السابق في غضون # ساعة}other{إعادة الجهاز إلى الإصدار السابق في غضون # ساعة}}</translation>
 <translation id="638716340450135524">تفعيل الوصول إلى الكاميرا</translation>
 <translation id="639644700271529076">‏مفتاح CAPS LOCK قيد الإيقاف</translation>
 <translation id="6406458002328242616">تعديل المؤقِّت. <ph name="FOCUS_DURATION" />.</translation>
@@ -1457,6 +1464,7 @@
 <translation id="6459472438155181876">تمديد الشاشة إلى <ph name="DISPLAY_NAME" /></translation>
 <translation id="6464094930452079790">الصور</translation>
 <translation id="6467290994038932560">مفعَّلة مع "<ph name="GAME_APP_NAME" />"</translation>
+<translation id="6468406072297048412">{0,plural, =1{إعادة الجهاز إلى الإصدار السابق في غضون دقيقة واحدة}zero{إعادة الجهاز إلى الإصدار السابق في غضون # دقيقة}two{إعادة الجهاز إلى الإصدار السابق في غضون دقيقتَين}few{إعادة الجهاز إلى الإصدار السابق في غضون # دقائق}many{إعادة الجهاز إلى الإصدار السابق في غضون # دقيقة}other{إعادة الجهاز إلى الإصدار السابق في غضون # دقيقة}}</translation>
 <translation id="6469104339369989396">إيقاف/تفعيل نقطة الاتصال</translation>
 <translation id="6477681113376365978">يتعذّر تنزيل الملف</translation>
 <translation id="6482559668224714696">مُكبِّر بملء الشاشة</translation>
@@ -1580,6 +1588,7 @@
 <translation id="6917259695595127329">‏تاريخ آخر تعديل للمهام: ‎<ph name="TIME" /></translation>
 <translation id="6919251195245069855">لم يتم التعرُّف على البطاقة الذكية. يُرجى إعادة المحاولة.</translation>
 <translation id="692135145298539227">حذف</translation>
+<translation id="6921427376813842559">تحديث الجهاز</translation>
 <translation id="6929081673585394903">عرض عناصر التحكّم</translation>
 <translation id="6931576957638141829">حفظ في</translation>
 <translation id="6942518653766415536">قائمة صيَغ التسجيل</translation>
@@ -1668,6 +1677,7 @@
 <translation id="7303365578352795231">جارٍ الرد على جهاز آخر.</translation>
 <translation id="7305884605064981971">‏شبكة EDGE</translation>
 <translation id="7312210124139670355">‏المشرف يعيد ضبط شريحة eSIM حاليًا. قد تستغرق هذه العملية بضع دقائق.</translation>
+<translation id="7312761820869643657">إعادة الجهاز إلى الإصدار السابق</translation>
 <translation id="7313193732017069507">توسيع الكاميرا</translation>
 <translation id="7330397557116570022">انتقِل إلى حقل نصي لاستخدام ميزة "إملاء".</translation>
 <translation id="7331646370422660166">‏‫alt + السهم المتّجه للأسفل</translation>
@@ -1817,6 +1827,7 @@
 <translation id="7851768487828137624">الكاناري</translation>
 <translation id="7862292329216937261">لاستخدام الجهاز في "وضع الضيف"، عليك تسجيل الخروج واختيار "التصفُّح كضيف" في أسفل الشاشة.</translation>
 <translation id="7866482334467279021">مفعّل</translation>
+<translation id="7866727328666668290">آخر علامة تبويب تم فتحها</translation>
 <translation id="7872786842639831132">غير مُفعَّل</translation>
 <translation id="7875575368831396199">يبدو أنه تم إيقاف اتصال البلوتوث على <ph name="DEVICE_TYPE" />. يُرجى تفعيل البلوتوث لاستخدام ميزة "مركز التحكم بالهاتف".</translation>
 <translation id="7884446017008693258">إعدادات نقطة الاتصال</translation>
@@ -2143,7 +2154,6 @@
 <translation id="9080132581049224423">يُرجى التمرير السريع إلى الأعلى للانتقال إلى الصفحة الرئيسية.</translation>
 <translation id="9080206825613744995">الميكروفون قيد الاستخدام</translation>
 <translation id="9083324773537346962">إصدار نظام التشغيل</translation>
-<translation id="908451241440060346">يتم كتم صوت الإشعارات عندما تكون ميزة "عدم الإزعاج" مفعَّلة.</translation>
 <translation id="9084606467167974638">تبديل موضع القائمة</translation>
 <translation id="9085962983642906571">سيبقى مستوى شحن البطارية عند %80 أثناء توصيل الجهاز بمصدر طاقة، وذلك لإطالة عمر البطارية.</translation>
 <translation id="9089416786594320554">أساليب الإدخال</translation>
@@ -2184,6 +2194,7 @@
 <translation id="925832987464884575">إخفاء المعاينات</translation>
 <translation id="938407504481277932">سطح المكتب الحالي: <ph name="DESK_NAME" />. ‫<ph name="PROFILE_NAME" /> ‏<ph name="EMAIL" />. سطح المكتب <ph name="DESK_INDEX" /> من <ph name="DESK_COUNT" />.</translation>
 <translation id="938963181863597773">ماذا يتضمّن تقويمي؟</translation>
+<translation id="94468042118567862">الجهاز غير محدَّث</translation>
 <translation id="945383118875625837">اسحب الرابط إلى شريط الإشارات</translation>
 <translation id="945522503751344254">إرسال ملاحظات</translation>
 <translation id="951991426597076286">رفض</translation>

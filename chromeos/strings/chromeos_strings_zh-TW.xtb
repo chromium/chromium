@@ -631,7 +631,6 @@
 <translation id="458794348635939462">無法解析所有主機</translation>
 <translation id="4593212453765072419">需要 Proxy 驗證</translation>
 <translation id="4609350030397390689">鍵盤亮度調低</translation>
-<translation id="4617553623719764431">系統不知道你的所在位置，因此無法顯示天氣資訊。如要顯示當地天氣資訊，請<ph name="BEGIN_LINK" />開啟位置資訊存取權<ph name="END_LINK" /></translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />，<ph name="PRINTER_NAME" />，<ph name="CREATION_TIME" />，已列印 <ph name="PRINTED_PAGE_NUMBER" /> 頁 (共 <ph name="TOTAL_PAGE_NUMBER" /> 頁)。按下 Enter 鍵即可取消列印工作。</translation>
 <translation id="463791356324567266">正在取消掃描…</translation>
 <translation id="4646949265910132906">安全的 WiFi 連線</translation>

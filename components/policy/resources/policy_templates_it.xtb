@@ -5022,6 +5022,7 @@ La disattivazione della decodifica video con accelerazione hardware non è consi
       al fine di elaborare le richieste keepalive (https://fetch.spec.whatwg.org/#request-keepalive-flag).
 
       Il valore predefinito (0) significa che questa funzionalità è disattivata.</translation>
+<translation id="4933780993367313536">Consenti le connessioni di accesso remoto da parte degli amministratori aziendali a questo computer</translation>
 <translation id="4937423591320233496">Disattiva i contenuti suggeriti</translation>
 <translation id="4942096314850617489">Disattiva l'attestazione da remoto per l'utente</translation>
 <translation id="4942681160308347946">Se il criterio è impostato su True, la funzione di lettura vocale viene attivata nella schermata di accesso. Se il criterio è impostato su False, la funzione di lettura vocale viene disattivata nella schermata.
@@ -6299,6 +6300,7 @@ gli utenti non potranno modificarlo o eseguirne l'override.</translation>
 <translation id="5966615072639944554">Estensioni autorizzate a utilizzare l'API di attestazione da remoto</translation>
 <translation id="596732417280023843">Il nome del profilo di certificato.</translation>
 <translation id="5972538402066550344">Consenti i controlli di reporting granulare</translation>
+<translation id="5973437409890460481">Consenti le connessioni di accesso remoto aziendali a questo computer</translation>
 <translation id="5975765799383881158">Se il criterio viene impostato su Attivato o se non viene configurato, gli utenti possono inviare dei feedback a Google tramite una combinazione di tasti o nella sezione Menu &gt; Guida &gt; Segnala un problema.
 
       Se viene impostato su Disattivato, gli utenti non possono inviare dei feedback a Google.</translation>
@@ -9732,6 +9734,11 @@ Se configuri questo criterio, il criterio <ph name="PRIVACY_SANDBOX_PROMPT_ENABL
       Se questa norma viene impostata su true, l'utente deve accedere a <ph name="PRODUCT_NAME" /> con il proprio profilo per poter usare il browser e il valore predefinito di BrowserGuestModeEnabled viene impostato su false. Tieni presente che i profili esistenti a cui non è stato eseguito l'accesso saranno bloccati e inaccessibili dopo l'attivazione di questa norma. Per ulteriori informazioni, leggi l'articolo del Centro assistenza.
 
       Se la norma viene impostata su false o non viene configurata, l'utente può utilizzare il browser senza accedere a <ph name="PRODUCT_NAME" />.</translation>
+<translation id="8575422604428646609">Se questo criterio viene disattivato, impedisce agli amministratori aziendali di connettersi a dispositivi <ph name="PRODUCT_OS_NAME" /> gestiti quando non è presente alcun utente sul dispositivo.
+
+Questo criterio non influisce sugli altri scenari di accesso remoto.
+
+Questo criterio non è efficace se viene attivato, lasciato vuoto o se non viene configurato.</translation>
 <translation id="8575739761246140675">Attiva attendibilità nei certificati emessi dall'Infrastruttura a chiave pubblica precedente di Symantec Corporation</translation>
 <translation id="8575746110808109915">Se il criterio viene impostato su Attivato, la funzionalità di ripristino completo viene attivata.
       Se viene impostato su Vero, le app e le finestre delle app verranno ripristinate o meno dopo un arresto anomalo o un riavvio in base all'impostazione di ripristino dell'app.
@@ -10423,6 +10430,7 @@ Nota: se il dispositivo viene riavviato, la cache viene svuotata. Anche i dati r
 <translation id="9107635531763682565">Se il criterio viene impostato su 1, i siti web possono mostrare le notifiche desktop. Se il criterio viene impostato su 2, le notifiche desktop vengono negate.
 
 Se non viene configurato, si applica il criterio <ph name="ASK_NOTIFICATIONS_POLICY_NAME" />, ma gli utenti possono modificare l'impostazione.</translation>
+<translation id="9110194749335632373">Impedisci le connessioni di accesso da remoto da parte degli amministratori aziendali a questo computer</translation>
 <translation id="9110251436602897914">Segnala informazioni sulle periferiche collegate al dispositivo</translation>
 <translation id="9110485853581788150">Un elenco di certificati che <ph name="PRODUCT_NAME" /> non considera attendibili né non attendibili,
 ma che possono essere usati come suggerimenti per la creazione di percorsi. I certificati devono essere codificati in base64.</translation>

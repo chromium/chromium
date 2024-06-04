@@ -631,7 +631,6 @@
 <translation id="458794348635939462">Разрешење свих хостова није успело</translation>
 <translation id="4593212453765072419">Потребна је потврда аутентичности проксија</translation>
 <translation id="4609350030397390689">Смањите осветљеност тастатуре</translation>
-<translation id="4617553623719764431">Време није приказано јер не зна вашу локацију. Да би се приказивало локално време, <ph name="BEGIN_LINK" />укључите приступ локацији<ph name="END_LINK" /></translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> од <ph name="TOTAL_PAGE_NUMBER" />. Притисните тастер Enter да бисте отказали задатак штампања.</translation>
 <translation id="463791356324567266">Отказује се скенирање...</translation>
 <translation id="4646949265910132906">Безбедна WiFi веза</translation>

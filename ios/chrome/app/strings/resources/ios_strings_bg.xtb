@@ -503,6 +503,7 @@
 <translation id="3575234738189584619">Търсене с Обектив</translation>
 <translation id="3575426792457739946">Този списък съдържа всички заредени потребителски профили.</translation>
 <translation id="3581564640715911333">Извеждане на предложения за превод на страниците, написани на други езици</translation>
+<translation id="3585696901179982416">{count,plural, =1{{position} от {count} адрес}other{{position} от {count} адреса}}</translation>
 <translation id="3587885837929752825">Организацията ви ограничава това, което можете да запазвате в профила си в Google.</translation>
 <translation id="3588820906588687999">Отваряне на изображението в нов раздел</translation>
 <translation id="3595252146048399851">Винаги можете да изберете какво да се синхронизира от <ph name="BEGIN_LINK" />настройките<ph name="END_LINK" />. Google може да персонализира Търсене и други услуги въз основа на историята ви.</translation>
@@ -1195,6 +1196,7 @@
 <translation id="69739764870135975">Ако Google е и търсещата ви машина по подразбиране, ще виждате по-добри и контекстуално уместни предложения</translation>
 <translation id="6979158407327259162">Google Диск</translation>
 <translation id="6983306615164277634">Можете също да докоснете и задържите адресната лента, за да промените позицията.</translation>
+<translation id="6986937292199604715">Включване...</translation>
 <translation id="6988572888918530647">Управление на профила ви в Google</translation>
 <translation id="6990519590575500580">FaceTime</translation>
 <translation id="6998989275928107238">До</translation>
@@ -1301,6 +1303,7 @@
 <translation id="7557508262441527045">Излязохте от профила си</translation>
 <translation id="7561196759112975576">Винаги</translation>
 <translation id="7564917801238348224">ЗАПАЗВАНЕ...</translation>
+<translation id="758132317817089442">Включване на подобрената защита...</translation>
 <translation id="7582857256643797524">Тази настройка е активирана на устройството ви</translation>
 <translation id="7583004045319035904">Използвайте <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> за отключване на разделите в режим „инкогнито“.</translation>
 <translation id="7598439272585186139">Получете допълнителна сигурност</translation>

@@ -107,6 +107,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> imeunganishwa</translation>
 <translation id="1340378040547539434">Sogeza mbali kwenye ukurasa</translation>
 <translation id="1341651618736211726">Menyu ya vipengee vya ziada</translation>
+<translation id="1341926407152459446">Tumia "<ph name="DEVICE_NAME" />" kama kifaa cha kuingiza na kutoa sauti</translation>
 <translation id="1344141078024003905">Unatuma maudhui kwenye skrini yako. Unaweza kusimamisha au kuacha kutuma maudhui yaliyo kwenye skrini yako wakati wowote.</translation>
 <translation id="1346748346194534595">Kulia</translation>
 <translation id="1351937230027495976">Kunja menyu</translation>
@@ -145,6 +146,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1486307154719069822">Ukitumia kipengele cha kuandika kwa kutamka, unaweza kuandika ukitumia sauti yako. Bonyeza kitufe cha kuandika kwa kutamka au uchague aikoni ya maikrofoni katika sehemu ya chini ya skrini ukiwa katika sehemu ya maandishi. Umechagua <ph name="LANGUAGE" /> kama lugha yako ya kuandika kwa kutamka. Matamshi hutumwa kwenda Google ili yachakatwe. Unaweza kubadilisha lugha ya kuandika kwa kutamka wakati wowote katika Mipangilio &gt; Ufikivu.</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> na <ph name="SECOND_ITEM_TITLE" /> zimebadilishana nafasi</translation>
 <translation id="1500926532737552529">Onyesha mapendekezo yote</translation>
+<translation id="1501946871587957338">Ungependa kubadilisha chanzo cha sauti?</translation>
 <translation id="1510238584712386396">Kizindua</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Onyesha mipangilio ya arifa. Umezima arifa katika programu moja}other{Onyesha mipangilio ya arifa. Umezima arifa katika programu #}}</translation>
 <translation id="1523032696246003">Chaji ya betri ni asilimia <ph name="BATTERY_PERCENTAGE" /> | zimesalia <ph name="TIME" /> ijae</translation>
@@ -773,6 +775,7 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="397105322502079400">Inakokotoa...</translation>
 <translation id="397726367135689299">Huenda betri haichaji ipasavyo.</translation>
 <translation id="3977512764614765090">Chaji ya betri ni <ph name="PERCENTAGE" />% na inaendelea kuchaji.</translation>
+<translation id="3982013579989864579">Ungependa kubadilisha kifaa cha kutoa sauti?</translation>
 <translation id="3984536049089846927">Ukurasa unaofuata</translation>
 <translation id="3986082989454912832">Jibu</translation>
 <translation id="3990002060657467458">Vidhibiti vinavyotumika mara kwa mara kama vile Wi-Fi, Bluetooth na sauti viko katika Mipangilio ya Haraka. Unaweza pia kwenda hapa kupiga picha za skrini.</translation>
@@ -816,6 +819,7 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="4150201353443180367">Onyesho</translation>
 <translation id="4156293514828496577">Zimesalia asilimia <ph name="PERCENTAGE" /> za chaji ya betri (takribani <ph name="TIME_LEFT" />).
 Baadhi ya vipengele vimedhibitiwa ili kuongeza muda wa matumizi ya betri.</translation>
+<translation id="4160919062868802509">Vyanzo vingi vya sauti vimetambuliwa</translation>
 <translation id="4165275524535002941">Huenda kebo haijaoana na skrini</translation>
 <translation id="4177415338862979658">Bofya ili uangalie maelezo</translation>
 <translation id="4177913004758410636">{0,plural, =1{Sasisha kifaa ndani ya siku moja}other{Sasisha kifaa ndani ya siku #}}</translation>
@@ -1014,6 +1018,7 @@ Kifaa 1 kimeunganishwa.</translation>
 <translation id="4871905435473761992">Onyesha maelezo ya mtandao pepe. Mtandao wako wa simu hauruhusu matumizi ya mtandao pepe.</translation>
 <translation id="4872237917498892622">Alt + Utafutaji au Hama</translation>
 <translation id="4872852897273142380">Angazia sehemu ya alamisho (ikiwa imeonyeshwa)</translation>
+<translation id="4876935764454575645">Uteuzi wa sauti</translation>
 <translation id="4881323000405981760">Madoido hayatumiki katika programu zinazotumia linux</translation>
 <translation id="4881695831933465202">Fungua</translation>
 <translation id="4889868803215848840">Toa maoni yasiyo ya lazima ili kuboresha mapendekezo:</translation>
@@ -1090,6 +1095,7 @@ Kifaa 1 kimeunganishwa.</translation>
 <translation id="5121628974188116412">Nenda sehemu ya chini ya ukurasa</translation>
 <translation id="5122517996953421795">Onyesho la kukagua <ph name="DESK_NAME" />. Eneokazi halitumiki.</translation>
 <translation id="5136175204352732067">Kibodi tofauti imeunganishwa</translation>
+<translation id="5144005092084035179">Ungependa kubadilisha kifaa cha kuingiza sauti?</translation>
 <translation id="5147567197700016471">Imefunguliwa</translation>
 <translation id="5150070631291639005">Mipangilio ya faragha</translation>
 <translation id="5155897006997040331">Kasi ya kusoma</translation>
@@ -1398,7 +1404,6 @@ Hakuna vifaa vilivyounganishwa.</translation>
 <translation id="6232416233079464213">Kutoka <ph name="SESSION_NAME" /></translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> inatumia kamera na maikrofoni yako kwa sasa</translation>
 <translation id="6237231532760393653">1X</translation>
-<translation id="62380141479352646">Chaji ya betri imepungua. Kiokoa Betri kimewashwa.</translation>
 <translation id="6240603910551255087">Kitufe cha Juu</translation>
 <translation id="6247728804802644171">Fungua arifa</translation>
 <translation id="6249795363855770621">Imeshindwa kutia alama kuwa limekamilika. Jaribu tena ukiwa mtandaoni.</translation>
@@ -1790,6 +1795,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="7780094051999721182">Njia za mkato</translation>
 <translation id="7780159184141939021">Zungusha Skrini</translation>
 <translation id="7781829728241885113">Jana</translation>
+<translation id="7787212146956232129">Umeweka vifaa vya kuingiza na kutoa sauti. Nenda kwenye Mipangilio ili ubadilishe.</translation>
 <translation id="7792590255364786396">Kinaonekana</translation>
 <translation id="7796735576426975947">Arifa mpya imefichwa</translation>
 <translation id="7798302898096527229">Bonyeza Tafuta au Shift ili ughairi.</translation>
@@ -2096,6 +2102,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{Faili 1}other{Faili #}}</translation>
 <translation id="8936501819958976551">kimezimwa</translation>
 <translation id="8938800817013097409">Kifaa cha USB-C (mlango wa kulia nyuma)</translation>
+<translation id="8939855324412367560">Kifaa cha kuingiza sauti ni "<ph name="INPUT_DEVICE_NAME" />" na kifaa cha kutoa sauti ni "<ph name="OUTPUT_DEVICE_NAME" />". Nenda kwenye mipangilio ili ubadilishe.</translation>
 <translation id="8940956008527784070">Betri inaisha (<ph name="PERCENTAGE" />%)</translation>
 <translation id="894774083269346314">Kisanduku cha kuteua cha <ph name="PROFILE_NAME" /> <ph name="EMAIL" /> hakijateuliwa.</translation>
 <translation id="8949925099261528566">Kimeunganishwa, hakuna intaneti</translation>
@@ -2133,7 +2140,6 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="9080132581049224423">Telezesha kidole juu ili urudi kwenye skrini ya kwanza</translation>
 <translation id="9080206825613744995">Maikrofoni inatumika</translation>
 <translation id="9083324773537346962">Toleo la Mfumo wa Uendeshaji</translation>
-<translation id="908451241440060346">Arifa huzimwa kipengele cha Usinisumbue kinapokuwa kimewashwa</translation>
 <translation id="9084606467167974638">Badilisha nafasi ya menyu</translation>
 <translation id="9085962983642906571">Betri yako itasalia katika asilimia 80 inapokuwa imechomekwa kwenye umeme ili kuongeza muda wa matumizi ya betri.</translation>
 <translation id="9089416786594320554">Mbinu za Kuweka</translation>
@@ -2153,6 +2159,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="9178475906033259337">Inaonyesha matokeo moja ya <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Kipengele hiki kinakuruhusu ufikie kwa haraka mtumiaji yeyote aliyeingia katika akaunti bila ya kuweka nenosiri. Tumia kipengele hiki katika akaunti unazoamini pekee.</translation>
 <translation id="9183456764293710005">Kikuza Skrini Nzima</translation>
+<translation id="9192133205265227850">Tumia "<ph name="DEVICE_NAME" />"</translation>
 <translation id="9193626018745640770">Inatuma kwenye kifaa au kwa mpokeaji usiyemjua</translation>
 <translation id="9194617393863864469">Ongeza akaunti nyingine...</translation>
 <translation id="9195990613383871904">Kesho</translation>

@@ -503,6 +503,7 @@
 <translation id="3575234738189584619">Lensৰ জৰিয়তে সন্ধান কৰক</translation>
 <translation id="3575426792457739946">এই সূচীখনত আটাইবোৰ ল’ড কৰা প্ৰ’ফাইল আছে।</translation>
 <translation id="3581564640715911333">অন্য ভাষাত পৃষ্ঠাসমূহ অনুবাদ কৰাৰ সুবিধা দিয়ক</translation>
+<translation id="3585696901179982416">{count,plural, =1{{count} টা ঠিকনাৰ {position}তম ঠিকনাটো}one{{count} টা ঠিকনাৰ {position}তম ঠিকনাটো}other{{count} টা ঠিকনাৰ {position}তম ঠিকনাটো}}</translation>
 <translation id="3587885837929752825">আপুনি নিজৰ Google একাউণ্টত কি ছেভ কৰিব পাৰে, সেয়া আপোনাৰ প্ৰতিষ্ঠানে সীমিত কৰে।</translation>
 <translation id="3588820906588687999">প্ৰতিচ্ছবি নতুন টেবত খোলক</translation>
 <translation id="3595252146048399851">আপুনি কি ছিংক কৰিব লাগে সেয়া <ph name="BEGIN_LINK" />ছেটিঙ<ph name="END_LINK" />লৈ গৈ যেতিয়াই মন যায় তেতিয়াই বাছনি কৰিব পাৰে। Googleএ আপোনাৰ ইতিহাসৰ ওপৰত ভিত্তি কৰি Search আৰু অন্য সেৱা ব্যক্তিগতকৰণ কৰিব পাৰে।</translation>
@@ -1195,6 +1196,7 @@
 <translation id="69739764870135975">লগতে যদি Google আপোনাৰ ডিফ’ল্ট সন্ধান ইঞ্জিন, তেন্তে আপুনি উন্নত, প্ৰাসংগিক পৰামৰ্শসমূহ দেখা পাব</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6983306615164277634">আপুনি অৱস্থান সলনি কৰিবলৈ ঠিকনা বাৰ স্পৰ্শ কৰি ধৰি ৰাখিব পাৰে।</translation>
+<translation id="6986937292199604715">অন কৰক...</translation>
 <translation id="6988572888918530647">আপোনাৰ Google একাউণ্ট পৰিচালনা কৰক</translation>
 <translation id="6990519590575500580">Facetime</translation>
 <translation id="6998989275928107238">প্ৰতি</translation>
@@ -1301,6 +1303,7 @@
 <translation id="7557508262441527045">ছাইন আউট কৰা আছে</translation>
 <translation id="7561196759112975576">সদায়</translation>
 <translation id="7564917801238348224">ছেভ কৰক...</translation>
+<translation id="758132317817089442">বৰ্ধিত সুৰক্ষাৰ সুবিধা অন কৰক...</translation>
 <translation id="7582857256643797524">এই ছেটিংটো আপোনাৰ ডিভাইচত সক্ষম কৰা আছে</translation>
 <translation id="7583004045319035904">আপোনাৰ ইনক’গনিট’ টেবসমূহ আনলক কৰিবলৈ <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ব্যৱহাৰ কৰক।</translation>
 <translation id="7598439272585186139">অধিক সুৰক্ষা লাভ কৰক</translation>
@@ -1470,6 +1473,7 @@
 <translation id="8374977641764177587">জাননী অন কৰিবনে?</translation>
 <translation id="8378714024927312812">আপোনাৰ প্ৰতিষ্ঠানৰ দ্বাৰা পৰিচালিত</translation>
 <translation id="8386068868580335421">ৰিছেট কৰক</translation>
+<translation id="8386882774665382072">{count,plural, =1{{count} টা পাছৱৰ্ডৰ {position}তম পাছৱৰ্ডটো}one{{count} টা পাছৱৰ্ডৰ {position}তম পাছৱৰ্ডটো}other{{count} টা পাছৱৰ্ডৰ {position}তম পাছৱৰ্ডটো}}</translation>
 <translation id="838867811594159347">পাছফ্ৰে’জ দিয়ক…</translation>
 <translation id="8393889347136007944"><ph name="THRESHOLD" /> দিন ব্যৱহাৰ নকৰা টেবসমূহ</translation>
 <translation id="8395339334550012808">সোনকালেই আপুনি অনুসৰণ শিতানত <ph name="CHANNEL_NAME" />ৰ পৰা আৰু সেইটোৰ সৈতে সম্পৰ্কিত সমল দেখা পাব।</translation>
@@ -1653,6 +1657,7 @@
 <translation id="96615566463761848">অন্য ডিভাইচৰ পৰা টেবৰ পৰামৰ্শ দেখুৱাওক</translation>
 <translation id="973493300226275298">বিভিন্ন অনলাইন ষ্ট’ৰত কোনো প্ৰ’ডাক্টৰ মূল্য ট্ৰেক কৰক। মূল্য কমিলে আপুনি সতৰ্কবাৰ্তা পাব।</translation>
 <translation id="981498610235328462">আপোনাৰ প্ৰতিষ্ঠানে আপোনাক কেৱল কিছুমান নিৰ্দিষ্ট একাউণ্টৰ জৰিয়তেহে ছাইন ইন কৰিবলৈ দিয়ে। অনুমতি নথকা একাউণ্টসমূহ লুকুৱাই ৰখা হয়।</translation>
+<translation id="983800820186631385">{count,plural, =1{{count} টা পৰিশোধ পদ্ধতিৰ {position}তম পদ্ধতিটো}one{{count} টা পৰিশোধ পদ্ধতিৰ {position}তম পদ্ধতিটো}other{{count} টা পৰিশোধ পদ্ধতিৰ {position}তম পদ্ধতিটো}}</translation>
 <translation id="984275831282074731">পৰিশোধ পদ্ধতি</translation>
 <translation id="984509647832111802">ছিংক কৰাৰ সুবিধাটোৱে কাম কৰি থকা নাই।</translation>
 <translation id="988141524645182168">অন্য ডিভাইচ</translation>

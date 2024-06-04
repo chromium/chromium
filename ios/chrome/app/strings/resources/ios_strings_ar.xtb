@@ -505,6 +505,7 @@
 <translation id="3575234738189584619">‏البحث باستخدام "عدسة Google"</translation>
 <translation id="3575426792457739946">تحتوي هذه القائمة على جميع الملفات الشخصية التي تم تحميلها.</translation>
 <translation id="3581564640715911333">اقتراح ترجمة الصفحات المكتوبة بلغات أخرى</translation>
+<translation id="3585696901179982416">{count,plural, =1{العنوان {position} من إجمالي عنوان واحد ({count})}zero{العنوان {position} من إجمالي {count} عنوان}two{العنوان {position} من إجمالي عنوانَين ({count})}few{العنوان {position} من إجمالي {count} عناوين}many{العنوان {position} من إجمالي {count} عنوانًا}other{العنوان {position} من إجمالي {count} عنوان}}</translation>
 <translation id="3587885837929752825">‏تفرض مؤسستك قيودًا على ما يمكنك حفظه في حسابك على Google.</translation>
 <translation id="3588820906588687999">فتح صورة في علامة تبويب جديدة</translation>
 <translation id="3595252146048399851">‏يمكنك متى شئت اختيار البيانات التي تريد مزامنتها، وذلك من خلال <ph name="BEGIN_LINK" />الإعدادات<ph name="END_LINK" />. وقد تستخدم Google السجلّ لتخصيص "بحث Google" والخدمات الأخرى.</translation>
@@ -1197,6 +1198,7 @@
 <translation id="69739764870135975">‏إذا كان محرك البحث التلقائي هو Google، ستظهر لك اقتراحات أفضل وأكثر صلة بسياق عمليات البحث التي تجريها.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6983306615164277634">يمكنك أيضًا النقر مع الاستمرار على شريط العناوين لتغيير مكانه.</translation>
+<translation id="6986937292199604715">تفعيل…</translation>
 <translation id="6988572888918530647">‏إدارة حسابك على Google</translation>
 <translation id="6990519590575500580">‏استخدام Facetime</translation>
 <translation id="6998989275928107238">إلى</translation>
@@ -1303,6 +1305,7 @@
 <translation id="7557508262441527045">تمّ تسجيل الخروج.</translation>
 <translation id="7561196759112975576">دائمًا</translation>
 <translation id="7564917801238348224">جارٍ حفظ...</translation>
+<translation id="758132317817089442">تفعيل مستوى "الحماية المحسَّنة"...</translation>
 <translation id="7582857256643797524">هذه الإعدادات مفعَّلة على جهازك</translation>
 <translation id="7583004045319035904">يمكنك استخدام <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> لفتح علامات التبويب في وضع التصفّح المتخفي.</translation>
 <translation id="7598439272585186139">تعزيز مستوى الأمان</translation>

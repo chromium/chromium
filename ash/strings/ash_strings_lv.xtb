@@ -107,6 +107,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1333308631814936910">Izveidots savienojums ar ierīci “<ph name="DISPLAY_NAME" />”.</translation>
 <translation id="1340378040547539434">Tālināt saturu lapā</translation>
 <translation id="1341651618736211726">Pārpilde</translation>
+<translation id="1341926407152459446">Varat izmantot ierīci <ph name="DEVICE_NAME" /> audio ieejai un izvadei.</translation>
 <translation id="1344141078024003905">Jūs apraidāt ekrānu. Jebkurā brīdī varat apturēt vai pārtraukt ekrāna apraidi.</translation>
 <translation id="1346748346194534595">Pa labi</translation>
 <translation id="1351937230027495976">Sakļaut izvēlni</translation>
@@ -145,6 +146,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1486307154719069822">Izmantojot diktēšanas funkciju, rakstīšanai varat lietot balsi. Kad ir atlasīts teksta lauks, nospiediet diktēšanas taustiņu vai atlasiet mikrofona ikonu ekrāna apakšdaļā. Iestatītā diktēšanas valoda: <ph name="LANGUAGE" />. Runa tiek nosūtīta uzņēmumam Google apstrādei. Jebkurā laikā varat mainīt diktēšanas valodu sadaļā Iestatījumi &gt; Pieejamība.</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> ir samainīts ar <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Rādīt visus ieteikumus</translation>
+<translation id="1501946871587957338">Vai mainīt audio avotu?</translation>
 <translation id="1510238584712386396">Lietojumprogrammu palaidējs</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Rādīt paziņojumu iestatījumus. Paziņojumi lietotnei ir izslēgti}zero{Rādīt paziņojumu iestatījumus. Paziņojumi ir izslēgti # lietotnēm}one{Rādīt paziņojumu iestatījumus. Paziņojumi ir izslēgti # lietotnei}other{Rādīt paziņojumu iestatījumus. Paziņojumi ir izslēgti # lietotnēm}}</translation>
 <translation id="1523032696246003">Akumulatora uzlādes līmenis: <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> līdz pilnai uzlādei</translation>
@@ -773,6 +775,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="397105322502079400">Aprēķina...</translation>
 <translation id="397726367135689299">Akumulatora uzlāde var būt neuzticama.</translation>
 <translation id="3977512764614765090">Akumulatora uzlādes līmenis ir <ph name="PERCENTAGE" />%, un notiek uzlāde.</translation>
+<translation id="3982013579989864579">Vai pārslēgt audio izvadi?</translation>
 <translation id="3984536049089846927">Nākamā lapa</translation>
 <translation id="3986082989454912832">Atbildēt</translation>
 <translation id="3990002060657467458">Bieži izmantotās vadīklas, piemēram, Wi-Fi, Bluetooth un skaļums, ir pieejamas ātrajos iestatījumos. Šeit varat arī izveidot ekrānuzņēmumus.</translation>
@@ -816,6 +819,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="4150201353443180367">Displejs</translation>
 <translation id="4156293514828496577">Atlikušais akumulatora uzlādes līmenis ir <ph name="PERCENTAGE" />% (aptuveni <ph name="TIME_LEFT" />).
 Dažas funkcijas ir ierobežotas, lai palielinātu akumulatora darbības ilgumu.</translation>
+<translation id="4160919062868802509">Konstatēti vairāki audio avoti</translation>
 <translation id="4165275524535002941">Iespējams, vads neatbalsta displejus</translation>
 <translation id="4177415338862979658">Noklikšķiniet, lai skatītu detalizētu informāciju</translation>
 <translation id="4177913004758410636">{0,plural, =1{Ierīce jāatjaunina dienas laikā}zero{Ierīce jāatjaunina # dienu laikā}one{Ierīce jāatjaunina # dienas laikā}other{Ierīce jāatjaunina # dienu laikā}}</translation>
@@ -1014,6 +1018,7 @@ Pievienota viena ierīce.</translation>
 <translation id="4871905435473761992">Tīklāja informācijas rādīšana. Jūsu mobilais tīkls neatbalsta tīklāju.</translation>
 <translation id="4872237917498892622">Alt+Meklēt vai Shift</translation>
 <translation id="4872852897273142380">Novietot fokusu uz grāmatzīmju joslas vai izcelt to (ja tā tiek rādīta)</translation>
+<translation id="4876935764454575645">Audio atlase</translation>
 <translation id="4881323000405981760">Linux lietotnēs efekti netiek atbalstīti</translation>
 <translation id="4881695831933465202">Atvērt</translation>
 <translation id="4889868803215848840">Neobligāti — sniedziet atsauksmes, lai uzlabotu ieteikumus:</translation>
@@ -1090,6 +1095,7 @@ Pievienota viena ierīce.</translation>
 <translation id="5121628974188116412">Pāriet uz lapas beigām</translation>
 <translation id="5122517996953421795">Darbvietas <ph name="DESK_NAME" /> priekšskatījums. Neaktīva darbvieta.</translation>
 <translation id="5136175204352732067">Ir pievienota cita tastatūra</translation>
+<translation id="5144005092084035179">Vai pārslēgt audio ieeju?</translation>
 <translation id="5147567197700016471">Atbloķēts</translation>
 <translation id="5150070631291639005">Konfidencialitātes iestatījumi</translation>
 <translation id="5155897006997040331">Lasīšanas ātrums</translation>
@@ -1398,7 +1404,6 @@ Nav pievienota neviena ierīce.</translation>
 <translation id="6232416233079464213">No: <ph name="SESSION_NAME" /></translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> pašlaik izmanto jūsu kameru un mikrofonu.</translation>
 <translation id="6237231532760393653">1X</translation>
-<translation id="62380141479352646">Zems akumulatora uzlādes līmenis. Ieslēgts akumulatora enerģijas taupīšanas režīms.</translation>
 <translation id="6240603910551255087">Augšējā poga</translation>
 <translation id="6247728804802644171">Atvērt paziņojumus</translation>
 <translation id="6249795363855770621">Nevarēja atzīmēt kā pabeigtu. Mēģiniet vēlreiz, kad būsiet tiešsaistē.</translation>
@@ -1789,6 +1794,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="7780094051999721182">saīsnes</translation>
 <translation id="7780159184141939021">Ekrāna pagriešana</translation>
 <translation id="7781829728241885113">Vakar</translation>
+<translation id="7787212146956232129">Ievades un izvades ierīces ir iestatītas. Lai tās mainītu, pārejiet uz iestatījumiem.</translation>
 <translation id="7792590255364786396">Redzamas</translation>
 <translation id="7796735576426975947">Paslēpts jauns paziņojums</translation>
 <translation id="7798302898096527229">Lai atceltu, nospiediet meklēšanas vai pārslēgšanas taustiņu.</translation>
@@ -2095,6 +2101,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 fails}zero{# failu}one{# fails}other{# faili}}</translation>
 <translation id="8936501819958976551">deaktivizēta</translation>
 <translation id="8938800817013097409">USB-C ierīce (pieslēgvieta aizmugurē pa labi)</translation>
+<translation id="8939855324412367560">Ieejas audio ierīce ir <ph name="INPUT_DEVICE_NAME" />, un izvades audio ierīce ir <ph name="OUTPUT_DEVICE_NAME" />. Lai tās mainītu, pārejiet uz iestatījumiem.</translation>
 <translation id="8940956008527784070">Akumulators gandrīz tukšs (<ph name="PERCENTAGE" />%)</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" />, <ph name="EMAIL" /> izvēles rūtiņa nav atzīmēta</translation>
 <translation id="8949925099261528566">Savienojums izveidots, nav piekļuves internetam</translation>
@@ -2132,7 +2139,6 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="9080132581049224423">Velciet augšup, lai pārietu uz sākuma ekrānu.</translation>
 <translation id="9080206825613744995">Tiek izmantots mikrofons.</translation>
 <translation id="9083324773537346962">Operētājsistēmas versija</translation>
-<translation id="908451241440060346">Kad ir ieslēgts režīms “Netraucēt”, paziņojumi tiek paslēpti.</translation>
 <translation id="9084606467167974638">Pārslēgt izvēlnes pozīciju</translation>
 <translation id="9085962983642906571">Lai paildzinātu akumulatora darbību, tas tiks uzlādēts līdz 80%, kamēr ir pievienots strāvas avotam.</translation>
 <translation id="9089416786594320554">Ievades metodes</translation>
@@ -2152,6 +2158,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="9178475906033259337">Tiek rādīts 1 rezultāts vaicājumam “<ph name="QUERY" />”</translation>
 <translation id="9179259655489829027">Šī funkcija ļauj ātri piekļūt jebkuram lietotājam, kurš ir pierakstījies, nepieprasot paroli. Izmantojiet šo funkciju tikai uzticamiem kontiem.</translation>
 <translation id="9183456764293710005">Pilnekrāna lupa</translation>
+<translation id="9192133205265227850">Varat izmantot ierīci <ph name="DEVICE_NAME" />.</translation>
 <translation id="9193626018745640770">Apraide nezināmā uztvērējā</translation>
 <translation id="9194617393863864469">Pierakstīties kā citam lietotājam...</translation>
 <translation id="9195990613383871904">Rīt</translation>

@@ -631,7 +631,6 @@
 <translation id="458794348635939462">Nie udało się znaleźć wszystkich hostów</translation>
 <translation id="4593212453765072419">Wymagane uwierzytelnienie na serwerze proxy</translation>
 <translation id="4609350030397390689">Zmniejsz jasność klawiatury</translation>
-<translation id="4617553623719764431">Pogoda nie jest wyświetlana, ponieważ ta funkcja nie zna Twojej lokalizacji. Aby wyświetlać lokalną pogodę, <ph name="BEGIN_LINK" />włącz Dostęp do lokalizacji<ph name="END_LINK" /></translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> z <ph name="TOTAL_PAGE_NUMBER" />. Naciśnij Enter, by anulować zadanie drukowania.</translation>
 <translation id="463791356324567266">Anuluję skanowanie…</translation>
 <translation id="4646949265910132906">Bezpieczne połączenie z Wi-Fi</translation>

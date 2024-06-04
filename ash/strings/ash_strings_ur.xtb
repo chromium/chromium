@@ -951,6 +951,7 @@
 <translation id="4628757576491864469">آلات</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />، ستارہ کی درجہ بندی <ph name="RATING_SCORE" /></translation>
 <translation id="4633636853437260449">‏حذف کرنے کے لیے Ctrl+W دبائیں</translation>
+<translation id="4635501805800894201">{0,plural, =0{ابھی آلے کو پچھلے ورژن پر اپ ڈیٹ کریں}=1{1 سیکنڈ کے اندر آلے کو پچھلے ورژن پر اپ ڈیٹ کریں}other{# سیکنڈ کے اندر آلے کو پچھلے ورژن پر اپ ڈیٹ کریں}}</translation>
 <translation id="4642092649622328492">جزوی اسکرین شاٹ لیں</translation>
 <translation id="4644727592819780893">کیمرا فٹ کرنے کے لیے علاقہ بہت چھوٹا ہے</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />، ایپ کی تجویز</translation>
@@ -980,6 +981,7 @@
 <translation id="4735944890391795473">ڈیسک 12</translation>
 <translation id="473775607612524610">اپ ڈيٹ کریں</translation>
 <translation id="4740516757091333363">محفوظ کردہ ڈیسک کو حذف کریں؟</translation>
+<translation id="4746798685375253449">{0,plural, =1{ایک دن کے اندر آلے کو پچھلے ورژن پر اپ ڈیٹ کریں}other{# دن کے اندر آلے کو پچھلے ورژن پر اپ ڈیٹ کریں}}</translation>
 <translation id="4747410141429390146">اطلاعات دیکھنے کے لیے براہ کرم غیر مقفل کریں</translation>
 <translation id="4752784485658729358">صرف 6 محفوظ کردہ ڈیسکس کی اجازت ہے۔ نئی محفوظ کرنے کے لیے ڈیسک کو ہٹا دیں۔</translation>
 <translation id="4759238208242260848">ڈاؤن لوڈز</translation>
@@ -1315,6 +1317,7 @@
 <translation id="5916646100036936191">نئی اطلاع، کل <ph name="NOTIFICATION_COUNT" /></translation>
 <translation id="5916664084637901428">آن</translation>
 <translation id="5920710855273935292">مائیک خاموش کیا ہوا ہے۔</translation>
+<translation id="5928083197428724029"><ph name="MANAGER" /> کو اپ ڈیٹ درکار ہے</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> آن ہے۔</translation>
 <translation id="5947494881799873997">واپس لوٹیں</translation>
 <translation id="595202126637698455">کارکردگی کی ٹریسنگ فعال کر دی گئی</translation>
@@ -1404,7 +1407,6 @@
 <translation id="6232416233079464213"><ph name="SESSION_NAME" /> سے</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> فی الحال آپ کا کیمرا اور مائیکروفون استعمال کر رہی ہے</translation>
 <translation id="6237231532760393653">1X</translation>
-<translation id="62380141479352646">بیٹری کم ہے۔ بیٹری سیور کو آن کیا گیا۔</translation>
 <translation id="6240603910551255087">اوپری بٹن</translation>
 <translation id="6247728804802644171">اطلاعات کھولیں</translation>
 <translation id="6249795363855770621">مکمل کے طور پر نشان زد نہیں کیا جا سکتا۔ آن لائن ہونے پر دوبارہ کوشش کریں۔</translation>
@@ -1433,6 +1435,7 @@
 <translation id="6376931439017688372">بلوٹوتھ آن ہے</translation>
 <translation id="6378515133128829137">ونڈو کو دائیں جانب پن کریں</translation>
 <translation id="6381109794406942707">‏آلہ غیر مقفل کرنے کے لیے، اپنا PIN درج کریں۔</translation>
+<translation id="6381305031890976705">{0,plural, =1{ایک گھنٹے کے اندر آلے کو پچھلے ورژن پر اپ ڈیٹ کریں}other{# گھنٹے کے اندر آلے کو پچھلے ورژن پر اپ ڈیٹ کریں}}</translation>
 <translation id="638716340450135524">کیمرا تک رسائی آن کریں</translation>
 <translation id="639644700271529076">‏CAPS LOCK آف ہے</translation>
 <translation id="6406458002328242616">ٹائمر میں ترمیم کریں۔ <ph name="FOCUS_DURATION" />۔</translation>
@@ -1455,6 +1458,7 @@
 <translation id="6459472438155181876">اسکرین کو <ph name="DISPLAY_NAME" /> میں پھیلایا جا رہا ہے</translation>
 <translation id="6464094930452079790">تصاویر</translation>
 <translation id="6467290994038932560"><ph name="GAME_APP_NAME" /> کے لیے آن ہے</translation>
+<translation id="6468406072297048412">{0,plural, =1{1 منٹ کے اندر آلے کو پچھلے ورژن پر اپ ڈیٹ کریں}other{# منٹ کے اندر آلے کو پچھلے ورژن پر اپ ڈیٹ کریں}}</translation>
 <translation id="6469104339369989396">ہاٹ اسپاٹ کو ٹوگل کریں</translation>
 <translation id="6477681113376365978">فائل ڈاؤن لوڈ نہیں کر سکتے</translation>
 <translation id="6482559668224714696">پوری اسکرین مکبّر</translation>
@@ -1577,6 +1581,7 @@
 <translation id="6917259695595127329">ٹاسکس کی آخری بار اپ ڈیٹ کردہ تاریخ: <ph name="TIME" />۔</translation>
 <translation id="6919251195245069855">آپ کے اسمارٹ کارڈ کی شناخت نہیں کی جا سکی۔ پھر آزمائيں۔</translation>
 <translation id="692135145298539227">حذف کریں</translation>
+<translation id="6921427376813842559">آلہ اپ ڈیٹ کریں</translation>
 <translation id="6929081673585394903">کنٹرولز دکھائیں</translation>
 <translation id="6931576957638141829">اس میں محفوظ کریں</translation>
 <translation id="6942518653766415536">ریکارڈنگ فارمیٹ مینیو</translation>
@@ -1664,6 +1669,7 @@
 <translation id="7303365578352795231">ایک دوسرے آلہ پر جواب دیا جا رہا ہے۔</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">‏آپ کا منتظم آپ کی eSIM کو ری سیٹ کر رہا ہے۔ اس میں چند منٹ لگ سکتے ہیں۔</translation>
+<translation id="7312761820869643657">آلے کو پچھلے ورژن پر اپ ڈیٹ کریں</translation>
 <translation id="7313193732017069507">کیمرا پھیلائیں</translation>
 <translation id="7330397557116570022">ڈکٹیشن استعمال کرنے کے لیے ٹیکسٹ فیلڈ میں جائیں</translation>
 <translation id="7331646370422660166">‏alt + نیچے تیر کا نشان</translation>
@@ -2139,7 +2145,6 @@
 <translation id="9080132581049224423">ہوم پر جانے کے لیے اوپر سوائپ کریں</translation>
 <translation id="9080206825613744995">مائیکروفون زیر استعمال ہے۔</translation>
 <translation id="9083324773537346962">‏OS ورژن</translation>
-<translation id="908451241440060346">'ڈسٹرب نہ کریں' کے آن ہونے پر اطلاعات کی آواز سنائی نہیں دیتی ہے</translation>
 <translation id="9084606467167974638">مینیو پوزیشن کو ٹوگل کریں</translation>
 <translation id="9085962983642906571">بیٹری لائف بڑھانے کے لیے پلگ ان کے دوران آپ کی بیٹری عارضی طور پر 80 فیصد پر رکھی جاتی ہے۔</translation>
 <translation id="9089416786594320554">اندراج کے طریقے</translation>
@@ -2180,6 +2185,7 @@
 <translation id="925832987464884575">پیش مناظر چھپائیں</translation>
 <translation id="938407504481277932">موجودہ ڈیسک: <ph name="DESK_NAME" />۔ <ph name="PROFILE_NAME" /> <ph name="EMAIL" />۔ <ph name="DESK_COUNT" /> میں سے <ph name="DESK_INDEX" /> ڈیسک۔</translation>
 <translation id="938963181863597773">میرے کیلینڈر میں کیا ہے؟</translation>
+<translation id="94468042118567862">آلہ اپ ٹو ڈیٹ نہیں ہے</translation>
 <translation id="945383118875625837">لنک کو بُک مارکس بار پر گھسیٹیں</translation>
 <translation id="945522503751344254">تاثرات بھیجیں</translation>
 <translation id="951991426597076286">مسترد کریں</translation>

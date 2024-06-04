@@ -951,6 +951,7 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="4628757576491864469">Cihazlar</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, <ph name="RATING_SCORE" /> Yıldız puanı</translation>
 <translation id="4633636853437260449">Silmek için Ctrl+W tuşlarına basın</translation>
+<translation id="4635501805800894201">{0,plural, =0{Cihazı hemen önceki sürüme geçirin}=1{Cihazı 1 saniye içinde önceki sürüme güncelleyin}other{Cihazı # saniye içinde önceki sürüme güncelleyin}}</translation>
 <translation id="4642092649622328492">Kısmi ekran görüntüsü alır</translation>
 <translation id="4644727592819780893">Bölge, kamera önizlemesi için çok küçük</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, Uygulama önerisi</translation>
@@ -980,6 +981,7 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="4735944890391795473">Masa 12</translation>
 <translation id="473775607612524610">Güncelle</translation>
 <translation id="4740516757091333363">Kayıtlı masa silinsin mi?</translation>
+<translation id="4746798685375253449">{0,plural, =1{Cihazı bir gün içinde önceki sürüme güncelleyin}other{Cihazı # gün içinde önceki sürüme güncelleyin}}</translation>
 <translation id="4747410141429390146">Bildirimleri görmek için lütfen kilidi açın</translation>
 <translation id="4752784485658729358">Kayıtlı masa sayısı 6 ile sınırlıdır. Yeni masa kaydetmek için mevcut bir masayı kaldırın.</translation>
 <translation id="4759238208242260848">İndirilenler</translation>
@@ -1315,6 +1317,7 @@ Bağlı cihaz yok.</translation>
 <translation id="5916646100036936191">Yeni bildirim, toplam <ph name="NOTIFICATION_COUNT" /> bildirim</translation>
 <translation id="5916664084637901428">Açık</translation>
 <translation id="5920710855273935292">Mikrofonun sesi kapalı.</translation>
+<translation id="5928083197428724029"><ph name="MANAGER" /> tarafından güncellenmesi gerekiyor</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> özelliği açık.</translation>
 <translation id="5947494881799873997">Geri döndür</translation>
 <translation id="595202126637698455">Performans izleme etkin</translation>
@@ -1404,7 +1407,6 @@ Bağlı cihaz yok.</translation>
 <translation id="6232416233079464213"><ph name="SESSION_NAME" /> cihazından</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> şu anda kameranızı ve mikrofonunuzu kullanıyor</translation>
 <translation id="6237231532760393653">1X</translation>
-<translation id="62380141479352646">Pil seviyesi düşük. Pil Tasarrufu açıldı.</translation>
 <translation id="6240603910551255087">Üst Düğme</translation>
 <translation id="6247728804802644171">Bildirimleri açın</translation>
 <translation id="6249795363855770621">Tamamlandı olarak işaretlenemedi. İnternete bağlandığınızda tekrar deneyin.</translation>
@@ -1433,6 +1435,7 @@ Bağlı cihaz yok.</translation>
 <translation id="6376931439017688372">Bluetooth açık</translation>
 <translation id="6378515133128829137">Pencereyi sağa sabitle</translation>
 <translation id="6381109794406942707">Cihazın kilidini açmak için PIN'inizi girin.</translation>
+<translation id="6381305031890976705">{0,plural, =1{Cihazı bir saat içinde önceki sürüme güncelleyin}other{Cihazı # saat içinde önceki sürüme güncelleyin}}</translation>
 <translation id="638716340450135524">Kamera erişimini etkinleştirin</translation>
 <translation id="639644700271529076">CAPS LOCK kapalı</translation>
 <translation id="6406458002328242616">Zamanlayıcıyı düzenleyin. <ph name="FOCUS_DURATION" />.</translation>
@@ -1455,6 +1458,7 @@ Bağlı cihaz yok.</translation>
 <translation id="6459472438155181876">Ekran şuraya genişletiliyor: <ph name="DISPLAY_NAME" /></translation>
 <translation id="6464094930452079790">resimler</translation>
 <translation id="6467290994038932560"><ph name="GAME_APP_NAME" /> için açık</translation>
+<translation id="6468406072297048412">{0,plural, =1{Cihazı 1 dakika içinde önceki sürüme güncelleyin}other{Cihazı # dakika içinde önceki sürüme güncelleyin}}</translation>
 <translation id="6469104339369989396">Hotspot'u aç/kapat</translation>
 <translation id="6477681113376365978">Dosya indirilemiyor</translation>
 <translation id="6482559668224714696">Tam ekran büyüteci</translation>
@@ -1578,6 +1582,7 @@ Yeni yüklenmiş</translation>
 <translation id="6917259695595127329">Görevlerin son güncellenme zamanı: <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">Akıllı kartınız tanınamadı. Tekrar deneyin.</translation>
 <translation id="692135145298539227">sil</translation>
+<translation id="6921427376813842559">Cihazı güncelleyin</translation>
 <translation id="6929081673585394903">Kontrolleri göster</translation>
 <translation id="6931576957638141829">Kaydetme yeri</translation>
 <translation id="6942518653766415536">Kayıt biçimi menüsü</translation>
@@ -1665,6 +1670,7 @@ Yeni yüklenmiş</translation>
 <translation id="7303365578352795231">Başka bir cihazda yanıtlanıyor.</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Yöneticiniz eSIM'inizi sıfırlıyor. Bu işlem birkaç dakika sürebilir.</translation>
+<translation id="7312761820869643657">Cihazı önceki sürüme geçirin</translation>
 <translation id="7313193732017069507">Kamerayı genişlet</translation>
 <translation id="7330397557116570022">Dikte özelliğini kullanmak için bir metin alanına gidin</translation>
 <translation id="7331646370422660166">alt + aşağı ok</translation>
@@ -2140,7 +2146,6 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="9080132581049224423">Ana ekrana gitmek için yukarı kaydırın</translation>
 <translation id="9080206825613744995">Mikrofon kullanımda.</translation>
 <translation id="9083324773537346962">İS sürümü</translation>
-<translation id="908451241440060346">Rahatsız Etmeyin modu açıkken bildirimler gösterilmez</translation>
 <translation id="9084606467167974638">Menü konumunu değiştir</translation>
 <translation id="9085962983642906571">Pil ömrünü uzatmak için piliniz fişe takılıyken geçici olarak %80'de kalır.</translation>
 <translation id="9089416786594320554">Giriş yöntemleri</translation>
@@ -2181,6 +2186,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="925832987464884575">Önizlemeleri gizle</translation>
 <translation id="938407504481277932">Geçerli masa: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. Masa <ph name="DESK_INDEX" />/<ph name="DESK_COUNT" />.</translation>
 <translation id="938963181863597773">Takvimimde ne var?</translation>
+<translation id="94468042118567862">Cihaz güncel değil</translation>
 <translation id="945383118875625837">Bağlantıyı yer işaretleri çubuğuna sürükleyin</translation>
 <translation id="945522503751344254">Geri bildirim gönder</translation>
 <translation id="951991426597076286">Reddet</translation>

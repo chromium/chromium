@@ -212,6 +212,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1747827819627189109">Tastatura na ekranu je omogućena</translation>
 <translation id="1749109475624620922">Prozor <ph name="WINDOW_TITLE" /> je dodijeljen svim radnim površinama</translation>
 <translation id="1750088060796401187">Maksimalan broj dozvoljenih radnih površina je <ph name="MAX_DESK_LIMIT" />. Uklonite jednu radnu površinu da otvorite novu.</translation>
+<translation id="1755408179247123630">Želite li uključiti odabir za govor?</translation>
 <translation id="1755556344721611131">Aplikacija Diagnostics</translation>
 <translation id="1756833229520115364">Pohranjivanje šablona nije uspjelo. Previše prozora ili kartica.</translation>
 <translation id="1757857692711134412">Isključeno do zalaska sunca</translation>
@@ -951,6 +952,7 @@ Povezan je 1 uređaj.</translation>
 <translation id="4628757576491864469">Uređaji</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, ocjena zvjezdicama <ph name="RATING_SCORE" /></translation>
 <translation id="4633636853437260449">Pritisnite Ctrl+W da izbrišete</translation>
+<translation id="4635501805800894201">{0,plural, =0{Odmah ažurirajte uređaj na prethodnu verziju}=1{Ažurirajte uređaj na prethodnu verziju u roku od 1 s}one{Ažurirajte uređaj na prethodnu verziju u roku od # s}few{Ažurirajte uređaj na prethodnu verziju u roku od # s}other{Ažurirajte uređaj na prethodnu verziju u roku od # s}}</translation>
 <translation id="4642092649622328492">Napravite djelomičan snimak ekrana</translation>
 <translation id="4644727592819780893">Regija je premala da stane kamera</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, preporučena aplikacija</translation>
@@ -980,6 +982,7 @@ Povezan je 1 uređaj.</translation>
 <translation id="4735944890391795473">12. radna površina</translation>
 <translation id="473775607612524610">Ažuriraj</translation>
 <translation id="4740516757091333363">Izbrisati sačuvanu radnu površinu?</translation>
+<translation id="4746798685375253449">{0,plural, =1{Ažurirajte uređaj na prethodnu verziju u roku od jednog dana}one{Ažurirajte uređaj na prethodnu verziju u roku od # dana}few{Ažurirajte uređaj na prethodnu verziju u roku od # dana}other{Ažurirajte uređaj na prethodnu verziju u roku od # dana}}</translation>
 <translation id="4747410141429390146">Otključajte da pregledate obavještenja</translation>
 <translation id="4752784485658729358">Dozvoljeno je samo 6 radnih površina. Uklonite jednu radnu površinu da sačuvate novu.</translation>
 <translation id="4759238208242260848">Preuzimanja</translation>
@@ -1085,6 +1088,9 @@ Povezan je 1 uređaj.</translation>
 <translation id="5092436659250499817">Uključivane/isključivanje pozadinskog osvjetljenja tastature</translation>
 <translation id="5094577350232361255">informacije</translation>
 <translation id="5095136268899496849">Prilagodite i personalizirajte <ph name="PRODUCT_NAME" /> u Postavkama. Pokušajte promijeniti pozadinsku sliku ili postaviti čuvar ekrana.</translation>
+<translation id="5096125376090473584">Da bi se tekst pročitao naglas, odaberite ikonu odabira za govor pri dnu zaslona, a zatim istaknite tekst.
+
+Možete upotrijebiti i tipkovni prečac. Najprije istaknite tekst, a zatim pritisnite <ph name="MODIFIER" /> + s.</translation>
 <translation id="509790653408515442">Kada emitirate aplikacije s telefona, one će se prikazati ovdje</translation>
 <translation id="5098537242461068432">Radna površina i prozori su ponovo otvoreni</translation>
 <translation id="5103975065730779239">Do <ph name="END_TIME_EXPRESSION" /></translation>
@@ -1315,6 +1321,7 @@ Nije povezan nijedan uređaj.</translation>
 <translation id="5916646100036936191">Novo obavještenje, ukupno <ph name="NOTIFICATION_COUNT" /></translation>
 <translation id="5916664084637901428">Uključeno</translation>
 <translation id="5920710855273935292">Mikrofon je isključen.</translation>
+<translation id="5928083197428724029"><ph name="MANAGER" /> zahtijeva ažuriranje uređaja</translation>
 <translation id="5946788582095584774">Funkcija <ph name="FEATURE_NAME" /> je uključena.</translation>
 <translation id="5947494881799873997">Vrati</translation>
 <translation id="595202126637698455">Praćenje performansi je omogućeno</translation>
@@ -1404,7 +1411,6 @@ Nije povezan nijedan uređaj.</translation>
 <translation id="6232416233079464213">S <ph name="SESSION_NAME" /> računara</translation>
 <translation id="6232891689835436217">Aplikacija <ph name="APP_NAME" /> trenutno koristi vašu kameru i mikrofon</translation>
 <translation id="6237231532760393653">1X</translation>
-<translation id="62380141479352646">Baterija je slaba. Ušteda baterije je uključena.</translation>
 <translation id="6240603910551255087">Gornje dugme</translation>
 <translation id="6247728804802644171">Otvorite obavještenja</translation>
 <translation id="6249795363855770621">Označavanje zadatka kao završenog nije uspjelo. Pokušajte ponovo kada budete online.</translation>
@@ -1433,6 +1439,7 @@ Nije povezan nijedan uređaj.</translation>
 <translation id="6376931439017688372">Bluetooth je uključen</translation>
 <translation id="6378515133128829137">Kačenje prozora na desnoj strani</translation>
 <translation id="6381109794406942707">Da otključate uređaj, unesite PIN.</translation>
+<translation id="6381305031890976705">{0,plural, =1{Ažurirajte uređaj na prethodnu verziju u roku od sat vremena}one{Ažurirajte uređaj na prethodnu verziju u roku od # h}few{Ažurirajte uređaj na prethodnu verziju u roku od # h}other{Ažurirajte uređaj na prethodnu verziju u roku od # h}}</translation>
 <translation id="638716340450135524">Uključi pristup kameri</translation>
 <translation id="639644700271529076">Tipka CAPS LOCK je isključena</translation>
 <translation id="6406458002328242616">Uređivanje tajmera. <ph name="FOCUS_DURATION" />.</translation>
@@ -1455,6 +1462,7 @@ Nije povezan nijedan uređaj.</translation>
 <translation id="6459472438155181876">Proširivanje ekrana na <ph name="DISPLAY_NAME" /></translation>
 <translation id="6464094930452079790">slike</translation>
 <translation id="6467290994038932560">Uključeno je za aplikaciju <ph name="GAME_APP_NAME" /></translation>
+<translation id="6468406072297048412">{0,plural, =1{Ažurirajte uređaj na prethodnu verziju u roku od 1 min}one{Ažurirajte uređaj na prethodnu verziju u roku od # min}few{Ažurirajte uređaj na prethodnu verziju u roku od # min}other{Ažurirajte uređaj na prethodnu verziju u roku od # min}}</translation>
 <translation id="6469104339369989396">Uključivanje/isključivanje pristupne tačke</translation>
 <translation id="6477681113376365978">Nije moguće preuzeti datoteku</translation>
 <translation id="6482559668224714696">Povećalo za cijeli ekran</translation>
@@ -1578,6 +1586,7 @@ Nova instalacija</translation>
 <translation id="6917259695595127329">Zadaci su posljednji put ažurirani u <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">Prepoznavanje pametne kartice nije uspjelo. Ponovite.</translation>
 <translation id="692135145298539227">izbriši</translation>
+<translation id="6921427376813842559">Ažuriranje uređaja</translation>
 <translation id="6929081673585394903">Prikazivanje kontrola</translation>
 <translation id="6931576957638141829">Sačuvaj u</translation>
 <translation id="6942518653766415536">Meni formata snimanja</translation>
@@ -1665,6 +1674,7 @@ Nova instalacija</translation>
 <translation id="7303365578352795231">Odgovaranje na drugom uređaju.</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Vaš administrator vraća vaš eSIM na zadano. To može potrajati nekoliko minuta.</translation>
+<translation id="7312761820869643657">Ažurirajte uređaj na prethodnu verziju</translation>
 <translation id="7313193732017069507">Proširite kameru</translation>
 <translation id="7330397557116570022">Odlazak u tekstualno polje radi korištenja diktiranja</translation>
 <translation id="7331646370422660166">Alt i strelica nadolje</translation>
@@ -1814,6 +1824,7 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">Da koristite uređaj kao gost, trebate se odjaviti, a zatim odabrati Pregledajte kao gost u donjem dijelu ekrana.</translation>
 <translation id="7866482334467279021">uključeno</translation>
+<translation id="7866727328666668290">Posljednja otvorena kartica</translation>
 <translation id="7872786842639831132">Isključeno</translation>
 <translation id="7875575368831396199">Izgleda da je Bluetooth isključen na vašem uređaju <ph name="DEVICE_TYPE" />. Uključite Bluetooth da koristite Phone Hub.</translation>
 <translation id="7884446017008693258">Postavke pristupne tačke</translation>
@@ -2140,7 +2151,6 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="9080132581049224423">Prevucite prema gore da odete na početni ekran</translation>
 <translation id="9080206825613744995">Mikrofon je u upotrebi.</translation>
 <translation id="9083324773537346962">Verzija operativnog sistema</translation>
-<translation id="908451241440060346">Zvuk je isključen za obavještenja kada je uključena funkcija Ne ometaj</translation>
 <translation id="9084606467167974638">Promijenite položaj menija</translation>
 <translation id="9085962983642906571">Vaša baterija će ostati na 80% dok je priključena na napajanje radi produženja vijeka trajanja baterije.</translation>
 <translation id="9089416786594320554">Načini unosa</translation>
@@ -2181,6 +2191,7 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="925832987464884575">Sakrij preglede</translation>
 <translation id="938407504481277932">Trenutna radna površina: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. Radna površina <ph name="DESK_INDEX" /> od <ph name="DESK_COUNT" />.</translation>
 <translation id="938963181863597773">Šta ima u mom kalendaru?</translation>
+<translation id="94468042118567862">Uređaj nije ažuriran</translation>
 <translation id="945383118875625837">Prevucite link na traku oznaka</translation>
 <translation id="945522503751344254">Pošaljite povratne informacije</translation>
 <translation id="951991426597076286">Odbij</translation>

@@ -74,6 +74,7 @@ Weitere Einstellungen, bei denen Daten zur Verbesserung von Chromium verwendet w
 <translation id="2942241131342758843">Standardmäßig Chromium verwenden, um Links zu öffnen, über Widgets zu suchen und Passwörter in anderen Apps automatisch ausfüllen zu lassen</translation>
 <translation id="2977470724722393594">Chromium ist auf dem neuesten Stand</translation>
 <translation id="3044857325852340337">Chromium-Daten gelöscht</translation>
+<translation id="3049211156275642309">Chromium fertig einrichten</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{Chromium kann dir dabei helfen, dieses Paket auf der Seite „Neuer Tab“ zu verfolgen.}other{Chromium kann dir dabei helfen, diese Pakete auf der Seite „Neuer Tab“ zu verfolgen.}}</translation>
 <translation id="3102849287235003384">Du kannst dich auf allen Websites aus deinem Google-Konto abmelden, indem du dich <ph name="BEGIN_LINK" />von Chromium abmeldest<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Sprachsuche in Chromium</translation>
@@ -272,6 +273,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="8754966941001340678">Chromium empfiehlt den erweiterten Schutz</translation>
 <translation id="8759037115129007407">Dein Familienmitglied kann derzeit keine Passwörter erhalten. Bitte es, Chromium zu aktualisieren und seine Passwörter zu synchronisieren. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="8776843108004031667">Dieses Konto und alle nicht gespeicherten Daten werden aus Chromium entfernt.</translation>
+<translation id="8826789549860004832">Du kannst Chromium optimal nutzen, wenn du deinen Browser weiter einrichtest.</translation>
 <translation id="88376265765385899">Öffnet die Chromium-Lesezeichen.</translation>
 <translation id="8860548555286245440">URLs in Chromium im Inkognitomodus öffnen</translation>
 <translation id="8866191443434488382">Chromium erkennt Sendungsnummern auf Websites, die du besuchst, und zeigt dir aktuelle Informationen zu deinen Paketen auf der Seite „Neuer Tab“ an. Die Sendungsnummer und der Name der Website werden an Chromium gesendet, um diese Funktion bereitzustellen und die Shopping-Funktionen für alle zu verbessern. Du kannst dies jederzeit in den <ph name="BEGIN_LINK" />Einstellungen für die Paketverfolgung<ph name="END_LINK" /> aktualisieren.</translation>
