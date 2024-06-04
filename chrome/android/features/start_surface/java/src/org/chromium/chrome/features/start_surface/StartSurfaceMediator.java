@@ -23,14 +23,12 @@ import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_TAB_C
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_VOICE_RECOGNITION_BUTTON_VISIBLE;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.LENS_BUTTON_CLICK_LISTENER;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.MAGIC_STACK_VISIBLE;
-import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.MV_TILES_CONTAINER_TOP_MARGIN;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.MV_TILES_VISIBLE;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.RESET_TASK_SURFACE_HEADER_SCROLL_POSITION;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.TOP_TOOLBAR_PLACEHOLDER_HEIGHT;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.VOICE_SEARCH_BUTTON_CLICK_LISTENER;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Point;
 import android.text.Editable;
 import android.view.View;
@@ -458,8 +456,6 @@ class StartSurfaceMediator
                             notifyStateChange();
                         }
                     };
-
-            tweakMarginsBetweenSections();
         }
 
         if (mController != null) {
@@ -1204,16 +1200,6 @@ class StartSurfaceMediator
         return coordinator != null ? coordinator.getFeedReliabilityLogger() : null;
     }
 
-    private void tweakMarginsBetweenSections() {
-        if (mIsSurfacePolishEnabled) return;
-
-        Resources resources = mContext.getResources();
-        // TODO(crbug.com/40221888): Clean up this code when the refactor is enabled.
-        mPropertyModel.set(
-                MV_TILES_CONTAINER_TOP_MARGIN,
-                resources.getDimensionPixelSize(R.dimen.mv_tiles_container_top_margin));
-    }
-
     @Override
     public void onResumeWithNative() {
         mayRecordHomepageSessionBegin();
@@ -1330,8 +1316,8 @@ class StartSurfaceMediator
     }
 
     /**
-     * Update the background color of the start surface based on whether it is polished or not , in
-     * the incognito mode or non-incognito mode.
+     * Update the background color of the start surface based on whether it is in the incognito mode
+     * or non-incognito mode.
      */
     @VisibleForTesting
     void updateBackgroundColor(PropertyModel propertyModel) {

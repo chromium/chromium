@@ -64,8 +64,6 @@ public class TasksSurfaceProperties {
             new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel.WritableObjectPropertyKey<View.OnClickListener>
             VOICE_SEARCH_BUTTON_CLICK_LISTENER = new PropertyModel.WritableObjectPropertyKey<>();
-    public static final PropertyModel.WritableIntPropertyKey MV_TILES_CONTAINER_TOP_MARGIN =
-            new PropertyModel.WritableIntPropertyKey();
     public static final PropertyModel.WritableIntPropertyKey TOP_TOOLBAR_PLACEHOLDER_HEIGHT =
             new PropertyModel.WritableIntPropertyKey();
     public static final PropertyModel.WritableObjectPropertyKey
@@ -97,7 +95,6 @@ public class TasksSurfaceProperties {
                 QUERY_TILES_VISIBLE,
                 MAGIC_STACK_VISIBLE,
                 VOICE_SEARCH_BUTTON_CLICK_LISTENER,
-                MV_TILES_CONTAINER_TOP_MARGIN,
                 RESET_TASK_SURFACE_HEADER_SCROLL_POSITION,
                 TOP_TOOLBAR_PLACEHOLDER_HEIGHT,
                 BACKGROUND_COLOR

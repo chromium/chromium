@@ -23,7 +23,6 @@ import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_TAB_C
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_VOICE_RECOGNITION_BUTTON_VISIBLE;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.LENS_BUTTON_CLICK_LISTENER;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.MAGIC_STACK_VISIBLE;
-import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.MV_TILES_CONTAINER_TOP_MARGIN;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.MV_TILES_VISIBLE;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.TOP_TOOLBAR_PLACEHOLDER_HEIGHT;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.VOICE_SEARCH_BUTTON_CLICK_LISTENER;
@@ -287,21 +286,6 @@ public class TasksViewBinderUnitTest {
         assertTrue(isViewVisible(R.id.new_tab_incognito_container));
         assertTrue(isViewVisible(R.id.tracking_protection_card_title));
         assertFalse(isViewVisible(R.id.cookie_controls_card_toggle));
-    }
-
-    @Test
-    @SmallTest
-    public void testSetMVTilesContainerTopMargin() {
-        ViewGroup.MarginLayoutParams params =
-                (ViewGroup.MarginLayoutParams)
-                        mTasksView.findViewById(R.id.mv_tiles_container).getLayoutParams();
-        assertEquals(
-                mActivity.getResources().getDimensionPixelSize(R.dimen.mvt_container_top_margin),
-                params.topMargin);
-
-        mTasksViewPropertyModel.set(MV_TILES_CONTAINER_TOP_MARGIN, 16);
-
-        assertEquals(16, params.topMargin);
     }
 
     @Test

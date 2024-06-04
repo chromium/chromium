@@ -42,7 +42,6 @@ import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_LENS_
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_SURFACE_BODY_VISIBLE;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_TAB_CARD_VISIBLE;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_VOICE_RECOGNITION_BUTTON_VISIBLE;
-import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.MV_TILES_CONTAINER_TOP_MARGIN;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.MV_TILES_VISIBLE;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.VOICE_SEARCH_BUTTON_CLICK_LISTENER;
 
@@ -807,13 +806,6 @@ public class StartSurfaceMediatorUnitTest {
 
         mediator.initWithNative(mOmniboxStub, mExploreSurfaceCoordinatorFactory, mPrefService);
         assertThat(mPropertyModel.get(IS_EXPLORE_SURFACE_VISIBLE), equalTo(true));
-    }
-
-    @Test
-    public void initializeStartSurfaceTopMargins() {
-        createStartSurfaceMediatorWithoutInit(
-                /* hadWarmStart= */ false, /* useMagicStack= */ false);
-        assertThat(mPropertyModel.get(MV_TILES_CONTAINER_TOP_MARGIN), equalTo(0));
     }
 
     @Test

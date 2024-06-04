@@ -307,16 +307,6 @@ public class TasksView extends CoordinatorLayoutForPointer {
         }
     }
 
-    /**
-     * Set the top margin for the mv tiles container.
-     *
-     * @param topMargin The top margin to set.
-     */
-    void setMVTilesContainerTopMargin(int topMargin) {
-        MarginLayoutParams params = (MarginLayoutParams) mMvTilesContainerLayout.getLayoutParams();
-        params.topMargin = topMargin;
-    }
-
     /** Set the height of the top toolbar placeholder layout. */
     void setTopToolbarPlaceholderHeight(int height) {
         View topToolbarPlaceholder = findViewById(R.id.top_toolbar_placeholder);

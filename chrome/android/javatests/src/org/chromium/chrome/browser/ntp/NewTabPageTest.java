@@ -1211,10 +1211,9 @@ public class NewTabPageTest {
                 expectedMvtBottomMargin,
                 ((MarginLayoutParams) mvTilesContainer.getLayoutParams()).bottomMargin);
 
-        int expectedMvtTopPadding =
-                res.getDimensionPixelSize(R.dimen.mvt_container_top_padding_polish);
+        int expectedMvtTopPadding = res.getDimensionPixelSize(R.dimen.mvt_container_top_padding);
         int expectedMvtBottomPadding =
-                res.getDimensionPixelSize(R.dimen.mvt_container_bottom_padding_polish);
+                res.getDimensionPixelSize(R.dimen.mvt_container_bottom_padding);
         Assert.assertEquals(
                 "The top padding of the most visited tiles container is wrong.",
                 expectedMvtTopPadding,
