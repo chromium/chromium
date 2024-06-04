@@ -349,6 +349,55 @@ TEST_F(PickerSearchResultsViewTest, AdvancesPseudoFocusBackward) {
   ASSERT_TRUE(view->DoPseudoFocusedAction());
 }
 
+TEST_F(PickerSearchResultsViewTest, GainsPseudoFocusFromFront) {
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  widget->SetFullscreen(true);
+  MockSearchResultsViewDelegate mock_delegate;
+  MockPickerAssetFetcher asset_fetcher;
+  auto* view =
+      widget->SetContentsView(std::make_unique<PickerSearchResultsView>(
+          &mock_delegate, kPickerWidth, &asset_fetcher));
+  view->AppendSearchResults(PickerSearchResultsSection(
+      PickerSectionType::kCategories,
+      {{PickerSearchResult::Category(PickerCategory::kClipboard),
+        PickerSearchResult::Category(PickerCategory::kDriveFiles)}},
+      /*has_more_results=*/false));
+  ViewDrawnWaiter().Wait(view->section_list_view_for_testing()->GetTopItem());
+
+  EXPECT_CALL(mock_delegate, SelectSearchResult(PickerSearchResult::Category(
+                                 PickerCategory::kClipboard)));
+
+  EXPECT_TRUE(view->GainPseudoFocus(
+      PickerPseudoFocusHandler::PseudoFocusDirection::kForward));
+  EXPECT_TRUE(view->DoPseudoFocusedAction());
+}
+
+TEST_F(PickerSearchResultsViewTest, GainsPseudoFocusFromBack) {
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  widget->SetFullscreen(true);
+  MockSearchResultsViewDelegate mock_delegate;
+  MockPickerAssetFetcher asset_fetcher;
+  auto* view =
+      widget->SetContentsView(std::make_unique<PickerSearchResultsView>(
+          &mock_delegate, kPickerWidth, &asset_fetcher));
+  view->AppendSearchResults(PickerSearchResultsSection(
+      PickerSectionType::kCategories,
+      {{PickerSearchResult::Category(PickerCategory::kClipboard),
+        PickerSearchResult::Category(PickerCategory::kDriveFiles)}},
+      /*has_more_results=*/false));
+  ViewDrawnWaiter().Wait(view->section_list_view_for_testing()->GetTopItem());
+
+  EXPECT_CALL(mock_delegate, SelectSearchResult(PickerSearchResult::Category(
+                                 PickerCategory::kDriveFiles)));
+  EXPECT_CALL(mock_delegate, NotifyPseudoFocusChanged(_)).Times(1);
+
+  EXPECT_TRUE(view->GainPseudoFocus(
+      PickerPseudoFocusHandler::PseudoFocusDirection::kBackward));
+  EXPECT_TRUE(view->DoPseudoFocusedAction());
+}
+
 TEST_F(PickerSearchResultsViewTest, ShowsSeeMoreLinkWhenThereAreMoreResults) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);

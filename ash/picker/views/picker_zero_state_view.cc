@@ -130,8 +130,7 @@ bool PickerZeroStateView::MovePseudoFocusUp() {
   }
 
   // Default to backward pseudo focus traversal.
-  AdvancePseudoFocus(PseudoFocusDirection::kBackward);
-  return true;
+  return AdvancePseudoFocus(PseudoFocusDirection::kBackward);
 }
 
 bool PickerZeroStateView::MovePseudoFocusDown() {
@@ -150,8 +149,7 @@ bool PickerZeroStateView::MovePseudoFocusDown() {
   }
 
   // Default to forward pseudo focus traversal.
-  AdvancePseudoFocus(PseudoFocusDirection::kForward);
-  return true;
+  return AdvancePseudoFocus(PseudoFocusDirection::kForward);
 }
 
 bool PickerZeroStateView::MovePseudoFocusLeft() {
@@ -190,31 +188,35 @@ bool PickerZeroStateView::MovePseudoFocusRight() {
   return false;
 }
 
-void PickerZeroStateView::AdvancePseudoFocus(PseudoFocusDirection direction) {
+bool PickerZeroStateView::AdvancePseudoFocus(PseudoFocusDirection direction) {
   if (pseudo_focused_view_ == nullptr) {
-    return;
+    return false;
   }
 
   views::View* view = GetFocusManager()->GetNextFocusableView(
       pseudo_focused_view_, GetWidget(),
       direction == PseudoFocusDirection::kBackward,
       /*dont_loop=*/false);
-  // If the next view is outside this PickerZeroStateView, then loop back to
-  // the first (or last) view.
-  if (!Contains(view)) {
-    view = GetFocusManager()->GetNextFocusableView(
-        this, GetWidget(), direction == PseudoFocusDirection::kBackward,
-        /*dont_loop=*/false);
-  }
-
-  // There can be a short period of time where child views have been added but
-  // not drawn yet, so are not considered focusable. The computed `view` may not
-  // be valid in these cases. If so, just leave the current pseudo focused view.
   if (view == nullptr || !Contains(view)) {
-    return;
+    return false;
   }
-
   SetPseudoFocusedView(view);
+  return true;
+}
+
+bool PickerZeroStateView::GainPseudoFocus(PseudoFocusDirection direction) {
+  views::View* view = GetFocusManager()->GetNextFocusableView(
+      this, GetWidget(), direction == PseudoFocusDirection::kBackward,
+      /*dont_loop=*/false);
+  if (view == nullptr || !Contains(view)) {
+    return false;
+  }
+  SetPseudoFocusedView(view);
+  return true;
+}
+
+void PickerZeroStateView::LosePseudoFocus() {
+  SetPseudoFocusedView(nullptr);
 }
 
 PickerSectionView* PickerZeroStateView::GetOrCreateSectionView(

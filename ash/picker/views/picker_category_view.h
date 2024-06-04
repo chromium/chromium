@@ -40,7 +40,9 @@ class ASH_EXPORT PickerCategoryView : public PickerPageView {
   bool MovePseudoFocusDown() override;
   bool MovePseudoFocusLeft() override;
   bool MovePseudoFocusRight() override;
-  void AdvancePseudoFocus(PseudoFocusDirection direction) override;
+  bool AdvancePseudoFocus(PseudoFocusDirection direction) override;
+  bool GainPseudoFocus(PseudoFocusDirection direction) override;
+  void LosePseudoFocus() override;
 
   // Show a loading animation while results are not ready yet.
   void ShowLoadingAnimation();

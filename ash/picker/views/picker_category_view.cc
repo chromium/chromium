@@ -54,8 +54,16 @@ bool PickerCategoryView::MovePseudoFocusRight() {
   return search_results_view_->MovePseudoFocusRight();
 }
 
-void PickerCategoryView::AdvancePseudoFocus(PseudoFocusDirection direction) {
-  search_results_view_->AdvancePseudoFocus(direction);
+bool PickerCategoryView::AdvancePseudoFocus(PseudoFocusDirection direction) {
+  return search_results_view_->AdvancePseudoFocus(direction);
+}
+
+bool PickerCategoryView::GainPseudoFocus(PseudoFocusDirection direction) {
+  return search_results_view_->GainPseudoFocus(direction);
+}
+
+void PickerCategoryView::LosePseudoFocus() {
+  search_results_view_->LosePseudoFocus();
 }
 
 void PickerCategoryView::ShowLoadingAnimation() {

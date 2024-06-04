@@ -89,7 +89,9 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   bool MovePseudoFocusDown() override;
   bool MovePseudoFocusLeft() override;
   bool MovePseudoFocusRight() override;
-  void AdvancePseudoFocus(PseudoFocusDirection direction) override;
+  bool AdvancePseudoFocus(PseudoFocusDirection direction) override;
+  bool GainPseudoFocus(PseudoFocusDirection direction) override;
+  void LosePseudoFocus() override;
 
   // Returns the target bounds for this Picker view. The target bounds try to
   // vertically align `search_field_view_` with `anchor_bounds`. `anchor_bounds`

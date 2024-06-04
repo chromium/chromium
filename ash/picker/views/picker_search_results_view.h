@@ -44,7 +44,9 @@ class ASH_EXPORT PickerSearchResultsView : public PickerPageView {
   bool MovePseudoFocusDown() override;
   bool MovePseudoFocusLeft() override;
   bool MovePseudoFocusRight() override;
-  void AdvancePseudoFocus(PseudoFocusDirection direction) override;
+  bool AdvancePseudoFocus(PseudoFocusDirection direction) override;
+  bool GainPseudoFocus(PseudoFocusDirection direction) override;
+  void LosePseudoFocus() override;
 
   // Clears the search results.
   void ClearSearchResults();

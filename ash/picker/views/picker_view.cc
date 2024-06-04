@@ -291,14 +291,28 @@ bool PickerView::MovePseudoFocusUp() {
   if (main_container_view_->active_page() == nullptr) {
     return false;
   }
-  return main_container_view_->active_page()->MovePseudoFocusUp();
+  if (!main_container_view_->active_page()->MovePseudoFocusUp()) {
+    // TODO: b/340692819 - Once the emoji bar is implemented, we should transfer
+    // focus between the main container and emoji bar here.
+    main_container_view_->active_page()->LosePseudoFocus();
+    main_container_view_->active_page()->GainPseudoFocus(
+        PseudoFocusDirection::kBackward);
+  }
+  return true;
 }
 
 bool PickerView::MovePseudoFocusDown() {
   if (main_container_view_->active_page() == nullptr) {
     return false;
   }
-  return main_container_view_->active_page()->MovePseudoFocusDown();
+  if (!main_container_view_->active_page()->MovePseudoFocusDown()) {
+    // TODO: b/340692819 - Once the emoji bar is implemented, we should transfer
+    // focus between the main container and emoji bar here.
+    main_container_view_->active_page()->LosePseudoFocus();
+    main_container_view_->active_page()->GainPseudoFocus(
+        PseudoFocusDirection::kForward);
+  }
+  return true;
 }
 
 bool PickerView::MovePseudoFocusLeft() {
@@ -315,11 +329,28 @@ bool PickerView::MovePseudoFocusRight() {
   return main_container_view_->active_page()->MovePseudoFocusRight();
 }
 
-void PickerView::AdvancePseudoFocus(PseudoFocusDirection direction) {
+bool PickerView::AdvancePseudoFocus(PseudoFocusDirection direction) {
   if (main_container_view_->active_page() == nullptr) {
-    return;
+    return false;
   }
-  main_container_view_->active_page()->AdvancePseudoFocus(direction);
+  if (!main_container_view_->active_page()->AdvancePseudoFocus(direction)) {
+    // TODO: b/340692819 - Once the emoji bar is implemented, we should transfer
+    // focus between the main container and emoji bar here.
+    main_container_view_->active_page()->LosePseudoFocus();
+    main_container_view_->active_page()->GainPseudoFocus(direction);
+  }
+  return true;
+}
+
+bool PickerView::GainPseudoFocus(PseudoFocusDirection direction) {
+  return main_container_view_->active_page()->GainPseudoFocus(direction);
+}
+
+void PickerView::LosePseudoFocus() {
+  // TODO: b/340692819 - Once the emoji bar is implemented, handle losing focus
+  // from there as well (or determine if the PickerView should never lose pseudo
+  // focus).
+  main_container_view_->active_page()->LosePseudoFocus();
 }
 
 gfx::Rect PickerView::GetTargetBounds(const gfx::Rect& anchor_bounds,

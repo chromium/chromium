@@ -38,7 +38,11 @@ class MockPickerPageView : public PickerPageView {
   bool MovePseudoFocusDown() override { return true; }
   bool MovePseudoFocusLeft() override { return true; }
   bool MovePseudoFocusRight() override { return true; }
-  void AdvancePseudoFocus(PseudoFocusDirection direction) override { return; }
+  bool AdvancePseudoFocus(PseudoFocusDirection direction) override {
+    return true;
+  }
+  bool GainPseudoFocus(PseudoFocusDirection direction) override { return true; }
+  void LosePseudoFocus() override { return; }
 };
 
 BEGIN_METADATA(MockPickerPageView)

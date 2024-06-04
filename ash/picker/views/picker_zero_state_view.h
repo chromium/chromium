@@ -53,7 +53,9 @@ class ASH_EXPORT PickerZeroStateView : public PickerPageView {
   bool MovePseudoFocusDown() override;
   bool MovePseudoFocusLeft() override;
   bool MovePseudoFocusRight() override;
-  void AdvancePseudoFocus(PseudoFocusDirection direction) override;
+  bool AdvancePseudoFocus(PseudoFocusDirection direction) override;
+  bool GainPseudoFocus(PseudoFocusDirection direction) override;
+  void LosePseudoFocus() override;
 
   std::map<PickerCategoryType, raw_ptr<PickerSectionView>>
   category_section_views_for_testing() const {

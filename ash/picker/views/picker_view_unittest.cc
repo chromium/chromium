@@ -1232,17 +1232,16 @@ TEST_F(PickerViewTest, CategoryOnlySearchShowsNoResultsPage) {
 TEST_F(PickerViewTest,
        ChangingPseudoFocusOnZeroStateNotifiesActiveDescendantChange) {
   FakePickerViewDelegate delegate({
-      .available_categories = {PickerCategory::kLinks,
-                               PickerCategory::kExpressions},
+      .available_categories = {PickerCategory::kClipboard,
+                               PickerCategory::kLinks},
   });
   auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   views::test::AXEventCounter counter(views::AXEventManager::Get());
 
   PressAndReleaseKey(ui::KeyboardCode::VKEY_DOWN, ui::EF_NONE);
-  PressAndReleaseKey(ui::KeyboardCode::VKEY_DOWN, ui::EF_NONE);
 
-  EXPECT_EQ(counter.GetCount(ax::mojom::Event::kActiveDescendantChanged), 2);
+  EXPECT_EQ(counter.GetCount(ax::mojom::Event::kActiveDescendantChanged), 1);
 }
 
 TEST_F(PickerViewTest, ResetsToZeroStateWhenClickingOnBackButton) {
