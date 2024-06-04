@@ -96,15 +96,15 @@ enum XRDepthDataFormat {
 struct XRDepthOptions {
   // Ordered array of depth sensing usage preferences. At session creation,
   // the device will pick the depth sensing usage value that it supports,
-  /// starting from the lowest-indexed one. `kNone` entry is not allowed to
-  // appear in this array, and the array should not be empty.
+  // starting from the lowest-indexed one. If the array is empty, then we are
+  // allowed to select the optimal XRDepthUsage ourselves (this will usually
+  // match whatever the backing device's APIs support by default).
   array<XRDepthUsage> usage_preferences;
   // Ordered array of depth sensing data format preferences. At session
   // creation, the device will pick the depth sensing data format value that it
-  // supports, starting from the lowest-indexed one. `kNone` entry is not
-  // allowed to appear in this array, and the array should not be empty.
-  // The data format selection happens after the device has selected depth
-  // sensing usage.
+  // supports, starting from the lowest-indexed one. If the array is empty, then
+  // we are allowed to select the optimal XRDepthDataFormat ourselves (this will
+  // usually match whatever the backing device's APIs support by default).
   array<XRDepthDataFormat> data_format_preferences;
 };
 

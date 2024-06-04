@@ -82,10 +82,6 @@ const char kImmersiveArModeNotValid[] =
 const char kTrackedImageWidthInvalid[] =
     "trackedImages[%d].widthInMeters invalid, must be a positive number.";
 
-const char kDepthSensingConfigurationNotSupported[] =
-    "The provided preferences depth sensing usage and format are not "
-    "supported, unable to create the session.";
-
 constexpr device::mojom::XRSessionFeature kDefaultImmersiveVrFeatures[] = {
     device::mojom::XRSessionFeature::REF_SPACE_VIEWER,
     device::mojom::XRSessionFeature::REF_SPACE_LOCAL,
@@ -1351,19 +1347,6 @@ ScriptPromise<XRSession> XRSystem::requestSession(
         ParseDepthUsages(session_init->depthSensing()->usagePreference());
     Vector<device::mojom::XRDepthDataFormat> preferred_format =
         ParseDepthFormats(session_init->depthSensing()->dataFormatPreference());
-
-    // If the depth API is required and either preferred usages or preferred
-    // formats are empty, we already know that the session creation will fail
-    // (as we won't be able to pick a supported usage & format combination), so
-    // let's fail it already:
-    if (query->RequiredFeatures().Contains(
-            device::mojom::XRSessionFeature::DEPTH) &&
-        (preferred_usage.empty() || preferred_format.empty())) {
-      query->RejectWithDOMException(DOMExceptionCode::kNotSupportedError,
-                                    kDepthSensingConfigurationNotSupported,
-                                    &exception_state);
-      return promise;
-    }
 
     query->SetDepthSensingConfiguration(preferred_usage, preferred_format);
   }

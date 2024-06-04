@@ -753,12 +753,21 @@ bool ArCoreImpl::ConfigureDepthSensing(
     return false;
   }
 
-  if (!base::Contains(depth_sensing_config->depth_usage_preference,
+  // We only support CPU-optimized luminance-alpha depth data. If the preference
+  // array is empty, we are allowed to determine the type on our own. Otherwise,
+  // if an array was specified and doesn't allow for this combination, we will
+  // need to reject.
+  const auto& usage_preference = depth_sensing_config->depth_usage_preference;
+  if (!usage_preference.empty() &&
+      !base::Contains(usage_preference,
                       device::mojom::XRDepthUsage::kCPUOptimized)) {
     return false;
   }
 
-  if (!base::Contains(depth_sensing_config->depth_data_format_preference,
+  const auto& format_preference =
+      depth_sensing_config->depth_data_format_preference;
+  if (!format_preference.empty() &&
+      !base::Contains(format_preference,
                       device::mojom::XRDepthDataFormat::kLuminanceAlpha)) {
     return false;
   }
