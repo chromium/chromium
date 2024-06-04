@@ -10,7 +10,7 @@ available natively in iOS 15+.*
 
 # Cronet quick start guide
 
-Refer to [this doc](quick_start_guide.md).
+Refer to [this doc](getting_started.md).
 
 # Cronet build instructions
 
