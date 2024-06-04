@@ -1203,14 +1203,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tabs.CountAtResume" units="tabs" expires_after="2024-09-22">
-  <owner>marq@chromium.org</owner>
-  <owner>olivierrobin@chromium.org</owner>
-  <summary>
-    [iOS] The number of tabs opened when the app comes out of the background.
-  </summary>
-</histogram>
-
 <histogram name="Tabs.CountAtResume2" units="tabs" expires_after="2024-11-17">
   <owner>marq@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
@@ -1223,7 +1215,10 @@ chromium-metrics-reviews@google.com.
 <histogram name="Tabs.CountAtStartup" units="tabs" expires_after="2024-09-22">
   <owner>marq@chromium.org</owner>
   <owner>chromeleon@google.com</owner>
-  <summary>[Android and iOS] The number of tabs opened at cold launch.</summary>
+  <summary>
+    [Android] The number of tabs opened at cold launch. iOS uses
+    Tabs.CountAtStartup2
+  </summary>
 </histogram>
 
 <histogram name="Tabs.CountAtStartup2" units="tabs" expires_after="2024-10-06">
