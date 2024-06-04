@@ -138,20 +138,6 @@ bool IconReaderInitializeConfig(sandbox::TargetConfig* config) {
   result = config->SetDelayedProcessMitigations(flags);
   if (result != sandbox::SBOX_ALL_OK)
     return false;
-
-  // Allow file read. These should match IconLoader::GroupForFilepath().
-  result = config->AllowFileAccess(sandbox::FileSemantics::kAllowReadonly,
-                                   L"\\??\\*.exe");
-  if (result != sandbox::SBOX_ALL_OK)
-    return false;
-  result = config->AllowFileAccess(sandbox::FileSemantics::kAllowReadonly,
-                                   L"\\??\\*.dll");
-  if (result != sandbox::SBOX_ALL_OK)
-    return false;
-  result = config->AllowFileAccess(sandbox::FileSemantics::kAllowReadonly,
-                                   L"\\??\\*.ico");
-  if (result != sandbox::SBOX_ALL_OK)
-    return false;
   return true;
 }
 
