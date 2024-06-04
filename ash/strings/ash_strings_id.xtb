@@ -211,6 +211,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1747827819627189109">Keyboard di layar diaktifkan</translation>
 <translation id="1749109475624620922">Jendela <ph name="WINDOW_TITLE" /> ditetapkan ke semua desktop</translation>
 <translation id="1750088060796401187">Hanya <ph name="MAX_DESK_LIMIT" /> desktop yang diizinkan. Hapus satu desktop untuk membuka yang baru.</translation>
+<translation id="1755408179247123630">Aktifkan fitur Klik untuk Diucapkan?</translation>
 <translation id="1755556344721611131">Aplikasi Diagnostik</translation>
 <translation id="1756833229520115364">Tidak dapat menyimpan template. Terlalu banyak jendela atau tab.</translation>
 <translation id="1757857692711134412">Nonaktif sampai matahari terbenam</translation>
@@ -1084,6 +1085,9 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="5092436659250499817">Aktifkan/nonaktifkan lampu latar keyboard</translation>
 <translation id="5094577350232361255">tentang</translation>
 <translation id="5095136268899496849">Sesuaikan dan personalisasi <ph name="PRODUCT_NAME" /> Anda di Setelan. Coba ubah wallpaper atau setel screensaver.</translation>
+<translation id="5096125376090473584">Untuk mendengarkan teks yang dibacakan lisan, pilih ikon Klik untuk Diucapkan di bagian bawah layar, lalu tandai teks.
+
+Anda juga dapat menggunakan pintasan keyboard. Pertama, tandai teks, lalu tekan <ph name="MODIFIER" /> + s.</translation>
 <translation id="509790653408515442">Aplikasi yang di-streaming pada ponsel Anda akan ditampilkan di sini</translation>
 <translation id="5098537242461068432">Desktop dan jendela dibuka kembali</translation>
 <translation id="5103975065730779239">Sampai pukul <ph name="END_TIME_EXPRESSION" /></translation>
@@ -1814,6 +1818,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">Untuk menggunakan perangkat sebagai tamu, Anda harus logout lalu memilih Jelajahi sebagai Tamu di bagian bawah layar.</translation>
 <translation id="7866482334467279021">aktif</translation>
+<translation id="7866727328666668290">Tab yang terakhir dibuka</translation>
 <translation id="7872786842639831132">Nonaktif</translation>
 <translation id="7875575368831396199">Sepertinya Bluetooth dinonaktifkan di <ph name="DEVICE_TYPE" /> Anda. Aktifkan Bluetooth untuk menggunakan Phone Hub.</translation>
 <translation id="7884446017008693258">Setelan Hotspot</translation>

@@ -212,6 +212,7 @@
 <translation id="1747827819627189109">เปิดใช้แป้นพิมพ์บนหน้าจออยู่</translation>
 <translation id="1749109475624620922">กำหนดหน้าต่าง <ph name="WINDOW_TITLE" /> ให้ทุกเดสก์แล้ว</translation>
 <translation id="1750088060796401187">เปิดได้ <ph name="MAX_DESK_LIMIT" /> เดสก์เท่านั้น นำออก 1 เดสก์เพื่อเปิดเดสก์ใหม่</translation>
+<translation id="1755408179247123630">เปิดฟีเจอร์เลือกเพื่อให้อ่านใช่ไหม</translation>
 <translation id="1755556344721611131">แอปการวินิจฉัย</translation>
 <translation id="1756833229520115364">บันทึกเทมเพลตไม่ได้ มีหน้าต่างหรือแท็บมากเกินไป</translation>
 <translation id="1757857692711134412">ปิดจนถึงพระอาทิตย์ตก</translation>
@@ -946,6 +947,7 @@
 <translation id="4628757576491864469">อุปกรณ์</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, การให้ดาว <ph name="RATING_SCORE" /></translation>
 <translation id="4633636853437260449">กด Ctrl+W เพื่อลบ</translation>
+<translation id="4635501805800894201">{0,plural, =0{อัปเดตอุปกรณ์เป็นเวอร์ชันก่อนหน้าตอนนี้เลย}=1{อัปเดตอุปกรณ์เป็นเวอร์ชันก่อนหน้าภายใน 1 วินาที}other{อัปเดตอุปกรณ์เป็นเวอร์ชันก่อนหน้าภายใน # วินาที}}</translation>
 <translation id="4642092649622328492">ถ่ายภาพหน้าจอบางส่วน</translation>
 <translation id="4644727592819780893">พื้นที่เล็กเกินกว่าที่จะแสดงตัวอย่างกล้อง</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, แอปแนะนำ</translation>
@@ -975,6 +977,7 @@
 <translation id="4735944890391795473">เดสก์ที่ 12</translation>
 <translation id="473775607612524610">อัปเดต</translation>
 <translation id="4740516757091333363">ลบเดสก์ที่บันทึกไว้ใช่ไหม</translation>
+<translation id="4746798685375253449">{0,plural, =1{อัปเดตอุปกรณ์เป็นเวอร์ชันก่อนหน้าภายใน 1 วัน}other{อัปเดตอุปกรณ์เป็นเวอร์ชันก่อนหน้าภายใน # วัน}}</translation>
 <translation id="4747410141429390146">โปรดปลดล็อกเพื่อดูการแจ้งเตือน</translation>
 <translation id="4752784485658729358">อนุญาตให้บันทึกเพียง 6 เดสก์ นำออกเพื่อบันทึกเดสก์ใหม่</translation>
 <translation id="4759238208242260848">ดาวน์โหลด</translation>
@@ -1080,6 +1083,9 @@
 <translation id="5092436659250499817">เปิด/ปิดไฟแบ็กไลต์ของแป้นพิมพ์</translation>
 <translation id="5094577350232361255">เกี่ยวกับ</translation>
 <translation id="5095136268899496849">ปรับแต่งและปรับเปลี่ยน <ph name="PRODUCT_NAME" /> ในแบบของคุณในการตั้งค่า ลองเปลี่ยนวอลเปเปอร์หรือตั้งค่าภาพพักหน้าจอ</translation>
+<translation id="5096125376090473584">หากต้องการฟังการอ่านออกเสียงข้อความ ให้เลือกไอคอน "เลือกเพื่อให้อ่าน" ที่ด้านล่างของหน้าจอ แล้วไฮไลต์ข้อความ
+
+หรือจะใช้แป้นพิมพ์ลัดก็ได้ ก่อนอื่น ให้ไฮไลต์ข้อความ แล้วกด <ph name="MODIFIER" /> + s</translation>
 <translation id="509790653408515442">เมื่อคุณสตรีมแอปของโทรศัพท์ แอปจะปรากฏที่นี่</translation>
 <translation id="5098537242461068432">เดสก์และหน้าต่างเปิดอีกครั้งแล้ว</translation>
 <translation id="5103975065730779239">จนถึง <ph name="END_TIME_EXPRESSION" /></translation>
@@ -1310,6 +1316,7 @@
 <translation id="5916646100036936191">การแจ้งเตือนใหม่ ทั้งหมด <ph name="NOTIFICATION_COUNT" /> รายการ</translation>
 <translation id="5916664084637901428">เปิด</translation>
 <translation id="5920710855273935292">ปิดเสียงไมค์อยู่</translation>
+<translation id="5928083197428724029"><ph name="MANAGER" /> กำหนดให้ต้องมีการอัปเดต</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> เปิดอยู่</translation>
 <translation id="5947494881799873997">ย้อนกลับ</translation>
 <translation id="595202126637698455">เปิดใช้งานการติดตามการปฏิบัติงานแล้ว</translation>
@@ -1427,6 +1434,7 @@
 <translation id="6376931439017688372">บลูทูธเปิดอยู่</translation>
 <translation id="6378515133128829137">ปักหมุดหน้าต่างไว้ทางด้านขวา</translation>
 <translation id="6381109794406942707">ป้อน PIN เพื่อปลดล็อกอุปกรณ์</translation>
+<translation id="6381305031890976705">{0,plural, =1{อัปเดตอุปกรณ์เป็นเวอร์ชันก่อนหน้าภายใน 1 ชั่วโมง}other{อัปเดตอุปกรณ์เป็นเวอร์ชันก่อนหน้าภายใน # ชั่วโมง}}</translation>
 <translation id="638716340450135524">เปิดการเข้าถึงกล้อง</translation>
 <translation id="639644700271529076">CAPS LOCK ปิดอยู่</translation>
 <translation id="6406458002328242616">แก้ไขตัวจับเวลา <ph name="FOCUS_DURATION" /></translation>
@@ -1449,6 +1457,7 @@
 <translation id="6459472438155181876">ขยายหน้าจอไปยัง <ph name="DISPLAY_NAME" /></translation>
 <translation id="6464094930452079790">รูปภาพ</translation>
 <translation id="6467290994038932560">เปิดอยู่สำหรับ <ph name="GAME_APP_NAME" /></translation>
+<translation id="6468406072297048412">{0,plural, =1{อัปเดตอุปกรณ์เป็นเวอร์ชันก่อนหน้าภายใน 1 นาที}other{อัปเดตอุปกรณ์เป็นเวอร์ชันก่อนหน้าภายใน # นาที}}</translation>
 <translation id="6469104339369989396">เปิด/ปิดฮอตสปอต</translation>
 <translation id="6477681113376365978">ดาวน์โหลดไฟล์ไม่ได้</translation>
 <translation id="6482559668224714696">แว่นขยายทั้งหน้าจอ</translation>
@@ -1572,6 +1581,7 @@
 <translation id="6917259695595127329">อัปเดตงานล่าสุด: <ph name="TIME" /></translation>
 <translation id="6919251195245069855">ไม่พบสมาร์ทการ์ดของคุณ ลองใหม่</translation>
 <translation id="692135145298539227">นำออก</translation>
+<translation id="6921427376813842559">อัปเดตอุปกรณ์</translation>
 <translation id="6929081673585394903">แสดงการควบคุม</translation>
 <translation id="6931576957638141829">บันทึกไปยัง</translation>
 <translation id="6942518653766415536">เมนูรูปแบบการบันทึก</translation>
@@ -1659,6 +1669,7 @@
 <translation id="7303365578352795231">กำลังรับสายในอุปกรณ์อื่น</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">ผู้ดูแลระบบกำลังรีเซ็ต eSIM การดำเนินการนี้อาจใช้เวลาสักครู่</translation>
+<translation id="7312761820869643657">อัปเดตอุปกรณ์เป็นเวอร์ชันก่อนหน้า</translation>
 <translation id="7313193732017069507">ขยายขนาดกล้อง</translation>
 <translation id="7330397557116570022">ไปที่ช่องข้อความเพื่อใช้การพิมพ์ตามคําบอก</translation>
 <translation id="7331646370422660166">Alt + ลูกศรลง</translation>
@@ -1808,6 +1819,7 @@
 <translation id="7851768487828137624">สีเหลืองอ่อน</translation>
 <translation id="7862292329216937261">หากต้องการใช้อุปกรณ์ในฐานะผู้มาเยือน คุณต้องออกจากระบบแล้วเลือก "ท่องเว็บในฐานะผู้มาเยือน" ที่ด้านล่างของหน้าจอ</translation>
 <translation id="7866482334467279021">เปิด</translation>
+<translation id="7866727328666668290">แท็บที่เปิดล่าสุด</translation>
 <translation id="7872786842639831132">ปิด</translation>
 <translation id="7875575368831396199">ดูเหมือนว่าบลูทูธของ <ph name="DEVICE_TYPE" /> จะปิดอยู่ โปรดเปิดบลูทูธเพื่อใช้ฮับโทรศัพท์</translation>
 <translation id="7884446017008693258">การตั้งค่าฮอตสปอต</translation>
@@ -2174,6 +2186,7 @@
 <translation id="925832987464884575">ซ่อนตัวอย่าง</translation>
 <translation id="938407504481277932">เดสก์ปัจจุบัน: <ph name="DESK_NAME" /> <ph name="PROFILE_NAME" /> <ph name="EMAIL" /> เดสก์ที่ <ph name="DESK_INDEX" /> จาก <ph name="DESK_COUNT" /></translation>
 <translation id="938963181863597773">มีอะไรในปฏิทินของฉันบ้าง</translation>
+<translation id="94468042118567862">อุปกรณ์ไม่ได้ใช้เวอร์ชันล่าสุด</translation>
 <translation id="945383118875625837">ลากลิงก์ไปยังแถบบุ๊กมาร์ก</translation>
 <translation id="945522503751344254">ส่งความคิดเห็น</translation>
 <translation id="951991426597076286">ปฏิเสธ</translation>

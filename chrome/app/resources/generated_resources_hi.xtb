@@ -8553,6 +8553,7 @@
 <translation id="7416091793702109803"><ph name="FILE_NAME" /> को देखें</translation>
 <translation id="7416263748877373774">सेवा की शर्तें लोड नहीं की जा सकीं. कृपया अपना इंटरनेट कनेक्शन जांचें और फिर से कोशिश करें.</translation>
 <translation id="7416362041876611053">अज्ञात नेटवर्क गड़बड़ी.</translation>
+<translation id="7417435070053325657"><ph name="APPS_LIST_SIZE" /> में से <ph name="BLOCKED_APPS_SIZE" /> ऐप्लिकेशन ब्लॉक किए गए</translation>
 <translation id="741906494724992817">इस ऐप्लिकेशन के लिए किसी विशेष अनुमति की ज़रूरत नहीं है.</translation>
 <translation id="7419142833919893307">कोई उपयोगकर्ता नाम नहीं जोड़ा गया</translation>
 <translation id="7419565702166471774">हमेशा सुरक्षित कनेक्शन इस्तेमाल करें</translation>

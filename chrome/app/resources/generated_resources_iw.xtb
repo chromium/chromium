@@ -8556,6 +8556,7 @@
 <translation id="7416091793702109803">בדיקה של <ph name="FILE_NAME" /></translation>
 <translation id="7416263748877373774">לא ניתן לטעון את התנאים וההגבלות. יש לבדוק את החיבור לרשת ולנסות שוב.</translation>
 <translation id="7416362041876611053">שגיאת רשת לא ידועה.</translation>
+<translation id="7417435070053325657">‫<ph name="BLOCKED_APPS_SIZE" /> מתוך <ph name="APPS_LIST_SIZE" /> אפליקציות חסומות</translation>
 <translation id="741906494724992817">אין צורך בהרשאות מיוחדות עבור האפליקציה הזו.</translation>
 <translation id="7419142833919893307">לא נוסף שם משתמש</translation>
 <translation id="7419565702166471774">להשתמש תמיד בחיבורים מאובטחים</translation>

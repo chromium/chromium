@@ -5156,6 +5156,7 @@ No se recomienda inhabilitar la decodificación de video acelerada por hardware,
       para procesar las solicitudes (https://fetch.spec.whatwg.org/#request-keepalive-flag) de keepalive.
 
       El valor predeterminado (0) significa que esta función está inhabilitada.</translation>
+<translation id="4933780993367313536">Permitir que los administradores empresariales establezcan conexiones de acceso remoto con esta máquina</translation>
 <translation id="4937423591320233496">Inhabilitar el contenido sugerido</translation>
 <translation id="4942096314850617489">Inhabilitar la certificación remota para el usuario</translation>
 <translation id="4942681160308347946">Si estableces el valor "True" para la política, se activarán los comentarios por voz en la pantalla de acceso. Si estableces el valor "False", no se activarán los comentarios por voz en esa pantalla.
@@ -6478,6 +6479,7 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 <translation id="5966615072639944554">Extensiones que tienen permitido utilizar la API de atestación remota</translation>
 <translation id="596732417280023843">El nombre del perfil del certificado.</translation>
 <translation id="5972538402066550344">Permitir los controles de informes detallados</translation>
+<translation id="5973437409890460481">Permitir las conexiones de acceso remoto a esta máquina por parte de empresas</translation>
 <translation id="5975765799383881158">Si habilitas la política o no la estableces, los usuarios podrán enviar comentarios a Google desde Menú &gt; Ayuda &gt; Informar un problema o la combinación de teclas correspondiente.
 
       Si inhabilitas la política, los usuarios no podrán enviar los comentarios a Google.</translation>
@@ -10017,6 +10019,11 @@ Para establecer esta política, se debe inhabilitar la política <ph name="PRIVA
       Si se establece esta política como verdadera, el usuario deberá acceder a <ph name="PRODUCT_NAME" /> con su perfil antes de usar el navegador. El valor predeterminado de BrowserGuestModeEnabled se establecerá como "false". Debes tener en cuenta que, una vez habilitada esta política, se bloquearán los perfiles a los que no se haya accedido, y no podrás ingresar a ellos. Para obtener más información, consulta el artículo del Centro de ayuda.
 
       Si se establece esta política como falsa o no se configura, el usuario podrá usar el navegador sin acceder a <ph name="PRODUCT_NAME" />.</translation>
+<translation id="8575422604428646609">Si la inhabilitas, esta política impide que los administradores empresariales se conecten a dispositivos <ph name="PRODUCT_OS_NAME" /> administrados cuando no hay ningún usuario en el dispositivo.
+
+Esta política no afecta a los demás casos de acceso remoto.
+
+Esta política no tiene efecto si la habilitas, la dejas en blanco o no la configuras.</translation>
 <translation id="8575739761246140675">Habilitar la confianza en los certificados emitidos mediante la PKI heredada de Symantec Corporation</translation>
 <translation id="8575746110808109915">Si estableces la política, se habilitará la función de restauración completa.
       Si esta política es verdadera, el restablecimiento de las apps y las ventanas de apps tras una falla o un reinicio dependerá de la configuración correspondiente.
@@ -10728,6 +10735,7 @@ Nota: Si reinicias el dispositivo, se borrará la memoria caché. Se almacenan e
 <translation id="9107635531763682565">Si estableces la política en 1, los sitios web podrán mostrar notificaciones de escritorio. Si la estableces en 2, se rechazarán las notificaciones de escritorio.
 
 Si no la estableces, se aplicará la política <ph name="ASK_NOTIFICATIONS_POLICY_NAME" />, pero los usuarios podrán cambiar esta configuración.</translation>
+<translation id="9110194749335632373">Impedir que los administradores empresariales establezcan conexiones de acceso remoto con esta máquina</translation>
 <translation id="9110251436602897914">Informar datos sobre los periféricos que están conectados al dispositivo</translation>
 <translation id="9110485853581788150">Una lista de certificados que no son confiables o no confiables en <ph name="PRODUCT_NAME" />,
 pero que se pueden usar como sugerencias para la compilación de rutas de acceso. Los certificados deben estar codificados en base64.</translation>
