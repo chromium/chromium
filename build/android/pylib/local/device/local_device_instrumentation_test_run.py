@@ -129,9 +129,23 @@ RENDER_TEST_MODEL_SDK_CONFIGS = {
 
 _BATCH_SUFFIX = '_batch'
 # If the batch is too big it starts to fail for command line length reasons.
-_LOCAL_TEST_BATCH_MAX_GROUP_SIZE = 200
+_UNIT_TEST_MAX_GROUP_SIZE = 200
+# With sharding, large batches can unbalance the shards, so break down batches
+# of slow tests to a size that should not take more than a couple of minutes to
+# run.
+_NON_UNIT_TEST_MAX_GROUP_SIZE = 30
 
 _PICKLE_FORMAT_VERSION = 12
+
+
+def _dict2list(d):
+  if isinstance(d, dict):
+    return sorted([(k, _dict2list(v)) for k, v in d.items()])
+  if isinstance(d, list):
+    return [_dict2list(v) for v in d]
+  if isinstance(d, tuple):
+    return tuple(_dict2list(v) for v in d)
+  return d
 
 
 class _TestListPickleException(Exception):
@@ -811,6 +825,16 @@ class LocalDeviceInstrumentationTestRun(
 
   #override
   def _GroupTests(self, tests):
+    batched_tests, other_tests = self._GroupTestsIntoBatchesAndOthers(tests)
+    batched_tests_split = self._SplitBatchesAboveMaxSize(batched_tests)
+    all_tests = batched_tests_split + other_tests
+
+    # Sort all tests by hash.
+    # TODO(crbug.com/40200835): Add sorting logic back to _PartitionTests.
+    return self._SortTests(all_tests)
+
+  def _GroupTestsIntoBatchesAndOthers(self, tests):
+    # pylint: disable=no-self-use
     batched_tests = dict()
     other_tests = []
     for test in tests:
@@ -846,42 +870,31 @@ class LocalDeviceInstrumentationTestRun(
           base_test_result.MULTIPROCESS_SUFFIX in test['method'])
         if webview_multiprocess_mode:
           batch_name += '|multiprocess_mode'
-
         batched_tests.setdefault(batch_name, []).append(test)
       else:
         other_tests.append(test)
+    for tests_in_batch in batched_tests.values():
+      tests_in_batch.sort(key=_dict2list)
+    return batched_tests, other_tests
 
-    def dict2list(d):
-      if isinstance(d, dict):
-        return sorted([(k, dict2list(v)) for k, v in d.items()])
-      if isinstance(d, list):
-        return [dict2list(v) for v in d]
-      if isinstance(d, tuple):
-        return tuple(dict2list(v) for v in d)
-      return d
+  def _SplitBatchesAboveMaxSize(self, batched_tests):
+    # pylint: disable=no-self-use
+    batched_tests_split = []
+    for batch_name, tests_in_batch in batched_tests.items():
+      if batch_name.startswith('UnitTests'):
+        max_group_size = _UNIT_TEST_MAX_GROUP_SIZE
+      else:
+        max_group_size = _NON_UNIT_TEST_MAX_GROUP_SIZE
+      for i in range(0, len(tests_in_batch), max_group_size):
+        batched_tests_split.append(tests_in_batch[i:i + max_group_size])
+    return batched_tests_split
 
-    test_count = sum(
-        [len(test) - 1 for test in tests if self._CountTestsIndividually(test)])
-    test_count += len(tests)
-    if self._test_instance.total_external_shards > 1:
-      # Calculate suitable test batch max group size based on average partition
-      # size. The batch size should be below partition size to balance between
-      # shards. Choose to divide by 3 as it works fine with most of test suite
-      # without increasing too much setup/teardown time for batch tests.
-      test_batch_max_group_size = \
-        max(1, test_count // self._test_instance.total_external_shards // 3)
-    else:
-      test_batch_max_group_size = _LOCAL_TEST_BATCH_MAX_GROUP_SIZE
+  #override
+  def _GroupTestsAfterSharding(self, tests):
+    # pylint: disable=no-self-use
+    batched_tests, other_tests = self._GroupTestsIntoBatchesAndOthers(tests)
+    all_tests = list(batched_tests.values()) + other_tests
 
-    all_tests = []
-    for _, btests in list(batched_tests.items()):
-      # Ensure a consistent ordering across external shards.
-      btests.sort(key=dict2list)
-      all_tests.extend([
-          btests[i:i + test_batch_max_group_size]
-          for i in range(0, len(btests), test_batch_max_group_size)
-      ])
-    all_tests.extend(other_tests)
     # Sort all tests by hash.
     # TODO(crbug.com/40200835): Add sorting logic back to _PartitionTests.
     return self._SortTests(all_tests)

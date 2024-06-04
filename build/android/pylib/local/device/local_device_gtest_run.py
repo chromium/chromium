@@ -673,6 +673,10 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
 
     return all_tests
 
+  #override
+  def _GroupTestsAfterSharding(self, tests):
+    return self._GroupTests(tests)
+
   def _UploadTestArtifacts(self, device, test_artifacts_device_dir):
     # TODO(jbudorick): Reconcile this with the output manager once
     # https://codereview.chromium.org/2933993002/ lands.

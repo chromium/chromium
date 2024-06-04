@@ -155,7 +155,7 @@ class LocalDeviceTestRun(test_run.TestRun):
         while self._env.current_try < self._env.max_tries and tests:
           tries = self._env.current_try
           tests = self._SortTests(tests)
-          grouped_tests = self._GroupTests(tests)
+          grouped_tests = self._GroupTestsAfterSharding(tests)
           logging.info('STARTING TRY #%d/%d', tries + 1, self._env.max_tries)
           if tries > 0 and self._env.recover_devices:
             if any(d.build_version_sdk == version_codes.LOLLIPOP_MR1
@@ -170,9 +170,10 @@ class LocalDeviceTestRun(test_run.TestRun):
                   'Attempting to recover devices prior to last test attempt.')
               self._env.parallel_devices.pMap(
                   device_recovery.RecoverDevice, None)
-          logging.info('Will run %d tests on %d devices: %s',
-                       len(tests), len(self._env.devices),
-                       ', '.join(str(d) for d in self._env.devices))
+          logging.info(
+              'Will run %d tests, grouped into %d groups, on %d devices: %s',
+              len(tests), len(grouped_tests), len(self._env.devices),
+              ', '.join(str(d) for d in self._env.devices))
           for t in tests:
             logging.debug('  %s', t)
 
@@ -380,6 +381,10 @@ class LocalDeviceTestRun(test_run.TestRun):
     raise NotImplementedError
 
   def _GroupTests(self, tests):
+    # pylint: disable=no-self-use
+    return tests
+
+  def _GroupTestsAfterSharding(self, tests):
     # pylint: disable=no-self-use
     return tests
 
