@@ -98,9 +98,11 @@ void TranslateIconView::UpdateImpl() {
     CHECK(browser_);
     BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser_);
     CHECK(browser_view);
-    if (browser_view->toolbar()
-            ->pinned_toolbar_actions_container()
-            ->IsActionPinnedOrPoppedOut(action_id().value())) {
+    auto* pinned_toolbar_actions_container =
+        browser_view->toolbar()->pinned_toolbar_actions_container();
+    if (pinned_toolbar_actions_container &&
+        pinned_toolbar_actions_container->IsActionPinnedOrPoppedOut(
+            action_id().value())) {
       enabled = false;
     }
   }
