@@ -91,7 +91,7 @@ class AuthPanel : public NonAccessibleView, public AuthFactorStatusConsumer {
   std::unique_ptr<AuthPanelEventDispatcher> event_dispatcher_;
 
   base::OnceClosure on_end_authentication_;
-  base::RepeatingClosure on_preferred_size_changed_;
+  base::RepeatingClosure on_ui_changed_;
 
   raw_ptr<AuthHubConnector> auth_hub_connector_;
 };

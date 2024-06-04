@@ -33,10 +33,6 @@ AuthFactorStore::AuthFactorStore(Shell* shell,
                                  AuthHubConnector* connector,
                                  std::optional<AshAuthFactor> password_type)
     : auth_hub_connector_(connector) {
-  CHECK(password_type == AshAuthFactor::kLocalPassword ||
-        password_type == AshAuthFactor::kGaiaPassword)
-      << "password_type must be a password-based AshAuthFactor";
-
   password_type_ = password_type;
 
   auto* ime_controller = shell->ime_controller();
@@ -142,6 +138,8 @@ void AuthFactorStore::OnFactorStateChanged(AshAuthFactor factor,
       NOTIMPLEMENTED();
       break;
   }
+
+  NotifyStateChanged();
 }
 
 void AuthFactorStore::OnAuthVerdict(

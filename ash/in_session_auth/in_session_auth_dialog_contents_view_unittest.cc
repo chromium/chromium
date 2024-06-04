@@ -183,6 +183,21 @@ class InSessionAuthDialogContentsViewTest : public AshTestBase {
         {AshAuthFactor::kGaiaPassword, AuthFactorState::kFactorReady}});
   }
 
+  void NotifyAuthPanelFactorListChanged() {
+    // Calling `OnFactorListChanged` will destroy the `PasswordAuthView` to
+    // which the test api currently holds a pointer. To avoid dangling,
+    // invalidate it and recreate it after rebuilding the UI.
+    password_auth_view_test_api_ = nullptr;
+
+    contents_view_->GetAuthPanel()->OnFactorListChanged(FactorsStatusMap{
+        {AshAuthFactor::kGaiaPassword, AuthFactorState::kCheckingForPresence},
+        {AshAuthFactor::kCryptohomePin,
+         AuthFactorState::kCheckingForPresence}});
+
+    password_auth_view_test_api_ = std::make_unique<PasswordAuthView::TestApi>(
+        auth_panel_test_api_->GetPasswordAuthView());
+  }
+
   std::unique_ptr<MockAuthHubConnector> auth_hub_connector_;
   std::unique_ptr<MockAuthHub> auth_hub_;
 
@@ -247,10 +262,26 @@ TEST_F(InSessionAuthDialogContentsViewTest, TypePasswordAndCloseDialog) {
 // the preferred size has changed to new factor becoming available, or
 // existing factors becoming unavailable.
 TEST_F(InSessionAuthDialogContentsViewTest,
-       AuthPanelNotifiesToRecenterDialogWhenPrefferredSizeChanges) {
+       AuthPanelNotifiesToRecenterDialogWhenPrefferredSizeChangesOnInit) {
   CreateAndShowDialog();
   InitializeUiWithOnlyPasswordFactor();
   ASSERT_EQ(size_changed_notifications_count_, 1);
+}
+
+// Tests that `AuthPanel` correctly notifies its parent View that
+// the preferred size has changed to new factor becoming available, or
+// existing factors becoming unavailable.
+TEST_F(
+    InSessionAuthDialogContentsViewTest,
+    AuthPanelNotifiesToRecenterDialogWhenPrefferredSizeChangesOnFactorsChange) {
+  CreateAndShowDialog();
+  InitializeUiWithOnlyPasswordFactor();
+  NotifyAuthPanelFactorListChanged();
+
+  // Called once the UI is initialized with the the initial set of factor, and
+  // also when the UI is destroyed and recreated as part of
+  // `OnFactorListChanged`.
+  ASSERT_EQ(size_changed_notifications_count_, 2);
 }
 
 // Tests that `AuthPanel` correctly calls the submit password callback,
