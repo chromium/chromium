@@ -1194,8 +1194,10 @@ std::unique_ptr<views::View> LensOverlayController::CreateViewForOverlay() {
 bool LensOverlayController::HandleContextMenu(
     content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
-  // We do not want to show the browser context menu on the overlay.
-  return true;
+  // We do not want to show the browser context menu on the overlay unless we
+  // are in debugging mode. Returning true is equivalent to not showing the
+  // context menu.
+  return !lens::features::IsLensOverlayDebuggingEnabled();
 }
 
 bool LensOverlayController::HandleKeyboardEvent(
