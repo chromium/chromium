@@ -4223,10 +4223,6 @@ bool IsPeripheralNotificationEnabled() {
          IsPeripheralCustomizationEnabled();
 }
 
-bool IsPersonalizationJellyEnabled() {
-  return chromeos::features::IsJellyEnabled();
-}
-
 bool IsRemoveDetectPortalFromChromeEnabled() {
   return base::FeatureList::IsEnabled(kRemoveDetectPortalFromChrome);
 }

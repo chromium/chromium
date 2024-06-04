@@ -13,9 +13,13 @@
     <link rel="stylesheet"
         href="chrome://resources/chromeos/colors/cros_styles.css">
     <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
+    <link rel="stylesheet" href="chrome://theme/colors.css?sets=legacy,sys">
+    <link rel="stylesheet" href="chrome://theme/typography.css">
     <script type="module" src="/js/personalization_app.js" defer></script>
   </head>
-  <body>
+  <!-- TODO: b/324903595 - Remove jelly-enabled class when CrOS color tokens
+       are embedded into Ash cr-elements. -->
+  <body class="jelly-enabled">
     <personalization-router></personalization-router>
   </body>
 </html>

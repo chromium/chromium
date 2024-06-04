@@ -31,10 +31,6 @@ export function isRgbKeyboardSupported() {
   return loadTimeData.getBoolean('isRgbKeyboardSupported');
 }
 
-export function isPersonalizationJellyEnabled() {
-  return loadTimeData.getBoolean('isPersonalizationJellyEnabled');
-}
-
 export function isMultiZoneRgbKeyboardSupported() {
   return loadTimeData.getInteger('keyboardBacklightZoneCount') > 1;
 }

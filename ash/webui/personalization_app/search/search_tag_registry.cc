@@ -412,9 +412,7 @@ SearchTagRegistry::SearchTagRegistry(
     updates[&GetKeyboardBacklightSearchConcept()] = true;
   }
 
-  if (::ash::features::IsPersonalizationJellyEnabled()) {
-    updates[&GetDynamicColorSearchConcept()] = true;
-  }
+  updates[&GetDynamicColorSearchConcept()] = true;
 
   if (IsAmbientModeAllowed()) {
     updates[&GetAmbientSearchConcept()] = true;

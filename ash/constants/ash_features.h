@@ -1279,7 +1279,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorDynamicColorsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorGm3Enabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsQuickDimEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPerDeskZOrderEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsPersonalizationJellyEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsRenderArcNotificationsByChromeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsRemoveStalePolicyPinnedAppsFromShelfEnabled();

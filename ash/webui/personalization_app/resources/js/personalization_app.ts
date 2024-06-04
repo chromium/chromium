@@ -46,7 +46,6 @@ import './wallpaper/index.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
-import {isPersonalizationJellyEnabled} from './load_time_booleans.js';
 import {emptyState} from './personalization_state.js';
 import {PersonalizationStore} from './personalization_store.js';
 import {SeaPenStoreAdapter} from './sea_pen_store_adapter.js';
@@ -160,18 +159,4 @@ if (link) {
   link.href = '/hub_icon_192.png';
 }
 document.title = loadTimeData.getString('personalizationTitle');
-
-if (isPersonalizationJellyEnabled()) {
-  // After the Jelly experiment is launched, add the link directly to
-  // `index.html`.
-  const link = document.createElement('link');
-  link.rel = 'stylesheet';
-  link.href = 'chrome://theme/colors.css?sets=legacy,sys';
-  document.head.appendChild(link);
-  const fontLink = document.createElement('link');
-  fontLink.rel = 'stylesheet';
-  fontLink.href = 'chrome://theme/typography.css';
-  document.head.appendChild(fontLink);
-  document.body.classList.add('jelly-enabled');
-  ColorChangeUpdater.forDocument().start();
-}
+ColorChangeUpdater.forDocument().start();

@@ -505,7 +505,6 @@ void PersonalizationAppUI::BindInterface(
 
 void PersonalizationAppUI::BindInterface(
     mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
-  DCHECK(chromeos::features::IsJellyEnabled());
   color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
       web_ui()->GetWebContents(), std::move(receiver));
 }
@@ -525,9 +524,6 @@ void PersonalizationAppUI::AddBooleans(content::WebUIDataSource* source) {
   source->AddBoolean(
       "isRgbKeyboardSupported",
       Shell::Get()->rgb_keyboard_manager()->IsRgbKeyboardSupported());
-
-  source->AddBoolean("isPersonalizationJellyEnabled",
-                     features::IsPersonalizationJellyEnabled());
 
   source->AddBoolean("isUserAvatarCustomizationSelectorsEnabled",
                      user_provider_->IsCustomizationSelectorsPrefEnabled());

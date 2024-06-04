@@ -6,7 +6,7 @@ import {isNonEmptyArray} from 'chrome://resources/ash/common/sea_pen/sea_pen_uti
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
-import {isGooglePhotosIntegrationEnabled, isPersonalizationJellyEnabled, isTimeOfDayWallpaperEnabled} from './load_time_booleans.js';
+import {isGooglePhotosIntegrationEnabled, isTimeOfDayWallpaperEnabled} from './load_time_booleans.js';
 import {Paths, PersonalizationRouterElement} from './personalization_router_element.js';
 import {PersonalizationStore} from './personalization_store.js';
 import {getThemeProvider} from './theme/theme_interface_provider.js';
@@ -30,14 +30,11 @@ async function reset() {
   const wallpaperProvider = getWallpaperProvider();
   await wallpaperProvider.selectDefaultImage();
 
-  if (isPersonalizationJellyEnabled()) {
-    // Turn on dynamic color with default scheme.
-    const themeProvider = getThemeProvider();
-    themeProvider.setColorScheme(DEFAULT_COLOR_SCHEME);
-    const {colorScheme} = await themeProvider.getColorScheme();
-    assert(
-        colorScheme === DEFAULT_COLOR_SCHEME, 'reset to default color scheme');
-  }
+  // Turn on dynamic color with default scheme.
+  const themeProvider = getThemeProvider();
+  themeProvider.setColorScheme(DEFAULT_COLOR_SCHEME);
+  const {colorScheme} = await themeProvider.getColorScheme();
+  assert(colorScheme === DEFAULT_COLOR_SCHEME, 'reset to default color scheme');
 
   const router = PersonalizationRouterElement.instance();
   router.goToRoute(Paths.ROOT);

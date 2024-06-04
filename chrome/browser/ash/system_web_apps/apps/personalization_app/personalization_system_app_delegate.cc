@@ -81,14 +81,10 @@ gfx::Rect PersonalizationSystemAppDelegate::GetDefaultBounds(
     Browser* browser) const {
   gfx::Rect bounds =
       display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
-  if (ash::features::IsPersonalizationJellyEnabled()) {
-    if (ash::Shell::Get()->rgb_keyboard_manager()->IsRgbKeyboardSupported()) {
-      bounds.ClampToCenteredSize({826, 881});
-    } else {
-      bounds.ClampToCenteredSize({826, 708});
-    }
+  if (ash::Shell::Get()->rgb_keyboard_manager()->IsRgbKeyboardSupported()) {
+    bounds.ClampToCenteredSize({826, 881});
   } else {
-    bounds.ClampToCenteredSize({826, 745});
+    bounds.ClampToCenteredSize({826, 708});
   }
   return bounds;
 }
