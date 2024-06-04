@@ -1388,14 +1388,9 @@ TEST_F(SearchEngineChoiceServiceTest, NoRepromptForSyntaxError) {
       RepromptResult::kInvalidDictionary, 1);
 }
 
-// Test that the user is not reprompted if the no reprompt parameter is set.
-TEST_F(SearchEngineChoiceServiceTest, NoRepromptWhenSpecified) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      switches::kSearchEngineChoiceTrigger,
-      {{switches::kSearchEngineChoiceTriggerRepromptParams.name,
-        kNoRepromptString}});
-  ASSERT_EQ(kNoRepromptString,
+// Test that the user is not reprompted by default.
+TEST_F(SearchEngineChoiceServiceTest, NoRepromptByDefault) {
+  ASSERT_EQ(switches::kSearchEngineChoiceNoRepromptString,
             switches::kSearchEngineChoiceTriggerRepromptParams.Get());
 
   // Initialize the preference with some previous choice.
@@ -1427,8 +1422,11 @@ TEST_F(SearchEngineChoiceServiceTest, NoRepromptWhenSpecified) {
 
 // The user is reprompted if the version preference is missing.
 TEST_F(SearchEngineChoiceServiceTest, RepromptForMissingChoiceVersion) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      switches::kSearchEngineChoiceTrigger};
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      switches::kSearchEngineChoiceTrigger,
+      {{switches::kSearchEngineChoiceTriggerRepromptParams.name, "{}"}});
+  ASSERT_EQ("{}", switches::kSearchEngineChoiceTriggerRepromptParams.Get());
 
   // Initialize the timestamp, but not the version.
   int64_t kPreviousTimestamp = 1;

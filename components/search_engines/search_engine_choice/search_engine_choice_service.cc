@@ -458,7 +458,7 @@ void SearchEngineChoiceService::PreprocessPrefsForReprompt() {
   // Check parameters from `switches::kSearchEngineChoiceTriggerRepromptParams`.
   const std::string reprompt_params =
       switches::kSearchEngineChoiceTriggerRepromptParams.Get();
-  if (reprompt_params == kNoRepromptString) {
+  if (reprompt_params == switches::kSearchEngineChoiceNoRepromptString) {
     base::UmaHistogramEnumeration(kSearchEngineChoiceRepromptHistogram,
                                   RepromptResult::kNoReprompt);
     return;

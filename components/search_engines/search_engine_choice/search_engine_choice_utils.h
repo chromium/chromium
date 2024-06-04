@@ -22,11 +22,6 @@ struct TemplateURLData;
 
 namespace search_engines {
 
-// The string that's passed to
-// `switches::kSearchEngineChoiceTriggerRepromptParams` so that we don't
-// reprompt users with the choice screen.
-inline const char kNoRepromptString[] = "NO_REPROMPT";
-
 extern const char kSearchEngineChoiceScreenProfileInitConditionsHistogram[];
 extern const char kSearchEngineChoiceScreenNavigationConditionsHistogram[];
 extern const char kSearchEngineChoiceScreenEventsHistogram[];
