@@ -138,7 +138,8 @@ const NSUInteger kContextMenuMaxTitleLength = 30;
 
 #pragma mark - Private
 
-// TODO(crbug.com/40835387): rafactor long method.
+// Returns an action based contextual menu for a given web state (link, image,
+// copy and intent detection actions).
 - (UIContextMenuActionProvider)
     contextMenuActionProviderForWebState:(web::WebState*)webState
                                   params:(web::ContextMenuParams)params {
@@ -155,8 +156,6 @@ const NSUInteger kContextMenuMaxTitleLength = 30;
   const bool isLink = linkURL.is_valid();
   const GURL imageURL = params.src_url;
   const bool isImage = imageURL.is_valid();
-  const bool saveToPhotosAvailable =
-      IsSaveToPhotosAvailable(self.browser->GetBrowserState());
 
   DCHECK(self.browser->GetBrowserState());
   const bool isOffTheRecord = self.browser->GetBrowserState()->IsOffTheRecord();
@@ -171,274 +170,24 @@ const NSUInteger kContextMenuMaxTitleLength = 30;
       : isImage         ? kMenuScenarioHistogramContextMenuImage
                         : kMenuScenarioHistogramContextMenuLink;
 
-  BrowserActionFactory* actionFactory =
-      [[BrowserActionFactory alloc] initWithBrowser:self.browser
-                                           scenario:menuScenario];
-
-  __weak __typeof(self) weakSelf = self;
-
   if (isLink) {
-    // Array for the actions/menus used to open a link.
-    NSMutableArray<UIMenuElement*>* linkOpeningElements =
-        [[NSMutableArray alloc] init];
-
-    _URLToLoad = linkURL;
-    base::RecordAction(
-        base::UserMetricsAction("MobileWebContextMenuLinkImpression"));
-    if (web::UrlHasWebScheme(linkURL)) {
-      // Open in New Tab.
-      UrlLoadParams loadParams = UrlLoadParams::InNewTab(linkURL);
-      loadParams.SetInBackground(YES);
-      loadParams.in_incognito = isOffTheRecord;
-      loadParams.append_to = OpenPosition::kCurrentTab;
-      loadParams.web_params.referrer = referrer;
-      loadParams.origin_point = [params.view convertPoint:params.location
-                                                   toView:nil];
-      UIAction* openNewTab = [actionFactory actionToOpenInNewTabWithBlock:^{
-        ContextMenuConfigurationProvider* strongSelf = weakSelf;
-        if (!strongSelf)
-          return;
-        UrlLoadingBrowserAgent::FromBrowser(strongSelf.browser)
-            ->Load(loadParams);
-      }];
-      [linkOpeningElements addObject:openNewTab];
-
-      if (IsTabGroupInGridEnabled()) {
-        std::set<const TabGroup*> groups =
-            GetAllGroupsForBrowserState(self.browser->GetBrowserState());
-        auto actionResult = ^(const TabGroup* group) {
-          UrlLoadParams groupLoadParams = UrlLoadParams::InNewTab(linkURL);
-          groupLoadParams.SetInBackground(YES);
-          groupLoadParams.in_incognito = isOffTheRecord;
-          groupLoadParams.append_to = OpenPosition::kCurrentTab;
-          groupLoadParams.web_params.referrer = referrer;
-          groupLoadParams.origin_point =
-              [params.view convertPoint:params.location toView:nil];
-          groupLoadParams.load_in_group = true;
-          if (group) {
-            groupLoadParams.tab_group = group->GetWeakPtr();
-          }
-          ContextMenuConfigurationProvider* strongSelf = weakSelf;
-          if (!strongSelf) {
-            return;
-          }
-          UrlLoadingBrowserAgent::FromBrowser(strongSelf.browser)
-              ->Load(groupLoadParams);
-        };
-
-        UIMenuElement* openLinkInGroupMenu =
-            [actionFactory menuToOpenLinkInGroupWithGroups:groups
-                                                     block:actionResult];
-        [linkOpeningElements addObject:openLinkInGroupMenu];
-      }
-
-      if (!isOffTheRecord) {
-        // Open in Incognito Tab.
-        UIAction* openIncognitoTab;
-        openIncognitoTab =
-            [actionFactory actionToOpenInNewIncognitoTabWithURL:linkURL
-                                                     completion:nil];
-        [linkOpeningElements addObject:openIncognitoTab];
-      }
-
-      if (base::ios::IsMultipleScenesSupported()) {
-        // Open in New Window.
-
-        NSUserActivity* newWindowActivity = ActivityToLoadURL(
-            WindowActivityContextMenuOrigin, linkURL, referrer, isOffTheRecord);
-        UIAction* openNewWindow = [actionFactory
-            actionToOpenInNewWindowWithActivity:newWindowActivity];
-
-        [linkOpeningElements addObject:openNewWindow];
-      }
-
-      UIMenu* linkOpeningMenu = [UIMenu menuWithTitle:@""
-                                                image:nil
-                                           identifier:nil
-                                              options:UIMenuOptionsDisplayInline
-                                             children:linkOpeningElements];
-
-      [menuElements addObject:linkOpeningMenu];
-
-      if (linkURL.SchemeIsHTTPOrHTTPS()) {
-        NSString* innerText = params.text;
-        if ([innerText length] > 0) {
-          // Add to reading list.
-          UIAction* addToReadingList =
-              [actionFactory actionToAddToReadingListWithBlock:^{
-                ContextMenuConfigurationProvider* strongSelf = weakSelf;
-                if (!strongSelf)
-                  return;
-
-                ReadingListAddCommand* command =
-                    [[ReadingListAddCommand alloc] initWithURL:linkURL
-                                                         title:innerText];
-                ReadingListBrowserAgent* readingListBrowserAgent =
-                    ReadingListBrowserAgent::FromBrowser(self.browser);
-                readingListBrowserAgent->AddURLsToReadingList(command.URLs);
-              }];
-          [menuElements addObject:addToReadingList];
-        }
-      }
-    }
-
-    // Copy Link.
-    UIAction* copyLink =
-        [actionFactory actionToCopyURL:[[CrURL alloc] initWithGURL:linkURL]];
-    [menuElements addObject:copyLink];
+    [menuElements
+        addObjectsFromArray:[self contextMenuElementsForLink:linkURL
+                                                    scenario:menuScenario
+                                                    referrer:referrer
+                                              isOffTheRecord:isOffTheRecord
+                                                      params:params]];
   }
-
   if (isImage) {
-    base::RecordAction(
-        base::UserMetricsAction("MobileWebContextMenuImageImpression"));
-
-    __weak UIViewController* weakBaseViewController = self.baseViewController;
-
-    // Save Image.
-    UIAction* saveImage = [actionFactory actionSaveImageWithBlock:^{
-      if (!weakSelf || !weakBaseViewController)
-        return;
-      [weakSelf.imageSaver saveImageAtURL:imageURL
-                                 referrer:referrer
-                                 webState:weakSelf.currentWebState
-                       baseViewController:weakBaseViewController];
-      base::UmaHistogramEnumeration(
-          kSaveToPhotosContextMenuActionsHistogram,
-          saveToPhotosAvailable
-              ? SaveToPhotosContextMenuActions::kAvailableDidSaveImageLocally
-              : SaveToPhotosContextMenuActions::
-                    kUnavailableDidSaveImageLocally);
-    }];
-    [menuElements addObject:saveImage];
-
-    // Save Image to Photos.
-    if (saveToPhotosAvailable) {
-      base::RecordAction(base::UserMetricsAction(
-          "MobileWebContextMenuImageWithSaveToPhotosImpression"));
-      UIAction* saveImageToPhotosAction = [actionFactory
-          actionToSaveToPhotosWithImageURL:imageURL
-                                  referrer:referrer
-                                  webState:webState
-                                     block:^{
-                                       base::UmaHistogramEnumeration(
-                                           kSaveToPhotosContextMenuActionsHistogram,
-                                           SaveToPhotosContextMenuActions::
-                                               kAvailableDidSaveImageToGooglePhotos);
-                                     }];
-      [menuElements addObject:saveImageToPhotosAction];
-    }
-
-    // Copy Image.
-    UIAction* copyImage = [actionFactory actionCopyImageWithBlock:^{
-      if (!weakSelf || !weakBaseViewController)
-        return;
-      [weakSelf.imageCopier copyImageAtURL:imageURL
-                                  referrer:referrer
-                                  webState:weakSelf.currentWebState
-                        baseViewController:weakBaseViewController];
-    }];
-    [menuElements addObject:copyImage];
-
-    // Open Image.
-    UIAction* openImage = [actionFactory actionOpenImageWithURL:imageURL
-                                                     completion:nil];
-    [menuElements addObject:openImage];
-
-    // Open Image in new tab.
-    UrlLoadParams loadParams = UrlLoadParams::InNewTab(imageURL);
-    loadParams.SetInBackground(YES);
-    loadParams.web_params.referrer = referrer;
-    loadParams.in_incognito = isOffTheRecord;
-    loadParams.append_to = OpenPosition::kCurrentTab;
-    loadParams.origin_point = [params.view convertPoint:params.location
-                                                 toView:nil];
-    UIAction* openImageInNewTab =
-        [actionFactory actionOpenImageInNewTabWithUrlLoadParams:loadParams
-                                                     completion:nil];
-
-    // Check if the URL was a valid link to avoid having the `Open in Tab Group`
-    // option twice.
-    if (IsTabGroupInGridEnabled() && !isLink) {
-      // Array for the actions/menus used to open an image in a new tab.
-      NSMutableArray<UIMenuElement*>* imageOpeningElements =
-          [[NSMutableArray alloc] init];
-
-      [imageOpeningElements addObject:openImageInNewTab];
-
-      std::set<const TabGroup*> groups =
-          GetAllGroupsForBrowserState(self.browser->GetBrowserState());
-      auto actionResult = ^(const TabGroup* group) {
-        UrlLoadParams groupLoadParams = UrlLoadParams::InNewTab(imageURL);
-        groupLoadParams.SetInBackground(YES);
-        groupLoadParams.in_incognito = isOffTheRecord;
-        groupLoadParams.append_to = OpenPosition::kCurrentTab;
-        groupLoadParams.web_params.referrer = referrer;
-        groupLoadParams.origin_point = [params.view convertPoint:params.location
-                                                          toView:nil];
-        groupLoadParams.load_in_group = true;
-        if (group) {
-          groupLoadParams.tab_group = group->GetWeakPtr();
-        }
-        ContextMenuConfigurationProvider* strongSelf = weakSelf;
-        if (!strongSelf) {
-          return;
-        }
-        UrlLoadingBrowserAgent::FromBrowser(strongSelf.browser)
-            ->Load(groupLoadParams);
-      };
-
-      UIMenuElement* openLinkInGroupMenu =
-          [actionFactory menuToOpenLinkInGroupWithGroups:groups
-                                                   block:actionResult];
-      [imageOpeningElements addObject:openLinkInGroupMenu];
-      UIMenu* imageOpeningMenu =
-          [UIMenu menuWithTitle:@""
-                          image:nil
-                     identifier:nil
-                        options:UIMenuOptionsDisplayInline
-                       children:imageOpeningElements];
-
-      [menuElements addObject:imageOpeningMenu];
-    } else {
-      [menuElements addObject:openImageInNewTab];
-    }
-
-    // Search the image using Lens if Lens is enabled and available. Otherwise
-    // fall back to a standard search by image experience.
-    TemplateURLService* service =
-        ios::TemplateURLServiceFactory::GetForBrowserState(
-            self.browser->GetBrowserState());
-
-    const BOOL useLens =
-        lens_availability::CheckAndLogAvailabilityForLensEntryPoint(
-            LensEntrypoint::ContextMenu,
-            search_engines::SupportsSearchImageWithLens(service));
-    if (useLens) {
-      UIAction* searchImageWithLensAction =
-          [actionFactory actionToSearchImageUsingLensWithBlock:^{
-            [weakSelf searchImageWithURL:imageURL
-                               usingLens:YES
-                                referrer:referrer];
-          }];
-      [menuElements addObject:searchImageWithLensAction];
-    }
-
-    if (!useLens && search_engines::SupportsSearchByImage(service)) {
-      const TemplateURL* defaultURL = service->GetDefaultSearchProvider();
-      NSString* title = l10n_util::GetNSStringF(
-          IDS_IOS_CONTEXT_MENU_SEARCHWEBFORIMAGE, defaultURL->short_name());
-      UIAction* searchByImage = [actionFactory
-          actionSearchImageWithTitle:title
-                               Block:^{
-                                 [weakSelf searchImageWithURL:imageURL
-                                                    usingLens:NO
-                                                     referrer:referrer];
-                               }];
-      [menuElements addObject:searchByImage];
-    }
+    [menuElements
+        addObjectsFromArray:[self imageContextMenuElementsWithURL:imageURL
+                                                         scenario:menuScenario
+                                                         referrer:referrer
+                                                   isOffTheRecord:isOffTheRecord
+                                                           isLink:isLink
+                                                         webState:webState
+                                                           params:params]];
   }
-
-  NSString* menuTitle;
 
   // Insert any provided menu items. Do after Link and/or Image to allow
   // inserting at beginning or adding to end.
@@ -449,6 +198,7 @@ const NSUInteger kContextMenuMaxTitleLength = 30;
                              MiniMapCommands),
           HandlerForProtocol(self.browser->GetCommandDispatcher(),
                              UnitConversionCommands));
+  NSString* menuTitle = nil;
   if (result && result.elements) {
     [menuElements addObjectsFromArray:result.elements];
     menuTitle = result.title;
@@ -473,7 +223,7 @@ const NSUInteger kContextMenuMaxTitleLength = 30;
           stringByAppendingString:kContextMenuEllipsis];
     }
   }
-
+  CHECK(menuTitle);
   UIMenu* menu = [UIMenu menuWithTitle:menuTitle children:menuElements];
 
   UIContextMenuActionProvider actionProvider =
@@ -483,6 +233,179 @@ const NSUInteger kContextMenuMaxTitleLength = 30;
       };
 
   return actionProvider;
+}
+
+// Returns the elements of the context menu related to links.
+- (NSArray<UIMenuElement*>*)
+    contextMenuElementsForLink:(GURL)linkURL
+                      scenario:(MenuScenarioHistogram)scenario
+                      referrer:(web::Referrer)referrer
+                isOffTheRecord:(BOOL)isOffTheRecord
+                        params:(web::ContextMenuParams)params {
+  BrowserActionFactory* actionFactory =
+      [[BrowserActionFactory alloc] initWithBrowser:self.browser
+                                           scenario:scenario];
+
+  NSMutableArray<UIMenuElement*>* linkMenuElements =
+      [[NSMutableArray alloc] init];
+
+  __weak __typeof(self) weakSelf = self;
+
+  // Array for the actions/menus used to open a link.
+  NSMutableArray<UIMenuElement*>* linkOpeningElements =
+      [[NSMutableArray alloc] init];
+
+  _URLToLoad = linkURL;
+  base::RecordAction(
+      base::UserMetricsAction("MobileWebContextMenuLinkImpression"));
+  if (web::UrlHasWebScheme(linkURL)) {
+    // Open in New Tab.
+    UrlLoadParams loadParams = UrlLoadParams::InNewTab(linkURL);
+    loadParams.SetInBackground(YES);
+    loadParams.web_params.referrer = referrer;
+    loadParams.in_incognito = isOffTheRecord;
+    loadParams.append_to = OpenPosition::kCurrentTab;
+    loadParams.origin_point = [params.view convertPoint:params.location
+                                                 toView:nil];
+
+    UIAction* openNewTab = [actionFactory actionToOpenInNewTabWithBlock:^{
+      ContextMenuConfigurationProvider* strongSelf = weakSelf;
+      if (!strongSelf) {
+        return;
+      }
+      UrlLoadingBrowserAgent::FromBrowser(strongSelf.browser)->Load(loadParams);
+    }];
+    [linkOpeningElements addObject:openNewTab];
+
+    if (IsTabGroupInGridEnabled()) {
+      // Open in Tab Group.
+      UIMenuElement* openLinkInGroupMenu =
+          [self openLinkInGroupMenuElement:linkURL
+                                  scenario:scenario
+                                  referrer:referrer
+                            isOffTheRecord:isOffTheRecord
+                                    params:params];
+      [linkOpeningElements addObject:openLinkInGroupMenu];
+    }
+
+    if (!isOffTheRecord) {
+      // Open in Incognito Tab.
+      UIAction* openIncognitoTab;
+      openIncognitoTab =
+          [actionFactory actionToOpenInNewIncognitoTabWithURL:linkURL
+                                                   completion:nil];
+      [linkOpeningElements addObject:openIncognitoTab];
+    }
+
+    if (base::ios::IsMultipleScenesSupported()) {
+      // Open in New Window.
+
+      NSUserActivity* newWindowActivity = ActivityToLoadURL(
+          WindowActivityContextMenuOrigin, linkURL, referrer, isOffTheRecord);
+      UIAction* openNewWindow =
+          [actionFactory actionToOpenInNewWindowWithActivity:newWindowActivity];
+
+      [linkOpeningElements addObject:openNewWindow];
+    }
+
+    UIMenu* linkOpeningMenu = [UIMenu menuWithTitle:@""
+                                              image:nil
+                                         identifier:nil
+                                            options:UIMenuOptionsDisplayInline
+                                           children:linkOpeningElements];
+
+    [linkMenuElements addObject:linkOpeningMenu];
+
+    if (linkURL.SchemeIsHTTPOrHTTPS()) {
+      NSString* innerText = params.text;
+      if ([innerText length] > 0) {
+        // Add to reading list.
+        UIAction* addToReadingList =
+            [actionFactory actionToAddToReadingListWithBlock:^{
+              ContextMenuConfigurationProvider* strongSelf = weakSelf;
+              if (!strongSelf) {
+                return;
+              }
+
+              ReadingListAddCommand* command =
+                  [[ReadingListAddCommand alloc] initWithURL:linkURL
+                                                       title:innerText];
+              ReadingListBrowserAgent* readingListBrowserAgent =
+                  ReadingListBrowserAgent::FromBrowser(strongSelf.browser);
+              readingListBrowserAgent->AddURLsToReadingList(command.URLs);
+            }];
+        [linkMenuElements addObject:addToReadingList];
+      }
+    }
+  }
+
+  // Copy Link.
+  UIAction* copyLink =
+      [actionFactory actionToCopyURL:[[CrURL alloc] initWithGURL:linkURL]];
+  [linkMenuElements addObject:copyLink];
+
+  return linkMenuElements;
+}
+
+// Returns the elements of the context menu related to image links.
+- (NSArray<UIMenuElement*>*)
+    imageContextMenuElementsWithURL:(GURL)imageURL
+                           scenario:(MenuScenarioHistogram)scenario
+                           referrer:(web::Referrer)referrer
+                     isOffTheRecord:(BOOL)isOffTheRecord
+                             isLink:(BOOL)isLink
+                           webState:(web::WebState*)webState
+                             params:(web::ContextMenuParams)params {
+  BrowserActionFactory* actionFactory =
+      [[BrowserActionFactory alloc] initWithBrowser:self.browser
+                                           scenario:scenario];
+
+  NSMutableArray<UIMenuElement*>* imageMenuElements =
+      [[NSMutableArray alloc] init];
+  base::RecordAction(
+      base::UserMetricsAction("MobileWebContextMenuImageImpression"));
+
+  __weak __typeof(self) weakSelf = self;
+
+  // Image saving.
+  NSArray<UIMenuElement*>* imageSavingElements =
+      [self imageSavingElementsWithURL:imageURL
+                              scenario:scenario
+                              referrer:referrer
+                              webState:webState];
+  [imageMenuElements addObjectsFromArray:imageSavingElements];
+
+  // Copy Image.
+  UIAction* copyImage = [actionFactory actionCopyImageWithBlock:^{
+    ContextMenuConfigurationProvider* strongSelf = weakSelf;
+    if (!strongSelf || !strongSelf.baseViewController) {
+      return;
+    }
+    [strongSelf.imageCopier copyImageAtURL:imageURL
+                                  referrer:referrer
+                                  webState:strongSelf.currentWebState
+                        baseViewController:strongSelf.baseViewController];
+  }];
+  [imageMenuElements addObject:copyImage];
+
+  // Image opening.
+  NSArray<UIMenuElement*>* imageOpeningElements =
+      [self imageOpeningElementsWithURL:imageURL
+                               scenario:scenario
+                               referrer:referrer
+                         isOffTheRecord:isOffTheRecord
+                                 isLink:isLink
+                                 params:params];
+  [imageMenuElements addObjectsFromArray:imageOpeningElements];
+
+  // Image searching.
+  NSArray<UIMenuElement*>* imageSearchingElements =
+      [self imageSearchingElementsWithURL:imageURL
+                                 scenario:scenario
+                                 referrer:referrer];
+  [imageMenuElements addObjectsFromArray:imageSearchingElements];
+
+  return imageMenuElements;
 }
 
 // Searches an image with the given `imageURL` and `referrer`, optionally using
@@ -534,6 +457,217 @@ const NSUInteger kContextMenuMaxTitleLength = 30;
       initWithImage:image
          entryPoint:LensEntrypoint::ContextMenu];
   [handler searchImageWithLens:command];
+}
+
+// Returns the context menu element to open a URL (image or link) in a group.
+- (UIMenuElement*)openLinkInGroupMenuElement:(GURL)linkURL
+                                    scenario:(MenuScenarioHistogram)scenario
+                                    referrer:(web::Referrer)referrer
+                              isOffTheRecord:(BOOL)isOffTheRecord
+                                      params:(web::ContextMenuParams)params {
+  BrowserActionFactory* actionFactory =
+      [[BrowserActionFactory alloc] initWithBrowser:self.browser
+                                           scenario:scenario];
+  __weak __typeof(self) weakSelf = self;
+
+  std::set<const TabGroup*> groups =
+      GetAllGroupsForBrowserState(self.browser->GetBrowserState());
+
+  auto actionResult = ^(const TabGroup* group) {
+    ContextMenuConfigurationProvider* strongSelf = weakSelf;
+    if (!strongSelf) {
+      return;
+    }
+    UrlLoadParams groupLoadParams = UrlLoadParams::InNewTab(linkURL);
+    groupLoadParams.SetInBackground(YES);
+    groupLoadParams.web_params.referrer = referrer;
+    groupLoadParams.in_incognito = isOffTheRecord;
+    groupLoadParams.append_to = OpenPosition::kCurrentTab;
+    groupLoadParams.origin_point = [params.view convertPoint:params.location
+                                                      toView:nil];
+    groupLoadParams.load_in_group = true;
+    if (group) {
+      groupLoadParams.tab_group = group->GetWeakPtr();
+    }
+
+    UrlLoadingBrowserAgent::FromBrowser(strongSelf.browser)
+        ->Load(groupLoadParams);
+  };
+
+  return [actionFactory menuToOpenLinkInGroupWithGroups:groups
+                                                  block:actionResult];
+}
+
+// Returns the context menu elements for image opening.
+- (NSArray<UIMenuElement*>*)
+    imageOpeningElementsWithURL:(GURL)imageURL
+                       scenario:(MenuScenarioHistogram)scenario
+                       referrer:(web::Referrer)referrer
+                 isOffTheRecord:(BOOL)isOffTheRecord
+                         isLink:(BOOL)isLink
+                         params:(web::ContextMenuParams)params {
+  BrowserActionFactory* actionFactory =
+      [[BrowserActionFactory alloc] initWithBrowser:self.browser
+                                           scenario:scenario];
+
+  NSMutableArray<UIMenuElement*>* imageOpeningMenuElements =
+      [[NSMutableArray alloc] init];
+
+  // Open Image.
+  UIAction* openImage = [actionFactory actionOpenImageWithURL:imageURL
+                                                   completion:nil];
+  [imageOpeningMenuElements addObject:openImage];
+
+  // Open Image in new tab.
+  UrlLoadParams loadParams = UrlLoadParams::InNewTab(imageURL);
+  loadParams.SetInBackground(YES);
+  loadParams.web_params.referrer = referrer;
+  loadParams.in_incognito = isOffTheRecord;
+  loadParams.append_to = OpenPosition::kCurrentTab;
+  loadParams.origin_point = [params.view convertPoint:params.location
+                                               toView:nil];
+
+  UIAction* openImageInNewTab =
+      [actionFactory actionOpenImageInNewTabWithUrlLoadParams:loadParams
+                                                   completion:nil];
+
+  // Check if the URL was a valid link to avoid having the `Open in Tab Group`
+  // option twice.
+  if (!IsTabGroupInGridEnabled() || isLink) {
+    [imageOpeningMenuElements addObject:openImageInNewTab];
+  } else {
+    // Array for the actions/menus used to open an image in a new tab.
+    NSMutableArray<UIMenuElement*>* imageOpeningElements =
+        [[NSMutableArray alloc] init];
+
+    [imageOpeningElements addObject:openImageInNewTab];
+
+    // Open in Tab Group.
+    UIMenuElement* openLinkInGroupMenu =
+        [self openLinkInGroupMenuElement:imageURL
+                                scenario:scenario
+                                referrer:referrer
+                          isOffTheRecord:isOffTheRecord
+                                  params:params];
+    [imageOpeningElements addObject:openLinkInGroupMenu];
+
+    UIMenu* imageOpeningMenu = [UIMenu menuWithTitle:@""
+                                               image:nil
+                                          identifier:nil
+                                             options:UIMenuOptionsDisplayInline
+                                            children:imageOpeningElements];
+
+    [imageOpeningMenuElements addObject:imageOpeningMenu];
+  }
+
+  return imageOpeningMenuElements;
+}
+
+// Returns the context menu elements for image saving.
+- (NSArray<UIMenuElement*>*)
+    imageSavingElementsWithURL:(GURL)imageURL
+                      scenario:(MenuScenarioHistogram)scenario
+                      referrer:(web::Referrer)referrer
+                      webState:(web::WebState*)webState {
+  const bool saveToPhotosAvailable =
+      IsSaveToPhotosAvailable(self.browser->GetBrowserState());
+
+  BrowserActionFactory* actionFactory =
+      [[BrowserActionFactory alloc] initWithBrowser:self.browser
+                                           scenario:scenario];
+
+  NSMutableArray<UIMenuElement*>* imageSavingElements =
+      [[NSMutableArray alloc] init];
+
+  __weak __typeof(self) weakSelf = self;
+
+  // Save Image.
+  UIAction* saveImage = [actionFactory actionSaveImageWithBlock:^{
+    ContextMenuConfigurationProvider* strongSelf = weakSelf;
+    if (!strongSelf || !strongSelf.baseViewController) {
+      return;
+    }
+    [strongSelf.imageSaver saveImageAtURL:imageURL
+                                 referrer:referrer
+                                 webState:strongSelf.currentWebState
+                       baseViewController:strongSelf.baseViewController];
+    base::UmaHistogramEnumeration(
+        kSaveToPhotosContextMenuActionsHistogram,
+        saveToPhotosAvailable
+            ? SaveToPhotosContextMenuActions::kAvailableDidSaveImageLocally
+            : SaveToPhotosContextMenuActions::kUnavailableDidSaveImageLocally);
+  }];
+  [imageSavingElements addObject:saveImage];
+
+  // Save Image to Photos.
+  if (saveToPhotosAvailable) {
+    base::RecordAction(base::UserMetricsAction(
+        "MobileWebContextMenuImageWithSaveToPhotosImpression"));
+    UIAction* saveImageToPhotosAction = [actionFactory
+        actionToSaveToPhotosWithImageURL:imageURL
+                                referrer:referrer
+                                webState:webState
+                                   block:^{
+                                     base::UmaHistogramEnumeration(
+                                         kSaveToPhotosContextMenuActionsHistogram,
+                                         SaveToPhotosContextMenuActions::
+                                             kAvailableDidSaveImageToGooglePhotos);
+                                   }];
+    [imageSavingElements addObject:saveImageToPhotosAction];
+  }
+
+  return imageSavingElements;
+}
+
+// Returns the context menu elements for image searching.
+- (NSArray<UIMenuElement*>*)
+    imageSearchingElementsWithURL:(GURL)imageURL
+                         scenario:(MenuScenarioHistogram)scenario
+                         referrer:(web::Referrer)referrer {
+  BrowserActionFactory* actionFactory =
+      [[BrowserActionFactory alloc] initWithBrowser:self.browser
+                                           scenario:scenario];
+
+  __weak __typeof(self) weakSelf = self;
+
+  // Search the image using Lens if Lens is enabled and available. Otherwise
+  // fall back to a standard search by image experience.
+  TemplateURLService* service =
+      ios::TemplateURLServiceFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+
+  const BOOL useLens =
+      lens_availability::CheckAndLogAvailabilityForLensEntryPoint(
+          LensEntrypoint::ContextMenu,
+          search_engines::SupportsSearchImageWithLens(service));
+
+  NSMutableArray<UIMenuElement*>* imageSearchingMenuElements =
+      [[NSMutableArray alloc] init];
+  if (useLens) {
+    UIAction* searchImageWithLensAction =
+        [actionFactory actionToSearchImageUsingLensWithBlock:^{
+          [weakSelf searchImageWithURL:imageURL
+                             usingLens:YES
+                              referrer:referrer];
+        }];
+    [imageSearchingMenuElements addObject:searchImageWithLensAction];
+  }
+
+  if (!useLens && search_engines::SupportsSearchByImage(service)) {
+    const TemplateURL* defaultURL = service->GetDefaultSearchProvider();
+    NSString* title = l10n_util::GetNSStringF(
+        IDS_IOS_CONTEXT_MENU_SEARCHWEBFORIMAGE, defaultURL->short_name());
+    UIAction* searchByImage = [actionFactory
+        actionSearchImageWithTitle:title
+                             Block:^{
+                               [weakSelf searchImageWithURL:imageURL
+                                                  usingLens:NO
+                                                   referrer:referrer];
+                             }];
+    [imageSearchingMenuElements addObject:searchByImage];
+  }
+
+  return imageSearchingMenuElements;
 }
 
 @end
