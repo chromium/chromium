@@ -581,33 +581,3 @@ suite('TrackingProtectionRolloutUx', function() {
     assertFalse(isChildVisible(page, '#allow3pcExceptionsList'));
   });
 });
-
-suite('TrackingProtectionSettingsRollbackNotice', function() {
-  let page: SettingsCookiesPageElement;
-  let settingsPrefs: SettingsPrefsElement;
-
-  suiteSetup(function() {
-    loadTimeData.overrideValues({
-      showTrackingProtectionSettingsRollbackNotice: true,
-      // This notice only shows outside of 3PCD.
-      is3pcdCookieSettingsRedesignEnabled: false,
-    });
-    resetRouterForTesting();
-
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
-  });
-
-  setup(function() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-
-    page = document.createElement('settings-cookies-page');
-    page.prefs = settingsPrefs.prefs!;
-    document.body.appendChild(page);
-    flush();
-  });
-
-  test('RollbackNoticeDisplayed', function() {
-    assertTrue(isChildVisible(page, '#rollbackNotice'));
-  });
-});

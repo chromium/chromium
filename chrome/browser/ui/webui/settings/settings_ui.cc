@@ -548,13 +548,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   html_source->AddBoolean("isFingerprintingProtectionEnabled",
                           base::FeatureList::IsEnabled(
                               privacy_sandbox::kFingerprintingProtectionUx));
-  auto* onboarding_service =
-      TrackingProtectionOnboardingFactory::GetForProfile(profile);
-  html_source->AddBoolean(
-      "showTrackingProtectionSettingsRollbackNotice",
-      onboarding_service && onboarding_service->IsOffboarded() &&
-          base::FeatureList::IsEnabled(
-              privacy_sandbox::kTrackingProtectionSettingsPageRollbackNotice));
 
   html_source->AddBoolean(
       "isProactiveTopicsBlockingEnabled",

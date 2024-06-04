@@ -144,12 +144,6 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
         value: () =>
             loadTimeData.getBoolean('isFingerprintingProtectionEnabled'),
       },
-
-      showTrackingProtectionRollbackNotice_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean(
-            'showTrackingProtectionSettingsRollbackNotice'),
-      },
     };
   }
 

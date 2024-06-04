@@ -3297,13 +3297,6 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
           l10n_util::GetStringUTF16(
               IDS_SETTINGS_TRACKING_PROTECTION_BULLET_TWO_LEARN_MORE_ARIA_LABEL),
           l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB)));
-  html_source->AddString(
-      "trackingProtectionRollbackNotice",
-      l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_TRACKING_PROTECTION_ROLLBACK_NOTICE,
-          chrome::kTrackingProtectionHelpCenterURL,
-          l10n_util::GetStringUTF16(
-              IDS_SETTINGS_TRACKING_PROTECTION_ROLLBACK_NOTICE_LEARN_MORE_ARIA_LABEL)));
   html_source->AddString("trackingProtectionThirdPartyCookiesLearnMoreUrl",
                          chrome::kManage3pcHelpCenterURL);
   html_source->AddString(

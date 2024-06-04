@@ -30,11 +30,6 @@
         padding-left: var(--cr-section-padding);
       }
 
-      #rollbackNotice {
-        padding: 16px var(--cr-section-padding);
-        background: var(--cr-hover-background-color);
-      }
-
       #picture {
         display: flex;
       }
@@ -108,10 +103,6 @@
       </template>
     </picture>
     <template is="dom-if" if="[[!is3pcdRedesignEnabled_]]">
-      <div id="rollbackNotice"
-          hidden="[[!showTrackingProtectionRollbackNotice_]]">
-        $i18nRaw{trackingProtectionRollbackNotice}
-      </div>
       <div id="explanationText" class="secondary">
         $i18n{thirdPartyCookiesAlignedPageDescription}
       </div>
