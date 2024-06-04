@@ -479,6 +479,7 @@ message KioskAppInfoProto {
 }
 
 // Describes which Android application is to be launched.
+// Deprecated. Unsupported starting with M126.
 message AndroidKioskAppInfoProto {
   // Package name (must be present).
   // In the event this is the only field that is specified, runtime may use
@@ -551,8 +552,8 @@ message DeviceLocalAccountInfoProto {
     // Chrome app.
     ACCOUNT_TYPE_KIOSK_APP = 1;
     // An account that serves as a container for a single full-screen
-    // Android app.
-    ACCOUNT_TYPE_KIOSK_ANDROID_APP = 2;
+    // Android app. Deprecated.
+    ACCOUNT_TYPE_KIOSK_ANDROID_APP = 2 [deprecated = true];
     // SAML public session account
     ACCOUNT_TYPE_SAML_PUBLIC_SESSION = 3;
     // Web App.
@@ -569,7 +570,7 @@ message DeviceLocalAccountInfoProto {
   optional KioskAppInfoProto kiosk_app = 4;
 
   // Kiosk App parameters, relevant if |type| is ACCOUNT_TYPE_KIOSK_ANDROID_APP
-  optional AndroidKioskAppInfoProto android_kiosk_app = 5;
+  optional AndroidKioskAppInfoProto android_kiosk_app = 5 [deprecated = true];
 
   // Web Kiosk App parameters, relevant if |type| is ACCOUNT_TYPE_WEB_KIOSK_APP
   optional WebKioskAppInfoProto web_kiosk_app = 6;

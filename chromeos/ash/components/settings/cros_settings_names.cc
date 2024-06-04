@@ -28,14 +28,6 @@ const char kAccountsPrefDeviceLocalAccountsKeyType[] = "type";
 const char kAccountsPrefDeviceLocalAccountsKeyKioskAppId[] = "kiosk_app_id";
 const char kAccountsPrefDeviceLocalAccountsKeyKioskAppUpdateURL[] =
     "kiosk_app_update_url";
-const char kAccountsPrefDeviceLocalAccountsKeyArcKioskPackage[] =
-    "arc_kiosk_package";
-const char kAccountsPrefDeviceLocalAccountsKeyArcKioskClass[] =
-    "arc_kiosk_class";
-const char kAccountsPrefDeviceLocalAccountsKeyArcKioskAction[] =
-    "arc_kiosk_action";
-const char kAccountsPrefDeviceLocalAccountsKeyArcKioskDisplayName[] =
-    "arc_kiosk_display_name";
 const char kAccountsPrefDeviceLocalAccountsKeyWebKioskUrl[] = "web_kiosk_url";
 const char kAccountsPrefDeviceLocalAccountsKeyWebKioskTitle[] =
     "web_kiosk_title";

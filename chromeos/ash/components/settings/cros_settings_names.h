@@ -33,14 +33,6 @@ extern const char kAccountsPrefDeviceLocalAccountsKeyKioskAppId[];
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SETTINGS)
 extern const char kAccountsPrefDeviceLocalAccountsKeyKioskAppUpdateURL[];
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SETTINGS)
-extern const char kAccountsPrefDeviceLocalAccountsKeyArcKioskPackage[];
-COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SETTINGS)
-extern const char kAccountsPrefDeviceLocalAccountsKeyArcKioskClass[];
-COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SETTINGS)
-extern const char kAccountsPrefDeviceLocalAccountsKeyArcKioskAction[];
-COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SETTINGS)
-extern const char kAccountsPrefDeviceLocalAccountsKeyArcKioskDisplayName[];
-COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SETTINGS)
 extern const char kAccountsPrefDeviceLocalAccountsKeyWebKioskUrl[];
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SETTINGS)
 extern const char kAccountsPrefDeviceLocalAccountsKeyWebKioskTitle[];

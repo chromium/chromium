@@ -430,22 +430,6 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
         entry_dict.Set(kAccountsPrefDeviceLocalAccountsKeyKioskAppUpdateURL,
                        entry.kiosk_app().update_url());
       }
-      if (entry.android_kiosk_app().has_package_name()) {
-        entry_dict.Set(kAccountsPrefDeviceLocalAccountsKeyArcKioskPackage,
-                       entry.android_kiosk_app().package_name());
-      }
-      if (entry.android_kiosk_app().has_class_name()) {
-        entry_dict.Set(kAccountsPrefDeviceLocalAccountsKeyArcKioskClass,
-                       entry.android_kiosk_app().class_name());
-      }
-      if (entry.android_kiosk_app().has_action()) {
-        entry_dict.Set(kAccountsPrefDeviceLocalAccountsKeyArcKioskAction,
-                       entry.android_kiosk_app().action());
-      }
-      if (entry.android_kiosk_app().has_display_name()) {
-        entry_dict.Set(kAccountsPrefDeviceLocalAccountsKeyArcKioskDisplayName,
-                       entry.android_kiosk_app().display_name());
-      }
       if (entry.web_kiosk_app().has_url()) {
         entry_dict.Set(kAccountsPrefDeviceLocalAccountsKeyWebKioskUrl,
                        entry.web_kiosk_app().url());

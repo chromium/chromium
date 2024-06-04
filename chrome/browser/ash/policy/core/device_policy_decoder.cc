@@ -708,22 +708,6 @@ base::Value::Dict DecodeDeviceLocalAccountInfoProto(
     entry_dict.Set(ash::kAccountsPrefDeviceLocalAccountsKeyKioskAppUpdateURL,
                    entry.kiosk_app().update_url());
   }
-  if (entry.android_kiosk_app().has_package_name()) {
-    entry_dict.Set(ash::kAccountsPrefDeviceLocalAccountsKeyArcKioskPackage,
-                   entry.android_kiosk_app().package_name());
-  }
-  if (entry.android_kiosk_app().has_class_name()) {
-    entry_dict.Set(ash::kAccountsPrefDeviceLocalAccountsKeyArcKioskClass,
-                   entry.android_kiosk_app().class_name());
-  }
-  if (entry.android_kiosk_app().has_action()) {
-    entry_dict.Set(ash::kAccountsPrefDeviceLocalAccountsKeyArcKioskAction,
-                   entry.android_kiosk_app().action());
-  }
-  if (entry.android_kiosk_app().has_display_name()) {
-    entry_dict.Set(ash::kAccountsPrefDeviceLocalAccountsKeyArcKioskDisplayName,
-                   entry.android_kiosk_app().display_name());
-  }
   if (entry.web_kiosk_app().has_url()) {
     entry_dict.Set(ash::kAccountsPrefDeviceLocalAccountsKeyWebKioskUrl,
                    entry.web_kiosk_app().url());
