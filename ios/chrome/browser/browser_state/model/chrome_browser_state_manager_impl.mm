@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/page_info/about_this_site_service_factory.h"
+#import "ios/chrome/browser/plus_addresses/model/plus_address_service_factory.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_browser_state_service_factory.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -279,6 +280,8 @@ void ChromeBrowserStateManagerImpl::DoFinalInitForServices(
   // The AboutThisSiteService needs to be created at startup in order to
   // register its OptimizationType with OptimizationGuideDecider.
   AboutThisSiteServiceFactory::GetForBrowserState(browser_state);
+
+  PlusAddressServiceFactory::GetForBrowserState(browser_state);
 }
 
 void ChromeBrowserStateManagerImpl::AddBrowserStateToCache(
