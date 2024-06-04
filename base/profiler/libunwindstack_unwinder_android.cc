@@ -129,7 +129,6 @@ unwindstack::DexFiles* LibunwindstackUnwinderAndroid::GetOrCreateDexFiles(
 }
 
 UnwindResult LibunwindstackUnwinderAndroid::TryUnwind(
-    UnwinderStateCapture* capture_state,
     RegisterContext* thread_context,
     uintptr_t stack_top,
     std::vector<Frame>* stack) {

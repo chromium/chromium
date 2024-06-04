@@ -6,7 +6,6 @@
 #define BASE_PROFILER_STACK_SAMPLER_H_
 
 #include <memory>
-#include <tuple>
 #include <vector>
 
 #include "base/base_export.h"
@@ -23,15 +22,11 @@
 
 namespace base {
 
+class Unwinder;
 class ModuleCache;
 class ProfileBuilder;
 class StackBuffer;
 class StackSamplerTestDelegate;
-class Unwinder;
-class UnwinderStateCapture;
-
-using UnwinderCapture =
-    std::tuple<raw_ptr<Unwinder>, std::unique_ptr<UnwinderStateCapture>>;
 
 // StackSampler is an implementation detail of StackSamplingProfiler. It
 // abstracts the native implementation required to record a set of stack frames
@@ -88,7 +83,7 @@ class BASE_EXPORT StackSampler {
       ModuleCache* module_cache,
       RegisterContext* thread_context,
       uintptr_t stack_top,
-      const std::vector<UnwinderCapture>& unwinders);
+      const base::circular_deque<std::unique_ptr<Unwinder>>& unwinders);
 
   // Create a StackSampler, overriding the platform-specific components.
   static std::unique_ptr<StackSampler> CreateForTesting(
@@ -122,7 +117,7 @@ class BASE_EXPORT StackSampler {
       ModuleCache* module_cache,
       RegisterContext* thread_context,
       uintptr_t stack_top,
-      const std::vector<UnwinderCapture>& unwinders);
+      const base::circular_deque<std::unique_ptr<Unwinder>>& unwinders);
 
   const std::unique_ptr<StackCopier> stack_copier_;
   UnwindersFactory unwinders_factory_;

@@ -137,8 +137,7 @@ void CopyCalleeSavedRegisterToRegisterContext(
 V8Unwinder::V8Unwinder(v8::Isolate* isolate)
     : isolate_(isolate),
       js_entry_stubs_(isolate->GetJSEntryStubs()),
-      embedded_code_range_(GetEmbeddedCodeRange(isolate)),
-      required_code_ranges_capacity_(v8::Isolate::kMinCodePagesBufferSize) {}
+      embedded_code_range_(GetEmbeddedCodeRange(isolate)) {}
 
 V8Unwinder::~V8Unwinder() = default;
 
@@ -154,28 +153,22 @@ void V8Unwinder::InitializeModules() {
   module_cache()->UpdateNonNativeModules({}, std::move(new_module));
 }
 
-std::unique_ptr<base::UnwinderStateCapture>
-V8Unwinder::CreateUnwinderStateCapture() {
-  return std::make_unique<MemoryRanges>(required_code_ranges_capacity_);
-}
-
 // IMPORTANT NOTE: to avoid deadlock this function must not invoke any
 // non-reentrant code that is also invoked by the target thread. In particular,
 // no heap allocation or deallocation is permitted, including indirectly via use
 // of DCHECK/CHECK or other logging statements.
-void V8Unwinder::OnStackCapture(base::UnwinderStateCapture* capture_state) {
-  MemoryRanges* code_ranges = static_cast<MemoryRanges*>(capture_state);
+void V8Unwinder::OnStackCapture() {
   required_code_ranges_capacity_ =
-      CopyCodePages(code_ranges->size(), code_ranges->buffer());
-  code_ranges->ShrinkSize(required_code_ranges_capacity_);
+      CopyCodePages(code_ranges_.capacity(), code_ranges_.buffer());
+  code_ranges_.SetSize(
+      std::min(required_code_ranges_capacity_, code_ranges_.capacity()));
 }
 
 // Update the modules based on what was recorded in |code_ranges_|. The singular
 // embedded code range was already added in in InitializeModules(). It is
 // preserved by the algorithm below, which is why kNonEmbedded is
 // unconditionally passed when creating new modules.
-void V8Unwinder::UpdateModules(base::UnwinderStateCapture* capture_state) {
-  MemoryRanges* code_ranges = static_cast<MemoryRanges*>(capture_state);
+void V8Unwinder::UpdateModules() {
   MemoryRangeModuleCompare less_than;
 
   const auto is_embedded_code_range_module =
@@ -190,9 +183,9 @@ void V8Unwinder::UpdateModules(base::UnwinderStateCapture* capture_state) {
 
   // Identify defunct modules and create new modules seen since the last
   // sample. Code ranges provided by V8 are in sorted order.
-  v8::MemoryRange* const code_ranges_start = code_ranges->buffer();
+  v8::MemoryRange* const code_ranges_start = code_ranges_.buffer();
   v8::MemoryRange* const code_ranges_end =
-      code_ranges_start + code_ranges->size();
+      code_ranges_start + code_ranges_.size();
   CHECK(std::is_sorted(code_ranges_start, code_ranges_end, less_than));
   v8::MemoryRange* range_it = code_ranges_start;
   auto modules_it = modules_.begin();
@@ -205,7 +198,7 @@ void V8Unwinder::UpdateModules(base::UnwinderStateCapture* capture_state) {
       ++range_it;
     } else if (less_than(*modules_it, *range_it)) {
       // Avoid deleting the embedded code range module if it wasn't provided in
-      // |code_ranges|. This could happen if |code_ranges| had insufficient
+      // |code_ranges_|. This could happen if |code_ranges_| had insufficient
       // capacity when the code pages were copied.
       if (!is_embedded_code_range_module(*modules_it)) {
         defunct_modules.push_back(*modules_it);
@@ -238,6 +231,7 @@ void V8Unwinder::UpdateModules(base::UnwinderStateCapture* capture_state) {
 
   module_cache()->UpdateNonNativeModules(defunct_modules,
                                          std::move(new_modules));
+  code_ranges_.ExpandCapacityIfNecessary(required_code_ranges_capacity_);
 }
 
 bool V8Unwinder::CanUnwindFrom(const base::Frame& current_frame) const {
@@ -249,12 +243,9 @@ bool V8Unwinder::CanUnwindFrom(const base::Frame& current_frame) const {
   return loc != modules_.end();
 }
 
-base::UnwindResult V8Unwinder::TryUnwind(
-    base::UnwinderStateCapture* capture_state,
-    base::RegisterContext* thread_context,
-    uintptr_t stack_top,
-    std::vector<base::Frame>* stack) {
-  MemoryRanges* code_ranges = static_cast<MemoryRanges*>(capture_state);
+base::UnwindResult V8Unwinder::TryUnwind(base::RegisterContext* thread_context,
+                                         uintptr_t stack_top,
+                                         std::vector<base::Frame>* stack) {
   v8::RegisterState register_state;
   register_state.pc = reinterpret_cast<void*>(
       base::RegisterContextInstructionPointer(thread_context));
@@ -271,7 +262,7 @@ base::UnwindResult V8Unwinder::TryUnwind(
                                              register_state.callee_saved.get());
 
   if (!v8::Unwinder::TryUnwindV8Frames(
-          js_entry_stubs_, code_ranges->size(), code_ranges->buffer(),
+          js_entry_stubs_, code_ranges_.size(), code_ranges_.buffer(),
           &register_state, reinterpret_cast<const void*>(stack_top))) {
     return base::UnwindResult::kAborted;
   }
@@ -310,14 +301,27 @@ const char V8Unwinder::kV8EmbeddedCodeRangeBuildId[] =
 const char V8Unwinder::kV8CodeRangeBuildId[] =
     "5555555517284E1E874EFA4EB754964B999";
 
-V8Unwinder::MemoryRanges::MemoryRanges(size_t size)
-    : size_(size), ranges_(std::make_unique<v8::MemoryRange[]>(size)) {}
+V8Unwinder::MemoryRanges::MemoryRanges()
+    : capacity_(v8::Isolate::kMinCodePagesBufferSize),
+      size_(0),
+      ranges_(std::make_unique<v8::MemoryRange[]>(capacity_)) {}
 
 V8Unwinder::MemoryRanges::MemoryRanges::~MemoryRanges() = default;
 
-void V8Unwinder::MemoryRanges::ShrinkSize(size_t size) {
-  if (size < size_) {
-    size_ = size;
+void V8Unwinder::MemoryRanges::SetSize(size_t size) {
+  // DCHECKing size_ <= capacity_ is deferred to size() because the DCHECK may
+  // heap allocate.
+  size_ = size;
+}
+
+void V8Unwinder::MemoryRanges::ExpandCapacityIfNecessary(
+    size_t required_capacity) {
+  if (required_capacity > capacity_) {
+    while (required_capacity > capacity_)
+      capacity_ *= 2;
+    auto new_ranges = std::make_unique<v8::MemoryRange[]>(capacity_);
+    std::copy(buffer(), buffer() + size_, new_ranges.get());
+    ranges_ = std::move(new_ranges);
   }
 }
 

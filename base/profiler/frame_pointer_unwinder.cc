@@ -56,11 +56,9 @@ bool FramePointerUnwinder::CanUnwindFrom(const Frame& current_frame) const {
   return current_frame.module && current_frame.module->IsNative();
 }
 
-UnwindResult FramePointerUnwinder::TryUnwind(
-    UnwinderStateCapture* capture_state,
-    RegisterContext* thread_context,
-    uintptr_t stack_top,
-    std::vector<Frame>* stack) {
+UnwindResult FramePointerUnwinder::TryUnwind(RegisterContext* thread_context,
+                                             uintptr_t stack_top,
+                                             std::vector<Frame>* stack) {
   // We expect the frame corresponding to the |thread_context| register state to
   // exist within |stack|.
   DCHECK_GT(stack->size(), 0u);

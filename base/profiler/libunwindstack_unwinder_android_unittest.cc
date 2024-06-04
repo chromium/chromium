@@ -37,10 +37,8 @@ class TestStackCopierDelegate : public StackCopier::Delegate {
 std::vector<Frame> CaptureScenario(
     UnwindScenario* scenario,
     ModuleCache* module_cache,
-    OnceCallback<void(UnwinderStateCapture*,
-                      RegisterContext*,
-                      uintptr_t,
-                      std::vector<Frame>*)> unwind_callback) {
+    OnceCallback<void(RegisterContext*, uintptr_t, std::vector<Frame>*)>
+        unwind_callback) {
   std::vector<Frame> sample;
   WithTargetThread(
       scenario,
@@ -68,8 +66,7 @@ std::vector<Frame> CaptureScenario(
                 module_cache->GetModuleForAddress(
                     RegisterContextInstructionPointer(&thread_context)));
 
-            std::move(unwind_callback)
-                .Run(nullptr, &thread_context, stack_top, &sample);
+            std::move(unwind_callback).Run(&thread_context, stack_top, &sample);
           }));
 
   return sample;
@@ -84,17 +81,16 @@ TEST(LibunwindstackUnwinderAndroidTest, PlainFunction) {
   auto unwinder = std::make_unique<LibunwindstackUnwinderAndroid>();
 
   unwinder->Initialize(&module_cache);
-  std::vector<Frame> sample = CaptureScenario(
-      &scenario, &module_cache,
-      BindLambdaForTesting([&](UnwinderStateCapture* capture_state,
-                               RegisterContext* thread_context,
-                               uintptr_t stack_top,
-                               std::vector<Frame>* sample) {
-        ASSERT_TRUE(unwinder->CanUnwindFrom(sample->back()));
-        UnwindResult result = unwinder->TryUnwind(capture_state, thread_context,
-                                                  stack_top, sample);
-        EXPECT_EQ(UnwindResult::kCompleted, result);
-      }));
+  std::vector<Frame> sample =
+      CaptureScenario(&scenario, &module_cache,
+                      BindLambdaForTesting([&](RegisterContext* thread_context,
+                                               uintptr_t stack_top,
+                                               std::vector<Frame>* sample) {
+                        ASSERT_TRUE(unwinder->CanUnwindFrom(sample->back()));
+                        UnwindResult result = unwinder->TryUnwind(
+                            thread_context, stack_top, sample);
+                        EXPECT_EQ(UnwindResult::kCompleted, result);
+                      }));
 
   // Check that all the modules are valid.
   for (const auto& frame : sample)
@@ -115,17 +111,16 @@ TEST(LibunwindstackUnwinderAndroidTest, Alloca) {
   auto unwinder = std::make_unique<LibunwindstackUnwinderAndroid>();
 
   unwinder->Initialize(&module_cache);
-  std::vector<Frame> sample = CaptureScenario(
-      &scenario, &module_cache,
-      BindLambdaForTesting([&](UnwinderStateCapture* capture_state,
-                               RegisterContext* thread_context,
-                               uintptr_t stack_top,
-                               std::vector<Frame>* sample) {
-        ASSERT_TRUE(unwinder->CanUnwindFrom(sample->back()));
-        UnwindResult result = unwinder->TryUnwind(capture_state, thread_context,
-                                                  stack_top, sample);
-        EXPECT_EQ(UnwindResult::kCompleted, result);
-      }));
+  std::vector<Frame> sample =
+      CaptureScenario(&scenario, &module_cache,
+                      BindLambdaForTesting([&](RegisterContext* thread_context,
+                                               uintptr_t stack_top,
+                                               std::vector<Frame>* sample) {
+                        ASSERT_TRUE(unwinder->CanUnwindFrom(sample->back()));
+                        UnwindResult result = unwinder->TryUnwind(
+                            thread_context, stack_top, sample);
+                        EXPECT_EQ(UnwindResult::kCompleted, result);
+                      }));
 
   // Check that all the modules are valid.
   for (const auto& frame : sample)
@@ -148,17 +143,16 @@ TEST(LibunwindstackUnwinderAndroidTest, OtherLibrary) {
   auto unwinder = std::make_unique<LibunwindstackUnwinderAndroid>();
 
   unwinder->Initialize(&module_cache);
-  std::vector<Frame> sample = CaptureScenario(
-      &scenario, &module_cache,
-      BindLambdaForTesting([&](UnwinderStateCapture* capture_state,
-                               RegisterContext* thread_context,
-                               uintptr_t stack_top,
-                               std::vector<Frame>* sample) {
-        ASSERT_TRUE(unwinder->CanUnwindFrom(sample->back()));
-        UnwindResult result = unwinder->TryUnwind(capture_state, thread_context,
-                                                  stack_top, sample);
-        EXPECT_EQ(UnwindResult::kCompleted, result);
-      }));
+  std::vector<Frame> sample =
+      CaptureScenario(&scenario, &module_cache,
+                      BindLambdaForTesting([&](RegisterContext* thread_context,
+                                               uintptr_t stack_top,
+                                               std::vector<Frame>* sample) {
+                        ASSERT_TRUE(unwinder->CanUnwindFrom(sample->back()));
+                        UnwindResult result = unwinder->TryUnwind(
+                            thread_context, stack_top, sample);
+                        EXPECT_EQ(UnwindResult::kCompleted, result);
+                      }));
 
   // The stack should contain a full unwind.
   ExpectStackContains(sample, {scenario.GetWaitForSampleAddressRange(),
@@ -185,17 +179,16 @@ TEST(LibunwindstackUnwinderAndroidTest, JavaFunction) {
 
   ModuleCache module_cache;
   unwinder->Initialize(&module_cache);
-  const std::vector<Frame> sample = CaptureScenario(
-      &scenario, &module_cache,
-      BindLambdaForTesting([&](UnwinderStateCapture* capture_state,
-                               RegisterContext* thread_context,
-                               uintptr_t stack_top,
-                               std::vector<Frame>* sample) {
-        ASSERT_TRUE(unwinder->CanUnwindFrom(sample->back()));
-        UnwindResult result = unwinder->TryUnwind(capture_state, thread_context,
-                                                  stack_top, sample);
-        EXPECT_EQ(UnwindResult::kCompleted, result);
-      }));
+  const std::vector<Frame> sample =
+      CaptureScenario(&scenario, &module_cache,
+                      BindLambdaForTesting([&](RegisterContext* thread_context,
+                                               uintptr_t stack_top,
+                                               std::vector<Frame>* sample) {
+                        ASSERT_TRUE(unwinder->CanUnwindFrom(sample->back()));
+                        UnwindResult result = unwinder->TryUnwind(
+                            thread_context, stack_top, sample);
+                        EXPECT_EQ(UnwindResult::kCompleted, result);
+                      }));
 
   // Check that all the modules are valid.
   for (const auto& frame : sample) {
@@ -226,17 +219,16 @@ TEST(LibunwindstackUnwinderAndroidTest,
   UnwindScenario scenario(
       BindRepeating(&CallThroughOtherLibrary, Unretained(dynamic_library)));
 
-  auto sample = CaptureScenario(
-      &scenario, &module_cache,
-      BindLambdaForTesting([&](UnwinderStateCapture* capture_state,
-                               RegisterContext* thread_context,
-                               uintptr_t stack_top,
-                               std::vector<Frame>* sample) {
-        ASSERT_TRUE(unwinder->CanUnwindFrom(sample->back()));
-        UnwindResult result = unwinder->TryUnwind(capture_state, thread_context,
-                                                  stack_top, sample);
-        EXPECT_EQ(UnwindResult::kCompleted, result);
-      }));
+  auto sample =
+      CaptureScenario(&scenario, &module_cache,
+                      BindLambdaForTesting([&](RegisterContext* thread_context,
+                                               uintptr_t stack_top,
+                                               std::vector<Frame>* sample) {
+                        ASSERT_TRUE(unwinder->CanUnwindFrom(sample->back()));
+                        UnwindResult result = unwinder->TryUnwind(
+                            thread_context, stack_top, sample);
+                        EXPECT_EQ(UnwindResult::kCompleted, result);
+                      }));
 
   ExpectStackContains(sample, {scenario.GetWaitForSampleAddressRange(),
                                scenario.GetSetupFunctionAddressRange(),

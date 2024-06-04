@@ -29,13 +29,10 @@ class V8Unwinder : public base::Unwinder {
 
   // Unwinder:
   void InitializeModules() override;
-  std::unique_ptr<base::UnwinderStateCapture> CreateUnwinderStateCapture()
-      override;
-  void OnStackCapture(base::UnwinderStateCapture* capture_state) override;
-  void UpdateModules(base::UnwinderStateCapture* capture_state) override;
+  void OnStackCapture() override;
+  void UpdateModules() override;
   bool CanUnwindFrom(const base::Frame& current_frame) const override;
-  base::UnwindResult TryUnwind(base::UnwinderStateCapture* capture_state,
-                               base::RegisterContext* thread_context,
+  base::UnwindResult TryUnwind(base::RegisterContext* thread_context,
                                uintptr_t stack_top,
                                std::vector<base::Frame>* stack) override;
 
@@ -52,21 +49,36 @@ class V8Unwinder : public base::Unwinder {
   // Custom container for storing V8 code memory ranges. We use this type rather
   // than std::vector to guarantee that no heap allocation occurs during the
   // operations used in OnStackCapture().
-  class MemoryRanges : public base::UnwinderStateCapture {
+  class MemoryRanges {
    public:
-    explicit MemoryRanges(size_t size);
-    ~MemoryRanges() override;
+    MemoryRanges();
+    ~MemoryRanges();
 
     // Functions that must not heap allocate:
     // Returns a pointer to the start of the internal buffer.
     v8::MemoryRange* buffer() { return ranges_.get(); }
     const v8::MemoryRange* buffer() const { return ranges_.get(); }
-    size_t size() const { return size_; }
 
-    // Shrinks the size if `size_` is larger than `size`.
-    void ShrinkSize(size_t size);
+    // The capacity of the internal buffer.
+    size_t capacity() const { return capacity_; }
+
+    // Sets the number of elements stored.
+    void SetSize(size_t size);
+
+    // Functions that may heap allocate:
+    // Ensures that the object can store |required_capacity| elements,
+    // allocating more space if necessary.
+    void ExpandCapacityIfNecessary(size_t required_capacity);
+
+    // The number of elements stored.
+    size_t size() const {
+      DCHECK_LE(size_, capacity_);
+      return size_;
+    }
 
    private:
+    // Capacity and size are denominated in number of elements.
+    size_t capacity_;
     size_t size_;
     std::unique_ptr<v8::MemoryRange[]> ranges_;
   };
@@ -80,6 +92,9 @@ class V8Unwinder : public base::Unwinder {
   const raw_ptr<v8::Isolate> isolate_;
   const v8::JSEntryStubs js_entry_stubs_;
   const v8::MemoryRange embedded_code_range_;
+
+  // Code ranges recorded for the current sample.
+  MemoryRanges code_ranges_;
 
   // The number of code ranges required to represent all of ranges supplied by
   // V8 on the last call to CopyCodePages().
