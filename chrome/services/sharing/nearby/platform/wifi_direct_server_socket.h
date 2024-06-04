@@ -32,12 +32,17 @@ class WifiDirectServerSocket : public api::WifiDirectServerSocket {
   Exception Close() override;
 
  private:
+  void DoAccept(net::IPEndPoint* accepted_address,
+                std::unique_ptr<net::StreamSocket>* accepted_socket,
+                bool* did_succeed);
+  void OnAccept(bool* did_succeed, int result);
   void CloseSocket(base::WaitableEvent* close_waitable_event);
   void OnFirewallHoleDisconnect();
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   mojo::PlatformHandle handle_;
   mojo::SharedRemote<::sharing::mojom::FirewallHole> firewall_hole_;
+  base::WaitableEvent pending_accept_event_;
   std::unique_ptr<net::TCPServerSocket> tcp_server_socket_;
 };
 
