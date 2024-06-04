@@ -16875,7 +16875,7 @@ TEST_F(AuctionRunnerTest, RealTimeReportingSellerBadContribution) {
 }
 
 TEST_F(AuctionRunnerTest, RealTimeReportingAllOptedIn) {
-  // Optin all buyers and seller for real time reporting.
+  // Opt in all buyers and seller for real time reporting.
   auto type = blink::mojom::AuctionAdConfigNonSharedParams::
       RealTimeReportingType::kDefaultLocalReporting;
   seller_real_time_reporting_type_ = type;
@@ -16916,28 +16916,8 @@ TEST_F(AuctionRunnerTest, RealTimeReportingAllOptedIn) {
                                          /*bucket=*/202, priority_weight)))));
 }
 
-TEST_F(AuctionRunnerTest, RealTimeReportingNoOneOptedIn) {
-  auction_worklet::AddJavascriptResponse(
-      &url_loader_factory_, kBidder1Url,
-      MakeBidScriptWithRealTimeReporting(/*bid=*/1));
-  auction_worklet::AddJavascriptResponse(
-      &url_loader_factory_, kBidder2Url,
-      MakeBidScriptWithRealTimeReporting(/*bid=*/2));
-  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
-                                         kDecisionScriptWithRealTimeReporting);
-
-  // Bidder 2 won the auction.
-  RunStandardAuction(/*request_trusted_bidding_signals=*/false);
-  EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
-  EXPECT_FALSE(result_.aborted_by_script);
-  EXPECT_EQ(kBidder2Key, result_.winning_group_id);
-  EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_descriptor->url);
-
-  EXPECT_TRUE(result_.real_time_contributions.empty());
-}
-
 TEST_F(AuctionRunnerTest, RealTimeReportingPartialOptedIn) {
-  // Optin seller and kBidder1 for real time reporting.
+  // Opt in seller and kBidder1 for real time reporting.
   auto type = blink::mojom::AuctionAdConfigNonSharedParams::
       RealTimeReportingType::kDefaultLocalReporting;
   seller_real_time_reporting_type_ = type;
@@ -17138,7 +17118,7 @@ TEST_F(AuctionRunnerTest,
 // Real time reporting contributions are still collected when auction fails
 // (e.g., all bids rejected).
 TEST_F(AuctionRunnerTest, RealTimeReportingFailAuctionAllBidsRejected) {
-  // Optin all buyers and seller for real time reporting.
+  // Opt in all buyers and seller for real time reporting.
   auto type = blink::mojom::AuctionAdConfigNonSharedParams::
       RealTimeReportingType::kDefaultLocalReporting;
   seller_real_time_reporting_type_ = type;
@@ -17175,6 +17155,155 @@ TEST_F(AuctionRunnerTest, RealTimeReportingFailAuctionAllBidsRejected) {
           // Has empty contributions instead of no entry for seller,
           // since seller opted in.
           testing::Pair(kSeller, ElementsAreContributions())));
+}
+
+// Similar to NoSellerScript, but tests real time reporting contribution for
+// this error.
+TEST_F(AuctionRunnerTest, RealTimeReportingSellerScriptLoadFailed) {
+  // Real time reporting platform contributions also require opt-in.
+  seller_real_time_reporting_type_ =
+      blink::mojom::AuctionAdConfigNonSharedParams::RealTimeReportingType::
+          kDefaultLocalReporting;
+
+  url_loader_factory_.AddResponse(kSellerUrl.spec(), "", net::HTTP_NOT_FOUND);
+  RunStandardAuction();
+  EXPECT_FALSE(result_.winning_group_id);
+  EXPECT_FALSE(result_.ad_descriptor);
+  EXPECT_THAT(result_.errors,
+              testing::ElementsAre(
+                  "Failed to load https://adstuff.publisher1.com/auction.js "
+                  "HTTP status = 404 Not Found."));
+  EXPECT_THAT(result_.real_time_contributions,
+              testing::ElementsAre(testing::Pair(
+                  kSeller, ElementsAreContributions(BuildRealTimeContribution(
+                               /*bucket=*/1, /*priority_weight=*/1)))));
+}
+
+// An auction with different types of real time reporting contributions.
+TEST_F(AuctionRunnerTest, RealTimeReportingMixedContributions) {
+  // Opt in all buyers and seller for real time reporting.
+  auto type = blink::mojom::AuctionAdConfigNonSharedParams::
+      RealTimeReportingType::kDefaultLocalReporting;
+  seller_real_time_reporting_type_ = type;
+  per_buyer_real_time_reporting_types_.emplace();
+  per_buyer_real_time_reporting_types_->insert(std::make_pair(kBidder1, type));
+  per_buyer_real_time_reporting_types_->insert(std::make_pair(kBidder2, type));
+
+  // Bidder 1 load script would fail.
+  url_loader_factory_.AddResponse(kBidder1Url.spec(), "", net::HTTP_NOT_FOUND);
+
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder2Url,
+      MakeBidScriptWithRealTimeReporting(/*bid=*/2));
+  // Bidder 2 load trusted bidding signals would fail.
+  url_loader_factory_.AddResponse(kBidder2TrustedSignalsUrl.spec() +
+                                      "?hostname=publisher1.com&keys=l1,l2"
+                                      "&interestGroupNames=Another+Ad+Thing",
+                                  "", net::HTTP_NOT_FOUND);
+
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         kDecisionScriptWithRealTimeReporting);
+  RunStandardAuction();
+  EXPECT_EQ(kBidder2Key, result_.winning_group_id);
+  EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_descriptor->url);
+  EXPECT_THAT(
+      result_.errors,
+      testing::UnorderedElementsAre(
+          "Failed to load https://adplatform.com/offers.js "
+          "HTTP status = 404 Not Found.",
+          "Failed to load https://anotheradthing.com/"
+          "signals2?hostname=publisher1.com&keys=l1,l2&"
+          "interestGroupNames=Another+Ad+Thing HTTP status = 404 Not Found."));
+  double priority_weight = 1.5;
+  EXPECT_THAT(
+      result_.real_time_contributions,
+      testing::UnorderedElementsAre(
+          // Bidder 1 has a platform contribution for failed bidding script
+          // load.
+          testing::Pair(kBidder1,
+                        ElementsAreContributions(BuildRealTimeContribution(
+                            /*bucket=*/0, /*priority_weight=*/1))),
+          // Bidder 2 has a contribution from API call, and a contribution from
+          // flatform contribution for failed trusted bidding signals load.
+          testing::Pair(kBidder2,
+                        ElementsAreContributions(
+                            BuildRealTimeContribution(
+                                /*bucket=*/102, priority_weight),
+                            BuildRealTimeContribution(
+                                /*bucket=*/2, /*priority_weight=*/1))),
+          testing::Pair(kSeller,
+                        ElementsAreContributions(BuildRealTimeContribution(
+                            /*bucket=*/202, priority_weight)))));
+}
+
+// Similar to RealTimeReportingMixedContributions, but no origin opted in for
+// real time reporting. There should be no real time reporting contributions,
+// including those from API calls or platform contributions.
+TEST_F(AuctionRunnerTest, RealTimeReportingMixedContributionsNoOptIn) {
+  // Bidder 1 load script would fail.
+  url_loader_factory_.AddResponse(kBidder1Url.spec(), "", net::HTTP_NOT_FOUND);
+
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder2Url,
+      MakeBidScriptWithRealTimeReporting(/*bid=*/2));
+  // Bidder 2 load trusted bidding signals would fail.
+  url_loader_factory_.AddResponse(kBidder2TrustedSignalsUrl.spec() +
+                                      "?hostname=publisher1.com&keys=l1,l2"
+                                      "&interestGroupNames=Another+Ad+Thing",
+                                  "", net::HTTP_NOT_FOUND);
+
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         kDecisionScriptWithRealTimeReporting);
+  RunStandardAuction();
+  EXPECT_EQ(kBidder2Key, result_.winning_group_id);
+  EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_descriptor->url);
+  EXPECT_THAT(
+      result_.errors,
+      testing::UnorderedElementsAre(
+          "Failed to load https://adplatform.com/offers.js "
+          "HTTP status = 404 Not Found.",
+          "Failed to load https://anotheradthing.com/"
+          "signals2?hostname=publisher1.com&keys=l1,l2&"
+          "interestGroupNames=Another+Ad+Thing HTTP status = 404 Not Found."));
+  EXPECT_TRUE(result_.real_time_contributions.empty());
+}
+
+// Similar to RealTimeReportingMixedContributions, but with feature
+// kFledgeRealTimeReporting disabled. There should be no real time reporting
+// contributions, including those from API calls or platform contributions.
+TEST_F(AuctionRunnerTest, RealTimeReportingMixedContributionsFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      blink::features::kFledgeRealTimeReporting);
+
+  // Opt in all buyers and seller for real time reporting.
+  auto type = blink::mojom::AuctionAdConfigNonSharedParams::
+      RealTimeReportingType::kDefaultLocalReporting;
+  seller_real_time_reporting_type_ = type;
+  per_buyer_real_time_reporting_types_.emplace();
+  per_buyer_real_time_reporting_types_->insert(std::make_pair(kBidder1, type));
+  per_buyer_real_time_reporting_types_->insert(std::make_pair(kBidder2, type));
+
+  // Bidder 1 load script would fail.
+  url_loader_factory_.AddResponse(kBidder1Url.spec(), "", net::HTTP_NOT_FOUND);
+
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder2Url,
+      MakeBidScriptWithRealTimeReporting(/*bid=*/2));
+  // Bidder 2 load trusted bidding signals would fail.
+  url_loader_factory_.AddResponse(kBidder2TrustedSignalsUrl.spec() +
+                                      "?hostname=publisher1.com&keys=l1,l2"
+                                      "&interestGroupNames=Another+Ad+Thing",
+                                  "", net::HTTP_NOT_FOUND);
+
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         kDecisionScriptWithRealTimeReporting);
+  RunStandardAuction();
+  // No winner because bidding and seller scripts throw realTimeReporting
+  // undefined exceptions.
+  EXPECT_FALSE(result_.winning_group_id);
+  EXPECT_FALSE(result_.ad_descriptor);
+  EXPECT_TRUE(result_.real_time_contributions.empty());
 }
 
 class RoundingTest : public AuctionRunnerTest,

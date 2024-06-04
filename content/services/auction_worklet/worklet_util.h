@@ -13,11 +13,6 @@
 
 namespace auction_worklet {
 
-static const int32_t kTrustedBiddingSignalsFailureRealTimeBucket = 2;
-static const int32_t kTrustedScoringSignalsFailureRealTimeBucket = 3;
-
-static const int32_t kRealTimePlatformContributionPriorityWeight = 1;
-
 using RealTimeReportingContributions =
     std::vector<auction_worklet::mojom::RealTimeReportingContributionPtr>;
 

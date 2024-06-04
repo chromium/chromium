@@ -999,6 +999,15 @@ class CONTENT_EXPORT InterestGroupAuction
            (!is_server_auction_ || saved_response_.has_value());
   }
 
+  // True if `owner` opted in for real time reporting.
+  bool IsBuyerOptedInToRealTimeReporting(const url::Origin& owner);
+
+  // Add a real time reporting contribution for `origin` for script load
+  // failure. If `is_buyer` is true, it's bidding script load failure.
+  // Otherwise, it's scoring script load failure.
+  void MaybeAddScriptFailureRealTimeContribution(bool is_buyer,
+                                                 const url::Origin& origin);
+
   // Invoked when a component auction completes. If `success` is true, gets
   // the Bid from `component_auction` and passes a copy of it to ScoreBid().
   void OnComponentAuctionComplete(InterestGroupAuction* component_auction,
@@ -1438,6 +1447,11 @@ class CONTENT_EXPORT InterestGroupAuction
   // request's event type.
   std::map<std::string, PrivateAggregationRequests>
       private_aggregation_requests_non_reserved_;
+
+  // A cache of feature param
+  // kFledgeRealTimeReportingPlatformContributionPriority to avoid getting its
+  // value many times which can be slow.
+  std::optional<double> real_time_platform_contribution_priority_weight_;
 
   // Stores all real time reporting contributions. These will go through
   // sampling and converting to histograms of 0 and 1s.

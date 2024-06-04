@@ -571,6 +571,9 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<double>
 // buckets will be [0, kFledgeRealTimeReportingNumBuckets).
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kFledgeRealTimeReportingNumBuckets;
+// The priorityWeight of FLEDGE real time reporting's platform contributions.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<double>
+    kFledgeRealTimeReportingPlatformContributionPriority;
 // The number of FLEDGE real time reports (`kFledgeRealTimeReportingMaxReports`)
 // allowed to be sent per reporting origin per page per
 // `kFledgeRealTimeReportingWindow`.

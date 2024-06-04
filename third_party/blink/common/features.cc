@@ -1028,6 +1028,10 @@ const base::FeatureParam<int> kFledgeRealTimeReportingNumBuckets{
     &kFledgeRealTimeReporting, "FledgeRealTimeReportingNumBuckets", 1024};
 const base::FeatureParam<double> kFledgeRealTimeReportingEpsilon{
     &kFledgeRealTimeReporting, "FledgeRealTimeReportingEpsilon", 1};
+const base::FeatureParam<double>
+    kFledgeRealTimeReportingPlatformContributionPriority{
+        &kFledgeRealTimeReporting,
+        "FledgeRealTimeReportingPlatformContributionPriority", 1};
 const base::FeatureParam<base::TimeDelta> kFledgeRealTimeReportingWindow{
     &kFledgeRealTimeReporting, "FledgeRealTimeReportingWindow",
     base::Seconds(20)};

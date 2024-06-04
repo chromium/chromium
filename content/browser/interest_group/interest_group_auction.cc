@@ -21,6 +21,7 @@
 
 #include "base/base64.h"
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -71,6 +72,7 @@
 #include "content/common/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/services/auction_worklet/public/cpp/auction_downloader.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
@@ -1553,6 +1555,8 @@ class InterestGroupAuction::BuyerHelper
           {base::StrCat({bid_state->bidder->interest_group.bidding_url->spec(),
                          " crashed while trying to run generateBid()."})});
     } else {
+      auction_->MaybeAddScriptFailureRealTimeContribution(
+          /*is_buyer=*/true, bid_state->bidder->interest_group.owner);
       OnFatalError(bid_state, errors);
     }
   }
@@ -1976,14 +1980,8 @@ class InterestGroupAuction::BuyerHelper
         real_time_contributions.clear();
         generate_bid_client_receiver_set_.ReportBadMessage(
             "Invalid real time reporting priority weight");
-      } else if (auction_->config_->non_shared_params
-                     .per_buyer_real_time_reporting_types.has_value() &&
-                 auction_->config_->non_shared_params
-                         .per_buyer_real_time_reporting_types.value()
-                         .find(interest_group.owner) !=
-                     auction_->config_->non_shared_params
-                         .per_buyer_real_time_reporting_types.value()
-                         .end()) {
+      } else if (auction_->IsBuyerOptedInToRealTimeReporting(
+                     interest_group.owner)) {
         // Only keep real time reporting contributions when the buyer is
         // opted-in.
         RealTimeReportingContributions& real_time_contributions_for_origin =
@@ -4500,6 +4498,8 @@ void InterestGroupAuction::OnSellerWorkletFatalError(
   switch (fatal_error_type) {
     case AuctionWorkletManager::FatalErrorType::kScriptLoadFailed:
       result = AuctionResult::kSellerWorkletLoadFailed;
+      MaybeAddScriptFailureRealTimeContribution(/*is_buyer=*/false,
+                                                config_->seller);
       break;
     case AuctionWorkletManager::FatalErrorType::kWorkletCrash:
       result = AuctionResult::kSellerWorkletCrashed;
@@ -4507,6 +4507,43 @@ void InterestGroupAuction::OnSellerWorkletFatalError(
   }
 
   OnBiddingAndScoringComplete(result, errors);
+}
+
+bool InterestGroupAuction::IsBuyerOptedInToRealTimeReporting(
+    const url::Origin& owner) {
+  return config_->non_shared_params.per_buyer_real_time_reporting_types
+             .has_value() &&
+         base::Contains(
+             *config_->non_shared_params.per_buyer_real_time_reporting_types,
+             owner);
+}
+
+void InterestGroupAuction::MaybeAddScriptFailureRealTimeContribution(
+    bool is_buyer,
+    const url::Origin& origin) {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kFledgeRealTimeReporting)) {
+    return;
+  }
+  if (!real_time_platform_contribution_priority_weight_.has_value()) {
+    real_time_platform_contribution_priority_weight_ =
+        blink::features::kFledgeRealTimeReportingPlatformContributionPriority
+            .Get();
+  }
+  if (is_buyer && IsBuyerOptedInToRealTimeReporting(origin)) {
+    real_time_contributions_[origin].push_back(
+        auction_worklet::mojom::RealTimeReportingContribution::New(
+            auction_worklet::kBiddingScriptLoadFailureRealTimeBucket,
+            *real_time_platform_contribution_priority_weight_,
+            /*latency_threshold=*/std::nullopt));
+  } else if (!is_buyer && config_->non_shared_params
+                              .seller_real_time_reporting_type.has_value()) {
+    real_time_contributions_[origin].push_back(
+        auction_worklet::mojom::RealTimeReportingContribution::New(
+            auction_worklet::kScoringScriptLoadFailureRealTimeBucket,
+            *real_time_platform_contribution_priority_weight_,
+            /*latency_threshold=*/std::nullopt));
+  }
 }
 
 void InterestGroupAuction::OnComponentAuctionComplete(
