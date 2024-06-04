@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 chromium::import! {
-    pub "//mojo/public/rust:mojo_bindings" as bindings;
     pub "//mojo/public/rust:mojo_system" as system;
 }
 

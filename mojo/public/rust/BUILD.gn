@@ -18,7 +18,6 @@ group("mojo_rust") {
 test("mojo_rust_integration_unittests") {
   deps = [
     "//base/test:run_all_unittests",
-    "//mojo/public/rust/tests:mojo_rust_integration_tests",
     "//mojo/public/rust/tests:mojo_rust_system_tests",
     "//testing/gtest",
   ]
@@ -29,7 +28,6 @@ test("mojo_rust_integration_unittests") {
 test("mojo_rust_unittests") {
   deps = [
     "//base/test:run_all_unittests",
-    "//mojo/public/rust/tests:mojo_rust_encoding_tests",
     "//testing/gtest",
   ]
 
@@ -64,7 +62,6 @@ rust_static_library("mojo_system") {
     "system/mojo_types.rs",
     "system/shared_buffer.rs",
     "system/trap.rs",
-    "system/util/run_loop.rs",
     "system/wait.rs",
     "system/wait_set.rs",
   ]
@@ -97,30 +94,11 @@ rust_static_library("mojo_system_test_support") {
   ]
 }
 
-rust_static_library("mojo_bindings") {
-  crate_root = "bindings/lib.rs"
-  allow_unsafe = true
-
-  sources = [
-    "bindings/decoding.rs",
-    "bindings/encoding.rs",
-    "bindings/lib.rs",
-    "bindings/macros.rs",
-    "bindings/message.rs",
-    "bindings/mojom.rs",
-  ]
-
-  deps = [ ":mojo_system" ]
-}
-
 # Convenience target to link both Mojo Rust components and reexport them under a
 # single `mojo` name.
 rust_static_library("mojo") {
   crate_root = "lib.rs"
 
   sources = [ "lib.rs" ]
-  deps = [
-    ":mojo_bindings",
-    ":mojo_system",
-  ]
+  deps = [ ":mojo_system" ]
 }

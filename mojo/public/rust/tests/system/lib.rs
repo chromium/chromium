@@ -16,8 +16,6 @@ chromium::import! {
     "//mojo/public/rust/tests:test_util";
 }
 
-mod run_loop;
-
 use mojo::system::shared_buffer::{self, SharedBuffer};
 use mojo::system::trap::{
     ArmResult, Trap, TrapEvent, TriggerCondition, UnsafeTrap, UnsafeTrapEvent,

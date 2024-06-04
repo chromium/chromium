@@ -24,12 +24,6 @@ pub mod wait_set;
 pub mod ffi_for_testing;
 use ffi_for_testing as ffi;
 
-/// Provides extra utilities that don't directly wrap Mojo APIs, but build on
-/// top of them and may be generally useful.
-pub mod util {
-    pub mod run_loop;
-}
-
 // In order to keep the interface clean, we re-export basic Mojo and handle
 // types and traits here in the system module.
 pub use crate::handle::*;
