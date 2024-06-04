@@ -11,7 +11,6 @@
 #include "gpu/command_buffer/service/shared_image/dcomp_surface_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/dxgi_swap_chain_image_backing.h"
 #include "ui/gfx/color_space_win.h"
-#include "ui/gl/direct_composition_child_surface_win.h"
 
 namespace gpu {
 

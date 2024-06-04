@@ -295,12 +295,8 @@ component("gl") {
       "debug_utils.h",
       "delegated_ink_point_renderer_gpu.cc",
       "delegated_ink_point_renderer_gpu.h",
-      "direct_composition_child_surface_win.cc",
-      "direct_composition_child_surface_win.h",
       "direct_composition_support.cc",
       "direct_composition_support.h",
-      "direct_composition_surface_win.cc",
-      "direct_composition_surface_win.h",
       "gl_angle_util_win.cc",
       "gl_angle_util_win.h",
       "gl_fence_win.cc",
@@ -551,7 +547,6 @@ test("gl_unittests") {
     sources += [
       "dcomp_presenter_unittest.cc",
       "delegated_ink_point_renderer_gpu_unittest.cc",
-      "direct_composition_surface_win_unittest.cc",
       "gl_fence_win_unittest.cc",
       "hdr_metadata_helper_win_unittest.cc",
     ]

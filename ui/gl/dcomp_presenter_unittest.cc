@@ -684,6 +684,230 @@ TEST_F(DCompPresenterTest, DelegatedInkVisualAddedWithRootSurfaceVisualNull) {
   EXPECT_EQ(1u, layer_tree->GetDcompLayerCountForTesting());
 }
 
+// Ensure that swap chains stay attached to the same visual between subsequent
+// frames.
+// Please ensure this test is not broken. Re-attaching swapchains between
+// subsequent frames may cause flickering under certain conditions that include
+// specific Intel drivers, custom present duration etc.
+// See https://bugs.chromium.org/p/chromium/issues/detail?id=1421175.
+TEST_F(DCompPresenterTest, VisualsReused) {
+  constexpr gfx::Size window_size(100, 100);
+  EXPECT_TRUE(presenter_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
+
+  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
+      GetDirectCompositionD3D11Device();
+
+  gfx::Size texture_size(50, 50);
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> texture =
+      CreateNV12Texture(d3d11_device, texture_size);
+  EXPECT_NE(texture, nullptr);
+
+  // Frame 1:
+  // overlay 0: root dcomp surface
+  // overlay 1: swapchain z-order = 1 (overlay)
+  InitializeRootAndScheduleRootSurface(window_size, SkColors::kBlue);
+  {
+    auto params = std::make_unique<DCLayerOverlayParams>();
+    params->overlay_image.emplace(texture_size, texture);
+    params->content_rect = gfx::RectF(texture_size);
+    params->quad_rect = gfx::Rect(100, 100);
+    params->video_params.color_space = gfx::ColorSpace::CreateREC709();
+    // Overlay
+    params->z_order = 1;
+    presenter_->ScheduleDCLayer(std::move(params));
+  }
+
+  PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+
+  DCLayerTree* dcLayerTree = presenter_->GetLayerTreeForTesting();
+  EXPECT_EQ(2u, dcLayerTree->GetDcompLayerCountForTesting());
+  Microsoft::WRL::ComPtr<IDCompositionVisual2> visual0 =
+      dcLayerTree->GetContentVisualForTesting(0);
+  Microsoft::WRL::ComPtr<IDCompositionVisual2> visual1 =
+      dcLayerTree->GetContentVisualForTesting(1);
+
+  // Frame 2:
+  // overlay 0: root dcomp surface
+  // overlay 1: swapchain z-order = -1 (underlay)
+  InitializeRootAndScheduleRootSurface(window_size, SkColors::kBlue);
+  {
+    auto params = std::make_unique<DCLayerOverlayParams>();
+    params->overlay_image.emplace(texture_size, texture);
+    params->content_rect = gfx::RectF(texture_size);
+    params->quad_rect = gfx::Rect(100, 100);
+    params->video_params.color_space = gfx::ColorSpace::CreateREC709();
+    // Underlay
+    params->z_order = -1;
+    presenter_->ScheduleDCLayer(std::move(params));
+  }
+
+  PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+  EXPECT_EQ(2u, dcLayerTree->GetDcompLayerCountForTesting());
+  // Verify that the visuals are reused from the previous frame but attached
+  // to the root visual in a reversed order.
+  EXPECT_EQ(visual0.Get(), dcLayerTree->GetContentVisualForTesting(1));
+  EXPECT_EQ(visual1.Get(), dcLayerTree->GetContentVisualForTesting(0));
+#if DCHECK_IS_ON()
+  EXPECT_TRUE(dcLayerTree->GetAttachedToRootFromPreviousFrameForTesting(0));
+  EXPECT_FALSE(dcLayerTree->GetAttachedToRootFromPreviousFrameForTesting(1));
+#endif  // DCHECK_IS_ON()
+}
+
+void ScheduleDCLayer(scoped_refptr<gl::Presenter> presenter,
+                     Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain,
+                     const gfx::Size& swap_chain_size,
+                     int z_order) {
+  auto params = std::make_unique<DCLayerOverlayParams>();
+  params->overlay_image = DCLayerOverlayImage(swap_chain_size, swap_chain);
+  params->content_rect = gfx::RectF(swap_chain_size);
+  params->quad_rect = gfx::Rect(100, 100);
+  params->video_params.color_space = gfx::ColorSpace::CreateSRGB();
+  params->z_order = z_order;
+  presenter->ScheduleDCLayer(std::move(params));
+}
+
+void CreateSwapChain(IDXGIFactory2* dxgi_factory,
+                     ID3D11Device* d3d11_device,
+                     const DXGI_SWAP_CHAIN_DESC1& desc,
+                     Microsoft::WRL::ComPtr<IDXGISwapChain1>& swap_chain) {
+  ASSERT_HRESULT_SUCCEEDED(dxgi_factory->CreateSwapChainForComposition(
+      d3d11_device, &desc, nullptr, &swap_chain));
+  ASSERT_TRUE(swap_chain);
+}
+
+TEST_F(DCompPresenterTest, MatchedAndUnmatchedVisualsReused) {
+  if (context_ && context_->GetVersionInfo() &&
+      context_->GetVersionInfo()->driver_vendor.find("AMD") !=
+          std::string::npos) {
+    GTEST_SKIP() << "Fails on AMD RX 5500 XT. https://crbug.com/1152565.";
+  }
+
+  constexpr gfx::Size window_size(100, 100);
+  EXPECT_TRUE(presenter_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
+
+  InitializeRootAndScheduleRootSurface(window_size, SkColors::kBlue);
+
+  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
+      QueryD3D11DeviceObjectFromANGLE();
+  ASSERT_TRUE(d3d11_device);
+  Microsoft::WRL::ComPtr<IDXGIDevice> dxgi_device;
+  ASSERT_HRESULT_SUCCEEDED(d3d11_device.As(&dxgi_device));
+  ASSERT_TRUE(dxgi_device);
+  Microsoft::WRL::ComPtr<IDXGIAdapter> dxgi_adapter;
+  ASSERT_HRESULT_SUCCEEDED(dxgi_device->GetAdapter(&dxgi_adapter));
+  ASSERT_TRUE(dxgi_adapter);
+  Microsoft::WRL::ComPtr<IDXGIFactory2> dxgi_factory;
+  ASSERT_HRESULT_SUCCEEDED(
+      dxgi_adapter->GetParent(IID_PPV_ARGS(&dxgi_factory)));
+  ASSERT_TRUE(dxgi_factory);
+
+  gfx::Size swap_chain_size(50, 50);
+  DXGI_SWAP_CHAIN_DESC1 desc = {};
+  desc.Width = swap_chain_size.width();
+  desc.Height = swap_chain_size.height();
+  desc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+  desc.Stereo = FALSE;
+  desc.SampleDesc.Count = 1;
+  desc.BufferCount = 2;
+  desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT | DXGI_USAGE_SHADER_INPUT;
+  desc.Scaling = DXGI_SCALING_STRETCH;
+  desc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
+  desc.Flags = 0;
+
+  Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chainA;
+  CreateSwapChain(dxgi_factory.Get(), d3d11_device.Get(), desc, swap_chainA);
+
+  Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chainB;
+  CreateSwapChain(dxgi_factory.Get(), d3d11_device.Get(), desc, swap_chainB);
+
+  Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chainC;
+  CreateSwapChain(dxgi_factory.Get(), d3d11_device.Get(), desc, swap_chainC);
+
+  Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chainD;
+  CreateSwapChain(dxgi_factory.Get(), d3d11_device.Get(), desc, swap_chainD);
+
+  Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chainE;
+  CreateSwapChain(dxgi_factory.Get(), d3d11_device.Get(), desc, swap_chainE);
+
+  Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chainF;
+  CreateSwapChain(dxgi_factory.Get(), d3d11_device.Get(), desc, swap_chainF);
+
+  Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chainL;
+  CreateSwapChain(dxgi_factory.Get(), d3d11_device.Get(), desc, swap_chainL);
+
+  Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chainM;
+  CreateSwapChain(dxgi_factory.Get(), d3d11_device.Get(), desc, swap_chainM);
+
+  // Frame 1: RootSurface, A B C D E F
+  ScheduleDCLayer(presenter_, swap_chainA, swap_chain_size, 1);
+  ScheduleDCLayer(presenter_, swap_chainB, swap_chain_size, 2);
+  ScheduleDCLayer(presenter_, swap_chainC, swap_chain_size, 3);
+  ScheduleDCLayer(presenter_, swap_chainD, swap_chain_size, 4);
+  ScheduleDCLayer(presenter_, swap_chainE, swap_chain_size, 5);
+  ScheduleDCLayer(presenter_, swap_chainF, swap_chain_size, 6);
+
+  PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+
+  DCLayerTree* dc_layer_tree = presenter_->GetLayerTreeForTesting();
+  EXPECT_EQ(7u, dc_layer_tree->GetDcompLayerCountForTesting());
+  Microsoft::WRL::ComPtr<IDCompositionVisual2> visualRS =
+      dc_layer_tree->GetContentVisualForTesting(0);
+  EXPECT_NE(visualRS, nullptr);
+  Microsoft::WRL::ComPtr<IDCompositionVisual2> visualA =
+      dc_layer_tree->GetContentVisualForTesting(1);
+  EXPECT_NE(visualA, nullptr);
+  Microsoft::WRL::ComPtr<IDCompositionVisual2> visualB =
+      dc_layer_tree->GetContentVisualForTesting(2);
+  EXPECT_NE(visualB, nullptr);
+  Microsoft::WRL::ComPtr<IDCompositionVisual2> visualC =
+      dc_layer_tree->GetContentVisualForTesting(3);
+  EXPECT_NE(visualC, nullptr);
+  Microsoft::WRL::ComPtr<IDCompositionVisual2> visualD =
+      dc_layer_tree->GetContentVisualForTesting(4);
+  EXPECT_NE(visualD, nullptr);
+  Microsoft::WRL::ComPtr<IDCompositionVisual2> visualE =
+      dc_layer_tree->GetContentVisualForTesting(5);
+  EXPECT_NE(visualE, nullptr);
+  Microsoft::WRL::ComPtr<IDCompositionVisual2> visualF =
+      dc_layer_tree->GetContentVisualForTesting(6);
+  EXPECT_NE(visualF, nullptr);
+
+  // Frame 2: RootSurface, A L D C M
+  InitializeRootAndScheduleRootSurface(window_size, SkColors::kBlue);
+  ScheduleDCLayer(presenter_, swap_chainA, swap_chain_size, 1);
+  ScheduleDCLayer(presenter_, swap_chainL, swap_chain_size, 2);
+  ScheduleDCLayer(presenter_, swap_chainD, swap_chain_size, 3);
+  ScheduleDCLayer(presenter_, swap_chainC, swap_chain_size, 4);
+  ScheduleDCLayer(presenter_, swap_chainM, swap_chain_size, 5);
+
+  PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+
+  EXPECT_EQ(6u, dc_layer_tree->GetDcompLayerCountForTesting());
+
+  // Verify:
+  // RootSurface is matched to RootSurface and kept attached to the root.
+  // A is matched to A and kept attached to the root.
+  // L is reused from B and kept attached to the root.
+  // D is matched to D and kept attached to the root.
+  // C is matched to C and reattached to the root.
+  // M is reused from E and kept attached to the root.
+  EXPECT_EQ(visualRS.Get(),
+            dc_layer_tree->GetContentVisualForTesting(0) /*RS*/);
+  EXPECT_EQ(visualA.Get(), dc_layer_tree->GetContentVisualForTesting(1) /*A*/);
+  EXPECT_EQ(visualB.Get(), dc_layer_tree->GetContentVisualForTesting(2) /*L*/);
+  EXPECT_EQ(visualD.Get(), dc_layer_tree->GetContentVisualForTesting(3) /*D*/);
+  EXPECT_EQ(visualC.Get(), dc_layer_tree->GetContentVisualForTesting(4) /*C*/);
+  EXPECT_EQ(visualE.Get(), dc_layer_tree->GetContentVisualForTesting(5) /*M*/);
+#if DCHECK_IS_ON()
+  EXPECT_TRUE(dc_layer_tree->GetAttachedToRootFromPreviousFrameForTesting(0));
+  EXPECT_TRUE(dc_layer_tree->GetAttachedToRootFromPreviousFrameForTesting(1));
+  EXPECT_TRUE(dc_layer_tree->GetAttachedToRootFromPreviousFrameForTesting(2));
+  EXPECT_TRUE(dc_layer_tree->GetAttachedToRootFromPreviousFrameForTesting(3));
+  EXPECT_FALSE(dc_layer_tree->GetAttachedToRootFromPreviousFrameForTesting(4));
+  EXPECT_TRUE(dc_layer_tree->GetAttachedToRootFromPreviousFrameForTesting(5));
+#endif  // DCHECK_IS_ON()
+}
+
 class DCompPresenterPixelTest : public DCompPresenterTest {
  public:
   DCompPresenterPixelTest()
