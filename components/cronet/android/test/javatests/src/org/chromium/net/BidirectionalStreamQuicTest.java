@@ -19,6 +19,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.net.CronetTestRule.CronetImplementation;
 import org.chromium.net.CronetTestRule.IgnoreFor;
 
@@ -97,6 +98,7 @@ public class BidirectionalStreamQuicTest {
 
     @Test
     @SmallTest
+    @RequiresRestart("crbug.com/344966604")
     public void testSimplePost() throws Exception {
         CronetImplementation implementationUnderTest = mTestRule.implementationUnderTest();
         String path = "/simple.txt";

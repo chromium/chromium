@@ -32,7 +32,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.library_loader.LibraryLoader;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -63,7 +62,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /** Tests for CustomTabsConnection. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@Batch(Batch.PER_CLASS)
+// TODO(crbug.com/344898996): Failing when batched, batch this again.
 public class CustomTabsConnectionTest {
     private CustomTabsConnection mCustomTabsConnection;
     private static final String URL = "http://www.google.com";
