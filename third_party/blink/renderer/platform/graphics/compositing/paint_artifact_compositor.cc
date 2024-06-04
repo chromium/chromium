@@ -550,8 +550,8 @@ void PaintArtifactCompositor::LayerizeGroup(
             chunk_cursor->hit_test_data->scroll_translation.get(),
             ComputeNeedsCompositedScrolling(artifact, chunk_cursor));
       }
-      pending_layers_.emplace_back(artifact, *chunk_cursor);
-      pending_layers_.back().SetCompositingType(
+      pending_layers_.emplace_back(
+          artifact, *chunk_cursor,
           ChunkCompositingType(artifact, *chunk_cursor));
       ++chunk_cursor;
       // force_draws_content doesn't apply to pending layers that require own
@@ -621,7 +621,7 @@ void PaintArtifactCompositor::LayerizeGroup(
         break;
       }
       if (new_layer.MightOverlap(candidate_layer)) {
-        new_layer.SetCompositingType(PendingLayer::kOverlap);
+        new_layer.SetCompositingTypeToOverlap();
         break;
       }
     }
