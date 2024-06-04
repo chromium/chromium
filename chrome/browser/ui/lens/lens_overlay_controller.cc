@@ -194,10 +194,6 @@ LensOverlayController::LensOverlayController(
       &LensOverlayController::WillDetach, weak_factory_.GetWeakPtr())));
   search_bubble_controller_ =
       std::make_unique<lens::LensSearchBubbleController>(this);
-
-#if BUILDFLAG(IS_MAC)
-  corner_radii_ = {0, 0, 10, 10};
-#endif
 }
 
 LensOverlayController::~LensOverlayController() {
@@ -984,7 +980,7 @@ void LensOverlayController::ShowOverlayWidget() {
       views::Widget::GetWidgetForNativeWindow(top_level_native_window);
   overlay_widget_->StackAboveWidget(top_level_widget);
 
-  SetWebViewCornerRadii(corner_radii_);
+  SetWebViewCornerRadii(initial_corner_radii_);
 
   overlay_widget_->Show();
   // The overlay needs to be focused on show to immediately begin
@@ -1021,14 +1017,15 @@ void LensOverlayController::UpdateCornerRadiusForSidePanel() {
   const float corner_radius =
       browser_view->GetLayoutProvider()->GetCornerRadiusMetric(
           views::ShapeContextTokens::kSidePanelPageContentRadius);
+  gfx::RoundedCornersF new_radii = initial_corner_radii_;
   if (is_right_aligned) {
-    corner_radii_.set_upper_right(corner_radius);
-    corner_radii_.set_lower_right(0);
+    new_radii.set_upper_right(corner_radius);
+    new_radii.set_lower_right(0);
   } else {
-    corner_radii_.set_upper_left(corner_radius);
-    corner_radii_.set_lower_left(0);
+    new_radii.set_upper_left(corner_radius);
+    new_radii.set_lower_left(0);
   }
-  SetWebViewCornerRadii(corner_radii_);
+  SetWebViewCornerRadii(new_radii);
 }
 
 void LensOverlayController::CloseUIPart2(

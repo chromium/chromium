@@ -644,8 +644,12 @@ class LensOverlayController : public LensSearchboxClient,
   // Tracks the internal state machine.
   State state_ = State::kOff;
 
-  // The current corner radii set to the web view.
-  gfx::RoundedCornersF corner_radii_ = {0, 0, 0, 0};
+// The initial web view corner radii depending on the OS.
+#if BUILDFLAG(IS_MAC)
+  gfx::RoundedCornersF initial_corner_radii_ = {0, 0, 10, 10};
+#else
+  gfx::RoundedCornersF initial_corner_radii_ = {0, 0, 0, 0};
+#endif
 
   // Controller for showing the page screenshot permission bubble.
   std::unique_ptr<lens::LensPermissionBubbleController>
