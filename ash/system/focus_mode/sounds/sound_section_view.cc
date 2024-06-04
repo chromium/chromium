@@ -114,8 +114,11 @@ void SoundSectionView::CreatePlaylistViewsContainer(
     if (i > 0) {
       auto* spacer_view =
           playlist_views_container_->AddChildView(CreateSpacerView());
-      spacer_view->SetProperty(views::kFlexBehaviorKey,
-                               views::FlexSpecification().WithWeight(1));
+      spacer_view->SetProperty(
+          views::kFlexBehaviorKey,
+          views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
+                                   views::MaximumFlexSizeRule::kUnbounded)
+              .WithWeight(1));
     }
 
     // `FocusModeSoundsController` is owned by `FocusModeController` which

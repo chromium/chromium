@@ -34,6 +34,9 @@ PlaylistView::PlaylistView(focus_mode_util::SoundType type,
   SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kCenter);
   SetBetweenChildSpacing(kSinglePlaylistViewSpacingBetweenChild);
 
+  // TODO(crbug.com/40232718): See View::SetLayoutManagerUseConstrainedSpace.
+  SetLayoutManagerUseConstrainedSpace(false);
+
   playlist_image_button_ =
       AddChildView(std::make_unique<PlaylistImageButton>());
   playlist_image_button_->SetCallback(base::BindRepeating(
