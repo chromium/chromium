@@ -16828,6 +16828,7 @@ from previous Chrome versions.
   <int value="-1529631789" label="enable-unsafe-fast-js-calls"/>
   <int value="-1529140321" label="ReadLater:enabled"/>
   <int value="-1528455406" label="OmniboxPedalSuggestions:enabled"/>
+  <int value="-1527783093" label="VideoPictureInPictureMinimizeButton:enabled"/>
   <int value="-1527094429" label="ArcRtVcpuQuadCore:disabled"/>
   <int value="-1526934250" label="BorealisProvision:disabled"/>
   <int value="-1525129540"
@@ -24355,6 +24356,7 @@ from previous Chrome versions.
   <int value="1739507233" label="EarlyEstablishGpuChannel:enabled"/>
   <int value="1739782037" label="LinkDoctorDeprecationAndroid:enabled"/>
   <int value="1739919484" label="ZstdContentEncoding:disabled"/>
+  <int value="1740660782" label="VideoPictureInPictureMinimizeButton:disabled"/>
   <int value="1741751043"
       label="MinorModeRestrictionsForHistorySyncOptIn:enabled"/>
   <int value="1741851701" label="ReadAnythingReadAloud:disabled"/>

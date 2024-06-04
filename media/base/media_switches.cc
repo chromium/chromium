@@ -871,6 +871,11 @@ BASE_FEATURE(kVideoBlitColorAccuracy,
              "video-blit-color-accuracy",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Displays a minimize button on video picture-in-picture windows.
+BASE_FEATURE(kVideoPictureInPictureMinimizeButton,
+             "VideoPictureInPictureMinimizeButton",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_APPLE)
 // Use VideoToolbox for AV1 hardware decoding.
 // Owner: dalecurtis@chromium.org, sandersd@chromium.org

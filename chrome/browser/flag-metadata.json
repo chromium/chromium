@@ -8821,6 +8821,11 @@
     "expiry_milestone": 129
   },
   {
+    "name": "video-picture-in-picture-minimize-button",
+    "owners": [ "steimel@chromium.org", "media-dev@chromium.org" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "view-transition-on-navigation",
     "owners": [ "khushalsagar@chromium.org", "vmpstr@chromium.org", "chrishtr@chromium.org" ],
     "expiry_milestone" : 130

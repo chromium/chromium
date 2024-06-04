@@ -27,6 +27,7 @@ class FrameSinkId;
 class BackToTabLabelButton;
 class CloseImageButton;
 class HangUpButton;
+class OverlayWindowMinimizeButton;
 class PlaybackImageButton;
 class ResizeHandleButton;
 class SimpleOverlayWindowImageButton;
@@ -145,6 +146,7 @@ class VideoOverlayWindowViews
   gfx::Rect GetBackToTabControlsBounds();
   gfx::Rect GetSkipAdControlsBounds();
   gfx::Rect GetCloseControlsBounds();
+  gfx::Rect GetMinimizeControlsBounds();
   gfx::Rect GetPlayPauseControlsBounds();
   gfx::Rect GetNextTrackControlsBounds();
   gfx::Rect GetPreviousTrackControlsBounds();
@@ -166,6 +168,7 @@ class VideoOverlayWindowViews
   SimpleOverlayWindowImageButton* previous_slide_controls_view_for_testing()
       const;
   CloseImageButton* close_button_for_testing() const;
+  OverlayWindowMinimizeButton* minimize_button_for_testing() const;
   gfx::Point close_image_position_for_testing() const;
   gfx::Point resize_handle_position_for_testing() const;
   PlaybackState playback_state_for_testing() const;
@@ -251,7 +254,8 @@ class VideoOverlayWindowViews
     kHangUp,
     kPreviousSlide,
     kNextSlide,
-    kMaxValue = kNextSlide
+    kMinimize,
+    kMaxValue = kMinimize
   };
   void RecordButtonPressed(OverlayWindowControl);
   void RecordTapGesture(OverlayWindowControl);
@@ -321,6 +325,7 @@ class VideoOverlayWindowViews
   raw_ptr<views::View> controls_scrim_view_ = nullptr;
   raw_ptr<views::View> controls_container_view_ = nullptr;
   raw_ptr<CloseImageButton> close_controls_view_ = nullptr;
+  raw_ptr<OverlayWindowMinimizeButton> minimize_button_ = nullptr;
   raw_ptr<BackToTabLabelButton> back_to_tab_label_button_ = nullptr;
   raw_ptr<SimpleOverlayWindowImageButton> previous_track_controls_view_ =
       nullptr;

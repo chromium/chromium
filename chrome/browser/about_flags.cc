@@ -9565,6 +9565,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutoPictureInPictureForVideoPlaybackDescription,
      kOsMac | kOsWin | kOsLinux | kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(media::kAutoPictureInPictureForVideoPlayback)},
+
+    {"video-picture-in-picture-minimize-button",
+     flag_descriptions::kVideoPictureInPictureMinimizeButtonName,
+     flag_descriptions::kVideoPictureInPictureMinimizeButtonDescription,
+     kOsMac | kOsWin | kOsLinux | kOsCrOS | kOsLacros,
+     FEATURE_VALUE_TYPE(media::kVideoPictureInPictureMinimizeButton)},
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_CHROMEOS)
 

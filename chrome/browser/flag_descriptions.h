@@ -2114,6 +2114,9 @@ extern const char kVcLightIntensityDescription[];
 extern const char kVcWebApiName[];
 extern const char kVcWebApiDescription[];
 
+extern const char kVideoPictureInPictureMinimizeButtonName[];
+extern const char kVideoPictureInPictureMinimizeButtonDescription[];
+
 extern const char kViewportSegmentsName[];
 extern const char kViewportSegmentsDescription[];
 
