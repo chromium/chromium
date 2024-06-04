@@ -78,6 +78,8 @@ found in the LICENSE file.
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
+        android:ellipsize="end"
+        android:singleLine="true"
         android:textAppearance="@style/TextAppearance.TextMedium.Secondary"/>
 
 </LinearLayout>

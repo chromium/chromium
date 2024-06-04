@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.plus_addresses;
 
 import android.app.Activity;
+import android.graphics.Typeface;
 import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
 import android.text.style.TextAppearanceSpan;
@@ -88,6 +89,9 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
 
         TextView proposedPlusAddressView = mContentView.findViewById(R.id.proposed_plus_address);
         proposedPlusAddressView.setText(proposedPlusAddressPlaceholder);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PLUS_ADDRESS_UI_REDESIGN)) {
+            proposedPlusAddressView.setTypeface(Typeface.MONOSPACE);
+        }
 
         NoUnderlineClickableSpan errorReportLink =
                 new NoUnderlineClickableSpan(
