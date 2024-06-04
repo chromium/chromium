@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.view.View;
 
@@ -25,7 +26,6 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.InsetObserver;
-import org.chromium.ui.InsetObserverSupplier;
 import org.chromium.ui.base.WindowAndroid;
 
 /** Unit tests for {@link DeferredIMEWindowInsetApplicationCallback}. */
@@ -44,11 +44,11 @@ public class DeferredIMEWindowInsetApplicationCallbackTest {
     @Mock private Runnable mUpdateRunnable;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private View mView;
-    @Mock InsetObserver mInsetObserver;
+    @Mock private InsetObserver mInsetObserver;
 
     @Before
     public void setUp() {
-        InsetObserverSupplier.setInstanceForTesting(mInsetObserver);
+        when(mWindowAndroid.getInsetObserver()).thenReturn(mInsetObserver);
         mAnimation = new WindowInsetsAnimationCompat(WindowInsetsCompat.Type.ime(), null, 160);
         mAnimation2 = new WindowInsetsAnimationCompat(WindowInsetsCompat.Type.ime(), null, 160);
         mCallback = new DeferredIMEWindowInsetApplicationCallback(mUpdateRunnable);

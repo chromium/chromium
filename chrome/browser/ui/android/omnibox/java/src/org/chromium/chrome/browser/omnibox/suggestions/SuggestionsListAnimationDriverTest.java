@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import androidx.core.view.WindowInsetsAnimationCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -22,7 +23,6 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.MathUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.InsetObserver;
-import org.chromium.ui.InsetObserverSupplier;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -47,7 +47,7 @@ public class SuggestionsListAnimationDriverTest {
     @Before
     public void setUp() {
         mTranslation = 0.0f;
-        InsetObserverSupplier.setInstanceForTesting(mInsetObserver);
+        when(mWindowAndroid.getInsetObserver()).thenReturn(mInsetObserver);
         mImeAnimation = new WindowInsetsAnimationCompat(WindowInsetsCompat.Type.ime(), null, 160);
         mNonImeAnimation =
                 new WindowInsetsAnimationCompat(WindowInsetsCompat.Type.statusBars(), null, 160);
