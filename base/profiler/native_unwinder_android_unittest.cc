@@ -102,8 +102,10 @@ class TestStackCopierDelegate : public StackCopier::Delegate {
 std::vector<Frame> CaptureScenario(
     UnwindScenario* scenario,
     ModuleCache* module_cache,
-    OnceCallback<void(RegisterContext*, uintptr_t, std::vector<Frame>*)>
-        unwind_callback) {
+    OnceCallback<void(UnwinderStateCapture*,
+                      RegisterContext*,
+                      uintptr_t,
+                      std::vector<Frame>*)> unwind_callback) {
   std::vector<Frame> sample;
   WithTargetThread(
       scenario,
@@ -131,7 +133,8 @@ std::vector<Frame> CaptureScenario(
                 module_cache->GetModuleForAddress(
                     RegisterContextInstructionPointer(&thread_context)));
 
-            std::move(unwind_callback).Run(&thread_context, stack_top, &sample);
+            std::move(unwind_callback)
+                .Run(nullptr, &thread_context, stack_top, &sample);
           }));
 
   return sample;
@@ -153,16 +156,17 @@ TEST(NativeUnwinderAndroidTest, PlainFunction) {
       0, &map_delegate, /*is_java_name_hashing_enabled=*/false);
 
   unwinder->Initialize(&module_cache);
-  std::vector<Frame> sample =
-      CaptureScenario(&scenario, &module_cache,
-                      BindLambdaForTesting([&](RegisterContext* thread_context,
-                                               uintptr_t stack_top,
-                                               std::vector<Frame>* sample) {
-                        ASSERT_TRUE(unwinder->CanUnwindFrom(sample->back()));
-                        UnwindResult result = unwinder->TryUnwind(
-                            thread_context, stack_top, sample);
-                        EXPECT_EQ(UnwindResult::kCompleted, result);
-                      }));
+  std::vector<Frame> sample = CaptureScenario(
+      &scenario, &module_cache,
+      BindLambdaForTesting([&](UnwinderStateCapture* capture_state,
+                               RegisterContext* thread_context,
+                               uintptr_t stack_top,
+                               std::vector<Frame>* sample) {
+        ASSERT_TRUE(unwinder->CanUnwindFrom(sample->back()));
+        UnwindResult result = unwinder->TryUnwind(capture_state, thread_context,
+                                                  stack_top, sample);
+        EXPECT_EQ(UnwindResult::kCompleted, result);
+      }));
 
   // Check that all the modules are valid.
   for (const auto& frame : sample)
@@ -192,16 +196,17 @@ TEST(NativeUnwinderAndroidTest, Alloca) {
       0, &map_delegate, /*is_java_name_hashing_enabled=*/false);
 
   unwinder->Initialize(&module_cache);
-  std::vector<Frame> sample =
-      CaptureScenario(&scenario, &module_cache,
-                      BindLambdaForTesting([&](RegisterContext* thread_context,
-                                               uintptr_t stack_top,
-                                               std::vector<Frame>* sample) {
-                        ASSERT_TRUE(unwinder->CanUnwindFrom(sample->back()));
-                        UnwindResult result = unwinder->TryUnwind(
-                            thread_context, stack_top, sample);
-                        EXPECT_EQ(UnwindResult::kCompleted, result);
-                      }));
+  std::vector<Frame> sample = CaptureScenario(
+      &scenario, &module_cache,
+      BindLambdaForTesting([&](UnwinderStateCapture* capture_state,
+                               RegisterContext* thread_context,
+                               uintptr_t stack_top,
+                               std::vector<Frame>* sample) {
+        ASSERT_TRUE(unwinder->CanUnwindFrom(sample->back()));
+        UnwindResult result = unwinder->TryUnwind(capture_state, thread_context,
+                                                  stack_top, sample);
+        EXPECT_EQ(UnwindResult::kCompleted, result);
+      }));
 
   // Check that all the modules are valid.
   for (const auto& frame : sample)
@@ -232,16 +237,17 @@ TEST(NativeUnwinderAndroidTest, OtherLibrary) {
       0, &map_delegate, /*is_java_name_hashing_enabled=*/false);
 
   unwinder->Initialize(&module_cache);
-  std::vector<Frame> sample =
-      CaptureScenario(&scenario, &module_cache,
-                      BindLambdaForTesting([&](RegisterContext* thread_context,
-                                               uintptr_t stack_top,
-                                               std::vector<Frame>* sample) {
-                        ASSERT_TRUE(unwinder->CanUnwindFrom(sample->back()));
-                        UnwindResult result = unwinder->TryUnwind(
-                            thread_context, stack_top, sample);
-                        EXPECT_EQ(UnwindResult::kCompleted, result);
-                      }));
+  std::vector<Frame> sample = CaptureScenario(
+      &scenario, &module_cache,
+      BindLambdaForTesting([&](UnwinderStateCapture* capture_state,
+                               RegisterContext* thread_context,
+                               uintptr_t stack_top,
+                               std::vector<Frame>* sample) {
+        ASSERT_TRUE(unwinder->CanUnwindFrom(sample->back()));
+        UnwindResult result = unwinder->TryUnwind(capture_state, thread_context,
+                                                  stack_top, sample);
+        EXPECT_EQ(UnwindResult::kCompleted, result);
+      }));
 
   // The stack should contain a full unwind.
   ExpectStackContains(sample, {scenario.GetWaitForSampleAddressRange(),
@@ -269,17 +275,18 @@ TEST(NativeUnwinderAndroidTest, ExcludeOtherLibrary) {
       /*is_java_name_hashing_enabled=*/false);
   unwinder->Initialize(&module_cache);
 
-  std::vector<Frame> sample =
-      CaptureScenario(&scenario, &module_cache,
-                      BindLambdaForTesting([&](RegisterContext* thread_context,
-                                               uintptr_t stack_top,
-                                               std::vector<Frame>* sample) {
-                        ASSERT_TRUE(unwinder->CanUnwindFrom(sample->back()));
-                        EXPECT_EQ(UnwindResult::kUnrecognizedFrame,
-                                  unwinder->TryUnwind(thread_context, stack_top,
-                                                      sample));
-                        EXPECT_FALSE(unwinder->CanUnwindFrom(sample->back()));
-                      }));
+  std::vector<Frame> sample = CaptureScenario(
+      &scenario, &module_cache,
+      BindLambdaForTesting([&](UnwinderStateCapture* capture_state,
+                               RegisterContext* thread_context,
+                               uintptr_t stack_top,
+                               std::vector<Frame>* sample) {
+        ASSERT_TRUE(unwinder->CanUnwindFrom(sample->back()));
+        EXPECT_EQ(UnwindResult::kUnrecognizedFrame,
+                  unwinder->TryUnwind(capture_state, thread_context, stack_top,
+                                      sample));
+        EXPECT_FALSE(unwinder->CanUnwindFrom(sample->back()));
+      }));
 
   ExpectStackContains(sample, {scenario.GetWaitForSampleAddressRange()});
   ExpectStackDoesNotContain(sample, {scenario.GetSetupFunctionAddressRange(),
@@ -326,15 +333,16 @@ TEST(NativeUnwinderAndroidTest, ResumeUnwinding) {
 
   std::vector<Frame> sample = CaptureScenario(
       &scenario, &module_cache_for_native,
-      BindLambdaForTesting([&](RegisterContext* thread_context,
+      BindLambdaForTesting([&](UnwinderStateCapture* capture_state,
+                               RegisterContext* thread_context,
                                uintptr_t stack_top,
                                std::vector<Frame>* sample) {
         // |unwinder_for_native| unwinds through native frames, but stops at
         // chrome frames. It might not contain SampleAddressRange.
         ASSERT_TRUE(unwinder_for_native->CanUnwindFrom(sample->back()));
-        EXPECT_EQ(
-            UnwindResult::kUnrecognizedFrame,
-            unwinder_for_native->TryUnwind(thread_context, stack_top, sample));
+        EXPECT_EQ(UnwindResult::kUnrecognizedFrame,
+                  unwinder_for_native->TryUnwind(capture_state, thread_context,
+                                                 stack_top, sample));
         EXPECT_FALSE(unwinder_for_native->CanUnwindFrom(sample->back()));
 
         ExpectStackDoesNotContain(*sample,
@@ -345,9 +353,9 @@ TEST(NativeUnwinderAndroidTest, ResumeUnwinding) {
         // |unwinder_for_chrome| unwinds through Chrome frames, but stops at
         // |other_library|. It won't contain SetupFunctionAddressRange.
         ASSERT_TRUE(unwinder_for_chrome->CanUnwindFrom(sample->back()));
-        EXPECT_EQ(
-            UnwindResult::kUnrecognizedFrame,
-            unwinder_for_chrome->TryUnwind(thread_context, stack_top, sample));
+        EXPECT_EQ(UnwindResult::kUnrecognizedFrame,
+                  unwinder_for_chrome->TryUnwind(capture_state, thread_context,
+                                                 stack_top, sample));
         EXPECT_FALSE(unwinder_for_chrome->CanUnwindFrom(sample->back()));
         EXPECT_LT(prior_stack_size, sample->size());
         ExpectStackContains(*sample, {scenario.GetWaitForSampleAddressRange()});
@@ -357,9 +365,9 @@ TEST(NativeUnwinderAndroidTest, ResumeUnwinding) {
 
         // |unwinder_for_all| should complete unwinding through all frames.
         ASSERT_TRUE(unwinder_for_all->CanUnwindFrom(sample->back()));
-        EXPECT_EQ(
-            UnwindResult::kCompleted,
-            unwinder_for_all->TryUnwind(thread_context, stack_top, sample));
+        EXPECT_EQ(UnwindResult::kCompleted,
+                  unwinder_for_all->TryUnwind(capture_state, thread_context,
+                                              stack_top, sample));
       }));
 
   // The stack should contain a full unwind.
@@ -389,16 +397,17 @@ TEST(NativeUnwinderAndroidTest, JavaFunction) {
       0, &map_delegate, /*is_java_name_hashing_enabled=*/false);
 
   unwinder->Initialize(&module_cache);
-  std::vector<Frame> sample =
-      CaptureScenario(&scenario, &module_cache,
-                      BindLambdaForTesting([&](RegisterContext* thread_context,
-                                               uintptr_t stack_top,
-                                               std::vector<Frame>* sample) {
-                        ASSERT_TRUE(unwinder->CanUnwindFrom(sample->back()));
-                        UnwindResult result = unwinder->TryUnwind(
-                            thread_context, stack_top, sample);
-                        EXPECT_EQ(UnwindResult::kCompleted, result);
-                      }));
+  std::vector<Frame> sample = CaptureScenario(
+      &scenario, &module_cache,
+      BindLambdaForTesting([&](UnwinderStateCapture* capture_state,
+                               RegisterContext* thread_context,
+                               uintptr_t stack_top,
+                               std::vector<Frame>* sample) {
+        ASSERT_TRUE(unwinder->CanUnwindFrom(sample->back()));
+        UnwindResult result = unwinder->TryUnwind(capture_state, thread_context,
+                                                  stack_top, sample);
+        EXPECT_EQ(UnwindResult::kCompleted, result);
+      }));
 
   // Check that all the modules are valid.
   for (const auto& frame : sample)

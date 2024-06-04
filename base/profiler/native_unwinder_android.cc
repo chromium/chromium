@@ -168,9 +168,11 @@ bool NativeUnwinderAndroid::CanUnwindFrom(const Frame& current_frame) const {
              exclude_module_with_base_address_;
 }
 
-UnwindResult NativeUnwinderAndroid::TryUnwind(RegisterContext* thread_context,
-                                              uintptr_t stack_top,
-                                              std::vector<Frame>* stack) {
+UnwindResult NativeUnwinderAndroid::TryUnwind(
+    UnwinderStateCapture* capture_state,
+    RegisterContext* thread_context,
+    uintptr_t stack_top,
+    std::vector<Frame>* stack) {
   auto regs = CreateFromRegisterContext(thread_context);
   DCHECK(regs);
   unwindstack::ArchEnum arch = regs->Arch();
