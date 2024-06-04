@@ -282,11 +282,12 @@ SiteInfo SiteInfo::CreateInternal(const IsolationContext& isolation_context,
   bool requires_origin_keyed_process = false;
   if (SiteIsolationPolicy::IsProcessIsolationForOriginAgentClusterEnabled()) {
     auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
+    url::Origin origin =
+        GetPossiblyOverriddenOriginFromUrl(url_info.url, url_info.origin);
     requires_origin_keyed_process =
         policy
-            ->DetermineOriginAgentClusterIsolation(
-                isolation_context, url::Origin::Create(url_info.url),
-                requested_isolation_state)
+            ->DetermineOriginAgentClusterIsolation(isolation_context, origin,
+                                                   requested_isolation_state)
             .requires_origin_keyed_process();
   }
   // If after the call to `DetermineOriginAgentClusterIsolation` the returned
