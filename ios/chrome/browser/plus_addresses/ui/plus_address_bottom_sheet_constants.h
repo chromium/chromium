@@ -40,6 +40,12 @@ extern const CGFloat kBrandedImageWidth;
 // stack and is used to prevent content being hidden under buttons border.
 extern const CGFloat kScrollViewBottomInsets;
 
+// The table view corner radius.
+extern const CGFloat kTableViewCellCornerRadius;
+
+// The cell height in the table view.
+extern const CGFloat kTableViewCellHeight;
+
 // Branding icon view size.
 extern const CGFloat kBrandingIconContainerViewSize;
 

@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/plus_addresses/ui/plus_address_bottom_sheet_delegate.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_image_item.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -30,6 +31,9 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
+
+static NSString* const kImageCellIdentifier = @"ImageCell";
+
 // Generates the description to be displayed in the modal, which includes an
 // attributed string that links to the user's myaccount page.
 NSAttributedString* DescriptionMessage() {
@@ -114,6 +118,8 @@ UIImage* PlusAddressesLogo() {
 @interface PlusAddressBottomSheetViewController () <
     ConfirmationAlertActionHandler,
     UIAdaptivePresentationControllerDelegate,
+    UITableViewDataSource,
+    UITableViewDelegate,
     UITextViewDelegate>
 @end
 
@@ -125,6 +131,10 @@ UIImage* PlusAddressesLogo() {
   __weak id<BrowserCoordinatorCommands> _browserCoordinatorHandler;
   // The label that will display the reserved plus address, once it is ready.
   UILabel* _reservedPlusAddressLabel;
+  // The reserved plus address label, once it is ready.
+  NSString* _reservedPlusAddress;
+  // The table view that displays the reserved plus address for confirmation.
+  UITableView* _reservedPlusAddressTableView;
   // The description of plus address that will be displayed on the bottom sheet.
   UITextView* _description;
   // The error message with error report instruction that will be shown when
@@ -137,6 +147,9 @@ UIImage* PlusAddressesLogo() {
   // Error that occurred while bottom sheet is showing.
   std::optional<plus_addresses::metrics::PlusAddressModalCompletionStatus>
       _bottomSheetErrorStatus;
+  // TODO(crbug.com/343153116): Cleanup once feature is enabled.
+  // Yes, if the feature flag `kPlusAddressUIRedesign` is enabled.
+  BOOL _plusAddressUIRedesignEnabled;
 }
 
 - (instancetype)initWithDelegate:(id<PlusAddressBottomSheetDelegate>)delegate
@@ -146,6 +159,9 @@ UIImage* PlusAddressesLogo() {
   if (self) {
     _delegate = delegate;
     _browserCoordinatorHandler = browserCoordinatorHandler;
+    _reservedPlusAddress = @"";
+    _plusAddressUIRedesignEnabled = base::FeatureList::IsEnabled(
+        plus_addresses::features::kPlusAddressUIRedesign);
   }
   return self;
 }
@@ -165,7 +181,8 @@ UIImage* PlusAddressesLogo() {
     self.imageHasFixedSize = YES;
   }
 
-  self.customScrollViewBottomInsets = kScrollViewBottomInsets;
+  self.customScrollViewBottomInsets =
+      _plusAddressUIRedesignEnabled ? 0 : kScrollViewBottomInsets;
   self.titleString = l10n_util::GetNSString(IDS_PLUS_ADDRESS_MODAL_TITLE);
   self.primaryActionString =
       l10n_util::GetNSString(IDS_PLUS_ADDRESS_MODAL_OK_TEXT);
@@ -179,15 +196,26 @@ UIImage* PlusAddressesLogo() {
   self.topAlignedLayout = YES;
   self.customSpacingBeforeImageIfNoNavigationBar = kBeforeImageTopMargin;
   self.customSpacingAfterImage = kAfterImageMargin;
-  // Set up the label that will indicate the reserved plus address to the user.
-  _reservedPlusAddressLabel = [self reservedPlusAddressView:@""];
+  if (_plusAddressUIRedesignEnabled) {
+    // Set up the view that will indicate the reserved plus address to the user
+    // for confirmation.
+    _reservedPlusAddressTableView = [self reservedPlusAddressView];
+  } else {
+    // Set up the label that will indicate the reserved plus address to the
+    // user.
+    _reservedPlusAddressLabel = [self reservedPlusAddressView:@""];
+  }
+
   NSString* primaryEmailAddress = [_delegate primaryEmailAddress];
   UILabel* primaryAddressLabel =
       [self primaryEmailAddressView:primaryEmailAddress];
   _description = [self descriptionView:DescriptionMessage()];
   _errorMessage = [self errorMessageViewWithMessage:ErrorMessage()];
   UIStackView* verticalStack = [[UIStackView alloc] initWithArrangedSubviews:@[
-    _description, primaryAddressLabel, _reservedPlusAddressLabel, _errorMessage
+    _description, primaryAddressLabel,
+    (_plusAddressUIRedesignEnabled ? _reservedPlusAddressTableView
+                                   : _reservedPlusAddressLabel),
+    _errorMessage
   ]];
   _errorMessage.hidden = YES;
   verticalStack.axis = UILayoutConstraintAxisVertical;
@@ -235,7 +263,12 @@ UIImage* PlusAddressesLogo() {
 
 - (void)didReservePlusAddress:(NSString*)plusAddress {
   self.primaryActionButton.enabled = YES;
-  _reservedPlusAddressLabel.text = plusAddress;
+  if (_plusAddressUIRedesignEnabled) {
+    _reservedPlusAddress = plusAddress;
+    [_reservedPlusAddressTableView reloadData];
+  } else {
+    _reservedPlusAddressLabel.text = plusAddress;
+  }
 }
 
 - (void)didConfirmPlusAddress {
@@ -253,7 +286,13 @@ UIImage* PlusAddressesLogo() {
   // step, disable submission of the modal.
   _bottomSheetErrorStatus = status;
   self.primaryActionButton.enabled = NO;
-  _reservedPlusAddressLabel.hidden = YES;
+
+  if (_plusAddressUIRedesignEnabled) {
+    _reservedPlusAddressTableView.hidden = YES;
+    [_reservedPlusAddressTableView reloadData];
+  } else {
+    _reservedPlusAddressLabel.hidden = YES;
+  }
   _errorMessage.hidden = NO;
   [_activityIndicator stopAnimating];
   // Resize to accommodate error message.
@@ -289,11 +328,38 @@ UIImage* PlusAddressesLogo() {
   [self dismiss];
 }
 
+#pragma mark - UITableViewDataSource
+
+- (NSInteger)tableView:(UITableView*)tableView
+    numberOfRowsInSection:(NSInteger)section {
+  return _plusAddressUIRedesignEnabled && _errorMessage.hidden ? 1 : 0;
+}
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView*)tableView {
+  return _plusAddressUIRedesignEnabled && _errorMessage.hidden ? 1 : 0;
+}
+
+- (UITableViewCell*)tableView:(UITableView*)tableView
+        cellForRowAtIndexPath:(NSIndexPath*)indexPath {
+  TableViewImageCell* cell =
+      [tableView dequeueReusableCellWithIdentifier:kImageCellIdentifier];
+
+  cell.selectionStyle = UITableViewCellSelectionStyleNone;
+  cell.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
+  cell.userInteractionEnabled = NO;
+  // TODO(crbug.com/343153116): Update the image to indicate plus address.
+  cell.imageView.image = PlusAddressesLogo();
+  cell.textLabel.text = _reservedPlusAddress;
+
+  return cell;
+}
+
 #pragma mark - Private
 
 // Configures the reserved address view, which allows the user to understand the
 // plus address they can confirm use of (or not).
 - (UILabel*)reservedPlusAddressView:(NSString*)text {
+  CHECK(!_plusAddressUIRedesignEnabled);
   UILabel* reservedPlusAddressLabel = [[UILabel alloc] init];
   reservedPlusAddressLabel.text = text;
 
@@ -305,6 +371,25 @@ UIImage* PlusAddressesLogo() {
   reservedPlusAddressLabel.numberOfLines = 0;
   reservedPlusAddressLabel.textAlignment = NSTextAlignmentCenter;
   return reservedPlusAddressLabel;
+}
+
+// Configures the reserved address view, which allows the user to understand the
+// plus address they can confirm use of (or not).
+- (UITableView*)reservedPlusAddressView {
+  CHECK(_plusAddressUIRedesignEnabled);
+  UITableView* tableViewContainer =
+      [[UITableView alloc] initWithFrame:CGRectZero];
+  tableViewContainer.rowHeight = kTableViewCellHeight;
+  tableViewContainer.separatorStyle = UITableViewCellSeparatorStyleNone;
+  tableViewContainer.layer.cornerRadius = kTableViewCellCornerRadius;
+  [tableViewContainer registerClass:[TableViewImageCell class]
+             forCellReuseIdentifier:kImageCellIdentifier];
+  tableViewContainer.dataSource = self;
+  tableViewContainer.delegate = self;
+  [tableViewContainer.heightAnchor
+      constraintEqualToConstant:kTableViewCellHeight]
+      .active = YES;
+  return tableViewContainer;
 }
 
 // The primary email address is displayed in a separate view with slightly

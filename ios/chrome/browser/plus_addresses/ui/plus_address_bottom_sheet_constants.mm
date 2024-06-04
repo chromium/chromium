@@ -22,6 +22,10 @@ const CGFloat kBrandedImageWidth = 40;
 
 const CGFloat kScrollViewBottomInsets = 26;
 
+const CGFloat kTableViewCellCornerRadius = 10;
+
+const CGFloat kTableViewCellHeight = 64;
+
 const CGFloat kBrandingIconContainerViewSize = 64;
 
 const CGFloat kBrandingIconContainerViewCornerRadius = 15;
