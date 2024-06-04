@@ -123,7 +123,8 @@ ChromeUserPopulation GetUserPopulationForProfileWithCookieTheftExperiments(
     static const base::NoDestructor<std::vector<const base::Feature*>>
         kCookieTheftExperiments{{
 #if BUILDFLAG(IS_WIN)
-            &features::kLockProfileCookieDatabase
+            &features::kLockProfileCookieDatabase,
+            &features::kUseAppBoundEncryptionProviderForEncryption
 #endif
         }};
 
