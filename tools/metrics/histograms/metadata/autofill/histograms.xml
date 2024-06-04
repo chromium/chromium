@@ -592,6 +592,7 @@ chromium-metrics-reviews@google.com.
     Logs if the filling of a field was accepted even though it had a
     NUMERIC_QUANTITY prediction. This metric is only emitted if the feature to
     grant the heuristic precedence is disabled. Emitted on submission time.
+    Since M127 this stopped including fields filled with autocomplete.
   </summary>
 </histogram>
 

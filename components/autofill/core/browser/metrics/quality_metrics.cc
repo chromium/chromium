@@ -49,6 +49,7 @@ void LogNumericQuantityMetrics(const FormStructure& form) {
     // If there was a collision, log if the NUMERIC_QUANTITY was a false
     // positive since the field was correctly filled.
     if ((field->is_autofilled() || field->previously_autofilled()) &&
+        field->filling_product() != FillingProduct::kAutocomplete &&
         field_has_non_empty_server_prediction &&
         !base::FeatureList::IsEnabled(
             features::kAutofillGivePrecedenceToNumericQuantities)) {
