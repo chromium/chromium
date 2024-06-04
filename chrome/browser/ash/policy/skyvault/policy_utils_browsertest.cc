@@ -115,8 +115,13 @@ IN_PROC_BROWSER_TEST_F(FileSaveDestinationPolicyUtilsBrowserTest,
             GetDownloadsDestination(browser()->profile()));
 }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_ScreenCaptureDestination DISABLED_ScreenCaptureDestination
+#else
+#define MAYBE_ScreenCaptureDestination ScreenCaptureDestination
+#endif
 IN_PROC_BROWSER_TEST_F(FileSaveDestinationPolicyUtilsBrowserTest,
-                       ScreenCaptureDestination) {
+                       MAYBE_ScreenCaptureDestination) {
   EXPECT_EQ(FileSaveDestination::kNotSpecified,
             GetScreenCaptureDestination(browser()->profile()));
 
