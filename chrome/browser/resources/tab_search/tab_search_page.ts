@@ -10,10 +10,10 @@ import 'chrome://resources/cr_elements/mwb_shared_vars.css.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 import './infinite_list.js';
+import './strings.m.js';
 import './tab_search_group_item.js';
 import './tab_search_item.js';
 import './title_item.js';
-import './strings.m.js';
 
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';

@@ -3,27 +3,25 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/cr_icons.css.js';
-import 'chrome://resources/cr_elements/mwb_shared_style.css.js';
 import './strings.m.js';
 import './tab_organization_failure.js';
 import './tab_organization_in_progress.js';
 import './tab_organization_not_started.js';
 import './tab_organization_results.js';
-import './tab_organization_shared_style.css.js';
 
 import {CrFeedbackOption} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {TabOrganizationFailureElement} from './tab_organization_failure.js';
 import type {TabOrganizationInProgressElement} from './tab_organization_in_progress.js';
 import type {TabOrganizationNotStartedElement} from './tab_organization_not_started.js';
-import {getTemplate} from './tab_organization_page.html.js';
+import {getCss} from './tab_organization_page.css.js';
+import {getHtml} from './tab_organization_page.html.js';
 import type {TabOrganizationResultsElement} from './tab_organization_results.js';
 import type {Tab, TabOrganization, TabOrganizationSession} from './tab_search.mojom-webui.js';
-import {TabOrganizationState, UserFeedback} from './tab_search.mojom-webui.js';
+import {TabOrganizationError, TabOrganizationState, UserFeedback} from './tab_search.mojom-webui.js';
 import type {TabSearchApiProxy} from './tab_search_api_proxy.js';
 import {TabSearchApiProxyImpl} from './tab_search_api_proxy.js';
 
@@ -38,50 +36,39 @@ export interface TabOrganizationPageElement {
   };
 }
 
-export class TabOrganizationPageElement extends PolymerElement {
+export class TabOrganizationPageElement extends CrLitElement {
   static get is() {
     return 'tab-organization-page';
   }
 
-  static get properties() {
+  static override get properties() {
     return {
-      state_: Object,
-      session_: Object,
-
-      availableHeight_: {
-        type: Number,
-        value: 0,
-      },
-
-      tabOrganizationStateEnum_: {
-        type: Object,
-        value: TabOrganizationState,
-      },
-
-      showFRE_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('showTabOrganizationFRE'),
-      },
-
-      multiTabOrganization_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('multiTabOrganizationEnabled'),
-      },
+      state_: {type: Number},
+      session_: {type: Object},
+      availableHeight_: {type: Number},
+      showFRE_: {type: Boolean},
+      multiTabOrganization_: {type: Boolean},
     };
   }
 
   private apiProxy_: TabSearchApiProxy = TabSearchApiProxyImpl.getInstance();
   private listenerIds_: number[] = [];
   private state_: TabOrganizationState = TabOrganizationState.kInitializing;
-  private availableHeight_: number;
-  private session_: TabOrganizationSession|null;
-  private showFRE_: boolean;
-  private multiTabOrganization_: boolean;
+  protected availableHeight_: number = 0;
+  protected session_: TabOrganizationSession|null;
+  protected showFRE_: boolean =
+      loadTimeData.getBoolean('showTabOrganizationFRE');
+  protected multiTabOrganization_: boolean =
+      loadTimeData.getBoolean('multiTabOrganizationEnabled');
   private documentVisibilityChangedListener_: () => void;
   private futureState_: TabOrganizationState|null;
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
+  }
+
+  override render() {
+    return getHtml.bind(this)();
   }
 
   constructor() {
@@ -216,43 +203,43 @@ export class TabOrganizationPageElement extends PolymerElement {
     this.futureState_ = null;
   }
 
-  private isState_(state: TabOrganizationState): boolean {
+  protected isState_(state: TabOrganizationState): boolean {
     return this.state_ === state;
   }
 
-  private onSyncClick_() {
+  protected onSyncClick_() {
     this.apiProxy_.triggerSync();
   }
 
-  private onSignInClick_() {
+  protected onSignInClick_() {
     this.apiProxy_.triggerSignIn();
   }
 
-  private onSettingsClick_() {
+  protected onSettingsClick_() {
     this.apiProxy_.openSyncSettings();
   }
 
-  private onOrganizeTabsClick_() {
+  protected onOrganizeTabsClick_() {
     this.apiProxy_.requestTabOrganization();
   }
 
-  private onRejectClick_(event: CustomEvent<{organizationId: number}>) {
+  protected onRejectClick_(event: CustomEvent<{organizationId: number}>) {
     this.apiProxy_.rejectTabOrganization(
         this.session_!.sessionId, event.detail.organizationId);
   }
 
-  private onRejectAllGroupsClick_() {
+  protected onRejectAllGroupsClick_() {
     this.apiProxy_.rejectSession(this.session_!.sessionId);
   }
 
-  private onCreateGroupClick_(
+  protected onCreateGroupClick_(
       event: CustomEvent<{organizationId: number, name: string, tabs: Tab[]}>) {
     this.apiProxy_.acceptTabOrganization(
         this.session_!.sessionId, event.detail.organizationId,
         event.detail.name, event.detail.tabs);
   }
 
-  private onCreateAllGroupsClick_(event: CustomEvent<{
+  protected onCreateAllGroupsClick_(event: CustomEvent<{
     organizations: Array<{organizationId: number, name: string, tabs: Tab[]}>,
   }>) {
     event.detail.organizations.forEach((organization) => {
@@ -262,25 +249,26 @@ export class TabOrganizationPageElement extends PolymerElement {
     });
   }
 
-  private onCheckNow_() {
+  protected onCheckNow_() {
     this.apiProxy_.restartSession();
   }
 
-  private onTipClick_() {
+  protected onTipClick_() {
     this.apiProxy_.startTabGroupTutorial();
   }
 
-  private onRemoveTab_(event: CustomEvent<{organizationId: number, tab: Tab}>) {
+  protected onRemoveTab_(event:
+                             CustomEvent<{organizationId: number, tab: Tab}>) {
     this.apiProxy_.removeTabFromOrganization(
         this.session_!.sessionId, event.detail.organizationId,
         event.detail.tab);
   }
 
-  private onLearnMoreClick_() {
+  protected onLearnMoreClick_() {
     this.apiProxy_.openHelpPage();
   }
 
-  private onFeedback_(event: CustomEvent<{value: CrFeedbackOption}>) {
+  protected onFeedback_(event: CustomEvent<{value: CrFeedbackOption}>) {
     if (!this.session_) {
       return;
     }
@@ -311,6 +299,10 @@ export class TabOrganizationPageElement extends PolymerElement {
       // Show feedback dialog
       this.apiProxy_.triggerFeedback(this.session_.sessionId);
     }
+  }
+
+  protected getSessionError_(): TabOrganizationError {
+    return this.session_?.error || TabOrganizationError.kNone;
   }
 }
 

@@ -1,88 +1,39 @@
-<style include="tab-organization-shared-style">
-  :host {
-    --standard-curve: cubic-bezier(0.2, 0.0, 0, 1.0);
-  }
-
-  tab-organization-not-started,
-  tab-organization-in-progress,
-  tab-organization-results,
-  tab-organization-failure {
-    display: flex;
-  }
-
-  :host(.changed-state) tab-organization-not-started[shown],
-  :host(.changed-state) tab-organization-in-progress[shown],
-  :host(.changed-state) tab-organization-results[shown],
-  :host(.changed-state) tab-organization-failure[shown] {
-    animation: fadeIn 100ms linear 100ms forwards,
-               displayIn 200ms linear forwards,
-               slideIn 250ms var(--standard-curve) forwards;
-  }
-
-  tab-organization-not-started:not([shown]),
-  tab-organization-in-progress:not([shown]),
-  tab-organization-results:not([shown]),
-  tab-organization-failure:not([shown]) {
-    height: 0px;
-    position: absolute;
-    visibility: hidden;
-  }
-
-  :host(.changed-state.from-not-started)
-  tab-organization-not-started:not([shown]),
-  :host(.changed-state.from-in-progress)
-  tab-organization-in-progress:not([shown]),
-  :host(.changed-state.from-success)
-  tab-organization-results:not([shown]),
-  :host(.changed-state.from-failure)
-  tab-organization-failure:not([shown]) {
-    animation: fadeOut 100ms linear forwards,
-               displayOut 200ms linear forwards,
-               slideOut 250ms var(--standard-curve) forwards;
-  }
-
-  #body {
-    margin: var(--mwb-list-item-horizontal-margin);
-  }
-
-  #contents {
-    overflow: hidden;
-  }
-</style>
-
+<!-- #html_wrapper_imports_start
+import {TabOrganizationState} from './tab_search.mojom-webui.js';
+#html_wrapper_imports_end -->
 <div id="contents">
   <div id="body">
     <tab-organization-not-started id="notStarted"
-        shown$="[[isState_(tabOrganizationStateEnum_.kNotStarted, state_)]]"
-        on-sync-click="onSyncClick_"
-        on-sign-in-click="onSignInClick_"
-        on-settings-click="onSettingsClick_"
-        on-organize-tabs-click="onOrganizeTabsClick_"
-        on-learn-more-click="onLearnMoreClick_"
-        show-fre="[[showFRE_]]">
+        ?shown="${this.isState_(TabOrganizationState.kNotStarted)}"
+        @sync-click="${this.onSyncClick_}"
+        @sign-in-click="${this.onSignInClick_}"
+        @settings-click="${this.onSettingsClick_}"
+        @organize-tabs-click="${this.onOrganizeTabsClick_}"
+        @learn-more-click="${this.onLearnMoreClick_}"
+        ?show-fre="${this.showFRE_}">
     </tab-organization-not-started>
     <tab-organization-in-progress id="inProgress"
-        shown$="[[isState_(tabOrganizationStateEnum_.kInProgress, state_)]]">
+        ?shown="${this.isState_(TabOrganizationState.kInProgress)}">
     </tab-organization-in-progress>
     <tab-organization-results id="results"
-        shown$="[[isState_(tabOrganizationStateEnum_.kSuccess, state_)]]"
-        session="[[session_]]"
-        multi-tab-organization="[[multiTabOrganization_]]"
-        available-height="[[availableHeight_]]"
-        on-reject-click="onRejectClick_"
-        on-reject-all-groups-click="onRejectAllGroupsClick_"
-        on-create-group-click="onCreateGroupClick_"
-        on-create-all-groups-click="onCreateAllGroupsClick_"
-        on-remove-tab="onRemoveTab_"
-        on-learn-more-click="onLearnMoreClick_"
-        on-feedback="onFeedback_">
+        ?shown="${this.isState_(TabOrganizationState.kSuccess)}"
+        .session="${this.session_}"
+        ?multi-tab-organization="${this.multiTabOrganization_}"
+        available-height="${this.availableHeight_}"
+        @reject-click="${this.onRejectClick_}"
+        @reject-all-groups-click="${this.onRejectAllGroupsClick_}"
+        @create-group-click="${this.onCreateGroupClick_}"
+        @create-all-groups-click="${this.onCreateAllGroupsClick_}"
+        @remove-tab="${this.onRemoveTab_}"
+        @learn-more-click="${this.onLearnMoreClick_}"
+        @feedback="${this.onFeedback_}">
     </tab-organization-results>
     <tab-organization-failure id="failure"
-        shown$="[[isState_(tabOrganizationStateEnum_.kFailure, state_)]]"
-        show-fre="[[showFRE_]]"
-        error="[[session_.error]]"
-        on-check-now="onCheckNow_"
-        on-tip-click="onTipClick_">
+        ?shown="${this.isState_(TabOrganizationState.kFailure)}"
+        ?show-fre="${this.showFRE_}"
+        .error="${this.getSessionError_()}"
+        @check-now="${this.onCheckNow_}"
+        @tip-click="${this.onTipClick_}">
     </tab-organization-failure>
   </div>
 </div>
