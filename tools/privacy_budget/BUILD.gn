@@ -4,8 +4,5 @@
 
 group("privacy_budget_tools") {
   testonly = true
-  deps = [
-    "blink_apis:blink_apis",
-    "font_indexer:font_indexer",
-  ]
+  deps = [ "font_indexer:font_indexer" ]
 }
