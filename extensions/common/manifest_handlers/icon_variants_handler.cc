@@ -11,6 +11,7 @@
 #include "extensions/common/api/icon_variants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/icons/extension_icon_variants.h"
+#include "extensions/common/icons/extension_icon_variants_diagnostics.h"
 #include "extensions/common/manifest_constants.h"
 
 namespace extensions {
@@ -23,6 +24,26 @@ IconVariantsHandler::~IconVariantsHandler() = default;
 
 namespace keys = manifest_keys;
 using IconVariantsManifestKeys = extensions::api::icon_variants::ManifestKeys;
+
+// extensions::diagnostics::
+using Code = extensions::diagnostics::icon_variants::Code;
+using Severity = extensions::diagnostics::icon_variants::Severity;
+using Feature = extensions::diagnostics::icon_variants::Feature;
+
+namespace {
+void AddInstallWarning(Extension& extension, const std::string& warning) {
+  extension.AddInstallWarning(InstallWarning(warning));
+}
+
+void AddInstallWarningFromCode(Extension& extension, Code code) {
+  auto diagnostic = extensions::diagnostics::icon_variants::GetDiagnosticForID(
+      Feature::kIconVariants, code);
+  if (diagnostic.severity != Severity::kWarning) {
+    return;
+  }
+  AddInstallWarning(extension, diagnostic.message);
+}
+}  // namespace
 
 // static
 bool IconVariantsInfo::HasIconVariants(const Extension* extension) {
@@ -38,6 +59,8 @@ const IconVariantsInfo* IconVariantsInfo::GetIconVariants(
 }
 
 bool IconVariantsHandler::Parse(Extension* extension, std::u16string* error) {
+  DCHECK(extension);
+
   // The `icon_variants` key should be able to be parsed from generated .idl.
   // This only verifies the limited subset of keys supported by
   // json_schema_compiler. The manifest_keys wouldn't contain icon sizes, so
@@ -53,10 +76,10 @@ bool IconVariantsHandler::Parse(Extension* extension, std::u16string* error) {
     // TODO(crbug.com/41419485): Maybe emit `warning`. A problem is that the
     // .idl parser returns false if manifest value doesn't match an .idl enum,
     // but `warning` is empty in that case.
-    extension->AddInstallWarning(InstallWarning("Warning: Failed to parse."));
+    AddInstallWarningFromCode(*extension, Code::kFailedToParse);
   }
 
-  // Convert the input key into a list containing everything, to parse next.
+  // Convert the input key into a list containing everything.
   const base::Value::List* icon_variants_list =
       extension->manifest()->available_values().FindList(keys::kIconVariants);
   if (!icon_variants_list) {
@@ -69,7 +92,7 @@ bool IconVariantsHandler::Parse(Extension* extension, std::u16string* error) {
   std::unique_ptr<ExtensionIconVariants> icon_variants =
       std::make_unique<ExtensionIconVariants>();
   if (!icon_variants->Parse(icon_variants_list, error)) {
-    extension->AddInstallWarning(InstallWarning("Error: Failed to parse."));
+    AddInstallWarningFromCode(*extension, Code::kFailedToParse);
     // TODO(crbug.com/41419485): Use the WECG proposal to determine warn/error.
     return true;
   }

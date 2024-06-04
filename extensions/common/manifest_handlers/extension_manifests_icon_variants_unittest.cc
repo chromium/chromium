@@ -78,14 +78,14 @@ TEST_F(IconVariantsManifestTest, SuccessWithOptionalWarnings) {
     const char* title;
     const char* icon_variants;
   } test_cases[] = {
-      {"Below the minimum.",
+      {"An icon size is below the minimum",
        R"([
             {
-              "15": "15.png",
+              "0": "0.png",
               "16": "16.png",
             }
           ])"},
-      {"Above the maximum.",
+      {"An icon size is above the max",
        R"([
             {
               "2048": "2048.png",
@@ -111,7 +111,11 @@ TEST_F(IconVariantsManifestTest, Errors) {
   static constexpr struct {
     const char* title;
     const char* icon_variants;
-  } test_cases[] = {{"Empty value", "[{}]"}};
+  } test_cases[] = {
+      {"Empty value", "[{}]"},
+      {"Empty array", "[]"},
+      {"Invalid item type", R"(["error"])"},
+  };
   for (const auto& test_case : test_cases) {
     SCOPED_TRACE(base::StringPrintf("Error: '%s'", test_case.title));
     LoadAndExpectError(GetManifestData(test_case.icon_variants),
