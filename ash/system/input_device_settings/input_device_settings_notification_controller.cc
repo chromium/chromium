@@ -14,6 +14,7 @@
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/notification_utils.h"
+#include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/public/cpp/system/anchored_nudge_data.h"
 #include "ash/public/cpp/system/anchored_nudge_manager.h"
 #include "ash/public/cpp/system_tray_client.h"
@@ -1097,6 +1098,9 @@ void InputDeviceSettingsNotificationController::ShowTopRowRewritingNudge() {
           IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_TOP_ROW_NUDGE_DESCRIPTION));
   nudge_data.title_text = l10n_util::GetStringUTF16(
       IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_NUDGE_TITLE);
+  nudge_data.image_model =
+      ui::ResourceBundle::GetSharedInstance().GetThemedLottieImageNamed(
+          IDR_KEYBOARD_FN_KEY_NUDGE_IMAGE);
 
   AnchoredNudgeManager::Get()->Show(nudge_data);
 }
@@ -1168,7 +1172,9 @@ void InputDeviceSettingsNotificationController::ShowSixPackKeyRewritingNudge(
   std::vector<ui::KeyboardCode> keyboard_codes = {ui::VKEY_FUNCTION};
   InsertSixPackShortcutKeyboardCodes(key_code, keyboard_codes);
   nudge_data.keyboard_codes = std::move(keyboard_codes);
-
+  nudge_data.image_model =
+      ui::ResourceBundle::GetSharedInstance().GetThemedLottieImageNamed(
+          IDR_KEYBOARD_FN_KEY_NUDGE_IMAGE);
   AnchoredNudgeManager::Get()->Show(nudge_data);
 }
 
@@ -1203,6 +1209,9 @@ void InputDeviceSettingsNotificationController::ShowCapsLockRewritingNudge() {
   nudge_data.title_text = l10n_util::GetStringUTF16(
       IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_NUDGE_TITLE);
   nudge_data.keyboard_codes = {ui::VKEY_FUNCTION, ui::VKEY_RIGHT_ALT};
+  nudge_data.image_model =
+      ui::ResourceBundle::GetSharedInstance().GetThemedLottieImageNamed(
+          IDR_KEYBOARD_FN_KEY_NUDGE_IMAGE);
 
   AnchoredNudgeManager::Get()->Show(nudge_data);
 }
