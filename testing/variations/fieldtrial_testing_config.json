@@ -22706,7 +22706,7 @@
             ]
         }
     ],
-    "V8SingleThreadedGCInBackground": [
+    "V8SingleThreadedGCInBackgroundVariants": [
         {
             "platforms": [
                 "android",
@@ -22723,6 +22723,30 @@
                     "name": "Enabled",
                     "enable_features": [
                         "V8SingleThreadedGCInBackground"
+                    ],
+                    "disable_features": [
+                        "V8SingleThreadedGCInBackgroundNoIncrementalMarking",
+                        "V8SingleThreadedGCInBackgroundParallelPause"
+                    ]
+                },
+                {
+                    "name": "ParallelPause",
+                    "enable_features": [
+                        "V8SingleThreadedGCInBackground",
+                        "V8SingleThreadedGCInBackgroundParallelPause"
+                    ],
+                    "disable_features": [
+                        "V8SingleThreadedGCInBackgroundNoIncrementalMarking"
+                    ]
+                },
+                {
+                    "name": "NoIncrementalMarking",
+                    "enable_features": [
+                        "V8SingleThreadedGCInBackground",
+                        "V8SingleThreadedGCInBackgroundNoIncrementalMarking"
+                    ],
+                    "disable_features": [
+                        "V8SingleThreadedGCInBackgroundParallelPause"
                     ]
                 }
             ]
