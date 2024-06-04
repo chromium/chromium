@@ -7,7 +7,7 @@ import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 
 import {createCustomEvent} from '../utils/event_utils.js';
 import {getDestinationProvider} from '../utils/mojo_data_providers.js';
-import {Capabilities, type DestinationProvider, SessionContext} from '../utils/print_preview_cros_app_types.js';
+import {Capabilities, DestinationProviderCompositeInterface, SessionContext} from '../utils/print_preview_cros_app_types.js';
 
 import {DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED, DestinationManager} from './destination_manager.js';
 
@@ -40,7 +40,7 @@ export class CapabilitiesManager extends EventTarget {
   }
 
   // Non-static properties:
-  private destinationProvider: DestinationProvider|null;
+  private destinationProvider: DestinationProviderCompositeInterface|null;
   private sessionContext: SessionContext;
   private eventTracker = new EventTracker();
   private destinationManager: DestinationManager =

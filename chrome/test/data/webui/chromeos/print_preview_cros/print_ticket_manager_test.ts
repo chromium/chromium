@@ -6,6 +6,7 @@ import 'chrome://os-print/js/data/print_ticket_manager.js';
 
 import {PDF_DESTINATION} from 'chrome://os-print/js/data/destination_constants.js';
 import {DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED, DestinationManager} from 'chrome://os-print/js/data/destination_manager.js';
+import {DestinationProviderComposite} from 'chrome://os-print/js/data/destination_provider_composite.js';
 import {PRINT_REQUEST_FINISHED_EVENT, PRINT_REQUEST_STARTED_EVENT, PRINT_TICKET_MANAGER_SESSION_INITIALIZED, PRINT_TICKET_MANAGER_TICKET_CHANGED, PrintTicketManager} from 'chrome://os-print/js/data/print_ticket_manager.js';
 import {DEFAULT_PARTIAL_PRINT_TICKET} from 'chrome://os-print/js/data/ticket_constants.js';
 import {FakeDestinationProvider} from 'chrome://os-print/js/fakes/fake_destination_provider.js';
@@ -44,7 +45,9 @@ suite('PrintTicketManager', () => {
     mockTimer.install();
     printPreviewPageHandler =
         getPrintPreviewPageHandler() as FakePrintPreviewPageHandler;
-    destinationProvider = getDestinationProvider() as FakeDestinationProvider;
+    destinationProvider =
+        (getDestinationProvider() as DestinationProviderComposite)
+            .fakeDestinationProvider;
   });
 
   teardown(() => {

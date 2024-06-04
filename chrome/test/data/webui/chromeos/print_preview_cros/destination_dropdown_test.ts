@@ -6,10 +6,10 @@ import 'chrome://os-print/js/destination_dropdown.js';
 
 import {PDF_DESTINATION} from 'chrome://os-print/js/data/destination_constants.js';
 import {DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED, DESTINATION_MANAGER_DESTINATIONS_CHANGED, DESTINATION_MANAGER_SESSION_INITIALIZED, DestinationManager} from 'chrome://os-print/js/data/destination_manager.js';
+import {DestinationProviderComposite} from 'chrome://os-print/js/data/destination_provider_composite.js';
 import {DestinationDropdownElement} from 'chrome://os-print/js/destination_dropdown.js';
 import {DESTINATION_DROPDOWN_DROPDOWN_DISABLED_CHANGED, DESTINATION_DROPDOWN_UPDATE_DESTINATIONS, DESTINATION_DROPDOWN_UPDATE_SELECTED_DESTINATION, DestinationDropdownController} from 'chrome://os-print/js/destination_dropdown_controller.js';
 import {DestinationRowElement} from 'chrome://os-print/js/destination_row.js';
-import {type FakeDestinationProvider} from 'chrome://os-print/js/fakes/fake_destination_provider.js';
 import {FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL} from 'chrome://os-print/js/fakes/fake_print_preview_page_handler.js';
 import {createCustomEvent} from 'chrome://os-print/js/utils/event_utils.js';
 import {getDestinationProvider} from 'chrome://os-print/js/utils/mojo_data_providers.js';
@@ -238,7 +238,8 @@ suite('DestinationDropdown', () => {
         // Simulate update from destination observer appends a new destination
         // to the list of destinations in dropdown.
         const destinationProvider =
-            getDestinationProvider() as FakeDestinationProvider;
+            (getDestinationProvider() as DestinationProviderComposite)
+                .fakeDestinationProvider;
         const addedDestination = createTestDestination();
         destinationProvider.setDestinationsChangesData([addedDestination]);
         const updateContentEvent = eventToPromise(

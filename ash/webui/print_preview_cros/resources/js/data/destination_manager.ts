@@ -7,7 +7,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 
 import {createCustomEvent} from '../utils/event_utils.js';
 import {getDestinationProvider} from '../utils/mojo_data_providers.js';
-import {Destination, DestinationProvider, FakeDestinationObserverInterface, SessionContext} from '../utils/print_preview_cros_app_types.js';
+import {Destination, DestinationProviderCompositeInterface, FakeDestinationObserverInterface, SessionContext} from '../utils/print_preview_cros_app_types.js';
 import {isValidDestination} from '../utils/validation_utils.js';
 
 import {PDF_DESTINATION} from './destination_constants.js';
@@ -58,7 +58,7 @@ export class DestinationManager extends EventTarget implements
   }
 
   // Non-static properties:
-  private destinationProvider: DestinationProvider;
+  private destinationProvider: DestinationProviderCompositeInterface;
   private destinations: Destination[] = [];
   // Cache used for constant lookup of destinations by key.
   private destinationCache: Map<string, Destination> = new Map();

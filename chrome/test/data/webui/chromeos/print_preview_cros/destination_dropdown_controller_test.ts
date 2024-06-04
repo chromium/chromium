@@ -6,6 +6,7 @@ import 'chrome://os-print/js/destination_dropdown_controller.js';
 
 import {PDF_DESTINATION} from 'chrome://os-print/js/data/destination_constants.js';
 import {DESTINATION_MANAGER_ACTIVE_DESTINATION_CHANGED, DESTINATION_MANAGER_DESTINATIONS_CHANGED, DestinationManager} from 'chrome://os-print/js/data/destination_manager.js';
+import {DestinationProviderComposite} from 'chrome://os-print/js/data/destination_provider_composite.js';
 import {PrintTicketManager} from 'chrome://os-print/js/data/print_ticket_manager.js';
 import {DESTINATION_DROPDOWN_UPDATE_DESTINATIONS, DESTINATION_DROPDOWN_UPDATE_SELECTED_DESTINATION, DestinationDropdownController} from 'chrome://os-print/js/destination_dropdown_controller.js';
 import {FakeDestinationProvider} from 'chrome://os-print/js/fakes/fake_destination_provider.js';
@@ -38,7 +39,8 @@ suite('DestinationDropdownController', () => {
 
     resetDataManagersAndProviders();
     fakeDestinationProvider =
-        getDestinationProvider() as FakeDestinationProvider;
+        (getDestinationProvider() as DestinationProviderComposite)
+            .fakeDestinationProvider;
     fakeDestinationProvider.setTestDelay(testDelay);
     destinationManager = DestinationManager.getInstance();
     printTicketManager = PrintTicketManager.getInstance();

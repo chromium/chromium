@@ -4,10 +4,10 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 
-import {FakeDestinationProvider} from '../fakes/fake_destination_provider.js';
+import {DestinationProviderComposite} from '../data/destination_provider_composite.js';
 import {FakePrintPreviewPageHandler} from '../fakes/fake_print_preview_page_handler.js';
 
-import {DestinationProvider, type PrintPreviewPageHandler} from './print_preview_cros_app_types.js';
+import {DestinationProviderCompositeInterface, type PrintPreviewPageHandler} from './print_preview_cros_app_types.js';
 
 /**
  * @fileoverview
@@ -17,7 +17,7 @@ import {DestinationProvider, type PrintPreviewPageHandler} from './print_preview
 
 let useFakeProviders: boolean = false;
 let printPreviewPageHandler: PrintPreviewPageHandler|null = null;
-let destinationProvider: DestinationProvider|null = null;
+let destinationProvider: DestinationProviderCompositeInterface|null = null;
 
 // Returns shared instance of PrintPreviewPageHandler.
 export function getPrintPreviewPageHandler(): PrintPreviewPageHandler {
@@ -30,9 +30,10 @@ export function getPrintPreviewPageHandler(): PrintPreviewPageHandler {
 }
 
 // Returns shared instance of DestinationProvider.
-export function getDestinationProvider(): DestinationProvider {
+export function getDestinationProvider():
+    DestinationProviderCompositeInterface {
   if (destinationProvider === null && useFakeProviders) {
-    destinationProvider = new FakeDestinationProvider();
+    destinationProvider = new DestinationProviderComposite();
   }
 
   assert(destinationProvider);

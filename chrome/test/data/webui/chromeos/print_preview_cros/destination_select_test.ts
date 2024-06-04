@@ -5,6 +5,7 @@
 import 'chrome://os-print/js/destination_select.js';
 
 import {DestinationManager} from 'chrome://os-print/js/data/destination_manager.js';
+import {DestinationProviderComposite} from 'chrome://os-print/js/data/destination_provider_composite.js';
 import {DestinationDropdownElement} from 'chrome://os-print/js/destination_dropdown.js';
 import {DestinationSelectElement} from 'chrome://os-print/js/destination_select.js';
 import {DESTINATION_SELECT_SHOW_LOADING_UI_CHANGED, DestinationSelectController} from 'chrome://os-print/js/destination_select_controller.js';
@@ -37,7 +38,9 @@ suite('DestinationSelect', () => {
     mockTimer.install();
 
     resetDataManagersAndProviders();
-    destinationProvider = getDestinationProvider() as FakeDestinationProvider;
+    destinationProvider =
+        (getDestinationProvider() as DestinationProviderComposite)
+            .fakeDestinationProvider;
     destinationProvider.setTestDelay(testDelay);
     destinationManager = DestinationManager.getInstance();
     destinationManager.initializeSession(FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL);

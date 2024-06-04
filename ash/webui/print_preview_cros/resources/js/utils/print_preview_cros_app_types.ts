@@ -527,3 +527,12 @@ export interface DestinationProvider {
   fetchCapabilities(destinationId: string, printerType: PrinterType):
       Promise<Capabilities>;
 }
+
+// This is a temporary interface with the purpose of combining methods from the
+// above fake DestinationProvider interface and the actual
+// DestinationProviderInterface mojo implementation. All tests and classes
+// will use this interface until all methods are defined in mojom.
+// TODO(b/323421684): Remove the interface once all mojo methods are
+// implemented.
+export interface DestinationProviderCompositeInterface extends
+    DestinationProvider {}
