@@ -89,7 +89,7 @@ constexpr std::size_t constexpr_strlen(const char* s) {
 }
 
 // Length of the CBOR encoded length of a CBOR value.
-size_t LengthOfLength(uint64_t length) {
+constexpr size_t LengthOfLength(uint64_t length) {
   if (length < 24) {
     return 0;
   }
