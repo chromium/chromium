@@ -17,7 +17,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.blink.mojom.ViewportFit;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -65,7 +64,6 @@ public class DisplayCutoutTest {
     /** Test that the safe area is applied when we have viewport fit cover. */
     @Test
     @LargeTest
-    @DisabledTest(message = "Disabled due to failures. See crbug.com/344647694")
     public void testViewportFitCover() throws TimeoutException {
         mTestRule.enterFullscreen();
         mTestRule.setViewportFit(DisplayCutoutTestRule.VIEWPORT_FIT_COVER);
@@ -86,7 +84,6 @@ public class DisplayCutoutTest {
      */
     @Test
     @LargeTest
-    @DisabledTest(message = "Disabled due to failures. See crbug.com/344647694")
     public void testViewportFitCoverForced() throws TimeoutException {
         mTestRule.enterFullscreen();
 
@@ -124,7 +121,6 @@ public class DisplayCutoutTest {
     /** Test that no safe area is applied when we have no viewport fit. */
     @Test
     @LargeTest
-    @DisabledTest(message = "Disabled due to failures. See crbug.com/344647694")
     public void testViewportFitDefault() throws TimeoutException {
         mTestRule.enterFullscreen();
         mTestRule.setViewportFit(DisplayCutoutTestRule.VIEWPORT_FIT_COVER);
@@ -185,7 +181,6 @@ public class DisplayCutoutTest {
      */
     @Test
     @LargeTest
-    @DisabledTest(message = "Disabled due to failures. See crbug.com/344647694")
     public void testBrowserDisplayCutoutTakesPrecedence() throws Exception {
         final ObservableSupplierImpl<Integer> browserCutoutModeSupplier =
                 TestThreadUtils.runOnUiThreadBlocking(
