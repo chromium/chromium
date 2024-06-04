@@ -8,6 +8,7 @@ import os.path
 import subprocess
 import textwrap
 import unittest
+from unittest import mock
 
 import PRESUBMIT
 
@@ -5540,6 +5541,45 @@ class CheckDeprecatedSyncConsentFunctionsTest(unittest.TestCase):
     self.assertTrue('chrome/foo/file3.java' in results[0].message),
     self.assertTrue('chrome/foo/file4.java' in results[0].message),
     self.assertTrue('chrome/foo/file5.java' in results[0].message),
+
+class CheckNoNewGitFilesAddedInDependenciesTest(unittest.TestCase):
+  @mock.patch('PRESUBMIT._readDeps')
+  def testNonNested(self, readDeps):
+    readDeps.return_value = '''deps = {
+      'src/foo': 'bar',
+      'src/components/foo/bar': 'bar',
+    }'''
+
+    input_api = MockInputApi()
+    input_api.files = [
+      MockFile('components/foo/file1.java', ['otherFunction']),
+      MockFile('components/foo/file2.java', ['hasSyncConsent']),
+      MockFile('chrome/foo/file3.java', ['canSyncFeatureStart']),
+      MockFile('chrome/foo/file4.java', ['isSyncFeatureEnabled']),
+      MockFile('chrome/foo/file5.java', ['isSyncFeatureActive']),
+    ]
+    results = PRESUBMIT.CheckNoNewGitFilesAddedInDependencies(
+        input_api,
+        MockOutputApi())
+
+    self.assertEqual(0, len(results))
+
+  @mock.patch('PRESUBMIT._readDeps')
+  def testCollision(self, readDeps):
+    readDeps.return_value = '''deps = {'src/foo': 'ignore_me'}'''
+
+    input_api = MockInputApi()
+    input_api.files = [
+      MockAffectedFile('fo', 'content'),  # no conflict
+      MockAffectedFile('foo', 'content'),  # conflict
+      MockAffectedFile('foo/bar', 'content'),  # conflict
+    ]
+    results = PRESUBMIT.CheckNoNewGitFilesAddedInDependencies(
+        input_api,
+        MockOutputApi())
+
+    self.assertEqual(2, len(results))
+
 
 
 if __name__ == '__main__':
