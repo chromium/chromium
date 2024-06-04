@@ -448,8 +448,10 @@ void FilesPolicyNotificationManager::OnIOTaskResumed(
     return;
   }
 
-  std::move(io_tasks_.at(task_id).GetWarningInfo()->warning_callback)
-      .Run(/*user_justification=*/std::nullopt, /*should_proceed=*/true);
+  auto* warning_info = io_tasks_.at(task_id).GetWarningInfo();
+  std::move(warning_info->warning_callback)
+      .Run(/*user_justification=*/warning_info->user_justification,
+           /*should_proceed=*/true);
   io_tasks_.at(task_id).ResetWarningInfo();
 }
 
@@ -1045,6 +1047,8 @@ void FilesPolicyNotificationManager::OnIOTaskWarningDialogClicked(
     return;
   }
   if (should_proceed) {
+    io_tasks_.at(task_id).GetWarningInfo()->user_justification =
+        user_justification;
     Resume(task_id);
   } else {
     Cancel(task_id);

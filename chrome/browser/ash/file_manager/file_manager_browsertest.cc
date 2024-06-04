@@ -22,7 +22,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/config/coverage/buildflags.h"
-#include "chrome/browser/ash/file_manager/copy_or_move_io_task_policy_impl.h"
 #include "chrome/browser/ash/file_manager/file_manager_browsertest_base.h"
 #include "chrome/browser/ash/file_manager/file_manager_browsertest_utils.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"

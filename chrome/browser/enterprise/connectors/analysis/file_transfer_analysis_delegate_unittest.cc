@@ -59,6 +59,9 @@ namespace {
 constexpr char kUserName[] = "test@chromium.org";
 
 constexpr char kDmToken[] = "dm_token";
+
+constexpr char16_t kUserJustification[] = u"User justification";
+
 base::TimeDelta kResponseDelay = base::Seconds(0);
 
 storage::FileSystemURL GetEmptyTestSrcUrl() {
@@ -1003,7 +1006,8 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileBlockedDlp) {
       /*username*/ kUserName,
       /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
       /*scan_id*/ scan_id,
-      /*content_transfer_method*/ std::nullopt);
+      /*content_transfer_method*/ std::nullopt,
+      /*user_justification*/ std::nullopt);
 
   ScanUpload(source_url, destination_directory_url_);
 
@@ -1056,7 +1060,8 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileWarnDlp) {
         /*username*/ kUserName,
         /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
         /*scan_id*/ scan_id,
-        /*content_transfer_method*/ std::nullopt);
+        /*content_transfer_method*/ std::nullopt,
+        /*user_justification*/ std::nullopt);
 
     ScanUpload(source_url, destination_directory_url_);
   }
@@ -1116,7 +1121,8 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileWarnDlpBypassed) {
         /*username*/ kUserName,
         /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
         /*scan_id*/ scan_id,
-        /*content_transfer_method*/ std::nullopt);
+        /*content_transfer_method*/ std::nullopt,
+        /*user_justification*/ std::nullopt);
 
     ScanUpload(source_url, destination_directory_url_);
   }
@@ -1156,9 +1162,10 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileWarnDlpBypassed) {
         /*username*/ kUserName,
         /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
         /*scan_id*/ scan_id,
-        /*content_transfer_method*/ std::nullopt);
+        /*content_transfer_method*/ std::nullopt,
+        /*user_justification*/ kUserJustification);
 
-    file_transfer_analysis_delegate_->BypassWarnings(std::nullopt);
+    file_transfer_analysis_delegate_->BypassWarnings(kUserJustification);
   }
 }
 
@@ -1331,7 +1338,8 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
       /*username*/ kUserName,
       /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
       /*scan_id*/ scan_id,
-      /*content_transfer_method*/ std::nullopt);
+      /*content_transfer_method*/ std::nullopt,
+      /*user_justification*/ std::nullopt);
 
   ScanUpload(source_url, destination_url);
 
@@ -1516,7 +1524,8 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
       /*username*/ kUserName,
       /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
       /*scan_id*/ scan_id,
-      /*content_transfer_method*/ std::nullopt);
+      /*content_transfer_method*/ std::nullopt,
+      /*user_justification*/ std::nullopt);
 
   ScanUpload(source_directory_url_, destination_directory_url_);
 
@@ -1599,7 +1608,8 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
       /*username*/ kUserName,
       /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
       /*scan_ids*/ {scan_id, scan_id, scan_id},
-      /*content_transfer_method*/ std::nullopt);
+      /*content_transfer_method*/ std::nullopt,
+      /*user_justification*/ std::nullopt);
 
   ScanUpload(source_directory_url_, destination_directory_url_);
 
@@ -1664,7 +1674,8 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
       /*username*/ kUserName,
       /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
       /*scan_ids*/ {scan_id, scan_id},
-      /*content_transfer_method*/ std::nullopt);
+      /*content_transfer_method*/ std::nullopt,
+      /*user_justification*/ std::nullopt);
 
   ScanUpload(source_directory_url_, destination_directory_url_);
 
@@ -1752,7 +1763,8 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, DirectoryTreeSomeBlocked) {
       /*username*/ kUserName,
       /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
       /*scan_ids*/ expected_scan_ids,
-      /*content_transfer_method*/ std::nullopt);
+      /*content_transfer_method*/ std::nullopt,
+      /*user_justification*/ std::nullopt);
 
   ScanUpload(source_directory_url_, destination_directory_url_);
 
@@ -1856,7 +1868,8 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
         /*username*/ kUserName,
         /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
         /*scan_ids*/ expected_scan_ids,
-        /*content_transfer_method*/ std::nullopt);
+        /*content_transfer_method*/ std::nullopt,
+        /*user_justification*/ std::nullopt);
 
     ScanUpload(source_directory_url_, destination_directory_url_);
   }
@@ -1936,9 +1949,10 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
         /*username*/ kUserName,
         /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
         /*scan_ids*/ expected_scan_ids,
-        /*content_transfer_method*/ std::nullopt);
+        /*content_transfer_method*/ std::nullopt,
+        /*user_justification*/ kUserJustification);
 
-    file_transfer_analysis_delegate_->BypassWarnings(std::nullopt);
+    file_transfer_analysis_delegate_->BypassWarnings(kUserJustification);
   }
 
   // Should now no longer block bypassed files.

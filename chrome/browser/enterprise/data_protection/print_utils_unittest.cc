@@ -74,6 +74,8 @@ constexpr char kPrinterName[] = "my_printer";
 
 constexpr char kUserName[] = "test-user@chromium.org";
 
+constexpr char16_t kUserJustification[] = u"User justification";
+
 scoped_refptr<base::RefCountedMemory> CreateData() {
   return base::MakeRefCounted<base::RefCountedStaticMemory>(
       reinterpret_cast<const unsigned char*>(kTestData), sizeof(kTestData) - 1);
@@ -456,7 +458,8 @@ TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyReportOnly) {
       /*username*/ kUserName,
       /*profile_identifier*/ profile()->GetPath().AsUTF8Unsafe(),
       /*scan_id*/ kScanId,
-      /*content_transfer_method*/ std::nullopt);
+      /*content_transfer_method*/ std::nullopt,
+      /*user_justification*/ std::nullopt);
 
   auto data = CreateData();
   base::RunLoop run_loop;
@@ -520,7 +523,8 @@ TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyWarnThenCancel) {
       /*username*/ kUserName,
       /*profile_identifier*/ profile()->GetPath().AsUTF8Unsafe(),
       /*scan_id*/ kScanId,
-      /*content_transfer_method*/ std::nullopt);
+      /*content_transfer_method*/ std::nullopt,
+      /*user_justification*/ std::nullopt);
 
   auto data = CreateData();
   base::RunLoop run_loop;
@@ -587,11 +591,12 @@ TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyWarnedThenBypass) {
           /*username*/ kUserName,
           /*profile_identifier*/ profile()->GetPath().AsUTF8Unsafe(),
           /*scan_id*/ kScanId,
-          /*content_transfer_method*/ std::nullopt);
+          /*content_transfer_method*/ std::nullopt,
+          /*user_justification*/ kUserJustification);
       ASSERT_TRUE(test_delegate_);
       test_delegate_->SetPageWarningForTesting(
           CreateResponse(ContentAnalysisResponse::Result::TriggeredRule::WARN));
-      test_delegate_->BypassWarnings(std::nullopt);
+      test_delegate_->BypassWarnings(kUserJustification);
     }
   }));
 
@@ -613,7 +618,8 @@ TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyWarnedThenBypass) {
       /*username*/ kUserName,
       /*profile_identifier*/ profile()->GetPath().AsUTF8Unsafe(),
       /*scan_id*/ kScanId,
-      /*content_transfer_method*/ std::nullopt);
+      /*content_transfer_method*/ std::nullopt,
+      /*user_justification*/ std::nullopt);
 
   auto data = CreateData();
   base::RunLoop run_loop;
@@ -671,7 +677,8 @@ TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyBlocked) {
       /*username*/ kUserName,
       /*profile_identifier*/ profile()->GetPath().AsUTF8Unsafe(),
       /*scan_id*/ kScanId,
-      /*content_transfer_method*/ std::nullopt);
+      /*content_transfer_method*/ std::nullopt,
+      /*user_justification*/ std::nullopt);
 
   auto data = CreateData();
   base::RunLoop run_loop;
