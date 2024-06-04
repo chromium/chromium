@@ -155,13 +155,15 @@ public class SignInPreference extends Preference
     }
 
     private void setupSigninDisabledByPolicy() {
-        setTitle(R.string.sync_promo_turn_on_sync);
-        setSummary(R.string.sign_in_to_chrome_disabled_summary);
         setFragment(null);
         if (ChromeFeatureList.isEnabled(
                 ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
+            setTitle(R.string.signin_settings_title);
+            setSummary(R.string.settings_signin_disabled_by_administrator);
             setIcon(R.drawable.ic_business_small_disabled_with_bg);
         } else {
+            setTitle(R.string.sync_promo_turn_on_sync);
+            setSummary(R.string.sign_in_to_chrome_disabled_summary);
             setIcon(ManagedPreferencesUtils.getManagedByEnterpriseIconId());
         }
         setViewEnabledAndShowAlertIcon(/* enabled= */ false, /* alertIconVisible= */ false);
