@@ -195,16 +195,16 @@
   <message name="IDS_APP_MANAGEMENT_PERMISSION_ALLOWED_TEXT_WITH_DETAILS_AND_TURN_ON_SYSTEM_LOCATION_ACCESS_BUTTON" desc="Label explaining that access to location is allowed for an app followed by a button to turn on system location access.">
     Allowed – <ph name="PERMISSION_DETAILS">$1<ex>While in use</ex></ph>. Turn on <ph name="LINK_BEGIN">&lt;a href="#"&gt;</ph>system location access<ph name="LINK_END">&lt;/a&gt;</ph>.
   </message>
-  <message name="IDS_APP_MANAGEMENT_PERMISSION_ALLOWED_BUT_NO_CAMERA_CONNECTED_TEXT" desc="Label explaining that access to camera is allowed for an app but no camera is connected to the device." translateable="false">
+  <message name="IDS_APP_MANAGEMENT_PERMISSION_ALLOWED_BUT_NO_CAMERA_CONNECTED_TEXT" desc="Label explaining that access to camera is allowed for an app but no camera is connected to the device.">
     Allowed. Connect a camera to your device.
   </message>
-  <message name="IDS_APP_MANAGEMENT_PERMISSION_ALLOWED_BUT_NO_MICROPHONE_CONNECTED_TEXT" desc="Label explaining that access to microphone is allowed for an app but no microphone is connected to the device." translateable="false">
+  <message name="IDS_APP_MANAGEMENT_PERMISSION_ALLOWED_BUT_NO_MICROPHONE_CONNECTED_TEXT" desc="Label explaining that access to microphone is allowed for an app but no microphone is connected to the device.">
     Allowed. Connect a microphone to your device.
   </message>
-  <message name="IDS_APP_MANAGEMENT_PERMISSION_ALLOWED_BUT_NO_CAMERA_CONNECTED_TEXT_WITH_DETAILS" desc="Label explaining that access to camera is allowed for an app but no camera is connected to the device with details." translateable="false">
+  <message name="IDS_APP_MANAGEMENT_PERMISSION_ALLOWED_BUT_NO_CAMERA_CONNECTED_TEXT_WITH_DETAILS" desc="Label explaining that access to camera is allowed for an app but no camera is connected to the device with details.">
     Allowed – <ph name="PERMISSION_DETAILS">$1<ex>While in use</ex></ph>. Connect a camera to your device.
   </message>
-  <message name="IDS_APP_MANAGEMENT_PERMISSION_ALLOWED_BUT_NO_MICROPHONE_CONNECTED_TEXT_WITH_DETAILS" desc="Label explaining that access to microphone is allowed for an app but no microphone is connected to the device with details." translateable="false">
+  <message name="IDS_APP_MANAGEMENT_PERMISSION_ALLOWED_BUT_NO_MICROPHONE_CONNECTED_TEXT_WITH_DETAILS" desc="Label explaining that access to microphone is allowed for an app but no microphone is connected to the device with details.">
     Allowed – <ph name="PERMISSION_DETAILS">$1<ex>While in use</ex></ph>. Connect a microphone to your device.
   </message>
   <message name="IDS_APP_MANAGEMENT_PERMISSION_ALLOWED_BUT_MICROPHONE_HW_SWITCH_ACTIVE_TEXT" desc="Label explaining that access to microphone is allowed for an app but microphone is blocked by hardware switch.">
