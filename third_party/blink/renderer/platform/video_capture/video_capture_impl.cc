@@ -76,8 +76,7 @@ struct GpuMemoryBufferResources {
   // The GpuMemoryBuffer backing the camera frame.
   std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer;
   // The SharedImage created from |gpu_memory_buffer|.
-  scoped_refptr<gpu::ClientSharedImage>
-      shared_images[media::VideoFrame::kMaxPlanes];
+  scoped_refptr<gpu::ClientSharedImage> shared_image;
   // The release sync token for |shared_images|.
   gpu::SyncToken release_sync_token;
 };
@@ -243,17 +242,14 @@ struct VideoCaptureImpl::BufferContext
   virtual ~BufferContext() {
     if (!gmb_resources_)
       return;
-    for (size_t plane = 0; plane < media::VideoFrame::kMaxPlanes; ++plane) {
-      if (!gmb_resources_->shared_images[plane]) {
-        continue;
-      }
-      media_task_runner_->PostTask(
-          FROM_HERE,
-          base::BindOnce(&BufferContext::DestroyTextureOnMediaThread,
-                         gpu_factories_,
-                         std::move(gmb_resources_->shared_images[plane]),
-                         gmb_resources_->release_sync_token));
+    if (!gmb_resources_->shared_image) {
+      return;
     }
+    media_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&BufferContext::DestroyTextureOnMediaThread,
+                       gpu_factories_, std::move(gmb_resources_->shared_image),
+                       gmb_resources_->release_sync_token));
   }
 
   VideoFrameBufferHandleType buffer_type_;
@@ -588,8 +584,6 @@ bool VideoCaptureImpl::BindVideoFrameOnMediaTaskRunner(
   DCHECK(output_format ==
          media::GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB);
 
-  std::vector<gfx::BufferPlane> planes;
-
   // The SharedImages here are used to back VideoFrames. They may be read by the
   // raster interface for format conversion (e.g., for 2-copy import into WebGL)
   // as well as by the GLES2 interface for one-copy import into WebGL.
@@ -604,95 +598,46 @@ bool VideoCaptureImpl::BindVideoFrameOnMediaTaskRunner(
   usage |= gpu::SHARED_IMAGE_USAGE_WEBGPU_READ;
 #endif
 
-  // The feature flags here are a little subtle:
-  // * IsMultiPlaneFormatForHardwareVideoEnabled() controls whether Multiplanar
-  //   SI is used (i.e., whether a single SharedImage is created via passing a
-  //   viz::MultiPlaneFormat rather than the legacy codepath of passing a
-  //   GMB).
-  // * kMultiPlaneVideoCaptureSharedImages controls whether planes are sampled
-  //   individually rather than using external sampling.
-  //
-  // These two flags are orthogonal:
-  // * If both flags are true, one SharedImage with format MultiPlaneFormat::
-  //   kNV12 will be created.
-  // * If using multiplane SI without per-plane sampling, one SharedImage with
-  //   format MultiPlaneFormat::kNV12 configured to use external sampling
-  //   will be created (this is supported only on Ozone-based platforms and
-  //   not expected to be requested on other platforms).
-  // * If using per-plane sampling without multiplane SI, one SharedImage will
-  //   be created for each plane via the legacy "pass GMB" entrypoint.
-  // * If both flags are false, one SharedImage will be created via the legacy
-  //   "pass GMB" entrypoint (this uses external sampling on the other side
-  //   based on the format of the GMB).
-  bool create_multiplanar_image =
-      media::IsMultiPlaneFormatForHardwareVideoEnabled();
+  // kMultiPlaneVideoCaptureSharedImages controls whether planes are sampled
+  // individually rather than using external sampling.
   bool use_per_plane_sampling =
       base::FeatureList::IsEnabled(media::kMultiPlaneVideoCaptureSharedImages);
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  // External sampling isn't supported on Windows/Mac with Multiplane SI (it's
-  // not supported with legacy SI either for that matter, but we restricted
-  // the CHECK here to Multiplane SI as in the case of legacy SI the flow is
-  // more nebulous and we wanted to restrict any impact here to the Multiplane
-  // SI flow).
+  // External sampling isn't supported on Windows/Mac with Multiplane SI.
   // NOTE: This CHECK would ideally be done if !BUILDFLAG(IS_OZONE), but this
   // codepath is entered in tests for Android, which does not have
   // kMultiPlaneVideoCaptureSharedImages set. This codepath is not entered in
   // production for Android (see
   // https://chromium-review.googlesource.com/c/chromium/src/+/4640009/comment/29c99ef9_587e49dc/
   // for a detailed discussion).
-  CHECK(!create_multiplanar_image || use_per_plane_sampling);
+  CHECK(use_per_plane_sampling);
 #endif
 
-  if (create_multiplanar_image || !use_per_plane_sampling) {
-    planes.push_back(gfx::BufferPlane::DEFAULT);
-  } else {
-    // Using per-plane sampling without multiplane SI.
-    planes.push_back(gfx::BufferPlane::Y);
-    planes.push_back(gfx::BufferPlane::UV);
-  }
-  CHECK(planes.size() == 1 || !create_multiplanar_image);
-
-  for (size_t plane = 0; plane < planes.size(); ++plane) {
-    if (should_recreate_shared_image ||
-        !video_frame_init_data.buffer_context->gmb_resources()
-             ->shared_images[plane]) {
-      auto multiplanar_si_format = viz::MultiPlaneFormat::kNV12;
+  if (should_recreate_shared_image ||
+      !video_frame_init_data.buffer_context->gmb_resources()->shared_image) {
+    auto multiplanar_si_format = viz::MultiPlaneFormat::kNV12;
 #if BUILDFLAG(IS_OZONE)
-      if (!use_per_plane_sampling) {
-        multiplanar_si_format.SetPrefersExternalSampler();
-      }
+    if (!use_per_plane_sampling) {
+      multiplanar_si_format.SetPrefersExternalSampler();
+    }
 #endif
-      CHECK_EQ(gpu_memory_buffer->GetFormat(),
-               gfx::BufferFormat::YUV_420_BIPLANAR);
-      scoped_refptr<gpu::ClientSharedImage> client_shared_image;
-      if (create_multiplanar_image) {
-        client_shared_image = sii->CreateSharedImage(
+    CHECK_EQ(gpu_memory_buffer->GetFormat(),
+             gfx::BufferFormat::YUV_420_BIPLANAR);
+    scoped_refptr<gpu::ClientSharedImage> client_shared_image =
+        sii->CreateSharedImage(
             {multiplanar_si_format, gpu_memory_buffer->GetSize(),
              video_frame_init_data.ready_buffer->info->color_space, usage,
              "VideoCaptureFrameBuffer"},
             gpu_memory_buffer->CloneHandle());
 
-      } else {
-        client_shared_image = sii->CreateSharedImage(
-            gpu_memory_buffer.get(),
-            video_frame_init_data.buffer_context->gpu_factories()
-                ->GpuMemoryBufferManager(),
-            planes[plane],
-            {video_frame_init_data.ready_buffer->info->color_space,
-             kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
-             "VideoCaptureFrameBuffer"});
-      }
-      CHECK(client_shared_image);
-      video_frame_init_data.buffer_context->gmb_resources()
-          ->shared_images[plane] = std::move(client_shared_image);
-    } else {
-      sii->UpdateSharedImage(
-          video_frame_init_data.buffer_context->gmb_resources()
-              ->release_sync_token,
-          video_frame_init_data.buffer_context->gmb_resources()
-              ->shared_images[plane]
-              ->mailbox());
-    }
+    CHECK(client_shared_image);
+    video_frame_init_data.buffer_context->gmb_resources()->shared_image =
+        std::move(client_shared_image);
+  } else {
+    sii->UpdateSharedImage(video_frame_init_data.buffer_context->gmb_resources()
+                               ->release_sync_token,
+                           video_frame_init_data.buffer_context->gmb_resources()
+                               ->shared_image->mailbox());
   }
 
   const unsigned texture_target =
@@ -713,22 +658,19 @@ bool VideoCaptureImpl::BindVideoFrameOnMediaTaskRunner(
           :
 #endif
           video_frame_init_data.buffer_context->gmb_resources()
-              ->shared_images[0]
-              ->GetTextureTarget(gfx::BufferUsage::SCANOUT_CPU_READ_WRITE,
-                                 gpu_memory_buffer->GetFormat());
+              ->shared_image->GetTextureTarget(
+                  gfx::BufferUsage::SCANOUT_CPU_READ_WRITE,
+                  gpu_memory_buffer->GetFormat());
   const gpu::SyncToken sync_token = sii->GenVerifiedSyncToken();
 
-  for (size_t plane = 0; plane < planes.size(); ++plane) {
-    DCHECK(video_frame_init_data.buffer_context->gmb_resources()
-               ->shared_images[plane]);
-  }
+  DCHECK(video_frame_init_data.buffer_context->gmb_resources()->shared_image);
 
   const auto gmb_size = gpu_memory_buffer->GetSize();
   scoped_refptr<media::VideoFrame> frame =
       media::VideoFrame::WrapExternalGpuMemoryBuffer(
           gfx::Rect(video_frame_init_data.ready_buffer->info->visible_rect),
           gmb_size, std::move(gpu_memory_buffer),
-          video_frame_init_data.buffer_context->gmb_resources()->shared_images,
+          video_frame_init_data.buffer_context->gmb_resources()->shared_image,
           sync_token, texture_target,
           base::BindOnce(&BufferContext::MailboxHolderReleased,
                          video_frame_init_data.buffer_context),
@@ -738,15 +680,13 @@ bool VideoCaptureImpl::BindVideoFrameOnMediaTaskRunner(
     return false;
   }
 
-  // If we created a single multiplanar image, inform the VideoFrame that it
-  // should go down the normal SharedImageFormat codepath rather than the
-  // codepath used for legacy multiplanar formats.
-  if (create_multiplanar_image) {
-    frame->set_shared_image_format_type(
-        use_per_plane_sampling
-            ? media::SharedImageFormatType::kSharedImageFormat
-            : media::SharedImageFormatType::kSharedImageFormatExternalSampler);
-  }
+  // For a single multiplanar image, inform the VideoFrame that it
+  // should go down the normal SharedImageFormat codepath or the one with
+  // ExternalSampler is not using per plane sampling..
+  frame->set_shared_image_format_type(
+      use_per_plane_sampling
+          ? media::SharedImageFormatType::kSharedImageFormat
+          : media::SharedImageFormatType::kSharedImageFormatExternalSampler);
 
   frame->metadata().allow_overlay = true;
   frame->metadata().read_lock_fences_enabled = true;
