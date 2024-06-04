@@ -2819,7 +2819,7 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
 Connect your device to power.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_LOW_BATTERY_BSM_AUTOENABLED_TITLE" desc="The title for the notification displayed when device battery level is low, and battery saver was just enabled.">
-        Low battery. Battery Saver turned on.
+        Low battery. Battery Saver is on
       </message>
       <message name="IDS_ASH_STATUS_TRAY_LOW_BATTERY_BSM_AUTOENABLED_MESSAGE" desc="The notification body text stating features are limited because of battery saver, alongside the remaining battery percentage, and the estimated time remaining.">
         <ph name="percentage">$1<ex>20%</ex></ph>% battery left (about <ph name="time_left">$2<ex>25 minutes</ex></ph>).
