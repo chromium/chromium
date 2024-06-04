@@ -82,7 +82,8 @@ export async function isSensorAvailable(permissionType: PermissionTypeIndex|
 export function getPermissionDescriptionString(
     app: App|undefined, permissionType: PermissionTypeIndex|undefined,
     isSensorAvailable: boolean, isSensorBlocked: boolean,
-    isMicrophoneHardwareToggleActive: boolean): string {
+    isMicrophoneHardwareToggleActive: boolean,
+    isCameraSwitchForceDisabled: boolean): string {
   if (app === undefined || permissionType === undefined) {
     return '';
   }
@@ -117,7 +118,8 @@ export function getPermissionDescriptionString(
         loadTimeData.getString(
             'permissionAllowedButMicrophoneHwSwitchActiveText');
   } else if (value === TriState.kAllow && isSensorBlocked) {
-    if (PermissionType[permissionType] === PermissionType.kCamera) {
+    if (PermissionType[permissionType] === PermissionType.kCamera &&
+        !isCameraSwitchForceDisabled) {
       return permission.details ?
           loadTimeData.getStringF(
               'permissionAllowedTextWithDetailsAndTurnOnCameraAccessButton',

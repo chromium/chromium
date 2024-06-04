@@ -563,5 +563,38 @@ suite('<app-management-arc-detail-view>', () => {
                   loadTimeData.getString('appManagementPermissionAllowed'),
                   getPermissionDescriptionString(permissionItem));
             });
+
+        // Camera toggle button is force-disabled in CRD session.
+        test(
+            'Allow camera access button hidden if camera toggle force disabled',
+            async () => {
+              const permissionItem =
+                  getPermissionItemByType(arcPermissionView, 'kCamera');
+
+              await setPermission(PermissionType.kMicrophone, TriState.kAllow);
+              arcPermissionView.set(
+                  'prefs.ash.user.camera_allowed.value', false);
+              await addFakeSensor(mediaDevices, 'kCamera');
+
+              assertEquals(
+                  loadTimeData.getString(
+                      'permissionAllowedTextWithTurnOnCameraAccessButton'),
+                  getPermissionDescriptionString(permissionItem));
+
+              webUIListenerCallback('force-disable-camera-switch', true);
+              await waitAfterNextRender(arcPermissionView);
+
+              assertEquals(
+                  loadTimeData.getString('appManagementPermissionAllowed'),
+                  getPermissionDescriptionString(permissionItem));
+
+              webUIListenerCallback('force-disable-camera-switch', false);
+              await waitAfterNextRender(arcPermissionView);
+
+              assertEquals(
+                  loadTimeData.getString(
+                      'permissionAllowedTextWithTurnOnCameraAccessButton'),
+                  getPermissionDescriptionString(permissionItem));
+            });
       });
 });

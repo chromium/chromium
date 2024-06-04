@@ -22,6 +22,7 @@ import {GeolocationAccessLevel} from '../../os_privacy_page/privacy_hub_geolocat
 type Constructor<T> = new (...args: any[]) => T;
 
 export interface PrivacyHubMixinInterface {
+  cameraSwitchForceDisabled: boolean;
   microphoneHardwareToggleActive: boolean;
   isSensorBlocked(permissionType: PermissionTypeIndex|undefined): boolean;
 }
@@ -35,6 +36,11 @@ export const PrivacyHubMixin = dedupingMixin(
           PrivacyHubMixinInterface {
         static get properties() {
           return {
+            cameraSwitchForceDisabled: {
+              type: Boolean,
+              value: false,
+            },
+
             microphoneHardwareToggleActive: {
               type: Boolean,
               value: false,
@@ -42,6 +48,7 @@ export const PrivacyHubMixin = dedupingMixin(
           };
         }
 
+        cameraSwitchForceDisabled: boolean;
         microphoneHardwareToggleActive: boolean;
         private privacyHubBrowserProxy_: PrivacyHubBrowserProxy;
 
@@ -53,6 +60,16 @@ export const PrivacyHubMixin = dedupingMixin(
 
         override connectedCallback(): void {
           super.connectedCallback();
+
+          this.addWebUiListener(
+              'force-disable-camera-switch', (disabled: boolean) => {
+                this.cameraSwitchForceDisabled = disabled;
+              });
+          this.privacyHubBrowserProxy_
+              .getInitialCameraSwitchForceDisabledState()
+              .then((disabled) => {
+                this.cameraSwitchForceDisabled = disabled;
+              });
 
           this.addWebUiListener(
               'microphone-hardware-toggle-changed', (enabled: boolean) => {

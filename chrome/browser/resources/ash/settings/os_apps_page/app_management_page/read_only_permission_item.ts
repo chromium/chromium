@@ -116,7 +116,7 @@ export class AppManagementReadOnlyPermissionItemElement extends
         this.isSensorBlocked(permissionType);
     return getPermissionDescriptionString(
         app, permissionType, this.sensorAvailable_, isSensorBlocked,
-        this.microphoneHardwareToggleActive);
+        this.microphoneHardwareToggleActive, this.cameraSwitchForceDisabled);
   }
 
   private isManaged_(
