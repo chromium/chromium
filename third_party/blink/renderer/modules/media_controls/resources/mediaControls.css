@@ -1345,6 +1345,15 @@ video::cue(rt) {
     text-indent: 0;
 }
 
+@supports blink-feature(VttCueDisplayRuby) {
+  video::cue(rt) {
+    display: ruby-text;
+  }
+  video::cue(ruby) {
+    display: ruby;
+  }
+}
+
 /*
  * ::-webkit-media-text-track-container needs to create new formatting context
  * because LayoutMedia is a legacy object, and

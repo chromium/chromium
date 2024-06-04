@@ -292,18 +292,9 @@ void LayoutTheme::AdjustStyle(const Element* element,
 }
 
 String LayoutTheme::ExtraDefaultStyleSheet() {
-  if (RuntimeEnabledFeatures::VttCueDisplayRubyEnabled()) {
-    // !important is necessary because this style is loaded earlier than
-    // mediaControls.css.
-    //
-    // Avoid to write "video::cue" for a false-positive by
-    // audit_non_blink_usage.py.
-    return "@namespace 'http://www.w3.org/1999/xhtml';\n"
-           "video::"
-           "cue(rt) { display: ruby-text !important; }\n"
-           "video::"
-           "cue(ruby) { display: ruby; }\n";
-  }
+  // If you want to add something depending on a runtime flag here,
+  // please consider using `@supports blink-feature(flag-name)` in a
+  // stylesheet resource file.
   return "@namespace 'http://www.w3.org/1999/xhtml';\n";
 }
 
