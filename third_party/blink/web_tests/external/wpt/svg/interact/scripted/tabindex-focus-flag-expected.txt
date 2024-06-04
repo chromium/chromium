@@ -1,8 +1,6 @@
 This is a testharness.js-based test.
-[FAIL] The document root element should be focusable.
-  assert_equals: expected Element node <svg xmlns="http://www.w3.org/2000/svg" xmlns:h="http://w... but got null
 [FAIL] rect[focusable=true] should be focusable.
-  assert_equals: expected Element node <rect focusable="true"></rect> but got null
+  assert_equals: expected Element node <rect focusable="true"></rect> but got Element node <svg xmlns="http://www.w3.org/2000/svg" xmlns:h="http://w...
 [FAIL] a[focusable=false] should not be focusable.
   assert_not_equals: got disallowed value Element node <a href="" focusable="false"></a>
 [FAIL] iframe should be focusable.
