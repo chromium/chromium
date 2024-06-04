@@ -87,7 +87,7 @@ TEST_F(UnifiedVolumeViewTest, SliderButtonComponents) {
   auto* live_caption_button =
       static_cast<IconButton*>(unified_volume_view()->children()[1]);
   EXPECT_STREQ(live_caption_button->GetClassName(), "IconButton");
-  EXPECT_EQ(live_caption_button->GetAccessibleName(),
+  EXPECT_EQ(live_caption_button->GetViewAccessibility().GetCachedName(),
             l10n_util::GetStringFUTF16(
                 IDS_ASH_STATUS_TRAY_LIVE_CAPTION_TOGGLE_TOOLTIP,
                 l10n_util::GetStringUTF16(
@@ -98,8 +98,9 @@ TEST_F(UnifiedVolumeViewTest, SliderButtonComponents) {
   auto* audio_subpage_drill_in_button =
       static_cast<IconButton*>(unified_volume_view()->children()[2]);
   EXPECT_STREQ(audio_subpage_drill_in_button->GetClassName(), "IconButton");
-  EXPECT_EQ(audio_subpage_drill_in_button->GetAccessibleName(),
-            l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_AUDIO));
+  EXPECT_EQ(
+      audio_subpage_drill_in_button->GetViewAccessibility().GetCachedName(),
+      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_AUDIO));
   EXPECT_EQ(audio_subpage_drill_in_button->GetTooltipText(), u"Audio settings");
 
   // Clicks on the drill-in button and checks `AudioDetailedView` is shown.

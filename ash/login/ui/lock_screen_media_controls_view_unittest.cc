@@ -31,6 +31,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/vector_icons.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/animation/bounds_animator_observer.h"
 #include "ui/views/controls/image_view.h"
@@ -393,7 +394,10 @@ TEST_F(LockScreenMediaControlsViewTest, ButtonsSanityCheck) {
         kActionButtonOrder[i]);
 
     EXPECT_TRUE(child->GetVisible());
-    EXPECT_FALSE(views::Button::AsButton(child)->GetAccessibleName().empty());
+    EXPECT_FALSE(views::Button::AsButton(child)
+                     ->GetViewAccessibility()
+                     .GetCachedName()
+                     .empty());
   }
 
   EXPECT_TRUE(GetButtonForAction(MediaSessionAction::kPause));

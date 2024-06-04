@@ -13,6 +13,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/compositor/property_change_reason.h"
 #include "ui/gfx/image/image.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/menu_button.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/view.h"
@@ -186,13 +187,17 @@ TEST_F(CameraRollViewTest, AccessibleNameAndTooltip) {
   PresetCameraRollOptInState(/*can_be_enabled=*/false);
   fake_camera_roll_manager()->SetCurrentItems(CreateFakeItems(4));
 
-  EXPECT_EQ(u"Recent photo 1 of 4.", GetThumbnailView(0)->GetAccessibleName());
+  EXPECT_EQ(u"Recent photo 1 of 4.",
+            GetThumbnailView(0)->GetViewAccessibility().GetCachedName());
   EXPECT_EQ(u"Recent photo 1 of 4.", GetThumbnailView(0)->GetTooltipText());
-  EXPECT_EQ(u"Recent photo 2 of 4.", GetThumbnailView(1)->GetAccessibleName());
+  EXPECT_EQ(u"Recent photo 2 of 4.",
+            GetThumbnailView(1)->GetViewAccessibility().GetCachedName());
   EXPECT_EQ(u"Recent photo 2 of 4.", GetThumbnailView(1)->GetTooltipText());
-  EXPECT_EQ(u"Recent photo 3 of 4.", GetThumbnailView(2)->GetAccessibleName());
+  EXPECT_EQ(u"Recent photo 3 of 4.",
+            GetThumbnailView(2)->GetViewAccessibility().GetCachedName());
   EXPECT_EQ(u"Recent photo 3 of 4.", GetThumbnailView(2)->GetTooltipText());
-  EXPECT_EQ(u"Recent photo 4 of 4.", GetThumbnailView(3)->GetAccessibleName());
+  EXPECT_EQ(u"Recent photo 4 of 4.",
+            GetThumbnailView(3)->GetViewAccessibility().GetCachedName());
   EXPECT_EQ(u"Recent photo 4 of 4.", GetThumbnailView(3)->GetTooltipText());
 }
 

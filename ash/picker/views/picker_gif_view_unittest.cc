@@ -15,6 +15,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 namespace ash {
 namespace {
@@ -72,7 +73,7 @@ TEST(PickerGifViewTest, AccessibleNameIsContentDescription) {
                          asset_fetcher.GetPreviewImageFetcher(), kImageSize,
                          /*accessible_name=*/u"cat gif");
 
-  EXPECT_EQ(gif_view.GetAccessibleName(), u"cat gif");
+  EXPECT_EQ(gif_view.GetViewAccessibility().GetCachedName(), u"cat gif");
 }
 
 TEST(PickerGifViewTest, PreferredHeightPreservesAspectRatio) {

@@ -17,6 +17,7 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/test/views_test_utils.h"
@@ -130,7 +131,7 @@ class HotspotDetailedViewTest : public AshTestBase {
     ASSERT_TRUE(entry_row);
     // Entry row should be enabled to show a11y string.
     EXPECT_TRUE(entry_row->GetEnabled());
-    EXPECT_EQ(kHotspotTitle, entry_row->GetAccessibleName());
+    EXPECT_EQ(kHotspotTitle, entry_row->GetViewAccessibility().GetCachedName());
   }
 
   void AssertToggleOn(bool expected_toggle_on, bool expected_toogle_enabled) {

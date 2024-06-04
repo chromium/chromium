@@ -3833,7 +3833,8 @@ TEST_P(AppListPresenterTest, ShouldNotCrashOnItemClickAfterMonitorDisconnect) {
 
   // Click on an item.
   AppListItemView* item_view = apps_grid_view()->GetItemViewAt(0);
-  EXPECT_EQ(item_view->GetAccessibleName(), base::UTF8ToUTF16(item0->id()));
+  EXPECT_EQ(item_view->GetViewAccessibility().GetCachedName(),
+            base::UTF8ToUTF16(item0->id()));
   LeftClickOn(item_view);
 
   // No crash. No use-after-free detected by ASAN.

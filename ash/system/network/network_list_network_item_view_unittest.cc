@@ -435,7 +435,7 @@ TEST_F(NetworkListNetworkItemViewTest, HasExpectedA11yText) {
   EXPECT_EQ(
       l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_NETWORK_A11Y_LABEL_OPEN,
                                  base::UTF8ToUTF16(kWiFiName)),
-      network_list_network_item_view()->GetAccessibleName());
+      network_list_network_item_view()->GetViewAccessibility().GetCachedName());
 
   // Network can be connected to.
   wifi_network->connectable = true;
@@ -445,7 +445,7 @@ TEST_F(NetworkListNetworkItemViewTest, HasExpectedA11yText) {
   EXPECT_EQ(
       l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_NETWORK_A11Y_LABEL_CONNECT,
                                  base::UTF8ToUTF16(kWiFiName)),
-      network_list_network_item_view()->GetAccessibleName());
+      network_list_network_item_view()->GetViewAccessibility().GetCachedName());
 
   // Activate cellular network A11Y label is shown when a pSIM network is
   // connected but not yet activated.
@@ -458,20 +458,22 @@ TEST_F(NetworkListNetworkItemViewTest, HasExpectedA11yText) {
       ActivationStateType::kNotActivated;
   UpdateViewForNetwork(cellular_network);
 
-  EXPECT_EQ(l10n_util::GetStringFUTF16(
-                IDS_ASH_STATUS_TRAY_NETWORK_A11Y_LABEL_ACTIVATE,
-                base::UTF8ToUTF16(kCellularName)),
-            network_list_network_item_view()->GetAccessibleName());
+  EXPECT_EQ(
+      l10n_util::GetStringFUTF16(
+          IDS_ASH_STATUS_TRAY_NETWORK_A11Y_LABEL_ACTIVATE,
+          base::UTF8ToUTF16(kCellularName)),
+      network_list_network_item_view()->GetViewAccessibility().GetCachedName());
 
   // Simulate user logout and check label for pSIM networks that are
   // connected but not activated.
   GetSessionControllerClient()->Reset();
   base::RunLoop().RunUntilIdle();
   UpdateViewForNetwork(cellular_network);
-  EXPECT_EQ(l10n_util::GetStringFUTF16(
-                IDS_ASH_STATUS_TRAY_NETWORK_A11Y_LABEL_ACTIVATE_AFTER_SETUP,
-                base::UTF8ToUTF16(kCellularName)),
-            network_list_network_item_view()->GetAccessibleName());
+  EXPECT_EQ(
+      l10n_util::GetStringFUTF16(
+          IDS_ASH_STATUS_TRAY_NETWORK_A11Y_LABEL_ACTIVATE_AFTER_SETUP,
+          base::UTF8ToUTF16(kCellularName)),
+      network_list_network_item_view()->GetViewAccessibility().GetCachedName());
 
   CreateUserSessions(/*session_count=*/1);
   base::RunLoop().RunUntilIdle();
@@ -480,10 +482,11 @@ TEST_F(NetworkListNetworkItemViewTest, HasExpectedA11yText) {
   // not yet activated.
   cellular_network->type_state->get_cellular()->eid = kEid;
   UpdateViewForNetwork(cellular_network);
-  EXPECT_EQ(l10n_util::GetStringFUTF16(
-                IDS_ASH_STATUS_TRAY_NETWORK_A11Y_UNAVAILABLE_SIM_NETWORK,
-                base::UTF8ToUTF16(kCellularName)),
-            network_list_network_item_view()->GetAccessibleName());
+  EXPECT_EQ(
+      l10n_util::GetStringFUTF16(
+          IDS_ASH_STATUS_TRAY_NETWORK_A11Y_UNAVAILABLE_SIM_NETWORK,
+          base::UTF8ToUTF16(kCellularName)),
+      network_list_network_item_view()->GetViewAccessibility().GetCachedName());
 }
 
 TEST_F(NetworkListNetworkItemViewTest, HasExpectedDescriptionForEthernet) {

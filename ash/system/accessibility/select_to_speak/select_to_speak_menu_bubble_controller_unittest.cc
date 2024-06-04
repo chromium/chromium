@@ -17,6 +17,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 namespace ash {
 
@@ -127,7 +128,7 @@ TEST_F(SelectToSpeakMenuBubbleControllerTest, ShowSelectToSpeakPanel_paused) {
       GetMenuButton(SelectToSpeakMenuView::ButtonId::kPause);
   EXPECT_EQ(pause_button->GetTooltipText(),
             l10n_util::GetStringUTF16(IDS_ASH_SELECT_TO_SPEAK_RESUME));
-  EXPECT_EQ(pause_button->GetAccessibleName(),
+  EXPECT_EQ(pause_button->GetViewAccessibility().GetCachedName(),
             l10n_util::GetStringUTF16(IDS_ASH_SELECT_TO_SPEAK_TOGGLE_PLAYBACK));
   EXPECT_TRUE(GetBubbleWidget()->IsVisible());
 }
@@ -141,7 +142,7 @@ TEST_F(SelectToSpeakMenuBubbleControllerTest,
       GetMenuButton(SelectToSpeakMenuView::ButtonId::kPause);
   EXPECT_EQ(pause_button->GetTooltipText(),
             l10n_util::GetStringUTF16(IDS_ASH_SELECT_TO_SPEAK_PAUSE));
-  EXPECT_EQ(pause_button->GetAccessibleName(),
+  EXPECT_EQ(pause_button->GetViewAccessibility().GetCachedName(),
             l10n_util::GetStringUTF16(IDS_ASH_SELECT_TO_SPEAK_TOGGLE_PLAYBACK));
   EXPECT_TRUE(GetBubbleWidget()->IsVisible());
 }

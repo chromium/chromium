@@ -54,6 +54,7 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/test/widget_test.h"
@@ -311,10 +312,10 @@ TEST_F(SearchBoxViewTest, CloseButtonVisibleInZeroStateSearchBox) {
 TEST_F(SearchBoxViewTest,
        DISABLED_AccessibilityHintRemovedWhenSearchBoxActive) {
   EXPECT_TRUE(IsValidSearchBoxAccessibilityHint(
-      view()->search_box()->GetAccessibleName()));
+      view()->search_box()->GetViewAccessibility().GetCachedName()));
   SetSearchBoxActive(true, ui::ET_MOUSE_PRESSED);
   EXPECT_TRUE(IsValidSearchBoxAccessibilityHint(
-      view()->search_box()->GetAccessibleName()));
+      view()->search_box()->GetViewAccessibility().GetCachedName()));
 }
 
 // Tests that the black Google icon is used for an inactive Google search.
@@ -1057,7 +1058,7 @@ TEST_F(SearchBoxViewAppListBubbleTest, HasAccessibilityHintWhenActive) {
   EXPECT_TRUE(view->is_search_box_active());
 
   EXPECT_TRUE(IsValidSearchBoxAccessibilityHint(
-      view->search_box()->GetAccessibleName()));
+      view->search_box()->GetViewAccessibility().GetCachedName()));
 }
 
 class SearchBoxViewTabletTest : public AshTestBase {

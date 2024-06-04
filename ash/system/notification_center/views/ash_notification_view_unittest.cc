@@ -56,6 +56,7 @@
 #include "ui/message_center/views/notification_view.h"
 #include "ui/message_center/views/proportional_image_view.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
@@ -1219,12 +1220,12 @@ TEST_F(AshNotificationViewTest, ExpandButtonAccessibleName) {
 
   EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_ASH_NOTIFICATION_EXPAND_TOOLTIP,
                                        notification_title),
-            expand_button->GetAccessibleName());
+            expand_button->GetViewAccessibility().GetCachedName());
 
   notification_view()->ToggleExpand();
   EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_ASH_NOTIFICATION_COLLAPSE_TOOLTIP,
                                        notification_title),
-            expand_button->GetAccessibleName());
+            expand_button->GetViewAccessibility().GetCachedName());
 
   // Update the notification title. The expand button tooltip text should be
   // updated accordingly.
@@ -1234,7 +1235,7 @@ TEST_F(AshNotificationViewTest, ExpandButtonAccessibleName) {
 
   EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_ASH_NOTIFICATION_COLLAPSE_TOOLTIP,
                                        notification_title),
-            expand_button->GetAccessibleName());
+            expand_button->GetViewAccessibility().GetCachedName());
 }
 
 TEST_F(AshNotificationViewTest, OnThemeChangedWithoutMessageLabel) {
