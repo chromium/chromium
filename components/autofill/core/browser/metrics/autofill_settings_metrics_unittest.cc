@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/metrics/autofill_settings_metrics.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
 #include "components/autofill/core/common/autofill_prefs.h"
@@ -16,6 +17,9 @@
 namespace autofill::autofill_metrics {
 
 namespace {
+
+constexpr std::string_view kUserActionProfileDisabled =
+    "Autofill_ProfileDisabled";
 
 class AutofillSettingsMetricsTest : public AutofillMetricsBaseTest,
                                     public testing::TestWithParam<bool> {
@@ -282,6 +286,54 @@ TEST_P(AutofillSettingsMetricsTest,
 }
 
 #endif
+
+TEST_P(AutofillSettingsMetricsTest,
+       EmitsActionAutofillProfileDisabledOnPrefChangeByUser) {
+  base::UserActionTester user_action_tester;
+  EXPECT_EQ(user_action_tester.GetActionCount(kUserActionProfileDisabled), 0);
+  autofill_client_->GetPrefs()->SetUserPref(prefs::kAutofillProfileEnabled,
+                                            base::Value(GetParam()));
+  EXPECT_EQ(user_action_tester.GetActionCount(kUserActionProfileDisabled),
+            !GetParam());
+}
+
+TEST_P(AutofillSettingsMetricsTest,
+       EmitsActionAutofillProfileDisabledOnPrefChangeByUserViaSetBoolean) {
+  base::UserActionTester user_action_tester;
+  EXPECT_EQ(user_action_tester.GetActionCount(kUserActionProfileDisabled), 0);
+  autofill_client_->GetPrefs()->SetBoolean(prefs::kAutofillProfileEnabled,
+                                           GetParam());
+  EXPECT_EQ(user_action_tester.GetActionCount(kUserActionProfileDisabled),
+            !GetParam());
+}
+
+TEST_P(AutofillSettingsMetricsTest,
+       EmitsActionAutofillProfileDisabledOnPrefChangeByExtension) {
+  base::UserActionTester user_action_tester;
+  EXPECT_EQ(user_action_tester.GetActionCount(kUserActionProfileDisabled), 0);
+  autofill_client_->GetPrefs()->SetExtensionPref(prefs::kAutofillProfileEnabled,
+                                                 base::Value(GetParam()));
+  EXPECT_EQ(user_action_tester.GetActionCount(kUserActionProfileDisabled),
+            !GetParam());
+}
+
+TEST_P(AutofillSettingsMetricsTest,
+       DoesNotEmitActionAutofillProfileDisabledOnPrefChangeByAdminPolicy) {
+  base::UserActionTester user_action_tester;
+  EXPECT_EQ(user_action_tester.GetActionCount(kUserActionProfileDisabled), 0);
+  autofill_client_->GetPrefs()->SetManagedPref(prefs::kAutofillProfileEnabled,
+                                               base::Value(GetParam()));
+  EXPECT_EQ(user_action_tester.GetActionCount(kUserActionProfileDisabled), 0);
+}
+
+TEST_P(AutofillSettingsMetricsTest,
+       DoesNotEmitActionAutofillProfileDisabledOnPrefChangeByCustodian) {
+  base::UserActionTester user_action_tester;
+  EXPECT_EQ(user_action_tester.GetActionCount(kUserActionProfileDisabled), 0);
+  autofill_client_->GetPrefs()->SetSupervisedUserPref(
+      prefs::kAutofillProfileEnabled, base::Value(GetParam()));
+  EXPECT_EQ(user_action_tester.GetActionCount(kUserActionProfileDisabled), 0);
+}
 
 }  // namespace
 

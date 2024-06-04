@@ -396,6 +396,9 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // has finished.
   void LogStoredDataMetrics() const;
 
+  // Called when `prefs::kAutofillProfileEnabled` changed.
+  void OnAutofillProfilePrefChanged();
+
   std::unique_ptr<ContactInfoPreconditionChecker>
       contact_info_precondition_checker_;
 

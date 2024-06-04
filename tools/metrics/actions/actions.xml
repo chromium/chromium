@@ -4467,6 +4467,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Autofill_ProfileDisabled">
+  <owner>battre@chromium.org</owner>
+  <owner>bwolfgang@google.com</owner>
+  <owner>mlerman@google.com</owner>
+  <description>
+    This user action is logged when a user or an extension disables pref
+    autofill.profile_enabled.
+  </description>
+</action>
+
 <action name="Autofill_SelectedSuggestion">
   <owner>battre@chromium.org</owner>
   <description>

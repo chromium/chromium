@@ -341,6 +341,12 @@ void AddressDataManager::MigrateProfileToAccount(
   AddProfile(account_profile);
 }
 
+void AddressDataManager::OnAutofillProfilePrefChanged() {
+  LoadProfiles();
+  autofill_metrics::MaybeLogAutofillProfileDisabled(
+      CHECK_DEREF(pref_service_.get()));
+}
+
 void AddressDataManager::LoadProfiles() {
   if (!webdata_service_) {
     return;
@@ -509,7 +515,7 @@ void AddressDataManager::SetPrefService(PrefService* pref_service) {
   if (pref_service_) {
     profile_enabled_pref_->Init(
         prefs::kAutofillProfileEnabled, pref_service_,
-        base::BindRepeating(&AddressDataManager::LoadProfiles,
+        base::BindRepeating(&AddressDataManager::OnAutofillProfilePrefChanged,
                             base::Unretained(this)));
   }
 }

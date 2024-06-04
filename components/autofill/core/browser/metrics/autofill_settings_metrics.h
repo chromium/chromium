@@ -61,6 +61,11 @@ void LogAutofillProfileDisabledReasonAtStartup(const PrefService& pref_service);
 void LogAutofillProfileDisabledReasonAtPageLoad(
     const PrefService& pref_service);
 
+// Logs user action "Autofill_ProfileDisabled" if
+// `prefs::kAutofillProfileEnabled` is disabled and controlled by the user or an
+// extension.
+void MaybeLogAutofillProfileDisabled(const PrefService& pref_service);
+
 }  // namespace autofill::autofill_metrics
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_AUTOFILL_SETTINGS_METRICS_H_

@@ -4,8 +4,11 @@
 
 #include "components/autofill/core/browser/metrics/autofill_settings_metrics.h"
 
+#include "base/check_deref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/strings/strcat.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/prefs/pref_service.h"
@@ -101,6 +104,18 @@ void LogAutofillProfileDisabledReasonAtStartup(
 void LogAutofillProfileDisabledReasonAtPageLoad(
     const PrefService& pref_service) {
   LogAutofillProfileDisabledReason(pref_service, "PageLoad");
+}
+
+void MaybeLogAutofillProfileDisabled(const PrefService& pref_service) {
+  if (prefs::IsAutofillProfileEnabled(&pref_service)) {
+    return;
+  }
+  const PrefService::Preference& pref =
+      CHECK_DEREF(pref_service.FindPreference(prefs::kAutofillProfileEnabled));
+  if (!pref.IsUserControlled() && !pref.IsExtensionControlled()) {
+    return;
+  }
+  base::RecordAction(base::UserMetricsAction("Autofill_ProfileDisabled"));
 }
 
 }  // namespace autofill::autofill_metrics
