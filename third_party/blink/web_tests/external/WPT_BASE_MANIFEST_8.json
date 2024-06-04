@@ -21263,6 +21263,45 @@
        {}
       ]
      ],
+     "page-box-008-print.html": [
+      "c05f0e24af08b0e497de5a91ae869315e82092c0",
+      [
+       null,
+       [
+        [
+         "/css/css-page/page-box-008-print-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "page-box-009-print.html": [
+      "dc9ced3bdf9ea7cdc23988a9fc3fba1420262300",
+      [
+       null,
+       [
+        [
+         "/css/css-page/page-box-009-print-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "page-box-010-print.html": [
+      "66e192a14e84238d99e57159dc04ccd8bfea24a4",
+      [
+       null,
+       [
+        [
+         "/css/css-page/page-box-010-print-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "page-left-right-001-print.html": [
       "044696fcca27ec7ebe18edab3053dfbb65af6bbc",
       [
@@ -168457,19 +168496,6 @@
        {}
       ]
      ],
-     "first-letter-width-2.html": [
-      "e7d01afe47291b507179ca4f984e710d06ee526e",
-      [
-       null,
-       [
-        [
-         "/css/css-pseudo/first-letter-width-2-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
      "first-letter-width.html": [
       "fedf917c62a1c34c054b7484594ced16960c4c17",
       [
@@ -264658,416 +264684,52 @@
          {}
         ]
        ],
-       "2d.layer.global-states.blending.no-shadow.no-transform.html": [
-        "91decadfe2d9a05ddef878ecf783d388f4833ff5",
+       "2d.layer.global-states.filter.no-transform.html": [
+        "dc55eeb38cf9093d7e6749ffcd56b89d775dbfc1",
         [
          null,
          [
           [
-           "/html/canvas/element/layers/2d.layer.global-states.blending.no-shadow.no-transform-expected.html",
+           "/html/canvas/element/layers/2d.layer.global-states.filter.no-transform-expected.html",
            "=="
           ]
          ],
          {}
         ]
        ],
-       "2d.layer.global-states.blending.no-shadow.rotation.html": [
-        "d6b28315f214795d62e8160856f8314056e4ca84",
+       "2d.layer.global-states.filter.rotation.html": [
+        "49676d458ef38f581b3f3cc03fec160b83bf3826",
         [
          null,
          [
           [
-           "/html/canvas/element/layers/2d.layer.global-states.blending.no-shadow.rotation-expected.html",
+           "/html/canvas/element/layers/2d.layer.global-states.filter.rotation-expected.html",
            "=="
           ]
          ],
          {}
         ]
        ],
-       "2d.layer.global-states.blending.shadow.no-transform.html": [
-        "e0b8e45b51ae70d0d452901152a7a51dbc188292",
+       "2d.layer.global-states.no-transform.html": [
+        "cabbe954cee38864c414099114998c1b559d3d4d",
         [
          null,
          [
           [
-           "/html/canvas/element/layers/2d.layer.global-states.blending.shadow.no-transform-expected.html",
+           "/html/canvas/element/layers/2d.layer.global-states.no-transform-expected.html",
            "=="
           ]
          ],
          {}
         ]
        ],
-       "2d.layer.global-states.blending.shadow.rotation.html": [
-        "f3891369c9437be0078a3fa7956d5302c8da2a43",
+       "2d.layer.global-states.rotation.html": [
+        "240a510b844710ecaabe94b08bbc482a977abef1",
         [
          null,
          [
           [
-           "/html/canvas/element/layers/2d.layer.global-states.blending.shadow.rotation-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.composite.no-shadow.no-transform.html": [
-        "195905e16bf775fa9776992218d78588d6d55aee",
-        [
-         null,
-         [
-          [
-           "/html/canvas/element/layers/2d.layer.global-states.composite.no-shadow.no-transform-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.composite.no-shadow.rotation.html": [
-        "905fd7637b860cbd3282f39d372b826d688467e3",
-        [
-         null,
-         [
-          [
-           "/html/canvas/element/layers/2d.layer.global-states.composite.no-shadow.rotation-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.composite.shadow.no-transform.html": [
-        "df008cf12e96839fb09dd04bd6bc40f62e58939c",
-        [
-         null,
-         [
-          [
-           "/html/canvas/element/layers/2d.layer.global-states.composite.shadow.no-transform-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.composite.shadow.rotation.html": [
-        "99e1d95443716cef787739996407b843f6519ec4",
-        [
-         null,
-         [
-          [
-           "/html/canvas/element/layers/2d.layer.global-states.composite.shadow.rotation-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.copy.no-shadow.no-transform.html": [
-        "1720f20589fcd676f93f9871d32f6701820672df",
-        [
-         null,
-         [
-          [
-           "/html/canvas/element/layers/2d.layer.global-states.copy.no-shadow.no-transform-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.copy.no-shadow.rotation.html": [
-        "87cd91bb120b52d5c6d2081444a5be759f9b5d75",
-        [
-         null,
-         [
-          [
-           "/html/canvas/element/layers/2d.layer.global-states.copy.no-shadow.rotation-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.copy.shadow.no-transform.html": [
-        "e8d01065c1d746407f641fecf5648c96df676145",
-        [
-         null,
-         [
-          [
-           "/html/canvas/element/layers/2d.layer.global-states.copy.shadow.no-transform-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.copy.shadow.rotation.html": [
-        "5c7fa379f14932e1377fab595f8b1a3302457d6c",
-        [
-         null,
-         [
-          [
-           "/html/canvas/element/layers/2d.layer.global-states.copy.shadow.rotation-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.filter.blending.no-shadow.no-transform.html": [
-        "188d5ea98be76d827857285197ccae1494d87db9",
-        [
-         null,
-         [
-          [
-           "/html/canvas/element/layers/2d.layer.global-states.filter.blending.no-shadow.no-transform-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.filter.blending.no-shadow.rotation.html": [
-        "849a0c997e6677df4a1b95210c1474956d503de6",
-        [
-         null,
-         [
-          [
-           "/html/canvas/element/layers/2d.layer.global-states.filter.blending.no-shadow.rotation-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.filter.blending.shadow.no-transform.html": [
-        "34ded8fef59b4469ee8e44d703c4d2b16d8af65d",
-        [
-         null,
-         [
-          [
-           "/html/canvas/element/layers/2d.layer.global-states.filter.blending.shadow.no-transform-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.filter.blending.shadow.rotation.html": [
-        "78407dd4596c2ee01eb78a46ec3bb9e5624cad3d",
-        [
-         null,
-         [
-          [
-           "/html/canvas/element/layers/2d.layer.global-states.filter.blending.shadow.rotation-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.filter.composite.no-shadow.no-transform.html": [
-        "e3c36d3c0e63e6acce02f7d8e99d20995781823e",
-        [
-         null,
-         [
-          [
-           "/html/canvas/element/layers/2d.layer.global-states.filter.composite.no-shadow.no-transform-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.filter.composite.no-shadow.rotation.html": [
-        "466513864ed57c156340fb79d82337c9222e3e2d",
-        [
-         null,
-         [
-          [
-           "/html/canvas/element/layers/2d.layer.global-states.filter.composite.no-shadow.rotation-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.filter.composite.shadow.no-transform.html": [
-        "bc7cfd314eb746b92b0215df4c0d63c60a883e66",
-        [
-         null,
-         [
-          [
-           "/html/canvas/element/layers/2d.layer.global-states.filter.composite.shadow.no-transform-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.filter.composite.shadow.rotation.html": [
-        "f304e9c8e8771fca7aec7973e069d7b498158ec2",
-        [
-         null,
-         [
-          [
-           "/html/canvas/element/layers/2d.layer.global-states.filter.composite.shadow.rotation-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.filter.copy.no-shadow.no-transform.html": [
-        "ac5c7303a81856c5763f3237d75aeb5e9ddedc04",
-        [
-         null,
-         [
-          [
-           "/html/canvas/element/layers/2d.layer.global-states.filter.copy.no-shadow.no-transform-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.filter.copy.no-shadow.rotation.html": [
-        "3158a2fff34ef7327f85ce0c05d2b5bfbba271f4",
-        [
-         null,
-         [
-          [
-           "/html/canvas/element/layers/2d.layer.global-states.filter.copy.no-shadow.rotation-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.filter.copy.shadow.no-transform.html": [
-        "839ab13add854c1c3c033568b2a8a37a4a5acb2b",
-        [
-         null,
-         [
-          [
-           "/html/canvas/element/layers/2d.layer.global-states.filter.copy.shadow.no-transform-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.filter.copy.shadow.rotation.html": [
-        "7c090165f5903101ba0c4d945f0b9bd1efa3ee69",
-        [
-         null,
-         [
-          [
-           "/html/canvas/element/layers/2d.layer.global-states.filter.copy.shadow.rotation-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.filter.no-composite-op.no-shadow.no-transform.html": [
-        "d2b2d806c4b30ef0fa6d141766b7d0f9cbebc589",
-        [
-         null,
-         [
-          [
-           "/html/canvas/element/layers/2d.layer.global-states.filter.no-composite-op.no-shadow.no-transform-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.filter.no-composite-op.no-shadow.rotation.html": [
-        "afc4ebbd4051dac715b8eb87aa55a22a44e7e967",
-        [
-         null,
-         [
-          [
-           "/html/canvas/element/layers/2d.layer.global-states.filter.no-composite-op.no-shadow.rotation-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.filter.no-composite-op.shadow.no-transform.html": [
-        "93caac12fc978d21d143d37c7836114e45ff2f90",
-        [
-         null,
-         [
-          [
-           "/html/canvas/element/layers/2d.layer.global-states.filter.no-composite-op.shadow.no-transform-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.filter.no-composite-op.shadow.rotation.html": [
-        "6849a2f40dee8360035b77807a1cff41400ca48d",
-        [
-         null,
-         [
-          [
-           "/html/canvas/element/layers/2d.layer.global-states.filter.no-composite-op.shadow.rotation-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.no-composite-op.no-shadow.no-transform.html": [
-        "f0fd2d19e3bd5ab09b8e5386e28e83f15e31244f",
-        [
-         null,
-         [
-          [
-           "/html/canvas/element/layers/2d.layer.global-states.no-composite-op.no-shadow.no-transform-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.no-composite-op.no-shadow.rotation.html": [
-        "7ab850023e0da41bb6bfeecfb1640c7b18dda49b",
-        [
-         null,
-         [
-          [
-           "/html/canvas/element/layers/2d.layer.global-states.no-composite-op.no-shadow.rotation-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.no-composite-op.shadow.no-transform.html": [
-        "9da1936c5dfbd8bcb03d2683c32ee2ee5d56a70c",
-        [
-         null,
-         [
-          [
-           "/html/canvas/element/layers/2d.layer.global-states.no-composite-op.shadow.no-transform-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.no-composite-op.shadow.rotation.html": [
-        "00ace7c54d8203fb0eff593219fa26ad9886a32e",
-        [
-         null,
-         [
-          [
-           "/html/canvas/element/layers/2d.layer.global-states.no-composite-op.shadow.rotation-expected.html",
+           "/html/canvas/element/layers/2d.layer.global-states.rotation-expected.html",
            "=="
           ]
          ],
@@ -267681,832 +267343,104 @@
          {}
         ]
        ],
-       "2d.layer.global-states.blending.no-shadow.no-transform.html": [
-        "1f8736e0e4df8d66f58edbc2f5c66fffaee8b67b",
+       "2d.layer.global-states.filter.no-transform.html": [
+        "3afded0040552a09621515de9f1ce94789262715",
         [
          null,
          [
           [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.blending.no-shadow.no-transform-expected.html",
+           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.no-transform-expected.html",
            "=="
           ]
          ],
          {}
         ]
        ],
-       "2d.layer.global-states.blending.no-shadow.no-transform.w.html": [
-        "2bd46eee66ebb9ce874d8d40b30e2800732521e9",
+       "2d.layer.global-states.filter.no-transform.w.html": [
+        "7b925b2539aeabc0f8b21ea0c5eb97f256bb8bc2",
         [
          null,
          [
           [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.blending.no-shadow.no-transform-expected.html",
+           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.no-transform-expected.html",
            "=="
           ]
          ],
          {}
         ]
        ],
-       "2d.layer.global-states.blending.no-shadow.rotation.html": [
-        "0470777988446c7a131ab8ad1644c7f87d6bd00f",
+       "2d.layer.global-states.filter.rotation.html": [
+        "851b24adbd5f5acc8277ef5396be3a57b0c54f70",
         [
          null,
          [
           [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.blending.no-shadow.rotation-expected.html",
+           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.rotation-expected.html",
            "=="
           ]
          ],
          {}
         ]
        ],
-       "2d.layer.global-states.blending.no-shadow.rotation.w.html": [
-        "4d33b3a638e18cb638e99b056ef08783ee16aa36",
+       "2d.layer.global-states.filter.rotation.w.html": [
+        "adb85393eb1e2e866fdef409a5a5f36a3341c8d4",
         [
          null,
          [
           [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.blending.no-shadow.rotation-expected.html",
+           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.rotation-expected.html",
            "=="
           ]
          ],
          {}
         ]
        ],
-       "2d.layer.global-states.blending.shadow.no-transform.html": [
-        "c6f0239c394f85b6175c8952e901672d8abd6825",
+       "2d.layer.global-states.no-transform.html": [
+        "d80b669af927b320716deaeb30304eb6290e88cd",
         [
          null,
          [
           [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.blending.shadow.no-transform-expected.html",
+           "/html/canvas/offscreen/layers/2d.layer.global-states.no-transform-expected.html",
            "=="
           ]
          ],
          {}
         ]
        ],
-       "2d.layer.global-states.blending.shadow.no-transform.w.html": [
-        "0be246ebfb1cd9e8ca55e991e1bef60524e6a41f",
+       "2d.layer.global-states.no-transform.w.html": [
+        "e9e1f753a3cf350480a2da2e2a37feb5acebde17",
         [
          null,
          [
           [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.blending.shadow.no-transform-expected.html",
+           "/html/canvas/offscreen/layers/2d.layer.global-states.no-transform-expected.html",
            "=="
           ]
          ],
          {}
         ]
        ],
-       "2d.layer.global-states.blending.shadow.rotation.html": [
-        "aac9d86e660f9bd8662d74d3f96a04909bdf3228",
+       "2d.layer.global-states.rotation.html": [
+        "30d0ef5aca5893fe1733ba4603208c0c79d7814c",
         [
          null,
          [
           [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.blending.shadow.rotation-expected.html",
+           "/html/canvas/offscreen/layers/2d.layer.global-states.rotation-expected.html",
            "=="
           ]
          ],
          {}
         ]
        ],
-       "2d.layer.global-states.blending.shadow.rotation.w.html": [
-        "86067b72994c14e577a99b9943970f6bdb83921c",
+       "2d.layer.global-states.rotation.w.html": [
+        "7f947d8dba2ac3cb3023f608c7963f207fdf6b02",
         [
          null,
          [
           [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.blending.shadow.rotation-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.composite.no-shadow.no-transform.html": [
-        "69dc916d7deef1f1c07ef6b590e26e1a6a46482e",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.composite.no-shadow.no-transform-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.composite.no-shadow.no-transform.w.html": [
-        "aa358b57bcd50c514af6e5259fa543af1a906bd6",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.composite.no-shadow.no-transform-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.composite.no-shadow.rotation.html": [
-        "d0d08f9835fe9d3876f8fe722fb1bb3609824aa7",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.composite.no-shadow.rotation-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.composite.no-shadow.rotation.w.html": [
-        "5e2cd0783dfa93eb4e87dccaba1118ab27fc002e",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.composite.no-shadow.rotation-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.composite.shadow.no-transform.html": [
-        "8b79eba1285ba3a9fe23ab4c20748df0ae1ba5ff",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.composite.shadow.no-transform-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.composite.shadow.no-transform.w.html": [
-        "47f2df391f67aa8bfef3cf6707772ea10394097c",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.composite.shadow.no-transform-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.composite.shadow.rotation.html": [
-        "632d390986aee9f63553b4ea1578cf42de92e35a",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.composite.shadow.rotation-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.composite.shadow.rotation.w.html": [
-        "dde0d8bec03160bd3c7fa49ef13ccf9e363e684b",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.composite.shadow.rotation-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.copy.no-shadow.no-transform.html": [
-        "70b659f52ba565806c813e3d8c86cccf9666f548",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.copy.no-shadow.no-transform-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.copy.no-shadow.no-transform.w.html": [
-        "1db7f17a94d65c074b8ecfa41dd191f7f5889980",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.copy.no-shadow.no-transform-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.copy.no-shadow.rotation.html": [
-        "2151535015b670f35cebc61cd9287350ef3e9bd9",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.copy.no-shadow.rotation-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.copy.no-shadow.rotation.w.html": [
-        "9c0cac99b913236a4946bbdf29ceb7221bdc2de5",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.copy.no-shadow.rotation-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.copy.shadow.no-transform.html": [
-        "42231fa61eeda807201e913fb9d8edb27f144c6a",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.copy.shadow.no-transform-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.copy.shadow.no-transform.w.html": [
-        "20dc667ef8730ecf3216ea17b713b4a801b764da",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.copy.shadow.no-transform-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.copy.shadow.rotation.html": [
-        "77158a9f962d2f0aa5bad8934a4a5b0676e20070",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.copy.shadow.rotation-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.copy.shadow.rotation.w.html": [
-        "def6bc51e2054f7189125a23dbcd12e78b5ff239",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.copy.shadow.rotation-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.filter.blending.no-shadow.no-transform.html": [
-        "8acbfa668fbc62c168d6d9ec43607b51291947c8",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.blending.no-shadow.no-transform-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.filter.blending.no-shadow.no-transform.w.html": [
-        "93edfabdf3a28ccdff4c6f5f5977dc84605697ac",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.blending.no-shadow.no-transform-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.filter.blending.no-shadow.rotation.html": [
-        "0a4a8c65d2f9831e7f40a34496b06944c4d7f312",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.blending.no-shadow.rotation-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.filter.blending.no-shadow.rotation.w.html": [
-        "7caaf1edee3eb3c13fe32fe3fefae4d114271237",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.blending.no-shadow.rotation-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.filter.blending.shadow.no-transform.html": [
-        "1ee32543245ad91b5629ae502a6dcc598a7c0713",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.blending.shadow.no-transform-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.filter.blending.shadow.no-transform.w.html": [
-        "3ec656c135dcc826b8083ff47aa6218d1cd75387",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.blending.shadow.no-transform-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.filter.blending.shadow.rotation.html": [
-        "62af08d2ac5c45fcc7035f7d395c06d85ca66758",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.blending.shadow.rotation-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.filter.blending.shadow.rotation.w.html": [
-        "d5693cdcdcc8fd9452c18f68346c70d3353fe123",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.blending.shadow.rotation-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.filter.composite.no-shadow.no-transform.html": [
-        "17394aa4c84a8302a7512dff6103791f16a2b544",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.composite.no-shadow.no-transform-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.filter.composite.no-shadow.no-transform.w.html": [
-        "386ad43b0fe9fb04a707ca11c186c98e52d217b2",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.composite.no-shadow.no-transform-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.filter.composite.no-shadow.rotation.html": [
-        "576283ea732cfcc476d2db4721d6c11f2b187525",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.composite.no-shadow.rotation-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.filter.composite.no-shadow.rotation.w.html": [
-        "6dd39d77e954771783314be9b19d507429dcbca2",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.composite.no-shadow.rotation-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.filter.composite.shadow.no-transform.html": [
-        "b574a819d601458af022bba16eb282f4167a1335",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.composite.shadow.no-transform-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.filter.composite.shadow.no-transform.w.html": [
-        "96ee1b027b3d7890a7444b19f596529feeb64f3c",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.composite.shadow.no-transform-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.filter.composite.shadow.rotation.html": [
-        "b7b4312a3591e314f59fa90ceeb0a41f5d152444",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.composite.shadow.rotation-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.filter.composite.shadow.rotation.w.html": [
-        "1ae9f00a8588b2ded2a3bf5644ca3c5f2812c280",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.composite.shadow.rotation-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.filter.copy.no-shadow.no-transform.html": [
-        "f08ba940af401dfa88645adcbcf5b329b741e0f4",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.copy.no-shadow.no-transform-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.filter.copy.no-shadow.no-transform.w.html": [
-        "75fc90bae67cc47cb5606b5b0ece91e05eed0cd3",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.copy.no-shadow.no-transform-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.filter.copy.no-shadow.rotation.html": [
-        "3f12cf0c4e4dc0444da574fee29fc56de19263b2",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.copy.no-shadow.rotation-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.filter.copy.no-shadow.rotation.w.html": [
-        "0a3ecee6698060758615b01ceae626ce0971ecf7",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.copy.no-shadow.rotation-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.filter.copy.shadow.no-transform.html": [
-        "b4996deb6f3b5e7380ca32282e595dfd1095e326",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.copy.shadow.no-transform-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.filter.copy.shadow.no-transform.w.html": [
-        "9c13a367b32606080ea265a82a54002874e69ee4",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.copy.shadow.no-transform-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.filter.copy.shadow.rotation.html": [
-        "eab5f8312bbb31753800958d128562a235bfca77",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.copy.shadow.rotation-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.filter.copy.shadow.rotation.w.html": [
-        "aebd6cc00d4802fa7dcea4162d85f081f46fa022",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.copy.shadow.rotation-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.filter.no-composite-op.no-shadow.no-transform.html": [
-        "f86b0fd37d73c501c1cdc3b466228b775349b678",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.no-composite-op.no-shadow.no-transform-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.filter.no-composite-op.no-shadow.no-transform.w.html": [
-        "ab0836af94b1f4764ec6a63be2279617ec1ab033",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.no-composite-op.no-shadow.no-transform-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.filter.no-composite-op.no-shadow.rotation.html": [
-        "5854af853cb8c756538ff9af0c48384a5b08b787",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.no-composite-op.no-shadow.rotation-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.filter.no-composite-op.no-shadow.rotation.w.html": [
-        "c08f1f9f3c6a5fdd90662506fdb65e71cc70d5b2",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.no-composite-op.no-shadow.rotation-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.filter.no-composite-op.shadow.no-transform.html": [
-        "f1dc725b83a509d79c6bb4f522eabbda6d4a8fc8",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.no-composite-op.shadow.no-transform-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.filter.no-composite-op.shadow.no-transform.w.html": [
-        "f191747805364c19d0d2c04e9ab1e92b5f306337",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.no-composite-op.shadow.no-transform-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.filter.no-composite-op.shadow.rotation.html": [
-        "76258b326d6cdcdfbd99b9874e2f2eade7303d5a",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.no-composite-op.shadow.rotation-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.filter.no-composite-op.shadow.rotation.w.html": [
-        "9a10fb569feb88d1e067b867757855d9f3dc23a8",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.filter.no-composite-op.shadow.rotation-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.no-composite-op.no-shadow.no-transform.html": [
-        "016f78a5d8fb5f3f78cc35f11ac27f892caba2ae",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.no-composite-op.no-shadow.no-transform-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.no-composite-op.no-shadow.no-transform.w.html": [
-        "2a450624f1f20caadda8a135cd7a8daa378969d4",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.no-composite-op.no-shadow.no-transform-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.no-composite-op.no-shadow.rotation.html": [
-        "12a1e64b4236d037c2cd2c18e3928995581b968e",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.no-composite-op.no-shadow.rotation-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.no-composite-op.no-shadow.rotation.w.html": [
-        "a0f5f7609906e8a3f6a3182ae0c2130be741c4c7",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.no-composite-op.no-shadow.rotation-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.no-composite-op.shadow.no-transform.html": [
-        "99301fde096e3cbe420b13fcb2e3335b9546ef1c",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.no-composite-op.shadow.no-transform-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.no-composite-op.shadow.no-transform.w.html": [
-        "46375f290c8c9e13919b725affa785915f6ad6e3",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.no-composite-op.shadow.no-transform-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.no-composite-op.shadow.rotation.html": [
-        "280cc1cceb218f2c429f0fffcb321dbad0cb1ee9",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.no-composite-op.shadow.rotation-expected.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "2d.layer.global-states.no-composite-op.shadow.rotation.w.html": [
-        "3192f79afa7d08b9cc11679cdbf3272256a39483",
-        [
-         null,
-         [
-          [
-           "/html/canvas/offscreen/layers/2d.layer.global-states.no-composite-op.shadow.rotation-expected.html",
+           "/html/canvas/offscreen/layers/2d.layer.global-states.rotation-expected.html",
            "=="
           ]
          ],
@@ -275245,6 +274179,34 @@
       }
      },
      "forms": {
+      "the-datalist-element": {
+       "input-text-datalist-appearance.html": [
+        "c1663de2f2f181305f5d988f1e36a0f54ea4b4c6",
+        [
+         null,
+         [
+          [
+           "/html/semantics/forms/the-datalist-element/input-text-focused-ref.html",
+           "!="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "input-text-datalist-removal.html": [
+        "c85bd288ed519eccfd97f4b07eacb8d2217b5451",
+        [
+         null,
+         [
+          [
+           "/html/semantics/forms/the-datalist-element/input-text-focused-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ]
+      },
       "the-input-element": {
        "auto-direction-dynamic.html": [
         "68ea51185c07833a8cd197f35cbcd6c5ee9c184a",
@@ -305704,6 +304666,10 @@
       []
      ],
      "parsing": {
+      "position-try-options-parsing-expected.txt": [
+       "eb256bd21fec67c82a34904fa1fdaaf7458962d3",
+       []
+      ],
       "position-visibility-computed.tentative-expected.txt": [
        "236fd0475a9a531b9215e5be8425e210b2a654c2",
        []
@@ -329533,6 +328499,18 @@
       "9f5550f8f585a04ab48bc26ef834ef09ed85ce00",
       []
      ],
+     "page-box-008-print-ref.html": [
+      "91ed0cec3fac6fea39363a23058951f4408f3daf",
+      []
+     ],
+     "page-box-009-print-ref.html": [
+      "3c034171d3b70e62e0e2aebfff9d419d2cd51451",
+      []
+     ],
+     "page-box-010-print-ref.html": [
+      "e5e9a057dcb6191864a16be34fa9fd2749de66eb",
+      []
+     ],
      "page-left-right-001-print-ref.html": [
       "1eb011bed8a0dde4a65494d54fc2e2bd9a042080",
       []
@@ -331011,10 +329989,6 @@
      ],
      "first-letter-skip-marker-ref.html": [
       "82c5074fd26aa2dc35c9c8fa77dd3bf1099c5f88",
-      []
-     ],
-     "first-letter-width-2-ref.html": [
-      "67fe00ca79030554f19be7100ccb505dc273e300",
       []
      ],
      "first-letter-width-ref.html": [
@@ -363427,132 +362401,20 @@
         "88057fc354a4e593191a4b3d5c94cdfa7d466126",
         []
        ],
-       "2d.layer.global-states.blending.no-shadow.no-transform-expected.html": [
-        "c56f13f2fd5bcb96d53de3332a1a45d02663be2f",
+       "2d.layer.global-states.filter.no-transform-expected.html": [
+        "c57e256847846ac136679ad6455ed6b3b8f566a3",
         []
        ],
-       "2d.layer.global-states.blending.no-shadow.rotation-expected.html": [
-        "e5f8ba0db43330bcf6c42a354c978b5930ee1e84",
+       "2d.layer.global-states.filter.rotation-expected.html": [
+        "650a40bb80c1409b6b8f6effaa10ad7baf8d45f2",
         []
        ],
-       "2d.layer.global-states.blending.shadow.no-transform-expected.html": [
-        "debbd430c434a0fe0a8ffd1c0a481e7e33067474",
+       "2d.layer.global-states.no-transform-expected.html": [
+        "ad6f64043f6a175b105db4313d46c64d18f417eb",
         []
        ],
-       "2d.layer.global-states.blending.shadow.rotation-expected.html": [
-        "75a55e591b6d12ae8a672549af8ceba8712aa7c7",
-        []
-       ],
-       "2d.layer.global-states.composite.no-shadow.no-transform-expected.html": [
-        "cf875595821fdbec74112916279efad539805d11",
-        []
-       ],
-       "2d.layer.global-states.composite.no-shadow.rotation-expected.html": [
-        "2f9bb208fb02f8b706b69dd8bd9417e9885d533a",
-        []
-       ],
-       "2d.layer.global-states.composite.shadow.no-transform-expected.html": [
-        "2b4436806a4435a358dfd4173aba2e43ae393061",
-        []
-       ],
-       "2d.layer.global-states.composite.shadow.rotation-expected.html": [
-        "da144975a57d2563394c7b6cedc1d998f8fb5ef1",
-        []
-       ],
-       "2d.layer.global-states.copy.no-shadow.no-transform-expected.html": [
-        "489d4322823e96b1f205e3088b7b4939c3757c39",
-        []
-       ],
-       "2d.layer.global-states.copy.no-shadow.rotation-expected.html": [
-        "63913ffb0571c916d0c3927ba3265583486bfe2c",
-        []
-       ],
-       "2d.layer.global-states.copy.shadow.no-transform-expected.html": [
-        "021581f8925dcfbca0e02d83a58c6ac1ff2c7ea3",
-        []
-       ],
-       "2d.layer.global-states.copy.shadow.rotation-expected.html": [
-        "dd9a5c2a00141ad61a1e53e56b012cc99ae0316f",
-        []
-       ],
-       "2d.layer.global-states.filter.blending.no-shadow.no-transform-expected.html": [
-        "482ab25a8552ea83f004e35de28c5ac2a1532a4a",
-        []
-       ],
-       "2d.layer.global-states.filter.blending.no-shadow.rotation-expected.html": [
-        "3af6b863edde3d476287c20b02b88f542d7169cc",
-        []
-       ],
-       "2d.layer.global-states.filter.blending.shadow.no-transform-expected.html": [
-        "d530ef9d19024a4c939c5eed778f8e1bc5e24cba",
-        []
-       ],
-       "2d.layer.global-states.filter.blending.shadow.rotation-expected.html": [
-        "80705c36fdb5269f689e2c1877088fdc2b0a17e3",
-        []
-       ],
-       "2d.layer.global-states.filter.composite.no-shadow.no-transform-expected.html": [
-        "2f513bff0a646c3477e01c4c7c1b2195d8626290",
-        []
-       ],
-       "2d.layer.global-states.filter.composite.no-shadow.rotation-expected.html": [
-        "242973300fba5fab0371786fc77bba416e59a87c",
-        []
-       ],
-       "2d.layer.global-states.filter.composite.shadow.no-transform-expected.html": [
-        "c8926e5e15dea3f236a263d4bf64a182374d685f",
-        []
-       ],
-       "2d.layer.global-states.filter.composite.shadow.rotation-expected.html": [
-        "e70fe3e92d87c705328eff2cc4949599b093ed40",
-        []
-       ],
-       "2d.layer.global-states.filter.copy.no-shadow.no-transform-expected.html": [
-        "21aa241aca8b82feeba45f72b73c1fded973744c",
-        []
-       ],
-       "2d.layer.global-states.filter.copy.no-shadow.rotation-expected.html": [
-        "b2b46ee039cb85c2eba622b7d7e6c320b436b139",
-        []
-       ],
-       "2d.layer.global-states.filter.copy.shadow.no-transform-expected.html": [
-        "d11326d5d68dbde8aa28ed07f5093bbd9c414d71",
-        []
-       ],
-       "2d.layer.global-states.filter.copy.shadow.rotation-expected.html": [
-        "3ac098c344877d9e50c94810a1141f89bdd67e2d",
-        []
-       ],
-       "2d.layer.global-states.filter.no-composite-op.no-shadow.no-transform-expected.html": [
-        "a445ae2c4a4b0c21c500ee6ab0ad7e470d479ef6",
-        []
-       ],
-       "2d.layer.global-states.filter.no-composite-op.no-shadow.rotation-expected.html": [
-        "610c601b1cbd705081b161721b36197a98c951b3",
-        []
-       ],
-       "2d.layer.global-states.filter.no-composite-op.shadow.no-transform-expected.html": [
-        "6bd4501584ad5be0e2e263a0f6e573cbf4b17d60",
-        []
-       ],
-       "2d.layer.global-states.filter.no-composite-op.shadow.rotation-expected.html": [
-        "b60a5526d9da815f175b46d27327b39de975c1ce",
-        []
-       ],
-       "2d.layer.global-states.no-composite-op.no-shadow.no-transform-expected.html": [
-        "d1a799707f5bf255b4d30f4f351b729ab897ed5e",
-        []
-       ],
-       "2d.layer.global-states.no-composite-op.no-shadow.rotation-expected.html": [
-        "cc91a67faf88245951d468dedc08023e9c3fd1c2",
-        []
-       ],
-       "2d.layer.global-states.no-composite-op.shadow.no-transform-expected.html": [
-        "02b239116c06d644b0b5e08519d94313a441bfa1",
-        []
-       ],
-       "2d.layer.global-states.no-composite-op.shadow.rotation-expected.html": [
-        "06f6a2dff3ec1533b419a8d1819a9fdf32fc1aa4",
+       "2d.layer.global-states.rotation-expected.html": [
+        "376504488c392ea6f58f415da8f03faafafb41f2",
         []
        ],
        "2d.layer.globalCompositeOperation-expected.html": [
@@ -364671,132 +363533,20 @@
         "88057fc354a4e593191a4b3d5c94cdfa7d466126",
         []
        ],
-       "2d.layer.global-states.blending.no-shadow.no-transform-expected.html": [
-        "c56f13f2fd5bcb96d53de3332a1a45d02663be2f",
+       "2d.layer.global-states.filter.no-transform-expected.html": [
+        "c57e256847846ac136679ad6455ed6b3b8f566a3",
         []
        ],
-       "2d.layer.global-states.blending.no-shadow.rotation-expected.html": [
-        "e5f8ba0db43330bcf6c42a354c978b5930ee1e84",
+       "2d.layer.global-states.filter.rotation-expected.html": [
+        "650a40bb80c1409b6b8f6effaa10ad7baf8d45f2",
         []
        ],
-       "2d.layer.global-states.blending.shadow.no-transform-expected.html": [
-        "debbd430c434a0fe0a8ffd1c0a481e7e33067474",
+       "2d.layer.global-states.no-transform-expected.html": [
+        "ad6f64043f6a175b105db4313d46c64d18f417eb",
         []
        ],
-       "2d.layer.global-states.blending.shadow.rotation-expected.html": [
-        "75a55e591b6d12ae8a672549af8ceba8712aa7c7",
-        []
-       ],
-       "2d.layer.global-states.composite.no-shadow.no-transform-expected.html": [
-        "cf875595821fdbec74112916279efad539805d11",
-        []
-       ],
-       "2d.layer.global-states.composite.no-shadow.rotation-expected.html": [
-        "2f9bb208fb02f8b706b69dd8bd9417e9885d533a",
-        []
-       ],
-       "2d.layer.global-states.composite.shadow.no-transform-expected.html": [
-        "2b4436806a4435a358dfd4173aba2e43ae393061",
-        []
-       ],
-       "2d.layer.global-states.composite.shadow.rotation-expected.html": [
-        "da144975a57d2563394c7b6cedc1d998f8fb5ef1",
-        []
-       ],
-       "2d.layer.global-states.copy.no-shadow.no-transform-expected.html": [
-        "489d4322823e96b1f205e3088b7b4939c3757c39",
-        []
-       ],
-       "2d.layer.global-states.copy.no-shadow.rotation-expected.html": [
-        "63913ffb0571c916d0c3927ba3265583486bfe2c",
-        []
-       ],
-       "2d.layer.global-states.copy.shadow.no-transform-expected.html": [
-        "021581f8925dcfbca0e02d83a58c6ac1ff2c7ea3",
-        []
-       ],
-       "2d.layer.global-states.copy.shadow.rotation-expected.html": [
-        "dd9a5c2a00141ad61a1e53e56b012cc99ae0316f",
-        []
-       ],
-       "2d.layer.global-states.filter.blending.no-shadow.no-transform-expected.html": [
-        "482ab25a8552ea83f004e35de28c5ac2a1532a4a",
-        []
-       ],
-       "2d.layer.global-states.filter.blending.no-shadow.rotation-expected.html": [
-        "3af6b863edde3d476287c20b02b88f542d7169cc",
-        []
-       ],
-       "2d.layer.global-states.filter.blending.shadow.no-transform-expected.html": [
-        "d530ef9d19024a4c939c5eed778f8e1bc5e24cba",
-        []
-       ],
-       "2d.layer.global-states.filter.blending.shadow.rotation-expected.html": [
-        "80705c36fdb5269f689e2c1877088fdc2b0a17e3",
-        []
-       ],
-       "2d.layer.global-states.filter.composite.no-shadow.no-transform-expected.html": [
-        "2f513bff0a646c3477e01c4c7c1b2195d8626290",
-        []
-       ],
-       "2d.layer.global-states.filter.composite.no-shadow.rotation-expected.html": [
-        "242973300fba5fab0371786fc77bba416e59a87c",
-        []
-       ],
-       "2d.layer.global-states.filter.composite.shadow.no-transform-expected.html": [
-        "c8926e5e15dea3f236a263d4bf64a182374d685f",
-        []
-       ],
-       "2d.layer.global-states.filter.composite.shadow.rotation-expected.html": [
-        "e70fe3e92d87c705328eff2cc4949599b093ed40",
-        []
-       ],
-       "2d.layer.global-states.filter.copy.no-shadow.no-transform-expected.html": [
-        "21aa241aca8b82feeba45f72b73c1fded973744c",
-        []
-       ],
-       "2d.layer.global-states.filter.copy.no-shadow.rotation-expected.html": [
-        "b2b46ee039cb85c2eba622b7d7e6c320b436b139",
-        []
-       ],
-       "2d.layer.global-states.filter.copy.shadow.no-transform-expected.html": [
-        "d11326d5d68dbde8aa28ed07f5093bbd9c414d71",
-        []
-       ],
-       "2d.layer.global-states.filter.copy.shadow.rotation-expected.html": [
-        "3ac098c344877d9e50c94810a1141f89bdd67e2d",
-        []
-       ],
-       "2d.layer.global-states.filter.no-composite-op.no-shadow.no-transform-expected.html": [
-        "a445ae2c4a4b0c21c500ee6ab0ad7e470d479ef6",
-        []
-       ],
-       "2d.layer.global-states.filter.no-composite-op.no-shadow.rotation-expected.html": [
-        "610c601b1cbd705081b161721b36197a98c951b3",
-        []
-       ],
-       "2d.layer.global-states.filter.no-composite-op.shadow.no-transform-expected.html": [
-        "6bd4501584ad5be0e2e263a0f6e573cbf4b17d60",
-        []
-       ],
-       "2d.layer.global-states.filter.no-composite-op.shadow.rotation-expected.html": [
-        "b60a5526d9da815f175b46d27327b39de975c1ce",
-        []
-       ],
-       "2d.layer.global-states.no-composite-op.no-shadow.no-transform-expected.html": [
-        "d1a799707f5bf255b4d30f4f351b729ab897ed5e",
-        []
-       ],
-       "2d.layer.global-states.no-composite-op.no-shadow.rotation-expected.html": [
-        "cc91a67faf88245951d468dedc08023e9c3fd1c2",
-        []
-       ],
-       "2d.layer.global-states.no-composite-op.shadow.no-transform-expected.html": [
-        "02b239116c06d644b0b5e08519d94313a441bfa1",
-        []
-       ],
-       "2d.layer.global-states.no-composite-op.shadow.rotation-expected.html": [
-        "06f6a2dff3ec1533b419a8d1819a9fdf32fc1aa4",
+       "2d.layer.global-states.rotation-expected.html": [
+        "376504488c392ea6f58f415da8f03faafafb41f2",
         []
        ],
        "2d.layer.globalCompositeOperation-expected.html": [
@@ -365161,7 +363911,7 @@
       "yaml": {
        "element": {
         "meta.yaml": [
-         "12852e200ad7199f25cc11d877fc5a62df2abf75",
+         "358333d96e0c5a9b26ad65b5fedcb2a3ce604858",
          []
         ],
         "the-canvas-element.yaml": [
@@ -365171,7 +363921,7 @@
        },
        "offscreen": {
         "meta.yaml": [
-         "b07898224d2b3c3cc2e038dcf23589c26071df02",
+         "9c1cfbfd0fc80c0eeed751f7dff3bdff64d0df43",
          []
         ],
         "the-offscreen-canvas.yaml": [
@@ -365210,7 +363960,7 @@
         []
        ],
        "layers.yaml": [
-        "e71155650b0662d894cc9a665334af794effdf94",
+        "ed70a318b2997a1fde6eab8ec0adb3b1a6332030",
         []
        ],
        "line-styles.yaml": [
@@ -365242,7 +363992,7 @@
         []
        ],
        "the-canvas-state.yaml": [
-        "045208615436efec1596a2f14cb62f02fa8e470a",
+        "230e45f80a5901cae395ed1c4c848556e333073d",
         []
        ],
        "transformations.yaml": [
@@ -373447,6 +372197,10 @@
       "the-datalist-element": {
        "DIR_METADATA": [
         "6a81fd2c5e28412b1316c23a17ab6d5cac48873e",
+        []
+       ],
+       "input-text-focused-ref.html": [
+        "df8ea576069cf84c3a01c996c618103bd9e91323",
         []
        ]
       },
@@ -400613,7 +399367,7 @@
        []
       ],
       "fixtures.py": [
-       "5ab020ad0087ff19dda62d5ae34fa2867f3f6e2c",
+       "55256425f391b3959fa342d4b651329b94d48b89",
        []
       ],
       "fixtures_bidi.py": [
@@ -400625,7 +399379,7 @@
        []
       ],
       "helpers.py": [
-       "678733e951f083d121c9946c72cfea75d090d2b4",
+       "2b810be8a99a9fe143d90a588816ad0829c99542",
        []
       ],
       "html": {
@@ -445973,7 +444727,7 @@
        ]
       ],
       "position-try-options-parsing.html": [
-       "72bc74111bcc2f8439449da35dc97ca3ef57db95",
+       "375bef170c191f960bc2e0cfa0f18bca39ae9e87",
        [
         null,
         {}
@@ -449798,7 +448552,7 @@
        ]
       ],
       "color-valid-color-mix-function.html": [
-       "baa6512053fa476a979ac7f995168e70b3854e0f",
+       "1f7c7728ab5b48d30b02e48fb9f318f9b5c5b8ba",
        [
         null,
         {}
@@ -472389,7 +471143,7 @@
       ]
      ],
      "transform-with-sign-function.html": [
-      "b6e179d390b9bf484e64e3c90ac9fd23f0df7891",
+      "64b30dca17ee4853a467f535a9c90d4438763455",
       [
        null,
        {}
@@ -554354,14 +553108,14 @@
         ]
        ],
        "2d.canvas.host.initial.reset.2dstate.html": [
-        "36230dab7735685ef0c4714aff07f42a3edd995e",
+        "f6aaf9c9bbbcf9105578b8da81694a3aa63b1308",
         [
          null,
          {}
         ]
        ],
        "2d.canvas.host.initial.reset.2dstate.worker.js": [
-        "df0bd9f63cb6e2df735b7d321f16e86c4adbe7b0",
+        "fe0db573c6df6712640cb26f3a8e425270c8423d",
         [
          "html/canvas/offscreen/canvas-host/2d.canvas.host.initial.reset.2dstate.worker.html",
          {}
