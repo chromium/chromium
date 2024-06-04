@@ -6,7 +6,15 @@
 
 #import "ios/chrome/browser/ui/omnibox/popup/autocomplete_suggestion.h"
 #import "ios/chrome/browser/ui/omnibox/popup/row/actions/omnibox_popup_actions_row_content_view.h"
+#import "ios/chrome/browser/ui/omnibox/popup/row/actions/suggest_action.h"
 #import "net/base/apple/url_conversions.h"
+
+@interface OmniboxPopupActionsRowContentConfiguration ()
+
+// Redefined as readwrite.
+@property(nonatomic, strong, readwrite) NSArray<SuggestAction*>* actions;
+
+@end
 
 @implementation OmniboxPopupActionsRowContentConfiguration
 
@@ -15,10 +23,17 @@
   return [[OmniboxPopupActionsRowContentConfiguration alloc] init];
 }
 
+- (void)setSuggestion:(id<AutocompleteSuggestion>)suggestion {
+  [super setSuggestion:suggestion];
+
+  _actions = suggestion.actionsInSuggest;
+}
+
 #pragma mark - UIContentConfiguration
 
 - (id)copyWithZone:(NSZone*)zone {
   __typeof__(self) configuration = [super copyWithZone:zone];
+  configuration.actions = self.actions;
   return configuration;
 }
 

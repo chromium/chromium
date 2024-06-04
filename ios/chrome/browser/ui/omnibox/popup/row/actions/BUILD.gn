@@ -4,6 +4,8 @@
 
 source_set("actions") {
   sources = [
+    "actions_view.h",
+    "actions_view.mm",
     "omnibox_popup_actions_row_content_configuration.h",
     "omnibox_popup_actions_row_content_configuration.mm",
     "omnibox_popup_actions_row_content_view.h",
@@ -13,7 +15,9 @@ source_set("actions") {
   ]
   deps = [
     "//components/omnibox/browser",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/ui/elements",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/omnibox:features",
     "//ios/chrome/browser/ui/omnibox/popup:popup_icon",
@@ -22,6 +26,7 @@ source_set("actions") {
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/elements",
     "//ios/chrome/common/ui/util",
+    "//ui/base",
     "//url",
   ]
 }

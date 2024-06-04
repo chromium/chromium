@@ -151,6 +151,7 @@ source_set("popup_ui") {
     "//ios/chrome/browser/ui/omnibox:omnibox_util",
     "//ios/chrome/browser/ui/omnibox/popup/carousel",
     "//ios/chrome/browser/ui/omnibox/popup/row",
+    "//ios/chrome/browser/ui/omnibox/popup/row/actions",
     "//ios/chrome/browser/ui/toolbar/buttons",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",

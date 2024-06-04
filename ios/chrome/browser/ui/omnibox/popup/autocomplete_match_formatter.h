@@ -25,6 +25,9 @@ struct AutocompleteMatch;
 /// From <AutocompleteSuggestion>, redefined as readwrite.
 @property(nonatomic, strong) NSNumber* suggestionSectionId;
 
+/// From <AutocompleteSuggestion>, redefined as readwrite.
+@property(nonatomic, strong) NSArray<SuggestAction*>* actionsInSuggest;
+
 - (instancetype)initWithMatch:(const AutocompleteMatch&)match
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;

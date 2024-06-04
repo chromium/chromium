@@ -56,6 +56,7 @@
 #import "ios/chrome/browser/ui/omnibox/popup/row/actions/suggest_action.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_omnibox_consumer.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
+#import "net/base/apple/url_conversions.h"
 #import "third_party/omnibox_proto/groups.pb.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -487,6 +488,30 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
     formatter.suggestionSectionId =
         [NSNumber numberWithInt:static_cast<int>(sectionId)];
   }
+
+  NSMutableArray* actions = [[NSMutableArray alloc] init];
+
+  for (auto& action : match.actions) {
+    SuggestAction* suggestAction =
+        [SuggestAction actionWithOmniboxAction:action.get()];
+
+    if (!suggestAction) {
+      continue;
+    }
+
+    if (suggestAction.type != omnibox::ActionInfo_ActionType_CALL) {
+      [actions addObject:suggestAction];
+      continue;
+    }
+
+    BOOL hasDialApp = [[UIApplication sharedApplication]
+        canOpenURL:net::NSURLWithGURL(suggestAction.actionURI)];
+    if (hasDialApp) {
+      [actions addObject:suggestAction];
+    }
+  }
+
+  formatter.actionsInSuggest = actions;
 
   return formatter;
 }

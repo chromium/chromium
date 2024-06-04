@@ -26,6 +26,9 @@ class GURL;
 // otherwise.
 + (instancetype)actionWithOmniboxAction:(OmniboxAction*)action;
 
+// Returns an image icon for the given action.
++ (UIImage*)imageIconForAction:(SuggestAction*)action size:(CGFloat)size;
+
 // The suggestion action uri.
 @property(nonatomic, assign, readonly) GURL actionURI;
 // The suggestion action title.

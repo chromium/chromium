@@ -68,7 +68,7 @@ typedef NS_ENUM(NSUInteger, SuggestTileType) {
 /// For URL suggestions, the URL that the match represents.
 @property(nonatomic, readonly) CrURL* destinationUrl;
 /// Suggestion attached actions in suggest.
-@property(nonatomic, readonly) NSMutableArray<SuggestAction*>* actionsInSuggest;
+@property(nonatomic, readonly) NSArray<SuggestAction*>* actionsInSuggest;
 
 #pragma mark tail suggest
 

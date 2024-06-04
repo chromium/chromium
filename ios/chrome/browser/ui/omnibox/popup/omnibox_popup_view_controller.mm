@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/ui/omnibox/popup/content_providing.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_accessibility_identifier_constants.h"
 #import "ios/chrome/browser/ui/omnibox/popup/popup_match_preview_delegate.h"
+#import "ios/chrome/browser/ui/omnibox/popup/row/actions/omnibox_popup_actions_row_content_configuration.h"
 #import "ios/chrome/browser/ui/omnibox/popup/row/omnibox_popup_row_cell.h"
 #import "ios/chrome/browser/ui/omnibox/popup/row/omnibox_popup_row_cell_experimental.h"
 #import "ios/chrome/browser/ui/omnibox/popup/row/omnibox_popup_row_content_configuration.h"
@@ -307,6 +308,8 @@ BOOL ShouldDismissKeyboardOnScroll() {
   if (base::FeatureList::IsEnabled(kOmniboxPopupRowContentConfiguration)) {
     [self.tableView registerClass:[UITableViewCell class]
            forCellReuseIdentifier:OmniboxPopupRowCellReuseIdentifier];
+    [self.tableView registerClass:[UITableViewCell class]
+           forCellReuseIdentifier:OmniboxPopupActionsRowCellReuseIdentifier];
   } else if (base::FeatureList::IsEnabled(kOmniboxSuggestionsRTLImprovements)) {
     [self.tableView registerClass:[OmniboxPopupRowCellExperimental class]
            forCellReuseIdentifier:OmniboxPopupRowCellReuseIdentifier];
@@ -918,12 +921,27 @@ BOOL ShouldDismissKeyboardOnScroll() {
           self.currentResult[indexPath.section].suggestions[indexPath.row];
 
       if (base::FeatureList::IsEnabled(kOmniboxPopupRowContentConfiguration)) {
-        UITableViewCell* cell = [self.tableView
-            dequeueReusableCellWithIdentifier:OmniboxPopupRowCellReuseIdentifier
-                                 forIndexPath:indexPath];
+        UITableViewCell* cell;
 
-        OmniboxPopupRowContentConfiguration* configuration =
-            [OmniboxPopupRowContentConfiguration cellConfiguration];
+        OmniboxPopupRowContentConfiguration* configuration;
+
+        if (base::FeatureList::IsEnabled(kOmniboxActionsInSuggest) &&
+            suggestion.actionsInSuggest.count > 0) {
+          cell = [self.tableView dequeueReusableCellWithIdentifier:
+                                     OmniboxPopupActionsRowCellReuseIdentifier
+                                                      forIndexPath:indexPath];
+          configuration =
+              [OmniboxPopupActionsRowContentConfiguration cellConfiguration];
+        } else {
+          cell = [self.tableView dequeueReusableCellWithIdentifier:
+                                     OmniboxPopupRowCellReuseIdentifier
+                                                      forIndexPath:indexPath];
+          configuration =
+              [OmniboxPopupRowContentConfiguration cellConfiguration];
+        }
+
+        DCHECK(cell);
+        DCHECK(configuration);
         configuration.suggestion = suggestion;
         configuration.delegate = self;
         configuration.indexPath = indexPath;

@@ -48,6 +48,7 @@ UIColor* DimColorIncognito() {
   AutocompleteMatch _match;
 }
 @synthesize suggestionSectionId;
+@synthesize actionsInSuggest;
 
 - (instancetype)initWithMatch:(const AutocompleteMatch&)match {
   self = [super init];
@@ -412,21 +413,6 @@ UIColor* DimColorIncognito() {
 
 - (id<OmniboxPedal>)pedal {
   return self.pedalData;
-}
-
-- (NSMutableArray<SuggestAction*>*)actionsInSuggest {
-  NSMutableArray<SuggestAction*>* suggestActions =
-      [[NSMutableArray alloc] init];
-
-  for (auto& action : _match.actions) {
-    SuggestAction* suggestAction =
-        [SuggestAction actionWithOmniboxAction:action.get()];
-    if (suggestAction) {
-      [suggestActions addObject:suggestAction];
-    }
-  }
-
-  return suggestActions;
 }
 
 - (UIImage*)matchTypeIcon {

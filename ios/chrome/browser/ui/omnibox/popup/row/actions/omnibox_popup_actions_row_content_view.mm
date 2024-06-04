@@ -1,16 +1,19 @@
+
 // Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
 #import "ios/chrome/browser/ui/omnibox/popup/row/actions/omnibox_popup_actions_row_content_view.h"
 
 #import "base/check.h"
 #import "base/metrics/histogram_functions.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/elements/fade_truncating_label.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/attributed_string_util.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_icon_view.h"
+#import "ios/chrome/browser/ui/omnibox/popup/row/actions/actions_view.h"
+#import "ios/chrome/browser/ui/omnibox/popup/row/actions/suggest_action.h"
 #import "ios/chrome/browser/ui/omnibox/popup/row/omnibox_popup_row_delegate.h"
 #import "ios/chrome/browser/ui/omnibox/popup/row/omnibox_popup_row_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -43,6 +46,12 @@ const CGFloat kTopGradientColorOpacity = 0.85;
 /// Name of the histogram recording the number of lines in search suggestions.
 const char kOmniboxSearchSuggestionNumberOfLines[] =
     "IOS.Omnibox.SearchSuggestionNumberOfLines";
+/// The rich entity height
+const CGFloat kRichEntityViewHeight = 52;
+/// The minimum height of the row.
+const CGFloat kActionsRowMinimumHeight = 98;
+/// The space between the actions scroll view and the separator
+const CGFloat kActionScrollViewSeparatorSpace = 8;
 
 }  // namespace
 
@@ -55,6 +64,11 @@ const char kOmniboxSearchSuggestionNumberOfLines[] =
   UIStackView* _textStackView;
   UIView* _separator;
   UIView* _selectedBackgroundView;
+  /// The Actions  view (contains the actions buttons).
+  ActionsView* _actionsView;
+  /// The Rich entity view (contains the leading icon,text and the trailing
+  /// icon).
+  UIView* _richEntityView;
 
   NSLayoutConstraint* _separatorHeightConstraint;
   /// Constraints that changes when the text is a multi-lines search suggestion.
@@ -84,14 +98,15 @@ const char kOmniboxSearchSuggestionNumberOfLines[] =
     _selectedBackgroundView.hidden = YES;
     [self addSubview:_selectedBackgroundView];
     AddSameConstraints(self, _selectedBackgroundView);
-
+    // Rich entity view.
+    _richEntityView = [[UIView alloc] init];
+    _richEntityView.translatesAutoresizingMaskIntoConstraints = NO;
     // Leading Icon.
     _leadingIconView = [[OmniboxIconView alloc] init];
     _leadingIconView.imageRetriever = configuration.imageRetriever;
     _leadingIconView.faviconRetriever = configuration.faviconRetriever;
     _leadingIconView.translatesAutoresizingMaskIntoConstraints = NO;
-    [self addSubview:_leadingIconView];
-
+    [_richEntityView addSubview:_leadingIconView];
     // Primary Label.
     _primaryLabel = [[FadeTruncatingLabel alloc] init];
     _primaryLabel.translatesAutoresizingMaskIntoConstraints = NO;
@@ -127,7 +142,7 @@ const char kOmniboxSearchSuggestionNumberOfLines[] =
     _textStackView.axis = UILayoutConstraintAxisVertical;
     _textStackView.alignment = UIStackViewAlignmentFill;
     _textStackView.spacing = kTextSpacing;
-    [self addSubview:_textStackView];
+    [_richEntityView addSubview:_textStackView];
 
     // Trailing Button.
     _trailingButton =
@@ -138,7 +153,18 @@ const char kOmniboxSearchSuggestionNumberOfLines[] =
                         action:@selector(trailingButtonTapped)
               forControlEvents:UIControlEventTouchUpInside];
     _trailingButton.hidden = YES;  // Optional view.
-    [self addSubview:_trailingButton];
+    [_richEntityView addSubview:_trailingButton];
+    _actionsView = [[ActionsView alloc] initWithConfiguration:configuration];
+
+    UIStackView* suggestionContentVerticalStackView = [[UIStackView alloc]
+        initWithArrangedSubviews:@[ _richEntityView, _actionsView ]];
+    suggestionContentVerticalStackView
+        .translatesAutoresizingMaskIntoConstraints = NO;
+    [suggestionContentVerticalStackView
+        setDistribution:UIStackViewDistributionFillProportionally];
+    suggestionContentVerticalStackView.axis = UILayoutConstraintAxisVertical;
+
+    [self addSubview:suggestionContentVerticalStackView];
 
     // Bottom separator.
     _separator = [[UIView alloc] initWithFrame:CGRectZero];
@@ -156,14 +182,14 @@ const char kOmniboxSearchSuggestionNumberOfLines[] =
 
     // Top space should be at least the given top margin, but can be more if
     // the row is short enough to use the minimum height constraint above.
-    _textTopConstraint =
-        [_textStackView.topAnchor constraintEqualToAnchor:self.topAnchor
-                                                 constant:kTextTopMargin];
+    _textTopConstraint = [_textStackView.topAnchor
+        constraintEqualToAnchor:_richEntityView.topAnchor
+                       constant:kTextTopMargin];
     _textTopConstraint.priority = UILayoutPriorityRequired - 1;
 
     // When there is no trailing button, the text should extend to the cell's
     // trailing edge with a padding.
-    _textTrailingConstraint = [self.trailingAnchor
+    _textTrailingConstraint = [_richEntityView.trailingAnchor
         constraintEqualToAnchor:_textStackView.trailingAnchor
                        constant:kTextTrailingMargin];
     _textTrailingConstraint.priority = UILayoutPriorityRequired - 1;
@@ -174,7 +200,7 @@ const char kOmniboxSearchSuggestionNumberOfLines[] =
                        constant:kTextTrailingMargin];
 
     // Constraint updated with popout omnibox.
-    _trailingButtonTrailingConstraint = [self.trailingAnchor
+    _trailingButtonTrailingConstraint = [_richEntityView.trailingAnchor
         constraintEqualToAnchor:_trailingButton.trailingAnchor
                        constant:kTrailingButtonTrailingMargin];
     _leadingConstraint =
@@ -182,23 +208,25 @@ const char kOmniboxSearchSuggestionNumberOfLines[] =
                                                        constant:kLeadingSpace];
 
     [NSLayoutConstraint activateConstraints:@[
-      // Row has a minimum height.
-      [self.heightAnchor constraintGreaterThanOrEqualToConstant:
-                             kOmniboxPopupCellMinimumHeight],
+      [_richEntityView.heightAnchor
+          constraintGreaterThanOrEqualToConstant:kRichEntityViewHeight],
+      [self.heightAnchor
+          constraintGreaterThanOrEqualToConstant:kActionsRowMinimumHeight],
+      [_richEntityView.leadingAnchor
+          constraintEqualToAnchor:self.leadingAnchor],
+      [_richEntityView.trailingAnchor
+          constraintEqualToAnchor:self.trailingAnchor],
+      [_richEntityView.topAnchor constraintEqualToAnchor:self.topAnchor],
 
       // Position leadingIconView at the leading edge of the view.
       [_leadingIconView.widthAnchor
           constraintEqualToConstant:kLeadingIconViewSize],
       [_leadingIconView.heightAnchor
           constraintEqualToConstant:kLeadingIconViewSize],
-      [_leadingIconView.centerYAnchor
-          constraintEqualToAnchor:self.centerYAnchor],
       _leadingConstraint,
 
       // Position textStackView "after" leadingIconView.
-      _textTopConstraint,
-      _textTrailingConstraint,
-      [_textStackView.centerYAnchor constraintEqualToAnchor:self.centerYAnchor],
+      _textTopConstraint, _textTrailingConstraint,
       [_textStackView.leadingAnchor
           constraintEqualToAnchor:_leadingIconView.trailingAnchor
                          constant:kTextIconSpace],
@@ -208,8 +236,6 @@ const char kOmniboxSearchSuggestionNumberOfLines[] =
           constraintEqualToConstant:kTrailingButtonSize],
       [_trailingButton.widthAnchor
           constraintEqualToConstant:kTrailingButtonSize],
-      [_trailingButton.centerYAnchor
-          constraintEqualToAnchor:self.centerYAnchor],
       _trailingButtonTrailingConstraint,
 
       // Separator height anchor added in `didMoveToWindow`.
@@ -217,9 +243,18 @@ const char kOmniboxSearchSuggestionNumberOfLines[] =
       [_separator.trailingAnchor constraintEqualToAnchor:self.trailingAnchor],
       [_separator.leadingAnchor
           constraintEqualToAnchor:_textStackView.leadingAnchor],
+      [suggestionContentVerticalStackView.bottomAnchor
+          constraintEqualToAnchor:_separator.topAnchor
+                         constant:-kActionScrollViewSeparatorSpace],
+      [_leadingIconView.centerYAnchor
+          constraintEqualToAnchor:_richEntityView.centerYAnchor],
+      [_textStackView.centerYAnchor
+          constraintEqualToAnchor:_richEntityView.centerYAnchor],
+      [_trailingButton.centerYAnchor
+          constraintEqualToAnchor:_richEntityView.centerYAnchor]
     ]];
-    [self addInteraction:[[ViewPointerInteraction alloc] init]];
 
+    [self addInteraction:[[ViewPointerInteraction alloc] init]];
     self.configuration = configuration;
   }
   return self;
@@ -247,6 +282,8 @@ const char kOmniboxSearchSuggestionNumberOfLines[] =
   [super setSemanticContentAttribute:semanticContentAttribute];
 
   _trailingButton.semanticContentAttribute = semanticContentAttribute;
+  _richEntityView.semanticContentAttribute = semanticContentAttribute;
+  _actionsView.semanticContentAttribute = semanticContentAttribute;
 
   // Forces texts to have the same alignment as the omnibox textfield text.
   BOOL isRTL = [UIView userInterfaceLayoutDirectionForSemanticContentAttribute:
@@ -271,11 +308,12 @@ const char kOmniboxSearchSuggestionNumberOfLines[] =
 
 #pragma mark - UIContentView
 
-- (void)setConfiguration:(OmniboxPopupRowContentConfiguration*)configuration {
+- (void)setConfiguration:
+    (OmniboxPopupActionsRowContentConfiguration*)configuration {
   // This is technically possible as configuration overrides
   // id<UIContentConfiguration>.
   if (![configuration
-          isKindOfClass:OmniboxPopupRowContentConfiguration.class]) {
+          isMemberOfClass:OmniboxPopupActionsRowContentConfiguration.class]) {
     return;
   }
   _configuration = [configuration copy];
@@ -284,16 +322,16 @@ const char kOmniboxSearchSuggestionNumberOfLines[] =
 
 - (BOOL)supportsConfiguration:(id<UIContentConfiguration>)configuration
     API_AVAILABLE(ios(16.0)) {
-  return
-      [configuration isKindOfClass:OmniboxPopupRowContentConfiguration.class];
+  return [configuration
+      isMemberOfClass:OmniboxPopupActionsRowContentConfiguration.class];
 }
 
 #pragma mark - Private
 
 - (void)setupWithConfiguration:
-    (OmniboxPopupRowContentConfiguration*)configuration {
-  CHECK(
-      [configuration isKindOfClass:OmniboxPopupRowContentConfiguration.class]);
+    (OmniboxPopupActionsRowContentConfiguration*)configuration {
+  CHECK([configuration
+      isMemberOfClass:OmniboxPopupActionsRowContentConfiguration.class]);
 
   // Background.
   _selectedBackgroundView.hidden = !configuration.showSelectedBackgroundView;

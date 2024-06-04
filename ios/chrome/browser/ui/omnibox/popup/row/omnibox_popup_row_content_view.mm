@@ -278,7 +278,7 @@ const char kOmniboxSearchSuggestionNumberOfLines[] =
   // This is technically possible as configuration overrides
   // id<UIContentConfiguration>.
   if (![configuration
-          isKindOfClass:OmniboxPopupRowContentConfiguration.class]) {
+          isMemberOfClass:OmniboxPopupRowContentConfiguration.class]) {
     return;
   }
   _configuration = [configuration copy];
@@ -288,7 +288,7 @@ const char kOmniboxSearchSuggestionNumberOfLines[] =
 - (BOOL)supportsConfiguration:(id<UIContentConfiguration>)configuration
     API_AVAILABLE(ios(16.0)) {
   return
-      [configuration isKindOfClass:OmniboxPopupRowContentConfiguration.class];
+      [configuration isMemberOfClass:OmniboxPopupRowContentConfiguration.class];
 }
 
 #pragma mark - Private

@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/ui/omnibox/popup/row/actions/suggest_action.h"
 
-#import "url/gurl.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 @implementation SuggestAction
 
@@ -21,6 +23,20 @@
   return nil;
 }
 
++ (UIImage*)imageIconForAction:(SuggestAction*)suggestAction
+                          size:(CGFloat)size {
+  switch (suggestAction.type) {
+    case omnibox::ActionInfo_ActionType_CALL:
+      return DefaultSymbolWithPointSize(kPhoneFillSymbol, size);
+    case omnibox::ActionInfo_ActionType_DIRECTIONS:
+      return DefaultSymbolWithPointSize(kTurnUpRightDiamondFillSymbol, size);
+    case omnibox::ActionInfo_ActionType_REVIEWS:
+      return DefaultSymbolWithPointSize(kStarBubbleFillSymbol, size);
+    default:
+      return nil;
+  }
+}
+
 - (instancetype)initWithAction:(OmniboxActionInSuggest*)action {
   DCHECK(action);
   self = [super init];
@@ -32,14 +48,13 @@
 }
 
 - (NSString*)title {
-  // TODO(crbug.com/331344638) Add translation strings.
   switch (self.type) {
     case omnibox::ActionInfo_ActionType_CALL:
-      return @"Call";
+      return l10n_util::GetNSString(IDS_IOS_CALL_OMNIBOX_ACTION);
     case omnibox::ActionInfo_ActionType_DIRECTIONS:
-      return @"Directions";
+      return l10n_util::GetNSString(IDS_IOS_DIRECTIONS_OMNIBOX_ACTION);
     case omnibox::ActionInfo_ActionType_REVIEWS:
-      return @"Reviews";
+      return l10n_util::GetNSString(IDS_IOS_REVIEWS_OMNIBOX_ACTION);
     default:
       return nil;
   }

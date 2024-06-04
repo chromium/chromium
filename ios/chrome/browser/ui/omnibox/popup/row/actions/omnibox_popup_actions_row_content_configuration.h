@@ -16,12 +16,13 @@ NSString* const OmniboxPopupActionsRowCellReuseIdentifier =
 @protocol OmniboxPopupActionsRowDelegate;
 @class SuggestAction;
 
-/// Content configuration of the omnibox popup row, contains the logic of an
-/// actions row UI .
+/// Content configuration of the omnibox popup actions row.
 @interface OmniboxPopupActionsRowContentConfiguration
     : OmniboxPopupRowContentConfiguration
 
 - (instancetype)init NS_UNAVAILABLE;
+// The available actions attached to the suggestion.
+@property(nonatomic, strong, readonly) NSArray<SuggestAction*>* actions;
 
 @end
 
