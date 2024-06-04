@@ -343,6 +343,22 @@ void MigrateTimePrefFromLocalStatePrefsToProfilePrefs(
   }
 }
 
+// Helper function migrating the `int` preference from LocalState prefs to
+// BrowserState prefs.
+void MigrateIntegerPrefFromLocalStatePrefsToProfilePrefs(
+    std::string_view pref_name,
+    PrefService* profile_pref_service) {
+  PrefService* local_pref_service = GetApplicationContext()->GetLocalState();
+
+  const PrefService::Preference* legacy_pref =
+      local_pref_service->FindPreference(pref_name.data());
+  if (legacy_pref && !legacy_pref->IsDefaultValue()) {
+    profile_pref_service->SetInteger(pref_name.data(),
+                             local_pref_service->GetInteger(pref_name.data()));
+    local_pref_service->ClearPref(pref_name.data());
+  }
+}
+
 }  // namespace
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
@@ -471,9 +487,6 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 
   // Preference related to the tab pickup feature.
   registry->RegisterBooleanPref(prefs::kTabPickupEnabled, true);
-
-  registry->RegisterIntegerPref(prefs::kIosSyncSegmentsNewTabPageDisplayCount,
-                                0);
 
   // Pref used to store the number of impressions of the Most Visited Sites
   // since a freshness signal of the Most Visited Sites.
@@ -812,6 +825,9 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // Deprecated 05/2024.
   registry->RegisterBooleanPref(kAutologinEnabled, true);
   registry->RegisterListPref(kReverseAutologinRejectedEmailList);
+
+  registry->RegisterIntegerPref(prefs::kIosSyncSegmentsNewTabPageDisplayCount,
+                                0);
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -1032,6 +1048,10 @@ void MigrateObsoleteBrowserStatePrefs(const base::FilePath& state_path,
   // Added 05/2024.
   prefs->ClearPref(kAutologinEnabled);
   prefs->ClearPref(kReverseAutologinRejectedEmailList);
+
+  // Added 06/2024.
+  MigrateIntegerPrefFromLocalStatePrefsToProfilePrefs(
+      prefs::kIosSyncSegmentsNewTabPageDisplayCount, prefs);
 }
 
 void MigrateObsoleteUserDefault() {

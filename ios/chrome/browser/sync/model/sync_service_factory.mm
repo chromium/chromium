@@ -110,13 +110,12 @@ std::unique_ptr<KeyedService> BuildSyncService(web::BrowserState* context) {
         DeviceInfoSyncServiceFactory::GetForBrowserState(browser_state);
 
     if (history_service && device_info_sync_service) {
-      PrefService* local_state = GetApplicationContext()->GetLocalState();
-      CHECK(local_state);
+      PrefService* pref_service = browser_state->GetPrefs();
 
-      int display_count = local_state->GetInteger(
+      const int display_count = pref_service->GetInteger(
           prefs::kIosSyncSegmentsNewTabPageDisplayCount);
 
-      int display_limit = history::kMaxNumNewTabPageDisplays.Get();
+      const int display_limit = history::kMaxNumNewTabPageDisplays.Get();
 
       history_service->SetCanAddForeignVisitsToSegmentsOnBackend(display_count <
                                                                  display_limit);

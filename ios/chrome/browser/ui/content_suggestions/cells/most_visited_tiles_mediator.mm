@@ -433,12 +433,12 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
 // remaining New Tab Page displays that include synced history in the Most
 // Visited Tiles.
 - (void)recordMostVisitedTilesDisplayed {
-  const int displayCount = GetApplicationContext()->GetLocalState()->GetInteger(
-                               prefs::kIosSyncSegmentsNewTabPageDisplayCount) +
-                           1;
+  const int displayCount =
+      _prefService->GetInteger(prefs::kIosSyncSegmentsNewTabPageDisplayCount) +
+      1;
 
-  GetApplicationContext()->GetLocalState()->SetInteger(
-      prefs::kIosSyncSegmentsNewTabPageDisplayCount, displayCount);
+  _prefService->SetInteger(prefs::kIosSyncSegmentsNewTabPageDisplayCount,
+                           displayCount);
 }
 
 // Logs a User Action if `freshMostVisitedSites` has at least one site that
