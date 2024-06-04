@@ -37,6 +37,7 @@ import org.chromium.base.BaseFeatures;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
@@ -347,6 +348,7 @@ public class AwContentsGarbageCollectionTest extends AwParameterizedTest {
     @Test
     @DisableHardwareAcceleration
     @LargeTest
+    @DisabledTest(message = "crbug.com/344959459")
     public void testActivityDoesNotLeak() throws Throwable {
         // Test that Activity should not leak if view is still attached after activity is destroyed.
         ReferenceQueue<Activity> referenceQueue = new ReferenceQueue<>();
