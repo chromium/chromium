@@ -195,4 +195,16 @@ public class TabProperties {
                 TABSTRIP_FAVICON_BACKGROUND_COLOR_ID,
                 IS_INCOGNITO
             };
+
+    public static final PropertyKey[] TAB_GRID_SELECTABLE_KEYS =
+            new PropertyKey[] {
+                CHECKED_DRAWABLE_STATE_LIST,
+                SELECTABLE_TAB_ACTION_BUTTON_BACKGROUND,
+                SELECTABLE_TAB_CLICKED_LISTENER
+            };
+
+    public static final PropertyKey[] TAB_GRID_CLOSABLE_KEYS =
+            new PropertyKey[] {
+                TAB_SELECTED_LISTENER, ON_MENU_ITEM_CLICKED_CALLBACK,
+            };
 }

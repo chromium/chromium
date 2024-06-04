@@ -282,7 +282,6 @@ class TabListViewBinder {
             endButton.setOnLongClickListener(onLongClickListener);
             endButton.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
         } else if (TabProperties.TAB_SELECTION_DELEGATE == propertyKey) {
-            assert model.get(TabProperties.TAB_SELECTION_DELEGATE) != null;
             tabListView.setSelectionDelegate(model.get(TabProperties.TAB_SELECTION_DELEGATE));
             tabListView.setItem(tabId);
         } else if (TabProperties.IS_SELECTED == propertyKey) {

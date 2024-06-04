@@ -399,6 +399,8 @@ public class TabListCoordinator
             mEmptyStateSubheadingResId = emptySubheadingStringResId;
             mEmptyStateImageResId = emptyImageResId;
         }
+
+        configureRecyclerViewTouchHelpers(mMode, mTabActionState);
     }
 
     /** Returns the {@link TabListMode} of the coordinator. */
@@ -415,6 +417,14 @@ public class TabListCoordinator
                             onLongPressTabItemEventListener) {
         assert mMediator != null;
         mMediator.setOnLongPressTabItemEventListener(onLongPressTabItemEventListener);
+    }
+
+    /** Sets the current {@link TabActionState} for the TabList. */
+    public void setTabActionState(@TabActionState int tabActionState) {
+        assert mMediator != null;
+        mTabActionState = tabActionState;
+        configureRecyclerViewTouchHelpers(mMode, mTabActionState);
+        mMediator.setTabActionState(tabActionState);
     }
 
     @NonNull
@@ -502,11 +512,14 @@ public class TabListCoordinator
             if (dynamicResourceLoader != null) {
                 mRecyclerView.createDynamicView(dynamicResourceLoader);
             }
+        }
+    }
 
-            // TODO(crbug.com/339460636): Initialize the item touch helper in setTabActionState
-            // function.
-            if ((mMode == TabListMode.GRID || mMode == TabListMode.LIST)
-                    && mTabActionState != TabActionState.SELECTABLE) {
+    private void configureRecyclerViewTouchHelpers(
+            @TabListMode int mode, @TabActionState int tabActionState) {
+        if ((mMode == TabListMode.GRID || mMode == TabListMode.LIST)
+                && mTabActionState != TabActionState.SELECTABLE) {
+            if (mItemTouchHelper == null || mOnItemTouchListener == null) {
                 TabGridItemTouchHelperCallback callback =
                         (TabGridItemTouchHelperCallback)
                                 mMediator.getItemTouchHelperCallback(
@@ -526,7 +539,6 @@ public class TabListCoordinator
                 //
                 // See similar comments in TabGridItemTouchHelperCallback for more details.
                 mItemTouchHelper = new ItemTouchHelper(callback);
-                mItemTouchHelper.attachToRecyclerView(mRecyclerView);
                 mOnItemTouchListener =
                         new OnItemTouchListener() {
                             @Override
@@ -567,7 +579,13 @@ public class TabListCoordinator
                                 callback.shouldBlockAction();
                             }
                         };
-                mRecyclerView.addOnItemTouchListener(mOnItemTouchListener);
+            }
+            mItemTouchHelper.attachToRecyclerView(mRecyclerView);
+            mRecyclerView.addOnItemTouchListener(mOnItemTouchListener);
+        } else {
+            if (mItemTouchHelper != null && mOnItemTouchListener != null) {
+                mItemTouchHelper.attachToRecyclerView(null);
+                mRecyclerView.removeOnItemTouchListener(mOnItemTouchListener);
             }
         }
     }

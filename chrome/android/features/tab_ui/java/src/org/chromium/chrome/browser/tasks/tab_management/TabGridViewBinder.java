@@ -279,8 +279,6 @@ class TabGridViewBinder {
                         return ((TabGridView) view).onLongClick(view);
                     });
         } else if (TabProperties.TAB_SELECTION_DELEGATE == propertyKey) {
-            assert model.get(TabProperties.TAB_SELECTION_DELEGATE) != null;
-
             ((TabGridView) view)
                     .setSelectionDelegate(model.get(TabProperties.TAB_SELECTION_DELEGATE));
             ((TabGridView) view).setItem(tabId);

@@ -101,6 +101,8 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.ListObservable;
 import org.chromium.ui.modelutil.ListObservable.ListObserver;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
+import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import org.chromium.url.GURL;
@@ -1607,21 +1609,7 @@ class TabListMediator {
             assert mModel.get(index).model.get(TabProperties.TAB_ID) == tab.getId();
         }
 
-        // TODO(wychen): refactor this.
         boolean isInTabGroup = isTabInTabGroup(tab);
-        TabActionListener tabSelectedListener;
-        if (mGridCardOnClickListenerProvider == null
-                || !isInTabGroup
-                || !mActionsOnAllRelatedTabs) {
-            tabSelectedListener = mTabSelectedListener;
-        } else {
-            tabSelectedListener = mGridCardOnClickListenerProvider.openTabGridDialog(tab);
-
-            if (tabSelectedListener == null) {
-                tabSelectedListener = mTabSelectedListener;
-            }
-        }
-
         if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
             // If the tab to update is in ListMode, update it with the most recent stored color.
             if (mMode == TabListMode.LIST) {
@@ -1641,7 +1629,9 @@ class TabListMediator {
             }
         }
 
-        mModel.get(index).model.set(TabProperties.TAB_SELECTED_LISTENER, tabSelectedListener);
+        mModel.get(index)
+                .model
+                .set(TabProperties.TAB_SELECTED_LISTENER, getTabActionListener(tab, isInTabGroup));
         mModel.get(index).model.set(TabProperties.IS_SELECTED, isSelected);
         mModel.get(index).model.set(TabProperties.SHOULD_SHOW_PRICE_DROP_TOOLTIP, false);
         mModel.get(index)
@@ -1906,13 +1896,125 @@ class TabListMediator {
         }
     }
 
-    private void addTabInfoToModel(Tab tab, int index, boolean isSelected) {
-        assert index != TabModel.INVALID_TAB_INDEX;
-        boolean showIPH = false;
-        boolean isInTabGroup = isTabInTabGroup(tab);
-        if (mActionsOnAllRelatedTabs && !mShownIPH) {
-            showIPH = isInTabGroup;
+    void setTabActionState(@TabActionState int tabActionState) {
+        if (mTabActionState == tabActionState) return;
+        mTabActionState = tabActionState;
+
+        for (int i = 0; i < mModel.size(); i++) {
+            ListItem item = mModel.get(i);
+            if (item.type != UiType.TAB) continue;
+            Tab tab = getTabForIndex(i);
+            // Unbind the current TabActionState properties.
+            unbindTabActionStateProperties(item.model);
+
+            item.model.set(TabProperties.TAB_ACTION_STATE, mTabActionState);
+            bindTabActionStateProperties(tabActionState, tab, item.model);
         }
+    }
+
+    private void unbindTabActionStateProperties(PropertyModel model) {
+        for (PropertyKey propertyKey : TabProperties.TAB_GRID_SELECTABLE_KEYS) {
+            unbindSelectableProperty(model, propertyKey);
+        }
+
+        for (PropertyKey propertyKey : TabProperties.TAB_GRID_CLOSABLE_KEYS) {
+            unbindClosableProperty(model, propertyKey);
+        }
+    }
+
+    private void unbindSelectableProperty(
+            @NonNull PropertyModel model, @NonNull PropertyKey propertyKey) {
+        if (TabProperties.TAB_ACTION_BUTTON_LISTENER == propertyKey) {
+            model.set(TabProperties.TAB_ACTION_BUTTON_LISTENER, null);
+        } else if (TabProperties.CHECKED_DRAWABLE_STATE_LIST == propertyKey) {
+            model.set(TabProperties.CHECKED_DRAWABLE_STATE_LIST, null);
+        } else if (TabProperties.SELECTABLE_TAB_ACTION_BUTTON_BACKGROUND == propertyKey) {
+            model.set(TabProperties.SELECTABLE_TAB_ACTION_BUTTON_BACKGROUND, null);
+        } else if (TabProperties.SELECTABLE_TAB_CLICKED_LISTENER == propertyKey) {
+            model.set(TabProperties.SELECTABLE_TAB_CLICKED_LISTENER, null);
+        }
+    }
+
+    private void unbindClosableProperty(
+            @NonNull PropertyModel model, @NonNull PropertyKey propertyKey) {
+        if (TabProperties.TAB_ACTION_BUTTON_LISTENER == propertyKey) {
+            model.set(TabProperties.TAB_ACTION_BUTTON_LISTENER, null);
+        } else if (TabProperties.TAB_SELECTED_LISTENER == propertyKey) {
+            model.set(TabProperties.TAB_SELECTED_LISTENER, null);
+        } else if (TabProperties.ON_MENU_ITEM_CLICKED_CALLBACK == propertyKey) {
+            model.set(TabProperties.ON_MENU_ITEM_CLICKED_CALLBACK, null);
+        }
+    }
+
+    private void bindTabActionStateProperties(
+            @TabActionState int tabActionState, Tab tab, PropertyModel model) {
+        model.set(TabProperties.IS_SELECTED, isTabSelected(tabActionState, tab));
+        boolean isInTabGroup = isTabInTabGroup(tab);
+        if (mTabActionState == TabActionState.SELECTABLE) {
+            // Incognito in both light/dark theme is the same as non-incognito mode in dark theme.
+            // Non-incognito mode and incognito in both light/dark themes in dark theme all look
+            // dark.
+            ColorStateList checkedDrawableColorList =
+                    ColorStateList.valueOf(
+                            tab.isIncognito()
+                                    ? mContext.getColor(R.color.default_icon_color_dark)
+                                    : SemanticColorUtils.getDefaultIconColorInverse(mContext));
+            ColorStateList actionButtonBackgroundColorList =
+                    AppCompatResources.getColorStateList(
+                            mContext,
+                            tab.isIncognito()
+                                    ? R.color.default_icon_color_light
+                                    : R.color.default_icon_color_tint_list);
+            // TODO(crbug.com/41477267): Update color baseline_primary_80 to active_color_dark when
+            // the associated bug is landed.
+            ColorStateList actionbuttonSelectedBackgroundColorList =
+                    ColorStateList.valueOf(
+                            tab.isIncognito()
+                                    ? mContext.getColor(R.color.baseline_primary_80)
+                                    : SemanticColorUtils.getDefaultControlColorActive(mContext));
+
+            model.set(TabProperties.CHECKED_DRAWABLE_STATE_LIST, checkedDrawableColorList);
+            model.set(
+                    TabProperties.SELECTABLE_TAB_ACTION_BUTTON_BACKGROUND,
+                    actionButtonBackgroundColorList);
+            model.set(
+                    TabProperties.SELECTABLE_TAB_ACTION_BUTTON_SELECTED_BACKGROUND,
+                    actionbuttonSelectedBackgroundColorList);
+            model.set(TabProperties.SELECTABLE_TAB_CLICKED_LISTENER, mSelectableTabOnClickListener);
+        } else {
+            model.set(
+                    TabProperties.IS_SELECTED,
+                    TabModelUtils.getCurrentTabId(
+                                    mCurrentTabModelFilterSupplier.get().getTabModel())
+                            == tab.getId());
+            model.set(TabProperties.TAB_SELECTED_LISTENER, getTabActionListener(tab, isInTabGroup));
+
+            model.set(TabProperties.ON_MENU_ITEM_CLICKED_CALLBACK, mOnMenuItemClickedCallback);
+            // A tab is deemed a tab group card representation if it is part of a tab group and
+            // based in the tab switcher.
+            boolean isTabGroup = isTabInTabGroup(tab) && isParentComponentTabSwitcher();
+            // The ordering of TAB_ACTION_BUTTON_LISTENER and IS_TAB_GROUP must be preserved when
+            // setting the property keys on the model. Both properties modify the onClickListener
+            // so ensure that the default behavior (close on click) is set first, and tab groups
+            // under valid circumstances will override the listener with alternate behavior.
+            if (!ChromeFeatureList.sTabGroupPaneAndroid.isEnabled() || !isTabGroup) {
+                model.set(TabProperties.TAB_ACTION_BUTTON_LISTENER, mTabClosedListener);
+            }
+            // Only set this for tab group representation cards. An onClickListener will be set in
+            // the view as part of the accompanying logic.
+            if (ChromeFeatureList.sTabGroupPaneAndroid.isEnabled()) {
+                model.set(
+                        TabProperties.TAB_GROUP_INFO,
+                        new TabGroupInfo(
+                                TabGroupSyncFeatures.isTabGroupSyncEnabled(mProfile), isTabGroup));
+            }
+            // Can this be done separately from SELECTABLE/CLOSABLE?
+            updateDescriptionString(tab, model);
+            updateActionButtonDescriptionString(tab, model);
+        }
+    }
+
+    private TabActionListener getTabActionListener(Tab tab, boolean isInTabGroup) {
         TabActionListener tabSelectedListener;
         if (mGridCardOnClickListenerProvider == null
                 || !isInTabGroup
@@ -1923,6 +2025,27 @@ class TabListMediator {
             if (tabSelectedListener == null) {
                 tabSelectedListener = mTabSelectedListener;
             }
+        }
+        return tabSelectedListener;
+    }
+
+    private boolean isTabSelected(@TabActionState int tabActionState, Tab tab) {
+        if (tabActionState == TabActionState.SELECTABLE) {
+            SelectionDelegate selectionDelegate = getTabSelectionDelegate();
+            assert selectionDelegate != null : "Null selection delegate while in SELECTABLE state.";
+            return selectionDelegate.isItemSelected(tab.getId());
+        } else {
+            return TabModelUtils.getCurrentTabId(mCurrentTabModelFilterSupplier.get().getTabModel())
+                    == tab.getId();
+        }
+    }
+
+    private void addTabInfoToModel(Tab tab, int index, boolean isSelected) {
+        assert index != TabModel.INVALID_TAB_INDEX;
+        boolean showIPH = false;
+        boolean isInTabGroup = isTabInTabGroup(tab);
+        if (mActionsOnAllRelatedTabs && !mShownIPH) {
+            showIPH = isInTabGroup;
         }
 
         int colorId = TabGroupColorUtils.INVALID_COLOR_ID;
@@ -1986,64 +2109,7 @@ class TabListMediator {
                     mTabListFaviconProvider.getDefaultFaviconFetcher(tab.isIncognito()));
         }
 
-        if (mTabActionState == TabActionState.SELECTABLE) {
-            // Incognito in both light/dark theme is the same as non-incognito mode in dark theme.
-            // Non-incognito mode and incognito in both light/dark themes in dark theme all look
-            // dark.
-            ColorStateList checkedDrawableColorList =
-                    ColorStateList.valueOf(
-                            tab.isIncognito()
-                                    ? mContext.getColor(R.color.default_icon_color_dark)
-                                    : SemanticColorUtils.getDefaultIconColorInverse(mContext));
-            ColorStateList actionButtonBackgroundColorList =
-                    AppCompatResources.getColorStateList(
-                            mContext,
-                            tab.isIncognito()
-                                    ? R.color.default_icon_color_light
-                                    : R.color.default_icon_color_tint_list);
-            // TODO(crbug.com/41477267): Update color baseline_primary_80 to active_color_dark when
-            // the associated bug is landed.
-            ColorStateList actionbuttonSelectedBackgroundColorList =
-                    ColorStateList.valueOf(
-                            tab.isIncognito()
-                                    ? mContext.getColor(R.color.baseline_primary_80)
-                                    : SemanticColorUtils.getDefaultControlColorActive(mContext));
-
-            tabInfo.set(TabProperties.CHECKED_DRAWABLE_STATE_LIST, checkedDrawableColorList);
-            tabInfo.set(
-                    TabProperties.SELECTABLE_TAB_ACTION_BUTTON_BACKGROUND,
-                    actionButtonBackgroundColorList);
-            tabInfo.set(
-                    TabProperties.SELECTABLE_TAB_ACTION_BUTTON_SELECTED_BACKGROUND,
-                    actionbuttonSelectedBackgroundColorList);
-            tabInfo.set(
-                    TabProperties.SELECTABLE_TAB_CLICKED_LISTENER, mSelectableTabOnClickListener);
-        } else {
-            tabInfo.set(TabProperties.TAB_SELECTED_LISTENER, tabSelectedListener);
-
-            tabInfo.set(TabProperties.ON_MENU_ITEM_CLICKED_CALLBACK, mOnMenuItemClickedCallback);
-            // A tab is deemed a tab group card representation if it is part of a tab group and
-            // based in the tab switcher.
-            boolean isTabGroup = isTabInTabGroup(tab) && isParentComponentTabSwitcher();
-            // The ordering of TAB_ACTION_BUTTON_LISTENER and IS_TAB_GROUP must be preserved when
-            // setting the property keys on the model. Both properties modify the onClickListener
-            // so ensure that the default behavior (close on click) is set first, and tab groups
-            // under valid circumstances will override the listener with alternate behavior.
-            if (!ChromeFeatureList.sTabGroupPaneAndroid.isEnabled() || !isTabGroup) {
-                tabInfo.set(TabProperties.TAB_ACTION_BUTTON_LISTENER, mTabClosedListener);
-            }
-            // Only set this for tab group representation cards. An onClickListener will be set in
-            // the view as part of the accompanying logic.
-            if (ChromeFeatureList.sTabGroupPaneAndroid.isEnabled()) {
-                tabInfo.set(
-                        TabProperties.TAB_GROUP_INFO,
-                        new TabGroupInfo(
-                                TabGroupSyncFeatures.isTabGroupSyncEnabled(mProfile), isTabGroup));
-            }
-
-            updateDescriptionString(tab, tabInfo);
-            updateActionButtonDescriptionString(tab, tabInfo);
-        }
+        bindTabActionStateProperties(mTabActionState, tab, tabInfo);
 
         @UiType
         int tabUiType =

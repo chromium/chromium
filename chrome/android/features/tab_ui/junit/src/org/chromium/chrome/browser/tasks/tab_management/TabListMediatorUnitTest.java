@@ -11,6 +11,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.hasItems;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -153,7 +154,9 @@ import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -162,6 +165,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -3981,6 +3985,71 @@ public class TabListMediatorUnitTest {
         assertThat(resultMap.get(2), contains(3));
     }
 
+    @Test
+    public void setTabActionState_UnbindsPropertiesCorrectly() {
+        when(mSelectionDelegate.isItemSelected(TAB1_ID)).thenReturn(true);
+        when(mSelectionDelegate.isItemSelected(TAB2_ID)).thenReturn(false);
+        when(mSelectionDelegate.isItemSelected(TAB3_ID)).thenReturn(false);
+        mMediator =
+                new TabListMediator(
+                        mActivity,
+                        mModel,
+                        TabListMode.GRID,
+                        mModalDialogManager,
+                        mCurrentTabModelFilterSupplier,
+                        getTabThumbnailCallback(),
+                        mTabListFaviconProvider,
+                        mTabGroupColorFaviconProvider,
+                        true,
+                        () -> {
+                            return mSelectionDelegate;
+                        },
+                        null,
+                        null,
+                        null,
+                        getClass().getSimpleName(),
+                        TabProperties.TabActionState.CLOSABLE,
+                        mActionConfirmationManager);
+        mMediator.registerOrientationListener(mGridLayoutManager);
+        mMediator.initWithNative(mProfile);
+        initAndAssertAllProperties();
+
+        // Unique sets of keys for each of SELECTABLE/CLOSABLE.
+        ArrayList<PropertyKey> uniqueSelectableKeys =
+                new ArrayList<>(Arrays.asList(TabProperties.TAB_GRID_SELECTABLE_KEYS));
+        uniqueSelectableKeys.removeAll(Arrays.asList(TabProperties.TAB_GRID_CLOSABLE_KEYS));
+        ArrayList<PropertyKey> uniqueClosableKeys =
+                new ArrayList<>(Arrays.asList(TabProperties.TAB_GRID_CLOSABLE_KEYS));
+        uniqueClosableKeys.removeAll(Arrays.asList(TabProperties.TAB_GRID_SELECTABLE_KEYS));
+
+        // The test starts in the CLOSABLE state.
+        PropertyModel model = mModel.get(0).model;
+        // Intitially, the CLOSABLE properties should be set and the SELECTABLE properties should
+        // be unset.
+        Collection<PropertyKey> setProps = model.getAllSetProperties();
+        assertEquals(TabActionState.CLOSABLE, model.get(TabProperties.TAB_ACTION_STATE));
+        assertThat(setProps, hasItems(TabProperties.TAB_GRID_CLOSABLE_KEYS));
+        assertThat(setProps, not(hasItems(TabProperties.TAB_GRID_SELECTABLE_KEYS)));
+
+        // After the TabActionState is changed to SELECTABLE, the CLOSABLE state properties should
+        // still be present but unbound.
+        mMediator.setTabActionState(TabActionState.SELECTABLE);
+        setProps = model.getAllSetProperties();
+        assertEquals(TabActionState.SELECTABLE, model.get(TabProperties.TAB_ACTION_STATE));
+        assertThat(setProps, hasItems(TabProperties.TAB_GRID_CLOSABLE_KEYS));
+        assertThat(setProps, hasItems(TabProperties.TAB_GRID_SELECTABLE_KEYS));
+        assertAllUnset(model, uniqueClosableKeys);
+
+        // Switching back to CLOSABLE will unbind the SELECTABLE properties, but they will still be
+        // present.
+        mMediator.setTabActionState(TabActionState.CLOSABLE);
+        setProps = model.getAllSetProperties();
+        assertEquals(TabActionState.CLOSABLE, model.get(TabProperties.TAB_ACTION_STATE));
+        assertThat(setProps, hasItems(TabProperties.TAB_GRID_CLOSABLE_KEYS));
+        assertThat(setProps, hasItems(TabProperties.TAB_GRID_SELECTABLE_KEYS));
+        assertAllUnset(model, uniqueSelectableKeys);
+    }
+
     private void setUpCloseButtonDescriptionString(boolean isGroup) {
         if (isGroup) {
             doAnswer(
@@ -4153,6 +4222,13 @@ public class TabListMediatorUnitTest {
     }
 
     private void setUpTabListMediator(@TabListMediatorType int type, @TabListMode int mode) {
+        setUpTabListMediator(type, mode, TabActionState.CLOSABLE);
+    }
+
+    private void setUpTabListMediator(
+            @TabListMediatorType int type,
+            @TabListMode int mode,
+            @TabActionState int tabActionState) {
         if (mMediator != null) {
             mMediator.resetWithListOfTabs(null, false);
             mMediator.destroy();
@@ -4166,14 +4242,6 @@ public class TabListMediatorUnitTest {
         TabListMediator.TabGridDialogHandler handler =
                 type == TabListMediatorType.TAB_GRID_DIALOG ? mTabGridDialogHandler : null;
         boolean actionOnRelatedTabs = type == TabListMediatorType.TAB_SWITCHER;
-        int uiType = 0;
-        if (type == TabListMediatorType.TAB_SWITCHER
-                || type == TabListMediatorType.TAB_GRID_DIALOG) {
-            uiType = TabProperties.TabActionState.CLOSABLE;
-        } else if (type == TabListMediatorType.TAB_STRIP) {
-            uiType = TabProperties.UiType.STRIP;
-        }
-
         ThumbnailProvider thumbnailProvider =
                 mode == TabListMode.GRID ? getTabThumbnailCallback() : null;
 
@@ -4193,7 +4261,7 @@ public class TabListMediatorUnitTest {
                         handler,
                         null,
                         getClass().getSimpleName(),
-                        uiType,
+                        tabActionState,
                         mActionConfirmationManager);
         TrackerFactory.setTrackerForTests(mTracker);
         mMediator.registerOrientationListener(mGridLayoutManager);
@@ -4311,5 +4379,33 @@ public class TabListMediatorUnitTest {
         FeatureList.setTestValues(testValues);
 
         PriceTrackingFeatures.setPriceTrackingEnabledForTesting(value);
+    }
+
+    private void assertAllUnset(PropertyModel model, List<PropertyKey> keys) {
+        for (PropertyKey key : keys) {
+            assertUnset(model, key);
+        }
+    }
+
+    /** Asserts that the given key is non-null (aka "set") in the given model. */
+    private void assertSet(PropertyModel model, PropertyKey propertyKey) {
+        if (propertyKey instanceof ReadableObjectPropertyKey) {
+            ReadableObjectPropertyKey objectKey = (ReadableObjectPropertyKey) propertyKey;
+            assertNotNull(
+                    "Expected property to be set, property=" + objectKey, model.get(objectKey));
+        } else {
+            assert false : "Unsupported key type passed to function, add it to #assertSet";
+        }
+    }
+
+    /** Asserts that the given key is null (aka "unset") in the given model. */
+    private void assertUnset(PropertyModel model, PropertyKey propertyKey) {
+        if (propertyKey instanceof ReadableObjectPropertyKey) {
+            ReadableObjectPropertyKey objectKey = (ReadableObjectPropertyKey) propertyKey;
+            assertNull(
+                    "Expected property to be unset, property=" + objectKey, model.get(objectKey));
+        } else {
+            assert false : "Unsupported key type passed to function, add it to #assertUnset";
+        }
     }
 }

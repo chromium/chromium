@@ -204,6 +204,7 @@ public class TabGridView extends SelectableItemViewBase<Integer> {
                                     bitmap, closeButtonSize, closeButtonSize, true));
             bitmap.recycle();
         }
+        actionButton.setBackground(null);
         actionButton.setImageBitmap(sCloseButtonBitmapWeakRef.get());
     }
 
