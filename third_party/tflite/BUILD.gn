@@ -395,6 +395,7 @@ source_set("tflite_kernel_internals") {
   configs += [
     ":tflite_config",
     ":tflite_flags",
+    "//third_party/eigen3:eigen_includes",
   ]
 
   public_configs = [ "//third_party/eigen3:eigen_public_includes" ]

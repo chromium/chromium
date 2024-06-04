@@ -65,6 +65,8 @@ source_set("compiler_files") {
     "src/grpc/src/compiler/swift_generator.h",
     "src/grpc/src/compiler/ts_generator.cc",
     "src/grpc/src/compiler/ts_generator.h",
+    "src/include/codegen/python.cc",
+    "src/include/codegen/python.h",
     "src/include/flatbuffers/code_generators.h",
     "src/include/flatbuffers/flatc.h",
     "src/include/flatbuffers/grpc.h",
