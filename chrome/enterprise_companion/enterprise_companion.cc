@@ -8,8 +8,17 @@
 
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "base/message_loop/message_pump_type.h"
+#include "base/run_loop.h"
+#include "base/system/sys_info.h"
+#include "base/task/single_thread_task_executor.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/platform_thread.h"
+#include "chrome/enterprise_companion/enterprise_companion_service.h"
+#include "chrome/enterprise_companion/enterprise_companion_service_stub.h"
+#include "chrome/enterprise_companion/ipc_support.h"
 #include "chrome/enterprise_companion/lock.h"
+#include "chrome/enterprise_companion/mojom/enterprise_companion.mojom.h"
 
 namespace {
 
@@ -30,14 +39,28 @@ void InitLogging() {
                        /*enable_tickcount=*/false);
 }
 
+void InitThreadPool() {
+  base::PlatformThread::SetName("EnterpriseCompanion");
+  base::ThreadPoolInstance::Create("EnterpriseCompanion");
+
+  // Reuses the logic in base::ThreadPoolInstance::StartWithDefaultParams.
+  const size_t max_num_foreground_threads =
+      static_cast<size_t>(std::max(3, base::SysInfo::NumberOfProcessors() - 1));
+  base::ThreadPoolInstance::InitParams init_params(max_num_foreground_threads);
+  base::ThreadPoolInstance::Get()->Start(init_params);
+}
+
 }  // namespace
 
 namespace enterprise_companion {
 
 int EnterpriseCompanionMain(int argc, const char* const* argv) {
-  base::PlatformThread::SetName("EnterpriseCompanion");
   base::CommandLine::Init(argc, argv);
   InitLogging();
+  InitThreadPool();
+
+  base::SingleThreadTaskExecutor main_task_executor;
+  ScopedIPCSupportWrapper ipc_support;
 
   std::unique_ptr<ScopedLock> lock = CreateScopedLock();
   if (!lock) {
@@ -46,6 +69,12 @@ int EnterpriseCompanionMain(int argc, const char* const* argv) {
   }
 
   VLOG(1) << "Launching Chrome Enterprise Companion";
+  base::RunLoop run_loop;
+  std::unique_ptr<mojom::EnterpriseCompanion> stub =
+      CreateEnterpriseCompanionServiceStub(
+          CreateEnterpriseCompanionService(run_loop.QuitClosure()));
+  run_loop.Run();
+
   return 0;
 }
 
