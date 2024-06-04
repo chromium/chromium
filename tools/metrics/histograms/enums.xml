@@ -2217,9 +2217,9 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="11" label="CertificateRevokedByFallbackCRL"/>
 </enum>
 
+<enum name="CastChannelFlag">
 <!-- Used as a bitfield, so values must be ascending powers-of-2. -->
 
-<enum name="CastChannelFlag">
   <int value="0" label="None"/>
   <int value="1" label="Sha1DigestAlgorithm"/>
   <int value="2" label="SenderNonceMissing"/>
@@ -5574,10 +5574,10 @@ Called by update_document_policy_enum.py.-->
   <int value="3" label="kBlockedAndExperimentAllowed"/>
 </enum>
 
+<enum name="ExploreSitesCategories">
 <!-- This must be kept current with
      //chrome/browser/android/explore_sites/catalog.proto's CategoryType. -->
 
-<enum name="ExploreSitesCategories">
   <int value="0" label="Default"/>
   <int value="1" label="Social"/>
   <int value="2" label="Entertainment"/>
@@ -11381,10 +11381,10 @@ Called by update_permissions_policy_enum.py.-->
   <int value="5" label="kCloseFeedbackApp"/>
 </enum>
 
+<enum name="FeedbackReportSendingResult">
 <!-- This must be kept current with feedback_uploader.cc's
      FeedbackReportSendingResult -->
 
-<enum name="FeedbackReportSendingResult">
   <int value="0" label="The report was uploaded successfully at first try"/>
   <int value="1" label="The report was uploaded successfully after retry"/>
   <int value="2" label="The report is corrupt or invalid and was dropped"/>
@@ -11435,10 +11435,6 @@ Called by update_permissions_policy_enum.py.-->
   <int value="41" label="Birch"/>
   <int value="42" label="Borealis"/>
 </enum>
-
-<!-- Keep elements in sync with components/feed/core/feed_logging_metrics.cc and
- third_party/feed_library/src/src/main/java/com/google/android/libraries/feed/api/host/logging/InternalFeedError.java
- -->
 
 <enum name="FetchKeepAliveRequestMetricType">
   <int value="0" label="kFetch"/>
@@ -13053,8 +13049,6 @@ Called by update_permissions_policy_enum.py.-->
   <int value="1" label="REQUEST_TRIGGERED"/>
   <int value="2" label="TEXT_INSERTED"/>
 </enum>
-
-<!-- If any update to the enum values here is made, the relevant google3 metrics update must also be made to ensure compatibility. Example: cl/576730646-->
 
 <enum name="IMEPKLongpressDiacriticAction">
   <int value="0" label="SHOW_WINDOW"/>
@@ -15349,6 +15343,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="2" label="Area with references loaded"/>
 </enum>
 
+<enum name="LoginCustomFlags">
 <!--
 Values in LoginCustomFlags are:  value=(uint32_t)MD5(label).
 
@@ -15359,7 +15354,6 @@ Don't remove entries when removing a flag; they are still used to decode data
 from previous Chrome versions.
 -->
 
-<enum name="LoginCustomFlags">
   <int value="-2147423273" label="EnableHeatmapPalmDetection:disabled"/>
   <int value="-2146979021" label="OmniboxMaxURLMatches:enabled"/>
   <int value="-2146832142" label="SyncPseudoUSSSearchEngines:enabled"/>
@@ -25506,9 +25500,6 @@ from previous Chrome versions.
   <int value="16" label="Background needs repaint on scroll"/>
 </enum>
 
-<!-- Keep this in sync with ScreensaverImageDownloadResult in
-  //ash/ambient/managed/screensaver_image_downloader.h -->
-
 <enum name="ManifestParseIdResultType">
   <int value="0" label="Success"/>
   <int value="1" label="Not specified, used default value"/>
@@ -30073,11 +30064,6 @@ Called by update_net_error_codes.py.-->
   <int value="15" label="Dictionary"/>
 </enum>
 
-<!--
-  This must be kept current with RgbKeyboardCapabilities located in
-  third_party/cros_system_api/dbus/rgbkbd/dbus-constants.h.
--->
-
 <enum name="SameSiteCookieContext">
   <summary>
     The SameSiteCookieContext of a request describes the relation between the
@@ -32506,12 +32492,6 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="Superseded by other suggestion"/>
 </enum>
 
-<!--
-These values are based on the server-side type AnswerTriggererKey. Note that not
-all of the types are launched in Chrome but if they're sent erroneously, it
-would be helpful to identify which type is being sent.
--->
-
 <enum name="SuggestTileType">
   <int value="0" label="Other"/>
   <int value="1" label="URL"/>
@@ -32591,9 +32571,6 @@ would be helpful to identify which type is being sent.
   <int value="4" label="Incoming invalidation"/>
   <int value="5" label="Poll request scheduled"/>
 </enum>
-
-<!-- This must be kept current with
-     //components/sync/protocol/sync_enums.proto's ErrorType. -->
 
 <enum name="TabForegroundState">
   <int value="0" label="Foreground (app in foreground)"/>
@@ -33627,13 +33604,13 @@ others/histograms.xml -->
   <int value="3" label="Tab"/>
 </enum>
 
+<enum name="WebClientHintsType">
 <!--
 This must be kept in sync with services/network/public/mojom/web_client_hints_types.mojom
 DO NOT REMOVE TYPES THAT MADE IT TO STABLE AT ANY POINT!
 This is true even if the type has been removed from the mojom file.
 -->
 
-<enum name="WebClientHintsType">
   <int value="0" label="DeviceMemory_DEPRECATED"/>
   <int value="1" label="Dpr_DEPRECATED"/>
   <int value="2" label="ResourceWidth_DEPRECATED"/>
