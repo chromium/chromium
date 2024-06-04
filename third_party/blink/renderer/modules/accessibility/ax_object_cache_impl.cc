@@ -66,7 +66,6 @@
 #include "third_party/blink/renderer/core/html/forms/html_label_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_opt_group_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
-#include "third_party/blink/renderer/core/html/forms/html_options_collection.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/forms/listed_element.h"
 #include "third_party/blink/renderer/core/html/html_area_element.h"
@@ -2946,19 +2945,6 @@ int AXObjectCacheImpl::GetLocationSerializationDelay() {
   return kDelayForLocationUpdatesNonFocused;
 }
 
-bool AXObjectCacheImpl::IsReadyToProcessDeferredEvents() {
-  // Special case for open <select> with incomplete <option> bounds:
-  // When there are too many options, layout does not build them all at once. Do
-  // not process until there is an option bound for each option.
-  if (current_menu_list_axid_) {
-    if (AXObject* ax_select = ObjectFromAXID(current_menu_list_axid_)) {
-      HTMLSelectElement* select = To<HTMLSelectElement>(ax_select->GetNode());
-      return select->options()->length() == options_bounds_.size();
-    }
-  }
-  return true;
-}
-
 void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document,
                                                            bool force) {
   if (IsPopup(document)) {
@@ -3043,10 +3029,6 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document,
   }
 
   weak_factory_for_serialization_pipeline_.Invalidate();
-
-  if (!IsReadyToProcessDeferredEvents()) {
-    return;
-  }
 
   if (GetPopupDocumentIfShowing()) {
     UpdateLifecycleIfNeeded(*GetPopupDocumentIfShowing());
