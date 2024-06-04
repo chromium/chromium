@@ -22,19 +22,17 @@ class PickerPreviewBubbleView;
 
 class ASH_EXPORT PickerPreviewBubbleController : public views::WidgetObserver {
  public:
-  using AsyncBitmapResolver = HoldingSpaceImage::AsyncBitmapResolver;
-
-  explicit PickerPreviewBubbleController(
-      HoldingSpaceImage::AsyncBitmapResolver async_bitmap_resolver);
+  PickerPreviewBubbleController();
   PickerPreviewBubbleController(const PickerPreviewBubbleController&) = delete;
   PickerPreviewBubbleController& operator=(
       const PickerPreviewBubbleController&) = delete;
   ~PickerPreviewBubbleController() override;
 
+  // `async_preview_image` must remain alive while the bubble is open.
   // `anchor_view` must not be `nullptr`.
   // Destroying `anchor_view` closes the bubble if it's shown.
-  void ShowBubbleForFile(views::View* anchor_view,
-                         const base::FilePath& file_path);
+  void ShowBubble(HoldingSpaceImage* async_preview_image,
+                  views::View* anchor_view);
 
   // TODO: b/322899032 - Take in an `anchor_view` to avoid accidentally closing
   // the bubble view shown by a different anchor view.
@@ -48,8 +46,7 @@ class ASH_EXPORT PickerPreviewBubbleController : public views::WidgetObserver {
  private:
   void UpdateBubbleImage();
 
-  AsyncBitmapResolver async_bitmap_resolver_;
-  std::unique_ptr<HoldingSpaceImage> preview_image_;
+  raw_ptr<HoldingSpaceImage> async_preview_image_;
 
   // Owned by the bubble widget.
   raw_ptr<PickerPreviewBubbleView> bubble_view_;

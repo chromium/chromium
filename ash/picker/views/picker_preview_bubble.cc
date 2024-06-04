@@ -26,7 +26,6 @@
 namespace ash {
 namespace {
 
-constexpr gfx::Size kPreviewImageSize(240, 135);
 constexpr ui::ColorId kBackgroundColor =
     cros_tokens::kCrosSysSystemBaseElevatedOpaque;
 constexpr int kBubbleOverlapOverPicker = 8;
@@ -79,10 +78,6 @@ PickerPreviewBubbleView::PickerPreviewBubbleView(views::View* anchor_view)
   rect.Inset(kBubbleOverlapOverPicker);
   SetAnchorView(nullptr);
   SetAnchorRect(rect);
-}
-
-gfx::Size PickerPreviewBubbleView::GetPreferredImageSize() const {
-  return kPreviewImageSize;
 }
 
 ui::ImageModel PickerPreviewBubbleView::GetPreviewImage() const {

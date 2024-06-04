@@ -27,8 +27,7 @@ class ASH_EXPORT PickerPreviewBubbleView
   PickerPreviewBubbleView(const PickerPreviewBubbleView&) = delete;
   PickerPreviewBubbleView& operator=(const PickerPreviewBubbleView&) = delete;
 
-  // Returns the preferred size of the preview image.
-  gfx::Size GetPreferredImageSize() const;
+  static constexpr auto kPreviewImageSize = gfx::Size(240, 135);
 
   ui::ImageModel GetPreviewImage() const;
   void SetPreviewImage(ui::ImageModel image);

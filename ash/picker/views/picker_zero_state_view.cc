@@ -56,10 +56,7 @@ PickerZeroStateView::PickerZeroStateView(
     base::span<const PickerCategory> recent_results_categories,
     int picker_view_width,
     PickerAssetFetcher* asset_fetcher)
-    : delegate_(delegate),
-      preview_controller_(
-          base::BindRepeating(&PickerAssetFetcher::FetchFileThumbnail,
-                              base::Unretained(asset_fetcher))) {
+    : delegate_(delegate) {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
 

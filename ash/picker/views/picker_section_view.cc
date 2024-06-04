@@ -273,7 +273,12 @@ PickerItemView* PickerSectionView::AddResult(
             item_view->SetPrimaryText(data.title);
             item_view->SetLeadingIcon(ui::ImageModel::FromVectorIcon(
                 chromeos::kFiletypeImageIcon, cros_tokens::kCrosSysOnSurface));
-            item_view->SetPreview(preview_controller, data.file_path);
+            item_view->SetPreview(
+                preview_controller, data.file_path,
+                // base::Unretained is safe here since asset_fetcher_ outlives
+                // this class.
+                base::BindRepeating(&PickerAssetFetcher::FetchFileThumbnail,
+                                    base::Unretained(asset_fetcher_)));
             return AddListItem(std::move(item_view));
           },
           [&](const PickerSearchResult::DriveFileData& data)
@@ -282,7 +287,12 @@ PickerItemView* PickerSectionView::AddResult(
                 std::move(select_result_callback));
             item_view->SetPrimaryText(data.title);
             item_view->SetLeadingIcon(data.icon);
-            item_view->SetPreview(preview_controller, data.file_path);
+            item_view->SetPreview(
+                preview_controller, data.file_path,
+                // base::Unretained is safe here since asset_fetcher_ outlives
+                // this class.
+                base::BindRepeating(&PickerAssetFetcher::FetchFileThumbnail,
+                                    base::Unretained(asset_fetcher_)));
             return AddListItem(std::move(item_view));
           },
           [&](const PickerSearchResult::CategoryData& data) -> PickerItemView* {

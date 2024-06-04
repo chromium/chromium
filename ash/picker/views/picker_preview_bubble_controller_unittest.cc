@@ -42,17 +42,17 @@ std::unique_ptr<views::Widget> CreateAnchorWidget(gfx::NativeWindow context) {
   return widget;
 }
 
-PickerPreviewBubbleController::AsyncBitmapResolver CreateUnresolvedBitmap() {
-  return base::DoNothing();
+ash::HoldingSpaceImage CreateUnresolvedAsyncImage() {
+  return ash::HoldingSpaceImage(PickerPreviewBubbleView::kPreviewImageSize,
+                                base::FilePath(), base::DoNothing());
 }
 
-TEST_F(PickerPreviewBubbleControllerTest, ShowBubbleForFileShowsBubbleWidget) {
+TEST_F(PickerPreviewBubbleControllerTest, ShowBubbleShowsBubbleWidget) {
   std::unique_ptr<views::Widget> anchor_widget =
       CreateAnchorWidget(GetContext());
-  PickerPreviewBubbleController controller(CreateUnresolvedBitmap());
-
-  controller.ShowBubbleForFile(anchor_widget->GetContentsView(),
-                               base::FilePath());
+  PickerPreviewBubbleController controller;
+  ash::HoldingSpaceImage async_preview_image = CreateUnresolvedAsyncImage();
+  controller.ShowBubble(&async_preview_image, anchor_widget->GetContentsView());
 
   views::View* bubble_view = controller.bubble_view_for_testing();
   ASSERT_NE(bubble_view, nullptr);
@@ -64,9 +64,9 @@ TEST_F(PickerPreviewBubbleControllerTest, ShowBubbleForFileShowsBubbleWidget) {
 TEST_F(PickerPreviewBubbleControllerTest, CloseBubbleClosesBubbleWidget) {
   std::unique_ptr<views::Widget> anchor_widget =
       CreateAnchorWidget(GetContext());
-  PickerPreviewBubbleController controller(CreateUnresolvedBitmap());
-  controller.ShowBubbleForFile(anchor_widget->GetContentsView(),
-                               base::FilePath());
+  PickerPreviewBubbleController controller;
+  ash::HoldingSpaceImage async_preview_image = CreateUnresolvedAsyncImage();
+  controller.ShowBubble(&async_preview_image, anchor_widget->GetContentsView());
   ASSERT_NE(controller.bubble_view_for_testing(), nullptr);
   views::Widget* bubble_widget =
       controller.bubble_view_for_testing()->GetWidget();
@@ -79,11 +79,11 @@ TEST_F(PickerPreviewBubbleControllerTest, CloseBubbleClosesBubbleWidget) {
 
 TEST_F(PickerPreviewBubbleControllerTest,
        DestroyingAnchorWidgetDestroysBubbleWidget) {
-  PickerPreviewBubbleController controller(CreateUnresolvedBitmap());
+  PickerPreviewBubbleController controller;
   std::unique_ptr<views::Widget> anchor_widget =
       CreateAnchorWidget(GetContext());
-  controller.ShowBubbleForFile(anchor_widget->GetContentsView(),
-                               base::FilePath());
+  ash::HoldingSpaceImage async_preview_image = CreateUnresolvedAsyncImage();
+  controller.ShowBubble(&async_preview_image, anchor_widget->GetContentsView());
   ASSERT_NE(controller.bubble_view_for_testing(), nullptr);
   views::Widget* bubble_widget =
       controller.bubble_view_for_testing()->GetWidget();
@@ -96,29 +96,27 @@ TEST_F(PickerPreviewBubbleControllerTest,
 
 TEST_F(PickerPreviewBubbleControllerTest,
        DestroyingAnchorWidgetImmediatelyDoesNotCrash) {
-  PickerPreviewBubbleController controller(CreateUnresolvedBitmap());
+  PickerPreviewBubbleController controller;
   std::unique_ptr<views::Widget> anchor_widget =
       CreateAnchorWidget(GetContext());
-  controller.ShowBubbleForFile(anchor_widget->GetContentsView(),
-                               base::FilePath());
+  ash::HoldingSpaceImage async_preview_image = CreateUnresolvedAsyncImage();
+  controller.ShowBubble(&async_preview_image, anchor_widget->GetContentsView());
 
   anchor_widget->CloseNow();
 
   EXPECT_EQ(controller.bubble_view_for_testing(), nullptr);
 }
 
-TEST_F(PickerPreviewBubbleControllerTest,
-       ShowBubbleForFileWhileShownKeepsSameBubble) {
+TEST_F(PickerPreviewBubbleControllerTest, ShowBubbleWhileShownKeepsSameBubble) {
   std::unique_ptr<views::Widget> anchor_widget =
       CreateAnchorWidget(GetContext());
-  PickerPreviewBubbleController controller(CreateUnresolvedBitmap());
-  controller.ShowBubbleForFile(anchor_widget->GetContentsView(),
-                               base::FilePath());
+  PickerPreviewBubbleController controller;
+  ash::HoldingSpaceImage async_preview_image = CreateUnresolvedAsyncImage();
+  controller.ShowBubble(&async_preview_image, anchor_widget->GetContentsView());
   views::View* bubble_view = controller.bubble_view_for_testing();
   ViewDrawnWaiter().Wait(bubble_view);
 
-  controller.ShowBubbleForFile(anchor_widget->GetContentsView(),
-                               base::FilePath());
+  controller.ShowBubble(&async_preview_image, anchor_widget->GetContentsView());
 
   ASSERT_EQ(controller.bubble_view_for_testing(), bubble_view);
   EXPECT_EQ(controller.bubble_view_for_testing()->GetWidget(),
@@ -126,7 +124,7 @@ TEST_F(PickerPreviewBubbleControllerTest,
 }
 
 TEST_F(PickerPreviewBubbleControllerTest, CloseBubbleWithoutShowing) {
-  PickerPreviewBubbleController controller(CreateUnresolvedBitmap());
+  PickerPreviewBubbleController controller;
 
   controller.CloseBubble();
 
@@ -136,14 +134,13 @@ TEST_F(PickerPreviewBubbleControllerTest, CloseBubbleWithoutShowing) {
 TEST_F(PickerPreviewBubbleControllerTest, ShowingBubbleWhileClosingOldBubble) {
   std::unique_ptr<views::Widget> anchor_widget =
       CreateAnchorWidget(GetContext());
-  PickerPreviewBubbleController controller(CreateUnresolvedBitmap());
-  controller.ShowBubbleForFile(anchor_widget->GetContentsView(),
-                               base::FilePath());
+  PickerPreviewBubbleController controller;
+  ash::HoldingSpaceImage async_preview_image = CreateUnresolvedAsyncImage();
+  controller.ShowBubble(&async_preview_image, anchor_widget->GetContentsView());
 
   // CloseBubble is asynchronous.
   controller.CloseBubble();
-  controller.ShowBubbleForFile(anchor_widget->GetContentsView(),
-                               base::FilePath());
+  controller.ShowBubble(&async_preview_image, anchor_widget->GetContentsView());
   views::View* bubble_view = controller.bubble_view_for_testing();
   ViewDrawnWaiter().Wait(bubble_view);
 
@@ -153,13 +150,13 @@ TEST_F(PickerPreviewBubbleControllerTest, ShowingBubbleWhileClosingOldBubble) {
 }
 
 TEST_F(PickerPreviewBubbleControllerTest,
-       ShowBubbleForFileUsesPlaceholderBeforeBitmapResolves) {
+       ShowBubbleUsesPlaceholderBeforeBitmapResolves) {
   std::unique_ptr<views::Widget> anchor_widget =
       CreateAnchorWidget(GetContext());
-  PickerPreviewBubbleController controller(CreateUnresolvedBitmap());
+  PickerPreviewBubbleController controller;
 
-  controller.ShowBubbleForFile(anchor_widget->GetContentsView(),
-                               base::FilePath());
+  ash::HoldingSpaceImage async_preview_image = CreateUnresolvedAsyncImage();
+  controller.ShowBubble(&async_preview_image, anchor_widget->GetContentsView());
   PickerPreviewBubbleView* bubble_view = controller.bubble_view_for_testing();
   ViewDrawnWaiter().Wait(bubble_view);
 
@@ -168,20 +165,22 @@ TEST_F(PickerPreviewBubbleControllerTest,
 }
 
 TEST_F(PickerPreviewBubbleControllerTest,
-       ShowBubbleForFileUpdatesPreviewAfterBitmapResolves) {
+       ShowBubbleUpdatesPreviewAfterBitmapResolves) {
   std::unique_ptr<views::Widget> anchor_widget =
       CreateAnchorWidget(GetContext());
   base::RunLoop run_loop;
   SkBitmap bitmap = gfx::test::CreateBitmap(100, SK_ColorBLUE);
-  PickerPreviewBubbleController controller(base::BindLambdaForTesting(
-      [&](const base::FilePath& file_path, const gfx::Size& size,
-          HoldingSpaceImage::BitmapCallback callback) {
-        std::move(callback).Run(&bitmap, base::File::Error::FILE_OK);
-        run_loop.Quit();
-      }));
+  ash::HoldingSpaceImage async_preview_image(
+      PickerPreviewBubbleView::kPreviewImageSize, base::FilePath(),
+      base::BindLambdaForTesting(
+          [&](const base::FilePath& file_path, const gfx::Size& size,
+              HoldingSpaceImage::BitmapCallback callback) {
+            std::move(callback).Run(&bitmap, base::File::Error::FILE_OK);
+            run_loop.Quit();
+          }));
+  PickerPreviewBubbleController controller;
 
-  controller.ShowBubbleForFile(anchor_widget->GetContentsView(),
-                               base::FilePath());
+  controller.ShowBubble(&async_preview_image, anchor_widget->GetContentsView());
   PickerPreviewBubbleView* bubble_view = controller.bubble_view_for_testing();
   ViewDrawnWaiter().Wait(bubble_view);
 

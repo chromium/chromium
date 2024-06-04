@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "ash/picker/model/picker_action_type.h"
 #include "ash/picker/views/picker_item_view.h"
+#include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "base/files/file_path.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
@@ -33,6 +34,8 @@ class ASH_EXPORT PickerListItemView : public PickerItemView {
   METADATA_HEADER(PickerListItemView, PickerItemView)
 
  public:
+  using AsyncBitmapResolver = HoldingSpaceImage::AsyncBitmapResolver;
+
   explicit PickerListItemView(SelectItemCallback select_item_callback);
   PickerListItemView(const PickerListItemView&) = delete;
   PickerListItemView& operator=(const PickerListItemView&) = delete;
@@ -51,7 +54,8 @@ class ASH_EXPORT PickerListItemView : public PickerItemView {
   void SetBadgeVisible(bool visible);
 
   void SetPreview(PickerPreviewBubbleController* preview_bubble_controller,
-                  base::FilePath file_path);
+                  base::FilePath file_path,
+                  AsyncBitmapResolver async_bitmap_resolver);
 
   // views::Button:
   void OnMouseEntered(const ui::MouseEvent& event) override;
@@ -83,8 +87,8 @@ class ASH_EXPORT PickerListItemView : public PickerItemView {
   raw_ptr<PickerBadgeView> trailing_badge_ = nullptr;
 
   // These are only used for file items.
+  std::unique_ptr<HoldingSpaceImage> async_preview_image_;
   raw_ptr<PickerPreviewBubbleController> preview_bubble_controller_;
-  base::FilePath preview_file_path_;
 };
 
 }  // namespace ash

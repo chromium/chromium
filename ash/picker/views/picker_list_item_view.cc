@@ -12,7 +12,9 @@
 #include "ash/bubble/bubble_utils.h"
 #include "ash/picker/views/picker_badge_view.h"
 #include "ash/picker/views/picker_item_view.h"
+#include "ash/picker/views/picker_preview_bubble.h"
 #include "ash/picker/views/picker_preview_bubble_controller.h"
+#include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/style_util.h"
 #include "ash/style/typography.h"
@@ -187,18 +189,21 @@ void PickerListItemView::SetBadgeVisible(bool visible) {
 
 void PickerListItemView::SetPreview(
     PickerPreviewBubbleController* preview_bubble_controller,
-    base::FilePath file_path) {
+    base::FilePath file_path,
+    AsyncBitmapResolver async_bitmap_resolver) {
   if (preview_bubble_controller_ != nullptr) {
     preview_bubble_controller_->CloseBubble();
   }
 
+  async_preview_image_ = std::make_unique<ash::HoldingSpaceImage>(
+      PickerPreviewBubbleView::kPreviewImageSize, file_path,
+      std::move(async_bitmap_resolver));
   preview_bubble_controller_ = preview_bubble_controller;
-  preview_file_path_ = file_path;
 }
 
 void PickerListItemView::OnMouseEntered(const ui::MouseEvent&) {
   if (preview_bubble_controller_ != nullptr) {
-    preview_bubble_controller_->ShowBubbleForFile(this, preview_file_path_);
+    preview_bubble_controller_->ShowBubble(async_preview_image_.get(), this);
   }
 }
 

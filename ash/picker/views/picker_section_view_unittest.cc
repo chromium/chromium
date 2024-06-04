@@ -158,7 +158,7 @@ TEST_F(PickerSectionViewTest, EmojiItemsAndGifItems) {
 TEST_F(PickerSectionViewTest, AddsResults) {
   MockPickerAssetFetcher asset_fetcher;
   PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher);
-  PickerPreviewBubbleController preview_controller(base::DoNothing());
+  PickerPreviewBubbleController preview_controller;
 
   section_view.AddResult(PickerSearchResult::Text(u"Result"),
                          &preview_controller, base::DoNothing());
