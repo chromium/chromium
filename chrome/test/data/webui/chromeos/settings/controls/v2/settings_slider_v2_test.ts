@@ -325,6 +325,8 @@ suite(SettingsSliderV2Element.is, () => {
 
         const event = await changeEventPromise;
         assertEquals(newValue, event.detail);
+        // Event should not pass the shadow DOM boundary.
+        assertFalse(event.composed);
       });
 
       suite('with ticks', () => {

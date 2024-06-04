@@ -165,7 +165,7 @@ export class SettingsToggleV2Element extends SettingsToggleV2ElementBase {
 
     this.dispatchEvent(new CustomEvent('change', {
       bubbles: true,
-      composed: true,
+      composed: false,  // Event should not pass the shadow DOM boundary.
       detail: this.checked,
     }));
   }

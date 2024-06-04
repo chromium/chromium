@@ -133,8 +133,11 @@ export class SettingsDropdownV2Element extends SettingsDropdownV2ElementBase {
       this.updatePrefValueFromUserAction(this.value);
     }
 
-    this.dispatchEvent(new CustomEvent(
-        'change', {bubbles: true, composed: true, detail: this.value}));
+    this.dispatchEvent(new CustomEvent('change', {
+      bubbles: true,
+      composed: false,  // Event should not pass the shadow DOM boundary.
+      detail: this.value,
+    }));
   }
 
   /**

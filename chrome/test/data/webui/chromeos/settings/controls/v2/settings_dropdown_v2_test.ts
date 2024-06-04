@@ -278,6 +278,8 @@ suite(SettingsDropdownV2Element.is, () => {
         assertOptionSelected(value);
         const event = await changeEventPromise;
         assertEquals(value, event.detail);
+        // Event should not pass the shadow DOM boundary.
+        assertFalse(event.composed);
       }
     });
   });

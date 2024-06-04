@@ -89,6 +89,8 @@ suite(SettingsToggleV2Element.is, () => {
 
         const event = await checkedChangeEventPromise;
         assertEquals(toggleElement.checked, event.detail);
+        // Event should not pass the shadow DOM boundary.
+        assertFalse(event.composed);
       });
 
   test('the internal cr-toggle control value changes on click', () => {
