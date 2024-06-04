@@ -7,7 +7,7 @@
 
 namespace ash {
 
-// Generated as: web_app::GenerateAppId(/*manifest_id=*/"/", GURL(
+// Generated as: web_app::GenerateAppId(/*manifest_id=*/std::nullopt, GURL(
 //     "chrome://mall/"))
 inline constexpr char kMallSystemAppId[] = "hlkibhljafkcdegnpfbghfpanocdocai";
 
