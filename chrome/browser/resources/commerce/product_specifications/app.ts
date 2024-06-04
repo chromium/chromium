@@ -86,7 +86,7 @@ export class ProductSpecificationsElement extends PolymerElement {
     };
   }
 
-  private minLoadingAnimationMs_: number = 50000;
+  private minLoadingAnimationMs_: number = 500;
   private loadingState_: LoadingState = {loading: false, urlCount: 0};
   private setName_: string;
   private showEmptyState_: boolean;
