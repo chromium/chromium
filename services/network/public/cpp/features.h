@@ -195,6 +195,12 @@ BASE_DECLARE_FEATURE(kAvoidResourceRequestCopies);
 
 COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kDocumentIsolationPolicy);
 
+COMPONENT_EXPORT(NETWORK_CPP)
+BASE_DECLARE_FEATURE(kNetworkContextPrefetch);
+
+COMPONENT_EXPORT(NETWORK_CPP)
+extern const base::FeatureParam<int> kNetworkContextPrefetchMaxLoaders;
+
 }  // namespace features
 }  // namespace network
 

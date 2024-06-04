@@ -43,6 +43,7 @@
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/http/http_auth_preferences.h"
 #include "net/net_buildflags.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/cors/preflight_controller.h"
 #include "services/network/first_party_sets/first_party_sets_access_delegate.h"
 #include "services/network/http_cache_data_counter.h"
@@ -122,14 +123,17 @@ class NetworkServiceMemoryCache;
 class NetworkServiceNetworkDelegate;
 class P2PSocketManager;
 class PendingTrustTokenStore;
+class PrefetchCache;
 class ProxyLookupRequest;
 class ResourceSchedulerClient;
 class SCTAuditingHandler;
+class SQLiteTrustTokenPersister;
 class SessionCleanupCookieStore;
 class SharedDictionaryManager;
-class SQLiteTrustTokenPersister;
 class WebSocketFactory;
 class WebTransport;
+
+struct ResourceRequest;
 
 namespace cors {
 class CorsURLLoaderFactory;
@@ -534,6 +538,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       const GURL& exempted_url,
       const base::UnguessableToken& nonce,
       ExemptUrlFromNetworkRevocationForNonceCallback callback) override;
+  void Prefetch(int32_t request_id,
+                uint32_t options,
+                const ResourceRequest& request,
+                const net::MutableNetworkTrafficAnnotationTag&
+                    traffic_annotation) override;
 
   // Destroys |request| when a proxy lookup completes.
   void OnProxyLookupComplete(ProxyLookupRequest* proxy_lookup_request);
@@ -773,6 +782,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   bool IsAllowedToUseAllHttpAuthSchemes(
       const url::SchemeHostPort& scheme_host_port);
 
+  void InitializePrefetchURLLoaderFactory();
+
   const raw_ptr<NetworkService> network_service_;
 
   mojo::Remote<mojom::NetworkContextClient> client_;
@@ -1004,6 +1015,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   // and membership is checked with `IsNetworkForNonceAndUrlAllowed`.
   std::map<base::UnguessableToken, std::set<GURL>>
       network_revocation_exemptions_;
+
+  // An LRU cache for in-progress prefetches. Created on first use.
+  std::unique_ptr<PrefetchCache> prefetch_cache_;
+
+  // The URLLoaderFactory to use for prefetches. Created on first use.
+  mojo::Remote<mojom::URLLoaderFactory> prefetch_url_loader_factory_remote_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

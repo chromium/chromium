@@ -1698,4 +1698,14 @@ interface NetworkContext {
   // take effect afterwards.
   ExemptUrlFromNetworkRevocationForNonce(
       url.mojom.Url exempted_url, mojo_base.mojom.UnguessableToken nonce) => ();
+
+  // Request that `request` be performed and cached as a prefetch. If a matching
+  // request is subseqently received from a render process, the prefetch will
+  // be consumed. `request_id`, `options` and `traffic_annotation` will be
+  // passed to the CreateLoaderAndStart() method of CorsURLLoaderFactory when
+  // the request is started.
+  Prefetch(int32 request_id,
+           uint32 options,
+           URLRequest request,
+           MutableNetworkTrafficAnnotationTag traffic_annotation);
 };

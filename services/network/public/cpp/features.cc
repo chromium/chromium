@@ -485,4 +485,15 @@ BASE_FEATURE(kDocumentIsolationPolicy,
              "DocumentIsolationPolicy",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// This feature enables the Prefetch() method on the NetworkContext, and the
+// PrefetchMatchingURLLoaderFactory.
+BASE_FEATURE(kNetworkContextPrefetch,
+             "NetworkContextPrefetch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+// How many prefetches should be cached before old ones are evicted. This
+// provides rough control over the overall memory used by prefetches.
+const base::FeatureParam<int> kNetworkContextPrefetchMaxLoaders{
+    &kNetworkContextPrefetch,
+    /*name=*/"max_loaders", /*default_value=*/10};
+
 }  // namespace network::features

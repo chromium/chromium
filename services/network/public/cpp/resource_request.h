@@ -233,6 +233,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   // TODO(crbug.com/40066149): Remove this once the issue is fixed.
   std::string created_location;
 #endif
+  std::optional<base::UnguessableToken> prefetch_token;
 };
 
 // This does not accept |kDefault| referrer policy.

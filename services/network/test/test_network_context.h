@@ -349,6 +349,11 @@ class TestNetworkContext : public mojom::NetworkContext {
       const GURL& exempted_url,
       const base::UnguessableToken& nonce,
       ExemptUrlFromNetworkRevocationForNonceCallback callback) override {}
+  void Prefetch(int32_t request_id,
+                uint32_t options,
+                const ResourceRequest& request,
+                const net::MutableNetworkTrafficAnnotationTag&
+                    traffic_annotation) override {}
 };
 
 }  // namespace network

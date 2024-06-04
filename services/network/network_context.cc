@@ -4,6 +4,7 @@
 
 #include "services/network/network_context.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
@@ -112,6 +113,8 @@
 #include "services/network/network_service_network_delegate.h"
 #include "services/network/network_service_proxy_delegate.h"
 #include "services/network/oblivious_http_request_handler.h"
+#include "services/network/prefetch_cache.h"
+#include "services/network/prefetch_url_loader_client.h"
 #include "services/network/proxy_config_service_mojo.h"
 #include "services/network/proxy_lookup_request.h"
 #include "services/network/proxy_resolving_socket_factory_mojo.h"
@@ -120,6 +123,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/cpp/parsed_headers.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_host_resolver.h"
 #include "services/network/public/mojom/clear_data_filter.mojom.h"
 #include "services/network/public/mojom/cookie_encryption_provider.mojom.h"
@@ -514,6 +518,52 @@ bool GetFullDataFilePath(
   full_path =
       file_paths->data_directory.path().Append(relative_file_path->value());
   return true;
+}
+
+// Produces URLLoaderFactoryParams suitable for a prefetch. Generally this
+// should match the params that are used for subresource fetches to render
+// processes.
+mojom::URLLoaderFactoryParamsPtr CreateURLLoaderFactoryParamsForPrefetch() {
+  auto params = mojom::URLLoaderFactoryParams::New();
+  params->process_id = mojom::kBrowserProcessId;
+  // We want to be able to use TrustedParams to set the IsolationInfo for each
+  // prefetch separately, so make it trusted.
+  // TODO(crbug.com/342445996): Maybe stop using TrustedParams and lock this
+  // down?
+  params->is_trusted = true;
+
+  // This can be set to true by the content::switches::kDisableWebSecurity
+  // switch, but that's not available in the network service. The consequences
+  // of this being disabled should just be that prefetches fail where this flag
+  // would have taken effect.
+  // TODO(crbug.com/342445996): Pass this through from the caller.
+  //
+  // Android WebView also disables web security when the
+  // `allow_universal_access_from_file_urls` flag is set, however, WebView
+  // doesn't currently support prefetch anyway.
+  params->disable_web_security = false;
+
+  // TODO(crbug.com/342445996): Find out if we need to set anything here.
+  params->client_security_state = mojom::ClientSecurityState::New();
+
+  // TODO(crbug.com/342445996): params->coep_reporter
+
+  // --disable-web-security also disables Opaque Response Blocking (ORB).
+  params->is_orb_enabled = !params->disable_web_security;
+
+  // TODO(crbug.com/342445996): trust_token_issuance_policy,
+  // trust_token_redemption_policy
+
+  // TODO(crbug.com/342445996): Add observers as needed for DevTools support,
+  // etc.
+
+  // TODO(crbug.com/342445996): params->cookie_setting_overrides
+
+  params->debug_tag = "CreateURLLoaderFactoryParamsForPrefetch";
+
+  // TODO(crbug.com/342445996): params->require_cross_site_requests_for_cookies
+
+  return params;
 }
 
 }  // namespace
@@ -3110,6 +3160,37 @@ void NetworkContext::ExemptUrlFromNetworkRevocationForNonce(
   std::move(callback).Run();
 }
 
+void NetworkContext::Prefetch(
+    int32_t request_id,
+    uint32_t options,
+    const ResourceRequest& request,
+    const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
+  if (!base::FeatureList::IsEnabled(features::kNetworkContextPrefetch)) {
+    return;
+  }
+
+  if (!prefetch_cache_) {
+    // Lazily initialized to avoid slowing down startup.
+    prefetch_cache_ = std::make_unique<PrefetchCache>();
+  }
+
+  if (!prefetch_url_loader_factory_remote_.is_bound() ||
+      !prefetch_url_loader_factory_remote_.is_connected()) {
+    InitializePrefetchURLLoaderFactory();
+  }
+
+  PrefetchURLLoaderClient* client = prefetch_cache_->Emplace(request);
+  if (!client) {
+    // This is normal if we already have a prefetch in progress for the {NIK,
+    // URL} combination.
+    return;
+  }
+
+  prefetch_url_loader_factory_remote_->CreateLoaderAndStart(
+      client->GetURLLoaderPendingReceiver(), request_id, options, request,
+      client->BindNewPipeAndPassRemote(), traffic_annotation);
+}
+
 bool NetworkContext::IsNetworkForNonceAndUrlAllowed(
     const base::UnguessableToken& nonce,
     const GURL& url) const {
@@ -3126,6 +3207,13 @@ bool NetworkContext::IsNetworkForNonceAndUrlAllowed(
   }
   // The nonce was revoked and the url isn't exempted.
   return false;
+}
+
+void NetworkContext::InitializePrefetchURLLoaderFactory() {
+  auto pending_receiver =
+      prefetch_url_loader_factory_remote_.BindNewPipeAndPassReceiver();
+  CreateURLLoaderFactory(std::move(pending_receiver),
+                         CreateURLLoaderFactoryParamsForPrefetch());
 }
 
 }  // namespace network
