@@ -1,0 +1,11 @@
+Document
+++Group Name='test-label'
+++++Text Name='Test'
+++++++Text Name='Test' IsControlElement=false
+++++Group IsControlElement=false
+++++++Text Name='This is test content within a section, tab index negative 1. I am missing on Android.'
+++Group Name='test-label-2'
+++++Text Name='Test'
+++++++Text Name='Test' IsControlElement=false
+++++Group IsControlElement=false
+++++++Text Name='This is test content within a section, no tab index.'

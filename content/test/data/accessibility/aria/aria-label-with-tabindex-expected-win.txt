@@ -1,0 +1,11 @@
+ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
+++IA2_ROLE_LANDMARK name='test-label' FOCUSABLE
+++++IA2_ROLE_HEADING name='Test'
+++++++ROLE_SYSTEM_STATICTEXT name='Test'
+++++IA2_ROLE_PARAGRAPH
+++++++ROLE_SYSTEM_STATICTEXT name='This is test content within a section, tab index negative 1. I am missing on Android.'
+++IA2_ROLE_LANDMARK name='test-label-2'
+++++IA2_ROLE_HEADING name='Test'
+++++++ROLE_SYSTEM_STATICTEXT name='Test'
+++++IA2_ROLE_PARAGRAPH
+++++++ROLE_SYSTEM_STATICTEXT name='This is test content within a section, no tab index.'

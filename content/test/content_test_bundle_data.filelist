@@ -957,6 +957,15 @@ data/accessibility/aria/aria-label-expected-auralinux.txt
 data/accessibility/aria/aria-label-expected-blink.txt
 data/accessibility/aria/aria-label-expected-mac.txt
 data/accessibility/aria/aria-label-expected-win.txt
+data/accessibility/aria/aria-label-with-tabindex-expected-android-assist-data.txt
+data/accessibility/aria/aria-label-with-tabindex-expected-android-external.txt
+data/accessibility/aria/aria-label-with-tabindex-expected-android.txt
+data/accessibility/aria/aria-label-with-tabindex-expected-auralinux.txt
+data/accessibility/aria/aria-label-with-tabindex-expected-blink.txt
+data/accessibility/aria/aria-label-with-tabindex-expected-mac.txt
+data/accessibility/aria/aria-label-with-tabindex-expected-uia-win.txt
+data/accessibility/aria/aria-label-with-tabindex-expected-win.txt
+data/accessibility/aria/aria-label-with-tabindex.html
 data/accessibility/aria/aria-label.html
 data/accessibility/aria/aria-labelledby-heading-expected-android-assist-data.txt
 data/accessibility/aria/aria-labelledby-heading-expected-android-external.txt

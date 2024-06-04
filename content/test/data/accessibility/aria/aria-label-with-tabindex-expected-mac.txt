@@ -1,0 +1,11 @@
+AXWebArea
+++AXGroup AXSubrole=AXLandmarkRegion AXDescription='test-label'
+++++AXHeading AXTitle='Test' AXValue=3
+++++++AXStaticText AXValue='Test'
+++++AXGroup
+++++++AXStaticText AXValue='This is test content within a section, tab index negative 1. I am missing on Android.'
+++AXGroup AXSubrole=AXLandmarkRegion AXDescription='test-label-2'
+++++AXHeading AXTitle='Test' AXValue=3
+++++++AXStaticText AXValue='Test'
+++++AXGroup
+++++++AXStaticText AXValue='This is test content within a section, no tab index.'

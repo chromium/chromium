@@ -1011,6 +1011,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAriaLabelWithTabIndex) {
+  RunAriaTest(FILE_PATH_LITERAL("aria-label-with-tabindex.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityAriaLabelledByRefersToSelf) {
   RunAriaTest(FILE_PATH_LITERAL("aria-labelledby-refers-to-self.html"));
 }

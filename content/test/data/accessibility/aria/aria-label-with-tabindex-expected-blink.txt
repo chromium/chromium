@@ -1,0 +1,17 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++region name='test-label'
+++++++++heading name='Test'
+++++++++++staticText name='Test'
+++++++++++++inlineTextBox name='Test'
+++++++++paragraph
+++++++++++staticText name='This is test content within a section, tab index negative 1. I am missing on Android.'
+++++++++++++inlineTextBox name='This is test content within a section, tab index negative 1. I am missing on Android.'
+++++++region name='test-label-2'
+++++++++heading name='Test'
+++++++++++staticText name='Test'
+++++++++++++inlineTextBox name='Test'
+++++++++paragraph
+++++++++++staticText name='This is test content within a section, no tab index.'
+++++++++++++inlineTextBox name='This is test content within a section, no tab index.'
