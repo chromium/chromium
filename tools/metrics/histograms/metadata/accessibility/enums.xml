@@ -1376,6 +1376,12 @@ Unknown properties are collapsed to zero. -->
   <int value="2" label="Highlight change"/>
 </enum>
 
+<enum name="ReadAnythingReadAloudVoice">
+  <int value="0" label="Natural voice"/>
+  <int value="1" label="eSpeak voice"/>
+  <int value="2" label="ChromeOS voice"/>
+</enum>
+
 <enum name="ReadAnythingScrollEvent">
   <int value="0" label="Side panel selected"/>
   <int value="1" label="Main panel selected"/>

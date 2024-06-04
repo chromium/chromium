@@ -23,7 +23,7 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 import {getTemplate} from './app.html.js';
 import {minOverflowLengthToScroll, playFromSelectionTimeout, validatedFontName} from './common.js';
 import type {ReadAnythingToolbarElement} from './read_anything_toolbar.js';
-import {areVoicesEqual, AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, isNatural, isVoicePackStatusError, isVoicePackStatusSuccess, mojoVoicePackStatusToVoicePackStatusEnum, VoiceClientSideStatusCode, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from './voice_language_util.js';
+import {areVoicesEqual, AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, isEspeak, isNatural, isVoicePackStatusError, isVoicePackStatusSuccess, mojoVoicePackStatusToVoicePackStatusEnum, VoiceClientSideStatusCode, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from './voice_language_util.js';
 import type {VoicePackStatus} from './voice_language_util.js';
 
 const ReadAnythingElementBase = WebUiListenerMixin(PolymerElement);
@@ -82,12 +82,24 @@ const minWidthOverflow = 'fit-content';
 // UMA logging constants.
 const NEW_PAGE_UMA = 'Accessibility.ReadAnything.NewPage';
 const LANGUAGE_UMA = 'Accessibility.ReadAnything.ReadAloud.Language';
+const VOICE_UMA = 'Accessibility.ReadAnything.ReadAloud.Voice';
 // Enum for logging when we play speech on a page.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum ReadAnythingNewPage {
   NEW_PAGE = 0,
   SPEECH_PLAYED_ON_NEW_PAGE = 1,
+
+  // Must be last.
+  COUNT = 2,
+}
+// Enum for logging which kind of voice is being used to read aloud.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum ReadAnythingVoiceType {
+  NATURAL = 0,
+  ESPEAK = 1,
+  CHROMEOS = 2,
 
   // Must be last.
   COUNT = 3,
@@ -1348,11 +1360,33 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // sync and we call stopSpeech before playSpeech.
     if (this.playSessionStartTime > 0) {
       this.logLanguageUsedForReading();
+      this.logVoiceTypeUsedForReading();
       chrome.readingMode.logLongMetric(
           Date.now() - this.playSessionStartTime,
           'Accessibility.ReadAnything.SpeechPlaybackSession');
       this.playSessionStartTime = -1;
     }
+  }
+
+  private logVoiceTypeUsedForReading() {
+    if (!this.selectedVoice) {
+      return;
+    }
+
+    let voiceType: ReadAnythingVoiceType|undefined;
+    if (isNatural(this.selectedVoice)) {
+      voiceType = ReadAnythingVoiceType.NATURAL;
+    } else if (isEspeak(this.selectedVoice)) {
+      voiceType = ReadAnythingVoiceType.ESPEAK;
+    } else if (chrome.readingMode.isChromeOsAsh) {
+      voiceType = ReadAnythingVoiceType.CHROMEOS;
+    }
+    if (!voiceType) {
+      return;
+    }
+
+    chrome.metricsPrivate.recordEnumerationValue(
+        VOICE_UMA, voiceType, ReadAnythingVoiceType.COUNT);
   }
 
   private playNextGranularity_() {

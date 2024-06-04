@@ -2432,6 +2432,17 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.ReadAnything.ReadAloud.Voice"
+    enum="ReadAnythingReadAloudVoice" expires_after="2025-02-28">
+  <owner>kristislee@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <summary>
+    Records which kind of voice the user is using to read aloud text in the Read
+    Anything panel. This is recorded when speech stops, either from user action
+    or when speech completes, to avoid blocking speech.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.ReadAnything.ReadAloud.VoiceSpeed"
     units="speech rate %" expires_after="2025-02-28">
   <owner>kristislee@google.com</owner>

@@ -65,12 +65,17 @@ export enum VoiceClientSideStatusCode {
   INSTALL_ERROR_ALLOCATION,  // Couldn't install due to not enough memory
 }
 
-// This string is not localized and will be in English, even for non-English
-// Natural voices.
+// These strings are not localized and will be in English, even for non-English
+// Natural and eSpeak voices.
 const NATURAL_STRING_IDENTIFIER = '(Natural)';
+const ESPEAK_STRING_IDENTIFIER = 'eSpeak';
 
 export function isNatural(voice: SpeechSynthesisVoice) {
   return voice.name.includes(NATURAL_STRING_IDENTIFIER);
+}
+
+export function isEspeak(voice: SpeechSynthesisVoice) {
+  return voice.name.includes(ESPEAK_STRING_IDENTIFIER);
 }
 
 export function createInitialListOfEnabledLanguages(
