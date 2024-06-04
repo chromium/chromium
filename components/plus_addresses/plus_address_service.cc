@@ -236,8 +236,7 @@ std::optional<Suggestion> PlusAddressService::GetManagePlusAddressSuggestion()
   Suggestion suggestion(
       l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MANAGE_PLUS_ADDRESSES_TEXT),
       SuggestionType::kAutofillOptions);
-  // TODO(b/343414152): Use the Google G logo icon.
-  suggestion.icon = Suggestion::Icon::kPlusAddress;
+  suggestion.icon = Suggestion::Icon::kGoogleMonochrome;
   return suggestion;
 }
 

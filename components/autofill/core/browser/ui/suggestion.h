@@ -88,6 +88,7 @@ struct Suggestion {
     kEmpty,
     kGlobe,
     kGoogle,
+    kGoogleMonochrome,
     kGooglePasswordManager,
     kGooglePay,
     kGooglePayDark,

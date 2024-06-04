@@ -1369,7 +1369,7 @@ TEST_F(PlusAddressSuggestionsTest,
                   SuggestionType::kAutofillOptions,
                   l10n_util::GetStringUTF16(
                       IDS_PLUS_ADDRESS_MANAGE_PLUS_ADDRESSES_TEXT),
-                  Suggestion::Icon::kPlusAddress)));
+                  Suggestion::Icon::kGoogleMonochrome)));
 }
 
 }  // namespace plus_addresses
