@@ -788,6 +788,27 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
                                   Comparator(ANY, 0), 0, 0);
     return config;
   }
+
+  if (kIPHiOSPaymentPromoDesktopFeature.name == feature->name) {
+    // A config for allowing other IPH's to explicitly block the iOS payment
+    // promo bubble on desktop if needed. Blocked and blocking by default, so
+    // won't appear at the same time as other IPH, but without any session rate
+    // impact.
+
+    std::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->session_rate_impact.type = SessionRateImpact::Type::NONE;
+    config->blocked_by.type = BlockedBy::Type::ALL;
+    config->blocking.type = Blocking::Type::ALL;
+    config->used =
+        EventConfig("ios_payment_promo_bubble_on_desktop_interacted_with",
+                    Comparator(ANY, 0), 0, 0);
+    config->trigger = EventConfig("ios_payment_promo_bubble_on_desktop_shown",
+                                  Comparator(ANY, 0), 0, 0);
+    return config;
+  }
 #endif  // !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 #if BUILDFLAG(IS_ANDROID)

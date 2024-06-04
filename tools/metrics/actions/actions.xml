@@ -43156,6 +43156,8 @@ should be able to be added at any place in this file.
       label="For the iOSParcelTrackingFeature feature"/>
   <suffix name="iOSPasswordPromoDesktop"
       label="For iOSPasswordPromoDesktop feature"/>
+  <suffix name="iOSPaymentPromoDesktop"
+      label="For iOSPaymentPromoDesktop feature"/>
   <suffix name="iOSPostDefaultAbandonmentPromo"
       label="For iOSPostDefaultAbandonmentPromo feature"/>
   <suffix name="iOSPromoAllTabs" label="For All Tabs default browser promo."/>
