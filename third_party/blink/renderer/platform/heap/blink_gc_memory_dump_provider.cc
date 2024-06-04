@@ -126,6 +126,9 @@ bool BlinkGCMemoryDumpProvider::OnMemoryDump(
   heap_dump->AddScalar("allocated_objects_size",
                        base::trace_event::MemoryAllocatorDump::kUnitsBytes,
                        stats.used_size_bytes);
+  heap_dump->AddScalar("pooled_size",
+                       base::trace_event::MemoryAllocatorDump::kUnitsBytes,
+                       stats.pooled_memory_size_bytes);
   heap_dump->AddScalar("fragmentation", "percent", GetFragmentation(stats));
 
   if (detail_level == ::cppgc::HeapStatistics::kBrief) {
