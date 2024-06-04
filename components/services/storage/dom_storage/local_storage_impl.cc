@@ -50,6 +50,9 @@ namespace storage {
 //   key: "VERSION"
 //   value: "1"
 //
+//   key: "METAACCESS:" + <StorageKey 'storage_key'>
+//   value: <LocalStorageAreaAccessMetaData serialized as a string>
+//
 //   key: "META:" + <StorageKey 'storage_key'>
 //   value: <LocalStorageAreaWriteMetaData serialized as a string>
 //
@@ -67,6 +70,8 @@ using StorageAreaImpl = StorageAreaImpl;
 static const int kDaysInTenYears = 10 * 365;
 
 constexpr std::string_view kVersionKey = "VERSION";
+const uint8_t kAccessMetaPrefix[] = {'M', 'E', 'T', 'A', 'A', 'C',
+                                     'C', 'E', 'S', 'S', ':'};
 const uint8_t kWriteMetaPrefix[] = {'M', 'E', 'T', 'A', ':'};
 const int64_t kMinSchemaVersion = 1;
 const int64_t kCurrentLocalStorageSchemaVersion = 1;
@@ -84,6 +89,20 @@ const size_t kMaxLocalStorageCacheSize = 2 * 1024 * 1024;
 const unsigned kMaxLocalStorageAreaCount = 50;
 const size_t kMaxLocalStorageCacheSize = 20 * 1024 * 1024;
 #endif
+
+DomStorageDatabase::Key CreateAccessMetaDataKey(
+    const blink::StorageKey& storage_key) {
+  std::string storage_key_str = storage_key.SerializeForLocalStorage();
+  std::vector<uint8_t> serialized_storage_key(storage_key_str.begin(),
+                                              storage_key_str.end());
+  DomStorageDatabase::Key key;
+  key.reserve(std::size(kAccessMetaPrefix) + serialized_storage_key.size());
+  key.insert(key.end(), kAccessMetaPrefix,
+             kAccessMetaPrefix + std::size(kAccessMetaPrefix));
+  key.insert(key.end(), serialized_storage_key.begin(),
+             serialized_storage_key.end());
+  return key;
+}
 
 DomStorageDatabase::Key CreateWriteMetaDataKey(
     const blink::StorageKey& storage_key) {
@@ -143,6 +162,8 @@ void DeleteStorageKeys(AsyncDomStorageDatabase* database,
             for (const auto& storage_key : storage_keys) {
               db.DeletePrefixed(MakeStorageKeyPrefix(storage_key), &batch);
               batch.Delete(
+                  leveldb_env::MakeSlice(CreateAccessMetaDataKey(storage_key)));
+              batch.Delete(
                   leveldb_env::MakeSlice(CreateWriteMetaDataKey(storage_key)));
             }
             return db.Commit(&batch);
@@ -189,6 +210,44 @@ class LocalStorageImpl::StorageAreaHolder final
               this,
               createOptions()) {}
 
+  ~StorageAreaHolder() override {
+    // If we already wrote last_accessed we can skip writing it again.
+    if (has_written_access_meta_data_) {
+      return;
+    }
+    // We should not write last_accessed if the area is empty.
+    if (storage_area()->empty()) {
+      return;
+    }
+    // We should not write last_accessed if the data will be purged.
+    if (context_->origins_to_purge_on_shutdown_.find(storage_key_.origin()) !=
+            context_->origins_to_purge_on_shutdown_.end() ||
+        context_->origins_to_purge_on_shutdown_.find(
+            url::Origin::Create(storage_key_.top_level_site().GetURL())) !=
+            context_->origins_to_purge_on_shutdown_.end()) {
+      return;
+    }
+    context_->database_->RunDatabaseTask(
+        base::BindOnce(
+            [](const blink::StorageKey& storage_key,
+               const DomStorageDatabase& db) {
+              leveldb::WriteBatch batch;
+              storage::LocalStorageAreaAccessMetaData data;
+              data.set_last_accessed(base::Time::Now().ToInternalValue());
+              const std::string serialized_data = data.SerializeAsString();
+              batch.Put(
+                  leveldb_env::MakeSlice(CreateAccessMetaDataKey(storage_key)),
+                  leveldb_env::MakeSlice(DomStorageDatabase::Value(
+                      serialized_data.begin(), serialized_data.end())));
+              return db.Commit(&batch);
+            },
+            storage_key_),
+        base::BindOnce([](leveldb::Status status) {
+          base::UmaHistogramBoolean(
+              "LocalStorage.AccessMetaDataUpdateAtShutdown", status.ok());
+        }));
+  }
+
   StorageAreaImpl* storage_area() { return &area_; }
 
   void OnNoBindings() override {
@@ -212,18 +271,34 @@ class LocalStorageImpl::StorageAreaHolder final
       context_->database_initialized_ = true;
     }
 
-    DomStorageDatabase::Key metadata_key = CreateWriteMetaDataKey(storage_key_);
+    DomStorageDatabase::Key access_metadata_key =
+        CreateAccessMetaDataKey(storage_key_);
+    DomStorageDatabase::Key write_metadata_key =
+        CreateWriteMetaDataKey(storage_key_);
     if (storage_area()->empty()) {
-      extra_keys_to_delete->push_back(std::move(metadata_key));
+      extra_keys_to_delete->push_back(std::move(access_metadata_key));
+      extra_keys_to_delete->push_back(std::move(write_metadata_key));
     } else {
-      storage::LocalStorageAreaWriteMetaData data;
-      data.set_last_modified(base::Time::Now().ToInternalValue());
-      data.set_size_bytes(storage_area()->storage_used());
-      std::string serialized_data = data.SerializeAsString();
+      base::Time now = base::Time::Now();
+      storage::LocalStorageAreaWriteMetaData write_data;
+      write_data.set_last_modified(now.ToInternalValue());
+      write_data.set_size_bytes(storage_area()->storage_used());
+      std::string serialized_write_data = write_data.SerializeAsString();
       extra_entries_to_add->emplace_back(
-          std::move(metadata_key),
-          DomStorageDatabase::Value(serialized_data.begin(),
-                                    serialized_data.end()));
+          std::move(write_metadata_key),
+          DomStorageDatabase::Value(serialized_write_data.begin(),
+                                    serialized_write_data.end()));
+      // We only need to write this once per construction.
+      if (!has_written_access_meta_data_) {
+        storage::LocalStorageAreaAccessMetaData access_data;
+        access_data.set_last_accessed(now.ToInternalValue());
+        std::string serialized_access_data = access_data.SerializeAsString();
+        extra_entries_to_add->emplace_back(
+            std::move(access_metadata_key),
+            DomStorageDatabase::Value(serialized_access_data.begin(),
+                                      serialized_access_data.end()));
+        has_written_access_meta_data_ = true;
+      }
     }
   }
 
@@ -242,6 +317,7 @@ class LocalStorageImpl::StorageAreaHolder final
   blink::StorageKey storage_key_;
   StorageAreaImpl area_;
   bool has_bindings_ = false;
+  bool has_written_access_meta_data_ = false;
 };
 
 LocalStorageImpl::LocalStorageImpl(

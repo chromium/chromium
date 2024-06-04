@@ -22,6 +22,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "components/services/storage/dom_storage/local_storage_database.pb.h"
 #include "components/services/storage/dom_storage/storage_area_test_util.h"
 #include "components/services/storage/public/cpp/constants.h"
 #include "components/services/storage/public/cpp/filesystem/filesystem_proxy.h"
@@ -314,9 +315,9 @@ TEST_F(LocalStorageImplTest, Basic) {
 
   RunUntilIdle();
 
-  // Should have three rows of data, one for the version, one for the actual
-  // data and one for metadata.
-  EXPECT_EQ(3u, GetDatabaseContents().size());
+  // Should have four rows of data, one for the version, one for the actual
+  // data and two for metadata.
+  EXPECT_EQ(4u, GetDatabaseContents().size());
 }
 
 TEST_F(LocalStorageImplTest, StorageKeysAreIndependent) {
@@ -339,7 +340,7 @@ TEST_F(LocalStorageImplTest, StorageKeysAreIndependent) {
   area.reset();
 
   RunUntilIdle();
-  EXPECT_EQ(5u, GetDatabaseContents().size());
+  EXPECT_EQ(7u, GetDatabaseContents().size());
 }
 
 TEST_F(LocalStorageImplTest, WrapperOutlivesMojoConnection) {
@@ -480,6 +481,94 @@ TEST_F(LocalStorageImplTest, GetStorageUsage_Data) {
   EXPECT_GT(info[0]->total_size_bytes, info[1]->total_size_bytes);
 }
 
+TEST_F(LocalStorageImplTest, CheckAccessMetaData) {
+  base::Time before_metadata = base::Time::Now();
+  blink::StorageKey storage_key1 =
+      blink::StorageKey::CreateFromStringForTesting("http://foo.com");
+  blink::StorageKey storage_key2 =
+      blink::StorageKey::CreateFromStringForTesting("http://bar.com");
+  blink::StorageKey storage_key3 =
+      blink::StorageKey::CreateFromStringForTesting("http://qux.com");
+  mojo::Remote<blink::mojom::StorageArea> area;
+
+  // storage_key1 has no content in its area.
+  context()->BindStorageArea(storage_key1, area.BindNewPipeAndPassReceiver());
+  area.reset();
+  RunUntilIdle();
+
+  // storage_key2 has content in its area.
+  context()->BindStorageArea(storage_key2, area.BindNewPipeAndPassReceiver());
+  area->Put(StdStringToUint8Vector("key"), StdStringToUint8Vector("value"),
+            std::nullopt, "source", base::DoNothing());
+  area.reset();
+  RunUntilIdle();
+
+  // storage_key3 has content in its area but is purged on shutdown.
+  context()->BindStorageArea(storage_key3, area.BindNewPipeAndPassReceiver());
+  area->Put(StdStringToUint8Vector("key"), StdStringToUint8Vector("value"),
+            std::nullopt, "source", base::DoNothing());
+  area.reset();
+  std::vector<mojom::StoragePolicyUpdatePtr> updates;
+  updates.emplace_back(mojom::StoragePolicyUpdate::New(
+      storage_key3.origin(), /*purge_on_shutdown=*/true));
+  context()->ApplyPolicyUpdates(std::move(updates));
+  RunUntilIdle();
+
+  // After shutdown, we should just see data for storage_key2.
+  ResetStorage(storage_path());
+  RunUntilIdle();
+  base::Time after_metadata = base::Time::Now();
+  auto contents = GetDatabaseContents();
+  EXPECT_EQ(4u, contents.size());
+  bool did_see_access_metadata = false;
+  for (const auto& entry : contents) {
+    if (entry.first.find("ACCESS") != std::string::npos &&
+        entry.first.find(storage_key2.origin().Serialize()) !=
+            std::string::npos) {
+      storage::LocalStorageAreaAccessMetaData metadata;
+      if (metadata.ParseFromArray(entry.second.data(), entry.second.size())) {
+        base::Time last_accessed =
+            base::Time::FromInternalValue(metadata.last_accessed());
+        EXPECT_LE(before_metadata, last_accessed);
+        EXPECT_GE(after_metadata, last_accessed);
+        did_see_access_metadata = true;
+      }
+    }
+  }
+  EXPECT_TRUE(did_see_access_metadata);
+
+  // If we re-bind storage_key2 and then shutdown, the last_accessed time should
+  // be updated.
+  before_metadata = base::Time::Now();
+  context()->BindStorageArea(storage_key2, area.BindNewPipeAndPassReceiver());
+  mojo::PendingRemote<blink::mojom::StorageAreaObserver> unused_observer;
+  std::ignore = unused_observer.InitWithNewPipeAndPassReceiver();
+  area->GetAll(std::move(unused_observer), base::DoNothing());
+  area.reset();
+  RunUntilIdle();
+  ResetStorage(storage_path());
+  RunUntilIdle();
+  after_metadata = base::Time::Now();
+  contents = GetDatabaseContents();
+  EXPECT_EQ(4u, contents.size());
+  did_see_access_metadata = false;
+  for (const auto& entry : contents) {
+    if (entry.first.find("ACCESS") != std::string::npos &&
+        entry.first.find(storage_key2.origin().Serialize()) !=
+            std::string::npos) {
+      storage::LocalStorageAreaAccessMetaData metadata;
+      if (metadata.ParseFromArray(entry.second.data(), entry.second.size())) {
+        base::Time last_accessed =
+            base::Time::FromInternalValue(metadata.last_accessed());
+        EXPECT_LE(before_metadata, last_accessed);
+        EXPECT_GE(after_metadata, last_accessed);
+        did_see_access_metadata = true;
+      }
+    }
+  }
+  EXPECT_TRUE(did_see_access_metadata);
+}
+
 TEST_F(LocalStorageImplTest, MetaDataClearedOnDelete) {
   blink::StorageKey storage_key1 =
       blink::StorageKey::CreateFromStringForTesting("http://foobar.com");
@@ -506,7 +595,7 @@ TEST_F(LocalStorageImplTest, MetaDataClearedOnDelete) {
   // Data from storage_key2 should exist, including meta-data, but nothing
   // should exist for storage_key1.
   auto contents = GetDatabaseContents();
-  EXPECT_EQ(3u, contents.size());
+  EXPECT_EQ(4u, contents.size());
   for (const auto& entry : contents) {
     if (entry.first == "VERSION")
       continue;
@@ -544,7 +633,7 @@ TEST_F(LocalStorageImplTest, MetaDataClearedOnDeleteAll) {
   // Data from storage_key2 should exist, including meta-data, but nothing
   // should exist for storage_key1.
   auto contents = GetDatabaseContents();
-  EXPECT_EQ(3u, contents.size());
+  EXPECT_EQ(4u, contents.size());
   for (const auto& entry : contents) {
     if (entry.first == "VERSION")
       continue;
@@ -596,7 +685,7 @@ TEST_F(LocalStorageImplTest, DeleteStorageWithoutConnection) {
   // Data from storage_key2 should exist, including meta-data, but nothing
   // should exist for storage_key1.
   auto contents = GetDatabaseContents();
-  EXPECT_EQ(3u, contents.size());
+  EXPECT_EQ(4u, contents.size());
   for (const auto& entry : contents) {
     if (entry.first == "VERSION")
       continue;
@@ -644,7 +733,7 @@ TEST_F(LocalStorageImplTest, DeleteStorageNotifiesWrapper) {
   // Data from storage_key2 should exist, including meta-data, but nothing
   // should exist for storage_key1.
   auto contents = GetDatabaseContents();
-  EXPECT_EQ(3u, contents.size());
+  EXPECT_EQ(4u, contents.size());
   for (const auto& entry : contents) {
     if (entry.first == "VERSION")
       continue;
@@ -696,7 +785,7 @@ TEST_F(LocalStorageImplTest, DeleteStorageWithPendingWrites) {
   // Data from storage_key2 should exist, including meta-data, but nothing
   // should exist for storage_key1.
   auto contents = GetDatabaseContents();
-  EXPECT_EQ(3u, contents.size());
+  EXPECT_EQ(4u, contents.size());
   for (const auto& entry : contents) {
     if (entry.first == "VERSION")
       continue;
@@ -753,7 +842,7 @@ TEST_F(LocalStorageImplTest, ShutdownClearsData) {
   // of storage_key1, which is set to purge on shutdown.
   ResetStorage(storage_path());
   auto contents = GetDatabaseContents();
-  EXPECT_EQ(3u, contents.size());
+  EXPECT_EQ(4u, contents.size());
   for (const auto& entry : contents) {
     if (entry.first == "VERSION")
       continue;
