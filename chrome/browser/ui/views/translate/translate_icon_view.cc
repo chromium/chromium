@@ -101,15 +101,14 @@ void TranslateIconView::UpdateImpl() {
     if (browser_view->toolbar()
             ->pinned_toolbar_actions_container()
             ->IsActionPinnedOrPoppedOut(action_id().value())) {
-      SetVisible(false);
+      enabled = false;
     }
-  } else {
-    ChromeTranslateClient::FromWebContents(GetWebContents())
-        ->GetTranslateManager()
-        ->GetActiveTranslateMetricsLogger()
-        ->LogOmniboxIconChange(enabled);
-    SetVisible(enabled);
   }
+  ChromeTranslateClient::FromWebContents(GetWebContents())
+      ->GetTranslateManager()
+      ->GetActiveTranslateMetricsLogger()
+      ->LogOmniboxIconChange(enabled);
+  SetVisible(enabled);
 
   if (!enabled &&
       TranslateBubbleController::FromWebContents(GetWebContents())) {
