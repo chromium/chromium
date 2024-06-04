@@ -1425,10 +1425,19 @@ std::unique_ptr<VideoFrame::ScopedMapping> VideoFrame::MapGMBOrSharedImage()
 }
 
 gfx::GpuMemoryBufferHandle VideoFrame::GetGpuMemoryBufferHandle() const {
-  return wrapped_frame_
-             ? wrapped_frame_->GetGpuMemoryBufferHandle()
-             : (gpu_memory_buffer_ ? gpu_memory_buffer_->CloneHandle()
-                                   : gfx::GpuMemoryBufferHandle());
+  if (wrapped_frame_) {
+    return wrapped_frame_->GetGpuMemoryBufferHandle();
+  }
+  if (is_mappable_si_enabled_) {
+    // When MappableSI is enabled, there can only be 1 shared image
+    // even for multiplanar formats.
+    CHECK_EQ(NumTextures(), 1U);
+    return shared_images_[0]->CloneGpuMemoryBufferHandle();
+  }
+  if (gpu_memory_buffer_) {
+    return gpu_memory_buffer_->CloneHandle();
+  }
+  return gfx::GpuMemoryBufferHandle();
 }
 
 bool VideoFrame::IsSameAllocation(VideoPixelFormat format,
