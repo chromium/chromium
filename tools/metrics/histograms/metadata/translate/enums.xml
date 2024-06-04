@@ -124,6 +124,20 @@ chromium-metrics-reviews@google.com.
   <int value="27" label="Never translate site unchecked in the options menu"/>
 </enum>
 
+<enum name="TranslateError">
+  <int value="0" label="No error"/>
+  <int value="1" label="Network error"/>
+  <int value="2" label="Initialization error"/>
+  <int value="3" label="Unknown language"/>
+  <int value="4" label="Unsupported language"/>
+  <int value="5" label="Identical language"/>
+  <int value="6" label="Translation error"/>
+  <int value="7" label="Translation timeout"/>
+  <int value="8" label="Unexpected script error"/>
+  <int value="9" label="Bad origin"/>
+  <int value="10" label="Script load error"/>
+</enum>
+
 <enum name="TranslateLanguageDetectionTiming">
   <int value="0" label="On time"/>
   <int value="1" label="Deferred"/>
@@ -146,6 +160,29 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<enum name="TranslateRankerDecision">
+  <int value="0" label="Uninitialized"/>
+  <int value="1" label="Not queried"/>
+  <int value="2" label="Show UI"/>
+  <int value="3" label="Don't show UI"/>
+</enum>
+
+<enum name="TranslateState">
+  <int value="0" label="Uninitialized"/>
+  <int value="1"
+      label="The page is not translated, and no translate UI is shown"/>
+  <int value="2"
+      label="The page is not translated, and only the translate omnibox icon
+             is shown"/>
+  <int value="3"
+      label="The page is not translated, and the translate UI is shown"/>
+  <int value="4" label="The page is translated, and no translate UI is shown"/>
+  <int value="5"
+      label="The page is translated, and only the translate omnibox icon is
+             shown"/>
+  <int value="6" label="The page is translated, and the translate UI is shown"/>
+</enum>
+
 <enum name="TranslateTargetLanguageOrigin">
   <int value="0" label="Recent target language"/>
   <int value="1" label="Language model"/>
@@ -155,6 +192,51 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Changed by user"/>
   <int value="6" label="Uninitialized"/>
   <int value="7" label="Auto Translate"/>
+</enum>
+
+<enum name="TranslateTriggerDecision">
+  <int value="0" label="Uninitialized"/>
+  <int value="1" label="Disabled, doesn't need translation"/>
+  <int value="2" label="Disabled, translation feature disabled"/>
+  <int value="3" label="Disabled, offline"/>
+  <int value="4" label="Disabled, missing API key"/>
+  <int value="5" label="Disabled, MIME type not supported"/>
+  <int value="6" label="Disabled, URL not supported"/>
+  <int value="7" label="Disabled, never offer translations"/>
+  <int value="8" label="Disabled, similar languages"/>
+  <int value="9" label="Disabled, unsupported language"/>
+  <int value="10" label="Disabled, never translate language"/>
+  <int value="11" label="Disabled, never translate site"/>
+  <int value="12" label="Disabled, ranker decision"/>
+  <int value="13" label="Show UI"/>
+  <int value="14" label="Automatic translation, by link"/>
+  <int value="15" label="Automatic translation, by user preference"/>
+  <int value="16" label="Show UI, from Href"/>
+  <int value="17" label="Automatic translation, by Href"/>
+  <int value="18" label="Automatic translation to predefined target"/>
+  <int value="19" label="Show icon in omnibox"/>
+  <int value="20"
+      label="Disabled, source language matches that of previous page"/>
+</enum>
+
+<enum name="TranslateUIInteraction">
+  <int value="0" label="Uninitialized"/>
+  <int value="1" label="Translate page"/>
+  <int value="2" label="Revert translation"/>
+  <int value="3" label="Deprecated 06/2023. Always translate language"/>
+  <int value="4" label="Change source language"/>
+  <int value="5" label="Change target language"/>
+  <int value="6" label="Deprecated 06/2023. Never translate language"/>
+  <int value="7" label="Deprecated 06/2023. Never translate site"/>
+  <int value="8" label="Close UI explicitly"/>
+  <int value="9" label="Close UI by lost focus"/>
+  <int value="10" label="Close UI by auto-dismiss timer firing"/>
+  <int value="11" label="Add always translate language"/>
+  <int value="12" label="Remove always translate language"/>
+  <int value="13" label="Add never translate language"/>
+  <int value="14" label="Remove never translate language"/>
+  <int value="15" label="Add never translate site"/>
+  <int value="16" label="Remove never translate site"/>
 </enum>
 
 <enum name="TranslationStatus">

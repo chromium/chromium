@@ -98,6 +98,27 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Failed to post authentication task."/>
 </enum>
 
+<enum name="AutofillSuggestionTriggerSource">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Form control elemnt clicked"/>
+  <int value="2" label="Textarea focused without click"/>
+  <int value="3" label="Content editable clicked"/>
+  <int value="4" label="Text field did change"/>
+  <int value="5" label="Text field did receive keydown,"/>
+  <int value="6" label="Open text data list chooser"/>
+  <int value="7" label="Show cards fromaccount"/>
+  <int value="8" label="Password manager"/>
+  <int value="9" label="iOS"/>
+  <int value="10" label="Manual fallback address"/>
+  <int value="11" label="Manual fallback payments"/>
+  <int value="12" label="Manual fallback passwords"/>
+  <int value="13" label="Manual fallback plus addresses"/>
+  <int value="14" label="Show prompt after dialog closed non manual fallback"/>
+  <int value="15" label="Compose dialog lost focus"/>
+  <int value="16" label="Compose elayed proactive nudge"/>
+  <int value="17" label="Password manager processed focused field"/>
+</enum>
+
 <enum name="AutoSigninFirstRun">
   <int value="0" label="No action"/>
   <int value="1" label="Turn off"/>
@@ -295,6 +316,16 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Url override was available and used"/>
   <int value="2" label="No url override was available"/>
   <int value="3" label="Url override was available in the FacetGroup and used"/>
+</enum>
+
+<enum name="HandleSubmittedFormStatus">
+  <int value="0" label="Handled"/>
+  <int value="1" label="Rejected, no WebState"/>
+  <int value="2" label="Rejected, no delegate"/>
+  <int value="3" label="Rejected, msg body not a dict"/>
+  <int value="4" label="Rejected, no frame for id"/>
+  <int value="5" label="Rejected, no trusted URL"/>
+  <int value="6" label="Rejected, can't extract form data"/>
 </enum>
 
 <enum name="HistogramExportResult">
@@ -615,6 +646,15 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Username match"/>
 </enum>
 
+<enum name="PasswordFormType2">
+  <int value="0" label="Undefined"/>
+  <int value="1" label="Login form"/>
+  <int value="2" label="Signup form"/>
+  <int value="3" label="Change password form"/>
+  <int value="4" label="Reset password form"/>
+  <int value="5" label="Single username"/>
+</enum>
+
 <enum name="PasswordGenerationEvent">
   <int value="0" label="No sign up form"/>
   <int value="1" label="Local heuristics found sign up form"/>
@@ -634,11 +674,25 @@ chromium-metrics-reviews@google.com.
   <int value="15" label="Generated password deleted by autofilling"/>
 </enum>
 
+<enum name="PasswordGenerationPopupShown">
+  <int value="0" label="Not shown"/>
+  <int value="1" label="Shown automatically"/>
+  <int value="2" label="Shown manually"/>
+</enum>
+
 <enum name="PasswordGenerationUserEvent">
   <int value="0" label="Password accepted"/>
   <int value="1" label="Password edited"/>
   <int value="2" label="Password deleted"/>
   <int value="3" label="Password rejected in modal dialog (obsolete)"/>
+</enum>
+
+<enum name="PasswordLeakDetectionDialogDismissalReason">
+  <int value="0" label="No direct user interaction"/>
+  <int value="1" label="Clicked Close"/>
+  <int value="2" label="Clicked Check passwords"/>
+  <int value="3" label="Clicked Ok"/>
+  <int value="4" label="(Deprecated) Clicked Change password automatically"/>
 </enum>
 
 <enum name="PasswordLeakDetectionError">
@@ -827,6 +881,29 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="From Android"/>
 </enum>
 
+<enum name="PasswordManagerFillingAssistance">
+  <int value="0" label=":-D Credential fields filled automatically"/>
+  <int value="1"
+      label=":-) Credential fields filled manually (but none required typing)"/>
+  <int value="2"
+      label=":-| Password filled (automatically or manually), known username
+             was typed"/>
+  <int value="3" label=":-( Saved password was typed"/>
+  <int value="4"
+      label=":-X Unknown password typed, some saved credentials existed"/>
+  <int value="5"
+      label=":-X Unknown password typed, no saved credentials existed"/>
+  <int value="6" label="%-) Neither filling nor user input">
+    For example, it might be because of 3rd party password managers.
+  </int>
+  <int value="7"
+      label=":-X Unknown password typed, no saved credentials existed and
+             site was explicitly blacklisted"/>
+  <int value="8"
+      label=":-X Unknown password typed, no saved credentials existed and
+             site is blacklisted by the smart bubble"/>
+</enum>
+
 <enum name="PasswordManagerFillingSource">
   <int value="0"
       label="Typed manually (i.e. filled from neither the account-scoped nor
@@ -836,6 +913,86 @@ chromium-metrics-reviews@google.com.
   <int value="3"
       label="Filled from both in the profile-scoped and the account-scoped
              store"/>
+</enum>
+
+<enum name="PasswordManagerFirstRendererFillingResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="No password element">
+    The password element to be filled has not been found.
+  </int>
+  <int value="2" label="Blocked by frame hierarchy">
+    Filling only happens in iframes if all parent frames PSL-match the security
+    origin of the iframe containing the password field.
+  </int>
+  <int value="3" label="Password element is not autocompleteable">
+    Passwords are not filled into fields that are not editable.
+  </int>
+  <int value="4" label="Username prefilled with incompatible value">
+    The username field contains a string that does not match the username of any
+    available credential. This typically indicates placeholder values.
+  </int>
+  <int value="5" label="Found no password for username">
+    No credential was filled due to mismatches with the username. This can
+    happen in a number of cases: In case the username field is empty and
+    readonly. In case of a username-first-flow where a user's credentials do
+    contain a username but the form contains only a password field and no
+    username field. In case of change password forms that contain no username
+    field. In case the user name is given on a page but only PSL matched
+    credentials exist for this username. There may be further cases.
+  </int>
+  <int value="6" label="Wait for username">
+    Renderer was instructed to wait until user has manually picked a credential.
+    This happens for example if the session is an incognito session, the
+    credendial's URL matches the mainframe only via the PSL, the site is on
+    HTTP, or the form has no current password field.
+    PasswordManager.FirstWaitForUsernameReason records the root causes.
+  </int>
+  <int value="7" label="No fillable elements found">
+    No fillable elements were found, only possible for the old form parser.
+  </int>
+</enum>
+
+<enum name="PasswordManagerFirstWaitForUsernameReason">
+  <int value="0" label="Don't wait"/>
+  <int value="1" label="Incognito mode">
+    User is browsing in incognito mode.
+  </int>
+  <int value="2" label="Public suffix match">
+    A credential exists for a PSL matched site but not for the current security
+    origin.
+  </int>
+  <int value="3" label="Form not good for filling">
+    Form is suspected to be a password change form. (Only recorded for old form
+    parser)
+  </int>
+  <int value="4" label="Insecure Origin">
+    User is on a site with an insecure main frame origin.
+  </int>
+  <int value="5" label="Touch To Fill (obsolete)">
+    User is browsing with the Touch To Fill feature enabled.
+  </int>
+  <int value="6" label="Fill On Select">
+    User is browsing with the Fill On Select feature enabled.
+  </int>
+  <int value="7" label="Reauth required (obsolete)">
+    Re-authenticaion for filling passwords is required.
+  </int>
+  <int value="8" label="Password is already filled">
+    Password field is already filled in and it doesn't look like a placeholder.
+  </int>
+  <int value="9" label="Affiliated website">
+    A credential exists for an affiliated matched site but not for the current
+    security origin.
+  </int>
+  <int value="10" label="Accepts WebAuthn credentials">
+    The form acccepts WebAuthn credentials from an active WebAuthn request.
+  </int>
+  <int value="11" label="Biometric authentication">
+    User needs to reauthenticate using biometric.
+  </int>
+  <int value="12" label="Cross origin iframe">
+    The form is in a cross origin iframe.
+  </int>
 </enum>
 
 <enum name="PasswordManagerHttpCredentialType">
@@ -1330,6 +1487,26 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Not saved"/>
 </enum>
 
+<enum name="SingleUsernameFillingAssistance">
+  <int value="0" label=":-D Username filled automatically"/>
+  <int value="1"
+      label=":-) Username filled manually (but none required typing)"/>
+  <int value="2" label=":-( Saved username was typed"/>
+  <int value="3"
+      label=":-X Unknown username typed, some saved credentials existed"/>
+  <int value="4"
+      label=":-X Unknown username typed, no saved credentials existed"/>
+  <int value="5"
+      label=":-X Unknown username typed, no saved credentials existed and
+             site was explicitly blacklisted"/>
+  <int value="6"
+      label=":-X Unknown username typed, no saved credentials existed and
+             site is blacklisted by the smart bubble"/>
+  <int value="7" label="%-) Neither filling nor user input">
+    For example, it might be because of 3rd party password managers.
+  </int>
+</enum>
+
 <enum name="SingleUsernameVoteDataAvailability">
   <summary>
     Whether two existing single username detection mechanisms (UFF and FPF) have
@@ -1351,6 +1528,24 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Failed to add group"/>
 </enum>
 
+<enum name="SubmissionIndicatorEvent">
+  <int value="0" label="No submission"/>
+  <int value="1" label="HTML form submission"/>
+  <int value="2" label="Same document navigation"/>
+  <int value="3" label="XHR succeeded"/>
+  <int value="4" label="Frame detached"/>
+  <int value="5" label="(obsolete) By context menu"/>
+  <int value="6" label="(obsolete) DOM mutation after XHR"/>
+  <int value="7"
+      label="(obsolete) Provisionally saved form on start provisional load"/>
+  <int value="8" label="(obsolete) Filled form on start provisional load"/>
+  <int value="9"
+      label="(obsolete) Filled input elements on start provisional load"/>
+  <int value="10" label="Probable form submission"/>
+  <int value="11" label="Change password form cleared"/>
+  <int value="12" label="DOM mutation after Autofill"/>
+</enum>
+
 <enum name="SubmittedPasswordFormFrame">
   <int value="0" label="Main frame"/>
   <int value="1" label="Iframe with the same url as main frame"/>
@@ -1368,6 +1563,18 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="'Manage Passwords' was selected"/>
   <int value="4" label="Passkey was selected"/>
   <int value="5" label="Hybrid passkey sign-in was selected"/>
+</enum>
+
+<enum name="TouchToFill.SubmissionReadiness">
+  <int value="0" label="No information"/>
+  <int value="1" label="Error occurred"/>
+  <int value="2" label="Username field not found"/>
+  <int value="3" label="Fields between username and password fields"/>
+  <int value="4" label="Field after the password field"/>
+  <int value="5" label="Empty fields in the form"/>
+  <int value="6" label="More than two fields in the form"/>
+  <int value="7" label="2-field form (username+password)"/>
+  <int value="8" label="Password field not found"/>
 </enum>
 
 <enum name="TouchToFillPasswordGenerationTriggerOutcome">
@@ -1396,6 +1603,12 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Off"/>
   <int value="1" label="OffAndMigrationPending"/>
   <int value="2" label="On"/>
+</enum>
+
+<enum name="WellKnownChangePasswordResult">
+  <int value="0" label="Fallback to Origin"/>
+  <int value="1" label="Fallback to Url Override"/>
+  <int value="2" label="Well-Known supported"/>
 </enum>
 
 </enums>

@@ -149,6 +149,35 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Embeddings result clicked"/>
 </enum>
 
+<enum name="HistoryClustersInitialState">
+  <summary>
+    The initial state that describes how an interaction with the
+    HistoryClusters, or Journeys, UI was started.
+  </summary>
+  <int value="0" label="Unknown"/>
+  <int value="1" label="kDirectNavigation">
+    The UI was reached via direct navigation, like the user typing the WebUI URL
+    in the omnibox.
+  </int>
+  <int value="2" label="kIndirectNavigation">
+    The UI was reached via indirect navigation, e.g. clicking on the omnibox
+    action chip.
+  </int>
+  <int value="3" label="kSameDocument">
+    The UI was reached via same-document navigation, like the user visiting
+    History first, and then clicking the Journeys Tab. This also includes other
+    edge cases, like if the user clicked over from 'Tabs on other devices'.
+  </int>
+  <int value="4" label="kSidePanelFromOmnibox">
+    The Side Panel HistoryClusters UI was opened from the omnibox. Technically
+    this COULD be logged as kIndirectNavigation, but we want to be able to
+    distinguish between Side Panel and History WebUI initializations.
+  </int>
+  <int value="5" label="kSidePanelFromToolbarButton">
+    The Side Panel HistoryClusters UI was opened from side panel toolbar button.
+  </int>
+</enum>
+
 <enum name="HistoryInitStep">
   <int value="0" label="Open"/>
   <int value="1" label="Transaction begin"/>

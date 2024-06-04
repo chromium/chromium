@@ -282,6 +282,27 @@ chromium-metrics-reviews@google.com.
       label="Interacted then ignored (user didn't explicitly cancel/accept)"/>
 </enum>
 
+<enum name="AutofillCreditCardSeamlessnessBitmask">
+  <summary>
+    A bitmask indicating which credit card field types were autofilled.
+  </summary>
+  <int value="1" label=":-( -name, -num, -exp, +cvc"/>
+  <int value="2" label=":-( -name, -num, +exp, -cvc"/>
+  <int value="3" label=":-( -name, -num, +exp, +cvc"/>
+  <int value="4" label=":-( -name, +num, -exp, -cvc"/>
+  <int value="5" label=":-( -name, +num, -exp, +cvc"/>
+  <int value="6" label=":-) -name, +num, +exp, -cvc"/>
+  <int value="7" label=":-) -name, +num, +exp, +cvc"/>
+  <int value="8" label=":-( +name, -num, -exp, -cvc"/>
+  <int value="9" label=":-( +name, -num, -exp, +cvc"/>
+  <int value="10" label=":-( +name, -num, +exp, -cvc"/>
+  <int value="11" label=":-( +name, -num, +exp, +cvc"/>
+  <int value="12" label=":-( +name, +num, -exp, -cvc"/>
+  <int value="13" label=":-| +name, +num, -exp, +cvc"/>
+  <int value="14" label=":-) +name, +num, +exp, -cvc"/>
+  <int value="15" label=":-D +name, +num, +exp, +cvc"/>
+</enum>
+
 <enum name="AutofillCreditCardUnmaskDecisionMetric">
   <int value="0" label="WebAuthn only"/>
   <int value="1" label="CVC followed by WebAuthn"/>
@@ -1222,6 +1243,111 @@ Called by update_autofill_enums.py.-->
       label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT: False Negative (Mismatch)"/>
   <int value="11785"
       label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT: False Negative (Unknown)"/>
+</enum>
+
+<enum name="AutofillFieldType">
+<!-- Generated from components/autofill/core/browser/field_types.h.
+Called by update_autofill_enums.py.-->
+
+  <int value="0" label="NO_SERVER_DATA"/>
+  <int value="1" label="UNKNOWN_TYPE"/>
+  <int value="2" label="EMPTY_TYPE"/>
+  <int value="3" label="NAME_FIRST"/>
+  <int value="4" label="NAME_MIDDLE"/>
+  <int value="5" label="NAME_LAST"/>
+  <int value="6" label="NAME_MIDDLE_INITIAL"/>
+  <int value="7" label="NAME_FULL"/>
+  <int value="8" label="NAME_SUFFIX"/>
+  <int value="9" label="EMAIL_ADDRESS"/>
+  <int value="10" label="PHONE_HOME_NUMBER"/>
+  <int value="11" label="PHONE_HOME_CITY_CODE"/>
+  <int value="12" label="PHONE_HOME_COUNTRY_CODE"/>
+  <int value="13" label="PHONE_HOME_CITY_AND_NUMBER"/>
+  <int value="14" label="PHONE_HOME_WHOLE_NUMBER"/>
+  <int value="30" label="ADDRESS_HOME_LINE1"/>
+  <int value="31" label="ADDRESS_HOME_LINE2"/>
+  <int value="32" label="ADDRESS_HOME_APT_NUM"/>
+  <int value="33" label="ADDRESS_HOME_CITY"/>
+  <int value="34" label="ADDRESS_HOME_STATE"/>
+  <int value="35" label="ADDRESS_HOME_ZIP"/>
+  <int value="36" label="ADDRESS_HOME_COUNTRY"/>
+  <int value="51" label="CREDIT_CARD_NAME_FULL"/>
+  <int value="52" label="CREDIT_CARD_NUMBER"/>
+  <int value="53" label="CREDIT_CARD_EXP_MONTH"/>
+  <int value="54" label="CREDIT_CARD_EXP_2_DIGIT_YEAR"/>
+  <int value="55" label="CREDIT_CARD_EXP_4_DIGIT_YEAR"/>
+  <int value="56" label="CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR"/>
+  <int value="57" label="CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR"/>
+  <int value="58" label="CREDIT_CARD_TYPE"/>
+  <int value="59" label="CREDIT_CARD_VERIFICATION_CODE"/>
+  <int value="60" label="COMPANY_NAME"/>
+  <int value="61" label="FIELD_WITH_DEFAULT_VALUE"/>
+  <int value="73" label="MERCHANT_EMAIL_SIGNUP"/>
+  <int value="74" label="MERCHANT_PROMO_CODE"/>
+  <int value="75" label="PASSWORD"/>
+  <int value="76" label="ACCOUNT_CREATION_PASSWORD"/>
+  <int value="77" label="ADDRESS_HOME_STREET_ADDRESS"/>
+  <int value="79" label="ADDRESS_HOME_SORTING_CODE"/>
+  <int value="81" label="ADDRESS_HOME_DEPENDENT_LOCALITY"/>
+  <int value="83" label="ADDRESS_HOME_LINE3"/>
+  <int value="85" label="NOT_ACCOUNT_CREATION_PASSWORD"/>
+  <int value="86" label="USERNAME"/>
+  <int value="87" label="USERNAME_AND_EMAIL_ADDRESS"/>
+  <int value="88" label="NEW_PASSWORD"/>
+  <int value="89" label="PROBABLY_NEW_PASSWORD"/>
+  <int value="90" label="NOT_NEW_PASSWORD"/>
+  <int value="91" label="CREDIT_CARD_NAME_FIRST"/>
+  <int value="92" label="CREDIT_CARD_NAME_LAST"/>
+  <int value="93" label="PHONE_HOME_EXTENSION"/>
+  <int value="95" label="CONFIRMATION_PASSWORD"/>
+  <int value="96" label="AMBIGUOUS_TYPE"/>
+  <int value="97" label="SEARCH_TERM"/>
+  <int value="98" label="PRICE"/>
+  <int value="99" label="NOT_PASSWORD"/>
+  <int value="100" label="SINGLE_USERNAME"/>
+  <int value="101" label="NOT_USERNAME"/>
+  <int value="102" label="UPI_VPA"/>
+  <int value="103" label="ADDRESS_HOME_STREET_NAME"/>
+  <int value="104" label="ADDRESS_HOME_HOUSE_NUMBER"/>
+  <int value="105" label="ADDRESS_HOME_SUBPREMISE"/>
+  <int value="106" label="ADDRESS_HOME_OTHER_SUBUNIT"/>
+  <int value="107" label="NAME_LAST_FIRST"/>
+  <int value="108" label="NAME_LAST_CONJUNCTION"/>
+  <int value="109" label="NAME_LAST_SECOND"/>
+  <int value="110" label="NAME_HONORIFIC_PREFIX"/>
+  <int value="114" label="ADDRESS_HOME_ADDRESS"/>
+  <int value="115" label="ADDRESS_HOME_ADDRESS_WITH_NAME"/>
+  <int value="116" label="ADDRESS_HOME_FLOOR"/>
+  <int value="118" label="BIRTHDATE_DAY"/>
+  <int value="119" label="BIRTHDATE_MONTH"/>
+  <int value="120" label="BIRTHDATE_4_DIGIT_YEAR"/>
+  <int value="121" label="PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX"/>
+  <int value="122" label="PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX"/>
+  <int value="123" label="PHONE_HOME_NUMBER_PREFIX"/>
+  <int value="124" label="PHONE_HOME_NUMBER_SUFFIX"/>
+  <int value="125" label="IBAN_VALUE"/>
+  <int value="126" label="CREDIT_CARD_STANDALONE_VERIFICATION_CODE"/>
+  <int value="128" label="NUMERIC_QUANTITY"/>
+  <int value="129" label="ONE_TIME_CODE"/>
+  <int value="133" label="DELIVERY_INSTRUCTIONS"/>
+  <int value="135" label="ADDRESS_HOME_OVERFLOW"/>
+  <int value="136" label="ADDRESS_HOME_LANDMARK"/>
+  <int value="140" label="ADDRESS_HOME_OVERFLOW_AND_LANDMARK"/>
+  <int value="141" label="ADDRESS_HOME_ADMIN_LEVEL2"/>
+  <int value="142" label="ADDRESS_HOME_STREET_LOCATION"/>
+  <int value="143" label="ADDRESS_HOME_BETWEEN_STREETS"/>
+  <int value="144" label="ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK"/>
+  <int value="145" label="ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY"/>
+  <int value="146" label="ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK"/>
+  <int value="150" label="ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK"/>
+  <int value="151" label="ADDRESS_HOME_BETWEEN_STREETS_1"/>
+  <int value="152" label="ADDRESS_HOME_BETWEEN_STREETS_2"/>
+  <int value="153" label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT"/>
+  <int value="154" label="SINGLE_USERNAME_FORGOT_PASSWORD"/>
+  <int value="156" label="ADDRESS_HOME_APT"/>
+  <int value="157" label="ADDRESS_HOME_APT_TYPE"/>
+  <int value="160" label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES"/>
+  <int value="161" label="SERVER_RESPONSE_PENDING"/>
 </enum>
 
 <enum name="AutofillFillingMethodMetric">
@@ -3158,6 +3284,312 @@ Called by update_autofill_enums.py.-->
   <int value="5" label="Admin Policy"/>
 </enum>
 
+<enum name="AutofillPreFilledFieldClassifications">
+  <int value="0" label="Had placeholder classification"/>
+  <int value="1" label="No placeholder classification"/>
+</enum>
+
+<enum name="AutofillPreFilledFieldClassificationsQuality">
+  <int value="0" label="Placeholder, value not changed"/>
+  <int value="1" label="Placeholder, value changed"/>
+  <int value="2" label="Meaningfully pre-filled, value not changed"/>
+  <int value="3" label="Meaningfully pre-filled, value changed"/>
+</enum>
+
+<enum name="AutofillPreFilledFieldStatus">
+  <int value="0" label="Pre-filled on page load"/>
+  <int value="1" label="Empty on page load"/>
+</enum>
+
+<enum name="AutofillPreFilledFieldStatusByFieldType">
+<!-- Generated from components/autofill/core/browser/field_types.h.
+Called by update_autofill_enums.py.-->
+
+  <int value="0" label="NO_SERVER_DATA: Pre-filled on page load"/>
+  <int value="1" label="NO_SERVER_DATA: Empty on page load"/>
+  <int value="16" label="UNKNOWN_TYPE: Pre-filled on page load"/>
+  <int value="17" label="UNKNOWN_TYPE: Empty on page load"/>
+  <int value="32" label="EMPTY_TYPE: Pre-filled on page load"/>
+  <int value="33" label="EMPTY_TYPE: Empty on page load"/>
+  <int value="48" label="NAME_FIRST: Pre-filled on page load"/>
+  <int value="49" label="NAME_FIRST: Empty on page load"/>
+  <int value="64" label="NAME_MIDDLE: Pre-filled on page load"/>
+  <int value="65" label="NAME_MIDDLE: Empty on page load"/>
+  <int value="80" label="NAME_LAST: Pre-filled on page load"/>
+  <int value="81" label="NAME_LAST: Empty on page load"/>
+  <int value="96" label="NAME_MIDDLE_INITIAL: Pre-filled on page load"/>
+  <int value="97" label="NAME_MIDDLE_INITIAL: Empty on page load"/>
+  <int value="112" label="NAME_FULL: Pre-filled on page load"/>
+  <int value="113" label="NAME_FULL: Empty on page load"/>
+  <int value="128" label="NAME_SUFFIX: Pre-filled on page load"/>
+  <int value="129" label="NAME_SUFFIX: Empty on page load"/>
+  <int value="144" label="EMAIL_ADDRESS: Pre-filled on page load"/>
+  <int value="145" label="EMAIL_ADDRESS: Empty on page load"/>
+  <int value="160" label="PHONE_HOME_NUMBER: Pre-filled on page load"/>
+  <int value="161" label="PHONE_HOME_NUMBER: Empty on page load"/>
+  <int value="176" label="PHONE_HOME_CITY_CODE: Pre-filled on page load"/>
+  <int value="177" label="PHONE_HOME_CITY_CODE: Empty on page load"/>
+  <int value="192" label="PHONE_HOME_COUNTRY_CODE: Pre-filled on page load"/>
+  <int value="193" label="PHONE_HOME_COUNTRY_CODE: Empty on page load"/>
+  <int value="208" label="PHONE_HOME_CITY_AND_NUMBER: Pre-filled on page load"/>
+  <int value="209" label="PHONE_HOME_CITY_AND_NUMBER: Empty on page load"/>
+  <int value="224" label="PHONE_HOME_WHOLE_NUMBER: Pre-filled on page load"/>
+  <int value="225" label="PHONE_HOME_WHOLE_NUMBER: Empty on page load"/>
+  <int value="480" label="ADDRESS_HOME_LINE1: Pre-filled on page load"/>
+  <int value="481" label="ADDRESS_HOME_LINE1: Empty on page load"/>
+  <int value="496" label="ADDRESS_HOME_LINE2: Pre-filled on page load"/>
+  <int value="497" label="ADDRESS_HOME_LINE2: Empty on page load"/>
+  <int value="512" label="ADDRESS_HOME_APT_NUM: Pre-filled on page load"/>
+  <int value="513" label="ADDRESS_HOME_APT_NUM: Empty on page load"/>
+  <int value="528" label="ADDRESS_HOME_CITY: Pre-filled on page load"/>
+  <int value="529" label="ADDRESS_HOME_CITY: Empty on page load"/>
+  <int value="544" label="ADDRESS_HOME_STATE: Pre-filled on page load"/>
+  <int value="545" label="ADDRESS_HOME_STATE: Empty on page load"/>
+  <int value="560" label="ADDRESS_HOME_ZIP: Pre-filled on page load"/>
+  <int value="561" label="ADDRESS_HOME_ZIP: Empty on page load"/>
+  <int value="576" label="ADDRESS_HOME_COUNTRY: Pre-filled on page load"/>
+  <int value="577" label="ADDRESS_HOME_COUNTRY: Empty on page load"/>
+  <int value="816" label="CREDIT_CARD_NAME_FULL: Pre-filled on page load"/>
+  <int value="817" label="CREDIT_CARD_NAME_FULL: Empty on page load"/>
+  <int value="832" label="CREDIT_CARD_NUMBER: Pre-filled on page load"/>
+  <int value="833" label="CREDIT_CARD_NUMBER: Empty on page load"/>
+  <int value="848" label="CREDIT_CARD_EXP_MONTH: Pre-filled on page load"/>
+  <int value="849" label="CREDIT_CARD_EXP_MONTH: Empty on page load"/>
+  <int value="864"
+      label="CREDIT_CARD_EXP_2_DIGIT_YEAR: Pre-filled on page load"/>
+  <int value="865" label="CREDIT_CARD_EXP_2_DIGIT_YEAR: Empty on page load"/>
+  <int value="880"
+      label="CREDIT_CARD_EXP_4_DIGIT_YEAR: Pre-filled on page load"/>
+  <int value="881" label="CREDIT_CARD_EXP_4_DIGIT_YEAR: Empty on page load"/>
+  <int value="896"
+      label="CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR: Pre-filled on page load"/>
+  <int value="897"
+      label="CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR: Empty on page load"/>
+  <int value="912"
+      label="CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR: Pre-filled on page load"/>
+  <int value="913"
+      label="CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR: Empty on page load"/>
+  <int value="928" label="CREDIT_CARD_TYPE: Pre-filled on page load"/>
+  <int value="929" label="CREDIT_CARD_TYPE: Empty on page load"/>
+  <int value="944"
+      label="CREDIT_CARD_VERIFICATION_CODE: Pre-filled on page load"/>
+  <int value="945" label="CREDIT_CARD_VERIFICATION_CODE: Empty on page load"/>
+  <int value="960" label="COMPANY_NAME: Pre-filled on page load"/>
+  <int value="961" label="COMPANY_NAME: Empty on page load"/>
+  <int value="976" label="FIELD_WITH_DEFAULT_VALUE: Pre-filled on page load"/>
+  <int value="977" label="FIELD_WITH_DEFAULT_VALUE: Empty on page load"/>
+  <int value="1168" label="MERCHANT_EMAIL_SIGNUP: Pre-filled on page load"/>
+  <int value="1169" label="MERCHANT_EMAIL_SIGNUP: Empty on page load"/>
+  <int value="1184" label="MERCHANT_PROMO_CODE: Pre-filled on page load"/>
+  <int value="1185" label="MERCHANT_PROMO_CODE: Empty on page load"/>
+  <int value="1200" label="PASSWORD: Pre-filled on page load"/>
+  <int value="1201" label="PASSWORD: Empty on page load"/>
+  <int value="1216" label="ACCOUNT_CREATION_PASSWORD: Pre-filled on page load"/>
+  <int value="1217" label="ACCOUNT_CREATION_PASSWORD: Empty on page load"/>
+  <int value="1232"
+      label="ADDRESS_HOME_STREET_ADDRESS: Pre-filled on page load"/>
+  <int value="1233" label="ADDRESS_HOME_STREET_ADDRESS: Empty on page load"/>
+  <int value="1264" label="ADDRESS_HOME_SORTING_CODE: Pre-filled on page load"/>
+  <int value="1265" label="ADDRESS_HOME_SORTING_CODE: Empty on page load"/>
+  <int value="1296"
+      label="ADDRESS_HOME_DEPENDENT_LOCALITY: Pre-filled on page load"/>
+  <int value="1297"
+      label="ADDRESS_HOME_DEPENDENT_LOCALITY: Empty on page load"/>
+  <int value="1328" label="ADDRESS_HOME_LINE3: Pre-filled on page load"/>
+  <int value="1329" label="ADDRESS_HOME_LINE3: Empty on page load"/>
+  <int value="1360"
+      label="NOT_ACCOUNT_CREATION_PASSWORD: Pre-filled on page load"/>
+  <int value="1361" label="NOT_ACCOUNT_CREATION_PASSWORD: Empty on page load"/>
+  <int value="1376" label="USERNAME: Pre-filled on page load"/>
+  <int value="1377" label="USERNAME: Empty on page load"/>
+  <int value="1392"
+      label="USERNAME_AND_EMAIL_ADDRESS: Pre-filled on page load"/>
+  <int value="1393" label="USERNAME_AND_EMAIL_ADDRESS: Empty on page load"/>
+  <int value="1408" label="NEW_PASSWORD: Pre-filled on page load"/>
+  <int value="1409" label="NEW_PASSWORD: Empty on page load"/>
+  <int value="1424" label="PROBABLY_NEW_PASSWORD: Pre-filled on page load"/>
+  <int value="1425" label="PROBABLY_NEW_PASSWORD: Empty on page load"/>
+  <int value="1440" label="NOT_NEW_PASSWORD: Pre-filled on page load"/>
+  <int value="1441" label="NOT_NEW_PASSWORD: Empty on page load"/>
+  <int value="1456" label="CREDIT_CARD_NAME_FIRST: Pre-filled on page load"/>
+  <int value="1457" label="CREDIT_CARD_NAME_FIRST: Empty on page load"/>
+  <int value="1472" label="CREDIT_CARD_NAME_LAST: Pre-filled on page load"/>
+  <int value="1473" label="CREDIT_CARD_NAME_LAST: Empty on page load"/>
+  <int value="1488" label="PHONE_HOME_EXTENSION: Pre-filled on page load"/>
+  <int value="1489" label="PHONE_HOME_EXTENSION: Empty on page load"/>
+  <int value="1520" label="CONFIRMATION_PASSWORD: Pre-filled on page load"/>
+  <int value="1521" label="CONFIRMATION_PASSWORD: Empty on page load"/>
+  <int value="1536" label="AMBIGUOUS_TYPE: Pre-filled on page load"/>
+  <int value="1537" label="AMBIGUOUS_TYPE: Empty on page load"/>
+  <int value="1552" label="SEARCH_TERM: Pre-filled on page load"/>
+  <int value="1553" label="SEARCH_TERM: Empty on page load"/>
+  <int value="1568" label="PRICE: Pre-filled on page load"/>
+  <int value="1569" label="PRICE: Empty on page load"/>
+  <int value="1584" label="NOT_PASSWORD: Pre-filled on page load"/>
+  <int value="1585" label="NOT_PASSWORD: Empty on page load"/>
+  <int value="1600" label="SINGLE_USERNAME: Pre-filled on page load"/>
+  <int value="1601" label="SINGLE_USERNAME: Empty on page load"/>
+  <int value="1616" label="NOT_USERNAME: Pre-filled on page load"/>
+  <int value="1617" label="NOT_USERNAME: Empty on page load"/>
+  <int value="1648" label="ADDRESS_HOME_STREET_NAME: Pre-filled on page load"/>
+  <int value="1649" label="ADDRESS_HOME_STREET_NAME: Empty on page load"/>
+  <int value="1664" label="ADDRESS_HOME_HOUSE_NUMBER: Pre-filled on page load"/>
+  <int value="1665" label="ADDRESS_HOME_HOUSE_NUMBER: Empty on page load"/>
+  <int value="1680" label="ADDRESS_HOME_SUBPREMISE: Pre-filled on page load"/>
+  <int value="1681" label="ADDRESS_HOME_SUBPREMISE: Empty on page load"/>
+  <int value="1696"
+      label="ADDRESS_HOME_OTHER_SUBUNIT: Pre-filled on page load"/>
+  <int value="1697" label="ADDRESS_HOME_OTHER_SUBUNIT: Empty on page load"/>
+  <int value="1712" label="NAME_LAST_FIRST: Pre-filled on page load"/>
+  <int value="1713" label="NAME_LAST_FIRST: Empty on page load"/>
+  <int value="1728" label="NAME_LAST_CONJUNCTION: Pre-filled on page load"/>
+  <int value="1729" label="NAME_LAST_CONJUNCTION: Empty on page load"/>
+  <int value="1744" label="NAME_LAST_SECOND: Pre-filled on page load"/>
+  <int value="1745" label="NAME_LAST_SECOND: Empty on page load"/>
+  <int value="1760" label="NAME_HONORIFIC_PREFIX: Pre-filled on page load"/>
+  <int value="1761" label="NAME_HONORIFIC_PREFIX: Empty on page load"/>
+  <int value="1824" label="ADDRESS_HOME_ADDRESS: Pre-filled on page load"/>
+  <int value="1825" label="ADDRESS_HOME_ADDRESS: Empty on page load"/>
+  <int value="1840"
+      label="ADDRESS_HOME_ADDRESS_WITH_NAME: Pre-filled on page load"/>
+  <int value="1841" label="ADDRESS_HOME_ADDRESS_WITH_NAME: Empty on page load"/>
+  <int value="1856" label="ADDRESS_HOME_FLOOR: Pre-filled on page load"/>
+  <int value="1857" label="ADDRESS_HOME_FLOOR: Empty on page load"/>
+  <int value="1888" label="BIRTHDATE_DAY: Pre-filled on page load"/>
+  <int value="1889" label="BIRTHDATE_DAY: Empty on page load"/>
+  <int value="1904" label="BIRTHDATE_MONTH: Pre-filled on page load"/>
+  <int value="1905" label="BIRTHDATE_MONTH: Empty on page load"/>
+  <int value="1920" label="BIRTHDATE_4_DIGIT_YEAR: Pre-filled on page load"/>
+  <int value="1921" label="BIRTHDATE_4_DIGIT_YEAR: Empty on page load"/>
+  <int value="1936"
+      label="PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX: Pre-filled on page load"/>
+  <int value="1937"
+      label="PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX: Empty on page load"/>
+  <int value="1952"
+      label="PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX: Pre-filled on
+             page load"/>
+  <int value="1953"
+      label="PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX: Empty on page
+             load"/>
+  <int value="1968" label="PHONE_HOME_NUMBER_PREFIX: Pre-filled on page load"/>
+  <int value="1969" label="PHONE_HOME_NUMBER_PREFIX: Empty on page load"/>
+  <int value="1984" label="PHONE_HOME_NUMBER_SUFFIX: Pre-filled on page load"/>
+  <int value="1985" label="PHONE_HOME_NUMBER_SUFFIX: Empty on page load"/>
+  <int value="2000" label="IBAN_VALUE: Pre-filled on page load"/>
+  <int value="2001" label="IBAN_VALUE: Empty on page load"/>
+  <int value="2016"
+      label="CREDIT_CARD_STANDALONE_VERIFICATION_CODE: Pre-filled on page
+             load"/>
+  <int value="2017"
+      label="CREDIT_CARD_STANDALONE_VERIFICATION_CODE: Empty on page load"/>
+  <int value="2048" label="NUMERIC_QUANTITY: Pre-filled on page load"/>
+  <int value="2049" label="NUMERIC_QUANTITY: Empty on page load"/>
+  <int value="2064" label="ONE_TIME_CODE: Pre-filled on page load"/>
+  <int value="2065" label="ONE_TIME_CODE: Empty on page load"/>
+  <int value="2128" label="DELIVERY_INSTRUCTIONS: Pre-filled on page load"/>
+  <int value="2129" label="DELIVERY_INSTRUCTIONS: Empty on page load"/>
+  <int value="2160" label="ADDRESS_HOME_OVERFLOW: Pre-filled on page load"/>
+  <int value="2161" label="ADDRESS_HOME_OVERFLOW: Empty on page load"/>
+  <int value="2176" label="ADDRESS_HOME_LANDMARK: Pre-filled on page load"/>
+  <int value="2177" label="ADDRESS_HOME_LANDMARK: Empty on page load"/>
+  <int value="2240"
+      label="ADDRESS_HOME_OVERFLOW_AND_LANDMARK: Pre-filled on page load"/>
+  <int value="2241"
+      label="ADDRESS_HOME_OVERFLOW_AND_LANDMARK: Empty on page load"/>
+  <int value="2256" label="ADDRESS_HOME_ADMIN_LEVEL2: Pre-filled on page load"/>
+  <int value="2257" label="ADDRESS_HOME_ADMIN_LEVEL2: Empty on page load"/>
+  <int value="2272"
+      label="ADDRESS_HOME_STREET_LOCATION: Pre-filled on page load"/>
+  <int value="2273" label="ADDRESS_HOME_STREET_LOCATION: Empty on page load"/>
+  <int value="2288"
+      label="ADDRESS_HOME_BETWEEN_STREETS: Pre-filled on page load"/>
+  <int value="2289" label="ADDRESS_HOME_BETWEEN_STREETS: Empty on page load"/>
+  <int value="2304"
+      label="ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK: Pre-filled on page
+             load"/>
+  <int value="2305"
+      label="ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK: Empty on page load"/>
+  <int value="2320"
+      label="ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY: Pre-filled on page
+             load"/>
+  <int value="2321"
+      label="ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY: Empty on page load"/>
+  <int value="2336"
+      label="ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK: Pre-filled on page
+             load"/>
+  <int value="2337"
+      label="ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK: Empty on page load"/>
+  <int value="2400"
+      label="ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK: Pre-filled on page
+             load"/>
+  <int value="2401"
+      label="ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK: Empty on page load"/>
+  <int value="2416"
+      label="ADDRESS_HOME_BETWEEN_STREETS_1: Pre-filled on page load"/>
+  <int value="2417" label="ADDRESS_HOME_BETWEEN_STREETS_1: Empty on page load"/>
+  <int value="2432"
+      label="ADDRESS_HOME_BETWEEN_STREETS_2: Pre-filled on page load"/>
+  <int value="2433" label="ADDRESS_HOME_BETWEEN_STREETS_2: Empty on page load"/>
+  <int value="2448"
+      label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT: Pre-filled on page load"/>
+  <int value="2449"
+      label="ADDRESS_HOME_HOUSE_NUMBER_AND_APT: Empty on page load"/>
+  <int value="2464"
+      label="SINGLE_USERNAME_FORGOT_PASSWORD: Pre-filled on page load"/>
+  <int value="2465"
+      label="SINGLE_USERNAME_FORGOT_PASSWORD: Empty on page load"/>
+  <int value="2496" label="ADDRESS_HOME_APT: Pre-filled on page load"/>
+  <int value="2497" label="ADDRESS_HOME_APT: Empty on page load"/>
+  <int value="2512" label="ADDRESS_HOME_APT_TYPE: Pre-filled on page load"/>
+  <int value="2513" label="ADDRESS_HOME_APT_TYPE: Empty on page load"/>
+  <int value="2560"
+      label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES: Pre-filled on page
+             load"/>
+  <int value="2561"
+      label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES: Empty on page load"/>
+</enum>
+
+<enum name="AutofillPreFilledValueStatus">
+  <int value="0" label="Not changed"/>
+  <int value="1" label="Pre-filled value manually restored after Autofill"/>
+  <int value="2" label="Pre-filled value restored by Autofill"/>
+  <int value="3" label="Changed to empty"/>
+  <int value="4" label="Manually changed to what would have been filled"/>
+  <int value="5"
+      label="Changed to another value of the corresponding field type"/>
+  <int value="6" label="Changed to a value of a different or unknown type"/>
+</enum>
+
+<enum name="AutofillProfileImportDecision">
+  <int value="0" label="Undefined"/>
+  <int value="1" label="UserNotAsked"/>
+  <int value="2" label="Accpeted"/>
+  <int value="3" label="Declined"/>
+  <int value="4" label="EditAccepted"/>
+  <int value="5" label="EditDeclined"/>
+  <int value="6" label="Never"/>
+  <int value="7" label="Ignored"/>
+  <int value="8" label="MessageTimeout"/>
+  <int value="9" label="MessageDeclined"/>
+  <int value="10" label="AutoDeclined"/>
+</enum>
+
+<enum name="AutofillProfileImportType">
+  <int value="0" label="Unspecified"/>
+  <int value="1" label="NewProfile"/>
+  <int value="2" label="DuplicateImport"/>
+  <int value="3" label="SilentUpdate"/>
+  <int value="4" label="ConfirmableMerge"/>
+  <int value="5" label="SuppressedNewProfile"/>
+  <int value="6" label="ConfirmableMergeAndSilentUpdate"/>
+  <int value="7" label="SuppressedConfirmableMerge"/>
+  <int value="8" label="SuppressedConfirmableMergeAndSilentUpdate"/>
+  <int value="9" label="SilentUpdateForIncompleteProfile"/>
+  <int value="10" label="UnusableIncompleteProfile"/>
+  <int value="11" label="ProfileMigration"/>
+  <int value="12" label="ProfileMigrationAndSilentUpdate"/>
+</enum>
+
 <enum name="AutofillProfileTokenQualityObservationType">
   <int value="0" label="Unknown"/>
   <int value="1" label="Accepted"/>
@@ -3370,6 +3802,15 @@ Called by update_autofill_enums.py.-->
   <int value="2"
       label="Keyboard accessory suggestion long pressed and deletion dialog
              confirmed"/>
+</enum>
+
+<enum name="AutofillSubmissionSource">
+  <int value="0" label="Same document navigation"/>
+  <int value="1" label="XHR succeeded"/>
+  <int value="2" label="Frame detached"/>
+  <int value="3" label="DOM mutation after XHR"/>
+  <int value="4" label="Probably form submission"/>
+  <int value="5" label="Form submission"/>
 </enum>
 
 <enum name="AutofillSubmissionSource2">
@@ -3797,10 +4238,34 @@ Called by update_autofill_enums.py.-->
   <int value="2" label="Checked"/>
 </enum>
 
+<enum name="CreditCardSeamlessFill">
+  <int value="0" label=":-D Full fill"/>
+  <int value="1" label=":-) Optional name missing"/>
+  <int value="2" label=":-) Optional CVC missing"/>
+  <int value="3" label=":-) Optional name and CVC missing"/>
+  <int value="4" label=":-| Full fill but exp. date missing"/>
+  <int value="5" label=":-( Partial fill"/>
+</enum>
+
 <enum name="CvcFillingFlowType">
   <int value="0" label="CVC filled without any interactive authentication"/>
   <int value="1" label="CVC filled by FIDO authentication"/>
   <int value="2" label="CVC filed by mandatory re-auth"/>
+</enum>
+
+<enum name="EmailPredictionConfusionMatrix">
+  <int value="0"
+      label="TruePositive: overall_type=email, submitted text matches email
+             format"/>
+  <int value="1"
+      label="FalsePositive: overall_type=email, submitted text is non-empty
+             and does not match email"/>
+  <int value="2"
+      label="TrueNegative: overall_type=not email, submitted text is
+             non-empty and does not match email"/>
+  <int value="3"
+      label="FalseNegative: overall_type=not email, submitted text matches
+             email"/>
 </enum>
 
 <enum name="FastCheckoutCacheStateForIsTriggerFormSupported">
@@ -3824,6 +4289,17 @@ Called by update_autofill_enums.py.-->
       label="Failure: The response body could not be parsed as
              `FastCheckoutFunnels` proto message."/>
   <int value="2" label="Success: Parsing was successful."/>
+</enum>
+
+<enum name="FastCheckoutRunOutcome">
+  <summary>Defines possible outcomes of a Fast Checkout run.</summary>
+  <int value="0"
+      label="Failure: Script did not run because the user has declined
+             onboarding."/>
+  <int value="1"
+      label="Failure: Script run did not complete or never started."/>
+  <int value="2" label="Failure: Script run failed."/>
+  <int value="3" label="Success: Script ran successfully."/>
 </enum>
 
 <enum name="FastCheckoutTriggerOutcome">
@@ -4066,6 +4542,17 @@ Called by update_autofill_enums.py.-->
   <int value="1" label="The escape key was pressed, closing the dialog"/>
   <int value="2" label="The cancel button was pressed, closing the dialog"/>
   <int value="3" label="The accept button was pressed, closing the dialog"/>
+</enum>
+
+<enum name="PhoneCollectionState">
+  <int value="0" label="Phone Not Collected, WebOTP Not Used, OTC Not Used"/>
+  <int value="1" label="Phone Not Collected, WebOTP Not Used, OTC Used"/>
+  <int value="2" label="Phone Not Collected, WebOTP Used, OTC Not Used"/>
+  <int value="3" label="Phone Not Collected, WebOTP Used, OTC Used"/>
+  <int value="4" label="Phone Collected, WebOTP Not Used, OTC Not Used"/>
+  <int value="5" label="Phone Collected, WebOTP Not Used, OTC Used"/>
+  <int value="6" label="Phone Collected, WebOTP Used, OTC Not Used"/>
+  <int value="7" label="Phone Collected, WebOTP Used, OTC Used"/>
 </enum>
 
 <enum name="PhoneNumberGrammarUsage2">
