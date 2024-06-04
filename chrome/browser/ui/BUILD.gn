@@ -4234,24 +4234,6 @@ static_library("ui") {
       "frame/window_frame_util.cc",
       "frame/window_frame_util.h",
       "incognito_clear_browsing_data_dialog_interface.h",
-      "lens/lens_overlay_controller.cc",
-      "lens/lens_overlay_controller.h",
-      "lens/lens_overlay_side_panel_coordinator.cc",
-      "lens/lens_overlay_side_panel_coordinator.h",
-      "lens/lens_overlay_side_panel_navigation_throttle.cc",
-      "lens/lens_overlay_side_panel_navigation_throttle.h",
-      "lens/lens_overlay_side_panel_web_view.cc",
-      "lens/lens_overlay_side_panel_web_view.h",
-      "lens/lens_overlay_theme_utils.cc",
-      "lens/lens_overlay_theme_utils.h",
-      "lens/lens_search_bubble_controller.cc",
-      "lens/lens_search_bubble_controller.h",
-      "lens/lens_untrusted_ui.cc",
-      "lens/lens_untrusted_ui.h",
-      "lens/lens_untrusted_ui_config.cc",
-      "lens/lens_untrusted_ui_config.h",
-      "lens/search_bubble_ui.cc",
-      "lens/search_bubble_ui.h",
       "signin/signin_modal_dialog.cc",
       "signin/signin_modal_dialog.h",
       "signin/signin_modal_dialog_impl.cc",
@@ -4309,6 +4291,9 @@ static_library("ui") {
       "//third_party/omnibox_proto",
       "//ui/webui",
     ]
+
+    # TODO(crbug.com/339497734): Remove circular dependencies.
+    allow_circular_includes_from += [ "//chrome/browser/ui/lens" ]
   }
 
   if (is_win || is_mac || is_linux) {

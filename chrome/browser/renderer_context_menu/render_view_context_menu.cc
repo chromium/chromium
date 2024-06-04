@@ -96,7 +96,6 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/keyboard_lock_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
-#include "chrome/browser/ui/lens/lens_overlay_image_helper.h"
 #include "chrome/browser/ui/lens/lens_overlay_invocation_source.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
@@ -4356,8 +4355,7 @@ void RenderViewContextMenu::OpenLensOverlayWithBounds(
   CHECK(controller);
   controller->ShowUIWithPendingRegion(
       lens::LensOverlayInvocationSource::kContentAreaContextMenuImage,
-      lens::GetCenterRotatedBoxFromTabViewAndImageBounds(
-          tab_bounds, view_bounds, scaled_image_bounds));
+      tab_bounds, view_bounds, scaled_image_bounds);
 }
 
 void RenderViewContextMenu::ExecRegionSearch(

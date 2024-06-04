@@ -117,6 +117,15 @@ class LensOverlayController : public LensSearchboxClient,
   static bool IsEnabled(Profile* profile);
 
   // Sets a region to search after the overlay loads, then calls ShowUI().
+  // All units are in device pixels.
+  void ShowUIWithPendingRegion(
+      lens::LensOverlayInvocationSource invocation_source,
+      const gfx::Rect& tab_bounds,
+      const gfx::Rect& view_bounds,
+      const gfx::Rect& image_bounds);
+
+  // Implementation detail of above, exposed for testing. Do not call this
+  // directly.
   void ShowUIWithPendingRegion(
       lens::LensOverlayInvocationSource invocation_source,
       lens::mojom::CenterRotatedBoxPtr region);

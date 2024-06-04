@@ -2683,6 +2683,9 @@ static_library("browser") {
       "//components/manta/proto",
       "//components/user_education/common",
     ]
+
+    # TODO(crbug.com/339497734): Remove circular dependencies.
+    allow_circular_includes_from += [ "//chrome/browser/ui/lens" ]
   }
 
   if (enable_feed_v2) {

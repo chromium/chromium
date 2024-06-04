@@ -24,8 +24,8 @@ source_set("configs") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
-    "//chrome/browser/ui:ui",
-    "//chrome/browser/ui/webui:webui",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/webui",
     "//components/compose:buildflags",
     "//components/lens:buildflags",
     "//content/public/browser",
@@ -34,6 +34,10 @@ source_set("configs") {
     "//skia",
     "//third_party/abseil-cpp:absl",
   ]
+
+  if (is_win || is_mac || is_linux || is_chromeos) {
+    deps += [ "//chrome/browser/ui/lens" ]
+  }
 
   # Includes Ash Chrome and Lacros Chrome
   if (is_chromeos) {

@@ -61,12 +61,12 @@
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/widget/widget.h"
-#include "ui/wm/core/coordinate_conversion.h"
-#include "ui/wm/core/window_properties.h"
 
-#if defined(USE_AURA)
-#include "ui/aura/window.h"
-#include "ui/wm/core/window_util.h"
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ui/aura/window.h"                    // nogncheck
+#include "ui/wm/core/coordinate_conversion.h"  // nogncheck
+#include "ui/wm/core/window_properties.h"      // nogncheck
+#include "ui/wm/core/window_util.h"            // nogncheck
 #endif
 
 namespace {
@@ -272,6 +272,16 @@ bool LensOverlayController::IsEnabled(Profile* profile) {
 
   static int phys_mem_mb = base::SysInfo::AmountOfPhysicalMemoryMB();
   return phys_mem_mb > lens::features::GetLensOverlayMinRamMb();
+}
+
+void LensOverlayController::ShowUIWithPendingRegion(
+    lens::LensOverlayInvocationSource invocation_source,
+    const gfx::Rect& tab_bounds,
+    const gfx::Rect& view_bounds,
+    const gfx::Rect& image_bounds) {
+  ShowUIWithPendingRegion(invocation_source,
+                          lens::GetCenterRotatedBoxFromTabViewAndImageBounds(
+                              tab_bounds, view_bounds, image_bounds));
 }
 
 void LensOverlayController::ShowUIWithPendingRegion(
