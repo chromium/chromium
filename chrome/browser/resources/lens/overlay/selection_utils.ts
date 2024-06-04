@@ -131,3 +131,14 @@ export function unfocusShimmer(
         detail: {requester},
       }));
 }
+
+// Converts the clientX and clientY to be relative to the given parent bounds
+// instead of the viewport. If the event is out of the parent bounds, returns
+// the closest point to those bounds.
+export function getRelativeCoordinate(
+    coord: Point, parentBounds: DOMRect): Point {
+  return {
+    x: Math.max(0, Math.min(coord.x, parentBounds.right) - parentBounds.left),
+    y: Math.max(0, Math.min(coord.y, parentBounds.bottom) - parentBounds.top),
+  };
+}

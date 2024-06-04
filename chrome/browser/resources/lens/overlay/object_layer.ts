@@ -21,7 +21,7 @@ import type {OverlayObject} from './overlay_object.mojom-webui.js';
 import {Polygon_CoordinateType} from './polygon.mojom-webui.js';
 import type {PostSelectionBoundingBox} from './post_selection_renderer.js';
 import type {CursorData} from './selection_overlay.js';
-import {CursorType, focusShimmerOnRegion, type GestureEvent, ShimmerControlRequester, unfocusShimmer} from './selection_utils.js';
+import {CursorType, focusShimmerOnRegion, type GestureEvent, getRelativeCoordinate, ShimmerControlRequester, unfocusShimmer} from './selection_utils.js';
 import {toPercent} from './values_converter.js';
 
 // The percent of the selection layer width and height the object needs to take
@@ -250,10 +250,15 @@ export class ObjectLayerElement extends PolymerElement {
       return;
     }
 
+    // Convert the mouse position to be relative to the canvas instead of the
+    // viewport.
+    const relativeCoord = getRelativeCoordinate(
+        {x: event.clientX, y: event.clientY}, this.getBoundingClientRect());
+
     assertInstanceof(event.target, HTMLElement);
     if (this.hiddenContext!.isPointInPath(
-            event.clientX * window.devicePixelRatio,
-            event.clientY * window.devicePixelRatio)) {
+            relativeCoord.x * window.devicePixelRatio,
+            relativeCoord.y * window.devicePixelRatio)) {
       // Ensure the object is drawn only once.
       if (!this.canvasIsBlank) {
         return;
