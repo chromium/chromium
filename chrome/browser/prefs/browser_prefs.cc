@@ -2146,6 +2146,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   registry->RegisterBooleanPref(policy::policy_prefs::kFloatingWorkspaceEnabled,
                                 false);
   ::reporting::RegisterProfilePrefs(registry);
+  registry->RegisterBooleanPref(prefs::kFloatingSsoEnabled, false);
+  registry->RegisterListPref(prefs::kFloatingSsoDomainBlocklist);
+  registry->RegisterListPref(prefs::kFloatingSsoDomainBlocklistExceptions);
 #if BUILDFLAG(USE_CUPS)
   extensions::PrintingAPIHandler::RegisterProfilePrefs(registry);
 #endif  // BUILDFLAG(USE_CUPS)

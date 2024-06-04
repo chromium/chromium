@@ -1033,8 +1033,16 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     base::Value::Type::LIST },
   { key::kFloatingWorkspaceEnabled,
     policy_prefs::kFloatingWorkspaceEnabled,
-    base::Value::Type::BOOLEAN
-  },
+    base::Value::Type::BOOLEAN },
+  { key::kFloatingSsoEnabled,
+    prefs::kFloatingSsoEnabled,
+    base::Value::Type::BOOLEAN },
+  { key::kFloatingSsoDomainBlocklist,
+    prefs::kFloatingSsoDomainBlocklist,
+    base::Value::Type::LIST },
+  { key::kFloatingSsoDomainBlocklistExceptions,
+    prefs::kFloatingSsoDomainBlocklistExceptions,
+    base::Value::Type::LIST },
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

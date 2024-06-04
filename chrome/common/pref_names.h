@@ -1258,6 +1258,23 @@ inline constexpr char kFilesAppDefaultLocation[] =
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS)
+// List pref containing blocked domains of cookies that will not be moved when a
+// user switches between ChromeOS devices, when the Floating SSO Service is
+// enabled.
+inline constexpr char kFloatingSsoDomainBlocklist[] =
+    "floating_sso_domain_blocklist";
+
+// List pref containing blocklist excepted domains of cookies to be moved when a
+// user switches between ChromeOS devices, when the Floating SSO Service is
+// enabled.
+inline constexpr char kFloatingSsoDomainBlocklistExceptions[] =
+    "floating_sso_domain_blocklist_exceptions";
+
+// Boolean pref specifying if the the Floating SSO Service is enabled. The
+// service restores the user's web service authentication state by moving
+// cookies from the previous device onto another, on ChromeOS.
+inline constexpr char kFloatingSsoEnabled[] = "floating_sso_enabled";
+
 // This boolean controls whether the first window shown on first run should be
 // unconditionally maximized, overriding the heuristic that normally chooses the
 // window size.
