@@ -44,9 +44,6 @@
 // Standard library:
 //   PA_LIBC_GLIBC
 
-// TODO(https://crbug.com/41481467): Remove //build dependency.
-#include "build/build_config.h"
-
 // Definition of PA_BUILDFLAG(...) macro.
 #include "partition_alloc/buildflag.h"  // IWYU pragma: export
 

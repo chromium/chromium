@@ -19,13 +19,6 @@ the entire Chromium project.
 
 ## Building
 
-As of today, partition_alloc still depends on chromium's
-`//build/build_config.h`, so a symbolic link is needed to make it work.
-```sh
-ln -s /path/to/chromium/src/build/ src/build
-```
-
-Then you can build partition_alloc as a standalone library by running:
 ```sh
 gn gen out/Default
 autoninja -C out/Default

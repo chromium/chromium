@@ -39,9 +39,6 @@ specific_include_rules = {
   "use_death_tests\.h$": [
     "+testing/gtest/include/gtest/gtest.h",
   ],
-
-  # TODO(https://crbug.com/1508847): Remove //build dependency.
-  "build_config.h$": [ "+build/build_config.h" ],
 }
 
 # In the context of a module-level DEPS, the `deps` variable must be defined.
