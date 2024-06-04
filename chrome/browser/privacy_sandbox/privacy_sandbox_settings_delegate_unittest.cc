@@ -710,16 +710,6 @@ TEST_P(CookieDeprecationLabelAllowedTest, OnboardingStatusChecked) {
           .expected_allowed = false,
       },
       {
-          .onboarding_status = TrackingProtectionOnboardingStatus::kRequested,
-          .need_onboarding = false,
-          .expected_allowed = true,
-      },
-      {
-          .onboarding_status = TrackingProtectionOnboardingStatus::kRequested,
-          .need_onboarding = true,
-          .expected_allowed = true,
-      },
-      {
           .onboarding_status = TrackingProtectionOnboardingStatus::kOnboarded,
           .need_onboarding = false,
           .expected_allowed = true,
@@ -751,13 +741,6 @@ TEST_P(CookieDeprecationLabelAllowedTest, OnboardingStatusChecked) {
     if (disable_3pcs) {
       prefs()->SetInteger(prefs::kTrackingProtectionOnboardingStatus,
                           static_cast<int>(test_case.onboarding_status));
-      EXPECT_EQ(delegate()->IsCookieDeprecationLabelAllowed(),
-                test_case.expected_allowed);
-    } else if (test_case.onboarding_status !=
-               TrackingProtectionOnboardingStatus::
-                   kRequested)  // Silent Onboarding can never be combined with
-                                // the requested status.
-    {
       prefs()->SetInteger(prefs::kTrackingProtectionSilentOnboardingStatus,
                           static_cast<int>(test_case.onboarding_status));
       EXPECT_EQ(delegate()->IsCookieDeprecationLabelAllowed(),

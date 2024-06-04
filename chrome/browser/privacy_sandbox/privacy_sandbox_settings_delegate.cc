@@ -338,8 +338,6 @@ bool PrivacySandboxSettingsDelegate::IsCookieDeprecationLabelAllowed() const {
           kEligible:
         return !tpcd::experiment::kNeedOnboardingForLabel.Get();
       case privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus::
-          kOnboardingRequested:
-      case privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus::
           kOnboarded:
         return true;
     }
@@ -388,8 +386,6 @@ bool PrivacySandboxSettingsDelegate::
         kEligible:
     case privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus::
         kOffboarded:
-    case privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus::
-        kOnboardingRequested:
       return false;
     case privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus::
         kOnboarded:

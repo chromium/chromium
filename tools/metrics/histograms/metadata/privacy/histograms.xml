@@ -1424,63 +1424,6 @@ reviewer.
 </histogram>
 
 <histogram
-    name="PrivacySandbox.TrackingProtection.Onboarding.NoticeFirstRequestedToOnboardedDuration"
-    units="ms" expires_after="2024-09-30">
-  <owner>boujane@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Emitted once when a profile is onboarded. Records the value since the
-    onboarding Notice was first requested for the profile.
-  </summary>
-</histogram>
-
-<histogram
-    name="PrivacySandbox.TrackingProtection.Onboarding.NoticeLastRequestedToOnboardedDuration"
-    units="ms" expires_after="2024-09-30">
-  <owner>boujane@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Emitted once when a profile is onboarded. Records the value since the
-    onboarding Notice was last requested for the profile.
-  </summary>
-</histogram>
-
-<histogram
-    name="PrivacySandbox.TrackingProtection.Onboarding.NoticeRequested.SinceFirstRequested"
-    units="ms" expires_after="2024-09-30">
-  <owner>boujane@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Emitted when a notice is requested after being previously requested but
-    failing to show. Records the duration since the first time the notice was
-    requested.
-  </summary>
-</histogram>
-
-<histogram
-    name="PrivacySandbox.TrackingProtection.Onboarding.NoticeRequested.SinceLastRequested"
-    units="ms" expires_after="2024-09-30">
-  <owner>boujane@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Emitted when a notice is requested after being previously requested but
-    failing to show. Records the duration since the last time the notice was
-    requested.
-  </summary>
-</histogram>
-
-<histogram
-    name="PrivacySandbox.TrackingProtection.Onboarding.NoticeRequestedForStatus"
-    enum="TrackingProtectionInternalOnboardingStatus"
-    expires_after="2024-09-30">
-  <owner>boujane@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records the internal onboarding status everytime a notice is requested.
-  </summary>
-</histogram>
-
-<histogram
     name="PrivacySandbox.TrackingProtection.Onboarding.NoticeServiceEvent"
     enum="TrackingProtectionMetricsNoticeEvent" expires_after="2024-09-30">
   <owner>jacobstanley@google.com</owner>
@@ -1522,30 +1465,6 @@ reviewer.
   <summary>
     Records the duration it takes while being eligible up till onboarding to
     3PCD. This occurs once per profile during the startup of onboarding.
-  </summary>
-</histogram>
-
-<histogram
-    name="PrivacySandbox.TrackingProtection.OnboardingStartup.SinceFirstNoticeRequest"
-    units="ms" expires_after="2024-09-30">
-  <owner>boujane@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Emitted on startup. Records the value since the onboarding Notice was first
-    requested for the profile. This is only emitted if the profile still hasn't
-    onboarded (is still in the NoticeRequested state)
-  </summary>
-</histogram>
-
-<histogram
-    name="PrivacySandbox.TrackingProtection.OnboardingStartup.SinceLastNoticeRequest"
-    units="ms" expires_after="2024-09-30">
-  <owner>boujane@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Emitted on startup. Records the value since the onboarding Notice was last
-    requested for the profile. This is only emitted if the profile still hasn't
-    onboarded (is still in the NoticeRequested state)
   </summary>
 </histogram>
 
