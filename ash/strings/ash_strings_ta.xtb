@@ -951,6 +951,7 @@
 <translation id="4628757576491864469">சாதனங்கள்</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, நட்சத்திர மதிப்பீடு: <ph name="RATING_SCORE" /></translation>
 <translation id="4633636853437260449">நீக்க Ctrl+W அழுத்தவும்</translation>
+<translation id="4635501805800894201">{0,plural, =0{இப்போதே சாதனத்தை முந்தைய பதிப்பிற்கு மாற்றுங்கள்}=1{ஒரு வினாடிக்குள் சாதனத்தை முந்தைய பதிப்பிற்கு மாற்றுங்கள்}other{# வினாடிகளுக்குள் சாதனத்தை முந்தைய பதிப்பிற்கு மாற்றுங்கள்}}</translation>
 <translation id="4642092649622328492">பகுதியளவு ஸ்கிரீன்ஷாட்டை எடுக்கும்</translation>
 <translation id="4644727592819780893">கேமராவில் பொருந்த முடியாத அளவுக்கு மிகவும் சிறிய பகுதி</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, ஆப்ஸ் பரிந்துரை</translation>
@@ -980,6 +981,7 @@
 <translation id="4735944890391795473">டெஸ்க் 12</translation>
 <translation id="473775607612524610">புதுப்பி</translation>
 <translation id="4740516757091333363">சேமிக்கப்பட்ட டெஸ்க்கை நீக்கவா?</translation>
+<translation id="4746798685375253449">{0,plural, =1{ஒரு நாளுக்குள் சாதனத்தை முந்தைய பதிப்பிற்கு மாற்றுங்கள்}other{# நாட்களுக்குள் சாதனத்தை முந்தைய பதிப்பிற்கு மாற்றுங்கள்}}</translation>
 <translation id="4747410141429390146">அறிவிப்புகளைப் பார்க்க அன்லாக் செய்யவும்</translation>
 <translation id="4752784485658729358">6 டெஸ்க்குகளை மட்டுமே சேமிக்க முடியும். புதிதாக ஒன்றைச் சேமிக்க ஒரு டெஸ்கை அகற்றவும்.</translation>
 <translation id="4759238208242260848">பதிவிறக்கங்கள்</translation>
@@ -1315,6 +1317,7 @@
 <translation id="5916646100036936191">புதிய அறிவிப்பு, மொத்தம் <ph name="NOTIFICATION_COUNT" /></translation>
 <translation id="5916664084637901428">இயக்கு</translation>
 <translation id="5920710855273935292">மைக் ஒலியடக்கப்பட்டுள்ளது.</translation>
+<translation id="5928083197428724029"><ph name="MANAGER" />க்குப் புதுப்பிப்பு தேவை</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> இயக்கப்பட்டுள்ளது.</translation>
 <translation id="5947494881799873997">மாற்றியமை</translation>
 <translation id="595202126637698455">செயல்திறனைத் தடமறிதல் இயக்கப்பட்டுள்ளது</translation>
@@ -1432,6 +1435,7 @@
 <translation id="6376931439017688372">புளூடூத் இயக்கப்பட்டுள்ளது</translation>
 <translation id="6378515133128829137">சாளரத்தை வலதுபுறத்தில் பின் செய்</translation>
 <translation id="6381109794406942707">சாதனத்தை அன்லாக் செய்ய உங்கள் பின்னை உள்ளிடவும்.</translation>
+<translation id="6381305031890976705">{0,plural, =1{ஒரு மணிநேரத்திற்குள் சாதனத்தை முந்தைய பதிப்பிற்கு மாற்றுங்கள்}other{# மணிநேரத்திற்குள் சாதனத்தை முந்தைய பதிப்பிற்கு மாற்றுங்கள்}}</translation>
 <translation id="638716340450135524">கேமரா அணுகலை இயக்கு</translation>
 <translation id="639644700271529076">CAPS LOCK முடக்கப்பட்டுள்ளது</translation>
 <translation id="6406458002328242616">டைமரை மாற்றும். <ph name="FOCUS_DURATION" />.</translation>
@@ -1454,6 +1458,7 @@
 <translation id="6459472438155181876"><ph name="DISPLAY_NAME" /> க்கு திரை விரிவாக்கப்படுகிறது</translation>
 <translation id="6464094930452079790">படங்கள்</translation>
 <translation id="6467290994038932560"><ph name="GAME_APP_NAME" /> ஆப்ஸிற்கு இயக்கப்பட்டுள்ளது</translation>
+<translation id="6468406072297048412">{0,plural, =1{ஒரு நிமிடத்திற்குள் சாதனத்தை முந்தைய பதிப்பிற்கு மாற்றுங்கள்}other{# நிமிடங்களுக்குள் சாதனத்தை முந்தைய பதிப்பிற்கு மாற்றுங்கள்}}</translation>
 <translation id="6469104339369989396">ஹாட்ஸ்பாட்டை இயக்கும் அல்லது முடக்கும்</translation>
 <translation id="6477681113376365978">ஃபைலைப் பதிவிறக்க முடியவில்லை</translation>
 <translation id="6482559668224714696">முழுத்திரைப் பெரிதாக்கி</translation>
@@ -1577,6 +1582,7 @@
 <translation id="6917259695595127329">பணிகள் கடைசியாகப் புதுப்பிக்கப்பட்டது: <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">உங்கள் ஸ்மார்ட் கார்டை அடையாளம் காண முடியவில்லை. மீண்டும் முயலவும்.</translation>
 <translation id="692135145298539227">நீக்கு</translation>
+<translation id="6921427376813842559">சாதனத்தைப் புதுப்பியுங்கள்</translation>
 <translation id="6929081673585394903">கண்ட்ரோல்களைக் காட்டும்</translation>
 <translation id="6931576957638141829">இதில் சேமி</translation>
 <translation id="6942518653766415536">ரெக்கார்டிங் வடிவமைப்பு மெனு</translation>
@@ -1664,6 +1670,7 @@
 <translation id="7303365578352795231">மற்றொரு சாதனத்தில் பதிலளிக்கப்படுகிறது.</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">நிர்வாகி உங்கள் eSIMமை மீட்டமைக்கிறார். இதற்குச் சில நிமிடங்கள் ஆகலாம்.</translation>
+<translation id="7312761820869643657">சாதனத்தை முந்தைய பதிப்பிற்கு மாற்றுங்கள்</translation>
 <translation id="7313193732017069507">கேமராவை விரிவாக்கும்</translation>
 <translation id="7330397557116570022">சொல்வதை எழுதும் வசதியைப் பயன்படுத்த வார்த்தைப் புலத்திற்குச் செல்லவும்</translation>
 <translation id="7331646370422660166">Alt + கீழ்நோக்கிய அம்புக்குறி</translation>
@@ -2179,6 +2186,7 @@
 <translation id="925832987464884575">மாதிரிக்காட்சிகளை மறை</translation>
 <translation id="938407504481277932">தற்போதைய டெஸ்க்: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. டெஸ்க் <ph name="DESK_INDEX" />/<ph name="DESK_COUNT" />.</translation>
 <translation id="938963181863597773">எனது கேலெண்டரில் என்ன உள்ளது?</translation>
+<translation id="94468042118567862">சாதனம் சமீபத்தியதாக இல்லை</translation>
 <translation id="945383118875625837">இணைப்பை இழுத்துச் சென்று புக்மார்க் பட்டியில் வைக்கவும்</translation>
 <translation id="945522503751344254">கருத்தை அனுப்பு</translation>
 <translation id="951991426597076286">நிராகரி</translation>

@@ -212,6 +212,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1747827819627189109">Teclado en pantalla habilitado</translation>
 <translation id="1749109475624620922">Se asignó la ventana <ph name="WINDOW_TITLE" /> a todos los escritorios</translation>
 <translation id="1750088060796401187">Solo se permiten <ph name="MAX_DESK_LIMIT" /> escritorios. Para abrir un escritorio nuevo, deberás quitar uno.</translation>
+<translation id="1755408179247123630">¿Quieres activar Seleccionar para pronunciar?</translation>
 <translation id="1755556344721611131">App de diagnóstico</translation>
 <translation id="1756833229520115364">No se pudo guardar la plantilla. Hay demasiadas ventanas o pestañas.</translation>
 <translation id="1757857692711134412">Desactivada hasta el atardecer</translation>
@@ -952,6 +953,7 @@ Se conectó un dispositivo.</translation>
 <translation id="4628757576491864469">Dispositivos</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, calificación por estrellas: <ph name="RATING_SCORE" /></translation>
 <translation id="4633636853437260449">Presiona Ctrl+W para borrar</translation>
+<translation id="4635501805800894201">{0,plural, =0{Cambia el dispositivo a la versión anterior ahora}=1{Cambia el dispositivo a la versión anterior en el transcurso de 1 segundo}other{Cambia el dispositivo a la versión anterior en el transcurso de # segundos}}</translation>
 <translation id="4642092649622328492">Realizar una captura de pantalla parcial</translation>
 <translation id="4644727592819780893">La región es demasiado pequeña para entrar en la cámara</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, recomendación de app</translation>
@@ -981,6 +983,7 @@ Se conectó un dispositivo.</translation>
 <translation id="4735944890391795473">Escritorio 12</translation>
 <translation id="473775607612524610">Actualizar</translation>
 <translation id="4740516757091333363">¿Deseas borrar el escritorio guardado?</translation>
+<translation id="4746798685375253449">{0,plural, =1{Cambia el dispositivo a la versión anterior en el transcurso de un día}other{Cambia el dispositivo a la versión anterior en el transcurso de # días}}</translation>
 <translation id="4747410141429390146">Desbloquea el dispositivo para ver las notificaciones</translation>
 <translation id="4752784485658729358">Se permiten únicamente 6 escritorios guardados. Para guardar un escritorio nuevo, deberás quitar uno.</translation>
 <translation id="4759238208242260848">Descargas</translation>
@@ -1086,6 +1089,9 @@ Se conectó un dispositivo.</translation>
 <translation id="5092436659250499817">Activar o desactivar la retroiluminación del teclado</translation>
 <translation id="5094577350232361255">información</translation>
 <translation id="5095136268899496849">Personaliza tu <ph name="PRODUCT_NAME" /> en Configuración. Intenta cambiar el fondo de pantalla o configurar un protector de pantalla.</translation>
+<translation id="5096125376090473584">Para escuchar el texto leído en voz alta, selecciona el ícono de Seleccionar para pronunciar en la parte inferior de la pantalla y, luego, destaca el texto.
+
+También puedes usar la combinación de teclas. Primero, destaca el texto y, luego, presiona <ph name="MODIFIER" /> + s.</translation>
 <translation id="509790653408515442">Cuando transmitas las apps del teléfono, aparecerán aquí</translation>
 <translation id="5098537242461068432">Se reabrieron el escritorio y las ventanas</translation>
 <translation id="5103975065730779239">Hasta las <ph name="END_TIME_EXPRESSION" /></translation>
@@ -1316,6 +1322,7 @@ No hay dispositivos conectados.</translation>
 <translation id="5916646100036936191">Nueva notificación, <ph name="NOTIFICATION_COUNT" /> en total</translation>
 <translation id="5916664084637901428">Activado</translation>
 <translation id="5920710855273935292">El micrófono está silenciado.</translation>
+<translation id="5928083197428724029">Debes cambiar la versión antes del <ph name="MANAGER" /></translation>
 <translation id="5946788582095584774">La función <ph name="FEATURE_NAME" /> está activada.</translation>
 <translation id="5947494881799873997">Revertir</translation>
 <translation id="595202126637698455">Seguimiento de rendimiento habilitado</translation>
@@ -1433,6 +1440,7 @@ No hay dispositivos conectados.</translation>
 <translation id="6376931439017688372">Se activó la conexión Bluetooth</translation>
 <translation id="6378515133128829137">Fijar la ventana a la derecha</translation>
 <translation id="6381109794406942707">Para desbloquear el dispositivo, ingresa el PIN.</translation>
+<translation id="6381305031890976705">{0,plural, =1{Cambia el dispositivo a la versión anterior en el transcurso de una hora}other{Cambia el dispositivo a la versión anterior en el transcurso de # horas}}</translation>
 <translation id="638716340450135524">Activar el acceso a la cámara</translation>
 <translation id="639644700271529076">El bloqueo de mayúsculas está desactivado.</translation>
 <translation id="6406458002328242616">Edita el temporizador. <ph name="FOCUS_DURATION" />.</translation>
@@ -1455,6 +1463,7 @@ No hay dispositivos conectados.</translation>
 <translation id="6459472438155181876">Ampliando pantalla para <ph name="DISPLAY_NAME" /></translation>
 <translation id="6464094930452079790">imágenes</translation>
 <translation id="6467290994038932560">Activados para <ph name="GAME_APP_NAME" /></translation>
+<translation id="6468406072297048412">{0,plural, =1{Cambia el dispositivo a la versión anterior en el transcurso de 1 minuto}other{Cambia el dispositivo a la versión anterior en el transcurso de # minutos}}</translation>
 <translation id="6469104339369989396">Activa o desactiva el hotspot.</translation>
 <translation id="6477681113376365978">No se puede descargar el archivo</translation>
 <translation id="6482559668224714696">Lupa de pantalla completa</translation>
@@ -1578,6 +1587,7 @@ Nueva instalación</translation>
 <translation id="6917259695595127329">Última actualización de las tareas: <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">No se reconoció tu tarjeta inteligente. Vuelve a intentarlo.</translation>
 <translation id="692135145298539227">eliminar</translation>
+<translation id="6921427376813842559">Cambia la versión del dispositivo</translation>
 <translation id="6929081673585394903">Mostrar controles</translation>
 <translation id="6931576957638141829">Guardar en</translation>
 <translation id="6942518653766415536">Menú de formato de grabación</translation>
@@ -1665,6 +1675,7 @@ Nueva instalación</translation>
 <translation id="7303365578352795231">Se responderá en otro dispositivo.</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">El administrador está restableciendo tu eSIM. Es posible que este proceso demore unos minutos.</translation>
+<translation id="7312761820869643657">Cambia el dispositivo a la versión anterior</translation>
 <translation id="7313193732017069507">Expandir la cámara</translation>
 <translation id="7330397557116570022">Ve a un campo de texto para usar el Dictado</translation>
 <translation id="7331646370422660166">Alt + flecha hacia abajo</translation>
@@ -1814,6 +1825,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">Para usar el dispositivo como invitado, tienes que salir y seleccionar Navegar como invitado en la parte inferior de la pantalla.</translation>
 <translation id="7866482334467279021">activado</translation>
+<translation id="7866727328666668290">Última pestaña abierta</translation>
 <translation id="7872786842639831132">No</translation>
 <translation id="7875575368831396199">Al parecer, tu <ph name="DEVICE_TYPE" /> tiene la conexión Bluetooth desactivada. Actívala para poder usar Phone Hub.</translation>
 <translation id="7884446017008693258">Configuración del hotspot</translation>
@@ -2180,6 +2192,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="925832987464884575">Ocultar vistas previas</translation>
 <translation id="938407504481277932">Escritorio actual: <ph name="DESK_NAME" />; <ph name="PROFILE_NAME" /> <ph name="EMAIL" />; escritorio <ph name="DESK_INDEX" /> de <ph name="DESK_COUNT" /></translation>
 <translation id="938963181863597773">¿Qué eventos tengo en mi calendario?</translation>
+<translation id="94468042118567862">El dispositivo no está actualizado</translation>
 <translation id="945383118875625837">Arrastrar el vínculo a la barra de favoritos</translation>
 <translation id="945522503751344254">Enviar comentarios</translation>
 <translation id="951991426597076286">Rechazar</translation>

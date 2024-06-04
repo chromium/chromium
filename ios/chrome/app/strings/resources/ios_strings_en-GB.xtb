@@ -503,6 +503,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3575234738189584619">Search with Lens</translation>
 <translation id="3575426792457739946">This list contains all loaded profiles.</translation>
 <translation id="3581564640715911333">Offer to translate pages in other languages</translation>
+<translation id="3585696901179982416">{count,plural, =1{{position} of {count} address}other{{position} of {count} addresses}}</translation>
 <translation id="3587885837929752825">Your organisation limits what you can save in your Google Account.</translation>
 <translation id="3588820906588687999">Open Image in New Tab</translation>
 <translation id="3595252146048399851">You can always choose what to sync in <ph name="BEGIN_LINK" />settings<ph name="END_LINK" />. Google may personalise Search and other services based on your history.</translation>
@@ -1195,6 +1196,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="69739764870135975">If Google is also your default search engine, you'll see better, contextually relevant suggestions</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6983306615164277634">You can also touch and hold the address bar to change the position.</translation>
+<translation id="6986937292199604715">Turn on…</translation>
 <translation id="6988572888918530647">Manage your Google Account</translation>
 <translation id="6990519590575500580">Facetime</translation>
 <translation id="6998989275928107238">To</translation>
@@ -1301,6 +1303,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7557508262441527045">Signed out</translation>
 <translation id="7561196759112975576">Always</translation>
 <translation id="7564917801238348224">SAVE…</translation>
+<translation id="758132317817089442">Turn on enhanced protection…</translation>
 <translation id="7582857256643797524">This setting is enabled on your device</translation>
 <translation id="7583004045319035904">Use <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> to unlock your incognito tabs.</translation>
 <translation id="7598439272585186139">Get more security</translation>

@@ -212,6 +212,7 @@
 <translation id="1747827819627189109">በማያ ገፅ ላይ የቁልፍ ሰሌዳ ነቅቷል</translation>
 <translation id="1749109475624620922">መስኮት <ph name="WINDOW_TITLE" /> ለሁሉም ዴስኮች ተመድቧል</translation>
 <translation id="1750088060796401187"><ph name="MAX_DESK_LIMIT" /> ዴስኮች ብቻ ተፈቅደዋል። አዲስ ለመክፈት ዴስክን ያስወግዱ።</translation>
+<translation id="1755408179247123630">ለመናገር ምረጥ የሚለው ይብራ?</translation>
 <translation id="1755556344721611131">የምርመራ መተግበሪያ</translation>
 <translation id="1756833229520115364">ቅንብር ደንብን ማስቀመጥ አልተቻለም። በጣም ብዙ መስኮቶች ወይም ትሮች።</translation>
 <translation id="1757857692711134412">ፀሐይ እስክትጠልቅ ድረስ ይጠፋል</translation>
@@ -1087,6 +1088,9 @@
 <translation id="5092436659250499817">የቁልፍ ሰሌዳ የጀርባ ብርሀንን አብራ/አጥፋ</translation>
 <translation id="5094577350232361255">ስለ</translation>
 <translation id="5095136268899496849">በቅንብሮች ውስጥ የእርስዎን <ph name="PRODUCT_NAME" /> ያብጁ እና ግላዊነት ያላብሱ። ልጣፍዎን መለወጥ ወይም ማያ ገጽ ቆጣቢን ማቀናበርን ይሞክሩ።</translation>
+<translation id="5096125376090473584">በጮክ ብለህ አንብብ ጽሑፍን ለመስማት በማያ ገጽዎ ግርጌ ላይ ያለውን ለመናገር ምረጥ የሚለውን አዶ ይምረጡ እና ጽሑፍን ያድምቁ።
+
+እንዲሁም የቁልፍ ሰሌዳ አቋራጭን መጠቀም ይችላሉ። መጀመሪያ ጽሑፍን ያድምቁ እና <ph name="MODIFIER" /> + s የሚለውን ይጫኑ።</translation>
 <translation id="509790653408515442">የስልክዎን መተግበሪያዎች በዥረት ሲለቅቁ እዚህ ይታያሉ</translation>
 <translation id="5098537242461068432">ዴስክ እና መስኮቶች ዳግም ተከፍተዋል</translation>
 <translation id="5103975065730779239">እስከ <ph name="END_TIME_EXPRESSION" /> ድረስ</translation>
@@ -1821,6 +1825,7 @@
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">መሣሪያውን እንደ እንግዳ ለመጠቀም ዘግተው መውጣት እና ከዚያም በማያ ገጹ ታች ላይ እንደ እንግዳ አስስ የሚለውን መምረጥ ያስፈልግዎታል።</translation>
 <translation id="7866482334467279021">በርቷል</translation>
+<translation id="7866727328666668290">የመጨረሻው ትር ተከፍቷል</translation>
 <translation id="7872786842639831132">አጥፋ</translation>
 <translation id="7875575368831396199">ብሉቱዝ በእርስዎ <ph name="DEVICE_TYPE" /> ላይ የጠፋ ይመስላል። የስልክ ሃብን ለመጠቀም እባክዎ ብሉቱዝን ያብሩ።</translation>
 <translation id="7884446017008693258">የመገናኛ ነጥብ ቅንብሮች</translation>

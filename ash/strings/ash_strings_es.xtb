@@ -953,6 +953,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="4628757576491864469">Dispositivos</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, valoración por estrellas de <ph name="RATING_SCORE" /></translation>
 <translation id="4633636853437260449">Pulsa Ctrl + W para eliminar</translation>
+<translation id="4635501805800894201">{0,plural, =0{Restaura la versión anterior en el dispositivo ahora}=1{Restaura la versión anterior en el dispositivo en un plazo de 1 segundo}other{Restaura la versión anterior en el dispositivo en un plazo de # segundos}}</translation>
 <translation id="4642092649622328492">Hacer una captura de pantalla parcial</translation>
 <translation id="4644727592819780893">El área es demasiado pequeña para que la cámara la capte</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, aplicación recomendada</translation>
@@ -982,6 +983,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="4735944890391795473">Escritorio 12</translation>
 <translation id="473775607612524610">Actualizar</translation>
 <translation id="4740516757091333363">¿Eliminar escritorio guardado?</translation>
+<translation id="4746798685375253449">{0,plural, =1{Restaura la versión anterior en el dispositivo en un plazo de 1 día}other{Restaura la versión anterior en el dispositivo en un plazo de # días}}</translation>
 <translation id="4747410141429390146">Desbloquea el dispositivo para ver las notificaciones</translation>
 <translation id="4752784485658729358">Solo se pueden guardar 6 escritorios. Quita un escritorio para guardar uno nuevo.</translation>
 <translation id="4759238208242260848">Descargas</translation>
@@ -1320,6 +1322,7 @@ No hay dispositivos conectados.</translation>
 <translation id="5916646100036936191">Nueva notificación, <ph name="NOTIFICATION_COUNT" /> en total</translation>
 <translation id="5916664084637901428">Activado</translation>
 <translation id="5920710855273935292">El micrófono está silenciado.</translation>
+<translation id="5928083197428724029">Actualización requerida por <ph name="MANAGER" /></translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> está activado.</translation>
 <translation id="5947494881799873997">Deshacer</translation>
 <translation id="595202126637698455">Se ha habilitado el control del rendimiento</translation>
@@ -1437,6 +1440,7 @@ No hay dispositivos conectados.</translation>
 <translation id="6376931439017688372">El Bluetooth está activado</translation>
 <translation id="6378515133128829137">Fijar ventana a la derecha</translation>
 <translation id="6381109794406942707">Para desbloquear el dispositivo, introduce tu PIN.</translation>
+<translation id="6381305031890976705">{0,plural, =1{Restaura la versión anterior en el dispositivo en un plazo de 1 hora}other{Restaura la versión anterior en el dispositivo en un plazo de # horas}}</translation>
 <translation id="638716340450135524">Activar acceso a cámara</translation>
 <translation id="639644700271529076">Bloqueo de mayúsculas desactivado</translation>
 <translation id="6406458002328242616">Editar temporizador. <ph name="FOCUS_DURATION" />.</translation>
@@ -1459,6 +1463,7 @@ No hay dispositivos conectados.</translation>
 <translation id="6459472438155181876">Extendiendo pantalla a <ph name="DISPLAY_NAME" /></translation>
 <translation id="6464094930452079790">imágenes</translation>
 <translation id="6467290994038932560">Activados para <ph name="GAME_APP_NAME" /></translation>
+<translation id="6468406072297048412">{0,plural, =1{Restaura la versión anterior en el dispositivo en un plazo de 1 minuto}other{Restaura la versión anterior en el dispositivo en un plazo de # minutos}}</translation>
 <translation id="6469104339369989396">Activar o desactivar punto de acceso</translation>
 <translation id="6477681113376365978">No se puede descargar el archivo</translation>
 <translation id="6482559668224714696">Lupa de pantalla completa</translation>
@@ -1582,6 +1587,7 @@ Nueva instalación</translation>
 <translation id="6917259695595127329">Última actualización de las tareas: <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">No se ha podido reconocer la tarjeta inteligente. Vuelve a intentarlo.</translation>
 <translation id="692135145298539227">eliminar</translation>
+<translation id="6921427376813842559">Actualiza el dispositivo</translation>
 <translation id="6929081673585394903">Mostrar controles</translation>
 <translation id="6931576957638141829">Guardar en</translation>
 <translation id="6942518653766415536">Menú de formatos de grabación</translation>
@@ -1669,6 +1675,7 @@ Nueva instalación</translation>
 <translation id="7303365578352795231">Se está respondiendo en otro dispositivo.</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Tu administrador está restableciendo tu eSIM. Este proceso puede tardar unos minutos.</translation>
+<translation id="7312761820869643657">Restaura la versión anterior en el dispositivo</translation>
 <translation id="7313193732017069507">Ampliar cámara</translation>
 <translation id="7330397557116570022">Ve a un campo de texto para usar el dictado</translation>
 <translation id="7331646370422660166">Alt + flecha hacia abajo</translation>
@@ -2185,6 +2192,7 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="925832987464884575">Ocultar vistas previas</translation>
 <translation id="938407504481277932">Escritorio actual: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. Escritorio <ph name="DESK_INDEX" /> de <ph name="DESK_COUNT" />.</translation>
 <translation id="938963181863597773">¿Qué tengo en el calendario?</translation>
+<translation id="94468042118567862">Dispositivo no actualizado</translation>
 <translation id="945383118875625837">Arrastra el enlace a la barra de marcadores</translation>
 <translation id="945522503751344254">Enviar comentarios</translation>
 <translation id="951991426597076286">Rechazar</translation>

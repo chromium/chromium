@@ -212,6 +212,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1747827819627189109">Skærmtastaturet er aktiveret</translation>
 <translation id="1749109475624620922">Vinduet <ph name="WINDOW_TITLE" /> er tildelt til alle skriveborde</translation>
 <translation id="1750088060796401187">Maks. <ph name="MAX_DESK_LIMIT" /> skriveborde er tilladt. Fjern et skrivebord for at åbne et nyt.</translation>
+<translation id="1755408179247123630">Vil du aktivere Tekstoplæsning?</translation>
 <translation id="1755556344721611131">Appen Diagnostik</translation>
 <translation id="1756833229520115364">Skabelonen kunne ikke gemmes. Der er for mange vinduer eller faner.</translation>
 <translation id="1757857692711134412">Deaktiveret indtil solnedgang</translation>
@@ -951,6 +952,7 @@ Nogle funktioner er begrænset for at forlænge batteritiden.</translation>
 <translation id="4628757576491864469">Enheder</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, antal stjerner <ph name="RATING_SCORE" /></translation>
 <translation id="4633636853437260449">Tryk på Ctrl+W for at slette</translation>
+<translation id="4635501805800894201">{0,plural, =0{Opdater enheden til en tidligere version nu}=1{Opdater enheden til en tidligere version inden for 1 sekund}one{Opdater enheden til en tidligere version inden for # sekund}other{Opdater enheden til en tidligere version inden for # sekunder}}</translation>
 <translation id="4642092649622328492">Tag et delvist screenshot</translation>
 <translation id="4644727592819780893">Området er for småt til kameraet</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, anbefalet app</translation>
@@ -980,6 +982,7 @@ Nogle funktioner er begrænset for at forlænge batteritiden.</translation>
 <translation id="4735944890391795473">Skrivebord 12</translation>
 <translation id="473775607612524610">Opdater</translation>
 <translation id="4740516757091333363">Vil du slette det gemte skrivebord?</translation>
+<translation id="4746798685375253449">{0,plural, =1{Opdater enheden til en tidligere version inden for en dag}one{Opdater enheden til en tidligere version inden for # dag}other{Opdater enheden til en tidligere version inden for # dage}}</translation>
 <translation id="4747410141429390146">Lås op for at se notifikationer</translation>
 <translation id="4752784485658729358">Der er en grænse på maks. 6 gemte skriveborde. Fjern et skrivebord for at gemme et nyt.</translation>
 <translation id="4759238208242260848">Downloads</translation>
@@ -1085,6 +1088,9 @@ Nogle funktioner er begrænset for at forlænge batteritiden.</translation>
 <translation id="5092436659250499817">Slå tastaturets baggrundslys til/fra</translation>
 <translation id="5094577350232361255">om</translation>
 <translation id="5095136268899496849">Tilpas din <ph name="PRODUCT_NAME" /> under Indstillinger. Prøv at ændre din baggrund eller vælge en pauseskærm.</translation>
+<translation id="5096125376090473584">Hvis du vil have tekst læst højt, skal du vælge ikonet for Tekstoplæsning nederst på skærmen og derefter fremhæve teksten.
+
+Du kan også bruge tastaturgenvejen. Fremhæv først tekst, og tryk derefter på <ph name="MODIFIER" /> + s.</translation>
 <translation id="509790653408515442">Når du streamer din telefons apps, vises de her</translation>
 <translation id="5098537242461068432">Skrivebordet og vinduer er genåbnet</translation>
 <translation id="5103975065730779239">Indtil kl. <ph name="END_TIME_EXPRESSION" /></translation>
@@ -1315,6 +1321,7 @@ Ingen enheder er forbundet.</translation>
 <translation id="5916646100036936191">Ny notifikation, <ph name="NOTIFICATION_COUNT" /> i alt</translation>
 <translation id="5916664084637901428">Til</translation>
 <translation id="5920710855273935292">Mikrofonen er slået fra.</translation>
+<translation id="5928083197428724029"><ph name="MANAGER" /> kræver en opdatering</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> er aktiveret.</translation>
 <translation id="5947494881799873997">Fortryd</translation>
 <translation id="595202126637698455">Sporing af ydelsen er aktiveret</translation>
@@ -1432,6 +1439,7 @@ Ingen enheder er forbundet.</translation>
 <translation id="6376931439017688372">Bluetooth er slået til</translation>
 <translation id="6378515133128829137">Fastgør vinduet til højre side</translation>
 <translation id="6381109794406942707">Angiv din pinkode for at låse enheden op.</translation>
+<translation id="6381305031890976705">{0,plural, =1{Opdater enheden til en tidligere version inden for en time}one{Opdater enheden til en tidligere version inden for # time}other{Opdater enheden til en tidligere version inden for # timer}}</translation>
 <translation id="638716340450135524">Aktivér kameraadgang</translation>
 <translation id="639644700271529076">CAPS LOCK er deaktiveret</translation>
 <translation id="6406458002328242616">Rediger timer. <ph name="FOCUS_DURATION" />.</translation>
@@ -1454,6 +1462,7 @@ Ingen enheder er forbundet.</translation>
 <translation id="6459472438155181876">Udvider skærmen til <ph name="DISPLAY_NAME" /></translation>
 <translation id="6464094930452079790">billeder</translation>
 <translation id="6467290994038932560">Aktiveret for <ph name="GAME_APP_NAME" /></translation>
+<translation id="6468406072297048412">{0,plural, =1{Opdater enheden til en tidligere version inden for 1 minut}one{Opdater enheden til en tidligere version inden for # minut}other{Opdater enheden til en tidligere version inden for # minutter}}</translation>
 <translation id="6469104339369989396">Slå hotspot til/fra</translation>
 <translation id="6477681113376365978">Filen kan ikke downloades</translation>
 <translation id="6482559668224714696">Forstørrelse af fuld skærm</translation>
@@ -1577,6 +1586,7 @@ Installeret for nylig</translation>
 <translation id="6917259695595127329">Opgaver blev senest opdateret: <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">Dit chipkort blev ikke genkendt. Prøv igen.</translation>
 <translation id="692135145298539227">slet</translation>
+<translation id="6921427376813842559">Opdater enheden</translation>
 <translation id="6929081673585394903">Vis styringselementer</translation>
 <translation id="6931576957638141829">Gem i</translation>
 <translation id="6942518653766415536">Menu for optagelsesformat</translation>
@@ -1664,6 +1674,7 @@ Installeret for nylig</translation>
 <translation id="7303365578352795231">Besvares på en anden enhed</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Din administrator er ved at nulstille dit eSIM. Dette kan tage et par minutter.</translation>
+<translation id="7312761820869643657">Opdater enheden til en tidligere version</translation>
 <translation id="7313193732017069507">Udvid kameraet</translation>
 <translation id="7330397557116570022">Gå til et tekstfelt for at bruge diktering</translation>
 <translation id="7331646370422660166">Alt + pil ned</translation>
@@ -1813,6 +1824,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">Hvis du vil bruge enheden som gæst, skal du logge ud og derefter vælge Anvend som gæst nederst på skærmen.</translation>
 <translation id="7866482334467279021">til</translation>
+<translation id="7866727328666668290">Senest åbnede fane</translation>
 <translation id="7872786842639831132">Fra</translation>
 <translation id="7875575368831396199">Det ser ud til, at Bluetooth er deaktiveret på din <ph name="DEVICE_TYPE" />. Aktivér Bluetooth for at bruge Telefonstyring.</translation>
 <translation id="7884446017008693258">Indstillinger for hotspot</translation>
@@ -2179,6 +2191,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="925832987464884575">Skjul forhåndsvisninger</translation>
 <translation id="938407504481277932">Aktuelt skrivebord: <ph name="DESK_NAME" /> <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. Skrivebord <ph name="DESK_INDEX" /> af <ph name="DESK_COUNT" />.</translation>
 <translation id="938963181863597773">Hvad har jeg i kalenderen?</translation>
+<translation id="94468042118567862">Enheden er ikke opdateret</translation>
 <translation id="945383118875625837">Træk linket til bogmærkelinjen</translation>
 <translation id="945522503751344254">Send feedback</translation>
 <translation id="951991426597076286">Afvis</translation>

@@ -212,6 +212,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1747827819627189109">Opskerm-sleutelbord geaktiveer</translation>
 <translation id="1749109475624620922">Venster <ph name="WINDOW_TITLE" /> is aan alle lesenaars toegewys</translation>
 <translation id="1750088060796401187">Net <ph name="MAX_DESK_LIMIT" /> lessenaars word toegelaat. Verwyder 'n lessenaar om 'n nuwe een oop te maak.</translation>
+<translation id="1755408179247123630">Skakel Hardoplees aan?</translation>
 <translation id="1755556344721611131">Diagnostiekprogram</translation>
 <translation id="1756833229520115364">Kon nie templaat stoor nie. Te veel vensters of oortjies.</translation>
 <translation id="1757857692711134412">Af tot sonsondergang</translation>
@@ -1086,6 +1087,9 @@ Sommige kenmerke is beperk om die batterylewe te verleng.</translation>
 <translation id="5092436659250499817">Skakel sleutelbordagterlig aan of af</translation>
 <translation id="5094577350232361255">meer oor</translation>
 <translation id="5095136268899496849">Pasmaak en personaliseer jou <ph name="PRODUCT_NAME" /> in Instellings. Probeer jou muurpapier verander of ’n sluimerskerm stel.</translation>
+<translation id="5096125376090473584">Kies die Hardoplees-ikoon aan die onderkant van jou skerm en merk dan die teks om teks hardop gelees te hoor.
+
+Jy kan ook die kortpadsleutels gebruik. Merk eers die teks en druk dan <ph name="MODIFIER" /> + s.</translation>
 <translation id="509790653408515442">Wanneer jy jou foon se programme stroom, sal hulle hier verskyn</translation>
 <translation id="5098537242461068432">Lessenaar en vensters is heropen</translation>
 <translation id="5103975065730779239">Tot <ph name="END_TIME_EXPRESSION" /></translation>
@@ -1814,6 +1818,7 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="7851768487828137624">Kanarie</translation>
 <translation id="7862292329216937261">Om die toestel as ’n gas te gebruik, moet jy afmeld en dan Blaai as ’n Gas onderaan die skerm kies.</translation>
 <translation id="7866482334467279021">aan</translation>
+<translation id="7866727328666668290">Oortjie wat laaste oopgemaak is</translation>
 <translation id="7872786842639831132">Af</translation>
 <translation id="7875575368831396199">Dit lyk of Bluetooth op jou <ph name="DEVICE_TYPE" /> afgeskakel is. Skakel asseblief Bluetooth aan om Foonsentrum te gebruik.</translation>
 <translation id="7884446017008693258">Warmkolinstellings</translation>
