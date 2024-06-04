@@ -496,16 +496,6 @@ void TabbedPaneTabStrip::OnPaintBorder(gfx::Canvas* canvas) {
                    GetColorProvider()->GetColor(ui::kColorTabBorderSelected));
 }
 
-gfx::Size TabbedPaneTabStrip::CalculatePreferredSize(
-    const SizeBounds& available_size) const {
-  if (orientation_ == TabbedPane::Orientation::kHorizontal) {
-    // Should we respect its available space setting in case of horizontal?
-    return View::CalculatePreferredSize({});
-  }
-
-  return View::CalculatePreferredSize(available_size);
-}
-
 BEGIN_METADATA(TabbedPaneTabStrip)
 ADD_READONLY_PROPERTY_METADATA(size_t, SelectedTabIndex)
 ADD_READONLY_PROPERTY_METADATA(TabbedPane::Orientation, Orientation)
@@ -521,8 +511,6 @@ TabbedPane::TabbedPane(TabbedPane::Orientation orientation,
     SetOrientation(views::LayoutOrientation::kVertical);
 
   auto tab_strip = std::make_unique<TabbedPaneTabStrip>(orientation, style);
-  tab_strip->SetProperty(views::kCrossAxisAlignmentKey,
-                         views::LayoutAlignment::kStart);
   if (scrollable) {
     scroll_view_ = AddChildView(
         std::make_unique<ScrollView>(ScrollView::ScrollWithLayers::kEnabled));
