@@ -7,15 +7,19 @@
 
 #include "ui/ozone/platform/drm/gpu/drm_gpu_display_manager.h"
 
+#include <xf86drm.h>
+
 #include "base/files/file_path.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/display_features.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/linux/test/mock_gbm_device.h"
 #include "ui/ozone/platform/drm/common/display_types.h"
 #include "ui/ozone/platform/drm/common/drm_util.h"
+#include "ui/ozone/platform/drm/common/scoped_drm_types.h"
 #include "ui/ozone/platform/drm/gpu/drm_device_manager.h"
 #include "ui/ozone/platform/drm/gpu/drm_display.h"
 #include "ui/ozone/platform/drm/gpu/fake_drm_device.h"
@@ -35,7 +39,11 @@ using ::testing::Exactly;
 using ::testing::Field;
 using ::testing::Gt;
 using ::testing::IsEmpty;
+using ::testing::Pointee;
+using ::testing::Property;
 using ::testing::Return;
+using ::testing::SizeIs;
+using ::testing::UnorderedElementsAre;
 
 // HP z32x monitor.
 constexpr unsigned char kHPz32x[] =
@@ -84,7 +92,7 @@ constexpr unsigned char kNoSerialNumberDisplay[] =
 constexpr size_t kNoSerialNumberDisplayLength =
     std::size(kNoSerialNumberDisplay);
 
-const char kDefaultTestGraphicsCardPattern[] = "/test/dri/card%d";
+constexpr char kDefaultTestGraphicsCardPattern[] = "/test/dri/card%d";
 
 constexpr char kTestOnlyModesetOutcomeOneDisplay[] =
     "ConfigureDisplays.Modeset.Test.OneDisplay.Outcome";
@@ -142,6 +150,26 @@ class MockDrmDeviceGenerator : public DrmDeviceGenerator {
         std::move(path), std::move(gbm_device), is_primary_device);
   }
 };
+
+ScopedDrmPropertyBlob CreateTilePropertyBlob(FakeDrmDevice& drm,
+                                             const TileProperty& property) {
+  // "group_id:tile_is_single_monitor:num_h_tile:num_v_tile:tile_h_loc
+  // :tile_v_loc:tile_h_size:tile_v_size"
+  std::string tile_property_str = base::StringPrintf(
+      "%d:1:%d:%d:%d:%d:%d:%d\0", property.group_id,
+      property.tile_layout.width(), property.tile_layout.height(),
+      property.location.x(), property.location.y(), property.tile_size.width(),
+      property.tile_size.height());
+
+  return drm.CreatePropertyBlob(tile_property_str.data(),
+                                tile_property_str.size());
+}
+
+testing::Matcher<display::DisplayMode> EqResAndRefresh(
+    const ResolutionAndRefreshRate& mode) {
+  return AllOf(Property(&display::DisplayMode::size, Eq(mode.first)),
+               Property(&display::DisplayMode::refresh_rate, Eq(mode.second)));
+}
 
 }  // namespace
 
@@ -1025,6 +1053,122 @@ TEST_F(DrmGpuDisplayManagerGetSeamlessRefreshRateTest,
       drm_gpu_display_manager_->GetSeamlessRefreshRates(wrong_display_id);
 
   ASSERT_FALSE(refresh_rates);
+}
+
+using TiledDisplayGetDisplaysTest = DrmGpuDisplayManagerTest;
+
+TEST_F(TiledDisplayGetDisplaysTest, SingleTile) {
+  auto fake_drm = AddDrmDevice();
+  fake_drm->ResetStateWithAllProperties();
+
+  // Add 1 CRTC
+  fake_drm->AddCrtcWithPrimaryAndCursorPlanes();
+
+  // Add one encoder
+  auto& encoder = fake_drm->AddEncoder();
+  encoder.possible_crtcs = 0b1;
+
+  // Add 1 Connector with a tile blob.
+  auto& connector = fake_drm->AddConnector();
+  connector.connection = true;
+  // One tile, one non-tile modes.
+  connector.modes = std::vector<ResolutionAndRefreshRate>{
+      {gfx::Size(3840, 4320), 60}, {gfx::Size(1920, 1080), 60}};
+  connector.encoders = std::vector<uint32_t>{encoder.id};
+
+  const TileProperty tile_property = {.group_id = 1,
+                                      .tile_size = gfx::Size(3840, 4320),
+                                      .tile_layout = gfx::Size(2, 1),
+                                      .location = gfx::Point(0, 0)};
+  ScopedDrmPropertyBlob tile_property_blob =
+      CreateTilePropertyBlob(*fake_drm, tile_property);
+  fake_drm->AddProperty(
+      connector.id, {.id = kTileBlobPropId, .value = tile_property_blob->id()});
+
+  fake_drm->InitializeState(/* use_atomic */ true);
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(display::features::kTiledDisplaySupport);
+  ASSERT_TRUE(display::features::IsTiledDisplaySupportEnabled());
+
+  MovableDisplaySnapshots displays = drm_gpu_display_manager_->GetDisplays();
+
+  // Expect only one of the tiles to be represented as display with their whole
+  // unmodified modes.
+  ASSERT_THAT(displays, SizeIs(1));
+  EXPECT_THAT(displays[0]->modes(),
+              UnorderedElementsAre(
+                  Pointee(EqResAndRefresh({gfx::Size(3840, 4320), 60})),
+                  Pointee(EqResAndRefresh({gfx::Size(1920, 1080), 60}))));
+}
+
+TEST_F(TiledDisplayGetDisplaysTest, AllTilesPresent) {
+  auto fake_drm = AddDrmDevice();
+  fake_drm->ResetStateWithAllProperties();
+
+  const TileProperty expected_primary_tile_prop = {
+      .group_id = 1,
+      .tile_size = gfx::Size(3840, 4320),
+      .tile_layout = gfx::Size(2, 1),
+      .location = gfx::Point(0, 0)};
+
+  // Primary tile at (0,0)
+  ScopedDrmPropertyBlob primary_tile_property_blob =
+      CreateTilePropertyBlob(*fake_drm, expected_primary_tile_prop);
+  {
+    fake_drm->AddCrtcWithPrimaryAndCursorPlanes();
+
+    auto& primary_encoder = fake_drm->AddEncoder();
+    primary_encoder.possible_crtcs = 0b1;
+
+    auto& primary_connector = fake_drm->AddConnector();
+    primary_connector.connection = true;
+    primary_connector.modes = std::vector<ResolutionAndRefreshRate>{
+        {gfx::Size(3840, 4320), 60}, {gfx::Size(1920, 1080), 60}};
+    primary_connector.encoders = std::vector<uint32_t>{primary_encoder.id};
+    fake_drm->AddProperty(
+        primary_connector.id,
+        {.id = kTileBlobPropId, .value = primary_tile_property_blob->id()});
+  }
+
+  // Non-primary tile at (0,1) - Identical to the primary tile except for tile
+  // location.
+  TileProperty expected_nonprimary_tile_prop = expected_primary_tile_prop;
+  expected_nonprimary_tile_prop.location = gfx::Point(1, 0);
+  ScopedDrmPropertyBlob nonprimary_tile_property_blob =
+      CreateTilePropertyBlob(*fake_drm, expected_nonprimary_tile_prop);
+  {
+    fake_drm->AddCrtcWithPrimaryAndCursorPlanes();
+
+    auto& nonprimary_encoder = fake_drm->AddEncoder();
+    nonprimary_encoder.possible_crtcs = 0b10;
+
+    auto& nonprimary_connector = fake_drm->AddConnector();
+    nonprimary_connector.connection = true;
+    nonprimary_connector.modes = std::vector<ResolutionAndRefreshRate>{
+        {gfx::Size(3840, 4320), 60}, {gfx::Size(1920, 1080), 60}};
+    nonprimary_connector.encoders =
+        std::vector<uint32_t>{nonprimary_encoder.id};
+    fake_drm->AddProperty(
+        nonprimary_connector.id,
+        {.id = kTileBlobPropId, .value = nonprimary_tile_property_blob->id()});
+  }
+
+  fake_drm->InitializeState(/* use_atomic */ true);
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(display::features::kTiledDisplaySupport);
+  ASSERT_TRUE(display::features::IsTiledDisplaySupportEnabled());
+
+  MovableDisplaySnapshots displays = drm_gpu_display_manager_->GetDisplays();
+
+  // Expect only one of the tiles to be represented as display with their whole
+  // unmodified modes.
+  ASSERT_THAT(displays, SizeIs(1));
+  EXPECT_THAT(displays[0]->modes(),
+              UnorderedElementsAre(
+                  Pointee(EqResAndRefresh({gfx::Size(3840, 4320), 60})),
+                  Pointee(EqResAndRefresh({gfx::Size(1920, 1080), 60}))));
 }
 
 }  // namespace ui

@@ -258,6 +258,10 @@ MovableDisplaySnapshots DrmGpuDisplayManager::GetDisplays() {
                                  display_info->connector()->connector_id);
         });
 
+    // Consolidate all display infos that belong to the same tiled display into
+    // one.
+    ConsolidateTiledDisplayInfo(display_infos);
+
     for (auto& display_info : display_infos) {
       display_snapshots.emplace_back(CreateDisplaySnapshot(
           *drm, display_info.get(), static_cast<uint8_t>(device_index)));

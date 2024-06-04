@@ -278,6 +278,7 @@ DrmDisplayHostManager::DrmDisplayHostManager(
   proxy_->AddGpuThreadObserver(this);
 
   auto display_infos = GetAvailableDisplayControllerInfos(*primary_drm_device_);
+  ConsolidateTiledDisplayInfo(display_infos);
   has_dummy_display_ = !display_infos.empty();
   MapEdidIdToDisplaySnapshot edid_id_collision_map;
   for (auto& display_info : display_infos) {

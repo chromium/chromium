@@ -27,10 +27,13 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "ui/base/ui_base_switches.h"
+#include "ui/display/display_features.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/display/types/display_mode.h"
 #include "ui/display/util/display_util.h"
 #include "ui/display/util/edid_parser.h"
 #include "ui/ozone/platform/drm/common/scoped_drm_types.h"
+#include "ui/ozone/platform/drm/common/tile_property.h"
 
 namespace ui {
 
@@ -114,7 +117,8 @@ float GetRefreshRate(const drmModeModeInfo& mode) {
   return (clock * 1000.0f) / (htotal * vtotal);
 }
 
-display::DisplayConnectionType GetDisplayType(drmModeConnector* connector) {
+display::DisplayConnectionType GetDisplayConnectionType(
+    drmModeConnector* connector) {
   switch (connector->connector_type) {
     case DRM_MODE_CONNECTOR_VGA:
       return display::DISPLAY_CONNECTION_TYPE_VGA;
@@ -255,6 +259,22 @@ bool IsAspectPreserving(const DrmWrapper& drm, drmModeConnector* connector) {
           "Full aspect");
 }
 
+std::optional<TileProperty> GetTileProperty(const DrmWrapper& drm,
+                                            drmModeConnector* connector) {
+  const ScopedDrmPropertyBlobPtr tile_blob =
+      drm.GetPropertyBlob(connector, "TILE");
+  if (!tile_blob) {
+    return std::nullopt;
+  }
+
+  std::optional<TileProperty> tile_property = ParseTileBlob(*tile_blob);
+  if (!tile_property.has_value()) {
+    return std::nullopt;
+  }
+
+  return tile_property;
+}
+
 display::PanelOrientation GetPanelOrientation(const DrmWrapper& drm,
                                               drmModeConnector* connector) {
   ScopedDrmPropertyPtr property;
@@ -282,6 +302,31 @@ std::optional<std::string> ReadFileAndTrim(const base::FilePath& path) {
 
   return std::string(
       base::TrimWhitespaceASCII(data, base::TrimPositions::TRIM_ALL));
+}
+
+std::unique_ptr<HardwareDisplayControllerInfo> GetPrimaryTileInfo(
+    HardwareDisplayControllerInfoList&& tiled_infos) {
+  if (tiled_infos.empty()) {
+    return nullptr;
+  }
+
+  // TODO(b/324236939): Implement an actual primary tile selection logic.
+  // As a placeholder, return the controller that is closest to the origin
+  // (0,0).
+  std::unique_ptr<HardwareDisplayControllerInfo> tile_closest_to_origin =
+      std::move(tiled_infos.front());
+  gfx::Point lowest_location =
+      tile_closest_to_origin->tile_property()->location;
+  for (size_t i = 1; i < tiled_infos.size(); i++) {
+    auto tiled_info = std::move(tiled_infos[i]);
+    const gfx::Point& tile_location = tiled_info->tile_property()->location;
+    if (tile_location < lowest_location) {
+      lowest_location = tile_location;
+      tile_closest_to_origin = std::move(tiled_info);
+    }
+  }
+
+  return tile_closest_to_origin;
 }
 }  // namespace
 
@@ -358,8 +403,12 @@ display::VariableRefreshRateState GetVariableRefreshRateState(
 HardwareDisplayControllerInfo::HardwareDisplayControllerInfo(
     ScopedDrmConnectorPtr connector,
     ScopedDrmCrtcPtr crtc,
-    uint8_t index)
-    : connector_(std::move(connector)), crtc_(std::move(crtc)), index_(index) {}
+    uint8_t index,
+    std::optional<TileProperty> tile_property)
+    : connector_(std::move(connector)),
+      crtc_(std::move(crtc)),
+      index_(index),
+      tile_property_(std::move(tile_property)) {}
 
 HardwareDisplayControllerInfo::~HardwareDisplayControllerInfo() = default;
 
@@ -443,13 +492,20 @@ GetDisplayInfosAndInvalidCrtcs(const DrmWrapper& drm) {
       invalid_crtcs.push_back((connected_crtc));
 
     ScopedDrmCrtcPtr crtc = drm.GetCrtc(best_crtc);
-    auto iter = base::ranges::find(connectors, c, &ScopedDrmConnectorPtr::get);
-    DCHECK(iter != connectors.end());
+    auto connector_iter =
+        base::ranges::find(connectors, c, &ScopedDrmConnectorPtr::get);
+    DCHECK(connector_iter != connectors.end());
     // |connectors.size()| <= 256, so |index| should be between 0-255.
-    const uint8_t index = iter - connectors.begin();
+    const uint8_t index = connector_iter - connectors.begin();
     DCHECK_LT(index, connectors.size());
+
+    std::optional<TileProperty> tile_property;
+    if (display::features::IsTiledDisplaySupportEnabled()) {
+      tile_property = GetTileProperty(drm, connector_iter->get());
+    }
+
     displays.push_back(std::make_unique<HardwareDisplayControllerInfo>(
-        std::move(*iter), std::move(crtc), index));
+        std::move(*connector_iter), std::move(crtc), index, tile_property));
   }
 
   return std::make_pair(std::move(displays), std::move(invalid_crtcs));
@@ -567,7 +623,8 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
       display::ConnectorIndex16(device_index, info->index());
   const gfx::Size physical_size =
       gfx::Size(info->connector()->mmWidth, info->connector()->mmHeight);
-  const display::DisplayConnectionType type = GetDisplayType(info->connector());
+  const display::DisplayConnectionType type =
+      GetDisplayConnectionType(info->connector());
   uint64_t base_connector_id = 0u;
   std::vector<uint64_t> path_topology = GetPathTopology(drm, info->connector());
   if (!path_topology.empty()) {
@@ -771,6 +828,68 @@ std::vector<uint64_t> ParsePathBlob(const drmModePropertyBlobRes& path_blob) {
   return path;
 }
 
+// Parses tiled display properties from the TILE connector property
+// |tile_blob|. TileProperty::scale_to_fit_display is not populated here as this
+// information is not available in the TILE blob. Tile property blob is encoded
+// as:
+// "group_id:tile_is_single_monitor:num_h_tile:num_v_tile:tile_h_loc:tile_v_loc
+//  :tile_h_size:tile_v_size"
+// e.g. 313a313a323a313a303a303a323536303a3238383000 == 1:1:2:1:0:0:2560:2880
+// tile_is_single_monitor is not used as all tiles in a single group are to be
+// treated as a single monitor for simplicity.
+std::optional<TileProperty> ParseTileBlob(
+    const drmModePropertyBlobRes& tile_blob) {
+  if (!tile_blob.length) {
+    LOG(ERROR) << "TILE property blob is empty.";
+    return std::nullopt;
+  }
+
+  const std::string tile_str(
+      static_cast<char*>(tile_blob.data),
+      base::strict_cast<std::string::size_type>(tile_blob.length));
+  base::StringPiece tile_string_piece(tile_str);
+  tile_string_piece = base::TrimString(tile_string_piece, std::string("\0", 1u),
+                                       base::TRIM_TRAILING);
+
+  std::vector<base::StringPiece> tile_properties = base::SplitStringPiece(
+      tile_string_piece, ":", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+
+  if (tile_properties.size() != 8) {
+    LOG(ERROR) << "Some of the values in the TILE property are missing. "
+                  "Expected 8, got "
+               << tile_properties.size() << ". TILE blob: " << tile_str;
+    return std::nullopt;
+  }
+
+  TileProperty tile_property;
+  int num_tiles_horiz, num_tiles_vert, tile_loc_horiz, tile_loc_vert,
+      tile_size_horiz, tile_size_vert;
+  std::vector<std::pair<size_t /*tile properties index*/, int*>>
+      tile_properties_ptrs = {{0, &tile_property.group_id},
+                              // Skip {1, tile_is_single_monitor}
+                              {2, &num_tiles_horiz},
+                              {3, &num_tiles_vert},
+                              {4, &tile_loc_horiz},
+                              {5, &tile_loc_vert},
+                              {6, &tile_size_horiz},
+                              {7, &tile_size_vert}};
+
+  for (auto& [index, property_ptr] : tile_properties_ptrs) {
+    if (!base::StringToInt(tile_properties[index], property_ptr)) {
+      LOG(ERROR) << "Could not convert string \"" << tile_properties[index]
+                 << "\" at index #" << index
+                 << " of the TILE property to an int. TILE blob: " << tile_str;
+      return std::nullopt;
+    }
+  }
+
+  tile_property.tile_size.SetSize(tile_size_horiz, tile_size_vert);
+  tile_property.tile_layout.SetSize(num_tiles_horiz, num_tiles_vert);
+  tile_property.location.SetPoint(tile_loc_horiz, tile_loc_vert);
+
+  return tile_property;
+}
+
 bool IsAddfb2ModifierCapable(const DrmWrapper& drm) {
   uint64_t addfb2_mod_cap = 0;
   return drm.GetCapability(DRM_CAP_ADDFB2_MODIFIERS, &addfb2_mod_cap) &&
@@ -831,6 +950,32 @@ std::vector<const char*> GetPreferredDrmDrivers() {
 
   // Default order.
   return {"i915", "amdgpu", "virtio_gpu"};
+}
+
+void ConsolidateTiledDisplayInfo(
+    HardwareDisplayControllerInfoList& display_infos) {
+  // Ignore all non-tiled displays, group all tile displays into |tile_groups|
+  // by tile group IDs.
+  HardwareDisplayControllerInfoList nontiled_display_infos;
+  std::unordered_map<int /*tile_group_id*/, HardwareDisplayControllerInfoList>
+      tile_groups;
+  for (auto& info : display_infos) {
+    const std::optional<TileProperty>& tile_property = info->tile_property();
+    if (tile_property.has_value()) {
+      tile_groups[tile_property->group_id].push_back(std::move(info));
+    } else {
+      nontiled_display_infos.push_back(std::move(info));
+    }
+  }
+  display_infos = std::move(nontiled_display_infos);
+
+  // For each tile display group, determine the primary tile and drop others in
+  // the group.
+  for (auto& tile_group : tile_groups) {
+    std::unique_ptr<HardwareDisplayControllerInfo> primary_tile_info =
+        GetPrimaryTileInfo(std::move(tile_group.second));
+    display_infos.push_back(std::move(primary_tile_info));
+  }
 }
 
 }  // namespace ui

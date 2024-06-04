@@ -58,6 +58,10 @@ const std::map<uint32_t, std::string> kConnectorRequiredPropertyNames = {
     {kEdidBlobPropId, "EDID"},
 };
 
+const std::map<uint32_t, std::string> kConnectorOptionalPropertyNames = {
+    {kTileBlobPropId, "TILE"},
+};
+
 const std::map<uint32_t, std::string> kPlaneRequiredPropertyNames = {
     // Add all required properties.
     {kPlaneCrtcId, "CRTC_ID"},
@@ -174,6 +178,8 @@ void FakeDrmDevice::ResetStateWithAllProperties() {
   // tests will append the property to the planes on a case-by-case basis.
   drm_state_.property_names.insert(kCrtcOptionalPropertyNames.begin(),
                                    kCrtcOptionalPropertyNames.end());
+  drm_state_.property_names.insert(kConnectorOptionalPropertyNames.begin(),
+                                   kConnectorOptionalPropertyNames.end());
 }
 
 FakeDrmDevice::FakeDrmState& FakeDrmDevice::ResetStateWithDefaultObjects(

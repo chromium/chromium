@@ -23,6 +23,7 @@ source_set("gbm") {
     "common/drm_wrapper.h",
     "common/scoped_drm_types.cc",
     "common/scoped_drm_types.h",
+    "common/tile_property.h",
     "gpu/crtc_commit_request.cc",
     "gpu/crtc_commit_request.h",
     "gpu/crtc_controller.cc",
