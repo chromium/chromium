@@ -230,13 +230,6 @@ AX_BASE_EXPORT bool IsPdfOcrEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnything);
 AX_BASE_EXPORT bool IsReadAnythingEnabled();
 
-// Delay showing the side panel until content has loaded. This is being
-// separated out behind a separate flag to better verify that latency issues
-// introduced by the switch to the WebUI toolbar aren't related to delaying
-// loading the side panel.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingDelaySidePanelLoad);
-AX_BASE_EXPORT bool IsReadAnythingDelaySidePanelLoadEnabled();
-
 // Make the Read Anything Side Panel local (don't persist when opening a new
 // tab)
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingLocalSidePanel);

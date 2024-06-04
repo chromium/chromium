@@ -204,19 +204,11 @@ void ReadAnythingUntrustedUI::CreateUntrustedPageHandler(
   read_anything_untrusted_page_handler_ =
       std::make_unique<ReadAnythingUntrustedPageHandler>(
           std::move(page), std::move(receiver), web_ui());
-
-  if (!features::IsReadAnythingDelaySidePanelLoadEnabled()) {
-    if (embedder()) {
-      embedder()->ShowUI();
-    }
-  }
 }
 
 void ReadAnythingUntrustedUI::ShouldShowUI() {
   // Show the UI after the Side Panel content has loaded.
-  if (features::IsReadAnythingDelaySidePanelLoadEnabled()) {
-    if (embedder()) {
-      embedder()->ShowUI();
-    }
+  if (embedder()) {
+    embedder()->ShowUI();
   }
 }

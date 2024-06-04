@@ -84,6 +84,12 @@
       },
     ],
   };
+  // When setting content for testing, the loading screen can interfere with
+  // showing the ui. If the loading screen is currently shown when we try
+  // to handle selection, the promise will never resolve and the test will
+  // timeout. Since this particular test is not testing the loading screen,
+  // just don't show the loading screen in the test to reduce flakiness.
+  readAnythingApp.showLoading = () => {};
   setOnSelectionChangeForTest();
   chrome.readingMode.setContentForTesting(axTree, [1]);
   const expected = '<div>HelloWorldFriend</div>';
