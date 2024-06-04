@@ -206,7 +206,7 @@ PinnedNotificationView::PinnedNotificationView(
       secondary_button_ = buttons_container->AddChildView(
           IconButton::Builder()
               .SetViewId(VIEW_ID_PINNED_NOTIFICATION_SECONDARY_ICON_BUTTON)
-              .SetType(IconButton::Type::kSmall)
+              .SetType(IconButton::Type::kMedium)
               .SetBackgroundColor(cros_tokens::kCrosSysSystemOnBase1)
               .SetVectorIcon(notification.buttons()[0].vector_icon)
               .SetAccessibleName(notification.buttons()[0].accessible_name)
@@ -226,7 +226,7 @@ PinnedNotificationView::PinnedNotificationView(
     primary_icon_button_ = buttons_container->AddChildView(
         IconButton::Builder()
             .SetViewId(VIEW_ID_PINNED_NOTIFICATION_PRIMARY_ICON_BUTTON)
-            .SetType(IconButton::Type::kSmall)
+            .SetType(IconButton::Type::kMedium)
             .SetBackgroundColor(cros_tokens::kCrosSysHighlightShape)
             .SetVectorIcon(primary_button.vector_icon)
             .SetAccessibleName(primary_button.accessible_name)
