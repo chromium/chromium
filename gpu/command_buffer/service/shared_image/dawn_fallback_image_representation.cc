@@ -12,6 +12,7 @@
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
 namespace gpu {
@@ -313,15 +314,21 @@ wgpu::Texture DawnFallbackImageRepresentation::BeginAccess(
   texture_descriptor.viewFormatCount = view_formats_.size();
   texture_descriptor.viewFormats = view_formats_.data();
 
-  // We need to have internal usages of CopySrc & CopyDst for copies. If texture
-  // is not for video frame import, we also need RenderAttachment usage for
-  // clears, and TextureBinding for copyTextureForBrowser.
   wgpu::DawnTextureInternalUsageDescriptor internalDesc;
-  internalDesc.internalUsage = wgpu::TextureUsage::CopySrc |
-                               wgpu::TextureUsage::CopyDst |
-                               wgpu::TextureUsage::TextureBinding;
-  if (wgpu_format_ != wgpu::TextureFormat::R8BG8Biplanar420Unorm) {
-    internalDesc.internalUsage |= wgpu::TextureUsage::RenderAttachment;
+  if (base::FeatureList::IsEnabled(
+          features::kDawnSIRepsUseClientProvidedInternalUsages)) {
+    internalDesc.internalUsage = internal_usage;
+  } else {
+    // We need to have internal usages of CopySrc & CopyDst for copies. If
+    // texture is not for video frame import, we also need RenderAttachment
+    // usage for clears, and TextureBinding for copyTextureForBrowser.
+    internalDesc.internalUsage = wgpu::TextureUsage::CopySrc |
+                                 wgpu::TextureUsage::CopyDst |
+                                 wgpu::TextureUsage::TextureBinding;
+
+    if (wgpu_format_ != wgpu::TextureFormat::R8BG8Biplanar420Unorm) {
+      internalDesc.internalUsage |= wgpu::TextureUsage::RenderAttachment;
+    }
   }
 
   texture_descriptor.nextInChain = &internalDesc;

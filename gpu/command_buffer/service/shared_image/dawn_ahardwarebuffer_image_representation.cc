@@ -7,6 +7,7 @@
 #include <dawn/native/VulkanBackend.h>
 
 #include "base/logging.h"
+#include "gpu/config/gpu_finch_features.h"
 
 namespace gpu {
 
@@ -54,12 +55,18 @@ wgpu::Texture DawnAHardwareBufferImageRepresentation::BeginAccess(
     return nullptr;
   }
 
-  // We need to have internal usages of CopySrc for copies,
-  // RenderAttachment for clears, and TextureBinding for copyTextureForBrowser.
   wgpu::DawnTextureInternalUsageDescriptor internalDesc;
-  internalDesc.internalUsage = wgpu::TextureUsage::CopySrc |
-                               wgpu::TextureUsage::RenderAttachment |
-                               wgpu::TextureUsage::TextureBinding;
+  if (base::FeatureList::IsEnabled(
+          features::kDawnSIRepsUseClientProvidedInternalUsages)) {
+    internalDesc.internalUsage = internal_usage;
+  } else {
+    // We need to have internal usages of CopySrc for copies,
+    // RenderAttachment for clears, and TextureBinding for
+    // copyTextureForBrowser.
+    internalDesc.internalUsage = wgpu::TextureUsage::CopySrc |
+                                 wgpu::TextureUsage::RenderAttachment |
+                                 wgpu::TextureUsage::TextureBinding;
+  }
 
   texture_descriptor.nextInChain = &internalDesc;
 

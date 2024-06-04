@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/posix/eintr_wrapper.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "gpu/vulkan/vulkan_image.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/MutableTextureState.h"
@@ -60,12 +61,19 @@ wgpu::Texture ExternalVkImageDawnImageRepresentation::BeginAccess(
   texture_descriptor.viewFormatCount = view_formats_.size();
   texture_descriptor.viewFormats = view_formats_.data();
 
-  // We need to have internal usages of CopySrc for copies,
-  // RenderAttachment for clears, and TextureBinding for copyTextureForBrowser.
   wgpu::DawnTextureInternalUsageDescriptor internalDesc;
-  internalDesc.internalUsage = wgpu::TextureUsage::CopySrc |
-                               wgpu::TextureUsage::RenderAttachment |
-                               wgpu::TextureUsage::TextureBinding;
+  if (base::FeatureList::IsEnabled(
+          features::kDawnSIRepsUseClientProvidedInternalUsages)) {
+    internalDesc.internalUsage = internal_usage;
+  } else {
+    // We need to have internal usages of CopySrc for copies,
+    // RenderAttachment for clears, and TextureBinding for
+    // copyTextureForBrowser.
+    internalDesc.internalUsage = wgpu::TextureUsage::CopySrc |
+                                 wgpu::TextureUsage::RenderAttachment |
+                                 wgpu::TextureUsage::TextureBinding;
+  }
+
   texture_descriptor.nextInChain = &internalDesc;
 
   dawn::native::vulkan::ExternalImageDescriptorOpaqueFD descriptor = {};
