@@ -3015,6 +3015,11 @@ const char kRenderDocumentName[] = "Enable RenderDocument";
 const char kRenderDocumentDescription[] =
     "Enable swapping RenderFrameHosts on same-site navigations";
 
+const char kRelatedWebsiteSetsDevUIName[] = "Related Website Sets Dev UI";
+const char kRelatedWebsiteSetsDevUIDescription[] =
+    "Enables the chrome://privacy-sandbox-internals/related-website-sets page. "
+    "Relies on privacy-sandbox-internals also being enabled.";
+
 const char kQuicName[] = "Experimental QUIC protocol";
 const char kQuicDescription[] = "Enable experimental QUIC protocol support.";
 

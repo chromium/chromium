@@ -163,6 +163,10 @@ BASE_FEATURE(kPrivacySandboxInternalsDevUI,
              "PrivacySandboxInternalsDevUI",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kRelatedWebsiteSetsDevUI,
+             "RelatedWebsiteSetsDevUI",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kFingerprintingProtectionSetting,
              "FingerprintingProtectionSetting",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -195,6 +195,11 @@ BASE_DECLARE_FEATURE(kPrivateAggregationDebugReportingCookieDeprecationTesting);
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kPrivacySandboxInternalsDevUI);
 
+// Enables chrome://privacy-sandbox-internals/related-website-internals DevUI
+// page. Relies on PrivacySandboxInternalsDevUI also being enabled.
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+BASE_DECLARE_FEATURE(kRelatedWebsiteSetsDevUI);
+
 // Enables fingerprinting protection setting behavior.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kFingerprintingProtectionSetting);
