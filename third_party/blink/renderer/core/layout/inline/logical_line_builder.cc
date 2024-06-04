@@ -430,9 +430,8 @@ InlineBoxState* LogicalLineBuilder::PlaceRubyColumn(
   bool on_end_edge = false;
   if (RuntimeEnabledFeatures::RubyLineEdgeAlignmentEnabled() &&
       !node_.IsBidiEnabled()) {
-    on_start_edge =
-        ruby_column.base_line.StartOffset() == line_info.StartOffset() ||
-        item_result.StartOffset() == line_info.StartOffset();
+    on_start_edge = ruby_column.base_line.InflowStartOffset() ==
+                    line_info.InflowStartOffset();
     wtf_size_t end_text_offset = ruby_column.base_line.EndTextOffset();
     wtf_size_t inflow_end = line_info.InflowEndOffsetWithoutForcedBreak();
     on_end_edge = end_text_offset == inflow_end;

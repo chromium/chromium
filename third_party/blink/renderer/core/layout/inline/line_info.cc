@@ -173,6 +173,25 @@ bool LineInfo::ComputeNeedsAccurateEndPosition() const {
   return false;
 }
 
+unsigned LineInfo::InflowStartOffset() const {
+  for (const auto& item_result : Results()) {
+    const InlineItem& item = *item_result.item;
+    if ((item.Type() == InlineItem::kText ||
+         item.Type() == InlineItem::kControl ||
+         item.Type() == InlineItem::kAtomicInline) &&
+        item.Length() > 0) {
+      return item_result.StartOffset();
+    } else if (item_result.IsRubyColumn()) {
+      const LineInfo& base_line = item_result.ruby_column->base_line;
+      unsigned start_offset = base_line.InflowStartOffset();
+      if (start_offset != base_line.EndTextOffset()) {
+        return start_offset;
+      }
+    }
+  }
+  return EndTextOffset();
+}
+
 InlineItemTextIndex LineInfo::End() const {
   if (GetBreakToken()) {
     return GetBreakToken()->Start();

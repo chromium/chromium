@@ -185,6 +185,13 @@ class CORE_EXPORT LineInfo {
   const InlineItemTextIndex& Start() const { return start_; }
   unsigned StartOffset() const { return start_.text_offset; }
   void SetStart(const InlineItemTextIndex& index) { start_ = index; }
+
+  // Start text offset of this line, excluding out-of-flow objects, and
+  // zero-length items.
+  // Returns EndTextOffset() if the line is empty or all item results are
+  // excluded.
+  unsigned InflowStartOffset() const;
+
   // End offset of this line. This is the same as the start offset of the next
   // line, or the end of block if this is the last line.
   InlineItemTextIndex End() const;
