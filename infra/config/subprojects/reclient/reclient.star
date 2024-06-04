@@ -92,8 +92,6 @@ def fyi_reclient_staging_builder(
         "GOMA_DEPS_CACHE_TABLE_THRESHOLD": "40000",
         "RBE_fast_log_collection": "true",
         "RBE_use_unified_uploads": "true",
-        # TODO(b/297350970): remove once fully rolled out.
-        "RBE_use_round_robin_balancer": "true",
     })
 
     reclient_rewrapper_env = kwargs.pop("reclient_rewrapper_env", {})
