@@ -15,6 +15,7 @@
 #include "components/site_isolation/features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/content_mock_cert_verifier.h"
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -38,8 +39,25 @@ class LoginDetectionBrowserTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     https_test_server_.ServeFilesFromSourceDirectory("chrome/test/data");
+    host_resolver()->AddRule("*", "127.0.0.1");
+    cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
     ASSERT_TRUE(https_test_server_.Start());
     histogram_tester_ = std::make_unique<base::HistogramTester>();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpCommandLine(command_line);
+    cert_verifier_.SetUpCommandLine(command_line);
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
+    cert_verifier_.SetUpInProcessBrowserTestFixture();
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    cert_verifier_.TearDownInProcessBrowserTestFixture();
+    InProcessBrowserTest::TearDownInProcessBrowserTestFixture();
   }
 
   void ResetHistogramTester() {
@@ -61,23 +79,29 @@ class LoginDetectionBrowserTest : public InProcessBrowserTest {
                                           expected_bucket_count);
   }
 
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
  protected:
   net::EmbeddedTestServer https_test_server_;
+  content::ContentMockCertVerifier cert_verifier_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(LoginDetectionBrowserTest, PopUpBasedOAuthLoginFlow) {
   // Navigate to the OAuth requestor.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), https_test_server_.GetURL("www.foo.com", "/title1.html")));
+  ASSERT_TRUE(content::NavigateToURL(
+      GetWebContents(),
+      https_test_server_.GetURL("www.foo.com", "/title1.html")));
   ExpectLoginDetectionTypeMetric(LoginDetectionType::kNoLogin);
   ResetHistogramTester();
 
   // Create a popup for the navigation flow.
   content::WebContentsAddedObserver web_contents_added_observer;
   ASSERT_TRUE(content::ExecJs(
-      browser()->tab_strip_model()->GetActiveWebContents(),
+      GetWebContents(),
       content::JsReplace(
           "window.open($1, 'oauth_window', 'width=10,height=10');",
           https_test_server_.GetURL("www.oauthprovider.com",
@@ -85,6 +109,7 @@ IN_PROC_BROWSER_TEST_F(LoginDetectionBrowserTest, PopUpBasedOAuthLoginFlow) {
   auto* popup_contents = web_contents_added_observer.GetWebContents();
   content::TestNavigationObserver observer(popup_contents);
   observer.WaitForNavigationFinished();
+  EXPECT_TRUE(observer.last_navigation_succeeded());
   // This popup navigation is treated as not logged-in too.
   ExpectLoginDetectionTypeMetric(LoginDetectionType::kNoLogin);
   ResetHistogramTester();
@@ -117,16 +142,12 @@ class LoginDetectionPrerenderBrowserTest : public LoginDetectionBrowserTest {
   }
 
   void SetUpOnMainThread() override {
-    host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
+    LoginDetectionBrowserTest::SetUpOnMainThread();
   }
 
   content::test::PrerenderTestHelper& prerender_test_helper() {
     return *prerender_helper_;
-  }
-
-  content::WebContents* GetWebContents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
  private:
@@ -137,7 +158,7 @@ IN_PROC_BROWSER_TEST_F(LoginDetectionPrerenderBrowserTest,
                        PrerenderingShouldNotRecordLoginDetectionMetrics) {
   GURL initial_url = embedded_test_server()->GetURL("/empty.html");
   GURL prerender_url = embedded_test_server()->GetURL("/title1.html");
-  ASSERT_NE(ui_test_utils::NavigateToURL(browser(), initial_url), nullptr);
+  ASSERT_TRUE(content::NavigateToURL(GetWebContents(), initial_url));
   ResetHistogramTester();
 
   const int host_id = prerender_test_helper().AddPrerender(prerender_url);
@@ -161,13 +182,8 @@ class LoginDetectionFencedFrameBrowserTest : public LoginDetectionBrowserTest {
   ~LoginDetectionFencedFrameBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
-    host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
     LoginDetectionBrowserTest::SetUpOnMainThread();
-  }
-
-  content::WebContents* GetWebContents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
   content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
@@ -181,7 +197,7 @@ class LoginDetectionFencedFrameBrowserTest : public LoginDetectionBrowserTest {
 IN_PROC_BROWSER_TEST_F(LoginDetectionFencedFrameBrowserTest,
                        FencedFrameShouldNotRecordLoginDetectionMetrics) {
   GURL initial_url = embedded_test_server()->GetURL("/empty.html");
-  ASSERT_NE(ui_test_utils::NavigateToURL(browser(), initial_url), nullptr);
+  ASSERT_TRUE(content::NavigateToURL(GetWebContents(), initial_url));
   ResetHistogramTester();
 
   // Create a fenced frame to ensure that it doesn't record the login detection
