@@ -69,6 +69,15 @@ public class AccountManagerTestRule implements TestRule {
                     .accountImage(createAvatar())
                     .build();
 
+    public static final AccountInfo TEST_NON_GMAIL_ACCOUNT =
+            new AccountInfo.Builder(
+                            "test@nongmail.com",
+                            FakeAccountManagerFacade.toGaiaId("test@nongmail.com"))
+                    .fullName("Test Non Gmail Full")
+                    .givenName("Test Non Gmail Given")
+                    .accountImage(createAvatar())
+                    .build();
+
     public static final AccountInfo TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL =
             new AccountInfo.Builder(
                             generateChildEmail("test@gmail.com"),

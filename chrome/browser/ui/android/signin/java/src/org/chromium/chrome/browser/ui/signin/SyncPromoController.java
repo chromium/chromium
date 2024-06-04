@@ -411,10 +411,12 @@ public class SyncPromoController {
                 visibleAccountPromise.isFulfilled() ? visibleAccountPromise.getResult() : null;
         if (accountInfo == null) return false;
 
-        return accountInfo
-                        .getAccountCapabilities()
-                        .canShowHistorySyncOptInsWithoutMinorModeRestrictions()
-                == Tribool.TRUE;
+        return ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+                || accountInfo
+                                .getAccountCapabilities()
+                                .canShowHistorySyncOptInsWithoutMinorModeRestrictions()
+                        == Tribool.TRUE;
     }
 
     private boolean canShowBookmarkPromo() {
