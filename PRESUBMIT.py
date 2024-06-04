@@ -1989,7 +1989,11 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       pattern = (
         r'/FindBrowserWithUiElementContext|'
         r'FindBrowserWithTab|'
-        r'FindBrowserWithGroup'
+        r'FindBrowserWithGroup|'
+        r'FindTabbedBrowser|'
+        r'FindAnyBrowser|'
+        r'FindBrowserWithProfile|'
+        r'FindBrowserWithActiveWindow'
       ),
       explanation = (
         'Most code should already be scoped to a Browser. Pass in a Browser* '

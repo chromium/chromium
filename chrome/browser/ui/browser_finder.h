@@ -61,17 +61,20 @@ namespace chrome {
 // in the corresponding display may be returned. If `ignore_closing_browsers` is
 // false, browsers that are in the closing state (i.e. browsers registered in
 // `BrowserList::currently_closing_browsers_`) may be returned.
+// WARNING: Do not use this method. See comment at top of file.
 Browser* FindTabbedBrowser(Profile* profile,
                            bool match_original_profiles,
                            int64_t display_id = display::kInvalidDisplayId,
                            bool ignore_closing_browsers = false);
 
 // Returns an existing browser window of any kind.
+// WARNING: Do not use this method. See comment at top of file.
 Browser* FindAnyBrowser(Profile* profile, bool match_original_profiles);
 
 // Returns an existing browser window with the provided profile. Searches in the
 // order of last activation. Only browsers that have been active can be
 // returned. Returns nullptr if no such browser currently exists.
+// WARNING: Do not use this method. See comment at top of file.
 Browser* FindBrowserWithProfile(Profile* profile);
 
 // Returns all tabbed browsers with the provided profile. Returns an empty
@@ -92,6 +95,7 @@ Browser* FindBrowserWithWindow(gfx::NativeWindow window);
 
 // Returns the browser with the currently active window. Returns nullptr if no
 // such browser currently exists.
+// WARNING: Do not use this method. See comment at top of file.
 Browser* FindBrowserWithActiveWindow();
 
 // Returns the browser containing the specified `web_contents` as a tab in that
