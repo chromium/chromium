@@ -56,8 +56,12 @@ class PlusAddressCreationDialogDelegate : public views::BubbleDialogDelegate,
   void HandleButtonPress(PlusAddressViewButtonType type);
 
  private:
-  // Set the modal dialog to show error messages.
+  // Updates the modal dialog to show error messages.
   void ShowErrorStateUI();
+
+  // Updates `plus_address_label_` to indicate that a new address is loading,
+  // disables `confirm_button_` and informs the controller.
+  void OnRefreshClicked();
 
   base::WeakPtr<PlusAddressCreationController> controller_;
   raw_ptr<content::WebContents> web_contents_;

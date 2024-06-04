@@ -343,6 +343,9 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogInteractiveTest,
           WaitForViewProperty(
               PlusAddressCreationView::kPlusAddressSuggestedEmailElementId,
               views::Label, Text, kFakePlusAddressRefreshU16),
+          WaitForViewProperty(
+              PlusAddressCreationView::kPlusAddressConfirmButtonElementId,
+              views::View, Enabled, true),
           // Simulate confirming plus address.
           PressButton(
               PlusAddressCreationView::kPlusAddressConfirmButtonElementId),

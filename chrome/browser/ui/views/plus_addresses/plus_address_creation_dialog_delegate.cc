@@ -281,17 +281,10 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
 
   // The refresh button.
   if (offer_refresh) {
-    refresh_button_ =
-        label_container->AddChildView(views::CreateVectorImageButton(
-            base::BindRepeating(
-                [](views::Label& label) {
-                  label.SetText(l10n_util::GetStringUTF16(
-                      IDS_PLUS_ADDRESS_MODEL_REFRESH_TEMPORARY_LABEL_CONTENT));
-                },
-                std::ref(*plus_address_label_))
-                .Then(base::BindRepeating(
-                    &PlusAddressCreationController::OnRefreshClicked,
-                    controller_))));
+    refresh_button_ = label_container->AddChildView(
+        views::CreateVectorImageButton(base::BindRepeating(
+            &PlusAddressCreationDialogDelegate::OnRefreshClicked,
+            base::Unretained(this))));
     views::SetImageFromVectorIconWithColorId(refresh_button_,
                                              vector_icons::kReloadIcon,
                                              ui::kColorIcon, ui::kColorIcon);
@@ -500,6 +493,13 @@ void PlusAddressCreationDialogDelegate::ShowErrorStateUI() {
       web_modal::WebContentsModalDialogManager::FromWebContents(web_contents_)
           ->delegate()
           ->GetWebContentsModalDialogHost());
+}
+
+void PlusAddressCreationDialogDelegate::OnRefreshClicked() {
+  plus_address_label_->SetText(l10n_util::GetStringUTF16(
+      IDS_PLUS_ADDRESS_MODEL_REFRESH_TEMPORARY_LABEL_CONTENT));
+  confirm_button_->SetEnabled(false);
+  controller_->OnRefreshClicked();
 }
 
 }  // namespace plus_addresses
