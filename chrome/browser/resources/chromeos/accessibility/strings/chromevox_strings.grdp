@@ -2144,7 +2144,7 @@
     To open the Chrome browser menu, press Alt+F.
   </message>
   <message desc="Part of the ChromeVox tutorial, explains a keyboard shortcut to press on Chromebook keyboards" name="IDS_CHROMEVOX_TUTORIAL_CHROMEBOOK_CTRL_FORWARD">
-    To jump to other parts of the screen, like toolbars or the system tray, press Control+Forward. On a Chromebook, the Forward key is immediately above the number 2 key.
+    To jump to other parts of the screen, like toolbars or the system tray, press Control+F1. F1 is the first key to the right of the escape key.
   </message>
   <message desc="Heading for a section of the ChromeVox tutorial where the user can learn more" name="IDS_CHROMEVOX_TUTORIAL_LEARN_MORE_HEADING">
     Learn More
