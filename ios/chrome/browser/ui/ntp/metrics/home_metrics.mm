@@ -57,7 +57,7 @@ void RecordMagicStackClick(ContentSuggestionsModuleType type,
 void RecordMagicStackTabResumptionClick(bool isLocal,
                                         bool isStartSurface,
                                         NSUInteger index) {
-  UMA_HISTOGRAM_EXACT_LINEAR(
+  base::UmaHistogramExactLinear(
       TabResumptionHistogramName(/*is_click*/ true, isStartSurface, isLocal),
       index, kMaxModuleImpressionIndex);
 }
@@ -204,7 +204,7 @@ void LogTopModuleImpressionForType(ContentSuggestionsModuleType module_type) {
 void LogTabResumptionImpression(bool isLocal,
                                 bool isStartSurface,
                                 NSUInteger index) {
-  UMA_HISTOGRAM_EXACT_LINEAR(
+  base::UmaHistogramExactLinear(
       TabResumptionHistogramName(/*is_click*/ false, isStartSurface, isLocal),
       index, kMaxModuleImpressionIndex);
 }
