@@ -219,7 +219,7 @@ std::vector<ScopedAtspiAccessible> AtspiInProcessFuzzer::GetChildren(
   // atspi_accessible_get_child_count and atspi_accessible_get_child_at_index
   // to work. Discovered empirically.
   GHashTable* attributes = atspi_accessible_get_attributes(node, &error);
-  if (!error) {
+  if (!error && attributes) {
     GHashTableIter i;
     void* key = nullptr;
     void* value = nullptr;
