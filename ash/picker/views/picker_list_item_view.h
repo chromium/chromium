@@ -61,8 +61,8 @@ class ASH_EXPORT PickerListItemView : public PickerItemView {
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
 
-  const views::View* leading_container_for_testing() const {
-    return leading_container_;
+  const views::ImageView& leading_icon_view_for_testing() const {
+    return *leading_icon_view_;
   }
   const views::View* primary_container_for_testing() const {
     return primary_container_;
@@ -74,8 +74,7 @@ class ASH_EXPORT PickerListItemView : public PickerItemView {
   ui::ImageModel GetPrimaryImageForTesting() const;
 
  private:
-  // Contains the item's leading icon if it has been set.
-  raw_ptr<views::View> leading_container_ = nullptr;
+  raw_ptr<views::ImageView> leading_icon_view_ = nullptr;
 
   // Contains the item's primary contents, which can be text or an image.
   raw_ptr<views::View> primary_container_ = nullptr;

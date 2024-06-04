@@ -63,9 +63,12 @@ PickerListItemView::PickerListItemView(SelectItemCallback select_item_callback)
           .SetCanProcessEventsWithinSubtree(false)
           .Build());
 
-  // The leading container contains an icon and should always be preferred size.
-  leading_container_ = item_contents->AddChildView(
-      views::Builder<views::FlexLayoutView>()
+  // The leading icon should always be preferred size.
+  leading_icon_view_ = item_contents->AddChildView(
+      views::Builder<views::ImageView>()
+          .SetImageSize(kLeadingIconSizeDip)
+          .SetCanProcessEventsWithinSubtree(false)
+          .SetProperty(views::kMarginsKey, kLeadingIconRightPadding)
           .Build());
 
   // The main container should use the remaining horizontal space.
@@ -130,17 +133,7 @@ void PickerListItemView::SetPrimaryImage(
 }
 
 void PickerListItemView::SetLeadingIcon(const ui::ImageModel& icon) {
-  leading_container_->RemoveAllChildViews();
-  if (icon.IsEmpty()) {
-    return;
-  }
-  leading_container_->AddChildView(
-      views::Builder<views::ImageView>()
-          .SetImageSize(kLeadingIconSizeDip)
-          .SetImage(icon)
-          .SetCanProcessEventsWithinSubtree(false)
-          .SetProperty(views::kMarginsKey, kLeadingIconRightPadding)
-          .Build());
+  leading_icon_view_->SetImage(icon);
 }
 
 void PickerListItemView::SetSecondaryText(

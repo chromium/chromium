@@ -59,9 +59,8 @@ TEST_F(PickerListItemViewTest, SetsLeadingIcon) {
   item_view.SetLeadingIcon(ui::ImageModel::FromVectorIcon(
       kImeMenuEmoticonIcon, cros_tokens::kCrosSysOnSurface));
 
-  ASSERT_THAT(item_view.leading_container_for_testing()->children(), SizeIs(1));
-  EXPECT_TRUE(views::IsViewClass<views::ImageView>(
-      item_view.leading_container_for_testing()->children()[0]));
+  EXPECT_TRUE(
+      item_view.leading_icon_view_for_testing().GetImageModel().IsVectorIcon());
 }
 
 TEST_F(PickerListItemViewTest, SetsBadgeVisible) {
