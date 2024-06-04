@@ -341,22 +341,35 @@ class AutofillExternalDelegateUnitTest : public testing::Test {
 
   // Issue an OnQuery call.
   void IssueOnQuery(
+      FormData form_data,
+      const gfx::Rect& caret_bounds = gfx::Rect(),
       AutofillSuggestionTriggerSource trigger_source = kDefaultTriggerSource) {
-    FormGlobalId form_id = test::MakeFormGlobalId();
-    FieldGlobalId field_id = test::MakeFieldGlobalId();
-    queried_form_ = test::GetFormData({
-        .fields = {{.role = NAME_FIRST,
-                    .host_frame = field_id.frame_token,
-                    .renderer_id = field_id.renderer_id,
-                    .autocomplete_attribute = "given-name"}},
-        .host_frame = form_id.frame_token,
-        .renderer_id = form_id.renderer_id,
-    });
+    queried_form_ = std::move(form_data);
     manager().OnFormsSeen({queried_form()}, {});
-    external_delegate().OnQuery(queried_form(), queried_field(),
+    external_delegate().OnQuery(queried_form(), queried_field(), caret_bounds,
                                 trigger_source);
   }
 
+  void IssueOnQuery(
+      const gfx::Rect& caret_bounds,
+      AutofillSuggestionTriggerSource trigger_source = kDefaultTriggerSource) {
+    FormGlobalId form_id = test::MakeFormGlobalId();
+    FieldGlobalId field_id = test::MakeFieldGlobalId();
+    IssueOnQuery(test::GetFormData({
+                     .fields = {{.role = NAME_FIRST,
+                                 .host_frame = field_id.frame_token,
+                                 .renderer_id = field_id.renderer_id,
+                                 .autocomplete_attribute = "given-name"}},
+                     .host_frame = form_id.frame_token,
+                     .renderer_id = form_id.renderer_id,
+                 }),
+                 caret_bounds, trigger_source);
+  }
+
+  void IssueOnQuery(
+      AutofillSuggestionTriggerSource trigger_source = kDefaultTriggerSource) {
+    IssueOnQuery(/*caret_bounds=*/gfx::Rect(), trigger_source);
+  }
   // Returns the triggering `AutofillField`. This is the only field in the form
   // created in `IssueOnQuery()`.
   AutofillField* get_triggering_autofill_field() {
@@ -1796,6 +1809,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
   manager().OnFormsSeen({form}, {});
   external_delegate().OnQuery(
       form, form.fields[0],
+      /*caret_bounds=*/gfx::Rect(),
       AutofillSuggestionTriggerSource::kManualFallbackPayments);
 
   EXPECT_CALL(cc_access_manager(), FetchCreditCard).Times(0);
@@ -1873,6 +1887,8 @@ TEST_F(AutofillExternalDelegateUnitTest,
   manager().OnFormsSeen({form}, {});
   external_delegate().OnQuery(
       form, form.fields[0],
+      /*caret_bounds=*/gfx::Rect(),
+
       AutofillSuggestionTriggerSource::kManualFallbackPayments);
 
   const CreditCard unlocked_card = test::GetFullServerCard();
@@ -2133,6 +2149,145 @@ TEST_F(AutofillExternalDelegateUnitTest,
                                           SuggestionPosition{.row = 0});
 }
 
+TEST_F(AutofillExternalDelegateUnitTest,
+       ComposeSuggestion_ComposeProactiveNudge_ForwardsCaretBoundsToClient) {
+  const gfx::Rect caret_bounds = gfx::Rect(/*width=*/1, /*height=*/3);
+  FormGlobalId form_id = test::MakeFormGlobalId();
+  FieldGlobalId field_id = test::MakeFieldGlobalId();
+  FormData form_data = test::GetFormData({
+      .fields = {{.role = NAME_FIRST,
+                  .host_frame = field_id.frame_token,
+                  .renderer_id = field_id.renderer_id,
+                  .autocomplete_attribute = "given-name"}},
+      .host_frame = form_id.frame_token,
+      .renderer_id = form_id.renderer_id,
+  });
+  // make sure the field bounds contain the caret.
+  form_data.fields.front().set_bounds(gfx::RectF(
+      /*x=*/0, /*y=*/0, caret_bounds.width() * 2, caret_bounds.height() * 2));
+
+  IssueOnQuery(std::move(form_data), caret_bounds);
+
+  EXPECT_CALL(client(),
+              ShowAutofillSuggestions(
+                  Field(&AutofillClient::PopupOpenArgs::element_bounds,
+                        gfx::RectF(caret_bounds)),
+                  _));
+  MockAutofillComposeDelegate compose_delegate;
+  ON_CALL(client(), GetComposeDelegate)
+      .WillByDefault(Return(&compose_delegate));
+  ON_CALL(compose_delegate, ShouldAnchorNudgeOnCaret)
+      .WillByDefault(Return(true));
+
+  // This should call ShowAutofillSuggestions.
+  external_delegate().OnSuggestionsReturned(
+      queried_field().global_id(),
+      {Suggestion(SuggestionType::kComposeProactiveNudge)});
+}
+
+// Even though the `SuggestionType` is correct and the bounds are valid. The
+// caret bounds are not used because the
+// `ComposeDelegate::ShouldAnchorNudgeOnCaret()` is returning false.
+TEST_F(
+    AutofillExternalDelegateUnitTest,
+    ComposeSuggestion_ComposeProactiveNudge_ShouldAnchorNudgeOnCaretReturnsFalse_DoNotForwardsCaretBoundsToClient) {
+  const gfx::Rect caret_bounds = gfx::Rect(/*width=*/1, /*height=*/3);
+  FormGlobalId form_id = test::MakeFormGlobalId();
+  FieldGlobalId field_id = test::MakeFieldGlobalId();
+  FormData form_data = test::GetFormData({
+      .fields = {{.role = NAME_FIRST,
+                  .host_frame = field_id.frame_token,
+                  .renderer_id = field_id.renderer_id,
+                  .autocomplete_attribute = "given-name"}},
+      .host_frame = form_id.frame_token,
+      .renderer_id = form_id.renderer_id,
+  });
+  // make sure the field bounds contain the caret.
+  const gfx::RectF field_bounds = gfx::RectF(
+      /*x=*/0, /*y=*/0, caret_bounds.width() * 2, caret_bounds.height() * 2);
+  form_data.fields.front().set_bounds(field_bounds);
+
+  IssueOnQuery(std::move(form_data), caret_bounds);
+
+  EXPECT_CALL(
+      client(),
+      ShowAutofillSuggestions(
+          Field(&AutofillClient::PopupOpenArgs::element_bounds, field_bounds),
+          _));
+  MockAutofillComposeDelegate compose_delegate;
+  ON_CALL(client(), GetComposeDelegate)
+      .WillByDefault(Return(&compose_delegate));
+  ON_CALL(compose_delegate, ShouldAnchorNudgeOnCaret)
+      .WillByDefault(Return(false));
+
+  // This should call ShowAutofillSuggestions.
+  external_delegate().OnSuggestionsReturned(
+      queried_field().global_id(),
+      {Suggestion(SuggestionType::kComposeProactiveNudge)});
+}
+
+TEST_F(
+    AutofillExternalDelegateUnitTest,
+    ComposeSuggestion_ComposeProactiveNudge_CaretOutsideField_DoNotSendCaretBoundsToClient) {
+  const gfx::Rect caret_bounds = gfx::Rect(/*width=*/1, /*height=*/3);
+  FormGlobalId form_id = test::MakeFormGlobalId();
+  FieldGlobalId field_id = test::MakeFieldGlobalId();
+  FormData form_data = test::GetFormData({
+      .fields = {{.role = NAME_FIRST,
+                  .host_frame = field_id.frame_token,
+                  .renderer_id = field_id.renderer_id,
+                  .autocomplete_attribute = "given-name"}},
+      .host_frame = form_id.frame_token,
+      .renderer_id = form_id.renderer_id,
+  });
+  // make sure the field bounds do not contain the caret.
+  const gfx::RectF field_bounds = gfx::RectF(
+      /*x=*/caret_bounds.x() + caret_bounds.width() + 1,
+      /*y=*/caret_bounds.y() + caret_bounds.height() + 1, caret_bounds.width(),
+      caret_bounds.height());
+  form_data.fields.front().set_bounds(field_bounds);
+
+  IssueOnQuery(std::move(form_data), caret_bounds);
+
+  EXPECT_CALL(
+      client(),
+      ShowAutofillSuggestions(
+          Field(&AutofillClient::PopupOpenArgs::element_bounds, field_bounds),
+          _));
+  MockAutofillComposeDelegate compose_delegate;
+  ON_CALL(client(), GetComposeDelegate)
+      .WillByDefault(Return(&compose_delegate));
+  ON_CALL(compose_delegate, ShouldAnchorNudgeOnCaret)
+      .WillByDefault(Return(true));
+
+  // This should call ShowAutofillSuggestions.
+  external_delegate().OnSuggestionsReturned(
+      queried_field().global_id(),
+      {Suggestion(SuggestionType::kComposeProactiveNudge)});
+}
+
+TEST_F(
+    AutofillExternalDelegateUnitTest,
+    NonComposeSuggestion_NonComposeProactiveNudge_DoNotForwardsCaretBoundsToClient) {
+  IssueOnQuery(gfx::Rect(/*width=*/123, /*height=*/123));
+
+  EXPECT_CALL(client(),
+              ShowAutofillSuggestions(
+                  Field(&AutofillClient::PopupOpenArgs::element_bounds,
+                        gfx::RectF(/*width=*/0, /*height=*/0)),
+                  _));
+  MockAutofillComposeDelegate compose_delegate;
+  ON_CALL(client(), GetComposeDelegate)
+      .WillByDefault(Return(&compose_delegate));
+  ON_CALL(compose_delegate, ShouldAnchorNudgeOnCaret)
+      .WillByDefault(Return(true));
+
+  // This should call ShowAutofillSuggestions.
+  external_delegate().OnSuggestionsReturned(
+      queried_field().global_id(),
+      {Suggestion(SuggestionType::kAutocompleteEntry)});
+}
+
 // Tests that accepting a Compose suggestion returns a callback that, when run,
 // fills the trigger field.
 TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateOpensComposeAndFills) {
@@ -2345,7 +2500,8 @@ TEST_F(AutofillExternalDelegateUnitTest, IgnoreAutocompleteOffForAutofill) {
   field.set_is_focusable(true);
   field.set_should_autocomplete(false);
 
-  external_delegate().OnQuery(form, field, kDefaultTriggerSource);
+  external_delegate().OnQuery(form, field, /*caret_bounds=*/gfx::Rect(),
+                              kDefaultTriggerSource);
 
   std::vector<Suggestion> autofill_items;
   autofill_items.emplace_back();

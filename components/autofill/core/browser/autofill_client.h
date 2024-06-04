@@ -289,7 +289,8 @@ class AutofillClient {
     PopupOpenArgs& operator=(const PopupOpenArgs&);
     PopupOpenArgs& operator=(PopupOpenArgs&&);
     ~PopupOpenArgs();
-
+    // TODO(b/340817507): Update this member name since bounds can now refer to
+    // the caret bounds and elements gives the idea of HTML elements only.
     gfx::RectF element_bounds;
     base::i18n::TextDirection text_direction =
         base::i18n::TextDirection::UNKNOWN_DIRECTION;

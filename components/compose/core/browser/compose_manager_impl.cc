@@ -195,7 +195,7 @@ std::optional<Suggestion> ComposeManagerImpl::GetSuggestion(
   suggestion.type = type;
   suggestion.icon = Suggestion::Icon::kPenSpark;
   // Add footer label if not using compact ui.
-  if (!compose::GetComposeConfig().proactive_nudge_compact_ui) {
+  if (!GetComposeConfig().proactive_nudge_compact_ui) {
     suggestion.labels = {{Suggestion::Text(std::move(label_text))}};
   }
 
@@ -223,22 +223,24 @@ std::optional<Suggestion> ComposeManagerImpl::GetSuggestion(
 
 void ComposeManagerImpl::NeverShowComposeForOrigin(const url::Origin& origin) {
   client_->AddSiteToNeverPromptList(origin);
-  compose::LogComposeProactiveNudgeCtr(
-      compose::ComposeProactiveNudgeCtrEvent::kUserDisabledSite);
+  LogComposeProactiveNudgeCtr(ComposeProactiveNudgeCtrEvent::kUserDisabledSite);
   client_->getPageUkmTracker()->ProactiveNudgeDisabledForSite();
 }
 
 void ComposeManagerImpl::DisableCompose() {
   client_->DisableProactiveNudge();
-  compose::LogComposeProactiveNudgeCtr(
-      compose::ComposeProactiveNudgeCtrEvent::kUserDisabledProactiveNudge);
+  LogComposeProactiveNudgeCtr(
+      ComposeProactiveNudgeCtrEvent::kUserDisabledProactiveNudge);
   client_->getPageUkmTracker()->ProactiveNudgeDisabledGlobally();
 }
 
 void ComposeManagerImpl::GoToSettings() {
   client_->OpenProactiveNudgeSettings();
-  compose::LogComposeProactiveNudgeCtr(
-      compose::ComposeProactiveNudgeCtrEvent::kOpenSettings);
+  LogComposeProactiveNudgeCtr(ComposeProactiveNudgeCtrEvent::kOpenSettings);
+}
+
+bool ComposeManagerImpl::ShouldAnchorNudgeOnCaret() {
+  return GetComposeConfig().is_nudge_shown_at_cursor;
 }
 
 }  // namespace compose

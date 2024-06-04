@@ -48,6 +48,7 @@ class ComposeManagerImpl : public ComposeManager {
   void NeverShowComposeForOrigin(const url::Origin& origin) override;
   void DisableCompose() override;
   void GoToSettings() override;
+  bool ShouldAnchorNudgeOnCaret() override;
 
  private:
   bool IsEnabled() const;
