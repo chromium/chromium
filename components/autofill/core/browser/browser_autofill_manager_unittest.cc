@@ -2209,11 +2209,9 @@ TEST_F(BrowserAutofillManagerTest,
 }
 
 // Tests that `SingleFieldFormFillRouter` returns to the
-// `AutofillExternalDelegate`, if it has any. It also checks that the time delay
-// for returning the suggestions is measured.
+// `AutofillExternalDelegate`, if it has any.
 TEST_F(BrowserAutofillManagerTest,
        OnSuggestionsReturned_CallsExternalDelegate) {
-  base::HistogramTester histogram_tester;
   FormData form = CreateTestAddressFormData();
   form.fields = {CreateTestFormField("Some Field", "somefield", "",
                                      FormControlType::kInputText)};
@@ -2239,8 +2237,6 @@ TEST_F(BrowserAutofillManagerTest,
             AutofillSuggestionTriggerSource::kFormControlElementClicked);
   external_delegate()->CheckSuggestions(form.fields[0].global_id(),
                                         {suggestions[0], suggestions[1]});
-  histogram_tester.ExpectTotalCount(
-      "Autofill.Popup.SingleFieldFormFillerDelay.Autocomplete", 1);
 }
 
 // Tests that metrics are logged to measure whether Autocomplete would have been
@@ -7128,8 +7124,8 @@ TEST_F(BrowserAutofillManagerTest, TouchToFillSuggestionForIban) {
       .WillOnce(Return(true));
   EXPECT_FALSE(external_delegate()->on_suggestions_returned_seen());
   browser_autofill_manager_->OnGetSingleFieldSuggestionsCallback(
-      /*form_element_was_clicked=*/true, form, base::TimeTicks::Now(),
-      FieldTypeGroup::kIban, form.fields[0].global_id(), /*suggestion=*/{});
+      /*form_element_was_clicked=*/true, form, FieldTypeGroup::kIban,
+      form.fields[0].global_id(), /*suggestion=*/{});
 }
 
 // Tests that Autofill suggestions are not shown if TTF is eligible and shown.

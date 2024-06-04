@@ -40,7 +40,6 @@
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -313,25 +312,6 @@ void MaybeLogAutocompleteSuppressionByPlusAddresses(
   base::UmaHistogramEnumeration(
       kAutocompleteSuppressionByPlusAddressUma,
       has_email ? kSuppressedWithEmailResults : kSuppressedWithoutEmailResults);
-}
-
-// Emits a metric that measures how long it took to show a single field form
-// filling suggestion.
-// TODO(b/324553809): Remove once we know the average time for a suggestion to
-// show.
-void LogTimeDelayForSingleFieldFormFill(
-    base::span<const Suggestion> suggestions,
-    base::TimeDelta delay) {
-  if (suggestions.empty()) {
-    return;
-  }
-  const FillingProduct filling_product =
-      GetFillingProductFromSuggestionType(suggestions[0].type);
-  CHECK(IsSingleFieldFormFillerFillingProduct(filling_product));
-  base::UmaHistogramTimes(
-      base::StrCat({"Autofill.Popup.SingleFieldFormFillerDelay.",
-                    FillingProductToString(filling_product)}),
-      delay);
 }
 
 FillDataType GetEventTypeFromSingleFieldSuggestionType(SuggestionType type) {
@@ -1516,7 +1496,6 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
             base::BindRepeating(
                 &BrowserAutofillManager::OnGetSingleFieldSuggestionsCallback,
                 weak_ptr_factory_.GetWeakPtr(), form_element_was_clicked, form,
-                base::TimeTicks::Now(),
                 context.focused_field ? context.focused_field->Type().group()
                                       : FieldTypeGroup::kNoGroup),
             context);
@@ -2170,14 +2149,11 @@ void BrowserAutofillManager::
 void BrowserAutofillManager::OnGetSingleFieldSuggestionsCallback(
     bool form_element_was_clicked,
     const FormData& form,
-    base::TimeTicks request_start_time,
     FieldTypeGroup focused_field_type_group,
     FieldGlobalId field_id,
     const std::vector<Suggestion>& suggestions) {
   MaybeLogAutocompleteSuppressionByPlusAddresses(client(), suggestions,
                                                  focused_field_type_group);
-  LogTimeDelayForSingleFieldFormFill(
-      suggestions, base::TimeTicks::Now() - request_start_time);
   // TODO(b/309163415): Replace parameter of FormFieldData in
   // `TryToShowTouchToFill` by FieldGlobalId.
   const FormFieldData* form_field = form.FindFieldByGlobalId(field_id);

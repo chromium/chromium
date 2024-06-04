@@ -393,7 +393,6 @@ class BrowserAutofillManager : public AutofillManager {
   void OnGetSingleFieldSuggestionsCallback(
       bool form_element_was_clicked,
       const FormData& form,
-      base::TimeTicks request_start_time,
       FieldTypeGroup focused_field_type_group,
       FieldGlobalId field_id,
       const std::vector<Suggestion>& suggestions);
