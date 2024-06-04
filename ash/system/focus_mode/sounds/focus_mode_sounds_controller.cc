@@ -119,8 +119,16 @@ void DispatchRequests(
 }
 
 // In response to receiving the track, start playing the track.
-void OnTrackFetched(const std::optional<FocusModeSoundsDelegate::Track>& data) {
-  // TODO: Play the track here.
+void OnTrackFetched(
+    FocusModeSoundsController::GetNextTrackCallback callback,
+    const std::optional<FocusModeSoundsDelegate::Track>& track) {
+  if (!track) {
+    // TODO(b/343961303): Potentially retry the request.
+    LOG(WARNING) << "Retrieving track failed";
+    return;
+  }
+
+  std::move(callback).Run(*track);
 }
 
 }  // namespace
@@ -147,6 +155,28 @@ FocusModeSoundsController::FocusModeSoundsController()
 }
 
 FocusModeSoundsController::~FocusModeSoundsController() = default;
+
+void FocusModeSoundsController::GetNextTrack(GetNextTrackCallback callback) {
+  if (selected_playlist_.type == focus_mode_util::SoundType::kNone ||
+      selected_playlist_.id.empty()) {
+    LOG(WARNING) << "No selected playlist";
+    return;
+  }
+
+  FocusModeSoundsDelegate* delegate;
+  if (selected_playlist_.type == focus_mode_util::SoundType::kSoundscape) {
+    delegate = soundscape_delegate_.get();
+  } else if (selected_playlist_.type ==
+             focus_mode_util::SoundType::kYouTubeMusic) {
+    delegate = youtube_music_delegate_.get();
+  } else {
+    LOG(ERROR) << "Unrecognized playlist type";
+    return;
+  }
+
+  delegate->GetNextTrack(selected_playlist_.id,
+                         base::BindOnce(&OnTrackFetched, std::move(callback)));
+}
 
 void FocusModeSoundsController::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
@@ -241,14 +271,6 @@ void FocusModeSoundsController::SelectPlaylist(
   // trigger the player to start playing and set the state as `kPlaying`
   // instead.
   selected_playlist_.state = focus_mode_util::SoundState::kSelected;
-
-  if (playlist_data.type == focus_mode_util::SoundType::kSoundscape) {
-    soundscape_delegate_->GetNextTrack(playlist_data.id,
-                                       base::BindOnce(&OnTrackFetched));
-  } else if (playlist_data.type == focus_mode_util::SoundType::kYouTubeMusic) {
-    youtube_music_delegate_->GetNextTrack(playlist_data.id,
-                                          base::BindOnce(&OnTrackFetched));
-  }
 
   sound_type_ = selected_playlist_.type;
   SaveUserPref();

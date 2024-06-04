@@ -10,6 +10,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/focus_mode/focus_mode_util.h"
+#include "ash/system/focus_mode/sounds/focus_mode_sounds_delegate.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -21,7 +22,6 @@ class ImageSkia;
 
 namespace ash {
 
-class FocusModeSoundsDelegate;
 class FocusModeYouTubeMusicDelegate;
 
 // This class is used to download images and record the info of playlists after
@@ -71,6 +71,10 @@ class ASH_EXPORT FocusModeSoundsController {
   FocusModeSoundsController& operator=(const FocusModeSoundsController&) =
       delete;
   ~FocusModeSoundsController();
+
+  using GetNextTrackCallback =
+      base::OnceCallback<void(const FocusModeSoundsDelegate::Track&)>;
+  void GetNextTrack(GetNextTrackCallback callback);
 
   const std::vector<std::unique_ptr<Playlist>>& soundscape_playlists() const {
     return soundscape_playlists_;
