@@ -100,6 +100,7 @@
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html/html_plugin_element.h"
+#include "third_party/blink/renderer/core/html/plugin_document.h"
 #include "third_party/blink/renderer/core/input/context_menu_allowed_scope.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/input/touch_action_util.h"
@@ -2162,22 +2163,37 @@ std::optional<gfx::Point> WebFrameWidgetImpl::GetAndResetContextMenuLocation() {
   return std::move(host_context_menu_location_);
 }
 
+double WebFrameWidgetImpl::GetZoomLevel() {
+  return zoom_level_;
+}
+
 void WebFrameWidgetImpl::SetZoomLevel(double zoom_level) {
   // Override the zoom level with the testing one if necessary.
   if (zoom_level_for_testing_ != -INFINITY)
     zoom_level = zoom_level_for_testing_;
 
+  zoom_level = View()->ClampZoomLevel(zoom_level);
   // Set the layout shift exclusion window for the zoom level change.
-  if (View()->ZoomLevel() != zoom_level)
+  if (zoom_level_ != zoom_level) {
     NotifyZoomLevelChanged(LocalRootImpl()->GetFrame());
+  }
+  zoom_level_ = zoom_level;
+  double zoom_factor = View()->SetMainFrameZoomLevel(zoom_level_);
+  if (auto* local_frame = LocalRootImpl()->GetFrame()) {
+    if (Document* document = local_frame->GetDocument()) {
+      auto* plugin_document = DynamicTo<PluginDocument>(document);
+      if (!plugin_document || !plugin_document->GetPluginView()) {
+        local_frame->SetPageZoomFactor(zoom_factor);
+      }
+    }
 
-  View()->SetZoomLevel(zoom_level);
-
-  // Part of the UpdateVisualProperties dance we send the zoom level to
-  // RemoteFrames that are below the local root for this widget.
-  ForEachRemoteFrameControlledByWidget([zoom_level](RemoteFrame* remote_frame) {
-    remote_frame->ZoomLevelChanged(zoom_level);
-  });
+    // Part of the UpdateVisualProperties dance we send the zoom level to
+    // RemoteFrames that are below the local root for this widget.
+    ForEachRemoteFrameControlledByWidget(
+        [zoom_level](RemoteFrame* remote_frame) {
+          remote_frame->ZoomLevelChanged(zoom_level);
+        });
+  }
 }
 
 void WebFrameWidgetImpl::SetAutoResizeMode(bool auto_resize,
@@ -5081,8 +5097,10 @@ void WebFrameWidgetImpl::NotifyZoomLevelChanged(LocalFrame* root) {
         // this histogrm should only include samples at 100% zoom factor.
         UMA_HISTOGRAM_CUSTOM_EXACT_LINEAR(
             "Accessibility.Android.PageZoom.MainFrameZoomFactor",
-            blink::PageZoomLevelToZoomFactor(View()->ZoomLevel()) * 100, 50,
-            300, 52);
+            PageZoomLevelToZoomFactor(
+                View()->MainFrameWidget()->GetZoomLevel()) *
+                100,
+            50, 300, 52);
       }
 #endif
     }

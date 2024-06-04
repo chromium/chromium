@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
 #include <string>
 #include <string_view>
 #include <vector>
@@ -43,6 +44,7 @@
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/web/web_document.h"
+#include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/blink/public/web/web_view.h"
@@ -531,8 +533,8 @@ v8::Local<v8::Value> NewTabPageBindings::GetMostVisited(v8::Isolate* isolate) {
   content::RenderFrame* render_frame = GetMainRenderFrameForCurrentContext();
 
   // This corresponds to "window.devicePixelRatio" in JavaScript.
-  float zoom_factor =
-      blink::PageZoomLevelToZoomFactor(render_frame->GetWebView()->ZoomLevel());
+  float zoom_factor = blink::PageZoomLevelToZoomFactor(
+      (render_frame->GetWebFrame())->FrameWidget()->GetZoomLevel());
   float device_pixel_ratio = render_frame->GetDeviceScaleFactor() * zoom_factor;
 
   auto frame_token = render_frame->GetWebFrame()->GetLocalFrameToken();

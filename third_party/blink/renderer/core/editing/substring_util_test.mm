@@ -66,7 +66,7 @@ TEST_F(SubStringUtilTest, SubstringUtil) {
                                                     point, baseline_point));
   ASSERT_TRUE(result);
 
-  web_view->SetZoomLevel(3);
+  web_view->MainFrameWidget()->SetZoomLevel(3);
 
   result.reset(SubstringUtil::AttributedSubstringInRange(frame->GetFrame(), 5,
                                                          5, baseline_point));
