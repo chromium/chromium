@@ -1738,7 +1738,8 @@ TEST_F(CampaignsManagerTest, GetCampaignActiveUrlEmptyActiveUrl) {
         "https://www\\.google\\.com/\\?foo=bar2"
     ])");
 
-  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+  VerifyDemoModePayload(
+      campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 }
 
 TEST_F(CampaignsManagerTest, GetCampaignActiveUrlNoActiveUrl) {
@@ -1749,7 +1750,8 @@ TEST_F(CampaignsManagerTest, GetCampaignActiveUrlNoActiveUrl) {
         "https://www\\.google\\.com/\\?foo=bar2"
     ])");
 
-  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+  VerifyDemoModePayload(
+      campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 }
 
 TEST_F(CampaignsManagerTest, GetCampaignTriggersWithAppOpened) {

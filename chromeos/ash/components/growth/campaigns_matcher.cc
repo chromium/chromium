@@ -516,6 +516,17 @@ bool CampaignsMatcher::MatchActiveUrlRegexes(
     return true;
   }
 
+  if (active_url_.is_empty()) {
+    // Campaigns matched if no active URL is set. Active URL is used for
+    // targeting web app and PWA. When active URL is empty, it is likely not
+    // triggered by opening web app or PWA. In this case, defer to other
+    // targeting to match campaign.
+    // An example is G1 nudge is triggered by a group of app opened (PWA, Web
+    // App and ARC app), the active URL targeting is used for PWA and Web App
+    // while doesn't apply for ARC app.
+    return true;
+  }
+
   for (const auto& url_regrex : active_url_regrexes) {
     if (RE2::FullMatch(active_url_.spec(), url_regrex)) {
       return true;
