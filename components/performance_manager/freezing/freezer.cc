@@ -5,10 +5,10 @@
 #include "components/performance_manager/freezing/freezer.h"
 
 #include "base/functional/bind.h"
+#include "base/memory/weak_ptr.h"
 #include "base/task/task_traits.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/performance_manager/public/graph/page_node.h"
-#include "components/performance_manager/public/web_contents_proxy.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -21,9 +21,8 @@ namespace performance_manager {
 namespace {
 
 // Try to freeze a page on the UI thread.
-void MaybeFreezePageOnUIThread(const WebContentsProxy& contents_proxy) {
+void MaybeFreezePageOnUIThread(base::WeakPtr<content::WebContents> contents) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  content::WebContents* const contents = contents_proxy.Get();
   if (!contents) {
     return;
   }
@@ -50,19 +49,18 @@ void MaybeFreezePageOnUIThread(const WebContentsProxy& contents_proxy) {
   contents->SetPageFrozen(true);
 }
 
-void UnfreezePageOnUIThread(const WebContentsProxy& contents_proxy) {
+void UnfreezePageOnUIThread(base::WeakPtr<content::WebContents> contents) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  content::WebContents* const content = contents_proxy.Get();
-  if (!content) {
+  if (!contents) {
     return;
   }
 
   // A visible page is automatically unfrozen.
-  if (content->GetVisibility() == content::Visibility::VISIBLE) {
+  if (contents->GetVisibility() == content::Visibility::VISIBLE) {
     return;
   }
 
-  content->SetPageFrozen(false);
+  contents->SetPageFrozen(false);
 }
 
 }  // namespace
@@ -70,15 +68,15 @@ void UnfreezePageOnUIThread(const WebContentsProxy& contents_proxy) {
 void Freezer::MaybeFreezePageNode(const PageNode* page_node) {
   DCHECK(page_node);
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&MaybeFreezePageOnUIThread,
-                                page_node->GetContentsProxy()));
+      FROM_HERE,
+      base::BindOnce(&MaybeFreezePageOnUIThread, page_node->GetWebContents()));
 }
 
 void Freezer::UnfreezePageNode(const PageNode* page_node) {
   DCHECK(page_node);
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(&UnfreezePageOnUIThread, page_node->GetContentsProxy()));
+      base::BindOnce(&UnfreezePageOnUIThread, page_node->GetWebContents()));
 }
 
 }  // namespace performance_manager

@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/memory_pressure_listener.h"
+#include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/task/task_traits.h"
 #include "base/time/time.h"
@@ -13,7 +14,6 @@
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/page_node.h"
-#include "components/performance_manager/public/web_contents_proxy.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -77,16 +77,16 @@ bool PageMightHaveFramesInBFCache(const PageNode* page_node) {
 
 using MemoryPressureLevel = base::MemoryPressureListener::MemoryPressureLevel;
 
-void MaybeFlushBFCacheOnUIThread(const WebContentsProxy& contents_proxy,
+void MaybeFlushBFCacheOnUIThread(base::WeakPtr<content::WebContents> contents,
                                  MemoryPressureLevel memory_pressure_level) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  content::WebContents* const content = contents_proxy.Get();
-  if (!content)
+  if (!contents) {
     return;
+  }
 
   int cache_size = -1;
   bool foregrounded =
-      (content->GetVisibility() == content::Visibility::VISIBLE);
+      (contents->GetVisibility() == content::Visibility::VISIBLE);
   switch (memory_pressure_level) {
     case MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_MODERATE:
       cache_size = foregrounded ? ForegroundCacheSizeOnModeratePressure()
@@ -106,7 +106,7 @@ void MaybeFlushBFCacheOnUIThread(const WebContentsProxy& contents_proxy,
   // Do not flush the BFCache if there's a pending navigation as this could stop
   // it.
   // TODO(sebmarchand): Check if this is really needed.
-  auto& navigation_controller = content->GetController();
+  auto& navigation_controller = contents->GetController();
   if (!navigation_controller.GetPendingEntry())
     navigation_controller.GetBackForwardCache().Prune(cache_size);
 }
@@ -119,8 +119,8 @@ void BFCachePolicy::MaybeFlushBFCache(
   DCHECK(page_node);
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(&MaybeFlushBFCacheOnUIThread,
-                     page_node->GetContentsProxy(), memory_pressure_level));
+      base::BindOnce(&MaybeFlushBFCacheOnUIThread, page_node->GetWebContents(),
+                     memory_pressure_level));
 }
 
 void BFCachePolicy::OnPassedToGraph(Graph* graph) {

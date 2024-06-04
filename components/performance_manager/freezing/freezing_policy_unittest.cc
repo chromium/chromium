@@ -22,7 +22,6 @@
 #include "components/performance_manager/public/resource_attribution/queries.h"
 #include "components/performance_manager/public/resource_attribution/query_results.h"
 #include "components/performance_manager/public/resource_attribution/resource_contexts.h"
-#include "components/performance_manager/public/web_contents_proxy.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "content/public/browser/browsing_instance_id.h"
 #include "testing/gmock/include/gmock/gmock.h"

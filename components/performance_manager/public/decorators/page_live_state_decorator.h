@@ -12,7 +12,6 @@
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/node_data_describer.h"
 #include "components/performance_manager/public/graph/page_node.h"
-#include "components/performance_manager/public/web_contents_proxy.h"
 #include "url/gurl.h"
 
 namespace content {
