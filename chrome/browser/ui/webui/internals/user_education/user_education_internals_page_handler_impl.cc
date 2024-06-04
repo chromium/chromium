@@ -43,6 +43,10 @@ using mojom::user_education_internals::FeaturePromoDemoPageDataPtr;
 using mojom::user_education_internals::FeaturePromoDemoPageInfo;
 using mojom::user_education_internals::FeaturePromoDemoPageInfoPtr;
 
+namespace user_education::features {
+extern bool IsRateLimitingDisabled();
+}
+
 namespace {
 
 user_education::TutorialService* GetTutorialService(Profile* profile) {
@@ -465,14 +469,55 @@ void UserEducationInternalsPageHandlerImpl::GetSessionData(
 
   auto* const storage_service = GetStorageService(profile_);
   if (storage_service) {
+    const base::Time now = storage_service->GetCurrentTime();
     const auto session_data = storage_service->ReadSessionData();
+
+    // Current session.
     data.emplace_back(
         FormatDemoPageData("Session start", session_data.start_time));
     data.emplace_back(FormatDemoPageData("Last active at",
                                          session_data.most_recent_active_time));
+
+    // Grace periods.
+    const bool disabled = user_education::features::IsRateLimitingDisabled();
+    if (disabled) {
+      data.emplace_back(
+          FormatDemoPageData("Rate limiting disabled via command-line.", ""));
+    } else {
+      const base::Time session_grace_period_end =
+          session_data.start_time +
+          user_education::features::GetSessionStartGracePeriod();
+      const base::Time new_profile_grace_period_end =
+          storage_service->profile_creation_time() +
+          user_education::features::GetNewProfileGracePeriod();
+      const bool in_session_grace_period = now < session_grace_period_end;
+      const bool in_new_profile_grace_period =
+          now < new_profile_grace_period_end;
+      data.emplace_back(FormatDemoPageData("In session grace period?",
+                                           in_session_grace_period));
+      if (in_session_grace_period) {
+        data.emplace_back(FormatDemoPageData("Session grace period ends",
+                                             session_grace_period_end));
+      }
+      data.emplace_back(FormatDemoPageData("In new profile grace period?",
+                                           in_new_profile_grace_period));
+      if (in_new_profile_grace_period) {
+        data.emplace_back(FormatDemoPageData("New profile grace period ends",
+                                             new_profile_grace_period_end));
+      }
+    }
+
+    // Cooldowns.
     const auto policy_data = storage_service->ReadPolicyData();
     data.emplace_back(FormatDemoPageData(
         "Last heavyweight promo at", policy_data.last_heavyweight_promo_time));
+    if (!disabled && !policy_data.last_heavyweight_promo_time.is_null()) {
+      const base::Time heavyweight_promo_cooldown_end =
+          policy_data.last_heavyweight_promo_time +
+          user_education::features::GetLowPriorityCooldown();
+      data.emplace_back(FormatDemoPageData("Heavyweight promo cooldown ends",
+                                           heavyweight_promo_cooldown_end));
+    }
   }
   if (!base::FeatureList::IsEnabled(
           user_education::features::kUserEducationExperienceVersion2)) {
@@ -596,6 +641,10 @@ void UserEducationInternalsPageHandlerImpl::ClearSessionData(
   user_education::FeaturePromoSessionData session_data;
   session_data.most_recent_active_time = storage_service->GetCurrentTime();
   storage_service->SaveSessionData(session_data);
+
+  // Push the profile creation date far enough into the past that the grace
+  // period isn't relevant.
+  storage_service->set_profile_creation_time(base::Time());
 
   std::move(callback).Run(std::string());
 }

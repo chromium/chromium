@@ -11,6 +11,7 @@
 #include <sstream>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -721,4 +722,39 @@ IN_PROC_BROWSER_TEST_P(BrowserUserEducationServiceRecentSessionsTest,
       UserEducationServiceFactory::GetForBrowserContext(browser()->profile())
           ->recent_session_tracker();
   EXPECT_EQ(GetParam(), result != nullptr);
+}
+
+// Verify that the "disable rate limiting" command line arg works.
+class BrowserUserEducationServiceCommandLineTest
+    : public BrowserUserEducationServiceBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    if (GetParam()) {
+      command_line->AppendSwitch("--disable-user-education-rate-limiting");
+    }
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         BrowserUserEducationServiceCommandLineTest,
+                         testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(BrowserUserEducationServiceCommandLineTest,
+                       DisableUserEducationRateLimiting) {
+  if (GetParam()) {
+    EXPECT_EQ(user_education::features::GetLowPriorityCooldown(),
+              base::Seconds(0));
+    EXPECT_EQ(user_education::features::GetSessionStartGracePeriod(),
+              base::Seconds(0));
+    EXPECT_EQ(user_education::features::GetNewProfileGracePeriod(),
+              base::Seconds(0));
+  } else {
+    EXPECT_GT(user_education::features::GetLowPriorityCooldown(),
+              base::Seconds(0));
+    EXPECT_GT(user_education::features::GetSessionStartGracePeriod(),
+              base::Seconds(0));
+    EXPECT_GT(user_education::features::GetNewProfileGracePeriod(),
+              base::Seconds(0));
+  }
 }

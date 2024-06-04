@@ -16,6 +16,7 @@
 
 // Declare in the global namespace for test purposes.
 class FeaturePromoStorageInteractiveTest;
+class UserEducationInternalsPageHandlerImpl;
 
 namespace user_education {
 
@@ -90,6 +91,8 @@ class FeaturePromoStorageService {
   void set_clock_for_testing(const base::Clock* clock) { clock_ = clock; }
 
  protected:
+  friend UserEducationInternalsPageHandlerImpl;
+
   // Sets the profile creation time; used by derived classes.
   void set_profile_creation_time(base::Time profile_creation_time) {
     profile_creation_time_ = profile_creation_time;

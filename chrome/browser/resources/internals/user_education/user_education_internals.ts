@@ -74,7 +74,8 @@ class UserEducationInternalsElement extends UserEducationInternalsElementBase {
       narrow_: Boolean,
 
       /**
-       * Indicates if the list of promo data is expanded or collapsed.
+       * Indicates if the information about session data is expanded or
+       * collapsed.
        */
       sessionExpanded_: {
         type: Boolean,
