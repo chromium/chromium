@@ -29,7 +29,7 @@ class FakeSyncService : public SyncService {
   FakeSyncService();
   ~FakeSyncService() override;
 
-  // Dummy methods.
+  // Fake methods.
   // SyncService implementation.
 #if BUILDFLAG(IS_ANDROID)
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject() override;

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_MODEL_DUMMY_METADATA_CHANGE_LIST_H_
-#define COMPONENTS_SYNC_MODEL_DUMMY_METADATA_CHANGE_LIST_H_
+#ifndef COMPONENTS_SYNC_MODEL_EMPTY_METADATA_CHANGE_LIST_H_
+#define COMPONENTS_SYNC_MODEL_EMPTY_METADATA_CHANGE_LIST_H_
 
 #include <string>
 
@@ -12,10 +12,10 @@
 namespace syncer {
 
 // A MetadataChangeList class that does not store anything.
-class DummyMetadataChangeList : public MetadataChangeList {
+class EmptyMetadataChangeList : public MetadataChangeList {
  public:
-  DummyMetadataChangeList();
-  ~DummyMetadataChangeList() override;
+  EmptyMetadataChangeList();
+  ~EmptyMetadataChangeList() override;
 
   // MetadataChangeList implementation.
   void UpdateModelTypeState(
@@ -28,4 +28,4 @@ class DummyMetadataChangeList : public MetadataChangeList {
 
 }  // namespace syncer
 
-#endif  // COMPONENTS_SYNC_MODEL_DUMMY_METADATA_CHANGE_LIST_H_
+#endif  // COMPONENTS_SYNC_MODEL_EMPTY_METADATA_CHANGE_LIST_H_

@@ -196,10 +196,10 @@ class TestSyncedWindowDelegatesGetter : public SyncedWindowDelegatesGetter {
   const SyncedWindowDelegate* FindById(SessionID session_id) override;
 
  private:
-  class DummyRouter : public LocalSessionEventRouter {
+  class TestRouter : public LocalSessionEventRouter {
    public:
-    DummyRouter();
-    ~DummyRouter() override;
+    TestRouter();
+    ~TestRouter() override;
     void StartRoutingTo(LocalSessionEventHandler* handler) override;
     void Stop() override;
     void NotifyNav(SyncedTabDelegate* tab);
@@ -212,7 +212,7 @@ class TestSyncedWindowDelegatesGetter : public SyncedWindowDelegatesGetter {
   SyncedWindowDelegateMap delegates_;
   std::vector<std::unique_ptr<TestSyncedWindowDelegate>> windows_;
   std::vector<std::unique_ptr<TestSyncedTabDelegate>> tabs_;
-  DummyRouter router_;
+  TestRouter router_;
 };
 
 }  // namespace sync_sessions

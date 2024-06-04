@@ -371,7 +371,7 @@ sync_pb::SyncEntity* MockConnectionManager::AddUpdateFromLastCommit() {
 
 void MockConnectionManager::AddUpdateTombstone(const std::string& id,
                                                ModelType type) {
-  // Tombstones have only the ID set and dummy values for the required fields.
+  // Tombstones have only the ID set and fake values for the required fields.
   sync_pb::SyncEntity* ent = GetUpdateResponse()->add_entries();
   ent->set_id_string(id);
   ent->set_version(0);

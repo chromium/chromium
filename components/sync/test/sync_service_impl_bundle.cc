@@ -50,7 +50,7 @@ SyncServiceImpl::InitParams SyncServiceImplBundle::CreateBasicInitParams(
           &test_url_loader_factory_);
   init_params.network_connection_tracker =
       network::TestNetworkConnectionTracker::GetInstance();
-  init_params.debug_identifier = "dummyDebugName";
+  init_params.debug_identifier = "fakeDebugName";
 
   return init_params;
 }

@@ -2761,7 +2761,7 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
        ShouldPropagateFailedCommitItemsToBridgeWhenCommitCompleted) {
   InitializeToReadyState();
   FailedCommitResponseData response_data;
-  response_data.client_tag_hash = GetPrefHash("dummy tag");
+  response_data.client_tag_hash = GetPrefHash("fake tag");
   response_data.response_type = sync_pb::CommitResponse::TRANSIENT_ERROR;
   response_data.datatype_specific_error.mutable_sharing_message_error()
       ->set_error_code(sync_pb::SharingMessageCommitError::INVALID_ARGUMENT);

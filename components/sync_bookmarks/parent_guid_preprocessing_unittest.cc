@@ -166,28 +166,28 @@ TEST(ParentGuidPreprocessingTest,
 
   // Non-empty specifics are needed for SyncedBookmarkTracker::Add(), with
   // unique position populated.
-  sync_pb::EntitySpecifics dummy_specifics;
-  dummy_specifics.mutable_bookmark()->mutable_unique_position();
+  sync_pb::EntitySpecifics fake_specifics;
+  fake_specifics.mutable_bookmark()->mutable_unique_position();
 
   // BookmarkModelView is used here to pass DCHECKs that require that permanent
   // folders are tracked.
   TestBookmarkModelView bookmark_model;
   tracker->Add(bookmark_model.bookmark_bar_node(), /*sync_id=*/kBookmarkBarId,
                /*server_version=*/0, /*creation_time=*/base::Time::Now(),
-               /*specifics=*/dummy_specifics);
+               /*specifics=*/fake_specifics);
   tracker->Add(bookmark_model.other_node(), /*sync_id=*/"other_node_id",
                /*server_version=*/0, /*creation_time=*/base::Time::Now(),
-               /*specifics=*/dummy_specifics);
+               /*specifics=*/fake_specifics);
   tracker->Add(bookmark_model.mobile_node(), /*sync_id=*/"mobile_node_id",
                /*server_version=*/0, /*creation_time=*/base::Time::Now(),
-               /*specifics=*/dummy_specifics);
+               /*specifics=*/fake_specifics);
 
   // Add one regular (non-permanent) node.
   bookmarks::BookmarkNode tracked_node(/*id=*/1, base::Uuid::GenerateRandomV4(),
                                        GURL());
   tracker->Add(&tracked_node, kSyncId,
                /*server_version=*/0, /*creation_time=*/base::Time::Now(),
-               /*specifics=*/dummy_specifics);
+               /*specifics=*/fake_specifics);
 
   syncer::UpdateResponseDataList updates;
   updates.emplace_back();

@@ -15,7 +15,7 @@
 
 namespace syncer {
 
-// Dummy methods
+// Fake methods
 
 FakeSyncService::FakeSyncService() = default;
 

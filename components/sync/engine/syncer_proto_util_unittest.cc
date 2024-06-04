@@ -212,9 +212,9 @@ TEST_F(SyncerProtoUtilTest, VerifyEncryptionObsolete) {
   EXPECT_EQ(DISABLE_SYNC_ON_CLIENT, sync_protocol_error.action);
 }
 
-class DummyConnectionManager : public ServerConnectionManager {
+class FakeConnectionManager : public ServerConnectionManager {
  public:
-  explicit DummyConnectionManager(
+  explicit FakeConnectionManager(
       const sync_pb::ClientToServerResponse& response)
       : response_(response) {}
 
@@ -238,7 +238,7 @@ class DummyConnectionManager : public ServerConnectionManager {
 };
 
 TEST_F(SyncerProtoUtilTest, PostAndProcessHeaders) {
-  DummyConnectionManager dcm(ClientToServerResponse{});
+  FakeConnectionManager dcm(ClientToServerResponse{});
   ClientToServerMessage msg;
   SyncerProtoUtil::SetProtocolVersion(&msg);
   msg.set_share("required");
@@ -262,7 +262,7 @@ TEST_F(SyncerProtoUtilTest, PostAndProcessHeaders) {
 TEST_F(SyncerProtoUtilTest, ShouldHandleGetUpdatesRetryDelay) {
   ClientToServerResponse response_to_return = DefaultGetUpdatesResponse();
   response_to_return.mutable_client_command()->set_gu_retry_delay_seconds(900);
-  DummyConnectionManager dcm(response_to_return);
+  FakeConnectionManager dcm(response_to_return);
 
   testing::NiceMock<MockSyncScheduler> mock_sync_scheduler;
   EXPECT_CALL(mock_sync_scheduler, OnReceivedGuRetryDelay(base::Seconds(900)));
@@ -291,7 +291,7 @@ TEST_F(SyncerProtoUtilTest, ShouldIgnoreGetUpdatesRetryDelay) {
 
   ClientToServerResponse response_to_return = DefaultGetUpdatesResponse();
   response_to_return.mutable_client_command()->set_gu_retry_delay_seconds(900);
-  DummyConnectionManager dcm(response_to_return);
+  FakeConnectionManager dcm(response_to_return);
 
   // Verify that OnReceivedGuRetryDelay is not called despite
   // gu_retry_delay_seconds command.

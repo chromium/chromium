@@ -200,7 +200,7 @@ class MockSyncPrefObserver : public SyncPrefObserver {
 
 TEST_F(SyncPrefsTest, ObservedPrefs) {
   StrictMock<MockSyncPrefObserver> mock_sync_pref_observer;
-  InSequence dummy;
+  InSequence in_sequence;
   EXPECT_CALL(mock_sync_pref_observer, OnSyncManagedPrefChange(true));
   EXPECT_CALL(mock_sync_pref_observer, OnSyncManagedPrefChange(false));
 
@@ -219,7 +219,7 @@ TEST_F(SyncPrefsTest, ObservedPrefs) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(SyncPrefsTest, FirstSetupCompletePrefChange) {
   StrictMock<MockSyncPrefObserver> mock_sync_pref_observer;
-  InSequence dummy;
+  InSequence in_sequence;
 
   EXPECT_CALL(mock_sync_pref_observer, OnFirstSetupCompletePrefChange(true));
   EXPECT_CALL(mock_sync_pref_observer, OnFirstSetupCompletePrefChange(false));

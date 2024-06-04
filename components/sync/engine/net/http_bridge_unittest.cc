@@ -109,7 +109,7 @@ class MAYBE_SyncHttpBridgeTest : public testing::Test {
 };
 
 // An HttpBridge that doesn't actually make network requests and just calls
-// back with dummy response info.
+// back with fake response info.
 // TODO(tim): Instead of inheriting here we should inject a component
 // responsible for the MakeAsynchronousPost bit.
 class ShuntedHttpBridge : public HttpBridge {
@@ -142,7 +142,7 @@ class ShuntedHttpBridge : public HttpBridge {
   void CallOnURLFetchComplete() {
     ASSERT_TRUE(test_->GetIOThreadTaskRunner()->BelongsToCurrentThread());
 
-    // Set up a dummy content response.
+    // Set up a fake content response.
     OnURLLoadCompleteInternal(200, net::OK, GURL("http://www.google.com"),
                               std::make_unique<std::string>("success!"));
   }

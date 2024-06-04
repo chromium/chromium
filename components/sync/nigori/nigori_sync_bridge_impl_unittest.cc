@@ -37,7 +37,7 @@ using testing::Not;
 using testing::NotNull;
 using testing::Return;
 
-NigoriMetadataBatch CreateDummyNigoriMetadataBatch(
+NigoriMetadataBatch CreateFakeNigoriMetadataBatch(
     const std::string& progress_marker_token,
     int64_t entity_metadata_sequence_number);
 
@@ -137,13 +137,13 @@ MATCHER(IsEmptyMetadataBatch, "") {
   return given.entity_metadata == std::nullopt;
 }
 
-MATCHER_P2(IsDummyNigoriMetadataBatchWithTokenAndSequenceNumber,
+MATCHER_P2(IsFakeNigoriMetadataBatchWithTokenAndSequenceNumber,
            expected_token,
            expected_sequence_number,
            "") {
   const NigoriMetadataBatch& given = arg;
   NigoriMetadataBatch expected =
-      CreateDummyNigoriMetadataBatch(expected_token, expected_sequence_number);
+      CreateFakeNigoriMetadataBatch(expected_token, expected_sequence_number);
   if (given.model_type_state.SerializeAsString() !=
       expected.model_type_state.SerializeAsString()) {
     return false;
@@ -164,7 +164,7 @@ CrossUserSharingKeys CreateNewCrossUserSharingKeys() {
   return cross_user_sharing_keys;
 }
 
-NigoriMetadataBatch CreateDummyNigoriMetadataBatch(
+NigoriMetadataBatch CreateFakeNigoriMetadataBatch(
     const std::string& progress_marker_token,
     int64_t entity_metadata_sequence_number) {
   NigoriMetadataBatch metadata_batch;
@@ -285,8 +285,8 @@ class NigoriSyncBridgeImplTest : public testing::Test {
   NigoriSyncBridgeImplTest() {
     ON_CALL(processor_, IsTrackingMetadata).WillByDefault(Return(true));
     ON_CALL(processor_, GetMetadata()).WillByDefault([&] {
-      return CreateDummyNigoriMetadataBatch(
-          "dummy_token", /*entity_metadata_sequence_number=*/100);
+      return CreateFakeNigoriMetadataBatch(
+          "fake_token", /*entity_metadata_sequence_number=*/100);
     });
     InitializeBridge();
   }
@@ -1265,11 +1265,11 @@ TEST_F(NigoriSyncBridgeImplTest, ShouldNotAllowCustomPassphraseChange) {
 
 TEST_F(NigoriSyncBridgeImplTest, ShouldRestoreMetadata) {
   // Provide some custom metadata to verify that we store it.
-  const std::string kDummyProgressMarkerToken = "progress_token";
-  const int64_t kDummySequenceNumber = 105;
+  const std::string kFakeProgressMarkerToken = "progress_token";
+  const int64_t kFakeSequenceNumber = 105;
   ON_CALL(*processor(), GetMetadata()).WillByDefault([&] {
-    return CreateDummyNigoriMetadataBatch(kDummyProgressMarkerToken,
-                                          kDummySequenceNumber);
+    return CreateFakeNigoriMetadataBatch(kFakeProgressMarkerToken,
+                                         kFakeSequenceNumber);
   });
 
   // Mimic initial sync, this should store metadata in nigori_local_data().
@@ -1280,8 +1280,8 @@ TEST_F(NigoriSyncBridgeImplTest, ShouldRestoreMetadata) {
   EXPECT_CALL(
       *processor(),
       ModelReadyToSync(NotNull(),
-                       IsDummyNigoriMetadataBatchWithTokenAndSequenceNumber(
-                           kDummyProgressMarkerToken, kDummySequenceNumber)));
+                       IsFakeNigoriMetadataBatchWithTokenAndSequenceNumber(
+                           kFakeProgressMarkerToken, kFakeSequenceNumber)));
   MimicRestartWithLocalData(nigori_local_data());
 }
 

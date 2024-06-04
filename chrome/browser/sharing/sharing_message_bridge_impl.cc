@@ -7,7 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/uuid.h"
 #include "chrome/browser/sharing/features.h"
-#include "components/sync/model/dummy_metadata_change_list.h"
+#include "components/sync/model/empty_metadata_change_list.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "net/base/network_change_notifier.h"
@@ -116,7 +116,7 @@ std::unique_ptr<syncer::MetadataChangeList>
 SharingMessageBridgeImpl::CreateMetadataChangeList() {
   // The data type intentionally doesn't persist the data on disk, so metadata
   // is just ignored.
-  return std::make_unique<syncer::DummyMetadataChangeList>();
+  return std::make_unique<syncer::EmptyMetadataChangeList>();
 }
 
 std::optional<syncer::ModelError> SharingMessageBridgeImpl::MergeFullSyncData(

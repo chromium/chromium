@@ -13,7 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/reading_list/core/reading_list_entry.h"
 #include "components/reading_list/core/reading_list_model_storage.h"
-#include "components/sync/model/dummy_metadata_change_list.h"
+#include "components/sync/model/empty_metadata_change_list.h"
 #include "components/sync/model/metadata_batch.h"
 
 // Test-only implementation of ReadingListModelStorage that doesn't do any
@@ -44,7 +44,7 @@ class FakeReadingListModelStorage final : public ReadingListModelStorage {
 
    private:
     const raw_ptr<Observer> observer_ = nullptr;
-    syncer::DummyMetadataChangeList sync_metadata_change_list;
+    syncer::EmptyMetadataChangeList sync_metadata_change_list;
   };
 
   FakeReadingListModelStorage();

@@ -9,7 +9,7 @@
 #include "base/uuid.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/sharing/password_sender_service.h"
-#include "components/sync/model/dummy_metadata_change_list.h"
+#include "components/sync/model/empty_metadata_change_list.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/model_type_change_processor.h"
@@ -88,7 +88,7 @@ OutgoingPasswordSharingInvitationSyncBridge::CreateMetadataChangeList() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // The data type intentionally doesn't persist the data on disk, so metadata
   // is just ignored.
-  return std::make_unique<syncer::DummyMetadataChangeList>();
+  return std::make_unique<syncer::EmptyMetadataChangeList>();
 }
 
 void OutgoingPasswordSharingInvitationSyncBridge::SendPasswordGroup(

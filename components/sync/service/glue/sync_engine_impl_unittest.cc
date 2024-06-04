@@ -165,7 +165,7 @@ class SyncEngineImplTest : public testing::Test {
         .WillByDefault(Return(
             ByMove(ActiveDevicesInvalidationInfo::CreateUninitialized())));
     backend_ = std::make_unique<SyncEngineImpl>(
-        "dummyDebugName", &mock_sync_invalidations_service_,
+        "fakeDebugName", &mock_sync_invalidations_service_,
         std::move(mock_active_devices_provider),
         std::make_unique<SyncTransportDataPrefs>(
             &pref_service_, signin::GaiaIdHash::FromGaiaId(kTestGaiaId)),
