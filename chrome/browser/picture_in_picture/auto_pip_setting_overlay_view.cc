@@ -17,7 +17,7 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
 
-constexpr float kOverlayViewOpacity = 0.7f;
+constexpr float kOverlayViewOpacity = 0.99f;
 
 // The time duration for |background_| to fade in.
 constexpr int kFadeInDurationMs = 500;
@@ -46,7 +46,7 @@ AutoPipSettingOverlayView::AutoPipSettingOverlayView(
       AddChildView(views::Builder<views::View>()
                        .SetPaintToLayer()
                        .SetBackground(views::CreateThemedSolidBackground(
-                           kColorPipWindowBackground))
+                           ui::kColorSysStateScrim))
                        .Build());
   background_->layer()->SetOpacity(0.0f);
   FadeInLayer(background_->layer());
