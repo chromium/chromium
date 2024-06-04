@@ -1853,7 +1853,7 @@ BASE_FEATURE(kLinkCrossDeviceInternals,
 // (This feature is only available for consumer users)
 BASE_FEATURE(kLocalPasswordForConsumers,
              "LocalPasswordForConsumers",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Supports the feature to hide sensitive content in notifications on the lock
 // screen. This option is effective when |kLockScreenNotification| is enabled.
