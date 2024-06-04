@@ -717,6 +717,7 @@
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
+            "device_os": "AP1A.240405.002",
             "device_os_flavor": "google",
             "device_type": "oriole",
             "os": "Android",
@@ -760,6 +761,7 @@
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
+            "device_os": "AP1A.240405.002",
             "device_os_flavor": "google",
             "device_type": "oriole",
             "os": "Android",
@@ -803,6 +805,7 @@
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
+            "device_os": "AP1A.240405.002",
             "device_os_flavor": "google",
             "device_type": "raven",
             "os": "Android",
@@ -846,6 +849,7 @@
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
+            "device_os": "AP1A.240405.002",
             "device_os_flavor": "google",
             "device_type": "raven",
             "os": "Android",
