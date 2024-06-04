@@ -30,18 +30,16 @@ using plus_addresses::FakePlusAddressService;
 
 class PlusAddressBottomSheetMediatorTest : public PlatformTest {
  protected:
-  PlusAddressBottomSheetMediatorTest() {}
-
-  void SetUp() override {
-    consumer_ = OCMProtocolMock(@protocol(PlusAddressBottomSheetConsumer));
-    browser_state_ = TestChromeBrowserState::Builder().Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
-    UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser_.get());
-    FakeUrlLoadingBrowserAgent::InjectForBrowser(browser_.get());
+  PlusAddressBottomSheetMediatorTest()
+      : consumer_(OCMProtocolMock(@protocol(PlusAddressBottomSheetConsumer))),
+        browser_state_(TestChromeBrowserState::Builder().Build()),
+        browser_(browser_state_.get()),
+        service_(
+            IdentityManagerFactory::GetForBrowserState(browser_state_.get())) {
+    UrlLoadingNotifierBrowserAgent::CreateForBrowser(&browser_);
+    FakeUrlLoadingBrowserAgent::InjectForBrowser(&browser_);
     url_loader_ = FakeUrlLoadingBrowserAgent::FromUrlLoadingBrowserAgent(
-        UrlLoadingBrowserAgent::FromBrowser(browser_.get()));
-    service_ = std::make_unique<FakePlusAddressService>(
-        IdentityManagerFactory::GetForBrowserState(browser_state_.get()));
+        UrlLoadingBrowserAgent::FromBrowser(&browser_));
     BOOL incognito = browser_state_.get()->IsOffTheRecord();
     mediator_ = [[PlusAddressBottomSheetMediator alloc]
         initWithPlusAddressService:&service()
@@ -52,7 +50,7 @@ class PlusAddressBottomSheetMediatorTest : public PlatformTest {
     mediator_.consumer = consumer_;
   }
 
-  FakePlusAddressService& service() { return *service_; }
+  FakePlusAddressService& service() { return service_; }
   PlusAddressBottomSheetMediator* mediator() { return mediator_; }
   FakeUrlLoadingBrowserAgent* url_loader() { return url_loader_.get(); }
 
@@ -61,9 +59,9 @@ class PlusAddressBottomSheetMediatorTest : public PlatformTest {
  private:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
-  std::unique_ptr<Browser> browser_;
+  TestBrowser browser_;
+  FakePlusAddressService service_;
   raw_ptr<FakeUrlLoadingBrowserAgent> url_loader_;
-  std::unique_ptr<FakePlusAddressService> service_;
   PlusAddressBottomSheetMediator* mediator_ = nil;
 };
 
