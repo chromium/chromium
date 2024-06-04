@@ -51,7 +51,7 @@ class TransferCacheTestHelper : public TransferCacheDeserializeHelper,
   // Serialization helpers.
   bool LockEntryInternal(const EntryKey& key) override;
   uint32_t CreateEntryInternal(const ClientTransferCacheEntry& entry,
-                               char* memory) override;
+                               uint8_t* memory) override;
   void FlushEntriesInternal(std::set<EntryKey> keys) override;
 
  private:

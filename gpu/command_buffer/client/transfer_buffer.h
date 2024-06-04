@@ -227,7 +227,7 @@ class GPU_EXPORT ScopedTransferBufferPtr {
   }
 
   // Returns true if |memory| lies inside this buffer.
-  bool BelongsToBuffer(char* memory) const;
+  bool BelongsToBuffer(uint8_t* memory) const;
 
   void Release();
 

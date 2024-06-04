@@ -190,7 +190,7 @@ class RasterImplementation::TransferCacheSerializeHelperImpl final
   }
 
   uint32_t CreateEntryInternal(const cc::ClientTransferCacheEntry& entry,
-                               char* memory) final {
+                               uint8_t* memory) final {
     uint32_t size = entry.SerializedSize();
     // Cap the entries inlined to a specific size.
     if (size <= ri_->max_inlined_entry_size_ && ri_->raster_mapped_buffer_) {
@@ -224,7 +224,7 @@ class RasterImplementation::TransferCacheSerializeHelperImpl final
   // Writes the entry into |memory| if there is enough space. Returns the number
   // of bytes written on success or 0u on failure due to insufficient size.
   uint32_t InlineEntry(const cc::ClientTransferCacheEntry& entry,
-                       char* memory) {
+                       uint8_t* memory) {
     DCHECK(memory);
     DCHECK(SkIsAlign4(reinterpret_cast<uintptr_t>(memory)));
 
@@ -233,10 +233,10 @@ class RasterImplementation::TransferCacheSerializeHelperImpl final
     const auto& buffer = ri_->raster_mapped_buffer_;
     DCHECK(buffer->BelongsToBuffer(memory));
 
-    DCHECK(base::CheckedNumeric<uint32_t>(memory -
-                                          static_cast<char*>(buffer->address()))
+    DCHECK(base::CheckedNumeric<uint32_t>(
+               memory - static_cast<uint8_t*>(buffer->address()))
                .IsValid());
-    uint32_t memory_offset = memory - static_cast<char*>(buffer->address());
+    uint32_t memory_offset = memory - static_cast<uint8_t*>(buffer->address());
     uint32_t bytes_to_write = entry.SerializedSize();
     uint32_t bytes_remaining = buffer->size() - memory_offset;
     DCHECK_GT(bytes_to_write, 0u);

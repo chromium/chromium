@@ -23,7 +23,7 @@ class CC_PAINT_EXPORT TransferCacheSerializeHelper {
   // The PaintOpWriter passes the address where the transfer cache may inline
   // this entry. The size returned is the memory used if the entry is inlined,
   // or 0u if no data is inlined.
-  uint32_t CreateEntry(const ClientTransferCacheEntry& entry, char* memory);
+  uint32_t CreateEntry(const ClientTransferCacheEntry& entry, uint8_t* memory);
   void FlushEntries();
 
   void AssertLocked(TransferCacheEntryType type, uint32_t id);
@@ -33,7 +33,7 @@ class CC_PAINT_EXPORT TransferCacheSerializeHelper {
 
   virtual bool LockEntryInternal(const EntryKey& key) = 0;
   virtual uint32_t CreateEntryInternal(const ClientTransferCacheEntry& entry,
-                                       char* memory) = 0;
+                                       uint8_t* memory) = 0;
   virtual void FlushEntriesInternal(std::set<EntryKey> keys) = 0;
 
  private:

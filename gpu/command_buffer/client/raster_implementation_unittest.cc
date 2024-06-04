@@ -828,13 +828,13 @@ TEST_F(RasterImplementationTest, TransferCacheSerialization) {
   ScopedTransferBufferPtr buffer(buffer_size, helper_, transfer_buffer_);
   ASSERT_EQ(buffer.size(), buffer_size);
 
-  char* buffer_start = reinterpret_cast<char*>(buffer.address());
+  uint8_t* buffer_start = reinterpret_cast<uint8_t*>(buffer.address());
   memset(buffer_start, 0, buffer_size);
   gl_->SetRasterMappedBufferForTesting(std::move(buffer));
   auto transfer_cache = gl_->CreateTransferCacheHelperForTesting();
 
   std::vector<uint8_t> data(buffer_size - 16u);
-  char* memory = buffer_start + 8u;
+  uint8_t* memory = buffer_start + 8u;
   cc::ClientRawMemoryTransferCacheEntry inlined_entry(data);
   EXPECT_EQ(transfer_cache->CreateEntry(inlined_entry, memory), data.size());
   EXPECT_EQ(memcmp(data.data(), memory, data.size()), 0);

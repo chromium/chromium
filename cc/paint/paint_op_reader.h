@@ -361,7 +361,7 @@ class CC_PAINT_EXPORT PaintOpReader {
     }
   }
 
-  const volatile char* memory_ = nullptr;
+  const volatile uint8_t* memory_ = nullptr;
   size_t remaining_bytes_ = 0u;
   bool valid_ = true;
   const PaintOp::DeserializeOptions& options_;

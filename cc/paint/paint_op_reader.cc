@@ -69,12 +69,12 @@ PaintOpReader::PaintOpReader(const volatile void* memory,
                              size_t size,
                              const PaintOp::DeserializeOptions& options,
                              bool enable_security_constraints)
-    : memory_(static_cast<const volatile char*>(memory)),
+    : memory_(static_cast<const volatile uint8_t*>(memory)),
       remaining_bytes_(
           base::bits::AlignDown(size, PaintOpWriter::kDefaultAlignment)),
       options_(options),
       enable_security_constraints_(enable_security_constraints) {
-  PaintOpWriter::AssertAlignment(memory, BufferAlignment());
+  PaintOpWriter::AssertAlignment(memory_, BufferAlignment());
 }
 
 // static
@@ -132,7 +132,7 @@ void PaintOpReader::ReadSimple(T* val) {
   // used for SkRect/SkIRect/SkMatrix whose implicit operator= can't use a
   // volatile.  TOCTOU violations don't matter for these simple types so
   // use assignment.
-  *val = *reinterpret_cast<const T*>(const_cast<const char*>(memory_));
+  *val = *reinterpret_cast<const T*>(const_cast<const uint8_t*>(memory_));
 
   memory_ += size;
   remaining_bytes_ -= size;
@@ -145,7 +145,7 @@ uint8_t* PaintOpReader::CopyScratchSpace(size_t bytes) {
   if (options_.scratch_buffer.size() < bytes) {
     options_.scratch_buffer.resize(bytes);
   }
-  memcpy(options_.scratch_buffer.data(), const_cast<const char*>(memory_),
+  memcpy(options_.scratch_buffer.data(), const_cast<const uint8_t*>(memory_),
          bytes);
   return options_.scratch_buffer.data();
 }
@@ -160,7 +160,7 @@ void PaintOpReader::ReadData(size_t bytes, void* data) {
     return;
   }
 
-  memcpy(data, const_cast<const char*>(memory_), bytes);
+  memcpy(data, const_cast<const uint8_t*>(memory_), bytes);
   DidRead(bytes);
 }
 
@@ -547,7 +547,7 @@ void PaintOpReader::Read(sk_sp<SkData>* data) {
   }
 
   // This is safe to cast away the volatile as it is just a memcpy internally.
-  *data = SkData::MakeWithCopy(const_cast<const char*>(memory_), bytes);
+  *data = SkData::MakeWithCopy(const_cast<const uint8_t*>(memory_), bytes);
   DidRead(bytes);
 }
 
@@ -608,7 +608,7 @@ void PaintOpReader::Read(sk_sp<sktext::gpu::Slug>* slug) {
     return;
   }
 
-  *slug = sktext::gpu::Slug::Deserialize(const_cast<const char*>(memory_),
+  *slug = sktext::gpu::Slug::Deserialize(const_cast<const uint8_t*>(memory_),
                                          data_bytes, options_.strike_client);
   DidRead(data_bytes);
 

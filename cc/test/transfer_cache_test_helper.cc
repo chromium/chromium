@@ -108,7 +108,7 @@ bool TransferCacheTestHelper::LockEntryInternal(const EntryKey& key) {
 
 uint32_t TransferCacheTestHelper::CreateEntryInternal(
     const ClientTransferCacheEntry& client_entry,
-    char* memory) {
+    uint8_t* memory) {
   auto key = std::make_pair(client_entry.Type(), client_entry.Id());
   DCHECK(!base::Contains(entries_, key));
 
