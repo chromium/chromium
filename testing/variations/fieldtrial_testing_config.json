@@ -3331,6 +3331,28 @@
             ]
         }
     ],
+    "CSSLazyParsingFastPath": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CSSLazyParsingFastPath"
+                    ]
+                }
+            ]
+        }
+    ],
     "CVDisplayLinkBeginFrameSource": [
         {
             "platforms": [
