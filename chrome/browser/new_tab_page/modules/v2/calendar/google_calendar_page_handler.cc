@@ -86,6 +86,7 @@ ntp::calendar::mojom::CalendarEventPtr GetFakeEvent(int index) {
   event->title = "Calendar Event " + base::NumberToString(index);
   event->start_time = base::Time::Now() + base::Minutes(index * 30);
   event->url = GURL("https://foo.com/" + base::NumberToString(index));
+  event->location = "Conference Room " + base::NumberToString(index);
   return event;
 }
 
@@ -204,6 +205,7 @@ void GoogleCalendarPageHandler::OnRequestComplete(
       formatted_event->title = event->summary();
       formatted_event->start_time = event->start_time().date_time();
       formatted_event->url = GURL(event->html_link());
+      formatted_event->location = event->location();
       result.push_back(std::move(formatted_event));
     }
   }

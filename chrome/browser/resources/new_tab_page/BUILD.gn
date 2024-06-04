@@ -34,6 +34,7 @@ build_webui("build") {
     "$target_gen_dir/modules/feed/icons/resources.grdp",
     "$target_gen_dir/modules/photos/icons/resources.grdp",
     "$target_gen_dir/modules/photos/images/resources.grdp",
+    "$target_gen_dir/modules/v2/calendar/icons/resources.grdp",
   ]
 
   extra_grdp_deps = [
@@ -42,6 +43,7 @@ build_webui("build") {
     "modules/feed/icons:build_grdp",
     "modules/photos/icons:build_grdp",
     "modules/photos/images:build_grdp",
+    "modules/v2/calendar/icons:build_grdp",
   ]
 
   if (optimize_webui) {

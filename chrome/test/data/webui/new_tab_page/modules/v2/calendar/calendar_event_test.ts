@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 import {CalendarEventElement} from 'chrome://new-tab-page/lazy_load.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {$$} from 'chrome://new-tab-page/new_tab_page.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
@@ -32,6 +33,7 @@ suite('NewTabPageModulesCalendaEventTest', () => {
       title,
       startTime: {internalValue: convertedStartTime},
       url: {url: 'http://foo.com/1'},
+      location: '',
     };
     await waitAfterNextRender(element);
 
@@ -42,5 +44,52 @@ suite('NewTabPageModulesCalendaEventTest', () => {
     assertEquals(element.$.title.innerHTML, title);
     assertEquals(element.$.startTime.innerHTML, '3:04am');
     assertEquals(element.$.header.href, element.event.url.url);
+  });
+
+  test('Expanded event shows extra info', async () => {
+    element.expanded = true;
+    element.event = {
+      title: 'Test title',
+      startTime: {internalValue: 1230000000000n},
+      url: {url: 'http://foo.com/1'},
+      location: 'Conference Room 0',
+    };
+    await waitAfterNextRender(element);
+
+    // Assert.
+    const locationElement = $$(element, '#location');
+    assertTrue(!!locationElement);
+    assertTrue(isVisible(locationElement));
+  });
+
+  test('Non-expanded event hides extra info', async () => {
+    element.expanded = false;
+    element.event = {
+      title: 'Test title',
+      startTime: {internalValue: 1230000000000n},
+      url: {url: 'http://foo.com/1'},
+      location: 'Conference Room 0',
+    };
+    await waitAfterNextRender(element);
+
+    // Assert.
+    const locationElement = $$(element, '#location');
+    assertTrue(!locationElement);
+  });
+
+  test('location hidden if empty', async () => {
+    element.expanded = true;
+    element.event = {
+      title: 'Test title',
+      startTime: {internalValue: 1230000000000n},
+      url: {url: 'http://foo.com/1'},
+      location: '',
+    };
+    await waitAfterNextRender(element);
+
+    // Assert.
+    const locationElement = $$(element, '#location');
+    assertTrue(!!locationElement);
+    assertFalse(isVisible(locationElement));
   });
 });

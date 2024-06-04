@@ -15,6 +15,8 @@ struct CalendarEvent {
   mojo_base.mojom.Time start_time;
   // Url to event in the user's calendar.
   url.mojom.Url url;
+  // Location of the event. Optional.
+  string? location;
 };
 
 // Browser-side handler for requests from NTP Module UI.

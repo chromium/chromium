@@ -1,9 +1,7 @@
-<style>
+<style include="cr-icons cr-hidden-style">
   :host {
     box-sizing: border-box;
     display: block;
-    font-size: var(--ntp-module-text-size);
-    line-height: var(--ntp-module-line-height);
     width: 100%;
   }
 
@@ -16,6 +14,8 @@
     column-gap: 4px;
     color: var(--color-new-tab-page-secondary-foreground);
     display: flex;
+    font-size: var(--ntp-module-text-size);
+    line-height: var(--ntp-module-line-height);
     text-decoration: none;
     width: 100%;
   }
@@ -24,8 +24,40 @@
     display: inline-block;
     width: 56px;
   }
+
+  #location {
+    column-gap: 8px;
+    display: flex;
+    margin-top: 8px;
+    width: 100%;
+  }
+
+  #location .cr-icon {
+    --cr-icon-color: var(--color-new-tab-page-secondary-foreground);
+    --cr-icon-image: url(modules/v2/calendar/icons/location.svg);
+    --cr-icon-size: 16px;
+    height: 16px;
+    margin: 0;
+    width: 16px;
+  }
+
+  #location p {
+    color: var(--color-new-tab-page-secondary-foreground);
+    font-size: 12px;
+    line-height: var(--ntp-module-secondary-line-height);
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 </style>
 <a id="header" href="[[event.url.url]]">
   <span id="startTime">[[formattedStartTime_]]</span>
   <span id="title">[[event.title]]</span>
 </a>
+<template is="dom-if" if="[[expanded]]">
+  <div id="location" hidden$="[[!showLocation_(event.location)]]">
+    <div class="cr-icon"></div>
+    <p>[[event.location]]</p>
+  </div>
+</template>

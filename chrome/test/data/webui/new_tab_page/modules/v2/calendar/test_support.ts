@@ -11,6 +11,7 @@ export function createEvents(num: number): CalendarEvent[] {
       title: `Test Event ${i}`,
       startTime: {internalValue: 123n},
       url: {url: `http://foo.com/${i}`},
+      location: `Location ${i}`,
     });
   }
   return events;

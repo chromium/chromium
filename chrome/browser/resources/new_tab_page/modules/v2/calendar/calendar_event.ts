@@ -1,6 +1,9 @@
 // Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
+import 'chrome://resources/cr_elements/cr_icons.css.js';
+
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {CalendarEvent} from '../../../google_calendar.mojom-webui.js';
@@ -47,6 +50,7 @@ export class CalendarEventElement extends PolymerElement {
   private formattedStartTime_: string;
 
   event: CalendarEvent;
+  expanded: boolean;
 
   private computeFormattedStartTime_(): string {
     const offsetDate =
@@ -58,6 +62,10 @@ export class CalendarEventElement extends PolymerElement {
     // Remove extra spacing and make AM/PM lower case.
     timeStr = timeStr.replace(' AM', 'am').replace(' PM', 'pm');
     return timeStr;
+  }
+
+  private showLocation_(): boolean {
+    return !!this.event.location;
   }
 }
 
