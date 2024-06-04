@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/device_notifications/device_status_icon_renderer.h"
+
 #include "base/i18n/message_formatter.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -14,6 +15,8 @@
 #include "chrome/grit/generated_resources.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/color_palette.h"
+#include "ui/gfx/paint_vector_icon.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/browser/extension_registry.h"
@@ -197,7 +200,9 @@ void DeviceStatusIconRenderer::RefreshIcon() {
 
   if (!status_icon_) {
     status_icon_ = status_tray->CreateStatusIcon(
-        StatusTray::OTHER_ICON, device_system_tray_icon_->GetIcon(),
+        StatusTray::OTHER_ICON,
+        gfx::CreateVectorIcon(device_system_tray_icon_->GetIcon(),
+                              gfx::kGoogleGrey300),
         title_label);
   } else {
     status_icon_->SetToolTip(title_label);

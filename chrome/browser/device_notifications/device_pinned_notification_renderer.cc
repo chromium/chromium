@@ -3,11 +3,14 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/device_notifications/device_pinned_notification_renderer.h"
+
+#include "ash/constants/ash_features.h"
 #include "base/i18n/message_formatter.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/device_notifications/device_connection_tracker.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
+#include "components/vector_icons/vector_icons.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -87,8 +90,22 @@ std::string DevicePinnedNotificationRenderer::GetNotificationId(
 std::unique_ptr<message_center::Notification>
 DevicePinnedNotificationRenderer::CreateNotification(Profile* profile) {
   message_center::RichNotificationData data;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // The new pinned notification view uses a settings icon button.
+  if (ash::features::AreOngoingProcessesEnabled()) {
+    data.buttons.emplace_back(message_center::ButtonInfo(
+        /*vector_icon=*/&vector_icons::kSettingsIcon,
+        /*accessible_name=*/device_system_tray_icon_
+            ->GetContentSettingsLabel()));
+  } else {
+    data.buttons.emplace_back(
+        device_system_tray_icon_->GetContentSettingsLabel());
+  }
+#else
   data.buttons.emplace_back(
       device_system_tray_icon_->GetContentSettingsLabel());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   auto* device_connection_tracker =
       device_system_tray_icon_->GetConnectionTracker(profile->GetWeakPtr());
   DCHECK(device_connection_tracker);
@@ -126,7 +143,7 @@ DevicePinnedNotificationRenderer::CreateNotification(Profile* profile) {
                                  notification_id),
 #endif
       data, std::move(delegate));
-  notification->SetSmallImage(gfx::Image(device_system_tray_icon_->GetIcon()));
+  notification->set_vector_small_image(device_system_tray_icon_->GetIcon());
   notification->set_pinned(true);
   // Set to low priority so it doesn't create a popup.
   notification->set_priority(message_center::LOW_PRIORITY);

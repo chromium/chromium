@@ -16,9 +16,8 @@
 #include "ui/gfx/paint_vector_icon.h"
 
 // static
-gfx::ImageSkia HidSystemTrayIcon::GetIcon() {
-  return gfx::CreateVectorIcon(vector_icons::kVideogameAssetIcon,
-                               gfx::kGoogleGrey300);
+const gfx::VectorIcon& HidSystemTrayIcon::GetIcon() {
+  return vector_icons::kVideogameAssetIcon;
 }
 
 // static

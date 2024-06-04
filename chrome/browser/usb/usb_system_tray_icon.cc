@@ -16,8 +16,8 @@
 #include "ui/gfx/paint_vector_icon.h"
 
 // static
-gfx::ImageSkia UsbSystemTrayIcon::GetIcon() {
-  return gfx::CreateVectorIcon(kTabUsbConnectedIcon, gfx::kGoogleGrey300);
+const gfx::VectorIcon& UsbSystemTrayIcon::GetIcon() {
+  return kTabUsbConnectedIcon;
 }
 
 // static

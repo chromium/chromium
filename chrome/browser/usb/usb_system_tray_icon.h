@@ -17,7 +17,7 @@ class UsbSystemTrayIcon : public DeviceSystemTrayIcon {
   UsbSystemTrayIcon& operator=(const UsbSystemTrayIcon&) = delete;
   ~UsbSystemTrayIcon() override;
 
-  gfx::ImageSkia GetIcon() override;
+  const gfx::VectorIcon& GetIcon() override;
   std::u16string GetTitleLabel(size_t num_origins,
                                size_t num_connections) override;
   std::u16string GetContentSettingsLabel() override;

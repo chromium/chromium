@@ -17,7 +17,7 @@ class HidSystemTrayIcon : public DeviceSystemTrayIcon {
   HidSystemTrayIcon& operator=(const HidSystemTrayIcon&) = delete;
   ~HidSystemTrayIcon() override;
 
-  gfx::ImageSkia GetIcon() override;
+  const gfx::VectorIcon& GetIcon() override;
   std::u16string GetTitleLabel(size_t num_origins,
                                size_t num_connections) override;
   std::u16string GetContentSettingsLabel() override;
