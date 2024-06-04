@@ -1,0 +1,20 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module enterprise_companion.mojom;
+
+// The core of the enterprise companion.
+[Stable] interface EnterpriseCompanion {
+    [Stable, Extensible] enum Result {
+        // The remote transmitted a value unknown to this version of the app.
+        [Default] kUnknown = 0,
+
+        // The service successfully handled the function call.
+        kSuccess,
+    };
+
+    // Instruct the application to exit. The callback will be returned before
+    // the app shuts down.
+    Shutdown@0() => (Result result);
+};

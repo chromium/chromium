@@ -6,36 +6,59 @@ source_set("base") {
     "enterprise_companion.h",
     "enterprise_companion_service.cc",
     "enterprise_companion_service.h",
+    "enterprise_companion_service_stub.cc",
+    "enterprise_companion_service_stub.h",
+    "ipc_support.cc",
+    "ipc_support.h",
     "lock.cc",
     "lock.h",
   ]
   deps = [
+    ":client",
+    "mojom/",
     "//base",
+    "//components/named_mojo_ipc_server",
     "//components/named_system_lock",
+    "//mojo/core/embedder",
+    "//mojo/public/cpp/platform",
   ]
-}
-
-executable("enterprise_companion") {
-  sources = [ "main.cc" ]
-  deps = [ ":base" ]
-
-  if (is_win) {
-    configs += [ "//build/config/win:windowed" ]
-  }
 }
 
 test("enterprise_companion_tests") {
   testonly = true
 
   sources = [
+    "enterprise_companion_service_stub_unittest.cc",
     "enterprise_companion_service_unittest.cc",
     "enterprise_companion_unittest.cc",
     "test/run_all_unittests.cc",
   ]
   deps = [
     ":base",
+    ":client",
+    "mojom/",
     "//base",
     "//base/test:test_support",
+    "//components/named_mojo_ipc_server",
     "//testing/gtest",
   ]
+}
+
+static_library("client") {
+  sources = [
+    "enterprise_companion_client.cc",
+    "enterprise_companion_client.h",
+  ]
+  deps = [ "//mojo/public/cpp/platform" ]
+}
+
+if (!is_official_build) {
+  executable("enterprise_companion") {
+    sources = [ "main.cc" ]
+    deps = [ ":base" ]
+
+    if (is_win) {
+      configs += [ "//build/config/win:windowed" ]
+    }
+  }
 }
