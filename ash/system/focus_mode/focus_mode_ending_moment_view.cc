@@ -92,6 +92,9 @@ FocusModeEndingMomentView::FocusModeEndingMomentView() {
       views::BoxLayout::CrossAxisAlignment::kStretch);
   button_container->SetBetweenChildSpacing(kSpaceBetweenButtons);
 
+  // TODO(crbug.com/40232718): See View::SetLayoutManagerUseConstrainedSpace.
+  button_container->SetLayoutManagerUseConstrainedSpace(false);
+
   auto* focus_mode_controller = FocusModeController::Get();
   button_container->AddChildView(std::make_unique<PillButton>(
       base::BindRepeating(&FocusModeController::ResetFocusSession,

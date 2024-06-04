@@ -31,7 +31,6 @@ constexpr int kBarHeight = 8;
 constexpr int kAboveBarSpace = 8;
 constexpr int kAboveBarSpaceInBubble = 12;
 constexpr int kBelowBarSpace = 8;
-constexpr int kSpaceBetweenContainers = 16;
 
 std::unique_ptr<views::Label> CreateTimerLabel(
     gfx::HorizontalAlignment alignment,
@@ -78,8 +77,6 @@ FocusModeCountdownView::FocusModeCountdownView(bool include_end_button)
       views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
                                views::MaximumFlexSizeRule::kPreferred,
                                /*adjust_height_for_width =*/false));
-  timer_container->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets::TLBR(0, 0, 0, kSpaceBetweenContainers)));
 
   time_remaining_label_ = timer_container->AddChildView(
       CreateTimerLabel(gfx::ALIGN_LEFT, TypographyToken::kCrosDisplay6Regular,
@@ -126,6 +123,9 @@ FocusModeCountdownView::FocusModeCountdownView(bool include_end_button)
   button_container->SetCrossAxisAlignment(
       views::BoxLayout::CrossAxisAlignment::kStretch);
   button_container->SetBetweenChildSpacing(kSpaceBetweenButtons);
+
+  // TODO(crbug.com/40232718): See View::SetLayoutManagerUseConstrainedSpace.
+  button_container->SetLayoutManagerUseConstrainedSpace(false);
 
   FocusModeController* focus_mode_controller = FocusModeController::Get();
   if (include_end_button_) {
