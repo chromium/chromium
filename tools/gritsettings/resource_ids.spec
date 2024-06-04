@@ -106,7 +106,7 @@
   "chrome/browser/nearby_sharing/internal/nearby_share_internal_strings.grd": {
     "messages": [2280],
   },
-  "chrome/browser/platform_experience/win/resources/resources.grd": {
+  "chrome/browser/platform_experience/win/resources/platform_experience_win_resources.grd": {
     "includes": [2300],
     "messages": [2320],
   },
