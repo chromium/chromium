@@ -75,6 +75,15 @@ public abstract class TabModalPresenter extends ModalDialogManager.Presenter {
                 if (model.get(ModalDialogProperties.FOCUS_DIALOG)) {
                     mFocusDialog = true;
                 }
+            } else if (ModalDialogProperties.TAB_MODAL_DIALOG_CANCEL_ON_ESCAPE == propertyKey) {
+                if (model.get(ModalDialogProperties.TAB_MODAL_DIALOG_CANCEL_ON_ESCAPE)) {
+                    view.setOnEscapeCallback(
+                            () -> {
+                                dismissCurrentDialog(DialogDismissalCause.NAVIGATE_BACK);
+                            });
+                } else {
+                    view.setOnEscapeCallback(null);
+                }
             } else {
                 super.bind(model, view, propertyKey);
             }
@@ -121,6 +130,7 @@ public abstract class TabModalPresenter extends ModalDialogManager.Presenter {
             PropertyModel model, @Nullable Callback<ComponentDialog> onDialogCreatedCallback) {
         if (mDialogContainer == null) mDialogContainer = createDialogContainer();
 
+        model.set(ModalDialogProperties.TAB_MODAL_DIALOG_CANCEL_ON_ESCAPE, true);
         int style = R.style.ThemeOverlay_BrowserUI_ModalDialog_TextPrimaryButton;
         int buttonStyles = model.get(ModalDialogProperties.BUTTON_STYLES);
         if (buttonStyles == ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE

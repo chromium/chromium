@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.util.AttributeSet;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -56,6 +57,7 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
     private Button mPositiveButton;
     private Button mNegativeButton;
     private Callback<Integer> mOnButtonClickedCallback;
+    private Runnable mOnEscapeCallback;
     private boolean mTitleScrollable;
     private boolean mShouldWrapCustomViewScrollable;
     private boolean mFilterTouchForSecurity;
@@ -179,7 +181,16 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         mOnButtonClickedCallback = callback;
     }
 
-    /** @param title The title of the dialog. */
+    /**
+     * @param callback The {@link Runnable} to invoke when the keyboard escape key is pressed.
+     */
+    void setOnEscapeCallback(Runnable callback) {
+        mOnEscapeCallback = callback;
+    }
+
+    /**
+     * @param title The title of the dialog.
+     */
     public void setTitle(CharSequence title) {
         mTitleView.setText(title);
         updateContentVisibility();
@@ -493,5 +504,17 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
     public static void disableButtonTapProtectionForTesting() {
         sDisableButtonTapProtectionForTesting = true;
         ResettersForTesting.register(() -> sDisableButtonTapProtectionForTesting = false);
+    }
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        if (mOnEscapeCallback != null
+                && event.getKeyCode() == KeyEvent.KEYCODE_ESCAPE
+                && event.getAction() == KeyEvent.ACTION_DOWN
+                && event.getRepeatCount() == 0) {
+            mOnEscapeCallback.run();
+            return true;
+        }
+        return super.dispatchKeyEvent(event);
     }
 }
