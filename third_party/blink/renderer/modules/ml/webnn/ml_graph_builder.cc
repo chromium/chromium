@@ -874,12 +874,6 @@ DetermineGraphResourcesFromOutputs(const MLNamedOperands& named_outputs) {
                         std::move(output_resources_info));
 }
 
-uint64_t NextOperandId(const webnn::mojom::blink::GraphInfo& graph_info) {
-  // This count must start at 1 because 0 is a reserved element in a
-  // WTF::HashMap (yes, really).
-  return graph_info.id_to_operand_map.size() + 1;
-}
-
 base::expected<webnn::mojom::blink::GraphInfoPtr, String> BuildWebNNGraphInfo(
     const MLNamedOperands& named_outputs,
     const webnn::mojom::blink::ContextProperties& context_properties) {
