@@ -109,7 +109,6 @@
 #include "third_party/blink/renderer/core/exported/web_plugin_container_impl.h"
 #include "third_party/blink/renderer/core/exported/web_settings_impl.h"
 #include "third_party/blink/renderer/core/frame/browser_controls.h"
-#include "third_party/blink/renderer/core/frame/display_cutout_client_impl.h"
 #include "third_party/blink/renderer/core/frame/dom_window.h"
 #include "third_party/blink/renderer/core/frame/event_handler_registry.h"
 #include "third_party/blink/renderer/core/frame/fullscreen_controller.h"
@@ -1282,13 +1281,6 @@ void WebViewImpl::DidUpdateBrowserControls() {
     visual_viewport.SetBrowserControlsAdjustment(
         GetBrowserControls().UnreportedSizeAdjustment());
   }
-
-  DisplayCutoutClientImpl* display_cutout_client =
-      DisplayCutoutClientImpl::From(main_frame->GetFrame());
-  if (display_cutout_client) {
-    display_cutout_client->UpdateSafeAreaInsetWithBrowserControls(
-        main_frame->GetDocument(), GetBrowserControls());
-  }
 }
 
 BrowserControls& WebViewImpl::GetBrowserControls() {
@@ -1306,14 +1298,6 @@ void WebViewImpl::ResizeViewWhileAnchored(
 
   if (old_viewport_shrink != GetBrowserControls().ShrinkViewport())
     MainFrameImpl()->GetFrameView()->DynamicViewportUnitsChanged();
-
-  DisplayCutoutClientImpl* display_cutout_client =
-      DisplayCutoutClientImpl::From(MainFrameImpl()->GetFrame());
-  if (display_cutout_client) {
-    display_cutout_client->UpdateSafeAreaInsetWithBrowserControls(
-        MainFrameImpl()->GetDocument(), GetBrowserControls(),
-        /* force_update= */ true);
-  }
 
   {
     // Avoids unnecessary invalidations while various bits of state in

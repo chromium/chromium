@@ -1423,10 +1423,6 @@
       name: "DontFireDblclickOnDisabledFormControls",
       status: "stable",
     },
-    // Dynamically change the safe area insets as browser controls scrolls.
-    {
-      name: "DynamicSafeAreaInsets",
-    },
     {
       name: "DynamicScrollCullRectExpansion",
       status: "experimental",
