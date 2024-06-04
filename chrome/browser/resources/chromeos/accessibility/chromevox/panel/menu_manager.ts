@@ -5,9 +5,6 @@
 /**
  * @fileoverview Class to manage the ChromeVox menus.
  */
-import {AsyncUtil} from '/common/async_util.js';
-import {EventGenerator} from '/common/event_generator.js';
-import {KeyCode} from '/common/key_code.js';
 import {StringUtil} from '/common/string_util.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
@@ -166,20 +163,6 @@ export class MenuManager {
 
   addNodeMenuItem(itemData: PanelNodeMenuItemData): void {
     this.nodeMenuDictionary_[itemData.menuId].addItemFromData(itemData);
-  }
-
-  async addOSKeyboardShortcutsMenuItem(menu: PanelMenu): Promise<void> {
-    let localizedSlash =
-        await AsyncUtil.getLocalizedDomKeyStringForKeyCode(KeyCode.OEM_2);
-    if (!localizedSlash) {
-      localizedSlash = '/';
-    }
-    menu.addMenuItem(
-        Msgs.getMsg('open_keyboard_shortcuts_menu'),
-        `Ctrl+Alt+${localizedSlash}`, '', '', async () => {
-          EventGenerator.sendKeyPress(
-              KeyCode.OEM_2 /* forward slash */, {'ctrl': true, 'alt': true});
-        });
   }
 
   /**
@@ -567,10 +550,6 @@ export class MenuManager {
         touchScreen ? this.addMenu('panel_menu_touchgestures') : null;
     const chromevoxMenu = this.addMenu('panel_menu_chromevox');
     const actionsMenu = this.addMenu('panel_menu_actions');
-
-    // Add a menu item that opens the full list of ChromeBook keyboard
-    // shortcuts. We want this to be at the top of the ChromeVox menu.
-    await this.addOSKeyboardShortcutsMenuItem(chromevoxMenu);
 
     // Create a mapping between categories from CommandStore, and our
     // top-level menus. Some categories aren't mapped to any menu.

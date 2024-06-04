@@ -219,6 +219,9 @@ export class CommandHandler extends CommandHandlerInterface {
       case Command.TOGGLE_DICTATION:
         EventGenerator.sendKeyPress(KeyCode.D, {search: true});
         return false;
+      case Command.OPEN_KEYBOARD_SHORTCUTS:
+        EventGenerator.sendKeyPress(KeyCode.S, {search: true, ctrl: true});
+        return false;
     }
 
     // The remaining commands require a current range.

@@ -4180,3 +4180,10 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'CustomTabList', async function() {
       .expectSpeech('Selected');
   await mockFeedback.replay();
 });
+
+AX_TEST_F('ChromeVoxBackgroundTest', 'OpenKeyboardShortcuts', async function() {
+  const mockFeedback = this.createMockFeedback();
+  mockFeedback.call(doCmd('openKeyboardShortcuts'))
+      .expectSpeech('Search shortcuts')
+      .replay();
+});

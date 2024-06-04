@@ -263,7 +263,8 @@ AX_TEST_F(
           'Search+O, then B');
       this.fireMockEvent('ArrowRight')();
       this.assertActiveMenuItem(
-          'panel_menu_chromevox', 'Open keyboard shortcuts menu', 'Ctrl+Alt+/');
+          'panel_menu_chromevox', 'Enable/Disable Sticky Mode',
+          'Search+Search');
     });
 
 // Ensure 'Touch Gestures' is not in the panel menus by default.

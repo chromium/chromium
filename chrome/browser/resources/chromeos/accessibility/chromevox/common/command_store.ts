@@ -595,6 +595,13 @@ export const COMMAND_DATA: Record<Command, DataEntry> = {
     category: CommandCategory.NO_CATEGORY,
     msgId: 'menus_title',
   },
+  [Command.OPEN_KEYBOARD_SHORTCUTS]: {
+    category: CommandCategory.HELP_COMMANDS,
+    denySignedOut: true,
+    msgId: 'open_keyboard_shortcuts_menu',
+    sequence:
+        {cvoxModifier: true, keys: {keyCode: [KeyCode.S], ctrlKey: [true]}},
+  },
   [Command.OPEN_LONG_DESC]: {
     category: CommandCategory.INFORMATION,
     msgId: 'open_long_desc',

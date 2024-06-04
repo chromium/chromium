@@ -1013,7 +1013,6 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, NavigateChromeVoxMenu) {
   sm_.Call([this]() {
     SendKeyPress(ui::VKEY_DOWN);
     SendKeyPress(ui::VKEY_DOWN);
-    SendKeyPress(ui::VKEY_DOWN);
   });
   sm_.ExpectSpeech("Open ChromeVox Tutorial");
   sm_.Call([this]() { SendKeyPress(ui::VKEY_SPACE); });

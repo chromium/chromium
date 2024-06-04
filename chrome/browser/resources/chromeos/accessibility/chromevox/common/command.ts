@@ -99,6 +99,7 @@ export enum Command {
   NEXT_VISITED_LINK = 'nextVisitedLink',
   NEXT_WORD = 'nextWord',
   OPEN_CHROMEVOX_MENUS = 'openChromeVoxMenus',
+  OPEN_KEYBOARD_SHORTCUTS = 'openKeyboardShortcuts',
   OPEN_LONG_DESC = 'openLongDesc',
   PAN_LEFT = 'panLeft',
   PAN_RIGHT = 'panRight',
