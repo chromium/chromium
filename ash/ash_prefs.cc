@@ -14,6 +14,7 @@
 #include "ash/app_list/views/app_list_nudge_controller.h"
 #include "ash/app_list/views/search_notifier_controller.h"
 #include "ash/assistant/assistant_controller_impl.h"
+#include "ash/birch/birch_item.h"
 #include "ash/birch/birch_model.h"
 #include "ash/calendar/calendar_controller.h"
 #include "ash/capture_mode/capture_mode_controller.h"
@@ -116,6 +117,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry,
   AutozoomNudgeController::RegisterProfilePrefs(registry);
   AmbientController::RegisterProfilePrefs(registry);
   BirchBarController::RegisterProfilePrefs(registry);
+  BirchItem::RegisterProfilePrefs(registry);
   BirchModel::RegisterProfilePrefs(registry);
   CalendarController::RegisterProfilePrefs(registry);
   camera_app_prefs::RegisterProfilePrefs(registry);

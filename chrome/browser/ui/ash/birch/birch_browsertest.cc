@@ -41,7 +41,7 @@ class TestWeatherProvider : public BirchDataProvider {
   // BirchDataProvider:
   void RequestBirchDataFetch() override {
     std::vector<BirchWeatherItem> items;
-    items.emplace_back(u"Cloudy", u"16 C", ui::ImageModel());
+    items.emplace_back(u"Cloudy", 70.f, ui::ImageModel());
     Shell::Get()->birch_model()->SetWeatherItems(std::move(items));
   }
 };

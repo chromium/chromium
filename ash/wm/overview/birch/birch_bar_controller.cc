@@ -206,6 +206,11 @@ bool BirchBarController::IsDataLoading() const {
   return birch_model_observer_.IsObserving() || data_fetch_in_progress_;
 }
 
+void BirchBarController::ToggleTemperatureUnits() {
+  // TODO(jamescook): Toggle the units preference.
+  // TODO(jamescook): Refresh the suggestion chips.
+}
+
 void BirchBarController::ExecuteCommand(int command_id, int event_flags) {
   if (command_id ==
       base::to_underlying(BirchBarContextMenuModel::CommandId::kReset)) {

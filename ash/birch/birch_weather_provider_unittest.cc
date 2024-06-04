@@ -119,7 +119,7 @@ TEST_F(BirchWeatherProviderTest, GetWeather) {
   auto& weather_items = birch_model->GetWeatherForTest();
   ASSERT_EQ(1u, weather_items.size());
   EXPECT_EQ(u"Cloudy", weather_items[0].title());
-  EXPECT_EQ(u"70\xB0 F", weather_items[0].temperature());
+  EXPECT_FLOAT_EQ(70.f, weather_items[0].temp_f());
   weather_items[0].LoadIcon(base::BindOnce(
       [](const ui::ImageModel& icon) { EXPECT_FALSE(icon.IsEmpty()); }));
 }
@@ -147,7 +147,7 @@ TEST_F(BirchWeatherProviderTest, GetWeatherWaitsForRefreshTokens) {
   auto& weather_items = birch_model->GetWeatherForTest();
   ASSERT_EQ(1u, weather_items.size());
   EXPECT_EQ(u"Cloudy", weather_items[0].title());
-  EXPECT_EQ(u"70\xB0 F", weather_items[0].temperature());
+  EXPECT_FLOAT_EQ(70.f, weather_items[0].temp_f());
   weather_items[0].LoadIcon(base::BindOnce(
       [](const ui::ImageModel& icon) { EXPECT_FALSE(icon.IsEmpty()); }));
 
@@ -177,30 +177,6 @@ TEST_F(BirchWeatherProviderTest, WeatherNotFetchedWhenGeolocationDisabled) {
 
   // Weather was not fetched.
   EXPECT_TRUE(birch_model->GetWeatherForTest().empty());
-}
-
-TEST_F(BirchWeatherProviderTest, GetWeatherInCelsius) {
-  auto* birch_model = Shell::Get()->birch_model();
-
-  WeatherInfo info;
-  info.condition_description = "Cloudy";
-  info.condition_icon_url = "https://fake-icon-url";
-  info.temp_f = 70.0f;
-  info.show_celsius = true;
-  ambient_backend_controller_->SetWeatherInfo(std::move(info));
-
-  base::RunLoop run_loop;
-  birch_model->RequestBirchDataFetch(/*is_post_login=*/false,
-                                     run_loop.QuitClosure());
-  EXPECT_TRUE(birch_model->GetWeatherForTest().empty());
-  run_loop.Run();
-
-  auto& weather_items = birch_model->GetWeatherForTest();
-  ASSERT_EQ(1u, weather_items.size());
-  EXPECT_EQ(u"Cloudy", weather_items[0].title());
-  EXPECT_EQ(u"21\xB0 C", weather_items[0].temperature());
-  weather_items[0].LoadIcon(base::BindOnce(
-      [](const ui::ImageModel& icon) { EXPECT_FALSE(icon.IsEmpty()); }));
 }
 
 TEST_F(BirchWeatherProviderTest, NoWeatherInfo) {
@@ -321,7 +297,7 @@ TEST_F(BirchWeatherProviderTest, RefetchWeather) {
   auto& weather_items = birch_model->GetWeatherForTest();
   ASSERT_EQ(1u, weather_items.size());
   EXPECT_EQ(u"Cloudy", weather_items[0].title());
-  EXPECT_EQ(u"70\xB0 F", weather_items[0].temperature());
+  EXPECT_FLOAT_EQ(70.f, weather_items[0].temp_f());
   weather_items[0].LoadIcon(base::BindOnce(
       [](const ui::ImageModel& icon) { EXPECT_FALSE(icon.IsEmpty()); }));
 
@@ -340,7 +316,7 @@ TEST_F(BirchWeatherProviderTest, RefetchWeather) {
   auto& updated_weather_items = birch_model->GetWeatherForTest();
   ASSERT_EQ(1u, updated_weather_items.size());
   EXPECT_EQ(u"Sunny", updated_weather_items[0].title());
-  EXPECT_EQ(u"73\xB0 F", updated_weather_items[0].temperature());
+  EXPECT_FLOAT_EQ(73.f, updated_weather_items[0].temp_f());
   weather_items[0].LoadIcon(base::BindOnce(
       [](const ui::ImageModel& icon) { EXPECT_FALSE(icon.IsEmpty()); }));
 }
@@ -363,7 +339,7 @@ TEST_F(BirchWeatherProviderTest, RefetchInvalidWeather) {
   auto& weather_items = birch_model->GetWeatherForTest();
   ASSERT_EQ(1u, weather_items.size());
   EXPECT_EQ(u"Cloudy", weather_items[0].title());
-  EXPECT_EQ(u"70\xB0 F", weather_items[0].temperature());
+  EXPECT_FLOAT_EQ(70.f, weather_items[0].temp_f());
   weather_items[0].LoadIcon(base::BindOnce(
       [](const ui::ImageModel& icon) { EXPECT_FALSE(icon.IsEmpty()); }));
 

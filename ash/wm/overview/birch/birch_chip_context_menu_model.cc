@@ -69,6 +69,10 @@ BirchChipContextMenuModel::BirchChipContextMenuModel(
   AddSubMenuWithIcon(base::to_underlying(CommandId::kCustomizeSuggestions),
                      u"Customize suggestions", sub_menu_model_.get(),
                      CreateIconForMenuItem(kPencilIcon));
+  if (chip_type == BirchSuggestionType::kWeather) {
+    AddItem(base::to_underlying(CommandId::kToggleTemperatureUnits),
+            u"Toggle temperature units (F vs C)");
+  }
   AddSeparator(ui::MenuSeparatorType::NORMAL_SEPARATOR);
   AddItemWithIcon(base::to_underlying(CommandId::kFeedback), u"Send Feedback",
                   CreateIconForMenuItem(kFeedbackIcon));

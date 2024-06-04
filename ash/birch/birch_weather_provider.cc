@@ -150,26 +150,25 @@ void BirchWeatherProvider::OnWeatherInfoFetched(
   if (!icon.isNull()) {
     // Use the cached icon.
     AddItemToBirchModel(base::UTF8ToUTF16(*weather_info->condition_description),
-                        *weather_info->temp_f, weather_info->show_celsius,
-                        icon);
+                        *weather_info->temp_f, icon);
     return;
   }
 
-  // Download the weather condition icon.
+  // Download the weather condition icon. Note that we ignore "show_celsius" in
+  // favor of a client-side pref.
   DownloadImageFromUrl(
       *weather_info->condition_icon_url,
       base::BindOnce(&BirchWeatherProvider::OnWeatherConditionIconDownloaded,
                      weak_factory_.GetWeakPtr(),
                      *weather_info->condition_icon_url,
                      base::UTF8ToUTF16(*weather_info->condition_description),
-                     *weather_info->temp_f, weather_info->show_celsius));
+                     *weather_info->temp_f));
 }
 
 void BirchWeatherProvider::OnWeatherConditionIconDownloaded(
     const std::string& condition_icon_url,
     const std::u16string& weather_description,
     float temp_f,
-    bool show_celsius,
     const gfx::ImageSkia& icon) {
   if (icon.isNull()) {
     birch_model_->SetWeatherItems({});
@@ -179,24 +178,15 @@ void BirchWeatherProvider::OnWeatherConditionIconDownloaded(
   // Add the icon to the cache.
   Shell::Get()->birch_model()->icon_cache()->Put(condition_icon_url, icon);
 
-  AddItemToBirchModel(weather_description, temp_f, show_celsius, icon);
+  AddItemToBirchModel(weather_description, temp_f, icon);
 }
 
 void BirchWeatherProvider::AddItemToBirchModel(
     const std::u16string& weather_description,
     float temp_f,
-    bool show_celsius,
     const gfx::ImageSkia& icon) {
-  std::u16string temperature_string =
-      show_celsius ? l10n_util::GetStringFUTF16Int(
-                         IDS_ASH_AMBIENT_MODE_WEATHER_TEMPERATURE_IN_CELSIUS,
-                         static_cast<int>((temp_f - 32) * 5 / 9))
-                   : l10n_util::GetStringFUTF16Int(
-                         IDS_ASH_AMBIENT_MODE_WEATHER_TEMPERATURE_IN_FAHRENHEIT,
-                         static_cast<int>(temp_f));
-
   std::vector<BirchWeatherItem> items;
-  items.emplace_back(weather_description, temperature_string,
+  items.emplace_back(weather_description, temp_f,
                      ui::ImageModel::FromImageSkia(icon));
   birch_model_->SetWeatherItems(std::move(items));
 }

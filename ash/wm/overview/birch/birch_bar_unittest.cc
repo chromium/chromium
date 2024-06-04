@@ -465,7 +465,7 @@ class BirchBarTestBase : public AshTestBase {
     std::vector<BirchWeatherItem> item_list;
     for (size_t i = 0; i < num; i++) {
       item_list.emplace_back(/*weather_description=*/u"cloudy",
-                             /*temperature=*/u"16 c",
+                             /*temperature=*/72.f,
                              /*icon*/ ui::ImageModel());
       item_list.back().set_ranking(1.0f);
     }

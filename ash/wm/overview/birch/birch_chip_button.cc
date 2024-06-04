@@ -271,6 +271,9 @@ void BirchChipButton::ExecuteCommand(int command_id, int event_flags) {
       birch_bar_controller->SetShowSuggestionType(BirchSuggestionType::kWeather,
                                                   /*show=*/false);
       break;
+    case base::to_underlying(CommandId::kToggleTemperatureUnits):
+      birch_bar_controller->ToggleTemperatureUnits();
+      break;
     case base::to_underlying(CommandId::kHideCalendarSuggestions):
       birch_bar_controller->SetShowSuggestionType(
           BirchSuggestionType::kCalendar,

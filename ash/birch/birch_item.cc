@@ -10,6 +10,7 @@
 
 #include "ash/birch/birch_icon_cache.h"
 #include "ash/birch/birch_model.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/image_downloader.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
@@ -23,6 +24,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ui/base/file_icon_util.h"
+#include "components/prefs/pref_service.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -104,6 +106,15 @@ void DownloadImageFromUrl(
       base::BindOnce(&OnImageDownloaded, url, std::move(callback)));
 }
 
+// Returns the pref service to use for Birch item prefs.
+PrefService* GetPrefService() {
+  if (!Shell::HasInstance()) {
+    CHECK_IS_TEST();
+    return nullptr;
+  }
+  return Shell::Get()->session_controller()->GetPrimaryUserPrefService();
+}
+
 }  // namespace
 
 int BirchItem::action_count_ = 0;
@@ -125,6 +136,11 @@ BirchItem& BirchItem::operator=(const BirchItem&) = default;
 BirchItem::~BirchItem() = default;
 
 bool BirchItem::operator==(const BirchItem& rhs) const = default;
+
+// static
+void BirchItem::RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterBooleanPref(prefs::kBirchUseCelsius, false);
+}
 
 void BirchItem::RecordActionMetrics() {
   // Record that the whole bar was activated.
@@ -407,10 +423,10 @@ std::u16string BirchFileItem::GetTitle(const base::FilePath& file_path) {
 ////////////////////////////////////////////////////////////////////////////////
 
 BirchWeatherItem::BirchWeatherItem(const std::u16string& weather_description,
-                                   const std::u16string& temperature,
+                                   float temp_f,
                                    ui::ImageModel icon)
-    : BirchItem(weather_description, temperature),
-      temperature_(temperature),
+    : BirchItem(weather_description, GetSubtitle(temp_f)),
+      temp_f_(temp_f),
       icon_(std::move(icon)) {}
 
 BirchWeatherItem::BirchWeatherItem(BirchWeatherItem&&) = default;
@@ -431,8 +447,8 @@ BirchItemType BirchWeatherItem::GetType() const {
 std::string BirchWeatherItem::ToString() const {
   std::stringstream ss;
   ss << "Weather item: {ranking: " << ranking()
-     << ", title : " << base::UTF16ToUTF8(title())
-     << ", temperature:" << base::UTF16ToUTF8(temperature_) << "}";
+     << ", title : " << base::UTF16ToUTF8(title()) << ", temp_f:" << temp_f_
+     << "}";
   return ss.str();
 }
 
@@ -451,6 +467,25 @@ void BirchWeatherItem::PerformSecondaryAction() {
 
 void BirchWeatherItem::LoadIcon(LoadIconCallback callback) const {
   std::move(callback).Run(icon_);
+}
+
+// static
+std::u16string BirchWeatherItem::GetSubtitle(float temp_f) {
+  // Tests may not have a pref service.
+  bool use_celsius = false;
+  PrefService* pref_service = GetPrefService();
+  if (pref_service) {
+    use_celsius = pref_service->GetBoolean(prefs::kBirchUseCelsius);
+  } else {
+    CHECK_IS_TEST();
+  }
+  return use_celsius
+             ? l10n_util::GetStringFUTF16Int(
+                   IDS_ASH_AMBIENT_MODE_WEATHER_TEMPERATURE_IN_CELSIUS,
+                   static_cast<int>((temp_f - 32) * 5 / 9))
+             : l10n_util::GetStringFUTF16Int(
+                   IDS_ASH_AMBIENT_MODE_WEATHER_TEMPERATURE_IN_FAHRENHEIT,
+                   static_cast<int>(temp_f));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

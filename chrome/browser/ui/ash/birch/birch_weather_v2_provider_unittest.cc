@@ -148,7 +148,7 @@ TEST_F(BirchWeatherV2ProviderTest, WeatherWithTemp) {
   auto weather_items = items_future.Take();
   ASSERT_EQ(1u, weather_items.size());
   EXPECT_EQ(u"[i18n] Current weather", weather_items[0].title());
-  EXPECT_EQ(u"70\xB0 F", weather_items[0].temperature());
+  EXPECT_FLOAT_EQ(70.f, weather_items[0].temp_f());
 }
 
 TEST_F(BirchWeatherV2ProviderTest, WeatherWithNonIntegerTemp) {
@@ -167,26 +167,7 @@ TEST_F(BirchWeatherV2ProviderTest, WeatherWithNonIntegerTemp) {
   auto weather_items = items_future.Take();
   ASSERT_EQ(1u, weather_items.size());
   EXPECT_EQ(u"[i18n] Current weather", weather_items[0].title());
-  EXPECT_EQ(u"71\xB0 F", weather_items[0].temperature());
-}
-
-TEST_F(BirchWeatherV2ProviderTest, WeatherWithNonIntegerTempRoundedUp) {
-  EXPECT_CALL(request_handler(),
-              HandleRequest(Field(&HttpRequest::relative_url,
-                                  "/v1/weather?feature_id=1")))
-      .WillOnce(Return(ByMove(
-          TestRequestHandler::CreateSuccessfulResponse(R"({"tempF": 71.9})"))));
-
-  TestFuture<std::vector<BirchWeatherItem>> items_future;
-  SetItemsCallback(items_future.GetCallback());
-
-  weather_provider()->RequestBirchDataFetch();
-
-  ASSERT_TRUE(items_future.Wait());
-  auto weather_items = items_future.Take();
-  ASSERT_EQ(1u, weather_items.size());
-  EXPECT_EQ(u"[i18n] Current weather", weather_items[0].title());
-  EXPECT_EQ(u"72\xB0 F", weather_items[0].temperature());
+  EXPECT_EQ(71.3f, weather_items[0].temp_f());
 }
 
 TEST_F(BirchWeatherV2ProviderTest, ConcurrentRequests) {
@@ -206,7 +187,7 @@ TEST_F(BirchWeatherV2ProviderTest, ConcurrentRequests) {
   auto weather_items = items_future.Take();
   ASSERT_EQ(1u, weather_items.size());
   EXPECT_EQ(u"[i18n] Current weather", weather_items[0].title());
-  EXPECT_EQ(u"70\xB0 F", weather_items[0].temperature());
+  EXPECT_FLOAT_EQ(70.f, weather_items[0].temp_f());
 }
 
 TEST_F(BirchWeatherV2ProviderTest, SequentialRequests) {
@@ -226,7 +207,7 @@ TEST_F(BirchWeatherV2ProviderTest, SequentialRequests) {
   auto weather_items = items_future.Take();
   ASSERT_EQ(1u, weather_items.size());
   EXPECT_EQ(u"[i18n] Current weather", weather_items[0].title());
-  EXPECT_EQ(u"70\xB0 F", weather_items[0].temperature());
+  EXPECT_FLOAT_EQ(70.f, weather_items[0].temp_f());
 
   TestFuture<std::vector<BirchWeatherItem>> second_items_future;
   SetItemsCallback(second_items_future.GetCallback());
@@ -236,7 +217,7 @@ TEST_F(BirchWeatherV2ProviderTest, SequentialRequests) {
   weather_items = second_items_future.Take();
   ASSERT_EQ(1u, weather_items.size());
   EXPECT_EQ(u"[i18n] Current weather", weather_items[0].title());
-  EXPECT_EQ(u"71\xB0 F", weather_items[0].temperature());
+  EXPECT_FLOAT_EQ(71.f, weather_items[0].temp_f());
 }
 
 TEST_F(BirchWeatherV2ProviderTest, FailedRequest) {
@@ -386,7 +367,7 @@ TEST_F(BirchWeatherV2ProviderTest, FailedRequestWithSuccessfulRetry) {
   weather_items = second_items_future.Take();
   ASSERT_EQ(1u, weather_items.size());
   EXPECT_EQ(u"[i18n] Current weather", weather_items[0].title());
-  EXPECT_EQ(u"71\xB0 F", weather_items[0].temperature());
+  EXPECT_FLOAT_EQ(71.f, weather_items[0].temp_f());
 }
 
 TEST_F(BirchWeatherV2ProviderTest, ImmediateProviderShutdownCancelsRequest) {

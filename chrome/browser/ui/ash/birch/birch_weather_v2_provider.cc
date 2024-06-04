@@ -164,12 +164,9 @@ void BirchWeatherV2Provider::OnWeatherInfoParsed(
     model_updater_.Run({});
     return;
   }
-  std::u16string temperature_string = l10n_util::GetStringFUTF16Int(
-      IDS_ASH_AMBIENT_MODE_WEATHER_TEMPERATURE_IN_FAHRENHEIT,
-      static_cast<int>(std::round(*temp_f)));
 
   std::vector<BirchWeatherItem> items;
-  items.emplace_back(u"[i18n] Current weather", temperature_string,
+  items.emplace_back(u"[i18n] Current weather", temp_f.value(),
                      ui::ImageModel());
 
   model_updater_.Run(std::move(items));

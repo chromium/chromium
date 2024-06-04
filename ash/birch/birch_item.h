@@ -14,6 +14,8 @@
 #include "ui/base/models/image_model.h"
 #include "url/gurl.h"
 
+class PrefRegistrySimple;
+
 namespace ash {
 
 // These values are used in metrics and should not be reordered or deleted.
@@ -41,6 +43,8 @@ class ASH_EXPORT BirchItem {
   BirchItem& operator=(const BirchItem&);
   virtual ~BirchItem();
   bool operator==(const BirchItem& rhs) const;
+
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   virtual BirchItemType GetType() const = 0;
 
@@ -368,7 +372,7 @@ class ASH_EXPORT BirchSelfShareItem : public BirchItem {
 class ASH_EXPORT BirchWeatherItem : public BirchItem {
  public:
   BirchWeatherItem(const std::u16string& weather_description,
-                   const std::u16string& temperature,
+                   float temp_f,
                    ui::ImageModel icon);
   BirchWeatherItem(BirchWeatherItem&&);
   BirchWeatherItem(const BirchWeatherItem&);
@@ -383,10 +387,12 @@ class ASH_EXPORT BirchWeatherItem : public BirchItem {
   void PerformSecondaryAction() override;
   void LoadIcon(LoadIconCallback callback) const override;
 
-  const std::u16string& temperature() const { return temperature_; }
+  float temp_f() const { return temp_f_; }
 
  private:
-  std::u16string temperature_;
+  static std::u16string GetSubtitle(float temp_f);
+
+  float temp_f_;
   ui::ImageModel icon_;
 };
 

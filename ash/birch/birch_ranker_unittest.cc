@@ -465,7 +465,7 @@ TEST(BirchRankerTest, RankWeatherItems_Morning) {
   ASSERT_TRUE(ranker.IsMorning());
 
   // Create a weather item.
-  BirchWeatherItem item(u"Sunny", u"72", ui::ImageModel());
+  BirchWeatherItem item(u"Sunny", 72.f, ui::ImageModel());
   std::vector<BirchWeatherItem> items = {item};
 
   ranker.RankWeatherItems(&items);
@@ -485,7 +485,7 @@ TEST(BirchRankerTest, RankWeatherItems_Afternoon) {
   ASSERT_FALSE(ranker.IsMorning());
 
   // Create a weather item.
-  BirchWeatherItem item(u"Sunny", u"72", ui::ImageModel());
+  BirchWeatherItem item(u"Sunny", 72.f, ui::ImageModel());
   std::vector<BirchWeatherItem> items = {item};
 
   ranker.RankWeatherItems(&items);

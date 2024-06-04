@@ -539,7 +539,7 @@ TEST_F(BirchModelTest, DisablingPrefsClearsModel) {
       base::Time(), u"my device", faviconUrl, base::DoNothing());
   model->SetSelfShareItems(std::move(self_share_item_list));
   std::vector<BirchWeatherItem> weather_item_list;
-  weather_item_list.emplace_back(u"cloudy", u"16 c", ui::ImageModel());
+  weather_item_list.emplace_back(u"cloudy", 70.f, ui::ImageModel());
   model->SetWeatherItems(std::move(weather_item_list));
   std::vector<BirchReleaseNotesItem> release_notes_item_list;
   release_notes_item_list.emplace_back(
@@ -744,7 +744,7 @@ TEST_F(BirchModelTest, MAYBE_DataFetchTimeout) {
   model->SetSelfShareItems(std::vector<BirchSelfShareItem>());
   model->SetSelfShareItems({});
   std::vector<BirchWeatherItem> weather_items;
-  weather_items.emplace_back(u"desc", u"temp", ui::ImageModel());
+  weather_items.emplace_back(u"desc", 70.f, ui::ImageModel());
   model->SetWeatherItems(std::move(weather_items));
   model->SetCalendarItems({});
   model->SetAttachmentItems({});
@@ -1014,7 +1014,7 @@ TEST_F(BirchModelTest, ResponseAfterFirstTimeout) {
 
   model->SetFileSuggestItems(MakeFileItemList(/*item_count=*/1));
   std::vector<BirchWeatherItem> weather_item_list;
-  weather_item_list.emplace_back(u"cloudy", u"16 c", ui::ImageModel());
+  weather_item_list.emplace_back(u"cloudy", 70.f, ui::ImageModel());
   model->SetWeatherItems(std::move(weather_item_list));
   std::vector<BirchTabItem> tab_item_list;
   tab_item_list.emplace_back(u"tab", GURL("https://www.example.com/"),
@@ -1077,7 +1077,7 @@ TEST_F(BirchModelTest, GetAllItems) {
 
   // Insert one item of each type.
   std::vector<BirchWeatherItem> weather_item_list;
-  weather_item_list.emplace_back(u"cloudy", u"16 c", ui::ImageModel());
+  weather_item_list.emplace_back(u"cloudy", 70.f, ui::ImageModel());
   model->SetWeatherItems(std::move(weather_item_list));
   std::vector<BirchReleaseNotesItem> release_notes_item_list;
   release_notes_item_list.emplace_back(
@@ -1138,7 +1138,7 @@ TEST_F(BirchModelTest, SetItemListRecordsHistogram) {
   model->SetLastActiveItems(std::move(last_active_list));
   model->SetFileSuggestItems(MakeFileItemList(/*item_count=*/1));
   std::vector<BirchWeatherItem> weather_item_list;
-  weather_item_list.emplace_back(u"cloudy", u"16 c", ui::ImageModel());
+  weather_item_list.emplace_back(u"cloudy", 70.f, ui::ImageModel());
   model->SetWeatherItems(std::move(weather_item_list));
   std::vector<BirchReleaseNotesItem> release_notes_item_list;
   release_notes_item_list.emplace_back(
@@ -1354,7 +1354,7 @@ TEST_F(BirchModelTest, WeatherItemsClearedWhenGeolocationDisabled) {
 
   // Add a weather item.
   std::vector<BirchWeatherItem> weather_items;
-  weather_items.emplace_back(u"Sunny", u"72", ui::ImageModel());
+  weather_items.emplace_back(u"Sunny", 72.f, ui::ImageModel());
   model->SetWeatherItems(std::move(weather_items));
   ASSERT_FALSE(model->GetWeatherForTest().empty());
 
