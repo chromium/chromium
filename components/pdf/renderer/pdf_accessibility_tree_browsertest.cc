@@ -167,15 +167,9 @@ void CheckRootAndStatusNodes(const ui::AXNode* root_node,
   } else {
     // Note that the string below must be synced with
     // `IDS_PDF_OCR_FEATURE_ALERT`.
-#if BUILDFLAG(IS_CHROMEOS)
     constexpr char kPdfOcrFeatureAlert[] =
-        "This PDF is inaccessible. Press search plus m to open context menu "
-        "and turn on \"extract text from PDF\"";
-#else
-    constexpr char kPdfOcrFeatureAlert[] =
-        "This PDF is inaccessible. Open context menu and turn on \"extract "
-        "text from PDF\"";
-#endif  // BUILDFLAG(IS_CHROMEOS)
+        "This PDF is inaccessible. Couldn't download text extraction files. "
+        "Please try again later.";
     ASSERT_EQ(kPdfOcrFeatureAlert, status_node->GetStringAttribute(
                                        ax::mojom::StringAttribute::kName));
   }

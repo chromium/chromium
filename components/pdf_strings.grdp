@@ -359,18 +359,9 @@
     </message>
   </if>
   <if expr="enable_screen_ai_service">
-    <if expr="is_chromeos">
-      <then>
-        <message name="IDS_PDF_OCR_FEATURE_ALERT" is_accessibility_with_no_ui="true" desc="Notification of the PDF OCR feature when the user encounters an inaccessible PDF.">
-          This PDF is inaccessible. Press search plus m to open context menu and turn on &quot;extract text from PDF&quot;
-        </message>
-      </then>
-      <else>
-        <message name="IDS_PDF_OCR_FEATURE_ALERT" is_accessibility_with_no_ui="true" desc="Notification of the PDF OCR feature when the user encounters an inaccessible PDF.">
-          This PDF is inaccessible. Open context menu and turn on &quot;extract text from PDF&quot;
-        </message>
-      </else>
-    </if>
+    <message name="IDS_PDF_OCR_FEATURE_ALERT" is_accessibility_with_no_ui="true" desc="Notification of the PDF OCR feature when the user encounters an inaccessible PDF.">
+          This PDF is inaccessible. Couldn't download text extraction files. Please try again later.
+    </message>
     <message name="IDS_PDF_OCR_IN_PROGRESS" is_accessibility_with_no_ui="true" desc="Notification to inform the user that OCR is in progress.">
       This PDF is inaccessible. Extracting text, powered by Google AI
     </message>

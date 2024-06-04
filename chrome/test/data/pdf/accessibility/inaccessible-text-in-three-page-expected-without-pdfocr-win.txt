@@ -1,7 +1,7 @@
 pdfRoot 'PDF document containing 3 pages'
   banner
-    status 'This PDF is inaccessible. Open context menu and turn on "extract text from PDF"'
-      staticText 'This PDF is inaccessible. Open context menu and turn on "extract text from PDF"'
+    status 'This PDF is inaccessible. Couldn't download text extraction files. Please try again later.'
+      staticText 'This PDF is inaccessible. Couldn't download text extraction files. Please try again later.'
   region 'Page 1'
     paragraph
       image 'Unlabeled graphic'
