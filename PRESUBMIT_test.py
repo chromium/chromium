@@ -257,7 +257,7 @@ class CheckEachPerfettoTestDataFileHasDepsEntry(unittest.TestCase):
                   }""".splitlines()
     input_api.files = [
       MockFile('base/tracing/test/data_sha256/new.pftrace.sha256', ['a1b2c3f4']),
-      MockFile('DEPS', new_deps),
+      MockFile('DEPS', new_deps, ["deps={'src/base/tracing/test/data':{}}"]),
     ]
     results = PRESUBMIT.CheckEachPerfettoTestDataFileHasDepsEntry(input_api, MockOutputApi())
     self.assertEqual(0, len(results))
@@ -282,7 +282,7 @@ class CheckEachPerfettoTestDataFileHasDepsEntry(unittest.TestCase):
     f = MockFile('base/tracing/test/data_sha256/new.pftrace.sha256', ['a1b2c3f4'])
     input_api.files = [
       f,
-      MockFile('DEPS', new_deps),
+      MockFile('DEPS', new_deps, ["deps={'src/base/tracing/test/data':{}}"]),
     ]
     results = PRESUBMIT.CheckEachPerfettoTestDataFileHasDepsEntry(input_api, MockOutputApi())
     self.assertEqual((
@@ -311,7 +311,7 @@ class CheckEachPerfettoTestDataFileHasDepsEntry(unittest.TestCase):
     f = MockFile('base/tracing/test/data_sha256/new.pftrace.sha256', [], ['a1b2c3f4'], action='D')
     input_api.files = [
       f,
-      MockFile('DEPS', old_deps),
+      MockFile('DEPS', old_deps, old_deps),
     ]
     results = PRESUBMIT.CheckEachPerfettoTestDataFileHasDepsEntry(input_api, MockOutputApi())
     self.assertEqual((

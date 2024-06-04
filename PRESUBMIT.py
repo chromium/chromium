@@ -3425,10 +3425,13 @@ def CheckEachPerfettoTestDataFileHasDepsEntry(input_api, output_api):
 
     # Find DEPS entry
     deps_entry = []
+    old_deps_entry = []
     for f in input_api.AffectedFiles(include_deletes=False):
         if f.LocalPath() == 'DEPS':
             new_deps = _ParseDeps('\n'.join(f.NewContents()))['deps']
             deps_entry = new_deps['src/base/tracing/test/data']
+            old_deps = _ParseDeps('\n'.join(f.OldContents()))['deps']
+            old_deps_entry = old_deps['src/base/tracing/test/data']
     if not deps_entry:
         # TODO(312895063):Add back error when .sha256 files have been moved.
         return [output_api.PresubmitNotifyResult(
@@ -3445,7 +3448,13 @@ def CheckEachPerfettoTestDataFileHasDepsEntry(input_api, output_api):
             object_entry = next(
                 (item for item in objects if item["sha256sum"] == sha256_from_file),
                 None)
+            old_entry = next(
+                (item for item in old_deps_entry['objects'] if item["sha256sum"] == sha256_from_file),
+                None)
             if object_entry:
+                # Allow renaming of objects with the same hash
+                if object_entry['object_name'] != old_entry['object_name']:
+                    continue
                 output.append(output_api.PresubmitError(
                     'You deleted %s so you must also remove the corresponding DEPS entry.'
                     % f.LocalPath()
