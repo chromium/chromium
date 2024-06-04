@@ -270,6 +270,8 @@ ExtensionFunction::ResponseAction BrowsingDataRemoverFunction::Run() {
     if (!result.has_value()) {
       return RespondNow(std::move(result.error()));
     }
+    EXTENSION_FUNCTION_VALIDATE(!result->empty());
+
     origins_ = std::move(*result);
   } else if (exclude_origins) {
     OriginParsingResult result = ParseOrigins(*exclude_origins);
