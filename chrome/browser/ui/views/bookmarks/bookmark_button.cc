@@ -22,6 +22,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/widget/tooltip_manager.h"
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -137,7 +138,7 @@ std::u16string BookmarkButton::GetTooltipText(const gfx::Point& p) const {
 
 void BookmarkButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   BookmarkButtonBase::GetAccessibleNodeData(node_data);
-  const std::u16string name = GetAccessibleName();
+  const std::u16string name = GetViewAccessibility().GetCachedName();
   node_data->SetNameChecked(
       name.empty()
           ? l10n_util::GetStringFUTF16(

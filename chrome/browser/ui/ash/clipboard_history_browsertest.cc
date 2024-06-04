@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/clipboard/clipboard_history.h"
+
 #include <iterator>
 #include <list>
 #include <memory>
 #include <string_view>
 #include <tuple>
 
-#include "ash/clipboard/clipboard_history.h"
 #include "ash/clipboard/clipboard_history_controller_impl.h"
 #include "ash/clipboard/clipboard_history_item.h"
 #include "ash/clipboard/clipboard_history_menu_model_adapter.h"
@@ -65,6 +66,7 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/menu/menu_config.h"
 #include "ui/views/controls/menu/menu_item_view.h"
@@ -253,7 +255,7 @@ class ClipboardHistoryBrowserTest : public ash::LoginManagerTest {
         l10n_util::GetStringUTF16(
             IDS_CLIPBOARD_HISTORY_DELETE_BUTTON_HOVER_TEXT));
     EXPECT_EQ(
-        delete_button->GetAccessibleName(),
+        delete_button->GetViewAccessibility().GetCachedName(),
         l10n_util::GetStringFUTF16(IDS_CLIPBOARD_HISTORY_DELETE_ITEM_TEXT,
                                    GetClipboardItemAt(index).display_text()));
     GetEventGenerator()->ClickLeftButton();

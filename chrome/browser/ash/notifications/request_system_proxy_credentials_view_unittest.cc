@@ -131,7 +131,7 @@ TEST_F(RequestSystemProxyCredentialsViewTest, TextfieldAccessibility) {
       username_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
       l10n_util::GetStringUTF16(IDS_SYSTEM_PROXY_AUTH_DIALOG_USERNAME_LABEL));
   EXPECT_EQ(
-      username_field->GetAccessibleName(),
+      username_field->GetViewAccessibility().GetCachedName(),
       l10n_util::GetStringUTF16(IDS_SYSTEM_PROXY_AUTH_DIALOG_USERNAME_LABEL));
   EXPECT_EQ(username_data.GetNameFrom(), ax::mojom::NameFrom::kRelatedElement);
   EXPECT_TRUE(username_data.HasIntListAttribute(
@@ -150,7 +150,7 @@ TEST_F(RequestSystemProxyCredentialsViewTest, TextfieldAccessibility) {
       password_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
       l10n_util::GetStringUTF16(IDS_SYSTEM_PROXY_AUTH_DIALOG_PASSWORD_LABEL));
   EXPECT_EQ(
-      password_field->GetAccessibleName(),
+      password_field->GetViewAccessibility().GetCachedName(),
       l10n_util::GetStringUTF16(IDS_SYSTEM_PROXY_AUTH_DIALOG_PASSWORD_LABEL));
   EXPECT_EQ(password_data.GetNameFrom(), ax::mojom::NameFrom::kRelatedElement);
   EXPECT_TRUE(password_data.HasIntListAttribute(

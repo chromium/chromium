@@ -250,7 +250,7 @@ void LocationIconView::SetAccessibleProperties(bool is_initialization) {
   const std::u16string name =
       delegate_->IsEditingOrEmpty()
           ? l10n_util::GetStringUTF16(IDS_ACC_SEARCH_ICON)
-          : GetAccessibleName();
+          : GetViewAccessibility().GetCachedName();
 
   // If no display text exists, ensure that the accessibility label is added.
   const std::u16string description =

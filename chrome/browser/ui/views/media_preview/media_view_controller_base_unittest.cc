@@ -18,6 +18,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/simple_combobox_model.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/test/combobox_test_api.h"
@@ -118,7 +119,9 @@ class MediaViewControllerBaseTestParameterized
   }
 
   std::u16string GetComboboxAccessibleName() const {
-    return controller_->GetComboboxForTesting()->GetAccessibleName();
+    return controller_->GetComboboxForTesting()
+        ->GetViewAccessibility()
+        .GetCachedName();
   }
 
   const std::u16string& GetDeviceNameLabel() const {

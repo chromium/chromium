@@ -31,6 +31,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view_observer.h"
@@ -378,7 +379,7 @@ IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
   for (auto& pair : GetBubbleViews()->fields_to_buttons_map_) {
     EXPECT_EQ(normal_button_tooltip, pair.second->GetTooltipText());
     EXPECT_EQ(pair.second->GetText() + u" " + normal_button_tooltip,
-              pair.second->GetAccessibleName());
+              pair.second->GetViewAccessibility().GetCachedName());
   }
 
   auto* card_number_button =
@@ -392,24 +393,24 @@ IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
       VirtualCardManualFallbackBubbleField::kCardNumber);
   EXPECT_EQ(clicked_button_tooltip, card_number_button->GetTooltipText());
   EXPECT_EQ(u"4111 1111 1111 1111 " + clicked_button_tooltip,
-            card_number_button->GetAccessibleName());
+            card_number_button->GetViewAccessibility().GetCachedName());
   EXPECT_EQ(normal_button_tooltip, cardholder_name_button->GetTooltipText());
   EXPECT_EQ(u"Full Carter " + normal_button_tooltip,
-            cardholder_name_button->GetAccessibleName());
+            cardholder_name_button->GetViewAccessibility().GetCachedName());
 
   GetBubbleViews()->OnFieldClicked(
       VirtualCardManualFallbackBubbleField::kCardholderName);
   EXPECT_EQ(normal_button_tooltip, card_number_button->GetTooltipText());
   EXPECT_EQ(u"4111 1111 1111 1111 " + normal_button_tooltip,
-            card_number_button->GetAccessibleName());
+            card_number_button->GetViewAccessibility().GetCachedName());
   EXPECT_EQ(clicked_button_tooltip, cardholder_name_button->GetTooltipText());
   EXPECT_EQ(u"Full Carter " + clicked_button_tooltip,
-            cardholder_name_button->GetAccessibleName());
+            cardholder_name_button->GetViewAccessibility().GetCachedName());
 }
 
 IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
                        IconViewAccessibleName) {
-  EXPECT_EQ(GetIconView()->GetAccessibleName(),
+  EXPECT_EQ(GetIconView()->GetViewAccessibility().GetCachedName(),
             l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_ICON_TOOLTIP));
   EXPECT_EQ(GetIconView()->GetTextForTooltipAndAccessibleName(),

@@ -20,6 +20,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 // static
 SelectedKeywordView::KeywordLabelNames
@@ -64,7 +65,7 @@ SelectedKeywordView::SelectedKeywordView(
   // be focusable, so paint checks will fail due to a lack of name. It might
   // make more sense to only set `FocusBehavior` when this view will be shown.
   // For now, Eliminate the paint check failure.
-  if (GetAccessibleName().empty()) {
+  if (GetViewAccessibility().GetCachedName().empty()) {
     SetAccessibilityProperties(/*role*/ std::nullopt,
                                /*name*/ std::u16string(),
                                /*description*/ std::nullopt,

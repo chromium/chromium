@@ -1154,8 +1154,9 @@ IN_PROC_BROWSER_TEST_F(
     LocalCardMigrationBrowserTest,
     // TODO(crbug.com/40649134): Flaky, but feature should soon be removed.
     DISABLED_IconViewAccessibleName) {
-  EXPECT_EQ(GetLocalCardMigrationIconView()->GetAccessibleName(),
-            l10n_util::GetStringUTF16(IDS_TOOLTIP_MIGRATE_LOCAL_CARD));
+  EXPECT_EQ(
+      GetLocalCardMigrationIconView()->GetViewAccessibility().GetCachedName(),
+      l10n_util::GetStringUTF16(IDS_TOOLTIP_MIGRATE_LOCAL_CARD));
   EXPECT_EQ(
       GetLocalCardMigrationIconView()->GetTextForTooltipAndAccessibleName(),
       l10n_util::GetStringUTF16(IDS_TOOLTIP_MIGRATE_LOCAL_CARD));

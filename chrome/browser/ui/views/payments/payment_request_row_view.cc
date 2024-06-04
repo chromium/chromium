@@ -13,6 +13,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/focus_ring.h"
@@ -29,7 +30,9 @@ namespace {
 // ensure that no data is inaccessible.
 std::u16string GetAccessibleNameFromTree(views::View* view) {
   if (views::IsViewClass<views::Label>(view))
-    return static_cast<views::Label*>(view)->GetAccessibleName();
+    return static_cast<views::Label*>(view)
+        ->GetViewAccessibility()
+        .GetCachedName();
 
   std::u16string accessible_name;
   for (views::View* child : view->children()) {

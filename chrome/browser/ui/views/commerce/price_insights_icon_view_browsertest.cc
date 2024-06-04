@@ -84,7 +84,8 @@ class PriceInsightsIconViewBrowserTest : public UiBrowserTest {
     if (!price_insights_chip) {
       return false;
     }
-    EXPECT_EQ(base::ToLowerASCII(price_insights_chip->GetAccessibleName()),
+    EXPECT_EQ(base::ToLowerASCII(
+                  price_insights_chip->GetViewAccessibility().GetCachedName()),
               base::ToLowerASCII(l10n_util::GetStringUTF16(
                   IDS_SHOPPING_INSIGHTS_ICON_TOOLTIP_TEXT)));
 
@@ -183,7 +184,8 @@ class PriceInsightsIconViewWithLabelBrowserTest
 
       // TODO(meiliang): Add pixel test.
     }
-    EXPECT_EQ(base::ToLowerASCII(price_insights_chip->GetAccessibleName()),
+    EXPECT_EQ(base::ToLowerASCII(
+                  price_insights_chip->GetViewAccessibility().GetCachedName()),
               base::ToLowerASCII(l10n_util::GetStringUTF16(
                   IDS_SHOPPING_INSIGHTS_ICON_TOOLTIP_TEXT)));
     return true;

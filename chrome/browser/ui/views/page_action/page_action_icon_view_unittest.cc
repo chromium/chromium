@@ -12,6 +12,7 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/widget/widget_utils.h"
 
@@ -203,6 +204,6 @@ TEST_F(PageActionIconViewTest, UsesIconImageIfAvailable) {
 }
 
 TEST_F(PageActionIconViewTest, IconViewAccessibleName) {
-  EXPECT_EQ(view()->GetAccessibleName(),
+  EXPECT_EQ(view()->GetViewAccessibility().GetCachedName(),
             view()->GetTextForTooltipAndAccessibleName());
 }

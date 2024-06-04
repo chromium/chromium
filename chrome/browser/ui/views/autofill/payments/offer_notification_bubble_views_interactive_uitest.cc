@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/autofill/payments/offer_notification_bubble_views_test_base.h"
-
 #include <string_view>
 
 #include "base/strings/utf_string_conversions.h"
@@ -17,6 +15,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/autofill/payments/offer_notification_bubble_views_test_base.h"
 #include "chrome/browser/ui/views/autofill/payments/promo_code_label_button.h"
 #include "chrome/browser/ui/views/autofill/payments/promo_code_label_view.h"
 #include "chrome/browser/ui/views/controls/subpage_view.h"
@@ -48,6 +47,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -598,13 +598,13 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
 
   EXPECT_EQ(normal_button_tooltip, copy_promo_code_button->GetTooltipText());
   EXPECT_EQ(copy_promo_code_button->GetText() + u" " + normal_button_tooltip,
-            copy_promo_code_button->GetAccessibleName());
+            copy_promo_code_button->GetViewAccessibility().GetCachedName());
 
   GetOfferNotificationBubbleViews()->OnPromoCodeButtonClicked();
 
   EXPECT_EQ(clicked_button_tooltip, copy_promo_code_button->GetTooltipText());
   EXPECT_EQ(copy_promo_code_button->GetText() + u" " + clicked_button_tooltip,
-            copy_promo_code_button->GetAccessibleName());
+            copy_promo_code_button->GetViewAccessibility().GetCachedName());
 }
 
 IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
@@ -723,9 +723,10 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
 
 IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
                        IconViewAccessibleName) {
-  EXPECT_EQ(GetOfferNotificationIconView()->GetAccessibleName(),
-            l10n_util::GetStringUTF16(
-                IDS_AUTOFILL_OFFERS_REMINDER_ICON_TOOLTIP_TEXT));
+  EXPECT_EQ(
+      GetOfferNotificationIconView()->GetViewAccessibility().GetCachedName(),
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_OFFERS_REMINDER_ICON_TOOLTIP_TEXT));
   EXPECT_EQ(
       GetOfferNotificationIconView()->GetTextForTooltipAndAccessibleName(),
       l10n_util::GetStringUTF16(

@@ -33,6 +33,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
@@ -340,7 +341,7 @@ TEST_F(SharesheetBubbleViewTest, TextPreviewOneFile) {
 
   auto* title_text = static_cast<views::Label*>(text_views->children()[1]);
   ASSERT_EQ(title_text->GetText(), u"text.txt");
-  ASSERT_EQ(title_text->GetAccessibleName(), u"text.txt");
+  ASSERT_EQ(title_text->GetViewAccessibility().GetCachedName(), u"text.txt");
   CloseBubble();
 }
 
@@ -361,7 +362,8 @@ TEST_F(SharesheetBubbleViewTest, TextPreviewMultipleFiles) {
 
   auto* title_text = static_cast<views::Label*>(text_views->children()[1]);
   ASSERT_EQ(title_text->GetText(), u"2 files");
-  ASSERT_EQ(title_text->GetAccessibleName(), u"2 files file.pdf, text.txt");
+  ASSERT_EQ(title_text->GetViewAccessibility().GetCachedName(),
+            u"2 files file.pdf, text.txt");
   CloseBubble();
 }
 

@@ -158,7 +158,7 @@ TEST_F(LocationIconViewTest, ShouldNotAnimateWarningToDangerous) {
 TEST_F(LocationIconViewTest, IconViewAccessibleNameAndRole) {
   ui::AXNodeData data;
   view()->GetViewAccessibility().GetAccessibleNodeData(&data);
-  EXPECT_EQ(view()->GetAccessibleName(),
+  EXPECT_EQ(view()->GetViewAccessibility().GetCachedName(),
             l10n_util::GetStringUTF16(IDS_TOOLTIP_LOCATION_ICON));
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
             l10n_util::GetStringUTF16(IDS_TOOLTIP_LOCATION_ICON));
@@ -169,7 +169,7 @@ TEST_F(LocationIconViewTest, IconViewAccessibleNameAndRole) {
   view()->Update(/*suppress_animations=*/true);
   data = ui::AXNodeData();
   view()->GetViewAccessibility().GetAccessibleNodeData(&data);
-  EXPECT_EQ(view()->GetAccessibleName(),
+  EXPECT_EQ(view()->GetViewAccessibility().GetCachedName(),
             l10n_util::GetStringUTF16(IDS_ACC_SEARCH_ICON));
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
             l10n_util::GetStringUTF16(IDS_ACC_SEARCH_ICON));
@@ -181,7 +181,7 @@ TEST_F(LocationIconViewTest, IconViewAccessibleNameAndRole) {
   view()->Update(/*suppress_animations=*/true);
   data = ui::AXNodeData();
   view()->GetViewAccessibility().GetAccessibleNodeData(&data);
-  EXPECT_EQ(view()->GetAccessibleName(), u"Insecure");
+  EXPECT_EQ(view()->GetViewAccessibility().GetCachedName(), u"Insecure");
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
             u"Insecure");
   EXPECT_EQ(view()->GetAccessibleRole(), ax::mojom::Role::kPopUpButton);

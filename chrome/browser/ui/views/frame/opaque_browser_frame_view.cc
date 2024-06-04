@@ -879,10 +879,14 @@ void OpaqueBrowserFrameView::
 void OpaqueBrowserFrameView::
     UpdateCaptionButtonToolTipsForWindowControlsOverlay() {
   if (browser_view()->IsWindowControlsOverlayEnabled()) {
-    minimize_button_->SetTooltipText(minimize_button_->GetAccessibleName());
-    maximize_button_->SetTooltipText(maximize_button_->GetAccessibleName());
-    restore_button_->SetTooltipText(restore_button_->GetAccessibleName());
-    close_button_->SetTooltipText(close_button_->GetAccessibleName());
+    minimize_button_->SetTooltipText(
+        minimize_button_->GetViewAccessibility().GetCachedName());
+    maximize_button_->SetTooltipText(
+        maximize_button_->GetViewAccessibility().GetCachedName());
+    restore_button_->SetTooltipText(
+        restore_button_->GetViewAccessibility().GetCachedName());
+    close_button_->SetTooltipText(
+        close_button_->GetViewAccessibility().GetCachedName());
   } else {
     minimize_button_->SetTooltipText(u"");
     maximize_button_->SetTooltipText(u"");

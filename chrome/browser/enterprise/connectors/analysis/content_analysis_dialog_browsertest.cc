@@ -1204,7 +1204,7 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests,
   EXPECT_EQ(textarea->GetAccessibleRole(), ax::mojom::Role::kTextField);
   EXPECT_EQ(
       textarea_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
-      label->GetAccessibleName());
+      label->GetViewAccessibility().GetCachedName());
   EXPECT_EQ(textarea_data.GetNameFrom(), ax::mojom::NameFrom::kRelatedElement);
   EXPECT_EQ(textarea_data.GetIntListAttribute(
                 ax::mojom::IntListAttribute::kLabelledbyIds)[0],

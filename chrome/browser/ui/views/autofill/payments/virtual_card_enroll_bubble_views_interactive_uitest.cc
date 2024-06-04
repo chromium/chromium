@@ -29,6 +29,7 @@
 #include "content/public/test/browser_test.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/throbber.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view_observer.h"
@@ -585,7 +586,7 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     VirtualCardEnrollBubbleViewsInteractiveUiTestParameterized,
     IconViewAccessibleName) {
-  EXPECT_EQ(GetIconView()->GetAccessibleName(),
+  EXPECT_EQ(GetIconView()->GetViewAccessibility().GetCachedName(),
             l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_FALLBACK_ICON_TOOLTIP));
   EXPECT_EQ(GetIconView()->GetTextForTooltipAndAccessibleName(),

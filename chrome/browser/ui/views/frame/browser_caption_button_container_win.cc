@@ -15,6 +15,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/view_class_properties.h"
 
@@ -204,10 +205,14 @@ void BrowserCaptionButtonContainer::UpdateButtons() {
 void BrowserCaptionButtonContainer::
     UpdateButtonToolTipsForWindowControlsOverlay() {
   if (frame_view_->browser_view()->IsWindowControlsOverlayEnabled()) {
-    minimize_button_->SetTooltipText(minimize_button_->GetAccessibleName());
-    maximize_button_->SetTooltipText(maximize_button_->GetAccessibleName());
-    restore_button_->SetTooltipText(restore_button_->GetAccessibleName());
-    close_button_->SetTooltipText(close_button_->GetAccessibleName());
+    minimize_button_->SetTooltipText(
+        minimize_button_->GetViewAccessibility().GetCachedName());
+    maximize_button_->SetTooltipText(
+        maximize_button_->GetViewAccessibility().GetCachedName());
+    restore_button_->SetTooltipText(
+        restore_button_->GetViewAccessibility().GetCachedName());
+    close_button_->SetTooltipText(
+        close_button_->GetViewAccessibility().GetCachedName());
   } else {
     minimize_button_->SetTooltipText(u"");
     maximize_button_->SetTooltipText(u"");
