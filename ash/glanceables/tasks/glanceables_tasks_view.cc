@@ -133,14 +133,14 @@ class TasksExpandButton : public CounterExpandButton {
   std::u16string GetExpandedStateTooltipText() override {
     // The tooltip tells users that clicking on the button will collapse the
     // Tasks view.
-    // TODO(b/338917100): Update this when the string is ready.
-    return u"Collapse Tasks";
+    return l10n_util::GetStringUTF16(
+        IDS_GLANCEABLES_TASKS_EXPAND_BUTTON_COLLAPSE_TOOLTIP);
   }
   std::u16string GetCollapsedStateTooltipText() override {
     // The tooltip tells users that clicking on the button will expand the
     // Tasks view.
-    // TODO(b/338917100): Update this when the string is ready.
-    return u"Expand Tasks";
+    return l10n_util::GetStringUTF16(
+        IDS_GLANCEABLES_TASKS_EXPAND_BUTTON_EXPAND_TOOLTIP);
   }
 };
 

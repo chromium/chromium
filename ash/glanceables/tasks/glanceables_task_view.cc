@@ -288,6 +288,13 @@ class GlanceablesTaskView::TaskTitleButton : public views::LabelButton {
             .DeriveWithStyle(completed ? gfx::Font::FontStyle::STRIKE_THROUGH
                                        : gfx::Font::FontStyle::NORMAL));
   }
+
+  void SetText(const std::u16string& text) override {
+    views::LabelButton::SetText(text);
+    SetAccessibleName(text, text.empty()
+                                ? ax::mojom::NameFrom::kAttributeExplicitlyEmpty
+                                : ax::mojom::NameFrom::kAttribute);
+  }
 };
 
 BEGIN_METADATA(GlanceablesTaskView, TaskTitleButton)

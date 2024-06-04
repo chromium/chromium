@@ -131,14 +131,14 @@ class ClassroomExpandButton : public CounterExpandButton {
   std::u16string GetExpandedStateTooltipText() override {
     // The tooltip tells users that clicking on the button will collapse the
     // Classroom view.
-    // TODO(b/338917100): Update this when the string is ready.
-    return u"Collapse Classroom";
+    return l10n_util::GetStringUTF16(
+        IDS_GLANCEABLES_CLASSROOM_EXPAND_BUTTON_COLLAPSE_TOOLTIP);
   }
   std::u16string GetCollapsedStateTooltipText() override {
     // The tooltip tells users that clicking on the button will expand the
     // Classroom view.
-    // TODO(b/338917100): Update this when the string is ready.
-    return u"Expand Classroom";
+    return l10n_util::GetStringUTF16(
+        IDS_GLANCEABLES_CLASSROOM_EXPAND_BUTTON_EXPAND_TOOLTIP);
   }
 };
 

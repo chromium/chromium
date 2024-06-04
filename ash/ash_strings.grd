@@ -7630,6 +7630,18 @@ New install
       <message name="IDS_GLANCEABLES_TASKS_ASSIGNED_TASK_NOTICE" desc="The glanceable displays tasks fetched from Google Tasks API. Some of them can be created and assigned by other users (e.g. via Google Docs). This is a privacy notice warning that any changes will be visible to others (e.g. everyone having access to the same origin document).">
         Others can see changes that you make to this task
       </message>
+      <message name="IDS_GLANCEABLES_TASKS_EXPAND_BUTTON_EXPAND_TOOLTIP" desc="The tooltip for the expand button, indicating action to expand the glanceables task UI">
+        Expand Google Tasks
+      </message>
+      <message name="IDS_GLANCEABLES_TASKS_EXPAND_BUTTON_COLLAPSE_TOOLTIP" desc="The tooltip for the expand button, indicating action to collapse the glanceables task UI">
+        Collapse Google Tasks
+      </message>
+      <message name="IDS_GLANCEABLES_CLASSROOM_EXPAND_BUTTON_EXPAND_TOOLTIP" desc="The tooltip for the expand button, indicating action to expand the glanceables classroom UI">
+        Expand Google Classroom
+      </message>
+      <message name="IDS_GLANCEABLES_CLASSROOM_EXPAND_BUTTON_COLLAPSE_TOOLTIP" desc="The tooltip for the expand button, indicating action to collapse the glanceables classroom UI">
+        Collapse Google Classroom
+      </message>
 
       <!-- Do Not Disturb notification -->
       <message name="IDS_ASH_DO_NOT_DISTURB_NOTIFICATION_TITLE" desc="Label used for the notification that shows up when the 'Do Not Disturb' feature is enabled.">
