@@ -243,14 +243,7 @@ pa_buildflag_header("chromecast_buildflags") {
 
 pa_buildflag_header("chromeos_buildflags") {
   header = "chromeos_buildflags.h"
-
-  flags = [
-    "IS_CHROMEOS=$is_chromeos",
-
-    # TODO(https://crbug.com/41481467): Remove the "PA_" prefix, because it
-    # will already be part of the define and the `PA_BUILDFLAG` macro.
-    "PA_IS_CHROMEOS_ASH=$is_chromeos_ash",
-  ]
+  flags = [ "IS_CHROMEOS=$is_chromeos" ]
 }
 
 pa_buildflag_header("debugging_buildflags") {
@@ -698,9 +691,6 @@ if (is_clang_or_gcc) {
         sources += [ "partition_alloc_base/debug/stack_trace_linux.cc" ]
       }
 
-      if (is_android || is_chromeos_ash) {
-        sources += [ "partition_alloc_base/time/time_android.cc" ]
-      }
       if (is_apple) {
         # Request <dlfcn.h> to provide the `dladdr()` function. This is used to
         # translate address to symbolic information.

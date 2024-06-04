@@ -68,7 +68,6 @@
 #include <limits>
 
 #include "partition_alloc/build_config.h"
-#include "partition_alloc/chromeos_buildflags.h"
 #include "partition_alloc/partition_alloc_base/check.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
 #include "partition_alloc/partition_alloc_base/numerics/clamped_math.h"
@@ -865,37 +864,6 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) TimeTicks
       mach_timebase_info_data_t timebase);
 
 #endif  // PA_BUILDFLAG(IS_APPLE)
-
-#if PA_BUILDFLAG(IS_ANDROID) || PA_BUILDFLAG(PA_IS_CHROMEOS_ASH)
-  // Converts to TimeTicks the value obtained from SystemClock.uptimeMillis().
-  // Note: this conversion may be non-monotonic in relation to previously
-  // obtained TimeTicks::Now() values because of the truncation (to
-  // milliseconds) performed by uptimeMillis().
-  static TimeTicks FromUptimeMillis(int64_t uptime_millis_value);
-
-#endif  // PA_BUILDFLAG(IS_ANDROID) || PA_BUILDFLAG(PA_IS_CHROMEOS_ASH)
-
-#if PA_BUILDFLAG(IS_ANDROID)
-  // Converts to TimeTicks the value obtained from System.nanoTime(). This
-  // conversion will be monotonic in relation to previously obtained
-  // TimeTicks::Now() values as the clocks are based on the same posix monotonic
-  // clock, with nanoTime() potentially providing higher resolution.
-  static TimeTicks FromJavaNanoTime(int64_t nano_time_value);
-
-  // Truncates the TimeTicks value to the precision of SystemClock#uptimeMillis.
-  // Note that the clocks already share the same monotonic clock source.
-  jlong ToUptimeMillis() const;
-
-  // Returns the TimeTicks value as microseconds in the timebase of
-  // SystemClock#uptimeMillis.
-  // Note that the clocks already share the same monotonic clock source.
-  //
-  // System.nanoTime() may be used to get sub-millisecond precision in Java code
-  // and may be compared against this value as the two share the same clock
-  // source (though be sure to convert nanos to micros).
-  jlong ToUptimeMicros() const;
-
-#endif  // PA_BUILDFLAG(IS_ANDROID)
 
   // Get an estimate of the TimeTick value at the time of the UnixEpoch. Because
   // Time and TimeTicks respond differently to user-set time and NTP
