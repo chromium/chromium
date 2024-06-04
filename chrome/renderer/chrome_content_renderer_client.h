@@ -156,6 +156,8 @@ class ChromeContentRendererClient
   bool IsPrefetchOnly(content::RenderFrame* render_frame) override;
   uint64_t VisitedLinkHash(std::string_view canonical_url) override;
   bool IsLinkVisited(uint64_t link_hash) override;
+  void AddOrUpdateVisitedLinkSalt(const url::Origin& origin,
+                                  uint64_t salt) override;
   std::unique_ptr<blink::WebPrescientNetworking> CreatePrescientNetworking(
       content::RenderFrame* render_frame) override;
   bool IsExternalPepperPlugin(const std::string& module_name) override;

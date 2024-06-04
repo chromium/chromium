@@ -31,8 +31,11 @@
 #include "third_party/blink/renderer/core/dom/visited_link_state.h"
 
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/execution_context/security_context.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
@@ -107,6 +110,21 @@ void VisitedLinkState::InvalidateStyleForLink(LinkHash link_hash) {
   if (links_checked_for_visited_state_.Contains(link_hash) &&
       GetDocument().firstChild())
     InvalidateStyleForLinkRecursively(*GetDocument().firstChild(), link_hash);
+}
+
+void VisitedLinkState::UpdateSalt(uint64_t visited_link_salt) {
+  // Obtain the SecurityOrigin for our Document.
+  // NOTE: for all Documents which have a valid VisitedLinkState, we should not
+  // ever encounter an invalid `frame`, `context`, or `security_origin`.
+  const LocalFrame* frame = GetDocument().GetFrame();
+  DCHECK(frame);
+  const SecurityContext* context = frame->GetSecurityContext();
+  DCHECK(context);
+  const SecurityOrigin* security_origin = context->GetSecurityOrigin();
+  DCHECK(security_origin);
+  // Inform VisitedLinkReader in our corresponding process of new salt value.
+  Platform::Current()->AddOrUpdateVisitedLinkSalt(
+      security_origin->ToUrlOrigin(), visited_link_salt);
 }
 
 EInsideLink VisitedLinkState::DetermineLinkStateSlowCase(

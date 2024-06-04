@@ -81,6 +81,8 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
   virtual bool sandboxEnabled();
   uint64_t VisitedLinkHash(std::string_view canonical_url) override;
   bool IsLinkVisited(uint64_t linkHash) override;
+  void AddOrUpdateVisitedLinkSalt(const url::Origin& origin,
+                                  uint64_t salt) override;
   blink::WebString UserAgent() override;
   blink::UserAgentMetadata UserAgentMetadata() override;
   bool IsRedirectSafe(const GURL& from_url, const GURL& to_url) override;

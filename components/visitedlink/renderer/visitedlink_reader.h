@@ -32,6 +32,13 @@ class VisitedLinkReader : public VisitedLinkCommon,
       void(mojo::PendingReceiver<mojom::VisitedLinkNotificationSink>)>
   GetBindCallback();
 
+  // Mutator for `salts_`. Called by Documents which received
+  // per-origin salts from their navigation commit params. This function may
+  // only be called on the UI (main) thread.
+  void AddOrUpdateSalt(const url::Origin& origin, uint64_t salt) {
+    salts_[origin] = salt;
+  }
+
   // mojom::VisitedLinkNotificationSink overrides.
   void UpdateVisitedLinks(
       base::ReadOnlySharedMemoryRegion table_region) override;
@@ -51,6 +58,12 @@ class VisitedLinkReader : public VisitedLinkCommon,
       base::ReadOnlySharedMemoryRegion table_region);
 
   void Bind(mojo::PendingReceiver<mojom::VisitedLinkNotificationSink> receiver);
+
+  // Contains the per-origin salts required to hash every :visited link relevant
+  // to this RenderProcess. Queries to the hashtable stored within
+  // `table_mapping_` MUST provide the salt that corresponds to that link's
+  // origin, otherwise :visited status cannot be determined.
+  std::map<url::Origin, uint64_t> salts_;
 
   base::ReadOnlySharedMemoryMapping table_mapping_;
 

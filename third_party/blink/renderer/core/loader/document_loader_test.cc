@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader_client.h"
 #include "third_party/blink/renderer/platform/loader/static_data_navigation_body_loader.h"
 #include "third_party/blink/renderer/platform/storage/blink_storage_key.h"
+#include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_loader_mock_factory.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
@@ -101,15 +102,47 @@ class BodyLoaderTestDelegate : public URLLoaderTestDelegate {
   StaticDataNavigationBodyLoader* body_loader_raw_;
 };
 
+// To test the abiltity to obtain and store the per-origin salt used in
+// partitioning visited links, we need to override the Platform::Current() used
+// in this test. Our platform will obtain and store the per-origin salt values
+// locally in `salts_`.
+class VisitedLinkSaltPlatform : public TestingPlatformSupport {
+ public:
+  // Override which stores our per-origin salts locally.
+  void AddOrUpdateVisitedLinkSalt(const url::Origin& origin,
+                                  uint64_t salt) override {
+    salts_[origin] = salt;
+  }
+
+  // Test cases can query whether we obtained a salt for a specific origin.
+  std::optional<uint64_t> GetVisitedLinkSaltForOrigin(
+      const url::Origin& origin) {
+    auto it = salts_.find(origin);
+    if (it != salts_.end()) {
+      return it->second;
+    }
+    // We do not have a corresponding salt for this origin.
+    return std::nullopt;
+  }
+
+ private:
+  std::map<url::Origin, uint64_t> salts_;
+};
+
 class DocumentLoaderTest : public testing::TestWithParam<bool> {
  protected:
   void SetUp() override {
-    if (IsThirdPartyStoragePartitioningEnabled()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          net::features::kThirdPartyStoragePartitioning);
+    if (GetParam()) {
+      // Enabled the features.
+      scoped_feature_list_.InitWithFeatures(
+          {net::features::kThirdPartyStoragePartitioning,
+           blink::features::kPartitionVisitedLinkDatabase},
+          {});
     } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          net::features::kThirdPartyStoragePartitioning);
+      // Disables the features.
+      scoped_feature_list_.InitWithFeatures(
+          {}, {net::features::kThirdPartyStoragePartitioning,
+               blink::features::kPartitionVisitedLinkDatabase});
     }
 
     web_view_helper_.Initialize();
@@ -152,8 +185,6 @@ class DocumentLoaderTest : public testing::TestWithParam<bool> {
     url_test_helpers::UnregisterAllURLsAndClearMemoryCache();
   }
 
-  bool IsThirdPartyStoragePartitioningEnabled() const { return GetParam(); }
-
   class ScopedLoaderDelegate {
    public:
     explicit ScopedLoaderDelegate(URLLoaderTestDelegate* delegate) {
@@ -164,6 +195,7 @@ class DocumentLoaderTest : public testing::TestWithParam<bool> {
 
   WebLocalFrameImpl* MainFrame() { return web_view_helper_.LocalMainFrame(); }
 
+  ScopedTestingPlatformSupport<VisitedLinkSaltPlatform> platform_;
   test::TaskEnvironment task_environment_;
   frame_test_helpers::WebViewHelper web_view_helper_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -847,6 +879,36 @@ TEST_P(DocumentLoaderTest, EmbeddedCredentialsNavigation) {
     EXPECT_EQ(test_case.useCounted,
               document->IsUseCounted(
                   WebFeature::kTopLevelDocumentWithEmbeddedCredentials));
+  }
+}
+
+TEST_P(DocumentLoaderTest, VisitedLinkSalt) {
+  // Generate the constants.
+  const uint64_t kSalt = base::RandUint64();
+  const KURL& kUrl = KURL(NullURL(), "https://www.example.com/foo.html");
+
+  // Load a blank slate.
+  WebViewImpl* web_view_impl =
+      web_view_helper_.InitializeAndLoad("about:blank");
+
+  // Create params for the URL we will navigate to next.
+  std::unique_ptr<WebNavigationParams> params =
+      WebNavigationParams::CreateWithEmptyHTMLForTesting(kUrl);
+  params->visited_link_salt = kSalt;
+
+  // Perform the navigation and provide an empty vector for visited link state.
+  LocalFrame* local_frame =
+      To<LocalFrame>(web_view_impl->GetPage()->MainFrame());
+  local_frame->Loader().CommitNavigation(std::move(params), nullptr);
+
+  // Check if the platform was notified of our salt.
+  std::optional<uint64_t> result_salt =
+      platform_->GetVisitedLinkSaltForOrigin(url::Origin::Create(GURL(kUrl)));
+  ASSERT_EQ(result_salt.has_value(),
+            base::FeatureList::IsEnabled(
+                blink::features::kPartitionVisitedLinkDatabase));
+  if (result_salt.has_value()) {
+    EXPECT_EQ(result_salt.value(), kSalt);
   }
 }
 

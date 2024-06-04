@@ -1488,6 +1488,12 @@ bool ChromeContentRendererClient::IsLinkVisited(uint64_t link_hash) {
   return chrome_observer_->visited_link_reader()->IsVisited(link_hash);
 }
 
+void ChromeContentRendererClient::AddOrUpdateVisitedLinkSalt(
+    const url::Origin& origin,
+    uint64_t salt) {
+  return chrome_observer_->visited_link_reader()->AddOrUpdateSalt(origin, salt);
+}
+
 std::unique_ptr<blink::WebPrescientNetworking>
 ChromeContentRendererClient::CreatePrescientNetworking(
     content::RenderFrame* render_frame) {

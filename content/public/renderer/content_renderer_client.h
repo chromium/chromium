@@ -270,6 +270,8 @@ class CONTENT_EXPORT ContentRendererClient {
   // See blink::Platform.
   virtual uint64_t VisitedLinkHash(std::string_view canonical_url);
   virtual bool IsLinkVisited(uint64_t link_hash);
+  virtual void AddOrUpdateVisitedLinkSalt(const url::Origin& origin,
+                                          uint64_t salt);
 
   // Creates a WebPrescientNetworking instance for |render_frame|. The returned
   // instance is owned by the frame. May return null.

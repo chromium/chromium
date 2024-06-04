@@ -228,6 +228,13 @@ bool AwContentRendererClient::IsLinkVisited(uint64_t link_hash) {
   return visited_link_reader_->IsVisited(link_hash);
 }
 
+// Android WebView does not support partitioned :visited links. Since per-origin
+// salts are only used in the partitioned hashtable, AndroidWebView clients do
+// not need to take any action if a per-origin salt is received.
+void AwContentRendererClient::AddOrUpdateVisitedLinkSalt(
+    const url::Origin& origin,
+    uint64_t salt) {}
+
 void AwContentRendererClient::RunScriptsAtDocumentStart(
     content::RenderFrame* render_frame) {
   js_injection::JsCommunication* communication =

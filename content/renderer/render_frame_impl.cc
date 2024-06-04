@@ -2968,6 +2968,7 @@ void RenderFrameImpl::CommitNavigationWithParams(
 
   navigation_params->load_with_storage_access =
       commit_params->load_with_storage_access;
+  navigation_params->visited_link_salt = commit_params->visited_link_salt;
 
   if (!container_info) {
     // An empty network provider will always be created since it is expected in

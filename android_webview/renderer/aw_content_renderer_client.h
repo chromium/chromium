@@ -54,6 +54,8 @@ class AwContentRendererClient : public content::ContentRendererClient,
                         std::string* error_html) override;
   uint64_t VisitedLinkHash(std::string_view canonical_url) override;
   bool IsLinkVisited(uint64_t link_hash) override;
+  void AddOrUpdateVisitedLinkSalt(const url::Origin& origin,
+                                  uint64_t salt) override;
   void RunScriptsAtDocumentStart(content::RenderFrame* render_frame) override;
   std::unique_ptr<media::KeySystemSupportRegistration> GetSupportedKeySystems(
       content::RenderFrame* render_frame,

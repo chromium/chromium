@@ -81,6 +81,7 @@
 #include "third_party/blink/renderer/core/dom/document_parser.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/scriptable_document_parser.h"
+#include "third_party/blink/renderer/core/dom/visited_link_state.h"
 #include "third_party/blink/renderer/core/dom/weak_identifier_map.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/security_context_init.h"
@@ -257,6 +258,7 @@ struct SameSizeAsDocumentLoader
   bool grant_load_local_resources;
   std::optional<blink::mojom::FetchCacheMode> force_fetch_cache_mode;
   FramePolicy frame_policy;
+  std::optional<uint64_t> visited_link_salt;
   Member<LocalFrame> frame;
   Member<HistoryItem> history_item;
   Member<DocumentParser> parser;
@@ -494,6 +496,7 @@ DocumentLoader::DocumentLoader(
       grant_load_local_resources_(params_->grant_load_local_resources),
       force_fetch_cache_mode_(params_->force_fetch_cache_mode),
       frame_policy_(params_->frame_policy.value_or(FramePolicy())),
+      visited_link_salt_(params_->visited_link_salt),
       frame_(frame),
       // For back/forward navigations, the browser passed a history item to use
       // at commit time in |params_|. Set it as the current history item of this
@@ -717,6 +720,7 @@ DocumentLoader::CreateWebNavigationParamsToCloneDocument() {
   params->load_with_storage_access = load_with_storage_access_;
   params->modified_runtime_features = modified_runtime_features_;
   params->cookie_deprecation_label = cookie_deprecation_label_;
+  params->visited_link_salt = visited_link_salt_;
   params->content_settings = content_settings_->Clone();
   return params;
 }
@@ -2840,6 +2844,16 @@ void DocumentLoader::CommitNavigation() {
     KURL main_resource_url = main_resource ? main_resource->Url() : KURL();
     if (!main_resource_url.IsEmpty())
       document->SetBaseURLOverride(main_resource_url);
+  }
+
+  // For any navigations which have a per-origin salt, we need to notify the
+  // resulting `document`. The `visited_link_salt_` allows the `document` to
+  // hash and identify which links should be styled as :visited. Without the
+  // salt, the hashtable is unreadable to the Document.
+  if (visited_link_salt_.has_value() &&
+      base::FeatureList::IsEnabled(
+          blink::features::kPartitionVisitedLinkDatabase)) {
+    document->GetVisitedLinkState().UpdateSalt(visited_link_salt_.value());
   }
 
   // The navigation API is not initialized on the initial about:blank document

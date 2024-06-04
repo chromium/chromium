@@ -551,6 +551,22 @@ struct BLINK_EXPORT WebNavigationParams {
 
   // The cookie deprecation label for cookie deprecation facilitated testing.
   WebString cookie_deprecation_label;
+
+  // The :visited link hashtable is stored in shared memory and contains salted
+  // hashes for all visits. Each salt corresponds to a unique origin, and
+  // renderer processes are only informed of salts that correspond to their
+  // origins. As a result, any given renderer process can only
+  // learn about visits relevant to origins for which it has the salt.
+  //
+  // Here we store the salt corresponding to this navigation's origin to
+  // be committed. It will allow the renderer process that commits this
+  // navigation to learn about visits hashed with this salt. If the :visited
+  // link hashtable is not yet initialized (or the feature is disabled), the
+  // salt value will not be set here. Instead, PartitionedVisitedLinkWriter will
+  // send the salt values to the renderer (specifically to VisitedLinkReader via
+  // the VisitedLinkNotificationSink interface) after the :visited link
+  // hashtable is initialized.
+  std::optional<uint64_t> visited_link_salt;
 };
 
 }  // namespace blink
