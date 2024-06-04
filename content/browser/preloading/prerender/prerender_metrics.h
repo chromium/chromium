@@ -95,8 +95,7 @@ class CONTENT_EXPORT PrerenderCancellationReason {
   PrerenderCancellationReason(PrerenderCancellationReason&& reason);
 
   // Reports UMA and UKM metrics.
-  void ReportMetrics(PreloadingTriggerType trigger_type,
-                     const std::string& embedder_histogram_suffix) const;
+  void ReportMetrics(const std::string& histogram_suffix) const;
 
   PrerenderFinalStatus final_status() const { return final_status_; }
 
@@ -159,28 +158,24 @@ void ReportSuccessActivation(const PrerenderAttributes& attributes,
 // initial prerender navigation when activation fails.
 void RecordPrerenderActivationNavigationParamsMatch(
     PrerenderHost::ActivationNavigationParamsMatch result,
-    PreloadingTriggerType trigger_type,
-    const std::string& embedder_suffix);
+    const std::string& histogram_suffix);
 
 // Records the detailed types of the cross-origin redirection, e.g., changes to
 // scheme, host name etc.
 void RecordPrerenderRedirectionMismatchType(
     PrerenderCrossOriginRedirectionMismatch case_type,
-    PreloadingTriggerType trigger_type,
-    const std::string& embedder_histogram_suffix);
+    const std::string& histogram_suffix);
 
 // Records whether the redirection was caused by HTTP protocol upgrade.
 void RecordPrerenderRedirectionProtocolChange(
     PrerenderCrossOriginRedirectionProtocolChange change_type,
-    PreloadingTriggerType trigger_type,
-    const std::string& embedder_histogram_suffix);
+    const std::string& histogram_suffix);
 
 // Records ui::PageTransition of prerender activation navigation when transition
 // mismatch happens on prerender activation.
 void RecordPrerenderActivationTransition(
     int32_t potential_activation_transition,
-    PreloadingTriggerType trigger_type,
-    const std::string& embedder_histogram_suffix);
+    const std::string& histogram_suffix);
 
 // If you change this, please follow the process in
 // go/preloading-dashboard-updates to update the mapping reflected in dashboard,

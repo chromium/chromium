@@ -22,14 +22,14 @@ void TestHeaders(const std::string& prerender_header_str,
   potential_headers.AddHeadersFromString(potential_header_str);
   ASSERT_FALSE(PrerenderHost::IsActivationHeaderMatch(
       potential_headers, prerender_headers, reason));
-  reason.ReportMetrics(PreloadingTriggerType::kEmbedder, "ForTesting");
+  reason.ReportMetrics(".ForTesting");
 }
 
 // Tests to ensure the ReportHeaderMismatch implementation is aligned with the
 // enum generator.
 TEST(PrerenderMetricsTest, NavigationHeaderMismatchMetric) {
   const char kMetricName[] =
-      "Prerender.Experimental.ActivationHeadersMismatch.Embedder_ForTesting";
+      "Prerender.Experimental.ActivationHeadersMismatch.ForTesting";
   {
     base::HistogramTester histogram_tester;
     TestHeaders("Content-Type: ab\r\n If-Match: xy",

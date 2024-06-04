@@ -121,7 +121,7 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
       const std::string& potential_activation_headers_str,
       const std::string& prerender_headers_str,
       PreloadingTriggerType trigger_type,
-      const std::string& embedder_histogram_suffix,
+      const std::string& histogram_suffix,
       PrerenderCancellationReason& reason);
 
   // Sets a callback to be called on PrerenderHost creation.

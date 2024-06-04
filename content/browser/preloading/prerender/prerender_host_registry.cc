@@ -1033,8 +1033,7 @@ bool PrerenderHostRegistry::CancelHostInternal(
   std::unique_ptr<PrerenderHost> prerender_host = std::move(iter->second);
   prerender_host_by_frame_tree_node_id_.erase(iter);
 
-  reason.ReportMetrics(prerender_host->trigger_type(),
-                       prerender_host->embedder_histogram_suffix());
+  reason.ReportMetrics(prerender_host->GetHistogramSuffix());
 
   NotifyCancel(prerender_host->frame_tree_node_id(), reason);
 

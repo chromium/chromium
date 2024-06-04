@@ -74,7 +74,7 @@ bool PrerenderHost::AreHttpRequestHeadersCompatible(
     const std::string& potential_activation_headers_str,
     const std::string& prerender_headers_str,
     PreloadingTriggerType trigger_type,
-    const std::string& embedder_histogram_suffix,
+    const std::string& histogram_suffix,
     PrerenderCancellationReason& reason) {
   net::HttpRequestHeaders prerender_headers;
   prerender_headers.AddHeadersFromString(prerender_headers_str);
@@ -753,8 +753,8 @@ bool PrerenderHost::AreInitialPrerenderNavigationParamsCompatibleWithNavigation(
           navigation_request.begin_params(),
           allow_initiator_and_transition_mismatch, reason);
   if (result != ActivationNavigationParamsMatch::kOk) {
-    RecordPrerenderActivationNavigationParamsMatch(result, trigger_type(),
-                                                   embedder_histogram_suffix());
+    RecordPrerenderActivationNavigationParamsMatch(result,
+                                                   GetHistogramSuffix());
     return false;
   }
 
@@ -763,14 +763,13 @@ bool PrerenderHost::AreInitialPrerenderNavigationParamsCompatibleWithNavigation(
       navigation_request.common_params(),
       allow_initiator_and_transition_mismatch);
   if (result != ActivationNavigationParamsMatch::kOk) {
-    RecordPrerenderActivationNavigationParamsMatch(result, trigger_type(),
-                                                   embedder_histogram_suffix());
+    RecordPrerenderActivationNavigationParamsMatch(result,
+                                                   GetHistogramSuffix());
     return false;
   }
 
   RecordPrerenderActivationNavigationParamsMatch(
-      ActivationNavigationParamsMatch::kOk, trigger_type(),
-      embedder_histogram_suffix());
+      ActivationNavigationParamsMatch::kOk, GetHistogramSuffix());
   return true;
 }
 
@@ -792,7 +791,7 @@ PrerenderHost::AreBeginNavigationParamsCompatibleWithNavigation(
 
   if (!AreHttpRequestHeadersCompatible(potential_activation.headers,
                                        begin_params_->headers, trigger_type(),
-                                       embedder_histogram_suffix(), reason)) {
+                                       GetHistogramSuffix(), reason)) {
     return ActivationNavigationParamsMatch::kHttpRequestHeader;
   }
 
@@ -910,8 +909,7 @@ PrerenderHost::AreCommonNavigationParamsCompatibleWithNavigation(
   if (!allow_initiator_and_transition_mismatch &&
       (potential_activation_transition != common_params_->transition)) {
     RecordPrerenderActivationTransition(potential_activation_transition,
-                                        trigger_type(),
-                                        embedder_histogram_suffix());
+                                        GetHistogramSuffix());
     return ActivationNavigationParamsMatch::kTransition;
   }
 
