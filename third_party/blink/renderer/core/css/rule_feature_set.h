@@ -340,7 +340,6 @@ class CORE_EXPORT RuleFeatureSet {
                                                PositionType);
   SiblingInvalidationSet& EnsureUniversalSiblingInvalidationSet();
   NthSiblingInvalidationSet& EnsureNthInvalidationSet();
-  DescendantInvalidationSet& EnsurePartInvalidationSet();
 
   void UpdateInvalidationSets(const CSSSelector&, const StyleScope*);
 
