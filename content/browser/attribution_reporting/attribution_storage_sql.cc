@@ -599,8 +599,7 @@ StoreSourceResult AttributionStorageSql::StoreSource(StorableSource source) {
         delegate_->GetMaxSourcesPerOrigin()));
   }
 
-  switch (rate_limit_table_.SourceAllowedForDestinationLimit(&db_, source,
-                                                             source_time)) {
+  switch (SourceAllowedForDestinationLimit(source, source_time)) {
     case RateLimitResult::kAllowed:
       break;
     case RateLimitResult::kNotAllowed:
@@ -611,8 +610,7 @@ StoreSourceResult AttributionStorageSql::StoreSource(StorableSource source) {
       return make_result(StoreSourceResult::InternalError());
   }
 
-  switch (rate_limit_table_.SourceAllowedForReportingOriginPerSiteLimit(
-      &db_, source, source_time)) {
+  switch (SourceAllowedForReportingOriginPerSiteLimit(source, source_time)) {
     case RateLimitResult::kAllowed:
       break;
     case RateLimitResult::kNotAllowed:
@@ -631,8 +629,7 @@ StoreSourceResult AttributionStorageSql::StoreSource(StorableSource source) {
   // side-channel leakage of the cross-origin data.
 
   RateLimitTable::DestinationRateLimitResult destination_rate_limit_result =
-      rate_limit_table_.SourceAllowedForDestinationRateLimit(&db_, source,
-                                                             source_time);
+      SourceAllowedForDestinationRateLimit(source, source_time);
   base::UmaHistogramEnumeration("Conversions.DestinationRateLimitResult",
                                 destination_rate_limit_result);
 
@@ -651,8 +648,7 @@ StoreSourceResult AttributionStorageSql::StoreSource(StorableSource source) {
       return make_result(StoreSourceResult::InternalError());
   }
 
-  switch (rate_limit_table_.SourceAllowedForReportingOriginLimit(&db_, source,
-                                                                 source_time)) {
+  switch (SourceAllowedForReportingOriginLimit(source, source_time)) {
     case RateLimitResult::kAllowed:
       break;
     case RateLimitResult::kNotAllowed:
@@ -769,8 +765,7 @@ StoreSourceResult AttributionStorageSql::StoreSource(StorableSource source) {
       reg.aggregatable_debug_reporting_config.config().key_piece,
       remaining_aggregatable_debug_budget);
 
-  if (!stored_source.has_value() ||
-      !rate_limit_table_.AddRateLimitForSource(&db_, *stored_source)) {
+  if (!stored_source.has_value() || !AddRateLimitForSource(*stored_source)) {
     return make_result(StoreSourceResult::InternalError());
   }
 
@@ -818,8 +813,7 @@ StoreSourceResult AttributionStorageSql::StoreSource(StorableSource source) {
   }
 
   if (attribution_logic != StoredSource::AttributionLogic::kTruthfully) {
-    if (!rate_limit_table_.AddRateLimitForAttribution(
-            &db_,
+    if (!AddRateLimitForAttribution(
             AttributionInfo(/*time=*/source_time,
                             /*debug_key=*/std::nullopt,
                             /*context_origin=*/common_info.source_origin()),
@@ -1198,8 +1192,8 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
         /*new_aggregatable_status=*/std::nullopt, transaction);
   }
 
-  switch (rate_limit_table_.AttributionAllowedForReportingOriginLimit(
-      &db_, attribution_info, source_to_attribute->source)) {
+  switch (AttributionAllowedForReportingOriginLimit(
+      attribution_info, source_to_attribute->source)) {
     case RateLimitResult::kAllowed:
       break;
     case RateLimitResult::kNotAllowed:
@@ -1296,17 +1290,16 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
                           IsSuccessResult(store_aggregatable_status));
 
   if (new_event_level_report.has_value() &&
-      !rate_limit_table_.AddRateLimitForAttribution(
-          &db_, attribution_info, source_to_attribute->source,
-          RateLimitTable::Scope::kEventLevelAttribution,
-          new_event_level_report->id())) {
+      !AddRateLimitForAttribution(attribution_info, source_to_attribute->source,
+                                  RateLimitTable::Scope::kEventLevelAttribution,
+                                  new_event_level_report->id())) {
     return assemble_report_result(EventLevelResult::kInternalError,
                                   AggregatableResult::kInternalError);
   }
 
   if (new_aggregatable_report.has_value() &&
-      !rate_limit_table_.AddRateLimitForAttribution(
-          &db_, attribution_info, source_to_attribute->source,
+      !AddRateLimitForAttribution(
+          attribution_info, source_to_attribute->source,
           RateLimitTable::Scope::kAggregatableAttribution,
           new_aggregatable_report->id())) {
     return assemble_report_result(EventLevelResult::kInternalError,
@@ -1422,8 +1415,8 @@ EventLevelResult AttributionStorageSql::MaybeCreateEventLevelReport(
       return EventLevelResult::kReportWindowPassed;
   }
 
-  switch (rate_limit_table_.AttributionAllowedForAttributionLimit(
-      &db_, attribution_info, source,
+  switch (AttributionAllowedForAttributionLimit(
+      attribution_info, source,
       RateLimitTable::Scope::kEventLevelAttribution)) {
     case RateLimitResult::kAllowed:
       break;
@@ -3040,8 +3033,8 @@ AttributionStorageSql::MaybeCreateAggregatableAttributionReport(
       return AggregatableResult::kInternalError;
   }
 
-  switch (rate_limit_table_.AttributionAllowedForAttributionLimit(
-      &db_, attribution_info, source,
+  switch (AttributionAllowedForAttributionLimit(
+      attribution_info, source,
       RateLimitTable::Scope::kAggregatableAttribution)) {
     case RateLimitResult::kAllowed:
       break;
@@ -3345,6 +3338,83 @@ void AttributionStorageSql::SetDelegate(AttributionResolverDelegate* delegate) {
   DCHECK(delegate);
   rate_limit_table_.SetDelegate(*delegate);
   delegate_ = delegate;
+}
+
+bool AttributionStorageSql::AddRateLimitForSource(const StoredSource& source) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_EQ(*db_status_, DbStatus::kOpen);
+  CHECK(db_.HasActiveTransactions());
+  return rate_limit_table_.AddRateLimitForSource(&db_, source);
+}
+
+bool AttributionStorageSql::AddRateLimitForAttribution(
+    const AttributionInfo& attribution_info,
+    const StoredSource& source,
+    RateLimitTable::Scope scope,
+    AttributionReport::Id id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_EQ(*db_status_, DbStatus::kOpen);
+  CHECK(db_.HasActiveTransactions());
+  return rate_limit_table_.AddRateLimitForAttribution(&db_, attribution_info,
+                                                      source, scope, id);
+}
+
+RateLimitResult AttributionStorageSql::SourceAllowedForReportingOriginLimit(
+    const StorableSource& source,
+    base::Time source_time) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_EQ(*db_status_, DbStatus::kOpen);
+  return rate_limit_table_.SourceAllowedForReportingOriginLimit(&db_, source,
+                                                                source_time);
+}
+
+RateLimitResult
+AttributionStorageSql::SourceAllowedForReportingOriginPerSiteLimit(
+    const StorableSource& source,
+    base::Time source_time) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_EQ(*db_status_, DbStatus::kOpen);
+  return rate_limit_table_.SourceAllowedForReportingOriginPerSiteLimit(
+      &db_, source, source_time);
+}
+
+RateLimitResult AttributionStorageSql::SourceAllowedForDestinationLimit(
+    const StorableSource& source,
+    base::Time source_time) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_EQ(*db_status_, DbStatus::kOpen);
+  return rate_limit_table_.SourceAllowedForDestinationLimit(&db_, source,
+                                                            source_time);
+}
+
+RateLimitTable::DestinationRateLimitResult
+AttributionStorageSql::SourceAllowedForDestinationRateLimit(
+    const StorableSource& source,
+    base::Time source_time) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_EQ(*db_status_, DbStatus::kOpen);
+  return rate_limit_table_.SourceAllowedForDestinationRateLimit(&db_, source,
+                                                                source_time);
+}
+
+RateLimitResult
+AttributionStorageSql::AttributionAllowedForReportingOriginLimit(
+    const AttributionInfo& attribution_info,
+    const StoredSource& source) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_EQ(*db_status_, DbStatus::kOpen);
+  return rate_limit_table_.AttributionAllowedForReportingOriginLimit(
+      &db_, attribution_info, source);
+}
+
+RateLimitResult AttributionStorageSql::AttributionAllowedForAttributionLimit(
+    const AttributionInfo& attribution_info,
+    const StoredSource& source,
+    RateLimitTable::Scope scope) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_EQ(*db_status_, DbStatus::kOpen);
+  return rate_limit_table_.AttributionAllowedForAttributionLimit(
+      &db_, attribution_info, source, scope);
 }
 
 }  // namespace content

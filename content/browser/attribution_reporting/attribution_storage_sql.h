@@ -144,6 +144,42 @@ class CONTENT_EXPORT AttributionStorageSql {
                            bool delete_rate_limit_data);
   void SetDelegate(AttributionResolverDelegate*);
 
+  // Rate-limiting
+  [[nodiscard]] RateLimitTable::DestinationRateLimitResult
+  CheckDestinationRateLimit(const StorableSource& source,
+                            base::Time source_time);
+  [[nodiscard]] bool AddRateLimitForSource(const StoredSource& source);
+  [[nodiscard]] bool AddRateLimitForAttribution(
+      const AttributionInfo& attribution_info,
+      const StoredSource& source,
+      RateLimitTable::Scope scope,
+      AttributionReport::Id id);
+
+  [[nodiscard]] RateLimitResult SourceAllowedForReportingOriginLimit(
+      const StorableSource& source,
+      base::Time source_time);
+
+  [[nodiscard]] RateLimitResult SourceAllowedForReportingOriginPerSiteLimit(
+      const StorableSource& source,
+      base::Time source_time);
+
+  [[nodiscard]] RateLimitResult SourceAllowedForDestinationLimit(
+      const StorableSource& source,
+      base::Time source_time);
+
+  [[nodiscard]] RateLimitTable::DestinationRateLimitResult
+  SourceAllowedForDestinationRateLimit(const StorableSource& source,
+                                       base::Time source_time);
+
+  [[nodiscard]] RateLimitResult AttributionAllowedForReportingOriginLimit(
+      const AttributionInfo& attribution_info,
+      const StoredSource& source);
+
+  [[nodiscard]] RateLimitResult AttributionAllowedForAttributionLimit(
+      const AttributionInfo& attribution_info,
+      const StoredSource& source,
+      RateLimitTable::Scope scope);
+
  private:
   using ReportCorruptionStatusSet =
       base::EnumSet<ReportCorruptionStatus,
