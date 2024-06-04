@@ -18,6 +18,7 @@
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl_io_surface.h"
 #include "gpu/ipc/service/gpu_channel.h"
+#include "gpu/ipc/service/gpu_channel_shared_image_interface.h"
 #include "gpu/ipc/service/shared_image_stub.h"
 #include "media/base/mac/color_space_util_mac.h"
 #include "media/base/mac/video_frame_mac.h"
@@ -214,12 +215,14 @@ void VideoToolboxFrameConverter::Convert(
   VideoPixelFormat video_pixel_format =
       PixelFormatToVideoPixelFormat(pixel_format);
 
-  gpu::Mailbox mailbox = gpu::Mailbox::Generate();
-  bool result = sis_->CreateSharedImage(
-      mailbox, std::move(handle), *format, coded_size, color_space,
-      kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType, kSharedImageUsage,
-      kSharedImageDebugLabel);
-  if (!result) {
+  auto shared_image_interface = sis_->shared_image_interface();
+  CHECK(shared_image_interface);
+
+  auto shared_image = shared_image_interface->CreateSharedImage(
+      {*format, coded_size, metadata->color_space, kTopLeft_GrSurfaceOrigin,
+       kOpaque_SkAlphaType, kSharedImageUsage, kSharedImageDebugLabel},
+      std::move(handle));
+  if (!shared_image) {
     MEDIA_LOG(ERROR, media_log_.get()) << "Failed to create shared image";
     std::move(output_cb).Run(nullptr, std::move(metadata));
     return;
@@ -231,29 +234,26 @@ void VideoToolboxFrameConverter::Convert(
 
   GLenum target = texture_rectangle_ ? GL_TEXTURE_RECTANGLE_ARB : GL_TEXTURE_2D;
 
-  gpu::MailboxHolder mailbox_holders[VideoFrame::kMaxPlanes];
-  mailbox_holders[0] = gpu::MailboxHolder(mailbox, gpu::SyncToken(), target);
-
   // |image| must be retained until after the release sync token passes.
   VideoFrame::ReleaseMailboxCB release_cb = base::BindPostTask(
       gpu_task_runner_,
       base::BindOnce(&VideoToolboxFrameConverter::OnVideoFrameReleased, this,
-                     sis_->GetSharedImageDestructionCallback(mailbox),
-                     std::move(image)));
+                     shared_image, std::move(image)));
 
   // It should be possible to use VideoFrame::WrapExternalGpuMemoryBuffer(),
   // which would allow the renderer to map the IOSurface, but this is more
   // expensive whenever the renderer is not doing readback.
-  scoped_refptr<VideoFrame> frame = VideoFrame::WrapNativeTextures(
-      video_pixel_format, mailbox_holders, std::move(release_cb), coded_size,
-      visible_rect, natural_size, metadata->timestamp);
+  scoped_refptr<VideoFrame> frame = VideoFrame::WrapSharedImage(
+      video_pixel_format, shared_image, shared_image->creation_sync_token(),
+      target, std::move(release_cb), coded_size, visible_rect, natural_size,
+      metadata->timestamp);
 
   if (!frame) {
     MEDIA_LOG(ERROR, media_log_.get()) << "Failed to create VideoFrame";
 
     // |image| was dropped along with |release_cb|, but the SharedImage is still
     // alive.
-    sis_->GetSharedImageDestructionCallback(mailbox).Run(gpu::SyncToken());
+    shared_image->MarkForDestruction();
 
     std::move(output_cb).Run(nullptr, std::move(metadata));
     return;
@@ -279,7 +279,7 @@ void VideoToolboxFrameConverter::Convert(
 }
 
 void VideoToolboxFrameConverter::OnVideoFrameReleased(
-    base::OnceCallback<void(const gpu::SyncToken&)> destroy_shared_image_cb,
+    scoped_refptr<gpu::ClientSharedImage> client_shared_image,
     base::apple::ScopedCFTypeRef<CVImageBufferRef> image,
     const gpu::SyncToken& sync_token) {
   DVLOG(4) << __func__;
@@ -290,8 +290,10 @@ void VideoToolboxFrameConverter::OnVideoFrameReleased(
     return;
   }
 
-  // Destroy the SharedImage.
-  std::move(destroy_shared_image_cb).Run(sync_token);
+  if (client_shared_image) {
+    client_shared_image->UpdateDestructionSyncToken(sync_token);
+    client_shared_image->MarkForDestruction();
+  }
 
   // Release |image|.
   stub_->channel()->scheduler()->ScheduleTask(gpu::Scheduler::Task(
