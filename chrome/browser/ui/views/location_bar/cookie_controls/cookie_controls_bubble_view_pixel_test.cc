@@ -111,9 +111,15 @@ class CookieControlsBubbleViewPixelTest
     auto expiration = days_to_expiration
                           ? base::Time::Now() + base::Days(days_to_expiration)
                           : base::Time();
+    // TODO: 344042974 - This should be updated to set directly on
+    // CookieControlsController. Currently if the page action icon is updated
+    // after OnStatusChanged() is called it will pull state from
+    // CookieControlsController, which has not been updated to reflect what is
+    // needed for this test.
     view_controller()->OnStatusChanged(controls_visible, protections_on,
                                        enforcement, blocking_status,
                                        expiration);
+    cookie_controls_icon()->DisableUpdatesForTesting();
   }
 
   static base::Time GetReferenceTime() {
@@ -176,7 +182,9 @@ class CookieControlsBubbleViewPixelTest
                                        "/third_party_partitioned_cookies.html");
   }
 
-  PageActionIconView* cookie_controls_icon() { return cookie_controls_icon_; }
+  CookieControlsIconView* cookie_controls_icon() {
+    return cookie_controls_icon_;
+  }
   net::EmbeddedTestServer* https_test_server() { return https_server_.get(); }
 
   CookieControlsBubbleViewController* view_controller() {

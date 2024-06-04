@@ -223,6 +223,7 @@ chromium-metrics-reviews@google.com.
   <int value="26" label="Price Insights"/>
   <int value="27" label="Read Anything"/>
   <int value="28" label="Product Specifications"/>
+  <int value="29" label="Lens Overlay"/>
 </enum>
 
 <enum name="PageActionPageEvent">

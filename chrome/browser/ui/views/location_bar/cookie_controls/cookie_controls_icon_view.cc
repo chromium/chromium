@@ -77,7 +77,15 @@ void CookieControlsIconView::SetCoordinatorForTesting(
   bubble_coordinator_ = std::move(coordinator);
 }
 
+void CookieControlsIconView::DisableUpdatesForTesting() {
+  disable_updates_for_testing_ = true;
+}
+
 void CookieControlsIconView::UpdateImpl() {
+  if (disable_updates_for_testing_) {
+    return;
+  }
+
   auto* web_contents = delegate()->GetWebContentsForPageActionIconView();
   if (web_contents) {
     if (!controller_) {

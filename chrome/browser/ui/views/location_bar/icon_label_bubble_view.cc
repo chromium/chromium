@@ -303,11 +303,11 @@ void IconLabelBubbleView::UpdateBackground() {
   // TODO(pbos): Consider renaming kPageInfo/kPageAction color IDs to share the
   // same prefix. Here PageInfo assumes to have a background and PageAction
   // assumes to not have one.
-    ConfigureInkDropForRefresh2023(this,
-                                   painted_on_solid_background
-                                       ? kColorPageInfoIconHover
-                                       : kColorPageActionIconHover,
-                                   kColorPageInfoIconPressed);
+  ConfigureInkDropForRefresh2023(this,
+                                 painted_on_solid_background
+                                     ? kColorPageInfoIconHover
+                                     : kColorPageActionIconHover,
+                                 kColorPageInfoIconPressed);
 }
 
 void IconLabelBubbleView::SetUseTonalColorsWhenExpanded(bool use_tonal_colors) {
