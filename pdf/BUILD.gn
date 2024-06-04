@@ -204,6 +204,8 @@ if (enable_pdf) {
         "ink_module.h",
         "pdf_ink_brush.cc",
         "pdf_ink_brush.h",
+        "pdf_ink_undo_redo_model.cc",
+        "pdf_ink_undo_redo_model.h",
       ]
 
       public_deps += [ "//pdf/ink" ]
@@ -449,7 +451,10 @@ if (enable_pdf) {
     ]
 
     if (enable_pdf_ink2) {
-      sources += [ "ink_module_unittest.cc" ]
+      sources += [
+        "ink_module_unittest.cc",
+        "pdf_ink_undo_redo_model_unittest.cc",
+      ]
     }
 
     if (v8_use_external_startup_data) {
