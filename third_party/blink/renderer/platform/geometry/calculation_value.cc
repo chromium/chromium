@@ -177,4 +177,28 @@ bool CalculationValue::HasStretch() const {
   return data_.expression->HasStretch();
 }
 
+bool CalculationValue::HasMinContent() const {
+  if (!IsExpression()) {
+    return false;
+  }
+  return data_.expression->HasContentOrIntrinsicSize() &&
+         data_.expression->HasMinContent();
+}
+
+bool CalculationValue::HasMaxContent() const {
+  if (!IsExpression()) {
+    return false;
+  }
+  return data_.expression->HasContentOrIntrinsicSize() &&
+         data_.expression->HasMaxContent();
+}
+
+bool CalculationValue::HasFitContent() const {
+  if (!IsExpression()) {
+    return false;
+  }
+  return data_.expression->HasContentOrIntrinsicSize() &&
+         data_.expression->HasFitContent();
+}
+
 }  // namespace blink

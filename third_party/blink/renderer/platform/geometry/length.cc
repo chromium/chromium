@@ -258,6 +258,27 @@ bool Length::HasStretch() const {
   return GetType() == kFillAvailable;
 }
 
+bool Length::HasMinContent() const {
+  if (GetType() == kCalculated) {
+    return GetCalculationValue().HasMinContent();
+  }
+  return GetType() == kMinContent;
+}
+
+bool Length::HasMaxContent() const {
+  if (GetType() == kCalculated) {
+    return GetCalculationValue().HasMaxContent();
+  }
+  return GetType() == kMaxContent;
+}
+
+bool Length::HasFitContent() const {
+  if (GetType() == kCalculated) {
+    return GetCalculationValue().HasFitContent();
+  }
+  return GetType() == kFitContent;
+}
+
 bool Length::IsCalculatedEqual(const Length& o) const {
   return IsCalculated() &&
          (&GetCalculationValue() == &o.GetCalculationValue() ||

@@ -379,25 +379,27 @@ CalculationExpressionOperationNode::CalculationExpressionOperationNode(
     // "A calc-size() is treated, in all respects, as if it were its
     // calc-size basis."  This is particularly relevant for ignoring the
     // presence of percentages in the calculation.
-    DCHECK_EQ(children_.size(), 2u);
+    CHECK_EQ(children_.size(), 2u);
     const auto& basis = children_[0];
     has_content_or_intrinsic_ = basis->HasContentOrIntrinsicSize();
     has_auto_ = basis->HasAuto();
     has_percent_ = basis->HasPercent();
     has_stretch_ = basis->HasStretch();
+#if DCHECK_IS_ON()
+    {
+      const auto& calculation = children_[1];
+      DCHECK(!calculation->HasAuto());
+      DCHECK(!calculation->HasContentOrIntrinsicSize());
+      DCHECK(!calculation->HasStretch());
+    }
+#endif
   } else {
     for (const auto& child : children_) {
-      if (child->HasContentOrIntrinsicSize()) {
-        has_content_or_intrinsic_ = true;
-      }
-      if (child->HasAuto()) {
-        has_auto_ = true;
-      }
+      DCHECK(!child->HasAuto());
+      DCHECK(!child->HasContentOrIntrinsicSize());
+      DCHECK(!child->HasStretch());
       if (child->HasPercent()) {
         has_percent_ = true;
-      }
-      if (child->HasStretch()) {
-        has_stretch_ = true;
       }
     }
   }
@@ -574,6 +576,33 @@ CalculationExpressionOperationNode::Zoom(double factor) const {
       NOTREACHED_IN_MIGRATION();
       return nullptr;
   }
+}
+
+bool CalculationExpressionOperationNode::HasMinContent() const {
+  if (operator_ != CalculationOperator::kCalcSize) {
+    return false;
+  }
+  CHECK_EQ(children_.size(), 2u);
+  const auto& basis = children_[0];
+  return basis->HasMinContent();
+}
+
+bool CalculationExpressionOperationNode::HasMaxContent() const {
+  if (operator_ != CalculationOperator::kCalcSize) {
+    return false;
+  }
+  CHECK_EQ(children_.size(), 2u);
+  const auto& basis = children_[0];
+  return basis->HasMaxContent();
+}
+
+bool CalculationExpressionOperationNode::HasFitContent() const {
+  if (operator_ != CalculationOperator::kCalcSize) {
+    return false;
+  }
+  CHECK_EQ(children_.size(), 2u);
+  const auto& basis = children_[0];
+  return basis->HasFitContent();
 }
 
 #if DCHECK_IS_ON()

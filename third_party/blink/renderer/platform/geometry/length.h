@@ -288,6 +288,11 @@ class PLATFORM_EXPORT Length {
   bool HasPercentOrStretch() const;
   bool HasStretch() const;
 
+  bool HasMinContent() const;
+  bool HasMaxContent() const;
+  bool HasMinIntrinsic() const { return IsMinIntrinsic(); }
+  bool HasFitContent() const;
+
   bool IsSpecified() const {
     return GetType() == kFixed || GetType() == kPercent ||
            GetType() == kCalculated;
@@ -295,9 +300,12 @@ class PLATFORM_EXPORT Length {
 
   bool IsCalculated() const { return GetType() == kCalculated; }
   bool IsCalculatedEqual(const Length&) const;
+
+  // These type checking methods should be used with extreme caution;
+  // many uses probably want the Has* methods above to work correctly
+  // with calc-size().
   bool IsMinContent() const { return GetType() == kMinContent; }
   bool IsMaxContent() const { return GetType() == kMaxContent; }
-  bool IsContent() const { return GetType() == kContent; }
   bool IsMinIntrinsic() const { return GetType() == kMinIntrinsic; }
   bool IsFillAvailable() const { return GetType() == kFillAvailable; }
   bool IsFitContent() const { return GetType() == kFitContent; }

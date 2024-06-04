@@ -31,11 +31,9 @@ inline bool InlineLengthMayChange(const ComputedStyle& style,
                                   const LayoutResult& layout_result) {
   DCHECK_EQ(new_space.InlineAutoBehavior(), old_space.InlineAutoBehavior());
 
-  // TODO(https://crbug.com/313072): Adjust these IsFitContent and
-  // IsFillAvailable calls for calc-size().
   bool is_unspecified =
       (length.HasAuto() && type != LengthResolveType::kMinSize) ||
-      length.IsFitContent() || length.IsFillAvailable();
+      length.HasFitContent() || length.HasStretch();
 
   // Percentage inline margins will affect the size if the size is unspecified
   // (auto and similar).
@@ -65,9 +63,7 @@ inline bool BlockLengthMayChange(const Length& length,
                                  const ConstraintSpace& new_space,
                                  const ConstraintSpace& old_space) {
   DCHECK_EQ(new_space.BlockAutoBehavior(), old_space.BlockAutoBehavior());
-  // TODO(https://crbug.com/313072): Adjust this IsFillAvailable calls for
-  // calc-size().
-  if (length.IsFillAvailable() ||
+  if (length.HasStretch() ||
       (length.HasAuto() && new_space.IsBlockAutoBehaviorStretch())) {
     if (new_space.AvailableSize().block_size !=
         old_space.AvailableSize().block_size)

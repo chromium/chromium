@@ -1853,8 +1853,7 @@ class ComputedStyle final : public ComputedStyleBase {
   bool IsFixedTableLayout() const {
     // https://www.w3.org/TR/css-tables-3/#table-layout-property
     return TableLayout() == ETableLayout::kFixed &&
-           (LogicalWidth().IsSpecified() || LogicalWidth().IsMinContent() ||
-            LogicalWidth().IsFitContent());
+           (!LogicalWidth().HasAuto() && !LogicalWidth().HasMaxContent());
   }
 
   LogicalSize TableBorderSpacing() const {

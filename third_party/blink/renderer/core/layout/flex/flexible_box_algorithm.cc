@@ -781,13 +781,10 @@ bool FlexibleBoxAlgorithm::ShouldApplyMinSizeAutoForChild(
   bool main_axis_is_childs_block_axis =
       IsHorizontalFlow() != child.StyleRef().IsHorizontalWritingMode();
   bool intrinsic_in_childs_block_axis =
-      main_axis_is_childs_block_axis &&
-      (min.IsMinContent() || min.IsMaxContent() || min.IsMinIntrinsic() ||
-       min.IsFitContent());
-  // TODO(https://crbug.com/313072): This needs some work to support
-  // calc-size(auto, ...).
-  if (!min.IsAuto() && !intrinsic_in_childs_block_axis)
+      main_axis_is_childs_block_axis && min.HasContentOrIntrinsic();
+  if (!min.HasAuto() && !intrinsic_in_childs_block_axis) {
     return false;
+  }
 
   // webkit-box treats min-size: auto as 0.
   if (StyleRef().IsDeprecatedWebkitBox())

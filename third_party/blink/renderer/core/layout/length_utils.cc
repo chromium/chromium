@@ -306,7 +306,8 @@ MinMaxSizesResult ComputeMinAndMaxContentContributionInternal(
       is_parent_writing_mode_horizontal ? style.Width() : style.Height();
 
   MinMaxSizesResult result;
-  // TODO(https://crbug.com/313072): Rewrite this test for calc-size().
+  // TODO(https://crbug.com/40339056): These parts need to be merged
+  // together to handle calc-size() correctly.
   if (inline_size.HasAuto() || inline_size.HasPercent() ||
       inline_size.IsFillAvailable() || inline_size.IsFitContent()) {
     result = min_max_sizes_func(MinMaxSizesType::kContent);
@@ -448,12 +449,12 @@ LayoutUnit ComputeInlineSizeForFragmentInternal(
   const Length& logical_width = style.LogicalWidth();
   bool apply_automatic_min_size = false;
 
-  // TODO(https://crbug.com/313072): Fix these IsMinContent/IsMaxContent tests
-  // for calc-size().
+  // TODO(https://crbug.com/40339056): This still isn't right -- we need to do
+  // more math here for calc-size()!
   if (!style.AspectRatio().IsAuto() &&
       ((logical_width.HasAuto() &&
         space.InlineAutoBehavior() != AutoSizeBehavior::kStretchExplicit) ||
-       logical_width.IsMinContent() || logical_width.IsMaxContent())) {
+       logical_width.HasMinContent() || logical_width.HasMaxContent())) {
     extent = ComputeInlineSizeFromAspectRatio(space, style, border_padding);
 
     if (extent != kIndefiniteSize) {
