@@ -191,9 +191,7 @@ void EligibilityService::MaybeNotifyManagerTrackingProtectionOnboarded(
     privacy_sandbox::TrackingProtectionOnboarding::OnboardingStatus
         onboarding_status) {
   if (onboarding_status == privacy_sandbox::TrackingProtectionOnboarding::
-                               OnboardingStatus::kOnboarded ||
-      onboarding_status == privacy_sandbox::TrackingProtectionOnboarding::
-                               OnboardingStatus::kOnboardingRequested) {
+                               OnboardingStatus::kOnboarded) {
     experiment_manager_->NotifyProfileTrackingProtectionOnboarded();
   }
 }
