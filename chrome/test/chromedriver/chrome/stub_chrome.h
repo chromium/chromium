@@ -31,6 +31,7 @@ class StubChrome : public Chrome {
   Status GetWebViewById(const std::string& id, WebView** web_view) override;
   Status NewWindow(const std::string& target_id,
                    WindowType type,
+                   bool is_background,
                    std::string* window_handle) override;
   Status GetWindowRect(const std::string& id, WindowRect* rect) override;
   Status SetWindowRect(const std::string& target_id,

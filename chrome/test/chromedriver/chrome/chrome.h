@@ -65,6 +65,7 @@ class Chrome {
   // Makes new window or tab.
   virtual Status NewWindow(const std::string& target_id,
                            WindowType type,
+                           bool is_background,
                            std::string* window_handle) = 0;
 
   // Gets the rect of the specified WebView

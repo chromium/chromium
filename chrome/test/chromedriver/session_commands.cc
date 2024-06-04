@@ -365,10 +365,10 @@ Status InitSessionHelper(const InitSessionParams& bound_params,
     session->bidi_mapper_web_view_id = session->window;
 
     // Create a new tab because the default one will be occupied by the
-    // mapper.
+    // mapper. The new tab is activated and focused.
     std::string web_view_id;
-    status = session->chrome->NewWindow(session->window,
-                                        Chrome::WindowType::kTab, &web_view_id);
+    status = session->chrome->NewWindow(
+        session->window, Chrome::WindowType::kTab, false, &web_view_id);
 
     if (status.IsError()) {
       return status;
@@ -378,6 +378,8 @@ Status InitSessionHelper(const InitSessionParams& bound_params,
     base::Value::Dict body;
     body.Set("handle", web_view_id);
 
+    // Even though the new tab is already activated the explicit switch to the
+    // new tab is needed to update the internal state of ChromeDriver properly.
     status = ExecuteSwitchToWindow(session, body, &result);
     if (status.IsError()) {
       return status;

@@ -896,6 +896,12 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
                                obj['buzz'] = copyMe;
                                return obj;""")
 
+  def testFocusInFirstTab(self):
+    # According to the standard the WebDriver implementation should prefer a
+    # top-level browsing context (window / tab) that has system focus.
+    # S/A: https://w3c.github.io/webdriver/#dfn-new-sessions
+    self.assertTrue(self._driver.ExecuteScript("return document.hasFocus()"))
+
   def _newWindowDoesNotFocus(self, window_type='window'):
     current_handles = self._driver.GetWindowHandles()
     self._driver.Load(self.GetHttpUrlForFile(
@@ -7255,7 +7261,7 @@ class PureBidiTest(ChromeDriverBaseTestWithWebServer):
   def testCloseWithUserPromptOpened(self):
     connection = self.createWebSocketConnection()
     connection.SetTimeout(60)  # 1 min as the test is likely to timeout
-    response = connection.SendCommand(self.createSessionNewCommand())
+    connection.SendCommand(self.createSessionNewCommand())
     context1 = connection.SendCommand({
         'method': 'browsingContext.create',
         'params': {
@@ -7301,6 +7307,31 @@ class PureBidiTest(ChromeDriverBaseTestWithWebServer):
           'params': {
           }
       })
+
+  def testFocusInFirstTab(self):
+    connection = self.createWebSocketConnection()
+    connection.SendCommand(self.createSessionNewCommand())
+    response = connection.SendCommand({
+      'method': 'browsingContext.getTree',
+      'params': {
+      }
+    })
+    context = response['contexts'][0]['context']
+    result = connection.SendCommand({
+      'method': 'script.evaluate',
+      'params': {
+          'expression': 'document.hasFocus()',
+          'target': {
+              'context': context
+          },
+          'awaitPromise': True,
+      }
+    })
+    # According to the standard the WebDriver implementation should prefer a
+    # top-level browsing context (window / tab) that has system focus.
+    # S/A: https://w3c.github.io/webdriver/#dfn-new-sessions
+    self.assertEqual('boolean', result['result']['type'])
+    self.assertTrue(result['result']['value'])
 
 
 class BidiTest(ChromeDriverBaseTestWithWebServer):
@@ -7872,6 +7903,12 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
     self.navigateTo(conn, self.GetHttpsUrlForFile('/%s.html' % page_name))
     title = driver.GetTitle()
     self.assertEqual(title, page_name)
+
+  def testFocusInFirstTab(self):
+    # According to the standard the WebDriver implementation should prefer a
+    # top-level browsing context (window / tab) that has system focus.
+    # S/A: https://w3c.github.io/webdriver/#dfn-new-sessions
+    self.assertTrue(self._driver.ExecuteScript("return document.hasFocus()"))
 
 
 class CustomBidiMapperTest(ChromeDriverBaseTest):

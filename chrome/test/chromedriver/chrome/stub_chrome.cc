@@ -42,6 +42,7 @@ Status StubChrome::GetWebViewById(const std::string& id, WebView** web_view) {
 
 Status StubChrome::NewWindow(const std::string& target_id,
                              WindowType type,
+                             bool is_background,
                              std::string* window_handle) {
   return Status(kOk);
 }

@@ -879,7 +879,7 @@ Status ExecuteNewWindow(Session* session,
 
   std::string handle;
   Status status =
-      session->chrome->NewWindow(session->window, window_type, &handle);
+      session->chrome->NewWindow(session->window, window_type, true, &handle);
 
   if (status.IsError())
     return status;
