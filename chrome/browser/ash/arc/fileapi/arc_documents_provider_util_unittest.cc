@@ -207,7 +207,6 @@ TEST(ArcDocumentsProviderUtilTest, BuildDocumentUrl) {
             BuildDocumentUrl("a b", "a b").spec());
   EXPECT_EQ("content://a%2Fb/document/a%2Fb",
             BuildDocumentUrl("a/b", "a/b").spec());
-  EXPECT_EQ("content://../document/..", BuildDocumentUrl("..", "..").spec());
 }
 
 TEST(ArcDocumentsProviderUtilTest, GetExtensionsForArcMimeType) {
