@@ -117,6 +117,9 @@ public class TabPersistentStoreTest {
 
     private static final int SELECTOR_INDEX = 0;
 
+    private static final int PREV_ROOT_ID = 32;
+    private static final int NEW_ROOT_ID = 42;
+
     private static class TabRestoredDetails {
         public int index;
         public int id;
@@ -516,21 +519,8 @@ public class TabPersistentStoreTest {
         Pair<TabPersistentStore, Tab[]> storeAndRestoredTabs = createStoreAndRestoreTabs();
         TabPersistentStore store = storeAndRestoredTabs.first;
         Tab[] tabs = storeAndRestoredTabs.second;
-        // Wait for legacy TabState files to be cleaned up. This cleanup path covers FlatBuffer
-        // files as well so if we're not careful we'll have a race condition where a FlatBuffer file
-        // is deleted after it's created and before it's verified.
-        for (final Tab tab : tabs) {
-            CriteriaHelper.pollInstrumentationThread(
-                    () -> {
-                        File legacyTabStateFile =
-                                TabStateFileManager.getTabStateFile(
-                                        mMockDirectory.getDataDirectory(),
-                                        /* tabId= */ tab.getId(),
-                                        /* encrypted= */ tab.isIncognito(),
-                                        /* isFlatBuffer= */ false);
-                        Criteria.checkThat(legacyTabStateFile.exists(), Matchers.is(false));
-                    });
-        }
+        waitForTabStateCleanup(tabs);
+
         // All Tabs should be a candidate for the FlatBuffer migration as they were restored
         // using legacy TabState.
         Assert.assertEquals(tabs.length, store.getTabsToMigrateForTesting().size());
@@ -570,6 +560,24 @@ public class TabPersistentStoreTest {
         }
     }
 
+    private void waitForTabStateCleanup(Tab[] tabs) {
+        // Wait for legacy TabState files to be cleaned up. This cleanup path covers FlatBuffer
+        // files as well so if we're not careful we'll have a race condition where a FlatBuffer file
+        // is deleted after it's created and before it's verified.
+        for (final Tab tab : tabs) {
+            CriteriaHelper.pollInstrumentationThread(
+                    () -> {
+                        File legacyTabStateFile =
+                                TabStateFileManager.getTabStateFile(
+                                        mMockDirectory.getDataDirectory(),
+                                        /* tabId= */ tab.getId(),
+                                        /* encrypted= */ tab.isIncognito(),
+                                        /* isFlatBuffer= */ false);
+                        Criteria.checkThat(legacyTabStateFile.exists(), Matchers.is(false));
+                    });
+        }
+    }
+
     private Pair<TabPersistentStore, Tab[]> createStoreAndRestoreTabs() throws Exception {
         TabModelMetaDataInfo info = TestTabModelDirectory.TAB_MODEL_METADATA_V4;
         int numExpectedTabs = info.contents.length;
@@ -605,6 +613,220 @@ public class TabPersistentStoreTest {
             restoredTabs[i] = mockSelector.getModel(false).getTabAt(i);
         }
         return Pair.create(store, restoredTabs);
+    }
+
+    @Test
+    @SmallTest
+    @Feature("TabPersistentStore")
+    @EnableFeatures({ChromeFeatureList.TAB_STATE_FLATBUFFER + "<Study"})
+    @CommandLineFlags.Add({
+        "force-fieldtrials=Study/Group",
+        "force-fieldtrial-params=Study.Group:migrate_stale_tabs/true"
+    })
+    public void testSaveStateNoFlatBufferPrior() throws Exception {
+        Pair<TabPersistentStore, Tab[]> storeAndRestoredTabs = createStoreAndRestoreTabs();
+        TabPersistentStore store = storeAndRestoredTabs.first;
+        Tab[] tabs = storeAndRestoredTabs.second;
+        waitForTabStateCleanup(tabs);
+        setAllTabStatesForTesting(tabs);
+        // There should be no TabState files for tabs[0] to start with - legacy or FlatBuffer.
+        File legacyFile = getLegacyTabStateFile(tabs[0]);
+        File flatBufferFile = getFlatBufferTabStateFile(tabs[0]);
+        Assert.assertFalse(
+                "Legacy TabState File " + legacyFile + " should not exist", legacyFile.exists());
+        Assert.assertFalse(
+                "FlatBuffer TabState File " + flatBufferFile + " should not exist",
+                flatBufferFile.exists());
+
+        // Having tabs[0] in the save queue when saveState() is called should just save
+        // the legacy TabState, but not migrate because the FlatBuffer file doesn't exist
+        // prior to saveState() being called.
+        CallbackHelper helper = new CallbackHelper();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    store.getTabsToSaveForTesting().add(tabs[0]);
+                    store.saveState();
+                    helper.notifyCalled();
+                });
+        helper.waitForCallback(0);
+
+        Assert.assertTrue(
+                "Legacy TabState File " + legacyFile + " should exist", legacyFile.exists());
+        Assert.assertFalse(
+                "FlatBuffer TabState File " + flatBufferFile + " should not exist",
+                flatBufferFile.exists());
+    }
+
+    @Test
+    @SmallTest
+    @Feature("TabPersistentStore")
+    @EnableFeatures({ChromeFeatureList.TAB_STATE_FLATBUFFER + "<Study"})
+    @CommandLineFlags.Add({
+        "force-fieldtrials=Study/Group",
+        "force-fieldtrial-params=Study.Group:migrate_stale_tabs/true"
+    })
+    public void testSaveStateFlatBufferParityRootIdChange() throws Exception {
+        Pair<TabPersistentStore, Tab[]> storeAndRestoredTabs = createStoreAndRestoreTabs();
+        TabPersistentStore store = storeAndRestoredTabs.first;
+        Tab[] tabs = storeAndRestoredTabs.second;
+        waitForTabStateCleanup(tabs);
+        setAllTabStatesForTesting(tabs);
+        TabPersistentStore.onDeferredStartup();
+        updateRootIdForTabStateSave(tabs[0].getId(), PREV_ROOT_ID);
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    store.addTabToSaveQueue(tabs[0]);
+                    store.saveNextTab();
+                });
+        waitForAllSavesAndMigrations(store);
+
+        Assert.assertEquals(PREV_ROOT_ID, getRootIdFromLegacyTabStateFile(tabs[0]));
+        Assert.assertEquals(PREV_ROOT_ID, getRootIdFromFlatBufferTabStateFile(tabs[0]));
+
+        // Next save of tabs[0] should result in a legacy and FlatBuffer files with NEW_ROOT_ID
+        updateRootIdForTabStateSave(tabs[0].getId(), NEW_ROOT_ID);
+
+        CallbackHelper helper = new CallbackHelper();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabStateAttributes.from(tabs[0])
+                            .setStateForTesting(TabStateAttributes.DirtinessState.DIRTY);
+                    store.getTabsToSaveForTesting().add(tabs[0]);
+                    store.saveState();
+                    helper.notifyCalled();
+                });
+
+        helper.waitForCallback(0);
+        // There should be parity between legacy and FlatBuffer TabState files with respect
+        // to the attribute change (in this case root id).
+        Assert.assertEquals(NEW_ROOT_ID, getRootIdFromLegacyTabStateFile(tabs[0]));
+        Assert.assertEquals(NEW_ROOT_ID, getRootIdFromFlatBufferTabStateFile(tabs[0]));
+    }
+
+    @Test
+    @SmallTest
+    @Feature("TabPersistentStore")
+    @EnableFeatures({ChromeFeatureList.TAB_STATE_FLATBUFFER + "<Study"})
+    @CommandLineFlags.Add({
+        "force-fieldtrials=Study/Group",
+        "force-fieldtrial-params=Study.Group:migrate_stale_tabs/true"
+    })
+    public void testInFlightMigration() throws Exception {
+        Pair<TabPersistentStore, Tab[]> storeAndRestoredTabs = createStoreAndRestoreTabs();
+        TabPersistentStore store = storeAndRestoredTabs.first;
+        Tab[] tabs = storeAndRestoredTabs.second;
+        waitForTabStateCleanup(tabs);
+        setAllTabStatesForTesting(tabs);
+        TabPersistentStore.onDeferredStartup();
+
+        CallbackHelper helper = new CallbackHelper();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    store.getTabsToMigrateForTesting().clear();
+                    store.setMigrateTabTaskForTesting(store.new MigrateTabTask(tabs[0], 1));
+                    Assert.assertNotNull(store.getMigrateTabTaskForTesting());
+                    Assert.assertEquals(0, store.getTabsToMigrateForTesting().size());
+                    store.saveState();
+                    Assert.assertNull(store.getMigrateTabTaskForTesting());
+                    Assert.assertEquals(1, store.getTabsToMigrateForTesting().size());
+                    Assert.assertEquals(tabs[0], store.getTabsToMigrateForTesting().getFirst());
+                    helper.notifyCalled();
+                });
+        helper.waitForCallback(0);
+    }
+
+    @Test
+    @SmallTest
+    @Feature("TabPersistentStore")
+    @EnableFeatures({ChromeFeatureList.TAB_STATE_FLATBUFFER + "<Study"})
+    @CommandLineFlags.Add({
+        "force-fieldtrials=Study/Group",
+        "force-fieldtrial-params=Study.Group:migrate_stale_tabs/true"
+    })
+    public void testUpdateMigratedFiles() throws Exception {
+        Pair<TabPersistentStore, Tab[]> storeAndRestoredTabs = createStoreAndRestoreTabs();
+        TabPersistentStore store = storeAndRestoredTabs.first;
+        Tab[] tabs = storeAndRestoredTabs.second;
+        waitForTabStateCleanup(tabs);
+        setAllTabStatesForTesting(tabs);
+        TabPersistentStore.onDeferredStartup();
+        updateRootIdForTabStateSave(tabs[0].getId(), PREV_ROOT_ID);
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    store.addTabToSaveQueue(tabs[0]);
+                    store.saveNextTab();
+                });
+        waitForAllSavesAndMigrations(store);
+
+        File flatBufferFile = getFlatBufferTabStateFile(tabs[0]);
+        Assert.assertTrue(
+                "FlatBuffer TabState File " + flatBufferFile + " should exist",
+                flatBufferFile.exists());
+        Assert.assertEquals(PREV_ROOT_ID, getRootIdFromFlatBufferTabStateFile(tabs[0]));
+
+        updateRootIdForTabStateSave(tabs[0].getId(), NEW_ROOT_ID);
+
+        CallbackHelper helper = new CallbackHelper();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    store.getTabsToMigrateForTesting().clear();
+                    store.getTabsToMigrateForTesting().add(tabs[0]);
+                    Assert.assertEquals(1, store.getTabsToMigrateForTesting().size());
+                    Assert.assertEquals(tabs[0], store.getTabsToMigrateForTesting().getFirst());
+                    store.setMigrateTabTaskForTesting(store.new MigrateTabTask(tabs[0], 1));
+                    store.updateMigratedFiles();
+                    Assert.assertEquals(0, store.getTabsToMigrateForTesting().size());
+                    Assert.assertEquals(NEW_ROOT_ID, getRootIdFromFlatBufferTabStateFile(tabs[0]));
+                    helper.notifyCalled();
+                });
+        helper.waitForCallback(0);
+    }
+
+    private static void updateRootIdForTabStateSave(int tabId, int rootId) {
+        TabState tabState = new TabState();
+        ByteBuffer buffer = ByteBuffer.allocateDirect(4);
+        buffer.put(new byte[] {1, 2, 3, 4});
+        tabState.contentsState = new WebContentsState(buffer);
+        tabState.rootId = rootId;
+        TabStateExtractor.setTabStateForTesting(tabId, tabState);
+    }
+
+    private static void waitForAllSavesAndMigrations(TabPersistentStore store) {
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            store.isSavingAndMigratingIdleForTesting(), Matchers.is(true));
+                });
+    }
+
+    private int getRootIdFromLegacyTabStateFile(Tab tab) {
+        return TabStateFileManager.restoreTabState(
+                        mMockDirectory.getDataDirectory(), tab.getId(), /* useFlatBuffer= */ false)
+                .rootId;
+    }
+
+    private int getRootIdFromFlatBufferTabStateFile(Tab tab) {
+        return TabStateFileManager.restoreTabState(
+                        mMockDirectory.getDataDirectory(), tab.getId(), /* useFlatBuffer= */ true)
+                .rootId;
+    }
+
+    private File getLegacyTabStateFile(Tab tab) {
+        return TabStateFileManager.getTabStateFile(
+                mMockDirectory.getDataDirectory(),
+                /* tabId= */ tab.getId(),
+                /* encrypted= */ false,
+                /* isFlatBuffer= */ false);
+    }
+
+    private File getFlatBufferTabStateFile(Tab tab) {
+        return TabStateFileManager.getTabStateFile(
+                mMockDirectory.getDataDirectory(),
+                /* tabId= */ tab.getId(),
+                /* encrypted= */ false,
+                /* isFlatBuffer= */ true);
     }
 
     /**

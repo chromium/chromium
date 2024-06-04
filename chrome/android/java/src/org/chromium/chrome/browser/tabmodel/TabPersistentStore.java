@@ -63,6 +63,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -294,7 +295,7 @@ public class TabPersistentStore {
     private final ObserverList<TabPersistentStoreObserver> mObservers;
 
     private final Deque<Tab> mTabsToSave;
-    private final Deque<Tab> mTabsToMigrate;
+    private final ArrayDeque<Tab> mTabsToMigrate;
     private final Deque<TabRestoreDetails> mTabsToRestore;
     private final Set<Integer> mTabIdsToRestore;
 
@@ -381,6 +382,23 @@ public class TabPersistentStore {
         // Temporarily allowing disk access. TODO: Fix. See http://b/5518024
         StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskWrites();
         try {
+            // Clear out any in-flight migration.
+            if (mMigrateTabTask != null) {
+                if (mMigrateTabTask.cancel(false) && !mMigrateTabTask.mMigrationComplete) {
+                    // The task was successfully cancelled. Re-add Tab to migration queue.
+                    Tab cancelledTab = mMigrateTabTask.mTab;
+                    mTabsToMigrate.addFirst(cancelledTab);
+                }
+                mMigrateTabTask = null;
+            }
+            // Don't want any new save below to trigger new migrations which are unnecessary. Only
+            // want to update any migrations for which Tabs have already migrated (so the
+            // migrated TabState file is not out of date, which would lead to an old snapshot
+            // of the Tab being restored upon restart). If the Tab hasn't migrated yet,
+            // the legacy TabState file will be used upon a restart.
+            ArrayDeque<Tab> tabsToMigrateCopy = mTabsToMigrate.clone();
+            mTabsToMigrate.clear();
+
             // The list of tabs should be saved first in case our activity is terminated early.
             // Explicitly toss out any existing SaveListTask because they only save the TabModel as
             // it looked when the SaveListTask was first created.
@@ -420,15 +438,69 @@ public class TabPersistentStore {
                     TabState state = TabStateExtractor.from(tab);
                     if (state != null) {
                         TabStateFileManager.saveState(getStateDirectory(), state, id, incognito);
+                        if (isFlatBufferSchemaEnabled()
+                                && TabStateFileManager.isMigrated(
+                                        getStateDirectory(), id, incognito)) {
+                            // Ensure parity between the FlatBuffer TabState file and legacy.
+                            // Otherwise if the user restarts and is in the experiment, they may
+                            // have the Tab restored using an out of date FlatBuffer file.
+                            TabStateFileManager.migrateTabState(
+                                    getStateDirectory(), state, id, incognito);
+                            // No longer need to migrate the Tab as it was just migrated.
+                            tabsToMigrateCopy.remove(tab);
+                        }
                     }
                 } catch (OutOfMemoryError e) {
                     Log.e(TAG, "Out of memory error while attempting to save tab state.  Erasing.");
                     deleteTabState(id, incognito);
+                    if (isFlatBufferSchemaEnabled()) {
+                        TabStateFileManager.deleteMigratedFile(getStateDirectory(), id, incognito);
+                    }
                 }
             }
+            // Now all pending saves (and migrations, if applicable) are complete we are ok to
+            // resume any migrations which would be triggered by another Tab save.
+            for (Tab tab : tabsToMigrateCopy) {
+                mTabsToMigrate.add(tab);
+            }
+            updateMigratedFiles();
             mTabsToSave.clear();
         } finally {
             StrictMode.setThreadPolicy(oldPolicy);
+        }
+    }
+
+    /**
+     * Migrate any Tabs to the TabState FlatBuffer file which have a FlatBuffer file already
+     * written. Otherwise if the user restarts in the experiment they may have their Tab restored
+     * using an out of date FlatBuffer file.
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    protected void updateMigratedFiles() {
+        List<Tab> updatedMigrations = new LinkedList<>();
+        for (Tab tab : mTabsToMigrate) {
+            int id = tab.getId();
+            boolean incognito = tab.isIncognito();
+            if (TabStateFileManager.isMigrated(getStateDirectory(), id, incognito)) {
+                try {
+                    TabState state = TabStateExtractor.from(tab);
+                    if (state != null) {
+                        TabStateFileManager.migrateTabState(
+                                getStateDirectory(), state, id, incognito);
+                        updatedMigrations.add(tab);
+                    }
+                } catch (OutOfMemoryError e) {
+                    Log.e(
+                            TAG,
+                            "Out of memory error while attempting to update Migrated TabState file."
+                                    + "  Erasing.");
+                    TabStateFileManager.deleteMigratedFile(getStateDirectory(), id, incognito);
+                }
+            }
+        }
+        // No longer need to migrate Tabs which were just migrated.
+        for (Tab migratedTab : updatedMigrations) {
+            mTabsToMigrate.remove(migratedTab);
         }
     }
 
@@ -1427,6 +1499,7 @@ public class TabPersistentStore {
         TabState mState;
         boolean mEncrypted;
         int mNumMigration;
+        boolean mMigrationComplete;
 
         MigrateTabTask(Tab tab, int numMigration) {
             mTab = tab;
@@ -1449,7 +1522,9 @@ public class TabPersistentStore {
         @Override
         protected Void doInBackground() {
             try {
-                TabStateFileManager.migrateTabState(getStateDirectory(), mState, mId, mEncrypted);
+                mMigrationComplete =
+                        TabStateFileManager.migrateTabState(
+                                getStateDirectory(), mState, mId, mEncrypted);
             } catch (Exception e) {
                 Log.d(TAG_MIGRATION, "Error MigrateTabTask#doInBackground", e);
                 throw e;
@@ -1973,6 +2048,18 @@ public class TabPersistentStore {
 
     public MigrateTabTask getMigrateTabTaskForTesting() {
         return mMigrateTabTask;
+    }
+
+    protected Deque<Tab> getTabsToSaveForTesting() {
+        return mTabsToSave;
+    }
+
+    protected boolean isSavingAndMigratingIdleForTesting() {
+        // Idle if
+        // 1) no save is in progress and the save queue is empty.
+        // 2) No migration in progress (it's ok for the migration queue to be non-empty as only
+        // sMaxMigrationsPerSave are executed at a time).
+        return mSaveTabTask == null && mTabsToSave.isEmpty() && mMigrateTabTask == null;
     }
 
     public void setMigrateTabTaskForTesting(MigrateTabTask migrateTabTask) {
