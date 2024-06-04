@@ -434,7 +434,7 @@ bool AutocompleteTable::AddFormFieldValueTime(
       ntstatus_key.Set(base::NumberToString(
           static_cast<uint32_t>(base::win::GetLastNtStatus())));
 #endif
-      DUMP_WILL_BE_NOTREACHED_NORETURN() << create_debug_info("UPDATE");
+      DUMP_WILL_BE_NOTREACHED() << create_debug_info("UPDATE");
       return false;
     }
   } else {
@@ -442,7 +442,7 @@ bool AutocompleteTable::AddFormFieldValueTime(
     if (!InsertAutocompleteEntry({{element.name(), element.value()},
                                   /*date_created=*/time,
                                   /*date_last_used=*/time})) {
-      DUMP_WILL_BE_NOTREACHED_NORETURN() << create_debug_info("INSERT");
+      DUMP_WILL_BE_NOTREACHED() << create_debug_info("INSERT");
       return false;
     }
   }

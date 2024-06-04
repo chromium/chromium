@@ -14,7 +14,7 @@ const char* GetHttpReasonPhrase(HttpStatusCode code) {
   if (const char* phrase = TryToGetHttpReasonPhrase(code)) {
     return phrase;
   }
-  DUMP_WILL_BE_NOTREACHED_NORETURN() << "unknown HTTP status code " << code;
+  DUMP_WILL_BE_NOTREACHED() << "unknown HTTP status code " << code;
   return nullptr;
 }
 

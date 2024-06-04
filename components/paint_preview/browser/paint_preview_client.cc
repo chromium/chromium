@@ -422,7 +422,7 @@ void PaintPreviewClient::CapturePaintPreviewInternal(
   if (!token.has_value()) {
     DVLOG(1) << "Error: Attempted to capture a frame without an "
                 "embedding token.";
-    DUMP_WILL_BE_NOTREACHED_NORETURN();
+    DUMP_WILL_BE_NOTREACHED();
     return;
   }
 

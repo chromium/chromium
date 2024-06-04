@@ -370,13 +370,13 @@ void ServiceWorkerContextAdapter::OnControlleeRemoved(
   // notification is dropped.
   auto it = service_worker_clients_.find(version_id);
   if (it == service_worker_clients_.end()) {
-    DUMP_WILL_BE_NOTREACHED_NORETURN();
+    DUMP_WILL_BE_NOTREACHED();
     return;
   }
 
   size_t removed = it->second.erase(client_uuid);
   if (!removed) {
-    DUMP_WILL_BE_NOTREACHED_NORETURN();
+    DUMP_WILL_BE_NOTREACHED();
     return;
   }
 

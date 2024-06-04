@@ -1344,13 +1344,13 @@ span<uint8_t> DelayedPersistentAllocation::GetUntyped() const {
       SCOPED_CRASH_KEY_NUMBER(
           "PersistentMemoryAllocator", "ref_after",
           (reference_ + 1)->load(std::memory_order_relaxed));
-      DUMP_WILL_BE_NOTREACHED_NORETURN();
+      DUMP_WILL_BE_NOTREACHED();
       return span<uint8_t>();
     }
 #endif  // !BUILDFLAG(IS_NACL)
     // This should never happen but be tolerant if it does as corruption from
     // the outside is something to guard against.
-    DUMP_WILL_BE_NOTREACHED_NORETURN();
+    DUMP_WILL_BE_NOTREACHED();
     return span<uint8_t>();
   }
   return make_span(mem + offset_, size_ - offset_);

@@ -485,7 +485,7 @@ bool AXNodeData::GetHtmlAttribute(const char* attribute,
 void AXNodeData::AddChildTreeId(const AXTreeID& tree_id) {
   DCHECK(!HasChildTreeID());
   if (tree_id.type() == ax::mojom::AXTreeIDType::kUnknown) {
-    DUMP_WILL_BE_NOTREACHED_NORETURN();
+    DUMP_WILL_BE_NOTREACHED();
     return;
   }
   std::string tree_id_str = tree_id.ToString();

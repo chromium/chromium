@@ -2088,7 +2088,7 @@ bool LocalFrameView::UpdateLifecyclePhases(
   // Prevent reentrance.
   // TODO(vmpstr): Should we just have a DCHECK instead here?
   if (UNLIKELY(IsUpdatingLifecycle())) {
-    DUMP_WILL_BE_NOTREACHED_NORETURN()
+    DUMP_WILL_BE_NOTREACHED()
         << "LocalFrameView::updateLifecyclePhasesInternal() reentrance";
     return false;
   }

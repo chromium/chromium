@@ -56,7 +56,7 @@ extensions::api::passwords_private::PasswordStoreSet StoreSetFromCredential(
   if (credential.stored_in.contains(Store::kProfileStore)) {
     return extensions::api::passwords_private::PasswordStoreSet::kDevice;
   }
-  DUMP_WILL_BE_NOTREACHED_NORETURN();
+  DUMP_WILL_BE_NOTREACHED();
   return extensions::api::passwords_private::PasswordStoreSet::kDevice;
 }
 

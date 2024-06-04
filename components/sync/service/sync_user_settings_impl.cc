@@ -187,7 +187,7 @@ void SyncUserSettingsImpl::SetSelectedTypes(bool sync_everything,
   switch (delegate_->GetSyncAccountStateForPrefs()) {
     case SyncPrefs::SyncAccountState::kNotSignedIn:
       // TODO(crbug.com/40945692): Convert to NOTREACHED_NORETURN.
-      DUMP_WILL_BE_NOTREACHED_NORETURN()
+      DUMP_WILL_BE_NOTREACHED()
           << "Must not set selected types while signed out";
       break;
     case SyncPrefs::SyncAccountState::kSignedInNotSyncing:
@@ -210,7 +210,7 @@ void SyncUserSettingsImpl::SetSelectedType(UserSelectableType type,
   switch (delegate_->GetSyncAccountStateForPrefs()) {
     case SyncPrefs::SyncAccountState::kNotSignedIn: {
       // TODO(crbug.com/40945692): Convert to NOTREACHED_NORETURN.
-      DUMP_WILL_BE_NOTREACHED_NORETURN()
+      DUMP_WILL_BE_NOTREACHED()
           << "Must not set selected types while signed out";
       break;
     }
@@ -467,8 +467,7 @@ void SyncUserSettingsImpl::SetEncryptionBootstrapToken(
   const std::string& gaia_id = delegate_->GetSyncAccountInfoForPrefs().gaia;
   if (gaia_id.empty()) {
     // TODO(crbug.com/40945692): Convert to NOTREACHED_NORETURN.
-    DUMP_WILL_BE_NOTREACHED_NORETURN()
-        << "Must not set passphrase while signed out";
+    DUMP_WILL_BE_NOTREACHED() << "Must not set passphrase while signed out";
     return;
   }
   signin::GaiaIdHash gaia_id_hash = signin::GaiaIdHash::FromGaiaId(gaia_id);

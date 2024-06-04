@@ -410,7 +410,7 @@ TouchExplorationController::InSingleTapOrTouchExploreReleased(
   }
   if (type == ui::ET_TOUCH_MOVED)
     return DiscardEvent(continuation);
-  DUMP_WILL_BE_NOTREACHED_NORETURN();
+  DUMP_WILL_BE_NOTREACHED();
   return SendEvent(continuation, &event);
 }
 

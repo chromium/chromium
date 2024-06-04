@@ -656,8 +656,7 @@ WebInputEvent::Type ToWebMouseEventType(MotionEvent::Action action) {
     case MotionEvent::Action::POINTER_UP:
       break;
   }
-  DUMP_WILL_BE_NOTREACHED_NORETURN()
-      << "Invalid MotionEvent::Action = " << action;
+  DUMP_WILL_BE_NOTREACHED() << "Invalid MotionEvent::Action = " << action;
   return WebInputEvent::Type::kUndefined;
 }
 

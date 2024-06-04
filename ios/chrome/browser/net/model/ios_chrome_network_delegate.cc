@@ -40,7 +40,7 @@ void ReportInvalidReferrerSend(const GURL& target_url,
   // Record information to help debug http://crbug.com/422871
   if (!target_url.SchemeIsHTTPOrHTTPS())
     return;
-  DUMP_WILL_BE_NOTREACHED_NORETURN();
+  DUMP_WILL_BE_NOTREACHED();
 }
 
 }  // namespace

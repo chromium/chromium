@@ -240,7 +240,7 @@ void LegacyBookmarkModelWithSharedUnderlyingModel::BookmarkModelLoaded(
 
 void LegacyBookmarkModelWithSharedUnderlyingModel::BookmarkModelBeingDeleted() {
   // The underlying BookmarkModel cannot be destroyed before `this`.
-  DUMP_WILL_BE_NOTREACHED_NORETURN();
+  DUMP_WILL_BE_NOTREACHED();
 }
 
 void LegacyBookmarkModelWithSharedUnderlyingModel::BookmarkNodeMoved(

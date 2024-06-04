@@ -140,7 +140,7 @@ SyncStatusCode ApiErrorCodeToSyncStatusCode(google_apis::ApiErrorCode error) {
       return SYNC_STATUS_FAILED;
   }
 
-  DUMP_WILL_BE_NOTREACHED_NORETURN();
+  DUMP_WILL_BE_NOTREACHED();
   return SYNC_STATUS_FAILED;
 }
 

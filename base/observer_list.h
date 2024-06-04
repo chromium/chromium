@@ -294,7 +294,7 @@ class ObserverList {
     // TODO(crbug.com/40063488): Turn this into a CHECK once very prevalent
     // failures are weeded out.
     if (HasObserver(obs)) {
-      DUMP_WILL_BE_NOTREACHED_NORETURN() << "Observers can only be added once!";
+      DUMP_WILL_BE_NOTREACHED() << "Observers can only be added once!";
       return;
     }
     observers_count_++;

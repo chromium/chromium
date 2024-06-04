@@ -183,7 +183,7 @@ void LaunchSystemWebAppAsync(Profile* profile,
     // We can't find a suitable profile to launch. Complain about this so we
     // can identify the call site, and ask them to pick the right profile.
     // Note that this is fatal in developer builds.
-    DUMP_WILL_BE_NOTREACHED_NORETURN()
+    DUMP_WILL_BE_NOTREACHED()
         << "LaunchSystemWebAppAsync is called on a profile that can't launch "
            "system web apps. The launch request is ignored. Please check the "
            "profile you are using is correct.";

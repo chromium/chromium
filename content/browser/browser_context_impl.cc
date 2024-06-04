@@ -93,7 +93,7 @@ BrowserContextImpl::~BrowserContextImpl() {
   if (!rph_crash_key_value.empty()) {
     SCOPED_CRASH_KEY_STRING256("BrowserContext", "dangling_rph",
                                rph_crash_key_value);
-    DUMP_WILL_BE_NOTREACHED_NORETURN()
+    DUMP_WILL_BE_NOTREACHED()
         << "rph_with_bc_reference : " << rph_crash_key_value;
   }
 

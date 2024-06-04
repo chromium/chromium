@@ -27,7 +27,7 @@ const base::FilePath::CharType kProductDirName[] =
 
 bool GetDefaultUserDataDirectory(base::FilePath* result) {
   if (!base::PathService::Get(base::DIR_APP_DATA, result)) {
-    DUMP_WILL_BE_NOTREACHED_NORETURN();
+    DUMP_WILL_BE_NOTREACHED();
     return false;
   }
   *result = result->Append(kProductDirName);

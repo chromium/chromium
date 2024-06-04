@@ -3077,7 +3077,7 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
 #endif
 
     default:
-      DUMP_WILL_BE_NOTREACHED_NORETURN() << "Unhandled id: " << id;
+      DUMP_WILL_BE_NOTREACHED() << "Unhandled id: " << id;
       return false;
   }
 }
@@ -3574,7 +3574,7 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
     }
 
     default:
-      DUMP_WILL_BE_NOTREACHED_NORETURN() << "Unhandled id: " << id;
+      DUMP_WILL_BE_NOTREACHED() << "Unhandled id: " << id;
       break;
   }
 }

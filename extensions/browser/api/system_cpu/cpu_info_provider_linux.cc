@@ -60,7 +60,7 @@ bool CpuInfoProvider::QueryCpuTimePerProcessor(
     if (vals != 5 || pindex >= infos->size()) {
       // TODO(b/326303922): This fires in internal integration tests, reevaluate
       // whether this should be (and can be made) unreachable or handle it.
-      DUMP_WILL_BE_NOTREACHED_NORETURN();
+      DUMP_WILL_BE_NOTREACHED();
       return false;
     }
 

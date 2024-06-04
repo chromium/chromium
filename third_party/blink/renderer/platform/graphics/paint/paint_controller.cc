@@ -291,7 +291,7 @@ bool PaintController::UseCachedSubsequenceIfPossible(
     // created multiple subsequences. If DCHECK_IS_ON(), then we should have
     // encountered the DCHECK at the end of EndSubsequence() during the previous
     // paint.
-    DUMP_WILL_BE_NOTREACHED_NORETURN();
+    DUMP_WILL_BE_NOTREACHED();
     return false;
   }
 
@@ -480,7 +480,7 @@ void PaintController::CheckNewChunkId(const PaintChunk::Id& id) {
   auto it = new_paint_chunk_id_index_map_.find(id.AsHashKey());
   if (it != new_paint_chunk_id_index_map_.end()) {
     ShowDebugData();
-    DUMP_WILL_BE_NOTREACHED_NORETURN()
+    DUMP_WILL_BE_NOTREACHED()
         << "New paint chunk id " << id.ToString(*new_paint_artifact_)
         << " is already used by a previous chuck "
         << new_paint_artifact_->GetPaintChunks()[it->value].ToString(

@@ -1203,7 +1203,7 @@ int HttpNetworkTransaction::DoReadHeadersComplete(int result) {
     // TODO(https://crbug.com/332234173): Assuming this isn't hit, replace with
     // a CHECK.
     if (!response_.cert_request_info) {
-      DUMP_WILL_BE_NOTREACHED_NORETURN();
+      DUMP_WILL_BE_NOTREACHED();
       response_.cert_request_info = base::MakeRefCounted<SSLCertRequestInfo>();
     }
     total_received_bytes_ += stream_->GetTotalReceivedBytes();

@@ -258,7 +258,7 @@ void RenderWidgetHostInputEventRouter::TouchscreenPinchState::
     case PinchState::EXISTING_BUBBLING_TO_ROOT:
     case PinchState::PINCH_WITH_ROOT_GESTURE_TARGET:
     case PinchState::PINCH_WHILE_BUBBLING_TO_ROOT:
-      DUMP_WILL_BE_NOTREACHED_NORETURN();
+      DUMP_WILL_BE_NOTREACHED();
   }
 }
 
@@ -286,7 +286,7 @@ void RenderWidgetHostInputEventRouter::TouchscreenPinchState::
     case PinchState::PINCH_WITH_ROOT_GESTURE_TARGET:
     case PinchState::PINCH_WHILE_BUBBLING_TO_ROOT:
     case PinchState::PINCH_DURING_CHILD_GESTURE:
-      DUMP_WILL_BE_NOTREACHED_NORETURN();
+      DUMP_WILL_BE_NOTREACHED();
   }
 }
 

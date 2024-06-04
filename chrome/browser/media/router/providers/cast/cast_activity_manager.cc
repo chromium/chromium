@@ -1052,8 +1052,7 @@ std::string CastActivityManager::ChooseAppId(
     if (sink_capabilities.HasAll(info.required_capabilities))
       return info.app_id;
   }
-  DUMP_WILL_BE_NOTREACHED_NORETURN()
-      << "Can't determine app ID from capabilities.";
+  DUMP_WILL_BE_NOTREACHED() << "Can't determine app ID from capabilities.";
   return source.app_infos()[0].app_id;
 }
 

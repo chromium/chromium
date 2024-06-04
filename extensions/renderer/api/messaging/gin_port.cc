@@ -77,7 +77,7 @@ void GinPort::DispatchOnMessage(v8::Local<v8::Context> context,
   v8::Local<v8::Value> parsed_message =
       messaging_util::MessageToV8(context, message);
   if (parsed_message.IsEmpty()) {
-    DUMP_WILL_BE_NOTREACHED_NORETURN();
+    DUMP_WILL_BE_NOTREACHED();
     return;
   }
 

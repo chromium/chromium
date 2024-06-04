@@ -677,7 +677,7 @@ Color LayoutTheme::DefaultSystemColor(
     default:
       break;
   }
-  DUMP_WILL_BE_NOTREACHED_NORETURN()
+  DUMP_WILL_BE_NOTREACHED()
       << getValueName(css_value_id) << " is not a recognized system color";
   return Color();
 }

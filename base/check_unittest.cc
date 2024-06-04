@@ -535,8 +535,8 @@ TEST(CheckDeathTest, DumpWillBeCheck) {
 }
 
 TEST(CheckDeathTest, DumpWillBeNotReachedNoreturn) {
-  EXPECT_DUMP_WILL_BE_CHECK("NOTREACHED hit. foo",
-                            DUMP_WILL_BE_NOTREACHED_NORETURN() << "foo");
+  EXPECT_DUMP_WILL_BE_CHECK("NOTREACHED hit. foo", DUMP_WILL_BE_NOTREACHED()
+                                                       << "foo");
 }
 
 static const std::string kNotImplementedMessage = "Not implemented reached in ";

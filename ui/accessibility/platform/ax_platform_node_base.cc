@@ -1937,7 +1937,7 @@ int AXPlatformNodeBase::GetHypertextOffsetFromEndpoint(
   // TODO(crbug.com/40897578): Make sure this doesn't fire then turn the last
   // conditional into a CHECK_GT(endpoint_index_in_common_parent,
   // index_in_common_parent); and remove this code path.
-  DUMP_WILL_BE_NOTREACHED_NORETURN();
+  DUMP_WILL_BE_NOTREACHED();
   return -1;
 }
 

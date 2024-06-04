@@ -45,8 +45,7 @@ bool TokenServiceTable::CreateTablesIfNecessary() {
     if (!db_->Execute("CREATE TABLE token_service ("
                       "service VARCHAR PRIMARY KEY NOT NULL,"
                       "encrypted_token BLOB)")) {
-      DUMP_WILL_BE_NOTREACHED_NORETURN()
-          << "Failed creating token_service table";
+      DUMP_WILL_BE_NOTREACHED() << "Failed creating token_service table";
       return false;
     }
   }

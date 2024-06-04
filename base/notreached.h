@@ -69,10 +69,10 @@ namespace logging {
           LOGGING_CHECK_FUNCTION_IMPL(                       \
               ::logging::NotReachedError::NotReached(__VA_ARGS__), false))
 
-// The DUMP_WILL_BE_NOTREACHED_NORETURN() macro provides a convenient way to
+// The DUMP_WILL_BE_NOTREACHED() macro provides a convenient way to
 // non-fatally dump in official builds if ever hit. See DUMP_WILL_BE_CHECK for
 // suggested usage.
-#define DUMP_WILL_BE_NOTREACHED_NORETURN() \
+#define DUMP_WILL_BE_NOTREACHED() \
   ::logging::CheckError::DumpWillBeNotReachedNoreturn()
 
 }  // namespace logging

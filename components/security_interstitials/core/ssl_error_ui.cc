@@ -254,7 +254,7 @@ void SSLErrorUI::HandleCommand(SecurityInterstitialCommand command) {
     case CMD_CLOSE_INTERSTITIAL_WITHOUT_UI:
     case CMD_REQUEST_SITE_ACCESS_PERMISSION: {
       // Not supported by the SSL error page.
-      DUMP_WILL_BE_NOTREACHED_NORETURN() << "Unsupported command: " << command;
+      DUMP_WILL_BE_NOTREACHED() << "Unsupported command: " << command;
       break;
     }
     case CMD_ERROR:

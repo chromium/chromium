@@ -487,7 +487,7 @@ bool Transform::GetInverse(Transform* transform) const {
 Transform Transform::GetCheckedInverse() const {
   Transform inverse;
   if (!GetInverse(&inverse))
-    DUMP_WILL_BE_NOTREACHED_NORETURN() << ToString() << " is not invertible";
+    DUMP_WILL_BE_NOTREACHED() << ToString() << " is not invertible";
   return inverse;
 }
 

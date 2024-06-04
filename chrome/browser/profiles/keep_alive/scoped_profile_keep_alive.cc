@@ -62,7 +62,7 @@ void ScopedProfileKeepAlive::RemoveKeepAliveOnUIThread(
   // TODO(crbug.com/41484323): |profile| was unexpectedly destroyed
   // early. Convert this to CHECK(profile) once the root cause is fixed.
   if (!profile) {
-    DUMP_WILL_BE_NOTREACHED_NORETURN();
+    DUMP_WILL_BE_NOTREACHED();
     return;
   }
   profile_manager->RemoveKeepAlive(profile.get(), origin);

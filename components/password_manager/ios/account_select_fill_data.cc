@@ -142,7 +142,7 @@ std::vector<UsernameAndRealm> AccountSelectFillData::RetrieveSuggestions(
 std::unique_ptr<FillData> AccountSelectFillData::GetFillData(
     const std::u16string& username) const {
   if (!last_requested_form_) {
-    DUMP_WILL_BE_NOTREACHED_NORETURN();
+    DUMP_WILL_BE_NOTREACHED();
     return nullptr;
   }
 

@@ -1033,7 +1033,7 @@ void LoginDisplayHostWebUI::ShowRemoteActivityNotificationScreen() {
 }
 
 void LoginDisplayHostWebUI::HideOobeDialog(bool saml_page_closed) {
-  DUMP_WILL_BE_NOTREACHED_NORETURN();
+  DUMP_WILL_BE_NOTREACHED();
 }
 
 void LoginDisplayHostWebUI::SetShelfButtonsEnabled(bool enabled) {
@@ -1078,7 +1078,7 @@ void LoginDisplayHostWebUI::StartUserRecovery(const AccountId& account_id) {
 void LoginDisplayHostWebUI::UseAlternativeAuthentication(
     std::unique_ptr<UserContext> user_context,
     bool online_password_mismatch) {
-  DUMP_WILL_BE_NOTREACHED_NORETURN();
+  DUMP_WILL_BE_NOTREACHED();
 }
 
 void LoginDisplayHostWebUI::RunLocalAuthentication(

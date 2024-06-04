@@ -5628,7 +5628,7 @@ AXObject* AXObject::NextInPreOrderIncludingIgnored(
   if (!IsIncludedInTree()) {
     // TODO(crbug.com/1421052): Make sure this no longer fires then turn the
     // above into CHECK(IsIncludedInTree());
-    DUMP_WILL_BE_NOTREACHED_NORETURN()
+    DUMP_WILL_BE_NOTREACHED()
         << "We don't support iterating children of objects excluded "
            "from the accessibility tree: "
         << this;
@@ -5721,7 +5721,7 @@ AXObject* AXObject::UnignoredNextSibling() const {
   if (IsIgnored()) {
     // TODO(crbug.com/1407397): Make sure this no longer fires then turn this
     // block into CHECK(!IsIgnored());
-    DUMP_WILL_BE_NOTREACHED_NORETURN()
+    DUMP_WILL_BE_NOTREACHED()
         << "We don't support finding unignored siblings for ignored "
            "objects because it is not clear whether to search for the "
            "sibling in the unignored tree or in the whole tree: "
@@ -7835,10 +7835,8 @@ void AXObject::PreSerializationConsistencyCheck() const{
     AXObject* included_parent = ParentObjectIncludedInTree();
     // TODO(accessibility): Return to CHECK once it has been resolved,
     // so that the message does not bloat stable releases.
-    DUMP_WILL_BE_NOTREACHED_NORETURN()
-        << "Do not serialize unincluded nodes: " << this
-        << "\nIncluded parent: "
-        << included_parent;
+    DUMP_WILL_BE_NOTREACHED() << "Do not serialize unincluded nodes: " << this
+                              << "\nIncluded parent: " << included_parent;
   }
 #if defined(AX_FAIL_FAST_BUILD)
   // A bit more expensive, so only check in builds used for testing.

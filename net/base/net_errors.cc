@@ -48,7 +48,7 @@ std::string ErrorToShortString(int error) {
   default:
     // TODO(crbug.com/40909121): Figure out why this is firing, fix and upgrade
     // this to be fatal.
-    DUMP_WILL_BE_NOTREACHED_NORETURN() << error;
+    DUMP_WILL_BE_NOTREACHED() << error;
     error_string = "<unknown>";
   }
   return std::string("ERR_") + error_string;

@@ -498,7 +498,7 @@ void TranslateAgent::TranslateFrame(const std::string& translate_script,
 
 void TranslateAgent::RevertTranslation() {
   if (!IsTranslateLibAvailable()) {
-    DUMP_WILL_BE_NOTREACHED_NORETURN();
+    DUMP_WILL_BE_NOTREACHED();
     return;
   }
 

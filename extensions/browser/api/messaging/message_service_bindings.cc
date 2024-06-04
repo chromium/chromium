@@ -52,7 +52,7 @@ bool IsPortContextSandboxed(RenderProcessHost& process,
     // ExtensionFrameHost::OpenChannelToExtension()). Ensure there are no
     // unexpected reports of this and then remove the early return here and also
     // in IsValidSourceUrl().
-    DUMP_WILL_BE_NOTREACHED_NORETURN();
+    DUMP_WILL_BE_NOTREACHED();
     return false;
   }
 

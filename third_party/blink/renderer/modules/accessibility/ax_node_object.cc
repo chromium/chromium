@@ -5855,7 +5855,7 @@ Element* AXNodeObject::AnchorElement() const {
     if (current->IsLink()) {
       if (!current->GetElement()) {
         // TODO(crbug.com/1524124): Investigate and fix why this gets hit.
-        DUMP_WILL_BE_NOTREACHED_NORETURN()
+        DUMP_WILL_BE_NOTREACHED()
             << "An AXObject* that is a link should always have an element.\n"
             << this << "\n"
             << current;

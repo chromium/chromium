@@ -106,7 +106,7 @@ void RecordSearchResultOpenTypeHistogram(AppListLaunchedFrom launch_location,
                                          SearchResultType type,
                                          bool is_tablet_mode) {
   if (type == SEARCH_RESULT_TYPE_BOUNDARY) {
-    DUMP_WILL_BE_NOTREACHED_NORETURN();
+    DUMP_WILL_BE_NOTREACHED();
     return;
   }
 
@@ -149,7 +149,7 @@ void RecordSearchResultOpenTypeHistogram(AppListLaunchedFrom launch_location,
 
 void RecordDefaultSearchResultOpenTypeHistogram(SearchResultType type) {
   if (type == SEARCH_RESULT_TYPE_BOUNDARY) {
-    DUMP_WILL_BE_NOTREACHED_NORETURN();
+    DUMP_WILL_BE_NOTREACHED();
     return;
   }
   UMA_HISTOGRAM_ENUMERATION(kAppListDefaultSearchResultOpenTypeHistogram, type,

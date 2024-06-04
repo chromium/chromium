@@ -28,7 +28,7 @@ struct EnumTraits<arc::mojom::BluetoothDeviceType, device::BluetoothTransport> {
       case device::BLUETOOTH_TRANSPORT_DUAL:
         return arc::mojom::BluetoothDeviceType::DUAL;
       default:
-        DUMP_WILL_BE_NOTREACHED_NORETURN()
+        DUMP_WILL_BE_NOTREACHED()
             << "Invalid type: " << static_cast<uint8_t>(type);
         // XXX: is there a better value to return here?
         return arc::mojom::BluetoothDeviceType::DUAL;

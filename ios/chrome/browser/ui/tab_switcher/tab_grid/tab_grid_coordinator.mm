@@ -1055,13 +1055,13 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       activeBrowser = self.regularBrowser;
       break;
     case TabGridPageRemoteTabs:
-      DUMP_WILL_BE_NOTREACHED_NORETURN()
+      DUMP_WILL_BE_NOTREACHED()
           << "It is invalid to have an active tab in Recent Tabs.";
       // This appears to come up in release -- see crbug.com/1069243.
       // Defensively early return instead of continuing.
       return;
     case TabGridPageTabGroups:
-      DUMP_WILL_BE_NOTREACHED_NORETURN()
+      DUMP_WILL_BE_NOTREACHED()
           << "It is invalid to have an active tab in Tab Groups.";
       // This may come up in release -- see crbug.com/1069243.
       // Defensively early return instead of continuing.

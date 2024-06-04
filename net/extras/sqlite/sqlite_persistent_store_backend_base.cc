@@ -228,7 +228,7 @@ bool SQLitePersistentStoreBackendBase::MigrateDatabaseSchema() {
     base::UmaHistogramBoolean(histogram_tag_ + ".CorruptMetaTableRecovered",
                               recovered);
     if (!recovered) {
-      DUMP_WILL_BE_NOTREACHED_NORETURN()
+      DUMP_WILL_BE_NOTREACHED()
           << "Unable to reset the " << histogram_tag_ << " DB.";
       meta_table_.Reset();
       db_.reset();

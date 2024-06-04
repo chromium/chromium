@@ -530,7 +530,7 @@ class PrefetchedNavigationLoaderInterceptor
         return;
       }
     }
-    DUMP_WILL_BE_NOTREACHED_NORETURN();
+    DUMP_WILL_BE_NOTREACHED();
   }
 
  private:

@@ -449,7 +449,7 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
       [self.navigationItem.leftBarButtonItem setEnabled:YES];
       break;
     default:
-      DUMP_WILL_BE_NOTREACHED_NORETURN();
+      DUMP_WILL_BE_NOTREACHED();
       break;
   }
   self.savedBarButtonItem = nil;

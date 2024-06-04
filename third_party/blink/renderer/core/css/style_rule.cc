@@ -174,7 +174,7 @@ void StyleRuleBase::Trace(Visitor* visitor) const {
       To<StyleRulePositionTry>(this)->TraceAfterDispatch(visitor);
       return;
   }
-  DUMP_WILL_BE_NOTREACHED_NORETURN();
+  DUMP_WILL_BE_NOTREACHED();
 }
 
 void StyleRuleBase::FinalizeGarbageCollectedObject() {

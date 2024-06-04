@@ -119,7 +119,7 @@ void PhoneHubUiReadinessRecorder::RecordPhoneHubUiConnected() {
       ConnectionFlowState::kPhoneSnapShotReceivedButNoPhoneModelSet) {
     // The method should not be invoked when connection_flow_state_ is neither
     // kPhoneSnapShotReceivedButNoPhoneModelSet nor kUiConnected.
-    DUMP_WILL_BE_NOTREACHED_NORETURN();
+    DUMP_WILL_BE_NOTREACHED();
     return;
   }
 

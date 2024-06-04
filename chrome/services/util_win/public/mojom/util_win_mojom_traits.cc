@@ -100,7 +100,7 @@ EnumTraits<chrome::mojom::ShortcutOperation, ::base::win::ShortcutOperation>::
     case base::win::ShortcutOperation::kUpdateExisting:
       return chrome::mojom::ShortcutOperation::kUpdateExisting;
   }
-  DUMP_WILL_BE_NOTREACHED_NORETURN();
+  DUMP_WILL_BE_NOTREACHED();
   return chrome::mojom::ShortcutOperation::kCreateAlways;
 }
 

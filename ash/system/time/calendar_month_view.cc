@@ -471,7 +471,7 @@ CalendarMonthView::CalendarMonthView(
                   current_date_exploded);
     ++safe_index;
     if (safe_index == calendar_utils::kDateInOneWeek) {
-      DUMP_WILL_BE_NOTREACHED_NORETURN()
+      DUMP_WILL_BE_NOTREACHED()
           << "Should not render more than 7 days as the grayed out cells.";
       break;
     }

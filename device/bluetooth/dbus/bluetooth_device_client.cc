@@ -85,7 +85,7 @@ std::unique_ptr<BluetoothServiceAttributeValueBlueZ> ReadAttributeValue(
         // don't have any fields which use this size. If we ever decide to
         // change this, this needs to get fixed.
         default:
-          DUMP_WILL_BE_NOTREACHED_NORETURN();
+          DUMP_WILL_BE_NOTREACHED();
       }
       break;
     }

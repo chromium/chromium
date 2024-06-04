@@ -566,7 +566,7 @@ v8::Local<v8::Value> ScriptContext::RunScript(
       "extensions::%s", *v8::String::Utf8Value(isolate(), name));
 
   if (internal_name.size() >= v8::String::kMaxLength) {
-    DUMP_WILL_BE_NOTREACHED_NORETURN() << "internal_name is too long.";
+    DUMP_WILL_BE_NOTREACHED() << "internal_name is too long.";
     return v8::Undefined(isolate());
   }
 

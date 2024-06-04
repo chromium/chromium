@@ -131,7 +131,7 @@ V4DecodeResult V4RiceDecoder::DecodePrefixes(const int64 first_value,
 
       last_value += offset;
       if (!last_value.IsValid()) {
-        DUMP_WILL_BE_NOTREACHED_NORETURN();
+        DUMP_WILL_BE_NOTREACHED();
         return DECODED_INTEGER_OVERFLOW_FAILURE;
       }
 

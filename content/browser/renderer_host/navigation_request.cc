@@ -7035,7 +7035,7 @@ void NavigationRequest::OnNavigationEventProcessed(
   DCHECK_NE(NavigationThrottle::DEFER, result.action());
   switch (event) {
     case NavigationThrottleRunner::Event::NoEvent:
-      DUMP_WILL_BE_NOTREACHED_NORETURN();
+      DUMP_WILL_BE_NOTREACHED();
       return;
     case NavigationThrottleRunner::Event::WillStartRequest:
       OnWillStartRequestProcessed(result);

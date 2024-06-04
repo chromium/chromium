@@ -258,7 +258,7 @@ void SyncServiceCrypto::SetEncryptionPassphrase(const std::string& passphrase) {
       // TODO(crbug.com/40904402): this is currently reachable on iOS due to
       // discrepancy in UI code. Fix iOS implementation and avoid using more
       // strict checks here until this is done.
-      DUMP_WILL_BE_NOTREACHED_NORETURN()
+      DUMP_WILL_BE_NOTREACHED()
           << "Can not set explicit passphrase when decryption is needed.";
       return;
   }

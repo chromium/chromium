@@ -280,7 +280,7 @@ uint32_t ResizeDirection(int component) {
       LOG(ERROR) << "Unknown component:" << component;
       break;
   }
-  DUMP_WILL_BE_NOTREACHED_NORETURN();
+  DUMP_WILL_BE_NOTREACHED();
   return ZCR_REMOTE_SURFACE_V1_RESIZE_DIRECTION_NONE;
 }
 

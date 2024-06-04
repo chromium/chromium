@@ -3564,7 +3564,7 @@ using UserFeedbackDataCallback =
     }
     case AuthenticationService::ServiceStatus::SigninDisabledByInternal:
     case AuthenticationService::ServiceStatus::SigninDisabledByUser: {
-      DUMP_WILL_BE_NOTREACHED_NORETURN()
+      DUMP_WILL_BE_NOTREACHED()
           << "Status service: " << static_cast<int>(statusService);
       break;
     }

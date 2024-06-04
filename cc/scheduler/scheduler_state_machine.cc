@@ -1063,7 +1063,7 @@ void SchedulerStateMachine::DidDrawInternal(DrawResult draw_result) {
       if (consecutive_cant_draw_count_++ < 3u) {
         needs_redraw_ = true;
       } else {
-        DUMP_WILL_BE_NOTREACHED_NORETURN()
+        DUMP_WILL_BE_NOTREACHED()
             << consecutive_cant_draw_count_ << " consecutve draws"
             << " with DrawResult::kAbortedCantDraw result";
       }

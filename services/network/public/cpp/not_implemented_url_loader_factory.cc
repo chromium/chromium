@@ -28,7 +28,7 @@ void NotImplementedURLLoaderFactory::CreateLoaderAndStart(
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
   SCOPED_CRASH_KEY_STRING256("bug40216482", "NoImplFactoryCreator",
                              creator_location_.ToString());
-  DUMP_WILL_BE_NOTREACHED_NORETURN();
+  DUMP_WILL_BE_NOTREACHED();
   network::URLLoaderCompletionStatus status;
   status.error_code = net::ERR_NOT_IMPLEMENTED;
   mojo::Remote<network::mojom::URLLoaderClient>(std::move(client))

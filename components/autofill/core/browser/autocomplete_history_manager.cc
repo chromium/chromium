@@ -145,7 +145,7 @@ void AutocompleteHistoryManager::OnSingleFieldSuggestionSelected(
     // Not found, therefore nothing to do. Most likely there was a race
     // condition, but it's not that big of a deal in the current scenario
     // (logging metrics).
-    DUMP_WILL_BE_NOTREACHED_NORETURN();
+    DUMP_WILL_BE_NOTREACHED();
     return;
   }
 
