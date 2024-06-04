@@ -470,4 +470,22 @@ class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
         // It has a default state so theoretically this case shouldn't happen.
         throw new IllegalArgumentException("Couldn't retrieve a valid status.");
     }
+
+    @Override
+    public void setBackForwardCacheEnabled(boolean backForwardCacheEnabled) {
+        try (TraceEvent ignored =
+                TraceEvent.scoped("WebView.APICall.AndroidX.SET_BACK_FORWARD_CACHE_ENABLED")) {
+            recordApiCall(ApiCall.SET_BACK_FORWARD_CACHE_ENABLED);
+            mAwSettings.setBackForwardCacheEnabled(backForwardCacheEnabled);
+        }
+    }
+
+    @Override
+    public boolean getBackForwardCacheEnabled() {
+        try (TraceEvent ignored =
+                TraceEvent.scoped("WebView.APICall.AndroidX.GET_BACK_FORWARD_CACHE_ENABLED")) {
+            recordApiCall(ApiCall.GET_BACK_FORWARD_CACHE_ENABLED);
+            return mAwSettings.getBackForwardCacheEnabled();
+        }
+    }
 }

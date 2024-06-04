@@ -118,4 +118,8 @@ public interface WebSettingsBoundaryInterface {
 
     @SpeculativeLoadingStatus
     int getSpeculativeLoadingStatus();
+
+    void setBackForwardCacheEnabled(boolean backForwardCacheEnabled);
+
+    boolean getBackForwardCacheEnabled();
 }

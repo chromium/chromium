@@ -549,6 +549,8 @@ chromium-metrics-reviews@google.com.
   <int value="103" label="WebSettingsCompat.getWebauthnSupport"/>
   <int value="104" label="WebSettingsCompat.setSpeculativeLoadingStatus"/>
   <int value="105" label="WebSettingsCompat.getSpeculativeLoadingStatus"/>
+  <int value="106" label="WebSettingsCompat.setBackForwardCacheEnabled"/>
+  <int value="107" label="WebSettingsCompat.getBackForwardCacheEnabled"/>
 </enum>
 
 <enum name="ArmCpuPart">
