@@ -515,16 +515,14 @@ TEST_P(AuthSessionAuthenticatorTest, CompleteLoginEphemeral) {
               PrepareEphemeralVault(WithFirstAuthSessionId(), _))
       .WillOnce(ReplyWith(BuildPrepareEphemeralVaultReply()));
 
-  if (!GetParam()) {
-    // We do not call `AddAuthFactor` during complete login if local passwords
-    // are enabled.
-    EXPECT_CALL(
-        userdataauth(),
-        AddAuthFactor(AllOf(WithFirstAuthSessionId(),
-                            WithPasswordFactorAdd(kCryptohomeGaiaKeyLabel)),
-                      _))
-        .WillOnce(ReplyWith(AddAuthFactorReply()));
-  }
+  // TODO(b/344603210): restore parameter once we have
+  // long-term implementation.
+  EXPECT_CALL(
+      userdataauth(),
+      AddAuthFactor(AllOf(WithFirstAuthSessionId(),
+                          WithPasswordFactorAdd(kCryptohomeGaiaKeyLabel)),
+                    _))
+      .WillOnce(ReplyWith(AddAuthFactorReply()));
   EXPECT_CALL(userdataauth(), ListAuthFactors(WithAccountId(), _))
       .WillOnce(ReplyWith(ListAuthFactorsReply()));
 
@@ -566,16 +564,14 @@ TEST_P(AuthSessionAuthenticatorTest, CompleteLoginEphemeralStaleData) {
                 PrepareEphemeralVault(WithSecondAuthSessionId(), _))
         .WillOnce(ReplyWith(BuildPrepareEphemeralVaultReply()));
 
-    if (!GetParam()) {
-      // We do not call `AddAuthFactor` during complete login if local passwords
-      // are enabled.
-      EXPECT_CALL(
-          userdataauth(),
-          AddAuthFactor(AllOf(WithSecondAuthSessionId(),
-                              WithPasswordFactorAdd(kCryptohomeGaiaKeyLabel)),
-                        _))
-          .WillOnce(ReplyWith(AddAuthFactorReply()));
-    }
+    // TODO(b/344603210): restore parameter once we have
+    // long-term implementation.
+    EXPECT_CALL(
+        userdataauth(),
+        AddAuthFactor(AllOf(WithSecondAuthSessionId(),
+                            WithPasswordFactorAdd(kCryptohomeGaiaKeyLabel)),
+                      _))
+        .WillOnce(ReplyWith(AddAuthFactorReply()));
     EXPECT_CALL(userdataauth(), ListAuthFactors(WithAccountId(), _))
         .WillOnce(ReplyWith(ListAuthFactorsReply()));
   }
