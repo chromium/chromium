@@ -137,6 +137,8 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
   bool ShouldCreateVisibilityController() const override;
   void UpdateWindowShapeIfNeeded(const ui::PaintContext& context) override;
   void SetBoundsInDIP(const gfx::Rect& bounds) override;
+  void SetAllowScreenshots(bool allow) override;
+  bool AreScreenshotsAllowed() override;
 
   // WindowTreeHost:
   gfx::Transform GetRootTransform() const override;

@@ -208,6 +208,8 @@ class VIEWS_EXPORT NativeWidgetMac : public internal::NativeWidgetPrivate,
   void OnSizeConstraintsChanged() override;
   void OnNativeViewHierarchyWillChange() override;
   void OnNativeViewHierarchyChanged() override;
+  bool SetAllowScreenshots(bool allow) override;
+  bool AreScreenshotsAllowed() override;
   std::string GetName() const override;
   base::WeakPtr<internal::NativeWidgetPrivate> GetWeakPtr() override;
 

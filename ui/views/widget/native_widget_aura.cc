@@ -1010,6 +1010,21 @@ void NativeWidgetAura::OnNativeViewHierarchyWillChange() {}
 
 void NativeWidgetAura::OnNativeViewHierarchyChanged() {}
 
+bool NativeWidgetAura::SetAllowScreenshots(bool allow) {
+  // TODO(crbug.com/322519161): Revisit this to delegate the call to
+  // `WindowTreeHost`.
+  NOTIMPLEMENTED();
+  return false;
+}
+
+bool NativeWidgetAura::AreScreenshotsAllowed() {
+  // TODO(crbug.com/322519161): Revisit this to delegate the call to
+  // `WindowTreeHost`. For now, this function simply returns true as the
+  // screenshot blocking logic is handled in desktop_native_widget_aura.cc
+  NOTIMPLEMENTED();
+  return true;
+}
+
 std::string NativeWidgetAura::GetName() const {
   return window_ ? window_->GetName() : std::string();
 }

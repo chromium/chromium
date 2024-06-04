@@ -217,6 +217,8 @@ class VIEWS_EXPORT DesktopNativeWidgetAura
   void OnSizeConstraintsChanged() override;
   void OnNativeViewHierarchyWillChange() override;
   void OnNativeViewHierarchyChanged() override;
+  bool SetAllowScreenshots(bool allow) override;
+  bool AreScreenshotsAllowed() override;
   std::string GetName() const override;
 
   // aura::WindowDelegate:

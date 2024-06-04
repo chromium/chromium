@@ -214,6 +214,10 @@ class VIEWS_EXPORT DesktopWindowTreeHost {
   // operates in pixels). This function is implemented in terms of Screen.
   virtual void SetBoundsInDIP(const gfx::Rect& bounds) = 0;
 
+  // Allow or prevent screenshots of this window tree.
+  virtual void SetAllowScreenshots(bool allow) = 0;
+  virtual bool AreScreenshotsAllowed() = 0;
+
   // Updates window shape by clipping the canvas before paint starts.
   virtual void UpdateWindowShapeIfNeeded(const ui::PaintContext& context);
 

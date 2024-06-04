@@ -1793,7 +1793,8 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
     SetWindowManagementPermissionSubscriptionForBorderlessMode(new_contents);
   }
 
-#if BUILDFLAG(ENTERPRISE_WATERMARK)
+#if BUILDFLAG(ENTERPRISE_WATERMARK) || \
+    BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
   enterprise_data_protection::DataProtectionNavigationObserver::
       GetDataProtectionSettings(
           GetProfile(), web_contents(),
@@ -2737,7 +2738,8 @@ void BrowserView::TouchModeChanged() {
   MaybeShowWebUITabStripIPH();
 }
 
-#if BUILDFLAG(ENTERPRISE_WATERMARK)
+#if BUILDFLAG(ENTERPRISE_WATERMARK) || \
+    BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
 void BrowserView::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
   if (base::FeatureList::IsEnabled(features::kEnableWatermarkView)) {
@@ -2776,12 +2778,21 @@ void BrowserView::DocumentOnLoadCompletedInPrimaryMainFrame() {
   // Note that steps #5 and #6 are racy but the final outcome is correct
   // regardless of the order in which they execute.
 
+#if BUILDFLAG(ENTERPRISE_WATERMARK)
   if (watermark_view_ && clear_watermark_text_on_page_load_) {
     ApplyWatermarkSettings(std::string());
   }
+#endif  // BUILDFLAG(ENTERPRISE_WATERMARK)
+
+#if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+  if (clear_screenshot_protection_on_page_load_) {
+    ApplyScreenshotSettings(true);
+  }
+#endif
 }
 
-#endif
+#endif  // BUILDFLAG(ENTERPRISE_WATERMARK) ||
+        // BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
 
 void BrowserView::MaybeShowWebUITabStripIPH() {
   if (!webui_tab_strip_)
@@ -5445,6 +5456,9 @@ void BrowserView::UpdateFullscreenAllowedFromPolicy(
   }
 }
 
+#if BUILDFLAG(ENTERPRISE_WATERMARK) || \
+    BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+
 void BrowserView::ApplyDataProtectionSettings(
     base::WeakPtr<content::WebContents> expected_web_contents,
     const enterprise_data_protection::UrlSettings& settings) {
@@ -5454,9 +5468,16 @@ void BrowserView::ApplyDataProtectionSettings(
     return;
   }
 
+#if BUILDFLAG(ENTERPRISE_WATERMARK)
   ApplyWatermarkSettings(settings.watermark_text);
+#endif  // BUILDFLAG(ENTERPRISE_WATERMARK)
+
+#if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+  ApplyScreenshotSettings(settings.allow_screenshots);
+#endif  // BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
 }
 
+#if BUILDFLAG(ENTERPRISE_WATERMARK)
 void BrowserView::ApplyWatermarkSettings(const std::string& watermark_text) {
   if (watermark_view_) {
     watermark_view_->SetString(watermark_text);
@@ -5465,6 +5486,20 @@ void BrowserView::ApplyWatermarkSettings(const std::string& watermark_text) {
   // Watermark string should not be changed once the page loads.
   clear_watermark_text_on_page_load_ = false;
 }
+#endif  // BUILDFLAG(ENTERPRISE_WATERMARK)
+
+#if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+void BrowserView::ApplyScreenshotSettings(bool allow) {
+#if BUILDFLAG(IS_WIN)
+  DCHECK_NE(GetWidget()->GetNativeWindow()->GetHost()->GetAcceleratedWidget(),
+            gfx::kNullAcceleratedWidget);
+#endif  // BUILDFLAG(IS_WIN)
+  GetWidget()->SetAllowScreenshots(allow);
+
+  // Screenshot protection should not be changed once the page loads.
+  clear_screenshot_protection_on_page_load_ = false;
+}
+#endif  // BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
 
 void BrowserView::DelayApplyDataProtectionSettingsIfEmpty(
     base::WeakPtr<content::WebContents> expected_web_contents,
@@ -5475,13 +5510,25 @@ void BrowserView::DelayApplyDataProtectionSettingsIfEmpty(
     return;
   }
 
+#if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+  if (!settings.allow_screenshots) {
+    ApplyScreenshotSettings(settings.allow_screenshots);
+  } else {
+    // Screenshot protection should be cleared.  Delay that until the page
+    // finishes loading.
+    clear_screenshot_protection_on_page_load_ = true;
+  }
+#endif  // BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+
+#if BUILDFLAG(ENTERPRISE_WATERMARK)
   if (!settings.watermark_text.empty()) {
-    ApplyDataProtectionSettings(expected_web_contents, settings);
+    ApplyWatermarkSettings(settings.watermark_text);
   } else {
     // The watermark string should be cleared.  Delay that until the page
     // finishes loading.
     clear_watermark_text_on_page_load_ = true;
   }
+#endif  // BUILDFLAG(ENTERPRISE_WATERMARK)
 
   if (!on_delay_apply_data_protection_settings_if_empty_called_for_testing_
            .is_null()) {
@@ -5490,6 +5537,9 @@ void BrowserView::DelayApplyDataProtectionSettingsIfEmpty(
         .Run();
   }
 }
+
+#endif  // BUILDFLAG(ENTERPRISE_WATERMARK) ||
+        // BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
 
 BEGIN_METADATA(BrowserView)
 ADD_READONLY_PROPERTY_METADATA(gfx::Rect, FindBarBoundingBox)

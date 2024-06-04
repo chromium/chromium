@@ -2133,6 +2133,16 @@ void Widget::SetCheckParentForFullscreen() {
   check_parent_for_fullscreen_ = true;
 }
 
+void Widget::SetAllowScreenshots(bool allow) {
+  if (native_widget_) {
+    native_widget_->SetAllowScreenshots(allow);
+  }
+}
+
+bool Widget::AreScreenshotsAllowed() {
+  return native_widget_ ? native_widget_->AreScreenshotsAllowed() : true;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Widget, protected:
 

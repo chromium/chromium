@@ -723,7 +723,8 @@ class BrowserView : public BrowserWindow,
 
   // content::WebContentsObserver:
   void DidFirstVisuallyNonEmptyPaint() override;
-#if BUILDFLAG(ENTERPRISE_WATERMARK)
+#if BUILDFLAG(ENTERPRISE_WATERMARK) || \
+    BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
 
@@ -1065,12 +1066,24 @@ class BrowserView : public BrowserWindow,
   // when it should not be able to.
   void UpdateFullscreenAllowedFromPolicy(bool allowed_without_policy);
 
+#if BUILDFLAG(ENTERPRISE_WATERMARK) || \
+    BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
   // Applies data protection settings based on the verdict received by
   // safe-browsing's realtime to `watermark_view_`.
   void ApplyDataProtectionSettings(
       base::WeakPtr<content::WebContents> expected_web_contents,
       const enterprise_data_protection::UrlSettings& settings);
+
+#if BUILDFLAG(ENTERPRISE_WATERMARK)
   void ApplyWatermarkSettings(const std::string& watermark_text);
+#endif
+
+#if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+  void ApplyScreenshotSettings(bool allow);
+#endif
+
+#endif  // BUILDFLAG(ENTERPRISE_WATERMARK) ||
+        // BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
 
   // Applies data protection settings if there are any to apply, otherwise
   // delay clearing the data protection settings until the page loads.
@@ -1209,8 +1222,15 @@ class BrowserView : public BrowserWindow,
   raw_ptr<views::WebView, AcrossTasksDanglingUntriaged> devtools_web_view_ =
       nullptr;
 
-  // Clear watermark text once the page loads.
+  // Clear data protections once the page loads.
+  // TODO(b/330960313): These bools can be removed once FCP is used as the
+  // signal to set the data protections for the current tab.
+#if BUILDFLAG(ENTERPRISE_WATERMARK)
   bool clear_watermark_text_on_page_load_ = false;
+#endif
+#if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+  bool clear_screenshot_protection_on_page_load_ = false;
+#endif
 
   // The view that overlays a watermark on the contents container.
   raw_ptr<enterprise_watermark::WatermarkView> watermark_view_ = nullptr;

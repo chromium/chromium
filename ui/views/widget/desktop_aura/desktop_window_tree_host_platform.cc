@@ -845,6 +845,15 @@ void DesktopWindowTreeHostPlatform::SetBoundsInDIP(const gfx::Rect& bounds) {
   platform_window()->SetBoundsInDIP(bounds);
 }
 
+void DesktopWindowTreeHostPlatform::SetAllowScreenshots(bool allow) {
+  NOTIMPLEMENTED();
+}
+
+bool DesktopWindowTreeHostPlatform::AreScreenshotsAllowed() {
+  NOTIMPLEMENTED();
+  return true;
+}
+
 gfx::Transform DesktopWindowTreeHostPlatform::GetRootTransform() const {
   // TODO(crbug.com/40218466): This can use wrong scale during initialization.
   // Revisit this as a part of 'use dip' work.

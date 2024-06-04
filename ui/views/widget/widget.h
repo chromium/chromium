@@ -1226,6 +1226,10 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
   bool native_widget_active() const { return native_widget_active_; }
 
+  // Called to enable or disable screenshots of this widget.
+  void SetAllowScreenshots(bool allow);
+  bool AreScreenshotsAllowed();
+
  protected:
   // Creates the RootView to be used within this Widget. Subclasses may override
   // to create custom RootViews that do specialized event processing.

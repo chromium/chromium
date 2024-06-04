@@ -1195,6 +1195,20 @@ void DesktopNativeWidgetAura::OnNativeViewHierarchyWillChange() {}
 
 void DesktopNativeWidgetAura::OnNativeViewHierarchyChanged() {}
 
+bool DesktopNativeWidgetAura::SetAllowScreenshots(bool allow) {
+  if (desktop_window_tree_host_) {
+    desktop_window_tree_host_->SetAllowScreenshots(allow);
+    return true;
+  }
+  return false;
+}
+
+bool DesktopNativeWidgetAura::AreScreenshotsAllowed() {
+  return desktop_window_tree_host_
+             ? desktop_window_tree_host_->AreScreenshotsAllowed()
+             : true;
+}
+
 std::string DesktopNativeWidgetAura::GetName() const {
   return name_;
 }

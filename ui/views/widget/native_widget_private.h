@@ -249,6 +249,10 @@ class VIEWS_EXPORT NativeWidgetPrivate : public NativeWidget {
   // Called before and after re-parenting of this or an ancestor widget.
   virtual void OnNativeViewHierarchyWillChange() = 0;
   virtual void OnNativeViewHierarchyChanged() = 0;
+  // Returns false if the setter did not use `allow` to change screenshot
+  // availability.
+  virtual bool SetAllowScreenshots(bool allow) = 0;
+  virtual bool AreScreenshotsAllowed() = 0;
 
   // Returns an internal name that matches the name of the associated Widget.
   virtual std::string GetName() const = 0;

@@ -1240,6 +1240,25 @@ void DesktopWindowTreeHostWin::SetBoundsInDIP(const gfx::Rect& bounds) {
   AsWindowTreeHost()->SetBoundsInPixels(bounds_in_pixels);
 }
 
+void DesktopWindowTreeHostWin::SetAllowScreenshots(bool allow) {
+  // When screenshots are not allowed, set the affinity to WDA_MONITOR.
+  // This is used instead of WDA_EXCLUDEFROMCAPTURE because the latter
+  // renders the window with "no content", which appears as a black
+  // rectangle on the screen, whereas the latter completely removes the
+  // window from the screen.  The former is better indication to the user
+  // that the contents of the window are being explicitly not shown.
+  SetWindowDisplayAffinity(GetHWND(), allow ? WDA_NONE : WDA_MONITOR);
+}
+
+bool DesktopWindowTreeHostWin::AreScreenshotsAllowed() {
+  DWORD affinity;
+  if (GetWindowDisplayAffinity(GetHWND(), &affinity)) {
+    return affinity == WDA_NONE;
+  }
+
+  return true;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // DesktopWindowTreeHostWin, private:
 

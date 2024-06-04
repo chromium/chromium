@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <utility>
 #include <vector>
@@ -99,6 +100,7 @@ namespace views::test {
 
 namespace {
 
+using ::testing::_;
 using ::testing::IsEmpty;
 using ::testing::Not;
 
@@ -6037,6 +6039,47 @@ TEST_F(CompositingWidgetTest, Transparency_DesktopWidgetOpaque) {
 
 TEST_F(CompositingWidgetTest, Transparency_DesktopWidgetTranslucent) {
   CheckAllWidgetsForOpacity(Widget::InitParams::WindowOpacity::kTranslucent);
+}
+
+namespace {
+
+class ScreenshotWidgetTest : public ViewsTestBase {
+ public:
+  ScreenshotWidgetTest() = default;
+
+  // ViewsTestBase:
+  void SetUp() override {
+    ViewsTestBase::SetUp();
+    widget_ = WidgetAutoclosePtr(new Widget);
+    Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+    native_widget_ = std::make_unique<MockNativeWidget>(widget());
+    ON_CALL(*native_widget(), SetAllowScreenshots(_))
+        .WillByDefault([this](bool allowed) {
+          screenshots_allowed_ = allowed;
+          return true;
+        });
+    params.native_widget = native_widget();
+    widget()->Init(std::move(params));
+  }
+
+  Widget* widget() { return widget_.get(); }
+  MockNativeWidget* native_widget() { return native_widget_.get(); }
+  const std::optional<bool>& screenshots_allowed() {
+    return screenshots_allowed_;
+  }
+
+ private:
+  WidgetAutoclosePtr widget_;
+  std::unique_ptr<MockNativeWidget> native_widget_;
+  std::optional<bool> screenshots_allowed_;
+};
+
+}  // namespace
+
+TEST_F(ScreenshotWidgetTest, CallsNativeWidget) {
+  widget()->SetAllowScreenshots(false);
+  ASSERT_TRUE(screenshots_allowed().has_value());
+  EXPECT_FALSE(screenshots_allowed().value());
 }
 
 #endif  // BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_MAC)

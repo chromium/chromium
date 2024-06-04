@@ -160,6 +160,8 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
   bool ShouldCreateVisibilityController() const override;
   DesktopNativeCursorManager* GetSingletonDesktopNativeCursorManager() override;
   void SetBoundsInDIP(const gfx::Rect& bounds) override;
+  void SetAllowScreenshots(bool allow) override;
+  bool AreScreenshotsAllowed() override;
 
   // Overridden from aura::WindowTreeHost:
   ui::EventSource* GetEventSource() override;
