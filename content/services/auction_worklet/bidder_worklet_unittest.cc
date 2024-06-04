@@ -666,10 +666,9 @@ class BidderWorkletTest : public testing::Test {
   // Creates a BidderWorkletNonSharedParams based on test fixture
   // configuration.
   mojom::BidderWorkletNonSharedParamsPtr CreateBidderWorkletNonSharedParams() {
-    std::vector<std::pair<auction_worklet::mojom::KAnonKeyPtr, bool>>
-        kanon_keys;
+    std::vector<auction_worklet::mojom::KAnonKeyPtr> kanon_keys;
     for (const auto& key : kanon_keys_) {
-      kanon_keys.emplace_back(key.first.Clone(), key.second);
+      kanon_keys.emplace_back(key.Clone());
     }
     return mojom::BidderWorkletNonSharedParams::New(
         interest_group_name_,
@@ -948,7 +947,7 @@ class BidderWorkletTest : public testing::Test {
   std::vector<blink::InterestGroup::Ad> interest_group_ads_;
   std::optional<std::vector<blink::InterestGroup::Ad>>
       interest_group_ad_components_;
-  base::flat_map<auction_worklet::mojom::KAnonKeyPtr, bool> kanon_keys_;
+  base::flat_set<auction_worklet::mojom::KAnonKeyPtr> kanon_keys_;
   auction_worklet::mojom::KAnonymityBidMode kanon_mode_ =
       auction_worklet::mojom::KAnonymityBidMode::kNone;
   bool bid_is_kanon_;
@@ -3049,8 +3048,7 @@ TEST_F(BidderWorkletMultiBidTest, TargetNumAdComponentsKAnon) {
   kanon_keys_.emplace(
       auction_worklet::mojom::KAnonKey::New(blink::HashedKAnonKeyForAdBid(
           url::Origin::Create(interest_group_bidding_url_),
-          interest_group_bidding_url_, "https://response.test/")),
-      true);
+          interest_group_bidding_url_, "https://response.test/")));
   RunGenerateBidWithReturnValueExpectingResult(
       kBid, non_k_anon_bid->Clone(),
       /*expected_data_version=*/std::nullopt,
@@ -3062,13 +3060,11 @@ TEST_F(BidderWorkletMultiBidTest, TargetNumAdComponentsKAnon) {
   // Authorizing ad components 2 and 4, they should be used for k-anon bid but
   // there should still be the non-k-anon bid.
   kanon_keys_.emplace(auction_worklet::mojom::KAnonKey::New(
-                          blink::HashedKAnonKeyForAdComponentBid(
-                              GURL("https://ad_component2.test/"))),
-                      true);
+      blink::HashedKAnonKeyForAdComponentBid(
+          GURL("https://ad_component2.test/"))));
   kanon_keys_.emplace(auction_worklet::mojom::KAnonKey::New(
-                          blink::HashedKAnonKeyForAdComponentBid(
-                              GURL("https://ad_component4.test/"))),
-                      true);
+      blink::HashedKAnonKeyForAdComponentBid(
+          GURL("https://ad_component4.test/"))));
 
   {
     std::vector<mojom::BidderWorkletBidPtr> expected;
@@ -3088,9 +3084,8 @@ TEST_F(BidderWorkletMultiBidTest, TargetNumAdComponentsKAnon) {
 
   // Authorizing 1 as well makes the bid suitable for both auctions.
   kanon_keys_.emplace(auction_worklet::mojom::KAnonKey::New(
-                          blink::HashedKAnonKeyForAdComponentBid(
-                              GURL("https://ad_component.test/"))),
-                      true);
+      blink::HashedKAnonKeyForAdComponentBid(
+          GURL("https://ad_component.test/"))));
   RunGenerateBidWithReturnValueExpectingResult(
       kBid, mojom::BidderWorkletBid::New(
                 auction_worklet::mojom::BidRole::kBothKAnonModes, "\"ad\"", 5,
@@ -3156,8 +3151,7 @@ TEST_F(BidderWorkletMultiBidTest, TargetAndMandatoryAdComponentsKAnon) {
   kanon_keys_.emplace(
       auction_worklet::mojom::KAnonKey::New(blink::HashedKAnonKeyForAdBid(
           url::Origin::Create(interest_group_bidding_url_),
-          interest_group_bidding_url_, "https://response.test/")),
-      true);
+          interest_group_bidding_url_, "https://response.test/")));
   RunGenerateBidWithReturnValueExpectingResult(
       kBid, non_k_anon_bid->Clone(),
       /*expected_data_version=*/std::nullopt,
@@ -3169,13 +3163,11 @@ TEST_F(BidderWorkletMultiBidTest, TargetAndMandatoryAdComponentsKAnon) {
   // Authorizing ad components 3 and 4 isn't enough since absence of 1 prevents
   // it from being accepted.
   kanon_keys_.emplace(auction_worklet::mojom::KAnonKey::New(
-                          blink::HashedKAnonKeyForAdComponentBid(
-                              GURL("https://ad_component3.test/"))),
-                      true);
+      blink::HashedKAnonKeyForAdComponentBid(
+          GURL("https://ad_component3.test/"))));
   kanon_keys_.emplace(auction_worklet::mojom::KAnonKey::New(
-                          blink::HashedKAnonKeyForAdComponentBid(
-                              GURL("https://ad_component4.test/"))),
-                      true);
+      blink::HashedKAnonKeyForAdComponentBid(
+          GURL("https://ad_component4.test/"))));
   RunGenerateBidWithReturnValueExpectingResult(
       kBid, non_k_anon_bid->Clone(),
       /*expected_data_version=*/std::nullopt,
@@ -3186,9 +3178,8 @@ TEST_F(BidderWorkletMultiBidTest, TargetAndMandatoryAdComponentsKAnon) {
 
   // Now authorize 1 as well. Should get 1 and 3 as k-anon bid.
   kanon_keys_.emplace(auction_worklet::mojom::KAnonKey::New(
-                          blink::HashedKAnonKeyForAdComponentBid(
-                              GURL("https://ad_component.test/"))),
-                      true);
+      blink::HashedKAnonKeyForAdComponentBid(
+          GURL("https://ad_component.test/"))));
   {
     std::vector<mojom::BidderWorkletBidPtr> expected;
     expected.push_back(mojom::BidderWorkletBid::New(
@@ -3207,9 +3198,8 @@ TEST_F(BidderWorkletMultiBidTest, TargetAndMandatoryAdComponentsKAnon) {
 
   // Authorizing 2 as well makes the bid suitable for both auctions.
   kanon_keys_.emplace(auction_worklet::mojom::KAnonKey::New(
-                          blink::HashedKAnonKeyForAdComponentBid(
-                              GURL("https://ad_component2.test/"))),
-                      true);
+      blink::HashedKAnonKeyForAdComponentBid(
+          GURL("https://ad_component2.test/"))));
   RunGenerateBidWithReturnValueExpectingResult(
       kBid, mojom::BidderWorkletBid::New(
                 auction_worklet::mojom::BidRole::kBothKAnonModes, "\"ad\"", 5,
@@ -10473,8 +10463,7 @@ TEST_F(BidderWorkletTest, KAnonSimulate) {
   kanon_keys_.emplace(
       auction_worklet::mojom::KAnonKey::New(blink::HashedKAnonKeyForAdBid(
           url::Origin::Create(interest_group_bidding_url_),
-          interest_group_bidding_url_, "https://response.test/")),
-      true);
+          interest_group_bidding_url_, "https://response.test/")));
   RunGenerateBidWithJavascriptExpectingResult(
       CreateGenerateBidScript(
           R"({ad: ["ad"], bid:1, render:"https://response.test/"})",
@@ -10531,8 +10520,7 @@ TEST_F(BidderWorkletTest, KAnonSimulate) {
   kanon_keys_.emplace(
       auction_worklet::mojom::KAnonKey::New(blink::HashedKAnonKeyForAdBid(
           url::Origin::Create(interest_group_bidding_url_),
-          interest_group_bidding_url_, "https://response2.test/")),
-      true);
+          interest_group_bidding_url_, "https://response2.test/")));
   RunGenerateBidWithJavascriptExpectingResult(
       CreateGenerateBidScript(
           R"({ad: ["ad"], bid:interestGroup.ads.length,
@@ -10588,8 +10576,7 @@ TEST_F(BidderWorkletTest, KAnonEnforce) {
   kanon_keys_.emplace(
       auction_worklet::mojom::KAnonKey::New(blink::HashedKAnonKeyForAdBid(
           url::Origin::Create(interest_group_bidding_url_),
-          interest_group_bidding_url_, "https://response.test/")),
-      true);
+          interest_group_bidding_url_, "https://response.test/")));
   RunGenerateBidWithJavascriptExpectingResult(
       CreateGenerateBidScript(
           R"({ad: ["ad"], bid:1, render:"https://response.test/"})",
@@ -10646,8 +10633,7 @@ TEST_F(BidderWorkletTest, KAnonEnforce) {
   kanon_keys_.emplace(
       auction_worklet::mojom::KAnonKey::New(blink::HashedKAnonKeyForAdBid(
           url::Origin::Create(interest_group_bidding_url_),
-          interest_group_bidding_url_, "https://response2.test/")),
-      true);
+          interest_group_bidding_url_, "https://response2.test/")));
   RunGenerateBidWithJavascriptExpectingResult(
       CreateGenerateBidScript(
           R"({ad: ["ad"], bid:interestGroup.ads.length,
@@ -10719,8 +10705,7 @@ TEST_F(BidderWorkletMultiBidTest, KAnonClassify) {
   kanon_keys_.emplace(
       auction_worklet::mojom::KAnonKey::New(blink::HashedKAnonKeyForAdBid(
           url::Origin::Create(interest_group_bidding_url_),
-          interest_group_bidding_url_, "https://response2.test/")),
-      true);
+          interest_group_bidding_url_, "https://response2.test/")));
   {
     std::vector<mojom::BidderWorkletBidPtr> expected;
     expected.push_back(bid1.Clone());
@@ -10755,8 +10740,7 @@ TEST_F(BidderWorkletMultiBidTest, KAnonRerun) {
   kanon_keys_.emplace(
       auction_worklet::mojom::KAnonKey::New(blink::HashedKAnonKeyForAdBid(
           url::Origin::Create(interest_group_bidding_url_),
-          interest_group_bidding_url_, "https://response4.test/")),
-      true);
+          interest_group_bidding_url_, "https://response4.test/")));
 
   const char kScript[] = R"(
     function generateBid(interestGroup, auctionSignals, perBuyerSignals,
@@ -10829,8 +10813,7 @@ TEST_F(BidderWorkletTest, KAnonRerun) {
   kanon_keys_.emplace(
       auction_worklet::mojom::KAnonKey::New(blink::HashedKAnonKeyForAdBid(
           url::Origin::Create(interest_group_bidding_url_),
-          interest_group_bidding_url_, "https://response.test/")),
-      true);
+          interest_group_bidding_url_, "https://response.test/")));
 
   for (auto execution_mode :
        {blink::mojom::InterestGroup::ExecutionMode::kCompatibilityMode,
@@ -10873,12 +10856,10 @@ TEST_F(BidderWorkletTest, IsKAnonURL) {
   const std::string kUrl4KAnonKey = blink::HashedKAnonKeyForAdBid(
       owner, interest_group_bidding_url_, kUrl4.spec());
 
-  params->kanon_keys.emplace(
-      auction_worklet::mojom::KAnonKey::New(kUrl1KAnonKey), true);
-  params->kanon_keys.emplace(
-      auction_worklet::mojom::KAnonKey::New(kUrl2KAnonKey), true);
-  params->kanon_keys.emplace(
-      auction_worklet::mojom::KAnonKey::New(kUrl3KAnonKey), false);
+  params->kanon_keys.emplace_back(
+      auction_worklet::mojom::KAnonKey::New(kUrl1KAnonKey));
+  params->kanon_keys.emplace_back(
+      auction_worklet::mojom::KAnonKey::New(kUrl2KAnonKey));
 
   EXPECT_TRUE(BidderWorklet::IsKAnon(params.get(), kUrl1KAnonKey));
   EXPECT_TRUE(BidderWorklet::IsKAnon(params.get(), kUrl2KAnonKey));
@@ -10894,16 +10875,11 @@ TEST_F(BidderWorkletTest, IsKAnonResult) {
   mojom::BidderWorkletNonSharedParamsPtr params =
       mojom::BidderWorkletNonSharedParams::New();
   url::Origin owner = url::Origin::Create(interest_group_bidding_url_);
-  params->kanon_keys.emplace(
+  params->kanon_keys.emplace_back(
       auction_worklet::mojom::KAnonKey::New(blink::HashedKAnonKeyForAdBid(
-          owner, interest_group_bidding_url_, kUrl1.spec())),
-      true);
-  params->kanon_keys.emplace(auction_worklet::mojom::KAnonKey::New(
-                                 blink::HashedKAnonKeyForAdComponentBid(kUrl2)),
-                             true);
-  params->kanon_keys.emplace(auction_worklet::mojom::KAnonKey::New(
-                                 blink::HashedKAnonKeyForAdComponentBid(kUrl3)),
-                             false);
+          owner, interest_group_bidding_url_, kUrl1.spec())));
+  params->kanon_keys.emplace_back(auction_worklet::mojom::KAnonKey::New(
+      blink::HashedKAnonKeyForAdComponentBid(kUrl2)));
 
   mojom::BidderWorkletBidPtr bid = mojom::BidderWorkletBid::New();
 

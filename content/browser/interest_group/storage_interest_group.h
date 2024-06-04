@@ -31,7 +31,7 @@ struct CONTENT_EXPORT StorageInterestGroup {
   auction_worklet::mojom::BiddingBrowserSignalsPtr bidding_browser_signals;
 
   // Hashed k-anonymous keys.
-  std::vector<std::string> hashed_kanon_keys;
+  base::flat_set<std::string> hashed_kanon_keys;
 
   // Top level page origin from when the interest group was joined.
   url::Origin joining_origin;

@@ -165,27 +165,25 @@ bool IsUrlValid(const GURL& url) {
   return url.is_valid() && url.SchemeIs(url::kHttpsScheme);
 }
 
-bool IsKAnon(const base::flat_map<std::string, bool>& kanon_keys,
+bool IsKAnon(const base::flat_set<std::string>& kanon_keys,
              const std::string& key) {
-  auto it = kanon_keys.find(key);
-  return it != kanon_keys.end() && it->second;
+  return kanon_keys.contains(key);
 }
 
-base::flat_map<auction_worklet::mojom::KAnonKeyPtr, bool> KAnonKeysToMojom(
-    const base::flat_map<std::string, bool>& kanon_keys) {
-  std::vector<std::pair<auction_worklet::mojom::KAnonKeyPtr, bool>> result;
+std::vector<auction_worklet::mojom::KAnonKeyPtr> KAnonKeysToMojom(
+    const base::flat_set<std::string>& kanon_keys) {
+  std::vector<auction_worklet::mojom::KAnonKeyPtr> result;
   for (const auto& key : kanon_keys) {
-    result.emplace_back(auction_worklet::mojom::KAnonKey::New(key.first),
-                        key.second);
+    result.emplace_back(auction_worklet::mojom::KAnonKey::New(key));
   }
-  return std::move(result);
+  return result;
 }
 
 // Finds InterestGroup::Ad in `ads` that matches `ad_descriptor`, if any.
 // Returns nullptr if `ad_descriptor` is invalid.
 const blink::InterestGroup::Ad* FindMatchingAd(
     const std::vector<blink::InterestGroup::Ad>& ads,
-    const base::flat_map<std::string, bool>& kanon_keys,
+    const base::flat_set<std::string>& kanon_keys,
     const blink::InterestGroup& interest_group,
     auction_worklet::mojom::BidRole bid_role,
     bool is_component_ad,
@@ -1600,7 +1598,7 @@ class InterestGroupAuction::BuyerHelper
         /*errors=*/{});
   }
 
-  base::flat_map<std::string, bool> ComputeKAnon(
+  base::flat_set<std::string> ComputeKAnon(
       const SingleStorageInterestGroup& storage_interest_group,
       auction_worklet::mojom::KAnonymityBidMode kanon_mode) {
     if (kanon_mode == auction_worklet::mojom::KAnonymityBidMode::kNone) {
@@ -1614,13 +1612,7 @@ class InterestGroupAuction::BuyerHelper
                            start_time)) {
       return {};
     }
-
-    std::vector<std::pair<std::string, bool>> kanon_entries;
-    for (const std::string& hashed_key :
-         storage_interest_group->hashed_kanon_keys) {
-      kanon_entries.emplace_back(hashed_key, true);
-    }
-    return base::flat_map<std::string, bool>(std::move(kanon_entries));
+    return storage_interest_group->hashed_kanon_keys;
   }
 
   // Invoked whenever the AuctionWorkletManager has provided a BidderWorket

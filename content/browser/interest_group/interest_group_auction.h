@@ -238,7 +238,7 @@ class CONTENT_EXPORT InterestGroupAuction
     // Set of render keys that are k-anonymous and correspond to ad or ad
     // component render URLs for this interest group.
     // (Not set if we are not configured to care).
-    base::flat_map<std::string, bool> kanon_keys;
+    base::flat_set<std::string> kanon_keys;
 
     // This starts off as the base priority of the interest group, but is
     // updated by sparse vector multiplications using first the priority vector

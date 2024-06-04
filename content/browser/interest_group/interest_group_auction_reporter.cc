@@ -94,10 +94,7 @@ bool IsKAnonForReporting(
 
   std::string reporting_key = HashedKAnonKeyForAdNameReporting(
       storage_interest_group->interest_group, chosen_ad);
-  return std::find(storage_interest_group->hashed_kanon_keys.begin(),
-                   storage_interest_group->hashed_kanon_keys.end(),
-                   reporting_key) !=
-         storage_interest_group->hashed_kanon_keys.end();
+  return storage_interest_group->hashed_kanon_keys.contains(reporting_key);
 }
 
 }  // namespace

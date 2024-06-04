@@ -174,7 +174,8 @@ TEST_F(InterestGroupKAnonymityManagerTest,
     EXPECT_EQ(base::Time::Min(), maybe_group.value()->last_k_anon_updated);
     // The database just has that one key that we set above.
     ASSERT_EQ(1u, maybe_group.value()->hashed_kanon_keys.size());
-    EXPECT_EQ(k_anon_key, maybe_group.value()->hashed_kanon_keys[0]);
+    EXPECT_THAT(maybe_group.value()->hashed_kanon_keys,
+                testing::ElementsAre(k_anon_key));
   }
 
   // k-anonymity update happens here.
@@ -220,7 +221,8 @@ TEST_F(InterestGroupKAnonymityManagerTest,
     EXPECT_LT(last_updated, maybe_group.value()->last_k_anon_updated);
     // This update only contains one key.
     ASSERT_EQ(1u, maybe_group.value()->hashed_kanon_keys.size());
-    EXPECT_EQ(k_anon_key, maybe_group.value()->hashed_kanon_keys[0]);
+    EXPECT_THAT(maybe_group.value()->hashed_kanon_keys,
+                testing::ElementsAre(k_anon_key));
   }
 }
 
@@ -763,7 +765,7 @@ TEST_F(InterestGroupKAnonymityManagerTestWithMock,
   EXPECT_EQ(1u, delegate()->TakeQueryIDs().size());
   auto maybe_group = GetGroup(manager.get(), group.owner, group.name);
   ASSERT_TRUE(maybe_group);
-  std::vector<std::string> pre_existing_kanon =
+  base::flat_set<std::string> pre_existing_kanon =
       maybe_group.value()->hashed_kanon_keys;
   EXPECT_FALSE(pre_existing_kanon.empty());
 

@@ -331,8 +331,8 @@ TEST_F(InterestGroupCachingStorageTest, DBUpdatesShouldModifyCache) {
                 ->GetInterestGroups()[0]
                 ->hashed_kanon_keys.size(),
             0u);
-  ASSERT_EQ(loaded_igs->get()->GetInterestGroups()[0]->hashed_kanon_keys[0],
-            k_anon_key);
+  ASSERT_THAT(loaded_igs->get()->GetInterestGroups()[0]->hashed_kanon_keys,
+              testing::UnorderedElementsAre(k_anon_key));
 
   previously_loaded_igs = loaded_igs;
 

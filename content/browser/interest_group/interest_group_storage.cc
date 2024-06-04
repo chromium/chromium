@@ -2808,7 +2808,7 @@ std::optional<InterestGroupKanonUpdateParameter> DoJoinInterestGroup(
 
   StorageInterestGroup old_group;
   base::Time last_k_anon_updated = base::Time::Min();
-  std::vector<std::string> positive_kanon_keys;
+  base::flat_set<std::string> positive_kanon_keys;
   std::set<std::string> all_old_kanon_keys;
   blink::InterestGroupKey interest_group_key(data.owner, data.name);
   if (DoLoadInterestGroup(db, passkey, interest_group_key, old_group)) {
@@ -2977,10 +2977,11 @@ std::optional<InterestGroupKanonUpdateParameter> DoJoinInterestGroup(
   return std::move(kanon_update);
 }
 
-bool DoStoreInterestGroupUpdate(sql::Database& db,
-                                const blink::InterestGroup& group,
-                                base::Time now,
-                                std::vector<std::string>& positive_kanon_keys) {
+bool DoStoreInterestGroupUpdate(
+    sql::Database& db,
+    const blink::InterestGroup& group,
+    base::Time now,
+    base::flat_set<std::string>& positive_kanon_keys) {
   // clang-format off
   sql::Statement store_group(
       db.GetCachedStatement(SQL_FROM_HERE,
@@ -3095,7 +3096,7 @@ std::optional<InterestGroupKanonUpdateParameter> DoUpdateInterestGroup(
   blink::InterestGroup& updated_group = storage_interest_group.interest_group;
   std::set<std::string> pre_existing_k_anon_keys =
       GetAllKanonKeys(updated_group);
-  std::vector<std::string> positive_kanon_keys =
+  base::flat_set<std::string> positive_kanon_keys =
       std::move(storage_interest_group.hashed_kanon_keys);
   bool updated_kanon_keys = false;
 

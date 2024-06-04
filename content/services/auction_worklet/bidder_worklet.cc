@@ -42,6 +42,7 @@
 #include "content/services/auction_worklet/public/cpp/auction_network_events_delegate.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-shared.h"
+#include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "content/services/auction_worklet/public/mojom/real_time_reporting.mojom.h"
 #include "content/services/auction_worklet/real_time_reporting_bindings.h"
@@ -413,9 +414,10 @@ int BidderWorklet::context_group_id_for_testing() const {
 bool BidderWorklet::IsKAnon(
     const mojom::BidderWorkletNonSharedParams* bidder_worklet_non_shared_params,
     const std::string& key) {
-  auto it = bidder_worklet_non_shared_params->kanon_keys.find(
-      mojom::KAnonKey::New(key));
-  return it != bidder_worklet_non_shared_params->kanon_keys.end() && it->second;
+  return std::find(bidder_worklet_non_shared_params->kanon_keys.begin(),
+                   bidder_worklet_non_shared_params->kanon_keys.end(),
+                   mojom::KAnonKey::New(key)) !=
+         bidder_worklet_non_shared_params->kanon_keys.end();
 }
 
 // static

@@ -1358,7 +1358,7 @@ void AuthorizeKAnonAd(const blink::InterestGroup::Ad& ad,
                       const char* url,
                       StorageInterestGroup& group) {
   DCHECK_EQ(url, ad.render_url());
-  group.hashed_kanon_keys.emplace_back(
+  group.hashed_kanon_keys.emplace(
       blink::HashedKAnonKeyForAdBid(group.interest_group, ad.render_url()));
 }
 
@@ -1366,7 +1366,7 @@ void AuthorizeKAnonReporting(const blink::InterestGroup::Ad& ad,
                              const char* url,
                              StorageInterestGroup& group) {
   DCHECK_EQ(url, ad.render_url());
-  group.hashed_kanon_keys.emplace_back(
+  group.hashed_kanon_keys.emplace(
       blink::HashedKAnonKeyForAdNameReporting(group.interest_group, ad));
 }
 
@@ -1374,7 +1374,7 @@ void AuthorizeKAnonAdComponent(const blink::InterestGroup::Ad& ad,
                                const char* url,
                                StorageInterestGroup& group) {
   DCHECK_EQ(url, ad.render_url());
-  group.hashed_kanon_keys.emplace_back(
+  group.hashed_kanon_keys.emplace(
       blink::HashedKAnonKeyForAdComponentBid(ad.render_url()));
 }
 
@@ -1980,8 +1980,10 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
       blink::InterestGroupKey bidder_group_key(bidder.interest_group.owner,
                                                bidder.interest_group.name);
       base::Time update_time(base::Time::Now());
+      std::vector<std::string> positive_hashed_keys_to_update(
+          bidder.hashed_kanon_keys.begin(), bidder.hashed_kanon_keys.end());
       interest_group_manager_->UpdateKAnonymity(
-          bidder_group_key, bidder.hashed_kanon_keys, update_time,
+          bidder_group_key, positive_hashed_keys_to_update, update_time,
           /*replace_existing_values*/ true);
     }
 
