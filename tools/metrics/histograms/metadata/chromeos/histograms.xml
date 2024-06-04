@@ -1638,7 +1638,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.Healthd.EventSubscription"
-    enum="CrosHealthdEventCategory" expires_after="2024-06-30">
+    enum="CrosHealthdEventCategory" expires_after="2024-12-31">
   <owner>weiluanwang@google.com</owner>
   <owner>dennyh@google.com</owner>
   <owner>cros-tdm-tpe-eng@google.com</owner>
