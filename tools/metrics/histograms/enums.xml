@@ -18052,7 +18052,6 @@ from previous Chrome versions.
   <int value="-1239515260" label="OmniboxDisableCGIParamMatching:disabled"/>
   <int value="-1239262870" label="TextFragmentAnchor:enabled"/>
   <int value="-1238992816" label="ShelfDimming:enabled"/>
-  <int value="-1238850731" label="AutofillServerBehaviors:enabled"/>
   <int value="-1237921078" label="SyncUSSNigori:enabled"/>
   <int value="-1237821073" label="SharedHighlightingUseBlocklist:enabled"/>
   <int value="-1237621246" label="WebXRGamepadSupport:disabled"/>
@@ -24316,7 +24315,6 @@ from previous Chrome versions.
   <int value="1492184741" label="EnablePeripheralsLogging:disabled"/>
   <int value="1492255992" label="OnDeviceGrammarCheck:enabled"/>
   <int value="1492541927" label="QuickAnswersTranslationCloudAPI:enabled"/>
-  <int value="1493006959" label="AutofillServerBehaviors:disabled"/>
   <int value="1493223152" label="CloseAllTabsModalDialog:enabled"/>
   <int value="1493522762" label="ShowWebauthnSuggestionsOnAutofocus:enabled"/>
   <int value="1493727661" label="ChromeRootStoreUsed:disabled"/>

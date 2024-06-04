@@ -1389,44 +1389,6 @@ TEST_P(AutofillQueryTest, SendsExperiment) {
   }
 }
 
-TEST_P(AutofillQueryTest, SendsExperimentFromFeatureParam) {
-  std::vector<std::unique_ptr<FormStructure>> form_structures;
-  form_structures.push_back(std::make_unique<FormStructure>(
-      test::GetFormData({.fields = {{.role = NAME_FIRST}}})));
-
-  {
-    SCOPED_TRACE("Query without experiment");
-    ResetCallCount();
-    payloads().clear();
-    ASSERT_TRUE(SendQueryRequest(form_structures));
-    EXPECT_EQ(1, call_count());
-
-    ASSERT_THAT(payloads(), SizeIs(1));
-    AutofillPageQueryRequest query_contents;
-    ASSERT_TRUE(query_contents.ParseFromString(payloads()[0]));
-    EXPECT_THAT(query_contents.experiments(), ElementsAre());
-  }
-
-  {
-    SCOPED_TRACE("Query with experiment");
-
-    base::test::ScopedFeatureList features;
-    features.InitAndEnableFeatureWithParameters(
-        features::kAutofillServerBehaviors,
-        {{"server_prediction_source", "19890601"}});
-
-    ResetCallCount();
-    payloads().clear();
-    ASSERT_TRUE(SendQueryRequest(form_structures));
-    EXPECT_EQ(1, call_count());
-
-    ASSERT_THAT(payloads(), SizeIs(1));
-    AutofillPageQueryRequest query_contents;
-    ASSERT_TRUE(query_contents.ParseFromString(payloads()[0]));
-    EXPECT_THAT(query_contents.experiments(), ElementsAre(19890601));
-  }
-}
-
 TEST_P(AutofillQueryTest, ExpiredCacheInResponse) {
   std::vector<std::unique_ptr<FormStructure>> form_structures;
   form_structures.push_back(std::make_unique<FormStructure>(

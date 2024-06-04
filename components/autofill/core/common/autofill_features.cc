@@ -117,13 +117,6 @@ BASE_FEATURE(kAutofillDontPreserveAutofillState,
              "AutofillDontPreserveAutofillState",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, checking whether a form has disappeared after an Ajax response is
-// delayed because subsequent Ajax responses may restore the form. If disabled,
-// the check happens right after a successful Ajax response.
-BASE_FEATURE(kAutofillDeferSubmissionClassificationAfterAjax,
-             "AutofillDeferSubmissionClassificationAfterAjax",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Kill switch for Autofill filling.
 BASE_FEATURE(kAutofillDisableFilling,
              "AutofillDisableFilling",
@@ -400,7 +393,7 @@ BASE_FEATURE(kAutofillDetectFieldVisibility,
              "AutofillDetectFieldVisibility",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, new heuristics are applied for disamibguating multiple possible
+// If enabled, new heuristics are applied for disambiguating multiple possible
 // types in a form field. Otherwise, only the already established heuristic for
 // disambiguating address and credit card names is used.
 BASE_FEATURE(kAutofillDisambiguateContradictingFieldTypes,
@@ -568,16 +561,6 @@ BASE_FEATURE(kAutofillPopupImprovedTimingChecksV2,
 BASE_FEATURE(kAutofillPopupZOrderSecuritySurface,
              "AutofillPopupZOrderSecuritySurface",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Controls non-default Autofill API predictions. See crbug.com/1331322.
-BASE_FEATURE(kAutofillServerBehaviors,
-             "AutofillServerBehaviors",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-// Chrome doesn't need to know the meaning of the value. Chrome only needs to
-// forward it to the Autofill API, to let the server know which group the client
-// belongs to.
-const base::FeatureParam<int> kAutofillServerBehaviorsParam{
-    &kAutofillServerBehaviors, "server_prediction_source", 0};
 
 // Controls whether Autofill may fill across origins.
 // In payment forms, the cardholder name field is often on the merchant's origin

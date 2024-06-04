@@ -567,11 +567,6 @@ void InitActiveExperiments() {
           {variations::GOOGLE_WEB_PROPERTIES_TRIGGER_ANY_CONTEXT,
            variations::GOOGLE_WEB_PROPERTIES_TRIGGER_FIRST_PARTY});
   std::erase_if(active_experiments, std::not_fn(&IsAutofillExperimentId));
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillServerBehaviors)) {
-    active_experiments.push_back(
-        autofill::features::kAutofillServerBehaviorsParam.Get());
-  }
   std::sort(active_experiments.begin(), active_experiments.end());
   active_experiments.erase(
       std::unique(active_experiments.begin(), active_experiments.end()),
