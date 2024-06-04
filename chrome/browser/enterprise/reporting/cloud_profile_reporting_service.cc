@@ -6,11 +6,14 @@
 
 #include <utility>
 
+#include "base/check_is_test.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
+#include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -19,9 +22,11 @@
 #include "components/enterprise/browser/reporting/chrome_profile_request_generator.h"
 #include "components/enterprise/browser/reporting/report_scheduler.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "components/policy/core/common/cloud/cloud_policy_core.h"
+#include "components/policy/core/common/cloud/cloud_policy_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/enterprise/reporting/reporting_delegate_factory_android.h"
@@ -49,32 +54,25 @@ std::string GetProfileName(Profile* profile) {
 
 }  // namespace
 
-CloudProfileReportingService::CloudProfileReportingService(
-    Profile* profile,
-    policy::DeviceManagementService* device_management_service,
-    scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory) {
-  content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
-      ->PostTask(
-          FROM_HERE,
-          base::BindOnce(&CloudProfileReportingService::CreateReportScheduler,
-                         weak_factory_.GetWeakPtr(), profile,
-                         device_management_service, system_url_loader_factory));
+CloudProfileReportingService::CloudProfileReportingService(Profile* profile)
+    : profile_(profile) {
+  Init();
 }
 
 CloudProfileReportingService::~CloudProfileReportingService() = default;
 
-
-void CloudProfileReportingService::CreateReportScheduler(Profile* profile,
-    policy::DeviceManagementService* device_management_service,
-    scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory) {
+void CloudProfileReportingService::CreateReportScheduler() {
   std::string profile_id = "";
-  if (enterprise::ProfileIdServiceFactory::GetForProfile(profile)) {
-    profile_id = enterprise::ProfileIdServiceFactory::GetForProfile(profile)
+  if (enterprise::ProfileIdServiceFactory::GetForProfile(profile_)) {
+    profile_id = enterprise::ProfileIdServiceFactory::GetForProfile(profile_)
                      ->GetProfileId()
                      .value_or("");
   }
   cloud_policy_client_ = std::make_unique<policy::CloudPolicyClient>(
-      profile_id, device_management_service, system_url_loader_factory,
+      profile_id,
+      g_browser_process->browser_policy_connector()
+          ->device_management_service(),
+      profile_->GetURLLoaderFactory(),
       policy::CloudPolicyClient::DeviceDMTokenCallback());
 
 #if BUILDFLAG(IS_ANDROID)
@@ -84,11 +82,43 @@ void CloudProfileReportingService::CreateReportScheduler(Profile* profile,
 #endif  // !BUILDFLAG(IS_ANDROID)
   ReportScheduler::CreateParams params;
   params.client = cloud_policy_client_.get();
-  params.delegate = delegate_factory.GetReportSchedulerDelegate(profile);
+  params.delegate = delegate_factory.GetReportSchedulerDelegate(profile_);
   params.profile_request_generator =
       std::make_unique<ChromeProfileRequestGenerator>(
-          profile->GetPath(), GetProfileName(profile), &delegate_factory);
+          profile_->GetPath(), GetProfileName(profile_), &delegate_factory);
   report_scheduler_ = std::make_unique<ReportScheduler>(std::move(params));
+}
+
+void CloudProfileReportingService::OnCoreConnected(
+    policy::CloudPolicyCore* core) {
+  CreateReportScheduler();
+  core_observation_.Reset();
+}
+void CloudProfileReportingService::OnRefreshSchedulerStarted(
+    policy::CloudPolicyCore* core) {}
+void CloudProfileReportingService::OnCoreDisconnecting(
+    policy::CloudPolicyCore* core) {}
+
+void CloudProfileReportingService::InitForTesting() {
+  Init();
+}
+
+void CloudProfileReportingService::Init() {
+  // Only create ReportScheduler when profile is managed.
+  if (policy::ManagementServiceFactory::GetForProfile(profile_)
+          ->HasManagementAuthority(
+              policy::EnterpriseManagementAuthority::CLOUD)) {
+    content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
+        ->PostTask(
+            FROM_HERE,
+            base::BindOnce(&CloudProfileReportingService::CreateReportScheduler,
+                           weak_factory_.GetWeakPtr()));
+    return;
+  }
+  // Otherwise, wait for profile being signed in.
+  if (profile_->GetCloudPolicyManager()) {
+    core_observation_.Observe(profile_->GetCloudPolicyManager()->core());
+  }
 }
 
 }  // namespace enterprise_reporting

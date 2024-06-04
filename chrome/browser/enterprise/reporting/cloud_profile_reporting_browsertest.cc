@@ -6,14 +6,17 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/reporting/cloud_profile_reporting_service.h"
 #include "chrome/browser/enterprise/reporting/cloud_profile_reporting_service_factory.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
+#include "components/policy/core/common/cloud/cloud_policy_service.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "components/policy/core/common/policy_loader_lacros.h"
@@ -40,14 +43,27 @@ class CloudProfileReportingServiceTest : public PlatformBrowserTest {
     policy_data.set_device_id("device-id");
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     ASSERT_TRUE(profile->IsMainProfile());
+    profile->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
     policy::PolicyLoaderLacros::set_main_user_policy_data_for_testing(
         policy_data);
+
+    // On Lacros, there is no easy way for us to setup management state early
+    // enough. Because the keyed service is created with profile. And changing
+    // management state afterward won't work either as it's not a normal process
+    // for Lacros.
+    // Hence we trigger initial process for the service for testing.
+    CloudProfileReportingServiceFactory::GetForProfile(profile)
+        ->InitForTesting();
 #else
-    profile->GetUserCloudPolicyManager()
+    profile->GetCloudPolicyManager()
         ->core()
         ->store()
         ->set_policy_data_for_testing(
             std::make_unique<em::PolicyData>(policy_data));
+    auto client = std::make_unique<policy::CloudPolicyClient>(
+        /*service=*/nullptr, /*url_laoder_factory=*/nullptr);
+    profile->GetCloudPolicyManager()->core()->ConnectForTesting(
+        /*service=*/nullptr, std::move(client));
 #endif
   }
 

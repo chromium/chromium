@@ -9,24 +9,20 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "components/enterprise/browser/reporting/report_scheduler.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
+#include "components/policy/core/common/cloud/cloud_policy_core.h"
 
 class Profile;
 
-namespace policy {
-class DeviceManagementService;
-}
-
 namespace enterprise_reporting {
 
-class CloudProfileReportingService : public KeyedService {
+class CloudProfileReportingService : public KeyedService,
+                                     public policy::CloudPolicyCore::Observer {
  public:
-  CloudProfileReportingService(
-      Profile* profile,
-      policy::DeviceManagementService* device_management_service,
-      scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory);
+  explicit CloudProfileReportingService(Profile* profile);
   CloudProfileReportingService(const CloudProfileReportingService&) = delete;
   CloudProfileReportingService& operator=(const CloudProfileReportingService&) =
       delete;
@@ -34,16 +30,27 @@ class CloudProfileReportingService : public KeyedService {
 
   ReportScheduler* report_scheduler() { return report_scheduler_.get(); }
 
-  void CreateReportScheduler(Profile* profile,
-    policy::DeviceManagementService* device_management_service,
-    scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory);
+  void CreateReportScheduler();
+
+  // policy::CloudPolicyCore::Observer
+  void OnCoreConnected(policy::CloudPolicyCore* core) override;
+  void OnRefreshSchedulerStarted(policy::CloudPolicyCore* core) override;
+  void OnCoreDisconnecting(policy::CloudPolicyCore* core) override;
+
+  void InitForTesting();
 
  private:
+  void Init();
+
   std::unique_ptr<policy::CloudPolicyClient> cloud_policy_client_;
   std::unique_ptr<ReportScheduler> report_scheduler_;
+  raw_ptr<Profile> profile_;
 
-  base::WeakPtrFactory<CloudProfileReportingService> weak_factory_{
-      this};
+  base::ScopedObservation<policy::CloudPolicyCore,
+                          policy::CloudPolicyCore::Observer>
+      core_observation_{this};
+
+  base::WeakPtrFactory<CloudProfileReportingService> weak_factory_{this};
 };
 
 }  // namespace enterprise_reporting
