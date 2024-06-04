@@ -820,7 +820,6 @@ def _set_builder_config_property(ctx):
                 # TODO(crbug.com/343505108): Remove the following libfuzzer
                 # builders as trybots are created for them.
                 "Centipede High End Upload Linux ASan",
-                "Libfuzzer Upload Chrome OS ASan",
                 "Libfuzzer Upload Linux ASan Debug",
                 "Libfuzzer Upload Linux MSan",
                 "Libfuzzer Upload Linux UBSan",

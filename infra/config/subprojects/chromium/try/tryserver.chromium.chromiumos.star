@@ -236,6 +236,24 @@ try_.builder(
     gn_args = "ci/chromeos-arm64-generic-rel",
 )
 
+try_.builder(
+    name = "chromeos-libfuzzer-asan-rel",
+    # TODO(crbug.com/41492669): Can delete this description when it's
+    # automatically generated.
+    description_html = "Trybot of {}.".format(linkify_builder("ci", "Libfuzzer Upload Chrome OS ASan")),
+    executable = "recipe:chromium/fuzz",
+    mirrors = ["ci/Libfuzzer Upload Chrome OS ASan"],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/Libfuzzer Upload Chrome OS ASan",
+            "dcheck_always_on",
+            "no_symbols",
+            "skip_generate_fuzzer_owners",
+        ],
+    ),
+    contact_team_email = "chrome-deet-core@google.com",
+)
+
 try_.orchestrator_builder(
     name = "lacros-amd64-generic-rel-gtest",
     branch_selector = branches.selector.CROS_BRANCHES,
