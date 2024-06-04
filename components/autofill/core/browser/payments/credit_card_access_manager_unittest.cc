@@ -281,7 +281,6 @@ class CreditCardAccessManagerTest : public testing::Test {
   bool GetRealPanForCVCAuth(
       AutofillClient::PaymentsRpcResult result,
       const std::string& real_pan,
-      bool fido_opt_in = false,
       TestFidoRequestOptionsType test_fido_request_options_type =
           TestFidoRequestOptionsType::kNotPresent) {
     payments::FullCardRequest* full_card_request =
@@ -2029,9 +2028,9 @@ TEST_F(CreditCardAccessManagerTest, FIDONewCardAuthorization) {
 
   // Do not return any RequestOptions or CreationOptions in GetRealPan.
   // RequestOptions should have been returned in unmask details response.
-  EXPECT_TRUE(GetRealPanForCVCAuth(
-      AutofillClient::PaymentsRpcResult::kSuccess, kTestNumber,
-      /*fido_opt_in=*/false, TestFidoRequestOptionsType::kNotPresent));
+  EXPECT_TRUE(GetRealPanForCVCAuth(AutofillClient::PaymentsRpcResult::kSuccess,
+                                   kTestNumber,
+                                   TestFidoRequestOptionsType::kNotPresent));
   // Ensure that the form is not filled yet (OnCreditCardFetched is not called).
   EXPECT_EQ(accessor_->number(), std::u16string());
   EXPECT_EQ(accessor_->cvc(), std::u16string());
@@ -2081,9 +2080,9 @@ TEST_F(CreditCardAccessManagerTest,
   WaitForCallbacks();
 
   // Do not return any RequestOptions or CreationOptions in GetRealPan.
-  EXPECT_TRUE(GetRealPanForCVCAuth(
-      AutofillClient::PaymentsRpcResult::kSuccess, kTestNumber,
-      /*fido_opt_in=*/false, TestFidoRequestOptionsType::kNotPresent));
+  EXPECT_TRUE(GetRealPanForCVCAuth(AutofillClient::PaymentsRpcResult::kSuccess,
+                                   kTestNumber,
+                                   TestFidoRequestOptionsType::kNotPresent));
   // Ensure that the form is filled as there are no FIDO request options
   // present.
   EXPECT_EQ(accessor_->number(), kTestNumber16);
@@ -2112,11 +2111,11 @@ TEST_F(CreditCardAccessManagerTest,
   InvokeUnmaskDetailsTimeout();
   WaitForCallbacks();
 
-  // Do not return any RequestOptions or CreationOptions in GetRealPan.
-  // RequestOptions should have been returned in unmask details response.
-  EXPECT_TRUE(GetRealPanForCVCAuth(
-      AutofillClient::PaymentsRpcResult::kSuccess, kTestNumber,
-      /*fido_opt_in=*/false, TestFidoRequestOptionsType::kNotPresent));
+  // Do not return any RequestOptions in GetRealPan. RequestOptions should have
+  // been returned in unmask details response.
+  EXPECT_TRUE(GetRealPanForCVCAuth(AutofillClient::PaymentsRpcResult::kSuccess,
+                                   kTestNumber,
+                                   TestFidoRequestOptionsType::kNotPresent));
   // Ensure that the form is filled as the only FIDO request options present are
   // invalid.
   EXPECT_EQ(accessor_->number(), kTestNumber16);
@@ -2174,9 +2173,9 @@ TEST_F(CreditCardAccessManagerTest, FIDOOptInSuccess_Android) {
   // For Android, set `test_fido_request_options_type` to valid to mock user
   // checking the opt-in checkbox and ensuring GetRealPan returns
   // RequestOptions.
-  EXPECT_TRUE(GetRealPanForCVCAuth(
-      AutofillClient::PaymentsRpcResult::kSuccess, kTestNumber,
-      /*fido_opt_in=*/false, TestFidoRequestOptionsType::kValid));
+  EXPECT_TRUE(GetRealPanForCVCAuth(AutofillClient::PaymentsRpcResult::kSuccess,
+                                   kTestNumber,
+                                   TestFidoRequestOptionsType::kValid));
   WaitForCallbacks();
 
   // Check current flow to ensure CreditCardFidoAuthenticator::Authorize is
@@ -2226,9 +2225,9 @@ TEST_F(CreditCardAccessManagerTest,
 
   // Set the test request options returned to invalid to mock the user checking
   // the checkbox, but invalid request options are returned from the server.
-  EXPECT_TRUE(GetRealPanForCVCAuth(
-      AutofillClient::PaymentsRpcResult::kSuccess, kTestNumber,
-      /*fido_opt_in=*/false, TestFidoRequestOptionsType::kInvalid));
+  EXPECT_TRUE(GetRealPanForCVCAuth(AutofillClient::PaymentsRpcResult::kSuccess,
+                                   kTestNumber,
+                                   TestFidoRequestOptionsType::kInvalid));
   WaitForCallbacks();
 
   // Ensure that the form is filled because the request options returned from
@@ -2258,9 +2257,9 @@ TEST_F(CreditCardAccessManagerTest, FIDOOptInUserVerificationFailure) {
   // For Android, set `test_fido_request_options_type` to valid to mock user
   // checking the opt-in checkbox and ensuring GetRealPan returns
   // RequestOptions.
-  EXPECT_TRUE(GetRealPanForCVCAuth(
-      AutofillClient::PaymentsRpcResult::kSuccess, kTestNumber,
-      /*fido_opt_in=*/false, TestFidoRequestOptionsType::kValid));
+  EXPECT_TRUE(GetRealPanForCVCAuth(AutofillClient::PaymentsRpcResult::kSuccess,
+                                   kTestNumber,
+                                   TestFidoRequestOptionsType::kValid));
   // Check current flow to ensure CreditCardFidoAuthenticator::Authorize is
   // called and correct flow is set.
   EXPECT_EQ(CreditCardFidoAuthenticator::Flow::OPT_IN_WITH_CHALLENGE_FLOW,
@@ -2302,9 +2301,9 @@ TEST_F(CreditCardAccessManagerTest, FIDOOptInServerFailure) {
   // For Android, set `test_fido_request_options_type` to valid to mock user
   // checking the opt-in checkbox and ensuring GetRealPan returns
   // RequestOptions.
-  EXPECT_TRUE(GetRealPanForCVCAuth(
-      AutofillClient::PaymentsRpcResult::kSuccess, kTestNumber,
-      /*fido_opt_in=*/false, TestFidoRequestOptionsType::kValid));
+  EXPECT_TRUE(GetRealPanForCVCAuth(AutofillClient::PaymentsRpcResult::kSuccess,
+                                   kTestNumber,
+                                   TestFidoRequestOptionsType::kValid));
   // Check current flow to ensure CreditCardFidoAuthenticator::Authorize is
   // called and correct flow is set.
   EXPECT_EQ(CreditCardFidoAuthenticator::Flow::OPT_IN_WITH_CHALLENGE_FLOW,
@@ -2343,9 +2342,9 @@ TEST_F(CreditCardAccessManagerTest, FIDOOptIn_CheckboxDeclined) {
   // For Android, set `test_fido_request_options_type` to not present to mock
   // user unchecking the opt-in checkbox resulting in GetRealPan not returning
   // request options.
-  EXPECT_TRUE(GetRealPanForCVCAuth(
-      AutofillClient::PaymentsRpcResult::kSuccess, kTestNumber,
-      /*fido_opt_in=*/false, TestFidoRequestOptionsType::kNotPresent));
+  EXPECT_TRUE(GetRealPanForCVCAuth(AutofillClient::PaymentsRpcResult::kSuccess,
+                                   kTestNumber,
+                                   TestFidoRequestOptionsType::kNotPresent));
   // Ensure that form is filled (OnCreditCardFetched is called).
   EXPECT_EQ(kTestNumber16, accessor_->number());
   EXPECT_EQ(kTestCvc16, accessor_->cvc());
@@ -2420,8 +2419,7 @@ TEST_F(CreditCardAccessManagerTest,
 
   // Mock user and payments response.
   EXPECT_TRUE(GetRealPanForCVCAuth(AutofillClient::PaymentsRpcResult::kSuccess,
-                                   kTestNumber,
-                                   /*fido_opt_in=*/false));
+                                   kTestNumber));
   AcceptWebauthnOfferDialog(/*did_accept=*/true);
 
   OptChange(AutofillClient::PaymentsRpcResult::kSuccess,
@@ -2482,8 +2480,7 @@ TEST_F(CreditCardAccessManagerTest, FIDOEnrollment_OfferDeclined_Desktop) {
 
   // Mock user and payments response.
   EXPECT_TRUE(GetRealPanForCVCAuth(AutofillClient::PaymentsRpcResult::kSuccess,
-                                   kTestNumber,
-                                   /*fido_opt_in=*/false));
+                                   kTestNumber));
   AcceptWebauthnOfferDialog(/*did_accept=*/false);
   EXPECT_EQ(
       FidoAuthenticationStrikeDatabase::kStrikesToAddWhenOptInOfferDeclined,
@@ -2522,8 +2519,7 @@ TEST_F(CreditCardAccessManagerTest,
 
   // Mock user and payments response.
   EXPECT_TRUE(GetRealPanForCVCAuth(AutofillClient::PaymentsRpcResult::kSuccess,
-                                   kTestNumber,
-                                   /*fido_opt_in=*/false));
+                                   kTestNumber));
   AcceptWebauthnOfferDialog(/*did_accept=*/true);
   AcceptWebauthnOfferDialog(/*did_accept=*/false);
   EXPECT_EQ(
@@ -2564,8 +2560,7 @@ TEST_F(CreditCardAccessManagerTest,
 
   // Mock user and payments response.
   EXPECT_TRUE(GetRealPanForCVCAuth(AutofillClient::PaymentsRpcResult::kSuccess,
-                                   kTestNumber,
-                                   /*fido_opt_in=*/false));
+                                   kTestNumber));
   WaitForCallbacks();
   AcceptWebauthnOfferDialog(/*did_accept=*/true);
 
@@ -2613,8 +2608,7 @@ TEST_F(CreditCardAccessManagerTest,
 
   // Mock user and payments response.
   EXPECT_TRUE(GetRealPanForCVCAuth(AutofillClient::PaymentsRpcResult::kSuccess,
-                                   kTestNumber,
-                                   /*fido_opt_in=*/false));
+                                   kTestNumber));
   WaitForCallbacks();
   AcceptWebauthnOfferDialog(/*did_accept=*/true);
 
@@ -2951,8 +2945,7 @@ TEST_F(CreditCardAccessManagerTest,
       0);
 
   EXPECT_TRUE(GetRealPanForCVCAuth(AutofillClient::PaymentsRpcResult::kSuccess,
-                                   kTestNumber,
-                                   /*fido_opt_in=*/false));
+                                   kTestNumber));
   // Since no unmask detail returned, we can't discover the pref mismatch, we
   // won't call opt out and local pref is unchanged.
   EXPECT_FALSE(GetFIDOAuthenticator()->IsOptOutCalled());
@@ -2986,8 +2979,7 @@ TEST_F(CreditCardAccessManagerTest, IntentToOptOut_OptOutAfterUnmaskSucceeds) {
 
   // Mock cvc auth success.
   EXPECT_TRUE(GetRealPanForCVCAuth(AutofillClient::PaymentsRpcResult::kSuccess,
-                                   kTestNumber,
-                                   /*fido_opt_in=*/false));
+                                   kTestNumber));
   WaitForCallbacks();
 
   // Ensure calling opt out after a successful cvc auth.
@@ -3063,8 +3055,7 @@ TEST_F(CreditCardAccessManagerTest, IntentToOptOut_OptOutFailure) {
 
   // Mock cvc auth success.
   EXPECT_TRUE(GetRealPanForCVCAuth(AutofillClient::PaymentsRpcResult::kSuccess,
-                                   kTestNumber,
-                                   /*fido_opt_in=*/false));
+                                   kTestNumber));
   WaitForCallbacks();
 
   // Mock payments opt out failure. Local pref should be unchanged.
@@ -3563,7 +3554,7 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
 
   // Expect CVC prompt to be invoked.
   EXPECT_TRUE(GetRealPanForCVCAuth(AutofillClient::PaymentsRpcResult::kSuccess,
-                                   test_number, /*fido_opt_in=*/false,
+                                   test_number,
                                    TestFidoRequestOptionsType::kNotPresent));
   // Ensure that the form is not filled yet (OnCreditCardFetched is not called).
   EXPECT_EQ(accessor_->number(), std::u16string());
