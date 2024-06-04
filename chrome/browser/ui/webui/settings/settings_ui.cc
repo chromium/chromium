@@ -385,9 +385,9 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                           safe_browsing::hash_realtime_utils::
                               IsHashRealTimeLookupEligibleInSession());
 
-  html_source->AddBoolean(
-      "enableHttpsFirstModeNewSettings",
-      base::FeatureList::IsEnabled(features::kHttpsFirstModeIncognito));
+  html_source->AddBoolean("enableHttpsFirstModeNewSettings",
+                          base::FeatureList::IsEnabled(
+                              features::kHttpsFirstModeIncognitoNewSettings));
 
   html_source->AddBoolean(
       "enableKeyboardAndPointerLockPrompt",

@@ -79,7 +79,8 @@ GeneratedHttpsFirstModePref::SetPref(const base::Value* value) {
     return extensions::settings_private::SetPrefResult::PREF_TYPE_MISMATCH;
   }
 
-  if (!base::FeatureList::IsEnabled(features::kHttpsFirstModeIncognito) &&
+  if (!base::FeatureList::IsEnabled(
+          features::kHttpsFirstModeIncognitoNewSettings) &&
       selection == HttpsFirstModeSetting::kEnabledIncognito) {
     return extensions::settings_private::SetPrefResult::PREF_TYPE_UNSUPPORTED;
   }
@@ -97,7 +98,14 @@ GeneratedHttpsFirstModePref::SetPref(const base::Value* value) {
   // Note that the HttpsFirstModeSetting::kEnabledIncognito is not available by
   // default. If the feature flag is disabled, then the kEnabledFull and
   // kDisabled settings will only be mapped to the kHttpsOnlyModeEnabled pref.
-  if (base::FeatureList::IsEnabled(features::kHttpsFirstModeIncognito)) {
+  //
+  // Additionally, if kHttpsFirstModeIncognitoNewSettings is disabled, then the
+  // HFM-in-Incognito pref should not be controlled by the user setting. (The
+  // pref will be set to its default `true` regardless of the HFM boolean
+  // setting toggle.)
+  if (base::FeatureList::IsEnabled(features::kHttpsFirstModeIncognito) &&
+      base::FeatureList::IsEnabled(
+          features::kHttpsFirstModeIncognitoNewSettings)) {
     profile_->GetPrefs()->SetBoolean(
         prefs::kHttpsFirstModeIncognito,
         selection != HttpsFirstModeSetting::kDisabled);
@@ -121,12 +129,14 @@ settings_api::PrefObject GeneratedHttpsFirstModePref::GetPrefObject() const {
   auto* hfm_fully_enabled_pref =
       profile_->GetPrefs()->FindPreference(prefs::kHttpsOnlyModeEnabled);
 
-  // The HttpsFirstModeSetting::kEnabledIncognito setting is not available  by
-  // default -- if the feature flag is disabled, then the kEnabledFull and
-  // kDisabled settings will be mapped to the kHttpsOnlyModeEnabled pref on its
-  // own.
+  // The HttpsFirstModeSetting::kEnabledIncognito setting is not available by
+  // default -- if the kHttpsFirstModeIncognitoNewSettings feature flag is
+  // disabled, then the kEnabledFull and kDisabled settings will be mapped to
+  // the kHttpsOnlyModeEnabled pref on its own.
   bool hfm_incognito_enabled =
       base::FeatureList::IsEnabled(features::kHttpsFirstModeIncognito) &&
+      base::FeatureList::IsEnabled(
+          features::kHttpsFirstModeIncognitoNewSettings) &&
       profile_->GetPrefs()->GetBoolean(prefs::kHttpsFirstModeIncognito);
 
   bool fully_enabled = hfm_fully_enabled_pref->GetValue()->GetBool() ||
