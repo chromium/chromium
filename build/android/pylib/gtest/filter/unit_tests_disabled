@@ -39,7 +39,6 @@ AutocompleteProviderTest.*
 HistoryContentsProviderBodyOnlyTest.*
 HistoryContentsProviderTest.*
 HQPOrderingTest.*
-SearchProviderTest.*
 
 ProtocolHandlerRegistryTest.TestOSRegistrationFailure
 

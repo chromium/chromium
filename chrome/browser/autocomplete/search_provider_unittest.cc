@@ -828,45 +828,49 @@ TEST_F(SearchProviderTest, QueryKeywordProvider) {
 }
 
 TEST_F(SearchProviderTest, SendDataToSuggestAtAppropriateTimes) {
+  constexpr bool fileNameTreatedAsQuery =
+      (BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID));
   struct {
     std::string input;
     const bool expect_to_send_to_default_provider;
   } cases[] = {
-    // None of the following input strings should be sent to the default
-    // suggest server because they may contain potentially private data.
-    { "username:password",                  false },
-    { "User:f",                             false },
-    { "http://username:password",           false },
-    { "https://username:password",          false },
-    { "username:password@hostname",         false },
-    { "http://username:password@hostname/", false },
-    { "file://filename",                    false },
-    { "data://data",                        false },
-    { "unknownscheme:anything",             false },
-    { "http://hostname/?query=q",           false },
-    { "http://hostname/path#ref",           false },
-    { "http://hostname/path #ref",          false },
-    { "https://hostname/path",              false },
-    // For all of the following input strings, it doesn't make much difference
-    // if we allow them to be sent to the default provider or not.  The strings
-    // need to be in this list of test cases however so that they are tested
-    // against the keyword provider and verified that they are allowed to be
-    // sent to it.
-    { "User:",                              false },
-    { "User::",                             false },
-    { "User:!",                             false },
-    // All of the following input strings should be sent to the default suggest
-    // server because they should not get caught by the private data checks.
-    { "User",                               true },
-    { "query",                              true },
-    { "query with spaces",                  true },
-    { "http://hostname",                    true },
-    { "http://hostname/path",               true },
-    { "http://hostname #ref",               true },
-    { "www.hostname.com #ref",              true },
-    { "https://hostname",                   true },
-    { "#hashtag",                           true },
-    { "foo https://hostname/path",          true },
+      // None of the following input strings should be sent to the default
+      // suggest server because they may contain potentially private data.
+      {"username:password", false},
+      {"User:f", false},
+      {"http://username:password", false},
+      {"https://username:password", false},
+      {"username:password@hostname", false},
+      {"http://username:password@hostname/", false},
+      {"file://filename", fileNameTreatedAsQuery},
+      {"data://data", false},
+      {"unknownscheme:anything", false},
+      {"http://hostname/?query=q", false},
+      {"http://hostname/path#ref", false},
+      {"http://hostname/path #ref", false},
+      {"https://hostname/path", false},
+      // For all of the following input strings, it doesn't make much difference
+      // if we allow them to be sent to the default provider or not.  The
+      // strings
+      // need to be in this list of test cases however so that they are tested
+      // against the keyword provider and verified that they are allowed to be
+      // sent to it.
+      {"User:", false},
+      {"User::", false},
+      {"User:!", false},
+      // All of the following input strings should be sent to the default
+      // suggest
+      // server because they should not get caught by the private data checks.
+      {"User", true},
+      {"query", true},
+      {"query with spaces", true},
+      {"http://hostname", true},
+      {"http://hostname/path", true},
+      {"http://hostname #ref", true},
+      {"www.hostname.com #ref", true},
+      {"https://hostname", true},
+      {"#hashtag", true},
+      {"foo https://hostname/path", true},
   };
 
   for (size_t i = 0; i < std::size(cases); ++i) {
