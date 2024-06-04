@@ -3453,6 +3453,7 @@ InlineItemResult* LineBreaker::AddRubyColumnResult(
   auto* data = MakeGarbageCollected<InlineItemResultRubyColumn>();
   column_result->ruby_column = data;
   data->base_line = base_line_info;
+  data->base_line.OverrideLineStyle(*current_style_);
   data->base_line.SetIsRubyBase();
   data->base_line.UpdateTextAlign();
   if (data->base_line.MayHaveRubyOverhang()) {

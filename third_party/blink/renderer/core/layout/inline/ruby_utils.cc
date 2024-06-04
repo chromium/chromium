@@ -190,6 +190,15 @@ AnnotationOverhang GetOverhang(const InlineItemResult& item) {
   if (item.IsRubyColumn()) {
     DCHECK(RuntimeEnabledFeatures::RubyLineBreakableEnabled());
     const InlineItemResultRubyColumn& column = *item.ruby_column;
+    ERubyAlign ruby_align = column.base_line.LineStyle().RubyAlign();
+    switch (ruby_align) {
+      case ERubyAlign::kSpaceBetween:
+        return overhang;
+      case ERubyAlign::kStart:
+      case ERubyAlign::kSpaceAround:
+      case ERubyAlign::kCenter:
+        break;
+    }
     LayoutUnit half_width_of_annotation_font;
     for (const auto& annotation_line : column.annotation_line_list) {
       if (annotation_line.Width() == item.inline_size) {
@@ -201,8 +210,16 @@ AnnotationOverhang GetOverhang(const InlineItemResult& item) {
     if (half_width_of_annotation_font == LayoutUnit()) {
       return overhang;
     }
-    std::optional<LayoutUnit> inset = ComputeRubyBaseInset(
-        item.inline_size - column.base_line.Width(), column.base_line);
+    LayoutUnit space = item.inline_size - column.base_line.Width();
+    if (space <= LayoutUnit()) {
+      return overhang;
+    }
+    if (ruby_align == ERubyAlign::kStart) {
+      overhang.end = std::min(space, half_width_of_annotation_font);
+      return overhang;
+    }
+    std::optional<LayoutUnit> inset =
+        ComputeRubyBaseInset(space, column.base_line);
     if (!inset) {
       return overhang;
     }
@@ -390,16 +407,35 @@ std::pair<LayoutUnit, LayoutUnit> ApplyRubyAlign(LayoutUnit available_line_size,
   if (space <= LayoutUnit()) {
     return {LayoutUnit(), LayoutUnit()};
   }
+
+  ERubyAlign ruby_align = line_info.LineStyle().RubyAlign();
   ETextAlign text_align = line_info.TextAlign();
-  // Handle `space-around`.
+  switch (ruby_align) {
+    case ERubyAlign::kSpaceAround:
+      // We respect to the text-align value as ever if ruby-align is the
+      // initial value.
+      break;
+    case ERubyAlign::kSpaceBetween:
+      on_start_edge = true;
+      on_end_edge = true;
+      text_align = ETextAlign::kJustify;
+      break;
+    case ERubyAlign::kStart:
+      return IsLtr(line_info.BaseDirection())
+                 ? std::make_pair(LayoutUnit(), space)
+                 : std::make_pair(space, LayoutUnit());
+    case ERubyAlign::kCenter:
+      return {space / 2, space / 2};
+  }
+
+  // Handle `space-around` and `space-between`.
   if (text_align == ETextAlign::kJustify) {
-    JustificationTarget target = JustificationTarget::kNormal;
-    if (line_info.IsRubyBase()) {
-      target = JustificationTarget::kRubyBase;
+    JustificationTarget target;
+    if (on_start_edge && on_end_edge) {
       // Switch to `space-between` if this needs to align both edges.
-      if (on_start_edge && on_end_edge) {
-        target = JustificationTarget::kNormal;
-      }
+      target = JustificationTarget::kNormal;
+    } else if (line_info.IsRubyBase()) {
+      target = JustificationTarget::kRubyBase;
     } else {
       DCHECK(line_info.IsRubyText());
       target = JustificationTarget::kRubyText;
