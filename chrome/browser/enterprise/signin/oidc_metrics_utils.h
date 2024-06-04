@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_SIGNIN_OIDC_METRICS_UTILS_H_
 #define CHROME_BROWSER_ENTERPRISE_SIGNIN_OIDC_METRICS_UTILS_H_
 
+#include <optional>
+
 #include "base/time/time.h"
 
 // Steps of the OIDC profile enrolllment flow before profile registration. These
