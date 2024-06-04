@@ -1816,8 +1816,6 @@ chromium-metrics-reviews@google.com.
     <variant name="ImageLayerBridge" summary="ImageLayerBridge sources"/>
     <variant name="PepperGraphics2D" summary="PepperGraphics2D sources"/>
     <variant name="PPBGraphics3D" summary="PPBGraphics3D sources"/>
-    <variant name="SharedElementTransition"
-        summary="SharedElementTransition sources"/>
     <variant name="StaleContent" summary="StaleContent sources"/>
     <variant name="Test" summary="Test sources, which should not be seen,"/>
     <variant name="TileRasterTask" summary="TileRasterTask sources"/>
@@ -1825,6 +1823,7 @@ chromium-metrics-reviews@google.com.
     <variant name="UI" summary="UI sources"/>
     <variant name="Unknown" summary="Unknown sources, which are unexpected,"/>
     <variant name="Video" summary="Video sources"/>
+    <variant name="ViewTransition" summary="ViewTransition sources"/>
     <variant name="WebGPUSwapBuffer" summary="WebGPUSwapBuffer sources"/>
   </token>
 </histogram>

@@ -87,7 +87,7 @@ TransferableResourceTracker::ImportResource(
       resource = TransferableResource::MakeSoftwareSharedBitmap(
           id, gpu::SyncToken(), output_copy.draw_data.size,
           SinglePlaneFormat::kRGBA_8888,
-          TransferableResource::ResourceSource::kSharedElementTransition);
+          TransferableResource::ResourceSource::kViewTransition);
       // Remove the bitmap from shared bitmap manager when no longer in use.
       DCHECK(!output_copy.release_callback);
       release_callback = base::BindOnce(
@@ -105,7 +105,7 @@ TransferableResourceTracker::ImportResource(
         output_copy.mailbox, GL_TEXTURE_2D, output_copy.sync_token,
         output_copy.draw_data.size, SinglePlaneFormat::kRGBA_8888,
         /*is_overlay_candidate=*/false,
-        TransferableResource::ResourceSource::kSharedElementTransition);
+        TransferableResource::ResourceSource::kViewTransition);
     resource.color_space = output_copy.color_space;
   }
 

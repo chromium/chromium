@@ -66,7 +66,7 @@ struct VIZ_COMMON_EXPORT TransferableResource {
     kImageLayerBridge = 6,
     kPPBGraphics3D = 7,
     kPepperGraphics2D = 8,
-    kSharedElementTransition = 9,
+    kViewTransition = 9,
     kStaleContent = 10,
     kTest = 11,
     kTileRasterTask = 12,

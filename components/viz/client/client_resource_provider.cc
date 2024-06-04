@@ -76,10 +76,9 @@ void ReportResourceSourceUsage(TransferableResource::ResourceSource source,
           "Memory.Renderer.EvictedLockedResources.PepperGraphics2D",
           usage_in_kb);
       break;
-    case TransferableResource::ResourceSource::kSharedElementTransition:
+    case TransferableResource::ResourceSource::kViewTransition:
       CustomUmaHistogramMemoryKB(
-          "Memory.Renderer.EvictedLockedResources.SharedElementTransition",
-          usage_in_kb);
+          "Memory.Renderer.EvictedLockedResources.ViewTransition", usage_in_kb);
       break;
     case TransferableResource::ResourceSource::kStaleContent:
       CustomUmaHistogramMemoryKB(
