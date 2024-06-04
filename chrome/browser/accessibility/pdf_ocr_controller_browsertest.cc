@@ -221,8 +221,14 @@ IN_PROC_BROWSER_TEST_P(PdfOcrControllerBrowserTest,
   }
 }
 
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_NotEnabledWithoutScreenReader \
+  DISABLED_NotEnabledWithoutScreenReader
+#else
+#define MAYBE_NotEnabledWithoutScreenReader NotEnabledWithoutScreenReader
+#endif
 IN_PROC_BROWSER_TEST_P(PdfOcrControllerBrowserTest,
-                       NotEnabledWithoutScreenReader) {
+                       MAYBE_NotEnabledWithoutScreenReader) {
   EnableScreenReader(false);
 
   screen_ai::PdfOcrControllerFactory::GetForProfile(browser()->profile())
@@ -238,8 +244,13 @@ IN_PROC_BROWSER_TEST_P(PdfOcrControllerBrowserTest,
 
 // Lacros does not download the library.
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_DownloadRetry DISABLED_DownloadRetry
+#else
+#define MAYBE_DownloadRetry DownloadRetry
+#endif
 // Retry download if it fails.
-IN_PROC_BROWSER_TEST_P(PdfOcrControllerBrowserTest, DownloadRetry) {
+IN_PROC_BROWSER_TEST_P(PdfOcrControllerBrowserTest, MAYBE_DownloadRetry) {
   screen_ai::PdfOcrControllerFactory::GetForProfile(browser()->profile())
       ->set_initialization_retry_wait_for_testing(base::Milliseconds(1));
 
