@@ -91,14 +91,23 @@ public class TabResumptionTileContainerView extends LinearLayout {
                                                 false);
                 addView(divider);
             }
+
+            long recencyMs = bundle.referenceTimeMs - entry.lastActiveTime;
+            TabResumptionModuleMetricsUtils.recordTabRecencyShow(recencyMs);
+            SuggestionClickCallback suggestionClickCallbackWithLogging =
+                    (SuggestionEntry clickedEntry) -> {
+                        TabResumptionModuleMetricsUtils.recordTabRecencyClick(recencyMs);
+                        suggestionClickCallback.onSuggestionClicked(clickedEntry);
+                    };
+
             if (entry.isLocalTab() && isSingle) {
                 allTilesTexts +=
                         loadLocalTabSingle(
                                         this,
                                         entry,
-                                        bundle.referenceTimeMs,
+                                        recencyMs,
                                         urlImageProvider,
-                                        suggestionClickCallback,
+                                        suggestionClickCallbackWithLogging,
                                         clickInfo)
                                 + ". ";
             } else {
@@ -110,15 +119,10 @@ public class TabResumptionTileContainerView extends LinearLayout {
                         (TabResumptionTileView)
                                 LayoutInflater.from(getContext()).inflate(layoutId, this, false);
                 allTilesTexts +=
-                        loadTileTexts(
-                                        entry,
-                                        bundle.referenceTimeMs,
-                                        isSingle,
-                                        tileView,
-                                        useSalientImage)
-                                + ". ";
+                        loadTileTexts(entry, recencyMs, isSingle, tileView, useSalientImage) + ". ";
                 loadTileUrlImage(entry, urlImageProvider, tileView, isSingle, useSalientImage);
-                bindSuggestionClickCallback(tileView, suggestionClickCallback, entry, clickInfo);
+                bindSuggestionClickCallback(
+                        tileView, suggestionClickCallbackWithLogging, entry, clickInfo);
                 addView(tileView);
             }
             ++entryIndex;
@@ -129,14 +133,12 @@ public class TabResumptionTileContainerView extends LinearLayout {
     /** Renders and returns the texts of a {@link TabResumptionTileView}. */
     private String loadTileTexts(
             SuggestionEntry entry,
-            long referenceTimeMs,
+            long recencyMs,
             boolean isSingle,
             TabResumptionTileView tileView,
             boolean useSalientImage) {
         Resources res = getContext().getResources();
-        String recencyString =
-                TabResumptionModuleUtils.getRecencyString(
-                        getResources(), referenceTimeMs - entry.lastActiveTime);
+        String recencyString = TabResumptionModuleUtils.getRecencyString(getResources(), recencyMs);
         if (isSingle) {
             // Single Local Tab suggestion is handled by #loadLocalTabSingle().
             assert !entry.isLocalTab();
@@ -183,15 +185,13 @@ public class TabResumptionTileContainerView extends LinearLayout {
     private String loadLocalTabSingle(
             ViewGroup parentView,
             SuggestionEntry localTabEntry,
-            long referenceTimeMs,
+            long recencyMs,
             UrlImageProvider urlImageProvider,
             SuggestionClickCallback suggestionClickCallback,
             @ClickInfo int clickInfo) {
         assert localTabEntry.isLocalTab();
         Resources res = getContext().getResources();
-        String recencyString =
-                TabResumptionModuleUtils.getRecencyString(
-                        getResources(), referenceTimeMs - localTabEntry.lastActiveTime);
+        String recencyString = TabResumptionModuleUtils.getRecencyString(getResources(), recencyMs);
         LocalTileView tileView =
                 (LocalTileView)
                         LayoutInflater.from(getContext())

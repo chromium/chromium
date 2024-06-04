@@ -154,6 +154,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="MagicStack.Clank.TabResumption.TabRecency.Click" units="ms"
+    expires_after="2024-11-03">
+  <owner>huangs@google.com</owner>
+  <owner>hanxi@google.com</owner>
+  <summary>
+    Records each clicked tile's recency in the Tab Resumption Module.
+    Android-only.
+  </summary>
+</histogram>
+
+<histogram name="MagicStack.Clank.TabResumption.TabRecency.Show" units="ms"
+    expires_after="2024-11-03">
+  <owner>huangs@google.com</owner>
+  <owner>hanxi@google.com</owner>
+  <summary>
+    Records each shown tile's recency in the Tab Resumption Module.
+    Android-only.
+  </summary>
+</histogram>
+
 <histogram
     name="MagicStack.Clank.{ModuleDelegateHost}.ContextMenu.OpenCustomizeSettings"
     enum="ModuleType" expires_after="2024-10-28">
