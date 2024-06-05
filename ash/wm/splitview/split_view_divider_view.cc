@@ -81,9 +81,10 @@ END_METADATA
 // SplitViewDividerView:
 
 SplitViewDividerView::SplitViewDividerView(SplitViewDivider* divider)
-    : divider_(divider),
-      handler_view_(AddChildView(std::make_unique<DividerHandlerView>(
-          IsLayoutHorizontal(divider_->divider_widget()->GetNativeWindow())))) {
+    : divider_(divider) {
+  const bool horizontal = IsLayoutHorizontal(divider_->GetRootWindow());
+  handler_view_ =
+      AddChildView(std::make_unique<DividerHandlerView>(horizontal));
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
 
   SetPaintToLayer(ui::LAYER_TEXTURED);
@@ -97,8 +98,9 @@ SplitViewDividerView::SplitViewDividerView(SplitViewDivider* divider)
   set_allow_deactivate_on_esc(true);
   SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_ASH_SNAP_GROUP_DIVIDER_A11Y_NAME));
-  GetViewAccessibility().SetDescription(
-      l10n_util::GetStringUTF16(IDS_ASH_SNAP_GROUP_DIVIDER_A11Y_DESCRIPTION));
+  GetViewAccessibility().SetDescription(l10n_util::GetStringUTF16(
+      horizontal ? IDS_ASH_SNAP_GROUP_DIVIDER_A11Y_DESCRIPTION_HORIZONTAL
+                 : IDS_ASH_SNAP_GROUP_DIVIDER_A11Y_DESCRIPTION_VERTICAL));
   TooltipTextChanged();
   SetAccessibleRole(ax::mojom::Role::kToolbar);
 
