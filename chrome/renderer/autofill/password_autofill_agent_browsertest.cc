@@ -2721,7 +2721,7 @@ TEST_F(PasswordAutofillAgentTest,
   // user selection; simulates the menu actually popping up.
   SimulatePointClick(gfx::Point(1, 1));
 
-  // No popup when using address/payment manual fallback.
+  // No popup request when using address/payment/plus address manual fallback.
   EXPECT_CALL(fake_driver_, ShowPasswordSuggestions).Times(0);
   autofill_agent_->TriggerSuggestions(
       form_util::GetFieldRendererId(username_element_),
@@ -2729,8 +2729,11 @@ TEST_F(PasswordAutofillAgentTest,
   autofill_agent_->TriggerSuggestions(
       form_util::GetFieldRendererId(username_element_),
       AutofillSuggestionTriggerSource::kManualFallbackPayments);
+  autofill_agent_->TriggerSuggestions(
+      form_util::GetFieldRendererId(username_element_),
+      AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses);
 
-  // However popup is shown otherwise.
+  // However, the popup is requested for password manual fallback.
   EXPECT_CALL(fake_driver_, ShowPasswordSuggestions);
   autofill_agent_->TriggerSuggestions(
       form_util::GetFieldRendererId(username_element_),
