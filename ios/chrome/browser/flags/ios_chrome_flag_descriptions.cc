@@ -678,10 +678,6 @@ const char kIPHiOSSwipeToolbarToChangeTabFeatureDescription[] =
     "Enables displaying the gesture IPH instructing users to swipe the toolbar "
     "to navigate to the previous or next tab in the tab list.";
 
-const char kLensCircleToSearchEnabledName[] = "Lens Circle to Search";
-const char kLensCircleToSearchEnabledDescription[] =
-    "When enabled, circle to search is available in Lens.";
-
 const char kLensWebPageEarlyTransitionEnabledName[] =
     "Lens web page early transition";
 const char kLensWebPageEarlyTransitionEnabledDescription[] =

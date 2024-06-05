@@ -6,10 +6,6 @@
 
 #import "base/metrics/field_trial_params.h"
 
-BASE_FEATURE(kLensCircleToSearchEnabled,
-             "LensCircleToSearchEnabled",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kLensWebPageEarlyTransitionEnabled,
              "LensWebPageEarlyTransitionEnabled",
              base::FEATURE_DISABLED_BY_DEFAULT);

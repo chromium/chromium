@@ -5570,11 +5570,6 @@
     "expiry_milestone": 129
   },
   {
-    "name": "lens-circle-to-search-enabled",
-    "owners": ["cmyang@google.com"],
-    "expiry_milestone": 135
-  },
-  {
     "name": "lens-web-page-early-transition-enabled",
     "owners": ["cmyang@google.com"],
     "expiry_milestone": 135

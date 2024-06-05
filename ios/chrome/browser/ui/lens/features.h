@@ -7,9 +7,6 @@
 
 #import "base/feature_list.h"
 
-// Lens feature, circle to search enabled.
-BASE_DECLARE_FEATURE(kLensCircleToSearchEnabled);
-
 // Whether to enable the early transition from the Lens UI to web page.
 BASE_DECLARE_FEATURE(kLensWebPageEarlyTransitionEnabled);
 

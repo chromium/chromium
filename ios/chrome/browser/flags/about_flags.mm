@@ -1627,10 +1627,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"tab-group-sync", flag_descriptions::kTabGroupSync,
      flag_descriptions::kTabGroupSync, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kTabGroupSync)},
-    {"lens-circle-to-search-enabled",
-     flag_descriptions::kLensCircleToSearchEnabledName,
-     flag_descriptions::kLensCircleToSearchEnabledDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kLensCircleToSearchEnabled)},
     {"autofill-enable-save-card-loading-and-confirmation",
      flag_descriptions::kAutofillEnableSaveCardLoadingAndConfirmationName,
      flag_descriptions::
