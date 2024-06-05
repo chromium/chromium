@@ -1983,6 +1983,18 @@ WebGPUDecoderImpl::AssociateMailboxDawn(
     }
     // Set contents to uncleared.
     shared_image->SetClearedRect(gfx::Rect());
+
+    if (base::FeatureList::IsEnabled(
+            features::kDawnSIRepsUseClientProvidedInternalUsages)) {
+      // Add the RenderAttachment usage as an internal usage, as it is needed on
+      // Vulkan to support lazy internal clearing (see crbug.com/338514133).
+      // NOTE: Even after crbug.com/338514133 is resolved it will almost
+      // certainly still make sense to pass RenderAttachment here to signify to
+      // the SharedImage that this is a write access. In particular, some
+      // SharedImage Dawn representations validate that the passed-in usages
+      // indicate a Dawn write access if the SI is not cleared.
+      internal_usage |= wgpu::TextureUsage::RenderAttachment;
+    }
   }
 
   std::unique_ptr<DawnImageRepresentation::ScopedAccess> scoped_access =
@@ -2030,6 +2042,18 @@ WebGPUDecoderImpl::AssociateMailboxUsingSkiaFallback(
     }
     // Set contents to uncleared.
     shared_image->SetClearedRect(gfx::Rect());
+
+    if (base::FeatureList::IsEnabled(
+            features::kDawnSIRepsUseClientProvidedInternalUsages)) {
+      // Add the RenderAttachment usage as an internal usage, as it is needed on
+      // Vulkan to support lazy internal clearing (see crbug.com/338514133).
+      // NOTE: Even after crbug.com/338514133 is resolved it will almost
+      // certainly still make sense to pass RenderAttachment here to signify to
+      // the SharedImage that this is a write access. In particular, some
+      // SharedImage Dawn representations validate that the passed-in usages
+      // indicate a Dawn write access if the SI is not cleared.
+      internal_usage |= wgpu::TextureUsage::RenderAttachment;
+    }
   }
 
   return SharedImageRepresentationAndAccessSkiaFallback::Create(
