@@ -2035,7 +2035,9 @@ void RenderWidgetHostViewAura::OnDeviceScaleFactorChanged(
   // Sometimes GetDisplayNearestWindow returns the default monitor. We don't
   // want to use that here.
   if (display.is_valid()) {
-    CHECK_EQ(new_device_scale_factor, display.device_scale_factor());
+    // TODO: crbug.com/337612968 - This assumption is not valid, and is probably
+    // causing bugs in other places.
+    DCHECK_EQ(new_device_scale_factor, display.device_scale_factor());
     current_cursor_.SetDisplayInfo(display);
   }
 }
