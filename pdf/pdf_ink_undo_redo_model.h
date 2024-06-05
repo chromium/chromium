@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <set>
 #include <vector>
 
@@ -37,6 +38,9 @@ class PdfInkUndoRedoModel {
 
   using Commands = absl::variant<absl::monostate, DrawCommands, EraseCommands>;
 
+  // Set of IDs used for drawing to discard.
+  using DiscardedDrawCommands = std::set<size_t>;
+
   PdfInkUndoRedoModel();
   PdfInkUndoRedoModel(const PdfInkUndoRedoModel&) = delete;
   PdfInkUndoRedoModel& operator=(const PdfInkUndoRedoModel&) = delete;
@@ -45,16 +49,20 @@ class PdfInkUndoRedoModel {
   // For all Draw / Erase methods:
   // - The expected usage is: 1 StartOp call, any number of Op calls, 1 FinishOp
   //   call.
-  // - Returns true on success. Returns false if any requirements are not met.
+  // - StartOp returns a non-null, but possible empty value on success. Returns
+  //   nullopt if any requirements are not met.
+  // - Op and FinishOp return true on success. Return false if any requirements
+  //   are not met.
   // - Must not return false in production code. Returning false is only allowed
   //   in tests to check failure modes without resorting to death tests.
 
   // Starts recording draw commands. If the current commands stack position is
   // not at the top of the stack, then this discards all entries from the
-  // current position to the top of the stack.
+  // current position to the top of the stack. The caller can discard its
+  // entries with IDs that match the returned values.
   // Must be called before Draw().
   // Must not be called while another draw/erase has been started.
-  [[nodiscard]] bool StartDraw();
+  [[nodiscard]] std::optional<DiscardedDrawCommands> StartDraw();
   // Records drawing a stroke identified by `id`.
   // Must be called between StartDraw() and FinishDraw().
   // `id` must not be on the commands stack.
@@ -65,10 +73,11 @@ class PdfInkUndoRedoModel {
 
   // Starts recording erase commands. If the current commands stack position is
   // not at the top of the stack, then this discards all entries from the
-  // current position to the top of the stack.
+  // current position to the top of the stack. The caller can discard its
+  // entries with IDs that match the returned values.
   // Must be called before Erase().
   // Must not be called while another draw/erase has been started.
-  [[nodiscard]] bool StartErase();
+  [[nodiscard]] std::optional<DiscardedDrawCommands> StartErase();
   // Records erasing a stroke identified by `id`.
   // Must be called between StartErase() and FinishErase().
   // `id` must be in a `DrawCommands` on the commands stack.
@@ -90,7 +99,7 @@ class PdfInkUndoRedoModel {
 
  private:
   template <typename T>
-  bool StartImpl();
+  std::optional<DiscardedDrawCommands> StartImpl();
 
   bool IsAtTopOfStackWithGivenCommandType(CommandsType type) const;
   bool HasIdInDrawCommands(size_t id) const;

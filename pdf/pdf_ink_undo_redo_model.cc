@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <set>
 #include <vector>
 
@@ -35,7 +36,8 @@ PdfInkUndoRedoModel::PdfInkUndoRedoModel() = default;
 
 PdfInkUndoRedoModel::~PdfInkUndoRedoModel() = default;
 
-bool PdfInkUndoRedoModel::StartDraw() {
+std::optional<PdfInkUndoRedoModel::DiscardedDrawCommands>
+PdfInkUndoRedoModel::StartDraw() {
   return StartImpl<DrawCommands>();
 }
 
@@ -77,7 +79,8 @@ bool PdfInkUndoRedoModel::FinishDraw() {
   return true;
 }
 
-bool PdfInkUndoRedoModel::StartErase() {
+std::optional<PdfInkUndoRedoModel::DiscardedDrawCommands>
+PdfInkUndoRedoModel::StartErase() {
   return StartImpl<EraseCommands>();
 }
 
@@ -202,23 +205,46 @@ const PdfInkUndoRedoModel::EraseCommands& PdfInkUndoRedoModel::GetEraseCommands(
 }
 
 template <typename T>
-bool PdfInkUndoRedoModel::StartImpl() {
+std::optional<PdfInkUndoRedoModel::DiscardedDrawCommands>
+PdfInkUndoRedoModel::StartImpl() {
   CHECK(!commands_stack_.empty());
   CHECK_LT(stack_position_, commands_stack_.size());
 
+  DiscardedDrawCommands discarded_commands;
   auto& commands = commands_stack_[stack_position_];
   const bool has_commands = GetCommandsType(commands) != CommandsType::kNone;
   if (stack_position_ == commands_stack_.size() - 1) {
     if (has_commands) {
-      return false;  // Cannot start when drawing/erasing already started.
+      // Cannot start when drawing/erasing already started.
+      return std::nullopt;
     }
   } else {
-    CHECK(has_commands);                          // Invariant 2.
-    commands_stack_.resize(stack_position_ + 1);  // Discard rest of stack.
+    CHECK(has_commands);  // Invariant 2.
+
+    // Record the draw commands to discard.
+    for (size_t i = stack_position_; i < commands_stack_.size(); ++i) {
+      if (GetCommandsType(commands_stack_[i]) == CommandsType::kDraw) {
+        for (size_t id : GetDrawCommands(commands_stack_[i]).value()) {
+          bool inserted = discarded_commands.insert(id).second;
+          CHECK(inserted);
+        }
+      }
+    }
+
+    // Discard rest of stack.
+    //
+    // The vector capacity is never reduced when resizing to smaller size. Thus
+    // references to `commands_stack_` elements are not invalidated and safe to
+    // use.
+    commands_stack_.resize(stack_position_ + 1);
   }
 
-  commands = T();  // Set the top of the stack to the appropriate command type.
-  return true;
+  // Set the top of the stack to the appropriate command type.
+  //
+  // Safe to reuse `commands`, which references an element inside of
+  // `commands_stack_`. See note above the resize() call regarding safety.
+  commands = T();
+  return discarded_commands;
 }
 
 bool PdfInkUndoRedoModel::IsAtTopOfStackWithGivenCommandType(
