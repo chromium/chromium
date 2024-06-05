@@ -14,6 +14,7 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
+#include "base/rand_util.h"
 #include "base/strings/string_util.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
@@ -177,7 +178,9 @@ void CloudFileSystem::AddWatcherOnCachedFileImpl(
             << " attempts";
     return;
   }
-  auto delay = base::Seconds(attempts == 0 ? 0 : 2);
+  // Set a random delay in the interval attempts*[0,2] seconds to stagger
+  // AddWatcher requests.
+  base::TimeDelta delay = attempts * base::Milliseconds(base::RandInt(1, 2000));
   // Notifications are received though Notify() so no notification_callback
   // is needed. Call this function recursively to continuously retry upon
   // FILE_ERROR_SECURITY errors until the max number of attempts have been made.
