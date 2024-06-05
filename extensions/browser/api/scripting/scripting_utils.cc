@@ -24,6 +24,10 @@ constexpr char kFilesExceededSizeLimitError[] =
     "Scripts could not be loaded because '*' exceeds the maximum script size "
     "or the extension's maximum total script size.";
 constexpr char kNonExistentScriptIdError[] = "Nonexistent script ID '*'";
+// Key corresponding to the set of URL patterns from the extension's persistent
+// dynamic content scripts.
+constexpr const char kPrefPersistentScriptURLPatterns[] =
+    "persistent_script_url_patterns";
 constexpr char kReservedScriptIdPrefixError[] =
     "Script's ID '*' must not start with '*'";
 

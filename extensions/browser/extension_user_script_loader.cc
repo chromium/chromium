@@ -75,6 +75,9 @@ enum class ReadScriptContentSource {
   kResouceBundle,
 };
 
+// The key for storing a dynamic content script's id.
+inline constexpr char kId[] = "id";
+
 struct VerifyContentInfo {
   VerifyContentInfo(const scoped_refptr<ContentVerifier>& verifier,
                     const ExtensionId& extension_id,
@@ -394,7 +397,7 @@ ContentScriptDictToSerializedUserScript(const base::Value::Dict& dict) {
     return std::nullopt;  // Bad entry.
   }
 
-  auto* id = dict.FindString(scripting::kId);
+  auto* id = dict.FindString(kId);
   if (!id || id->empty()) {
     return std::nullopt;  // Bad entry.
   }
@@ -851,7 +854,7 @@ void ExtensionUserScriptLoader::DynamicScriptsStorageHelper::SetDynamicScripts(
 
     base::Value::Dict value =
         script_serialization::SerializeUserScript(*script).ToValue();
-    value.Set(scripting::kId, script->id());
+    value.Set(kId, script->id());
 
     scripts_value.Append(std::move(value));
     persistent_patterns.AddPatterns(script->url_patterns());
