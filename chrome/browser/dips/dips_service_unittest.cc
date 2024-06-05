@@ -297,16 +297,16 @@ class DIPSServiceStateRemovalTest : public testing::Test {
                                       ContentSettingsType::COOKIES,
                                       ContentSetting::CONTENT_SETTING_ALLOW);
 
-    EXPECT_EQ(
-        CONTENT_SETTING_BLOCK,
-        GetCookieSettings()->GetCookieSetting(
-            first_party_url.value_or(GURL()), third_party_url.value_or(GURL()),
-            net::CookieSettingOverrides(), nullptr));
-    EXPECT_EQ(
-        CONTENT_SETTING_ALLOW,
-        GetCookieSettings()->GetCookieSetting(
-            third_party_url.value_or(GURL()), first_party_url.value_or(GURL()),
-            net::CookieSettingOverrides(), nullptr));
+    EXPECT_EQ(CONTENT_SETTING_BLOCK,
+              GetCookieSettings()->GetCookieSetting(
+                  first_party_url.value_or(GURL()), net::SiteForCookies(),
+                  third_party_url.value_or(GURL()),
+                  net::CookieSettingOverrides(), nullptr));
+    EXPECT_EQ(CONTENT_SETTING_ALLOW,
+              GetCookieSettings()->GetCookieSetting(
+                  third_party_url.value_or(GURL()), net::SiteForCookies(),
+                  first_party_url.value_or(GURL()),
+                  net::CookieSettingOverrides(), nullptr));
   }
 
  private:

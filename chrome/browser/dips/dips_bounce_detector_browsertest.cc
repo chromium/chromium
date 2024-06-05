@@ -2031,14 +2031,14 @@ IN_PROC_BROWSER_TEST_P(RedirectHeuristicGrantTest,
 
   // Expect some cookie grants on `first_party_url` based on flags and criteria.
   EXPECT_EQ(cookie_settings->GetCookieSetting(
-                aba_current_interaction_url, first_party_url,
-                net::CookieSettingOverrides(), nullptr),
+                aba_current_interaction_url, net::SiteForCookies(),
+                first_party_url, net::CookieSettingOverrides(), nullptr),
             GetParam().write_redirect_grants ? CONTENT_SETTING_ALLOW
                                              : CONTENT_SETTING_BLOCK);
-  EXPECT_EQ(
-      cookie_settings->GetCookieSetting(no_interaction_url, first_party_url,
-                                        net::CookieSettingOverrides(), nullptr),
-      CONTENT_SETTING_BLOCK);
+  EXPECT_EQ(cookie_settings->GetCookieSetting(
+                no_interaction_url, net::SiteForCookies(), first_party_url,
+                net::CookieSettingOverrides(), nullptr),
+            CONTENT_SETTING_BLOCK);
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -2084,15 +2084,15 @@ IN_PROC_BROWSER_TEST_P(
 
   // Expect some cookie grants on `first_party_url` based on flags and criteria.
   EXPECT_EQ(cookie_settings->GetCookieSetting(
-                aba_past_interaction_url, first_party_url,
-                net::CookieSettingOverrides(), nullptr),
+                aba_past_interaction_url, net::SiteForCookies(),
+                first_party_url, net::CookieSettingOverrides(), nullptr),
             (GetParam().write_redirect_grants &&
              !GetParam().require_current_interaction)
                 ? CONTENT_SETTING_ALLOW
                 : CONTENT_SETTING_BLOCK);
   EXPECT_EQ(cookie_settings->GetCookieSetting(
-                no_aba_current_interaction_url, first_party_url,
-                net::CookieSettingOverrides(), nullptr),
+                no_aba_current_interaction_url, net::SiteForCookies(),
+                first_party_url, net::CookieSettingOverrides(), nullptr),
             (GetParam().write_redirect_grants && !GetParam().require_aba_flow)
                 ? CONTENT_SETTING_ALLOW
                 : CONTENT_SETTING_BLOCK);
