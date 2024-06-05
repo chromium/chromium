@@ -28,6 +28,10 @@ const CGFloat kCloseButtonTrailingMargin = 16;
 // Identifier for the one section in this collection view.
 NSString* const kSectionIdentifier = @"section1";
 
+NSString* const kViewAccessibilityIdentifier = @"PanelContentViewAXID";
+
+NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
+
 }  // namespace
 
 @implementation PanelContentViewController {
@@ -54,6 +58,8 @@ NSString* const kSectionIdentifier = @"section1";
 
 - (void)viewDidLoad {
   [super viewDidLoad];
+
+  self.view.accessibilityIdentifier = kViewAccessibilityIdentifier;
 
   [self createBackground];
   [self.view addSubview:_backgroundVisualEffectView];
@@ -90,6 +96,15 @@ NSString* const kSectionIdentifier = @"section1";
         constraintEqualToAnchor:_closeButton.trailingAnchor
                        constant:kCloseButtonTrailingMargin],
   ]];
+
+  // One of UIVisualEffectView's subviews has a white-ish background color,
+  // which is not desired for this feature.
+  for (UIView* subview in _headerView.subviews) {
+    // Replace any non-nil backgrounds with clear.
+    if (subview.backgroundColor) {
+      subview.backgroundColor = UIColor.clearColor;
+    }
+  }
 }
 
 #pragma mark - Public methods
@@ -214,6 +229,7 @@ NSString* const kSectionIdentifier = @"section1";
                 primaryAction:[UIAction actionWithHandler:^(UIAction* action) {
                   [weakSelf closeButtonTapped];
                 }]];
+  _closeButton.accessibilityIdentifier = kCloseButtonAccessibilityIdentifier;
   _closeButton.translatesAutoresizingMaskIntoConstraints = NO;
 }
 
