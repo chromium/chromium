@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.ValueChangedCallback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -229,6 +230,9 @@ class TabListEditorMediator
                 tabs, preSelectedTabCount, recyclerViewPosition, /* quickMode= */ false);
 
         mModel.set(TabListEditorProperties.IS_VISIBLE, true);
+        mModel.set(
+                TabListEditorProperties.TOOLBAR_TITLE,
+                mContext.getString(R.string.tab_selection_editor_toolbar_select_tabs));
         updateColors(mCurrentTabModelFilterSupplier.get().isIncognito());
     }
 
@@ -319,6 +323,11 @@ class TabListEditorMediator
     @Override
     public boolean isVisible() {
         return isEditorVisible();
+    }
+
+    @Override
+    public void setToolbarTitle(String title) {
+        mModel.set(TabListEditorProperties.TOOLBAR_TITLE, title);
     }
 
     @Override

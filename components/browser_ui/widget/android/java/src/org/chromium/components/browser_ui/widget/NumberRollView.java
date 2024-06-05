@@ -27,12 +27,11 @@ public class NumberRollView extends FrameLayout {
     private float mNumber;
     private Animator mLastRollAnimator;
     private int mStringId;
-    private int mStringIdForZero;
+    private String mStringForZero;
 
     /**
-     * A Property wrapper around the <code>number</code> functionality handled by the
-     * {@link NumberRollView#setNumberRoll(float)} and {@link NumberRollView#getNumberRoll()}
-     * methods.
+     * A Property wrapper around the <code>number</code> functionality handled by the {@link
+     * NumberRollView#setNumberRoll(float)} and {@link NumberRollView#getNumberRoll()} methods.
      */
     public static final FloatProperty<NumberRollView> NUMBER_PROPERTY =
             new FloatProperty<NumberRollView>("") {
@@ -91,10 +90,17 @@ public class NumberRollView extends FrameLayout {
 
     /**
      * @param stringIdForZero The id of the string to use for the description when the number is
-     * zero.
+     *     zero.
      */
     public void setStringForZero(int stringIdForZero) {
-        mStringIdForZero = stringIdForZero;
+        mStringForZero = getResources().getString(stringIdForZero);
+    }
+
+    /**
+     * @param string The string to use for the description when the number is 0.
+     */
+    public void setStringForZero(String stringForZero) {
+        mStringForZero = stringForZero;
     }
 
     /** Gets the current number roll position. */
@@ -112,8 +118,8 @@ public class NumberRollView extends FrameLayout {
         String newString;
         if (mStringId != 0) {
             newString =
-                    upNumber == 0 && mStringIdForZero != 0
-                            ? getResources().getString(mStringIdForZero)
+                    (upNumber == 0 && mStringForZero != null)
+                            ? mStringForZero
                             : getResources().getQuantityString(mStringId, upNumber, upNumber);
         } else {
             newString = numberFormatter.format(upNumber);
@@ -124,8 +130,8 @@ public class NumberRollView extends FrameLayout {
 
         if (mStringId != 0) {
             newString =
-                    downNumber == 0 && mStringIdForZero != 0
-                            ? getResources().getString(mStringIdForZero)
+                    (downNumber == 0 && mStringForZero != null)
+                            ? mStringForZero
                             : getResources().getQuantityString(mStringId, downNumber, downNumber);
         } else {
             newString = numberFormatter.format(downNumber);

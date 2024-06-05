@@ -176,6 +176,21 @@ public class ClosableTabListEditorTest {
         mRobot.resultRobot.verifyTabListEditorIsVisible();
     }
 
+    @Test
+    @MediumTest
+    public void testCustomToolbarTitle() {
+        prepareBlankTab(2, false);
+        List<Tab> tabs = getTabsInCurrentTabModel();
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTabListEditorController.show(tabs, 0, /* recyclerViewPosition= */ null);
+                    mTabListEditorController.setToolbarTitle("testing");
+                });
+
+        mRobot.resultRobot.verifyTabListEditorIsVisible().verifyToolbarSelectionText("testing");
+    }
+
     /** Retrieves all tabs from the current tab model */
     private List<Tab> getTabsInCurrentTabModel() {
         List<Tab> tabs = new ArrayList<>();

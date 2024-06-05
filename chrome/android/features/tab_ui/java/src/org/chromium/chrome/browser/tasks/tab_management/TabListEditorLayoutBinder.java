@@ -43,6 +43,8 @@ public class TabListEditorLayoutBinder {
             view.getToolbar()
                     .setRelatedTabCountProvider(
                             model.get(TabListEditorProperties.RELATED_TAB_COUNT_PROVIDER));
+        } else if (TabListEditorProperties.TOOLBAR_TITLE == propertyKey) {
+            view.getToolbar().setTitle(model.get(TabListEditorProperties.TOOLBAR_TITLE));
         }
     }
 }

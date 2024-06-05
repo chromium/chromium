@@ -104,6 +104,9 @@ class TabListEditorCoordinator {
          * @return Whether the TabListEditor is visible.
          */
         boolean isVisible();
+
+        /** Sets the toolbar title when no items are selected. */
+        void setToolbarTitle(String title);
     }
 
     /** Provider of action for the navigation button in {@link TabListEditorMediator}. */
@@ -156,6 +159,11 @@ class TabListEditorCoordinator {
                 @Override
                 public boolean isVisible() {
                     return mTabListEditorMediator.isVisible();
+                }
+
+                @Override
+                public void setToolbarTitle(String title) {
+                    mTabListEditorMediator.setToolbarTitle(title);
                 }
 
                 @Override

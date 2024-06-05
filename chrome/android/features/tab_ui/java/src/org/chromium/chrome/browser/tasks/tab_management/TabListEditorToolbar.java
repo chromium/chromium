@@ -51,10 +51,10 @@ class TabListEditorToolbar extends SelectableListToolbar<Integer> {
         super.onFinishInflate();
 
         showNavigationButton();
-        mActionViewLayout =
-                (TabListEditorActionViewLayout) findViewById(R.id.action_view_layout);
+        mActionViewLayout = (TabListEditorActionViewLayout) findViewById(R.id.action_view_layout);
         mMenuButton = (ChromeImageButton) findViewById(R.id.list_menu_button);
 
+        // Can be overridden by #setToolbarTitle.
         mNumberRollView.setStringForZero(R.string.tab_selection_editor_toolbar_select_tabs);
         mNumberRollView.setString(R.plurals.tab_selection_editor_tabs_count);
 
@@ -149,5 +149,10 @@ class TabListEditorToolbar extends SelectableListToolbar<Integer> {
      */
     public void setRelatedTabCountProvider(RelatedTabCountProvider relatedTabCountProvider) {
         mRelatedTabCountProvider = relatedTabCountProvider;
+    }
+
+    /** Set the title of the toolbar when no tabs are selected. */
+    public void setTitle(String title) {
+        mNumberRollView.setStringForZero(title);
     }
 }
