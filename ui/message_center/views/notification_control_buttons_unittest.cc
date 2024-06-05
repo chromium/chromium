@@ -56,7 +56,8 @@ class NotificationControlButtonsTest : public views::ViewsTestBase {
   // views::ViewsTestBase:
   void SetUp() override {
     views::ViewsTestBase::SetUp();
-    widget_ = CreateTestWidget();
+    widget_ =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     Notification notification(
         NOTIFICATION_TYPE_SIMPLE, "id", u"title", u"id", ui::ImageModel(),
         std::u16string(), GURL(),

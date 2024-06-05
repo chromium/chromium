@@ -24,7 +24,8 @@ class ResizeConfirmationDialogViewTest : public CompatModeTestBase {
   // CompatModeTestBase:
   void SetUp() override {
     CompatModeTestBase::SetUp();
-    widget_ = CreateTestWidget();
+    widget_ =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     widget_->SetBounds(gfx::Rect(800, 800));
     parent_widget_ = CreateArcWidget(/*app_id=*/"123");
     dialog_view_ =

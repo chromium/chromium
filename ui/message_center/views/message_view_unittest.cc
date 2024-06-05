@@ -57,7 +57,8 @@ class MessageViewTest : public views::ViewsTestBase {
         NotifierId(), RichNotificationData(), /*delegate=*/nullptr);
 
     // `widget_` owns `message_view_`.
-    widget_ = CreateTestWidget();
+    widget_ =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     message_view_ = widget_->SetContentsView(
         std::make_unique<TestMessageView>(*notification_.get()));
     widget_->Show();
