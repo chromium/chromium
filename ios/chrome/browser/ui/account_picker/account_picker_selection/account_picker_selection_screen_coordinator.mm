@@ -14,7 +14,6 @@
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
-#import "ios/chrome/browser/ui/account_picker/account_picker_logger.h"
 #import "ios/chrome/browser/ui/account_picker/account_picker_selection/account_picker_selection_screen_mediator.h"
 #import "ios/chrome/browser/ui/account_picker/account_picker_selection/account_picker_selection_screen_table_view_controller_action_delegate.h"
 #import "ios/chrome/browser/ui/account_picker/account_picker_selection/account_picker_selection_screen_view_controller.h"
@@ -33,7 +32,6 @@
 
 - (void)startWithSelectedIdentity:(id<SystemIdentity>)selectedIdentity {
   [super start];
-  [_logger logAccountPickerSelectionScreenOpened];
   _mediator = [[AccountPickerSelectionScreenMediator alloc]
       initWithSelectedIdentity:selectedIdentity
          accountManagerService:ChromeAccountManagerServiceFactory::
@@ -54,8 +52,6 @@
   [_mediator disconnect];
   _mediator = nil;
   _accountListViewController = nil;
-  [_logger logAccountPickerSelectionScreenClosed];
-  _logger = nil;
 }
 
 - (void)dealloc {

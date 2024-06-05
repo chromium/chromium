@@ -23812,6 +23812,106 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileSaveToDriveAccountPickerAddAccountCompleted">
+  <owner>qpubert@google.com</owner>
+  <owner>olivierrobin@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <description>
+    Reported when the user successfully added an account in the Save to Drive
+    account selection screen in the account picker. iOS only.
+  </description>
+</action>
+
+<action name="MobileSaveToDriveAccountPickerAddAccountScreenOpened">
+  <owner>qpubert@google.com</owner>
+  <owner>olivierrobin@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <description>
+    Reported when the user taps &quot;Add Account...&quot; in the Save to Drive
+    account selection screen in the account picker. iOS only.
+  </description>
+</action>
+
+<action name="MobileSaveToDriveAccountPickerNewIdentitySelected">
+  <owner>qpubert@google.com</owner>
+  <owner>olivierrobin@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <description>
+    Reported when the user selects a different identity in the Save to Drive
+    account selection screen in the account picker. iOS only.
+  </description>
+</action>
+
+<action name="MobileSaveToDriveAccountPickerSelectionScreenClosed">
+  <owner>qpubert@google.com</owner>
+  <owner>olivierrobin@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <description>
+    Reported when the user closes the Save to Drive account selection screen in
+    the account picker using the &quot;Back&quot; button. iOS only.
+  </description>
+</action>
+
+<action name="MobileSaveToDriveAccountPickerSelectionScreenOpened">
+  <owner>qpubert@google.com</owner>
+  <owner>olivierrobin@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <description>
+    Reported when the user opens the Save to Drive account selection screen in
+    the account picker. iOS only.
+  </description>
+</action>
+
+<action name="MobileSaveToPhotosAccountPickerAddAccountCompleted">
+  <owner>qpubert@google.com</owner>
+  <owner>olivierrobin@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <description>
+    Reported when the user successfully added an account in the Save to Photos
+    account selection screen in the account picker. iOS only.
+  </description>
+</action>
+
+<action name="MobileSaveToPhotosAccountPickerAddAccountScreenOpened">
+  <owner>qpubert@google.com</owner>
+  <owner>olivierrobin@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <description>
+    Reported when the user taps &quot;Add Account...&quot; in the Save to Photos
+    account selection screen in the account picker. iOS only.
+  </description>
+</action>
+
+<action name="MobileSaveToPhotosAccountPickerNewIdentitySelected">
+  <owner>qpubert@google.com</owner>
+  <owner>olivierrobin@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <description>
+    Reported when the user selects a different identity in the Save to Photos
+    account selection screen in the account picker. iOS only.
+  </description>
+</action>
+
+<action name="MobileSaveToPhotosAccountPickerSelectionScreenClosed">
+  <owner>qpubert@google.com</owner>
+  <owner>olivierrobin@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <description>
+    Reported when the user closes the Save to Photos account selection screen in
+    the account picker using the &quot;Back&quot; button. iOS only.
+  </description>
+</action>
+
+<action name="MobileSaveToPhotosAccountPickerSelectionScreenOpened">
+  <owner>qpubert@google.com</owner>
+  <owner>olivierrobin@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <description>
+    Reported when the user opens the Save to Photos account selection screen in
+    the account picker. iOS only.
+  </description>
+</action>
+
 <action name="MobileSaveToPhotosManageStorage">
   <owner>qpubert@google.com</owner>
   <owner>olivierrobin@google.com</owner>

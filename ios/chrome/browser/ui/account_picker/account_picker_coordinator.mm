@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/ui/account_picker/account_picker_confirmation/account_picker_confirmation_screen_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/account_picker/account_picker_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/account_picker/account_picker_layout_delegate.h"
+#import "ios/chrome/browser/ui/account_picker/account_picker_logger.h"
 #import "ios/chrome/browser/ui/account_picker/account_picker_screen/account_picker_screen_navigation_controller.h"
 #import "ios/chrome/browser/ui/account_picker/account_picker_screen/account_picker_screen_presentation_controller.h"
 #import "ios/chrome/browser/ui/account_picker/account_picker_screen/account_picker_screen_slide_transition_animator.h"
@@ -163,6 +164,7 @@
     return;
   }
   _accountPickerConfirmationScreenCoordinator.selectedIdentity = identity;
+  [self.logger logAccountPickerAddAccountCompleted];
 }
 
 // Opens an AddAccountSigninCoordinator to add an account to the device.
@@ -172,6 +174,7 @@
              openAddAccountWithCompletion:^(id<SystemIdentity> identity) {
                [weakSelf addAccountCompletionWithIdentity:identity];
              }];
+  [self.logger logAccountPickerAddAccountScreenOpened];
 }
 
 // Starts the validation flow.
@@ -234,6 +237,7 @@
     // AccountChooserCoordinator has been removed by "Back" button.
     [_accountPickerSelectionScreenCoordinator stop];
     _accountPickerSelectionScreenCoordinator = nil;
+    [self.logger logAccountPickerSelectionScreenClosed];
   }
 }
 
@@ -241,6 +245,10 @@
 
 - (void)accountPickerSelectionScreenCoordinatorIdentitySelected:
     (AccountPickerSelectionScreenCoordinator*)coordinator {
+  if (_accountPickerSelectionScreenCoordinator.selectedIdentity !=
+      _accountPickerConfirmationScreenCoordinator.selectedIdentity) {
+    [self.logger logAccountPickerNewIdentitySelected];
+  }
   _accountPickerConfirmationScreenCoordinator.selectedIdentity =
       _accountPickerSelectionScreenCoordinator.selectedIdentity;
   [_accountPickerSelectionScreenCoordinator stop];
@@ -283,6 +291,7 @@
   [_navigationController
       pushViewController:_accountPickerSelectionScreenCoordinator.viewController
                 animated:YES];
+  [self.logger logAccountPickerSelectionScreenOpened];
 }
 
 - (void)accountPickerConfirmationScreenCoordinatorSubmit:

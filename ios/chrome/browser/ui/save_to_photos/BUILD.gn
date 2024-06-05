@@ -30,6 +30,7 @@ source_set("save_to_photos") {
     "//ios/chrome/browser/store_kit/model",
     "//ios/chrome/browser/ui/account_picker",
     "//ios/chrome/browser/ui/account_picker:account_picker_configuration",
+    "//ios/chrome/browser/ui/account_picker:account_picker_logger",
     "//ios/chrome/browser/ui/authentication/signin:constants",
     "//ios/chrome/browser/ui/authentication/signin:signin_headers",
     "//ios/chrome/browser/web/model/image_fetch",

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/save_to_drive/save_to_drive_coordinator.h"
 
 #import "base/metrics/histogram_functions.h"
+#import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/download/model/download_manager_tab_helper.h"
@@ -23,6 +24,7 @@
 #import "ios/chrome/browser/ui/account_picker/account_picker_configuration.h"
 #import "ios/chrome/browser/ui/account_picker/account_picker_coordinator.h"
 #import "ios/chrome/browser/ui/account_picker/account_picker_coordinator_delegate.h"
+#import "ios/chrome/browser/ui/account_picker/account_picker_logger.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_completion_info.h"
 #import "ios/chrome/browser/ui/save_to_drive/file_destination_picker_view_controller.h"
 #import "ios/chrome/browser/ui/save_to_drive/save_to_drive_mediator.h"
@@ -34,6 +36,7 @@
 
 @interface SaveToDriveCoordinator () <AccountPickerCommands,
                                       AccountPickerCoordinatorDelegate,
+                                      AccountPickerLogger,
                                       ManageStorageAlertCommands>
 
 @end
@@ -97,6 +100,7 @@
                          browser:self.browser
                    configuration:accountPickerConfiguration];
   _accountPickerCoordinator.delegate = self;
+  _accountPickerCoordinator.logger = self;
   _destinationPicker = [[FileDestinationPickerViewController alloc] init];
   _accountPickerCoordinator.accountConfirmationChildViewController =
       _destinationPicker;
@@ -171,6 +175,33 @@
   id<SaveToDriveCommands> saveToDriveCommandsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), SaveToDriveCommands);
   [saveToDriveCommandsHandler hideSaveToDrive];
+}
+
+#pragma mark - AccountPickerLogger
+
+- (void)logAccountPickerSelectionScreenOpened {
+  base::RecordAction(base::UserMetricsAction(
+      "MobileSaveToDriveAccountPickerSelectionScreenOpened"));
+}
+
+- (void)logAccountPickerNewIdentitySelected {
+  base::RecordAction(base::UserMetricsAction(
+      "MobileSaveToDriveAccountPickerNewIdentitySelected"));
+}
+
+- (void)logAccountPickerSelectionScreenClosed {
+  base::RecordAction(base::UserMetricsAction(
+      "MobileSaveToDriveAccountPickerSelectionScreenClosed"));
+}
+
+- (void)logAccountPickerAddAccountScreenOpened {
+  base::RecordAction(base::UserMetricsAction(
+      "MobileSaveToDriveAccountPickerAddAccountScreenOpened"));
+}
+
+- (void)logAccountPickerAddAccountCompleted {
+  base::RecordAction(base::UserMetricsAction(
+      "MobileSaveToDriveAccountPickerAddAccountCompleted"));
 }
 
 #pragma mark - ManageStorageAlertCommands

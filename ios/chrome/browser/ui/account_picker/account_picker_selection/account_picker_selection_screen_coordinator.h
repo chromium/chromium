@@ -35,7 +35,6 @@
 @property(nonatomic, weak) id<AccountPickerSelectionScreenCoordinatorDelegate>
     delegate;
 @property(nonatomic, weak) id<AccountPickerLayoutDelegate> layoutDelegate;
-@property(nonatomic, weak) id<AccountPickerLogger> logger;
 
 - (void)start NS_UNAVAILABLE;
 // Starts the coordinator with the selected identity.

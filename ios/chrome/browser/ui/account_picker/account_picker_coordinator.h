@@ -11,6 +11,7 @@
 
 @class AccountPickerConfiguration;
 @protocol AccountPickerCoordinatorDelegate;
+@protocol AccountPickerLogger;
 @protocol SystemIdentity;
 
 // Presents a bottom sheet that lets the user pick or add an account on the
@@ -18,6 +19,8 @@
 @interface AccountPickerCoordinator : ChromeCoordinator <AccountPickerConsumer>
 
 @property(nonatomic, weak) id<AccountPickerCoordinatorDelegate> delegate;
+
+@property(nonatomic, weak) id<AccountPickerLogger> logger;
 
 // View controller presented by the coordinator. Can be used to present a view
 // on top of the account picker e.g. the AddAccountSigninCoordinator's view.

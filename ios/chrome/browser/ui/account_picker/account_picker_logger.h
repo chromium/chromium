@@ -13,8 +13,19 @@
 // Called when the account picker list is opened.
 - (void)logAccountPickerSelectionScreenOpened;
 
-// Called when the account picker list is closed.
+// Called when the user selected an identity in the account picker selection
+// screen, that is different from the initially selected identity.
+- (void)logAccountPickerNewIdentitySelected;
+
+// Called when the account picker list is closed using the "Back" button.
 - (void)logAccountPickerSelectionScreenClosed;
+
+// Called when the user Add Account UI is opened.
+- (void)logAccountPickerAddAccountScreenOpened;
+
+// Called when the user completed adding an account on the device using the
+// account picker.
+- (void)logAccountPickerAddAccountCompleted;
 
 @end
 

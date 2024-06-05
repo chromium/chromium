@@ -12,6 +12,7 @@ source_set("account_picker") {
     ":account_picker_configuration",
     ":account_picker_consumer",
     ":account_picker_layout",
+    ":account_picker_logger",
     "//components/prefs",
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager/objc",
