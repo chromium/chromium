@@ -135,7 +135,7 @@ void PlusAddressSettingSyncBridge::GetAllDataForDebugging(
 bool PlusAddressSettingSyncBridge::IsEntityDataValid(
     const syncer::EntityData& entity_data) const {
   CHECK(entity_data.specifics.has_plus_address_setting());
-  const sync_pb::PlusAddressSettingSpecifics specifics =
+  const sync_pb::PlusAddressSettingSpecifics& specifics =
       entity_data.specifics.plus_address_setting();
   return specifics.has_name() && !specifics.name().empty();
 }
