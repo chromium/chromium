@@ -284883,7 +284883,7 @@
        ]
       ],
       "non-scaling-stroke-002.html": [
-       "b236ef3477372187e13a8441e59667c3ff304273",
+       "bdb31c286097825c0af01d990a4019d6242bf2c8",
        [
         null,
         [
@@ -361055,6 +361055,14 @@
        ],
        "close_beforeunload-1.html": [
         "6f44d8a83ecade23c4b02707c56981d25ed62811",
+        []
+       ],
+       "close_noopener_beforeunload-1.html": [
+        "fc114bc443e500819487efc92f9e1042c2dcfa60",
+        []
+       ],
+       "close_noopener_beforeunload-2.html": [
+        "4cce1e2e6f7dd058ed0129abb2a14e5f879aa340",
         []
        ],
        "close_pagehide-1.html": [
@@ -544628,6 +544636,13 @@
       "open-close": {
        "close_beforeunload.html": [
         "dcb8830ab68d5dacc701105eb01f6084aeec9507",
+        [
+         null,
+         {}
+        ]
+       ],
+       "close_noopener_beforeunload.html": [
+        "6862a70b8c1489a1d6ab8450cc01772d753fbe4d",
         [
          null,
          {}
