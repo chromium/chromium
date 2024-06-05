@@ -24528,6 +24528,27 @@
             ]
         }
     ],
+    "WebViewSurfaceControlForTV": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "RelaxLimitAImageReaderMaxSizeToOneBlocklist": "*Broadcom*|*Google*",
+                        "RelaxLimitAImageReaderMaxSizeToOneManufacturerBlocklist": "*Google*",
+                        "RelaxLimitAImageReaderMaxSizeToOneSoCBlocklist": "*Broadcom*"
+                    },
+                    "enable_features": [
+                        "RelaxLimitAImageReaderMaxSizeToOne",
+                        "WebViewSurfaceControlForTV"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebViewThreadReduction": [
         {
             "platforms": [

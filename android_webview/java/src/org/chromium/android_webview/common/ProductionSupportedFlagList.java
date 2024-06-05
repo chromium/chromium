@@ -157,6 +157,10 @@ public final class ProductionSupportedFlagList {
                 "Use SurfaceControl. Requires WebViewThreadSafeMedia and Android device and OS "
                         + "support. Only supported on TV."),
         Flag.baseFeature(
+                GpuFeatures.RELAX_LIMIT_A_IMAGE_READER_MAX_SIZE_TO_ONE,
+                "Allow more than 1 buffer from AImageReader on the specific set of devices. "
+                        + "Only supported on TV."),
+        Flag.baseFeature(
                 GpuFeatures.WEBVIEW_THREAD_SAFE_MEDIA,
                 "Use thread-safe media path, requires Android P."),
         Flag.baseFeature(
