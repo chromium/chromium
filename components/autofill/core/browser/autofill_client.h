@@ -481,11 +481,7 @@ class AutofillClient {
   virtual payments::MandatoryReauthManager*
   GetOrCreatePaymentsMandatoryReauthManager();
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  // Hides the virtual card enroll bubble and icon if it is visible.
-  virtual void HideVirtualCardEnrollBubbleAndIconIfVisible();
-
-#else  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // Display the cardholder name fix flow prompt and run the |callback| if
   // the card should be uploaded to payments with updated name from the user.
   virtual void ConfirmAccountNameFixFlow(
@@ -498,7 +494,7 @@ class AutofillClient {
       const CreditCard& card,
       base::OnceCallback<void(const std::u16string&, const std::u16string&)>
           callback);
-#endif
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
   // Runs |callback| once the user makes a decision with respect to the
   // offer-to-save prompt. This includes both the save local card prompt and the

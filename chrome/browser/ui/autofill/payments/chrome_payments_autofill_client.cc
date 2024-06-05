@@ -192,6 +192,17 @@ bool ChromePaymentsAutofillClient::CloseWebauthnDialog() {
 
   return false;
 }
+
+void ChromePaymentsAutofillClient::
+    HideVirtualCardEnrollBubbleAndIconIfVisible() {
+  VirtualCardEnrollBubbleControllerImpl::CreateForWebContents(web_contents());
+  VirtualCardEnrollBubbleControllerImpl* controller =
+      VirtualCardEnrollBubbleControllerImpl::FromWebContents(web_contents());
+
+  if (controller && controller->IsIconVisible()) {
+    controller->HideIconAndBubble();
+  }
+}
 #endif  // BUILDFLAG(IS_ANDROID)
 
 void ChromePaymentsAutofillClient::CreditCardUploadCompleted(

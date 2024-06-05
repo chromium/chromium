@@ -146,6 +146,9 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // Will close the current visible WebAuthn dialog. Returns true if dialog was
   // visible and has been closed.
   virtual bool CloseWebauthnDialog();
+
+  // Hides the virtual card enroll bubble and icon if it is visible.
+  virtual void HideVirtualCardEnrollBubbleAndIconIfVisible();
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // Shows upload result to users. Called after credit card upload is finished.

@@ -52,6 +52,8 @@ void PaymentsAutofillClient::UpdateWebauthnOfferDialogWithError() {}
 bool PaymentsAutofillClient::CloseWebauthnDialog() {
   return false;
 }
+
+void PaymentsAutofillClient::HideVirtualCardEnrollBubbleAndIconIfVisible() {}
 #endif  // BUILDFLAG(IS_ANDROID)
 
 void PaymentsAutofillClient::CreditCardUploadCompleted(

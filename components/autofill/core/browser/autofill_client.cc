@@ -112,11 +112,7 @@ AutofillClient::GetOrCreatePaymentsMandatoryReauthManager() {
   return nullptr;
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-void AutofillClient::HideVirtualCardEnrollBubbleAndIconIfVisible() {
-}
-
-#else
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 void AutofillClient::ConfirmAccountNameFixFlow(
     base::OnceCallback<void(const std::u16string&)> callback) {
 }

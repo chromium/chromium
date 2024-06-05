@@ -131,9 +131,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   void ShowAutofillSettings(FillingProduct main_filling_product) override;
   payments::MandatoryReauthManager* GetOrCreatePaymentsMandatoryReauthManager()
       override;
-#if !BUILDFLAG(IS_ANDROID)
-  void HideVirtualCardEnrollBubbleAndIconIfVisible() override;
-#else  // !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void ConfirmAccountNameFixFlow(
       base::OnceCallback<void(const std::u16string&)> callback) override;
   void ConfirmExpirationDateFixFlow(

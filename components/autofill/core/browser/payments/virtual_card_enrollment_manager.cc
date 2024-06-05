@@ -518,7 +518,8 @@ void VirtualCardEnrollmentManager::SetInitialVirtualCardEnrollFields(
   // Hide the bubble and icon if it is already showing for a previous enrollment
   // bubble.
   DCHECK(autofill_client_);
-  autofill_client_->HideVirtualCardEnrollBubbleAndIconIfVisible();
+  autofill_client_->GetPaymentsAutofillClient()
+      ->HideVirtualCardEnrollBubbleAndIconIfVisible();
 #endif
 
   state_.virtual_card_enrollment_fields.credit_card = credit_card;

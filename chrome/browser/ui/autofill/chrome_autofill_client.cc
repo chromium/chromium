@@ -51,7 +51,6 @@
 #include "chrome/browser/ui/autofill/payments/chrome_payments_autofill_client.h"
 #include "chrome/browser/ui/autofill/payments/credit_card_scanner_controller.h"
 #include "chrome/browser/ui/autofill/payments/view_factory.h"
-#include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/popup_controller_common.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -518,16 +517,7 @@ ChromeAutofillClient::GetOrCreatePaymentsMandatoryReauthManager() {
   return payments_mandatory_reauth_manager_.get();
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-void ChromeAutofillClient::HideVirtualCardEnrollBubbleAndIconIfVisible() {
-  VirtualCardEnrollBubbleControllerImpl::CreateForWebContents(web_contents());
-  VirtualCardEnrollBubbleControllerImpl* controller =
-      VirtualCardEnrollBubbleControllerImpl::FromWebContents(web_contents());
-
-  if (controller && controller->IsIconVisible())
-    controller->HideIconAndBubble();
-}
-#else  // BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void ChromeAutofillClient::ConfirmAccountNameFixFlow(
     base::OnceCallback<void(const std::u16string&)> callback) {
   CardNameFixFlowViewAndroid* card_name_fix_flow_view_android =
@@ -620,7 +610,7 @@ void ChromeAutofillClient::ConfirmSaveCreditCardToCloud(
   }
 #else
   // Hide virtual card confirmation bubble showing for a different card.
-  HideVirtualCardEnrollBubbleAndIconIfVisible();
+  GetPaymentsAutofillClient()->HideVirtualCardEnrollBubbleAndIconIfVisible();
 
   // Do lazy initialization of SaveCardBubbleControllerImpl.
   SaveCardBubbleControllerImpl::CreateForWebContents(web_contents());
