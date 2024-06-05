@@ -35,5 +35,11 @@ This is a testharness.js-based test.
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported data type int64 for input operand indices"
 [FAIL] gather float32 5D tensor and 0D scalar indices options.axis=4
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported data type int64 for input operand indices"
+[FAIL] gather float32 2D tensor and int32 0D negative indices default options
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'compute' on 'MLContext': Error computing results"
+[FAIL] gather float32 2D tensor and int32 0D out-of-bound positive indices default options
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'compute' on 'MLContext': Error computing results"
+[FAIL] gather float32 2D tensor and int32 0D out-of-bound negative indices default options
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'compute' on 'MLContext': Error computing results"
 Harness: the test ran to completion.
 
