@@ -291,22 +291,20 @@ NSString* const kAuthenticationSnackbarCategory =
   // type.
   BOOL bookmarksToggleEnabledWithSigninFlow = NO;
   BOOL readingListToggleEnabledWithSigninFlow = NO;
-  if (base::FeatureList::IsEnabled(kEnableReviewAccountSettingsPromo)) {
-    if (postSignInActions.Has(
-            PostSignInAction::kEnableUserSelectableTypeBookmarks) &&
-        !syncService->GetUserSettings()->GetSelectedTypes().Has(
-            syncer::UserSelectableType::kBookmarks)) {
-      syncService->GetUserSettings()->SetSelectedType(
-          syncer::UserSelectableType::kBookmarks, true);
-      bookmarksToggleEnabledWithSigninFlow = YES;
-    } else if (postSignInActions.Has(
-                   PostSignInAction::kEnableUserSelectableTypeReadingList) &&
-               !syncService->GetUserSettings()->GetSelectedTypes().Has(
-                   syncer::UserSelectableType::kReadingList)) {
-      syncService->GetUserSettings()->SetSelectedType(
-          syncer::UserSelectableType::kReadingList, true);
-      readingListToggleEnabledWithSigninFlow = YES;
-    }
+  if (postSignInActions.Has(
+          PostSignInAction::kEnableUserSelectableTypeBookmarks) &&
+      !syncService->GetUserSettings()->GetSelectedTypes().Has(
+          syncer::UserSelectableType::kBookmarks)) {
+    syncService->GetUserSettings()->SetSelectedType(
+        syncer::UserSelectableType::kBookmarks, true);
+    bookmarksToggleEnabledWithSigninFlow = YES;
+  } else if (postSignInActions.Has(
+                 PostSignInAction::kEnableUserSelectableTypeReadingList) &&
+             !syncService->GetUserSettings()->GetSelectedTypes().Has(
+                 syncer::UserSelectableType::kReadingList)) {
+    syncService->GetUserSettings()->SetSelectedType(
+        syncer::UserSelectableType::kReadingList, true);
+    readingListToggleEnabledWithSigninFlow = YES;
   }
 
   if (!postSignInActions.Has(PostSignInAction::kShowSnackbar)) {

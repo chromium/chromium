@@ -337,10 +337,6 @@ BASE_FEATURE(kEnableBatchUploadFromBookmarksManager,
              "EnableBatchUploadFromBookmarksManager",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableReviewAccountSettingsPromo,
-             "EnableReviewAccountSettingsPromo",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kLinkAccountSettingsToPrivacyFooter,
              "LinkAccountSettingsToPrivacyFooter",
              base::FEATURE_ENABLED_BY_DEFAULT);

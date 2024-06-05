@@ -610,7 +610,6 @@
       _syncService->GetUserSettings()->GetSelectedTypes().Has(
           syncer::UserSelectableType::kReadingList);
   if (hasPrimaryAccount &&
-      base::FeatureList::IsEnabled(kEnableReviewAccountSettingsPromo) &&
       !isReadingListSynced) {
     signinPromoAction = SigninPromoAction::kReviewAccountSettings;
   }

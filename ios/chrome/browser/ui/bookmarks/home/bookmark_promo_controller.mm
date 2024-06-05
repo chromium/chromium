@@ -126,8 +126,7 @@
     // If the user is already syncing, the promo should not be visible.
     self.shouldShowSigninPromo = NO;
     return;
-  } else if (base::FeatureList::IsEnabled(kEnableReviewAccountSettingsPromo) &&
-             !bookmark_utils_ios::IsAccountBookmarkStorageOptedIn(
+  } else if (!bookmark_utils_ios::IsAccountBookmarkStorageOptedIn(
                  syncService)) {
     if (self.shouldShowSigninPromo &&
         _signinPromoViewMediator.signinPromoAction !=

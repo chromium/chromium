@@ -462,26 +462,6 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 @synthesize serverRespondsWithContent = _serverRespondsWithContent;
 @synthesize serverResponseDelay = _serverResponseDelay;
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-
-  if ([self isRunningTest:@selector
-            (testReviewAccountSettingsPromoWithReadingListToggleDisabled)] ||
-      [self isRunningTest:@selector
-            (testAccountSettingsPromoIfSyncToSigninEnabledWithReadingListOn)] ||
-      [self isRunningTest:@selector
-            (testAccountSettingsViewedFroReadingListManager)] ||
-      [self isRunningTest:@selector
-            (testSignOutFromAccountSettingsFromReadingListManager)] ||
-      [self isRunningTest:@selector(testNoReviewAccountSettingsPromo)] ||
-      [self isRunningTest:@selector(testUndoSignInTypeDisabled)] ||
-      [self isRunningTest:@selector(testUndoSignInTypeEnabled)]) {
-    config.features_enabled.push_back(kEnableReviewAccountSettingsPromo);
-  }
-
-  return config;
-}
-
 - (void)setUp {
   [super setUp];
   GREYAssertNil([ReadingListAppInterface clearEntries],

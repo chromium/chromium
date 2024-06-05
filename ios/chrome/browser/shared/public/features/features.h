@@ -331,10 +331,6 @@ BASE_DECLARE_FEATURE(kHistoryOptInForRestoreShortyAndReSignin);
 // Enables batch upload entry point from the Bookmarks Manager.
 BASE_DECLARE_FEATURE(kEnableBatchUploadFromBookmarksManager);
 
-// Enables the promo in the Bookmarks Manager or Reading Lists Manager to review
-// account settings when these types are disabled.
-BASE_DECLARE_FEATURE(kEnableReviewAccountSettingsPromo);
-
 // Enables linking account settings in the Privacy Settings page footer for
 // signed in non syncing users.
 BASE_DECLARE_FEATURE(kLinkAccountSettingsToPrivacyFooter);
