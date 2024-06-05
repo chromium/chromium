@@ -607,7 +607,7 @@ bool ArcSupportHost::Initialize() {
         l10n_util::GetStringFUTF16(
             is_child ? IDS_CROS_OPT_IN_LEARN_MORE_LOCATION_SERVICES_CHILD
                      : IDS_CROS_OPT_IN_LEARN_MORE_LOCATION_SERVICES,
-            chrome::kPrivacyHubGeolocationAdvancedLocationLearnMoreURL));
+            chrome::kPrivacyHubGeolocationAccuracyLearnMoreURL));
   } else {
     loadtime_data.Set(
         "learnMoreLocationServices",

@@ -375,8 +375,8 @@ void AddStrings(content::WebUIDataSource* source) {
   source->AddString("timeOfDayBannerImageUrl",
                     GetAmbientBackendController()->GetPromoBannerUrl());
 
-  source->AddString("systemGeolocationDialogLearnMoreUrl",
-                    kPrivacyHubGeolocationLearnMoreUrl);
+  source->AddString("geolocationAccuracyLearnMoreUrl",
+                    kPrivacyHubGeolocationAccuracyLearnMoreURL);
 
   // Product name does not need to be translated.
   auto product_name =

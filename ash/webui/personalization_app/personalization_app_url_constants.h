@@ -12,7 +12,7 @@ extern const char kChromeUIPersonalizationAppURL[];
 extern const char kAmbientSubpageRelativeUrl[];
 extern const char kUserSubpageRelativeUrl[];
 extern const char kWallpaperSubpageRelativeUrl[];
-extern const char kPrivacyHubGeolocationLearnMoreUrl[];
+extern const char kPrivacyHubGeolocationAccuracyLearnMoreURL[];
 
 }  // namespace ash::personalization_app
 

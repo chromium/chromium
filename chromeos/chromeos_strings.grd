@@ -2537,7 +2537,7 @@
           Allow system services to use your location?
         </message>
         <message name="IDS_PERSONALIZATION_APP_GEOLOCATION_DIALOG_BODY" desc="Description of the dialog that prompts the user to enable system geolocation access. This gives detailed explanation of the outcomes of enabling system geolocation access for system services.">
-          This allows system services with the permission to use your location. Location may use sources like Wi-Fi, mobile networks, and sensors to help estimate your device's location. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+          This allows system services to use Location Accuracy to determine your location. Location Accuracy uses information about wireless signals, such as Wi-Fi access points, cellular network towers, and GPS, along with device sensor data, such as accelerometer and gyroscope, to estimate device location. You can turn off location in Settings &gt; Privacy and security &gt; Privacy controls &gt; Location access. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
         </message>
         <message name="IDS_PERSONALIZATION_APP_GEOLOCATION_DIALOG_CONFIRM_BUTTON" desc="Label of the confirm button for the geolocation dialog, that enables geolocation for ChromeOS system services.">
           Allow

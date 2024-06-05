@@ -11,7 +11,7 @@ const char kChromeUIPersonalizationAppURL[] = "chrome://personalization/";
 const char kAmbientSubpageRelativeUrl[] = "ambient";
 const char kUserSubpageRelativeUrl[] = "user";
 const char kWallpaperSubpageRelativeUrl[] = "wallpaper";
-const char kPrivacyHubGeolocationLearnMoreUrl[] =
-    "https://support.google.com/chromebook/?p=manage_your_location";
+const char kPrivacyHubGeolocationAccuracyLearnMoreURL[] =
+    "https://support.google.com/android/?p=location_accuracy";
 
 }  // namespace ash::personalization_app
