@@ -111,39 +111,7 @@ class NtpBackgroundServiceTest : public testing::Test,
 
 INSTANTIATE_TEST_SUITE_P(All, NtpBackgroundServiceTest, ::testing::Bool());
 
-// TODO(crbug/41495146): Test fails post-ChromeRefresh2023. Skip until fixed
-// or removed.
-TEST_P(NtpBackgroundServiceTest, DISABLED_CollectionRequest) {
-  g_browser_process->SetApplicationLocale("foo");
-  service()->FetchCollectionInfo();
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_EQ(1u, test_url_loader_factory()->pending_requests()->size());
-  std::string request_body(test_url_loader_factory()
-                               ->pending_requests()
-                               ->at(0)
-                               .request.request_body->elements()
-                               ->at(0)
-                               .As<network::DataElementBytes>()
-                               .AsStringPiece());
-  ntp::background::GetCollectionsRequest collection_request;
-  EXPECT_TRUE(collection_request.ParseFromString(request_body));
-  EXPECT_EQ("foo", collection_request.language());
-  if (BackgroundImageErrorDetectionEnabled()) {
-    EXPECT_EQ(4, collection_request.filtering_label_size());
-    EXPECT_EQ("chrome_desktop_ntp.error_detection",
-              collection_request.filtering_label(3));
-  } else {
-    EXPECT_EQ(3, collection_request.filtering_label_size());
-  }
-  EXPECT_EQ("chrome_desktop_ntp", collection_request.filtering_label(0));
-  EXPECT_EQ("chrome_desktop_ntp.M" + version_info::GetMajorVersionNumber(),
-            collection_request.filtering_label(1));
-  EXPECT_EQ("chrome_desktop_ntp.panorama",
-            collection_request.filtering_label(2));
-}
-
-TEST_P(NtpBackgroundServiceTest, CollectionRequestWithGM3Enabled) {
+TEST_P(NtpBackgroundServiceTest, CollectionRequest) {
   g_browser_process->SetApplicationLocale("foo");
   service()->FetchCollectionInfo();
   base::RunLoop().RunUntilIdle();
@@ -280,6 +248,15 @@ TEST_P(NtpBackgroundServiceTest, BrokenCollectionPreviewImageHasNoReplacement) {
       GURL(collection.preview(0).image_url() + GetThumbnailImageOptions());
   if (BackgroundImageErrorDetectionEnabled()) {
     EXPECT_TRUE(service()->collection_info().empty());
+    histogram_tester_.ExpectTotalCount(
+        "NewTabPage.BackgroundService.Images.Headers.ErrorDetected", 1);
+    ASSERT_EQ(1,
+              histogram_tester_.GetBucketCount(
+                  "NewTabPage.BackgroundService.Images.Headers.ErrorDetected",
+                  NtpImageType::kCollections));
+    ASSERT_EQ(2, histogram_tester_.GetBucketCount(
+                     "NewTabPage.BackgroundService.Images.Headers.StatusCode",
+                     net::HTTP_NOT_FOUND));
   } else {
     EXPECT_FALSE(service()->collection_info().empty());
     EXPECT_THAT(service()->collection_info().at(0), Eq(collection_info));

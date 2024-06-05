@@ -453,6 +453,10 @@ void NtpBackgroundService::OnCollectionPreviewURLHeadersReceived(
         CollectionInfo::CreateFromProto(collection, preview_image_url));
     std::move(collection_fetch_complete_closure).Run();
     return;
+  } else {
+    UMA_HISTOGRAM_ENUMERATION(
+        "NewTabPage.BackgroundService.Images.Headers.ErrorDetected",
+        NtpImageType::kCollections);
   }
 
   FetchCollectionImageInfoInternal(
