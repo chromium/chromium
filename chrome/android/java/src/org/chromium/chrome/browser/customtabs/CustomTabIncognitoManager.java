@@ -60,7 +60,7 @@ public class CustomTabIncognitoManager implements NativeInitObserver, DestroyObs
 
     @Override
     public void onFinishNativeInitialization() {
-        if (mIntentDataProvider.isIncognito()) {
+        if (mIntentDataProvider.isIncognitoBranded()) {
             initializeIncognito();
         }
     }
@@ -96,7 +96,7 @@ public class CustomTabIncognitoManager implements NativeInitObserver, DestroyObs
         if (!CommandLine.getInstance()
                 .hasSwitch(ChromeSwitches.ENABLE_INCOGNITO_SNAPSHOTS_IN_ANDROID_RECENTS)) {
             new IncognitoCustomTabSnapshotController(
-                    mActivity.getWindow(), () -> mIntentDataProvider.isIncognito());
+                    mActivity.getWindow(), () -> mIntentDataProvider.isIncognitoBranded());
         }
     }
 

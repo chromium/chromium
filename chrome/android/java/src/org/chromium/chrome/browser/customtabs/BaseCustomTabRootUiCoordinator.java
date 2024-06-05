@@ -254,7 +254,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         mIntentDataProvider = intentDataProvider;
         if (intentDataProvider.get().getActivityType() == ActivityType.CUSTOM_TAB
                 && !intentDataProvider.get().isOpenedByChrome()
-                && !intentDataProvider.get().isIncognito()) {
+                && !intentDataProvider.get().isIncognitoBranded()) {
             String appId = mIntentDataProvider.get().getClientPackageName();
             if (TextUtils.isEmpty(appId)) {
                 appId = CustomTabIntentDataProvider.getAppIdFromReferrer(activity);
@@ -522,6 +522,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
     @Override
     protected IncognitoReauthCoordinatorFactory getIncognitoReauthCoordinatorFactory(
             Profile profile) {
+        // TODO(crbug.com/335609494): Disable this for ephemeral CCTs.
         Intent showRegularOverviewIntent = new Intent(Intent.ACTION_MAIN);
         showRegularOverviewIntent.setClass(mActivity, ChromeLauncherActivity.class);
         showRegularOverviewIntent.putExtra(IntentHandler.EXTRA_OPEN_REGULAR_OVERVIEW_MODE, true);

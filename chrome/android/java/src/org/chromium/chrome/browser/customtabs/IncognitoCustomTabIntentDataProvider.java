@@ -82,9 +82,13 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
                 IntentUtils.safeGetBundleExtra(
                         intent, CustomTabsIntent.EXTRA_EXIT_ANIMATION_BUNDLE);
         mIsOpenedByChrome = IntentHandler.wasIntentSenderChrome(intent);
-        // TODO(crbug.com/335607734) Adjust color scheme for ephemeral tabs.
-        // Only allow first-parties to change the styling.
-        mColorProvider = new IncognitoCustomTabColorProvider(context);
+
+        if (mIsIncognitoBranded) {
+            mColorProvider = new IncognitoCustomTabColorProvider(context);
+        } else {
+            mColorProvider = new CustomTabColorProviderImpl(intent, context, colorScheme);
+        }
+
         mCloseButtonIcon = TintedDrawable.constructTintedDrawable(context, R.drawable.btn_close);
         mShowShareItem =
                 IntentUtils.safeGetBooleanExtra(
@@ -334,7 +338,7 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
 
     @Override
     public boolean shouldShowShareMenuItem() {
-        return mShowShareItem;
+        return mShowShareItem || !isIncognitoBranded();
     }
 
     @Override
@@ -354,14 +358,21 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
 
     @Override
     public boolean shouldShowDownloadButton() {
-        return false;
+        return !isIncognitoBranded();
     }
 
     @Override
     public boolean isIncognito() {
-        // TODO(crbug.com/335607734): Validate usage of this function for ephemeral tabs. Maybe
-        // split
-        // into IsIncognitoBranded() and IsOffTheRecord()?
+        return true;
+    }
+
+    @Override
+    public boolean isIncognitoBranded() {
+        return mIsIncognitoBranded;
+    }
+
+    @Override
+    public boolean isOffTheRecord() {
         return true;
     }
 
