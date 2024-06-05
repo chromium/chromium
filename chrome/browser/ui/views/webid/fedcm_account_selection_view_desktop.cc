@@ -552,13 +552,7 @@ void FedCmAccountSelectionView::OnVisibilityChanged(
     }
     GetDialogWidget()->widget_delegate()->SetCanActivate(true);
   } else {
-    // On Mac, NativeWidgetMac::Activate() ignores the views::Widget visibility.
-    // Make the views::Widget non-activatable while it is hidden to prevent the
-    // views::Widget from being shown during focus traversal.
-    // TODO(crbug.com/40239995): fix the issue on Mac.
-    GetDialogWidget()->Hide();
-    GetDialogWidget()->widget_delegate()->SetCanActivate(false);
-    input_protector_->VisibilityChanged(false);
+    HideDialogWidget();
   }
 }
 
@@ -571,6 +565,9 @@ void FedCmAccountSelectionView::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
+  if (!GetDialogWidget()) {
+    return;
+  }
   int index =
       tab_strip_model->GetIndexOfWebContents(delegate_->GetWebContents());
   // If the WebContents has been moved out of this `tab_strip_model`, close the
@@ -578,8 +575,12 @@ void FedCmAccountSelectionView::OnTabStripModelChanged(
   // TODO(npm): we should change the management logic so that it is
   // possible to move the dialog with the tab, even to a different browser
   // window.
-  if (index == TabStripModel::kNoTab && GetDialogWidget()) {
+  if (index == TabStripModel::kNoTab) {
     Close();
+  }
+  if (index != tab_strip_model->active_index() &&
+      GetDialogWidget()->IsVisible()) {
+    HideDialogWidget();
   }
 }
 
@@ -1042,7 +1043,16 @@ void FedCmAccountSelectionView::FrameSizeChanged(
   }
 
   if (GetDialogWidget()->IsVisible()) {
-    GetDialogWidget()->Hide();
-    input_protector_->VisibilityChanged(false);
+    HideDialogWidget();
   }
+}
+
+void FedCmAccountSelectionView::HideDialogWidget() {
+  // On Mac, NativeWidgetMac::Activate() ignores the views::Widget visibility.
+  // Make the views::Widget non-activatable while it is hidden to prevent the
+  // views::Widget from being shown during focus traversal.
+  // TODO(crbug.com/40239995): fix the issue on Mac.
+  GetDialogWidget()->Hide();
+  GetDialogWidget()->widget_delegate()->SetCanActivate(false);
+  input_protector_->VisibilityChanged(false);
 }
