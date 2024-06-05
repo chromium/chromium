@@ -43,11 +43,9 @@ namespace chromeos::mahi {
 
 namespace {
 
-constexpr auto kCondensedMenuMargins = gfx::Insets::VH(8, 0);
-
 constexpr int kButtonIconSize = 16;
 constexpr int kButtonIconLabelSpacing = 8;
-constexpr auto kButtonBorderInsets = gfx::Insets::VH(4, 16);
+constexpr auto kButtonBorderInsets = gfx::Insets::VH(12, 16);
 
 // TODO(b/331127382): Finalize the Mahi condensed menu button text.
 std::u16string GetMahiCondensedMenuButtonText() {
@@ -128,7 +126,6 @@ MahiCondensedMenuView::MahiCondensedMenuView()
   SetBackground(views::CreateThemedRoundedRectBackground(
       ui::kColorSysSurface, views::LayoutProvider::Get()->GetCornerRadiusMetric(
                                 views::ShapeContextTokens::kMenuRadius)));
-  SetBorder(views::CreateEmptyBorder(kCondensedMenuMargins));
 
   menu_button_ = AddChildView(std::make_unique<MahiCondensedMenuButton>());
 }
