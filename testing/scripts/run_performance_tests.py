@@ -58,6 +58,9 @@ CHROMIUM_SRC_DIR = pathlib.Path(__file__).absolute().parents[2]
 
 PERF_DIR = CHROMIUM_SRC_DIR / 'tools/perf'
 sys.path.append(str(PERF_DIR))
+if (PERF_DIR / 'crossbench_result_converter.py').exists():
+  # Optional import needed to run crossbench.
+  import crossbench_result_converter
 import generate_legacy_perf_dashboard_json
 from core import path_util
 
@@ -662,24 +665,25 @@ class CrossbenchTest(object):
     self.options = options
     self.isolated_out_dir = isolated_out_dir
 
-  def _generate_command_list(self, benchmark, output_paths):
+  def _generate_command_list(self, benchmark, working_dir):
     # In Swarming bot, use the Chrome build in the running path.
     browser = [self.CHROME_BROWSER] if 'SWARMING_TASK_ID' in os.environ else []
     return ([sys.executable] + [self.options.executable] + [benchmark] +
-            [self.OUTDIR % output_paths.benchmark_path] + browser +
+            [self.OUTDIR % working_dir] + browser +
             self.options.passthrough_args)
 
-  def execute_benchmark(self, benchmark):
+  def execute_benchmark(self, benchmark, display_name):
     start = time.time()
 
     env = os.environ.copy()
     env['CHROME_HEADLESS'] = '1'
 
     return_code = 1
-    output_paths = OutputFilePaths(self.isolated_out_dir, benchmark).SetUp()
+    output_paths = OutputFilePaths(self.isolated_out_dir, display_name).SetUp()
     infra_failure = False
     try:
-      command = self._generate_command_list(benchmark, output_paths)
+      working_dir = tempfile.mkdtemp(suffix='crossbench')
+      command = self._generate_command_list(benchmark, working_dir)
       if self.options.xvfb:
         # When running with xvfb, we currently output both to stdout and to the
         # file. It would be better to only output to the file to keep the logs
@@ -692,11 +696,25 @@ class CrossbenchTest(object):
           return_code = test_env.run_command_output_to_handle(command,
                                                               handle,
                                                               env=env)
+
+      if return_code == 0:
+        crossbench_result_converter.convert(
+            pathlib.Path(working_dir) / 'output',
+            pathlib.Path(output_paths.perf_results), display_name)
     except Exception:
       print('The following exception may have prevented the code from '
             'outputing structured test results and perf results output:')
       print(traceback.format_exc())
       infra_failure = True
+    finally:
+      # On swarming bots, don't remove output directory, since Result Sink might
+      # still be uploading files to Result DB. Also, swarming bots automatically
+      # clean up at the end of each task.
+      if 'SWARMING_TASK_ID' not in os.environ:
+        # Add ignore_errors=True because otherwise rmtree may fail due to leaky
+        # processes of tests are still holding opened handles to files under
+        # |tempfile_dir|. For example, see crbug.com/865896
+        shutil.rmtree(output_dir, ignore_errors=True)
 
     print_duration(f'Executing benchmark: {benchmark}', start)
 
@@ -716,7 +734,9 @@ class CrossbenchTest(object):
       raise Exception('Please use the --benchmarks to specify the benchmark.')
     if ',' in self.options.benchmarks:
       raise Exception('No support to run multiple benchmarks at this time.')
-    return self.execute_benchmark(self.options.benchmarks)
+    return self.execute_benchmark(
+        self.options.benchmarks,
+        (self.options.benchmark_display_name or self.options.benchmarks))
 
 
 def parse_arguments(args):
@@ -759,6 +779,10 @@ def parse_arguments(args):
   parser.add_argument('--benchmarks',
                       help='Comma separated list of benchmark names'
                       ' to run in lieu of indexing into our benchmark bot maps',
+                      required=False)
+  parser.add_argument('--benchmark-display-name',
+                      help='Benchmark name displayed to the user,'
+                      ' supported with crossbench only',
                       required=False)
   # crbug.com/1236245: This allows for per-benchmark device logs.
   parser.add_argument('--per-test-logs-dir',
@@ -977,7 +1001,7 @@ def _run_benchmarks_on_shardmap(shard_map, options, isolated_out_dir,
       print(f'\n### {display_name} ###')
       benchmark_args = benchmark_config.get('arguments', [])
       options.passthrough_args = list(set(crossbench_args + benchmark_args))
-      return_code = crossbench_test.execute_benchmark(benchmark)
+      return_code = crossbench_test.execute_benchmark(benchmark, display_name)
       overall_return_code = return_code or overall_return_code
 
   return overall_return_code
