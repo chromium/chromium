@@ -32,6 +32,10 @@ const char kSecureConnectApiGetSecondaryGoogleAccountUsageUrl[] =
     "https://secureconnect-pa.clients6.google.com/"
     "v1:getManagedAccountsSigninRestriction?policy_name="
     "SecondaryGoogleAccountUsage";
+const char kSecureConnectApiGetSecondaryAccountAllowedInArcPolicyUrl[] =
+    "https://secureconnect-pa.clients6.google.com/"
+    "v1:getManagedAccountsSigninRestriction?policy_name="
+    "SecondaryAccountAllowedInArcPolicy";
 const char kJsonContentType[] = "application/json";
 // Presence of this key in the user info response indicates whether the user is
 // on a hosted domain.
@@ -43,20 +47,31 @@ constexpr net::NetworkTrafficAnnotationTag kAnnotation =
     semantics {
       sender: "Chrome OS sign-in restrictions"
       description:
-        "A request to the SecureConnect API to retrieve the value of the "
-        "SecondaryGoogleAccountUsage policy for the signed in user."
+        "A request to the SecureConnect API to retrieve the value of "
+        "SecondaryAccountAllowedInArcPolicy and SecondaryGoogleAccountUsage "
+        "policies for the signed in user."
       trigger:
         "After a user signs into a managed account as a secondary account in "
         "Chrome OS."
       data:
         "Gaia access token."
       destination: GOOGLE_OWNED_SERVICE
+      internal {
+        contacts {
+          email: "chromeos-commercial-identity@google.com"
+        }
+      }
+      user_data {
+        type: ACCESS_TOKEN
+      }
+      last_reviewed: "2024-06-04"
     }
     policy {
       cookies_allowed: NO
+      setting: "This feature cannot be disabled by settings."
       policy_exception_justification:
           "No policy. The operation is only triggered by a user signing "
-          "into a managed account, and there is no policy to opt out"
+          "into a managed account, and there is no policy to opt out."
     })");
 
 std::unique_ptr<network::SimpleURLLoader> CreateUrlLoader(
@@ -106,9 +121,9 @@ UserCloudSigninRestrictionPolicyFetcher::
 void UserCloudSigninRestrictionPolicyFetcher::GetSecondaryGoogleAccountUsage(
     std::unique_ptr<OAuth2AccessTokenFetcher> access_token_fetcher,
     PolicyInfoCallback callback) {
-  DCHECK(access_token_fetcher);
-  DCHECK(callback);
-  DCHECK(!callback_) << "A request is already in progress";
+  CHECK(access_token_fetcher);
+  CHECK(callback);
+  CHECK(!callback_) << "A request is already in progress";
   callback_ = std::move(callback);
   if (signin::AccountManagedStatusFinder::IsEnterpriseUserBasedOnEmail(
           email_) == signin::AccountManagedStatusFinder::EmailEnterpriseStatus::
@@ -119,6 +134,18 @@ void UserCloudSigninRestrictionPolicyFetcher::GetSecondaryGoogleAccountUsage(
                              /*domain=*/std::string());
     return;
   }
+  access_token_fetcher_ = std::move(access_token_fetcher);
+  FetchAccessToken();
+}
+
+void UserCloudSigninRestrictionPolicyFetcher::
+    GetSecondaryAccountAllowedInArcPolicy(
+        std::unique_ptr<OAuth2AccessTokenFetcher> access_token_fetcher,
+        PolicyInfoCallbackForSecondaryAccountAllowedInArc callback) {
+  CHECK(access_token_fetcher);
+  CHECK(callback);
+  CHECK(!callback_for_arc_) << "A request is already in progress";
+  callback_for_arc_ = std::move(callback);
   access_token_fetcher_ = std::move(access_token_fetcher);
   FetchAccessToken();
 }
@@ -143,9 +170,15 @@ void UserCloudSigninRestrictionPolicyFetcher::OnGetTokenFailure(
   // TODO(b/223628330): Implement retry strategy.
   LOG(ERROR) << "Failed to fetch access token for consumer: "
              << GetConsumerName() << " with error: " << error.ToString();
-  std::move(callback_).Run(/*status=*/Status::kGetTokenError,
-                           /*policy=*/std::nullopt,
-                           /*domain=*/std::string());
+  if (!callback_.is_null()) {
+    std::move(callback_).Run(/*status=*/Status::kGetTokenError,
+                             /*policy=*/std::nullopt,
+                             /*domain=*/std::string());
+  } else {
+    std::move(callback_for_arc_)
+        .Run(/*status=*/Status::kGetTokenError,
+             /*policy=*/std::nullopt);
+  }
 }
 
 std::string UserCloudSigninRestrictionPolicyFetcher::GetConsumerName() const {
@@ -158,26 +191,38 @@ void UserCloudSigninRestrictionPolicyFetcher::FetchUserInfo() {
 
 void UserCloudSigninRestrictionPolicyFetcher::OnGetUserInfoSuccess(
     const base::Value::Dict& user_info) {
-  // Check if the user account has a hosted domain.
-  const std::string* hosted_domain = user_info.FindString(kHostedDomainKey);
-  if (hosted_domain) {
-    hosted_domain_ = *hosted_domain;
-    GetSecondaryGoogleAccountUsageInternal();
-  } else {
-    // Non Enterprise accounts do not have restrictions.
-    DVLOG(1) << "User account is not an Enterprise account";
-    std::move(callback_).Run(/*status=*/Status::kUnsupportedAccountTypeError,
-                             /*policy=*/std::nullopt,
-                             /*domain=*/std::string());
+  // No need to check for hosted domain when fetching value of
+  // SecondaryAccountAllowedInArcPolicy since call to fetch its value is only
+  // made after establishing that SecondaryGoogleAccountUsage is called on a
+  // hosted domain
+  if (!callback_.is_null()) {
+    const std::string* hosted_domain = user_info.FindString(kHostedDomainKey);
+    if (!hosted_domain) {
+      // Non Enterprise accounts do not have restrictions.
+      DVLOG(1) << "User account is not an Enterprise account";
+      std::move(callback_).Run(/*status=*/Status::kUnsupportedAccountTypeError,
+                               /*policy=*/std::nullopt,
+                               /*domain=*/std::string());
+      return;
+    } else {
+      hosted_domain_ = *hosted_domain;
+    }
   }
+  GetSecondaryGoogleAccountUsageInternal();
 }
 
 void UserCloudSigninRestrictionPolicyFetcher::OnGetUserInfoFailure(
     const GoogleServiceAuthError& error) {
   LOG(ERROR) << "Failed to fetch user info: " << error.ToString();
-  std::move(callback_).Run(/*status=*/Status::kGetUserInfoError,
-                           /*policy=*/std::nullopt,
-                           /*domain=*/std::string());
+  if (!callback_.is_null()) {
+    std::move(callback_).Run(/*status=*/Status::kGetUserInfoError,
+                             /*policy=*/std::nullopt,
+                             /*domain=*/std::string());
+  } else {
+    std::move(callback_for_arc_)
+        .Run(/*status=*/Status::kGetUserInfoError,
+             /*policy=*/std::nullopt);
+  }
 }
 
 void UserCloudSigninRestrictionPolicyFetcher::
@@ -200,10 +245,15 @@ void UserCloudSigninRestrictionPolicyFetcher::
 void UserCloudSigninRestrictionPolicyFetcher::
     OnSecondaryGoogleAccountUsageResult(
         std::unique_ptr<std::string> response_body) {
-  base::UmaHistogramMediumTimes(
-      kSecondaryGoogleAccountUsageLatencyHistogramName,
-      base::TimeTicks::Now() - policy_fetch_start_time_);
+  if (!callback_.is_null()) {
+    base::UmaHistogramMediumTimes(
+        kSecondaryGoogleAccountUsageLatencyHistogramName,
+        base::TimeTicks::Now() - policy_fetch_start_time_);
+  }
   std::optional<std::string> restriction;
+  const std::string policy_name = !callback_.is_null()
+                                      ? "SecondaryGoogleAccountUsage"
+                                      : "SecondaryAccountAllowedInArcPolicy";
   Status status = Status::kUnknownError;
   std::unique_ptr<network::SimpleURLLoader> url_loader = std::move(url_loader_);
 
@@ -215,19 +265,25 @@ void UserCloudSigninRestrictionPolicyFetcher::
   // Check for network or HTTP errors.
   if (url_loader->NetError() != net::OK || !response_body) {
     if (response_code) {
-      LOG(ERROR) << "SecondaryGoogleAccountUsage request "
+      LOG(ERROR) << policy_name
+                 << " request "
                     "failed with HTTP code: "
                  << response_code.value();
       status = Status::kHttpError;
     } else {
       error =
           GoogleServiceAuthError::FromConnectionError(url_loader->NetError());
-      LOG(ERROR) << "SecondaryGoogleAccountUsage request "
+      LOG(ERROR) << policy_name
+                 << " request "
                     "failed with error: "
                  << url_loader->NetError();
       status = Status::kNetworkError;
     }
-    std::move(callback_).Run(status, restriction, hosted_domain_);
+    if (!callback_.is_null()) {
+      std::move(callback_).Run(status, restriction, hosted_domain_);
+    } else {
+      std::move(callback_for_arc_).Run(status, restriction);
+    }
     return;
   }
 
@@ -240,12 +296,15 @@ void UserCloudSigninRestrictionPolicyFetcher::
       restriction = *policy_value;
       status = Status::kSuccess;
     } else {
-      LOG(ERROR) << "Failed to parse SecondaryGoogleAccountUsage response";
+      LOG(ERROR) << "Failed to parse " << policy_name << " response";
       status = Status::kParsingResponseError;
     }
   }
-
-  std::move(callback_).Run(status, restriction, hosted_domain_);
+  if (!callback_.is_null()) {
+    std::move(callback_).Run(status, restriction, hosted_domain_);
+  } else {
+    std::move(callback_for_arc_).Run(status, restriction);
+  }
 }
 
 std::string UserCloudSigninRestrictionPolicyFetcher::
@@ -256,7 +315,9 @@ std::string UserCloudSigninRestrictionPolicyFetcher::
         policy::switches::kSecureConnectApiUrl);
   }
 
-  return kSecureConnectApiGetSecondaryGoogleAccountUsageUrl;
+  return callback_.is_null()
+             ? kSecureConnectApiGetSecondaryAccountAllowedInArcPolicyUrl
+             : kSecureConnectApiGetSecondaryGoogleAccountUsageUrl;
 }
 
 }  // namespace ash
