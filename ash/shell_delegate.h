@@ -61,7 +61,6 @@ class ASH_EXPORT ShellDelegate {
     kFocusMode,
     kGameDashboard,
     kOverview,
-    kSnapGroups,
     kWindowLayoutMenu,
   };
 

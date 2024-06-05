@@ -17,21 +17,15 @@ class Rect;
 namespace ash {
 
 class DividerHandlerView;
-class IconButton;
 class SplitViewDivider;
 
 // A view that acts as the content view within a split view divider widget.
-// It hosts two child views: a handler view and a feedback button. Its
-// responsibility is to update the bounds and visibility of its child views in
-// response to located events.
+// It hosts one child view: a handler view. Its responsibility is to update the
+// bounds and visibility of its child views in response to located events.
 //          | |
 //          | |
 //          |||<-----handler_view_
 //          |||
-//          | |
-//         +---+
-//         |   |<----feedback_button_
-//         +---+
 //          | |
 class SplitViewDividerView : public views::AccessiblePaneView,
                              public views::ViewTargeterDelegate {
@@ -71,7 +65,6 @@ class SplitViewDividerView : public views::AccessiblePaneView,
   ASH_EXPORT gfx::Rect GetHandlerViewBoundsInScreenForTesting() const;
 
   DividerHandlerView* handler_view_for_testing() { return handler_view_; }
-  IconButton* feedback_button_for_testing() { return feedback_button_; }
 
  private:
   friend class SplitViewDivider;
@@ -91,16 +84,6 @@ class SplitViewDividerView : public views::AccessiblePaneView,
   // changes in the divider's dimensions or display properties.
   void RefreshDividerHandler(bool should_enlarge);
 
-  // Initializes, refreshes bounds, or updates visibility for the
-  // `feedback_button_` on the divider.
-  void RefreshFeedbackButton(bool visible);
-
-  // Refreshes the bounds of the `feedback_button_`.
-  void RefreshFeedbackButtonBounds();
-
-  // Triggered when the feedback button is pressed to open feedback form.
-  void OnFeedbackButtonPressed();
-
   // The location of the initial mouse event in screen coordinates.
   gfx::Point initial_mouse_event_location_;
 
@@ -111,7 +94,6 @@ class SplitViewDividerView : public views::AccessiblePaneView,
   raw_ptr<SplitViewDivider> divider_;
 
   raw_ptr<DividerHandlerView> handler_view_ = nullptr;
-  raw_ptr<IconButton> feedback_button_ = nullptr;
 
   base::WeakPtrFactory<SplitViewDividerView> weak_ptr_factory_{this};
 };

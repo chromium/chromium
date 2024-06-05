@@ -64,7 +64,7 @@ enum FeedbackSource {
   kFeedbackSourceAI,
   kFeedbackSourceFocusMode,
   kFeedbackSourceOverview,
-  kFeedbackSourceSnapGroups,
+  kFeedbackSourceSnapGroups_DEPRECATED,
   kFeedbackSourceBirch,
   kFeedbackSourceBorealis,
 

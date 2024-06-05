@@ -38,16 +38,6 @@ namespace {
 constexpr int kDividerHandlerCornerRadius = 1;
 constexpr int kDividerHandlerEnlargedCornerRadius = 2;
 
-// Distance between the bottom / right edge of the feedback button and the
-// bottom / right of the work area.
-constexpr int kFeedbackButtonDistanceFromEdge = 58;
-
-// Feedback button size.
-constexpr gfx::Size kFeedbackButtonSize{40, 40};
-
-// Feedback button icon size.
-constexpr int kFeedbackButtonIconSize = 20;
-
 }  // namespace
 
 // -----------------------------------------------------------------------------
@@ -92,7 +82,6 @@ SplitViewDividerView::SplitViewDividerView(SplitViewDivider* divider)
 
   SetBackground(
       views::CreateThemedSolidBackground(cros_tokens::kCrosSysSecondary));
-  RefreshFeedbackButton(/*visible=*/false);
 
   SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
   set_allow_deactivate_on_esc(true);
@@ -129,7 +118,6 @@ void SplitViewDividerView::Layout(PassKey) {
 
   SetBoundsRect(GetLocalBounds());
   RefreshDividerHandler(/*should_enlarge=*/false);
-  RefreshFeedbackButtonBounds();
 }
 
 void SplitViewDividerView::OnMouseEntered(const ui::MouseEvent& event) {
@@ -137,12 +125,6 @@ void SplitViewDividerView::OnMouseEntered(const ui::MouseEvent& event) {
 
   gfx::Point screen_location = event.location();
   ConvertPointToScreen(this, &screen_location);
-
-  // Show `feedback_button_` on mouse entered.
-  if (!feedback_button_ ||
-      !feedback_button_->GetBoundsInScreen().Contains(screen_location)) {
-    RefreshFeedbackButton(/*visible=*/true);
-  }
 }
 
 void SplitViewDividerView::OnMouseExited(const ui::MouseEvent& event) {
@@ -150,16 +132,8 @@ void SplitViewDividerView::OnMouseExited(const ui::MouseEvent& event) {
   ConvertPointToScreen(this, &screen_location);
 
   if (handler_view_ &&
-      !handler_view_->GetBoundsInScreen().Contains(screen_location) &&
-      (!feedback_button_ ||
-       !feedback_button_->GetBoundsInScreen().Contains(screen_location))) {
+      !handler_view_->GetBoundsInScreen().Contains(screen_location)) {
     divider_->EnlargeOrShrinkDivider(/*should_enlarge=*/false);
-  }
-
-  // Hide `feedback_button_` on mouse exited.
-  if (feedback_button_ &&
-      !feedback_button_->GetBoundsInScreen().Contains(screen_location)) {
-    RefreshFeedbackButton(/*visible=*/false);
   }
 }
 
@@ -173,7 +147,6 @@ bool SplitViewDividerView::OnMousePressed(const ui::MouseEvent& event) {
 bool SplitViewDividerView::OnMouseDragged(const ui::MouseEvent& event) {
   CHECK(divider_);
   divider_->EnlargeOrShrinkDivider(/*should_enlarge=*/true);
-  RefreshFeedbackButton(/*visible=*/false);
 
   if (!mouse_move_started_) {
     // If this is the first mouse drag event, start the resize and reset
@@ -197,8 +170,6 @@ void SplitViewDividerView::OnMouseReleased(const ui::MouseEvent& event) {
   initial_mouse_event_location_ = gfx::Point();
   mouse_move_started_ = false;
   EndResizing(location, /*swap_windows=*/event.GetClickCount() == 2);
-
-  RefreshFeedbackButton(/*visible=*/true);
 }
 
 void SplitViewDividerView::OnGestureEvent(ui::GestureEvent* event) {
@@ -220,23 +191,18 @@ void SplitViewDividerView::OnGestureEvent(ui::GestureEvent* event) {
       break;
     case ui::ET_GESTURE_TAP_DOWN:
       divider_->EnlargeOrShrinkDivider(/*should_enlarge=*/true);
-      RefreshFeedbackButton(/*visible=*/true);
       break;
     case ui::ET_GESTURE_TAP_CANCEL:
       divider_->EnlargeOrShrinkDivider(/*should_enlarge=*/false);
-      RefreshFeedbackButton(/*visible=*/false);
       break;
     case ui::ET_GESTURE_SCROLL_BEGIN:
       StartResizing(location);
-      RefreshFeedbackButton(/*visible=*/true);
       break;
     case ui::ET_GESTURE_SCROLL_UPDATE:
       divider_->ResizeWithDivider(location);
-      RefreshFeedbackButton(/*visible=*/true);
       break;
     case ui::ET_GESTURE_SCROLL_END:
       divider_->EnlargeOrShrinkDivider(/*should_enlarge=*/false);
-      RefreshFeedbackButton(/*visible=*/false);
       break;
     case ui::ET_GESTURE_END: {
       EndResizing(location, /*swap_windows=*/false);
@@ -245,7 +211,6 @@ void SplitViewDividerView::OnGestureEvent(ui::GestureEvent* event) {
       if (divider_) {
         divider_->EnlargeOrShrinkDivider(/*should_enlarge=*/false);
       }
-      RefreshFeedbackButton(/*visible=*/true);
       break;
     }
 
@@ -381,61 +346,6 @@ void SplitViewDividerView::RefreshDividerHandler(bool should_enlarge) {
       should_enlarge ? kDividerHandlerEnlargedCornerRadius
                      : kDividerHandlerCornerRadius));
   handler_view_->SetVisible(true);
-}
-
-void SplitViewDividerView::RefreshFeedbackButton(bool visible) {
-  if (!IsSnapGroupEnabledInClamshellMode()) {
-    return;
-  }
-
-  if (!feedback_button_) {
-    feedback_button_ = AddChildView(std::make_unique<IconButton>(
-        base::BindRepeating(&SplitViewDividerView::OnFeedbackButtonPressed,
-                            base::Unretained(this)),
-        IconButton::Type::kMediumFloating, &kFeedbackIcon,
-        IDS_ASH_SNAP_GROUP_SEND_FEEDBACK,
-        /*is_togglable=*/false,
-        /*has_border=*/false));
-    feedback_button_->SetPaintToLayer();
-    feedback_button_->layer()->SetFillsBoundsOpaquely(false);
-    feedback_button_->SetPreferredSize(kFeedbackButtonSize);
-    feedback_button_->SetIconSize(kFeedbackButtonIconSize);
-    feedback_button_->SetIconColor(cros_tokens::kCrosSysOnSecondary);
-    feedback_button_->SetVisible(true);
-    feedback_button_->SetBackground(views::CreateThemedRoundedRectBackground(
-        cros_tokens::kCrosSysSecondary, kFeedbackButtonSize.height() / 2.f));
-  }
-
-  feedback_button_->SetVisible(visible);
-  RefreshFeedbackButtonBounds();
-}
-
-void SplitViewDividerView::RefreshFeedbackButtonBounds() {
-  if (feedback_button_ && feedback_button_->GetVisible()) {
-    const gfx::Size feedback_button_size = feedback_button_->GetPreferredSize();
-    gfx::Rect feedback_button_bounds = gfx::Rect();
-    if (IsLayoutHorizontal(divider_->GetRootWindow())) {
-      feedback_button_bounds = gfx::Rect(
-          (width() - feedback_button_size.width()) / 2.f,
-          height() - feedback_button_size.height() -
-              kFeedbackButtonDistanceFromEdge,
-          feedback_button_size.width(), feedback_button_size.height());
-    } else {
-      feedback_button_bounds = gfx::Rect(
-          width() - feedback_button_size.width() / 2.f -
-              kFeedbackButtonDistanceFromEdge,
-          height() - feedback_button_size.height() / 2,
-          feedback_button_size.width(), feedback_button_size.height());
-    }
-    feedback_button_->SetBoundsRect(feedback_button_bounds);
-  }
-}
-
-void SplitViewDividerView::OnFeedbackButtonPressed() {
-  Shell::Get()->shell_delegate()->OpenFeedbackDialog(
-      /*source=*/ShellDelegate::FeedbackSource::kSnapGroups,
-      /*description_template=*/std::string(),
-      /*category_tag=*/"FromSnapGroups");
 }
 
 BEGIN_METADATA(SplitViewDividerView)

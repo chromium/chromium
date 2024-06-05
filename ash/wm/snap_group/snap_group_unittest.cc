@@ -3302,45 +3302,6 @@ TEST_F(SnapGroupDividerTest, SnapGroupDividerBoundsWithShelfAlignmentChange) {
   }
 }
 
-TEST_F(SnapGroupDividerTest, FeedbackButtonTest) {
-  std::unique_ptr<aura::Window> w1(CreateAppWindow());
-  std::unique_ptr<aura::Window> w2(CreateAppWindow());
-  SnapTwoTestWindows(w1.get(), w2.get(), /*horizontal=*/true);
-
-  SplitViewDividerView* divider_view =
-      snap_group_divider()->divider_view_for_testing();
-  auto* feedback_button = divider_view->feedback_button_for_testing();
-  EXPECT_TRUE(feedback_button);
-
-  // Verify that the feedback button is insivible by default.
-  EXPECT_FALSE(feedback_button->GetVisible());
-
-  // Test that the feedback button becomes visible upon hover on the divider.
-  const gfx::Point hover_location =
-      snap_group_divider_bounds_in_screen().CenterPoint() +
-      gfx::Vector2d(0, kDividerHandlerEnlargedLongSideLength / 2 + 1);
-
-  auto* event_generator = GetEventGenerator();
-  event_generator->MoveMouseTo(hover_location);
-  EXPECT_TRUE(feedback_button->GetVisible());
-
-  // Test that the feedback button will be invisible when drag starts.
-  event_generator->PressLeftButton();
-  event_generator->MoveMouseBy(10, 0);
-  EXPECT_FALSE(feedback_button->GetVisible());
-
-  // Test that the feedback button will be visible again when drag ends.
-  event_generator->ReleaseLeftButton();
-  EXPECT_TRUE(feedback_button->GetVisible());
-
-  // Test that open feedback dialog callback will be triggered.
-  event_generator->MoveMouseTo(
-      feedback_button->GetBoundsInScreen().CenterPoint());
-  event_generator->ClickLeftButton();
-  EXPECT_EQ(1, static_cast<TestShellDelegate*>(Shell::Get()->shell_delegate())
-                   ->open_feedback_dialog_call_count());
-}
-
 // Tests that the cursor type gets updated to be resize cursor on mouse hovering
 // on the split view divider excluding the feedback button.
 TEST_F(SnapGroupDividerTest, CursorUpdateTest) {
@@ -3382,17 +3343,6 @@ TEST_F(SnapGroupDividerTest, CursorUpdateTest) {
   EXPECT_EQ(CursorType::kColumnResize, cursor_manager->GetCursor().type());
   EXPECT_EQ(snap_group_divider_bounds_in_screen().CenterPoint() + delta_vector,
             cached_hover_point + move_vector);
-
-  // Test that when hovering over the feedback button, the cursor type changed
-  // back to the default type.
-  SplitViewDividerView* divider_view =
-      snap_group_divider()->divider_view_for_testing();
-  auto* feedback_button = divider_view->feedback_button_for_testing();
-  EXPECT_TRUE(feedback_button);
-  event_generator->MoveMouseTo(divider_view->feedback_button_for_testing()
-                                   ->GetBoundsInScreen()
-                                   .CenterPoint());
-  EXPECT_EQ(CursorType::kNull, cursor_manager->GetCursor().type());
 }
 
 //  Tests that the cursor updates correctly after snap to replace. See
@@ -3447,17 +3397,6 @@ TEST_F(SnapGroupDividerTest, CursorUpdateAfterSnapToReplace) {
   EXPECT_EQ(CursorType::kColumnResize, cursor_manager->GetCursor().type());
   EXPECT_EQ(snap_group_divider_bounds_in_screen().CenterPoint() + delta_vector,
             cached_hover_point + move_vector);
-
-  // Test that when hovering over the feedback button, the cursor type changed
-  // back to the default type.
-  SplitViewDividerView* divider_view =
-      snap_group_divider()->divider_view_for_testing();
-  auto* feedback_button = divider_view->feedback_button_for_testing();
-  EXPECT_TRUE(feedback_button);
-  event_generator->MoveMouseTo(divider_view->feedback_button_for_testing()
-                                   ->GetBoundsInScreen()
-                                   .CenterPoint());
-  EXPECT_EQ(CursorType::kNull, cursor_manager->GetCursor().type());
 }
 
 // Verify that the cursor changes to `kColumnResize` when hovering over the
