@@ -26,8 +26,8 @@ bool IsUsernameAllowedByPatternFromPrefs(const PrefService* prefs,
 // It will return false if the feature is enabled and the user is either signed
 // out or signed in explicitly.
 bool IsImplicitBrowserSigninOrExplicitDisabled(
-    IdentityManager* identity_manager,
-    PrefService* prefs);
+    const IdentityManager* identity_manager,
+    const PrefService* prefs);
 
 // Returns true if the Google account cookies are automatically rebuilt after
 // being cleared from settings, when the user is signed in.

@@ -102,8 +102,7 @@ bool DiceAccountReconcilorDelegate::IsReconcileEnabled() const {
 bool DiceAccountReconcilorDelegate::IsCookieBasedConsistencyMode() const {
   CHECK(IsReconcileEnabled());
   return switches::IsExplicitBrowserSigninUIOnDesktopEnabled() &&
-         !identity_manager_->HasPrimaryAccount(
-             GetConsentLevelForPrimaryAccount());
+         !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin);
 }
 
 void DiceAccountReconcilorDelegate::MatchTokensWithAccountsInCookie(
@@ -245,7 +244,8 @@ ConsentLevel DiceAccountReconcilorDelegate::GetConsentLevelForPrimaryAccount()
   }
 #endif
 
-  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
+  if (!IsImplicitBrowserSigninOrExplicitDisabled(identity_manager_,
+                                                 signin_client_->GetPrefs())) {
     return ConsentLevel::kSignin;
   }
 

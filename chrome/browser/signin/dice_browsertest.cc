@@ -90,6 +90,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_launcher.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -165,8 +166,9 @@ class BlockedHttpResponse : public net::test_server::BasicHttpResponse {
  private:
   void SendResponseInternal(
       base::WeakPtr<net::test_server::HttpResponseDelegate> delegate) {
-    if (delegate)
+    if (delegate) {
       BasicHttpResponse::SendResponse(delegate);
+    }
   }
   base::OnceCallback<void(base::OnceClosure)> callback_;
 
@@ -205,14 +207,16 @@ std::unique_ptr<HttpResponse> HandleSigninURL(
     const HttpRequest& request) {
   if (!net::test_server::ShouldHandle(request, kSigninURL) &&
       !net::test_server::ShouldHandle(request, kChromeSyncEndpointURL) &&
-      !net::test_server::ShouldHandle(request, kSigninWithOutageInDiceURL))
+      !net::test_server::ShouldHandle(request, kSigninWithOutageInDiceURL)) {
     return nullptr;
+  }
 
   // Extract Dice request header.
   std::string header_value = kNoDiceRequestHeader;
   auto it = request.headers.find(signin::kDiceRequestHeader);
-  if (it != request.headers.end())
+  if (it != request.headers.end()) {
     header_value = it->second;
+  }
 
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(callback, header_value));
@@ -274,8 +278,9 @@ std::unique_ptr<HttpResponse> HandleEnableSyncURL(
 // the query string).
 std::unique_ptr<HttpResponse> HandleSignoutURL(const std::string& main_email,
                                                const HttpRequest& request) {
-  if (!net::test_server::ShouldHandle(request, kSignoutURL))
+  if (!net::test_server::ShouldHandle(request, kSignoutURL)) {
     return nullptr;
+  }
 
   // Build signout header.
   int query_value;
@@ -291,8 +296,9 @@ std::unique_ptr<HttpResponse> HandleSignoutURL(const std::string& main_email,
                            main_email.c_str(), main_gaia_id.c_str());
   }
   if (signout_type == kAllAccounts || signout_type == kSecondaryAccount) {
-    if (!signout_header_value.empty())
+    if (!signout_header_value.empty()) {
       signout_header_value += ", ";
+    }
     std::string secondary_gaia_id =
         signin::GetTestGaiaIdForEmail(kSecondaryEmail);
     signout_header_value +=
@@ -313,14 +319,17 @@ std::unique_ptr<HttpResponse> HandleSignoutURL(const std::string& main_email,
 std::unique_ptr<HttpResponse> HandleOAuth2TokenExchangeURL(
     const base::RepeatingCallback<void(base::OnceClosure)>& callback,
     const HttpRequest& request) {
-  if (!net::test_server::ShouldHandle(request, kOAuth2TokenExchangeURL))
+  if (!net::test_server::ShouldHandle(request, kOAuth2TokenExchangeURL)) {
     return nullptr;
+  }
 
   // Check that the authorization code is somewhere in the request body.
-  if (!request.has_content)
+  if (!request.has_content) {
     return nullptr;
-  if (request.content.find(kAuthorizationCode) == std::string::npos)
+  }
+  if (request.content.find(kAuthorizationCode) == std::string::npos) {
     return nullptr;
+  }
 
   std::unique_ptr<BlockedHttpResponse> http_response =
       std::make_unique<BlockedHttpResponse>(callback);
@@ -346,8 +355,9 @@ std::unique_ptr<HttpResponse> HandleOAuth2TokenExchangeURL(
 std::unique_ptr<HttpResponse> HandleOAuth2TokenRevokeURL(
     const base::RepeatingClosure& callback,
     const HttpRequest& request) {
-  if (!net::test_server::ShouldHandle(request, kOAuth2TokenRevokeURL))
+  if (!net::test_server::ShouldHandle(request, kOAuth2TokenRevokeURL)) {
     return nullptr;
+  }
 
   content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, callback);
 
@@ -363,13 +373,15 @@ std::unique_ptr<HttpResponse> HandleChromeSigninEmbeddedURL(
     const base::RepeatingCallback<void(const std::string&)>& callback,
     const HttpRequest& request) {
   if (!net::test_server::ShouldHandle(request,
-                                      "/embedded/setup/chrome/usermenu"))
+                                      "/embedded/setup/chrome/usermenu")) {
     return nullptr;
+  }
 
   std::string dice_request_header(kNoDiceRequestHeader);
   auto it = request.headers.find(signin::kDiceRequestHeader);
-  if (it != request.headers.end())
+  if (it != request.headers.end()) {
     dice_request_header = it->second;
+  }
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(callback, dice_request_header));
 
@@ -535,8 +547,9 @@ class DiceBrowserTest : public InProcessBrowserTest,
 
   // Calls |closure| if it is not null and resets it after.
   void RunClosureIfValid(base::OnceClosure closure) {
-    if (closure)
+    if (closure) {
       std::move(closure).Run();
+    }
   }
 
   // Creates and runs a RunLoop until |closure| is called.
@@ -628,8 +641,9 @@ class DiceBrowserTest : public InProcessBrowserTest,
 
   // Waits until |reconcilor_unblocked_count_| reaches |count|.
   void WaitForReconcilorUnblockedCount(int count) {
-    if (reconcilor_unblocked_count_ == count)
+    if (reconcilor_unblocked_count_ == count) {
       return;
+    }
 
     ASSERT_EQ(count - 1, reconcilor_unblocked_count_);
     // Wait for the timeout after the request is complete.
@@ -652,8 +666,9 @@ class DiceBrowserTest : public InProcessBrowserTest,
   // server.
   // Note: this does not wait for the response to reach Chrome.
   void SendEnableSyncResponse() {
-    if (!enable_sync_requested_)
+    if (!enable_sync_requested_) {
       WaitForClosure(&enable_sync_requested_quit_closure_);
+    }
     DCHECK(unblock_enable_sync_response_closure_);
     std::move(unblock_enable_sync_response_closure_).Run();
   }
@@ -663,22 +678,25 @@ class DiceBrowserTest : public InProcessBrowserTest,
   // refresh token will not be sent by the server.
   void SendRefreshTokenResponse() {
     // Wait for the request hitting the server.
-    if (!token_requested_)
+    if (!token_requested_) {
       WaitForClosure(&token_requested_quit_closure_);
+    }
     EXPECT_TRUE(token_requested_);
     // Unblock the server response.
     DCHECK(unblock_token_exchange_response_closure_);
     std::move(unblock_token_exchange_response_closure_).Run();
     // Wait for the response coming back.
-    if (!refresh_token_available_)
+    if (!refresh_token_available_) {
       WaitForClosure(&refresh_token_available_quit_closure_);
+    }
     EXPECT_TRUE(refresh_token_available_);
   }
 
   void WaitForTokenRevokedCount(int count) {
     EXPECT_LE(token_revoked_count_, count);
-    while (token_revoked_count_ < count)
+    while (token_revoked_count_ < count) {
       WaitForClosure(&token_revoked_quit_closure_);
+    }
     EXPECT_EQ(count, token_revoked_count_);
   }
 
@@ -977,8 +995,9 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, MAYBE_NoDiceFromWebUI) {
       browser(), GURL("chrome:chrome-signin?reason=5")));
 
   // Check that the request had no Dice request header.
-  if (dice_request_header_.empty())
+  if (dice_request_header_.empty()) {
     WaitForClosure(&chrome_signin_embedded_quit_closure_);
+  }
   EXPECT_EQ(kNoDiceRequestHeader, dice_request_header_);
   EXPECT_EQ(0, reconcilor_blocked_count_);
   WaitForReconcilorUnblockedCount(0);
@@ -1564,6 +1583,49 @@ IN_PROC_BROWSER_TEST_F(DiceExplicitSigninBrowserTest, Migration) {
   settings->SetDefaultCookieSetting(CONTENT_SETTING_ALLOW);
   EXPECT_TRUE(profile->GetPrefs()->GetBoolean(
       prefs::kCookieClearOnExitMigrationNoticeComplete));
+}
+
+// Signin implicitlty, Dice Signin.
+IN_PROC_BROWSER_TEST_F(DiceExplicitSigninBrowserTest,
+                       PRE_DiceUserMigratedClearsCookie) {
+  signin::MakeAccountAvailable(
+      GetIdentityManager(),
+      signin::AccountAvailabilityOptionsBuilder()
+          .AsPrimary(signin::ConsentLevel::kSignin)
+          // `ACCESS_POINT_WEB_SIGNIN` is not explicit before the migration.
+          .WithAccessPoint(signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN)
+          .Build(kMainGmailEmail));
+  // Set the SAPISID cookie so that its deletion can be detected later.
+  // Set a max-age so that it's persisted on disk.
+  std::string gaia_cookie = base::StrCat(
+      {GaiaConstants::kGaiaSigninCookieName, "=foo; secure; max-age=1000"});
+  content::SetCookie(browser()->profile(), GURL("https://google.com/"),
+                     gaia_cookie);
+  ASSERT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_FALSE(browser()->profile()->GetPrefs()->GetBoolean(
+      prefs::kExplicitBrowserSignin));
+}
+
+// Dice Signin with `switches::kExplicitBrowserSigninUIOnDesktop` enabled.
+IN_PROC_BROWSER_TEST_F(DiceExplicitSigninBrowserTest,
+                       DiceUserMigratedClearsCookie) {
+  Profile* profile = browser()->profile();
+  // The user is still signed in implicitly.
+  ASSERT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_TRUE(gaia::AreEmailsSame(
+      GetIdentityManager()
+          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+          .email,
+      kMainGmailEmail));
+  ASSERT_FALSE(profile->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+
+  content::DeleteCookies(profile, network::mojom::CookieDeletionFilter());
+
+  // User should be signed out.
+  EXPECT_FALSE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 }
 
 class DiceBrowserTestWithExplicitSignin : public DiceBrowserTest {
