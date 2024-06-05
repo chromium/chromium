@@ -56,7 +56,8 @@ class ProcessNodeImpl
  public:
   using PassKey = base::PassKey<ProcessNodeImpl>;
 
-  static constexpr NodeTypeEnum Type() { return NodeTypeEnum::kProcess; }
+  using TypedNodeBase<ProcessNodeImpl, ProcessNode, ProcessNodeObserver>::
+      FromNode;
 
   // Constructor for the browser process.
   explicit ProcessNodeImpl(BrowserProcessNodeTag tag);

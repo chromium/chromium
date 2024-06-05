@@ -41,7 +41,8 @@ class FrameNodeImpl
       public mojom::DocumentCoordinationUnit {
  public:
   static const char kDefaultPriorityReason[];
-  static constexpr NodeTypeEnum Type() { return NodeTypeEnum::kFrame; }
+
+  using TypedNodeBase<FrameNodeImpl, FrameNode, FrameNodeObserver>::FromNode;
 
   // Construct a frame node associated with a `process_node`, a `page_node` and
   // optionally with a `parent_frame_node`. For the main frame of `page_node`

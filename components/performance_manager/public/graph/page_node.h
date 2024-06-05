@@ -42,7 +42,7 @@ enum class PageType {
 // A PageNode represents the root of a FrameTree, or equivalently a WebContents.
 // These may correspond to normal tabs, WebViews, Portals, Chrome Apps or
 // Extensions.
-class PageNode : public Node {
+class PageNode : public TypedNode<PageNode> {
  public:
   using FrameNodeVisitor = base::FunctionRef<bool(const FrameNode*)>;
   using LifecycleState = mojom::LifecycleState;
@@ -106,6 +106,8 @@ class PageNode : public Node {
   };
 
   static const char* ToString(PageNode::PageState page_state);
+
+  static constexpr NodeTypeEnum Type() { return NodeTypeEnum::kPage; }
 
   PageNode();
 

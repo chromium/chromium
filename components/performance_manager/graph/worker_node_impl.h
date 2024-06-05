@@ -32,7 +32,8 @@ class WorkerNodeImpl
       public TypedNodeBase<WorkerNodeImpl, WorkerNode, WorkerNodeObserver> {
  public:
   static const char kDefaultPriorityReason[];
-  static constexpr NodeTypeEnum Type() { return NodeTypeEnum::kWorker; }
+
+  using TypedNodeBase<WorkerNodeImpl, WorkerNode, WorkerNodeObserver>::FromNode;
 
   WorkerNodeImpl(const std::string& browser_context_id,
                  WorkerType worker_type,

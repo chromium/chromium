@@ -32,7 +32,7 @@ constexpr size_t kFooDataSize = sizeof(uintptr_t);
 // A dummy node type so that we can exercise node attached storage code paths.
 class DummyNode : public NodeBase, public Node {
  public:
-  DummyNode() : NodeBase(NodeTypeEnum::kInvalidType) {}
+  DummyNode() = default;
 
   DummyNode(const DummyNode&) = delete;
   DummyNode& operator=(const DummyNode&) = delete;
@@ -44,6 +44,9 @@ class DummyNode : public NodeBase, public Node {
   void RemoveNodeAttachedData() override {}
 
   // Node implementation:
+  NodeTypeEnum GetNodeType() const override {
+    return NodeTypeEnum::kInvalidType;
+  }
   Graph* GetGraph() const override { return graph(); }
   NodeState GetNodeState() const override { return NodeState::kActiveInGraph; }
   uintptr_t GetImplType() const override {

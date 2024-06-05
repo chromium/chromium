@@ -63,7 +63,7 @@ using execution_context_priority::PriorityAndReason;
 //
 // It is only valid to access this object on the sequence of the graph that owns
 // it.
-class FrameNode : public Node {
+class FrameNode : public TypedNode<FrameNode> {
  public:
   using FrameNodeVisitor = base::FunctionRef<bool(const FrameNode*)>;
   using LifecycleState = mojom::LifecycleState;
@@ -80,6 +80,8 @@ class FrameNode : public Node {
     kVisible,
     kNotVisible,
   };
+
+  static constexpr NodeTypeEnum Type() { return NodeTypeEnum::kFrame; }
 
   FrameNode();
 

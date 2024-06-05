@@ -11,9 +11,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/performance_manager/graph/graph_impl.h"
-#include "components/performance_manager/graph/node_type.h"
 #include "components/performance_manager/graph/properties.h"
 #include "components/performance_manager/public/graph/node_state.h"
+#include "components/performance_manager/public/graph/node_type.h"
 
 namespace performance_manager {
 
@@ -32,9 +32,7 @@ class NodeBase {
   // provided by PublicNodeImpl below.
   static const uintptr_t kNodeBaseType;
 
-  // TODO(siggi): Don't store the node type, expose it on a virtual function
-  //    instead.
-  explicit NodeBase(NodeTypeEnum type);
+  NodeBase();
 
   NodeBase(const NodeBase&) = delete;
   NodeBase& operator=(const NodeBase&) = delete;
@@ -42,7 +40,7 @@ class NodeBase {
   virtual ~NodeBase();
 
   // May be called on any sequence.
-  NodeTypeEnum type() const { return type_; }
+  NodeTypeEnum GetNodeType() const { return ToNode()->GetNodeType(); }
 
   // The state of this node.
   NodeState GetNodeState() const {
@@ -133,8 +131,6 @@ class NodeBase {
   // immediately afterwards.
   void LeaveGraph();
 
-  const NodeTypeEnum type_;
-
   // Assigned when JoinGraph() is called, up until LeaveGraph() is called, where
   // it is reset to null.
   raw_ptr<GraphImpl> graph_ GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
@@ -169,7 +165,7 @@ class TypedNodeBase : public NodeBase {
   using ObservedProperty =
       ObservedPropertyImpl<NodeImplClass, NodeClass, NodeObserverClass>;
 
-  TypedNodeBase() : NodeBase(NodeImplClass::Type()) {}
+  TypedNodeBase() = default;
 
   TypedNodeBase(const TypedNodeBase&) = delete;
   TypedNodeBase& operator=(const TypedNodeBase&) = delete;
@@ -177,20 +173,20 @@ class TypedNodeBase : public NodeBase {
   // Helper functions for casting from NodeBase to a concrete node type. This
   // CHECKs that the cast is valid.
   static const NodeImplClass* FromNodeBase(const NodeBase* node) {
-    CHECK_EQ(NodeImplClass::Type(), node->type());
+    CHECK_EQ(NodeImplClass::Type(), node->GetNodeType());
     return static_cast<const NodeImplClass*>(node);
   }
   static NodeImplClass* FromNodeBase(NodeBase* node) {
-    CHECK_EQ(NodeImplClass::Type(), node->type());
+    CHECK_EQ(NodeImplClass::Type(), node->GetNodeType());
     return static_cast<NodeImplClass*>(node);
   }
 
-  // Helper function for casting from a public node type to the private impl.
+  // Helper functions for casting from a public node type to the private impl.
   // This also casts away const correctness, as it is intended to be used by
   // impl code that uses the public observer interface for a node type, where
   // all notifications are delivered with a const node pointer. This CHECKs that
   // the cast is valid.
-  static NodeImplClass* FromNode(const NodeClass* node) {
+  static NodeImplClass* FromNode(const Node* node) {
     NodeBase* node_base = const_cast<NodeBase*>(NodeBase::FromNode(node));
     return FromNodeBase(node_base);
   }

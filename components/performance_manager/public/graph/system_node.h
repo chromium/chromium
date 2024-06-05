@@ -15,11 +15,13 @@ class SystemNodeObserver;
 
 // The SystemNode represents system-wide state. Each graph owns exactly one
 // system node. This node has the same lifetime has the graph that owns it.
-class SystemNode : public Node {
+class SystemNode : public TypedNode<SystemNode> {
  public:
   using Observer = SystemNodeObserver;
   using MemoryPressureLevel = base::MemoryPressureListener::MemoryPressureLevel;
   class ObserverDefaultImpl;
+
+  static constexpr NodeTypeEnum Type() { return NodeTypeEnum::kSystem; }
 
   SystemNode();
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PERFORMANCE_MANAGER_GRAPH_NODE_TYPE_H_
-#define COMPONENTS_PERFORMANCE_MANAGER_GRAPH_NODE_TYPE_H_
+#ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_GRAPH_NODE_TYPE_H_
+#define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_GRAPH_NODE_TYPE_H_
 
 #include <stdint.h>
 
@@ -23,4 +23,4 @@ inline constexpr uint8_t kValidNodeTypeCount = 5;
 
 }  // namespace performance_manager
 
-#endif  // COMPONENTS_PERFORMANCE_MANAGER_GRAPH_NODE_TYPE_H_
+#endif  // COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_GRAPH_NODE_TYPE_H_

@@ -38,21 +38,17 @@ const uintptr_t kGraphImplType = reinterpret_cast<uintptr_t>(&kGraphImplType);
 
 base::Value::Dict DescribeNodeWithDescriber(const NodeDataDescriber& describer,
                                             const Node* node) {
-  const NodeBase* node_base = NodeBase::FromNode(node);
-  switch (node_base->type()) {
+  switch (node->GetNodeType()) {
     case NodeTypeEnum::kFrame:
-      return describer.DescribeNodeData(FrameNodeImpl::FromNodeBase(node_base));
+      return describer.DescribeNodeData(FrameNodeImpl::FromNode(node));
     case NodeTypeEnum::kPage:
-      return describer.DescribeNodeData(PageNodeImpl::FromNodeBase(node_base));
+      return describer.DescribeNodeData(PageNodeImpl::FromNode(node));
     case NodeTypeEnum::kProcess:
-      return describer.DescribeNodeData(
-          ProcessNodeImpl::FromNodeBase(node_base));
+      return describer.DescribeNodeData(ProcessNodeImpl::FromNode(node));
     case NodeTypeEnum::kSystem:
-      return describer.DescribeNodeData(
-          SystemNodeImpl::FromNodeBase(node_base));
+      return describer.DescribeNodeData(SystemNodeImpl::FromNode(node));
     case NodeTypeEnum::kWorker:
-      return describer.DescribeNodeData(
-          WorkerNodeImpl::FromNodeBase(node_base));
+      return describer.DescribeNodeData(WorkerNodeImpl::FromNode(node));
     case NodeTypeEnum::kInvalidType:
       NOTREACHED_NORETURN();
   }
@@ -372,7 +368,7 @@ GraphImpl* GraphImpl::FromGraph(const Graph* graph) {
 
 bool GraphImpl::NodeInGraph(const NodeBase* node) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const NodeSet& nodes = GetNodesOfType(node->type());
+  const NodeSet& nodes = GetNodesOfType(node->GetNodeType());
   return base::Contains(nodes, const_cast<NodeBase*>(node));
 }
 
@@ -444,7 +440,7 @@ void GraphImpl::AddNewNode(NodeBase* new_node) {
   DCHECK(!node_in_transition_);
 
   // Add the node to the graph.
-  NodeSet& nodes = GetNodesOfType(new_node->type());
+  NodeSet& nodes = GetNodesOfType(new_node->GetNodeType());
   auto it = nodes.insert(new_node);
   DCHECK(it.second);  // Inserted successfully
 
@@ -480,7 +476,7 @@ void GraphImpl::RemoveNode(NodeBase* node) {
   node_in_transition_state_ = NodeState::kNotInGraph;
 
   // Remove the node itself.
-  NodeSet& nodes = GetNodesOfType(node->type());
+  NodeSet& nodes = GetNodesOfType(node->GetNodeType());
   size_t erased = nodes.erase(node);
   DCHECK_EQ(1u, erased);
 }
@@ -578,7 +574,7 @@ void GraphImpl::DispatchNodeAddedNotifications(NodeBase* node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // This handles the strongly typed observer notifications.
-  switch (node->type()) {
+  switch (node->GetNodeType()) {
     case NodeTypeEnum::kFrame: {
       auto* frame_node = FrameNodeImpl::FromNodeBase(node);
       for (auto& observer : frame_node_observers_) {
@@ -614,7 +610,7 @@ void GraphImpl::DispatchNodeAddedNotifications(NodeBase* node) {
 void GraphImpl::DispatchNodeRemovedNotifications(NodeBase* node) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  switch (node->type()) {
+  switch (node->GetNodeType()) {
     case NodeTypeEnum::kFrame: {
       auto* frame_node = FrameNodeImpl::FromNodeBase(node);
       for (auto& observer : frame_node_observers_) {

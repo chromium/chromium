@@ -41,7 +41,7 @@ class BrowserChildProcessHostProxy;
 //
 // It is only valid to access this object on the sequence of the graph that owns
 // it.
-class ProcessNode : public Node {
+class ProcessNode : public TypedNode<ProcessNode> {
  public:
   using FrameNodeVisitor = base::FunctionRef<bool(const FrameNode*)>;
   using WorkerNodeVisitor = base::FunctionRef<bool(const WorkerNode*)>;
@@ -67,6 +67,8 @@ class ProcessNode : public Node {
 
   using ContentTypes =
       base::EnumSet<ContentType, ContentType::kExtension, ContentType::kWorker>;
+
+  static constexpr NodeTypeEnum Type() { return NodeTypeEnum::kProcess; }
 
   ProcessNode();
 

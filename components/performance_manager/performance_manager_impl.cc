@@ -427,7 +427,7 @@ void PerformanceManagerImpl::BatchDeleteNodesImpl(
   base::flat_set<ProcessNodeImpl*> process_nodes;
 
   for (const auto& node : *nodes) {
-    switch (node->type()) {
+    switch (node->GetNodeType()) {
       case PageNodeImpl::Type(): {
         auto* page_node = PageNodeImpl::FromNodeBase(node.get());
 

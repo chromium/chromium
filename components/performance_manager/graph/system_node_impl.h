@@ -21,7 +21,7 @@ class SystemNodeImpl
     : public PublicNodeImpl<SystemNodeImpl, SystemNode>,
       public TypedNodeBase<SystemNodeImpl, SystemNode, SystemNodeObserver> {
  public:
-  static constexpr NodeTypeEnum Type() { return NodeTypeEnum::kSystem; }
+  using TypedNodeBase<SystemNodeImpl, SystemNode, SystemNodeObserver>::FromNode;
 
   SystemNodeImpl();
 

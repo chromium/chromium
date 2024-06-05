@@ -53,7 +53,7 @@ using execution_context_priority::PriorityAndReason;
 // A client, from the point of view of the worker, is the frame or worker that
 // caused the worker to start running, either because it explicitly created it,
 // or a service worker is registered to handle their network requests.
-class WorkerNode : public Node {
+class WorkerNode : public TypedNode<WorkerNode> {
  public:
   using FrameNodeVisitor = base::FunctionRef<bool(const FrameNode*)>;
   using WorkerNodeVisitor = base::FunctionRef<bool(const WorkerNode*)>;
@@ -67,6 +67,8 @@ class WorkerNode : public Node {
 
   using Observer = WorkerNodeObserver;
   class ObserverDefaultImpl;
+
+  static constexpr NodeTypeEnum Type() { return NodeTypeEnum::kWorker; }
 
   WorkerNode();
 

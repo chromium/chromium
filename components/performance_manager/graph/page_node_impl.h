@@ -57,7 +57,7 @@ class PageNodeImpl
   // WorkerNode uses blink::WorkerToken) but WebContents has no id to use.
   using PageToken = base::TokenType<class PageTokenTag>;
 
-  static constexpr NodeTypeEnum Type() { return NodeTypeEnum::kPage; }
+  using TypedNodeBase<PageNodeImpl, PageNode, PageNodeObserver>::FromNode;
 
   PageNodeImpl(base::WeakPtr<content::WebContents> web_contents,
                const std::string& browser_context_id,
