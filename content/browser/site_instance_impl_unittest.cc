@@ -542,6 +542,26 @@ TEST_F(SiteInstanceTest, SiteInstanceDestructor) {
   // contents is now deleted, along with instance and browsing_instance
 }
 
+// Tests that, when using SiteInfo::CreateForTesting with an IsolationContext
+// that has no BrowsingInstance, that origins are still correctly given a
+// default origin-keyed process when OriginKeyedProcessByDefault is enabled.
+TEST_F(SiteInstanceTest,
+       OriginKeyedProcessesByDefault_SiteInfo_CreateForTesting) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /* enable */ {features::kOriginKeyedProcessesByDefault},
+      /* disable */ {});
+  EXPECT_TRUE(
+      base::FeatureList::IsEnabled(features::kOriginKeyedProcessesByDefault));
+
+  TestBrowserContext browser_context;
+  GURL url("https://www.foo.com/");
+  SiteInfo site_info =
+      SiteInfo::CreateForTesting(IsolationContext(&browser_context), url);
+  EXPECT_TRUE(site_info.requires_origin_keyed_process());
+  EXPECT_EQ(url, site_info.process_lock_url());
+}
+
 // Verifies some basic properties of default SiteInstances.
 TEST_F(SiteInstanceTest, DefaultSiteInstanceProperties) {
   TestBrowserContext browser_context;

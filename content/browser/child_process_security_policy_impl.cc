@@ -2554,47 +2554,45 @@ bool ChildProcessSecurityPolicyImpl::GetMatchingProcessIsolatedOrigin(
   *result = url::Origin();
   base::AutoLock isolated_origins_lock(isolated_origins_lock_);
 
-  // If |isolation_context| does not specify a BrowsingInstance ID, then assume
-  // that we want to retrieve the latest applicable information; i.e., return
-  // the latest matching isolated origins that would apply to future
-  // BrowsingInstances.  Using NextBrowsingInstanceId() will match all
-  // available IsolatedOriginEntries.
+  // If |isolation_context| does not specify a BrowsingInstance ID (which should
+  // only happen in tests), then assume that we want to retrieve the latest
+  // applicable information; i.e., return the latest matching isolated origins
+  // that would apply to future BrowsingInstances.  Using
+  // NextBrowsingInstanceId() will match all available IsolatedOriginEntries.
   BrowsingInstanceId browsing_instance_id(
       isolation_context.browsing_instance_id());
-
   if (browsing_instance_id.is_null()) {
     browsing_instance_id = SiteInstanceImpl::NextBrowsingInstanceId();
-  } else {
-    // Check the opt-in isolation status of |origin| in |isolation_context|.
-    // Note that while IsolatedOrigins considers any sub-origin of an isolated
-    // origin as also being isolated, with opt-in we will always either return
-    // false, or true with result set to |origin|. We give priority to origins
-    // requesting opt-in isolation over command-line isolation, but don't check
-    // for opt-in if we didn't get a valid BrowsingInstance id.
-    // Note: This should only return a full origin if we are doing
-    // process-isolated Origin-keyed Agent Clusters, which will only be the case
-    // when site-isolation is enabled. Otherwise we put the origin into its
-    // corresponding site, even if Origin-keyed Agent Clusters will be enabled
-    // on the renderer side.
-    // TODO(wjmaclean,alexmos,acolwell): We should revisit this when we have
-    // SiteInstanceGroups, since at that point we can again return an origin
-    // here (and thus create a new SiteInstance) even when
-    // IsProcessIsolationForOriginAgentClusterEnabled() returns false; in that
-    // case a SiteInstanceGroup will allow a logical group of SiteInstances that
-    // live same-process.
-    if (SiteIsolationPolicy::IsProcessIsolationForOriginAgentClusterEnabled()) {
-      OriginAgentClusterIsolationState oac_isolation_state_request =
-          requests_origin_keyed_process
-              ? OriginAgentClusterIsolationState::CreateForOriginAgentCluster(
-                    true /* requires_origin_keyed_process */)
-              : OriginAgentClusterIsolationState::CreateNonIsolated();
-      OriginAgentClusterIsolationState oac_isolation_state_result =
-          DetermineOriginAgentClusterIsolation(isolation_context, origin,
-                                               oac_isolation_state_request);
-      if (oac_isolation_state_result.requires_origin_keyed_process()) {
-        *result = origin;
-        return true;
-      }
+  }
+
+  // Check the opt-in isolation status of |origin| in |isolation_context|.
+  // Note that while IsolatedOrigins considers any sub-origin of an isolated
+  // origin as also being isolated, with opt-in we will always either return
+  // false, or true with result set to |origin|. We give priority to origins
+  // requesting opt-in isolation over command-line isolation.
+  // Note: This should only return a full origin if we are doing
+  // process-isolated Origin-keyed Agent Clusters, which will only be the case
+  // when site-isolation is enabled. Otherwise we put the origin into its
+  // corresponding site, even if Origin-keyed Agent Clusters will be enabled
+  // on the renderer side.
+  // TODO(wjmaclean,alexmos,acolwell): We should revisit this when we have
+  // SiteInstanceGroups, since at that point we can again return an origin
+  // here (and thus create a new SiteInstance) even when
+  // IsProcessIsolationForOriginAgentClusterEnabled() returns false; in that
+  // case a SiteInstanceGroup will allow a logical group of SiteInstances that
+  // live same-process.
+  if (SiteIsolationPolicy::IsProcessIsolationForOriginAgentClusterEnabled()) {
+    OriginAgentClusterIsolationState oac_isolation_state_request =
+        requests_origin_keyed_process
+            ? OriginAgentClusterIsolationState::CreateForOriginAgentCluster(
+                  true /* requires_origin_keyed_process */)
+            : OriginAgentClusterIsolationState::CreateNonIsolated();
+    OriginAgentClusterIsolationState oac_isolation_state_result =
+        DetermineOriginAgentClusterIsolation(isolation_context, origin,
+                                             oac_isolation_state_request);
+    if (oac_isolation_state_result.requires_origin_keyed_process()) {
+      *result = origin;
+      return true;
     }
   }
 
