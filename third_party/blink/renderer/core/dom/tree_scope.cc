@@ -605,15 +605,7 @@ Element* TreeScope::activeElement() const {
   if (Element* element = AdjustedFocusedElement()) {
     return element;
   }
-  if (document_ == this) {
-    if (Element* body = document_->body()) {
-      return body;
-    }
-    if (Element* document_element = document_->documentElement()) {
-      return document_element;
-    }
-  }
-  return nullptr;
+  return document_ == this ? document_->body() : nullptr;
 }
 
 HeapVector<Member<Animation>> TreeScope::getAnimations() {

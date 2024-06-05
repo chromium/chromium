@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Never-rendered element with tabindex should not support autofocus
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'tagName')"
+Harness: the test ran to completion.
+
