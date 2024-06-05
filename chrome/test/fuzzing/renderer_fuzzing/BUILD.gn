@@ -2,14 +2,21 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/browser_exposed_mojom_targets.gni")
 import("//chrome/test/fuzzing/in_process_fuzzer.gni")
 import("//chrome/test/fuzzing/renderer_fuzzing/in_process_renderer_fuzzing.gni")
-import(
-    "//chrome/test/fuzzing/renderer_fuzzing/ipc_fuzzing/mojom_interfaces.gni")
 
 group("test") {
   testonly = true
 }
+
+# We want to make sure to only enable this fuzzer on platforms that have a CQ
+# bot so that the mojom target list is maintained up-to-date.
+# Similarly, if something goes wrong with those targets, this will "only" break
+# fuzzer CQ bots, so we this allows for damage control.
+# crbug.com/343669713: enable this on Windows once the Linux version sticks in.
+renderer_ipc_fuzzing_enabled =
+    fuzzing_engine_supports_custom_main && is_linux && enable_mojom_fuzzer
 
 if (fuzzing_engine_supports_custom_main) {
   source_set("renderer_in_process_fuzzer_runner") {
@@ -25,164 +32,77 @@ if (fuzzing_engine_supports_custom_main) {
   }
 }
 
-# As for now, we cannot compile this fuzzer when `dcheck_always_on=true`,
-# because InProcessFuzzer aren't running properly. See crbug.com/40949031.
-# Relatedly, we are also checking for `fuzzing_engine_supports_custom_main`
-# because this is a necessary condition to most of the in_process_fuzzer
-# dependencies, which we are heavily relying upon here.
-if (!is_android && !dcheck_always_on && fuzzing_engine_supports_custom_main) {
+if (renderer_ipc_fuzzing_enabled) {
+  _mojolpm_deps = []
+  foreach(target, browser_exposed_mojom_targets) {
+    _mojolpm_deps += [ "${target}_mojolpm" ]
+  }
+
+  # This tool aims at replicating an environment similar to how
+  # in_process_fuzzer are running, so that we can fetch a list of mojom
+  # interfaces that make sense for `renderer_in_process_mojolpm_fuzzer`.
   executable("ipc_interfaces_dumper") {
     testonly = true
-    sources = [
-      # We include those files so that we take into consideration the exact
-      # same setup as in_process_fuzzer, including the runtime flags. This is
-      # important because this can have an effect on which interfaces are
-      # being exposed.
-      "../in_process_fuzzer.cc",
-      "../in_process_fuzzer.h",
-      "ipc_fuzzing/ipc_interfaces_dumper.cc",
-    ]
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "ipc_fuzzing/ipc_interfaces_dumper.cc" ]
     deps = [
-      "//chrome/test:chrome_test_launcher",
+      "//base",
+      "//chrome/test:browser_tests_runner",
       "//chrome/test:test_support",
-      "//chrome/test/fuzzing:in_process_fuzzer_buildflags",
       "//content/test:test_support",
-
-      # This is so that in_process_fuzzer internals work, but
-      # `ipc_interfaces_dumper` is not recognized as an actual fuzzer.
-      "//testing/libfuzzer:fuzzing_engine_no_main_core",
     ]
   }
   action("renderer_in_process_mojolpm_fuzzer_generator") {
     testonly = true
+    deps = [ ":ipc_interfaces_dumper" ]
+    depfile = "$target_out_dir/$target_name.d"
+    inputs = []
+    foreach(target, browser_exposed_mojom_targets) {
+      inputs += [ get_label_info(target, "target_gen_dir") + "/" +
+                  get_label_info(target, "name") + ".build_metadata" ]
+    }
+
+    # We cannot use the GN `metadata` mechanism here, because our initial
+    # deps could depend on other mojom targets which would also generate some
+    # metadata, but we would actually not depend on their `mojolpm` variant.
+    # Doing things the current way allows for ensuring that we are only listing
+    # meta files for mojolpm targets we directly depend upon.
+    _metafiles = []
+    foreach(file, inputs) {
+      _metafiles += [ rebase_path(file, root_build_dir) ]
+    }
+    write_file("$target_gen_dir/metadata", _metafiles)
+
     script = "//chrome/test/fuzzing/renderer_fuzzing/ipc_fuzzing/generate_testcase.py"
     args = [
-      "-n",
-      "renderer_in_process_mojolpm_fuzzer",
+      "-p",
+      rebase_path("${root_build_dir}/ipc_interfaces_dumper", root_build_dir),
+      "-i",
+      rebase_path("${target_gen_dir}/interfaces.json", root_build_dir),
+      "-r",
+      rebase_path(root_gen_dir, root_build_dir),
+      "-m",
+      rebase_path("$target_gen_dir/metadata", root_build_dir),
+      "-t",
+      rebase_path("${target_gen_dir}/testcase.h", root_build_dir),
       "-d",
       rebase_path("${target_gen_dir}/", root_gen_dir),
-      "-o",
-      rebase_path("${target_gen_dir}/testcase.h", root_build_dir),
-      "-c",
+      "-n",
+      "renderer_in_process_mojolpm_fuzzer",
+      "-f",
+      rebase_path(depfile, root_build_dir),
     ]
-    foreach(interface, context_browser_exposed_interfaces) {
-      args += [ interface[1] ]
-    }
-    args += [ "-p" ]
-    foreach(interface, process_browser_exposed_interfaces) {
-      args += [ interface[1] ]
-    }
-    outputs = [ "${target_gen_dir}/testcase.h" ]
+    outputs = [
+      "${target_gen_dir}/interfaces.json",
+      "${target_gen_dir}/testcase.h",
+    ]
+    deps += _mojolpm_deps
   }
   in_process_renderer_mojolpm_generated_fuzzer(
       "renderer_in_process_mojolpm_fuzzer") {
     sources = [ "renderer_in_process_mojolpm_fuzzer.cc" ]
 
-    interfaces = context_browser_exposed_interfaces
-    interfaces += process_browser_exposed_interfaces
-
-    _interfaces_deps = [
-      "//chrome/browser/lens/core/mojom:mojo_bindings_mojolpm",
-      "//chrome/browser/media:mojo_bindings_mojolpm",
-      "//chrome/browser/new_tab_page/modules/file_suggestion:mojo_bindings_mojolpm",
-      "//chrome/browser/new_tab_page/modules/photos:mojo_bindings_mojolpm",
-      "//chrome/browser/new_tab_page/modules/v2/history_clusters:mojo_bindings_mojolpm",
-      "//chrome/browser/new_tab_page/modules/v2/tab_resumption:mojo_bindings_mojolpm",
-      "//chrome/browser/ui/webui/access_code_cast:mojo_bindings_mojolpm",
-      "//chrome/browser/ui/webui/app_home:mojo_bindings_mojolpm",
-      "//chrome/browser/ui/webui/app_service_internals:mojo_bindings_mojolpm",
-      "//chrome/browser/ui/webui/bluetooth_internals:mojo_bindings_mojolpm",
-      "//chrome/browser/ui/webui/connectors_internals:mojo_bindings_mojolpm",
-      "//chrome/browser/ui/webui/discards:mojo_bindings_mojolpm",
-      "//chrome/browser/ui/webui/downloads:mojo_bindings_mojolpm",
-      "//chrome/browser/ui/webui/internals/user_education:mojo_bindings_mojolpm",
-      "//chrome/browser/ui/webui/location_internals:mojo_bindings_mojolpm",
-      "//chrome/browser/ui/webui/new_tab_page:mojo_bindings_mojolpm",
-      "//chrome/browser/ui/webui/new_tab_page/foo:mojo_bindings_mojolpm",
-      "//chrome/browser/ui/webui/new_tab_page_third_party:mojo_bindings_mojolpm",
-      "//chrome/browser/ui/webui/omnibox:mojo_bindings_mojolpm",
-      "//chrome/browser/ui/webui/privacy_sandbox:mojo_bindings_mojolpm",
-      "//chrome/browser/ui/webui/reset_password:mojo_bindings_mojolpm",
-      "//chrome/browser/ui/webui/search_engine_choice:mojo_bindings_mojolpm",
-      "//chrome/browser/ui/webui/segmentation_internals:mojo_bindings_mojolpm",
-      "//chrome/browser/ui/webui/side_panel/bookmarks:mojo_bindings_mojolpm",
-      "//chrome/browser/ui/webui/side_panel/customize_chrome:mojo_bindings_mojolpm",
-      "//chrome/browser/ui/webui/side_panel/reading_list:mojo_bindings_mojolpm",
-      "//chrome/browser/ui/webui/suggest_internals:mojo_bindings_mojolpm",
-      "//chrome/browser/ui/webui/tab_search:mojo_bindings_mojolpm",
-      "//chrome/browser/ui/webui/tab_strip:mojo_bindings_mojolpm",
-      "//chrome/browser/ui/webui/usb_internals:mojo_bindings_mojolpm",
-      "//chrome/browser/ui/webui/web_app_internals:mojo_bindings_mojolpm",
-      "//chrome/common:mojo_bindings_mojolpm",
-      "//chrome/common/accessibility:mojo_bindings_mojolpm",
-      "//chrome/common/cart:mojo_bindings_mojolpm",
-      "//components/browsing_topics/mojom:mojo_bindings_mojolpm",
-      "//components/commerce/core/internals/mojom:mojo_bindings_mojolpm",
-      "//components/dom_distiller/content/common/mojom:mojom_mojolpm",
-      "//components/history_clusters/history_clusters_internals/webui:mojo_bindings_mojolpm",
-      "//components/metrics/public/mojom:call_stack_mojo_bindings_mojolpm",
-      "//components/metrics/public/mojom:single_sample_metrics_mojo_bindings_mojolpm",
-      "//components/network_hints/common:mojo_bindings_mojolpm",
-      "//components/no_state_prefetch/common:mojo_bindings_mojolpm",
-      "//components/optimization_guide/optimization_guide_internals/webui:mojo_bindings_mojolpm",
-      "//components/page_image_service/mojom:mojo_bindings_mojolpm",
-      "//components/performance_manager/public/mojom:mojom_mojolpm",
-      "//components/safe_browsing/content/common:interfaces_mojolpm",
-      "//components/site_engagement/core/mojom:mojo_bindings_mojolpm",
-      "//components/spellcheck/common:interfaces_mojolpm",
-      "//components/translate/content/common:common_mojolpm",
-      "//content/browser/attribution_reporting:internals_mojo_bindings_mojolpm",
-      "//content/browser/indexed_db:internals_mojo_bindings_mojolpm",
-      "//content/browser/private_aggregation:mojo_bindings_mojolpm",
-      "//content/browser/process_internals:mojo_bindings_mojolpm",
-      "//content/browser/tracing/trace_report:mojo_bindings_mojolpm",
-      "//content/browser/xr/webxr_internals/mojom:mojo_bindings_mojolpm",
-      "//content/common:mojo_bindings_mojolpm",
-      "//device/gamepad/public/mojom:mojom_mojolpm",
-      "//device/vr/public/mojom:vr_service_mojolpm",
-      "//extensions/common/api:mojom_mojolpm",
-      "//media/capture/mojom:image_capture_mojolpm",
-      "//media/capture/mojom:video_capture_mojolpm",
-      "//media/midi:mojo_mojolpm",
-      "//media/mojo/mojom:mojom_mojolpm",
-      "//media/mojo/mojom:remoting_mojolpm",
-      "//media/mojo/mojom:speech_recognition_mojolpm",
-      "//media/mojo/mojom:web_speech_recognition_mojolpm",
-      "//services/device/public/mojom:mojom_mojolpm",
-      "//services/image_annotation/public/mojom:mojom_mojolpm",
-      "//services/network/public/mojom:cookies_mojom_mojolpm",
-      "//services/network/public/mojom:mojom_mojolpm",
-      "//services/network/public/mojom:url_loader_base_mojolpm",
-      "//services/resource_coordinator/public/mojom:mojom_mojolpm",
-      "//services/screen_ai/public/mojom:mojom_mojolpm",
-      "//services/shape_detection/public/mojom:mojom_mojolpm",
-      "//services/viz/public/mojom:mojom_mojolpm",
-      "//storage/browser/quota:mojo_bindings_mojolpm",
-      "//third_party/blink/public/mojom:android_mojo_bindings_mojolpm",
-      "//third_party/blink/public/mojom:authenticator_test_mojo_bindings_mojolpm",
-      "//third_party/blink/public/mojom:embedded_frame_sink_mojo_bindings_mojolpm",
-      "//third_party/blink/public/mojom:mojom_core_mojolpm",
-      "//third_party/blink/public/mojom:mojom_modules_mojolpm",
-      "//third_party/blink/public/mojom:mojom_platform_mojolpm",
-      "//third_party/blink/public/mojom:web_bluetooth_mojo_bindings_mojolpm",
-      "//third_party/blink/public/mojom/gpu:gpu_mojolpm",
-      "//third_party/blink/public/mojom/origin_trial_state:origin_trial_state_mojolpm",
-      "//third_party/blink/public/mojom/quota:quota_mojolpm",
-      "//third_party/blink/public/mojom/usb:usb_mojolpm",
-      "//ui/webui/resources/cr_components/app_management:mojo_bindings_mojolpm",
-      "//ui/webui/resources/cr_components/certificate_manager:mojom_mojolpm",
-      "//ui/webui/resources/cr_components/color_change_listener:mojom_mojolpm",
-      "//ui/webui/resources/cr_components/commerce:mojo_bindings_mojolpm",
-      "//ui/webui/resources/cr_components/customize_color_scheme_mode:mojom_mojolpm",
-      "//ui/webui/resources/cr_components/customize_themes:mojom_mojolpm",
-      "//ui/webui/resources/cr_components/help_bubble:mojo_bindings_mojolpm",
-      "//ui/webui/resources/cr_components/history_clusters:mojo_bindings_mojolpm",
-      "//ui/webui/resources/cr_components/most_visited:mojom_mojolpm",
-      "//ui/webui/resources/cr_components/searchbox:mojo_bindings_mojolpm",
-      "//ui/webui/resources/cr_components/theme_color_picker:mojom_mojolpm",
-      "//ui/webui/resources/js/browser_command:mojo_bindings_mojolpm",
-      "//ui/webui/resources/js/metrics_reporter:mojo_bindings_mojolpm",
-    ]
+    interface_file = "${target_gen_dir}/interfaces.json"
 
     deps = [
       ":renderer_in_process_mojolpm_fuzzer_generator",
@@ -193,8 +113,10 @@ if (!is_android && !dcheck_always_on && fuzzing_engine_supports_custom_main) {
       "//testing/libfuzzer/proto:url_proto_converter",
       "//third_party/blink/public/common:storage_key_proto_converter",
     ]
-    deps += _interfaces_deps
 
-    proto_deps = _interfaces_deps
+    deps += _mojolpm_deps
+
+    proto_deps = [ ":renderer_in_process_mojolpm_fuzzer_generator" ]
+    proto_deps += _mojolpm_deps
   }
 }

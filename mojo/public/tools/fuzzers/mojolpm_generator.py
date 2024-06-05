@@ -45,6 +45,7 @@ from __future__ import annotations
 import abc
 import argparse
 import dataclasses
+import json
 import os
 import pathlib
 import re
@@ -62,6 +63,7 @@ from mojom import fileutil
 from mojom.generate import module
 
 fileutil.AddLocalRepoThirdPartyDirToModulePath()
+CHROME_SRC_DIR = fileutil._GetDirAbove('mojo')
 
 import jinja2
 
@@ -654,17 +656,48 @@ def build(interface: module.Interface,
   return actions
 
 
+def get_interface_list_from_file(
+    file_path: str) -> typing.List[typing.List[str]]:
+  """Reads the JSON input file and returns the interfaces list that it
+  contains.
+
+  Args:
+      file_path: the path to the input file.
+
+  Returns:
+      the list of interfaces.
+  """
+  with open(file_path, 'r') as f:
+    data = json.load(f)
+    return data['interfaces']
+
+
+def get_interface_list_from_input(
+    interfaces: typing.List[str]) -> typing.List[typing.List[str]]:
+  """Parses the input list of interfaces and returns a list of list that
+  matches the expected format.
+
+  Args:
+      interfaces: the list of strings listing the interfaces.
+
+  Returns:
+      the list of interfaces.
+  """
+  return [interface.split(':') for interface in interfaces]
+
+
 def main():
   parser = argparse.ArgumentParser(
       description='Generate MojoLPM proto and cpp/h files.')
-  parser.add_argument(
+  group = parser.add_mutually_exclusive_group(required=True)
+  group.add_argument(
       '-i',
       '--input',
       default=[],
       nargs='+',
-      required=True,
       help="input(s) with format: "
       "path/to/interface.mojom-module:InterfaceName:{Remote|AssociatedRemote}")
+  group.add_argument('-f', '--file', help="")
   parser.add_argument('--output_file_format',
                       required=True,
                       help="output file format. Files with extensions '.h' and"
@@ -677,11 +710,11 @@ def main():
       [MojoLPMProtoGenerator(output_file),
        MojoLPMCppGenerator(output_file)])
   actions = MojoLPMActionSet()
-  for file_interface in args.input:
-    custom_format = file_interface.split(':')
-    if len(custom_format) != 3:
-      print(f"Wrong format: {file_interface}. See help for usage.")
-      return
+  if args.file:
+    interfaces = get_interface_list_from_file(args.file)
+  else:
+    interfaces = get_interface_list_from_input(args.input)
+  for custom_format in interfaces:
     (file, interface_name, remote_type_str) = custom_format
     if remote_type_str == 'Remote':
       remote_type = MojoLPMActionType.REMOTE_ACTION

@@ -14,12 +14,14 @@
 #include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "chrome/test/fuzzing/in_process_fuzzer.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/test/browser_test.h"
 
 // Format for the outputted JSON:
 // {
@@ -41,19 +43,6 @@
 //   ]
 // }
 
-class IPCInterfaceDumper : public InProcessFuzzer {
- public:
-  IPCInterfaceDumper() = default;
-  void RunTestOnMainThread() override;
-
-  int Fuzz(const uint8_t* data, size_t size) override { return 0; }
-};
-
-// We register this tool as an in_process_fuzzer so that it has the exact same
-// setup as an in_process_fuzzer. Indeed, this is important because this can
-// have an effect on which interfaces are being exposed.
-REGISTER_IN_PROCESS_FUZZER(IPCInterfaceDumper)
-
 namespace {
 
 void RegisterInterfaces(const std::vector<std::string>& interfaces,
@@ -72,7 +61,12 @@ void RegisterInterfaces(const std::vector<std::string>& interfaces,
 
 }  // namespace
 
-void IPCInterfaceDumper::RunTestOnMainThread() {
+class IPCInterfacesDumper : public InProcessBrowserTest {
+ public:
+  IPCInterfacesDumper() = default;
+};
+
+IN_PROC_BROWSER_TEST_F(IPCInterfacesDumper, DumperTest) {
   auto env = base::Environment::Create();
   if (!env->HasVar("IPC_DUMP_PATH")) {
     LOG(ERROR) << "IPC_DUMP_PATH not set. Nothing will be done.";
@@ -107,6 +101,8 @@ void IPCInterfaceDumper::RunTestOnMainThread() {
   // Write the JSON to a file in the IPC_DUMP_PATH directory.
   std::string file_path;
   env->GetVar("IPC_DUMP_PATH", &file_path);
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
 #if BUILDFLAG(IS_WIN)
   base::FilePath filepath = base::FilePath(base::UTF8ToWide(file_path));
 #else
