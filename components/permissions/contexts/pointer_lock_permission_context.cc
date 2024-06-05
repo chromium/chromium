@@ -16,4 +16,25 @@ PointerLockPermissionContext::PointerLockPermissionContext(
                             blink::mojom::PermissionsPolicyFeature::kNotFound) {
 }
 
+void PointerLockPermissionContext::NotifyPermissionSet(
+    const PermissionRequestID& id,
+    const GURL& requesting_origin,
+    const GURL& embedding_origin,
+    BrowserPermissionCallback callback,
+    bool persist,
+    ContentSetting content_setting,
+    bool is_one_time,
+    bool is_final_decision) {
+  if (is_one_time) {
+    // When `persist` is true, one-time permissions persist for a short period
+    // of time (managed by OneTimePermissionProvider), which we do not want for
+    // pointer lock. If another request is made (e.g. after a page navigation),
+    // the request must obtain a user permission again.
+    persist = false;
+  }
+  permissions::PermissionContextBase::NotifyPermissionSet(
+      id, requesting_origin, embedding_origin, std::move(callback), persist,
+      content_setting, is_one_time, is_final_decision);
+}
+
 }  // namespace permissions

@@ -18,6 +18,15 @@ class PointerLockPermissionContext : public permissions::PermissionContextBase {
   PointerLockPermissionContext(const PointerLockPermissionContext&) = delete;
   PointerLockPermissionContext& operator=(const PointerLockPermissionContext&) =
       delete;
+
+  void NotifyPermissionSet(const PermissionRequestID& id,
+                           const GURL& requesting_origin,
+                           const GURL& embedding_origin,
+                           BrowserPermissionCallback callback,
+                           bool persist,
+                           ContentSetting content_setting,
+                           bool is_one_time,
+                           bool is_final_decision) override;
 };
 
 }  // namespace permissions

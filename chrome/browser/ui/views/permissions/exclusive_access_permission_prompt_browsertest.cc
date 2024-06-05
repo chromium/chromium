@@ -30,9 +30,15 @@ class PermissionPromptDelegate : public TestPermissionBubbleViewDelegate {
     }
   }
 
-  void Dismiss() override {
+  void AcceptThisTime() override {
     for (auto request : Requests()) {
-      request->Cancelled();
+      request->PermissionGranted(/*is_one_time=*/true);
+    }
+  }
+
+  void Deny() override {
+    for (auto request : Requests()) {
+      request->PermissionDenied();
     }
   }
 
@@ -64,13 +70,26 @@ class ExclusiveAccessPermissionPromptInteractiveTest
   }
 
   void PressAllowButton(ExclusiveAccessPermissionPrompt* prompt) {
-    prompt->GetViewForTesting()->RunButtonCallback(static_cast<int>(
-        ExclusiveAccessPermissionPromptView::ButtonType::kAllow));
+    PressButton(prompt,
+                ExclusiveAccessPermissionPromptView::ButtonType::kAlwaysAllow);
+  }
+
+  void PressAllowThisTimeButton(ExclusiveAccessPermissionPrompt* prompt) {
+    PressButton(
+        prompt,
+        ExclusiveAccessPermissionPromptView::ButtonType::kAllowThisTime);
   }
 
   void PressDenyButton(ExclusiveAccessPermissionPrompt* prompt) {
-    prompt->GetViewForTesting()->RunButtonCallback(static_cast<int>(
-        ExclusiveAccessPermissionPromptView::ButtonType::kDontAllow));
+    PressButton(prompt,
+                ExclusiveAccessPermissionPromptView::ButtonType::kNeverAllow);
+  }
+
+  void PressButton(
+      ExclusiveAccessPermissionPrompt* prompt,
+      ExclusiveAccessPermissionPromptView::ButtonType button_type) {
+    prompt->GetViewForTesting()->RunButtonCallback(
+        static_cast<int>(button_type));
   }
 
   base::MockCallback<permissions::PermissionRequest::PermissionDecidedCallback>
@@ -90,17 +109,26 @@ IN_PROC_BROWSER_TEST_F(ExclusiveAccessPermissionPromptInteractiveTest,
                        AllowPermisison) {
   std::unique_ptr<ExclusiveAccessPermissionPrompt> prompt =
       CreatePrompt({&keyboard_request_});
-  EXPECT_CALL(keyboard_callback_, Run(CONTENT_SETTING_ALLOW, _, _));
+  EXPECT_CALL(keyboard_callback_,
+              Run(CONTENT_SETTING_ALLOW, /*is_one_time=*/false, _));
   PressAllowButton(prompt.get());
+}
+
+IN_PROC_BROWSER_TEST_F(ExclusiveAccessPermissionPromptInteractiveTest,
+                       AllowPermisisonThisTime) {
+  std::unique_ptr<ExclusiveAccessPermissionPrompt> prompt =
+      CreatePrompt({&keyboard_request_});
+  EXPECT_CALL(keyboard_callback_,
+              Run(CONTENT_SETTING_ALLOW, /*is_one_time=*/true, _));
+  PressAllowThisTimeButton(prompt.get());
 }
 
 IN_PROC_BROWSER_TEST_F(ExclusiveAccessPermissionPromptInteractiveTest,
                        DenyPermisison) {
   std::unique_ptr<ExclusiveAccessPermissionPrompt> prompt =
       CreatePrompt({&keyboard_request_});
-  // Denying the request in this prompt means "deny this time" and the page can
-  // ask again, so the content setting should stay at default.
-  EXPECT_CALL(keyboard_callback_, Run(CONTENT_SETTING_DEFAULT, _, _));
+  EXPECT_CALL(keyboard_callback_,
+              Run(CONTENT_SETTING_BLOCK, /*is_one_time=*/false, _));
   PressDenyButton(prompt.get());
 }
 
@@ -108,8 +136,10 @@ IN_PROC_BROWSER_TEST_F(ExclusiveAccessPermissionPromptInteractiveTest,
                        AllowMultiplePermisisons) {
   std::unique_ptr<ExclusiveAccessPermissionPrompt> prompt =
       CreatePrompt({&keyboard_request_, &pointer_request_});
-  EXPECT_CALL(keyboard_callback_, Run(CONTENT_SETTING_ALLOW, _, _));
-  EXPECT_CALL(pointer_callback_, Run(CONTENT_SETTING_ALLOW, _, _));
+  EXPECT_CALL(keyboard_callback_,
+              Run(CONTENT_SETTING_ALLOW, /*is_one_time=*/false, _));
+  EXPECT_CALL(pointer_callback_,
+              Run(CONTENT_SETTING_ALLOW, /*is_one_time=*/false, _));
   PressAllowButton(prompt.get());
 }
 
@@ -117,9 +147,9 @@ IN_PROC_BROWSER_TEST_F(ExclusiveAccessPermissionPromptInteractiveTest,
                        DenyMultiplePermisisons) {
   std::unique_ptr<ExclusiveAccessPermissionPrompt> prompt =
       CreatePrompt({&keyboard_request_, &pointer_request_});
-  // Denying the request in this prompt means "deny this time" and the page can
-  // ask again, so the content setting should stay at default.
-  EXPECT_CALL(keyboard_callback_, Run(CONTENT_SETTING_DEFAULT, _, _));
-  EXPECT_CALL(pointer_callback_, Run(CONTENT_SETTING_DEFAULT, _, _));
+  EXPECT_CALL(keyboard_callback_,
+              Run(CONTENT_SETTING_BLOCK, /*is_one_time=*/false, _));
+  EXPECT_CALL(pointer_callback_,
+              Run(CONTENT_SETTING_BLOCK, /*is_one_time=*/false, _));
   PressDenyButton(prompt.get());
 }
