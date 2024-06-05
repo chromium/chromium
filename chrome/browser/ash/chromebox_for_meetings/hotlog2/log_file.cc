@@ -67,20 +67,13 @@ std::streampos LogFile::GetCurrentOffset() {
   std::streampos offset;
 
   // tellg() will report -1 if the last read resulted in an EOF,
-  // but we want the true offset value. Temporarily clear the EOF
-  // bit, store the tellg() result, and call .get() to trigger
-  // another EOF. Note there is no risk of .get() advancing our
-  // buffer accidentally as changes on the filesystem will not
-  // be reflected in our stream until we do a full close & open.
+  // but we want the true offset value. Use the last-known read
+  // offset as it will be the offset right before we hit the EOF.
   if (IsAtEOF()) {
-    file_stream_.clear();
-    offset = file_stream_.tellg();
-    file_stream_.get();
-  } else {
-    offset = file_stream_.tellg();
+    return last_read_offset_;
   }
 
-  return offset;
+  return file_stream_.tellg();
 }
 
 bool LogFile::Refresh() {
@@ -104,6 +97,7 @@ std::vector<std::string> LogFile::RetrieveNextLogs(size_t count) {
          std::getline(file_stream_, line)) {
     logs.push_back(std::move(line));
     num_read_lines++;
+    last_read_offset_ = file_stream_.tellg();
   }
 
   if (IsInFailState()) {
