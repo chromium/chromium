@@ -17,11 +17,25 @@ namespace ash {
 
 namespace {
 
-// Conigure of grid view for `IconButton` instances. We have 4 x 3 instances
-// divided into 3 column groups.
-constexpr size_t kGridViewRowNum = 8;
-constexpr size_t kGridViewColNum = 4;
-constexpr size_t kGridViewRowGroupSize = 4;
+// 3 columns with 15 rows divided into groups of 5.
+//
+//+-----------------+-----------------+-----------------+
+//|Default XSmall   | Floating XSmall | Toggled XSmall  |
+//|      ...        |       ...       |       ...       |
+//|Default XLarge   | Floating XLarge | Toggled XLarge  |
+//+-----------------+-----------------+-----------------+
+//|Prominent XSmall | Image XSmall    | Disabled XSmall |
+//|      ...        |       ...       |       ...       |
+//|Prominent XLarge | Image XLarge    | Disabled XLarge |
+//+-----------------+-----------------+-----------------+
+//|Symbol XSmall    |                 |                 |
+//|      ...        |                 |                 |
+//|Symbol XLarge    |                 |                 |
+//+-----------------+-----------------+-----------------+
+constexpr size_t kGridViewRowNum = 15;
+constexpr size_t kGridViewRowGroupSize = 5;
+
+constexpr size_t kGridViewColNum = 3;
 constexpr size_t kGirdViewColGroupSize = 1;
 
 struct IconButtonInfo {
@@ -30,6 +44,7 @@ struct IconButtonInfo {
   bool is_toggled;
   bool is_enabled;
   raw_ptr<gfx::ImageSkia> bg_img;
+  std::optional<base_icu::UChar32> symbol;
 };
 
 }  // namespace
@@ -68,9 +83,9 @@ CreateIconButtonInstancesGridView() {
        {u"Toggled Small", IconButton::Type::kSmall, true, true, nullptr},
        {u"Toggled Meduim", IconButton::Type::kMedium, true, true, nullptr},
        {u"Toggled Large", IconButton::Type::kLarge, true, true, nullptr},
-       {u"Toggled XLarge", IconButton::Type::kLarge, true, true, nullptr},
+       {u"Toggled XLarge", IconButton::Type::kLarge, true, true, nullptr}},
 
-       {u"Prominent Floating XSmall",
+      {{u"Prominent Floating XSmall",
         IconButton::Type::kXSmallProminentFloating, false, true, nullptr},
        {u"Prominent Floating Small", IconButton::Type::kSmallProminentFloating,
         false, true, nullptr},
@@ -79,9 +94,9 @@ CreateIconButtonInstancesGridView() {
        {u"Prominent Floating Large", IconButton::Type::kLargeProminentFloating,
         false, true, nullptr},
        {u"Prominent Floating XLarge",
-        IconButton::Type::kXLargeProminentFloating, false, true, nullptr}},
+        IconButton::Type::kXLargeProminentFloating, false, true, nullptr},
 
-      {{u"Default XSmall With Background Image", IconButton::Type::kXSmall,
+       {u"Default XSmall With Background Image", IconButton::Type::kXSmall,
         false, true, image},
        {u"Default Small With Background Image", IconButton::Type::kSmall, false,
         true, image},
@@ -96,7 +111,19 @@ CreateIconButtonInstancesGridView() {
        {u"Disabled Small", IconButton::Type::kSmall, false, false, nullptr},
        {u"Disabled Meduim", IconButton::Type::kMedium, false, false, nullptr},
        {u"Disabled Large", IconButton::Type::kLarge, false, false, nullptr},
-       {u"Disabled XLarge", IconButton::Type::kXLarge, false, false, nullptr}}};
+       {u"Disabled XLarge", IconButton::Type::kXLarge, false, false, nullptr}},
+
+      {{u"Symbol XSmall", IconButton::Type::kXSmall, false, true, nullptr,
+        0x0032 /*2 numeral*/},
+       {u"Symbol Small", IconButton::Type::kSmall, false, true, nullptr,
+        0x003E /*> symbol*/},
+       {u"Symbol Meduim", IconButton::Type::kMedium, false, true, nullptr,
+        0x03A9 /*Upper Case Omega*/},
+       {u"Symbol Large", IconButton::Type::kLarge, false, true, nullptr,
+        0x2615 /*Hot Beverage*/},
+       {u"Symbol XLarge", IconButton::Type::kXLarge, false, true, nullptr,
+        0x1F6EBU /*Airplane Departing*/}},
+  };
 
   // Insert the instance in grid view with column-primary order.
   for (auto types : type_groups) {
@@ -112,11 +139,15 @@ CreateIconButtonInstancesGridView() {
         IconButtonInfo type_info = types[idx];
         IconButton::Builder builder;
         builder.SetType(type_info.type)
-            .SetVectorIcon(&kSettingsIcon)
             .SetAccessibleName(type_info.name)
             .SetTogglable(type_info.is_toggled)
             .SetEnabled(type_info.is_enabled)
             .SetBorder(/*has_border*/ true);
+        if (type_info.symbol.has_value()) {
+          builder.SetSymbol(*type_info.symbol);
+        } else {
+          builder.SetVectorIcon(&kSettingsIcon);
+        }
         if (type_info.bg_img) {
           builder.SetBackgroundImage(*type_info.bg_img);
         }

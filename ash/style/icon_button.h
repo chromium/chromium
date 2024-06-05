@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
+#include "base/third_party/icu/icu_utf.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/color/color_id.h"
@@ -91,6 +92,10 @@ class ASH_EXPORT IconButton : public views::ImageButton {
     // a crash.
     Builder& SetVectorIcon(const gfx::VectorIcon* icon);
 
+    // Set a symbol for display. This is only used if icon is not set.
+    // `character` must contain exactly one unicode character or this will fail.
+    Builder& SetSymbol(base_icu::UChar32 character);
+
     Builder& SetAccessibleNameId(int accessible_name_id);
     Builder& SetAccessibleName(const std::u16string& accessible_name);
     Builder& SetTogglable(bool is_togglable);
@@ -105,6 +110,7 @@ class ASH_EXPORT IconButton : public views::ImageButton {
     PressedCallback callback_;
     Type type_;
     raw_ptr<const gfx::VectorIcon> icon_;
+    std::optional<base_icu::UChar32> character_;
     absl::variant<int, std::u16string> accessible_name_;
     bool is_togglable_;
     bool has_border_;
@@ -148,6 +154,8 @@ class ASH_EXPORT IconButton : public views::ImageButton {
   // Sets the vector icon of the button, it might change on different `toggled_`
   // states.
   void SetVectorIcon(const gfx::VectorIcon& icon);
+
+  void SetSymbol(base_icu::UChar32 character);
 
   // Sets the vector icon used when the button is toggled. If the button does
   // not specify a toggled vector icon, it will use the same vector icon for
@@ -213,9 +221,16 @@ class ASH_EXPORT IconButton : public views::ImageButton {
   // and the toggle state.
   void UpdateAccessibilityProperties();
 
+  std::pair<ui::ImageModel, ui::ImageModel> VectorImages(
+      const bool is_toggled,
+      ColorVariant color_variant,
+      const int size);
+
   const Type type_;
   raw_ptr<const gfx::VectorIcon> icon_ = nullptr;
   raw_ptr<const gfx::VectorIcon> toggled_icon_ = nullptr;
+
+  std::optional<base_icu::UChar32> character_;
 
   // True if this button is togglable.
   const bool is_togglable_ = false;
