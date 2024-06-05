@@ -7,9 +7,11 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 
 namespace base {
+class Clock;
 class SimpleTestClock;
 }  // namespace base
 
@@ -37,6 +39,7 @@ class TestAutofillClock {
 
  private:
   std::unique_ptr<base::SimpleTestClock> test_clock_;
+  raw_ptr<const base::Clock> previous_clock_ = nullptr;
 };
 
 }  // namespace autofill
