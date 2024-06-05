@@ -26,7 +26,7 @@ class CpuReductionExperimentSubSampler {
   CpuReductionExperimentSubSampler() : counter_(base::RandUint64()) {}
 
   bool ShouldLogHistograms() {
-    // Relaxed memory order since no memory access depends on value.
+    // Relaxed memory order since there is no dependent memory access.
     uint64_t val = counter_.fetch_add(1, std::memory_order_relaxed);
     return val % 1000 == 0;
   }
@@ -49,7 +49,8 @@ std::atomic_bool g_accessed_subsampler = false;
 
 bool IsRunningCpuReductionExperiment() {
 #if DCHECK_IS_ON()
-  g_accessed_subsampler.store(true, std::memory_order_seq_cst);
+  // Relaxed memory order since there is no dependent memory access.
+  g_accessed_subsampler.store(true, std::memory_order_relaxed);
 #endif
   return !!g_subsampler;
 }
@@ -58,7 +59,9 @@ void InitializeCpuReductionExperiment() {
 #if DCHECK_IS_ON()
   // TSAN should generate an error if InitializeCpuReductionExperiment() races
   // with IsRunningCpuReductionExperiment().
-  DCHECK(!g_accessed_subsampler.load(std::memory_order_seq_cst));
+  //
+  // Relaxed memory order since there is no dependent memory access.
+  DCHECK(!g_accessed_subsampler.load(std::memory_order_relaxed));
 #endif
   if (FeatureList::IsEnabled(kReduceCpuUtilization)) {
     g_subsampler = new CpuReductionExperimentSubSampler();
