@@ -37,12 +37,8 @@ source_set("mac") {
     "video_toolbox_video_decoder.h",
     "video_toolbox_vp9_accelerator.cc",
     "video_toolbox_vp9_accelerator.h",
-    "vp9_super_frame_bitstream_filter.cc",
-    "vp9_super_frame_bitstream_filter.h",
     "vt_config_util.h",
     "vt_config_util.mm",
-    "vt_video_decode_accelerator_mac.h",
-    "vt_video_decode_accelerator_mac.mm",
     "vt_video_encode_accelerator_mac.h",
     "vt_video_encode_accelerator_mac.mm",
   ]
@@ -99,7 +95,6 @@ source_set("unit_tests") {
     "video_toolbox_h264_accelerator_unittest.cc",
     "video_toolbox_output_queue_unittest.cc",
     "video_toolbox_vp9_accelerator_unittest.cc",
-    "vp9_super_frame_bitstream_filter_unittest.cc",
     "vt_config_util_unittest.mm",
   ]
   if (enable_hevc_parser_and_hw_decoder) {

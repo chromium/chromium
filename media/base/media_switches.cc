@@ -876,22 +876,6 @@ BASE_FEATURE(kVideoPictureInPictureMinimizeButton,
              "VideoPictureInPictureMinimizeButton",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_APPLE)
-// Use VideoToolbox for AV1 hardware decoding.
-// Owner: dalecurtis@chromium.org, sandersd@chromium.org
-// Expiry: When enabled by default for a full release cycle
-BASE_FEATURE(kVideoToolboxAv1Decoding,
-             "VideoToolboxAv1Decoding",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Use the new VideoToolboxVideoDecoder for hardware decoding.
-// Owner: sandersd@chromium.org
-// Expiry: When VTVideoDecodeAccelerator is deleted
-BASE_FEATURE(kVideoToolboxVideoDecoder,
-             "VideoToolboxVideoDecoder",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_APPLE)
-
 // A video encoder is allowed to drop a frame in cast mirroring.
 BASE_FEATURE(kCastVideoEncoderFrameDrop,
              "CastVideoEncoderFrameDrop",

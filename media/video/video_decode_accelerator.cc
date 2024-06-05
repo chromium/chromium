@@ -34,13 +34,6 @@ void VideoDecodeAccelerator::Client::NotifyInitializationComplete(
       << "By default deferred initialization is not supported.";
 }
 
-#if BUILDFLAG(IS_APPLE)
-gpu::SharedImageStub* VideoDecodeAccelerator::Client::GetSharedImageStub()
-    const {
-  return nullptr;
-}
-#endif
-
 VideoDecodeAccelerator::~VideoDecodeAccelerator() = default;
 
 void VideoDecodeAccelerator::Decode(scoped_refptr<DecoderBuffer> buffer,

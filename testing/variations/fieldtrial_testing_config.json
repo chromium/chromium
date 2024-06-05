@@ -23302,36 +23302,6 @@
             ]
         }
     ],
-    "VideoToolboxAv1Decoding": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "VideoToolboxAv1Decoding"
-                    ]
-                }
-            ]
-        }
-    ],
-    "VideoToolboxVideoDecoder": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "VideoToolboxVideoDecoder"
-                    ]
-                }
-            ]
-        }
-    ],
     "ViewTransitionOnNavigation": [
         {
             "platforms": [

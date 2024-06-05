@@ -105,7 +105,6 @@
 #include "base/message_loop/message_pump_apple.h"
 #include "components/metal_util/device_removal.h"
 #include "gpu/ipc/service/built_in_shader_cache_loader.h"
-#include "media/gpu/mac/vt_video_decode_accelerator_mac.h"
 #include "sandbox/mac/seatbelt.h"
 #endif
 
@@ -165,13 +164,6 @@ class ContentSandboxHelper : public gpu::GpuSandboxHelper {
 #endif  // BUILDFLAG(USE_VAAPI)
 #if BUILDFLAG(IS_WIN)
     media::PreSandboxMediaFoundationInitialization();
-#endif
-
-#if BUILDFLAG(IS_MAC)
-    {
-      TRACE_EVENT0("gpu", "Initialize VideoToolbox");
-      media::InitializeVideoToolbox();
-    }
 #endif
 
     // On Linux, reading system memory doesn't work through the GPU sandbox.

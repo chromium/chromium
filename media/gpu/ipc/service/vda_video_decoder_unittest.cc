@@ -350,13 +350,8 @@ class VdaVideoDecoderTest : public testing::TestWithParam<bool> {
   raw_ptr<VideoDecodeAccelerator::Client, AcrossTasksDanglingUntriaged> client_;
   uint64_t next_release_count_ = 1;
 
-#if BUILDFLAG(IS_APPLE)
-  static constexpr auto output_mode_ =
-      VideoDecodeAccelerator::Config::OutputMode::kAllocate;
-#else
   static constexpr auto output_mode_ =
       VideoDecodeAccelerator::Config::OutputMode::kImport;
-#endif
 };
 
 TEST_P(VdaVideoDecoderTest, CreateAndDestroy) {}
@@ -431,7 +426,6 @@ TEST_P(VdaVideoDecoderTest, Decode_NotifyError) {
 
 // The below tests rely on creation of video frames from GL textures, which is
 // not supported on Apple platforms.
-#if !BUILDFLAG(IS_APPLE)
 TEST_P(VdaVideoDecoderTest, Decode_OutputAndReuse) {
   Initialize();
   int32_t bitstream_id = Decode(base::TimeDelta());
@@ -487,7 +481,6 @@ TEST_P(VdaVideoDecoderTest, Decode_Output_MaintainsAspect) {
 
   UpdateSyncTokenAndDropFrame(std::move(frame), picture_buffer_id);
 }
-#endif  // !BUILDFLAG(IS_APPLE)
 
 TEST_P(VdaVideoDecoderTest, Flush) {
   Initialize();

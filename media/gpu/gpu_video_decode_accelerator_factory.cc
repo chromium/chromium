@@ -16,9 +16,6 @@
 #include "media/gpu/media_gpu_export.h"
 #include "media/media_buildflags.h"
 
-#if BUILDFLAG(IS_APPLE)
-#include "media/gpu/mac/vt_video_decode_accelerator_mac.h"
-#endif
 #if BUILDFLAG(USE_V4L2_CODEC) && \
     (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH))
 #include "media/gpu/v4l2/legacy/v4l2_video_decode_accelerator.h"
@@ -44,16 +41,11 @@ gpu::VideoDecodeAcceleratorCapabilities GetDecoderCapabilitiesInternal(
   // TODO(posciak,henryhsu): improve this so that we choose a superset of
   // resolutions and other supported profile parameters.
   VideoDecodeAccelerator::Capabilities capabilities;
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-#if BUILDFLAG(USE_V4L2_CODEC) && \
+#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION) && BUILDFLAG(USE_V4L2_CODEC) && \
     (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH))
   GpuVideoAcceleratorUtil::InsertUniqueDecodeProfiles(
       V4L2VideoDecodeAccelerator::GetSupportedProfiles(),
       &capabilities.supported_profiles);
-#endif
-#elif BUILDFLAG(IS_APPLE)
-  capabilities.supported_profiles =
-      VTVideoDecodeAccelerator::GetSupportedProfiles(workarounds);
 #endif
 
   return GpuVideoAcceleratorUtil::ConvertMediaToGpuDecodeCapabilities(
@@ -122,10 +114,6 @@ GpuVideoDecodeAcceleratorFactory::CreateVDA(
     (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH))
     &GpuVideoDecodeAcceleratorFactory::CreateV4L2VDA,
 #endif
-
-#if BUILDFLAG(IS_APPLE)
-    &GpuVideoDecodeAcceleratorFactory::CreateVTVDA,
-#endif
   };
 
   std::unique_ptr<VideoDecodeAccelerator> vda;
@@ -148,18 +136,6 @@ GpuVideoDecodeAcceleratorFactory::CreateV4L2VDA(
     MediaLog* /*media_log*/) const {
   std::unique_ptr<VideoDecodeAccelerator> decoder;
   decoder.reset(new V4L2VideoDecodeAccelerator(new V4L2Device()));
-  return decoder;
-}
-#endif
-
-#if BUILDFLAG(IS_APPLE)
-std::unique_ptr<VideoDecodeAccelerator>
-GpuVideoDecodeAcceleratorFactory::CreateVTVDA(
-    const gpu::GpuDriverBugWorkarounds& workarounds,
-    const gpu::GpuPreferences& gpu_preferences,
-    MediaLog* media_log) const {
-  std::unique_ptr<VideoDecodeAccelerator> decoder;
-  decoder.reset(new VTVideoDecodeAccelerator(workarounds, media_log));
   return decoder;
 }
 #endif

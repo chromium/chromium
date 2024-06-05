@@ -147,9 +147,7 @@ VdaVideoDecoder::VdaVideoDecoder(
   DCHECK_EQ(vda_capabilities_.flags, 0U);
   DCHECK(media_log_);
 
-#if !BUILDFLAG(IS_APPLE)
   CHECK_EQ(output_mode, VideoDecodeAccelerator::Config::OutputMode::kImport);
-#endif
 
   gpu_weak_this_ = gpu_weak_this_factory_.GetWeakPtr();
   parent_weak_this_ = parent_weak_this_factory_.GetWeakPtr();
@@ -335,23 +333,8 @@ void VdaVideoDecoder::InitializeOnGpuThread() {
 
   // Set up |command_buffer_helper_|.
   if (!reinitializing_) {
-#if BUILDFLAG(IS_APPLE)
-    CHECK_EQ(output_mode_,
-             VideoDecodeAccelerator::Config::OutputMode::kAllocate);
-    command_buffer_helper_ = std::move(create_command_buffer_helper_cb_).Run();
-    if (!command_buffer_helper_) {
-      parent_task_runner_->PostTask(
-          FROM_HERE,
-          base::BindOnce(&VdaVideoDecoder::InitializeDone, parent_weak_this_,
-                         DecoderStatus::Codes::kFailed));
-      return;
-    }
-    picture_buffer_manager_->Initialize(gpu_task_runner_,
-                                        command_buffer_helper_);
-#else
     CHECK_EQ(output_mode_, VideoDecodeAccelerator::Config::OutputMode::kImport);
     picture_buffer_manager_->Initialize(gpu_task_runner_, nullptr);
-#endif
   }
 
   // Convert the configuration.
@@ -795,13 +778,6 @@ void VdaVideoDecoder::NotifyError(VideoDecodeAccelerator::Error error) {
       FROM_HERE, base::BindOnce(&VdaVideoDecoder::NotifyErrorOnParentThread,
                                 parent_weak_this_, error));
 }
-
-#if BUILDFLAG(IS_APPLE)
-gpu::SharedImageStub* VdaVideoDecoder::GetSharedImageStub() const {
-  DCHECK_EQ(output_mode_, VideoDecodeAccelerator::Config::OutputMode::kAllocate);
-  return command_buffer_helper_->GetSharedImageStub();
-}
-#endif
 
 void VdaVideoDecoder::NotifyErrorOnParentThread(
     VideoDecodeAccelerator::Error error) {

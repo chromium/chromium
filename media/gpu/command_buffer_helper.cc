@@ -48,16 +48,7 @@ class CommandBufferHelperImpl
 
     stub_->AddDestructionObserver(this);
     wait_sequence_id_ = stub_->channel()->scheduler()->CreateSequence(
-#if BUILDFLAG(IS_MAC)
-        // Workaround for crbug.com/1035750.
-        // TODO(sandersd): Investigate whether there is a deeper scheduling
-        // problem that can be resolved.
-        gpu::SchedulingPriority::kHigh
-#else
-        gpu::SchedulingPriority::kNormal
-#endif  // BUILDFLAG(IS_MAC)
-        ,
-        stub_->channel()->task_runner());
+        gpu::SchedulingPriority::kNormal, stub_->channel()->task_runner());
 #if !BUILDFLAG(IS_ANDROID)
     decoder_helper_ = GLES2DecoderHelper::Create(stub_->decoder_context());
 #endif

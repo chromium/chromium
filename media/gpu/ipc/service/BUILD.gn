@@ -22,8 +22,8 @@ target(link_target_type, "service") {
     "media_gpu_channel_manager.h",
   ]
 
-  # The legacy VDA API is not supported on Android or Windows.
-  if (!is_android && !is_win) {
+  # The legacy VDA API is not supported on Android, Windows, or macOS.
+  if (!is_android && !is_win && !is_apple) {
     sources += [
       "picture_buffer_manager.cc",
       "picture_buffer_manager.h",
@@ -62,8 +62,8 @@ source_set("unit_tests") {
   testonly = true
   sources = []
 
-  # The legacy VDA API is not supported on Android or Windows.
-  if (!is_android && !is_win) {
+  # The legacy VDA API is not supported on Android, Windows, or macOS.
+  if (!is_android && !is_win && !is_apple) {
     sources += [
       "picture_buffer_manager_unittest.cc",
       "vda_video_decoder_unittest.cc",

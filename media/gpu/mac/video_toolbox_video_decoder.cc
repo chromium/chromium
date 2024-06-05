@@ -493,8 +493,7 @@ VideoToolboxVideoDecoder::GetSupportedVideoDecoderConfigs(
     }
   }
 
-  if (base::FeatureList::IsEnabled(kVideoToolboxAv1Decoding) &&
-      !gpu_workarounds.disable_accelerated_av1_decode && SupportsAV1()) {
+  if (!gpu_workarounds.disable_accelerated_av1_decode && SupportsAV1()) {
     supported.emplace_back(
         /*profile_min=*/AV1PROFILE_PROFILE_MAIN,
         /*profile_max=*/AV1PROFILE_PROFILE_MAIN,
