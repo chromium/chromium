@@ -35,7 +35,7 @@ def ci_builder(
         console_view_entry = None,
         main_console_view = args.DEFAULT,
         cq_mirrors_console_view = args.DEFAULT,
-        sheriff_rotations = None,
+        gardener_rotations = None,
         tree_closing = args.DEFAULT,
         tree_closing_notifiers = None,
         notifies = None,
@@ -63,11 +63,11 @@ def ci_builder(
         default that defaults to None. An entry will be added only if
         `console_view_entry` is provided and the first entry's branch
         selector causes the entry to be defined.
-      sheriff_rotations: The name(s) of any sheriff rotations that the builder
+      gardener_rotations: The name(s) of any gardener rotations that the builder
         should be added to. On branches, all CI builders will be added to the
-        `chrome_browser_release` sheriff rotation.
+        `chrome_browser_release` gardener rotation.
       tree_closing: If true, failed builds from this builder that meet certain
-        criteria will close the tree and email the sheriff. See the
+        criteria will close the tree and email the gardener. See the
         'chromium-tree-closer' config in notifiers.star for the full criteria.
       tree_closing_notifiers: A list of notifiers that will be notified when
         tree closing criteria are met by a build of this builder. Supports a
@@ -130,12 +130,12 @@ def ci_builder(
     ]
     merged_resultdb_bigquery_exports.extend(resultdb_bigquery_exports or [])
 
-    branch_sheriff_rotations = list({
-        platform_settings.sheriff_rotation: None
+    branch_gardener_rotations = list({
+        platform_settings.gardener_rotation: None
         for platform, platform_settings in settings.platforms.items()
         if branches.matches(branch_selector, platform = platform)
     })
-    sheriff_rotations = args.listify(sheriff_rotations, branch_sheriff_rotations)
+    gardener_rotations = args.listify(gardener_rotations, branch_gardener_rotations)
 
     # Define the builder first so that any validation of luci.builder arguments
     # (e.g. bucket) occurs before we try to use it
@@ -144,7 +144,7 @@ def ci_builder(
         branch_selector = branch_selector,
         console_view_entry = console_view_entry,
         resultdb_bigquery_exports = merged_resultdb_bigquery_exports,
-        sheriff_rotations = sheriff_rotations,
+        gardener_rotations = gardener_rotations,
         experiments = experiments,
         resultdb_index_by_timestamp = True,
         **kwargs

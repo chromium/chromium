@@ -5,7 +5,7 @@
 
 load("//lib/branches.star", "branches")
 load("//lib/builder_health_indicators.star", "health_spec")
-load("//lib/builders.star", "os", "sheriff_rotations")
+load("//lib/builders.star", "gardener_rotations", "os")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 
@@ -126,12 +126,12 @@ packager_builder(
     executable = "recipe:android/androidx_packager",
     schedule = "0 7,14,22 * * * *",
     triggered_by = [],
-    sheriff_rotations = sheriff_rotations.ANDROID,
     console_view_entry = consoles.console_view_entry(
         category = "packager|android",
         short_name = "androidx",
     ),
     contact_team_email = "clank-build@google.com",
+    gardener_rotations = gardener_rotations.ANDROID,
     notifies = ["chromium-androidx-packager"],
 )
 

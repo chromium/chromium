@@ -7,7 +7,7 @@ load("//lib/args.star", "args")
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
 load("//lib/builder_health_indicators.star", "health_spec")
-load("//lib/builders.star", "os", "sheriff_rotations", "siso")
+load("//lib/builders.star", "gardener_rotations", "os", "siso")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
@@ -22,11 +22,11 @@ ci.defaults.set(
     pool = ci.DEFAULT_POOL,
     cores = 8,
     os = os.LINUX_DEFAULT,
-    sheriff_rotations = sheriff_rotations.CHROMIUM,
     tree_closing = True,
     main_console_view = "main",
     contact_team_email = "chrome-sanitizer-builder-owners@google.com",
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
+    gardener_rotations = gardener_rotations.CHROMIUM,
     health_spec = health_spec.DEFAULT,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
     shadow_service_account = ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
@@ -674,12 +674,12 @@ ci.builder(
         ],
     ),
     os = os.LINUX_DEFAULT,
-    sheriff_rotations = args.ignore_default(None),
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "android",
         short_name = "asn",
     ),
+    gardener_rotations = args.ignore_default(None),
 )
 
 ci.builder(
@@ -795,11 +795,11 @@ ci.builder(
     ),
     cores = None,
     os = os.MAC_DEFAULT,
-    sheriff_rotations = args.ignore_default(sheriff_rotations.IOS),
     console_view_entry = consoles.console_view_entry(
         category = "iOS",
         short_name = "asn",
     ),
+    gardener_rotations = args.ignore_default(gardener_rotations.IOS),
     xcode = xcode.xcode_default,
 )
 
@@ -811,7 +811,6 @@ ci.builder(
     schedule = "0 13 * * *",
     cores = 32,
     ssd = True,
-    sheriff_rotations = args.ignore_default(None),
     console_view_entry = [
         consoles.console_view_entry(
             category = "codeql-linux",
@@ -820,5 +819,6 @@ ci.builder(
     ],
     contact_team_email = "chrome-memory-safety-team@google.com",
     execution_timeout = 15 * time.hour,
+    gardener_rotations = args.ignore_default(None),
     notifies = ["codeql-infra"],
 )

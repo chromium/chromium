@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 """Definitions of builders in the presubmit.linux builder group."""
 
-load("//lib/builders.star", "os", "sheriff_rotations")
+load("//lib/builders.star", "gardener_rotations", "os")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 load("//lib/builder_health_indicators.star", "health_spec")
@@ -26,7 +26,6 @@ ci.builder(
     builderless = True,
     cores = 32,
     os = os.LINUX_DEFAULT,
-    sheriff_rotations = sheriff_rotations.CHROMIUM,
     console_view_entry = consoles.console_view_entry(
         console_view = "checks",
         category = "presubmit",
@@ -34,6 +33,7 @@ ci.builder(
     ),
     contact_team_email = "chrome-browser-infra-team@google.com",
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
+    gardener_rotations = gardener_rotations.CHROMIUM,
     properties = {
         "$depot_tools/presubmit": {
             "runhooks": True,
@@ -49,7 +49,6 @@ ci.builder(
     builderless = True,
     cores = 32,
     os = os.WINDOWS_DEFAULT,
-    sheriff_rotations = sheriff_rotations.CHROMIUM,
     console_view_entry = consoles.console_view_entry(
         console_view = "checks",
         category = "presubmit",
@@ -57,6 +56,7 @@ ci.builder(
     ),
     contact_team_email = "chrome-browser-infra-team@google.com",
     execution_timeout = 6 * time.hour,
+    gardener_rotations = gardener_rotations.CHROMIUM,
     properties = {
         "$depot_tools/presubmit": {
             "runhooks": True,

@@ -6,7 +6,7 @@
 load("//lib/args.star", "args")
 load("//lib/builder_config.star", "builder_config")
 load("//lib/builder_health_indicators.star", "health_spec")
-load("//lib/builders.star", "builders", "os", "sheriff_rotations", "siso")
+load("//lib/builders.star", "builders", "gardener_rotations", "os", "siso")
 load("//lib/branches.star", "branches")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
@@ -22,10 +22,10 @@ ci.defaults.set(
     pool = ci.DEFAULT_POOL,
     cores = 8,
     os = os.LINUX_DEFAULT,
-    sheriff_rotations = sheriff_rotations.CHROMIUM,
     tree_closing = True,
     main_console_view = "main",
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
+    gardener_rotations = gardener_rotations.CHROMIUM,
     health_spec = health_spec.DEFAULT,
     notifies = ["chromium.linux"],
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
@@ -77,8 +77,6 @@ ci.builder(
             "minimal_symbols",
         ],
     ),
-    # TODO(crbug.com/332735845): Garden this once stabilized.
-    sheriff_rotations = args.ignore_default(None),
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "cast",
@@ -86,6 +84,8 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     contact_team_email = "cast-eng@google.com",
+    # TODO(crbug.com/332735845): Garden this once stabilized.
+    gardener_rotations = args.ignore_default(None),
 )
 
 ci.builder(
@@ -120,8 +120,6 @@ ci.builder(
             "minimal_symbols",
         ],
     ),
-    # TODO(crbug.com/332735845): Garden this once stabilized.
-    sheriff_rotations = args.ignore_default(None),
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "cast",
@@ -129,6 +127,8 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     contact_team_email = "cast-eng@google.com",
+    # TODO(crbug.com/332735845): Garden this once stabilized.
+    gardener_rotations = args.ignore_default(None),
 )
 
 ci.builder(
@@ -192,7 +192,6 @@ ci.builder(
     gn_args = gn_args.config(
         configs = ["release_builder", "remoteexec"],
     ),
-    sheriff_rotations = args.ignore_default(None),
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         console_view = "chromium.fyi",
@@ -200,6 +199,7 @@ ci.builder(
         short_name = "lk",
     ),
     main_console_view = None,
+    gardener_rotations = args.ignore_default(None),
     notifies = args.ignore_default([]),
     siso_remote_jobs = siso.remote_jobs.DEFAULT,
 )

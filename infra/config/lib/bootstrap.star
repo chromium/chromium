@@ -42,7 +42,7 @@ _NON_BOOTSTRAPPED_PROPERTIES = [
     "recipe",
 
     # Sheriff-o-Matic queries for builder_group in the input properties to find
-    # builds for the main sheriff rotation and Findit reads the builder_group
+    # builds for the main gardener rotation and Findit reads the builder_group
     # from the input properties of an analyzed build to set the builder group
     # for the target builder when triggering the rerun builder. Bootstrapped
     # properties don't appear in the build's input properties, so don't
@@ -52,11 +52,13 @@ _NON_BOOTSTRAPPED_PROPERTIES = [
     "builder_group",
 
     # Sheriff-o-Matic will query for sheriff_rotations in the input properties
-    # to determine which sheriff rotation a build belongs to. Bootstrapped
+    # to determine which gardener rotation a build belongs to. Bootstrapped
     # properties don't appear in the build's input properties, so don't
-    # bootstrap this property.
+    # bootstrap this property. The same applies to gardener_rotations as
+    # we move to it.
     # TODO(gbeaty) When finalized input properties are exported to BQ, remove
     # this.
+    "gardener_rotations",
     "sheriff_rotations",
 
     # Export a try builder's CQ status (required, path-based) to BQ if set.

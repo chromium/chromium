@@ -20,7 +20,7 @@ PLATFORMS = tuple([getattr(platform, a) for a in dir(platform)])
 def _platform_settings(
         *,
         description,  # buildifier: disable=unused-variable
-        sheriff_rotation = None):
+        gardener_rotation = None):
     """Declare settings for a platform on the project.
 
     This provides the project-wide settings for a platform, which should be
@@ -31,11 +31,11 @@ def _platform_settings(
       * description - A string describing why the platform is enabled in the
         project. This is not used by the starlark, but enables providing some
         form of documentaion in the json file.
-      * sheriff_rotation - The name of a sheriff rotation in which to include
+      * gardener_rotation - The name of a gardener rotation in which to include
         builders that are selected for the corresponding platform.
     """
     return struct(
-        sheriff_rotation = sheriff_rotation,
+        gardener_rotation = gardener_rotation,
     )
 
 def _project_settings(

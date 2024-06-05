@@ -34,7 +34,7 @@ load("./bootstrap.star", "register_bootstrap")
 load("./builder_config.star", "register_builder_config")
 load("./builder_health_indicators.star", "register_health_spec")
 load("./recipe_experiments.star", "register_recipe_experiments_ref")
-load("./sheriff_rotations.star", "register_sheriffed_builder")
+load("./sheriff_rotations.star", "register_gardener_builder")
 load("./description_exceptions.star", "exempted_from_description_builders")
 
 ################################################################################
@@ -118,10 +118,10 @@ def _rotation(name):
         value = [name],
     )
 
-# Sheriff rotations that a builder can be added to (only takes effect on trunk)
+# Gardener rotations that a builder can be added to (only takes effect on trunk)
 # New rotations can be added, but won't automatically show up in SoM without
 # changes to SoM code.
-sheriff_rotations = struct(
+gardener_rotations = struct(
     ANDROID = _rotation("android"),
     ANGLE = _rotation("angle"),
     CHROMIUM = _rotation("chromium"),
@@ -330,7 +330,7 @@ defaults = args.defaults(
     os = None,
     pool = None,
     skip_profile_upload = False,
-    sheriff_rotations = None,
+    gardener_rotations = None,
     xcode = None,
     ssd = args.COMPUTE,
     coverage_gs_bucket = None,
@@ -407,7 +407,7 @@ def builder(
         builder_config_settings = args.DEFAULT,
         pool = args.DEFAULT,
         ssd = args.DEFAULT,
-        sheriff_rotations = None,
+        gardener_rotations = None,
         xcode = args.DEFAULT,
         console_view_entry = None,
         list_view = args.DEFAULT,
@@ -550,7 +550,7 @@ def builder(
             If True, emits a 'ssd:1' dimension. If False, emits a 'ssd:0'
             parameter. By default, considered False if builderless is considered
             True and otherwise None.
-        sheriff_rotations: A string or list of strings identifying the sheriff
+        gardener_rotations: A string or list of strings identifying the gardener
             rotations that the builder should be included in. Will be merged
             with the module-level default.
         xcode: a member of the `xcode` enum indicating the xcode version the
@@ -699,9 +699,9 @@ def builder(
     dimensions = {}
 
     properties = kwargs.pop("properties", {})
-    if "sheriff_rotations" in properties:
-        fail('Setting "sheriff_rotations" property is not supported: ' +
-             "use sheriff_rotations instead")
+    if "gardener_rotations" in properties:
+        fail('Setting "gardener_rotations" property is not supported: ' +
+             "use gardener_rotations instead")
     if "$build/code_coverage" in properties:
         fail('Setting "$build/code_coverage" property is not supported: ' +
              "use coverage_gs_bucket, use_clang_coverage, use_java_coverage, " +
@@ -774,11 +774,11 @@ def builder(
     if pool:
         dimensions["pool"] = pool
 
-    sheriff_rotations = defaults.get_value("sheriff_rotations", sheriff_rotations, merge = args.MERGE_LIST)
-    if sheriff_rotations:
-        # TODO(343503161): Remove sheriff_rotations after SoM is updated.
-        properties["sheriff_rotations"] = sheriff_rotations
-        properties["gardener_rotations"] = sheriff_rotations
+    gardener_rotations = defaults.get_value("gardener_rotations", gardener_rotations, merge = args.MERGE_LIST)
+    if gardener_rotations:
+        # TODO(343503161): Remove gardener_rotations after SoM is updated.
+        properties["sheriff_rotations"] = gardener_rotations
+        properties["gardener_rotations"] = gardener_rotations
 
     ssd = defaults.get_value("ssd", ssd)
     if ssd == args.COMPUTE:
@@ -944,7 +944,7 @@ def builder(
     if builder == None:
         return None
 
-    register_sheriffed_builder(bucket, name, sheriff_rotations)
+    register_gardener_builder(bucket, name, gardener_rotations)
 
     register_recipe_experiments_ref(bucket, name, executable)
 
@@ -1041,6 +1041,6 @@ builders = struct(
     cpu = cpu,
     defaults = defaults,
     os = os,
-    sheriff_rotations = sheriff_rotations,
+    gardener_rotations = gardener_rotations,
     free_space = free_space,
 )

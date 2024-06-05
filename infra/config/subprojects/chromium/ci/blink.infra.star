@@ -75,7 +75,7 @@ ci.builder(
 
 ci.builder(
     name = "blink-flake-suppressor",
-    description_html = "Runs Flake Suppressor on all sheriff builders to generate test suppression cl.",
+    description_html = "Runs Flake Suppressor on all gardened builders to generate test suppression cl.",
     executable = "recipe:chromium_expectation_files/expectation_file_scripts",
     # Run once at 4 PM Pacific on weekdays.
     schedule = "0 0 * * 1-5",

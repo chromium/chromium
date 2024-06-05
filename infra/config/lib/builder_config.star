@@ -12,7 +12,7 @@ load("./builder_url.star", "linkify_builder")
 load("./chrome_settings.star", "per_builder_outputs_config")
 load("./enums.star", "enums")
 load("./nodes.star", "nodes")
-load("./sheriff_rotations.star", "get_sheriff_rotations")
+load("./sheriff_rotations.star", "get_gardener_rotations")
 load("./structs.star", "structs")
 load("./targets.star", "get_targets_spec_generator", "register_targets")
 
@@ -802,7 +802,7 @@ def _set_builder_config_property(ctx):
             builder.description_html = _get_builder_mirror_description(bucket_name, builder, bc_state)
 
             # Enforce that most gardened CI bots have a matching trybot.
-            rotations = get_sheriff_rotations(bucket_name, builder.name)
+            rotations = get_gardener_rotations(bucket_name, builder.name)
             excluded_rotations = [
                 # Most/all the clang bots build using clang built from HEAD.
                 # Failures on them hopefully/rarely lead to reverts of random
@@ -866,7 +866,7 @@ def _set_builder_config_property(ctx):
             all_mirror_rotations = []
             for m in mirrors:
                 mirror_id = _builder_id(m)
-                mirror_rotations = get_sheriff_rotations(mirror_id["bucket"], mirror_id["builder"])
+                mirror_rotations = get_gardener_rotations(mirror_id["bucket"], mirror_id["builder"])
                 all_mirror_rotations += mirror_rotations
                 if not mirror_rotations:
                     is_excluded = True

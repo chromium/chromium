@@ -20,7 +20,7 @@ HEADER = headers.header(
             name = "Chromium Branches",
             branch_selector = branches.selector.ALL_BRANCHES,
             url = "https://chrome-ops-rotation-proxy.appspot.com/current/oncallator:chrome-branch-sheriff",
-        ) if any([s.sheriff_rotation == "chrome_browser_release" for s in settings.platforms.values()]) else None,
+        ) if any([s.gardener_rotation == "chrome_browser_release" for s in settings.platforms.values()]) else None,
         headers.oncall(
             name = "Android",
             url = "https://chrome-ops-rotation-proxy.appspot.com/current/oncallator:chrome-android-sheriff",
