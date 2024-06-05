@@ -422,14 +422,13 @@ void AXMediaAppUntrustedHandler::PageMetadataUpdated(
     page_metadata_.at(page_id).page_num = i + 1;  // 1-indexed.
     page_metadata_.at(page_id).rect = page_metadata.at(i)->rect;
     // Page location can only be set after the corresponding `pages_`
-    // `AXTreeManager` entry has been created, so don't update it for first
-    // load.
-    if (!is_first_load) {
-      page_id_updated.insert(page_id);
+    // `AXTreeManager` entry has been created.
+    if (pages_.contains(page_id)) {
       UpdatePageLocation(page_id, page_metadata.at(i)->rect);
       SendAXTreeToAccessibilityService(*pages_.at(page_id),
                                        *page_serializers_.at(page_id));
     }
+    page_id_updated.insert(page_id);
   }
 
   // If this is the "first load", there could be no deleted pages.
@@ -697,7 +696,11 @@ void AXMediaAppUntrustedHandler::UpdatePageLocation(
   if (HasRendererTerminatedDueToBadPageId("UpdatePageLocation", page_id)) {
     return;
   }
-  DCHECK(pages_.contains(page_id));
+  if (!pages_.contains(page_id)) {
+    DCHECK(page_metadata_.contains(page_id));
+    page_metadata_[page_id].rect = page_location;
+    return;
+  }
   ui::AXTree* tree = pages_.at(page_id)->ax_tree();
   DCHECK(tree->root());
   ui::AXNodeData root_data = tree->root()->data();

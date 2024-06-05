@@ -634,7 +634,7 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
 
   // 'Rotate' the third page, moving the other pages to fit it.
   fake_metadata[2]->rect = gfx::RectF(
-      /*x=*/-2.5,
+      /*x=*/fake_metadata[2]->rect.x(),
       /*y=*/fake_metadata[1]->rect.y() + kTestPageHeight + kTestPageGap,
       /*width=*/kTestPageHeight, /*height=*/kTestPageWidth);
   fake_metadata[3]->rect = gfx::RectF(
@@ -654,17 +654,78 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
   EXPECT_EQ(
       "AXTree has_parent_tree title=PDF document\n"
       "id=1 pdfRoot FOCUSABLE name=PDF document containing 4 pages "
-      "name_from=attribute clips_children child_ids=2,3,4,5 (-2.5, 0)-(8, 33) "
-      "text_align=left restriction=readonly scroll_x_min=-2 scroll_y_min=0 "
+      "name_from=attribute clips_children child_ids=2,3,4,5 (0, 0)-(8, 33) "
+      "text_align=left restriction=readonly scroll_x_min=0 scroll_y_min=0 "
       "scrollable=true is_line_breaking_object=true\n"
-      "  id=2 region name=Page 1 name_from=attribute has_child_tree (0, 0)-"
-      "(3, 8) restriction=readonly is_page_breaking_object=true\n"
-      "  id=3 region name=Page 2 name_from=attribute has_child_tree (0, 10)-"
-      "(3, 8) restriction=readonly is_page_breaking_object=true\n"
-      "  id=4 region name=Page 3 name_from=attribute has_child_tree (-2.5, 20)-"
-      "(8, 3) restriction=readonly is_page_breaking_object=true\n"
-      "  id=5 region name=Page 4 name_from=attribute has_child_tree (0, 25)-"
-      "(3, 8) restriction=readonly is_page_breaking_object=true\n",
+      "  id=2 region name=Page 1 name_from=attribute has_child_tree (0, 0)-(3, "
+      "8) restriction=readonly is_page_breaking_object=true\n"
+      "  id=3 region name=Page 2 name_from=attribute has_child_tree (0, "
+      "10)-(3, 8) restriction=readonly is_page_breaking_object=true\n"
+      "  id=4 region name=Page 3 name_from=attribute has_child_tree (0, "
+      "20)-(8, 3) restriction=readonly is_page_breaking_object=true\n"
+      "  id=5 region name=Page 4 name_from=attribute has_child_tree (0, "
+      "25)-(3, 8) restriction=readonly is_page_breaking_object=true\n",
+      handler_->GetDocumentTreeToStringForTesting());
+}
+
+IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
+                       PageMetadataUpdated_PageRotatedBeforeOcr) {
+  handler_->DisableStatusNodesForTesting();
+  handler_->DisablePostamblePageForTesting();
+  constexpr size_t kTestNumPages = 2u;
+  std::vector<PageMetadataPtr> fake_metadata =
+      CreateFakePageMetadata(kTestNumPages);
+  handler_->PageMetadataUpdated(ClonePageMetadataPtrs(fake_metadata));
+  WaitForOcringPages(1u);
+
+  // Only the first page must have gone through OCR.
+  const std::map<const std::string, std::unique_ptr<ui::AXTreeManager>>& pages =
+      handler_->GetPagesForTesting();
+  ASSERT_EQ(1u, pages.size());
+  EXPECT_TRUE(pages.contains("PageA"));
+
+  // 'Rotate' the first page, moving the second page as a result.
+  fake_metadata[0]->rect = gfx::RectF(
+      /*x=*/fake_metadata[0]->rect.x(),
+      /*y=*/fake_metadata[0]->rect.y(),
+      /*width=*/kTestPageHeight, /*height=*/kTestPageWidth);
+  fake_metadata[1]->rect = gfx::RectF(
+      /*x=*/fake_metadata[1]->rect.x(),
+      /*y=*/fake_metadata[0]->rect.y() + kTestPageWidth + kTestPageGap,
+      /*width=*/kTestPageWidth, /*height=*/kTestPageHeight);
+  handler_->PageMetadataUpdated(ClonePageMetadataPtrs(fake_metadata));
+  handler_->PageContentsUpdated("PageA");
+
+  ASSERT_EQ(1u, pages.size());
+  EXPECT_TRUE(pages.contains("PageA"));
+
+  // Rotate the second page as well.
+  fake_metadata[1]->rect = gfx::RectF(
+      /*x=*/fake_metadata[1]->rect.x(),
+      /*y=*/fake_metadata[1]->rect.y(),
+      /*width=*/kTestPageHeight, /*height=*/kTestPageWidth);
+  handler_->PageMetadataUpdated(ClonePageMetadataPtrs(fake_metadata));
+  handler_->PageContentsUpdated("PageB");
+
+  ASSERT_EQ(1u, pages.size());
+  EXPECT_TRUE(pages.contains("PageA"));
+
+  WaitForOcringPages(1u);
+
+  ASSERT_EQ(2u, pages.size());
+  EXPECT_TRUE(pages.contains("PageA"));
+  EXPECT_TRUE(pages.contains("PageB"));
+
+  EXPECT_EQ(
+      "AXTree has_parent_tree title=PDF document\n"
+      "id=1 pdfRoot FOCUSABLE name=PDF document containing 2 pages "
+      "name_from=attribute clips_children child_ids=2,3 (0, 0)-(8, 8) "
+      "text_align=left restriction=readonly scroll_x_min=0 scroll_y_min=0 "
+      "scrollable=true is_line_breaking_object=true\n"
+      "  id=2 region name=Page 1 name_from=attribute has_child_tree (0, 0)-(8, "
+      "3) restriction=readonly is_page_breaking_object=true\n"
+      "  id=3 region name=Page 2 name_from=attribute has_child_tree (0, 5)-(8, "
+      "3) restriction=readonly is_page_breaking_object=true\n",
       handler_->GetDocumentTreeToStringForTesting());
 }
 
