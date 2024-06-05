@@ -182,6 +182,7 @@ class BookmarkBarView : public views::AccessiblePaneView,
   void OnThemeChanged() override;
   void VisibilityChanged(views::View* starting_from, bool is_visible) override;
   void ChildPreferredSizeChanged(views::View* child) override;
+  void AddedToWidget() override;
 
   // AccessiblePaneView:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
@@ -384,6 +385,8 @@ class BookmarkBarView : public views::AccessiblePaneView,
 
   int GetDropLocationModelIndexForTesting() const;
   const views::View* GetSavedTabGroupsSeparatorViewForTesting() const;
+
+  void MaybeShowSavedTabGroupsIntroPromo() const;
 
   // Needed to react to bookmark bar pref changes.
   PrefChangeRegistrar profile_pref_registrar_;

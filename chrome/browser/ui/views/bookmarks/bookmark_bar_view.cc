@@ -52,6 +52,7 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
@@ -1111,6 +1112,10 @@ void BookmarkBarView::ChildPreferredSizeChanged(views::View* child) {
   InvalidateDrop();
 }
 
+void BookmarkBarView::AddedToWidget() {
+  MaybeShowSavedTabGroupsIntroPromo();
+}
+
 void BookmarkBarView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kToolbar;
   node_data->SetNameChecked(l10n_util::GetStringUTF8(IDS_ACCNAME_BOOKMARKS));
@@ -2158,6 +2163,70 @@ int BookmarkBarView::GetDropLocationModelIndexForTesting() const {
 const views::View* BookmarkBarView::GetSavedTabGroupsSeparatorViewForTesting()
     const {
   return saved_tab_groups_separator_view_;
+}
+
+void BookmarkBarView::MaybeShowSavedTabGroupsIntroPromo() const {
+  // Only show this promo with the V2 enabled flag.
+  if (!tab_groups::IsTabGroupsSaveV2Enabled()) {
+    return;
+  }
+
+  // Attempting to queue up an IPH that should show at startup, this requires
+  // the BrowserFeaturePromoController.
+  BrowserFeaturePromoController* const promo_controller =
+      BrowserFeaturePromoController::GetForView(saved_tab_group_bar_);
+  if (!promo_controller) {
+    return;
+  }
+
+  // Check whether to show the synced, or unsyned version of the promo.
+  tab_groups::SavedTabGroupKeyedService* const service =
+      tab_groups::SavedTabGroupServiceFactory::GetForProfile(
+          browser_->profile());
+  if (!service) {
+    return;
+  }
+
+  // In order for IPH's for V2 to show up, there must be at least 1 group.
+  if (service->model()->saved_tab_groups().empty()) {
+    return;
+  }
+
+  user_education::FeaturePromoParams params(
+      feature_engagement::kIPHTabGroupsSaveV2IntroFeature);
+
+  const bool everything_button_is_visible =
+      saved_tab_group_bar_ && saved_tab_group_bar_->GetVisible();
+
+  // TODO (crbug.com/343258921) Once A11y text is supported with string
+  // substitutions, add them in.
+
+  // If tabs groups are syncing...
+  if (service->AreSavedTabGroupsSynced()) {
+    // Anchor the IPH to the bookmarks bar if the everything button is visible.
+    // Otherwise, anchor to the AppMenu.
+    if (everything_button_is_visible) {
+      params.body_params = {l10n_util::GetStringUTF16(
+          IDS_SAVED_TAB_GROUPS_V2_INTRO_IPH_BOOKMARKS_BAR_SYNCED_BODY)};
+    } else {
+      params.body_params = {l10n_util::GetStringUTF16(
+          IDS_SAVED_TAB_GROUPS_V2_INTRO_IPH_APP_MENU_SYNCED_BODY)};
+    }
+  } else {
+    // Anchor the IPH to the bookmarks bar if the everything button is visible.
+    // Otherwise, anchor to the AppMenu.
+    if (everything_button_is_visible) {
+      params.body_params =
+          std::vector<std::u16string>{l10n_util::GetStringUTF16(
+              IDS_SAVED_TAB_GROUPS_V2_INTRO_IPH_BOOKMARKS_BAR_NOT_SYNCED_BODY)};
+    } else {
+      params.body_params =
+          std::vector<std::u16string>{l10n_util::GetStringUTF16(
+              IDS_SAVED_TAB_GROUPS_V2_INTRO_IPH_APP_MENU_NOT_SYNCED_BODY)};
+    }
+  }
+
+  promo_controller->MaybeShowStartupPromo(std::move(params));
 }
 
 BEGIN_METADATA(BookmarkBarView)
