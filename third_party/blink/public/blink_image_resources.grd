@@ -17,7 +17,6 @@
       <structure type="chrome_scaled_image" name="IDR_SEARCH_CANCEL_PRESSED_DARK_MODE" file="blink/search_cancel_pressed_dark_mode.png" />
       <structure type="chrome_scaled_image" name="IDR_SEARCH_CANCEL_HC_LIGHT_MODE" file="blink/search_cancel_hc_light.png" />
       <structure type="chrome_scaled_image" name="IDR_SEARCH_CANCEL_PRESSED_HC_LIGHT_MODE" file="blink/search_cancel_pressed_hc_light.png" />
-      <structure type="chrome_scaled_image" name="IDR_PLACEHOLDER_ICON" file="blink/placeholder_icon.png" />
     </structures>
   </release>
 </grit>

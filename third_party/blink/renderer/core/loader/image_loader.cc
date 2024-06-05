@@ -747,15 +747,6 @@ void ImageLoader::ImageNotifyFinished(ImageResourceContent* content) {
   CHECK(!image_complete_);
 
   if (lazy_image_load_state_ == LazyImageLoadState::kDeferred) {
-    // LazyImages: if a placeholder is loaded, suppress load events and do not
-    // consider the image as loaded, except for unblocking document load events.
-    // The final image load (including load events) occurs when the
-    // non-placeholder image loading (triggered by LoadDeferredImage()) is
-    // finished.
-    if (image_content_ && image_content_->GetImage()->IsPlaceholderImage()) {
-      delay_until_image_notify_finished_ = nullptr;
-      return;
-    }
     // A placeholder was requested, but the result was an error or a full image.
     // In these cases, consider this as the final image and suppress further
     // reloading and proceed to the image load completion process below.

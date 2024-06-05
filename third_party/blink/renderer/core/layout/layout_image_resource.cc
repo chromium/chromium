@@ -34,7 +34,6 @@
 #include "third_party/blink/renderer/core/layout/intrinsic_sizing_info.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image_for_container.h"
-#include "third_party/blink/renderer/platform/graphics/placeholder_image.h"
 #include "ui/base/resource/resource_scale_factor.h"
 
 namespace blink {
@@ -223,10 +222,6 @@ scoped_refptr<Image> LayoutImageResource::GetImage(
     return Image::NullImage();
 
   Image* image = cached_image_->GetImage();
-  if (image->IsPlaceholderImage()) {
-    static_cast<PlaceholderImage*>(image)->SetIconAndTextScaleFactor(
-        layout_object_->StyleRef().EffectiveZoom());
-  }
 
   auto* svg_image = DynamicTo<SVGImage>(image);
   if (!svg_image)
