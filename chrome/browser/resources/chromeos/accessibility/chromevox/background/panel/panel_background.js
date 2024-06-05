@@ -303,6 +303,8 @@ export class PanelBackground {
 
       desktop.removeEventListener(
           chrome.automation.EventType.FOCUS, onFocus, true);
+      desktop.removeEventListener(
+          chrome.automation.EventType.BLUR, onBlur, true);
 
       // Clears focus on the page by focusing the root explicitly. This makes
       // sure we don't get future focus events as a result of giving this
@@ -314,6 +316,22 @@ export class PanelBackground {
       notifyPanelCollapsed();
     };
 
+    const onBlur = event => {
+      if (!event.target.docUrl ||
+          !event.target.docUrl.includes('chromevox/panel')) {
+        return;
+      }
+
+      desktop.removeEventListener(
+          chrome.automation.EventType.BLUR, onBlur, true);
+      desktop.removeEventListener(
+          chrome.automation.EventType.FOCUS, onFocus, true);
+
+      notifyPanelCollapsed();
+    };
+
+
+    desktop.addEventListener(chrome.automation.EventType.BLUR, onBlur, true);
     desktop.addEventListener(chrome.automation.EventType.FOCUS, onFocus, true);
   }
 
