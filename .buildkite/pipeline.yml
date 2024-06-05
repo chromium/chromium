@@ -247,6 +247,8 @@ steps:
     trigger: "runtime-command-tests"
     depends_on:
       - "build-chromium-mac-arm64"
+    build:
+      branch: toshok/tt-492-force-slowpath-in-value-serializer
 
   # wait for all steps above, but also continue if they fail
   - wait: ~
