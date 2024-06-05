@@ -14,7 +14,7 @@ pub struct {{name}} {
 #[derive(Debug)]
 #[repr(C)]
 pub struct {{name}}_Data {
-    pub _header: bindings::StructHeader,
+    pub _header: bindings::data::StructHeader,
 {%- for field in struct.packed|get_rust_data_fields%}
     pub r#{{field.name}}: {{field.type}},
 {%- endfor %}

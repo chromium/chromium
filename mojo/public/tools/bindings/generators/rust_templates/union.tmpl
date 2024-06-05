@@ -17,7 +17,7 @@ pub struct {{union.name}}_Data {
 
 // All unions have a predefined size in the wire format. Assert it's correct.
 static_assertions::const_assert_eq!(
-    bindings::UNION_DATA_SIZE,
+    bindings::data::UNION_DATA_SIZE,
     std::mem::size_of::<{{union.name}}_Data>()
 );
 
@@ -47,7 +47,7 @@ impl std::fmt::Debug for {{union.name}}_Inner {
 
 // All unions have a predefined size in the wire format. Assert it's correct.
 static_assertions::const_assert_eq!(
-    bindings::UNION_INNER_SIZE,
+    bindings::data::UNION_INNER_SIZE,
     std::mem::size_of::<{{union.name}}_Inner>()
 );
 

@@ -100,28 +100,29 @@ class Generator(generator.Generator):
     if mojom.IsEnumKind(kind):
       return self._GetNameForKind(kind)
     if mojom.IsStructKind(kind):
-      return f"bindings::Pointer<{self._GetNameForKind(kind, is_data=True)}>"
+      return (f"bindings::data::Pointer<"
+              f"{self._GetNameForKind(kind, is_data=True)}>")
     if mojom.IsArrayKind(kind):
-      return (f"bindings::Pointer<bindings::Array<"
+      return (f"bindings::data::Pointer<bindings::data::Array<"
               f"{self._GetRustDataFieldType(kind.kind)}>>")
     if mojom.IsStringKind(kind):
-      return "bindings::Pointer<bindings::Array<u8>>"
+      return "bindings::data::Pointer<bindings::data::Array<u8>>"
     if mojom.IsMapKind(kind):
-      return (f"bindings::Pointer<bindings::Map<"
+      return (f"bindings::data::Pointer<bindings::data::Map<"
               f"{self._GetRustDataFieldType(kind.key_kind)}, "
               f"{self._GetRustDataFieldType(kind.value_kind)}>>")
     if mojom.IsUnionKind(kind):
       return self._GetNameForKind(kind, is_data=True)
     if mojom.IsInterfaceKind(kind) or mojom.IsPendingRemoteKind(kind):
-      return "bindings::InterfaceData"
+      return "bindings::data::InterfaceData"
     if mojom.IsPendingReceiverKind(kind):
-      return "bindings::HandleRef"
+      return "bindings::data::HandleRef"
     if mojom.IsPendingAssociatedRemoteKind(kind):
-      return "bindings::InterfaceData"
+      return "bindings::data::InterfaceData"
     if mojom.IsPendingAssociatedReceiverKind(kind):
-      return "bindings::HandleRef"
+      return "bindings::data::HandleRef"
     if mojom.IsAnyHandleKind(kind):
-      return "bindings::HandleRef"
+      return "bindings::data::HandleRef"
     if kind not in _kind_to_rust_type:
       return "()"
     return _kind_to_rust_type[kind]
@@ -130,7 +131,9 @@ class Generator(generator.Generator):
     if kind == mojom.BOOL:
       return "u8"
     if mojom.IsUnionKind(kind):
-      return (f"bindings::Pointer<{self._GetNameForKind(kind, is_data=True)}>")
+      return (
+          f"bindings::data::Pointer<{self._GetNameForKind(kind, is_data=True)}>"
+      )
     return self._GetRustDataFieldType(kind)
 
   def _ToUpperSnakeCase(self, ident):

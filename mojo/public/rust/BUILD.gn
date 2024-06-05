@@ -98,7 +98,10 @@ rust_static_library("mojo_bindings") {
   crate_root = "bindings/lib.rs"
   allow_unsafe = true
 
-  sources = [ "bindings/lib.rs" ]
+  sources = [
+    "bindings/data.rs",
+    "bindings/lib.rs",
+  ]
 
   deps = [
     ":mojo_system",
