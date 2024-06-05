@@ -16,6 +16,7 @@ import static org.mockito.Mockito.verify;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
+import android.view.View;
 import android.view.WindowInsets;
 import android.widget.LinearLayout;
 
@@ -37,6 +38,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.InsetObserver.WindowInsetsAnimationListener;
 import org.chromium.ui.InsetObserver.WindowInsetsConsumer;
+import org.chromium.ui.base.ImmutableWeakReference;
 
 import java.util.Collections;
 
@@ -98,7 +100,7 @@ public class InsetObserverTest {
                 .when(mModifiedInsets)
                 .getInsets(WindowInsetsCompat.Type.systemBars());
 
-        mInsetObserver = new InsetObserver(mContentView);
+        mInsetObserver = new InsetObserver(new ImmutableWeakReference<View>(mContentView));
         mInsetObserver.addObserver(mObserver);
     }
 
@@ -265,7 +267,7 @@ public class InsetObserverTest {
     @Config(sdk = VERSION_CODES.R)
     public void initializeWithLastSeenRawWindowInsets() {
         doReturn(mNonCompatInsets).when(mContentView).getRootWindowInsets();
-        mInsetObserver = new InsetObserver(mContentView);
+        mInsetObserver = new InsetObserver(new ImmutableWeakReference<View>(mContentView));
         assertEquals(
                 "WindowInsets is different.",
                 WindowInsetsCompat.toWindowInsetsCompat(mNonCompatInsets),

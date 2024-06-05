@@ -33,7 +33,6 @@ import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownEmbedder.OmniboxAlignment;
 import org.chromium.ui.InsetObserver;
-import org.chromium.ui.InsetObserverSupplier;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
@@ -79,7 +78,7 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
     @Before
     public void setUp() {
         mContextWeakRef = new WeakReference<>(ContextUtils.getApplicationContext());
-        InsetObserverSupplier.setInstanceForTesting(mInsetObserver);
+        doReturn(mInsetObserver).when(mWindowAndroid).getInsetObserver();
         doReturn(mContextWeakRef).when(mWindowAndroid).getContext();
         doReturn(mContextWeakRef.get()).when(mAnchorView).getContext();
         doReturn(mViewTreeObserver).when(mAnchorView).getViewTreeObserver();
