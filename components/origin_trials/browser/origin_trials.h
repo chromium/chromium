@@ -16,9 +16,12 @@
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/origin_trials/common/origin_trials_persistence_provider.h"
+#include "content/public/browser/origin_trial_status_change_details.h"
 #include "content/public/browser/origin_trials_controller_delegate.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
 #include "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-shared.h"
+
+using content::OriginTrialStatusChangeDetails;
 
 namespace url {
 class Origin;
@@ -81,11 +84,8 @@ class OriginTrials : public KeyedService,
   std::unique_ptr<blink::TrialTokenValidator> trial_token_validator_;
   ObserverMap observer_map_;
 
-  void NotifyStatusChange(const url::Origin& origin,
-                          const std::string& partition_site,
-                          bool match_subdomains,
-                          const std::string& trial,
-                          bool enabled);
+  void NotifyStatusChange(const std::string& trial,
+                          const OriginTrialStatusChangeDetails& details);
   void NotifyPersistedTokensCleared();
 
   // Returns true if `origin` can use a token made for `token_origin`. For

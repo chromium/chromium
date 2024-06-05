@@ -6,7 +6,10 @@
 #define CHROME_BROWSER_TPCD_SUPPORT_TPCD_SUPPORT_SERVICE_H_
 
 #include "components/keyed_service/core/keyed_service.h"
+#include "content/public/browser/origin_trial_status_change_details.h"
 #include "content/public/browser/origin_trials_controller_delegate.h"
+
+using content::OriginTrialStatusChangeDetails;
 
 namespace content {
 class BrowserContext;
@@ -31,30 +34,22 @@ class TpcdTrialService
   // KeyedService overrides:
   void Shutdown() override;
 
-  void Update3pcdTrialSettingsForTesting(const url::Origin& origin,
-                                         const std::string& partition_site,
-                                         bool match_subdomains,
-                                         bool enabled);
+  void Update3pcdTrialSettingsForTesting(
+      const OriginTrialStatusChangeDetails& details);
 
  private:
-  // Updates `ContentSettingsForOneType::TPCD_TRIAL` to reflect
-  // the status of the trial for `origin` (when embedded by `partition_site`).
-  // If `match_subdomains` is true, a custom scope is used for the content
-  // setting to match all subdomains of `origin`.
-  void Update3pcdTrialSettings(const url::Origin& origin,
-                               const std::string& partition_site,
-                               bool match_subdomains,
-                               bool enabled);
+  // Updates `ContentSettingsForOneType::TPCD_TRIAL` to reflect the status of
+  // the trial for `details.origin` (when embedded by `details.partition_site`).
+  // If `details.match_subdomains` is true, a custom scope is used for the
+  // content setting to match all subdomains of `details.origin`.
+  void Update3pcdTrialSettings(const OriginTrialStatusChangeDetails& details);
   void ClearTpcdTrialSettings();
 
   void SyncTpcdTrialSettingsToNetworkService(
       HostContentSettingsMap* settings_map);
 
   // content::OriginTrialsControllerDelegate::Observer overrides:
-  void OnStatusChanged(const url::Origin& origin,
-                       const std::string& partition_site,
-                       bool match_subdomains,
-                       bool enabled) override;
+  void OnStatusChanged(const OriginTrialStatusChangeDetails& details) override;
   void OnPersistedTokensCleared() override;
   std::string trial_name() override;
 

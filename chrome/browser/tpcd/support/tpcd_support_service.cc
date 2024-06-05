@@ -45,43 +45,36 @@ void TpcdTrialService::Shutdown() {
 }
 
 void TpcdTrialService::Update3pcdTrialSettingsForTesting(
-    const url::Origin& request_origin,
-    const std::string& partition_site,
-    bool match_subdomains,
-    bool enabled) {
-  Update3pcdTrialSettings(request_origin, partition_site, match_subdomains,
-                          enabled);
+    const OriginTrialStatusChangeDetails& details) {
+  Update3pcdTrialSettings(details);
 }
 
 void TpcdTrialService::Update3pcdTrialSettings(
-    const url::Origin& request_origin,
-    const std::string& partition_site,
-    bool includes_subdomains,
-    bool enabled) {
+    const OriginTrialStatusChangeDetails& details) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   HostContentSettingsMap* settings_map =
       HostContentSettingsMapFactory::GetForProfile(browser_context_);
   CHECK(settings_map);
 
-  const GURL request_origin_as_url = request_origin.GetURL();
-  const GURL partition_site_as_url = GURL(partition_site);
+  const GURL origin_as_url = details.origin.GetURL();
+  const GURL partition_site_as_url = GURL(details.partition_site);
 
   // Check for an existing `TPCD_TRIAL` setting that allows the pair.
   content_settings::SettingInfo existing_setting_info;
   bool setting_exists =
-      (settings_map->GetContentSetting(
-           request_origin_as_url, partition_site_as_url,
-           ContentSettingsType::TPCD_TRIAL,
-           &existing_setting_info) == CONTENT_SETTING_ALLOW) &&
+      (settings_map->GetContentSetting(origin_as_url, partition_site_as_url,
+                                       ContentSettingsType::TPCD_TRIAL,
+                                       &existing_setting_info) ==
+       CONTENT_SETTING_ALLOW) &&
       (existing_setting_info.primary_pattern.HasDomainWildcard() ==
-       includes_subdomains) &&
+       details.match_subdomains) &&
       !existing_setting_info.primary_pattern.MatchesAllHosts() &&
       !existing_setting_info.secondary_pattern.MatchesAllHosts();
 
   // If the trial status matches existing settings, there is no need to
   // update `settings_map`.
-  if (enabled == setting_exists) {
+  if (details.enabled == setting_exists) {
     return;
   }
 
@@ -89,19 +82,18 @@ void TpcdTrialService::Update3pcdTrialSettings(
   ContentSettingsPattern secondary_setting_pattern =
       ContentSettingsPattern::FromURLToSchemefulSitePattern(
           partition_site_as_url);
-  if (includes_subdomains) {
-    primary_setting_pattern =
-        ContentSettingsPattern::FromURL(request_origin_as_url);
+  if (details.match_subdomains) {
+    primary_setting_pattern = ContentSettingsPattern::FromURL(origin_as_url);
   } else {
     // In this case, the combination of `primary_setting_pattern` and
     // `secondary_setting_pattern` is equivalent to
     // `ContentSettingsType::TPCD_TRIAL`'s default scope
     // (`REQUESTING_ORIGIN_AND_TOP_SCHEMEFUL_SITE_SCOPE`).
     primary_setting_pattern =
-        ContentSettingsPattern::FromURLNoWildcard(request_origin_as_url);
+        ContentSettingsPattern::FromURLNoWildcard(origin_as_url);
   }
 
-  if (enabled) {
+  if (details.enabled) {
     settings_map->SetContentSettingCustomScope(
         primary_setting_pattern, secondary_setting_pattern,
         ContentSettingsType::TPCD_TRIAL, CONTENT_SETTING_ALLOW);
@@ -147,11 +139,9 @@ void TpcdTrialService::SyncTpcdTrialSettingsToNetworkService(
                            base::NullCallback());
 }
 
-void TpcdTrialService::OnStatusChanged(const url::Origin& origin,
-                                       const std::string& partition_site,
-                                       bool includes_subdomains,
-                                       bool enabled) {
-  Update3pcdTrialSettings(origin, partition_site, includes_subdomains, enabled);
+void TpcdTrialService::OnStatusChanged(
+    const OriginTrialStatusChangeDetails& details) {
+  Update3pcdTrialSettings(details);
 }
 
 void TpcdTrialService::OnPersistedTokensCleared() {

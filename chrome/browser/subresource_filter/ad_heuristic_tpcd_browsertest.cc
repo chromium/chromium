@@ -501,10 +501,10 @@ IN_PROC_BROWSER_TEST_F(AdHeuristicTPCDBrowserTestTrialGrant, CookieAllowed) {
   GURL third_party_url = https_server()->GetURL("b.test", "/");
   GURL first_party_url = https_server()->GetURL("a.test", "/");
   tpcd::trial::TpcdTrialServiceFactory::GetForProfile(browser()->profile())
-      ->Update3pcdTrialSettingsForTesting(url::Origin::Create(third_party_url),
-                                          first_party_url.spec(),
-                                          /*match_subdomains=*/false,
-                                          /*enabled=*/true);
+      ->Update3pcdTrialSettingsForTesting(OriginTrialStatusChangeDetails(
+          url::Origin::Create(third_party_url), first_party_url.spec(),
+          /*match_subdomains=*/false,
+          /*enabled=*/true));
 
   Verify3PCookieAccessAllowed(register_response.get());
 }
@@ -549,10 +549,10 @@ IN_PROC_BROWSER_TEST_F(AdHeuristicTPCDBrowserTestSkipTrialGrant,
   GURL third_party_url = https_server()->GetURL("b.test", "/");
   GURL first_party_url = https_server()->GetURL("a.test", "/");
   tpcd::trial::TpcdTrialServiceFactory::GetForProfile(browser()->profile())
-      ->Update3pcdTrialSettingsForTesting(url::Origin::Create(third_party_url),
-                                          first_party_url.spec(),
-                                          /*match_subdomains=*/false,
-                                          /*enabled=*/true);
+      ->Update3pcdTrialSettingsForTesting(OriginTrialStatusChangeDetails(
+          url::Origin::Create(third_party_url), first_party_url.spec(),
+          /*match_subdomains=*/false,
+          /*enabled=*/true));
 
   VerifyAdCookieAccessBlocked(register_response.get(), register_response2.get(),
                               /*metadata_count=*/0, /*heuristics_count=*/0,

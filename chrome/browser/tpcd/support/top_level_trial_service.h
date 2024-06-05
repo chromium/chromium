@@ -7,9 +7,12 @@
 
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "content/public/browser/origin_trial_status_change_details.h"
 #include "content/public/browser/origin_trials_controller_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+
+using content::OriginTrialStatusChangeDetails;
 
 namespace tpcd::trial {
 
@@ -57,10 +60,7 @@ class TopLevelTrialService
   void ClearTopLevelTrialSettings();
 
   // content::OriginTrialsControllerDelegate::Observer overrides:
-  void OnStatusChanged(const url::Origin& origin,
-                       const std::string& partition_site,
-                       bool match_subdomains,
-                       bool enabled) override;
+  void OnStatusChanged(const OriginTrialStatusChangeDetails& details) override;
   void OnPersistedTokensCleared() override;
   std::string trial_name() override;
 

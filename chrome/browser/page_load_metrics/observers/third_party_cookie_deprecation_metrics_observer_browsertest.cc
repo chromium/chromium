@@ -960,9 +960,9 @@ class ThirdPartyCookieDeprecationObserverMechanismBrowserTest
           browser()->profile());
       auto request_origin = url::Origin::Create(third_party_url);
       auto partition_origin = url::Origin::Create(first_party_url);
-      service->Update3pcdTrialSettingsForTesting(
+      service->Update3pcdTrialSettingsForTesting(OriginTrialStatusChangeDetails(
           request_origin, net::SchemefulSite(partition_origin).Serialize(),
-          /*match_subdomains=*/true, /*enabled=*/true);
+          /*match_subdomains=*/true, /*enabled=*/true));
     }
 
     auto tpcd_metadata_helper = [&](const std::string& source) {

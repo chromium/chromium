@@ -23,23 +23,24 @@ namespace {
 
 const char kTrialName[] = "TopLevelTpcd";
 
-OriginTrialStatusChange ClassifyStatusChange(bool enabled,
-                                             bool matches_subdomains) {
-  if (enabled) {
-    return matches_subdomains
+OriginTrialStatusChange ClassifyStatusChange(
+    const OriginTrialStatusChangeDetails& details) {
+  if (details.enabled) {
+    return details.match_subdomains
                ? OriginTrialStatusChange::kEnabled_MatchesSubdomains
                : OriginTrialStatusChange::kEnabled;
   } else {
-    return matches_subdomains
+    return details.match_subdomains
                ? OriginTrialStatusChange::kDisabled_MatchesSubdomains
                : OriginTrialStatusChange::kDisabled;
   }
 }
 
-inline void UmaHistogramCrossSiteChange(bool enabled, bool matches_subdomains) {
+inline void UmaHistogramCrossSiteChange(
+    const OriginTrialStatusChangeDetails& details) {
   base::UmaHistogramEnumeration(
       "PageLoad.Clients.TPCD.TopLevelTpcd.CrossSiteTrialChange",
-      ClassifyStatusChange(enabled, matches_subdomains));
+      ClassifyStatusChange(details));
 }
 
 bool IsSameSite(const GURL& url1, const GURL& url2) {
@@ -164,21 +165,20 @@ void TopLevelTrialService::ClearTopLevelTrialSettings() {
       ContentSettingsType::TOP_LEVEL_TPCD_TRIAL);
 }
 
-void TopLevelTrialService::OnStatusChanged(const url::Origin& origin,
-                                           const std::string& partition_site,
-                                           bool includes_subdomains,
-                                           bool enabled) {
+void TopLevelTrialService::OnStatusChanged(
+    const OriginTrialStatusChangeDetails& details) {
   // TopLevelTpcd is a first-party trial that is only intended for use by
-  // top-level sites. However, since a cross-site iframe may enabled a
-  // first-party origin trial (for itself), so to ensure we only create settings
-  // for top-level sites, explicitly check that `origin` is same-site with
+  // top-level sites. However, a cross-site iframe may enable a first-party
+  // origin trial (for itself), so to ensure we only create settings for
+  // top-level sites, explicitly check that `origin` is same-site with
   // `partition_site`.
-  if (!IsSameSite(origin.GetURL(), GURL(partition_site))) {
-    UmaHistogramCrossSiteChange(enabled, includes_subdomains);
+  if (!IsSameSite(details.origin.GetURL(), GURL(details.partition_site))) {
+    UmaHistogramCrossSiteChange(details);
     return;
   }
 
-  UpdateTopLevelTrialSettings(origin, includes_subdomains, enabled);
+  UpdateTopLevelTrialSettings(details.origin, details.match_subdomains,
+                              details.enabled);
 }
 
 void TopLevelTrialService::OnPersistedTokensCleared() {

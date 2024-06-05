@@ -51,18 +51,16 @@ void OriginTrials::RemoveObserver(Observer* observer) {
   }
 }
 
-void OriginTrials::NotifyStatusChange(const url::Origin& origin,
-                                      const std::string& partition_site,
-                                      bool match_subdomains,
-                                      const std::string& trial,
-                                      bool enabled) {
+void OriginTrials::NotifyStatusChange(
+    const std::string& trial,
+    const OriginTrialStatusChangeDetails& details) {
   const auto find_it = observer_map_.find(trial);
   if (find_it == observer_map_.end()) {
     return;
   }
 
   for (Observer& observer : find_it->second) {
-    observer.OnStatusChanged(origin, partition_site, match_subdomains, enabled);
+    observer.OnStatusChanged(details);
   }
 }
 
@@ -280,9 +278,10 @@ void OriginTrials::UpdatePersistedTokenSet(
         // by a document loaded from the token origin.
         if (!token.match_subdomains || (document_origin == token_origin)) {
           token.RemoveFromPartition(partition_site);
-          NotifyStatusChange(token_origin, partition_site,
-                             token.match_subdomains, token.trial_name,
-                             /* enabled = */ false);
+          NotifyStatusChange(token.trial_name,
+                             OriginTrialStatusChangeDetails(
+                                 token_origin, partition_site,
+                                 token.match_subdomains, /*enabled=*/false));
         }
       }
     }
@@ -307,10 +306,11 @@ void OriginTrials::UpdatePersistedTokenSet(
       // NOTE: This is because `found_token` can "match" `new_token` without
       // `found_token->partition_sites` containing `partition_site`.
       if (!found_token->partition_sites.contains(partition_site)) {
-        NotifyStatusChange(token_origin, partition_site,
-                           found_token->match_subdomains,
-                           found_token->trial_name,
-                           /* enabled = */ true);
+        NotifyStatusChange(
+            found_token->trial_name,
+            OriginTrialStatusChangeDetails(token_origin, partition_site,
+                                           found_token->match_subdomains,
+                                           /*enabled=*/true));
       }
 
       // Update the existing stored trial token with the metadata fields, as it
@@ -318,9 +318,10 @@ void OriginTrials::UpdatePersistedTokenSet(
       found_token->AddToPartition(partition_site);
     } else {
       token_set.emplace(new_token, partition_site);
-      NotifyStatusChange(token_origin, partition_site,
-                         new_token.match_subdomains(), new_token.feature_name(),
-                         /* enabled = */ true);
+      NotifyStatusChange(new_token.feature_name(),
+                         OriginTrialStatusChangeDetails(
+                             token_origin, partition_site,
+                             new_token.match_subdomains(), /*enabled=*/true));
     }
   }
   persistence_provider_->SavePersistentTrialTokens(token_origin,

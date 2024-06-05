@@ -171,30 +171,6 @@ const char kFrobulatePersistentInvalidOsToken[] =
     "WF0dXJlIjogIkZyb2J1bGF0ZVBlcnNpc3RlbnRJbnZhbGlkT1MiLCAiZXhwaXJ5IjogMjAwMDA"
     "wMDAwMH0=";
 
-struct StatusInfo {
-  url::Origin origin;
-  std::string partition_site;
-  bool match_subdomains;
-  bool enabled;
-};
-
-inline bool operator==(const StatusInfo& lhs, const StatusInfo& rhs) {
-  return std::tie(lhs.origin, lhs.partition_site, lhs.match_subdomains,
-                  lhs.enabled) == std::tie(rhs.origin, rhs.partition_site,
-                                           rhs.match_subdomains, rhs.enabled);
-}
-
-std::ostream& operator<<(std::ostream& out, const StatusInfo& info) {
-  out << "{";
-  out << "origin: " << info.origin << ", ";
-  out << "partition_site: " << info.partition_site << ", ";
-  out << "match_subdomains:" << (info.match_subdomains ? "true" : "false")
-      << ", ";
-  out << "enabled: " << (info.enabled ? "true" : "false");
-  out << "}";
-  return out;
-}
-
 class OpenScopedTestOriginTrialPolicy
     : public blink::ScopedTestOriginTrialPolicy {
  public:
@@ -240,12 +216,9 @@ class TestStatusObserver
   TestStatusObserver(const TestStatusObserver&) = delete;
   TestStatusObserver& operator=(const TestStatusObserver&) = delete;
 
-  void OnStatusChanged(const url::Origin& origin,
-                       const std::string& partition_site,
-                       bool match_subdomains,
-                       bool enabled) override {
+  void OnStatusChanged(const OriginTrialStatusChangeDetails& details) override {
     on_status_changed_count_++;
-    last_status_change_ = {origin, partition_site, match_subdomains, enabled};
+    last_status_change_ = details;
   }
   void OnPersistedTokensCleared() override {
     on_persisted_tokens_cleared_count_++;
@@ -256,11 +229,13 @@ class TestStatusObserver
   int on_persisted_tokens_cleared_count() {
     return on_persisted_tokens_cleared_count_;
   }
-  StatusInfo last_status_change() { return last_status_change_; }
+  const OriginTrialStatusChangeDetails& last_status_change() {
+    return last_status_change_;
+  }
 
  private:
   std::string trial_name_;
-  StatusInfo last_status_change_;
+  OriginTrialStatusChangeDetails last_status_change_;
   int on_status_changed_count_ = 0;
   int on_persisted_tokens_cleared_count_ = 0;
 };
@@ -774,10 +749,11 @@ TEST_F(OriginTrialsTest, NotifyOnEnable) {
 
   EXPECT_EQ(observer->on_status_changed_count(), 1);
   EXPECT_EQ(observer->on_persisted_tokens_cleared_count(), 0);
-  EXPECT_EQ(observer->last_status_change(),
-            StatusInfo(trial_enabled_origin_,
-                       GetTokenPartitionSite(trial_enabled_origin_),
-                       /*match_subdomains=*/false, /*enabled=*/true));
+  EXPECT_EQ(
+      observer->last_status_change(),
+      OriginTrialStatusChangeDetails(
+          trial_enabled_origin_, GetTokenPartitionSite(trial_enabled_origin_),
+          /*match_subdomains=*/false, /*enabled=*/true));
 }
 
 TEST_F(OriginTrialsTest, NotifyOnEnableWithSubdomainMatching) {
@@ -789,10 +765,11 @@ TEST_F(OriginTrialsTest, NotifyOnEnableWithSubdomainMatching) {
 
   EXPECT_EQ(observer->on_status_changed_count(), 1);
   EXPECT_EQ(observer->on_persisted_tokens_cleared_count(), 0);
-  EXPECT_EQ(observer->last_status_change(),
-            StatusInfo(trial_enabled_origin_,
-                       GetTokenPartitionSite(trial_enabled_origin_),
-                       /*match_subdomains=*/true, /*enabled=*/true));
+  EXPECT_EQ(
+      observer->last_status_change(),
+      OriginTrialStatusChangeDetails(
+          trial_enabled_origin_, GetTokenPartitionSite(trial_enabled_origin_),
+          /*match_subdomains=*/true, /*enabled=*/true));
 }
 
 TEST_F(OriginTrialsTest, NotifyOnDisable) {
@@ -807,10 +784,11 @@ TEST_F(OriginTrialsTest, NotifyOnDisable) {
 
   EXPECT_EQ(observer->on_status_changed_count(), 1);
   EXPECT_EQ(observer->on_persisted_tokens_cleared_count(), 0);
-  EXPECT_EQ(observer->last_status_change(),
-            StatusInfo(trial_enabled_origin_,
-                       GetTokenPartitionSite(trial_enabled_origin_),
-                       /*match_subdomains=*/false, /*enabled=*/false));
+  EXPECT_EQ(
+      observer->last_status_change(),
+      OriginTrialStatusChangeDetails(
+          trial_enabled_origin_, GetTokenPartitionSite(trial_enabled_origin_),
+          /*match_subdomains=*/false, /*enabled=*/false));
 }
 
 TEST_F(OriginTrialsTest, NotifyOnDisableWithSubdomainMatching) {
@@ -825,10 +803,11 @@ TEST_F(OriginTrialsTest, NotifyOnDisableWithSubdomainMatching) {
 
   EXPECT_EQ(observer->on_status_changed_count(), 1);
   EXPECT_EQ(observer->on_persisted_tokens_cleared_count(), 0);
-  EXPECT_EQ(observer->last_status_change(),
-            StatusInfo(trial_enabled_origin_,
-                       GetTokenPartitionSite(trial_enabled_origin_),
-                       /*match_subdomains=*/true, /*enabled=*/false));
+  EXPECT_EQ(
+      observer->last_status_change(),
+      OriginTrialStatusChangeDetails(
+          trial_enabled_origin_, GetTokenPartitionSite(trial_enabled_origin_),
+          /*match_subdomains=*/true, /*enabled=*/false));
 }
 
 // Verifies that the origin stored in a subdomain-matching token is provided in
@@ -844,10 +823,11 @@ TEST_F(OriginTrialsTest, NotifyUsingTokenOriginOnEnable) {
   PersistTrialsFromTokens(trial_enabled_origin_subdomain_, tokens, kValidTime);
 
   EXPECT_EQ(observer->on_status_changed_count(), 1);
-  EXPECT_EQ(observer->last_status_change(),
-            StatusInfo(trial_enabled_origin_,
-                       GetTokenPartitionSite(trial_enabled_origin_),
-                       /*match_subdomains=*/true, /*enabled=*/true));
+  EXPECT_EQ(
+      observer->last_status_change(),
+      OriginTrialStatusChangeDetails(
+          trial_enabled_origin_, GetTokenPartitionSite(trial_enabled_origin_),
+          /*match_subdomains=*/true, /*enabled=*/true));
 }
 
 TEST_F(OriginTrialsTest, DontNotifyOnDisableIfNotPreviouslyEnabled) {
@@ -873,10 +853,11 @@ TEST_F(OriginTrialsTest, NotifyOnEnabledOnlyIfPreviouslyDisabled) {
   PersistTrialsFromTokens(trial_enabled_origin_, tokens, kValidTime);
 
   EXPECT_EQ(observer->on_status_changed_count(), 1);
-  EXPECT_EQ(observer->last_status_change(),
-            StatusInfo(trial_enabled_origin_,
-                       GetTokenPartitionSite(trial_enabled_origin_),
-                       /*match_subdomains=*/false, /*enabled=*/true));
+  EXPECT_EQ(
+      observer->last_status_change(),
+      OriginTrialStatusChangeDetails(
+          trial_enabled_origin_, GetTokenPartitionSite(trial_enabled_origin_),
+          /*match_subdomains=*/false, /*enabled=*/true));
 
   PersistTrialsFromTokens(trial_enabled_origin_, tokens, kValidTime);
   origin_trials_.PersistAdditionalTrialsFromTokens(
@@ -898,16 +879,18 @@ TEST_F(OriginTrialsTest, NotifyOnStatusChangeMultiplePartitionSites) {
                                          tokens, kValidTime);
   EXPECT_EQ(observer->on_status_changed_count(), 1);
   EXPECT_EQ(observer->last_status_change(),
-            StatusInfo(trial_enabled_origin_, GetTokenPartitionSite(origin_a),
-                       /*match_subdomains=*/false, /*enabled=*/true));
+            OriginTrialStatusChangeDetails(
+                trial_enabled_origin_, GetTokenPartitionSite(origin_a),
+                /*match_subdomains=*/false, /*enabled=*/true));
 
   // Enable trial for `trial_enabled_origin_`, partitioned under `origin_b`.
   origin_trials_.PersistTrialsFromTokens(trial_enabled_origin_, origin_b,
                                          tokens, kValidTime);
   EXPECT_EQ(observer->on_status_changed_count(), 2);
   EXPECT_EQ(observer->last_status_change(),
-            StatusInfo(trial_enabled_origin_, GetTokenPartitionSite(origin_b),
-                       /*match_subdomains=*/false, /*enabled=*/true));
+            OriginTrialStatusChangeDetails(
+                trial_enabled_origin_, GetTokenPartitionSite(origin_b),
+                /*match_subdomains=*/false, /*enabled=*/true));
 
   // Disable trial for `trial_enabled_origin_`, partitioned under `origin_a`.
   tokens = {};
@@ -915,8 +898,9 @@ TEST_F(OriginTrialsTest, NotifyOnStatusChangeMultiplePartitionSites) {
                                          tokens, kValidTime);
   EXPECT_EQ(observer->on_status_changed_count(), 3);
   EXPECT_EQ(observer->last_status_change(),
-            StatusInfo(trial_enabled_origin_, GetTokenPartitionSite(origin_a),
-                       /*match_subdomains=*/false, /*enabled=*/false));
+            OriginTrialStatusChangeDetails(
+                trial_enabled_origin_, GetTokenPartitionSite(origin_a),
+                /*match_subdomains=*/false, /*enabled=*/false));
 
   // Disable trial for `trial_enabled_origin_`, partitioned under `origin_b`.
   tokens = {};
@@ -924,8 +908,9 @@ TEST_F(OriginTrialsTest, NotifyOnStatusChangeMultiplePartitionSites) {
                                          tokens, kValidTime);
   EXPECT_EQ(observer->on_status_changed_count(), 4);
   EXPECT_EQ(observer->last_status_change(),
-            StatusInfo(trial_enabled_origin_, GetTokenPartitionSite(origin_b),
-                       /*match_subdomains=*/false, /*enabled=*/false));
+            OriginTrialStatusChangeDetails(
+                trial_enabled_origin_, GetTokenPartitionSite(origin_b),
+                /*match_subdomains=*/false, /*enabled=*/false));
 }
 
 // Check that observers are only notified of status change events for the trial
@@ -949,8 +934,9 @@ TEST_F(OriginTrialsTest, NotifyForCorrectTrial) {
 
   EXPECT_EQ(observer_a->on_status_changed_count(), 1);
   EXPECT_EQ(observer_a->last_status_change(),
-            StatusInfo(origin_a, GetTokenPartitionSite(origin_a),
-                       /*match_subdomains=*/false, /*enabled=*/true));
+            OriginTrialStatusChangeDetails(
+                origin_a, GetTokenPartitionSite(origin_a),
+                /*match_subdomains=*/false, /*enabled=*/true));
   EXPECT_EQ(observer_b->on_status_changed_count(), 0);
 
   // Enable `kPersistentThirdPartyDeprecationTrialName` for `origin_b`
@@ -963,8 +949,9 @@ TEST_F(OriginTrialsTest, NotifyForCorrectTrial) {
   EXPECT_EQ(observer_a->on_status_changed_count(), 1);
   EXPECT_EQ(observer_b->on_status_changed_count(), 1);
   EXPECT_EQ(observer_b->last_status_change(),
-            StatusInfo(origin_b, GetTokenPartitionSite(origin_a),
-                       /*match_subdomains=*/false, /*enabled=*/true));
+            OriginTrialStatusChangeDetails(
+                origin_b, GetTokenPartitionSite(origin_a),
+                /*match_subdomains=*/false, /*enabled=*/true));
 
   // Disable `kPersistentTrialName` for `origin_a`.
   tokens_a = {};
@@ -973,12 +960,14 @@ TEST_F(OriginTrialsTest, NotifyForCorrectTrial) {
 
   EXPECT_EQ(observer_a->on_status_changed_count(), 2);
   EXPECT_EQ(observer_a->last_status_change(),
-            StatusInfo(origin_a, GetTokenPartitionSite(origin_a),
-                       /*match_subdomains=*/false, /*enabled=*/false));
+            OriginTrialStatusChangeDetails(
+                origin_a, GetTokenPartitionSite(origin_a),
+                /*match_subdomains=*/false, /*enabled=*/false));
   EXPECT_EQ(observer_b->on_status_changed_count(), 1);
   EXPECT_EQ(observer_b->last_status_change(),
-            StatusInfo(origin_b, GetTokenPartitionSite(origin_a),
-                       /*match_subdomains=*/false, /*enabled=*/true));
+            OriginTrialStatusChangeDetails(
+                origin_b, GetTokenPartitionSite(origin_a),
+                /*match_subdomains=*/false, /*enabled=*/true));
 }
 
 TEST_F(OriginTrialsTest, NotifyWithTokenOriginForSubdomainTokens) {
@@ -991,9 +980,10 @@ TEST_F(OriginTrialsTest, NotifyWithTokenOriginForSubdomainTokens) {
   EXPECT_EQ(observer->on_status_changed_count(), 1);
   EXPECT_EQ(observer->on_persisted_tokens_cleared_count(), 0);
   EXPECT_EQ(observer->last_status_change(),
-            StatusInfo(trial_enabled_origin_,
-                       GetTokenPartitionSite(trial_enabled_origin_subdomain_),
-                       /*match_subdomains=*/true, /*enabled=*/true));
+            OriginTrialStatusChangeDetails(
+                trial_enabled_origin_,
+                GetTokenPartitionSite(trial_enabled_origin_subdomain_),
+                /*match_subdomains=*/true, /*enabled=*/true));
 }
 
 TEST_F(OriginTrialsTest, NotifyOnPersistedTokensCleared) {
