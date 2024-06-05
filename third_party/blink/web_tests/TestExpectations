@@ -7527,3 +7527,6 @@ crbug.com/343845140 http/tests/devtools/components/throttler.js [ Failure Pass T
 
 # Gardener 2024-06-04
 crbug.com/40899458 [ Linux ] virtual/gpu/fast/canvas/OffscreenCanvas-copyImage.html [ Failure Pass ]
+
+# Gardener 2024-06-05
+crbug.com/325323464 [ Mac13 ] http/tests/navigation/back-to-redirect-with-frame.php [ Pass Timeout ]
