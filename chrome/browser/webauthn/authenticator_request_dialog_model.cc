@@ -985,7 +985,7 @@ void AuthenticatorRequestDialogController::OnCableConnectingTimerComplete() {
 }
 
 void AuthenticatorRequestDialogController::OnRecoverSecurityDomainClosed() {
-  // TODO(enclave): implement this.
+  CancelAuthenticatorRequest();
 }
 
 void AuthenticatorRequestDialogController::StartPhonePairing() {
