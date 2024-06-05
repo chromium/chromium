@@ -3385,7 +3385,6 @@ def _CalculateAddedDeps(os_path, old_contents, new_contents):
             results.add(os_path.join(added_dep, 'DEPS'))
     return results
 
-
 def CheckForNewDEPSDownloadFromGoogleStorageHooks(input_api, output_api):
     """Checks that there are no new download_from_google_storage hooks"""
     for f in input_api.AffectedFiles(include_deletes=False):
@@ -3416,38 +3415,6 @@ def CheckForNewDEPSDownloadFromGoogleStorageHooks(input_api, output_api):
                         items=new_download_from_google_storage_hooks)
                 ]
     return []
-
-
-def _readDeps(input_api):
-    deps_file = input_api.os_path.join(input_api.PresubmitLocalPath(), 'DEPS')
-    with open(deps_file) as f:
-        return f.read()
-
-
-def CheckNoNewGitFilesAddedInDependencies(input_api, output_api):
-    deps = _ParseDeps(_readDeps(input_api))
-    dependency_paths = set([])
-    for path in deps['deps']:
-        # TODO(crbug.com/40738689): Remove src/ prefix
-        dependency_paths.add(path[4:])  # 4 == len('src/')
-
-    errors = []
-    for file in input_api.AffectedFiles(include_deletes=False):
-        path = file.LocalPath()
-        # We are checking path, and all paths below up to root. E.g. if path is
-        # a/b/c, we start with path == "a/b/c", followed by "a/b" and "a".
-        while path:
-            if path in dependency_paths:
-                errors.append(output_api.PresubmitError(
-                    'You cannot place files tracked by Git inside a '
-                    'first-party DEPS dependency (deps).\n'
-                    f'Dependency: {path}\n'
-                    f'File: {file.LocalPath()}'
-                ))
-            last_dir_path = path.rfind('/')
-            path = None if last_dir_path == -1 else path[:last_dir_path]
-
-    return errors
 
 
 def CheckEachPerfettoTestDataFileHasDepsEntry(input_api, output_api):
