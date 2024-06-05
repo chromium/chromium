@@ -183,14 +183,14 @@ if (_build_mac_webkit) {
       "--output_dir",
       rebase_path("$_webkit_mac_out_base_dir"),
 
-      # The arguments below allow building with Xcode 14.2 (with the macOS 13.1
-      # SDK) on macOS 13.4.
-      "MACOSX_DEPLOYMENT_TARGET=13.1",
-      "TARGET_MAC_OS_X_VERSION_MAJOR=130000",
-      "MAC_OS_X_VERSION_ACTUAL=130400",
-      "MAC_OS_X_VERSION_MAJOR=130000",
-      "MAC_OS_X_VERSION_MINOR=130400",
-      "MAC_OS_X_PRODUCT_BUILD_VERSION=22C55",
+      # The arguments below allow building with Xcode 15.4 (with the macOS 14.5
+      # SDK) on macOS 14.4.
+      "MACOSX_DEPLOYMENT_TARGET=14.5",
+      "TARGET_MAC_OS_X_VERSION_MAJOR=140000",
+      "MAC_OS_X_VERSION_ACTUAL=140400",
+      "MAC_OS_X_VERSION_MAJOR=140000",
+      "MAC_OS_X_VERSION_MINOR=140400",
+      "MAC_OS_X_PRODUCT_BUILD_VERSION=23F73",
     ]
   }
 
