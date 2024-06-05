@@ -1328,6 +1328,8 @@ source_set("browser") {
     "media/session/audio_focus_delegate.h",
     "media/session/media_metadata_sanitizer.cc",
     "media/session/media_metadata_sanitizer.h",
+    "media/session/media_players_callback_aggregator.cc",
+    "media/session/media_players_callback_aggregator.h",
     "media/session/media_session_controller.cc",
     "media/session/media_session_controller.h",
     "media/session/media_session_controllers_manager.cc",
