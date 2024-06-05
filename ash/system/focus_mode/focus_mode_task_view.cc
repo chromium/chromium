@@ -233,6 +233,7 @@ FocusModeTaskView::FocusModeTaskView(bool is_network_connected) {
   textfield_->SetAccessibleName(l10n_util::GetStringUTF16(
       IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_TEXTFIELD_PLACEHOLDER));
   textfield_->SetBackgroundEnabled(false);
+  textfield_->UpdateBackground();
   textfield_->SetPlaceholderText(l10n_util::GetStringUTF16(
       IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_TEXTFIELD_PLACEHOLDER));
   textfield_->SetPlaceholderTextColorId(is_network_connected
