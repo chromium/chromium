@@ -9,6 +9,7 @@
 
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
+#include "ash/wm/desks/desks_util.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_utils.h"
@@ -89,6 +90,13 @@ SnapGroup* SnapGroupController::AddSnapGroup(
 
   // We only allow snap group to be created if the windows fit the work area.
   if (!CanWindowsFitInWorkArea(window1, window2)) {
+    return nullptr;
+  }
+
+  // Disallow forming a Snap Group if either of the windows is configured to be
+  // "visible on all workspaces".
+  if (desks_util::IsWindowVisibleOnAllWorkspaces(window1) ||
+      desks_util::IsWindowVisibleOnAllWorkspaces(window2)) {
     return nullptr;
   }
 

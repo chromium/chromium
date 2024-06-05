@@ -2078,6 +2078,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="16" label="Window bounds change"/>
   <int value="17" label="Snapped bounds no longer fit work area"/>
   <int value="18" label="Snap to replace"/>
+  <int value="19" label="Visible on all desks"/>
 </enum>
 
 <enum name="SpeechRecognitionEndState">

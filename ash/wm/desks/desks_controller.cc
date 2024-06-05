@@ -36,6 +36,7 @@
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/scoped_overview_hide_windows.h"
+#include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/switchable_windows.h"
@@ -990,6 +991,14 @@ void DesksController::AddVisibleOnAllDesksWindow(aura::Window* window) {
   // added.
   if (!visible_on_all_desks_windows_.emplace(window).second)
     return;
+
+  if (SnapGroupController* snap_group_controller = SnapGroupController::Get()) {
+    if (SnapGroup* snap_group =
+            snap_group_controller->GetSnapGroupForGivenWindow(window)) {
+      snap_group_controller->RemoveSnapGroup(
+          snap_group, SnapGroupExitPoint::kVisibleOnAllDesks);
+    }
+  }
 
   // A window is made visible on all desks by always keeping it on the active
   // desk. If `window` isn't already on the active desk, then we need to move it

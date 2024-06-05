@@ -267,8 +267,11 @@ void SnapGroup::OnWindowParentChanged(aura::Window* window,
 
   // The `window` may be temporarily moved under
   // `kShellWindowId_UnparentedContainer`, skip the stacking order fixing in
-  // this case.
-  if (did_parent_change && desks_util::IsDeskContainer(parent)) {
+  // this case. While "visible on all workspaces" windows should never belong to
+  // Snap Groups, this check is still necessary as the group removal can be
+  // asynchronous.
+  if (did_parent_change && desks_util::IsDeskContainer(parent) &&
+      !desks_util::IsWindowVisibleOnAllWorkspaces(to_be_moved_window)) {
     window_util::FixWindowStackingAccordingToGlobalMru(to_be_moved_window);
   }
 

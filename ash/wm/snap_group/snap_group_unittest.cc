@@ -2418,6 +2418,43 @@ TEST_F(SnapGroupTest, NoGapAfterSnapGroupCreationInPortrait) {
   UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), snap_group_divider());
 }
 
+// Verify that a window configured to be "visible on all workspaces" cannot be
+// part of any Snap Group.
+TEST_F(SnapGroupTest, DisallowVisibleOnAllWorkspacesWindowToFormGroup) {
+  auto* desks_controller = DesksController::Get();
+  desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
+  ASSERT_EQ(2u, desks_controller->desks().size());
+  const Desk* desk0 = desks_controller->GetDeskAtIndex(0);
+  const Desk* desk1 = desks_controller->GetDeskAtIndex(1);
+  ASSERT_TRUE(desk0->is_active());
+  ASSERT_FALSE(desk1->is_active());
+
+  std::unique_ptr<aura::Window> w0(CreateAppWindow());
+  auto* window_widget0 = views::Widget::GetWidgetForNativeView(w0.get());
+  // Configure the property for `w0` to be visible on all workspaces.
+  window_widget0->SetVisibleOnAllWorkspaces(true);
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+
+  SnapOneTestWindow(w0.get(),
+                    /*state_type=*/chromeos::WindowStateType::kPrimarySnapped,
+                    chromeos::kDefaultSnapRatio);
+  VerifySplitViewOverviewSession(w0.get());
+  OverviewItemBase* overview_item1 = GetOverviewItemForWindow(w1.get());
+  const gfx::Point overview_item1_center =
+      gfx::ToRoundedPoint(overview_item1->target_bounds().CenterPoint());
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(overview_item1_center);
+  event_generator->ClickLeftButton();
+
+  // Verify that Snap Group will not be formed after activating `w1` in partial
+  // Overview.
+  SnapGroupController* snap_group_controller = SnapGroupController::Get();
+  EXPECT_FALSE(
+      snap_group_controller->AreWindowsInSnapGroup(w0.get(), w1.get()));
+  EXPECT_FALSE(snap_group_controller->GetSnapGroupForGivenWindow(w0.get()));
+  EXPECT_FALSE(snap_group_controller->GetSnapGroupForGivenWindow(w1.get()));
+}
+
 // Tests that the shelf's corners are rounded by default. Upon Snap Group
 // creation,  the shelf's corners become sharp. When the Snap Group breaks, the
 // shelf returns to its default state with rounded corners.
@@ -5437,6 +5474,104 @@ TEST_F(SnapGroupDesksTest, SaveDeskForSnapGroupWithAnotherSavedDesk) {
   UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), snap_group_divider());
 
   overview_controller->set_disable_app_id_check_for_saved_desks_for_test(false);
+}
+
+// Verify that Snap Group will be broken when setting a window that belongs to a
+// Snap Group to be visible on all workspaces.
+TEST_F(SnapGroupDesksTest, MoveToAllDesksToBreakTheGroup) {
+  auto* desks_controller = DesksController::Get();
+  desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
+  ASSERT_EQ(2u, desks_controller->desks().size());
+  const Desk* desk0 = desks_controller->GetDeskAtIndex(0);
+  const Desk* desk1 = desks_controller->GetDeskAtIndex(1);
+  ASSERT_TRUE(desk0->is_active());
+  ASSERT_FALSE(desk1->is_active());
+
+  // Create `snap_group` on `desk0`.
+  std::unique_ptr<aura::Window> w0(CreateAppWindow());
+  auto* window_widget0 = views::Widget::GetWidgetForNativeView(w0.get());
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  SnapTwoTestWindows(w0.get(), w1.get());
+  SnapGroup* snap_group =
+      SnapGroupController::Get()->GetSnapGroupForGivenWindow(w0.get());
+  ASSERT_TRUE(snap_group);
+  ASSERT_EQ(desk0, desks_util::GetDeskForContext(w0.get()));
+  ASSERT_EQ(desk0, desks_util::GetDeskForContext(w1.get()));
+
+  // Move `w0` to all desks.
+  window_widget0->SetVisibleOnAllWorkspaces(true);
+
+  // Verify that `snap_group` will be broken.
+  SnapGroupController* snap_group_controller = SnapGroupController::Get();
+  EXPECT_FALSE(
+      snap_group_controller->AreWindowsInSnapGroup(w0.get(), w1.get()));
+  EXPECT_FALSE(snap_group_controller->GetSnapGroupForGivenWindow(w0.get()));
+  EXPECT_FALSE(snap_group_controller->GetSnapGroupForGivenWindow(w1.get()));
+}
+
+// Test to verify that moving a Snap Group to all desks and removing it from its
+// original desk doesn't cause a crash with one Snap Group per desk. See
+// http://b/344982754 for more details.
+TEST_F(SnapGroupDesksTest, DeskRemovalAfterMovingSnapGroupToAllDesks) {
+  auto* desks_controller = DesksController::Get();
+  desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
+  ASSERT_EQ(2u, desks_controller->desks().size());
+  const Desk* desk0 = desks_controller->GetDeskAtIndex(0);
+  const Desk* desk1 = desks_controller->GetDeskAtIndex(1);
+  ASSERT_TRUE(desk0->is_active());
+  ASSERT_FALSE(desk1->is_active());
+
+  // Create `snap_group0` on `desk0`.
+  std::unique_ptr<aura::Window> w0(CreateAppWindow());
+  auto* window_widget0 = views::Widget::GetWidgetForNativeView(w0.get());
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  SnapTwoTestWindows(w0.get(), w1.get());
+
+  SnapGroupController* snap_group_controller = SnapGroupController::Get();
+  SnapGroup* snap_group0 =
+      snap_group_controller->GetSnapGroupForGivenWindow(w0.get());
+  ASSERT_TRUE(snap_group0);
+  ASSERT_EQ(desk0, desks_util::GetDeskForContext(w0.get()));
+  ASSERT_EQ(desk0, desks_util::GetDeskForContext(w1.get()));
+
+  ActivateDesk(desk1);
+  ASSERT_TRUE(desk1->is_active());
+  ASSERT_FALSE(desk0->is_active());
+
+  // Create `snap_group1` on `desk1`.
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  std::unique_ptr<aura::Window> w3(CreateAppWindow());
+  SnapTwoTestWindows(w2.get(), w3.get());
+  SnapGroup* snap_group1 =
+      snap_group_controller->GetSnapGroupForGivenWindow(w0.get());
+  ASSERT_TRUE(snap_group1);
+  ASSERT_EQ(desk1, desks_util::GetDeskForContext(w2.get()));
+  ASSERT_EQ(desk1, desks_util::GetDeskForContext(w3.get()));
+
+  ActivateDesk(desk0);
+
+  // Move `snap_group0` to all desks will break the Snap Group.
+  window_widget0->SetVisibleOnAllWorkspaces(true);
+  EXPECT_FALSE(
+      snap_group_controller->AreWindowsInSnapGroup(w0.get(), w1.get()));
+
+  // Pre-release ownership of `w0` and `w1` using `release()`. This is crucial
+  // to avoid double-freeing memory. When unique_ptr goes out of scope, its
+  // destructor will attempt to deallocate the owned memory. Since CloseAll will
+  // already handle the window destruction, leaving the unique_ptrs to manage
+  // the memory would lead to a second deallocation attempt on the same address,
+  // resulting in crash.
+  w0.release();
+  w1.release();
+
+  ToggleOverview();
+  ASSERT_TRUE(IsInOverviewSession());
+
+  // Remove `desk0` and verify that there will be no CHECK crash.
+  RemoveDesk(desk0, DeskCloseType::kCloseAllWindowsAndWait);
+  ASSERT_TRUE(desk0->is_desk_being_removed());
+
+  base::RunLoop().RunUntilIdle();
 }
 
 // -----------------------------------------------------------------------------

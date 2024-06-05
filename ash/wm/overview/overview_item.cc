@@ -1029,7 +1029,13 @@ void OverviewItem::OnWindowBoundsChanged(aura::Window* window,
 void OverviewItem::OnWindowStackingChanged(aura::Window* window) {
   auto* parent_window = window->parent();
   auto* item_widget_window = item_widget_->GetNativeWindow();
-  CHECK_EQ(parent_window, item_widget_window->parent());
+
+  // Window parent change should be handled in
+  // `OverviewItem::OnWindowParentChanged()`.
+  if (parent_window != item_widget_window->parent()) {
+    return;
+  }
+
   parent_window->StackChildBelow(item_widget_window, window);
 
   if (cannot_snap_widget_) {

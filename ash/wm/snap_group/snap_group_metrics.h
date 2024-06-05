@@ -69,7 +69,8 @@ enum class SnapGroupExitPoint {
   kWindowBoundsChange,
   kCanNotFitInWorkArea,
   kSnapToReplace,
-  kMaxValue = kSnapToReplace,
+  kVisibleOnAllDesks,
+  kMaxValue = kVisibleOnAllDesks,
 };
 
 // Records the partial overview metrics for `item`. Should only be called while
