@@ -142,14 +142,17 @@ class TelemetryCommandGeneratorTest(unittest.TestCase):
   @mock.patch.object(run_performance_tests.CrossbenchTest, 'execute_benchmark')
   def testCrossbenchTestBenchmarksArg(self, mock_execute_benchmark):
     fake_args = [
-        './cp.py', '--isolated-script-test-output=output',
-        '--benchmarks=speedometer_3.0'
+        './cp.py',
+        '--isolated-script-test-output=output',
+        '--benchmarks=speedometer_3.0',
+        '--benchmark-display-name=speedometer3.crossbench',
     ]
     options = run_performance_tests.parse_arguments(fake_args)
 
     run_performance_tests.CrossbenchTest(options, 'dir').execute()
 
-    mock_execute_benchmark.assert_called_with('speedometer_3.0')
+    mock_execute_benchmark.assert_called_with('speedometer_3.0',
+                                              'speedometer3.crossbench')
 
   def testCrossbenchTestBenchmarksException(self):
     fake_args = ['./cp.py', '--isolated-script-test-output=output']
@@ -217,14 +220,23 @@ class TelemetryCommandGeneratorTest(unittest.TestCase):
         '--test-shard-map-filename=foo'
     ]
     options = run_performance_tests.parse_arguments(fake_args)
-    shard_map = {'0': {'crossbench': {'my_benchmark': []}}}
+    shard_map = {
+        '0': {
+            'crossbench': {
+                'my_benchmark': {
+                    'display_name': 'my_display',
+                    'arguments': []
+                }
+            }
+        }
+    }
     mock_execute_benchmark.return_value = 0
 
     return_code = run_performance_tests._run_benchmarks_on_shardmap(
         shard_map, options, 'dir', [])
 
     self.assertEqual(return_code, 0)
-    mock_execute_benchmark.assert_called_with('my_benchmark')
+    mock_execute_benchmark.assert_called_with('my_benchmark', 'my_display')
 
   @mock.patch.object(run_performance_tests.CrossbenchTest, 'execute_benchmark')
   def testCrossbenchTestMissingShardIndex(self, mock_execute_benchmark):
@@ -264,11 +276,26 @@ class TelemetryCommandGeneratorTest(unittest.TestCase):
         '--test-shard-map-filename=foo'
     ]
     options = run_performance_tests.parse_arguments(fake_args)
-    shard_map = {'0': {'crossbench': {'b1': [], 'b2': []}}}
+    shard_map = {
+        '0': {
+            'crossbench': {
+                'b1': {
+                    'display_name': 'display1',
+                    'arguments': []
+                },
+                'b2': {
+                    'display_name': 'display2',
+                    'arguments': []
+                }
+            }
+        }
+    }
     mock_execute_benchmark.return_value = 1
 
     return_code = run_performance_tests._run_benchmarks_on_shardmap(
         shard_map, options, 'dir', [])
 
-    self.assertEqual(return_code, 2)
-    mock_execute_benchmark.assert_has_calls([mock.call('b1'), mock.call('b2')])
+    self.assertEqual(return_code, 1)
+    mock_execute_benchmark.assert_has_calls(
+        [mock.call('b1', 'display1'),
+         mock.call('b2', 'display2')])
