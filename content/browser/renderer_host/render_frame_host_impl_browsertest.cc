@@ -4656,6 +4656,86 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   EXPECT_TRUE(root_frame_host()->has_committed_any_navigation_);
 }
 
+// Ensure that calling document.open in an error page does not cause a renderer
+// kill when it inherits the unreachable error URL.
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
+                       DocumentOpenInErrorPage) {
+  GURL error_url(embedded_test_server()->GetURL("error.com", "/empty.html"));
+  std::unique_ptr<URLLoaderInterceptor> url_interceptor =
+      URLLoaderInterceptor::SetupRequestFailForURL(error_url,
+                                                   net::ERR_DNS_TIMED_OUT);
+  EXPECT_FALSE(NavigateToURL(shell(), error_url));
+
+  // Calling document.open should not cause CanCommitURL to fail, even though
+  // the error page URL is inherited.
+  // See https://crbug.com/326250356#comment36.
+  EXPECT_TRUE(ExecJs(shell(), "document.open();"));
+  EXPECT_EQ(GURL(kUnreachableWebDataURL),
+            root_frame_host()->last_document_url_in_renderer());
+
+  // Ensure the renderer process has not crashed.
+  ASSERT_TRUE(ExecJs(shell(), "true"));
+  ASSERT_TRUE(root_frame_host()->IsRenderFrameLive());
+}
+
+// Similar to DocumentOpenInErrorPage, but without error page isolation in the
+// main frame, which changes ProcessLock expectations and can thus fail in
+// additional ways.
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
+                       DocumentOpenInErrorPageWithoutErrorPageIsolation) {
+  // Disable error page isolation in main frames, similar to Android WebView.
+  class NoErrorPageIsolationContentBrowserClient
+      : public ContentBrowserTestContentBrowserClient {
+   public:
+    bool ShouldIsolateErrorPage(bool in_main_frame) override { return false; }
+  } no_error_isolation_client;
+
+  GURL error_url(embedded_test_server()->GetURL("error.com", "/empty.html"));
+  std::unique_ptr<URLLoaderInterceptor> url_interceptor =
+      URLLoaderInterceptor::SetupRequestFailForURL(error_url,
+                                                   net::ERR_DNS_TIMED_OUT);
+  EXPECT_FALSE(NavigateToURL(shell(), error_url));
+
+  // Calling document.open should not cause CanCommitURL to fail, even though
+  // the error page URL is inherited.
+  // See https://crbug.com/326250356#comment36.
+  EXPECT_TRUE(ExecJs(shell(), "document.open();"));
+  EXPECT_EQ(GURL(kUnreachableWebDataURL),
+            root_frame_host()->last_document_url_in_renderer());
+
+  // Ensure the renderer process has not crashed.
+  ASSERT_TRUE(ExecJs(shell(), "true"));
+  ASSERT_TRUE(root_frame_host()->IsRenderFrameLive());
+}
+
+// Similar to DocumentOpenInErrorPage, but when loading the error page in a
+// subframe, which lacks error page isolation.
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
+                       DocumentOpenInErrorPageSubframe) {
+  GURL main_frame_url(
+      embedded_test_server()->GetURL("/frame_tree/page_with_one_frame.html"));
+  ASSERT_TRUE(NavigateToURL(shell(), main_frame_url));
+
+  GURL error_url(embedded_test_server()->GetURL("error.com", "/empty.html"));
+  std::unique_ptr<URLLoaderInterceptor> url_interceptor =
+      URLLoaderInterceptor::SetupRequestFailForURL(error_url,
+                                                   net::ERR_DNS_TIMED_OUT);
+  EXPECT_TRUE(NavigateIframeToURL(web_contents(), "child0", error_url));
+  RenderFrameHostImpl* subframe =
+      static_cast<RenderFrameHostImpl*>(ChildFrameAt(root_frame_host(), 0));
+
+  // Calling document.open should not cause CanCommitURL to fail, even though
+  // the error page URL is inherited.
+  // See https://crbug.com/326250356#comment36.
+  EXPECT_TRUE(ExecJs(subframe, "document.open();"));
+  EXPECT_EQ(GURL(kUnreachableWebDataURL),
+            subframe->last_document_url_in_renderer());
+
+  // Ensure the renderer process has not crashed.
+  ASSERT_TRUE(ExecJs(subframe, "true"));
+  ASSERT_TRUE(subframe->IsRenderFrameLive());
+}
+
 // Test the LifecycleStateImpl when a renderer crashes during navigation.
 // When navigating after a crash, the new RenderFrameHost should
 // become active immediately, prior to the navigation committing. This is

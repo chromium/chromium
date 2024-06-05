@@ -11901,17 +11901,30 @@ void RenderFrameHostImpl::GrantFileAccessFromResourceRequestBody(
 
 void RenderFrameHostImpl::UpdatePermissionsForNavigation(
     NavigationRequest* request) {
+  ChildProcessSecurityPolicyImpl::GetInstance()->GrantCommitURL(
+      GetProcess()->GetID(), request->common_params().url);
+  if (request->IsLoadDataWithBaseURL()) {
+    // When there's a base URL specified for the data URL, we also need to
+    // grant access to the base URL. This allows file: and other unexpected
+    // schemes to be accepted at commit time and during CORS checks (e.g., for
+    // font requests).
     ChildProcessSecurityPolicyImpl::GetInstance()->GrantCommitURL(
-        GetProcess()->GetID(), request->common_params().url);
-    if (request->IsLoadDataWithBaseURL()) {
-      // When there's a base URL specified for the data URL, we also need to
-      // grant access to the base URL. This allows file: and other unexpected
-      // schemes to be accepted at commit time and during CORS checks (e.g., for
-      // font requests).
-      ChildProcessSecurityPolicyImpl::GetInstance()->GrantCommitURL(
-          GetProcess()->GetID(),
-          request->common_params().base_url_for_data_url);
-    }
+        GetProcess()->GetID(), request->common_params().base_url_for_data_url);
+  }
+
+  if (request->DidEncounterError()) {
+    // Failed navigations will end up using chrome-error://chromewebdata as the
+    // URL in RenderFrameImpl::CommitFailedNavigation. This does not immediately
+    // get sent back at DidCommit time, but it can be inherited as the URL via
+    // document.open, so we must grant access to that URL as well in case
+    // embedders (e.g., Android WebView apps) call document.open on an error
+    // page. See https://crbug.com/326250356#comment36.
+    // TODO(crbug.com/40150370): The browser process should tell the renderer
+    // process to use kUnreachableWebDataURL, rather than having the renderer
+    // process make the change independently.
+    ChildProcessSecurityPolicyImpl::GetInstance()->GrantCommitURL(
+        GetProcess()->GetID(), GURL(kUnreachableWebDataURL));
+  }
 
   // We may be returning to an existing NavigationEntry that had been granted
   // file access.  If this is a different process, we will need to grant the
