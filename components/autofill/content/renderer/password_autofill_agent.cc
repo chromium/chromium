@@ -1078,10 +1078,11 @@ bool PasswordAutofillAgent::FindPasswordInfoForElement(
       *password_info = &iter->second;
       return true;
     }
-    // Otherwise `username_element` has been set above.
   }
 
-  CHECK(*username_element);
+  if (username_element == nullptr || username_element->IsNull()) {
+    return false;
+  }
   auto iter = web_input_to_password_info_.find(FieldRef(*username_element));
   if (iter == web_input_to_password_info_.end()) {
     return false;
