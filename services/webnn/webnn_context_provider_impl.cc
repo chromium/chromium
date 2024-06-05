@@ -268,7 +268,7 @@ void WebNNContextProviderImpl::CreateWebNNContext(
     return;
   }
 
-  mojom::ContextPropertiesPtr properties = context_impl->GetProperties();
+  mojom::ContextPropertiesPtr properties = context_impl->properties().Clone();
   impls_.push_back(base::WrapUnique<WebNNContextImpl>(context_impl));
 
   auto success = mojom::CreateContextSuccess::New(std::move(remote),

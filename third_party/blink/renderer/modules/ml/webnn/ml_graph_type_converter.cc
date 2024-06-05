@@ -360,19 +360,18 @@ constexpr std::array<uint32_t, 4> kNhwcToNchwPermutation = {0u, 3u, 1u, 2u};
 std::optional<base::span<const uint32_t>> GetConv2DInputPermutation(
     blink::V8MLInputOperandLayout input_layout,
     const webnn::mojom::blink::ContextProperties& context_properties) {
-  if (!context_properties.preferred_conv2d_input_layout ||
-      BlinkInputOperandLayoutToMojo(input_layout.AsEnum()) ==
-          context_properties.preferred_conv2d_input_layout) {
+  if (BlinkInputOperandLayoutToMojo(input_layout.AsEnum()) ==
+      context_properties.conv2d_input_layout) {
     return std::nullopt;
   }
 
   switch (input_layout.AsEnum()) {
     case blink::V8MLInputOperandLayout::Enum::kNchw:
-      CHECK_EQ(context_properties.preferred_conv2d_input_layout.value(),
+      CHECK_EQ(context_properties.conv2d_input_layout,
                blink_mojom::InputOperandLayout::kChannelsLast);
       return kNchwToNhwcPermutation;
     case blink::V8MLInputOperandLayout::Enum::kNhwc:
-      CHECK_EQ(context_properties.preferred_conv2d_input_layout.value(),
+      CHECK_EQ(context_properties.conv2d_input_layout,
                blink_mojom::InputOperandLayout::kChannelsFirst);
       return kNhwcToNchwPermutation;
   }
@@ -381,9 +380,8 @@ std::optional<base::span<const uint32_t>> GetConv2DInputPermutation(
 std::optional<base::span<const uint32_t>> GetConv2DOutputPermutation(
     blink::V8MLInputOperandLayout input_layout,
     const blink_mojom::ContextProperties& context_properties) {
-  if (!context_properties.preferred_conv2d_input_layout ||
-      BlinkInputOperandLayoutToMojo(input_layout.AsEnum()) ==
-          context_properties.preferred_conv2d_input_layout) {
+  if (BlinkInputOperandLayoutToMojo(input_layout.AsEnum()) ==
+      context_properties.conv2d_input_layout) {
     return std::nullopt;
   }
 
@@ -392,11 +390,11 @@ std::optional<base::span<const uint32_t>> GetConv2DOutputPermutation(
   // `GetConv2DInputPermutation()` applied.
   switch (input_layout.AsEnum()) {
     case blink::V8MLInputOperandLayout::Enum::kNchw:
-      CHECK_EQ(context_properties.preferred_conv2d_input_layout.value(),
+      CHECK_EQ(context_properties.conv2d_input_layout,
                blink_mojom::InputOperandLayout::kChannelsLast);
       return kNhwcToNchwPermutation;
     case blink::V8MLInputOperandLayout::Enum::kNhwc:
-      CHECK_EQ(context_properties.preferred_conv2d_input_layout.value(),
+      CHECK_EQ(context_properties.conv2d_input_layout,
                blink_mojom::InputOperandLayout::kChannelsFirst);
       return kNchwToNhwcPermutation;
   }
@@ -640,14 +638,6 @@ std::optional<String> SerializeConv2dOperation(
     conv2d_mojo->bias_operand_id = operand_to_id_map.at(options->bias());
   }
 
-  if (context_properties.preferred_conv2d_input_layout.has_value()) {
-    conv2d_mojo->input_layout =
-        context_properties.preferred_conv2d_input_layout.value();
-  } else {
-    conv2d_mojo->input_layout =
-        BlinkInputOperandLayoutToMojo(options->inputLayout().AsEnum());
-  }
-
   const MLOperand* input_operand = conv2d->Inputs()[0];
   const MLOperand* output_operand = conv2d->Outputs()[0];
   uint64_t output_operand_id = operand_to_id_map.at(output_operand);
@@ -681,7 +671,7 @@ std::optional<String> SerializeConv2dOperation(
     }
 
     const std::optional<base::span<const uint32_t>> filter_permutation =
-        GetConv2DFilterPermutation(conv2d_mojo->input_layout,
+        GetConv2DFilterPermutation(context_properties.conv2d_input_layout,
                                    options->filterLayout(), depthwise);
     if (filter_permutation.has_value()) {
       conv2d_mojo->filter_operand_id = InsertInputTranspose(

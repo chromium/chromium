@@ -7,6 +7,7 @@
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 #include "services/webnn/tflite/buffer_impl_tflite.h"
 #include "services/webnn/tflite/context_impl_tflite.h"
+#include "services/webnn/tflite/graph_builder_tflite.h"
 #include "services/webnn/tflite/graph_impl_cros.h"
 
 namespace webnn::tflite {
@@ -14,16 +15,11 @@ namespace webnn::tflite {
 ContextImplCrOS::ContextImplCrOS(
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
     WebNNContextProviderImpl* context_provider)
-    : WebNNContextImpl(std::move(receiver), context_provider) {}
+    : WebNNContextImpl(std::move(receiver),
+                       context_provider,
+                       GraphBuilderTflite::GetContextProperties()) {}
 
 ContextImplCrOS::~ContextImplCrOS() = default;
-
-mojom::ContextPropertiesPtr ContextImplCrOS::GetProperties() {
-  auto properties = mojom::ContextProperties::New();
-  properties->preferred_conv2d_input_layout =
-      mojom::InputOperandLayout::kChannelsLast;
-  return properties;
-}
 
 void ContextImplCrOS::LoadModel(
     flatbuffers::DetachedBuffer model_content,

@@ -27,7 +27,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
     : public mojom::WebNNContext {
  public:
   WebNNContextImpl(mojo::PendingReceiver<mojom::WebNNContext> receiver,
-                   WebNNContextProviderImpl* context_provider);
+                   WebNNContextProviderImpl* context_provider,
+                   mojom::ContextPropertiesPtr properties);
 
   WebNNContextImpl(const WebNNContextImpl&) = delete;
   WebNNContextImpl& operator=(const WebNNContextImpl&) = delete;
@@ -53,7 +54,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   base::optional_ref<WebNNBufferImpl> GetWebNNBufferImpl(
       const base::UnguessableToken& handle);
 
-  virtual mojom::ContextPropertiesPtr GetProperties() = 0;
+  const mojom::ContextProperties& properties() { return *properties_; }
 
  protected:
   void OnConnectionError();
@@ -85,6 +86,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
 
   // Owns this object.
   raw_ptr<WebNNContextProviderImpl> context_provider_;
+
+  mojom::ContextPropertiesPtr properties_;
 
   // BufferImpls must be stored on the context to allow the WebNN service to
   // identify and use them from the renderer process in MLContext operations.

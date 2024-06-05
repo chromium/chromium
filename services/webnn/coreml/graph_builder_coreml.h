@@ -15,6 +15,7 @@
 #include "base/memory/stack_allocated.h"
 #include "base/numerics/checked_math.h"
 #include "base/types/expected.h"
+#include "services/webnn/public/mojom/webnn_context_provider.mojom-forward.h"
 #include "services/webnn/public/mojom/webnn_error.mojom-forward.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
 #include "third_party/coremltools/mlmodel/format/MIL.pb.h"
@@ -123,6 +124,8 @@ class GraphBuilderCoreml {
   [[nodiscard]] static base::expected<std::unique_ptr<Result>, mojom::ErrorPtr>
   CreateAndBuild(const mojom::GraphInfo& graph_info,
                  const base::FilePath& working_directory);
+
+  static mojom::ContextPropertiesPtr GetContextProperties();
 
   GraphBuilderCoreml(const GraphBuilderCoreml&) = delete;
   GraphBuilderCoreml& operator=(const GraphBuilderCoreml&) = delete;

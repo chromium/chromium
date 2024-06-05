@@ -28,8 +28,6 @@ class API_AVAILABLE(macos(14.0)) ContextImplCoreml final
 
   ~ContextImplCoreml() override;
 
-  mojom::ContextPropertiesPtr GetProperties() override;
-
  private:
   void CreateGraphImpl(mojom::GraphInfoPtr graph_info,
                        CreateGraphCallback callback) override;

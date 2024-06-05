@@ -9,6 +9,7 @@
 
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/webnn/error.h"
+#include "services/webnn/public/mojom/webnn_context_provider.mojom-forward.h"
 #include "services/webnn/webnn_buffer_impl.h"
 #include "services/webnn/webnn_context_provider_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
@@ -17,9 +18,11 @@ namespace webnn {
 
 WebNNContextImpl::WebNNContextImpl(
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
-    WebNNContextProviderImpl* context_provider)
+    WebNNContextProviderImpl* context_provider,
+    mojom::ContextPropertiesPtr properties)
     : receiver_(this, std::move(receiver)),
-      context_provider_(context_provider) {
+      context_provider_(context_provider),
+      properties_(std::move(properties)) {
   CHECK(context_provider_);
   // Safe to use base::Unretained because the context_provider_ owns this class
   // that won't be destroyed until this callback executes.
@@ -36,7 +39,7 @@ void WebNNContextImpl::OnConnectionError() {
 void WebNNContextImpl::CreateGraph(
     mojom::GraphInfoPtr graph_info,
     mojom::WebNNContext::CreateGraphCallback callback) {
-  if (!WebNNGraphImpl::ValidateGraph(graph_info)) {
+  if (!WebNNGraphImpl::ValidateGraph(*properties_, graph_info)) {
     receiver_.ReportBadMessage(kBadMessageInvalidGraph);
     return;
   }

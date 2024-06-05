@@ -33,8 +33,6 @@ class ContextImplDml final : public WebNNContextImpl {
 
   ~ContextImplDml() override;
 
-  mojom::ContextPropertiesPtr GetProperties() override;
-
   void ReadBuffer(const WebNNBufferImpl& src_buffer,
                   mojom::WebNNBuffer::ReadBufferCallback callback);
 

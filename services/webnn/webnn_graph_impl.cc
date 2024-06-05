@@ -16,6 +16,7 @@
 #include "base/types/expected.h"
 #include "components/ml/webnn/graph_validation_utils.h"
 #include "services/webnn/error.h"
+#include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "services/webnn/webnn_buffer_impl.h"
 #include "services/webnn/webnn_context_impl.h"
@@ -235,6 +236,7 @@ webnn::BatchNormalizationAttributes ConvertToBatchNormalizationAttributes(
 
 template <typename Conv2dAttributesType>
 Conv2dAttributesType ConvertToConv2dAttributes(
+    const webnn::mojom::ContextProperties& context_properties,
     const IdToOperandMap& id_to_operand_map,
     const webnn::mojom::Conv2dPtr& conv2d,
     std::optional<Operand> bias_operand) {
@@ -255,20 +257,22 @@ Conv2dAttributesType ConvertToConv2dAttributes(
   // Convert groups, input layout and bias.
   attributes_base.groups = conv2d->groups;
   attributes_base.input_layout =
-      MojoInputOperandLayoutToComponent(conv2d->input_layout);
+      MojoInputOperandLayoutToComponent(context_properties.conv2d_input_layout);
   attributes_base.bias_operand = std::move(bias_operand);
 
   return std::move(attributes_base);
 }
 
 webnn::Conv2dAttributes ConvertToConv2dAttributes(
+    const webnn::mojom::ContextProperties& context_properties,
     const IdToOperandMap& id_to_operand_map,
     const webnn::mojom::Conv2dPtr& conv2d,
     std::optional<Operand> bias_operand) {
   auto component_attributes =
       ConvertToConv2dAttributes<webnn::Conv2dAttributes>(
-          id_to_operand_map, conv2d, std::move(bias_operand));
-  switch (conv2d->input_layout) {
+          context_properties, id_to_operand_map, conv2d,
+          std::move(bias_operand));
+  switch (context_properties.conv2d_input_layout) {
     case webnn::mojom::InputOperandLayout::kChannelsFirst:
       // "channelsFirst": [batches, input_channels, height, width]
       component_attributes.filter_layout = Conv2dFilterOperandLayout::kOihw;
@@ -366,18 +370,20 @@ webnn::LstmCellAttributes ConvertToLstmCellAttributes(
 }
 
 webnn::ConvTranspose2dAttributes ConvertToConvTranspose2dAttributes(
+    const webnn::mojom::ContextProperties& context_properties,
     const IdToOperandMap& id_to_operand_map,
     const webnn::mojom::Conv2dPtr& conv2d,
     std::optional<Operand> bias_operand) {
   auto component_attributes =
       ConvertToConv2dAttributes<webnn::ConvTranspose2dAttributes>(
-          id_to_operand_map, conv2d, std::move(bias_operand));
+          context_properties, id_to_operand_map, conv2d,
+          std::move(bias_operand));
 
   // Convert the output sizes that fetched from dimensions of output operand.
   auto* output = GetMojoOperand(id_to_operand_map, conv2d->output_operand_id);
   CHECK_EQ(output->dimensions.size(), 4u);
   webnn::Size2d<uint32_t> output_sizes;
-  switch (conv2d->input_layout) {
+  switch (context_properties.conv2d_input_layout) {
     case webnn::mojom::InputOperandLayout::kChannelsFirst:
       // "channelsFirst": [batches, input_channels, height, width]
       output_sizes.height = output->dimensions[2];
@@ -751,7 +757,8 @@ bool ValidateConcat(const IdToOperandMap& id_to_operand_map,
   return true;
 }
 
-bool ValidateConv2d(const IdToOperandMap& id_to_operand_map,
+bool ValidateConv2d(const mojom::ContextProperties& context_properties,
+                    const IdToOperandMap& id_to_operand_map,
                     const mojom::Conv2dPtr& conv2d,
                     base::flat_set<uint64_t>& processed_operands) {
   if (!processed_operands.contains(conv2d->input_operand_id) ||
@@ -802,15 +809,16 @@ bool ValidateConv2d(const IdToOperandMap& id_to_operand_map,
     case mojom::Conv2d::Kind::kDirect: {
       validated_output = ValidateConv2dAndInferOutput(
           MojoOperandToComponent(input), MojoOperandToComponent(filter),
-          ConvertToConv2dAttributes(id_to_operand_map, conv2d,
-                                    std::move(bias_operand)));
+          ConvertToConv2dAttributes(context_properties, id_to_operand_map,
+                                    conv2d, std::move(bias_operand)));
       break;
     }
 
     case mojom::Conv2d::Kind::kTransposed: {
       validated_output = ValidateConvTranspose2dAndInferOutput(
           MojoOperandToComponent(input), MojoOperandToComponent(filter),
-          ConvertToConvTranspose2dAttributes(id_to_operand_map, conv2d,
+          ConvertToConvTranspose2dAttributes(context_properties,
+                                             id_to_operand_map, conv2d,
                                              std::move(bias_operand)));
       break;
     }
@@ -1970,7 +1978,8 @@ base::flat_map<std::string, size_t> CreateByteLengthMap(
   return name_to_byte_length_map;
 }
 
-bool ValidateOperation(const IdToOperandMap& id_to_operand_map,
+bool ValidateOperation(const mojom::ContextProperties& context_properties,
+                       const IdToOperandMap& id_to_operand_map,
                        const mojom::OperationPtr& operation,
                        base::flat_set<uint64_t>& processed_operands) {
   switch (operation->which()) {
@@ -1988,8 +1997,8 @@ bool ValidateOperation(const IdToOperandMap& id_to_operand_map,
       return ValidateConcat(id_to_operand_map, operation->get_concat(),
                             processed_operands);
     case mojom::Operation::Tag::kConv2d:
-      return ValidateConv2d(id_to_operand_map, operation->get_conv2d(),
-                            processed_operands);
+      return ValidateConv2d(context_properties, id_to_operand_map,
+                            operation->get_conv2d(), processed_operands);
     case mojom::Operation::Tag::kElementWiseBinary:
       return ValidateElementWiseBinary(id_to_operand_map,
                                        operation->get_element_wise_binary(),
@@ -2193,7 +2202,9 @@ WebNNGraphImpl::WebNNGraphImpl(WebNNContextImpl* context,
 
 WebNNGraphImpl::~WebNNGraphImpl() = default;
 
-bool WebNNGraphImpl::ValidateGraph(const mojom::GraphInfoPtr& graph_info) {
+bool WebNNGraphImpl::ValidateGraph(
+    const mojom::ContextProperties& context_properties,
+    const mojom::GraphInfoPtr& graph_info) {
   // The input operands of graph can be empty.
   if (graph_info->id_to_operand_map.empty() || graph_info->operations.empty() ||
       graph_info->output_operands.empty()) {
@@ -2300,8 +2311,8 @@ bool WebNNGraphImpl::ValidateGraph(const mojom::GraphInfoPtr& graph_info) {
 
   // Validate the operations which are sorted in the topological order.
   for (auto& operation : graph_info->operations) {
-    if (!ValidateOperation(graph_info->id_to_operand_map, operation,
-                           processed_operands)) {
+    if (!ValidateOperation(context_properties, graph_info->id_to_operand_map,
+                           operation, processed_operands)) {
       return false;
     }
   }

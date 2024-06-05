@@ -35,6 +35,7 @@
 #include "base/uuid.h"
 #include "base/values.h"
 #include "mojo/public/cpp/base/big_buffer.h"
+#include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
 #include "services/webnn/webnn_utils.h"
 #include "third_party/coremltools/mlmodel/format/FeatureTypes.pb.h"
@@ -576,6 +577,12 @@ GraphBuilderCoreml::CreateAndBuild(const mojom::GraphInfo& graph_info,
   RETURN_IF_ERROR(graph_builder.BuildCoreMLModel());
   RETURN_IF_ERROR(graph_builder.SerializeModel());
   return graph_builder.FinishAndTakeResult();
+}
+
+// static
+mojom::ContextPropertiesPtr GraphBuilderCoreml::GetContextProperties() {
+  return mojom::ContextProperties::New(
+      /*conv2d_input_layout=*/mojom::InputOperandLayout::kChannelsFirst);
 }
 
 GraphBuilderCoreml::GraphBuilderCoreml(const mojom::GraphInfo& graph_info,
@@ -1259,11 +1266,6 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::AddOperationForConv2d(
   const OperandInfo& input_operand = GetOperandInfo(operation.input_operand_id);
 
   CHECK(kFloatDataTypes.contains(input_operand.mil_data_type));
-
-  if (operation.input_layout != mojom::InputOperandLayout::kChannelsFirst) {
-    // TODO: support channels last by adding transposes.
-    return NewNotSupportedError("Unsupported input layout.");
-  }
 
   static constexpr char kParamWeight[] = "weight";
   static constexpr char kParamStrides[] = "strides";

@@ -14,16 +14,11 @@ namespace webnn::coreml {
 ContextImplCoreml::ContextImplCoreml(
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
     WebNNContextProviderImpl* context_provider)
-    : WebNNContextImpl(std::move(receiver), context_provider) {}
+    : WebNNContextImpl(std::move(receiver),
+                       context_provider,
+                       GraphBuilderCoreml::GetContextProperties()) {}
 
 ContextImplCoreml::~ContextImplCoreml() = default;
-
-mojom::ContextPropertiesPtr ContextImplCoreml::GetProperties() {
-  auto properties = mojom::ContextProperties::New();
-  properties->preferred_conv2d_input_layout =
-      mojom::InputOperandLayout::kChannelsFirst;
-  return properties;
-}
 
 void ContextImplCoreml::CreateGraphImpl(
     mojom::GraphInfoPtr graph_info,

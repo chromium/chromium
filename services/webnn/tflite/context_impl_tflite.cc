@@ -12,21 +12,23 @@
 
 namespace webnn::tflite {
 
+namespace {
+
+mojom::ContextPropertiesPtr GetProperties() {
+  return mojom::ContextProperties::New(
+      /*conv2d_input_layout=*/mojom::InputOperandLayout::kChannelsLast);
+}
+
+}  // namespace
+
 ContextImplTflite::ContextImplTflite(
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
     WebNNContextProviderImpl* context_provider,
     mojom::CreateContextOptionsPtr options)
-    : WebNNContextImpl(std::move(receiver), context_provider),
+    : WebNNContextImpl(std::move(receiver), context_provider, GetProperties()),
       options_(std::move(options)) {}
 
 ContextImplTflite::~ContextImplTflite() = default;
-
-mojom::ContextPropertiesPtr ContextImplTflite::GetProperties() {
-  auto properties = mojom::ContextProperties::New();
-  properties->preferred_conv2d_input_layout =
-      mojom::InputOperandLayout::kChannelsLast;
-  return properties;
-}
 
 void ContextImplTflite::CreateGraphImpl(
     mojom::GraphInfoPtr graph_info,

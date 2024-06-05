@@ -59,19 +59,28 @@ class WebnnGraphLPMFuzzer {
   void NextAction() {
     const auto& action = testcase_->actions(action_index_);
     const auto& create_graph = action.create_graph();
-    auto graph_info_ptr = webnn::mojom::GraphInfo::New();
 
-    // Test the cross platform webnn graph validator.
+    auto graph_info_ptr = webnn::mojom::GraphInfo::New();
     mojolpm::FromProto(create_graph.graph_info(), graph_info_ptr);
-    if (webnn::WebNNGraphImpl::ValidateGraph(graph_info_ptr)) {
+
 #if BUILDFLAG(IS_POSIX)
+    auto coreml_properties =
+        webnn::coreml::GraphBuilderCoreml::GetContextProperties();
+    if (webnn::WebNNGraphImpl::ValidateGraph(*coreml_properties,
+                                             graph_info_ptr)) {
       // Test the Core ML graph builder.
       base::ScopedTempDir temp_dir;
       CHECK(temp_dir.CreateUniqueTempDir());
       auto coreml_graph_builder =
           webnn::coreml::GraphBuilderCoreml::CreateAndBuild(*graph_info_ptr,
                                                             temp_dir.GetPath());
+    }
 #endif
+
+    auto tflite_properties =
+        webnn::tflite::GraphBuilderTflite::GetContextProperties();
+    if (webnn::WebNNGraphImpl::ValidateGraph(*tflite_properties,
+                                             graph_info_ptr)) {
       // Test the TFLite graph builder.
       auto flatbuffer =
           webnn::tflite::GraphBuilderTflite::CreateAndBuild(*graph_info_ptr);

@@ -81,12 +81,6 @@ static constexpr auto kDml64BitIntegerDataTypes =
 
 constexpr const uint32_t kNhwcToNchwPermutation[] = {0, 3, 1, 2};
 constexpr const uint32_t kNchwToNhwcPermutation[] = {0, 2, 3, 1};
-// The `nhwc` input layout of regular conv2d is `ohwi` filter layout by default
-// that need to be transposed to `oihw`.
-constexpr const uint32_t kOhwiToOihwPermutation[] = {0, 3, 1, 2};
-// The `nhwc` input layout of depthwise conv2d is `ihwo` filter layout by
-// default that need to be transposed to `oihw`.
-constexpr const uint32_t kIhwoToOihwPermutation[] = {3, 0, 1, 2};
 
 DML_TENSOR_DATA_TYPE GetTensorDataType(Operand::DataType type) {
   switch (type) {
@@ -1598,35 +1592,6 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForConv2d(
     inputs.push_back(reshaped_bias_node_output);
   }
 
-  switch (conv2d->input_layout) {
-    case mojom::InputOperandLayout::kChannelsFirst: {
-      break;
-    }
-    // DML convolution operator only support nchw layout according to
-    // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_convolution_operator_desc
-    //
-    // To support other layouts, we can transpose the input and output
-    // tensors
-    case mojom::InputOperandLayout::kChannelsLast: {
-      if (conv2d->kind == mojom::Conv2d::Kind::kDirect) {
-        const uint32_t input_channels = input_tensor_desc.GetDimensions()[3];
-        const uint32_t output_channels = output_tensor_desc.GetDimensions()[3];
-        const bool depthwise = webnn::IsDepthwiseConv2d(
-            input_channels, output_channels, conv2d->groups);
-        if (depthwise) {
-          // The filter layout is `ihwo` for depthwise conv2d.
-          filter_tensor_desc.Transpose(kIhwoToOihwPermutation);
-        } else {
-          // The filter layout is `ohwi` for regular conv2d.
-          filter_tensor_desc.Transpose(kOhwiToOihwPermutation);
-        }
-      }
-      input_tensor_desc.Transpose(kNhwcToNchwPermutation);
-      output_tensor_desc.Transpose(kNhwcToNchwPermutation);
-      break;
-    }
-  }
-
   std::array<uint32_t, 2> strides = {conv2d->strides->height,
                                      conv2d->strides->width};
   std::array<uint32_t, 2> dilations = {conv2d->dilations->height,
@@ -1704,11 +1669,6 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForConv2d(
   if (!conv2d_node) {
     return base::unexpected(CreateError(mojom::Error::Code::kUnknownError,
                                         "Failed to create conv2d operator."));
-  }
-
-  if (conv2d->input_layout == mojom::InputOperandLayout::kChannelsLast) {
-    // Transpose the output tensor from nchw to nhwc layout.
-    output_tensor_desc.Transpose(kNchwToNhwcPermutation);
   }
 
   const NodeOutput* output = graph_builder.CreateNodeOutput(

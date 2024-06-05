@@ -59,7 +59,7 @@ struct CreateContextOptions {
 // Represents properties of the `WebNNContext` implementation that has been
 // provided.
 struct ContextProperties {
-  InputOperandLayout? preferred_conv2d_input_layout;
+  InputOperandLayout conv2d_input_layout;
 };
 
 // Represents a successful call to `WebNNContextProvider::CreateWebNNContext`.

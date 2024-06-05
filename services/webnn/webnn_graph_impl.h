@@ -53,7 +53,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNGraphImpl
   ~WebNNGraphImpl() override;
 
   // Return false if the graph is invalid.
-  static bool ValidateGraph(const mojom::GraphInfoPtr& graph_info);
+  static bool ValidateGraph(const mojom::ContextProperties& context_properties,
+                            const mojom::GraphInfoPtr& graph_info);
 
   const ComputeResourceInfo& compute_resource_info() const {
     return compute_resource_info_;

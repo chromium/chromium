@@ -179,10 +179,13 @@ struct Conv2d {
   // The kind of 2-D convolution.
   Kind kind;
   // The id of input operand is used to get the `Operand` description from
-  // `GraphInfo.id_to_operand_map`.
+  // `GraphInfo.id_to_operand_map`. The input must be in the layout defined
+  // by ContextProperties.preferred_conv2d_input_layout.
   uint64 input_operand_id;
   // The id of filter operand is used to get the `Operand` description from
-  // `GraphInfo.id_to_operand_map`.
+  // `GraphInfo.id_to_operand_map`. The filter must be in OIHW order if the
+  // input is in NCHW order. Otherwise, it must be in IHWO if this is a
+  // depthwise convolution and OHWI order if it is not.
   uint64 filter_operand_id;
   // The id of output operand is used to get the `Operand` description from
   // `GraphInfo.id_to_operand_map`.
@@ -197,8 +200,6 @@ struct Conv2d {
   // The number of groups that input channels and output channels are divided
   // into.
   uint32 groups = 1;
-  // The layout format of the input.
-  InputOperandLayout input_layout;
   // The additional 1-D tensor with the shape of output channels whose values
   // are added to the convolution result.
   uint64? bias_operand_id;

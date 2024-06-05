@@ -25,8 +25,6 @@ class ContextImplCrOS final : public WebNNContextImpl {
 
   ~ContextImplCrOS() override;
 
-  mojom::ContextPropertiesPtr GetProperties() override;
-
   // Load the TFLite model with ML Service, the `ModelLoader` interface needs to
   // be created if it's not bound.
   void LoadModel(flatbuffers::DetachedBuffer model_content,

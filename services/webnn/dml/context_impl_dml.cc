@@ -20,7 +20,16 @@
 
 namespace webnn::dml {
 
+namespace {
+
 using Microsoft::WRL::ComPtr;
+
+mojom::ContextPropertiesPtr GetProperties() {
+  return mojom::ContextProperties::New(
+      /*conv2d_input_layout=*/mojom::InputOperandLayout::kChannelsFirst);
+}
+
+}  // namespace
 
 ContextImplDml::ContextImplDml(
     scoped_refptr<Adapter> adapter,
@@ -28,7 +37,7 @@ ContextImplDml::ContextImplDml(
     WebNNContextProviderImpl* context_provider,
     std::unique_ptr<CommandRecorder> command_recorder,
     const gpu::GpuFeatureInfo& gpu_feature_info)
-    : WebNNContextImpl(std::move(receiver), context_provider),
+    : WebNNContextImpl(std::move(receiver), context_provider, GetProperties()),
       adapter_(std::move(adapter)),
       command_recorder_(std::move(command_recorder)),
       gpu_feature_info_(gpu_feature_info) {
@@ -36,17 +45,6 @@ ContextImplDml::ContextImplDml(
 }
 
 ContextImplDml::~ContextImplDml() = default;
-
-mojom::ContextPropertiesPtr ContextImplDml::GetProperties() {
-  auto properties = mojom::ContextProperties::New();
-  // TODO: Remove the code from `GraphImpl::CreateOperatorNodeForConv2d()`
-  // which handles `kChannelsLast` and rely on the renderer to insert the
-  // necessary transpose operations by setting:
-  //
-  // properties->preferred_conv2d_input_layout =
-  // mojom::InputOperandLayout::kChannelsFirst;
-  return properties;
-}
 
 void ContextImplDml::CreateGraphImpl(
     mojom::GraphInfoPtr graph_info,

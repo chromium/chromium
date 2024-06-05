@@ -16,6 +16,7 @@
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "components/ml/webnn/graph_validation_utils.h"
+#include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
 #include "services/webnn/webnn_utils.h"
 #include "third_party/tflite/src/tensorflow/lite/schema/schema_generated.h"
@@ -266,6 +267,12 @@ GraphBuilderTflite::CreateAndBuild(const mojom::GraphInfo& graph_info) {
 
   return builder.FinishAndTakeFlatBuffer(graph_info.input_operands,
                                          graph_info.output_operands);
+}
+
+// static
+mojom::ContextPropertiesPtr GraphBuilderTflite::GetContextProperties() {
+  return mojom::ContextProperties::New(
+      /*conv2d_input_layout=*/mojom::InputOperandLayout::kChannelsLast);
 }
 
 GraphBuilderTflite::GraphBuilderTflite(const mojom::GraphInfo& graph_info)
@@ -1055,11 +1062,6 @@ auto GraphBuilderTflite::SerializeConv2d(const mojom::Conv2d& conv2d)
     -> base::expected<OperatorOffset, std::string> {
   if (conv2d.kind != mojom::Conv2d::Kind::kDirect) {
     return base::unexpected("convTranspose2d is not implemented.");
-  }
-  // TODO(crbug.com/327941466): Transpose input operand to support other layouts
-  // because tflite only support nhwc layout.
-  if (conv2d.input_layout != mojom::InputOperandLayout::kChannelsLast) {
-    return base::unexpected("The channel first input layout is not supported.");
   }
 
   const mojom::Operand& input_operand = GetOperand(conv2d.input_operand_id);

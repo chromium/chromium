@@ -197,7 +197,6 @@ class GraphInfoBuilder final {
     conv2d->dilations =
         mojom::Size2d::New(attributes.dilations[0], attributes.dilations[1]);
     conv2d->groups = attributes.groups;
-    conv2d->input_layout = attributes.input_layout;
     conv2d->bias_operand_id = bias_operand_id;
 
     if (attributes.activation.has_value()) {
