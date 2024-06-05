@@ -63,10 +63,6 @@ To use a third-party crate "bar" version 3 from first party code:
      for the crates. If a patch can not apply, the crate's download will be cancelled and
      an error will be printed. See [patching errors](#patching-errors) below for how to resolve
      this.
-1. Add the new files to git:
-   * `git add -f third_party/rust/chromium_crates_io`
-   * The `-f` is important, as files may be skipped otherwise from a
-     `.gitignore` inside the crate.
 1. (optional) If the crate is only to be used by tests and tooling, then
    specify the `"test"` group in `//third_party/rust/chromium_crates_io/gnrt_config.toml`:
    ```
@@ -83,6 +79,11 @@ To use a third-party crate "bar" version 3 from first party code:
    * `./tools/crates/run_cargo_vet.py check`
    * If `check` fails, then there are missing audits, which need to be added to
      `//third_party/rust/chromium_crates_io/supply-chain/audits.toml`.
+1. Add the new files to git:
+   * `git add -f third_party/rust/chromium_crates_io/vendor`.
+     (The `-f` is important, as files may be skipped otherwise from a
+     `.gitignore` inside the crate.)
+   * `git add third_party/rust`
 1. Upload the CL. If there is any `unsafe` usage then Security experts will need to
    audit the "ub-risk" level.  See
    [`rust-unsafe.md#code-review-policy`](rust-unsafe.md#code-review-policy) for

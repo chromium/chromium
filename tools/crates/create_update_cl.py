@@ -90,6 +90,11 @@ def Git(*args) -> str:
     return RunCommandAndCheckForErrors(['git'] + list(args), False)
 
 
+def GitAddRustFiles():
+    Git("add", "-f", f"{VENDOR_DIR}")
+    Git("add", f"{THIRD_PARTY_RUST}")
+
+
 def Gnrt(*args) -> str:
     """Runs a gnrt command."""
     return RunCommandAndCheckForErrors([RUN_GNRT] + list(args), True)
@@ -444,7 +449,7 @@ def UpdateCrate(args, crate_id: str, upstream_branch: str):
     new_branch = f"{BRANCH_BASENAME}--{crate_id.replace('@', '-')}"
     Git("checkout", upstream_branch, "-b", new_branch)
     Git("branch", "--set-upstream-to", upstream_branch)
-    Git("add", "-f", f"{THIRD_PARTY_RUST}")
+    GitAddRustFiles()
     Git("commit", "-m", description)
     if args.upload:
         print(f"  Running `git cl upload ...` ...")
@@ -473,14 +478,14 @@ def FinishUpdatingCrate(args, title: str, diff: CratesDiff):
         new_target_dir = ConvertCrateIdToEpochDir(update.new_crate_id)
         if old_target_dir != new_target_dir:
             Git("mv", "--force", old_target_dir, new_target_dir)
-    Git("add", "-f", f"{THIRD_PARTY_RUST}")
+    GitAddRustFiles()
     GitCommit(args, "git mv <old dir> <new dir> (for better diff)")
     Git("reset", "--hard", "HEAD^")  # Undoing `git mv ...`
 
     # gnrt vendor
     print(f"  Running `gnrt vendor`...")
     Gnrt("vendor")
-    Git("add", "-f", f"{THIRD_PARTY_RUST}")
+    GitAddRustFiles()
     # `INCLUSIVE_LANG_SCRIPT` below uses `git grep` and therefore depends on the
     # earlier `Git("add"...)` above.  Please don't reorder/coalesce the `add`.
     new_content = RunCommandAndCheckForErrors([INCLUSIVE_LANG_SCRIPT], False)
@@ -499,7 +504,7 @@ def FinishUpdatingCrate(args, title: str, diff: CratesDiff):
     # Some crates (e.g. ones in the `remove_crates` list of `gnrt_config.toml`)
     # may result in no changes - this is why we have an `if` below...
     if Git("status", "--porcelain"):
-        Git("add", "-f", f"{THIRD_PARTY_RUST}")
+        GitAddRustFiles()
         GitCommit(args, "gnrt gen")
 
     if args.upload:
@@ -666,7 +671,7 @@ def main():
                         action='store_false',
                         help="Avoids uploading CLs to Gerrit")
     parser.add_argument("--verbose", action='store_true')
-    subparsers = parser.add_subparsers(required=True)
+    subparsers = parser.add_subparsers(required=False)
 
     parser_auto = subparsers.add_parser(
         "auto", description="Automatically update minor version of all crates")
@@ -697,6 +702,11 @@ def main():
                                help="The first line of CL description.")
 
     args = parser.parse_args()
+    if "func" not in args:
+        msg = "ERROR: No auto/single/manual mode specified"
+        print(msg)
+        parser.print_help()
+        raise RuntimeError(msg)
 
     global g_is_verbose
     g_is_verbose = args.verbose
