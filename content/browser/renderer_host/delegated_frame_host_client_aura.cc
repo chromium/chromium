@@ -37,7 +37,7 @@ SkColor DelegatedFrameHostClientAura::DelegatedFrameHostGetGutterColor() const {
   }
   if (render_widget_host_view_->GetBackgroundColor())
     return *render_widget_host_view_->GetBackgroundColor();
-  return SK_ColorWHITE;
+  return SK_ColorTRANSPARENT;
 }
 
 void DelegatedFrameHostClientAura::OnFrameTokenChanged(
