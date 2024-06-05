@@ -35,7 +35,6 @@
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/session/arc_session.h"
 #include "ash/components/arc/session/arc_session_runner.h"
-#include "ash/components/arc/storage_manager/arc_storage_manager.h"
 #include "ash/components/arc/system_ui/arc_system_ui_bridge.h"
 #include "ash/components/arc/timer/arc_timer_bridge.h"
 #include "ash/components/arc/usb/usb_host_bridge.h"
@@ -490,7 +489,6 @@ void ArcServiceLauncher::EnsureFactoriesBuilt() {
   ArcResizeLockManager::EnsureFactoryBuilt();
   ArcScreenCaptureBridge::EnsureFactoryBuilt();
   ArcSettingsService::EnsureFactoryBuilt();
-  ArcStorageManager::EnsureFactoryBuilt();
   ArcSharesheetBridge::EnsureFactoryBuilt();
   ArcSurveyService::EnsureFactoryBuilt();
   ArcSystemUIBridge::EnsureFactoryBuilt();
