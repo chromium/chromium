@@ -36,9 +36,11 @@ namespace {
 
 // Helper, returns dummy (but valid) VideoBufferHandlePtr.
 media::mojom::VideoBufferHandlePtr GetDummyVideoBufferHandle() {
+  auto shared_image = gpu::ClientSharedImage::CreateForTesting();
   return media::mojom::VideoBufferHandle::NewSharedImageHandles(
       media::mojom::SharedImageBufferHandleSet::New(
-          std::vector<gpu::ExportedSharedImage>(), gpu::SyncToken(), 0));
+          shared_image->Export(), gpu::SyncToken(),
+          shared_image->GetTextureTarget()));
 }
 
 class VideoEffectsProcessorTest : public testing::Test {

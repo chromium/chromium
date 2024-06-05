@@ -63,8 +63,7 @@ mojom::VideoBufferHandlePtr CreateBufferHandle(
     case VideoCaptureBufferType::kGpuMemoryBuffer: {
       auto [shared_image, sync_token] = CreateSharedImage(buffer, frame_info);
       auto shared_image_set = mojom::SharedImageBufferHandleSet::New(
-          std::vector<gpu::ExportedSharedImage>{shared_image}, sync_token,
-          GL_TEXTURE_2D);
+          shared_image, sync_token, GL_TEXTURE_2D);
 
       return mojom::VideoBufferHandle::NewSharedImageHandles(
           std::move(shared_image_set));

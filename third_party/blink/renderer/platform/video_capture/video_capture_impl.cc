@@ -124,8 +124,8 @@ struct VideoCaptureImpl::BufferContext
   const base::ReadOnlySharedMemoryRegion* read_only_shmem_region() const {
     return &read_only_shmem_region_;
   }
-  const Vector<scoped_refptr<gpu::ClientSharedImage>>& shared_images() const {
-    return shared_images_;
+  const scoped_refptr<gpu::ClientSharedImage>& shared_image() const {
+    return shared_image_;
   }
   const gpu::SyncToken& shared_image_sync_token() const {
     return shared_image_sync_token_;
@@ -216,18 +216,8 @@ struct VideoCaptureImpl::BufferContext
 
   void InitializeFromSharedImage(
       media::mojom::blink::SharedImageBufferHandleSetPtr shared_image_handles) {
-    DCHECK_GE(media::VideoFrame::kMaxPlanes,
-              shared_image_handles->shared_images.size());
-    for (wtf_size_t i = 0; i < media::VideoFrame::kMaxPlanes; ++i) {
-      if (i < shared_image_handles->shared_images.size()) {
-        scoped_refptr<gpu::ClientSharedImage> shared_image =
-            gpu::ClientSharedImage::ImportUnowned(
-                shared_image_handles->shared_images[i]);
-        shared_images_.emplace_back(shared_image);
-      } else {
-        shared_images_.emplace_back(nullptr);
-      }
-    }
+    shared_image_ = gpu::ClientSharedImage::ImportUnowned(
+        shared_image_handles->shared_image);
     shared_image_sync_token_ = shared_image_handles->sync_token;
     shared_image_texture_target_ = shared_image_handles->texture_target;
   }
@@ -272,7 +262,7 @@ struct VideoCaptureImpl::BufferContext
   size_t data_size_ = 0;
 
   // Only valid for |buffer_type_ == SHARED_IMAGE_HANDLES|.
-  Vector<scoped_refptr<gpu::ClientSharedImage>> shared_images_;
+  scoped_refptr<gpu::ClientSharedImage> shared_image_;
   gpu::SyncToken shared_image_sync_token_;
   uint32_t shared_image_texture_target_;
 
@@ -383,17 +373,12 @@ VideoCaptureImpl::CreateVideoFrameInitData(
       break;
     }
     case VideoFrameBufferHandleType::kSharedImageHandles: {
-      scoped_refptr<gpu::ClientSharedImage>
-          shared_images[media::VideoFrame::kMaxPlanes];
-      CHECK_GE(media::VideoFrame::kMaxPlanes,
-               buffer_context->shared_images().size());
-      for (wtf_size_t i = 0; i < buffer_context->shared_images().size(); i++) {
-        shared_images[i] = buffer_context->shared_images()[i];
-      }
+      CHECK(buffer_context->shared_image());
       video_frame_init_data.frame_or_buffer =
-          media::VideoFrame::WrapSharedImages(
+          media::VideoFrame::WrapSharedImage(
               video_frame_init_data.ready_buffer->info->pixel_format,
-              shared_images, buffer_context->shared_image_sync_token(),
+              buffer_context->shared_image(),
+              buffer_context->shared_image_sync_token(),
               buffer_context->shared_image_texture_target(),
               media::VideoFrame::ReleaseMailboxCB(),
               gfx::Size(video_frame_init_data.ready_buffer->info->coded_size),
