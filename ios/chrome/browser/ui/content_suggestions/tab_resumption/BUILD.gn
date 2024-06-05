@@ -17,6 +17,7 @@ source_set("tab_resumption") {
     ":constants",
     "//base",
     "//components/page_image_service",
+    "//components/segmentation_platform/public",
     "//components/sessions:session_id",
     "//components/signin/public/identity_manager/objc",
     "//components/sync/base",

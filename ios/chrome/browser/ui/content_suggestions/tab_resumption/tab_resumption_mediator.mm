@@ -241,11 +241,14 @@ const char kGStatic[] = ".gstatic.com";
   [self.delegate logMagicStackEngagementForType:ContentSuggestionsModuleType::
                                                     kTabResumption];
 
-  if (!IsTabResumption2_0Enabled()) {
-    // TODO(crbug.com/342390229): Log TR2.0 item was opened.
-  }
   NSUInteger index = [self.delegate
       indexForMagicStackModule:ContentSuggestionsModuleType::kTabResumption];
+  if (IsTabResumption2_0Enabled() && index == 0 && _visitedURLRankingService) {
+    _visitedURLRankingService->RecordAction(visited_url_ranking::kActivated,
+                                            self.itemConfig.URLKey,
+                                            self.itemConfig.requestID);
+  }
+
   switch (item.itemType) {
     case TabResumptionItemType::kLastSyncedTab:
       [self.NTPMetricsDelegate distantTabResumptionOpenedAtIndex:index];
@@ -304,6 +307,11 @@ const char kGStatic[] = ".gstatic.com";
 - (void)magicStackModule:(MagicStackModule*)magicStackModule
      wasDisplayedAtIndex:(NSUInteger)index {
   CHECK(self.itemConfig == magicStackModule);
+  if (IsTabResumption2_0Enabled() && index == 0 && _visitedURLRankingService) {
+    _visitedURLRankingService->RecordAction(visited_url_ranking::kSeen,
+                                            self.itemConfig.URLKey,
+                                            self.itemConfig.requestID);
+  }
   switch (self.itemConfig.itemType) {
     case TabResumptionItemType::kLastSyncedTab:
       [self.NTPMetricsDelegate distantTabResumptionDisplayedAtIndex:index];
@@ -605,13 +613,15 @@ const char kGStatic[] = ".gstatic.com";
   }
 
   const visited_url_ranking::URLVisitAggregate::TabData* tabData = nullptr;
-  for (auto& URLAggregate : URLs) {
-    tabData = ExtractTabData(URLAggregate);
+  const visited_url_ranking::URLVisitAggregate* URLAggregate = nullptr;
+  for (auto& aggregate : URLs) {
+    tabData = ExtractTabData(aggregate);
     if (tabData) {
+      URLAggregate = &aggregate;
       break;
     }
   }
-  if (!tabData) {
+  if (!tabData || !URLAggregate) {
     return;
   }
   const visited_url_ranking::URLVisitAggregate::Tab& tab =
@@ -627,6 +637,8 @@ const char kGStatic[] = ".gstatic.com";
   item.syncedTime = tab.visit.last_modified;
   item.tabURL = tab.visit.url;
   item.shouldShowSeeMore = IsTabResumption1_5SeeMoreEnabled();
+  item.URLKey = URLAggregate->url_key;
+  item.requestID = URLAggregate->request_id;
   item.commandHandler = self;
   if (tab.id > 0 && tab.session_tag && !isLocal) {
     item.sessionName = base::SysUTF8ToNSString(tab.session_name.value());

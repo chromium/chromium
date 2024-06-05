@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "components/segmentation_platform/public/trigger.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module.h"
 
 @protocol TabResumptionCommands;
@@ -51,6 +52,13 @@ enum TabResumptionItemType {
 
 // Command handler for user actions.
 @property(nonatomic, weak) id<TabResumptionCommands> commandHandler;
+
+// The URL key used to log metrics when displaying or activating the item.
+@property(nonatomic, assign) std::string URLKey;
+
+// An ID used to collect metrics associated with the triggering visit for model
+// training purposes.
+@property(nonatomic, assign) segmentation_platform::TrainingRequestId requestID;
 
 // The Item's designated initializer.
 - (instancetype)initWithItemType:(TabResumptionItemType)itemType
