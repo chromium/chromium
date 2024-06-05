@@ -206,10 +206,8 @@ void CleanAllMockExtensions(Profile* profile) {
                   profile);
 
   // Check that all extensions were successfully uninstalled.
-  const extensions::ExtensionSet extensions =
-      extensions::ExtensionRegistry::Get(profile)
-          ->GenerateInstalledExtensionsSet(
-              extensions::ExtensionRegistry::ENABLED);
+  const extensions::ExtensionSet& extensions =
+      extensions::ExtensionRegistry::Get(profile)->enabled_extensions();
   EXPECT_TRUE(extensions.empty());
 }
 
