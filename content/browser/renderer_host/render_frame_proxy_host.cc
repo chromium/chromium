@@ -503,9 +503,41 @@ void RenderFrameProxyHost::SetIsInert(bool inert) {
   cross_process_frame_connector_->SetIsInert(inert);
 }
 
+std::u16string RenderFrameProxyHost::SerializePostMessageSourceOrigin(
+    const url::Origin& source_origin) {
+  std::u16string source_origin_string =
+      base::UTF8ToUTF16(source_origin.Serialize());
+
+  // TODO(crbug.com/40554285, crbug.com/40467682): This serialization used to
+  // happen in blink via blink::SecurityOrigin::ToString(), but is now happening
+  // here via url::Origin::Serialize(). The two are the same except for one
+  // unfortunate difference with file URLs. url::Origin always serializes them
+  // as "file://", while blink::SecurityOrigin serializes them to "null" or
+  // "file://" depending on the `allow_file_access_from_file_urls` flag in
+  // WebPreferences. For now, mimic Blink's file: URL serialization here to
+  // minimize compat risks. Eventually, this should be improved to (1) rely on
+  // url::Origin's version and fix url::Origin::Serialize() to honor
+  // `allow_file_access_from_file_urls` if that is important enough to support,
+  // (2) plumb `source_origin` further into blink in the receiving renderer, so
+  // that it can be serialized there (this requires refactoring the other uses
+  // of RenderFrameHostImpl::PostMessageEvent()), or (3) fix file: URLs to
+  // always correspond to opaque origins, so that their serializations are
+  // always "null" in both blink::SecurityOrigin and url::Origin.
+  if (source_origin.scheme() == url::kFileScheme) {
+    auto prefs = frame_tree_node()
+                     ->current_frame_host()
+                     ->delegate()
+                     ->GetOrCreateWebPreferences();
+    if (!prefs.allow_file_access_from_file_urls) {
+      source_origin_string = u"null";
+    }
+  }
+  return source_origin_string;
+}
+
 void RenderFrameProxyHost::RouteMessageEvent(
     const std::optional<blink::LocalFrameToken>& source_frame_token,
-    const std::u16string& source_origin,
+    const url::Origin& source_origin,
     const std::u16string& target_origin,
     blink::TransferableMessage message) {
   RenderFrameHostImpl* target_rfh = frame_tree_node()->current_frame_host();
@@ -544,14 +576,26 @@ void RenderFrameProxyHost::RouteMessageEvent(
       return;
   }
 
-  // TODO(lukasza): Move opaque-ness check into ChildProcessSecurityPolicyImpl.
-  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
-  if (source_origin != u"null" &&
-      !policy->HostsOrigin(GetProcess()->GetID(),
-                           url::Origin::Create(GURL(source_origin)))) {
-    bad_message::ReceivedBadMessage(
-        GetProcess(), bad_message::RFPH_POST_MESSAGE_INVALID_SOURCE_ORIGIN);
-    return;
+  std::u16string source_origin_string =
+      SerializePostMessageSourceOrigin(source_origin);
+
+  // Verify the source origin. Note that this used to skip cases where the
+  // origin serialized to "null", but now that old behavior is behind a kill
+  // switch.
+  //
+  // TODO(crbug.com/40109437): Remove this fallback and always validate opaque
+  // origins once rollout is complete.
+  bool should_verify_source_origin =
+      base::FeatureList::IsEnabled(
+          features::kAdditionalOpaqueOriginEnforcements) ||
+      source_origin_string != u"null";
+  if (should_verify_source_origin) {
+    auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
+    if (!policy->HostsOrigin(GetProcess()->GetID(), source_origin)) {
+      bad_message::ReceivedBadMessage(
+          GetProcess(), bad_message::RFPH_POST_MESSAGE_INVALID_SOURCE_ORIGIN);
+      return;
+    }
   }
 
   // Only deliver the message if the request came from a RenderFrameHost in the
@@ -660,7 +704,7 @@ void RenderFrameProxyHost::RouteMessageEvent(
     return;
   };
 
-  target_rfh->PostMessageEvent(translated_source_token, source_origin,
+  target_rfh->PostMessageEvent(translated_source_token, source_origin_string,
                                target_origin, std::move(message));
 }
 

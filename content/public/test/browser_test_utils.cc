@@ -1439,8 +1439,7 @@ void SimulateProxyHostPostMessage(RenderFrameHost* source_render_frame_host,
 
   proxy_host->RouteMessageEvent(
       source_render_frame_host->GetFrameToken(),
-      base::UTF8ToUTF16(
-          source_render_frame_host->GetLastCommittedOrigin().Serialize()),
+      source_render_frame_host->GetLastCommittedOrigin(),
       base::UTF8ToUTF16(
           target_render_frame_host->GetLastCommittedOrigin().Serialize()),
       std::move(message));

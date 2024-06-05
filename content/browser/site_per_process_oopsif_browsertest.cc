@@ -414,6 +414,92 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessIsolatedSandboxedIframeTest,
                    .is_sandboxed());
 }
 
+// A test to verify that postMessages sent to/from sandboxed frames get
+// delivered properly.
+IN_PROC_BROWSER_TEST_P(SitePerProcessIsolatedSandboxedIframeTest, PostMessage) {
+  GURL main_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL child1_url(embedded_test_server()->GetURL("a.com", "/title2.html"));
+  GURL child2_url(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // Create sandboxed same-site child frame.
+  {
+    std::string js_str = base::StringPrintf(
+        "var frame = document.createElement('iframe'); "
+        "frame.sandbox = 'allow-scripts'; "
+        "frame.src = '%s'; "
+        "document.body.appendChild(frame);",
+        child1_url.spec().c_str());
+    EXPECT_TRUE(ExecJs(shell(), js_str));
+    ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  }
+
+  // Create sandboxed cross-site child frame.
+  {
+    std::string js_str = base::StringPrintf(
+        "var frame = document.createElement('iframe'); "
+        "frame.sandbox = 'allow-scripts'; "
+        "frame.src = '%s'; "
+        "document.body.appendChild(frame);",
+        child2_url.spec().c_str());
+    EXPECT_TRUE(ExecJs(shell(), js_str));
+    ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  }
+
+  // Verify test setup.
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+  ASSERT_EQ(2U, root->child_count());
+  FrameTreeNode* child1 = root->child_at(0);
+  FrameTreeNode* child2 = root->child_at(1);
+  EXPECT_NE(root->current_frame_host()->GetSiteInstance(),
+            child1->current_frame_host()->GetSiteInstance());
+  EXPECT_NE(root->current_frame_host()->GetSiteInstance(),
+            child2->current_frame_host()->GetSiteInstance());
+  EXPECT_TRUE(child1->current_frame_host()
+                  ->GetSiteInstance()
+                  ->GetSiteInfo()
+                  .is_sandboxed());
+  EXPECT_TRUE(child2->current_frame_host()
+                  ->GetSiteInstance()
+                  ->GetSiteInfo()
+                  .is_sandboxed());
+
+  // Verify that postMessage works between same-site sandboxed child and its
+  // parent.
+  const std::string kDefinePostMessageReply =
+      "window.addEventListener('message', function(event) {"
+      "  event.source.postMessage(event.data + '-reply', '*');"
+      "});";
+  EXPECT_TRUE(ExecJs(root->current_frame_host(), kDefinePostMessageReply));
+  const std::string kDefineOnMessagePromise =
+      "var onMessagePromise = new Promise(resolve => {"
+      "  window.addEventListener('message', function(event) {"
+      "    resolve(event.data);"
+      "  });"
+      "});";
+  EXPECT_TRUE(ExecJs(child1->current_frame_host(), kDefineOnMessagePromise));
+  EXPECT_TRUE(
+      ExecJs(child1->current_frame_host(), "parent.postMessage('foo', '*');"));
+  EXPECT_EQ("foo-reply",
+            EvalJs(child1->current_frame_host(), "onMessagePromise"));
+
+  // Verify that postMessage works between cross-site sandboxed child and its
+  // parent.
+  EXPECT_TRUE(ExecJs(child2->current_frame_host(), kDefineOnMessagePromise));
+  EXPECT_TRUE(
+      ExecJs(child2->current_frame_host(), "parent.postMessage('bar', '*');"));
+  EXPECT_EQ("bar-reply",
+            EvalJs(child2->current_frame_host(), "onMessagePromise"));
+
+  // Verify that postMessage works between the two sandboxed frames.
+  EXPECT_TRUE(ExecJs(child2->current_frame_host(), kDefinePostMessageReply));
+  EXPECT_TRUE(ExecJs(child1->current_frame_host(), kDefineOnMessagePromise));
+  EXPECT_TRUE(ExecJs(child1->current_frame_host(),
+                     "parent.frames[1].postMessage('baz', '*');"));
+  EXPECT_EQ("baz-reply",
+            EvalJs(child1->current_frame_host(), "onMessagePromise"));
+}
+
 // Test that a sandboxed srcdoc iframe loads properly when its parent's url is
 // different from its site_url. The child should get its own SiteInstance with a
 // site_url based on the full origin of the parent's original url.

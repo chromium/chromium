@@ -272,6 +272,16 @@ class PLATFORM_EXPORT SecurityOrigin : public RefCounted<SecurityOrigin> {
   // When using the string value, it's important to remember that it might be
   // "null". This typically happens when this SecurityOrigin is opaque (e.g. the
   // origin of a sandboxed iframe).
+  //
+  // This should be kept in sync with url::Origin::Serialize().
+  //
+  // TODO(crbug.com/40554285, crbug.com/40467682): Note that there's a subtle
+  // difference in how this function handles file: URL origins compared to
+  // url::Origin::Serialize(). url::Origin always serializes them to "file://",
+  // whereas this function serializes them to "null" or // "file://" depending
+  // on the `allow_file_access_from_file_urls` flag in WebPreferences. This
+  // difference should be cleaned up, along with the workaround for it in
+  // RenderFrameProxyHost::SerializePostMessageSourceOrigin().
   String ToString() const;
   AtomicString ToAtomicString() const;
 

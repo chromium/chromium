@@ -225,11 +225,14 @@ interface RemoteFrameHost {
   // process to the frame token of the equivalent RemoteFrame in the target
   // renderer process.
   // |source_origin| is the origin of the source frame when the message was
-  // sent, |target_origin| specifies what the origin of the target frame must be
-  // for the message to be dispatched and |message| is the encoded data, plus
-  // any extra properties such as transferred ports or blobs.
+  // sent, and |target_origin| specifies what the origin of the target frame
+  // must be for the message to be dispatched. |source_origin| has an Origin
+  // type since it will be validated by the browser process, even when opaque
+  // with a precursor, while |target_origin| is a string since the web page
+  // specifies it, and might use an asterisk as a wildcard. |message| is the
+  // encoded data, plus any extra properties such as transferred ports or blobs.
   RouteMessageEvent(blink.mojom.LocalFrameToken? source_frame_token,
-                    mojo_base.mojom.String16 source_origin,
+                    url.mojom.Origin source_origin,
                     mojo_base.mojom.String16 target_origin,
                     blink.mojom.TransferableMessage message);
 
