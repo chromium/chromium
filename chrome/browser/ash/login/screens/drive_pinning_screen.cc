@@ -122,6 +122,10 @@ bool DrivePinningScreen::ShouldBeSkipped(const WizardContext& context) const {
   if (features::IsOobeChoobeEnabled()) {
     auto* choobe_controller =
         WizardController::default_controller()->choobe_flow_controller();
+    if (!ignore_choobe_controller_state_for_tests_ && !choobe_controller) {
+      return true;
+    }
+
     if (choobe_controller && choobe_controller->ShouldScreenBeSkipped(
                                  DrivePinningScreenView::kScreenId)) {
       return true;

@@ -55,6 +55,11 @@ class DrivePinningScreen
     return exit_callback_;
   }
 
+  void set_ignore_choobe_controller_state_for_testing(
+      bool ignore_chobe_controller) {
+    ignore_choobe_controller_state_for_tests_ = ignore_chobe_controller;
+  }
+
   // Starts calculating the required space. This should only be called once, in
   // the event DriveFS restarts the `DrivePinningScreen` will handle restarting
   // calculation.
@@ -89,6 +94,8 @@ class DrivePinningScreen
   drivefs::pinning::Stage drive_pinning_stage_ =
       drivefs::pinning::Stage::kStopped;
   bool started_calculating_space_ = false;
+
+  bool ignore_choobe_controller_state_for_tests_ = false;
 
   // The number of times bulk pinning is initialized.
   int bulk_pinning_initializations_ = 0;
