@@ -3389,7 +3389,7 @@ bool Document::InitiateStyleOrLayoutDependentLoadForPrint() {
     view->AdjustMediaTypeForPrinting(false);
     UpdateStyleAndLayout(DocumentUpdateReason::kPrinting);
 
-    return !ShouldComplete();
+    return fetcher_->BlockingRequestCount() > 0;
   }
 
   return false;
