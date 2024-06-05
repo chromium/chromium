@@ -75,6 +75,9 @@ constexpr float kTestPageWidth = 3.0f;
 constexpr float kTestPageHeight = 8.0f;
 // The test device pixel ratio.
 constexpr float kTestDisplayPixelRatio = 1.5f;
+// Backlight's internal scale factor. It needs to be synced with
+// `kBacklightInternalScaleFactor` in ax_media_app_untrusted_handler.cc
+constexpr float kBacklightInternalScaleFactor = 1.25f;
 
 // Use letters to generate fake IDs for fake page metadata. If more than
 // 26 pages are needed, more characters can be added.
@@ -1071,8 +1074,12 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, ScrollToMakeVisible) {
   std::vector<PageMetadataPtr> fake_metadata;
   PageMetadataPtr fake_page = ash::media_app_ui::mojom::PageMetadata::New();
   fake_page->id = std::format("Page{}", kTestPageIds[0]);
-  fake_page->rect =
-      gfx::RectF(/*x=*/kPageX, /*y=*/kPageY, kTestPageWidth, kTestPageHeight);
+  // Multiply by `kBacklightInternalScaleFactor` to take into account that
+  // this bounds get divided by this internal scale factor when being compared
+  // with the viewport.
+  fake_page->rect = gfx::RectF(/*x=*/kPageX, /*y=*/kPageY,
+                               kTestPageWidth * kBacklightInternalScaleFactor,
+                               kTestPageHeight * kBacklightInternalScaleFactor);
   fake_metadata.push_back(std::move(fake_page));
   handler_->PageMetadataUpdated(ClonePageMetadataPtrs(fake_metadata));
   WaitForOcringPages(1u);
@@ -1176,9 +1183,14 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
       gfx::RectF(/*x=*/0.0f, /*y=*/0.0f, kViewportWidth, kViewportHeight),
       /*scale_factor=*/1.0f);
   handler_->PerformAction(scroll_action_data);
-  EXPECT_EQ(gfx::RectF(/*x=*/kTestPageWidth - kViewportWidth,
-                       /*y=*/kTestPageHeight - kViewportHeight, kViewportWidth,
-                       kViewportHeight),
+  // Divide by `kBacklightInternalScaleFactor` to take into account that
+  // the bounds get divided by this internal scale factor to be compared
+  // with the viewport when performing the ScrollToMakeVisible action.
+  EXPECT_EQ(gfx::RectF(/*x=*/kTestPageWidth / kBacklightInternalScaleFactor -
+                           kViewportWidth,
+                       /*y=*/kTestPageHeight / kBacklightInternalScaleFactor -
+                           kViewportHeight,
+                       kViewportWidth, kViewportHeight),
             fake_media_app_.ViewportBox());
 
   // Reorder the pages by swapping their IDs.
@@ -1191,12 +1203,16 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
       /*scale_factor=*/1.0f);
   handler_->PerformAction(scroll_action_data);
   // The viewport should move all the way to the bottom-right corner of page
-  // two.
-  EXPECT_EQ(
-      gfx::RectF(/*x=*/kTestPageWidth - kViewportWidth,
-                 /*y=*/kTestPageHeight * 2 + kTestPageGap - kViewportHeight,
-                 kViewportWidth, kViewportHeight),
-      fake_media_app_.ViewportBox());
+  // two. Also, divide by `kBacklightInternalScaleFactor` to take into account
+  // that the bounds get divided by this internal scale factor to be compared
+  // with the viewport when performing the ScrollToMakeVisible action.
+  EXPECT_EQ(gfx::RectF(/*x=*/kTestPageWidth / kBacklightInternalScaleFactor -
+                           kViewportWidth,
+                       /*y=*/(kTestPageHeight * 2 + kTestPageGap) /
+                               kBacklightInternalScaleFactor -
+                           kViewportHeight,
+                       kViewportWidth, kViewportHeight),
+            fake_media_app_.ViewportBox());
 }
 
 IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, PageBatching) {
@@ -1443,8 +1459,10 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
 
   EXPECT_EQ(kExpectRect, page_a_rect);
   EXPECT_EQ(
-      gfx::RectF(-kViewportXOffset * kViewportScale * kTestDisplayPixelRatio,
-                 -kViewportYOffset * kViewportScale * kTestDisplayPixelRatio,
+      gfx::RectF(-kViewportXOffset * kViewportScale * kTestDisplayPixelRatio *
+                     kBacklightInternalScaleFactor,
+                 -kViewportYOffset * kViewportScale * kTestDisplayPixelRatio *
+                     kBacklightInternalScaleFactor,
                  kTestPageWidth * kViewportScale * kTestDisplayPixelRatio,
                  kTestPageHeight * kViewportScale * kTestDisplayPixelRatio),
       document_root->data().relative_bounds.transform->MapRect(page_a_rect));
