@@ -112,6 +112,17 @@ public class BookmarkUtils {
             return;
         }
 
+        BookmarkId parent = null;
+        if (fromExplicitTrackUi) {
+            // If account bookmarks are enabled and active, they take precedence, otherwise fall
+            // back to the local-or-syncable mobile folder, e.g. for users that have
+            // sync-the-feature enabled.
+            parent =
+                    bookmarkModel.areAccountBookmarkFoldersActive()
+                            ? bookmarkModel.getAccountMobileFolderId()
+                            : bookmarkModel.getMobileFolderId();
+        }
+
         BookmarkId newBookmarkId =
                 addBookmarkInternal(
                         activity,
@@ -119,7 +130,7 @@ public class BookmarkUtils {
                         bookmarkModel,
                         tab.getTitle(),
                         tab.getOriginalUrl(),
-                        fromExplicitTrackUi ? bookmarkModel.getMobileFolderId() : null,
+                        parent,
                         bookmarkType);
         showSaveFlow(
                 activity,
