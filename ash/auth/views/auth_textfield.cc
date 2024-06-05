@@ -92,14 +92,39 @@ void AuthTextfield::OnFocus() {
 
 bool AuthTextfield::HandleKeyEvent(views::Textfield* sender,
                                     const ui::KeyEvent& key_event) {
-  if (auth_type_ == AuthType::kPassword) {
-    return SystemTextfieldController::HandleKeyEvent(sender, key_event);
+  CHECK_EQ(sender, this);
+
+  if (GetReadOnly()) {
+    return false;
   }
-  CHECK_EQ(auth_type_, AuthType::kPin);
 
   if (key_event.type() != ui::ET_KEY_PRESSED) {
     return false;
   }
+
+  const ui::KeyboardCode key_code = key_event.key_code();
+
+  if (key_code == ui::VKEY_RETURN) {
+    if (!GetText().empty()) {
+      for (auto& observer : observers_) {
+        observer.OnSubmit();
+      }
+    }
+    return true;
+  }
+
+  if (key_code == ui::VKEY_ESCAPE) {
+    for (auto& observer : observers_) {
+      observer.OnEscape();
+    }
+    return true;
+  }
+
+  if (auth_type_ == AuthType::kPassword) {
+    return SystemTextfieldController::HandleKeyEvent(sender, key_event);
+  }
+
+  CHECK_EQ(auth_type_, AuthType::kPin);
 
   // Default handling for events with Alt modifier like spoken feedback.
   if (key_event.IsAltDown()) {
@@ -111,13 +136,7 @@ bool AuthTextfield::HandleKeyEvent(views::Textfield* sender,
     return false;
   }
 
-  if (sender->GetReadOnly()) {
-    return false;
-  }
-
-  // FixedLengthCodeInput class responds to limited subset of key press
-  // events. All key pressed events not handled below are ignored.
-  const ui::KeyboardCode key_code = key_event.key_code();
+  // All key pressed events not handled below are ignored.
   if (key_code == ui::VKEY_TAB || key_code == ui::VKEY_BACKTAB) {
     // Allow using tab for keyboard navigation.
     return false;
@@ -131,17 +150,13 @@ bool AuthTextfield::HandleKeyEvent(views::Textfield* sender,
   } else if (key_code >= ui::VKEY_NUMPAD0 && key_code <= ui::VKEY_NUMPAD9) {
     InsertDigit(key_code - ui::VKEY_NUMPAD0);
   } else if (key_code == ui::VKEY_BACK) {
-    Backspace();
-  } else if (key_code == ui::VKEY_RETURN) {
-    if (!GetText().empty()) {
-      for (auto& observer : observers_) {
-        observer.OnSubmit();
-      }
-    }
-  } else if (key_code == ui::VKEY_ESCAPE) {
-    for (auto& observer : observers_) {
-      observer.OnEscape();
-    }
+    return false;
+  } else if (key_code == ui::VKEY_DELETE) {
+    return false;
+  } else if (key_code == ui::VKEY_LEFT) {
+    return false;
+  } else if (key_code == ui::VKEY_RIGHT) {
+    return false;
   }
 
   return true;
@@ -187,6 +202,15 @@ void AuthTextfield::Backspace() {
   // event as this handles the various edge cases (ie, selected text).
 
   // views::Textfield::OnKeyPressed is private, so we call it via views::View.
+  if (GetReadOnly()) {
+    return;
+  }
+
+  if (!HasFocus()) {
+    // RequestFocus on textfield to activate cursor.
+    RequestFocus();
+  }
+
   auto* view = static_cast<views::View*>(this);
   view->OnKeyPressed(ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_BACK,
                                   ui::DomCode::BACKSPACE, ui::EF_NONE));
