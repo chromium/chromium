@@ -464,10 +464,10 @@ TEST_F(BidirectionalStreamTest, CreateInsecureStream) {
   request_info->method = "GET";
   request_info->url = GURL("http://www.example.org/");
 
-  TestDelegateBase delegate(nullptr, 0);
   auto session = std::make_unique<HttpNetworkSession>(
       SpdySessionDependencies::CreateSessionParams(&session_deps_),
       SpdySessionDependencies::CreateSessionContext(&session_deps_));
+  TestDelegateBase delegate(nullptr, 0);
   delegate.SetRunUntilCompletion(true);
   delegate.Start(std::move(request_info), session.get());
 
