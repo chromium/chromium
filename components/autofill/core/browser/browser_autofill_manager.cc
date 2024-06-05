@@ -1551,11 +1551,15 @@ void BrowserAutofillManager::OnGetPlusAddressSuggestions(
     std::vector<Suggestion> address_suggestions,
     OnGenerateSuggestionsCallback callback,
     std::vector<Suggestion> suggestions) {
-  if (!suggestions.empty()) {
-    client().GetPlusAddressDelegate()->OnPlusAddressSuggestionShown(
-        *this, form.global_id(), field.global_id(), suggestions_context,
-        password_form_type, suggestions[0].type);
+  if (suggestions.empty()) {
+    std::move(callback).Run(/*show_suggestions=*/true,
+                            std::move(address_suggestions));
+    return;
   }
+
+  client().GetPlusAddressDelegate()->OnPlusAddressSuggestionShown(
+      *this, form.global_id(), field.global_id(), suggestions_context,
+      password_form_type, suggestions[0].type);
   if (address_suggestions.empty()) {
     std::optional<Suggestion> manage_plus_addresses =
         client().GetPlusAddressDelegate()->GetManagePlusAddressSuggestion();
@@ -1564,11 +1568,10 @@ void BrowserAutofillManager::OnGetPlusAddressSuggestions(
       suggestions.emplace_back(SuggestionType::kSeparator);
       suggestions.emplace_back(std::move(manage_plus_addresses.value()));
     }
-  } else {
-    suggestions.insert(suggestions.cend(),
-                       std::make_move_iterator(address_suggestions.begin()),
-                       std::make_move_iterator(address_suggestions.end()));
   }
+  suggestions.insert(suggestions.cend(),
+                     std::make_move_iterator(address_suggestions.begin()),
+                     std::make_move_iterator(address_suggestions.end()));
 
   std::move(callback).Run(/*show_suggestions=*/true, std::move(suggestions));
 }

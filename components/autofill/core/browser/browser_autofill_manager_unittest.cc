@@ -140,6 +140,7 @@ using ::testing::Eq;
 using ::testing::Field;
 using ::testing::HasSubstr;
 using ::testing::InSequence;
+using ::testing::IsEmpty;
 using ::testing::Matcher;
 using ::testing::MockFunction;
 using ::testing::NiceMock;
@@ -8082,6 +8083,33 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
       ElementsAre(EqualsSuggestion(SuggestionType::kCreateNewPlusAddress),
                   EqualsSuggestion(SuggestionType::kSeparator),
                   EqualsSuggestion(SuggestionType::kAutofillOptions)));
+}
+
+// Tests that a manage plus address suggestion is not added if there are no plus
+// address suggestions.
+TEST_F(BrowserAutofillManagerPlusAddressTest,
+       NoStandaloneManagePlusAddressSuggestion) {
+  using enum AutofillPlusAddressDelegate::SuggestionContext;
+  using enum AutofillClient::PasswordFormType;
+  personal_data().test_address_data_manager().ClearProfiles();
+  EXPECT_CALL(plus_address_delegate(), GetSuggestions)
+      .WillOnce(RunOnceCallback<5>(std::vector<Suggestion>{}));
+  EXPECT_CALL(plus_address_delegate(), GetManagePlusAddressSuggestion).Times(0);
+  EXPECT_CALL(plus_address_delegate(), OnPlusAddressSuggestionShown).Times(0);
+
+  // Set up our form data. Notably, the first field is an email address.
+  FormData form = test::GetFormData(
+      {.fields = {{.role = EMAIL_ADDRESS, .autocomplete_attribute = "email"}}});
+  form.set_name(u"MyForm");
+  form.set_url(GURL("https://myform.com/form.html"));
+  form.set_action(GURL("https://myform.com/submit.html"));
+
+  FormsSeen({form});
+
+  // Check that no suggestions are offered.
+  GetAutofillSuggestions(form, form.fields[0]);
+  EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
+  EXPECT_THAT(external_delegate()->suggestions(), IsEmpty());
 }
 
 // Tests that only Plus Address suggestions are shown when the trigger source is
