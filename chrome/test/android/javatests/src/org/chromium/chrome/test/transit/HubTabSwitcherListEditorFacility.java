@@ -22,6 +22,7 @@ import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.util.ViewActionOnDescendant;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.hub.HubTabListEditorAppMenu;
+import org.chromium.chrome.test.transit.tab_groups.TabGroupUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,10 +61,8 @@ public class HubTabSwitcherListEditorFacility extends Facility<HubTabSwitcherBas
     private String getSelectionModeNumberText() {
         if (getNumTabsSelected() == 0) {
             return "Select tabs";
-        } else if (getNumTabsSelected() == 1) {
-            return "1 tab";
         } else {
-            return String.format("%d tabs", getNumTabsSelected());
+            return TabGroupUtil.getNumberOfTabsString(getNumTabsSelected());
         }
     }
 

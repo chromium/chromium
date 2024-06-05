@@ -14,16 +14,13 @@ import android.view.View;
 
 import org.hamcrest.Matcher;
 
-import org.chromium.base.supplier.Supplier;
-import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Facility;
-import org.chromium.base.test.transit.UiThreadCondition;
 import org.chromium.base.test.transit.ViewElement;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.HubTabSwitcherBaseStation;
+import org.chromium.chrome.test.transit.tab_groups.TabGroupExistsCondition;
+import org.chromium.chrome.test.transit.tab_groups.TabGroupUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,18 +38,21 @@ public class HubTabSwitcherGroupCardFacility extends Facility<HubTabSwitcherBase
     public static final Matcher<View> CARD = withId(R.id.card_view);
 
     private final List<Integer> mTabIdsToGroup;
-    private final int mTabCount;
     private final String mTitle;
 
     public HubTabSwitcherGroupCardFacility(
             HubTabSwitcherBaseStation station, List<Integer> tabIdsToGroup) {
+        this(station, tabIdsToGroup, TabGroupUtil.getNumberOfTabsString(tabIdsToGroup.size()));
+    }
+
+    public HubTabSwitcherGroupCardFacility(
+            HubTabSwitcherBaseStation station, List<Integer> tabIdsToGroup, String title) {
         super(station);
         assert !tabIdsToGroup.isEmpty();
 
         mTabIdsToGroup = new ArrayList<>(tabIdsToGroup);
         Collections.sort(mTabIdsToGroup);
-        mTabCount = tabIdsToGroup.size();
-        mTitle = mTabCount > 1 ? String.format("%d tabs", mTabCount) : "1 tab";
+        mTitle = title;
     }
 
     @Override
@@ -62,40 +62,9 @@ public class HubTabSwitcherGroupCardFacility extends Facility<HubTabSwitcherBase
                         allOf(withText(mTitle), withId(R.id.tab_title), withParent(CARD))));
 
         elements.declareEnterCondition(
-                new TabGroupExists(mHostStation.getTabModelSelectorSupplier()));
-    }
-
-    /** Check that the tab group represented by the card exists in the tab model. */
-    private class TabGroupExists extends UiThreadCondition {
-
-        private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
-
-        TabGroupExists(Supplier<TabModelSelector> tabModelSelectorSupplier) {
-            mTabModelSelectorSupplier = tabModelSelectorSupplier;
-        }
-
-        @Override
-        protected ConditionStatus checkWithSuppliers() {
-            TabGroupModelFilter groupFilter =
-                    (TabGroupModelFilter)
-                            mTabModelSelectorSupplier
-                                    .get()
-                                    .getTabModelFilterProvider()
-                                    .getTabModelFilter(mHostStation.isIncognito());
-            List<Integer> relatedTabIds =
-                    new ArrayList<>(groupFilter.getRelatedTabIds(mTabIdsToGroup.get(0)));
-            if (relatedTabIds.isEmpty()) {
-                return notFulfilled("relatedTabIds is empty");
-            }
-
-            Collections.sort(relatedTabIds);
-            return whether(
-                    mTabIdsToGroup.equals(relatedTabIds), "relatedTabIds: %s", relatedTabIds);
-        }
-
-        @Override
-        public String buildDescription() {
-            return String.format("TabGroup exists with tabIds %s", mTabIdsToGroup);
-        }
+                new TabGroupExistsCondition(
+                        mHostStation.isIncognito(),
+                        mTabIdsToGroup,
+                        mHostStation.getTabModelSelectorSupplier()));
     }
 }

@@ -4,16 +4,12 @@
 
 package org.chromium.chrome.test.transit.hub;
 
-import static androidx.test.espresso.action.ViewActions.click;
-
-import android.util.Pair;
-
 import org.chromium.base.test.transit.ScrollableFacility;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.AppMenuFacility;
 import org.chromium.chrome.test.transit.HubTabSwitcherBaseStation;
 import org.chromium.chrome.test.transit.HubTabSwitcherListEditorFacility;
-import org.chromium.chrome.test.transit.HubTabSwitcherStation;
 
 /**
  * App menu shown when in the "Select Tabs" state in the Hub Tab Switcher.
@@ -24,7 +20,8 @@ import org.chromium.chrome.test.transit.HubTabSwitcherStation;
 public class HubTabListEditorAppMenu extends AppMenuFacility<HubTabSwitcherBaseStation> {
 
     private final HubTabSwitcherListEditorFacility mListEditor;
-    private Item<Pair<HubTabSwitcherStation, HubTabSwitcherGroupCardFacility>> mGroupMenuItems;
+    private Item<HubTabSwitcherGroupCardFacility> mGroupMenuItem;
+    private Item<HubNewTabGroupDialogFacility> mGroupWithParityMenuItem;
 
     public HubTabListEditorAppMenu(
             HubTabSwitcherBaseStation station, HubTabSwitcherListEditorFacility listEditor) {
@@ -43,11 +40,19 @@ public class HubTabListEditorAppMenu extends AppMenuFacility<HubTabSwitcherBaseS
                 itemViewMatcher("Close " + tabOrTabs),
                 itemDataMatcher(R.id.tab_list_editor_close_menu_item));
 
-        mGroupMenuItems =
-                items.declareItem(
-                        itemViewMatcher("Group " + tabOrTabs),
-                        itemDataMatcher(R.id.tab_list_editor_group_menu_item),
-                        this::doGroupTabs);
+        if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
+            mGroupWithParityMenuItem =
+                    items.declareItemToFacility(
+                            itemViewMatcher("Group " + tabOrTabs),
+                            itemDataMatcher(R.id.tab_list_editor_group_menu_item),
+                            this::doGroupTabsWithParityEnabled);
+        } else {
+            mGroupMenuItem =
+                    items.declareItemToFacility(
+                            itemViewMatcher("Group " + tabOrTabs),
+                            itemDataMatcher(R.id.tab_list_editor_group_menu_item),
+                            this::doGroupTabsWithParityDisabled);
+        }
 
         items.declareStubItem(
                 itemViewMatcher("Bookmark " + tabOrTabs),
@@ -64,21 +69,29 @@ public class HubTabListEditorAppMenu extends AppMenuFacility<HubTabSwitcherBaseS
      * @return the next state of the TabSwitcher as a Station and the newly created tab group card
      *     as a Facility.
      */
-    public Pair<HubTabSwitcherStation, HubTabSwitcherGroupCardFacility> groupTabs() {
-        return mGroupMenuItems.scrollToAndSelect();
+    public HubTabSwitcherGroupCardFacility groupTabs() {
+        assert !ChromeFeatureList.sTabGroupParityAndroid.isEnabled();
+        return mGroupMenuItem.scrollToAndSelect();
     }
 
-    /** Actual implementation of {@link #groupTabs()}. Called after scrolling if necessary. */
-    private Pair<HubTabSwitcherStation, HubTabSwitcherGroupCardFacility> doGroupTabs(
-            ItemOnScreenFacility<Pair<HubTabSwitcherStation, HubTabSwitcherGroupCardFacility>>
-                    itemOnScreen) {
-        HubTabSwitcherStation tabSwitcherAfter = new HubTabSwitcherStation();
-        HubTabSwitcherGroupCardFacility groupCard =
-                new HubTabSwitcherGroupCardFacility(
-                        tabSwitcherAfter, mListEditor.getTabIdsSelected());
-        tabSwitcherAfter.addInitialFacility(groupCard);
-        mHostStation.travelToSync(
-                tabSwitcherAfter, () -> mGroupMenuItems.getViewElement().perform(click()));
-        return Pair.create(tabSwitcherAfter, groupCard);
+    /** Factory for the result of {@link #groupTabs()}. */
+    private HubTabSwitcherGroupCardFacility doGroupTabsWithParityDisabled() {
+        return new HubTabSwitcherGroupCardFacility(mHostStation, mListEditor.getTabIdsSelected());
+    }
+
+    /**
+     * Select "Group tabs" to create a new group with the selected tabs when TAB_GROUP_PARITY is
+     * enabled.
+     *
+     * @return the "New tab group" dialog as a Facility.
+     */
+    public HubNewTabGroupDialogFacility groupTabsWithParityEnabled() {
+        assert ChromeFeatureList.sTabGroupParityAndroid.isEnabled();
+        return mGroupWithParityMenuItem.scrollToAndSelect();
+    }
+
+    /** Factory for the result of {@link #groupTabsWithParityEnabled()}. */
+    private HubNewTabGroupDialogFacility doGroupTabsWithParityEnabled() {
+        return new HubNewTabGroupDialogFacility(mHostStation, mListEditor.getTabIdsSelected());
     }
 }

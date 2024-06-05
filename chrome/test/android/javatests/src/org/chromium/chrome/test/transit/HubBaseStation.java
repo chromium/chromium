@@ -28,6 +28,7 @@ import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Station;
+import org.chromium.base.test.transit.Transition;
 import org.chromium.base.test.transit.TravelException;
 import org.chromium.base.test.transit.UiThreadCondition;
 import org.chromium.base.test.transit.ViewElement;
@@ -104,7 +105,7 @@ public abstract class HubBaseStation extends Station {
     }
 
     /** Returns the {@link ChromeTabbedActivity} for this station. */
-    protected ChromeTabbedActivity getActivity() {
+    public ChromeTabbedActivity getActivity() {
         assertSuppliersCanBeUsed();
         return mActivityElement.get();
     }
@@ -115,7 +116,7 @@ public abstract class HubBaseStation extends Station {
      * @return the {@link PageStation} that Hub returned to.
      */
     public <T extends PageStation> T leaveHubToPreviousTabViaBack(T destination) {
-        return travelToSync(destination, () -> Espresso.pressBack());
+        return travelToSync(destination, Transition.retryOption(), () -> Espresso.pressBack());
     }
 
     /**
