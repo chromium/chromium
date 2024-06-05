@@ -447,9 +447,6 @@ class AttributionDataHostManagerImpl::RegistrationContext {
 
   RegistrationContext(RegistrationContext&&) = default;
   RegistrationContext& operator=(RegistrationContext&&) = default;
-
-  bool operator==(const RegistrationContext& other) const = default;
-
   const SuitableOrigin& context_origin() const {
     return suitable_context_.context_origin();
   }
@@ -522,6 +519,15 @@ class AttributionDataHostManagerImpl::RegistrationContext {
   void SetNavigation(int64_t navigation_id) {
     CHECK(!navigation_id_.has_value());
     navigation_id_.emplace(navigation_id);
+  }
+
+  // Contexts are considered equivalent if their properties are equals except
+  // for those related to the registration channel.
+  bool IsEquivalent(const RegistrationContext& other) const {
+    // Ignores `devtools_request_id_`, `registration_eligibility_` and
+    // `method_`.
+    return suitable_context_ == other.suitable_context_ &&
+           navigation_id_ == other.navigation_id_;
   }
 
  private:
@@ -1004,10 +1010,10 @@ class AttributionDataHostManagerImpl::OsRegistrationsBuffer {
       context_ = registration_context;
     } else {
       // TODO(anthonygarant): Convert to CHECK after validating that the
-      // contexts are always equal.
+      // contexts are always equivalent.
       base::UmaHistogramBoolean(
           "Conversions.OsRegistrationsBufferWithSameContext",
-          context_ == registration_context);
+          context_->IsEquivalent(registration_context));
     }
 
     CHECK_LE(registrations_.size(), kMaxBufferSize);

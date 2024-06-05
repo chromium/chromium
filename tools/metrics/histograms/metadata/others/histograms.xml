@@ -3694,9 +3694,12 @@ chromium-metrics-reviews@google.com.
     result, all registrations tied to a navigation are buffered before
     delegating them to the OS.
 
-    Registrations buffered in one buffer should all have the same context. This
-    histogram emits a boolean indicating if the context match that of the first
-    buffered registration.
+    Registrations buffered in one buffer should all have equivalent contexts.
+    This histogram emits a boolean indicating if the context is considered
+    equivalent to the first buffered registration.
+
+    Contexts are considered equivalent if their properties are equal except for
+    those influenced by the registration method.
   </summary>
 </histogram>
 

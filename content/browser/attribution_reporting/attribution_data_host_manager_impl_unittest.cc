@@ -3295,7 +3295,7 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
           context_origin,
           /*is_nested_within_fenced_frame=*/false, kFrameId,
           /*last_navigation_id=*/1234),
-      RegistrationEligibility::kSource, attribution_src_token,
+      RegistrationEligibility::kSourceOrTrigger, attribution_src_token,
       kDevtoolsRequestId);
   auto headers_1 = base::MakeRefCounted<net::HttpResponseHeaders>("");
   headers_1->SetHeader(kAttributionReportingRegisterOsSourceHeader,
@@ -3356,6 +3356,9 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
   histograms.ExpectBucketCount(kRegistrationMethod, 0, 1);
   // Even if OS registrations are buffered, each data received should record.
   histograms.ExpectBucketCount(kRegistrationMethod, 3, 2);
+
+  histograms.ExpectUniqueSample(
+      "Conversions.OsRegistrationsBufferWithSameContext", true, 2);
 }
 
 TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
