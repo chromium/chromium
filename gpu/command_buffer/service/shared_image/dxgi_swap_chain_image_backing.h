@@ -99,6 +99,7 @@ class GPU_GLES2_EXPORT DXGISwapChainImageBacking
   friend class DawnRepresentationDXGISwapChain;
   wgpu::Texture BeginAccessDawn(const wgpu::Device& device,
                                 wgpu::TextureUsage usage,
+                                wgpu::TextureUsage internal_usage,
                                 const gfx::Rect& update_rect);
   void EndAccessDawn(const wgpu::Device& device, wgpu::Texture texture);
 

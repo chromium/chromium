@@ -754,6 +754,7 @@ wgpu::Texture D3DImageBacking::BeginAccessDawn(
     const wgpu::Device& device,
     wgpu::BackendType backend_type,
     wgpu::TextureUsage wgpu_usage,
+    wgpu::TextureUsage wgpu_internal_usage,
     std::vector<wgpu::TextureFormat> view_formats) {
   const bool write_access = wgpu_usage & (wgpu::TextureUsage::CopyDst |
                                           wgpu::TextureUsage::StorageBinding |
@@ -806,8 +807,8 @@ wgpu::Texture D3DImageBacking::BeginAccessDawn(
   desc.signaledValues = signaled_values.data();
   desc.nextInChain = &swapchain_begin_state;
 
-  wgpu::Texture texture =
-      CreateDawnSharedTexture(shared_texture_memory, wgpu_usage, view_formats);
+  wgpu::Texture texture = CreateDawnSharedTexture(
+      shared_texture_memory, wgpu_usage, wgpu_internal_usage, view_formats);
   if (!texture || !shared_texture_memory.BeginAccess(texture, &desc)) {
     LOG(ERROR) << "Failed to begin access and produce WGPUTexture";
     return nullptr;

@@ -28,6 +28,7 @@ bool ClearD3D11TextureToColor(
 wgpu::Texture CreateDawnSharedTexture(
     const wgpu::SharedTextureMemory& shared_texture_memory,
     wgpu::TextureUsage usage,
+    wgpu::TextureUsage internal_usage,
     base::span<wgpu::TextureFormat> view_formats);
 
 wgpu::SharedTextureMemory CreateDawnSharedTextureMemory(

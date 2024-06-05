@@ -121,6 +121,7 @@ class GPU_GLES2_EXPORT D3DImageBacking final
   wgpu::Texture BeginAccessDawn(const wgpu::Device& device,
                                 wgpu::BackendType backend_type,
                                 wgpu::TextureUsage usage,
+                                wgpu::TextureUsage internal_usage,
                                 std::vector<wgpu::TextureFormat> view_formats);
   void EndAccessDawn(const wgpu::Device& device, wgpu::Texture texture);
 

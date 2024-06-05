@@ -112,6 +112,7 @@ class GPU_GLES2_EXPORT DCompSurfaceImageBacking
   friend class DCompSurfaceDawnImageRepresentation;
   wgpu::Texture BeginDrawDawn(const wgpu::Device& device,
                               const wgpu::TextureUsage usage,
+                              const wgpu::TextureUsage internal_usage,
                               const gfx::Rect& update_rect);
   void EndDrawDawn(const wgpu::Device& device, wgpu::Texture texture);
 

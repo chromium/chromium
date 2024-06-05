@@ -124,7 +124,8 @@ wgpu::Texture DCompSurfaceDawnImageRepresentation::BeginAccess(
     const gfx::Rect& update_rect) {
   DCompSurfaceImageBacking* dcomp_backing =
       static_cast<DCompSurfaceImageBacking*>(backing());
-  texture_ = dcomp_backing->BeginDrawDawn(device_, usage, update_rect);
+  texture_ =
+      dcomp_backing->BeginDrawDawn(device_, usage, internal_usage, update_rect);
   return texture_;
 }
 

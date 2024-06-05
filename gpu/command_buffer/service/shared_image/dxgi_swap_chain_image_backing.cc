@@ -400,6 +400,7 @@ DXGISwapChainImageBacking::ProduceSkiaGraphite(
 wgpu::Texture DXGISwapChainImageBacking::BeginAccessDawn(
     const wgpu::Device& device,
     wgpu::TextureUsage usage,
+    wgpu::TextureUsage internal_usage,
     const gfx::Rect& update_rect) {
   DidBeginWriteAccess(update_rect);
 
@@ -411,8 +412,9 @@ wgpu::Texture DXGISwapChainImageBacking::BeginAccessDawn(
   desc.initialized = true;
   desc.nextInChain = &swapchain_begin_state;
 
-  wgpu::Texture texture = CreateDawnSharedTexture(shared_texture_memory_, usage,
-                                                  /*view_formats=*/{});
+  wgpu::Texture texture =
+      CreateDawnSharedTexture(shared_texture_memory_, usage, internal_usage,
+                              /*view_formats=*/{});
   if (!texture || !shared_texture_memory_.BeginAccess(texture, &desc)) {
     LOG(ERROR) << "Failed to begin access and produce WGPUTexture";
     return nullptr;

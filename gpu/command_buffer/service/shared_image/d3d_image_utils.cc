@@ -9,6 +9,7 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/config/gpu_finch_features.h"
 
 using dawn::native::d3d11::SharedTextureMemoryD3D11Texture2DDescriptor;
 
@@ -42,6 +43,7 @@ bool ClearD3D11TextureToColor(
 wgpu::Texture CreateDawnSharedTexture(
     const wgpu::SharedTextureMemory& shared_texture_memory,
     wgpu::TextureUsage usage,
+    wgpu::TextureUsage internal_usage,
     base::span<wgpu::TextureFormat> view_formats) {
   wgpu::SharedTextureMemoryProperties properties;
   shared_texture_memory.GetProperties(&properties);
@@ -58,11 +60,16 @@ wgpu::Texture CreateDawnSharedTexture(
       static_cast<uint32_t>(view_formats.size());
   wgpu_texture_desc.viewFormats = view_formats.data();
 
-  // We need to have internal usages of CopySrc for copies,
-  // RenderAttachment for clears, and TextureBinding for copyTextureForBrowser
-  // if texture format allows these usages.
   wgpu::DawnTextureInternalUsageDescriptor wgpu_internal_usage_desc;
-  wgpu_internal_usage_desc.internalUsage = properties.usage;
+  if (base::FeatureList::IsEnabled(
+          features::kDawnSIRepsUseClientProvidedInternalUsages)) {
+    wgpu_internal_usage_desc.internalUsage = internal_usage;
+  } else {
+    // We need to have internal usages of CopySrc for copies,
+    // RenderAttachment for clears, and TextureBinding for copyTextureForBrowser
+    // if texture format allows these usages.
+    wgpu_internal_usage_desc.internalUsage = properties.usage;
+  }
   wgpu_texture_desc.nextInChain = &wgpu_internal_usage_desc;
 
   return shared_texture_memory.CreateTexture(&wgpu_texture_desc);
