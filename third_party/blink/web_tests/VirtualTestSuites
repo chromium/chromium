@@ -203,6 +203,16 @@
     "expires": "Jan 2, 2025"
   },
   {
+    "prefix": "attribution-reporting-aggregatable-debug",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": ["external/wpt/attribution-reporting/aggregatable-debug"],
+    "exclusive_tests": "ALL",
+    "args": ["--enable-features=AttributionAggregatableDebugReporting",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
+    "owners": ["linnan@chromium.org"],
+    "expires": "Dec 3, 2024"
+  },
+  {
     "prefix": "off-main-thread-css-paint",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/css/css-paint-api",

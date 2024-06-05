@@ -53,7 +53,7 @@ attribution_reporting_promise_test(async t => {
   const aggregation_service_payload = report.aggregation_service_payloads[0];
   assert_own_property(aggregation_service_payload, 'debug_cleartext_payload');
 
-  const debugPayload = await pollAggregatableDebugReports();
+  const debugPayload = await pollAttributionSuccessDebugAggregatableReports();
   assert_equals(debugPayload.reports.length, 1);
   const debugReport = JSON.parse(debugPayload.reports[0].body);
   assert_equals(debugReport.source_debug_key, expectedSourceDebugKey);
