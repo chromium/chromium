@@ -2104,7 +2104,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
     if (!currentlyEnabled) {
       this.installVoicePackIfPossible(
-          toggledLanguage, /* onlyInstallExactGoogleLocaleMatch=*/ true);
+          toggledLanguage, /* onlyInstallExactGoogleLocaleMatch=*/ true,
+          /* retryIfPreviousInstallFailed= */ true);
     } else {
       // If the language has been deselected, remove the language from the list
       // of language packs to download
@@ -2284,7 +2285,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
     for (const lang of this.enabledLanguagesInPref) {
       this.installVoicePackIfPossible(
-          lang, /* onlyInstallExactGoogleLocaleMatch=*/ true);
+          lang, /* onlyInstallExactGoogleLocaleMatch=*/ true,
+          /* retryIfPreviousInstallFailed= */ false);
     }
   }
 
@@ -2506,7 +2508,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // Don't check for Google locales when the language has changed.
     this.installVoicePackIfPossible(
         this.speechSynthesisLanguage,
-        /* onlyInstallExactGoogleLocaleMatch=*/ false);
+        /* onlyInstallExactGoogleLocaleMatch=*/ false,
+        /* retryIfPreviousInstallFailed= */ false);
   }
 
   // Include parameters in order to force a re-render whenever the values
@@ -2527,7 +2530,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   // 4) Upon response, if we see the voice is not installed and that it's in
   // installVoicePackIfPossible, then we trigger an install request
   private installVoicePackIfPossible(
-      langOrLocale: string, onlyInstallExactGoogleLocaleMatch: boolean) {
+      langOrLocale: string, onlyInstallExactGoogleLocaleMatch: boolean,
+      retryIfPreviousInstallFailed: boolean) {
     if (!chrome.readingMode.isLanguagePackDownloadingEnabled) {
       return;
     }
@@ -2553,13 +2557,28 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
     const statusForLang =
         this.voicePackInstallStatusServerResponses[langCodeForVoicePackManager];
+
     if (!statusForLang ||
-        (statusForLang.code ===
-         VoicePackServerStatusSuccessCode.NOT_INSTALLED)) {
+        (isVoicePackStatusSuccess(statusForLang) &&
+         statusForLang.code ===
+             VoicePackServerStatusSuccessCode.NOT_INSTALLED)) {
       this.languagesForVoiceDownloads.add(langCodeForVoicePackManager);
       // Inquire if the voice pack is downloaded. If not, it'll trigger a
       // download when we get the response in updateVoicePackStatus().
       this.sendGetVoicePackInfoRequest(langCodeForVoicePackManager);
+    } else if (
+        retryIfPreviousInstallFailed && isVoicePackStatusError(statusForLang)) {
+      // If the previous install attempt failed (e.g. due to no internet
+      // connection), the PackManager sends a failure for subsequent GetInfo
+      // requests. Therefore, we need to bypass our normal flow of calling
+      // GetInfo to see if the voice is available to install, and just call
+      // sendInstallVoicePackRequest directly
+      this.setVoicePackLocalStatus_(
+          langCodeForVoicePackManager,
+          VoiceClientSideStatusCode.SENT_INSTALL_REQUEST_ERROR_RETRY);
+
+      chrome.readingMode.sendInstallVoicePackRequest(
+          langCodeForVoicePackManager);
     }
   }
 

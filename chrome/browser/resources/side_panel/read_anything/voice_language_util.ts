@@ -24,13 +24,20 @@ interface VoicePackServerResponseParsingError {
   code: 'ParseError';
 }
 
-export function isVoicePackStatusSuccess(status: VoicePackStatus):
+export function isVoicePackStatusSuccess(status?: VoicePackStatus):
     status is VoicePackServerResponseSuccess {
+  if (status === undefined) {
+    return false;
+  }
   return status.id === STATUS_SUCCESS;
 }
 
-export function isVoicePackStatusError(status: VoicePackStatus):
+export function isVoicePackStatusError(status?: VoicePackStatus):
     status is VoicePackServerResponseError {
+  if (status === undefined) {
+    return false;
+  }
+
   return status.id === STATUS_FAILURE;
 }
 
@@ -55,8 +62,10 @@ export enum VoicePackServerStatusErrorCode {
 
 // Our client-side representation tracking voice-pack states.
 export enum VoiceClientSideStatusCode {
-  NOT_INSTALLED,              // Available to be downloaded but not installed
-  SENT_INSTALL_REQUEST,       // We sent an install request
+  NOT_INSTALLED,         // Available to be downloaded but not installed
+  SENT_INSTALL_REQUEST,  // We sent an install request
+  SENT_INSTALL_REQUEST_ERROR_RETRY,  // We sent an install request retrying a
+                                     // previously failed download
   INSTALLED_AND_UNAVAILABLE,  // The server says voice is on disk, but it's not
                               // available to the local speechSynthesis API yet
   AVAILABLE,  // The voice is installed and available to be used by the local

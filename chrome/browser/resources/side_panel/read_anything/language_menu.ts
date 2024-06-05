@@ -261,6 +261,7 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
     // TODO(b/300259625): Show more error messages.
     switch (notification) {
       case VoiceClientSideStatusCode.SENT_INSTALL_REQUEST:
+      case VoiceClientSideStatusCode.SENT_INSTALL_REQUEST_ERROR_RETRY:
       case VoiceClientSideStatusCode.INSTALLED_AND_UNAVAILABLE:
         return 'readingModeLanguageMenuDownloading';
       case VoiceClientSideStatusCode.ERROR_INSTALLING:

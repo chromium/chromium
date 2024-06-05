@@ -7,7 +7,7 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {BrowserProxy} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {ReadAnythingElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {defaultFontName, FONT_EVENT, FONT_SIZE_EVENT, HIGHLIGHT_TOGGLE_EVENT, LANGUAGE_TOGGLE_EVENT, LETTER_SPACING_EVENT, LINE_SPACING_EVENT, NEXT_GRANULARITY_EVENT, PLAY_PAUSE_EVENT, PREVIOUS_GRANULARITY_EVENT, RATE_EVENT, THEME_EVENT} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {defaultFontName, FONT_EVENT, FONT_SIZE_EVENT, HIGHLIGHT_TOGGLE_EVENT, LANGUAGE_TOGGLE_EVENT, LETTER_SPACING_EVENT, LINE_SPACING_EVENT, NEXT_GRANULARITY_EVENT, PLAY_PAUSE_EVENT, PREVIOUS_GRANULARITY_EVENT, RATE_EVENT, THEME_EVENT, VoiceClientSideStatusCode, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {emitEvent, suppressInnocuousErrors} from './common.js';
@@ -250,6 +250,70 @@ suite('AppReceivesToolbarChanges', () => {
       assertFalse(chrome.readingMode.getLanguagesEnabledInPref()
         .includes(firstLanguage));
     });
+
+    suite('with language downloading enabled', () => {
+      let sentInstallRequestFor: string;
+
+      setup(() => {
+        chrome.readingMode.isLanguagePackDownloadingEnabled = true;
+
+        sentInstallRequestFor = '';
+        // Monkey patch sendInstallVoicePackRequest() to spy on the method
+        chrome.readingMode.sendInstallVoicePackRequest = (language) => {
+          sentInstallRequestFor = language;
+        };
+      });
+
+      suite('when the previous install of the language failed', () => {
+        const lang = 'en-us';
+        setup(() => {
+          // @ts-ignore
+          app.setVoicePackServerStatus_(lang, {
+            id: 'Unsuccessful response',
+            code: VoicePackServerStatusErrorCode.OTHER,
+          });
+        });
+
+        test(
+            'directly installs lang without usual protocol of sending status request first',
+            () => {
+              emitLanguageToggle(lang);
+
+              assertEquals(sentInstallRequestFor, lang);
+              assertEquals(
+                  // @ts-ignore
+                  app.getVoicePackLocalStatus_(lang),
+                  VoiceClientSideStatusCode.SENT_INSTALL_REQUEST_ERROR_RETRY);
+            });
+      });
+
+      suite('when there is no status for lang', () => {
+        test('does not directly send install request', () => {
+          emitLanguageToggle('en-us');
+
+          assertEquals(sentInstallRequestFor, '');
+        });
+      });
+
+
+      suite('when the language status is uninstalled', () => {
+        const lang = 'en-us';
+        setup(() => {
+          // @ts-ignore
+          app.setVoicePackServerStatus_(lang, {
+            id: 'Successful response',
+            code: VoicePackServerStatusSuccessCode.NOT_INSTALLED,
+          });
+        });
+
+        test('does not directly install lang', () => {
+          emitLanguageToggle(lang);
+
+          assertEquals(sentInstallRequestFor, '');
+        });
+      });
+    });
+
   });
 
   suite('on speech rate change', () => {
