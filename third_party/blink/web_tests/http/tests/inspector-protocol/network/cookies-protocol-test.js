@@ -12,7 +12,7 @@
       if (cookie.partitionKeyOpaque)
         suffix += `, partitionKey: <opaque>`;
       else if (cookie.partitionKey)
-        suffix += `, partitionKey: ${cookie.partitionKey}`;
+      suffix += `, partitionKey: ${JSON.stringify(cookie.partitionKey)}`;
       if (cookie.secure)
         suffix += `, secure`;
       if (cookie.httpOnly)
@@ -87,7 +87,8 @@
   function listenForResponsePartitionKey(event) {
     const partitionKey = event.params.cookiePartitionKeyOpaque ?
       '<opaque>' : event.params.cookiePartitionKey;
-    testRunner.log('Current cookie partition key: ' + partitionKey);
+    testRunner.log(
+        'Current cookie partition key: ' + JSON.stringify(partitionKey));
   }
 
   async function getPartitionedCookies() {
@@ -262,9 +263,39 @@
     getPartitionedCookies,
 
     async function setPartitionedCookie() {
-      await setCookie({url: 'https://devtools.test:8443', secure: true, name: '__Host-foo', value: 'bar', partitionKey: 'https://example.test:8443', sameSite: 'None'});
-      await setCookie({url: 'https://example.test:8443', secure: true, name: '__Host-foo', value: 'bar', partitionKey: 'https://devtools.test:8443', sameSite: 'None'});
-      await setCookie({url: 'https://example.test:8443', secure: true, name: '__Host-foo', value: 'bar', partitionKey: 'https://notinset.test:8443', sameSite: 'None'});
+      await setCookie({
+        url: 'https://devtools.test:8443',
+        secure: true,
+        name: '__Host-foo',
+        value: 'bar',
+        partitionKey: {
+          topLevelSite: 'https://devtools.test:8443',
+          hasCrossSiteAncestor: false
+        },
+        sameSite: 'None'
+      });
+      await setCookie({
+        url: 'https://example.test:8443',
+        secure: true,
+        name: '__Host-foo',
+        value: 'bar',
+        partitionKey: {
+          topLevelSite: 'https://devtools.test:8443',
+          hasCrossSiteAncestor: false
+        },
+        sameSite: 'None'
+      });
+      await setCookie({
+        url: 'https://example.test:8443',
+        secure: true,
+        name: '__Host-foo',
+        value: 'bar',
+        partitionKey: {
+          topLevelSite: 'https://notinset.test:8443',
+          hasCrossSiteAncestor: false
+        },
+        sameSite: 'None'
+      });
     },
 
     deleteAllCookies,
@@ -272,11 +303,38 @@
 
     async function partitionedAndUnpartitionedCookiesWithSameName() {
       await setCookie({url: 'https://devtools.test:8443', secure: true, name: '__Host-foo', value: 'bar', sameSite: 'None'});
-      await setCookie({url: 'https://devtools.test:8443', secure: true, name: '__Host-foo', value: 'bar', partitionKey: 'https://example.test', sameSite: 'None'});
-      await setCookie({url: 'https://devtools.test:8443', secure: true, name: '__Host-foo', value: 'bar', partitionKey: 'https://notinset.test', sameSite: 'None'});
+      await setCookie({
+        url: 'https://devtools.test:8443',
+        secure: true,
+        name: '__Host-foo',
+        value: 'bar',
+        partitionKey:
+            {topLevelSite: 'https://example.test', hasCrossSiteAncestor: false},
+        sameSite: 'None'
+      });
+      await setCookie({
+        url: 'https://devtools.test:8443',
+
+
+        secure: true,
+        name: '__Host-foo',
+        value: 'bar',
+        partitionKey: {
+          topLevelSite: 'https://notinset.test',
+          hasCrossSiteAncestor: false
+        },
+
+        sameSite: 'None'
+      });
 
       await deleteCookie({url: 'https://devtools.test:8443', name: '__Host-foo'});
-      await deleteCookie({url: 'https://devtools.test:8443', name: '__Host-foo', partitionKey: 'https://example.test'});
+      await deleteCookie({
+        url: 'https://devtools.test:8443',
+        name: '__Host-foo',
+        partitionKey:
+            {topLevelSite: 'https://example.test', hasCrossSiteAncestor: false},
+
+      });
     },
 
     deleteAllCookies,
@@ -284,12 +342,86 @@
 
     async function setPartitionedCookies() {
       await setCookies([
-        {url: 'https://devtools.test:8443', secure: true, name: '__Host-foo', value: 'bar', partitionKey: 'https://example.test:8443', sameSite: 'None'},
-        {url: 'https://example.test:8443', secure: true, name: '__Host-foo', value: 'bar', partitionKey: 'https://devtools.test:8443', sameSite: 'None'},
-        {url: 'https://example.test:8443', secure: true, name: '__Host-foo', value: 'bar', partitionKey: 'https://notinset.test:8443', sameSite: 'None'}
+        {
+          url: 'https://devtools.test:8443',
+          secure: true,
+          name: '__Host-foo',
+          value: 'bar',
+          partitionKey: {
+            topLevelSite: 'https://example.test:8443',
+            hasCrossSiteAncestor: false
+          },
+
+          sameSite: 'None'
+        },
+        {
+          url: 'https://example.test:8443',
+          secure: true,
+          name: '__Host-foo',
+          value: 'bar',
+          partitionKey: {
+            topLevelSite: 'https://devtools.test:8443',
+            hasCrossSiteAncestor: false
+          },
+
+          sameSite: 'None'
+        },
+        {
+          url: 'https://example.test:8443',
+          secure: true,
+          name: '__Host-foo',
+          value: 'bar',
+          partitionKey: {
+            topLevelSite: 'https://notinset.test:8443',
+            hasCrossSiteAncestor: false
+          },
+
+          sameSite: 'None'
+        }
       ]);
     },
 
+    getPartitionedCookies,
+    deleteAllCookies,
+
+    async function setPartitionedCookiesWithAncestorChainBitVals() {
+      await setCookies([
+        {
+          url: 'https://acbDefaultFalse.test:8443',
+          secure: true,
+          name: '__Host-foo',
+          value: 'bar',
+          partitionKey: {
+            topLevelSite: 'https://example.test:8443',
+            hasCrossSiteAncestor: false
+          },
+          sameSite: 'None'
+        },
+        {
+          url: 'https://acbFalse.test:8443',
+          secure: true,
+          name: '__Host-foo',
+          value: 'bar',
+          partitionKey: {
+            topLevelSite: 'https://example.test:8443',
+            hasCrossSiteAncestor: false
+          },
+          sameSite: 'None'
+        },
+        {
+          url: 'https://acbTrue.test:8443',
+          secure: true,
+          name: '__Host-foo',
+          value: 'bar',
+          partitionKey: {
+            topLevelSite: 'https://devtools.test:8443',
+            hasCrossSiteAncestor: true
+          },
+          sameSite: 'None'
+        }
+      ]);
+      logCookies((await dp.Network.getCookies()).result);
+    },
     getPartitionedCookies,
     deleteAllCookies,
 
