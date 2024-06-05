@@ -171,6 +171,10 @@ class FetcherClient {
     base::RunLoop().RunUntilIdle();
   }
 
+  URLRequestContext* url_request_context() {
+    return url_request_context_.get();
+  }
+
   TestCompletionCallback callback_;
   std::unique_ptr<URLRequestContext> url_request_context_;
   std::unique_ptr<MockDhcpPacFileAdapterFetcher> fetcher_;
@@ -297,7 +301,7 @@ class MockDhcpRealFetchPacFileAdapterFetcher
     return PacFileFetcherImpl::Create(url_request_context_);
   }
 
-  raw_ptr<URLRequestContext, DanglingUntriaged> url_request_context_;
+  raw_ptr<URLRequestContext> url_request_context_;
 };
 
 TEST(DhcpPacFileAdapterFetcher, MockDhcpRealFetch) {
@@ -311,9 +315,8 @@ TEST(DhcpPacFileAdapterFetcher, MockDhcpRealFetch) {
   GURL configured_url = test_server.GetURL("/downloadable.pac");
 
   FetcherClient client;
-  auto url_request_context = CreateTestURLRequestContextBuilder()->Build();
   client.fetcher_ = std::make_unique<MockDhcpRealFetchPacFileAdapterFetcher>(
-      url_request_context.get(),
+      client.url_request_context(),
       base::ThreadPool::CreateTaskRunner(
           {base::MayBlock(),
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN}));
