@@ -290,7 +290,7 @@ inline constexpr char kGoogleAccountActivityControlsURLInPrivacyGuide[] =
 
 // URL of the 'Linked services' section of the privacy settings page.
 inline constexpr char kGoogleAccountLinkedServicesURL[] =
-    "https://myaccount.google.com/linked-services";
+    "https://myaccount.google.com/linked-services?utm_source=chrome_s";
 
 // URL of the Google Account.
 inline constexpr char kGoogleAccountURL[] = "https://myaccount.google.com";

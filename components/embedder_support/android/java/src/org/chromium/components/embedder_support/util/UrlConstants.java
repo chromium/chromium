@@ -89,7 +89,7 @@ public class UrlConstants {
             "https://myaccount.google.com/activitycontrols/search";
 
     public static final String GOOGLE_ACCOUNT_LINKED_SERVICES_URL =
-            "https://myaccount.google.com/linked-services";
+            "https://myaccount.google.com/linked-services?utm_source=chrome_s";
 
     public static final String GOOGLE_ACCOUNT_ACTIVITY_CONTROLS_FROM_PG_URL =
             "https://myaccount.google.com/activitycontrols/search"
