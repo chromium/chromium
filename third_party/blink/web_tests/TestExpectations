@@ -7536,3 +7536,5 @@ crbug.com/40899458 [ Linux ] virtual/gpu/fast/canvas/OffscreenCanvas-copyImage.h
 # Gardener 2024-06-05
 crbug.com/325323464 [ Mac13 ] http/tests/navigation/back-to-redirect-with-frame.php [ Pass Timeout ]
 crbug.com/345118873 external/wpt/webdriver/tests/classic/get_active_element/get.py [ Failure ]
+
+crbug.com/331836147 [ Debug Linux ] virtual/threaded/external/wpt/css/css-scroll-snap/snap-after-relayout/multiple-aligned-targets/prefer-first-in-tree-order.html [ Failure Pass ]
