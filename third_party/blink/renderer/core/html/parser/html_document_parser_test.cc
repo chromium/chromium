@@ -104,8 +104,8 @@ TEST_P(HTMLDocumentParserTest, StopThenPrepareToStopShouldNotCrash) {
   auto& document = To<HTMLDocument>(GetDocument());
   DocumentParser* parser = CreateParser(document);
   ScopedParserDetacher detacher(parser);
-  const char kBytes[] = "<html>";
-  parser->AppendBytes(kBytes, sizeof(kBytes));
+  const auto kBytes = base::span_from_cstring("<html>");
+  parser->AppendBytes(kBytes.data(), kBytes.size());
   // These methods are not supposed to be called one after the other, but in
   // practice it can happen (e.g. if navigation is aborted).
   parser->StopParsing();
@@ -117,8 +117,8 @@ TEST_P(HTMLDocumentParserTest, HasNoPendingWorkAfterStopParsing) {
   HTMLDocumentParser* parser = CreateParser(document);
   DocumentParser* control_parser = static_cast<DocumentParser*>(parser);
   ScopedParserDetacher detacher(control_parser);
-  const char kBytes[] = "<html>";
-  control_parser->AppendBytes(kBytes, sizeof(kBytes));
+  const auto kBytes = base::span_from_cstring("<html>");
+  control_parser->AppendBytes(kBytes.data(), kBytes.size());
   control_parser->StopParsing();
   EXPECT_FALSE(parser->HasPendingWorkScheduledForTesting());
 }
@@ -128,11 +128,11 @@ TEST_P(HTMLDocumentParserTest, HasNoPendingWorkAfterStopParsingThenAppend) {
   HTMLDocumentParser* parser = CreateParser(document);
   DocumentParser* control_parser = static_cast<DocumentParser*>(parser);
   ScopedParserDetacher detacher(control_parser);
-  const char kBytes1[] = "<html>";
-  control_parser->AppendBytes(kBytes1, sizeof(kBytes1));
+  const auto kBytes1 = base::span_from_cstring("<html>");
+  control_parser->AppendBytes(kBytes1.data(), kBytes1.size());
   control_parser->StopParsing();
-  const char kBytes2[] = "<head>";
-  control_parser->AppendBytes(kBytes2, sizeof(kBytes2));
+  const auto kBytes2 = base::span_from_cstring("<head>");
+  control_parser->AppendBytes(kBytes2.data(), kBytes2.size());
   EXPECT_FALSE(parser->HasPendingWorkScheduledForTesting());
 }
 
@@ -140,8 +140,8 @@ TEST_P(HTMLDocumentParserTest, HasNoPendingWorkAfterDetach) {
   auto& document = To<HTMLDocument>(GetDocument());
   HTMLDocumentParser* parser = CreateParser(document);
   DocumentParser* control_parser = static_cast<DocumentParser*>(parser);
-  const char kBytes[] = "<html>";
-  control_parser->AppendBytes(kBytes, sizeof(kBytes));
+  const auto kBytes = base::span_from_cstring("<html>");
+  control_parser->AppendBytes(kBytes.data(), kBytes.size());
   control_parser->Detach();
   EXPECT_FALSE(parser->HasPendingWorkScheduledForTesting());
 }
@@ -155,8 +155,8 @@ TEST_P(HTMLDocumentParserTest, AppendPrefetch) {
   HTMLDocumentParser* parser = CreateParser(document);
   ScopedParserDetacher detacher(parser);
 
-  const char kBytes[] = "<httttttt";
-  parser->AppendBytes(kBytes, sizeof(kBytes));
+  const auto kBytes = base::span_from_cstring("<httttttt");
+  parser->AppendBytes(kBytes.data(), kBytes.size());
   // The bytes are forwarded to the preload scanner, not to the tokenizer.
   HTMLParserScriptRunnerHost* script_runner_host =
       parser->AsHTMLParserScriptRunnerHostForTesting();
@@ -178,8 +178,8 @@ TEST_P(HTMLDocumentParserTest, AppendNoPrefetch) {
   HTMLDocumentParser* parser = CreateParser(document);
   ScopedParserDetacher detacher(parser);
 
-  const char kBytes[] = "<htttttt";
-  parser->AppendBytes(kBytes, sizeof(kBytes));
+  const auto kBytes = base::span_from_cstring("<htttttt");
+  parser->AppendBytes(kBytes.data(), kBytes.size());
   test::RunPendingTasks();
   // The bytes are forwarded to the tokenizer.
   HTMLParserScriptRunnerHost* script_runner_host =
@@ -305,8 +305,8 @@ TEST_F(HTMLDocumentParserProcessImmediatelyTest, FirstChunk) {
   auto& document = To<HTMLDocument>(GetDocument());
   HTMLDocumentParser* parser = CreateParser(document);
   ScopedParserDetacher detacher(parser);
-  const char kBytes[] = "<htttttt";
-  parser->AppendBytes(kBytes, sizeof(kBytes));
+  const auto kBytes = base::span_from_cstring("<htttttt");
+  parser->AppendBytes(kBytes.data(), kBytes.size());
   // Because kProcessHtmlDataImmediatelyFirstChunk is set,
   // DidPumpTokenizerForTesting() should be true.
   EXPECT_TRUE(parser->DidPumpTokenizerForTesting());
@@ -324,14 +324,14 @@ TEST_F(HTMLDocumentParserProcessImmediatelyTest, SecondChunk) {
   auto& document = To<HTMLDocument>(GetDocument());
   HTMLDocumentParser* parser = CreateParser(document);
   ScopedParserDetacher detacher(parser);
-  const char kBytes[] = "<div><div><div>";
-  parser->AppendBytes(kBytes, sizeof(kBytes) - 1);
+  const auto kBytes = base::span_from_cstring("<div><div><div>");
+  parser->AppendBytes(kBytes.data(), kBytes.size());
   // The first chunk should not have been processed yet (it was scheduled).
   EXPECT_FALSE(parser->DidPumpTokenizerForTesting());
   test::RunPendingTasks();
   EXPECT_TRUE(parser->DidPumpTokenizerForTesting());
   EXPECT_EQ(1u, parser->GetChunkCountForTesting());
-  parser->AppendBytes(kBytes, sizeof(kBytes) - 1);
+  parser->AppendBytes(kBytes.data(), kBytes.size());
   // As kProcessHtmlDataImmediatelySubsequentChunks is true, the second chunk
   // should be processed immediately.
   EXPECT_EQ(2u, parser->GetChunkCountForTesting());
@@ -351,8 +351,8 @@ TEST_F(HTMLDocumentParserProcessImmediatelyTest, FirstChunkChildFrame) {
       ConfigureWebViewHelperForChildFrameAndCreateParser(web_view_helper);
   ASSERT_TRUE(parser);
   ScopedParserDetacher detacher(parser);
-  const char kBytes[] = "<div><div><div>";
-  parser->AppendBytes(kBytes, sizeof(kBytes) - 1);
+  const auto kBytes = base::span_from_cstring("<div><div><div>");
+  parser->AppendBytes(kBytes.data(), kBytes.size());
   // The first chunk should been processed.
   EXPECT_TRUE(parser->DidPumpTokenizerForTesting());
 
@@ -372,8 +372,8 @@ TEST_F(HTMLDocumentParserProcessImmediatelyTest, FirstChunkDelayedChildFrame) {
       ConfigureWebViewHelperForChildFrameAndCreateParser(web_view_helper);
   ASSERT_TRUE(parser);
   ScopedParserDetacher detacher(parser);
-  const char kBytes[] = "<div><div><div>";
-  parser->AppendBytes(kBytes, sizeof(kBytes) - 1);
+  const auto kBytes = base::span_from_cstring("<div><div><div>");
+  parser->AppendBytes(kBytes.data(), kBytes.size());
   // The first chunk should not been processed.
   EXPECT_FALSE(parser->DidPumpTokenizerForTesting());
 
