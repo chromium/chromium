@@ -208,6 +208,7 @@ class BaseTest(unittest.TestCase):
   def _TestEndToEndRegistration(self,
                                 input_files,
                                 src_files_for_asserts_and_stubs=None,
+                                priority_java_files=None,
                                 **kwargs):
     golden_name = self._testMethodName
     options = CliOptions(is_final=True, **kwargs)
@@ -243,6 +244,13 @@ class BaseTest(unittest.TestCase):
         native_sources_file = pathlib.Path(tdir) / 'native_sources.txt'
         native_sources_file.write_text('\n'.join(native_sources))
         cmd += ['--native-sources-file', str(native_sources_file)]
+      if priority_java_files:
+        priority_java_sources = [
+            os.path.join(_JAVA_SRC_DIR, f) for f in priority_java_files
+        ]
+        priority_java_file = pathlib.Path(tdir) / 'java_priority_sources.txt'
+        priority_java_file.write_text('\n'.join(priority_java_sources))
+        cmd += ['--priority-java-sources-file', str(priority_java_file)]
 
       srcjar_path = os.path.join(tdir, 'srcjar.jar')
       cmd += ['--srcjar-path', srcjar_path]
@@ -392,6 +400,16 @@ class Tests(BaseTest):
         src_files_for_asserts_and_stubs=stubs_java_files,
         add_stubs_for_missing_native=True,
         remove_uncalled_methods=True)
+
+  def testPriorityRegistration(self):
+    input_java_files = [
+        'TinySample2.java', 'TinySample.java', 'SampleProxyEdgeCases.java'
+    ]
+    priority_java_files = ['TinySample2.java']
+    self._TestEndToEndRegistration(input_java_files,
+                                   priority_java_files=priority_java_files,
+                                   enable_jni_multiplexing=True,
+                                   use_proxy_hash=True)
 
   def testFullStubs(self):
     self._TestEndToEndRegistration(

@@ -26,6 +26,10 @@ def _add_io_args(parser, *, is_final=False, is_javap=False):
         help='Newline-separated file containing paths to .java or .jni.pickle '
         'files, taken from Java dependency tree.')
     inputs.add_argument(
+        '--priority-java-sources-file',
+        help='Same format as java-sources-file, only used by multiplexing to '
+        'pick certain methods to be the first N numbers in the switch table.')
+    inputs.add_argument(
         '--native-sources-file',
         help='Newline-separated file containing paths to .java or .jni.pickle '
         'files, taken from Native dependency tree.')

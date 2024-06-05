@@ -106,6 +106,8 @@ template("_invoke_jni_zero") {
 #   enable_native_mocks: Allow native calls using
 #     org.jni_zero.NativeMethods to be mocked in tests
 #     (optional).
+#   priority_java_targets: List of java targets that, if using multiplexing,
+#     will always be placed first in the sequential switch numbers. (optional)
 #
 # Example
 #   generate_jni_registration("chrome_jni_registration") {
@@ -130,6 +132,28 @@ template("generate_jni_registration") {
     # When apk or bundle module targets are uses, do not pull metadata from
     # their native library deps.
     walk_keys = [ "java_walk_keys" ]
+  }
+
+  _enable_jni_multiplexing = defined(invoker.enable_jni_multiplexing) &&
+                             invoker.enable_jni_multiplexing
+  if (defined(invoker.priority_java_targets)) {
+    if (_enable_jni_multiplexing) {
+      # This is intended for WebView, so we can only look at Java sources. This
+      # is becuase WebView's java is a strict subset of it's native, so we don't
+      # need to take the intersection of it's native and java.
+      _priority_java_sources_list =
+          "$target_gen_dir/$target_name.priority_javasources.txt"
+      jni_sources_list("${target_name}__priority_java_sources") {
+        deps = invoker.priority_java_targets
+        output = _priority_java_sources_list
+
+        # When apk or bundle module targets are uses, do not pull metadata from
+        # their native library deps.
+        walk_keys = [ "java_walk_keys" ]
+      }
+    } else {
+      not_needed(invoker, [ "priority_java_targets" ])
+    }
   }
 
   _invoke_jni_zero(target_name) {
@@ -161,6 +185,13 @@ template("generate_jni_registration") {
       args += [
         "--native-sources-file",
         rebase_path(_native_sources_list, root_build_dir),
+      ]
+    }
+
+    if (defined(_priority_java_sources_list)) {
+      args += [
+        "--priority-java-sources-file",
+        rebase_path(_priority_java_sources_list, root_build_dir),
       ]
     }
 
@@ -196,8 +227,6 @@ template("generate_jni_registration") {
 
     _manual_jni_registration = defined(invoker.manual_jni_registration) &&
                                invoker.manual_jni_registration
-    _enable_jni_multiplexing = defined(invoker.enable_jni_multiplexing) &&
-                               invoker.enable_jni_multiplexing
     if (_manual_jni_registration) {
       args += [ "--manual-jni-registration" ]
     }
@@ -556,6 +585,7 @@ template("native_with_jni") {
                                "module_name",
                                "namespace",
                                "remove_uncalled_jni",
+                               "priority_java_targets",
                              ])
     }
   } else {
@@ -567,6 +597,7 @@ template("native_with_jni") {
                  "module_name",
                  "namespace",
                  "remove_uncalled_jni",
+                 "priority_java_targets",
                ])
   }
 
