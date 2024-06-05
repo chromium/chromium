@@ -70,9 +70,9 @@ TEST_P(AppControlsServiceFactoryTest, IsFeatureEnabledForRegularUser) {
   TestingProfile::Builder builder;
   std::unique_ptr<Profile> profile = builder.Build();
 
-  if (IsOnDeviceAppControlsEnabled() &&
-      (IsOnDeviceAppControlsAvailableInRegion() ||
-       IsOnDeviceAppControlsForceEnabled())) {
+  if ((IsOnDeviceAppControlsAvailableInRegion() &&
+       IsOnDeviceAppControlsEnabled()) ||
+      IsOnDeviceAppControlsForceEnabled()) {
     EXPECT_TRUE(AppControlsServiceFactory::IsOnDeviceAppControlsAvailable(
         profile.get()));
   } else {

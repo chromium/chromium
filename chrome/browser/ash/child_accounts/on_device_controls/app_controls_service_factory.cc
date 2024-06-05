@@ -38,12 +38,9 @@ bool AppControlsServiceFactory::IsOnDeviceAppControlsAvailable(
     return false;
   }
 
-  if (!features::IsOnDeviceAppControlsEnabled()) {
-    return false;
-  }
-
   const std::string region = on_device_controls::GetDeviceRegionCode();
-  return on_device_controls::IsOnDeviceControlsRegion(region) ||
+  return (features::IsOnDeviceAppControlsEnabled() &&
+          on_device_controls::IsOnDeviceControlsRegion(region)) ||
          features::ForceOnDeviceAppControlsForAllRegions();
 }
 
