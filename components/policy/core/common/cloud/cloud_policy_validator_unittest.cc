@@ -283,7 +283,7 @@ TEST_F(CloudPolicyValidatorTest,
   Validate(CheckStatus(CloudPolicyValidatorBase::VALIDATION_OK));
 }
 
-TEST_F(CloudPolicyValidatorTest, SuccessfulValidationWithSHA1) {
+TEST_F(CloudPolicyValidatorTest, SuccessfulValidationWithSignatureTypeSHA1) {
   policy_.SetSignatureType(em::PolicyFetchRequest::SHA1_RSA);
   policy_.policy_data().set_policy_type(
       dm_protocol::kChromeMachineLevelUserCloudPolicyType);
@@ -296,7 +296,23 @@ TEST_F(CloudPolicyValidatorTest, SuccessfulValidationWithSHA1) {
                  std::move(validator));
 }
 
-TEST_F(CloudPolicyValidatorTest, SuccessfulValidationWithSHA256) {
+// Assume that if a policy blob does not have `policy_data_signature_type` set,
+// the blob is signed with SHA1_RSA.
+TEST_F(CloudPolicyValidatorTest, SuccessfulValidationWithMissingSignatureType) {
+  policy_.SetSignatureType(em::PolicyFetchRequest::SHA1_RSA);
+  policy_.policy_data().set_policy_type(
+      dm_protocol::kChromeMachineLevelUserCloudPolicyType);
+  policy_.Build();
+  policy_.policy().clear_policy_data_signature_type();
+  std::unique_ptr<UserCloudPolicyValidator> validator =
+      CreateValidator(policy_.GetCopy());
+  validator->ValidatePolicyType(
+      dm_protocol::kChromeMachineLevelUserCloudPolicyType);
+  ValidatePolicy(CheckStatus(CloudPolicyValidatorBase::VALIDATION_OK),
+                 std::move(validator));
+}
+
+TEST_F(CloudPolicyValidatorTest, SuccessfulValidationWithSignatureTypeSHA256) {
   policy_.SetSignatureType(em::PolicyFetchRequest::SHA256_RSA);
   policy_.policy_data().set_policy_type(
       dm_protocol::kChromeMachineLevelUserCloudPolicyType);
@@ -309,20 +325,19 @@ TEST_F(CloudPolicyValidatorTest, SuccessfulValidationWithSHA256) {
                  std::move(validator));
 }
 
-TEST_F(CloudPolicyValidatorTest,
-       FailedValidationWithSHA256WithUnsupportedPolicyType) {
-  // We will only use signature type for CBCM. Other policy type will still be
-  // verified by SHA1 until we have fully tested them.
-  // In this test, we use user `kChromeUserPolicyType` by default.
-  policy_.SetSignatureType(em::PolicyFetchRequest::SHA256_RSA);
-  policy_.policy_data().set_policy_type(
-      dm_protocol::kChromeDevicePolicyType);
+// Treat `em::PolicyFetchRequest::NONE` in `policy_data_signature_type`
+// as unsigned, which is not supported.
+TEST_F(CloudPolicyValidatorTest, FailedValidationWithSignatureTypeNONE) {
+  policy_.SetSignatureType(em::PolicyFetchRequest::SHA1_RSA);
+  policy_.policy_data().set_policy_type(dm_protocol::kChromeUserPolicyType);
   policy_.Build();
+  policy_.policy().set_policy_data_signature_type(em::PolicyFetchRequest::NONE);
   std::unique_ptr<UserCloudPolicyValidator> validator =
       CreateValidator(policy_.GetCopy());
-  validator->ValidatePolicyType(
-      dm_protocol::kChromeDevicePolicyType);
-  Validate(CheckStatus(CloudPolicyValidatorBase::VALIDATION_BAD_SIGNATURE));
+  validator->ValidatePolicyType(dm_protocol::kChromeUserPolicyType);
+  ValidatePolicy(
+      CheckStatus(CloudPolicyValidatorBase::VALIDATION_BAD_SIGNATURE),
+      std::move(validator));
 }
 
 TEST_F(CloudPolicyValidatorTest, UsernameCanonicalization) {

@@ -33,7 +33,7 @@
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "components/policy/core/common/cloud/mock_cloud_external_data_manager.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
-#include "components/policy/core/common/cloud/test/policy_builder.h"
+#include "components/policy/proto/device_management_backend.pb.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -332,16 +332,18 @@ TEST_F(CrosapiUtilTest, BrowserInitParamsContainsUserPolicy) {
   IdleServiceAsh::DisableForTesting();
   AddRegularUser(TestingProfile::kDefaultProfileUserName);
 
-  policy::UserPolicyBuilder user_policy_builder;
-  user_policy_builder.payload().mutable_userprintersallowed()->set_value(false);
-  user_policy_builder.UnsetSigningKey();
-  user_policy_builder.Build();
+  enterprise_management::CloudPolicySettings user_policies;
+  user_policies.mutable_userprintersallowed()->set_value(false);
+  auto user_policy_data = std::make_unique<enterprise_management::PolicyData>();
+  user_policies.SerializeToString(user_policy_data->mutable_policy_value());
   GetCloudPolicyStore()->set_policy_data_for_testing(
-      std::make_unique<enterprise_management::PolicyData>(
-          user_policy_builder.policy_data()));
-  std::string expected_policy_blob = user_policy_builder.GetBlob();
+      std::move(user_policy_data));
+  std::string expected_policy_blob;
+  GetCloudPolicyStore()->policy_fetch_response()->SerializeToString(
+      &expected_policy_blob);
   std::vector<uint8_t> expected_policy_bytes = std::vector<uint8_t>(
       expected_policy_blob.begin(), expected_policy_blob.end());
+
   task_environment_.RunUntilIdle();
 
   std::string actual_user_policy_blob;

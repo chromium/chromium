@@ -165,7 +165,7 @@ class PolicyBuilder {
   std::string raw_new_signing_key_signature_;
 
   enterprise_management::PolicyFetchRequest::SignatureType signature_type_ =
-      enterprise_management::PolicyFetchRequest::NONE;
+      enterprise_management::PolicyFetchRequest::SHA1_RSA;
 };
 
 // Type-parameterized PolicyBuilder extension that allows for building policy

@@ -263,7 +263,10 @@ bool CloudPolicyValidatorBase::VerifySignature(const std::string& data,
       algorithm = crypto::SignatureVerifier::RSA_PKCS1_SHA256;
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << "Invalid signature type: " << signature_type;
+      // Treat `em::PolicyFetchRequest::NONE` as unsigned blobs, which is
+      // not supported.
+      LOG(ERROR) << "Invalid signature type for verification: "
+                 << signature_type;
       return false;
   }
 
@@ -741,12 +744,7 @@ CloudPolicyValidatorBase::Status CloudPolicyValidatorBase::CheckDomain() {
 
 CloudPolicyValidatorBase::SignatureType
 CloudPolicyValidatorBase::GetSignatureType() {
-  if (!policy_->has_policy_data_signature_type() ||
-      policy_->policy_data_signature_type() == em::PolicyFetchRequest::NONE) {
-    return em::PolicyFetchRequest::SHA1_RSA;
-  }
-
-  if (policy_type_ != dm_protocol::kChromeMachineLevelUserCloudPolicyType) {
+  if (!policy_->has_policy_data_signature_type()) {
     return em::PolicyFetchRequest::SHA1_RSA;
   }
 

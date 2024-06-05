@@ -251,7 +251,9 @@ void SignData(const std::string& data,
       algorithm = crypto::SignatureCreator::SHA256;
       break;
     default:
-      algorithm = crypto::SignatureCreator::SHA1;
+      // `em::PolicyFetchRequest::NONE` indicates unsigned blobs.
+      // Crash is OK here.
+      NOTREACHED_NORETURN();
   }
 
   std::unique_ptr<crypto::SignatureCreator> signature_creator(
@@ -343,46 +345,67 @@ void PolicyBuilder::SetDefaultInitialSigningKey() {
 }
 
 void PolicyBuilder::Build() {
-  // Generate signatures if applicable.
-  std::unique_ptr<crypto::RSAPrivateKey> policy_signing_key =
-      GetNewSigningKey();
-  if (signature_type_ != em::PolicyFetchRequest::NONE) {
-    policy_.set_policy_data_signature_type(signature_type_);
+  // Start with a clean state.
+  policy_.clear_policy_data();
+  policy_.clear_policy_data_signature();
+
+  if (!policy_data_) {
+    return;
   }
-  if (policy_signing_key) {
+
+  // Serialize the policy data.
+  CHECK(policy_data_->SerializeToString(policy_.mutable_policy_data()));
+
+  // Signature type of `NONE` indicates an unsigned blob.
+  if (signature_type_ == em::PolicyFetchRequest::NONE) {
+    return;
+  }
+
+  // Rotate/install keys.
+  std::unique_ptr<crypto::RSAPrivateKey> new_signing_key = GetNewSigningKey();
+  std::unique_ptr<crypto::RSAPrivateKey> current_signing_key = GetSigningKey();
+  crypto::RSAPrivateKey* key_to_sign_policy_data_with = nullptr;
+  if (new_signing_key) {
     // Add the new public key.
     policy_.set_new_public_key(
-        ConvertPublicKeyToString(ExportPublicKey(*policy_signing_key)));
+        ConvertPublicKeyToString(ExportPublicKey(*new_signing_key)));
     policy_.set_new_public_key_verification_signature_deprecated(
         raw_new_signing_key_signature_);
 
     // Add the new public key verification data.
-    em::PublicKeyVerificationData signed_data;
+    em::PublicKeyVerificationData new_signing_key_verification_data;
 
     // Need to set as public key the key that will be used to validate the
     // policy. So, it's the new public key.
-    signed_data.set_new_public_key(
-        ConvertPublicKeyToString(ExportPublicKey(*policy_signing_key)));
-    signed_data.set_domain(kFakeDomain);
-    signed_data.set_new_public_key_version(kNewPublicKeyVersion);
-    std::string signed_data_as_string;
-    CHECK(signed_data.SerializeToString(&signed_data_as_string));
+    new_signing_key_verification_data.set_new_public_key(
+        ConvertPublicKeyToString(ExportPublicKey(*new_signing_key)));
+    new_signing_key_verification_data.set_domain(kFakeDomain);
+    new_signing_key_verification_data.set_new_public_key_version(
+        kNewPublicKeyVersion);
+    std::string new_signing_key_verification_data_as_string;
+    CHECK(new_signing_key_verification_data.SerializeToString(
+        &new_signing_key_verification_data_as_string));
 
     // Note that protobuf serialization doesn't guarantee the same output,
     // but the alternative of putting a hard-coded string here will make
     // the code less clear to read. So, we prefer to use this option with
     // the risk that in the future the signature given by this file will
     // fail.
-    policy_.set_new_public_key_verification_data(signed_data_as_string);
-    std::string signature_as_string = GetPublicKeyVerificationDataSignature();
-    policy_.set_new_public_key_verification_data_signature(signature_as_string);
+    policy_.set_new_public_key_verification_data(
+        new_signing_key_verification_data_as_string);
+    std::string new_signing_key_verification_data_signature =
+        GetPublicKeyVerificationDataSignature();
+    policy_.set_new_public_key_verification_data_signature(
+        new_signing_key_verification_data_signature);
 
-    // The new public key must be signed by the old key.
-    std::unique_ptr<crypto::RSAPrivateKey> old_signing_key = GetSigningKey();
-    if (old_signing_key) {
-      SignData(policy_.new_public_key(), old_signing_key.get(),
+    // The new public key must be signed by the current key in the event of key
+    // rotation.
+    if (current_signing_key) {
+      SignData(policy_.new_public_key(), current_signing_key.get(),
                policy_.mutable_new_public_key_signature(), signature_type_);
     }
+
+    key_to_sign_policy_data_with = new_signing_key.get();
   } else {
     // No new signing key, so clear the old public key (this allows us to
     // reuse the same PolicyBuilder to build multiple policy blobs).
@@ -391,26 +414,24 @@ void PolicyBuilder::Build() {
     policy_.clear_new_public_key_signature();
     policy_.clear_new_public_key_verification_data();
     policy_.clear_new_public_key_verification_data_signature();
-    policy_signing_key = GetSigningKey();
-  }
 
-  if (policy_data_) {
-    // Policy isn't signed, so there shouldn't be a public key version.
-    if (!policy_signing_key)
-      policy_data_->clear_public_key_version();
-
-    // Serialize the policy data.
-    CHECK(policy_data_->SerializeToString(policy_.mutable_policy_data()));
-
-    // PolicyData signature.
-    if (policy_signing_key) {
-      SignData(policy_.policy_data(), policy_signing_key.get(),
-               policy_.mutable_policy_data_signature(), signature_type_);
+    if (current_signing_key) {
+      key_to_sign_policy_data_with = current_signing_key.get();
     }
-  } else {
-    policy_.clear_policy_data();
-    policy_.clear_policy_data_signature();
   }
+
+  // Sign if possible.
+  if (key_to_sign_policy_data_with) {
+    SignData(policy_.policy_data(), key_to_sign_policy_data_with,
+             policy_.mutable_policy_data_signature(), signature_type_);
+
+    // Generate signatures if applicable.
+    policy_.set_policy_data_signature_type(signature_type_);
+  } else {
+    policy_data_->clear_public_key_version();
+  }
+
+  return;
 }
 
 std::string PolicyBuilder::GetBlob() const {
