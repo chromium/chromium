@@ -183,7 +183,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
       LayoutGuideCenterForBrowser(self.browser);
   self.viewController.originalPrefService = originalPrefs;
 
-  _locationBar = std::make_unique<WebLocationBarImpl>(self, self.delegate);
+  _locationBar = std::make_unique<WebLocationBarImpl>(self);
   _locationBar->SetURLLoader(self);
   _locationBarModelDelegate.reset(new LocationBarModelDelegateIOS(
       self.browser->GetWebStateList(), self.browserState));
@@ -195,6 +195,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
                                                      browser:self.browser];
   self.omniboxCoordinator.bubblePresenter = self.bubblePresenter;
   self.omniboxCoordinator.locationBar = _locationBar.get();
+  self.omniboxCoordinator.focusDelegate = self.delegate;
   self.omniboxCoordinator.presenterDelegate = self.popupPresenterDelegate;
   [self.omniboxCoordinator start];
 

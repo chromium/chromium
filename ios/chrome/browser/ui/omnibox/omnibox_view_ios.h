@@ -26,6 +26,7 @@ struct AutocompleteMatch;
 @class OmniboxTextFieldIOS;
 @protocol OmniboxCommands;
 @protocol ToolbarCommands;
+@protocol OmniboxFocusDelegate;
 
 // iOS implementation of OmniBoxView.  Wraps a UITextField and
 // interfaces with the rest of the autocomplete system.
@@ -39,6 +40,7 @@ class OmniboxViewIOS : public OmniboxView,
                  WebLocationBar* location_bar,
                  ChromeBrowserState* browser_state,
                  id<OmniboxCommands> omnibox_focuser,
+                 id<OmniboxFocusDelegate> focus_delegate,
                  id<ToolbarCommands> toolbar_commands_handler,
                  id<OmniboxAdditionalTextConsumer> additional_text_consumer);
 
@@ -184,6 +186,10 @@ class OmniboxViewIOS : public OmniboxView,
   // Focuser, used to transition the location bar to focused/defocused state as
   // necessary.
   __weak id<OmniboxCommands> omnibox_focuser_;
+
+  // Delegate that manages the browser UI changes in response to omnibox being
+  // focused and defocused.
+  __weak id<OmniboxFocusDelegate> focus_delegate_;
 
   // Handler for ToolbarCommands.
   __weak id<ToolbarCommands> toolbar_commands_handler_;

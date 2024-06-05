@@ -17,8 +17,7 @@
 // WebLocationBar once OmniboxViewIOS doesn't need it.
 class WebLocationBarImpl : public WebLocationBar {
  public:
-  WebLocationBarImpl(id<OmniboxControllerDelegate> delegate,
-                     id<OmniboxFocusDelegate> focus_delegate);
+  explicit WebLocationBarImpl(id<OmniboxControllerDelegate> delegate);
   ~WebLocationBarImpl() override;
 
   void SetURLLoader(id<LocationBarURLLoader> URLLoader) {
@@ -27,8 +26,6 @@ class WebLocationBarImpl : public WebLocationBar {
 
   // WebLocationBar methods.
   web::WebState* GetWebState() override;
-  void OnKillFocus() override;
-  void OnSetFocus() override;
   void OnNavigate(const GURL& destination_url,
                   TemplateURLRef::PostContent* post_content,
                   WindowOpenDisposition disposition,
@@ -39,7 +36,6 @@ class WebLocationBarImpl : public WebLocationBar {
 
  private:
   __weak id<OmniboxControllerDelegate> delegate_;
-  __weak id<OmniboxFocusDelegate> focus_delegate_;
   __weak id<LocationBarURLLoader> URLLoader_;
 };
 

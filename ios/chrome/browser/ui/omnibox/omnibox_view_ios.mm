@@ -25,16 +25,15 @@
 #import "components/open_from_clipboard/clipboard_recent_content.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_scheme_classifier_impl.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
-#import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/ui/ntp/metrics/home_metrics.h"
 #import "ios/chrome/browser/ui/omnibox/chrome_omnibox_client_ios.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_additional_text_consumer.h"
+#import "ios/chrome/browser/ui/omnibox/omnibox_focus_delegate.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_metrics_helper.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_util.h"
@@ -58,6 +57,7 @@ OmniboxViewIOS::OmniboxViewIOS(
     WebLocationBar* location_bar,
     ChromeBrowserState* browser_state,
     id<OmniboxCommands> omnibox_focuser,
+    id<OmniboxFocusDelegate> focus_delegate,
     id<ToolbarCommands> toolbar_commands_handler,
     id<OmniboxAdditionalTextConsumer> additional_text_consumer)
     : OmniboxView(
@@ -71,6 +71,7 @@ OmniboxViewIOS::OmniboxViewIOS(
       field_(field),
       location_bar_(location_bar),
       omnibox_focuser_(omnibox_focuser),
+      focus_delegate_(focus_delegate),
       toolbar_commands_handler_(toolbar_commands_handler),
       additional_text_consumer_(additional_text_consumer),
       ignore_popup_updates_(false),
@@ -382,7 +383,7 @@ void OmniboxViewIOS::OnDidBeginEditing() {
   // happen when the omnibox is being focused and it starts showing the popup;
   // if the popup was already open, no need to call this.
   if (!popup_was_open_before_editing_began)
-    location_bar_->OnSetFocus();
+    [focus_delegate_ omniboxDidBecomeFirstResponder];
 }
 
 void OmniboxViewIOS::OnWillEndEditing() {
@@ -541,13 +542,6 @@ void OmniboxViewIOS::OnDidChange(bool processing_user_event) {
 
 void OmniboxViewIOS::OnAccept() {
   base::RecordAction(UserMetricsAction("MobileOmniboxUse"));
-  NewTabPageTabHelper* NTPTabHelper =
-      NewTabPageTabHelper::FromWebState(location_bar_->GetWebState());
-  if (NTPTabHelper->IsActive()) {
-    RecordHomeAction(IOSHomeActionType::kOmnibox,
-                     NTPTabHelper->ShouldShowStartSurface());
-  }
-
   base::RecordAction(UserMetricsAction("IOS.Omnibox.AcceptDefaultSuggestion"));
 
   if (model()) {
@@ -697,7 +691,7 @@ void OmniboxViewIOS::EndEditing() {
 
     // The controller looks at the current pre-edit state, so the call to
     // OnKillFocus() must come after exiting pre-edit.
-    location_bar_->OnKillFocus();
+    [focus_delegate_ omniboxDidResignFirstResponder];
 
     // Blow away any in-progress edits.
     RevertAll();

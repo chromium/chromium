@@ -18,8 +18,6 @@ class TestWebLocationBar final : public WebLocationBar {
   void SetLocationBarModel(LocationBarModel* location_bar_model);
 
   web::WebState* GetWebState() override;
-  void OnKillFocus() override {}
-  void OnSetFocus() override {}
   void OnNavigate(const GURL& destination_url,
                   TemplateURLRef::PostContent* post_content,
                   WindowOpenDisposition disposition,

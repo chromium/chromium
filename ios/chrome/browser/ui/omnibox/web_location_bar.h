@@ -27,13 +27,6 @@ class WebLocationBar {
   // Returns the WebState of the currently active tab.
   virtual web::WebState* GetWebState() = 0;
 
-  // The autocomplete edit lost focus.
-  virtual void OnKillFocus() = 0;
-
-  // The autocomplete got focus. In UI Refresh, this is not called if the popup
-  // was already open when the omnibox is refocused.
-  virtual void OnSetFocus() = 0;
-
   virtual void OnNavigate(const GURL& destination_url,
                           TemplateURLRef::PostContent* post_content,
                           WindowOpenDisposition disposition,

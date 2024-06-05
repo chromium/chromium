@@ -16,6 +16,7 @@ class WebLocationBar;
 @protocol OmniboxPopupPresenterDelegate;
 @protocol TextFieldViewContaining;
 @protocol ToolbarOmniboxConsumer;
+@protocol OmniboxFocusDelegate;
 
 // The coordinator for the omnibox.
 @interface OmniboxCoordinator : ChromeCoordinator
@@ -32,6 +33,9 @@ class WebLocationBar;
 
 /// Positioner for the popup. Has to be configured before calling `start`.
 @property(nonatomic, weak) id<OmniboxPopupPresenterDelegate> presenterDelegate;
+
+/// Delegate for responding to focusing events.
+@property(nonatomic, weak) id<OmniboxFocusDelegate> focusDelegate;
 
 // Bubble presenter for displaying IPH bubbles relating to the omnibox.
 @property(nonatomic, strong) BubblePresenter* bubblePresenter;
