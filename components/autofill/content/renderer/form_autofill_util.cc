@@ -2419,12 +2419,11 @@ std::u16string FindChildText(const WebNode& node) {
 
 ButtonTitleList GetButtonTitles(const WebFormElement& web_form,
                                 ButtonTitlesCache* button_titles_cache) {
+  DCHECK(web_form);
   if (!button_titles_cache) {
     // Button titles scraping is disabled for this form.
-    return ButtonTitleList();
+    return InferButtonTitlesForForm(web_form);
   }
-
-  DCHECK(web_form);
 
   auto [form_position, cache_miss] = button_titles_cache->emplace(
       GetFormRendererId(web_form), ButtonTitleList());

@@ -524,33 +524,32 @@ TEST_F(FormAutofillUtilsTest, GetButtonTitles_TooLongTitle) {
   EXPECT_EQ(200, total_length);
 }
 
-TEST_F(FormAutofillUtilsTest, GetButtonTitles_DisabledIfNoCache) {
-  // Button titles scraping for unowned forms can be time-consuming and disabled
-  // in Beta and Stable. To disable button titles computation, |buttons_cache|
-  // should be null.
-  constexpr char kNoFormHtml[] =
-      "<div class='reg-form'>"
+TEST_F(FormAutofillUtilsTest, GetButtonTitles_NoCache) {
+  constexpr char kHtml[] =
+      "<form id='target'>"
+      "  <input type='button' value='Clear field'>"
+      "  <input type='button' value='Clear field'>"
+      "  <input type='button' value='Clear field'>"
       "  <input type='button' value='\n Show\t password '>"
       "  <button>Sign Up</button>"
       "  <button type='button'>Register</button>"
-      "</div>"
-      "<form id='ignored-form'>"
-      "  <input type='button' value='Ignore this'>"
-      "  <button>Ignore this</button>"
-      "  <a id='Submit' value='Ignore this'>"
-      "  <div name='BTN'>Ignore this</div>"
+      "  <a id='Submit' value='Create account'>"
+      "  <div name='BTN'> Join </div>"
+      "  <span class='button'> Start </span>"
+      "  <a class='empty button' value='   \t   \n'>"
       "</form>";
 
-  LoadHTML(kNoFormHtml);
+  LoadHTML(kHtml);
   WebLocalFrame* web_frame = GetMainFrame();
   ASSERT_NE(nullptr, web_frame);
-  WebFormElement form_target;
-  ASSERT_FALSE(web_frame->GetDocument().Body().IsNull());
+  WebFormElement form_target =
+      GetFormElementById(web_frame->GetDocument(), "target");
 
+  autofill::ButtonTitleList expected = {
+      {u"Sign Up", ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE}};
   autofill::ButtonTitleList actual =
       GetButtonTitles(form_target, /*button_titles_cache=*/nullptr);
-
-  EXPECT_TRUE(actual.empty());
+  EXPECT_EQ(expected, actual);
 }
 
 TEST_F(FormAutofillUtilsTest, IsEnabled) {

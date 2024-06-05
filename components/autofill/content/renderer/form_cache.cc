@@ -90,6 +90,15 @@ bool IsFormInteresting(const FormData& form) {
                               &FormFieldData::autocomplete_attribute);
 }
 
+std::string GetButtonTitlesString(const ButtonTitleList& titles_list) {
+  std::vector<std::string> titles;
+  titles.reserve(titles_list.size());
+  std::transform(
+      titles_list.cbegin(), titles_list.cend(), std::back_inserter(titles),
+      [](const auto& list_item) { return base::UTF16ToUTF8(list_item.first); });
+  return base::JoinString(titles, ",");
+}
+
 }  // namespace
 
 FormCache::UpdateFormCacheResult::UpdateFormCacheResult() = default;
@@ -260,6 +269,13 @@ bool FormCache::ShowPredictions(const FormDataPredictions& form,
           field.host_form_signature,
           "\nalternative form signature: ",
           form.alternative_signature,
+          "\nform name: ",
+          base::UTF16ToUTF8(form.data.name_attribute()),
+          "\nform id: ",
+          base::UTF16ToUTF8(form.data.id_attribute()),
+          "\nform button titles: ",
+          GetButtonTitlesString(form_util::GetButtonTitles(
+              form_element, /*button_titles_cache=*/nullptr)),
           "\nfield frame token: ",
           frame_token.ToString(),
           "\nform renderer id: ",
