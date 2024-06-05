@@ -35,6 +35,8 @@ class ReportBodyAdjuster {
   // have a full event-level-report body.
   virtual void AdjustVerboseDebug(std::string_view debug_data_type,
                                   base::Value::Dict& body);
+
+  virtual void AdjustAggregatableDebug(base::Value::Dict&) {}
 };
 
 void MaybeAdjustReportBody(const GURL&,

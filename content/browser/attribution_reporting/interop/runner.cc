@@ -352,6 +352,10 @@ RunAttributionInteropSimulation(AttributionInteropRun run,
         network::features::kAttributionReportingCrossAppWeb);
     scoped_api_state.emplace(AttributionOsLevelManager::ApiState::kEnabled);
   }
+  if (run.config.needs_aggregatable_debug) {
+    enabled_features.emplace_back(attribution_reporting::features::
+                                      kAttributionAggregatableDebugReporting);
+  }
 
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
@@ -491,6 +495,12 @@ void MaybeAdjustReportBody(const GURL& url,
           adjuster.AdjustVerboseDebug(*debug_data_type, *body);
         }
       }
+    }
+  } else if (url.path_piece() ==
+             "/.well-known/attribution-reporting/debug/"
+             "report-aggregate-debug") {
+    if (base::Value::Dict* dict = payload.GetIfDict()) {
+      adjuster.AdjustAggregatableDebug(*dict);
     }
   }
 }

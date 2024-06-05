@@ -172,6 +172,8 @@ class AttributionInteropParser {
       bool required) && {
     interop_config.needs_cross_app_web =
         ParseBool(dict, "needs_cross_app_web").value_or(false);
+    interop_config.needs_aggregatable_debug =
+        ParseBool(dict, "needs_aggregatable_debug").value_or(false);
 
     AttributionConfig& config = interop_config.attribution_config;
 
@@ -249,6 +251,22 @@ class AttributionInteropParser {
                  /*allow_zero=*/true)) {
       config.aggregate_limit.delay_span =
           base::Minutes(aggregatable_report_delay_span);
+    }
+
+    int max_aggregatable_debug_budget_per_context_site;
+    if (ParseInt(dict, "max_aggregatable_debug_budget_per_context_site",
+                 max_aggregatable_debug_budget_per_context_site, required,
+                 /*allow_zero=*/false)) {
+      config.aggregatable_debug_rate_limit.max_budget_per_context_site =
+          max_aggregatable_debug_budget_per_context_site;
+    }
+
+    int max_aggregatable_debug_reports_per_source;
+    if (ParseInt(dict, "max_aggregatable_debug_reports_per_source",
+                 max_aggregatable_debug_reports_per_source, required,
+                 /*allow_zero=*/false)) {
+      config.aggregatable_debug_rate_limit.max_reports_per_source =
+          max_aggregatable_debug_reports_per_source;
     }
 
     {

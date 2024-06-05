@@ -143,6 +143,34 @@ base::Value::List GetDecryptedPayloads(std::optional<base::Value> payloads,
   return list;
 }
 
+void AdjustAggregatableReportBody(base::Value::Dict& report_body) {
+  // These fields normally encode a random GUID or the absolute
+  // time and therefore are sources of nondeterminism in the
+  // output.
+
+  // Output attribution_destination from the shared_info field.
+  const std::optional<base::Value> shared_info =
+      report_body.Extract("shared_info");
+  CHECK(shared_info.has_value());
+  const std::string& shared_info_str = shared_info->GetString();
+
+  std::optional<base::Value> shared_info_value =
+      base::JSONReader::Read(shared_info_str, base::JSON_PARSE_RFC);
+  CHECK(shared_info_value.has_value());
+  static constexpr char kKeyAttributionDestination[] =
+      "attribution_destination";
+  std::optional<base::Value> attribution_destination =
+      shared_info_value->GetDict().Extract(kKeyAttributionDestination);
+  CHECK(attribution_destination.has_value());
+  report_body.Set(kKeyAttributionDestination,
+                  std::move(*attribution_destination));
+
+  report_body.Set(
+      "histograms",
+      GetDecryptedPayloads(report_body.Extract("aggregation_service_payloads"),
+                           shared_info_str));
+}
+
 class Adjuster : public ReportBodyAdjuster {
  public:
   explicit Adjuster(bool actual) : actual_(actual) {}
@@ -180,31 +208,17 @@ class Adjuster : public ReportBodyAdjuster {
       return;
     }
 
-    // These fields normally encode a random GUID or the absolute
-    // time and therefore are sources of nondeterminism in the
-    // output.
+    AdjustAggregatableReportBody(report_body);
+  }
 
-    // Output attribution_destination from the shared_info field.
-    const std::optional<base::Value> shared_info =
-        report_body.Extract("shared_info");
-    CHECK(shared_info.has_value());
-    const std::string& shared_info_str = shared_info->GetString();
+  void AdjustAggregatableDebug(base::Value::Dict& report_body) override {
+    if (!actual_) {
+      return;
+    }
 
-    std::optional<base::Value> shared_info_value =
-        base::JSONReader::Read(shared_info_str, base::JSON_PARSE_RFC);
-    CHECK(shared_info_value.has_value());
-    static constexpr char kKeyAttributionDestination[] =
-        "attribution_destination";
-    std::optional<base::Value> attribution_destination =
-        shared_info_value->GetDict().Extract(kKeyAttributionDestination);
-    CHECK(attribution_destination.has_value());
-    report_body.Set(kKeyAttributionDestination,
-                    std::move(*attribution_destination));
+    // TODO(b/343870498): Consider including more fields for validation.
 
-    report_body.Set("histograms",
-                    GetDecryptedPayloads(
-                        report_body.Extract("aggregation_service_payloads"),
-                        shared_info_str));
+    AdjustAggregatableReportBody(report_body);
   }
 
   const bool actual_;

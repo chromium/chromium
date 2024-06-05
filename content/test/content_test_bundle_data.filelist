@@ -5632,6 +5632,8 @@ data/attribution_reporting/databases/version_62.sql
 data/attribution_reporting/inject_cross_app_web_third_party_ot.js
 data/attribution_reporting/interop/aggregatable_budget.json
 data/attribution_reporting/interop/aggregatable_contributions_creation.json
+data/attribution_reporting/interop/aggregatable_debug_reports.json
+data/attribution_reporting/interop/aggregatable_debug_reports_limits.json
 data/attribution_reporting/interop/aggregatable_dedup_key.json
 data/attribution_reporting/interop/aggregatable_large_key.json
 data/attribution_reporting/interop/aggregatable_report_trigger_context_id.json

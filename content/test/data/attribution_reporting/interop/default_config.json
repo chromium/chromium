@@ -86,6 +86,14 @@
   // aggregatable report. Formatted as a base-10 string.
   "aggregatable_report_delay_span": "50",
 
+  // Positive integer that controls the max aggregatable debug budget per
+  // context site per day.
+  "max_aggregatable_debug_budget_per_context_site": "1048576",
+
+  // Positive integer that controls the max number of aggregatable debug
+  // reports per source.
+  "max_aggregatable_debug_reports_per_source": "5",
+
   // Non-empty list that controls which origins are allowed as aggregation
   // coordinators. The first value is used as the default if a trigger omits
   // the corresponding field.

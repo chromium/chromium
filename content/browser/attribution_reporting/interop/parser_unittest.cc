@@ -552,6 +552,15 @@ TEST(AttributionInteropParserTest, ValidConfig) {
        [](AttributionConfig& c) {
          c.aggregate_limit.delay_span = base::TimeDelta();
        }},
+      {R"json({"max_aggregatable_debug_budget_per_context_site":"65537"})json",
+       false,
+       [](AttributionConfig& c) {
+         c.aggregatable_debug_rate_limit.max_budget_per_context_site = 65537;
+       }},
+      {R"json({"max_aggregatable_debug_reports_per_source":"3"})json", false,
+       [](AttributionConfig& c) {
+         c.aggregatable_debug_rate_limit.max_reports_per_source = 3;
+       }},
       {R"json({
         "max_sources_per_origin":"10",
         "max_destinations_per_source_site_reporting_site":"10",
@@ -572,7 +581,9 @@ TEST(AttributionInteropParserTest, ValidConfig) {
         "max_aggregatable_reports_per_destination":"10",
         "aggregatable_report_min_delay":"10",
         "aggregatable_report_delay_span":"20",
-        "aggregation_coordinator_origins":["https://c.test/123"]
+        "aggregation_coordinator_origins":["https://c.test/123"],
+        "max_aggregatable_debug_budget_per_context_site": "1024",
+        "max_aggregatable_debug_reports_per_source": "10"
       })json",
        true, [](AttributionInteropConfig& config) {
          AttributionConfig& c = config.attribution_config;
@@ -603,6 +614,9 @@ TEST(AttributionInteropParserTest, ValidConfig) {
 
          config.aggregation_coordinator_origins.emplace_back(
              url::Origin::Create(GURL("https://c.test")));
+
+         c.aggregatable_debug_rate_limit.max_budget_per_context_site = 1024;
+         c.aggregatable_debug_rate_limit.max_reports_per_source = 10;
        }}};
 
   for (const auto& test_case : kTestCases) {
@@ -645,7 +659,8 @@ TEST(AttributionInteropParserTest, InvalidConfigPositiveIntegers) {
       "rate_limit_origins_per_site_window_in_days",
       "max_event_level_reports_per_destination",
       "max_aggregatable_reports_per_destination",
-  };
+      "max_aggregatable_debug_budget_per_context_site",
+      "max_aggregatable_debug_reports_per_source"};
 
   {
     auto result = ParseAttributionInteropConfig(base::Value::Dict());
