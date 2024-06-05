@@ -2030,16 +2030,6 @@ void RenderWidgetHostViewAura::OnDeviceScaleFactorChanged(
                               window_->GetLocalSurfaceId());
 
   device_scale_factor_ = new_device_scale_factor;
-  const display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window_);
-  // Sometimes GetDisplayNearestWindow returns the default monitor. We don't
-  // want to use that here.
-  if (display.is_valid()) {
-    // TODO: crbug.com/337612968 - This assumption is not valid, and is probably
-    // causing bugs in other places.
-    DCHECK_EQ(new_device_scale_factor, display.device_scale_factor());
-    current_cursor_.SetDisplayInfo(display);
-  }
 }
 
 void RenderWidgetHostViewAura::OnWindowDestroying(aura::Window* window) {
