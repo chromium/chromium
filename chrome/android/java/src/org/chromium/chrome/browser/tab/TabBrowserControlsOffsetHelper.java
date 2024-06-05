@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tab;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ObserverList.RewindableIterator;
 import org.chromium.base.UserData;
@@ -15,7 +16,8 @@ import org.chromium.ui.base.WindowAndroid;
  * Helper that coordinates the browser controls offsets from the perspective of a particular Tab.
  */
 public class TabBrowserControlsOffsetHelper extends EmptyTabObserver implements UserData {
-    private static final Class<TabBrowserControlsOffsetHelper> USER_DATA_KEY =
+    @VisibleForTesting
+    public static final Class<TabBrowserControlsOffsetHelper> USER_DATA_KEY =
             TabBrowserControlsOffsetHelper.class;
 
     private TabImpl mTab;

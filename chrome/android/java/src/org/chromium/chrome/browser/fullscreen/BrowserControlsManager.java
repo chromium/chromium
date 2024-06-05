@@ -212,6 +212,10 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
                     @Override
                     protected void onObservingDifferentTab(Tab tab, boolean hint) {
                         setTab(tab);
+
+                        // The tab that's been switched away from is never going to update us that
+                        // the scroll event stopped.
+                        mTabControlsObserver.onContentViewScrollingStateChanged(false);
                     }
                 };
 
@@ -264,14 +268,13 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
 
                     @Override
                     public void onContentViewScrollingStateChanged(boolean scrolling) {
+                        mContentViewScrolling = scrolling;
                         if (!scrolling
                                 && ToolbarFeatures.shouldSuppressCaptures()
                                 && shouldShowAndroidControls()
                                 && mControlContainer.getView().getVisibility() != View.VISIBLE) {
                             scheduleVisibilityUpdate();
                         }
-
-                        mContentViewScrolling = scrolling;
                     }
                 };
         assert controlContainer != null || mControlsPosition == ControlsPosition.NONE;
@@ -525,8 +528,8 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
     }
 
     /**
-     * Utility routine for ensuring visibility updates are synchronized with
-     * animation, preventing message loop stalls due to untimely invalidation.
+     * Utility routine for ensuring visibility updates are synchronized with animation, preventing
+     * message loop stalls due to untimely invalidation.
      */
     private void scheduleVisibilityUpdate() {
         if (mControlContainer == null) {

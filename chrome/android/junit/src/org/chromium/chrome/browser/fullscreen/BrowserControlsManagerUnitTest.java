@@ -14,7 +14,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.Mockito.doAnswer;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -22,20 +23,26 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.ui.test.util.MockitoHelper.doCallback;
+
 import android.app.Activity;
+import android.content.res.Resources;
 import android.view.View;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.Callback;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
@@ -45,14 +52,23 @@ import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabBrowserControlsOffsetHelper;
+import org.chromium.chrome.browser.tab.TabCreationState;
+import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabObserver;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.ui.util.TokenHolder;
 
+import java.util.Collections;
+
 /** Unit tests for {@link BrowserControlsManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class BrowserControlsManagerUnitTest {
+    @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
     @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     // Since these tests don't depend on the heights being pixels, we can use these as dpi directly.
@@ -64,25 +80,36 @@ public class BrowserControlsManagerUnitTest {
     @Mock private View mContainerView;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private ActivityTabProvider mActivityTabProvider;
-    @Mock private android.content.res.Resources mResources;
+    @Mock private Resources mResources;
     @Mock private BrowserControlsStateProvider.Observer mBrowserControlsStateProviderObserver;
     @Mock private Tab mTab;
     @Mock private ContentView mContentView;
+    @Mock private TabModel mTabModel;
+    @Mock private TabBrowserControlsOffsetHelper mTabBrowserControlsOffsetHelper;
+
+    private @Captor ArgumentCaptor<Callback<Tab>> mCallbackTabCaptor;
+    private @Captor ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
+    private @Captor ArgumentCaptor<TabObserver> mTabObserverCaptor;
 
     private UserDataHost mUserDataHost = new UserDataHost();
     private BrowserControlsManager mBrowserControlsManager;
-    private boolean mControlsResizeView;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.CREATED);
         when(mActivity.getResources()).thenReturn(mResources);
         when(mResources.getDimensionPixelSize(R.dimen.control_container_height))
                 .thenReturn(TOOLBAR_HEIGHT);
         when(mControlContainer.getView()).thenReturn(mContainerView);
-        when(mContainerView.getVisibility()).thenReturn(View.VISIBLE);
+
+        // Only the last/current visibility matters and is verified by tests.
+        doCallback(
+                        (Integer visibility) ->
+                                when(mContainerView.getVisibility()).thenReturn(visibility))
+                .when(mContainerView)
+                .setVisibility(anyInt());
+        mContainerView.setVisibility(View.VISIBLE);
+
         when(mTab.isUserInteractable()).thenReturn(true);
         when(mTab.isInitialized()).thenReturn(true);
         when(mTab.getUserDataHost()).thenReturn(mUserDataHost);
@@ -91,6 +118,8 @@ public class BrowserControlsManagerUnitTest {
         doNothing().when(mContentView).removeOnSystemUiVisibilityChangeListener(any());
         doNothing().when(mContentView).addOnHierarchyChangeListener(any());
         doNothing().when(mContentView).addOnSystemUiVisibilityChangeListener(any());
+        when(mTabModelSelector.getModels()).thenReturn(Collections.singletonList(mTabModel));
+        when(mTabModel.getComprehensiveModel()).thenReturn(mTabModel);
 
         BrowserControlsManager browserControlsManager =
                 new BrowserControlsManager(mActivity, BrowserControlsManager.ControlsPosition.TOP);
@@ -102,6 +131,21 @@ public class BrowserControlsManagerUnitTest {
                 R.dimen.control_container_height);
         mBrowserControlsManager.addObserver(mBrowserControlsStateProviderObserver);
         when(mBrowserControlsManager.getTab()).thenReturn(mTab);
+    }
+
+    private void remakeWithoutSpy() {
+        mBrowserControlsManager.destroy();
+        mBrowserControlsManager =
+                new BrowserControlsManager(mActivity, BrowserControlsManager.ControlsPosition.TOP);
+        mBrowserControlsManager.initialize(
+                mControlContainer,
+                mActivityTabProvider,
+                mTabModelSelector,
+                R.dimen.control_container_height);
+        mBrowserControlsManager.addObserver(mBrowserControlsStateProviderObserver);
+        doCallback((Runnable runnable) -> runnable.run())
+                .when(mContainerView)
+                .postOnAnimation(any());
     }
 
     @Test
@@ -313,33 +357,17 @@ public class BrowserControlsManagerUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES)
     public void testShowAndroidControlsObserver() {
-        BrowserControlsManager browserControlsManager =
-                new BrowserControlsManager(mActivity, BrowserControlsManager.ControlsPosition.TOP);
-        browserControlsManager.initialize(
-                mControlContainer,
-                mActivityTabProvider,
-                mTabModelSelector,
-                R.dimen.control_container_height);
-        browserControlsManager.addObserver(mBrowserControlsStateProviderObserver);
-
-        doAnswer(
-                        invocation -> {
-                            ((Runnable) invocation.getArguments()[0]).run();
-                            return null;
-                        })
-                .when(mContainerView)
-                .postOnAnimation(any());
+        remakeWithoutSpy();
 
         int token =
-                browserControlsManager.hideAndroidControlsAndClearOldToken(
+                mBrowserControlsManager.hideAndroidControlsAndClearOldToken(
                         TokenHolder.INVALID_TOKEN);
         verify(mContainerView).setVisibility(View.INVISIBLE);
         verify(mBrowserControlsStateProviderObserver)
                 .onAndroidControlsVisibilityChanged(View.INVISIBLE);
 
-        when(mContainerView.getVisibility()).thenReturn(View.INVISIBLE);
-        browserControlsManager.releaseAndroidControlsHidingToken(token);
-        verify(mContainerView).setVisibility(View.VISIBLE);
+        mBrowserControlsManager.releaseAndroidControlsHidingToken(token);
+        assertEquals(View.VISIBLE, mContainerView.getVisibility());
         verify(mBrowserControlsStateProviderObserver)
                 .onAndroidControlsVisibilityChanged(View.VISIBLE);
     }
@@ -348,17 +376,78 @@ public class BrowserControlsManagerUnitTest {
     public void testGetAndroidControlsVisibility() {
         BrowserControlsManager browserControlsManager =
                 new BrowserControlsManager(mActivity, BrowserControlsManager.ControlsPosition.TOP);
-        Assert.assertEquals(View.INVISIBLE, browserControlsManager.getAndroidControlsVisibility());
+        assertEquals(View.INVISIBLE, browserControlsManager.getAndroidControlsVisibility());
 
         browserControlsManager.initialize(
                 mControlContainer,
                 mActivityTabProvider,
                 mTabModelSelector,
                 R.dimen.control_container_height);
-        when(mContainerView.getVisibility()).thenReturn(View.VISIBLE);
-        Assert.assertEquals(View.VISIBLE, browserControlsManager.getAndroidControlsVisibility());
+        assertEquals(View.VISIBLE, browserControlsManager.getAndroidControlsVisibility());
 
-        when(mContainerView.getVisibility()).thenReturn(View.INVISIBLE);
-        Assert.assertEquals(View.INVISIBLE, browserControlsManager.getAndroidControlsVisibility());
+        mContainerView.setVisibility(View.INVISIBLE);
+        assertEquals(View.INVISIBLE, browserControlsManager.getAndroidControlsVisibility());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES)
+    public void testScrollingVisibility() {
+        remakeWithoutSpy();
+        assertEquals(View.VISIBLE, mBrowserControlsManager.getAndroidControlsVisibility());
+
+        // TabBrowserControlsOffsetHelper casts to TabImpl which is package private, mock instead.
+        mUserDataHost.setUserData(
+                TabBrowserControlsOffsetHelper.USER_DATA_KEY, mTabBrowserControlsOffsetHelper);
+
+        // Emit tab event such that we get an active tab observer.
+        verify(mTabModel, atLeast(1)).addObserver(mTabModelObserverCaptor.capture());
+        for (TabModelObserver observer : mTabModelObserverCaptor.getAllValues()) {
+            observer.didAddTab(
+                    mTab,
+                    TabLaunchType.FROM_LINK,
+                    TabCreationState.LIVE_IN_FOREGROUND,
+                    /* markedForSelection= */ false);
+        }
+        verify(mActivityTabProvider, atLeast(1)).addObserver(mCallbackTabCaptor.capture());
+        for (Callback<Tab> observer : mCallbackTabCaptor.getAllValues()) {
+            observer.onResult(mTab);
+        }
+        verify(mTab, atLeast(1)).addObserver(mTabObserverCaptor.capture());
+
+        // Hide should be eagerly be reacted to, regardless of scrolling or not.
+        for (TabObserver observer : mTabObserverCaptor.getAllValues()) {
+            observer.onContentViewScrollingStateChanged(true);
+        }
+        int token =
+                mBrowserControlsManager.hideAndroidControlsAndClearOldToken(
+                        TokenHolder.INVALID_TOKEN);
+        assertEquals(View.INVISIBLE, mBrowserControlsManager.getAndroidControlsVisibility());
+
+        // This should not cause visibility updates because we're scrolling.
+        mBrowserControlsManager.releaseAndroidControlsHidingToken(token);
+
+        // Now stop scrolling, and the visibility should update.
+        for (TabObserver observer : mTabObserverCaptor.getAllValues()) {
+            observer.onContentViewScrollingStateChanged(false);
+        }
+        assertEquals(View.VISIBLE, mBrowserControlsManager.getAndroidControlsVisibility());
+
+        // Set up the same situation where we're scrolling and have a hidden view that wants to be
+        // shown once the scroll is over.
+        for (TabObserver observer : mTabObserverCaptor.getAllValues()) {
+            observer.onContentViewScrollingStateChanged(true);
+        }
+        token =
+                mBrowserControlsManager.hideAndroidControlsAndClearOldToken(
+                        TokenHolder.INVALID_TOKEN);
+        mBrowserControlsManager.releaseAndroidControlsHidingToken(token);
+        assertEquals(View.INVISIBLE, mBrowserControlsManager.getAndroidControlsVisibility());
+
+        // But now switch tabs instead. The manager should clear the scrolling signal. Although this
+        // is actually the same tab object, nothing is doing an equality check.
+        for (Callback<Tab> observer : mCallbackTabCaptor.getAllValues()) {
+            observer.onResult(mTab);
+        }
+        assertEquals(View.VISIBLE, mBrowserControlsManager.getAndroidControlsVisibility());
     }
 }
