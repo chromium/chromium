@@ -14,7 +14,6 @@
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_content_injector.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
-#import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
 @interface ManualFillAddressItem ()
@@ -360,8 +359,8 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
 
   // First name chip button.
   if (showFirstName) {
-    [self setTitleAndAccessibilityLabelOfChip:self.firstNameButton
-                                    withValue:address.firstName];
+    [self.firstNameButton setTitle:address.firstName
+                          forState:UIControlStateNormal];
     self.firstNameButton.hidden = NO;
   } else {
     self.firstNameButton.hidden = YES;
@@ -369,8 +368,8 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
 
   // Middle name chip button.
   if (showMiddleName) {
-    [self setTitleAndAccessibilityLabelOfChip:self.middleNameButton
-                                    withValue:address.middleNameOrInitial];
+    [self.middleNameButton setTitle:address.middleNameOrInitial
+                           forState:UIControlStateNormal];
     self.middleNameButton.hidden = NO;
   } else {
     self.middleNameButton.hidden = YES;
@@ -378,8 +377,8 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
 
   // Last name chip button.
   if (showLastName) {
-    [self setTitleAndAccessibilityLabelOfChip:self.lastNameButton
-                                    withValue:address.lastName];
+    [self.lastNameButton setTitle:address.lastName
+                         forState:UIControlStateNormal];
     self.lastNameButton.hidden = NO;
   } else {
     self.lastNameButton.hidden = YES;
@@ -387,8 +386,7 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
 
   // Company line chip button.
   if (address.company.length) {
-    [self setTitleAndAccessibilityLabelOfChip:self.companyButton
-                                    withValue:address.company];
+    [self.companyButton setTitle:address.company forState:UIControlStateNormal];
     self.companyButton.hidden = NO;
   } else {
     self.companyButton.hidden = YES;
@@ -396,8 +394,7 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
 
   // Address line 1 chip button.
   if (address.line1.length) {
-    [self setTitleAndAccessibilityLabelOfChip:self.line1Button
-                                    withValue:address.line1];
+    [self.line1Button setTitle:address.line1 forState:UIControlStateNormal];
     self.line1Button.hidden = NO;
   } else {
     self.line1Button.hidden = YES;
@@ -405,8 +402,7 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
 
   // Address line 2 chip button.
   if (address.line2.length) {
-    [self setTitleAndAccessibilityLabelOfChip:self.line2Button
-                                    withValue:address.line2];
+    [self.line2Button setTitle:address.line2 forState:UIControlStateNormal];
     self.line2Button.hidden = NO;
   } else {
     self.line2Button.hidden = YES;
@@ -414,8 +410,7 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
 
   // City chip button.
   if (address.city.length) {
-    [self setTitleAndAccessibilityLabelOfChip:self.cityButton
-                                    withValue:address.city];
+    [self.cityButton setTitle:address.city forState:UIControlStateNormal];
     self.cityButton.hidden = NO;
   } else {
     self.cityButton.hidden = YES;
@@ -423,8 +418,7 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
 
   // State chip button.
   if (address.state.length) {
-    [self setTitleAndAccessibilityLabelOfChip:self.stateButton
-                                    withValue:address.state];
+    [self.stateButton setTitle:address.state forState:UIControlStateNormal];
     self.stateButton.hidden = NO;
   } else {
     self.stateButton.hidden = YES;
@@ -432,8 +426,7 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
 
   // ZIP code chip button.
   if (address.zip.length) {
-    [self setTitleAndAccessibilityLabelOfChip:self.zipButton
-                                    withValue:address.zip];
+    [self.zipButton setTitle:address.zip forState:UIControlStateNormal];
     self.zipButton.hidden = NO;
   } else {
     self.zipButton.hidden = YES;
@@ -441,8 +434,7 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
 
   // Country chip button.
   if (address.country.length) {
-    [self setTitleAndAccessibilityLabelOfChip:self.countryButton
-                                    withValue:address.country];
+    [self.countryButton setTitle:address.country forState:UIControlStateNormal];
     self.countryButton.hidden = NO;
   } else {
     self.countryButton.hidden = YES;
@@ -450,8 +442,8 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
 
   // Phone number chip button.
   if (address.phoneNumber.length) {
-    [self setTitleAndAccessibilityLabelOfChip:self.phoneNumberButton
-                                    withValue:address.phoneNumber];
+    [self.phoneNumberButton setTitle:address.phoneNumber
+                            forState:UIControlStateNormal];
     self.phoneNumberButton.hidden = NO;
   } else {
     self.phoneNumberButton.hidden = YES;
@@ -459,8 +451,8 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
 
   // Email address chip button.
   if (address.emailAddress.length) {
-    [self setTitleAndAccessibilityLabelOfChip:self.emailAddressButton
-                                    withValue:address.emailAddress];
+    [self.emailAddressButton setTitle:address.emailAddress
+                             forState:UIControlStateNormal];
     self.emailAddressButton.hidden = NO;
   } else {
     self.emailAddressButton.hidden = YES;
@@ -672,18 +664,6 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
               IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM))];
 
   [self.contentInjector autofillFormWithSuggestion:suggestion];
-}
-
-// Sets the title and accessbility label of the given `chipButton` using the
-// given `value`.
-- (void)setTitleAndAccessibilityLabelOfChip:(UIButton*)chipButton
-                                  withValue:(NSString*)value {
-  [chipButton setTitle:value forState:UIControlStateNormal];
-  if (IsKeyboardAccessoryUpgradeEnabled()) {
-    chipButton.accessibilityLabel = l10n_util::GetNSStringF(
-        IDS_IOS_MANUAL_FALLBACK_CHIP_ACCESSIBILITY_LABEL,
-        base::SysNSStringToUTF16(value));
-  }
 }
 
 @end
