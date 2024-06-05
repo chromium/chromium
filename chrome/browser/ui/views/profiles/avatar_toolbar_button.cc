@@ -299,6 +299,15 @@ void AvatarToolbarButton::MaybeShowProfileSwitchIPH() {
   }
 }
 
+void AvatarToolbarButton::MaybeShowExplicitBrowserSigninPreferenceRememberedIPH(
+    const AccountInfo& account_info) {
+  user_education::FeaturePromoParams params(
+      feature_engagement::kIPHExplicitBrowserSigninPreferenceRememberedFeature,
+      account_info.gaia);
+  params.title_params = base::UTF8ToUTF16(account_info.given_name);
+  browser_->window()->MaybeShowFeaturePromo(std::move(params));
+}
+
 void AvatarToolbarButton::MaybeShowWebSignoutIPH(const std::string& gaia_id) {
   CHECK(switches::IsExplicitBrowserSigninUIOnDesktopEnabled());
   browser_->window()->MaybeShowFeaturePromo(user_education::FeaturePromoParams(

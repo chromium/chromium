@@ -91,6 +91,9 @@ class AvatarToolbarButtonDelegate : public signin::IdentityManager::Observer {
   gfx::Image GetGaiaAccountImage() const;
 
   // signin::IdentityManager::Observer:
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event_details) override;
+  void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
   void OnErrorStateOfRefreshTokenUpdatedForAccount(
       const CoreAccountInfo& account_info,
       const GoogleServiceAuthError& error,
@@ -101,6 +104,11 @@ class AvatarToolbarButtonDelegate : public signin::IdentityManager::Observer {
   const raw_ptr<Browser> browser_;
   const raw_ptr<Profile> profile_;
   const raw_ptr<signin::IdentityManager> identity_manager_;
+
+  // Gaia Id of the account that was signed in from having it's choice
+  // remembered following a web sign-in event but waiting for the available
+  // account information to be fetched in order to show the sign in IPH.
+  std::string gaia_id_for_signin_choice_remembered_;
 
   // Initialized in `InitializeStates()`.
   std::unique_ptr<internal::StateManager> state_manager_;

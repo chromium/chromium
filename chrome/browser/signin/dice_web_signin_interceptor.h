@@ -235,11 +235,6 @@ class DiceWebSigninInterceptor : public KeyedService,
       const WebSigninInterceptor::Delegate::BubbleParameters& bubble_parameters,
       base::OnceCallback<void(SigninInterceptionResult)> callback);
 
-  // Attempts showing the In-Product-Help for remembering the explicit browser
-  // sign-in preference.
-  void MaybeShowExplicitBrowserSigninPreferenceRememberedIPH(
-      const AccountInfo& account_info);
-
   // Ensure that we are observing changes in extended account info. Idempotent.
   void EnsureObservingExtendedAccountInfo();
 

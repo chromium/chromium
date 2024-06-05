@@ -1408,7 +1408,33 @@ bool AvatarToolbarButtonDelegate::ShouldPaintBorder() const {
   }
 }
 
-// signin::IdentityManager::Observer:
+void AvatarToolbarButtonDelegate::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event_details) {
+  if (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
+          signin::PrimaryAccountChangeEvent::Type::kSet &&
+      event_details.GetAccessPoint() ==
+          signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_CHOICE_REMEMBERED) {
+    AccountInfo account_info = identity_manager_->FindExtendedAccountInfo(
+        event_details.GetCurrentState().primary_account);
+    if (!account_info.given_name.empty()) {
+      avatar_toolbar_button_
+          ->MaybeShowExplicitBrowserSigninPreferenceRememberedIPH(account_info);
+    } else {
+      gaia_id_for_signin_choice_remembered_ = account_info.gaia;
+    }
+  }
+}
+
+void AvatarToolbarButtonDelegate::OnExtendedAccountInfoUpdated(
+    const AccountInfo& info) {
+  if (info.gaia == gaia_id_for_signin_choice_remembered_ &&
+      !info.given_name.empty()) {
+    gaia_id_for_signin_choice_remembered_.clear();
+    avatar_toolbar_button_
+        ->MaybeShowExplicitBrowserSigninPreferenceRememberedIPH(info);
+  }
+}
+
 void AvatarToolbarButtonDelegate::OnErrorStateOfRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info,
     const GoogleServiceAuthError& error,
