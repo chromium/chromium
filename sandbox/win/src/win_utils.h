@@ -53,14 +53,6 @@ class SingletonBase {
   }
 };
 
-// Convert a short path (C:\path~1 or \\??\\c:\path~1) to the long version of
-// the path. If the path is not a valid filesystem path, the function returns
-// false and argument is not modified.
-// - If passing in a short native device path (\Device\HarddiskVolumeX\path~1),
-//   a drive letter string (c:\) must also be provided.
-bool ConvertToLongPath(std::wstring* path,
-                       const std::wstring* drive_letter = nullptr);
-
 // Resolves a handle to an nt path or nullopt if the path cannot be resolved.
 std::optional<std::wstring> GetPathFromHandle(HANDLE handle);
 
@@ -82,7 +74,7 @@ bool CopyToChildMemory(HANDLE child,
                        size_t buffer_bytes,
                        void** remote_buffer);
 
-// Returns true if the provided path points to a pipe.
+// Returns true if the provided path points to a pipe using a native path.
 bool IsPipe(const std::wstring& path);
 
 // Converts a NTSTATUS code to a Win32 error code.
@@ -104,9 +96,5 @@ std::optional<ProcessHandleMap> GetCurrentProcessHandles();
 bool ContainsNulCharacter(std::wstring_view str);
 
 }  // namespace sandbox
-
-// Resolves a function name in NTDLL to a function pointer. The second parameter
-// is a pointer to the function pointer.
-void ResolveNTFunctionPtr(const char* name, void* ptr);
 
 #endif  // SANDBOX_WIN_SRC_WIN_UTILS_H_

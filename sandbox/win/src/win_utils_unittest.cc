@@ -195,57 +195,6 @@ TEST(WinUtils, GetProcessBaseAddress) {
   EXPECT_EQ(base_address, modules[0]);
 }
 
-// This test requires an elevated prompt to setup.
-TEST(WinUtils, ConvertToLongPath) {
-  // Test setup.
-  base::FilePath orig_path;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_SYSTEM, &orig_path));
-  orig_path = orig_path.Append(L"calc.exe");
-
-  base::ScopedTempDir temp_dir;
-  base::FilePath base_path;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_COMMON_APP_DATA, &base_path));
-  ASSERT_TRUE(temp_dir.CreateUniqueTempDirUnderPath(base_path));
-
-  base::FilePath temp_path = temp_dir.GetPath().Append(L"test_calc.exe");
-  ASSERT_TRUE(base::CopyFile(orig_path, temp_path));
-
-  // WIN32 long path: "C:\ProgramData\%TEMP%\test_calc.exe"
-  wchar_t short_path[MAX_PATH] = {};
-  DWORD size =
-      ::GetShortPathNameW(temp_path.value().c_str(), short_path, MAX_PATH);
-  EXPECT_TRUE(size > 0 && size < MAX_PATH);
-  // WIN32 short path: "C:\PROGRA~3\%TEMP%\TEST_C~1.exe"
-
-  // Sanity check that we actually got a short path above!  Small chance
-  // it was disabled in the filesystem setup.
-  EXPECT_NE(temp_path.value().length(), ::wcslen(short_path));
-
-  auto short_form_native_path =
-      sandbox::GetNtPathFromWin32Path(std::wstring(short_path));
-  EXPECT_TRUE(short_form_native_path);
-  // NT short path: "\Device\HarddiskVolume4\PROGRA~3\%TEMP%\TEST_C~1.EXE"
-
-  // Test 1: convert win32 short path to long:
-  std::wstring test1(short_path);
-  EXPECT_TRUE(sandbox::ConvertToLongPath(&test1));
-  EXPECT_TRUE(::wcsicmp(temp_path.value().c_str(), test1.c_str()) == 0);
-  // Expected result: "C:\ProgramData\%TEMP%\test_calc.exe"
-
-  // Test 2: convert native short path to long:
-  std::wstring drive_letter = temp_path.value().substr(0, 3);
-  std::wstring test2(short_form_native_path.value());
-  EXPECT_TRUE(sandbox::ConvertToLongPath(&test2, &drive_letter));
-
-  size_t index = short_form_native_path->find_first_of(
-      L'\\', ::wcslen(L"\\Device\\HarddiskVolume"));
-  EXPECT_TRUE(index != std::wstring::npos);
-  std::wstring expected_result = short_form_native_path->substr(0, index + 1);
-  expected_result.append(temp_path.value().substr(3));
-  EXPECT_TRUE(::wcsicmp(expected_result.c_str(), test2.c_str()) == 0);
-  // Expected result: "\Device\HarddiskVolumeX\ProgramData\%TEMP%\test_calc.exe"
-}
-
 TEST(WinUtils, GetPathAndTypeFromHandle) {
   EXPECT_FALSE(GetPathFromHandle(nullptr));
   EXPECT_FALSE(GetTypeNameFromHandle(nullptr));

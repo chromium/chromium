@@ -19,7 +19,6 @@
 
 #include "base/numerics/safe_math.h"
 #include "base/strings/string_util.h"
-#include "base/win/pe_image.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/win_util.h"
 #include "sandbox/win/src/internal_types.h"
@@ -27,97 +26,6 @@
 #include "sandbox/win/src/sandbox_nt_util.h"
 
 namespace {
-
-const size_t kDriveLetterLen = 3;
-
-constexpr wchar_t kNTDotPrefix[] = L"\\\\.\\";
-const size_t kNTDotPrefixLen = std::size(kNTDotPrefix) - 1;
-
-bool EqualPath(const std::wstring& first,
-               const wchar_t* second,
-               size_t second_len) {
-  return _wcsnicmp(first.c_str(), second, second_len) == 0;
-}
-
-bool EqualPath(const std::wstring& first,
-               size_t first_offset,
-               const wchar_t* second,
-               size_t second_len) {
-  return _wcsnicmp(first.c_str() + first_offset, second, second_len) == 0;
-}
-
-// Returns true if |path| starts with "\??\" and returns a path without that
-// component.
-bool IsNTPath(const std::wstring& path, std::wstring* trimmed_path) {
-  if ((path.size() < sandbox::kNTPrefixLen) ||
-      !EqualPath(path, sandbox::kNTPrefix, sandbox::kNTPrefixLen)) {
-    *trimmed_path = path;
-    return false;
-  }
-
-  *trimmed_path = path.substr(sandbox::kNTPrefixLen);
-  return true;
-}
-
-// Returns true if |path| starts with "\Device\" and returns a path without that
-// component.
-bool IsDevicePath(const std::wstring& path, std::wstring* trimmed_path) {
-  if ((path.size() < sandbox::kNTDevicePrefixLen) ||
-      (!EqualPath(path, sandbox::kNTDevicePrefix,
-                  sandbox::kNTDevicePrefixLen))) {
-    *trimmed_path = path;
-    return false;
-  }
-
-  *trimmed_path = path.substr(sandbox::kNTDevicePrefixLen);
-  return true;
-}
-
-// Returns the offset to the path seperator following
-// "\Device\HarddiskVolumeX" in |path|.
-size_t PassHarddiskVolume(const std::wstring& path) {
-  static constexpr wchar_t pattern[] = L"\\Device\\HarddiskVolume";
-  const size_t patternLen = std::size(pattern) - 1;
-
-  // First, check for |pattern|.
-  if ((path.size() < patternLen) || (!EqualPath(path, pattern, patternLen)))
-    return std::wstring::npos;
-
-  // Find the next path separator, after the pattern match.
-  return path.find_first_of(L'\\', patternLen - 1);
-}
-
-// Returns true if |path| starts with "\Device\HarddiskVolumeX\" and returns a
-// path without that component.  |removed| will hold the prefix removed.
-bool IsDeviceHarddiskPath(const std::wstring& path,
-                          std::wstring* trimmed_path,
-                          std::wstring* removed) {
-  size_t offset = PassHarddiskVolume(path);
-  if (offset == std::wstring::npos)
-    return false;
-
-  // Remove up to and including the path separator.
-  *removed = path.substr(0, offset + 1);
-  // Remaining path starts after the path separator.
-  *trimmed_path = path.substr(offset + 1);
-  return true;
-}
-
-bool StartsWithDriveLetter(const std::wstring& path) {
-  if (path.size() < kDriveLetterLen)
-    return false;
-
-  if (path[1] != L':' || path[2] != L'\\')
-    return false;
-
-  return base::IsAsciiAlpha(path[0]);
-}
-
-// Removes "\\\\.\\" from the path.
-void RemoveImpliedDevice(std::wstring* path) {
-  if (EqualPath(*path, kNTDotPrefix, kNTDotPrefixLen))
-    *path = path->substr(kNTDotPrefixLen);
-}
 
 NTSTATUS WrapQueryObject(HANDLE handle,
                          OBJECT_INFORMATION_CLASS info_class,
@@ -161,111 +69,10 @@ std::unique_ptr<std::vector<uint8_t>> QueryObjectInformation(
 
 namespace sandbox {
 
-// Returns true if the provided path points to a pipe.
 bool IsPipe(const std::wstring& path) {
-  size_t start = 0;
-  if (EqualPath(path, sandbox::kNTPrefix, sandbox::kNTPrefixLen))
-    start = sandbox::kNTPrefixLen;
-
-  const wchar_t kPipe[] = L"pipe\\";
-  if (path.size() < start + std::size(kPipe) - 1)
-    return false;
-
-  return EqualPath(path, start, kPipe, std::size(kPipe) - 1);
-}
-
-// Just make a best effort here.  There are lots of corner cases that we're
-// not expecting - and will fail to make long.
-bool ConvertToLongPath(std::wstring* native_path,
-                       const std::wstring* drive_letter) {
-  if (IsPipe(*native_path))
-    return true;
-
-  bool is_device_harddisk_path = false;
-  bool is_nt_path = false;
-  bool added_implied_device = false;
-  std::wstring temp_path;
-  std::wstring to_restore;
-
-  // Process a few prefix types.
-  if (IsNTPath(*native_path, &temp_path)) {
-    // "\??\"
-    if (!StartsWithDriveLetter(temp_path)) {
-      // Prepend with "\\.\".
-      temp_path = std::wstring(kNTDotPrefix) + temp_path;
-      added_implied_device = true;
-    }
-    is_nt_path = true;
-  } else if (IsDeviceHarddiskPath(*native_path, &temp_path, &to_restore)) {
-    // "\Device\HarddiskVolumeX\" - hacky attempt making ::GetLongPathName
-    // work for native device paths.  Remove "\Device\HarddiskVolumeX\" and
-    // replace with drive letter.
-
-    // Nothing we can do if we don't have a drive letter.  Leave |native_path|
-    // as is.
-    if (!drive_letter || drive_letter->empty())
-      return false;
-    temp_path = *drive_letter + temp_path;
-    is_device_harddisk_path = true;
-  } else if (IsDevicePath(*native_path, &temp_path)) {
-    // "\Device\" - there's nothing we can do to convert to long here.
-    return false;
-  }
-
-  DWORD size = MAX_PATH;
-  std::unique_ptr<wchar_t[]> long_path_buf(new wchar_t[size]);
-
-  DWORD return_value =
-      ::GetLongPathName(temp_path.c_str(), long_path_buf.get(), size);
-  while (return_value >= size) {
-    size *= 2;
-    long_path_buf.reset(new wchar_t[size]);
-    return_value =
-        ::GetLongPathName(temp_path.c_str(), long_path_buf.get(), size);
-  }
-
-  DWORD last_error = ::GetLastError();
-  if (0 == return_value && (ERROR_FILE_NOT_FOUND == last_error ||
-                            ERROR_PATH_NOT_FOUND == last_error ||
-                            ERROR_INVALID_NAME == last_error)) {
-    // The file does not exist, but maybe a sub path needs to be expanded.
-    std::wstring::size_type last_slash = temp_path.rfind(L'\\');
-    if (std::wstring::npos == last_slash)
-      return false;
-
-    std::wstring begin = temp_path.substr(0, last_slash);
-    std::wstring end = temp_path.substr(last_slash);
-    if (!ConvertToLongPath(&begin))
-      return false;
-
-    // Ok, it worked. Let's reset the return value.
-    temp_path = begin + end;
-    return_value = 1;
-  } else if (0 != return_value) {
-    temp_path = long_path_buf.get();
-  }
-
-  // If successful, re-apply original namespace prefix before returning.
-  if (return_value != 0) {
-    if (added_implied_device)
-      RemoveImpliedDevice(&temp_path);
-
-    if (is_nt_path) {
-      *native_path = kNTPrefix;
-      *native_path += temp_path;
-    } else if (is_device_harddisk_path) {
-      // Remove the added drive letter.
-      temp_path = temp_path.substr(kDriveLetterLen);
-      *native_path = to_restore;
-      *native_path += temp_path;
-    } else {
-      *native_path = temp_path;
-    }
-
-    return true;
-  }
-
-  return false;
+  std::wstring prefix = sandbox::kNTPrefix;
+  prefix += L"pipe\\";
+  return base::StartsWith(path, prefix, base::CompareCase::INSENSITIVE_ASCII);
 }
 
 std::optional<std::wstring> GetNtPathFromWin32Path(const std::wstring& path) {
@@ -403,22 +210,3 @@ bool ContainsNulCharacter(std::wstring_view str) {
 }
 
 }  // namespace sandbox
-
-void ResolveNTFunctionPtr(const char* name, void* ptr) {
-  static volatile HMODULE ntdll = nullptr;
-
-  if (!ntdll) {
-    HMODULE ntdll_local = ::GetModuleHandle(sandbox::kNtdllName);
-    // Use PEImage to sanity-check that we have a valid ntdll handle.
-    base::win::PEImage ntdll_peimage(ntdll_local);
-    CHECK_NT(ntdll_peimage.VerifyMagic());
-    // Race-safe way to set static ntdll.
-    ::InterlockedCompareExchangePointer(
-        reinterpret_cast<PVOID volatile*>(&ntdll), ntdll_local, nullptr);
-  }
-
-  CHECK_NT(ntdll);
-  FARPROC* function_ptr = reinterpret_cast<FARPROC*>(ptr);
-  *function_ptr = ::GetProcAddress(ntdll, name);
-  CHECK_NT(*function_ptr);
-}

@@ -83,7 +83,6 @@ bool FileSystemPolicy::GenerateRules(const wchar_t* name,
   }
 
   bool is_pipe = IsPipe(mod_name);
-  ConvertToLongPath(&mod_name);
 
   // TODO(cpu) bug 32224: This prefix add is a hack because we don't have the
   // infrastructure to normalize names. In any case we need to escape the

@@ -384,7 +384,6 @@ TEST(FilePolicyTest, AllowImplicitDeviceName) {
   ASSERT_NE(::GetTempFileName(temp_directory, L"test", 0, temp_file_name), 0u);
 
   std::wstring path(temp_file_name);
-  EXPECT_TRUE(ConvertToLongPath(&path));
   auto opt_nt_path = GetNtPathFromWin32Path(path);
   EXPECT_TRUE(opt_nt_path);
   path = opt_nt_path->substr(sandbox::kNTDevicePrefixLen);

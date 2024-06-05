@@ -83,15 +83,6 @@ bool FilesystemDispatcher::SetupService(InterceptionManager* manager,
   }
 }
 
-bool PreProcessName(std::wstring* path) {
-  // The file path should never have an embedded NUL character.
-  if (ContainsNulCharacter(*path)) {
-    return false;
-  }
-  ConvertToLongPath(path);
-  return true;
-}
-
 bool ValidateFileOptions(uint32_t options) {
   // Validate file options passed to NtCreateFile or NtOpenFile. Blocks use of
   // rare options. This includes blocking calls with special information in
@@ -109,7 +100,7 @@ bool FilesystemDispatcher::NtCreateFile(IPCInfo* ipc,
                                         uint32_t share_access,
                                         uint32_t create_disposition,
                                         uint32_t create_options) {
-  if (!ValidateFileOptions(create_options) || !PreProcessName(name)) {
+  if (!ValidateFileOptions(create_options) || ContainsNulCharacter(*name)) {
     ipc->return_info.nt_status = STATUS_ACCESS_DENIED;
     return true;
   }
@@ -139,7 +130,7 @@ bool FilesystemDispatcher::NtOpenFile(IPCInfo* ipc,
                                       uint32_t desired_access,
                                       uint32_t share_access,
                                       uint32_t open_options) {
-  if (!ValidateFileOptions(open_options) || !PreProcessName(name)) {
+  if (!ValidateFileOptions(open_options) || ContainsNulCharacter(*name)) {
     ipc->return_info.nt_status = STATUS_ACCESS_DENIED;
     return true;
   }
@@ -169,7 +160,7 @@ bool FilesystemDispatcher::NtQueryAttributesFile(IPCInfo* ipc,
   if (sizeof(FILE_BASIC_INFORMATION) != info->Size())
     return false;
 
-  if (!PreProcessName(name)) {
+  if (ContainsNulCharacter(*name)) {
     ipc->return_info.nt_status = STATUS_ACCESS_DENIED;
     return true;
   }
@@ -198,7 +189,7 @@ bool FilesystemDispatcher::NtQueryFullAttributesFile(IPCInfo* ipc,
   if (sizeof(FILE_NETWORK_OPEN_INFORMATION) != info->Size())
     return false;
 
-  if (!PreProcessName(name)) {
+  if (ContainsNulCharacter(*name)) {
     ipc->return_info.nt_status = STATUS_ACCESS_DENIED;
     return true;
   }
@@ -240,7 +231,7 @@ bool FilesystemDispatcher::NtSetInformationFile(IPCInfo* ipc,
   std::wstring name;
   name.assign(rename_info->FileName,
               rename_info->FileNameLength / sizeof(rename_info->FileName[0]));
-  if (!PreProcessName(&name)) {
+  if (ContainsNulCharacter(name)) {
     ipc->return_info.nt_status = STATUS_ACCESS_DENIED;
     return true;
   }
