@@ -1,4 +1,5 @@
 include_rules = [
+  "+components/page_image_service",
   "+ios/chrome/browser/ui/authentication/signin/signin_constants.h",
   "+ios/chrome/browser/ui/credential_provider_promo",
   "+ios/chrome/browser/ui/first_run/first_run_util.h",

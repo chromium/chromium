@@ -71,6 +71,7 @@
 #import "ios/chrome/browser/metrics/model/ios_profile_session_durations_service_factory.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/page_content_annotations/model/page_content_annotations_service_factory.h"
+#import "ios/chrome/browser/page_image/model/page_image_service_factory.h"
 #import "ios/chrome/browser/page_info/about_this_site_service_factory.h"
 #import "ios/chrome/browser/passwords/model/credentials_cleaner_runner_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
@@ -269,6 +270,7 @@ void EnsureBrowserStateKeyedServiceFactoriesBuilt() {
   ModelTypeStoreServiceFactory::GetInstance();
   OhttpKeyServiceFactory::GetInstance();
   OptimizationGuideServiceFactory::GetInstance();
+  PageImageServiceFactory::GetInstance();
   PhotosServiceFactory::GetInstance();
   PlusAddressServiceFactory::GetInstance();
   PlusAddressSettingServiceFactory::GetInstance();

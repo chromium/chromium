@@ -23,4 +23,15 @@
   return ContentSuggestionsModuleType::kTabResumption;
 }
 
+- (void)reconfigureWithItem:(TabResumptionItem*)item {
+  DCHECK(self.commandHandler == item.commandHandler);
+  _itemType = item.itemType;
+  _sessionName = item.sessionName;
+  _tabTitle = item.tabTitle;
+  _tabURL = item.tabURL;
+  _syncedTime = item.syncedTime;
+  _faviconImage = item.faviconImage;
+  _salientImage = item.salientImage;
+}
+
 @end

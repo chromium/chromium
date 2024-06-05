@@ -9,6 +9,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/time/time.h"
 #import "components/url_formatter/elide_url.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_commands.h"
@@ -24,6 +25,7 @@
 namespace {
 
 // Favicon constants.
+const CGFloat kSalientImageSize = 48.0;
 const CGFloat kFaviconSize = 24.0;
 const CGFloat kFavIconCornerRadius = 5.0;
 const CGFloat kFaviconBackgroundSize = 30.0;
@@ -146,8 +148,12 @@ const CGFloat kLabelStackSpacing = 5.0;
   faviconBackgroundView.backgroundColor = UIColor.whiteColor;
   [faviconContainerView addSubview:faviconBackgroundView];
 
+  CGFloat imageSize = kFaviconSize;
   UIImageView* faviconImageView = [[UIImageView alloc] init];
-  if (_item.faviconImage) {
+  if (_item.salientImage && IsTabResumption1_5Enabled()) {
+    faviconImageView.image = _item.salientImage;
+    imageSize = kSalientImageSize;
+  } else if (_item.faviconImage) {
     faviconImageView.image = _item.faviconImage;
   } else {
     // If the `faviconImage` property is nil, add a default symbol icon.
@@ -172,8 +178,8 @@ const CGFloat kLabelStackSpacing = 5.0;
         constraintEqualToConstant:kFaviconBackgroundSize],
     [faviconBackgroundView.heightAnchor
         constraintEqualToConstant:kFaviconBackgroundSize],
-    [faviconImageView.widthAnchor constraintEqualToConstant:kFaviconSize],
-    [faviconImageView.heightAnchor constraintEqualToConstant:kFaviconSize],
+    [faviconImageView.widthAnchor constraintEqualToConstant:imageSize],
+    [faviconImageView.heightAnchor constraintEqualToConstant:imageSize],
   ]];
   AddSameCenterConstraints(faviconBackgroundView, faviconContainerView);
   AddSameCenterConstraints(faviconImageView, faviconContainerView);

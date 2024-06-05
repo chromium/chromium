@@ -7,6 +7,9 @@
 #import "base/apple/foundation_util.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/page_image_service/features.h"
+#import "components/page_image_service/image_service.h"
+#import "components/page_image_service/mojom/page_image_service.mojom.h"
 #import "components/sessions/core/session_id.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/sync/base/user_selectable_type.h"
@@ -21,6 +24,7 @@
 #import "ios/chrome/browser/metrics/model/new_tab_page_uma.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp_tiles/model/tab_resumption/tab_resumption_prefs.h"
+#import "ios/chrome/browser/page_image/model/page_image_service_factory.h"
 #import "ios/chrome/browser/sessions/session_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -53,6 +57,7 @@
 #import "ios/chrome/browser/visited_url_ranking/model/visited_url_ranking_service_factory.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
+#import "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace {
 
@@ -91,6 +96,9 @@ const visited_url_ranking::URLVisitAggregate::TabData* ExtractTabData(
   }
   return nullptr;
 }
+
+// Salient images should come from gstatic.com.
+const char kGStatic[] = ".gstatic.com";
 
 }  // namespace
 
@@ -133,9 +141,12 @@ const visited_url_ranking::URLVisitAggregate::TabData* ExtractTabData(
   // KeyedService for Tab resumption 2.0.
   raw_ptr<visited_url_ranking::VisitedURLRankingService>
       _visitedURLRankingService;
+  // KeyedService for Salient images.
+  raw_ptr<page_image_service::ImageService> _pageImageService;
   // Observer bridge for mediator to listen to
   // StartSurfaceRecentTabObserverBridge.
   std::unique_ptr<StartSurfaceRecentTabObserverBridge> _startSurfaceObserver;
+  std::unique_ptr<image_fetcher::ImageDataFetcher> _imageFetcher;
 
   std::unique_ptr<SyncObserverBridge> _syncObserverModelBridge;
   // Observer for changes to the user's identity state.
@@ -179,6 +190,12 @@ const visited_url_ranking::URLVisitAggregate::TabData* ExtractTabData(
         std::make_unique<StartSurfaceRecentTabObserverBridge>(self);
     StartSurfaceRecentTabBrowserAgent::FromBrowser(_browser)->AddObserver(
         _startSurfaceObserver.get());
+    if (IsTabResumption1_5Enabled()) {
+      _pageImageService =
+          PageImageServiceFactory::GetForBrowserState(browserState);
+    }
+    _imageFetcher = std::make_unique<image_fetcher::ImageDataFetcher>(
+        browserState->GetSharedURLLoaderFactory());
 
     if (IsTabResumption2_0Enabled()) {
       _visitedURLRankingService =
@@ -431,30 +448,100 @@ const visited_url_ranking::URLVisitAggregate::TabData* ExtractTabData(
   }
 }
 
+// Fetches a relevant image for the `item` to display.
+- (void)fetchImageForItem:(TabResumptionItem*)item {
+  if (IsTabResumption1_5Enabled() && _pageImageService &&
+      base::FeatureList::IsEnabled(page_image_service::kImageService)) {
+    [self fetchSalientImageForItem:item];
+  } else {
+    [self fetchFaviconForItem:item];
+  }
+}
+
+// Fetches the salient image for `item`.
+- (void)fetchSalientImageForItem:(TabResumptionItem*)item {
+  __weak TabResumptionMediator* weakSelf = self;
+  page_image_service::mojom::Options options;
+  options.optimization_guide_images = true;
+  options.suggest_images = false;
+  _pageImageService->FetchImageFor(
+      page_image_service::mojom::ClientId::NtpTabResumption, item.tabURL,
+      options, base::BindOnce(^(const GURL& URL) {
+        [weakSelf salientImageURLReceived:URL forItem:item];
+      }));
+}
+
+// The URL for the salient image has been received. Download the image if it
+// is valid or fallbacks to favicon.
+- (void)salientImageURLReceived:(const GURL&)URL
+                        forItem:(TabResumptionItem*)item {
+  __weak TabResumptionMediator* weakSelf = self;
+  if (!URL.is_valid() || !URL.SchemeIsCryptographic() ||
+      !base::EndsWith(URL.host(), kGStatic)) {
+    [self fetchFaviconForItem:item];
+    return;
+  }
+  _imageFetcher->FetchImageData(
+      URL,
+      base::BindOnce(^(const std::string& imageData,
+                       const image_fetcher::RequestMetadata& metadata) {
+        [weakSelf salientImageReceived:imageData forItem:item];
+      }),
+      NO_TRAFFIC_ANNOTATION_YET);
+}
+
+// Salient image has been received. Display it.
+- (void)salientImageReceived:(const std::string&)imageData
+                     forItem:(TabResumptionItem*)item {
+  UIImage* image =
+      [UIImage imageWithData:[NSData dataWithBytes:imageData.c_str()
+                                            length:imageData.size()]];
+  if (!image) {
+    [self fetchFaviconForItem:item];
+    return;
+  }
+  item.salientImage = image;
+  [self showItem:item];
+}
+
+// Fetches the favicon for `item`.
 - (void)fetchFaviconForItem:(TabResumptionItem*)item {
   __weak TabResumptionMediator* weakSelf = self;
+
   _faviconLoader->FaviconForPageUrl(
       item.tabURL, kDesiredSmallFaviconSizePt, kMinFaviconSizePt,
       /*fallback_to_google_server=*/true, ^(FaviconAttributes* attributes) {
-        TabResumptionMediator* strongSelf = weakSelf;
-        if (strongSelf && !attributes.usesDefaultImage) {
-          if ([UIImagePNGRepresentation(item.faviconImage)
-                  isEqual:UIImagePNGRepresentation(attributes.faviconImage)]) {
-            return;
-          }
-          item.faviconImage = attributes.faviconImage;
-          TabResumptionItem* previousItem = strongSelf.itemConfig;
-          strongSelf.itemConfig = item;
-          if (previousItem && IsIOSMagicStackCollectionViewEnabled()) {
-            [strongSelf.delegate
-                tabResumptionHelperDidReplaceItem:previousItem];
-          } else {
-            [strongSelf.delegate tabResumptionHelperDidReceiveItem];
-          }
-        }
+        [weakSelf faviconReceived:attributes forItem:item];
       });
 }
 
+// The favicon has been received. Display it.
+- (void)faviconReceived:(FaviconAttributes*)attributes
+                forItem:(TabResumptionItem*)item {
+  if (!attributes.usesDefaultImage) {
+    if ([UIImagePNGRepresentation(item.faviconImage)
+            isEqual:UIImagePNGRepresentation(attributes.faviconImage)]) {
+      return;
+    }
+    item.faviconImage = attributes.faviconImage;
+    [self showItem:item];
+  }
+}
+
+// Sends `item` to  TabResumption to be displayed.
+- (void)showItem:(TabResumptionItem*)item {
+  if (!self.itemConfig || !IsIOSMagicStackCollectionViewEnabled()) {
+    self.itemConfig = item;
+    [self.delegate tabResumptionHelperDidReceiveItem];
+    return;
+  }
+  // The item is already used by some view, so it cannot be replaced.
+  // Instead the existing config must be updated.
+  [self.itemConfig reconfigureWithItem:item];
+  [self.delegate tabResumptionHelperDidReconfigureItem];
+}
+
+// Creates a TabResumptionItem corresponding to the last synced tab.
 - (void)fetchLastSyncedTabItemFromLastActiveDistantTab:
             (const synced_sessions::DistantTab*)tab
                                                session:(const synced_sessions::
@@ -471,13 +558,14 @@ const visited_url_ranking::URLVisitAggregate::TabData* ExtractTabData(
   item.commandHandler = self;
   item.delegate = self;
   item.shouldShowSeeMore = IsTabResumption1_5Enabled();
-
-  // Fetch the favicon.
-  [self fetchFaviconForItem:item];
+  if (IsTabResumption1_5Enabled()) {
+    [self showItem:item];
+  }
+  // Fetch the image.
+  [self fetchImageForItem:item];
 }
 
-// Creates a TabResumptionItem corresponding to the last synced tab then
-// asynchronously invokes `item_block_handler` and exits.
+// Creates a TabResumptionItem corresponding to the `webState`.
 - (void)fetchMostRecentTabItemFromWebState:(web::WebState*)webState
                                 openedTime:(base::Time)openedTime {
   TabResumptionItem* item = [[TabResumptionItem alloc]
@@ -488,9 +576,11 @@ const visited_url_ranking::URLVisitAggregate::TabData* ExtractTabData(
   item.commandHandler = self;
   item.delegate = self;
   item.shouldShowSeeMore = IsTabResumption1_5Enabled();
-
-  // Fetch the favicon.
-  [self fetchFaviconForItem:item];
+  if (IsTabResumption1_5Enabled()) {
+    [self showItem:item];
+  }
+  // Fetch the image.
+  [self fetchImageForItem:item];
 }
 
 #pragma mark - Private method for Tab resumption 2.0 tab fetch.
@@ -544,6 +634,7 @@ const visited_url_ranking::URLVisitAggregate::TabData* ExtractTabData(
   item.tabTitle = base::SysUTF16ToNSString(tab.visit.title);
   item.syncedTime = tab.visit.last_modified;
   item.tabURL = tab.visit.url;
+  item.shouldShowSeeMore = IsTabResumption1_5Enabled();
   item.commandHandler = self;
   if (tab.id > 0 && tab.session_tag && !isLocal) {
     item.sessionName = base::SysUTF8ToNSString(tab.session_name.value());

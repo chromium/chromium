@@ -103,6 +103,11 @@
   [self.magicStackConsumer removeItem:item];
 }
 
+- (void)magicStackRankingModel:(MagicStackRankingModel*)model
+            didReconfigureItem:(MagicStackModule*)item {
+  [self.magicStackConsumer reconfigureItem:item];
+}
+
 #pragma mark - Private
 
 - (void)configureConsumer {

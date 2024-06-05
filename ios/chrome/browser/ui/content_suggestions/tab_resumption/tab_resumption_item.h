@@ -43,8 +43,11 @@ enum TabResumptionItemType {
 // The time when the tab was synced.
 @property(nonatomic, assign) base::Time syncedTime;
 
-// The favicon image of the tab.
+// The favicon image of the tab if any.
 @property(nonatomic, strong) UIImage* faviconImage;
+
+// The favicon image of the tab if any.
+@property(nonatomic, strong) UIImage* salientImage;
 
 // Command handler for user actions.
 @property(nonatomic, weak) id<TabResumptionCommands> commandHandler;
@@ -54,6 +57,9 @@ enum TabResumptionItemType {
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
+
+// Replaces all `self` properties by `item` ones.
+- (void)reconfigureWithItem:(TabResumptionItem*)item;
 
 @end
 

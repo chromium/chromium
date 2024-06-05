@@ -211,16 +211,14 @@
   [self showTabResumptionWithItem:_tabResumptionMediator.itemConfig];
 }
 
-- (void)tabResumptionHelperDidReplaceItem:(TabResumptionItem*)oldItem {
+- (void)tabResumptionHelperDidReconfigureItem {
   if (tab_resumption_prefs::IsTabResumptionDisabled(_localState)) {
     return;
   }
 
   if (IsIOSMagicStackCollectionViewEnabled()) {
     TabResumptionItem* item = _tabResumptionMediator.itemConfig;
-    [self.delegate magicStackRankingModel:self
-                           didReplaceItem:oldItem
-                                 withItem:item];
+    [self.delegate magicStackRankingModel:self didReconfigureItem:item];
     return;
   }
 }

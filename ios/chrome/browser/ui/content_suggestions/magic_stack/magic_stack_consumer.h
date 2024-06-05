@@ -22,6 +22,9 @@
 // Remove `item` from the Magic Stack.
 - (void)removeItem:(MagicStackModule*)item;
 
+// Reconfigure existing item.
+- (void)reconfigureItem:(MagicStackModule*)item;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_MAGIC_STACK_MAGIC_STACK_CONSUMER_H_

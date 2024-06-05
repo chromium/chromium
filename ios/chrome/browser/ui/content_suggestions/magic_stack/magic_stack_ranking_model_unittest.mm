@@ -198,6 +198,10 @@ std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
                  didRemoveItem:(MagicStackModule*)item {
 }
 
+- (void)magicStackRankingModel:(MagicStackRankingModel*)model
+            didReconfigureItem:(MagicStackModule*)item {
+}
+
 @end
 
 // Expose -hasReceivedMagicStackResponse for waiting for ranking to return.

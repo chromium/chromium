@@ -795,6 +795,10 @@ extern const char
 extern const char kPageContentAnnotationsRemotePageMetadataName[];
 extern const char kPageContentAnnotationsRemotePageMetadataDescription[];
 
+// Title and description for the flag to enable salient images.
+extern const char kPageImageServiceSalientImageName[];
+extern const char kPageImageServiceSalientImageDescription[];
+
 // Title and description for the flag to enable page visibility.
 extern const char kPageVisibilityPageContentAnnotationsName[];
 extern const char kPageVisibilityPageContentAnnotationsDescription[];

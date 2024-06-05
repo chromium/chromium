@@ -16,6 +16,7 @@ source_set("tab_resumption") {
   deps = [
     ":constants",
     "//base",
+    "//components/page_image_service",
     "//components/sessions:session_id",
     "//components/signin/public/identity_manager/objc",
     "//components/sync/base",
@@ -29,6 +30,7 @@ source_set("tab_resumption") {
     "//ios/chrome/browser/metrics/model:metrics_internal",
     "//ios/chrome/browser/ntp/model",
     "//ios/chrome/browser/ntp_tiles/model/tab_resumption:tab_resumption_prefs",
+    "//ios/chrome/browser/page_image/model",
     "//ios/chrome/browser/sessions:session_util",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",

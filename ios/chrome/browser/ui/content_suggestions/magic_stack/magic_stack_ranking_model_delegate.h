@@ -29,6 +29,10 @@
 - (void)magicStackRankingModel:(MagicStackRankingModel*)model
                  didRemoveItem:(MagicStackModule*)item;
 
+// Indicates that `item` should be reconfigured.
+- (void)magicStackRankingModel:(MagicStackRankingModel*)model
+            didReconfigureItem:(MagicStackModule*)item;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_MAGIC_STACK_MAGIC_STACK_RANKING_MODEL_DELEGATE_H_

@@ -50,6 +50,7 @@
 #import "components/optimization_guide/core/optimization_guide_features.h"
 #import "components/optimization_guide/core/optimization_guide_switches.h"
 #import "components/page_content_annotations/core/page_content_annotations_features.h"
+#import "components/page_image_service/features.h"
 #import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/payments/core/features.h"
@@ -686,6 +687,11 @@ const FeatureEntry::FeatureVariation kModernTabStripVariations[] = {
      std::size(kModernTabStripNTBDynamic), nullptr},
     {"New tab button static", kModernTabStripNTBStatic,
      std::size(kModernTabStripNTBStatic), nullptr},
+};
+
+const FeatureEntry::FeatureVariation
+    kImageServiceOptimizationGuideSalientImagesVariations[] = {
+        {"High Performance Canonicalization", nullptr, 0, "3362133"},
 };
 
 // To add a new entry, add to the end of kFeatureEntries. There are four
@@ -1667,6 +1673,14 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"tab-resumption-2", flag_descriptions::kTabResumption2Name,
      flag_descriptions::kTabResumption2Description, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kTabResumption2)},
+    {"page-image-service-optimization-guide-salient-images",
+     flag_descriptions::kPageImageServiceSalientImageName,
+     flag_descriptions::kPageImageServiceSalientImageDescription,
+     flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         page_image_service::kImageServiceOptimizationGuideSalientImages,
+         kImageServiceOptimizationGuideSalientImagesVariations,
+         "PageImageService")},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

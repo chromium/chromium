@@ -16,8 +16,8 @@ enum class ContentSuggestionsModuleType;
 // Signals that the TabResumptionHelper received a new item configuration.
 - (void)tabResumptionHelperDidReceiveItem;
 
-// Signals that `oldItem` has been replaced by a more recent item configuration.
-- (void)tabResumptionHelperDidReplaceItem:(TabResumptionItem*)oldItem;
+// Signals that the TabResumptionHelper did reconfignure the existing item.
+- (void)tabResumptionHelperDidReconfigureItem;
 
 // Signals that the Tab Resumption module should be removed.
 - (void)removeTabResumptionModule;

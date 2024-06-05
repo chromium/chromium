@@ -179,6 +179,17 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
   [self.diffableDataSource applySnapshot:snapshot animatingDifferences:NO];
 }
 
+- (void)reconfigureItem:(MagicStackModule*)item {
+  NSIndexPath* existingItemIndexPath =
+      [self.diffableDataSource indexPathForItemIdentifier:item];
+  if (!existingItemIndexPath) {
+    return;
+  }
+  MagicStackSnapshot* snapshot = [self.diffableDataSource snapshot];
+  [snapshot reconfigureItemsWithIdentifiers:@[ item ]];
+  [self.diffableDataSource applySnapshot:snapshot animatingDifferences:NO];
+}
+
 #pragma mark - UIScrollViewDelegate
 
 - (void)scrollViewWillEndDragging:(UIScrollView*)scrollView

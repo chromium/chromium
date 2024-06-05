@@ -890,6 +890,12 @@ const char kPageContentAnnotationsName[] = "Page content annotations";
 const char kPageContentAnnotationsDescription[] =
     "Enables page content to be annotated on-device.";
 
+const char kPageImageServiceSalientImageName[] =
+    "Page Image Service - Optimization Guide Salient Images";
+extern const char kPageImageServiceSalientImageDescription[] =
+    "Enables the PageImageService fetching images from the Optimization Guide "
+    "Salient Images source.";
+
 const char kPageContentAnnotationsPersistSalientImageMetadataName[] =
     "Page content annotations - Persist salient image metadata";
 const char kPageContentAnnotationsPersistSalientImageMetadataDescription[] =
