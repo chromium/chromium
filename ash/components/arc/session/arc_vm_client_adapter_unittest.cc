@@ -2513,6 +2513,78 @@ TEST_F(ArcVmClientAdapterTest, StartMiniArc_ArcSwitchToKeymint_Default) {
   EXPECT_FALSE(request.mini_instance_request().arc_switch_to_keymint());
 }
 
+TEST_F(ArcVmClientAdapterTest, StartMiniArc_EnableArcAttestation_Default) {
+  StartMiniArc();
+  EXPECT_GE(GetTestConciergeClient()->start_arc_vm_call_count(), 1);
+  EXPECT_FALSE(is_system_shutdown().has_value());
+  const auto& request = GetTestConciergeClient()->start_arc_vm_request();
+  EXPECT_FALSE(request.mini_instance_request().enable_arc_attestation());
+}
+
+TEST_F(ArcVmClientAdapterTest, StartMiniArc_EnableArcAttestation_Enabled) {
+  base::test::ScopedChromeOSVersionInfo version(
+      base::StringPrintf("CHROMEOS_ARC_ANDROID_SDK_VERSION=%d",
+                         arc::kArcVersionT),
+      base::Time::Now());
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureStates(
+      {{arc::kEnableArcAttestation, true}, {arc::kSwitchToKeyMintOnT, true}});
+  StartMiniArc();
+
+  EXPECT_GE(GetTestConciergeClient()->start_arc_vm_call_count(), 1);
+  EXPECT_FALSE(is_system_shutdown().has_value());
+  const auto& request = GetTestConciergeClient()->start_arc_vm_request();
+  EXPECT_TRUE(request.mini_instance_request().enable_arc_attestation());
+}
+
+TEST_F(ArcVmClientAdapterTest, StartMiniArc_EnableArcAttestation_DisabledOnR) {
+  base::test::ScopedChromeOSVersionInfo version(
+      base::StringPrintf("CHROMEOS_ARC_ANDROID_SDK_VERSION=%d",
+                         arc::kArcVersionR),
+      base::Time::Now());
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureStates(
+      {{arc::kEnableArcAttestation, true}, {arc::kSwitchToKeyMintOnT, true}});
+  StartMiniArc();
+
+  EXPECT_GE(GetTestConciergeClient()->start_arc_vm_call_count(), 1);
+  EXPECT_FALSE(is_system_shutdown().has_value());
+  const auto& request = GetTestConciergeClient()->start_arc_vm_request();
+  EXPECT_FALSE(request.mini_instance_request().enable_arc_attestation());
+}
+
+TEST_F(ArcVmClientAdapterTest, StartMiniArc_EnableArcAttestation_DisabledOnT) {
+  base::test::ScopedChromeOSVersionInfo version(
+      base::StringPrintf("CHROMEOS_ARC_ANDROID_SDK_VERSION=%d",
+                         arc::kArcVersionT),
+      base::Time::Now());
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureStates(
+      {{arc::kEnableArcAttestation, false}, {arc::kSwitchToKeyMintOnT, true}});
+  StartMiniArc();
+
+  EXPECT_GE(GetTestConciergeClient()->start_arc_vm_call_count(), 1);
+  EXPECT_FALSE(is_system_shutdown().has_value());
+  const auto& request = GetTestConciergeClient()->start_arc_vm_request();
+  EXPECT_FALSE(request.mini_instance_request().enable_arc_attestation());
+}
+
+TEST_F(ArcVmClientAdapterTest,
+       StartMiniArc_EnableArcAttestation_KeymintDisabled) {
+  base::test::ScopedChromeOSVersionInfo version(
+      base::StringPrintf("CHROMEOS_ARC_ANDROID_SDK_VERSION=%d",
+                         arc::kArcVersionT),
+      base::Time::Now());
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureState(arc::kSwitchToKeyMintOnT, false);
+  StartMiniArc();
+
+  EXPECT_GE(GetTestConciergeClient()->start_arc_vm_call_count(), 1);
+  EXPECT_FALSE(is_system_shutdown().has_value());
+  const auto& request = GetTestConciergeClient()->start_arc_vm_request();
+  EXPECT_FALSE(request.mini_instance_request().enable_arc_attestation());
+}
+
 // Test that the value of swappiness is default value when kGuestZram is
 // disabled.
 TEST_F(ArcVmClientAdapterTest, ArcGuestZramDisabledSwappiness) {

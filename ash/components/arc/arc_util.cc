@@ -549,6 +549,12 @@ bool ShouldUseArcKeyMint() {
           base::FeatureList::IsEnabled(kSwitchToKeyMintOnTOverride));
 }
 
+bool ShouldUseArcAttestation() {
+  // Attesation depends on keymint.
+  return ShouldUseArcKeyMint() &&
+         base::FeatureList::IsEnabled(kEnableArcAttestation);
+}
+
 int GetDaysUntilArcVmDataMigrationDeadline(PrefService* prefs) {
   if (GetArcVmDataMigrationStatus(prefs) ==
       ArcVmDataMigrationStatus::kStarted) {

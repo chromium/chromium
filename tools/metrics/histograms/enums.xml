@@ -20562,6 +20562,7 @@ from previous Chrome versions.
   <int value="89934221" label="MediaAppPhotosIntegrationImage:disabled"/>
   <int value="90551098" label="UseWallpaperStagingUrl:enabled"/>
   <int value="90673685" label="cast-mirroring-target-playout-delay"/>
+  <int value="91508297" label="ArcAttestation:enabled"/>
   <int value="91780047" label="TabGroupsSaveUIUpdate:disabled"/>
   <int value="91916443" label="ManagedConfiguration:disabled"/>
   <int value="91938915" label="enable-suggestions-service"/>
@@ -22841,6 +22842,7 @@ from previous Chrome versions.
   <int value="1087235172" label="file-manager-enable-new-audio-player"/>
   <int value="1088880545" label="ShelfStackedHotseat:enabled"/>
   <int value="1088915385" label="new-password-form-parsing:enabled"/>
+  <int value="1089014363" label="ArcAttestation:disabled"/>
   <int value="1089106835" label="ContextMenuPopupStyle:enabled"/>
   <int value="1089913432" label="VirtualDesksGestures:disabled"/>
   <int value="1090324500" label="EcheLauncher:enabled"/>

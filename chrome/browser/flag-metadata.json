@@ -293,6 +293,11 @@
     "expiry_milestone": 98
   },
   {
+    "name": "arc-enable-attestation",
+    "owners": [ "batoon@google.com", "vraheja@google.com" ],
+    "expiry_milestone": 135
+  },
+  {
     "name": "arc-enable-virtio-blk-for-data",
     "owners": [ "niwa@chromium.org" ],
     "expiry_milestone": 130

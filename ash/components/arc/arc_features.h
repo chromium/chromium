@@ -25,6 +25,7 @@ BASE_DECLARE_FEATURE(kDeferArcActivationUntilUserSessionStartUpTaskCompletion);
 extern const base::FeatureParam<int> kDeferArcActivationHistoryWindow;
 extern const base::FeatureParam<int> kDeferArcActivationHistoryThreshold;
 BASE_DECLARE_FEATURE(kDocumentsProviderUnknownSizeFeature);
+BASE_DECLARE_FEATURE(kEnableArcAttestation);
 BASE_DECLARE_FEATURE(kEnableArcIdleManager);
 extern const base::FeatureParam<bool> kEnableArcIdleManagerIgnoreBatteryForPLT;
 extern const base::FeatureParam<int> kEnableArcIdleManagerDelayMs;

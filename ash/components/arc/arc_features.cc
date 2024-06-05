@@ -78,6 +78,11 @@ BASE_FEATURE(kDocumentsProviderUnknownSizeFeature,
              "ArcDocumentsProviderUnknownSize",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether attestation will be used on ARCVM.
+BASE_FEATURE(kEnableArcAttestation,
+             "ArcAttestation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether we automatically send ARCVM into Doze mode
 // when it is mostly idle - even if Chrome is still active.
 BASE_FEATURE(kEnableArcIdleManager,

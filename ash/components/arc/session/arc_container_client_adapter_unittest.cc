@@ -238,6 +238,15 @@ TEST_F(ArcContainerClientAdapterTest,
   EXPECT_FALSE(upgrade_request.skip_tts_cache());
 }
 
+TEST_F(ArcContainerClientAdapterTest, StartArc_EnableArcAttestationDefault) {
+  StartParams start_params;
+  client_adapter()->StartMiniArc(std::move(start_params),
+                                 base::BindOnce(&OnMiniInstanceStarted));
+  const auto& request = ash::FakeSessionManagerClient::Get()
+                            ->last_start_arc_mini_container_request();
+  EXPECT_FALSE(request.enable_arc_attestation());
+}
+
 struct DalvikMemoryProfileTestParam {
   // Requested profile.
   StartParams::DalvikMemoryProfile profile;

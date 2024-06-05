@@ -5715,6 +5715,10 @@ const char kArcDocumentsProviderUnknownSizeName[] =
 const char kArcDocumentsProviderUnknownSizeDescription[] =
     "Allow opening DocumentsProvider files where size is not reported.";
 
+const char kArcEnableAttestationName[] = "Enable ARC attestation";
+const char kArcEnableAttestationDescription[] =
+    "Allow key and ID attestation to run for keymint";
+
 const char kArcExtendInputAnrTimeoutName[] =
     "Extend input event ANR timeout time";
 const char kArcExtendInputAnrTimeoutDescription[] =

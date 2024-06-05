@@ -463,6 +463,7 @@ void ArcSessionImpl::DoStartMiniInstance(size_t num_cores_disabled) {
   params.enable_privacy_hub_for_chrome =
       base::FeatureList::IsEnabled(ash::features::kCrosPrivacyHub);
   params.arc_switch_to_keymint = ShouldUseArcKeyMint();
+  params.enable_arc_attestation = ShouldUseArcAttestation();
   params.use_virtio_blk_data = use_virtio_blk_data_;
   params.arc_signed_in = arc_signed_in_;
 

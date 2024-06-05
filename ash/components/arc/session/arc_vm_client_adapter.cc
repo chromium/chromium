@@ -446,6 +446,8 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
       base::FeatureList::IsEnabled(ash::features::kCrosPrivacyHub));
   if (GetArcAndroidSdkVersionAsInt() == kArcVersionT) {
     mini_instance_request->set_arc_switch_to_keymint(ShouldUseArcKeyMint());
+    mini_instance_request->set_enable_arc_attestation(
+        ShouldUseArcAttestation());
   }
 
   request.set_enable_broadcast_anr_prenotify(

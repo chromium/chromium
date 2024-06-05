@@ -107,6 +107,10 @@ struct StartParams {
 
   // Flag that indicates whether ARC is already signed in.
   bool arc_signed_in = false;
+
+  // Flag that would enable ARC Attestation, and would make ARC
+  // RemotelyProvisionedComponentDevice visible to Keystore.
+  bool enable_arc_attestation = false;
 };
 
 }  // namespace arc
