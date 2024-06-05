@@ -103,6 +103,18 @@ void WebNavigationParams::FillStaticResponse(WebNavigationParams* params,
   FillBodyLoader(params, data);
 }
 
+// static
+void WebNavigationParams::FillStaticResponse(WebNavigationParams* params,
+                                             WebString mime_type,
+                                             WebString text_encoding,
+                                             SharedBuffer* data) {
+  params->response = WebURLResponse(params->url);
+  params->response.SetMimeType(mime_type);
+  params->response.SetTextEncodingName(text_encoding);
+  params->response.SetHttpStatusCode(params->http_status_code);
+  FillBodyLoader(params, WebData(data));
+}
+
 WebNavigationParams::PrefetchedSignedExchange::PrefetchedSignedExchange() =
     default;
 WebNavigationParams::PrefetchedSignedExchange::~PrefetchedSignedExchange() =

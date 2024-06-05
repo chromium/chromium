@@ -952,12 +952,9 @@ static void FillStaticResponseIfNeeded(WebNavigationParams* params,
     params->body_loader.reset();
     ArchiveResource* archive_resource = archive->SubresourceForURL(url);
     if (archive_resource) {
-      SharedBuffer* archive_data = archive_resource->Data();
       WebNavigationParams::FillStaticResponse(
           params, archive_resource->MimeType(),
-          archive_resource->TextEncoding(),
-          base::make_span(archive_data->FlattenIfNeededAndGetData(),
-                          archive_data->size()));
+          archive_resource->TextEncoding(), archive_resource->Data());
     } else {
       // The requested archive resource does not exist. In an ideal world, this
       // would commit as a failed navigation, but the browser doesn't know

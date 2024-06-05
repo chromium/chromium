@@ -246,6 +246,12 @@ struct BLINK_EXPORT WebNavigationParams {
                                  WebString mime_type,
                                  WebString text_encoding,
                                  base::span<const char> data);
+#if INSIDE_BLINK
+  static void FillStaticResponse(WebNavigationParams*,
+                                 WebString mime_type,
+                                 WebString text_encoding,
+                                 SharedBuffer* data);
+#endif
 
   // This block defines the request used to load the main resource
   // for this navigation.
