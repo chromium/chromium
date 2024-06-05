@@ -118,11 +118,13 @@ bool IsUnconsentedSignedInOAuth2Scopes(const std::string& scope) {
       // identity system.
       GaiaConstants::kOAuth1LoginScope,
 
+      // Required by the Google Calendar NTP module and ChromeOS.
+      GaiaConstants::kCalendarReadOnlyOAuth2Scope,
+
     // Required by ChromeOS only.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       GaiaConstants::kAssistantOAuth2Scope,
       GaiaConstants::kAuditRecordingOAuth2Scope,
-      GaiaConstants::kCalendarReadOnlyOAuth2Scope,
       GaiaConstants::kCastBackdropOAuth2Scope,
       GaiaConstants::kClearCutOAuth2Scope,
       GaiaConstants::kDriveOAuth2Scope,
