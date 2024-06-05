@@ -218,6 +218,6 @@ public class AutocompleteResult {
     @NativeMethods
     interface Natives {
         boolean verifyCoherency(
-                long nativeAutocompleteResult, long[] matches, long suggestionIndex, int origin);
+                long nativeAutocompleteResult, long[] matches, int suggestionIndex, int origin);
     }
 }
