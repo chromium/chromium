@@ -88,6 +88,7 @@ You have:
 uint8_t array1[12] = {};
 uint8_t array2[12] = {};
 bool eq = memcmp(array1, array2, sizeof(array1)) == 0;
+bool less = memcmp(array1, array2, sizeof(array1)) < 0;
 
 // In tests.
 for (size_t i = 0; i < sizeof(array1); ++i) {
@@ -102,6 +103,7 @@ uint8_t array1[12] = {};
 uint8_t array2[12] = {};
 // If one side is a span, the other will convert to span too.
 bool eq = base::span(array1) == array2;
+bool less = base::span(array1) < array2;
 
 // In tests.
 EXPECT_EQ(base::span(array1), array2);
