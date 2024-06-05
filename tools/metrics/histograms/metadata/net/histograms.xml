@@ -2305,7 +2305,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.QuicChromiumClientStream.Http3DatagramDroppedOnWriteConnectUdpPayload"
-    enum="BooleanSuccess" expires_after="2024-07-01">
+    enum="BooleanSuccess" expires_after="2024-12-04">
   <owner>ciaramcmullin@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -2677,7 +2677,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicProxyDatagramClientSocket.MaxQueueSizeReached"
-    enum="BooleanSuccess" expires_after="2024-06-13">
+    enum="BooleanSuccess" expires_after="2024-12-04">
   <owner>ciaramcmullin@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
