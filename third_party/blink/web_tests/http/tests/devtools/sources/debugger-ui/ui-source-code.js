@@ -5,6 +5,7 @@
 import {TestRunner} from 'test_runner';
 
 import * as Common from 'devtools/core/common/common.js';
+import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
 import * as Workspace from 'devtools/models/workspace/workspace.js';
 
 (async function() {
@@ -15,7 +16,7 @@ import * as Workspace from 'devtools/models/workspace/workspace.js';
     requestFileContent(uri) {
       TestRunner.addResult('Content is requested from SourceCodeProvider.');
       return new Promise(resolve => {
-        setTimeout(() => resolve({ content: 'var x = 0;', error: null, isEncoded: false }));
+        setTimeout(() => resolve(new TextUtils.ContentData.ContentData('var x = 0;', false, 'text/javascript')));
       });
     }
 
@@ -38,23 +39,23 @@ import * as Workspace from 'devtools/models/workspace/workspace.js';
 
   TestRunner.runTestSuite([function testUISourceCode(next) {
     var uiSourceCode = new Workspace.UISourceCode.UISourceCode(new MockProject(), 'url', Common.ResourceType.resourceTypes.Script);
-    function didRequestContent(callNumber, { content, error, isEncoded }) {
+    function didRequestContent(callNumber, { text }) {
       TestRunner.addResult('Callback ' + callNumber + ' is invoked.');
       TestRunner.assertEquals('text/javascript', uiSourceCode.mimeType());
-      TestRunner.assertEquals('var x = 0;', content);
+      TestRunner.assertEquals('var x = 0;', text);
 
       if (callNumber === 3) {
         // Check that sourceCodeProvider.requestContent won't be called anymore.
-        uiSourceCode.requestContent().then(function({ content, error, isEncoded }) {
+        uiSourceCode.requestContentData().then(function({ text }) {
           TestRunner.assertEquals('text/javascript', uiSourceCode.mimeType());
-          TestRunner.assertEquals('var x = 0;', content);
+          TestRunner.assertEquals('var x = 0;', text);
           next();
         });
       }
     }
     // Check that all callbacks will be invoked.
-    uiSourceCode.requestContent().then(didRequestContent.bind(null, 1));
-    uiSourceCode.requestContent().then(didRequestContent.bind(null, 2));
-    uiSourceCode.requestContent().then(didRequestContent.bind(null, 3));
+    uiSourceCode.requestContentData().then(didRequestContent.bind(null, 1));
+    uiSourceCode.requestContentData().then(didRequestContent.bind(null, 2));
+    uiSourceCode.requestContentData().then(didRequestContent.bind(null, 3));
   }]);
 })();
