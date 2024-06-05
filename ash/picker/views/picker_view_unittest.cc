@@ -278,7 +278,7 @@ TEST_F(PickerViewTest, LeftClickSearchResultInsertsResult) {
               future.SetValue();
               callback.Run({
                   PickerSearchResultsSection(
-                      PickerSectionType::kExpressions,
+                      PickerSectionType::kSuggestions,
                       {{PickerSearchResult::Text(u"result")}},
                       /*has_more_results=*/false),
               });
@@ -399,7 +399,7 @@ TEST_F(PickerViewTest, ClickingCategoryResultsSwitchesToCategoryView) {
             search_called.SetValue();
             callback.Run({
                 PickerSearchResultsSection(
-                    PickerSectionType::kExpressions,
+                    PickerSectionType::kCategories,
                     {{PickerSearchResult::Category(PickerCategory::kLinks)}},
                     /*has_more_results=*/false),
             });
@@ -531,7 +531,7 @@ TEST_F(PickerViewTest, SearchingShowResultsWhenResultsArriveAsynchronously) {
   ASSERT_TRUE(search_called.Wait());
 
   search_callback.Run({
-      PickerSearchResultsSection(PickerSectionType::kExpressions, {},
+      PickerSearchResultsSection(PickerSectionType::kLinks, {},
                                  /*has_more_results=*/false),
   });
 
@@ -541,7 +541,7 @@ TEST_F(PickerViewTest, SearchingShowResultsWhenResultsArriveAsynchronously) {
           .section_views_for_testing(),
       ElementsAre(Pointee(Property(
           "title", &PickerSectionView::title_label_for_testing,
-          Property("text", &views::Label::GetText, u"Matching expressions")))));
+          Property("text", &views::Label::GetText, u"Matching links")))));
 }
 
 TEST_F(PickerViewTest, SearchingKeepsOldResultsUntilNewResultsArrive) {
@@ -552,8 +552,8 @@ TEST_F(PickerViewTest, SearchingKeepsOldResultsUntilNewResultsArrive) {
           [&](FakePickerViewDelegate::SearchResultsCallback callback) {
             if (!search1_called.IsReady()) {
               callback.Run({
-                  PickerSearchResultsSection(PickerSectionType::kExpressions,
-                                             {}, /*has_more_results=*/false),
+                  PickerSearchResultsSection(PickerSectionType::kLinks, {},
+                                             /*has_more_results=*/false),
               });
               search1_called.SetValue();
             } else {
@@ -579,7 +579,7 @@ TEST_F(PickerViewTest, SearchingKeepsOldResultsUntilNewResultsArrive) {
           .section_views_for_testing(),
       ElementsAre(Pointee(Property(
           "title", &PickerSectionView::title_label_for_testing,
-          Property("text", &views::Label::GetText, u"Matching expressions")))));
+          Property("text", &views::Label::GetText, u"Matching links")))));
 }
 
 TEST_F(PickerViewTest, SearchingReplacesOldResultsWithNewResults) {
@@ -591,8 +591,8 @@ TEST_F(PickerViewTest, SearchingReplacesOldResultsWithNewResults) {
           [&](FakePickerViewDelegate::SearchResultsCallback callback) {
             if (!search1_called.IsReady()) {
               callback.Run({
-                  PickerSearchResultsSection(PickerSectionType::kExpressions,
-                                             {}, /*has_more_results=*/false),
+                  PickerSearchResultsSection(PickerSectionType::kFiles, {},
+                                             /*has_more_results=*/false),
               });
               search1_called.SetValue();
             } else {
@@ -634,7 +634,7 @@ TEST_F(PickerViewTest, ClearsResultsWhenGoingBackToZeroState) {
             search_called.SetValue();
             callback.Run({
                 PickerSearchResultsSection(
-                    PickerSectionType::kExpressions,
+                    PickerSectionType::kSuggestions,
                     {{PickerSearchResult::Text(u"result")}},
                     /*has_more_results=*/false),
             });
@@ -711,7 +711,7 @@ TEST_F(PickerViewTest, BoundsAlignedWithAnchorNearTopLeftOfScreen) {
   const gfx::Rect screen_work_area =
       display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
   gfx::Rect anchor_bounds(screen_work_area.origin(), {0, 10});
-  anchor_bounds.Offset(80, 80);
+  anchor_bounds.Offset(80, 120);
 
   auto widget = PickerWidget::Create(&delegate, anchor_bounds);
   widget->Show();
@@ -900,7 +900,7 @@ TEST_F(PickerViewTest, PressingEnterDoesNothingOnEmptySearchResultsPage) {
           [&](FakePickerViewDelegate::SearchResultsCallback callback) {
             future.SetValue();
             callback.Run({
-                PickerSearchResultsSection(PickerSectionType::kExpressions, {},
+                PickerSearchResultsSection(PickerSectionType::kLinks, {},
                                            /*has_more_results=*/false),
             });
           }),
@@ -923,10 +923,11 @@ TEST_F(PickerViewTest, PressingEnterDefaultSelectsFirstSearchResult) {
           [&](FakePickerViewDelegate::SearchResultsCallback callback) {
             future.SetValue();
             callback.Run({
-                PickerSearchResultsSection(PickerSectionType::kExpressions,
-                                           {{PickerSearchResult::Emoji(u"😊"),
-                                             PickerSearchResult::Symbol(u"♬")}},
-                                           /*has_more_results=*/false),
+                PickerSearchResultsSection(
+                    PickerSectionType::kSuggestions,
+                    {{PickerSearchResult::Text(u"Result A"),
+                      PickerSearchResult::Text(u"Result B")}},
+                    /*has_more_results=*/false),
             });
           }),
   });
@@ -937,7 +938,7 @@ TEST_F(PickerViewTest, PressingEnterDefaultSelectsFirstSearchResult) {
   PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN, ui::EF_NONE);
 
   EXPECT_THAT(delegate.last_inserted_result(),
-              Optional(PickerSearchResult::Emoji(u"😊")));
+              Optional(PickerSearchResult::Text(u"Result A")));
 }
 
 TEST_F(PickerViewTest, RightArrowKeyNavigatesSearchResults) {
@@ -1002,10 +1003,9 @@ TEST_F(PickerViewTest, TabKeyNavigatesSearchResults) {
             future.SetValue();
             callback.Run({
                 PickerSearchResultsSection(
-                    PickerSectionType::kExpressions,
-                    {{PickerSearchResult::Emoji(u"😊"),
-                      PickerSearchResult::Symbol(u"♬"),
-                      PickerSearchResult::Emoticon(u"¯\\_(ツ)_/¯")}},
+                    PickerSectionType::kSuggestions,
+                    {{PickerSearchResult::Text(u"Result A"),
+                      PickerSearchResult::Text(u"Result B")}},
                     /*has_more_results=*/false),
             });
           }),
@@ -1023,7 +1023,7 @@ TEST_F(PickerViewTest, TabKeyNavigatesSearchResults) {
   PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN, ui::EF_NONE);
 
   EXPECT_THAT(delegate.last_inserted_result(),
-              Optional(PickerSearchResult::Symbol(u"♬")));
+              Optional(PickerSearchResult::Text(u"Result B")));
 }
 
 TEST_F(PickerViewTest, ShiftTabKeyNavigatesSearchResults) {
@@ -1034,10 +1034,9 @@ TEST_F(PickerViewTest, ShiftTabKeyNavigatesSearchResults) {
             future.SetValue();
             callback.Run({
                 PickerSearchResultsSection(
-                    PickerSectionType::kExpressions,
-                    {{PickerSearchResult::Emoji(u"😊"),
-                      PickerSearchResult::Symbol(u"♬"),
-                      PickerSearchResult::Emoticon(u"¯\\_(ツ)_/¯")}},
+                    PickerSectionType::kSuggestions,
+                    {{PickerSearchResult::Text(u"Result A"),
+                      PickerSearchResult::Text(u"Result B")}},
                     /*has_more_results=*/false),
             });
           }),
@@ -1056,7 +1055,7 @@ TEST_F(PickerViewTest, ShiftTabKeyNavigatesSearchResults) {
   PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN, ui::EF_NONE);
 
   EXPECT_THAT(delegate.last_inserted_result(),
-              Optional(PickerSearchResult::Emoji(u"😊")));
+              Optional(PickerSearchResult::Text(u"Result A")));
 }
 
 TEST_F(PickerViewTest, ClearsSearchWhenClickingOnCategoryResult) {
