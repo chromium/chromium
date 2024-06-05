@@ -226,6 +226,61 @@ JNI_BOUNDARY_EXPORT jdouble Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleF
   return _ret;
 }
 
+// Forward declaration. To be implemented by the including .cc file.
+static std::vector<bool> JNI_SampleForTests_PrimitiveArrays(
+    JNIEnv* env,
+    std::vector<uint8_t>& b,
+    std::vector<uint16_t>& c,
+    std::vector<int16_t>& s,
+    std::vector<int32_t>& i,
+    std::vector<int64_t>& l,
+    std::vector<float>& f,
+    std::vector<double>& d);
+
+JNI_BOUNDARY_EXPORT jbooleanArray Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForTests_1primitiveArrays(
+    JNIEnv* env,
+    jclass jcaller,
+    jbyteArray b,
+    jcharArray c,
+    jshortArray s,
+    jintArray i,
+    jlongArray l,
+    jfloatArray f,
+    jdoubleArray d) {
+  std::vector<uint8_t> b_converted = jni_zero::FromJniArray<std::vector<uint8_t>>(
+      env,
+      jni_zero::JavaParamRef<jbyteArray>(env, static_cast<jbyteArray>(b)));
+  std::vector<uint16_t> c_converted = jni_zero::FromJniArray<std::vector<uint16_t>>(
+      env,
+      jni_zero::JavaParamRef<jcharArray>(env, static_cast<jcharArray>(c)));
+  std::vector<int16_t> s_converted = jni_zero::FromJniArray<std::vector<int16_t>>(
+      env,
+      jni_zero::JavaParamRef<jshortArray>(env, static_cast<jshortArray>(s)));
+  std::vector<int32_t> i_converted = jni_zero::FromJniArray<std::vector<int32_t>>(
+      env,
+      jni_zero::JavaParamRef<jintArray>(env, static_cast<jintArray>(i)));
+  std::vector<int64_t> l_converted = jni_zero::FromJniArray<std::vector<int64_t>>(
+      env,
+      jni_zero::JavaParamRef<jlongArray>(env, static_cast<jlongArray>(l)));
+  std::vector<float> f_converted = jni_zero::FromJniArray<std::vector<float>>(
+      env,
+      jni_zero::JavaParamRef<jfloatArray>(env, static_cast<jfloatArray>(f)));
+  std::vector<double> d_converted = jni_zero::FromJniArray<std::vector<double>>(
+      env,
+      jni_zero::JavaParamRef<jdoubleArray>(env, static_cast<jdoubleArray>(d)));
+  auto _ret = JNI_SampleForTests_PrimitiveArrays(
+      env,
+      b_converted,
+      c_converted,
+      s_converted,
+      i_converted,
+      l_converted,
+      f_converted,
+      d_converted);
+  jobject converted_ret = jni_zero::ToJniArray(env, _ret).Release();
+  return static_cast<jbooleanArray>(converted_ret);
+}
+
 JNI_BOUNDARY_EXPORT jstring Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleForTests_1returnAString(
     JNIEnv* env,
     jclass jcaller,
@@ -564,6 +619,61 @@ static void Java_SampleForTests_packagePrivateJavaMethod(
       "()V",
       &cached_method_id);
   env->CallVoidMethod(obj.obj(), call_context.method_id());
+}
+
+static std::vector<bool> Java_SampleForTests_primitiveArrays(
+    JNIEnv* env,
+    std::vector<uint8_t> const& b,
+    std::vector<uint16_t> const& c,
+    std::vector<int16_t> const& s,
+    std::vector<int32_t> const& i,
+    std::vector<int64_t> const& l,
+    std::vector<float> const& f,
+    std::vector<double> const& d) {
+  static std::atomic<jmethodID> cached_method_id(nullptr);
+  jclass clazz = org_jni_1zero_SampleForTests_clazz(env);
+  CHECK_CLAZZ(env, clazz, clazz, nullptr);
+  jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<jni_zero::MethodID::TYPE_STATIC>(
+      env,
+      clazz,
+      "primitiveArrays",
+      "([B[C[S[I[J[F[D)[Z",
+      &cached_method_id);
+  jni_zero::ScopedJavaLocalRef<jobject> converted_b = jni_zero::ToJniArray(
+      env,
+      b);
+  jni_zero::ScopedJavaLocalRef<jobject> converted_c = jni_zero::ToJniArray(
+      env,
+      c);
+  jni_zero::ScopedJavaLocalRef<jobject> converted_s = jni_zero::ToJniArray(
+      env,
+      s);
+  jni_zero::ScopedJavaLocalRef<jobject> converted_i = jni_zero::ToJniArray(
+      env,
+      i);
+  jni_zero::ScopedJavaLocalRef<jobject> converted_l = jni_zero::ToJniArray(
+      env,
+      l);
+  jni_zero::ScopedJavaLocalRef<jobject> converted_f = jni_zero::ToJniArray(
+      env,
+      f);
+  jni_zero::ScopedJavaLocalRef<jobject> converted_d = jni_zero::ToJniArray(
+      env,
+      d);
+  auto _ret = env->CallStaticObjectMethod(
+      clazz,
+      call_context.method_id(),
+      converted_b.obj(),
+      converted_c.obj(),
+      converted_s.obj(),
+      converted_i.obj(),
+      converted_l.obj(),
+      converted_f.obj(),
+      converted_d.obj());
+  return jni_zero::FromJniArray<std::vector<bool>>(
+      env,
+      jni_zero::ScopedJavaLocalRef<jbooleanArray>(env, static_cast<jbooleanArray>(_ret)));
 }
 
 static jboolean Java_SampleForTests_staticJavaMethod(JNIEnv* env) {

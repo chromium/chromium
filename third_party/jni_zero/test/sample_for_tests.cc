@@ -145,6 +145,18 @@ static ScopedJavaLocalRef<jobject> JNI_SampleForTests_GetMap(
   return ScopedJavaLocalRef<jobject>();
 }
 
+static std::vector<bool> JNI_SampleForTests_PrimitiveArrays(
+    JNIEnv* env,
+    std::vector<uint8_t>& b,
+    std::vector<uint16_t>& c,
+    std::vector<int16_t>& s,
+    std::vector<int32_t>& i,
+    std::vector<int64_t>& l,
+    std::vector<float>& f,
+    std::vector<double>& d) {
+  return Java_SampleForTests_primitiveArrays(env, b, c, s, i, l, f, d);
+}
+
 }  // namespace jni_zero::tests
 
 // Proxy natives.

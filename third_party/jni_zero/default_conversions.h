@@ -114,35 +114,24 @@ ToJniArray(JNIEnv* env, const ContainerType& collection, jclass clazz) {
   return ScopedJavaLocalRef<jobjectArray>(env, j_array);
 }
 
-// Specialization for int64_t.
-template <>
-JNI_ZERO_COMPONENT_BUILD_EXPORT std::vector<int64_t>
-FromJniArray<std::vector<int64_t>>(JNIEnv* env,
-                                   const JavaRef<jobject>& j_object);
+#define DECLARE_PRIMITIVE_ARRAY_CONVERSIONS(T)                                 \
+  template <>                                                                  \
+  JNI_ZERO_COMPONENT_BUILD_EXPORT std::vector<T> FromJniArray<std::vector<T>>( \
+      JNIEnv * env, const JavaRef<jobject>& j_object);                         \
+  template <>                                                                  \
+  JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaLocalRef<jarray>                   \
+  ToJniArray<std::vector<T>>(JNIEnv * env, const std::vector<T>& vec);
 
-template <>
-JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaLocalRef<jarray>
-ToJniArray<std::vector<int64_t>>(JNIEnv* env, const std::vector<int64_t>& vec);
+DECLARE_PRIMITIVE_ARRAY_CONVERSIONS(int64_t)
+DECLARE_PRIMITIVE_ARRAY_CONVERSIONS(int32_t)
+DECLARE_PRIMITIVE_ARRAY_CONVERSIONS(int16_t)
+DECLARE_PRIMITIVE_ARRAY_CONVERSIONS(uint16_t)
+DECLARE_PRIMITIVE_ARRAY_CONVERSIONS(uint8_t)
+DECLARE_PRIMITIVE_ARRAY_CONVERSIONS(bool)
+DECLARE_PRIMITIVE_ARRAY_CONVERSIONS(float)
+DECLARE_PRIMITIVE_ARRAY_CONVERSIONS(double)
 
-// Specialization for int32_t.
-template <>
-JNI_ZERO_COMPONENT_BUILD_EXPORT std::vector<int32_t>
-FromJniArray<std::vector<int32_t>>(JNIEnv* env,
-                                   const JavaRef<jobject>& j_object);
-
-template <>
-JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaLocalRef<jarray>
-ToJniArray<std::vector<int32_t>>(JNIEnv* env, const std::vector<int32_t>& vec);
-
-// Specialization for byte array.
-template <>
-JNI_ZERO_COMPONENT_BUILD_EXPORT std::vector<uint8_t>
-FromJniArray<std::vector<uint8_t>>(JNIEnv* env,
-                                   const JavaRef<jobject>& j_object);
-
-template <>
-JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaLocalRef<jarray>
-ToJniArray<std::vector<uint8_t>>(JNIEnv* env, const std::vector<uint8_t>& vec);
+#undef DECLARE_PRIMITIVE_ARRAY_CONVERSIONS
 
 // Specialization for ByteArrayView.
 template <>

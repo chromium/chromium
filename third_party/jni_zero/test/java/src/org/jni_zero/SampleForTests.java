@@ -257,6 +257,18 @@ class SampleForTests {
         return null;
     }
 
+    @CalledByNative
+    static @JniType("std::vector<bool>") boolean[] primitiveArrays(
+            @JniType("std::vector<uint8_t>") byte[] b,
+            @JniType("std::vector<uint16_t>") char[] c,
+            @JniType("std::vector<int16_t>") short[] s,
+            @JniType("std::vector<int32_t>") int[] i,
+            @JniType("std::vector<int64_t>") long[] l,
+            @JniType("std::vector<float>") float[] f,
+            @JniType("std::vector<double>") double[] d) {
+        return null;
+    }
+
     // ---------------------------------------------------------------------------------------------
     // The following methods demonstrate declaring methods to call into C++ from Java.
     // The generator detects the type and name of the first parameter.
@@ -324,6 +336,16 @@ class SampleForTests {
                 long nativeCPPClass,
                 SampleForTests caller,
                 @JniType("std::vector<std::string>") String[] strings);
+
+        @JniType("std::vector<bool>")
+        boolean[] primitiveArrays(
+                @JniType("std::vector<uint8_t>") byte[] b,
+                @JniType("std::vector<uint16_t>") char[] c,
+                @JniType("std::vector<int16_t>") short[] s,
+                @JniType("std::vector<int32_t>") int[] i,
+                @JniType("std::vector<int64_t>") long[] l,
+                @JniType("std::vector<float>") float[] f,
+                @JniType("std::vector<double>") double[] d);
 
         // Similar to nativeMethod above, but here the C++ fully qualified class name is taken from
         // the annotation rather than parameter name, which can thus be chosen freely.

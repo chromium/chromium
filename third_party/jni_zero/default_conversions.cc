@@ -7,81 +7,74 @@
 #include "third_party/jni_zero/default_conversions.h"
 
 namespace jni_zero {
-// Specialization for int64_t.
+
+#define PRIMITIVE_ARRAY_CONVERSIONS(T, JTYPE, J)                          \
+  template <>                                                             \
+  std::vector<T> FromJniArray<std::vector<T>>(                            \
+      JNIEnv * env, const JavaRef<jobject>& j_object) {                   \
+    JTYPE##Array j_array = static_cast<JTYPE##Array>(j_object.obj());     \
+    jsize array_jsize = env->GetArrayLength(j_array);                     \
+    size_t array_size = static_cast<size_t>(array_jsize);                 \
+    std::vector<T> ret;                                                   \
+    ret.resize(array_size);                                               \
+    env->Get##J##ArrayRegion(j_array, 0, array_jsize,                     \
+                             reinterpret_cast<JTYPE*>(ret.data()));       \
+    return ret;                                                           \
+  }                                                                       \
+  template <>                                                             \
+  ScopedJavaLocalRef<jarray> ToJniArray<std::vector<T>>(                  \
+      JNIEnv * env, const std::vector<T>& vec) {                          \
+    jsize array_jsize = static_cast<jsize>(vec.size());                   \
+    JTYPE##Array arr = env->New##J##Array(array_jsize);                   \
+    CheckException(env);                                                  \
+    env->Set##J##ArrayRegion(arr, 0, array_jsize,                         \
+                             reinterpret_cast<const JTYPE*>(vec.data())); \
+    return ScopedJavaLocalRef<jarray>(env, arr);                          \
+  }
+
+PRIMITIVE_ARRAY_CONVERSIONS(int64_t, jlong, Long)
+PRIMITIVE_ARRAY_CONVERSIONS(int32_t, jint, Int)
+PRIMITIVE_ARRAY_CONVERSIONS(int16_t, jshort, Short)
+PRIMITIVE_ARRAY_CONVERSIONS(uint16_t, jchar, Char)
+PRIMITIVE_ARRAY_CONVERSIONS(uint8_t, jbyte, Byte)
+PRIMITIVE_ARRAY_CONVERSIONS(float, jfloat, Float)
+PRIMITIVE_ARRAY_CONVERSIONS(double, jdouble, Double)
+
+// Specialization for bool, which is a bitmask under-the-hood.
 template <>
-std::vector<int64_t> FromJniArray<std::vector<int64_t>>(
+std::vector<bool> FromJniArray<std::vector<bool>>(
     JNIEnv* env,
     const JavaRef<jobject>& j_object) {
-  jlongArray j_array = static_cast<jlongArray>(j_object.obj());
+  jbooleanArray j_array = static_cast<jbooleanArray>(j_object.obj());
   jsize array_jsize = env->GetArrayLength(j_array);
   size_t array_size = static_cast<size_t>(array_jsize);
-  std::vector<int64_t> ret;
+  jboolean arr[array_size];
+  env->GetBooleanArrayRegion(j_array, 0, array_jsize, arr);
+
+  std::vector<bool> ret;
   ret.resize(array_size);
-  env->GetLongArrayRegion(j_array, 0, array_jsize, ret.data());
+  for (size_t i = 0; i < array_size; ++i) {
+    ret[i] = arr[i];
+  }
   return ret;
 }
 
 template <>
-ScopedJavaLocalRef<jarray> ToJniArray<std::vector<int64_t>>(
+ScopedJavaLocalRef<jarray> ToJniArray<std::vector<bool>>(
     JNIEnv* env,
-    const std::vector<int64_t>& vec) {
+    const std::vector<bool>& vec) {
   jsize array_jsize = static_cast<jsize>(vec.size());
-  jlongArray jia = env->NewLongArray(array_jsize);
-  CheckException(env);
-  env->SetLongArrayRegion(jia, 0, array_jsize, vec.data());
-  return ScopedJavaLocalRef<jarray>(env, jia);
-}
-
-// Specialization for int32_t.
-template <>
-std::vector<int32_t> FromJniArray<std::vector<int32_t>>(
-    JNIEnv* env,
-    const JavaRef<jobject>& j_object) {
-  jintArray j_array = static_cast<jintArray>(j_object.obj());
-  jsize array_jsize = env->GetArrayLength(j_array);
   size_t array_size = static_cast<size_t>(array_jsize);
-  std::vector<int32_t> ret;
-  ret.resize(array_size);
-  env->GetIntArrayRegion(j_array, 0, array_jsize, ret.data());
-  return ret;
-}
 
-template <>
-ScopedJavaLocalRef<jarray> ToJniArray<std::vector<int32_t>>(
-    JNIEnv* env,
-    const std::vector<int32_t>& vec) {
-  jsize array_jsize = static_cast<jsize>(vec.size());
-  jintArray jia = env->NewIntArray(array_jsize);
+  jboolean arr[array_size];
+  for (size_t i = 0; i < array_size; ++i) {
+    arr[i] = vec[i];
+  }
+
+  jbooleanArray j_array = env->NewBooleanArray(array_jsize);
   CheckException(env);
-  env->SetIntArrayRegion(jia, 0, array_jsize, vec.data());
-  return ScopedJavaLocalRef<jarray>(env, jia);
-}
-
-// Specialization for byte array.
-template <>
-std::vector<uint8_t> FromJniArray<std::vector<uint8_t>>(
-    JNIEnv* env,
-    const JavaRef<jobject>& j_object) {
-  jbyteArray j_array = static_cast<jbyteArray>(j_object.obj());
-  jsize array_jsize = env->GetArrayLength(j_array);
-  size_t array_size = static_cast<size_t>(array_jsize);
-  std::vector<uint8_t> ret;
-  ret.resize(array_size);
-  env->GetByteArrayRegion(j_array, 0, array_jsize,
-                          reinterpret_cast<jbyte*>(ret.data()));
-  return ret;
-}
-
-template <>
-ScopedJavaLocalRef<jarray> ToJniArray<std::vector<uint8_t>>(
-    JNIEnv* env,
-    const std::vector<uint8_t>& vec) {
-  jsize array_jsize = static_cast<jsize>(vec.size());
-  jbyteArray jia = env->NewByteArray(array_jsize);
-  CheckException(env);
-  env->SetByteArrayRegion(jia, 0, array_jsize,
-                          reinterpret_cast<const jbyte*>(vec.data()));
-  return ScopedJavaLocalRef<jarray>(env, jia);
+  env->SetBooleanArrayRegion(j_array, 0, array_jsize, arr);
+  return ScopedJavaLocalRef<jarray>(env, j_array);
 }
 }  // namespace jni_zero
 #endif  // JNI_ZERO_ENABLE_TYPE_CONVERSIONS
