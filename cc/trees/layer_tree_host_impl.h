@@ -650,6 +650,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   virtual void DidFinishImplFrame(const viz::BeginFrameArgs& args);
   void DidNotProduceFrame(const viz::BeginFrameAck& ack,
                           FrameSkippedReason reason);
+  void OnBeginImplFrameDeadline();
   void DidModifyTilePriorities();
   // Requests that we do not produce frames until the new viz::LocalSurfaceId
   // has been activated.

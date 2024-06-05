@@ -54,6 +54,7 @@ class InputDelegateForCompositor {
   virtual void DidCommit() = 0;
   virtual void DidActivatePendingTree() = 0;
   virtual void DidFinishImplFrame() = 0;
+  virtual void OnBeginImplFrameDeadline() = 0;
 
   // Called when the state of the "root layer" may have changed from outside
   // the input system. The state includes: scroll offset, scrollable size,

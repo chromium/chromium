@@ -213,12 +213,21 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kWarmUpCompositor);
 // `kScrollEventDispatchModeNameUseScrollPredictorForEmptyQueue` checks when
 // we begin frame production, if the event queue is empty, we will generate a
 // new prediction and dispatch a synthetic scroll event.
+//
+// `kScrollEventDispatchModeUseScrollPredictorForDeadline` will perform the
+// same as `kScrollEventDispatchModeDispatchScrollEventsImmediately` until
+// the deadline is encountered. Instead of immediately resuming frame
+// production, we will first attempt to generate a new prediction to dispatch.
+// As in `kScrollEventDispatchModeUseScrollPredictorForEmptyQueue`. After
+// which we will resume frame production and enqueuing input.
 CC_BASE_EXPORT extern const base::FeatureParam<std::string>
     kScrollEventDispatchMode;
 CC_BASE_EXPORT extern const char
     kScrollEventDispatchModeDispatchScrollEventsImmediately[];
 CC_BASE_EXPORT extern const char
     kScrollEventDispatchModeUseScrollPredictorForEmptyQueue[];
+CC_BASE_EXPORT extern const char
+    kScrollEventDispatchModeUseScrollPredictorForDeadline[];
 
 // Enables GPU-side layer trees for content rendering.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kVizLayers);

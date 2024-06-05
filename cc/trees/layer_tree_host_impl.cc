@@ -3149,6 +3149,13 @@ void LayerTreeHostImpl::DidNotProduceFrame(const viz::BeginFrameAck& ack,
     layer_tree_frame_sink_->DidNotProduceFrame(ack, reason);
 }
 
+void LayerTreeHostImpl::OnBeginImplFrameDeadline() {
+  if (!input_delegate_) {
+    return;
+  }
+  input_delegate_->OnBeginImplFrameDeadline();
+}
+
 void LayerTreeHostImpl::SynchronouslyInitializeAllTiles() {
   // Only valid for the single-threaded non-scheduled/synchronous case
   // using the zero copy raster worker pool.

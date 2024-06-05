@@ -45,8 +45,11 @@ SchedulerSettings LayerTreeSettings::ToSchedulerSettings() const {
     const std::string mode_name = ::features::kScrollEventDispatchMode.Get();
     scheduler_settings.scroll_deadline_mode_enabled =
         base::FeatureList::IsEnabled(::features::kWaitForLateScrollEvents) &&
-        mode_name ==
-            ::features::kScrollEventDispatchModeDispatchScrollEventsImmediately;
+        (mode_name ==
+             ::features::
+                 kScrollEventDispatchModeDispatchScrollEventsImmediately ||
+         mode_name ==
+             ::features::kScrollEventDispatchModeUseScrollPredictorForDeadline);
     if (scheduler_settings.scroll_deadline_mode_enabled) {
       scheduler_settings.scroll_deadline_ratio =
           ::features::kWaitForLateScrollEventsDeadlineRatio.Get();

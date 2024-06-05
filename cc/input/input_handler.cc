@@ -47,6 +47,11 @@ InputHandlerClient::ScrollEventDispatchMode GetScrollEventDispatchMode() {
                  kScrollEventDispatchModeUseScrollPredictorForEmptyQueue) {
     return InputHandlerClient::ScrollEventDispatchMode::
         kUseScrollPredictorForEmptyQueue;
+  } else if (mode_name ==
+             ::features::
+                 kScrollEventDispatchModeUseScrollPredictorForDeadline) {
+    return InputHandlerClient::ScrollEventDispatchMode::
+        kUseScrollPredictorForDeadline;
   }
 
   return InputHandlerClient::ScrollEventDispatchMode::kEnqueueScrollEvents;
@@ -1099,6 +1104,15 @@ void InputHandler::DidActivatePendingTree() {
 void InputHandler::DidFinishImplFrame() {
   if (input_handler_client_) {
     input_handler_client_->DidFinishImplFrame();
+  }
+}
+
+void InputHandler::OnBeginImplFrameDeadline() {
+  if (!IsCurrentlyScrolling()) {
+    return;
+  }
+  if (input_handler_client_) {
+    input_handler_client_->DeliverInputForDeadline();
   }
 }
 

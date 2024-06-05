@@ -818,6 +818,7 @@ void Scheduler::OnBeginImplFrameDeadline() {
     }
 
     state_machine_.OnBeginImplFrameDeadline();
+    client_->OnBeginImplFrameDeadline();
   }
   ProcessScheduledActions();
 

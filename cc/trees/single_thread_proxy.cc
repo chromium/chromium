@@ -1024,6 +1024,10 @@ void SingleThreadProxy::FrameIntervalUpdated(base::TimeDelta interval) {
   single_thread_client_->FrameIntervalUpdated(interval);
 }
 
+void SingleThreadProxy::OnBeginImplFrameDeadline() {
+  host_impl_->OnBeginImplFrameDeadline();
+}
+
 void SingleThreadProxy::SendBeginMainFrameNotExpectedSoon() {
   // DebugScopedSetImplThread here is just a formality; all SchedulerClient
   // methods should have it.

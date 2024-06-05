@@ -170,6 +170,7 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
   void ScheduledActionBeginMainFrameNotExpectedUntil(
       base::TimeTicks time) override;
   void FrameIntervalUpdated(base::TimeDelta interval) override {}
+  void OnBeginImplFrameDeadline() override;
 
   DrawResult DrawInternal(bool forced_draw);
 

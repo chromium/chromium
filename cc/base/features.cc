@@ -221,6 +221,8 @@ constexpr const char kScrollEventDispatchModeDispatchScrollEventsImmediately[] =
     "DispatchScrollEventsImmediately";
 constexpr const char kScrollEventDispatchModeUseScrollPredictorForEmptyQueue[] =
     "UseScrollPredictorForEmptyQueue";
+constexpr const char kScrollEventDispatchModeUseScrollPredictorForDeadline[] =
+    "UseScrollPredictorForDeadline";
 
 BASE_FEATURE(kVizLayers, "VizLayers", base::FEATURE_DISABLED_BY_DEFAULT);
 

@@ -156,6 +156,8 @@ class FakeSchedulerClient : public SchedulerClient,
     frame_interval_ = interval;
   }
 
+  void OnBeginImplFrameDeadline() override {}
+
   const viz::BeginFrameArgs& last_begin_main_frame_args() {
     return last_begin_main_frame_args_;
   }

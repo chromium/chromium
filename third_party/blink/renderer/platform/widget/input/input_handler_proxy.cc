@@ -203,6 +203,14 @@ bool IsGestureScrollOrPinch(WebInputEvent::Type type) {
   }
 }
 
+bool DoNotEnqueueLateScrollEvents(
+    cc::InputHandlerClient::ScrollEventDispatchMode mode) {
+  return mode == cc::InputHandlerClient::ScrollEventDispatchMode::
+                     kDispatchScrollEventsImmediately ||
+         mode == cc::InputHandlerClient::ScrollEventDispatchMode::
+                     kUseScrollPredictorForDeadline;
+}
+
 }  // namespace
 
 InputHandlerProxy::InputHandlerProxy(cc::InputHandler& input_handler,
@@ -324,10 +332,9 @@ void InputHandlerProxy::HandleInputEventWithLatencyInfo(
     // DeliverInputForBeginFrame we want to dispatch those immediately. We will
     // return to `enqueue_scroll_events_` once frame production has begun.
     if (gesture_event.IsScrollEvent() &&
-        scroll_event_dispatch_mode_ ==
-            cc::InputHandlerClient::ScrollEventDispatchMode::
-                kDispatchScrollEventsImmediately &&
+        DoNotEnqueueLateScrollEvents(scroll_event_dispatch_mode_) &&
         !enqueue_scroll_events_) {
+      enqueue_scroll_events_ = true;
       // TODO(jonross): this will update to a prediction that is -5ms before
       // `current_begin_frame_args_.frame_time`. We should consider not
       // dispatching if `event_with_callback` is too old, and if we expect a
@@ -1506,6 +1513,16 @@ void InputHandlerProxy::DeliverInputForHighLatencyMode() {
   // When prediction enabled, do not handle input after commit complete.
   if (!scroll_predictor_)
     DispatchQueuedInputEvents(false /* frame_aligned */);
+}
+
+void InputHandlerProxy::DeliverInputForDeadline() {
+  if (scroll_event_dispatch_mode_ !=
+          cc::InputHandlerClient::ScrollEventDispatchMode::
+              kUseScrollPredictorForDeadline ||
+      enqueue_scroll_events_) {
+    return;
+  }
+  GenerateAndDispatchSytheticScrollPrediction(current_begin_frame_args_);
 }
 
 void InputHandlerProxy::DidFinishImplFrame() {
