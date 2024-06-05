@@ -54,6 +54,7 @@ class VIEWS_EXPORT AccessiblePaneView : public View,
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
   void SetVisible(bool flag) override;
   void RequestFocus() override;
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   // Overridden from FocusChangeListener:
   void OnWillChangeFocus(View* focused_before, View* focused_now) override;
