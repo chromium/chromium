@@ -9,10 +9,8 @@
 #import "ios/chrome/browser/contextual_panel/entrypoint/coordinator/contextual_panel_entrypoint_mediator.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/coordinator/contextual_panel_entrypoint_mediator_delegate.h"
 #import "ios/chrome/browser/contextual_panel/entrypoint/ui/contextual_panel_entrypoint_view_controller.h"
-#import "ios/chrome/browser/contextual_panel/model/contextual_panel_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_commands.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
 #import "ios/chrome/browser/ui/fullscreen/animated_scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
@@ -41,27 +39,18 @@
   [super start];
   _viewController = [[ContextualPanelEntrypointViewController alloc] init];
 
-  ContextualPanelBrowserAgent* browserAgent =
-      ContextualPanelBrowserAgent::FromBrowser(self.browser);
+  WebStateList* webStateList = self.browser->GetWebStateList();
 
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
 
   _mediator = [[ContextualPanelEntrypointMediator alloc]
-      initWithBrowserAgent:browserAgent];
+      initWithWebStateList:webStateList];
   _mediator.delegate = self;
   _mediator.contextualSheetHandler =
       HandlerForProtocol(dispatcher, ContextualSheetCommands);
 
   _mediator.consumer = _viewController;
   _viewController.mutator = _mediator;
-
-  [dispatcher
-      startDispatchingToTarget:_mediator
-                   forProtocol:@protocol(ContextualPanelEntrypointCommands)];
-
-  id<ContextualPanelEntrypointCommands> entrypointHandler =
-      HandlerForProtocol(dispatcher, ContextualPanelEntrypointCommands);
-  browserAgent->SetEntrypointCommandsHandler(entrypointHandler);
 
   _contextualPanelEntrypointFullscreenUIUpdater =
       std::make_unique<FullscreenUIUpdater>(

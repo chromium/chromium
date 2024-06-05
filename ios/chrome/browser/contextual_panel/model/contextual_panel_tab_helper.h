@@ -30,8 +30,8 @@ class ContextualPanelTabHelper
   // Adds and removes observers for contextual panel actions. The order in
   // which notifications are sent to observers is undefined. Clients must be
   // sure to remove the observer before they go away.
-  void AddObserver(ContextualPanelTabHelperObserver* observer);
-  void RemoveObserver(ContextualPanelTabHelperObserver* observer);
+  virtual void AddObserver(ContextualPanelTabHelperObserver* observer);
+  virtual void RemoveObserver(ContextualPanelTabHelperObserver* observer);
 
   // Whether there exists at least one finalized Contextual Panel model config
   // currently available in the cached list of sorted configs. This will be
@@ -65,6 +65,12 @@ class ContextualPanelTabHelper
       web::WebState* web_state,
       web::PageLoadCompletionStatus load_completion_status) override;
 
+ protected:
+  // Protected to allow test overriding.
+  ContextualPanelTabHelper(
+      web::WebState* web_state,
+      std::map<ContextualPanelItemType, raw_ptr<ContextualPanelModel>> models);
+
  private:
   friend class web::WebStateUserData<ContextualPanelTabHelper>;
 
@@ -85,10 +91,6 @@ class ContextualPanelTabHelper
         std::unique_ptr<ContextualPanelItemConfiguration>&& configuration);
     ~ModelResponse();
   };
-
-  ContextualPanelTabHelper(
-      web::WebState* web_state,
-      std::map<ContextualPanelItemType, raw_ptr<ContextualPanelModel>> models);
 
   // Callback for when the given model has finished fetching its data.
   void ModelCallbackReceived(

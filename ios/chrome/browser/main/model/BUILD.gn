@@ -18,7 +18,6 @@ source_set("model") {
     "//base",
     "//components/breadcrumbs/core:status",
     "//ios/chrome/browser/app_launcher/model",
-    "//ios/chrome/browser/contextual_panel/model",
     "//ios/chrome/browser/crash_report/model/breadcrumbs",
     "//ios/chrome/browser/device_sharing/model",
     "//ios/chrome/browser/favicon/model",

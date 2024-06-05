@@ -25,5 +25,6 @@ source_set("public") {
     "panel_block_data.h",
     "panel_block_data.mm",
   ]
+  deps = [ "//base" ]
   frameworks = [ "UIKit.framework" ]
 }

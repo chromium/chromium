@@ -16,11 +16,35 @@ source_set("coordinator") {
     "//ios/chrome/browser/contextual_panel/entrypoint/ui",
     "//ios/chrome/browser/contextual_panel/model",
     "//ios/chrome/browser/contextual_panel/model:public",
+    "//ios/chrome/browser/contextual_panel/ui:public",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/ui/fullscreen",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "contextual_panel_entrypoint_mediator_unittest.mm" ]
+  frameworks = [ "Foundation.framework" ]
+  deps = [
+    ":coordinator",
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/browser/contextual_panel/entrypoint/ui",
+    "//ios/chrome/browser/contextual_panel/model",
+    "//ios/chrome/browser/contextual_panel/model:public",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
+    "//third_party/ocmock",
   ]
 }

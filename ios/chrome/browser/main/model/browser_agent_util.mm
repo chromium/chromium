@@ -7,7 +7,6 @@
 #import "base/feature_list.h"
 #import "components/breadcrumbs/core/breadcrumbs_status.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_browser_agent.h"
-#import "ios/chrome/browser/contextual_panel/model/contextual_panel_browser_agent.h"
 #import "ios/chrome/browser/crash_report/model/breadcrumbs/breadcrumb_manager_browser_agent.h"
 #import "ios/chrome/browser/device_sharing/model/device_sharing_browser_agent.h"
 #import "ios/chrome/browser/favicon/model/favicon_browser_agent.h"
@@ -141,11 +140,6 @@ void AttachBrowserAgents(Browser* browser) {
 
   if (!browser_is_inactive) {
     TabBasedIPHBrowserAgent::CreateForBrowser(browser);
-  }
-
-  // Contextual Panel is non-OTR only.
-  if (!browser_is_off_record && IsContextualPanelEnabled()) {
-    ContextualPanelBrowserAgent::CreateForBrowser(browser);
   }
 
   // This needs to be called last in case any downstream browser agents need to
