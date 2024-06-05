@@ -72,8 +72,14 @@ gfx::BufferFormat SinglePlaneSharedImageFormatToBufferFormat(
 
 // Returns the SharedImageFormat corresponding to `format`, which must be a
 // single-planar format.
+// Note: This is deprecated and you should use `GetSharedImageFormat()` in new
+// code.
 COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT)
 SharedImageFormat GetSinglePlaneSharedImageFormat(gfx::BufferFormat format);
+
+// Returns the SharedImageFormat corresponding to `buffer_format`.
+COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT)
+SharedImageFormat GetSharedImageFormat(gfx::BufferFormat buffer_format);
 
 // Utilities that conceptually belong only on the service side, but are
 // currently used by some clients. Usage is restricted to friended clients.

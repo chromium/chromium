@@ -819,8 +819,7 @@ DirectRenderer::CalculateRenderPassRequirements(
     CHECK(!render_pass->generate_mipmap);
     requirements.generate_mipmap = false;
     requirements.color_space = reshape_color_space();
-    requirements.format =
-        GetSinglePlaneSharedImageFormat(reshape_buffer_format());
+    requirements.format = GetSharedImageFormat(reshape_buffer_format());
     if (is_root) {
       requirements.alpha_type = reshape_alpha_type();
     } else {

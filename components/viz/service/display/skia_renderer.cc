@@ -3957,7 +3957,7 @@ void SkiaRenderer::PrepareRenderPassOverlay(
     return;
   }
 
-  SharedImageFormat buffer_format;
+  SharedImageFormat si_format;
   gfx::ColorSpace color_space;
 
   RenderPassBacking* src_quad_backing = nullptr;
@@ -3972,7 +3972,7 @@ void SkiaRenderer::PrepareRenderPassOverlay(
 
     // For bypassed render pass, we use the same format and color space for the
     // framebuffer.
-    buffer_format = GetSinglePlaneSharedImageFormat(reshape_buffer_format());
+    si_format = GetSharedImageFormat(reshape_buffer_format());
     color_space = reshape_color_space();
   } else {
     // A real render pass that was turned into an image
@@ -3981,7 +3981,7 @@ void SkiaRenderer::PrepareRenderPassOverlay(
     // This function is called after AllocateRenderPassResourceIfNeeded, so
     // there should be backing ready.
     src_quad_backing = &it->second;
-    buffer_format = src_quad_backing->format;
+    si_format = src_quad_backing->format;
     color_space = src_quad_backing->color_space;
   }
 
@@ -3997,7 +3997,7 @@ void SkiaRenderer::PrepareRenderPassOverlay(
       CanSkipRenderPassOverlay(quad->render_pass_id, quad, &overlay_params);
   if (!can_skip_render_pass) {
     overlay_params = GetOrCreateRenderPassOverlayBacking(
-        quad->render_pass_id, quad, buffer_format, color_space, buffer_size);
+        quad->render_pass_id, quad, si_format, color_space, buffer_size);
   }
   DCHECK(overlay_params);
   UMA_HISTOGRAM_BOOLEAN(
@@ -4117,7 +4117,7 @@ void SkiaRenderer::PrepareRenderPassOverlay(
 
   // Fill in |format| and |color_space| information based on selected backing.
   overlay->color_space = color_space;
-  overlay->format = SinglePlaneSharedImageFormatToBufferFormat(buffer_format);
+  overlay->format = SinglePlaneSharedImageFormatToBufferFormat(si_format);
 #endif  // BUILDFLAG(IS_APPLE)
 }
 #endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_WIN)
