@@ -82,11 +82,15 @@ class PhishyInteractionTrackerTest : public ChromeRenderViewHostTestHarness {
   ~PhishyInteractionTrackerTest() override = default;
 
   void SetUp() override {
-    ChromeRenderViewHostTestHarness::SetUp();
     browser_process_ = TestingBrowserProcess::GetGlobal();
     sb_service_ =
         base::MakeRefCounted<safe_browsing::TestSafeBrowsingService>();
+    sb_service_->SetUseTestUrlLoaderFactory(true);
+    // Set sb_service before the ChromeRenderViewHostTestHarness::SetUp(),
+    // because it is needed to construct ping manager.
     browser_process_->SetSafeBrowsingService(sb_service_.get());
+
+    ChromeRenderViewHostTestHarness::SetUp();
 
     ui_manager_ = new StrictMock<MockSafeBrowsingUIManager>();
     phishy_interaction_tracker_ =
@@ -211,7 +215,7 @@ class PhishyInteractionTrackerTest : public ChromeRenderViewHostTestHarness {
 
  protected:
   raw_ptr<TestingBrowserProcess> browser_process_;
-  scoped_refptr<safe_browsing::SafeBrowsingService> sb_service_;
+  scoped_refptr<safe_browsing::TestSafeBrowsingService> sb_service_;
   std::unique_ptr<PhishyInteractionTracker> phishy_interaction_tracker_;
   scoped_refptr<MockSafeBrowsingUIManager> ui_manager_;
   safe_browsing::ChromePingManagerAllowerForTesting allow_ping_manager_;

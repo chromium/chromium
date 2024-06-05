@@ -370,6 +370,10 @@ TEST_F(DownloadRequestMakerTest, PopulatesEnhancedProtection) {
 }
 
 TEST_F(DownloadRequestMakerTest, PopulateTailoredInfo) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(
+      safe_browsing::kDownloadReportWithoutUserDecision);
+
   base::RunLoop run_loop;
   base::FilePath tmp_path(FILE_PATH_LITERAL("temp_path"));
 
