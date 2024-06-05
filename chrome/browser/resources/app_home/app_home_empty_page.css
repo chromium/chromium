@@ -1,0 +1,37 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+.container {
+  font-size: 12px;
+  left: 50%;
+  /* to account for the extra pixels at the top of the image */
+  margin-top: -41px;
+  position: absolute;
+  text-align: center;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.container p {
+  font-size: 15px;
+  margin-bottom: 16px;
+  margin-top: 0;
+}
+
+/* Force dark mode colors. */
+cr-button {
+  --cr-button-border-color: var(--google-grey-700);
+  --cr-button-text-color: var(--google-blue-300);
+  --cr-button-ripple-color: var(--google-blue-300);
+  --cr-button-ripple-opacity: .16;
+}
+
+cr-button:hover {
+  --cr-button-background-color: rgba(var(--google-blue-300-rgb), .08);
+}

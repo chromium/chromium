@@ -15,7 +15,7 @@ import {BrowserProxy} from 'chrome://apps/browser_proxy.js';
 import type {DeprecatedAppsLinkElement} from 'chrome://apps/deprecated_apps_link.js';
 import type {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestAppHomeBrowserProxy} from './test_app_home_browser_proxy.js';
@@ -616,17 +616,16 @@ suite('AppListTest', () => {
     await waitAfterNextRender(deprecatedAppsLink);
 
     assertTrue(!!deprecatedAppsLink);
-    const linkContainer: HTMLElement =
+    const linkContainer =
         deprecatedAppsLink.shadowRoot!.querySelector<HTMLImageElement>(
-            '#container')!;
-    assertEquals(
-        linkContainer!.style.display, 'none', 'Deprecation link is not hidden');
+            '#container');
+    assertNull(linkContainer, 'Deprecation link is not hidden.');
 
     const appItems = appListElement.shadowRoot!.querySelectorAll('app-item');
     assertTrue(!!appItems, 'No apps.');
 
     appItems.forEach((item) => {
-      const deprecatedIcon: HTMLElement =
+      const deprecatedIcon =
           item!.shadowRoot!.querySelector<HTMLImageElement>('#deprecatedIcon')!;
       assertTrue(
           deprecatedIcon.hidden,
@@ -642,12 +641,10 @@ suite('AppListTest', () => {
     document.body.appendChild(deprecatedAppsLink);
     await waitAfterNextRender(deprecatedAppsLink);
     assertTrue(!!deprecatedAppsLink);
-    const linkContainer: HTMLElement =
+    const linkContainer =
         deprecatedAppsLink.shadowRoot!.querySelector<HTMLImageElement>(
-            '#container')!;
-    assertEquals(
-        linkContainer!.style.display, 'inline-flex',
-        'Removal link is hidden when it shouldn\'t be.');
+            '#container');
+    assertTrue(!!linkContainer);
   });
 
   test('Deprecated app icon', async () => {
@@ -661,7 +658,7 @@ suite('AppListTest', () => {
 
     let found = false;
     appItems.forEach((item) => {
-      const deprecatedIcon: HTMLElement =
+      const deprecatedIcon =
           item!.shadowRoot!.querySelector<HTMLImageElement>('#deprecatedIcon')!;
       if (item!.id === deprecatedAppInfo.id) {
         found = true;
@@ -717,9 +714,8 @@ suite('AppListTest', () => {
     await waitAfterNextRender(deprecatedAppsLink);
 
     assertTrue(!!deprecatedAppsLink);
-    const link: HTMLElement =
-        deprecatedAppsLink.shadowRoot!.querySelector<HTMLImageElement>(
-            '#deprecated-apps-link')!;
+    const link = deprecatedAppsLink.shadowRoot!.querySelector<HTMLImageElement>(
+        '#deprecated-apps-link')!;
 
     link.click();
 

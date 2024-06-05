@@ -1,0 +1,70 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_hidden_style_lit.css.js
+ * #scheme=relative
+ * #include=cr-hidden-style-lit
+ * #css_wrapper_metadata_end */
+
+/* TODO(crbug.com/40234138): update the style after UI design
+  spec is finalized.*/
+
+:host {
+  align-items: center;
+  cursor: pointer;
+  display: block;
+  height: 120px;
+  margin: auto 0;
+  text-align: center;
+}
+
+#iconContainer {
+  height: 64px;
+  margin-inline-end: auto;
+  margin-inline-start: auto;
+  margin-top: 14px;
+  position: relative;
+  transition: all 250ms;
+  width: 64px;
+}
+
+#deprecatedIcon {
+  bottom: 0;
+  height: 18px;
+  position: absolute;
+  right: 0;
+  width: 18px;
+}
+
+#iconContainer:active {
+  transform: scale(0.94);
+}
+
+#textContainer {
+  font-size: 13px;
+  height: 20px;
+  /* Scale the total text margin with the size of "extra space" available in
+  the grid column, but limit max margin at 32px to give text some space. */
+  margin-inline: min(32px, calc(8px + (100% - 96px) / 2));
+  margin-top: 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#iconImage {
+  height: 100%;
+  width: 100%;
+}
+
+hr {
+  border-top: var(--cr-separator-line);
+  height: 0;
+}
+
+cr-checkbox::part(label-container) {
+  flex: 1;
+}

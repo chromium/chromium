@@ -4,17 +4,22 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './app_home_empty_page.html.js';
+import {getCss} from './app_home_empty_page.css.js';
+import {getHtml} from './app_home_empty_page.html.js';
 
-export class AppHomeEmptyPageElement extends PolymerElement {
+export class AppHomeEmptyPageElement extends CrLitElement {
   static get is() {
     return 'app-home-empty-page';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
+  }
+
+  override render() {
+    return getHtml.bind(this)();
   }
 }
 
