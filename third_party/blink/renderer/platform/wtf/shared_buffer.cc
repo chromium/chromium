@@ -90,11 +90,6 @@ const char* SharedBuffer::FlattenIfNeededAndGetData() {
   return segments_.begin()->data().data();
 }
 
-void SharedBuffer::Append(const SharedBuffer& data) {
-  for (const auto& span : data)
-    Append(span);
-}
-
 void SharedBuffer::Append(base::span<const char> data) {
   if (data.empty()) {
     return;

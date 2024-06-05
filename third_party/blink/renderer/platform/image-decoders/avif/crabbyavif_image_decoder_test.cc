@@ -777,7 +777,7 @@ void TestYUVRed(const char* file_name,
   EXPECT_NEAR(decoded_pixel.z(), 0, kMinError);  // B
 }
 
-void DecodeTask(const SharedBuffer* data, base::RepeatingClosure* done) {
+void DecodeTask(const Vector<char>* data, base::RepeatingClosure* done) {
   std::unique_ptr<ImageDecoder> decoder = CreateAVIFDecoder();
 
   scoped_refptr<SharedBuffer> data_copy = SharedBuffer::Create();
@@ -1526,9 +1526,8 @@ TEST(CrabbyStaticAVIFTests, ParallelDecoding) {
   // media::PaintCanvasVideoRenderer::ConvertVideoFrameToRGBPixels() to pick
   // n_tasks > 1 if CrabbyAVIFImageDecoder did not pass disable_threading=true
   // to it.
-  scoped_refptr<SharedBuffer> data =
-      ReadFile("/images/resources/avif/gray1024x704.avif");
-  ASSERT_TRUE(data.get());
+  Vector<char> data = ReadFile("/images/resources/avif/gray1024x704.avif")
+                          ->CopyAs<Vector<char>>();
 
   // Task timeout in tests is 30 seconds (see https://crrev.com/c/1949028).
   // Four blocking tasks cause a temporary deadlock (1.2 seconds) of
@@ -1544,7 +1543,7 @@ TEST(CrabbyStaticAVIFTests, ParallelDecoding) {
   for (size_t i = 0; i < n_decodes; ++i) {
     base::ThreadPool::PostTask(
         FROM_HERE,
-        base::BindOnce(DecodeTask, base::Unretained(data.get()), &barrier));
+        base::BindOnce(DecodeTask, base::Unretained(&data), &barrier));
   }
 
   event.Wait();

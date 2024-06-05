@@ -1046,7 +1046,7 @@ TEST(AnimatedPNGTests, Offset) {
   char buffer[kOffset] = {};
 
   auto data = SharedBuffer::Create(buffer, kOffset);
-  data->Append(*original_data.get());
+  data->Append(original_data->CopyAs<Vector<char>>());
 
   // Use the same defaults as CreatePNGDecoder, except use the (arbitrary)
   // non-zero offset.

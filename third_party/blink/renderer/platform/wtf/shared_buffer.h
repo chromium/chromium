@@ -153,8 +153,6 @@ class WTF_EXPORT SharedBuffer : public RefCounted<SharedBuffer> {
 
   bool empty() const { return !size(); }
 
-  void Append(const SharedBuffer&);
-
   // TODO(crbug.com/40284755): Remove the pointer-based methods in favor of span
   // ones.
   HAS_STRICTLY_TYPED_ARG
