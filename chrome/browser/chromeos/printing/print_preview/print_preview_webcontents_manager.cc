@@ -7,6 +7,7 @@
 #include "base/no_destructor.h"
 #include "base/unguessable_token.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/chromeos/printing/print_preview/print_settings_converter.h"
 #include "chrome/browser/chromeos/printing/print_preview/print_view_manager_cros.h"
 #include "chromeos/crosapi/mojom/print_preview_cros.mojom.h"
 #include "components/device_event_log/device_event_log.h"
@@ -108,9 +109,18 @@ void PrintPreviewWebcontentsManager::GeneratePrintPreview(
         "Bad token, can only be called by a valid print preview instance.");
     return;
   }
-  std::move(callback).Run(/*success=*/true);
 
-  // TODO(jimmyxgong): Call into UI wrapper to generate the preview.
+  PrintViewManagerCros* view_manager =
+      PrintViewManagerCros::FromWebContents(found_content_iter->second);
+  if (!view_manager) {
+    PRINTER_LOG(ERROR) << "Failed to start generating a print preview.";
+    std::move(callback).Run(/*success=*/false);
+    return;
+  }
+
+  view_manager->HandleGeneratePrintPreview(
+      SerializePrintSettings(std::move(settings)));
+  std::move(callback).Run(/*success=*/true);
 }
 
 void PrintPreviewWebcontentsManager::HandleDialogClosed(

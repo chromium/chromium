@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/unguessable_token.h"
+#include "chrome/browser/chromeos/printing/print_preview/print_preview_ui_wrapper.h"
 #include "chrome/browser/chromeos/printing/print_preview/print_preview_webcontents_manager.h"
 #include "components/printing/common/print.mojom.h"
 #include "content/public/browser/render_frame_host.h"
@@ -14,6 +15,7 @@
 #include "content/public/browser/web_contents_user_data.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
+#include "printing/print_job_constants.h"
 #include "stdint.h"
 
 namespace chromeos {
@@ -23,7 +25,11 @@ PrintViewManagerCros::PrintViewManagerCros(content::WebContents* web_contents)
       content::WebContentsUserData<PrintViewManagerCros>(*web_contents),
       token_(base::UnguessableToken::Create()) {}
 
-PrintViewManagerCros::~PrintViewManagerCros() = default;
+PrintViewManagerCros::~PrintViewManagerCros() {
+  if (ui_wrapper_) {
+    ui_wrapper_->Reset();
+  }
+}
 
 // static
 void PrintViewManagerCros::BindPrintManagerHost(
@@ -60,7 +66,10 @@ void PrintViewManagerCros::RequestPrintPreview(
 
 void PrintViewManagerCros::CheckForCancel(int32_t preview_ui_id,
                                           int32_t request_id,
-                                          CheckForCancelCallback callback) {}
+                                          CheckForCancelCallback callback) {
+  std::move(callback).Run(
+      PrintPreviewUiWrapper::ShouldCancelRequest(preview_ui_id, request_id));
+}
 
 void PrintViewManagerCros::RenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {
@@ -90,6 +99,14 @@ bool PrintViewManagerCros::PrintPreviewNow(content::RenderFrameHost* rfh,
       has_selection);
   DCHECK(!render_frame_host_);
   render_frame_host_ = rfh;
+  // Upon re-opening the print dialog, we should also reset the print preview
+  // UI wrapper.
+  if (ui_wrapper_) {
+    ui_wrapper_->Reset();
+  }
+  ui_wrapper_.reset();
+  ui_wrapper_ = std::make_unique<PrintPreviewUiWrapper>();
+  ui_wrapper_->BindPrintPreviewUI(rfh);
   return true;
 }
 
@@ -106,6 +123,15 @@ void PrintViewManagerCros::HandlePrintPreviewRemoved() {
     GetPrintRenderFrame(render_frame_host_)->OnPrintPreviewDialogClosed();
   }
   render_frame_host_ = nullptr;
+
+  if (ui_wrapper_) {
+    ui_wrapper_->Reset();
+  }
+}
+
+void PrintViewManagerCros::HandleGeneratePrintPreview(
+    const base::Value::Dict& settings) {
+  ui_wrapper_->GeneratePrintPreview(settings.Clone());
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(PrintViewManagerCros);
