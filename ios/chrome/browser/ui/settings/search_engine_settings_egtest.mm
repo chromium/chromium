@@ -113,14 +113,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   AppLaunchConfiguration config;
   config.additional_args.push_back(
       std::string("--") + switches::kSearchEngineChoiceCountry + "=US");
-  if ([self isRunningTest:@selector
-            (testDeleteSelectedCustomSearchEngineBySwipe)]) {
-    config.features_disabled.push_back(switches::kSearchEngineChoiceTrigger);
-  } else {
-    config.additional_args.push_back(
-        "--enable-features=SearchEngineChoiceTrigger:for_tagged_profiles_only/"
-        "false");
-  }
+  config.features_enabled.push_back(switches::kSearchEngineChoiceTrigger);
   return config;
 }
 
@@ -186,9 +179,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [ChromeEarlGrey waitForWebStateContainingText:kYahooURL];
 }
 
-// TODO(crbug.com/325379827): Re-enable this test.
 // Deletes a custom search engine by swiping and tapping on the "Delete" button.
-- (void)DISABLED_testDeleteCustomSearchEngineSwipeAndTap {
+- (void)testDeleteCustomSearchEngineSwipeAndTap {
   [self enterSettingsWithCustomSearchEngine];
 
   [[SearchEngineChoiceEarlGreyUI
@@ -206,9 +198,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       assertWithMatcher:grey_nil()];
 }
 
-// TODO(crbug.com/325379827): Re-enable this test.
 // Deletes a custom engine by swiping it.
-- (void)DISABLED_testDeleteCustomSearchEngineSwipe {
+- (void)testDeleteCustomSearchEngineSwipe {
   [self enterSettingsWithCustomSearchEngine];
   [[SearchEngineChoiceEarlGreyUI
       interactionForSettingsSearchEngineWithName:kCustomSearchEngineName]
@@ -220,8 +211,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       assertWithMatcher:grey_nil()];
 }
 
-// Deletes the selected custom engine by swiping it.
-- (void)testDeleteSelectedCustomSearchEngineBySwipe {
+// Tests that the selected custom search engine cannot be deleted.
+- (void)testRefuseToDeleteSelectedCustomSearchEngineBySwipe {
   [self enterSettingsWithCustomSearchEngine];
   [[SearchEngineChoiceEarlGreyUI
       interactionForSettingsSearchEngineWithName:kCustomSearchEngineName]
@@ -232,22 +223,12 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
                                                             0.9, 0.5)];
   id<GREYMatcher> searchEngineCellMatcher = [SearchEngineChoiceEarlGreyUI
       settingsSearchEngineMatcherWithName:kCustomSearchEngineName];
-  // Verify that the custom search engine disappeared.
   [[EarlGrey selectElementWithMatcher:searchEngineCellMatcher]
-      assertWithMatcher:grey_nil()];
-  // Verify the default search engine is back to Google.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsDoneButton()]
-      performAction:grey_tap()];
-  NSString* googleSearchEngineName =
-      [SearchEngineChoiceEarlGreyUI searchEngineNameWithPrepopulatedEngine:
-                                        TemplateURLPrepopulateData::google];
-  [SearchEngineChoiceEarlGreyUI
-      verifyDefaultSearchEngineSetting:googleSearchEngineName];
+      assertWithMatcher:grey_notNil()];
 }
 
-// TODO(crbug.com/325379827): Re-enable this test.
-// Deletes a non-selecetd custom search engine by entering edit mode.
-- (void)DISABLED_testDeleteCustomSearchEngineEdit {
+// Deletes a non-selected custom search engine by entering edit mode.
+- (void)testDeleteCustomSearchEngineEdit {
   [self enterSettingsWithCustomSearchEngine];
 
   id<GREYMatcher> editButton = grey_allOf(
