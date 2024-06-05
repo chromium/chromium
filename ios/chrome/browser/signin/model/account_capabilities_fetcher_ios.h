@@ -27,6 +27,10 @@ class AccountCapabilitiesFetcherIOS : public AccountCapabilitiesFetcher {
   AccountCapabilitiesFetcherIOS& operator=(
       const AccountCapabilitiesFetcherIOS&) = delete;
 
+  // Returns the list of account capability service names supported in Chrome.
+  // This is exposed to allow for prefetching capabilities on app startup.
+  static const std::vector<std::string>& GetAccountCapabilityNamesForPrefetch();
+
  protected:
   // AccountCapabilitiesFetcher:
   void StartImpl() override;
