@@ -221,13 +221,13 @@ class CreditCardSaveManagerTest : public testing::Test {
         std::make_unique<MockVirtualCardEnrollmentManager>(
             autofill_client_.GetPersonalDataManager(),
             &payments_network_interface(), &autofill_client_));
-    credit_card_save_manager_ = new TestCreditCardSaveManager(
-        autofill_driver_.get(), &autofill_client_, &personal_data());
+    auto credit_card_save_manager =
+        std::make_unique<TestCreditCardSaveManager>(&autofill_client_);
+    credit_card_save_manager_ = credit_card_save_manager.get();
     credit_card_save_manager_->SetCreditCardUploadEnabled(true);
     autofill_client_.set_test_form_data_importer(
         std::make_unique<TestFormDataImporter>(
-            &autofill_client_,
-            std::unique_ptr<CreditCardSaveManager>(credit_card_save_manager_),
+            &autofill_client_, std::move(credit_card_save_manager),
             /*iban_save_manager=*/nullptr, "en-US"));
     autofill_client_.GetStrikeDatabase();
     browser_autofill_manager_ =
@@ -442,7 +442,7 @@ class CreditCardSaveManagerTest : public testing::Test {
   MockAutofillClient autofill_client_;
   // TODO(crbug.com/40818490): Refactor to use the real CreditCardSaveManager.
   // Ends up getting owned (and destroyed) by TestFormDataImporter:
-  raw_ptr<TestCreditCardSaveManager> credit_card_save_manager_;
+  raw_ptr<TestCreditCardSaveManager> credit_card_save_manager_ = nullptr;
 
  private:
   int ToHistogramSample(autofill_metrics::CardUploadDecision metric) {

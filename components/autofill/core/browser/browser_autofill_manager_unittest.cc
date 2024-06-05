@@ -784,9 +784,8 @@ class BrowserAutofillManagerTest : public testing::Test {
             std::make_unique<payments::TestPaymentsNetworkInterface>(
                 autofill_client_.GetURLLoaderFactory(),
                 autofill_client_.GetIdentityManager(), &personal_data()));
-    auto credit_card_save_manager = std::make_unique<TestCreditCardSaveManager>(
-        autofill_driver_.get(), &autofill_client_,
-        &personal_data());
+    auto credit_card_save_manager =
+        std::make_unique<TestCreditCardSaveManager>(&autofill_client_);
     credit_card_save_manager->SetCreditCardUploadEnabled(true);
     autofill_client_.set_test_form_data_importer(
         std::make_unique<autofill::TestFormDataImporter>(

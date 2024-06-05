@@ -23,7 +23,6 @@
 #include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/strike_databases/payments/credit_card_save_strike_database.h"
 #include "components/autofill/core/browser/strike_databases/payments/cvc_storage_strike_database.h"
 #include "components/autofill/core/browser/strike_databases/payments/local_card_migration_strike_database.h"
@@ -101,11 +100,8 @@ class CreditCardSaveManager {
     virtual void OnStrikeChangeComplete() {}
   };
 
-  // The parameters should outlive the CreditCardSaveManager.
-  CreditCardSaveManager(
-      AutofillClient* client,
-      const std::string& app_locale,
-      PersonalDataManager* personal_data_manager);
+  // `client` must outlive the CreditCardSaveManager.
+  CreditCardSaveManager(AutofillClient* client, const std::string& app_locale);
 
   CreditCardSaveManager(const CreditCardSaveManager&) = delete;
   CreditCardSaveManager& operator=(const CreditCardSaveManager&) = delete;
@@ -267,7 +263,7 @@ class CreditCardSaveManager {
 
   // Called once the user makes a decision with respect to the local credit card
   // offer-to-save prompt. If accepted, clears strikes for the to-be-saved card
-  // and has |personal_data_manager_| save the card.
+  // and has `PaymentsDataManager` save the card.
   void OnUserDidDecideOnLocalSave(
       AutofillClient::SaveCardOfferUserDecision user_decision);
 
@@ -358,14 +354,12 @@ class CreditCardSaveManager {
     observer_for_testing_ = observer;
   }
 
-  const raw_ptr<AutofillClient> client_;
+  PaymentsDataManager& payments_data_manager();
+  const PaymentsDataManager& payments_data_manager() const;
+
+  const raw_ref<AutofillClient> client_;
 
   std::string app_locale_;
-
-  // The personal data manager, used to save and load personal data to/from the
-  // web database.  This is overridden by the BrowserAutofillManagerTest.
-  // Weak reference.
-  raw_ptr<PersonalDataManager> personal_data_manager_;
 
   // The credit card to be saved if local credit card or local or server CVC
   // save is accepted.

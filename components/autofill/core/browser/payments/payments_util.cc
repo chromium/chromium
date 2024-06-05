@@ -17,7 +17,7 @@ namespace {
 constexpr int kCustomerHasNoBillingCustomerNumber = 0;
 }
 
-int64_t GetBillingCustomerId(PaymentsDataManager* payments_data_manager) {
+int64_t GetBillingCustomerId(const PaymentsDataManager* payments_data_manager) {
   DCHECK(payments_data_manager);
 
   // Get billing customer ID from the synced PaymentsCustomerData.

@@ -167,10 +167,8 @@ FormDataImporter::FormDataImporter(AutofillClient* client,
                                    history::HistoryService* history_service,
                                    const std::string& app_locale)
     : client_(CHECK_DEREF(client)),
-      credit_card_save_manager_(std::make_unique<CreditCardSaveManager>(
-          client,
-          app_locale,
-          client_->GetPersonalDataManager())),
+      credit_card_save_manager_(
+          std::make_unique<CreditCardSaveManager>(client, app_locale)),
       address_profile_save_manager_(std::make_unique<AddressProfileSaveManager>(
           client,
           client_->GetPersonalDataManager())),
