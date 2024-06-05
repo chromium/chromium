@@ -101,7 +101,7 @@ import * as Common from 'devtools/core/common/common.js';
 
   function testSimpleSchedule(next, runningProcess) {
     assertThrottlerIdle();
-    throttler.schedule(ProcessMock.create('operation #1').run, false);
+    throttler.schedule(ProcessMock.create('operation #1').run, 'Default');
     var process = ProcessMock.create('operation #2');
     throttler.schedule(process.run);
 
@@ -123,7 +123,7 @@ import * as Common from 'devtools/core/common/common.js';
     assertThrottlerIdle();
     throttler.schedule(ProcessMock.create('operation #1').run);
     var process = ProcessMock.create('operation #2');
-    throttler.schedule(process.run, true);
+    throttler.schedule(process.run, 'AsSoonAsPossible');
 
     var promise = Promise.resolve();
     if (runningProcess) {
@@ -146,7 +146,7 @@ import * as Common from 'devtools/core/common/common.js';
     var process = null;
     for (var i = 0; i < 4; ++i) {
       process = ProcessMock.create('operation #' + i);
-      throttler.schedule(process.run, i % 2 === 0);
+      throttler.schedule(process.run, i % 2 === 0 ? 'AsSoonAsPossible' : 'Default');
     }
     var promise = Promise.resolve();
     if (runningProcess) {
@@ -210,7 +210,7 @@ import * as Common from 'devtools/core/common/common.js';
 
       function processBody() {
         nextProcess = ProcessMock.create('operation #2');
-        throttler.schedule(nextProcess.run, false);
+        throttler.schedule(nextProcess.run, 'Default');
       }
     },
 
