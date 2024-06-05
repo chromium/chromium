@@ -123,7 +123,7 @@ class AutocompleteMediator
     // When set, specifies the time when the suggestion list was shown the first time.
     // Suggestions are refreshed several times per keystroke.
     private Long mFirstSuggestionListModelCreatedTime;
-    private OptionalInt mPageClassification;
+    private OptionalInt mPageClassification = OptionalInt.empty();
 
     @IntDef({
         EditSessionState.INACTIVE,
@@ -840,6 +840,7 @@ class AutocompleteMediator
 
                 postAutocompleteRequest(
                         () -> {
+                            if (!mPageClassification.isPresent()) return;
                             startMeasuringSuggestionRequestToUiModelTime();
                             mAutocomplete.ifPresent(
                                     a ->
@@ -1059,12 +1060,14 @@ class AutocompleteMediator
         if (mDelegate.isUrlBarFocused()
                 && (mDataProvider.hasTab() || mDataProvider.isInOverviewAndShowingOmnibox())) {
             mAutocomplete.ifPresent(
-                    a ->
-                            a.startZeroSuggest(
-                                    mUrlBarEditingTextProvider.getTextWithAutocomplete(),
-                                    mDataProvider.getCurrentGurl(),
-                                    mPageClassification.getAsInt(),
-                                    mDataProvider.getTitle()));
+                    a -> {
+                        if (!mPageClassification.isPresent()) return;
+                        a.startZeroSuggest(
+                                mUrlBarEditingTextProvider.getTextWithAutocomplete(),
+                                mDataProvider.getCurrentGurl(),
+                                mPageClassification.getAsInt(),
+                                mDataProvider.getTitle());
+                    });
         }
     }
 

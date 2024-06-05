@@ -1541,4 +1541,28 @@ public class AutocompleteMediatorUnitTest {
         mMediator.onOmniboxSessionStateChange(false);
         verify(mDeferredImeCallback).detach();
     }
+
+    @Test
+    public void bailWhenPageClassGone() {
+        mMediator.setAutocompleteProfile(mProfile);
+
+        when(mAutocompleteDelegate.isUrlBarFocused()).thenReturn(true);
+        when(mAutocompleteDelegate.didFocusUrlFromFakebox()).thenReturn(false);
+
+        GURL url = JUnitTestGURLs.BLUE_1;
+        String title = "Title";
+        int pageClassification = PageClassification.BLANK_VALUE;
+        setUpLocationBarDataProvider(url, title, pageClassification);
+
+        when(mTextStateProvider.getTextWithAutocomplete()).thenReturn("");
+
+        mMediator.onNativeInitialized();
+        mMediator.onTextChanged("");
+        verify(mAutocompleteController, never())
+                .startZeroSuggest("", url, pageClassification, title);
+
+        mMediator.onTextChanged("t");
+        verify(mAutocompleteController, never())
+                .start(any(), anyInt(), any(), anyInt(), anyBoolean());
+    }
 }
