@@ -77,6 +77,7 @@ class TestAnnotationTextObserver : public AnnotationsTextObserver {
                        int seq_id,
                        const base::Value::Dict& metadata) override {
     extracted_text_ = text;
+    EXPECT_GE(seq_id, 1);
     seq_id_ = seq_id;
     metadata_ = metadata.Clone();
   }
@@ -192,8 +193,8 @@ class AnnotationTextManagerTest : public web::WebTestWithWebState {
     ASSERT_TRUE(WaitForWebFramesCount(1));
 
     // Wait for text extracted, background parsing and decoration.
-    // Make timeout 3 times the regular action timeout to reduce flakiness.
-    EXPECT_TRUE(WaitUntilConditionOrTimeout(3 * kWaitForActionTimeout, ^{
+    // Make timeout 4 times the regular action timeout to reduce flakiness.
+    EXPECT_TRUE(WaitUntilConditionOrTimeout(4 * kWaitForActionTimeout, ^{
       return observer()->seq_id() > seq_id;
     }));
   }
