@@ -35,6 +35,7 @@ import android.graphics.drawable.Drawable;
 import android.util.Size;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -47,6 +48,8 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.JUnitProcessor;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
@@ -62,6 +65,8 @@ import org.chromium.components.browser_ui.widget.displaystyle.HorizontalDisplayS
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig.DisplayStyle;
 import org.chromium.components.browser_ui.widget.displaystyle.VerticalDisplayStyle;
+import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -70,6 +75,10 @@ import org.chromium.url.JUnitTestGURLs;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class SingleTabSwitcherOnNtpMediatorUnitTest {
+    @Rule public JUnitProcessor mFeaturesProcessor = new JUnitProcessor();
+    @Rule public JniMocker mocker = new JniMocker();
+    @Mock UrlUtilities.Natives mUrlUtilitiesJniMock;
+
     private final int mTabId = 1;
     private final String mTitle = "test";
     private final GURL mUrl = JUnitTestGURLs.URL_1;
@@ -96,6 +105,8 @@ public class SingleTabSwitcherOnNtpMediatorUnitTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        mocker.mock(UrlUtilitiesJni.TEST_HOOKS, mUrlUtilitiesJniMock);
+
         doReturn(true).when(mTabListFaviconProvider).isInitialized();
         doReturn(mNormalTabModel).when(mTabModelSelector).getModel(false);
         doReturn(mTab).when(mNormalTabModel).getTabAt(0);
@@ -153,7 +164,8 @@ public class SingleTabSwitcherOnNtpMediatorUnitTest {
                 ContextUtils.getApplicationContext()
                         .getResources()
                         .getDimensionPixelSize(
-                                org.chromium.chrome.R.dimen.single_tab_module_tab_thumbnail_size);
+                                org.chromium.chrome.R.dimen
+                                        .single_tab_module_tab_thumbnail_size_big);
         int height = width;
         Size thumbnailSize = new Size(width, height);
 

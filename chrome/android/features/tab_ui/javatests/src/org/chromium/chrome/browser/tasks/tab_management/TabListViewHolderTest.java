@@ -76,7 +76,6 @@ import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.state.LevelDBPersistedDataStorage;
 import org.chromium.chrome.browser.tab.state.LevelDBPersistedDataStorageJni;
-import org.chromium.chrome.browser.tab.state.PersistedTabDataConfiguration;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.ResourceTabFavicon;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.StaticTabFaviconType;
@@ -948,48 +947,6 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
         public void fetch(Callback<ShoppingPersistedTabData> callback) {
             callback.onResult(mShoppingPersistedTabData);
         }
-    }
-
-    @Test
-    @MediumTest
-    @Features.DisableFeatures({ChromeFeatureList.PRICE_CHANGE_MODULE})
-    public void testPriceDropEndToEnd() {
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    ShoppingPersistedTabData.onDeferredStartup();
-                    ShoppingPersistedTabData.enablePriceTrackingWithOptimizationGuideForTesting();
-                    PersistedTabDataConfiguration.setUseTestConfig(true);
-                    PriceTrackingFeatures.setPriceTrackingEnabledForTesting(true);
-                    mockCurrencyFormatter();
-                    mockUrlUtilities();
-                    mockOptimizationGuideResponse(
-                            OptimizationGuideDecision.TRUE, ANY_PRICE_TRACKING_DATA);
-                    MockTab tab = MockTab.createAndInitialize(1, mProfile);
-                    tab.setGurlOverrideForTesting(TEST_GURL);
-                    tab.setIsInitialized(true);
-                    tab.setTimestampMillis(System.currentTimeMillis());
-                    TabListMediator.ShoppingPersistedTabDataFetcher fetcher =
-                            new TabListMediator.ShoppingPersistedTabDataFetcher(tab, null);
-                    mGridModel.set(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER, fetcher);
-                    testGridSelected(mTabGridView, mGridModel);
-                });
-        CriteriaHelper.pollUiThread(
-                () ->
-                        EXPECTED_PRICE.equals(
-                                ((TextView) mTabGridView.findViewById(R.id.current_price))
-                                        .getText()));
-        CriteriaHelper.pollUiThread(
-                () ->
-                        EXPECTED_PREVIOUS_PRICE.equals(
-                                ((TextView) mTabGridView.findViewById(R.id.previous_price))
-                                        .getText()));
-        CriteriaHelper.pollUiThread(
-                () ->
-                        EXPECTED_CONTENT_DESCRIPTION.equals(
-                                ((PriceCardView)
-                                                mTabGridView.findViewById(
-                                                        R.id.price_info_box_outer))
-                                        .getContentDescription()));
     }
 
     @Test

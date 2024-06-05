@@ -732,7 +732,7 @@ public class ReturnToChromeUtilUnitTest {
         verify(mTabCreater, never()).createNewTab(any(), eq(TabLaunchType.FROM_STARTUP), eq(null));
         verify(mCurrentTabModel, never())
                 .setIndex(anyInt(), eq(TabSelectionType.FROM_USER), eq(false));
-        verify(mNewTabPage, never()).showHomeSurfaceUi(any());
+        verify(mNewTabPage, never()).showMagicStack(any());
         verify(mHomeSurfaceTracker).updateHomeSurfaceAndTrackingTabs(eq(mNtpTab), eq(null));
         histogram.assertExpected();
 
@@ -771,7 +771,7 @@ public class ReturnToChromeUtilUnitTest {
                 mHomeSurfaceTracker);
         verify(mTabCreater, never()).createNewTab(any(), eq(TabLaunchType.FROM_STARTUP), eq(null));
         verify(mCurrentTabModel).setIndex(eq(1), eq(TabSelectionType.FROM_USER), eq(false));
-        verify(mNewTabPage).showHomeSurfaceUi(eq(mTab1));
+        verify(mNewTabPage).showMagicStack(eq(mTab1));
         verify(mHomeSurfaceTracker).updateHomeSurfaceAndTrackingTabs(eq(mNtpTab), eq(mTab1));
         histogram.assertExpected();
     }
@@ -816,7 +816,7 @@ public class ReturnToChromeUtilUnitTest {
                 mTabCreater,
                 mHomeSurfaceTracker);
         verify(mTabCreater, times(1)).createNewTab(any(), eq(TabLaunchType.FROM_STARTUP), eq(null));
-        verify(mNewTabPage).showHomeSurfaceUi(eq(mTab1));
+        verify(mNewTabPage).showMagicStack(eq(mTab1));
         verify(mHomeSurfaceTracker).updateHomeSurfaceAndTrackingTabs(eq(mNtpTab), eq(mTab1));
         histogram.assertExpected();
     }
@@ -863,7 +863,7 @@ public class ReturnToChromeUtilUnitTest {
                 mHomeSurfaceTracker);
         histogram.assertExpected();
         verify(mHomeSurfaceTracker, never()).updateHomeSurfaceAndTrackingTabs(eq(mNtpTab), any());
-        verify(mNewTabPage, never()).showHomeSurfaceUi(any());
+        verify(mNewTabPage, never()).showMagicStack(any());
 
         // Set the last active NTP doesn't have a tracking Tab.
         doReturn(false).when(mHomeSurfaceTracker).canShowHomeSurface(activeNtpTab);
@@ -882,7 +882,7 @@ public class ReturnToChromeUtilUnitTest {
                 mHomeSurfaceTracker);
         histogram.assertExpected();
         verify(mHomeSurfaceTracker, never()).updateHomeSurfaceAndTrackingTabs(eq(mNtpTab), any());
-        verify(mNewTabPage, never()).showHomeSurfaceUi(any());
+        verify(mNewTabPage, never()).showMagicStack(any());
     }
 
     @Test
@@ -901,35 +901,6 @@ public class ReturnToChromeUtilUnitTest {
                 mHomeSurfaceTracker);
         verify(mTabCreater, never()).createNewTab(any(), eq(TabLaunchType.FROM_STARTUP), eq(null));
         verify(mHomeSurfaceTracker, never()).updateHomeSurfaceAndTrackingTabs(any(), any());
-    }
-
-    @Test
-    @SmallTest
-    public void testColdStartupWithOnlyLastActiveTabUrl() {
-        assertTrue(StartSurfaceConfiguration.isNtpAsHomeSurfaceEnabled(true));
-
-        doReturn(JUnitTestGURLs.URL_1).when(mTab1).getUrl();
-        doReturn(true).when(mNtpTab).isNativePage();
-        doReturn(mNewTabPage).when(mNtpTab).getNativePage();
-        doReturn(mNtpTab)
-                .when(mTabCreater)
-                .createNewTab(any(), eq(TabLaunchType.FROM_STARTUP), eq(null));
-        doReturn(mCurrentTabModel).when(mTabModelSelector).getModel(false);
-
-        // Tests the case that a new NTP is created and waits for its tracking last active Tab being
-        // restored.
-        ReturnToChromeUtil.createNewTabAndShowHomeSurfaceUi(
-                mTabCreater,
-                mHomeSurfaceTracker,
-                mTabModelSelector,
-                JUnitTestGURLs.URL_1.getSpec(),
-                null);
-        verify(mCurrentTabModel).addObserver(mTabModelObserverCaptor.capture());
-
-        // Verifies if the added Tab matches the tracking URL, call showHomeSurfaceUi().
-        mTabModelObserverCaptor.getValue().willAddTab(mTab1, TabLaunchType.FROM_RESTORE);
-        verify(mNewTabPage).showHomeSurfaceUi(eq(mTab1));
-        verify(mHomeSurfaceTracker).updateHomeSurfaceAndTrackingTabs(eq(mNtpTab), eq(mTab1));
     }
 
     @Test

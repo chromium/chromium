@@ -1150,6 +1150,10 @@ public class NewTabPage
      * @param mostRecentTab The last shown Tab if exists. It is non null for NTP home surface only.
      */
     public void showMagicStack(Tab mostRecentTab) {
+        if (mModuleRegistrySupplier.get() == null) {
+            return;
+        }
+
         if (mostRecentTab != null && !UrlUtilities.isNtpUrl(mostRecentTab.getUrl())) {
             mMostRecentTabSupplier.set(mostRecentTab);
         }

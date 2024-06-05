@@ -84,7 +84,6 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.browser.single_tab.SingleTabSwitcherMediator;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
@@ -211,7 +210,7 @@ public class StartSurfaceTest {
         onViewWaiting(withId(R.id.primary_tasks_surface_view));
         onViewWaiting(withId(R.id.search_box_text));
         onViewWaiting(withId(R.id.mv_tiles_container)).check(matches(isDisplayed()));
-        onViewWaiting(withId(R.id.tab_switcher_module_container)).check(matches(isDisplayed()));
+        onViewWaiting(withId(R.id.single_tab_view)).check(matches(isDisplayed()));
         onView(withId(R.id.tasks_surface_body)).check(matches(isDisplayed()));
 
         // TODO(crbug.com/40128588): fix toolbar to make incognito switch part of the view.
@@ -248,7 +247,6 @@ public class StartSurfaceTest {
         onViewWaiting(withId(R.id.primary_tasks_surface_view));
         onViewWaiting(withId(R.id.search_box_text));
         onView(withId(R.id.mv_tiles_container)).check(matches(isDisplayed()));
-        onView(withId(R.id.tab_switcher_module_container)).check(matches(isDisplayed()));
         onView(withId(R.id.single_tab_view)).check(matches(isDisplayed()));
         onView(withId(R.id.tasks_surface_body)).check(matches(isDisplayed()));
 
@@ -456,12 +454,6 @@ public class StartSurfaceTest {
 
         // Histograms should be only recorded when StartSurface is shown immediately after
         // launch.
-        Assert.assertEquals(
-                expectedRecordCount,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        StartSurfaceConfiguration.getHistogramName(
-                                SingleTabSwitcherMediator.SINGLE_TAB_TITLE_AVAILABLE_TIME_UMA)));
-
         Assert.assertEquals(
                 expectedRecordCount,
                 RecordHistogram.getHistogramTotalCountForTesting(
@@ -994,7 +986,7 @@ public class StartSurfaceTest {
         onViewWaiting(withId(R.id.tab_switcher_toolbar));
         onViewWaiting(withId(R.id.search_box_text)).check(matches(isDisplayed()));
         onViewWaiting(withId(R.id.mv_tiles_container)).check(matches(isDisplayed()));
-        onViewWaiting(withId(R.id.tab_switcher_module_container)).check(matches(isDisplayed()));
+        onViewWaiting(withId(R.id.single_tab_view)).check(matches(isDisplayed()));
         onViewWaiting(withId(R.id.tasks_surface_body));
 
         View startSurfaceView =

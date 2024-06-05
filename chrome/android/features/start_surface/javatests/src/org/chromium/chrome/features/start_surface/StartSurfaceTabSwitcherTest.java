@@ -187,16 +187,13 @@ public class StartSurfaceTabSwitcherTest {
         StartSurfaceTestUtils.waitForStartSurfaceVisible(
                 mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
         TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
-        assertEquals(
-                cta.findViewById(R.id.tab_switcher_module_container).getVisibility(), View.VISIBLE);
+        assertEquals(cta.findViewById(R.id.single_tab_view).getVisibility(), View.VISIBLE);
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     cta.getTabModelSelector().getModel(false).closeAllTabs();
                 });
         TabUiTestHelper.verifyTabModelTabCount(cta, 0, 0);
-        assertEquals(
-                cta.findViewById(R.id.tab_switcher_module_container).getVisibility(), View.GONE);
     }
 
     @Test

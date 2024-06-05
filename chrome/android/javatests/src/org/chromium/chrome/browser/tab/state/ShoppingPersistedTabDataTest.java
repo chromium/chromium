@@ -30,7 +30,6 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -758,44 +757,6 @@ public class ShoppingPersistedTabDataTest {
         Assert.assertEquals(
                 ShoppingPersistedTabData.NO_PRICE_KNOWN,
                 shoppingPersistedTabData.getPreviousPriceMicros());
-        verify(mShoppingPersistedTabDataService, times(0))
-                .notifyPriceDropStatus(any(), anyBoolean());
-    }
-
-    @UiThreadTest
-    @SmallTest
-    @Test
-    @CommandLineFlags.Add({
-        "force-fieldtrial-params=Study.Group:price_tracking_with_optimization_guide/true"
-    })
-    @DisableFeatures({ChromeFeatureList.PRICE_CHANGE_MODULE})
-    public void testOptGuidePrefetchingNotNotifyServiceWithoutFeature() {
-        ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponseAsync(
-                mOptimizationGuideBridgeMock,
-                HintsProto.OptimizationType.PRICE_TRACKING,
-                ShoppingPersistedTabDataTestUtils.MockPriceTrackingResponse
-                        .BUYABLE_PRODUCT_AND_PRODUCT_UPDATE);
-        MockTab tab =
-                ShoppingPersistedTabDataTestUtils.createTabOnUiThread(
-                        ShoppingPersistedTabDataTestUtils.TAB_ID, mProfileMock);
-        tab.setIsInitialized(true);
-        GURL gurl = new GURL("https://www.google.com");
-        tab.setGurlOverrideForTesting(gurl);
-        ShoppingPersistedTabData shoppingPersistedTabData = new ShoppingPersistedTabData(tab);
-        doReturn(gurl).when(mNavigationHandle).getUrl();
-        Semaphore semaphore = new Semaphore(0);
-        shoppingPersistedTabData.prefetchOnNewNavigation(
-                tab, mNavigationHandle, semaphore::release);
-        ShoppingPersistedTabDataTestUtils.acquireSemaphore(semaphore);
-        Assert.assertEquals(287_000_000L, shoppingPersistedTabData.getPriceMicros());
-        Assert.assertEquals(
-                123_456_789_012_345L, shoppingPersistedTabData.getPreviousPriceMicros());
-        Assert.assertEquals(
-                ShoppingPersistedTabDataTestUtils.FAKE_PRODUCT_TITLE,
-                shoppingPersistedTabData.getProductTitle());
-        Assert.assertEquals(
-                ShoppingPersistedTabDataTestUtils.FAKE_PRODUCT_IMAGE_URL,
-                shoppingPersistedTabData.getProductImageUrl().getSpec());
         verify(mShoppingPersistedTabDataService, times(0))
                 .notifyPriceDropStatus(any(), anyBoolean());
     }

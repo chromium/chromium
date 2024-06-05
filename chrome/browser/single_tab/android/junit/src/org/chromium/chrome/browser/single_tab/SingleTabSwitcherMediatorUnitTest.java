@@ -33,6 +33,7 @@ import android.util.Size;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -44,6 +45,8 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.JUnitProcessor;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.tab.Tab;
@@ -58,6 +61,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
+import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -66,6 +71,10 @@ import org.chromium.url.JUnitTestGURLs;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class SingleTabSwitcherMediatorUnitTest {
+    @Rule public JUnitProcessor mFeaturesProcessor = new JUnitProcessor();
+    @Rule public JniMocker mocker = new JniMocker();
+    @Mock UrlUtilities.Natives mUrlUtilitiesJniMock;
+
     private final int mTabId = 1;
     private final String mTitle = "test";
     private final GURL mUrl = JUnitTestGURLs.URL_1;
@@ -94,6 +103,7 @@ public class SingleTabSwitcherMediatorUnitTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        mocker.mock(UrlUtilitiesJni.TEST_HOOKS, mUrlUtilitiesJniMock);
 
         doReturn(new BitmapDrawable())
                 .when(mTabListFaviconProvider)
@@ -186,7 +196,8 @@ public class SingleTabSwitcherMediatorUnitTest {
                 ContextUtils.getApplicationContext()
                         .getResources()
                         .getDimensionPixelSize(
-                                org.chromium.chrome.R.dimen.single_tab_module_tab_thumbnail_size);
+                                org.chromium.chrome.R.dimen
+                                        .single_tab_module_tab_thumbnail_size_big);
         int height = width;
         Size thumbnailSize = new Size(width, height);
         verify(mTabContentManager)

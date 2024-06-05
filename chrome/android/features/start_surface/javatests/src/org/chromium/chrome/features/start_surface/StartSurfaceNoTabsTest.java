@@ -111,7 +111,6 @@ public class StartSurfaceNoTabsTest {
         onView(withId(R.id.mv_tiles_container)).check(matches(isDisplayed()));
         onView(withId(R.id.tab_switcher_module_container))
                 .check(matches(withEffectiveVisibility(GONE)));
-        onView(withId(R.id.single_tab_view)).check(matches(withEffectiveVisibility(GONE)));
         onView(withId(R.id.tasks_surface_body)).check(matches(isDisplayed()));
         onView(withId(R.id.start_tab_switcher_button)).check(matches(isDisplayed()));
         onViewWaiting(withId(R.id.search_provider_logo)).check(matches(isDisplayed()));

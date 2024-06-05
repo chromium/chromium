@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.magic_stack;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.never;
@@ -45,6 +47,7 @@ import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 
 import org.chromium.base.Callback;
+import org.chromium.base.FeatureList;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
@@ -60,7 +63,9 @@ import org.chromium.components.browser_ui.widget.displaystyle.HorizontalDisplayS
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig.DisplayStyle;
 import org.chromium.components.browser_ui.widget.displaystyle.VerticalDisplayStyle;
+import org.chromium.components.segmentation_platform.ClassificationResult;
 import org.chromium.components.segmentation_platform.SegmentationPlatformService;
+import org.chromium.components.segmentation_platform.prediction_status.PredictionStatus;
 import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.HashSet;
@@ -101,6 +106,7 @@ public class HomeModulesCoordinatorUnitTest {
     @Captor private ArgumentCaptor<DisplayStyleObserver> mDisplayStyleObserver;
     @Captor private ArgumentCaptor<Callback<Profile>> mProfileObserver;
     @Captor private ArgumentCaptor<RecyclerView.OnScrollListener> mOnScrollListener;
+    @Captor private ArgumentCaptor<Callback<ClassificationResult>> mClassificationResultCaptor;
 
     @Captor
     private ArgumentCaptor<HomeModulesConfigManager.HomeModulesStateListener>
@@ -121,11 +127,17 @@ public class HomeModulesCoordinatorUnitTest {
                 .thenReturn(new HashSet<>(Set.of(ModuleType.PRICE_CHANGE, ModuleType.SINGLE_TAB)));
         ProfileManager.setLastUsedProfileForTesting(mProfile);
         SegmentationPlatformServiceFactory.setForTests(mSegmentationPlatformService);
+
+        FeatureList.TestValues testValues = new FeatureList.TestValues();
+        testValues.addFeatureFlagOverride(
+                ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER, true);
+        FeatureList.setTestValues(testValues);
     }
 
     @After
     public void tearDown() {
         mCoordinator.destroy();
+        FeatureList.setTestValues(null);
     }
 
     @Test
@@ -170,7 +182,6 @@ public class HomeModulesCoordinatorUnitTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER})
     public void testHide() {
         mCoordinator = createCoordinator(/* skipInitProfile= */ false);
         verify(mRecyclerView).setAdapter(notNull());
@@ -178,7 +189,7 @@ public class HomeModulesCoordinatorUnitTest {
         mCoordinator.hide();
         verify(mRecyclerView).setAdapter(eq(null));
 
-        mCoordinator.show((isVisible) -> {});
+        showWithSegmentation((isVisible) -> {});
         verify(mRecyclerView, times(2)).setAdapter(notNull());
     }
 
@@ -242,7 +253,6 @@ public class HomeModulesCoordinatorUnitTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER})
     public void testProfileNotReady() {
         mCoordinator = createCoordinator(/* skipInitProfile= */ true);
         Callback<Boolean> callback = Mockito.mock(Callback.class);
@@ -259,7 +269,6 @@ public class HomeModulesCoordinatorUnitTest {
     @SmallTest
     @DisableFeatures({
         ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID,
-        ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER
     })
     public void testRecordMagicStackScroll_Scrolled() {
         mCoordinator = createCoordinator(/* skipInitProfile= */ true);
@@ -280,7 +289,6 @@ public class HomeModulesCoordinatorUnitTest {
     @SmallTest
     @DisableFeatures({
         ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID,
-        ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER
     })
     public void testRecordMagicStackScroll_NotScrolled() {
         when(mModuleDelegateHost.isHomeSurface()).thenReturn(true);
@@ -315,5 +323,14 @@ public class HomeModulesCoordinatorUnitTest {
                         mProfileSupplier,
                         mModuleRegistry);
         return homeModulesCoordinator;
+    }
+
+    private void showWithSegmentation(Callback<Boolean> callback) {
+        mCoordinator.show(callback);
+        verify(mSegmentationPlatformService)
+                .getClassificationResult(
+                        anyString(), any(), any(), mClassificationResultCaptor.capture());
+        ClassificationResult result = new ClassificationResult(PredictionStatus.FAILED, null);
+        mClassificationResultCaptor.getValue().onResult(result);
     }
 }

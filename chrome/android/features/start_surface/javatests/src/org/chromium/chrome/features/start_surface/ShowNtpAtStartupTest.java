@@ -101,11 +101,7 @@ public class ShowNtpAtStartupTest {
         StartSurfaceTestUtils.waitForTabModel(mActivityTestRule.getActivity());
 
         verifyTabCountAndActiveTabUrl(
-                mActivityTestRule.getActivity(),
-                1,
-                TAB_URL,
-                /* expectHomeSurfaceUiShown= */ null,
-                /* magicStackEnabled= */ false);
+                mActivityTestRule.getActivity(), 1, TAB_URL, /* expectHomeSurfaceUiShown= */ null);
     }
 
     @Test
@@ -127,8 +123,9 @@ public class ShowNtpAtStartupTest {
                 mActivityTestRule.getActivity(),
                 2,
                 UrlConstants.NTP_URL,
-                /* expectHomeSurfaceUiShown= */ true,
-                /* magicStackEnabled= */ false);
+                /* expectHomeSurfaceUiShown= */ true);
+        waitForNtpLoaded(mActivityTestRule.getActivity().getActivityTab());
+
         histogram.assertExpected();
     }
 
@@ -156,8 +153,7 @@ public class ShowNtpAtStartupTest {
                 mActivityTestRule.getActivity(),
                 3,
                 UrlConstants.NTP_URL,
-                /* expectHomeSurfaceUiShown= */ true,
-                /* magicStackEnabled= */ false);
+                /* expectHomeSurfaceUiShown= */ true);
         histogram.assertExpected();
     }
 
@@ -186,8 +182,7 @@ public class ShowNtpAtStartupTest {
                 mActivityTestRule.getActivity(),
                 2,
                 modifiedNtpUrl,
-                /* expectHomeSurfaceUiShown= */ false,
-                /* magicStackEnabled= */ false);
+                /* expectHomeSurfaceUiShown= */ false);
         histogram.assertExpected();
     }
 
@@ -208,11 +203,7 @@ public class ShowNtpAtStartupTest {
 
         // Verifies that a new NTP is created and set as the active Tab.
         verifyTabCountAndActiveTabUrl(
-                cta,
-                3,
-                UrlConstants.NTP_URL,
-                /* expectHomeSurfaceUiShown= */ true,
-                /* magicStackEnabled= */ true);
+                cta, 3, UrlConstants.NTP_URL, /* expectHomeSurfaceUiShown= */ true);
         waitForNtpLoaded(cta.getActivityTab());
 
         NewTabPage ntp = (NewTabPage) cta.getActivityTab().getNativePage();
@@ -236,7 +227,7 @@ public class ShowNtpAtStartupTest {
                 () -> {
                     ntp.showMagicStack(newTrackingTab);
                 });
-        Assert.assertTrue(ntp.isMagicStackVisibleForTesting());
+        CriteriaHelper.pollUiThread(() -> ntp.isMagicStackVisibleForTesting());
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -259,15 +250,11 @@ public class ShowNtpAtStartupTest {
 
         // Verifies that a new NTP is created and set as the active Tab.
         verifyTabCountAndActiveTabUrl(
-                cta,
-                3,
-                UrlConstants.NTP_URL,
-                /* expectHomeSurfaceUiShown= */ true,
-                /* magicStackEnabled= */ false);
+                cta, 3, UrlConstants.NTP_URL, /* expectHomeSurfaceUiShown= */ true);
         waitForNtpLoaded(cta.getActivityTab());
 
         NewTabPage ntp = (NewTabPage) cta.getActivityTab().getNativePage();
-        Assert.assertTrue(ntp.isSingleTabCardVisibleForTesting());
+        Assert.assertTrue(ntp.isMagicStackVisibleForTesting());
         onViewWaiting(allOf(withId(R.id.single_tab_view), isDisplayed()));
         View singleTabModule = cta.findViewById(R.id.single_tab_view);
         Assert.assertEquals(
@@ -291,11 +278,7 @@ public class ShowNtpAtStartupTest {
 
         // Verifies that a new NTP is created and set as the active Tab.
         verifyTabCountAndActiveTabUrl(
-                cta,
-                3,
-                UrlConstants.NTP_URL,
-                /* expectHomeSurfaceUiShown= */ true,
-                /* magicStackEnabled= */ true);
+                cta, 3, UrlConstants.NTP_URL, /* expectHomeSurfaceUiShown= */ true);
         waitForNtpLoaded(cta.getActivityTab());
 
         onViewWaiting(allOf(withId(R.id.home_modules_recycler_view), isDisplayed()));
@@ -394,21 +377,31 @@ public class ShowNtpAtStartupTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    @CommandLineFlags.Add({IMMEDIATE_RETURN_TEST_PARAMS})
-    public void testClickSingleTabCardCloseNtpHomeSurface() throws IOException {
-        testClickSingleTabCardCloseNtpHomeSurfaceImpl(/* magicStackEnabled= */ false);
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"StartSurface"})
     @EnableFeatures({
         ChromeFeatureList.MAGIC_STACK_ANDROID,
         ChromeFeatureList.SHOW_NTP_AT_STARTUP_ANDROID
     })
     @CommandLineFlags.Add({IMMEDIATE_RETURN_TEST_PARAMS})
-    public void testClickSingleTabCardCloseNtpHomeSurface_MagicStack() throws IOException {
-        testClickSingleTabCardCloseNtpHomeSurfaceImpl(/* magicStackEnabled= */ true);
+    public void testClickSingleTabCardCloseNtpHomeSurface() throws IOException {
+        StartSurfaceTestUtils.prepareTabStateMetadataFile(new int[] {0}, new String[] {TAB_URL}, 0);
+        StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        StartSurfaceTestUtils.waitForTabModel(cta);
+
+        // Verifies that a new NTP is created and set as the active Tab.
+        verifyTabCountAndActiveTabUrl(
+                cta, 2, UrlConstants.NTP_URL, /* expectHomeSurfaceUiShown= */ true);
+        waitForNtpLoaded(cta.getActivityTab());
+
+        try {
+            TestThreadUtils.runOnUiThreadBlocking(
+                    () -> cta.findViewById(R.id.single_tab_view).performClick());
+        } catch (ExecutionException e) {
+            Assert.fail("Failed to tap the single tab card " + e.toString());
+        }
+
+        // Verifies that the last active Tab is showing, and NTP home surface is closed.
+        verifyTabCountAndActiveTabUrl(cta, 1, TAB_URL, /* expectHomeSurfaceUiShown= */ null);
     }
 
     private void enableDoodleLogoForTestingLogoSize() {
@@ -441,38 +434,6 @@ public class ShowNtpAtStartupTest {
         Assert.assertEquals(expectedBottomMargin, marginLayoutParams.bottomMargin);
     }
 
-    private void testClickSingleTabCardCloseNtpHomeSurfaceImpl(boolean magicStackEnabled)
-            throws IOException {
-        StartSurfaceTestUtils.prepareTabStateMetadataFile(new int[] {0}, new String[] {TAB_URL}, 0);
-        StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        StartSurfaceTestUtils.waitForTabModel(cta);
-
-        // Verifies that a new NTP is created and set as the active Tab.
-        verifyTabCountAndActiveTabUrl(
-                cta,
-                2,
-                UrlConstants.NTP_URL,
-                /* expectHomeSurfaceUiShown= */ true,
-                /* magicStackEnabled= */ magicStackEnabled);
-        waitForNtpLoaded(cta.getActivityTab());
-
-        try {
-            TestThreadUtils.runOnUiThreadBlocking(
-                    () -> cta.findViewById(R.id.single_tab_view).performClick());
-        } catch (ExecutionException e) {
-            Assert.fail("Failed to tap the single tab card " + e.toString());
-        }
-
-        // Verifies that the last active Tab is showing, and NTP home surface is closed.
-        verifyTabCountAndActiveTabUrl(
-                cta,
-                1,
-                TAB_URL,
-                /* expectHomeSurfaceUiShown= */ null,
-                /* magicStackEnabled= */ false);
-    }
-
     /**
      * Test the close of the tab to track for the single tab card on the {@link NewTabPage} in the
      * tablet.
@@ -487,13 +448,10 @@ public class ShowNtpAtStartupTest {
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         StartSurfaceTestUtils.waitForTabModel(cta);
+
         // Verifies that a new NTP is created and set as the active Tab.
         verifyTabCountAndActiveTabUrl(
-                cta,
-                2,
-                UrlConstants.NTP_URL,
-                /* expectHomeSurfaceUiShown= */ true,
-                /* magicStackEnabled= */ false);
+                cta, 2, UrlConstants.NTP_URL, /* expectHomeSurfaceUiShown= */ true);
         waitForNtpLoaded(cta.getActivityTab());
 
         Tab lastActiveTab = cta.getCurrentTabModel().getTabAt(0);
@@ -501,7 +459,7 @@ public class ShowNtpAtStartupTest {
         NewTabPage ntp = (NewTabPage) ntpTab.getNativePage();
         Assert.assertTrue(
                 "The single tab card is still invisible after initialization.",
-                ntp.isSingleTabCardVisibleForTesting());
+                ntp.isMagicStackVisibleForTesting());
         assertFalse(
                 "There is a wrong signal that the single tab card is changed and needs a "
                         + "snapshot for the NTP.",
@@ -635,11 +593,7 @@ public class ShowNtpAtStartupTest {
     }
 
     private void verifyTabCountAndActiveTabUrl(
-            ChromeTabbedActivity cta,
-            int tabCount,
-            String url,
-            Boolean expectHomeSurfaceUiShown,
-            boolean magicStackEnabled) {
+            ChromeTabbedActivity cta, int tabCount, String url, Boolean expectHomeSurfaceUiShown) {
         Assert.assertEquals(tabCount, cta.getCurrentTabModel().getCount());
         Tab tab = StartSurfaceTestUtils.getCurrentTabFromUIThread(cta);
         TestThreadUtils.runOnUiThreadBlocking(
@@ -647,15 +601,9 @@ public class ShowNtpAtStartupTest {
                     Assert.assertTrue(TextUtils.equals(url, tab.getUrl().getSpec()));
                 });
         if (expectHomeSurfaceUiShown != null) {
-            if (magicStackEnabled) {
-                Assert.assertEquals(
-                        expectHomeSurfaceUiShown,
-                        ((NewTabPage) tab.getNativePage()).isMagicStackVisibleForTesting());
-            } else {
-                Assert.assertEquals(
-                        expectHomeSurfaceUiShown,
-                        ((NewTabPage) tab.getNativePage()).isSingleTabCardVisibleForTesting());
-            }
+            Assert.assertEquals(
+                    expectHomeSurfaceUiShown,
+                    ((NewTabPage) tab.getNativePage()).isMagicStackVisibleForTesting());
         }
     }
 
