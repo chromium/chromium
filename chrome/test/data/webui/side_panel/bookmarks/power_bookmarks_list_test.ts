@@ -19,6 +19,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {TestBrowserProxy} from './commerce/test_shopping_service_api_proxy.js';
 import {TestBookmarksApiProxy} from './test_bookmarks_api_proxy.js';
@@ -95,11 +96,16 @@ suite('SidePanelPowerBookmarksListTest', () => {
     return getBookmarks().find((bookmark) => bookmark.id === id);
   }
 
+  function getPowerBookmarksRowElement(id: string): PowerBookmarkRowElement|
+      undefined {
+    return powerBookmarksList.shadowRoot!
+               .querySelector<PowerBookmarkRowElement>(`#bookmark-${id}`) ||
+        undefined;
+  }
+
   function getCrUrlListItemElementWithId(id: string): CrUrlListItemElement|
       undefined {
-    const powerBookmarkRowElement =
-        powerBookmarksList.shadowRoot!.querySelector<PowerBookmarkRowElement>(
-            `#bookmark-${id}`);
+    const powerBookmarkRowElement = getPowerBookmarksRowElement(id);
     if (!powerBookmarkRowElement) {
       return undefined;
     }
@@ -126,6 +132,15 @@ suite('SidePanelPowerBookmarksListTest', () => {
     powerBookmarksList.clickBookmarkRowForTests(bookmark);
 
     await flushTasks();
+  }
+
+  async function selectBookmark(id: string) {
+    const checkboxClicked =
+        eventToPromise('checkbox-change', getPowerBookmarksRowElement(id)!);
+    const bookmarkListItem = getCrUrlListItemElementWithId(id);
+    assertTrue(!!bookmarkListItem);
+    bookmarkListItem.click();
+    await checkboxClicked;
   }
 
   setup(async () => {
@@ -515,8 +530,11 @@ suite('SidePanelPowerBookmarksListTest', () => {
     assertTrue(!!rowElement);
     let input =
         rowElement.shadowRoot!.querySelector<CrInputElement>('cr-input');
+    const inputBlurred = eventToPromise(
+        'input-change', getPowerBookmarksRowElement(renamedBookmarkId)!);
     assertTrue(!!input);
     input.inputElement.blur();
+    await inputBlurred;
 
     await flushTasks();
 
@@ -541,24 +559,21 @@ suite('SidePanelPowerBookmarksListTest', () => {
     assertNotEquals(0, childFolderElement.imageUrls.length);
   });
 
-  test('DeletesSelectedBookmarks', () => {
+  test('DeletesSelectedBookmarks', async () => {
     const editButton: HTMLElement =
         powerBookmarksList.shadowRoot!.querySelector('#editButton')!;
     editButton.click();
 
     flush();
 
-    const bookmarkElement3 = getCrUrlListItemElementWithId('3');
-    assertTrue(!!bookmarkElement3);
-    bookmarkElement3.click();
-    const bookmarkElement5 = getCrUrlListItemElementWithId('5');
-    assertTrue(!!bookmarkElement5);
-    bookmarkElement5.click();
+    await selectBookmark('3');
+    await selectBookmark('5');
 
     flush();
 
-    const deleteButton: HTMLElement =
+    const deleteButton: HTMLButtonElement =
         powerBookmarksList.shadowRoot!.querySelector('#deleteButton')!;
+    assertFalse(deleteButton.disabled);
     deleteButton.click();
 
     flush();
