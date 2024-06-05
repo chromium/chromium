@@ -3070,7 +3070,8 @@ void LineBreaker::HandleAtomicInline(const InlineItem& item,
       maybe_have_end_overhang_ = true;
     }
 
-    if (CanApplyStartOverhang(*line_info, overhang.start)) {
+    if (CanApplyStartOverhang(*line_info, line_info->Results().size() - 1,
+                              *item_result->item->Style(), overhang.start)) {
       DCHECK_EQ(item_result->margins.inline_start, LayoutUnit());
       item_result->margins.inline_start = -overhang.start;
       item_result->inline_size -= overhang.start;
@@ -3256,6 +3257,9 @@ bool LineBreaker::HandleRuby(LineInfo* line_info, LayoutUnit retry_size) {
   LineInfo base_line_info = CreateSubLineInfo(
       base_start, base_end_index, LineBreakerMode::kMaxContent, kIndefiniteSize,
       trailing_whitespace_);
+  base_line_info.OverrideLineStyle(*current_style_);
+  base_line_info.SetIsRubyBase();
+  base_line_info.UpdateTextAlign();
 
   const wtf_size_t number_of_annotations = annotation_data.size();
   HeapVector<LineInfo, 1> annotation_line_list;
@@ -3264,12 +3268,21 @@ bool LineBreaker::HandleRuby(LineInfo* line_info, LayoutUnit retry_size) {
     annotation_line_list.push_back(CreateSubLineInfo(
         data.start, data.end_item_index, LineBreakerMode::kMaxContent,
         kIndefiniteSize, WhitespaceState::kLeading));
+    annotation_line_list.back().OverrideLineStyle(
+        Items()[data.start_item_index].GetLayoutObject()->StyleRef());
   }
 
   LayoutUnit ruby_size = MaxLineWidth(base_line_info, annotation_line_list);
   LayoutUnit available = RemainingAvailableWidth().ClampNegativeToZero();
+  AnnotationOverhang overhang =
+      GetOverhang(ruby_size, base_line_info, annotation_line_list);
+  if (!CanApplyStartOverhang(*line_info, line_info->Results().size(),
+                             *current_style_, overhang.start)) {
+    overhang.start = LayoutUnit();
+  }
   bool is_monolithic = IsMonolithicRuby(base_line_info, annotation_line_list);
-  if ((retry_size == kIndefiniteSize && ruby_size <= available) ||
+  if ((retry_size == kIndefiniteSize &&
+       ruby_size <= available + overhang.start) ||
       is_monolithic) {
     // Recreate lines because lines created with LineBreakerMode::kMaxContent
     // are not usable in InlineLayoutAlgorithm.
@@ -3491,7 +3504,11 @@ InlineItemResult* LineBreaker::AddRubyColumnResult(
       maybe_have_end_overhang_ = true;
     }
 
-    if (CanApplyStartOverhang(line_info, overhang.start)) {
+    if (CanApplyStartOverhang(line_info, line_info.Results().size() - 1,
+                              column_result->item->GetLayoutObject()
+                                  ? *column_result->item->Style()
+                                  : *current_style_,
+                              overhang.start)) {
       DCHECK_EQ(column_result->margins.inline_start, LayoutUnit());
       DCHECK_EQ((*column_result->ruby_column->base_line.MutableResults())[0]
                     .item->Type(),

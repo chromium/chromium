@@ -185,47 +185,56 @@ PhysicalRect AdjustTextRectForEmHeight(const PhysicalRect& rect,
           PhysicalSize(new_line_height, rect.size.height)};
 }
 
+AnnotationOverhang GetOverhang(
+    LayoutUnit ruby_size,
+    const LineInfo& base_line,
+    const HeapVector<LineInfo, 1> annotation_line_list) {
+  DCHECK(RuntimeEnabledFeatures::RubyLineBreakableEnabled());
+  AnnotationOverhang overhang;
+  ERubyAlign ruby_align = base_line.LineStyle().RubyAlign();
+  switch (ruby_align) {
+    case ERubyAlign::kSpaceBetween:
+      return overhang;
+    case ERubyAlign::kStart:
+    case ERubyAlign::kSpaceAround:
+    case ERubyAlign::kCenter:
+      break;
+  }
+  LayoutUnit half_width_of_annotation_font;
+  for (const auto& annotation_line : annotation_line_list) {
+    if (annotation_line.Width() == ruby_size) {
+      half_width_of_annotation_font =
+          LayoutUnit(annotation_line.LineStyle().FontSize() / 2);
+      break;
+    }
+  }
+  if (half_width_of_annotation_font == LayoutUnit()) {
+    return overhang;
+  }
+  LayoutUnit space = ruby_size - base_line.Width();
+  if (space <= LayoutUnit()) {
+    return overhang;
+  }
+  if (ruby_align == ERubyAlign::kStart) {
+    overhang.end = std::min(space, half_width_of_annotation_font);
+    return overhang;
+  }
+  std::optional<LayoutUnit> inset = ComputeRubyBaseInset(space, base_line);
+  if (!inset) {
+    return overhang;
+  }
+  overhang.start = std::min(*inset, half_width_of_annotation_font);
+  overhang.end = overhang.start;
+  return overhang;
+}
+
 AnnotationOverhang GetOverhang(const InlineItemResult& item) {
   AnnotationOverhang overhang;
   if (item.IsRubyColumn()) {
     DCHECK(RuntimeEnabledFeatures::RubyLineBreakableEnabled());
     const InlineItemResultRubyColumn& column = *item.ruby_column;
-    ERubyAlign ruby_align = column.base_line.LineStyle().RubyAlign();
-    switch (ruby_align) {
-      case ERubyAlign::kSpaceBetween:
-        return overhang;
-      case ERubyAlign::kStart:
-      case ERubyAlign::kSpaceAround:
-      case ERubyAlign::kCenter:
-        break;
-    }
-    LayoutUnit half_width_of_annotation_font;
-    for (const auto& annotation_line : column.annotation_line_list) {
-      if (annotation_line.Width() == item.inline_size) {
-        half_width_of_annotation_font =
-            LayoutUnit(annotation_line.LineStyle().FontSize() / 2);
-        break;
-      }
-    }
-    if (half_width_of_annotation_font == LayoutUnit()) {
-      return overhang;
-    }
-    LayoutUnit space = item.inline_size - column.base_line.Width();
-    if (space <= LayoutUnit()) {
-      return overhang;
-    }
-    if (ruby_align == ERubyAlign::kStart) {
-      overhang.end = std::min(space, half_width_of_annotation_font);
-      return overhang;
-    }
-    std::optional<LayoutUnit> inset =
-        ComputeRubyBaseInset(space, column.base_line);
-    if (!inset) {
-      return overhang;
-    }
-    overhang.start = std::min(*inset, half_width_of_annotation_font);
-    overhang.end = overhang.start;
-    return overhang;
+    return GetOverhang(item.inline_size, column.base_line,
+                       column.annotation_line_list);
   }
 
   if (!item.layout_result)
@@ -289,18 +298,21 @@ AnnotationOverhang GetOverhang(const InlineItemResult& item) {
 }
 
 bool CanApplyStartOverhang(const LineInfo& line_info,
+                           wtf_size_t ruby_index,
+                           const ComputedStyle& ruby_style,
                            LayoutUnit& start_overhang) {
   if (start_overhang <= LayoutUnit())
     return false;
   const InlineItemResults& items = line_info.Results();
-  // Requires at least the current item and the previous item.
-  if (items.size() < 2)
+  // Requires at least the ruby item and the previous item.
+  if (ruby_index < 1) {
     return false;
+  }
   // Find a previous item other than kOpenTag/kCloseTag.
   // Searching items in the logical order doesn't work well with bidi
   // reordering. However, it's difficult to compute overhang after bidi
   // reordering because it affects line breaking.
-  wtf_size_t previous_index = items.size() - 2;
+  wtf_size_t previous_index = ruby_index - 1;
   while ((items[previous_index].item->Type() == InlineItem::kOpenTag ||
           items[previous_index].item->Type() == InlineItem::kCloseTag) &&
          previous_index > 0) {
@@ -310,10 +322,9 @@ bool CanApplyStartOverhang(const LineInfo& line_info,
   if (previous_item.item->Type() != InlineItem::kText) {
     return false;
   }
-  const InlineItem& current_item = *items.back().item;
-  if (previous_item.item->Style()->FontSize() >
-      current_item.Style()->FontSize())
+  if (previous_item.item->Style()->FontSize() > ruby_style.FontSize()) {
     return false;
+  }
   start_overhang = std::min(start_overhang, previous_item.inline_size);
   return true;
 }

@@ -62,11 +62,22 @@ struct AnnotationOverhang {
 // This is used by LineBreaker.
 AnnotationOverhang GetOverhang(const InlineItemResult& item);
 
+// Returns overhang values of the specified base/annotation lines.
+// These lines should have correct LineStyle.
+//
+// This is used by LineBreaker.
+AnnotationOverhang GetOverhang(
+    LayoutUnit ruby_size,
+    const LineInfo& base_line,
+    const HeapVector<LineInfo, 1> annotation_line_list);
+
 // Returns true if |start_overhang| is applied to a previous item, and
 // clamp |start_overhang| to the width of the previous item.
 //
 // This is used by LineBreaker.
 bool CanApplyStartOverhang(const LineInfo& line_info,
+                           wtf_size_t ruby_index,
+                           const ComputedStyle& ruby_style,
                            LayoutUnit& start_overhang);
 
 // This should be called before a text `InlineItem` is added in
