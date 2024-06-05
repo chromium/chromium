@@ -22,6 +22,7 @@ suite('LanguageChanged', () => {
   const langForDefaultVoice = 'en';
   const lang1 = 'zh';
   const lang2 = 'tr';
+  const lang3 = 'pt';
   const langWithNoVoices = 'elvish';
 
   const defaultVoice = {
@@ -36,6 +37,10 @@ suite('LanguageChanged', () => {
   const firstVoiceWithLang2 = {lang: lang2, name: 'Yu'} as SpeechSynthesisVoice;
   const secondVoiceWithLang2 = {lang: lang2, name: 'Xiang'} as
       SpeechSynthesisVoice;
+  const firstVoiceWithLang3 = {lang: lang3, name: 'Kristi'} as
+      SpeechSynthesisVoice;
+  const naturalVoiceWithLang3 = {lang: lang3, name: 'Kristi (Natural)'} as
+      SpeechSynthesisVoice;
   const otherVoice = {lang: 'it', name: 'Shari'} as SpeechSynthesisVoice;
   const voices = [
     defaultVoice,
@@ -44,6 +49,8 @@ suite('LanguageChanged', () => {
     otherVoice,
     firstVoiceWithLang2,
     secondVoiceWithLang2,
+    firstVoiceWithLang3,
+    naturalVoiceWithLang3,
   ];
 
   let testBrowserProxy: TestColorUpdaterBrowserProxy;
@@ -117,20 +124,40 @@ suite('LanguageChanged', () => {
           app.languageChanged();
           assertEquals(selectedVoice(), otherVoice);
         });
-        test('to the device default if there\'s no current voice', () => {
+
+        test('to a natural voice if there\'s no current voice', () => {
+          app.languageChanged();
+          assertEquals(selectedVoice(), naturalVoiceWithLang3);
+        });
+
+        test('to the device default if there\'s no natural', () => {
+          // @ts-ignore
+          app.availableVoices = voices.filter(v => v !== naturalVoiceWithLang3);
+          flush();
+
           app.languageChanged();
           assertEquals(selectedVoice(), defaultVoice);
         });
       });
 
       suite('and this locale is enabled', () => {
-        test('to the default voice for this language', () => {
+        test('to a natural voice for this language', () => {
           // @ts-ignore
-          app.enabledLanguagesInPref = [lang1];
-          chrome.readingMode.baseLanguageForSpeech = lang1;
+          app.enabledLanguagesInPref = [lang3];
+          chrome.readingMode.baseLanguageForSpeech = lang3;
           app.languageChanged();
-          assertEquals(selectedVoice(), defaultVoiceWithLang1);
+          assertEquals(selectedVoice(), naturalVoiceWithLang3);
         });
+
+        test(
+            'to the default voice for this language if there\'s no natural voice',
+            () => {
+              // @ts-ignore
+              app.enabledLanguagesInPref = [lang1];
+              chrome.readingMode.baseLanguageForSpeech = lang1;
+              app.languageChanged();
+              assertEquals(selectedVoice(), defaultVoiceWithLang1);
+            });
 
         test(
             'to the first listed voice for this language if there\'s no default',
@@ -159,7 +186,20 @@ suite('LanguageChanged', () => {
           assertEquals(selectedVoice(), voice);
         });
 
-        test('to default enabled voice if no same locale', () => {
+        test('to natural enabled voice if no same locale', () => {
+          // @ts-ignore
+          app.enabledLanguagesInPref = [lang3];
+          // @ts-ignore
+          app.availableVoices = [naturalVoiceWithLang3];
+          flush();
+          chrome.readingMode.baseLanguageForSpeech = lang2;
+
+          app.languageChanged();
+
+          assertEquals(selectedVoice(), naturalVoiceWithLang3);
+        });
+
+        test('to default enabled voice if no natural voice', () => {
           // @ts-ignore
           app.enabledLanguagesInPref = [lang1];
           // @ts-ignore

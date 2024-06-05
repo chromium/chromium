@@ -1085,8 +1085,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   defaultVoice(): SpeechSynthesisVoice|undefined {
-    // TODO(crbug.com/40927698): Additional logic to find default voice if there
-    // isn't a voice marked as default
     const baseLang = this.speechSynthesisLanguage;
     const allPossibleVoices = this.getVoices();
     const voicesForLanguage =
@@ -1094,40 +1092,45 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
     if (!voicesForLanguage || (voicesForLanguage.length === 0)) {
       // Stay with the current voice if no voices are available for this
-      // language. If no voice is yet selected, use the default voice.
+      // language.
       return this.selectedVoice ?
           this.selectedVoice :
-          this.getVoices().find(({default: isDefaultVoice}) => isDefaultVoice);
+          this.getNaturalVoiceOrDefault_(allPossibleVoices);
     }
 
     // First try to choose a voice only from currently enabled locales for this
     // language.
-    const voicesForEnabledLocale = voicesForLanguage.filter(
-        voice =>
-            this.enabledLanguagesInPref.includes(voice.lang.toLowerCase()));
-    if (!voicesForEnabledLocale || voicesForEnabledLocale.length === 0) {
-      // If there are no enabled locales for this language, choose a voice
-      // labeled default among all enabled voices, or the first enabled voice.
+    const voicesForCurrentEnabledLocale = voicesForLanguage.filter(
+        v => this.enabledLanguagesInPref.includes(v.lang.toLowerCase()));
+    if (!voicesForCurrentEnabledLocale ||
+        voicesForCurrentEnabledLocale.length === 0) {
+      // If there's no enabled locales for this language, check for any other
+      // voices for enabled locales.
       const allVoicesForEnabledLocales = allPossibleVoices.filter(
           v => this.enabledLanguagesInPref.includes(v.lang.toLowerCase()));
       if (!allVoicesForEnabledLocales) {
-        // If there are no enabled locales, we can't select a voice. So return
-        // undefined so we can disable the play button.
+        // If there are no voices for the enabled locales, or no enabled
+        // locales at all, we can't select a voice. So return undefined so we
+        // can disable the play button.
         return undefined;
       } else {
-        const defaultVoiceForEnabledLocales = allVoicesForEnabledLocales.find(
-            ({default: isDefaultVoice}) => isDefaultVoice);
-        return defaultVoiceForEnabledLocales ? defaultVoiceForEnabledLocales :
-                                               allVoicesForEnabledLocales[0];
+        return this.getNaturalVoiceOrDefault_(allVoicesForEnabledLocales);
       }
     }
 
-    // Get the default voice for the currently enabled locale.
-    const defaultVoiceForLanguage = voicesForEnabledLocale.find(
-        ({default: isDefaultVoice}) => isDefaultVoice);
+    return this.getNaturalVoiceOrDefault_(voicesForCurrentEnabledLocale);
+  }
 
-    return defaultVoiceForLanguage ? defaultVoiceForLanguage :
-                                     voicesForEnabledLocale[0];
+  private getNaturalVoiceOrDefault_(voices: SpeechSynthesisVoice[]):
+      SpeechSynthesisVoice {
+    const naturalVoice = voices.find(v => isNatural(v));
+    if (naturalVoice) {
+      return naturalVoice;
+    }
+
+    const defaultVoice =
+        voices.find(({default: isDefaultVoice}) => isDefaultVoice);
+    return defaultVoice ? defaultVoice : voices[0];
   }
 
   // Attempt to get a new voice using the current language. In theory, the
