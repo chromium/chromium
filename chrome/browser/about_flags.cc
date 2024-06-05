@@ -8396,13 +8396,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(content_settings::features::kTrackingProtection3pcd)},
 
-    {"tracking-protection-onboarding-rollback-flow",
-     flag_descriptions::kTrackingProtectionOnboardingRollbackName,
-     flag_descriptions::kTrackingProtectionOnboardingRollbackDescription,
-     kOsDesktop | kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         privacy_sandbox::kTrackingProtectionOnboardingRollback)},
-
     {"tracking-protection-settings-launch",
      flag_descriptions::kTrackingProtectionSettingsLaunchName,
      flag_descriptions::kTrackingProtectionSettingsLaunchDescription,

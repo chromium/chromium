@@ -2070,9 +2070,6 @@ extern const char kIpProtectionV1Description[];
 extern const char kTrackingProtection3pcdName[];
 extern const char kTrackingProtection3pcdDescription[];
 
-extern const char kTrackingProtectionOnboardingRollbackName[];
-extern const char kTrackingProtectionOnboardingRollbackDescription[];
-
 extern const char kTrackingProtectionSettingsLaunchName[];
 extern const char kTrackingProtectionSettingsLaunchDescription[];
 
