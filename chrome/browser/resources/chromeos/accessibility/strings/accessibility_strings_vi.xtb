@@ -264,7 +264,6 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{Hơn # mục}other{Hơn # mục}}</translation>
 <translation id="2792200646155001340">Bạn cũng có thể vuốt bằng một ngón tay từ bên phải sang bên trái để chuyển đến mục trước. Hãy thử ngay.</translation>
 <translation id="280499067616661124">ChromeVox tìm trong trang</translation>
-<translation id="2811019999044652585">Để chuyển tới các phần khác của màn hình, như thanh công cụ hoặc khay hệ thống, nhấn phím Control+Forward. Trên Chromebook, phím Forward ở ngay phía trên phím số 2.</translation>
 <translation id="2811204574343810641">Hàng</translation>
 <translation id="2816868829355607410">Khu vực thực hành: Các lệnh chuyển</translation>
 <translation id="2841013758207633010">Thời gian</translation>
@@ -880,6 +879,7 @@
 <translation id="7091296112653361280">Màu trắng Navajo</translation>
 <translation id="7095834689119144465">Chỉnh sửa văn bản chỉ dành cho số</translation>
 <translation id="7096001299300236431">Phương tiện trước</translation>
+<translation id="7096668131290451939">Nhấn phím Escape lần nữa để thoát chế độ Học tập</translation>
 <translation id="7116595520562830928">multln</translation>
 <translation id="712735679809149106">nói từ</translation>
 <translation id="7137397390322864165">Màu hồng cam</translation>

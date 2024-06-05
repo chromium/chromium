@@ -1191,7 +1191,6 @@
 <translation id="1859339856433307593">Այս հաշվի գաղտնաբառն արդեն պահված է ձեր <ph name="BRAND" />ում (<ph name="USER_EMAIL" />)</translation>
 <translation id="1861262398884155592">Այս պանակը դատարկ է</translation>
 <translation id="1862311223300693744">Ձեր համակարգչում տեղադրվա՞ծ է որևէ հատուկ VPN, պրոքսի, հրապատ կամ NAS ծրագրաշար։</translation>
-<translation id="1863047423483329595">Հետագծման արգելափակումը ժամանակավորապես անհասանելի է։ Քանի դեռ Chrome-ը թարմացնում է այս գործառույթը, կայքերը կարող են ժամանակավորապես օգտագործել երրորդ կողմի քուքիներ, եթե չարգելափակեք դրանք։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="1863182668524159459">Հաջորդական միացքներ չեն գտնվել</translation>
 <translation id="1864111464094315414">Մուտք</translation>
 <translation id="1864400682872660285">Սառը</translation>
@@ -3757,7 +3756,7 @@
 <translation id="3755411799582650620">Ձեր <ph name="PHONE_NAME" /> հեռախոսն այժմ կարող է ապակողպել նաև այս <ph name="DEVICE_TYPE" /> սարքը:</translation>
 <translation id="375636864092143889">Կայքն օգտագործում է ձեր խոսափողը</translation>
 <translation id="3756485814916578707">Էկրանի հեռարձակում</translation>
-<translation id="3756578970075173856">Սահմանեք PIN կոդ</translation>
+<translation id="3756578970075173856">Ընտրեք PIN կոդ</translation>
 <translation id="3756795331760037744">Թույլատրեք Google Օգնականին օգտագործել <ph name="SUPERVISED_USER_NAME" />-ի սարքի էկրանին առկա տեղեկությունները</translation>
 <translation id="3756806135608816820">Կայքերը կարող են Bluetooth սարքեր որոնելու թույլտվություն հայցել</translation>
 <translation id="3757567010566591880">Ապամրացնել գործիքագոտուց</translation>
@@ -5549,6 +5548,7 @@
 <translation id="5121052518313988218">Լինուքսի կոնտեյների օպերացիոն համակարգն այլևս չի աջակցվում։ Այն կդադարի ստանալ անվտանգության թարմացումներ և վրիպակների շտկումներ, իսկ ներկայումս աշխատող գործառույթները կարող են անսպասելի կերպով դադարել աշխատել։ Նորացրեք օպերացիոն համակարգը, որպեսզի շարունակեք օգտվել Լինուքսից։</translation>
 <translation id="5121130586824819730">Ձեր կոշտ սկավառակը լցված է: Պահեք այլ տեղադրությունում կամ տեղ ազատեք կոշտ սկավառակի վրա:</translation>
 <translation id="5123433949759960244">Բասկետբոլ</translation>
+<translation id="5125714798187802869">Ակտիվացնել</translation>
 <translation id="5125751979347152379">URL-ն անվավեր է:</translation>
 <translation id="5125967981703109366">Այս քարտի մասին</translation>
 <translation id="512642543295077915">որոնում + backspace</translation>
@@ -8359,6 +8359,7 @@
 <translation id="7289049772085228972">Ձեզ պաշտպանում է Chrome-ի ամենահուսալի անվտանգության համակարգը</translation>
 <translation id="7289303553784750393">Եթե առցանց ռեժիմում եք, սակայն խնդիրը չի վերանում, փորձեք մուտքի այլ եղանակներ՝ <ph name="SITE_ETLD_PLUS_ONE" /> կայքում ձեր աշխատանքը շարունակելու համար։</translation>
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> – Պահանջվում է թույլտվություն։ Արձագանքելու համար սեղմեք F6 ստեղնը։</translation>
+<translation id="7290005709287747471">Ապակտիվացնել</translation>
 <translation id="7290242001003353852"><ph name="SAML_DOMAIN" />-ի կողմից տրամադրվող մուտքի ծառայությունն օգտագործում է ձեր տեսախցիկը:</translation>
 <translation id="7292067737327289208">Ձեր <ph name="BEGIN_LINK" />դիտարկիչը կառավարվում է<ph name="END_LINK" /> ձեր կազմակերպության կողմից, իսկ <ph name="BEGIN_LINK" />պրոֆիլը<ph name="END_LINK" />՝ <ph name="PROFILE_DOMAIN" /> տիրույթի կողմից</translation>
 <translation id="7292147651179697920">Խնդրեք ծնողին Կարգավորումներում թույլատրել օգտագործումը</translation>
@@ -9795,6 +9796,7 @@
 <translation id="8327386430364625757">Մաթեմատիկական տառատեսակ</translation>
 <translation id="8327538105740918488">Դուք ցանկացած ժամանակ կարող եք փոխել այս գաղտնաբառը։ Այն <ph name="EMAIL" /> հաշվի համար կպահվի <ph name="GOOGLE_PASSWORD_MANAGER" />ում։</translation>
 <translation id="8327676037044516220">Թույլտվություններ և բովանդակության կարգավորումներ</translation>
+<translation id="8328777765163860529">Փակել բոլորը</translation>
 <translation id="8330617762701840933">Կայքերի ցուցակը, որոնք վերաուղղորդում են դեպի այլընտրանքային դիտարկիչ։</translation>
 <translation id="8330689128072902965">Մոտ գտնվող կոնտակտները կարող են տվյալներով կիսվել ձեզ հետ։ Հպեք՝ կարգավորումները փոփոխելու համար։</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{Ֆայլի աջակցվող տեսակ՝ <ph name="FILE_TYPE1" />}=2{Ֆայլերի աջակցվող տեսակներ՝ <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />}=3{Ֆայլերի աջակցվող տեսակներ՝ <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />}=4{Ֆայլերի աջակցվող տեսակներ՝ <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" />}one{Ֆայլերի աջակցվող տեսակներ՝ <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />ու ևս {OVERFLOW_COUNT}-ը<ph name="END_LINK" />)}other{Ֆայլերի աջակցվող տեսակներ՝ <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />ու ևս {OVERFLOW_COUNT}-ը<ph name="END_LINK" />)}}</translation>
@@ -10275,7 +10277,6 @@
 <translation id="869144235543261764">Այս ներդիրում նվագարկվում է տեսանյութ «նկար նկարի մեջ» ռեժիմում</translation>
 <translation id="869167754614449887"><ph name="FILE_NAME" /> ֆայլը հեռացվեց ներբեռնումների պատմությունից</translation>
 <translation id="8692107307702113268">Գաղտնաբառը պարունակում է ավելի քան 1000 նիշ</translation>
-<translation id="8693639060656817812">Իմանալ ավելին հետագծման արգելափակման առկայության մասին</translation>
 <translation id="8693862390730570097">Թույլ չտալ, որ տեքստագրիչն ավտոմատ բացվի</translation>
 <translation id="8694596275649352090">Կողպել, երբ սարքն անցնում է քնի ռեժիմի, կամ դրա կափարիչը փակվում է</translation>
 <translation id="8695139659682234808">Ավելացրեք ծնողական վերահսկողությունը՝ կարգավորումն ավարտելուց հետո</translation>

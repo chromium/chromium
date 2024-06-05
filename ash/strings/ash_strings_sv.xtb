@@ -212,6 +212,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1747827819627189109">Skärmen på tangentbordet har aktiverats</translation>
 <translation id="1749109475624620922">Fönstret <ph name="WINDOW_TITLE" /> har tilldelats alla skrivbord</translation>
 <translation id="1750088060796401187">Bara <ph name="MAX_DESK_LIMIT" /> skrivbord tillåts. Ta bort ett skrivbord om du vill öppna ett nytt.</translation>
+<translation id="1755408179247123630">Vill du aktivera Textuppläsning?</translation>
 <translation id="1755556344721611131">Appen Diagnostik</translation>
 <translation id="1756833229520115364">Det gick inte att spara mallen. För många fönster eller flikar.</translation>
 <translation id="1757857692711134412">Av till solnedgången</translation>
@@ -423,6 +424,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2653659639078652383">Skicka</translation>
 <translation id="2658778018866295321">Klicka och dra</translation>
 <translation id="2665788051462227163"><ph name="UNAVAILABLE_APPS_ONE" /> och <ph name="UNAVAILABLE_APPS_TWO" /> finns inte på enheten.</translation>
+<translation id="2670350619068134931">Reducerade animationer</translation>
 <translation id="2673968385134502798">Spel</translation>
 <translation id="2678852583403169292">Textuppläsningsmeny</translation>
 <translation id="2687510499067466116">Kortkommandot har ändrats</translation>
@@ -1087,6 +1089,9 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="5092436659250499817">Tänd/släck tangentbordets bakgrundsbelysning</translation>
 <translation id="5094577350232361255">om</translation>
 <translation id="5095136268899496849">Anpassa din <ph name="PRODUCT_NAME" /> i inställningarna. Testa att ändra bakgrund eller ställa in en skärmsläckare.</translation>
+<translation id="5096125376090473584">Du kan få texten uppläst genom att välja textuppläsningsikonen längst ned på skärmen och sedan markera texten.
+
+Du kan även använda kortkommandot. Markera först text och tryck sedan på <ph name="MODIFIER" /> + s.</translation>
 <translation id="509790653408515442">När du streamar telefonens appar visas de här</translation>
 <translation id="5098537242461068432">Skrivbord och fönster öppnades igen</translation>
 <translation id="5103975065730779239">Till kl. <ph name="END_TIME_EXPRESSION" /></translation>
@@ -1820,6 +1825,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">Om du vill använda enheten som gäst måste du logga ut och sedan välja Använd som gäst längst ned på skärmen.</translation>
 <translation id="7866482334467279021">på</translation>
+<translation id="7866727328666668290">Senast öppnad flik</translation>
 <translation id="7872786842639831132">Av</translation>
 <translation id="7875575368831396199">Det verkar som om Bluetooth har inaktiverats på <ph name="DEVICE_TYPE" />. Aktivera Bluetooth om du vill använda Phone Hub.</translation>
 <translation id="7884446017008693258">Inställningar för surfzon</translation>

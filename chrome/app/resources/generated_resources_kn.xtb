@@ -1192,7 +1192,6 @@
 <translation id="1859339856433307593">ಈ ಖಾತೆಗಾಗಿ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಈಗಾಗಲೇ ನಿಮ್ಮ <ph name="BRAND" /> (<ph name="USER_EMAIL" />) ನಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="1861262398884155592">ಈ ಫೋಲ್ಡರ್ ಖಾಲಿಯಾಗಿದೆ</translation>
 <translation id="1862311223300693744">ನಿಮ್ಮಲ್ಲಿ ಯಾವುದೇ ವಿಶೇಷವಾದ VPN, ಪ್ರಾಕ್ಸಿ, ಫೈರ್‌ವಾಲ್‌ ಅಥವಾ NAS ಸಾಫ್ಟ್‌ವೇರ್‌ಗಳನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾಗಿದೆಯೇ?</translation>
-<translation id="1863047423483329595">ಟ್ರ್ಯಾಕಿಂಗ್ ಸಂರಕ್ಷಣೆಯು ತಾತ್ಕಾಲಿಕವಾಗಿ ಲಭ್ಯವಿಲ್ಲ. Chrome ಈ ಫೀಚರ್‌ ಅನ್ನು ಅಪ್‌ಡೇಟ್‌‌ ಮಾಡುವಾಗ, ನೀವು ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕಿಗಳನ್ನು ನಿರ್ಬಂಧಿಸದ ಹೊರತು ಸೈಟ್‌ಗಳು ತಾತ್ಕಾಲಿಕವಾಗಿ ಅವುಗಳನ್ನು ಬಳಸಬಹುದು. <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="1863182668524159459">ಯಾವುದೇ ಸೀರಿಯಲ್ ಪೋರ್ಟ್‌ಗಳು ಕಂಡುಬಂದಿಲ್ಲ</translation>
 <translation id="1864111464094315414">ಲಾಗಿನ್</translation>
 <translation id="1864400682872660285">ಕೂಲರ್</translation>
@@ -2987,7 +2986,7 @@
 <translation id="3177909033752230686">ಪುಟದ ಭಾಷೆ:</translation>
 <translation id="3177914167275935955">ನಿಮ್ಮ ಸಾಧನವು Chrome Education ಅಪ್‌ಗ್ರೇಡ್ ಅನ್ನು ಹೊಂದಿದೆ, ಆದರೆ ನಿಮ್ಮ ಬಳಕೆದಾರ ಹೆಸರು ಅದಕ್ಕೆ ಸಂಬಂಧಿಸಿದ Google for Education ಖಾತೆಯನ್ನು ಹೊಂದಿಲ್ಲ. ಸೆಕೆಂಡರಿ ಸಾಧನದಲ್ಲಿ g.co/workspace/edusignup ಗೆ ಭೇಟಿ ನೀಡುವ ಮೂಲಕ Google for Education ಖಾತೆಯನ್ನು ರಚಿಸಿ.</translation>
 <translation id="3179982752812949580">ಪಠ್ಯದ ಫಾಂಟ್</translation>
-<translation id="3180284704187420717">ಸಿಂಕ್ ಮಾಡುವ ಮೂಲಕ ನಿಮ್ಮ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಹಾಗೂ ಮುಂತಾದವುಗಳನ್ನು ಉಳಿಸಿ</translation>
+<translation id="3180284704187420717">ಸಿಂಕ್ ಮಾಡುವ ಮೂಲಕ ನಿಮ್ಮ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಹಾಗೂ ಮುಂತಾದವುಗಳನ್ನು ಸೇವ್ ಮಾಡಿ</translation>
 <translation id="3180716079618904608">ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ಗೇಮ್‌ಗಳನ್ನು ಪಡೆದುಕೊಳ್ಳಿ</translation>
 <translation id="3181954750937456830">ಸುರಕ್ಷಿತ ಬ್ರೌಸಿಂಗ್ (ಅಪಾಯಕಾರಿ ಸೈಟ್‌ಗಳಿಂದ ನಿಮ್ಮನ್ನು ಮತ್ತು ನಿಮ್ಮ ಸಾಧನವನ್ನು ರಕ್ಷಿಸುತ್ತದೆ)</translation>
 <translation id="3182749001423093222">ಕಾಗುಣಿತ ಪರಿಶೀಲನೆ</translation>
@@ -6201,7 +6200,7 @@
 <translation id="5608580678041221894">ಕ್ರಾಪ್ ಮಾಡಿರುವ ಪ್ರದೇಶವನ್ನು ಸರಿಹೊಂದಿಸಲು ಅಥವಾ ಸರಿಸಲು ಈ ಮುಂದಿನ ಕೀಗಳನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="5609231933459083978">ಅಪ್ಲಿಕೇಶನ್ ಅಮಾನ್ಯವಾಗಿರುವಂತೆ ತೋರುತ್ತಿದೆ.</translation>
 <translation id="5610867721023328944">ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ ಅಥವಾ ಕೆಳಗಿನ ಲಭ್ಯವಿರುವ ಥೀಮ್‌ಗಳಲ್ಲಿ ಒಂದನ್ನು ಆಯ್ಕೆಮಾಡಿ.</translation>
-<translation id="5611398002774823980">ಖಾತೆಯಲ್ಲಿ ಉಳಿಸಿ</translation>
+<translation id="5611398002774823980">ಖಾತೆಯಲ್ಲಿ ಸೇವ್ ಮಾಡಿ</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5613074282491265467">ನೀವು Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿದಾಗ, ನೀವು ಸೇವ್ ಮಾಡುವ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ನಿಮ್ಮ Google ಖಾತೆ, <ph name="USER_EMAIL" /> ಗೆ ಹೋಗುತ್ತವೆ. ಇದನ್ನು ಆಫ್ ಮಾಡಲು, ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ.</translation>
 <translation id="5614190747811328134">ಬಳಕೆದಾರ ಸೂಚನೆ</translation>
@@ -9807,6 +9806,7 @@
 <translation id="8327386430364625757">ಗಣಿತದ ಫಾಂಟ್</translation>
 <translation id="8327538105740918488">ನೀವು ಈ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ನಂತರ ಯಾವಾಗ ಬೇಕಾದರೂ ಬದಲಾಯಿಸಬಹುದು. ಇದನ್ನು <ph name="EMAIL" /> ಗಾಗಿ <ph name="GOOGLE_PASSWORD_MANAGER" /> ನಲ್ಲಿ ಉಳಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="8327676037044516220">ಅನುಮತಿಗಳು ಮತ್ತು ಕಂಟೆಂಟ್‍ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
+<translation id="8328777765163860529">ಎಲ್ಲವನ್ನು ಮುಚ್ಚಿರಿ</translation>
 <translation id="8330617762701840933">ಪರ್ಯಾಯ ಬ್ರೌಸರ್‌ಗೆ ಮರುನಿರ್ದೇಶಿಸುವ ವೆಬ್‌ಸೈಟ್‌ಗಳ ಪಟ್ಟಿ.</translation>
 <translation id="8330689128072902965">ಸಮೀಪದಲ್ಲಿರುವ ಸಂಪರ್ಕಗಳು ನಿಮ್ಮ ಜೊತೆ ಹಂಚಿಕೊಳ್ಳಬಹುದು. ಬದಲಾಯಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ.</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{ಬೆಂಬಲಿತ ಫೈಲ್ ಪ್ರಕಾರ: <ph name="FILE_TYPE1" />}=2{ಬೆಂಬಲಿತ ಫೈಲ್ ಪ್ರಕಾರಗಳು: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />}=3{ಬೆಂಬಲಿತ ಫೈಲ್ ಪ್ರಕಾರಗಳು: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />}=4{ಬೆಂಬಲಿತ ಫೈಲ್ ಪ್ರಕಾರಗಳು: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" />}one{ಬೆಂಬಲಿತ ಫೈಲ್ ಪ್ರಕಾರಗಳು: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />ಮತ್ತು {OVERFLOW_COUNT} ಇನ್ನಷ್ಟು<ph name="END_LINK" />)}other{ಬೆಂಬಲಿತ ಫೈಲ್ ಪ್ರಕಾರಗಳು: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />ಮತ್ತು {OVERFLOW_COUNT} ಇನ್ನಷ್ಟು<ph name="END_LINK" />)}}</translation>
@@ -10070,7 +10070,7 @@
 <translation id="8527257351549797148">ನಿಮ್ಮ ಸಂಸ್ಥೆಗೆ ನೋಂದಣಿ ಅಗತ್ಯವಿರಬಹುದು ಆದ್ದರಿಂದ ನೀವು ಆ್ಯಪ್‌ಗಳು, ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ಗಳು ಮತ್ತು ಹೆಚ್ಚಿನದನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಬಹುದು. ಭದ್ರತೆ ಮತ್ತು ಸಾಧನ ಸೆಟ್ಟಿಂಗ್‌ಗಳಂತಹ ವಿಷಯಗಳನ್ನು ನಿರ್ವಹಿಸಲು ಇದು ನಿಮ್ಮ ಸಂಸ್ಥೆಗೆ ಅನುಮತಿಸುತ್ತದೆ.</translation>
 <translation id="8527869672961320915"><ph name="VM_NAME" /> ಆ್ಯಪ್‌ಗಳು</translation>
 <translation id="8528074251912154910">ಭಾಷೆಗಳನ್ನು ಸೇರಿಸಿ</translation>
-<translation id="8528479410903501741">IBAN ಉಳಿಸಿ</translation>
+<translation id="8528479410903501741">IBAN ಸೇವ್ ಮಾಡಿ</translation>
 <translation id="8528962588711550376">ಸೈನ್ ಇನ್ ಮಾಡಲಾಗುತ್ತಿದೆ.</translation>
 <translation id="8529925957403338845">ತತ್‌ಕ್ಷಣ ಟೆಥರಿಂಗ್ ಸಂಪರ್ಕ ವಿಫಲಗೊಂಡಿದೆ</translation>
 <translation id="8531367864749403520">ನಿಮ್ಮ ಟ್ಯಾಬ್‌ ಸ್ಟ್ರೈಪ್‌ನಿಂದ ಗುಂಪನ್ನು ತೆಗೆದುಹಾಕಲು "ಗುಂಪನ್ನು ಮರೆಮಾಡಿ" ಆಯ್ಕೆಮಾಡಿ</translation>
@@ -10287,7 +10287,6 @@
 <translation id="869144235543261764">ಈ ಟ್ಯಾಬ್ ಚಿತ್ರದಲ್ಲಿ ಚಿತ್ರ ಮೋಡ್‌ನಲ್ಲಿ ವೀಡಿಯೊವನ್ನು ಪ್ಲೇ ಮಾಡುತ್ತಿದೆ</translation>
 <translation id="869167754614449887"><ph name="FILE_NAME" /> ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಇತಿಹಾಸದಿಂದ ಅಳಿಸಲಾಗಿದೆ</translation>
 <translation id="8692107307702113268">ಪಾಸ್‌ವರ್ಡ್ 1000 ಕ್ಕಿಂತ ಹೆಚ್ಚಿನ ಅಕ್ಷರಗಳನ್ನು ಹೊಂದಿದೆ</translation>
-<translation id="8693639060656817812">ಟ್ರ್ಯಾಕಿಂಗ್ ಸಂರಕ್ಷಣೆಯ ಲಭ್ಯತೆಯ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="8693862390730570097">ಸ್ವಯಂಚಾಲಿತವಾಗಿ ತೆರೆಯಲು "ಬರೆಯಲು ನನಗೆ ಸಹಾಯ ಮಾಡಿ" ಅನ್ನು ಅನುಮತಿಸಬೇಡಿ</translation>
 <translation id="8694596275649352090">ಮಲಗುವಾಗ ಅಥವಾ ಮುಚ್ಚಳವು ಮುಚ್ಚಿರುವಾಗ ಲಾಕ್ ಮಾಡಿ</translation>
 <translation id="8695139659682234808">ಸೆಟಪ್‌ನ ನಂತರ ಪೋಷಕ ನಿಯಂತ್ರಣಗಳನ್ನು ಸೇರಿಸಿ</translation>

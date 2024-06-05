@@ -264,7 +264,6 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{আরও #টি}one{আরও #টি}other{আরও #টি}}</translation>
 <translation id="2792200646155001340">এছাড়াও আপনি আগের আইটেমে ফিরে যেতে এক আঙুল দিয়ে ডানদিক থেকে বাঁদিকে সোয়াইপ করতে পারেন। এখনই করে দেখুন।</translation>
 <translation id="280499067616661124">ChromeVox পৃষ্ঠাতে খুঁজুন</translation>
-<translation id="2811019999044652585">স্ক্রিনের অন্যান্য অংশে যেমন টুল দণ্ড বা সিস্টেম ট্রেতে যাওয়ার জন্য কন্ট্রোল + ফরোয়ার্ড টিপুন। Chromebook-এ ফরোয়ার্ড কী 'সংখ্যা কী ২'-এর ঠিক উপরে।</translation>
 <translation id="2811204574343810641">সারি</translation>
 <translation id="2816868829355607410">অনুশীলন ক্ষেত্র: জাম্প কমান্ড</translation>
 <translation id="2841013758207633010">সময়</translation>
@@ -880,6 +879,7 @@
 <translation id="7091296112653361280">নাভাহো সাদা</translation>
 <translation id="7095834689119144465">কেবল পাঠ্য সংখ্যা সম্পাদনা করুন</translation>
 <translation id="7096001299300236431">পূর্ববর্তী মিডিয়া</translation>
+<translation id="7096668131290451939">শেখার মোড থেকে বেরিয়ে আসতে আবার Escape প্রেস করুন</translation>
 <translation id="7116595520562830928">multln</translation>
 <translation id="712735679809149106">শব্দ ইকো</translation>
 <translation id="7137397390322864165">স্যালমন</translation>

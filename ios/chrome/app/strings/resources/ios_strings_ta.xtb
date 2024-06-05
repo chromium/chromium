@@ -503,6 +503,7 @@
 <translation id="3575234738189584619">Lens மூலம் தேடலாம்</translation>
 <translation id="3575426792457739946">ஏற்றப்பட்ட அனைத்து சுயவிவரங்களும் இந்தப் பட்டியலில் உள்ளன.</translation>
 <translation id="3581564640715911333">பக்கங்களைப் பிற மொழிகளில் மொழிபெயர்க்க அனுமதி</translation>
+<translation id="3585696901179982416">{count,plural, =1{{count}ல் {position}வது முகவரி}other{{count}ல் {position}வது முகவரிகள்}}</translation>
 <translation id="3587885837929752825">நீங்கள் எவற்றையெல்லாம் Google கணக்கில் சேமிக்கலாம் என்பதை உங்கள் நிறுவனம் கட்டுப்படுத்துகிறது.</translation>
 <translation id="3588820906588687999">படத்தைப் புதிய தாவலில் திற</translation>
 <translation id="3595252146048399851">எதையெல்லாம் ஒத்திசைக்க வேண்டும் என்பதை <ph name="BEGIN_LINK" />அமைப்புகளுக்குச்<ph name="END_LINK" /> சென்று எப்போது வேண்டுமானாலும் தேர்வுசெய்யலாம். உங்கள் பதிவுகளின் அடிப்படையில் Search மற்றும் பிற சேவைகளை Google பிரத்தியேகமாக்கலாம்.</translation>
@@ -1195,6 +1196,7 @@
 <translation id="69739764870135975">உங்களின் இயல்புத் தேடல் இன்ஜினாகவும் Google இருந்தால் சூழலுக்குத் தொடர்புடைய சிறப்பான பரிந்துரைகள் காட்டப்படும்</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6983306615164277634">முகவரிப் பட்டியின் இடத்தை மாற்ற அதைத் தொட்டுப் பிடித்திருக்கலாம்.</translation>
+<translation id="6986937292199604715">இயக்கு...</translation>
 <translation id="6988572888918530647">உங்கள் Google கணக்கை நிர்வகியுங்கள்</translation>
 <translation id="6990519590575500580">Facetime</translation>
 <translation id="6998989275928107238">பெறுநர்:</translation>
@@ -1301,6 +1303,7 @@
 <translation id="7557508262441527045">வெளியேறிவிட்டீர்கள்</translation>
 <translation id="7561196759112975576">எப்போதும்</translation>
 <translation id="7564917801238348224">சேமி...</translation>
+<translation id="758132317817089442">மேம்பட்ட பாதுகாப்பை இயக்கு...</translation>
 <translation id="7582857256643797524">இந்த அமைப்பு உங்கள் சாதனத்தில் இயக்கப்பட்டுள்ளது</translation>
 <translation id="7583004045319035904">மறைநிலைத் தாவல்களை அன்லாக் செய்ய <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ஐப் பயன்படுத்தவும்.</translation>
 <translation id="7598439272585186139">கூடுதல் பாதுகாப்பைப் பெறுங்கள்</translation>

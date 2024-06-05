@@ -1191,7 +1191,6 @@
 <translation id="1859339856433307593">Пароль для этого аккаунта уже сохранен в <ph name="BRAND" /> (<ph name="USER_EMAIL" />).</translation>
 <translation id="1861262398884155592">Папка пуста</translation>
 <translation id="1862311223300693744">На вашем компьютере установлено специализированное ПО, например VPN-клиент, прокси-сервер, брандмауэр или NAS?</translation>
-<translation id="1863047423483329595">Защита от слежения временно недоступна. Пока эта функция в Chrome обновляется, сайтам временно разрешено использовать сторонние файлы cookie, если вы не отключили такую возможность. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="1863182668524159459">Последовательные порты не найдены.</translation>
 <translation id="1864111464094315414">Вход</translation>
 <translation id="1864400682872660285">Холоднее</translation>
@@ -5552,6 +5551,7 @@
 <translation id="5121052518313988218">Операционная система в вашем контейнере Linux больше не поддерживается. Для нее перестанут приходить обновления системы безопасности и исправления ошибок, а некоторые функции могут неожиданно перестать работать. Чтобы использовать Linux и дальше, обновите систему до последней версии.</translation>
 <translation id="5121130586824819730">Недостаточно места на диске. Выберите другой каталог или освободите место на диске.</translation>
 <translation id="5123433949759960244">Баскетбол</translation>
+<translation id="5125714798187802869">Включить</translation>
 <translation id="5125751979347152379">Недопустимый URL.</translation>
 <translation id="5125967981703109366">Об этой карточке</translation>
 <translation id="512642543295077915">Поиск + Backspace</translation>
@@ -8371,6 +8371,7 @@
 <translation id="7289049772085228972">Выбран максимальный уровень защиты в Chrome.</translation>
 <translation id="7289303553784750393">Если у вас есть подключение к интернету, но проблема не решается, попробуйте другие способы авторизации, чтобы продолжить работу на <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> – требуется разрешение. Нажмите F6, чтобы ответить.</translation>
+<translation id="7290005709287747471">Отключить</translation>
 <translation id="7290242001003353852">Сервису входа, размещенному в домене <ph name="SAML_DOMAIN" />, разрешен доступ к вашей камере.</translation>
 <translation id="7292067737327289208">Этим <ph name="BEGIN_LINK" />браузером управляет<ph name="END_LINK" /> ваша организация, а <ph name="BEGIN_LINK" />профилем<ph name="END_LINK" /> – <ph name="PROFILE_DOMAIN" />.</translation>
 <translation id="7292147651179697920">Попроси родителя разрешить доступ в настройках.</translation>
@@ -9808,6 +9809,7 @@
 <translation id="8327386430364625757">Математический шрифт</translation>
 <translation id="8327538105740918488">Этот пароль можно изменить в любое время. Он будет сохранен для аккаунта <ph name="EMAIL" /> здесь: <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="8327676037044516220">Разрешения и настройки контента</translation>
+<translation id="8328777765163860529">Закрыть все</translation>
 <translation id="8330617762701840933">Список сайтов, которые открываются в альтернативном браузере.</translation>
 <translation id="8330689128072902965">Контакты рядом могут обмениваться с вами данными. Нажмите, чтобы изменить.</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{Поддерживается тип файлов: <ph name="FILE_TYPE1" />}=2{Поддерживаются типы файлов: <ph name="FILE_TYPE1" /> и <ph name="FILE_TYPE2" />}=3{Поддерживаются типы файлов: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" /> и <ph name="FILE_TYPE3" />}=4{Поддерживаются типы файлов: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" /> и <ph name="FILE_TYPE4" />}one{Поддерживаются типы файлов: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />и ещё {OVERFLOW_COUNT}<ph name="END_LINK" />)}few{Поддерживаются типы файлов: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />и ещё {OVERFLOW_COUNT}<ph name="END_LINK" />)}many{Поддерживаются типы файлов: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />и ещё {OVERFLOW_COUNT}<ph name="END_LINK" />)}other{Поддерживаются типы файлов: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />и ещё {OVERFLOW_COUNT}<ph name="END_LINK" />)}}</translation>
@@ -10288,7 +10290,6 @@
 <translation id="869144235543261764">На этой вкладке воспроизводится видео в режиме "Картинка в картинке"</translation>
 <translation id="869167754614449887">Файл "<ph name="FILE_NAME" />" удален из истории скачиваний.</translation>
 <translation id="8692107307702113268">В пароле более 1000 символов.</translation>
-<translation id="8693639060656817812">Узнать больше о доступности Защиты от слежения</translation>
 <translation id="8693862390730570097">Генератору текстов запрещено открываться автоматически</translation>
 <translation id="8694596275649352090">Блокировать при переходе в спящий режим или закрытии крышки</translation>
 <translation id="8695139659682234808">Включите родительский контроль после настройки</translation>

@@ -1197,7 +1197,6 @@
 <translation id="1861262398884155592">ఈ ఫోల్డర్ ఖాళీగా ఉంది</translation>
 <translation id="1862311223300693744">మీరు ఏదైనా ప్రత్యేక VPN, ప్రాక్సీ, ఫైర్‌వాల్ లేదా NAS సాఫ్ట్‌వేర్‌ను
     ఇన్‌స్టాల్ చేశారా?</translation>
-<translation id="1863047423483329595">ట్రాకింగ్ నుండి రక్షణ తాత్కాలికంగా అందుబాటులో లేదు. Chrome ఈ ఫీచర్‌ను అప్‌డేట్ చేస్తున్నప్పుడు, మీరు థర్డ్-పార్టీ కుక్కీలను బ్లాక్ చేయనంత వరకు సైట్‌లు తాత్కాలికంగా వాటిని ఉపయోగించగలవు. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="1863182668524159459">సీరియల్ పోర్ట్‌లు కనుగొనబడలేదు</translation>
 <translation id="1864111464094315414">లాగిన్</translation>
 <translation id="1864400682872660285">చల్లని</translation>
@@ -9809,6 +9808,7 @@
 <translation id="8327386430364625757">గణిత సంబంధిత ఫాంట్</translation>
 <translation id="8327538105740918488">మీరు ఈ పాస్‌వర్డ్‌ను తర్వాత ఎప్పుడైనా మార్చవచ్చు. ఇది <ph name="EMAIL" /> కోసం <ph name="GOOGLE_PASSWORD_MANAGER" />‌కు సేవ్ చేయబడుతుంది.</translation>
 <translation id="8327676037044516220">అనుమతులు, కంటెంట్ సెట్టింగ్‌లు</translation>
+<translation id="8328777765163860529">అన్నింటినీ మూసివేయండి</translation>
 <translation id="8330617762701840933">ప్రత్యామ్నాయ బ్రౌజర్‌కు మళ్లించే వెబ్‌సైట్‌ల లిస్ట్.</translation>
 <translation id="8330689128072902965">సమీపంలోని కాంటాక్ట్‌లు మీతో షేర్ చేయగలవు. మార్చడానికి క్లిక్ చేయండి.</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{సపోర్ట్ కలిగిన ఫైల్ రకం: <ph name="FILE_TYPE1" />}=2{సపోర్ట్ కలిగిన ఫైల్ రకాలు: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />}=3{సపోర్ట్ కలిగిన ఫైల్ రకాలు: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />}=4{సపోర్ట్ కలిగిన ఫైల్ రకాలు: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" />}other{సపోర్ట్ కలిగిన ఫైల్ రకాలు: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />మరియు, మరో {OVERFLOW_COUNT}<ph name="END_LINK" />)}}</translation>
@@ -10289,7 +10289,6 @@
 <translation id="869144235543261764">ఈ ట్యాబ్ వీడియోను పిక్చర్-ఇన్-పిక్చర్ మోడ్‌లో ప్లే చేస్తోంది</translation>
 <translation id="869167754614449887">డౌన్‌లోడ్ హిస్టరీ నుండి <ph name="FILE_NAME" />‌ను తొలగించారు</translation>
 <translation id="8692107307702113268">పాస్‌వర్డ్‌లో 1000 కంటే ఎక్కువ అక్షరాలు ఉన్నాయి</translation>
-<translation id="8693639060656817812">'ట్రాకింగ్ నుండి రక్షణ లభ్యత' గురించి మరింత తెలుసుకోండి</translation>
 <translation id="8693862390730570097">"రాయడంలో సహాయం పొందండి" ఫీచర్ ఆటోమేటిక్‌గా తెరుచుకొనేలా అనుమతించవద్దు</translation>
 <translation id="8694596275649352090">స్లీప్‌లో ఉన్నప్పుడు లేదా మూత మూసి ఉన్నప్పుడు లాక్ అవుతుంది</translation>
 <translation id="8695139659682234808">సెటప్ పూర్తి అయ్యాక తల్లిదండ్రుల నియంత్రణలను జోడించండి</translation>

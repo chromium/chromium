@@ -264,7 +264,6 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}few{+#}many{+#}other{+#}}</translation>
 <translation id="2792200646155001340">Přejetím prstem zprava doleva také můžete přejít na předchozí položku. Zkuste to.</translation>
 <translation id="280499067616661124">Vyhledávání ChromeVox na stránce</translation>
-<translation id="2811019999044652585">Na jiné části obrazovky, jako jsou lišty nebo hlavní panel systému, přejdete stisknutím kláves Control + Vpřed. Klávesa Vpřed se na Chromebooku nachází ihned nad klávesou číslice 2.</translation>
 <translation id="2811204574343810641">Řádek</translation>
 <translation id="2816868829355607410">Cvičná oblast: přeskakovací příkazy</translation>
 <translation id="2841013758207633010">Čas</translation>
@@ -880,6 +879,7 @@
 <translation id="7091296112653361280">Světle krémová</translation>
 <translation id="7095834689119144465">Úprava textu – pouze číslice</translation>
 <translation id="7096001299300236431">Předchozí mediální objekt</translation>
+<translation id="7096668131290451939">Dalším stisknutím klávesy Escape režim učení ukončíte</translation>
 <translation id="7116595520562830928">více řádků</translation>
 <translation id="712735679809149106">vyslovovat slova</translation>
 <translation id="7137397390322864165">Lososová</translation>

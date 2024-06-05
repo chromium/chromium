@@ -147,6 +147,7 @@
 <translation id="1487931858675166540">“<ph name="FIRST_ITEM_TITLE" />”与“<ph name="SECOND_ITEM_TITLE" />”交换了位置</translation>
 <translation id="1500926532737552529">显示所有建议</translation>
 <translation id="1501946871587957338">要切换音频源吗？</translation>
+<translation id="1505542291183484463">将平铺窗口向下调整大小</translation>
 <translation id="1510238584712386396">启动器</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{显示通知设置。针对 1 个应用关闭通知}other{显示通知设置。针对 # 个应用关闭通知}}</translation>
 <translation id="1523032696246003">电池电量为 <ph name="BATTERY_PERCENTAGE" />% | 还需 <ph name="TIME" />才能充满</translation>
@@ -296,6 +297,7 @@
 <translation id="2149229036084364364">切换到上一曲</translation>
 <translation id="2152895518047545149">您似乎未曾缺交任何作业。表现不错！</translation>
 <translation id="2161132820593978283">试用相机取景功能，使自己在视频通话过程中位于屏幕中央。您可在“快捷设置”中开启此功能。</translation>
+<translation id="216955976692983107">将平铺窗口向右调整大小</translation>
 <translation id="2185166372312820725">转到上一个标签页</translation>
 <translation id="2185444992308415167">逐一浏览第 1 至 8 个标签页</translation>
 <translation id="2198625180564913276">正在添加配置文件。这可能需要几分钟的时间。</translation>
@@ -424,6 +426,7 @@
 <translation id="2653659639078652383">提交</translation>
 <translation id="2658778018866295321">点击并拖动</translation>
 <translation id="2665788051462227163">无法在此设备上使用<ph name="UNAVAILABLE_APPS_ONE" />和<ph name="UNAVAILABLE_APPS_TWO" />。</translation>
+<translation id="2670350619068134931">经过简化的动画</translation>
 <translation id="2673968385134502798">游戏</translation>
 <translation id="2678852583403169292">“随选朗读”菜单</translation>
 <translation id="2687510499067466116">键盘快捷键已更改</translation>
@@ -641,6 +644,7 @@
 <translation id="3509391053705095206">找不到您的手机。请确保手机已开启蓝牙功能。</translation>
 <translation id="3510164367642747937">突出显示鼠标光标</translation>
 <translation id="3513798432020909783">该账号由 <ph name="MANAGER_EMAIL" /> 管理</translation>
+<translation id="3516000762115478502">将平铺窗口向上调整大小</translation>
 <translation id="3517037892157925473">任务上次更新时间：<ph name="DATE" /><ph name="TIME" />。</translation>
 <translation id="352245152354538528">{0,plural, =1{请在 1 分钟内更新此设备}other{请在 # 分钟内更新此设备}}</translation>
 <translation id="3522979239100719575">正在查找可用的配置文件。这可能需要几分钟的时间。</translation>
@@ -757,6 +761,7 @@
 <translation id="3899995891769452915">语音输入</translation>
 <translation id="3900355044994618856">您的会话将在 <ph name="SESSION_TIME_REMAINING" />后结束</translation>
 <translation id="3901991538546252627">正在连接：<ph name="NAME" /></translation>
+<translation id="3904768293285573640">将平铺窗口向左调整大小</translation>
 <translation id="3906954721959377182">平板电脑</translation>
 <translation id="3923494859158167397">未设置任何移动网络</translation>
 <translation id="3925540965556789199"><ph name="DATE" />，正在加载活动。</translation>

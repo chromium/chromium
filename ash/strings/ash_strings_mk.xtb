@@ -212,6 +212,7 @@
 <translation id="1747827819627189109">Тастатурата на екранот е овозможена</translation>
 <translation id="1749109475624620922">Прозорецот <ph name="WINDOW_TITLE" /> им е доделен на сите работни површини</translation>
 <translation id="1750088060796401187">Дозволени се само <ph name="MAX_DESK_LIMIT" /> работни површини. Отстранете работна површина за да отворите нова.</translation>
+<translation id="1755408179247123630">Да се вклучи „Изберете за говор“?</translation>
 <translation id="1755556344721611131">Апликација за дијагностика</translation>
 <translation id="1756833229520115364">Не можеше да се зачува шаблон. Премногу прозорци или картички.</translation>
 <translation id="1757857692711134412">Исклучено до зајдисонце</translation>
@@ -423,6 +424,7 @@
 <translation id="2653659639078652383">Испрати</translation>
 <translation id="2658778018866295321">Кликни и повлечи</translation>
 <translation id="2665788051462227163"><ph name="UNAVAILABLE_APPS_ONE" /> и <ph name="UNAVAILABLE_APPS_TWO" /> не се на уредов.</translation>
+<translation id="2670350619068134931">Намалени анимации</translation>
 <translation id="2673968385134502798">Игри</translation>
 <translation id="2678852583403169292">Мени за „Изберете за говор“</translation>
 <translation id="2687510499067466116">Кратенката од тастатура е променета</translation>
@@ -952,6 +954,7 @@
 <translation id="4628757576491864469">Уреди</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, оцена со ѕвезди: <ph name="RATING_SCORE" /></translation>
 <translation id="4633636853437260449">Притиснете Ctrl+W за да избришете</translation>
+<translation id="4635501805800894201">{0,plural, =0{Вратете го уредот на претходна верзија сега}=1{Вратете го уредот на претходна верзија во рок од 1 секунда}one{Вратете го уредот на претходна верзија во рок од # секунда}other{Вратете го уредот на претходна верзија во рок од # секунди}}</translation>
 <translation id="4642092649622328492">Снимете делумна слика од екранот</translation>
 <translation id="4644727592819780893">Регионот е премал за да се прикаже преглед на камерата</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, препорачана апликација</translation>
@@ -981,6 +984,7 @@
 <translation id="4735944890391795473">Работна површина 12</translation>
 <translation id="473775607612524610">Ажурирај</translation>
 <translation id="4740516757091333363">Да се избрише зачуваната работна површина?</translation>
+<translation id="4746798685375253449">{0,plural, =1{Вратете го уредот на претходна верзија во рок од 1 ден}one{Вратете го уредот на претходна верзија во рок од # ден}other{Вратете го уредот на претходна верзија во рок од # дена}}</translation>
 <translation id="4747410141429390146">Отклучете за да ги видите известувањата</translation>
 <translation id="4752784485658729358">Дозволени се само 6 зачувани работни површини. Отстранете работна површина за да зачувате нова.</translation>
 <translation id="4759238208242260848">Преземања</translation>
@@ -1086,6 +1090,9 @@
 <translation id="5092436659250499817">Вклучување/Исклучување заднинско светло на тастатура</translation>
 <translation id="5094577350232361255">за</translation>
 <translation id="5095136268899496849">Приспособете и персонализирајте го вашиот уред <ph name="PRODUCT_NAME" /> во „Поставки“. Обидете се со променување на тапетот или поставување штедач на екран.</translation>
+<translation id="5096125376090473584">За да слушнете текст прочитан наглас, изберете ја иконата „Изберете за говор“ најдолу на екранот, па нагласете го текстот.
+
+Може да користите и кратенка од тастатурата. Прво, нагласете го текстот, па притиснете <ph name="MODIFIER" /> + S.</translation>
 <translation id="509790653408515442">Кога ќе ги стримувате апликациите од телефонот, ќе се појават тука</translation>
 <translation id="5098537242461068432">Работната површина и прозорците се отворени повторно</translation>
 <translation id="5103975065730779239">До <ph name="END_TIME_EXPRESSION" /></translation>
@@ -1316,6 +1323,7 @@
 <translation id="5916646100036936191">Ново известување, вкупно: <ph name="NOTIFICATION_COUNT" /></translation>
 <translation id="5916664084637901428">Вклучено</translation>
 <translation id="5920710855273935292">Звукот на микрофонот е исклучен.</translation>
+<translation id="5928083197428724029">Ажурирањето го бара <ph name="MANAGER" /></translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> е вклучено.</translation>
 <translation id="5947494881799873997">Врати</translation>
 <translation id="595202126637698455">Овозможено е следење на изведбата</translation>
@@ -1433,6 +1441,7 @@
 <translation id="6376931439017688372">Bluetooth е вклучен</translation>
 <translation id="6378515133128829137">Закачете прозорец на десната страна</translation>
 <translation id="6381109794406942707">За да го отклучите уредот, внесете го вашиот PIN.</translation>
+<translation id="6381305031890976705">{0,plural, =1{Вратете го уредот на претходна верзија во рок од 1 час}one{Вратете го уредот на претходна верзија во рок од # час}other{Вратете го уредот на претходна верзија во рок од # часа}}</translation>
 <translation id="638716340450135524">Вклучете го пристапот до камерата</translation>
 <translation id="639644700271529076">CAPS LOCK е исклучено</translation>
 <translation id="6406458002328242616">Изменете го тајмерот. <ph name="FOCUS_DURATION" />.</translation>
@@ -1455,6 +1464,7 @@
 <translation id="6459472438155181876">Проширување екран на <ph name="DISPLAY_NAME" /></translation>
 <translation id="6464094930452079790">слики</translation>
 <translation id="6467290994038932560">Вклучено за <ph name="GAME_APP_NAME" /></translation>
+<translation id="6468406072297048412">{0,plural, =1{Вратете го уредот на претходна верзија во рок од 1 минута}one{Вратете го уредот на претходна верзија во рок од # минута}other{Вратете го уредот на претходна верзија во рок од # минути}}</translation>
 <translation id="6469104339369989396">Вклучување/Исклучување на точката на пристап</translation>
 <translation id="6477681113376365978">Датотеката не може да се преземе</translation>
 <translation id="6482559668224714696">Лупа за цел екран</translation>
@@ -1578,6 +1588,7 @@
 <translation id="6917259695595127329">Последно ажурирање на задачите: <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">Не можевме да ја препознаеме вашата паметна картичка. Обидете се повторно.</translation>
 <translation id="692135145298539227">избриши</translation>
+<translation id="6921427376813842559">Ажурирајте го уредот</translation>
 <translation id="6929081673585394903">Прикажи ги контролите</translation>
 <translation id="6931576957638141829">Зачувај во</translation>
 <translation id="6942518653766415536">Мени за формат на снимање</translation>
@@ -1665,6 +1676,7 @@
 <translation id="7303365578352795231">Се одговара на друг уред.</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Администраторот ја ресетира вашата eSIM. Може да потрае неколку минути.</translation>
+<translation id="7312761820869643657">Вратете го уредот на претходна верзија</translation>
 <translation id="7313193732017069507">Прошири ја камерата</translation>
 <translation id="7330397557116570022">Одете на текстуално поле за да користите „Диктирање“</translation>
 <translation id="7331646370422660166">alt + стрелка надолу</translation>
@@ -1814,6 +1826,7 @@
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">За да го користите уредот како гостин, треба да се одјавите, па да изберете „Прелистувај како гостин“ најдолу на екранот.</translation>
 <translation id="7866482334467279021">вклучено</translation>
+<translation id="7866727328666668290">Последната отворена картичка</translation>
 <translation id="7872786842639831132">Исклучено</translation>
 <translation id="7875575368831396199">Се чини дека Bluetooth е исклучен на вашиот <ph name="DEVICE_TYPE" />. Вклучете го Bluetooth за да користите Phone Hub.</translation>
 <translation id="7884446017008693258">Поставки за точка на пристап</translation>
@@ -2180,6 +2193,7 @@
 <translation id="925832987464884575">Скриј ги прегледите</translation>
 <translation id="938407504481277932">Тековна работна површина: <ph name="DESK_NAME" /> <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. Работна површина <ph name="DESK_INDEX" /> од <ph name="DESK_COUNT" />.</translation>
 <translation id="938963181863597773">Што има во мојот календар?</translation>
+<translation id="94468042118567862">Уредот не е ажуриран</translation>
 <translation id="945383118875625837">Повлечете го линкот до лентата со обележувачи</translation>
 <translation id="945522503751344254">Испратете повратни информации</translation>
 <translation id="951991426597076286">Одбиј</translation>

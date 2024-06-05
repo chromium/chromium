@@ -424,6 +424,7 @@
 <translation id="2653659639078652383">पेश गर्नुहोस्</translation>
 <translation id="2658778018866295321">क्लिक गरेर ड्र्याग गर्नुहोस्</translation>
 <translation id="2665788051462227163">यो डिभाइसमा <ph name="UNAVAILABLE_APPS_ONE" /> र <ph name="UNAVAILABLE_APPS_TWO" /> उपलब्ध छैनन्।</translation>
+<translation id="2670350619068134931">कम गरिएका एनिमेसन</translation>
 <translation id="2673968385134502798">गेमहरू</translation>
 <translation id="2678852583403169292">'सेलेक्ट टु स्पिक' सुविधाको मेनु</translation>
 <translation id="2687510499067466116">किबोर्डका सर्टकट परिवर्तन भएका छन्</translation>
@@ -952,6 +953,7 @@
 <translation id="4628757576491864469">यन्त्रहरू</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, तारा चिन्ह प्रयोग गरी गरिने मूल्याङ्कन <ph name="RATING_SCORE" /></translation>
 <translation id="4633636853437260449">मेटाउन Ctrl+W थिच्नुहोस्</translation>
+<translation id="4635501805800894201">{0,plural, =0{अहिले नै यो डिभाइस अपडेट गरी अघिल्लो संस्करण रिस्टोर गर्नुहोस्}=1{अबको १ सेकेन्डभित्र यो डिभाइस अपडेट गरी अघिल्लो संस्करण रिस्टोर गर्नुहोस्}other{अबको # सेकेन्डभित्र यो डिभाइस अपडेट गरी अघिल्लो संस्करण रिस्टोर गर्नुहोस्}}</translation>
 <translation id="4642092649622328492">आंशिक स्क्रिनसट लिनुहोस्</translation>
 <translation id="4644727592819780893">यो क्षेत्र धेरै सानो भएकाले यसमा क्यामेराको प्रिभ्यू देखाउन मिल्दैन</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, एपको सिफारिस</translation>
@@ -981,6 +983,7 @@
 <translation id="4735944890391795473">डेस्क १२</translation>
 <translation id="473775607612524610">अपडेट गर्नुहोस्</translation>
 <translation id="4740516757091333363">सेभ गरिएको डेस्क मेटाउने हो?</translation>
+<translation id="4746798685375253449">{0,plural, =1{अबको एक दिनभित्र यो डिभाइस अपडेट गरी अघिल्लो संस्करण रिस्टोर गर्नुहोस्}other{अबको # दिनभित्र यो डिभाइस अपडेट गरी अघिल्लो संस्करण रिस्टोर गर्नुहोस्}}</translation>
 <translation id="4747410141429390146">सूचनाहरू हेर्न कृपया स्क्रिन अनलक गर्नुहोस्</translation>
 <translation id="4752784485658729358">६ वटाभन्दा बढी डेस्क सेभ गर्न मिल्दैन। तपाईं नयाँ डेस्क सेभ गर्न चाहनुहुन्छ भने सेभ गरिएको कुनै डेस्क हटाउनुहोस्।</translation>
 <translation id="4759238208242260848">डाउनलोडहरू</translation>
@@ -1319,6 +1322,7 @@
 <translation id="5916646100036936191">नयाँ सूचना, कुल <ph name="NOTIFICATION_COUNT" /> वटा</translation>
 <translation id="5916664084637901428">अन</translation>
 <translation id="5920710855273935292">माइक म्युट गरिएको छ।</translation>
+<translation id="5928083197428724029"><ph name="MANAGER" /> का अनुसार अपडेट गर्नु पर्ने हुन्छ</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> अन छ।</translation>
 <translation id="5947494881799873997">उल्टाउनुहोस्</translation>
 <translation id="595202126637698455">प्रदर्शन ट्रेसिङ सक्षम गरियो</translation>
@@ -1436,6 +1440,7 @@
 <translation id="6376931439017688372">ब्लुटुथ सक्रिय छ</translation>
 <translation id="6378515133128829137">विन्डो दायाँतिर पिन गर्नुहोस्</translation>
 <translation id="6381109794406942707">यो डिभाइस अनलक गर्न आफ्नो PIN हाल्नुहोस्।</translation>
+<translation id="6381305031890976705">{0,plural, =1{अबको एक घन्टाभित्र यो डिभाइस अपडेट गरी अघिल्लो संस्करण रिस्टोर गर्नुहोस्}other{अबको # घन्टाभित्र यो डिभाइस अपडेट गरी अघिल्लो संस्करण रिस्टोर गर्नुहोस्}}</translation>
 <translation id="638716340450135524">क्यामेरा प्रयोग गर्ने अनुमति अन गर्नुहोस्</translation>
 <translation id="639644700271529076">CAPS LOCK बन्द छ</translation>
 <translation id="6406458002328242616">टाइमर परिवर्तन गर्नुहोस्। <ph name="FOCUS_DURATION" />।</translation>
@@ -1458,6 +1463,7 @@
 <translation id="6459472438155181876">स्क्रिनलाई <ph name="DISPLAY_NAME" /> मा विस्तार गर्दै</translation>
 <translation id="6464094930452079790">फोटोहरू</translation>
 <translation id="6467290994038932560"><ph name="GAME_APP_NAME" /> का लागि अन गर्नुहोस्</translation>
+<translation id="6468406072297048412">{0,plural, =1{अबको १ मिनेटभित्र यो डिभाइस अपडेट गरी अघिल्लो संस्करण रिस्टोर गर्नुहोस्}other{अबको # मिनेटभित्र यो डिभाइस अपडेट गरी अघिल्लो संस्करण रिस्टोर गर्नुहोस्}}</translation>
 <translation id="6469104339369989396">हटस्पट टगल गर्नुहोस्</translation>
 <translation id="6477681113376365978">यो फाइल डाउनलोड गर्न सकिएन</translation>
 <translation id="6482559668224714696">फुल स्क्रिन म्याग्निफायर</translation>
@@ -1581,6 +1587,7 @@
 <translation id="6917259695595127329">कार्यहरू अपडेट गरिएको पछिल्लो समय: <ph name="TIME" />।</translation>
 <translation id="6919251195245069855">तपाईंको स्मार्ट कार्ड पहिचान गर्न सकिएन। फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="692135145298539227">मेटाउनुहोस्</translation>
+<translation id="6921427376813842559">डिभाइस अपडेट गर्नुहोस्</translation>
 <translation id="6929081673585394903">सेटिङ देखाउनुहोस्</translation>
 <translation id="6931576957638141829">यसमा सेभ गर्नुहोस्</translation>
 <translation id="6942518653766415536">रेकर्डिङको फर्म्याटसम्बन्धी मेनु</translation>
@@ -1668,6 +1675,7 @@
 <translation id="7303365578352795231">अर्को यन्त्रमा जवाफ दिँदै।</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">तपाईंका एड्मिन तपाईंको eSIM रिसेट गर्दै हुनुहुन्छ। यो कार्य पूरा हुन केही बेर लाग्न सक्छ।</translation>
+<translation id="7312761820869643657">डिभाइस अपडेट गरी अघिल्लो संस्करण रिस्टोर गर्नुहोस्</translation>
 <translation id="7313193732017069507">क्यामेरा एक्स्पान्ड गर्नुहोस्</translation>
 <translation id="7330397557116570022">स्पिच-टु-टेक्स्ट प्रयोग गर्न टेक्स्ट फिल्डमा जानुहोस्</translation>
 <translation id="7331646370422660166">alt + डाउन एरो</translation>
@@ -2184,6 +2192,7 @@
 <translation id="925832987464884575">प्रिभ्यूहरू लुकाउनुहोस्</translation>
 <translation id="938407504481277932">हालको डेस्क: <ph name="DESK_NAME" />। <ph name="PROFILE_NAME" /> <ph name="EMAIL" />। <ph name="DESK_COUNT" /> वटामध्ये <ph name="DESK_INDEX" /> औँ डेस्क।</translation>
 <translation id="938963181863597773">मेरो क्यालेन्डरमा के छ?</translation>
+<translation id="94468042118567862">डिभाइस अपडेट गरिएको छैन</translation>
 <translation id="945383118875625837">लिंकलाई ड्र्याग गरी पुस्तक चिन्ह पट्टीमा लैजानुहोस्</translation>
 <translation id="945522503751344254">पृष्ठपोषण पठाउनुहोस्</translation>
 <translation id="951991426597076286">अस्वीकार गर्नुहोस्</translation>

@@ -264,7 +264,6 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}one{+#}few{+#}many{+#}other{+#}}</translation>
 <translation id="2792200646155001340">Можна також провести одним пальцем справа наліво, щоб перейти до попереднього елемента. Спробуйте зараз.</translation>
 <translation id="280499067616661124">Пошук ChromeVox на сторінці</translation>
-<translation id="2811019999044652585">Щоб переходити між частинами екрана, наприклад перейти на панель інструментів чи системну область, натисніть Control+Forward. На Chromebook клавіша Forward розташована прямо над клавішею цифри 2.</translation>
 <translation id="2811204574343810641">Рядок</translation>
 <translation id="2816868829355607410">Практика: команди переходу</translation>
 <translation id="2841013758207633010">Час</translation>
@@ -880,6 +879,7 @@
 <translation id="7091296112653361280">Білий навахо</translation>
 <translation id="7095834689119144465">Редагування тексту лише для цифр</translation>
 <translation id="7096001299300236431">Медіа – назад</translation>
+<translation id="7096668131290451939">Щоб вийти з режиму довідки, натисніть клавішу Escape знову</translation>
 <translation id="7116595520562830928">багаторядковий</translation>
 <translation id="712735679809149106">озвучення слів</translation>
 <translation id="7137397390322864165">Лососевий</translation>

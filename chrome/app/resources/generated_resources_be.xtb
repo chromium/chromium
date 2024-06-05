@@ -1192,7 +1192,6 @@
 <translation id="1859339856433307593">Пароль для гэтага ўліковага запісу (<ph name="USER_EMAIL" />) ужо захаваны ў <ph name="BRAND" /></translation>
 <translation id="1861262398884155592">Гэта папка пустая</translation>
 <translation id="1862311223300693744">Ці ўсталявана ў вас якое-небудзь спецыяльнае праграмнае забеспячэнне VPN, проксі-сервера, брандмаўара або NAS?</translation>
-<translation id="1863047423483329595">Абарона ад адсочвання часова недаступная. Пакуль гэта функцыя ў Chrome абнаўляецца, сайтам часова дазваляецца выкарыстоўваць староннія файлы cookie, калі вы не забароніце іх выкарыстанне. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="1863182668524159459">Паслядоўныя парты не знойдзены</translation>
 <translation id="1864111464094315414">Уваход</translation>
 <translation id="1864400682872660285">Халадней</translation>
@@ -1224,6 +1223,7 @@
 <translation id="1878885068166344708">Пры пераходзе на аб'ект ён вылучаецца. Для пераходу на аб'ект яго трэба выбраць або выкарыстаць клавішу Tab.</translation>
 <translation id="1879000426787380528">Уваход з уліковага запісу</translation>
 <translation id="18802377548000045">Укладкі сціскаюцца і маюць вялікую шырыню</translation>
+<translation id="1880677175115548835">Выбраць тэкст</translation>
 <translation id="1880905663253319515">Выдаліць сертыфікат "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="1881445033931614352">Раскладка клавіятуры</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{Элемент}one{# элемент}few{# элементы}many{# элементаў}other{# элемента}}</translation>
@@ -5548,6 +5548,7 @@
 <translation id="5121052518313988218">Аперацыйная сістэма ў кантэйнеры Linux больш не падтрымліваецца. Яна больш не будзе атрымліваць абнаўленні сістэмы бяспекі і выпраўленні памылак, а функцыі, якія зараз працуюць, могуць нечакана перапыняць сваю работу. Каб працягваць выкарыстоўваць Linux, абнавіце АС да апошняй версіі.</translation>
 <translation id="5121130586824819730">Цвёрды дыск поўны.  Захавайце спампоўку ў іншае месца або вызваліце месца на цвёрдым дыску.</translation>
 <translation id="5123433949759960244">Баскетбол</translation>
+<translation id="5125714798187802869">Уключыць</translation>
 <translation id="5125751979347152379">Няправільны URL-адрас.</translation>
 <translation id="5125967981703109366">Інфармацыя пра гэту картку</translation>
 <translation id="512642543295077915">пошук + Backspace</translation>
@@ -8365,6 +8366,7 @@
 <translation id="7289049772085228972">Вы выкарыстоўваеце самую моцную абарону Chrome</translation>
 <translation id="7289303553784750393">Калі ў вас ёсць падключэнне да інтэрнэту, а праблема не знікае, паспрабуйце іншыя спосабы ўваходу, каб працягнуць работу на сайце <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> – Запытаны дазвол. Каб адказаць, націсніце F6</translation>
+<translation id="7290005709287747471">Выключыць</translation>
 <translation id="7290242001003353852">Гэты сэрвіс уваходу, размешчаны на дамене <ph name="SAML_DOMAIN" />, атрымлівае доступ да вашай камеры.</translation>
 <translation id="7292067737327289208">Вашым <ph name="BEGIN_LINK" />браўзерам кіруе<ph name="END_LINK" /> ваша арганізацыя, а <ph name="BEGIN_LINK" />профілем<ph name="END_LINK" /> – <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="7292147651179697920">Папрасі бацькоў адкрыць у Наладах доступ</translation>
@@ -9802,6 +9804,7 @@
 <translation id="8327386430364625757">Матэматычны шрыфт</translation>
 <translation id="8327538105740918488">Пазней вы можаце змяніць гэты пароль. <ph name="GOOGLE_PASSWORD_MANAGER" /> захавае яго для ўліковага запісу <ph name="EMAIL" />.</translation>
 <translation id="8327676037044516220">Дазволы і налады змесціва</translation>
+<translation id="8328777765163860529">Закрыць усе</translation>
 <translation id="8330617762701840933">Спіс вэб-сайтаў, якія адкрываюцца ў альтэрнатыўным браўзеры.</translation>
 <translation id="8330689128072902965">Абагульваць з вамі сваё змесціва могуць кантакты, якія знаходзяцца паблізу. Націсніце, каб змяніць гэта.</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{Сумяшчальны тып файлаў: <ph name="FILE_TYPE1" />}=2{Сумяшчальныя тыпы файлаў: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />}=3{Сумяшчальныя тыпы файлаў: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />}=4{Сумяшчальныя тыпы файлаў: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" />}one{Сумяшчальныя тыпы файлаў: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />і яшчэ {OVERFLOW_COUNT}<ph name="END_LINK" />)}few{Сумяшчальныя тыпы файлаў: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />і яшчэ {OVERFLOW_COUNT}<ph name="END_LINK" />)}many{Сумяшчальныя тыпы файлаў: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />і яшчэ {OVERFLOW_COUNT}<ph name="END_LINK" />)}other{Сумяшчальныя тыпы файлаў: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />і яшчэ {OVERFLOW_COUNT}<ph name="END_LINK" />)}}</translation>
@@ -10282,7 +10285,6 @@
 <translation id="869144235543261764">Гэта ўкладка прайграе відэа ў рэжыме "відарыс у відарысе"</translation>
 <translation id="869167754614449887">Файл "<ph name="FILE_NAME" />" выдалены з гісторыі спампоўвання</translation>
 <translation id="8692107307702113268">Даўжыня пароля перавышае 1000 сімвалаў</translation>
-<translation id="8693639060656817812">Даведацца больш пра даступнасць абароны ад адсочвання</translation>
 <translation id="8693862390730570097">Не дазваляць аўтаматычны запуск функцыі "Дапамога з напісаннем"</translation>
 <translation id="8694596275649352090">Блакіраваць пры пераходзе ў рэжым сну ці закрыцці вечка</translation>
 <translation id="8695139659682234808">Дадаванне функцыі бацькоўскага кантролю па завяршэнні наладкі</translation>

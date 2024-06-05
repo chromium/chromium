@@ -264,7 +264,6 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{Уште #}one{Уште #}other{Уште #}}</translation>
 <translation id="2792200646155001340">Може и да повлечете со еден прст оддесно налево за да одите на претходната ставка. Пробајте сега.</translation>
 <translation id="280499067616661124">ChromeVox најди на страницата</translation>
-<translation id="2811019999044652585">За да скокнете до другите делови од екранот, како алатниците или системската фиока, притиснете Control+Напред. На Chromebook, копчето за напред е веднаш над копчето со бројот 2.</translation>
 <translation id="2811204574343810641">Ред</translation>
 <translation id="2816868829355607410">Област за вежбање: наредби за скокање</translation>
 <translation id="2841013758207633010">Време</translation>
@@ -881,6 +880,7 @@
 <translation id="7091296112653361280">Бела „Навахо“</translation>
 <translation id="7095834689119144465">Измени само броеви во текстот</translation>
 <translation id="7096001299300236431">Претходни медиуми</translation>
+<translation id="7096668131290451939">Притиснете Escape повторно за да излезете од „Режим на учење“</translation>
 <translation id="7116595520562830928">multln</translation>
 <translation id="712735679809149106">ехо на збор</translation>
 <translation id="7137397390322864165">Боја на лосос</translation>

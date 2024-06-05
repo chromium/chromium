@@ -5061,6 +5061,7 @@ Donanım hızlandırmalı video kodu çözme işleminin devre dışı bırakılm
        belirtilen süre boyunca tarayıcının kapanması engellenebilir.
 
       Varsayılan değer (0) bu özelliğin devre dışı olduğu anlamına gelir.</translation>
+<translation id="4933780993367313536">Kurumsal yöneticilerin bu makineye uzaktan destek bağlantıları yapmasına izin ver</translation>
 <translation id="4937423591320233496">Önerilen içeriği devre dışı bırak</translation>
 <translation id="4942096314850617489">Kullanıcı için uzaktan onayı devre dışı bırak</translation>
 <translation id="4942681160308347946">Politikayı True (Doğru) değerine ayarlamak, oturum açma ekranında sözlü geri bildirimi açar. Politikayı False (Yanlış) değerine ayarlamak, oturum açma ekranında sözlü geri bildirimi kapatır.
@@ -6364,6 +6365,7 @@ geçerlidir ve politika ayarlanmadan bırakılırsa varsayılan olarak devre dı
 <translation id="5966615072639944554">Uzaktan doğrulama API'sını kullanmasına izin verilen uzantılar</translation>
 <translation id="596732417280023843">Sertifika profilinin adı.</translation>
 <translation id="5972538402066550344">Ayrıntılı raporlama kontrollerine izin ver</translation>
+<translation id="5973437409890460481">Bu makineye uzaktan kurumsal destek bağlantıları yapılmasına izin ver</translation>
 <translation id="5975765799383881158">Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa kullanıcılar Menü &gt; Yardım &gt; Sorun Bildirin adımlarını veya tuş kombinasyonunu kullanarak Google'a geri bildirim gönderebilir.
 
       Politika, Devre Dışı değerine ayarlanırsa kullanıcılar Google'a geri bildirim gönderemez.</translation>
@@ -9821,6 +9823,11 @@ Bu politikanın ayarlanması için <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_POLI
 Bu politika "true" (doğru) olarak ayarlanırsa kullanıcının tarayıcıyı kullanmadan önce <ph name="PRODUCT_NAME" /> ürününde kendi profiliyle oturum açması gerekir. BrowserGuestModeEnabled varsayılan değeri "false" (yanlış) olarak ayarlanır. Bu politika etkinleştirildikten sonra mevcut imzasız profillerin kilitleneceğini ve erişilemez hale geleceğini unutmayın. Daha fazla bilgi edinmek için yardım merkezi makalesine bakabilirsiniz.
 
       Bu politika "false" (yanlış) değerine ayarlanır veya yapılandırılmazsa kullanıcı <ph name="PRODUCT_NAME" /> ürününde oturum açmadan tarayıcıyı kullanabilir.</translation>
+<translation id="8575422604428646609">Bu politika devre dışı bırakılırsa kurumsal yöneticilerin, cihazda kullanıcı olmadığında yönetilen <ph name="PRODUCT_OS_NAME" /> cihazlara bağlanmasını engeller.
+
+Bu politika, uzaktan erişim senaryolarını etkilemez.
+
+Politika etkinleştirilir, boş bırakılır veya yapılandırılmazsa geçerli olmaz.</translation>
 <translation id="8575739761246140675">Symantec Corporation'ın Eski PKI altyapısı tarafından verilen sertifikalara güveni etkinleştir</translation>
 <translation id="8575746110808109915">Politika ayarlanarak tam geri yükleme özelliği etkinleştirilir.
       Bu politika Doğru değerine ayarlanırsa, uygulama geri yükleme ayarına bağlı olarak bir kilitlenme veya yeniden başlatma sonrasında uygulamalar ve uygulama pencereleri geri yüklenir ya da yüklenmez.
@@ -10518,6 +10525,7 @@ Not: Cihazın yeniden başlatılması, önbelleğin temizlenmesine neden olur. G
 <translation id="9107635531763682565">Politikayı 1 değerine ayarlamak web sitelerinin masaüstü bildirimlerine izin verir. Politikayı 2 değerine ayarlamak masaüstü bildirimlerini engeller.
 
 Politikayı ayarlamadan bırakırsanız <ph name="ASK_NOTIFICATIONS_POLICY_NAME" /> politikası geçerli olur. Kullanıcılar bu ayarı değiştirebilir.</translation>
+<translation id="9110194749335632373">Kurumsal yöneticilerin bu makineye uzaktan destek bağlantıları yapmasını engelle</translation>
 <translation id="9110251436602897914">Cihaza takılı çevre birimleri hakkında bilgi rapor et</translation>
 <translation id="9110485853581788150"><ph name="PRODUCT_NAME" /> ürününde güvenilmeyen ancak yol oluşturma için ipucu olarak
 kullanılabilecek sertifikaların listesi. Sertifikalar, base64 kodlu olmalıdır.</translation>

@@ -264,7 +264,6 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}one{+#}few{+#}many{+#}other{+#}}</translation>
 <translation id="2792200646155001340">Для пераходу да папярэдняга элемента можна таксама правесці адным пальцам справа налева. Паспрабуйце.</translation>
 <translation id="280499067616661124">ChromeVox знайсці на старонцы</translation>
-<translation id="2811019999044652585">Для пераходу на іншыя часткі экрана, напрыклад на панэль інструментаў або панэль заданняў, націсніце клавішы Ctrl+"Наперад". У Chromebook клавіша "Наперад" знаходзіцца непасрэдна над клавішай "2".</translation>
 <translation id="2811204574343810641">Радок</translation>
 <translation id="2816868829355607410">Вобласць практыкаванняў: каманды хуткага пераходу</translation>
 <translation id="2841013758207633010">Час</translation>
@@ -880,6 +879,7 @@
 <translation id="7091296112653361280">Белы наваха</translation>
 <translation id="7095834689119144465">Рэдагаванне тэксту ў полі з толькі лічбавым уводам</translation>
 <translation id="7096001299300236431">Папярэдні файл мультымедыя</translation>
+<translation id="7096668131290451939">Каб выйсці з рэжыму навучання, націсніце Esc яшчэ раз</translation>
 <translation id="7116595520562830928">шматрадк</translation>
 <translation id="712735679809149106">агучванне слоў</translation>
 <translation id="7137397390322864165">Ласасёвы</translation>

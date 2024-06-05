@@ -503,6 +503,7 @@
 <translation id="3575234738189584619">Искать с помощью Объектива</translation>
 <translation id="3575426792457739946">В списке указаны все загруженные профили.</translation>
 <translation id="3581564640715911333">Предлагать перевести страницы на других языках.</translation>
+<translation id="3585696901179982416">{count,plural, =1{Адрес {position} из {count}}one{Адрес {position} из {count}}few{Адрес {position} из {count}}many{Адрес {position} из {count}}other{Адрес {position} из {count}}}</translation>
 <translation id="3587885837929752825">Ваша организация ограничила данные, которые можно сохранять в аккаунте Google.</translation>
 <translation id="3588820906588687999">Открыть изображение в новой вкладке</translation>
 <translation id="3595252146048399851">Вы всегда можете выбрать, что синхронизировать, в <ph name="BEGIN_LINK" />настройках<ph name="END_LINK" />. Google может персонально настраивать Поиск и другие сервисы на основе вашей истории.</translation>
@@ -1195,6 +1196,7 @@
 <translation id="69739764870135975">Если установить Google как поисковую систему по умолчанию, подсказки будут более подходящими по контексту.</translation>
 <translation id="6979158407327259162">Google Диск</translation>
 <translation id="6983306615164277634">Чтобы изменить расположение адресной строки, также можно нажать и удерживать ее.</translation>
+<translation id="6986937292199604715">Включить</translation>
 <translation id="6988572888918530647">Перейти в настройки аккаунта Google</translation>
 <translation id="6990519590575500580">FaceTime</translation>
 <translation id="6998989275928107238">На</translation>
@@ -1301,6 +1303,7 @@
 <translation id="7557508262441527045">Выполнен выход.</translation>
 <translation id="7561196759112975576">Всегда</translation>
 <translation id="7564917801238348224">СОХРАНИТЬ…</translation>
+<translation id="758132317817089442">Включить улучшенную защиту</translation>
 <translation id="7582857256643797524">Этот параметр включен на вашем устройстве</translation>
 <translation id="7583004045319035904">Используйте <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> для разблокировки вкладок инкогнито.</translation>
 <translation id="7598439272585186139">Повысьте уровень безопасности</translation>

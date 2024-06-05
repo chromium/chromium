@@ -503,7 +503,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="3575234738189584619">Pretraživanje pomoću Objektiva</translation>
 <translation id="3575426792457739946">Lista sadržava sve učitane profile.</translation>
 <translation id="3581564640715911333">Ponudi prevođenje stranica na drugim jezicima</translation>
-<translation id="3585696901179982416">{count,plural, =1{Adresa: {position} od {count}}one{Adrese: {position} od {count}}few{Adrese: {position} od {count}}other{Adrese: {position} od {count}}}</translation>
+<translation id="3585696901179982416">{count,plural, =1{{position}. od {count} adrese}one{{position}. od {count} adrese}few{{position}. od {count} adrese}other{{position}. od {count} adresa}}</translation>
 <translation id="3587885837929752825">Organizacija ograničava šta možete pohranjivati na Google računu.</translation>
 <translation id="3588820906588687999">Otvori sliku na novoj kartici</translation>
 <translation id="3595252146048399851">U <ph name="BEGIN_LINK" />postavkama<ph name="END_LINK" /> uvijek možete odabrati šta želite sinhronizirati. Google može personalizirati Pretraživanje i druge usluge na osnovu vaše historije.</translation>
@@ -1196,7 +1196,7 @@ U anonimnom načinu rada web lokacije ne mogu koristiti kolačiće da vide vašu
 <translation id="69739764870135975">Ako je Google vaš zadani pretraživač, vidjet ćete bolje, kontekstualno relevantne prijedloge</translation>
 <translation id="6979158407327259162">Google Disk</translation>
 <translation id="6983306615164277634">Također možete dodirnuti i zadržati traku za adresu da promijenite položaj.</translation>
-<translation id="6986937292199604715">Uključi...</translation>
+<translation id="6986937292199604715">Uključivanje…</translation>
 <translation id="6988572888918530647">Upravljanje Google računom</translation>
 <translation id="6990519590575500580">FaceTime</translation>
 <translation id="6998989275928107238">U</translation>
@@ -1303,7 +1303,7 @@ U anonimnom načinu rada web lokacije ne mogu koristiti kolačiće da vide vašu
 <translation id="7557508262441527045">Odjavljeni ste</translation>
 <translation id="7561196759112975576">Uvijek</translation>
 <translation id="7564917801238348224">POHRANJIVANJE…</translation>
-<translation id="758132317817089442">Uključi poboljšanu zaštitu…</translation>
+<translation id="758132317817089442">Uključivanje poboljšane zaštite…</translation>
 <translation id="7582857256643797524">Ova postavka je omogućena na uređaju</translation>
 <translation id="7583004045319035904">Koristite <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> da otključate svoje anonimne kartice.</translation>
 <translation id="7598439272585186139">Nabavite dodatnu zaštitu</translation>

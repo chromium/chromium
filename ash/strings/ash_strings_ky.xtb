@@ -212,6 +212,7 @@
 <translation id="1747827819627189109">Экрандагы баскычтоп күйгүзүлдү</translation>
 <translation id="1749109475624620922"><ph name="WINDOW_TITLE" /> терезеси бардык иш такталарга дайындалды</translation>
 <translation id="1750088060796401187"><ph name="MAX_DESK_LIMIT" /> иш тактага гана уруксат берилет. Жаңысын ачуу үчүн иш тактаны жабыңыз.</translation>
+<translation id="1755408179247123630">Басып туруп угуңуз функциясы күйгүзүлсүнбү?</translation>
 <translation id="1755556344721611131">Мүчүлүштүктөрдү аныктоо колдонмосу</translation>
 <translation id="1756833229520115364">Үлгү сакталган жок. Өтө көп терезелер же өтмөктөр сакталды.</translation>
 <translation id="1757857692711134412">Күн батканга чейин өчүк</translation>
@@ -423,6 +424,7 @@
 <translation id="2653659639078652383">Тапшыруу</translation>
 <translation id="2658778018866295321">Чыкылдатып, сүйрөө</translation>
 <translation id="2665788051462227163"><ph name="UNAVAILABLE_APPS_ONE" /> жана <ph name="UNAVAILABLE_APPS_TWO" /> бул түзмөктө жок.</translation>
+<translation id="2670350619068134931">Анимациялар аз</translation>
 <translation id="2673968385134502798">Оюндар</translation>
 <translation id="2678852583403169292">Басып туруп угуңуз функциясынын менюсу</translation>
 <translation id="2687510499067466116">Ыкчам баскыч өзгөрдү</translation>
@@ -951,6 +953,7 @@
 <translation id="4628757576491864469">Түзмөктөр</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, Рейтинги: <ph name="RATING_SCORE" /></translation>
 <translation id="4633636853437260449">Өчүрүү үчүн Ctrl+W баскычтарын басыңыз</translation>
+<translation id="4635501805800894201">{0,plural, =0{Түзмөктү мурунку версияга азыр кайтарыңыз}=1{Түзмөктү 1 секунддун ичинде мурунку версияга кайтарыңыз}other{Түзмөктү # секунддун ичинде мурунку версияга кайтарыңыз}}</translation>
 <translation id="4642092649622328492">Экрандын бир бөлүгүн тартып алуу</translation>
 <translation id="4644727592819780893">Аймак камера үчүн өтө кичинекей</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, Сунушталган колдонмо</translation>
@@ -980,6 +983,7 @@
 <translation id="4735944890391795473">12-иш такта</translation>
 <translation id="473775607612524610">Жаңыртуу</translation>
 <translation id="4740516757091333363">Сакталган иш тактаны өчүрөсүзбү?</translation>
+<translation id="4746798685375253449">{0,plural, =1{Түзмөктү бир күндүн ичинде мурунку версияга кайтарыңыз}other{Түзмөктү # күндүн ичинде мурунку версияга кайтарыңыз}}</translation>
 <translation id="4747410141429390146">Билдирмелерди көрүү үчүн кулпусун ачыңыз</translation>
 <translation id="4752784485658729358">6 сакталган иш тактага гана уруксат берилген. Жаңы иш тактаны сактоо үчүн эскисин өчүрүңүз.</translation>
 <translation id="4759238208242260848">Жүктөлүп алынгандар</translation>
@@ -1085,6 +1089,9 @@
 <translation id="5092436659250499817">Баскычтоптун жарыгын күйгүзүү/өчүрүү</translation>
 <translation id="5094577350232361255">жөнүндө</translation>
 <translation id="5095136268899496849">Параметрлерден <ph name="PRODUCT_NAME" /> түзмөгүңүздү ыңгайлаштырып жана жекелештирип алыңыз. Тушкагазды өзгөртүп же көшөгөнү тууралап көрүңүз.</translation>
+<translation id="5096125376090473584">Текстти угуу үчүн экрандын ылдый жагындагы "Басып туруп угуңуз" сүрөчтөсүн тандап, андан соң текстти бөлүп көрсөтүңүз.
+
+Ыкчам баскычтарды да колдонсоңуз болот. Адегенде текстти бөлүп көрсөтүп, андан соң <ph name="MODIFIER" /> + s баскычтарын басыңыз.</translation>
 <translation id="509790653408515442">Телефонуңуздагы колдонмолорду алып ойнотконуңузда, алар ушул жерде көрсөтүлөт</translation>
 <translation id="5098537242461068432">Иш такта жана терезелер кайра ачылды</translation>
 <translation id="5103975065730779239"><ph name="END_TIME_EXPRESSION" /> чейин</translation>
@@ -1315,6 +1322,7 @@
 <translation id="5916646100036936191">Жаңы билдирме, бардыгы <ph name="NOTIFICATION_COUNT" /> билдирме</translation>
 <translation id="5916664084637901428">Күйүк</translation>
 <translation id="5920710855273935292">Микрофондун үнү өчүрүлдү.</translation>
+<translation id="5928083197428724029"><ph name="MANAGER" /> жаңыртууну талап кылат</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> күйүк.</translation>
 <translation id="5947494881799873997">Кайтаруу</translation>
 <translation id="595202126637698455">Иштин майнаптуулугуна көз салуу аракети иштетилди</translation>
@@ -1432,6 +1440,7 @@
 <translation id="6376931439017688372">Bluetooth күйүк</translation>
 <translation id="6378515133128829137">Терезени оңго кадоо</translation>
 <translation id="6381109794406942707">Түзмөктүн кулпусун ачуу үчүн PIN кодуңузду киргизиңиз.</translation>
+<translation id="6381305031890976705">{0,plural, =1{Түзмөктү бир сааттын ичинде мурунку версияга кайтарыңыз}other{Түзмөктү # сааттын ичинде мурунку версияга кайтарыңыз}}</translation>
 <translation id="638716340450135524">Түзмөктүн микрофонун колдонуу мүмкүнчүлүгүн күйгүзүү</translation>
 <translation id="639644700271529076">CAPS LOCK өчүк</translation>
 <translation id="6406458002328242616">Таймерди түзөтүңүз. <ph name="FOCUS_DURATION" />.</translation>
@@ -1454,6 +1463,7 @@
 <translation id="6459472438155181876">Экран <ph name="DISPLAY_NAME" /> карай кеңейтилүүдө</translation>
 <translation id="6464094930452079790">сүрөттөр</translation>
 <translation id="6467290994038932560"><ph name="GAME_APP_NAME" /> үчүн күйүк</translation>
+<translation id="6468406072297048412">{0,plural, =1{Түзмөктү 1 мүнөттүн ичинде мурунку версияга кайтарыңыз}other{Түзмөктү # мүнөттүн ичинде мурунку версияга кайтарыңыз}}</translation>
 <translation id="6469104339369989396">Байланыш түйүнүн өчүрүү/күйгүзүү</translation>
 <translation id="6477681113376365978">Файлды жүктөп алууга болбойт</translation>
 <translation id="6482559668224714696">Толук экран режиминдеги лупа</translation>
@@ -1577,6 +1587,7 @@
 <translation id="6917259695595127329">Жасалчу иш акыркы жолу качан жаңырган: <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">Акылдуу картаңыз таанылган жок. Кайталап көрүңүз.</translation>
 <translation id="692135145298539227">жок кылуу</translation>
+<translation id="6921427376813842559">Түзмөктү жаңыртыңыз</translation>
 <translation id="6929081673585394903">Башкаруу элементтерин көрсөтүү</translation>
 <translation id="6931576957638141829">Төмөнкүгө сактоо:</translation>
 <translation id="6942518653766415536">Жаздыруунун форматынын менюсу</translation>
@@ -1664,6 +1675,7 @@
 <translation id="7303365578352795231">Башка түзмөктөн жооп берилип жатат.</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Администраторуңуз eSIM-картаны баштапкы абалга келтирүүдө. Бир нече мүнөткө созулушу мүмкүн.</translation>
+<translation id="7312761820869643657">Түзмөктү мурунку версиясына кайтарыңыз</translation>
 <translation id="7313193732017069507">Камераны жайып көрсөтүү</translation>
 <translation id="7330397557116570022">Текстти айтып терүү үчүн текст талаасына өтүңүз</translation>
 <translation id="7331646370422660166">alt + ылдый жебе</translation>
@@ -1813,6 +1825,7 @@
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">Түзмөктү конок режиминде колдонуу үчүн, учурдагы аккаунттан чыгып, экрандын ылдый жагындагы Конок катары карап чыгуу дегенди тандаңыз.</translation>
 <translation id="7866482334467279021">күйүк</translation>
+<translation id="7866727328666668290">Акыркы ачылган өтмөк</translation>
 <translation id="7872786842639831132">Өчүк</translation>
 <translation id="7875575368831396199"><ph name="DEVICE_TYPE" /> түзмөгүңүздө Bluetooth өчүрүлгөн окшойт. Phone Hub'ды колдонуу үчүн Bluetooth'ду күйгүзүңүз.</translation>
 <translation id="7884446017008693258">Байланыш түйүнүнүн параметрлери</translation>
@@ -2179,6 +2192,7 @@
 <translation id="925832987464884575">Алдын ала көрүүнү жашыруу</translation>
 <translation id="938407504481277932">Учурдагы иш такта: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. <ph name="DESK_COUNT" /> иш тактанын ичинен <ph name="DESK_INDEX" />-иш такта.</translation>
 <translation id="938963181863597773">Жылнаамада эмне бар?</translation>
+<translation id="94468042118567862">Түзмөк жаңыртылган эмес</translation>
 <translation id="945383118875625837">Шилтемени кыстармалар тилкесине сүйрөө</translation>
 <translation id="945522503751344254">Пикириңизди билдириңиз</translation>
 <translation id="951991426597076286">Четке кагуу</translation>

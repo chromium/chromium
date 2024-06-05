@@ -264,7 +264,6 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}other{+#}}</translation>
 <translation id="2792200646155001340">ഒരു വിരൽ വലത്തുനിന്ന് ഇടത്തേക്ക് സ്വൈപ്പ് ചെയ്ത് മുമ്പത്തെ ഇനത്തിലേക്ക് നീങ്ങാനും നിങ്ങൾക്ക് കഴിയും. ഇപ്പോൾ ശ്രമിക്കുക.</translation>
 <translation id="280499067616661124">ChromeVox പേജിൽ കണ്ടെത്തുക</translation>
-<translation id="2811019999044652585">സ്‌ക്രീനിലെ ടൂൾബാറുകളോ സിസ്‌റ്റം ട്രേയോ പോലുള്ള മറ്റ് ഭാഗങ്ങളിലേക്ക് പോകാൻ, കൺട്രോൾ+ഫോർവേഡ് അമർത്തുക. Chromebook-ൽ, നമ്പർ 2 കീയുടെ തൊട്ടുമുകളിലുള്ളതാണ് ഫോർവേഡ് കീ.</translation>
 <translation id="2811204574343810641">വരി</translation>
 <translation id="2816868829355607410">പരിശീലന വിഭാഗം: ജമ്പ് കമാൻഡുകൾ</translation>
 <translation id="2841013758207633010">സമയം</translation>
@@ -880,6 +879,7 @@
 <translation id="7091296112653361280">നവാജോ വൈറ്റ്</translation>
 <translation id="7095834689119144465">ടെക്സ്റ്റ് സംഖ്യ മാത്രം എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="7096001299300236431">മുമ്പത്തെ മീഡിയ</translation>
+<translation id="7096668131290451939">'അറിയുക മോഡിൽ' നിന്ന് പുറത്തുകടക്കാൻ വീണ്ടും Escape അമർത്തുക</translation>
 <translation id="7116595520562830928">multln</translation>
 <translation id="712735679809149106">പദ എക്കൊ</translation>
 <translation id="7137397390322864165">സാൽമൻ</translation>

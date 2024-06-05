@@ -147,6 +147,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> a fost înlocuit cu <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Vezi toate sugestiile</translation>
 <translation id="1501946871587957338">Schimbi sursa audio?</translation>
+<translation id="1505542291183484463">Redimensionează ferestrele sub formă de dale în jos</translation>
 <translation id="1510238584712386396">Lansator</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Afișează setările pentru notificări. Notificările sunt dezactivate pentru o aplicație}few{Afișează setările pentru notificări. Notificările sunt dezactivate pentru # aplicații}other{Afișează setările pentru notificări. Notificările sunt dezactivate pentru # de aplicații}}</translation>
 <translation id="1523032696246003">Baterie <ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> până la încărcare completă</translation>
@@ -296,6 +297,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2149229036084364364">Accesează melodia anterioară</translation>
 <translation id="2152895518047545149">Se pare că nu lipsește nimic. Bravo!</translation>
 <translation id="2161132820593978283">Încearcă încadrarea camerei ca să fii în centrul ecranului în apelurile video. Activează în Setări rapide.</translation>
+<translation id="216955976692983107">Redimensionează ferestrele sub formă de dale spre dreapta</translation>
 <translation id="2185166372312820725">Accesează fila anterioară</translation>
 <translation id="2185444992308415167">Parcurge filele de la 1 la 8</translation>
 <translation id="2198625180564913276">Se adaugă profilul. Poate dura câteva minute.</translation>
@@ -424,6 +426,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2653659639078652383">Trimite</translation>
 <translation id="2658778018866295321">Dă clic și trage</translation>
 <translation id="2665788051462227163"><ph name="UNAVAILABLE_APPS_ONE" /> și <ph name="UNAVAILABLE_APPS_TWO" /> nu sunt disponibile pe acest dispozitiv.</translation>
+<translation id="2670350619068134931">Animații reduse</translation>
 <translation id="2673968385134502798">Jocuri</translation>
 <translation id="2678852583403169292">Meniul Selectați și ascultați</translation>
 <translation id="2687510499067466116">Comanda rapidă de la tastatură s-a schimbat</translation>
@@ -641,6 +644,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3509391053705095206">Telefonul nu a fost găsit. Asigură-te că funcția Bluetooth a telefonului este activată.</translation>
 <translation id="3510164367642747937">Evidențiază cursorul mouse-ului</translation>
 <translation id="3513798432020909783">Cont gestionat de <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3516000762115478502">Redimensionează ferestrele sub formă de dale în sus</translation>
 <translation id="3517037892157925473">Ultima actualizare a activităților: <ph name="TIME" />, <ph name="DATE" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{Actualizează dispozitivul într-un minut}few{Actualizează dispozitivul în # minute}other{Actualizează dispozitivul în # de minute}}</translation>
 <translation id="3522979239100719575">Se caută profiluri disponibile. Procesul poate dura câteva minute.</translation>
@@ -757,6 +761,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="3899995891769452915">Intrare vocală</translation>
 <translation id="3900355044994618856">Sesiunea se va încheia în <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">Se conectează la <ph name="NAME" /></translation>
+<translation id="3904768293285573640">Redimensionează ferestrele sub formă de dale spre stânga</translation>
 <translation id="3906954721959377182">Tabletă</translation>
 <translation id="3923494859158167397">Nu a fost configurată nicio rețea mobilă</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, Se încarcă evenimentele.</translation>

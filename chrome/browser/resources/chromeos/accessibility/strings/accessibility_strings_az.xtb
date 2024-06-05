@@ -264,7 +264,6 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}other{+#}}</translation>
 <translation id="2792200646155001340">Həmçinin əvvəlki elementə keçmək üçün bir barmağınızı sağdan sola sürüşdürə bilərsiniz. İndi sınayın.</translation>
 <translation id="280499067616661124">ChromeVox səhifədə tapma</translation>
-<translation id="2811019999044652585">Ekranın digər hissələrinə, məsələn, alətlər paneli və ya sistem seçimlərinə keçmək üçün Control+Forward basın. Chromebook'da Forward düyməsi 2 rəqəminin tam üstündədir.</translation>
 <translation id="2811204574343810641">Sıra</translation>
 <translation id="2816868829355607410">Təcrübə sahəsi: Keçid əmrləri</translation>
 <translation id="2841013758207633010">Vaxt</translation>
@@ -880,6 +879,7 @@
 <translation id="7091296112653361280">Sarımtıl Ağ</translation>
 <translation id="7095834689119144465">Yalnız rəqəmli mətnə düzəliş edin</translation>
 <translation id="7096001299300236431">Əvvəlki media</translation>
+<translation id="7096668131290451939">Öyrənmə rejimindən çıxmaq üçün yenidən escape üstünə basın</translation>
 <translation id="7116595520562830928">multln</translation>
 <translation id="712735679809149106">söz exosu</translation>
 <translation id="7137397390322864165">Qırmızımtıl narıncı</translation>

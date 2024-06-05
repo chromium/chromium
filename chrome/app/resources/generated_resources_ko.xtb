@@ -1199,7 +1199,6 @@
 <translation id="1861262398884155592">폴더가 비어 있습니다.</translation>
 <translation id="1862311223300693744">특별히 설치한 VPN, 프록시, 방화벽 또는 NAS 소프트웨어가
     있나요?</translation>
-<translation id="1863047423483329595">추적 보호 기능을 일시적으로 사용할 수 없습니다. Chrome에서 이 기능을 업데이트하는 동안 사이트에서 서드 파티 쿠키를 차단하지 않으면 일시적으로 쿠키를 사용할 수 있습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="1863182668524159459">직렬 포트를 찾을 수 없음</translation>
 <translation id="1864111464094315414">로그인</translation>
 <translation id="1864400682872660285">시원함</translation>
@@ -8553,6 +8552,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7416091793702109803"><ph name="FILE_NAME" /> 검토</translation>
 <translation id="7416263748877373774">서비스 약관을 로드할 수 없습니다. 네트워크 연결을 확인한 다음 다시 시도하세요.</translation>
 <translation id="7416362041876611053">알려지지 않은 네트워크 오류입니다.</translation>
+<translation id="7417435070053325657">앱 <ph name="APPS_LIST_SIZE" />개 중 <ph name="BLOCKED_APPS_SIZE" />개 차단됨</translation>
 <translation id="741906494724992817">이 앱에는 특별한 권한이 필요하지 않습니다.</translation>
 <translation id="7419142833919893307">추가된 사용자 이름 없음</translation>
 <translation id="7419565702166471774">항상 보안 연결 사용</translation>
@@ -9817,6 +9817,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8327386430364625757">산술 글꼴</translation>
 <translation id="8327538105740918488">이 비밀번호는 나중에 언제든지 변경할 수 있습니다. 비밀번호는 <ph name="EMAIL" />의 <ph name="GOOGLE_PASSWORD_MANAGER" />에 저장됩니다.</translation>
 <translation id="8327676037044516220">권한 및 콘텐츠 설정</translation>
+<translation id="8328777765163860529">모두 닫기</translation>
 <translation id="8330617762701840933">대체 브라우저로 리디렉션되는 웹사이트의 목록입니다.</translation>
 <translation id="8330689128072902965">주변 연락처가 나와 파일을 공유할 수 있습니다. 변경하려면 클릭하세요.</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{지원되는 파일 형식: <ph name="FILE_TYPE1" />}=2{지원되는 파일 형식: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />}=3{지원되는 파일 형식: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />}=4{지원되는 파일 형식 <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" />}other{지원되는 파일 형식: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" />(<ph name="LINK" />이외의 {OVERFLOW_COUNT}개 더보기<ph name="END_LINK" />)}}</translation>
@@ -10297,7 +10298,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="869144235543261764">이 탭에서는 PIP 모드로 동영상이 재생되고 있습니다</translation>
 <translation id="869167754614449887">다운로드 기록에서 <ph name="FILE_NAME" /> 파일이 삭제되었습니다.</translation>
 <translation id="8692107307702113268">비밀번호가 1,000자(영문 기준)를 초과합니다.</translation>
-<translation id="8693639060656817812">추적 보호 사용 가능 여부에 관해 자세히 알아보기</translation>
 <translation id="8693862390730570097">'작성 지원 기능'이 자동으로 열리도록 허용하지 않음</translation>
 <translation id="8694596275649352090">절전 모드일 때 또는 덮개가 닫힌 경우 잠금</translation>
 <translation id="8695139659682234808">설정 완료 후 자녀 보호 기능 추가</translation>

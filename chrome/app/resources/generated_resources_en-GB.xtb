@@ -1199,7 +1199,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1861262398884155592">This folder is empty</translation>
 <translation id="1862311223300693744">Do you have any special VPN, proxy, firewall or NAS software
     installed?</translation>
-<translation id="1863047423483329595">Tracking Protection is temporarily unavailable. While Chrome is updating this feature, sites can temporarily use third-party cookies unless you block them. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="1863182668524159459">No serial ports found</translation>
 <translation id="1864111464094315414">Login</translation>
 <translation id="1864400682872660285">Cooler</translation>
@@ -8552,6 +8551,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7416091793702109803">Review <ph name="FILE_NAME" /></translation>
 <translation id="7416263748877373774">Terms of Service cannot be loaded. Please check your network connection and retry.</translation>
 <translation id="7416362041876611053">Unknown network error</translation>
+<translation id="7417435070053325657"><ph name="BLOCKED_APPS_SIZE" /> of <ph name="APPS_LIST_SIZE" /> apps blocked</translation>
 <translation id="741906494724992817">This app requires no special permissions.</translation>
 <translation id="7419142833919893307">No username added</translation>
 <translation id="7419565702166471774">Always use secure connections</translation>
@@ -9816,6 +9816,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8327386430364625757">Mathematical font</translation>
 <translation id="8327538105740918488">You can always change this password later. It will be saved to <ph name="GOOGLE_PASSWORD_MANAGER" /> for <ph name="EMAIL" />.</translation>
 <translation id="8327676037044516220">Permissions and content settings</translation>
+<translation id="8328777765163860529">Close All</translation>
 <translation id="8330617762701840933">The list of websites that redirect to alternative browser.</translation>
 <translation id="8330689128072902965">Nearby contacts can share with you. Click to change.</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{Supported file type: <ph name="FILE_TYPE1" />}=2{Supported file types: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />}=3{Supported file types: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />}=4{Supported file types: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" />}other{Supported file types: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />and {OVERFLOW_COUNT} more<ph name="END_LINK" />)}}</translation>
@@ -10296,7 +10297,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="869144235543261764">This tab is playing a video in picture-in-picture mode</translation>
 <translation id="869167754614449887">Deleted <ph name="FILE_NAME" /> from download history</translation>
 <translation id="8692107307702113268">Password is more than 1,000 characters</translation>
-<translation id="8693639060656817812">Learn more about Tracking Protection availability</translation>
 <translation id="8693862390730570097">Don't allow 'Help me write' to automatically open</translation>
 <translation id="8694596275649352090">Lock when sleeping or lid is closed</translation>
 <translation id="8695139659682234808">Add parental controls after setup</translation>

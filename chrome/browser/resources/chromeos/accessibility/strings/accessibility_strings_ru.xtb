@@ -264,7 +264,6 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}one{+#}few{+#}many{+#}other{+#}}</translation>
 <translation id="2792200646155001340">Чтобы перейти к предыдущему элементу, можно провести одним пальцем справа налево. Потренируйтесь на этом экране.</translation>
 <translation id="280499067616661124">Поиск на странице (ChromeVox)</translation>
-<translation id="2811019999044652585">Чтобы перемещаться между разными частями экрана, например панелью инструментов и областью уведомлений, нажимайте CTRL + ВПЕРЕД. Клавиша ВПЕРЕД на Chromebook расположена над клавишей 2.</translation>
 <translation id="2811204574343810641">Строка.</translation>
 <translation id="2816868829355607410">Практические задания: команды для быстрого перехода</translation>
 <translation id="2841013758207633010">Время</translation>
@@ -880,6 +879,7 @@
 <translation id="7091296112653361280">Белый навахо</translation>
 <translation id="7095834689119144465">Изменение текста: только цифры</translation>
 <translation id="7096001299300236431">Перейти к предыдущему файлу мультимедиа</translation>
+<translation id="7096668131290451939">Повторно нажмите клавишу Escape, чтобы отключить режим обучения</translation>
 <translation id="7116595520562830928">multln</translation>
 <translation id="712735679809149106">Озвучивание слов.</translation>
 <translation id="7137397390322864165">Лососевый</translation>

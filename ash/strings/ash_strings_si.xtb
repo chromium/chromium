@@ -148,6 +148,7 @@
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> <ph name="SECOND_ITEM_TITLE" /> සමඟ හුවමාරු කර ගත්තා</translation>
 <translation id="1500926532737552529">සියලු යෝජනා පෙන්වන්න</translation>
 <translation id="1501946871587957338">ශ්‍රව්‍ය මූලාශ්‍රය මාරු කරන්න ද?</translation>
+<translation id="1505542291183484463">පහළට කැට කරන ලද ප්‍රතිප්‍රමාණ කවුළුව</translation>
 <translation id="1510238584712386396">දියත්කරණය</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{දැනුම් දීම් සැකසීම් පෙන්වන්න. යෙදුමක් සඳහා දැනුම්දීම් ක්‍රියාවිරහිතයි}one{දැනුම් දීම් සැකසීම් පෙන්වන්න. යෙදුම් # ක් සඳහා දැනුම්දීම් ක්‍රියාවිරහිතයි}other{දැනුම් දීම් සැකසීම් පෙන්වන්න. යෙදුම් # ක් සඳහා දැනුම්දීම් ක්‍රියාවිරහිතයි}}</translation>
 <translation id="1523032696246003">බැටරිය <ph name="BATTERY_PERCENTAGE" />% | සම්පූර්ණ වන තෙක් <ph name="TIME" /></translation>
@@ -213,6 +214,7 @@
 <translation id="1747827819627189109">තිරය මත යතුරු පුවරුව සබල කර ඇත</translation>
 <translation id="1749109475624620922">සියලු මේසවලට <ph name="WINDOW_TITLE" /> කවුළුව පවරා ඇත</translation>
 <translation id="1750088060796401187">මේස <ph name="MAX_DESK_LIMIT" />ක් පමණක් ඉඩ දේ. අලුත් එකක් විවෘත කිරීමට මේසයක් ඉවත් කරන්න.</translation>
+<translation id="1755408179247123630">කථා කිරීමට තෝරන්න ක්‍රියාත්මක කරන්න ද?</translation>
 <translation id="1755556344721611131">Diagnostics යෙදුම</translation>
 <translation id="1756833229520115364">අච්චුව සුරැකීමට නොහැකි විය. කවුළු හෝ ටැබ ඉතා වැඩි ගණනකි.</translation>
 <translation id="1757857692711134412">හිරු බැස යන තෙක් ක්‍රියාවිරහිතයි</translation>
@@ -296,6 +298,7 @@
 <translation id="2149229036084364364">පෙර ශ්‍රව්‍ය ඛණ්ඩයට යන්න</translation>
 <translation id="2152895518047545149">කිසිවක් මඟ නොහැරෙන බව පෙනේ. කදිම වැඩක්!</translation>
 <translation id="2161132820593978283">ඔබ වීඩියෝ ඇමතුම්වල තිරයෙහි මැද සිටිනු ඇති පරිදි කැමරා රාමු කිරීමට උත්සාහ කරන්න. ඉක්මන් සැකසීම් තුළ එය ක්‍රියාත්මක කරන්න.</translation>
+<translation id="216955976692983107">දකුණට කැට කරන ලද ප්‍රතිප්‍රමාණ කවුළුව</translation>
 <translation id="2185166372312820725">පෙර පටිත්තට යන්න</translation>
 <translation id="2185444992308415167">1 සිට 8 දක්වා පටිති හරහා යන්න</translation>
 <translation id="2198625180564913276">පැතිකඩ එක් කිරීම මෙයට මිනිත්තු කිහිපයක් ගත විය හැකිය.</translation>
@@ -424,6 +427,7 @@
 <translation id="2653659639078652383">ඉදිරිපත් කරන්න</translation>
 <translation id="2658778018866295321">ක්ලික් කර අදින්න</translation>
 <translation id="2665788051462227163"><ph name="UNAVAILABLE_APPS_ONE" /> සහ <ph name="UNAVAILABLE_APPS_TWO" /> මෙම උපාංගයෙහි නැත.</translation>
+<translation id="2670350619068134931">අඩු කළ සජීවීකරණ</translation>
 <translation id="2673968385134502798">ක්‍රීඩා</translation>
 <translation id="2678852583403169292">කථා කිරීමට තෝරන්න මෙනුව</translation>
 <translation id="2687510499067466116">යතුරුපුවරු කෙටිමඟ වෙනස් වී ඇත</translation>
@@ -641,6 +645,7 @@
 <translation id="3509391053705095206">ඔබගේ දුරකථනය සොයා ගත නොහැකිය. ඔබගේ දුරකථනයේ බ්ලූටූත් ක්‍රියාත්මක බව සහතික කර ගන්න.</translation>
 <translation id="3510164367642747937">මූසිකයේ කර්සරය ඉස්මතු කරන්න</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> විසින් ගිණුම කළමනාකරණය කරයි</translation>
+<translation id="3516000762115478502">ඉහළට කැට කරන ලද ප්‍රතිප්‍රමාණ කවුළුව</translation>
 <translation id="3517037892157925473">කාර්ය අවසන් වරට යාවත්කාලීන කරන ලද්දේ: <ph name="TIME" />, <ph name="DATE" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{උපාංගය මිනිත්තු 1ක් තුළ යාවත්කාලීන කරන්න}one{උපාංගය මිනිත්තු #ක් තුළ යාවත්කාලීන කරන්න}other{උපාංගය මිනිත්තු #ක් තුළ යාවත්කාලීන කරන්න}}</translation>
 <translation id="3522979239100719575">ලබා ගත හැකි පැතිකඩවල් සොයමින්. මෙයට මිනිත්තු කිහිපයක් ගත විය හැක.</translation>
@@ -757,6 +762,7 @@
 <translation id="3899995891769452915">හඬ ආදානය</translation>
 <translation id="3900355044994618856">ඔබගේ සැසිය <ph name="SESSION_TIME_REMAINING" /> කින් අවසන් වනු ඇත</translation>
 <translation id="3901991538546252627"><ph name="NAME" /> වෙත සබඳ වෙමින්</translation>
+<translation id="3904768293285573640">වමට කැට කරන ලද ප්‍රතිප්‍රමාණ කවුළුව</translation>
 <translation id="3906954721959377182">ටැබ්ලට්</translation>
 <translation id="3923494859158167397">ජංගම ජාල පිහිටුවා නැත</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, සිදුවීම් පූරණය කරමින්.</translation>
@@ -952,6 +958,7 @@
 <translation id="4628757576491864469">උපාංග</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, තරු ඇගයීම <ph name="RATING_SCORE" /></translation>
 <translation id="4633636853437260449">මකා දැමීමට Ctrl+W ඔබන්න</translation>
+<translation id="4635501805800894201">{0,plural, =0{උපාංගය දැන් පෙර අනුවාදයට යාවත්කාලීන කරන්න}=1{තත්පර 1ක් ඇතුළත උපාංගය පෙර අනුවාදයට යාවත්කාලීන කරන්න}one{තත්පර #ක් ඇතුළත උපාංගය පෙර අනුවාදයට යාවත්කාලීන කරන්න}other{තත්පර #ක් ඇතුළත උපාංගය පෙර අනුවාදයට යාවත්කාලීන කරන්න}}</translation>
 <translation id="4642092649622328492">අර්ධ තිර රුවක් ගන්න</translation>
 <translation id="4644727592819780893">කැමරාවට ගැළපීමට කලාපය කුඩා වැඩිය</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, යෙදුම් නිර්දේශය</translation>
@@ -981,6 +988,7 @@
 <translation id="4735944890391795473">12 වෙනි මේසය</translation>
 <translation id="473775607612524610">යාවත්කාලීනය</translation>
 <translation id="4740516757091333363">සුරැකි මේසය මකන්නද?</translation>
+<translation id="4746798685375253449">{0,plural, =1{දිනක් ඇතුළත උපාංගය පෙර අනුවාදයට යාවත්කාලීන කරන්න}one{දින #ක් ඇතුළත උපාංගය පෙර අනුවාදයට යාවත්කාලීන කරන්න}other{දින #ක් ඇතුළත උපාංගය පෙර අනුවාදයට යාවත්කාලීන කරන්න}}</translation>
 <translation id="4747410141429390146">දැනුම්දීම් බැලීමට අගුළු හරින්න</translation>
 <translation id="4752784485658729358">සුරැකි මේස 6කට පමණක් ඉඩ දේ. අලුත් එකක් සුරැකීමට මේසයක් ඉවත් කරන්න.</translation>
 <translation id="4759238208242260848">බාගැනීම්</translation>
@@ -1086,6 +1094,9 @@
 <translation id="5092436659250499817">යතුරු පුවරු පසුතල ආලෝකය ක්‍රියාත්මක/ක්‍රියාවිරහිත කරන්න</translation>
 <translation id="5094577350232361255">පිළිබඳව</translation>
 <translation id="5095136268899496849">සැකසීම් තුළ ඔබේ <ph name="PRODUCT_NAME" /> අභිරුචි සහ පුද්ගලායන කරන්න. ඔබේ බිතුපත වෙනස් කිරීමට හෝ තිර සුරැකුමක් සැකසීමට උත්සාහ කරන්න.</translation>
+<translation id="5096125376090473584">පෙළ ශබ්ද නඟා කියවීමට සවන් දීමට, ඔබේ තිරයෙහි පහළින් ඇති කථා කිරීමට තෝරන්න නිරූපකය තෝරා, ඉන්පසු පෙළ උද්දීපනය කරන්න.
+
+ඔබට යතුරු පුවරු කෙටිමඟ ද භාවිතා කළ හැක. පළමුව, පෙළ උද්දීපනය කරන්න, ඉන්පසු <ph name="MODIFIER" /> + s ඔබන්න.</translation>
 <translation id="509790653408515442">ඔබ ඔබගේ දුරකථනයේ යෙදුම් ප්‍රවාහ කරන විට, ඒවා මෙහි දිස් වනු ඇත</translation>
 <translation id="5098537242461068432">මේසය සහ කවුළු නැවත විවෘත කරන ලදි</translation>
 <translation id="5103975065730779239"><ph name="END_TIME_EXPRESSION" /> දක්වා</translation>
@@ -1316,6 +1327,7 @@
 <translation id="5916646100036936191">නව දැනුම්දීම, මුළු වශයෙන් <ph name="NOTIFICATION_COUNT" /></translation>
 <translation id="5916664084637901428">ක්‍රියාත්මකයි</translation>
 <translation id="5920710855273935292">මයිකය නිහඬයි.</translation>
+<translation id="5928083197428724029"><ph name="MANAGER" /> විසින් යාවත්කාලීන කිරීම අවශ්‍ය කරයි</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> ක්‍රියාත්මකයි.</translation>
 <translation id="5947494881799873997">ප්‍රතිවර්තනය</translation>
 <translation id="595202126637698455">ක්‍රියාකරිත්ව හඹායෑම සබල කෙරිණි</translation>
@@ -1433,6 +1445,7 @@
 <translation id="6376931439017688372">බ්ලූටූත් ක්‍රියාත්මකයි</translation>
 <translation id="6378515133128829137">කවුළුව දකුණට අමුණන්න</translation>
 <translation id="6381109794406942707">උපාංගය අගුලු ඇරීමට, ඔබේ රහස් අංකය ඇතුළත් කරන්න.</translation>
+<translation id="6381305031890976705">{0,plural, =1{පැයක් ඇතුළත උපාංගය පෙර අනුවාදයට යාවත්කාලීන කරන්න}one{පැය #ක් ඇතුළත උපාංගය පෙර අනුවාදයට යාවත්කාලීන කරන්න}other{පැය #ක් ඇතුළත උපාංගය පෙර අනුවාදයට යාවත්කාලීන කරන්න}}</translation>
 <translation id="638716340450135524">කැමරා ප්‍රවේශය ක්‍රියාත්මක කරන්න</translation>
 <translation id="639644700271529076">කැප්ස් ලොක් අක්‍රීයයි</translation>
 <translation id="6406458002328242616">මුහූර්තකය සංස්කරණ කරන්න. <ph name="FOCUS_DURATION" />.</translation>
@@ -1455,6 +1468,7 @@
 <translation id="6459472438155181876">තිරය <ph name="DISPLAY_NAME" /> වෙත දිගු කෙරෙමින්</translation>
 <translation id="6464094930452079790">රූප</translation>
 <translation id="6467290994038932560"><ph name="GAME_APP_NAME" /> සඳහා ක්‍රියාත්මකයි</translation>
+<translation id="6468406072297048412">{0,plural, =1{මිනිත්තු 1ක් ඇතුළත උපාංගය පෙර අනුවාදයට යාවත්කාලීන කරන්න}one{මිනිත්තු #ක් ඇතුළත උපාංගය පෙර අනුවාදයට යාවත්කාලීන කරන්න}other{මිනිත්තු #ක් ඇතුළත උපාංගය පෙර අනුවාදයට යාවත්කාලීන කරන්න}}</translation>
 <translation id="6469104339369989396">හොට්ස්පොට් ටොගල් කරන්න</translation>
 <translation id="6477681113376365978">ගොනුව බාගැනීමට නොහැකිය</translation>
 <translation id="6482559668224714696">පූර්ණ තිර විශාලකය</translation>
@@ -1578,6 +1592,7 @@
 <translation id="6917259695595127329">කාර්ය අවසන් වරට යාවත්කාලීන කරන ලද්දේ: <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">ඔබේ ස්මාර්ට් කාඩ්පත හඳුනා ගැනීමට නොහැකි විය. නැවත උත්සාහ කරන්න.</translation>
 <translation id="692135145298539227">මකන්න</translation>
+<translation id="6921427376813842559">උපාංගය යාවත්කාලීන කරන්න</translation>
 <translation id="6929081673585394903">පාලන පෙන්වන්න</translation>
 <translation id="6931576957638141829">සුරකින්නේ</translation>
 <translation id="6942518653766415536">පටිගත කිරීමේ ආකෘති මෙනුව</translation>
@@ -1665,6 +1680,7 @@
 <translation id="7303365578352795231">වෙනත් උපාංගයක් මත පිළිතුරු ලබා දෙයි.</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">ඔබගේ පරිපාලක ඔබගේ eSIM යළි සකසයි. මෙයට මිනිත්තු කිහිපයක් ගත විය හැකිය.</translation>
+<translation id="7312761820869643657">උපාංගය පෙර අනුවාදයට යාවත්කාලීන කරන්න</translation>
 <translation id="7313193732017069507">කැමරාව පුළුල් කරන්න</translation>
 <translation id="7330397557116570022">අනුලේඛනය භාවිතා කිරීමට පෙළ ක්ෂේත්‍රයකට යන්න</translation>
 <translation id="7331646370422660166">alt + පහළට ඊතලය</translation>
@@ -1814,6 +1830,7 @@
 <translation id="7851768487828137624">කැනරි</translation>
 <translation id="7862292329216937261">උපාංගය ආගන්තුකයෙකු ලෙස භාවිතය සඳහා, ඔබ වැරීමට සහ පසුව තිරයෙහි පහළින් ඇති ආගන්තුකයෙකු ලෙස බ්‍රවුස් කරන්න තේරීමට අවශ්‍ය වේ.</translation>
 <translation id="7866482334467279021">ක්‍රියාත්මකයි</translation>
+<translation id="7866727328666668290">අවසන් පටිත්ත විවෘත කරන ලදි</translation>
 <translation id="7872786842639831132">ක්‍රියාවිරහිතයි</translation>
 <translation id="7875575368831396199">ඔබගේ <ph name="DEVICE_TYPE" /> හි බ්ලූටූත් ක්‍රියාවිරහිත කර ඇති බව පෙනේ. Phone Hub භාවිත කිරීමට කරුණාකර බ්ලූටූත් ක්‍රියාත්මක කරන්න.</translation>
 <translation id="7884446017008693258">හොට්ස්පොට් සැකසීම්</translation>
@@ -2180,6 +2197,7 @@
 <translation id="925832987464884575">පෙරදසුන් සඟවන්න</translation>
 <translation id="938407504481277932">වත්මන් මේසය: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. මේස <ph name="DESK_COUNT" /> න් <ph name="DESK_INDEX" />.</translation>
 <translation id="938963181863597773">මාගේ දින දර්ශනයෙහි ඇත්තේ කුමක්ද?</translation>
+<translation id="94468042118567862">උපාංගය යාවත්කාලීන නොවේ</translation>
 <translation id="945383118875625837">පොත්සලකුණු තීරුවට සබැඳිය ඇදගෙන යන්න</translation>
 <translation id="945522503751344254">අදහස් හා යෝජනා යවන්න</translation>
 <translation id="951991426597076286">පිළිකෙව්</translation>

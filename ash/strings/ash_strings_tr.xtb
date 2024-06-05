@@ -212,6 +212,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1747827819627189109">Dokunmatik klavye etkin</translation>
 <translation id="1749109475624620922"><ph name="WINDOW_TITLE" /> penceresi tüm masalara atandı</translation>
 <translation id="1750088060796401187">Yalnızca <ph name="MAX_DESK_LIMIT" /> masaya izin verilir. Yenisini açmak için bir masayı kaldırın.</translation>
+<translation id="1755408179247123630">Seç ve Dinle etkinleştirilsin mi?</translation>
 <translation id="1755556344721611131">Teşhis Aracı uygulaması</translation>
 <translation id="1756833229520115364">Şablon kaydedilemedi. Çok fazla pencere veya sekme var.</translation>
 <translation id="1757857692711134412">Gün batımına kadar kapalı</translation>
@@ -423,6 +424,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2653659639078652383">Gönder</translation>
 <translation id="2658778018866295321">Tıkla ve sürükle</translation>
 <translation id="2665788051462227163"><ph name="UNAVAILABLE_APPS_ONE" /> ve <ph name="UNAVAILABLE_APPS_TWO" /> bu cihazda yok.</translation>
+<translation id="2670350619068134931">İndirgenmiş animasyonlar</translation>
 <translation id="2673968385134502798">Oyunlar</translation>
 <translation id="2678852583403169292">Seç ve Dinle menüsü</translation>
 <translation id="2687510499067466116">Klavye kısayolu değişti</translation>
@@ -1087,6 +1089,9 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="5092436659250499817">Klavye arka ışığını açın/kapatın</translation>
 <translation id="5094577350232361255">hakkında</translation>
 <translation id="5095136268899496849">Ayarlar'a giderek <ph name="PRODUCT_NAME" /> cihazınızı özelleştirin ve kişiselleştirin. Duvar kağıdınızı değiştirmeyi veya ekran koruyucu ayarlamayı deneyin.</translation>
+<translation id="5096125376090473584">Sesli okunan metinleri dinlemek için ekranın alt kısmındaki Seç ve Dinle simgesini seçtikten sonra metni vurgulayın.
+
+Klavye kısayolunu da kullanabilirsiniz. Önce metni vurgulayın, ardından <ph name="MODIFIER" /> + s tuşlarına basın.</translation>
 <translation id="509790653408515442">Telefonunuzdan yayınladığınız uygulamalar burada görünür</translation>
 <translation id="5098537242461068432">Masa ve pencereler yeniden açıldı</translation>
 <translation id="5103975065730779239">Şu saate kadar: <ph name="END_TIME_EXPRESSION" /></translation>
@@ -1820,6 +1825,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">Cihazı misafir olarak kullanmak için oturumu kapattıktan sonra ekranın alt tarafındaki Misafir olarak göz at'ı seçmeniz gerekir.</translation>
 <translation id="7866482334467279021">açık</translation>
+<translation id="7866727328666668290">Son açılan sekme</translation>
 <translation id="7872786842639831132">Kapalı</translation>
 <translation id="7875575368831396199"><ph name="DEVICE_TYPE" /> cihazınızda Bluetooth kapalı görünüyor. Telefon Merkezini kullanmak için lütfen Bluetooth'u açın.</translation>
 <translation id="7884446017008693258">Hotspot Ayarları</translation>

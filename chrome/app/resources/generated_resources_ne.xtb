@@ -1186,7 +1186,6 @@
 <translation id="1859339856433307593">यो खाताको पासवर्ड <ph name="BRAND" /> (<ph name="USER_EMAIL" />) मा सेभ गरिसकिएको छ</translation>
 <translation id="1861262398884155592">यो फोल्डर खाली छ</translation>
 <translation id="1862311223300693744">तपाईंले कुनै पनि विशेष VPN, प्रोक्सी, फायरवाल वा NAS सफ्टवेयर इन्स्टल गर्नुभएको छ?</translation>
-<translation id="1863047423483329595">ट्र्याकिङबाट सुरक्षित राख्ने सुविधा हाल उपलब्ध छैन। तपाईंले तेस्रो पक्षीय कुकीहरू ब्लक गर्नुभएको छैन भने Chrome ले यो सुविधा अपडेट गरिरहेका बेला साइटहरूले केही समयका लागि तेस्रो पक्षीय कुकीहरू प्रयोग गर्न सक्छन्। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="1863182668524159459">कुनै पनि सिरियल पोर्ट फेला परेन</translation>
 <translation id="1864111464094315414">लगइन</translation>
 <translation id="1864400682872660285">अझ शीतल</translation>
@@ -5545,6 +5544,7 @@
 <translation id="5121052518313988218">तपाईंको Linux कन्टेनरमा इन्स्टल गरिएको अपरेटिङ सिस्टमले अब उप्रान्त काम गर्दैन। यसले गर्दा सुरक्षासम्बन्धी अपडेट प्राप्त गर्ने र त्रुटि सच्याउने सुविधा बन्द हुने छ। साथै, अहिले काम गरिरहेका सुविधाहरू अनपेक्षित रूपमा क्र्यास हुन सक्छन्। तपाईं Linux चलाइराख्न चाहनुहुन्छ भने कृपया हालको संस्करण अपग्रेड गरी नयाँ संस्करण बनाउनुहोस्।</translation>
 <translation id="5121130586824819730">तपाईंको हार्ड डिस्क भरिएको छ । कृपया अर्को स्थानमा बचत गर्नुहोस् वा हार्डडिस्कमा थप खाली ठाउँ बनाउनुहोस् ।</translation>
 <translation id="5123433949759960244">बास्केटबल</translation>
+<translation id="5125714798187802869">एक्टिभेट गर्नुहोस्</translation>
 <translation id="5125751979347152379">अवैध URL।</translation>
 <translation id="5125967981703109366">यस कार्डका बारेमा</translation>
 <translation id="512642543295077915">सर्च + ब्याकस्पेस</translation>
@@ -8356,6 +8356,7 @@
 <translation id="7289049772085228972">तपाईंको डिभाइसमा Chrome को सबैभन्दा भरपर्दो सुरक्षा सुविधा छ</translation>
 <translation id="7289303553784750393">तपाईं अनलाइन भए तापनि यो समस्या अझै पनि देखिएको खण्डमा तपाईं <ph name="SITE_ETLD_PLUS_ONE" /> मा जाने अन्य तरिका अपनाई हेर्न सक्नुहुन्छ।</translation>
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> - अनुमति मागियो, यस सम्बन्धमा कारबाही गर्न F6 थिच्नुहोस्</translation>
+<translation id="7290005709287747471">डिएक्टिभेट गर्नुहोस्</translation>
 <translation id="7290242001003353852"><ph name="SAML_DOMAIN" /> द्वारा होस्ट गरिएको यस साइन-इन सेवाले तपाईँको क्यामेरामाथि पहुँच राख्दैछ।</translation>
 <translation id="7292067737327289208">तपाईंको सङ्गठनले तपाईंको <ph name="BEGIN_LINK" />ब्राउजर व्यवस्थापन गर्छ<ph name="END_LINK" /> र <ph name="PROFILE_DOMAIN" /> ले तपाईंको <ph name="BEGIN_LINK" />प्रोफाइल व्यवस्थापन<ph name="END_LINK" /> गर्छ</translation>
 <translation id="7292147651179697920">आफ्ना अभिभावकलाई सेटिङमा गई एक्सेस दिन आग्रह गर्नुहोस्</translation>
@@ -9793,6 +9794,7 @@
 <translation id="8327386430364625757">गणितीय फन्ट</translation>
 <translation id="8327538105740918488">तपाईं पछि जुनसुकै बेला यो पासवर्ड बदल्न सक्नुहुन्छ। यो पासवर्ड <ph name="EMAIL" /> को <ph name="GOOGLE_PASSWORD_MANAGER" /> मा सेभ गरिने छ।</translation>
 <translation id="8327676037044516220">अनुमति र सामग्रीसम्बन्धी सेटिङहरू</translation>
+<translation id="8328777765163860529">सबै बन्द गर्नुहोस्</translation>
 <translation id="8330617762701840933">रिडिरेक्ट गरेर वैकल्पिक ब्राउजरमा खोलिने वेबसाइटहरूको सूची।</translation>
 <translation id="8330689128072902965">नजिकैका कन्ट्याक्टहरू तपाईंसँग सामग्री सेयर गर्न सक्छन्। तपाईं यी सेटिङ बदल्न चाहनुहुन्छ भने क्लिक गर्नुहोस्।</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{खोल्न मिल्ने फाइलको प्रकार: <ph name="FILE_TYPE1" />}=2{खोल्न मिल्ने फाइलका प्रकारहरू: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />}=3{खोल्न मिल्ने फाइलका प्रकारहरू: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />}=4{खोल्न मिल्ने फाइलका प्रकारहरू: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" />}other{खोल्न मिल्ने फाइलका प्रकारहरू: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />र अन्य {OVERFLOW_COUNT} वटा<ph name="END_LINK" />)}}</translation>
@@ -10273,7 +10275,6 @@
 <translation id="869144235543261764">यो ट्याबले picture-in-picture मोडमा भिडियो प्ले गरिरहेको छ</translation>
 <translation id="869167754614449887">डाउनलोड हिस्ट्रीबाट <ph name="FILE_NAME" /> मेटाइएको छ</translation>
 <translation id="8692107307702113268">पासवर्ड १००० वर्णभन्दा लामो छ</translation>
-<translation id="8693639060656817812">ट्र्याकिङबाट सुरक्षित राख्ने सुविधाको उपलब्धताका बारेमा थप जान्नुहोस्</translation>
 <translation id="8693862390730570097">"मलाई लेख्न मद्दत गर" लाई स्वतः खुल्ने अनुमति नदिनुहोस्</translation>
 <translation id="8694596275649352090">स्लिप मोडमा हुँदा वा लिड बन्द गरेपछि लक गर्नुहोस्</translation>
 <translation id="8695139659682234808">सेटअप पूरा गरिसकेपछि अभिभावकीय नियन्त्रणहरू थप्नुहोस्</translation>

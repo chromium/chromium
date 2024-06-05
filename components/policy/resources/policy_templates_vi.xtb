@@ -5081,6 +5081,7 @@ Bạn không nên tắt tính năng giải mã video có tăng tốc phần cứ
       để xử lý các yêu cầu giữ kết nối (https://fetch.spec.whatwg.org/#request-keepalive-flag).
 
       Giá trị mặc định (0) có nghĩa là tính năng này bị tắt.</translation>
+<translation id="4933780993367313536">Cho phép quản trị viên doanh nghiệp truy cập máy này từ xa</translation>
 <translation id="4937423591320233496">Tắt nội dung đề xuất</translation>
 <translation id="4942096314850617489">Tắt chính sách chứng thực từ xa đối với người dùng này</translation>
 <translation id="4942681160308347946">Khi bạn đặt chính sách này thành True, tính năng phản hồi bằng giọng nói sẽ bật trên màn hình đăng nhập. Khi bạn đặt chính sách này thành False, tính năng phản hồi bằng giọng nói sẽ tắt trên màn hình.
@@ -6374,6 +6375,7 @@ Nếu bạn chưa đặt cả hai chính sách này thì mọi trạng thái xá
 <translation id="5966615072639944554">Tiện ích được phép sử dụng API chứng thực từ xa</translation>
 <translation id="596732417280023843">Tên của hồ sơ chứng chỉ.</translation>
 <translation id="5972538402066550344">Cho phép các biện pháp kiểm soát báo cáo chi tiết</translation>
+<translation id="5973437409890460481">Cho phép doanh nghiệp truy cập máy này từ xa</translation>
 <translation id="5975765799383881158">Nếu bạn không đặt hoặc đặt chính sách này thành Bật, thì người dùng có thể gửi ý kiến phản hồi cho Google thông qua Trình đơn &gt; Trợ giúp &gt; Báo cáo vấn đề hoặc tổ hợp phím.
 
       Nếu bạn đặt chính sách này thành Tắt, người dùng sẽ không thể gửi ý kiến phản hồi cho Google.</translation>
@@ -9811,6 +9813,11 @@ Nếu đặt chính sách này, thì bạn cần đặt chính sách <ph name="P
       Nếu bạn đặt chính sách này thành true, người dùng sẽ phải đăng nhập vào <ph name="PRODUCT_NAME" /> bằng hồ sơ của họ trước khi sử dụng trình duyệt. Giá trị mặc định của BrowserGuestModeEnabled sẽ được đặt thành false. Lưu ý rằng các hồ sơ chưa ký hiện tại sẽ bị khóa và không truy cập được sau khi bật chính sách này. Để biết thêm thông tin, hãy xem bài viết trên trung tâm trợ giúp.
 
       Nếu bạn đặt chính sách này thành false hoặc chưa định cấu hình, thì người dùng có thể sử dụng trình duyệt mà không cần đăng nhập vào <ph name="PRODUCT_NAME" />.</translation>
+<translation id="8575422604428646609">Nếu bạn tắt chính sách này thì quản trị viên doanh nghiệp sẽ không thể kết nối với các thiết bị <ph name="PRODUCT_OS_NAME" /> được quản lý khi không có người dùng nào đang dùng thiết bị.
+
+Chính sách này không ảnh hưởng đến các trường hợp truy cập từ xa khác.
+
+Chính sách này không có hiệu lực nếu bạn bật, để trống hoặc không thiết lập.</translation>
 <translation id="8575739761246140675">Bật cài đặt tin cậy trong các chứng chỉ do cơ sở hạ tầng khoá công khai (PKI) cũ của Symantec Corporation phát hành</translation>
 <translation id="8575746110808109915">Đặt chính sách này để bật tính năng khôi phục hoàn toàn.
       Nếu bạn bật chính sách này, thì các ứng dụng và cửa sổ ứng dụng sẽ được khôi phục hoặc không được khôi phục sau khi gặp sự cố hoặc khởi động lại dựa trên chế độ cài đặt khôi phục ứng dụng.
@@ -10500,6 +10507,7 @@ Lưu ý: Thao tác khởi động lại thiết bị sẽ xoá bộ nhớ đệm
 <translation id="9107635531763682565">Nếu bạn đặt chính sách này thành 1, thì các trang web có thể hiển thị thông báo trên màn hình. Nếu bạn đặt chính sách này thành 2, thì các trang web không được hiển thị thông báo trên màn hình.
 
 Nếu bạn không đặt chính sách này, thì <ph name="ASK_NOTIFICATIONS_POLICY_NAME" /> sẽ được áp dụng nhưng người dùng có thể thay đổi chế độ cài đặt này.</translation>
+<translation id="9110194749335632373">Không cho phép quản trị viên doanh nghiệp truy cập máy này từ xa</translation>
 <translation id="9110251436602897914">Báo cáo thông tin về những thiết bị ngoại vi được cắm vào thiết bị này</translation>
 <translation id="9110485853581788150">Danh sách chứng chỉ không đáng tin cậy trong <ph name="PRODUCT_NAME" /> nhưng có thể dùng làm gợi ý khi tạo đường dẫn. Chứng chỉ cần được mã hoá base64.</translation>
 <translation id="9111850884577810507">Trường này phải khớp với một trong các chuỗi đại diện cho một máy in được <ph name="PRODUCT_NAME" /> hỗ trợ. Chuỗi này sẽ dùng để nhận diện và cài đặt PPD phù hợp cho máy in. Bạn có thể xem thêm thông tin tại https://support.google.com/chrome?p=noncloudprint.</translation>

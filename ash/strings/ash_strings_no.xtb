@@ -147,6 +147,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> har byttet plass med <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Vis alle forslag</translation>
 <translation id="1501946871587957338">Vil du bytte lydkilde?</translation>
+<translation id="1505542291183484463">Endre vindusstørrelse feltvis nedover</translation>
 <translation id="1510238584712386396">Appoversikt</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Vis innstillinger for varsler. Varsler er slått av for en app}other{Vis innstillinger for varsler. Varsler er slått av for # apper}}</translation>
 <translation id="1523032696246003">Batteri <ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> til batteriet er fullt</translation>
@@ -296,6 +297,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2149229036084364364">Gå til forrige spor</translation>
 <translation id="2152895518047545149">Det ser ikke ut til at noe mangler. Bra jobbet!</translation>
 <translation id="2161132820593978283">Prøv kamerainnramming, så du er midt på skjermen i videosamtaler. Slå det på i hurtiginnstillingene.</translation>
+<translation id="216955976692983107">Endre vindusstørrelse feltvis mot høyre</translation>
 <translation id="2185166372312820725">Gå til forrige fane</translation>
 <translation id="2185444992308415167">Gå gjennom fane 1–8</translation>
 <translation id="2198625180564913276">Legger til profil. Dette kan ta noen minutter.</translation>
@@ -424,6 +426,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2653659639078652383">Send inn</translation>
 <translation id="2658778018866295321">Klikk og dra</translation>
 <translation id="2665788051462227163"><ph name="UNAVAILABLE_APPS_ONE" /> og <ph name="UNAVAILABLE_APPS_TWO" /> er ikke på denne enheten.</translation>
+<translation id="2670350619068134931">Reduserte animasjoner</translation>
 <translation id="2673968385134502798">Spill</translation>
 <translation id="2678852583403169292">Tekstopplesing-menyen</translation>
 <translation id="2687510499067466116">Hurtigtasten er endret</translation>
@@ -641,6 +644,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3509391053705095206">Finner ikke telefonen. Kontroller at Bluetooth på telefonen er slått på.</translation>
 <translation id="3510164367642747937">Fremhev musemarkøren</translation>
 <translation id="3513798432020909783">Kontoen er administrert av <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3516000762115478502">Endre vindusstørrelse feltvis oppover</translation>
 <translation id="3517037892157925473">Gjøremålene ble sist oppdatert <ph name="TIME" />, <ph name="DATE" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{Oppdater enheten innen 1 minutt}other{Oppdater enheten innen # minutter}}</translation>
 <translation id="3522979239100719575">Ser etter tilgjengelige profiler. Dette kan ta noen minutter.</translation>
@@ -757,6 +761,7 @@ Koble enheten til strøm.</translation>
 <translation id="3899995891769452915">Taleinndata</translation>
 <translation id="3900355044994618856">Økten din avsluttes om <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">Kobler til <ph name="NAME" /></translation>
+<translation id="3904768293285573640">Endre vindusstørrelse feltvis mot venstre</translation>
 <translation id="3906954721959377182">Nettbrett</translation>
 <translation id="3923494859158167397">Ingen mobilnettverk er konfigurert</translation>
 <translation id="3925540965556789199"><ph name="DATE" /> – laster inn hendelser.</translation>

@@ -1199,7 +1199,6 @@
 <translation id="1861262398884155592">Бул папка бош</translation>
 <translation id="1862311223300693744">Атайын VPN, прокси, тармактык коргоо же NAS программасын
     орноткон белеңиз?</translation>
-<translation id="1863047423483329595">Көз салуудан коргоо азырынча жеткиликсиз. Үчүнчү тараптын cookie файлдарын бөгөттөбөсөңүз, Chrome'до бул функция жаңыртылып жатканда сайттар аларды убактылуу колдоно алышат. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="1863182668524159459">Сериялык порт табылган жок</translation>
 <translation id="1864111464094315414">Кирүү</translation>
 <translation id="1864400682872660285">Салкыныраак</translation>
@@ -5563,6 +5562,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5121052518313988218">Linux контейнериндеги операциялык тутум мындан ары колдоого алынбайт. Ал коопсуздук системасын жаңыртууларды албай жана андагы мүчүлүштүктөр оңдолбой калат, ал эми учурдагы функциялар күтүүсүздөн иштебей калышы мүмкүн. Linux'ту колдоно берүү үчүн анын акыркы версиясын жүктөп алыңыз.</translation>
 <translation id="5121130586824819730">Катуу дискиңиз толуп калды. Башка жерге сактаңыз же катуу дисктен орун бошотуңуз.</translation>
 <translation id="5123433949759960244">Баскетбол</translation>
+<translation id="5125714798187802869">Иштетүү</translation>
 <translation id="5125751979347152379">Жараксыз URL.</translation>
 <translation id="5125967981703109366">Бул карта жөнүндө маалымат</translation>
 <translation id="512642543295077915">издөө + backspace</translation>
@@ -8375,6 +8375,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7289049772085228972">Chrome'дун эң күчтүү коопсуздук тутумуна ээсиз</translation>
 <translation id="7289303553784750393">Эгер онлайн режиминде болсоңуз, бирок бул маселе кайталана берсе, <ph name="SITE_ETLD_PLUS_ONE" /> аркылуу башка жолдор менен улантып көрүңүз.</translation>
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> - Уруксат суралды. Жооп берүү үчүн F6 баскычын басыңыз</translation>
+<translation id="7290005709287747471">Өчүрүп коюу</translation>
 <translation id="7290242001003353852"><ph name="SAML_DOMAIN" /> доменинде жайгашкан аккаунтка кирүү кызматы камераңызды колдонуп жатат.</translation>
 <translation id="7292067737327289208"><ph name="BEGIN_LINK" />Серепчиңиз<ph name="END_LINK" /> уюмуңуз, ал эми <ph name="BEGIN_LINK" />профилиңиз<ph name="END_LINK" /> <ph name="PROFILE_DOMAIN" /> тарабынан тескелет</translation>
 <translation id="7292147651179697920">Ата-энеңден Параметрлер аркылуу кирүү уруксатын суран</translation>
@@ -9812,6 +9813,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8327386430364625757">Математикалык арип</translation>
 <translation id="8327538105740918488">Бул сырсөздү кийин каалаган убакта өзгөртүп алсаңыз болот. Ал <ph name="EMAIL" /> аккаунту үчүн <ph name="GOOGLE_PASSWORD_MANAGER" /> кызматына сакталат.</translation>
 <translation id="8327676037044516220">Уруксаттар жана мазмун параметрлери</translation>
+<translation id="8328777765163860529">Баарын жабуу</translation>
 <translation id="8330617762701840933">Кошумча серепчиге багыттаган вебсайттардын тизмеси.</translation>
 <translation id="8330689128072902965">Жакын жердеги байланыштар файлдарын бөлүшө алышат. Өзгөртүү үчүн чыкылдатыңыз.</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{Колдоого алынган файлдын түрү: <ph name="FILE_TYPE1" />}=2{Колдоого алынган файлдардын түрлөрү: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />}=3{Колдоого алынган файлдардын түрлөрү: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />}=4{Колдоого алынган файлдардын түрлөрү: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" />}other{Колдоого алынган файлдардын түрлөрү: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />жана дагы {OVERFLOW_COUNT}<ph name="END_LINK" />)}}</translation>
@@ -10292,7 +10294,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="869144235543261764">Бул өтмөктөгү видео сүрөт ичиндеги сүрөт режиминде ойнотулуп жатат</translation>
 <translation id="869167754614449887"><ph name="FILE_NAME" /> жүктөө таржымалынан өчүрүлдү</translation>
 <translation id="8692107307702113268">Сырсөз 1000 символдон ашып кетти</translation>
-<translation id="8693639060656817812">Көз салуудан коргоонун жеткиликтүүлүгү жөнүндө кеңири маалымат алыңыз</translation>
 <translation id="8693862390730570097">"Жазууга жардам бер" функциясын автоматтык түрдө ачылбасын</translation>
 <translation id="8694596275649352090">Уктап жатканда же капкагы жабык болгондо кулпулоо</translation>
 <translation id="8695139659682234808">Жөндөгөндөн кийин Ата-эненин көзөмөлүн кошуу</translation>

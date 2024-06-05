@@ -212,6 +212,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="1747827819627189109">Ikhibhodi ekuskrini inikwe amandla</translation>
 <translation id="1749109475624620922">Iwindi le-<ph name="WINDOW_TITLE" /> labelwe kuwo wonke amatafula</translation>
 <translation id="1750088060796401187">Amatafula e-<ph name="MAX_DESK_LIMIT" /> kuphela avunyelwe. Susa itafula ukuze uvule elisha.</translation>
+<translation id="1755408179247123630">Vula okuthi Khethau ukuze ukhulume</translation>
 <translation id="1755556344721611131">I-app yokuxilonga</translation>
 <translation id="1756833229520115364">Ayikwazanga ukulondoloza isifanekiso. Kunamawindi noma amathebhu amaningi kakhulu.</translation>
 <translation id="1757857692711134412">Iyavalwa kuze kushone ilanga</translation>
@@ -423,6 +424,7 @@ Kuxhunywe amadivayisi angu-<ph name="DEVICECOUNT" /></translation>
 <translation id="2653659639078652383">Hambisa</translation>
 <translation id="2658778018866295321">Chofoza uphinde uhudule</translation>
 <translation id="2665788051462227163"><ph name="UNAVAILABLE_APPS_ONE" />, ne-<ph name="UNAVAILABLE_APPS_TWO" /> awekho kule divayisi.</translation>
+<translation id="2670350619068134931">Izithombe ezincishisiwe</translation>
 <translation id="2673968385134502798">Amageyimu</translation>
 <translation id="2678852583403169292">Imenyu yokukhetha ukuze ukhulume</translation>
 <translation id="2687510499067466116">Isinqamuleli sekhibhodi sishintshiwe</translation>
@@ -1087,6 +1089,9 @@ Kuxhunywe idivayisi engu-1.</translation>
 <translation id="5092436659250499817">Vula/vala ukukhanya okungemuva kwekhibhodi</translation>
 <translation id="5094577350232361255">mayelana</translation>
 <translation id="5095136268899496849">Enza ngendlela oyifisayo futhi wenze ngezifiso i-<ph name="PRODUCT_NAME" /> yakho Kumasethingi. Zama ukushintsha isithombe sangemuva noma ukusetha isilondolozi sesikrini.</translation>
+<translation id="5096125376090473584">Ukuze uzwe umbhalo ufundwa ngokuzwakalayo, khetha isithonjana sokuthi Khetha ukuze ukhulume ngaphansi kwesikrini sakho, bese ugqamisa umbhalo.
+
+Ungaphinde futhi usebenzise isinqamuleli sekhibhodi. Okokuqala, gqamisa umbhalo, bese ucindezela okuthi <ph name="MODIFIER" /> + s.</translation>
 <translation id="509790653408515442">Uma usakaza ama-app efoni yakho, azovela lapha</translation>
 <translation id="5098537242461068432">Itafula namawindi kuvulwe kabusha</translation>
 <translation id="5103975065730779239">Kuze kube ngu-<ph name="END_TIME_EXPRESSION" /></translation>
@@ -1820,6 +1825,7 @@ Ukuze uvale idivayisi, cindezela futhi ubambe inkinobho yamandla kudivayisi futh
 <translation id="7851768487828137624">I-Canary</translation>
 <translation id="7862292329216937261">Ukuze usebenzise idivayisi njengesivakashi, udinga ukuphuma ngemvume bese ukhetha okuthi Bhrawuza Njengesivakashi ngaphansi kwesikrini.</translation>
 <translation id="7866482334467279021">ku-</translation>
+<translation id="7866727328666668290">Ithebhu yokugcina ivuliwe</translation>
 <translation id="7872786842639831132">Valiwe</translation>
 <translation id="7875575368831396199">Kubonakala sengathi i-Bluetooth ivaliwe ku-<ph name="DEVICE_TYPE" /> yakho. Sicela uvule i-Bluetooth ukuze usebenzise Ihabhu yefoni.</translation>
 <translation id="7884446017008693258">Amasethingi e-Hotspot</translation>

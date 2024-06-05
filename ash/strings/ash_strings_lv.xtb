@@ -212,6 +212,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1747827819627189109">Ekrāna tastatūra iespējota</translation>
 <translation id="1749109475624620922">Logs <ph name="WINDOW_TITLE" /> ir piešķirts visām darbvietām</translation>
 <translation id="1750088060796401187">Ir atļautas tikai <ph name="MAX_DESK_LIMIT" /> darbvietas. Noņemiet kādu darbvietu, lai atvērtu jaunu darbvietu.</translation>
+<translation id="1755408179247123630">Vai ieslēgt funkciju “Atlasīt, lai izrunātu”?</translation>
 <translation id="1755556344721611131">Diagnostikas lietotne</translation>
 <translation id="1756833229520115364">Nevarēja saglabāt veidni. Pārāk daudz logu vai ciļņu.</translation>
 <translation id="1757857692711134412">Izslēgts līdz saulrietam</translation>
@@ -423,6 +424,7 @@ Pievienoto ierīču skaits: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2653659639078652383">Iesniegt</translation>
 <translation id="2658778018866295321">Noklikšķiniet un velciet</translation>
 <translation id="2665788051462227163">Šajā ierīcē nav lietotņu <ph name="UNAVAILABLE_APPS_ONE" /> un <ph name="UNAVAILABLE_APPS_TWO" />.</translation>
+<translation id="2670350619068134931">Mazāk animāciju</translation>
 <translation id="2673968385134502798">Spēles</translation>
 <translation id="2678852583403169292">Funkcijas “Atlasīt, lai izrunātu” izvēlne</translation>
 <translation id="2687510499067466116">Īsinājumtaustiņi ir mainīti</translation>
@@ -951,6 +953,7 @@ Pievienota viena ierīce.</translation>
 <translation id="4628757576491864469">Ierīces</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, vērtējums zvaigznītēs: <ph name="RATING_SCORE" /></translation>
 <translation id="4633636853437260449">Nospiediet taustiņu kombināciju Ctrl+W, lai dzēstu</translation>
+<translation id="4635501805800894201">{0,plural, =0{Atjaunojiet ierīcē iepriekšējo versiju tagad}=1{Atjaunojiet ierīcē iepriekšējo versiju 1 sekundes laikā}zero{Atjaunojiet ierīcē iepriekšējo versiju # sekunžu laikā}one{Atjaunojiet ierīcē iepriekšējo versiju # sekundes laikā}other{Atjaunojiet ierīcē iepriekšējo versiju # sekunžu laikā}}</translation>
 <translation id="4642092649622328492">Iegūt daļēju ekrānuzņēmumu</translation>
 <translation id="4644727592819780893">Reģions ir par mazu kamerai</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, lietotņu ieteikumi</translation>
@@ -980,6 +983,7 @@ Pievienota viena ierīce.</translation>
 <translation id="4735944890391795473">12. darbvieta</translation>
 <translation id="473775607612524610">Atjaunināt</translation>
 <translation id="4740516757091333363">Vai dzēst saglabāto darbvietu?</translation>
+<translation id="4746798685375253449">{0,plural, =1{Atjaunojiet ierīcē iepriekšējo versiju 1 dienas laikā}zero{Atjaunojiet ierīcē iepriekšējo versiju # dienu laikā}one{Atjaunojiet ierīcē iepriekšējo versiju # dienas laikā}other{Atjaunojiet ierīcē iepriekšējo versiju # dienu laikā}}</translation>
 <translation id="4747410141429390146">Lūdzu, atbloķējiet ekrānu, lai skatītu paziņojumus.</translation>
 <translation id="4752784485658729358">Var saglabāt ne vairāk kā sešas darbvietas. Lai saglabātu jaunu darbvietu, noņemiet kādu no pašreizējām.</translation>
 <translation id="4759238208242260848">Lejupielādes</translation>
@@ -1085,6 +1089,9 @@ Pievienota viena ierīce.</translation>
 <translation id="5092436659250499817">Ieslēgt/izslēgt tastatūras fona apgaismojumu</translation>
 <translation id="5094577350232361255">par</translation>
 <translation id="5095136268899496849">Iestatījumos varat pielāgot un personalizēt savu ierīci (<ph name="PRODUCT_NAME" />). Mainiet fona tapeti vai iestatiet ekrānsaudzētāju.</translation>
+<translation id="5096125376090473584">Lai noklausītos tekstu, ekrāna apakšdaļā atlasiet ikonu “Atlasīt, lai izrunātu” un pēc tam atzīmējiet tekstu.
+
+Varat arī izmantot īsinājumtaustiņus. Vispirms atzīmējiet tekstu un pēc tam nospiediet <ph name="MODIFIER" /> + s.</translation>
 <translation id="509790653408515442">Šeit būs redzamas jūsu tālruņa lietotnes, kad tās straumēsiet.</translation>
 <translation id="5098537242461068432">Darbvieta un logi atkārtoti atvērti</translation>
 <translation id="5103975065730779239">Līdz plkst. <ph name="END_TIME_EXPRESSION" /></translation>
@@ -1315,6 +1322,7 @@ Nav pievienota neviena ierīce.</translation>
 <translation id="5916646100036936191">Jauns paziņojums, kopā <ph name="NOTIFICATION_COUNT" /></translation>
 <translation id="5916664084637901428">Iesl.</translation>
 <translation id="5920710855273935292">Mikrofons ir izslēgts.</translation>
+<translation id="5928083197428724029">Atjaunināšanu pieprasa <ph name="MANAGER" /></translation>
 <translation id="5946788582095584774">Funkcija <ph name="FEATURE_NAME" /> ir ieslēgta.</translation>
 <translation id="5947494881799873997">Atjaunot</translation>
 <translation id="595202126637698455">Veiktspējas izsekošana ir iespējota</translation>
@@ -1432,6 +1440,7 @@ Nav pievienota neviena ierīce.</translation>
 <translation id="6376931439017688372">Bluetooth ir ieslēgts</translation>
 <translation id="6378515133128829137">Piespraust logu labajā malā</translation>
 <translation id="6381109794406942707">Lai atbloķētu ierīci, ievadiet PIN.</translation>
+<translation id="6381305031890976705">{0,plural, =1{Atjaunojiet ierīcē iepriekšējo versiju 1 stundas laikā}zero{Atjaunojiet ierīcē iepriekšējo versiju # stundu laikā}one{Atjaunojiet ierīcē iepriekšējo versiju # stundas laikā}other{Atjaunojiet ierīcē iepriekšējo versiju # stundu laikā}}</translation>
 <translation id="638716340450135524">Ieslēgt piekļuvi kamerai</translation>
 <translation id="639644700271529076">Funkcija CAPS LOCK ir izslēgta.</translation>
 <translation id="6406458002328242616">Rediģējiet taimeri. <ph name="FOCUS_DURATION" />.</translation>
@@ -1454,6 +1463,7 @@ Nav pievienota neviena ierīce.</translation>
 <translation id="6459472438155181876">Paplašina ekrānu uz: <ph name="DISPLAY_NAME" /></translation>
 <translation id="6464094930452079790">attēli</translation>
 <translation id="6467290994038932560">Ieslēgtas spēlei <ph name="GAME_APP_NAME" /></translation>
+<translation id="6468406072297048412">{0,plural, =1{Atjaunojiet ierīcē iepriekšējo versiju 1 minūtes laikā}zero{Atjaunojiet ierīcē iepriekšējo versiju # minūšu laikā}one{Atjaunojiet ierīcē iepriekšējo versiju # minūtes laikā}other{Atjaunojiet ierīcē iepriekšējo versiju # minūšu laikā}}</translation>
 <translation id="6469104339369989396">Pārslēgt tīklāju</translation>
 <translation id="6477681113376365978">Nevar lejupielādēt failu</translation>
 <translation id="6482559668224714696">Pilnekrāna lupa</translation>
@@ -1577,6 +1587,7 @@ Jauna instalācija</translation>
 <translation id="6917259695595127329">Uzdevumi pēdējoreiz atjaunināti: <ph name="TIME" />.</translation>
 <translation id="6919251195245069855">Nevarēja atpazīt jūsu viedkarti. Mēģiniet vēlreiz.</translation>
 <translation id="692135145298539227">dzēst</translation>
+<translation id="6921427376813842559">Atjauniniet ierīci</translation>
 <translation id="6929081673585394903">Rādīt vadīklas</translation>
 <translation id="6931576957638141829">Saglabāt šeit:</translation>
 <translation id="6942518653766415536">Ierakstīšanas formāta izvēlne</translation>
@@ -1664,6 +1675,7 @@ Jauna instalācija</translation>
 <translation id="7303365578352795231">Tiek atbildēts citā ierīcē.</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">Administrators atiestata jūsu eSIM. Atiestatīšana var ilgt dažas minūtes.</translation>
+<translation id="7312761820869643657">Atjaunojiet ierīcē iepriekšējo versiju</translation>
 <translation id="7313193732017069507">Izvērst kameru</translation>
 <translation id="7330397557116570022">Lai izmantotu diktēšanu, pārejiet uz teksta lauku.</translation>
 <translation id="7331646370422660166">Alt + lejupvērstā bultiņa</translation>
@@ -1813,6 +1825,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="7851768487828137624">Canary</translation>
 <translation id="7862292329216937261">Lai izmantotu ierīci viesa režīmā, izrakstieties un pēc tam ekrāna apakšdaļā atlasiet Pārlūkot kā viesim.</translation>
 <translation id="7866482334467279021">ieslēgts</translation>
+<translation id="7866727328666668290">Pēdējā atvērtā cilne</translation>
 <translation id="7872786842639831132">Izslēgts</translation>
 <translation id="7875575368831396199">Šķiet, jūsu ierīcē (<ph name="DEVICE_TYPE" />) ir izslēgts Bluetooth savienojums. Lai izmantotu funkciju Tālruņa centrmezgls, ieslēdziet Bluetooth savienojumu.</translation>
 <translation id="7884446017008693258">Tīklāja iestatījumi</translation>
@@ -2179,6 +2192,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="925832987464884575">Paslēpt priekšskatījumus</translation>
 <translation id="938407504481277932">Pašreizējā darbvieta: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> (<ph name="EMAIL" />). <ph name="DESK_INDEX" />. darbvieta no <ph name="DESK_COUNT" />.</translation>
 <translation id="938963181863597773">Kas ir atrodams manā kalendārā?</translation>
+<translation id="94468042118567862">Ierīce nav atjaunināta</translation>
 <translation id="945383118875625837">Vilkt saiti uz grāmatzīmju joslu</translation>
 <translation id="945522503751344254">Sūtīt atsauksmes</translation>
 <translation id="951991426597076286">Noraidīt</translation>

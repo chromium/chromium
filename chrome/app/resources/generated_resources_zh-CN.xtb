@@ -1182,7 +1182,6 @@
 <translation id="1859339856433307593">此账号的密码已保存到您的 <ph name="BRAND" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="1861262398884155592">此文件夹中没有内容</translation>
 <translation id="1862311223300693744">您安装了任何特殊的 VPN、代理、防火墙或 NAS 软件吗？</translation>
-<translation id="1863047423483329595">暂时无法使用“跟踪保护”功能。在 Chrome 更新此功能期间，网站可暂时使用第三方 Cookie，除非您屏蔽了这类 Cookie。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="1863182668524159459">未发现串行端口</translation>
 <translation id="1864111464094315414">登录</translation>
 <translation id="1864400682872660285">冷色调</translation>
@@ -8524,6 +8523,7 @@
 <translation id="7416091793702109803">检查“<ph name="FILE_NAME" />”文件</translation>
 <translation id="7416263748877373774">无法加载《服务条款》。请检查您的网络连接状况，然后重试。</translation>
 <translation id="7416362041876611053">未知网络错误。</translation>
+<translation id="7417435070053325657">已屏蔽 <ph name="BLOCKED_APPS_SIZE" /> 个应用（共 <ph name="APPS_LIST_SIZE" /> 个）</translation>
 <translation id="741906494724992817">此应用不需要任何特殊权限。</translation>
 <translation id="7419142833919893307">未添加用户名</translation>
 <translation id="7419565702166471774">一律使用安全连接</translation>
@@ -9788,6 +9788,7 @@
 <translation id="8327386430364625757">数学字体</translation>
 <translation id="8327538105740918488">日后您可随时更改此密码。系统会将它保存到 <ph name="EMAIL" /> 的 <ph name="GOOGLE_PASSWORD_MANAGER" />中。</translation>
 <translation id="8327676037044516220">权限和内容设置</translation>
+<translation id="8328777765163860529">全部关闭</translation>
 <translation id="8330617762701840933">会重定向到备用浏览器的网站的列表。</translation>
 <translation id="8330689128072902965">附近的联系人可与您分享内容。点击即可更改。</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{支持的文件类型：<ph name="FILE_TYPE1" />}=2{支持的文件类型：<ph name="FILE_TYPE1" />、<ph name="FILE_TYPE2" />}=3{支持的文件类型：<ph name="FILE_TYPE1" />、<ph name="FILE_TYPE2" />、<ph name="FILE_TYPE3" />}=4{支持的文件类型：<ph name="FILE_TYPE1" />、<ph name="FILE_TYPE2" />、<ph name="FILE_TYPE3" />、<ph name="FILE_TYPE4" />}other{支持的文件类型：<ph name="FILE_TYPE1" />、<ph name="FILE_TYPE2" />、<ph name="FILE_TYPE3" />、<ph name="FILE_TYPE4" />（<ph name="LINK" />以及另外 {OVERFLOW_COUNT} 种<ph name="END_LINK" />）}}</translation>
@@ -10268,7 +10269,6 @@
 <translation id="869144235543261764">此标签页正在“画中画”模式中播放视频</translation>
 <translation id="869167754614449887">“<ph name="FILE_NAME" />”已从下载记录中删除</translation>
 <translation id="8692107307702113268">密码长度超过了 1,000 个字符</translation>
-<translation id="8693639060656817812">详细了解“跟踪保护”功能的适用范围</translation>
 <translation id="8693862390730570097">不允许自动打开“帮我写”功能</translation>
 <translation id="8694596275649352090">在休眠或合盖时锁定</translation>
 <translation id="8695139659682234808">在完成设置后添加家长控制功能</translation>

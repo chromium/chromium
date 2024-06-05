@@ -1195,7 +1195,6 @@
 <translation id="1861262398884155592">Тази папка е празна</translation>
 <translation id="1862311223300693744">Имате ли инсталиран специален софтуер за VPN, прокси сървър, защитна стена или
 мрежово хранилище (NAS)?</translation>
-<translation id="1863047423483329595">Функцията за защита от проследяване временно не е налице. Докато Chrome я актуализира, сайтовете могат временно да използват „бисквитки“ на трети страни, освен ако не ги блокирате. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="1863182668524159459">Няма намерени серийни портове</translation>
 <translation id="1864111464094315414">Вход</translation>
 <translation id="1864400682872660285">По-студени цветове</translation>
@@ -8550,6 +8549,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7416091793702109803">Преглед на <ph name="FILE_NAME" /></translation>
 <translation id="7416263748877373774">Общите условия не могат да се заредят. Моля, проверете връзката си с мрежата и опитайте отново.</translation>
 <translation id="7416362041876611053">Неизвестна грешка в мрежата.</translation>
+<translation id="7417435070053325657">Блокирани приложения: <ph name="BLOCKED_APPS_SIZE" /> от <ph name="APPS_LIST_SIZE" /></translation>
 <translation id="741906494724992817">Това приложение не изисква специални разрешения.</translation>
 <translation id="7419142833919893307">Няма добавено потребителско име</translation>
 <translation id="7419565702166471774">Винаги да се използват сигурни връзки</translation>
@@ -9814,6 +9814,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8327386430364625757">Математически символи</translation>
 <translation id="8327538105740918488">Винаги можете да промените тази парола по-късно. Тя ще бъде запазена в <ph name="GOOGLE_PASSWORD_MANAGER" /> за <ph name="EMAIL" />.</translation>
 <translation id="8327676037044516220">Разрешения и настройки за съдържанието</translation>
+<translation id="8328777765163860529">Затваряне на всички</translation>
 <translation id="8330617762701840933">Списъкът с уебсайтове, за които се пренасочва към алтернативния браузър.</translation>
 <translation id="8330689128072902965">Контактите в близост могат да споделят с вас. Кликнете за промяна.</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{Поддържан файлов тип: <ph name="FILE_TYPE1" />}=2{Поддържани файлови типове: <ph name="FILE_TYPE1" /> и <ph name="FILE_TYPE2" />}=3{Поддържани файлови типове: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" /> и <ph name="FILE_TYPE3" />}=4{Поддържани файлови типове: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" /> и <ph name="FILE_TYPE4" />}other{Поддържани файлови типове: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (и <ph name="LINK" />още {OVERFLOW_COUNT}<ph name="END_LINK" />)}}</translation>
@@ -10294,7 +10295,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="869144235543261764">В този раздел се възпроизвежда видео в режим „Картина в картината“</translation>
 <translation id="869167754614449887">Изтрихте <ph name="FILE_NAME" /> от историята на изтеглянията</translation>
 <translation id="8692107307702113268">Паролата съдържа повече от 1000 знака</translation>
-<translation id="8693639060656817812">Научете повече за наличността на функцията за защита от проследяване</translation>
 <translation id="8693862390730570097">Забраняване функцията „Помощ при писане“ да се отваря автоматично</translation>
 <translation id="8694596275649352090">Заключване при преминаване в спящ режим или затваряне на капака</translation>
 <translation id="8695139659682234808">Добавете родителски контроли след настройването</translation>

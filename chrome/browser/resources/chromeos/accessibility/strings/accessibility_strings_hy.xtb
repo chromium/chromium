@@ -264,7 +264,6 @@
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}one{+#}other{+#}}</translation>
 <translation id="2792200646155001340">Նախորդ տարրին անցնելու համար նաև կարող եք մատը սահեցնել աջից ձախ։ Փորձեք հիմա։</translation>
 <translation id="280499067616661124">ChromeVox որոնում էջում</translation>
-<translation id="2811019999044652585">Էրկրանի այլ հատվածներ (օրինակ՝ գործիքագոտի կամ ծանուցման տարածք) անցնելու համար սեղմեք Control + Forward: Chromebook-ում Forward ստեղնն անմիջապես 2 ստեղնի վերևում է:</translation>
 <translation id="2811204574343810641">Տող</translation>
 <translation id="2816868829355607410">Գործնական վարժությունների տարածք․ անցման հրամաններ</translation>
 <translation id="2841013758207633010">Ժամանակ</translation>
@@ -880,6 +879,7 @@
 <translation id="7091296112653361280">Նավահո սպիտակ</translation>
 <translation id="7095834689119144465">Տեքստի փոփոխում. միայն թվնաշաններ</translation>
 <translation id="7096001299300236431">Նախորդ մեդիան</translation>
+<translation id="7096668131290451939">Նորից սեղմեք Escape՝ Ուսուցման ռեժիմից դուրս գալու համար</translation>
 <translation id="7116595520562830928">multln</translation>
 <translation id="712735679809149106">բառերի հնչեցում</translation>
 <translation id="7137397390322864165">Կարմրանարնջագույն</translation>

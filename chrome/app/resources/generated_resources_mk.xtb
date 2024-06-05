@@ -1200,7 +1200,6 @@
 <translation id="1861262398884155592">Папкава е празна</translation>
 <translation id="1862311223300693744">Дали имате инсталирано посебна VPN, прокси, заштитен ѕид или
     софтвер NAS?</translation>
-<translation id="1863047423483329595">„Заштитата од следење“ е привремено недостапна. Додека Chrome ја ажурира функцијава, сајтовите може привремено да користат колачиња од трети страни, освен ако ги блокирате. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="1863182668524159459">Не се најдени сериски порти</translation>
 <translation id="1864111464094315414">Најавување</translation>
 <translation id="1864400682872660285">Поладни</translation>
@@ -5564,6 +5563,7 @@
 <translation id="5121052518313988218">Оперативниот систем во вашиот контејнет за Linux веќе не е поддржан. Ќе престане да прима безбедносни ажурирања и поправени грешки, а функциите што моментално функционираат може неочекувано да престанат. Надградете на најновата верзија за да продолжите да користите Linux.</translation>
 <translation id="5121130586824819730">Тврдиот диск е полн. Зачувувајте на друга локација или направете простор на тврдиот диск.</translation>
 <translation id="5123433949759960244">Баскет</translation>
+<translation id="5125714798187802869">Активирај</translation>
 <translation id="5125751979347152379">Неважечка URL-адреса.</translation>
 <translation id="5125967981703109366">За картичкава</translation>
 <translation id="512642543295077915">search + backspace</translation>
@@ -8378,6 +8378,7 @@
 <translation id="7289049772085228972">Ја имате најсилната безбедност на Chrome</translation>
 <translation id="7289303553784750393">Ако сте онлајн, но и натаму се соочувате со проблемов, може да испробате други начини да продолжите на <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> - Побарана е дозвола. Притиснете F6 за да одговорите</translation>
+<translation id="7290005709287747471">Деактивирај</translation>
 <translation id="7290242001003353852">Услугава за најавување, чиј хост е <ph name="SAML_DOMAIN" />, пристапува до камерата.</translation>
 <translation id="7292067737327289208"><ph name="BEGIN_LINK" />Со вашиот прелистувач управува<ph name="END_LINK" /> вашата организација, а <ph name="BEGIN_LINK" />со вашиот профил управува<ph name="END_LINK" /> <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="7292147651179697920">Побарај од родителот да дозволи пристап во „Поставки“</translation>
@@ -9818,6 +9819,7 @@
 <translation id="8327386430364625757">Математички фонт</translation>
 <translation id="8327538105740918488">Секогаш може да ја промените лозинкава подоцна. Ќе се зачува во <ph name="GOOGLE_PASSWORD_MANAGER" /> за <ph name="EMAIL" />.</translation>
 <translation id="8327676037044516220">Дозволи и поставки за содржини</translation>
+<translation id="8328777765163860529">Затвори ги сите</translation>
 <translation id="8330617762701840933">Списокот на веб-сајтови кои пренасочуваат кон алтернативен прелистувач.</translation>
 <translation id="8330689128072902965">Контактите во близина може да споделуваат со вас. Кликнете за промена.</translation>
 <translation id="8331323939220256760">{FILE_TYPE_COUNT,plural, =1{Поддржан тип датотека: <ph name="FILE_TYPE1" />}=2{Поддржани типови датотеки: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />}=3{Поддржани типови датотеки: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />}=4{Поддржани типови датотеки: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" />}one{Поддржани типови датотеки: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />и уште {OVERFLOW_COUNT}<ph name="END_LINK" />)}other{Поддржани типови датотеки: <ph name="FILE_TYPE1" />, <ph name="FILE_TYPE2" />, <ph name="FILE_TYPE3" />, <ph name="FILE_TYPE4" /> (<ph name="LINK" />и уште {OVERFLOW_COUNT}<ph name="END_LINK" />)}}</translation>
@@ -10050,7 +10052,7 @@
 <translation id="8503813439785031346">Корисничко име</translation>
 <translation id="850382998924680137">Прегледано денес</translation>
 <translation id="8505669004895429027">Мали заштеди</translation>
-<translation id="8507227974644337342">Резолуција на екран</translation>
+<translation id="8507227974644337342">Резолуција на екранот</translation>
 <translation id="8509177919508253835">Ресетирајте ги безбедносните клучеви и создајте PIN-кодови</translation>
 <translation id="8509646642152301857">Преземањето речник за проверување правопис не успеа.</translation>
 <translation id="8509967119010808787">За да ги пребарувате картичките, кликнете тука</translation>
@@ -10298,7 +10300,6 @@
 <translation id="869144235543261764">Картичкава пушта видео во режимот „Слика во слика“.</translation>
 <translation id="869167754614449887">Датотеката <ph name="FILE_NAME" /> е избришана од историјата на преземања</translation>
 <translation id="8692107307702113268">Лозинката содржи повеќе од 1.000 знаци</translation>
-<translation id="8693639060656817812">Дознајте повеќе за достапноста на „Заштита од следење“</translation>
 <translation id="8693862390730570097">Не дозволувај „Помош при пишување“ да се отвора автоматски</translation>
 <translation id="8694596275649352090">Заклучи при спиење или затворен капак</translation>
 <translation id="8695139659682234808">Додајте родителски контроли по поставувањето</translation>

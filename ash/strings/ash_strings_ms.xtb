@@ -72,6 +72,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1235458158152011030">Rangkaian yang diketahui</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> disambungkan.</translation>
 <translation id="1240638468526743569">Apl</translation>
+<translation id="1242198791279543032">Pemberitahuan diredamkan</translation>
 <translation id="1242883863226959074">peranti</translation>
 <translation id="1245644940275736236">Akses Assistant</translation>
 <translation id="124678866338384709">Tutup tab semasa</translation>
@@ -147,6 +148,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> Ditukar dengan <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Tunjukkan semua cadangan</translation>
 <translation id="1501946871587957338">Tukar sumber audio?</translation>
+<translation id="1505542291183484463">Tetingkap ubah saiz berjubin ke bawah</translation>
 <translation id="1510238584712386396">Pelancar</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Tunjukkan tetapan pemberitahuan. Pemberitahuan dimatikan untuk satu apl}other{Tunjukkan tetapan pemberitahuan. Pemberitahuan dimatikan untuk # apl}}</translation>
 <translation id="1523032696246003">Bateri <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> sehingga penuh</translation>
@@ -296,6 +298,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="2149229036084364364">Akses runut sebelumnya</translation>
 <translation id="2152895518047545149">Nampaknya tiada apa-apa yang tercicir. Bagus!</translation>
 <translation id="2161132820593978283">Cuba pembingkaian kamera supaya anda berada di tengah-tengah skrin semasa membuat panggilan video. Hidupkan autozum dalam Tetapan Pantas.</translation>
+<translation id="216955976692983107">Tetingkap ubah saiz berjubin ke kanan</translation>
 <translation id="2185166372312820725">Pergi ke tab sebelumnya</translation>
 <translation id="2185444992308415167">Lihat tab 1 hingga 8</translation>
 <translation id="2198625180564913276">Menambah profil. Proses ini mungkin mengambil masa beberapa minit.</translation>
@@ -424,6 +427,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="2653659639078652383">Serah</translation>
 <translation id="2658778018866295321">Klik dan seret</translation>
 <translation id="2665788051462227163"><ph name="UNAVAILABLE_APPS_ONE" /> dan <ph name="UNAVAILABLE_APPS_TWO" /> tidak tersedia pada peranti ini.</translation>
+<translation id="2670350619068134931">Animasi yang dikurangkan</translation>
 <translation id="2673968385134502798">Permainan</translation>
 <translation id="2678852583403169292">Menu Pilih untuk bercakap</translation>
 <translation id="2687510499067466116">Pintasan papan kekunci telah diubah</translation>
@@ -641,6 +645,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="3509391053705095206">Tidak dapat menemukan telefon anda. Pastikan Bluetooth telefon anda dihidupkan.</translation>
 <translation id="3510164367642747937">Serlahkan kursor tetikus</translation>
 <translation id="3513798432020909783">Akaun diurus oleh <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3516000762115478502">Tetingkap ubah saiz berjubin ke atas</translation>
 <translation id="3517037892157925473">Kemaskinian terakhir tugasan: <ph name="TIME" />, <ph name="DATE" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{Kemas kini peranti dalam masa 1 minit}other{Kemas kini peranti dalam masa # minit}}</translation>
 <translation id="3522979239100719575">Mencari profil yang tersedia. Proses ini mungkin mengambil masa beberapa minit.</translation>
@@ -758,6 +763,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="3899995891769452915">Input suara</translation>
 <translation id="3900355044994618856">Sesi anda akan tamat dalam <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">Menyambung ke <ph name="NAME" /></translation>
+<translation id="3904768293285573640">Tetingkap ubah saiz berjubin ke kiri</translation>
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3923494859158167397">Tiada rangkaian mudah alih disediakan</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, Memuatkan acara.</translation>

@@ -48,7 +48,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="1175572348579024023">Sgrolio</translation>
 <translation id="1175944128323889279">Lefel batri bresennol <ph name="BATTERY_PERCENTAGE" />%, <ph name="TIME" /> ar ôl</translation>
 <translation id="1178581264944972037">Seibio</translation>
-<translation id="1179776263021875437">Stopio ffocysu canolbwyntio ar dasg</translation>
+<translation id="1179776263021875437">Stopio ffocysu ar dasg</translation>
 <translation id="1181037720776840403">Dileu</translation>
 <translation id="1182225749592316782">Mae hyn yn caniatáu mynediad ar gyfer pob ap a gwefan gyda chaniatadau camera a meicroffon.</translation>
 <translation id="1182876754474670069">cartref</translation>
@@ -147,6 +147,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="1487931858675166540">Cyfnewidiwyd <ph name="FIRST_ITEM_TITLE" /> â <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Dangos yr holl awgrymiadau</translation>
 <translation id="1501946871587957338">Newid ffynhonnell sain?</translation>
+<translation id="1505542291183484463">Ffenestr teilsen newid maint i lawr</translation>
 <translation id="1510238584712386396">Lansiwr</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Dangos gosodiadau hysbysiadau. Mae hysbysiadau wedi'u diffodd ar gyfer ap}zero{Dangos gosodiadau hysbysiadau. Mae hysbysiadau wedi'u diffodd ar gyfer # ap}two{Dangos gosodiadau hysbysiadau. Mae hysbysiadau wedi'u diffodd ar gyfer # ap}few{Dangos gosodiadau hysbysiadau. Mae hysbysiadau wedi'u diffodd ar gyfer # ap}many{Dangos gosodiadau hysbysiadau. Mae hysbysiadau wedi'u diffodd ar gyfer # ap}other{Dangos gosodiadau hysbysiadau. Mae hysbysiadau wedi'u diffodd ar gyfer # ap}}</translation>
 <translation id="1523032696246003">Batri <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> nes yn llawn</translation>
@@ -296,6 +297,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="2149229036084364364">Mynd i'r trac blaenorol</translation>
 <translation id="2152895518047545149">Mae'n debyg nad oes unrhyw beth ar goll. Da iawn!</translation>
 <translation id="2161132820593978283">Rhowch gynnig ar fframio camera fel y byddwch yng nghanol y sgrîn ar alwadau fideo. Trowch ef ymlaen yn y Gosodiadau Cyflym.</translation>
+<translation id="216955976692983107">Ffenestr teilsen newid maint i'r dde</translation>
 <translation id="2185166372312820725">Mynd i'r tab blaenorol</translation>
 <translation id="2185444992308415167">Mynd trwy dabiau 1 i 8</translation>
 <translation id="2198625180564913276">Wrthi'n ychwanegu proffil. Gallai hyn gymryd ychydig funudau.</translation>
@@ -424,6 +426,7 @@ Mae <ph name="DEVICECOUNT" /> o ddyfeisiau yn gysylltiedig.</translation>
 <translation id="2653659639078652383">Danfon</translation>
 <translation id="2658778018866295321">Clicio a llusgo</translation>
 <translation id="2665788051462227163">Nid yw <ph name="UNAVAILABLE_APPS_ONE" />, a <ph name="UNAVAILABLE_APPS_TWO" /> ar y ddyfais hon.</translation>
+<translation id="2670350619068134931">Llai o animeiddiadau</translation>
 <translation id="2673968385134502798">Gemau</translation>
 <translation id="2678852583403169292">Dewislen Dewis i siarad</translation>
 <translation id="2687510499067466116">Mae'r llwybr byr bysellfwrdd wedi newid</translation>
@@ -641,6 +644,7 @@ Mae <ph name="DEVICECOUNT" /> o ddyfeisiau yn gysylltiedig.</translation>
 <translation id="3509391053705095206">Methu â dod o hyd i'ch ffôn. Gwnewch yn siŵr bod Bluetooth eich ffôn wedi'i droi ymlaen.</translation>
 <translation id="3510164367642747937">Amlygu'r cyrchwr llygoden</translation>
 <translation id="3513798432020909783">Rheolir y cyfrif gan <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3516000762115478502">Ffenestr teilsen newid maint i fyny</translation>
 <translation id="3517037892157925473">Diweddarwyd tasgau ddiwethaf: <ph name="TIME" />, <ph name="DATE" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{Diweddarwch y ddyfais o fewn 1 funud}zero{Diweddarwch y ddyfais o fewn # munud}two{Diweddarwch y ddyfais o fewn # funud}few{Diweddarwch y ddyfais o fewn # munud}many{Diweddarwch y ddyfais o fewn # munud}other{Diweddarwch y ddyfais o fewn # munud}}</translation>
 <translation id="3522979239100719575">Wrthi'n chwilio am broffiliau sydd ar gael. Gallai hyn gymryd ychydig funudau.</translation>
@@ -662,7 +666,7 @@ Mae <ph name="DEVICECOUNT" /> o ddyfeisiau yn gysylltiedig.</translation>
 <translation id="3576141592585647168">Newid cylchfa amser</translation>
 <translation id="3577473026931028326">Aeth rhywbeth o'i le. Rhowch gynnig arall arni.</translation>
 <translation id="3580650856351781466">Wrthi'n lawrlwytho ffeiliau lleferydd</translation>
-<translation id="3583350334315908861">{MINUTES,plural, =1{munud}zero{munud}two{funud}few{munud}many{munud}other{munud}}</translation>
+<translation id="3583350334315908861">{MINUTES,plural, =1{funud}zero{munud}two{funud}few{munud}many{munud}other{munud}}</translation>
 <translation id="3585296979871889131">Gweld lluniau, cyfryngau, hysbysiadau ac apiau diweddar eich ffôn</translation>
 <translation id="358832729276157756">ExpressKey 1</translation>
 <translation id="3590441166907930941">Botwm Ochr</translation>
@@ -757,6 +761,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="3899995891769452915">Mewnbwn llais</translation>
 <translation id="3900355044994618856">Bydd eich sesiwn yn dod i ben mewn <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">Cysylltu â <ph name="NAME" /></translation>
+<translation id="3904768293285573640">Ffenestr teilsen newid maint i'r chwith</translation>
 <translation id="3906954721959377182">Llechen</translation>
 <translation id="3923494859158167397">Ni osodwyd unrhyw rwydweithiau symudol</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, Wrthi'n llwytho digwyddiadau.</translation>
@@ -1228,7 +1233,7 @@ Dim dyfeisiau yn gysylltiedig.</translation>
 <translation id="5592745162308462420">fn</translation>
 <translation id="5596627076506792578">Rhagor o ddewisiadau</translation>
 <translation id="5599242528220103262">Mae llwybr byr bysellfwrdd wedi'i ddiffodd</translation>
-<translation id="5600415762228455511">Mae ffocysu ymlaen, <ph name="REMAINING_TIME" /> ar ôl, wrthi'n ffocysu: <ph name="TASK_NAME" /></translation>
+<translation id="5600415762228455511">Mae ffocysu ymlaen, <ph name="REMAINING_TIME" /> ar ôl, wrthi'n ffocysu ar: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">Pwyswch Ctrl + Alt + Z i analluogi adborth ar lafar.</translation>
 <translation id="5601491729809307732">{HOURS,plural, =0{&lt; 1 awr yn ôl}=1{1 awr yn ôl}two{# awr yn ôl}few{# awr yn ôl}many{# awr yn ôl}other{# awr yn ôl}}</translation>
 <translation id="5601503069213153581">PIN</translation>
@@ -1377,7 +1382,7 @@ Dim dyfeisiau yn gysylltiedig.</translation>
 <translation id="6119972796024789243">Cywirwr lliw</translation>
 <translation id="6121838516699723042">Cadarnhau lawrlwytho <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Nid yw Google Assistant ar gael mewn sesiwn westai.</translation>
-<translation id="6127370444807669747">Ar gyfer rhestri chwarae personol a rhagor o gerddoriaeth ffocysau, rhowch gynnig ar YouTube Music Premium</translation>
+<translation id="6127370444807669747">Ar gyfer rhestri chwarae personol a rhagor o gerddoriaeth ffocysu, rhowch gynnig ar YouTube Music Premium</translation>
 <translation id="6129953537138746214">Bwlch</translation>
 <translation id="6137566720514957455">Agor deialog tynnu ar gyfer <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141205840878048728">Beth hoffech chi ganolbwyntio arno?</translation>
