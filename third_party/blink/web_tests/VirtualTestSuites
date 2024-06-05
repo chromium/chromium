@@ -434,15 +434,6 @@
     "expires": "Jun 1, 2025"
   },
   {
-    "prefix": "compute-pressure",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["external/wpt/compute-pressure"],
-    "exclusive_tests": "ALL",
-    "args": ["--enable-features=ComputePressure",
-             "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jun 1, 2024"
-  },
-  {
     "prefix": "highdpi-threaded",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/css/css-backgrounds/hidpi",
