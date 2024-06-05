@@ -11,7 +11,6 @@
 
 #include "base/containers/unique_ptr_adapters.h"
 #import "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
@@ -53,8 +52,7 @@ class SafeBrowsingTabHelper
   // request, always allows the request, but uses the result of the
   // SafeBrowsing check to determine whether to allow the corresponding
   // response.
-  class PolicyDecider : public web::WebStatePolicyDecider,
-                        public base::SupportsWeakPtr<PolicyDecider> {
+  class PolicyDecider : public web::WebStatePolicyDecider {
    public:
     PolicyDecider(web::WebState* web_state, SafeBrowsingClient* client);
     ~PolicyDecider() override;
