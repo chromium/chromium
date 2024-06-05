@@ -715,8 +715,6 @@ TEST_F(V4StoreTest, GetMatchingHashPrefixSize32Or21) {
 #endif
 }
 
-#if defined(NDEBUG) && !defined(DCHECK_ALWAYS_ON)
-// This test hits a NOTREACHED so it is a release mode only test.
 TEST_F(V4StoreTest, TestAdditionsWithRiceEncodingFailsWithInvalidInput) {
   RepeatedPtrField<ThreatEntrySet> additions;
   ThreatEntrySet* addition = additions.Add();
@@ -728,7 +726,6 @@ TEST_F(V4StoreTest, TestAdditionsWithRiceEncodingFailsWithInvalidInput) {
                 .UpdateHashPrefixMapFromAdditions("V4Metric", additions,
                                                   &additions_map));
 }
-#endif
 
 TEST_F(V4StoreTest, TestAdditionsWithRiceEncodingSucceeds) {
   RepeatedPtrField<ThreatEntrySet> additions;
