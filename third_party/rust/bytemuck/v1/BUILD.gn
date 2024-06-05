@@ -50,9 +50,4 @@ cargo_crate("lib") {
     "derive",
     "min_const_generics",
   ]
-
-  # Only for usage from third-party crates. Add the crate to
-  # //third_party/rust/chromium_crates_io/Cargo.toml to use
-  # it from first-party code.
-  visibility = [ "//third_party/rust/*" ]
 }
