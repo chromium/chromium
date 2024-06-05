@@ -77,6 +77,10 @@ class ASH_EXPORT MahiPanelView : public views::View,
   // drag event sequence are ignored.
   void HandleDragEventIfNeeded(ui::LocatedEvent* event);
 
+  // Callbacks when the feedback buttons are toggled from inactive to active.
+  void OnThumbsUpButtonActive();
+  void OnThumbsDownButtonActive();
+
   // `ui_controller_` will outlive `this`.
   const raw_ptr<MahiUiController> ui_controller_;
 
@@ -88,6 +92,8 @@ class ASH_EXPORT MahiPanelView : public views::View,
   raw_ptr<SummaryOutlinesSection> summary_outlines_section_ = nullptr;
   raw_ptr<views::Textfield> question_textfield_ = nullptr;
   raw_ptr<IconButton> send_button_ = nullptr;
+  raw_ptr<IconButton> thumbs_up_button_ = nullptr;
+  raw_ptr<IconButton> thumbs_down_button_ = nullptr;
 
   // The time when this view is constructed, which is when the user opens this
   // view.

@@ -64,6 +64,7 @@
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/layout_types.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/metadata/view_factory_internal.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
@@ -186,7 +187,8 @@ class FeedbackButton : public IconButton {
   METADATA_HEADER(FeedbackButton, IconButton)
 
  public:
-  explicit FeedbackButton(FeedbackType feedback_type)
+  FeedbackButton(FeedbackType feedback_type,
+                 base::RepeatingClosure on_toggle_to_active_callback)
       : IconButton(
             views::Button::PressedCallback(),
             IconButton::Type::kSmallFloating,
@@ -196,7 +198,8 @@ class FeedbackButton : public IconButton {
                 : IDS_ASH_MAHI_THUMBS_DOWN_FEEDBACK_BUTTON_ACCESSIBLE_NAME,
             /*is_togglable=*/true,
             /*has_border=*/false),
-        feedback_type_(feedback_type) {
+        feedback_type_(feedback_type),
+        on_toggle_to_active_callback_(std::move(on_toggle_to_active_callback)) {
     SetCallback(base::BindRepeating(&FeedbackButton::OnButtonPressed,
                                     weak_ptr_factory_.GetWeakPtr()));
 
@@ -218,6 +221,7 @@ class FeedbackButton : public IconButton {
       return;
     }
 
+    on_toggle_to_active_callback_.Run();
     base::UmaHistogramBoolean(mahi_constants::kMahiFeedbackHistogramName,
                               feedback_type_ == FeedbackType::kThumbsUp);
 
@@ -239,8 +243,14 @@ class FeedbackButton : public IconButton {
   // Whether the feedback dialog has been shown.
   bool feedback_dialog_was_shown_ = false;
 
+  // Callback when this button is toggled from not toggled to toggled.
+  base::RepeatingClosure on_toggle_to_active_callback_;
+
   base::WeakPtrFactory<FeedbackButton> weak_ptr_factory_{this};
 };
+
+BEGIN_VIEW_BUILDER(/*no export*/, FeedbackButton, views::View)
+END_VIEW_BUILDER
 
 BEGIN_METADATA(FeedbackButton)
 END_METADATA
@@ -501,6 +511,7 @@ END_METADATA
 
 }  // namespace ash
 
+DEFINE_VIEW_BUILDER(/*no export*/, ash::FeedbackButton)
 DEFINE_VIEW_BUILDER(/*no export*/, ash::GoToSummaryOutlinesButton)
 DEFINE_VIEW_BUILDER(/*no export*/, ash::GoToQuestionAndAnswerButton)
 
@@ -580,13 +591,21 @@ MahiPanelView::MahiPanelView(MahiUiController* ui_controller)
                       views::BoxLayout::CrossAxisAlignment::kEnd)
                   .SetBetweenChildSpacing(kFeedbackButtonSpacing)
                   .AddChildren(
-                      views::Builder<views::View>(
+                      views::Builder<FeedbackButton>(
                           std::make_unique<FeedbackButton>(
-                              FeedbackType::kThumbsUp))
+                              FeedbackType::kThumbsUp,
+                              base::BindRepeating(
+                                  &MahiPanelView::OnThumbsUpButtonActive,
+                                  weak_ptr_factory_.GetWeakPtr())))
+                          .CopyAddressTo(&thumbs_up_button_)
                           .SetID(mahi_constants::ViewId::kThumbsUpButton),
-                      views::Builder<views::View>(
+                      views::Builder<FeedbackButton>(
                           std::make_unique<FeedbackButton>(
-                              FeedbackType::kThumbsDown))
+                              FeedbackType::kThumbsDown,
+                              base::BindRepeating(
+                                  &MahiPanelView::OnThumbsDownButtonActive,
+                                  weak_ptr_factory_.GetWeakPtr())))
+                          .CopyAddressTo(&thumbs_down_button_)
                           .SetID(mahi_constants::ViewId::kThumbsDownButton)),
               views::Builder<views::ScrollView>(
                   std::make_unique<MahiScrollView>(ui_controller_))
@@ -896,6 +915,18 @@ void MahiPanelView::HandleDragEventIfNeeded(ui::LocatedEvent* event) {
   // here. Other drag behavior, e.g. for text selection, is handled by the
   // panel's child views.
   ui_controller_->drag_controller()->OnLocatedPanelEvent(event);
+}
+
+void MahiPanelView::OnThumbsUpButtonActive() {
+  if (thumbs_down_button_->toggled()) {
+    thumbs_down_button_->SetToggled(false);
+  }
+}
+
+void MahiPanelView::OnThumbsDownButtonActive() {
+  if (thumbs_up_button_->toggled()) {
+    thumbs_up_button_->SetToggled(false);
+  }
 }
 
 BEGIN_METADATA(MahiPanelView)
