@@ -292,6 +292,9 @@ TEST_F(BleV2GattServerTest,
   EXPECT_EQ(kNewCharacteristicValue,
             base::as_string_view(
                 base::as_chars(base::make_span(read_result->get_data()))));
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Connections.BleV2.GattServer.OnLocalCharacteristicRead.Result",
+      /*bucket: success=*/1, 1);
 }
 
 TEST_F(
@@ -327,6 +330,9 @@ TEST_F(
   EXPECT_FALSE(read_result->is_data());
   EXPECT_EQ(device::BluetoothGattService::GattErrorCode::kNotPermitted,
             read_result->get_error_code());
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Connections.BleV2.GattServer.OnLocalCharacteristicRead.Result",
+      /*bucket: failure=*/0, 1);
 }
 
 TEST_F(
@@ -351,6 +357,9 @@ TEST_F(
   EXPECT_FALSE(read_result->is_data());
   EXPECT_EQ(device::BluetoothGattService::GattErrorCode::kNotSupported,
             read_result->get_error_code());
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Connections.BleV2.GattServer.OnLocalCharacteristicRead.Result",
+      /*bucket: failure=*/0, 1);
 }
 
 TEST_F(BleV2GattServerTest, Stop) {

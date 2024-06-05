@@ -361,6 +361,7 @@ void BleV2GattServer::OnLocalCharacteristicRead(
     LOG(WARNING) << __func__
                  << ": trying to read a characteristic that does not support "
                     "read requests";
+    metrics::RecordOnLocalCharacteristicReadResult(/*success=*/false);
     std::move(callback).Run(
         bluetooth::mojom::LocalCharacteristicReadResult::NewErrorCode(
             device::BluetoothGattService::GattErrorCode::kNotPermitted));
@@ -377,6 +378,7 @@ void BleV2GattServer::OnLocalCharacteristicRead(
   if (new_value_it == new_value_map.end()) {
     LOG(WARNING) << __func__
                  << ": value for the characteristic read request not found";
+    metrics::RecordOnLocalCharacteristicReadResult(/*success=*/false);
     std::move(callback).Run(
         bluetooth::mojom::LocalCharacteristicReadResult::NewErrorCode(
             device::BluetoothGattService::GattErrorCode::kNotSupported));
@@ -394,6 +396,7 @@ void BleV2GattServer::OnLocalCharacteristicRead(
 
   const uint8_t* bytes = reinterpret_cast<const uint8_t*>(data.data());
   std::vector<uint8_t> read_value(bytes + offset, bytes + data.size());
+  metrics::RecordOnLocalCharacteristicReadResult(/*success=*/true);
   std::move(callback).Run(
       bluetooth::mojom::LocalCharacteristicReadResult::NewData(
           std::move(read_value)));

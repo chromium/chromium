@@ -100,6 +100,21 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Nearby.Connections.BleV2.GattServer.OnLocalCharacteristicRead.Result"
+    enum="BooleanSuccess" expires_after="2025-04-30">
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the success or failure of a read requested by a remote GATT client
+    on the GATT server. Emitted during the advertising flow of BLE V2 after the
+    GATT service and characteristic have been set up, the characteristic value
+    has been set, and after an advertisement has been sent; a remote GATT client
+    sees the advertisement, connects to the GATT server, and attempts to read
+    the value.
+  </summary>
+</histogram>
+
+<histogram
     name="Nearby.Connections.BleV2.GattServer.RegisterGattService.FailureReason"
     enum="BluetoothGattServiceGattErrorCode" expires_after="2025-04-30">
   <owner>julietlevesque@google.com</owner>
