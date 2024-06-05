@@ -4,6 +4,7 @@ request headers: undefined
 request data: dummy
 requestExtraInfo has same requestId: true
 requestExtraInfo has headers: true
+requestExtraInfo referer: https://127.0.0.1:8443/
 responseReceived has same requestId: true
 responseReceived status: 200
 loadingFinished has same requestId: true

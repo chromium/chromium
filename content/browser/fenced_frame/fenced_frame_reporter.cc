@@ -384,7 +384,8 @@ bool FencedFrameReporter::SendReport(
     std::string& error_message,
     blink::mojom::ConsoleMessageLevel& console_message_level,
     int initiator_frame_tree_node_id,
-    std::optional<int64_t> navigation_id) {
+    std::optional<int64_t> navigation_id,
+    std::optional<url::Origin> ad_root_origin) {
   DCHECK(request_initiator_frame);
 
   if (reporting_destination ==
@@ -444,8 +445,19 @@ bool FencedFrameReporter::SendReport(
     }
   }
 
-  const url::Origin& request_initiator =
+  url::Origin request_initiator =
       request_initiator_frame->GetLastCommittedOrigin();
+
+  // |ad_root_origin| is only set for ad components. Automatic beacons sent from
+  // ad components should not have the ad component's origin present in the
+  // beacon, as that is additional information that should not be made available
+  // to the reporting server. Set it to the root ad frame's origin instead.
+  if (base::FeatureList::IsEnabled(
+          blink::features::kFencedFramesReportEventHeaderChanges) &&
+      ad_root_origin.has_value()) {
+    CHECK(absl::holds_alternative<AutomaticBeaconEvent>(event_variant));
+    request_initiator = ad_root_origin.value();
+  }
 
   // If the reporting URL map is pending, queue the event.
   NotifyIsBeaconQueued(
@@ -678,10 +690,13 @@ bool FencedFrameReporter::SendReportInternal(
   } else {
     request->method = net::HttpRequestHeaders::kPostMethod;
   }
-  if (absl::holds_alternative<DestinationEnumEvent>(event_variant) ||
-      absl::holds_alternative<DestinationURLEvent>(event_variant)) {
-    request->referrer = request_initiator.GetURL();
+  if (base::FeatureList::IsEnabled(
+          blink::features::kFencedFramesReportEventHeaderChanges)) {
+    // For automatic beacons initiating from component ad frames, the
+    // request_initiator will have already been set to the root ad frame's
+    // origin by this point.
     request->referrer_policy = net::ReferrerPolicy::ORIGIN;
+    request->referrer = request_initiator.GetURL();
   }
   request->trusted_params = network::ResourceRequest::TrustedParams();
   request->trusted_params->isolation_info =

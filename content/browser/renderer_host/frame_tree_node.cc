@@ -996,6 +996,18 @@ bool FrameTreeNode::IsInFencedFrameTree() const {
   return fenced_frame_status_ != FencedFrameStatus::kNotNestedInFencedFrame;
 }
 
+FrameTreeNode* FrameTreeNode::GetClosestAncestorWithFencedFrameProperties() {
+  FrameTreeNode* node = this;
+  while (node) {
+    if (node->fenced_frame_properties_.has_value()) {
+      return node;
+    }
+    node = node->parent() ? node->parent()->frame_tree_node() : nullptr;
+  }
+
+  return nullptr;
+}
+
 std::optional<FencedFrameProperties>& FrameTreeNode::GetFencedFrameProperties(
     FencedFramePropertiesNodeSource node_source) {
   if (node_source == FencedFramePropertiesNodeSource::kFrameTreeRoot) {
@@ -1006,15 +1018,9 @@ std::optional<FencedFrameProperties>& FrameTreeNode::GetFencedFrameProperties(
   // properties are obtained by a bottom-up traversal.
   CHECK_EQ(node_source, FencedFramePropertiesNodeSource::kClosestAncestor);
 
-  FrameTreeNode* node = this;
-  while (node) {
-    if (node->fenced_frame_properties_.has_value()) {
-      return node->fenced_frame_properties_;
-    }
-    node = node->parent() ? node->parent()->frame_tree_node() : nullptr;
-  }
+  FrameTreeNode* node = GetClosestAncestorWithFencedFrameProperties();
 
-  return fenced_frame_properties_;
+  return node ? node->fenced_frame_properties_ : fenced_frame_properties_;
 }
 
 void FrameTreeNode::MaybeResetFencedFrameAutomaticBeaconReportEventData(

@@ -19,13 +19,11 @@ import hashlib
 NO_DATA_STRING = b"<No data>"
 NOT_SET_STRING = b"<Not set>"
 
-
 # The server stash requires a uuid to store data. Use a hash of the automatic
 # beacon data as the uuid to store and retrieve the data.
 def string_to_uuid(input):
     hash_value = hashlib.md5(str(input).encode("UTF-8")).hexdigest()
     return str(uuid.UUID(hex=hash_value))
-
 
 def main(request, response):
     stash = request.server.stash
@@ -46,15 +44,18 @@ def main(request, response):
         # (either through reportEvent() or through an automatic beacon).
         if request.method == "POST" and event_type:
             request_body = request.body or NO_DATA_STRING
-            request_headers = request.headers.get("Origin") or NO_DATA_STRING
+            request_origin = request.headers.get("Origin") or NO_DATA_STRING
+            request_referrer = request.headers.get("Referer") or NO_DATA_STRING
             stash.put(string_to_uuid(event_type + request_body),
-                      request_headers)
+                      (request_origin + b"," + request_referrer))
             return (200, [], b"")
         # GET requests without an 'expected_body' parameter imply they were sent
         # as a destination URL reporting beacon.
         if request.method == "GET" and event_type:
+            request_origin = request.headers.get("Origin") or NO_DATA_STRING
+            request_referrer = request.headers.get("Referer") or NO_DATA_STRING
             stash.put(string_to_uuid(event_type + NO_DATA_STRING),
-                      NO_DATA_STRING)
+                      (request_origin + b"," + request_referrer))
             return (200, [], b"")
 
         return (400, [], u"")

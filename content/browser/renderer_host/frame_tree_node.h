@@ -598,6 +598,11 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
       FencedFramePropertiesNodeSource node_source =
           FencedFramePropertiesNodeSource::kClosestAncestor);
 
+  // Helper function for getting the FrameTreeNode that houses the relevant
+  // FencedFrameProperties when GetFencedFrameProperties() is called with
+  // kClosestAncestor.
+  FrameTreeNode* GetClosestAncestorWithFencedFrameProperties();
+
   bool HasFencedFrameProperties() const {
     return fenced_frame_properties_.has_value();
   }

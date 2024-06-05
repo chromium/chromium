@@ -9263,12 +9263,27 @@ void RenderFrameHostImpl::SendFencedFrameReportingBeaconInternal(
     return;
   }
 
+  // Automatic beacons that originate from component ads shouldn't expose the ad
+  // component's origin in the beacon. Instead, use the origin of the ad frame
+  // root.
+  std::optional<url::Origin> ad_root_origin = std::nullopt;
+  if (frame_tree_node_->GetFencedFrameProperties()->is_ad_component()) {
+    FrameTreeNode* ad_component_root =
+        frame_tree_node_->GetClosestAncestorWithFencedFrameProperties();
+    FrameTreeNode* ad_root =
+        ad_component_root->GetParentOrOuterDocument()
+            ->frame_tree_node()
+            ->GetClosestAncestorWithFencedFrameProperties();
+    ad_root_origin = ad_root->current_frame_host()->GetLastCommittedOrigin();
+  }
+
   if (!frame_tree_node_->GetFencedFrameProperties()
            ->fenced_frame_reporter()
-           ->SendReport(
-               event_variant, destination, /*request_initiator_frame=*/this,
-               fenced_frame_data->features(), error_message,
-               console_message_level, GetFrameTreeNodeId(), navigation_id)) {
+           ->SendReport(event_variant, destination,
+                        /*request_initiator_frame=*/this,
+                        fenced_frame_data->features(), error_message,
+                        console_message_level, GetFrameTreeNodeId(),
+                        navigation_id, ad_root_origin)) {
     AddMessageToConsole(console_message_level, error_message);
   }
 }

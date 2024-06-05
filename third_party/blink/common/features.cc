@@ -903,6 +903,10 @@ BASE_FEATURE(kFencedFramesLocalUnpartitionedDataAccess,
              "FencedFramesLocalUnpartitionedDataAccess",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kFencedFramesReportEventHeaderChanges,
+             "FencedFramesReportEventHeaderChanges",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls access to an API to exempt certain URLs from fenced frame
 // network revocation to facilitate testing.
 BASE_FEATURE(kExemptUrlFromNetworkRevocationForTesting,

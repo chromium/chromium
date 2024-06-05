@@ -56,7 +56,8 @@ FencedFrameTestHelper::FencedFrameTestHelper() {
        {blink::features::kFencedFramesM120FeaturesPart2, {}},
        {blink::features::kFencedFramesLocalUnpartitionedDataAccess, {}},
        {blink::features::kFencedFramesCrossOriginEventReportingUnlabeledTraffic,
-        {}}},
+        {}},
+       {blink::features::kFencedFramesReportEventHeaderChanges, {}}},
       {/* disabled_features */});
 }
 

@@ -72,6 +72,8 @@
       + (request.requestId === requestExtraInfo.requestId));
   testRunner.log('requestExtraInfo has headers: '
       + (Object.keys(requestExtraInfo.params.headers).length > 0));
+  testRunner.log('requestExtraInfo referer: '
+      + requestExtraInfo.params.headers.Referer);
 
   // The request should succeed with a 200 status code.
   testRunner.log('responseReceived has same requestId: '
