@@ -258,6 +258,9 @@ TEST_F(BleV2GattServerTest,
   CallUpdateCharacteristic(
       /*characteristic_uuid=*/kCharacteristicUuid1,
       /*expected_success=*/false);
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Connections.BleV2.GattServer.UpdateCharacteristic.Result",
+      /*bucket: failure=*/0, 1);
 }
 
 TEST_F(BleV2GattServerTest,
@@ -274,6 +277,9 @@ TEST_F(BleV2GattServerTest,
   CallUpdateCharacteristic(
       /*characteristic_uuid=*/kCharacteristicUuid1,
       /*expected_success=*/true);
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Connections.BleV2.GattServer.UpdateCharacteristic.Result",
+      /*bucket: success=*/1, 1);
 
   base::test::TestFuture<bluetooth::mojom::LocalCharacteristicReadResultPtr>
       future;
@@ -307,6 +313,9 @@ TEST_F(
       /*expected_success=*/true,
       /*permission=*/api::ble_v2::GattCharacteristic::Permission::kWrite,
       /*property=*/api::ble_v2::GattCharacteristic::Property::kWrite);
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Connections.BleV2.GattServer.UpdateCharacteristic.Result",
+      /*bucket: success=*/1, 1);
 
   base::test::TestFuture<bluetooth::mojom::LocalCharacteristicReadResultPtr>
       future;

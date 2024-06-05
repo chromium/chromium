@@ -215,6 +215,7 @@ bool BleV2GattServer::UpdateCharacteristic(
     LOG(WARNING) << __func__
                  << ": trying to update a characteristic in a service that "
                     "doesn't exist";
+    metrics::RecordUpdateCharacteristicResult(/*success=*/false);
     return false;
   }
 
@@ -226,6 +227,7 @@ bool BleV2GattServer::UpdateCharacteristic(
     LOG(WARNING) << __func__
                  << ": trying to update a characteristic that doesn't exist in "
                     "the GATT service";
+    metrics::RecordUpdateCharacteristicResult(/*success=*/false);
     return false;
   }
 
@@ -239,6 +241,7 @@ bool BleV2GattServer::UpdateCharacteristic(
           << characteristic.uuid.Get16BitAsString();
   gatt_service->characteristic_uuid_to_value_map.emplace(characteristic.uuid,
                                                          value);
+  metrics::RecordUpdateCharacteristicResult(/*success=*/true);
   return true;
 }
 

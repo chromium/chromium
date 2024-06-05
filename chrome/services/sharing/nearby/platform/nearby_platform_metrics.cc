@@ -39,6 +39,12 @@ void RecordCreateLocalGattCharacteristicResult(bool success) {
       success);
 }
 
+void RecordUpdateCharacteristicResult(bool success) {
+  base::UmaHistogramBoolean(
+      "Nearby.Connections.BleV2.GattServer.UpdateCharacteristic.Result",
+      success);
+}
+
 void RecordStartAdvertisingFailureReason(StartAdvertisingFailureReason reason,
                                          bool is_extended_advertisement) {
   // Record the overall StartAdvertising failure reason.

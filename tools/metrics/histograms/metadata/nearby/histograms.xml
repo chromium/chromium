@@ -131,6 +131,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Nearby.Connections.BleV2.GattServer.UpdateCharacteristic.Result"
+    enum="BooleanSuccess" expires_after="2025-04-30">
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the success or failure of updating the value of a local GATT
+    characteristic, which entails storing the value of the characteristic for
+    future read requests. Emitted during the BLE V2 advertising flow after a
+    GATT service and GATT characteristic are created successfully, and before
+    advertising is started by Nearby Connections. Possible failure reasons are
+    that the requested GATT service or GATT characteristic called on the API do
+    not exist at the time of the call unexpectedly.
+  </summary>
+</histogram>
+
 <histogram name="Nearby.Connections.BleV2.ScatternetDualRoleSupported"
     enum="Boolean" expires_after="2025-04-30">
   <owner>julietlevesque@google.com</owner>
