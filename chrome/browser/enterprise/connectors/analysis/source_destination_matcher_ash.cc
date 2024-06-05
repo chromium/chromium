@@ -67,6 +67,8 @@ SourceDestinationMatcherAsh::FsType SourceDestinationMatcherAsh::VolumeToFsType(
         return SourceDestinationMatcherAsh::FsType::kUnknownVm;
       case guest_os::VmType::ARCVM:
         return SourceDestinationMatcherAsh::FsType::kArc;
+      case guest_os::VmType::BAGUETTE:
+        return SourceDestinationMatcherAsh::FsType::kUnknownVm;
       case guest_os::VmType::VmType_INT_MIN_SENTINEL_DO_NOT_USE_:
       case guest_os::VmType::VmType_INT_MAX_SENTINEL_DO_NOT_USE_:
         NOTREACHED_IN_MIGRATION();

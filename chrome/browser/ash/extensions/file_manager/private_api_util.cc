@@ -241,6 +241,9 @@ fmp::VmType VmTypeToJs(guest_os::VmType vm_type) {
       return fmp::VmType::kBruschetta;
     case guest_os::VmType::ARCVM:
       return fmp::VmType::kArcvm;
+    case guest_os::VmType::BAGUETTE:
+      // Baguette currently isn't hooked up to file manager
+      return fmp::VmType::kNone;
     case guest_os::VmType::UNKNOWN:
     case guest_os::VmType::VmType_INT_MIN_SENTINEL_DO_NOT_USE_:
     case guest_os::VmType::VmType_INT_MAX_SENTINEL_DO_NOT_USE_:
