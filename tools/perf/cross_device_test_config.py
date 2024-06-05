@@ -246,4 +246,12 @@ TARGET_DEVICES = {
             'Speedometer3': 4,
         },
     },
+    'mac-m1_mini_2020-no-brp-perf': {
+        'speedometer2': {
+            'Speedometer2': 20,
+        },
+        'speedometer3': {
+            'Speedometer3': 20,
+        },
+    },
 }
