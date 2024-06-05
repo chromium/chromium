@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_FILE_MANAGER_INDEXING_TEXT_TABLE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/component_export.h"
@@ -48,7 +49,7 @@ class COMPONENT_EXPORT(FILE_MANAGER) TextTable {
 
   // Populates the value with the value for the given ID, if found. If not
   // found, returns -1 and leaves `value` unchanged.
-  int64_t GetValue(int64_t value_id, std::string* value) const;
+  std::optional<std::string> GetValue(int64_t value_id) const;
 
   // Without changing the ID associated with the value, it changes it from
   // from string, to to string.

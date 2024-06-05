@@ -72,8 +72,8 @@ int64_t TokenTable::DeleteToken(const std::string& token_bytes) {
   return DeleteValue(token_bytes);
 }
 
-int64_t TokenTable::GetToken(int64_t token_id, std::string* token_bytes) const {
-  return GetValue(token_id, token_bytes);
+std::optional<std::string> TokenTable::GetToken(int64_t token_id) const {
+  return GetValue(token_id);
 }
 
 int64_t TokenTable::GetTokenId(const std::string& token_bytes) const {

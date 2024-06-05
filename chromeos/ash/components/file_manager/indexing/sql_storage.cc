@@ -255,11 +255,11 @@ std::optional<FileInfo> SqlStorage::GetFileInfo(int64_t url_id) const {
   if (url_id == -1) {
     return std::nullopt;
   }
-  std::string url_spec;
-  if (url_table_.GetUrlSpec(url_id, &url_spec) == -1) {
+  auto url_spec = url_table_.GetUrlSpec(url_id);
+  if (!url_spec.has_value()) {
     return std::nullopt;
   }
-  GURL url(url_spec);
+  GURL url(url_spec.value());
   if (!url.is_valid()) {
     return std::nullopt;
   }

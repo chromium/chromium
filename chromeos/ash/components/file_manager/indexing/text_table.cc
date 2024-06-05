@@ -58,17 +58,15 @@ int64_t TextTable::DeleteValue(const std::string& value) {
   return value_id;
 }
 
-int64_t TextTable::GetValue(int64_t value_id, std::string* value) const {
-  DCHECK(value != nullptr);
+std::optional<std::string> TextTable::GetValue(int64_t value_id) const {
   auto get_value = MakeGetValueStatement();
   DCHECK(get_value->is_valid()) << "Invalid get value statement: \""
                                 << get_value->GetSQLStatement() << "\"";
   get_value->BindInt64(0, value_id);
   if (get_value->Step()) {
-    *value = get_value->ColumnString(0);
-    return value_id;
+    return get_value->ColumnString(0);
   }
-  return -1;
+  return std::nullopt;
 }
 
 int64_t TextTable::ChangeValue(const std::string& from, const std::string& to) {

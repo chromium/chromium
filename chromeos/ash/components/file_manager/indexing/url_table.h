@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_FILE_MANAGER_INDEXING_URL_TABLE_H_
 
 #include <memory>
+#include <optional>
 
 #include "chromeos/ash/components/file_manager/indexing/text_table.h"
 #include "sql/database.h"
@@ -44,7 +45,7 @@ class UrlTable : public TextTable {
   // For the given `url_id` attempts to find the corresponding URL spec.
   // If one cannot be found, returns -1. Otherwise returns `url_id` and fills
   // the `url_spec` with the found value.
-  int64_t GetUrlSpec(int64_t url_id, std::string* url_spec) const;
+  std::optional<std::string> GetUrlSpec(int64_t url_id) const;
 
   // Changes the URL from the `from` value to the `to` value, if the `from`
   // value exists. Returns the ID of the changed URL if the operation was

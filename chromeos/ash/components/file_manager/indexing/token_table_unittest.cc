@@ -78,15 +78,14 @@ TEST_F(TokenTableTest, GetToken) {
   TokenTable table(db_.get());
   EXPECT_TRUE(table.Init());
 
-  std::string token;
-  EXPECT_EQ(table.GetToken(1, &token), -1);
+  EXPECT_FALSE(table.GetToken(1).has_value());
   EXPECT_EQ(table.GetOrCreateTokenId("hello"), 1);
-  EXPECT_EQ(table.GetToken(1, &token), 1);
-  EXPECT_EQ(token, "hello");
+
+  auto token_or = table.GetToken(1);
+  EXPECT_TRUE(token_or.has_value());
+  EXPECT_EQ(token_or.value(), "hello");
   EXPECT_EQ(table.DeleteToken("hello"), 1);
-  token = "";
-  EXPECT_EQ(table.GetToken(1, &token), -1);
-  EXPECT_TRUE(token.empty());
+  EXPECT_FALSE(table.GetToken(1).has_value());
 }
 
 TEST_F(TokenTableTest, ChangeToken) {

@@ -74,8 +74,8 @@ int64_t UrlTable::GetUrlId(const GURL& url) const {
   return GetValueId(url.spec());
 }
 
-int64_t UrlTable::GetUrlSpec(int64_t url_id, std::string* url_spec) const {
-  return GetValue(url_id, url_spec);
+std::optional<std::string> UrlTable::GetUrlSpec(int64_t url_id) const {
+  return GetValue(url_id);
 }
 
 int64_t UrlTable::GetOrCreateUrlId(const GURL& url) {

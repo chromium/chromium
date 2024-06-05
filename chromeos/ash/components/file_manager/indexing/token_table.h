@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_FILE_MANAGER_INDEXING_TOKEN_TABLE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/component_export.h"
@@ -41,7 +42,7 @@ class COMPONENT_EXPORT(FILE_MANAGER) TokenTable : public TextTable {
   // For the given `token_id` attempts to find the corresponding token value.
   // If one cannot be found, returns -1. Otherwise returns `token_id` and fills
   // the token with the found value.
-  int64_t GetToken(int64_t token_id, std::string* token_bytes) const;
+  std::optional<std::string> GetToken(int64_t token_id) const;
 
   // Gets or creates the unique token ID for the given token bytes.
   int64_t GetOrCreateTokenId(const std::string& token_bytes);
