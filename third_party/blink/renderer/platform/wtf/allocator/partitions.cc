@@ -55,7 +55,11 @@ const char* const Partitions::kAllocatedObjectPoolName =
 
 BASE_FEATURE(kBlinkUseLargeEmptySlotSpanRingForBufferRoot,
              "BlinkUseLargeEmptySlotSpanRingForBufferRoot",
+#if BUILDFLAG(IS_MAC)
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#else
              base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 #if PA_BUILDFLAG(USE_STARSCAN)
 // Runs PCScan on WTF partitions.
