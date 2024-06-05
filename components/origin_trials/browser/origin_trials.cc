@@ -106,9 +106,10 @@ void OriginTrials::PersistTrialsFromTokens(
     const url::Origin& origin,
     const url::Origin& partition_origin,
     const base::span<const std::string> header_tokens,
-    const base::Time current_time) {
+    const base::Time current_time,
+    std::optional<ukm::SourceId> source_id) {
   PersistTokensInternal(origin, partition_origin, /*script_origins=*/{},
-                        header_tokens, current_time,
+                        header_tokens, current_time, source_id,
                         /*append_only=*/false);
 }
 
@@ -117,9 +118,10 @@ void OriginTrials::PersistAdditionalTrialsFromTokens(
     const url::Origin& partition_origin,
     base::span<const url::Origin> script_origins,
     const base::span<const std::string> header_tokens,
-    const base::Time current_time) {
+    const base::Time current_time,
+    std::optional<ukm::SourceId> source_id) {
   PersistTokensInternal(origin, partition_origin, script_origins, header_tokens,
-                        current_time,
+                        current_time, source_id,
                         /*append_only=*/true);
 }
 
@@ -129,6 +131,7 @@ void OriginTrials::PersistTokensInternal(
     base::span<const url::Origin> script_origins,
     const base::span<const std::string> header_tokens,
     const base::Time current_time,
+    std::optional<ukm::SourceId> source_id,
     bool append_only) {
   if (origin.opaque()) {
     return;
@@ -184,7 +187,7 @@ void OriginTrials::PersistTokensInternal(
   std::string partition_site = GetTokenPartitionSite(partition_origin);
   for (const auto& origin_token_pair : valid_tokens) {
     UpdatePersistedTokenSet(origin, origin_token_pair.first,
-                            origin_token_pair.second, partition_site,
+                            origin_token_pair.second, partition_site, source_id,
                             append_only);
   }
 }
@@ -252,6 +255,7 @@ void OriginTrials::UpdatePersistedTokenSet(
     const url::Origin& token_origin,
     base::span<const blink::TrialToken> new_tokens,
     const std::string& partition_site,
+    std::optional<ukm::SourceId> source_id,
     bool append_only) {
   if (append_only && new_tokens.empty()) {
     return;  // Nothing to do.
@@ -278,10 +282,11 @@ void OriginTrials::UpdatePersistedTokenSet(
         // by a document loaded from the token origin.
         if (!token.match_subdomains || (document_origin == token_origin)) {
           token.RemoveFromPartition(partition_site);
-          NotifyStatusChange(token.trial_name,
-                             OriginTrialStatusChangeDetails(
-                                 token_origin, partition_site,
-                                 token.match_subdomains, /*enabled=*/false));
+          NotifyStatusChange(
+              token.trial_name,
+              OriginTrialStatusChangeDetails(token_origin, partition_site,
+                                             token.match_subdomains,
+                                             /*enabled=*/false, source_id));
         }
       }
     }
@@ -310,7 +315,7 @@ void OriginTrials::UpdatePersistedTokenSet(
             found_token->trial_name,
             OriginTrialStatusChangeDetails(token_origin, partition_site,
                                            found_token->match_subdomains,
-                                           /*enabled=*/true));
+                                           /*enabled=*/true, source_id));
       }
 
       // Update the existing stored trial token with the metadata fields, as it
@@ -318,10 +323,11 @@ void OriginTrials::UpdatePersistedTokenSet(
       found_token->AddToPartition(partition_site);
     } else {
       token_set.emplace(new_token, partition_site);
-      NotifyStatusChange(new_token.feature_name(),
-                         OriginTrialStatusChangeDetails(
-                             token_origin, partition_site,
-                             new_token.match_subdomains(), /*enabled=*/true));
+      NotifyStatusChange(
+          new_token.feature_name(),
+          OriginTrialStatusChangeDetails(token_origin, partition_site,
+                                         new_token.match_subdomains(),
+                                         /*enabled=*/true, source_id));
     }
   }
   persistence_provider_->SavePersistentTrialTokens(token_origin,

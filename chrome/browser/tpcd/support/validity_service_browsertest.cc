@@ -180,7 +180,8 @@ class ValidityServiceBrowserTestBase : public PlatformBrowserTest {
     GetTpcdTrialService()->Update3pcdTrialSettingsForTesting(
         OriginTrialStatusChangeDetails(url::Origin::Create(embedded_url),
                                        top_level_url.spec(), match_subdomains,
-                                       /*enabled=*/true));
+                                       /*enabled=*/true,
+                                       /*source_id=*/std::nullopt));
     setting_observer.Wait();
 
     // Verify that a |TPCD_TRIAL| content setting now allows |embedded_url|

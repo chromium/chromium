@@ -962,7 +962,8 @@ class ThirdPartyCookieDeprecationObserverMechanismBrowserTest
       auto partition_origin = url::Origin::Create(first_party_url);
       service->Update3pcdTrialSettingsForTesting(OriginTrialStatusChangeDetails(
           request_origin, net::SchemefulSite(partition_origin).Serialize(),
-          /*match_subdomains=*/true, /*enabled=*/true));
+          /*match_subdomains=*/true, /*enabled=*/true,
+          /*source_id=*/std::nullopt));
     }
 
     auto tpcd_metadata_helper = [&](const std::string& source) {

@@ -109,8 +109,13 @@ CreateContentBrowserURLLoaderThrottles(
                          ->GetOutermostMainFrame()
                          ->GetLastCommittedOrigin();
       }
+      std::optional<ukm::SourceId> source_id =
+          navigation_id.has_value()
+              ? std::make_optional(ukm::ConvertToSourceId(
+                    navigation_id.value(), ukm::SourceIdType::NAVIGATION_ID))
+              : std::nullopt;
       throttles.push_back(std::make_unique<CriticalOriginTrialsThrottle>(
-          *origin_trials_delegate, std::move(top_origin)));
+          *origin_trials_delegate, std::move(top_origin), source_id));
     }
   }
 

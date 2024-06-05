@@ -128,7 +128,8 @@ void OriginTrialStateHostImpl::EnablePersistentTrial(
       /*origin=*/render_frame_host().GetLastCommittedOrigin(),
       /*partition_origin=*/
       render_frame_host().GetOutermostMainFrame()->GetLastCommittedOrigin(),
-      script_origins, tokens, base::Time::Now());
+      script_origins, tokens, base::Time::Now(),
+      render_frame_host().GetPageUkmSourceId());
 }
 
 }  // namespace content

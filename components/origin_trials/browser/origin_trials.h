@@ -61,13 +61,15 @@ class OriginTrials : public KeyedService,
       const url::Origin& origin,
       const url::Origin& partition_origin,
       const base::span<const std::string> header_tokens,
-      const base::Time current_time) override;
+      const base::Time current_time,
+      std::optional<ukm::SourceId> source_id) override;
   void PersistAdditionalTrialsFromTokens(
       const url::Origin& origin,
       const url::Origin& partition_origin,
       base::span<const url::Origin> script_origins,
       const base::span<const std::string> header_tokens,
-      const base::Time current_time) override;
+      const base::Time current_time,
+      std::optional<ukm::SourceId> source_id) override;
   bool IsFeaturePersistedForOrigin(const url::Origin& origin,
                                    const url::Origin& partition_origin,
                                    blink::mojom::OriginTrialFeature feature,
@@ -107,6 +109,7 @@ class OriginTrials : public KeyedService,
                              base::span<const url::Origin> script_origins,
                              const base::span<const std::string> header_tokens,
                              const base::Time current_time,
+                             std::optional<ukm::SourceId> source_id,
                              bool append_only);
 
   // Helper to return the still-valid persisted trials, with an optional
@@ -131,6 +134,7 @@ class OriginTrials : public KeyedService,
                                const url::Origin& token_origin,
                                base::span<const blink::TrialToken> new_tokens,
                                const std::string& partition_site,
+                               std::optional<ukm::SourceId> source_id,
                                bool append_only);
 
   // Get the 'site' used as the partitioning key for trial tokens.

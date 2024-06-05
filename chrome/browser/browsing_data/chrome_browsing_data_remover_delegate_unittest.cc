@@ -4402,7 +4402,8 @@ TEST_F(ChromeBrowsingDataRemoverDelegateOriginTrialsTest,
   content::OriginTrialsControllerDelegate* delegate =
       profile->GetOriginTrialsControllerDelegate();
   delegate->PersistTrialsFromTokens(origin, /*partition_origin=*/origin, tokens,
-                                    kPersistentOriginTrialValidTime);
+                                    kPersistentOriginTrialValidTime,
+                                    /*source_id=*/std::nullopt);
 
   // Delete all data types that trigger website setting deletions.
   uint64_t mask = constants::DATA_TYPE_HISTORY |

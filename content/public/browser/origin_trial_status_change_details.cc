@@ -12,11 +12,13 @@ OriginTrialStatusChangeDetails::OriginTrialStatusChangeDetails(
     const url::Origin& origin,
     const std::string& partition_site,
     bool match_subdomains,
-    bool enabled)
+    bool enabled,
+    std::optional<ukm::SourceId> source_id)
     : origin(origin),
       partition_site(partition_site),
       match_subdomains(match_subdomains),
-      enabled(enabled) {}
+      enabled(enabled),
+      source_id(source_id) {}
 
 OriginTrialStatusChangeDetails::OriginTrialStatusChangeDetails(
     const OriginTrialStatusChangeDetails&) = default;

@@ -75,7 +75,8 @@ class CONTENT_EXPORT OriginTrialsControllerDelegate {
       const url::Origin& origin,
       const url::Origin& partition_origin,
       const base::span<const std::string> header_tokens,
-      const base::Time current_time) = 0;
+      const base::Time current_time,
+      std::optional<ukm::SourceId> source_id) = 0;
 
   // Appends all enabled and persistable `tokens` to the set of already enabled
   // trials for `origin`. By passing `script_origins`, this method can be used
@@ -88,7 +89,8 @@ class CONTENT_EXPORT OriginTrialsControllerDelegate {
       const url::Origin& partition_origin,
       base::span<const url::Origin> script_origins,
       const base::span<const std::string> tokens,
-      const base::Time current_time) = 0;
+      const base::Time current_time,
+      std::optional<ukm::SourceId> source_id) = 0;
 
   // Returns `true` if `feature` has been persistently enabled for `origin`,
   // partitioned by `partition_origin` and is still valid. This method should

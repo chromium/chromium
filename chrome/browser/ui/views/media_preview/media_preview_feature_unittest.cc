@@ -40,7 +40,8 @@ class MockOriginTrialsDelegate
               (const url::Origin&,
                const url::Origin&,
                const base::span<const std::string>,
-               const base::Time),
+               const base::Time,
+               std::optional<ukm::SourceId>),
               (override));
   MOCK_METHOD(void,
               PersistAdditionalTrialsFromTokens,
@@ -48,7 +49,8 @@ class MockOriginTrialsDelegate
                const url::Origin&,
                const base::span<const url::Origin>,
                const base::span<const std::string>,
-               const base::Time),
+               const base::Time,
+               std::optional<ukm::SourceId>),
               (override));
   MOCK_METHOD(bool,
               IsFeaturePersistedForOrigin,

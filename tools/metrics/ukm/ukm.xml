@@ -27545,6 +27545,26 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="ThirdPartyCookies.TopLevelDeprecationTrial">
+  <owner>3pcd-core@google.com</owner>
+  <owner>jdh@chromium.org</owner>
+  <summary>
+    Recorded when there is a change in the status of the TopLevelTpcd
+    deprecation trial.
+  </summary>
+  <metric name="Enabled" enum="Boolean">
+    <summary>
+      True if the trial was enabled. False if the trial was disabled.
+    </summary>
+  </metric>
+  <metric name="MatchSubdomains" enum="Boolean">
+    <summary>
+      True iff the token used to enable the trial is/was valid for subdomains of
+      the origin store in the token.
+    </summary>
+  </metric>
+</event>
+
 <event name="TopToolbar.Share">
   <owner>nyquist@chromium.org</owner>
   <owner>ssid@chromium.org</owner>

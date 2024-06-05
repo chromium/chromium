@@ -31,9 +31,11 @@ bool CriticalOriginTrialsThrottle::IsNavigationRequest(
 
 CriticalOriginTrialsThrottle::CriticalOriginTrialsThrottle(
     OriginTrialsControllerDelegate& origin_trials_delegate,
-    std::optional<url::Origin> top_frame_origin)
+    std::optional<url::Origin> top_frame_origin,
+    std::optional<ukm::SourceId> source_id)
     : origin_trials_delegate_(origin_trials_delegate),
-      top_frame_origin_(std::move(top_frame_origin)) {}
+      top_frame_origin_(std::move(top_frame_origin)),
+      source_id_(source_id) {}
 
 CriticalOriginTrialsThrottle::~CriticalOriginTrialsThrottle() = default;
 
@@ -125,7 +127,7 @@ void CriticalOriginTrialsThrottle::MaybeRestartWithTrials(
     // Add the new tokens to the set of persisted trials
     origin_trials_delegate_->PersistAdditionalTrialsFromTokens(
         request_origin, partition_origin, /*script_origins=*/{},
-        origin_trial_tokens, base::Time::Now());
+        origin_trial_tokens, base::Time::Now(), source_id_);
     restarted_origins_.insert(request_origin);
     *restart_with_url_reset = RestartWithURLReset(true);
   }

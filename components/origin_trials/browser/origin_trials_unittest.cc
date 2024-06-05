@@ -171,6 +171,9 @@ const char kFrobulatePersistentInvalidOsToken[] =
     "WF0dXJlIjogIkZyb2J1bGF0ZVBlcnNpc3RlbnRJbnZhbGlkT1MiLCAiZXhwaXJ5IjogMjAwMDA"
     "wMDAwMH0=";
 
+const ukm::SourceId kFakeSourceId1 = 123456l;
+const ukm::SourceId kFakeSourceId2 = 777888l;
+
 class OpenScopedTestOriginTrialPolicy
     : public blink::ScopedTestOriginTrialPolicy {
  public:
@@ -259,10 +262,11 @@ class OriginTrialsTest : public testing::Test {
   // PersistTrialsFromTokens using |origin| as partition origin.
   void PersistTrialsFromTokens(const url::Origin& origin,
                                base::span<std::string> tokens,
-                               base::Time time) {
+                               base::Time time,
+                               std::optional<ukm::SourceId> source_id) {
     origin_trials_.PersistTrialsFromTokens(origin,
                                            /* partition_origin*/ origin, tokens,
-                                           time);
+                                           time, source_id);
   }
 
   // GetPersistedTrialsForOrigin using |trial_origin| as partition origin.
@@ -329,7 +333,8 @@ TEST_F(OriginTrialsTest, CleanObjectHasNoPersistentTrials) {
 
 TEST_F(OriginTrialsTest, EnabledTrialsArePersisted) {
   std::vector<std::string> tokens = {kFrobulatePersistentToken};
-  PersistTrialsFromTokens(trial_enabled_origin_, tokens, kValidTime);
+  PersistTrialsFromTokens(trial_enabled_origin_, tokens, kValidTime,
+                          /*source_id=*/std::nullopt);
 
   base::flat_set<std::string> enabled_trials =
       GetPersistedTrialsForOrigin(trial_enabled_origin_, kValidTime);
@@ -340,7 +345,8 @@ TEST_F(OriginTrialsTest, EnabledTrialsArePersisted) {
 TEST_F(OriginTrialsTest, OnlyPersistentTrialsAreEnabled) {
   std::vector<std::string> tokens = {kFrobulateToken,
                                      kFrobulatePersistentToken};
-  PersistTrialsFromTokens(trial_enabled_origin_, tokens, kValidTime);
+  PersistTrialsFromTokens(trial_enabled_origin_, tokens, kValidTime,
+                          /*source_id=*/std::nullopt);
 
   base::flat_set<std::string> enabled_trials =
       GetPersistedTrialsForOrigin(trial_enabled_origin_, kValidTime);
@@ -351,13 +357,15 @@ TEST_F(OriginTrialsTest, OnlyPersistentTrialsAreEnabled) {
 
 TEST_F(OriginTrialsTest, ResetClearsPersistedTrials) {
   std::vector<std::string> tokens = {kFrobulatePersistentToken};
-  PersistTrialsFromTokens(trial_enabled_origin_, tokens, kValidTime);
+  PersistTrialsFromTokens(trial_enabled_origin_, tokens, kValidTime,
+                          /*source_id=*/std::nullopt);
 
   EXPECT_FALSE(
       GetPersistedTrialsForOrigin(trial_enabled_origin_, kValidTime).empty());
 
   tokens = {};
-  PersistTrialsFromTokens(trial_enabled_origin_, tokens, kValidTime);
+  PersistTrialsFromTokens(trial_enabled_origin_, tokens, kValidTime,
+                          /*source_id=*/std::nullopt);
 
   EXPECT_TRUE(
       GetPersistedTrialsForOrigin(trial_enabled_origin_, kValidTime).empty());
@@ -371,7 +379,8 @@ TEST_F(OriginTrialsTest, TrialNotEnabledByDefault) {
 
 TEST_F(OriginTrialsTest, TrialEnablesFeature) {
   std::vector<std::string> tokens = {kFrobulatePersistentToken};
-  PersistTrialsFromTokens(trial_enabled_origin_, tokens, kValidTime);
+  PersistTrialsFromTokens(trial_enabled_origin_, tokens, kValidTime,
+                          /*source_id=*/std::nullopt);
 
   EXPECT_TRUE(IsFeaturePersistedForOrigin(
       trial_enabled_origin_,
@@ -380,7 +389,8 @@ TEST_F(OriginTrialsTest, TrialEnablesFeature) {
 
 TEST_F(OriginTrialsTest, TrialDoesNotEnableOtherFeatures) {
   std::vector<std::string> tokens = {kFrobulatePersistentToken};
-  PersistTrialsFromTokens(trial_enabled_origin_, tokens, kValidTime);
+  PersistTrialsFromTokens(trial_enabled_origin_, tokens, kValidTime,
+                          /*source_id=*/std::nullopt);
 
   EXPECT_FALSE(IsFeaturePersistedForOrigin(
       trial_enabled_origin_, OriginTrialFeature::kOriginTrialsSampleAPI,
@@ -389,7 +399,8 @@ TEST_F(OriginTrialsTest, TrialDoesNotEnableOtherFeatures) {
 
 TEST_F(OriginTrialsTest, TrialIsNotEnabledOrPersistedOnInvalidOs) {
   std::vector<std::string> tokens = {kFrobulatePersistentInvalidOsToken};
-  PersistTrialsFromTokens(trial_enabled_origin_, tokens, kValidTime);
+  PersistTrialsFromTokens(trial_enabled_origin_, tokens, kValidTime,
+                          /*source_id=*/std::nullopt);
 
   EXPECT_FALSE(IsFeaturePersistedForOrigin(
       trial_enabled_origin_,
@@ -403,7 +414,8 @@ TEST_F(OriginTrialsTest, TrialIsNotEnabledOrPersistedOnInvalidOs) {
 
 TEST_F(OriginTrialsTest, TokensCanBeAppended) {
   std::vector<std::string> tokens = {kFrobulatePersistentToken};
-  PersistTrialsFromTokens(trial_enabled_origin_, tokens, kValidTime);
+  PersistTrialsFromTokens(trial_enabled_origin_, tokens, kValidTime,
+                          /*source_id=*/std::nullopt);
 
   EXPECT_TRUE(IsFeaturePersistedForOrigin(
       trial_enabled_origin_,
@@ -418,7 +430,8 @@ TEST_F(OriginTrialsTest, TokensCanBeAppended) {
       kFrobulatePersistentExpiryGracePeriodToken};
   origin_trials_.PersistAdditionalTrialsFromTokens(
       trial_enabled_origin_, /*partition_origin=*/trial_enabled_origin_,
-      /*script_origins=*/{}, additional_tokens, kValidTime);
+      /*script_origins=*/{}, additional_tokens, kValidTime,
+      /*source_id=*/std::nullopt);
   // Check that both trials are now enabled
   EXPECT_TRUE(IsFeaturePersistedForOrigin(
       trial_enabled_origin_,
@@ -441,7 +454,8 @@ TEST_F(OriginTrialsTest, ThirdPartyTokensCanBeAppendedOnlyIfDeprecation) {
 
   origin_trials_.PersistAdditionalTrialsFromTokens(
       trial_enabled_origin_, /*partition_origin=*/trial_enabled_origin_,
-      script_origins, third_party_tokens, kValidTime);
+      script_origins, third_party_tokens, kValidTime,
+      /*source_id=*/std::nullopt);
 
   // The FrobulatePersistent should not be persisted, as it is not a deprecation
   // token.
@@ -460,7 +474,8 @@ TEST_F(OriginTrialsTest, ThirdPartyTokensCanBeAppendedOnlyIfDeprecation) {
 
 TEST_F(OriginTrialsTest, SubdomainTokensEnableTrialForSubdomainsOfTokenOrigin) {
   std::vector<std::string> tokens = {kFrobulatePersistentSubdomainToken};
-  PersistTrialsFromTokens(trial_enabled_origin_, tokens, kValidTime);
+  PersistTrialsFromTokens(trial_enabled_origin_, tokens, kValidTime,
+                          /*source_id=*/std::nullopt);
 
   base::flat_set<std::string> origin_enabled_trials =
       GetPersistedTrialsForOrigin(trial_enabled_origin_, kValidTime);
@@ -486,7 +501,8 @@ TEST_F(OriginTrialsTest, SubdomainTokensEnableTrialForSubdomainsOfTokenOrigin) {
 TEST_F(OriginTrialsTest,
        TrialNotEnabledForNonSubdomainsOfSubdomainTokenOrigin) {
   std::vector<std::string> tokens = {kFrobulatePersistentSubdomainToken};
-  PersistTrialsFromTokens(trial_enabled_origin_, tokens, kValidTime);
+  PersistTrialsFromTokens(trial_enabled_origin_, tokens, kValidTime,
+                          /*source_id=*/std::nullopt);
 
   // The trial should not be enabled for https://example.com since
   // `trial_enabled_origin_` (https://enabled.example.com) is a subdomain of it.
@@ -508,7 +524,8 @@ TEST_F(OriginTrialsTest, SubdomainTokensEnableTrialForTokenOrigin) {
   // (`trial_enabled_origin_subdomain_`) of the token origin
   // (`trial_enabled_origin_`).
   std::vector<std::string> tokens = {kFrobulatePersistentSubdomainToken};
-  PersistTrialsFromTokens(trial_enabled_origin_subdomain_, tokens, kValidTime);
+  PersistTrialsFromTokens(trial_enabled_origin_, tokens, kValidTime,
+                          /*source_id=*/std::nullopt);
 
   base::flat_set<std::string> origin_enabled_trials =
       GetPersistedTrialsForOrigin(trial_enabled_origin_, kValidTime);
@@ -535,7 +552,8 @@ TEST_F(OriginTrialsTest,
 
   origin_trials_.PersistAdditionalTrialsFromTokens(
       trial_enabled_origin_, /*partition_origin=*/trial_enabled_origin_,
-      script_origins, third_party_tokens, kValidTime);
+      script_origins, third_party_tokens, kValidTime,
+      /*source_id=*/std::nullopt);
 
   url::Origin script_origin_subdomain =
       url::Origin::Create(GURL(kThirdPartyTrialEnabledOriginSubdomain));
@@ -564,7 +582,8 @@ TEST_F(OriginTrialsTest,
   // (`trial_enabled_origin_subdomain_`) of the token origin
   // (`trial_enabled_origin_`).
   std::vector<std::string> tokens = {kFrobulatePersistentSubdomainToken};
-  PersistTrialsFromTokens(trial_enabled_origin_subdomain_, tokens, kValidTime);
+  PersistTrialsFromTokens(trial_enabled_origin_subdomain_, tokens, kValidTime,
+                          /*source_id=*/std::nullopt);
 
   {
     base::flat_set<std::string> origin_enabled_trials =
@@ -586,7 +605,8 @@ TEST_F(OriginTrialsTest,
   std::vector<std::string> different_tokens = {
       kFrobulatePersistentThirdPartyDeprecationSubdomainToken};
   PersistTrialsFromTokens(trial_enabled_origin_subdomain_, different_tokens,
-                          kValidTime);
+                          kValidTime,
+                          /*source_id=*/std::nullopt);
 
   {
     base::flat_set<std::string> origin_enabled_trials =
@@ -614,7 +634,8 @@ TEST_F(OriginTrialsTest, SubdomainTokenNotDisabledBySubdomain) {
   // (`trial_enabled_origin_subdomain_`) of the token origin
   // (`trial_enabled_origin_`).
   std::vector<std::string> tokens = {kFrobulatePersistentSubdomainToken};
-  PersistTrialsFromTokens(trial_enabled_origin_subdomain_, tokens, kValidTime);
+  PersistTrialsFromTokens(trial_enabled_origin_subdomain_, tokens, kValidTime,
+                          /*source_id=*/std::nullopt);
 
   {
     base::flat_set<std::string> origin_enabled_trials =
@@ -632,7 +653,8 @@ TEST_F(OriginTrialsTest, SubdomainTokenNotDisabledBySubdomain) {
   // Clear the tokens for the subdomain that provided the token
   // (`trial_enabled_origin_subdomain_`).
   PersistTrialsFromTokens(trial_enabled_origin_subdomain_,
-                          std::vector<std::string>(), kValidTime);
+                          std::vector<std::string>(), kValidTime,
+                          /*source_id=*/std::nullopt);
 
   {
     base::flat_set<std::string> origin_enabled_trials =
@@ -656,7 +678,8 @@ TEST_F(OriginTrialsTest, SubdomainTokenDisabledByTokenOrigin) {
   // (`trial_enabled_origin_subdomain_`) of the token origin
   // (`trial_enabled_origin_`).
   std::vector<std::string> tokens = {kFrobulatePersistentSubdomainToken};
-  PersistTrialsFromTokens(trial_enabled_origin_subdomain_, tokens, kValidTime);
+  PersistTrialsFromTokens(trial_enabled_origin_subdomain_, tokens, kValidTime,
+                          /*source_id=*/std::nullopt);
 
   {
     base::flat_set<std::string> origin_enabled_trials =
@@ -673,7 +696,7 @@ TEST_F(OriginTrialsTest, SubdomainTokenDisabledByTokenOrigin) {
 
   // Clear the tokens for the token origin (`trial_enabled_origin_`).
   PersistTrialsFromTokens(trial_enabled_origin_, std::vector<std::string>(),
-                          kValidTime);
+                          kValidTime, /*source_id=*/std::nullopt);
 
   {
     base::flat_set<std::string> origin_enabled_trials =
@@ -745,7 +768,8 @@ TEST_F(OriginTrialsTest, NotifyOnEnable) {
       CreateAndAddObserver(kPersistentTrialName);
 
   std::vector<std::string> tokens = {kFrobulatePersistentToken};
-  PersistTrialsFromTokens(trial_enabled_origin_, tokens, kValidTime);
+  PersistTrialsFromTokens(trial_enabled_origin_, tokens, kValidTime,
+                          kFakeSourceId1);
 
   EXPECT_EQ(observer->on_status_changed_count(), 1);
   EXPECT_EQ(observer->on_persisted_tokens_cleared_count(), 0);
@@ -753,7 +777,7 @@ TEST_F(OriginTrialsTest, NotifyOnEnable) {
       observer->last_status_change(),
       OriginTrialStatusChangeDetails(
           trial_enabled_origin_, GetTokenPartitionSite(trial_enabled_origin_),
-          /*match_subdomains=*/false, /*enabled=*/true));
+          /*match_subdomains=*/false, /*enabled=*/true, kFakeSourceId1));
 }
 
 TEST_F(OriginTrialsTest, NotifyOnEnableWithSubdomainMatching) {
@@ -761,7 +785,8 @@ TEST_F(OriginTrialsTest, NotifyOnEnableWithSubdomainMatching) {
       CreateAndAddObserver(kPersistentTrialName);
 
   std::vector<std::string> tokens = {kFrobulatePersistentSubdomainToken};
-  PersistTrialsFromTokens(trial_enabled_origin_, tokens, kValidTime);
+  PersistTrialsFromTokens(trial_enabled_origin_, tokens, kValidTime,
+                          kFakeSourceId1);
 
   EXPECT_EQ(observer->on_status_changed_count(), 1);
   EXPECT_EQ(observer->on_persisted_tokens_cleared_count(), 0);
@@ -769,18 +794,20 @@ TEST_F(OriginTrialsTest, NotifyOnEnableWithSubdomainMatching) {
       observer->last_status_change(),
       OriginTrialStatusChangeDetails(
           trial_enabled_origin_, GetTokenPartitionSite(trial_enabled_origin_),
-          /*match_subdomains=*/true, /*enabled=*/true));
+          /*match_subdomains=*/true, /*enabled=*/true, kFakeSourceId1));
 }
 
 TEST_F(OriginTrialsTest, NotifyOnDisable) {
   std::vector<std::string> tokens = {kFrobulatePersistentToken};
-  PersistTrialsFromTokens(trial_enabled_origin_, tokens, kValidTime);
+  PersistTrialsFromTokens(trial_enabled_origin_, tokens, kValidTime,
+                          kFakeSourceId1);
 
   std::unique_ptr<TestStatusObserver> observer =
       CreateAndAddObserver(kPersistentTrialName);
 
   tokens = {};
-  PersistTrialsFromTokens(trial_enabled_origin_, tokens, kValidTime);
+  PersistTrialsFromTokens(trial_enabled_origin_, tokens, kValidTime,
+                          kFakeSourceId1);
 
   EXPECT_EQ(observer->on_status_changed_count(), 1);
   EXPECT_EQ(observer->on_persisted_tokens_cleared_count(), 0);
@@ -788,18 +815,20 @@ TEST_F(OriginTrialsTest, NotifyOnDisable) {
       observer->last_status_change(),
       OriginTrialStatusChangeDetails(
           trial_enabled_origin_, GetTokenPartitionSite(trial_enabled_origin_),
-          /*match_subdomains=*/false, /*enabled=*/false));
+          /*match_subdomains=*/false, /*enabled=*/false, kFakeSourceId1));
 }
 
 TEST_F(OriginTrialsTest, NotifyOnDisableWithSubdomainMatching) {
   std::vector<std::string> tokens = {kFrobulatePersistentSubdomainToken};
-  PersistTrialsFromTokens(trial_enabled_origin_, tokens, kValidTime);
+  PersistTrialsFromTokens(trial_enabled_origin_, tokens, kValidTime,
+                          kFakeSourceId1);
 
   std::unique_ptr<TestStatusObserver> observer =
       CreateAndAddObserver(kPersistentTrialName);
 
   tokens = {};
-  PersistTrialsFromTokens(trial_enabled_origin_, tokens, kValidTime);
+  PersistTrialsFromTokens(trial_enabled_origin_, tokens, kValidTime,
+                          kFakeSourceId1);
 
   EXPECT_EQ(observer->on_status_changed_count(), 1);
   EXPECT_EQ(observer->on_persisted_tokens_cleared_count(), 0);
@@ -807,7 +836,7 @@ TEST_F(OriginTrialsTest, NotifyOnDisableWithSubdomainMatching) {
       observer->last_status_change(),
       OriginTrialStatusChangeDetails(
           trial_enabled_origin_, GetTokenPartitionSite(trial_enabled_origin_),
-          /*match_subdomains=*/true, /*enabled=*/false));
+          /*match_subdomains=*/true, /*enabled=*/false, kFakeSourceId1));
 }
 
 // Verifies that the origin stored in a subdomain-matching token is provided in
@@ -820,14 +849,15 @@ TEST_F(OriginTrialsTest, NotifyUsingTokenOriginOnEnable) {
   // (`trial_enabled_origin_subdomain_`) of the token origin
   // (`trial_enabled_origin_`).
   std::vector<std::string> tokens = {kFrobulatePersistentSubdomainToken};
-  PersistTrialsFromTokens(trial_enabled_origin_subdomain_, tokens, kValidTime);
+  PersistTrialsFromTokens(trial_enabled_origin_subdomain_, tokens, kValidTime,
+                          kFakeSourceId1);
 
   EXPECT_EQ(observer->on_status_changed_count(), 1);
   EXPECT_EQ(
       observer->last_status_change(),
       OriginTrialStatusChangeDetails(
           trial_enabled_origin_, GetTokenPartitionSite(trial_enabled_origin_),
-          /*match_subdomains=*/true, /*enabled=*/true));
+          /*match_subdomains=*/true, /*enabled=*/true, kFakeSourceId1));
 }
 
 TEST_F(OriginTrialsTest, DontNotifyOnDisableIfNotPreviouslyEnabled) {
@@ -837,7 +867,8 @@ TEST_F(OriginTrialsTest, DontNotifyOnDisableIfNotPreviouslyEnabled) {
   EXPECT_TRUE(
       GetPersistedTrialsForOrigin(trial_enabled_origin_, kValidTime).empty());
 
-  PersistTrialsFromTokens(trial_enabled_origin_, {}, kValidTime);
+  PersistTrialsFromTokens(trial_enabled_origin_, {}, kValidTime,
+                          kFakeSourceId1);
 
   EXPECT_EQ(observer->on_status_changed_count(), 0);
 }
@@ -850,19 +881,21 @@ TEST_F(OriginTrialsTest, NotifyOnEnabledOnlyIfPreviouslyDisabled) {
       GetPersistedTrialsForOrigin(trial_enabled_origin_, kValidTime).empty());
 
   std::vector<std::string> tokens = {kFrobulatePersistentToken};
-  PersistTrialsFromTokens(trial_enabled_origin_, tokens, kValidTime);
+  PersistTrialsFromTokens(trial_enabled_origin_, tokens, kValidTime,
+                          kFakeSourceId1);
 
   EXPECT_EQ(observer->on_status_changed_count(), 1);
   EXPECT_EQ(
       observer->last_status_change(),
       OriginTrialStatusChangeDetails(
           trial_enabled_origin_, GetTokenPartitionSite(trial_enabled_origin_),
-          /*match_subdomains=*/false, /*enabled=*/true));
+          /*match_subdomains=*/false, /*enabled=*/true, kFakeSourceId1));
 
-  PersistTrialsFromTokens(trial_enabled_origin_, tokens, kValidTime);
+  PersistTrialsFromTokens(trial_enabled_origin_, tokens, kValidTime,
+                          kFakeSourceId1);
   origin_trials_.PersistAdditionalTrialsFromTokens(
       trial_enabled_origin_, /*partition_origin=*/trial_enabled_origin_,
-      /*script_origins=*/{}, tokens, kValidTime);
+      /*script_origins=*/{}, tokens, kValidTime, kFakeSourceId1);
 
   EXPECT_EQ(observer->on_status_changed_count(), 1);
 }
@@ -876,41 +909,41 @@ TEST_F(OriginTrialsTest, NotifyOnStatusChangeMultiplePartitionSites) {
 
   // Enable trial for `trial_enabled_origin_`, partitioned under `origin_a`.
   origin_trials_.PersistTrialsFromTokens(trial_enabled_origin_, origin_a,
-                                         tokens, kValidTime);
+                                         tokens, kValidTime, kFakeSourceId1);
   EXPECT_EQ(observer->on_status_changed_count(), 1);
   EXPECT_EQ(observer->last_status_change(),
             OriginTrialStatusChangeDetails(
                 trial_enabled_origin_, GetTokenPartitionSite(origin_a),
-                /*match_subdomains=*/false, /*enabled=*/true));
+                /*match_subdomains=*/false, /*enabled=*/true, kFakeSourceId1));
 
   // Enable trial for `trial_enabled_origin_`, partitioned under `origin_b`.
   origin_trials_.PersistTrialsFromTokens(trial_enabled_origin_, origin_b,
-                                         tokens, kValidTime);
+                                         tokens, kValidTime, kFakeSourceId2);
   EXPECT_EQ(observer->on_status_changed_count(), 2);
   EXPECT_EQ(observer->last_status_change(),
             OriginTrialStatusChangeDetails(
                 trial_enabled_origin_, GetTokenPartitionSite(origin_b),
-                /*match_subdomains=*/false, /*enabled=*/true));
+                /*match_subdomains=*/false, /*enabled=*/true, kFakeSourceId2));
 
   // Disable trial for `trial_enabled_origin_`, partitioned under `origin_a`.
   tokens = {};
   origin_trials_.PersistTrialsFromTokens(trial_enabled_origin_, origin_a,
-                                         tokens, kValidTime);
+                                         tokens, kValidTime, kFakeSourceId1);
   EXPECT_EQ(observer->on_status_changed_count(), 3);
   EXPECT_EQ(observer->last_status_change(),
             OriginTrialStatusChangeDetails(
                 trial_enabled_origin_, GetTokenPartitionSite(origin_a),
-                /*match_subdomains=*/false, /*enabled=*/false));
+                /*match_subdomains=*/false, /*enabled=*/false, kFakeSourceId1));
 
   // Disable trial for `trial_enabled_origin_`, partitioned under `origin_b`.
   tokens = {};
   origin_trials_.PersistTrialsFromTokens(trial_enabled_origin_, origin_b,
-                                         tokens, kValidTime);
+                                         tokens, kValidTime, kFakeSourceId2);
   EXPECT_EQ(observer->on_status_changed_count(), 4);
   EXPECT_EQ(observer->last_status_change(),
             OriginTrialStatusChangeDetails(
                 trial_enabled_origin_, GetTokenPartitionSite(origin_b),
-                /*match_subdomains=*/false, /*enabled=*/false));
+                /*match_subdomains=*/false, /*enabled=*/false, kFakeSourceId2));
 }
 
 // Check that observers are only notified of status change events for the trial
@@ -929,14 +962,15 @@ TEST_F(OriginTrialsTest, NotifyForCorrectTrial) {
       CreateAndAddObserver(kPersistentThirdPartyDeprecationTrialName);
 
   // Enable `kPersistentTrialName` for `origin_a`.
-  origin_trials_.PersistTrialsFromTokens(
-      origin_a, /*partition_origin=*/origin_a, tokens_a, kValidTime);
+  origin_trials_.PersistTrialsFromTokens(origin_a,
+                                         /*partition_origin=*/origin_a,
+                                         tokens_a, kValidTime, kFakeSourceId1);
 
   EXPECT_EQ(observer_a->on_status_changed_count(), 1);
   EXPECT_EQ(observer_a->last_status_change(),
             OriginTrialStatusChangeDetails(
                 origin_a, GetTokenPartitionSite(origin_a),
-                /*match_subdomains=*/false, /*enabled=*/true));
+                /*match_subdomains=*/false, /*enabled=*/true, kFakeSourceId1));
   EXPECT_EQ(observer_b->on_status_changed_count(), 0);
 
   // Enable `kPersistentThirdPartyDeprecationTrialName` for `origin_b`
@@ -944,30 +978,31 @@ TEST_F(OriginTrialsTest, NotifyForCorrectTrial) {
   std::vector<url::Origin> script_origins = {origin_b};
   origin_trials_.PersistAdditionalTrialsFromTokens(
       origin_a, /*partition_origin=*/origin_a, script_origins, tokens_b,
-      kValidTime);
+      kValidTime, kFakeSourceId1);
 
   EXPECT_EQ(observer_a->on_status_changed_count(), 1);
   EXPECT_EQ(observer_b->on_status_changed_count(), 1);
   EXPECT_EQ(observer_b->last_status_change(),
             OriginTrialStatusChangeDetails(
                 origin_b, GetTokenPartitionSite(origin_a),
-                /*match_subdomains=*/false, /*enabled=*/true));
+                /*match_subdomains=*/false, /*enabled=*/true, kFakeSourceId1));
 
   // Disable `kPersistentTrialName` for `origin_a`.
   tokens_a = {};
-  origin_trials_.PersistTrialsFromTokens(
-      origin_a, /*partition_origin=*/origin_a, tokens_a, kValidTime);
+  origin_trials_.PersistTrialsFromTokens(origin_a,
+                                         /*partition_origin=*/origin_a,
+                                         tokens_a, kValidTime, kFakeSourceId1);
 
   EXPECT_EQ(observer_a->on_status_changed_count(), 2);
   EXPECT_EQ(observer_a->last_status_change(),
             OriginTrialStatusChangeDetails(
                 origin_a, GetTokenPartitionSite(origin_a),
-                /*match_subdomains=*/false, /*enabled=*/false));
+                /*match_subdomains=*/false, /*enabled=*/false, kFakeSourceId1));
   EXPECT_EQ(observer_b->on_status_changed_count(), 1);
   EXPECT_EQ(observer_b->last_status_change(),
             OriginTrialStatusChangeDetails(
                 origin_b, GetTokenPartitionSite(origin_a),
-                /*match_subdomains=*/false, /*enabled=*/true));
+                /*match_subdomains=*/false, /*enabled=*/true, kFakeSourceId1));
 }
 
 TEST_F(OriginTrialsTest, NotifyWithTokenOriginForSubdomainTokens) {
@@ -975,7 +1010,8 @@ TEST_F(OriginTrialsTest, NotifyWithTokenOriginForSubdomainTokens) {
       CreateAndAddObserver(kPersistentTrialName);
 
   std::vector<std::string> tokens = {kFrobulatePersistentSubdomainToken};
-  PersistTrialsFromTokens(trial_enabled_origin_subdomain_, tokens, kValidTime);
+  PersistTrialsFromTokens(trial_enabled_origin_subdomain_, tokens, kValidTime,
+                          kFakeSourceId1);
 
   EXPECT_EQ(observer->on_status_changed_count(), 1);
   EXPECT_EQ(observer->on_persisted_tokens_cleared_count(), 0);
@@ -983,12 +1019,13 @@ TEST_F(OriginTrialsTest, NotifyWithTokenOriginForSubdomainTokens) {
             OriginTrialStatusChangeDetails(
                 trial_enabled_origin_,
                 GetTokenPartitionSite(trial_enabled_origin_subdomain_),
-                /*match_subdomains=*/true, /*enabled=*/true));
+                /*match_subdomains=*/true, /*enabled=*/true, kFakeSourceId1));
 }
 
 TEST_F(OriginTrialsTest, NotifyOnPersistedTokensCleared) {
   std::vector<std::string> tokens = {kFrobulatePersistentToken};
-  PersistTrialsFromTokens(trial_enabled_origin_, tokens, kValidTime);
+  PersistTrialsFromTokens(trial_enabled_origin_, tokens, kValidTime,
+                          kFakeSourceId1);
 
   std::unique_ptr<TestStatusObserver> observer =
       CreateAndAddObserver(kPersistentTrialName);
@@ -1094,7 +1131,7 @@ TEST_F(OriginTrialsTest, GracePeriodIsRespected) {
   std::vector<std::string> tokens = {kFrobulateManualCompletionToken};
   origin_trials_.PersistTrialsFromTokens(
       trial_enabled_origin_, /*partition_origin=*/trial_enabled_origin_, tokens,
-      kValidTime);
+      kValidTime, /*source_id=*/std::nullopt);
 
   base::flat_set<std::string> enabled_trials =
       origin_trials_.GetPersistedTrialsForOrigin(
@@ -1124,7 +1161,7 @@ TEST_F(OriginTrialsTest, DoNotPersistTokensForOpaqueOrigins) {
   // Opaque primary origin
   origin_trials_.PersistTrialsFromTokens(
       opaque_origin, /*partition_origin=*/trial_enabled_origin_, tokens,
-      kValidTime);
+      kValidTime, /*source_id=*/std::nullopt);
 
   EXPECT_TRUE(origin_trials_
                   .GetPersistedTrialsForOrigin(
@@ -1139,7 +1176,8 @@ TEST_F(OriginTrialsTest, PersistTokensInOpaquePartition) {
   // Opaque partition origin
   origin_trials_.PersistTrialsFromTokens(trial_enabled_origin_,
                                          /*partition_origin=*/opaque_origin,
-                                         tokens, kValidTime);
+                                         tokens, kValidTime,
+                                         /*source_id=*/std::nullopt);
 
   EXPECT_TRUE(origin_trials_.IsFeaturePersistedForOrigin(
       trial_enabled_origin_, /*partition_origin=*/opaque_origin,
@@ -1156,12 +1194,15 @@ TEST_F(OriginTrialsTest, TokensArePartitionedByTopLevelSite) {
   std::vector<std::string> tokens_b = {kFrobulatePersistentTokenAlternate};
 
   origin_trials_.PersistTrialsFromTokens(origin_a, partition_site_a, tokens_a,
-                                         kValidTime);
+                                         kValidTime,
+                                         /*source_id=*/std::nullopt);
   origin_trials_.PersistTrialsFromTokens(origin_a, partition_site_b, tokens_a,
-                                         kValidTime);
+                                         kValidTime,
+                                         /*source_id=*/std::nullopt);
 
   origin_trials_.PersistTrialsFromTokens(origin_b, partition_site_b, tokens_b,
-                                         kValidTime);
+                                         kValidTime,
+                                         /*source_id=*/std::nullopt);
 
   // Only expect trials to be enabled for partitions where they have been set
   EXPECT_TRUE(origin_trials_.IsFeaturePersistedForOrigin(
@@ -1181,8 +1222,8 @@ TEST_F(OriginTrialsTest, TokensArePartitionedByTopLevelSite) {
       OriginTrialFeature::kOriginTrialsSampleAPIPersistentFeature, kValidTime));
 
   // Removing a token should only be from one partition
-  origin_trials_.PersistTrialsFromTokens(origin_a, partition_site_b, {},
-                                         kValidTime);
+  origin_trials_.PersistTrialsFromTokens(
+      origin_a, partition_site_b, {}, kValidTime, /*source_id=*/std::nullopt);
 
   EXPECT_TRUE(origin_trials_.IsFeaturePersistedForOrigin(
       origin_a, partition_site_a,

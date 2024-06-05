@@ -1148,7 +1148,8 @@ class OriginTrialsControllerDelegateMock
       const url::Origin& origin,
       const url::Origin& partition_origin,
       const base::span<const std::string> header_tokens,
-      const base::Time current_time) override {
+      const base::Time current_time,
+      std::optional<ukm::SourceId> source_id) override {
     persisted_tokens_[origin] =
         std::vector<std::string>(header_tokens.begin(), header_tokens.end());
   }
@@ -1157,7 +1158,8 @@ class OriginTrialsControllerDelegateMock
       const url::Origin& partition_origin,
       const base::span<const url::Origin> script_origins,
       const base::span<const std::string> header_tokens,
-      const base::Time current_time) override {
+      const base::Time current_time,
+      std::optional<ukm::SourceId> source_id) override {
     NOTREACHED_IN_MIGRATION() << "not used by test";
   }
   bool IsFeaturePersistedForOrigin(const url::Origin& origin,

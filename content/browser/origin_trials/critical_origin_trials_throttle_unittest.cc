@@ -91,7 +91,8 @@ class MockOriginTrialsDelegate
       const url::Origin& origin,
       const url::Origin& top_level_origin,
       const base::span<const std::string> header_tokens,
-      const base::Time current_time) override {
+      const base::Time current_time,
+      std::optional<ukm::SourceId> source_id) override {
     DCHECK(false) << "Critical Origin Trial Throttle should not override full "
                      "set of tokens, only append.";
   }
@@ -101,7 +102,8 @@ class MockOriginTrialsDelegate
       const url::Origin& top_level_origin,
       const base::span<const url::Origin> script_origins,
       const base::span<const std::string> header_tokens,
-      const base::Time current_time) override {}
+      const base::Time current_time,
+      std::optional<ukm::SourceId> source_id) override {}
   void ClearPersistedTokens() override { persisted_trials_.clear(); }
 
   void AddPersistedTrialForTest(const std::string_view url,
@@ -116,8 +118,8 @@ class CriticalOriginTrialsThrottleTest : public ::testing::Test {
   CriticalOriginTrialsThrottleTest()
       : origin_trials_delegate_(),
         throttle_(origin_trials_delegate_,
-                  url::Origin::Create(GURL(kExampleURL))) {
-  }
+                  url::Origin::Create(GURL(kExampleURL)),
+                  /*source_id=*/std::nullopt) {}
 
   ~CriticalOriginTrialsThrottleTest() override = default;
 

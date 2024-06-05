@@ -11,6 +11,7 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tpcd/support/trial_test_utils.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
@@ -22,10 +23,12 @@
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_features.h"
@@ -35,6 +38,8 @@
 #include "net/base/features.h"
 #include "net/cookies/cookie_util.h"
 #include "net/dns/mock_host_resolver.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
 using content::URLLoaderInterceptor;
 using content::WebContents;
@@ -43,6 +48,9 @@ namespace tpcd::trial {
 
 class TopLevelTpcdTrialBrowserTest : public PlatformBrowserTest {
  public:
+  const std::string kUkmEventName =
+      "ThirdPartyCookies.TopLevelDeprecationTrial";
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitchASCII("origin-trial-public-key",
                                     kTestTokenPublicKey);
@@ -79,6 +87,8 @@ class TopLevelTpcdTrialBrowserTest : public PlatformBrowserTest {
             }));
 
     GetPrefs()->SetBoolean(prefs::kTrackingProtection3pcdEnabled, true);
+
+    ukm_recorder_.emplace();
   }
 
   void TearDownOnMainThread() override {
@@ -122,15 +132,34 @@ class TopLevelTpcdTrialBrowserTest : public PlatformBrowserTest {
       return false;
     }
 
-    bool should_use_meta_tag = path.find("meta_tag") == 0;
+    bool should_use_meta_tag = path.starts_with("meta_tag");
+    // Redirects are fixed from `kTrialEnabledDomain` to
+    // `kOtherTrialEnabledDomain`.
+    bool should_redirect =
+        path.starts_with("redirect") && host == kTrialEnabledDomain;
+    bool should_include_critical_header = query == "critical";
 
-    std::string token = ChooseToken(host, query);
+    // To simulate a followed redirect, we have to first notify the client of
+    // the redirect, and then also commit the response for the redirect's
+    // destination page.
+    if (should_redirect) {
+      NotifyClientOfRedirect(params);
+    }
+
+    // For redirects, we need to commit the response for the redirect's
+    // destination page, so we should get the token for the destination page,
+    // not the request page.
+    std::string token_host = should_redirect ? kOtherTrialEnabledDomain : host;
+    std::string token = ChooseToken(token_host, query);
 
     std::string headers =
         "HTTP/1.1 200 OK\n"
         "Content-type: text/html\n";
     if (!should_use_meta_tag && !token.empty()) {
       base::StrAppend(&headers, {"Origin-Trial: ", token, "\n"});
+      if (should_include_critical_header) {
+        base::StrAppend(&headers, {"Critical-Origin-Trial: TopLevelTpcd\n"});
+      }
     }
 
     std::string body = (should_use_meta_tag && !token.empty())
@@ -150,9 +179,12 @@ class TopLevelTpcdTrialBrowserTest : public PlatformBrowserTest {
     return true;
   }
 
+  ukm::TestAutoSetUkmRecorder& ukm_recorder() { return ukm_recorder_.value(); }
+
   base::test::ScopedFeatureList features_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   std::unique_ptr<URLLoaderInterceptor> url_loader_interceptor_;
+  std::optional<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
   const GURL kTrialEnabledSite{base::StrCat({"https://", kTrialEnabledDomain})};
   const GURL kTrialEnabledSiteSubdomain{
       base::StrCat({"https://", kTrialEnabledSubdomain})};
@@ -160,6 +192,28 @@ class TopLevelTpcdTrialBrowserTest : public PlatformBrowserTest {
       base::StrCat({"https://", kOtherTrialEnabledDomain})};
 
  private:
+  // Fixed redirect from `kTrialEnabledSite` to `kOtherTrialEnabledSite`.
+  // Includes the token for `kTrialEnabledSite` in the response headers.
+  void NotifyClientOfRedirect(
+      content::URLLoaderInterceptor::RequestParams* params) {
+    net::RedirectInfo redirect_info;
+    redirect_info.new_url = kOtherTrialEnabledSite;
+    redirect_info.new_method = "GET";
+    net::HttpResponseInfo info;
+    info.headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+        net::HttpUtil::AssembleRawHeaders(base::StringPrintf(
+            "HTTP/1.1 301 Moved Permanently\n"
+            "Content-Type: text/html\n"
+            "Origin-Trial: %s\n"
+            "Location: %s\n",
+            kTopLevelTrialToken, kOtherTrialEnabledSite.spec().c_str())));
+    auto response = network::mojom::URLResponseHead::New();
+    response->headers = info.headers;
+    response->headers->GetMimeType(&response->mime_type);
+    response->encoded_data_length = 0;
+    params->client->OnReceiveRedirect(redirect_info, std::move(response));
+  }
+
   std::string ChooseToken(std::string host, std::string query) {
     if (query == "no_token") {
       return "";
@@ -594,6 +648,153 @@ IN_PROC_BROWSER_TEST_F(TopLevelTpcdTrialBrowserTest,
   EXPECT_EQ(settings->GetCookieSetting(GURL(), net::SiteForCookies(),
                                        kTrialEnabledSite, {}, nullptr),
             CONTENT_SETTING_ALLOW);
+}
+
+IN_PROC_BROWSER_TEST_F(TopLevelTpcdTrialBrowserTest,
+                       UkmEmittedWhenTrialConfiguredViaResponseHeader) {
+  content::WebContents* web_contents = GetActiveWebContents();
+
+  // Navigate to a `kTrialEnabledSite` page that returns its origin trial token
+  // in the Origin-Trial HTTP response header.
+  {
+    ContentSettingChangeObserver setting_observer =
+        CreateTopLevelTrialSettingsObserver(kTrialEnabledSite);
+    ASSERT_TRUE(content::NavigateToURL(web_contents, kTrialEnabledSite));
+    setting_observer.Wait();
+  }
+
+  // Expect a UKM event to have been emitted for enabling the trial.
+  auto ukm_entries = ukm_recorder().GetEntriesByName(kUkmEventName);
+  ASSERT_EQ(ukm_entries.size(), 1u);
+  auto entry = ukm_entries.at(0);
+  ukm_recorder().ExpectEntrySourceHasUrl(entry, kTrialEnabledSite);
+  ukm_recorder().ExpectEntryMetric(entry, "Enabled", true);
+  ukm_recorder().ExpectEntryMetric(entry, "MatchSubdomains", false);
+
+  // Load a subsequent `kTrialEnabledSite` page without the token to remove the
+  // `TOP_LEVEL_TPCD_TRIAL` content setting for the site.
+  GURL enabled_site_no_token = GURL(kTrialEnabledSite.spec() + "?no_token");
+  {
+    ContentSettingChangeObserver setting_observer =
+        CreateTopLevelTrialSettingsObserver(kTrialEnabledSite);
+    ASSERT_TRUE(content::NavigateToURL(web_contents, enabled_site_no_token));
+    setting_observer.Wait();
+  }
+
+  // Expect a UKM event to have been emitted for disabling the trial.
+  ukm_entries = ukm_recorder().GetEntriesByName(kUkmEventName);
+  ASSERT_EQ(ukm_entries.size(), 2u);
+  entry = ukm_entries.at(1);
+  ukm_recorder().ExpectEntrySourceHasUrl(entry, enabled_site_no_token);
+  ukm_recorder().ExpectEntryMetric(entry, "Enabled", false);
+  ukm_recorder().ExpectEntryMetric(entry, "MatchSubdomains", false);
+}
+
+IN_PROC_BROWSER_TEST_F(TopLevelTpcdTrialBrowserTest,
+                       UkmEmittedWhenTrialEnabledViaMetaTag) {
+  content::WebContents* web_contents = GetActiveWebContents();
+
+  // Navigate to a `kTrialEnabledSite` page where its origin trial token is in a
+  // meta tag in the head of the document.
+  GURL url = GURL(kTrialEnabledSite.spec() + "meta_tag");
+  {
+    ContentSettingChangeObserver setting_observer =
+        CreateTopLevelTrialSettingsObserver(url);
+    ASSERT_TRUE(content::NavigateToURL(web_contents, url));
+    setting_observer.Wait();
+  }
+
+  // Expect a UKM event to have been emitted for enabling the trial.
+  auto ukm_entries = ukm_recorder().GetEntriesByName(kUkmEventName);
+  ASSERT_EQ(ukm_entries.size(), 1u);
+  auto entry = ukm_entries.at(0);
+  ukm_recorder().ExpectEntrySourceHasUrl(entry, url);
+  ukm_recorder().ExpectEntryMetric(entry, "Enabled", true);
+  ukm_recorder().ExpectEntryMetric(entry, "MatchSubdomains", false);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    TopLevelTpcdTrialBrowserTest,
+    UkmNotDuplicatedWhenResponseToNavigationRequestHasCriticalOriginTrialHeader) {
+  content::WebContents* web_contents = GetActiveWebContents();
+
+  // Navigate to a `kTrialEnabledSite` page that returns its origin trial token
+  // in the Origin-Trial HTTP response header and also returns a
+  // `Critical-Origin-Trial: TopLevelTpcd` header.
+  GURL url = GURL(kTrialEnabledSite.spec() + "?critical");
+  {
+    ContentSettingChangeObserver setting_observer =
+        CreateTopLevelTrialSettingsObserver(url);
+    ASSERT_TRUE(content::NavigateToURL(web_contents, url));
+    setting_observer.Wait();
+  }
+
+  // Expect only 1 UKM event to have been emitted for enabling the trial.
+  auto ukm_entries = ukm_recorder().GetEntriesByName(kUkmEventName);
+  ASSERT_EQ(ukm_entries.size(), 1u);
+  auto entry = ukm_entries.at(0);
+  ukm_recorder().ExpectEntrySourceHasUrl(entry, url);
+  ukm_recorder().ExpectEntryMetric(entry, "Enabled", true);
+  ukm_recorder().ExpectEntryMetric(entry, "MatchSubdomains", false);
+}
+
+IN_PROC_BROWSER_TEST_F(TopLevelTpcdTrialBrowserTest,
+                       UkmNotEmittedWhenRedirectResponseHasTokenInHeader) {
+  content::WebContents* web_contents = GetActiveWebContents();
+
+  // Navigate to a `kTrialEnabledSite` page that returns its origin trial token
+  // in the Origin-Trial HTTP response header, while redirecting to another site
+  // (`kOtherTrialEnabledSite`) that also returns its own origin trial token.
+  GURL url = GURL(kTrialEnabledSite.spec() + "redirect");
+  {
+    ContentSettingChangeObserver settings_observer =
+        CreateTopLevelTrialSettingsObserver(kOtherTrialEnabledSite);
+    bool nav_success = content::NavigateToURL(
+        web_contents, url, /*expected_commit_url=*/kOtherTrialEnabledSite);
+    ASSERT_TRUE(nav_success);
+    settings_observer.Wait();
+  }
+
+  // Expect a UKM event to have been emitted for enabling the trial on
+  // `kOtherTrialEnabledSite` in the response headers. Expect no UKM event to
+  // have been emitted for the redirect.
+  auto ukm_entries = ukm_recorder().GetEntriesByName(kUkmEventName);
+  ASSERT_EQ(ukm_entries.size(), 1u);
+  auto entry = ukm_entries.at(0);
+  ukm_recorder().ExpectEntrySourceHasUrl(entry, kOtherTrialEnabledSite);
+  ukm_recorder().ExpectEntryMetric(entry, "Enabled", true);
+  ukm_recorder().ExpectEntryMetric(entry, "MatchSubdomains", false);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    TopLevelTpcdTrialBrowserTest,
+    UkmNotEmittedWhenRedirectResponseHasCriticalHeaderAndTokenInHeader) {
+  content::WebContents* web_contents = GetActiveWebContents();
+
+  // Navigate to a `kTrialEnabledSite` page that returns its origin trial token
+  // in the Origin-Trial HTTP response header, as well as the
+  // `Critical-Origin-Trials: TopLevelTpcd` header, while redirecting to another
+  // site (`kOtherTrialEnabledSite`) that also returns its own origin trial
+  // token.
+  GURL url = GURL(kTrialEnabledSite.spec() + "redirect?critical");
+  {
+    ContentSettingChangeObserver settings_observer =
+        CreateTopLevelTrialSettingsObserver(kOtherTrialEnabledSite);
+    bool nav_success = content::NavigateToURL(
+        web_contents, url, /*expected_commit_url=*/kOtherTrialEnabledSite);
+    ASSERT_TRUE(nav_success);
+    settings_observer.Wait();
+  }
+
+  // Expect a UKM event to have been emitted for enabling the trial on
+  // `kOtherTrialEnabledSite` in the response headers. Expect no UKM event to
+  // have been emitted for the redirect.
+  auto ukm_entries = ukm_recorder().GetEntriesByName(kUkmEventName);
+  ASSERT_EQ(ukm_entries.size(), 1u);
+  auto entry = ukm_entries.at(0);
+  ukm_recorder().ExpectEntrySourceHasUrl(entry, kOtherTrialEnabledSite);
+  ukm_recorder().ExpectEntryMetric(entry, "Enabled", true);
+  ukm_recorder().ExpectEntryMetric(entry, "MatchSubdomains", false);
 }
 
 }  // namespace tpcd::trial

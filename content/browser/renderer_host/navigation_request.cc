@@ -836,7 +836,8 @@ void PersistOriginTrialsFromHeaders(
     const url::Origin& origin,
     const url::Origin& partition_origin,
     const network::mojom::URLResponseHead* response,
-    BrowserContext* browser_context) {
+    BrowserContext* browser_context,
+    ukm::SourceId source_id) {
   if (!base::FeatureList::IsEnabled(features::kPersistentOriginTrials))
     return;
 
@@ -857,8 +858,8 @@ void PersistOriginTrialsFromHeaders(
 
   std::vector<std::string> tokens =
       GetOriginTrialHeaderValues(response->headers.get());
-  origin_trials_delegate->PersistTrialsFromTokens(origin, partition_origin,
-                                                  tokens, base::Time::Now());
+  origin_trials_delegate->PersistTrialsFromTokens(
+      origin, partition_origin, tokens, base::Time::Now(), source_id);
 }
 
 struct TopicsHeaderValueResult {
@@ -6028,7 +6029,7 @@ void NavigationRequest::CommitNavigation() {
   }
 
   PersistOriginTrialsFromHeaders(origin_to_commit, partition_origin, response(),
-                                 browser_context);
+                                 browser_context, GetNextPageUkmSourceId());
 
   // Update the reduced accept-language to commit if it's empty, and stop
   // persisting the accepted language if the final response do not have a valid
