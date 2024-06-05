@@ -160,7 +160,7 @@ SearchInfo VectorDatabase::FindNearest(
   // Embeddings must have source passages with at least this many words in order
   // to be considered during the search. Insufficient word count embeddings
   // will score zero against the query.
-  size_t search_minimum_word_count = kSearchMinimumWordCount.Get();
+  size_t search_minimum_word_count = kSearchPassageMinimumWordCount.Get();
 
   struct Compare {
     bool operator()(const ScoredUrl& a, const ScoredUrl& b) {

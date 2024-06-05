@@ -198,7 +198,7 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
                         IDS_HISTORY_EMBEDDINGS_PROMO_BODY,
                         base::UTF8ToUTF16(chrome::kChromeUISettingsURL)));
   source->AddInteger("historyEmbeddingsSearchMinimumWordCount",
-                     history_embeddings::kSearchMinimumWordCount.Get());
+                     history_embeddings::kSearchQueryMinimumWordCount.Get());
 
   // History clusters
   HistoryClustersUtil::PopulateSource(source, profile, /*in_side_panel=*/false);

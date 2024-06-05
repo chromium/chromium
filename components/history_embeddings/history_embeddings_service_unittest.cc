@@ -36,7 +36,10 @@ class HistoryEmbeddingsServiceTest : public testing::Test {
  public:
   void SetUp() override {
     feature_list_.InitAndEnableFeatureWithParameters(
-        kHistoryEmbeddings, {{"UseMlEmbedder", "false"}});
+        kHistoryEmbeddings, {
+                                {"UseMlEmbedder", "false"},
+                                {"SearchPassageMinimumWordCount", "3"},
+                            });
 
     OSCryptMocker::SetUp();
 

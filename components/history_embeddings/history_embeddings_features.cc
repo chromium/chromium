@@ -23,9 +23,14 @@ const base::FeatureParam<int> kPassageExtractionMaxWordsPerAggregatePassage(
     "PassageExtractionMaxWordsPerAggregatePassage",
     200);
 
-const base::FeatureParam<int> kSearchMinimumWordCount(&kHistoryEmbeddings,
-                                                      "SearchMinimumWordCount",
-                                                      3);
+const base::FeatureParam<int> kSearchQueryMinimumWordCount(
+    &kHistoryEmbeddings,
+    "SearchQueryMinimumWordCount",
+    3);
+const base::FeatureParam<int> kSearchPassageMinimumWordCount(
+    &kHistoryEmbeddings,
+    "SearchPassageMinimumWordCount",
+    5);
 
 const base::FeatureParam<int> kSearchResultItemCount(&kHistoryEmbeddings,
                                                      "SearchResultItemCount",

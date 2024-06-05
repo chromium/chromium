@@ -27,7 +27,8 @@ extern const base::FeatureParam<int>
 
 // The minimum number of words a query or passage must have in order to be
 // included in similarity search.
-extern const base::FeatureParam<int> kSearchMinimumWordCount;
+extern const base::FeatureParam<int> kSearchQueryMinimumWordCount;
+extern const base::FeatureParam<int> kSearchPassageMinimumWordCount;
 
 // Specifies the number of best matching items to take from the search.
 extern const base::FeatureParam<int> kSearchResultItemCount;
