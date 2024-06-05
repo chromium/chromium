@@ -214,6 +214,10 @@ const CGFloat kSeparatorHeight = 0.5;
   return self;
 }
 
+- (void)dealloc {
+  [self resetCell];
+}
+
 - (void)configureWithConfig:(MagicStackModule*)config {
   [self resetCell];
   // Ensures that the modules conforms to a height of kModuleMaxHeight. For
@@ -245,11 +249,6 @@ const CGFloat kSeparatorHeight = 0.5;
       _contextMenuInteraction =
           [[UIContextMenuInteraction alloc] initWithDelegate:self];
       [self addInteraction:_contextMenuInteraction];
-    }
-  } else {
-    if (_contextMenuInteraction) {
-      [self removeInteraction:_contextMenuInteraction];
-      _contextMenuInteraction = nil;
     }
   }
 
@@ -603,6 +602,10 @@ const CGFloat kSeparatorHeight = 0.5;
   if (_contentView) {
     [_contentView removeFromSuperview];
     _contentView = nil;
+  }
+  if (_contextMenuInteraction) {
+    [self removeInteraction:_contextMenuInteraction];
+    _contextMenuInteraction = nil;
   }
 }
 
