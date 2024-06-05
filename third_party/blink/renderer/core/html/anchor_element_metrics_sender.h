@@ -108,6 +108,11 @@ class CORE_EXPORT AnchorElementMetricsSender final
   void MaybeReportAnchorElementPointerEvent(HTMLAnchorElement& element,
                                             const PointerEvent& pointer_event);
 
+  // Record and send metrics to the browser process about the position of
+  // tracked anchor elements in the viewport. |pointerY| is the y-coordinate of
+  // the most recent pointerdown location (screen coordinates in DIPs).
+  void MaybeReportAnchorElementsPositionOnScrollEnd(double pointerY);
+
   void Trace(Visitor*) const override;
 
   // The minimum time gap that is required between two consecutive UpdateMetrics
@@ -139,6 +144,10 @@ class CORE_EXPORT AnchorElementMetricsSender final
   base::TimeTicks NavigationStart() const;
 
   void RegisterForLifecycleNotifications();
+
+  void PositionUpdateTimerFired(TimerBase*);
+
+  void ComputeAnchorElementsPositionUpdates();
 
   // Mock timestamp for navigation start used for testing.
   std::optional<base::TimeTicks> mock_navigation_start_for_testing_;
@@ -181,6 +190,7 @@ class CORE_EXPORT AnchorElementMetricsSender final
   const int random_anchor_sampling_period_;
 
   Member<IntersectionObserver> intersection_observer_;
+  HeapHashSet<WeakMember<const HTMLAnchorElement>> anchors_in_viewport_;
 
   WTF::Vector<mojom::blink::AnchorElementEnteredViewportPtr>
       entered_viewport_messages_;
@@ -196,6 +206,9 @@ class CORE_EXPORT AnchorElementMetricsSender final
   WTF::Vector<mojom::blink::AnchorElementLeftViewportPtr>
       left_viewport_messages_;
 
+  WTF::Vector<mojom::blink::AnchorElementPositionUpdatePtr>
+      position_update_messages_;
+
   WTF::Vector<mojom::blink::AnchorElementClickPtr> clicked_messages_;
 
   const base::TickClock* clock_;
@@ -203,6 +216,18 @@ class CORE_EXPORT AnchorElementMetricsSender final
   bool is_registered_for_lifecycle_notifications_ = false;
 
   bool intersection_observer_limit_exceeded_ = false;
+
+  // The y-coordinate of the last pointerdown (in screen coordinates) reported
+  // by AnchorElementInteractionTracker in DIPs. Used to compute
+  // |position_update_messages_|. The value is reset after metrics are computed.
+  std::optional<float> last_pointer_down_ = std::nullopt;
+  // Indicates that we should populate |position_update_messages_| in
+  // |DidFinishLifecycleUpdate|.
+  bool should_compute_positions_after_next_lifecycle_update_ = false;
+  // Used to timeout waiting for |UpdateVisibleAnchors| being called after
+  // |MaybeReportAnchorElementsPositionOnScrollEnd| is called. The timer is
+  // stopped when |UpdateVisibleAnchors| is called.
+  HeapTaskRunnerTimer<AnchorElementMetricsSender> position_update_timer_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

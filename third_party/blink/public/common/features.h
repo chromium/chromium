@@ -1077,6 +1077,8 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kMixedContentAutoupgrade);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kNavigationPredictor);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kPredictorTrafficClientEnabledPercent;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kNavigationPredictorNewViewportFeatures);
 
 // Disables forced frame updates for web tests. Used by web test runner only.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kNoForcedFrameUpdatesForWebTests);

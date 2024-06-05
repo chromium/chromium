@@ -155,6 +155,15 @@ struct AnchorElementPointerDown {
   mojo_base.mojom.TimeDelta navigation_start_to_pointer_down;
 };
 
+struct AnchorElementPositionUpdate {
+  // The ID of the anchor.
+  uint32 anchor_id;
+
+  // The vertical distance between the anchor's center and the last recorded
+  // pointer down (expressed as a ratio of the screen height).
+  float distance_from_pointer_down_ratio;
+};
+
 // TODO(isaboori): It's better to move the methods that are called for all
 // anchor elements and not just the down-sampled ones to a new
 // `AnchorElementInteractionHost` interface.
@@ -198,6 +207,13 @@ interface AnchorElementMetricsHost {
   // |ReportAnchorElementsEnteredViewport|.
   // This is called only for randomly selected anchor elements that we track.
   ReportAnchorElementsLeftViewport(array<AnchorElementLeftViewport> elements);
+
+  // This is called after the end of a scroll to report metrics related to the
+  // position of anchors in the viewport. The update will only include metrics
+  // for anchors that have already been reported to be inside the viewport.
+  // This is called only for randomly selected anchor elements that we track.
+  ReportAnchorElementsPositionUpdate(
+    array<AnchorElementPositionUpdate> elements);
 
   // This is called whenever the pointer starts hovering over anchor element.
   // This is called only for randomly selected anchor elements that we track.

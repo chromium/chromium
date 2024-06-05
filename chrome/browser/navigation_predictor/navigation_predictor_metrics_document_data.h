@@ -98,6 +98,10 @@ class NavigationPredictorMetricsDocumentData
     std::optional<double> mouse_velocity;
     // Mouse acceleration when the on-hover event was triggered.
     std::optional<double> mouse_acceleration;
+    // Vertical distance of the anchor element from the most recently recorded
+    // pointerdown that initiated a scroll (recorded as a percentage of the
+    // screen height).
+    std::optional<int> percent_distance_from_pointer_down;
   };
 
   struct PreloadOnHoverData {

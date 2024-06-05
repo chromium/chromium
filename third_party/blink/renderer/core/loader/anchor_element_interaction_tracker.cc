@@ -361,6 +361,16 @@ void AnchorElementInteractionTracker::OnClickEvent(
   }
 }
 
+void AnchorElementInteractionTracker::OnScrollEnd() {
+  if (last_pointer_down_locations_[0]) {
+    if (auto* sender = AnchorElementMetricsSender::GetForFrame(
+            GetDocument()->GetFrame())) {
+      sender->MaybeReportAnchorElementsPositionOnScrollEnd(
+          last_pointer_down_locations_[0].value());
+    }
+  }
+}
+
 void AnchorElementInteractionTracker::HoverTimerFired(TimerBase*) {
   if (!interaction_host_.is_bound()) {
     return;

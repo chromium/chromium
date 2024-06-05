@@ -580,6 +580,26 @@ void NavigationPredictor::ReportAnchorElementsLeftViewport(
     user_interaction.max_time_in_viewport = std::max(
         user_interaction.max_time_in_viewport.value_or(base::TimeDelta()),
         element->time_in_viewport);
+    user_interaction.percent_distance_from_pointer_down.reset();
+  }
+}
+
+void NavigationPredictor::ReportAnchorElementsPositionUpdate(
+    std::vector<blink::mojom::AnchorElementPositionUpdatePtr> elements) {
+  CHECK(base::FeatureList::IsEnabled(
+      blink::features::kNavigationPredictorNewViewportFeatures));
+  auto& user_interactions =
+      GetNavigationPredictorMetricsDocumentData().GetUserInteractionsData();
+  for (const auto& element : elements) {
+    auto index_it =
+        tracked_anchor_id_to_index_.find(AnchorId(element->anchor_id));
+    if (index_it == tracked_anchor_id_to_index_.end()) {
+      continue;
+    }
+    auto& user_interaction = user_interactions[index_it->second];
+    user_interaction.percent_distance_from_pointer_down =
+        base::saturated_cast<int>(element->distance_from_pointer_down_ratio *
+                                  100);
   }
 }
 

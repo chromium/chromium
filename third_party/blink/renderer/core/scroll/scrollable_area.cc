@@ -53,6 +53,7 @@
 #include "third_party/blink/renderer/core/layout/layout_shift_tracker.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
+#include "third_party/blink/renderer/core/loader/anchor_element_interaction_tracker.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
@@ -1232,8 +1233,12 @@ void ScrollableArea::OnScrollFinished(bool scroll_did_end) {
   if (GetLayoutBox()) {
     if (scroll_did_end) {
       UpdateSnappedTargetsAndEnqueueScrollSnapChange();
-      if (RuntimeEnabledFeatures::ScrollEndEventsEnabled()) {
-        if (Node* node = EventTargetNode()) {
+      if (Node* node = EventTargetNode()) {
+        if (auto* anchor_element_interaction_tracker =
+                node->GetDocument().GetAnchorElementInteractionTracker()) {
+          anchor_element_interaction_tracker->OnScrollEnd();
+        }
+        if (RuntimeEnabledFeatures::ScrollEndEventsEnabled()) {
           node->GetDocument().EnqueueScrollEndEventForNode(node);
         }
       }

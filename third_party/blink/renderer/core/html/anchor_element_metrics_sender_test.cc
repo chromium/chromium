@@ -10,9 +10,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "third_party/blink/public/mojom/loader/navigation_predictor.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/html/anchor_element_metrics.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
+#include "third_party/blink/renderer/core/html/html_collection.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
 #include "third_party/blink/renderer/core/loader/anchor_element_interaction_tracker.h"
@@ -81,6 +84,14 @@ class MockAnchorElementMetricsHost
     pointer_down_.emplace_back(std::move(pointer_down_event));
   }
 
+  void ReportAnchorElementsPositionUpdate(
+      WTF::Vector<mojom::blink::AnchorElementPositionUpdatePtr>
+          position_updates) override {
+    for (auto& position_update : position_updates) {
+      positions_[position_update->anchor_id] = std::move(position_update);
+    }
+  }
+
   void ReportNewAnchorElements(
       WTF::Vector<mojom::blink::AnchorElementMetricsPtr> elements,
       const WTF::Vector<uint32_t>& removed_elements) override {
@@ -110,6 +121,7 @@ class MockAnchorElementMetricsHost
   std::vector<mojom::blink::AnchorElementClickPtr> clicks_;
   std::vector<mojom::blink::AnchorElementEnteredViewportPtr> entered_viewport_;
   std::vector<mojom::blink::AnchorElementLeftViewportPtr> left_viewport_;
+  std::map<uint32_t, mojom::blink::AnchorElementPositionUpdatePtr> positions_;
   std::vector<mojom::blink::AnchorElementPointerOverPtr> pointer_over_;
   std::vector<mojom::blink::AnchorElementPointerOutPtr>
       pointer_hover_dwell_time_;
@@ -124,6 +136,24 @@ class MockAnchorElementMetricsHost
   mojo::Receiver<mojom::blink::AnchorElementMetricsHost> receiver_{this};
 };
 
+class TestWebFrameWidgetWithScreenInfo
+    : public frame_test_helpers::TestWebFrameWidget {
+ public:
+  template <typename... Args>
+  explicit TestWebFrameWidgetWithScreenInfo(
+      display::ScreenInfo initial_screen_info,
+      Args&&... args)
+      : TestWebFrameWidget(std::forward<Args>(args)...),
+        initial_screen_info_(initial_screen_info) {}
+
+  display::ScreenInfo GetInitialScreenInfo() override {
+    return initial_screen_info_;
+  }
+
+ private:
+  display::ScreenInfo initial_screen_info_;
+};
+
 class AnchorElementMetricsSenderTest : public SimTest {
  public:
   static constexpr int kViewportWidth = 400;
@@ -134,6 +164,8 @@ class AnchorElementMetricsSenderTest : public SimTest {
 
   void SetUp() override {
     SimTest::SetUp();
+    // Allows WidgetInputHandlerManager::InitOnInputHandlingThread() to run.
+    platform_->RunForPeriod(base::Milliseconds(1));
     // Report all anchors to avoid non-deterministic behavior.
     std::map<std::string, std::string> params;
     params["random_anchor_sampling_period"] = "1";
@@ -143,8 +175,9 @@ class AnchorElementMetricsSenderTest : public SimTest {
 
     IntersectionObserver::SetThrottleDelayEnabledForTesting(false);
 
-    WebView().MainFrameWidget()->Resize(
-        gfx::Size(kViewportWidth, kViewportHeight));
+    ResizeView(gfx::Size(kViewportWidth, kViewportHeight));
+    WebView().MainFrameViewWidget()->UpdateAllLifecyclePhases(
+        DocumentUpdateReason::kTest);
 
     MainFrame().GetFrame()->GetBrowserInterfaceBroker().SetBinderForTesting(
         mojom::blink::AnchorElementMetricsHost::Name_,
@@ -158,6 +191,33 @@ class AnchorElementMetricsSenderTest : public SimTest {
     hosts_.clear();
     IntersectionObserver::SetThrottleDelayEnabledForTesting(true);
     SimTest::TearDown();
+  }
+
+  frame_test_helpers::TestWebFrameWidget* CreateWebFrameWidget(
+      base::PassKey<WebLocalFrame> pass_key,
+      CrossVariantMojoAssociatedRemote<
+          mojom::blink::FrameWidgetHostInterfaceBase> frame_widget_host,
+      CrossVariantMojoAssociatedReceiver<mojom::blink::FrameWidgetInterfaceBase>
+          frame_widget,
+      CrossVariantMojoAssociatedRemote<mojom::blink::WidgetHostInterfaceBase>
+          widget_host,
+      CrossVariantMojoAssociatedReceiver<mojom::blink::WidgetInterfaceBase>
+          widget,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      const viz::FrameSinkId& frame_sink_id,
+      bool hidden,
+      bool never_composited,
+      bool is_for_child_local_root,
+      bool is_for_nested_main_frame,
+      bool is_for_scalable_page) override {
+    display::ScreenInfo screen_info;
+    screen_info.rect = gfx::Rect(kViewportWidth, kViewportHeight);
+    return MakeGarbageCollected<TestWebFrameWidgetWithScreenInfo>(
+        screen_info, std::move(pass_key), std::move(frame_widget_host),
+        std::move(frame_widget), std::move(widget_host), std::move(widget),
+        std::move(task_runner), frame_sink_id, hidden, never_composited,
+        is_for_child_local_root, is_for_nested_main_frame,
+        is_for_scalable_page);
   }
 
   void Bind(mojo::ScopedMessagePipeHandle message_pipe_handle) {
@@ -195,6 +255,32 @@ class AnchorElementMetricsSenderTest : public SimTest {
   void SetMockClock() {
     AnchorElementMetricsSender::From(GetDocument())
         ->SetTickClockForTesting(&clock_);
+  }
+
+  void VerticalScroll(float dy) {
+    GetWebFrameWidget().DispatchThroughCcInputHandler(
+        SyntheticWebGestureEventBuilder::BuildScrollBegin(
+            /*dx_hint=*/0.0f, /*dy_hint=*/0.0f,
+            WebGestureDevice::kTouchscreen));
+    GetWebFrameWidget().DispatchThroughCcInputHandler(
+        SyntheticWebGestureEventBuilder::BuildScrollUpdate(
+            /*dx=*/0.0f, dy, WebInputEvent::kNoModifiers,
+            WebGestureDevice::kTouchscreen));
+    GetWebFrameWidget().DispatchThroughCcInputHandler(
+        SyntheticWebGestureEventBuilder::Build(
+            WebInputEvent::Type::kGestureScrollEnd,
+            WebGestureDevice::kTouchscreen));
+    Compositor().BeginFrame();
+  }
+
+  void ProcessPositionUpdates() {
+    platform_->RunForPeriodSeconds(ConvertDOMHighResTimeStampToSeconds(
+        AnchorElementMetricsSender::From(GetDocument())
+            ->GetIntersectionObserverForTesting()
+            ->delay()));
+    GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+    platform_->RunForPeriod(AnchorElementMetricsSender::kUpdateMetricsTimeGap);
+    base::RunLoop().RunUntilIdle();
   }
 
   base::test::ScopedFeatureList feature_list_;
@@ -1016,6 +1102,144 @@ TEST_F(AnchorElementMetricsSenderTest, IntersectionObserverDelay) {
       AnchorElementMetricsSender::From(GetDocument())
           ->GetIntersectionObserverForTesting();
   EXPECT_EQ(intersection_observer->delay(), 252.0);
+}
+
+TEST_F(AnchorElementMetricsSenderTest, PositionUpdate) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kNavigationPredictorNewViewportFeatures);
+  String source("https://foo.com");
+
+  SimRequest main_resource(source, "text/html");
+  LoadURL(source);
+
+  // viewport |  div_1
+  //    ..    |  div_1
+  //    ..    |  div_1
+  //    ..    |  anchor_1
+  //    ..    |  div_2
+  //    ..    |  div_2
+  //    ..    |  div_2
+  //    ..    |  div_2
+  // --------------------
+  //   XXXX   |  anchor_2
+  //   XXXX   |  anchor_3
+  ASSERT_EQ(kViewportHeight % 8, 0);
+  const int unit = kViewportHeight / 8;
+  const int div_1_height = 3 * unit;
+  const int anchor_1_height = 1 * unit;
+  const int div_2_height = 4 * unit;
+  const int anchor_2_height = 1 * unit;
+  const int anchor_3_height = 1 * unit;
+  const int pointer_down_y = 5 * unit;
+
+  main_resource.Complete(String::Format(
+      R"HTML(
+    <body style="margin: 0px">
+      <div style="height: %dpx;"></div>
+      <a href="https://bar.com/1"
+         style="height: %dpx; display: block;">
+        one
+      </a>
+      <div style="height: %dpx;"></div>
+      <a href="https://bar.com/2"
+         style="height: %dpx; display: block;">
+        two
+      </a>
+      <a href="https://bar.com/3"
+         style="height: %dpx; display: block;">
+        three
+      </a>
+    </body>
+  )HTML",
+      div_1_height, anchor_1_height, div_2_height, anchor_2_height,
+      anchor_3_height));
+  Compositor().BeginFrame();
+
+  ProcessEvents(/*expected_anchors=*/3);
+  EXPECT_EQ(1u, hosts_.size());
+  const auto& mock_host = hosts_[0];
+  auto& positions = mock_host->positions_;
+  EXPECT_EQ(1u, mock_host->entered_viewport_.size());
+  EXPECT_EQ(0u, mock_host->left_viewport_.size());
+
+  HTMLCollection* anchors = GetDocument().links();
+  EXPECT_EQ(3u, anchors->length());
+  uint32_t anchor_1_id =
+      AnchorElementId(To<HTMLAnchorElement>(*anchors->item(0)));
+  uint32_t anchor_2_id =
+      AnchorElementId(To<HTMLAnchorElement>(*anchors->item(1)));
+  uint32_t anchor_3_id =
+      AnchorElementId(To<HTMLAnchorElement>(*anchors->item(2)));
+
+  auto get_ratio = [&positions](uint32_t anchor_id) {
+    auto it = positions.find(anchor_id);
+    CHECK(it != positions.end());
+    return it->second->distance_from_pointer_down_ratio;
+  };
+
+  // Simulate a pointer down and a scroll.
+  //   XXXX   |  div_1
+  // --------------------
+  // viewport |  div_1
+  //    ..    |  div_1
+  //    ..    |  anchor_1
+  //    ..    |  div_2
+  //    ..    |  div_2          . pointerdown
+  //    ..    |  div_2
+  //    ..    |  div_2
+  //    ..    |  anchor_2
+  // ----------------------
+  //   XXXX   |  anchor_3
+  gfx::PointF coordinates(10.0f, pointer_down_y);
+  WebInputEvent::Modifiers modifier = WebInputEvent::kLeftButtonDown;
+  WebMouseEvent event(WebInputEvent::Type::kMouseDown, coordinates, coordinates,
+                      WebPointerProperties::Button::kLeft, 0, modifier,
+                      WebInputEvent::GetStaticTimeStampForTests());
+  GetDocument().GetFrame()->GetEventHandler().HandleMousePressEvent(event);
+  VerticalScroll(-unit);
+  ProcessPositionUpdates();
+
+  EXPECT_EQ(2u, mock_host->entered_viewport_.size());
+  EXPECT_EQ(2u, positions.size());
+  EXPECT_EQ(-2.5f * unit / kViewportHeight, get_ratio(anchor_1_id));
+  EXPECT_EQ(2.5f * unit / kViewportHeight, get_ratio(anchor_2_id));
+  // anchor_3 is not in the viewport, so a ratio isn't reported.
+  EXPECT_TRUE(!base::Contains(positions, anchor_3_id));
+  positions.clear();
+
+  // Zoom (visual as opposed to logical), and scroll up by 2 units post-zoom.
+  //         ...
+  //   XXXX   |  div_1
+  // --------------------
+  // viewport |  div_1
+  //    ..    |  div_1
+  //    ..    |  anchor_1
+  //    ..    |  anchor_1
+  //    ..    |  div_2          . pointerdown
+  //    ..    |  div_2
+  //    ..    |  div_2
+  //    ..    |  div_2
+  // ----------------------
+  //   XXXX   |  div_2
+  //   XXXX   |  div_2
+  //   XXXX   |  div_2
+  //   XXXX   |  div_2
+  //   XXXX   |  anchor_2
+  //   XXXX   |  anchor_2
+  //         ...
+  GetDocument().GetPage()->SetPageScaleFactor(2.0f);
+  Compositor().BeginFrame();
+  VerticalScroll(-2 * unit);
+  ProcessPositionUpdates();
+
+  EXPECT_EQ(2u, positions.size());
+  EXPECT_EQ(-2.0f * unit / kViewportHeight, get_ratio(anchor_1_id));
+  // Note: anchor_2 is not in the visual viewport after the zoom, but is still
+  // in the layout viewport (and will be considered as intersecting by
+  // IntersectionObserver, so we still report a distance ratio).
+  EXPECT_EQ(8.0f * unit / kViewportHeight, get_ratio(anchor_2_id));
+  EXPECT_TRUE(!base::Contains(positions, anchor_3_id));
 }
 
 }  // namespace blink

@@ -17190,6 +17190,16 @@ be describing additional metrics about the same event.
       The index of the anchor element in NavigationPredictor's |top_urls_|.
     </summary>
   </metric>
+  <metric name="DistanceFromLastPointerDown">
+    <summary>
+      Vertical distance from the center of the anchor element to the most recent
+      pointerdown that started a scroll, as a percentage of screen height. This
+      value is between -100 and 100 (inclusive), and is negative when the
+      pointerdown was below the anchor's center (positive otherwise). This will
+      only be set for anchor elements that are in the viewport. Linearly
+      bucketed with a bucket size of 10.
+    </summary>
+  </metric>
   <metric name="EnteredViewportCount">
     <summary>
       How many times the anchor element entered the viewport. Exponentially

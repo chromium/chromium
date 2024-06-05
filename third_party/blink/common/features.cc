@@ -1690,6 +1690,13 @@ const base::FeatureParam<int> kPredictorTrafficClientEnabledPercent{
 #endif
 };
 
+// Used to control the collection of new viewport related anchor element
+// metrics. Metrics will not be recorded if either this or kNavigationPredictor
+// is disabled.
+BASE_FEATURE(kNavigationPredictorNewViewportFeatures,
+             "NavigationPredictorNewViewportFeatures",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kNoForcedFrameUpdatesForWebTests,
              "NoForcedFrameUpdatesForWebTests",
              base::FEATURE_DISABLED_BY_DEFAULT);

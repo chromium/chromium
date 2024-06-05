@@ -111,6 +111,7 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_shift_tracker.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
+#include "third_party/blink/renderer/core/loader/anchor_element_interaction_tracker.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/interactive_detector.h"
 #include "third_party/blink/renderer/core/page/context_menu_controller.h"
@@ -1306,6 +1307,11 @@ void WebFrameWidgetImpl::SendEndOfScrollEvents(
           ScrollableArea::GetForScrolling(target_node->GetLayoutBox())) {
     scrollable_area->UpdateSnappedTargetsAndEnqueueScrollSnapChange();
     scrollable_area->SetImplSnapStrategy(nullptr);
+  }
+
+  if (auto* anchor_element_interaction_tracker =
+          target_node->GetDocument().GetAnchorElementInteractionTracker()) {
+    anchor_element_interaction_tracker->OnScrollEnd();
   }
 
   if (RuntimeEnabledFeatures::ScrollEndEventsEnabled()) {
