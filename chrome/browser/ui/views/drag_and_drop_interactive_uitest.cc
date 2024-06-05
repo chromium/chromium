@@ -1128,7 +1128,13 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DropValidUrlFromOutside) {
 
 // Scenario: drag a URL into the Omnibox.  This is a regression test for
 // https://crbug.com/670123.
-IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DropUrlIntoOmnibox) {
+// TODO(crbug.com/344168586): Very flaky on linux-chromeos-rel bots.
+#if BUILDFLAG(IS_CHROMEOS_ASH) && defined(NDEBUG)
+#define MAYBE_DropUrlIntoOmnibox DISABLED_DropUrlIntoOmnibox
+#else
+#define MAYBE_DropUrlIntoOmnibox DropUrlIntoOmnibox
+#endif
+IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, MAYBE_DropUrlIntoOmnibox) {
   std::string frame_site = use_cross_site_subframe() ? "b.test" : "a.test";
   ASSERT_TRUE(NavigateToTestPage("a.test"));
   ASSERT_TRUE(NavigateRightFrame(frame_site, "title1.html"));
