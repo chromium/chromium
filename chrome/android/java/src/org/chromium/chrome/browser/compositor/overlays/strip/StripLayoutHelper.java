@@ -2760,7 +2760,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
      */
     private float calculateBottomIndicatorWidth(
             StripLayoutGroupTitle groupTitle, int numOfTabsInGroup) {
-        if (groupTitle == null || numOfTabsInGroup == 0) {
+        if (groupTitle == null || groupTitle.isCollapsed() || numOfTabsInGroup == 0) {
             return 0.f;
         }
         float tabWidth = mCachedTabWidth - mTabOverlapWidth;
