@@ -240,4 +240,11 @@ suite('cr-toolbar-search-field', function() {
     await field.updateComplete;
     assertEquals('cr:search', field.$.icon.ironIcon);
   });
+
+  test('sets aria-description on input', async () => {
+    assertEquals('', field.$.searchInput.ariaDescription);
+    field.inputAriaDescription = 'hello world';
+    await field.updateComplete;
+    assertEquals('hello world', field.$.searchInput.ariaDescription);
+  });
 });

@@ -119,4 +119,37 @@ suite('history-toolbar', function() {
     toolbar.selectedPage = 'syncedTabs';
     assertEquals(undefined, toolbar.$.mainToolbar.searchIconOverride);
   });
+
+  test('updates search input aria-description', async () => {
+    function createToolbar() {
+      const toolbar = document.createElement('history-toolbar');
+      document.body.appendChild(toolbar);
+      return toolbar;
+    }
+
+    // Without history embeddings enabled, description should be empty.
+    loadTimeData.overrideValues({enableHistoryEmbeddings: false});
+    let toolbar = createToolbar();
+    await flushTasks();
+    toolbar.selectedPage = 'history';
+    assertEquals('', toolbar.$.mainToolbar.searchInputAriaDescription);
+
+    // With history embeddings enabled, description should change.
+    loadTimeData.overrideValues({
+      enableHistoryEmbeddings: true,
+      historyEmbeddingsDisclaimer: 'some disclaimer',
+    });
+    toolbar = createToolbar();
+    await flushTasks();
+    toolbar.selectedPage = 'history';
+    assertEquals(
+        'some disclaimer', toolbar.$.mainToolbar.searchInputAriaDescription);
+    toolbar.selectedPage = 'grouped';
+    assertEquals(
+        'some disclaimer', toolbar.$.mainToolbar.searchInputAriaDescription);
+
+    // Synced tabs page should have no description.
+    toolbar.selectedPage = 'syncedTabs';
+    assertEquals(undefined, toolbar.$.mainToolbar.searchInputAriaDescription);
+  });
 });

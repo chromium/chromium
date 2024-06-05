@@ -89,6 +89,7 @@ export class CrToolbarElement extends CrLitElement {
       },
 
       searchIconOverride: {type: String},
+      searchInputAriaDescription: {type: String},
     };
   }
 
@@ -105,6 +106,7 @@ export class CrToolbarElement extends CrLitElement {
   alwaysShowLogo: boolean = false;
   protected showingSearch_: boolean = false;
   searchIconOverride?: string;
+  searchInputAriaDescription: string = '';
   private narrowQuery_: MediaQueryList|null = null;
 
   override willUpdate(changedProperties: PropertyValues<this>) {

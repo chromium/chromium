@@ -52,6 +52,11 @@ export class HistoryToolbarElement extends PolymerElement {
         computed: 'computeSearchIconOverride_(selectedPage)',
       },
 
+      searchInputAriaDescription_: {
+        type: String,
+        computed: 'computeSearchInputAriaDescriptionOverride_(selectedPage)',
+      },
+
       // The most recent term entered in the search field. Updated incrementally
       // as the user types.
       searchTerm: {
@@ -88,6 +93,7 @@ export class HistoryToolbarElement extends PolymerElement {
 
   count: number = 0;
   private searchIconOverride_?: string;
+  private searchInputAriaDescription_?: string;
   searchTerm: string;
   selectedPage: string;
   spinnerActive: boolean;
@@ -149,6 +155,15 @@ export class HistoryToolbarElement extends PolymerElement {
     if (loadTimeData.getBoolean('enableHistoryEmbeddings') &&
         TABBED_PAGES.includes(this.selectedPage)) {
       return 'history:embeddings';
+    }
+
+    return undefined;
+  }
+
+  private computeSearchInputAriaDescriptionOverride_(): string|undefined {
+    if (loadTimeData.getBoolean('enableHistoryEmbeddings') &&
+        TABBED_PAGES.includes(this.selectedPage)) {
+      return loadTimeData.getString('historyEmbeddingsDisclaimer');
     }
 
     return undefined;

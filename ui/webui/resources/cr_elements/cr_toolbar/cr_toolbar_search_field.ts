@@ -73,6 +73,8 @@ export class CrToolbarSearchFieldElement extends
       },
 
       iconOverride: {type: String},
+
+      inputAriaDescription: {type: String},
     };
   }
 
@@ -83,6 +85,7 @@ export class CrToolbarSearchFieldElement extends
   spinnerActive: boolean = false;
   private searchFocused_: boolean = false;
   iconOverride?: string;
+  inputAriaDescription: string = '';
 
   override firstUpdated() {
     this.addEventListener('click', e => this.showSearch_(e));

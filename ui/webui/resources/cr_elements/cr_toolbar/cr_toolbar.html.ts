@@ -36,7 +36,8 @@ export function getHtml(this: CrToolbarElement) {
       ?spinner-active="${this.spinnerActive}"
       ?showing-search="${this.showingSearch_}"
       @showing-search-changed="${this.onShowingSearchChanged_}"
-      ?autofocus="${this.autofocus}" icon-override="${this.searchIconOverride}">
+      ?autofocus="${this.autofocus}" icon-override="${this.searchIconOverride}"
+      input-aria-description="${this.searchInputAriaDescription}">
   </cr-toolbar-search-field>
 </div>
 

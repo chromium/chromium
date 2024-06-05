@@ -23,6 +23,7 @@ export function getHtml(this: CrToolbarSearchFieldElement) {
     </label>
     <input id="searchInput"
         aria-labelledby="prompt"
+        aria-description="${this.inputAriaDescription}"
         autocapitalize="off"
         autocomplete="off"
         type="search"
