@@ -38,6 +38,7 @@ build_webui("build") {
     "$root_gen_dir/$attribution_reporting_component_folder/debug_types.mojom-webui.ts",
     "$root_gen_dir/$attribution_reporting_component_folder/trigger_data_matching.mojom-webui.ts",
     "$root_gen_dir/$attribution_reporting_content_folder/aggregatable_result.mojom-webui.ts",
+    "$root_gen_dir/$attribution_reporting_content_folder/process_aggregatable_debug_report_result.mojom-webui.ts",
     "$root_gen_dir/$attribution_reporting_content_folder/attribution_internals.mojom-webui.ts",
     "$root_gen_dir/$attribution_reporting_content_folder/attribution_reporting.mojom-webui.ts",
     "$root_gen_dir/$attribution_reporting_content_folder/event_level_result.mojom-webui.ts",

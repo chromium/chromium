@@ -14,6 +14,7 @@
 #include "base/check.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "components/attribution_reporting/os_registration.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
@@ -87,6 +88,18 @@ void MockAttributionManager::NotifyDebugReportSent(
     const base::Time time) {
   for (auto& observer : observers_) {
     observer.OnDebugReportSent(report, status, time);
+  }
+}
+
+void MockAttributionManager::NotifyAggregatableDebugReportSent(
+    const AggregatableDebugReport& report,
+    base::ValueView report_body,
+    attribution_reporting::mojom::ProcessAggregatableDebugReportResult
+        process_result,
+    const SendAggregatableDebugReportResult& send_result) {
+  for (auto& observer : observers_) {
+    observer.OnAggregatableDebugReportSent(report, report_body, process_result,
+                                           send_result);
   }
 }
 

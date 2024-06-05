@@ -72,6 +72,13 @@ const char kDebugAggregatableReportUrl[] =
     "https://report.test/.well-known/attribution-reporting/debug/"
     "report-aggregate-attribution";
 
+const char kAggregatableDebugReportUrl[] =
+    "https://report.test/.well-known/attribution-reporting/debug/"
+    "report-aggregate-debug";
+
+const char kAggregatableDebugReportMetricName[] =
+    "Conversions.AggregatableDebugReport.HttpResponseOrNetErrorCode";
+
 const char kVerboseDebugReportMetricName[] =
     "Conversions.VerboseDebugReport.HttpResponseOrNetErrorCode";
 
@@ -906,31 +913,67 @@ TEST_F(AttributionReportNetworkSenderTest,
 }
 
 TEST_F(AttributionReportNetworkSenderTest, AggregatableDebugReportSent) {
-  static constexpr char kReportUrl[] =
-      "https://r.test/.well-known/attribution-reporting/debug/"
-      "report-aggregate-debug";
-
   base::HistogramTester histograms;
+
+  base::MockCallback<
+      AttributionReportSender::AggregatableDebugReportSentCallback>
+      callback;
+  EXPECT_CALL(callback, Run(_, _, 200));
 
   network_sender_->SendReport(
       AggregatableDebugReport::CreateForTesting(
           /*contributions=*/{},
           /*context_site=*/net::SchemefulSite::Deserialize("https://c.test"),
-          /*reporting_origin=*/*SuitableOrigin::Deserialize("https://r.test"),
+          /*reporting_origin=*/
+          *SuitableOrigin::Deserialize("https://report.test"),
           /*effective_destination=*/
           net::SchemefulSite::Deserialize("https://d.test"),
           /*aggregation_coordinator_origin=*/std::nullopt,
           /*scheduled_report_time=*/base::Time::Now()),
-      /*report_body=*/base::Value::Dict());
+      /*report_body=*/base::Value::Dict(), callback.Get());
 
   const network::ResourceRequest* pending_request;
-  EXPECT_TRUE(test_url_loader_factory_.IsPending(kReportUrl, &pending_request));
+  EXPECT_TRUE(test_url_loader_factory_.IsPending(kAggregatableDebugReportUrl,
+                                                 &pending_request));
   EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
-      kReportUrl, ""));
+      kAggregatableDebugReportUrl, ""));
 
-  histograms.ExpectUniqueSample(
-      "Conversions.AggregatableDebugReport.HttpResponseOrNetErrorCode",
-      net::HttpStatusCode::HTTP_OK, 1);
+  histograms.ExpectUniqueSample(kAggregatableDebugReportMetricName,
+                                net::HttpStatusCode::HTTP_OK, 1);
+}
+
+TEST_F(AttributionReportNetworkSenderTest,
+       AggregatableDebugReportSent_CallbackInvokedWithNetworkError) {
+  base::HistogramTester histograms;
+
+  base::MockCallback<
+      AttributionReportSender::AggregatableDebugReportSentCallback>
+      callback;
+  EXPECT_CALL(callback, Run(_, _, net::ERR_CONNECTION_ABORTED));
+
+  network_sender_->SendReport(
+      AggregatableDebugReport::CreateForTesting(
+          /*contributions=*/{},
+          /*context_site=*/net::SchemefulSite::Deserialize("https://c.test"),
+          /*reporting_origin=*/
+          *SuitableOrigin::Deserialize("https://report.test"),
+          /*effective_destination=*/
+          net::SchemefulSite::Deserialize("https://d.test"),
+          /*aggregation_coordinator_origin=*/std::nullopt,
+          /*scheduled_report_time=*/base::Time::Now()),
+      /*report_body=*/base::Value::Dict(), callback.Get());
+
+  const network::ResourceRequest* pending_request;
+  EXPECT_TRUE(test_url_loader_factory_.IsPending(kAggregatableDebugReportUrl,
+                                                 &pending_request));
+
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      GURL(kAggregatableDebugReportUrl),
+      network::URLLoaderCompletionStatus(net::ERR_CONNECTION_ABORTED),
+      network::mojom::URLResponseHead::New(), "");
+
+  histograms.ExpectUniqueSample(kAggregatableDebugReportMetricName,
+                                net::ERR_CONNECTION_ABORTED, 1);
 }
 
 }  // namespace content

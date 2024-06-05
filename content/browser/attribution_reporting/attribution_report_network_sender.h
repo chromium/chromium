@@ -58,8 +58,9 @@ class CONTENT_EXPORT AttributionReportNetworkSender
   void SendReport(AttributionDebugReport report,
                   DebugReportSentCallback) override;
 
-  void SendReport(const AggregatableDebugReport&,
-                  base::ValueView report_body) override;
+  void SendReport(AggregatableDebugReport,
+                  base::Value::Dict report_body,
+                  AggregatableDebugReportSentCallback) override;
 
  private:
   // This is a std::list so that iterators remain valid during modifications.
@@ -88,8 +89,10 @@ class CONTENT_EXPORT AttributionReportNetworkSender
       UrlLoaderList::iterator it,
       scoped_refptr<net::HttpResponseHeaders> headers);
 
-  void OnAggregatableDebugReportSent(UrlLoaderList::iterator,
-                                     scoped_refptr<net::HttpResponseHeaders>);
+  void OnAggregatableDebugReportSent(
+      base::OnceCallback<void(int status)> callback,
+      UrlLoaderList::iterator,
+      scoped_refptr<net::HttpResponseHeaders>);
 
   // Reports that are actively being sent.
   UrlLoaderList loaders_in_progress_;

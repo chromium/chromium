@@ -52,6 +52,7 @@
 #include "content/browser/attribution_reporting/attribution_resolver_impl.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
+#include "content/browser/attribution_reporting/process_aggregatable_debug_report_result.mojom.h"
 #include "content/browser/attribution_reporting/sql_utils.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/store_source_result.h"
@@ -83,6 +84,7 @@ using ::attribution_reporting::mojom::SourceType;
 
 using ::testing::AllOf;
 using ::testing::ElementsAre;
+using ::testing::Field;
 using ::testing::IsEmpty;
 using ::testing::Key;
 using ::testing::Pair;
@@ -2899,12 +2901,17 @@ TEST_F(AttributionStorageSqlTest, ClearData_AggregatableDebugDataDeleted) {
   EXPECT_THAT(storage()->ProcessAggregatableDebugReport(
                   create_report(), /*remaining_budget=*/std::nullopt,
                   /*source_id=*/std::nullopt),
-              Property(&AggregatableDebugReport::contributions, SizeIs(1)));
+              Field(&ProcessAggregatableDebugReportResult::result,
+                    attribution_reporting::mojom::
+                        ProcessAggregatableDebugReportResult::kSuccess));
   // Hits rate limits, null report.
-  EXPECT_THAT(storage()->ProcessAggregatableDebugReport(
-                  create_report(), /*remaining_budget=*/std::nullopt,
-                  /*source_id=*/std::nullopt),
-              Property(&AggregatableDebugReport::contributions, IsEmpty()));
+  EXPECT_THAT(
+      storage()->ProcessAggregatableDebugReport(
+          create_report(), /*remaining_budget=*/std::nullopt,
+          /*source_id=*/std::nullopt),
+      Field(&ProcessAggregatableDebugReportResult::result,
+            attribution_reporting::mojom::ProcessAggregatableDebugReportResult::
+                kReportingSiteRateLimitReached));
 
   // This should delete the rate-limit record.
   storage()->ClearData(/*delete_begin=*/base::Time::Min(),
@@ -2912,7 +2919,9 @@ TEST_F(AttributionStorageSqlTest, ClearData_AggregatableDebugDataDeleted) {
   EXPECT_THAT(storage()->ProcessAggregatableDebugReport(
                   create_report(), /*remaining_budget=*/std::nullopt,
                   /*source_id=*/std::nullopt),
-              Property(&AggregatableDebugReport::contributions, SizeIs(1)));
+              Field(&ProcessAggregatableDebugReportResult::result,
+                    attribution_reporting::mojom::
+                        ProcessAggregatableDebugReportResult::kSuccess));
 
   // This should not delete the rate-limit record.
   storage()->ClearData(
@@ -2921,10 +2930,13 @@ TEST_F(AttributionStorageSqlTest, ClearData_AggregatableDebugDataDeleted) {
                           blink::StorageKey::CreateFirstParty(
                               url::Origin::Create(GURL("https://r1.test")))));
   // Still hits rate limits, null report.
-  EXPECT_THAT(storage()->ProcessAggregatableDebugReport(
-                  create_report(), /*remaining_budget=*/std::nullopt,
-                  /*source_id=*/std::nullopt),
-              Property(&AggregatableDebugReport::contributions, IsEmpty()));
+  EXPECT_THAT(
+      storage()->ProcessAggregatableDebugReport(
+          create_report(), /*remaining_budget=*/std::nullopt,
+          /*source_id=*/std::nullopt),
+      Field(&ProcessAggregatableDebugReportResult::result,
+            attribution_reporting::mojom::ProcessAggregatableDebugReportResult::
+                kReportingSiteRateLimitReached));
 
   // The should delete the rate-limit record.
   storage()->ClearData(
@@ -2935,7 +2947,9 @@ TEST_F(AttributionStorageSqlTest, ClearData_AggregatableDebugDataDeleted) {
   EXPECT_THAT(storage()->ProcessAggregatableDebugReport(
                   create_report(), /*remaining_budget=*/std::nullopt,
                   /*source_id=*/std::nullopt),
-              Property(&AggregatableDebugReport::contributions, SizeIs(1)));
+              Field(&ProcessAggregatableDebugReportResult::result,
+                    attribution_reporting::mojom::
+                        ProcessAggregatableDebugReportResult::kSuccess));
 
   CloseDatabase();
 }

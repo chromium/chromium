@@ -14,8 +14,10 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "components/attribution_reporting/suitable_origin.h"
+#include "content/browser/attribution_reporting/process_aggregatable_debug_report_result.mojom-forward.h"
 #include "content/common/content_export.h"
 #include "net/base/schemeful_site.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom-forward.h"
 
 class GURL;
@@ -112,6 +114,26 @@ class CONTENT_EXPORT AggregatableDebugReport {
       aggregation_coordinator_origin_;
   base::Time scheduled_report_time_;
   base::Uuid report_id_;
+};
+
+struct ProcessAggregatableDebugReportResult {
+  AggregatableDebugReport report;
+  attribution_reporting::mojom::ProcessAggregatableDebugReportResult result;
+};
+
+struct SendAggregatableDebugReportResult {
+  struct Sent {
+    // If `status` is positive, it is the HTTP response code. Otherwise, it is
+    // the network error.
+    int status;
+    explicit Sent(int status) : status(status) {}
+  };
+
+  struct AssemblyFailed {};
+
+  using Result = absl::variant<Sent, AssemblyFailed>;
+
+  Result result;
 };
 
 }  // namespace content

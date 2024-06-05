@@ -68,7 +68,7 @@ class CONTENT_EXPORT AttributionResolverImpl : public AttributionResolver {
                  base::Time delete_end,
                  StoragePartition::StorageKeyMatcherFunction filter,
                  bool delete_rate_limit_data) override;
-  AggregatableDebugReport ProcessAggregatableDebugReport(
+  ProcessAggregatableDebugReportResult ProcessAggregatableDebugReport(
       AggregatableDebugReport,
       std::optional<int> remaining_budget,
       std::optional<StoredSource::Id>) override;

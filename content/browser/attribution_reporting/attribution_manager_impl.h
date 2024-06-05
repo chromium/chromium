@@ -29,6 +29,7 @@
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_report_sender.h"
 #include "content/browser/attribution_reporting/attribution_reporting.mojom-forward.h"
+#include "content/browser/attribution_reporting/process_aggregatable_debug_report_result.mojom-forward.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/privacy_sandbox_attestations_observer.h"
 #include "content/public/browser/storage_partition.h"
@@ -43,6 +44,7 @@ class FilePath;
 class Time;
 class TimeDelta;
 class UpdateableSequencedTaskRunner;
+class ValueView;
 }  // namespace base
 
 namespace storage {
@@ -70,6 +72,8 @@ class StoreSourceResult;
 
 struct GlobalRenderFrameHostId;
 struct OsRegistration;
+struct ProcessAggregatableDebugReportResult;
+struct SendAggregatableDebugReportResult;
 struct SendResult;
 
 // UI thread class that manages the lifetime of the underlying attribution
@@ -250,11 +254,16 @@ class CONTENT_EXPORT AttributionManagerImpl
 
   void MaybeSendAggregatableDebugReport(const StoreSourceResult& result);
   void MaybeSendAggregatableDebugReport(const CreateReportResult& result);
-  void OnAggregatableDebugReportProcessed(AggregatableDebugReport);
-  void OnAggregatableDebugReportAssembled(const AggregatableDebugReport&,
+  void OnAggregatableDebugReportProcessed(ProcessAggregatableDebugReportResult);
+  void OnAggregatableDebugReportAssembled(ProcessAggregatableDebugReportResult,
                                           AggregatableReportRequest,
                                           std::optional<AggregatableReport>,
                                           AggregationService::AssemblyStatus);
+  void NotifyAggregatableDebugReportSent(
+      const AggregatableDebugReport&,
+      base::ValueView report_body,
+      attribution_reporting::mojom::ProcessAggregatableDebugReportResult,
+      SendAggregatableDebugReportResult);
 
   void AddPendingAggregatableReportTiming(const AttributionReport&);
   void RecordPendingAggregatableReportsTimings();

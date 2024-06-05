@@ -8,6 +8,7 @@ import "components/attribution_reporting/registration.mojom";
 import "components/attribution_reporting/source_type.mojom";
 import "components/attribution_reporting/trigger_data_matching.mojom";
 import "content/browser/attribution_reporting/aggregatable_result.mojom";
+import "content/browser/attribution_reporting/process_aggregatable_debug_report_result.mojom";
 import "content/browser/attribution_reporting/attribution_reporting.mojom";
 import "content/browser/attribution_reporting/event_level_result.mojom";
 import "content/browser/attribution_reporting/store_source_result.mojom";
@@ -75,6 +76,7 @@ struct WebUIReport {
   WebUIReportData data;
 };
 
+// TODO(linnan): Consider share this with different reports.
 union DebugReportStatus {
   int32 http_response_code;
   string network_error;
@@ -85,6 +87,24 @@ struct WebUIDebugReport {
   double time;
   string body;
   DebugReportStatus status;
+};
+
+union SendAggregatableDebugReportResult {
+  Empty assembly_failed;
+  int32 http_response_code;
+  string network_error;
+};
+
+struct WebUIAggregatableDebugReport {
+  url.mojom.Url url;
+  // Contains msec since the Unix epoch, as returned by
+  // base::Time::InMillisecondsFSinceUnixEpochIgnoringNull().
+  double time;
+  // Serialized JSON dictionary.
+  string body;
+  attribution_reporting.mojom.ProcessAggregatableDebugReportResult
+      process_result;
+  SendAggregatableDebugReportResult send_result;
 };
 
 // Struct representing a stored attribution source that will be displayed by WebUI.
@@ -189,6 +209,10 @@ interface Observer {
 
   // Called when a verbose debug report is sent, regardless of success.
   OnDebugReportSent(WebUIDebugReport report);
+
+  // Called when an aggregatable debug report is assembled and sent, regardless
+  // of success.
+  OnAggregatableDebugReportSent(WebUIAggregatableDebugReport report);
 
   // Called when a trigger is registered, regardless of success or failure.
   OnTriggerHandled(WebUITrigger trigger);

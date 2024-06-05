@@ -80,6 +80,11 @@ class AttributionInternalsHandlerImpl
   void OnDebugReportSent(const AttributionDebugReport&,
                          int status,
                          base::Time) override;
+  void OnAggregatableDebugReportSent(
+      const AggregatableDebugReport&,
+      base::ValueView report_body,
+      attribution_reporting::mojom::ProcessAggregatableDebugReportResult,
+      const SendAggregatableDebugReportResult&) override;
   void OnTriggerHandled(std::optional<uint64_t> cleared_debug_key,
                         const CreateReportResult& result) override;
   void OnOsRegistration(

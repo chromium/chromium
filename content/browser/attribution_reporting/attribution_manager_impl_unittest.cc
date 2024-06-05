@@ -32,6 +32,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/attribution_reporting/aggregatable_debug_reporting_config.h"
@@ -136,6 +137,8 @@ using DebugReportSentCallback =
     ::content::AttributionReportSender::DebugReportSentCallback;
 using ReportSentCallback =
     ::content::AttributionReportSender::ReportSentCallback;
+using AggregatableDebugReportSentCallback =
+    ::content::AttributionReportSender::AggregatableDebugReportSentCallback;
 
 constexpr size_t kMaxPendingEvents = 5;
 constexpr size_t kMaxPendingReportsTimings = 50;
@@ -251,7 +254,9 @@ class MockReportSender : public AttributionReportSender {
 
   MOCK_METHOD(void,
               SendReport,
-              (const AggregatableDebugReport&, base::ValueView report_body),
+              (AggregatableDebugReport,
+               base::Value::Dict report_body,
+               AggregatableDebugReportSentCallback),
               (override));
 };
 
@@ -2904,10 +2909,9 @@ TEST_F(AttributionManagerImplTest, TriggerVerboseDebugReport_ReportSent) {
   {
     InSequence seq;
 
-    EXPECT_CALL(*report_sender_, SendReport(An<AttributionDebugReport>(), _))
-        .Times(0);
+    EXPECT_CALL(*report_sender_, SendReport(_, _)).Times(0);
     EXPECT_CALL(checkpoint, Call(1));
-    EXPECT_CALL(*report_sender_, SendReport(An<AttributionDebugReport>(), _));
+    EXPECT_CALL(*report_sender_, SendReport(_, _));
   }
 
   // Failed without debug reporting.
@@ -2979,8 +2983,7 @@ TEST_F(AttributionManagerImplTest,
   const auto reporting_origin = *SuitableOrigin::Deserialize("https://r1.test");
   cookie_checker_->AddOriginWithDebugCookieSet(reporting_origin);
 
-  EXPECT_CALL(*report_sender_, SendReport(An<AttributionDebugReport>(), _))
-      .Times(0);
+  EXPECT_CALL(*report_sender_, SendReport(_, _)).Times(0);
 
   MockAttributionReportingContentBrowserClient browser_client;
   EXPECT_CALL(browser_client, IsAttributionReportingOperationAllowed(
@@ -3151,10 +3154,9 @@ TEST_F(AttributionManagerImplCookieBasedDebugReportTest,
   {
     InSequence seq;
 
-    EXPECT_CALL(*report_sender_, SendReport(An<AttributionDebugReport>(), _))
-        .Times(0);
+    EXPECT_CALL(*report_sender_, SendReport(_, _)).Times(0);
     EXPECT_CALL(checkpoint, Call(1));
-    EXPECT_CALL(*report_sender_, SendReport(An<AttributionDebugReport>(), _))
+    EXPECT_CALL(*report_sender_, SendReport(_, _))
         .WillOnce([](AttributionDebugReport report,
                      DebugReportSentCallback callback) {
           std::move(callback).Run(std::move(report), kExpectedStatus);
@@ -3223,8 +3225,7 @@ TEST_F(AttributionManagerImplCookieBasedDebugReportTest,
       .WillRepeatedly(Return(false));
   ScopedContentBrowserClientSetting setting(&browser_client);
 
-  EXPECT_CALL(*report_sender_, SendReport(An<AttributionDebugReport>(), _))
-      .Times(0);
+  EXPECT_CALL(*report_sender_, SendReport(_, _)).Times(0);
 
   cookie_checker_->AddOriginWithDebugCookieSet(reporting_origin);
 
@@ -3348,7 +3349,7 @@ TEST_F(AttributionManagerImplTest,
         .WillOnce(base::test::RunOnceCallback<2>(registration,
                                                  std::vector<bool>{true}));
 
-    EXPECT_CALL(*report_sender_, SendReport(An<AttributionDebugReport>(), _));
+    EXPECT_CALL(*report_sender_, SendReport(_, _));
 
     attribution_manager_->HandleOsRegistration(registration);
 
@@ -3380,8 +3381,7 @@ TEST_F(AttributionManagerImplTest,
             : std::nullopt,
         /*is_within_fenced_frame=*/false, kFrameId, kRegistrar);
 
-    EXPECT_CALL(*report_sender_, SendReport(An<AttributionDebugReport>(), _))
-        .Times(0);
+    EXPECT_CALL(*report_sender_, SendReport(_, _)).Times(0);
 
     MockAttributionReportingContentBrowserClient browser_client;
     EXPECT_CALL(browser_client,
@@ -3510,9 +3510,10 @@ TEST_F(AttributionManagerImplTest,
   {
     InSequence seq;
 
-    EXPECT_CALL(*report_sender_, SendReport(_, _, _)).Times(0);
+    EXPECT_CALL(*report_sender_, SendReport(An<AttributionReport>(), _, _))
+        .Times(0);
     EXPECT_CALL(checkpoint, Call(1));
-    EXPECT_CALL(*report_sender_, SendReport(_, _, _));
+    EXPECT_CALL(*report_sender_, SendReport(An<AttributionReport>(), _, _));
   }
 
   task_environment_.FastForwardBy(kDefaultOfflineReportDelay.max);
@@ -3554,9 +3555,10 @@ TEST_F(AttributionManagerImplTest,
   {
     InSequence seq;
 
-    EXPECT_CALL(*report_sender_, SendReport(_, _, _)).Times(0);
+    EXPECT_CALL(*report_sender_, SendReport(An<AttributionReport>(), _, _))
+        .Times(0);
     EXPECT_CALL(checkpoint, Call(1));
-    EXPECT_CALL(*report_sender_, SendReport(_, _, _));
+    EXPECT_CALL(*report_sender_, SendReport(An<AttributionReport>(), _, _));
   }
 
   task_environment_.FastForwardBy(kDefaultOfflineReportDelay.max);
@@ -3583,8 +3585,7 @@ TEST_F(AttributionManagerImplTest, RegistrationHeaderErrorDebugReport) {
         .WillOnce(Return(allowed));
     ScopedContentBrowserClientSetting setting(&browser_client);
 
-    EXPECT_CALL(*report_sender_, SendReport(An<AttributionDebugReport>(), _))
-        .Times(allowed);
+    EXPECT_CALL(*report_sender_, SendReport(_, _)).Times(allowed);
 
     attribution_manager_->ReportRegistrationHeaderError(
         *SuitableOrigin::Deserialize("https://r.test"),
@@ -3654,6 +3655,25 @@ TEST_F(AttributionManagerImplTest, AggregatableDebugReport_ReportSent) {
   base::test::ScopedFeatureList scoped_feature_list(
       attribution_reporting::features::kAttributionAggregatableDebugReporting);
 
+  MockAttributionObserver observer;
+  base::ScopedObservation<AttributionManager, AttributionObserver> observation(
+      &observer);
+  observation.Observe(attribution_manager_.get());
+
+  const AggregatableReport assembled_report =
+      CreateExampleAggregatableDebugReport();
+
+  const int kExpectedStatus = 200;
+  EXPECT_CALL(
+      observer,
+      OnAggregatableDebugReportSent(
+          _, _, _,
+          Field(&SendAggregatableDebugReportResult::result,
+                ::testing::VariantWith<SendAggregatableDebugReportResult::Sent>(
+                    Field(&SendAggregatableDebugReportResult::Sent::status,
+                          kExpectedStatus)))))
+      .Times(3);
+
   EXPECT_CALL(*aggregation_service_, AssembleReport)
       .WillOnce([&](AggregatableReportRequest request,
                     AggregationService::AssemblyCallback callback) {
@@ -3662,8 +3682,7 @@ TEST_F(AttributionManagerImplTest, AggregatableDebugReport_ReportSent) {
                         blink::mojom::AggregatableReportHistogramContribution(
                             /*bucket=*/3,
                             /*value=*/123, /*filtering_id=*/std::nullopt)));
-        std::move(callback).Run(std::move(request),
-                                CreateExampleAggregatableDebugReport(),
+        std::move(callback).Run(std::move(request), assembled_report,
                                 AggregationService::AssemblyStatus::kOk);
       })
       .WillOnce([&](AggregatableReportRequest request,
@@ -3673,21 +3692,26 @@ TEST_F(AttributionManagerImplTest, AggregatableDebugReport_ReportSent) {
                         blink::mojom::AggregatableReportHistogramContribution(
                             /*bucket=*/7,
                             /*value=*/900, /*filtering_id=*/std::nullopt)));
-        std::move(callback).Run(std::move(request),
-                                CreateExampleAggregatableDebugReport(),
+        std::move(callback).Run(std::move(request), assembled_report,
                                 AggregationService::AssemblyStatus::kOk);
       })
       .WillOnce([&](AggregatableReportRequest request,
                     AggregationService::AssemblyCallback callback) {
         EXPECT_THAT(request.payload_contents().contributions, IsEmpty());
-        std::move(callback).Run(std::move(request),
-                                CreateExampleAggregatableDebugReport(),
+        std::move(callback).Run(std::move(request), assembled_report,
                                 AggregationService::AssemblyStatus::kOk);
       });
 
-  EXPECT_CALL(*report_sender_,
-              SendReport(An<const AggregatableDebugReport&>(), _))
-      .Times(3);
+  EXPECT_CALL(*report_sender_, SendReport(An<AggregatableDebugReport>(), _, _))
+      .Times(3)
+      .WillRepeatedly([&](AggregatableDebugReport report,
+                          base::Value::Dict report_body,
+                          AggregatableDebugReportSentCallback callback) {
+        EXPECT_THAT(report_body,
+                    base::test::IsJson(assembled_report.GetAsJson()));
+        std::move(callback).Run(std::move(report), std::move(report_body),
+                                kExpectedStatus);
+      });
 
   attribution_manager_->HandleSource(
       SourceBuilder()

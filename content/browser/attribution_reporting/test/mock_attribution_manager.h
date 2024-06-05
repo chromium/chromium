@@ -22,6 +22,7 @@
 #include "content/browser/attribution_reporting/attribution_reporting.mojom-forward.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/os_registration.h"
+#include "content/browser/attribution_reporting/process_aggregatable_debug_report_result.mojom-forward.h"
 #include "content/browser/attribution_reporting/send_result.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/public/browser/attribution_data_model.h"
@@ -30,13 +31,20 @@
 #include "services/network/public/mojom/attribution.mojom-forward.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+namespace base {
+class ValueView;
+}  // namespace base
+
 namespace content {
 
+class AggregatableDebugReport;
 class AttributionDataHostManager;
 class AttributionDebugReport;
 class BrowsingDataFilterBuilder;
 class CreateReportResult;
 class StoredSource;
+
+struct SendAggregatableDebugReportResult;
 
 class MockAttributionManager : public AttributionManager {
  public:
@@ -124,6 +132,11 @@ class MockAttributionManager : public AttributionManager {
   void NotifyDebugReportSent(const AttributionDebugReport&,
                              int status,
                              base::Time);
+  void NotifyAggregatableDebugReportSent(
+      const AggregatableDebugReport&,
+      base::ValueView report_body,
+      attribution_reporting::mojom::ProcessAggregatableDebugReportResult,
+      const SendAggregatableDebugReportResult&);
   void NotifyOsRegistration(const OsRegistration&,
                             bool is_debug_key_allowed,
                             attribution_reporting::mojom::OsRegistrationResult);

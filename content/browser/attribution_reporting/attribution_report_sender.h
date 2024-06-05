@@ -6,10 +6,7 @@
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_REPORT_SENDER_H_
 
 #include "base/functional/callback_forward.h"
-
-namespace base {
-class ValueView;
-}  // namespace base
+#include "base/values.h"
 
 namespace content {
 
@@ -34,6 +31,11 @@ class AttributionReportSender {
   using DebugReportSentCallback =
       base::OnceCallback<void(const AttributionDebugReport&, int status)>;
 
+  // If `status` is positive, it is the HTTP response code. Otherwise, it is the
+  // network error.
+  using AggregatableDebugReportSentCallback = base::OnceCallback<
+      void(const AggregatableDebugReport&, base::ValueView, int status)>;
+
   // Sends `report` and runs `sent_callback` when done.
   virtual void SendReport(AttributionReport report,
                           bool is_debug_report,
@@ -41,8 +43,9 @@ class AttributionReportSender {
 
   virtual void SendReport(AttributionDebugReport, DebugReportSentCallback) = 0;
 
-  virtual void SendReport(const AggregatableDebugReport&,
-                          base::ValueView report_body) = 0;
+  virtual void SendReport(AggregatableDebugReport,
+                          base::Value::Dict report_body,
+                          AggregatableDebugReportSentCallback) = 0;
 };
 
 }  // namespace content

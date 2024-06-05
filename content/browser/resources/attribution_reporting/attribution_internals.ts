@@ -12,11 +12,12 @@ import {AggregatableResult} from './aggregatable_result.mojom-webui.js';
 import type {TriggerVerification} from './attribution.mojom-webui.js';
 import {AttributionSupport} from './attribution.mojom-webui.js';
 import type {AttributionDetailTableElement} from './attribution_detail_table.js';
-import type {HandlerInterface, ObserverInterface, ReportID, ReportStatus, WebUIDebugReport, WebUIOsRegistration, WebUIRegistration, WebUIReport, WebUISource, WebUISourceRegistration, WebUITrigger} from './attribution_internals.mojom-webui.js';
+import type {HandlerInterface, ObserverInterface, ReportID, ReportStatus, WebUIAggregatableDebugReport, WebUIDebugReport, WebUIOsRegistration, WebUIRegistration, WebUIReport, WebUISource, WebUISourceRegistration, WebUITrigger} from './attribution_internals.mojom-webui.js';
 import {Factory, HandlerRemote, ObserverReceiver, WebUISource_Attributability} from './attribution_internals.mojom-webui.js';
 import type {AttributionInternalsTableElement, CompareFunc, DataColumn, InitOpts, RenderFunc} from './attribution_internals_table.js';
 import {OsRegistrationResult, RegistrationType} from './attribution_reporting.mojom-webui.js';
 import {EventLevelResult} from './event_level_result.mojom-webui.js';
+import {ProcessAggregatableDebugReportResult} from './process_aggregatable_debug_report_result.mojom-webui.js';
 import {SourceType} from './source_type.mojom-webui.js';
 import {StoreSourceResult} from './store_source_result.mojom-webui.js';
 import {TriggerDataMatching} from './trigger_data_matching.mojom-webui.js';
@@ -676,6 +677,54 @@ function attributionSuccessDebugReport(mojo: WebUIReport): DebugReport {
   };
 }
 
+const processAggregatableDebugReportResultText:
+    Readonly<Record<ProcessAggregatableDebugReportResult, string>> = {
+      [ProcessAggregatableDebugReportResult.kSuccess]: 'Success',
+      [ProcessAggregatableDebugReportResult.kNoDebugData]: 'No debug data',
+      [ProcessAggregatableDebugReportResult.kInsufficientBudget]:
+          'Insufficient budget',
+      [ProcessAggregatableDebugReportResult.kExcessiveReports]:
+          'Excessive reports',
+      [ProcessAggregatableDebugReportResult.kGlobalRateLimitReached]:
+          'Global rate-limit reached',
+      [ProcessAggregatableDebugReportResult.kReportingSiteRateLimitReached]:
+          'Per reporting site rate-limit reached',
+      [ProcessAggregatableDebugReportResult.kBothRateLimitsReached]:
+          'Both rate-limits reached',
+      [ProcessAggregatableDebugReportResult.kInternalError]: 'Internal error',
+    };
+
+function aggregatableDebugReport(mojo: WebUIAggregatableDebugReport):
+    DebugReport {
+  const report: DebugReport = {
+    body: mojo.body,
+    url: mojo.url.url,
+    time: new Date(mojo.time),
+    status: '',
+    sendFailed: false,
+  };
+
+  const processStatus =
+      processAggregatableDebugReportResultText[mojo.processResult];
+  let sendStatus;
+
+  if (mojo.sendResult.httpResponseCode !== undefined) {
+    sendStatus = `HTTP ${mojo.sendResult.httpResponseCode}`;
+    report.sendFailed = isHttpError(mojo.sendResult.httpResponseCode);
+  } else if (mojo.sendResult.networkError !== undefined) {
+    sendStatus = `Network error: ${mojo.sendResult.networkError}`;
+    report.sendFailed = true;
+  } else if (mojo.sendResult.assemblyFailed !== undefined) {
+    sendStatus = 'Assembly failure';
+  } else {
+    throw new Error('invalid AggregatableDebugReportStatus union');
+  }
+
+  report.status = `${processStatus}, ${sendStatus}`;
+
+  return report;
+}
+
 function initDebugReportTable(panel: HTMLElement):
     AttributionInternalsTableElement<DebugReport> {
   return initPanel(
@@ -905,6 +954,10 @@ class AttributionInternals implements ObserverInterface {
 
   onDebugReportSent(mojo: WebUIDebugReport): void {
     this.debugReports.addRow(verboseDebugReport(mojo));
+  }
+
+  onAggregatableDebugReportSent(mojo: WebUIAggregatableDebugReport): void {
+    this.debugReports.addRow(aggregatableDebugReport(mojo));
   }
 
   onSourceHandled(mojo: WebUISourceRegistration): void {

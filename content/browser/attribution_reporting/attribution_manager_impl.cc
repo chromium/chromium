@@ -37,6 +37,7 @@
 #include "base/task/updateable_sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "components/attribution_reporting/os_registration.h"
@@ -1428,15 +1429,23 @@ void AttributionManagerImpl::MaybeSendAggregatableDebugReport(
 }
 
 void AttributionManagerImpl::OnAggregatableDebugReportProcessed(
-    AggregatableDebugReport report) {
+    ProcessAggregatableDebugReportResult result) {
   AggregationService* aggregation_service =
       storage_partition_->GetAggregationService();
   if (!aggregation_service) {
+    NotifyAggregatableDebugReportSent(
+        result.report, /*report_body=*/base::Value::Dict(), result.result,
+        SendAggregatableDebugReportResult(
+            SendAggregatableDebugReportResult::AssemblyFailed()));
     return;
   }
   std::optional<AggregatableReportRequest> request =
-      report.CreateAggregatableReportRequest();
+      result.report.CreateAggregatableReportRequest();
   if (!request.has_value()) {
+    NotifyAggregatableDebugReportSent(
+        result.report, /*report_body=*/base::Value::Dict(), result.result,
+        SendAggregatableDebugReportResult(
+            SendAggregatableDebugReportResult::AssemblyFailed()));
     return;
   }
 
@@ -1444,21 +1453,52 @@ void AttributionManagerImpl::OnAggregatableDebugReportProcessed(
       std::move(*request),
       base::BindOnce(
           &AttributionManagerImpl::OnAggregatableDebugReportAssembled,
-          weak_factory_.GetWeakPtr(), std::move(report)));
+          weak_factory_.GetWeakPtr(), std::move(result)));
 }
 
 void AttributionManagerImpl::OnAggregatableDebugReportAssembled(
-    const AggregatableDebugReport& report,
+    ProcessAggregatableDebugReportResult result,
     AggregatableReportRequest,
     std::optional<AggregatableReport> assembled_report,
     AggregationService::AssemblyStatus) {
   if (!assembled_report.has_value()) {
+    NotifyAggregatableDebugReportSent(
+        result.report, /*report_body=*/base::Value::Dict(), result.result,
+        SendAggregatableDebugReportResult(
+            SendAggregatableDebugReportResult::AssemblyFailed()));
     return;
   }
 
-  // TODO(linnan): Show aggregatable debug reports in internals UI.
+  report_sender_->SendReport(
+      std::move(result.report), assembled_report->GetAsJson(),
+      base::BindOnce(
+          [](base::WeakPtr<AttributionManagerImpl> manager,
+             attribution_reporting::mojom::ProcessAggregatableDebugReportResult
+                 process_result,
+             const AggregatableDebugReport& report, base::ValueView report_body,
+             int status) {
+            if (!manager) {
+              return;
+            }
 
-  report_sender_->SendReport(report, assembled_report->GetAsJson());
+            manager->NotifyAggregatableDebugReportSent(
+                report, report_body, process_result,
+                SendAggregatableDebugReportResult(
+                    SendAggregatableDebugReportResult::Sent(status)));
+          },
+          weak_factory_.GetWeakPtr(), result.result));
+}
+
+void AttributionManagerImpl::NotifyAggregatableDebugReportSent(
+    const AggregatableDebugReport& report,
+    base::ValueView report_body,
+    attribution_reporting::mojom::ProcessAggregatableDebugReportResult
+        process_result,
+    SendAggregatableDebugReportResult send_result) {
+  for (auto& observer : observers_) {
+    observer.OnAggregatableDebugReportSent(report, report_body, process_result,
+                                           send_result);
+  }
 }
 
 void AttributionManagerImpl::MaybeSendVerboseDebugReport(

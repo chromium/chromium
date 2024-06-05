@@ -106,13 +106,18 @@ void AttributionReportNetworkSender::SendReport(
 }
 
 void AttributionReportNetworkSender::SendReport(
-    const AggregatableDebugReport& report,
-    base::ValueView report_body) {
-  SendReport(report.ReportUrl(), report.reporting_origin(),
-             SerializeAttributionJson(report_body), net::HttpRequestHeaders(),
+    AggregatableDebugReport report,
+    base::Value::Dict report_body,
+    AggregatableDebugReportSentCallback callback) {
+  GURL url(report.ReportUrl());
+  url::Origin origin(report.reporting_origin());
+  std::string body = SerializeAttributionJson(report_body);
+  SendReport(std::move(url), std::move(origin), body, net::HttpRequestHeaders(),
              base::BindOnce(
                  &AttributionReportNetworkSender::OnAggregatableDebugReportSent,
-                 base::Unretained(this)));
+                 base::Unretained(this),
+                 base::BindOnce(std::move(callback), std::move(report),
+                                std::move(report_body))));
 }
 
 void AttributionReportNetworkSender::SendReport(GURL url,
@@ -295,6 +300,7 @@ void AttributionReportNetworkSender::OnVerboseDebugReportSent(
 }
 
 void AttributionReportNetworkSender::OnAggregatableDebugReportSent(
+    base::OnceCallback<void(int status)> callback,
     UrlLoaderList::iterator it,
     scoped_refptr<net::HttpResponseHeaders> headers) {
   // HTTP statuses are positive; network errors are negative.
@@ -306,6 +312,7 @@ void AttributionReportNetworkSender::OnAggregatableDebugReportSent(
       "Conversions.AggregatableDebugReport.HttpResponseOrNetErrorCode", status);
 
   loaders_in_progress_.erase(it);
+  std::move(callback).Run(status);
 }
 
 }  // namespace content

@@ -25,6 +25,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/os_registration.h"
 #include "components/attribution_reporting/parsing_utils.h"
@@ -32,6 +33,7 @@
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_config.h"
 #include "components/attribution_reporting/trigger_registration.h"
+#include "content/browser/attribution_reporting/aggregatable_debug_report.h"
 #include "content/browser/attribution_reporting/attribution_debug_report.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_internals.mojom.h"
@@ -70,6 +72,7 @@ using Empty = ::attribution_internals::mojom::Empty;
 using ReportStatus = ::attribution_internals::mojom::ReportStatus;
 using ReportStatusPtr = ::attribution_internals::mojom::ReportStatusPtr;
 
+using ::attribution_internals::mojom::WebUIAggregatableDebugReport;
 using ::attribution_internals::mojom::WebUIDebugReport;
 
 attribution_internals::mojom::WebUISourcePtr WebUISource(
@@ -415,6 +418,42 @@ void AttributionInternalsHandlerImpl::OnDebugReportSent(
                 net::ErrorToShortString(status));
 
   observer_->OnDebugReportSent(std::move(web_report));
+}
+
+void AttributionInternalsHandlerImpl::OnAggregatableDebugReportSent(
+    const AggregatableDebugReport& report,
+    base::ValueView report_body,
+    attribution_reporting::mojom::ProcessAggregatableDebugReportResult
+        process_result,
+    const SendAggregatableDebugReportResult& send_result) {
+  auto web_report = WebUIAggregatableDebugReport::New();
+  web_report->url = report.ReportUrl();
+  web_report->time =
+      report.scheduled_report_time().InMillisecondsFSinceUnixEpoch();
+  web_report->body =
+      SerializeAttributionJson(report_body, /*pretty_print=*/true);
+  web_report->process_result = process_result;
+
+  web_report->send_result = absl::visit(
+      base::Overloaded{
+          [](const SendAggregatableDebugReportResult::Sent& sent) {
+            return sent.status > 0
+                       ? attribution_internals::mojom::
+                             SendAggregatableDebugReportResult::
+                                 NewHttpResponseCode(sent.status)
+                       : attribution_internals::mojom::
+                             SendAggregatableDebugReportResult::NewNetworkError(
+                                 net::ErrorToShortString(sent.status));
+          },
+          [](const SendAggregatableDebugReportResult::AssemblyFailed&) {
+            return attribution_internals::mojom::
+                SendAggregatableDebugReportResult::NewAssemblyFailed(
+                    Empty::New());
+          },
+      },
+      send_result.result);
+
+  observer_->OnAggregatableDebugReportSent(std::move(web_report));
 }
 
 void AttributionInternalsHandlerImpl::OnOsRegistration(

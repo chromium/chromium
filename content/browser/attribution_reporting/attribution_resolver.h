@@ -29,6 +29,8 @@ class StorableSource;
 class StoreSourceResult;
 class StoredSource;
 
+struct ProcessAggregatableDebugReportResult;
+
 // This class provides an interface for persisting attribution data to
 // disk, and performing queries on it. AttributionResolver should initialize
 // itself. Calls to a AttributionResolver instance that failed to initialize
@@ -124,7 +126,7 @@ class AttributionResolver {
   // `std::nullopt` for trigger debug reports. `source_id` is set when there is
   // an associated source with the debug report, i.e. when the source is
   // successfully stored or when there is a matching source with the trigger.
-  virtual AggregatableDebugReport ProcessAggregatableDebugReport(
+  virtual ProcessAggregatableDebugReportResult ProcessAggregatableDebugReport(
       AggregatableDebugReport,
       std::optional<int> remaining_budget,
       std::optional<StoredSource::Id> source_id) = 0;

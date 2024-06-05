@@ -23,6 +23,7 @@ mojom("registration_result_mojom") {
   sources = [
     "aggregatable_result.mojom",
     "event_level_result.mojom",
+    "process_aggregatable_debug_report_result.mojom",
     "store_source_result.mojom",
   ]
   webui_module_path = "/"
