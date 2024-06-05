@@ -22,6 +22,9 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener;
 import com.google.android.material.tabs.TabLayout.Tab;
 
+import org.chromium.base.Callback;
+import org.chromium.chrome.browser.hub.HubToolbarProperties.PaneButtonLookup;
+
 import java.util.List;
 
 /** Toolbar for the Hub. May contain a single or multiple rows, of which this view is the parent. */
@@ -105,6 +108,15 @@ public class HubToolbarView extends LinearLayout {
 
         // TODO(crbug.com/40948541): Updating the app menu color here is more correct and
         // should be done for code health.
+    }
+
+    void setButtonLookupConsumer(Callback<PaneButtonLookup> lookupConsumer) {
+        lookupConsumer.onResult(this::getButtonView);
+    }
+
+    private View getButtonView(int index) {
+        @Nullable Tab tab = mPaneSwitcher.getTabAt(index);
+        return tab == null ? null : tab.view;
     }
 
     private OnTabSelectedListener makeTabSelectedListener(

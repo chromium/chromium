@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.hub;
 
+import android.view.View;
+
+import androidx.annotation.Nullable;
+
 import org.chromium.chrome.browser.tab.Tab;
 
 /**
@@ -18,12 +22,23 @@ public interface PaneHubController {
      *
      * @param tabId The ID of the tab to select or {@link Tab.INVALID_TAB_ID}.
      */
-    public void selectTabAndHideHub(int tabId);
+    void selectTabAndHideHub(int tabId);
 
     /**
      * Focuses a pane taking focus away from the current pane.
      *
      * @param paneId The ID of the pane to focus.
      */
-    public void focusPane(@PaneId int paneId);
+    void focusPane(@PaneId int paneId);
+
+    /**
+     * Allows retrieval of the View object that will allow switching to a particular pane. Should
+     * never be used to perform click operations to switch panes, use {@link #focusPane(int)} for
+     * that. Instead this is for purposes such as rooting IPHs.
+     *
+     * @param paneId The id the the pane to be searched for.
+     * @return The view if currently present in the toolbar.
+     */
+    @Nullable
+    View getPaneButton(@PaneId int paneId);
 }

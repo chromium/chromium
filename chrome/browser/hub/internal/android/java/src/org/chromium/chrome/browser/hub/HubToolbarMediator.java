@@ -7,9 +7,12 @@ package org.chromium.chrome.browser.hub;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.ACTION_BUTTON_DATA;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.COLOR_SCHEME;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.MENU_BUTTON_VISIBLE;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_BUTTON_LOOKUP_CALLBACK;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_SWITCHER_BUTTON_DATA;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_SWITCHER_INDEX;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SHOW_ACTION_BUTTON_TEXT;
+
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,6 +22,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.TransitiveObservableSupplier;
+import org.chromium.chrome.browser.hub.HubToolbarProperties.PaneButtonLookup;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
@@ -45,6 +49,8 @@ public class HubToolbarMediator {
     // changes in the returned panes or suppliers.
     private final @NonNull List<Runnable> mRemoveReferenceButtonObservers = new ArrayList<>();
     private final @NonNull Callback<Pane> mOnFocusedPaneChange = this::onFocusedPaneChange;
+
+    private @Nullable PaneButtonLookup mPaneButtonLookup;
 
     /** Creates the mediator. */
     public HubToolbarMediator(
@@ -79,6 +85,8 @@ public class HubToolbarMediator {
                             focusedPaneSupplier, p -> p.getActionButtonDataSupplier());
             mActionButtonDataSupplier.addObserver(mOnActionButtonChangeCallback);
         }
+
+        mPropertyModel.set(PANE_BUTTON_LOOKUP_CALLBACK, this::consumeButtonLookup);
     }
 
     /** Cleans up observers. */
@@ -90,6 +98,24 @@ public class HubToolbarMediator {
         mRemoveReferenceButtonObservers.stream().forEach(r -> r.run());
         mRemoveReferenceButtonObservers.clear();
         mPaneManager.getFocusedPaneSupplier().removeObserver(mOnFocusedPaneChange);
+    }
+
+    /** Returns the button view for a given pane if present. */
+    public @Nullable View getButton(@PaneId int paneId) {
+        if (mPaneButtonLookup == null) return null;
+
+        int size = mCachedPaneSwitcherButtonData.size();
+        int index = 0;
+        for (int i = 0; i < size; ++i) {
+            Pair<Integer, DisplayButtonData> pair = mCachedPaneSwitcherButtonData.get(i);
+            if (Objects.equals(paneId, pair.first)) {
+                return mPaneButtonLookup.get(index);
+            } else if (pair.second != null) {
+                // The button lookup only knows about visible (non null) buttons.
+                index++;
+            }
+        }
+        return null;
     }
 
     private void onActionButtonChange(@Nullable FullButtonData actionButtonData) {
@@ -173,5 +199,9 @@ public class HubToolbarMediator {
                             "Android.Hub.PaneFocused.PaneSwitcher", paneId, PaneId.COUNT);
                 };
         return new DelegateButtonData(referenceButtonData, onPress);
+    }
+
+    private void consumeButtonLookup(PaneButtonLookup paneButtonLookup) {
+        mPaneButtonLookup = paneButtonLookup;
     }
 }

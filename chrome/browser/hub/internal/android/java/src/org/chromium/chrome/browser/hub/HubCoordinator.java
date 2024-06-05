@@ -167,6 +167,12 @@ public class HubCoordinator implements PaneHubController, BackPressHandler {
         mPaneManager.focusPane(paneId);
     }
 
+    @Nullable
+    @Override
+    public View getPaneButton(@PaneId int paneId) {
+        return mHubToolbarCoordinator.getPaneButton(paneId);
+    }
+
     private @Nullable Pane getFocusedPane() {
         return mPaneManager.getFocusedPaneSupplier().get();
     }

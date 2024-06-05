@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.hub;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -13,6 +14,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.ACTION_BUTTON_DATA;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.MENU_BUTTON_VISIBLE;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_BUTTON_LOOKUP_CALLBACK;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_SWITCHER_BUTTON_DATA;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_SWITCHER_INDEX;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SHOW_ACTION_BUTTON_TEXT;
@@ -33,11 +35,15 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.hub.HubToolbarProperties.PaneButtonLookup;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -56,6 +62,9 @@ public class HubToolbarViewUnitTest {
             new ActivityScenarioRule<>(TestActivity.class);
 
     @Mock Runnable mOnButton;
+    @Mock Callback<PaneButtonLookup> mPaneButtonLookupCallback;
+
+    @Captor ArgumentCaptor<PaneButtonLookup> mPaneButtonLookupCaptor;
 
     private Activity mActivity;
     private HubToolbarView mToolbar;
@@ -199,5 +208,21 @@ public class HubToolbarViewUnitTest {
 
         mPropertyModel.set(MENU_BUTTON_VISIBLE, true);
         assertEquals(View.VISIBLE, mMenuButtonContainer.getVisibility());
+    }
+
+    @Test
+    @MediumTest
+    public void testPaneButtonLookupCallback() {
+        FullButtonData buttonData1 = makeTestButtonData();
+        FullButtonData buttonData2 = makeTestButtonData();
+        mPropertyModel.set(PANE_SWITCHER_BUTTON_DATA, Arrays.asList(buttonData1, buttonData2));
+        mPropertyModel.set(PANE_BUTTON_LOOKUP_CALLBACK, mPaneButtonLookupCallback);
+
+        verify(mPaneButtonLookupCallback).onResult(mPaneButtonLookupCaptor.capture());
+        PaneButtonLookup lookup = mPaneButtonLookupCaptor.getValue();
+
+        assertEquals(lookup.get(0), lookup.get(0));
+        assertEquals(lookup.get(1), lookup.get(1));
+        assertNotEquals(lookup.get(0), lookup.get(1));
     }
 }

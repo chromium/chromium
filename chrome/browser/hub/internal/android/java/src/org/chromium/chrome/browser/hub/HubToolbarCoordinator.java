@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.hub;
 
+import android.view.View;
+
 import androidx.annotation.NonNull;
 
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
@@ -32,6 +34,11 @@ public class HubToolbarCoordinator {
 
         MenuButton menuButton = hubToolbarView.findViewById(R.id.menu_button_wrapper);
         menuButtonCoordinator.setMenuButton(menuButton);
+    }
+
+    /** Returns the button view for a given pane if present. */
+    public View getPaneButton(@PaneId int paneId) {
+        return mMediator.getButton(paneId);
     }
 
     /** Cleans up observers and resources. */
