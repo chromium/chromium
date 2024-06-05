@@ -23477,30 +23477,11 @@
             ]
         }
     ],
-    "WaffleAndroidStudy": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SearchEngineChoiceTrigger"
-                    ]
-                }
-            ]
-        }
-    ],
     "WaffleStudy": [
         {
             "platforms": [
                 "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
+                "chromeos_lacros"
             ],
             "experiments": [
                 {
