@@ -5,6 +5,7 @@
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "components/saved_tab_groups/features.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
 
 namespace tab_groups {
@@ -41,6 +42,10 @@ SavedTabGroupTab::~SavedTabGroupTab() = default;
 
 bool SavedTabGroupTab::ShouldMergeTab(
     const SavedTabGroupTab& remote_tab) const {
+  if (AlwaysAcceptServerDataInModel()) {
+    return true;
+  }
+
   return remote_tab.update_time_windows_epoch_micros() >=
          update_time_windows_epoch_micros();
 }

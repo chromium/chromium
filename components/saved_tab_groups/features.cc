@@ -46,6 +46,11 @@ BASE_FEATURE(kMigrationFromJavaSharedPrefs,
              "MigrationFromJavaSharedPrefs",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Feature flag to remove any merge logic from saved tab group model.
+BASE_FEATURE(kAlwaysAcceptServerDataInModel,
+             "AlwaysAcceptServerDataInModel",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 bool IsTabGroupsSaveV2Enabled() {
   return base::FeatureList::IsEnabled(kTabGroupsSaveV2);
 }
@@ -56,6 +61,10 @@ bool IsTabGroupsSaveUIUpdateEnabled() {
 
 bool IsMigrationFromJavaSharedPrefsEnabled() {
   return base::FeatureList::IsEnabled(kMigrationFromJavaSharedPrefs);
+}
+
+bool AlwaysAcceptServerDataInModel() {
+  return base::FeatureList::IsEnabled(kAlwaysAcceptServerDataInModel);
 }
 
 }  // namespace tab_groups

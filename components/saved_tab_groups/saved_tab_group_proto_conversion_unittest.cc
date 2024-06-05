@@ -235,7 +235,7 @@ TEST_F(SavedTabGroupConversionTest, MergedGroupHoldsCorrectData) {
   group1.SetColor(tab_groups::TabGroupColorId::kOrange);
   group1.SetTitle(u"Another title");
   group2.SetUpdateTimeWindowsEpochMicros(old_time);
-  EXPECT_FALSE(group1.RemoteGroupHasMoreRecentUpdates(
+  EXPECT_TRUE(group1.RemoteGroupHasMoreRecentUpdates(
       group2.update_time_windows_epoch_micros()));
 }
 
@@ -263,7 +263,7 @@ TEST_F(SavedTabGroupConversionTest, MergedTabHoldsCorrectData) {
   tab1.SetTitle(u"A title");
   tab1.SetURL(GURL("Another url"));
   tab2.SetUpdateTimeWindowsEpochMicros(old_time);
-  EXPECT_FALSE(tab1.ShouldMergeTab(tab2));
+  EXPECT_TRUE(tab1.ShouldMergeTab(tab2));
 }
 
 }  // namespace tab_groups

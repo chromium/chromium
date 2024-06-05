@@ -309,6 +309,10 @@ void SavedTabGroup::UpdateTabPositionsImpl() {
 
 bool SavedTabGroup::RemoteGroupHasMoreRecentUpdates(
     base::Time remote_group_update_time) const {
+  if (AlwaysAcceptServerDataInModel()) {
+    return true;
+  }
+
   // TODO(crbug.com/40870787): Investigate if we should consider the creation
   // time.
   return remote_group_update_time >= update_time_windows_epoch_micros();
