@@ -181,6 +181,8 @@ public class PageInsightsCoordinatorTest {
         when(mInMotionSupplier.get()).thenReturn(false);
         mFeatureListValues = new FeatureList.TestValues();
         FeatureList.setTestValues(mFeatureListValues);
+        // Disable native because this test does not initialize native.
+        FeatureList.setDisableNativeForTesting(true);
         mFeatureListValues.addFieldTrialParamOverride(
                 ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB_PEEK,
                 PageInsightsMediator.PAGE_INSIGHTS_PEEK_DELAY_PARAM,

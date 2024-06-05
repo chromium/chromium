@@ -65,7 +65,7 @@ public abstract class FeatureMap {
     public String getFieldTrialParamByFeature(String featureName, String paramName) {
         String testValue = FeatureList.getTestValueForFieldTrialParam(featureName, paramName);
         if (testValue != null) return testValue;
-        if (FeatureList.hasTestFeatures()) return "";
+        if (FeatureList.getDisableNativeForTesting()) return "";
         ensureNativeMapInit();
         return FeatureMapJni.get()
                 .getFieldTrialParamByFeature(mNativeMapPtr, featureName, paramName);
@@ -84,7 +84,7 @@ public abstract class FeatureMap {
             String featureName, String paramName, boolean defaultValue) {
         String testValue = FeatureList.getTestValueForFieldTrialParam(featureName, paramName);
         if (testValue != null) return Boolean.valueOf(testValue);
-        if (FeatureList.hasTestFeatures()) return defaultValue;
+        if (FeatureList.getDisableNativeForTesting()) return defaultValue;
         ensureNativeMapInit();
         return FeatureMapJni.get()
                 .getFieldTrialParamByFeatureAsBoolean(
@@ -104,7 +104,7 @@ public abstract class FeatureMap {
             String featureName, String paramName, int defaultValue) {
         String testValue = FeatureList.getTestValueForFieldTrialParam(featureName, paramName);
         if (testValue != null) return Integer.valueOf(testValue);
-        if (FeatureList.hasTestFeatures()) return defaultValue;
+        if (FeatureList.getDisableNativeForTesting()) return defaultValue;
         ensureNativeMapInit();
         return FeatureMapJni.get()
                 .getFieldTrialParamByFeatureAsInt(
@@ -124,7 +124,7 @@ public abstract class FeatureMap {
             String featureName, String paramName, double defaultValue) {
         String testValue = FeatureList.getTestValueForFieldTrialParam(featureName, paramName);
         if (testValue != null) return Double.valueOf(testValue);
-        if (FeatureList.hasTestFeatures()) return defaultValue;
+        if (FeatureList.getDisableNativeForTesting()) return defaultValue;
         ensureNativeMapInit();
         return FeatureMapJni.get()
                 .getFieldTrialParamByFeatureAsDouble(
@@ -136,7 +136,7 @@ public abstract class FeatureMap {
         Map<String, String> testValues =
                 FeatureList.getTestValuesForAllFieldTrialParamsForFeature(featureName);
         if (testValues != null) return testValues;
-        if (FeatureList.hasTestFeatures()) return Collections.emptyMap();
+        if (FeatureList.getDisableNativeForTesting()) return Collections.emptyMap();
 
         ensureNativeMapInit();
         Map<String, String> result = new HashMap<>();

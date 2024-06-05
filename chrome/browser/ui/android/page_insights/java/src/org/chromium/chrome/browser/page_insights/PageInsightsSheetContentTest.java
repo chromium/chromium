@@ -128,6 +128,8 @@ public class PageInsightsSheetContentTest {
 
     private void createSheetContent(TestValues testValues, PageInsightsIntentParams intentParams) {
         FeatureList.setTestValues(testValues);
+        // Disable native because this test does not initialize native.
+        FeatureList.setDisableNativeForTesting(true);
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {

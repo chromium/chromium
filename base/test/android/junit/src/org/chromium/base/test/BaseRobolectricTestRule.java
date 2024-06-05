@@ -13,6 +13,7 @@ import org.junit.runners.model.Statement;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.BundleUtils;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureParam;
 import org.chromium.base.Flag;
 import org.chromium.base.LifetimeAssert;
@@ -71,7 +72,13 @@ public class BaseRobolectricTestRule implements TestRule {
     }
 
     static void setUp(Method method) {
+        // Some of this logic seems like it would be more appropriate in @BeforeClass, but
+        // Robolectric doesn't really support @BeforeClass (maybe because @Config can be applied to
+        // individual methods). It does run the annotated methods, but does does so before
+        // configuring the Application instance, and it does so from within methodBlock rather than
+        // classBlock().
         ResettersForTesting.beforeHooksWillExecute();
+        FeatureList.setDisableNativeForTesting(true);
         UmaRecorderHolder.setUpNativeUmaRecorder(false);
         UmaRecorderHolder.resetForTesting();
         ContextUtils.initApplicationContextForTests(ApplicationProvider.getApplicationContext());

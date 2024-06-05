@@ -186,6 +186,9 @@ public class MerchantTrustMessageViewTest extends BlankUiTestActivityTestCase {
 
     private void setMessageUIParams(
             String useRatingBar, String useGoogleIcon, String titleUI, String descriptionUI) {
+        // TODO: Remove use of setDisableNativeForTesting(), probably needed due to isInitialized()
+        // in MerchantViewerConfig.
+        FeatureList.setDisableNativeForTesting(true);
         FeatureList.TestValues testValues = new FeatureList.TestValues();
         testValues.addFieldTrialParamOverride(
                 ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,

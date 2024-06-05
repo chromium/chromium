@@ -21,6 +21,8 @@ public class BaseRobolectricAndroidConfigurer
         implements ChromiumAndroidConfigurer.ExtraConfiguration {
     @Override
     public void withConfig(InstrumentationConfiguration.Builder builder, Config config) {
+        // HelperTestRunner is already not acquired when initially created, but listing it here
+        // means it will still not be acquired when accessed from within the sandbox.
         builder.doNotAcquireClass(BaseRobolectricTestRunner.HelperTestRunner.class)
                 // Requires access to non-fake SystemClock.
                 .doNotAcquireClass(TimeoutTimer.class)

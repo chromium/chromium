@@ -33,8 +33,7 @@ public class FeatureListUnitTest {
 
     @Test
     public void test_getTestValueForFeature_canUseDefaults_noException() {
-        FeatureList.setTestCanUseDefaultsForTesting();
-
+        FeatureList.setDisableNativeForTesting(false);
         Assert.assertNull(FeatureList.getTestValueForFeature(FEATURE_A));
     }
 
@@ -144,7 +143,7 @@ public class FeatureListUnitTest {
     @Test
     @EnableFeatures({FEATURE_A, FEATURE_B})
     public void test_setTestValues_replacesAnnotation() {
-        FeatureList.setTestCanUseDefaultsForTesting();
+        FeatureList.setDisableNativeForTesting(false);
 
         TestValues testValues = new TestValues();
         testValues.addFeatureFlagOverride(FEATURE_A, false);

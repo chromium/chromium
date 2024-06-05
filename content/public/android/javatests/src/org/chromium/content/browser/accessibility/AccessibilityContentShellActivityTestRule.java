@@ -26,7 +26,6 @@ import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 
-import org.chromium.base.FeatureList;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.UrlUtils;
@@ -112,8 +111,6 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
 
         mTracker = new AccessibilityActionAndEventTracker();
         mWcax.setAccessibilityTrackerForTesting(mTracker);
-
-        FeatureList.setTestCanUseDefaultsForTesting();
     }
 
     public void setupTestFrameworkForBasicMode() {
@@ -128,8 +125,6 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
 
         mTracker = new AccessibilityActionAndEventTracker();
         mWcax.setAccessibilityTrackerForTesting(mTracker);
-
-        FeatureList.setTestCanUseDefaultsForTesting();
     }
 
     public void setupTestFrameworkForFormControlsMode() {
@@ -145,8 +140,6 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
 
         mTracker = new AccessibilityActionAndEventTracker();
         mWcax.setAccessibilityTrackerForTesting(mTracker);
-
-        FeatureList.setTestCanUseDefaultsForTesting();
     }
 
     /** Helper method to tear down our tests so we can start the next test clean. */

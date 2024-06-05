@@ -142,9 +142,6 @@ public class Features {
 
         @Override
         protected void after() {
-            // Resets state that might persist in between tests.
-            FeatureList.setTestFeatures(null);
-
             // sInstance may already be null if there are nested usages.
             if (sInstance == null) return;
 
@@ -216,7 +213,6 @@ public class Features {
         // {@link CommandLine}, so that their test values are reflected in native too. Thus,
         // {@link FeatureList} is configured to allow asking native for a flag value regardless of
         // whether some other flag override has been set.
-        FeatureList.setTestCanUseDefaultsForTesting();
         mergeFeatureLists("enable-features", true);
         mergeFeatureLists("disable-features", false);
 
@@ -233,9 +229,6 @@ public class Features {
 
     /** Resets test fixtures for Feature flags after a Robolectric Test. */
     public static void resetAfterRobolectricTest() {
-        // Resets state that might persist in between tests.
-        FeatureList.setTestFeatures(null);
-
         resetCachedFlags(false);
 
         // sInstance may already be null if there are nested usages.

@@ -81,7 +81,6 @@ public class ReengagementNotificationControllerIntegrationTest {
     @Before
     public void setUp() throws Exception {
         reset(mTracker);
-        FeatureList.setTestCanUseDefaultsForTesting();
         setReengagementNotificationEnabled(true);
         TrackerFactory.setTrackerForTests(mTracker);
         closeReengagementNotifications();

@@ -34,7 +34,6 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.JniMocker;
@@ -62,7 +61,6 @@ import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
 /** Unit tests for the context menu logic of Chrome. */
@@ -113,10 +111,6 @@ public class ChromeContextMenuPopulatorTest {
 
         jniMocker.mock(ProfileJni.TEST_HOOKS, mProfileNatives);
         when(mProfileNatives.fromWebContents(eq(mWebContents))).thenReturn(mProfile);
-
-        FeatureList.setTestCanUseDefaultsForTesting();
-        HashMap<String, Boolean> features = new HashMap<String, Boolean>();
-        FeatureList.setTestFeatures(features);
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {

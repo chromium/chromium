@@ -4817,6 +4817,7 @@ if (is_android) {
     sources = [ "android/java/src/org/chromium/base/CommandLine.java" ]
     deps = [
       ":log_java",
+      ":resetters_java",
       "//third_party/androidx:androidx_annotation_annotation_experimental_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
