@@ -26,6 +26,7 @@ import {
   WifiSecurityType,
 } from './mojo/type.js';
 import * as snackbar from './snackbar.js';
+import {speak} from './spoken_msg.js';
 import * as state from './state.js';
 import {OneShotTimer} from './timer.js';
 import {
@@ -33,6 +34,7 @@ import {
   ErrorType,
   LocalStorageKey,
 } from './type.js';
+import {getKeyboardShortcut} from './util.js';
 
 // Supported source types.
 export enum Source {
@@ -46,7 +48,9 @@ interface ChipMethods {
   // Focus the chip. The element receiving focus depends on the type of chip.
   focus(): void;
   // Returns if the chip is expanded.
-  expanded?(): boolean;
+  isExpanded?(): boolean;
+  // Returns if the chip is focused inside.
+  isFocused?(): boolean;
 }
 
 interface CurrentChip extends ChipMethods {
@@ -288,6 +292,7 @@ function createCopyButton(
       dom.getFrom(container, '.barcode-copy-button', HTMLButtonElement);
   copyButton.onclick = async () => {
     await navigator.clipboard.writeText(content);
+    speak(I18nString.COPIED_DETECTED_CONTENT, content);
     snackbar.show(snackbarLabel);
     onCopy?.();
   };
@@ -338,39 +343,69 @@ function showUrl(url: string): ChipMethods {
 function showText(text: string, onCopy?: () => void): ChipMethods {
   const container = dom.get('#barcode-chip-text-container', HTMLDivElement);
   const expandEl = dom.get('#barcode-chip-text-expand', HTMLButtonElement);
-  container.classList.remove('expanded');
-  expandEl.ariaExpanded = 'false';
+  const descriptionEl = dom.get('#barcode-chip-text-description', HTMLElement);
+
+  function isChipExpanded() {
+    return container.classList.contains('expanded');
+  }
+  function hideChip() {
+    container.classList.add('invisible');
+  }
+  function expandChip() {
+    container.classList.add('expanded');
+    expandEl.ariaExpanded = 'true';
+    expandEl.setAttribute(
+        'aria-label',
+        loadTimeData.getI18nMessage(
+            I18nString.LABEL_COLLAPSE_DETECTED_CONTENT_BUTTON));
+  }
+  function collapseChip() {
+    container.classList.remove('expanded');
+    expandEl.ariaExpanded = 'false';
+    expandEl.setAttribute(
+        'aria-label',
+        loadTimeData.getI18nMessage(
+            I18nString.LABEL_EXPAND_DETECTED_CONTENT_BUTTON));
+  }
+
+  collapseChip();
   container.classList.remove('invisible');
 
   const textEl = dom.get('#barcode-chip-text-content', HTMLSpanElement);
   textEl.textContent = text;
   const expandable = textEl.scrollWidth > textEl.clientWidth;
 
-  expandEl.classList.toggle('hidden', !expandable);
-  expandEl.onclick = () => {
-    container.classList.toggle('expanded');
-    const expanded = container.classList.contains('expanded');
-    expandEl.ariaExpanded = expanded.toString();
-    assertExists(currentChip).timer.resetTimeout();
-  };
+  if (expandable) {
+    descriptionEl.textContent = loadTimeData.getI18nMessage(
+        I18nString.TEXT_DETECTED_DESCRIPTION_EXPANDABLE);
+    expandEl.classList.remove('hidden');
+    expandEl.onclick = () => {
+      if (isChipExpanded()) {
+        collapseChip();
+      } else {
+        expandChip();
+      }
+      assertExists(currentChip).timer.resetTimeout();
+    };
+  } else {
+    descriptionEl.textContent =
+        loadTimeData.getI18nMessage(I18nString.TEXT_DETECTED_DESCRIPTION);
+    expandEl.classList.add('hidden');
+  }
 
   const copyButton = createCopyButton(
       container, text, I18nString.SNACKBAR_TEXT_COPIED, onCopy);
-  const label =
-      loadTimeData.getI18nMessage(I18nString.BARCODE_COPY_TEXT_BUTTON, text);
-  copyButton.setAttribute('aria-label', label);
 
   return {
-    hide() {
-      container.classList.add('invisible');
-    },
+    hide: hideChip,
     focus() {
       // TODO(b/172879638): There is a race in ChromeVox which will speak the
       // focused element twice.
       copyButton.focus();
     },
-    expanded() {
-      return container.classList.contains('expanded');
+    isExpanded: isChipExpanded,
+    isFocused() {
+      return container.contains(document.activeElement);
     },
   };
 }
@@ -479,7 +514,7 @@ function showChip({setupChip, content, source}: ShowChipParams): void {
   if (isShowing) {
     assert(currentChip !== null);
     // Skip updating the chip if it's expanded.
-    if (currentChip.expanded?.() === true) {
+    if (currentChip.isExpanded?.() === true) {
       return;
     }
     // Extend the duration by resetting the timeout if the same content is being
@@ -509,6 +544,7 @@ function showChip({setupChip, content, source}: ShowChipParams): void {
     source,
     timer,
   };
+  window.addEventListener('keydown', onKeyDown);
 }
 
 /**
@@ -521,4 +557,12 @@ export function dismiss(): void {
   currentChip.timer.stop();
   currentChip.hide();
   currentChip = null;
+  window.removeEventListener('keydown', onKeyDown);
+}
+
+function onKeyDown(event: KeyboardEvent) {
+  const {isFocused} = assertExists(currentChip);
+  if (isFocused?.() === true && getKeyboardShortcut(event) === 'Escape') {
+    dismiss();
+  }
 }

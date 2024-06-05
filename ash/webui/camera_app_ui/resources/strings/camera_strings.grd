@@ -288,7 +288,22 @@
         Copy link address <ph name="url">$1<ex>https://www.google.com</ex></ph>
       </message>
       <message desc="Label for the copy button of the barcode text chip." name="IDS_BARCODE_COPY_TEXT_BUTTON">
-        Copy text <ph name="text">$1<ex>example text</ex></ph>
+        Copy detected text
+      </message>
+      <message desc="Speech spoken when content is copied." name="IDS_COPIED_DETECTED_CONTENT">
+        Copied <ph name="content">$1<ex>detected content</ex></ph>
+      </message>
+      <message desc="Description of the text detected chip." name="IDS_TEXT_DETECTED_DESCRIPTION">
+        Copy to verify the content.
+      </message>
+      <message desc="Description of the expandable text detected chip." name="IDS_TEXT_DETECTED_DESCRIPTION_EXPANDABLE">
+        Copy to verify the content or expand to stop scanning.
+      </message>
+      <message desc="Label for the expand button of the text detected chip." name="IDS_LABEL_EXPAND_DETECTED_CONTENT_BUTTON">
+        Expand dialog and stop scanning
+      </message>
+      <message desc="Label for the collapse button of the text detected chip." name="IDS_LABEL_COLLAPSE_DETECTED_CONTENT_BUTTON">
+        Collapse dialog and start scanning
       </message>
       <message desc="Label for the barcode container when text is detected under scan mode." name="IDS_LABEL_BARCODE_TEXT">
         Text detected.

@@ -113,7 +113,7 @@
         <div id="barcode-chip-url-container"
              class="invisible barcode-chip-container"
              role="dialog"
-             i18n-label="label_barcode_url">
+             i18n-aria="label_barcode_url">
           <button id="barcode-chip-url"
                   class="barcode-chip-button" tabindex="0">
             <svg-wrapper name="barcode_url.svg"></svg-wrapper>
@@ -122,17 +122,20 @@
           </button>
           <div class="circle">
             <button class="barcode-copy-button" tabindex="0"
-              data-svg="barcode_copy.svg"></button>
+              data-svg="barcode_copy.svg"
+              i18n-label="barcode_copy_link_button"></button>
           </div>
         </div>
         <div id="barcode-chip-text-container"
              class="invisible barcode-chip-container"
              role="dialog"
-             i18n-label="label_barcode_text">
+             aria-describedby="barcode-chip-text-description"
+             i18n-aria="label_barcode_text">
           <div class="barcode-chip-text">
             <span id="barcode-chip-text-content"></span>
             <button id="barcode-chip-text-expand"
-                    aria-expanded="false">
+                    aria-expanded="false"
+                    i18n-label="label_expand_detected_content_button">
               <svg-wrapper name="barcode_chevron_up.svg" class="up-icon">
               </svg-wrapper>
               <svg-wrapper name="barcode_chevron_down.svg" class="down-icon">
@@ -141,13 +144,15 @@
           </div>
           <div class="circle">
             <button class="barcode-copy-button" tabindex="0"
-              data-svg="barcode_copy.svg"></button>
+            data-svg="barcode_copy.svg"
+            i18n-label="barcode_copy_text_button"></button>
           </div>
+          <div id="barcode-chip-text-description" hidden></div>
         </div>
         <div id="barcode-chip-wifi-container"
             class="invisible barcode-chip-container"
             role="dialog"
-            i18n-label="label_barcode_wifi">
+            i18n-aria="label_barcode_wifi">
           <button id="barcode-chip-wifi"
                   class="barcode-chip-button" tabindex="0">
             <svg-wrapper name="wifi.svg"></svg-wrapper>
