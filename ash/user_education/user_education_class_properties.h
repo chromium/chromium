@@ -8,10 +8,6 @@
 #include "ash/ash_export.h"
 #include "ui/base/class_property.h"
 
-namespace gfx {
-class Insets;
-}  // namespace gfx
-
 namespace ash {
 
 // TODO(http://b/277994050): Remove after Lacros launch.
@@ -24,9 +20,6 @@ namespace ash {
 enum class HelpBubbleContext { kDefault, kAsh };
 ASH_EXPORT extern const ui::ClassProperty<HelpBubbleContext>* const
     kHelpBubbleContextKey;
-
-// A property which can be set on a view to inset any associated pings.
-ASH_EXPORT extern const ui::ClassProperty<gfx::Insets*>* const kPingInsetsKey;
 
 }  // namespace ash
 

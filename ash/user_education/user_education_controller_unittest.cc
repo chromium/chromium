@@ -13,7 +13,6 @@
 #include "ash/user_education/user_education_ash_test_base.h"
 #include "ash/user_education/user_education_feature_controller.h"
 #include "ash/user_education/user_education_help_bubble_controller.h"
-#include "ash/user_education/user_education_ping_controller.h"
 #include "ash/user_education/user_education_tutorial_controller.h"
 #include "ash/user_education/welcome_tour/welcome_tour_controller.h"
 #include "base/test/bind.h"
@@ -79,13 +78,6 @@ TEST_P(UserEducationControllerTest, Exists) {
 // education features are enabled.
 TEST_P(UserEducationControllerTest, UserEducationHelpBubbleControllerExists) {
   EXPECT_EQ(!!UserEducationHelpBubbleController::Get(),
-            !!UserEducationController::Get());
-}
-
-// Verifies that the user education ping controller exists iff user education
-// features are enabled.
-TEST_P(UserEducationControllerTest, UserEducationPingControllerExists) {
-  EXPECT_EQ(!!UserEducationPingController::Get(),
             !!UserEducationController::Get());
 }
 

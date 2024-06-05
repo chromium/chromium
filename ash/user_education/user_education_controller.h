@@ -12,7 +12,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/user_education/user_education_help_bubble_controller.h"
-#include "ash/user_education/user_education_ping_controller.h"
 #include "ash/user_education/user_education_private_api_key.h"
 #include "ash/user_education/user_education_tutorial_controller.h"
 
@@ -78,9 +77,6 @@ class ASH_EXPORT UserEducationController {
 
   // The controller responsible for creation/management of help bubbles.
   UserEducationHelpBubbleController help_bubble_controller_{delegate_.get()};
-
-  // The controller responsible for creation/management of pings.
-  UserEducationPingController ping_controller_;
 
   // The controller responsible for creation/management of tutorials.
   UserEducationTutorialController tutorial_controller_{delegate_.get()};
