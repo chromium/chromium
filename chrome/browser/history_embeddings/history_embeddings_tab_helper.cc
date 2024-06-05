@@ -31,9 +31,14 @@
 HistoryEmbeddingsTabHelper::HistoryEmbeddingsTabHelper(
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<HistoryEmbeddingsTabHelper>(*web_contents) {}
+      content::WebContentsUserData<HistoryEmbeddingsTabHelper>(*web_contents),
+      loading_tab_count_(0) {
+  resource_coordinator::TabLoadTracker::Get()->AddObserver(this);
+}
 
-HistoryEmbeddingsTabHelper::~HistoryEmbeddingsTabHelper() = default;
+HistoryEmbeddingsTabHelper::~HistoryEmbeddingsTabHelper() {
+  resource_coordinator::TabLoadTracker::Get()->RemoveObserver(this);
+}
 
 void HistoryEmbeddingsTabHelper::OnUpdatedHistoryForNavigation(
     content::NavigationHandle* navigation_handle,
@@ -70,18 +75,46 @@ void HistoryEmbeddingsTabHelper::DidFinishLoad(
   // guarantees at most one delayed task is scheduled at a time.
   CancelExtraction();
 
+  VLOG(3) << "Tabs Loading: "
+          << resource_coordinator::TabLoadTracker::Get()->GetLoadingTabCount();
+
+  ScheduleExtraction(render_frame_host->GetWeakDocumentPtr());
+}
+
+void HistoryEmbeddingsTabHelper::OnLoadingStateChange(
+    content::WebContents* web_contents,
+    LoadingState old_loading_state,
+    LoadingState new_loading_state) {
+  loading_tab_count_ =
+      resource_coordinator::TabLoadTracker::Get()->GetLoadingTabCount();
+  VLOG(3) << "Loading state changed for '" << web_contents->GetTitle()
+          << "' with " << loading_tab_count_ << " tabs now loading.";
+}
+
+void HistoryEmbeddingsTabHelper::ScheduleExtraction(
+    content::WeakDocumentPtr weak_render_frame_host) {
+  if (!weak_render_frame_host.AsRenderFrameHostIfValid()) {
+    return;
+  }
   // Schedule a new delayed task with a fresh weak pointer.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&HistoryEmbeddingsTabHelper::ExtractPassages,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     render_frame_host->GetWeakDocumentPtr()),
+                     weak_ptr_factory_.GetWeakPtr(), weak_render_frame_host),
       base::Milliseconds(history_embeddings::kPassageExtractionDelay.Get()));
 }
 
 void HistoryEmbeddingsTabHelper::ExtractPassages(
     content::WeakDocumentPtr weak_render_frame_host) {
   if (!history_url_.has_value()) {
+    return;
+  }
+
+  if (loading_tab_count_ > 0) {
+    // Not ready yet. Try again after the delay.
+    ScheduleExtraction(weak_render_frame_host);
+    VLOG(3) << "Extraction rescheduled; " << loading_tab_count_
+            << " tabs still loading.";
     return;
   }
 

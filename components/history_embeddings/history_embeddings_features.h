@@ -13,7 +13,10 @@ namespace history_embeddings {
 BASE_DECLARE_FEATURE(kHistoryEmbeddings);
 
 // Number of milliseconds to wait after `DidFinishLoad` before extracting
-// passages, computing and storing their embeddings, etc.
+// passages, computing and storing their embeddings, etc. Note, the
+// extraction will only begin if no tabs are loading. If any are
+// loading then the delay is applied again to reschedule extraction.
+// To avoid CPU churn from rescheduling, keep this value well above zero.
 extern const base::FeatureParam<int> kPassageExtractionDelay;
 
 // Specifies the `max_words_per_aggregate_passage` parameter for the

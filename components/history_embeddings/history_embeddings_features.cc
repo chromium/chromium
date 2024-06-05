@@ -16,7 +16,7 @@ BASE_FEATURE(kHistoryEmbeddings,
 
 const base::FeatureParam<int> kPassageExtractionDelay(&kHistoryEmbeddings,
                                                       "PassageExtractionDelay",
-                                                      0);
+                                                      5000);
 
 const base::FeatureParam<int> kPassageExtractionMaxWordsPerAggregatePassage(
     &kHistoryEmbeddings,
