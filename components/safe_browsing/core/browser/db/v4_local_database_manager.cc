@@ -217,19 +217,6 @@ void RecordTimeSinceLastUpdateHistograms(const base::Time& last_response_time) {
       time_since_update);
 }
 
-void RecordCheckUrlForHighConfidenceAllowlistBoolean(
-    const std::string& metric_name,
-    const std::string& metric_variation,
-    bool value) {
-  auto histogram_name =
-      base::StrCat({"SafeBrowsing.", metric_variation, ".", metric_name});
-  DCHECK(histogram_name == "SafeBrowsing.RT.AllStoresAvailable" ||
-         histogram_name == "SafeBrowsing.HPRT.AllStoresAvailable" ||
-         histogram_name == "SafeBrowsing.RT.AllowlistSizeTooSmall" ||
-         histogram_name == "SafeBrowsing.HPRT.AllowlistSizeTooSmall");
-  base::UmaHistogramBoolean(histogram_name, value);
-}
-
 bool GetPrefixMatchesIsAsync() {
   return base::FeatureList::IsEnabled(kMmapSafeBrowsingDatabase) &&
          kMmapSafeBrowsingDatabaseAsync.Get();
@@ -471,29 +458,28 @@ bool V4LocalDatabaseManager::CheckResourceUrl(const GURL& url, Client* client) {
   return HandleCheck(std::move(check));
 }
 
-void V4LocalDatabaseManager::CheckUrlForHighConfidenceAllowlist(
+std::optional<
+    SafeBrowsingDatabaseManager::HighConfidenceAllowlistCheckLoggingDetails>
+V4LocalDatabaseManager::CheckUrlForHighConfidenceAllowlist(
     const GURL& url,
-    const std::string& metric_variation,
     base::OnceCallback<void(bool)> callback) {
   DCHECK(sb_task_runner()->RunsTasksInCurrentSequence());
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           kSkipHighConfidenceAllowlist)) {
     sb_task_runner()->PostTask(FROM_HERE,
                                base::BindOnce(std::move(callback), false));
-    return;
+    return std::nullopt;
   }
 
   StoresToCheck stores_to_check({GetUrlHighConfidenceAllowlistId()});
   bool all_stores_available = AreAllStoresAvailableNow(stores_to_check);
-  RecordCheckUrlForHighConfidenceAllowlistBoolean(
-      "AllStoresAvailable", metric_variation, all_stores_available);
   bool is_artificial_prefix_empty =
       artificially_marked_store_and_hash_prefixes_.empty();
   bool is_allowlist_too_small =
       IsStoreTooSmall(GetUrlHighConfidenceAllowlistId(), kBytesPerFullHashEntry,
                       kHighConfidenceAllowlistMinimumEntryCount);
-  RecordCheckUrlForHighConfidenceAllowlistBoolean(
-      "AllowlistSizeTooSmall", metric_variation, is_allowlist_too_small);
+  auto logging_details = HighConfidenceAllowlistCheckLoggingDetails(
+      all_stores_available, is_allowlist_too_small);
   if (!IsDatabaseReady() ||
       (is_allowlist_too_small && is_artificial_prefix_empty) ||
       !CanCheckUrl(url) ||
@@ -505,7 +491,7 @@ void V4LocalDatabaseManager::CheckUrlForHighConfidenceAllowlist(
     // matches are present, consider the allowlist as ready.
     sb_task_runner()->PostTask(FROM_HERE,
                                base::BindOnce(std::move(callback), true));
-    return;
+    return logging_details;
   }
 
   std::unique_ptr<PendingCheck> check = std::make_unique<PendingCheck>(
@@ -514,6 +500,7 @@ void V4LocalDatabaseManager::CheckUrlForHighConfidenceAllowlist(
 
   HandleAllowlistCheck(std::move(check), /*allow_async_full_hash_check=*/false,
                        std::move(callback));
+  return logging_details;
 }
 
 bool V4LocalDatabaseManager::CheckUrlForSubresourceFilter(const GURL& url,
@@ -1314,5 +1301,12 @@ V4LocalDatabaseManager::CopyAndRemoveAllPendingChecks() {
   }
   return pending_checks;
 }
+
+V4LocalDatabaseManager::HighConfidenceAllowlistCheckLoggingDetails::
+    HighConfidenceAllowlistCheckLoggingDetails(
+        bool were_all_stores_available,
+        bool was_allowlist_size_too_small)
+    : were_all_stores_available(were_all_stores_available),
+      was_allowlist_size_too_small(was_allowlist_size_too_small) {}
 
 }  // namespace safe_browsing

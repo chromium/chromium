@@ -120,7 +120,7 @@ void CheckUrlForAllowlistAndRecordMetric(
   g_browser_process->safe_browsing_service()
       ->database_manager()
       ->CheckUrlForHighConfidenceAllowlist(
-          url, "RT" /*realtime*/,
+          url,
           base::BindOnce(
               [](history::HistoryLastVisitResult result, bool on_allowlist) {
                 RecordWebsiteStateAtApiRequest(result, on_allowlist);

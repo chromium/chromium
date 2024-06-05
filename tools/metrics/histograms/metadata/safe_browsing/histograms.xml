@@ -2195,6 +2195,9 @@ chromium-metrics-reviews@google.com.
     corrupted on the disk. If too small, the allowlist is considered as
     unavailable. Logged each time a top frame URL navigation happens for users
     who have the real time URL lookups enabled.
+
+    In M125 and M126, this contained logs from the full-screen use case of the
+    allowlist as well.
   </summary>
 </histogram>
 
@@ -2206,6 +2209,9 @@ chromium-metrics-reviews@google.com.
     Logs whether the local Safe Browsing stores are available. If not, all URLs
     are marked as safe during real time URL lookup. Logged each time a top frame
     URL navigation happens for users who have the real time URL lookups enabled.
+
+    In M125 and M126, this contained logs from the full-screen use case of the
+    allowlist as well.
   </summary>
 </histogram>
 

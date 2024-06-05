@@ -31,11 +31,22 @@ HashRealTimeMechanism::~HashRealTimeMechanism() {
 SafeBrowsingLookupMechanism::StartCheckResult
 HashRealTimeMechanism::StartCheckInternal() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  database_manager_->CheckUrlForHighConfidenceAllowlist(
-      url_, "HPRT",
-      base::BindOnce(
-          &HashRealTimeMechanism::OnCheckUrlForHighConfidenceAllowlist,
-          weak_factory_.GetWeakPtr()));
+  std::optional<
+      SafeBrowsingDatabaseManager::HighConfidenceAllowlistCheckLoggingDetails>
+      logging_details = database_manager_->CheckUrlForHighConfidenceAllowlist(
+          url_,
+          base::BindOnce(
+              &HashRealTimeMechanism::OnCheckUrlForHighConfidenceAllowlist,
+              weak_factory_.GetWeakPtr()));
+
+  if (logging_details.has_value()) {
+    base::UmaHistogramBoolean(
+        "SafeBrowsing.HPRT.AllStoresAvailable",
+        logging_details.value().were_all_stores_available);
+    base::UmaHistogramBoolean(
+        "SafeBrowsing.HPRT.AllowlistSizeTooSmall",
+        logging_details.value().was_allowlist_size_too_small);
+  }
 
   return StartCheckResult(
       /*is_safe_synchronously=*/false, /*threat_source=*/std::nullopt);

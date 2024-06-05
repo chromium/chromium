@@ -67,11 +67,21 @@ UrlRealTimeMechanism::StartCheckInternal() {
 
   bool check_allowlist = can_check_db_ && can_check_high_confidence_allowlist_;
   if (check_allowlist) {
-    database_manager_->CheckUrlForHighConfidenceAllowlist(
-        url_, "RT",
-        base::BindOnce(
-            &UrlRealTimeMechanism::OnCheckUrlForHighConfidenceAllowlist,
-            weak_factory_.GetWeakPtr()));
+    std::optional<
+        SafeBrowsingDatabaseManager::HighConfidenceAllowlistCheckLoggingDetails>
+        logging_details = database_manager_->CheckUrlForHighConfidenceAllowlist(
+            url_,
+            base::BindOnce(
+                &UrlRealTimeMechanism::OnCheckUrlForHighConfidenceAllowlist,
+                weak_factory_.GetWeakPtr()));
+    if (logging_details.has_value()) {
+      base::UmaHistogramBoolean(
+          "SafeBrowsing.RT.AllStoresAvailable",
+          logging_details.value().were_all_stores_available);
+      base::UmaHistogramBoolean(
+          "SafeBrowsing.RT.AllowlistSizeTooSmall",
+          logging_details.value().was_allowlist_size_too_small);
+    }
   } else {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,

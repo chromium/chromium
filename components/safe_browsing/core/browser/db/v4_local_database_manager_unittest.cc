@@ -540,16 +540,16 @@ class V4LocalDatabaseManagerTest : public PlatformTest {
   }
 
   void ValidateHighConfidenceAllowlistHistograms(
+      std::optional<SafeBrowsingDatabaseManager::
+                        HighConfidenceAllowlistCheckLoggingDetails>
+          logging_details,
       bool expected_all_stores_available_sample,
       bool expected_allowlist_too_small_sample) {
-    histogram_tester_.ExpectUniqueSample(
-        "SafeBrowsing.HPRT.AllStoresAvailable",
-        /*sample=*/expected_all_stores_available_sample,
-        /*expected_bucket_count=*/1);
-    histogram_tester_.ExpectUniqueSample(
-        "SafeBrowsing.HPRT.AllowlistSizeTooSmall",
-        /*sample=*/expected_allowlist_too_small_sample,
-        /*expected_bucket_count=*/1);
+    ASSERT_TRUE(logging_details.has_value());
+    EXPECT_EQ(logging_details.value().were_all_stores_available,
+              expected_all_stores_available_sample);
+    EXPECT_EQ(logging_details.value().was_allowlist_size_too_small,
+              expected_allowlist_too_small_sample);
   }
 
   const SBThreatTypeSet usual_threat_types_ = CreateSBThreatTypeSet(
@@ -808,10 +808,12 @@ TEST_F(V4LocalDatabaseManagerTest,
   // Confirm there is no match and the full hash check is not performed.
   const GURL url_check("https://" + url_safe_no_scheme);
   base::test::TestFuture<bool> future;
-  v4_local_database_manager_->CheckUrlForHighConfidenceAllowlist(
-      url_check, "HPRT", future.GetCallback());
+  auto logging_details =
+      v4_local_database_manager_->CheckUrlForHighConfidenceAllowlist(
+          url_check, future.GetCallback());
   EXPECT_FALSE(future.Get());
   ValidateHighConfidenceAllowlistHistograms(
+      logging_details,
       /*expected_all_stores_available_sample=*/true,
       /*expected_allowlist_too_small_sample=*/false);
 
@@ -837,10 +839,12 @@ TEST_F(V4LocalDatabaseManagerTest,
   // Confirm there is a match and the full hash check is not performed.
   const GURL url_check("https://" + url_safe_no_scheme);
   base::test::TestFuture<bool> future;
-  v4_local_database_manager_->CheckUrlForHighConfidenceAllowlist(
-      url_check, "HPRT", future.GetCallback());
+  auto logging_details =
+      v4_local_database_manager_->CheckUrlForHighConfidenceAllowlist(
+          url_check, future.GetCallback());
   EXPECT_TRUE(future.Get());
   ValidateHighConfidenceAllowlistHistograms(
+      logging_details,
       /*expected_all_stores_available_sample=*/true,
       /*expected_allowlist_too_small_sample=*/false);
   WaitForTasksOnTaskRunner();
@@ -864,10 +868,12 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckUrlForHCAllowlistWithNoMatch) {
   // Confirm there is no match and the full hash check is not performed.
   const GURL url_check("https://example.com/other/");
   base::test::TestFuture<bool> future;
-  v4_local_database_manager_->CheckUrlForHighConfidenceAllowlist(
-      url_check, "HPRT", future.GetCallback());
+  auto logging_details =
+      v4_local_database_manager_->CheckUrlForHighConfidenceAllowlist(
+          url_check, future.GetCallback());
   EXPECT_FALSE(future.Get());
   ValidateHighConfidenceAllowlistHistograms(
+      logging_details,
       /*expected_all_stores_available_sample=*/true,
       /*expected_allowlist_too_small_sample=*/false);
   WaitForTasksOnTaskRunner();
@@ -886,10 +892,12 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckUrlForHCAllowlistUnavailable) {
   // Confirm there is a match and the full hash check is not performed.
   const GURL url_check("https://example.com/safe");
   base::test::TestFuture<bool> future;
-  v4_local_database_manager_->CheckUrlForHighConfidenceAllowlist(
-      url_check, "HPRT", future.GetCallback());
+  auto logging_details =
+      v4_local_database_manager_->CheckUrlForHighConfidenceAllowlist(
+          url_check, future.GetCallback());
   EXPECT_TRUE(future.Get());
   ValidateHighConfidenceAllowlistHistograms(
+      logging_details,
       /*expected_all_stores_available_sample=*/false,
       /*expected_allowlist_too_small_sample=*/false);
   WaitForTasksOnTaskRunner();
@@ -914,8 +922,10 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckUrlForHCAllowlistAfterStopping) {
 
   const GURL url_check("https://" + url_safe_no_scheme);
   base::test::TestFuture<bool> future;
-  v4_local_database_manager_->CheckUrlForHighConfidenceAllowlist(
-      url_check, "HPRT", future.GetCallback());
+  auto logging_details =
+      v4_local_database_manager_->CheckUrlForHighConfidenceAllowlist(
+          url_check, future.GetCallback());
+  EXPECT_TRUE(logging_details.has_value());
   EXPECT_EQ(1ul, GetPendingChecks().size());
   StopLocalDatabaseManager();
   EXPECT_TRUE(GetPendingChecks().empty());
@@ -937,10 +947,12 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckUrlForHCAllowlistSmallSize) {
   // Confirm there is a match and the full hash check is not performed.
   const GURL url_check("https://example.com/safe");
   base::test::TestFuture<bool> future;
-  v4_local_database_manager_->CheckUrlForHighConfidenceAllowlist(
-      url_check, "HPRT", future.GetCallback());
+  auto logging_details =
+      v4_local_database_manager_->CheckUrlForHighConfidenceAllowlist(
+          url_check, future.GetCallback());
   EXPECT_TRUE(future.Get());
   ValidateHighConfidenceAllowlistHistograms(
+      logging_details,
       /*expected_all_stores_available_sample=*/true,
       /*expected_allowlist_too_small_sample=*/true);
   WaitForTasksOnTaskRunner();
@@ -964,8 +976,10 @@ TEST_F(V4LocalDatabaseManagerTest,
 
   // First, confirm the high-confidence allowlist is checked by default.
   base::test::TestFuture<bool> future1;
-  v4_local_database_manager_->CheckUrlForHighConfidenceAllowlist(
-      url_check, "HPRT", future1.GetCallback());
+  auto logging_details =
+      v4_local_database_manager_->CheckUrlForHighConfidenceAllowlist(
+          url_check, future1.GetCallback());
+  EXPECT_TRUE(logging_details.has_value());
   EXPECT_TRUE(future1.Get());
 
   // Now, check that the high-confidence allowlist is skipped if the command
@@ -974,8 +988,10 @@ TEST_F(V4LocalDatabaseManagerTest,
   scoped_command_line.GetProcessCommandLine()->AppendSwitch(
       "safe-browsing-skip-high-confidence-allowlist");
   base::test::TestFuture<bool> future2;
-  v4_local_database_manager_->CheckUrlForHighConfidenceAllowlist(
-      url_check, "HPRT", future2.GetCallback());
+  auto logging_details2 =
+      v4_local_database_manager_->CheckUrlForHighConfidenceAllowlist(
+          url_check, future2.GetCallback());
+  EXPECT_FALSE(logging_details2.has_value());
   EXPECT_FALSE(future2.Get());
 }
 

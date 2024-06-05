@@ -97,17 +97,19 @@ bool FakeSafeBrowsingDatabaseManager::CheckExtensionIDs(
   return true;
 }
 
-void FakeSafeBrowsingDatabaseManager::CheckUrlForHighConfidenceAllowlist(
+std::optional<
+    SafeBrowsingDatabaseManager::HighConfidenceAllowlistCheckLoggingDetails>
+FakeSafeBrowsingDatabaseManager::CheckUrlForHighConfidenceAllowlist(
     const GURL& url,
-    const std::string& metric_variation,
     base::OnceCallback<void(bool)> callback) {
   const auto it = high_confidence_allowlist_match_urls_.find(url);
   if (it == high_confidence_allowlist_match_urls_.end()) {
     std::move(callback).Run(false);
-    return;
+    return std::nullopt;
   }
   bool matched_allowlist = it->second;
   std::move(callback).Run(matched_allowlist);
+  return std::nullopt;
 }
 
 bool FakeSafeBrowsingDatabaseManager::CheckUrlForSubresourceFilter(

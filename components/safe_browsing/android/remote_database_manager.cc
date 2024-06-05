@@ -200,16 +200,17 @@ bool RemoteSafeBrowsingDatabaseManager::CheckResourceUrl(const GURL& url,
   return true;
 }
 
-void RemoteSafeBrowsingDatabaseManager::CheckUrlForHighConfidenceAllowlist(
+std::optional<
+    SafeBrowsingDatabaseManager::HighConfidenceAllowlistCheckLoggingDetails>
+RemoteSafeBrowsingDatabaseManager::CheckUrlForHighConfidenceAllowlist(
     const GURL& url,
-    const std::string& metric_variation,
     base::OnceCallback<void(bool)> callback) {
   DCHECK(sb_task_runner()->RunsTasksInCurrentSequence());
 
   if (!enabled_ || !CanCheckUrl(url)) {
     sb_task_runner()->PostTask(FROM_HERE,
                                base::BindOnce(std::move(callback), false));
-    return;
+    return std::nullopt;
   }
 
   IsInAllowlistResult match_result =
@@ -219,6 +220,7 @@ void RemoteSafeBrowsingDatabaseManager::CheckUrlForHighConfidenceAllowlist(
                   match_result == IsInAllowlistResult::kAllowlistUnavailable;
   sb_task_runner()->PostTask(FROM_HERE,
                              base::BindOnce(std::move(callback), is_match));
+  return std::nullopt;
 }
 
 bool RemoteSafeBrowsingDatabaseManager::CheckUrlForSubresourceFilter(
