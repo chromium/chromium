@@ -14,6 +14,7 @@
 
 #include "base/bits.h"
 #include "base/compiler_specific.h"
+#include "base/containers/heap_array.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -150,18 +151,19 @@ uint8_t* PaintOpReader::CopyScratchSpace(size_t bytes) {
   return options_.scratch_buffer.data();
 }
 
-void PaintOpReader::ReadData(size_t bytes, void* data) {
+void PaintOpReader::ReadData(base::span<uint8_t> data) {
   AssertFieldAlignment();
-  if (bytes == 0)
+  if (data.size() == 0) {
     return;
+  }
 
-  if (remaining_bytes_ < bytes) {
+  if (remaining_bytes_ < data.size()) {
     SetInvalid(DeserializationError::kInsufficientRemainingBytes_ReadData);
     return;
   }
 
-  memcpy(data, const_cast<const uint8_t*>(memory_), bytes);
-  DidRead(bytes);
+  memcpy(data.data(), const_cast<const uint8_t*>(memory_), data.size());
+  DidRead(data.size());
 }
 
 void PaintOpReader::ReadSize(size_t* size) {
@@ -740,7 +742,7 @@ void PaintOpReader::Read(sk_sp<PaintShader>* shader) {
     return;
   }
   ref.colors_.resize(colors_size);
-  ReadData(colors_bytes, ref.colors_.data());
+  ReadData(base::as_writable_byte_span(ref.colors_));
 
   decltype(ref.positions_)::size_type positions_size = 0;
   ReadSize(&positions_size);
@@ -756,7 +758,7 @@ void PaintOpReader::Read(sk_sp<PaintShader>* shader) {
     return;
   }
   ref.positions_.resize(positions_size);
-  ReadData(positions_size * sizeof(SkScalar), ref.positions_.data());
+  ReadData(base::as_writable_byte_span(ref.positions_));
 
   // We don't write the cached shader, so don't attempt to read it either.
 
@@ -861,7 +863,7 @@ void PaintOpReader::Read(SkYUVAInfo::Subsampling* subsampling) {
 }
 
 void PaintOpReader::Read(gpu::Mailbox* mailbox) {
-  ReadData(sizeof(gpu::Mailbox::Name), (*mailbox).name);
+  ReadData(base::as_writable_byte_span(mailbox->name));
 }
 
 void PaintOpReader::Read(SkHighContrastConfig* config) {
@@ -1628,11 +1630,11 @@ void PaintOpReader::Read(SkRegion* region) {
     SetInvalid(DeserializationError::kInsufficientRemainingBytes_Read_SkRegion);
   if (!valid_)
     return;
-  std::unique_ptr<char[]> data(new char[region_bytes]);
-  ReadData(region_bytes, data.get());
+  auto data = base::HeapArray<char>::Uninit(region_bytes);
+  ReadData(base::as_writable_byte_span(data));
   if (!valid_)
     return;
-  size_t result = region->readFromMemory(data.get(), region_bytes);
+  size_t result = region->readFromMemory(data.data(), data.size());
   if (!result)
     SetInvalid(DeserializationError::kSkRegionReadFromMemoryFailure);
 }

@@ -1005,7 +1005,7 @@ SkottieTextPropertyValue DeserializeSkottieTextPropertyValue(
   size_t text_size = 0u;
   reader.ReadSize(&text_size);
   std::string text(text_size, char());
-  reader.ReadData(text_size, const_cast<char*>(text.c_str()));
+  reader.ReadData(base::as_writable_byte_span(text));
   SkRect box;
   reader.Read(&box);
   return SkottieTextPropertyValue(std::move(text), gfx::SkRectToRectF(box));

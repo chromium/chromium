@@ -216,10 +216,10 @@ sk_sp<ColorFilter> ColorFilter::Deserialize(PaintOpReader& reader, Type type) {
       return MakeLuma();
     case Type::kTableARGB: {
       uint8_t a_table[256], r_table[256], g_table[256], b_table[256];
-      reader.ReadData(256, a_table);
-      reader.ReadData(256, r_table);
-      reader.ReadData(256, g_table);
-      reader.ReadData(256, b_table);
+      reader.ReadData(a_table);
+      reader.ReadData(r_table);
+      reader.ReadData(g_table);
+      reader.ReadData(b_table);
       if (!reader.valid()) {
         return nullptr;
       }

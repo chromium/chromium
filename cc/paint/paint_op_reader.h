@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/bits.h"
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/stack_allocated.h"
 #include "cc/paint/draw_looper.h"
@@ -67,7 +68,7 @@ class CC_PAINT_EXPORT PaintOpReader {
   bool valid() const { return valid_; }
   size_t remaining_bytes() const { return remaining_bytes_; }
 
-  void ReadData(size_t bytes, void* data);
+  void ReadData(base::span<uint8_t> data);
   void ReadSize(size_t* size);
 
   void Read(SkScalar* data);
@@ -349,7 +350,7 @@ class CC_PAINT_EXPORT PaintOpReader {
     requires(std::is_trivially_copyable_v<T>)
   void ReadVectorContent(size_t size, std::vector<T>* vec) {
     vec->resize(size);
-    ReadData(size * sizeof(T), vec->data());
+    ReadData(base::as_writable_byte_span(*vec));
   }
 
   template <typename T>
