@@ -116,31 +116,6 @@
     <message name="IDS_MANAGEMENT_TRUST_ROOTS_CONFIGURED" desc="Message describing that the administrators have installed their own certificates">
       Administrators of this device have set up security certificates that may allow them to see the content of websites you visit.
     </message>
-    <!-- Strings related to Files upload to cloud -->
-    <message name="IDS_MANAGEMENT_FILES_CLOUD_UPLOAD" desc="Title of the types of files upload to cloud section of the page">
-      Files upload
-    </message>
-    <message name="IDS_MANAGEMENT_FILES_CLOUD_UPLOAD_CONFIGURATION" desc="Message telling users that their administrator has configured files to be uploaded to cloud storage">
-      Your administrator has configured to save <ph name="FILES">$1<ex>downloads and screenshots</ex></ph> in your enterprise-managed <ph name="CLOUD_STORAGE">$2<ex>Google Drive or OneDrive</ex></ph> storage. These files may be monitored, audited, and retained when you delete them.
-    </message>
-    <message name="IDS_MANAGEMENT_FILES_CLOUD_UPLOAD_DOWNLOADS" desc="This string will appear in a sentence such as 'administrator has configured to save downloads'" meaning="Part of files upload enterprise disclosure">
-      downloads
-    </message>
-    <message name="IDS_MANAGEMENT_FILES_CLOUD_UPLOAD_SCREENSHOTS" desc="This string will appear in a sentence such as 'administrator has configured to save screenshots'" meaning="Part of files upload enterprise disclosure">
-      screenshots
-    </message>
-    <message name="IDS_MANAGEMENT_FILES_CLOUD_UPLOAD_DOWNLOADS_AND_SCREENSHOTS" desc="This string will appear in a sentence such as 'administrator has configured to save downloads and screenshots'" meaning="Part of files upload enterprise disclosure">
-      downloads and screenshots
-    </message>
-    <message name="IDS_MANAGEMENT_FILES_CLOUD_UPLOAD_GOOGLE_DRIVE" desc="This string will appear in a sentence such as 'configured to save downloads in Google Drive'" meaning="Part of files upload enterprise disclosure">
-      Google Drive
-    </message>
-    <message name="IDS_MANAGEMENT_FILES_CLOUD_UPLOAD_ONEDRIVE" desc="This string will appear in a sentence such as 'configured to save downloads in OneDrive'" meaning="Part of files upload enterprise disclosure">
-      OneDrive
-    </message>
-    <message name="IDS_MANAGEMENT_FILES_CLOUD_UPLOAD_GOOGLE_DRIVE_AND_ONEDRIVE" desc="This string will appear in a sentence such as 'configured to save downloads in Google Drive and OneDrive'" meaning="Part of files upload enterprise disclosure">
-      Google Drive and OneDrive
-    </message>
     <!-- Strings related to device reporting section of the management page -->
     <message name="IDS_MANAGEMENT_DEVICE_REPORTING" desc="Title of the types of device reporting section of the page">
       Device

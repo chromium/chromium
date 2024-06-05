@@ -95,12 +95,6 @@ class ManagementUiElement extends ManagementUiElementBase {
        */
       localTrustRoots_: String,
 
-      /**
-       * Message stating if uploading of downloads or screenshots to cloud
-       * storage is configured.
-       */
-      filesUploadToCloud_: String,
-
       customerLogo_: String,
       managementOverview_: String,
       pluginVmDataCollectionEnabled_: Boolean,
@@ -131,7 +125,6 @@ class ManagementUiElement extends ManagementUiElementBase {
   // <if expr="is_chromeos">
   private deviceReportingInfo_: DeviceReportingResponse[]|null;
   private localTrustRoots_: string;
-  private filesUploadToCloud_: string;
   private customerLogo_: string;
   private managementOverview_: string;
   private pluginVmDataCollectionEnabled_: boolean;
@@ -193,7 +186,6 @@ class ManagementUiElement extends ManagementUiElementBase {
     this.getDeviceReportingInfo_();
     this.getPluginVmDataCollectionStatus_();
     this.getLocalTrustRootsInfo_();
-    this.getFilesUploadToCloudInfo_();
     // </if>
   }
 
@@ -276,12 +268,6 @@ class ManagementUiElement extends ManagementUiElementBase {
       this.localTrustRoots_ = trustRootsConfigured ?
           loadTimeData.getString('managementTrustRootsConfigured') :
           '';
-    });
-  }
-
-  private getFilesUploadToCloudInfo_() {
-    this.browserProxy_!.getFilesUploadToCloudInfo().then(info => {
-      this.filesUploadToCloud_ = info;
     });
   }
 

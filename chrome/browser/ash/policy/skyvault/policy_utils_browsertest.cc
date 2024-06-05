@@ -8,7 +8,6 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/policy/policy_test_utils.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/policy/core/common/policy_map.h"
@@ -78,59 +77,4 @@ INSTANTIATE_TEST_SUITE_P(LocalUserFiles,
                              /*enable_skyvault*/ testing::Bool(),
                              /*policy_value*/ testing::Bool()),
                          LocalUserFilesPolicyUtilsBrowserTest::ParamToString);
-
-class FileSaveDestinationPolicyUtilsBrowserTest : public policy::PolicyTest {
- protected:
-  void SetDownloadsPolicy(const std::string& destination) {
-    policy::PolicyMap policies;
-    policy::PolicyTest::SetPolicy(&policies, policy::key::kDownloadDirectory,
-                                  base::Value(destination));
-    provider_.UpdateChromePolicy(policies);
-  }
-
-  void SetScreenCapturePolicy(const std::string& destination) {
-    policy::PolicyMap policies;
-    policy::PolicyTest::SetPolicy(&policies,
-                                  policy::key::kScreenCaptureLocation,
-                                  base::Value(destination));
-    provider_.UpdateChromePolicy(policies);
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(FileSaveDestinationPolicyUtilsBrowserTest,
-                       DownloadsDestination) {
-  EXPECT_EQ(FileSaveDestination::kNotSpecified,
-            GetDownloadsDestination(browser()->profile()));
-
-  SetDownloadsPolicy("");
-  EXPECT_EQ(FileSaveDestination::kDownloads,
-            GetDownloadsDestination(browser()->profile()));
-
-  SetDownloadsPolicy(kGoogleDrivePolicyVariableName);
-  EXPECT_EQ(FileSaveDestination::kGoogleDrive,
-            GetDownloadsDestination(browser()->profile()));
-
-  SetDownloadsPolicy(kOneDrivePolicyVariableName);
-  EXPECT_EQ(FileSaveDestination::kOneDrive,
-            GetDownloadsDestination(browser()->profile()));
-}
-
-IN_PROC_BROWSER_TEST_F(FileSaveDestinationPolicyUtilsBrowserTest,
-                       ScreenCaptureDestination) {
-  EXPECT_EQ(FileSaveDestination::kNotSpecified,
-            GetScreenCaptureDestination(browser()->profile()));
-
-  SetScreenCapturePolicy("");
-  EXPECT_EQ(FileSaveDestination::kDownloads,
-            GetScreenCaptureDestination(browser()->profile()));
-
-  SetScreenCapturePolicy(kGoogleDrivePolicyVariableName);
-  EXPECT_EQ(FileSaveDestination::kGoogleDrive,
-            GetScreenCaptureDestination(browser()->profile()));
-
-  SetScreenCapturePolicy(kOneDrivePolicyVariableName);
-  EXPECT_EQ(FileSaveDestination::kOneDrive,
-            GetScreenCaptureDestination(browser()->profile()));
-}
-
 }  // namespace policy::local_user_files

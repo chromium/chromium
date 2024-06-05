@@ -69,8 +69,6 @@ class ManagementUIHandlerChromeOS :
 
   // ManagementUIHandler
   void RegisterPrefChange(PrefChangeRegistrar& pref_registrar) override;
-
-  std::u16string GetFilesUploadToCloudInfo(Profile* profile);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   base::Value::Dict GetContextualManagedData(Profile* profile) override;
@@ -98,7 +96,6 @@ class ManagementUIHandlerChromeOS :
   void GetManagementStatus(Profile* profile, base::Value::Dict* status) const;
 
   void HandleGetLocalTrustRootsInfo(const base::Value::List& args);
-  void HandleGetFilesUploadToCloudInfo(const base::Value::List& args);
   void HandleGetDeviceReportingInfo(const base::Value::List& args);
   void HandleGetPluginVmDataCollectionStatus(const base::Value::List& args);
 
