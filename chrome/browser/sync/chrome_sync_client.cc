@@ -485,9 +485,13 @@ ChromeSyncClient::CreateModelTypeControllers(
     if (enable_tab_group_sync) {
       controllers.push_back(std::make_unique<syncer::ModelTypeController>(
           syncer::SAVED_TAB_GROUP,
+          /*delegate_for_full_sync_mode=*/
           std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
               GetControllerDelegateForModelType(syncer::SAVED_TAB_GROUP).get()),
-          /*delegate_for_transport_mode=*/nullptr));
+          /*delegate_for_transport_mode=*/
+          std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
+              GetControllerDelegateForModelType(syncer::SAVED_TAB_GROUP)
+                  .get())));
     }
 
     if (base::FeatureList::IsEnabled(

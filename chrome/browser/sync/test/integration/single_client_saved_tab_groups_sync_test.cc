@@ -579,5 +579,100 @@ INSTANTIATE_TEST_SUITE_P(SavedTabGroup,
                          SingleClientSavedTabGroupsSyncTest,
                          testing::Bool());
 
+// On ChromeOS, Sync-the-feature gets started automatically once a primary
+// account is signed in and the transport mode is not a thing.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Subclass that enables an additional feature, namely
+// `syncer::kReplaceSyncPromosWithSignInPromos`.
+class SingleClientSavedTabGroupsSyncTestWithTransportMode
+    : public SingleClientSavedTabGroupsSyncTest {
+ public:
+  SingleClientSavedTabGroupsSyncTestWithTransportMode() = default;
+  ~SingleClientSavedTabGroupsSyncTestWithTransportMode() override = default;
+
+ private:
+  base::test::ScopedFeatureList additional_features_{
+      syncer::kReplaceSyncPromosWithSignInPromos};
+};
+
+// Save a group with two tabs and validate they are added to the model for a
+// user that signs in without turning sync-the-feature on. It also verifies that
+// the downloaded data goes away upon signout.
+IN_PROC_BROWSER_TEST_P(SingleClientSavedTabGroupsSyncTestWithTransportMode,
+                       DownloadsGroupAndTabsInTransportMode) {
+  SavedTabGroup group1(u"Group 1", tab_groups::TabGroupColorId::kGrey, {},
+                       /*position=*/0);
+  SavedTabGroupTab tab1(GURL("about:blank"), u"about:blank",
+                        group1.saved_guid(), /*position=*/0);
+  SavedTabGroupTab tab2(GURL("about:blank"), u"about:blank",
+                        group1.saved_guid(), /*position=*/1);
+
+  // Add a group with two tabs to sync.
+  AddGroupToFakeServer(group1);
+  AddTabToFakeServer(tab1);
+  AddTabToFakeServer(tab2);
+
+  ASSERT_TRUE(SetupClients());
+  // Setup a primary account, but don't actually enable Sync-the-feature (so
+  // that Sync will start in transport mode).
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+  // Enable tabs explicitly (as it is off by default).
+#if BUILDFLAG(IS_ANDROID)
+  // On Android, the feature is behind `UserSelectableType::kTabs`.
+  GetSyncService(0)->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kTabs, true);
+#else   // BUILDFLAG(IS_ANDROID)
+  // On desktop platforms, there is a dedicated toggle.
+  GetSyncService(0)->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kSavedTabGroups, true);
+#endif  // BUILDFLAG(IS_ANDROID)
+
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
+  ASSERT_TRUE(
+      GetSyncService(0)->GetPreferredDataTypes().Has(syncer::SAVED_TAB_GROUP));
+  ASSERT_TRUE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::SAVED_TAB_GROUP));
+
+  SavedTabGroupKeyedService* const service =
+      SavedTabGroupServiceFactory::GetForProfile(GetProfile(0));
+
+  // Verify they are added to the model.
+  EXPECT_TRUE(
+      tab_groups::SavedTabOrGroupExistsChecker(service, group1.saved_guid())
+          .Wait());
+
+  EXPECT_TRUE(
+      tab_groups::SavedTabOrGroupExistsChecker(service, tab1.saved_tab_guid())
+          .Wait());
+
+  EXPECT_TRUE(
+      tab_groups::SavedTabOrGroupExistsChecker(service, tab2.saved_tab_guid())
+          .Wait());
+
+  // Sign out and verify that the tabs are gone.
+  GetClient(0)->SignOutPrimaryAccount();
+  ASSERT_FALSE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::SAVED_TAB_GROUP));
+  EXPECT_TRUE(tab_groups::SavedTabOrGroupDoesNotExistChecker(
+                  service, group1.saved_guid())
+                  .Wait());
+
+  EXPECT_TRUE(tab_groups::SavedTabOrGroupDoesNotExistChecker(
+                  service, tab1.saved_tab_guid())
+                  .Wait());
+
+  EXPECT_TRUE(tab_groups::SavedTabOrGroupDoesNotExistChecker(
+                  service, tab2.saved_tab_guid())
+                  .Wait());
+}
+
+INSTANTIATE_TEST_SUITE_P(SavedTabGroup,
+                         SingleClientSavedTabGroupsSyncTestWithTransportMode,
+                         testing::Bool());
+
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
 }  // namespace
 }  // namespace tab_groups

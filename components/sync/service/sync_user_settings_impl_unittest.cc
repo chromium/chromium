@@ -191,8 +191,9 @@ TEST_F(SyncUserSettingsImplTest, DefaultSelectedTypesWhileSignedIn) {
       sync_user_settings->GetRegisteredSelectableTypes();
   UserSelectableTypeSet selected_types = sync_user_settings->GetSelectedTypes();
   // History and Tabs require a separate opt-in.
-  // Apps, Extensions, Themes, SavedTabGroups and Cookies are not supported in
-  // transport mode.
+  // SavedTabGroups also requires a separate opt-in, either the same one as
+  // history and tabs (on mobile), or a dedicated opt-in.
+  // Apps, Extensions, Themes and Cookies are not supported in transport mode.
   UserSelectableTypeSet expected_disabled_types = {
       UserSelectableType::kHistory, UserSelectableType::kTabs,
       UserSelectableType::kApps,    UserSelectableType::kExtensions,

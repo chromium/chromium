@@ -145,7 +145,6 @@ void ModelTypeController::InitModelTypeController(
         WORKSPACE_DESK,
         HISTORY,
         PRINTERS_AUTHORIZATION_SERVERS,
-        SAVED_TAB_GROUP,
         POWER_BOOKMARK,
         NIGORI};
     CHECK(kLegacyTypes.Has(type()))

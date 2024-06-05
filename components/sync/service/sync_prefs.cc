@@ -293,8 +293,10 @@ UserSelectableTypeSet SyncPrefs::GetSelectedTypesForAccount(
         type_enabled = pref_value->GetBool();
       } else if (type == UserSelectableType::kHistory ||
                  type == UserSelectableType::kTabs ||
+                 type == UserSelectableType::kSavedTabGroups ||
                  type == UserSelectableType::kSharedTabGroupData) {
-        // History, Tabs, and Shared Tab Group Data are disabled by default.
+        // History, Tabs, Saved Tab Groups and and Shared Tab Group Data are
+        // disabled by default.
         type_enabled = false;
       } else if (type == UserSelectableType::kPasswords ||
                  type == UserSelectableType::kAutofill) {
@@ -765,13 +767,14 @@ bool SyncPrefs::IsTypeSupportedInTransportMode(UserSelectableType type) {
     case syncer::UserSelectableType::kSharedTabGroupData:
       return base::FeatureList::IsEnabled(
           kSyncSharedTabGroupDataInTransportMode);
+    case UserSelectableType::kSavedTabGroups:
+      return base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos);
     case UserSelectableType::kApps:
 #if BUILDFLAG(IS_ANDROID)
       return base::FeatureList::IsEnabled(kWebApkBackupAndRestoreBackend);
 #endif
     case UserSelectableType::kExtensions:
     case UserSelectableType::kThemes:
-    case UserSelectableType::kSavedTabGroups:
     case UserSelectableType::kCookies:
       // These types are not supported in transport mode yet.
       return false;
