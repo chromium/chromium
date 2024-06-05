@@ -41,6 +41,7 @@ static void JNI_TrackingProtectionBridge_NoticeActionTaken(JNIEnv* env,
 
 static jboolean JNI_TrackingProtectionBridge_IsOffboarded(JNIEnv* env,
                                                           Profile* profile) {
-  return TrackingProtectionOnboardingFactory::GetForProfile(profile)
-      ->IsOffboarded();
+  // Always returning false for now. This is to be removed as part of
+  // crbug/344565466.
+  return false;
 }

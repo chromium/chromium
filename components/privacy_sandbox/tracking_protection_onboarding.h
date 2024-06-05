@@ -164,9 +164,6 @@ class TrackingProtectionOnboarding : public KeyedService {
   // enum defined above.
   SilentOnboardingStatus GetSilentOnboardingStatus() const;
 
-  // Returns whether the profile has been offboarded.
-  bool IsOffboarded() const;
-
   // To be Called by UI code when the user has been shown the notice.
   void NoticeShown(NoticeType notice_type);
 
@@ -203,8 +200,6 @@ class TrackingProtectionOnboarding : public KeyedService {
   virtual void OnOnboardingPrefChanged() const;
   // Called when the notice has been acked.
   virtual void OnOnboardingAckedChanged() const;
-  // Called when the underlying offboarding pref is changed.
-  virtual void OnOffboardingPrefChanged() const;
   // Called when the underlying silent onboarding pref is changed.
   virtual void OnSilentOnboardingPrefChanged() const;
 

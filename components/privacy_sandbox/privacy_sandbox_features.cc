@@ -146,11 +146,6 @@ BASE_FEATURE(kTrackingProtectionOnboardingSkipSecurePageCheck,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-// Show the Tracking Protection rollback flow if previously onboarded.
-BASE_FEATURE(kTrackingProtectionOnboardingRollback,
-             "TrackingProtectionOnboardingRollback",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kAttributionDebugReportingCookieDeprecationTesting,
              "AttributionDebugReportingCookieDeprecationTesting",
              base::FEATURE_DISABLED_BY_DEFAULT);
