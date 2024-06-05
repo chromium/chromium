@@ -38,7 +38,8 @@ class WebBundleSigner {
     kAdditionalSignatureStackEntryAttribute,
     kAdditionalSignatureStackEntryElement,
     kWrongSignatureStackEntryAttributeNameLength,
-    kMaxValue = kWrongSignatureStackEntryAttributeNameLength
+    kMultipleValidPublicKeyAttributes,
+    kMaxValue = kMultipleValidPublicKeyAttributes
   };
 
   using IntegritySignatureErrorsForTesting =

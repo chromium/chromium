@@ -59,7 +59,16 @@ cbor::Value CreateSignatureStackEntryAttributes(
   if (!errors_for_testing.Has(IntegritySignatureErrorForTesting::
                                   kNoPublicKeySignatureStackEntryAttribute)) {
     if (errors_for_testing.Has(IntegritySignatureErrorForTesting::
-                                   kWrongSignatureStackEntryAttributeName)) {
+                                   kMultipleValidPublicKeyAttributes)) {
+      attributes[cbor::Value(kEd25519PublicKeyAttributeName)] =
+          cbor::Value(public_key_bytes);
+
+      attributes[cbor::Value(kEcdsaP256PublicKeyAttributeName)] = cbor::Value(
+          base::ToVector(WebBundleSigner::EcdsaP256KeyPair::CreateRandom()
+                             .public_key.bytes()));
+    } else if (errors_for_testing.Has(
+                   IntegritySignatureErrorForTesting::
+                       kWrongSignatureStackEntryAttributeName)) {
       // Add a typo: "ee" instead of "ed".
       attributes[cbor::Value("ee25519PublicKey")] =
           cbor::Value(public_key_bytes);
@@ -81,7 +90,7 @@ cbor::Value CreateSignatureStackEntryAttributes(
 
   if (errors_for_testing.Has(IntegritySignatureErrorForTesting::
                                  kAdditionalSignatureStackEntryAttribute)) {
-    attributes[cbor::Value("foo")] = cbor::Value(42);
+    attributes[cbor::Value("foo")] = cbor::Value(public_key_bytes);
   }
 
   return cbor::Value(attributes);

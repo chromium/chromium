@@ -1034,8 +1034,6 @@ TEST_F(UnsecureSignedWebBundleReaderTest, ErrorId) {
                      IntegritySignatureErrorForTesting::
                          kNoPublicKeySignatureStackEntryAttribute,
                      IntegritySignatureErrorForTesting::
-                         kAdditionalSignatureStackEntryAttribute,
-                     IntegritySignatureErrorForTesting::
                          kAdditionalSignatureStackEntryElement}) {
     std::string swbn_file_name =
         base::NumberToString(base::to_underlying(error)) + "_test.swbn";

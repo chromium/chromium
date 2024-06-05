@@ -13,7 +13,7 @@ specific_include_rules = {
   "(web_bundle_signer|signed_web_bundle_signature_verifier|signed_web_bundle_id|ecdsa_p256_utils)\.cc": [
     "+crypto",
   ],
-  "(integrity_block_parser|ed25519_public_key|ed25519_signature|web_bundle_parser_unittest|web_bundle_signer|signed_web_bundle_signature_verifier|ecdsa_p256_utils)\.cc": [
+  "(signature_entry_parser|ed25519_public_key|ed25519_signature|web_bundle_parser_unittest|web_bundle_signer|signed_web_bundle_signature_verifier|ecdsa_p256_utils)\.cc": [
     "+third_party/boringssl",
   ],
 }
