@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.answer;
 
+import android.app.Activity;
 import android.content.Context;
 import android.text.SpannableStringBuilder;
 import android.text.style.TextAppearanceSpan;
@@ -12,30 +13,40 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
+import org.robolectric.Robolectric;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.R;
 import org.chromium.components.omnibox.AnswerDataProto.AnswerData;
 import org.chromium.components.omnibox.AnswerDataProto.FormattedString;
 import org.chromium.components.omnibox.AnswerDataProto.FormattedString.ColorType;
 import org.chromium.components.omnibox.AnswerDataProto.FormattedString.FormattedStringFragment;
+import org.chromium.components.omnibox.OmniboxFeatureList;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.RichAnswerTemplateProto.RichAnswerTemplate;
 import org.chromium.components.omnibox.RichAnswerTemplateProto.RichAnswerTemplate.AnswerType;
 
 /** Tests for {@link RichAnswerText}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class RichAnswerTextTest {
+    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
     private Context mContext;
     private TextAppearanceSpan mGreenText;
     private TextAppearanceSpan mRedText;
     private TextAppearanceSpan mPrimaryText;
     private TextAppearanceSpan mMediumText;
+    private TextAppearanceSpan mHeadlineText;
 
     @Before
     public void setUp() {
-        mContext = ContextUtils.getApplicationContext();
+        mContext = Robolectric.buildActivity(Activity.class).setup().get();
+        mContext.setTheme(R.style.Theme_BrowserUI_DayNight);
         mGreenText =
                 new TextAppearanceSpan(
                         mContext,
@@ -56,6 +67,11 @@ public class RichAnswerTextTest {
                         mContext,
                         org.chromium.chrome.browser.omnibox.R.style
                                 .TextAppearance_TextMedium_Secondary);
+        mHeadlineText =
+                new TextAppearanceSpan(
+                        mContext,
+                        org.chromium.chrome.browser.omnibox.R.style
+                                .TextAppearance_OmniboxAnswerCardPrimaryMedium);
     }
 
     @Test
@@ -423,5 +439,39 @@ public class RichAnswerTextTest {
                 secondaryText.getSpans(0, secondaryText.length(), TextAppearanceSpan.class);
         Assert.assertEquals(textAppearanceSpans.length, 1);
         Assert.assertEquals(textAppearanceSpans[0].getTextSize(), mMediumText.getTextSize());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_ANSWER_ACTIONS)
+    public void testRichAnswerCard() {
+        OmniboxFeatures.sAnswerActionsShowRichCard.setForTesting(true);
+        FormattedString headline = FormattedString.newBuilder().setText("redmond weather").build();
+        FormattedString subhead =
+                FormattedString.newBuilder().setText("64•F Thu - Redmond, WA").build();
+
+        RichAnswerTemplate richAnswerTemplate =
+                RichAnswerTemplate.newBuilder()
+                        .setAnswerType(AnswerType.WEATHER)
+                        .addAnswers(
+                                0,
+                                AnswerData.newBuilder().setHeadline(headline).setSubhead(subhead))
+                        .build();
+
+        AnswerText[] texts = RichAnswerText.from(mContext, richAnswerTemplate, false);
+        SpannableStringBuilder primaryText = texts[0].getText();
+        SpannableStringBuilder secondaryText = texts[1].getText();
+
+        Assert.assertEquals(primaryText.toString(), "64•F Thu - Redmond, WA");
+        TextAppearanceSpan[] textAppearanceSpans =
+                primaryText.getSpans(0, primaryText.length(), TextAppearanceSpan.class);
+        Assert.assertEquals(textAppearanceSpans.length, 1);
+        Assert.assertEquals(textAppearanceSpans[0].getTextSize(), mHeadlineText.getTextSize());
+
+        Assert.assertEquals(secondaryText.toString(), "redmond weather");
+        textAppearanceSpans =
+                secondaryText.getSpans(0, secondaryText.length(), TextAppearanceSpan.class);
+        Assert.assertEquals(textAppearanceSpans.length, 1);
+        Assert.assertEquals(textAppearanceSpans[0].getTextSize(), mPrimaryText.getTextSize());
     }
 }

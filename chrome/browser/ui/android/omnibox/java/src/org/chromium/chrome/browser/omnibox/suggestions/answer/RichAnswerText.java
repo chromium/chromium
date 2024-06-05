@@ -11,12 +11,14 @@ import android.text.style.MetricAffectingSpan;
 import android.text.style.TextAppearanceSpan;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.StyleRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.components.omnibox.AnswerDataProto.FormattedString;
 import org.chromium.components.omnibox.AnswerDataProto.FormattedString.ColorType;
 import org.chromium.components.omnibox.AnswerDataProto.FormattedString.FormattedStringFragment;
 import org.chromium.components.omnibox.AnswerType;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.RichAnswerTemplateProto.RichAnswerTemplate;
 
 import java.util.List;
@@ -178,10 +180,15 @@ class RichAnswerText implements AnswerText {
             ColorType colorType,
             @AnswerType int answerType,
             boolean reverseStockTextColor) {
+        @StyleRes
+        int largeRes =
+                OmniboxFeatures.shouldShowRichAnswerCard()
+                        ? org.chromium.chrome.browser.omnibox.R.style
+                                .TextAppearance_OmniboxAnswerCardPrimaryMedium
+                        : org.chromium.chrome.browser.omnibox.R.style
+                                .TextAppearance_TextLarge_Primary;
         if (answerType != AnswerType.DICTIONARY && answerType != AnswerType.FINANCE) {
-            return new TextAppearanceSpan(
-                    context,
-                    org.chromium.chrome.browser.omnibox.R.style.TextAppearance_TextLarge_Primary);
+            return new TextAppearanceSpan(context, largeRes);
         }
 
         // TODO(b/327497146): skip color reversal when original data source is proto backend, which
@@ -199,9 +206,7 @@ class RichAnswerText implements AnswerText {
                                         .TextAppearance_OmniboxAnswerDescriptionNegativeSmall;
                 yield new TextAppearanceSpan(context, styleResource);
             }
-            default -> new TextAppearanceSpan(
-                    context,
-                    org.chromium.chrome.browser.omnibox.R.style.TextAppearance_TextLarge_Primary);
+            default -> new TextAppearanceSpan(context, largeRes);
                 // TODO(b/327497146): handle equivalent of
                 // AnswerTextType.SUGGESTION_SECONDARY_TEXT_MEDIUM
         };
@@ -213,9 +218,14 @@ class RichAnswerText implements AnswerText {
      * @return MetricAffectingSpan object defining style for the text.
      */
     private MetricAffectingSpan getAppearanceForQueryText() {
-        return new TextAppearanceSpan(
-                mContext,
-                org.chromium.chrome.browser.omnibox.R.style.TextAppearance_TextMedium_Secondary);
+        @StyleRes
+        int res =
+                OmniboxFeatures.shouldShowRichAnswerCard()
+                        ? org.chromium.chrome.browser.omnibox.R.style
+                                .TextAppearance_TextLarge_Secondary
+                        : org.chromium.chrome.browser.omnibox.R.style
+                                .TextAppearance_TextMedium_Secondary;
+        return new TextAppearanceSpan(mContext, res);
     }
 
     private static int getMaxLinesForAnswerType(int answerType) {

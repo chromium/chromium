@@ -119,4 +119,8 @@ found in the LICENSE file.
     <dimen name="omnibox_button_highlight_height">32dp</dimen>
     <dimen name="status_view_highlight_size">32dp</dimen>
     <dimen name="location_bar_status_icon_area_size">32dp</dimen>
+
+    <!-- Text style dimensions. -->
+    <dimen name="rich_answer_card_headline_size">20sp</dimen>
+    <dimen name="rich_answer_card_headline_leading">24</dimen>
 </resources>
