@@ -561,7 +561,7 @@ AUTHENTICATOR_EVENTS
 #undef AUTHENTICATOR_REQUEST_EVENT_1
 
 std::ostream& operator<<(std::ostream& os,
-                         AuthenticatorRequestDialogModel::Step& step) {
+                         const AuthenticatorRequestDialogModel::Step& step) {
   switch (step) {
 #define F(x)                                     \
   case AuthenticatorRequestDialogModel::Step::x: \
@@ -1678,8 +1678,8 @@ void AuthenticatorRequestDialogController::RecordMacOsStartedHistogram() {
   if (transport_availability_.request_type ==
           device::FidoRequestType::kMakeCredential &&
       transport_availability_.make_credential_attachment.has_value() &&
-      *transport_availability_.make_credential_attachment ==
-          device::AuthenticatorAttachment::kPlatform) {
+      *transport_availability_.make_credential_attachment !=
+          device::AuthenticatorAttachment::kCrossPlatform) {
     if (should_create_in_icloud_keychain_) {
       v = has_icloud_drive_enabled_
               ? MacOsHistogramValues::
@@ -2508,53 +2508,51 @@ AuthenticatorRequestDialogController::IndexOfPriorityMechanism() {
     CHECK_EQ(transport_availability_.request_type,
              device::FidoRequestType::kMakeCredential);
 
-    Profile* profile = Profile::FromBrowserContext(
-                           model_->GetRenderFrameHost()->GetBrowserContext())
-                           ->GetOriginalProfile();
-    if (base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator) &&
-        CanDefaultToEnclave(profile) && enclave_enabled_ &&
-        *transport_availability_.make_credential_attachment ==
-            device::AuthenticatorAttachment::kPlatform) {
-      priority_list.emplace_back(Mechanism::Enclave());
-    }
+    // For non-cross-platform requests, we attempt to jump to the platform
+    // authenticator and avoid showing the mechanism selection sheet.
+    if (transport_availability_.make_credential_attachment !=
+        device::AuthenticatorAttachment::kCrossPlatform) {
+      Profile* profile = Profile::FromBrowserContext(
+                             model_->GetRenderFrameHost()->GetBrowserContext())
+                             ->GetOriginalProfile();
+      if (base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator) &&
+          CanDefaultToEnclave(profile) && enclave_enabled_) {
+        priority_list.emplace_back(Mechanism::Enclave());
+      }
 
-    if (windows_handles_hybrid) {
-      // If Windows supports hybrid we defer to the platform.
-      priority_list.emplace_back(Mechanism::WindowsAPI());
-    }
+      // If Windows Hello is enabled, jump to it if it's a candidate.
+      if (transport_availability_.win_is_uvpaa) {
+        priority_list.emplace_back(Mechanism::WindowsAPI());
+      }
 
 #if BUILDFLAG(IS_MAC)
-    if (transport_availability_.make_credential_attachment ==
-        device::AuthenticatorAttachment::kPlatform) {
-      // For platform attachments, either we have iCloud Keychain available
-      // or not. If not, then there's only a single active mechanism (the
-      // profile authenticator) and we would have picked it above. Thus here we
-      // must be picking between the profile authenticator and iCloud Keychain.
+      // For non-cross-platform try to trigger either platform authenticator.
       if (should_create_in_icloud_keychain_) {
         priority_list.emplace_back(Mechanism::ICloudKeychain());
       } else {
         priority_list.emplace_back(
             Mechanism::Transport(AuthenticatorTransport::kInternal));
       }
-    }
 #endif
+    }
 
-    // If attachment=any, then don't jump to suggesting any specific mechanism.
-    if (*transport_availability_.make_credential_attachment !=
-        device::AuthenticatorAttachment::kAny) {
-      const bool is_passkey_request =
-          model_->resident_key_requirement !=
-          device::ResidentKeyRequirement::kDiscouraged;
-      if (is_passkey_request) {
-        if (model_->paired_phone_names.empty()) {
-          priority_list.emplace_back(Mechanism::AddPhone());
-        }
-      } else {
-        // This seems like it might be an error (crbug.com/1426244) as we might
-        // still want to jump to platform authenticators for passkey requests if
-        // we don't jump to a phone.
-        priority_list.emplace_back(Mechanism::WindowsAPI());
+    // If Windows handles hybrid, then jump to it because all remaining options
+    // are handled by Windows.
+    if (windows_handles_hybrid) {
+      priority_list.emplace_back(Mechanism::WindowsAPI());
+    }
+
+    // If there are no platform authenticators, then show the QR code for
+    // passkey requests unless the user might be able to select a paired phone.
+    const bool is_passkey_request =
+        model_->resident_key_requirement !=
+        device::ResidentKeyRequirement::kDiscouraged;
+    if (is_passkey_request) {
+      if (model_->paired_phone_names.empty()) {
+        priority_list.emplace_back(Mechanism::AddPhone());
       }
+    } else {
+      priority_list.emplace_back(Mechanism::WindowsAPI());
     }
   }
 

@@ -465,6 +465,24 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
   const auto plat_ui = Step::kNotStarted;
   const auto cable_ui = Step::kCableActivate;
   [[maybe_unused]] const auto create_pk = Step::kCreatePasskey;
+  const auto create_pk_or_mss =
+#if BUILDFLAG(IS_MAC)
+      Step::kCreatePasskey;
+#else
+      Step::kMechanismSelection;
+#endif
+  const auto create_pk_or_plat_ui =
+#if BUILDFLAG(IS_MAC)
+      Step::kCreatePasskey;
+#else
+      Step::kNotStarted;
+#endif
+  const auto create_pk_or_qr =
+#if BUILDFLAG(IS_MAC)
+      Step::kCreatePasskey;
+#else
+      Step::kCableV2QRCode;
+#endif
   [[maybe_unused]] const auto use_pk = Step::kPreSelectSingleAccount;
   [[maybe_unused]] const auto use_pk_multi = Step::kPreSelectAccount;
   const auto qr = Step::kCableV2QRCode;
@@ -561,11 +579,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
        {},
        {},
        {t(internal)},
-#if BUILDFLAG(IS_MAC)
-       create_pk
-#else
-       plat_ui
-#endif
+       create_pk_or_plat_ui,
       },
       // MakeCredential with attachment=undefined also shows the 'Create a
       // passkey' step on macOS. On other OSes, we show mechanism selection.
@@ -575,11 +589,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
        {},
        {},
        {t(internal), t(usb)},
-#if BUILDFLAG(IS_MAC)
-       create_pk
-#else
-       mss
-#endif
+       create_pk_or_mss,
       },
 
       // If the Windows API is available without caBLE, it should activate.
@@ -653,9 +663,12 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
        {t(aoa), t(cable), winapi},
        cable_ui},
 
-       // With attachment=undefined, the UI should jump to mechanism selection.
-       {L, mc, {usb, internal, cable}, {att_any}, {}, {add, t(internal)}, mss},
-       {L, mc, {usb, internal}, {att_any, rk}, {}, {t(internal), t(usb)}, mss},
+       // With attachment=undefined, the UI should still default to a platform
+       // authenticator.
+       {L, mc, {usb, internal, cable}, {att_any}, {}, {add, t(internal)},
+        create_pk_or_mss},
+       {L, mc, {usb, internal}, {att_any, rk}, {}, {t(internal), t(usb)},
+        create_pk_or_mss},
 
       // QR code first: Make credential should jump to the QR code with
       // RK=true.
@@ -681,7 +694,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
        {rk, att_any},
        {},
        {add, t(internal)},
-       mss},
+       create_pk_or_qr},
       // If RK=false, go to the default for the platform instead.
       {
           L,
@@ -690,14 +703,12 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
           {},
           {},
           {add, t(internal)},
-#if BUILDFLAG(IS_MAC)
-          create_pk,
-#else
-          mss,
-#endif
+          create_pk_or_mss,
       },
       // Windows should also jump to the QR code first.
-      {L, mc, {cable}, {rk, has_winapi}, {}, {winapi, add}, qr},
+      {L, mc, {cable}, {att_xplat, rk, has_winapi}, {}, {add, winapi}, qr},
+      // ... but not for attachment=undefined.
+      {L, mc, {cable}, {rk, has_winapi}, {}, {winapi, add}, plat_ui},
 
       // QR code first: Get assertion should jump to the QR code with empty
       // allow-list.
@@ -959,14 +970,14 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
        {},
        {ickc, t(internal)},
        plat_ui},
-      // ... and only for attachment=platform
+      // ... and also for attachment=any
       {L,
        mc,
        {internal},
        {rk, att_any, has_ickc, create_ickc},
        {},
        {ickc, t(internal)},
-       mss},
+       plat_ui},
 #endif
 
        // Tests for RP hints.
@@ -1714,7 +1725,11 @@ TEST_F(AuthenticatorRequestDialogControllerTest, AwaitingAcknowledgement) {
     EXPECT_CALL(mock_observer, OnStepTransition());
     controller.StartFlow(std::move(transports_info),
                          /*is_conditional_mediation=*/false);
+#if BUILDFLAG(IS_MAC)
+    EXPECT_EQ(Step::kCreatePasskey, model.step());
+#else
     EXPECT_EQ(Step::kMechanismSelection, model.step());
+#endif
     testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
     EXPECT_CALL(mock_observer, OnStepTransition());
@@ -2635,54 +2650,37 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Dispatch) {
 
       controller.StartFlow(std::move(transports_info),
                            /*is_conditional_mediation=*/false);
-      if (platform_attachment) {
-        if (should_create_in_icloud_keychain) {
-          EXPECT_EQ(request_callback.WaitForResult(), kICloudKeychainId);
-        } else {
-          EXPECT_EQ(model.step(),
-                    AuthenticatorRequestDialogModel::Step::kCreatePasskey);
-          controller.HideDialogAndDispatchToPlatformAuthenticator();
-          EXPECT_EQ(request_callback.WaitForResult(), kProfileAuthenticatorId);
-        }
+      if (should_create_in_icloud_keychain) {
+        EXPECT_EQ(request_callback.WaitForResult(), kICloudKeychainId);
       } else {
         EXPECT_EQ(model.step(),
-                  AuthenticatorRequestDialogModel::Step::kMechanismSelection);
-      }
-
-      if (!platform_attachment) {
-        // Dispatch to iCloud Keychain to check that canceling doesn't show
-        // a Chrome error dialog.
-        controller.HideDialogAndDispatchToPlatformAuthenticator(
-            device::AuthenticatorType::kICloudKeychain);
+                  AuthenticatorRequestDialogModel::Step::kCreatePasskey);
+        controller.HideDialogAndDispatchToPlatformAuthenticator();
+        EXPECT_EQ(request_callback.WaitForResult(), kProfileAuthenticatorId);
       }
 
       controller.OnUserConsentDenied();
 
-      if (platform_attachment) {
-        EXPECT_EQ(model.step(), should_create_in_icloud_keychain
-                                    ? AuthenticatorRequestDialogController::
-                                          Step::kMechanismSelection
-                                    : AuthenticatorRequestDialogController::
-                                          Step::kErrorInternalUnrecognized);
+      EXPECT_EQ(
+          model.step(),
+          should_create_in_icloud_keychain
+              ? AuthenticatorRequestDialogController::Step::kMechanismSelection
+              : AuthenticatorRequestDialogController::Step::
+                    kErrorInternalUnrecognized);
 
-        controller.saved_authenticators().AddAuthenticator(
-            AuthenticatorReference(kProfileAuthenticatorId,
-                                   AuthenticatorTransport::kInternal,
-                                   device::AuthenticatorType::kTouchID));
-        controller.saved_authenticators().AddAuthenticator(
-            AuthenticatorReference(kICloudKeychainId,
-                                   AuthenticatorTransport::kInternal,
-                                   device::AuthenticatorType::kICloudKeychain));
+      controller.saved_authenticators().AddAuthenticator(AuthenticatorReference(
+          kProfileAuthenticatorId, AuthenticatorTransport::kInternal,
+          device::AuthenticatorType::kTouchID));
+      controller.saved_authenticators().AddAuthenticator(AuthenticatorReference(
+          kICloudKeychainId, AuthenticatorTransport::kInternal,
+          device::AuthenticatorType::kICloudKeychain));
 
-        // Dispatch and cancel again to confirm that canceling the non-automatic
-        // dispatch cancels the whole request.
-        controller.HideDialogAndDispatchToPlatformAuthenticator(
-            device::AuthenticatorType::kICloudKeychain);
-        controller.OnUserConsentDenied();
-      }
+      // Dispatch and cancel again to confirm that canceling the non-automatic
+      // dispatch cancels the whole request.
+      controller.HideDialogAndDispatchToPlatformAuthenticator(
+          device::AuthenticatorType::kICloudKeychain);
+      controller.OnUserConsentDenied();
 
-      // Canceling after a non-automatic dispatch to iCloud Keychain should
-      // end the request.
       EXPECT_EQ(model.step(),
                 AuthenticatorRequestDialogModel::Step::kNotStarted);
     }
