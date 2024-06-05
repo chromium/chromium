@@ -295,7 +295,7 @@ public class SyncSettingsUtils {
 
         if (syncService.getSelectedTypes().contains(UserSelectableType.PASSWORDS)
                 && PasswordManagerUtilBridge.isGmsCoreUpdateRequired(
-                        UserPrefs.get(profile), /* isPwdSyncEnabled= */ true)) {
+                        UserPrefs.get(profile), syncService)) {
             return context.getString(R.string.sync_error_outdated_gms);
         }
 
@@ -640,7 +640,7 @@ public class SyncSettingsUtils {
 
         if (syncService.getSelectedTypes().contains(UserSelectableType.PASSWORDS)
                 && PasswordManagerUtilBridge.isGmsCoreUpdateRequired(
-                        UserPrefs.get(profile), /* isPwdSyncEnabled= */ true)) {
+                        UserPrefs.get(profile), syncService)) {
             return SyncError.UPM_BACKEND_OUTDATED;
         }
 

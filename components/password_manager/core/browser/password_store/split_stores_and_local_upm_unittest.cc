@@ -11,6 +11,7 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/sync/test/test_sync_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace password_manager {
@@ -107,18 +108,25 @@ TEST_P(SplitStoresAndLocalUpmTestIsGmsCoreUpdateRequired,
       password_manager::prefs::kEmptyProfileStoreLoginDatabase,
       p.is_login_db_empty);
 
-#if !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
+  syncer::TestSyncService sync_service;
+  if (p.is_pwd_sync_enabled) {
+    sync_service.SetSignedInWithSyncFeatureOn();
+  } else {
+    sync_service.SetSignedOut();
+  }
+
   bool expected_is_update_required =
+#if BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
+      false
+#else
       base::android::BuildInfo::GetInstance()->is_automotive()
           ? p.expected_is_update_required_automotive
-          : p.expected_is_update_required;
-  EXPECT_EQ(expected_is_update_required,
-            IsGmsCoreUpdateRequired(pref_service(), p.is_pwd_sync_enabled,
-                                    p.gms_version));
-#else
-  EXPECT_EQ(false, IsGmsCoreUpdateRequired(
-                       pref_service(), p.is_pwd_sync_enabled, p.gms_version));
+          : p.expected_is_update_required
 #endif
+      ;
+  EXPECT_EQ(
+      expected_is_update_required,
+      IsGmsCoreUpdateRequired(pref_service(), &sync_service, p.gms_version));
 }
 
 INSTANTIATE_TEST_SUITE_P(

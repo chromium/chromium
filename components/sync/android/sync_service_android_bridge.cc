@@ -94,6 +94,15 @@ syncer::UserSelectableType IntToUserSelectableTypeChecked(int type) {
 
 }  // namespace
 
+// static
+syncer::SyncService* SyncServiceAndroidBridge::FromJavaObject(
+    const base::android::JavaRef<jobject>& j_sync_service) {
+  return reinterpret_cast<SyncServiceAndroidBridge*>(
+             Java_SyncServiceImpl_getNativeSyncServiceAndroidBridge(
+                 AttachCurrentThread(), j_sync_service))
+      ->native_sync_service_;
+}
+
 SyncServiceAndroidBridge::SyncServiceAndroidBridge(
     syncer::SyncService* native_sync_service)
     : native_sync_service_(native_sync_service) {

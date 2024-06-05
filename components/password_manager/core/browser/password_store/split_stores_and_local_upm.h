@@ -9,6 +9,10 @@
 
 class PrefService;
 
+namespace syncer {
+class SyncService;
+}  // namespace syncer
+
 namespace password_manager {
 
 //  Checks whether the UPM for local users is activated for this client.
@@ -25,9 +29,9 @@ bool UsesSplitStoresAndUPMForLocal(const PrefService* pref_service);
 // into UPM.
 // - If the GMSCore version supports both the account and local stores, the
 // update is never required.
-bool IsGmsCoreUpdateRequired(PrefService* pref_service,
-                             bool is_pwd_sync_enabled,
-                             std::string gms_version_str);
+bool IsGmsCoreUpdateRequired(const PrefService* pref_service,
+                             const syncer::SyncService* sync_service,
+                             const std::string& gms_version_str);
 
 }  // namespace password_manager
 

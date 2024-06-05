@@ -23,6 +23,7 @@
 #include "components/password_manager/core/browser/password_manager_buildflags.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
 #include "components/password_manager/core/browser/password_store/split_stores_and_local_upm.h"
+#include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/pref_names.h"
 #include "components/version_info/android/channel_getter.h"
@@ -433,9 +434,11 @@ bool AreMinUpmRequirementsMet() {
   return gms_version >= password_manager::features::kAccountUpmMinGmsVersion;
 }
 
-bool ShouldUseUpmWiring(bool is_pwd_sync_enabled, PrefService* pref_service) {
-  // TODO(crbug.com/40226137): Re-evaluate if the SyncService can be passed here
-  // instead of the `is_pwd_sync_enabled` boolean.
+bool ShouldUseUpmWiring(const syncer::SyncService* sync_service,
+                        const PrefService* pref_service) {
+  bool is_pwd_sync_enabled =
+      password_manager::sync_util::IsSyncFeatureEnabledIncludingPasswords(
+          sync_service);
   if (is_pwd_sync_enabled &&
       password_manager_upm_eviction::IsCurrentUserEvicted(pref_service)) {
     return false;

@@ -19,7 +19,6 @@ import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -1309,7 +1308,7 @@ public class ManageSyncSettingsTest {
     @LargeTest
     @Feature({"Sync"})
     public void testSyncErrorCardActionForUpmBackendOutdatedError() {
-        when(mPasswordManagerUtilBridgeJniMock.isGmsCoreUpdateRequired(any(), anyBoolean()))
+        when(mPasswordManagerUtilBridgeJniMock.isGmsCoreUpdateRequired(any(), any()))
                 .thenReturn(true);
 
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
@@ -1338,7 +1337,7 @@ public class ManageSyncSettingsTest {
     @SmallTest
     @Feature({"Sync"})
     public void testSyncErrorCardForUpmBackendOutdatedUpdatedDynamically() {
-        when(mPasswordManagerUtilBridgeJniMock.isGmsCoreUpdateRequired(any(), anyBoolean()))
+        when(mPasswordManagerUtilBridgeJniMock.isGmsCoreUpdateRequired(any(), any()))
                 .thenReturn(true);
 
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
@@ -1354,8 +1353,7 @@ public class ManageSyncSettingsTest {
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    when(mPasswordManagerUtilBridgeJniMock.isGmsCoreUpdateRequired(
-                                    any(), anyBoolean()))
+                    when(mPasswordManagerUtilBridgeJniMock.isGmsCoreUpdateRequired(any(), any()))
                             .thenReturn(false);
                     // TODO(crbug.com/327623232): Observe such changes instead.
                     preference.syncStateChanged();

@@ -511,8 +511,8 @@ void PasswordManagerSettingsServiceAndroidImpl::
 }
 
 bool PasswordManagerSettingsServiceAndroidImpl::UsesUPMBackend() const {
-  return password_manager_android_util::ShouldUseUpmWiring(
-      is_password_sync_enabled_, pref_service_);
+  return password_manager_android_util::ShouldUseUpmWiring(sync_service_,
+                                                           pref_service_);
 }
 
 void PasswordManagerSettingsServiceAndroidImpl::MigratePrefsIfNeeded(

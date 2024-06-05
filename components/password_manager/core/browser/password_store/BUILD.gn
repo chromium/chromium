@@ -88,6 +88,10 @@ source_set("password_store_impl") {
       "split_stores_and_local_upm.cc",
       "split_stores_and_local_upm.h",
     ]
+    deps += [
+      "//components/sync/base",
+      "//components/sync/service",
+    ]
   }
 
   if ((is_posix && !is_apple) || is_fuchsia) {

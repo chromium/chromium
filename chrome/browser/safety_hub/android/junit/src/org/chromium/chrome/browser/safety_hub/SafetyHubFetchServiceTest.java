@@ -112,7 +112,7 @@ public class SafetyHubFetchServiceTest {
     private void setUPMStatus(boolean isUPMEnabled) {
         when(mPasswordManagerUtilBridgeNativeMock.areMinUpmRequirementsMet())
                 .thenReturn(isUPMEnabled);
-        when(mPasswordManagerUtilBridgeNativeMock.shouldUseUpmWiring(true, mPrefService))
+        when(mPasswordManagerUtilBridgeNativeMock.shouldUseUpmWiring(mSyncService, mPrefService))
                 .thenReturn(isUPMEnabled);
     }
 

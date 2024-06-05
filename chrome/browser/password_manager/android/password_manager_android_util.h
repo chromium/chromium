@@ -13,6 +13,10 @@ namespace base {
 class FilePath;
 }  // namespace base
 
+namespace syncer {
+class SyncService;
+}  // namespace syncer
+
 namespace password_manager_android_util {
 
 // Used to prevent static casting issues with
@@ -30,7 +34,8 @@ bool AreMinUpmRequirementsMet();
 //  - If the user is using UPM and everything works as expected.
 //  - If the user is eligible for using UPM, but the GMSCore version is too old
 //  and doesn't support UPM.
-bool ShouldUseUpmWiring(bool is_pwd_sync_enabled, PrefService* pref_service);
+bool ShouldUseUpmWiring(const syncer::SyncService* sync_service,
+                        const PrefService* pref_service);
 
 // Called on startup to update the value of UsesSplitStoresAndUPMForLocal(),
 // based on feature flags, minimum GmsCore version and other criteria.

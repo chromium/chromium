@@ -519,6 +519,11 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
         return userSelectableTypeArray;
     }
 
+    @CalledByNative
+    private long getNativeSyncServiceAndroidBridge() {
+        return mSyncServiceAndroidBridge;
+    }
+
     @NativeMethods
     interface Natives {
         // Please keep all methods below in the same order as sync_service_android_bridge.h.

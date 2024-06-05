@@ -7,10 +7,12 @@ package org.chromium.chrome.browser.password_manager;
 import android.content.pm.PackageInfo;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.PackageUtils;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.components.sync.SyncService;
 
 /** Wrapper for utilities in password_manager_util. */
 public class PasswordManagerUtilBridge {
@@ -20,13 +22,13 @@ public class PasswordManagerUtilBridge {
      * works as expected; 2) if the user is eligible for using UPM, but the GMSCore version is too
      * old and doesn't support UPM.
      *
-     * @param isPwdSyncEnabled Whether password syncing is enabled.
+     * @param syncService The sync service.
      * @param prefService The preference service (used to identify whether the preference for using
      *     UPM for local passwords is set)
      * @return Returns true if UPM wiring should be instantiated.
      */
-    public static boolean shouldUseUpmWiring(boolean isPwdSyncEnabled, PrefService prefService) {
-        return PasswordManagerUtilBridgeJni.get().shouldUseUpmWiring(isPwdSyncEnabled, prefService);
+    public static boolean shouldUseUpmWiring(SyncService syncService, PrefService prefService) {
+        return PasswordManagerUtilBridgeJni.get().shouldUseUpmWiring(syncService, prefService);
     }
 
     /**
@@ -43,14 +45,13 @@ public class PasswordManagerUtilBridge {
      * Checks if the GMSCore update is required to use the Password Manager functionality.
      *
      * @param prefService Preference service for checking if the user is enrolled into UPM.
-     * @param isPwdSyncEnabled Whether password syncing is enabled
+     * @param syncService The sync service.
      * @return Whether the user is required to update GMSCore to use the Password Manager
      *     functionality.
      */
     public static boolean isGmsCoreUpdateRequired(
-            PrefService prefService, boolean isPwdSyncEnabled) {
-        return PasswordManagerUtilBridgeJni.get()
-                .isGmsCoreUpdateRequired(prefService, isPwdSyncEnabled);
+            PrefService prefService, SyncService syncService) {
+        return PasswordManagerUtilBridgeJni.get().isGmsCoreUpdateRequired(prefService, syncService);
     }
 
     @CalledByNative
@@ -84,11 +85,15 @@ public class PasswordManagerUtilBridge {
 
     @NativeMethods
     public interface Natives {
-        boolean shouldUseUpmWiring(boolean isPwdSyncEnabled, PrefService prefService);
+        boolean shouldUseUpmWiring(
+                @JniType("syncer::SyncService*") SyncService syncService,
+                @JniType("PrefService*") PrefService prefService);
 
-        boolean usesSplitStoresAndUPMForLocal(PrefService prefService);
+        boolean usesSplitStoresAndUPMForLocal(@JniType("PrefService*") PrefService prefService);
 
-        boolean isGmsCoreUpdateRequired(PrefService prefService, boolean isPwdSyncEnabled);
+        boolean isGmsCoreUpdateRequired(
+                @JniType("PrefService*") PrefService prefService,
+                @JniType("syncer::SyncService*") SyncService syncService);
 
         boolean areMinUpmRequirementsMet();
 

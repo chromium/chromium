@@ -10,6 +10,9 @@
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync/base/user_selectable_type.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 
 using password_manager::features::kUnifiedPasswordManagerSyncOnlyInGMSCore;
 using password_manager::prefs::kCurrentMigrationVersionToGoogleMobileServices;
@@ -30,9 +33,9 @@ bool UsesSplitStoresAndUPMForLocal(const PrefService* pref_service) {
   NOTREACHED_NORETURN();
 }
 
-bool IsGmsCoreUpdateRequired(PrefService* pref_service,
-                             bool is_pwd_sync_enabled,
-                             std::string gms_version_str) {
+bool IsGmsCoreUpdateRequired(const PrefService* pref_service,
+                             const syncer::SyncService* sync_service,
+                             const std::string& gms_version_str) {
   if (!features::IsUnifiedPasswordManagerSyncOnlyInGMSCoreEnabled()) {
     return false;
   }
@@ -67,7 +70,8 @@ bool IsGmsCoreUpdateRequired(PrefService* pref_service,
 
   // GMSCore supports account storage only, thus update is required if password
   // syncing is disabled.
-  if (!is_pwd_sync_enabled) {
+  if (!sync_service || !sync_service->GetUserSettings()->GetSelectedTypes().Has(
+                           syncer::UserSelectableType::kPasswords)) {
     return true;
   }
 

@@ -19,8 +19,7 @@ public class PasswordCheckControllerFactory {
             SettingsLauncher settingsLauncher,
             PasswordManagerHelper passwordManagerHelper) {
         if (passwordManagerHelper.canUseUpm()
-                || PasswordManagerUtilBridge.isGmsCoreUpdateRequired(
-                        prefService, PasswordManagerHelper.hasChosenToSyncPasswords(syncService))) {
+                || PasswordManagerUtilBridge.isGmsCoreUpdateRequired(prefService, syncService)) {
             return new GmsCorePasswordCheckController(
                     syncService, prefService, passwordStoreBridge, passwordManagerHelper);
         }

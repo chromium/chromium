@@ -24,6 +24,9 @@ class SyncSetupInProgressHandle;
 // Must only be accessed from the UI thread.
 class SyncServiceAndroidBridge : public syncer::SyncServiceObserver {
  public:
+  static syncer::SyncService* FromJavaObject(
+      const base::android::JavaRef<jobject>& j_sync_service);
+
   // `native_sync_service` must be non-null and outlive this object.
   explicit SyncServiceAndroidBridge(syncer::SyncService* native_sync_service);
   ~SyncServiceAndroidBridge() override;
@@ -105,5 +108,16 @@ class SyncServiceAndroidBridge : public syncer::SyncServiceObserver {
   // Prevents Sync from running until configuration is complete.
   std::unique_ptr<syncer::SyncSetupInProgressHandle> sync_blocker_;
 };
+
+namespace jni_zero {
+
+template <>
+inline syncer::SyncService* FromJniType<syncer::SyncService*>(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& obj) {
+  return SyncServiceAndroidBridge::FromJavaObject(obj);
+}
+
+}  // namespace jni_zero
 
 #endif  // COMPONENTS_SYNC_ANDROID_SYNC_SERVICE_ANDROID_BRIDGE_H_

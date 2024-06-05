@@ -43,16 +43,13 @@ public class PasswordCheckupLauncher {
 
         assert profile != null;
         PasswordManagerHelper passwordManagerHelper = PasswordManagerHelper.getForProfile(profile);
-        boolean isPwdSyncEnabled =
-                PasswordManagerHelper.hasChosenToSyncPasswords(
-                        SyncServiceFactory.getForProfile(profile));
         // Force instantiation of GMSCore password check if GMSCore update is required. Password
         // check launch will fail and instead show the blocking dialog with the suggestion to
         // update. This is the desired behavior with the feature
         // UnifiedPasswordManagerSyncOnlyInGMSCore.
         if (passwordManagerHelper.canUseUpm()
                 || PasswordManagerUtilBridge.isGmsCoreUpdateRequired(
-                        UserPrefs.get(profile), isPwdSyncEnabled)) {
+                        UserPrefs.get(profile), SyncServiceFactory.getForProfile(profile))) {
             passwordManagerHelper.showPasswordCheckup(
                     windowAndroid.getContext().get(),
                     passwordCheckReferrer,

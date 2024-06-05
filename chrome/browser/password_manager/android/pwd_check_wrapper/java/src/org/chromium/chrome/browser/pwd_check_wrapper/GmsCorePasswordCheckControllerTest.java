@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.pwd_check_wrapper;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -86,7 +85,7 @@ public class GmsCorePasswordCheckControllerTest {
     private void configurePasswordManagerBackendSupport() {
         mJniMocker.mock(
                 PasswordManagerUtilBridgeJni.TEST_HOOKS, mPasswordManagerUtilBridgeNativeMock);
-        when(mPasswordManagerUtilBridgeNativeMock.shouldUseUpmWiring(true, mPrefService))
+        when(mPasswordManagerUtilBridgeNativeMock.shouldUseUpmWiring(mSyncService, mPrefService))
                 .thenReturn(true);
         when(mPasswordManagerUtilBridgeNativeMock.usesSplitStoresAndUPMForLocal(mPrefService))
                 .thenReturn(false);
@@ -213,7 +212,7 @@ public class GmsCorePasswordCheckControllerTest {
     @Test
     public void getBreachedCredentialsCountReturnsBackendVersionNotSupportedError()
             throws ExecutionException, InterruptedException {
-        when(mPasswordManagerUtilBridgeNativeMock.isGmsCoreUpdateRequired(any(), anyBoolean()))
+        when(mPasswordManagerUtilBridgeNativeMock.isGmsCoreUpdateRequired(any(), any()))
                 .thenReturn(true);
 
         PasswordCheckResult passwordCheckResultLocal =
