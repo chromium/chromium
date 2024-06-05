@@ -10,7 +10,9 @@ import org.json.JSONObject;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.components.safe_browsing.SafeBrowsingResult;
 import org.chromium.components.safe_browsing.SafetyNetApiHandler;
+import org.chromium.components.safe_browsing.VerifyAppsResult;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -61,7 +61,9 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.components.safe_browsing.SafeBrowsingApiBridge;
 import org.chromium.components.safe_browsing.SafeBrowsingApiHandler;
 import org.chromium.components.safe_browsing.SafeBrowsingFeatures;
+import org.chromium.components.safe_browsing.SafeBrowsingResult;
 import org.chromium.components.safe_browsing.SafetyNetApiHandler;
+import org.chromium.components.safe_browsing.VerifyAppsResult;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 

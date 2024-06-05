@@ -17,6 +17,7 @@ android_library("safe_browsing_java") {
   ]
 
   srcjar_deps = [
+    ":java_enums",
     ":jni_headers",
     ":sb_java_features_srcjar",
   ]
@@ -207,4 +208,8 @@ source_set("referring_app_info") {
     "//components/safe_browsing/core/common/proto:csd_proto",
     "//url",
   ]
+}
+
+java_cpp_enum("java_enums") {
+  sources = [ "safe_browsing_api_handler_util.h" ]
 }
