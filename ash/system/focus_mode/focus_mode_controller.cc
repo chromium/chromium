@@ -184,6 +184,10 @@ void FocusModeController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(
       prefs::kFocusModeSoundSection,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+
+  // Pref only set via policy.
+  registry->RegisterStringPref(prefs::kFocusModeSoundsEnabled,
+                               focus_mode_util::kFocusModeSoundsEnabled);
 }
 
 void FocusModeController::AddObserver(Observer* observer) {

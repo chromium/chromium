@@ -1683,6 +1683,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kLocalUserFilesMigrationEnabled,
     prefs::kLocalUserFilesMigrationEnabled,
     base::Value::Type::BOOLEAN },
+  { key::kFocusModeSoundsEnabled,
+    ash::prefs::kFocusModeSoundsEnabled,
+    base::Value::Type::STRING },
 #endif // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_LINUX)

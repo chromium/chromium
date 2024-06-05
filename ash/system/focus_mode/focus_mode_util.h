@@ -29,6 +29,11 @@ enum class SoundType {
   kYouTubeMusic = 2,
 };
 
+// Values for the "ash.focus_mode.focus_mode_sounds_enabled" policy.
+inline constexpr char kFocusModeSoundsEnabled[] = "enabled";
+inline constexpr char kFocusSoundsOnly[] = "focus-sounds";
+inline constexpr char kFocusModeSoundsDisabled[] = "disabled";
+
 constexpr std::string_view kTaskListIdKey = "taskListId";
 constexpr std::string_view kTaskIdKey = "taskId";
 constexpr std::string_view kSoundTypeKey = "SoundType";

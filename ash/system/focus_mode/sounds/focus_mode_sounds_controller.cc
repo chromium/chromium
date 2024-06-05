@@ -131,6 +131,28 @@ void OnTrackFetched(
   std::move(callback).Run(*track);
 }
 
+// Parses the ash.focus_mode.sounds_enabled pref and returns a set of the
+// `SoundType`s that should be enabled.
+base::flat_set<focus_mode_util::SoundType> ReadSoundSectionPolicy(
+    const PrefService* pref_service) {
+  CHECK(pref_service);
+  const std::string& enabled_sections_pref =
+      pref_service->GetString(prefs::kFocusModeSoundsEnabled);
+
+  if (enabled_sections_pref == focus_mode_util::kFocusModeSoundsEnabled) {
+    return {focus_mode_util::SoundType::kSoundscape,
+            focus_mode_util::SoundType::kYouTubeMusic};
+  } else if (enabled_sections_pref == focus_mode_util::kFocusSoundsOnly) {
+    return {focus_mode_util::SoundType::kSoundscape};
+  } else if (enabled_sections_pref ==
+             focus_mode_util::kFocusModeSoundsDisabled) {
+    return {};
+  }
+
+  // Unrecognized value. It's likely a new restriction so disable everything.
+  return {};
+}
+
 }  // namespace
 
 FocusModeSoundsController::SelectedPlaylist::SelectedPlaylist() = default;
@@ -219,20 +241,26 @@ void FocusModeSoundsController::DownloadPlaylistsForType(
 }
 
 void FocusModeSoundsController::UpdateFromUserPrefs() {
-  if (PrefService* active_user_prefs =
-          Shell::Get()->session_controller()->GetActivePrefService()) {
-    const auto& dict =
-        active_user_prefs->GetDict(prefs::kFocusModeSoundSection);
-
-    // If the user didn't select any playlist before, we should show the
-    // `Soundscape` sound section as default behavior.
-    if (dict.empty()) {
-      sound_type_ = focus_mode_util::SoundType::kSoundscape;
-    } else {
-      sound_type_ = static_cast<focus_mode_util::SoundType>(
-          dict.FindInt(focus_mode_util::kSoundTypeKey).value());
-    }
+  PrefService* active_user_prefs =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  if (!active_user_prefs) {
+    return;
   }
+
+  const auto& dict = active_user_prefs->GetDict(prefs::kFocusModeSoundSection);
+
+  // If the user didn't select any playlist before, we should show the
+  // `Soundscape` sound section as default behavior.
+  if (dict.empty()) {
+    sound_type_ = focus_mode_util::SoundType::kSoundscape;
+  } else {
+    sound_type_ = static_cast<focus_mode_util::SoundType>(
+        dict.FindInt(focus_mode_util::kSoundTypeKey).value());
+  }
+
+  base::flat_set<focus_mode_util::SoundType> enabled_sections =
+      ReadSoundSectionPolicy(active_user_prefs);
+  // TODO(b/328121041): Push section information into the views.
 }
 
 void FocusModeSoundsController::SetYouTubeMusicFailureCallback(
