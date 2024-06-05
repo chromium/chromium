@@ -38,6 +38,7 @@ ManagedUserProfileNoticeUI::ManagedUserProfileNoticeUI(content::WebUI* web_ui)
       chrome::kChromeUIManagedUserProfileNoticeHost);
 
   static constexpr webui::ResourcePath kResources[] = {
+      {"icons.html.js", IDR_SIGNIN_ICONS_HTML_JS},
       {"legacy_managed_user_profile_notice_app.js",
        IDR_SIGNIN_MANAGED_USER_PROFILE_NOTICE_LEGACY_MANAGED_USER_PROFILE_NOTICE_APP_JS},
       {"legacy_managed_user_profile_notice_app.html.js",
