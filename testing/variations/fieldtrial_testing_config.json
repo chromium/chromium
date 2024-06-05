@@ -1495,8 +1495,7 @@
                 "android_webview",
                 "chromeos",
                 "chromeos_lacros",
-                "ios",
-                "linux"
+                "ios"
             ],
             "experiments": [
                 {
