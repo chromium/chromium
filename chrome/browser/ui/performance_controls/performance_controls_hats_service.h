@@ -36,10 +36,6 @@ class PerformanceControlsHatsService
 
  private:
   raw_ptr<Profile> profile_;
-  base::ScopedObservation<
-      performance_manager::user_tuning::BatterySaverModeManager,
-      performance_manager::user_tuning::BatterySaverModeManager::Observer>
-      battery_saver_observer_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_PERFORMANCE_CONTROLS_HATS_SERVICE_H_

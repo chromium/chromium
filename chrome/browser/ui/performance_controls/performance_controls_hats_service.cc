@@ -28,20 +28,26 @@ PerformanceControlsHatsService::PerformanceControlsHatsService(Profile* profile)
   if (base::FeatureList::IsEnabled(
           performance_manager::features::
               kPerformanceControlsBatterySaverOptOutSurvey)) {
-    auto* manager = performance_manager::user_tuning::BatterySaverModeManager::
-        GetInstance();
-    battery_saver_observer_.Observe(manager);
+    performance_manager::user_tuning::BatterySaverModeManager::GetInstance()
+        ->AddObserver(this);
   }
 }
 
 PerformanceControlsHatsService::~PerformanceControlsHatsService() {
   // Can't used ScopedObservation because sometimes the
-  // UserPerformanceTuningManager is destroyed before this service.
+  // UserPerformanceTuningManager or BatterySaverModeManager are destroyed
+  // before this service.
   if (performance_manager::user_tuning::UserPerformanceTuningManager::
           HasInstance()) {
     performance_manager::user_tuning::UserPerformanceTuningManager::
         GetInstance()
             ->RemoveObserver(this);
+  }
+
+  if (performance_manager::user_tuning::BatterySaverModeManager::
+          HasInstance()) {
+    performance_manager::user_tuning::BatterySaverModeManager::GetInstance()
+        ->RemoveObserver(this);
   }
 }
 
