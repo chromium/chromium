@@ -150,6 +150,10 @@ void ProductSpecificationsButton::AnimationProgressed(
 }
 
 void ProductSpecificationsButton::Show() {
+  // If the button is already showing, don't update locked expansion mode.
+  if (expansion_animation_.IsShowing()) {
+    return;
+  }
   if (locked_expansion_view_->IsMouseHovered()) {
     SetLockedExpansionMode(LockedExpansionMode::kWillShow);
   }
