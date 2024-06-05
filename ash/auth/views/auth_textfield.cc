@@ -6,10 +6,14 @@
 
 #include <string>
 
+#include "ash/auth/views/auth_textfield_timer.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/system_textfield.h"
 #include "ash/style/system_textfield_controller.h"
 #include "ash/style/typography.h"
+#include "base/check.h"
+#include "base/check_op.h"
+#include "base/observer_list_types.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/font_list.h"
@@ -74,14 +78,16 @@ void AuthTextfield::AboutToRequestFocusFromTabTraversal(bool reverse) {
 
 void AuthTextfield::OnBlur() {
   SystemTextfield::OnBlur();
-  CHECK(delegate_);
-  delegate_->OnTextfieldBlur();
+  for (auto& observer : observers_) {
+    observer.OnTextfieldBlur();
+  }
 }
 
 void AuthTextfield::OnFocus() {
   SystemTextfield::OnFocus();
-  CHECK(delegate_);
-  delegate_->OnTextfieldFocus();
+  for (auto& observer : observers_) {
+    observer.OnTextfieldFocus();
+  }
 }
 
 bool AuthTextfield::HandleKeyEvent(views::Textfield* sender,
@@ -128,10 +134,14 @@ bool AuthTextfield::HandleKeyEvent(views::Textfield* sender,
     Backspace();
   } else if (key_code == ui::VKEY_RETURN) {
     if (!GetText().empty()) {
-      delegate_->OnSubmit();
+      for (auto& observer : observers_) {
+        observer.OnSubmit();
+      }
     }
   } else if (key_code == ui::VKEY_ESCAPE) {
-    delegate_->OnEscape();
+    for (auto& observer : observers_) {
+      observer.OnEscape();
+    }
   }
 
   return true;
@@ -139,8 +149,9 @@ bool AuthTextfield::HandleKeyEvent(views::Textfield* sender,
 
 void AuthTextfield::ContentsChanged(Textfield* sender,
                                      const std::u16string& new_contents) {
-  CHECK(delegate_);
-  delegate_->OnContentsChanged(new_contents);
+  for (auto& observer : observers_) {
+    observer.OnContentsChanged(new_contents);
+  }
 }
 
 gfx::Size AuthTextfield::CalculatePreferredSize(
@@ -149,9 +160,10 @@ gfx::Size AuthTextfield::CalculatePreferredSize(
 }
 
 void AuthTextfield::Reset() {
-  CHECK(delegate_);
   SetText(std::u16string());
-  delegate_->OnContentsChanged(GetText());
+  for (auto& observer : observers_) {
+    observer.OnContentsChanged(GetText());
+  }
   HideText();
   ClearEditHistory();
 }
@@ -182,7 +194,7 @@ void AuthTextfield::Backspace() {
                                   ui::DomCode::BACKSPACE, ui::EF_NONE));
 }
 
-void AuthTextfield::SetTextVisibility(bool visible) {
+void AuthTextfield::SetTextVisible(bool visible) {
   if (visible) {
     ShowText();
   } else {
@@ -202,8 +214,9 @@ void AuthTextfield::ShowText() {
       SetTextInputType(ui::TEXT_INPUT_TYPE_NUMBER);
       break;
   }
-  CHECK(delegate_);
-  delegate_->OnTextVisibleChanged(true);
+  for (auto& observer : observers_) {
+    observer.OnTextVisibleChanged(true);
+  }
 }
 
 void AuthTextfield::HideText() {
@@ -211,16 +224,31 @@ void AuthTextfield::HideText() {
     return;
   }
   SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
-  CHECK(delegate_);
-  delegate_->OnTextVisibleChanged(false);
+  for (auto& observer : observers_) {
+    observer.OnTextVisibleChanged(false);
+  }
 }
 
 bool AuthTextfield::IsTextVisible() const {
   return GetTextInputType() != ui::TEXT_INPUT_TYPE_PASSWORD;
 }
 
-void AuthTextfield::SetDelegate(Delegate* delegate) {
-  delegate_ = delegate;
+void AuthTextfield::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void AuthTextfield::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+void AuthTextfield::ApplyTimerLogic() {
+  CHECK_EQ(timer_logic_.get(), nullptr);
+  timer_logic_ = std::make_unique<AuthTextfieldTimer>(this);
+}
+
+void AuthTextfield::ResetTimerLogic() {
+  CHECK(timer_logic_.get());
+  timer_logic_.reset();
 }
 
 BEGIN_METADATA(AuthTextfield)

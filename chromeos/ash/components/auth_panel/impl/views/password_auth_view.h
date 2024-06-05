@@ -45,7 +45,7 @@ class AuthPanelEventDispatcher;
 // only handle UI behavior.
 class PasswordAuthView : public FactorAuthView,
                          public ImeControllerImpl::Observer,
-                         public AuthTextfield::Delegate {
+                         public AuthTextfield::Observer {
   METADATA_HEADER(PasswordAuthView, FactorAuthView)
 
  public:

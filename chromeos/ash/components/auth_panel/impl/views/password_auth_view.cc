@@ -139,7 +139,7 @@ void PasswordAuthView::CreateAndConfigureTextfieldContainer() {
   auth_textfield_ = textfield_container->AddChildView(
       std::make_unique<AuthTextfield>(AuthTextfield::AuthType::kPassword));
 
-  auth_textfield_->SetDelegate(this);
+  auth_textfield_->AddObserver(this);
 
   auth_textfield_->SetPlaceholderText(
       l10n_util::GetStringUTF16(IDS_ASH_IN_SESSION_AUTH_PASSWORD_PLACEHOLDER));
@@ -210,7 +210,7 @@ PasswordAuthView::PasswordAuthView(AuthPanelEventDispatcher* dispatcher,
 }
 
 PasswordAuthView::~PasswordAuthView() {
-  auth_textfield_->SetDelegate(nullptr);
+  auth_textfield_->RemoveObserver(this);
 }
 
 AshAuthFactor PasswordAuthView::GetFactor() {
@@ -308,7 +308,7 @@ void PasswordAuthView::OnTextfieldFocus() {
 void PasswordAuthView::UpdateTextfield(
     const AuthFactorStore::State::AuthTextfieldState& auth_textfield_state) {
   auth_textfield_->SetReadOnly(auth_textfield_state.is_read_only);
-  auth_textfield_->SetTextVisibility(auth_textfield_state.is_password_visible_);
+  auth_textfield_->SetTextVisible(auth_textfield_state.is_password_visible_);
 
   if (auto new_text = base::UTF8ToUTF16(auth_textfield_state.password_);
       new_text != auth_textfield_->GetText()) {

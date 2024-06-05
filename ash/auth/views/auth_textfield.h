@@ -5,16 +5,20 @@
 #ifndef ASH_AUTH_VIEWS_AUTH_TEXTFIELD_H_
 #define ASH_AUTH_VIEWS_AUTH_TEXTFIELD_H_
 
+#include <memory>
 #include <string>
 
 #include "ash/ash_export.h"
 #include "ash/style/system_textfield.h"
 #include "ash/style/system_textfield_controller.h"
 #include "base/memory/raw_ptr.h"
+#include "base/observer_list_types.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace ash {
+
+class AuthTextfieldTimer;
 
 // A textfield that selects all text on focus and allows to switch between
 // show/hide password modes.
@@ -27,7 +31,7 @@ class ASH_EXPORT AuthTextfield : public SystemTextfield,
     kPin,
   };
 
-  class Delegate {
+  class Observer : public base::CheckedObserver {
    public:
     virtual void OnTextfieldBlur() {}
     virtual void OnTextfieldFocus() {}
@@ -63,17 +67,23 @@ class ASH_EXPORT AuthTextfield : public SystemTextfield,
   void InsertDigit(int digit);
   void Backspace();
 
-  void SetTextVisibility(bool visible);
+  void SetTextVisible(bool visible);
   bool IsTextVisible() const;
 
-  void SetDelegate(Delegate* delegate);
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
+  void ApplyTimerLogic();
+  void ResetTimerLogic();
 
  private:
   void ShowText();
   void HideText();
 
   const AuthType auth_type_;
-  raw_ptr<Delegate> delegate_ = nullptr;
+  base::ObserverList<Observer> observers_;
+
+  std::unique_ptr<AuthTextfieldTimer> timer_logic_;
 };
 
 }  // namespace ash

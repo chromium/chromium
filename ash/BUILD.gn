@@ -332,6 +332,8 @@ component("ash") {
     "assistant/assistant_web_view_delegate_impl.h",
     "auth/views/auth_textfield.cc",
     "auth/views/auth_textfield.h",
+    "auth/views/auth_textfield_timer.cc",
+    "auth/views/auth_textfield_timer.h",
     "auth/views/pin_keyboard_view.cc",
     "auth/views/pin_keyboard_view.h",
     "autotest_private_api_utils.cc",
