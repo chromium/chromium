@@ -308,7 +308,14 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, MAYBE_TestOpenPopup) {
 }
 
 // Tests opening a popup in an incognito window.
-IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, TestOpenPopupIncognito) {
+// TODO(crbug.com/345091943): Extremely flaky on Mac release builds.
+#if BUILDFLAG(IS_MAC) && defined(NDEBUG)
+#define MAYBE_TestOpenPopupIncognito DISABLED_TestOpenPopupIncognito
+#else
+#define MAYBE_TestOpenPopupIncognito TestOpenPopupIncognito
+#endif
+IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest,
+                       MAYBE_TestOpenPopupIncognito) {
   // The creation of the incognito window is the first WebContents.
   content::CreateAndLoadWebContentsObserver frame_observer(
       /*num_expected_contents=*/2);
