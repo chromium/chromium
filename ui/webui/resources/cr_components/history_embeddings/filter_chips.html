@@ -29,10 +29,10 @@ hr {
     on-change="onShowByGroupSelectMenuChanged_"
     hidden$="[[!enableShowResultsByGroupOption]]">
   <option value="false">
-    $i18n{historyEmbeddingsShowByDate}
+    [[i18n('historyEmbeddingsShowByDate')]]
   </option>
   <option value="true">
-    $i18n{historyEmbeddingsShowByGroup}
+    [[i18n('historyEmbeddingsShowByGroup')]]
   </option>
 </select>
 

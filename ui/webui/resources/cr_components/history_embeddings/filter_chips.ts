@@ -6,6 +6,7 @@ import '//resources/cr_elements/cr_chip/cr_chip.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/cr_elements/md_select.css.js';
 
+import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -49,7 +50,11 @@ export interface HistoryEmbeddingsFilterChips {
     showByGroupSelectMenu: HTMLSelectElement,
   };
 }
-export class HistoryEmbeddingsFilterChips extends PolymerElement {
+
+const HistoryEmbeddingsFilterChipsElementBase = I18nMixin(PolymerElement);
+
+export class HistoryEmbeddingsFilterChips extends
+    HistoryEmbeddingsFilterChipsElementBase {
   static get is() {
     return 'cr-history-embeddings-filter-chips';
   }
