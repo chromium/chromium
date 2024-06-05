@@ -96,7 +96,6 @@ public class ActivityWindowAndroid extends WindowAndroid
             ApplicationStatus.registerWindowFocusChangedListener(this);
         }
 
-        setRootView(activity.getWindow().getDecorView().getRootView());
         setKeyboardDelegate(activityKeyboardVisibilityDelegate);
         setAndroidPermissionDelegate(activityAndroidPermissionDelegate);
     }

@@ -15,6 +15,7 @@ import androidx.core.view.WindowInsetsCompat;
 import org.chromium.ui.InsetObserver;
 import org.chromium.ui.InsetObserver.WindowInsetsAnimationListener;
 import org.chromium.ui.InsetObserver.WindowInsetsConsumer;
+import org.chromium.ui.InsetObserverSupplier;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.util.List;
@@ -50,7 +51,7 @@ public class DeferredIMEWindowInsetApplicationCallback
      * window insets and listening for IME animation updates.
      */
     public void attach(WindowAndroid windowAndroid) {
-        InsetObserver insetObserver = windowAndroid.getInsetObserver();
+        InsetObserver insetObserver = InsetObserverSupplier.getValueOrNullFrom(windowAndroid);
         assert insetObserver != null
                 : "DeferredIMEWindowInsetApplicationCallback can only be used in activities with an"
                         + " InsetObserverView";

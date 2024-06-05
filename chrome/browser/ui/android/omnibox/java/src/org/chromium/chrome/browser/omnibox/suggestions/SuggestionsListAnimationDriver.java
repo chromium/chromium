@@ -11,6 +11,7 @@ import androidx.core.view.WindowInsetsCompat;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.ui.InsetObserver;
 import org.chromium.ui.InsetObserver.WindowInsetsAnimationListener;
+import org.chromium.ui.InsetObserverSupplier;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -56,7 +57,7 @@ public class SuggestionsListAnimationDriver implements WindowInsetsAnimationList
 
     void onOmniboxSessionStateChange(boolean active) {
         if (active) {
-            InsetObserver insetObserver = mWindowAndroid.getInsetObserver();
+            InsetObserver insetObserver = InsetObserverSupplier.getValueOrNullFrom(mWindowAndroid);
             insetObserver.addWindowInsetsAnimationListener(this);
         } else {
             removeInsetListener();
@@ -64,7 +65,7 @@ public class SuggestionsListAnimationDriver implements WindowInsetsAnimationList
     }
 
     private void removeInsetListener() {
-        InsetObserver insetObserver = mWindowAndroid.getInsetObserver();
+        InsetObserver insetObserver = InsetObserverSupplier.getValueOrNullFrom(mWindowAndroid);
         insetObserver.removeWindowInsetsAnimationListener(this);
     }
 
