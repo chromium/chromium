@@ -372,7 +372,7 @@
     }, {
       "name": "openPopup",
       "type": "function",
-      "description": "Opens the extension's popup.",
+      "description": "Opens the extension's popup. Between Chrome 118 and Chrome 126, this is only available to policy installed extensions.",
       "parameters": [{
         "$ref": "OpenPopupOptions",
         "name": "options",
