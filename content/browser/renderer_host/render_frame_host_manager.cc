@@ -2413,15 +2413,10 @@ RenderFrameHostManager::ShouldSwapBrowsingInstancesForNavigation(
   // isolation, ensuring that the next navigation (e.g., a form submission
   // after user has typed in a password) can utilize a dedicated process when
   // possible (e.g., when there are no existing script references).
-  if (ShouldSwapBrowsingInstancesForDynamicIsolation(
-          render_frame_host_.get(),
-          UrlInfo(UrlInfoInit(destination_effective_url)
-                      .WithOriginIsolationRequest(
-                          destination_url_info.origin_isolation_request)
-                      .WithCOOPSiteIsolation(
-                          destination_url_info.requests_coop_isolation())
-                      .WithWebExposedIsolationInfo(
-                          destination_url_info.web_exposed_isolation_info)))) {
+  UrlInfo url_info_to_test = destination_url_info;
+  url_info_to_test.url = destination_effective_url;
+  if (ShouldSwapBrowsingInstancesForDynamicIsolation(render_frame_host_.get(),
+                                                     url_info_to_test)) {
     return BrowsingContextGroupSwap::CreateSecuritySwap();
   }
 
