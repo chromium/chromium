@@ -150,6 +150,9 @@ def NameIsTestOnly(name):
 
 
 def _MangleMethodName(type_resolver, name, param_types):
+  # E.g. java.util.List.reversed() has overloads that return different types.
+  if not param_types:
+    return name
   mangled_types = []
   for java_type in param_types:
     if java_type.primitive_name:
@@ -168,6 +171,7 @@ def _AssignMethodIdFunctionNames(type_resolver, called_by_natives):
             called_by_native.name, len(called_by_native.params))
 
   method_counts = collections.Counter(key(x) for x in called_by_natives)
+  cbn_by_name = collections.defaultdict(list)
 
   for called_by_native in called_by_natives:
     if called_by_native.is_constructor:
@@ -179,8 +183,14 @@ def _AssignMethodIdFunctionNames(type_resolver, called_by_natives):
       method_id_function_name = _MangleMethodName(
           type_resolver, method_id_function_name,
           called_by_native.signature.param_types)
+      cbn_by_name[method_id_function_name].append(called_by_native)
 
     called_by_native.method_id_function_name = method_id_function_name
+
+  # E.g. java.util.List.reversed() has overloads that return different types.
+  for duplicates in cbn_by_name.values():
+    for i, cbn in enumerate(duplicates[1:], 1):
+      cbn.method_id_function_name += str(i)
 
 
 class JniObject:

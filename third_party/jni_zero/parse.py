@@ -457,16 +457,6 @@ def parse_javap(filename, contents):
                              signature=signature,
                              static='static' in modifiers))
   called_by_natives.sort()
-
-  # Although javac will not allow multiple methods with no args and different
-  # return types, Class.class has just that, and it breaks with our
-  # name-mangling logic which assumes this cannot happen.
-  if java_class.full_name_with_slashes == 'java/lang/Class':
-    called_by_natives = [
-        x for x in called_by_natives if 'TypeDescriptor' not in (
-            x.signature.return_type.non_array_full_name_with_slashes)
-    ]
-
   return ParsedFile(filename=filename,
                     type_resolver=type_resolver,
                     proxy_methods=[],
