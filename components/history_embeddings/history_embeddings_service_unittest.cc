@@ -20,6 +20,7 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/test/history_service_test_util.h"
+#include "components/history_embeddings/answerer.h"
 #include "components/history_embeddings/history_embeddings_features.h"
 #include "components/history_embeddings/vector_database.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
@@ -91,6 +92,20 @@ class HistoryEmbeddingsServiceTest : public testing::Test {
     return result;
   }
 
+  void OnPassagesEmbeddingsComputed(HistoryEmbeddingsService* service,
+                                    UrlPassages url_passages,
+                                    std::vector<std::string> passages,
+                                    std::vector<Embedding> passages_embeddings,
+                                    ComputeEmbeddingsStatus status) {
+    service->OnPassagesEmbeddingsComputed(
+        std::move(url_passages), std::move(passages),
+        std::move(passages_embeddings), status);
+  }
+
+  Answerer* GetAnswerer(HistoryEmbeddingsService* service) {
+    return service->answerer_.get();
+  }
+
  protected:
   void AddTestHistoryPage(const std::string& url) {
     history_service_->AddPage(GURL(url), base::Time::Now() - base::Days(4), 0,
@@ -138,19 +153,19 @@ TEST_F(HistoryEmbeddingsServiceTest, OnHistoryDeletions) {
   std::vector<Embedding> passages_embeddings = {
       Embedding(std::vector<float>(768, 1.0f)),
       Embedding(std::vector<float>(768, 1.0f))};
-  service->OnPassagesEmbeddingsComputed(url_passages, passages,
-                                        passages_embeddings,
-                                        ComputeEmbeddingsStatus::SUCCESS);
+  OnPassagesEmbeddingsComputed(service.get(), url_passages, passages,
+                               passages_embeddings,
+                               ComputeEmbeddingsStatus::SUCCESS);
   url_passages.url_id = 2;
   url_passages.visit_id = 2;
-  service->OnPassagesEmbeddingsComputed(url_passages, passages,
-                                        passages_embeddings,
-                                        ComputeEmbeddingsStatus::SUCCESS);
+  OnPassagesEmbeddingsComputed(service.get(), url_passages, passages,
+                               passages_embeddings,
+                               ComputeEmbeddingsStatus::SUCCESS);
   url_passages.url_id = 3;
   url_passages.visit_id = 3;
-  service->OnPassagesEmbeddingsComputed(url_passages, passages,
-                                        passages_embeddings,
-                                        ComputeEmbeddingsStatus::SUCCESS);
+  OnPassagesEmbeddingsComputed(service.get(), url_passages, passages,
+                               passages_embeddings,
+                               ComputeEmbeddingsStatus::SUCCESS);
 
   // Verify that we find all three passages initially.
   EXPECT_EQ(CountEmbeddingsRows(service.get()), 3U);
@@ -198,24 +213,24 @@ TEST_F(HistoryEmbeddingsServiceTest, SearchFiltersLowScoringResults) {
   AddTestHistoryPage("http://test1.com");
   AddTestHistoryPage("http://test2.com");
   AddTestHistoryPage("http://test3.com");
-  service->OnPassagesEmbeddingsComputed(
-      UrlPassages(1, 1, base::Time::Now()),
-      {"test passage 1", "test passage 2"},
-      {Embedding(std::vector<float>(768, 1.0f)),
-       Embedding(std::vector<float>(768, 1.0f))},
-      ComputeEmbeddingsStatus::SUCCESS);
-  service->OnPassagesEmbeddingsComputed(
-      UrlPassages(2, 2, base::Time::Now()),
-      {"test passage 3", "test passage 4"},
-      {Embedding(std::vector<float>(768, -1.0f)),
-       Embedding(std::vector<float>(768, -1.0f))},
-      ComputeEmbeddingsStatus::SUCCESS);
-  service->OnPassagesEmbeddingsComputed(
-      UrlPassages(3, 3, base::Time::Now()),
-      {"test passage 5", "test passage 6"},
-      {Embedding(std::vector<float>(768, 1.0f)),
-       Embedding(std::vector<float>(768, 1.0f))},
-      ComputeEmbeddingsStatus::SUCCESS);
+  OnPassagesEmbeddingsComputed(service.get(),
+                               UrlPassages(1, 1, base::Time::Now()),
+                               {"test passage 1", "test passage 2"},
+                               {Embedding(std::vector<float>(768, 1.0f)),
+                                Embedding(std::vector<float>(768, 1.0f))},
+                               ComputeEmbeddingsStatus::SUCCESS);
+  OnPassagesEmbeddingsComputed(service.get(),
+                               UrlPassages(2, 2, base::Time::Now()),
+                               {"test passage 3", "test passage 4"},
+                               {Embedding(std::vector<float>(768, -1.0f)),
+                                Embedding(std::vector<float>(768, -1.0f))},
+                               ComputeEmbeddingsStatus::SUCCESS);
+  OnPassagesEmbeddingsComputed(service.get(),
+                               UrlPassages(3, 3, base::Time::Now()),
+                               {"test passage 5", "test passage 6"},
+                               {Embedding(std::vector<float>(768, 1.0f)),
+                                Embedding(std::vector<float>(768, 1.0f))},
+                               ComputeEmbeddingsStatus::SUCCESS);
 
   // Search
   base::test::TestFuture<SearchResult> future;
@@ -254,6 +269,22 @@ TEST_F(HistoryEmbeddingsServiceTest, CountWords) {
   EXPECT_EQ(2u, CountWords("a  bc"));
   EXPECT_EQ(3u, CountWords("a  bc d"));
   EXPECT_EQ(3u, CountWords("a  bc  def "));
+}
+
+TEST_F(HistoryEmbeddingsServiceTest, AnswerMocked) {
+  auto service = std::make_unique<HistoryEmbeddingsService>(
+      history_service_.get(), page_content_annotations_service_.get(),
+      /*model_provider=*/nullptr, /*service_controller=*/nullptr);
+
+  auto* answerer = GetAnswerer(service.get());
+  EXPECT_EQ(answerer->GetModelVersion(), 1);
+  base::test::TestFuture<AnswererResult> future;
+  answerer->ComputeAnswer("test query", {}, future.GetCallback());
+  AnswererResult result = future.Take();
+
+  EXPECT_EQ(result.status, ComputeAnswerStatus::SUCCESS);
+  EXPECT_EQ(result.query, "test query");
+  EXPECT_EQ(result.answer, "This is the answer to query 'test query'.");
 }
 
 }  // namespace history_embeddings

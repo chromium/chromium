@@ -41,6 +41,7 @@ class PageContentAnnotationsService;
 
 namespace history_embeddings {
 
+class Answerer;
 class Embedder;
 
 // A single item that forms part of a search result; combines metadata found in
@@ -131,9 +132,6 @@ class HistoryEmbeddingsService : public KeyedService,
  private:
   friend class HistoryEmbeddingsBrowserTest;
   friend class HistoryEmbeddingsServiceTest;
-  FRIEND_TEST_ALL_PREFIXES(HistoryEmbeddingsServiceTest, OnHistoryDeletions);
-  FRIEND_TEST_ALL_PREFIXES(HistoryEmbeddingsServiceTest,
-                           SearchFiltersLowScoringResults);
 
   // A utility container to wrap anything that should be accessed on
   // the separate storage worker sequence.
@@ -240,6 +238,9 @@ class HistoryEmbeddingsService : public KeyedService,
 
   // Metadata about the embedder.
   std::optional<EmbedderMetadata> embedder_metadata_;
+
+  // The answerer used to answer queries with context.
+  std::unique_ptr<Answerer> answerer_;
 
   // Storage is bound to a separate sequence.
   // This will be null if the feature flag is disabled.

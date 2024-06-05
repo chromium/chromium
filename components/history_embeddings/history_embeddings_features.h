@@ -45,6 +45,9 @@ extern const base::FeatureParam<double> kContentVisibilityThreshold;
 // and result inclusion.
 extern const base::FeatureParam<double> kSearchScoreThreshold;
 
+// Specifies whether to use the ML Answerer (if false, the mock is used).
+extern const base::FeatureParam<bool> kUseMlAnswerer;
+
 // Specifies whether to use the ML Embedder to embed passages and queries.
 extern const base::FeatureParam<bool> kUseMlEmbedder;
 

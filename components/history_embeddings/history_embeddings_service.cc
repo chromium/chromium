@@ -19,7 +19,9 @@
 #include "components/history/core/browser/url_database.h"
 #include "components/history/core/browser/url_row.h"
 #include "components/history_embeddings/history_embeddings_features.h"
+#include "components/history_embeddings/ml_answerer.h"
 #include "components/history_embeddings/ml_embedder.h"
+#include "components/history_embeddings/mock_answerer.h"
 #include "components/history_embeddings/mock_embedder.h"
 #include "components/history_embeddings/scheduling_embedder.h"
 #include "components/history_embeddings/sql_database.h"
@@ -158,6 +160,12 @@ HistoryEmbeddingsService::HistoryEmbeddingsService(
   embedder_ = std::make_unique<SchedulingEmbedder>(
       std::move(embedder_), kScheduledEmbeddingsMin.Get(),
       kScheduledEmbeddingsMax.Get());
+
+  if (kUseMlAnswerer.Get()) {
+    answerer_ = std::make_unique<MlAnswerer>();
+  } else {
+    answerer_ = std::make_unique<MockAnswerer>();
+  }
 
   storage_ = base::SequenceBound<Storage>(
       base::ThreadPool::CreateSequencedTaskRunner(

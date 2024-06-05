@@ -44,6 +44,10 @@ const base::FeatureParam<double> kSearchScoreThreshold(&kHistoryEmbeddings,
                                                        "SearchScoreThreshold",
                                                        0.9);
 
+const base::FeatureParam<bool> kUseMlAnswerer(&kHistoryEmbeddings,
+                                              "UseMlAnswerer",
+                                              false);
+
 const base::FeatureParam<bool> kUseMlEmbedder(&kHistoryEmbeddings,
                                               "UseMlEmbedder",
                                               true);
