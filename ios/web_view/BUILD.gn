@@ -386,6 +386,8 @@ ios_web_view_deps = [
   "//ios/components/security_interstitials/lookalikes",
   "//ios/components/security_interstitials/safe_browsing",
   "//ios/components/security_interstitials/safe_browsing:util",
+  "//ios/web/web_state/ui:wk_web_view_configuration_provider_header",
+  "//ios/web/webui",
 
   # TODO(crbug.com/40069191): Remove this once AppStore stops blocking
   # __availability_version_check.
@@ -395,13 +397,13 @@ ios_web_view_deps = [
   "//ios/components/webui/sync_internals",
   "//ios/net",
   "//ios/third_party/webkit",
-  "//ios/web",
   "//ios/web/common",
   "//ios/web/common:user_agent",
   "//ios/web/navigation:wk_navigation_util",
   "//ios/web/public",
   "//ios/web/public/browsing_data",
   "//ios/web/public/deprecated",
+  "//ios/web/public/download",
   "//ios/web/public/find_in_page",
   "//ios/web/public/init",
   "//ios/web/public/js_messaging",

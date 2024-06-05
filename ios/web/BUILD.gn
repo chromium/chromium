@@ -18,13 +18,8 @@ group("all_tests") {
 
 source_set("web") {
   public_deps = [
-    # TODO(crbug.com/338033944): Remove private files from public dependencies.
-    "//ios/web/public/download",
-    "//ios/web/public/init",
+    "//base",
     "//ios/web/public/navigation",
-    "//ios/web/web_state/ui",
-    "//ios/web/web_state/ui:wk_web_view_configuration_provider",
-    "//ios/web/webui",
   ]
 
   deps = [
@@ -46,6 +41,7 @@ source_set("web") {
     "//ios/web/navigation:wk_navigation_util",
     "//ios/web/net",
     "//ios/web/public",
+    "//ios/web/public/init",
     "//ios/web/public/js_messaging:gcrweb_js",
     "//ios/web/public/security",
     "//ios/web/public/session",
@@ -55,6 +51,8 @@ source_set("web") {
     "//ios/web/thread",
     "//ios/web/web_state",
     "//ios/web/web_state:web_view_internal_creation_util",
+    "//ios/web/web_state/ui:wk_web_view_configuration_provider",
+    "//ios/web/webui",
     "//services/network:network_service",
   ]
 
@@ -98,7 +96,6 @@ source_set("eg_app_support+eg2") {
   testonly = true
 
   deps = [
-    ":web",
     "//base",
     "//base/test:test_support",
     "//ios/testing/earl_grey:eg_app_support+eg2",
@@ -107,6 +104,7 @@ source_set("eg_app_support+eg2") {
     "//ios/web/public/test",
     "//ios/web/security",
     "//ios/web/web_state:web_state_impl_header",
+    "//ios/web/web_state/ui:web_controller_header",
     "//net",
   ]
 
@@ -186,7 +184,6 @@ source_set("ios_web_general_unittests") {
     ":core",
     ":test_support",
     ":threads",
-    ":web",
     "//base",
     "//base/test:test_support",
     "//components/url_formatter",
@@ -195,6 +192,7 @@ source_set("ios_web_general_unittests") {
     "//ios/web/navigation",
     "//ios/web/navigation:core",
     "//ios/web/public",
+    "//ios/web/public/init",
     "//ios/web/public/session",
     "//ios/web/public/session/proto",
     "//ios/web/public/test",
@@ -202,6 +200,7 @@ source_set("ios_web_general_unittests") {
     "//ios/web/test:mojo_bindings",
     "//ios/web/test:test_constants",
     "//ios/web/test:test_support",
+    "//ios/web/web_state/ui:wk_web_view_configuration_provider_header",
     "//net:test_support",
     "//testing/gmock",
     "//testing/gtest",
@@ -285,7 +284,6 @@ source_set("ios_web_net_unittests") {
   testonly = true
   deps = [
     ":core",
-    ":web",
     "//base",
     "//base/test:test_support",
     "//components/url_formatter",
@@ -305,6 +303,7 @@ source_set("ios_web_net_unittests") {
     "//ios/web/test:test_constants",
     "//ios/web/test:test_support",
     "//ios/web/test/fakes",
+    "//ios/web/web_state/ui:wk_web_view_configuration_provider_header",
     "//net:test_support",
     "//testing/gmock",
     "//testing/gtest",
@@ -402,6 +401,7 @@ source_set("ios_web_web_state_unittests") {
     "//ios/web/web_state:web_state_impl_header",
     "//ios/web/web_state:web_view_internal_creation_util",
     "//ios/web/web_state/ui:web_controller_header",
+    "//ios/web/web_state/ui:wk_web_view_configuration_provider_header",
     "//net:test_support",
     "//testing/gmock",
     "//testing/gtest",
@@ -462,7 +462,6 @@ source_set("ios_web_web_state_ui_unittests") {
   testonly = true
   deps = [
     ":core",
-    ":web",
     "//base",
     "//base/test:test_support",
     "//components/url_formatter",
@@ -478,6 +477,7 @@ source_set("ios_web_web_state_ui_unittests") {
     "//ios/web/navigation:core",
     "//ios/web/public",
     "//ios/web/public/deprecated",
+    "//ios/web/public/download",
     "//ios/web/public/js_messaging",
     "//ios/web/public/session",
     "//ios/web/public/test",
@@ -489,6 +489,7 @@ source_set("ios_web_web_state_ui_unittests") {
     "//ios/web/web_state:web_state_impl_header",
     "//ios/web/web_state/ui",
     "//ios/web/web_state/ui:crw_context_menu_controller",
+    "//ios/web/web_state/ui:wk_web_view_configuration_provider",
     "//net:test_support",
     "//testing/gmock",
     "//testing/gtest",

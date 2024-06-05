@@ -28,6 +28,7 @@ source_set("test") {
     "//ios/web/test:test_support",
     "//ios/web/web_state:web_state_impl_header",
     "//ios/web/web_state/ui:web_controller_header",
+    "//ios/web/web_state/ui:wk_web_view_configuration_provider_header",
     "//ui/base",
   ]
 
@@ -109,7 +110,6 @@ source_set("test_fixture") {
 
   deps = [
     "//base/test:test_support",
-    "//ios/web",
     "//ios/web/common:features",
     "//ios/web/js_messaging:java_script_feature",
     "//ios/web/navigation",
@@ -121,6 +121,7 @@ source_set("test_fixture") {
     "//ios/web/test:js_test_util_internal",
     "//ios/web/web_state:web_state_impl_header",
     "//ios/web/web_state/ui:web_controller_header",
+    "//ios/web/web_state/ui:wk_web_view_configuration_provider_header",
     "//ui/base",
     "//url",
   ]

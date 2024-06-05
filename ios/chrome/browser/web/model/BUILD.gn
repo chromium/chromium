@@ -225,10 +225,15 @@ source_set("web_internal") {
     "ios_thread_profiler.cc",
     "ios_thread_profiler.h",
   ]
+  public_deps = [
+    "//base",
+    "//components/memory_system",
+    "//ios/chrome/browser/flags:client_side",
+    "//ios/web/public/init",
+  ]
   deps = [
     ":feature_flags",
     ":model",
-    "//base",
     "//base/allocator:buildflags",
     "//build:blink_buildflags",
     "//components/autofill/core/common:features",
@@ -244,7 +249,6 @@ source_set("web_internal") {
     "//components/keyed_service/ios",
     "//components/language/core/browser",
     "//components/language/ios/browser",
-    "//components/memory_system",
     "//components/metrics",
     "//components/metrics:call_stack_profile_params",
     "//components/metrics:child_call_stack_profile_builder",
@@ -276,7 +280,6 @@ source_set("web_internal") {
     "//ios/chrome/browser/crash_report/model",
     "//ios/chrome/browser/first_run/model",
     "//ios/chrome/browser/flags",
-    "//ios/chrome/browser/flags:client_side",
     "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/follow/model:javascript_feature",
     "//ios/chrome/browser/https_upgrades/model",
@@ -325,7 +328,6 @@ source_set("web_internal") {
     "//ios/components/webui:url_constants",
     "//ios/net",
     "//ios/public/provider/chrome/browser/url_rewriters:url_rewriters_api",
-    "//ios/web",
     "//ios/web/common",
     "//ios/web/common:user_agent",
     "//ios/web/public",
