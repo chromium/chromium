@@ -90,8 +90,7 @@ void PickerPreviewBubbleView::SetPreviewImage(ui::ImageModel image) {
 
 void PickerPreviewBubbleView::OnThemeChanged() {
   BubbleDialogDelegateView::OnThemeChanged();
-  GetBubbleFrameView()->bubble_border()->set_color(
-      GetColorProvider()->GetColor(kBackgroundColor));
+  set_color(GetColorProvider()->GetColor(kBackgroundColor));
 }
 
 void PickerPreviewBubbleView::Close() {
