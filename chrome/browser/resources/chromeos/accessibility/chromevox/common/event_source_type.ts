@@ -7,12 +7,11 @@
  */
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
-/** @enum {string} */
-export const EventSourceType = {
-  NONE: 'none',
-  BRAILLE_KEYBOARD: 'brailleKeyboard',
-  STANDARD_KEYBOARD: 'standardKeyboard',
-  TOUCH_GESTURE: 'touchGesture',
-};
+export enum EventSourceType {
+  NONE = 'none',
+  BRAILLE_KEYBOARD = 'brailleKeyboard',
+  STANDARD_KEYBOARD = 'standardKeyboard',
+  TOUCH_GESTURE = 'touchGesture',
+}
 
 TestImportManager.exportForTesting(['EventSourceType', EventSourceType]);
