@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.magic_stack;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -209,6 +210,7 @@ public class HomeModulesCoordinatorUnitTest {
 
         mCoordinator.destroy();
         verify(mUiConfig).removeObserver(mDisplayStyleObserver.capture());
+        assertNull(mCoordinator.getHomeModulesContextMenuManagerForTesting());
     }
 
     @Test

@@ -42,8 +42,9 @@ public class HomeModulesContextMenuManager {
         int NUM_ENTRIES = 2;
     }
 
-    private final ModuleDelegate mModuleDelegate;
     private final Point mContextMenuStartPosition;
+
+    private ModuleDelegate mModuleDelegate;
 
     /**
      * @param moduleDelegate The instance of magic stack {@link ModuleDelegate}.
@@ -53,6 +54,10 @@ public class HomeModulesContextMenuManager {
             @NonNull ModuleDelegate moduleDelegate, @NonNull Point startPosition) {
         mModuleDelegate = moduleDelegate;
         mContextMenuStartPosition = startPosition;
+    }
+
+    public void destroy() {
+        mModuleDelegate = null;
     }
 
     /**
@@ -66,6 +71,8 @@ public class HomeModulesContextMenuManager {
             @NonNull ContextMenu contextMenu,
             @NonNull View associatedView,
             @NonNull ModuleProvider moduleProvider) {
+        if (mModuleDelegate == null) return;
+
         OnMenuItemClickListener listener =
                 menuItem -> onMenuItemClickImpl(menuItem, moduleProvider);
         boolean hasItems = false;
