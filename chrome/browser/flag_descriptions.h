@@ -2816,6 +2816,8 @@ extern const char kButterOnDesktopFollowupDescription[];
 
 extern const char kDialMediaRouteProviderName[];
 extern const char kDialMediaRouteProviderDescription[];
+extern const char kDelayMediaSinkDiscoveryName[];
+extern const char kDelayMediaSinkDiscoveryDescription[];
 
 extern const char kCastMirroringTargetPlayoutDelayName[];
 extern const char kCastMirroringTargetPlayoutDelayDescription[];

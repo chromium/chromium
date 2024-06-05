@@ -49,6 +49,10 @@ BASE_DECLARE_FEATURE(kAllowAllSitesToInitiateMirroring);
 // It sends a discovery SSDP message every 120 seconds.
 BASE_DECLARE_FEATURE(kDialMediaRouteProvider);
 
+// If enabled, the browser delays background discovery of Cast and DIAL devices
+// until explicit user interaction with the Cast feature.
+BASE_DECLARE_FEATURE(kDelayMediaSinkDiscovery);
+
 // If enabled, sinks that do not support presentation or remote playback, will
 // fall back to audio tab mirroring when casting from the Global Media Controls.
 BASE_DECLARE_FEATURE(kFallbackToAudioTabMirroring);

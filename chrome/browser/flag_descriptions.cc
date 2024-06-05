@@ -4845,6 +4845,13 @@ const char kDialMediaRouteProviderDescription[] =
     "Enable/Disable the browser discovery of the DIAL support cast device."
     "It sends a discovery SSDP message every 120 seconds";
 
+const char kDelayMediaSinkDiscoveryName[] =
+    "Delay media sink discovery until explicit user interaction with cast";
+const char kDelayMediaSinkDiscoveryDescription[] =
+    "Delay the browser background discovery of Cast and DIAL devices until "
+    "users have interacted with the Cast UI or visited a site supporting Cast "
+    "SDK or Remote Playback API.";
+
 const char kCastMirroringTargetPlayoutDelayName[] =
     "Changes the target playout delay for cast mirroring.";
 const char kCastMirroringTargetPlayoutDelayDescription[] =

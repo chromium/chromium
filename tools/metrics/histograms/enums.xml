@@ -15752,6 +15752,7 @@ from previous Chrome versions.
   <int value="-2002461806" label="ShoppingAssist:enabled"/>
   <int value="-2001869199" label="ShillSandboxing:enabled"/>
   <int value="-2001125545" label="OmniboxShortcutsAndroid:enabled"/>
+  <int value="-2001098269" label="DelayMediaSinkDiscovery:enabled"/>
   <int value="-2000862180" label="MerchantWidePromotion:disabled"/>
   <int value="-2000567059" label="SimplifyHttpsIndicator:enabled"/>
   <int value="-2000177300" label="JourneysLabel:disabled"/>
@@ -25296,6 +25297,7 @@ from previous Chrome versions.
   <int value="2135378598" label="TimedHtmlParserBudget:enabled"/>
   <int value="2135408204" label="OverscrollHistoryNavigation:disabled"/>
   <int value="2135540885" label="PrintPreviewCrosApp:disabled"/>
+  <int value="2135687747" label="DelayMediaSinkDiscovery:disabled"/>
   <int value="2137113620"
       label="ProcessSharingWithStrictSiteInstances:enabled"/>
   <int value="2137294324" label="zero-copy-video-capture"/>

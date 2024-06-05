@@ -5,6 +5,7 @@
 #include "chrome/browser/media/router/media_router_feature.h"
 
 #include <stdint.h>
+
 #include <string>
 #include <utility>
 
@@ -51,6 +52,9 @@ BASE_FEATURE(kAllowAllSitesToInitiateMirroring,
 BASE_FEATURE(kDialMediaRouteProvider,
              "DialMediaRouteProvider",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kDelayMediaSinkDiscovery,
+             "DelayMediaSinkDiscovery",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // TODO(crbug.com/1486680): Remove once stopping mirroring routes in the global
 // media controls is implemented on ChromeOS.

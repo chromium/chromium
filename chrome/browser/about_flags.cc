@@ -5037,7 +5037,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDialMediaRouteProviderName,
      flag_descriptions::kDialMediaRouteProviderDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(media_router::kDialMediaRouteProvider)},
-
+    {"delay-media-sink-discovery",
+     flag_descriptions::kDelayMediaSinkDiscoveryName,
+     flag_descriptions::kDelayMediaSinkDiscoveryDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(media_router::kDelayMediaSinkDiscovery)},
     {"cast-streaming-hardware-h264",
      flag_descriptions::kCastStreamingHardwareH264Name,
      flag_descriptions::kCastStreamingHardwareH264Description, kOsDesktop,

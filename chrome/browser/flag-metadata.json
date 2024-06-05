@@ -1867,6 +1867,14 @@
     "expiry_milestone": 124
   },
   {
+    "name": "delay-media-sink-discovery",
+    "owners": [
+      "muyaoxu@google.com",
+      "openscreen-eng@google.com"
+    ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "demo-mode-test-tag",
     "owners": [ "llin@google.com", "cros-demo-mode-eng@google.com" ],
     "expiry_milestone": 130
