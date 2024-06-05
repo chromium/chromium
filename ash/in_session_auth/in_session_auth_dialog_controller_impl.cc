@@ -173,6 +173,7 @@ void InSessionAuthDialogControllerImpl::OnUserAuthAttemptConfirmed(
     AuthHubConnector* connector,
     raw_ptr<AuthFactorStatusConsumer>& out_consumer) {
   CHECK_EQ(state_, State::kShowing);
+  CHECK_EQ(contents_view_, nullptr);
 
   auto contents_view = std::make_unique<InSessionAuthDialogContentsView>(
       prompt_,
@@ -183,6 +184,7 @@ void InSessionAuthDialogControllerImpl::OnUserAuthAttemptConfirmed(
           weak_factory_.GetWeakPtr()),
       connector, AuthHub::Get());
 
+  contents_view_ = contents_view.get();
   out_consumer = contents_view->GetAuthPanel();
   dialog_ = CreateAuthDialogWidget(std::move(contents_view));
   dialog_->Show();
@@ -204,7 +206,7 @@ void InSessionAuthDialogControllerImpl::OnUserAuthAttemptCancelled() {
 
 void InSessionAuthDialogControllerImpl::OnFactorAttemptFailed(
     AshAuthFactor factor) {
-  NOTIMPLEMENTED();
+  contents_view_->ShowAuthError(factor);
 }
 
 void InSessionAuthDialogControllerImpl::NotifySuccess(
@@ -234,6 +236,7 @@ void InSessionAuthDialogControllerImpl::OnUserAuthSuccess(
 }
 
 void InSessionAuthDialogControllerImpl::OnEndAuthentication() {
+  contents_view_ = nullptr;
   dialog_.reset();
   state_ = State::kNotShown;
 }

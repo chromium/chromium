@@ -18,6 +18,7 @@
 #include "ash/style/ash_color_id.h"
 #include "base/check.h"
 #include "base/functional/callback_forward.h"
+#include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/components/auth_panel/impl/auth_panel.h"
 #include "chromeos/ash/components/auth_panel/impl/factor_auth_view_factory.h"
@@ -230,6 +231,27 @@ void InSessionAuthDialogContentsView::AddAuthPanel(
 
 AuthPanel* InSessionAuthDialogContentsView::GetAuthPanel() {
   return auth_panel_;
+}
+
+void InSessionAuthDialogContentsView::ShowAuthError(AshAuthFactor factor) {
+  switch (factor) {
+    case AshAuthFactor::kGaiaPassword:
+    case AshAuthFactor::kLocalPassword:
+      title_->SetText(l10n_util::GetStringUTF16(
+          IDS_ASH_IN_SESSION_AUTH_PASSWORD_INCORRECT));
+      break;
+    case AshAuthFactor::kCryptohomePin:
+    case AshAuthFactor::kSmartCard:
+    case AshAuthFactor::kSmartUnlock:
+    case AshAuthFactor::kRecovery:
+    case AshAuthFactor::kLegacyPin:
+    case AshAuthFactor::kLegacyFingerprint:
+    case AshAuthFactor::kFingerprint:
+      NOTIMPLEMENTED();
+      break;
+  }
+
+  title_->SetEnabledColorId(cros_tokens::kCrosSysError);
 }
 
 void InSessionAuthDialogContentsView::OnCloseButtonPressed() {

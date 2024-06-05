@@ -66,6 +66,8 @@ class InSessionAuthDialogContentsView : public views::View {
 
   AuthPanel* GetAuthPanel();
 
+  void ShowAuthError(AshAuthFactor factor);
+
  private:
   friend class TestApi;
 

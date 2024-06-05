@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 
+#include "ash/in_session_auth/in_session_auth_dialog_contents_view.h"
 #include "ash/public/cpp/in_session_auth_dialog_controller.h"
 #include "ash/public/cpp/in_session_auth_token_provider.h"
 #include "base/memory/raw_ptr.h"
@@ -93,6 +94,8 @@ class InSessionAuthDialogControllerImpl : public InSessionAuthDialogController,
   std::unique_ptr<views::Widget> dialog_;
 
   std::optional<std::string> prompt_;
+
+  raw_ptr<InSessionAuthDialogContentsView> contents_view_ = nullptr;
 
   base::WeakPtrFactory<InSessionAuthDialogControllerImpl> weak_factory_{this};
 };
