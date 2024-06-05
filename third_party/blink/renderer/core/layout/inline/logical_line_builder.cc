@@ -428,17 +428,30 @@ InlineBoxState* LogicalLineBuilder::PlaceRubyColumn(
   InlineItemResultRubyColumn& ruby_column = *item_result.ruby_column;
   bool on_start_edge = false;
   bool on_end_edge = false;
-  if (RuntimeEnabledFeatures::RubyLineEdgeAlignmentEnabled() &&
-      !node_.IsBidiEnabled()) {
+  if (!node_.IsBidiEnabled()) {
     on_start_edge = ruby_column.base_line.InflowStartOffset() ==
                     line_info.InflowStartOffset();
     wtf_size_t end_text_offset = ruby_column.base_line.EndTextOffset();
     wtf_size_t inflow_end = line_info.InflowEndOffsetWithoutForcedBreak();
     on_end_edge = end_text_offset == inflow_end;
   }
+  std::optional<LayoutUnit> line_available_size;
+  // If this is the only item in the line and is a base-shorter ruby and the
+  // line has text-align:justify, ApplyJustification() did nothing because this
+  // item is represented as an OBJECT REPLACEMENT CHARACTER. We expand the item
+  // by ruby-align processing.
+  if (on_start_edge && on_end_edge &&
+      line_info.TextAlign() == ETextAlign::kJustify &&
+      item_result.inline_size > ruby_column.base_line.Width()) {
+    line_available_size = line_info.AvailableWidth();
+  }
+  if (!RuntimeEnabledFeatures::RubyLineEdgeAlignmentEnabled()) {
+    on_start_edge = false;
+    on_end_edge = false;
+  }
   std::pair<LayoutUnit, LayoutUnit> base_insets =
-      ApplyRubyAlign(item_result.inline_size, on_start_edge, on_end_edge,
-                     ruby_column.base_line);
+      ApplyRubyAlign(line_available_size.value_or(item_result.inline_size),
+                     on_start_edge, on_end_edge, ruby_column.base_line);
 
   // Set up LogicalRubyColumns. This should be done before consuming the base
   // InlineItemResults because it might contain ruby columns, and annotation
@@ -477,8 +490,8 @@ InlineBoxState* LogicalLineBuilder::PlaceRubyColumn(
       logical_column.base_insets = base_insets;
     }
     logical_column.size = column_base_size;
-    PlaceRubyAnnotation(item_result, i, ruby_column.annotation_line_list[i],
-                        logical_column);
+    PlaceRubyAnnotation(item_result, line_available_size, i,
+                        ruby_column.annotation_line_list[i], logical_column);
   }
 
   return box;
@@ -486,12 +499,14 @@ InlineBoxState* LogicalLineBuilder::PlaceRubyColumn(
 
 void LogicalLineBuilder::PlaceRubyAnnotation(
     InlineItemResult& item_result,
+    std::optional<LayoutUnit> line_available_size,
     wtf_size_t index,
     LineInfo& annotation_line,
     LogicalRubyColumn& logical_column) {
   std::pair<LayoutUnit, LayoutUnit> insets =
-      ApplyRubyAlign(item_result.inline_size -
-                         item_result.ruby_column->last_base_glyph_spacing,
+      ApplyRubyAlign(line_available_size.value_or(
+                         item_result.inline_size -
+                         item_result.ruby_column->last_base_glyph_spacing),
                      /* on_start_edge */ false,
                      /* on_end_edge */ false, annotation_line);
 

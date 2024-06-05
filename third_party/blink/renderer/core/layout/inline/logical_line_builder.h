@@ -90,6 +90,7 @@ class LogicalLineBuilder {
                                   LogicalLineItems& line_box,
                                   InlineBoxState* box);
   void PlaceRubyAnnotation(InlineItemResult& item_result,
+                           std::optional<LayoutUnit> line_available_size,
                            wtf_size_t index,
                            LineInfo& annotation_line,
                            LogicalRubyColumn& logical_column);
