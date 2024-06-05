@@ -1172,13 +1172,8 @@ AX_TEST_F('FaceGazeTest', 'KeyEvents', async function() {
   assertEquals(KeyCode.MEDIA_PLAY_PAUSE, keyEvents[13].keyCode);
 });
 
-// Flaky on MSAN builders.
-GEN('#if defined(MEMORY_SANITIZER)');
-GEN('#define MAYBE_ClosesCameraStream DISABLED_ClosesCameraStream');
-GEN('#else');
-GEN('#define MAYBE_ClosesCameraStream ClosesCameraStream');
-GEN('#endif');
-AX_TEST_F('FaceGazeTest', 'MAYBE_ClosesCameraStream', async function() {
+// TODO(b/345059065): Test is flaky.
+AX_TEST_F('FaceGazeTest', 'DISABLED_ClosesCameraStream', async function() {
   await this.getFaceGaze().cameraStreamReadyPromise_;
   let win = chrome.extension.getViews().find(
       view => view.location.href.includes('camera_stream.html'));
