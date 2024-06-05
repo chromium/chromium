@@ -4155,6 +4155,11 @@ bool IsOobeQuickStartEnabled() {
     return false;
   }
 
+  // QuickStart directly depends on the 'Local Password' feature.
+  if (!base::FeatureList::IsEnabled(kLocalPasswordForConsumers)) {
+    return false;
+  }
+
   return base::FeatureList::IsEnabled(kOobeQuickStart);
 }
 
