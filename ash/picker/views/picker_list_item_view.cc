@@ -18,6 +18,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/style_util.h"
 #include "ash/style/typography.h"
+#include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -46,7 +47,44 @@ constexpr int kImageDisplayHeight = 72;
 constexpr auto kLeadingIconRightPadding = gfx::Insets::TLBR(0, 0, 0, 16);
 constexpr auto kBadgeLeftPadding = gfx::Insets::TLBR(0, 8, 0, 0);
 
+// An ImageView that can optionally be masked with a circle.
+class LeadingIconImageView : public views::ImageView {
+  METADATA_HEADER(LeadingIconImageView, views::ImageView)
+
+ public:
+  LeadingIconImageView() = default;
+  LeadingIconImageView(const LeadingIconImageView&) = delete;
+  LeadingIconImageView& operator=(const LeadingIconImageView&) = delete;
+
+  void SetCircularMaskEnabled(bool enabled) {
+    if (enabled) {
+      const gfx::Rect& bounds = GetImageBounds();
+
+      // Calculate the radius of the circle based on the minimum of width and
+      // height in case the icon isn't square.
+      SkPath mask;
+      mask.addCircle(bounds.x() + bounds.width() / 2,
+                     bounds.y() + bounds.height() / 2,
+                     std::min(bounds.width(), bounds.height()) / 2);
+      SetClipPath(mask);
+    } else {
+      SetClipPath(SkPath());
+    }
+  }
+};
+
+BEGIN_METADATA(LeadingIconImageView)
+END_METADATA
+
+BEGIN_VIEW_BUILDER(/*no export*/, LeadingIconImageView, views::ImageView)
+END_VIEW_BUILDER
+
 }  // namespace
+}  // namespace ash
+
+DEFINE_VIEW_BUILDER(/* no export */, ash::LeadingIconImageView)
+
+namespace ash {
 
 PickerListItemView::PickerListItemView(SelectItemCallback select_item_callback)
     : PickerItemView(std::move(select_item_callback),
@@ -65,7 +103,7 @@ PickerListItemView::PickerListItemView(SelectItemCallback select_item_callback)
 
   // The leading icon should always be preferred size.
   leading_icon_view_ = item_contents->AddChildView(
-      views::Builder<views::ImageView>()
+      views::Builder<LeadingIconImageView>()
           .SetImageSize(kLeadingIconSizeDip)
           .SetCanProcessEventsWithinSubtree(false)
           .SetProperty(views::kMarginsKey, kLeadingIconRightPadding)
@@ -239,6 +277,8 @@ ui::ImageModel PickerListItemView::GetPrimaryImageForTesting() const {
 }
 
 void PickerListItemView::UpdateIconWithPreview() {
+  views::AsViewClass<LeadingIconImageView>(leading_icon_view_)
+      ->SetCircularMaskEnabled(true);
   SetLeadingIcon(
       ui::ImageModel::FromImageSkia(async_preview_icon_->GetImageSkia()));
 }
