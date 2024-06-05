@@ -25,7 +25,7 @@ namespace net {
 QuicSessionPool::ProxyJob::ProxyJob(
     QuicSessionPool* pool,
     quic::ParsedQuicVersion target_quic_version,
-    const QuicSessionAliasKey& key,
+    QuicSessionAliasKey key,
     NetworkTrafficAnnotationTag proxy_annotation_tag,
     const HttpUserAgentSettings* http_user_agent_settings,
     std::unique_ptr<CryptoClientConfigHandle> client_config_handle,
@@ -34,7 +34,7 @@ QuicSessionPool::ProxyJob::ProxyJob(
     const NetLogWithSource& net_log)
     : QuicSessionPool::Job::Job(
           pool,
-          key,
+          std::move(key),
           std::move(client_config_handle),
           priority,
           NetLogWithSource::Make(

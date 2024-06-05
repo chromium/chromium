@@ -282,6 +282,12 @@ class NET_EXPORT_PRIVATE QuicSessionPool
                         QuicSessionKey session_key);
     ~QuicSessionAliasKey() = default;
 
+    QuicSessionAliasKey(const QuicSessionAliasKey& other) = default;
+    QuicSessionAliasKey& operator=(const QuicSessionAliasKey& other) = default;
+
+    QuicSessionAliasKey(QuicSessionAliasKey&& other) = default;
+    QuicSessionAliasKey& operator=(QuicSessionAliasKey&& other) = default;
+
     // Needed to be an element of std::set.
     bool operator<(const QuicSessionAliasKey& other) const;
     bool operator==(const QuicSessionAliasKey& other) const;
@@ -527,7 +533,7 @@ class NET_EXPORT_PRIVATE QuicSessionPool
   void OnJobComplete(Job* job, int rv);
   bool HasActiveSession(const QuicSessionKey& session_key) const;
   bool HasActiveJob(const QuicSessionKey& session_key) const;
-  int CreateSessionSync(const QuicSessionAliasKey& key,
+  int CreateSessionSync(QuicSessionAliasKey key,
                         quic::ParsedQuicVersion quic_version,
                         int cert_verify_flags,
                         bool require_confirmation,
@@ -539,7 +545,7 @@ class NET_EXPORT_PRIVATE QuicSessionPool
                         raw_ptr<QuicChromiumClientSession>* session,
                         handles::NetworkHandle* network);
   int CreateSessionAsync(CompletionOnceCallback callback,
-                         const QuicSessionAliasKey& key,
+                         QuicSessionAliasKey key,
                          quic::ParsedQuicVersion quic_version,
                          int cert_verify_flags,
                          bool require_confirmation,
@@ -552,7 +558,7 @@ class NET_EXPORT_PRIVATE QuicSessionPool
                          handles::NetworkHandle* network);
   int CreateSessionOnProxyStream(
       CompletionOnceCallback callback,
-      const QuicSessionAliasKey& key,
+      QuicSessionAliasKey key,
       quic::ParsedQuicVersion quic_version,
       int cert_verify_flags,
       bool require_confirmation,
@@ -563,7 +569,7 @@ class NET_EXPORT_PRIVATE QuicSessionPool
       const NetLogWithSource& net_log,
       raw_ptr<QuicChromiumClientSession>* session);
   void FinishCreateSession(CompletionOnceCallback callback,
-                           const QuicSessionAliasKey& key,
+                           QuicSessionAliasKey key,
                            quic::ParsedQuicVersion quic_version,
                            int cert_verify_flags,
                            bool require_confirmation,
@@ -577,7 +583,7 @@ class NET_EXPORT_PRIVATE QuicSessionPool
                            handles::NetworkHandle* network,
                            std::unique_ptr<DatagramClientSocket> socket,
                            int rv);
-  bool CreateSessionHelper(const QuicSessionAliasKey& key,
+  bool CreateSessionHelper(QuicSessionAliasKey key,
                            quic::ParsedQuicVersion quic_version,
                            int cert_verify_flags,
                            bool require_confirmation,
@@ -646,7 +652,7 @@ class NET_EXPORT_PRIVATE QuicSessionPool
   // the map `session_aliases_`, and add the given `dns_aliases` for
   // `key.session_key()` in `dns_aliases_by_session_key_`.
   void MapSessionToAliasKey(QuicChromiumClientSession* session,
-                            const QuicSessionAliasKey& key,
+                            QuicSessionAliasKey key,
                             std::set<std::string> dns_aliases);
 
   // For all alias keys for `session` in `session_aliases_`, erase the

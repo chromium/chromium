@@ -1250,7 +1250,7 @@ bool QuicSessionPool::HasActiveJob(const QuicSessionKey& session_key) const {
 }
 
 int QuicSessionPool::CreateSessionSync(
-    const QuicSessionAliasKey& key,
+    QuicSessionAliasKey key,
     quic::ParsedQuicVersion quic_version,
     int cert_verify_flags,
     bool require_confirmation,
@@ -1274,7 +1274,7 @@ int QuicSessionPool::CreateSessionSync(
     return rv;
   }
   bool closed_during_initialize = CreateSessionHelper(
-      key, quic_version, cert_verify_flags, require_confirmation,
+      std::move(key), quic_version, cert_verify_flags, require_confirmation,
       std::move(peer_address), std::move(metadata), dns_resolution_start_time,
       dns_resolution_end_time, /*session_max_packet_length=*/0, net_log,
       session, network, std::move(socket));
@@ -1290,7 +1290,7 @@ int QuicSessionPool::CreateSessionSync(
 
 int QuicSessionPool::CreateSessionAsync(
     CompletionOnceCallback callback,
-    const QuicSessionAliasKey& key,
+    QuicSessionAliasKey key,
     quic::ParsedQuicVersion quic_version,
     int cert_verify_flags,
     bool require_confirmation,
@@ -1308,7 +1308,7 @@ int QuicSessionPool::CreateSessionAsync(
   DatagramClientSocket* socket_ptr = socket.get();
   CompletionOnceCallback connect_and_configure_callback = base::BindOnce(
       &QuicSessionPool::FinishCreateSession, weak_factory_.GetWeakPtr(),
-      std::move(callback), key, quic_version, cert_verify_flags,
+      std::move(callback), std::move(key), quic_version, cert_verify_flags,
       require_confirmation, peer_address, std::move(metadata),
       dns_resolution_start_time, dns_resolution_end_time,
       /*session_max_packet_length=*/0, net_log, session, network,
@@ -1323,7 +1323,7 @@ int QuicSessionPool::CreateSessionAsync(
 
 int QuicSessionPool::CreateSessionOnProxyStream(
     CompletionOnceCallback callback,
-    const QuicSessionAliasKey& key,
+    QuicSessionAliasKey key,
     quic::ParsedQuicVersion quic_version,
     int cert_verify_flags,
     bool require_confirmation,
@@ -1378,7 +1378,7 @@ int QuicSessionPool::CreateSessionOnProxyStream(
 
   CompletionOnceCallback on_connected_via_stream = base::BindOnce(
       &QuicSessionPool::FinishCreateSession, weak_factory_.GetWeakPtr(),
-      std::move(callback), key, quic_version, cert_verify_flags,
+      std::move(callback), std::move(key), quic_version, cert_verify_flags,
       require_confirmation, proxy_peer_address, std::move(metadata),
       dns_resolution_time, dns_resolution_time, session_max_packet_length,
       net_log, session, &network, std::move(socket));
@@ -1390,7 +1390,7 @@ int QuicSessionPool::CreateSessionOnProxyStream(
 
 void QuicSessionPool::FinishCreateSession(
     CompletionOnceCallback callback,
-    const QuicSessionAliasKey& key,
+    QuicSessionAliasKey key,
     quic::ParsedQuicVersion quic_version,
     int cert_verify_flags,
     bool require_confirmation,
@@ -1409,7 +1409,7 @@ void QuicSessionPool::FinishCreateSession(
     return;
   }
   bool closed_during_initialize = CreateSessionHelper(
-      key, quic_version, cert_verify_flags, require_confirmation,
+      std::move(key), quic_version, cert_verify_flags, require_confirmation,
       std::move(peer_address), std::move(metadata), dns_resolution_start_time,
       dns_resolution_end_time, session_max_packet_length, net_log, session,
       network, std::move(socket));
@@ -1425,7 +1425,7 @@ void QuicSessionPool::FinishCreateSession(
 }
 
 bool QuicSessionPool::CreateSessionHelper(
-    const QuicSessionAliasKey& key,
+    QuicSessionAliasKey key,
     quic::ParsedQuicVersion quic_version,
     int cert_verify_flags,
     bool require_confirmation,
@@ -1541,7 +1541,7 @@ bool QuicSessionPool::CreateSessionHelper(
       std::move(socket_performance_watcher), metadata, params_.report_ecn,
       net_log);
 
-  all_sessions_[*session] = key;  // owning pointer
+  all_sessions_[*session] = std::move(key);  // owning pointer
   writer->set_delegate(*session);
   (*session)->AddConnectivityObserver(&connectivity_monitor_);
 
@@ -1820,10 +1820,10 @@ void QuicSessionPool::ProcessGoingAwaySession(
 }
 
 void QuicSessionPool::MapSessionToAliasKey(QuicChromiumClientSession* session,
-                                           const QuicSessionAliasKey& key,
+                                           QuicSessionAliasKey key,
                                            std::set<std::string> dns_aliases) {
-  session_aliases_[session].insert(key);
   dns_aliases_by_session_key_[key.session_key()] = std::move(dns_aliases);
+  session_aliases_[session].insert(std::move(key));
 }
 
 void QuicSessionPool::UnmapSessionFromSessionAliases(

@@ -26,7 +26,7 @@ QuicSessionPool::DirectJob::DirectJob(
     QuicSessionPool* pool,
     quic::ParsedQuicVersion quic_version,
     HostResolver* host_resolver,
-    const QuicSessionAliasKey& key,
+    QuicSessionAliasKey key,
     std::unique_ptr<CryptoClientConfigHandle> client_config_handle,
     bool retry_on_alternate_network_before_handshake,
     RequestPriority priority,
@@ -36,7 +36,7 @@ QuicSessionPool::DirectJob::DirectJob(
     const NetLogWithSource& net_log)
     : QuicSessionPool::Job::Job(
           pool,
-          key,
+          std::move(key),
           std::move(client_config_handle),
           priority,
           NetLogWithSource::Make(

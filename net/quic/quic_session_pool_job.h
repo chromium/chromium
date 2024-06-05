@@ -30,7 +30,7 @@ namespace net {
 class QuicSessionPool::Job {
  public:
   Job(QuicSessionPool* pool,
-      const QuicSessionAliasKey& key,
+      QuicSessionAliasKey key,
       std::unique_ptr<CryptoClientConfigHandle> client_config_handle,
       RequestPriority priority,
       const NetLogWithSource& net_log);

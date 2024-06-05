@@ -42,12 +42,12 @@ base::Value::Dict NetLogQuicSessionPoolJobParams(
 
 QuicSessionPool::Job::Job(
     QuicSessionPool* pool,
-    const QuicSessionAliasKey& key,
+    QuicSessionAliasKey key,
     std::unique_ptr<CryptoClientConfigHandle> client_config_handle,
     RequestPriority priority,
     const NetLogWithSource& net_log)
     : pool_(pool),
-      key_(key),
+      key_(std::move(key)),
       client_config_handle_(std::move(client_config_handle)),
       priority_(priority),
       net_log_(net_log) {
