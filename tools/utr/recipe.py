@@ -34,13 +34,13 @@ _DEFAULT_RBE_PROJECT = 'rbe-chrome-untrusted'
 RerunOption = namedtuple('RerunOption', ['prompt', 'properties'])
 
 
-def check_rdb_auth():
-  """Checks that the user is logged in with resultdb."""
-  rdb_path = shutil.which('rdb')
-  if not rdb_path:
-    logging.error("'rdb' binary not found. Is depot_tools not on PATH?")
+def check_luci_context_auth():
+  """Checks that the user is logged in with luci-auth context."""
+  luci_auth_path = shutil.which('luci-auth')
+  if not luci_auth_path:
+    logging.error("'luci-auth' binary not found. Is depot_tools not on PATH?")
     return False
-  cmd = [rdb_path, 'auth-info']
+  cmd = [luci_auth_path, 'info', '-scopes-context']
   try:
     subprocess.run(cmd,
                    stdout=subprocess.PIPE,
@@ -48,9 +48,11 @@ def check_rdb_auth():
                    text=True,
                    check=True)
   except subprocess.CalledProcessError as e:
-    logging.error('No rdb auth available:')
+    logging.error('luci-auth context auth unavailable:')
     logging.error(e.output.strip())
-    logging.error("Please run 'rdb auth-login' to authenticate")
+    logging.error(
+        "Please run 'luci-auth login -scopes-context' to authenticate, "
+        'preferring your @google.com account if you have one.')
     return False
   return True
 
@@ -231,6 +233,9 @@ class LegacyRunner:
       rerun_props_path = pathlib.Path(tmp_dir).joinpath('rerun_props.json')
       input_props['output_properties_file'] = str(rerun_props_path)
       cmd = [
+          'luci-auth',
+          'context',
+          '--',
           'rdb',
           'stream',
           '-new',

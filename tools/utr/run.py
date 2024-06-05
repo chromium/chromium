@@ -164,7 +164,7 @@ def main():
   else:
     os.environ["PATH"] = str(cipd_bin_path) + os.pathsep + os.environ["PATH"]
 
-  if not recipe.check_rdb_auth():
+  if not recipe.check_luci_context_auth():
     return 1
 
   builder_props, project = builders.find_builder_props(args.bucket,
