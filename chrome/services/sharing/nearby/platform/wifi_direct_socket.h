@@ -17,6 +17,7 @@
 
 namespace net {
 class StreamSocket;
+class IOBufferWithSize;
 }
 
 namespace base {
@@ -28,10 +29,25 @@ namespace nearby::chrome {
 
 class SocketInputStream : public InputStream {
  public:
-  SocketInputStream();
-  ~SocketInputStream() override = default;
+  SocketInputStream(raw_ptr<net::StreamSocket> stream_socket,
+                    scoped_refptr<base::SequencedTaskRunner> task_runner);
+  ~SocketInputStream() override;
   ExceptionOr<ByteArray> Read(std::int64_t size) override;
   Exception Close() override;
+
+ private:
+  void ReadFromSocket(scoped_refptr<net::IOBufferWithSize>* buffer,
+                      std::int64_t buffer_len,
+                      int* bytes_read,
+                      std::optional<Exception>* exception,
+                      base::WaitableEvent* waitable_event);
+  void OnRead(int* bytes_read,
+              std::optional<Exception>* exception,
+              base::WaitableEvent* waitable_event,
+              int result);
+
+  raw_ptr<net::StreamSocket> stream_socket_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 };
 
 class SocketOutputStream : public OutputStream {

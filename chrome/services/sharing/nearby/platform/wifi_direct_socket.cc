@@ -8,19 +8,82 @@
 
 #include "base/check.h"
 #include "base/threading/thread_restrictions.h"
+#include "net/base/io_buffer.h"
 #include "net/socket/stream_socket.h"
 
 namespace nearby::chrome {
 
-SocketInputStream::SocketInputStream() = default;
+SocketInputStream::SocketInputStream(
+    raw_ptr<net::StreamSocket> stream_socket,
+    scoped_refptr<base::SequencedTaskRunner> task_runner)
+    : stream_socket_(stream_socket), task_runner_(task_runner) {}
+
+SocketInputStream::~SocketInputStream() = default;
 
 ExceptionOr<ByteArray> SocketInputStream::Read(std::int64_t size) {
-  NOTIMPLEMENTED();
-  return {Exception::kSuccess};
+  base::WaitableEvent waitable_event;
+  auto response_buffer = base::MakeRefCounted<net::IOBufferWithSize>(size);
+  int bytes_read = 0;
+  std::optional<Exception> exception = std::nullopt;
+  task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&SocketInputStream::ReadFromSocket,
+                                base::Unretained(this), &response_buffer, size,
+                                &bytes_read, &exception, &waitable_event));
+  waitable_event.Wait();
+
+  if (exception) {
+    return ExceptionOr<ByteArray>(exception.value());
+  } else {
+    return ExceptionOr<ByteArray>(
+        ByteArray(response_buffer->data(), bytes_read));
+  }
 }
 
 Exception SocketInputStream::Close() {
+  // This input stream does not own the socket, so it should not be responsible
+  // for closing it.
+  stream_socket_ = nullptr;
   return {Exception::kSuccess};
+}
+
+void SocketInputStream::ReadFromSocket(
+    scoped_refptr<net::IOBufferWithSize>* buffer,
+    std::int64_t buffer_len,
+    int* bytes_read,
+    std::optional<Exception>* exception,
+    base::WaitableEvent* waitable_event) {
+  if (!stream_socket_) {
+    *exception = Exception{Exception::kFailed};
+    *bytes_read = 0;
+    waitable_event->Signal();
+    return;
+  }
+
+  auto result = stream_socket_->Read(
+      buffer->get(), buffer_len,
+      base::BindOnce(&SocketInputStream::OnRead, base::Unretained(this),
+                     bytes_read, exception, waitable_event));
+  // If the `Read` call was unable to complete synchronously, a result value of
+  // `ERR_IO_PENDING` is returned to indicate that the callback will be called
+  // at some point in the future, when the read actually completes. If the call
+  // is completed synchronously, the callback must be manually triggered.
+  if (result != net::ERR_IO_PENDING) {
+    OnRead(bytes_read, exception, waitable_event, result);
+  }
+}
+
+void SocketInputStream::OnRead(int* bytes_read,
+                               std::optional<Exception>* exception,
+                               base::WaitableEvent* waitable_event,
+                               int result) {
+  if (result < 0) {
+    *exception = Exception{Exception::kFailed};
+    *bytes_read = 0;
+  } else {
+    *exception = std::nullopt;
+    *bytes_read = result;
+  }
+  waitable_event->Signal();
 }
 
 SocketOutputStream::SocketOutputStream() = default;
@@ -41,7 +104,9 @@ Exception SocketOutputStream::Close() {
 WifiDirectSocket::WifiDirectSocket(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     std::unique_ptr<net::StreamSocket> stream_socket)
-    : task_runner_(task_runner), stream_socket_(std::move(stream_socket)) {}
+    : task_runner_(task_runner),
+      stream_socket_(std::move(stream_socket)),
+      input_stream_(stream_socket_.get(), task_runner_) {}
 
 WifiDirectSocket::~WifiDirectSocket() {
   Close();
@@ -59,6 +124,11 @@ Exception WifiDirectSocket::Close() {
   if (!stream_socket_) {
     return {Exception::kFailed};
   }
+
+  // Propagate the close signal to the streams so they clean up their pointers
+  // to the underlying `net::StreamSocket`.
+  input_stream_.Close();
+  output_stream_.Close();
 
   // Directly call `CloseSocket` if the current sequence is on the appropriate
   // task runner.

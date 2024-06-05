@@ -4,8 +4,11 @@
 
 #include "chrome/services/sharing/nearby/platform/wifi_direct_socket.h"
 
+#include <algorithm>
+
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
+#include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/socket/stream_socket.h"
 #include "net/socket/tcp_socket.h"
@@ -13,15 +16,37 @@
 
 namespace {
 
+void RunOnTaskRunner(base::OnceClosure task) {
+  base::RunLoop run_loop;
+  base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})
+      ->PostTaskAndReply(FROM_HERE, std::move(task), run_loop.QuitClosure());
+  run_loop.Run();
+}
+
+nearby::ByteArray ToByteArray(const std::vector<uint8_t>& expected_data) {
+  return nearby::ByteArray(
+      std::string(expected_data.begin(), expected_data.end()));
+}
+
 class FakeStreamSocket : public net::StreamSocket {
  public:
   ~FakeStreamSocket() override = default;
+
+  void SetData(std::vector<uint8_t> data) { data_to_read_ = data; }
+  void SetReadError(int error) { read_error_ = error; }
 
   // net::Socket
   int Read(net::IOBuffer* buf,
            int buf_len,
            net::CompletionOnceCallback callback) override {
-    return net::ERR_NOT_IMPLEMENTED;
+    if (read_error_) {
+      return read_error_.value();
+    }
+
+    auto bytes_to_write = std::max(uint(buf_len), uint(data_to_read_.size()));
+    std::copy(data_to_read_.data(), data_to_read_.data() + bytes_to_write,
+              buf->data());
+    return bytes_to_write;
   }
 
   int ReadIfReady(net::IOBuffer* buf,
@@ -86,6 +111,8 @@ class FakeStreamSocket : public net::StreamSocket {
 
  private:
   net::NetLogWithSource net_log_;
+  std::vector<uint8_t> data_to_read_;
+  std::optional<int> read_error_;
 };
 
 }  // namespace
@@ -115,13 +142,6 @@ class WifiDirectSocketTest : public ::testing::Test {
 
   WifiDirectSocket* socket() { return socket_.get(); }
 
-  void RunOnTaskRunner(base::OnceClosure task) {
-    base::RunLoop run_loop;
-    base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})
-        ->PostTaskAndReply(FROM_HERE, std::move(task), run_loop.QuitClosure());
-    run_loop.Run();
-  }
-
  private:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<base::Thread> io_thread_;
@@ -141,6 +161,69 @@ TEST_F(WifiDirectSocketTest, Close_MultipleCalls) {
         EXPECT_FALSE(socket->Close());
       },
       socket()));
+}
+
+// SocketInputStream
+class SocketInputStreamTest : public ::testing::Test {
+ public:
+  // ::testing::Test
+  void SetUp() override {
+    stream_socket_ = std::make_unique<FakeStreamSocket>();
+    input_stream_ = std::make_unique<SocketInputStream>(
+        stream_socket_.get(), task_environment_.GetMainThreadTaskRunner());
+  }
+
+  SocketInputStream* input_stream() { return input_stream_.get(); }
+  FakeStreamSocket* stream_socket() { return stream_socket_.get(); }
+
+ private:
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::MainThreadType::IO};
+  std::unique_ptr<FakeStreamSocket> stream_socket_;
+  std::unique_ptr<SocketInputStream> input_stream_;
+};
+
+TEST_F(SocketInputStreamTest, Read) {
+  const std::vector<uint8_t> data = {0x01, 0x02, 0x03, 0x04};
+  stream_socket()->SetData(data);
+
+  RunOnTaskRunner(base::BindOnce(
+      [](SocketInputStream* input_stream,
+         const std::vector<uint8_t>& expected) {
+        base::ScopedAllowBaseSyncPrimitivesForTesting allow;
+        auto result = input_stream->Read(expected.size());
+        EXPECT_TRUE(result.ok());
+        EXPECT_EQ(result.GetResult(), ToByteArray(expected));
+      },
+      input_stream(), data));
+}
+
+TEST_F(SocketInputStreamTest, Read_Error) {
+  stream_socket()->SetReadError(net::ERR_FAILED);
+
+  RunOnTaskRunner(base::BindOnce(
+      [](SocketInputStream* input_stream) {
+        base::ScopedAllowBaseSyncPrimitivesForTesting allow;
+        auto result = input_stream->Read(1);
+        EXPECT_FALSE(result.ok());
+        EXPECT_EQ(result.GetException(), Exception{Exception::kFailed});
+      },
+      input_stream()));
+}
+
+TEST_F(SocketInputStreamTest, Read_AfterClose) {
+  const std::vector<uint8_t> data = {0x01, 0x02, 0x03, 0x04};
+  stream_socket()->SetData(data);
+
+  RunOnTaskRunner(base::BindOnce(
+      [](SocketInputStream* input_stream) {
+        base::ScopedAllowBaseSyncPrimitivesForTesting allow;
+        input_stream->Close();
+        auto result = input_stream->Read(1);
+        EXPECT_FALSE(result.ok());
+        EXPECT_EQ(result.GetException(), Exception{Exception::kFailed});
+      },
+      input_stream()));
 }
 
 }  // namespace nearby::chrome
