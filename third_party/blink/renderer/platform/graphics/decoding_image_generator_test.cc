@@ -28,7 +28,7 @@ class DecodingImageGeneratorTest : public testing::Test {};
 
 TEST_F(DecodingImageGeneratorTest, Create) {
   scoped_refptr<SharedBuffer> reference_data =
-      ReadFile(kDecodersTestingDir, "radient.gif");
+      ReadFileToSharedBuffer(kDecodersTestingDir, "radient.gif");
   scoped_refptr<SegmentReader> reader =
       SegmentReader::CreateFromSharedBuffer(std::move(reference_data));
   std::unique_ptr<SkImageGenerator> generator =
@@ -61,7 +61,7 @@ TEST_F(DecodingImageGeneratorTest, CreateWithNullImageDecoder) {
 // crash under ASAN.
 TEST_F(DecodingImageGeneratorTest, AdjustedGetPixels) {
   scoped_refptr<SharedBuffer> reference_data =
-      ReadFile(kDecodersTestingDir, "radient.gif");
+      ReadFileToSharedBuffer(kDecodersTestingDir, "radient.gif");
   scoped_refptr<SegmentReader> reader =
       SegmentReader::CreateFromSharedBuffer(std::move(reference_data));
   std::unique_ptr<SkImageGenerator> generator =

@@ -22,8 +22,7 @@ std::unique_ptr<ImageDecoder> CreateICODecoder() {
 }  // namespace
 
 TEST(ICOImageDecoderTests, trunctedIco) {
-  const Vector<char> data =
-      ReadFile("/images/resources/png-in-ico.ico")->CopyAs<Vector<char>>();
+  const Vector<char> data = ReadFile("/images/resources/png-in-ico.ico");
   ASSERT_FALSE(data.empty());
 
   scoped_refptr<SharedBuffer> truncated_data =
@@ -40,8 +39,7 @@ TEST(ICOImageDecoderTests, trunctedIco) {
 }
 
 TEST(ICOImageDecoderTests, errorInPngInIco) {
-  const Vector<char> data =
-      ReadFile("/images/resources/png-in-ico.ico")->CopyAs<Vector<char>>();
+  const Vector<char> data = ReadFile("/images/resources/png-in-ico.ico");
   ASSERT_FALSE(data.empty());
 
   // Modify the file to have a broken CRC in IHDR.
@@ -87,13 +85,11 @@ TEST(ICOImageDecoderTests, parseAndDecodeByteByByte) {
 TEST(ICOImageDecoderTests, NullData) {
   static constexpr size_t kSizeOfBadBlock = 6 + 16 + 1;
 
-  scoped_refptr<SharedBuffer> ico_file_data =
-      ReadFile("/images/resources/png-in-ico.ico");
-  ASSERT_FALSE(ico_file_data->empty());
-  ASSERT_LT(kSizeOfBadBlock, ico_file_data->size());
+  Vector<char> ico_file_data = ReadFile("/images/resources/png-in-ico.ico");
+  ASSERT_LT(kSizeOfBadBlock, ico_file_data.size());
 
-  scoped_refptr<SharedBuffer> truncated_data = SharedBuffer::Create(
-      ico_file_data->FlattenIfNeededAndGetData(), kSizeOfBadBlock);
+  scoped_refptr<SharedBuffer> truncated_data =
+      SharedBuffer::Create(ico_file_data.data(), kSizeOfBadBlock);
   auto decoder = CreateICODecoder();
 
   decoder->SetData(truncated_data.get(), false);

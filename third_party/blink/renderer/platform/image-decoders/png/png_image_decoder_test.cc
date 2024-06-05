@@ -11,7 +11,9 @@
 #include "png.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/skia/include/core/SkColorPriv.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImage.h"
@@ -61,7 +63,7 @@ std::unique_ptr<ImageDecoder> Create16BitPNGDecoder() {
 std::unique_ptr<ImageDecoder> CreatePNGDecoderWithPngData(
     const char* png_file) {
   auto decoder = CreatePNGDecoder();
-  scoped_refptr<SharedBuffer> data = ReadFile(png_file);
+  scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(png_file);
   EXPECT_FALSE(data->empty());
   decoder->SetData(data.get(), true);
   return decoder;
@@ -79,11 +81,11 @@ void TestSizeByteByByte(const char* png_file,
                         size_t bytes_needed_to_decode_size,
                         gfx::Size expected_size) {
   auto decoder = CreatePNGDecoder();
-  scoped_refptr<SharedBuffer> data = ReadFile(png_file);
-  ASSERT_FALSE(data->empty());
-  ASSERT_LT(bytes_needed_to_decode_size, data->size());
+  Vector<char> data = ReadFile(png_file);
+  ASSERT_FALSE(data.empty());
+  ASSERT_LT(bytes_needed_to_decode_size, data.size());
 
-  const char* source = data->FlattenIfNeededAndGetData();
+  const char* source = data.data();
   scoped_refptr<SharedBuffer> partial_data = SharedBuffer::Create();
   for (size_t length = 1; length <= bytes_needed_to_decode_size; length++) {
     partial_data->Append(source++, 1u);
@@ -165,14 +167,14 @@ void TestMissingDataBreaksDecoding(const char* png_file,
                                    size_t offset,
                                    size_t length) {
   auto decoder = CreatePNGDecoder();
-  scoped_refptr<SharedBuffer> data = ReadFile(png_file);
-  ASSERT_FALSE(data->empty());
+  Vector<char> data = ReadFile(png_file);
+  ASSERT_FALSE(data.empty());
 
   scoped_refptr<SharedBuffer> invalid_data =
-      SharedBuffer::Create(data->FlattenIfNeededAndGetData(), offset);
-  invalid_data->Append(data->FlattenIfNeededAndGetData() + offset + length,
-                       data->size() - offset - length);
-  ASSERT_EQ(data->size() - length, invalid_data->size());
+      SharedBuffer::Create(data.data(), offset);
+  invalid_data->Append(data.data() + offset + length,
+                       data.size() - offset - length);
+  ASSERT_EQ(data.size() - length, invalid_data->size());
 
   decoder->SetData(invalid_data, true);
   decoder->FrameCount();
@@ -197,12 +199,12 @@ void TestInvalidFctlSize(const char* png_file,
                          size_t offset_fctl,
                          size_t expected_frame_count,
                          bool should_fail) {
-  scoped_refptr<SharedBuffer> data = ReadFile(png_file);
-  ASSERT_FALSE(data->empty());
+  Vector<char> data = ReadFile(png_file);
+  ASSERT_FALSE(data.empty());
 
   auto decoder = CreatePNGDecoder();
   scoped_refptr<SharedBuffer> invalid_data =
-      SharedBuffer::Create(data->FlattenIfNeededAndGetData(), offset_fctl);
+      SharedBuffer::Create(data.data(), offset_fctl);
 
   // Test if this gives the correct frame count, before the fcTL is parsed.
   decoder->SetData(invalid_data, false);
@@ -216,12 +218,11 @@ void TestInvalidFctlSize(const char* png_file,
 
   // Skip the size in the original data, but provide a truncated fcTL,
   // which is 4B of tag, 20B of data and 4B of CRC, totalling 28B.
-  invalid_data->Append(data->FlattenIfNeededAndGetData() + offset_fctl + 4,
-                       28u);
+  invalid_data->Append(data.data() + offset_fctl + 4, 28u);
   // Append the rest of the data
   const size_t offset_post_fctl = offset_fctl + 38;
-  invalid_data->Append(data->FlattenIfNeededAndGetData() + offset_post_fctl,
-                       data->size() - offset_post_fctl);
+  invalid_data->Append(data.data() + offset_post_fctl,
+                       data.size() - offset_post_fctl);
 
   decoder->SetData(invalid_data, false);
   if (should_fail) {
@@ -243,11 +244,11 @@ void TestInvalidFctlSize(const char* png_file,
 void TestProgressiveDecodingContinuesAfterFullData(
     const char* png_file,
     size_t offset_mid_first_frame) {
-  scoped_refptr<SharedBuffer> full_data = ReadFile(png_file);
-  ASSERT_FALSE(full_data->empty());
+  Vector<char> full_data = ReadFile(png_file);
+  ASSERT_FALSE(full_data.empty());
 
   auto decoder_upfront = CreatePNGDecoder();
-  decoder_upfront->SetData(full_data.get(), true);
+  decoder_upfront->SetData(SharedBuffer::Create(full_data), true);
   EXPECT_GE(decoder_upfront->FrameCount(), 1u);
   const ImageFrame* const frame_upfront =
       decoder_upfront->DecodeFrameBufferAtIndex(0);
@@ -255,8 +256,8 @@ void TestProgressiveDecodingContinuesAfterFullData(
   const unsigned hash_upfront = HashBitmap(frame_upfront->Bitmap());
 
   auto decoder = CreatePNGDecoder();
-  scoped_refptr<SharedBuffer> partial_data = SharedBuffer::Create(
-      full_data->FlattenIfNeededAndGetData(), offset_mid_first_frame);
+  scoped_refptr<SharedBuffer> partial_data =
+      SharedBuffer::Create(full_data.data(), offset_mid_first_frame);
   decoder->SetData(partial_data, false);
 
   EXPECT_EQ(1u, decoder->FrameCount());
@@ -264,7 +265,7 @@ void TestProgressiveDecodingContinuesAfterFullData(
   EXPECT_EQ(frame->GetStatus(), ImageFrame::kFramePartial);
   const unsigned hash_partial = HashBitmap(frame->Bitmap());
 
-  decoder->SetData(full_data.get(), true);
+  decoder->SetData(SharedBuffer::Create(full_data), true);
   frame = decoder->DecodeFrameBufferAtIndex(0);
   EXPECT_EQ(frame->GetStatus(), ImageFrame::kFrameComplete);
   const unsigned hash_full = HashBitmap(frame->Bitmap());
@@ -355,11 +356,11 @@ TEST(AnimatedPNGTests, ByteByByteMetaData) {
   size_t frame_offsets[kExpectedFrameCount] = {141, 249, 322, 430};
 
   auto decoder = CreatePNGDecoder();
-  scoped_refptr<SharedBuffer> data = ReadFile(png_file);
-  ASSERT_FALSE(data->empty());
+  Vector<char> data = ReadFile(png_file);
+  ASSERT_FALSE(data.empty());
   size_t frames_parsed = 0;
 
-  const char* source = data->FlattenIfNeededAndGetData();
+  const char* source = data.data();
   scoped_refptr<SharedBuffer> partial_data = SharedBuffer::Create();
   for (size_t length = 1; length <= frame_offsets[kExpectedFrameCount - 1];
        length++) {
@@ -428,18 +429,17 @@ TEST(AnimatedPNGTests, ActlErrors) {
   const char* png_file =
       "/images/resources/"
       "png-animated-idat-part-of-animation.png";
-  scoped_refptr<SharedBuffer> data = ReadFile(png_file);
-  ASSERT_FALSE(data->empty());
+  Vector<char> data = ReadFile(png_file);
+  ASSERT_FALSE(data.empty());
 
   const size_t kOffsetActl = 33u;
   const size_t kAcTLSize = 20u;
   {
     // Remove the acTL chunk from the stream. This results in a static image.
     scoped_refptr<SharedBuffer> no_actl_data =
-        SharedBuffer::Create(data->FlattenIfNeededAndGetData(), kOffsetActl);
-    no_actl_data->Append(
-        data->FlattenIfNeededAndGetData() + kOffsetActl + kAcTLSize,
-        data->size() - kOffsetActl - kAcTLSize);
+        SharedBuffer::Create(data.data(), kOffsetActl);
+    no_actl_data->Append(data.data() + kOffsetActl + kAcTLSize,
+                         data.size() - kOffsetActl - kAcTLSize);
 
     auto decoder = CreatePNGDecoder();
     decoder->SetData(no_actl_data, true);
@@ -450,7 +450,7 @@ TEST(AnimatedPNGTests, ActlErrors) {
 
   // Store the acTL for more tests.
   char ac_tl[kAcTLSize];
-  memcpy(ac_tl, data->FlattenIfNeededAndGetData() + kOffsetActl, kAcTLSize);
+  memcpy(ac_tl, data.data() + kOffsetActl, kAcTLSize);
 
   // Insert an extra acTL at a couple of different offsets.
   // Prior to the IDAT, this should result in a static image. After, this
@@ -466,10 +466,9 @@ TEST(AnimatedPNGTests, ActlErrors) {
   for (const auto& rec : kGRecs) {
     const size_t offset = rec.offset;
     scoped_refptr<SharedBuffer> extra_actl_data =
-        SharedBuffer::Create(data->FlattenIfNeededAndGetData(), offset);
+        SharedBuffer::Create(data.data(), offset);
     extra_actl_data->Append(ac_tl, kAcTLSize);
-    extra_actl_data->Append(data->FlattenIfNeededAndGetData() + offset,
-                            data->size() - offset);
+    extra_actl_data->Append(data.data() + offset, data.size() - offset);
     auto decoder = CreatePNGDecoder();
     decoder->SetData(extra_actl_data, true);
     EXPECT_EQ(rec.should_fail ? 0u : 1u, decoder->FrameCount());
@@ -481,18 +480,17 @@ TEST(AnimatedPNGTests, ActlErrors) {
       "/images/resources/"
       "cHRM_color_spin.png";
   {
-    scoped_refptr<SharedBuffer> data2 = ReadFile(png_file);
-    ASSERT_FALSE(data2->empty());
+    Vector<char> data2 = ReadFile(png_file);
+    ASSERT_FALSE(data2.empty());
     const size_t kPostIDATOffset = 30971u;
     for (size_t times = 0; times < 2; times++) {
-      scoped_refptr<SharedBuffer> extra_actl_data = SharedBuffer::Create(
-          data2->FlattenIfNeededAndGetData(), kPostIDATOffset);
+      scoped_refptr<SharedBuffer> extra_actl_data =
+          SharedBuffer::Create(data2.data(), kPostIDATOffset);
       for (size_t i = 0; i < times; i++) {
         extra_actl_data->Append(ac_tl, kAcTLSize);
       }
-      extra_actl_data->Append(
-          data2->FlattenIfNeededAndGetData() + kPostIDATOffset,
-          data2->size() - kPostIDATOffset);
+      extra_actl_data->Append(data2.data() + kPostIDATOffset,
+                              data2.size() - kPostIDATOffset);
 
       auto decoder = CreatePNGDecoder();
       decoder->SetData(extra_actl_data, true);
@@ -509,54 +507,54 @@ TEST(AnimatedPNGTests, fdatBeforeIdat) {
   const char* png_file =
       "/images/resources/"
       "png-animated-idat-not-part-of-animation.png";
-  scoped_refptr<SharedBuffer> data = ReadFile(png_file);
-  ASSERT_FALSE(data->empty());
+  Vector<char> data = ReadFile(png_file);
+  ASSERT_FALSE(data.empty());
 
   // Insert fcTL and fdAT prior to the IDAT
   const size_t kIdatOffset = 71u;
-  scoped_refptr<SharedBuffer> modified_data =
-      SharedBuffer::Create(data->FlattenIfNeededAndGetData(), kIdatOffset);
+  scoped_refptr<SharedBuffer> modified_data_buffer =
+      SharedBuffer::Create(data.data(), kIdatOffset);
   // Copy fcTL and fdAT
   const size_t kFctlPlusFdatSize = 38u + 1566u;
-  modified_data->Append(data->FlattenIfNeededAndGetData() + 2519u,
-                        kFctlPlusFdatSize);
+  modified_data_buffer->Append(data.data() + 2519u, kFctlPlusFdatSize);
   // Copy IDAT
-  modified_data->Append(data->FlattenIfNeededAndGetData() + kIdatOffset, 2448u);
+  modified_data_buffer->Append(data.data() + kIdatOffset, 2448u);
   // Copy the remaining
-  modified_data->Append(data->FlattenIfNeededAndGetData() + 4123u, 39u + 12u);
+  modified_data_buffer->Append(data.data() + 4123u, 39u + 12u);
   // Data has just been rearranged.
-  ASSERT_EQ(data->size(), modified_data->size());
+  ASSERT_EQ(data.size(), modified_data_buffer->size());
 
   {
     // This broken APNG will be treated as a static png.
     auto decoder = CreatePNGDecoder();
-    decoder->SetData(modified_data.get(), true);
+    decoder->SetData(modified_data_buffer.get(), true);
     ExpectStatic(decoder.get());
   }
+
+  Vector<char> modified_data = modified_data_buffer->CopyAs<Vector<char>>();
 
   {
     // Remove the acTL from the modified image. It now has fdAT before
     // IDAT, but no acTL, so fdAT should be ignored.
     const size_t kOffsetActl = 33u;
     const size_t kAcTLSize = 20u;
-    scoped_refptr<SharedBuffer> modified_data2 = SharedBuffer::Create(
-        modified_data->FlattenIfNeededAndGetData(), kOffsetActl);
-    modified_data2->Append(
-        modified_data->FlattenIfNeededAndGetData() + kOffsetActl + kAcTLSize,
-        modified_data->size() - kOffsetActl - kAcTLSize);
+    scoped_refptr<SharedBuffer> modified_data_buffer2 =
+        SharedBuffer::Create(modified_data.data(), kOffsetActl);
+    modified_data_buffer2->Append(
+        modified_data.data() + kOffsetActl + kAcTLSize,
+        modified_data.size() - kOffsetActl - kAcTLSize);
     auto decoder = CreatePNGDecoder();
-    decoder->SetData(modified_data2.get(), true);
+    decoder->SetData(modified_data_buffer2.get(), true);
     ExpectStatic(decoder.get());
 
+    Vector<char> modified_data2 = modified_data_buffer2->CopyAs<Vector<char>>();
     // Likewise, if an acTL follows the fdAT, it is ignored.
     const size_t kInsertionOffset = kIdatOffset + kFctlPlusFdatSize - kAcTLSize;
-    scoped_refptr<SharedBuffer> modified_data3 = SharedBuffer::Create(
-        modified_data2->FlattenIfNeededAndGetData(), kInsertionOffset);
-    modified_data3->Append(data->FlattenIfNeededAndGetData() + kOffsetActl,
-                           kAcTLSize);
-    modified_data3->Append(
-        modified_data2->FlattenIfNeededAndGetData() + kInsertionOffset,
-        modified_data2->size() - kInsertionOffset);
+    scoped_refptr<SharedBuffer> modified_data3 =
+        SharedBuffer::Create(modified_data2.data(), kInsertionOffset);
+    modified_data3->Append(data.data() + kOffsetActl, kAcTLSize);
+    modified_data3->Append(modified_data2.data() + kInsertionOffset,
+                           modified_data2.size() - kInsertionOffset);
     decoder = CreatePNGDecoder();
     decoder->SetData(modified_data3.get(), true);
     ExpectStatic(decoder.get());
@@ -567,16 +565,16 @@ TEST(AnimatedPNGTests, FrameOverflowX) {
   const char* png_file =
       "/images/resources/"
       "png-animated-idat-part-of-animation.png";
-  scoped_refptr<SharedBuffer> data = ReadFile(png_file);
-  ASSERT_FALSE(data->empty());
+  Vector<char> data = ReadFile(png_file);
+  ASSERT_FALSE(data.empty());
 
   // Change the x_offset for frame 1
   const size_t kFctlOffset = 172u;
   scoped_refptr<SharedBuffer> modified_data =
-      SharedBuffer::Create(data->FlattenIfNeededAndGetData(), kFctlOffset);
+      SharedBuffer::Create(data.data(), kFctlOffset);
   const size_t kFctlSize = 38u;
   png_byte fctl[kFctlSize];
-  memcpy(fctl, data->FlattenIfNeededAndGetData() + kFctlOffset, kFctlSize);
+  memcpy(fctl, data.data() + kFctlOffset, kFctlSize);
 
   // Set the x_offset to a value that will overflow
   WriteUint32(4294967295, fctl + 20);
@@ -584,8 +582,7 @@ TEST(AnimatedPNGTests, FrameOverflowX) {
   WriteUint32(689600712, fctl + 34);
   modified_data->Append((const char*)fctl, kFctlSize);
   const size_t kAfterFctl = kFctlOffset + kFctlSize;
-  modified_data->Append(data->FlattenIfNeededAndGetData() + kAfterFctl,
-                        data->size() - kAfterFctl);
+  modified_data->Append(data.data() + kAfterFctl, data.size() - kAfterFctl);
 
   auto decoder = CreatePNGDecoder();
   decoder->SetData(modified_data.get(), true);
@@ -600,16 +597,16 @@ TEST(AnimatedPNGTests, FrameOverflowY) {
   const char* png_file =
       "/images/resources/"
       "png-animated-idat-part-of-animation.png";
-  scoped_refptr<SharedBuffer> data = ReadFile(png_file);
-  ASSERT_FALSE(data->empty());
+  Vector<char> data = ReadFile(png_file);
+  ASSERT_FALSE(data.empty());
 
   // Change the y_offset for frame 1
   const size_t kFctlOffset = 172u;
   scoped_refptr<SharedBuffer> modified_data =
-      SharedBuffer::Create(data->FlattenIfNeededAndGetData(), kFctlOffset);
+      SharedBuffer::Create(data.data(), kFctlOffset);
   const size_t kFctlSize = 38u;
   png_byte fctl[kFctlSize];
-  memcpy(fctl, data->FlattenIfNeededAndGetData() + kFctlOffset, kFctlSize);
+  memcpy(fctl, data.data() + kFctlOffset, kFctlSize);
 
   // Set the y_offset to a value that will overflow
   WriteUint32(4294967295, fctl + 24);
@@ -617,8 +614,7 @@ TEST(AnimatedPNGTests, FrameOverflowY) {
   WriteUint32(2094185741, fctl + 34);
   modified_data->Append((const char*)fctl, kFctlSize);
   const size_t kAfterFctl = kFctlOffset + kFctlSize;
-  modified_data->Append(data->FlattenIfNeededAndGetData() + kAfterFctl,
-                        data->size() - kAfterFctl);
+  modified_data->Append(data.data() + kAfterFctl, data.size() - kAfterFctl);
 
   auto decoder = CreatePNGDecoder();
   decoder->SetData(modified_data.get(), true);
@@ -633,23 +629,22 @@ TEST(AnimatedPNGTests, IdatSizeMismatch) {
   const char* png_file =
       "/images/resources/"
       "png-animated-idat-part-of-animation.png";
-  scoped_refptr<SharedBuffer> data = ReadFile(png_file);
-  ASSERT_FALSE(data->empty());
+  Vector<char> data = ReadFile(png_file);
+  ASSERT_FALSE(data.empty());
 
   const size_t kFctlOffset = 95u;
   scoped_refptr<SharedBuffer> modified_data =
-      SharedBuffer::Create(data->FlattenIfNeededAndGetData(), kFctlOffset);
+      SharedBuffer::Create(data.data(), kFctlOffset);
   const size_t kFctlSize = 38u;
   png_byte fctl[kFctlSize];
-  memcpy(fctl, data->FlattenIfNeededAndGetData() + kFctlOffset, kFctlSize);
+  memcpy(fctl, data.data() + kFctlOffset, kFctlSize);
   // Set the height to a smaller value, so it does not fill the image.
   WriteUint32(3, fctl + 16);
   // Correct the crc
   WriteUint32(3210324191, fctl + 34);
   modified_data->Append((const char*)fctl, kFctlSize);
   const size_t kAfterFctl = kFctlOffset + kFctlSize;
-  modified_data->Append(data->FlattenIfNeededAndGetData() + kAfterFctl,
-                        data->size() - kAfterFctl);
+  modified_data->Append(data.data() + kAfterFctl, data.size() - kAfterFctl);
 
   auto decoder = CreatePNGDecoder();
   decoder->SetData(modified_data.get(), true);
@@ -660,20 +655,19 @@ TEST(AnimatedPNGTests, EmptyFdatFails) {
   const char* png_file =
       "/images/resources/"
       "png-animated-idat-part-of-animation.png";
-  scoped_refptr<SharedBuffer> data = ReadFile(png_file);
-  ASSERT_FALSE(data->empty());
+  Vector<char> data = ReadFile(png_file);
+  ASSERT_FALSE(data.empty());
 
   // Modify the third fdAT to be empty.
   constexpr size_t kOffsetThirdFdat = 352;
   scoped_refptr<SharedBuffer> modified_data =
-      SharedBuffer::Create(data->FlattenIfNeededAndGetData(), kOffsetThirdFdat);
+      SharedBuffer::Create(data.data(), kOffsetThirdFdat);
   png_byte four_bytes[4u];
   WriteUint32(0, four_bytes);
   modified_data->Append(reinterpret_cast<char*>(four_bytes), 4u);
 
   // fdAT tag
-  modified_data->Append(
-      data->FlattenIfNeededAndGetData() + kOffsetThirdFdat + 4u, 4u);
+  modified_data->Append(data.data() + kOffsetThirdFdat + 4u, 4u);
 
   // crc computed from modified fdAT chunk
   WriteUint32(4122214294, four_bytes);
@@ -681,7 +675,7 @@ TEST(AnimatedPNGTests, EmptyFdatFails) {
 
   // IEND
   constexpr size_t kIENDOffset = 422u;
-  modified_data->Append(data->FlattenIfNeededAndGetData() + kIENDOffset, 12u);
+  modified_data->Append(data.data() + kIENDOffset, 12u);
 
   auto decoder = CreatePNGDecoder();
   decoder->SetData(std::move(modified_data), true);
@@ -698,16 +692,16 @@ TEST(AnimatedPNGTests, VerifyFrameOutsideImageSizeFails) {
   const char* png_file =
       "/images/resources/"
       "png-animated-idat-part-of-animation.png";
-  scoped_refptr<SharedBuffer> data = ReadFile(png_file);
+  Vector<char> data = ReadFile(png_file);
   auto decoder = CreatePNGDecoder();
-  ASSERT_FALSE(data->empty());
+  ASSERT_FALSE(data.empty());
 
   const size_t kOffsetThirdFctl = 241;
   scoped_refptr<SharedBuffer> modified_data =
-      SharedBuffer::Create(data->FlattenIfNeededAndGetData(), kOffsetThirdFctl);
+      SharedBuffer::Create(data.data(), kOffsetThirdFctl);
   const size_t kFctlSize = 38u;
   png_byte fctl[kFctlSize];
-  memcpy(fctl, data->FlattenIfNeededAndGetData() + kOffsetThirdFctl, kFctlSize);
+  memcpy(fctl, data.data() + kOffsetThirdFctl, kFctlSize);
   // Modify offset and crc.
   WriteUint32(4, fctl + 20u);
   WriteUint32(4, fctl + 24u);
@@ -715,9 +709,8 @@ TEST(AnimatedPNGTests, VerifyFrameOutsideImageSizeFails) {
 
   modified_data->Append(const_cast<const char*>(reinterpret_cast<char*>(fctl)),
                         kFctlSize);
-  modified_data->Append(
-      data->FlattenIfNeededAndGetData() + kOffsetThirdFctl + kFctlSize,
-      data->size() - kOffsetThirdFctl - kFctlSize);
+  modified_data->Append(data.data() + kOffsetThirdFctl + kFctlSize,
+                        data.size() - kOffsetThirdFctl - kFctlSize);
 
   decoder->SetData(modified_data, true);
 
@@ -767,24 +760,23 @@ TEST(AnimatedPNGTests, VerifyAlphaBlending) {
 // Attempting to decode the third frame should fail, since the file is
 // truncated.
 TEST(AnimatedPNGTests, FailureMissingIendChunk) {
-  scoped_refptr<SharedBuffer> full_data = ReadFile(
+  Vector<char> full_data = ReadFile(
       "/images/resources/"
       "png-animated-idat-part-of-animation.png");
-  ASSERT_FALSE(full_data->empty());
+  ASSERT_FALSE(full_data.empty());
   auto decoder = CreatePNGDecoder();
 
   const size_t kOffsetTwoFrames = 249;
   const size_t kExpectedFramesAfter249Bytes = 2;
-  scoped_refptr<SharedBuffer> temp_data = SharedBuffer::Create(
-      full_data->FlattenIfNeededAndGetData(), kOffsetTwoFrames);
+  scoped_refptr<SharedBuffer> temp_data =
+      SharedBuffer::Create(full_data.data(), kOffsetTwoFrames);
   decoder->SetData(temp_data.get(), false);
   EXPECT_EQ(kExpectedFramesAfter249Bytes, decoder->FrameCount());
   EXPECT_FALSE(decoder->Failed());
 
   // Provide the rest of the data except for the last IEND chunk.
   const size_t kExpectedFramesAfterAllExcept12Bytes = 3;
-  temp_data = SharedBuffer::Create(full_data->FlattenIfNeededAndGetData(),
-                                   full_data->size() - 12);
+  temp_data = SharedBuffer::Create(full_data.data(), full_data.size() - 12);
   decoder->SetData(temp_data.get(), true);
   ASSERT_EQ(kExpectedFramesAfterAllExcept12Bytes, decoder->FrameCount());
 
@@ -799,19 +791,17 @@ TEST(AnimatedPNGTests, FailureMissingIendChunk) {
 // Verify that a malformatted PNG, where the IEND appears before any frame data
 // (IDAT), invalidates the decoder.
 TEST(AnimatedPNGTests, VerifyIENDBeforeIDATInvalidatesDecoder) {
-  scoped_refptr<SharedBuffer> full_data = ReadFile(
+  Vector<char> full_data = ReadFile(
       "/images/resources/"
       "png-animated-idat-part-of-animation.png");
-  ASSERT_FALSE(full_data->empty());
+  ASSERT_FALSE(full_data.empty());
   auto decoder = CreatePNGDecoder();
 
   const size_t kOffsetIDAT = 133;
   scoped_refptr<SharedBuffer> data =
-      SharedBuffer::Create(full_data->FlattenIfNeededAndGetData(), kOffsetIDAT);
-  data->Append(full_data->FlattenIfNeededAndGetData() + full_data->size() - 12u,
-               12u);
-  data->Append(full_data->FlattenIfNeededAndGetData() + kOffsetIDAT,
-               full_data->size() - kOffsetIDAT);
+      SharedBuffer::Create(full_data.data(), kOffsetIDAT);
+  data->Append(full_data.data() + full_data.size() - 12u, 12u);
+  data->Append(full_data.data() + kOffsetIDAT, full_data.size() - kOffsetIDAT);
   decoder->SetData(data.get(), true);
 
   const size_t kExpectedFrameCount = 0u;
@@ -824,24 +814,22 @@ TEST(AnimatedPNGTests, MixedDataChunks) {
   const char* png_file =
       "/images/resources/"
       "png-animated-idat-part-of-animation.png";
-  scoped_refptr<SharedBuffer> full_data = ReadFile(png_file);
-  ASSERT_FALSE(full_data->empty());
+  Vector<char> full_data = ReadFile(png_file);
+  ASSERT_FALSE(full_data.empty());
 
   // Add an extra fdAT after the first IDAT, skipping fcTL.
   const size_t kPostIDAT = 172u;
   scoped_refptr<SharedBuffer> data =
-      SharedBuffer::Create(full_data->FlattenIfNeededAndGetData(), kPostIDAT);
+      SharedBuffer::Create(full_data.data(), kPostIDAT);
   const size_t kFcTLSize = 38u;
   const size_t kFdATSize = 31u;
   png_byte fdat[kFdATSize];
-  memcpy(fdat, full_data->FlattenIfNeededAndGetData() + kPostIDAT + kFcTLSize,
-         kFdATSize);
+  memcpy(fdat, full_data.data() + kPostIDAT + kFcTLSize, kFdATSize);
   // Modify the sequence number
   WriteUint32(1u, fdat + 8);
   data->Append((const char*)fdat, kFdATSize);
   const size_t kIENDOffset = 422u;
-  data->Append(full_data->FlattenIfNeededAndGetData() + kIENDOffset,
-               full_data->size() - kIENDOffset);
+  data->Append(full_data.data() + kIENDOffset, full_data.size() - kIENDOffset);
   auto decoder = CreatePNGDecoder();
   decoder->SetData(data.get(), true);
   decoder->FrameCount();
@@ -849,14 +837,11 @@ TEST(AnimatedPNGTests, MixedDataChunks) {
 
   // Insert an IDAT after an fdAT.
   const size_t kPostfdAT = kPostIDAT + kFcTLSize + kFdATSize;
-  data =
-      SharedBuffer::Create(full_data->FlattenIfNeededAndGetData(), kPostfdAT);
+  data = SharedBuffer::Create(full_data.data(), kPostfdAT);
   const size_t kIDATOffset = 133u;
-  data->Append(full_data->FlattenIfNeededAndGetData() + kIDATOffset,
-               kPostIDAT - kIDATOffset);
+  data->Append(full_data.data() + kIDATOffset, kPostIDAT - kIDATOffset);
   // Append the rest.
-  data->Append(full_data->FlattenIfNeededAndGetData() + kPostIDAT,
-               full_data->size() - kPostIDAT);
+  data->Append(full_data.data() + kPostIDAT, full_data.size() - kPostIDAT);
   decoder = CreatePNGDecoder();
   decoder->SetData(data.get(), true);
   decoder->FrameCount();
@@ -869,8 +854,8 @@ TEST(AnimatedPNGTests, VerifyInvalidDisposalAndBlending) {
   const char* png_file =
       "/images/resources/"
       "png-animated-idat-part-of-animation.png";
-  scoped_refptr<SharedBuffer> full_data = ReadFile(png_file);
-  ASSERT_FALSE(full_data->empty());
+  Vector<char> full_data = ReadFile(png_file);
+  ASSERT_FALSE(full_data.empty());
   auto decoder = CreatePNGDecoder();
 
   // The disposal byte in the frame control chunk is the 24th byte, alpha
@@ -881,15 +866,15 @@ TEST(AnimatedPNGTests, VerifyInvalidDisposalAndBlending) {
   // Write invalid values to the disposal and alpha blending byte, correct the
   // crc and append the rest of the buffer.
   const size_t kOffsetDisposalOp = 241 + 8 + 24;
-  scoped_refptr<SharedBuffer> data = SharedBuffer::Create(
-      full_data->FlattenIfNeededAndGetData(), kOffsetDisposalOp);
+  scoped_refptr<SharedBuffer> data =
+      SharedBuffer::Create(full_data.data(), kOffsetDisposalOp);
   png_byte disposal_and_blending[6u];
   disposal_and_blending[0] = 7;
   disposal_and_blending[1] = 9;
   WriteUint32(2408835439u, disposal_and_blending + 2u);
   data->Append(reinterpret_cast<char*>(disposal_and_blending), 6u);
-  data->Append(full_data->FlattenIfNeededAndGetData() + kOffsetDisposalOp + 6u,
-               full_data->size() - kOffsetDisposalOp - 6u);
+  data->Append(full_data.data() + kOffsetDisposalOp + 6u,
+               full_data.size() - kOffsetDisposalOp - 6u);
 
   decoder->SetData(data.get(), true);
   decoder->FrameCount();
@@ -911,20 +896,20 @@ TEST(AnimatedPNGTests, VerifySuccessfulFirstFrameDecodeAfterLaterFrame) {
       "/images/resources/"
       "png-animated-three-independent-frames.png";
   auto decoder = CreatePNGDecoder();
-  scoped_refptr<SharedBuffer> full_data = ReadFile(png_file);
-  ASSERT_FALSE(full_data->empty());
+  Vector<char> full_data = ReadFile(png_file);
+  ASSERT_FALSE(full_data.empty());
 
   // 160u is a randomly chosen offset in the IDAT chunk of the first frame.
   const size_t kMiddleFirstFrame = 160u;
-  scoped_refptr<SharedBuffer> data = SharedBuffer::Create(
-      full_data->FlattenIfNeededAndGetData(), kMiddleFirstFrame);
+  scoped_refptr<SharedBuffer> data =
+      SharedBuffer::Create(full_data.data(), kMiddleFirstFrame);
   decoder->SetData(data.get(), false);
 
   ASSERT_EQ(1u, decoder->FrameCount());
   ASSERT_EQ(ImageFrame::kFramePartial,
             decoder->DecodeFrameBufferAtIndex(0)->GetStatus());
 
-  decoder->SetData(full_data.get(), true);
+  decoder->SetData(SharedBuffer::Create(full_data), true);
   ASSERT_EQ(3u, decoder->FrameCount());
   ASSERT_EQ(ImageFrame::kFrameComplete,
             decoder->DecodeFrameBufferAtIndex(1)->GetStatus());
@@ -946,27 +931,25 @@ TEST(AnimatedPNGTests, DecodeFromIndependentFrame) {
   const char* png_file =
       "/images/resources/"
       "png-animated-idat-part-of-animation.png";
-  scoped_refptr<SharedBuffer> original_data = ReadFile(png_file);
-  ASSERT_FALSE(original_data->empty());
+  Vector<char> original_data = ReadFile(png_file);
+  ASSERT_FALSE(original_data.empty());
 
   // This file almost fits the bill. Modify it to dispose frame 0, making
   // frame 1 independent.
   const size_t kDisposeOffset = 127u;
-  auto data = SharedBuffer::Create(original_data->FlattenIfNeededAndGetData(),
-                                   kDisposeOffset);
+  auto data = SharedBuffer::Create(original_data.data(), kDisposeOffset);
   // 1 Corresponds to APNG_DISPOSE_OP_BACKGROUND
   const char kOne = '\001';
   data->Append(&kOne, 1u);
   // No need to modify the blend op
-  data->Append(original_data->FlattenIfNeededAndGetData() + kDisposeOffset + 1,
-               1u);
+  data->Append(original_data.data() + kDisposeOffset + 1, 1u);
   // Modify the CRC
   png_byte crc[4];
   WriteUint32(2226670956, crc);
   data->Append(reinterpret_cast<const char*>(crc), 4u);
-  data->Append(original_data->FlattenIfNeededAndGetData() + data->size(),
-               original_data->size() - data->size());
-  ASSERT_EQ(original_data->size(), data->size());
+  data->Append(original_data.data() + data->size(),
+               original_data.size() - data->size());
+  ASSERT_EQ(original_data.size(), data->size());
 
   auto decoder = CreatePNGDecoder();
   decoder->SetData(data.get(), true);
@@ -1002,17 +985,15 @@ TEST(AnimatedPNGTests, SubsetFromIHDR) {
   const char* png_file =
       "/images/resources/"
       "png-animated-idat-not-part-of-animation.png";
-  scoped_refptr<SharedBuffer> original_data = ReadFile(png_file);
-  ASSERT_FALSE(original_data->empty());
+  Vector<char> original_data = ReadFile(png_file);
+  ASSERT_FALSE(original_data.empty());
 
   const size_t kFcTLOffset = 2519u;
-  auto data = SharedBuffer::Create(original_data->FlattenIfNeededAndGetData(),
-                                   kFcTLOffset);
+  auto data = SharedBuffer::Create(original_data.data(), kFcTLOffset);
 
   const size_t kFcTLSize = 38u;
   png_byte fc_tl[kFcTLSize];
-  memcpy(fc_tl, original_data->FlattenIfNeededAndGetData() + kFcTLOffset,
-         kFcTLSize);
+  memcpy(fc_tl, original_data.data() + kFcTLOffset, kFcTLSize);
   // Modify to have a subset frame (yOffset 1, height 34 out of 35).
   WriteUint32(34, fc_tl + 16u);
   WriteUint32(1, fc_tl + 24u);
@@ -1022,10 +1003,9 @@ TEST(AnimatedPNGTests, SubsetFromIHDR) {
   // Append the rest of the data.
   // Note: If PNGImageDecoder changes to reject an image with too many
   // rows, the fdAT data will need to be modified as well.
-  data->Append(
-      original_data->FlattenIfNeededAndGetData() + kFcTLOffset + kFcTLSize,
-      original_data->size() - data->size());
-  ASSERT_EQ(original_data->size(), data->size());
+  data->Append(original_data.data() + kFcTLOffset + kFcTLSize,
+               original_data.size() - data->size());
+  ASSERT_EQ(original_data.size(), data->size());
 
   // This will test both byte by byte and using the full data, and compare.
   TestByteByByteDecode(CreatePNGDecoder, data.get(), 1, kAnimationNone);
@@ -1033,11 +1013,13 @@ TEST(AnimatedPNGTests, SubsetFromIHDR) {
 
 TEST(AnimatedPNGTests, Offset) {
   const char* png_file = "/images/resources/apng18.png";
-  scoped_refptr<SharedBuffer> original_data = ReadFile(png_file);
-  ASSERT_FALSE(original_data->empty());
+  Vector<char> original_data = ReadFile(png_file);
+  ASSERT_FALSE(original_data.empty());
 
   Vector<unsigned> baseline_hashes;
-  CreateDecodingBaseline(CreatePNGDecoder, original_data.get(),
+  scoped_refptr<SharedBuffer> original_data_buffer =
+      SharedBuffer::Create(original_data);
+  CreateDecodingBaseline(CreatePNGDecoder, original_data_buffer.get(),
                          &baseline_hashes);
   constexpr size_t kExpectedFrameCount = 13;
   ASSERT_EQ(kExpectedFrameCount, baseline_hashes.size());
@@ -1046,7 +1028,7 @@ TEST(AnimatedPNGTests, Offset) {
   char buffer[kOffset] = {};
 
   auto data = SharedBuffer::Create(buffer, kOffset);
-  data->Append(original_data->CopyAs<Vector<char>>());
+  data->Append(original_data);
 
   // Use the same defaults as CreatePNGDecoder, except use the (arbitrary)
   // non-zero offset.
@@ -1065,18 +1047,19 @@ TEST(AnimatedPNGTests, Offset) {
 
 TEST(AnimatedPNGTests, ExtraChunksBeforeIHDR) {
   const char* png_file = "/images/resources/apng18.png";
-  scoped_refptr<SharedBuffer> original_data = ReadFile(png_file);
-  ASSERT_FALSE(original_data->empty());
+  Vector<char> original_data = ReadFile(png_file);
+  ASSERT_FALSE(original_data.empty());
 
   Vector<unsigned> baseline_hashes;
-  CreateDecodingBaseline(CreatePNGDecoder, original_data.get(),
+  scoped_refptr<SharedBuffer> original_data_buffer =
+      SharedBuffer::Create(original_data);
+  CreateDecodingBaseline(CreatePNGDecoder, original_data_buffer.get(),
                          &baseline_hashes);
   constexpr size_t kExpectedFrameCount = 13;
   ASSERT_EQ(kExpectedFrameCount, baseline_hashes.size());
 
   constexpr size_t kPngSignatureSize = 8;
-  auto data = SharedBuffer::Create(original_data->FlattenIfNeededAndGetData(),
-                                   kPngSignatureSize);
+  auto data = SharedBuffer::Create(original_data.data(), kPngSignatureSize);
 
   // Arbitrary chunk of data.
   constexpr size_t kExtraChunkSize = 13;
@@ -1085,9 +1068,9 @@ TEST(AnimatedPNGTests, ExtraChunksBeforeIHDR) {
   data->Append(reinterpret_cast<const char*>(kExtraChunk), kExtraChunkSize);
 
   // Append the rest of the data from the original.
-  data->Append(original_data->FlattenIfNeededAndGetData() + kPngSignatureSize,
-               original_data->size() - kPngSignatureSize);
-  ASSERT_EQ(original_data->size() + kExtraChunkSize, data->size());
+  data->Append(original_data.data() + kPngSignatureSize,
+               original_data.size() - kPngSignatureSize);
+  ASSERT_EQ(original_data.size() + kExtraChunkSize, data->size());
 
   auto decoder = CreatePNGDecoder();
   decoder->SetData(data, true);
@@ -1396,7 +1379,7 @@ TEST(StaticPNGTests, DecodeHighBitDepthPngToHalfFloat) {
   String path = "/images/resources/png-16bit/";
   for (PNGSample& png_sample : png_samples) {
     String full_path = path + png_sample.filename;
-    png_sample.png_contents = ReadFile(full_path);
+    png_sample.png_contents = ReadFileToSharedBuffer(full_path);
     auto decoder = Create16BitPNGDecoder();
     TestHighBitDepthPNGDecoding(png_sample, decoder.get());
   }
@@ -1410,7 +1393,7 @@ TEST(StaticPNGTests, ImageIsHighBitDepth) {
   String path = "/images/resources/png-16bit/";
   for (PNGSample& png_sample : png_samples) {
     String full_path = path + png_sample.filename;
-    png_sample.png_contents = ReadFile(full_path);
+    png_sample.png_contents = ReadFileToSharedBuffer(full_path);
     ASSERT_TRUE(png_sample.png_contents.get());
 
     std::unique_ptr<ImageDecoder> decoders[] = {CreatePNGDecoder(),
@@ -1443,13 +1426,12 @@ TEST(PNGTests, VerifyFrameCompleteBehavior) {
       {"/images/resources/gracehopper.png", 1u, 40000u},
   };
   for (const auto& rec : g_recs) {
-    scoped_refptr<SharedBuffer> full_data = ReadFile(rec.name);
-    ASSERT_TRUE(full_data.get());
+    Vector<char> full_data = ReadFile(rec.name);
 
     // Create with enough data for part of the first frame.
     auto decoder = CreatePNGDecoder();
-    auto data = SharedBuffer::Create(full_data->FlattenIfNeededAndGetData(),
-                                     rec.offset_in_first_frame);
+    auto data =
+        SharedBuffer::Create(full_data.data(), rec.offset_in_first_frame);
     decoder->SetData(data.get(), false);
 
     EXPECT_FALSE(decoder->FrameIsReceivedAtIndex(0));
@@ -1468,7 +1450,7 @@ TEST(PNGTests, VerifyFrameCompleteBehavior) {
     EXPECT_NE(ImageFrame::kFrameComplete, frame->GetStatus());
     EXPECT_FALSE(decoder->FrameIsReceivedAtIndex(0));
 
-    decoder->SetData(full_data.get(), true);
+    decoder->SetData(SharedBuffer::Create(full_data), true);
 
     // With full data, parsing the size still does not mark a frame as
     // complete for animated images.
@@ -1519,7 +1501,7 @@ TEST(PNGTests, truncated) {
 
 TEST(PNGTests, crbug827754) {
   const char* png_file = "/images/resources/crbug827754.png";
-  scoped_refptr<SharedBuffer> data = ReadFile(png_file);
+  scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(png_file);
   ASSERT_TRUE(data);
 
   auto decoder = CreatePNGDecoder();
@@ -1531,7 +1513,7 @@ TEST(PNGTests, crbug827754) {
 
 TEST(PNGTests, cicp) {
   const char* png_file = "/images/resources/cicp_pq.png";
-  scoped_refptr<SharedBuffer> data = ReadFile(png_file);
+  scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(png_file);
   ASSERT_TRUE(data);
 
   auto decoder = CreatePNGDecoder();
@@ -1548,7 +1530,7 @@ TEST(PNGTests, cicp) {
 
 TEST(PNGTests, HDRMetadata) {
   const char* png_file = "/images/resources/cicp_pq.png";
-  scoped_refptr<SharedBuffer> data = ReadFile(png_file);
+  scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(png_file);
   ASSERT_TRUE(data);
 
   auto decoder = CreatePNGDecoder();
@@ -1588,8 +1570,8 @@ TEST(AnimatedPNGTests, TrnsMeansAlpha) {
 
 TEST(PNGTests, CriticalPrivateChunkBeforeIHDR) {
   auto decoder = CreatePNGDecoder();
-  scoped_refptr<SharedBuffer> data =
-      ReadFile(kDecodersTestingDir, "private-critical-chunk-before-ihdr.png");
+  scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(
+      kDecodersTestingDir, "private-critical-chunk-before-ihdr.png");
   EXPECT_FALSE(data->empty());
   decoder->SetData(data.get(), true);
   EXPECT_FALSE(decoder->IsSizeAvailable());

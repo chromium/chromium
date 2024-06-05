@@ -35,7 +35,7 @@ std::unique_ptr<ImageDecoder> CreateJPEGDecoder() {
 void Downsample(size_t max_decoded_bytes,
                 const char* image_file_path,
                 const gfx::Size& expected_size) {
-  scoped_refptr<SharedBuffer> data = ReadFile(image_file_path);
+  scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(image_file_path);
   ASSERT_TRUE(data);
 
   std::unique_ptr<ImageDecoder> decoder = CreateJPEGDecoder(max_decoded_bytes);
@@ -53,7 +53,7 @@ void ReadYUV(size_t max_decoded_bytes,
              const gfx::Size& expected_y_size,
              const gfx::Size& expected_uv_size,
              const bool expect_decoding_failure = false) {
-  scoped_refptr<SharedBuffer> data = ReadFile(image_file_path);
+  scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(image_file_path);
   ASSERT_TRUE(data);
 
   std::unique_ptr<JPEGImageDecoder> decoder =
@@ -195,7 +195,7 @@ TEST(JPEGImageDecoderTest, yuv) {
 
   // Make sure we revert to RGBA decoding when we're about to downscale,
   // which can occur on memory-constrained android devices.
-  scoped_refptr<SharedBuffer> data = ReadFile(jpeg_file);
+  scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(jpeg_file);
   ASSERT_TRUE(data);
 
   std::unique_ptr<JPEGImageDecoder> decoder = CreateJPEGDecoder(230 * 230 * 4);
@@ -233,20 +233,11 @@ TEST(JPEGImageDecoderTest, byteByByteRGBJPEGWithAdobeMarkers) {
                        1u, kAnimationNone);
 }
 
-// This test verifies that calling SharedBuffer::MergeSegmentsIntoBuffer() does
-// not break JPEG decoding at a critical point: in between a call to decode the
-// size (when JPEGImageDecoder stops while it may still have input data to
-// read) and a call to do a full decode.
-TEST(JPEGImageDecoderTest, mergeBuffer) {
-  const char* jpeg_file = "/images/resources/gracehopper.jpg";
-  TestMergeBuffer(&CreateJPEGDecoder, jpeg_file);
-}
-
 // This tests decoding a JPEG with many progressive scans.  Decoding should
 // fail, but not hang (crbug.com/642462).
 TEST(JPEGImageDecoderTest, manyProgressiveScans) {
   scoped_refptr<SharedBuffer> test_data =
-      ReadFile(kDecodersTestingDir, "many-progressive-scans.jpg");
+      ReadFileToSharedBuffer(kDecodersTestingDir, "many-progressive-scans.jpg");
   ASSERT_TRUE(test_data.get());
 
   std::unique_ptr<ImageDecoder> test_decoder = CreateJPEGDecoder();
@@ -263,7 +254,7 @@ TEST(JPEGImageDecoderTest, manyProgressiveScans) {
 //   <header> <out-of-line data> <Exif IFD> <0th IFD>
 TEST(JPEGImageDecoderTest, exifWithInitialIfdLast) {
   scoped_refptr<SharedBuffer> test_data =
-      ReadFile(kDecodersTestingDir, "green-exif-ifd-last.jpg");
+      ReadFileToSharedBuffer(kDecodersTestingDir, "green-exif-ifd-last.jpg");
   ASSERT_TRUE(test_data.get());
 
   std::unique_ptr<ImageDecoder> test_decoder = CreateJPEGDecoder();
@@ -276,7 +267,7 @@ TEST(JPEGImageDecoderTest, exifWithInitialIfdLast) {
 
 TEST(JPEGImageDecoderTest, SupportedSizesSquare) {
   const char* jpeg_file = "/images/resources/gracehopper.jpg";  // 256x256
-  scoped_refptr<SharedBuffer> data = ReadFile(jpeg_file);
+  scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(jpeg_file);
   ASSERT_TRUE(data);
 
   std::unique_ptr<ImageDecoder> decoder =
@@ -304,7 +295,7 @@ TEST(JPEGImageDecoderTest, SupportedSizesRectangle) {
   // okay for the decoder to downscale it.
   const char* jpeg_file = "/images/resources/icc-v2-gbr-422-whole-mcus.jpg";
 
-  scoped_refptr<SharedBuffer> data = ReadFile(jpeg_file);
+  scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(jpeg_file);
   ASSERT_TRUE(data);
 
   std::unique_ptr<ImageDecoder> decoder =
@@ -335,7 +326,7 @@ TEST(JPEGImageDecoderTest,
   // is forced to support downscaling.
   const char* jpeg_file = "/images/resources/icc-v2-gbr.jpg";
 
-  scoped_refptr<SharedBuffer> data = ReadFile(jpeg_file);
+  scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(jpeg_file);
   ASSERT_TRUE(data);
 
   // Make the memory limit one fewer byte than what is needed in order to force
@@ -375,7 +366,7 @@ TEST(JPEGImageDecoderTest, SupportedSizesRectangleNotMultipleOfMCU) {
        "/images/resources/icc-v2-gbr-420-height-not-whole-mcu.jpg",
        SkISize::Make(272, 200)}};
   for (const auto& rec : recs) {
-    scoped_refptr<SharedBuffer> data = ReadFile(rec.jpeg_file);
+    scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(rec.jpeg_file);
     ASSERT_TRUE(data);
     std::unique_ptr<ImageDecoder> decoder =
         CreateJPEGDecoder(std::numeric_limits<int>::max());
@@ -393,7 +384,7 @@ TEST(JPEGImageDecoderTest, SupportedSizesRectangleNotMultipleOfMCU) {
 
 TEST(JPEGImageDecoderTest, SupportedSizesTruncatedIfMemoryBound) {
   const char* jpeg_file = "/images/resources/gracehopper.jpg";  // 256x256
-  scoped_refptr<SharedBuffer> data = ReadFile(jpeg_file);
+  scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(jpeg_file);
   ASSERT_TRUE(data);
 
   // Limit the memory so that 128 would be the largest size possible.
@@ -468,7 +459,8 @@ TEST_P(ColorSpaceTest, RgbDecode) {
 
   if (!GetParam().expect_yuv_decoding) {
     const auto jpeg_file = ("/images/resources/" + GetParam().file);
-    scoped_refptr<SharedBuffer> data = ReadFile(jpeg_file.c_str());
+    scoped_refptr<SharedBuffer> data =
+        ReadFileToSharedBuffer(jpeg_file.c_str());
     ASSERT_TRUE(data);
 
     std::unique_ptr<ImageDecoder> decoder = CreateJPEGDecoder(kLargeEnoughSize);
@@ -526,41 +518,37 @@ INSTANTIATE_TEST_SUITE_P(JPEGImageDecoderTest,
 
 TEST(JPEGImageDecoderTest, PartialDataWithoutSize) {
   const char* jpeg_file = "/images/resources/gracehopper.jpg";
-  scoped_refptr<SharedBuffer> full_data = ReadFile(jpeg_file);
-  ASSERT_TRUE(full_data);
+  Vector<char> full_data = ReadFile(jpeg_file);
 
   constexpr size_t kDataLengthWithoutSize = 4;
-  ASSERT_LT(kDataLengthWithoutSize, full_data->size());
-  scoped_refptr<SharedBuffer> partial_data = SharedBuffer::Create(
-      full_data->FlattenIfNeededAndGetData(), kDataLengthWithoutSize);
+  ASSERT_LT(kDataLengthWithoutSize, full_data.size());
+  scoped_refptr<SharedBuffer> partial_data =
+      SharedBuffer::Create(full_data.data(), kDataLengthWithoutSize);
 
   std::unique_ptr<ImageDecoder> decoder = CreateJPEGDecoder();
   decoder->SetData(partial_data.get(), false);
   EXPECT_FALSE(decoder->IsSizeAvailable());
   EXPECT_FALSE(decoder->Failed());
-  decoder->SetData(full_data.get(), true);
+  decoder->SetData(SharedBuffer::Create(std::move(full_data)), true);
   EXPECT_TRUE(decoder->IsSizeAvailable());
   EXPECT_FALSE(decoder->Failed());
 }
 
 TEST(JPEGImageDecoderTest, PartialRgbDecodeBlocksYuvDecoding) {
   const char* jpeg_file = "/images/resources/non-interleaved_progressive.jpg";
-  scoped_refptr<SharedBuffer> full_data = ReadFile(jpeg_file);
-  ASSERT_TRUE(full_data);
+  Vector<char> full_data = ReadFile(jpeg_file);
 
   {
     auto yuv_decoder = CreateJPEGDecoder();
-    yuv_decoder->SetData(full_data.get(), true);
+    yuv_decoder->SetData(SharedBuffer::Create(full_data), true);
     EXPECT_TRUE(yuv_decoder->IsSizeAvailable());
     EXPECT_FALSE(yuv_decoder->Failed());
     EXPECT_TRUE(yuv_decoder->CanDecodeToYUV());
   }
 
-  const size_t kJustEnoughDataToStartHeaderParsing =
-      (full_data->size() + 1) / 2;
-  auto partial_data =
-      SharedBuffer::Create(full_data->FlattenIfNeededAndGetData(),
-                           kJustEnoughDataToStartHeaderParsing);
+  const size_t kJustEnoughDataToStartHeaderParsing = (full_data.size() + 1) / 2;
+  auto partial_data = SharedBuffer::Create(full_data.data(),
+                                           kJustEnoughDataToStartHeaderParsing);
   ASSERT_TRUE(partial_data);
 
   auto decoder = CreateJPEGDecoder();
@@ -572,13 +560,13 @@ TEST(JPEGImageDecoderTest, PartialRgbDecodeBlocksYuvDecoding) {
   const ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
   ASSERT_TRUE(frame);
   EXPECT_NE(frame->GetStatus(), ImageFrame::kFrameComplete);
-  decoder->SetData(full_data.get(), true);
+  decoder->SetData(SharedBuffer::Create(std::move(full_data)), true);
   EXPECT_FALSE(decoder->CanDecodeToYUV());
 }
 
 TEST(JPEGImageDecoderTest, Gainmap) {
   const char* jpeg_file = "/images/resources/gainmap-trattore0.jpg";
-  scoped_refptr<SharedBuffer> full_data = ReadFile(jpeg_file);
+  scoped_refptr<SharedBuffer> full_data = ReadFileToSharedBuffer(jpeg_file);
   ASSERT_TRUE(full_data);
 
   auto base_decoder = CreateJPEGDecoder();
@@ -668,7 +656,8 @@ TEST(JPEGImageDecoderTest, BppHistogramHuge13000002) {
 TEST(JPEGImageDecoderTest, BppHistogramInvalid) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<ImageDecoder> decoder = CreateJPEGDecoder();
-  decoder->SetData(ReadFile("/images/resources/green-truncated.jpg"), true);
+  decoder->SetData(
+      ReadFileToSharedBuffer("/images/resources/green-truncated.jpg"), true);
   ASSERT_TRUE(decoder->IsSizeAvailable());
   EXPECT_FALSE(decoder->Failed());
   EXPECT_EQ(decoder->FrameCount(), 1u);

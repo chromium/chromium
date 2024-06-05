@@ -44,7 +44,7 @@ std::unique_ptr<ImageDecoder> CreateWEBPDecoder() {
 void TestInvalidImage(const char* webp_file, bool parse_error_expected) {
   std::unique_ptr<ImageDecoder> decoder = CreateWEBPDecoder();
 
-  scoped_refptr<SharedBuffer> data = ReadFile(webp_file);
+  scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(webp_file);
   ASSERT_TRUE(data.get());
   decoder->SetData(data.get(), true);
 
@@ -74,7 +74,7 @@ TEST(AnimatedWebPTests, uniqueGenerationIDs) {
   std::unique_ptr<ImageDecoder> decoder = CreateWEBPDecoder();
 
   scoped_refptr<SharedBuffer> data =
-      ReadFile("/images/resources/webp-animated.webp");
+      ReadFileToSharedBuffer("/images/resources/webp-animated.webp");
   ASSERT_TRUE(data.get());
   decoder->SetData(data.get(), true);
 
@@ -91,7 +91,7 @@ TEST(AnimatedWebPTests, verifyAnimationParametersTransparentImage) {
   EXPECT_EQ(kAnimationLoopOnce, decoder->RepetitionCount());
 
   scoped_refptr<SharedBuffer> data =
-      ReadFile("/images/resources/webp-animated.webp");
+      ReadFileToSharedBuffer("/images/resources/webp-animated.webp");
   ASSERT_TRUE(data.get());
   decoder->SetData(data.get(), true);
 
@@ -132,7 +132,7 @@ TEST(AnimatedWebPTests,
   EXPECT_EQ(kAnimationLoopOnce, decoder->RepetitionCount());
 
   scoped_refptr<SharedBuffer> data =
-      ReadFile("/images/resources/webp-animated-opaque.webp");
+      ReadFileToSharedBuffer("/images/resources/webp-animated-opaque.webp");
   ASSERT_TRUE(data.get());
   decoder->SetData(data.get(), true);
 
@@ -174,7 +174,7 @@ TEST(AnimatedWebPTests, verifyAnimationParametersBlendOverwrite) {
   EXPECT_EQ(kAnimationLoopOnce, decoder->RepetitionCount());
 
   scoped_refptr<SharedBuffer> data =
-      ReadFile("/images/resources/webp-animated-no-blend.webp");
+      ReadFileToSharedBuffer("/images/resources/webp-animated-no-blend.webp");
   ASSERT_TRUE(data.get());
   decoder->SetData(data.get(), true);
 
@@ -231,7 +231,7 @@ TEST(AnimatedWebPTests, truncatedLastFrame) {
   std::unique_ptr<ImageDecoder> decoder = CreateWEBPDecoder();
 
   scoped_refptr<SharedBuffer> data =
-      ReadFile("/images/resources/invalid-animated-webp2.webp");
+      ReadFileToSharedBuffer("/images/resources/invalid-animated-webp2.webp");
   ASSERT_TRUE(data.get());
   decoder->SetData(data.get(), true);
 
@@ -254,8 +254,7 @@ TEST(AnimatedWebPTests, truncatedInBetweenFrame) {
   std::unique_ptr<ImageDecoder> decoder = CreateWEBPDecoder();
 
   const Vector<char> full_data =
-      ReadFile("/images/resources/invalid-animated-webp4.webp")
-          ->CopyAs<Vector<char>>();
+      ReadFile("/images/resources/invalid-animated-webp4.webp");
   scoped_refptr<SharedBuffer> data =
       SharedBuffer::Create(full_data.data(), full_data.size() - 1);
   decoder->SetData(data.get(), false);
@@ -274,10 +273,10 @@ TEST(AnimatedWebPTests, truncatedInBetweenFrame) {
 TEST(AnimatedWebPTests, reproCrash) {
   std::unique_ptr<ImageDecoder> decoder = CreateWEBPDecoder();
 
-  scoped_refptr<SharedBuffer> full_data_buffer =
+  const Vector<char> full_data =
       ReadFile("/images/resources/invalid_vp8_vp8x.webp");
-  ASSERT_TRUE(full_data_buffer.get());
-  const Vector<char> full_data = full_data_buffer->CopyAs<Vector<char>>();
+  scoped_refptr<SharedBuffer> full_data_buffer =
+      SharedBuffer::Create(full_data);
 
   // Parse partial data up to which error in bitstream is not detected.
   const size_t kPartialSize = 32768;
@@ -309,10 +308,8 @@ TEST(AnimatedWebPTests, progressiveDecode) {
 TEST(AnimatedWebPTests, frameIsCompleteAndDuration) {
   std::unique_ptr<ImageDecoder> decoder = CreateWEBPDecoder();
 
-  scoped_refptr<SharedBuffer> data_buffer =
-      ReadFile("/images/resources/webp-animated.webp");
-  ASSERT_TRUE(data_buffer.get());
-  const Vector<char> data = data_buffer->CopyAs<Vector<char>>();
+  const Vector<char> data = ReadFile("/images/resources/webp-animated.webp");
+  scoped_refptr<SharedBuffer> data_buffer = SharedBuffer::Create(data);
 
   ASSERT_GE(data.size(), 10u);
   scoped_refptr<SharedBuffer> temp_data =
@@ -396,7 +393,7 @@ TEST(AnimatedWEBPTests, clearCacheExceptFrameWithAncestors) {
   std::unique_ptr<ImageDecoder> decoder = CreateWEBPDecoder();
 
   scoped_refptr<SharedBuffer> full_data =
-      ReadFile("/images/resources/webp-animated.webp");
+      ReadFileToSharedBuffer("/images/resources/webp-animated.webp");
   ASSERT_TRUE(full_data.get());
   decoder->SetData(full_data.get(), true);
 
@@ -500,7 +497,7 @@ TEST(StaticWebPTests, isSizeAvailable) {
 TEST(StaticWebPTests, notAnimated) {
   std::unique_ptr<ImageDecoder> decoder = CreateWEBPDecoder();
   scoped_refptr<SharedBuffer> data =
-      ReadFile("/images/resources/webp-color-profile-lossy.webp");
+      ReadFileToSharedBuffer("/images/resources/webp-color-profile-lossy.webp");
   ASSERT_TRUE(data.get());
   decoder->SetData(data.get(), true);
   EXPECT_EQ(1u, decoder->FrameCount());
@@ -574,7 +571,8 @@ TEST(StaticWebPTests, bppHistogramHuge13000002) {
 TEST(StaticWebPTests, bppHistogramInvalid) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<ImageDecoder> decoder = CreateWEBPDecoder();
-  decoder->SetData(ReadFile("/images/resources/truncated.webp"), true);
+  decoder->SetData(ReadFileToSharedBuffer("/images/resources/truncated.webp"),
+                   true);
   ASSERT_TRUE(decoder->IsSizeAvailable());
   EXPECT_FALSE(decoder->Failed());
   EXPECT_EQ(decoder->FrameCount(), 1u);

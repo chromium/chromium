@@ -614,7 +614,7 @@ enum class ErrorPhase { kParse, kDecode };
 void TestInvalidStaticImage(const char* avif_file, ErrorPhase error_phase) {
   std::unique_ptr<ImageDecoder> decoder = CreateAVIFDecoder();
 
-  scoped_refptr<SharedBuffer> data = ReadFile(avif_file);
+  scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(avif_file);
   ASSERT_TRUE(data.get());
   decoder->SetData(std::move(data), true);
 
@@ -647,7 +647,7 @@ void ReadYUV(const char* file_name,
              int bit_depth,
              gfx::Point3F* rgb_pixel = nullptr) {
   scoped_refptr<SharedBuffer> data =
-      ReadFile("web_tests/images/resources/avif/", file_name);
+      ReadFileToSharedBuffer("web_tests/images/resources/avif/", file_name);
   ASSERT_TRUE(data);
 
   auto decoder = CreateAVIFDecoder();
@@ -801,7 +801,7 @@ void InspectImage(
   std::unique_ptr<ImageDecoder> decoder = CreateAVIFDecoderWithOptions(
       param.alpha_option, high_bit_depth_option, param.color_behavior,
       ImageDecoder::AnimationOption::kUnspecified);
-  scoped_refptr<SharedBuffer> data = ReadFile(param.path);
+  scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(param.path);
   ASSERT_TRUE(data.get());
 #if FIXME_DISTINGUISH_LOSSY_OR_LOSSLESS
   EXPECT_EQ(param.compression_format,
@@ -932,24 +932,27 @@ TEST_P(CrabbyAVIFValidImagesTest, ByteByByteDecode) {
 
 TEST(CrabbyAnimatedAVIFTests, HasMultipleSubImages) {
   std::unique_ptr<ImageDecoder> decoder = CreateAVIFDecoder();
-  decoder->SetData(ReadFile("/images/resources/avif/star-animated-8bpc.avif"),
-                   true);
+  decoder->SetData(
+      ReadFileToSharedBuffer("/images/resources/avif/star-animated-8bpc.avif"),
+      true);
   EXPECT_TRUE(decoder->ImageHasBothStillAndAnimatedSubImages());
 }
 
 TEST(CrabbyStaticAVIFTests, DoesNotHaveMultipleSubImages) {
   std::unique_ptr<ImageDecoder> decoder = CreateAVIFDecoder();
-  decoder->SetData(ReadFile("/images/resources/avif/"
-                            "red-at-12-oclock-with-color-profile-8bpc.avif"),
-                   true);
+  decoder->SetData(
+      ReadFileToSharedBuffer("/images/resources/avif/"
+                             "red-at-12-oclock-with-color-profile-8bpc.avif"),
+      true);
   EXPECT_FALSE(decoder->ImageHasBothStillAndAnimatedSubImages());
 }
 
 TEST(CrabbyStaticAVIFTests, HasTimingInformation) {
   std::unique_ptr<ImageDecoder> decoder = CreateAVIFDecoder();
-  decoder->SetData(ReadFile("/images/resources/avif/"
-                            "red-at-12-oclock-with-color-profile-8bpc.avif"),
-                   true);
+  decoder->SetData(
+      ReadFileToSharedBuffer("/images/resources/avif/"
+                             "red-at-12-oclock-with-color-profile-8bpc.avif"),
+      true);
   EXPECT_TRUE(!!decoder->DecodeFrameBufferAtIndex(0));
 
   // libavif has placeholder values for timestamp and duration on still images,
@@ -959,8 +962,9 @@ TEST(CrabbyStaticAVIFTests, HasTimingInformation) {
 
 TEST(CrabbyAnimatedAVIFTests, HasTimingInformation) {
   std::unique_ptr<ImageDecoder> decoder = CreateAVIFDecoder();
-  decoder->SetData(ReadFile("/images/resources/avif/star-animated-8bpc.avif"),
-                   true);
+  decoder->SetData(
+      ReadFileToSharedBuffer("/images/resources/avif/star-animated-8bpc.avif"),
+      true);
 
   constexpr auto kDuration = base::Milliseconds(100);
 
@@ -1004,8 +1008,8 @@ TEST(CrabbyStaticAVIFTests, GetAdobeGainmapInfoAndData) {
                             features::kAvifGainmapHdrImages},
       /*disabled_features=*/{});
 
-  scoped_refptr<SharedBuffer> data =
-      ReadFile("/images/resources/avif/small-with-gainmap-adobe.avif");
+  scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(
+      "/images/resources/avif/small-with-gainmap-adobe.avif");
   std::unique_ptr<ImageDecoder> decoder = CreateAVIFDecoder();
   decoder->SetData(data, true);
   SkGainmapInfo gainmap_info;
@@ -1060,8 +1064,8 @@ TEST(CrabbyStaticAVIFTests, GetIsoGainmapInfoAndData) {
                             features::kAvifGainmapHdrImages},
       /*disabled_features=*/{});
 
-  scoped_refptr<SharedBuffer> data =
-      ReadFile("/images/resources/avif/small-with-gainmap-iso.avif");
+  scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(
+      "/images/resources/avif/small-with-gainmap-iso.avif");
   std::unique_ptr<ImageDecoder> decoder = CreateAVIFDecoder();
   decoder->SetData(data, true);
   SkGainmapInfo gainmap_info;
@@ -1116,7 +1120,7 @@ TEST(CrabbyStaticAVIFTests, GetIsoGainmapInfoAndDataHdrToSdr) {
                             features::kAvifGainmapHdrImages},
       /*disabled_features=*/{});
 
-  scoped_refptr<SharedBuffer> data = ReadFile(
+  scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(
       "/images/resources/avif/small-with-gainmap-iso-hdrbase-forward.avif");
   std::unique_ptr<ImageDecoder> decoder = CreateAVIFDecoder();
   decoder->SetData(data, true);
@@ -1173,7 +1177,7 @@ TEST(CrabbyStaticAVIFTests, GetIsoGainmapColorSpaceSameICC) {
   // The image has use_base_color_space set to false (i.e. use the alternate
   // image's color space), and the base and alternate image ICC profiles are the
   // same, so the alternate image color space should be ignored.
-  scoped_refptr<SharedBuffer> data = ReadFile(
+  scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(
       "/images/resources/avif/small-with-gainmap-iso-usealtcolorspace.avif");
   std::unique_ptr<ImageDecoder> decoder = CreateAVIFDecoder();
   decoder->SetData(data, true);
@@ -1208,7 +1212,7 @@ TEST(CrabbyStaticAVIFTests, GetIsoGainmapColorSpaceDifferentICC) {
   // different, so the alternate ICC profile should be set as
   // fGainmapMathColorSpace.
   // Base is sRGB, alternate is P3.
-  scoped_refptr<SharedBuffer> data = ReadFile(
+  scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(
       "/images/resources/avif/"
       "small-with-gainmap-iso-usealtcolorspace-differenticc.avif");
   std::unique_ptr<ImageDecoder> decoder = CreateAVIFDecoder();
@@ -1238,7 +1242,7 @@ TEST(CrabbyStaticAVIFTests, GetIsoGainmapColorSpaceDifferentCICP) {
   // image's color space), and the base and alternate images don't have ICC
   // but CICP values instead. The alternate image's CICP values should be used.
   // Base is sRGB, alternate is Rec 2020.
-  scoped_refptr<SharedBuffer> data = ReadFile(
+  scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(
       "/images/resources/avif/gainmap-sdr-srgb-to-hdr-wcg-rec2020.avif");
   std::unique_ptr<ImageDecoder> decoder = CreateAVIFDecoder();
   decoder->SetData(data, true);
@@ -1264,8 +1268,8 @@ TEST(CrabbyStaticAVIFTests, GetGainmapInfoAndDataWithFeatureDisabled) {
 
   for (const std::string image :
        {"small-with-gainmap-adobe.avif", "small-with-gainmap-iso.avif"}) {
-    scoped_refptr<SharedBuffer> data =
-        ReadFile("web_tests/images/resources/avif", image.c_str());
+    scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(
+        "web_tests/images/resources/avif", image.c_str());
     std::unique_ptr<ImageDecoder> decoder = CreateAVIFDecoder();
     decoder->SetData(data, true);
     SkGainmapInfo gainmap_info;
@@ -1285,9 +1289,8 @@ TEST(CrabbyStaticAVIFTests, GetGainmapInfoAndDataWithTruncatedData) {
 
   for (const std::string image :
        {"small-with-gainmap-adobe.avif", "small-with-gainmap-iso.avif"}) {
-    scoped_refptr<SharedBuffer> data =
+    Vector<char> data_vector =
         ReadFile("web_tests/images/resources/avif", image.c_str());
-    const std::vector<char> data_vector = data->CopyAs<std::vector<char>>();
     scoped_refptr<SharedBuffer> half_data =
         SharedBuffer::Create(data_vector.data(), data_vector.size() / 2);
 
@@ -1356,10 +1359,9 @@ TEST(CrabbyStaticAVIFTests, SizeAvailableBeforeAllDataReceived) {
       SkISize::MakeEmpty(), ImageDecoder::AnimationOption::kUnspecified);
   EXPECT_FALSE(decoder->IsSizeAvailable());
 
-  scoped_refptr<SharedBuffer> data =
+  Vector<char> data =
       ReadFile("/images/resources/avif/red-limited-range-420-8bpc.avif");
-  ASSERT_TRUE(data.get());
-  stream_buffer->Append(data->FlattenIfNeededAndGetData(), data->size());
+  stream_buffer->Append(data.data(), data.size());
   EXPECT_EQ(stream_buffer->size(), 318u);
   decoder->SetData(stream_buffer, /*all_data_received=*/false);
   // All bytes are appended so we should have size, even though we pass
@@ -1381,15 +1383,13 @@ TEST(CrabbyStaticAVIFTests, ProgressiveDecoding) {
       ColorBehavior::kTag, Platform::GetMaxDecodedImageBytes(),
       SkISize::MakeEmpty(), ImageDecoder::AnimationOption::kUnspecified);
 
-  scoped_refptr<SharedBuffer> data =
-      ReadFile("/images/resources/avif/tiger_3layer_1res.avif");
-  ASSERT_TRUE(data.get());
-  ASSERT_EQ(data->size(), 70944u);
+  Vector<char> data = ReadFile("/images/resources/avif/tiger_3layer_1res.avif");
+  ASSERT_EQ(data.size(), 70944u);
 
   // This image has three layers. The first layer is 8299 bytes. Because of
   // image headers and other overhead, if we pass exactly 8299 bytes to the
   // decoder, the decoder does not have enough data to decode the first layer.
-  stream_buffer->Append(data->FlattenIfNeededAndGetData(), 8299u);
+  stream_buffer->Append(data.data(), 8299u);
   decoder->SetData(stream_buffer, /*all_data_received=*/false);
   EXPECT_TRUE(decoder->IsSizeAvailable());
   EXPECT_FALSE(decoder->Failed());
@@ -1404,7 +1404,7 @@ TEST(CrabbyStaticAVIFTests, ProgressiveDecoding) {
   // An additional 301 bytes are enough data for the decoder to decode the first
   // layer. With progressive decoding, the frame buffer status will transition
   // to ImageFrame::kFramePartial.
-  stream_buffer->Append(data->FlattenIfNeededAndGetData() + 8299u, 301u);
+  stream_buffer->Append(data.data() + 8299u, 301u);
   decoder->SetData(stream_buffer, /*all_data_received=*/false);
   EXPECT_FALSE(decoder->Failed());
   frame = decoder->DecodeFrameBufferAtIndex(0);
@@ -1418,8 +1418,7 @@ TEST(CrabbyStaticAVIFTests, ProgressiveDecoding) {
               testing::ContainerEq(expected_counts));
 
   // Now send the rest of the data.
-  stream_buffer->Append(data->FlattenIfNeededAndGetData() + 8299u + 301u,
-                        62344u);
+  stream_buffer->Append(data.data() + 8299u + 301u, 62344u);
   decoder->SetData(stream_buffer, /*all_data_received=*/true);
   EXPECT_FALSE(decoder->Failed());
   frame = decoder->DecodeFrameBufferAtIndex(0);
@@ -1450,9 +1449,8 @@ TEST(CrabbyStaticAVIFTests, IncrementalDecoding) {
       ColorBehavior::kTag, Platform::GetMaxDecodedImageBytes(),
       SkISize::MakeEmpty(), ImageDecoder::AnimationOption::kUnspecified);
 
-  scoped_refptr<SharedBuffer> data =
+  Vector<char> data =
       ReadFile("/images/resources/avif/tiger_420_8b_grid1x13.avif");
-  ASSERT_TRUE(data.get());
 
   constexpr int kImageArea = 1216 * 832;  // = 1011712
   constexpr int kFileSize = 72257;
@@ -1470,14 +1468,14 @@ TEST(CrabbyStaticAVIFTests, IncrementalDecoding) {
   const Step steps[] = {
       {2000, ImageFrame::kFrameEmpty, 0},
       // Decoding half of the bytes gives 6 tile rows.
-      {data->size() / 2, ImageFrame::kFramePartial, 6 * 64 - 1},
+      {data.size() / 2, ImageFrame::kFramePartial, 6 * 64 - 1},
       // Decoding all bytes but one gives 12 tile rows.
-      {data->size() - 1, ImageFrame::kFramePartial, 12 * 64 - 1},
+      {data.size() - 1, ImageFrame::kFramePartial, 12 * 64 - 1},
       // Decoding all bytes gives all 13 tile rows.
-      {data->size(), ImageFrame::kFrameComplete, 13 * 64}};
+      {data.size(), ImageFrame::kFrameComplete, 13 * 64}};
   size_t previous_size = 0;
   for (const Step& step : steps) {
-    stream_buffer->Append(data->FlattenIfNeededAndGetData() + previous_size,
+    stream_buffer->Append(data.data() + previous_size,
                           step.size - previous_size);
     decoder->SetData(stream_buffer, step.status == ImageFrame::kFrameComplete);
 
@@ -1526,8 +1524,7 @@ TEST(CrabbyStaticAVIFTests, ParallelDecoding) {
   // media::PaintCanvasVideoRenderer::ConvertVideoFrameToRGBPixels() to pick
   // n_tasks > 1 if CrabbyAVIFImageDecoder did not pass disable_threading=true
   // to it.
-  Vector<char> data = ReadFile("/images/resources/avif/gray1024x704.avif")
-                          ->CopyAs<Vector<char>>();
+  Vector<char> data = ReadFile("/images/resources/avif/gray1024x704.avif");
 
   // Task timeout in tests is 30 seconds (see https://crrev.com/c/1949028).
   // Four blocking tasks cause a temporary deadlock (1.2 seconds) of
@@ -1551,16 +1548,18 @@ TEST(CrabbyStaticAVIFTests, ParallelDecoding) {
 
 TEST(CrabbyStaticAVIFTests, AlphaHasNoIspeProperty) {
   std::unique_ptr<ImageDecoder> decoder = CreateAVIFDecoder();
-  decoder->SetData(ReadFile("/images/resources/avif/green-no-alpha-ispe.avif"),
-                   true);
+  decoder->SetData(
+      ReadFileToSharedBuffer("/images/resources/avif/green-no-alpha-ispe.avif"),
+      true);
   EXPECT_FALSE(decoder->IsSizeAvailable());
   EXPECT_TRUE(decoder->Failed());
 }
 
 TEST(CrabbyStaticAVIFTests, UnsupportedTransferFunctionInColrProperty) {
   std::unique_ptr<ImageDecoder> decoder = CreateAVIFDecoder();
-  decoder->SetData(
-      ReadFile("/images/resources/avif/red-unsupported-transfer.avif"), true);
+  decoder->SetData(ReadFileToSharedBuffer(
+                       "/images/resources/avif/red-unsupported-transfer.avif"),
+                   true);
   EXPECT_FALSE(decoder->IsSizeAvailable());
   EXPECT_TRUE(decoder->Failed());
 }
@@ -1569,8 +1568,9 @@ TEST(CrabbyStaticAVIFTests, ClapPropertyZeroOrigin) {
   constexpr int kClapWidth = 200;
   constexpr int kClapHeight = 50;
   std::unique_ptr<ImageDecoder> decoder1 = CreateAVIFDecoder();
-  decoder1->SetData(ReadFile("/images/resources/avif/red-and-purple-crop.avif"),
-                    true);
+  decoder1->SetData(
+      ReadFileToSharedBuffer("/images/resources/avif/red-and-purple-crop.avif"),
+      true);
   ASSERT_TRUE(decoder1->IsSizeAvailable());
   gfx::Size size1 = decoder1->Size();
   ASSERT_EQ(size1.width(), kClapWidth);
@@ -1583,8 +1583,9 @@ TEST(CrabbyStaticAVIFTests, ClapPropertyZeroOrigin) {
 
   // The second image is the uncropped version of the first image.
   std::unique_ptr<ImageDecoder> decoder2 = CreateAVIFDecoder();
-  decoder2->SetData(
-      ReadFile("/images/resources/avif/red-and-purple-and-blue.avif"), true);
+  decoder2->SetData(ReadFileToSharedBuffer(
+                        "/images/resources/avif/red-and-purple-and-blue.avif"),
+                    true);
   ASSERT_TRUE(decoder2->IsSizeAvailable());
   gfx::Size size2 = decoder2->Size();
   ASSERT_EQ(size2.width(), 300);
@@ -1614,8 +1615,9 @@ TEST(CrabbyStaticAVIFTests, InvalidClapPropertyHandling) {
   // Since the origin of the clean aperture is not located at (0, 0), we treat
   // the 'clap' property as invalid. So the full image is shown.
   std::unique_ptr<ImageDecoder> decoder1 = CreateAVIFDecoder();
-  decoder1->SetData(
-      ReadFile("/images/resources/avif/blue-and-magenta-crop.avif"), true);
+  decoder1->SetData(ReadFileToSharedBuffer(
+                        "/images/resources/avif/blue-and-magenta-crop.avif"),
+                    true);
   ASSERT_TRUE(decoder1->IsSizeAvailable());
   gfx::Size size1 = decoder1->Size();
   ASSERT_EQ(size1.width(), 320);
@@ -1630,7 +1632,8 @@ TEST(CrabbyStaticAVIFTests, InvalidClapPropertyHandling) {
   // property is invalid. In this case the full image is shown.
   std::unique_ptr<ImageDecoder> decoder2 = CreateAVIFDecoder();
   decoder2->SetData(
-      ReadFile("/images/resources/avif/blue-and-magenta-crop-invalid.avif"),
+      ReadFileToSharedBuffer(
+          "/images/resources/avif/blue-and-magenta-crop-invalid.avif"),
       true);
   ASSERT_TRUE(decoder2->IsSizeAvailable());
   gfx::Size size2 = decoder2->Size();
@@ -1717,7 +1720,7 @@ TEST(CrabbyStaticAVIFTests, BppHistogramInvalid) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<ImageDecoder> decoder = CreateAVIFDecoder();
   decoder->SetData(
-      ReadFile(
+      ReadFileToSharedBuffer(
           "/images/resources/avif/"
           "red-at-12-oclock-with-color-profile-with-wrong-frame-header.avif"),
       true);

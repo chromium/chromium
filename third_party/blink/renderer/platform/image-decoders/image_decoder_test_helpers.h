@@ -32,8 +32,13 @@ inline void PrepareReferenceData(char* buffer, size_t size) {
   }
 }
 
-scoped_refptr<SharedBuffer> ReadFile(StringView file_name);
-scoped_refptr<SharedBuffer> ReadFile(const char* dir, const char* file_name);
+Vector<char> ReadFile(StringView file_name);
+Vector<char> ReadFile(const char* dir, const char* file_name);
+
+scoped_refptr<SharedBuffer> ReadFileToSharedBuffer(StringView file_name);
+scoped_refptr<SharedBuffer> ReadFileToSharedBuffer(const char* dir,
+                                                   const char* file_name);
+
 unsigned HashBitmap(const SkBitmap&);
 void CreateDecodingBaseline(DecoderCreator,
                             SharedBuffer*,
@@ -52,11 +57,6 @@ void TestByteByByteDecode(DecoderCreator create_decoder,
                           const char* file,
                           size_t expected_frame_count,
                           int expected_repetition_count);
-
-void TestMergeBuffer(DecoderCreator create_decoder, const char* file);
-void TestMergeBuffer(DecoderCreator create_decoder,
-                     const char* dir,
-                     const char* file);
 
 // |skipping_step| is used to randomize the decoding order. For images with
 // a small number of frames (e.g. < 10), this value should be smaller, on the

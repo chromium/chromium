@@ -48,7 +48,7 @@ static void MixImages(const char* file_name,
                       size_t bytes_for_first_frame,
                       size_t later_frame) {
   base::test::SingleThreadTaskEnvironment task_environment;
-  const Vector<char> file = ReadFile(file_name)->CopyAs<Vector<char>>();
+  const Vector<char> file = ReadFile(file_name);
 
   scoped_refptr<SharedBuffer> partial_file =
       SharedBuffer::Create(file.data(), bytes_for_first_frame);
@@ -107,12 +107,8 @@ TEST(DeferredImageDecoderTestWoPlatform, fragmentedSignature) {
   };
 
   for (size_t i = 0; i < std::size(test_files); ++i) {
-    scoped_refptr<SharedBuffer> file_buffer = ReadFile(test_files[i]);
-    ASSERT_NE(file_buffer, nullptr);
-    // We need contiguous data, which SharedBuffer doesn't guarantee.
-    Vector<char> contiguous = file_buffer->CopyAs<Vector<char>>();
-    EXPECT_EQ(contiguous.size(), file_buffer->size());
-    const char* data = contiguous.data();
+    Vector<char> file_data = ReadFile(test_files[i]);
+    const char* data = file_data.data();
 
     // Truncated signature (only 1 byte).  Decoder instantiation should fail.
     scoped_refptr<SharedBuffer> buffer = SharedBuffer::Create<size_t>(data, 1u);
@@ -123,7 +119,7 @@ TEST(DeferredImageDecoderTestWoPlatform, fragmentedSignature) {
 
     // Append the rest of the data.  We should be able to sniff the signature
     // now, even if segmented.
-    buffer->Append<size_t>(data + 1, contiguous.size() - 1);
+    buffer->Append<size_t>(data + 1, file_data.size() - 1);
     EXPECT_TRUE(ImageDecoder::HasSufficientDataToSniffMimeType(*buffer));
     std::unique_ptr<DeferredImageDecoder> decoder =
         DeferredImageDecoder::Create(buffer, false,
