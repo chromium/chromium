@@ -345,6 +345,107 @@ TEST_F(TemplateURLTest, ImageURLWithGetShouldNotCrash) {
   EXPECT_EQ("http://foo/?q=X&t=dummy-image-thumbnail", result.spec());
 }
 
+TEST_F(TemplateURLTest, ParsePlayStoreDefinitions) {
+  // *** *** *** *** WARNING *** *** *** ***
+  //
+  // Do not remove elements from the list below.
+  //
+  // This test validates that the TemplateURL definitions served by Play Store
+  // can be processed and understood by Chrome.
+  //
+  // The list of parameters listed below reflects parameters found in Play Store
+  // configuration file. The only valid reason for modifying this list is if the
+  // Play Store configuration was updated to include *new* parameters.
+  //
+  // As long as the PlayStore TemplateURL definitions shadow internal templates
+  // this list should never drop elements.
+  //
+  // *** *** *** *** WARNING *** *** *** ***
+  //
+  // Extracted from search_engine_chrome_metadata using:
+  // sed -n 's/[^{]*\({[^}]*}\)[^{]*/"\1",\n/gp' | sort | uniq
+  // TODO(b/344023531): Add LINT rules linking to upstream tests.
+  std::set<std::string> recognized_params{{
+      "{google:RLZ}",
+      "{google:assistedQueryStats}",
+      "{google:baseSearchByImageURL}",
+      "{google:baseSuggestURL}",
+      "{google:baseURL}",
+      "{google:contextualSearchContextData}",
+      "{google:contextualSearchVersion}",
+      "{google:currentPageUrl}",
+      "{google:cursorPosition}",
+      "{google:iOSSearchLanguage}",
+      "{google:imageOriginalHeight}",
+      "{google:imageOriginalWidth}",
+      "{google:imageSearchSource}",
+      "{google:imageThumbnailBase64}",
+      "{google:imageThumbnail}",
+      "{google:imageURL}",
+      "{google:inputType}",
+      "{google:omniboxFocusType}",
+      "{google:originalQueryForSuggestion}",
+      "{google:pageClassification}",
+      "{google:pathWildcard}",
+      "{google:prefetchQuery}",
+      "{google:processedImageDimensions}",
+      "{google:searchClient}",
+      "{google:searchFieldtrialParameter}",
+      "{google:searchVersion}",
+      "{google:sessionToken}",
+      "{google:sourceId}",
+      "{google:suggestAPIKeyParameter}",
+      "{google:suggestClient}",
+      "{google:suggestRid}",
+      "{imageTranslateSourceLocale}",
+      "{imageTranslateTargetLocale}",
+      "{inputEncoding}",
+      "{language}",
+      "{searchTerms}",
+      "{yandex:searchPath}",
+  }};
+
+  // Basic confirmation check; if this fails, it's possible the logic below
+  // needs updating.
+  EXPECT_EQ(0, SEARCH_ENGINE_OTHER);
+  EXPECT_NE(0, SEARCH_ENGINE_GOOGLE);
+
+  for (const auto& reference : recognized_params) {
+    TemplateURLData data;
+    data.SetURL(reference);
+    TemplateURL url(data);
+    TemplateURLRef::Replacements replacements;
+
+    {
+      // External:
+      data.prepopulate_id = SEARCH_ENGINE_OTHER;
+      std::string result = reference;
+
+      EXPECT_TRUE(url.url_ref().ParseParameter(0, reference.length() - 1,
+                                               &result, &replacements));
+
+      // Verifying `replacements` is moot: if substitution is not available,
+      // replacement won't be made. Instead, verify if resulting URL has been
+      // modified.
+      EXPECT_NE(result, reference);
+    }
+
+    {
+      // Internal:
+      data.prepopulate_id = SEARCH_ENGINE_GOOGLE;
+      std::string result = reference;
+
+      EXPECT_TRUE(url.url_ref().ParseParameter(0, reference.length() - 1,
+                                               &result, &replacements));
+
+      // Verifying `replacements` is moot: if substitution is not available,
+      // replacement won't be made. Instead, verify if resulting URL has been
+      // modified.
+      EXPECT_NE(result, reference);
+    }
+  }
+}
+
 // Test that setting the prepopulate ID from TemplateURL causes the stored
 // TemplateURLRef to handle parsing the URL parameters differently.
 TEST_F(TemplateURLTest, SetPrepopulatedAndParse) {
