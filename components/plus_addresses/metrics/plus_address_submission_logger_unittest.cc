@@ -24,6 +24,7 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace plus_addresses::metrics {
 
@@ -44,6 +45,11 @@ constexpr char kSamplePlusAddress[] = "plus@plus.com";
 constexpr char16_t kSamplePlusAddress_U16[] = u"plus@plus.com";
 constexpr auto kSubmissionSource =
     autofill::mojom::SubmissionSource::FORM_SUBMISSION;
+
+constexpr char kNonCommerceUrl[] = "https://www.foo.com";
+constexpr char kCommerceUrl[] = "https://www.buy-stuff.com/checkout.html";
+
+constexpr char kManagedDomain[] = "corporate.com";
 
 // Short-hands for the bucket enum used to record bucketed plus address counts.
 constexpr int64_t kNoPlusAddress = 0;
@@ -121,6 +127,7 @@ class PlusAddressSubmissionLoggerTest : public ::testing::Test {
   autofill::TestBrowserAutofillManager& autofill_manager() {
     return autofill_manager_;
   }
+  autofill::TestAutofillClient& autofill_client() { return autofill_client_; }
   signin::IdentityTestEnvironment& identity_env() { return identity_test_env_; }
   signin::IdentityManager* identity_manager() {
     return identity_test_env_.identity_manager();
@@ -175,8 +182,8 @@ struct PlusAddressSubmissionTestCase {
     SuggestionType suggestion_type = SuggestionType::kCreateNewPlusAddress;
     int64_t plus_address_count = kNoPlusAddress;
     std::u16string submitted_value;
-    // TODO: crbug.com/343124027 - Add parameters for different form types,
-    // checkout page and managed profiles.
+    bool is_managed_profile = false;
+    std::string main_frame_url = kNonCommerceUrl;
   };
   const Input input;
   const std::vector<ukm::TestUkmRecorder::HumanReadableUkmMetrics> outcome;
@@ -189,10 +196,17 @@ class PlusAddressSubmissionTestWithParam
 // Parametrized test that checks that the expected UKM is recorded. The test
 // simulates that the user is logged in and submits a previously focused form
 TEST_P(PlusAddressSubmissionTestWithParam, SubmittingFormRecordsUkm) {
-  identity_env().MakeAccountAvailable(kGaiaAccount,
-                                      {signin::ConsentLevel::kSignin});
-
   const PlusAddressSubmissionTestCase::Input& input = GetParam().input;
+
+  AccountInfo account_info = identity_env().MakeAccountAvailable(
+      kGaiaAccount, {signin::ConsentLevel::kSignin});
+  if (input.is_managed_profile) {
+    account_info.hosted_domain = kManagedDomain;
+    identity_env().UpdateAccountInfoForAccount(account_info);
+  }
+  autofill_client().set_last_committed_primary_main_frame_url(
+      GURL(input.main_frame_url));
+
   FormData form = [&] {
     switch (input.sample_form) {
       using enum PlusAddressSubmissionTestCase::Input::SampleForm;
@@ -267,6 +281,44 @@ INSTANTIATE_TEST_SUITE_P(
                 /*field_count_renderer_form=*/1,
                 /*plus_address_count=*/kOneToThreePlusAddresses,
                 /*is_checkout_or_cart_page=*/false,
+                /*is_managed=*/false,
+                /*is_newly_created=*/false,
+                /*submitted_plus_address=*/true,
+                PasswordFormType::kSingleUsernameForm,
+                SuggestionContext::kAutofillProfileOnEmailField)}},
+        // Submission from a managed account.
+        PlusAddressSubmissionTestCase{
+            .input =
+                {.context = SuggestionContext::kAutofillProfileOnEmailField,
+                 .form_type = PasswordFormType::kSingleUsernameForm,
+                 .suggestion_type = SuggestionType::kFillExistingPlusAddress,
+                 .plus_address_count = 1,
+                 .submitted_value = kSamplePlusAddress_U16,
+                 .is_managed_profile = true},
+            .outcome = {CreateUkmMetrics(
+                /*field_count_browser_form=*/1,
+                /*field_count_renderer_form=*/1,
+                /*plus_address_count=*/kOneToThreePlusAddresses,
+                /*is_checkout_or_cart_page=*/false,
+                /*is_managed=*/true,
+                /*is_newly_created=*/false,
+                /*submitted_plus_address=*/true,
+                PasswordFormType::kSingleUsernameForm,
+                SuggestionContext::kAutofillProfileOnEmailField)}},
+        // Submission from a main frame URL with a checkout context.
+        PlusAddressSubmissionTestCase{
+            .input =
+                {.context = SuggestionContext::kAutofillProfileOnEmailField,
+                 .form_type = PasswordFormType::kSingleUsernameForm,
+                 .suggestion_type = SuggestionType::kFillExistingPlusAddress,
+                 .plus_address_count = 1,
+                 .submitted_value = kSamplePlusAddress_U16,
+                 .main_frame_url = kCommerceUrl},
+            .outcome = {CreateUkmMetrics(
+                /*field_count_browser_form=*/1,
+                /*field_count_renderer_form=*/1,
+                /*plus_address_count=*/kOneToThreePlusAddresses,
+                /*is_checkout_or_cart_page=*/true,
                 /*is_managed=*/false,
                 /*is_newly_created=*/false,
                 /*submitted_plus_address=*/true,
