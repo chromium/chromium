@@ -8358,19 +8358,7 @@ AXPlatformNodeWin::GetPatternProviderFactoryMethod(PATTERNID pattern_id) {
       break;
 
     case UIA_TogglePatternId:
-      // According to the CoreAAM spec [1], TogglePattern should be exposed for
-      // all aria-checkable roles. However, the UIA documentation [2] specifies
-      // the RadioButton control does not implement IToggleProvider. Also, the
-      // UIA documentation [3] and Accessibility Insights [4] seem to indicate
-      // that the Toggle control pattern should not be exposed when the
-      // ExpandCollapse control pattern  is already exposed for a button.
-      //
-      // [1]:https://w3c.github.io/core-aam/#mapping_state-property_table
-      // [2]:https://docs.microsoft.com/en-us/dotnet/framework/ui-automation/implementing-the-ui-automation-toggle-control-pattern
-      // [3]:https://learn.microsoft.com/en-us/windows/win32/winauto/uiauto-supportbuttoncontroltype#required-control-patterns
-      // [4]:https://github.com/microsoft/axe-windows/blob/main/src/Rules/Library/ButtonInvokeAndExpandeCollapsePatterns.cs
-      if ((IsPlatformCheckable() || SupportsToggle(GetRole())) &&
-          !IsRadio(GetRole()) && !GetData().SupportsExpandCollapse()) {
+      if (IsExpandCollapseSupported()) {
         return &PatternProvider<IToggleProvider>;
       }
       break;
@@ -8666,6 +8654,37 @@ bool AXPlatformNodeWin::IsSelectionItemSupported() const {
     default:
       return false;
   }
+}
+
+bool AXPlatformNodeWin::IsExpandCollapseSupported() const {
+  ax::mojom::Role role = GetRole();
+
+  // As per the spec [1], RadioButton control does not implement
+  // IToggleProvider, as it is not capable of cycling through its valid states.
+  //
+  // [1]:https://docs.microsoft.com/en-us/dotnet/framework/ui-automation/implementing-the-ui-automation-toggle-control-pattern
+  if (IsRadio(role)) {
+    return false;
+  }
+
+  // The documentation[2] and test case[3] seem to indicate that the Toggle
+  // control pattern should not be exposed when the ExpandCollapse control
+  // pattern is already exposed for a button. Please note that this last
+  // requirement only applies to buttons, not all elements; it's possible for an
+  // other role (e.g., treeitem) to support both the Toggle and the
+  // ExpandCollapse control patterns.
+  //
+  // [2]:https://learn.microsoft.com/en-us/windows/win32/winauto/uiauto-supportbuttoncontroltype#required-control-patterns
+  // [3]:https://github.com/microsoft/axe-windows/blob/main/src/Rules/Library/ButtonInvokeAndExpandeCollapsePatterns.cs
+  if (GetData().SupportsExpandCollapse() && IsButton(role)) {
+    return false;
+  }
+
+  // According to the CoreAAM spec [4], TogglePattern should be exposed for
+  // all aria-checkable roles.
+  //
+  // [4]:https://w3c.github.io/core-aam/#mapping_state-property_table
+  return IsPlatformCheckable() || SupportsToggle(role);
 }
 
 }  // namespace ui

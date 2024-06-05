@@ -6244,12 +6244,14 @@ TEST_F(AXPlatformNodeWinTest, GetPatternProviderSupportedPatterns) {
   constexpr AXNodeID row_group_id = 29;
   constexpr AXNodeID row_id = 30;
   constexpr AXNodeID cell_id = 31;
+  constexpr AXNodeID button_with_expanded_state = 32;
+  constexpr AXNodeID button_without_expanded_state = 33;
 
   AXTreeUpdate update;
   update.tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
   update.has_tree_data = true;
   update.root_id = root_id;
-  update.nodes.resize(31);
+  update.nodes.resize(33);
   update.nodes[0].id = root_id;
   update.nodes[0].role = ax::mojom::Role::kRootWebArea;
   update.nodes[0].child_ids = {text_field_with_combo_box_id,
@@ -6268,7 +6270,9 @@ TEST_F(AXPlatformNodeWinTest, GetPatternProviderSupportedPatterns) {
                                tree_item_id,
                                tab_id,
                                toggle_button_with_popup_id,
-                               generic_container_id};
+                               generic_container_id,
+                               button_with_expanded_state,
+                               button_without_expanded_state};
   update.nodes[1].id = text_field_with_combo_box_id;
   update.nodes[1].role = ax::mojom::Role::kTextFieldWithComboBox;
   update.nodes[1].AddState(ax::mojom::State::kEditable);
@@ -6361,6 +6365,17 @@ TEST_F(AXPlatformNodeWinTest, GetPatternProviderSupportedPatterns) {
   update.nodes[29].child_ids = {cell_id};
   update.nodes[30].role = ax::mojom::Role::kCell;
   update.nodes[30].id = cell_id;
+  update.nodes[31].id = button_with_expanded_state;
+  update.nodes[31].role = ax::mojom::Role::kButton;
+  update.nodes[31].AddState(ax::mojom::State::kExpanded);
+  update.nodes[31].AddIntAttribute(
+      ax::mojom::IntAttribute::kCheckedState,
+      static_cast<int>(ax::mojom::CheckedState::kTrue));
+  update.nodes[32].id = button_without_expanded_state;
+  update.nodes[32].role = ax::mojom::Role::kButton;
+  update.nodes[32].AddIntAttribute(
+      ax::mojom::IntAttribute::kCheckedState,
+      static_cast<int>(ax::mojom::CheckedState::kTrue));
 
   Init(update);
 
@@ -6442,10 +6457,10 @@ TEST_F(AXPlatformNodeWinTest, GetPatternProviderSupportedPatterns) {
                         UIA_TextChildPatternId}),
             GetSupportedPatternsFromNodeId(button_without_value));
   EXPECT_EQ(PatternSet({UIA_ScrollItemPatternId, UIA_ExpandCollapsePatternId,
-                        UIA_TextChildPatternId}),
+                        UIA_TextChildPatternId, UIA_TogglePatternId}),
             GetSupportedPatternsFromNodeId(tree_item_checked_id));
   EXPECT_EQ(PatternSet({UIA_ScrollItemPatternId, UIA_ExpandCollapsePatternId,
-                        UIA_TextChildPatternId}),
+                        UIA_TextChildPatternId, UIA_TogglePatternId}),
             GetSupportedPatternsFromNodeId(tree_item_checked_id));
   EXPECT_EQ(PatternSet({UIA_ScrollItemPatternId, UIA_ExpandCollapsePatternId,
                         UIA_TextChildPatternId}),
@@ -6459,6 +6474,14 @@ TEST_F(AXPlatformNodeWinTest, GetPatternProviderSupportedPatterns) {
   EXPECT_EQ(PatternSet({UIA_ScrollItemPatternId, UIA_TableItemPatternId,
                         UIA_TextChildPatternId}),
             GetSupportedPatternsFromNodeId(cell_id));
+
+  EXPECT_EQ(PatternSet({UIA_ScrollItemPatternId, UIA_ExpandCollapsePatternId,
+                        UIA_TextChildPatternId}),
+            GetSupportedPatternsFromNodeId(button_with_expanded_state));
+
+  EXPECT_EQ(PatternSet({UIA_ScrollItemPatternId, UIA_InvokePatternId,
+                        UIA_TextChildPatternId, UIA_TogglePatternId}),
+            GetSupportedPatternsFromNodeId(button_without_expanded_state));
 }
 
 TEST_F(AXPlatformNodeWinTest, GetPatternProviderExpandCollapsePattern) {
