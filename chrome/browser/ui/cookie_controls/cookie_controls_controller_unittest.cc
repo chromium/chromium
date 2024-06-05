@@ -321,7 +321,9 @@ TEST_F(CookieControlsUserBypassTest, NewTabPage) {
                   /*controls_visible=*/false, /*protections_on=*/false,
                   CookieControlsEnforcement::kNoEnforcement,
                   CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration(),
-                  std::vector<TrackingProtectionFeature>{}));
+                  GetThirdPartyCookiesFeatureForEnforcement(
+                      CookieControlsEnforcement::kNoEnforcement,
+                      BlockingStatus::kAllowed)));
   EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/false, /*protections_on=*/false,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
@@ -353,7 +355,9 @@ TEST_F(CookieControlsUserBypassTest, PreferenceDisabled) {
                   /*controls_visible=*/false, /*protections_on=*/false,
                   CookieControlsEnforcement::kNoEnforcement,
                   CookieBlocking3pcdStatus::kNotIn3pcd, zero_expiration(),
-                  std::vector<TrackingProtectionFeature>{}));
+                  GetThirdPartyCookiesFeatureForEnforcement(
+                      CookieControlsEnforcement::kNoEnforcement,
+                      BlockingStatus::kAllowed)));
   EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/false, /*protections_on=*/false,
                            CookieBlocking3pcdStatus::kNotIn3pcd,
@@ -602,15 +606,17 @@ TEST_F(CookieControlsUserBypassTest, Incognito) {
 
   // This should be enforced regardless of the default cookie setting in the
   // default profile.
-  EXPECT_CALL(*mock(),
-              OnStatusChanged(
-                  /*controls_visible=*/false, /*protections_on=*/false,
-                  CookieControlsEnforcement::kNoEnforcement,
-                  CookieBlocking3pcdStatus::kNotIn3pcd,
-                  // Although there is an allow exception with an
-                  // expiration, because the default allow never
-                  // expires, zero_expiration is correct.
-                  zero_expiration(), std::vector<TrackingProtectionFeature>{}));
+  EXPECT_CALL(*mock(), OnStatusChanged(
+                           /*controls_visible=*/false, /*protections_on=*/false,
+                           CookieControlsEnforcement::kNoEnforcement,
+                           CookieBlocking3pcdStatus::kNotIn3pcd,
+                           // Although there is an allow exception with an
+                           // expiration, because the default allow never
+                           // expires, zero_expiration is correct.
+                           zero_expiration(),
+                           GetThirdPartyCookiesFeatureForEnforcement(
+                               CookieControlsEnforcement::kNoEnforcement,
+                               BlockingStatus::kAllowed)));
   EXPECT_CALL(*mock(), OnCookieControlsIconStatusChanged(
                            /*icon_visible=*/false, /*protections_on=*/false,
                            CookieBlocking3pcdStatus::kNotIn3pcd,

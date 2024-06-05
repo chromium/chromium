@@ -185,7 +185,9 @@ CookieControlsController::Status CookieControlsController::GetStatus(
             CookieControlsEnforcement::kNoEnforcement,
             CookieBlocking3pcdStatus::kNotIn3pcd,
             base::Time(),
-            {}};
+            {{FeatureType::kThirdPartyCookies,
+              CookieControlsEnforcement::kNoEnforcement,
+              BlockingStatus::kAllowed}}};
   }
 
   const GURL& url = web_contents->GetLastCommittedURL();
@@ -196,7 +198,9 @@ CookieControlsController::Status CookieControlsController::GetStatus(
             CookieControlsEnforcement::kNoEnforcement,
             CookieBlocking3pcdStatus::kNotIn3pcd,
             base::Time(),
-            {}};
+            {{FeatureType::kThirdPartyCookies,
+              CookieControlsEnforcement::kNoEnforcement,
+              BlockingStatus::kAllowed}}};
   }
 
   CookieBlocking3pcdStatus blocking_status =
