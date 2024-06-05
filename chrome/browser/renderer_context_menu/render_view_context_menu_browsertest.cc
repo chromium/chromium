@@ -154,11 +154,6 @@
 #include "chrome/browser/compose/mock_chrome_compose_client.h"
 #endif
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-#include "chrome/browser/accessibility/pdf_ocr_controller.h"
-#include "chrome/browser/accessibility/pdf_ocr_controller_factory.h"
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/chromeos/window_pin_util.h"
 #include "ui/aura/window.h"
@@ -2911,73 +2906,6 @@ IN_PROC_BROWSER_TEST_F(OopifPdfPluginContextMenuBrowserTest,
 // launches.
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
     PdfPluginContextMenuBrowserTestWithOopifOverride);
-
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-class PdfOcrContextMenuBrowserTest
-    : public PdfPluginContextMenuBrowserTest,
-      public ::testing::WithParamInterface<std::tuple<int, bool>> {
- public:
-  PdfOcrContextMenuBrowserTest() {
-    if (IsPdfOcrEnabled()) {
-      scoped_feature_list_.InitAndEnableFeature(features::kPdfOcr);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(features::kPdfOcr);
-    }
-    accessibility_state_utils::OverrideIsScreenReaderEnabledForTesting(
-        IsScreenReaderEnabled());
-    if (IsComponentReady()) {
-      screen_ai::PdfOcrControllerFactory::GetForProfile(browser()->profile())
-          ->set_ocr_ready_for_testing();
-    }
-  }
-
-  PdfOcrContextMenuBrowserTest(const PdfOcrContextMenuBrowserTest&) = delete;
-  PdfOcrContextMenuBrowserTest& operator=(const PdfOcrContextMenuBrowserTest&) =
-      delete;
-
-  ~PdfOcrContextMenuBrowserTest() override = default;
-
-  int ocr_params() { return std::get<0>(GetParam()); }
-
-  bool UseOopif() const override { return std::get<1>(GetParam()); }
-
-  bool IsScreenReaderEnabled() { return ocr_params() & 1; }
-
-  bool IsPdfOcrEnabled() { return ocr_params() & 2; }
-
-  bool IsComponentReady() { return ocr_params() & 4; }
-
-  void SetUpOnMainThread() override {
-    PdfPluginContextMenuBrowserTest::SetUpOnMainThread();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// TODO(crbug.com/40267312): Re-enable this test.
-IN_PROC_BROWSER_TEST_P(PdfOcrContextMenuBrowserTest, DISABLED_PdfOcr) {
-  std::unique_ptr<TestRenderViewContextMenu> menu = SetupAndCreateMenu();
-  ASSERT_TRUE(menu);
-  ASSERT_EQ(menu->IsItemPresent(IDC_CONTENT_CONTEXT_PDF_OCR),
-            IsPdfOcrEnabled() && IsScreenReaderEnabled() && IsComponentReady());
-}
-
-struct PdfOcrContextMenuBrowserTestPassToString {
-  std::string operator()(
-      const ::testing::TestParamInfo<std::tuple<int, bool>>& i) const {
-    return (std::get<1>(i.param) ? "OOPIF_" : "GUESTVIEW_") +
-           base::NumberToString(std::get<0>(i.param));
-  }
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         PdfOcrContextMenuBrowserTest,
-                         ::testing::Combine(::testing::Range(0, 8),
-                                            ::testing::Bool()),
-                         PdfOcrContextMenuBrowserTestPassToString());
-
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 #endif  // BUILDFLAG(ENABLE_PDF)
 

@@ -62,9 +62,6 @@ class Profile;
 class ReadWriteCardObserver;
 class SpellingMenuObserver;
 class SpellingOptionsSubMenuObserver;
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-class PdfOcrMenuObserver;
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 namespace content {
 class RenderFrameHost;
@@ -138,7 +135,6 @@ class RenderViewContextMenu
   void ExecuteCommand(int command_id, int event_flags) override;
   void AddSpellCheckServiceItem(bool is_checked) override;
   void AddAccessibilityLabelsServiceItem(bool is_checked) override;
-  void AddPdfOcrMenuItem() override;
 
   // Registers a one-time callback that will be called the next time a context
   // menu is shown.
@@ -306,7 +302,6 @@ class RenderViewContextMenu
   // cases, e.g. these are only appended if a screen reader is enabled.
   bool AppendAccessibilityLabelsItems();
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  void AppendPdfOcrItems();
   void AppendLayoutExtractionItem();
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   void AppendSearchProvider();
@@ -487,12 +482,6 @@ class RenderViewContextMenu
   std::unique_ptr<AccessibilityLabelsMenuObserver>
       accessibility_labels_menu_observer_;
   ui::SimpleMenuModel accessibility_labels_submenu_model_;
-
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  // An observer that handles PDF OCR items.
-  std::unique_ptr<PdfOcrMenuObserver> pdf_ocr_submenu_model_observer_;
-  std::unique_ptr<ui::SimpleMenuModel> pdf_ocr_submenu_model_;
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 #if !BUILDFLAG(IS_MAC)
   // An observer that handles the submenu for showing spelling options. This

@@ -70,7 +70,6 @@
 #include "chrome/browser/renderer_context_menu/accessibility_labels_menu_observer.h"
 #include "chrome/browser/renderer_context_menu/context_menu_content_type_factory.h"
 #include "chrome/browser/renderer_context_menu/link_to_text_menu_observer.h"
-#include "chrome/browser/renderer_context_menu/pdf_ocr_menu_observer.h"
 #include "chrome/browser/renderer_context_menu/spelling_menu_observer.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -499,7 +498,7 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
        {IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE, 123},
        // Removed: {IDC_CONTENT_CONTEXT_ADD_A_NOTE, 124},
        {IDC_LIVE_CAPTION, 125},
-       {IDC_CONTENT_CONTEXT_PDF_OCR, 126},
+       // Removed: {IDC_CONTENT_CONTEXT_PDF_OCR, 126},
        // Removed: {IDC_CONTENT_CONTEXT_PDF_OCR_ALWAYS, 127},
        // Removed: {IDC_CONTENT_CONTEXT_PDF_OCR_ONCE, 128},
        {IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK, 129},
@@ -882,9 +881,6 @@ RenderViewContextMenu::RenderViewContextMenu(
                     ? GetBrowser()->app_controller()->system_app()
                     : nullptr;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  pdf_ocr_submenu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
   observers_.AddObserver(&autofill_context_menu_manager_);
 }
@@ -1260,12 +1256,6 @@ void RenderViewContextMenu::InitMenu() {
   }
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  if (accessibility_state_utils::IsScreenReaderEnabled() &&
-      features::IsPdfOcrEnabled() && IsFrameInPdfViewer(GetRenderFrameHost())) {
-    AppendPdfOcrItems();
-    VLOG(2) << "Appended PDF OCR Items";
-  }
-
   if (features::IsLayoutExtractionEnabled()) {
     AppendLayoutExtractionItem();
     VLOG(2) << "Appended Layout Extraction Item";
@@ -2337,16 +2327,6 @@ void RenderViewContextMenu::AppendReadingModeItem() {
 }
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-void RenderViewContextMenu::AppendPdfOcrItems() {
-  menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
-  if (!pdf_ocr_submenu_model_observer_) {
-    pdf_ocr_submenu_model_observer_ =
-        std::make_unique<PdfOcrMenuObserver>(this);
-  }
-  observers_.AddObserver(pdf_ocr_submenu_model_observer_.get());
-  pdf_ocr_submenu_model_observer_->InitMenu(params_);
-}
-
 void RenderViewContextMenu::AppendLayoutExtractionItem() {
   menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
   menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_RUN_LAYOUT_EXTRACTION,
@@ -3601,16 +3581,6 @@ void RenderViewContextMenu::AddAccessibilityLabelsServiceItem(bool is_checked) {
             IDS_CONTENT_CONTEXT_ACCESSIBILITY_LABELS_MENU_OPTION),
         &accessibility_labels_submenu_model_);
   }
-}
-
-void RenderViewContextMenu::AddPdfOcrMenuItem() {
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  // Add an item to the context menu. Its check state will be determined by
-  // whether PDF OCR is on. If on, it will be checked; otherwise, unchecked.
-  menu_model_.AddCheckItem(
-      IDC_CONTENT_CONTEXT_PDF_OCR,
-      l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_PDF_OCR_MENU_OPTION));
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 }
 
 // static

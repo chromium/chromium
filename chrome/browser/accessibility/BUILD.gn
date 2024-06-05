@@ -51,6 +51,7 @@ source_set("utils") {
     "//chrome/browser/profiles",
     "//chrome/common",
     "//components/prefs",
+    "//services/screen_ai/buildflags",
   ]
 
   if (is_chromeos_ash) {

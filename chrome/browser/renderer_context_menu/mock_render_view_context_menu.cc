@@ -236,14 +236,6 @@ void MockRenderViewContextMenu::AddAccessibilityLabelsServiceItem(
   }
 }
 
-void MockRenderViewContextMenu::AddPdfOcrMenuItem() {
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  AddCheckItem(
-      IDC_CONTENT_CONTEXT_PDF_OCR,
-      l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_PDF_OCR_MENU_OPTION));
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-}
-
 content::RenderFrameHost* MockRenderViewContextMenu::GetRenderFrameHost()
     const {
   return nullptr;

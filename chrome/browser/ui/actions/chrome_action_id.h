@@ -467,10 +467,6 @@
   /* Screen AI layout extraction. */ \
   E(kActionContentContextRunLayoutExtraction, \
     IDC_CONTENT_CONTEXT_RUN_LAYOUT_EXTRACTION) \
-  /* PDF OCR */ \
-  E(kActionContentContextPdfOcr, IDC_CONTENT_CONTEXT_PDF_OCR) \
-  E(kActionContentContextPdfOcrAlways, IDC_CONTENT_CONTEXT_PDF_OCR_ALWAYS) \
-  E(kActionContentContextPdfOcrOnce, IDC_CONTENT_CONTEXT_PDF_OCR_ONCE) \
   /* Tab Search */ \
   E(kActionTabSearch, IDC_TAB_SEARCH) \
   E(kActionTabSearchClose, IDC_TAB_SEARCH_CLOSE) \
