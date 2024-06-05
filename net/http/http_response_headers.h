@@ -308,6 +308,10 @@ class NET_EXPORT HttpResponseHeaders
   // header.
   bool HasStorageAccessRetryHeader() const;
 
+  // Returns true if this response included the `Activate-Storage-Access: load`
+  // header.
+  bool HasStorageAccessLoadHeader() const;
+
   // Returns true if the HTTP response code passed in corresponds to a
   // redirect.
   static bool IsRedirectResponseCode(int response_code);

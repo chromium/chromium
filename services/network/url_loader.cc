@@ -1431,6 +1431,9 @@ mojom::URLResponseHeadPtr URLLoader::BuildResponseHead() const {
   response->client_address_space =
       private_network_access_checker_.ClientAddressSpace();
 
+  response->load_with_storage_access =
+      url_request_->ShouldSetLoadWithStorageAccess();
+
   return response;
 }
 

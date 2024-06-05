@@ -18,6 +18,7 @@
 #include "base/types/pass_key.h"
 #include "base/values.h"
 #include "net/base/auth.h"
+#include "net/base/features.h"
 #include "net/base/io_buffer.h"
 #include "net/base/load_flags.h"
 #include "net/base/load_timing_info.h"
@@ -1296,6 +1297,15 @@ void URLRequest::set_socket_tag(const SocketTag& socket_tag) {
   DCHECK(!is_pending_);
   DCHECK(url().SchemeIsHTTPOrHTTPS());
   socket_tag_ = socket_tag;
+}
+
+bool URLRequest::ShouldSetLoadWithStorageAccess() const {
+  // TODO(https://crbug.com/344608182): this should probably only return true if
+  // the Storage-Access state is "inactive" or "active"/allowed. For now, this
+  // is fine because this is only used to set the renderer's bool, which is
+  // untrusted anyway.
+  return base::FeatureList::IsEnabled(features::kStorageAccessHeaderLoad) &&
+         response_headers() && response_headers()->HasStorageAccessLoadHeader();
 }
 
 base::WeakPtr<URLRequest> URLRequest::GetWeakPtr() {

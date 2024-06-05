@@ -65,6 +65,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_response_info.h"
+#include "net/http/http_status_code.h"
 #include "net/http/http_transaction_test_util.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/test_net_log.h"
@@ -4932,6 +4933,75 @@ TEST_F(URLLoaderTest, AllowAllCookies) {
   EXPECT_TRUE(url_loader->AllowCookie(*cc, first_party_url, site_for_cookies));
   EXPECT_TRUE(url_loader->AllowFullCookies(first_party_url, site_for_cookies));
   EXPECT_TRUE(url_loader->AllowFullCookies(third_party_url, site_for_cookies));
+}
+
+class StorageAccessHeaderURLLoaderTest : public URLLoaderTest {
+ public:
+  StorageAccessHeaderURLLoaderTest() {
+    features_.InitAndEnableFeature(net::features::kStorageAccessHeaderLoad);
+  }
+
+ protected:
+  static constexpr char kStorageAccessRedirectLoadPath[] =
+      "/redirect-load-with-storage-access";
+
+ private:
+  std::unique_ptr<net::test_server::HttpResponse>
+  HandleLoadWithStorageAccessRequest(
+      const net::test_server::HttpRequest& request) {
+    if (!base::StartsWith(request.GetURL().path(),
+                          kStorageAccessRedirectLoadPath)) {
+      return nullptr;
+    }
+    auto http_response =
+        std::make_unique<net::test_server::BasicHttpResponse>();
+    http_response->set_content_type("text/plain");
+    http_response->AddCustomHeader("Activate-Storage-Access", "load");
+    http_response->set_code(net::HTTP_PERMANENT_REDIRECT);
+    http_response->AddCustomHeader("Location", "/empty.html");
+    return http_response;
+  }
+  base::test::ScopedFeatureList features_;
+};
+
+TEST_F(StorageAccessHeaderURLLoaderTest, StorageAccessHeader_Load) {
+  base::RunLoop delete_run_loop;
+  ResourceRequest request = CreateResourceRequest(
+      "GET", test_server_.GetURL("/set-header?Activate-Storage-Access: load"));
+
+  mojo::PendingRemote<mojom::URLLoader> loader;
+  std::unique_ptr<URLLoader> url_loader;
+  context().mutable_factory_params().process_id = mojom::kBrowserProcessId;
+  url_loader = URLLoaderOptions().MakeURLLoader(
+      context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
+      loader.InitWithNewPipeAndPassReceiver(), request,
+      client()->CreateRemote());
+
+  client()->RunUntilComplete();
+  delete_run_loop.Run();
+
+  EXPECT_TRUE(client()->response_head()->load_with_storage_access);
+}
+
+TEST_F(StorageAccessHeaderURLLoaderTest, StorageAccessHeader_RedirectWithLoad) {
+  base::RunLoop delete_run_loop;
+  ResourceRequest request = CreateResourceRequest(
+      "GET", test_server_.GetURL(kStorageAccessRedirectLoadPath));
+
+  mojo::PendingRemote<mojom::URLLoader> loader;
+  std::unique_ptr<URLLoader> url_loader;
+  context().mutable_factory_params().process_id = mojom::kBrowserProcessId;
+  url_loader = URLLoaderOptions().MakeURLLoader(
+      context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
+      loader.InitWithNewPipeAndPassReceiver(), request,
+      client()->CreateRemote());
+
+  client()->RunUntilComplete();
+  delete_run_loop.Run();
+
+  // The redirect response included the `load` header, but the final response
+  // did not, so the URLLoader should not propagate it.
+  EXPECT_FALSE(client()->response_head()->load_with_storage_access);
 }
 
 class URLLoaderCookieSettingOverridesTest

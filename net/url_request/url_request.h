@@ -847,6 +847,10 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   }
   bool has_storage_access() const { return has_storage_access_; }
 
+  // Returns true if the corresponding `URLResponseHead`'s
+  // `load_with_storage_access` field should be set.
+  bool ShouldSetLoadWithStorageAccess() const;
+
   static bool DefaultCanUseCookies();
 
   base::WeakPtr<URLRequest> GetWeakPtr();

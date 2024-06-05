@@ -1149,6 +1149,44 @@ bool MaybeEvictFromBackForwardCacheBySubframeNavigation(
   return false;
 }
 
+bool ShouldLoadWithStorageAccess(
+    const blink::mojom::BeginNavigationParams& begin_params,
+    const blink::mojom::CommonNavigationParams& common_params,
+    const RenderFrameHostImpl* previous_document_rfh,
+    bool did_encounter_cross_origin_redirect,
+    const GURL response_url,
+    const network::mojom::URLResponseHead* response) {
+  // Experimental: Storage Access API Headers
+  // (https://github.com/cfredric/storage-access-headers)
+  //
+  // A server can opt-in to provide storage access to a document by setting the
+  // `Activate-Storage-Access: load` header, provided that the user has already
+  // granted the relevant `storage-access` permission.
+  //
+  // Note: As of today, `about:blank`, `about:srcdoc`, and MHTML-iframe do not
+  // have a response.
+  if (response && response->load_with_storage_access) {
+    return true;
+  }
+
+  // Storage Access API: https://privacycg.github.io/storage-access/#navigation
+  //
+  // If a document has storage access, and initiates a navigation in the same
+  // frame toward a document from the same origin, the `has storage access` bit
+  // is inherited.
+  //
+  // This doesn't hold if there is a cross-origin redirect in between.
+  //
+  // Note: `begin_params` and `common_params` are not trusted, so we have to
+  // check the frame token.
+  return begin_params.has_storage_access && common_params.initiator_origin &&
+         common_params.initiator_origin->IsSameOriginWith(response_url) &&
+         begin_params.initiator_frame_token &&
+         begin_params.initiator_frame_token ==
+             previous_document_rfh->GetFrameToken() &&
+         !did_encounter_cross_origin_redirect;
+}
+
 }  // namespace
 
 NavigationRequest::PrerenderActivationNavigationState::
@@ -1300,14 +1338,6 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
   common_params->request_destination =
       GetDestinationFromFrameTreeNode(frame_tree_node);
 
-  const bool load_with_storage_access =
-      begin_params->has_storage_access &&
-      common_params->initiator_origin.has_value() &&
-      common_params->initiator_origin->IsSameOriginWith(common_params->url) &&
-      begin_params->initiator_frame_token.has_value() &&
-      begin_params->initiator_frame_token ==
-          frame_tree_node->current_frame_host()->GetFrameToken();
-
   // TODO(clamy): See if the navigation start time should be measured in the
   // renderer and sent to the browser instead of being measured here.
   blink::mojom::CommitNavigationParamsPtr commit_params =
@@ -1369,7 +1399,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
           base::flat_map<::blink::mojom::RuntimeFeature, bool>(),
           /*fenced_frame_properties=*/std::nullopt,
           /*not_restored_reasons=*/nullptr,
-          /*load_with_storage_access=*/load_with_storage_access,
+          /*load_with_storage_access=*/false,
           /*browsing_context_group_info=*/std::nullopt,
           /*lcpp_hint=*/nullptr, blink::CreateDefaultRendererContentSettings(),
           /*cookie_deprecation_label=*/std::nullopt,
@@ -3385,9 +3415,6 @@ void NavigationRequest::OnRequestRedirected(
 
   did_receive_early_hints_before_cross_origin_redirect_ |=
       did_create_early_hints_manager_params_ && !is_same_origin_redirect;
-
-  commit_params_->load_with_storage_access =
-      commit_params_->load_with_storage_access && is_same_origin_redirect;
 
   commit_params_->redirects.push_back(common_params_->url);
   common_params_->url = redirect_info.new_url;
@@ -6153,6 +6180,10 @@ void NavigationRequest::CommitNavigation() {
     commit_params_->fenced_frame_properties =
         computed_fenced_frame_properties->RedactFor(entity);
   }
+
+  commit_params_->load_with_storage_access = ShouldLoadWithStorageAccess(
+      begin_params(), common_params(), frame_tree_node()->current_frame_host(),
+      did_encounter_cross_origin_redirect(), GetURL(), response());
 
   auto common_params = common_params_->Clone();
   auto commit_params = commit_params_.Clone();

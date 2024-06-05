@@ -2800,6 +2800,7 @@ class StorageAccessHeadersBrowserTest : public StorageAccessAPIBrowserTest {
   std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
     return {
         {net::features::kStorageAccessHeaderRetry, {}},
+        {net::features::kStorageAccessHeaderLoad, {}},
     };
   }
 };
@@ -2853,6 +2854,38 @@ IN_PROC_BROWSER_TEST_F(StorageAccessHeadersBrowserTest,
   EXPECT_EQ(CookiesFromFetch(GetFrame(), kHostA, kRetryPath),
             "cross-site=a.test");
   EXPECT_EQ(retry_path_fetch_count_, 2);
+}
+
+IN_PROC_BROWSER_TEST_F(StorageAccessHeadersBrowserTest, LoadHeader) {
+  SetBlockThirdPartyCookies(true);
+
+  // Pre-seed with a <A, B> permission grant.
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(EchoCookiesURL(kHostB));
+  prompt_factory()->set_response_type(
+      permissions::PermissionRequestManager::ACCEPT_ALL);
+  ASSERT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
+
+  // Now attempt to use that permission grant for a cross-site iframe, without
+  // invoking the Storage Access API.
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(GetURL(kHostB, "/set-header?Activate-Storage-Access: load"));
+  // No need to request storage access, because we already have it.
+  EXPECT_TRUE(storage::test::HasStorageAccessForFrame(GetFrame()));
+}
+
+IN_PROC_BROWSER_TEST_F(StorageAccessHeadersBrowserTest,
+                       LoadHeader_NoopWithoutGrant) {
+  SetBlockThirdPartyCookies(true);
+
+  // Note: we do *not* pre-seed with a <A, B> permission grant.
+
+  // Now attempt to get storage access in a cross-site iframe, without invoking
+  // the Storage Access API.
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(GetURL(kHostB, "/set-header?Activate-Storage-Access: load"));
+  // Permission was never granted, so we don't have storage access.
+  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
 }
 
 class StorageAccessHeadersWithThirdPartyCookiesBrowserTest

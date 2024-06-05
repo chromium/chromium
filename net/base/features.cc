@@ -544,6 +544,9 @@ BASE_FEATURE(kPartitionProxyChains,
 BASE_FEATURE(kStorageAccessHeaderRetry,
              "StorageAccessHeaderRetry",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kStorageAccessHeaderLoad,
+             "StorageAccessHeaderLoad",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSpdySessionForProxyAdditionalChecks,
              "SpdySessionForProxyAdditionalChecks",

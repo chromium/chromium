@@ -110,6 +110,8 @@ const char* const kNonUpdatedHeaderPrefixes[] = {
   "x-webkit-"
 };
 
+constexpr char kActivateStorageAccessHeader[] = "activate-storage-access";
+
 bool ShouldUpdateHeader(std::string_view name) {
   for (const auto* header : kNonUpdatedHeaders) {
     if (base::EqualsCaseInsensitiveASCII(name, header))
@@ -1094,7 +1096,11 @@ bool HttpResponseHeaders::IsRedirect(std::string* location) const {
 }
 
 bool HttpResponseHeaders::HasStorageAccessRetryHeader() const {
-  return HasHeaderValue("Activate-Storage-Access", "retry");
+  return HasHeaderValue(kActivateStorageAccessHeader, "retry");
+}
+
+bool HttpResponseHeaders::HasStorageAccessLoadHeader() const {
+  return HasHeaderValue(kActivateStorageAccessHeader, "load");
 }
 
 // static
