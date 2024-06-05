@@ -931,6 +931,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_CONFIRM_PASSWORD_DELETION" desc="Label of a confirmation dialogue button which allows the user to confirm deletion of a stored password. [Length: one line] [iOS only]">
         Delete Password
       </message>
+      <message name="IDS_IOS_CONFIRM_PASSKEY_DELETION" desc="Label of a confirmation dialogue button which allows the user to confirm deletion of a stored passkey. [Length: one line] [iOS only]">
+        Delete Passkey
+      </message>
       <message name="IDS_IOS_CONFIRM_PASSWORD_EDIT" desc="Confirm button inside confirmation alert when the user is trying to edit password [iOS only]" meaning="Save edited password">
         Save Password
       </message>
@@ -4708,6 +4711,15 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_SHOW_PASSWORD_VIEW_USERNAME" desc="Label indicating that the text displayed below is the username to which a saved password corresponds. The password is displayed in the same view, but under a different label. [Length: 20em] [iOS only]">
         Username
+      </message>
+      <message name="IDS_IOS_SHOW_PASSKEY_DISPLAY_NAME" desc="Label indicating that the text displayed below is the display name (usually a legal name, as opposed to username, which is usually an email address) to which a saved passkey corresponds. [Length: 20em] [iOS only]">
+        Display Name
+      </message>
+      <message name="IDS_IOS_SHOW_PASSKEY_CREATION_DATE" desc="Label indicating that the text displayed below is the date at which the passkey was created. [Length: 20em] [iOS only]">
+        Passkey
+      </message>
+      <message name="IDS_IOS_PASSKEY_CREATION_DATE" desc="Passkey creation date. [iOS only]">
+        Created on <ph name="Date"><ex>2023/12/31</ex>$1</ph>
       </message>
       <message name="IDS_IOS_SIGNIN_ACCOUNT_NOTIFICATION_TITLE_WITH_USERNAME" desc="Notification title for the user's signed-in state that includes the user's full name [iOS only]">
       Signed in as <ph name="USER">$1<ex>Jane Doe</ex></ph>
