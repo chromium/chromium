@@ -23955,6 +23955,14 @@ should be able to be added at any place in this file.
   <description>Reported when Settings UI was dismissed. iOS only.</description>
 </action>
 
+<action name="MobileSettingsEnhancedSafeBrowsingInlinePromoDismiss">
+  <owner>danieltwhite@google.com</owner>
+  <owner>ajuma@google.com</owner>
+  <description>
+    User clicked the Enhanced Safe Browsing inline promo's dismiss button.
+  </description>
+</action>
+
 <action name="MobileSettingsStorageClearAll">
   <owner>dmurph@chromium.org</owner>
   <description>

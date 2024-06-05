@@ -2613,6 +2613,8 @@ UIImage* GetBrandedGoogleServicesSymbol() {
       feature_engagement::TrackerFactory::GetForBrowserState(_browserState);
   tracker->Dismissed(
       feature_engagement::kIPHiOSInlineEnhancedSafeBrowsingPromoFeature);
+  base::RecordAction(base::UserMetricsAction(
+      "MobileSettingsEnhancedSafeBrowsingInlinePromoDismiss"));
 }
 
 - (void)showSafeBrowsingSettingsMenu {
