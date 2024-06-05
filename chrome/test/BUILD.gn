@@ -3062,6 +3062,7 @@ if (!is_android) {
 
     if (enable_screen_ai_service) {
       sources += [
+        "../browser/accessibility/ax_main_node_annotator_controller_browsertest.cc",
         "../browser/accessibility/ax_screen_ai_annotator.cc",
         "../browser/accessibility/ax_screen_ai_annotator.h",
         "../browser/accessibility/pdf_ocr_controller_browsertest.cc",

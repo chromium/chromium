@@ -66,14 +66,15 @@ void AXMainNodeAnnotator::Annotate(const WebDocument& document,
       node.role = ax::mojom::Role::kMain;
       return;
     }
+    // If the main node was set, even if if is not found in the tree anymore,
+    // do nothing.
+    // TODO: Consider whether we should call Screen2x again.
+    return;
   }
 
   if (!load_complete || !annotator_remote_.is_bound()) {
     return;
   }
-  // TODO: This is called several times in a row as the page loads content
-  // asynchronously. We should call this once, when the page reaches a stable
-  // condition.
   annotator_remote_->ExtractMainNode(
       *update, base::BindOnce(&AXMainNodeAnnotator::ProcessScreen2xResult,
                               weak_ptr_factory_.GetWeakPtr(), document));
@@ -81,12 +82,20 @@ void AXMainNodeAnnotator::Annotate(const WebDocument& document,
 
 void AXMainNodeAnnotator::ProcessScreen2xResult(const WebDocument& document,
                                                 ui::AXNodeID main_node_id) {
-  main_node_id_ = main_node_id;
-  if (main_node_id_ == ui::kInvalidAXNodeID) {
+  // If Screen2x returned an invalid main node id, do nothing.
+  if (main_node_id == ui::kInvalidAXNodeID) {
     return;
   }
-  WebAXObject object =
-      WebAXObject::FromWebDocumentByID(document, main_node_id_);
+  // If the main node id was already set, do nothing.
+  if (main_node_id_ != ui::kInvalidAXNodeID) {
+    return;
+  }
+  WebAXObject object = WebAXObject::FromWebDocumentByID(document, main_node_id);
+  // If the tree has changed, do nothing.
+  if (!object.IsIncludedInTree()) {
+    return;
+  }
+  main_node_id_ = main_node_id;
   render_accessibility_->MarkWebAXObjectDirty(object);
 }
 

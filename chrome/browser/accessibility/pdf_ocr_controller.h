@@ -86,9 +86,6 @@ class PdfOcrController : public KeyedService
   // Handles a change to the activation state.
   void OnActivationChanged();
 
-  // Sends Pdf Ocr Always Active state to all relevant WebContents.
-  void SendPdfOcrAlwaysActiveToAll(bool is_always_active);
-
   // Sends an initialization request to ScreenAIServiceRouter if one is not
   // pending.
   void InitializeService();

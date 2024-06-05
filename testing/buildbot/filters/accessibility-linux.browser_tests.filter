@@ -7,6 +7,7 @@
 # opposite of the situation when --force-renderer-accessibility is used.
 -AccessibilityLabelsBrowserTest.NotEnabledWithoutScreenReader
 -All/PdfOcrControllerBrowserTest.NotEnabledWithoutScreenReader/0
+-AXMainNodeAnnotatorControllerBrowserTest.NotEnabledWithoutScreenReader
 
 # These tests still need to be triaged and either okayed to skip or fixed.
 -AdsInterventionManagerTestWithEnforcement.AdsInterventionEnforced_PageActivated

@@ -240,6 +240,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#include "chrome/browser/accessibility/ax_main_node_annotator_controller_factory.h"
 #include "chrome/browser/accessibility/pdf_ocr_controller_factory.h"
 #include "ui/accessibility/accessibility_features.h"
 #endif
@@ -866,6 +867,9 @@ void ProfileImpl::DoFinalInit(CreateMode create_mode) {
   if (features::IsPdfOcrEnabled()) {
     // Create the PDF OCR controller so that it can self-activate as needed.
     screen_ai::PdfOcrControllerFactory::GetForProfile(this);
+  }
+  if (features::IsMainNodeAnnotationsEnabled()) {
+    screen_ai::AXMainNodeAnnotatorControllerFactory::GetForProfile(this);
   }
 #endif
 
