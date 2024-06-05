@@ -289,7 +289,7 @@ BASE_FEATURE(kJavaScriptRegExpDuplicateNamedGroups,
 // Enable WebAssembly inlining (not user visible).
 BASE_FEATURE(kWebAssemblyInlining,
              "WebAssemblyInlining",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable WebAssembly code flushing.
 BASE_FEATURE(kWebAssemblyLiftoffCodeFlushing,
