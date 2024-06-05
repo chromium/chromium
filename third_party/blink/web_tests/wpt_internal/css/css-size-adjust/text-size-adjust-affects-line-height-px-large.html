@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<meta content="width=device-width,initial-scale=1.0,minimum-scale=1.0" name="viewport">
+<meta name="assert" content="text-size-adjust should affect line-height specified in px with large values.">
+<link rel="help" href="https://drafts.csswg.org/css-size-adjust/#propdef-text-size-adjust">
+<script src='/resources/testharness.js'></script>
+<script src='/resources/testharnessreport.js'></script>
+<script>
+  function runTest() {
+    // This should not be needed but is required to work around a bug in
+    // Chrome's old autosizer due to computed style being updated during layout.
+    // TODO(pdr): Remove this when b/340389272 launches.
+    const forceLayout = document.body.offsetHeight;
+
+    test(() => {
+      assert_equals(getComputedStyle(test_50)['line-height'], '75px');
+    }, 'Resolved line-height with specified 50px line-height and text-size-adjust: 150%');
+
+    test(() => {
+      assert_equals(test_50.getBoundingClientRect().height, 75);
+    }, 'Actual line-height with specified 50px line-height and text-size-adjust: 150%');
+  }
+</script>
+<body onload="runTest()">
+  <div id="test_50" style="line-height: 50px; text-size-adjust: 150%;">test</div>
+</body>

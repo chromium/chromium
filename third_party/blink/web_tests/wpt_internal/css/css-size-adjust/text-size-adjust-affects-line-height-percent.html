@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<meta content="width=device-width,initial-scale=1.0,minimum-scale=1.0" name="viewport">
+<meta name="assert" content="text-size-adjust should affect line-height specified in percent.">
+<link rel="help" href="https://drafts.csswg.org/css-size-adjust/#propdef-text-size-adjust">
+<script src='/resources/testharness.js'></script>
+<script src='/resources/testharnessreport.js'></script>
+<script>
+  function runTest() {
+    // This should not be needed but is required to work around a bug in
+    // Chrome's old autosizer due to computed style being updated during layout.
+    // TODO(pdr): Remove this when b/340389272 launches.
+    const forceLayout = document.body.offsetHeight;
+
+    test(() => {
+      // 100% = 16px font-size, and 16px * 150% = 24px
+      assert_equals(getComputedStyle(test_100)['line-height'], '24px');
+    }, 'Resolved line-height with specified 100% line-height and text-size-adjust: 150%');
+
+    test(() => {
+      assert_equals(test_100.getBoundingClientRect().height, 24);
+    }, 'Actual line-height with specified 100% line-height and text-size-adjust: 150%');
+
+    test(() => {
+      // 75% = 12px font-size, and 12px * 150% = 18px
+      assert_equals(getComputedStyle(test_75)['line-height'], '18px');
+    }, 'Resolved line-height with specified 75% line-height and text-size-adjust: 150%');
+
+    test(() => {
+      assert_equals(test_75.getBoundingClientRect().height, 18);
+    }, 'Actual line-height with specified 75% line-height and text-size-adjust: 150%');
+  }
+</script>
+<body onload="runTest()">
+  <div id="test_100" style="line-height: 100%; text-size-adjust: 150%;">test</div>
+  <div id="test_75" style="line-height: 75%; text-size-adjust: 150%;">test</div>
+</body>

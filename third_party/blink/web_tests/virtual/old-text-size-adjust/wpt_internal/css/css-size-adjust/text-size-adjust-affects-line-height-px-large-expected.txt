@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Resolved line-height with specified 50px line-height and text-size-adjust: 150%
+  assert_equals: expected "75px" but got "50px"
+[FAIL] Actual line-height with specified 50px line-height and text-size-adjust: 150%
+  assert_equals: expected 75 but got 50
+Harness: the test ran to completion.
+

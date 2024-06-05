@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<meta content="width=device-width,initial-scale=1.0,minimum-scale=1.0" name="viewport">
+<meta name="assert" content="text-size-adjust should affect line-height specified in em.">
+<link rel="help" href="https://drafts.csswg.org/css-size-adjust/#propdef-text-size-adjust">
+<script src='/resources/testharness.js'></script>
+<script src='/resources/testharnessreport.js'></script>
+<script>
+  function runTest() {
+    // This should not be needed but is required to work around a bug in
+    // Chrome's old autosizer due to computed style being updated during layout.
+    // TODO(pdr): Remove this when b/340389272 launches.
+    const forceLayout = document.body.offsetHeight;
+
+    test(() => {
+      // 1em = 16px font size, and 16px * 150% = 24px
+      assert_equals(getComputedStyle(lh_1)['line-height'], '24px');
+    }, 'Resolved line-height with specified 1em line-height and text-size-adjust: 150%');
+
+    test(() => {
+      assert_equals(lh_1.getBoundingClientRect().height, 24);
+    }, 'Actual line-height with specified 1em line-height and text-size-adjust: 150%');
+
+    test(() => {
+      // 0.75em = 12px font size, and 12px * 150% = 18px
+      assert_equals(getComputedStyle(lh_075)['line-height'], '18px');
+    }, 'Resolved line-height with specified 0.75em line-height and text-size-adjust: 150%');
+
+    test(() => {
+      assert_equals(lh_075.getBoundingClientRect().height, 18);
+    }, 'Actual line-height with specified 0.75em line-height and text-size-adjust: 150%');
+
+    test(() => {
+      // 1em = 16px font size, and 16px * 150% = 24px
+      assert_equals(getComputedStyle(lh_1_with_fs_16)['line-height'], '24px');
+    }, 'Resolved line-height with specified 1em line-height, 16px font-size, and text-size-adjust: 150%');
+
+    test(() => {
+      assert_equals(lh_1_with_fs_16.getBoundingClientRect().height, 24);
+    }, 'Actual line-height with specified 1em line-height, 16px font-size, and text-size-adjust: 150%');
+
+    test(() => {
+      // 0.75em = 12px font size, and 12px * 150% = 18px
+      assert_equals(getComputedStyle(lh_075_with_fs_16)['line-height'], '18px');
+    }, 'Resolved line-height with specified 0.75em line-height, 16px font-size, and text-size-adjust: 150%');
+
+    test(() => {
+      assert_equals(lh_075_with_fs_16.getBoundingClientRect().height, 18);
+    }, 'Actual line-height with specified 0.75em line-height, 16px font-size, and text-size-adjust: 150%');
+
+    test(() => {
+      // 1em = 8px font size, and 8px * 150% = 12px
+      assert_equals(getComputedStyle(lh_1_with_fs_8)['line-height'], '12px');
+    }, 'Resolved line-height with specified 1em line-height, 8px font-size, and text-size-adjust: 150%');
+
+    test(() => {
+      assert_equals(lh_1_with_fs_8.getBoundingClientRect().height, 12);
+    }, 'Actual line-height with specified 1em line-height, 8px font-size, and text-size-adjust: 150%');
+
+    test(() => {
+      // 0.75em = 6px font size, and 6px * 150% = 9px
+      assert_equals(getComputedStyle(lh_075_with_fs_8)['line-height'], '9px');
+    }, 'Resolved line-height with specified 0.75em line-height, 8px font-size, and text-size-adjust: 150%');
+
+    test(() => {
+      assert_equals(lh_075_with_fs_8.getBoundingClientRect().height, 9);
+    }, 'Actual line-height with specified 0.75em line-height, 8px font-size, and text-size-adjust: 150%');
+  }
+</script>
+<body onload="runTest()">
+  <div id="lh_1" style="line-height: 1em; text-size-adjust: 150%;">test</div>
+  <div id="lh_075" style="line-height: 0.75em; text-size-adjust: 150%;">test</div>
+  <div id="lh_1_with_fs_16" style="line-height: 1em; font-size: 16px; text-size-adjust: 150%;">test</div>
+  <div id="lh_075_with_fs_16" style="line-height: 0.75em; font-size: 16px; text-size-adjust: 150%;">test</div>
+  <div id="lh_1_with_fs_8" style="line-height: 1em; font-size: 8px; text-size-adjust: 150%;">test</div>
+  <div id="lh_075_with_fs_8" style="line-height: 0.75em; font-size: 8px; text-size-adjust: 150%;">test</div>
+</body>
