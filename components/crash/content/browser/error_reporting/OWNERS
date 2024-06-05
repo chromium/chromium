@@ -1,4 +1,7 @@
 iby@chromium.org
+hirthanan@google.com
+andrewbregger@google.com
+eugenex@google.com
 
 # Backups. Explicitly copied from the parent OWNERS file so that
 # chrome/browser/error_reporting/OWNERS also sees them.
