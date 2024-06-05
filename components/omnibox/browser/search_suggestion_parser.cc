@@ -43,6 +43,7 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/omnibox_proto/entity_info.pb.h"
 #include "third_party/omnibox_proto/navigational_intent.pb.h"
+#include "third_party/omnibox_proto/rich_suggest_template.pb.h"
 #include "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/url_constants.h"
@@ -866,20 +867,40 @@ bool SearchSuggestionParser::ParseSuggestResults(
         const base::Value::Dict* answer_json =
             suggestion_detail.FindDict("ansa");
         const std::string* answer_type = suggestion_detail.FindString("ansb");
-        if (answer_json && answer_type) {
-          if (omnibox_feature_configs::SuggestionAnswerMigration::Get()
-                  .enabled &&
-              omnibox::answer_data_parser::ParseJsonToAnswerData(
-                  *answer_json, base::UTF8ToUTF16(*answer_type),
-                  &answer_template)) {
+        if (answer_type) {
+          // TemplateInfo should only exist if the server-side flag enabling
+          // its creation is enabled.
+          const auto* answer_template_string =
+              suggestion_detail.FindString("google:templateInfo");
+          bool template_parsed_successfully = false;
+          if (answer_template_string) {
+            omnibox::RichSuggestTemplate suggest_template;
+            template_parsed_successfully =
+                DecodeProtoFromBase64<omnibox::RichSuggestTemplate>(
+                    answer_template_string, suggest_template);
+            answer_template = suggest_template.rich_answer_template();
+            // TODO(327497146): Create histogram to log whether decoding was
+            // successful.
           }
-          if (SuggestionAnswer::ParseAnswer(
-                  *answer_json, base::UTF8ToUTF16(*answer_type), &answer)) {
-            base::UmaHistogramSparse("Omnibox.AnswerParseType", answer.type());
-            answer_parsed_successfully = true;
+          // Both RichAnswerTemplate and "ansa" may be found in the response for
+          // decoding safety. In the case that decoding the template is
+          // unsuccessful, fallback to JSON parsing.
+          if (!template_parsed_successfully && answer_json) {
+            if (omnibox_feature_configs::SuggestionAnswerMigration::Get()
+                    .enabled &&
+                omnibox::answer_data_parser::ParseJsonToAnswerData(
+                    *answer_json, base::UTF8ToUTF16(*answer_type),
+                    &answer_template)) {
+            } else if (SuggestionAnswer::ParseAnswer(
+                           *answer_json, base::UTF8ToUTF16(*answer_type),
+                           &answer)) {
+              base::UmaHistogramSparse("Omnibox.AnswerParseType",
+                                       answer.type());
+              answer_parsed_successfully = true;
+            }
+            UMA_HISTOGRAM_BOOLEAN("Omnibox.AnswerParseSuccess",
+                                  answer_parsed_successfully);
           }
-          UMA_HISTOGRAM_BOOLEAN("Omnibox.AnswerParseSuccess",
-                                answer_parsed_successfully);
         }
       }
 
