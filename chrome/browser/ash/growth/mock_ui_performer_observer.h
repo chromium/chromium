@@ -16,7 +16,7 @@ class MockUiPerformerObserver : public UiActionPerformer::Observer {
   // UiActionPerformer::Observer:
   MOCK_METHOD(void, OnReadyToLogImpression, (int), (override));
 
-  MOCK_METHOD(void, OnDismissed, (int), (override));
+  MOCK_METHOD(void, OnDismissed, (int, bool), (override));
 
   MOCK_METHOD(void, OnButtonPressed, (int, CampaignButtonId, bool), (override));
 };

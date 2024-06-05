@@ -25,7 +25,7 @@ class UiActionPerformer : public growth::ActionPerformer {
     // dismiss after some time.
     // TODO: b/330956316 - Log dismissal by reasons, e.g. the nudge is dismissed
     // automatically.
-    virtual void OnDismissed(int campaign_id) = 0;
+    virtual void OnDismissed(int campaign_id, bool should_mark_dismissed) = 0;
 
     // Trigger when the button in the UI (if exists) is pressed.
     virtual void OnButtonPressed(int campaign_id,
@@ -41,7 +41,7 @@ class UiActionPerformer : public growth::ActionPerformer {
 
  protected:
   void NotifyReadyToLogImpression(int campaign_id);
-  void NotifyDismissed(int campaign_id);
+  void NotifyDismissed(int campaign_id, bool should_mark_dismissed);
   void NotifyButtonPressed(int campaign_id,
                            CampaignButtonId button_id,
                            bool should_mark_dismissed);

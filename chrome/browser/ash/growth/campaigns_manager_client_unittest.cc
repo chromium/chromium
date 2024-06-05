@@ -372,7 +372,8 @@ TEST_F(CampaignsManagerClientTest, RecordButtonPressedButton1Id0And500) {
 
 TEST_F(CampaignsManagerClientTest, RecordDismissedId0) {
   int campaign_id = 0;
-  campaigns_manager_client_->OnDismissed(campaign_id);
+  campaigns_manager_client_->OnDismissed(campaign_id,
+                                         /*should_mark_dismissed=*/false);
 
   histogram_tester_.ExpectUniqueSample(kDismissedHistogramName500, campaign_id,
                                        /*expected_bucket_count=*/1);
@@ -385,7 +386,8 @@ TEST_F(CampaignsManagerClientTest, RecordDismissedId0) {
 
 TEST_F(CampaignsManagerClientTest, RecordDismissedId499) {
   int campaign_id = 499;
-  campaigns_manager_client_->OnDismissed(campaign_id);
+  campaigns_manager_client_->OnDismissed(campaign_id,
+                                         /*should_mark_dismissed=*/false);
 
   histogram_tester_.ExpectUniqueSample(kDismissedHistogramName500, campaign_id,
                                        /*expected_bucket_count=*/1);
@@ -398,7 +400,8 @@ TEST_F(CampaignsManagerClientTest, RecordDismissedId499) {
 
 TEST_F(CampaignsManagerClientTest, RecordDismissedId500) {
   int campaign_id = 500;
-  campaigns_manager_client_->OnDismissed(campaign_id);
+  campaigns_manager_client_->OnDismissed(campaign_id,
+                                         /*should_mark_dismissed=*/false);
 
   histogram_tester_.ExpectUniqueSample(kDismissedHistogramName1000, campaign_id,
                                        /*expected_bucket_count=*/1);
@@ -412,8 +415,10 @@ TEST_F(CampaignsManagerClientTest, RecordDismissedId500) {
 TEST_F(CampaignsManagerClientTest, RecordDismissedId0And500) {
   int campaign_id_0 = 0;
   int campaign_id_500 = 500;
-  campaigns_manager_client_->OnDismissed(campaign_id_0);
-  campaigns_manager_client_->OnDismissed(campaign_id_500);
+  campaigns_manager_client_->OnDismissed(campaign_id_0,
+                                         /*should_mark_dismissed=*/false);
+  campaigns_manager_client_->OnDismissed(campaign_id_500,
+                                         /*should_mark_dismissed=*/false);
 
   histogram_tester_.ExpectUniqueSample(kDismissedHistogramName500,
                                        campaign_id_0,

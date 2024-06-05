@@ -1145,6 +1145,8 @@
   <enum name="CampaignButtonId">
     <variant value="0">PRIMARY</variant>
     <variant value="1">SECONDARY</variant>
+    <variant value="2">OTHERS</variant>
+    <variant value="3">CLOSE</variant>
   </enum>
 
   <enum name="QuickStartAbortFlowReason">

@@ -36,13 +36,16 @@ constexpr char kMessagePath[] = "message";
 constexpr char kIconPath[] = "sourceIcon";
 constexpr char kButtonsPath[] = "buttons";
 constexpr char kLabelPath[] = "label";
+constexpr char kMarkDismissedPath[] = "shouldMarkDismissed";
 constexpr char kActionPath[] = "action";
+constexpr char kMarkDismissedOnClosePath[] = "shouldMarkDismissOnClose";
 constexpr char kImagePath[] = "image";
 constexpr char kNotificationIdTemplate[] = "growth_campaign_%d";
 
 struct ShowNotificationParams {
   std::string title;
   std::string message;
+  bool should_mark_dismissed_on_close = false;
   raw_ptr<const gfx::VectorIcon> icon = nullptr;
   raw_ptr<const gfx::Image> image = nullptr;
 
@@ -62,6 +65,9 @@ ParseShowNotificationActionPerformerParams(const base::Value::Dict* params) {
   const auto* message = params->FindString(kMessagePath);
   show_notification_params->title = title ? *title : std::string();
   show_notification_params->message = message ? *message : std::string();
+
+  show_notification_params->should_mark_dismissed_on_close =
+      params->FindBool(kMarkDismissedOnClosePath).value_or(false);
 
   // Set icons if available.
   const auto* icon_value = params->FindDict(kIconPath);
@@ -115,7 +121,35 @@ ParseShowNotificationActionPerformerParams(const base::Value::Dict* params) {
   return show_notification_params;
 }
 
+std::string GetNotificationId(int campaign_id) {
+  return base::StringPrintf(kNotificationIdTemplate, campaign_id);
+}
+
 }  // namespace
+
+HandleNotificationClickAndCloseDelegate::
+    HandleNotificationClickAndCloseDelegate(
+        const ButtonClickCallback& click_callback,
+        const CloseCallback& close_callback)
+    : click_callback_(click_callback), close_callback_(close_callback) {}
+HandleNotificationClickAndCloseDelegate::
+    ~HandleNotificationClickAndCloseDelegate() {}
+
+void HandleNotificationClickAndCloseDelegate::Click(
+    const std::optional<int>& button_index,
+    const std::optional<std::u16string>& reply) {
+  if (click_callback_.is_null()) {
+    return;
+  }
+  click_callback_.Run(button_index);
+}
+
+void HandleNotificationClickAndCloseDelegate::Close(bool by_user) {
+  if (close_callback_.is_null()) {
+    return;
+  }
+  close_callback_.Run(by_user);
+}
 
 ShowNotificationActionPerformer::ShowNotificationActionPerformer() = default;
 ShowNotificationActionPerformer::~ShowNotificationActionPerformer() = default;
@@ -124,6 +158,8 @@ void ShowNotificationActionPerformer::Run(
     int campaign_id,
     const base::Value::Dict* params,
     growth::ActionPerformer::Callback callback) {
+  // Cache the campaign ID
+  current_campaign_id_ = campaign_id;
   auto show_notification_params =
       ParseShowNotificationActionPerformerParams(params);
   if (!show_notification_params) {
@@ -140,7 +176,7 @@ void ShowNotificationActionPerformer::Run(
     optional_fields.image = *show_notification_params->image;
   }
 
-  auto id = base::StringPrintf(kNotificationIdTemplate, campaign_id);
+  auto id = GetNotificationId(campaign_id);
   std::unique_ptr<message_center::Notification> notification =
       ash::CreateSystemNotificationPtr(
           message_center::NOTIFICATION_TYPE_SIMPLE, id,
@@ -152,10 +188,14 @@ void ShowNotificationActionPerformer::Run(
               message_center::NotifierType::SYSTEM_COMPONENT, id,
               ash::NotificationCatalogName::kGrowthFramework),
           optional_fields,
-          base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
+          base::MakeRefCounted<HandleNotificationClickAndCloseDelegate>(
               base::BindRepeating(
                   &ShowNotificationActionPerformer::HandleNotificationClicked,
-                  weak_ptr_factory_.GetWeakPtr(), params, id, campaign_id)),
+                  weak_ptr_factory_.GetWeakPtr(), params, id, campaign_id),
+              base::BindRepeating(
+                  &ShowNotificationActionPerformer::HandleNotificationClose,
+                  weak_ptr_factory_.GetWeakPtr(), campaign_id,
+                  show_notification_params->should_mark_dismissed_on_close)),
           *show_notification_params->icon,
           message_center::SystemNotificationWarningLevel::NORMAL);
   auto* message_center = message_center::MessageCenter::Get();
@@ -172,6 +212,19 @@ void ShowNotificationActionPerformer::Run(
 
 growth::ActionType ShowNotificationActionPerformer::ActionType() const {
   return growth::ActionType::kShowNotification;
+}
+
+void ShowNotificationActionPerformer::HandleNotificationClose(
+    int campaign_id,
+    bool should_mark_dismissed,
+    bool by_user) {
+  if (!by_user) {
+    return;
+  }
+
+  // Dismiss and marked the notification dismissed as it is by user action.
+  NotifyButtonPressed(campaign_id, CampaignButtonId::kClose,
+                      should_mark_dismissed);
 }
 
 void ShowNotificationActionPerformer::HandleNotificationClicked(
@@ -192,8 +245,6 @@ void ShowNotificationActionPerformer::HandleNotificationClicked(
     button_id = CampaignButtonId::kSecondary;
   }
 
-  NotifyButtonPressed(campaign_id, button_id, /*should_mark_dismissed=*/true);
-
   const auto* buttons_value = params->FindList(kButtonsPath);
   CHECK(buttons_value);
 
@@ -201,6 +252,11 @@ void ShowNotificationActionPerformer::HandleNotificationClicked(
   if (!button_value.is_dict()) {
     LOG(ERROR) << "Invalid button payload.";
   }
+
+  const auto should_mark_dismissed =
+      button_value.GetDict().FindBool(kMarkDismissedPath).value_or(false);
+  NotifyButtonPressed(campaign_id, button_id, should_mark_dismissed);
+
   const auto* action_value = button_value.GetDict().FindDict(kActionPath);
   if (!action_value) {
     growth::RecordCampaignsManagerError(
@@ -210,8 +266,8 @@ void ShowNotificationActionPerformer::HandleNotificationClicked(
   }
   auto action = growth::Action(action_value);
   if (action.GetActionType() == growth::ActionType::kDismiss) {
-    message_center::MessageCenter::Get()->RemoveNotification(
-        notification_id, false /* by_user */);
+    message_center::MessageCenter::Get()->RemoveNotification(notification_id,
+                                                             /* by_user=*/true);
     return;
   }
 

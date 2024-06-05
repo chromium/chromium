@@ -24,9 +24,10 @@ void UiActionPerformer::NotifyReadyToLogImpression(int campaign_id) {
   }
 }
 
-void UiActionPerformer::NotifyDismissed(int campaign_id) {
+void UiActionPerformer::NotifyDismissed(int campaign_id,
+                                        bool should_mark_dismissed) {
   for (auto& observer : observers_) {
-    observer.OnDismissed(campaign_id);
+    observer.OnDismissed(campaign_id, should_mark_dismissed);
   }
 }
 

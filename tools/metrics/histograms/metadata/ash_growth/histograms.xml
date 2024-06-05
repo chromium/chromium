@@ -26,6 +26,7 @@ chromium-metrics-reviews@google.com.
   <variant name="0" summary="Primary"/>
   <variant name="1" summary="Secondary"/>
   <variant name="2" summary="Others"/>
+  <variant name="3" summary="Close"/>
 </variants>
 
 <histogram name="Ash.Growth.CampaignsComponent.DownloadDurationInOobe"

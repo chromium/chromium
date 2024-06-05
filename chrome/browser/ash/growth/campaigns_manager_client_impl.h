@@ -60,7 +60,7 @@ class CampaignsManagerClientImpl : public growth::CampaignsManagerClient,
 
   // UiActionPerformer::Observer:
   void OnReadyToLogImpression(int campaign_id) override;
-  void OnDismissed(int campaign_id) override;
+  void OnDismissed(int campaign_id, bool should_mark_dismissed) override;
   void OnButtonPressed(int campaign_id,
                        CampaignButtonId button_id,
                        bool should_mark_dismissed) override;

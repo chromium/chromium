@@ -458,7 +458,10 @@ void ShowNudgeActionPerformer::OnNudgeButtonClicked(
 }
 
 void ShowNudgeActionPerformer::OnNudgeDismissed(int campaign_id) {
-  NotifyDismissed(campaign_id);
+  // Dismissed automatically or by clicking on the X button. In this case, we
+  // don't mark the nudge as dismissed and will resurface if impression
+  // conditions met.
+  NotifyDismissed(campaign_id, /*should_mark_dismissed=*/false);
 }
 
 void ShowNudgeActionPerformer::OnWidgetVisibilityChanged(views::Widget* widget,

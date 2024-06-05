@@ -205,14 +205,20 @@ void CampaignsManagerClientImpl::OnReadyToLogImpression(int campaign_id) {
       growth::CampaignEvent::kImpression, base::NumberToString(campaign_id));
 }
 
-void CampaignsManagerClientImpl::OnDismissed(int campaign_id) {
+void CampaignsManagerClientImpl::OnDismissed(int campaign_id,
+                                             bool should_mark_dismissed) {
   RecordDismissed(campaign_id);
+  if (should_mark_dismissed) {
+    campaigns_manager_->RecordEventForTargeting(
+        growth::CampaignEvent::kDismissed, base::NumberToString(campaign_id));
+  }
 }
 
 void CampaignsManagerClientImpl::OnButtonPressed(int campaign_id,
                                                  CampaignButtonId button_id,
                                                  bool should_mark_dismissed) {
   RecordButtonPressed(campaign_id, button_id);
+
   if (!should_mark_dismissed) {
     return;
   }
@@ -222,7 +228,9 @@ void CampaignsManagerClientImpl::OnButtonPressed(int campaign_id,
   switch (button_id) {
     case CampaignButtonId::kPrimary:
     case CampaignButtonId::kSecondary:
-      // Primary and Secondary button press will treated as user dismissal.
+    case CampaignButtonId::kClose:
+      // Primary, Secondary and close button press will treated as user
+      // dismissal.
       campaigns_manager_->RecordEventForTargeting(
           growth::CampaignEvent::kDismissed, base::NumberToString(campaign_id));
       break;
