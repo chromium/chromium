@@ -315,8 +315,12 @@ UserSelectableTypeSet SyncPrefs::GetSelectedTypesForAccount(
                  type == UserSelectableType::kReadingList) {
         type_enabled = true;
 #if !BUILDFLAG(IS_IOS)
+        // Consider kBookmarks and kReadingList off by default until
+        // `kReplaceSyncPromosWithSignInPromos` is enabled. For existing clients
+        // at the time the feature transitions from disabled to enabled, the
+        // state at the time is captured as explicit value in
+        // `MaybeMigratePrefsForSyncToSigninPart1()`.
         if (!base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos)) {
-          // Consider kBookmarks and kReadingList off by default.
           type_enabled = false;
         }
 #endif
@@ -913,8 +917,6 @@ bool SyncPrefs::MaybeMigratePrefsForSyncToSigninPart1(
     case SyncAccountState::kSignedInNotSyncing: {
       pref_service_->SetInteger(kSyncToSigninMigrationState,
                                 kMigratedPart1ButNot2);
-      // For pre-existing signed-in users, some state needs to be migrated from
-      // the global to the account-scoped settings.
       CHECK(gaia_id_hash.IsValid());
       ScopedDictPrefUpdate update_selected_types_dict(
           pref_service_, prefs::internal::kSelectedTypesPerAccount);
@@ -926,16 +928,36 @@ bool SyncPrefs::MaybeMigratePrefsForSyncToSigninPart1(
       account_settings->Set(
           GetPrefNameForType(UserSelectableType::kPreferences), false);
 
-#if BUILDFLAG(IS_IOS)
       // Bookmarks and reading list remain enabled only if the user previously
       // explicitly opted in.
+#if BUILDFLAG(IS_IOS)
+      // On iOS, the opt-in state is controlled by a dedicated pref.
       const bool was_opted_in = pref_service_->GetBoolean(
           prefs::internal::kBookmarksAndReadingListAccountStorageOptIn);
       account_settings->Set(GetPrefNameForType(UserSelectableType::kBookmarks),
                             was_opted_in);
       account_settings->Set(
           GetPrefNameForType(UserSelectableType::kReadingList), was_opted_in);
+#else   // BUILDFLAG(IS_IOS)
+      // Outside iOS, the type's opt-in state is represented in the regular
+      // account-keyed prefs. However, the default value for new sign-ins
+      // changes with `kReplaceSyncPromosWithSignInPromos`, so it is important
+      // to grab a snapshot now during migration.
+      for (UserSelectableType type :
+           {UserSelectableType::kBookmarks, UserSelectableType::kReadingList}) {
+        const char* pref_name = GetPrefNameForType(type);
+        DCHECK(pref_name);
+
+        const base::Value* value = account_settings->Find(pref_name);
+        const bool is_type_on = value && value->is_bool() && value->GetBool();
+
+        // Setting the value explicitly is important to convert absence to
+        // false, so it doesn't use the default, which is enabled after
+        // `kReplaceSyncPromosWithSignInPromos`.
+        account_settings->Set(pref_name, is_type_on);
+      }
 #endif  // BUILDFLAG(IS_IOS)
+
       return true;
     }
   }

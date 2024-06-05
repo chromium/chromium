@@ -1327,7 +1327,6 @@ TEST_F(SyncPrefsSyncToSigninMigrationTest, MigratesBookmarksOptedIn) {
   }
 }
 
-#if BUILDFLAG(IS_IOS)
 TEST_F(SyncPrefsSyncToSigninMigrationTest, MigratesBookmarksNotOptedIn) {
   {
     // The SyncToSignin feature starts disabled.
@@ -1335,11 +1334,21 @@ TEST_F(SyncPrefsSyncToSigninMigrationTest, MigratesBookmarksNotOptedIn) {
     disable_sync_to_signin.InitAndDisableFeature(
         kReplaceSyncPromosWithSignInPromos);
 
+    SyncPrefs prefs(&pref_service_);
+
+#if BUILDFLAG(IS_IOS)
     // The regular Bookmarks and ReadingList prefs are enabled (by default), but
     // the additional opt-in pref should not be enabled.
-    SyncPrefs prefs(&pref_service_);
     ASSERT_FALSE(pref_service_.GetBoolean(
         prefs::internal::kBookmarksAndReadingListAccountStorageOptIn));
+#else   // BUILDFLAG(IS_IOS)
+    // With the feature disabled, and outside iOS, Bookmarks and ReadingList are
+    // disabled by default.
+    ASSERT_FALSE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
+                     .Has(UserSelectableType::kBookmarks));
+    ASSERT_FALSE(prefs.GetSelectedTypesForAccount(gaia_id_hash_)
+                     .Has(UserSelectableType::kReadingList));
+#endif  // BUILDFLAG(IS_IOS)
   }
 
   {
@@ -1368,7 +1377,6 @@ TEST_F(SyncPrefsSyncToSigninMigrationTest, MigratesBookmarksNotOptedIn) {
                      .Has(UserSelectableType::kReadingList));
   }
 }
-#endif  // BUILDFLAG(IS_IOS)
 
 TEST_F(SyncPrefsSyncToSigninMigrationTest,
        TurnsAutofillOffForCustomPassphraseUser) {
