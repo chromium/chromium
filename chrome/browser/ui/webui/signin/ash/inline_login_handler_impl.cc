@@ -320,9 +320,16 @@ void InlineLoginHandlerImpl::SetExtraInitParams(base::Value::Dict& params) {
 }
 
 void InlineLoginHandlerImpl::CompleteLogin(const CompleteLoginParams& params) {
-  CHECK(!params.auth_code.empty());
-  CHECK(!params.gaia_id.empty());
-  CHECK(!params.email.empty());
+  CHECK(!params.email.empty()) << "Email cannot be empty";
+  CHECK(!params.gaia_id.empty()) << "Gaia id cannot be empty";
+  if (params.auth_code.empty()) {
+    // Authentication flow may have been completed without Gaia giving us an
+    // authorization code. Handle this gracefully.
+    // TODO(crbug/343738879): Check if we need to listen on cookie changes -
+    // like https://crrev.com/c/1972837
+    ShowSigninErrorPage(params.email, /*hosted_domain=*/std::string());
+    return;
+  }
 
   if (AccountAppsAvailability::IsArcAccountRestrictionsEnabled()) {
     ::GetAccountManagerFacade(Profile::FromWebUI(web_ui())->GetPath().value())
