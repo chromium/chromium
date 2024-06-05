@@ -21,7 +21,7 @@
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desks_test_api.h"
 #include "ash/wm/desks/desks_test_util.h"
-#include "ash/wm/desks/legacy_desk_bar_view.h"
+#include "ash/wm/desks/overview_desk_bar_view.h"
 #include "ash/wm/float/float_test_api.h"
 #include "ash/wm/float/tablet_mode_float_window_resizer.h"
 #include "ash/wm/float/tablet_mode_tuck_education.h"

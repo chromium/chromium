@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WM_DESKS_LEGACY_DESK_BAR_VIEW_H_
-#define ASH_WM_DESKS_LEGACY_DESK_BAR_VIEW_H_
+#ifndef ASH_WM_DESKS_OVERVIEW_DESK_BAR_VIEW_H_
+#define ASH_WM_DESKS_OVERVIEW_DESK_BAR_VIEW_H_
 
 #include "ash/ash_export.h"
 #include "ash/wm/desks/desk_bar_view_base.h"
@@ -15,14 +15,14 @@ namespace ash {
 // A bar that resides at the top portion of the overview, which contains desk
 // mini views, the new desk button, the library button, and the scroll arrow
 // buttons.
-class ASH_EXPORT LegacyDeskBarView : public DeskBarViewBase {
-  METADATA_HEADER(LegacyDeskBarView, DeskBarViewBase)
+class ASH_EXPORT OverviewDeskBarView : public DeskBarViewBase {
+  METADATA_HEADER(OverviewDeskBarView, DeskBarViewBase)
 
  public:
-  explicit LegacyDeskBarView(base::WeakPtr<OverviewGrid> overview_grid);
+  explicit OverviewDeskBarView(base::WeakPtr<OverviewGrid> overview_grid);
 
-  LegacyDeskBarView(const LegacyDeskBarView&) = delete;
-  LegacyDeskBarView& operator=(const LegacyDeskBarView&) = delete;
+  OverviewDeskBarView(const OverviewDeskBarView&) = delete;
+  OverviewDeskBarView& operator=(const OverviewDeskBarView&) = delete;
 
   // views::View:
   gfx::Size CalculatePreferredSize(
@@ -34,4 +34,4 @@ class ASH_EXPORT LegacyDeskBarView : public DeskBarViewBase {
 
 }  // namespace ash
 
-#endif  // ASH_WM_DESKS_LEGACY_DESK_BAR_VIEW_H_
+#endif  // ASH_WM_DESKS_OVERVIEW_DESK_BAR_VIEW_H_

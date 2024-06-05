@@ -20,7 +20,7 @@
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desk_textfield.h"
 #include "ash/wm/desks/desks_util.h"
-#include "ash/wm/desks/legacy_desk_bar_view.h"
+#include "ash/wm/desks/overview_desk_bar_view.h"
 #include "ash/wm/desks/templates/saved_desk_dialog_controller.h"
 #include "ash/wm/desks/templates/saved_desk_grid_view.h"
 #include "ash/wm/desks/templates/saved_desk_item_view.h"

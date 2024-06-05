@@ -17,7 +17,7 @@ namespace ash {
 class CloseButton;
 class DeskActivationAnimation;
 class DeskMiniView;
-class LegacyDeskBarView;
+class OverviewDeskBarView;
 
 constexpr int kNumFingersForFocus = 3;
 constexpr int kNumFingersForDesksSwitch = 4;
@@ -70,7 +70,7 @@ void ScrollToSwitchDesks(bool scroll_left,
 void WaitUntilEndingScreenshotTaken(DeskActivationAnimation* animation);
 
 // Returns the desk bar view for the primary display.
-const LegacyDeskBarView* GetPrimaryRootDesksBarView();
+const OverviewDeskBarView* GetPrimaryRootDesksBarView();
 
 // Returns the combine desks button if it is available, and otherwise the
 // close-all button.

@@ -31,7 +31,7 @@ class DeskMiniView;
 class ScrollArrowButton;
 
 // Helper class used by tests to access desks' internal elements. Including
-// elements of multiple different objects of desks. E.g, LegacyDeskBarView,
+// elements of multiple different objects of desks. E.g, OverviewDeskBarView,
 // Desk.
 class DesksTestApi {
  public:

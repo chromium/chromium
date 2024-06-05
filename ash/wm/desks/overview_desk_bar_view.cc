@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/desks/legacy_desk_bar_view.h"
+#include "ash/wm/desks/overview_desk_bar_view.h"
 
 #include "ash/ash_element_identifiers.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -10,17 +10,14 @@
 
 namespace ash {
 
-// -----------------------------------------------------------------------------
-// LegacyDeskBarView:
-
-LegacyDeskBarView::LegacyDeskBarView(base::WeakPtr<OverviewGrid> overview_grid)
+OverviewDeskBarView::OverviewDeskBarView(base::WeakPtr<OverviewGrid> overview_grid)
     : DeskBarViewBase(overview_grid->root_window(),
                       DeskBarViewBase::Type::kOverview) {
   SetProperty(views::kElementIdentifierKey, kOverviewDeskBarElementId);
   overview_grid_ = overview_grid;
 }
 
-gfx::Size LegacyDeskBarView::CalculatePreferredSize(
+gfx::Size OverviewDeskBarView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
   // For overview bar, it always come with the fixed width (the full available
   // width).
@@ -28,13 +25,13 @@ gfx::Size LegacyDeskBarView::CalculatePreferredSize(
           GetPreferredBarHeight(root_, type_, state_)};
 }
 
-gfx::Rect LegacyDeskBarView::GetAvailableBounds() const {
+gfx::Rect OverviewDeskBarView::GetAvailableBounds() const {
   // Information is retrieved from the widget as it comes with the full
   // available bounds at initialization time and remains unchanged.
   return GetWidget()->GetRootView()->bounds();
 }
 
-BEGIN_METADATA(LegacyDeskBarView)
+BEGIN_METADATA(OverviewDeskBarView)
 END_METADATA
 
 }  // namespace ash

@@ -223,14 +223,14 @@ class ASH_EXPORT OverviewWindowDragController {
 
   // The original size of the dragged item after we scale it up when we start
   // dragging it. The item is restored to this size once it no longer intersects
-  // with the LegacyDeskBarView.
+  // with the OverviewDeskBarView.
   gfx::SizeF original_scaled_size_;
 
   // Track the per-overview-grid desks bar data used to perform the window
   // sizing operations when it is moved towards or on the desks bar.
   struct GridDesksBarData {
     // The scaled-down size of the dragged item once the drag location is on the
-    // LegacyDeskBarView of the corresponding grid. We size the item down so
+    // OverviewDeskBarView of the corresponding grid. We size the item down so
     // that it fits inside the desks' preview view.
     gfx::SizeF on_desks_bar_item_size;
 

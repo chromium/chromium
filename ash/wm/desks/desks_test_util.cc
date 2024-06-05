@@ -13,7 +13,7 @@
 #include "ash/wm/desks/desk_animation_impl.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desks_histogram_enums.h"
-#include "ash/wm/desks/legacy_desk_bar_view.h"
+#include "ash/wm/desks/overview_desk_bar_view.h"
 #include "ash/wm/desks/root_window_desk_switch_animator_test_api.h"
 #include "ash/wm/gestures/wm_gesture_handler.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -150,7 +150,7 @@ void WaitUntilEndingScreenshotTaken(DeskActivationAnimation* animation) {
   run_loop.Run();
 }
 
-const LegacyDeskBarView* GetPrimaryRootDesksBarView() {
+const OverviewDeskBarView* GetPrimaryRootDesksBarView() {
   auto* root_window = Shell::GetPrimaryRootWindow();
   auto* overview_controller = Shell::Get()->overview_controller();
   DCHECK(overview_controller->InOverviewSession());

@@ -29,7 +29,7 @@
 #include "ash/wm/desks/desks_test_api.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/desks/desks_util.h"
-#include "ash/wm/desks/legacy_desk_bar_view.h"
+#include "ash/wm/desks/overview_desk_bar_view.h"
 #include "ash/wm/desks/templates/saved_desk_dialog_controller.h"
 #include "ash/wm/desks/templates/saved_desk_grid_view.h"
 #include "ash/wm/desks/templates/saved_desk_icon_container.h"
@@ -174,7 +174,7 @@ class SavedDeskTest : public OverviewTestBase,
   }
 
   // May return null in tablet mode.
-  const LegacyDeskBarView* GetDesksBarViewForRoot(aura::Window* root_window) {
+  const OverviewDeskBarView* GetDesksBarViewForRoot(aura::Window* root_window) {
     if (auto* overview_session = GetOverviewSession()) {
       return overview_session->GetGridWithRootWindow(root_window)
           ->desks_bar_view();
@@ -4259,7 +4259,7 @@ TEST_F(SavedDeskTest,
   // Pre-check whether the save desk button is in the correct state.
   EXPECT_TRUE(overview_grid->IsSaveDeskButtonContainerVisible());
 
-  const LegacyDeskBarView* desks_bar_view = overview_grid->desks_bar_view();
+  const OverviewDeskBarView* desks_bar_view = overview_grid->desks_bar_view();
   ASSERT_EQ(2u, desks_bar_view->mini_views().size());
   DeskMiniView* mini_view_to_be_removed =
       desks_bar_view->FindMiniViewForDesk(active_desk);

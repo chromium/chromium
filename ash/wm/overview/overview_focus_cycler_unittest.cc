@@ -13,7 +13,7 @@
 #include "ash/wm/desks/desk_preview_view.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_test_util.h"
-#include "ash/wm/desks/legacy_desk_bar_view.h"
+#include "ash/wm/desks/overview_desk_bar_view.h"
 #include "ash/wm/overview/overview_item_view.h"
 #include "ash/wm/overview/overview_test_base.h"
 #include "ash/wm/overview/overview_test_util.h"
@@ -212,10 +212,10 @@ class DesksOverviewFocusCyclerTest : public OverviewFocusCyclerTest {
     return GetOverviewSession()->focus_cycler()->GetOverviewFocusedView();
   }
 
-  const LegacyDeskBarView* GetDesksBarViewForRoot(aura::Window* root_window) {
+  const OverviewDeskBarView* GetDesksBarViewForRoot(aura::Window* root_window) {
     OverviewGrid* grid =
         GetOverviewSession()->GetGridWithRootWindow(root_window);
-    const LegacyDeskBarView* bar_view = grid->desks_bar_view();
+    const OverviewDeskBarView* bar_view = grid->desks_bar_view();
     CHECK(bar_view->IsZeroState() ^ grid->IsDesksBarViewActive());
     return bar_view;
   }
@@ -237,7 +237,7 @@ class DesksOverviewFocusCyclerTest : public OverviewFocusCyclerTest {
   }
 
  protected:
-  static void CheckDeskBarViewSize(const LegacyDeskBarView* view,
+  static void CheckDeskBarViewSize(const OverviewDeskBarView* view,
                                    const std::string& scope) {
     SCOPED_TRACE(scope);
     EXPECT_EQ(view->bounds().height(),

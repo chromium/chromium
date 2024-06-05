@@ -18,7 +18,7 @@
 #include "ash/wm/desks/desk_bar_view_base.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
-#include "ash/wm/desks/legacy_desk_bar_view.h"
+#include "ash/wm/desks/overview_desk_bar_view.h"
 #include "ash/wm/desks/templates/saved_desk_item_view.h"
 #include "ash/wm/desks/templates/saved_desk_library_view.h"
 #include "ash/wm/desks/templates/saved_desk_metrics_util.h"
@@ -368,7 +368,7 @@ void SavedDeskPresenter::UpdateUIForSavedDeskLibrary() {
       overview_grid->HideSavedDeskLibrary(/*exit_overview=*/false);
     }
 
-    if (LegacyDeskBarView* desks_bar_view = overview_grid->desks_bar_view()) {
+    if (OverviewDeskBarView* desks_bar_view = overview_grid->desks_bar_view()) {
       // Library UI needs an update. If it's currently in the library page, keep
       // the UI visible.
       desks_bar_view->set_library_ui_visibility(
@@ -565,7 +565,8 @@ void SavedDeskPresenter::LaunchSavedDeskIntoNewDesk(
       OverviewGrid* overview_grid =
           overview_session->GetGridWithRootWindow(root_window);
 
-      const LegacyDeskBarView* desks_bar_view = overview_grid->desks_bar_view();
+      const OverviewDeskBarView* desks_bar_view =
+          overview_grid->desks_bar_view();
       DCHECK(desks_bar_view);
       DeskMiniView* mini_view = desks_bar_view->FindMiniViewForDesk(new_desk);
       DCHECK(mini_view);

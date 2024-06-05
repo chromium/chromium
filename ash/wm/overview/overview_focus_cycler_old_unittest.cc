@@ -15,7 +15,7 @@
 #include "ash/wm/desks/desk_name_view.h"
 #include "ash/wm/desks/desk_preview_view.h"
 #include "ash/wm/desks/desks_test_util.h"
-#include "ash/wm/desks/legacy_desk_bar_view.h"
+#include "ash/wm/desks/overview_desk_bar_view.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_focusable_view.h"
@@ -393,16 +393,16 @@ class DesksOverviewFocusCyclerOldTest : public OverviewFocusCyclerOldTest {
     return GetFocusCycler()->focused_view();
   }
 
-  const LegacyDeskBarView* GetDesksBarViewForRoot(aura::Window* root_window) {
+  const OverviewDeskBarView* GetDesksBarViewForRoot(aura::Window* root_window) {
     OverviewGrid* grid =
         GetOverviewSession()->GetGridWithRootWindow(root_window);
-    const LegacyDeskBarView* bar_view = grid->desks_bar_view();
+    const OverviewDeskBarView* bar_view = grid->desks_bar_view();
     DCHECK(bar_view->IsZeroState() ^ grid->IsDesksBarViewActive());
     return bar_view;
   }
 
  protected:
-  static void CheckDeskBarViewSize(const LegacyDeskBarView* view,
+  static void CheckDeskBarViewSize(const OverviewDeskBarView* view,
                                    const std::string& scope) {
     SCOPED_TRACE(scope);
     EXPECT_EQ(view->bounds().height(),
