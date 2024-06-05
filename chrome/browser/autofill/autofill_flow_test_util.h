@@ -69,10 +69,10 @@ namespace internal {
 // suggestion; see ShowMethod for details.
 //
 // Selecting a profile suggestion (address or credit card) also triggers
-// preview. By contrast, "Clear" and "Manage" do not cause a preview. The
+// preview. By contrast, "Undo" and "Manage" do not cause a preview. The
 // Autofill flow expects a preview for (only) the indices less than
 // `num_profile_suggestions`. The selected `target_index` may be greater or
-// equal to `num_profile_suggestions` to select "Clear" or "Manager".
+// equal to `num_profile_suggestions` to select "Undo" or "Manage".
 //
 // A callback can be set to be executed after each stage. Again note that
 // `show_method` may select the first suggestion.
@@ -84,6 +84,7 @@ struct AutofillFlowParams {
   bool do_show = true;
   bool do_select = true;
   bool do_accept = true;
+  bool expect_previews = true;
   ShowMethod show_method = ShowMethod::ByArrow();
   int num_profile_suggestions = 1;
   int target_index = 0;

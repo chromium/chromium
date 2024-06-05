@@ -266,6 +266,7 @@ struct AutofillSuggestionParams {
   int num_profile_suggestions = 1;
   int current_index = 0;
   int target_index = 0;
+  bool expect_previews = true;
   base::TimeDelta timeout = kAutofillFlowDefaultTimeout;
   std::optional<content::ToRenderFrameHost> execution_target = {};
 };
@@ -290,7 +291,7 @@ struct AutofillSuggestionParams {
   };
 
   for (int i = p.current_index + 1; i <= p.target_index; ++i) {
-    bool has_preview = i < p.num_profile_suggestions;
+    bool has_preview = i < p.num_profile_suggestions && p.expect_previews;
     if (!(has_preview ? ArrowDown({kPreview}) : ArrowDown({}))) {
       return AssertionFailure()
              << __func__ << "(): Couldn't go to " << i << "th suggestion with"
@@ -397,6 +398,7 @@ struct AutofillSuggestionParams {
         {.num_profile_suggestions = p.num_profile_suggestions,
          .current_index = p.show_method.selects_first_suggestion() ? 0 : -1,
          .target_index = p.target_index,
+         .expect_previews = p.expect_previews,
          .timeout = p.timeout,
          .execution_target = execution_target});
     if (!a) {
@@ -413,6 +415,7 @@ struct AutofillSuggestionParams {
         {.num_profile_suggestions = p.num_profile_suggestions,
          .current_index = p.target_index,
          .target_index = p.target_index,
+         .expect_previews = p.expect_previews,
          .timeout = p.timeout,
          .execution_target = execution_target});
     if (!a) {

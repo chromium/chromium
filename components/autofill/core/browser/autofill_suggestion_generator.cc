@@ -2116,8 +2116,8 @@ void AutofillSuggestionGenerator::AdjustVirtualCardSuggestionContent(
       &feature_engagement::kIPHAutofillVirtualCardSuggestionFeature;
 
   // If ShouldFormatForLargeKeyboardAccessory() is true, `suggestion` has been
-  // properly formatted by `SetSuggestionLabelsForCard` and does not need further
-  // changes.
+  // properly formatted by `SetSuggestionLabelsForCard` and does not need
+  // further changes.
   if (autofill_client_->ShouldFormatForLargeKeyboardAccessory()) {
     return;
   }

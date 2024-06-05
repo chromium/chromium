@@ -982,8 +982,10 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, BasicUndoAutofill) {
                                 kEmptyAddress, {"firstname", "M"}))}));
   EXPECT_THAT(GetFormValues(), ValuesAre(kDefaultAddress));
 
-  ASSERT_TRUE(
-      AutofillFlow(GetElementById("firstname"), this, {.target_index = 1}));
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this,
+                           {.expect_previews = false,
+                            .show_method = ShowMethod::ByClick(),
+                            .target_index = 1}));
 
   std::vector<FieldValue> expected_values = kEmptyAddress;
   expected_values[0].value = "M";
