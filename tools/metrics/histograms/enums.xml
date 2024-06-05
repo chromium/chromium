@@ -24271,6 +24271,8 @@ from previous Chrome versions.
   <int value="1694854500" label="disable-save-password-bubble"/>
   <int value="1694947836" label="ProjectorGm3:disabled"/>
   <int value="1696139514" label="enable-ble-advertising-in-apps"/>
+  <int value="1696579117"
+      label="ForceOnDeviceAppControlsForAllRegions:enabled"/>
   <int value="1697189972" label="WebPaymentsSingleAppUiSkip:disabled"/>
   <int value="1697576315" label="ZeroSuggestPrefetchingOnWeb:enabled"/>
   <int value="1698089268" label="WebXRMultiGpu:disabled"/>
@@ -25171,6 +25173,8 @@ from previous Chrome versions.
   <int value="2079182437" label="TabStateFlatBuffer:enabled"/>
   <int value="2079658706" label="IncreasedCmdBufferParseSlice:disabled"/>
   <int value="2079672348" label="ExperimentalKeyboardLockUI:disabled"/>
+  <int value="2080571369"
+      label="ForceOnDeviceAppControlsForAllRegions:disabled"/>
   <int value="2080666644"
       label="KeyboardBasedDisplayArrangementInSettings:disabled"/>
   <int value="2081154375" label="AssistantKeyRemapping:disabled"/>

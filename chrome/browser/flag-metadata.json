@@ -6611,6 +6611,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "on-device-app-controls",
+    "owners": [ "courtneywong@chromium.org", "agawronska@chromium.org", "cros-families-eng@google.com"],
+    "expiry_milestone": 129
+  },
+  {
     "name": "one-group-per-renderer",
     "owners": ["youssefesmat@chromium.org", "baseos-perf@google.com"],
     "expiry_milestone": 120

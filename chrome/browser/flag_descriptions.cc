@@ -7178,6 +7178,10 @@ const char kNotificationsIgnoreRequireInteractionDescription[] =
     "Always timeout notifications, even if they are set with "
     "requireInteraction.";
 
+const char kOnDeviceAppControlsName[] = "On-device controls for apps";
+const char kOnDeviceAppControlsDescription[] =
+    "Enables the on-device controls UI for blocking apps.";
+
 const char kOrcaKeyName[] = "Secret key for Orca feature";
 const char kOrcaKeyDescription[] =
     "Secret key for Orca feature. Incorrect values will cause chrome crashes.";
