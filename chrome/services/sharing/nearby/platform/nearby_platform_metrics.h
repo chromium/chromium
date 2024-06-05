@@ -41,6 +41,7 @@ void RecordGattServiceRegistrationResult(bool success);
 void RecordGattServiceRegistrationErrorReason(
     device::BluetoothGattService::GattErrorCode error_code);
 void RecordCreateLocalGattServiceResult(bool success);
+void RecordCreateLocalGattCharacteristicResult(bool success);
 void RecordStartAdvertisingFailureReason(StartAdvertisingFailureReason reason,
                                          bool is_extended_advertisement);
 void RecordStartAdvertisingResult(bool success, bool is_extended_advertisement);

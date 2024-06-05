@@ -157,6 +157,9 @@ TEST_F(BleV2GattServerTest,
     histogram_tester_.ExpectBucketCount(
         "Nearby.Connections.BleV2.GattServer.CreateLocalGattService.Result",
         /*bucket: success=*/1, 1);
+    histogram_tester_.ExpectBucketCount(
+        "Nearby.Connections.BleV2.GattServer.CreateCharacteristic.Result",
+        /*bucket: success=*/1, 1);
   }
 
   // Second time, expect no call to browser process since it already
@@ -171,6 +174,9 @@ TEST_F(BleV2GattServerTest,
     histogram_tester_.ExpectBucketCount(
         "Nearby.Connections.BleV2.GattServer.CreateLocalGattService.Result",
         /*bucket: success=*/1, 1);
+    histogram_tester_.ExpectBucketCount(
+        "Nearby.Connections.BleV2.GattServer.CreateCharacteristic.Result",
+        /*bucket: success=*/1, 2);
   }
 
   EXPECT_EQ(2, fake_gatt_service_ptr->GetNumCharacteristicUuids());
@@ -187,6 +193,9 @@ TEST_F(BleV2GattServerTest, CreateCharacteristic_Success) {
   histogram_tester_.ExpectBucketCount(
       "Nearby.Connections.BleV2.GattServer.CreateLocalGattService.Result",
       /*bucket: success=*/1, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Connections.BleV2.GattServer.CreateCharacteristic.Result",
+      /*bucket: success=*/1, 1);
 }
 
 TEST_F(BleV2GattServerTest, CreateCharacteristic_Failure) {
@@ -200,6 +209,9 @@ TEST_F(BleV2GattServerTest, CreateCharacteristic_Failure) {
   histogram_tester_.ExpectBucketCount(
       "Nearby.Connections.BleV2.GattServer.CreateLocalGattService.Result",
       /*bucket: success=*/1, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Connections.BleV2.GattServer.CreateCharacteristic.Result",
+      /*bucket: success=*/0, 1);
 }
 
 TEST_F(BleV2GattServerTest,
@@ -220,6 +232,9 @@ TEST_F(BleV2GattServerTest,
     histogram_tester_.ExpectBucketCount(
         "Nearby.Connections.BleV2.GattServer.CreateLocalGattService.Result",
         /*bucket: success=*/1, 1);
+    histogram_tester_.ExpectBucketCount(
+        "Nearby.Connections.BleV2.GattServer.CreateCharacteristic.Result",
+        /*bucket: success=*/1, 1);
   }
 
   // Second time, expect no call to browser process since it already
@@ -231,6 +246,9 @@ TEST_F(BleV2GattServerTest,
     EXPECT_EQ(1, fake_gatt_service_ptr->GetNumCharacteristicUuids());
     histogram_tester_.ExpectBucketCount(
         "Nearby.Connections.BleV2.GattServer.CreateLocalGattService.Result",
+        /*bucket: success=*/1, 1);
+    histogram_tester_.ExpectBucketCount(
+        "Nearby.Connections.BleV2.GattServer.CreateCharacteristic.Result",
         /*bucket: success=*/1, 1);
   }
 }

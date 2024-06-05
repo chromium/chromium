@@ -188,6 +188,7 @@ BleV2GattServer::CreateCharacteristic(
 
   if (!create_characteristic_success) {
     LOG(WARNING) << __func__ << ": Unable to create GATT characteristic";
+    metrics::RecordCreateLocalGattCharacteristicResult(/*success=*/false);
     return std::nullopt;
   }
 
@@ -196,6 +197,7 @@ BleV2GattServer::CreateCharacteristic(
   // Connections library. This will be used to trigger requests to notify or
   // update the GATT characteristic in other methods. The browser process
   // retrieves the corresponding GATT characteristic by `charactertistic_uuid`.
+  metrics::RecordCreateLocalGattCharacteristicResult(/*success=*/true);
   api::ble_v2::GattCharacteristic gatt_characteristic = {
       characteristic_uuid, service_uuid, permission, property};
   gatt_service->characteristic_uuid_to_characteristic_map.insert_or_assign(

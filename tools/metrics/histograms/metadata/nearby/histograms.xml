@@ -68,6 +68,24 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Nearby.Connections.BleV2.GattServer.CreateCharacteristic.Result"
+    enum="BooleanSuccess" expires_after="2025-04-30">
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the success or failure of creating a local GATT characteristic once
+    a GATT service hosting the characteristic is already successfully created.
+    Emitted on calls by Nearby Connections to create a GATT characteristic
+    before advertising begins; the GATT server first creates a GATT service if
+    one doesn't exist already before creating the characteristic, and this
+    metric captures the success/failure of creating the GATT characteristic.
+    Note that this metric is only about the creating of a characteristic, and
+    does not include any metrics about if the method CreateCharacteristic() is
+    called and the characteristic is already created.
+  </summary>
+</histogram>
+
+<histogram
     name="Nearby.Connections.BleV2.GattServer.CreateLocalGattService.Result"
     enum="BooleanSuccess" expires_after="2025-04-30">
   <owner>julietlevesque@google.com</owner>
