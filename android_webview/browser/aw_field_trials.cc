@@ -210,4 +210,9 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
     aw_feature_overrides.EnableFeature(net::features::kEnableIpProtectionProxy);
     aw_feature_overrides.EnableFeature(network::features::kMaskedDomainList);
   }
+
+  // Delete Incidental Party State (DIPS) feature is not yet supported on
+  // WebView.
+  // TODO(b/344852824): Enable the feature for WebView
+  aw_feature_overrides.DisableFeature(::features::kDIPS);
 }
