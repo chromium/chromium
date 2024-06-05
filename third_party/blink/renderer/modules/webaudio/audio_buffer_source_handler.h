@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_buffer.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_param.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_scheduled_source_node.h"
@@ -109,6 +110,8 @@ class AudioBufferSourceHandler final : public AudioScheduledSourceHandler {
   void ClampGrainParameters(const SharedAudioBuffer*)
       EXCLUSIVE_LOCKS_REQUIRED(process_lock_);
 
+  base::WeakPtr<AudioScheduledSourceHandler> AsWeakPtr() override;
+
   // Sample data for the outputs of this node. The shared buffer can safely be
   // accessed from the audio thread.
   std::unique_ptr<SharedAudioBuffer> shared_buffer_;
@@ -168,6 +171,8 @@ class AudioBufferSourceHandler final : public AudioScheduledSourceHandler {
   // True if the `buffer` attribute has ever been set to a non-null
   // value.  Defaults to false.
   bool buffer_has_been_set_ = false;
+
+  base::WeakPtrFactory<AudioScheduledSourceHandler> weak_ptr_factory_{this};
 };
 
 }  // namespace blink

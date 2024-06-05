@@ -28,9 +28,7 @@ class AudioBuffer;
 class BaseAudioContext;
 class SharedAudioBuffer;
 
-class ScriptProcessorHandler final
-    : public AudioHandler,
-      public base::SupportsWeakPtr<ScriptProcessorHandler> {
+class ScriptProcessorHandler final : public AudioHandler {
  public:
   static scoped_refptr<ScriptProcessorHandler> Create(
       AudioNode&,
@@ -93,6 +91,8 @@ class ScriptProcessorHandler final
   scoped_refptr<AudioBus> internal_input_bus_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+
+  base::WeakPtrFactory<ScriptProcessorHandler> weak_ptr_factory_{this};
 
   FRIEND_TEST_ALL_PREFIXES(ScriptProcessorNodeTest, BufferLifetime);
 };

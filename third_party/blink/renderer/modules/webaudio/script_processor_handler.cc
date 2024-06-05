@@ -210,7 +210,8 @@ void ScriptProcessorHandler::Process(uint32_t frames_to_process) {
       PostCrossThreadTask(
           *task_runner_, FROM_HERE,
           CrossThreadBindOnce(&ScriptProcessorHandler::FireProcessEvent,
-                              AsWeakPtr(), double_buffer_index_));
+                              weak_ptr_factory_.GetWeakPtr(),
+                              double_buffer_index_));
     } else {
       // For an offline context, wait until the script execution is finished.
       std::unique_ptr<base::WaitableEvent> waitable_event =
@@ -219,7 +220,7 @@ void ScriptProcessorHandler::Process(uint32_t frames_to_process) {
           *task_runner_, FROM_HERE,
           CrossThreadBindOnce(
               &ScriptProcessorHandler::FireProcessEventForOfflineAudioContext,
-              AsWeakPtr(), double_buffer_index_,
+              weak_ptr_factory_.GetWeakPtr(), double_buffer_index_,
               CrossThreadUnretained(waitable_event.get())));
       waitable_event->Wait();
     }

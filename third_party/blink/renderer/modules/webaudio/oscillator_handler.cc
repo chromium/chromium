@@ -762,6 +762,10 @@ bool OscillatorHandler::PropagatesSilence() const {
   return !IsPlayingOrScheduled() || HasFinished() || !periodic_wave_;
 }
 
+base::WeakPtr<AudioScheduledSourceHandler> OscillatorHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void OscillatorHandler::HandleStoppableSourceNode() {
   double now = Context()->currentTime();
 

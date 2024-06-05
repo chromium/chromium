@@ -126,4 +126,8 @@ void ConstantSourceHandler::HandleStoppableSourceNode() {
   }
 }
 
+base::WeakPtr<AudioScheduledSourceHandler> ConstantSourceHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace blink

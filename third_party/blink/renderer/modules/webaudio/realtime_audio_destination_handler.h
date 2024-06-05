@@ -25,10 +25,8 @@ class ExceptionState;
 class WebAudioLatencyHint;
 class WebAudioSinkDescriptor;
 
-class RealtimeAudioDestinationHandler final
-    : public AudioDestinationHandler,
-      public AudioIOCallback,
-      public base::SupportsWeakPtr<RealtimeAudioDestinationHandler> {
+class RealtimeAudioDestinationHandler final : public AudioDestinationHandler,
+                                              public AudioIOCallback {
  public:
   static scoped_refptr<RealtimeAudioDestinationHandler> Create(
       AudioNode&,
@@ -147,6 +145,8 @@ class RealtimeAudioDestinationHandler final
   // Represents the current condition of silence detection. By default, the
   // silence detection is active.
   bool is_detecting_silence_ = true;
+
+  base::WeakPtrFactory<RealtimeAudioDestinationHandler> weak_ptr_factory_{this};
 };
 
 }  // namespace blink

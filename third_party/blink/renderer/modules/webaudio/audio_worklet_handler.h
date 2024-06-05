@@ -25,9 +25,7 @@ class ExceptionState;
 class MessagePort;
 class ScriptState;
 
-class AudioWorkletHandler final
-    : public AudioHandler,
-      public base::SupportsWeakPtr<AudioWorkletHandler> {
+class AudioWorkletHandler final : public AudioHandler {
  public:
   static scoped_refptr<AudioWorkletHandler> Create(
       AudioNode&,
@@ -103,6 +101,8 @@ class AudioWorkletHandler final
   // lifecycle of an AudioWorkletNode and its handler. This flag becomes false
   // when a processor stops invoking the user-defined `process()` callback.
   bool is_processor_active_ = true;
+
+  base::WeakPtrFactory<AudioWorkletHandler> weak_ptr_factory_{this};
 };
 
 }  // namespace blink

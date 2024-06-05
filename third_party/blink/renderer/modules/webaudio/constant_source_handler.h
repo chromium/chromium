@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_CONSTANT_SOURCE_HANDLER_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_param.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_scheduled_source_node.h"
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
@@ -38,8 +39,12 @@ class ConstantSourceHandler final : public AudioScheduledSourceHandler {
                         float sample_rate,
                         AudioParamHandler& offset);
 
+  base::WeakPtr<AudioScheduledSourceHandler> AsWeakPtr() override;
+
   scoped_refptr<AudioParamHandler> offset_;
   AudioFloatArray sample_accurate_values_;
+
+  base::WeakPtrFactory<AudioScheduledSourceHandler> weak_ptr_factory_{this};
 };
 
 }  // namespace blink

@@ -496,6 +496,11 @@ void AudioBufferSourceHandler::ClampGrainParameters(
       grain_offset_, shared_buffer_->sampleRate());
 }
 
+base::WeakPtr<AudioScheduledSourceHandler>
+AudioBufferSourceHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void AudioBufferSourceHandler::Start(double when,
                                      ExceptionState& exception_state) {
   AudioScheduledSourceHandler::Start(when, exception_state);

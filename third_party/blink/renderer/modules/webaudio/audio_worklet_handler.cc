@@ -231,7 +231,8 @@ void AudioWorkletHandler::SetProcessorOnRenderThread(
     PostCrossThreadTask(
         *main_thread_task_runner_, FROM_HERE,
         CrossThreadBindOnce(
-            &AudioWorkletHandler::NotifyProcessorError, AsWeakPtr(),
+            &AudioWorkletHandler::NotifyProcessorError,
+            weak_ptr_factory_.GetWeakPtr(),
             AudioWorkletProcessorErrorState::kConstructionError));
   }
 }
@@ -246,7 +247,7 @@ void AudioWorkletHandler::FinishProcessorOnRenderThread() {
     PostCrossThreadTask(
         *main_thread_task_runner_, FROM_HERE,
         CrossThreadBindOnce(&AudioWorkletHandler::NotifyProcessorError,
-                            AsWeakPtr(), error_state));
+                            weak_ptr_factory_.GetWeakPtr(), error_state));
   }
 
   // After this point, the handler has no more pending activity and is ready for
@@ -261,7 +262,7 @@ void AudioWorkletHandler::FinishProcessorOnRenderThread() {
       *main_thread_task_runner_, FROM_HERE,
       CrossThreadBindOnce(
           &AudioWorkletHandler::MarkProcessorInactiveOnMainThread,
-          AsWeakPtr()));
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void AudioWorkletHandler::NotifyProcessorError(
