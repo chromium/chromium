@@ -12,34 +12,6 @@
 
 namespace ash::bluetooth_config {
 
-namespace {
-
-device::ConnectionFailureReason GetConnectionFailureReason(
-    device::BluetoothDevice::ConnectErrorCode error_code) {
-  switch (error_code) {
-    case device::BluetoothDevice::ConnectErrorCode::ERROR_AUTH_CANCELED:
-      return device::ConnectionFailureReason::kAuthCanceled;
-    case device::BluetoothDevice::ConnectErrorCode::ERROR_AUTH_FAILED:
-      return device::ConnectionFailureReason::kAuthFailed;
-    case device::BluetoothDevice::ConnectErrorCode::ERROR_AUTH_REJECTED:
-      return device::ConnectionFailureReason::kAuthRejected;
-    case device::BluetoothDevice::ConnectErrorCode::ERROR_AUTH_TIMEOUT:
-      return device::ConnectionFailureReason::kAuthTimeout;
-    case device::BluetoothDevice::ConnectErrorCode::ERROR_FAILED:
-      return device::ConnectionFailureReason::kFailed;
-    case device::BluetoothDevice::ConnectErrorCode::ERROR_INPROGRESS:
-      return device::ConnectionFailureReason::kInprogress;
-    case device::BluetoothDevice::ConnectErrorCode::ERROR_UNKNOWN:
-      return device::ConnectionFailureReason::kUnknownConnectionError;
-    case device::BluetoothDevice::ConnectErrorCode::ERROR_UNSUPPORTED_DEVICE:
-      return device::ConnectionFailureReason::kUnsupportedDevice;
-    default:
-      return device::ConnectionFailureReason::kUnknownError;
-  }
-}
-
-}  // namespace
-
 DeviceOperationHandlerImpl::DeviceOperationHandlerImpl(
     AdapterStateController* adapter_state_controller,
     scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,

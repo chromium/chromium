@@ -17,6 +17,10 @@ var errorCanceled = 'Request canceled';
 var errorTimeout = 'Operation timed out';
 var errorUnsupportedDevice = 'This device is not supported on ' +
     'the current platform';
+var errorNoMemory = 'No memory';
+var errorJniEnvironment = 'JNI environment error';
+var errorJniThreadAttach = 'JNI thread attach error';
+var errorWakelock = 'Wakelock error';
 
 function expectError(message) {
   if (!chrome.runtime.lastError)
@@ -48,19 +52,22 @@ function makeConnectErrorFunction(error) {
   };
 }
 
-queue = [function() {
-  ble.disconnect(deviceAddress0, runNext);
-}, function() {
-  expectError(errorNotConnected);
+queue = [
+  function() {
+    ble.disconnect(deviceAddress0, runNext);
+  },
+  function() {
+    expectError(errorNotConnected);
 
-  // Disconnect from deviceAddress1, (not connected)
-  ble.disconnect(deviceAddress1, runNext);
-}, function () {
-  expectError(errorNotConnected);
+    // Disconnect from deviceAddress1, (not connected)
+    ble.disconnect(deviceAddress1, runNext);
+  },
+  function() {
+    expectError(errorNotConnected);
 
-  // Connect to device that doesn't exist.
-  ble.connect(badDeviceAddress, runNext);
-},
+    // Connect to device that doesn't exist.
+    ble.connect(badDeviceAddress, runNext);
+  },
   makeConnectErrorFunction(errorNotFound),
   makeConnectErrorFunction(errorOperationFailed),
   makeConnectErrorFunction(errorInProgress),
@@ -69,59 +76,74 @@ queue = [function() {
   makeConnectErrorFunction(errorCanceled),
   makeConnectErrorFunction(errorTimeout),
   makeConnectErrorFunction(errorUnsupportedDevice),
-function () {
-  expectSuccess();
+  makeConnectErrorFunction(errorNoMemory),
+  makeConnectErrorFunction(errorJniEnvironment),
+  makeConnectErrorFunction(errorJniThreadAttach),
+  makeConnectErrorFunction(errorWakelock),
+  function() {
+    expectSuccess();
 
-  // Device 0 already connected.
-  ble.connect(deviceAddress0, runNext);
-}, function () {
-  expectError(errorAlreadyConnected);
+    // Device 0 already connected.
+    ble.connect(deviceAddress0, runNext);
+  },
+  function() {
+    expectError(errorAlreadyConnected);
 
-  // Device 1 still disconnected.
-  ble.disconnect(deviceAddress1, runNext);
-}, function () {
-  expectError(errorNotConnected);
+    // Device 1 still disconnected.
+    ble.disconnect(deviceAddress1, runNext);
+  },
+  function() {
+    expectError(errorNotConnected);
 
-  // Successful connect to device 1.
-  ble.connect(deviceAddress1, runNext);
-}, function () {
-  expectSuccess();
+    // Successful connect to device 1.
+    ble.connect(deviceAddress1, runNext);
+  },
+  function() {
+    expectSuccess();
 
-  // Device 1 already connected.
-  ble.connect(deviceAddress1, runNext);
-}, function () {
-  expectError(errorAlreadyConnected);
+    // Device 1 already connected.
+    ble.connect(deviceAddress1, runNext);
+  },
+  function() {
+    expectError(errorAlreadyConnected);
 
-  // Successfully disconnect device 0.
-  ble.disconnect(deviceAddress0, runNext);
-}, function () {
-  expectSuccess();
+    // Successfully disconnect device 0.
+    ble.disconnect(deviceAddress0, runNext);
+  },
+  function() {
+    expectSuccess();
 
-  // Cannot disconnect device 0.
-  ble.disconnect(deviceAddress0, runNext);
-}, function () {
-  expectError(errorNotConnected);
+    // Cannot disconnect device 0.
+    ble.disconnect(deviceAddress0, runNext);
+  },
+  function() {
+    expectError(errorNotConnected);
 
-  // Device 1 still connected.
-  ble.connect(deviceAddress1, runNext);
-}, function () {
-  expectError(errorAlreadyConnected);
+    // Device 1 still connected.
+    ble.connect(deviceAddress1, runNext);
+  },
+  function() {
+    expectError(errorAlreadyConnected);
 
-  // Successfully disconnect device 1.
-  ble.disconnect(deviceAddress1, runNext);
-}, function () {
-  expectSuccess();
+    // Successfully disconnect device 1.
+    ble.disconnect(deviceAddress1, runNext);
+  },
+  function() {
+    expectSuccess();
 
-  // Cannot disconnect device 1.
-  ble.disconnect(deviceAddress1, runNext);
-}, function () {
-  expectError(errorNotConnected);
+    // Cannot disconnect device 1.
+    ble.disconnect(deviceAddress1, runNext);
+  },
+  function() {
+    expectError(errorNotConnected);
 
-  // Re-connect device 0.
-  ble.connect(deviceAddress0, runNext);
-}, function () {
-  expectSuccess();
-  chrome.test.succeed();
-}];
+    // Re-connect device 0.
+    ble.connect(deviceAddress0, runNext);
+  },
+  function() {
+    expectSuccess();
+    chrome.test.succeed();
+  }
+];
 
 runNext();

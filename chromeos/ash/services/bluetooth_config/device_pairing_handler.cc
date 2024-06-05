@@ -64,6 +64,24 @@ mojom::PairingResult GetPairingResult(
     case device::ConnectionFailureReason::kNotFound:
       [[fallthrough]];
     case device::ConnectionFailureReason::kBluetoothDisabled:
+      [[fallthrough]];
+    case device::ConnectionFailureReason::kDeviceNotReady:
+      [[fallthrough]];
+    case device::ConnectionFailureReason::kAlreadyConnected:
+      [[fallthrough]];
+    case device::ConnectionFailureReason::kDeviceAlreadyExists:
+      [[fallthrough]];
+    case device::ConnectionFailureReason::kInvalidArgs:
+      [[fallthrough]];
+    case device::ConnectionFailureReason::kNonAuthTimeout:
+      [[fallthrough]];
+    case device::ConnectionFailureReason::kNoMemory:
+      [[fallthrough]];
+    case device::ConnectionFailureReason::kJniEnvironment:
+      [[fallthrough]];
+    case device::ConnectionFailureReason::kJniThreadAttach:
+      [[fallthrough]];
+    case device::ConnectionFailureReason::kWakelock:
       return mojom::PairingResult::kNonAuthFailure;
   }
 }

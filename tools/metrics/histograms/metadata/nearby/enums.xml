@@ -49,6 +49,10 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="Does Not Exist"/>
   <int value="15" label="Invalid Args"/>
   <int value="16" label="Non Auth Timeout"/>
+  <int value="17" label="No memory"/>
+  <int value="18" label="JNI Environment"/>
+  <int value="19" label="JNI Thread Attach"/>
+  <int value="20" label="Wakelock"/>
 </enum>
 
 <enum name="NearbyConnectionsMedium">

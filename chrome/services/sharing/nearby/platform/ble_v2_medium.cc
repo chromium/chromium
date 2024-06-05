@@ -98,6 +98,14 @@ std::string_view ConnectResultToString(bluetooth::mojom::ConnectResult result) {
       return "Invalid Args";
     case bluetooth::mojom::ConnectResult::NON_AUTH_TIMEOUT:
       return "Non Auth Timeout";
+    case bluetooth::mojom::ConnectResult::NO_MEMORY:
+      return "No Memory";
+    case bluetooth::mojom::ConnectResult::JNI_ENVIRONMENT:
+      return "JNI Environment";
+    case bluetooth::mojom::ConnectResult::JNI_THREAD_ATTACH:
+      return "JNI Thread Attach";
+    case bluetooth::mojom::ConnectResult::WAKELOCK:
+      return "Wakelock";
   }
 
   NOTREACHED_NORETURN();

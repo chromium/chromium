@@ -1168,10 +1168,10 @@ IN_PROC_BROWSER_TEST_F(BluetoothLowEnergyApiTest, GattConnection) {
   EXPECT_CALL(*mock_adapter_, GetDevice(kTestLeDeviceAddress1))
       .WillRepeatedly(Return(device1_.get()));
   static_assert(
-      BluetoothDevice::NUM_CONNECT_ERROR_CODES == 15,
+      BluetoothDevice::NUM_CONNECT_ERROR_CODES == 19,
       "Update required if the number of BluetoothDevice enums changes.");
   EXPECT_CALL(*device0_, CreateGattConnection(_, _))
-      .Times(9)
+      .Times(13)
       .WillOnce(RunOnceCallback<0>(/*connection=*/nullptr,
                                    BluetoothDevice::ERROR_FAILED))
       .WillOnce(RunOnceCallback<0>(/*connection=*/nullptr,
@@ -1186,6 +1186,14 @@ IN_PROC_BROWSER_TEST_F(BluetoothLowEnergyApiTest, GattConnection) {
                                    BluetoothDevice::ERROR_AUTH_TIMEOUT))
       .WillOnce(RunOnceCallback<0>(
           /*connection=*/nullptr, BluetoothDevice::ERROR_UNSUPPORTED_DEVICE))
+      .WillOnce(RunOnceCallback<0>(
+          /*connection=*/nullptr, BluetoothDevice::ERROR_NO_MEMORY))
+      .WillOnce(RunOnceCallback<0>(
+          /*connection=*/nullptr, BluetoothDevice::ERROR_JNI_ENVIRONMENT))
+      .WillOnce(RunOnceCallback<0>(
+          /*connection=*/nullptr, BluetoothDevice::ERROR_JNI_THREAD_ATTACH))
+      .WillOnce(RunOnceCallback<0>(
+          /*connection=*/nullptr, BluetoothDevice::ERROR_WAKELOCK))
       .WillOnce(RunOnceCallback<0>(
           CreateGattConnection(mock_adapter_, kTestLeDeviceAddress0,
                                /*expect_disconnect=*/true),

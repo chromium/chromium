@@ -265,6 +265,18 @@ WebBluetoothServiceImpl::TranslateConnectErrorAndRecord(
     case BluetoothDevice::ERROR_NON_AUTH_TIMEOUT:
       RecordConnectGATTOutcome(UMAConnectGATTOutcome::NON_AUTH_TIMEOUT);
       return blink::mojom::WebBluetoothResult::CONNECT_NON_AUTH_TIMEOUT;
+    case device::BluetoothDevice::ERROR_NO_MEMORY:
+      RecordConnectGATTOutcome(UMAConnectGATTOutcome::NO_MEMORY);
+      return blink::mojom::WebBluetoothResult::CONNECT_NO_MEMORY;
+    case device::BluetoothDevice::ERROR_JNI_ENVIRONMENT:
+      RecordConnectGATTOutcome(UMAConnectGATTOutcome::JNI_ENVIRONMENT);
+      return blink::mojom::WebBluetoothResult::CONNECT_JNI_ENVIRONMENT;
+    case device::BluetoothDevice::ERROR_JNI_THREAD_ATTACH:
+      RecordConnectGATTOutcome(UMAConnectGATTOutcome::JNI_THREAD_ATTACH);
+      return blink::mojom::WebBluetoothResult::CONNECT_JNI_THREAD_ATTACH;
+    case device::BluetoothDevice::ERROR_WAKELOCK:
+      RecordConnectGATTOutcome(UMAConnectGATTOutcome::WAKELOCK);
+      return blink::mojom::WebBluetoothResult::CONNECT_WAKELOCK;
     case BluetoothDevice::NUM_CONNECT_ERROR_CODES:
       NOTREACHED_IN_MIGRATION();
       return blink::mojom::WebBluetoothResult::CONNECT_UNKNOWN_FAILURE;

@@ -239,6 +239,16 @@ DeviceConnectErrorCodeToStatus(BluetoothDevice::ConnectErrorCode error_code) {
           kStatusErrorInvalidArguments;
     case BluetoothDevice::ERROR_NON_AUTH_TIMEOUT:
       return extensions::BluetoothLowEnergyEventRouter::kStatusErrorTimeout;
+    case device::BluetoothDevice::ConnectErrorCode::ERROR_NO_MEMORY:
+      return extensions::BluetoothLowEnergyEventRouter::kStatusErrorNoMemory;
+    case device::BluetoothDevice::ConnectErrorCode::ERROR_JNI_ENVIRONMENT:
+      return extensions::BluetoothLowEnergyEventRouter::
+          kStatusErrorJniEnvironment;
+    case device::BluetoothDevice::ConnectErrorCode::ERROR_JNI_THREAD_ATTACH:
+      return extensions::BluetoothLowEnergyEventRouter::
+          kStatusErrorJniThreadAttach;
+    case device::BluetoothDevice::ConnectErrorCode::ERROR_WAKELOCK:
+      return extensions::BluetoothLowEnergyEventRouter::kStatusErrorWakelock;
     case BluetoothDevice::NUM_CONNECT_ERROR_CODES:
       NOTREACHED_IN_MIGRATION();
       return extensions::BluetoothLowEnergyEventRouter::
