@@ -4794,6 +4794,18 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_GOOGLE_BOTTOM_BAR_PAGE_INSIGHTS_BUTTON_DESCRIPTION" desc="Content description for page insights button">
       Page insights button
       </message>
+      <message name="IDS_GOOGLE_BOTTOM_BAR_SEARCHBOX_SUPER_G_BUTTON_DESCRIPTION" desc="Content description for super G button in a searchbox that opens Home tab in Google App">
+      Go to Google App Home
+      </message>
+      <message name="IDS_GOOGLE_BOTTOM_BAR_SEARCHBOX_TEXT" desc="Text used as hint text for searchbox">
+      Ask anything
+      </message>
+      <message name="IDS_GOOGLE_BOTTOM_BAR_SEARCHBOX_MIC_BUTTON_DESCRIPTION" desc="Content description for mic button in a searchbox that opens Voice Search in Google App">
+      Go to Google App Voice Search
+      </message>
+      <message name="IDS_GOOGLE_BOTTOM_BAR_SEARCHBOX_LENS_BUTTON_DESCRIPTION" desc="Content description for lens button in searchbox that opens Lens in Google App">
+      Go to Lens
+      </message>
 
       <!-- WebFeed -->
       <message name="IDS_WEB_FEED_FOLLOW_LOADING_DESCRIPTION" desc="The content description of the loading spinner after the user presses Follow and is waiting for a response.">

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<!--TODO:  Replace with actual layout, and remove tools:ignore="UnusedResources"-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:ignore="UnusedResources">
+
+  <ImageButton
+      android:layout_width="@dimen/google_bottom_bar_button_size"
+      android:layout_height="@dimen/google_bottom_bar_button_size"
+      android:contentDescription="@string/google_bottom_bar_searchbox_super_g_button_description"/>
+
+  <ImageButton
+      android:layout_width="@dimen/google_bottom_bar_button_size"
+      android:layout_height="@dimen/google_bottom_bar_button_size"
+      android:contentDescription="@string/google_bottom_bar_searchbox_text"/>
+
+  <ImageButton
+      android:layout_width="@dimen/google_bottom_bar_button_size"
+      android:layout_height="@dimen/google_bottom_bar_button_size"
+      android:contentDescription="@string/google_bottom_bar_searchbox_mic_button_description"/>
+
+  <ImageButton
+      android:layout_width="@dimen/google_bottom_bar_button_size"
+      android:layout_height="@dimen/google_bottom_bar_button_size"
+      android:contentDescription="@string/google_bottom_bar_searchbox_lens_button_description"/>
+
+</LinearLayout>

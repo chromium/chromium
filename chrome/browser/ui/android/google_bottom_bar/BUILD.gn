@@ -46,6 +46,7 @@ android_resources("java_resources") {
     "java/res/layout/bottom_bar_button_non_spotlight_layout.xml",
     "java/res/layout/bottom_bar_button_spotlight_layout.xml",
     "java/res/layout/google_bottom_bar_even.xml",
+    "java/res/layout/google_bottom_bar_searchbox.xml",
     "java/res/layout/google_bottom_bar_spotlight.xml",
     "java/res/values/colors.xml",
     "java/res/values/dimens.xml",
