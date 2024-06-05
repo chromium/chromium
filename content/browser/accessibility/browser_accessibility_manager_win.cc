@@ -138,6 +138,20 @@ void BrowserAccessibilityManagerWin::FireAriaNotificationEvent(
     ax::mojom::AriaNotificationPriority priority_property) {
   DCHECK(node);
 
+  // This API is only supported from Windows10 (version 1709) onwards.
+  // Check if the function pointer is valid or not.
+  using UiaRaiseNotificationEventFunction =
+      HRESULT(WINAPI*)(IRawElementProviderSimple*, NotificationKind,
+                       NotificationProcessing, BSTR, BSTR);
+  static const UiaRaiseNotificationEventFunction
+      uia_raise_notification_event_func =
+          reinterpret_cast<UiaRaiseNotificationEventFunction>(
+              ::GetProcAddress(GetModuleHandle(L"uiautomationcore.dll"),
+                               "UiaRaiseNotificationEvent"));
+  if (!uia_raise_notification_event_func) {
+    return;
+  }
+
   auto MapPropertiesToUiaNotificationProcessing =
       [&]() -> NotificationProcessing {
     switch (interrupt_property) {
@@ -172,11 +186,11 @@ void BrowserAccessibilityManagerWin::FireAriaNotificationEvent(
   const base::win::ScopedBstr notification_id_bstr(
       base::UTF8ToWide(notification_id));
 
-  UiaRaiseNotificationEvent(ToBrowserAccessibilityWin(node)->GetCOM(),
-                            NotificationKind_ActionCompleted,
-                            MapPropertiesToUiaNotificationProcessing(),
-                            announcement_bstr.Get(),
-                            notification_id_bstr.Get());
+  uia_raise_notification_event_func(ToBrowserAccessibilityWin(node)->GetCOM(),
+                                    NotificationKind_ActionCompleted,
+                                    MapPropertiesToUiaNotificationProcessing(),
+                                    announcement_bstr.Get(),
+                                    notification_id_bstr.Get());
 }
 
 void BrowserAccessibilityManagerWin::FireFocusEvent(ui::AXNode* node) {
