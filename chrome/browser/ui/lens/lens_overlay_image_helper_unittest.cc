@@ -15,6 +15,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/codec/jpeg_codec.h"
+#include "ui/gfx/codec/webp_codec.h"
 #include "ui/gfx/color_analysis.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -59,9 +60,15 @@ class LensOverlayImageHelperTest : public testing::Test {
     return bitmap;
   }
 
-  std::string GetJpegBytesForBitmap(const SkBitmap bitmap) {
+  std::string GetJpegBytesForBitmap(const SkBitmap& bitmap) {
     std::vector<unsigned char> data;
     gfx::JPEGCodec::Encode(bitmap, kImageCompressionQuality, &data);
+    return std::string(data.begin(), data.end());
+  }
+
+  std::string GetWebpBytesForBitmap(const SkBitmap& bitmap) {
+    std::vector<unsigned char> data;
+    gfx::WebpCodec::Encode(bitmap, kImageCompressionQuality, &data);
     return std::string(data.begin(), data.end());
   }
 
@@ -185,7 +192,8 @@ TEST_F(LensOverlayImageHelperTest,
   const SkBitmap bitmap = CreateNonEmptyBitmap(kImageMaxWidth, kImageMaxHeight);
   lens::mojom::CenterRotatedBoxPtr region;
   std::optional<lens::ImageCrop> image_crop =
-      lens::DownscaleAndEncodeBitmapRegionIfNeeded(bitmap, std::move(region));
+      lens::DownscaleAndEncodeBitmapRegionIfNeeded(bitmap, std::move(region),
+                                                   std::nullopt);
   ASSERT_FALSE(image_crop.has_value());
 }
 
@@ -193,8 +201,8 @@ TEST_F(LensOverlayImageHelperTest, DownscaleAndEncodeBitmapRegionMaxSize) {
   const SkBitmap bitmap = CreateNonEmptyBitmap(kImageMaxWidth, kImageMaxHeight);
   gfx::Rect region(0, 0, kImageMaxWidth, kImageMaxHeight);
   std::optional<lens::ImageCrop> image_crop =
-      lens::DownscaleAndEncodeBitmapRegionIfNeeded(bitmap,
-                                                   CenterBoxForRegion(region));
+      lens::DownscaleAndEncodeBitmapRegionIfNeeded(
+          bitmap, CenterBoxForRegion(region), std::nullopt);
   std::string expected_output = GetJpegBytesForBitmap(bitmap);
 
   ASSERT_EQ(kImageMaxWidth, image_crop->zoomed_crop().parent_width());
@@ -214,8 +222,8 @@ TEST_F(LensOverlayImageHelperTest, DownscaleAndEncodeBitmapRegionSmallSize) {
   const SkBitmap bitmap = CreateNonEmptyBitmap(/*width=*/100, /*height=*/100);
   gfx::Rect region(10, 10, 50, 50);
   std::optional<lens::ImageCrop> image_crop =
-      lens::DownscaleAndEncodeBitmapRegionIfNeeded(bitmap,
-                                                   CenterBoxForRegion(region));
+      lens::DownscaleAndEncodeBitmapRegionIfNeeded(
+          bitmap, CenterBoxForRegion(region), std::nullopt);
 
   const SkBitmap region_bitmap =
       CreateNonEmptyBitmap(/*width=*/50, /*height=*/50);
@@ -242,8 +250,8 @@ TEST_F(LensOverlayImageHelperTest,
 
   gfx::Rect region(10, 10, 50, 50);
   std::optional<lens::ImageCrop> image_crop =
-      lens::DownscaleAndEncodeBitmapRegionIfNeeded(bitmap,
-                                                   CenterBoxForRegion(region));
+      lens::DownscaleAndEncodeBitmapRegionIfNeeded(
+          bitmap, CenterBoxForRegion(region), std::nullopt);
 
   const SkBitmap region_bitmap =
       CreateNonEmptyBitmap(/*width=*/50, /*height=*/50);
@@ -272,8 +280,8 @@ TEST_F(LensOverlayImageHelperTest,
   gfx::Rect region(10, 10, kImageMaxWidth * region_scale,
                    kImageMaxHeight * region_scale);
   std::optional<lens::ImageCrop> image_crop =
-      lens::DownscaleAndEncodeBitmapRegionIfNeeded(bitmap,
-                                                   CenterBoxForRegion(region));
+      lens::DownscaleAndEncodeBitmapRegionIfNeeded(
+          bitmap, CenterBoxForRegion(region), std::nullopt);
 
   const SkBitmap region_bitmap =
       CreateNonEmptyBitmap(kImageMaxWidth, kImageMaxHeight);
@@ -305,8 +313,8 @@ TEST_F(LensOverlayImageHelperTest,
   const int region_scale = 2;
   gfx::Rect region(10, 10, kImageMaxWidth * region_scale, kImageMaxHeight);
   std::optional<lens::ImageCrop> image_crop =
-      lens::DownscaleAndEncodeBitmapRegionIfNeeded(bitmap,
-                                                   CenterBoxForRegion(region));
+      lens::DownscaleAndEncodeBitmapRegionIfNeeded(
+          bitmap, CenterBoxForRegion(region), std::nullopt);
 
   const SkBitmap region_bitmap =
       CreateNonEmptyBitmap(kImageMaxWidth, kImageMaxHeight / region_scale);
@@ -338,8 +346,8 @@ TEST_F(LensOverlayImageHelperTest,
   const int region_scale = 2;
   gfx::Rect region(10, 10, kImageMaxWidth, kImageMaxHeight * region_scale);
   std::optional<lens::ImageCrop> image_crop =
-      lens::DownscaleAndEncodeBitmapRegionIfNeeded(bitmap,
-                                                   CenterBoxForRegion(region));
+      lens::DownscaleAndEncodeBitmapRegionIfNeeded(
+          bitmap, CenterBoxForRegion(region), std::nullopt);
 
   const SkBitmap region_bitmap =
       CreateNonEmptyBitmap(kImageMaxWidth / region_scale, kImageMaxHeight);
@@ -356,6 +364,55 @@ TEST_F(LensOverlayImageHelperTest,
   ASSERT_EQ(kImageMaxWidth, image_crop->zoomed_crop().crop().width());
   ASSERT_EQ(kImageMaxHeight * region_scale,
             image_crop->zoomed_crop().crop().height());
+  ASSERT_EQ(0, image_crop->zoomed_crop().crop().rotation_z());
+  ASSERT_EQ(lens::CoordinateType::IMAGE,
+            image_crop->zoomed_crop().crop().coordinate_type());
+  ASSERT_EQ(expected_output, image_crop->image().image_content());
+}
+
+TEST_F(LensOverlayImageHelperTest,
+       DownscaleAndEncodeBitmapWithOpaqueRegionBytes) {
+  const SkBitmap image_bitmap = CreateNonEmptyBitmap(1000, 1000);
+  SkBitmap region_bitmap = CreateNonEmptyBitmap(300, 300);
+  region_bitmap.setAlphaType(kOpaque_SkAlphaType);
+  gfx::Rect region(0, 0, 100, 100);
+  std::optional<lens::ImageCrop> image_crop =
+      lens::DownscaleAndEncodeBitmapRegionIfNeeded(
+          image_bitmap, CenterBoxForRegion(region),
+          std::make_optional<SkBitmap>(region_bitmap));
+  std::string expected_output = GetJpegBytesForBitmap(region_bitmap);
+
+  ASSERT_EQ(1000, image_crop->zoomed_crop().parent_width());
+  ASSERT_EQ(1000, image_crop->zoomed_crop().parent_height());
+  ASSERT_EQ(3, image_crop->zoomed_crop().zoom());
+  ASSERT_EQ(50, image_crop->zoomed_crop().crop().center_x());
+  ASSERT_EQ(50, image_crop->zoomed_crop().crop().center_y());
+  ASSERT_EQ(100, image_crop->zoomed_crop().crop().width());
+  ASSERT_EQ(100, image_crop->zoomed_crop().crop().height());
+  ASSERT_EQ(0, image_crop->zoomed_crop().crop().rotation_z());
+  ASSERT_EQ(lens::CoordinateType::IMAGE,
+            image_crop->zoomed_crop().crop().coordinate_type());
+  ASSERT_EQ(expected_output, image_crop->image().image_content());
+}
+
+TEST_F(LensOverlayImageHelperTest,
+       DownscaleAndEncodeBitmapWithTransparentRegionBytes) {
+  const SkBitmap image_bitmap = CreateNonEmptyBitmap(1000, 1000);
+  const SkBitmap region_bitmap = CreateNonEmptyBitmap(300, 300);
+  gfx::Rect region(0, 0, 100, 100);
+  std::optional<lens::ImageCrop> image_crop =
+      lens::DownscaleAndEncodeBitmapRegionIfNeeded(
+          image_bitmap, CenterBoxForRegion(region),
+          std::make_optional<SkBitmap>(region_bitmap));
+  std::string expected_output = GetWebpBytesForBitmap(region_bitmap);
+
+  ASSERT_EQ(1000, image_crop->zoomed_crop().parent_width());
+  ASSERT_EQ(1000, image_crop->zoomed_crop().parent_height());
+  ASSERT_EQ(3, image_crop->zoomed_crop().zoom());
+  ASSERT_EQ(50, image_crop->zoomed_crop().crop().center_x());
+  ASSERT_EQ(50, image_crop->zoomed_crop().crop().center_y());
+  ASSERT_EQ(100, image_crop->zoomed_crop().crop().width());
+  ASSERT_EQ(100, image_crop->zoomed_crop().crop().height());
   ASSERT_EQ(0, image_crop->zoomed_crop().crop().rotation_z());
   ASSERT_EQ(lens::CoordinateType::IMAGE,
             image_crop->zoomed_crop().crop().coordinate_type());

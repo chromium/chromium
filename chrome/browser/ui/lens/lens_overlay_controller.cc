@@ -274,16 +274,20 @@ void LensOverlayController::ShowUIWithPendingRegion(
     lens::LensOverlayInvocationSource invocation_source,
     const gfx::Rect& tab_bounds,
     const gfx::Rect& view_bounds,
-    const gfx::Rect& image_bounds) {
+    const gfx::Rect& image_bounds,
+    const SkBitmap& region_bitmap) {
   ShowUIWithPendingRegion(invocation_source,
                           lens::GetCenterRotatedBoxFromTabViewAndImageBounds(
-                              tab_bounds, view_bounds, image_bounds));
+                              tab_bounds, view_bounds, image_bounds),
+                          region_bitmap);
 }
 
 void LensOverlayController::ShowUIWithPendingRegion(
     lens::LensOverlayInvocationSource invocation_source,
-    lens::mojom::CenterRotatedBoxPtr region) {
+    lens::mojom::CenterRotatedBoxPtr region,
+    const SkBitmap& region_bitmap) {
   pending_region_ = std::move(region);
+  pending_region_bitmap_ = region_bitmap;
   ShowUI(invocation_source);
 }
 
@@ -476,7 +480,9 @@ void LensOverlayController::BindOverlay(
         device_scale_factor * page_scale_factor);
   }
   if (pending_region_) {
-    IssueLensRequest(std::move(pending_region_));
+    DoLensRequest(std::move(pending_region_),
+                  std::make_optional<SkBitmap>(pending_region_bitmap_));
+    pending_region_bitmap_.reset();
   }
 }
 
@@ -1391,6 +1397,23 @@ void LensOverlayController::RemoveBackgroundBlur() {
   ui_layer->SetLayerBlur(0);
 }
 
+void LensOverlayController::DoLensRequest(
+    lens::mojom::CenterRotatedBoxPtr region,
+    std::optional<SkBitmap> region_bytes) {
+  CHECK(initialization_data_);
+  CHECK(region);
+  SetSearchboxInputText(std::string());
+  initialization_data_->selected_region_ = region.Clone();
+  initialization_data_->selected_text_.reset();
+  initialization_data_->additional_search_query_params_.clear();
+  // TODO(b/332787629): Append the 'mactx' param.
+  lens_overlay_query_controller_->SendRegionSearch(
+      region.Clone(), initialization_data_->additional_search_query_params_,
+      region_bytes);
+  results_side_panel_coordinator_->RegisterEntryAndShow();
+  state_ = State::kOverlayAndResults;
+}
+
 void LensOverlayController::ActivityRequestedByOverlay(
     ui::mojom::ClickModifiersPtr click_modifiers) {
   // The tab is expected to be in the foreground.
@@ -1480,17 +1503,7 @@ void LensOverlayController::InfoRequestedByOverlay(
 
 void LensOverlayController::IssueLensRequest(
     lens::mojom::CenterRotatedBoxPtr region) {
-  CHECK(initialization_data_);
-  CHECK(region);
-  SetSearchboxInputText(std::string());
-  initialization_data_->selected_region_ = region.Clone();
-  initialization_data_->selected_text_.reset();
-  initialization_data_->additional_search_query_params_.clear();
-  // TODO(b/332787629): Append the 'mactx' param.
-  lens_overlay_query_controller_->SendRegionSearch(
-      region.Clone(), initialization_data_->additional_search_query_params_);
-  results_side_panel_coordinator_->RegisterEntryAndShow();
-  state_ = State::kOverlayAndResults;
+  DoLensRequest(std::move(region), std::nullopt);
 }
 
 void LensOverlayController::IssueTextSelectionRequest(const std::string& query,

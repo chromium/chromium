@@ -117,18 +117,22 @@ class LensOverlayController : public LensSearchboxClient,
   static bool IsEnabled(Profile* profile);
 
   // Sets a region to search after the overlay loads, then calls ShowUI().
-  // All units are in device pixels.
+  // All units are in device pixels. region_bitmap contains the high definition
+  // image bytes to use for the search instead of cropping the region from the
+  // viewport.
   void ShowUIWithPendingRegion(
       lens::LensOverlayInvocationSource invocation_source,
       const gfx::Rect& tab_bounds,
       const gfx::Rect& view_bounds,
-      const gfx::Rect& image_bounds);
+      const gfx::Rect& region_bounds,
+      const SkBitmap& region_bitmap);
 
   // Implementation detail of above, exposed for testing. Do not call this
   // directly.
   void ShowUIWithPendingRegion(
       lens::LensOverlayInvocationSource invocation_source,
-      lens::mojom::CenterRotatedBoxPtr region);
+      lens::mojom::CenterRotatedBoxPtr region,
+      const SkBitmap& region_bitmap);
 
   // This is entry point for showing the overlay UI. This has no effect if state
   // is not kOff. This has no effect if the tab is not in the foreground. If the
@@ -570,6 +574,12 @@ class LensOverlayController : public LensSearchboxClient,
   // Removes the blur on the live page.
   void RemoveBackgroundBlur();
 
+  // Makes a Lens request and updates all state related to the Lens request. If
+  // region_bitmap is provided, it will use those bytes to send to the Lens
+  // server instead of cropping the region from the full page screenshot.
+  void DoLensRequest(lens::mojom::CenterRotatedBoxPtr region,
+                     std::optional<SkBitmap> region_bitmap);
+
   // lens::mojom::LensPageHandler overrides.
   void ActivityRequestedByOverlay(
       ui::mojom::ClickModifiersPtr click_modifiers) override;
@@ -676,6 +686,11 @@ class LensOverlayController : public LensSearchboxClient,
 
   // Pending region to search after the overlay loads.
   lens::mojom::CenterRotatedBoxPtr pending_region_;
+
+  // The bitmap for the pending region stored in pending_region_.
+  // pending_region_ and pending_region_bitmap_ are correlated and their
+  // lifecycles are should stay in sync.
+  SkBitmap pending_region_bitmap_;
 
   // If the side panel needed to be closed before dismissing the overlay, this
   // stores the original dismissal_source so it is properly recorded when the

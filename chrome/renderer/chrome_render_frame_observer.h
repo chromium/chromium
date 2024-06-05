@@ -101,8 +101,9 @@ class ChromeRenderFrameObserver : public content::RenderFrameObserver,
       RequestImageForContextNodeCallback callback) override;
   void RequestBitmapForContextNode(
       RequestBitmapForContextNodeCallback callback) override;
-  void RequestBoundsForContextNodeDiagnostic(
-      RequestBoundsForContextNodeDiagnosticCallback callback) override;
+  void RequestBitmapForContextNodeWithBoundsDiagnostic(
+      RequestBitmapForContextNodeWithBoundsDiagnosticCallback callback)
+      override;
   void RequestReloadImageForContextNode() override;
 #if BUILDFLAG(IS_ANDROID)
   void SetCCTClientHeader(const std::string& header) override;

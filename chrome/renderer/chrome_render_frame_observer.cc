@@ -509,18 +509,20 @@ void ChromeRenderFrameObserver::RequestBitmapForContextNode(
   std::move(callback).Run(image);
 }
 
-void ChromeRenderFrameObserver::RequestBoundsForContextNodeDiagnostic(
-    RequestBoundsForContextNodeDiagnosticCallback callback) {
+void ChromeRenderFrameObserver::RequestBitmapForContextNodeWithBoundsDiagnostic(
+    RequestBitmapForContextNodeWithBoundsDiagnosticCallback callback) {
   WebNode context_node = render_frame()->GetWebFrame()->ContextMenuImageNode();
+  SkBitmap image;
   gfx::Rect bounds;
   if (context_node.IsNull() || !context_node.IsElementNode()) {
-    std::move(callback).Run(bounds);
+    std::move(callback).Run(image, bounds);
     return;
   }
 
   WebElement web_element = context_node.To<WebElement>();
+  image = web_element.ImageContents();
   bounds = web_element.BoundsInWidget();
-  std::move(callback).Run(bounds);
+  std::move(callback).Run(image, bounds);
 }
 
 void ChromeRenderFrameObserver::RequestReloadImageForContextNode() {

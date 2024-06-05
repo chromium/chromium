@@ -16,6 +16,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/codec/jpeg_codec.h"
+#include "ui/gfx/codec/webp_codec.h"
 #include "ui/gfx/color_analysis.h"
 #include "ui/gfx/color_conversions.h"
 #include "ui/gfx/geometry/rect.h"
@@ -126,9 +127,9 @@ SkBitmap DownscaleImageIfNeeded(const SkBitmap& image, int ui_scale_factor) {
 
   auto size = gfx::Size(image.width(), image.height());
   if (ShouldDownscaleSize(size, lens::features::GetLensOverlayImageMaxArea(),
-                          lens::features::GetLensOverlayImageMaxHeight(),
+                          lens::features::GetLensOverlayImageMaxWidth(),
                           lens::features::GetLensOverlayImageMaxHeight())) {
-    return DownscaleImage(image, lens::features::GetLensOverlayImageMaxHeight(),
+    return DownscaleImage(image, lens::features::GetLensOverlayImageMaxWidth(),
                           lens::features::GetLensOverlayImageMaxHeight());
   }
   // No downscaling needed.
@@ -137,6 +138,7 @@ SkBitmap DownscaleImageIfNeeded(const SkBitmap& image, int ui_scale_factor) {
 
 SkBitmap CropAndDownscaleImageIfNeeded(const SkBitmap& image,
                                        gfx::Rect region) {
+  SkBitmap output;
   auto full_image_size = gfx::Size(image.width(), image.height());
   auto region_size = gfx::Size(region.width(), region.height());
   auto target_width = lens::features::GetLensOverlayImageMaxWidth();
@@ -157,16 +159,22 @@ SkBitmap CropAndDownscaleImageIfNeeded(const SkBitmap& image,
     SkIRect dest_subset = {scaled_x, scaled_y,
                            scaled_x + downscaled_region_size.width(),
                            scaled_y + downscaled_region_size.height()};
-    return skia::ImageOperations::Resize(
+    output = skia::ImageOperations::Resize(
         image, skia::ImageOperations::RESIZE_BEST, scaled_full_image_width,
         scaled_full_image_height, dest_subset);
+  } else {
+    SkIRect dest_subset = {region.x(), region.y(), region.x() + region.width(),
+                           region.y() + region.height()};
+    output = skia::ImageOperations::Resize(
+        image, skia::ImageOperations::RESIZE_BEST, image.width(),
+        image.height(), dest_subset);
   }
 
-  SkIRect dest_subset = {region.x(), region.y(), region.x() + region.width(),
-                         region.y() + region.height()};
-  return skia::ImageOperations::Resize(
-      image, skia::ImageOperations::RESIZE_BEST, image.width(), image.height(),
-      dest_subset);
+  // Since we are cropping the image from a screenshot, we are assuming there
+  // cannot be transparent pixels. This allows encoding logic to choose the
+  // correct image format to represent the crop.
+  output.setAlphaType(kOpaque_SkAlphaType);
+  return output;
 }
 
 }  // namespace
@@ -178,6 +186,20 @@ bool EncodeImage(const SkBitmap& image,
                  scoped_refptr<base::RefCountedBytes>* output) {
   *output = base::MakeRefCounted<base::RefCountedBytes>();
   return gfx::JPEGCodec::Encode(image, compression_quality,
+                                &(*output)->as_vector());
+}
+
+bool EncodeImageMaybeWithTransparency(
+    const SkBitmap& image,
+    int compression_quality,
+    scoped_refptr<base::RefCountedBytes>* output) {
+  *output = base::MakeRefCounted<base::RefCountedBytes>();
+  if (image.isOpaque()) {
+    return gfx::JPEGCodec::Encode(image, compression_quality,
+                                  &(*output)->as_vector());
+  }
+  // If the image has transparency, fallback to WebP.
+  return gfx::WebpCodec::Encode(image, compression_quality,
                                 &(*output)->as_vector());
 }
 
@@ -200,7 +222,8 @@ lens::ImageData DownscaleAndEncodeBitmap(const SkBitmap& image,
 
 std::optional<lens::ImageCrop> DownscaleAndEncodeBitmapRegionIfNeeded(
     const SkBitmap& image,
-    lens::mojom::CenterRotatedBoxPtr region) {
+    lens::mojom::CenterRotatedBoxPtr region,
+    std::optional<SkBitmap> region_bytes) {
   if (!region) {
     return std::nullopt;
   }
@@ -218,11 +241,17 @@ std::optional<lens::ImageCrop> DownscaleAndEncodeBitmapRegionIfNeeded(
       std::max<int>(1, region->box.height() * y_scale));
 
   lens::ImageCrop image_crop;
+  SkBitmap region_bitmap;
   scoped_refptr<base::RefCountedBytes> data;
-  auto region_bitmap = CropAndDownscaleImageIfNeeded(image, region_rect);
-  if (EncodeImage(region_bitmap,
-                  lens::features::GetLensOverlayImageCompressionQuality(),
-                  &data)) {
+  if (region_bytes.has_value()) {
+    region_bitmap =
+        DownscaleImageIfNeeded(*region_bytes, /*ui_scale_factor=*/0);
+  } else {
+    region_bitmap = CropAndDownscaleImageIfNeeded(image, region_rect);
+  }
+  if (EncodeImageMaybeWithTransparency(
+          region_bitmap,
+          lens::features::GetLensOverlayImageCompressionQuality(), &data)) {
     auto* mutable_zoomed_crop = image_crop.mutable_zoomed_crop();
     mutable_zoomed_crop->set_parent_height(image.height());
     mutable_zoomed_crop->set_parent_width(image.width());

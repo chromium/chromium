@@ -32,10 +32,12 @@ lens::ImageData DownscaleAndEncodeBitmap(const SkBitmap& image,
 // Downscales and encodes the provided bitmap region and then stores it in a
 // lens::ImageCrop object if needed. Returns a nullopt if the region is not
 // set. Downscaling only occurs if the region dimensions exceed configured
-// flag values.
+// flag values. Providing region_bytes will use those bytes instead of cropping
+// the region from the full page bytes.
 std::optional<lens::ImageCrop> DownscaleAndEncodeBitmapRegionIfNeeded(
     const SkBitmap& image,
-    lens::mojom::CenterRotatedBoxPtr region);
+    lens::mojom::CenterRotatedBoxPtr region,
+    std::optional<SkBitmap> region_bytes);
 
 // Returns a normalized bounding box from the given tab, view, and image
 // bounds, clipping if the image bounds go outside the tab or view bounds.

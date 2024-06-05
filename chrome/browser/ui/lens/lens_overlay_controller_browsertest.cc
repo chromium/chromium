@@ -416,6 +416,13 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
     return std::make_unique<TabFeaturesFake>();
   }
 
+  const SkBitmap CreateNonEmptyBitmap(int width, int height) {
+    SkBitmap bitmap;
+    bitmap.allocN32Pixels(width, height);
+    bitmap.eraseColor(SK_ColorGREEN);
+    return bitmap;
+  }
+
   content::WebContents* GetOverlayWebContents() {
     auto* controller = browser()
                            ->tab_strip_model()
@@ -826,7 +833,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   // Showing UI should change the state to screenshot and eventually to overlay.
   controller->ShowUIWithPendingRegion(LensOverlayInvocationSource::kAppMenu,
-                                      kTestRegion->Clone());
+                                      kTestRegion->Clone(),
+                                      CreateNonEmptyBitmap(100, 100));
   ASSERT_EQ(controller->state(), State::kScreenshot);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlayAndResults; }));

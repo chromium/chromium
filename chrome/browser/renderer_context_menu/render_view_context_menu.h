@@ -434,13 +434,14 @@ class RenderViewContextMenu
   // relative to the screen and in DP, while image bounds are relative to the
   // view and in physical pixels. The device scale factor is supplied to scale
   // the image bounds properly.
-  void OpenLensOverlayWithBounds(
+  void OpenLensOverlayWithPreselectedRegion(
       mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame>
           chrome_render_frame,
       const gfx::Rect& tab_bounds,
       const gfx::Rect& view_bounds,
       float device_scale_factor,
-      const gfx::Rect& image_bounds);
+      const SkBitmap& region_bytes,
+      const gfx::Rect& region_bitmap);
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Shows the standalone clipboard history menu. `event_flags` describes the

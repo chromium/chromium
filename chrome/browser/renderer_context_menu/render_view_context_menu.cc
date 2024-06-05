@@ -4294,8 +4294,8 @@ void RenderViewContextMenu::ExecSearchLensForImage(bool is_image_translate) {
     // there's either a connection error or a response.
     auto* frame = chrome_render_frame.get();
 
-    frame->RequestBoundsForContextNodeDiagnostic(base::BindOnce(
-        &RenderViewContextMenu::OpenLensOverlayWithBounds,
+    frame->RequestBitmapForContextNodeWithBoundsDiagnostic(base::BindOnce(
+        &RenderViewContextMenu::OpenLensOverlayWithPreselectedRegion,
         weak_pointer_factory_.GetWeakPtr(), std::move(chrome_render_frame),
         tab_bounds, view_bounds, device_scale_factor));
   } else {
@@ -4310,22 +4310,23 @@ void RenderViewContextMenu::ExecSearchLensForImage(bool is_image_translate) {
   }
 }
 
-void RenderViewContextMenu::OpenLensOverlayWithBounds(
+void RenderViewContextMenu::OpenLensOverlayWithPreselectedRegion(
     mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame>
         chrome_render_frame,
     const gfx::Rect& tab_bounds,
     const gfx::Rect& view_bounds,
     float device_scale_factor,
-    const gfx::Rect& image_bounds) {
-  // Scale the image bounds, which are in physical pixels, to device pixels.
-  auto scaled_image_bounds =
-      gfx::ScaleToEnclosedRect(image_bounds, 1.f / device_scale_factor);
+    const SkBitmap& region_bitmap,
+    const gfx::Rect& region_bounds) {
+  // Scale the region bounds, which are in physical pixels, to device pixels.
+  auto scaled_region_bounds =
+      gfx::ScaleToEnclosedRect(region_bounds, 1.f / device_scale_factor);
   LensOverlayController* const controller =
       LensOverlayController::GetController(source_web_contents_);
   CHECK(controller);
   controller->ShowUIWithPendingRegion(
       lens::LensOverlayInvocationSource::kContentAreaContextMenuImage,
-      tab_bounds, view_bounds, scaled_image_bounds);
+      tab_bounds, view_bounds, scaled_region_bounds, region_bitmap);
 }
 
 void RenderViewContextMenu::ExecRegionSearch(

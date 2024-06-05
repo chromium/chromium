@@ -355,10 +355,11 @@ void LensOverlayQueryController::EndQuery() {
 
 void LensOverlayQueryController::SendRegionSearch(
     lens::mojom::CenterRotatedBoxPtr region,
-    std::map<std::string, std::string> additional_search_query_params) {
+    std::map<std::string, std::string> additional_search_query_params,
+    std::optional<SkBitmap> region_bytes) {
   SendInteraction(/*region=*/std::move(region), /*query_text=*/std::nullopt,
                   /*object_id=*/std::nullopt, lens::REGION_SEARCH,
-                  additional_search_query_params);
+                  additional_search_query_params, region_bytes);
 }
 
 void LensOverlayQueryController::SendMultimodalRequest(
@@ -372,7 +373,8 @@ void LensOverlayQueryController::SendMultimodalRequest(
   SendInteraction(/*region=*/std::move(region),
                   /*query_text=*/std::make_optional<std::string>(query_text),
                   /*object_id=*/std::nullopt, multimodal_selection_type,
-                  additional_search_query_params);
+                  additional_search_query_params,
+                  /*region_bytes*/ std::nullopt);
 }
 
 void LensOverlayQueryController::SendTextOnlyQuery(
@@ -411,7 +413,8 @@ void LensOverlayQueryController::SendInteraction(
     std::optional<std::string> query_text,
     std::optional<std::string> object_id,
     lens::LensOverlaySelectionType selection_type,
-    std::map<std::string, std::string> additional_search_query_params) {
+    std::map<std::string, std::string> additional_search_query_params,
+    std::optional<SkBitmap> region_bytes) {
   request_counter_++;
   int request_index = request_counter_;
 
@@ -423,7 +426,7 @@ void LensOverlayQueryController::SendInteraction(
   // Trigger asynchronous image cropping, then attempt to send the request.
   base::ThreadPool::PostTask(
       base::BindOnce(&DownscaleAndEncodeBitmapRegionIfNeeded,
-                     original_screenshot_, region.Clone())
+                     original_screenshot_, region.Clone(), region_bytes)
           .Then(base::BindPostTask(
               base::SequencedTaskRunner::GetCurrentDefault(),
               base::BindOnce(
