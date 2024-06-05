@@ -201,9 +201,10 @@ FocusModeTaskView::FocusModeTaskView(bool is_network_connected) {
       views::BoxLayout::Orientation::kHorizontal);
   textfield_container_->SetProperty(views::kBoxLayoutFlexKey,
                                     views::BoxLayoutFlexSpecification());
-  radio_button_ = textfield_container_->AddChildView(
-      std::make_unique<views::ImageButton>(base::BindRepeating(
-          &FocusModeTaskView::OnCompleteTask, base::Unretained(this))));
+  radio_button_ =
+      textfield_container_->AddChildView(std::make_unique<views::ImageButton>(
+          base::BindRepeating(&FocusModeTaskView::OnCompleteTask,
+                              base::Unretained(this), /*update=*/true)));
   const std::u16string radio_text = l10n_util::GetStringUTF16(
       IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_VIEW_RADIO_BUTTON);
   radio_button_->SetAccessibleName(radio_text);
@@ -342,7 +343,7 @@ void FocusModeTaskView::AddOrUpdateTask(const std::u16string& task_title) {
 }
 
 void FocusModeTaskView::OnTaskSelected(const FocusModeTask& task_entry) {
-  if (task_entry.task_id.empty()) {
+  if (task_entry.task_id.empty() || task_entry.title.empty()) {
     OnClearTask();
     return;
   }
@@ -388,8 +389,19 @@ void FocusModeTaskView::PaintFocusRingAndUpdateStyle() {
   textfield_->UpdateElideBehavior(is_active);
 }
 
-void FocusModeTaskView::OnCompleteTask() {
-  FocusModeController::Get()->CompleteTask();
+void FocusModeTaskView::OnCompleteTask(bool update) {
+  FocusModeController::Get()->CompleteTask(update);
+
+  // Not having a populated `task_title_` means that the UI is not in the
+  // selected state, so we don't need to update the styling and can immediately
+  // clear the task. This can only happen when we initialize the focus panel for
+  // the first time and we have a selected task without a title, since we do not
+  // save that to user prefs.
+  if (task_title_.empty()) {
+    OnClearTask();
+    return;
+  }
+
   radio_button_->SetEnabled(false);
   radio_button_->SetImageModel(
       views::Button::STATE_NORMAL,
@@ -445,7 +457,7 @@ void FocusModeTaskView::OnTaskFetched(const FocusModeTask& task_entry) {
   }
 
   if (task_entry.completed) {
-    OnCompleteTask();
+    OnCompleteTask(/*update=*/false);
   } else {
     OnTaskSelected(task_entry);
   }

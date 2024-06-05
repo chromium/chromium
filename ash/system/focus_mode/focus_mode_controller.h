@@ -172,9 +172,10 @@ class ASH_EXPORT FocusModeController
   // Returns whether there is a currently selected task.
   bool HasSelectedTask() const;
 
-  // Marks the task as completed with the tasks provider, and also clears the
-  // selected task data.
-  void CompleteTask();
+  // Marks the task as completed, and also clears the selected task data.
+  // Updates the tasks provider if `update` is `true`. For example, if the task
+  // has been completed outside of focus mode, `update` should be `false`.
+  void CompleteTask(bool update = true);
 
   // Shows the ending moment nudge that is anchored to the focus mode tray. Only
   // show if there isn't already showing and if there is no tray bubble open.

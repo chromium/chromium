@@ -100,7 +100,9 @@ class ASH_EXPORT FocusModeTray : public TrayBackgroundView,
 
   // Called when the user clicks the radio button to mark a selected task as
   // completed, or if the task is already completed when we show the bubble.
-  void OnCompleteTask();
+  // `update` is used to determine if we need to update the tasks provider (i.e.
+  // we don't if the task is already marked as completed).
+  void OnCompleteTask(bool update);
 
   // Called when the animation in `AnimateBubbleResize` starts.
   void OnBubbleResizeAnimationStarted();

@@ -406,10 +406,12 @@ bool FocusModeController::HasSelectedTask() const {
   return !selected_task_.task_id.empty();
 }
 
-void FocusModeController::CompleteTask() {
-  tasks_provider_.UpdateTask(selected_task_.task_list_id,
-                             selected_task_.task_id, selected_task_.title,
-                             /*completed=*/true, base::DoNothing());
+void FocusModeController::CompleteTask(bool update) {
+  if (update && !selected_task_.empty() && !selected_task_.title.empty()) {
+    tasks_provider_.UpdateTask(selected_task_.task_list_id,
+                               selected_task_.task_id, selected_task_.title,
+                               /*completed=*/true, base::DoNothing());
+  }
   SetSelectedTask({});
 
   if (focus_mode_metrics_recorder_) {

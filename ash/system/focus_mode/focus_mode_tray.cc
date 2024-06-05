@@ -470,8 +470,11 @@ void FocusModeTray::OnTaskFetched(const FocusModeTask& task_entry) {
     return;
   }
 
-  if (task_entry.completed) {
-    OnCompleteTask();
+  const std::string title = task_entry.title;
+  if (task_entry.completed || title.empty()) {
+    // TODO(b/342268177): Since we are only using this to clear/delete the task,
+    // we should separate this out to a different function.
+    OnCompleteTask(/*update=*/false);
     return;
   }
 
@@ -479,13 +482,13 @@ void FocusModeTray::OnTaskFetched(const FocusModeTask& task_entry) {
   FocusModeController::Get()->SetSelectedTask(task_entry);
 
   if (!task_item_view_) {
-    CreateTaskItemView(task_entry.title);
+    CreateTaskItemView(title);
 
     // We need to update the bubble after creating the `task_item_view_` so the
     // widget bounds are updated and shows the view.
     bubble_->bubble_view()->UpdateBubble();
   } else {
-    task_item_view_->UpdateTitle(base::UTF8ToUTF16(task_entry.title));
+    task_item_view_->UpdateTitle(base::UTF8ToUTF16(title));
   }
 }
 
@@ -498,7 +501,8 @@ void FocusModeTray::CreateTaskItemView(const std::string& task_title) {
       bubble_view_container_->AddChildView(std::make_unique<TaskItemView>(
           base::UTF8ToUTF16(task_title),
           base::BindRepeating(&FocusModeTray::OnCompleteTask,
-                              weak_ptr_factory_.GetWeakPtr())));
+                              weak_ptr_factory_.GetWeakPtr(),
+                              /*update=*/true)));
   task_item_view_->SetProperty(views::kBoxLayoutFlexKey,
                                views::BoxLayoutFlexSpecification());
 }
@@ -553,14 +557,14 @@ void FocusModeTray::MaybeUpdateEndingMomentViewUI(
   }
 }
 
-void FocusModeTray::OnCompleteTask() {
+void FocusModeTray::OnCompleteTask(bool update) {
   if (!task_item_view_ || task_item_view_->GetWasCompleted()) {
     return;
   }
 
   task_item_view_->UpdateStyleToCompleted();
 
-  FocusModeController::Get()->CompleteTask();
+  FocusModeController::Get()->CompleteTask(update);
 
   // We want to show the check icon and a strikethrough on the label for
   // `kStartAnimationDelay` before removing `task_item_view_` from the

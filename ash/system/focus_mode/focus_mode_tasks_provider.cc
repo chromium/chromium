@@ -154,6 +154,10 @@ class TaskFetcher {
     // NOTE: Completed tasks will not show up in `api_tasks`.
     if (success && api_tasks) {
       for (const auto& api_task : *api_tasks) {
+        // Skip tasks with empty titles.
+        if (api_task->title.empty()) {
+          continue;
+        }
         FocusModeTask& task = tasks_.emplace_back();
         task.task_list_id = list_id;
         task.task_id = api_task->id;
