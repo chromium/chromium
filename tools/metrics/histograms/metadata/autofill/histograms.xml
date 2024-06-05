@@ -1200,8 +1200,6 @@ chromium-metrics-reviews@google.com.
         summary="Registering for WebAuthn on checkout"/>
     <variant name=".ImmediateAuthentication"
         summary="WebAuthn for card downstream"/>
-    <variant name=".SettingsPageOptIn"
-        summary="Registering for WebAuthn on settings page"/>
   </token>
 </histogram>
 

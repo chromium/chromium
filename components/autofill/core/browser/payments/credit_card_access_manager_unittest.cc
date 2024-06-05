@@ -2645,8 +2645,6 @@ TEST_F(CreditCardAccessManagerTest,
 // Ensures WebAuthn result is logged correctly for a settings page opt-in.
 TEST_F(CreditCardAccessManagerTest, SettingsPage_FIDOEnrollment) {
   base::HistogramTester histogram_tester;
-  std::string webauthn_histogram_name =
-      "Autofill.BetterAuth.WebauthnResult.SettingsPageOptIn";
   std::string opt_in_histogram_name =
       "Autofill.BetterAuth.OptInCalled.FromSettingsPage";
   std::string promo_shown_histogram_name =
@@ -2668,15 +2666,8 @@ TEST_F(CreditCardAccessManagerTest, SettingsPage_FIDOEnrollment) {
     // Mock user response and payments response.
     TestCreditCardFidoAuthenticator::MakeCredential(GetFIDOAuthenticator(),
                                                     did_succeed);
-
-    histogram_tester.ExpectBucketCount(
-        webauthn_histogram_name,
-        did_succeed ? autofill_metrics::WebauthnResultMetric::kSuccess
-                    : autofill_metrics::WebauthnResultMetric::kNotAllowedError,
-        1);
   }
 
-  histogram_tester.ExpectTotalCount(webauthn_histogram_name, 2);
   histogram_tester.ExpectTotalCount(opt_in_histogram_name, 3);
   histogram_tester.ExpectBucketCount(
       opt_in_histogram_name,

@@ -135,8 +135,9 @@ void LogWebauthnResult(WebauthnFlowEvent event, WebauthnResultMetric metric) {
       histogram_name += "CheckoutOptIn";
       break;
     case WebauthnFlowEvent::kSettingsPageOptIn:
-      histogram_name += "SettingsPageOptIn";
-      break;
+      // TODO(crbug.com/345008736): Remove logic related to the settings page
+      // FIDO opt-in flow.
+      return;
   }
   base::UmaHistogramEnumeration(histogram_name, metric);
 }
