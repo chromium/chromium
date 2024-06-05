@@ -30,11 +30,10 @@ ci.defaults.set(
 
 consoles.console_view(
     name = "chromium.fyi",
-    branch_selector = [
-        branches.selector.CROS_LTS_BRANCHES,
-        branches.selector.IOS_BRANCHES,
-        branches.selector.LINUX_BRANCHES,
-    ],
+    # FYI builders should not be branched; since they are not gardened there's
+    # no guarantee that the branch builders would be in a good state when they
+    # are created and become the responsibility of the branch gardeners
+    branch_selector = branches.selector.MAIN,
     ordering = {
         None: [
             "code_coverage",
