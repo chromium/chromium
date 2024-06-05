@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.autofill.iban;
 
+import android.content.Context;
+
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -12,16 +14,21 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.chrome.browser.layouts.LayoutManagerProvider;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.ui.base.WindowAndroid;
 
 /** JNI wrapper to trigger Android bottom sheet prompting the user to save their IBAN locally. */
 @JNINamespace("autofill")
 public class AutofillSaveIbanBottomSheetBridge {
     private long mNativeAutofillSaveIbanBottomSheetBridge;
-    private CoordinatorFactory mCoordinatorFactory;
-    private WindowAndroid mWindow;
-    private TabModel mTabModel;
+    private final BottomSheetController mBottomSheetController;
+    private final Context mContext;
+    private final LayoutStateProvider mLayoutStateProvider;
+    private final TabModel mTabModel;
     @Nullable private AutofillSaveIbanBottomSheetCoordinator mCoordinator;
 
     /**
@@ -35,46 +42,36 @@ public class AutofillSaveIbanBottomSheetBridge {
      */
     @CalledByNative
     @VisibleForTesting
-    private AutofillSaveIbanBottomSheetBridge(
-            long nativeAutofillSaveIbanBottomSheetBridge, WindowAndroid window, TabModel tabModel) {
-        this(nativeAutofillSaveIbanBottomSheetBridge, AutofillSaveIbanBottomSheetCoordinator::new);
-        mWindow = window;
-        mTabModel = tabModel;
-    }
-
-    @VisibleForTesting
     /*package*/ AutofillSaveIbanBottomSheetBridge(
-            long nativeAutofillSaveIbanBottomSheetBridge, CoordinatorFactory coordinatorFactory) {
+            long nativeAutofillSaveIbanBottomSheetBridge, WindowAndroid window, TabModel tabModel) {
         mNativeAutofillSaveIbanBottomSheetBridge = nativeAutofillSaveIbanBottomSheetBridge;
-        mCoordinatorFactory = coordinatorFactory;
-    }
-
-    @VisibleForTesting
-    /*package*/ static interface CoordinatorFactory {
-        AutofillSaveIbanBottomSheetCoordinator create(AutofillSaveIbanBottomSheetBridge bridge);
+        mBottomSheetController = BottomSheetControllerProvider.from(window);
+        mContext = window.getContext().get();
+        mLayoutStateProvider = LayoutManagerProvider.from(window);
+        mTabModel = tabModel;
     }
 
     /**
      * Requests to show the bottom sheet. Called via JNI from C++.
      *
-     * @param ibanLabel String value of the IBAN being saved, i.e. CH56 0483 5012 3456 7800 9.
+     * @param ibanLabel String value of the IBAN being saved, e.g. CH56 **** **** **** *800 9.
      */
     @CalledByNative
     public void requestShowContent(@JniType("std::u16string_view") String ibanLabel) {
-        if (mNativeAutofillSaveIbanBottomSheetBridge != 0) {
-            mCoordinator = mCoordinatorFactory.create(this);
-            mCoordinator.requestShowContent(ibanLabel);
-        }
+        if (mNativeAutofillSaveIbanBottomSheetBridge == 0) return;
+        mCoordinator =
+                new AutofillSaveIbanBottomSheetCoordinator(
+                        this, mContext, mBottomSheetController, mLayoutStateProvider, mTabModel);
+        mCoordinator.requestShowContent(ibanLabel);
     }
 
     @CalledByNative
     @VisibleForTesting
     /*package*/ void destroy() {
-        if (mCoordinator != null) {
-            mCoordinator.destroy();
-            mCoordinator = null;
-        }
         mNativeAutofillSaveIbanBottomSheetBridge = 0;
+        if (mCoordinator == null) return;
+        mCoordinator.destroy();
+        mCoordinator = null;
     }
 
     /**

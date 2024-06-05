@@ -4,7 +4,11 @@
 
 package org.chromium.chrome.browser.autofill.iban;
 
-import androidx.annotation.VisibleForTesting;
+import android.content.Context;
+
+import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 /**
  * Coordinator of the autofill IBAN save UI.
@@ -18,23 +22,35 @@ public class AutofillSaveIbanBottomSheetCoordinator {
      * Creates the coordinator.
      *
      * @param bridge The bridge to signal UI flow events (OnUiCanceled, OnUiAccepted, etc.) to.
+     * @param context The context for this component.
+     * @param bottomSheetController The bottom sheet controller where this bottom sheet will be
+     *     shown.
+     * @param layoutStateProvider The LayoutStateProvider used to detect when the bottom sheet needs
+     *     to be hidden after a change of layout (e.g. to the tab switcher).
+     * @param tabModel The TabModel used to detect when the bottom sheet needs to be hidden after a
+     *     tab change.
      */
-    public AutofillSaveIbanBottomSheetCoordinator(AutofillSaveIbanBottomSheetBridge bridge) {
-        mMediator = new AutofillSaveIbanBottomSheetMediator(bridge);
-    }
-
-    @VisibleForTesting
-    /*package*/ AutofillSaveIbanBottomSheetCoordinator(
-            AutofillSaveIbanBottomSheetMediator mediator) {
-        mMediator = mediator;
+    public AutofillSaveIbanBottomSheetCoordinator(
+            AutofillSaveIbanBottomSheetBridge bridge,
+            Context context,
+            BottomSheetController bottomSheetController,
+            LayoutStateProvider layoutStateProvider,
+            TabModel tabModel) {
+        mMediator =
+                new AutofillSaveIbanBottomSheetMediator(
+                        bridge,
+                        new AutofillSaveIbanBottomSheetContent(context),
+                        bottomSheetController,
+                        layoutStateProvider,
+                        tabModel);
     }
 
     /**
      * Request to show the bottom sheet.
      *
-     * @param ibanLabel String value of the IBAN being shown, i.e. CH56 0483 5012 3456 7800 9.
+     * @param ibanLabel String value of the IBAN being shown, e.g. CH56 **** **** **** *800 9.
      */
-    public void requestShowContent(String ibanLabel) {
+    void requestShowContent(String ibanLabel) {
         if (ibanLabel == null || ibanLabel.isEmpty()) {
             throw new IllegalArgumentException(
                     "IBAN label passed from C++ should not be NULL or empty.");

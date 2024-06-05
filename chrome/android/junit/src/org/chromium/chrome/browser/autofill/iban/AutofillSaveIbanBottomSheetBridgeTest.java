@@ -4,12 +4,17 @@
 
 package org.chromium.chrome.browser.autofill.iban;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
+
+import android.app.Activity;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -17,79 +22,90 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.layouts.LayoutManagerAppUtils;
+import org.chromium.chrome.browser.layouts.ManagedLayoutManager;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
+import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
+import org.chromium.ui.base.WindowAndroid;
 
 /** Unit tests for {@link AutofillSaveIbanBottomSheetBridge}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @SmallTest
 public final class AutofillSaveIbanBottomSheetBridgeTest {
     private static final long MOCK_POINTER = 0xb00fb00f;
-
-    private static final String IBAN_LABEL = "CH56 0483 5012 3456 7800 9";
-
+    private static final String IBAN_LABEL = "CH56 **** **** **** *800 9";
     private static final String USER_PROVIDED_NICKNAME = "My Doctor's IBAN";
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-
     @Rule public JniMocker mJniMocker = new JniMocker();
 
-    private AutofillSaveIbanBottomSheetBridge mAutofillSaveIbanBottomSheetBridge;
-
     @Mock private AutofillSaveIbanBottomSheetBridge.Natives mBridgeNatives;
+    @Mock private ManagedBottomSheetController mBottomSheetController;
+    @Mock private ManagedLayoutManager mLayoutManager;
+    @Mock private Profile mProfile;
 
-    @Mock private AutofillSaveIbanBottomSheetBridge.CoordinatorFactory mCoordinatorFactory;
-
-    @Mock private AutofillSaveIbanBottomSheetCoordinator mCoordinator;
+    private AutofillSaveIbanBottomSheetBridge mAutofillSaveIbanBottomSheetBridge;
+    private WindowAndroid mWindow;
 
     @Before
     public void setUp() {
         mJniMocker.mock(AutofillSaveIbanBottomSheetBridgeJni.TEST_HOOKS, mBridgeNatives);
+        Activity activity = Robolectric.buildActivity(Activity.class).create().get();
+        mWindow = new WindowAndroid(activity);
+        BottomSheetControllerFactory.attach(mWindow, mBottomSheetController);
+        LayoutManagerAppUtils.attach(mWindow, mLayoutManager);
+        MockTabModel tabModel = new MockTabModel(mProfile, /* delegate= */ null);
         mAutofillSaveIbanBottomSheetBridge =
-                new AutofillSaveIbanBottomSheetBridge(MOCK_POINTER, mCoordinatorFactory);
+                new AutofillSaveIbanBottomSheetBridge(MOCK_POINTER, mWindow, tabModel);
     }
 
-    private void setUpCoordinatorFactory() {
-        when(mCoordinatorFactory.create(mAutofillSaveIbanBottomSheetBridge))
-                .thenReturn(mCoordinator);
-    }
-
-    @Test
-    public void testRequestShowContent_requestsShowOnCoordinator() {
-        setUpCoordinatorFactory();
-
-        mAutofillSaveIbanBottomSheetBridge.requestShowContent(IBAN_LABEL);
-
-        verify(mCoordinator).requestShowContent(IBAN_LABEL);
+    @After
+    public void tearDown() {
+        BottomSheetControllerFactory.detach(mBottomSheetController);
+        LayoutManagerAppUtils.detach(mLayoutManager);
+        mWindow.destroy();
     }
 
     @Test
-    public void testDestroy_callsCoordinatorDestroy() {
-        setUpCoordinatorFactory();
+    public void testRequestShowContent() {
         mAutofillSaveIbanBottomSheetBridge.requestShowContent(IBAN_LABEL);
 
+        verify(mBottomSheetController)
+                .requestShowContent(
+                        any(AutofillSaveIbanBottomSheetContent.class), /* animate= */ eq(true));
+    }
+
+    @Test
+    public void testDestroy() {
+        mAutofillSaveIbanBottomSheetBridge.requestShowContent(IBAN_LABEL);
         mAutofillSaveIbanBottomSheetBridge.destroy();
 
-        verify(mCoordinator).destroy();
+        verify(mBottomSheetController)
+                .hideContent(any(AutofillSaveIbanBottomSheetContent.class), eq(true));
     }
 
     @Test
     public void testDestroy_whenCoordinatorHasNotBeenCreated() {
         mAutofillSaveIbanBottomSheetBridge.destroy();
 
-        verifyNoInteractions(mCoordinator);
+        verifyNoInteractions(mBottomSheetController);
     }
 
     @Test
-    public void testDestroyTwice_destroysCoordinatorOnce() {
-        setUpCoordinatorFactory();
+    public void testDestroy_whenDestroyed() {
         mAutofillSaveIbanBottomSheetBridge.requestShowContent(IBAN_LABEL);
 
         mAutofillSaveIbanBottomSheetBridge.destroy();
-        mAutofillSaveIbanBottomSheetBridge.destroy();
+        clearInvocations(mBottomSheetController);
 
-        verify(mCoordinator).destroy();
+        mAutofillSaveIbanBottomSheetBridge.destroy();
+        verifyNoInteractions(mBottomSheetController);
     }
 
     @Test
