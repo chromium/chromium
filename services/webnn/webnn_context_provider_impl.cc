@@ -242,8 +242,8 @@ void WebNNContextProviderImpl::CreateWebNNContext(
   // TODO: crbug.com/325612086 - Consider using supporting older Macs either
   // with TFLite or a more restrictive implementation on CoreML.
   if (__builtin_available(macOS 14, *)) {
-    // TODO: crbug.com/41481333 - Create the CoreML context using `options`.
-    context_impl = new coreml::ContextImplCoreml(std::move(receiver), this);
+    context_impl = new coreml::ContextImplCoreml(std::move(receiver), this,
+                                                 std::move(options));
   }
 #endif  // BUILDFLAG(IS_MAC)
 

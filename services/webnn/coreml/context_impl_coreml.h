@@ -21,7 +21,8 @@ class API_AVAILABLE(macos(14.0)) ContextImplCoreml final
     : public WebNNContextImpl {
  public:
   ContextImplCoreml(mojo::PendingReceiver<mojom::WebNNContext> receiver,
-                    WebNNContextProviderImpl* context_provider);
+                    WebNNContextProviderImpl* context_provider,
+                    mojom::CreateContextOptionsPtr options);
 
   ContextImplCoreml(const WebNNContextImpl&) = delete;
   ContextImplCoreml& operator=(const ContextImplCoreml&) = delete;
@@ -36,6 +37,8 @@ class API_AVAILABLE(macos(14.0)) ContextImplCoreml final
       mojo::PendingAssociatedReceiver<mojom::WebNNBuffer> receiver,
       mojom::BufferInfoPtr buffer_info,
       const base::UnguessableToken& buffer_handle) override;
+
+  mojom::CreateContextOptionsPtr options_;
 };
 
 }  // namespace webnn::coreml

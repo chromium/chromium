@@ -4,6 +4,7 @@
 
 #include "services/webnn/coreml/graph_impl_coreml.h"
 
+#import <CoreML/CoreML.h>
 #import <Foundation/Foundation.h>
 
 #include <memory>
@@ -31,6 +32,7 @@
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "services/webnn/coreml/graph_builder_coreml.h"
 #include "services/webnn/error.h"
+#include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/webnn_switches.h"
 
 @interface WebNNMLFeatureProvider : NSObject <MLFeatureProvider>
@@ -126,6 +128,7 @@ mojo_base::BigBuffer ExtractMaybeNonContiguousOutput(
 // static
 void GraphImplCoreml::CreateAndBuild(
     mojom::GraphInfoPtr graph_info,
+    mojom::CreateContextOptionsPtr options,
     mojom::WebNNContext::CreateGraphCallback callback) {
   auto current_runner = base::SequencedTaskRunner::GetCurrentDefault();
   base::ThreadPool::PostTask(
@@ -133,13 +136,14 @@ void GraphImplCoreml::CreateAndBuild(
       {base::TaskPriority::USER_BLOCKING,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN, base::MayBlock()},
       base::BindOnce(&GraphImplCoreml::CreateAndBuildOnBackgroundThread,
-                     std::move(graph_info), current_runner,
+                     std::move(graph_info), std::move(options), current_runner,
                      std::move(callback)));
 }
 
 // static
 void GraphImplCoreml::CreateAndBuildOnBackgroundThread(
     mojom::GraphInfoPtr graph_info,
+    mojom::CreateContextOptionsPtr options,
     scoped_refptr<base::SequencedTaskRunner> originating_sequence,
     mojom::WebNNContext::CreateGraphCallback callback) {
   CHECK(graph_info);
@@ -209,7 +213,7 @@ void GraphImplCoreml::CreateAndBuildOnBackgroundThread(
   __block auto compilation_context = std::make_unique<CompilationContext>(
       std::move(compute_resource_info), std::move(input_feature_info),
       std::move(coreml_name_to_operand_name), std::move(model_file_dir),
-      std::move(callback));
+      std::move(options), std::move(callback));
 
   [MLModel
       compileModelAtURL:base::apple::FilePathToNSURL(
@@ -237,10 +241,27 @@ void GraphImplCoreml::CreateAndBuildOnBackgroundThread(
                              "Model compilation error."));
           return;
         }
+        MLModelConfiguration* configuration =
+            [[MLModelConfiguration alloc] init];
+        switch (compilation_context->options->device) {
+          case mojom::CreateContextOptions::Device::kCpu:
+            configuration.computeUnits = MLComputeUnitsCPUOnly;
+            break;
+          case mojom::CreateContextOptions::Device::kGpu:
+            // TODO: crbug.com/344935458 - Switch to MLComputeUnitsCPUAndGPU
+            // when we figure out how to fix the crashes.
+            configuration.computeUnits = MLComputeUnitsAll;
+            break;
+          case mojom::CreateContextOptions::Device::kNpu:
+            configuration.computeUnits = MLComputeUnitsAll;
+            break;
+        }
+
         base::ElapsedTimer model_load_timer;
         NSError* model_load_error = nil;
         compilation_context->ml_model =
             [MLModel modelWithContentsOfURL:compiled_model_url
+                              configuration:configuration
                                       error:&model_load_error];
         UMA_HISTOGRAM_MEDIUM_TIMES("WebNN.CoreML.TimingMs.CompiledModelLoad",
                                    model_load_timer.Elapsed());
@@ -514,11 +535,13 @@ GraphImplCoreml::CompilationContext::CompilationContext(
     std::unique_ptr<CoreMLFeatureInfoMap> input_feature_info,
     base::flat_map<std::string, std::string> coreml_name_to_operand_name,
     base::ScopedTempDir model_file_dir,
+    mojom::CreateContextOptionsPtr options,
     mojom::WebNNContext::CreateGraphCallback callback)
     : compute_resource_info(std::move(compute_resource_info)),
       input_feature_info(std::move(input_feature_info)),
       coreml_name_to_operand_name(std::move(coreml_name_to_operand_name)),
       model_file_dir(std::move(model_file_dir)),
+      options(std::move(options)),
       callback(std::move(callback)) {}
 
 GraphImplCoreml::CompilationContext::~CompilationContext() {

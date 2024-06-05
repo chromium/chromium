@@ -7,23 +7,27 @@
 #import <CoreML/CoreML.h>
 
 #include "services/webnn/coreml/graph_impl_coreml.h"
+#include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/webnn_context_provider_impl.h"
 
 namespace webnn::coreml {
 
 ContextImplCoreml::ContextImplCoreml(
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
-    WebNNContextProviderImpl* context_provider)
+    WebNNContextProviderImpl* context_provider,
+    mojom::CreateContextOptionsPtr options)
     : WebNNContextImpl(std::move(receiver),
                        context_provider,
-                       GraphBuilderCoreml::GetContextProperties()) {}
+                       GraphBuilderCoreml::GetContextProperties()),
+      options_(std::move(options)) {}
 
 ContextImplCoreml::~ContextImplCoreml() = default;
 
 void ContextImplCoreml::CreateGraphImpl(
     mojom::GraphInfoPtr graph_info,
     mojom::WebNNContext::CreateGraphCallback callback) {
-  GraphImplCoreml::CreateAndBuild(std::move(graph_info), std::move(callback));
+  GraphImplCoreml::CreateAndBuild(std::move(graph_info), options_.Clone(),
+                                  std::move(callback));
 }
 
 std::unique_ptr<WebNNBufferImpl> ContextImplCoreml::CreateBufferImpl(
