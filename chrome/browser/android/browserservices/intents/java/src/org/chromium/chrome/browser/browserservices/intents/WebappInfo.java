@@ -214,8 +214,21 @@ public class WebappInfo {
         return getWebApkExtras().manifestStartUrl;
     }
 
+    /**
+     * Return the WebAPK's manifest ID. This returns null for legacy WebAPK (shell version <155).
+     */
+    @Nullable
     public String manifestId() {
         return getWebApkExtras().manifestId;
+    }
+
+    /**
+     * Return the WebAPK's manifest ID. This returns the fallback (start url) for legacy WebAPKs
+     * (shell version <155). Note that this can still be null if start_url is empty.
+     */
+    @Nullable
+    public String manifestIdWithFallback() {
+        return TextUtils.isEmpty(manifestId()) ? manifestStartUrl() : manifestId();
     }
 
     public String appKey() {

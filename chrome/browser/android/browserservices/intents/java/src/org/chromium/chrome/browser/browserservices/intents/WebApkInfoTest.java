@@ -941,4 +941,37 @@ public class WebApkInfoTest {
         Assert.assertEquals(ICON_MURMUR2_HASH, info.icon().iconHash());
         Assert.assertEquals(false, info.isIconAdaptive());
     }
+
+    /** Test get manifestId and fallbacks */
+    @Test
+    public void testManifestIdAndFallback() {
+        {
+            Bundle bundle = new Bundle();
+            bundle.putString(WebApkMetaDataKeys.START_URL, START_URL);
+            bundle.putString(WebApkMetaDataKeys.WEB_MANIFEST_ID, MANIFEST_ID);
+            WebApkTestHelper.registerWebApkWithMetaData(
+                    WEBAPK_PACKAGE_NAME, bundle, /* shareTargetMetaData= */ null);
+            Intent intent =
+                    WebApkTestHelper.createMinimalWebApkIntent(WEBAPK_PACKAGE_NAME, START_URL);
+            WebappInfo info = createWebApkInfo(intent);
+            Assert.assertEquals(START_URL, info.url());
+            Assert.assertEquals(START_URL, info.manifestStartUrl());
+            Assert.assertEquals(MANIFEST_ID, info.manifestId());
+            Assert.assertEquals(MANIFEST_ID, info.manifestIdWithFallback());
+        }
+
+        {
+            Bundle bundle = new Bundle();
+            bundle.putString(WebApkMetaDataKeys.START_URL, START_URL);
+            WebApkTestHelper.registerWebApkWithMetaData(
+                    WEBAPK_PACKAGE_NAME, bundle, /* shareTargetMetaData= */ null);
+            Intent intent =
+                    WebApkTestHelper.createMinimalWebApkIntent(WEBAPK_PACKAGE_NAME, START_URL);
+            WebappInfo info = createWebApkInfo(intent);
+            Assert.assertEquals(START_URL, info.url());
+            Assert.assertEquals(START_URL, info.manifestStartUrl());
+            Assert.assertNull(info.manifestId());
+            Assert.assertEquals(START_URL, info.manifestIdWithFallback());
+        }
+    }
 }

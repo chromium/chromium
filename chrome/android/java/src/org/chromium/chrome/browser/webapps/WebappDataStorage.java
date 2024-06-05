@@ -278,7 +278,7 @@ public class WebappDataStorage {
             if (info.isForWebApk()) {
                 editor.putString(KEY_WEBAPK_PACKAGE_NAME, info.webApkPackageName());
                 editor.putString(KEY_WEBAPK_MANIFEST_URL, info.manifestUrl());
-                editor.putString(KEY_WEBAPK_MANIFEST_ID, info.manifestId());
+                editor.putString(KEY_WEBAPK_MANIFEST_ID, info.manifestIdWithFallback());
                 editor.putInt(KEY_WEBAPK_VERSION_CODE, info.webApkVersionCode());
                 editor.putLong(
                         KEY_WEBAPK_INSTALL_TIMESTAMP,

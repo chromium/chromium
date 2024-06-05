@@ -894,9 +894,6 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
             i++;
         }
 
-        String maniefstId =
-                TextUtils.isEmpty(info.manifestId()) ? info.manifestStartUrl() : info.manifestId();
-
         String[][] shortcuts = new String[info.shortcutItems().size()][];
         byte[][] shortcutIconData = new byte[info.shortcutItems().size()][];
         for (int j = 0; j < info.shortcutItems().size(); j++) {
@@ -943,7 +940,7 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
                         info.name(),
                         info.shortName(),
                         info.hasCustomName(),
-                        maniefstId,
+                        info.manifestIdWithFallback(),
                         info.appKey(),
                         primaryIconUrl,
                         primaryIconData,

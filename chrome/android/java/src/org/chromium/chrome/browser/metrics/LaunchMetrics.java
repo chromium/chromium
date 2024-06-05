@@ -93,7 +93,7 @@ public class LaunchMetrics {
                             webContents);
             if (webappInfo != null && webappInfo.isForWebApk()) {
                 WebApkUkmRecorder.recordWebApkLaunch(
-                        webappInfo.manifestId(),
+                        webappInfo.manifestIdWithFallback(),
                         webappInfo.distributor(),
                         webappInfo.webApkVersionCode(),
                         launch.mSource);
