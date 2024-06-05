@@ -160,7 +160,9 @@ enum class ComposeShowStatus {
   kRandomlyBlocked = 21,
   kProactiveNudgeDisabledByMSBB = 22,
   kProactiveNudgeBlockedBySegmentationPlatform = 23,
-  kMaxValue = kProactiveNudgeBlockedBySegmentationPlatform
+  kComposeNotEnabledInCountry = 24,
+  kUndefinedCountry = 25,
+  kMaxValue = kUndefinedCountry,
 };
 
 // Enum for calculating the CTR of the Compose proactive nudge.

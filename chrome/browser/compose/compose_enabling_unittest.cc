@@ -167,6 +167,8 @@ class ComposeEnablingTest : public BrowserWithTestWindowTest {
 
     // Override un-mockable per-user checks.
     scoped_skip_user_check_ = ComposeEnabling::ScopedSkipUserCheckForTesting();
+    // Set the user country to US, a Compose default-enabled country.
+    scoped_country_override_ = ComposeEnabling::OverrideCountryForTesting("us");
   }
 
   void TearDown() override {
@@ -253,6 +255,7 @@ class ComposeEnablingTest : public BrowserWithTestWindowTest {
 
   std::unique_ptr<ComposeEnabling> compose_enabling_;
   ComposeEnabling::ScopedOverride scoped_skip_user_check_;
+  ComposeEnabling::ScopedOverride scoped_country_override_;
 };
 
 TEST_F(ComposeEnablingTest, EverythingDisabledTest) {
@@ -1011,4 +1014,39 @@ TEST_F(ComposeEnablingTest, ProactiveNudgeDisabledSitesPreferenceTest) {
   EXPECT_EQ(should_trigger.error(),
             compose::ComposeShowStatus::
                 kProactiveNudgeDisabledForSiteByUserPreference);
+}
+
+TEST_F(ComposeEnablingTest, ClientCountryNotInFinchCountryList) {
+  // Sets a country list via Finch that does not include "us".
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      compose::features::kEnableCompose, {{"enabled_countries", "a, b, c"}});
+  compose::ResetConfigForTesting();
+
+  EXPECT_THAT(compose_enabling_->IsEnabled(),
+              ErrorIs(compose::ComposeShowStatus::kComposeNotEnabledInCountry));
+}
+
+TEST_F(ComposeEnablingTest, ClientCountryUndefined) {
+  // Replace the client country override with an undefined country.
+  scoped_country_override_.reset();
+  scoped_country_override_ = ComposeEnabling::OverrideCountryForTesting("");
+
+  EXPECT_THAT(compose_enabling_->IsEnabled(),
+              ErrorIs(compose::ComposeShowStatus::kUndefinedCountry));
+}
+
+TEST_F(ComposeEnablingTest, AnyAndAllCountriesAllowed) {
+  // Replace the client country override with an undefined country.
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      compose::features::kEnableCompose, {{"enabled_countries", "*"}});
+
+  EXPECT_NE(compose_enabling_->IsEnabled(), base::ok());
+
+  scoped_country_override_.reset();
+  EXPECT_NE(compose_enabling_->IsEnabled(), base::ok());
+
+  scoped_country_override_ = ComposeEnabling::OverrideCountryForTesting("");
+  EXPECT_NE(compose_enabling_->IsEnabled(), base::ok());
 }

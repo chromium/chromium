@@ -6,13 +6,19 @@
 
 #include <functional>
 #include <memory>
+#include <tuple>
 #include <type_traits>
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/rand_util.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/about_flags.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/compose/proto/compose_optimization_guide.pb.h"
 #include "chrome/browser/flag_descriptions.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -26,6 +32,8 @@
 #include "components/flags_ui/feature_entry.h"
 #include "components/flags_ui/flags_storage.h"
 #include "components/prefs/pref_service.h"
+#include "components/variations/service/variations_service.h"
+#include "components/variations/service/variations_service_utils.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_frame_host.h"
 #if BUILDFLAG(IS_CHROMEOS)
@@ -39,8 +47,36 @@ bool AutocompleteAllowed(std::string_view autocomplete_attribute) {
   return autocomplete_attribute != std::string("off");
 }
 
+std::unique_ptr<std::string>& GetCountryCodeOverride() {
+  static base::NoDestructor<std::unique_ptr<std::string>> country_code_override(
+      nullptr);
+  return *country_code_override;
+}
+
+std::string GetCountryCode() {
+  if (GetCountryCodeOverride()) {
+    return *GetCountryCodeOverride();
+  }
+  std::string country_code =
+      base::ToLowerASCII(variations::GetCurrentCountryCode(
+          g_browser_process->variations_service()));
+  DLOG_IF(WARNING, country_code.empty()) << "Couldn't get country info.";
+  return country_code;
+}
+
+std::tuple<std::string, bool> IsComposeEnabledForCountry(
+    compose::Config config) {
+  std::string country_code = GetCountryCode();
+  if (config.enabled_countries.size() == 1 &&
+      config.enabled_countries[0] == "*") {
+    return {country_code, true};
+  }
+  return {country_code, base::Contains(config.enabled_countries, country_code)};
+}
+
 }  // namespace
 
+// Static members' initializers.
 int ComposeEnabling::enabled_for_testing_{0};
 int ComposeEnabling::skip_user_check_for_testing_{0};
 
@@ -85,6 +121,15 @@ ComposeEnabling::ScopedSkipUserCheckForTesting() {
         DCHECK(skip_user_check_for_testing >= 0);
       },
       std::ref(skip_user_check_for_testing_)));
+}
+
+// Static.
+ComposeEnabling::ScopedOverride ComposeEnabling::OverrideCountryForTesting(
+    std::string country_code) {
+  CHECK(!GetCountryCodeOverride());
+  GetCountryCodeOverride() = std::make_unique<std::string>(country_code);
+  return std::make_unique<base::ScopedClosureRunner>(
+      base::BindOnce([]() { GetCountryCodeOverride().reset(); }));
 }
 
 compose::ComposeHintDecision ComposeEnabling::GetOptimizationGuidanceForUrl(
@@ -161,6 +206,20 @@ base::expected<void, compose::ComposeShowStatus> ComposeEnabling::CheckEnabling(
     DVLOG(2) << "feature not enabled ";
     return base::unexpected(
         compose::ComposeShowStatus::kComposeFeatureFlagDisabled);
+  }
+
+  // Check if we're running in an enabled country. Note that an empty country
+  // code will cause Compose to be disabled.
+  std::string country_code;
+  bool is_enabled_for_country;
+  std::tie(country_code, is_enabled_for_country) =
+      IsComposeEnabledForCountry(compose::GetComposeConfig());
+  if (!is_enabled_for_country) {
+    DVLOG(2) << "not running in an enabled country: \"" << country_code << "\"";
+    return base::unexpected(
+        country_code.empty()
+            ? compose::ComposeShowStatus::kUndefinedCountry
+            : compose::ComposeShowStatus::kComposeNotEnabledInCountry);
   }
 
   // Check signin status.

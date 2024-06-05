@@ -7,6 +7,8 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/no_destructor.h"
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "components/compose/core/browser/compose_features.h"
 #include "components/segmentation_platform/public/features.h"
@@ -127,6 +129,22 @@ Config::Config() {
   request_latency_timeout_seconds = base::GetFieldTrialParamByFeatureAsInt(
       features::kComposeRequestLatencyTimeout,
       "request_latency_timeout_seconds", request_latency_timeout_seconds);
+
+  // The "enabled_countries" field trial param must contain a list of lowercase
+  // country codes, following the format described in the documentation for the
+  // variations::VariationsService::GetStoredPermanentCountry method. Commas,
+  // spaces, tabs, new lines, single and double quotes are all treated as
+  // separators and then discarded. A resulting empty list will be ignored in
+  // favor of the default launched countries list.
+  // To enable for any and all countries, set it to have a single "*" element.
+  std::string enabled_countries_str = base::GetFieldTrialParamValueByFeature(
+      features::kEnableCompose, "enabled_countries");
+  std::vector<std::string> enabled_countries_from_finch =
+      base::SplitString(enabled_countries_str, ", \t\n'\"",
+                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  if (!enabled_countries_from_finch.empty()) {
+    enabled_countries = enabled_countries_from_finch;
+  }
 }
 
 Config::Config(const Config& other) = default;

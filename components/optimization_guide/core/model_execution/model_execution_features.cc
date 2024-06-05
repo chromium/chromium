@@ -27,9 +27,12 @@ BASE_FEATURE(kWallpaperSearchSettingsVisibility,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Graduation features.
+
+// Note: ComposeGraduated is enabled by default because the feature is
+// country-restricted at runtime.
 BASE_FEATURE(kComposeGraduated,
              "ComposeGraduated",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kTabOrganizationGraduated,
              "TabOrganizationGraduated",
              base::FEATURE_DISABLED_BY_DEFAULT);

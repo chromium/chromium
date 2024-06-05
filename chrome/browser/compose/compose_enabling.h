@@ -55,8 +55,8 @@ class ComposeEnabling {
   // use member function version if you need to mock them out.
   static bool IsEnabledForProfile(Profile* profile);
 
-  // Instance method that verifies that the feature be enabled for profile
-  // provided associated with this instance.
+  // Instance method that verifies that the feature can be enabled for the
+  // profile associated with this instance upon construction.
   base::expected<void, compose::ComposeShowStatus> IsEnabled();
 
   // The following methods allow overriding is-enabled checks to facilitate
@@ -66,6 +66,11 @@ class ComposeEnabling {
   // instances are destroyed. These implementations are not multi-thread safe.
   static ScopedOverride ScopedEnableComposeForTesting();
   static ScopedOverride ScopedSkipUserCheckForTesting();
+  // VariationsService is not available for unit tests, hence the need for this
+  // override method. Browser tests are recommended to use
+  // VariationsService::OverrideStoredPermanentCountry because it exercises a
+  // code path closer to the runtime one.
+  static ScopedOverride OverrideCountryForTesting(std::string country_code);
 
   base::expected<void, compose::ComposeShowStatus> ShouldTriggerNoStatePopup(
       std::string_view autocomplete_attribute,
@@ -105,6 +110,7 @@ class ComposeEnabling {
   raw_ptr<Profile> profile_;
   raw_ptr<OptimizationGuideKeyedService> opt_guide_;
   raw_ptr<signin::IdentityManager> identity_manager_;
+
   static int enabled_for_testing_;
   static int skip_user_check_for_testing_;
 };

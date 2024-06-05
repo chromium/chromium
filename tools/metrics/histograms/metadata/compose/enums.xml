@@ -185,6 +185,10 @@ chromium-metrics-reviews@google.com.
   <int value="22" label="Proactive nudge disabled by MSBB"/>
   <int value="23"
       label="Proactive nudge blocked for invalid Segmentation Platform"/>
+  <int value="24" label="Compose not enabled at the user's country"/>
+  <int value="25"
+      label="Compose disabled because the user's country coult not be
+             determined"/>
 </enum>
 
 <enum name="OpenComposeDialogResult">

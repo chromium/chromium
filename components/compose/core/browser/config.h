@@ -5,6 +5,9 @@
 #ifndef COMPONENTS_COMPOSE_CORE_BROWSER_CONFIG_H_
 #define COMPONENTS_COMPOSE_CORE_BROWSER_CONFIG_H_
 
+#include <string>
+#include <vector>
+
 #include "base/time/time.h"
 
 namespace compose {
@@ -116,6 +119,10 @@ struct Config {
   // The threshold for Compose request latency before showing a client-side
   // error message.
   unsigned int request_latency_timeout_seconds = 20;
+
+  // Finch-controllable list of countries where Compose should be enabled. The
+  // default value contains countries where it was already fully launched.
+  std::vector<std::string> enabled_countries = {"us"};
 
   Config();
   Config(const Config& other);

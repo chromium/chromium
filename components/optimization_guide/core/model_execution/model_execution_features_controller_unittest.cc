@@ -105,8 +105,9 @@ class ModelExecutionFeaturesControllerTest : public testing::Test {
 
 TEST_F(ModelExecutionFeaturesControllerTest, OneFeatureSettingVisible) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::internal::kComposeSettingsVisibility);
+  scoped_feature_list.InitWithFeatures(
+      {features::internal::kComposeSettingsVisibility},
+      {features::internal::kComposeGraduated});
   CreateController();
 
   EnableSignIn();
@@ -134,7 +135,7 @@ TEST_F(ModelExecutionFeaturesControllerTest,
   scoped_feature_list.InitWithFeaturesAndParameters(
       {{features::internal::kComposeSettingsVisibility, {}},
        {features::internal::kTabOrganizationSettingsVisibility, {}}},
-      {});
+      {features::internal::kComposeGraduated});
   CreateController();
   EXPECT_FALSE(controller()->IsSettingVisible(UserVisibleFeatureKey::kCompose));
   EXPECT_FALSE(
@@ -156,7 +157,7 @@ TEST_F(ModelExecutionFeaturesControllerTest,
         {{"allow_unsigned_user", "true"}}},
        {features::internal::kTabOrganizationSettingsVisibility,
         {{"allow_unsigned_user", "true"}}}},
-      {});
+      {features::internal::kComposeGraduated});
   CreateController();
   EXPECT_TRUE(controller()->IsSettingVisible(UserVisibleFeatureKey::kCompose));
   EXPECT_TRUE(
@@ -174,7 +175,8 @@ TEST_F(ModelExecutionFeaturesControllerTest,
        FeatureSettingDisabledWhenCapabilityDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      {features::internal::kComposeSettingsVisibility}, {});
+      {features::internal::kComposeSettingsVisibility},
+      {features::internal::kComposeGraduated});
   CreateController();
   EnableSignInWithoutCapability();
   EXPECT_FALSE(controller()->IsSettingVisible(UserVisibleFeatureKey::kCompose));
@@ -190,7 +192,7 @@ TEST_F(ModelExecutionFeaturesControllerTest,
   scoped_feature_list.InitWithFeatures(
       {features::internal::kComposeSettingsVisibility,
        features::internal::kModelExecutionCapabilityDisable},
-      {});
+      {features::internal::kComposeGraduated});
   CreateController();
   EnableSignInWithoutCapability();
 
@@ -206,7 +208,8 @@ TEST_F(ModelExecutionFeaturesControllerTest,
       {features::internal::kComposeSettingsVisibility,
        features::internal::kTabOrganizationSettingsVisibility,
        features::internal::kWallpaperSearchSettingsVisibility},
-      {features::internal::kWallpaperSearchGraduated});
+      {features::internal::kComposeGraduated,
+       features::internal::kWallpaperSearchGraduated});
   CreateController();
   EnableSignIn();
   EXPECT_TRUE(controller()->IsSettingVisible(UserVisibleFeatureKey::kCompose));
@@ -294,8 +297,9 @@ TEST_F(ModelExecutionFeaturesControllerTest, GraduatedFeatureIsNotVisible) {
 TEST_F(ModelExecutionFeaturesControllerTest,
        Logging_DisabledByEnterprisePolicy) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::internal::kComposeSettingsVisibility);
+  scoped_feature_list.InitWithFeatures(
+      {features::internal::kComposeSettingsVisibility},
+      {features::internal::kComposeGraduated});
   CreateController();
 
   auto feature = UserVisibleFeatureKey::kCompose;
@@ -310,8 +314,9 @@ TEST_F(ModelExecutionFeaturesControllerTest,
 TEST_F(ModelExecutionFeaturesControllerTest,
        Logging_DisabledByEnterprisePolicy_NotOverriddenByDogfoodStatusAlone) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::internal::kComposeSettingsVisibility);
+  scoped_feature_list.InitWithFeatures(
+      {features::internal::kComposeSettingsVisibility},
+      {features::internal::kComposeGraduated});
   CreateController(ModelExecutionFeaturesController::DogfoodStatus::DOGFOOD);
 
   auto feature = UserVisibleFeatureKey::kCompose;
@@ -326,8 +331,9 @@ TEST_F(ModelExecutionFeaturesControllerTest,
 TEST_F(ModelExecutionFeaturesControllerTest,
        Logging_DisabledByEnterprisePolicy_NotOverriddenBySwitchAlone) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::internal::kComposeSettingsVisibility);
+  scoped_feature_list.InitWithFeatures(
+      {features::internal::kComposeSettingsVisibility},
+      {features::internal::kComposeGraduated});
   CreateController();
 
   auto feature = UserVisibleFeatureKey::kCompose;
@@ -344,8 +350,9 @@ TEST_F(ModelExecutionFeaturesControllerTest,
 TEST_F(ModelExecutionFeaturesControllerTest,
        Logging_DisabledByEnterprisePolicy_OverriddenBySwitchWhenDogfood) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::internal::kComposeSettingsVisibility);
+  scoped_feature_list.InitWithFeatures(
+      {features::internal::kComposeSettingsVisibility},
+      {features::internal::kComposeGraduated});
   CreateController(ModelExecutionFeaturesController::DogfoodStatus::DOGFOOD);
 
   auto feature = UserVisibleFeatureKey::kCompose;

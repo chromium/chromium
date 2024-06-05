@@ -788,7 +788,8 @@ class ModelExecutionNewFeaturesEnabledAutomaticallyTest
         features::kOptimizationGuideModelExecution,
         features::internal::kTabOrganizationSettingsVisibility};
     std::vector<base::test::FeatureRef> disabled_features = {
-        features::internal::kTabOrganizationGraduated};
+        features::internal::kTabOrganizationGraduated,
+        features::internal::kComposeGraduated};
 
     std::string test_name =
         ::testing::UnitTest::GetInstance()->current_test_info()->name();
@@ -796,7 +797,6 @@ class ModelExecutionNewFeaturesEnabledAutomaticallyTest
     if (!base::StartsWith(test_name, "PRE_")) {
       enabled_features.push_back(
           features::internal::kComposeSettingsVisibility);
-      disabled_features.push_back(features::internal::kComposeGraduated);
     }
     enabled_features.push_back(::switches::kExplicitBrowserSigninUIOnDesktop);
 

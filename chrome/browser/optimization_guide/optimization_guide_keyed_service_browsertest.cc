@@ -199,6 +199,7 @@ class OptimizationGuideKeyedServiceBrowserTest
             network::TestNetworkConnectionTracker::CreateInstance()) {
     // Enable visibility of tab organization feature.
     scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
         {{features::kOptimizationHints, {}},
          {features::kOptimizationGuideModelExecution, {}},
          {features::internal::kComposeSettingsVisibility, {}},
@@ -209,7 +210,9 @@ class OptimizationGuideKeyedServiceBrowserTest
           }},
          {features::internal::kTabOrganizationSettingsVisibility,
           {{"allow_unsigned_user", "true"}}}},
-        {features::internal::kWallpaperSearchGraduated});
+        /*disabled_features=*/
+        {features::internal::kWallpaperSearchGraduated,
+         features::internal::kComposeGraduated});
   }
 
   OptimizationGuideKeyedServiceBrowserTest(

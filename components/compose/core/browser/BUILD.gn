@@ -53,6 +53,7 @@ source_set("unit_tests") {
   sources = [
     "compose_manager_impl_unittest.cc",
     "compose_prompt_trimming_unittest.cc",
+    "config_unittest.cc",
   ]
 
   deps = [

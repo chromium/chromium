@@ -8374,7 +8374,6 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "ComposeGraduated",
                         "TabOrganizationSettingsVisibility"
                     ]
                 }
