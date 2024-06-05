@@ -1,0 +1,55 @@
+# crbug.com/1515446
+-org.chromium.chrome.browser.webauth.Fido2CredentialRequestTest.*
+
+# crbug.com/1297370
+-org.chromium.chrome.browser.multiwindow.MultiWindowUtilsTest.testAreMultipleChromeInstancesRunningFirstInstanceKilledFirst
+-org.chromium.chrome.browser.multiwindow.MultiWindowUtilsTest.testAreMultipleChromeInstancesRunningSecondInstanceKilledFirst
+-org.chromium.chrome.browser.multiwindow.MultiWindowUtilsTest.testTabbedActivityForIntentLastResumedActivity
+-org.chromium.chrome.browser.multiwindow.MultiWindowUtilsTest.testTabbedActivityForIntentOnlyActivity2IsRunning
+-org.chromium.chrome.browser.multiwindow.MultiWindowUtilsTest.testTabbedActivityForIntentWithExtraWindowId
+-org.chromium.chrome.browser.multiwindow.MultiWindowIntegrationTest.testMoveTabTwice
+-org.chromium.chrome.browser.tabmodel.TabModelMergingTest.testMergeOnMultiDisplay_CTA_Resumed_CTA2_Not_Resumed
+-org.chromium.chrome.browser.tabmodel.TabModelMergingTest.testMergeOnMultiDisplay_OnDisplayChanged
+-org.chromium.chrome.browser.tabmodel.UndoTabModelTest.testOpenRecentlyClosedTabMultiWindow
+-org.chromium.chrome.browser.tabmodel.UndoTabModelTest.testOpenRecentlyClosedTabMultiWindowFallback
+-org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMultiWindowTest.testMoveLastIncognitoTab
+-org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMultiWindowTest.testMoveTabsAcrossWindow_GTS_WithoutGroup
+
+# crbug.com/1193745
+-org.chromium.chrome.browser.download.OMADownloadHandlerTest.testClearPendingOMADownloads
+-org.chromium.chrome.browser.download.OMADownloadHandlerTest.testQueryDownloadResult
+
+# crbug.com/1231227
+-org.chromium.chrome.browser.webapps.WebappDisplayModeTest.testFullScreen
+-org.chromium.chrome.browser.webapps.WebappDisplayModeTest.testFullScreenInFullscreen
+
+# crbug.com/1036556
+-org.chromium.chrome.browser.usage_stats.TabSuspensionTest.testTabAddedFromCustomTab
+
+# crbug.com/1225754
+-org.chromium.chrome.browser.offlinepages.OfflinePageBridgeTest.testGetLoadUrlParamsForOpeningMhtmlFileUrl
+
+# crbug.com/1036571
+-org.chromium.chrome.browser.shape_detection.ShapeDetectionTest.testTextDetection
+
+# crbug.com/1276402
+-org.chromium.chrome.browser.gesturenav.NavigationHandlerTest.*
+
+# crbug.com/1441680
+-org.chromium.chrome.browser.contextualsearch.ContextualSearchSystemTest.testAppMenuSuppressedWhenMaximized
+
+# crbug.com/1441685
+-org.chromium.chrome.browser.share.SaveBitmapDelegateTest.testSaveWithPermission
+-org.chromium.chrome.browser.share.SaveBitmapDelegateTest.testSaveWithoutPermissionCanNotAsk
+
+# crbug.com/1498168
+-org.chromium.chrome.browser.webapps.WebappSplashScreenTest.testThemeColorWhenNotSpecified
+
+# crbug.com/1511804
+-org.chromium.chrome.browser.tasks.tab_management.SelectableTabListEditorTest.testToolbarMenuItem_GroupActionAndUndo
+
+# crbug.com/337932321
+-org.chromium.chrome.browser.customtabs.TabReparentingTest.testTabReparentingInfoBar
+
+# crbug.com/339496718
+-org.chromium.chrome.browser.signin.UpgradePromoIntegrationTest.testUserAlreadySignedIn_onlyShowsHistorySync
