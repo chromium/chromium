@@ -173,6 +173,7 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate,
   // this data.
   void FillAutofillFormData(SuggestionType type,
                             Suggestion::BackendId backend_id,
+                            std::optional<SuggestionPosition> position,
                             bool is_preview,
                             const AutofillTriggerDetails& trigger_details);
 

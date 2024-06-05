@@ -2014,8 +2014,8 @@ TEST_P(GetLastFieldTypesToFillUnitTest, LastFieldTypesToFillForSection) {
           : test::CreateAutofillSuggestion(params.type);
 
   if (!params.is_preview) {
-    external_delegate().DidAcceptSuggestion(suggestion,
-                                            SuggestionPosition{.row = 1});
+    external_delegate().DidAcceptSuggestion(
+        suggestion, SuggestionPosition{.row = 1, .sub_popup_level = 1});
   } else {
     external_delegate().DidSelectSuggestion(suggestion);
   }
