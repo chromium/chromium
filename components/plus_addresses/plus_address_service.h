@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/autofill_plus_address_delegate.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/plus_addresses/affiliations/plus_address_affiliation_match_helper.h"
+#include "components/plus_addresses/metrics/plus_address_submission_logger.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/plus_addresses/webdata/plus_address_webdata_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -226,6 +227,8 @@ class PlusAddressService : public KeyedService,
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   const raw_ref<signin::IdentityManager> identity_manager_;
+
+  metrics::PlusAddressSubmissionLogger submission_logger_;
 
   // A timer to periodically retrieve all plus addresses from a remote server
   // to keep this service in sync.

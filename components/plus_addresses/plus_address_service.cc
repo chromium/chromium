@@ -102,6 +102,9 @@ PlusAddressService::PlusAddressService(
     scoped_refptr<PlusAddressWebDataService> webdata_service,
     affiliations::AffiliationService* affiliation_service)
     : identity_manager_(CHECK_DEREF(identity_manager)),
+      submission_logger_(identity_manager,
+                         base::BindRepeating(&PlusAddressService::IsPlusAddress,
+                                             base::Unretained(this))),
       plus_address_http_client_(std::move(plus_address_http_client)),
       webdata_service_(std::move(webdata_service)),
       plus_address_allocator_(std::make_unique<PlusAddressJitAllocator>(
@@ -591,7 +594,10 @@ void PlusAddressService::OnPlusAddressSuggestionShown(
     SuggestionContext suggestion_context,
     autofill::AutofillClient::PasswordFormType form_type,
     autofill::SuggestionType suggestion_type) {
-  NOTIMPLEMENTED();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  submission_logger_.OnPlusAddressSuggestionShown(
+      manager, form, field, suggestion_context, form_type, suggestion_type,
+      /*plus_address_count=*/plus_addresses_.size());
 }
 
 }  // namespace plus_addresses

@@ -52,6 +52,7 @@ source_set("plus_addresses") {
     ":parsing",
     "//components/affiliations/core/browser:affiliations",
     "//components/plus_addresses/metrics",
+    "//components/plus_addresses/metrics:submission_logger",
     "//components/plus_addresses/webdata",
     "//components/signin/public/identity_manager",
     "//components/strings:components_strings_grit",

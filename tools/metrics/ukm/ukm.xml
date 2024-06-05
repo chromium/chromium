@@ -22051,6 +22051,71 @@ be describing additional metrics about the same event.
   </summary>
 </event>
 
+<event name="PlusAddresses.Submission">
+  <owner>jkeitel@google.com</owner>
+  <owner>vizcay@google.com</owner>
+  <summary>
+    An email was submitted in a form for which the user had previously seen a
+    plus address suggestions. More precisely, this event is recorded whenever a
+    user submits a form that contains a form field for which a plus address
+    suggestion was shown and the form field contains either a plus address or
+    the current profile's GAIA email.
+  </summary>
+  <metric name="CheckoutOrCartPage" enum="Boolean">
+    <summary>
+      Boolean value representing whether commerce heuristics suggest that the
+      main frame URL belongs to a checkout or a cart page.
+    </summary>
+  </metric>
+  <metric name="FieldCountBrowserForm">
+    <summary>
+      The number of fields in the browser form. This uses exponential bucketing
+      with a spacing of 1.15.
+    </summary>
+  </metric>
+  <metric name="FieldCountRendererForm">
+    <summary>
+      The number of fields in the renderer form. This uses exponential bucketing
+      with a spacing of 1.15.
+    </summary>
+  </metric>
+  <metric name="ManagedProfile" enum="Boolean">
+    <summary>
+      Boolean value representing whether the active profile is managed.
+    </summary>
+  </metric>
+  <metric name="NewlyCreatedPlusAddress" enum="Boolean">
+    <summary>
+      Boolean value representing whether the submitted email was newly created
+      for this submission.
+    </summary>
+  </metric>
+  <metric name="PasswordFormType" enum="AutofillPasswordFormType">
+    <summary>
+      The password manager classification of the form focused by the user when
+      showing the plus address suggestion.
+    </summary>
+  </metric>
+  <metric name="PlusAddressCount" enum="PlusAddressCountBucket">
+    <summary>
+      The (bucketed) number of plus addresses the user had when shown the plus
+      address suggestion.
+    </summary>
+  </metric>
+  <metric name="SubmittedPlusAddress" enum="Boolean">
+    <summary>
+      Boolean value representing whether the submitted email was a plus address.
+    </summary>
+  </metric>
+  <metric name="SuggestionContext"
+      enum="AutofillPlusAddressDelegateSuggestionContext">
+    <summary>
+      The context in which the plus address suggestion (filling or creation) was
+      shown in the Autofill UI.
+    </summary>
+  </metric>
+</event>
+
 <event name="Popup.Closed">
   <owner>csharrison@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>

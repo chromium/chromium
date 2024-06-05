@@ -1,0 +1,84 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_PLUS_ADDRESSES_METRICS_PLUS_ADDRESS_SUBMISSION_LOGGER_H_
+#define COMPONENTS_PLUS_ADDRESSES_METRICS_PLUS_ADDRESS_SUBMISSION_LOGGER_H_
+
+#include <memory>
+
+#include "base/containers/flat_map.h"
+#include "base/functional/callback_forward.h"
+#include "base/memory/raw_ref.h"
+#include "base/scoped_multi_source_observation.h"
+#include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/autofill_manager.h"
+#include "components/autofill/core/browser/autofill_plus_address_delegate.h"
+#include "components/autofill/core/common/unique_ids.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
+namespace plus_addresses::metrics {
+
+class PlusAddressSubmissionLogger final : autofill::AutofillManager::Observer {
+ public:
+  // A callback used to verify whether a string corresponds to a valid plus
+  // address.
+  using PlusAddressVerifier = base::RepeatingCallback<bool(const std::string&)>;
+
+  PlusAddressSubmissionLogger(signin::IdentityManager* identity_manager,
+                              PlusAddressVerifier plus_address_verifier);
+  PlusAddressSubmissionLogger(const PlusAddressSubmissionLogger&) = delete;
+  PlusAddressSubmissionLogger& operator=(const PlusAddressSubmissionLogger&) =
+      delete;
+  ~PlusAddressSubmissionLogger() override;
+
+  void OnPlusAddressSuggestionShown(
+      autofill::AutofillManager& manager,
+      autofill::FormGlobalId form,
+      autofill::FieldGlobalId field,
+      autofill::AutofillPlusAddressDelegate::SuggestionContext
+          suggestion_context,
+      autofill::AutofillClient::PasswordFormType form_type,
+      autofill::SuggestionType suggestion_type,
+      size_t plus_address_count);
+
+ private:
+  // autofill::AutofillManager::Observer:
+  void OnAutofillManagerDestroyed(autofill::AutofillManager& manager) override;
+  void OnAutofillManagerReset(autofill::AutofillManager& manager) override;
+  void OnFormSubmitted(autofill::AutofillManager& manager,
+                       const autofill::FormData& form) override;
+
+  // Stops observing `manager` and removes all records for it.
+  void RemoveManagerObservation(autofill::AutofillManager& manager);
+
+  const raw_ref<signin::IdentityManager> identity_manager_;
+  const PlusAddressVerifier plus_address_verifier_;
+
+  // All records of plus address suggestions that were shown for fields. Records
+  // are deleted if the form containing the field is submitted or the Autofill
+  // manager that belongs to the browser form containing the form field is reset
+  // or destroyed.
+  using Record = ukm::builders::PlusAddresses_Submission;
+  // TODO: crbug.com/343124027 - Consider just keeping one map keyed by
+  // FieldGlobalId once frame tokens are set on iOS.
+  base::flat_map<
+      autofill::AutofillManager*,
+      base::flat_map<autofill::FieldGlobalId, std::unique_ptr<Record>>>
+      records_;
+
+  // Observations of all managers for which there is an entry in `records_`. The
+  // keys in `records_` and the observed managers here should always be kept
+  // identical.
+  base::ScopedMultiSourceObservation<autofill::AutofillManager,
+                                     autofill::AutofillManager::Observer>
+      managers_observation_{this};
+};
+
+}  // namespace plus_addresses::metrics
+
+#endif  // COMPONENTS_PLUS_ADDRESSES_METRICS_PLUS_ADDRESS_SUBMISSION_LOGGER_H_
