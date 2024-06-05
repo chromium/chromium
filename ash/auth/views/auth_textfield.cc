@@ -90,6 +90,17 @@ void AuthTextfield::OnFocus() {
   }
 }
 
+ui::TextInputMode AuthTextfield::GetTextInputMode() const {
+  if (auth_type_ == AuthType::kPin) {
+    return ui::TextInputMode::TEXT_INPUT_MODE_NUMERIC;
+  }
+  return ui::TextInputMode::TEXT_INPUT_MODE_DEFAULT;
+}
+
+bool AuthTextfield::ShouldDoLearning() {
+  return false;
+}
+
 bool AuthTextfield::HandleKeyEvent(views::Textfield* sender,
                                     const ui::KeyEvent& key_event) {
   CHECK_EQ(sender, this);

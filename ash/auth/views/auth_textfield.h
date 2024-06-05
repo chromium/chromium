@@ -50,6 +50,8 @@ class ASH_EXPORT AuthTextfield : public SystemTextfield,
   void AboutToRequestFocusFromTabTraversal(bool reverse) override;
   void OnBlur() override;
   void OnFocus() override;
+  ui::TextInputMode GetTextInputMode() const override;
+  bool ShouldDoLearning() override;
 
   // SystemTextfieldController:
   bool HandleKeyEvent(views::Textfield* sender,
