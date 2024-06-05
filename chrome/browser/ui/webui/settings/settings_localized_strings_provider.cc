@@ -3377,6 +3377,10 @@ void AddCertificateManagerV2Strings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_CERTIFICATE_MANAGER_V2_CRS_CERTIFICATES},
       {"certificateManagerV2HashCopiedToast",
        IDS_SETTINGS_CERTIFICATE_MANAGER_V2_HASH_COPIED_TOAST},
+      {"certificateManagerV2PolicyCertsSingular",
+       IDS_SETTINGS_CERTIFICATE_MANAGER_V2_ADMIN_CERTS_SINGULAR},
+      {"certificateManagerV2PolicyCertsPlural",
+       IDS_SETTINGS_CERTIFICATE_MANAGER_V2_ADMIN_CERTS_PLURAL},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }

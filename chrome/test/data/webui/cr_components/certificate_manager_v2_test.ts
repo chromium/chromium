@@ -13,7 +13,7 @@ import type {CertificateManagerV2Element} from 'chrome://resources/cr_components
 import type {CertPolicyInfo} from 'chrome://resources/cr_components/certificate_manager/certificate_manager_v2.mojom-webui.js';
 import {CertificateSource} from 'chrome://resources/cr_components/certificate_manager/certificate_manager_v2.mojom-webui.js';
 import {CertificatesV2BrowserProxy} from 'chrome://resources/cr_components/certificate_manager/certificates_v2_browser_proxy.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestCertificateManagerProxy} from './certificate_manager_v2_test_support.js';
@@ -161,6 +161,7 @@ suite('CertificateManagerV2Test', () => {
     const policyInfo: CertPolicyInfo = {
       includeSystemTrustStore: true,
       isIncludeSystemTrustStoreManaged: true,
+      numPolicyCerts: 0,
     };
     testProxy.handler.setPolicyInformation(policyInfo);
     initializeElement();
@@ -186,6 +187,7 @@ suite('CertificateManagerV2Test', () => {
     const policyInfo: CertPolicyInfo = {
       includeSystemTrustStore: true,
       isIncludeSystemTrustStoreManaged: false,
+      numPolicyCerts: 0,
     };
     testProxy.handler.setPolicyInformation(policyInfo);
     initializeElement();
@@ -212,6 +214,7 @@ suite('CertificateManagerV2Test', () => {
     const policyInfo: CertPolicyInfo = {
       includeSystemTrustStore: false,
       isIncludeSystemTrustStoreManaged: true,
+      numPolicyCerts: 0,
     };
     testProxy.handler.setPolicyInformation(policyInfo);
     initializeElement();
@@ -238,6 +241,7 @@ suite('CertificateManagerV2Test', () => {
     const policyInfo: CertPolicyInfo = {
       includeSystemTrustStore: false,
       isIncludeSystemTrustStoreManaged: false,
+      numPolicyCerts: 0,
     };
     testProxy.handler.setPolicyInformation(policyInfo);
     initializeElement();
@@ -265,6 +269,7 @@ suite('CertificateManagerV2Test', () => {
     const policyInfo: CertPolicyInfo = {
       includeSystemTrustStore: true,
       isIncludeSystemTrustStoreManaged: true,
+      numPolicyCerts: 0,
     };
     testProxy.handler.setPolicyInformation(policyInfo);
     initializeElement();
@@ -289,4 +294,37 @@ suite('CertificateManagerV2Test', () => {
     await testProxy.handler.whenCalled('showNativeManageCertificates');
   });
   // </if>
+
+  test('no admin certs, hide custom section', async () => {
+    const policyInfo: CertPolicyInfo = {
+      includeSystemTrustStore: true,
+      isIncludeSystemTrustStoreManaged: true,
+      numPolicyCerts: 0,
+    };
+    testProxy.handler.setPolicyInformation(policyInfo);
+    initializeElement();
+
+    await testProxy.handler.whenCalled('getPolicyInformation');
+    await microtasksFinished();
+    const customSection =
+        certManager.shadowRoot!.querySelector('#customCertsSection');
+    assertNull(customSection, 'custom certs section not hidden');
+  });
+
+  test('have admin certs, show custom section', async () => {
+    const policyInfo: CertPolicyInfo = {
+      includeSystemTrustStore: true,
+      isIncludeSystemTrustStoreManaged: true,
+      numPolicyCerts: 5,
+    };
+    testProxy.handler.setPolicyInformation(policyInfo);
+    initializeElement();
+
+    await testProxy.handler.whenCalled('getPolicyInformation');
+    await microtasksFinished();
+    const customSection =
+        certManager.shadowRoot!.querySelector('#customCertsSection');
+    const linkRow = customSection!.querySelector('cr-link-row');
+    assertEquals('5 certificates', linkRow!.subLabel);
+  });
 });

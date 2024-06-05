@@ -97,14 +97,14 @@
       </cr-link-row>
     </if>
 
-    <h3> Custom </h3>
-
-    <cr-link-row label="Installed by your administrator"
-        sub-label="23 certs">
-      <cr-button class="action-button" id="exportAdminCerts">
-        Export
-      </cr-button>
-    </cr-link-row>
+    <template is="dom-if" if="[[showCustomSection_(certPolicy_)]]">
+      <div id="customCertsSection">
+        <h3>Custom</h3>
+        <cr-link-row label="Installed by your administrator"
+            sub-label="[[getPolicyCertsString_(certPolicy_)]]">
+       </cr-link-row>
+      </div>
+    </template>
   </div>
 
   <!-- Chrome Root Store section -->

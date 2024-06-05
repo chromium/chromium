@@ -48,6 +48,9 @@ struct CertPolicyInfo {
   // If true, an enterprise policy controls whether user-added certs are
   // imported from the system.
   bool is_include_system_trust_store_managed;
+
+  // Number of certificates added via enterprise policy.
+  uint8 num_policy_certs;
 };
 
 // Calls from TS -> C++  (Renderer -> Browser).

@@ -8,6 +8,9 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 class FakePageHandler extends TestBrowserProxy implements
     CertificateManagerPageHandlerInterface {
+  // TODO(hchao): try to mess with structure so the auto formatter makes this
+  // less confusing. See:
+  // https://crrev.com/c/5577174/8/chrome/test/data/webui/cr_components/certificate_manager_v2_test_support.ts
   private getCertificatesCallback_: (source: CertificateSource) => {
     certs:
       SummaryCertInfo[],
@@ -18,6 +21,7 @@ class FakePageHandler extends TestBrowserProxy implements
   private policyInfo_: CertPolicyInfo = {
     includeSystemTrustStore: true,
     isIncludeSystemTrustStoreManaged: false,
+    numPolicyCerts: 0,
   };
 
   constructor() {

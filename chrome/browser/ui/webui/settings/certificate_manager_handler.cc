@@ -385,6 +385,16 @@ void CertificateManagerPageHandler::GetPolicyInformation(
   cert_policy_info->include_system_trust_store = true;
   cert_policy_info->is_include_system_trust_store_managed = false;
 #endif
+
+  cert_policy_info->num_policy_certs =
+      policies.full_distrusted_certs.size() +
+      policies.certificate_policies->trust_anchors.size() +
+      policies.certificate_policies->trust_anchors_with_enforced_constraints
+          .size() +
+      policies.certificate_policies->trust_anchors_with_additional_constraints
+          .size() +
+      policies.certificate_policies->all_certificates.size();
+
   std::move(callback).Run(std::move(cert_policy_info));
 }
 

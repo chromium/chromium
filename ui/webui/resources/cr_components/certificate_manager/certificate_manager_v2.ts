@@ -119,6 +119,27 @@ export class CertificateManagerV2Element extends
     return this.certPolicy_.isIncludeSystemTrustStoreManaged;
   }
 
+  private getPolicyCertsString_(): string {
+    if (this.certPolicy_ === undefined) {
+      return '';
+    }
+
+    // TODO(crbug.com/40928765): Use PluralStringProxy instead.
+    if (this.certPolicy_.numPolicyCerts > 1) {
+      return loadTimeData.getStringF(
+          'certificateManagerV2PolicyCertsPlural',
+          this.certPolicy_.numPolicyCerts);
+    } else {
+      return loadTimeData.getString('certificateManagerV2PolicyCertsSingular');
+    }
+  }
+
+  // If true, show the Custom Certs section.
+  private showCustomSection_(): boolean {
+    return this.certPolicy_ !== undefined &&
+        this.certPolicy_.numPolicyCerts > 0;
+  }
+
   // <if expr="is_win or is_macosx">
   private onManageCertsExternal_() {
     const proxy = CertificatesV2BrowserProxy.getInstance();
