@@ -502,28 +502,18 @@ TEST_F(BluetoothUtilsTest, TestTimeIntervalBetweenConnectionsMetric) {
   histogram_tester.ExpectTotalCount(
       kTimeIntervalBetweenConnectionsHistogramName, 0);
 
-  // Passing uninitialized time should not emit the metric.
-  RecordTimeIntervalBetweenConnections(base::TimeTicks());
+  // Record a time interval of 50 minutes between connections, this should not
+  // be recorded as it exceeds the threshold for recording.
+  RecordTimeIntervalBetweenConnections(base::Minutes(50));
   histogram_tester.ExpectTotalCount(
       kTimeIntervalBetweenConnectionsHistogramName, 0);
 
-  // Simulate first connection where last_connection_timestamp is std::nullopt.
-  RecordTimeIntervalBetweenConnections(std::nullopt);
-  histogram_tester.ExpectTotalCount(
-      kTimeIntervalBetweenConnectionsHistogramName, 0);
-
-  // Simulate a connection 1 hour ago and verify no metric is emitted.
-  RecordTimeIntervalBetweenConnections(base::TimeTicks::Now() - base::Hours(1));
-  histogram_tester.ExpectTotalCount(
-      kTimeIntervalBetweenConnectionsHistogramName, 0);
-
-  // Simulate a connection 1 second ago and check for histogram update.
-  RecordTimeIntervalBetweenConnections(base::TimeTicks::Now() -
-                                       base::Seconds(1));
+  // Record a time interval of 1 minute between connections.
+  RecordTimeIntervalBetweenConnections(base::Minutes(1));
   histogram_tester.ExpectTotalCount(
       kTimeIntervalBetweenConnectionsHistogramName, 1);
   histogram_tester.ExpectTimeBucketCount(
-      kTimeIntervalBetweenConnectionsHistogramName, base::Seconds(1), 1);
+      kTimeIntervalBetweenConnectionsHistogramName, base::Minutes(1), 1);
 }
 
 }  // namespace device

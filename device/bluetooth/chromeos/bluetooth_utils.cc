@@ -584,18 +584,13 @@ void RecordSetDeviceNickName(SetNicknameResult set_nickname_result) {
 }
 
 void RecordTimeIntervalBetweenConnections(
-    std::optional<base::TimeTicks> last_connection_timestamp) {
-  if (!last_connection_timestamp.has_value()) {
-    return;
-  }
-  base::TimeDelta time_since_last_connection =
-      base::TimeTicks::Now() - last_connection_timestamp.value();
-  if (time_since_last_connection >= kConnectionTimeIntervalThreshold) {
+    base::TimeDelta time_interval_since_last_connection) {
+  if (time_interval_since_last_connection >= kConnectionTimeIntervalThreshold) {
     return;
   }
   base::UmaHistogramCustomTimes(
       "Bluetooth.ChromeOS.TimeIntervalBetweenConnections",
-      time_since_last_connection,
+      time_interval_since_last_connection,
       /*min=*/base::Milliseconds(0),
       /*max=*/kConnectionTimeIntervalThreshold, 100);
 }

@@ -195,7 +195,7 @@ DEVICE_BLUETOOTH_EXPORT void RecordSetDeviceNickName(SetNicknameResult success);
 
 // Record the time interval between consecutive bluetooth connections.
 DEVICE_BLUETOOTH_EXPORT void RecordTimeIntervalBetweenConnections(
-    std::optional<base::TimeTicks> last_connection_timestamp);
+    base::TimeDelta time_interval_since_last_connection);
 
 }  // namespace device
 

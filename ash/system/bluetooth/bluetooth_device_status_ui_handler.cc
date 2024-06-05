@@ -80,7 +80,11 @@ void BluetoothDeviceStatusUiHandler::OnDeviceConnected(
   ShowToast(std::move(toast_data));
   device::RecordUiSurfaceDisplayed(
       device::BluetoothUiSurface::kConnectionToast);
-  device::RecordTimeIntervalBetweenConnections(last_connection_timestamp_);
+
+  if (last_connection_timestamp_.has_value()) {
+    device::RecordTimeIntervalBetweenConnections(
+        base::TimeTicks::Now() - last_connection_timestamp_.value());
+  }
   last_connection_timestamp_ = base::TimeTicks::Now();
 
   if (auto* hats_bluetooth_revamp_trigger = HatsBluetoothRevampTrigger::Get()) {
