@@ -422,6 +422,12 @@ void AutofillContextMenuManager::MaybeAddAutofillManualFallbackItems() {
 
 bool AutofillContextMenuManager::ShouldAddPlusAddressManualFallbackItem(
     ContentAutofillDriver& autofill_driver) {
+  if (params_.form_control_type &&
+      params_.form_control_type.value() ==
+          blink::mojom::FormControlType::kInputPassword) {
+    return false;
+  }
+
   auto* web_contents = content::WebContents::FromRenderFrameHost(
       autofill_driver.render_frame_host());
   const plus_addresses::PlusAddressService* plus_address_service =

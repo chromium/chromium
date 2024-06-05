@@ -1457,6 +1457,17 @@ IN_PROC_BROWSER_TEST_F(PlusAddressContextMenuManagerTest, ClassifiedForm) {
   EXPECT_THAT(menu_model(), OnlyPlusAddressFallbackAdded());
 }
 
+// Tests that no Plus Address fallbacks are shown on password fields.
+IN_PROC_BROWSER_TEST_F(PlusAddressContextMenuManagerTest, PasswordForm) {
+  FormData form = CreateAndAttachPasswordForm();
+  autofill_context_menu_manager()->set_params_for_testing(
+      CreateContextMenuParams(form.renderer_id(), form.fields[0].renderer_id(),
+                              blink::mojom::FormControlType::kInputPassword));
+  autofill_context_menu_manager()->AppendItems();
+  EXPECT_THAT(menu_model(),
+              Not(ContainsAnyAddressAndPaymentsFallbackEntries()));
+}
+
 // Tests that Plus Address fallbacks are not added in incognito mode if the user
 // does not have a Plus Address for the domain.
 IN_PROC_BROWSER_TEST_F(PlusAddressContextMenuManagerTest,
