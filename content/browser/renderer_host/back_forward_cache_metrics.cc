@@ -173,20 +173,31 @@ void BackForwardCacheMetrics::DidCommitNavigation(
     if (served_from_bfcache_not_match) {
       SCOPED_CRASH_KEY_BOOL("BFCacheMismatch", "did_store", did_store);
       SCOPED_CRASH_KEY_BOOL("BFCacheMismatch", "can_restore", can_restore);
-      SCOPED_CRASH_KEY_NUMBER(
-          "BFCacheMismatch", "not_restored",
-          page_store_result_->not_restored_reasons().ToEnumBitmask());
+      SCOPED_CRASH_KEY_NUMBER("BFCacheMismatch", "not_restored",
+                              page_store_result_->not_restored_reasons()
+                                  .GetNth64bitWordBitmask(0)
+                                  .value());
+      auto not_restored_1 =
+          page_store_result_->not_restored_reasons().GetNth64bitWordBitmask(1);
+      if (not_restored_1.has_value()) {
+        SCOPED_CRASH_KEY_NUMBER("BFCacheMismatch", "not_restored_1",
+                                not_restored_1.value());
+      }
       SCOPED_CRASH_KEY_NUMBER(
           "BFCacheMismatch", "bi_swap",
           page_store_result_->browsing_instance_swap_result().has_value()
               ? static_cast<int>(
                     page_store_result_->browsing_instance_swap_result().value())
               : -1);
-      std::vector<uint64_t> masks = blink::scheduler::ToEnumBitMasks(
-          page_store_result_->blocklisted_features());
-      SCOPED_CRASH_KEY_NUMBER("BFCacheMismatch", "blocklisted", masks[0]);
-      if (masks.size() > 1) {
-        SCOPED_CRASH_KEY_NUMBER("BFCacheMismatch", "blocklisted1", masks[1]);
+      SCOPED_CRASH_KEY_NUMBER("BFCacheMismatch", "blocklisted",
+                              page_store_result_->blocklisted_features()
+                                  .GetNth64bitWordBitmask(0)
+                                  .value());
+      auto blocklisted_1 =
+          page_store_result_->blocklisted_features().GetNth64bitWordBitmask(1);
+      if (blocklisted_1.has_value()) {
+        SCOPED_CRASH_KEY_NUMBER("BFCacheMismatch", "blocklisted_1",
+                                blocklisted_1.value());
       }
       SCOPED_CRASH_KEY_NUMBER("BFCacheMismatch", "disabled",
                               page_store_result_->disabled_reasons().size());
@@ -266,26 +277,29 @@ void BackForwardCacheMetrics::RecordHistoryNavigationUKM(
             ukm::SourceIdType::NAVIGATION_ID));
   }
 
-  std::vector<uint64_t> main_frame_features_masks =
-      blink::scheduler::ToEnumBitMasks(main_frame_features_);
-  builder.SetMainFrameFeatures(main_frame_features_masks[0]);
-  if (main_frame_features_masks.size() > 1) {
-    builder.SetMainFrameFeatures2(main_frame_features_masks[1]);
+  builder.SetMainFrameFeatures(
+      main_frame_features_.GetNth64bitWordBitmask(0).value());
+  auto main_frame_features_2 = main_frame_features_.GetNth64bitWordBitmask(1);
+  if (main_frame_features_2.has_value()) {
+    builder.SetMainFrameFeatures2(main_frame_features_2.value());
   }
-  std::vector<uint64_t> same_origin_frames_features_masks =
-      blink::scheduler::ToEnumBitMasks(same_origin_frames_features_);
-  builder.SetSameOriginSubframesFeatures(same_origin_frames_features_masks[0]);
-  if (same_origin_frames_features_masks.size() > 1) {
+
+  builder.SetSameOriginSubframesFeatures(
+      same_origin_frames_features_.GetNth64bitWordBitmask(0).value());
+  auto same_origin_frames_features_2 =
+      same_origin_frames_features_.GetNth64bitWordBitmask(1);
+  if (same_origin_frames_features_2.has_value()) {
     builder.SetSameOriginSubframesFeatures2(
-        same_origin_frames_features_masks[1]);
+        same_origin_frames_features_2.value());
   }
-  std::vector<uint64_t> cross_origin_frames_features_masks =
-      blink::scheduler::ToEnumBitMasks(same_origin_frames_features_);
+
   builder.SetCrossOriginSubframesFeatures(
-      cross_origin_frames_features_masks[0]);
-  if (cross_origin_frames_features_masks.size() > 1) {
+      cross_origin_frames_features_.GetNth64bitWordBitmask(0).value());
+  auto cross_origin_frames_features_2 =
+      cross_origin_frames_features_.GetNth64bitWordBitmask(1);
+  if (cross_origin_frames_features_2.has_value()) {
     builder.SetCrossOriginSubframesFeatures2(
-        cross_origin_frames_features_masks[1]);
+        cross_origin_frames_features_2.value());
   }
   // DidStart notification might be missing for some same-document
   // navigations. It's good that we don't care about the time in the cache
@@ -301,15 +315,25 @@ void BackForwardCacheMetrics::RecordHistoryNavigationUKM(
   builder.SetBackForwardCache_IsServedFromBackForwardCache(
       navigation->IsServedFromBackForwardCache());
   builder.SetBackForwardCache_NotRestoredReasons(
-      page_store_result_->not_restored_reasons().ToEnumBitmask());
+      page_store_result_->not_restored_reasons()
+          .GetNth64bitWordBitmask(0)
+          .value());
+  auto not_restored_reasons_2 =
+      page_store_result_->not_restored_reasons().GetNth64bitWordBitmask(1);
+  if (not_restored_reasons_2.has_value()) {
+    builder.SetBackForwardCache_NotRestoredReasons2(
+        not_restored_reasons_2.value());
+  }
 
-  std::vector<uint64_t> page_store_result_masks =
-      blink::scheduler::ToEnumBitMasks(
-          page_store_result_->blocklisted_features());
-  builder.SetBackForwardCache_BlocklistedFeatures(page_store_result_masks[0]);
-  if (page_store_result_masks.size() > 1) {
+  builder.SetBackForwardCache_BlocklistedFeatures(
+      page_store_result_->blocklisted_features()
+          .GetNth64bitWordBitmask(0)
+          .value());
+  auto blocklisted_features_2 =
+      page_store_result_->blocklisted_features().GetNth64bitWordBitmask(1);
+  if (blocklisted_features_2.has_value()) {
     builder.SetBackForwardCache_BlocklistedFeatures2(
-        page_store_result_masks[1]);
+        blocklisted_features_2.value());
   }
 
   if (browsing_instance_swap_result_) {

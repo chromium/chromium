@@ -193,12 +193,6 @@ BLINK_COMMON_EXPORT bool IsFeatureSticky(WebSchedulerTrackedFeature feature);
 // All the sticky features.
 BLINK_COMMON_EXPORT WebSchedulerTrackedFeatures StickyFeatures();
 
-// Generates a list of uint64_t bit masks for the `WebSchedulerTrackedFeatures`
-// in the following order:
-// [<bit mask for 0-63>, <bit mask for 64-127>, ...]
-BLINK_COMMON_EXPORT std::vector<uint64_t> ToEnumBitMasks(
-    WebSchedulerTrackedFeatures features);
-
 // Disables wake up alignment permanently for the process. This is called when a
 // feature that is incompatible with wake up alignment is used. Thread-safe.
 BLINK_COMMON_EXPORT void DisableAlignWakeUpsForProcess();

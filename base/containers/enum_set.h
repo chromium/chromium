@@ -242,6 +242,26 @@ class EnumSet {
     return enums_.to_ullong() << GetUnderlyingValue(kMinValue);
   }
 
+  // Returns a uint64_t bit mask representing the values within the range
+  // [64*n, 64*n + 63] of the EnumSet.
+  std::optional<uint64_t> GetNth64bitWordBitmask(size_t n) const {
+    // If the EnumSet contains less than n 64-bit masks, return std::nullopt.
+    if (GetUnderlyingValue(kMaxValue) / 64 < n) {
+      return std::nullopt;
+    }
+
+    std::bitset<kValueCount> mask = ~uint64_t{0};
+    std::bitset<kValueCount> bits = enums_;
+    if (GetUnderlyingValue(kMinValue) < n * 64) {
+      bits >>= n * 64 - GetUnderlyingValue(kMinValue);
+    }
+    uint64_t result = (bits & mask).to_ullong();
+    if (GetUnderlyingValue(kMinValue) > n * 64) {
+      result <<= GetUnderlyingValue(kMinValue) - n * 64;
+    }
+    return result;
+  }
+
   // Set operations.  Put, Retain, and Remove are basically
   // self-mutating versions of Union, Intersection, and Difference
   // (defined below).

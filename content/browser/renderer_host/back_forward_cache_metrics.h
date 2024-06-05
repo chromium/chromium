@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/containers/enum_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
@@ -129,8 +130,9 @@ class BackForwardCacheMetrics
     kMaxValue = kBroadcastChannelOnMessage,
   };
 
-  using NotRestoredReasons =
-      std::bitset<static_cast<size_t>(NotRestoredReason::kMaxValue) + 1ul>;
+  using NotRestoredReasons = base::EnumSet<NotRestoredReason,
+                                           NotRestoredReason::kMinValue,
+                                           NotRestoredReason::kMaxValue>;
 
   // Please keep in sync with BackForwardCacheHistoryNavigationOutcome in
   // tools/metrics/histograms/enums.xml. These values should not be renumbered.

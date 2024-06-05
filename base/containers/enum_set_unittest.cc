@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <optional>
+
 #include "base/containers/to_vector.h"
 #include "base/test/gtest_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -484,6 +486,38 @@ TEST_F(EnumSetTest, SparseEnum) {
   EXPECT_EQ(sparse.size(), 2u);
 
   EXPECT_EQ(TestEnumSparseSet::All().size(), 100u);
+}
+
+TEST_F(EnumSetTest, GetNth64bitWordBitmaskFromEnum) {
+  enum class TestEnumEdgeCase {
+    kTest1 = 1,
+    kTestMin = kTest1,
+    kTest63 = 63,
+    kTest64 = 64,
+    kTest100 = 100,
+    kTestMax = kTest100,
+  };
+  using TestEnumEdgeCaseSet =
+      EnumSet<TestEnumEdgeCase, TestEnumEdgeCase::kTestMin,
+              TestEnumEdgeCase::kTestMax>;
+  TestEnumEdgeCaseSet sparse;
+  sparse.Put(TestEnumEdgeCase::kTest1);
+  sparse.Put(TestEnumEdgeCase::kTest63);
+  sparse.Put(TestEnumEdgeCase::kTest64);
+  sparse.Put(TestEnumEdgeCase::kTest100);
+  std::optional<uint64_t> bit_mask_0 = sparse.GetNth64bitWordBitmask(0);
+  ASSERT_TRUE(bit_mask_0.has_value());
+  ASSERT_EQ(bit_mask_0.value(),
+            1ull << static_cast<uint32_t>(TestEnumEdgeCase::kTest1) |
+                1ull << static_cast<uint32_t>(TestEnumEdgeCase::kTest63));
+  std::optional<uint64_t> bit_mask_1 = sparse.GetNth64bitWordBitmask(1);
+  ASSERT_TRUE(bit_mask_1.has_value());
+  ASSERT_EQ(
+      bit_mask_1.value(),
+      1ull << (static_cast<uint32_t>(TestEnumEdgeCase::kTest64) - 64u) |
+          1ull << (static_cast<uint32_t>(TestEnumEdgeCase::kTest100) - 64u));
+  std::optional<uint64_t> bit_mask_2 = sparse.GetNth64bitWordBitmask(2);
+  ASSERT_FALSE(bit_mask_2.has_value());
 }
 
 TEST_F(EnumSetTest, SparseEnumSmall) {

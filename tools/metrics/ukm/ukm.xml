@@ -13229,7 +13229,16 @@ be describing additional metrics about the same event.
     <summary>
       Bitmask of the reasons why the page was not restored from the back-forward
       cache. See contents::BackForwardCacheMetrics::NotRestoredReason for the
-      meaning of the individual bits.
+      meaning of the individual bits. This entry records the features numbered
+      from 0 to 63.
+    </summary>
+  </metric>
+  <metric name="BackForwardCache.NotRestoredReasons2">
+    <summary>
+      Bitmask of the reasons why the page was not restored from the back-forward
+      cache. See contents::BackForwardCacheMetrics::NotRestoredReason for the
+      meaning of the individual bits. This entry records the features numbered
+      from 64 to 127.
     </summary>
   </metric>
   <metric name="CrossOriginSubframesFeatures">

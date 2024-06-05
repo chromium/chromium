@@ -232,24 +232,5 @@ bool IsAlignWakeUpsDisabledForProcess() {
   return disable_align_wake_ups.load(std::memory_order_relaxed);
 }
 
-// static
-std::vector<uint64_t> ToEnumBitMasks(WebSchedulerTrackedFeatures features) {
-  // We need one mask per 64 values, so the length of the mask should be
-  // kValueCount / 64 (round up).
-  std::vector<uint64_t> masks(
-      (WebSchedulerTrackedFeatures::kValueCount + 63u) / 64u, 0);
-  // It's guaranteed that `kValueCount` will be positive, so the size of the
-  // `masks` will be at least 1.
-  // See `//base/containers/enum_set.h`.
-  CHECK_GT(masks.size(), 0u);
-  for (auto feature : features) {
-    uint32_t value =
-        static_cast<std::underlying_type_t<WebSchedulerTrackedFeature>>(
-            feature);
-    masks[value / 64] |= 1ull << (value % 64);
-  }
-  return masks;
-}
-
 }  // namespace scheduler
 }  // namespace blink
