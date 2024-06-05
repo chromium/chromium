@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -51,6 +52,8 @@
 #include "chromeos/ash/components/drivefs/drivefs_bootstrap.h"
 #include "chromeos/ash/components/drivefs/drivefs_pinning_manager.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom-shared.h"
+#include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
+#include "chromeos/ash/components/drivefs/mojom/notifications.mojom-forward.h"
 #include "chromeos/ash/components/drivefs/mojom/notifications.mojom.h"
 #include "chromeos/components/drivefs/mojom/drivefs_native_messaging.mojom.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -400,6 +403,37 @@ void RecordBulkPinningMountFailureReason(
   }
 }
 
+std::optional<PersistedMessage> ConvertNotificationToMessage(
+    drivefs::mojom::DriveFsNotificationPtr notification) {
+  PersistedMessage message;
+  message.source = PersistedMessage::Source::kNotification;
+  message.type = notification->which();
+  switch (notification->which()) {
+    case drivefs::mojom::DriveFsNotification::Tag::kMirrorDownloadDeleted:
+      message.path = base::FilePath(
+          notification->get_mirror_download_deleted()->parent_title);
+      // Currently we don't have stable_id returned from DriveFs for this type
+      // of notification, assign it to -1 instead.
+      message.stable_id = -1;
+      return message;
+    case drivefs::mojom::DriveFsNotification::Tag::kUnknown:
+      LOG(ERROR) << "unknown notification received";
+      return std::nullopt;
+  }
+  NOTREACHED_IN_MIGRATION();
+}
+
+std::optional<PersistedMessage> ConvertSyncErrorToMessage(
+    mojo::InlinedStructPtr<drivefs::mojom::MirrorSyncError> const& error) {
+  if (error->type == drivefs::mojom::MirrorSyncError::Type::kUnknown) {
+    LOG(ERROR) << "unknown sync error received";
+    return std::nullopt;
+  }
+
+  return PersistedMessage({PersistedMessage::Source::kError, error->type,
+                           base::FilePath(error->name), error->stable_id});
+}
+
 }  // namespace
 
 // Observes changes in Drive's Preferences and network connections.
@@ -614,16 +648,28 @@ class DriveIntegrationService::DriveFsHolder
     if (!ash::features::IsDriveFsMirroringEnabled()) {
       return;
     }
-    switch (notification->which()) {
-      case drivefs::mojom::DriveFsNotification::Tag::kMirrorDownloadDeleted:
-        persisted_notification_
-            [drivefs::mojom::DriveFsNotification::Tag::kMirrorDownloadDeleted]
-                .emplace_back(
-                    notification->get_mirror_download_deleted()->parent_title);
-        break;
-      case drivefs::mojom::DriveFsNotification::Tag::kUnknown:
-        LOG(ERROR) << "unknown notification received";
-        break;
+
+    std::optional<PersistedMessage> opt_message =
+        ConvertNotificationToMessage(std::move(notification));
+    if (opt_message.has_value()) {
+      PersistedMessage message = opt_message.value();
+      persisted_messages_[message.type].push_back(std::move(message));
+    }
+  }
+
+  void PersistSyncErrors(
+      drivefs::mojom::MirrorSyncErrorListPtr error_list) override {
+    if (!ash::features::IsDriveFsMirroringEnabled()) {
+      return;
+    }
+
+    for (const auto& error : error_list->errors) {
+      std::optional<PersistedMessage> opt_message =
+          ConvertSyncErrorToMessage(error);
+      if (opt_message.has_value()) {
+        PersistedMessage message = opt_message.value();
+        persisted_messages_[message.type].push_back(std::move(message));
+      }
     }
   }
 
@@ -641,10 +687,9 @@ class DriveIntegrationService::DriveFsHolder
   mojo::Remote<crosapi::mojom::DriveFsNativeMessageHostBridge>
       native_message_host_bridge_;
   base::OnceClosure pending_connect_to_extension_request_;
-  // Notification received from DriveFS which requires persistence.
-  std::unordered_map<drivefs::mojom::DriveFsNotification::Tag,
-                     std::vector<std::string>>
-      persisted_notification_;
+  // Notifications/Errors received from DriveFS which requires persistence.
+  std::unordered_map<PersistedMessage::Type, std::vector<PersistedMessage>>
+      persisted_messages_;
 };
 
 DriveIntegrationService::DriveIntegrationService(

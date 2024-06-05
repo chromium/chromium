@@ -188,6 +188,8 @@ class TestingDriveFsHostDelegate : public DriveFsHost::Delegate,
   void PersistNotification(
       mojom::DriveFsNotificationPtr notification) override {}
 
+  void PersistSyncErrors(mojom::MirrorSyncErrorListPtr error_list) override {}
+
   const raw_ptr<signin::IdentityManager> identity_manager_;
   const AccountId account_id_;
   mojo::PendingRemote<mojom::DriveFsBootstrap> pending_bootstrap_;

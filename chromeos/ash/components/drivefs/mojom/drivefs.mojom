@@ -286,6 +286,9 @@ interface DriveFsDelegate {
 
   // Invoked when a notification of interest is sent from DriveFS.
   OnNotificationReceived(DriveFsNotification notification);
+
+  // Invoke when a mirror sync error is sent from DriveFS.
+  OnMirrorSyncError(MirrorSyncErrorList error_list);
 };
 
 [Extensible]
@@ -949,4 +952,31 @@ enum MirrorItemSyncingStatus {
   kSynced,
   kSyncing,
   kSyncError,
+};
+
+// Mirror sync errors received from DriveFS to be forwarded to the file manager
+// UI.
+struct MirrorSyncError {
+  [Extensible] enum Type {
+    [Default] kUnknown,
+    kGenericUploadFailure,
+    kGenericDownloadFailure,
+    kMultipleFailures,
+    kExceedsCloudDownloadQuota,
+    kNoDiskSpace,
+    kExceedsCloudStorageQuota,
+    kExceedsCloudUploadQuota,
+  };
+
+  Type type;
+
+  // The name of the file where an error was encountered.
+  string name;
+
+  // The stable id of the file where an error was encountered
+  int64 stable_id;
+};
+
+struct MirrorSyncErrorList {
+  array<MirrorSyncError> errors;
 };

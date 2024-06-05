@@ -108,6 +108,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsHost {
     virtual void PersistMachineRootID(const std::string& id) = 0;
     virtual void PersistNotification(
         mojom::DriveFsNotificationPtr notification) = 0;
+    virtual void PersistSyncErrors(
+        mojom::MirrorSyncErrorListPtr error_list) = 0;
   };
 
   DriveFsHost(const base::FilePath& profile_path,

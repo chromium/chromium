@@ -259,6 +259,12 @@ class DriveFsHost::MountState : public DriveFsSession {
     host_->delegate_->PersistNotification(std::move(notification));
   }
 
+  void OnMirrorSyncError(mojom::MirrorSyncErrorListPtr error_list) override {
+    if (ash::features::IsDriveFsMirroringEnabled()) {
+      host_->delegate_->PersistSyncErrors(std::move(error_list));
+    }
+  }
+
   // Owns |this|.
   const raw_ptr<DriveFsHost> host_;
 
