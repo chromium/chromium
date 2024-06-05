@@ -63,24 +63,25 @@ class GPU_GLES2_EXPORT MemoryProgramCache : public ProgramCache {
 
   class ProgramCacheValue : public base::RefCounted<ProgramCacheValue> {
    public:
-    ProgramCacheValue(GLenum format,
-                      std::vector<uint8_t> data,
-                      bool is_compressed,
-                      GLsizei decompressed_length,
-                      const std::string& program_hash,
-                      const char* shader_0_hash,
-                      const AttributeMap& attrib_map_0,
-                      const UniformMap& uniform_map_0,
-                      const VaryingMap& varying_map_0,
-                      const OutputVariableList& output_variable_list_0,
-                      const InterfaceBlockMap& interface_block_map_0,
-                      const char* shader_1_hash,
-                      const AttributeMap& attrib_map_1,
-                      const UniformMap& uniform_map_1,
-                      const VaryingMap& varying_map_1,
-                      const OutputVariableList& output_variable_list_1,
-                      const InterfaceBlockMap& interface_block_map_1,
-                      MemoryProgramCache* program_cache);
+    ProgramCacheValue(
+        GLenum format,
+        std::vector<uint8_t> data,
+        bool is_compressed,
+        GLsizei decompressed_length,
+        const std::string& program_hash,
+        base::span<const uint8_t, ProgramCache::kHashLength> shader_0_hash,
+        const AttributeMap& attrib_map_0,
+        const UniformMap& uniform_map_0,
+        const VaryingMap& varying_map_0,
+        const OutputVariableList& output_variable_list_0,
+        const InterfaceBlockMap& interface_block_map_0,
+        base::span<const uint8_t, ProgramCache::kHashLength> shader_1_hash,
+        const AttributeMap& attrib_map_1,
+        const UniformMap& uniform_map_1,
+        const VaryingMap& varying_map_1,
+        const OutputVariableList& output_variable_list_1,
+        const InterfaceBlockMap& interface_block_map_1,
+        MemoryProgramCache* program_cache);
 
     ProgramCacheValue(const ProgramCacheValue&) = delete;
     ProgramCacheValue& operator=(const ProgramCacheValue&) = delete;

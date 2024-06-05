@@ -178,8 +178,8 @@ TemplateURLBuilder::TemplateURLBuilder(const std::string& keyword) {
   data_.prepopulate_id = 999999;
 
   // Produce a GUID deterministically from |keyword|.
-  std::string hex_encoded_hash = base::HexEncode(
-      base::SHA1HashSpan(base::as_bytes(base::make_span(keyword))));
+  std::string hex_encoded_hash =
+      base::HexEncode(base::SHA1Hash(base::as_byte_span(keyword)));
   hex_encoded_hash.resize(12);
   data_.sync_guid =
       base::StrCat({"12345678-0000-4000-8000-", hex_encoded_hash});

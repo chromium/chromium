@@ -27,8 +27,7 @@ std::string GenerateSyncableBookmarkHash(
   serialized_type.AppendToString(&hash_input);
   hash_input.append(originator_cache_guid + originator_client_item_id);
 
-  return base::Base64Encode(
-      base::SHA1HashSpan(base::as_bytes(base::make_span(hash_input))));
+  return base::Base64Encode(base::SHA1Hash(base::as_byte_span(hash_input)));
 }
 
 std::string GetUnhashedClientTagFromAutofillWalletSpecifics(

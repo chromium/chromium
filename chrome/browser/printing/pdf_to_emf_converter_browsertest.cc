@@ -108,7 +108,7 @@ void CompareEmfHeaders(const ENHMETAHEADER& expected_header,
 
 std::string HashData(const char* data, size_t len) {
   auto span = base::make_span(reinterpret_cast<const uint8_t*>(data), len);
-  return base::HexEncode(base::SHA1HashSpan(span));
+  return base::HexEncode(base::SHA1Hash(span));
 }
 
 class PdfToEmfConverterBrowserTest

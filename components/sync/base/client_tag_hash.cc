@@ -24,8 +24,8 @@ ClientTagHash ClientTagHash::FromUnhashed(ModelType model_type,
   serialized_type.AppendToString(&hash_input);
   hash_input.append(client_tag);
 
-  std::string encode_output = base::Base64Encode(
-      base::SHA1HashSpan(base::as_bytes(base::make_span(hash_input))));
+  std::string encode_output =
+      base::Base64Encode(base::SHA1Hash(base::as_byte_span(hash_input)));
   return FromHashed(encode_output);
 }
 

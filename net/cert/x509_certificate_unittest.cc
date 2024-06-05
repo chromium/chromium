@@ -582,13 +582,9 @@ TEST(X509CertificateTest, ExtractSPKIFromDERCert) {
 
   std::string_view spkiBytes;
   EXPECT_TRUE(asn1::ExtractSPKIFromDERCert(
-      x509_util::CryptoBufferAsStringPiece(cert->cert_buffer()), &spkiBytes));
-
-  uint8_t hash[base::kSHA1Length];
-  base::SHA1HashBytes(reinterpret_cast<const uint8_t*>(spkiBytes.data()),
-                      spkiBytes.size(), hash);
-
-  EXPECT_EQ(0, memcmp(hash, kNistSPKIHash, sizeof(hash)));
+      base::as_string_view(cert->cert_span()), &spkiBytes));
+  base::SHA1Digest hash = base::SHA1Hash(base::as_byte_span(spkiBytes));
+  EXPECT_EQ(base::span(hash), base::as_byte_span(kNistSPKIHash));
 }
 
 TEST(X509CertificateTest, HasCanSignHttpExchangesDraftExtension) {

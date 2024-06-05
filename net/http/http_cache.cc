@@ -73,13 +73,6 @@ bool g_init_cache = false;
 // has been initialized.
 bool g_enable_split_cache = false;
 
-base::SHA1Digest GetHashForKey(const std::string& key) {
-  base::SHA1Digest sha_hash;
-  base::SHA1HashBytes(reinterpret_cast<const unsigned char*>(key.data()),
-                      key.size(), sha_hash.data());
-  return sha_hash;
-}
-
 }  // namespace
 
 const char HttpCache::kDoubleKeyPrefix[] = "_dk_";
@@ -1368,11 +1361,11 @@ bool HttpCache::RemovePendingTransactionFromPendingOp(
 }
 
 void HttpCache::MarkKeyNoStore(const std::string& key) {
-  keys_marked_no_store_.Put(GetHashForKey(key));
+  keys_marked_no_store_.Put(base::SHA1Hash(base::as_byte_span(key)));
 }
 
 bool HttpCache::DidKeyLeadToNoStoreResponse(const std::string& key) {
-  return keys_marked_no_store_.Get(GetHashForKey(key)) !=
+  return keys_marked_no_store_.Get(base::SHA1Hash(base::as_byte_span(key))) !=
          keys_marked_no_store_.end();
 }
 

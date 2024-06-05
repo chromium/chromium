@@ -15,7 +15,7 @@ namespace trace_event {
 namespace {
 
 uint64_t HashString(const std::string& str) {
-  SHA1Digest digest = SHA1HashSpan(base::as_byte_span(str));
+  SHA1Digest digest = SHA1Hash(base::as_byte_span(str));
   return base::U64FromLittleEndian(base::span(digest).first<8u>());
 }
 

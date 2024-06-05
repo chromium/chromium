@@ -41,7 +41,7 @@ std::vector<uint8_t> MakePkcs11IdForEcKey(base::span<const uint8_t> key_data) {
     return std::vector<uint8_t>(key_data.begin(), key_data.end());
   }
 
-  base::SHA1Digest hash = base::SHA1HashSpan(key_data);
+  base::SHA1Digest hash = base::SHA1Hash(key_data);
   return std::vector<uint8_t>(hash.begin(), hash.end());
 }
 

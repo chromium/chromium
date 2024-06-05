@@ -12,6 +12,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
+#include "base/containers/span.h"
 #include "base/hash/sha1.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
@@ -126,19 +127,18 @@ class GPU_GLES2_EXPORT ProgramCache {
 
   void CompiledShaderCacheSuccess(const std::string& shader_hash);
 
-  // result is not null terminated
-  void ComputeShaderHash(const std::string& shader,
-                         char* result) const;
+  void ComputeShaderHash(std::string_view shader,
+                         base::span<uint8_t, kHashLength> result) const;
 
   // result is not null terminated.  hashed shaders are expected to be
   // kHashLength in length
   void ComputeProgramHash(
-      const char* hashed_shader_0,
-      const char* hashed_shader_1,
+      base::span<const uint8_t, kHashLength> hashed_shader_0,
+      base::span<const uint8_t, kHashLength> hashed_shader_1,
       const LocationMap* bind_attrib_location_map,
       const std::vector<std::string>& transform_feedback_varyings,
       GLenum transform_feedback_buffer_mode,
-      char* result) const;
+      base::span<uint8_t, kHashLength> result) const;
 
   void Evict(const std::string& program_hash,
              const std::string& shader_0_hash,

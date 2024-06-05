@@ -24,6 +24,7 @@
 
 #include "base/containers/adapters.h"
 #include "base/containers/checked_iterators.h"
+#include "base/debug/alias.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/gtest_util.h"
@@ -1484,6 +1485,14 @@ TEST(SpanTest, AsByteSpan) {
     EXPECT_EQ(byte_span.size(), kVec.size() * sizeof(int));
   }
   {
+    const std::vector<int> kVec({2, 3, 5, 7, 11, 13});
+    auto byte_span = as_byte_span<6u * sizeof(int)>(kVec);
+    static_assert(std::is_same_v<decltype(byte_span),
+                                 span<const uint8_t, 6u * sizeof(int)>>);
+    EXPECT_EQ(byte_span.data(), reinterpret_cast<const uint8_t*>(kVec.data()));
+    EXPECT_EQ(byte_span.size(), kVec.size() * sizeof(int));
+  }
+  {
     int kMutArray[] = {2, 3, 5, 7};
     auto byte_span = as_byte_span(kMutArray);
     static_assert(std::is_same_v<decltype(byte_span),
@@ -1499,6 +1508,15 @@ TEST(SpanTest, AsByteSpan) {
               reinterpret_cast<const uint8_t*>(kMutVec.data()));
     EXPECT_EQ(byte_span.size(), kMutVec.size() * sizeof(int));
   }
+  {
+    std::vector<int> kMutVec({2, 3, 5, 7});
+    auto byte_span = as_byte_span<4u * sizeof(int)>(kMutVec);
+    static_assert(std::is_same_v<decltype(byte_span),
+                                 span<const uint8_t, 4u * sizeof(int)>>);
+    EXPECT_EQ(byte_span.data(),
+              reinterpret_cast<const uint8_t*>(kMutVec.data()));
+    EXPECT_EQ(byte_span.size(), kMutVec.size() * sizeof(int));
+  }
   // Rvalue input.
   {
     [](auto byte_span) {
@@ -1509,6 +1527,15 @@ TEST(SpanTest, AsByteSpan) {
       EXPECT_EQ(byte_span[0u], 2);
     }(as_byte_span({2, 3, 5, 7, 11, 13}));
   }
+}
+
+TEST(SpanDeathTest, AsByteSpan) {
+  // Constructing a fixed-size span of the wrong size will terminate.
+  const std::vector<int> kVec({2, 3, 5, 7, 11, 13});
+  EXPECT_CHECK_DEATH({
+    auto byte_span = as_byte_span<6u>(kVec);  // 6 bytes is the wrong size.
+    base::debug::Alias(&byte_span);
+  });
 }
 
 TEST(SpanTest, AsWritableByteSpan) {
@@ -1527,6 +1554,14 @@ TEST(SpanTest, AsWritableByteSpan) {
     EXPECT_EQ(byte_span.data(), reinterpret_cast<uint8_t*>(kMutVec.data()));
     EXPECT_EQ(byte_span.size(), kMutVec.size() * sizeof(int));
   }
+  {
+    std::vector<int> kMutVec({2, 3, 5, 7});
+    auto byte_span = as_writable_byte_span<4u * sizeof(int)>(kMutVec);
+    static_assert(
+        std::is_same_v<decltype(byte_span), span<uint8_t, 4u * sizeof(int)>>);
+    EXPECT_EQ(byte_span.data(), reinterpret_cast<uint8_t*>(kMutVec.data()));
+    EXPECT_EQ(byte_span.size(), kMutVec.size() * sizeof(int));
+  }
   // Rvalue input.
   {
     [](auto byte_span) {
@@ -1537,6 +1572,16 @@ TEST(SpanTest, AsWritableByteSpan) {
       EXPECT_EQ(byte_span[0u], 2);
     }(as_writable_byte_span({2, 3, 5, 7, 11, 13}));
   }
+}
+
+TEST(SpanDeathTest, AsWritableByteSpan) {
+  // Constructing a fixed-size span of the wrong size will terminate.
+  std::vector<int> kVec({2, 3, 5, 7, 11, 13});
+  EXPECT_CHECK_DEATH({
+    auto byte_span =
+        as_writable_byte_span<6u>(kVec);  // 6 bytes is the wrong size.
+    base::debug::Alias(&byte_span);
+  });
 }
 
 TEST(SpanTest, AsStringView) {

@@ -731,6 +731,10 @@ X509Certificate::X509Certificate(
 
 X509Certificate::~X509Certificate() = default;
 
+base::span<const uint8_t> X509Certificate::cert_span() const {
+  return x509_util::CryptoBufferAsSpan(cert_buffer_.get());
+}
+
 X509Certificate::ParsedFields::ParsedFields() = default;
 X509Certificate::ParsedFields::ParsedFields(const ParsedFields&) = default;
 X509Certificate::ParsedFields::ParsedFields(ParsedFields&&) = default;

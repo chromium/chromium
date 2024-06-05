@@ -297,7 +297,7 @@ class TrustStoreWin::Impl {
     }
 
     base::span<const uint8_t> cert_span = cert->der_cert();
-    base::SHA1Digest cert_hash = base::SHA1HashSpan(cert_span);
+    base::SHA1Digest cert_hash = base::SHA1Hash(cert_span);
     CRYPT_HASH_BLOB cert_hash_blob;
     cert_hash_blob.cbData = static_cast<DWORD>(cert_hash.size());
     cert_hash_blob.pbData = cert_hash.data();

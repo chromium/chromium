@@ -394,8 +394,7 @@ class SuffixGenerator {
     // suffix format is a base64'ed SHA1 hash, which should be fairly close to
     // random anyway.
     std::string input = cache_guid_ + base::NumberToString(next_id_--);
-    return base::Base64Encode(
-        base::SHA1HashSpan(base::as_bytes(base::make_span(input))));
+    return base::Base64Encode(base::SHA1Hash(base::as_byte_span(input)));
   }
 
  private:

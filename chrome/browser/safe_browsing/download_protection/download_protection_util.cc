@@ -174,8 +174,8 @@ void GetCertificateAllowlistStrings(
     paths_to_check.insert(ou_tokens[i]);
   }
 
-  std::string issuer_fp = base::HexEncode(base::SHA1HashSpan(
-      net::x509_util::CryptoBufferAsSpan(issuer.cert_buffer())));
+  std::string issuer_fp = base::HexEncode(
+      base::SHA1Hash(net::x509_util::CryptoBufferAsSpan(issuer.cert_buffer())));
   for (auto it = paths_to_check.begin(); it != paths_to_check.end(); ++it) {
     allowlist_strings->push_back("cert/" + issuer_fp + *it);
   }

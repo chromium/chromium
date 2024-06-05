@@ -18,6 +18,7 @@
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/check_is_test.h"
 #include "base/command_line.h"
+#include "base/containers/extend.h"
 #include "base/functional/bind.h"
 #include "base/hash/hash.h"
 #include "base/hash/sha1.h"
@@ -26,6 +27,7 @@
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -99,7 +101,7 @@ user_manager::UserType GetUserType(const AccountId& id) {
 //    and we may lose user => wallpaper files mapping at that point.
 // So this function gives WallpaperManager independent hashing method to break
 // this dependency.
-std::string HashWallpaperFilesIdStr(const std::string& files_id_unhashed) {
+std::string HashWallpaperFilesIdStr(std::string_view files_id_unhashed) {
   ash::SystemSaltGetter* salt_getter = ash::SystemSaltGetter::Get();
   DCHECK(salt_getter);
 
@@ -108,15 +110,12 @@ std::string HashWallpaperFilesIdStr(const std::string& files_id_unhashed) {
   if (!salt)
     LOG(FATAL) << "WallpaperManager HashWallpaperFilesIdStr(): no salt!";
 
-  unsigned char binmd[base::kSHA1Length];
-  std::string lowercase(files_id_unhashed);
-  base::ranges::transform(lowercase, lowercase.begin(), ::tolower);
   std::vector<uint8_t> data = *salt;
-  base::ranges::copy(files_id_unhashed, std::back_inserter(data));
-  base::SHA1HashBytes(data.data(), data.size(), binmd);
-  std::string result = base::HexEncode(binmd);
-  base::ranges::transform(result, result.begin(), ::tolower);
-  return result;
+  // Note: The original code in https://codereview.chromium.org/1886653002/
+  // presumably meant to lowercase the input string before hashing, but it did
+  // not.
+  base::Extend(data, base::as_byte_span(files_id_unhashed));
+  return base::ToLowerASCII(base::HexEncode(base::SHA1Hash(data)));
 }
 
 // Returns true if wallpaper files id can be returned successfully.

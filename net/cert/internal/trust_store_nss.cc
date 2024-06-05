@@ -377,7 +377,7 @@ bssl::CertificateTrust TrustStoreNSS::GetTrustIgnoringSystemTrust(
   // clear the cache. (There are multiple approaches possible, could cache the
   // hash->trust mappings on a per-slot basis, or just cache the end result for
   // each cert, etc.)
-  base::SHA1Digest cert_sha1 = base::SHA1HashSpan(
+  base::SHA1Digest cert_sha1 = base::SHA1Hash(
       base::make_span(nss_cert->derCert.data, nss_cert->derCert.len));
 
   // Check the slots in trustOrder ordering. Lower trustOrder values are higher

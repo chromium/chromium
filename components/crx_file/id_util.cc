@@ -67,8 +67,7 @@ std::string GenerateIdForPath(const base::FilePath& path) {
 }
 
 std::string HashedIdInHex(const std::string& id) {
-  return base::HexEncode(
-      base::SHA1HashSpan(base::as_bytes(base::make_span(id))));
+  return base::HexEncode(base::SHA1Hash(base::as_byte_span(id)));
 }
 
 base::FilePath MaybeNormalizePath(const base::FilePath& path) {

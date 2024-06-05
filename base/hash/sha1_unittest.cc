@@ -58,15 +58,7 @@ TEST(SHA1Test, Test1BytesAndSpan) {
                                    0x6a, 0xba, 0x3e, 0x25, 0x71, 0x78, 0x50,
                                    0xc2, 0x6c, 0x9c, 0xd0, 0xd8, 0x9d};
 
-  unsigned char output_bytes[base::kSHA1Length];
-  // TODO(crbug.com/40284755): This function is deprecated but we need to test
-  // it. Remove the test with the function.
-  UNSAFE_BUFFERS(base::SHA1HashBytes(base::as_byte_span(input).data(),
-                                     base::as_byte_span(input).size(),
-                                     output_bytes));
-  EXPECT_EQ(kExpected, base::as_byte_span(output_bytes));
-
-  base::SHA1Digest output = base::SHA1HashSpan(base::as_byte_span(input));
+  base::SHA1Digest output = base::SHA1Hash(base::as_byte_span(input));
   EXPECT_EQ(kExpected, base::span(output));
 }
 
@@ -79,15 +71,7 @@ TEST(SHA1Test, Test2BytesAndSpan) {
                                    0x6e, 0xba, 0xae, 0x4a, 0xa1, 0xf9, 0x51,
                                    0x29, 0xe5, 0xe5, 0x46, 0x70, 0xf1};
 
-  unsigned char output_bytes[base::kSHA1Length];
-  // TODO(crbug.com/40284755): This function is deprecated but we need to test
-  // it. Remove the test with the function.
-  UNSAFE_BUFFERS(base::SHA1HashBytes(base::as_byte_span(input).data(),
-                                     base::as_byte_span(input).size(),
-                                     output_bytes));
-  EXPECT_EQ(kExpected, base::as_byte_span(output_bytes));
-
-  base::SHA1Digest output = base::SHA1HashSpan(base::as_byte_span(input));
+  base::SHA1Digest output = base::SHA1Hash(base::as_byte_span(input));
   EXPECT_EQ(kExpected, base::as_byte_span(output));
 }
 
@@ -99,15 +83,7 @@ TEST(SHA1Test, Test3BytesAndSpan) {
                                    0xa4, 0xf6, 0x1e, 0xeb, 0x2b, 0xdb, 0xad,
                                    0x27, 0x31, 0x65, 0x34, 0x01, 0x6f};
 
-  unsigned char output_bytes[base::kSHA1Length];
-  // TODO(crbug.com/40284755): This function is deprecated but we need to test
-  // it. Remove the test with the function.
-  UNSAFE_BUFFERS(base::SHA1HashBytes(base::as_byte_span(input).data(),
-                                     base::as_byte_span(input).size(),
-                                     output_bytes));
-  EXPECT_EQ(kExpected, base::as_byte_span(output_bytes));
-
-  base::SHA1Digest output = base::SHA1HashSpan(base::as_byte_span(input));
+  base::SHA1Digest output = base::SHA1Hash(base::as_byte_span(input));
   EXPECT_EQ(kExpected, base::as_byte_span(output));
 }
 

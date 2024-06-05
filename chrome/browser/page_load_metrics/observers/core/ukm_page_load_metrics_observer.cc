@@ -94,7 +94,7 @@ uint64_t PackBytes(base::span<const uint8_t, N> bytes) {
 
 uint64_t StrToHash64Bit(std::string_view str) {
   auto bytes = base::as_bytes(base::make_span(str));
-  const base::SHA1Digest digest = base::SHA1HashSpan(bytes);
+  const base::SHA1Digest digest = base::SHA1Hash(bytes);
   return PackBytes(base::make_span(digest).subspan<0, 8>());
 }
 

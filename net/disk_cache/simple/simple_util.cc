@@ -53,7 +53,7 @@ bool GetEntryHashKeyFromHexString(std::string_view hash_key,
 }
 
 uint64_t GetEntryHashKey(const std::string& key) {
-  base::SHA1Digest sha_hash = base::SHA1HashSpan(base::as_byte_span(key));
+  base::SHA1Digest sha_hash = base::SHA1Hash(base::as_byte_span(key));
   return base::U64FromLittleEndian(base::span(sha_hash).first<8u>());
 }
 

@@ -13,6 +13,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -55,17 +56,12 @@ const user_manager::User* GetActiveUser() {
 }
 
 // Converts username to a hashed string.
-std::string HashUsername(const std::string& username) {
-  unsigned char binmd[base::kSHA1Length];
-  std::string lowercase(username);
-  base::ranges::transform(lowercase, lowercase.begin(), ::tolower);
-  std::vector<uint8_t> data;
-  base::ranges::copy(lowercase, std::back_inserter(data));
-  base::SHA1HashBytes(data.data(), data.size(), binmd);
-  std::string result = base::HexEncode(binmd);
-  // Stay compatible with CryptoLib::HexEncodeToBuffer()
-  base::ranges::transform(result, result.begin(), ::tolower);
-  return result;
+//
+// The result is converted to lowercase to stay compatible with
+// CryptoLib::HexEncodeToBuffer().
+std::string HashUsername(std::string_view username) {
+  return base::ToLowerASCII(base::HexEncode(
+      base::SHA1Hash(base::as_byte_span(base::ToLowerASCII(username)))));
 }
 
 const std::string& GetRequiredStringFromDict(const base::Value& dict,

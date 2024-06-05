@@ -125,7 +125,7 @@ Pkcs11Id MakePkcs11Id(base::span<const uint8_t> public_key_data) {
         std::vector<uint8_t>(public_key_data.begin(), public_key_data.end()));
   }
 
-  base::SHA1Digest hash = base::SHA1HashSpan(public_key_data);
+  base::SHA1Digest hash = base::SHA1Hash(public_key_data);
   return Pkcs11Id(std::vector<uint8_t>(hash.begin(), hash.end()));
 }
 

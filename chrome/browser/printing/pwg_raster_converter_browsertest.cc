@@ -54,10 +54,8 @@ void GetPdfData(const char* file_name,
       base::MakeRefCounted<base::RefCountedString>(std::move(pdf_data_str));
 }
 
-std::string HashData(const char* data, size_t len) {
-  uint8_t hash[base::kSHA1Length];
-  base::SHA1HashBytes(reinterpret_cast<const uint8_t*>(data), len, hash);
-  return base::HexEncode(hash);
+std::string HashData(base::span<const uint8_t> data) {
+  return base::HexEncode(base::SHA1Hash(data));
 }
 
 void ComparePwgOutput(const base::FilePath& expected_file,
@@ -69,8 +67,8 @@ void ComparePwgOutput(const base::FilePath& expected_file,
   ASSERT_TRUE(pwg_mapping.IsValid());
   size_t size = pwg_mapping.size();
   ASSERT_EQ(pwg_expected_data_str.length(), size);
-  EXPECT_EQ(HashData(pwg_expected_data_str.c_str(), size),
-            HashData(static_cast<const char*>(pwg_mapping.memory()), size));
+  EXPECT_EQ(HashData(base::as_byte_span(pwg_expected_data_str)),
+            HashData(pwg_mapping.GetMemoryAsSpan<uint8_t>()));
 }
 
 class PdfToPwgRasterBrowserTest : public InProcessBrowserTest {

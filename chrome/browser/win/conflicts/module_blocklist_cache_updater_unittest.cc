@@ -351,11 +351,11 @@ TEST_F(ModuleBlocklistCacheUpdaterTest, RegisteredModules) {
   third_party_dlls::PackedListModule expected;
   const std::string module_basename = base::UTF16ToUTF8(
       base::i18n::ToLower(module_key2.module_path.BaseName().AsUTF16Unsafe()));
-  base::SHA1HashBytes(reinterpret_cast<const uint8_t*>(module_basename.data()),
-                      module_basename.length(), &expected.basename_hash[0]);
+  base::span(expected.basename_hash)
+      .copy_from(base::SHA1Hash(base::as_byte_span(module_basename)));
   const std::string module_code_id = GenerateCodeId(module_key2);
-  base::SHA1HashBytes(reinterpret_cast<const uint8_t*>(module_code_id.data()),
-                      module_code_id.length(), &expected.code_id_hash[0]);
+  base::span(expected.code_id_hash)
+      .copy_from(base::SHA1Hash(base::as_byte_span(module_code_id)));
 
   EXPECT_TRUE(internal::ModuleEqual()(expected, blocklisted_modules[0]));
 }

@@ -40,7 +40,7 @@ double SHA1EntropyProvider::GetEntropyForTrial(
                             ? trial_name
                             : base::NumberToString(randomization_seed)});
 
-  base::SHA1Digest sha1_hash = base::SHA1HashSpan(base::as_byte_span(input));
+  base::SHA1Digest sha1_hash = base::SHA1Hash(base::as_byte_span(input));
   uint64_t bits =
       base::numerics::U64FromLittleEndian(base::span(sha1_hash).first<8u>());
 

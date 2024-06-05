@@ -50,7 +50,7 @@ uint32_t HashMetricNameAs32Bits(std::string_view name) {
 uint32_t HashFieldTrialName(std::string_view name) {
   // SHA-1 is designed to produce a uniformly random spread in its output space,
   // even for nearly-identical inputs.
-  SHA1Digest sha1_hash = SHA1HashSpan(as_byte_span(name));
+  SHA1Digest sha1_hash = SHA1Hash(as_byte_span(name));
   return U32FromLittleEndian(span(sha1_hash).first<4u>());
 }
 

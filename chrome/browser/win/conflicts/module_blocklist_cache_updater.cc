@@ -99,15 +99,13 @@ void PopulatePackedListModule(
   // Hash the basename.
   const std::string module_basename = base::UTF16ToUTF8(
       base::i18n::ToLower(module_key.module_path.BaseName().AsUTF16Unsafe()));
-  base::SHA1HashBytes(reinterpret_cast<const uint8_t*>(module_basename.data()),
-                      module_basename.length(),
-                      &packed_list_module->basename_hash[0]);
+  base::span(packed_list_module->basename_hash)
+      .copy_from(base::SHA1Hash(base::as_byte_span(module_basename)));
 
   // Hash the code id.
   const std::string module_code_id = GenerateCodeId(module_key);
-  base::SHA1HashBytes(reinterpret_cast<const uint8_t*>(module_code_id.data()),
-                      module_code_id.length(),
-                      &packed_list_module->code_id_hash[0]);
+  base::span(packed_list_module->code_id_hash)
+      .copy_from(base::SHA1Hash(base::as_byte_span(module_code_id)));
 
   packed_list_module->time_date_stamp =
       CalculateTimeDateStamp(base::Time::Now());

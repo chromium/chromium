@@ -34,7 +34,7 @@ TEST(DownloadProtectionUtilTest, GetCertificateAllowlistStrings) {
   scoped_refptr<net::X509Certificate> issuer_cert(
       ReadTestCertificate(testdata_path, "issuer.pem"));
   ASSERT_TRUE(issuer_cert.get());
-  std::string hashed = base::HexEncode(base::SHA1HashSpan(
+  std::string hashed = base::HexEncode(base::SHA1Hash(
       net::x509_util::CryptoBufferAsSpan(issuer_cert->cert_buffer())));
   std::string cert_base = "cert/" + hashed;
 

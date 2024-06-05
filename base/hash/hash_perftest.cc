@@ -24,7 +24,7 @@ namespace base {
 namespace {
 
 void Sha1Hash(base::span<const uint8_t> data) {
-  SHA1HashSpan(data);
+  SHA1Hash(data);
 }
 
 void FastHash(base::span<const uint8_t> data) {

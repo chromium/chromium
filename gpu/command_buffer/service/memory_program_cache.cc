@@ -92,34 +92,29 @@ void FillShaderInterfaceBlockProto(ShaderInterfaceBlockProto* proto,
   }
 }
 
-void FillShaderProto(ShaderProto* proto, const char* sha,
+void FillShaderProto(ShaderProto* proto,
+                     base::span<const uint8_t, ProgramCache::kHashLength> sha,
                      const Shader* shader) {
-  proto->set_sha(sha, gpu::gles2::ProgramCache::kHashLength);
-  for (AttributeMap::const_iterator iter = shader->attrib_map().begin();
-       iter != shader->attrib_map().end(); ++iter) {
+  proto->set_sha(sha.data(), sha.size());
+  for (const auto& [string, attr] : shader->attrib_map()) {
     ShaderAttributeProto* info = proto->add_attribs();
-    FillShaderAttributeProto(info, iter->second);
+    FillShaderAttributeProto(info, attr);
   }
-  for (UniformMap::const_iterator iter = shader->uniform_map().begin();
-       iter != shader->uniform_map().end(); ++iter) {
+  for (const auto& [string, uniform] : shader->uniform_map()) {
     ShaderUniformProto* info = proto->add_uniforms();
-    FillShaderUniformProto(info, iter->second);
+    FillShaderUniformProto(info, uniform);
   }
-  for (VaryingMap::const_iterator iter = shader->varying_map().begin();
-       iter != shader->varying_map().end(); ++iter) {
+  for (const auto& [string, varying] : shader->varying_map()) {
     ShaderVaryingProto* info = proto->add_varyings();
-    FillShaderVaryingProto(info, iter->second);
+    FillShaderVaryingProto(info, varying);
   }
-  for (auto iter = shader->output_variable_list().begin();
-       iter != shader->output_variable_list().end(); ++iter) {
+  for (const sh::OutputVariable& var : shader->output_variable_list()) {
     ShaderOutputVariableProto* info = proto->add_output_variables();
-    FillShaderOutputVariableProto(info, *iter);
+    FillShaderOutputVariableProto(info, var);
   }
-  for (InterfaceBlockMap::const_iterator iter =
-       shader->interface_block_map().begin();
-       iter != shader->interface_block_map().end(); ++iter) {
+  for (const auto& [string, interface_block] : shader->interface_block_map()) {
     ShaderInterfaceBlockProto* info = proto->add_interface_blocks();
-    FillShaderInterfaceBlockProto(info, iter->second);
+    FillShaderInterfaceBlockProto(info, interface_block);
   }
 }
 
@@ -293,8 +288,8 @@ ProgramCache::ProgramLoadResult MemoryProgramCache::LoadLinkedProgram(
     return PROGRAM_LOAD_FAILURE;
   }
 
-  char a_sha[kHashLength];
-  char b_sha[kHashLength];
+  uint8_t a_sha[kHashLength];
+  uint8_t b_sha[kHashLength];
   DCHECK(shader_a && !shader_a->last_compiled_source().empty() &&
          shader_b && !shader_b->last_compiled_source().empty());
   ComputeShaderHash(
@@ -302,14 +297,16 @@ ProgramCache::ProgramLoadResult MemoryProgramCache::LoadLinkedProgram(
   ComputeShaderHash(
       shader_b->last_compiled_signature(), b_sha);
 
-  char sha[kHashLength];
+  uint8_t sha[kHashLength];
   ComputeProgramHash(a_sha,
                      b_sha,
                      bind_attrib_location_map,
                      transform_feedback_varyings,
                      transform_feedback_buffer_mode,
                      sha);
-  const std::string sha_string(sha, kHashLength);
+  // TODO(danakj): This is a wasteful string allocation. The parameters below
+  // should be made to take string_view.
+  auto sha_string = std::string(base::as_string_view(sha));
 
   ProgramLRUCache::iterator found = store_.Get(sha_string);
   if (found == store_.end()) {
@@ -405,8 +402,8 @@ void MemoryProgramCache::SaveLinkedProgram(
   if (binary.size() > max_size_bytes())
     return;
 
-  char a_sha[kHashLength];
-  char b_sha[kHashLength];
+  uint8_t a_sha[kHashLength];
+  uint8_t b_sha[kHashLength];
   DCHECK(shader_a && !shader_a->last_compiled_source().empty() &&
          shader_b && !shader_b->last_compiled_source().empty());
   ComputeShaderHash(
@@ -414,14 +411,16 @@ void MemoryProgramCache::SaveLinkedProgram(
   ComputeShaderHash(
       shader_b->last_compiled_signature(), b_sha);
 
-  char sha[kHashLength];
+  uint8_t sha[kHashLength];
   ComputeProgramHash(a_sha,
                      b_sha,
                      bind_attrib_location_map,
                      transform_feedback_varyings,
                      transform_feedback_buffer_mode,
                      sha);
-  const std::string sha_string(sha, sizeof(sha));
+  // TODO(danakj): This is a wasteful string allocation. The parameters below
+  // should be made to take string_view.
+  auto sha_string = std::string(base::as_string_view(sha));
 
   // Evict any cached program with the same key in favor of the least recently
   // accessed.
@@ -521,18 +520,20 @@ void MemoryProgramCache::LoadProgram(const std::string& key,
     std::vector<uint8_t> binary(proto->program().length());
     memcpy(binary.data(), proto->program().c_str(), proto->program().length());
 
-    store_.Put(
-        proto->sha(),
-        new ProgramCacheValue(
-            proto->format(), std::move(binary),
-            proto->has_program_is_compressed() &&
-                proto->program_is_compressed(),
-            proto->program_decompressed_length(), proto->sha(),
-            proto->vertex_shader().sha().c_str(), vertex_attribs,
-            vertex_uniforms, vertex_varyings, vertex_output_variables,
-            vertex_interface_blocks, proto->fragment_shader().sha().c_str(),
-            fragment_attribs, fragment_uniforms, fragment_varyings,
-            fragment_output_variables, fragment_interface_blocks, this));
+    store_.Put(proto->sha(),
+               new ProgramCacheValue(
+                   proto->format(), std::move(binary),
+                   proto->has_program_is_compressed() &&
+                       proto->program_is_compressed(),
+                   proto->program_decompressed_length(), proto->sha(),
+                   base::as_byte_span<ProgramCache::kHashLength>(
+                       proto->vertex_shader().sha()),
+                   vertex_attribs, vertex_uniforms, vertex_varyings,
+                   vertex_output_variables, vertex_interface_blocks,
+                   base::as_byte_span<ProgramCache::kHashLength>(
+                       proto->fragment_shader().sha()),
+                   fragment_attribs, fragment_uniforms, fragment_varyings,
+                   fragment_output_variables, fragment_interface_blocks, this));
   } else {
     DVLOG(2) << "Failed to parse proto file.";
   }
@@ -553,13 +554,13 @@ MemoryProgramCache::ProgramCacheValue::ProgramCacheValue(
     bool is_compressed,
     GLsizei decompressed_length,
     const std::string& program_hash,
-    const char* shader_0_hash,
+    base::span<const uint8_t, ProgramCache::kHashLength> shader_0_hash,
     const AttributeMap& attrib_map_0,
     const UniformMap& uniform_map_0,
     const VaryingMap& varying_map_0,
     const OutputVariableList& output_variable_list_0,
     const InterfaceBlockMap& interface_block_map_0,
-    const char* shader_1_hash,
+    base::span<const uint8_t, ProgramCache::kHashLength> shader_1_hash,
     const AttributeMap& attrib_map_1,
     const UniformMap& uniform_map_1,
     const VaryingMap& varying_map_1,
@@ -571,13 +572,15 @@ MemoryProgramCache::ProgramCacheValue::ProgramCacheValue(
       is_compressed_(is_compressed),
       decompressed_length_(decompressed_length),
       program_hash_(program_hash),
-      shader_0_hash_(shader_0_hash, kHashLength),
+      shader_0_hash_(base::as_chars(shader_0_hash).data(),
+                     base::as_chars(shader_0_hash).size()),
       attrib_map_0_(attrib_map_0),
       uniform_map_0_(uniform_map_0),
       varying_map_0_(varying_map_0),
       output_variable_list_0_(output_variable_list_0),
       interface_block_map_0_(interface_block_map_0),
-      shader_1_hash_(shader_1_hash, kHashLength),
+      shader_1_hash_(base::as_chars(shader_1_hash).data(),
+                     base::as_chars(shader_1_hash).size()),
       attrib_map_1_(attrib_map_1),
       uniform_map_1_(uniform_map_1),
       varying_map_1_(varying_map_1),
