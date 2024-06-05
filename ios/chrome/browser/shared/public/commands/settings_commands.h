@@ -91,6 +91,10 @@ enum class PasswordCheckReferrer;
 // Shows the Safe Browsing page.
 - (void)showSafeBrowsingSettings;
 
+// Navigates the user to the Safe Browsing settings menu page when the user
+// clicks the inline promo's primary button.
+- (void)showSafeBrowsingSettingsFromPromoInteraction;
+
 // Shows the Password Manager's search page.
 - (void)showPasswordSearchPage;
 

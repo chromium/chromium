@@ -23,6 +23,9 @@
 
 // Delegate.
 @property(nonatomic, weak) id<PrivacySafeBrowsingCoordinatorDelegate> delegate;
+// Represents whether the coordinator is being presented due to the user's
+// interaction with a promo.
+@property(nonatomic, assign) BOOL openedFromPromoInteraction;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;

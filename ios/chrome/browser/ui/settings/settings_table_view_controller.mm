@@ -2620,7 +2620,9 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 - (void)showSafeBrowsingSettingsMenu {
   id<SettingsCommands> handler =
       HandlerForProtocol(_browser->GetCommandDispatcher(), SettingsCommands);
-  [handler showSafeBrowsingSettings];
+  [handler showSafeBrowsingSettingsFromPromoInteraction];
+  base::RecordAction(base::UserMetricsAction(
+      "MobileSettingsEnhancedSafeBrowsingInlinePromoProceed"));
 }
 
 @end

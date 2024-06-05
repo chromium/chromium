@@ -313,6 +313,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
     } else {
       base::RecordAction(base::UserMetricsAction(
           "SafeBrowsing.Settings.EnhancedProtectionClicked"));
+      if (self.openedFromPromoInteraction) {
+        base::RecordAction(base::UserMetricsAction(
+            "SafeBrowsing.Settings.EnhancedProtectionClickedDueToPromo"));
+      }
       [self selectSettingItem:item];
     }
   }

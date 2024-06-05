@@ -89,6 +89,11 @@
   [super stop];
 }
 
+- (void)setOpenedFromPromoInteraction:(BOOL)openedFromPromoInteraction {
+  _openedFromPromoInteraction = openedFromPromoInteraction;
+  self.mediator.openedFromPromoInteraction = _openedFromPromoInteraction;
+}
+
 #pragma mark - SafeBrowsingViewControllerPresentationDelegate
 
 - (void)privacySafeBrowsingViewControllerDidRemove:

@@ -21,6 +21,9 @@ class PrefService;
 @property(nonatomic, weak) id<PrivacySafeBrowsingConsumer> consumer;
 // Handler used to navigate inside the privacy safe browsing setting.
 @property(nonatomic, weak) id<PrivacySafeBrowsingNavigationCommands> handler;
+// Represents whether the Safe Browsing UI is being presented due to the user's
+// interaction with a promo.
+@property(nonatomic, assign) BOOL openedFromPromoInteraction;
 
 // Designated initializer. All the parameters should not be null.
 // `userPrefService`: preference service from the browser state.

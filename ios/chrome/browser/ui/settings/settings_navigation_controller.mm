@@ -1193,6 +1193,11 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   [self showSafeBrowsing];
 }
 
+- (void)showSafeBrowsingSettingsFromPromoInteraction {
+  [self showSafeBrowsing];
+  self.privacySafeBrowsingCoordinator.openedFromPromoInteraction = YES;
+}
+
 - (void)showPasswordSearchPage {
   [self showPasswordManagerSearchPage];
 }

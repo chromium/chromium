@@ -2436,6 +2436,12 @@ using UserFeedbackDataCallback =
                                  completion:nil];
 }
 
+- (void)showSafeBrowsingSettingsFromPromoInteraction {
+  DCHECK(self.settingsNavigationController);
+  [self.settingsNavigationController
+          showSafeBrowsingSettingsFromPromoInteraction];
+}
+
 - (void)showPasswordSearchPage {
   UIViewController* baseViewController = self.currentInterface.viewController;
   if (self.settingsNavigationController) {

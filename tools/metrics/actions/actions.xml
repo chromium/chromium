@@ -23963,6 +23963,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileSettingsEnhancedSafeBrowsingInlinePromoProceed">
+  <owner>danieltwhite@google.com</owner>
+  <owner>ajuma@google.com</owner>
+  <description>
+    User clicked the Enhanced Safe Browsing inline promo's primary button
+  </description>
+</action>
+
 <action name="MobileSettingsStorageClearAll">
   <owner>dmurph@chromium.org</owner>
   <description>
@@ -31643,6 +31651,16 @@ should be able to be added at any place in this file.
   <description>
     User clicks the exhanced protection button in the Safe Browsing setting
     page.
+  </description>
+</action>
+
+<action name="SafeBrowsing.Settings.EnhancedProtectionClickedDueToPromo">
+  <owner>danieltwhite@google.com</owner>
+  <owner>ajuma@google.com</owner>
+  <description>
+    User clicks the enhanced protection button in the Safe Browsing settings
+    page after being navigated there by the enhanced safe browsing inline promo.
+    iOS only.
   </description>
 </action>
 
