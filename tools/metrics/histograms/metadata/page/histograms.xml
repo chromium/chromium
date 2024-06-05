@@ -294,7 +294,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="PageLoad.Bytes" units="KB"
-    expires_after="2024-07-10">
+    expires_after="2025-07-10">
   <owner>jkarlin@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
@@ -306,9 +306,6 @@ chromium-metrics-reviews@google.com.
     identified ad frame and all of its children (which may also be ads, but are
     counted as part of the ancestor ad frame). Includes resources that did not
     finish loading.
-
-    Warning: This metric expired around 01/2023 and was unexpired 07/2023. Data
-    may be missing.
   </summary>
 </histogram>
 
@@ -1653,7 +1650,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="PageLoad.Cpu" units="units"
-    expires_after="2024-07-10">
+    expires_after="2025-07-10">
   <owner>johnidel@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -2182,7 +2179,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.FrameCounts.AdFrames.PerFrame.OriginStatus"
-    enum="CrossOriginAdStatus" expires_after="2024-07-10">
+    enum="CrossOriginAdStatus" expires_after="2025-07-10">
   <owner>johnidel@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -2217,7 +2214,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.FrameCounts.AdFrames.Total" units="Ad frames"
-    expires_after="2024-04-17">
+    expires_after="2025-04-17">
   <owner>jkarlin@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <summary>
