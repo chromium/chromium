@@ -50,6 +50,7 @@ import "ash/components/arc/mojom/process.mojom";
 import "ash/components/arc/mojom/property.mojom";
 import "ash/components/arc/mojom/screen_capture.mojom";
 import "ash/components/arc/mojom/sharesheet.mojom";
+import "ash/components/arc/mojom/storage_manager.mojom";
 import "ash/components/arc/mojom/system_state.mojom";
 import "ash/components/arc/mojom/system_ui.mojom";
 import "ash/components/arc/mojom/timer.mojom";
@@ -64,7 +65,7 @@ import "ash/components/arc/mojom/webapk.mojom";
 import "chromeos/components/payments/mojom/payment_app.mojom";
 
 // Next MinVersion: 67
-// Deprecated method IDs: 101, 105, 118, 121, 132, 134, 136, 137, 153, 154, 160
+// Deprecated method IDs: 101, 105, 121, 132, 134, 136, 137, 153, 154, 160
 // Next method ID: 172
 interface ArcBridgeHost {
   // Keep the entries alphabetical. In order to do so without breaking
@@ -257,6 +258,10 @@ interface ArcBridgeHost {
   // Notifies Chrome that the SharesheetInstance interface is ready.
   [MinVersion=52] OnSharesheetInstanceReady@157(
       pending_remote<SharesheetInstance> instance_remote);
+
+  // Notifies Chrome that the StorageManagerInstance interface is ready.
+  [MinVersion=12] OnStorageManagerInstanceReady@118(
+      pending_remote<StorageManagerInstance> instance_remote);
 
   // Notifies Chrome that the SystemStateInstance interface is ready.
   [MinVersion=64] OnSystemStateInstanceReady@169(

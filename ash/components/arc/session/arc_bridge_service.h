@@ -100,6 +100,7 @@ class ScreenCaptureHost;
 class ScreenCaptureInstance;
 class SharesheetHost;
 class SharesheetInstance;
+class StorageManagerInstance;
 class SystemStateHost;
 class SystemStateInstance;
 class SystemUiInstance;
@@ -315,6 +316,10 @@ class ArcBridgeService {
   sharesheet() {
     return &sharesheet_;
   }
+
+  ConnectionHolder<mojom::StorageManagerInstance>* storage_manager() {
+    return &storage_manager_;
+  }
   ConnectionHolder<mojom::SystemStateInstance, mojom::SystemStateHost>*
   system_state() {
     return &system_state_;
@@ -413,6 +418,7 @@ class ArcBridgeService {
       screen_capture_;
   ConnectionHolder<mojom::SharesheetInstance, mojom::SharesheetHost>
       sharesheet_;
+  ConnectionHolder<mojom::StorageManagerInstance> storage_manager_;
   ConnectionHolder<mojom::SystemStateInstance, mojom::SystemStateHost>
       system_state_;
   ConnectionHolder<mojom::SystemUiInstance> system_ui_;
