@@ -18,6 +18,10 @@
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "components/viz/common/quads/compositor_frame.h"
+#include "components/viz/common/quads/compositor_frame_transition_directive.h"
+#include "components/viz/common/quads/shared_element_draw_quad.h"
+#include "components/viz/common/quads/solid_color_draw_quad.h"
+#include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "components/viz/common/surfaces/surface_id.h"
@@ -32,6 +36,7 @@
 #include "components/viz/test/fake_surface_observer.h"
 #include "components/viz/test/mock_compositor_frame_sink_client.h"
 #include "components/viz/test/test_context_provider.h"
+#include "components/viz/test/test_shared_image_interface_provider.h"
 #include "components/viz/test/viz_test_suite.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_manager.mojom.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
@@ -134,6 +139,8 @@ class CompositorFrameSinkSupportTest : public testing::Test {
     manager_.surface_manager()->AddObserver(&surface_observer_);
     manager_.RegisterFrameSinkId(kArbitraryFrameSinkId,
                                  true /* report_activation */);
+    manager_.SetSharedImageInterfaceProviderForTest(
+        &shared_image_interface_provider_);
     support_ = std::make_unique<CompositorFrameSinkSupport>(
         &fake_support_client_, &manager_, kArbitraryFrameSinkId, kIsRoot);
     support_->SetBeginFrameSource(&begin_frame_source_);
@@ -283,6 +290,7 @@ class CompositorFrameSinkSupportTest : public testing::Test {
   }
 
  protected:
+  TestSharedImageInterfaceProvider shared_image_interface_provider_;
   std::unique_ptr<base::SimpleTestTickClock> now_src_;
   ServerSharedBitmapManager shared_bitmap_manager_;
   FrameSinkManagerImpl manager_;
@@ -2078,6 +2086,67 @@ TEST_F(CompositorFrameSinkSupportTest,
                                             surface);
   EXPECT_FALSE(HasAnimationManagerForToken(transition_token));
   EXPECT_FALSE(SupportHasSurfaceAnimationManager(support_.get()));
+}
+
+TEST_F(CompositorFrameSinkSupportTest, ViewTransitionBlitRequestTextureQuad) {
+  gfx::Rect rect(0, 0, 100, 100);
+  gfx::Transform transform;
+
+  // Create a root render pass that includes a VT quad.
+  auto root_render_pass = CompositorRenderPass::Create();
+  CompositorRenderPassId root_id{1};
+  root_render_pass->SetNew(root_id, rect, rect, transform);
+  SharedQuadState* shared_quad_state =
+      root_render_pass->CreateAndAppendSharedQuadState();
+  blink::ViewTransitionToken transition_token;
+  ViewTransitionElementResourceId resource_id(transition_token, 1);
+
+  auto* vt_quad =
+      root_render_pass->CreateAndAppendDrawQuad<SharedElementDrawQuad>();
+  vt_quad->SetNew(shared_quad_state, rect, rect, resource_id);
+
+  // Also create an orphaned render pass that will be be referenced by the draw
+  // quad.
+  auto orphan_render_pass = CompositorRenderPass::Create();
+  CompositorRenderPassId orphan_id{2};
+  orphan_render_pass->SetNew(orphan_id, rect, rect, transform);
+  shared_quad_state = orphan_render_pass->CreateAndAppendSharedQuadState();
+  auto* solid_quad =
+      orphan_render_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
+  solid_quad->SetNew(shared_quad_state, rect, rect, SkColors::kBlue, false);
+
+  // Create a frame.
+  CompositorRenderPassList render_passes;
+  render_passes.push_back(std::move(orphan_render_pass));
+  render_passes.push_back(std::move(root_render_pass));
+  CompositorFrame frame = MakeCompositorFrame(std::move(render_passes));
+  frame.metadata.has_shared_element_resources = true;
+
+  // The shared element references the orphan id.
+  CompositorFrameTransitionDirective::SharedElement shared_element;
+  shared_element.render_pass_id = orphan_id;
+  shared_element.view_transition_element_resource_id = resource_id;
+
+  frame.metadata.transition_directives.push_back(
+      CompositorFrameTransitionDirective::CreateSave(
+          transition_token,
+          /*maybe_cross_frame_sink=*/false,
+          /*sequence_id=*/1, {shared_element}, {}));
+
+  // Submit the frame.
+  auto result = support_->MaybeSubmitCompositorFrame(
+      local_surface_id_, std::move(frame), std::nullopt, 0,
+      mojom::CompositorFrameSink::SubmitCompositorFrameSyncCallback());
+  EXPECT_EQ(SubmitResult::ACCEPTED, result);
+
+  Surface* surface = support_->GetLastCreatedSurfaceForTesting();
+  ASSERT_TRUE(surface);
+
+  const auto& new_frame = surface->GetActiveFrame();
+  ASSERT_EQ(new_frame.render_pass_list.size(), 2u);
+  ASSERT_EQ(new_frame.render_pass_list[1]->quad_list.size(), 1u);
+  auto* quad = *new_frame.render_pass_list[1]->quad_list.begin();
+  EXPECT_EQ(quad->material, TextureDrawQuad::kMaterial);
 }
 
 TEST_F(CompositorFrameSinkSupportTest,

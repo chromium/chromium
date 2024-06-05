@@ -52,14 +52,18 @@ class TransferableResourceTrackerTest : public testing::Test {
 TEST_F(TransferableResourceTrackerTest, IdInRange) {
   TransferableResourceTracker tracker(&shared_bitmap_manager_, &id_tracker_);
 
-  auto frame1 = tracker.ImportResources(CreateFrameWithResult());
+  auto result = CreateFrameWithResult();
+  auto frame1 =
+      tracker.ImportResources(result->TakeResult(), result->directive());
   ASSERT_EQ(frame1.shared.size(), 1u);
   const auto& resource1 = frame1.shared.at(0);
   EXPECT_TRUE(HasBitmapResource(resource1->resource));
 
   EXPECT_GE(resource1->resource.id, kVizReservedRangeStartId);
 
-  auto frame2 = tracker.ImportResources(CreateFrameWithResult());
+  result = CreateFrameWithResult();
+  auto frame2 =
+      tracker.ImportResources(result->TakeResult(), result->directive());
   ASSERT_EQ(frame2.shared.size(), 1u);
   const auto& resource2 = frame2.shared.at(0);
   EXPECT_TRUE(HasBitmapResource(resource2->resource));
@@ -87,7 +91,9 @@ TEST_F(TransferableResourceTrackerTest, ExhaustedIdLoops) {
   ResourceId last_id = kInvalidResourceId;
   std::vector<TransferableResourceTracker::ResourceFrame> frames;
   for (int i = 0; i < 10; ++i) {
-    auto frame = tracker.ImportResources(CreateFrameWithResult());
+    auto result = CreateFrameWithResult();
+    auto frame =
+        tracker.ImportResources(result->TakeResult(), result->directive());
     ASSERT_EQ(frame.shared.size(), 1u);
     const auto& resource = frame.shared.at(0);
     EXPECT_TRUE(HasBitmapResource(resource->resource));
@@ -105,7 +111,9 @@ TEST_F(TransferableResourceTrackerTest, ExhaustedIdLoops) {
 
 TEST_F(TransferableResourceTrackerTest, UnrefWithCount) {
   TransferableResourceTracker tracker(&shared_bitmap_manager_, &id_tracker_);
-  auto frame = tracker.ImportResources(CreateFrameWithResult());
+  auto result = CreateFrameWithResult();
+  auto frame =
+      tracker.ImportResources(result->TakeResult(), result->directive());
   ASSERT_EQ(frame.shared.size(), 1u);
   const auto& resource = frame.shared.at(0);
   for (int i = 0; i < 1000; ++i)
@@ -126,7 +134,9 @@ TEST_F(TransferableResourceTrackerTest,
                 "The test only makes sense if ResourceId is uint32_t");
   TransferableResourceTracker tracker(&shared_bitmap_manager_, &id_tracker_);
 
-  auto reserved = tracker.ImportResources(CreateFrameWithResult());
+  auto result = CreateFrameWithResult();
+  auto reserved =
+      tracker.ImportResources(result->TakeResult(), result->directive());
   ASSERT_EQ(reserved.shared.size(), 1u);
   const auto& resource = reserved.shared.at(0);
   EXPECT_GE(resource->resource.id, kVizReservedRangeStartId);
@@ -137,7 +147,9 @@ TEST_F(TransferableResourceTrackerTest,
   ResourceId last_id = kInvalidResourceId;
   std::vector<TransferableResourceTracker::ResourceFrame> frames;
   for (int i = 0; i < 10; ++i) {
-    auto frame = tracker.ImportResources(CreateFrameWithResult());
+    result = CreateFrameWithResult();
+    auto frame =
+        tracker.ImportResources(result->TakeResult(), result->directive());
     ASSERT_EQ(frame.shared.size(), 1u);
     const auto& new_resource = frame.shared.at(0);
     EXPECT_TRUE(HasBitmapResource(new_resource->resource));

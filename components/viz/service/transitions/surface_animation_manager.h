@@ -110,7 +110,7 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager
 
   TransferableResourceTracker transferable_resource_tracker_;
 
-  std::unique_ptr<SurfaceSavedFrame> saved_frame_;
+  SurfaceSavedFrame saved_frame_;
   base::flat_set<ViewTransitionElementResourceId> empty_resource_ids_;
 
   std::optional<TransferableResourceTracker::ResourceFrame> saved_textures_;

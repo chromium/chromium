@@ -32,20 +32,12 @@ TransferableResourceTracker::~TransferableResourceTracker() = default;
 
 TransferableResourceTracker::ResourceFrame
 TransferableResourceTracker::ImportResources(
-    std::unique_ptr<SurfaceSavedFrame> saved_frame) {
-  DCHECK(saved_frame);
-  // Since we will be dereferencing this blindly, CHECK that the frame is indeed
-  // valid.
-  CHECK(saved_frame->IsValid());
-
-  std::optional<SurfaceSavedFrame::FrameResult> frame_copy =
-      saved_frame->TakeResult();
-  const auto& directive = saved_frame->directive();
-
+    SurfaceSavedFrame::FrameResult frame_result,
+    CompositorFrameTransitionDirective directive) {
   ResourceFrame resource_frame;
-  resource_frame.shared.resize(frame_copy->shared_results.size());
-  for (size_t i = 0; i < frame_copy->shared_results.size(); ++i) {
-    auto& shared_result = frame_copy->shared_results[i];
+  resource_frame.shared.resize(frame_result.shared_results.size());
+  for (size_t i = 0; i < frame_result.shared_results.size(); ++i) {
+    auto& shared_result = frame_result.shared_results[i];
     if (shared_result.has_value()) {
       resource_frame.shared[i].emplace(
           ImportResource(std::move(*shared_result)));
@@ -59,7 +51,7 @@ TransferableResourceTracker::ImportResources(
     }
   }
 
-  for (auto resource_id : frame_copy->empty_resource_ids) {
+  for (auto resource_id : frame_result.empty_resource_ids) {
     DCHECK(!resource_frame.element_id_to_resource.contains(resource_id));
     resource_frame.element_id_to_resource[resource_id] = TransferableResource();
   }
@@ -80,6 +72,7 @@ TransferableResourceTracker::ImportResource(
       resource = TransferableResource::MakeSoftwareSharedImage(
           output_copy.shared_image, gpu::SyncToken(),
           output_copy.draw_data.size, output_copy.shared_image->format());
+      resource.color_space = output_copy.shared_image->color_space();
     } else {
       SharedBitmapId id = SharedBitmap::GenerateId();
       shared_bitmap_manager_->LocalAllocatedSharedBitmap(
@@ -101,12 +94,21 @@ TransferableResourceTracker::ImportResource(
   } else {
     DCHECK(output_copy.bitmap.drawsNothing());
 
-    resource = TransferableResource::MakeGpu(
-        output_copy.mailbox, GL_TEXTURE_2D, output_copy.sync_token,
-        output_copy.draw_data.size, SinglePlaneFormat::kRGBA_8888,
-        /*is_overlay_candidate=*/false,
-        TransferableResource::ResourceSource::kViewTransition);
-    resource.color_space = output_copy.color_space;
+    if (output_copy.shared_image) {
+      resource = TransferableResource::MakeGpu(
+          output_copy.shared_image, GL_TEXTURE_2D, output_copy.sync_token,
+          output_copy.draw_data.size, output_copy.shared_image->format(),
+          /*is_overlay_candidate=*/false,
+          TransferableResource::ResourceSource::kViewTransition);
+      resource.color_space = output_copy.shared_image->color_space();
+    } else {
+      resource = TransferableResource::MakeGpu(
+          output_copy.mailbox, GL_TEXTURE_2D, output_copy.sync_token,
+          output_copy.draw_data.size, SinglePlaneFormat::kRGBA_8888,
+          /*is_overlay_candidate=*/false,
+          TransferableResource::ResourceSource::kViewTransition);
+      resource.color_space = output_copy.color_space;
+    }
   }
 
   if (output_copy.release_callback) {

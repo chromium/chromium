@@ -76,7 +76,8 @@ class VIZ_SERVICE_EXPORT TransferableResourceTracker {
   // TODO(vmpstr): Instead of providing a convenience function, we should
   // convert ResourceFrame to be RAII so that it can be automatically
   // "returned".
-  ResourceFrame ImportResources(std::unique_ptr<SurfaceSavedFrame> saved_frame);
+  ResourceFrame ImportResources(SurfaceSavedFrame::FrameResult frame_result,
+                                CompositorFrameTransitionDirective directive);
 
   // Return a frame back to the tracker. This unrefs all of the resources.
   void ReturnFrame(const ResourceFrame& frame);

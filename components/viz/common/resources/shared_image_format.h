@@ -317,7 +317,8 @@ class SinglePlaneFormat {
       kLUMINANCE_F16, kRGBA_F16,     kR_16,         kRG_1616, kRGBX_8888,
       kBGRX_8888,     kRGBA_1010102, kBGRA_1010102, kR_F16};
 
-  static SharedImageFormat FromBufferFormat(gfx::BufferFormat format);
+  static COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT) SharedImageFormat
+      FromBufferFormat(gfx::BufferFormat format);
 };
 
 // Constants for legacy single-plane representations of multiplanar formats.
