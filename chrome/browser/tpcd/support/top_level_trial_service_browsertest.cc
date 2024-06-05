@@ -122,52 +122,28 @@ class TopLevelTpcdTrialBrowserTest : public PlatformBrowserTest {
       return false;
     }
 
+    bool should_use_meta_tag = path.find("meta_tag") == 0;
+
+    std::string token = ChooseToken(host, query);
+
     std::string headers =
         "HTTP/1.1 200 OK\n"
         "Content-type: text/html\n";
-    std::string body = "";
-
-    std::string token = "";
-    if (host == kTrialEnabledDomain) {
-      if (query == "subdomain_matching_token") {
-        token = kTopLevelTrialSubdomainMatchingToken;
-      } else if (query != "no_token") {
-        token = kTopLevelTrialToken;
-      }
+    if (!should_use_meta_tag && !token.empty()) {
+      base::StrAppend(&headers, {"Origin-Trial: ", token, "\n"});
     }
 
-    if (host == kTrialEnabledSubdomain) {
-      if (query == "etld_plus_1_token") {
-        token = kTopLevelTrialSubdomainMatchingToken;
-      } else if (query == "subdomain_matching_token") {
-        token = kSubdomainTopLevelTrialSubdomainMatchingToken;
-      } else if (query != "no_token") {
-        token = kSubdomainTopLevelTrialToken;
-      }
-    }
-
-    if (host == kOtherTrialEnabledDomain) {
-      if (query != "no_token") {
-        token = kOtherDomainTopLevelTrialToken;
-      }
-    }
-
-    if (!token.empty()) {
-      if (path.find("meta_tag") == 0) {
-        body =
-            "<html>\n"
-            "<head>\n"
-            "<meta http-equiv='origin-trial' "
-            "content='" +
-            token +
-            "'>\n"
-            "</head>\n"
-            "<body></body>\n"
-            "</html>\n";
-      } else {
-        base::StrAppend(&headers, {"Origin-Trial: ", token, "\n"});
-      }
-    }
+    std::string body = (should_use_meta_tag && !token.empty())
+                           ? "<html>\n"
+                             "<head>\n"
+                             "<meta http-equiv='origin-trial' "
+                             "content='" +
+                                 token +
+                                 "'>\n"
+                                 "</head>\n"
+                                 "<body></body>\n"
+                                 "</html>\n"
+                           : "";
 
     content::URLLoaderInterceptor::WriteResponse(headers, body,
                                                  params->client.get());
@@ -182,6 +158,38 @@ class TopLevelTpcdTrialBrowserTest : public PlatformBrowserTest {
       base::StrCat({"https://", kTrialEnabledSubdomain})};
   const GURL kOtherTrialEnabledSite{
       base::StrCat({"https://", kOtherTrialEnabledDomain})};
+
+ private:
+  std::string ChooseToken(std::string host, std::string query) {
+    if (query == "no_token") {
+      return "";
+    }
+
+    if (host == kTrialEnabledDomain) {
+      if (query == "subdomain_matching_token") {
+        return kTopLevelTrialSubdomainMatchingToken;
+      } else {
+        return kTopLevelTrialToken;
+      }
+    }
+
+    if (host == kTrialEnabledSubdomain) {
+      if (query == "etld_plus_1_token") {
+        return kTopLevelTrialSubdomainMatchingToken;
+      } else if (query == "subdomain_matching_token") {
+        return kSubdomainTopLevelTrialSubdomainMatchingToken;
+      } else {
+        return kSubdomainTopLevelTrialToken;
+      }
+    }
+
+    if (host == kOtherTrialEnabledDomain) {
+      return kOtherDomainTopLevelTrialToken;
+    }
+
+    // The host isn't one of our trial-enabled domains, so return no token.
+    return "";
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(TopLevelTpcdTrialBrowserTest, EnabledAfterHttpResponse) {
