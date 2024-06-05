@@ -351,6 +351,116 @@ void VerifySnapGroupOnDisplay(SnapGroup* snap_group, const int64_t display_id) {
 
 }  // namespace
 
+using FasterSplitScreenDisabledTest = AshTestBase;
+
+// Tests kFasterSplitScreenSetup and kSnapGroup disabled.
+TEST_F(FasterSplitScreenDisabledTest, FasterSplitScreenSetupDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{features::kFasterSplitScreenSetup,
+                             features::kSnapGroup});
+
+  // Snap `w1`. Test we don't start partial overview.
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapOneTestWindow(w1.get(), WindowStateType::kPrimarySnapped,
+                    chromeos::kDefaultSnapRatio,
+                    WindowSnapActionSource::kSnapByWindowLayoutMenu);
+  EXPECT_FALSE(IsInOverviewSession());
+  EXPECT_FALSE(split_view_controller()->InSplitViewMode());
+  MaximizeToClearTheSession(w1.get());
+  MaximizeToClearTheSession(w2.get());
+
+  // Enter overview, then drag to snap. Test we start partial overview.
+  ToggleOverview();
+  ASSERT_TRUE(IsInOverviewSession());
+  // Note `DragGroupItemToPoint()` just drags the overview item, not necessarily
+  // the group item.
+  // TODO(b/344877340): Consider renaming this to `DragOverviewItemToPoint()`.
+  auto* event_generator = GetEventGenerator();
+  DragGroupItemToPoint(GetOverviewItemForWindow(w1.get()), gfx::Point(0, 0),
+                       event_generator, /*by_touch_gestures=*/false,
+                       /*drop=*/true);
+  EXPECT_EQ(WindowStateType::kPrimarySnapped,
+            WindowState::Get(w1.get())->GetStateType());
+  // Verify that split view overview session is active and the grid bounds are
+  // updated, but the faster splitscreen setup UI is *not* shown.
+  VerifySplitViewOverviewSession(w1.get(), /*faster_split_screen_setup=*/false);
+  EXPECT_TRUE(split_view_controller()->InSplitViewMode());
+  // Select the other window in overview, test we end overview and split view.
+  ClickOverviewItem(event_generator, w2.get());
+  EXPECT_FALSE(IsInOverviewSession());
+  EXPECT_FALSE(split_view_controller()->InSplitViewMode());
+  MaximizeToClearTheSession(w1.get());
+
+  // Enter overview, then drag `w1` to snap, then drag the other `w2` to snap.
+  // Test we start and end overview and split view correctly.
+  ToggleOverview();
+  ASSERT_TRUE(IsInOverviewSession());
+  DragGroupItemToPoint(GetOverviewItemForWindow(w1.get()), gfx::Point(0, 0),
+                       event_generator, /*by_touch_gestures=*/false,
+                       /*drop=*/true);
+  VerifySplitViewOverviewSession(w1.get(), /*faster_split_screen_setup=*/false);
+  EXPECT_TRUE(split_view_controller()->InSplitViewMode());
+  DragGroupItemToPoint(GetOverviewItemForWindow(w2.get()),
+                       work_area_bounds().top_right(), event_generator,
+                       /*by_touch_gestures=*/false,
+                       /*drop=*/true);
+  EXPECT_EQ(WindowStateType::kSecondarySnapped,
+            WindowState::Get(w2.get())->GetStateType());
+  EXPECT_FALSE(IsInOverviewSession());
+  EXPECT_FALSE(split_view_controller()->InSplitViewMode());
+  MaximizeToClearTheSession(w1.get());
+  MaximizeToClearTheSession(w2.get());
+
+  // Test that tablet mode works as normal.
+  SwitchToTabletMode();
+  SnapOneTestWindow(w1.get(), WindowStateType::kPrimarySnapped,
+                    chromeos::kDefaultSnapRatio,
+                    WindowSnapActionSource::kSnapByWindowLayoutMenu);
+  EXPECT_TRUE(IsInOverviewSession());
+  EXPECT_TRUE(split_view_controller()->InSplitViewMode());
+}
+
+// Tests kFasterSplitScreenSetup disabled and kSnapGroup enabled.
+TEST_F(FasterSplitScreenDisabledTest, SnapGroupEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kSnapGroup},
+      /*disabled_features=*/{features::kFasterSplitScreenSetup});
+
+  // Snap `w1`. Test we don't start partial overview.
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapOneTestWindow(w1.get(), WindowStateType::kPrimarySnapped,
+                    chromeos::kDefaultSnapRatio,
+                    WindowSnapActionSource::kSnapByWindowLayoutMenu);
+  EXPECT_FALSE(IsInOverviewSession());
+  EXPECT_FALSE(split_view_controller()->InSplitViewMode());
+  MaximizeToClearTheSession(w1.get());
+
+  // Enter overview, then drag to snap. Test we start partial overview.
+  ToggleOverview();
+  ASSERT_TRUE(IsInOverviewSession());
+  auto* event_generator = GetEventGenerator();
+  DragGroupItemToPoint(GetOverviewItemForWindow(w1.get()), gfx::Point(0, 0),
+                       event_generator, /*by_touch_gestures=*/false,
+                       /*drop=*/true);
+  EXPECT_EQ(WindowStateType::kPrimarySnapped,
+            WindowState::Get(w1.get())->GetStateType());
+  VerifySplitViewOverviewSession(w1.get(), /*faster_split_screen_setup=*/false);
+  EXPECT_TRUE(split_view_controller()->InSplitViewMode());
+
+  // Select the other window in overview, test we end overview and split view
+  // but create a snap group.
+  ClickOverviewItem(event_generator, w2.get());
+  EXPECT_FALSE(IsInOverviewSession());
+  EXPECT_FALSE(split_view_controller()->InSplitViewMode());
+  EXPECT_TRUE(
+      SnapGroupController::Get()->AreWindowsInSnapGroup(w1.get(), w2.get()));
+}
+
 // -----------------------------------------------------------------------------
 // FasterSplitScreenTest:
 
