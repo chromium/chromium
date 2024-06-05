@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.Promise;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.back_press.SecondaryActivityBackPressUma;
 import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.firstrun.FirstRunActivityBase;
@@ -195,7 +196,7 @@ public class SigninAndHistoryOptInActivity extends FirstRunActivityBase
         finish();
         // Override activity animation to avoid visual glitches due to the semi-transparent
         // background.
-        overridePendingTransition(0, android.R.anim.fade_out);
+        overridePendingTransition(0, R.anim.fast_fade_out);
     }
 
     @Override
