@@ -485,6 +485,44 @@ void ExpectHistogramEmittedForIPHDismissal(IPHDismissalReasonType reason) {
 }
 
 // Tests that the toolbar swipe IPH would be dismissed with the reason
+// `kTappedClose` when the user taps "dismiss" on the IPH.
+- (void)testShowToolbarSwipeIPHAndTapDismissButton {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad (IPH is iPhone only)");
+  }
+  [self relaunchWithIPHFeatureForSafariSwitcher:
+            @"IPH_iOSSwipeToolbarToChangeTab"];
+  [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
+
+  GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
+  // Make sure two tabs are created.
+  const GURL destinationUrl1 = self.testServer->GetURL("/pony.html");
+  const GURL destinationUrl2 =
+      self.testServer->GetURL("/chromium_logo_page.html");
+  [ChromeEarlGrey loadURL:destinationUrl1];
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey loadURL:destinationUrl2];
+  // Switch to adjacent tab.
+  [ChromeEarlGreyUI openTabGrid];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
+      performAction:grey_tap()];
+  BOOL appearance = HasGestureIPHAppeared();
+  {
+    // Disable scoped synchronization to tap button during animation.
+    ScopedSynchronizationDisabler sync_disabler;
+    GREYAssertTrue(appearance, @"Toolbar swipe IPH should be visible when the "
+                               @"user switches to an adjacent tab.");
+  }
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.5));
+  TapDismissButton();
+  appearance = HasGestureIPHAppeared();
+  GREYAssertFalse(
+      appearance,
+      @"IPH still displaying after the user taps the \"dismiss\" button.");
+  ExpectHistogramEmittedForIPHDismissal(IPHDismissalReasonType::kTappedClose);
+}
+
+// Tests that the toolbar swipe IPH would be dismissed with the reason
 // `kSwipedAsInstructedByGestureIPH` when the user swipes the toolbar in the
 // correct direction.
 - (void)testShowToolbarSwipeIPHAndPerformAction {
