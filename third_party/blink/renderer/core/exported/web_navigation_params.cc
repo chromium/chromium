@@ -76,10 +76,8 @@ WebNavigationParams::CreateWithHTMLStringForTesting(base::span<const char> html,
 void WebNavigationParams::FillBodyLoader(WebNavigationParams* params,
                                          base::span<const char> data) {
   params->response.SetExpectedContentLength(data.size());
-  auto body_loader = std::make_unique<StaticDataNavigationBodyLoader>();
-  body_loader->Write(data.data(), data.size());
-  body_loader->Finish();
-  params->body_loader = std::move(body_loader);
+  params->body_loader = StaticDataNavigationBodyLoader::CreateWithData(
+      SharedBuffer::Create(data));
   params->is_static_data = true;
 }
 
@@ -88,11 +86,8 @@ void WebNavigationParams::FillBodyLoader(WebNavigationParams* params,
                                          WebData data) {
   params->response.SetExpectedContentLength(data.size());
   auto body_loader = std::make_unique<StaticDataNavigationBodyLoader>();
-  scoped_refptr<SharedBuffer> buffer = data;
-  if (buffer)
-    body_loader->Write(*buffer);
-  body_loader->Finish();
-  params->body_loader = std::move(body_loader);
+  params->body_loader = StaticDataNavigationBodyLoader::CreateWithData(
+      scoped_refptr<SharedBuffer>(data));
   params->is_static_data = true;
 }
 

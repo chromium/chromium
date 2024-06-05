@@ -6,24 +6,30 @@
 
 namespace blink {
 
-StaticDataNavigationBodyLoader::StaticDataNavigationBodyLoader() {}
+// static
+std::unique_ptr<StaticDataNavigationBodyLoader>
+StaticDataNavigationBodyLoader::CreateWithData(
+    scoped_refptr<SharedBuffer> data) {
+  auto body_loader = std::make_unique<StaticDataNavigationBodyLoader>();
+  body_loader->data_ = std::move(data);
+  if (!body_loader->data_) {
+    body_loader->data_ = SharedBuffer::Create();
+  }
+  body_loader->Finish();
+  return body_loader;
+}
+
+StaticDataNavigationBodyLoader::StaticDataNavigationBodyLoader() = default;
 
 StaticDataNavigationBodyLoader::~StaticDataNavigationBodyLoader() = default;
 
-void StaticDataNavigationBodyLoader::Write(const char* data, size_t size) {
+void StaticDataNavigationBodyLoader::Write(base::span<const char> data) {
   DCHECK(!received_all_data_);
-  if (!data_)
-    data_ = SharedBuffer::Create(data, size);
-  else
-    data_->Append(data, size);
-  Continue();
-}
-
-void StaticDataNavigationBodyLoader::Write(const SharedBuffer& data) {
-  DCHECK(!received_all_data_);
-  if (!data_)
-    data_ = SharedBuffer::Create();
-  data_->Append(data);
+  if (!data_) {
+    data_ = SharedBuffer::Create(data);
+  } else {
+    data_->Append(data);
+  }
   Continue();
 }
 

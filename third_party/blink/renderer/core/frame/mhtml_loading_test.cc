@@ -95,10 +95,8 @@ class MHTMLLoadingTest : public testing::Test {
         blink::WebPolicyContainerPolicies(),
         mock_policy_container_host.BindNewEndpointAndPassDedicatedRemote());
     params->policy_container->policies.sandbox_flags = kMhtmlSandboxFlags;
-    auto body_loader = std::make_unique<StaticDataNavigationBodyLoader>();
-    body_loader->Write(*buffer);
-    body_loader->Finish();
-    params->body_loader = std::move(body_loader);
+    params->body_loader =
+        StaticDataNavigationBodyLoader::CreateWithData(std::move(buffer));
     frame->CommitNavigation(std::move(params), nullptr /* extra_data */);
     frame_test_helpers::PumpPendingRequestsForFrameToLoad(frame);
   }

@@ -163,11 +163,9 @@ void URLLoaderMockFactoryImpl::FillNavigationParamsResponse(
     DCHECK(buffer);
     DCHECK_EQ(net::OK, result);
     params->response = WrappedResourceResponse(response);
-    auto body_loader = std::make_unique<StaticDataNavigationBodyLoader>();
-    body_loader->Write(*buffer);
-    body_loader->Finish();
     params->is_static_data = true;
-    params->body_loader = std::move(body_loader);
+    params->body_loader =
+        StaticDataNavigationBodyLoader::CreateWithData(std::move(buffer));
     return;
   }
 
@@ -194,13 +192,9 @@ void URLLoaderMockFactoryImpl::FillNavigationParamsResponse(
     DCHECK(!error);
   }
 
-  auto body_loader = std::make_unique<StaticDataNavigationBodyLoader>();
-  if (data) {
-    body_loader->Write(*data);
-    body_loader->Finish();
-  }
   params->is_static_data = true;
-  params->body_loader = std::move(body_loader);
+  params->body_loader =
+      StaticDataNavigationBodyLoader::CreateWithData(std::move(data));
 }
 
 bool URLLoaderMockFactoryImpl::IsMockedURL(const blink::WebURL& url) {

@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/containers/span.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
@@ -93,7 +94,9 @@ class BodyLoaderTestDelegate : public URLLoaderTestDelegate {
     return true;
   }
 
-  void Write(const char* data) { body_loader_raw_->Write(data, strlen(data)); }
+  void Write(const char* data) {
+    body_loader_raw_->Write(base::make_span(data, strlen(data)));
+  }
 
   void Finish() { body_loader_raw_->Finish(); }
 
@@ -306,7 +309,7 @@ TEST_P(DocumentLoaderTest, MultiChunkWithReentrancy) {
 
     void DispatchOneByte() {
       char c = data_.TakeFirst();
-      body_loader_->Write(&c, 1);
+      body_loader_->Write(base::make_span(&c, static_cast<size_t>(1)));
     }
 
     bool ServedReentrantly() const { return served_reentrantly_; }
