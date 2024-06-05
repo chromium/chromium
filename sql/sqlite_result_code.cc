@@ -5,15 +5,15 @@
 #include "sql/sqlite_result_code.h"
 
 #include <cstddef>
-#include <ostream>  // Needed to compile NOTREACHED_IN_MIGRATION() with operator <<.
+#include <ostream>  // Needed to compile CHECK() with operator <<.
 #include <set>
 #include <string>
 #include <string_view>
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "sql/sqlite_result_code_values.h"
 #include "third_party/sqlite/sqlite3.h"
@@ -305,14 +305,10 @@ file lock requests"
      static_cast<int>(SqliteLoggedResultCode::kIoCorruptFileSystem)},
 };
 
-// Describes the handling of unknown SQLite error codes.
-constexpr SqliteResultCodeMappingEntry kUnknownResultCodeMappingEntry = {
-    0, static_cast<int>(SqliteLoggedResultCode::kUnusedChrome)};
-
 // Looks up a `sqlite_result_code` in the mapping tables.
 //
 // Returns an entry in kResultCodeMapping or kUnknownResultCodeMappingEntry.
-// DCHECKs if the `sqlite_result_code` is not in the mapping table.
+// CHECKs if the `sqlite_result_code` is not in the mapping table.
 SqliteResultCodeMappingEntry FindResultCode(int sqlite_result_code) {
   const auto* mapping_it = base::ranges::find_if(
       kResultCodeMapping,
@@ -320,11 +316,8 @@ SqliteResultCodeMappingEntry FindResultCode(int sqlite_result_code) {
         return sqlite_result_code == rhs.result_code;
       });
 
-  if (mapping_it == base::ranges::end(kResultCodeMapping)) {
-    NOTREACHED_IN_MIGRATION()
-        << "Unsupported SQLite result code: " << sqlite_result_code;
-    return kUnknownResultCodeMappingEntry;
-  }
+  CHECK(mapping_it != base::ranges::end(kResultCodeMapping))
+      << "Unsupported SQLite result code: " << sqlite_result_code;
   return *mapping_it;
 }
 

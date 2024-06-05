@@ -192,23 +192,13 @@ TEST(SqliteResultCodeTest, ToSqliteLoggedResultCode_ExtendedErrorCodes) {
 }
 
 TEST(SqliteResultCodeTest, ToSqliteLoggedResultCode_MissingLowValue) {
-#if DCHECK_IS_ON()
-  EXPECT_DCHECK_DEATH_WITH(ToSqliteLoggedResultCode(-65536),
-                           "Unsupported SQLite result code: -65536");
-#else
-  EXPECT_EQ(SqliteLoggedResultCode::kUnusedChrome,
-            ToSqliteLoggedResultCode(-65536));
-#endif
+  EXPECT_CHECK_DEATH_WITH(ToSqliteLoggedResultCode(-65536),
+                          "Unsupported SQLite result code: -65536");
 }
 
 TEST(SqliteResultCodeTest, ToSqliteLoggedResultCode_MissingHighValue) {
-#if DCHECK_IS_ON()
-  EXPECT_DCHECK_DEATH_WITH(ToSqliteLoggedResultCode(65536),
-                           "Unsupported SQLite result code: 65536");
-#else
-  EXPECT_EQ(SqliteLoggedResultCode::kUnusedChrome,
-            ToSqliteLoggedResultCode(65536));
-#endif
+  EXPECT_CHECK_DEATH_WITH(ToSqliteLoggedResultCode(65536),
+                          "Unsupported SQLite result code: 65536");
 }
 
 TEST(SqliteResultCodeTest, ToSqliteLoggedResultCode_SqliteInternalError) {
