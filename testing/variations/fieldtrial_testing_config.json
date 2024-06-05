@@ -11038,6 +11038,24 @@
             ]
         }
     ],
+    "IOSStart4Hour": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled4Hour",
+                    "params": {
+                        "ReturnToStartSurfaceInactiveDurationInSeconds": "14400"
+                    },
+                    "enable_features": [
+                        "StartSurface"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSStickyAutofillAndPasswordInfobars": [
         {
             "platforms": [
