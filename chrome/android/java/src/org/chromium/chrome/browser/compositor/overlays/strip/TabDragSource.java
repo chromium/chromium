@@ -64,6 +64,7 @@ import java.util.Set;
  */
 public class TabDragSource implements View.OnDragListener {
     private static final String TAG = "TabDragSource";
+    private static final Set<String> DRAG_NON_SPLIT_MODE_ALLOWLIST = Set.of("samsung");
 
     private final WindowAndroid mWindowAndroid;
     private MultiInstanceManager mMultiInstanceManager;
@@ -92,7 +93,6 @@ public class TabDragSource implements View.OnDragListener {
     private float mLastXDp;
     private int mLastAction;
     private boolean mHoveringInStrip;
-    private Set<String> mManufacturerAllowlist;
     // Local state used by Drag Drop metrics. Not-null when a tab dragging is in progress.
     private @Nullable DragLocalUmaState mUmaState;
 
@@ -135,13 +135,13 @@ public class TabDragSource implements View.OnDragListener {
         if (TabUiFeatureUtilities.isTabDragAsWindowEnabled()) {
             mAppIcon = context.getPackageManager().getApplicationIcon(context.getApplicationInfo());
         }
-        mManufacturerAllowlist = TabUiFeatureUtilities.getTabDragNonSplitModeAllowlist();
     }
 
     private boolean shouldAllowTabDrag() {
         // TODO (crbug/331980663): Prevent OEM-agnostic single tab drag on Android V+.
         return ChromeDragDropUtils.shouldAllowTabTearing(mTabModelSelector)
-                || mManufacturerAllowlist.contains(getCurrManufacturer());
+                || DRAG_NON_SPLIT_MODE_ALLOWLIST.contains(
+                        Build.MANUFACTURER.toLowerCase(Locale.US));
     }
 
     // Determine if a tab drag initiated to create a new window is valid.
@@ -169,7 +169,7 @@ public class TabDragSource implements View.OnDragListener {
             float tabPositionX,
             float tabWidthDp) {
         // Return false when FF is disabled or another drag in progress.
-        if (!TabUiFeatureUtilities.isTabDragEnabled() || DragDropGlobalState.hasValue()) {
+        if (DragDropGlobalState.hasValue()) {
             return false;
         }
         // Do not allow move for last tab when homepage enabled and is set to a custom url.
@@ -208,15 +208,6 @@ public class TabDragSource implements View.OnDragListener {
             sDragTrackerToken = null;
         }
         return res;
-    }
-
-    @VisibleForTesting
-    String getCurrManufacturer() {
-        return Build.MANUFACTURER.toLowerCase(Locale.US);
-    }
-
-    void setManufacturerAllowlistForTesting(Set<String> manufacturerList) {
-        mManufacturerAllowlist = manufacturerList;
     }
 
     @VisibleForTesting
@@ -325,11 +316,10 @@ public class TabDragSource implements View.OnDragListener {
             return false;
         }
 
-        // Return true only when the tab strip is visible and dropping onto strip is not disabled.
+        // Return true only when the tab strip is visible.
         // Otherwise, return false to not receive further events until dragEnd.
         if (!isDragSource()) {
-            return Boolean.TRUE.equals(mStripLayoutVisibilitySupplier.get())
-                    && !TabUiFeatureUtilities.DISABLE_STRIP_TO_STRIP_DD.getValue();
+            return Boolean.TRUE.equals(mStripLayoutVisibilitySupplier.get());
         }
 
         mStartScreenPos = new PointF(xPx, yPx);
@@ -391,13 +381,6 @@ public class TabDragSource implements View.OnDragListener {
             return false;
         }
         boolean tabDraggedBelongToCurrentModel = doesBelongToCurrentModel(tabBeingDragged);
-        if (!tabDraggedBelongToCurrentModel
-                && TabUiFeatureUtilities.DISABLE_STRIP_TO_STRIP_DIFF_MODEL_DD.getValue()) {
-            // Disallow dropping into another model when param enabled.
-            DragDropMetricUtils.recordTabDragDropResult(
-                    DragDropTabResult.IGNORED_DIFF_MODEL_NOT_SUPPORTED);
-            return false;
-        }
         if (!tabDraggedBelongToCurrentModel) {
             mMultiInstanceManager.moveTabToWindow(
                     getActivity(),
@@ -453,7 +436,6 @@ public class TabDragSource implements View.OnDragListener {
         int sourceInstanceId =
                 DragDropGlobalState.getState(sDragTrackerToken).getDragSourceInstance();
 
-        // TODO (crbug.com/1497784): Remove this method.
         mStripLayoutHelperSupplier.get().clearTabDragState();
         if (mShadowView != null) {
             mShadowView.clear();

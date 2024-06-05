@@ -1874,12 +1874,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
 
             // Allow the user to drag the selected tab out of the tab toolbar.
             if (clickedTab != null) {
-                boolean res = false;
-                if (TabUiFeatureUtilities.isTabDragEnabled()) {
-                    // The subsequent drag events will trigger reorder mode.
-                    res = allowMovingTabOutOfStripLayout(clickedTab, new PointF(x, y));
-                }
-
+                boolean res = allowMovingTabOutOfStripLayout(clickedTab, new PointF(x, y));
                 // If tab drag did not succeed, fallback to reorder within strip.
                 if (!res) {
                     startReorderMode(time, x, x);
@@ -5223,7 +5218,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
     @VisibleForTesting
     boolean allowMovingTabOutOfStripLayout(
             @NonNull StripLayoutTab clickedTab, @NonNull PointF dragStartPointF) {
-        if (!TabUiFeatureUtilities.isTabDragEnabled()) return false;
+        if (mTabDragSource == null) return false;
         // In addition to reordering, one can drag and drop the tab beyond the strip layout view.
         Tab tabBeingDragged = getTabById(clickedTab.getId());
         boolean dragStarted = false;
@@ -5317,7 +5312,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
     }
 
     void sendMoveWindowBroadcast(View view, float startXInView, float startYInView) {
-        if (!TabUiFeatureUtilities.isTabDragEnabled()) return;
+        if (!TabUiFeatureUtilities.isTabDragAsWindowEnabled()) return;
         if (mWindowAndroid.getActivity().get() == null) return;
 
         // The start position is in the view coordinate system and related to the top left position

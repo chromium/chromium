@@ -705,19 +705,6 @@ public class StripLayoutHelperManagerTest {
     }
 
     @Test
-    @DisableFeatures({
-        ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID,
-        ChromeFeatureList.TAB_DRAG_DROP_ANDROID
-    })
-    public void testDragDropInstances_FlagsDisabled_ReturnsNull() {
-        enableMultiInstance();
-        initializeTest();
-        assertNull(
-                "Tab drag source should not be set.",
-                mStripLayoutHelperManager.getTabDragSourceForTesting());
-    }
-
-    @Test
     @Config(sdk = VERSION_CODES.S)
     public void testGetDragListener() {
         enableMultiInstance();

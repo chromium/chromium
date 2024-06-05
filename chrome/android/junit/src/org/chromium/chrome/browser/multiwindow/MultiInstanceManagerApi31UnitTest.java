@@ -1061,7 +1061,6 @@ public class MultiInstanceManagerApi31UnitTest {
     @SmallTest
     @Config(sdk = 31)
     @EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
-    @DisableFeatures(ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID)
     public void testTabMove_MoveTabToNewWindow_calledWithDesiredParameters() {
         mMultiInstanceManager.mTestBuildInstancesList = true;
         MultiWindowTestUtils.enableMultiInstance();
@@ -1086,33 +1085,8 @@ public class MultiInstanceManagerApi31UnitTest {
 
     @Test
     @SmallTest
-    @DisableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
-    public void testTabMove_MoveTabToNewWindow_notCalled() {
-        MultiInstanceManagerApi31 multiInstanceManager1 =
-                Mockito.spy(
-                        createChromeInstance(
-                                INSTANCE_ID_1, TASK_ID_62, List.of(mTab1, mTab2, mTab3)));
-        doNothing()
-                .when(multiInstanceManager1)
-                .moveAndReparentTabToNewWindow(
-                        eq(mTab2), eq(INVALID_INSTANCE_ID), eq(true), eq(false), eq(true));
-
-        // Action
-        multiInstanceManager1.moveTabToNewWindow(mTab2);
-
-        // Verify the call is made with desired parameters. The moveAndReparentTabToNewWindow method
-        // is validated in integration test here
-        // https://source.chromium.org/chromium/chromium/src/+/main:chrome/android/javatests/src/org/chromium/chrome/browser/multiwindow/MultiWindowIntegrationTest.java
-        verify(multiInstanceManager1, times(0))
-                .moveAndReparentTabToNewWindow(
-                        any(), eq(INVALID_INSTANCE_ID), eq(true), eq(false), eq(true));
-    }
-
-    @Test
-    @SmallTest
     @Config(sdk = 31)
     @EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
-    @DisableFeatures(ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID)
     public void testTabMove_MoveTabToNewWindow_BeyondMaxWindows_CallsOnly_OpenNewWindow() {
         mMultiInstanceManager.mTestBuildInstancesList = true;
         MultiWindowTestUtils.enableMultiInstance();
@@ -1140,13 +1114,11 @@ public class MultiInstanceManagerApi31UnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
-    @DisableFeatures(ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID)
+    @EnableFeatures(ChromeFeatureList.DRAG_DROP_TAB_TEARING)
     @Config(sdk = 31)
     public void testTabMove_MoveTabToCurrentWindow_calledWithDesiredParameters() {
         int tabAtIndex = 0;
         mMultiInstanceManager.mTestBuildInstancesList = true;
-        MultiWindowTestUtils.enableMultiInstance();
         // Create two instances first before asking to move a tab from one to current.
         assertEquals(INSTANCE_ID_1, allocInstanceIndex(INSTANCE_ID_1, mTabbedActivityTask62, true));
         assertEquals(INSTANCE_ID_2, allocInstanceIndex(INSTANCE_ID_2, mTabbedActivityTask63, true));
@@ -1163,11 +1135,10 @@ public class MultiInstanceManagerApi31UnitTest {
     }
 
     @Test
-    @DisableFeatures({
-        ChromeFeatureList.TAB_DRAG_DROP_ANDROID,
-        ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID
-    })
+    @DisableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
+    @EnableFeatures(ChromeFeatureList.DRAG_DROP_TAB_TEARING)
     public void testTabMove_MoveTabToWindow_notCalled() {
+        MultiWindowTestUtils.enableMultiInstance();
         int tabAtIndex = 0;
         MultiInstanceManagerApi31 multiInstanceManager =
                 Mockito.spy(

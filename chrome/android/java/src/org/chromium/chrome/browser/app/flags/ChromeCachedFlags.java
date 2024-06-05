@@ -135,11 +135,6 @@ public class ChromeCachedFlags {
                         TabUiFeatureUtilities.ANIMATION_START_TIMEOUT_MS,
                         TabUiFeatureUtilities.ZOOMING_MIN_MEMORY,
                         TabUiFeatureUtilities.SKIP_SLOW_ZOOMING,
-                        TabUiFeatureUtilities.DISABLE_STRIP_TO_CONTENT_DD,
-                        TabUiFeatureUtilities.DISABLE_STRIP_TO_STRIP_DD,
-                        TabUiFeatureUtilities.DISABLE_STRIP_TO_STRIP_DIFF_MODEL_DD,
-                        TabUiFeatureUtilities.DISABLE_DRAG_TO_NEW_INSTANCE_DD,
-                        TabUiFeatureUtilities.ENABLE_NON_SPLIT_MODE_TAB_DRAG_MANUFACTURER_ALLOWLIST,
                         ToolbarFeatures.DTC_TRANSITION_THRESHOLD_DP,
                         ToolbarFeatures.USE_TOOLBAR_BG_COLOR_FOR_STRIP_TRANSITION_SCRIM,
                         VersionNumberGetter.MIN_SDK_VERSION);

@@ -11,20 +11,13 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.SysUtils;
 import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
 import org.chromium.base.cached_flags.IntCachedFieldTrialParameter;
-import org.chromium.base.cached_flags.StringCachedFieldTrialParameter;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.ui.base.DeviceFormFactor;
-
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 
 /** A class to handle the state of flags for tab_management. */
 public class TabUiFeatureUtilities {
     private static final String TAG = "TabFeatureUtilities";
-    private static final String SAMSUNG_LOWER_CASE = "samsung";
 
     // Field trial parameters:
     private static final String SKIP_SLOW_ZOOMING_PARAM = "skip-slow-zooming";
@@ -46,47 +39,6 @@ public class TabUiFeatureUtilities {
                     ChromeFeatureList.GRID_TAB_SWITCHER_ANDROID_ANIMATIONS,
                     ANIMATION_START_TIMEOUT_MS_PARAM,
                     300);
-
-    private static final String ENABLE_NON_SPLIT_MODE_TAB_DRAG_MANUFACTURER_ALLOWLIST_PARAM =
-            "enable_non_split_mode_tab_drag_manufacturer_allowlist";
-    public static final StringCachedFieldTrialParameter
-            ENABLE_NON_SPLIT_MODE_TAB_DRAG_MANUFACTURER_ALLOWLIST =
-                    ChromeFeatureList.newStringCachedFieldTrialParameter(
-                            ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID,
-                            ENABLE_NON_SPLIT_MODE_TAB_DRAG_MANUFACTURER_ALLOWLIST_PARAM,
-                            SAMSUNG_LOWER_CASE);
-
-    // Field trail params for tab drag and drop.
-    private static final String DISABLE_STRIP_TO_CONTENT_DD_PARAM = "disable_strip_to_content_dd";
-    private static final String DISABLE_STRIP_TO_STRIP_DD_PARAM = "disable_strip_to_strip_dd";
-    private static final String DISABLE_STRIP_TO_STRIP_DIFF_MODEL_DD_PARAM =
-            "disable_strip_to_strip_diff_model_dd";
-    private static final String DISABLE_DRAG_TO_NEW_INSTANCE_DD_PARAM =
-            "disable_drag_to_new_instance";
-
-    // Manufacturer list that supports tab drag in non-split mode.
-    static Set<String> sTabDragNonSplitManufacturerAllowlist;
-
-    public static final BooleanCachedFieldTrialParameter DISABLE_STRIP_TO_CONTENT_DD =
-            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID,
-                    DISABLE_STRIP_TO_CONTENT_DD_PARAM,
-                    false);
-    public static final BooleanCachedFieldTrialParameter DISABLE_STRIP_TO_STRIP_DD =
-            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID,
-                    DISABLE_STRIP_TO_STRIP_DD_PARAM,
-                    false);
-    public static final BooleanCachedFieldTrialParameter DISABLE_STRIP_TO_STRIP_DIFF_MODEL_DD =
-            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID,
-                    DISABLE_STRIP_TO_STRIP_DIFF_MODEL_DD_PARAM,
-                    false);
-    public static final BooleanCachedFieldTrialParameter DISABLE_DRAG_TO_NEW_INSTANCE_DD =
-            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID,
-                    DISABLE_DRAG_TO_NEW_INSTANCE_DD_PARAM,
-                    false);
 
     // Cached and fixed values.
     private static boolean sTabListEditorLongPressEntryEnabled;
@@ -139,37 +91,10 @@ public class TabUiFeatureUtilities {
     }
 
     /**
-     * @return whether tab drag is enabled (either via drag as window or drag as tab).
-     *     TODO(crbug.com/40933355) - merge both flags and use device property instead to
-     *     differentiate.
-     */
-    public static boolean isTabDragEnabled() {
-        if (!MultiWindowUtils.isMultiInstanceApi31Enabled()) {
-            return false;
-        }
-        // Both flags should not be enabled together.
-        assert !(ChromeFeatureList.sTabLinkDragDropAndroid.isEnabled()
-                && isTabDragAsWindowEnabled());
-        return isTabDragAsWindowEnabled() || ChromeFeatureList.sTabLinkDragDropAndroid.isEnabled();
-    }
-
-    /**
      * @return whether tab drag as window is enabled.
      */
     public static boolean isTabDragAsWindowEnabled() {
         return ChromeFeatureList.sTabDragDropAsWindowAndroid.isEnabled();
-    }
-
-    public static Set getTabDragNonSplitModeAllowlist() {
-        if (sTabDragNonSplitManufacturerAllowlist == null) {
-            sTabDragNonSplitManufacturerAllowlist = new HashSet<>();
-
-            String allowlist = ENABLE_NON_SPLIT_MODE_TAB_DRAG_MANUFACTURER_ALLOWLIST.getValue();
-            if (allowlist != null && !allowlist.isEmpty()) {
-                Collections.addAll(sTabDragNonSplitManufacturerAllowlist, allowlist.split(","));
-            }
-        }
-        return sTabDragNonSplitManufacturerAllowlist;
     }
 
     /** Returns if the tab group pane should be displayed in the hub. */
@@ -182,8 +107,7 @@ public class TabUiFeatureUtilities {
     // Consider merge code logic.
     public static boolean isTabTearingEnabled() {
         // TODO(crbug/328511660): Add OS version check once available.
-        return ChromeFeatureList.sTabLinkDragDropAndroid.isEnabled()
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.DRAG_DROP_TAB_TEARING)
-                && !DISABLE_DRAG_TO_NEW_INSTANCE_DD.getValue();
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.DRAG_DROP_TAB_TEARING)
+                && !isTabDragAsWindowEnabled();
     }
 }

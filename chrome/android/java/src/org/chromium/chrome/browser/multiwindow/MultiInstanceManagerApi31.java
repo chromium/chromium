@@ -944,14 +944,13 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
     }
 
     /**
-     * Open a new instance of the ChromeTabbedActivity window and move the
-     * specified tab from existing instance to the new one.
+     * Open a new instance of the ChromeTabbedActivity window and move the specified tab from
+     * existing instance to the new one.
+     *
      * @param tab Tab that is to be moved to a new Chrome instance.
      */
     @Override
     public void moveTabToNewWindow(Tab tab) {
-        if (!TabUiFeatureUtilities.isTabDragEnabled()) return;
-
         // Check if the new Chrome instance can be opened.
         if (MultiWindowUtils.getInstanceCount() < mMaxInstances) {
             moveAndReparentTabToNewWindow(
@@ -977,8 +976,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
      */
     @Override
     public void moveTabToWindow(Activity activity, Tab tab, int atIndex) {
-        if (!TabUiFeatureUtilities.isTabDragEnabled()
-                && !TabUiFeatureUtilities.isTabTearingEnabled()) return;
+        if (!TabUiFeatureUtilities.isTabTearingEnabled()) return;
 
         // Get the current instance and move tab there.
         InstanceInfo info = getInstanceInfoFor(activity);

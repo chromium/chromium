@@ -3698,6 +3698,7 @@ public class StripLayoutHelperTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
     @Config(sdk = Build.VERSION_CODES.R)
     public void testDrag_sendMoveWindowBroadcast_success() {
         // Setup with tabs and select first tab.

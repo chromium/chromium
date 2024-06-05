@@ -1973,9 +1973,6 @@ extern const char kSystemProxyForSystemServicesDescription[];
 extern const char kTabDragDropName[];
 extern const char kTabDragDropDescription[];
 
-extern const char kTabAndLinkDragDropName[];
-extern const char kTabAndLinkDragDropDescription[];
-
 extern const char kCommerceDeveloperName[];
 extern const char kCommerceDeveloperDescription[];
 

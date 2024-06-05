@@ -118,7 +118,6 @@ import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegateProvider;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.tasks.tab_management.UndoGroupSnackbarController;
 import org.chromium.chrome.browser.toolbar.ToolbarButtonInProductHelpController;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
@@ -641,8 +640,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         // TODO(crbug.com/40946488): Consider register this drag listener to other views besides
         // CVH.
-        if (ChromeFeatureList.sTabLinkDragDropAndroid.isEnabled()
-                && !TabUiFeatureUtilities.DISABLE_STRIP_TO_CONTENT_DD.getValue()) {
+        /**
+         * Instantiating ChromeTabbedOnDragListener on tablets since tab drags is enabled only via
+         * tablet tab strip.
+         */
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) {
             ChromeTabbedOnDragListener chromeTabbedOnDragListener =
                     new ChromeTabbedOnDragListener(
                             mMultiInstanceManager,

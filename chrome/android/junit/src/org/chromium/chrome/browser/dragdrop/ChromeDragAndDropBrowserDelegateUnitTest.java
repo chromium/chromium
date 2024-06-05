@@ -52,7 +52,6 @@ import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.UrlIntentSource;
@@ -212,34 +211,6 @@ public class ChromeDragAndDropBrowserDelegateUnitTest {
                 data.getDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN));
         assertTrue(
                 "The clip data should contain text/vnd.android.intent mimetype.",
-                data.getDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_INTENT));
-    }
-
-    @Test
-    @Config(sdk = 30)
-    public void testBuildClipData_DisableDragToOpenNewInstance() {
-        TabUiFeatureUtilities.DISABLE_DRAG_TO_NEW_INSTANCE_DD.setForTesting(true);
-        mDelegate = new ChromeDragAndDropBrowserDelegate(mActivity);
-
-        var dropData = createTabDropData(1, false);
-        var data = mDelegate.buildClipData(dropData);
-        assertEquals(
-                "The browser clip data is not as expected",
-                dropData.buildTabClipDataText(),
-                data.getItemAt(0).getText());
-        assertNull("The clip data should not have intent set.", data.getItemAt(0).getIntent());
-        assertTrue(
-                "The clip data should contain chrome/tab mimetype.",
-                data.getDescription().hasMimeType(MimeTypeUtils.CHROME_MIMETYPE_TAB));
-
-        assertFalse(
-                "The clip data should not contain chrome/link mimetype.",
-                data.getDescription().hasMimeType(MimeTypeUtils.CHROME_MIMETYPE_LINK));
-        assertFalse(
-                "The clip data should not contain text/plain mimetype.",
-                data.getDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN));
-        assertFalse(
-                "The clip data should not contain text/vnd.android.intent mimetype.",
                 data.getDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_INTENT));
     }
 
