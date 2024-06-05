@@ -1125,6 +1125,8 @@ component("net") {
       "device_bound_sessions/registration_fetcher.h",
       "device_bound_sessions/session_binding_utils.cc",
       "device_bound_sessions/session_binding_utils.h",
+      "device_bound_sessions/session_inclusion_rules.cc",
+      "device_bound_sessions/session_inclusion_rules.h",
       "device_bound_sessions/unexportable_key_service_factory.cc",
       "device_bound_sessions/unexportable_key_service_factory.h",
     ]
@@ -3253,6 +3255,7 @@ test("net_unittests") {
       "device_bound_sessions/device_bound_session_registration_fetcher_param_unittest.cc",
       "device_bound_sessions/registration_fetcher_unittest.cc",
       "device_bound_sessions/session_binding_utils_unittest.cc",
+      "device_bound_sessions/session_inclusion_rules_unittest.cc",
       "device_bound_sessions/test_util.cc",
       "device_bound_sessions/test_util.h",
     ]
