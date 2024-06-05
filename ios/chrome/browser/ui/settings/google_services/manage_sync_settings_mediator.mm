@@ -246,7 +246,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
       TableViewTextHeaderFooterItem* footerItem =
           [[TableViewTextHeaderFooterItem alloc]
               initWithType:TypesListHeaderOrFooterType];
-      footerItem.subtitle = headerItem.text =
+      footerItem.subtitle =
           would_clear_data_on_signout
               ? l10n_util::GetNSString(
                     IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_TYPES_LIST_DESCRIPTION_FOR_MANAGED_ACCOUNT)
