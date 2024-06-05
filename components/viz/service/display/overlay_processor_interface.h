@@ -203,6 +203,11 @@ class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
   // gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL_CLOCKWISE_270 transforms.
   virtual bool SupportsFlipRotateTransform() const;
 
+  // This is used by the overlay processor on platforms that support delegated
+  // ink. It marks the current frame as having delegated ink, and is cleared in
+  // the next ProcessForOverlays call.
+  virtual void SetFrameHasDelegatedInk() {}
+
  protected:
   OverlayProcessorInterface() = default;
 };

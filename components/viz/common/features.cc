@@ -85,6 +85,14 @@ BASE_FEATURE(kDelegatedCompositingLimitToUi,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+// If enabled, the overlay processor will force the use of dcomp surfaces as the
+// render pass backing while delegated ink is being employed. This will avoid
+// the need for finding what surface to synchronize ink updates with by making
+// all surfaces synchronize with dcomp commit
+BASE_FEATURE(kUseDCompSurfacesForDelegatedInk,
+             "UseDCompSurfacesForDelegatedInk",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kRenderPassDrawnRect,
              "RenderPassDrawnRect",
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

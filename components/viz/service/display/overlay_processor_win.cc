@@ -43,7 +43,8 @@ gfx::Rect UpdateRenderPassFromOverlayData(
     const DCLayerOverlayProcessor::RenderPassOverlayData& overlay_data,
     AggregatedRenderPass* render_pass,
     base::flat_map<AggregatedRenderPassId, int>&
-        frames_since_using_dc_layers_map) {
+        frames_since_using_dc_layers_map,
+    const bool frame_has_delegated_ink) {
   bool was_using_dc_layers =
       frames_since_using_dc_layers_map.contains(render_pass->id);
 
@@ -60,7 +61,14 @@ gfx::Rect UpdateRenderPassFromOverlayData(
   const bool force_swap_chain_due_to_copy_request = render_pass->HasCapture();
 
   bool using_dc_layers;
-  if (!overlay_data.promoted_overlays.empty()) {
+  // Force DCompSurfaces during delegated ink in order to synchronize the
+  // delegated ink visual updates with DComp commits. Doing so eliminates the
+  // need to identify the correct swap chain in complicated delegated
+  // compositing scenarios.
+  if (!overlay_data.promoted_overlays.empty() ||
+      (frame_has_delegated_ink &&
+       base::FeatureList::IsEnabled(
+           features::kUseDCompSurfacesForDelegatedInk))) {
     frames_since_using_dc_layers_map[render_pass->id] = 0;
     using_dc_layers = true;
   } else if ((was_using_dc_layers &&
@@ -254,7 +262,8 @@ DelegationStatus OverlayProcessorWin::ProcessOverlaysForDelegation(
 
     for (auto& [render_pass, overlay_data] : surface_content_render_passes) {
       render_pass->damage_rect = UpdateRenderPassFromOverlayData(
-          overlay_data, render_pass, frames_since_using_dc_layers_map_);
+          overlay_data, render_pass, frames_since_using_dc_layers_map_,
+          frame_has_delegated_ink_);
 
       DBG_LOG_OPT("delegated.overlay.log", DBG_OPT_BLUE,
                   "Partially delegated pass{id: %llu, damage: %s}, "
@@ -335,9 +344,9 @@ void OverlayProcessorWin::ProcessOverlaysFromOutputSurfacePlane(
   }
   *root_damage_rect = UpdateRenderPassFromOverlayData(
       root_render_pass_overlay_data, root_render_pass,
-      frames_since_using_dc_layers_map_);
+      frames_since_using_dc_layers_map_, frame_has_delegated_ink_);
   *candidates = std::move(root_render_pass_overlay_data.promoted_overlays);
-
+  frame_has_delegated_ink_ = false;
   if (!root_render_pass->copy_requests.empty()) {
     // A DComp surface is not readable by viz.
     // |DCLayerOverlayProcessor::Process| should avoid overlay candidates if
@@ -355,6 +364,10 @@ void OverlayProcessorWin::ProcessOverlaysFromOutputSurfacePlane(
     InsertDebugBorderDrawQuadsForOverlayCandidates(
         *candidates, root_render_pass, *root_damage_rect);
   }
+}
+
+void OverlayProcessorWin::SetFrameHasDelegatedInk() {
+  frame_has_delegated_ink_ = true;
 }
 
 void OverlayProcessorWin::SetUsingDCLayersForTesting(

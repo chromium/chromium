@@ -2510,6 +2510,96 @@ TEST_F(DCLayerOverlayTest,
                                6}));
 }
 
+// Tests that Delegated Ink in the frame correctly sets
+// needs_synchronous_dcomp_commit on the render pass.
+TEST_F(DCLayerOverlayTest, FrameHasDelegatedInk) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kUseDCompSurfacesForDelegatedInk);
+  InitializeOverlayProcessor();
+  overlay_processor_->SetUsingDCLayersForTesting(kDefaultRootPassId, false);
+  // Test that needs_synchronous_dcomp_commit on the render pass gets set to
+  // false as default.
+  {
+    auto pass = CreateRenderPass();
+    OverlayCandidateList dc_layer_list;
+    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+    damage_rect_ = gfx::Rect(1, 1, 10, 10);
+    AggregatedRenderPassList pass_list;
+    pass_list.push_back(std::move(pass));
+    SurfaceDamageRectList surface_damage_rect_list = {gfx::Rect(1, 1, 10, 10)};
+
+    EXPECT_FALSE(pass_list[0]->needs_synchronous_dcomp_commit);
+    overlay_processor_->ProcessForOverlays(
+        resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+        render_pass_filters, render_pass_backdrop_filters,
+        std::move(surface_damage_rect_list), GetOutputSurfacePlane(),
+        &dc_layer_list, &damage_rect_, &content_bounds_);
+    EXPECT_FALSE(pass_list[0]->needs_synchronous_dcomp_commit);
+  }
+
+  // Test that needs_synchronous_dcomp_commit gets set to true when the frame
+  // has delegated ink.
+  overlay_processor_->SetFrameHasDelegatedInk();
+  auto pass = CreateRenderPass();
+  OverlayCandidateList dc_layer_list;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+  damage_rect_ = gfx::Rect(1, 1, 10, 10);
+  AggregatedRenderPassList pass_list;
+  pass_list.push_back(std::move(pass));
+  SurfaceDamageRectList surface_damage_rect_list = {gfx::Rect(1, 1, 10, 10)};
+
+  EXPECT_FALSE(pass_list[0]->needs_synchronous_dcomp_commit);
+  overlay_processor_->ProcessForOverlays(
+      resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+      render_pass_filters, render_pass_backdrop_filters,
+      std::move(surface_damage_rect_list), GetOutputSurfacePlane(),
+      &dc_layer_list, &damage_rect_, &content_bounds_);
+  // Make sure |frame_has_delegated_ink_| has been set to false.
+  EXPECT_FALSE(overlay_processor_->frame_has_delegated_ink_for_testing());
+  EXPECT_TRUE(pass_list[0]->needs_synchronous_dcomp_commit);
+}
+
+// Ensure needs_synchronous_dcomp_commit lasts for 60 frames after
+// |SetFrameHasDelegatedInk| has been called (once). Based on
+// kNumberOfFramesBeforeDisablingDCLayers in
+// components/viz/service/display/overlay_processor_win.cc.
+TEST_F(DCLayerOverlayTest, DelegatedInkSurfaceHysteresis) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kUseDCompSurfacesForDelegatedInk);
+  InitializeOverlayProcessor();
+  overlay_processor_->SetUsingDCLayersForTesting(kDefaultRootPassId, false);
+
+  overlay_processor_->SetFrameHasDelegatedInk();
+  for (int frame = 1; frame <= 61; frame++) {
+    auto pass = CreateRenderPass();
+    OverlayCandidateList dc_layer_list;
+    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+    damage_rect_ = gfx::Rect(1, 1, 10, 10);
+    AggregatedRenderPassList pass_list;
+    pass_list.push_back(std::move(pass));
+    SurfaceDamageRectList surface_damage_rect_list = {gfx::Rect(1, 1, 10, 10)};
+
+    EXPECT_FALSE(pass_list[0]->needs_synchronous_dcomp_commit);
+    overlay_processor_->ProcessForOverlays(
+        resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+        render_pass_filters, render_pass_backdrop_filters,
+        std::move(surface_damage_rect_list), GetOutputSurfacePlane(),
+        &dc_layer_list, &damage_rect_, &content_bounds_);
+    // Make sure |frame_has_delegated_ink_| has been set to false.
+    EXPECT_FALSE(overlay_processor_->frame_has_delegated_ink_for_testing());
+    if (frame <= 60) {
+      EXPECT_TRUE(pass_list[0]->needs_synchronous_dcomp_commit);
+    } else {
+      EXPECT_FALSE(pass_list[0]->needs_synchronous_dcomp_commit);
+    }
+  }
+}
+
 class DCLayerOverlayDelegatedCompositingTest : public DCLayerOverlayTest {
  protected:
   DCLayerOverlayDelegatedCompositingTest() {

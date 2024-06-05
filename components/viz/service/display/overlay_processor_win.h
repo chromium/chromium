@@ -68,6 +68,13 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
       gfx::Rect* root_damage_rect,
       std::vector<gfx::Rect>* content_bounds) override;
 
+  void SetFrameHasDelegatedInk() override;
+
+  bool frame_has_delegated_ink_for_testing() const {
+    CHECK_IS_TEST();
+    return frame_has_delegated_ink_;
+  }
+
   // Sets whether or not |render_pass_id| will be marked for a DComp surface
   // backing. If |value| is true, this also resets the frame count since
   // enabling DC layers.
@@ -250,6 +257,10 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
   bool is_page_fullscreen_mode_ = false;
 
   bool delegation_succeeded_last_frame_ = false;
+
+  // If true, causes the use of DComp surfaces as the backing image of a render
+  // pass, given that UseDCompSurfacesForDelegatedInk is also enabled.
+  bool frame_has_delegated_ink_ = false;
 
   // Returned and reset by |GetAndResetOverlayDamage| to fully damage the root
   // render pass when we drop out of delegated compositing. This is essentially
