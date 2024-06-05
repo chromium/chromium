@@ -783,7 +783,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Counterfactual",
+                    "name": "Counterfactual_M127",
                     "params": {
                         "is-counterfactual": "true"
                     },
@@ -792,7 +792,7 @@
                     ]
                 },
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_M127",
                     "params": {
                         "is-counterfactual": "false"
                     },
