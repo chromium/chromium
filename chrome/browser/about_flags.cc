@@ -2478,33 +2478,35 @@ const FeatureEntry::FeatureParam
         {"use_salient_image", "true"},
 };
 const FeatureEntry::FeatureParam kTabResumptionModule_enable_v2_arm1[] = {
-    {"disable_blend", "true"},
-    {"enable_v2", "true"},
-    {"show_see_more", "true"},
-    {"show_tabs_in_one_module", "true"},
+    {"disable_blend", "true"},          {"enable_v2", "true"},
+    {"show_see_more", "true"},          {"show_tabs_in_one_module", "true"},
+    {"use_default_app_filter", "true"},
 };
 const FeatureEntry::FeatureParam kTabResumptionModule_enable_v2_arm2[] = {
     {"enable_v2", "true"},
     {"show_see_more", "true"},
     {"show_tabs_in_one_module", "true"},
+    {"use_default_app_filter", "true"},
     {"use_salient_image", "true"},
 };
 const FeatureEntry::FeatureParam kTabResumptionModule_enable_v2_arm3[] = {
     {"disable_blend", "true"},           {"enable_v2", "true"},
     {"max_tiles_number", "1"},           {"show_see_more", "true"},
-    {"show_tabs_in_one_module", "true"}, {"use_salient_image", "true"},
+    {"show_tabs_in_one_module", "true"}, {"use_default_app_filter", "true"},
+    {"use_salient_image", "true"},
 };
 const FeatureEntry::FeatureParam kTabResumptionModule_enable_v2_arm4[] = {
-    {"disable_blend", "true"},     {"enable_v2", "true"},
-    {"show_see_more", "true"},     {"show_tabs_in_one_module", "true"},
-    {"use_salient_image", "true"},
+    {"disable_blend", "true"},          {"enable_v2", "true"},
+    {"show_see_more", "true"},          {"show_tabs_in_one_module", "true"},
+    {"use_default_app_filter", "true"}, {"use_salient_image", "true"},
 };
 const FeatureEntry::FeatureParam kTabResumptionModule_enable_v2_ml[] = {
     {"enable_v2", "true"},
+    {"fetch_local_tabs_backend", "true"},
     {"show_see_more", "true"},
     {"show_tabs_in_one_module", "true"},
+    {"use_default_app_filter", "true"},
     {"use_salient_image", "true"},
-    {"fetch_local_tabs_backend", "true"},
 };
 const FeatureEntry::FeatureVariation kTabResumptionModuleAndroidVariations[] = {
     {"Default app filter", kTabResumptionModule_defaul_app_filter,
