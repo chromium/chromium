@@ -148,35 +148,15 @@ void ResolvePageBoxGeometry(const BlockNode& page_box,
   // size (the 'size' property). See
   // https://github.com/w3c/csswg-drafts/issues/8508 for discussion around
   // negative page margins in general.
-  auto ResolveAutoMargin =
-      [](Length start_length, Length end_length, LayoutUnit additional_space,
-         LayoutUnit* start_result, LayoutUnit* end_result) {
-        bool start_is_auto = start_length.IsAuto();
-        bool end_is_auto = end_length.IsAuto();
-        if (start_is_auto) {
-          if (end_is_auto) {
-            *start_result = additional_space / 2;
-            additional_space -= *start_result;
-          } else {
-            *start_result = additional_space;
-          }
-        }
-        if (end_is_auto) {
-          *end_result = additional_space;
-        }
-      };
   LayoutUnit additional_inline_space =
       space.AvailableSize().inline_size -
       (geometry->border_box_size.inline_size + margins->InlineSum());
-  ResolveAutoMargin(style.MarginInlineStartUsing(style),
-                    style.MarginInlineEndUsing(style), additional_inline_space,
-                    &margins->inline_start, &margins->inline_end);
   LayoutUnit additional_block_space =
       space.AvailableSize().block_size -
       (geometry->border_box_size.block_size + margins->BlockSum());
-  ResolveAutoMargin(style.MarginBlockStartUsing(style),
-                    style.MarginBlockEndUsing(style), additional_block_space,
-                    &margins->block_start, &margins->block_end);
+  ResolveAutoMargins(style.MarginInlineStart(), style.MarginInlineEnd(),
+                     style.MarginBlockStart(), style.MarginBlockEnd(),
+                     additional_inline_space, additional_block_space, margins);
 }
 
 PhysicalSize CalculateInitialContainingBlockSizeForPagination(

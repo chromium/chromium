@@ -1352,6 +1352,41 @@ void ResolveInlineAutoMargins(const ComputedStyle& style,
   }
 }
 
+void ResolveAutoMargins(Length start_length,
+                        Length end_length,
+                        LayoutUnit additional_space,
+                        LayoutUnit* start_result,
+                        LayoutUnit* end_result) {
+  bool start_is_auto = start_length.IsAuto();
+  bool end_is_auto = end_length.IsAuto();
+  if (start_is_auto) {
+    if (end_is_auto) {
+      *start_result = additional_space / 2;
+      additional_space -= *start_result;
+    } else {
+      *start_result = additional_space;
+    }
+  }
+  if (end_is_auto) {
+    *end_result = additional_space;
+  }
+}
+
+void ResolveAutoMargins(Length inline_start_length,
+                        Length inline_end_length,
+                        Length block_start_length,
+                        Length block_end_length,
+                        LayoutUnit additional_inline_space,
+                        LayoutUnit additional_block_space,
+                        BoxStrut* margins) {
+  ResolveAutoMargins(inline_start_length, inline_end_length,
+                     additional_inline_space, &margins->inline_start,
+                     &margins->inline_end);
+  ResolveAutoMargins(block_start_length, block_end_length,
+                     additional_block_space, &margins->block_start,
+                     &margins->block_end);
+}
+
 LayoutUnit LineOffsetForTextAlign(ETextAlign text_align,
                                   TextDirection direction,
                                   LayoutUnit space_left) {

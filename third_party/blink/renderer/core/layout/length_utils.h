@@ -488,6 +488,26 @@ CORE_EXPORT void ResolveInlineAutoMargins(
     LayoutUnit inline_size,
     BoxStrut* margins);
 
+// Resolve auto margins in one dimension. May result in negative margins, if
+// `additional_space` is negative.
+// `start_result` and `end_result` will be left unmodified for non-auto margins.
+void ResolveAutoMargins(Length start_length,
+                        Length end_length,
+                        LayoutUnit additional_space,
+                        LayoutUnit* start_result,
+                        LayoutUnit* end_result);
+
+// Resolve all auto margins. May result in negative margins, if
+// `additional_inline_space` or `additional_block_space` is negative. Non-auto
+// strut values will be left unmodified.
+void ResolveAutoMargins(Length inline_start_length,
+                        Length inline_end_length,
+                        Length block_start_length,
+                        Length block_end_length,
+                        LayoutUnit additional_inline_space,
+                        LayoutUnit additional_block_space,
+                        BoxStrut* margins);
+
 // Calculate the adjustment needed for the line's left position, based on
 // text-align, direction and amount of unused space.
 CORE_EXPORT LayoutUnit LineOffsetForTextAlign(ETextAlign,
