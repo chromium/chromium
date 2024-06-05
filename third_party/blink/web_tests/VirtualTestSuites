@@ -2947,15 +2947,6 @@
     "owners": ["evelynn.kaplan@microsoft.com", "almaher@microsoft.com"]
   },
   {
-    "prefix": "pageswap",
-    "platforms": ["Linux", "Mac", "Win"],
-    "exclusive_tests": "ALL",
-    "bases": ["external/wpt/html/browsers/browsing-the-web/history-traversal/pageswap"],
-    "args": ["--enable-features=PageSwapEvent"],
-    "expires": "June 1, 2024",
-    "owners": ["khushalsagar@chromium.org", "vmpstr@chromium.org"]
-  },
-  {
     "prefix": "popover-hover-disabled",
     "owners": ["masonf@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],
