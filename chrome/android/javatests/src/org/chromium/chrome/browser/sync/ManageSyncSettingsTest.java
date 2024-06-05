@@ -1469,6 +1469,9 @@ public class ManageSyncSettingsTest {
 
         ManageSyncSettings fragment = startManageSyncPreferences();
 
+        onView(withText(R.string.settings_sync_type_disabled_by_administrator))
+                .check(matches(isDisplayed()));
+
         // All datatype toggles should be unchecked and disabled.
         Map<Integer, ChromeSwitchPreference> dataTypes = getAccountDataTypes(fragment);
         for (ChromeSwitchPreference dataType : dataTypes.values()) {

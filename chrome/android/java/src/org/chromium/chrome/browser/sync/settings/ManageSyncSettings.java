@@ -57,6 +57,7 @@ import org.chromium.chrome.browser.ui.signin.SignOutCoordinator;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.ui.signin.SignoutButtonPreference;
 import org.chromium.components.browser_ui.settings.ChromeBaseCheckBoxPreference;
+import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.FragmentSettingsLauncher;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
@@ -130,6 +131,10 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     @VisibleForTesting public static final String PREF_TURN_OFF_SYNC = "turn_off_sync";
     @VisibleForTesting public static final String PREF_SYNC_REVIEW_DATA = "sync_review_data";
     private static final String PREF_ADVANCED_CATEGORY = "advanced_category";
+
+    @VisibleForTesting
+    private static final String PREF_SETTINGS_SYNC_TYPE_DISABLED_BY_ADMINISTRATOR =
+            "settings_sync_type_disabled_by_administrator";
 
     @VisibleForTesting
     public static final String PREF_ACCOUNT_SECTION_HISTORY_TOGGLE =
@@ -254,6 +259,14 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                     (IdentityErrorCardPreference)
                             findPreference(PREF_IDENTITY_ERROR_CARD_PREFERENCE);
             identityErrorCardPreference.initialize(profile, this);
+
+            if (mSyncService.isSyncDisabledByEnterprisePolicy()) {
+                ChromeBasePreference settingsSyncTypeDisabledByAdministrator =
+                        (ChromeBasePreference)
+                                findPreference(PREF_SETTINGS_SYNC_TYPE_DISABLED_BY_ADMINISTRATOR);
+                settingsSyncTypeDisabledByAdministrator.setDividerAllowedAbove(false);
+                settingsSyncTypeDisabledByAdministrator.setVisible(true);
+            }
 
             mSyncTypeSwitchPreferencesMap = new HashMap<>();
             mSyncTypeSwitchPreferencesMap.put(

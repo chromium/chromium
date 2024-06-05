@@ -21,6 +21,12 @@ found in the LICENSE file.
         android:key="account_section_header"
         android:title="@string/account_section_header"/>
 
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:key="settings_sync_type_disabled_by_administrator"
+        android:title="@string/settings_sync_type_disabled_by_administrator"
+        android:icon="@drawable/ic_business_small"
+        app:isPreferenceVisible="false"/>
+
     <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
         android:key="account_section_history_toggle"
         android:title="@string/account_section_history_toggle"
