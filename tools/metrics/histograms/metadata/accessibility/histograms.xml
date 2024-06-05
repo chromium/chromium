@@ -1853,16 +1853,6 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
-<histogram name="Accessibility.PdfOcr.UserSelection" enum="PdfOcrUserSelection"
-    expires_after="2025-02-28">
-  <owner>kyungjunlee@google.com</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Tracks the PDF OCR menu item that the user selects to turn on or off the PDF
-    OCR feature.
-  </summary>
-</histogram>
-
 <histogram
     name="Accessibility.Performance.AccessibilityTreeSnapshotCombiner::~AccessibilityTreeSnapshotCombiner"
     units="microseconds" expires_after="2025-02-28">

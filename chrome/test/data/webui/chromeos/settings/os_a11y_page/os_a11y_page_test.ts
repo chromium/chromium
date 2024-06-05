@@ -7,11 +7,9 @@ import 'chrome://os-settings/lazy_load.js';
 
 import {CrSettingsPrefs, OsA11yPageBrowserProxyImpl, OsSettingsA11yPageElement, OsSettingsRoutes, Router, routes, SettingsPrefsElement} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
@@ -76,33 +74,6 @@ suite('<os-settings-a11y-page>', () => {
 
     // Make sure confirmA11yImageLabels is called.
     assertEquals(1, browserProxy.getCallCount('confirmA11yImageLabels'));
-  });
-
-  test('Checking pdf ocr toggle visibility in the TTS page', async () => {
-    // Need to have this test here as the screen reader state is passed from
-    // the os-settings-a11y-page to the settings-text-to-speech-subpage.
-    // `features::kPdfOcr` is enabled in os_settings_v3_browsertest.js
-    assertTrue(loadTimeData.getBoolean('pdfOcrEnabled'));
-
-    Router.getInstance().navigateTo(routes.A11Y_TEXT_TO_SPEECH);
-    flush();
-    const ttsPage =
-        page.shadowRoot!.querySelector('settings-text-to-speech-subpage');
-
-    // Disable ChromeVox to hide the PDF OCR toggle.
-    webUIListenerCallback('screen-reader-state-changed', false);
-
-    const pdfOcrToggle =
-        ttsPage!.shadowRoot!.querySelector<HTMLElement>('#crosPdfOcrToggle');
-    assert(pdfOcrToggle);
-    await waitAfterNextRender(pdfOcrToggle);
-    assertTrue(pdfOcrToggle.hidden);
-
-    // Enable ChromeVox to show the PDF OCR toggle.
-    webUIListenerCallback('screen-reader-state-changed', true);
-
-    await waitAfterNextRender(pdfOcrToggle);
-    assertFalse(pdfOcrToggle.hidden);
   });
 
   const subpageTriggerData: SubpageTriggerData[] = [

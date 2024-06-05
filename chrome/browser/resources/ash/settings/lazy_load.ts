@@ -242,7 +242,7 @@ export {SettingsSwitchAccessActionAssignmentPaneElement} from './os_a11y_page/sw
 export {SwitchAccessCommand} from './os_a11y_page/switch_access_constants.js';
 export {SettingsSwitchAccessSetupGuideDialogElement} from './os_a11y_page/switch_access_setup_guide_dialog.js';
 export {SettingsSwitchAccessSubpageElement} from './os_a11y_page/switch_access_subpage.js';
-export {PdfOcrUserSelection, ScreenAiInstallStatus, SettingsTextToSpeechSubpageElement} from './os_a11y_page/text_to_speech_subpage.js';
+export {ScreenAiInstallStatus, SettingsTextToSpeechSubpageElement} from './os_a11y_page/text_to_speech_subpage.js';
 export {SettingsTtsVoiceSubpageElement} from './os_a11y_page/tts_voice_subpage.js';
 export {SettingsChannelSwitcherDialogElement} from './os_about_page/channel_switcher_dialog.js';
 export {SettingsConsumerAutoUpdateToggleDialogElement} from './os_about_page/consumer_auto_update_toggle_dialog.js';

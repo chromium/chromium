@@ -3526,8 +3526,6 @@ static_library("ui") {
       "webui/ash/settings/pages/a11y/accessibility_handler.h",
       "webui/ash/settings/pages/a11y/accessibility_section.cc",
       "webui/ash/settings/pages/a11y/accessibility_section.h",
-      "webui/ash/settings/pages/a11y/pdf_ocr_handler.cc",
-      "webui/ash/settings/pages/a11y/pdf_ocr_handler.h",
       "webui/ash/settings/pages/a11y/select_to_speak_handler.cc",
       "webui/ash/settings/pages/a11y/select_to_speak_handler.h",
       "webui/ash/settings/pages/a11y/settings_with_tts_preview_handler.cc",

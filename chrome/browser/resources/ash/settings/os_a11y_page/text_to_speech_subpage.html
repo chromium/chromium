@@ -58,14 +58,6 @@
     </cr-link-row>
   </div>
 </iron-collapse>
-<settings-toggle-button id="crosPdfOcrToggle"
-    class="hr" hidden$="[[!showPdfOcrToggle_]]"
-    pref="{{prefs.settings.a11y.pdf_ocr_always_active}}"
-    on-change="onPdfOcrToggleChange_"
-    label="$i18n{pdfOcrTitle}"
-    sub-label="[[getPdfOcrToggleSublabel_(pdfOcrStatus_, pdfOcrProgress_)]]"
-    deep-link-focus-id$="[[Setting.kPdfOcrOnOff]]">
-</settings-toggle-button>
 
 <cr-link-row id="ttsSubpageButton" class="hr"
     label="$i18n{manageTtsSettings}" on-click="onManageTtsSettingsClick_"

@@ -323,7 +323,7 @@ enum Setting {
   kMouseKeysDominantHand = 1543,
   kCaretBlinkInterval = 1544,
   kAccessibilityMagnifierFollowsSts = 1545,
-  kPdfOcrOnOff = 1546,
+  // [Deprecated] kPdfOcrOnOff = 1546,
   kOverscrollEnabled = 1547,
 
   // Reset section.

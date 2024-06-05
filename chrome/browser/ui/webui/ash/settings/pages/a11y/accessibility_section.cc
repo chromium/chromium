@@ -23,7 +23,6 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/speech/extension_api/tts_engine_extension_observer_chromeos.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/a11y/accessibility_handler.h"
-#include "chrome/browser/ui/webui/ash/settings/pages/a11y/pdf_ocr_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/a11y/select_to_speak_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/a11y/switch_access_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/a11y/tts_handler.h"
@@ -325,14 +324,6 @@ const std::vector<SearchConcept>& GetA11ySearchConcepts() {
        {.setting = mojom::Setting::kEnableCursorColor},
        {IDS_OS_SETTINGS_TAG_A11Y_CURSOR_COLOR_ALT1,
         IDS_OS_SETTINGS_TAG_A11Y_CURSOR_COLOR_ALT2, SearchConcept::kAltTagEnd}},
-      {IDS_OS_SETTINGS_TAG_A11Y_PDF_OCR,
-       mojom::kTextToSpeechPagePath,
-       kIsRevampEnabled ? mojom::SearchResultIcon::kTextToSpeech
-                        : mojom::SearchResultIcon::kA11y,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kPdfOcrOnOff},
-       {IDS_OS_SETTINGS_TAG_A11Y_PDF_OCR_ALT1, SearchConcept::kAltTagEnd}},
   });
   return *tags;
 }
@@ -957,12 +948,6 @@ void AccessibilitySection::AddLoadTimeData(
       {"onScreenKeyboardLabel", IDS_SETTINGS_ON_SCREEN_KEYBOARD_LABEL},
       {"optionsInMenuDescription", IDS_SETTINGS_OPTIONS_IN_MENU_DESCRIPTION},
       {"optionsInMenuLabel", IDS_SETTINGS_OPTIONS_IN_MENU_LABEL},
-      {"pdfOcrDownloadCompleteLabel", IDS_SETTINGS_PDF_OCR_DOWNLOAD_COMPLETE},
-      {"pdfOcrDownloadErrorLabel", IDS_SETTINGS_PDF_OCR_DOWNLOAD_ERROR},
-      {"pdfOcrDownloadProgressLabel", IDS_SETTINGS_PDF_OCR_DOWNLOAD_PROGRESS},
-      {"pdfOcrDownloadingLabel", IDS_SETTINGS_PDF_OCR_DOWNLOADING},
-      {"pdfOcrSubtitle", IDS_SETTINGS_PDF_OCR_SUBTITLE},
-      {"pdfOcrTitle", IDS_SETTINGS_PDF_OCR_TITLE},
       {"percentage", IDS_SETTINGS_PERCENTAGE},
       {"screenMagnifierDescriptionOff",
        IDS_SETTINGS_SCREEN_MAGNIFIER_DESCRIPTION_OFF},
@@ -1259,9 +1244,6 @@ void AccessibilitySection::AddLoadTimeData(
   html_source->AddString("tabletModeShelfNavigationButtonsLearnMoreUrl",
                          chrome::kTabletModeGesturesLearnMoreURL);
 
-  html_source->AddBoolean("pdfOcrEnabled",
-                          base::FeatureList::IsEnabled(::features::kPdfOcr));
-
   html_source->AddBoolean("isAccessibilityReducedAnimationsEnabled",
                           IsAccessibilityReducedAnimationsEnabled());
 
@@ -1296,9 +1278,6 @@ void AccessibilitySection::AddHandlers(content::WebUI* web_ui) {
       std::make_unique<::settings::FontHandler>(profile()));
   web_ui->AddMessageHandler(
       std::make_unique<::settings::CaptionsHandler>(profile()->GetPrefs()));
-  if (base::FeatureList::IsEnabled(::features::kPdfOcr)) {
-    web_ui->AddMessageHandler(std::make_unique<::settings::PdfOcrHandler>());
-  }
 }
 
 int AccessibilitySection::GetSectionNameMessageId() const {
@@ -1445,11 +1424,6 @@ bool AccessibilitySection::LogMetric(mojom::Setting setting,
           "ChromeOS.Settings.Accessibility.ReducedAnimations.Enabled",
           value.GetBool());
       return true;
-    case mojom::Setting::kPdfOcrOnOff:
-      base::UmaHistogramBoolean(
-          "ChromeOS.Settings.Accessibility.PdfOcr.Enabled",
-          value.GetBool());
-      return true;
     case mojom::Setting::kOverscrollEnabled:
       base::UmaHistogramBoolean(
           "ChromeOS.Settings.OverscrollHistoryNavigation.Enabled",
@@ -1555,7 +1529,6 @@ void AccessibilitySection::RegisterHierarchy(
       mojom::Setting::kColorCorrectionFilterAmount,
       mojom::Setting::kCaretBlinkInterval,
       mojom::Setting::kReducedAnimationsEnabled,
-      mojom::Setting::kPdfOcrOnOff,
       mojom::Setting::kOverscrollEnabled,
   };
   RegisterNestedSettingBulk(mojom::Subpage::kManageAccessibility,

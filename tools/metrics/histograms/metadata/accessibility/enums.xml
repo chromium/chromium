@@ -1311,18 +1311,6 @@ Unknown properties are collapsed to zero. -->
   <int value="1" label="OCR performed"/>
 </enum>
 
-<enum name="PdfOcrUserSelection">
-  <int value="0"
-      label="(Obsolete) Turned on once from the context menu. Removed in
-             2023/09."/>
-  <int value="1" label="Turned on always from the context menu"/>
-  <int value="2" label="Turned off from the context menu"/>
-  <int value="3" label="Turned on always from the more actions"/>
-  <int value="4" label="Turned off from the more actions"/>
-  <int value="5" label="Turned on always from the settings"/>
-  <int value="6" label="Turned off from the settings"/>
-</enum>
-
 <enum name="ReadAnythingColor">
   <int value="0" label="Default"/>
   <int value="1" label="Light"/>
