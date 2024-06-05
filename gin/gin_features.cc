@@ -316,8 +316,8 @@ BASE_FEATURE(kWebAssemblyTurboshaftInstructionSelection,
              "WebAssemblyTurboshaftInstructionSelection",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Feature for more aggressive code caching (https://crbug.com/v8/14411) and
-// three parameters to control caching behavior.
+// Feature for more aggressive code caching (https://crbug.com/v8/14411,
+// https://crbug.com/40945417) and three parameters to control caching behavior.
 BASE_FEATURE(kWebAssemblyMoreAggressiveCodeCaching,
              "WebAssemblyMoreAggressiveCodeCaching",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -326,10 +326,10 @@ const base::FeatureParam<int> kWebAssemblyMoreAggressiveCodeCachingThreshold{
     1'000};
 const base::FeatureParam<int> kWebAssemblyMoreAggressiveCodeCachingTimeoutMs{
     &kWebAssemblyMoreAggressiveCodeCaching, "WebAssemblyCodeCachingTimeoutMs",
-    5000};
+    2000};
 const base::FeatureParam<int>
     kWebAssemblyMoreAggressiveCodeCachingHardThreshold{
         &kWebAssemblyMoreAggressiveCodeCaching,
-        "WebAssemblyCodeCachingHardThreshold", 100'000};
+        "WebAssemblyCodeCachingHardThreshold", 1'000'000};
 
 }  // namespace features

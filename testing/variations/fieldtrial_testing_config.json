@@ -23018,55 +23018,54 @@
             ],
             "experiments": [
                 {
-                    "name": "3_CacheAfter5Sec",
-                    "params": {
-                        "WebAssemblyCodeCachingHardThreshold": "100000",
-                        "WebAssemblyCodeCachingThreshold": "1000",
-                        "WebAssemblyCodeCachingTimeoutMs": "5000"
-                    },
-                    "enable_features": [
-                        "WebAssemblyMoreAggressiveCodeCaching"
-                    ]
-                },
-                {
                     "name": "1_ReducedThreshold",
                     "params": {
-                        "WebAssemblyCodeCachingHardThreshold": "100000",
-                        "WebAssemblyCodeCachingThreshold": "100000",
-                        "WebAssemblyCodeCachingTimeoutMs": "0"
+                        "WebAssemblyCodeCachingThreshold": "200"
                     },
                     "enable_features": [
                         "WebAssemblyMoreAggressiveCodeCaching"
                     ]
                 },
                 {
-                    "name": "2_CacheAfter30Sec",
+                    "name": "2_IncreasedThreshold",
                     "params": {
-                        "WebAssemblyCodeCachingHardThreshold": "1000000",
-                        "WebAssemblyCodeCachingThreshold": "1000",
-                        "WebAssemblyCodeCachingTimeoutMs": "30000"
+                        "WebAssemblyCodeCachingThreshold": "10000"
                     },
                     "enable_features": [
                         "WebAssemblyMoreAggressiveCodeCaching"
                     ]
                 },
                 {
-                    "name": "4_CacheAfter2Sec",
+                    "name": "3_ReducedHardThreshold",
                     "params": {
-                        "WebAssemblyCodeCachingHardThreshold": "1000000",
-                        "WebAssemblyCodeCachingThreshold": "1",
-                        "WebAssemblyCodeCachingTimeoutMs": "2000"
+                        "WebAssemblyCodeCachingHardThreshold": "200000"
                     },
                     "enable_features": [
                         "WebAssemblyMoreAggressiveCodeCaching"
                     ]
                 },
                 {
-                    "name": "5_CacheAfter1Sec",
+                    "name": "4_IncreasedHardThreshold",
                     "params": {
-                        "WebAssemblyCodeCachingHardThreshold": "10000",
-                        "WebAssemblyCodeCachingThreshold": "1",
-                        "WebAssemblyCodeCachingTimeoutMs": "1000"
+                        "WebAssemblyCodeCachingHardThreshold": "10000000"
+                    },
+                    "enable_features": [
+                        "WebAssemblyMoreAggressiveCodeCaching"
+                    ]
+                },
+                {
+                    "name": "5_ReducedTimeout",
+                    "params": {
+                        "WebAssemblyCodeCachingTimeoutMs": "500"
+                    },
+                    "enable_features": [
+                        "WebAssemblyMoreAggressiveCodeCaching"
+                    ]
+                },
+                {
+                    "name": "6_IncreasedTimeout",
+                    "params": {
+                        "WebAssemblyCodeCachingTimeoutMs": "10000"
                     },
                     "enable_features": [
                         "WebAssemblyMoreAggressiveCodeCaching"
