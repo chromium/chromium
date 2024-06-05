@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "base/base64.h"
 #include "base/json/json_writer.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
@@ -57,9 +58,9 @@ std::string FacilitatedPaymentsInitiatePaymentRequest::GetRequestContent() {
   risk_data.Set("value", request_details_->risk_data_);
   request_dict.Set("risk_data_encoded", std::move(risk_data));
 
-  request_dict.Set("client_token", base::Value(std::string(
-                                       request_details_->client_token_.begin(),
-                                       request_details_->client_token_.end())));
+  request_dict.Set(
+      "client_token",
+      base::Value(base::Base64Encode(request_details_->client_token_)));
 
   base::Value::Dict context;
   context.Set("language_code", app_locale_);

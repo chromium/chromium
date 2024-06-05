@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/base64.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/values.h"
@@ -22,6 +23,8 @@ TEST_F(FacilitatedPaymentsInitiatePaymentRequestTest,
   auto request_details_full =
       std::make_unique<FacilitatedPaymentsInitiatePaymentRequestDetails>();
   request_details_full->risk_data_ = "seems pretty risky";
+  // The client token will be base64 encoded as "dG9rZW4=" in the request
+  // content.
   request_details_full->client_token_ =
       std::vector<uint8_t>{'t', 'o', 'k', 'e', 'n'};
   request_details_full->billing_customer_number_ = 11;
@@ -41,7 +44,8 @@ TEST_F(FacilitatedPaymentsInitiatePaymentRequestTest,
   EXPECT_EQ(
       request->GetRequestContent(),
       "{\"chrome_user_context\":{\"full_sync_enabled\":true},\"client_token\":"
-      "\"token\",\"context\":{\"billable_service\":70154,\"customer_context\":{"
+      "\"dG9rZW4=\",\"context\":{\"billable_service\":70154,\"customer_"
+      "context\":{"
       "\"external_customer_id\":\"11\"},\"language_code\":\"US\"},\"merchant_"
       "info\":{\"merchant_checkout_page_url\":\"https://foo.com/"
       "bar\"},\"payment_details\":{\"payment_rail\":\"PIX\",\"qr_code\":\"a "
@@ -58,6 +62,8 @@ TEST_F(FacilitatedPaymentsInitiatePaymentRequestTest,
   // `billing_customer_number_` and `merchant_payment_page_url_` optional fields
   // are not set.
   request_details_without_optional_data->risk_data_ = "seems pretty risky";
+  // The client token will be base64 encoded as "dG9rZW4=" in the request
+  // content.
   request_details_without_optional_data->client_token_ =
       std::vector<uint8_t>{'t', 'o', 'k', 'e', 'n'};
   request_details_without_optional_data->instrument_id_ = 13;
@@ -78,7 +84,7 @@ TEST_F(FacilitatedPaymentsInitiatePaymentRequestTest,
   // be absent.
   EXPECT_EQ(request->GetRequestContent(),
             "{\"chrome_user_context\":{\"full_sync_enabled\":true},\"client_"
-            "token\":\"token\",\"context\":{\"billable_service\":70154,"
+            "token\":\"dG9rZW4=\",\"context\":{\"billable_service\":70154,"
             "\"language_code\":\"US\"},\"payment_details\":{\"payment_rail\":"
             "\"PIX\",\"qr_code\":\"a valid "
             "code\"},\"risk_data_encoded\":{\"encoding_type\":\"BASE_64\","
