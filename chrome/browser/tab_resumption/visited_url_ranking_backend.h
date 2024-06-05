@@ -35,10 +35,16 @@ class VisitedUrlRankingBackend {
   // Computes ranked suggestions using synced data available on-device. Writes
   // result to |suggestion| and calls |callback| on completion.
   void GetRankedSuggestions(JNIEnv* env,
-                            jlong before_time_ms,
+                            jlong current_time_ms,
                             jboolean fetch_local_tabs,
                             const jni_zero::JavaParamRef<jobject>& suggestions,
                             const jni_zero::JavaParamRef<jobject>& callback);
+
+  // Sends feedback on a suggestion from GetRankedSuggestions() to train model.
+  void RecordAction(JNIEnv* env,
+                    jint scored_url_user_action,
+                    jstring visit_id,
+                    jlong visit_request_id);
 
  private:
   // Called when sync completes, to trigger refresh in Java.

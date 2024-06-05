@@ -55,6 +55,7 @@ android_library("java") {
     "//components/image_fetcher:java",
     "//components/page_image_service/mojom:mojo_bindings_java",
     "//components/sync/android:sync_java",
+    "//components/visited_url_ranking/android:visited_url_ranking_java",
     "//content/public/android:content_full_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",

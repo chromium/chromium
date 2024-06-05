@@ -232,6 +232,21 @@ public class TabResumptionModuleSuggestionsUnitTest extends TestSupport {
 
     @Test
     @SmallTest
+    public void testCompareSuggestionsWithTraingIds() {
+        SuggestionEntry entry =
+                new SuggestionEntry(SOURCE_NAME_0, URL_0, TITLE_0, TIMESTAMP_0, ID_0);
+        SuggestionEntry entryWithTrainingIds =
+                new SuggestionEntry(SOURCE_NAME_0, URL_0, TITLE_0, TIMESTAMP_0, ID_0);
+        entryWithTrainingIds.trainingIds =
+                new SuggestionEntry.TrainingIds(
+                        /* visitId= */ "www.google.com", /* requestId= */ 123L);
+
+        // The presence of `trainingIds` does not affect comparison.
+        Assert.assertEquals(0, entry.compareTo(entryWithTrainingIds));
+    }
+
+    @Test
+    @SmallTest
     public void testUrlImageProvider() {
         GURL urlWithFavicon = URL_0;
         GURL urlWithoutFavicon = URL_LO;

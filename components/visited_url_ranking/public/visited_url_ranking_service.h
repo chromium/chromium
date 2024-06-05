@@ -26,6 +26,7 @@ const char kURLVisitDismissedEventName[] =
     "VisitedURLRanking.URLVisit.Dismissed";
 
 // An action performed by the user on a `URLVisit` through a UI surface.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.visited_url_ranking
 enum ScoredURLUserAction {
   kSeen = 0,
   kActivated = 1,

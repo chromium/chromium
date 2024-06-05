@@ -39,6 +39,7 @@ using visited_url_ranking::Config;
 using visited_url_ranking::Fetcher;
 using visited_url_ranking::FetchOptions;
 using visited_url_ranking::ResultStatus;
+using visited_url_ranking::ScoredURLUserAction;
 using visited_url_ranking::URLVisitAggregate;
 using visited_url_ranking::URLVisitAggregatesTransformType;
 using visited_url_ranking::VisitedURLRankingService;
@@ -138,7 +139,7 @@ class FetchAndRankFlow : public base::RefCounted<FetchAndRankFlow> {
 
   // Translates results to Java objects and passes results to |j_callback_|.
   void PassResults(std::vector<URLVisitAggregate> aggregates) {
-    for (const auto& aggregate : aggregates) {
+    for (const URLVisitAggregate& aggregate : aggregates) {
       // TODO(crbug.com/337858147): Choose representative member. For now, just
       // take the first one.
       if (aggregate.fetcher_data_map.empty()) {
@@ -161,6 +162,10 @@ class FetchAndRankFlow : public base::RefCounted<FetchAndRankFlow> {
                 env_, tab_data->last_active_tab.visit.title),
             tab_data->last_active.InMillisecondsSinceUnixEpoch(),
             is_local_tab ? tab_data->last_active_tab.id : kInvalidTabId,
+            base::android::ConvertUTF8ToJavaString(env_, aggregate.url_key),
+            aggregate.request_id.is_null()
+                ? -1LL
+                : aggregate.request_id.GetUnsafeValue(),
             j_suggestions_);
       }
 
@@ -241,6 +246,23 @@ void VisitedUrlRankingBackend::GetRankedSuggestions(
       profile_, env, current_time, fetch_local_tabs, j_suggestions, j_callback);
 
   flow->RunFlow();
+}
+
+void VisitedUrlRankingBackend::RecordAction(JNIEnv* env,
+                                            jint scored_url_user_action,
+                                            jstring visit_id,
+                                            jlong visit_request_id) {
+  visited_url_ranking::VisitedURLRankingService* ranking_service =
+      visited_url_ranking::VisitedURLRankingServiceFactory::GetInstance()
+          ->GetForProfile(profile_);
+  if (!ranking_service) {
+    return;
+  }
+  ranking_service->RecordAction(
+      static_cast<ScoredURLUserAction>(scored_url_user_action),
+      base::android::ConvertJavaStringToUTF8(env, visit_id),
+      segmentation_platform::TrainingRequestId::FromUnsafeValue(
+          visit_request_id));
 }
 
 void VisitedUrlRankingBackend::OnRefresh() {
