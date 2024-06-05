@@ -6,6 +6,12 @@
 
 #include <cstring>
 
+#include "base/feature_list.h"
+#include "build/build_config.h"
+#include "media/base/video_codecs.h"
+#include "media/media_buildflags.h"
+#include "third_party/blink/public/common/buildflags.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/network/parsed_content_type.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/webrtc/api/video_codecs/sdp_video_format.h"
@@ -42,4 +48,36 @@ base::TimeTicks PLATFORM_EXPORT ConvertToBaseTimeTicks(webrtc::Timestamp time) {
   }
 }
 
+std::optional<media::VideoCodecProfile> WebRTCFormatToCodecProfile(
+    const webrtc::SdpVideoFormat& sdp) {
+  if (sdp.name == "H264") {
+#if !BUILDFLAG(IS_ANDROID)
+    // Enable H264 HW encode for WebRTC when SW fallback is available, which is
+    // checked by kWebRtcH264WithOpenH264FFmpeg flag. This check should be
+    // removed when SW implementation is fully enabled.
+    bool webrtc_h264_sw_enabled = false;
+#if BUILDFLAG(RTC_USE_H264) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+    webrtc_h264_sw_enabled = base::FeatureList::IsEnabled(
+        blink::features::kWebRtcH264WithOpenH264FFmpeg);
+#endif  // BUILDFLAG(RTC_USE_H264) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+    if (!webrtc_h264_sw_enabled) {
+      return std::nullopt;
+    }
+#endif
+
+    return media::VideoCodecProfile::H264PROFILE_MIN;
+  } else if (sdp.name == "VP8") {
+    return media::VideoCodecProfile::VP8PROFILE_MIN;
+  } else if (sdp.name == "VP9") {
+    return media::VideoCodecProfile::VP9PROFILE_MIN;
+  } else if (sdp.name == "AV1") {
+    return media::VideoCodecProfile::AV1PROFILE_MIN;
+  }
+#if BUILDFLAG(RTC_USE_H265)
+  else if (sdp.name == "H265") {
+    return media::VideoCodecProfile::HEVCPROFILE_MIN;
+  }
+#endif  // BUILDFLAG(RTC_USE_H265)
+  return std::nullopt;
+}
 }  // namespace blink
