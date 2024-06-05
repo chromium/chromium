@@ -18,6 +18,7 @@
 #import "ios/web/public/test/element_selector.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/base/l10n/l10n_util.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
 
 using base::test::ios::kWaitForActionTimeout;
@@ -92,6 +93,18 @@ id<GREYMatcher> AddressManualFillViewTab() {
       nil);
 }
 
+// Matcher for the chip button with the given `title`.
+id<GREYMatcher> ChipButton(std::u16string title) {
+  NSString* accessibility_label =
+      [AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]
+          ? l10n_util::GetNSStringF(
+                IDS_IOS_MANUAL_FALLBACK_CHIP_ACCESSIBILITY_LABEL, title)
+          : base::SysUTF16ToNSString(title);
+  return grey_allOf(
+      chrome_test_util::ButtonWithAccessibilityLabel(accessibility_label),
+      grey_interactable(), nullptr);
+}
+
 // Matcher for the overflow menu button shown in the address cells.
 id<GREYMatcher> OverflowMenuButton() {
   return grey_allOf(
@@ -112,6 +125,43 @@ id<GREYMatcher> AutofillFormButton() {
   return grey_allOf(chrome_test_util::ButtonWithAccessibilityLabelId(
                         IDS_IOS_MANUAL_FALLBACK_AUTOFILL_FORM_BUTTON_TITLE),
                     grey_interactable(), nullptr);
+}
+
+// Checks that the chip button with `title` is sufficiently visible.
+void CheckChipButtonVisibility(std::u16string title) {
+  [[EarlGrey selectElementWithMatcher:ChipButton(title)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Checks that the chip buttons of the example profile are all visible.
+void CheckChipButtonsOfExampleProfile() {
+  autofill::AutofillProfile profile = autofill::test::GetFullProfile();
+  std::string locale = l10n_util::GetLocaleOverride();
+
+  CheckChipButtonVisibility(profile.GetInfo(autofill::NAME_FIRST, locale));
+  CheckChipButtonVisibility(profile.GetInfo(autofill::NAME_MIDDLE, locale));
+  CheckChipButtonVisibility(profile.GetInfo(autofill::NAME_LAST, locale));
+  CheckChipButtonVisibility(profile.GetInfo(autofill::COMPANY_NAME, locale));
+  CheckChipButtonVisibility(
+      profile.GetInfo(autofill::ADDRESS_HOME_LINE1, locale));
+  CheckChipButtonVisibility(
+      profile.GetInfo(autofill::ADDRESS_HOME_LINE2, locale));
+
+  // Scroll down to show the remaining chips.
+  [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesTableViewMatcher()]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+
+  CheckChipButtonVisibility(
+      profile.GetInfo(autofill::ADDRESS_HOME_CITY, locale));
+  CheckChipButtonVisibility(
+      profile.GetInfo(autofill::ADDRESS_HOME_STATE, locale));
+  CheckChipButtonVisibility(
+      profile.GetInfo(autofill::ADDRESS_HOME_ZIP, locale));
+  CheckChipButtonVisibility(
+      profile.GetInfo(autofill::ADDRESS_HOME_COUNTRY, locale));
+  CheckChipButtonVisibility(profile.GetInfo(autofill::EMAIL_ADDRESS, locale));
+  CheckChipButtonVisibility(
+      profile.GetInfo(autofill::ADDRESS_HOME_ZIP, locale));
 }
 
 // Opens the address manual fill view when there are no saved addresses and
@@ -188,6 +238,20 @@ void OpenAddressManualFillViewWithNoSavedAddresses() {
   // Open the address manual fill view and verify that the address table view
   // controller is visible.
   OpenAddressManualFillView();
+}
+
+// Tests that the saved address chip buttons are all visible in the address
+// table view controller, and that they have the right accessibility label.
+- (void)testAddressChipButtonsAreAllVisible {
+  // Bring up the keyboard.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:TapWebElementWithId(kFormElementName)];
+
+  // Open the address manual fill view and verify that the address table view
+  // controller is visible.
+  OpenAddressManualFillView();
+
+  CheckChipButtonsOfExampleProfile();
 }
 
 // Tests that the "Manage Addresses..." action works.
