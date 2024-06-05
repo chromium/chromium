@@ -192,12 +192,7 @@ GLDisplay* GetDisplay(GpuPreference gpu_preference) {
 
 GL_EXPORT GLDisplay* GetDisplay(GpuPreference gpu_preference,
                                 gl::DisplayKey display_key) {
-#if defined(USE_GLX)
-  if (!GLDisplayManagerX11::GetInstance()->IsEmpty()) {
-    return GLDisplayManagerX11::GetInstance()->GetDisplay(gpu_preference,
-                                                          display_key);
-  }
-#endif
+  // TODO(344606399): Consider making callers directly create the EGL display.
 #if defined(USE_EGL)
   return GLDisplayManagerEGL::GetInstance()->GetDisplay(gpu_preference,
                                                         display_key);

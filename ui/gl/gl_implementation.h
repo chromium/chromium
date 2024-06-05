@@ -208,11 +208,10 @@ GL_EXPORT void SetGLGetProcAddressProc(GLGetProcAddressProc proc);
 
 // Find an entry point in the current GL implementation. Note that the function
 // may return a non-null pointer to something else than the GL function if an
-// unsupported function is queried. Spec-compliant eglGetProcAddress and
-// glxGetProcAddress are allowed to return garbage for unsupported functions,
-// and when querying functions from the EGL library supplied by Android, it may
-// return a function that prints a log message about the function being
-// unsupported.
+// unsupported function is queried. Spec-compliant eglGetProcAddress is allowed
+// to return garbage for unsupported functions, and when querying functions
+// from the EGL library supplied by Android, it may return a function that
+// prints a log message about the function being unsupported.
 STDCALL GL_EXPORT GLFunctionPointerType GetGLProcAddress(const char* name);
 
 // Helper for fetching the OpenGL extensions from the current context.

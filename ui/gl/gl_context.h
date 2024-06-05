@@ -156,10 +156,12 @@ class GL_EXPORT GLContext : public base::RefCounted<GLContext>,
 
   // Initializes the GL context to be compatible with the given surface. The GL
   // context can be made with other surface's of the same type. The compatible
-  // surface is only needed for certain platforms like WGL and GLX. It
-  // should be specific for all platforms though. If the compatible surface is
-  // an offscreen one, it is stored by the context and can be accessed via
+  // surface is only needed for certain platforms like WGL. It should be
+  // specific for all platforms though. If the compatible surface is an
+  // offscreen one, it is stored by the context and can be accessed via
   // |default_surface|.
+  // TODO(344606399): Consider removing the compatible_surface if it is not
+  // needed for EGL.
   bool Initialize(GLSurface* compatible_surface,
                   const GLContextAttribs& attribs);
 

@@ -26,9 +26,6 @@ class GLApi;
 #if defined(USE_EGL)
 class GLDisplayEGL;
 #endif  // USE_EGL
-#if defined(USE_GLX)
-class GLDisplayX11;
-#endif  // USE_GLX
 class GLDisplay;
 
 GL_EXPORT void Crash();

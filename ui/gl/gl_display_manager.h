@@ -21,6 +21,8 @@
 
 namespace gl {
 
+// TODO(344606399): Consider removing the templating since only the EGL display
+// is used.
 template <typename GLDisplayPlatform>
 class GLDisplayManager {
  public:
@@ -160,13 +162,6 @@ using GLDisplayManagerEGL = GLDisplayManager<GLDisplayEGL>;
 
 extern template class EXPORT_TEMPLATE_DECLARE(GL_EXPORT)
     GLDisplayManager<GLDisplayEGL>;
-#endif
-
-#if defined(USE_GLX)
-using GLDisplayManagerX11 = GLDisplayManager<GLDisplayX11>;
-
-extern template class EXPORT_TEMPLATE_DECLARE(GL_EXPORT)
-    GLDisplayManager<GLDisplayX11>;
 #endif
 
 }  // namespace gl
