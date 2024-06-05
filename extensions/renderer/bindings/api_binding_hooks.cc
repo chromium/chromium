@@ -4,6 +4,8 @@
 
 #include "extensions/renderer/bindings/api_binding_hooks.h"
 
+#include "base/debug/dump_without_crashing.h"
+#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/supports_user_data.h"
@@ -233,8 +235,8 @@ void CompleteHandleRequestHelper(
     // TODO(tjudkins): Audit existing handle request custom hooks to see if this
     // could happen in any of them. crbug.com/1298409 seemed to indicate this
     // was happening, hence why we fail gracefully here to avoid a crash.
-    NOTREACHED_IN_MIGRATION()
-        << "No callback found for the specified request ID.";
+    LOG(ERROR) << "No callback found for the specified request ID.";
+    base::debug::DumpWithoutCrashing();
     return;
   }
   auto callback = std::move(iter->second);
