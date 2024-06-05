@@ -2874,6 +2874,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Conversions.AggregatableDebugReport.ProcessResult"
+    enum="ConversionAggregatableDebugReportProcessResult"
+    expires_after="2024-11-29">
+  <owner>linnan@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures how often aggregatable debug reports are processed successfully or
+    null-ed and why. Recorded once for each aggregatable debug report created
+    and processed by the attribution resolver layer.
+  </summary>
+</histogram>
+
 <histogram
     name="Conversions.AggregatableDebugReporting.SourceRegistrationError"
     enum="ConversionAggregatableDebugReportingRegistrationError"

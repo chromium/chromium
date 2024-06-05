@@ -309,4 +309,10 @@ net::SchemefulSite AggregatableDebugReport::ReportingSite() const {
   return net::SchemefulSite(reporting_origin_);
 }
 
+void AggregatableDebugReport::ToNull() {
+  // Null contributions will be padded in
+  // `ConstructUnencryptedTeeBasedPayload()`.
+  contributions_.clear();
+}
+
 }  // namespace content

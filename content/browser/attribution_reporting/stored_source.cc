@@ -13,6 +13,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/time/time.h"
+#include "components/attribution_reporting/aggregatable_utils.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/destination_set.h"
@@ -35,10 +36,6 @@ bool IsExpiryOrReportWindowTimeValid(base::Time expiry_or_report_window_time,
              attribution_reporting::kMaxSourceExpiry;
 }
 
-bool IsRemainingAggregatableBudgetValid(int budget) {
-  return budget >= 0 && budget <= attribution_reporting::kMaxAggregatableValue;
-}
-
 bool AreFieldsValid(int remaining_aggregatable_attribution_budget,
                     int remaining_aggregatable_debug_budget,
                     double randomized_response_rate,
@@ -50,11 +47,11 @@ bool AreFieldsValid(int remaining_aggregatable_attribution_budget,
   static_assert(attribution_reporting::kMaxAggregatableValue <=
                 std::numeric_limits<int>::max() / 2);
 
-  return IsRemainingAggregatableBudgetValid(
+  return attribution_reporting::IsRemainingAggregatableBudgetInRange(
              remaining_aggregatable_attribution_budget) &&
-         IsRemainingAggregatableBudgetValid(
+         attribution_reporting::IsRemainingAggregatableBudgetInRange(
              remaining_aggregatable_debug_budget) &&
-         IsRemainingAggregatableBudgetValid(
+         attribution_reporting::IsRemainingAggregatableBudgetInRange(
              remaining_aggregatable_attribution_budget +
              remaining_aggregatable_debug_budget) &&
          randomized_response_rate >= 0 && randomized_response_rate <= 1 &&

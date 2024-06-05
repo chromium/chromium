@@ -45,6 +45,7 @@
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/test_utils.h"
 #include "components/attribution_reporting/trigger_config.h"
+#include "content/browser/attribution_reporting/aggregatable_debug_report.h"
 #include "content/browser/attribution_reporting/attribution_features.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_reporting.pb.h"
@@ -2876,6 +2877,67 @@ TEST_F(AttributionStorageSqlTest, SourceDebugKeyAndDebugCookieSetCombination) {
                          base::NullCallback());
     CloseDatabase();
   }
+}
+
+TEST_F(AttributionStorageSqlTest, ClearData_AggregatableDebugDataDeleted) {
+  OpenDatabase();
+
+  const auto create_report = []() {
+    return AggregatableDebugReport::CreateForTesting(
+        {blink::mojom::AggregatableReportHistogramContribution(
+            /*bucket=*/1, /*value=*/65536,
+            /*filtering_id=*/std::nullopt)},
+        /*context_site=*/net::SchemefulSite::Deserialize("https://c.test"),
+        /*reporting_origin=*/
+        *attribution_reporting::SuitableOrigin::Deserialize("https://r.test"),
+        /*effective_destination=*/
+        net::SchemefulSite::Deserialize("https://d.test"),
+        /*aggregation_coordinator_origin=*/std::nullopt,
+        /*scheduled_report_time=*/base::Time::Now());
+  };
+
+  EXPECT_THAT(storage()->ProcessAggregatableDebugReport(
+                  create_report(), /*remaining_budget=*/std::nullopt,
+                  /*source_id=*/std::nullopt),
+              Property(&AggregatableDebugReport::contributions, SizeIs(1)));
+  // Hits rate limits, null report.
+  EXPECT_THAT(storage()->ProcessAggregatableDebugReport(
+                  create_report(), /*remaining_budget=*/std::nullopt,
+                  /*source_id=*/std::nullopt),
+              Property(&AggregatableDebugReport::contributions, IsEmpty()));
+
+  // This should delete the rate-limit record.
+  storage()->ClearData(/*delete_begin=*/base::Time::Min(),
+                       /*delete_end=*/base::Time::Max(), base::NullCallback());
+  EXPECT_THAT(storage()->ProcessAggregatableDebugReport(
+                  create_report(), /*remaining_budget=*/std::nullopt,
+                  /*source_id=*/std::nullopt),
+              Property(&AggregatableDebugReport::contributions, SizeIs(1)));
+
+  // This should not delete the rate-limit record.
+  storage()->ClearData(
+      base::Time::Min(), base::Time::Max(),
+      base::BindRepeating(std::equal_to<blink::StorageKey>(),
+                          blink::StorageKey::CreateFirstParty(
+                              url::Origin::Create(GURL("https://r1.test")))));
+  // Still hits rate limits, null report.
+  EXPECT_THAT(storage()->ProcessAggregatableDebugReport(
+                  create_report(), /*remaining_budget=*/std::nullopt,
+                  /*source_id=*/std::nullopt),
+              Property(&AggregatableDebugReport::contributions, IsEmpty()));
+
+  // The should delete the rate-limit record.
+  storage()->ClearData(
+      base::Time::Min(), base::Time::Max(),
+      base::BindRepeating(std::equal_to<blink::StorageKey>(),
+                          blink::StorageKey::CreateFirstParty(
+                              url::Origin::Create(GURL("https://r.test")))));
+  EXPECT_THAT(storage()->ProcessAggregatableDebugReport(
+                  create_report(), /*remaining_budget=*/std::nullopt,
+                  /*source_id=*/std::nullopt),
+              Property(&AggregatableDebugReport::contributions, SizeIs(1)));
+
+  CloseDatabase();
 }
 
 }  // namespace

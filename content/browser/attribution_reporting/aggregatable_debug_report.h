@@ -73,6 +73,8 @@ class CONTENT_EXPORT AggregatableDebugReport {
 
   net::SchemefulSite ReportingSite() const;
 
+  void ToNull();
+
  private:
   FRIEND_TEST_ALL_PREFIXES(AggregatableDebugReportTest, SourceDebugReport_Data);
   FRIEND_TEST_ALL_PREFIXES(AggregatableDebugReportTest,

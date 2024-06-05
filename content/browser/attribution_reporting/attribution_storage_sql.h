@@ -18,6 +18,7 @@
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "content/browser/attribution_reporting/aggregatable_debug_rate_limit_table.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_resolver.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
@@ -35,6 +36,7 @@ class StatementID;
 
 namespace content {
 
+class AggregatableDebugReport;
 class AttributionResolverDelegate;
 class StorableSource;
 class StoreSourceResult;
@@ -48,11 +50,11 @@ enum class RateLimitResult : int;
 class CONTENT_EXPORT AttributionStorageSql {
  public:
   // Version number of the database.
-  static constexpr int kCurrentVersionNumber = 61;
+  static constexpr int kCurrentVersionNumber = 62;
 
   // Earliest version which can use a `kCurrentVersionNumber` database
   // without failing.
-  static constexpr int kCompatibleVersionNumber = 61;
+  static constexpr int kCompatibleVersionNumber = 62;
 
   // Latest version of the database that cannot be upgraded to
   // `kCurrentVersionNumber` without razing the database.
@@ -121,6 +123,11 @@ class CONTENT_EXPORT AttributionStorageSql {
     int reports = 0;
   };
 
+  struct AggregatableDebugSourceData {
+    int remaining_budget;
+    int num_reports;
+  };
+
   // Deletes corrupt sources/reports if `deletion_counts` is not `nullptr`.
   void VerifyReports(DeletionCounts* deletion_counts);
 
@@ -142,6 +149,13 @@ class CONTENT_EXPORT AttributionStorageSql {
                            base::Time delete_end,
                            StoragePartition::StorageKeyMatcherFunction filter,
                            bool delete_rate_limit_data);
+  [[nodiscard]] std::optional<AggregatableDebugSourceData>
+      GetAggregatableDebugSourceData(StoredSource::Id);
+  [[nodiscard]] AggregatableDebugRateLimitTable::Result
+  AggregatableDebugReportAllowedForRateLimit(const AggregatableDebugReport&);
+  [[nodiscard]] bool AdjustForAggregatableDebugReport(
+      const AggregatableDebugReport&,
+      std::optional<StoredSource::Id>);
   void SetDelegate(AttributionResolverDelegate*);
 
  private:
@@ -407,6 +421,10 @@ class CONTENT_EXPORT AttributionStorageSql {
                                        base::Time trigger_time) const
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
+  [[nodiscard]] bool AdjustAggregatableDebugSourceData(
+      StoredSource::Id,
+      int additional_budget_consumed) VALID_CONTEXT_REQUIRED(sequence_checker_);
+
   const base::FilePath path_to_database_;
 
   // Current status of the database initialization. Tracks what stage |this| is
@@ -423,9 +441,13 @@ class CONTENT_EXPORT AttributionStorageSql {
   // Table which stores timestamps of sent reports, and checks if new reports
   // can be created given API rate limits. The underlying table is created in
   // |db_|, but only accessed within |RateLimitTable|.
-  // `rate_limit_table_` references `delegate_` So it must be declared last and
-  // deleted first.
+  // `rate_limit_table_` references `delegate_` So it must be declared after it.
   RateLimitTable rate_limit_table_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // `aggregatable_rate_limit_table_` references `delegate_` So it must be
+  // declared after it.
+  AggregatableDebugRateLimitTable aggregatable_debug_rate_limit_table_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Time at which `DeleteExpiredSources()` was last called. Initialized to
   // the NULL time.

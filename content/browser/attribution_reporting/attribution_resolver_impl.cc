@@ -5,19 +5,46 @@
 #include "content/browser/attribution_reporting/attribution_resolver_impl.h"
 
 #include <memory>
+#include <optional>
+#include <utility>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
+#include "components/attribution_reporting/aggregatable_utils.h"
+#include "content/browser/attribution_reporting/aggregatable_debug_rate_limit_table.h"
+#include "content/browser/attribution_reporting/aggregatable_debug_report.h"
+#include "content/browser/attribution_reporting/attribution_config.h"
 #include "content/browser/attribution_reporting/attribution_resolver_delegate.h"
 #include "content/browser/attribution_reporting/attribution_storage_sql.h"
 #include "content/browser/attribution_reporting/create_report_result.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/store_source_result.h"
+#include "content/browser/attribution_reporting/stored_source.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
+
+namespace {
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class ProcessAggregatableDebugReportResult {
+  kSuccess = 0,
+  kNoDebugData = 1,
+  kInsufficientBudget = 2,
+  kExcessiveReports = 3,
+  kGlobalRateLimitReached = 4,
+  kReportingSiteRateLimitReached = 5,
+  kBothRateLimitsReached = 6,
+  kInternalError = 7,
+  kMaxValue = kInternalError,
+};
+
+}  // namespace
 
 AttributionResolverImpl::AttributionResolverImpl(
     const base::FilePath& user_data_directory,
@@ -118,6 +145,106 @@ void AttributionResolverImpl::ClearData(
   SCOPED_UMA_HISTOGRAM_TIMER("Conversions.Storage.ClearDataWithFilterDuration");
   storage_.ClearDataWithFilter(delete_begin, delete_end, std::move(filter),
                                delete_rate_limit_data);
+}
+
+AggregatableDebugReport AttributionResolverImpl::ProcessAggregatableDebugReport(
+    AggregatableDebugReport report,
+    std::optional<int> remaining_budget,
+    std::optional<StoredSource::Id> source_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  const auto make_result = [&](ProcessAggregatableDebugReportResult result) {
+    switch (result) {
+      case ProcessAggregatableDebugReportResult::kSuccess:
+        break;
+      case ProcessAggregatableDebugReportResult::kNoDebugData:
+      case ProcessAggregatableDebugReportResult::kInsufficientBudget:
+      case ProcessAggregatableDebugReportResult::kExcessiveReports:
+      case ProcessAggregatableDebugReportResult::kGlobalRateLimitReached:
+      case ProcessAggregatableDebugReportResult::kReportingSiteRateLimitReached:
+      case ProcessAggregatableDebugReportResult::kBothRateLimitsReached:
+      case ProcessAggregatableDebugReportResult::kInternalError:
+        report.ToNull();
+        break;
+    }
+
+    base::UmaHistogramEnumeration(
+        "Conversions.AggregatableDebugReport.ProcessResult", result);
+
+    return std::move(report);
+  };
+
+  if (report.contributions().empty()) {
+    return make_result(ProcessAggregatableDebugReportResult::kNoDebugData);
+  }
+
+  int num_reports = 0;
+
+  if (source_id.has_value()) {
+    std::optional<AttributionStorageSql::AggregatableDebugSourceData>
+        source_data = storage_.GetAggregatableDebugSourceData(*source_id);
+    if (!source_data.has_value() ||
+        !attribution_reporting::IsRemainingAggregatableBudgetInRange(
+            source_data->remaining_budget) ||
+        source_data->num_reports < 0) {
+      return make_result(ProcessAggregatableDebugReportResult::kInternalError);
+    }
+
+    if (remaining_budget.has_value()) {
+      // Source aggregatable debug report should be the first aggregatable debug
+      // report created for this source.
+      if (source_data->remaining_budget != remaining_budget ||
+          source_data->num_reports != num_reports) {
+        return make_result(
+            ProcessAggregatableDebugReportResult::kInternalError);
+      }
+    }
+
+    remaining_budget = source_data->remaining_budget;
+    num_reports = source_data->num_reports;
+  }
+
+  // `remaining_budget` is `std::nullopt` for `kTriggerNoMatchingSource` debug
+  // report. In this case, the total budget is required to not exceed the
+  // maximum budget per source.
+  int effective_remaining_budget =
+      remaining_budget.value_or(attribution_reporting::kMaxAggregatableValue);
+  CHECK(attribution_reporting::IsRemainingAggregatableBudgetInRange(
+      effective_remaining_budget));
+  if (report.BudgetRequired() > effective_remaining_budget) {
+    return make_result(
+        ProcessAggregatableDebugReportResult::kInsufficientBudget);
+  }
+
+  int max_reports_per_source =
+      delegate_->GetAggregatableDebugRateLimit().max_reports_per_source;
+  CHECK_GT(max_reports_per_source, 0);
+
+  if (num_reports >= max_reports_per_source) {
+    return make_result(ProcessAggregatableDebugReportResult::kExcessiveReports);
+  }
+
+  switch (storage_.AggregatableDebugReportAllowedForRateLimit(report)) {
+    case AggregatableDebugRateLimitTable::Result::kAllowed:
+      break;
+    case AggregatableDebugRateLimitTable::Result::kHitGlobalLimit:
+      return make_result(
+          ProcessAggregatableDebugReportResult::kGlobalRateLimitReached);
+    case AggregatableDebugRateLimitTable::Result::kHitReportingLimit:
+      return make_result(
+          ProcessAggregatableDebugReportResult::kReportingSiteRateLimitReached);
+    case AggregatableDebugRateLimitTable::Result::kHitBothLimits:
+      return make_result(
+          ProcessAggregatableDebugReportResult::kBothRateLimitsReached);
+    case AggregatableDebugRateLimitTable::Result::kError:
+      return make_result(ProcessAggregatableDebugReportResult::kInternalError);
+  }
+
+  if (!storage_.AdjustForAggregatableDebugReport(report, source_id)) {
+    return make_result(ProcessAggregatableDebugReportResult::kInternalError);
+  }
+
+  return make_result(ProcessAggregatableDebugReportResult::kSuccess);
 }
 
 void AttributionResolverImpl::SetDelegate(

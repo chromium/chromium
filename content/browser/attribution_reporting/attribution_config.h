@@ -142,6 +142,8 @@ struct CONTENT_EXPORT AttributionConfig {
 
     static constexpr base::TimeDelta kRateLimitWindow = base::Days(1);
 
+    int max_reports_per_source = 5;
+
     friend bool operator==(const AggregatableDebugRateLimit&,
                            const AggregatableDebugRateLimit&) = default;
 

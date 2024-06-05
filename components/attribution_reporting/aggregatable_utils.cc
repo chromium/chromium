@@ -103,4 +103,8 @@ bool IsAggregatableValueInRange(int value) {
   return value > 0 && value <= kMaxAggregatableValue;
 }
 
+bool IsRemainingAggregatableBudgetInRange(int budget) {
+  return budget >= 0 && budget <= kMaxAggregatableValue;
+}
+
 }  // namespace attribution_reporting

@@ -68,6 +68,10 @@ class CONTENT_EXPORT AttributionResolverImpl : public AttributionResolver {
                  base::Time delete_end,
                  StoragePartition::StorageKeyMatcherFunction filter,
                  bool delete_rate_limit_data) override;
+  AggregatableDebugReport ProcessAggregatableDebugReport(
+      AggregatableDebugReport,
+      std::optional<int> remaining_budget,
+      std::optional<StoredSource::Id>) override;
   void SetDelegate(std::unique_ptr<AttributionResolverDelegate>) override;
 
   std::unique_ptr<AttributionResolverDelegate> delegate_

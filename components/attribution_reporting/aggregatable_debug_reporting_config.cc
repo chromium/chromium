@@ -23,6 +23,7 @@
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
+#include "components/attribution_reporting/aggregatable_utils.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/debug_types.h"
 #include "components/attribution_reporting/debug_types.mojom.h"
@@ -62,16 +63,10 @@ base::expected<int, Error> ParseValue(const base::Value::Dict& dict,
   return *int_value;
 }
 
-bool IsBudgetInRange(int budget, bool allow_zero) {
-  return budget == 0 ? allow_zero
-                     : IsValueInRange(budget, /*max_value=*/std::nullopt);
-}
-
 base::expected<int, AggregatableDebugReportingConfigError> ParseBudget(
     const base::Value::Dict& dict) {
   std::optional<int> int_value = dict.FindInt(kBudget);
-  if (!int_value.has_value() ||
-      !IsBudgetInRange(*int_value, /*allow_zero=*/false)) {
+  if (!int_value.has_value() || !IsAggregatableValueInRange(*int_value)) {
     return base::unexpected(
         AggregatableDebugReportingConfigError::kBudgetInvalid);
   }
@@ -219,9 +214,7 @@ void SerializeConfig(base::Value::Dict& dict,
 
 bool IsValid(int budget,
              const AggregatableDebugReportingConfig::DebugData& data) {
-  // The value of 0 is allowed when there is no `aggregatable_debug_reporting`
-  // registration and the instance is created by default.
-  if (!IsBudgetInRange(budget, /*allow_zero=*/true)) {
+  if (!IsRemainingAggregatableBudgetInRange(budget)) {
     return false;
   }
 

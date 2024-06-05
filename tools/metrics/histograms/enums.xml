@@ -3271,6 +3271,17 @@ Called by update_net_error_codes.py.-->
   <int value="7" label="aggregation_coordinator_origin invalid"/>
 </enum>
 
+<enum name="ConversionAggregatableDebugReportProcessResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="No debug data"/>
+  <int value="2" label="Insufficient budget"/>
+  <int value="3" label="Excessive reports"/>
+  <int value="4" label="Global rate-limit reached"/>
+  <int value="5" label="Per reporting site rate-limit reached"/>
+  <int value="6" label="Both rate-limits reached"/>
+  <int value="7" label="Internal error"/>
+</enum>
+
 <enum name="ConversionAndroidOperationResult">
   <int value="0" label="Success"/>
   <int value="1" label="Unknown error"/>

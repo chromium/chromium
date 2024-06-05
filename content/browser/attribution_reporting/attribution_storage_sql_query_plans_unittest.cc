@@ -245,5 +245,34 @@ TEST_F(AttributionSqlQueryPlanTest, kDeleteAttributionRateLimitByReportIdSql) {
       ValueIs(UsesIndex("rate_limit_report_id_idx")));
 }
 
+TEST_F(AttributionSqlQueryPlanTest,
+       kAggregatableDebugReportAllowedForRateLimitSql) {
+  EXPECT_THAT(
+      GetPlan(
+          attribution_queries::kAggregatableDebugReportAllowedForRateLimitSql),
+      ValueIs(UsesIndex("aggregatable_debug_rate_limits_context_site_idx")));
+}
+
+TEST_F(AttributionSqlQueryPlanTest,
+       kDeleteExpiredAggregatableDebugRateLimitsSql) {
+  EXPECT_THAT(
+      GetPlan(
+          attribution_queries::kDeleteExpiredAggregatableDebugRateLimitsSql),
+      ValueIs(UsesIndex("aggregatable_debug_rate_limits_time_idx")));
+}
+
+TEST_F(AttributionSqlQueryPlanTest,
+       kSelectAggregatableDebugRateLimitsForDeletionSql) {
+  EXPECT_THAT(GetPlan(attribution_queries::
+                          kSelectAggregatableDebugRateLimitsForDeletionSql),
+              ValueIs(UsesIndex("aggregatable_debug_rate_limits_time_idx")));
+}
+
+TEST_F(AttributionSqlQueryPlanTest, kDeleteAggregatableDebugRateLimitRangeSql) {
+  EXPECT_THAT(
+      GetPlan(attribution_queries::kDeleteAggregatableDebugRateLimitRangeSql),
+      ValueIs(UsesIndex("aggregatable_debug_rate_limits_time_idx")));
+}
+
 }  // namespace
 }  // namespace content

@@ -39,6 +39,9 @@ std::vector<NullAggregatableReport> GetNullAggregatableReports(
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
 bool IsAggregatableValueInRange(int value);
 
+COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
+bool IsRemainingAggregatableBudgetInRange(int budget);
+
 }  // namespace attribution_reporting
 
 #endif  // COMPONENTS_ATTRIBUTION_REPORTING_AGGREGATABLE_UTILS_H_

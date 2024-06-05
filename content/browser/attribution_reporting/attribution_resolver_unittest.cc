@@ -10,7 +10,9 @@
 #include <functional>
 #include <limits>
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -43,6 +45,7 @@
 #include "components/attribution_reporting/trigger_config.h"
 #include "components/attribution_reporting/trigger_data_matching.mojom.h"
 #include "components/attribution_reporting/trigger_registration.h"
+#include "content/browser/attribution_reporting/aggregatable_debug_report.h"
 #include "content/browser/attribution_reporting/attribution_features.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_resolver_impl.h"
@@ -94,6 +97,7 @@ using ::attribution_reporting::TriggerSpec;
 using ::attribution_reporting::TriggerSpecs;
 using ::attribution_reporting::mojom::SourceType;
 using ::attribution_reporting::mojom::TriggerDataMatching;
+using ::blink::mojom::AggregatableReportHistogramContribution;
 
 // Default max number of conversions for a single impression for testing.
 const int kMaxConversions = 3;
@@ -105,6 +109,21 @@ StoragePartition::StorageKeyMatcherFunction GetMatcher(
     const url::Origin& to_delete) {
   return base::BindRepeating(std::equal_to<blink::StorageKey>(),
                              blink::StorageKey::CreateFirstParty(to_delete));
+}
+
+AggregatableDebugReport CreateAggregatableDebugReport(
+    std::vector<AggregatableReportHistogramContribution> contributions,
+    std::string_view reporting_origin = "https://r.test") {
+  return AggregatableDebugReport::CreateForTesting(
+      std::move(contributions),
+      /*context_site=*/
+      net::SchemefulSite::Deserialize("https://c.test"),
+      /*reporting_origin=*/
+      *SuitableOrigin::Deserialize(reporting_origin),
+      /*effective_destination=*/
+      net::SchemefulSite::Deserialize("https://d.test"),
+      /*aggregation_coordinator_origin=*/std::nullopt,
+      /*scheduled_report_time=*/base::Time::Now());
 }
 
 MATCHER_P(CreateReportSourceIs, matcher, "") {
@@ -4316,6 +4335,189 @@ TEST_F(AttributionResolverTest,
           Property(&StoredSource::remaining_aggregatable_debug_budget, 10),
           Property(&StoredSource::aggregatable_debug_key_piece, 123),
           RemainingAggregatableAttributionBudgetIs(65536 - 10))));
+}
+
+TEST_F(AttributionResolverTest,
+       ProcessAggregatableDebugReport_NoBudgetAndNoSourceId) {
+  // Insufficient budget, null report.
+  EXPECT_THAT(storage()->ProcessAggregatableDebugReport(
+                  CreateAggregatableDebugReport(
+                      {AggregatableReportHistogramContribution(
+                           /*bucket=*/1, /*value=*/65536,
+                           /*filtering_id=*/std::nullopt),
+                       AggregatableReportHistogramContribution(
+                           /*bucket=*/2, /*value=*/1,
+                           /*filtering_id=*/std::nullopt)}),
+                  /*remaining_budget=*/std::nullopt,
+                  /*source_id=*/std::nullopt),
+              Property(&AggregatableDebugReport::contributions, IsEmpty()));
+
+  // Adjusts rate limits.
+  EXPECT_THAT(storage()->ProcessAggregatableDebugReport(
+                  CreateAggregatableDebugReport(
+                      {AggregatableReportHistogramContribution(
+                           /*bucket=*/1, /*value=*/65535,
+                           /*filtering_id=*/std::nullopt),
+                       AggregatableReportHistogramContribution(
+                           /*bucket=*/2, /*value=*/1,
+                           /*filtering_id=*/std::nullopt)}),
+                  /*remaining_budget=*/std::nullopt,
+                  /*source_id=*/std::nullopt),
+              Property(&AggregatableDebugReport::contributions, SizeIs(2)));
+
+  // Hits rate limits, null report.
+  EXPECT_THAT(storage()->ProcessAggregatableDebugReport(
+                  CreateAggregatableDebugReport(
+                      {AggregatableReportHistogramContribution(
+                          /*bucket=*/1, /*value=*/1,
+                          /*filtering_id=*/std::nullopt)}),
+                  /*remaining_budget=*/std::nullopt,
+                  /*source_id=*/std::nullopt),
+              Property(&AggregatableDebugReport::contributions, IsEmpty()));
+}
+
+TEST_F(AttributionResolverTest,
+       ProcessAggregatableDebugReport_BudgetAndNoSourceId) {
+  // Insufficient budget, null report.
+  EXPECT_THAT(storage()->ProcessAggregatableDebugReport(
+                  CreateAggregatableDebugReport(
+                      {AggregatableReportHistogramContribution(
+                           /*bucket=*/1, /*value=*/1000,
+                           /*filtering_id=*/std::nullopt),
+                       AggregatableReportHistogramContribution(
+                           /*bucket=*/2, /*value=*/1,
+                           /*filtering_id=*/std::nullopt)}),
+                  /*remaining_budget=*/1000,
+                  /*source_id=*/std::nullopt),
+              Property(&AggregatableDebugReport::contributions, IsEmpty()));
+
+  // Adjusts rate limits.
+  EXPECT_THAT(storage()->ProcessAggregatableDebugReport(
+                  CreateAggregatableDebugReport(
+                      {AggregatableReportHistogramContribution(
+                           /*bucket=*/1, /*value=*/999,
+                           /*filtering_id=*/std::nullopt),
+                       AggregatableReportHistogramContribution(
+                           /*bucket=*/2, /*value=*/1,
+                           /*filtering_id=*/std::nullopt)}),
+                  /*remaining_budget=*/1000,
+                  /*source_id=*/std::nullopt),
+              Property(&AggregatableDebugReport::contributions, SizeIs(2)));
+
+  // Hits rate limits, null report.
+  EXPECT_THAT(storage()->ProcessAggregatableDebugReport(
+                  CreateAggregatableDebugReport(
+                      {AggregatableReportHistogramContribution(
+                          /*bucket=*/1, /*value=*/64537,
+                          /*filtering_id=*/std::nullopt)}),
+                  /*remaining_budget=*/65536,
+                  /*source_id=*/std::nullopt),
+              Property(&AggregatableDebugReport::contributions, IsEmpty()));
+}
+
+TEST_F(AttributionResolverTest, ProcessAggregatableDebugReport_SourceId) {
+  delegate()->set_aggregatable_debug_rate_limit({
+      .max_budget_per_context_site = 65537,
+      .max_budget_per_context_reporting_site = 65536,
+      .max_reports_per_source = 2,
+  });
+
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetAggregatableDebugReportingConfig(
+              *attribution_reporting::SourceAggregatableDebugReportingConfig::
+                  Create(
+                      /*budget=*/1000,
+                      attribution_reporting::AggregatableDebugReportingConfig(
+                          /*key_piece=*/1, /*debug_data=*/{},
+                          /*aggregation_coordinator_origin=*/std::nullopt)))
+          .Build());
+
+  const struct {
+    std::optional<int> remaining_budget;
+    std::optional<StoredSource::Id> source_id;
+    int consumed_budget;
+    const char* reporting_origin = "https://r.test";
+    bool expected_valid;
+    int expected_metric;
+  } kInputs[] = {
+      // Remaining budget not matching stored data.
+      {
+          .remaining_budget = 990,
+          .source_id = StoredSource::Id(1),
+          .consumed_budget = 990,
+          .expected_valid = false,
+          .expected_metric = 7,  // kInternalError
+      },
+      {
+          .remaining_budget = 1000,
+          .source_id = StoredSource::Id(1),
+          .consumed_budget = 990,
+          .expected_valid = true,
+          .expected_metric = 0,  // kSuccess
+      },
+      // Not counted for the limits.
+      {
+          .source_id = StoredSource::Id(1),
+          .consumed_budget = 0,
+          .expected_valid = false,
+          .expected_metric = 1,  // kNoDebugData
+      },
+      {
+          .source_id = StoredSource::Id(1),
+          .consumed_budget = 11,
+          .expected_valid = false,
+          .expected_metric = 2,  // kInsufficientBudget
+      },
+      {
+          .source_id = StoredSource::Id(1),
+          .consumed_budget = 9,
+          .expected_valid = true,
+          .expected_metric = 0,  // kSuccess
+      },
+      {
+          .source_id = StoredSource::Id(1),
+          .consumed_budget = 1,
+          .expected_valid = false,
+          .expected_metric = 3,  // kExcessiveReports
+      },
+      {
+          .consumed_budget = 64539,
+          .expected_valid = false,
+          .expected_metric = 6,  // kBothRateLimitsReached
+      },
+      {
+          .consumed_budget = 64538,
+          .expected_valid = false,
+          .expected_metric = 5,  // kReportingSiteRateLimitReached
+      },
+      {
+          .consumed_budget = 64539,
+          .reporting_origin = "https://r1.test",
+          .expected_valid = false,
+          .expected_metric = 4,  // kGlobalRateLimitReached
+      },
+  };
+
+  for (const auto& input : kInputs) {
+    base::HistogramTester histograms;
+
+    std::vector<AggregatableReportHistogramContribution> contributions;
+    if (input.consumed_budget > 0) {
+      contributions.emplace_back(/*bucket=*/1, /*value=*/input.consumed_budget,
+                                 /*filtering_id=*/std::nullopt);
+    }
+
+    EXPECT_THAT(storage()->ProcessAggregatableDebugReport(
+                    CreateAggregatableDebugReport(std::move(contributions),
+                                                  input.reporting_origin),
+                    input.remaining_budget, input.source_id),
+                Property(&AggregatableDebugReport::contributions,
+                         SizeIs(input.expected_valid)));
+    histograms.ExpectUniqueSample(
+        "Conversions.AggregatableDebugReport.ProcessResult",
+        input.expected_metric, 1);
+  }
 }
 
 }  // namespace content

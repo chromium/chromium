@@ -159,6 +159,10 @@ bool AttributionConfig::AggregatableDebugRateLimit::Validate() const {
     return false;
   }
 
+  if (max_reports_per_source <= 0) {
+    return false;
+  }
+
   return true;
 }
 

@@ -21,6 +21,7 @@ class Time;
 
 namespace content {
 
+class AggregatableDebugReport;
 class AttributionResolverDelegate;
 class AttributionTrigger;
 class CreateReportResult;
@@ -116,6 +117,17 @@ class AttributionResolver {
                          base::Time delete_end,
                          StoragePartition::StorageKeyMatcherFunction filter,
                          bool delete_rate_limit_data = true) = 0;
+
+  // Processes the specified aggregatable debug report. Converts the report to
+  // a null report if it's not allowed by the limits, otherwise adjusts the
+  // limits. `remaining_budget` is set for source debug reports and
+  // `std::nullopt` for trigger debug reports. `source_id` is set when there is
+  // an associated source with the debug report, i.e. when the source is
+  // successfully stored or when there is a matching source with the trigger.
+  virtual AggregatableDebugReport ProcessAggregatableDebugReport(
+      AggregatableDebugReport,
+      std::optional<int> remaining_budget,
+      std::optional<StoredSource::Id> source_id) = 0;
 
   virtual void SetDelegate(std::unique_ptr<AttributionResolverDelegate>) = 0;
 };

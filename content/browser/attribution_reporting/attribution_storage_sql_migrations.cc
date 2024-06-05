@@ -590,6 +590,36 @@ bool To61(sql::Database& db) {
   return true;
 }
 
+bool To62(sql::Database& db) {
+  static constexpr char kAggregatableDebugRateLimitsTableSql[] =
+      "CREATE TABLE aggregatable_debug_rate_limits("
+      "id INTEGER PRIMARY KEY NOT NULL,"
+      "context_site TEXT NOT NULL,"
+      "reporting_origin TEXT NOT NULL,"
+      "reporting_site TEXT NOT NULL,"
+      "time INTEGER NOT NULL,"
+      "consumed_budget INTEGER NOT NULL)";
+  if (!db.Execute(kAggregatableDebugRateLimitsTableSql)) {
+    return false;
+  }
+
+  static constexpr char kAggregatableDebugRateLimitsContextSiteIndex[] =
+      "CREATE INDEX aggregatable_debug_rate_limits_context_site_idx "
+      "ON aggregatable_debug_rate_limits(context_site)";
+  if (!db.Execute(kAggregatableDebugRateLimitsContextSiteIndex)) {
+    return false;
+  }
+
+  static constexpr char kAggregatableDebugRateLimitsTimeIndex[] =
+      "CREATE INDEX aggregatable_debug_rate_limits_time_idx "
+      "ON aggregatable_debug_rate_limits(time)";
+  if (!db.Execute(kAggregatableDebugRateLimitsTimeIndex)) {
+    return false;
+  }
+
+  return true;
+}
+
 }  // namespace
 
 bool UpgradeAttributionStorageSqlSchema(AttributionStorageSql& storage,
@@ -611,14 +641,15 @@ bool UpgradeAttributionStorageSqlSchema(AttributionStorageSql& storage,
             MaybeMigrate(db, meta_table, 57, &To58) &&
             MaybeMigrate(db, meta_table, 58, &To59) &&
             MaybeMigrate(db, meta_table, 59, &To60) &&
-            MaybeMigrate(db, meta_table, 60, &To61);
+            MaybeMigrate(db, meta_table, 60, &To61) &&
+            MaybeMigrate(db, meta_table, 61, &To62);
   if (!ok) {
     return false;
   }
 
   DeleteCorruptedReports(storage);
 
-  static_assert(AttributionStorageSql::kCurrentVersionNumber == 61,
+  static_assert(AttributionStorageSql::kCurrentVersionNumber == 62,
                 "Add migration(s) above.");
 
   if (base::ThreadTicks::IsSupported()) {

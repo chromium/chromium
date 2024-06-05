@@ -57,6 +57,8 @@
 #include "components/attribution_reporting/trigger_data_matching.mojom.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
+#include "content/browser/attribution_reporting/aggregatable_debug_rate_limit_table.h"
+#include "content/browser/attribution_reporting/aggregatable_debug_report.h"
 #include "content/browser/attribution_reporting/attribution_features.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
@@ -479,7 +481,8 @@ AttributionStorageSql::AttributionStorageSql(
                             : DatabasePath(user_data_directory)),
       db_(sql::DatabaseOptions{.page_size = 4096, .cache_size = 32}),
       delegate_(delegate),
-      rate_limit_table_(delegate_) {
+      rate_limit_table_(delegate_),
+      aggregatable_debug_rate_limit_table_(delegate_) {
   DCHECK(delegate_);
 
   db_.set_histogram_tag("Conversions");
@@ -1982,6 +1985,12 @@ void AttributionStorageSql::ClearDataWithFilter(
     return;
   }
 
+  if (delete_rate_limit_data &&
+      !aggregatable_debug_rate_limit_table_.ClearDataForOriginsInRange(
+          &db_, delete_begin, delete_end, filter)) {
+    return;
+  }
+
   if (!transaction.Commit()) {
     return;
   }
@@ -2055,6 +2064,11 @@ void AttributionStorageSql::ClearAllDataAllTime(bool delete_rate_limit_data) {
   }
 
   if (delete_rate_limit_data && !rate_limit_table_.ClearAllDataAllTime(&db_)) {
+    return;
+  }
+
+  if (delete_rate_limit_data &&
+      !aggregatable_debug_rate_limit_table_.ClearAllDataAllTime(&db_)) {
     return;
   }
 
@@ -2708,6 +2722,10 @@ bool AttributionStorageSql::CreateSchema() {
     return false;
   }
 
+  if (!aggregatable_debug_rate_limit_table_.CreateTable(&db_)) {
+    return false;
+  }
+
   if (sql::MetaTable meta_table;
       !meta_table.Init(&db_, kCurrentVersionNumber, kCompatibleVersionNumber)) {
     return false;
@@ -3339,10 +3357,95 @@ AttributionStorageSql::GetAllDataKeys() {
   return keys;
 }
 
+std::optional<AttributionStorageSql::AggregatableDebugSourceData>
+AttributionStorageSql::GetAggregatableDebugSourceData(
+    StoredSource::Id source_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!LazyInit(DbCreationPolicy::kIgnoreIfAbsent)) {
+    return std::nullopt;
+  }
+
+  static constexpr char kSelectSourceDataSql[] =
+      "SELECT remaining_aggregatable_debug_budget,"
+      "num_aggregatable_debug_reports "
+      "FROM sources WHERE source_id=?";
+  sql::Statement statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kSelectSourceDataSql));
+  statement.BindInt64(0, *source_id);
+
+  if (!statement.Step()) {
+    return std::nullopt;
+  }
+
+  return AggregatableDebugSourceData{
+      .remaining_budget = statement.ColumnInt(0),
+      .num_reports = statement.ColumnInt(1),
+  };
+}
+
+AggregatableDebugRateLimitTable::Result
+AttributionStorageSql::AggregatableDebugReportAllowedForRateLimit(
+    const AggregatableDebugReport& report) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Rate-limits are not hit in an empty database.
+  if (!LazyInit(DbCreationPolicy::kIgnoreIfAbsent)) {
+    return AggregatableDebugRateLimitTable::Result::kAllowed;
+  }
+
+  return aggregatable_debug_rate_limit_table_.AllowedForRateLimit(&db_, report);
+}
+
+bool AttributionStorageSql::AdjustAggregatableDebugSourceData(
+    StoredSource::Id source_id,
+    int additional_budget_consumed) {
+  static constexpr char kAdjustSourceDataSql[] =
+      "UPDATE sources "
+      "SET "
+      "remaining_aggregatable_debug_budget="
+      "remaining_aggregatable_debug_budget-?,"
+      "num_aggregatable_debug_reports=num_aggregatable_debug_reports+1 "
+      "WHERE source_id=?";
+
+  sql::Statement statement(
+      db_.GetCachedStatement(SQL_FROM_HERE, kAdjustSourceDataSql));
+  statement.BindInt(0, additional_budget_consumed);
+  statement.BindInt64(1, *source_id);
+
+  return statement.Run() && db_.GetLastChangeCount() == 1;
+}
+
+bool AttributionStorageSql::AdjustForAggregatableDebugReport(
+    const AggregatableDebugReport& report,
+    std::optional<StoredSource::Id> source_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!LazyInit(DbCreationPolicy::kCreateIfAbsent)) {
+    return false;
+  }
+
+  sql::Transaction transaction(&db_);
+  if (!transaction.Begin()) {
+    return false;
+  }
+
+  if (source_id.has_value() &&
+      !AdjustAggregatableDebugSourceData(*source_id, report.BudgetRequired())) {
+    return false;
+  }
+
+  if (!aggregatable_debug_rate_limit_table_.AddRateLimit(&db_, report)) {
+    return false;
+  }
+
+  return transaction.Commit();
+}
 
 void AttributionStorageSql::SetDelegate(AttributionResolverDelegate* delegate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(delegate);
+  aggregatable_debug_rate_limit_table_.SetDelegate(*delegate);
   rate_limit_table_.SetDelegate(*delegate);
   delegate_ = delegate;
 }
