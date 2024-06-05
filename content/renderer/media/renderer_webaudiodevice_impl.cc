@@ -183,8 +183,8 @@ RendererWebAudioDeviceImpl::RendererWebAudioDeviceImpl(
       // This is guaranteed to be the main thread since this call runs on the
       // main thread.
       main_thread_task_runner_ =
-          RenderFrame::FromWebFrame(WebLocalFrame::FromFrameToken(frame_token_))
-              ->GetTaskRunner(blink::TaskType::kInternalMediaRealTime);
+          base::SingleThreadTaskRunner::GetCurrentDefault();
+
       // Post a task on the same thread, and the posted task will be executed
       // once the construction sequence is finished.
       main_thread_task_runner_->PostTask(
