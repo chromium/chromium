@@ -296,6 +296,8 @@ ocrCallbackRouter.requestBitmap.addListener(async (requestedPageId: string) => {
 });
 ocrCallbackRouter.setViewport.addListener(
     (viewportBox: RectF) => void getApp()?.setViewport(viewportBox));
+ocrCallbackRouter.setPdfOcrEnabled.addListener(
+    (enabled: boolean) => void getApp()?.setPdfOcrEnabled(enabled));
 ocrCallbackRouter.onConnectionError.addListener(() => {
   console.warn('Calling MediaApp RequestBitmap() failed to return bitmap.');
 });

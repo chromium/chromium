@@ -12,6 +12,7 @@
 #include "ash/webui/media_app_ui/media_app_ui_untrusted.mojom.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/accessibility/media_app/ax_media_app.h"
 #include "chrome/browser/accessibility/media_app/ax_media_app_handler_factory.h"
 #include "chrome/browser/accessibility/media_app/test/fake_ax_media_app.h"
@@ -22,6 +23,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/scoped_accessibility_mode_override.h"
 #include "content/public/test/test_web_ui.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -197,6 +199,31 @@ void AXMediaAppUntrustedHandlerTest::WaitForOcringPages(
 }
 
 }  // namespace
+
+IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, IsAccessibilityEnabled) {
+  EXPECT_FALSE(handler_->IsAccessibilityEnabled());
+  EXPECT_FALSE(fake_media_app_.IsAccessibilityEnabled());
+
+  accessibility_state_utils::OverrideIsScreenReaderEnabledForTesting(true);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  AccessibilityManager::Get()->EnableSpokenFeedback(true);
+#else
+  content::ScopedAccessibilityModeOverride scoped_mode(ui::kAXModeComplete);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  EXPECT_TRUE(handler_->IsAccessibilityEnabled());
+  EXPECT_TRUE(fake_media_app_.IsAccessibilityEnabled());
+
+  accessibility_state_utils::OverrideIsScreenReaderEnabledForTesting(false);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  AccessibilityManager::Get()->EnableSpokenFeedback(false);
+#else
+  content::ScopedAccessibilityModeOverride scoped_mode(ui::kNone);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  EXPECT_FALSE(handler_->IsAccessibilityEnabled());
+  EXPECT_FALSE(fake_media_app_.IsAccessibilityEnabled());
+}
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, PageMetadataUpdated) {

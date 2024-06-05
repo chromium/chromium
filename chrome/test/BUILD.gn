@@ -8645,7 +8645,6 @@ test("unit_tests") {
       "../browser/ui/window_sizer/window_sizer_unittest.cc",
     ]
     sources += [
-      "../browser/accessibility/media_app/ax_media_app_untrusted_handler_unittest.cc",
       "../browser/browser_process_platform_part_ash_unittest.cc",
       "../browser/chromeos/mahi/mahi_prefs_controller_ash_unittest.cc",
       "../browser/component_updater/cros_component_installer_chromeos_unittest.cc",

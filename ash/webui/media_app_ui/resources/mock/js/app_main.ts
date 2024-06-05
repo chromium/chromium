@@ -236,6 +236,8 @@ class BacklightApp extends HTMLElement implements ClientApi {
 
   async setViewport(_viewport: RectF) {}
 
+  async setPdfOcrEnabled(_enabled: boolean) {}
+
   async getPdfContent(_limit: number) {
     return {
       'content': 'test content',

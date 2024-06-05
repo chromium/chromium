@@ -28,6 +28,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/message.h"
@@ -84,23 +86,62 @@ AXMediaAppUntrustedHandler::AXMediaAppUntrustedHandler(
   if (!base::FeatureList::IsEnabled(ash::features::kMediaAppPdfA11yOcr)) {
     return;
   }
+  auto* profile =
+      Profile::FromBrowserContext(base::to_address(browser_context_));
   ocr_ = screen_ai::OpticalCharacterRecognizer::CreateWithStatusCallback(
-      Profile::FromBrowserContext(base::to_address(browser_context_)),
-      screen_ai::mojom::OcrClientType::kMediaApp,
+      profile, screen_ai::mojom::OcrClientType::kMediaApp,
       base::BindOnce(&AXMediaAppUntrustedHandler::OnOCRServiceInitialized,
                      weak_ptr_factory_.GetWeakPtr()));
+
+  // Observe the screenreader (ChromeVox) setting.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (auto* accessibility_manager = ash::AccessibilityManager::Get()) {
+    // Unretained is safe because `this` owns the subscription.
+    accessibility_status_subscription_ =
+        accessibility_manager->RegisterCallback(base::BindRepeating(
+            &AXMediaAppUntrustedHandler::OnAshAccessibilityModeChanged,
+            base::Unretained(this)));
+  }
+#else   // BUILDFLAG(IS_CHROMEOS_LACROS)
   ax_mode_observation_.Observe(&ui::AXPlatform::GetInstance());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // Observe the PDF OCR setting in user prefs.
+  user_prefs_registrar_.Init(profile->GetPrefs());
+  // base::Unretained() is safe since the listener is removed in this class's
+  // destructor.
+  user_prefs_registrar_.Add(
+      prefs::kAccessibilityPdfOcrAlwaysActive,
+      base::BindRepeating(&AXMediaAppUntrustedHandler::SetPdfOcrEnabledState,
+                          base::Unretained(this)));
 }
 
 AXMediaAppUntrustedHandler::~AXMediaAppUntrustedHandler() {
+  user_prefs_registrar_.Remove(prefs::kAccessibilityPdfOcrAlwaysActive);
   for (auto& page : pages_) {
     ui::AXActionHandlerRegistry::GetInstance()->RemoveAXTreeID(
         page.second->GetTreeID());
   }
 }
 
+void AXMediaAppUntrustedHandler::SetPdfOcrEnabledState() {
+  bool newState = false;
+  auto* profile =
+      Profile::FromBrowserContext(base::to_address(browser_context_));
+  const bool pref_enabled =
+      profile->GetPrefs()->GetBoolean(prefs::kAccessibilityPdfOcrAlwaysActive);
+  if (IsAccessibilityEnabled() && pref_enabled) {
+    newState = true;
+  }
+  if (newState == pdf_ocr_enabled_) {
+    return;
+  }
+  pdf_ocr_enabled_ = newState;
+  media_app_page_->SetPdfOcrEnabled(pdf_ocr_enabled_);
+}
+
 bool AXMediaAppUntrustedHandler::IsOcrServiceEnabled() const {
-  return ocr_->is_ready();
+  return ocr_ ? ocr_->is_ready() : false;
 }
 
 void AXMediaAppUntrustedHandler::OnOCRServiceInitialized(bool successful) {
@@ -115,7 +156,7 @@ void AXMediaAppUntrustedHandler::OnOCRServiceInitialized(bool successful) {
     CHECK_IS_TEST();
     media_app_->OcrServiceEnabledChanged(true);
   } else {
-    // TODO(b/301007305): Implement `OcrServiceEnabledChanged` in the Media App.
+    SetPdfOcrEnabledState();
   }
 }
 
@@ -123,6 +164,37 @@ bool AXMediaAppUntrustedHandler::IsAccessibilityEnabled() const {
   return base::FeatureList::IsEnabled(ash::features::kMediaAppPdfA11yOcr) &&
          accessibility_state_utils::IsScreenReaderEnabled();
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void AXMediaAppUntrustedHandler::OnAshAccessibilityModeChanged(
+    const ash::AccessibilityStatusEventDetails& details) {
+  if (details.notification_type ==
+          ash::AccessibilityNotificationType::kToggleSpokenFeedback ||
+      details.notification_type ==
+          ash::AccessibilityNotificationType::kToggleSelectToSpeak) {
+    SetPdfOcrEnabledState();
+  }
+  if (media_app_) [[unlikely]] {
+    // `media_app_` is only used for testing.
+    CHECK_IS_TEST();
+    media_app_->AccessibilityEnabledChanged(
+        accessibility_state_utils::IsScreenReaderEnabled());
+  }
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+void AXMediaAppUntrustedHandler::OnAXModeAdded(ui::AXMode mode) {
+  if (media_app_) [[unlikely]] {
+    // `media_app_` is only used for testing.
+    CHECK_IS_TEST();
+    media_app_->AccessibilityEnabledChanged(
+        accessibility_state_utils::IsScreenReaderEnabled());
+    return;
+  }
+  SetPdfOcrEnabledState();
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 void AXMediaAppUntrustedHandler::PerformAction(
     const ui::AXActionData& action_data) {
@@ -284,18 +356,6 @@ void AXMediaAppUntrustedHandler::PerformAction(
     case ax::mojom::Action::kLongClick:
       NOTIMPLEMENTED();
       return;
-  }
-}
-
-void AXMediaAppUntrustedHandler::OnAXModeAdded(ui::AXMode mode) {
-  if (media_app_) [[unlikely]] {
-    // `media_app_` is only used for testing.
-    CHECK_IS_TEST();
-    media_app_->AccessibilityEnabledChanged(
-        accessibility_state_utils::IsScreenReaderEnabled());
-  } else {
-    // TODO(b/301007305): Implement `AccessibilityEnabledChanged` in the Media
-    // App.
   }
 }
 

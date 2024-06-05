@@ -81,6 +81,11 @@ interface OcrUntrustedPage {
   // `kScrollToMakeVisible` or `kSetScrollOffset`.
   //   viewport_box: The bounding box representing the new camera position.
   SetViewport(gfx.mojom.RectF viewport_box);
+
+  // Tells the MediaApp when the OCR service has been turned on or off (either
+  // due to the PDF OCR setting being changed, or the accessibility service
+  // being toggled on or off).
+  SetPdfOcrEnabled(bool enabled);
 };
 
 
