@@ -123,10 +123,6 @@ GetOpenXrInputProfilesMap() {
              {"generic-hand-select-grasp", "generic-hand-select",
               "generic-hand", "generic-trigger-squeeze"}}}},
 
-          // XR_ANDROID_hand_gestures
-          {OpenXrInteractionProfileType::kAndroidHandGestures,
-           {{"", {"generic-hand-select", "generic-hand", "generic-button"}}}},
-
           // XR_FB_hand_tracking_aim
           {OpenXrInteractionProfileType::kMetaHandAim,
            {{"", {"generic-hand-select", "generic-hand", "generic-button"}}}},

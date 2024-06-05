@@ -648,12 +648,10 @@ constexpr device::mojom::OpenXrInteractionProfileType
     kSkippedInteractionProfiles[] = {
         // The "Invalid" entry is not a real profile.
         device::mojom::OpenXrInteractionProfileType::kInvalid,
-        // kAndroidHandGestures is a "synthetic" interaction profile type which
-        // is synthesized via it's own set of extension methods and needs to
-        // use a different mechanism to send button clicks rather than the rest
-        // of the methods.
-        device::mojom::OpenXrInteractionProfileType::kAndroidHandGestures,
-        // kMetaHandAim is also a "synthetic" interaction profile type
+        // kMetaHandAim is a "synthetic" interaction profile type which is
+        // synthesized via it's own set of extension methods and needs to use a
+        // different mechanism to send button clicks rather than the rest of the
+        // methods.
         device::mojom::OpenXrInteractionProfileType::kMetaHandAim,
 };
 
