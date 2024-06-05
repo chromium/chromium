@@ -98,23 +98,25 @@ gfx::RectF GetOccludingRectForRRectF(const gfx::RRectF& bounds) {
   gfx::RectF occluding_rect = bounds.rect();
 
   // Compute the radius for each corner
-  const float top_left =
-      bounds.GetCornerRadii(gfx::RRectF::Corner::kUpperLeft).x();
-  const float top_right =
-      bounds.GetCornerRadii(gfx::RRectF::Corner::kUpperRight).x();
-  const float lower_right =
-      bounds.GetCornerRadii(gfx::RRectF::Corner::kLowerRight).x();
-  const float lower_left =
-      bounds.GetCornerRadii(gfx::RRectF::Corner::kLowerLeft).x();
+  const auto top_left = bounds.GetCornerRadii(gfx::RRectF::Corner::kUpperLeft);
+  const auto top_right =
+      bounds.GetCornerRadii(gfx::RRectF::Corner::kUpperRight);
+  const auto lower_right =
+      bounds.GetCornerRadii(gfx::RRectF::Corner::kLowerRight);
+  const auto lower_left =
+      bounds.GetCornerRadii(gfx::RRectF::Corner::kLowerLeft);
 
   // Get a bounding rect that does not intersect with the rounding clip.
   // When a rect has rounded corner with radius r, then the largest rect that
   // can be inscribed inside it has an inset of |((2 - sqrt(2)) / 2) * radius|.
-  occluding_rect.Inset(
-      gfx::InsetsF::TLBR(std::max(top_left, top_right) * 0.3f,
-                         std::max(top_left, lower_left) * 0.3f,
-                         std::max(lower_right, lower_left) * 0.3f,
-                         std::max(top_right, lower_right) * 0.3f));
+  // Should you wish to convince yourself that sin(pi/4) is the max value check:
+  // https://math.stackexchange.com/questions/240192/find-the-area-of-largest-rectangle-that-can-be-inscribed-in-an-ellipse
+  constexpr float kInsetCoeficient = 0.3f;
+  occluding_rect.Inset(gfx::InsetsF::TLBR(
+      std::max(top_left.y(), top_right.y()) * kInsetCoeficient,
+      std::max(top_left.x(), lower_left.x()) * kInsetCoeficient,
+      std::max(lower_right.y(), lower_left.y()) * kInsetCoeficient,
+      std::max(top_right.x(), lower_right.x()) * kInsetCoeficient));
   return occluding_rect;
 }
 
