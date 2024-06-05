@@ -1,4 +1,4 @@
-﻿from tests.support.asserts import assert_error, assert_success
+from tests.support.asserts import assert_error, assert_success
 
 
 def get_title(session):
