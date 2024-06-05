@@ -492,7 +492,7 @@ constexpr MessageInfo kAnimationFrameTimingInfo = {
     kAnimationFrameTimingInfoIndices, nullptr};
 
 // Proto Message: AnimationFrameScriptTimingInfo
-constexpr int kAnimationFrameScriptTimingInfoIndices[] = {1, 2, 3, 9, -1};
+constexpr int kAnimationFrameScriptTimingInfoIndices[] = {1, 2, 3, 9, 10, -1};
 constexpr MessageInfo kAnimationFrameScriptTimingInfo = {
     kAnimationFrameScriptTimingInfoIndices, nullptr};
 
