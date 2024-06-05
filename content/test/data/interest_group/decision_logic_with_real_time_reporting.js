@@ -4,8 +4,8 @@
 
 function scoreAd(
     adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
-  realTimeReporting.contributeToRealTimeHistogram(
-      200 + bid, {priorityWeight: 1.5});
+  realTimeReporting.contributeToHistogram(
+      {bucket: 200 + bid, priorityWeight: 1.5});
   return bid;
 }
 

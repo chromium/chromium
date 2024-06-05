@@ -4,9 +4,7 @@
 
 module auction_worklet.mojom;
 
-// Represents a Real Time Reporting contribution. It can be from either
-// contributeToRealTimeHistogram() or contributeOnWorkletLatency(), depending on
-// whether there's a `latency_threshold` field.
+// Represents a Real Time Reporting contribution, from contributeToHistogram().
 struct RealTimeReportingContribution {
   int32 bucket;
 
@@ -14,8 +12,7 @@ struct RealTimeReportingContribution {
   // likelihood of which bucket will get the contribution.
   double priority_weight = 1.0;
 
-  // Only contributeOnWorkletLatency() has latency_threshold, and it's required.
-  // The contribution is only kept when worklet latency is greater than the
-  // threshold.
-  uint32? latency_threshold;
+  // Only set for a worklet latency contribution. The contribution is only kept
+  // when worklet latency is greater than the threshold.
+  int32? latency_threshold;
 };

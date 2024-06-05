@@ -1137,8 +1137,8 @@ std::string MakeBidScriptWithRealTimeReporting(int bid) {
     function generateBid(
         interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
         browserSignals) {
-      realTimeReporting.contributeToRealTimeHistogram(
-          100 + bid, {priorityWeight: 1.5});
+      realTimeReporting.contributeToHistogram(
+        {bucket: 100 + bid, priorityWeight: 1.5});
       return {
         bid: bid,
         render: interestGroup.ads[0].renderURL,
@@ -1154,8 +1154,8 @@ std::string MakeBidScriptWithRealTimeReporting(int bid) {
 
 const char kDecisionScriptWithRealTimeReporting[] = R"(
   function scoreAd(adMetadata, bid, auctionConfig, browserSignals) {
-    realTimeReporting.contributeToRealTimeHistogram(
-        200 + bid, {priorityWeight: 1.5});
+    realTimeReporting.contributeToHistogram(
+        {bucket: 200 + bid, priorityWeight: 1.5});
     return {desirability: 2 * bid, bid: 10 * bid, allowComponentAuction: true};
   }
 

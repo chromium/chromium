@@ -7290,7 +7290,7 @@ TEST_F(SellerWorkletRealTimeReportingEnabledTest, RealTimeReporting) {
   // takes 0ms to run some times, which is not higher than the smallest allowed
   // latency threshold (0ms), in which case the contribution will be dropped.
   constexpr char kExtraCode[] = R"(
-realTimeReporting.contributeToRealTimeHistogram(100, {priorityWeight: 0.5})
+realTimeReporting.contributeToHistogram({bucket: 100, priorityWeight: 0.5})
 )";
 
   RealTimeReportingContributions expected_real_time_contributions;
@@ -7312,7 +7312,7 @@ TEST_F(SellerWorkletRealTimeReportingEnabledTest, InvalidScore) {
       /*latency_threshold=*/std::nullopt);
 
   constexpr char kExtraCode[] = R"(
-realTimeReporting.contributeToRealTimeHistogram(100, {priorityWeight: 0.5})
+realTimeReporting.contributeToHistogram({bucket: 100, priorityWeight: 0.5})
 )";
 
   RealTimeReportingContributions expected_real_time_contributions;
@@ -7343,9 +7343,9 @@ TEST_F(SellerWorkletRealTimeReportingEnabledTest, ScriptTimeout) {
   mojom::RealTimeReportingContribution expected_latency_histogram(
       /*bucket=*/200, /*priority_weight=*/2, /*latency_threshold=*/1);
   constexpr char kExtraCode[] = R"(
-realTimeReporting.contributeToRealTimeHistogram(100, {priorityWeight: 0.5});
-realTimeReporting.contributeOnWorkletLatency(
-    200, {priorityWeight: 2, latencyThreshold: 1});
+realTimeReporting.contributeToHistogram({bucket: 100, priorityWeight: 0.5});
+realTimeReporting.contributeToHistogram(
+    {bucket: 200, priorityWeight: 2, latencyThreshold: 1});
 while (1);
 )";
 
@@ -7366,7 +7366,7 @@ while (1);
       /*expected_pa_requests=*/{}, std::move(expected_real_time_contributions));
 }
 
-// contributeOnWorkletLatency's is dropped when the script's latency does not
+// contributeToHistogram's is dropped when the script's latency does not
 // exceed the threshold.
 TEST_F(SellerWorkletRealTimeReportingEnabledTest,
        NotExceedingLatencyThreshold) {
@@ -7374,13 +7374,13 @@ TEST_F(SellerWorkletRealTimeReportingEnabledTest,
       /*bucket=*/100, /*priority_weight=*/0.5,
       /*latency_threshold=*/std::nullopt);
   constexpr char kExtraCode[] = R"(
-realTimeReporting.contributeToRealTimeHistogram(100, {priorityWeight: 0.5});
-realTimeReporting.contributeOnWorkletLatency(
-    200, {priorityWeight: 2, latencyThreshold: 10000000})
+realTimeReporting.contributeToHistogram({bucket: 100, priorityWeight: 0.5});
+realTimeReporting.contributeToHistogram(
+    {bucket: 200, priorityWeight: 2, latencyThreshold: 10000000})
 )";
 
-  // Only contributeToRealTimeHistogram's contribution is kept.
-  // contributeOnWorkletLatency's is filtered out since the script's latency
+  // Only contributeToHistogram's contribution is kept.
+  // contributeToHistogram's is filtered out since the script's latency
   // didn't exceed the threshold.
   RealTimeReportingContributions expected_real_time_contributions;
   expected_real_time_contributions.push_back(expected_histogram.Clone());
@@ -7419,16 +7419,17 @@ TEST_F(SellerWorkletRealTimeReportingEnabledTest,
       /*bucket=*/3, /*priority_weight=*/1,
       /*latency_threshold=*/std::nullopt);
 
+  constexpr char kExtraCode[] = R"(
+realTimeReporting.contributeToHistogram({bucket: 100, priorityWeight: 0.5})
+)";
+
   RealTimeReportingContributions expected_real_time_contributions;
   expected_real_time_contributions.push_back(expected_histogram.Clone());
   expected_real_time_contributions.push_back(
       expected_trusted_signal_histogram.Clone());
 
   RunScoreAdWithJavascriptExpectingResult(
-      CreateScoreAdScript("trustedScoringSignals === null ? 1 : 0",
-                          R"(realTimeReporting.contributeToRealTimeHistogram(
-                100, {priorityWeight: 0.5});
-        )"),
+      CreateScoreAdScript("trustedScoringSignals === null ? 1 : 0", kExtraCode),
       1, /*expected_errors=*/
       {base::StringPrintf("Failed to load %s HTTP status = 404 Not Found.",
                           kNoComponentSignalsUrl.spec().c_str())},

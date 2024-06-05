@@ -481,12 +481,14 @@ void PrivateAggregationBindings::ContributeToHistogram(
         v8_helper, time_limit_scope,
         "privateAggregation.contributeToHistogram() 'contribution' argument: ",
         contribution_val);
+
+    // Note: alphabetical to match WebIDL.
     contribution_converter.GetRequired("bucket", idl_bucket);
-    contribution_converter.GetRequired("value", idl_value);
     if (base::FeatureList::IsEnabled(
             blink::features::kPrivateAggregationApiFilteringIds)) {
       contribution_converter.GetOptional("filteringId", idl_filtering_id);
     }
+    contribution_converter.GetRequired("value", idl_value);
     args_converter.SetStatus(contribution_converter.TakeStatus());
   }
 
@@ -564,22 +566,23 @@ void PrivateAggregationBindings::ContributeToHistogramOnEvent(
         args[1]);
 
     v8::Local<v8::Value> bucket_val, value_val;
+    // Note: alphabetical to match WebIDL.
     contribution_converter.GetRequired("bucket", bucket_val) &&
         ConvertToPASignalValueOr<v8::Local<v8::BigInt>>(
             v8_helper, time_limit_scope,
             "privateAggregation.contributeToHistogramOnEvent() 'contribution' "
             "argument: ",
-            "bucket", bucket_val, contribution_converter, bucket) &&
-        contribution_converter.GetRequired("value", value_val) &&
+            "bucket", bucket_val, contribution_converter, bucket);
+    if (base::FeatureList::IsEnabled(
+            blink::features::kPrivateAggregationApiFilteringIds)) {
+      contribution_converter.GetOptional("filteringId", filtering_id);
+    }
+    contribution_converter.GetRequired("value", value_val) &&
         ConvertToPASignalValueOr<int32_t>(
             v8_helper, time_limit_scope,
             "privateAggregation.contributeToHistogramOnEvent() 'contribution' "
             "argument: ",
             "value", value_val, contribution_converter, value);
-    if (base::FeatureList::IsEnabled(
-            blink::features::kPrivateAggregationApiFilteringIds)) {
-      contribution_converter.GetOptional("filteringId", filtering_id);
-    }
     args_converter.SetStatus(contribution_converter.TakeStatus());
   }
 

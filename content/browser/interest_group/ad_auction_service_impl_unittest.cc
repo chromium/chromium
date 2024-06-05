@@ -7844,7 +7844,7 @@ TEST_F(AdAuctionServiceImplTest, RealTimeReportRateLimit) {
 function generateBid(
     interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
     browserSignals) {
-  realTimeReporting.contributeToRealTimeHistogram(101, {priorityWeight: 0.5});
+  realTimeReporting.contributeToHistogram({bucket: 101, priorityWeight: 0.5});
   return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render',
           'allowComponentAuction': true};
 }

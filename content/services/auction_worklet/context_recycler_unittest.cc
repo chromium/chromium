@@ -4782,28 +4782,16 @@ class ContextRecyclerRealTimeReportingEnabledTest : public ContextRecyclerTest {
 TEST_F(ContextRecyclerRealTimeReportingEnabledTest, RealTimeReportingBindings) {
   const char kScript[] = R"(
     function test(args) {
-      realTimeReporting.contributeToRealTimeHistogram(123,args);
-    }
-    function testNegativeBucket(args) {
-      realTimeReporting.contributeToRealTimeHistogram(-123,args);
-    }
-    function testBiggerBucket(args) {
-      realTimeReporting.contributeToRealTimeHistogram(12345,args);
-    }
-    function testReservedBucket(args) {
-      realTimeReporting.contributeToRealTimeHistogram(1,args);
-    }
-    function testLatency(args) {
-      realTimeReporting.contributeOnWorkletLatency(200, args);
+      realTimeReporting.contributeToHistogram(args);
     }
     function testMultiCalls(args) {
-      realTimeReporting.contributeToRealTimeHistogram(100,args);
+      realTimeReporting.contributeToHistogram(args);
       // Allow multiple contributions with the same bucket.
-      realTimeReporting.contributeToRealTimeHistogram(100,args);
-      realTimeReporting.contributeToRealTimeHistogram(101,args);
-      realTimeReporting.contributeOnWorkletLatency(200, args);
-      realTimeReporting.contributeOnWorkletLatency(200, args);
-      realTimeReporting.contributeOnWorkletLatency(201, args);
+      realTimeReporting.contributeToHistogram(args);
+      // Allow a mix of latency calls as well.
+      args.latencyThreshold = 200;
+      realTimeReporting.contributeToHistogram(args);
+      realTimeReporting.contributeToHistogram(args);
     }
 
     function doNothing() {}
@@ -4824,6 +4812,7 @@ TEST_F(ContextRecyclerRealTimeReportingEnabledTest, RealTimeReportingBindings) {
     std::vector<std::string> error_msgs;
 
     gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+    dict.Set("bucket", 123);
     dict.Set("priorityWeight", 0.5);
 
     Run(scope, script, "test", error_msgs,
@@ -4846,9 +4835,10 @@ TEST_F(ContextRecyclerRealTimeReportingEnabledTest, RealTimeReportingBindings) {
     std::vector<std::string> error_msgs;
 
     gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+    dict.Set("bucket", -123);
     dict.Set("priorityWeight", 0.5);
 
-    Run(scope, script, "testNegativeBucket", error_msgs,
+    Run(scope, script, "test", error_msgs,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(error_msgs, ElementsAre());
     EXPECT_TRUE(context_recycler.real_time_reporting_bindings()
@@ -4862,9 +4852,10 @@ TEST_F(ContextRecyclerRealTimeReportingEnabledTest, RealTimeReportingBindings) {
     std::vector<std::string> error_msgs;
 
     gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+    dict.Set("bucket", 12345);
     dict.Set("priorityWeight", 0.5);
 
-    Run(scope, script, "testBiggerBucket", error_msgs,
+    Run(scope, script, "test", error_msgs,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(error_msgs, ElementsAre());
     EXPECT_TRUE(context_recycler.real_time_reporting_bindings()
@@ -4879,11 +4870,31 @@ TEST_F(ContextRecyclerRealTimeReportingEnabledTest, RealTimeReportingBindings) {
     std::vector<std::string> error_msgs;
 
     gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+    dict.Set("bucket", 1);
     dict.Set("priorityWeight", 0.5);
 
-    Run(scope, script, "testReservedBucket", error_msgs,
+    Run(scope, script, "test", error_msgs,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(error_msgs, ElementsAre());
+    EXPECT_TRUE(context_recycler.real_time_reporting_bindings()
+                    ->TakeRealTimeReportingContributions()
+                    .empty());
+  }
+
+  // Missing bucket.
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+
+    gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+    dict.Set("priorityWeight", 0.5);
+    Run(scope, script, "test", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), dict));
+    EXPECT_THAT(
+        error_msgs,
+        ElementsAre("https://example.test/script.js:3 Uncaught TypeError: "
+                    "realTimeReporting.contributeToHistogram() 'contribution' "
+                    "argument: Required field 'bucket' is undefined."));
     EXPECT_TRUE(context_recycler.real_time_reporting_bindings()
                     ->TakeRealTimeReportingContributions()
                     .empty());
@@ -4895,13 +4906,13 @@ TEST_F(ContextRecyclerRealTimeReportingEnabledTest, RealTimeReportingBindings) {
     std::vector<std::string> error_msgs;
 
     gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
-
+    dict.Set("bucket", 123);
     Run(scope, script, "test", error_msgs,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(
         error_msgs,
         ElementsAre("https://example.test/script.js:3 Uncaught TypeError: "
-                    "realTimeReporting.contributeToRealTimeHistogram() 'value' "
+                    "realTimeReporting.contributeToHistogram() 'contribution' "
                     "argument: Required field 'priorityWeight' is undefined."));
     EXPECT_TRUE(context_recycler.real_time_reporting_bindings()
                     ->TakeRealTimeReportingContributions()
@@ -4914,6 +4925,7 @@ TEST_F(ContextRecyclerRealTimeReportingEnabledTest, RealTimeReportingBindings) {
     std::vector<std::string> error_msgs;
 
     gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+    dict.Set("bucket", 123);
     dict.Set("priorityWeight", 0);
 
     Run(scope, script, "test", error_msgs,
@@ -4933,6 +4945,7 @@ TEST_F(ContextRecyclerRealTimeReportingEnabledTest, RealTimeReportingBindings) {
     std::vector<std::string> error_msgs;
 
     gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+    dict.Set("bucket", 123);
     dict.Set("priorityWeight", -0.5);
 
     Run(scope, script, "test", error_msgs,
@@ -4952,6 +4965,7 @@ TEST_F(ContextRecyclerRealTimeReportingEnabledTest, RealTimeReportingBindings) {
     std::vector<std::string> error_msgs;
 
     gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+    dict.Set("bucket", 123);
     dict.Set("priorityWeight", std::numeric_limits<double>::quiet_NaN());
 
     Run(scope, script, "test", error_msgs,
@@ -4959,7 +4973,7 @@ TEST_F(ContextRecyclerRealTimeReportingEnabledTest, RealTimeReportingBindings) {
     EXPECT_THAT(
         error_msgs,
         ElementsAre("https://example.test/script.js:3 Uncaught TypeError: "
-                    "realTimeReporting.contributeToRealTimeHistogram() 'value' "
+                    "realTimeReporting.contributeToHistogram() 'contribution' "
                     "argument: Converting field 'priorityWeight' to a Number "
                     "did not produce a finite double."));
     EXPECT_TRUE(context_recycler.real_time_reporting_bindings()
@@ -4973,6 +4987,7 @@ TEST_F(ContextRecyclerRealTimeReportingEnabledTest, RealTimeReportingBindings) {
     std::vector<std::string> error_msgs;
 
     gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+    dict.Set("bucket", 123);
     dict.Set("priorityWeight", std::numeric_limits<double>::infinity());
 
     Run(scope, script, "test", error_msgs,
@@ -4980,7 +4995,7 @@ TEST_F(ContextRecyclerRealTimeReportingEnabledTest, RealTimeReportingBindings) {
     EXPECT_THAT(
         error_msgs,
         ElementsAre("https://example.test/script.js:3 Uncaught TypeError: "
-                    "realTimeReporting.contributeToRealTimeHistogram() 'value' "
+                    "realTimeReporting.contributeToHistogram() 'contribution' "
                     "argument: Converting field 'priorityWeight' to a Number "
                     "did not produce a finite double."));
     EXPECT_TRUE(context_recycler.real_time_reporting_bindings()
@@ -4988,15 +5003,15 @@ TEST_F(ContextRecyclerRealTimeReportingEnabledTest, RealTimeReportingBindings) {
                     .empty());
   }
 
-  // latency_threshold is ignored for contributeToRealTimeHistogram().
+  // Unknown keys are ignored.
   {
     ContextRecyclerScope scope(context_recycler);
     std::vector<std::string> error_msgs;
 
     gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+    dict.Set("bucket", 123);
     dict.Set("priorityWeight", 0.5);
-    dict.Set("latencyThreshold", 200);
-    // Other unknown keys are just ignored.
+    // Unknown keys are just ignored.
     dict.Set("someUnknown", 200);
 
     Run(scope, script, "test", error_msgs,
@@ -5019,15 +5034,16 @@ TEST_F(ContextRecyclerRealTimeReportingEnabledTest, RealTimeReportingBindings) {
     std::vector<std::string> error_msgs;
 
     gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+    dict.Set("bucket", 123);
     dict.Set("priorityWeight", 0.5);
     dict.Set("latencyThreshold", 200);
 
-    Run(scope, script, "testLatency", error_msgs,
+    Run(scope, script, "test", error_msgs,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(error_msgs, ElementsAre());
 
     auction_worklet::mojom::RealTimeReportingContribution expected_contribution(
-        /*bucket=*/200, /*priority_weight*/ 0.5, /*latency_threshold=*/200);
+        /*bucket=*/123, /*priority_weight*/ 0.5, /*latency_threshold=*/200);
     auto contributions = context_recycler.real_time_reporting_bindings()
                              ->TakeRealTimeReportingContributions();
 
@@ -5035,55 +5051,37 @@ TEST_F(ContextRecyclerRealTimeReportingEnabledTest, RealTimeReportingBindings) {
     EXPECT_EQ(contributions[0], expected_contribution.Clone());
   }
 
-  // Worklet latency API missing priorityWeight.
+  // Negative latencyThreshold.
   {
     ContextRecyclerScope scope(context_recycler);
     std::vector<std::string> error_msgs;
 
     gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
-    dict.Set("latencyThreshold", 200);
+    dict.Set("bucket", 123);
+    dict.Set("priorityWeight", 0.5);
+    dict.Set("latencyThreshold", -200);
 
-    Run(scope, script, "testLatency", error_msgs,
+    Run(scope, script, "test", error_msgs,
         gin::ConvertToV8(helper_->isolate(), dict));
-    EXPECT_THAT(
-        error_msgs,
-        ElementsAre("https://example.test/script.js:15 Uncaught TypeError: "
-                    "realTimeReporting.contributeOnWorkletLatency() 'value' "
-                    "argument: Required field 'priorityWeight' is undefined."));
-    EXPECT_TRUE(context_recycler.real_time_reporting_bindings()
-                    ->TakeRealTimeReportingContributions()
-                    .empty());
+    EXPECT_THAT(error_msgs, ElementsAre());
+
+    auction_worklet::mojom::RealTimeReportingContribution expected_contribution(
+        /*bucket=*/123, /*priority_weight*/ 0.5, /*latency_threshold=*/-200);
+    auto contributions = context_recycler.real_time_reporting_bindings()
+                             ->TakeRealTimeReportingContributions();
+
+    ASSERT_EQ(contributions.size(), 1u);
+    EXPECT_EQ(contributions[0], expected_contribution.Clone());
   }
 
-  // Worklet latency API missing latencyThreshold.
+  // Multi API calls.
   {
     ContextRecyclerScope scope(context_recycler);
     std::vector<std::string> error_msgs;
 
     gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+    dict.Set("bucket", 123);
     dict.Set("priorityWeight", 0.5);
-
-    Run(scope, script, "testLatency", error_msgs,
-        gin::ConvertToV8(helper_->isolate(), dict));
-    EXPECT_THAT(
-        error_msgs,
-        ElementsAre(
-            "https://example.test/script.js:15 Uncaught TypeError: "
-            "realTimeReporting.contributeOnWorkletLatency() 'value' argument: "
-            "Required field 'latencyThreshold' is undefined."));
-    EXPECT_TRUE(context_recycler.real_time_reporting_bindings()
-                    ->TakeRealTimeReportingContributions()
-                    .empty());
-  }
-
-  // Multi API calls, and calls both APIs.
-  {
-    ContextRecyclerScope scope(context_recycler);
-    std::vector<std::string> error_msgs;
-
-    gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
-    dict.Set("priorityWeight", 0.5);
-    dict.Set("latencyThreshold", 200);
 
     Run(scope, script, "testMultiCalls", error_msgs,
         gin::ConvertToV8(helper_->isolate(), dict));
@@ -5092,7 +5090,7 @@ TEST_F(ContextRecyclerRealTimeReportingEnabledTest, RealTimeReportingBindings) {
     auto contributions = context_recycler.real_time_reporting_bindings()
                              ->TakeRealTimeReportingContributions();
 
-    ASSERT_EQ(contributions.size(), 6u);
+    ASSERT_EQ(contributions.size(), 4u);
   }
 
   // API not called.
@@ -5129,7 +5127,7 @@ TEST_F(ContextRecyclerRealTimeReportingDisabledTest,
        RealTimeReportingBindings) {
   const char kScript[] = R"(
     function test(args) {
-      realTimeReporting.contributeToRealTimeHistogram(123,args);
+      realTimeReporting.contributeToHistogram(123,args);
     }
     function testLatency(args) {
       realTimeReporting.contributeOnWorkletLatency(200, args);
@@ -5204,7 +5202,7 @@ TEST_F(ContextRecyclerRealTimeReportingAndCookieDeprecationEnabledTest,
        RealTimeReportingBindings) {
   const char kScript[] = R"(
     function test(args) {
-      realTimeReporting.contributeToRealTimeHistogram(123,args);
+      realTimeReporting.contributeToHistogram(123,args);
     }
     function testLatency(args) {
       realTimeReporting.contributeOnWorkletLatency(200, args);

@@ -40,37 +40,38 @@ void ParseAndCollectContribution(
     AuctionV8Helper* v8_helper,
     AuctionV8Logger* v8_logger,
     const v8::FunctionCallbackInfo<v8::Value>& args,
-    bool is_latency,
     std::vector<auction_worklet::mojom::RealTimeReportingContributionPtr>&
         contributions_out) {
   AuctionV8Helper::TimeLimitScope time_limit_scope(v8_helper->GetTimeLimit());
-  std::string function_name = is_latency ? "contributeOnWorkletLatency"
-                                         : "contributeToRealTimeHistogram";
   ArgsConverter args_converter(
       v8_helper, time_limit_scope,
-      base::StrCat({"realTimeReporting.", function_name, "(): "}), &args,
-      /*min_required_args=*/2);
+      "realTimeReporting.contributeToHistogram(): ", &args,
+      /*min_required_args=*/1);
 
-  int32_t bucket;
+  v8::Local<v8::Value> contribution_val;
+  args_converter.ConvertArg(0, "contribution", contribution_val);
+
+  int32_t idl_bucket;
   double idl_priority_weight;
-  std::optional<uint32_t> latency_threshold;
-  args_converter.ConvertArg(0, "bucket", bucket);
+  std::optional<int32_t> idl_latency_threshold;
 
   if (args_converter.is_success()) {
+    // arg 0 is:
+    // dictionary RealTimeContribution {
+    //   required long bucket;
+    //   required double priorityWeight;
+    //   long latencyThreshold;
+    // };
     DictConverter contribution_converter(
         v8_helper, time_limit_scope,
-        base::StrCat(
-            {"realTimeReporting.", function_name, "() 'value' argument: "}),
-        args[1]);
+        "realTimeReporting.contributeToHistogram() 'contribution' argument: ",
+        contribution_val);
 
     // Note that this happens in lexicographic order of field names, to match
     // WebIDL behavior.
-    if (is_latency) {
-      uint32_t idl_latency_threshold;
-      contribution_converter.GetRequired("latencyThreshold",
-                                         idl_latency_threshold);
-      latency_threshold = idl_latency_threshold;
-    }
+    contribution_converter.GetRequired("bucket", idl_bucket);
+    contribution_converter.GetOptional("latencyThreshold",
+                                       idl_latency_threshold);
     contribution_converter.GetRequired("priorityWeight", idl_priority_weight);
     args_converter.SetStatus(contribution_converter.TakeStatus());
   }
@@ -83,8 +84,8 @@ void ParseAndCollectContribution(
   // [0, features::kFledgeRealTimeReportingNumBuckets) are supported buckets,
   // while [0, kNumReservedBuckets) are reserved buckets which cannot be used by
   // real time reporting APIs.
-  if (bucket < kNumReservedBuckets ||
-      bucket >= blink::features::kFledgeRealTimeReportingNumBuckets.Get()) {
+  if (idl_bucket < kNumReservedBuckets ||
+      idl_bucket >= blink::features::kFledgeRealTimeReportingNumBuckets.Get()) {
     // Don't throw, to be forward compatible.
     return;
   }
@@ -98,7 +99,7 @@ void ParseAndCollectContribution(
 
   contributions_out.push_back(
       auction_worklet::mojom::RealTimeReportingContribution::New(
-          bucket, idl_priority_weight, latency_threshold));
+          idl_bucket, idl_priority_weight, idl_latency_threshold));
 }
 
 }  // namespace
@@ -124,24 +125,12 @@ void RealTimeReportingBindings::AttachToContext(
 
   v8::Local<v8::FunctionTemplate> real_time_histogram_template =
       v8::FunctionTemplate::New(
-          isolate, &RealTimeReportingBindings::ContributeToRealTimeHistogram,
-          v8_this);
-  v8::Local<v8::FunctionTemplate> worklet_latency_template =
-      v8::FunctionTemplate::New(
-          isolate, &RealTimeReportingBindings::ContributeOnWorkletLatency,
-          v8_this);
-
-  real_time_reporting
-      ->Set(
-          context,
-          v8_helper_->CreateStringFromLiteral("contributeToRealTimeHistogram"),
-          real_time_histogram_template->GetFunction(context).ToLocalChecked())
-      .Check();
+          isolate, &RealTimeReportingBindings::ContributeToHistogram, v8_this);
 
   real_time_reporting
       ->Set(context,
-            v8_helper_->CreateStringFromLiteral("contributeOnWorkletLatency"),
-            worklet_latency_template->GetFunction(context).ToLocalChecked())
+            v8_helper_->CreateStringFromLiteral("contributeToHistogram"),
+            real_time_histogram_template->GetFunction(context).ToLocalChecked())
       .Check();
 
   context->Global()
@@ -154,22 +143,13 @@ void RealTimeReportingBindings::Reset() {
   real_time_reporting_contributions_.clear();
 }
 
-void RealTimeReportingBindings::ContributeToRealTimeHistogram(
+void RealTimeReportingBindings::ContributeToHistogram(
     const v8::FunctionCallbackInfo<v8::Value>& args) {
   RealTimeReportingBindings* bindings = static_cast<RealTimeReportingBindings*>(
       v8::External::Cast(*args.Data())->Value());
-  ParseAndCollectContribution(
-      bindings->v8_helper_.get(), bindings->v8_logger_.get(), args,
-      /*is_latency=*/false, bindings->real_time_reporting_contributions_);
-}
-
-void RealTimeReportingBindings::ContributeOnWorkletLatency(
-    const v8::FunctionCallbackInfo<v8::Value>& args) {
-  RealTimeReportingBindings* bindings = static_cast<RealTimeReportingBindings*>(
-      v8::External::Cast(*args.Data())->Value());
-  ParseAndCollectContribution(
-      bindings->v8_helper_.get(), bindings->v8_logger_.get(), args,
-      /*is_latency=*/true, bindings->real_time_reporting_contributions_);
+  ParseAndCollectContribution(bindings->v8_helper_.get(),
+                              bindings->v8_logger_.get(), args,
+                              bindings->real_time_reporting_contributions_);
 }
 
 }  // namespace auction_worklet

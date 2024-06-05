@@ -12089,7 +12089,7 @@ TEST_F(BidderWorkletRealTimeReportingEnabledTest, RealTimeReporting) {
   // takes 0ms to run some times, which is not higher than the smallest allowed
   // latency threshold (0ms), in which case the contribution will be dropped.
   constexpr char kExtraCode[] = R"(
-realTimeReporting.contributeToRealTimeHistogram(100, {priorityWeight: 0.5})
+realTimeReporting.contributeToHistogram({bucket: 100, priorityWeight: 0.5})
 )";
 
   RealTimeReportingContributions expected_real_time_contributions;
@@ -12120,7 +12120,7 @@ TEST_F(BidderWorkletRealTimeReportingEnabledTest, NoBid) {
       /*latency_threshold=*/std::nullopt);
 
   constexpr char kExtraCode[] = R"(
-realTimeReporting.contributeToRealTimeHistogram(100, {priorityWeight: 0.5});
+realTimeReporting.contributeToHistogram({bucket: 100, priorityWeight: 0.5});
 )";
 
   RealTimeReportingContributions expected_real_time_contributions;
@@ -12152,9 +12152,9 @@ TEST_F(BidderWorkletRealTimeReportingEnabledTest, ScriptTimeout) {
       expected_latency_histogram(
           /*bucket=*/200, /*priority_weight=*/2, /*latency_threshold=*/1);
   constexpr char kExtraCode[] = R"(
-realTimeReporting.contributeToRealTimeHistogram(100, {priorityWeight: 0.5});
-realTimeReporting.contributeOnWorkletLatency(
-    200, {priorityWeight: 2, latencyThreshold: 1});
+realTimeReporting.contributeToHistogram({bucket: 100, priorityWeight: 0.5});
+realTimeReporting.contributeToHistogram(
+    {bucket: 200, priorityWeight: 2, latencyThreshold: 1});
 while (1);
 )";
 
@@ -12177,7 +12177,7 @@ while (1);
       std::move(expected_real_time_contributions));
 }
 
-// contributeOnWorkletLatency's is dropped when the script's latency does not
+// contributeToHistogram's is dropped when the script's latency does not
 // exceed the threshold.
 TEST_F(BidderWorkletRealTimeReportingEnabledTest,
        NotExceedingLatencyThreshold) {
@@ -12185,13 +12185,13 @@ TEST_F(BidderWorkletRealTimeReportingEnabledTest,
       /*bucket=*/100, /*priority_weight=*/0.5,
       /*latency_threshold=*/std::nullopt);
   constexpr char kExtraCode[] = R"(
-realTimeReporting.contributeToRealTimeHistogram(100, {priorityWeight: 0.5});
-realTimeReporting.contributeOnWorkletLatency(
-    200, {priorityWeight: 2, latencyThreshold: 10000000})
+realTimeReporting.contributeToHistogram({bucket: 100, priorityWeight: 0.5});
+realTimeReporting.contributeToHistogram(
+    {bucket: 200, priorityWeight: 2, latencyThreshold: 10000000})
 )";
 
-  // Only contributeToRealTimeHistogram's contribution is kept.
-  // contributeOnWorkletLatency's is filtered out since the script's latency
+  // Only contributeToHistogram's contribution is kept.
+  // contributeToHistogram's is filtered out since the script's latency
   // didn't exceed the threshold.
   RealTimeReportingContributions expected_real_time_contributions;
   expected_real_time_contributions.push_back(expected_histogram.Clone());
@@ -12248,6 +12248,10 @@ TEST_F(BidderWorkletRealTimeReportingEnabledTest,
       /*bucket=*/2, /*priority_weight=*/1,
       /*latency_threshold=*/std::nullopt);
 
+  constexpr char kExtraCode[] = R"(
+realTimeReporting.contributeToHistogram({bucket: 100, priorityWeight: 0.5})
+)";
+
   RealTimeReportingContributions expected_real_time_contributions;
   expected_real_time_contributions.push_back(expected_histogram.Clone());
   expected_real_time_contributions.push_back(
@@ -12257,10 +12261,7 @@ TEST_F(BidderWorkletRealTimeReportingEnabledTest,
       CreateGenerateBidScript(
           /*raw_return_value=*/
           R"({ad: trustedBiddingSignals, bid: 1, render:"https://response.test/"})",
-          /*extra_code=*/R"(
-            realTimeReporting.contributeToRealTimeHistogram(
-                100, {priorityWeight: 0.5});
-          )"),
+          kExtraCode),
       mojom::BidderWorkletBid::New(
           auction_worklet::mojom::BidRole::kUnenforcedKAnon, "null", 1,
           /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,

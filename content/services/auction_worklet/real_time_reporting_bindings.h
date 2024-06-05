@@ -41,15 +41,13 @@ class CONTENT_EXPORT RealTimeReportingBindings : public Bindings {
   }
 
  private:
-  static void ContributeToRealTimeHistogram(
-      const v8::FunctionCallbackInfo<v8::Value>& args);
-  static void ContributeOnWorkletLatency(
+  static void ContributeToHistogram(
       const v8::FunctionCallbackInfo<v8::Value>& args);
 
   const raw_ptr<AuctionV8Helper> v8_helper_;
   const raw_ptr<AuctionV8Logger> v8_logger_;
 
-  // Contributions from calling Real Time Reporting APIs.
+  // Contributions from calling Real Time Reporting API.
   std::vector<auction_worklet::mojom::RealTimeReportingContributionPtr>
       real_time_reporting_contributions_;
 };
