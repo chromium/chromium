@@ -13,6 +13,8 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_delegate.h"
+#include "ui/views/widget/widget_observer.h"
 
 namespace ash {
 
@@ -65,6 +67,36 @@ int AdvanceIndex(int previous_index, int size, bool reverse) {
   return previous_index == (size - 1) ? 0 : (previous_index + 1);
 }
 
+// Class that temporary makes a widget activatable so that we can focus it. This
+// is meant to be used while keyboard traversing through overview item widgets.
+// These widgets are not activatable normally for both historical reasons, and
+// to prevent activation change while mouse dragging.
+class ScopedActivatable : public views::WidgetObserver {
+ public:
+  explicit ScopedActivatable(views::Widget* widget) {
+    views::WidgetDelegate* delegate = widget->widget_delegate();
+    if (!delegate->CanActivate()) {
+      observation_.Observe(widget);
+      delegate->SetCanActivate(true);
+    }
+  }
+  ScopedActivatable(const ScopedActivatable&) = delete;
+  ScopedActivatable& operator=(const ScopedActivatable&) = delete;
+  ~ScopedActivatable() override {
+    if (observation_.IsObserving()) {
+      observation_.GetSource()->widget_delegate()->SetCanActivate(false);
+    }
+  }
+
+  void OnWidgetDestroying(views::Widget* widget) override {
+    observation_.Reset();
+  }
+
+ private:
+  base::ScopedObservation<views::Widget, views::WidgetObserver> observation_{
+      this};
+};
+
 }  // namespace
 
 OverviewFocusCycler::OverviewFocusCycler(OverviewSession* overview_session)
@@ -94,6 +126,7 @@ void OverviewFocusCycler::MoveFocus(bool reverse) {
   // first widget, depending on `reverse`.
   if (!focused_view) {
     views::Widget* widget = reverse ? widgets.back() : widgets.front();
+    ScopedActivatable scoped_activatable(widget);
     GetFirstOrLastFocusableView(widget, reverse)->RequestFocus();
     return;
   }
@@ -107,6 +140,7 @@ void OverviewFocusCycler::MoveFocus(bool reverse) {
   // Focus the last focusable view of the previous widget if `reverse`, or the
   // first focusable view of the next widget otherwise.
   const int next_index = AdvanceIndex(previous_index, size, reverse);
+  ScopedActivatable scoped_activatable(widgets[next_index]);
   GetFirstOrLastFocusableView(widgets[next_index], reverse)->RequestFocus();
 }
 
@@ -174,7 +208,8 @@ std::vector<views::Widget*> OverviewFocusCycler::GetTraversableWidgets(
 
     // Focus is tied to activation except in ChromeVox where labels and other
     // normally unfocusable elements can be ChromeVox focused.
-    if (!for_accessibility && !widget->CanActivate()) {
+    if (!for_accessibility && !widget->CanActivate() &&
+        !widget->GetNativeWindow()->GetProperty(kIsOverviewItemKey)) {
       return;
     }
 
@@ -193,6 +228,9 @@ std::vector<views::Widget*> OverviewFocusCycler::GetTraversableWidgets(
   // TODO(http://b/325335020): Handle multidisplay focus.
   OverviewGrid* primary_grid =
       overview_session_->GetGridWithRootWindow(Shell::GetPrimaryRootWindow());
+  for (const auto& item : primary_grid->window_list()) {
+    maybe_add_widget(item->item_widget());
+  }
   maybe_add_widget(primary_grid->desks_widget());
   maybe_add_widget(primary_grid->save_desk_button_container_widget());
   maybe_add_widget(primary_grid->pine_widget());

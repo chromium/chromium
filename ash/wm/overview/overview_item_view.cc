@@ -78,7 +78,9 @@ OverviewItemView::OverviewItemView(
     views::Button::PressedCallback close_callback,
     aura::Window* window,
     bool show_preview)
-    : WindowMiniView(window),
+    : WindowMiniView(window,
+                     /*use_custom_focus_predicate=*/!features::
+                         IsOverviewNewFocusEnabled()),
       overview_item_(overview_item),
       event_handler_delegate_(event_handler_delegate),
       close_button_(header_view()->icon_label_view()->AddChildView(
@@ -97,6 +99,10 @@ OverviewItemView::OverviewItemView(
   close_button_->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
 
   header_view()->UpdateIconView(window);
+
+  AddAccelerator(ui::Accelerator(ui::VKEY_W, ui::EF_CONTROL_DOWN));
+  AddAccelerator(ui::Accelerator(ui::VKEY_RETURN, 0));
+  AddAccelerator(ui::Accelerator(ui::VKEY_SPACE, 0));
 
   // Call this last as it triggers layout, which relies on some of the other
   // elements existing.
@@ -316,6 +322,28 @@ void OverviewItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 void OverviewItemView::OnThemeChanged() {
   WindowMiniView::OnThemeChanged();
   UpdateFocusState(is_focused());
+}
+
+bool OverviewItemView::AcceleratorPressed(const ui::Accelerator& accelerator) {
+  if (accelerator.IsCtrlDown() && accelerator.key_code() == ui::VKEY_W) {
+    if (overview_item_) {
+      overview_item_->OnFocusedViewClosed();
+    }
+    return true;
+  }
+
+  if (accelerator.key_code() == ui::VKEY_RETURN ||
+      accelerator.key_code() == ui::VKEY_SPACE) {
+    if (overview_item_) {
+      overview_item_->OnFocusedViewActivated();
+    }
+    return true;
+  }
+  return WindowMiniView::AcceleratorPressed(accelerator);
+}
+
+bool OverviewItemView::CanHandleAccelerators() const {
+  return HasFocus() && WindowMiniView::CanHandleAccelerators();
 }
 
 BEGIN_METADATA(OverviewItemView)

@@ -257,9 +257,10 @@ gfx::Size WindowMiniView::GetPreviewViewSize() const {
   return preview_view_->GetPreferredSize();
 }
 
-WindowMiniView::WindowMiniView(aura::Window* source_window)
+WindowMiniView::WindowMiniView(aura::Window* source_window,
+                               bool use_custom_focus_predicate)
     : source_window_(source_window) {
-  InstallFocusRing();
+  InstallFocusRing(use_custom_focus_predicate);
   window_observation_.Observe(source_window);
   header_view_ = AddChildView(std::make_unique<WindowMiniViewHeaderView>(this));
 }
@@ -339,19 +340,22 @@ void WindowMiniView::OnRoundedCornersSet() {
   RefreshFocusRingVisuals();
 }
 
-void WindowMiniView::InstallFocusRing() {
+void WindowMiniView::InstallFocusRing(bool use_custom_predicate) {
   RefreshFocusRingVisuals();
   views::FocusRing::Install(this);
   views::FocusRing* focus_ring = views::FocusRing::Get(this);
   focus_ring->SetOutsetFocusRingDisabled(true);
   focus_ring->SetColorId(cros_tokens::kCrosSysTertiary);
   focus_ring->SetHaloThickness(kFocusRingThickness);
-  focus_ring->SetHasFocusPredicate(
-      base::BindRepeating([](const views::View* view) {
-        const auto* v = views::AsViewClass<WindowMiniView>(view);
-        CHECK(v);
-        return v->is_focused_;
-      }));
+
+  if (use_custom_predicate) {
+    focus_ring->SetHasFocusPredicate(
+        base::BindRepeating([](const views::View* view) {
+          const auto* v = views::AsViewClass<WindowMiniView>(view);
+          CHECK(v);
+          return v->is_focused_;
+        }));
+  }
 }
 
 std::unique_ptr<views::HighlightPathGenerator>

@@ -71,7 +71,7 @@ int GetPreviewFixedHeight(const aura::Window* window) {
 }  // namespace
 
 WindowCycleItemView::WindowCycleItemView(aura::Window* window)
-    : WindowMiniView(window),
+    : WindowMiniView(window, /*use_custom_focus_predicate=*/true),
       window_cycle_controller_(Shell::Get()->window_cycle_controller()) {
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetNotifyEnterExitOnChild(true);

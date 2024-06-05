@@ -168,6 +168,7 @@ TEST_P(OverviewFocusCyclerOldTest, BasicArrowKeyNavigation) {
 
 // Tests that when an item is removed while focused, the focus ring disappears,
 // and when we tab again we pick up where we left off.
+// TODO(http://b/325335020): Port this test to `OverviewFocusCyclerTest`.
 TEST_P(OverviewFocusCyclerOldTest, ItemClosed) {
   auto widget1 = CreateTestWidget();
   auto widget2 = CreateTestWidget();
@@ -193,6 +194,7 @@ TEST_P(OverviewFocusCyclerOldTest, ItemClosed) {
 }
 
 // Tests basic selection across multiple monitors.
+// TODO(http://b/325335020): Port this test to `OverviewFocusCyclerTest`.
 TEST_P(OverviewFocusCyclerOldTest, BasicMultiMonitorArrowKeyNavigation) {
   UpdateDisplay("500x400,500x400");
   const gfx::Rect bounds1(100, 100);
@@ -221,6 +223,7 @@ TEST_P(OverviewFocusCyclerOldTest, BasicMultiMonitorArrowKeyNavigation) {
 
 // Tests first monitor when display order doesn't match left to right screen
 // positions.
+// TODO(http://b/325335020): Port this test to `OverviewFocusCyclerTest`.
 TEST_P(OverviewFocusCyclerOldTest, MultiMonitorReversedOrder) {
   UpdateDisplay("500x400,500x400");
   Shell::Get()->display_manager()->SetLayoutForCurrentDisplays(
@@ -252,6 +255,7 @@ TEST_P(OverviewFocusCyclerOldTest, MultiMonitorReversedOrder) {
 }
 
 // Tests three monitors where the grid becomes empty on one of the monitors.
+// TODO(http://b/325335020): Port this test to `OverviewFocusCyclerTest`.
 TEST_P(OverviewFocusCyclerOldTest, ThreeMonitors) {
   UpdateDisplay("500x400,500x400,500x400");
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
@@ -318,6 +322,7 @@ TEST_P(OverviewFocusCyclerOldTest, FocusOverviewWindowWithReturnKey) {
 
 // Tests that the location of the overview focus ring is as expected while
 // dragging an overview item.
+// TODO(http://b/325335020): Port this test to `OverviewFocusCyclerTest`.
 TEST_P(OverviewFocusCyclerOldTest, FocusLocationWhileDragging) {
   std::unique_ptr<aura::Window> window1(CreateTestWindow(gfx::Rect(200, 200)));
   std::unique_ptr<aura::Window> window2(CreateTestWindow(gfx::Rect(200, 200)));

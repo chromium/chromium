@@ -148,7 +148,7 @@ class ASH_EXPORT WindowMiniView : public WindowMiniViewBase,
   void OnWindowTitleChanged(aura::Window* window) override;
 
  protected:
-  explicit WindowMiniView(aura::Window* source_window);
+  WindowMiniView(aura::Window* source_window, bool use_custom_focus_predicate);
 
   // Returns the bounds where the backdrop and preview should go.
   gfx::Rect GetContentAreaBounds() const;
@@ -164,7 +164,7 @@ class ASH_EXPORT WindowMiniView : public WindowMiniViewBase,
   // the `header_view_`, `preview_view_` and focus ring.
   void OnRoundedCornersSet();
 
-  void InstallFocusRing();
+  void InstallFocusRing(bool use_custom_predicate);
 
   // Generates the focus ring path for `this`, which has four rounded corners by
   // default. If this is part of a snap group, the path should match the rounded

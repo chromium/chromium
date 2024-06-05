@@ -14,8 +14,11 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/desks/legacy_desk_bar_view.h"
+#include "ash/wm/overview/overview_item_view.h"
 #include "ash/wm/overview/overview_test_base.h"
 #include "ash/wm/overview/overview_test_util.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
+#include "ash/wm/window_util.h"
 #include "base/test/scoped_feature_list.h"
 
 namespace ash {
@@ -44,20 +47,154 @@ class OverviewFocusCyclerTest : public OverviewTestBase,
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Temporary test to make sure we don't have critical problems with the flag
-// enabled. These should be covered in separate tests once the feature is done.
-// TODO(http://b/325335020): Remove this test once the feature is complete.
-TEST_P(OverviewFocusCyclerTest, NoCrashOnTab) {
-  auto* desk_controller = DesksController::Get();
-  desk_controller->NewDesk(DesksCreationRemovalSource::kButton);
-  ASSERT_EQ(2u, desk_controller->desks().size());
+// Tests traversing some windows in overview mode with the tab key.
+TEST_P(OverviewFocusCyclerTest, BasicTabKeyNavigation) {
+  std::unique_ptr<aura::Window> window2 = CreateAppWindow();
+  std::unique_ptr<aura::Window> window1 = CreateAppWindow();
 
+  ToggleOverview();
+  const std::vector<std::unique_ptr<OverviewItemBase>>& overview_windows =
+      GetOverviewItemsForRoot(0);
+  auto* event_generator = GetEventGenerator();
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB, event_generator);
+  EXPECT_EQ(overview_windows[0]->item_widget()->GetNativeWindow(),
+            window_util::GetFocusedWindow());
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB, event_generator);
+  EXPECT_EQ(overview_windows[1]->item_widget()->GetNativeWindow(),
+            window_util::GetFocusedWindow());
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB, event_generator);
+  EXPECT_EQ(overview_windows[0]->item_widget()->GetNativeWindow(),
+            window_util::GetFocusedWindow());
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_RIGHT, event_generator);
+  EXPECT_EQ(overview_windows[1]->item_widget()->GetNativeWindow(),
+            window_util::GetFocusedWindow());
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_LEFT, event_generator);
+  EXPECT_EQ(overview_windows[0]->item_widget()->GetNativeWindow(),
+            window_util::GetFocusedWindow());
+}
+
+// Same as above but for tablet mode.
+TEST_P(OverviewFocusCyclerTest, BasicTabKeyNavigationTablet) {
   std::unique_ptr<aura::Window> window1 = CreateAppWindow();
   std::unique_ptr<aura::Window> window2 = CreateAppWindow();
+  std::unique_ptr<aura::Window> window3 = CreateAppWindow();
+
+  TabletModeControllerTestApi().EnterTabletMode();
   ToggleOverview();
-  for (int i = 0; i < 15; ++i) {
-    PressAndReleaseKey(ui::VKEY_TAB);
+  const std::vector<std::unique_ptr<OverviewItemBase>>& overview_windows =
+      GetOverviewItemsForRoot(0);
+  auto* event_generator = GetEventGenerator();
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB, event_generator);
+  EXPECT_EQ(overview_windows[0]->item_widget()->GetNativeWindow(),
+            window_util::GetFocusedWindow());
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_TAB, event_generator);
+  EXPECT_EQ(overview_windows[1]->item_widget()->GetNativeWindow(),
+            window_util::GetFocusedWindow());
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_RIGHT, event_generator);
+  EXPECT_EQ(overview_windows[2]->item_widget()->GetNativeWindow(),
+            window_util::GetFocusedWindow());
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_LEFT, event_generator);
+  EXPECT_EQ(overview_windows[1]->item_widget()->GetNativeWindow(),
+            window_util::GetFocusedWindow());
+}
+
+// Tests that pressing Ctrl+W while a window is selected in overview closes it.
+TEST_P(OverviewFocusCyclerTest, CloseWindowWithKey) {
+  std::unique_ptr<aura::Window> window = CreateAppWindow();
+  ToggleOverview();
+
+  SendKeyUntilOverviewItemIsFocused(ui::VKEY_RIGHT, GetEventGenerator());
+  PressAndReleaseKey(ui::VKEY_W, ui::EF_CONTROL_DOWN);
+  EXPECT_TRUE(
+      views::Widget::GetWidgetForNativeWindow(window.get())->IsClosed());
+}
+
+// Tests traversing some windows in overview mode with the arrow keys in every
+// possible direction.
+TEST_P(OverviewFocusCyclerTest, BasicArrowKeyNavigation) {
+  const size_t test_windows = 9;
+  std::vector<std::unique_ptr<aura::Window>> windows;
+  for (size_t i = test_windows; i > 0; --i) {
+    std::unique_ptr<aura::Window> window = CreateAppWindow();
+    window->SetId(i);
+    windows.push_back(std::move(window));
   }
+
+  struct TestData {
+    ui::KeyboardCode key_code;
+    std::string msg;
+    std::vector<int> expected_ids;
+  };
+
+  // The rows contain variable number of items making vertical navigation not
+  // feasible. [Down] is equivalent to [Right] and [Up] is equivalent to [Left].
+  std::vector<TestData> test_data = {
+      {ui::VKEY_RIGHT, "right", {1, 2, 3, 4, 5, 6, 7, 8, 9, 1}},
+      {ui::VKEY_DOWN, "down", {1, 2, 3, 4, 5, 6, 7, 8, 9, 1}},
+      {ui::VKEY_LEFT, "left", {9, 8, 7, 6, 5, 4, 3, 2, 1, 9}},
+      {ui::VKEY_UP, "up", {9, 8, 7, 6, 5, 4, 3, 2, 1, 9}}};
+
+  // In this test, the original windows are assigned id's. However, when focus
+  // traversing, the window that gets focused is the overview item widget
+  // window. This helper gets the id of the original window associated with
+  // the current focused window, if the focused window is an overview item
+  // widget window.
+  auto get_id_for_focused_window =
+      [](const std::vector<std::unique_ptr<OverviewItemBase>>& items) -> int {
+    aura::Window* window = window_util::GetFocusedWindow();
+    if (!window) {
+      return aura::Window::kInitialId;
+    }
+    for (const auto& item : items) {
+      if (window == item->item_widget()->GetNativeWindow()) {
+        return item->GetWindow()->GetId();
+      }
+    }
+    return aura::Window::kInitialId;
+  };
+
+  auto* event_generator = GetEventGenerator();
+  for (const TestData& test_case : test_data) {
+    SCOPED_TRACE("Using " + test_case.msg + " key.");
+
+    ToggleOverview();
+    const std::vector<std::unique_ptr<OverviewItemBase>>& overview_windows =
+        GetOverviewItemsForRoot(0);
+    std::vector<int> actual_ids;
+    for (size_t i = 0; i < test_windows + 1; ++i) {
+      SendKeyUntilOverviewItemIsFocused(test_case.key_code, event_generator);
+      actual_ids.push_back(get_id_for_focused_window(overview_windows));
+    }
+    EXPECT_THAT(test_case.expected_ids, actual_ids);
+    ToggleOverview();
+  }
+}
+
+// Tests selecting a window in overview mode with the return key.
+TEST_P(OverviewFocusCyclerTest, FocusOverviewWindowWithReturnKey) {
+  std::unique_ptr<aura::Window> window2 = CreateAppWindow();
+  std::unique_ptr<aura::Window> window1 = CreateAppWindow();
+  ToggleOverview();
+
+  // Pressing the return key on an item that is not focused should not do
+  // anything.
+  PressAndReleaseKey(ui::VKEY_RETURN);
+  OverviewController* overview_controller = OverviewController::Get();
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+
+  // Focus and select the first window.
+  PressAndReleaseKey(ui::VKEY_TAB);
+  PressAndReleaseKey(ui::VKEY_RETURN);
+  EXPECT_FALSE(overview_controller->InOverviewSession());
+  EXPECT_TRUE(wm::IsActiveWindow(window1.get()));
+
+  // Focus and select the second window.
+  ToggleOverview();
+  PressAndReleaseKey(ui::VKEY_TAB);
+  PressAndReleaseKey(ui::VKEY_TAB);
+  PressAndReleaseKey(ui::VKEY_RETURN);
+  EXPECT_FALSE(OverviewController::Get()->InOverviewSession());
+  EXPECT_TRUE(wm::IsActiveWindow(window2.get()));
 }
 
 // ----------------------------------------------------------------------------
@@ -124,8 +261,16 @@ TEST_P(DesksOverviewFocusCyclerTest, TabbingBasic) {
   CheckDeskBarViewSize(desk_bar_view, "initial");
   ASSERT_EQ(2u, desk_bar_view->mini_views().size());
 
+  // Tests that the overview item gets focused first.
+  PressAndReleaseKey(ui::VKEY_TAB);
+  auto* item2 = GetOverviewItemForWindow(window2.get())
+                    ->GetLeafItemForWindow(window2.get());
+  EXPECT_EQ(item2->overview_item_view(), GetHighlightedView());
+  CheckDeskBarViewSize(desk_bar_view, "overview item");
+
   // Tests that the first focused desk item is the first desk preview view.
   DeskMiniView* first_mini_view = desk_bar_view->mini_views()[0];
+  PressAndReleaseKey(ui::VKEY_TAB);
   PressAndReleaseKey(ui::VKEY_TAB);
   EXPECT_EQ(first_mini_view->desk_preview(), GetHighlightedView());
   CheckDeskBarViewSize(desk_bar_view, "first mini view");
@@ -227,8 +372,26 @@ TEST_P(DesksOverviewFocusCyclerTest, TabbingReverse) {
   PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
   EXPECT_EQ(first_mini_view->desk_preview(), GetHighlightedView());
 
-  // TODO(http://b/325335020): Tabbing onto overview items is not supported
-  // yet.
+  // Tests that the next focused item when reversing is the last overview item.
+  PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+  auto* item1 = GetOverviewItemForWindow(window1.get())
+                    ->GetLeafItemForWindow(window1.get());
+  EXPECT_EQ(item1->overview_item_view(), GetHighlightedView());
+
+  // Tests that the next focused item when reversing is the save desk for later
+  // button.
+  PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+  PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+  EXPECT_EQ(desk_bar_view->overview_grid()->GetSaveDeskForLaterButton(),
+            GetHighlightedView());
+
+  // Tests that we return to the save desk as template button after reverse
+  // tabbing through the save desk for later button if the feature is enabled.
+  if (AreDeskTemplatesEnabled()) {
+    PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+    EXPECT_EQ(desk_bar_view->overview_grid()->GetSaveDeskAsTemplateButton(),
+              GetHighlightedView());
+  }
 
   OverviewController::Get()->set_disable_app_id_check_for_saved_desks_for_test(
       false);

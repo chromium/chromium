@@ -10320,8 +10320,7 @@ TEST_P(DeskBarTest, ForwardTabbing) {
   ASSERT_TRUE(desk_bar_view);
 
   // Tab through the first window if we are in overview.
-  if (bar_type_ == DeskBarViewBase::Type::kOverview &&
-      !use_overview_new_focus_) {
+  if (bar_type_ == DeskBarViewBase::Type::kOverview) {
     PressAndReleaseKey(ui::VKEY_TAB);
   }
 

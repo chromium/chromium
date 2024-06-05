@@ -904,11 +904,10 @@ void OverviewSession::OnWindowActivating(
     return;
   }
 
-  // In addition to activation, overview UI that are modal dialogs (confirmation
-  // dialogs associated with saved desk) should not end overview.
+  // In addition to activation, overview UI that are losing activation due to
+  // the window being destroyed should not end overview.
   if (lost_active && lost_active->GetProperty(kOverviewUiKey) &&
-      lost_active->GetProperty(aura::client::kModalKey) ==
-          ui::ModalType::MODAL_TYPE_SYSTEM) {
+      lost_active->is_destroying()) {
     return;
   }
 

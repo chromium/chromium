@@ -88,6 +88,8 @@ class ASH_EXPORT OverviewItemView : public WindowMiniView,
   bool CanAcceptEvent(const ui::Event& event) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnThemeChanged() override;
+  bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
+  bool CanHandleAccelerators() const override;
 
  private:
   // The `OverviewItem` whose item widget owns and hosts this view. Please note

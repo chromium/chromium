@@ -14,6 +14,7 @@
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_item_base.h"
+#include "ash/wm/overview/overview_item_view.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/window_util.h"
 #include "base/run_loop.h"
@@ -167,6 +168,13 @@ void DragItemToPoint(OverviewItemBase* item,
 void SendKeyUntilOverviewItemIsFocused(
     ui::KeyboardCode key,
     ui::test::EventGenerator* event_generator) {
+  if (features::IsOverviewNewFocusEnabled()) {
+    do {
+      SendKey(key, event_generator);
+    } while (!views::IsViewClass<OverviewItemView>(GetFocusedView()));
+    return;
+  }
+
   do {
     SendKey(key, event_generator);
   } while (!GetOverviewFocusedWindow());
