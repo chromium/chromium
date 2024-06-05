@@ -7,6 +7,8 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
+#include <vector>
 
 #include "ash/app_list/apps_collections_controller.h"
 #include "ash/constants/ash_features.h"
@@ -44,6 +46,7 @@
 #include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ash/app_list/app_list_model_updater.h"
 #include "chrome/browser/ash/app_list/app_list_model_updater_observer.h"
+#include "chrome/browser/ash/app_list/app_list_survey_handler.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ash/app_list/chrome_app_list_item.h"
 #include "chrome/browser/ash/app_list/search/search_controller.h"
@@ -51,6 +54,8 @@
 #include "chrome/browser/ash/app_list/search/test/search_results_changed_waiter.h"
 #include "chrome/browser/ash/app_list/test/chrome_app_list_test_support.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
+#include "chrome/browser/ash/hats/hats_config.h"
+#include "chrome/browser/ash/hats/hats_notification_controller.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_test_utils.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
@@ -60,6 +65,7 @@
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -71,6 +77,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -1351,4 +1358,207 @@ IN_PROC_BROWSER_TEST_P(AppListClientNewUserTest, IsNewUser) {
     return AppListClientImpl::GetInstance()->IsNewUser(account_id()) ==
            was_first_sync_ever();
   }));
+}
+
+// An enum identifying the possible combinations for the Launcher HATS survey in
+// tests.
+enum class AppListSurveyConfiguration {
+  // No HATS configurations is selected for this test.
+  kNone,
+  // ash::kHatsLauncherAppsFindingSurvey
+  kAppsFinding,
+  // ash::kHatsLauncherAppsNeedingSurvey
+  kAppsNeeding,
+};
+
+class AppListSurveyTriggerTest
+    : public AppListClientImplBrowserTest,
+      public testing::WithParamInterface<
+          std::tuple<ash::AppsCollectionsController::ExperimentalArm,
+                     AppListSurveyConfiguration>> {
+ public:
+  AppListSurveyTriggerTest() {
+    std::vector<base::test::FeatureRefAndParams> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+    ash::AppsCollectionsController::ExperimentalArm arm = GetExperimentalArm();
+
+    switch (arm) {
+      case ash::AppsCollectionsController::ExperimentalArm::kDefaultValue:
+      case ash::AppsCollectionsController::ExperimentalArm::kControl:
+        disabled_features.push_back(app_list_features::kAppsCollections);
+        break;
+      case ash::AppsCollectionsController::ExperimentalArm::kEnabled:
+        enabled_features.push_back(
+            base::test::FeatureRefAndParams(app_list_features::kAppsCollections,
+                                            {{"is-counterfactual", "false"}}));
+        break;
+      case ash::AppsCollectionsController::ExperimentalArm::kCounterfactual:
+        enabled_features.push_back(
+            base::test::FeatureRefAndParams(app_list_features::kAppsCollections,
+                                            {{"is-counterfactual", "true"}}));
+        break;
+    }
+
+    switch (GetHatsConfig()) {
+      case AppListSurveyConfiguration::kNone:
+        disabled_features.push_back(
+            ash::kHatsLauncherAppsNeedingSurvey.feature);
+        disabled_features.push_back(
+            ash::kHatsLauncherAppsFindingSurvey.feature);
+        break;
+      case AppListSurveyConfiguration::kAppsFinding:
+        enabled_features.push_back(base::test::FeatureRefAndParams(
+            ash::kHatsLauncherAppsFindingSurvey.feature, {}));
+        disabled_features.push_back(
+            ash::kHatsLauncherAppsNeedingSurvey.feature);
+        break;
+      case AppListSurveyConfiguration::kAppsNeeding:
+        enabled_features.push_back(base::test::FeatureRefAndParams(
+            ash::kHatsLauncherAppsNeedingSurvey.feature, {}));
+        disabled_features.push_back(
+            ash::kHatsLauncherAppsFindingSurvey.feature);
+        break;
+    }
+
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                       disabled_features);
+  }
+  ~AppListSurveyTriggerTest() override = default;
+
+  // AppListClientImplBrowserTest:
+  void SetUpOnMainThread() override {
+    AppListClientImplBrowserTest::SetUpOnMainThread();
+
+    display_service_ = std::make_unique<NotificationDisplayServiceTester>(
+        browser()->profile());
+    user_manager::UserManager::Get()->SetIsCurrentUserNew(true);
+    AppListClientImpl::GetInstance()->InitializeAsIfNewUserLoginForTest();
+  }
+
+  void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
+    AppListClientImplBrowserTest::SetUpDefaultCommandLine(command_line);
+
+    switch (GetHatsConfig()) {
+      case AppListSurveyConfiguration::kNone:
+        break;
+      case AppListSurveyConfiguration::kAppsFinding:
+        command_line->AppendSwitchASCII(
+            ash::switches::kForceHappinessTrackingSystem,
+            ash::kHatsLauncherAppsFindingSurvey.feature.name);
+        break;
+      case AppListSurveyConfiguration::kAppsNeeding:
+        command_line->AppendSwitchASCII(
+            ash::switches::kForceHappinessTrackingSystem,
+            ash::kHatsLauncherAppsNeedingSurvey.feature.name);
+        break;
+    }
+  }
+
+  bool IsHatsNotificationActive() const {
+    return display_service_
+        ->GetNotification(ash::HatsNotificationController::kNotificationId)
+        .has_value();
+  }
+
+  void MaybeWaitForHatsNotification() {
+    if (!ShouldShowHatsSurvey()) {
+      return;
+    }
+
+    base::RunLoop loop;
+    display_service_->SetNotificationAddedClosure(loop.QuitClosure());
+    loop.Run();
+  }
+
+  const ash::HatsNotificationController* GetHatsNotificationController() const {
+    return AppListClientImpl::GetInstance()
+        ->survey_handler_->GetHatsNotificationControllerForTesting();
+  }
+
+  // Returns the HATS Survey that is expected to trigger.
+  AppListSurveyConfiguration GetHatsConfig() const {
+    return std::get<1>(GetParam());
+  }
+
+  // Returns the experimental arm that this test was set up for AppsCollections.
+  ash::AppsCollectionsController::ExperimentalArm GetExperimentalArm() const {
+    return std::get<0>(GetParam());
+  }
+
+  // Returns whether the a HATS survey should trigger for this parameter
+  // configuration.
+  bool ShouldShowHatsSurvey() {
+    return GetExperimentalArm() !=
+               ash::AppsCollectionsController::ExperimentalArm::kControl &&
+           GetHatsConfig() != AppListSurveyConfiguration::kNone;
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+
+  std::unique_ptr<NotificationDisplayServiceTester> display_service_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    AppListSurveyTriggerTest,
+    ::testing::Combine(
+        testing::Values(
+            ash::AppsCollectionsController::ExperimentalArm::kControl,
+            ash::AppsCollectionsController::ExperimentalArm::kCounterfactual,
+            ash::AppsCollectionsController::ExperimentalArm::kEnabled),
+        testing::Values(AppListSurveyConfiguration::kAppsFinding,
+                        AppListSurveyConfiguration::kAppsNeeding,
+                        AppListSurveyConfiguration::kNone)));
+
+IN_PROC_BROWSER_TEST_P(AppListSurveyTriggerTest, ShowSurveySuccess) {
+  EXPECT_FALSE(IsHatsNotificationActive());
+
+  AppListClientImpl* client = AppListClientImpl::GetInstance();
+
+  // Bring up the app list.
+  EXPECT_FALSE(client->GetAppListWindow());
+  client->ShowAppList(ash::AppListShowSource::kSearchKey);
+  ash::AppListTestApi().WaitForBubbleWindow(
+      /*wait_for_opening_animation=*/false);
+  EXPECT_TRUE(client->GetAppListWindow());
+
+  MaybeWaitForHatsNotification();
+
+  EXPECT_EQ(GetHatsNotificationController() != nullptr, ShouldShowHatsSurvey());
+  EXPECT_EQ(IsHatsNotificationActive(), ShouldShowHatsSurvey());
+}
+
+IN_PROC_BROWSER_TEST_P(AppListSurveyTriggerTest, ShowSurveyOnlyOnce) {
+  if (!ShouldShowHatsSurvey()) {
+    return;
+  }
+
+  EXPECT_FALSE(IsHatsNotificationActive());
+
+  AppListClientImpl* client = AppListClientImpl::GetInstance();
+
+  // Bring up the app list.
+  EXPECT_FALSE(client->GetAppListWindow());
+  client->ShowAppList(ash::AppListShowSource::kSearchKey);
+  ash::AppListTestApi().WaitForBubbleWindow(
+      /*wait_for_opening_animation=*/false);
+  EXPECT_TRUE(client->GetAppListWindow());
+
+  MaybeWaitForHatsNotification();
+
+  const ash::HatsNotificationController* hats_notification_controller =
+      GetHatsNotificationController();
+  EXPECT_NE(hats_notification_controller, nullptr);
+  EXPECT_TRUE(IsHatsNotificationActive());
+
+  // Bring up the app list again but the controller shouldn't be a new instance.
+  client->DismissView();
+
+  EXPECT_FALSE(client->GetAppListWindow());
+  client->ShowAppList(ash::AppListShowSource::kSearchKey);
+  ash::AppListTestApi().WaitForBubbleWindow(
+      /*wait_for_opening_animation=*/false);
+  EXPECT_TRUE(client->GetAppListWindow());
+
+  EXPECT_EQ(hats_notification_controller, GetHatsNotificationController());
 }
