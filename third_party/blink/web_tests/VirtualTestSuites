@@ -1956,7 +1956,7 @@
     ],
     "args": ["--enable-features=ThreadedPreloadScanner,PrecompileInlineScripts",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jul 1, 2023"
+    "expires": "Dec 5, 2024"
   },
   {
     "prefix": "isolate-sandboxed-iframes",
