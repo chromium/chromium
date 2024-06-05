@@ -37,6 +37,7 @@ import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -44,7 +45,8 @@ import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -75,6 +77,7 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
     private static final int CONTENT_TOP_MARGIN = 56;
 
     @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private PropertyModel mModel;
     private PropertyModelChangeProcessor mMCP;
@@ -91,17 +94,12 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
     private GridLayoutManager mLayoutManager;
     private LinearLayoutManager mLinearLayoutManager;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
+    @Mock private GradientDrawable mCardViewBackground;
 
     private Integer mBindingToken;
 
     @Before
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
-    }
-
-    @Override
-    public void setUpTest() throws Exception {
-        super.setUpTest();
+    public void setUp() throws Exception {
         mBindingToken = 5;
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -602,9 +600,23 @@ public class TabGridDialogViewBinderTest extends BlankUiTestActivityTestCase {
         Assert.assertTrue(colorIconClicked.get());
     }
 
-    @Override
-    public void tearDownTest() throws Exception {
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @EnableFeatures(ChromeFeatureList.FORCE_LIST_TAB_SWITCHER)
+    public void testSetAnimationBackgroundColor() {
+        int color = ContextCompat.getColor(getActivity(), R.color.baseline_primary_80);
+
+        View cardView = mTabGridDialogView.findViewById(R.id.card_view);
+        cardView.setBackground(mCardViewBackground);
+
+        mModel.set(TabGridDialogProperties.ANIMATION_BACKGROUND_COLOR, color);
+
+        verify(mCardViewBackground).setTint(color);
+    }
+
+    @After
+    public void tearDown() {
         TestThreadUtils.runOnUiThreadBlocking(mMCP::destroy);
-        super.tearDownTest();
     }
 }

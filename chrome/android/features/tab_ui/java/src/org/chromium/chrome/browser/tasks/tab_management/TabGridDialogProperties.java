@@ -69,6 +69,8 @@ class TabGridDialogProperties {
             new PropertyModel.WritableIntPropertyKey();
     public static final PropertyModel.WritableObjectPropertyKey<String> DIALOG_UNGROUP_BAR_TEXT =
             new PropertyModel.WritableObjectPropertyKey<>();
+    public static final PropertyModel.WritableObjectPropertyKey<Integer>
+            ANIMATION_BACKGROUND_COLOR = new PropertyModel.WritableObjectPropertyKey<>();
 
     /**
      * Integer, but not {@link PropertyModel.WritableIntPropertyKey} so that we can force update on
@@ -137,6 +139,7 @@ class TabGridDialogProperties {
                 INITIAL_SCROLL_INDEX,
                 TAB_GROUP_COLOR_ID,
                 IS_INCOGNITO,
-                COLOR_ICON_CLICK_LISTENER
+                COLOR_ICON_CLICK_LISTENER,
+                ANIMATION_BACKGROUND_COLOR,
             };
 }

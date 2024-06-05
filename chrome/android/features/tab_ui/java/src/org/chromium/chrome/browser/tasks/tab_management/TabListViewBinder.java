@@ -218,12 +218,12 @@ class TabListViewBinder {
         // colored so it should use the unselected color. This will be addressed in a fixit.
 
         // Shared by both classes, from tab_list_card_item.
-        View cardView = view.findViewById(R.id.content_view);
-        cardView.getBackground().mutate();
+        View contentView = view.findViewById(R.id.content_view);
+        contentView.getBackground().mutate();
         final @ColorInt int backgroundColor =
                 TabUiThemeUtils.getCardViewBackgroundColor(
                         view.getContext(), isIncognito, /* isSelected= */ false);
-        ViewCompat.setBackgroundTintList(cardView, ColorStateList.valueOf(backgroundColor));
+        ViewCompat.setBackgroundTintList(contentView, ColorStateList.valueOf(backgroundColor));
 
         final @ColorInt int textColor =
                 TabUiThemeUtils.getTitleTextColor(

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.ADD_CLICK_LISTENER;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.ANIMATION_BACKGROUND_COLOR;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.ANIMATION_SOURCE_VIEW;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.BINDING_TOKEN;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.BROWSER_CONTROLS_STATE_PROVIDER;
@@ -248,6 +249,13 @@ class TabGridDialogViewBinder {
                 // Fit the scrim to the TabGridDialog again after the bottom sheet visibility
                 // changes.
                 viewHolder.dialogView.refreshScrim();
+            }
+        } else if (ANIMATION_BACKGROUND_COLOR == propertyKey) {
+            // Only set in LIST mode not GRID mode. Will always be set in LIST mode. Mode is not
+            // mutable without restarting the app.
+            if (model.get(ANIMATION_BACKGROUND_COLOR) != null) {
+                viewHolder.dialogView.updateAnimationBackgroundColor(
+                        model.get(ANIMATION_BACKGROUND_COLOR));
             }
         }
     }

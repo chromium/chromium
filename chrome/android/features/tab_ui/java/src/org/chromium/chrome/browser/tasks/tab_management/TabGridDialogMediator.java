@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
+import org.chromium.chrome.browser.tab_ui.TabUiThemeUtils;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
@@ -670,6 +671,13 @@ public class TabGridDialogMediator
                 TabGridDialogProperties.DIALOG_UNGROUP_BAR_HOVERED_TEXT_COLOR,
                 ungroupBarHoveredTextColor);
         mModel.set(TabGridDialogProperties.IS_INCOGNITO, isIncognito);
+        if (TabUiFeatureUtilities.shouldUseListMode()) {
+            int animationBackgroundColor =
+                    TabUiThemeUtils.getCardViewBackgroundColor(
+                            mContext, isIncognito, /* isSelected= */ false);
+            mModel.set(
+                    TabGridDialogProperties.ANIMATION_BACKGROUND_COLOR, animationBackgroundColor);
+        }
     }
 
     private int getIdForTab(@Nullable Tab tab) {
