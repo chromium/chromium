@@ -84,8 +84,8 @@ TEST_F(InlinePromoItemTest, ConfigureCell) {
       isEqual:[UIColor colorNamed:kBlue600Color]]);
   EXPECT_NSEQ(more_info_button_configuration.attributedTitle.string,
               more_info_button_title);
-  EXPECT_EQ(GetMoreInfoButtonTitleFont(more_info_button_configuration),
-            [UIFont preferredFontForTextStyle:UIFontTextStyleBody]);
+  EXPECT_NSEQ(GetMoreInfoButtonTitleFont(more_info_button_configuration),
+              [UIFont preferredFontForTextStyle:UIFontTextStyleBody]);
 }
 
 // Tests that the close button visibility follows the item's
