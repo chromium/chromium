@@ -158,9 +158,11 @@ int IDBKey::Compare(const IDBKey* other) const {
       return CompareNumbers(array_.size(), other->array_.size());
     case mojom::IDBKeyType::Binary:
       if (int result =
-              memcmp(binary_->Data(), other->binary_->Data(),
-                     std::min(binary_->size(), other->binary_->size())))
+              memcmp(binary_->FlattenIfNeededAndGetData(),
+                     other->binary_->FlattenIfNeededAndGetData(),
+                     std::min(binary_->size(), other->binary_->size()))) {
         return result < 0 ? -1 : 1;
+      }
       return CompareNumbers(binary_->size(), other->binary_->size());
     case mojom::IDBKeyType::String:
       return CodeUnitCompare(string_, other->string_);

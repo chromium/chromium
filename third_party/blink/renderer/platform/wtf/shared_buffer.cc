@@ -82,7 +82,7 @@ scoped_refptr<SharedBuffer> SharedBuffer::Create(Vector<char>&& vector) {
   return buffer;
 }
 
-const char* SharedBuffer::Data() {
+const char* SharedBuffer::FlattenIfNeededAndGetData() {
   MergeSegmentsIntoBuffer();
   if (segments_.empty()) {
     return nullptr;

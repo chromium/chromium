@@ -361,7 +361,8 @@ TEST_F(BitmapImageTest, ConstantImageIdForPartiallyLoadedImages) {
 
   // Create a new buffer to partially supply the data.
   scoped_refptr<SharedBuffer> partial_buffer = SharedBuffer::Create();
-  partial_buffer->Append(image_data->Data(), image_data->size() - 4);
+  partial_buffer->Append(image_data->FlattenIfNeededAndGetData(),
+                         image_data->size() - 4);
 
   // First partial load. Repeated calls for a PaintImage should have the same
   // image until the data changes or the decoded data is destroyed.

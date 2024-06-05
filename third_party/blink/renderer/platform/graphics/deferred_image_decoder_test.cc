@@ -179,8 +179,8 @@ TEST_F(DeferredImageDecoderTest, drawIntoPaintRecord) {
 }
 
 TEST_F(DeferredImageDecoderTest, drawIntoPaintRecordProgressive) {
-  scoped_refptr<SharedBuffer> partial_data =
-      SharedBuffer::Create(data_->Data(), data_->size() - 10);
+  scoped_refptr<SharedBuffer> partial_data = SharedBuffer::Create(
+      data_->FlattenIfNeededAndGetData(), data_->size() - 10);
 
   // Received only half the file.
   lazy_decoder_->SetData(partial_data, false /* all_data_received */);
@@ -215,8 +215,8 @@ TEST_F(DeferredImageDecoderTest, allDataReceivedPriorToDecodeNonIncrementally) {
 TEST_F(DeferredImageDecoderTest, allDataReceivedPriorToDecodeIncrementally) {
   // The image is received in two parts, but a PaintImageGenerator is created
   // only after all the data is received.
-  scoped_refptr<SharedBuffer> partial_data =
-      SharedBuffer::Create(data_->Data(), data_->size() - 10);
+  scoped_refptr<SharedBuffer> partial_data = SharedBuffer::Create(
+      data_->FlattenIfNeededAndGetData(), data_->size() - 10);
   lazy_decoder_->SetData(partial_data, false /* all_data_received */);
   lazy_decoder_->SetData(data_, true /* all_data_received */);
   PaintImage image = CreatePaintImage();
@@ -230,8 +230,8 @@ TEST_F(DeferredImageDecoderTest, notAllDataReceivedPriorToDecode) {
   // The image is received in two parts, and a PaintImageGenerator is created
   // for each one. In real usage, it's likely that the software image decoder
   // will start working with partial data.
-  scoped_refptr<SharedBuffer> partial_data =
-      SharedBuffer::Create(data_->Data(), data_->size() - 10);
+  scoped_refptr<SharedBuffer> partial_data = SharedBuffer::Create(
+      data_->FlattenIfNeededAndGetData(), data_->size() - 10);
   lazy_decoder_->SetData(partial_data, false /* all_data_received */);
   PaintImage image =
       CreatePaintImage(PaintImage::CompletionState::kPartiallyDone);
@@ -416,7 +416,7 @@ TEST_F(DeferredImageDecoderTest, frameOpacity) {
 
 TEST_F(DeferredImageDecoderTest, data) {
   scoped_refptr<SharedBuffer> original_buffer =
-      SharedBuffer::Create(data_->Data(), data_->size());
+      SharedBuffer::Create(data_->FlattenIfNeededAndGetData(), data_->size());
   EXPECT_EQ(original_buffer->size(), data_->size());
   lazy_decoder_->SetData(original_buffer, false /* all_data_received */);
   scoped_refptr<SharedBuffer> new_buffer = lazy_decoder_->Data();

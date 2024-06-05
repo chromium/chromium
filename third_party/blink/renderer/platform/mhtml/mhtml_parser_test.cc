@@ -18,7 +18,7 @@ namespace {
 std::string GetResourceData(
     const HeapVector<Member<ArchiveResource>>& resources,
     size_t index) {
-  return std::string(resources[index]->Data()->Data(),
+  return std::string(resources[index]->Data()->FlattenIfNeededAndGetData(),
                      resources[index]->Data()->size());
 }
 

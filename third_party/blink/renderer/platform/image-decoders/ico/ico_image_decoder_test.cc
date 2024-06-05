@@ -92,8 +92,8 @@ TEST(ICOImageDecoderTests, NullData) {
   ASSERT_FALSE(ico_file_data->empty());
   ASSERT_LT(kSizeOfBadBlock, ico_file_data->size());
 
-  scoped_refptr<SharedBuffer> truncated_data =
-      SharedBuffer::Create(ico_file_data->Data(), kSizeOfBadBlock);
+  scoped_refptr<SharedBuffer> truncated_data = SharedBuffer::Create(
+      ico_file_data->FlattenIfNeededAndGetData(), kSizeOfBadBlock);
   auto decoder = CreateICODecoder();
 
   decoder->SetData(truncated_data.get(), false);

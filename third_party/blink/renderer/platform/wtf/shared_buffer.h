@@ -147,7 +147,7 @@ class WTF_EXPORT SharedBuffer : public RefCounted<SharedBuffer> {
   //
   // Calling this function will force internal segmented buffers to be merged
   // into a flat buffer. Use iterator whenever possible for better performance.
-  const char* Data();
+  const char* FlattenIfNeededAndGetData();
 
   size_t size() const { return size_; }
 

@@ -1357,7 +1357,7 @@ TEST(StaticAVIFTests, SizeAvailableBeforeAllDataReceived) {
   scoped_refptr<SharedBuffer> data =
       ReadFile("/images/resources/avif/red-limited-range-420-8bpc.avif");
   ASSERT_TRUE(data.get());
-  stream_buffer->Append(data->Data(), data->size());
+  stream_buffer->Append(data->FlattenIfNeededAndGetData(), data->size());
   EXPECT_EQ(stream_buffer->size(), 318u);
   decoder->SetData(stream_buffer, /*all_data_received=*/false);
   // All bytes are appended so we should have size, even though we pass
@@ -1387,7 +1387,7 @@ TEST(StaticAVIFTests, ProgressiveDecoding) {
   // This image has three layers. The first layer is 8299 bytes. Because of
   // image headers and other overhead, if we pass exactly 8299 bytes to the
   // decoder, the decoder does not have enough data to decode the first layer.
-  stream_buffer->Append(data->Data(), 8299u);
+  stream_buffer->Append(data->FlattenIfNeededAndGetData(), 8299u);
   decoder->SetData(stream_buffer, /*all_data_received=*/false);
   EXPECT_TRUE(decoder->IsSizeAvailable());
   EXPECT_FALSE(decoder->Failed());
@@ -1402,7 +1402,7 @@ TEST(StaticAVIFTests, ProgressiveDecoding) {
   // An additional 301 bytes are enough data for the decoder to decode the first
   // layer. With progressive decoding, the frame buffer status will transition
   // to ImageFrame::kFramePartial.
-  stream_buffer->Append(data->Data() + 8299u, 301u);
+  stream_buffer->Append(data->FlattenIfNeededAndGetData() + 8299u, 301u);
   decoder->SetData(stream_buffer, /*all_data_received=*/false);
   EXPECT_FALSE(decoder->Failed());
   frame = decoder->DecodeFrameBufferAtIndex(0);
@@ -1416,7 +1416,8 @@ TEST(StaticAVIFTests, ProgressiveDecoding) {
               testing::ContainerEq(expected_counts));
 
   // Now send the rest of the data.
-  stream_buffer->Append(data->Data() + 8299u + 301u, 62344u);
+  stream_buffer->Append(data->FlattenIfNeededAndGetData() + 8299u + 301u,
+                        62344u);
   decoder->SetData(stream_buffer, /*all_data_received=*/true);
   EXPECT_FALSE(decoder->Failed());
   frame = decoder->DecodeFrameBufferAtIndex(0);
@@ -1474,7 +1475,7 @@ TEST(StaticAVIFTests, IncrementalDecoding) {
       {data->size(), ImageFrame::kFrameComplete, 13 * 64}};
   size_t previous_size = 0;
   for (const Step& step : steps) {
-    stream_buffer->Append(data->Data() + previous_size,
+    stream_buffer->Append(data->FlattenIfNeededAndGetData() + previous_size,
                           step.size - previous_size);
     decoder->SetData(stream_buffer, step.status == ImageFrame::kFrameComplete);
 

@@ -247,7 +247,8 @@ TEST_F(WorkerMainScriptLoaderTest, ResponseWithSucessThenOnComplete) {
             worker_main_script_loader->GetRequestURL());
   EXPECT_EQ(UTF8Encoding(), worker_main_script_loader->GetScriptEncoding());
   EXPECT_EQ(kTopLevelScript,
-            std::string(client_->Data()->Data(), client_->Data()->size()));
+            std::string(client_->Data()->FlattenIfNeededAndGetData(),
+                        client_->Data()->size()));
   EXPECT_EQ("text/javascript", fake_resource_load_info_notifier.GetMimeType());
 }
 

@@ -326,8 +326,8 @@ class InspectorPostBodyParser
   void BlobReadCallback(String* destination,
                         scoped_refptr<SharedBuffer> raw_data) {
     if (raw_data) {
-      *destination = String::FromUTF8WithLatin1Fallback(raw_data->Data(),
-                                                        raw_data->size());
+      *destination = String::FromUTF8WithLatin1Fallback(
+          raw_data->FlattenIfNeededAndGetData(), raw_data->size());
     } else {
       error_ = true;
     }

@@ -956,7 +956,8 @@ static void FillStaticResponseIfNeeded(WebNavigationParams* params,
       WebNavigationParams::FillStaticResponse(
           params, archive_resource->MimeType(),
           archive_resource->TextEncoding(),
-          base::make_span(archive_data->Data(), archive_data->size()));
+          base::make_span(archive_data->FlattenIfNeededAndGetData(),
+                          archive_data->size()));
     } else {
       // The requested archive resource does not exist. In an ideal world, this
       // would commit as a failed navigation, but the browser doesn't know

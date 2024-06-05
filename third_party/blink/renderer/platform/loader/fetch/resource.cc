@@ -217,7 +217,8 @@ void Resource::CheckResourceIntegrity() {
   // because people might want to assert a zero-length resource.
   CHECK(DecodedSize() == 0 || Data());
   if (Data()) {
-    data = base::as_bytes(base::span(Data()->Data(), Data()->size()));
+    data = base::as_bytes(
+        base::span(Data()->FlattenIfNeededAndGetData(), Data()->size()));
   }
 
   if (SubresourceIntegrity::CheckSubresourceIntegrity(

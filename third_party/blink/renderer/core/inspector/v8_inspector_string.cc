@@ -60,7 +60,8 @@ class BinaryBasedOnSharedBuffer : public Binary::Impl {
       : buffer_(std::move(buffer)) {}
 
   const uint8_t* data() const override {
-    return reinterpret_cast<const uint8_t*>(buffer_->Data());
+    return reinterpret_cast<const uint8_t*>(
+        buffer_->FlattenIfNeededAndGetData());
   }
   size_t size() const override { return buffer_->size(); }
 

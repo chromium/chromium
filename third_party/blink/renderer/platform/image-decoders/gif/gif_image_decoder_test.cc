@@ -471,9 +471,9 @@ TEST(GIFImageDecoderTest, recursiveDecodeFailure) {
   // Modify data to have an error in frame 2.
   const size_t kErrorOffset = 15302u;
   scoped_refptr<SharedBuffer> modified_data =
-      SharedBuffer::Create(data->Data(), kErrorOffset);
+      SharedBuffer::Create(data->FlattenIfNeededAndGetData(), kErrorOffset);
   modified_data->Append("A", 1u);
-  modified_data->Append(data->Data() + kErrorOffset + 1,
+  modified_data->Append(data->FlattenIfNeededAndGetData() + kErrorOffset + 1,
                         data->size() - kErrorOffset - 1);
   {
     auto decoder = CreateDecoder();

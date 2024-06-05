@@ -152,7 +152,7 @@ static void TestMergeBuffer(DecoderCreator create_decoder,
   // This will call SharedBuffer::MergeSegmentsIntoBuffer, copying all
   // segments into the contiguous buffer. If the ImageDecoder was pointing to
   // data in a segment, its pointer would no longer be valid.
-  segmented_data->Data();
+  segmented_data->FlattenIfNeededAndGetData();
 
   ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
   ASSERT_FALSE(decoder->Failed());

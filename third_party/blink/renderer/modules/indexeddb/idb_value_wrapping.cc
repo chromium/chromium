@@ -319,10 +319,11 @@ bool IDBValueUnwrapper::Decompress(SharedBuffer& buffer,
     return false;
   }
 
-  // Calling `Data()` is "safe" because the SharedBuffer will have always been
-  // created from a Vector and hence not segmented.
-  base::span<const char> compressed(buffer.Data() + kHeaderSize,
-                                    buffer.size() - kHeaderSize);
+  // Calling `FlattenIfNeededAndGetData()` is "safe" because the SharedBuffer
+  // will have always been created from a Vector and hence not segmented.
+  base::span<const char> compressed(
+      buffer.FlattenIfNeededAndGetData() + kHeaderSize,
+      buffer.size() - kHeaderSize);
 
   Vector<char> decompressed_data;
   size_t decompressed_length;
@@ -343,7 +344,8 @@ bool IDBValueUnwrapper::Parse(IDBValue* value) {
   if (!IDBValueUnwrapper::IsWrapped(value))
     return false;
 
-  const uint8_t* data = reinterpret_cast<const uint8_t*>(value->data_->Data());
+  const uint8_t* data = reinterpret_cast<const uint8_t*>(
+      value->data_->FlattenIfNeededAndGetData());
   end_ = data + value->data_->size();
   current_ = data + kHeaderSize;
 
