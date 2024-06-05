@@ -398,12 +398,9 @@ crbug.com/1290953 [ android android-pixel-4 android-webview-instrumentation ] Pi
 
 crbug.com/1345777 [ android ] Pixel_VideoStreamFromWebGLCanvas [ Skip ]
 
-
-
 crbug.com/1372141 [ android android-sm-a235m ] Pixel_CanvasLowLatencyWebGLAlphaFalse [ Failure ]
 
 crbug.com/1376927 [ win10 target-cpu-32 nvidia-0x2184 ] Pixel_MediaFoundationClearDirectComposition [ Failure ]
-
 
 
 # Lacros consistent failures on CrOS devices, skip to save some time
@@ -421,7 +418,6 @@ crbug.com/1495176 [ chromeos lacros-chrome chromeos-board-octopus ] Pixel_WebGLS
 
 crbug.com/1456360 [ chromeos chromeos-board-amd64-generic ] Pixel_WebGLCopyImage [ Skip ]
 crbug.com/1456360 [ chromeos chromeos-board-amd64-generic ] Pixel_WebGLSadCanvas [ Skip ]
-
 
 
 # Flaky, but if it fails, retries also always fail.
@@ -461,6 +457,10 @@ crbug.com/1516977 [ chromeos cros-chrome chromeos-board-volteer ] Pixel_WebGLCon
 
 # Broadly flaky unsymbolized crashes on Jacuzzi
 crbug.com/1518007 [ chromeos cros-chrome chromeos-board-jacuzzi ] Pixel_Video* [ RetryOnFailure ]
+
+# ChromeOS failures
+crbug.com/345146895 [ chromeos cros-chrome chromeos-board-amd64-generic renderer-skia-gl ] Pixel_RenderPasses [ Failure ]
+
 
 # Failures on fuchsia
 crbug.com/40935289 [ fuchsia fuchsia-board-qemu-x64 ] Pixel_WebGLFloat [ Failure ]
