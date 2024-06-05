@@ -14499,6 +14499,17 @@
                         "AdaptiveButtonInTopToolbarTranslate",
                         "SegmentationPlatformAdaptiveToolbarV2Feature"
                     ]
+                },
+                {
+                    "name": "Segmentation_Fixed_Random_6_Button_Forced_Refresh_60_Days_1_20240604",
+                    "enable_features": [
+                        "AdaptiveButtonInTopToolbarAddToBookmarks",
+                        "AdaptiveButtonInTopToolbarCustomizationV2",
+                        "AdaptiveButtonInTopToolbarTranslate",
+                        "ReadAloudInMultiWindow",
+                        "ReadAloudTapToSeek",
+                        "SegmentationPlatformAdaptiveToolbarV2Feature"
+                    ]
                 }
             ]
         }
