@@ -229,7 +229,8 @@ void RouteToManager(ContentAutofillDriver& source,
                         RouterArgs...),
                     void (AutofillManager::*manager_fun)(ManagerArgs...),
                     ActualArgs&&... args) {
-  if (!bad_message::CheckFrameNotPrerendering(source.render_frame_host())) {
+  if (!bad_message::CheckFieldInForm(args...) ||
+      !bad_message::CheckFrameNotPrerendering(source.render_frame_host())) {
     return;
   }
   return (router.*router_fun)(

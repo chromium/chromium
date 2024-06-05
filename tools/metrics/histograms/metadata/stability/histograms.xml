@@ -196,18 +196,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Stability.BadMessageTerminated.Autofill"
-    enum="BadMessageReasonAutofill" expires_after="never">
-<!-- expires-never: Monitoring renderer kills triggered by auto-fill. -->
-
-  <owner>vollick@chromium.org</owner>
-  <owner>battre@chromium.org</owner>
-  <summary>
-    Count of processes killed because they sent a bad IPC that couldn't be
-    properly handled. Categories are the reasons (code locations) for the kills.
-  </summary>
-</histogram>
-
 <histogram name="Stability.BadMessageTerminated.Chrome"
     enum="BadMessageReasonChrome" expires_after="never">
 <!-- expires-never: Monitoring renderer kills triggered by //chrome. -->

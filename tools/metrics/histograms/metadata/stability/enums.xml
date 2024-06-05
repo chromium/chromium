@@ -111,13 +111,6 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
-<enum name="BadMessageReasonAutofill">
-<!-- Generated from components/autofill/content/browser/bad_message.h.
-Called by update_bad_message_reasons.py.-->
-
-  <int value="1" label="Prerendering"/>
-</enum>
-
 <enum name="BadMessageReasonChrome">
 <!-- Generated from chrome/browser/bad_message.h.
 Called by update_bad_message_reasons.py.-->

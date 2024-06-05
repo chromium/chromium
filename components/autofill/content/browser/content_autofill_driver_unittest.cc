@@ -49,9 +49,13 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_renderer_host.h"
+#include "content/public/test/web_contents_tester.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/message.h"
+#include "mojo/public/cpp/system/functions.h"
 #include "net/base/net_errors.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -918,6 +922,66 @@ TEST_F(ContentAutofillDriverTest,
       }));
   run_loop.Run();
   EXPECT_THAT(matches, ElementsAre("1234"));
+}
+
+// RAII type that intercepts mojom::ReportBadMessage() calls.
+class BadMessageHelper {
+ public:
+  BadMessageHelper() { mojo::SetDefaultProcessErrorHandler(callback_.Get()); }
+  ~BadMessageHelper() {
+    mojo::SetDefaultProcessErrorHandler(base::NullCallback());
+  }
+
+  // This callback is invoked when a bad message arrives.
+  base::MockRepeatingCallback<void(const std::string&)>& callback() {
+    return callback_;
+  }
+
+ private:
+  base::MockRepeatingCallback<void(const std::string&)> callback_;
+  // mojo::ReportBadMessage() needs a MessageDispatchContext.
+  mojo::Message dummy_message_{0, 0, 0, 0, nullptr};
+  mojo::internal::MessageDispatchContext context_{&dummy_message_};
+};
+
+class ContentAutofillDriverTest_PrerenderBadMessage
+    : public ContentAutofillDriverTest {
+ private:
+  content::test::ScopedPrerenderFeatureList prerender_feature_list_;
+};
+
+// Tests that a renderer event during prerendering causes a bad message.
+TEST_F(ContentAutofillDriverTest_PrerenderBadMessage,
+       BadMessageIfPrerendering) {
+  content::test::ScopedPrerenderWebContentsDelegate web_contents_delegate(
+      *web_contents());
+  // This must "a.test" (or "http").
+  // Otherwise AddPrerenderAndCommitNavigation() hits a DCHECK.
+  NavigateAndCommit(GURL("https://a.test/"));
+  content::RenderFrameHost* rfh =
+      content::WebContentsTester::For(web_contents())
+          ->AddPrerenderAndCommitNavigation(GURL("https://a.test/prerender"));
+  ASSERT_EQ(rfh->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kPrerendering);
+  BadMessageHelper bad_message_helper;
+  EXPECT_CALL(manager(rfh), Reset()).Times(0);
+  EXPECT_CALL(bad_message_helper.callback(), Run);
+  EXPECT_CALL(manager(rfh), OnFormsSeen).Times(0);
+  driver(rfh).renderer_events().FormsSeen(/*updated_forms=*/{},
+                                          /*removed_forms=*/{});
+}
+
+// Tests that a renderer event with a FieldRendererId that doesn't belong to the
+// associated FormData causes a bad message.
+TEST_F(ContentAutofillDriverTest, BadMessageIfFieldWithoutForm) {
+  EXPECT_CALL(manager(), Reset()).Times(0);
+  BadMessageHelper bad_message_helper;
+  EXPECT_CALL(bad_message_helper.callback(), Run);
+  EXPECT_CALL(manager(), OnFormsSeen).Times(0);
+  FormData form = test::CreateTestAddressFormData();
+  FieldRendererId field = test::MakeFieldRendererId();
+  driver().renderer_events().AskForValuesToFill(
+      form, field, gfx::Rect(), AutofillSuggestionTriggerSource::kUnspecified);
 }
 
 }  // namespace autofill
