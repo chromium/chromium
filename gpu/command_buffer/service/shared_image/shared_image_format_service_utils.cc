@@ -647,8 +647,7 @@ skgpu::graphite::TextureInfo GraphitePromiseTextureInfo(
 
     wgpu::TextureFormat wgpu_view_format;
     if (ycbcr_info) {
-      // TODO(crbug.com/41488897): Set to EXTERNAL.
-      wgpu_view_format = wgpu::TextureFormat::RGBA8Unorm;
+      wgpu_view_format = wgpu::TextureFormat::External;
     } else {
       wgpu_view_format = gpu::ToDawnTextureViewFormat(format, plane_index);
     }

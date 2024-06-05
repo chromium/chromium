@@ -356,11 +356,7 @@ class VideoImageReaderImageBacking::SkiaGraphiteDawnImageRepresentation
 
     // Set the Dawn texture and SharedTextureMemory parameters.
 
-    // TODO(crbug.com/41488897): Need to set the external format.
-    wgpu::TextureFormat webgpu_format = ToDawnFormat(format());
-    if (webgpu_format == wgpu::TextureFormat::Undefined) {
-      LOG(ERROR) << "Unable to find a suitable WebGPU format.";
-    }
+    wgpu::TextureFormat webgpu_format = wgpu::TextureFormat::External;
     auto device = context_state_->dawn_context_provider()->GetDevice();
 
     wgpu::TextureDescriptor texture_descriptor;
