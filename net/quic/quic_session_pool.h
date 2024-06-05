@@ -784,9 +784,12 @@ class NET_EXPORT_PRIVATE QuicSessionPool
 
   QuicConnectivityMonitor connectivity_monitor_;
 
-  raw_ptr<const base::TickClock, DanglingUntriaged> tick_clock_ = nullptr;
-
   scoped_refptr<base::SequencedTaskRunner> task_runner_ = nullptr;
+
+  // This needs to be below `task_runner_`, since in some tests, it often points
+  // to a TickClock owned by the TestMockTimeTaskRunner that `task_runner_`
+  // owners a reference to.
+  raw_ptr<const base::TickClock> tick_clock_ = nullptr;
 
   const raw_ptr<SSLConfigService> ssl_config_service_;
 
