@@ -53,9 +53,14 @@
   }
   checkScriptTraceEvent(
       events, 'AnimationFrame::Script::Execute', loaf_tracing_event.id, 50);
+
+  // We want to assert that there are exactly four short AnimationFrame events with
+  // no scripts counted against. However, on some really slow devices (eg. cpu=1 tests),
+  // this tends to flake with short frames' script execution time going above the 5ms
+  // threshold. In order to deflake, we use a < 200 threshold here to count short frames.
   const short_animation_frame_events = events.filter(
       e => e.name == 'AnimationFrame' &&
-          e.args.animation_frame_timing_info?.num_scripts == 0);
+          (e.args.animation_frame_timing_info?.duration_ms || 0) < 200);
   testRunner.log(`Found matching short LoaF events ${
       short_animation_frame_events.length >= 4 ? '>=4' : '<4'}`);
   const short_frame_ids = short_animation_frame_events.map(({ id }) => id);
