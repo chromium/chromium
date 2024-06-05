@@ -4034,6 +4034,9 @@
                     },
                     "enable_features": [
                         "GrowthCampaignsExperiment2"
+                    ],
+                    "disable_features": [
+                        "GoogleOneOfferFilesBanner"
                     ]
                 }
             ]
@@ -9548,52 +9551,6 @@
                     "enable_features": [
                         "LensCameraAssistedSearch",
                         "LensOnQuickActionSearchWidget"
-                    ]
-                }
-            ]
-        }
-    ],
-    "GoogleOneOfferStudy": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "NotificationOnly_20230216",
-                    "params": {
-                        "availability": ">=0",
-                        "event_trigger": "name:google_one_offer_iph_notification_shown;comparator:==0;window:365;storage:365",
-                        "event_used": "name:google_one_offer_iph_notification_get_perk;comparator:any;window:365;storage:365",
-                        "session_rate": "<1"
-                    },
-                    "enable_features": [
-                        "IPH_GoogleOneOfferNotification"
-                    ],
-                    "disable_features": [
-                        "GoogleOneOfferFilesBanner"
-                    ]
-                },
-                {
-                    "name": "FilesBannerOnly_20230216",
-                    "enable_features": [
-                        "GoogleOneOfferFilesBanner"
-                    ],
-                    "disable_features": [
-                        "IPH_GoogleOneOfferNotification"
-                    ]
-                },
-                {
-                    "name": "NotificationAndFilesBanner_20230216",
-                    "params": {
-                        "availability": ">=0",
-                        "event_trigger": "name:google_one_offer_iph_notification_shown;comparator:==0;window:365;storage:365",
-                        "event_used": "name:google_one_offer_iph_notification_get_perk;comparator:any;window:365;storage:365",
-                        "session_rate": "<1"
-                    },
-                    "enable_features": [
-                        "GoogleOneOfferFilesBanner",
-                        "IPH_GoogleOneOfferNotification"
                     ]
                 }
             ]
