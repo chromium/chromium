@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/check_is_test.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -171,47 +172,55 @@ PlusAddressCreationDialogDelegate::PlusAddressCreationDialogDelegate(
   description_paragraph->SetProperty(views::kElementIdentifierKey,
                                      kPlusAddressDescriptionTextElementId);
 
-  // Set the description text & update the styling.
-  std::vector<size_t> description_offsets;
-  // Prepend the settings link text with a newline to render it on one line.
-  std::u16string settings_text =
-      base::StrCat({u"\n", l10n_util::GetStringUTF16(
-                               IDS_PLUS_ADDRESS_MODAL_PLUS_ADDRESS_LINK_TEXT)});
-  description_paragraph->SetText(l10n_util::GetStringFUTF16(
-      IDS_PLUS_ADDRESS_MODAL_PLUS_ADDRESS_DESCRIPTION_START, {settings_text},
-      &description_offsets));
-
-  gfx::Range settings_text_range(
-      description_offsets[0], description_offsets[0] + settings_text.length());
-  views::StyledLabel::RangeStyleInfo settings_text_style =
-      views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
-          &PlusAddressCreationDialogDelegate::OpenSettingsLink,
-          // Safe because this delegate outlives the Widget (and this view).
-          base::Unretained(this), web_contents));
-  description_paragraph->AddStyleRange(settings_text_range,
-                                       settings_text_style);
-
-  // Add the primary email address separately to avoid width constriction.
-  views::StyledLabel* primary_email_address_view = primary_view->AddChildView(
-      views::Builder<views::StyledLabel>()
-          .SetHorizontalAlignment(gfx::ALIGN_CENTER)
-          .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
-          .Build());
-
-  // Set the primary email address & update the styling.
-  std::vector<size_t> email_address_offsets;
-  std::u16string u16_primary_email_address =
+  const std::u16string u16_primary_email_address =
       base::UTF8ToUTF16(primary_email_address);
-  primary_email_address_view->SetText(l10n_util::GetStringFUTF16(
-      IDS_PLUS_ADDRESS_MODAL_PLUS_ADDRESS_DESCRIPTION_END,
-      {u16_primary_email_address}, &email_address_offsets));
 
-  views::StyledLabel::RangeStyleInfo email_address_style;
-  email_address_style.text_style = views::style::TextStyle::STYLE_EMPHASIZED;
-  primary_email_address_view->AddStyleRange(
-      gfx::Range(email_address_offsets[0],
-                 email_address_offsets[0] + u16_primary_email_address.length()),
-      email_address_style);
+  if (base::FeatureList::IsEnabled(features::kPlusAddressUIRedesign)) {
+    description_paragraph->SetText(l10n_util::GetStringFUTF16(
+        IDS_PLUS_ADDRESS_MODAL_DESCRIPTION, {u16_primary_email_address}));
+  } else {
+    // Set the description text & update the styling.
+    std::vector<size_t> description_offsets;
+    // Prepend the settings link text with a newline to render it on one line.
+    std::u16string settings_text = base::StrCat(
+        {u"\n", l10n_util::GetStringUTF16(
+                    IDS_PLUS_ADDRESS_MODAL_PLUS_ADDRESS_LINK_TEXT)});
+    description_paragraph->SetText(l10n_util::GetStringFUTF16(
+        IDS_PLUS_ADDRESS_MODAL_PLUS_ADDRESS_DESCRIPTION_START, {settings_text},
+        &description_offsets));
+
+    gfx::Range settings_text_range(
+        description_offsets[0],
+        description_offsets[0] + settings_text.length());
+    views::StyledLabel::RangeStyleInfo settings_text_style =
+        views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
+            &PlusAddressCreationDialogDelegate::OpenSettingsLink,
+            // Safe because this delegate outlives the Widget (and this view).
+            base::Unretained(this), web_contents));
+    description_paragraph->AddStyleRange(settings_text_range,
+                                         settings_text_style);
+
+    // Add the primary email address separately to avoid width constriction.
+    views::StyledLabel* primary_email_address_view = primary_view->AddChildView(
+        views::Builder<views::StyledLabel>()
+            .SetHorizontalAlignment(gfx::ALIGN_CENTER)
+            .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
+            .Build());
+
+    // Set the primary email address & update the styling.
+    std::vector<size_t> email_address_offsets;
+    primary_email_address_view->SetText(l10n_util::GetStringFUTF16(
+        IDS_PLUS_ADDRESS_MODAL_PLUS_ADDRESS_DESCRIPTION_END,
+        {u16_primary_email_address}, &email_address_offsets));
+
+    views::StyledLabel::RangeStyleInfo email_address_style;
+    email_address_style.text_style = views::style::TextStyle::STYLE_EMPHASIZED;
+    primary_email_address_view->AddStyleRange(
+        gfx::Range(
+            email_address_offsets[0],
+            email_address_offsets[0] + u16_primary_email_address.length()),
+        email_address_style);
+  }
 
   // Create a bubble for the plus address to be displayed in.
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();

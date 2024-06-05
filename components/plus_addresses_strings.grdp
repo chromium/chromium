@@ -5,9 +5,12 @@
     <message name="IDS_PLUS_ADDRESS_FALLBACK_LABEL_CONTEXT_MENU" desc="Label for the context menu entry that serves as a fallback to trigger plus address suggestions on a field." translateable="false">
       Lorem Ipsum
     </message>
-    <!-- Modal strings -->
+    <!-- Creation dialog strings -->
     <message name="IDS_PLUS_ADDRESS_MODAL_TITLE" desc="Title for the experimental enterprise plus addresses feature modal" translateable="false">
       Lorem Ipsum
+    </message>
+    <message name="IDS_PLUS_ADDRESS_MODAL_DESCRIPTION" desc="The description text on the creation dialog for plus addresses." translateable="false">
+    Lorem (<ph name="GAIA_EMAIL">$1<ex>foo@gmail.com</ex></ph>).
     </message>
     <message name="IDS_PLUS_ADDRESS_MODAL_PLUS_ADDRESS_LABEL" desc="Label for the upper portion of the plus addresses modal" translateable="false">
       Lorem Ipsum
