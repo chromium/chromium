@@ -10,7 +10,8 @@ sections are placed consecutively in the order specified. This allows us
 to page in less code during start-up.
 
 Example usage:
-  tools/cygprofile/orderfile_generator_backend.py --use-goma --target-arch=arm
+  tools/cygprofile/orderfile_generator_backend.py --use-remoteexec \
+    --target-arch=arm
 """
 
 
@@ -255,8 +256,6 @@ class ClankCompiler:
         'devtools_instrumentation_dumping=' + str(instrumented).lower()
     ]
     gn_args += _ARCH_GN_ARGS[self._options.arch]
-    if self._options.goma_dir:
-      gn_args += ['goma_dir="%s"' % self._options.goma_dir]
 
     if os.path.exists(self._orderfile_location):
       # GN needs the orderfile path to be source-absolute.
@@ -1129,9 +1128,6 @@ def CreateArgumentParser():
   parser.add_argument(
       '--skip-patch', action='store_false', dest='patch', default=True,
       help='Only generate the raw (unpatched) orderfile, don\'t patch it.')
-  parser.add_argument('--goma-dir', help='GOMA directory.')
-  parser.add_argument(
-      '--use-goma', action='store_true', help='Enable GOMA.', default=False)
   parser.add_argument('--use-remoteexec',
                       action='store_true',
                       help='Enable remoteexec. see //build/toolchain/rbe.gni.',
