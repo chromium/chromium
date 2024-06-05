@@ -81,6 +81,23 @@ void KeyboardBrightnessController::KeyboardAmbientLightSensorEnabledChanged(
   }
 
   user_manager::KnownUser known_user(local_state_);
+
+  // If the keyboard ambient light sensor was disabled, save the cause for that
+  // change into a KnownUser pref. This pref can be used if we need to
+  // systematically re-enable the ambient light sensor for a subset of users
+  // (e.g. those who didn't manually disable the sensor from the Settings app).
+  if (!change.sensor_enabled()) {
+    known_user.SetPath(
+        active_account_id_.value(),
+        prefs::kKeyboardAmbientLightSensorDisabledReason,
+        std::make_optional<base::Value>(static_cast<int>(change.cause())));
+  } else {
+    // If the ambient light sensor was enabled, remove the existing "disabled
+    // reason" pref.
+    known_user.RemovePref(active_account_id_.value(),
+                          prefs::kKeyboardAmbientLightSensorDisabledReason);
+  }
+
   // Save the current ambient light sensor enabled status into local state.
   known_user.SetPath(active_account_id_.value(),
                      prefs::kKeyboardAmbientLightSensorEnabled,

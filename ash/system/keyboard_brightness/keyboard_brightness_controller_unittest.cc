@@ -129,6 +129,31 @@ class KeyboardBrightnessControllerTest : public AshTestBase {
         ->GetDouble();
   }
 
+  // Return true if there is a KnownUser pref for the keyboard ambient light
+  // sensor disabled reason.
+  bool HasKeyboardAmbientLightSensorDisabledReasonPrefValue(
+      const user_manager::KnownUser& known_user,
+      const AccountId& account_id) {
+    const base::Value* pref_value = known_user.FindPath(
+        account_id, prefs::kKeyboardAmbientLightSensorDisabledReason);
+    if (!pref_value) {
+      return false;
+    }
+
+    return pref_value->is_int();
+  }
+
+  // Gets the KnownUser keyboard ambient light sensor disabled reason pref
+  // value. Only call this function if
+  // HasKeyboardAmbientLightSensorDisabledReasonPrefValue is true.
+  int GetKeyboardAmbientLightSensorDisabledReasonPrefValue(
+      const user_manager::KnownUser& known_user,
+      const AccountId& account_id) {
+    return known_user
+        .FindPath(account_id, prefs::kKeyboardAmbientLightSensorDisabledReason)
+        ->GetInt();
+  }
+
   void SetKeyboardAmbientLightSensorEnabled(
       bool enabled,
       power_manager::AmbientLightSensorChange_Cause cause) {
@@ -550,6 +575,57 @@ TEST_F(KeyboardBrightnessControllerTest,
   LoginScreenFocusAccount(first_account);
   ExpectKeyboardAmbientLightSensorEnabled(true);
   ExpectKeyboardBrightnessPercent(kInitialKeyboardBrightness);
+}
+
+TEST_F(KeyboardBrightnessControllerTest, KeyboardALSDisabledReasonPref) {
+  // Set initial ALS status and brightness level.
+  power_manager_client()->SetKeyboardAmbientLightSensorEnabled(true);
+  power_manager_client()->set_keyboard_brightness_percent(
+      kInitialKeyboardBrightness);
+
+  // On the login screen, focus a user.
+  AccountId account_id = AccountId::FromUserEmail(kUserEmail);
+  login_data_dispatcher()->NotifyFocusPod(account_id);
+
+  user_manager::KnownUser known_user(local_state());
+
+  // Confirm that no "disabled reason" pref exists for the given KnownUser.
+  EXPECT_FALSE(HasKeyboardAmbientLightSensorDisabledReasonPrefValue(
+      known_user, account_id));
+
+  // Disable the keyboard ambient light sensor.
+  SetKeyboardAmbientLightSensorEnabled(
+      false,
+      power_manager::AmbientLightSensorChange_Cause_USER_REQUEST_SETTINGS_APP);
+
+  // There should now be a "disabled reason" pref stored in KnownUser.
+  EXPECT_TRUE(HasKeyboardAmbientLightSensorDisabledReasonPrefValue(known_user,
+                                                                   account_id));
+  EXPECT_EQ(
+      power_manager::AmbientLightSensorChange_Cause_USER_REQUEST_SETTINGS_APP,
+      GetKeyboardAmbientLightSensorDisabledReasonPrefValue(known_user,
+                                                           account_id));
+
+  // Re-enable the keyboard ambient light sensor.
+  SetKeyboardAmbientLightSensorEnabled(
+      true,
+      power_manager::AmbientLightSensorChange_Cause_USER_REQUEST_SETTINGS_APP);
+
+  // After the keyboard ambient light sensor is re-enabled, the "disabled
+  // reason" pref should be deleted.
+  EXPECT_FALSE(HasKeyboardAmbientLightSensorDisabledReasonPrefValue(
+      known_user, account_id));
+
+  // Test with other causes.
+  SetKeyboardAmbientLightSensorEnabled(
+      false,
+      power_manager::AmbientLightSensorChange_Cause_BRIGHTNESS_USER_REQUEST);
+  EXPECT_TRUE(HasKeyboardAmbientLightSensorDisabledReasonPrefValue(known_user,
+                                                                   account_id));
+  EXPECT_EQ(
+      power_manager::AmbientLightSensorChange_Cause_BRIGHTNESS_USER_REQUEST,
+      GetKeyboardAmbientLightSensorDisabledReasonPrefValue(known_user,
+                                                           account_id));
 }
 
 }  // namespace ash

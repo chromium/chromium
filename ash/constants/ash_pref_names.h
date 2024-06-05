@@ -971,6 +971,14 @@ const char kKeyboardBrightnessPercent[] =
 inline constexpr char kKeyboardAmbientLightSensorEnabled[] =
     "settings.keyboard_ambient_light_sensor_enabled";
 
+// An integer pref which stores the reason that the keyboard ambient light
+// sensor was disabled. This pref can be used if we need to systematically
+// re-enable the keyboard ambient light sensor for a subset of users (e.g. those
+// who didn't manually disable the sensor from the Settings app). Values are
+// from `power_manager::AmbientLightSensorChange_Cause`.
+inline constexpr char kKeyboardAmbientLightSensorDisabledReason[] =
+    "settings.keyboard.ambient_light_sensor_disabled_reason";
+
 // A boolean pref that enable fullscreen alert bubble.
 // TODO(zxdan): Change to an allowlist in M89.
 inline constexpr char kFullscreenAlertEnabled[] =
