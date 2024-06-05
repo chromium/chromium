@@ -201,7 +201,7 @@ void AXMediaAppUntrustedHandler::PerformAction(
   if (!document_.GetRoot()) {
     return;
   }
-  CHECK(document_.ax_tree());
+  DCHECK(document_.ax_tree());
   switch (action_data.action) {
     case ax::mojom::Action::kBlur:
     case ax::mojom::Action::kClearAccessibilityFocus:
@@ -274,15 +274,15 @@ void AXMediaAppUntrustedHandler::PerformAction(
     }
     case ax::mojom::Action::kScrollToMakeVisible: {
       if (!media_app_) {
-        CHECK_NE(action_data.target_tree_id, ui::AXTreeIDUnknown());
+        DCHECK_NE(action_data.target_tree_id, ui::AXTreeIDUnknown());
       } else {
         // `media_app_` is only used for testing.
         CHECK_IS_TEST();
       }
-      CHECK_NE(action_data.target_node_id, ui::kInvalidAXNodeID);
-      CHECK_EQ(pages_.size(), document_.GetRoot()->GetUnignoredChildCount() -
-                                  (has_landmark_node_ ? 1u : 0u) -
-                                  (has_postamble_page_ ? 1u : 0u));
+      DCHECK_NE(action_data.target_node_id, ui::kInvalidAXNodeID);
+      DCHECK_EQ(pages_.size(), document_.GetRoot()->GetUnignoredChildCount() -
+                                   (has_landmark_node_ ? 1u : 0u) -
+                                   (has_postamble_page_ ? 1u : 0u));
       for (int32_t page_index = 0; const auto& page : pages_) {
         const std::unique_ptr<ui::AXTreeManager>& page_manager = page.second;
         if (page_manager->GetTreeID() != action_data.target_tree_id) {
@@ -293,7 +293,7 @@ void AXMediaAppUntrustedHandler::PerformAction(
         if (!target_node) {
           break;
         }
-        CHECK(page_manager->ax_tree());
+        DCHECK(page_manager->ax_tree());
         // Passing an empty `RectF` for the node bounds will initialize it
         // automatically to `target_node->data().relative_bounds.bounds`.
         gfx::RectF global_bounds =
@@ -464,7 +464,7 @@ content::WebContents* AXMediaAppUntrustedHandler::GetMediaAppWebContents()
   }
   content::WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
-  CHECK(web_contents);
+  DCHECK(web_contents);
   return web_contents;
 }
 
@@ -482,7 +482,7 @@ AXMediaAppUntrustedHandler::GetMediaAppRenderFrameHost() const {
 }
 
 size_t AXMediaAppUntrustedHandler::ComputePagesPerBatch() const {
-  CHECK_LE(min_pages_per_batch_, kMaxPagesPerBatch);
+  DCHECK_LE(min_pages_per_batch_, kMaxPagesPerBatch);
   size_t page_count = page_metadata_.size();
   return std::clamp<size_t>(page_count * 0.1, min_pages_per_batch_,
                             kMaxPagesPerBatch);
@@ -620,7 +620,7 @@ std::vector<ui::AXNodeData> AXMediaAppUntrustedHandler::CreatePostamblePage()
 void AXMediaAppUntrustedHandler::SendAXTreeToAccessibilityService(
     const ui::AXTreeManager& manager,
     TreeSerializer& serializer) {
-  CHECK(manager.GetRoot());
+  DCHECK(manager.GetRoot());
   ui::AXTreeUpdate update;
   serializer.MarkSubtreeDirty(manager.GetRoot()->id());
   if (!serializer.SerializeChanges(manager.GetRoot(), &update)) {
@@ -636,7 +636,7 @@ void AXMediaAppUntrustedHandler::SendAXTreeToAccessibilityService(
   }
 #if defined(USE_AURA)
   auto* event_router = extensions::AutomationEventRouter::GetInstance();
-  CHECK(event_router);
+  DCHECK(event_router);
   const gfx::Point& mouse_location =
       aura::Env::GetInstance()->last_mouse_location();
   event_router->DispatchAccessibilityEvents(manager.GetTreeID(), {update},
@@ -651,7 +651,7 @@ void AXMediaAppUntrustedHandler::ViewportUpdated(const gfx::RectF& viewport_box,
   if (!document_.GetRoot()) {
     return;
   }
-  CHECK(document_.ax_tree());
+  DCHECK(document_.ax_tree());
   ui::AXNodeData document_root_data = document_.GetRoot()->data();
   document_root_data.AddIntAttribute(
       ax::mojom::IntAttribute::kScrollXMax,
@@ -683,9 +683,9 @@ void AXMediaAppUntrustedHandler::UpdatePageLocation(
   if (HasRendererTerminatedDueToBadPageId("UpdatePageLocation", page_id)) {
     return;
   }
-  CHECK(pages_.contains(page_id));
+  DCHECK(pages_.contains(page_id));
   ui::AXTree* tree = pages_.at(page_id)->ax_tree();
-  CHECK(tree->root());
+  DCHECK(tree->root());
   ui::AXNodeData root_data = tree->root()->data();
   root_data.relative_bounds.bounds = page_location;
   ui::AXTreeUpdate location_update;
@@ -739,7 +739,7 @@ void AXMediaAppUntrustedHandler::UpdateDocumentTree() {
   std::vector<ui::AXNodeData> status_nodes;
   if (has_landmark_node_) {
     status_nodes = CreateStatusNodesWithLandmark();
-    CHECK_GE(status_nodes.size(), 1u);
+    DCHECK_GE(status_nodes.size(), 1u);
     child_ids.at(0) = status_nodes.at(0).id;
   }
   std::iota(std::begin(child_ids) + (has_landmark_node_ ? 1u : 0u),
@@ -747,7 +747,7 @@ void AXMediaAppUntrustedHandler::UpdateDocumentTree() {
   std::vector<ui::AXNodeData> postamble_page_nodes;
   if (has_postamble_page_) {
     postamble_page_nodes = CreatePostamblePage();
-    CHECK_GE(postamble_page_nodes.size(), 1u);
+    DCHECK_GE(postamble_page_nodes.size(), 1u);
     child_ids.push_back(postamble_page_nodes.at(0).id);
   }
   document_root_data.child_ids.swap(child_ids);
@@ -844,7 +844,7 @@ void AXMediaAppUntrustedHandler::StitchDocumentTree() {
   }
   ui::AXActionData action_data;
   action_data.action = ax::mojom::Action::kStitchChildTree;
-  CHECK(document_.ax_tree());
+  DCHECK(document_.ax_tree());
   action_data.target_tree_id = document_.GetParentTreeID();
   action_data.target_role = ax::mojom::Role::kGraphicsDocument;
   action_data.child_tree_id = document_.GetTreeID();
@@ -979,8 +979,8 @@ void AXMediaAppUntrustedHandler::OnPageOcred(
       return;
     }
   }
-  CHECK_NE(pages_.at(dirty_page_id)->GetTreeID().type(),
-           ax::mojom::AXTreeIDType::kUnknown);
+  DCHECK_NE(pages_.at(dirty_page_id)->GetTreeID().type(),
+            ax::mojom::AXTreeIDType::kUnknown);
 
   // Update the page location again - running the page through OCR overwrites
   // the previous `AXTree` it was given and thus the page location it was
