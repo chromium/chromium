@@ -12,10 +12,16 @@
 #include "components/search_engines/template_url_service_observer.h"
 
 // Objective-C equivalent of the TemplateURLServiceObserver class.
-@protocol SearchEngineObserving
+@protocol SearchEngineObserving <NSObject>
 
 // Called when the search engine is changed.
 - (void)searchEngineChanged;
+
+@optional
+// Called from OnTemplateURLServiceShuttingDown.
+// Note that the observer will unregister itself at `urlService` destruction, no
+// explicit action on owner's part is necessary.
+- (void)templateURLServiceShuttingDown:(TemplateURLService*)urlService;
 
 @end
 
@@ -28,6 +34,7 @@ class SearchEngineObserverBridge : public TemplateURLServiceObserver {
                              TemplateURLService* urlService);
   ~SearchEngineObserverBridge() override;
   void OnTemplateURLServiceChanged() override;
+  void OnTemplateURLServiceShuttingDown() override;
 
  private:
   __weak id<SearchEngineObserving> owner_;

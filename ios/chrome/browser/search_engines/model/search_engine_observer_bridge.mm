@@ -18,3 +18,9 @@ SearchEngineObserverBridge::~SearchEngineObserverBridge() {
 void SearchEngineObserverBridge::OnTemplateURLServiceChanged() {
   [owner_ searchEngineChanged];
 }
+
+void SearchEngineObserverBridge::OnTemplateURLServiceShuttingDown() {
+  if ([owner_ respondsToSelector:@selector(templateURLServiceShuttingDown:)]) {
+    [owner_ templateURLServiceShuttingDown:templateURLService_];
+  }
+}

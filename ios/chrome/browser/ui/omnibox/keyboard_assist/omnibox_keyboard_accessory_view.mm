@@ -221,10 +221,12 @@ constexpr base::TimeDelta kLensButtonIPHDelay = base::Seconds(1);
   if (!self.window || ![self.textField isFirstResponder]) {
     return;
   }
-  // Log the Lens support status when the keyboard is opened.
-  lens_availability::CheckAndLogAvailabilityForLensEntryPoint(
-      LensEntrypoint::Keyboard,
-      [self isGoogleSearchEngine:self.templateURLService]);
+  if (self.templateURLService) {
+    // Log the Lens support status when the keyboard is opened.
+    lens_availability::CheckAndLogAvailabilityForLensEntryPoint(
+        LensEntrypoint::Keyboard,
+        [self isGoogleSearchEngine:self.templateURLService]);
+  }
 
   UIButton* lensButton = _delegate.lensButton;
   if (lensButton) {
@@ -254,6 +256,9 @@ constexpr base::TimeDelta kLensButtonIPHDelay = base::Seconds(1);
 - (void)searchEngineChanged {
   // Regenerate the shortcut buttons depending on the new search engine.
   [self addSubviews];
+}
+- (void)templateURLServiceShuttingDown:(TemplateURLService*)urlService {
+  self.templateURLService = nil;
 }
 
 #pragma mark - Private
