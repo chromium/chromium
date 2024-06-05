@@ -55,9 +55,10 @@ if there is evidence of active exploitation.
 Example bugs:
 
 * Memory corruption in the browser process ([319125](https://crbug.com/319125#c10)).
-* Memory corruption in the GPU process when it is reachable directly from web
+* Memory corruption in an unsandboxed GPU process when it is reachable directly from web
   content without compromising the renderer.
-  ([1420130](https://crbug.com/1420130), [1427865](https://crbug.com/1427865))
+  ([1420130](https://crbug.com/1420130), [1427865](https://crbug.com/1427865)).
+  (Note that on some platforms we consider the GPU process 'sandboxed').
 * Exploit chains made up of multiple bugs that can lead to code execution
   outside of the sandbox ([416449](https://crbug.com/416449)).
 * A bug that enables web content to read local files
@@ -102,15 +103,16 @@ such as memory corruption in the renderer process
 ([570427](https://crbug.com/570427), [468936](https://crbug.com/468936)).
 * Complete control over the apparent origin in the omnibox
 ([76666](https://crbug.com/76666)).
-* Memory corruption in the browser or another high privileged process (e.g. GPU
-  or network process), that can only be triggered from a compromised renderer,
+* Memory corruption in the browser or another high privileged process (e.g. a
+  GPU or network process on a platform where they're not sandboxed),
+  that can only be triggered from a compromised renderer,
   leading to a sandbox escape ([1393177](https://crbug.com/1393177),
   [1421268](crbug.com/1421268)).
 * Kernel memory corruption that could be used as a sandbox escape from a
 compromised renderer ([377392](https://crbug.com/377392)).
-* Memory corruption in the browser or another high privileged process (e.g. GPU
-  or network process) that requires specific user interaction, such as granting
-  a permission ([455735](https://crbug.com/455735)).
+* Memory corruption in the browser or another high privileged process (e.g.
+  unsandboxed GPU or network process) that requires specific user interaction,
+  such as granting a permission ([455735](https://crbug.com/455735)).
 * Site Isolation bypasses:
     - Cross-site execution contexts unexpectedly sharing a renderer process
       ([863069](https://crbug.com/863069), [886976](https://crbug.com/886976)).
