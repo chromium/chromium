@@ -497,12 +497,13 @@ export interface PrintPreviewPageHandler {
   // Completes initialization on the backend and provides immutable
   // configuration details for the current CrOS preview request in the form of
   // a SessionContext.
-  startSession(dialogArgs: string): Promise<SessionContext>;
+  startSession(dialogArgs: string): Promise<{sessionContext: SessionContext}>;
 
   // Start the print job and close the window. Requires a print ticket to detail
   // how print job should be configured.Needs to wait for result to display
   // error messaging if starting the print job fails.
-  print(ticket: PrintTicket): Promise<PrintRequestOutcome>;
+  print(ticket: PrintTicket):
+      Promise<{printRequestOutcome: PrintRequestOutcome}>;
 
   // Cancel the print preview and close the window.
   cancel(): void;
@@ -518,7 +519,7 @@ export interface FakeDestinationObserverInterface {
 // Placeholder for the DestinationProvider mojo interface.
 export interface DestinationProvider {
   // Retrieve a list of local print destinations; usually provided by CUPS.
-  getLocalDestinations(): Promise<Destination[]>;
+  getLocalDestinations(): Promise<{destinations: Destination[]}>;
 
   // Registers an observer which is notified every time the set of known
   // destinations are appended or updated;

@@ -63,7 +63,7 @@ suite('FakeDestinationProvider', () => {
             destinationProvider.getCallCount(GET_LOCAL_DESTINATIONS_METHOD),
             `Called once`);
         assertDeepEquals(
-            FAKE_GET_LOCAL_DESTINATIONS_SUCCESSFUL_EMPTY, result,
+            FAKE_GET_LOCAL_DESTINATIONS_SUCCESSFUL_EMPTY, result.destinations,
             'Returns FAKE_GET_LOCAL_DESTINATIONS_SUCCESSFUL_EMPTY');
       });
 

@@ -40,7 +40,7 @@ export class FakeDestinationProvider implements DestinationProvider,
     this.methods.register(GET_LOCAL_DESTINATIONS_METHOD);
     this.methods.setResult(
         GET_LOCAL_DESTINATIONS_METHOD,
-        FAKE_GET_LOCAL_DESTINATIONS_SUCCESSFUL_EMPTY);
+        {destinations: FAKE_GET_LOCAL_DESTINATIONS_SUCCESSFUL_EMPTY});
     this.callCount.set(GET_LOCAL_DESTINATIONS_METHOD, 0);
     this.methods.register(FETCH_CAPABILITIES_METHOD);
     this.callCount.set(FETCH_CAPABILITIES_METHOD, 0);
@@ -82,7 +82,7 @@ export class FakeDestinationProvider implements DestinationProvider,
     return this.methods;
   }
 
-  getLocalDestinations(): Promise<Destination[]> {
+  getLocalDestinations(): Promise<{destinations: Destination[]}> {
     this.incrementCallCount(GET_LOCAL_DESTINATIONS_METHOD);
     return this.methods.resolveMethodWithDelay(
         GET_LOCAL_DESTINATIONS_METHOD, this.testDelayMs);
@@ -114,7 +114,8 @@ export class FakeDestinationProvider implements DestinationProvider,
   }
 
   setLocalDestinationResult(destinations: Destination[]): void {
-    this.methods.setResult(GET_LOCAL_DESTINATIONS_METHOD, destinations);
+    this.methods.setResult(
+        GET_LOCAL_DESTINATIONS_METHOD, {destinations: destinations});
   }
 
   fetchCapabilities(_destinationId: string, _printerType: PrinterType):

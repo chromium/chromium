@@ -34,8 +34,8 @@ export class PrintPreviewCrosAppController extends EventTarget {
 
     this.dialogArgs = chrome.getVariableValue(DIALOG_ARG_PROPERTY_KEY);
     this.printPreviewPageHandler.startSession(this.dialogArgs)
-        .then((sessionContext: SessionContext): void => {
-          this.sessionContext = sessionContext;
+        .then((response: {sessionContext: SessionContext}): void => {
+          this.sessionContext = response.sessionContext;
           this.capabilitiesManager.initializeSession(this.sessionContext);
           this.destinationManager.initializeSession(this.sessionContext);
           this.previewTicketManager.initializeSession(this.sessionContext);

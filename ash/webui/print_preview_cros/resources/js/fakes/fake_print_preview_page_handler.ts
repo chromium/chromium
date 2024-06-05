@@ -49,13 +49,15 @@ export class FakePrintPreviewPageHandler implements PrintPreviewPageHandler {
 
   private registerMethods() {
     this.methods.register(PRINT_METHOD);
-    this.methods.setResult(PRINT_METHOD, FAKE_PRINT_REQUEST_SUCCESSFUL);
+    this.methods.setResult(
+        PRINT_METHOD, {printRequestOutcome: FAKE_PRINT_REQUEST_SUCCESSFUL});
     this.callCount.set(PRINT_METHOD, 0);
     this.methods.register(CANCEL_METHOD);
     this.callCount.set(CANCEL_METHOD, 0);
     this.methods.register(START_SESSION_METHOD);
     this.methods.setResult(
-        START_SESSION_METHOD, FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL);
+        START_SESSION_METHOD,
+        {sessionContext: FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL});
     this.callCount.set(START_SESSION_METHOD, 0);
     this.methods.register(GENERATE_PREVIEW_METHOD);
     this.callCount.set(GENERATE_PREVIEW_METHOD, 0);
@@ -72,7 +74,7 @@ export class FakePrintPreviewPageHandler implements PrintPreviewPageHandler {
   }
 
   setPrintResult(result: PrintRequestOutcome) {
-    this.methods.setResult(PRINT_METHOD, result);
+    this.methods.setResult(PRINT_METHOD, {printRequestOutcome: result});
   }
 
   // Incrementing call count of tracked method.
@@ -82,13 +84,13 @@ export class FakePrintPreviewPageHandler implements PrintPreviewPageHandler {
   }
 
   // Mock implementation of print.
-  print(): Promise<PrintRequestOutcome> {
+  print(): Promise<{printRequestOutcome: PrintRequestOutcome}> {
     this.incrementCallCount(PRINT_METHOD);
     return this.methods.resolveMethodWithDelay(PRINT_METHOD, this.testDelayMs);
   }
 
   // Mock implementation of startSession.
-  startSession(dialogArgs: string): Promise<SessionContext> {
+  startSession(dialogArgs: string): Promise<{sessionContext: SessionContext}> {
     this.dialogArgs = dialogArgs;
     this.incrementCallCount(START_SESSION_METHOD);
     return this.methods.resolveMethodWithDelay(

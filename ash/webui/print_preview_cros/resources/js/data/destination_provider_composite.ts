@@ -37,7 +37,7 @@ export class DestinationProviderComposite implements
         destinationId, printerType);
   }
 
-  getLocalDestinations(): Promise<Destination[]> {
+  getLocalDestinations(): Promise<{destinations: Destination[]}> {
     return this.fakeDestinationProvider.getLocalDestinations();
   }
 

@@ -201,8 +201,8 @@ export class DestinationManager extends EventTarget implements
     // Request initial data.
     this.updateState(DestinationManagerState.FETCHING);
     this.destinationProvider.getLocalDestinations().then(
-        (destinations: Destination[]): void => {
-          this.addOrUpdateDestinations(destinations);
+        (response: {destinations: Destination[]}): void => {
+          this.addOrUpdateDestinations(response.destinations);
           this.initialDestinationsLoaded = true;
           // TODO(b/323421684): Refactor selectInitialDestination to call
           // setPrintTicketDestination print ticket manager.
