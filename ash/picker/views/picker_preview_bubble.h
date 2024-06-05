@@ -40,6 +40,14 @@ class ASH_EXPORT PickerPreviewBubbleView
  private:
   raw_ptr<views::ImageView> image_view_;
 };
+
+BEGIN_VIEW_BUILDER(ASH_EXPORT,
+                   PickerPreviewBubbleView,
+                   views::BubbleDialogDelegateView)
+END_VIEW_BUILDER
+
 }  // namespace ash
+
+DEFINE_VIEW_BUILDER(ASH_EXPORT, ash::PickerPreviewBubbleView)
 
 #endif  // ASH_PICKER_VIEWS_PICKER_PREVIEW_BUBBLE_H_

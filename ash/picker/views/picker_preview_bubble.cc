@@ -20,6 +20,7 @@
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/widget/widget.h"
 
@@ -35,7 +36,7 @@ constexpr std::u16string_view kLinkLabelText = u"Link";
 constexpr std::u16string_view kTitleText = u"Placeholder";
 constexpr gfx::Insets kMargins(8);
 constexpr int kPreviewBackgroundBorderRadius = 8;
-constexpr gfx::Insets kLabelPadding = gfx::Insets::TLBR(8, 0, 0, 0);
+constexpr gfx::Insets kLabelPadding = gfx::Insets::TLBR(8, 8, 0, 8);
 
 }  // namespace
 
@@ -44,29 +45,35 @@ PickerPreviewBubbleView::PickerPreviewBubbleView(views::View* anchor_view)
                                views::BubbleBorder::RIGHT_CENTER,
                                views::BubbleBorder::STANDARD_SHADOW) {
   // Configuration for this view.
-  SetButtons(ui::DIALOG_BUTTON_NONE);
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical)
       .SetCrossAxisAlignment(views::LayoutAlignment::kStart);
-  set_corner_radius(kPickerBubbleCornerRadius);
-  set_margins(kMargins);
   SetCanActivate(false);
 
-  // Contents of this view.
-  AddChildView(
-      views::Builder<views::ImageView>()
-          .SetImageSize(kPreviewImageSize)
-          .SetBackground(views::CreateThemedRoundedRectBackground(
-              cros_tokens::kCrosSysSeparator, kPreviewBackgroundBorderRadius))
-          .CopyAddressTo(&image_view_)
-          .Build());
-  auto* label = AddChildView(ash::bubble_utils::CreateLabel(
-      TypographyToken::kCrosAnnotation2, kLinkLabelText.data(),
-      cros_tokens::kCrosSysOnSurfaceVariant));
-  label->SetBorder(views::CreateEmptyBorder(kLabelPadding));
-  AddChildView(ash::bubble_utils::CreateLabel(TypographyToken::kCrosBody2,
-                                              kTitleText.data(),
-                                              cros_tokens::kCrosSysOnSurface));
+  views::Builder<PickerPreviewBubbleView>(this)
+      .set_margins(kMargins)
+      .set_corner_radius(kPickerBubbleCornerRadius)
+      .SetButtons(ui::DIALOG_BUTTON_NONE)
+      .AddChildren(
+          views::Builder<views::ImageView>()
+              .SetImageSize(kPreviewImageSize)
+              .SetBackground(views::CreateThemedRoundedRectBackground(
+                  cros_tokens::kCrosSysSeparator,
+                  kPreviewBackgroundBorderRadius))
+              .CopyAddressTo(&image_view_),
+          views::Builder<views::BoxLayoutView>()
+              .SetOrientation(views::BoxLayout::Orientation::kVertical)
+              .SetCrossAxisAlignment(
+                  views::BoxLayout::CrossAxisAlignment::kStart)
+              .SetBorder(views::CreateEmptyBorder(kLabelPadding))
+              .AddChildren(
+                  views::Builder<views::Label>(ash::bubble_utils::CreateLabel(
+                      TypographyToken::kCrosAnnotation2, kLinkLabelText.data(),
+                      cros_tokens::kCrosSysOnSurfaceVariant)),
+                  views::Builder<views::Label>(ash::bubble_utils::CreateLabel(
+                      TypographyToken::kCrosBody2, kTitleText.data(),
+                      cros_tokens::kCrosSysOnSurface))))
+      .BuildChildren();
 
   // Show the widget.
   auto* widget = views::BubbleDialogDelegateView::CreateBubble(this);
