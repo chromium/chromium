@@ -10916,11 +10916,10 @@ TEST_P(DeskBarTest, CanUndoDeskClosureThroughKeyboardNavigation) {
 
     ASSERT_EQ(2u, desks_controller->desks().size());
 
-    ASSERT_TRUE(TabUntil(/*reverse=*/test_case.desk_removal_method ==
-                             DeskRemovalMethod::kInactiveDeskRemovedReverseTab,
-                         [desks_controller] {
-                           return desks_controller->IsUndoToastHighlighted();
-                         }));
+    ASSERT_TRUE(TabUntil(
+        /*reverse=*/test_case.desk_removal_method ==
+            DeskRemovalMethod::kInactiveDeskRemovedReverseTab,
+        [desks_controller] { return desks_controller->IsUndoToastFocused(); }));
 
     // Pressing undo in the desk button desk bar after closing the active desk
     // will switch us back to the removed desk.

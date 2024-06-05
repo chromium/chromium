@@ -60,6 +60,7 @@ struct ASH_PUBLIC_EXPORT ToastData {
   std::u16string dismiss_text;
   bool persist_on_hover = false;
   bool show_on_all_root_windows = false;
+  bool activatable = false;
   // TODO(b/259100049): We should turn this into a `OnceClosure`.
   base::RepeatingClosure dismiss_callback;
   // RAW_PTR_EXCLUSION: Never allocated by PartitionAlloc (always points to a

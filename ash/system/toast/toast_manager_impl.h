@@ -47,18 +47,19 @@ class ASH_EXPORT ToastManagerImpl : public ToastManager,
 
   ~ToastManagerImpl() override;
 
-  // ToastManager overrides:
+  // ToastManager:
   void Show(ToastData data) override;
   void Cancel(std::string_view id) override;
+  bool RequestFocusOnActiveToastDismissButton(std::string_view id) override;
   bool MaybeToggleA11yHighlightOnActiveToastDismissButton(
       std::string_view id) override;
   bool MaybeActivateHighlightedDismissButtonOnActiveToast(
       std::string_view id) override;
   bool IsToastShown(std::string_view id) const override;
-  bool IsToastDismissButtonHighlighted(std::string_view id) const override;
+  bool IsToastDismissButtonFocused(std::string_view id) const override;
   std::unique_ptr<ScopedToastPause> CreateScopedPause() override;
 
-  // ToastOverlay::Delegate overrides:
+  // ToastOverlay::Delegate:
   void CloseToast() override;
   void OnToastHoverStateChanged(bool is_hovering) override;
 

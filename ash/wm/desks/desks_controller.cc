@@ -249,7 +249,8 @@ bool IsApplistActiveInTabletMode(const aura::Window* active_window) {
 void ShowDeskRemovalUndoToast(const std::string& toast_id,
                               base::RepeatingClosure dismiss_callback,
                               base::OnceClosure expired_callback,
-                              bool use_persistent_toast) {
+                              bool use_persistent_toast,
+                              bool activate) {
   // If ChromeVox is enabled, then we want the toast to be infinite duration.
   ToastData undo_toast_data(
       toast_id, ash::ToastCatalogName::kUndoCloseAll,
@@ -263,6 +264,7 @@ void ShowDeskRemovalUndoToast(const std::string& toast_id,
   undo_toast_data.show_on_all_root_windows = true;
   undo_toast_data.dismiss_callback = std::move(dismiss_callback);
   undo_toast_data.expired_callback = std::move(expired_callback);
+  undo_toast_data.activatable = activate;
   ToastManager::Get()->Show(std::move(undo_toast_data));
 }
 
@@ -1503,6 +1505,17 @@ void DesksController::MaybeDismissPersistentDeskRemovalToast() {
   }
 }
 
+bool DesksController::RequestFocusOnUndoDeskRemovalToast() {
+  if (!Shell::Get()->accessibility_controller()->spoken_feedback().enabled() ||
+      !temporary_removed_desk_ ||
+      !ToastManager::Get()->IsToastShown(temporary_removed_desk_->toast_id())) {
+    return false;
+  }
+
+  return ToastManager::Get()->RequestFocusOnActiveToastDismissButton(
+      temporary_removed_desk_->toast_id());
+}
+
 bool DesksController::MaybeToggleA11yHighlightOnUndoDeskRemovalToast() {
   if (!Shell::Get()->accessibility_controller()->spoken_feedback().enabled() ||
       !temporary_removed_desk_ ||
@@ -1687,9 +1700,9 @@ void DesksController::OnAnimationFinished(DeskAnimationBase* animation) {
   animation_.reset();
 
   // If we just switched desks due to removing the active desk, we immediately
-  // highlight the undo button.
+  // focus the undo button.
   if (Shell::Get()->accessibility_controller()->spoken_feedback().enabled()) {
-    MaybeToggleA11yHighlightOnUndoDeskRemovalToast();
+    RequestFocusOnUndoDeskRemovalToast();
   }
 }
 
@@ -2038,7 +2051,7 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
         base::BindOnce(&DesksController::MaybeCommitPendingDeskRemoval,
                        base::Unretained(this),
                        temporary_removed_desk_->toast_id()),
-        temporary_removed_desk_->is_toast_persistent());
+        temporary_removed_desk_->is_toast_persistent(), !in_overview);
 
     // This method will be invoked on both undo and expired toast.
     base::UmaHistogramBoolean(kCloseAllTotalHistogramName, true);
@@ -2221,14 +2234,9 @@ void DesksController::MaybeCommitPendingDeskRemoval(
   }
 }
 
-bool DesksController::IsUndoToastShown() const {
+bool DesksController::IsUndoToastFocused() const {
   return temporary_removed_desk_ &&
-         ToastManager::Get()->IsToastShown(temporary_removed_desk_->toast_id());
-}
-
-bool DesksController::IsUndoToastHighlighted() const {
-  return temporary_removed_desk_ &&
-         ToastManager::Get()->IsToastDismissButtonHighlighted(
+         ToastManager::Get()->IsToastDismissButtonFocused(
              temporary_removed_desk_->toast_id());
 }
 

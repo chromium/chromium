@@ -80,7 +80,11 @@ class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
   // Update the position and size of toast.
   void UpdateOverlayBounds();
 
-  const std::u16string GetText();
+  const std::u16string GetText() const;
+
+  // Requests focus on the toast's dismiss button. Return true if it was
+  // successful.
+  bool RequestFocusOnActiveToastDismissButton();
 
   // Returns true if the toast has a button and it can be highlighted for
   // accessibility, false otherwise.
@@ -93,9 +97,9 @@ class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
   // UnifiedSystemTray::Observer:
   void OnSliderBubbleHeightChanged() override;
 
-  // Returns if the dismiss button is highlighted in the toast. If the toast
-  // does not have a dismiss button, it returns false.
-  bool IsDismissButtonHighlighted() const;
+  // Returns if the dismiss button is focused in the toast. If the toast does
+  // not have a dismiss button, it returns false.
+  bool IsDismissButtonFocused() const;
 
  private:
   friend class ToastManagerImplTest;

@@ -63,48 +63,6 @@ bool ShouldProcessLocatedEvent(const ui::LocatedEvent& event) {
   return true;
 }
 
-// Moves the focus ring to the next traversable view.
-void MoveFocus(const DeskBarController::BarWidgetAndView& desk_bar,
-               bool reverse) {
-  DesksController* desks_controller = DesksController::Get();
-  auto* focus_manager = desk_bar.bar_widget->GetFocusManager();
-  views::View* focused_view = focus_manager->GetFocusedView();
-
-  // Focus the first/last focusable view when tabbing out from the toast.
-  if (desks_controller->IsUndoToastHighlighted()) {
-    desks_controller->MaybeToggleA11yHighlightOnUndoDeskRemovalToast();
-    focus_manager->AdvanceFocus(reverse);
-    return;
-  }
-
-  // Focus the toast when tabbing out from the first/last focusable view.
-  if (desks_controller->IsUndoToastShown() &&
-      Shell::Get()->accessibility_controller()->spoken_feedback().enabled()) {
-    if (focused_view) {
-      const views::View* first_focusable_view =
-          desk_bar.GetFirstFocusableView();
-      const views::View* last_focusable_view = desk_bar.GetLastFocusableView();
-      const views::View* next_focusable_view =
-          desk_bar.GetNextFocusableView(focused_view, reverse);
-      if (((next_focusable_view == first_focusable_view && !reverse) ||
-           (next_focusable_view == last_focusable_view && reverse)) &&
-          desks_controller->MaybeToggleA11yHighlightOnUndoDeskRemovalToast()) {
-        focus_manager->ClearFocus();
-        return;
-      }
-    }
-  }
-
-  // Focus from and to views within the desk bar.
-  if (focused_view) {
-    focus_manager->AdvanceFocus(reverse);
-  } else {
-    focus_manager->SetFocusedView(
-        desk_bar.bar_view->FindMiniViewForDesk(desks_controller->active_desk())
-            ->desk_preview());
-  }
-}
-
 }  // namespace
 
 DeskBarController::BarWidgetAndView::BarWidgetAndView(
@@ -206,7 +164,7 @@ void DeskBarController::OnKeyEvent(ui::KeyEvent* event) {
   //    showing. If this is the case, we should try to close the toast.
   DesksController* desks_controller = DesksController::Get();
   if (event->key_code() == ui::VKEY_RETURN) {
-    desks_controller->MaybeActivateDeskRemovalUndoButtonOnHighlightedToast();
+    // Fallthrough to the toast and let its button handle the return key.
     return;
   }
 
@@ -443,6 +401,44 @@ void DeskBarController::CloseAllDeskBars() {
   }
 
   desk_bars_.clear();
+}
+
+void DeskBarController::MoveFocus(const BarWidgetAndView& desk_bar,
+                                  bool reverse) {
+  DesksController* desks_controller = DesksController::Get();
+  auto* focus_manager = desk_bar.bar_widget->GetFocusManager();
+  views::View* focused_view = focus_manager->GetFocusedView();
+
+  // Focus the first/last focusable view when tabbing out from the toast.
+  if (desks_controller->IsUndoToastFocused()) {
+    focus_manager->AdvanceFocus(reverse);
+    return;
+  }
+
+  // Attempt to focus the toast when tabbing out from the first/last focusable
+  // view.
+  if (focused_view) {
+    const views::View* first_focusable_view = desk_bar.GetFirstFocusableView();
+    const views::View* last_focusable_view = desk_bar.GetLastFocusableView();
+    const views::View* next_focusable_view =
+        desk_bar.GetNextFocusableView(focused_view, reverse);
+    if ((next_focusable_view == first_focusable_view && !reverse) ||
+        (next_focusable_view == last_focusable_view && reverse)) {
+      base::AutoReset<bool> auto_reset(&should_ignore_activation_change_, true);
+      if (desks_controller->RequestFocusOnUndoDeskRemovalToast()) {
+        return;
+      }
+    }
+  }
+
+  // Focus from and to views within the desk bar.
+  if (focused_view) {
+    focus_manager->AdvanceFocus(reverse);
+  } else {
+    focus_manager->SetFocusedView(
+        desk_bar.bar_view->FindMiniViewForDesk(desks_controller->active_desk())
+            ->desk_preview());
+  }
 }
 
 void DeskBarController::CloseDeskBarInternal(BarWidgetAndView& desk_bar) {
