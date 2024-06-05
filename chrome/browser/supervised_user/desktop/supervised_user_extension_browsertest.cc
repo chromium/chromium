@@ -4,23 +4,37 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
+#include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/supervised_user/supervised_user_extensions_delegate_impl.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/views/supervised_user/parent_permission_dialog_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/supervised_user/supervision_mixin.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/features.h"
+#include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
+#include "content/public/test/web_contents_tester.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/supervised_user_extensions_delegate.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_builder.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/supervised_user/chromeos/parent_access_extension_approvals_manager.h"
+#include "chromeos/crosapi/mojom/parent_access.mojom.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 constexpr char kGoodCrxId[] = "ldnnhddmnhbkjipkidpdiheffobcpfmf";
@@ -448,6 +462,84 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(ExtensionsParentalControlState::kEnabled),
 #endif // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
+        testing::Values(ExtensionManagementSwitch::kManagedByExtensions,
+                        ExtensionManagementSwitch::kManagedByPermissions),
+        testing::Values(base::BindRepeating([]() {
+          return supervised_user::SupervisionMixin::SignInMode::kSupervised;
+        }))),
+    [](const auto& info) { return CreateTestSuffixFromParam(info); });
+
+class ParentApprovalRequestTest
+    : public SupervisionExtensionTestBase,
+#if BUILDFLAG(IS_CHROMEOS)
+      public TestExtensionApprovalsManagerObserver,
+#endif
+      public TestParentPermissionDialogViewObserver {
+ public:
+  ParentApprovalRequestTest()
+      :
+#if BUILDFLAG(IS_CHROMEOS)
+        TestExtensionApprovalsManagerObserver(this),
+#endif
+        TestParentPermissionDialogViewObserver(this) {
+  }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // TestExtensionApprovalsManagerObserver implementation:
+  void OnTestParentAccessDialogCreated() override {
+    parent_permission_dialog_appeared_ = true;
+    SetParentAccessDialogResult(crosapi::mojom::ParentAccessResult::NewCanceled(
+        crosapi::mojom::ParentAccessCanceledResult::New()));
+  }
+#endif
+
+  // TestParentPermissionDialogViewObserver implementation:
+  void OnTestParentPermissionDialogViewCreated(
+      ParentPermissionDialogView* view) override {
+    parent_permission_dialog_appeared_ = true;
+  }
+
+  bool parent_permission_dialog_appeared_ = false;
+};
+
+// Tests that the method to request extension approval can be triggered
+// without errors for new (uninstalled) extensions that already have been
+// granted parent approval.
+// Prevents regressions to b/321016032.
+IN_PROC_BROWSER_TEST_P(ParentApprovalRequestTest,
+                       RequestToInstallApprovedExtension) {
+  base::HistogramTester histogram_tester;
+
+  // Create and extension and give it parent approval.
+  scoped_refptr<const extensions::Extension> extension =
+      extensions::ExtensionBuilder("An extension").Build();
+  CHECK(extension);
+
+  base::Value::Dict approved_extensions;
+  approved_extensions.Set(extension->id(), true);
+  profile()->GetPrefs()->SetDict(prefs::kSupervisedUserApprovedExtensions,
+                                 std::move(approved_extensions));
+  ASSERT_FALSE(extension_registry()->GetInstalledExtension(extension->id()));
+
+  // Request Approval to add a new extension,
+  SkBitmap icon;
+  auto supervised_user_extensions_delegate =
+      std::make_unique<SupervisedUserExtensionsDelegateImpl>(profile());
+  supervised_user_extensions_delegate->RequestToAddExtensionOrShowError(
+      *extension.get(), browser()->tab_strip_model()->GetActiveWebContents(),
+      gfx::ImageSkia::CreateFrom1xBitmap(icon),
+      SupervisedUserExtensionParentApprovalEntryPoint::kOnWebstoreInstallation,
+      base::DoNothing());
+  // Confirm that the parent approval dialog for extensions for each OS is
+  // created.
+  EXPECT_TRUE(parent_permission_dialog_appeared_);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ParentApprovalRequestTest,
+    testing::Combine(
+        testing::Values(ExtensionsParentalControlState::kEnabled),
         testing::Values(ExtensionManagementSwitch::kManagedByExtensions,
                         ExtensionManagementSwitch::kManagedByPermissions),
         testing::Values(base::BindRepeating([]() {

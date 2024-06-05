@@ -83,8 +83,7 @@ void SupervisedUserExtensionsDelegateImpl::RequestToAddExtensionOrShowError(
     SupervisedUserExtensionParentApprovalEntryPoint
         extension_approval_entry_point,
     ExtensionApprovalDoneCallback extension_approval_callback) {
-  DCHECK(IsChild());
-  DCHECK(!IsExtensionAllowedByParent(extension));
+  CHECK(IsChild());
 
   done_callback_ = std::move(extension_approval_callback);
   RequestExtensionApproval(extension, web_contents->GetWeakPtr(),
