@@ -11,11 +11,12 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/file_version_info_win.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
-#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
@@ -434,7 +435,14 @@ Version OSInfo::MajorMinorBuildToVersion(uint32_t major,
 
   if (major > 6) {
     // Hitting this likely means that it's time for a >11 block above.
-    NOTREACHED_IN_MIGRATION() << major << "." << minor << "." << build;
+    LOG(DFATAL) << "Unsupported version: " << major << "." << minor << "."
+                << build;
+
+    SCOPED_CRASH_KEY_NUMBER("WindowsVersion", "major", major);
+    SCOPED_CRASH_KEY_NUMBER("WindowsVersion", "minor", minor);
+    SCOPED_CRASH_KEY_NUMBER("WindowsVersion", "build", build);
+    base::debug::DumpWithoutCrashing();
+
     return Version::WIN_LAST;
   }
 
