@@ -59,7 +59,8 @@ void AddressProfileSaveManager::ImportProfileFromForm(
     return;
 
   MaybeOfferSavePrompt(std::make_unique<ProfileImportProcess>(
-      observed_profile, app_locale, url, personal_data_manager_,
+      observed_profile, app_locale, url,
+      &personal_data_manager_->address_data_manager(),
       allow_only_silent_updates, import_metadata));
 }
 

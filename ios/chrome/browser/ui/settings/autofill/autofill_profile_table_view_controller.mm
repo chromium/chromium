@@ -769,7 +769,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // icon.
 - (BOOL)shouldShowCloudOffIconForProfile:
     (const autofill::AutofillProfile&)profile {
-  return IsEligibleForMigrationToAccount(*_personalDataManager, profile) &&
+  return IsEligibleForMigrationToAccount(
+             _personalDataManager->address_data_manager(), profile) &&
          self.userEmail != nil;
 }
 

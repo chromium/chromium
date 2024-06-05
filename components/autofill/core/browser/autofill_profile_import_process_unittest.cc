@@ -12,9 +12,9 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/profile_token_quality.h"
 #include "components/autofill/core/browser/profile_token_quality_test_api.h"
+#include "components/autofill/core/browser/test_address_data_manager.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
-#include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/browser/test_utils/test_profiles.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -37,38 +37,39 @@ MATCHER(CompareWithSource, "") {
 class AutofillProfileImportProcessTest : public testing::Test {
  protected:
   void BlockProfileForUpdates(const AutofillProfile& profile) {
-    while (
-        !personal_data_manager_.address_data_manager().IsProfileUpdateBlocked(
-            profile.guid())) {
-      personal_data_manager_.address_data_manager()
-          .AddStrikeToBlockProfileUpdate(profile.guid());
+    while (!address_data_manager().IsProfileUpdateBlocked(profile.guid())) {
+      address_data_manager().AddStrikeToBlockProfileUpdate(profile.guid());
     }
   }
 
   void BlockDomainForNewProfiles(GURL url) {
-    while (!personal_data_manager_.address_data_manager()
-                .IsNewProfileImportBlockedForDomain(url)) {
-      personal_data_manager_.address_data_manager()
-          .AddStrikeToBlockNewProfileImportForDomain(url);
+    while (!address_data_manager().IsNewProfileImportBlockedForDomain(url)) {
+      address_data_manager().AddStrikeToBlockNewProfileImportForDomain(url);
     }
   }
 
-  // Returns all profiles stored in the `personal_data_manager_` after
+  // Returns all profiles stored in the `address_data_manager_` after
   // finalizing the `import_process`'s import.
   std::vector<AutofillProfile> ApplyImportAndGetProfiles(
-      ProfileImportProcess& import_process) const {
+      ProfileImportProcess& import_process) {
     import_process.ApplyImport();
     // For convenience, return plain objects rather than pointers.
     std::vector<AutofillProfile> profiles;
-    for (const AutofillProfile* pdm_profile :
-         personal_data_manager_.address_data_manager().GetProfiles()) {
-      profiles.push_back(*pdm_profile);
+    for (const AutofillProfile* adm_profile :
+         address_data_manager().GetProfiles()) {
+      profiles.push_back(*adm_profile);
     }
     return profiles;
   }
 
-  TestPersonalDataManager personal_data_manager_;
+  TestAddressDataManager& address_data_manager() {
+    return address_data_manager_;
+  }
+
   GURL url_{"https://www.import.me/now.html"};
+
+ private:
+  TestAddressDataManager address_data_manager_;
 };
 
 // Tests the import process for the scenario, that the user accepts the import
@@ -86,7 +87,7 @@ TEST_F(AutofillProfileImportProcessTest, ImportFirstProfile_UserAccepts) {
   // Create the import process for the scenario that there aren't any other
   // stored profiles yet.
   ProfileImportProcess import_data(observed_profile, "en_US", url_,
-                                   &personal_data_manager_,
+                                   &address_data_manager(),
                                    /*allow_only_silent_updates=*/false);
 
   // Simulate the acceptance of the save prompt.
@@ -115,7 +116,7 @@ TEST_F(AutofillProfileImportProcessTest, ImportFirstProfile_ImportIsBlocked) {
   // Create the import process for the scenario that there aren't any other
   // stored profiles yet.
   ProfileImportProcess import_data(observed_profile, "en_US", url_,
-                                   &personal_data_manager_,
+                                   &address_data_manager(),
                                    /*allow_only_silent_updates=*/false);
 
   // The user is not asked.
@@ -139,7 +140,7 @@ TEST_F(AutofillProfileImportProcessTest,
   // Create the import process for the scenario that there aren't any other
   // stored profiles yet.
   ProfileImportProcess import_data(observed_profile, "en_US", url_,
-                                   &personal_data_manager_,
+                                   &address_data_manager(),
                                    /*allow_only_silent_updates=*/false);
 
   // Simulate that the user accepts the save prompt but only after editing the
@@ -166,7 +167,7 @@ TEST_F(AutofillProfileImportProcessTest, ImportFirstProfile_UserRejects) {
   // Create the import process for the scenario that there aren't any other
   // stored profiles yet.
   ProfileImportProcess import_data(observed_profile, "en_US", url_,
-                                   &personal_data_manager_,
+                                   &address_data_manager(),
                                    /*allow_only_silent_updates=*/false);
 
   // Simulate the decline of the user.
@@ -186,12 +187,12 @@ TEST_F(AutofillProfileImportProcessTest, ImportFirstProfile_UserRejects) {
 // existing profile.
 TEST_F(AutofillProfileImportProcessTest, ImportDuplicateProfile) {
   AutofillProfile observed_profile = test::StandardProfile();
-  personal_data_manager_.address_data_manager().AddProfile(observed_profile);
+  address_data_manager().AddProfile(observed_profile);
 
   // Create the import process for the scenario that the observed profile is an
   // exact copy of an already existing one.
   ProfileImportProcess import_data(observed_profile, "en_US", url_,
-                                   &personal_data_manager_,
+                                   &address_data_manager(),
                                    /*allow_only_silent_updates=*/false);
 
   // Test that the import of a duplicate is determined correctly.
@@ -215,7 +216,7 @@ TEST_F(AutofillProfileImportProcessTest, ImportDuplicateProfile) {
 TEST_F(AutofillProfileImportProcessTest, IncorrectlyComplementedCountry) {
   AutofillProfile profile = test::StandardProfile(AddressCountryCode("ES"));
   EXPECT_EQ(u"ES", profile.GetRawInfo(ADDRESS_HOME_COUNTRY));
-  personal_data_manager_.address_data_manager().AddProfile(profile);
+  address_data_manager().AddProfile(profile);
 
   // Suppose the country was incorrectly complemented to "ZA". Note that the
   // selected country must share the same address model with the existing
@@ -226,7 +227,7 @@ TEST_F(AutofillProfileImportProcessTest, IncorrectlyComplementedCountry) {
   ProfileImportMetadata metadata;
   metadata.did_complement_country = true;
   ProfileImportProcess import_data(
-      profile, "en_US", url_, &personal_data_manager_,
+      profile, "en_US", url_, &address_data_manager(),
       /*allow_only_silent_updates=*/false, metadata);
   EXPECT_EQ(import_data.import_type(),
             AutofillProfileImportType::kDuplicateImport);
@@ -245,14 +246,12 @@ TEST_F(AutofillProfileImportProcessTest,
   AutofillProfile distinct_existing_profile =
       test::DifferentFromStandardProfile();
 
-  personal_data_manager_.address_data_manager().AddProfile(
-      duplicate_existing_profile);
-  personal_data_manager_.address_data_manager().AddProfile(
-      distinct_existing_profile);
+  address_data_manager().AddProfile(duplicate_existing_profile);
+  address_data_manager().AddProfile(distinct_existing_profile);
 
   // Create the import process for the two already existing profiles.
   ProfileImportProcess import_data(observed_profile, "en_US", url_,
-                                   &personal_data_manager_,
+                                   &address_data_manager(),
                                    /*allow_only_silent_updates=*/false);
 
   // Test that the type of import was determined correctly.
@@ -276,11 +275,11 @@ TEST_F(AutofillProfileImportProcessTest,
 TEST_F(AutofillProfileImportProcessTest, ImportDuplicateProfile_kAccount) {
   AutofillProfile account_profile = test::StandardProfile();
   account_profile.set_source_for_testing(AutofillProfile::Source::kAccount);
-  personal_data_manager_.address_data_manager().AddProfile(account_profile);
+  address_data_manager().AddProfile(account_profile);
 
   ProfileImportProcess import_data(
       /*observed_profile=*/test::StandardProfile(), "en_US", url_,
-      &personal_data_manager_,
+      &address_data_manager(),
       /*allow_only_silent_updates=*/false);
 
   EXPECT_EQ(import_data.import_type(),
@@ -296,11 +295,11 @@ TEST_F(AutofillProfileImportProcessTest, ImportDuplicateProfile_kAccount) {
 TEST_F(AutofillProfileImportProcessTest, ImportSubsetProfile_kAccount) {
   AutofillProfile account_profile = test::StandardProfile();
   account_profile.set_source_for_testing(AutofillProfile::Source::kAccount);
-  personal_data_manager_.address_data_manager().AddProfile(account_profile);
+  address_data_manager().AddProfile(account_profile);
 
   ProfileImportProcess import_data(
       /*observed_profile=*/test::SubsetOfStandardProfile(), "en_US", url_,
-      &personal_data_manager_,
+      &address_data_manager(),
       /*allow_only_silent_updates=*/false);
 
   EXPECT_EQ(import_data.import_type(),
@@ -317,11 +316,11 @@ TEST_F(AutofillProfileImportProcessTest,
        ImportSupersetProfile_kAccount_PostStorage) {
   AutofillProfile account_profile = test::SubsetOfStandardProfile();
   account_profile.set_source_for_testing(AutofillProfile::Source::kAccount);
-  personal_data_manager_.address_data_manager().AddProfile(account_profile);
+  address_data_manager().AddProfile(account_profile);
 
   ProfileImportProcess import_data(
       /*observed_profile=*/test::StandardProfile(), "en_US", url_,
-      &personal_data_manager_,
+      &address_data_manager(),
       /*allow_only_silent_updates=*/false);
 
   EXPECT_EQ(import_data.import_type(),
@@ -339,13 +338,13 @@ TEST_F(AutofillProfileImportProcessTest,
 TEST_F(AutofillProfileImportProcessTest, ImportSilentUpdate_kAccount) {
   AutofillProfile account_profile = test::UpdateableStandardProfile();
   account_profile.set_source_for_testing(AutofillProfile::Source::kAccount);
-  personal_data_manager_.address_data_manager().AddProfile(account_profile);
+  address_data_manager().AddProfile(account_profile);
 
   // The `observed_profile` is of type `kLocalOrSyncable`. This should not
   // prevent silent-updating a `kAccount` profile.
   ProfileImportProcess import_data(
       /*observed_profile=*/test::StandardProfile(), "en_US", url_,
-      &personal_data_manager_,
+      &address_data_manager(),
       /*allow_only_silent_updates=*/true);
 
   EXPECT_EQ(import_data.import_type(),
@@ -375,12 +374,12 @@ TEST_F(AutofillProfileImportProcessTest, MergeWithExistingProfile_Accepted) {
   test_clock.Advance(base::Days(1));
   base::Time current_time = AutofillClock::Now();
 
-  personal_data_manager_.address_data_manager().AddProfile(mergeable_profile);
+  address_data_manager().AddProfile(mergeable_profile);
 
   // Create the import process for the scenario that a profile that is mergeable
   // with the observed profile already exists.
   ProfileImportProcess import_data(observed_profile, "en_US", url_,
-                                   &personal_data_manager_,
+                                   &address_data_manager(),
                                    /*allow_only_silent_updates=*/false);
 
   // Test that the type of import was determined correctly.
@@ -426,12 +425,12 @@ TEST_F(AutofillProfileImportProcessTest,
   test_clock.Advance(base::Days(1));
   base::Time current_time = AutofillClock::Now();
 
-  personal_data_manager_.address_data_manager().AddProfile(mergeable_profile);
+  address_data_manager().AddProfile(mergeable_profile);
 
   // Create the import process for the scenario that a profile that is mergeable
   // with the observed profile already exists.
   ProfileImportProcess import_data(observed_profile, "en_US", url_,
-                                   &personal_data_manager_,
+                                   &address_data_manager(),
                                    /*allow_only_silent_updates=*/false);
 
   // Test that the type of import was determined correctly.
@@ -469,13 +468,13 @@ TEST_F(AutofillProfileImportProcessTest,
   // This is just another completely different profile.
   AutofillProfile distinct_profile = test::DifferentFromStandardProfile();
 
-  personal_data_manager_.address_data_manager().AddProfile(mergeable_profile);
-  personal_data_manager_.address_data_manager().AddProfile(distinct_profile);
+  address_data_manager().AddProfile(mergeable_profile);
+  address_data_manager().AddProfile(distinct_profile);
 
   // Create an import data instance for the observed profile and determine the
   // import type for the case that there are no already existing profiles.
   ProfileImportProcess import_data(observed_profile, "en_US", url_,
-                                   &personal_data_manager_,
+                                   &address_data_manager(),
                                    /*allow_only_silent_updates=*/false);
 
   // Test that the type of import was determined correctly.
@@ -516,12 +515,12 @@ TEST_F(AutofillProfileImportProcessTest, MergeWithExistingProfile_Rejected) {
   base::Time earlier_time = AutofillClock::Now();
   test_clock.Advance(base::Days(1));
 
-  personal_data_manager_.address_data_manager().AddProfile(mergeable_profile);
+  address_data_manager().AddProfile(mergeable_profile);
 
   // Create an import data instance for the observed profile and determine the
   // import type for the case that there are no already existing profiles.
   ProfileImportProcess import_data(observed_profile, "en_US", url_,
-                                   &personal_data_manager_,
+                                   &address_data_manager(),
                                    /*allow_only_silent_updates=*/false);
 
   // Test that the type of import was determined correctly.
@@ -562,12 +561,12 @@ TEST_F(AutofillProfileImportProcessTest, SilentlyUpdateProfile) {
   test_clock.Advance(base::Days(1));
   base::Time current_time = AutofillClock::Now();
 
-  personal_data_manager_.address_data_manager().AddProfile(updateable_profile);
+  address_data_manager().AddProfile(updateable_profile);
 
   // Create the import process for the scenario that there is an existing
   // profile that is updateable with the observed profile.
   ProfileImportProcess import_data(observed_profile, "en_US", url_,
-                                   &personal_data_manager_,
+                                   &address_data_manager(),
                                    /*allow_only_silent_updates=*/false);
 
   // Test that the type of import was determined correctly.
@@ -606,12 +605,12 @@ TEST_F(AutofillProfileImportProcessTest, BothMergeAndSilentUpdate_Accepted) {
   // This profile should be mergeable with the observed profile.
   AutofillProfile mergeable_profile = test::SubsetOfStandardProfile();
 
-  personal_data_manager_.address_data_manager().AddProfile(updateable_profile);
-  personal_data_manager_.address_data_manager().AddProfile(mergeable_profile);
+  address_data_manager().AddProfile(updateable_profile);
+  address_data_manager().AddProfile(mergeable_profile);
 
   // Create the import process with a mergeable and a updateable profile..
   ProfileImportProcess import_data(observed_profile, "en_US", url_,
-                                   &personal_data_manager_,
+                                   &address_data_manager(),
                                    /*allow_only_silent_updates=*/false);
 
   // Test that the type of import was determined correctly.
@@ -648,12 +647,12 @@ TEST_F(AutofillProfileImportProcessTest, BothMergeAndSilentUpdate_Rejected) {
   // This profile should be mergeable with the observed profile.
   AutofillProfile mergeable_profile = test::SubsetOfStandardProfile();
 
-  personal_data_manager_.address_data_manager().AddProfile(updateable_profile);
-  personal_data_manager_.address_data_manager().AddProfile(mergeable_profile);
+  address_data_manager().AddProfile(updateable_profile);
+  address_data_manager().AddProfile(mergeable_profile);
 
   // Create the import process with a mergeable and a updateable profile..
   ProfileImportProcess import_data(observed_profile, "en_US", url_,
-                                   &personal_data_manager_,
+                                   &address_data_manager(),
                                    /*allow_only_silent_updates=*/false);
 
   // Test that the type of import was determined correctly.
@@ -692,12 +691,12 @@ TEST_F(AutofillProfileImportProcessTest, BlockedMergeAndSilentUpdate) {
 
   BlockProfileForUpdates(mergeable_profile);
 
-  personal_data_manager_.address_data_manager().AddProfile(updateable_profile);
-  personal_data_manager_.address_data_manager().AddProfile(mergeable_profile);
+  address_data_manager().AddProfile(updateable_profile);
+  address_data_manager().AddProfile(mergeable_profile);
 
   // Create the import process with a mergeable and an updateable profile..
   ProfileImportProcess import_data(observed_profile, "en_US", url_,
-                                   &personal_data_manager_,
+                                   &address_data_manager(),
                                    /*allow_only_silent_updates=*/false);
 
   // Test that the type of import was determined correctly.
@@ -732,11 +731,11 @@ TEST_F(AutofillProfileImportProcessTest, BlockedMerge) {
   AutofillProfile mergeable_profile = test::SubsetOfStandardProfile();
 
   BlockProfileForUpdates(mergeable_profile);
-  personal_data_manager_.address_data_manager().AddProfile(mergeable_profile);
+  address_data_manager().AddProfile(mergeable_profile);
 
   // Create the import process with a mergeable profile.
   ProfileImportProcess import_data(observed_profile, "en_US", url_,
-                                   &personal_data_manager_,
+                                   &address_data_manager(),
                                    /*allow_only_silent_updates=*/false);
 
   // Test that the type of import was determined correctly.
@@ -773,12 +772,12 @@ TEST_F(AutofillProfileImportProcessTest,
   test_clock.Advance(base::Days(1));
   base::Time current_time = AutofillClock::Now();
 
-  personal_data_manager_.address_data_manager().AddProfile(updateable_profile);
+  address_data_manager().AddProfile(updateable_profile);
 
   // Create the import process for the scenario that there is an existing
   // profile that is updateable with the observed profile.
   ProfileImportProcess import_data(observed_profile, "en_US", url_,
-                                   &personal_data_manager_,
+                                   &address_data_manager(),
                                    /*allow_only_silent_updates=*/true);
 
   // Test that the type of import was determined correctly.
@@ -817,7 +816,7 @@ TEST_F(AutofillProfileImportProcessTest, SilentlyUpdateProfile_WithNewProfile) {
   // Create the import process for the scenario that there is an existing
   // profile that is updateable with the observed profile.
   ProfileImportProcess import_data(observed_profile, "en_US", url_,
-                                   &personal_data_manager_,
+                                   &address_data_manager(),
                                    /*allow_only_silent_updates=*/true);
 
   // Test that the type of import was determined correctly.
@@ -846,12 +845,12 @@ TEST_F(AutofillProfileImportProcessTest,
   // This profile should be mergeable with the observed profile.
   AutofillProfile mergeable_profile = test::SubsetOfStandardProfile();
 
-  personal_data_manager_.address_data_manager().AddProfile(updateable_profile);
-  personal_data_manager_.address_data_manager().AddProfile(mergeable_profile);
+  address_data_manager().AddProfile(updateable_profile);
+  address_data_manager().AddProfile(mergeable_profile);
 
   // Create the import process with a mergeable and an updateable profile..
   ProfileImportProcess import_data(observed_profile, "en_US", url_,
-                                   &personal_data_manager_,
+                                   &address_data_manager(),
                                    /*allow_only_silent_updates=*/true);
 
   // Test that the type of import was determined correctly.
@@ -881,10 +880,9 @@ TEST_F(AutofillProfileImportProcessTest,
 TEST_F(AutofillProfileImportProcessTest, NewProfileSource) {
   // Ineligible user.
   {
-    personal_data_manager_.test_address_data_manager()
-        .SetIsEligibleForAddressAccountStorage(false);
+    address_data_manager().SetIsEligibleForAddressAccountStorage(false);
     ProfileImportProcess import_data(test::StandardProfile(), "en_US", url_,
-                                     &personal_data_manager_,
+                                     &address_data_manager(),
                                      /*allow_only_silent_updates=*/false);
     EXPECT_EQ(import_data.import_candidate()->source(),
               AutofillProfile::Source::kLocalOrSyncable);
@@ -892,10 +890,9 @@ TEST_F(AutofillProfileImportProcessTest, NewProfileSource) {
 
   // Eligible user.
   {
-    personal_data_manager_.test_address_data_manager()
-        .SetIsEligibleForAddressAccountStorage(true);
+    address_data_manager().SetIsEligibleForAddressAccountStorage(true);
     ProfileImportProcess import_data(test::StandardProfile(), "en_US", url_,
-                                     &personal_data_manager_,
+                                     &address_data_manager(),
                                      /*allow_only_silent_updates=*/false);
     EXPECT_EQ(import_data.import_candidate()->source(),
               AutofillProfile::Source::kAccount);
@@ -904,7 +901,7 @@ TEST_F(AutofillProfileImportProcessTest, NewProfileSource) {
     AutofillProfile ineligible_profile = test::StandardProfile();
     ineligible_profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"SD");
     import_data = ProfileImportProcess(ineligible_profile, "en_US", url_,
-                                       &personal_data_manager_,
+                                       &address_data_manager(),
                                        /*allow_only_silent_updates=*/false);
     EXPECT_EQ(import_data.import_candidate()->source(),
               AutofillProfile::Source::kLocalOrSyncable);
@@ -918,14 +915,13 @@ TEST_F(AutofillProfileImportProcessTest, NewProfileSource) {
 TEST_F(AutofillProfileImportProcessTest, MigrateProfileToAccount) {
   const AutofillProfile profile_to_migrate = test::StandardProfile();
   const AutofillProfile other_profile = test::DifferentFromStandardProfile();
-  personal_data_manager_.address_data_manager().AddProfile(profile_to_migrate);
-  personal_data_manager_.address_data_manager().AddProfile(other_profile);
-  personal_data_manager_.test_address_data_manager()
-      .SetIsEligibleForAddressAccountStorage(true);
+  address_data_manager().AddProfile(profile_to_migrate);
+  address_data_manager().AddProfile(other_profile);
+  address_data_manager().SetIsEligibleForAddressAccountStorage(true);
 
   ProfileImportProcess import_data(
       /*observed_profile=*/profile_to_migrate, "en_US", url_,
-      &personal_data_manager_,
+      &address_data_manager(),
       /*allow_only_silent_updates=*/false);
   EXPECT_EQ(import_data.import_type(),
             AutofillProfileImportType::kProfileMigration);
@@ -946,12 +942,11 @@ TEST_F(AutofillProfileImportProcessTest, MigrateProfileToAccount) {
 TEST_F(AutofillProfileImportProcessTest, MigrateProfileToAccount_SilentUpdate) {
   const AutofillProfile profile_to_migrate = test::UpdateableStandardProfile();
   const AutofillProfile observed_profile = test::StandardProfile();
-  personal_data_manager_.address_data_manager().AddProfile(profile_to_migrate);
-  personal_data_manager_.test_address_data_manager()
-      .SetIsEligibleForAddressAccountStorage(true);
+  address_data_manager().AddProfile(profile_to_migrate);
+  address_data_manager().SetIsEligibleForAddressAccountStorage(true);
 
   ProfileImportProcess import_data(observed_profile, "en_US", url_,
-                                   &personal_data_manager_,
+                                   &address_data_manager(),
                                    /*allow_only_silent_updates=*/false);
   EXPECT_EQ(import_data.import_type(),
             AutofillProfileImportType::kProfileMigrationAndSilentUpdate);
@@ -975,12 +970,11 @@ TEST_F(AutofillProfileImportProcessTest,
        MigrateProfileToAccount_SilentUpdate_Decline) {
   const AutofillProfile migration_candidate = test::UpdateableStandardProfile();
   const AutofillProfile observed_profile = test::StandardProfile();
-  personal_data_manager_.address_data_manager().AddProfile(migration_candidate);
-  personal_data_manager_.test_address_data_manager()
-      .SetIsEligibleForAddressAccountStorage(true);
+  address_data_manager().AddProfile(migration_candidate);
+  address_data_manager().SetIsEligibleForAddressAccountStorage(true);
 
   ProfileImportProcess import_data(observed_profile, "en_US", url_,
-                                   &personal_data_manager_,
+                                   &address_data_manager(),
                                    /*allow_only_silent_updates=*/false);
   EXPECT_EQ(import_data.import_type(),
             AutofillProfileImportType::kProfileMigrationAndSilentUpdate);
@@ -995,12 +989,11 @@ TEST_F(AutofillProfileImportProcessTest,
 TEST_F(AutofillProfileImportProcessTest,
        MigrateProfileToAccount_IneligibleUser) {
   const AutofillProfile profile = test::StandardProfile();
-  personal_data_manager_.address_data_manager().AddProfile(profile);
-  personal_data_manager_.test_address_data_manager()
-      .SetIsEligibleForAddressAccountStorage(false);
+  address_data_manager().AddProfile(profile);
+  address_data_manager().SetIsEligibleForAddressAccountStorage(false);
 
   ProfileImportProcess import_data(
-      /*observed_profile=*/profile, "en_US", url_, &personal_data_manager_,
+      /*observed_profile=*/profile, "en_US", url_, &address_data_manager(),
       /*allow_only_silent_updates=*/false);
   EXPECT_EQ(import_data.import_type(),
             AutofillProfileImportType::kDuplicateImport);
@@ -1011,10 +1004,10 @@ TEST_F(AutofillProfileImportProcessTest,
        MigrateProfileToAccount_IneligibleProfile) {
   AutofillProfile profile = test::StandardProfile();
   profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"KP");
-  personal_data_manager_.address_data_manager().AddProfile(profile);
+  address_data_manager().AddProfile(profile);
 
   ProfileImportProcess import_data(
-      /*observed_profile=*/profile, "en_US", url_, &personal_data_manager_,
+      /*observed_profile=*/profile, "en_US", url_, &address_data_manager(),
       /*allow_only_silent_updates=*/false);
   EXPECT_EQ(import_data.import_type(),
             AutofillProfileImportType::kDuplicateImport);
@@ -1067,7 +1060,7 @@ class QuasiDuplicateUpdateTest : public AutofillProfileImportProcessTest {
 
 TEST_F(QuasiDuplicateUpdateTest, NonLowQualityTokenEdited) {
   AutofillProfile profile = test::GetFullProfile();
-  personal_data_manager_.address_data_manager().AddProfile(profile);
+  address_data_manager().AddProfile(profile);
   auto [observed_profile, metadata] = ConstructFilledObservedProfile(
       profile, {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, EMAIL_ADDRESS});
   SimulateManuallyEditingValue(EMAIL_ADDRESS, observed_profile, metadata);
@@ -1075,7 +1068,7 @@ TEST_F(QuasiDuplicateUpdateTest, NonLowQualityTokenEdited) {
   // the email address. Since EMAIL_ADDRESS is not considered a low quality
   // token, expect that the creation of a new profile is offered.
   ProfileImportProcess import_process(
-      observed_profile, "en_US", url_, &personal_data_manager_,
+      observed_profile, "en_US", url_, &address_data_manager(),
       /*allow_only_silent_updates=*/false, metadata);
   EXPECT_EQ(import_process.import_type(),
             AutofillProfileImportType::kNewProfile);
@@ -1085,7 +1078,7 @@ TEST_F(QuasiDuplicateUpdateTest, NonLowQualityTokenEdited) {
 TEST_F(QuasiDuplicateUpdateTest, LowQualityTokenEdited) {
   AutofillProfile profile = test::GetFullProfile();
   MakeTokenLowQuality(EMAIL_ADDRESS, profile);
-  personal_data_manager_.address_data_manager().AddProfile(profile);
+  address_data_manager().AddProfile(profile);
   auto [observed_profile, metadata] = ConstructFilledObservedProfile(
       profile, {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, EMAIL_ADDRESS});
   SimulateManuallyEditingValue(EMAIL_ADDRESS, observed_profile, metadata);
@@ -1093,7 +1086,7 @@ TEST_F(QuasiDuplicateUpdateTest, LowQualityTokenEdited) {
   // the email address. Since EMAIL_ADDRESS is a low quality token, expect that
   // updating the existing profile with the observed email address is offered.
   ProfileImportProcess import_process(
-      observed_profile, "en_US", url_, &personal_data_manager_,
+      observed_profile, "en_US", url_, &address_data_manager(),
       /*allow_only_silent_updates=*/false, metadata);
   EXPECT_EQ(import_process.import_type(),
             AutofillProfileImportType::kConfirmableMerge);

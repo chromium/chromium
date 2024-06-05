@@ -18,6 +18,8 @@
 
 namespace autofill {
 
+class AddressDataManager;
+
 // Specifies the type of a profile form import.
 enum class AutofillProfileImportType {
   // Type is unspecified.
@@ -116,7 +118,7 @@ struct ProfileImportMetadata {
 //   `AcceptWithEdits()`, `Declined()` or `Ignore()`.
 //
 // * Finally, `ImportAffectedProfiles()` should be used to update the
-//   profiles in the `PersonalDataManager`.
+//   profiles in the `AddressDataManager`.
 //
 // The instance of this class should contain all information needed to record
 // metrics once an import process is finished.
@@ -125,7 +127,7 @@ class ProfileImportProcess {
   ProfileImportProcess(const AutofillProfile& observed_profile,
                        const std::string& app_locale,
                        const GURL& form_source_url,
-                       PersonalDataManager* personal_data_manager,
+                       AddressDataManager* address_data_manager,
                        bool allow_only_silent_updates,
                        ProfileImportMetadata import_metadata = {});
 
@@ -190,7 +192,7 @@ class ProfileImportProcess {
   const GURL& form_source_url() const { return form_source_url_; }
 
   // Adds and updates all profiles affected by the import process in the
-  // `personal_data_manager_`. The affected profiles correspond to the
+  // `address_data_manager_`. The affected profiles correspond to the
   // `silently_updated_profiles_` and depending on the import type, the
   // `confirmed_import_candidate_`.
   void ApplyImport();
@@ -315,9 +317,9 @@ class ProfileImportProcess {
   // was observed on.
   bool new_profiles_suppressed_for_domain_;
 
-  // A pointer to the persona data manager that is used to retrieve additional
+  // A reference to the address data manager that is used to retrieve additional
   // information about existing profiles and save/update imported profiles.
-  raw_ptr<PersonalDataManager> personal_data_manager_;
+  raw_ref<AddressDataManager> address_data_manager_;
 
   // Counts the number of blocked profile updates.
   int number_of_blocked_profile_updates_{0};

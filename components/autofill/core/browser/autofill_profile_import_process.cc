@@ -6,6 +6,7 @@
 
 #include <map>
 
+#include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
@@ -16,7 +17,6 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/metrics/profile_deduplication_metrics.h"
 #include "components/autofill/core/browser/metrics/profile_import_metrics.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/profile_requirement_utils.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -62,13 +62,13 @@ ProfileImportProcess::ProfileImportProcess(
     const AutofillProfile& observed_profile,
     const std::string& app_locale,
     const GURL& form_source_url,
-    PersonalDataManager* personal_data_manager,
+    AddressDataManager* address_data_manager,
     bool allow_only_silent_updates,
     ProfileImportMetadata import_metadata)
     : observed_profile_(observed_profile),
       app_locale_(app_locale),
       form_source_url_(form_source_url),
-      personal_data_manager_(personal_data_manager),
+      address_data_manager_(CHECK_DEREF(address_data_manager)),
       allow_only_silent_updates_(allow_only_silent_updates),
       import_metadata_(import_metadata) {
   DetermineProfileImportType();
@@ -103,10 +103,9 @@ void ProfileImportProcess::DetermineProfileImportType() {
   AutofillProfileComparator comparator(app_locale_);
   bool is_mergeable_with_existing_profile = false;
 
-  DCHECK(personal_data_manager_);
   new_profiles_suppressed_for_domain_ =
-      personal_data_manager_->address_data_manager()
-          .IsNewProfileImportBlockedForDomain(form_source_url_);
+      address_data_manager_->IsNewProfileImportBlockedForDomain(
+          form_source_url_);
 
   int number_of_unchanged_profiles = 0;
   std::optional<AutofillProfile> migration_candidate;
@@ -114,7 +113,7 @@ void ProfileImportProcess::DetermineProfileImportType() {
   // We don't offer an import if `observed_profile_` is a duplicate of an
   // existing profile.
   const std::vector<const AutofillProfile*> existing_profiles =
-      personal_data_manager_->address_data_manager().GetProfiles(
+      address_data_manager_->GetProfiles(
           AddressDataManager::ProfileOrder::kMostRecentlyUsedFirstDesc);
 
   // If we have reason to believe that the country was complemented incorrectly,
@@ -164,10 +163,10 @@ void ProfileImportProcess::DetermineProfileImportType() {
       }
 
       // Determine if the existing profile is blocked for updates.
-      // If the personal data manager is not available the profile is considered
+      // If the address data manager is not available the profile is considered
       // as not blocked. Also, updates can be disabled by a feature flag.
       bool is_blocked_for_update =
-          personal_data_manager_->address_data_manager().IsProfileUpdateBlocked(
+          address_data_manager_->IsProfileUpdateBlocked(
               existing_profile->guid()) ||
           base::FeatureList::IsEnabled(
               features::test::kAutofillDisableProfileUpdates);
@@ -279,10 +278,9 @@ void ProfileImportProcess::DetermineSourceOfImportCandidate() {
     return;
   }
   CHECK(import_candidate_);
-  if (personal_data_manager_->address_data_manager()
-          .IsEligibleForAddressAccountStorage() &&
-      personal_data_manager_->address_data_manager()
-          .IsCountryEligibleForAccountStorage(base::UTF16ToUTF8(
+  if (address_data_manager_->IsEligibleForAddressAccountStorage() &&
+      address_data_manager_->IsCountryEligibleForAccountStorage(
+          base::UTF16ToUTF8(
               import_candidate_->GetRawInfo(ADDRESS_HOME_COUNTRY)))) {
     import_candidate_ = import_candidate_->ConvertToAccountProfile();
   }
@@ -321,8 +319,7 @@ bool ProfileImportProcess::IsObservedProfileAutofilledQuasiDuplicate(
     return false;
   }
   const AutofillProfile* autofilled_profile =
-      personal_data_manager_->address_data_manager().GetProfileByGUID(
-          *guid_to_types.rbegin()->first);
+      address_data_manager_->GetProfileByGUID(*guid_to_types.rbegin()->first);
   if (!autofilled_profile) {
     return false;
   }
@@ -355,7 +352,7 @@ void ProfileImportProcess::MaybeSetMigrationCandidate(
     return;
   }
   // Check the eligiblity of the user and profile.
-  if (IsEligibleForMigrationToAccount(*personal_data_manager_, profile)) {
+  if (IsEligibleForMigrationToAccount(*address_data_manager_, profile)) {
     migration_candidate = profile;
   }
 }
@@ -369,8 +366,7 @@ void ProfileImportProcess::ApplyImport() {
 
   // Apply silent updates.
   for (const AutofillProfile& updated_profile : silently_updated_profiles_) {
-    personal_data_manager_->address_data_manager().UpdateProfile(
-        updated_profile);
+    address_data_manager_->UpdateProfile(updated_profile);
   }
 
   if (!confirmed_import_candidate_.has_value()) {
@@ -380,14 +376,11 @@ void ProfileImportProcess::ApplyImport() {
   // Confirming an import candidate corresponds to either a new/update profile
   // or a migration prompt.
   if (is_migration()) {
-    personal_data_manager_->address_data_manager().MigrateProfileToAccount(
-        confirmed_profile);
+    address_data_manager_->MigrateProfileToAccount(confirmed_profile);
   } else if (is_confirmable_update()) {
-    personal_data_manager_->address_data_manager().UpdateProfile(
-        confirmed_profile);
+    address_data_manager_->UpdateProfile(confirmed_profile);
   } else {
-    personal_data_manager_->address_data_manager().AddProfile(
-        confirmed_profile);
+    address_data_manager_->AddProfile(confirmed_profile);
   }
 }
 
