@@ -15,7 +15,6 @@ ci/linux-lacros-tester-rel
 ci/win-arm64-dbg
 ci/win-arm64-rel
 ci/win-official
-ci/win11-arm64-rel-tests
 ci/win32-official
 try/lacros-amd64-generic-rel-gtest
 try/lacros-amd64-generic-rel-gtest-and-tast
