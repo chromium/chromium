@@ -215,6 +215,21 @@ enum class LoginDatabaseEncryptionStatus {
   kMaxValue = kEncryptionUnavailable,
 };
 
+// Represents whether undecryptable passwords should be deleted from the login
+// database or the reason if they shouldn't be deleted.
+// Entries should not be renumbered and numeric values should never be
+// reused. Always keep this enum in sync with the corresponding
+// LoginDatabaseShouldDeleteUndecryptablePasswords in enums.xml.
+enum class ShouldDeleteUndecryptablePasswordsResult {
+  kShouldDelete = 0,
+  kUserDataDirEnvVarIsPresent = 1,
+  kUserDataDirSwitchIsPresent = 2,
+  kUserPasswordStoreSwitchIsPresent = 3,
+  kUserEncryptionSelectionSwitchrIsPresent = 4,
+  kEncryptionNotAvailiable = 5,
+  kMaxValue = kEncryptionNotAvailiable,
+};
+
 // Struct to hold table builder for different tables in the LoginDatabase.
 struct SQLTableBuilders {
   raw_ptr<SQLTableBuilder> logins;
@@ -999,6 +1014,13 @@ LoginDatabase::EncryptionResult DecryptPasswordFromStatement(
   return encryption_result;
 }
 
+void RecordShouldDeleteUndecryptablePasswordsMetric(
+    ShouldDeleteUndecryptablePasswordsResult should_delete_status) {
+  base::UmaHistogramEnumeration(
+      "PasswordManager.LoginDatabase.ShouldDeleteUndecryptablePasswords",
+      should_delete_status);
+}
+
 bool ShouldDeleteUndecryptablePasswords() {
 #if BUILDFLAG(IS_LINUX)
   std::string user_data_dir_string;
@@ -1006,24 +1028,43 @@ bool ShouldDeleteUndecryptablePasswords() {
   // On Linux user data directory ca be specified using an env variable. If it
   // exists, passwords shouldn't be deleted.
   if (environment->GetVar("CHROME_USER_DATA_DIR", &user_data_dir_string)) {
+    RecordShouldDeleteUndecryptablePasswordsMetric(
+        ShouldDeleteUndecryptablePasswordsResult::kUserDataDirEnvVarIsPresent);
     return false;
   }
 #endif  // BUILDFLAG(IS_LINUX)
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  bool has_pwm_related_switches_enabled =
-      command_line->HasSwitch(password_manager::kUserDataDir);
+  if (command_line->HasSwitch(password_manager::kUserDataDir)) {
+    RecordShouldDeleteUndecryptablePasswordsMetric(
+        ShouldDeleteUndecryptablePasswordsResult::kUserDataDirSwitchIsPresent);
+    return false;
+  }
 
 #if BUILDFLAG(IS_LINUX)
-  has_pwm_related_switches_enabled =
-      has_pwm_related_switches_enabled ||
-      command_line->HasSwitch(password_manager::kPasswordStore) ||
-      command_line->HasSwitch(password_manager::kEnableEncryptionSelection);
+  if (command_line->HasSwitch(password_manager::kPasswordStore)) {
+    RecordShouldDeleteUndecryptablePasswordsMetric(
+        ShouldDeleteUndecryptablePasswordsResult::
+            kUserPasswordStoreSwitchIsPresent);
+    return false;
+  }
+  if (command_line->HasSwitch(password_manager::kEnableEncryptionSelection)) {
+    RecordShouldDeleteUndecryptablePasswordsMetric(
+        ShouldDeleteUndecryptablePasswordsResult::
+            kUserEncryptionSelectionSwitchrIsPresent);
+    return false;
+  }
 #endif  // BUILDFLAG(IS_LINUX)
 
-  return !has_pwm_related_switches_enabled &&
-         OSCrypt::IsEncryptionAvailable() &&
-         base::FeatureList::IsEnabled(features::kClearUndecryptablePasswords);
+  if (!OSCrypt::IsEncryptionAvailable()) {
+    RecordShouldDeleteUndecryptablePasswordsMetric(
+        ShouldDeleteUndecryptablePasswordsResult::kEncryptionNotAvailiable);
+    return false;
+  }
+
+  RecordShouldDeleteUndecryptablePasswordsMetric(
+      ShouldDeleteUndecryptablePasswordsResult::kShouldDelete);
+  return base::FeatureList::IsEnabled(features::kClearUndecryptablePasswords);
 }
 
 }  // namespace

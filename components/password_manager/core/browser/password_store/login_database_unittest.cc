@@ -2157,9 +2157,15 @@ class LoginDatabaseUndecryptableLoginsTest : public testing::Test {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     database_path_ = temp_dir_.GetPath().AppendASCII("test.db");
     OSCryptMocker::SetUp();
+    env_ = base::Environment::Create();
   }
 
-  void TearDown() override { OSCryptMocker::TearDown(); }
+  void TearDown() override {
+    OSCryptMocker::TearDown();
+    if (env_->HasVar("CHROME_USER_DATA_DIR")) {
+      env_->UnSetVar("CHROME_USER_DATA_DIR");
+    }
+  }
 
   // Generates login depending on |unique_string| and |origin| parameters and
   // adds it to the database. Changes encrypted password in the database if the
@@ -2177,7 +2183,10 @@ class LoginDatabaseUndecryptableLoginsTest : public testing::Test {
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
+  base::Environment* env() { return env_.get(); }
+
  private:
+  std::unique_ptr<base::Environment> env_;
   base::FilePath database_path_;
   base::ScopedTempDir temp_dir_;
   base::test::TaskEnvironment task_environment_;
@@ -2311,6 +2320,8 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest,
   EXPECT_FALSE(db.GetAutoSignInLogins(&forms));
   histogram_tester.ExpectTotalCount(
       "PasswordManager.DeleteUndecryptableLoginsReturnValue", 0);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.LoginDatabase.ShouldDeleteUndecryptablePasswords", 3, 1);
 }
 
 TEST_F(LoginDatabaseUndecryptableLoginsTest,
@@ -2342,6 +2353,8 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest,
   EXPECT_FALSE(db.GetAutoSignInLogins(&forms));
   histogram_tester.ExpectTotalCount(
       "PasswordManager.DeleteUndecryptableLoginsReturnValue", 0);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.LoginDatabase.ShouldDeleteUndecryptablePasswords", 4, 1);
 }
 
 TEST_F(LoginDatabaseUndecryptableLoginsTest,
@@ -2353,12 +2366,7 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest,
        {features::kClearUndecryptablePasswords, true}});
 
   // Set the home dir env variable.
-  std::string orig_chrome_config_home = "test/path";
-  std::unique_ptr<base::Environment> env(base::Environment::Create());
-  env->SetVar("CHROME_CONFIG_HOME", orig_chrome_config_home);
-
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      password_manager::kEnableEncryptionSelection);
+  env()->SetVar("CHROME_USER_DATA_DIR", "test/path");
 
   base::HistogramTester histogram_tester;
   std::vector<PasswordForm> forms;
@@ -2377,6 +2385,8 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest,
   EXPECT_FALSE(db.GetAutoSignInLogins(&forms));
   histogram_tester.ExpectTotalCount(
       "PasswordManager.DeleteUndecryptableLoginsReturnValue", 0);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.LoginDatabase.ShouldDeleteUndecryptablePasswords", 1, 1);
 }
 
 #endif  // BUILDFLAG(IS_LINUX)
@@ -2410,6 +2420,8 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest,
   EXPECT_FALSE(db.GetAutoSignInLogins(&forms));
   histogram_tester.ExpectTotalCount(
       "PasswordManager.DeleteUndecryptableLoginsReturnValue", 0);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.LoginDatabase.ShouldDeleteUndecryptablePasswords", 2, 1);
 }
 
 #if BUILDFLAG(IS_MAC)
@@ -2441,6 +2453,8 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest,
   EXPECT_FALSE(db.GetAutoSignInLogins(&forms));
   histogram_tester.ExpectTotalCount(
       "PasswordManager.DeleteUndecryptableLoginsReturnValue", 0);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.LoginDatabase.ShouldDeleteUndecryptablePasswords", 5, 1);
 }
 #endif  // BUILDFLAG(IS_MAC)
 
@@ -2525,6 +2539,9 @@ TEST_P(LoginDatabaseGetUndecryptableLoginsTest, GetAutoSignInLogins) {
         "PasswordManager.DeleteUndecryptableLoginsReturnValue",
         metrics_util::DeleteCorruptedPasswordsResult::kSuccessPasswordsDeleted,
         1);
+    histogram_tester.ExpectUniqueSample(
+        "PasswordManager.LoginDatabase.ShouldDeleteUndecryptablePasswords", 0,
+        1);
   } else {
     if (base::FeatureList::IsEnabled(features::kSkipUndecryptablePasswords)) {
       EXPECT_TRUE(db.GetAutoSignInLogins(&forms));
@@ -2561,6 +2578,9 @@ TEST_P(LoginDatabaseGetUndecryptableLoginsTest, GetLogins) {
     histogram_tester.ExpectUniqueSample(
         "PasswordManager.DeleteUndecryptableLoginsReturnValue",
         metrics_util::DeleteCorruptedPasswordsResult::kSuccessPasswordsDeleted,
+        1);
+    histogram_tester.ExpectUniqueSample(
+        "PasswordManager.LoginDatabase.ShouldDeleteUndecryptablePasswords", 0,
         1);
   } else {
     if (base::FeatureList::IsEnabled(features::kSkipUndecryptablePasswords)) {
@@ -2602,6 +2622,9 @@ TEST_P(LoginDatabaseGetUndecryptableLoginsTest, GetAutofillableLogins) {
     histogram_tester.ExpectUniqueSample(
         "PasswordManager.DeleteUndecryptableLoginsReturnValue",
         metrics_util::DeleteCorruptedPasswordsResult::kSuccessPasswordsDeleted,
+        1);
+    histogram_tester.ExpectUniqueSample(
+        "PasswordManager.LoginDatabase.ShouldDeleteUndecryptablePasswords", 0,
         1);
   } else {
     if (base::FeatureList::IsEnabled(features::kSkipUndecryptablePasswords)) {

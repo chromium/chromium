@@ -1924,6 +1924,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="PasswordManager.LoginDatabase.ShouldDeleteUndecryptablePasswords"
+    enum="LoginDatabaseShouldDeleteUndecryptablePasswords"
+    expires_after="2025-09-22">
+  <owner>sygiet@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Records if undecryptable passwords should be deleted from the login database
+    and the reason when they shouldn't be deleted. Recorded after every read
+    from the login database after the decision to delete is made.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.LoginDatabaseInit2"
     enum="LoginDatabaseInitError" expires_after="2024-11-03">
   <owner>vasilii@chromium.org</owner>
