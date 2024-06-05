@@ -145,11 +145,11 @@ class BitmapImageTest : public testing::Test {
     int last_decoded_size_changed_delta_;
   };
 
-  static scoped_refptr<SharedBuffer> ReadFile(const char* file_name) {
+  static Vector<char> ReadFile(const char* file_name) {
     String file_path = test::PlatformTestDataPath(file_name);
     std::optional<Vector<char>> data = test::ReadFromFile(file_path);
     CHECK(data && data->size());
-    return SharedBuffer::Create(std::move(*data));
+    return std::move(*data);
   }
 
   // Accessors to BitmapImage's protected methods.
@@ -164,7 +164,8 @@ class BitmapImageTest : public testing::Test {
   void LoadImage(const char* file_name) {
     CreateImage();
 
-    scoped_refptr<SharedBuffer> image_data = ReadFile(file_name);
+    scoped_refptr<SharedBuffer> image_data =
+        SharedBuffer::Create(ReadFile(file_name));
     ASSERT_TRUE(image_data.get());
 
     image_->SetData(image_data, true);
@@ -190,7 +191,8 @@ class BitmapImageTest : public testing::Test {
   }
 
   SkBitmap GenerateBitmapForImage(const char* file_name) {
-    scoped_refptr<SharedBuffer> image_data = ReadFile(file_name);
+    scoped_refptr<SharedBuffer> image_data =
+        SharedBuffer::Create(ReadFile(file_name));
     EXPECT_TRUE(image_data.get());
     if (!image_data)
       return SkBitmap();
@@ -284,7 +286,8 @@ TEST_F(BitmapImageTest, maybeAnimated) {
 }
 
 TEST_F(BitmapImageTest, isAllDataReceived) {
-  scoped_refptr<SharedBuffer> image_data = ReadFile("green.jpg");
+  scoped_refptr<SharedBuffer> image_data =
+      SharedBuffer::Create(ReadFile("green.jpg"));
   ASSERT_TRUE(image_data.get());
 
   scoped_refptr<BitmapImage> image = BitmapImage::Create();
@@ -356,13 +359,12 @@ TEST_F(BitmapImageTest, recachingFrameAfterDataChanged) {
 }
 
 TEST_F(BitmapImageTest, ConstantImageIdForPartiallyLoadedImages) {
-  scoped_refptr<SharedBuffer> image_data = ReadFile("green.jpg");
-  ASSERT_TRUE(image_data.get());
+  Vector<char> image_data_binary = ReadFile("green.jpg");
 
   // Create a new buffer to partially supply the data.
   scoped_refptr<SharedBuffer> partial_buffer = SharedBuffer::Create();
-  partial_buffer->Append(image_data->FlattenIfNeededAndGetData(),
-                         image_data->size() - 4);
+  partial_buffer->Append(image_data_binary.data(),
+                         image_data_binary.size() - 4);
 
   // First partial load. Repeated calls for a PaintImage should have the same
   // image until the data changes or the decoded data is destroyed.
@@ -393,6 +395,8 @@ TEST_F(BitmapImageTest, ConstantImageIdForPartiallyLoadedImages) {
             image3.GetKeyForFrame(PaintImage::kDefaultFrameIndex));
 
   // Load complete. This should generate a new image id.
+  scoped_refptr<SharedBuffer> image_data =
+      SharedBuffer::Create(image_data_binary);
   image_->SetData(image_data, true);
   auto complete_image = image_->PaintImageForCurrentFrame();
   auto complete_sk_image = complete_image.GetSwSkImage();
