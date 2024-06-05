@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/platform/peerconnection/rtc_video_encoder_factory.h"
 #include "third_party/blink/renderer/platform/peerconnection/stats_collecting_decoder.h"
 #include "third_party/blink/renderer/platform/peerconnection/stats_collecting_encoder.h"
+#include "third_party/blink/renderer/platform/peerconnection/webrtc_util.h"
 #include "third_party/webrtc/api/video_codecs/video_decoder_software_fallback_wrapper.h"
 #include "third_party/webrtc/api/video_codecs/video_encoder_software_fallback_wrapper.h"
 #include "third_party/webrtc/media/base/codec.h"
@@ -84,6 +85,10 @@ class EncoderAdapter : public webrtc::VideoEncoderFactory {
   std::unique_ptr<webrtc::VideoEncoder> Create(
       const webrtc::Environment& env,
       const webrtc::SdpVideoFormat& format) override {
+    if (!WebRTCFormatToCodecProfile(format)) {
+      LOG(ERROR) << "Unsupported SDP format: " << format.name;
+      return nullptr;
+    }
     const bool supported_in_hardware =
         IsFormatSupported(hardware_encoder_factory_.get(), format);
     bool allow_h264_profile_fallback = false;

@@ -57,6 +57,7 @@ webrtc_public_deps = [
   "//third_party/webrtc/api/audio_codecs/opus:audio_decoder_opus",
   "//third_party/webrtc/api/audio_codecs/opus:audio_encoder_multiopus",
   "//third_party/webrtc/api/audio_codecs/opus:audio_encoder_opus",
+  "//third_party/webrtc/api/environment:environment_factory",
   "//third_party/webrtc/api/metronome",
   "//third_party/webrtc/api/rtc_event_log:rtc_event_log_factory",
   "//third_party/webrtc/api/task_queue:task_queue",
