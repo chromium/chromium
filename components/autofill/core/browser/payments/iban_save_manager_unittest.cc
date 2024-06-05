@@ -73,8 +73,7 @@ class IbanSaveManagerTest : public testing::Test {
     autofill_client_.set_test_strike_database(std::move(test_strike_database));
     personal_data().payments_data_manager().SetSyncingForTest(true);
     personal_data().SetPrefService(autofill_client_.GetPrefs());
-    iban_save_manager_ =
-        std::make_unique<IbanSaveManager>(&personal_data(), &autofill_client_);
+    iban_save_manager_ = std::make_unique<IbanSaveManager>(&autofill_client_);
   }
 
   using SaveIbanOfferUserDecision =

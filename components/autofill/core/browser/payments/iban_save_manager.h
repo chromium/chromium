@@ -18,6 +18,8 @@
 
 namespace autofill {
 
+class PaymentsDataManager;
+
 // Decides whether an IBAN local save should be offered and handles the workflow
 // for local saves.
 class IbanSaveManager {
@@ -45,8 +47,7 @@ class IbanSaveManager {
     kMaxValue = kOfferLocalSave
   };
 
-  IbanSaveManager(PersonalDataManager* personal_data_manager,
-                  AutofillClient* client);
+  explicit IbanSaveManager(AutofillClient* client);
   IbanSaveManager(const IbanSaveManager&) = delete;
   IbanSaveManager& operator=(const IbanSaveManager&) = delete;
   virtual ~IbanSaveManager();
@@ -174,12 +175,11 @@ class IbanSaveManager {
                        bool show_save_prompt,
                        AutofillClient::PaymentsRpcResult result);
 
-  // The personal data manager, used to save and load personal data to/from the
-  // web database.
-  const raw_ptr<PersonalDataManager> personal_data_manager_;
+  PaymentsDataManager& payments_data_manager();
+  const PaymentsDataManager& payments_data_manager() const;
 
   // The associated autofill client.
-  const raw_ptr<AutofillClient> client_;
+  const raw_ref<AutofillClient> client_;
 
   // StrikeDatabase used to check whether to offer to save the IBAN or not.
   std::unique_ptr<IbanSaveStrikeDatabase> iban_save_strike_database_;
