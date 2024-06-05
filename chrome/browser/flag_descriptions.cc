@@ -5339,9 +5339,6 @@ const char kUserDisplayModeSyncStandaloneMitigationDescription[] =
     "Enables a mitigation during web app install on CrOS for syncing "
     "user_display_mode: kStandalone to non-CrOS devices.";
 
-const char kUseScreen2xV2Name[] = "Use Screen2x V2";
-const char kUseScreen2xV2Description[] = "Uses version 2 of Screen2x library.";
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 const char kWebAppSystemMediaControlsName[] = "Web App System Media Controls";
 const char kWebAppSystemMediaControlsDescription[] =

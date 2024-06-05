@@ -302,10 +302,6 @@ AX_BASE_EXPORT bool IsScreenAIOCREnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kScreenAITestMode);
 AX_BASE_EXPORT bool IsScreenAITestModeEnabled();
 
-// Use screen2x version 2.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kUseScreen2xV2);
-AX_BASE_EXPORT bool UseScreen2xV2();
-
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_MAC)

@@ -220,12 +220,8 @@ screenai::UiElement CreateUiElementProto(const ui::AXTree* tree,
       node_data.GetStringAttribute(ax::mojom::StringAttribute::kDisplay);
   if (!display_value.empty())
     AddAttribute("/extras/styles/display", display_value, uie);
-  if (features::UseScreen2xV2()) {
-    AddAttribute("/extras/styles/visibility", !node_data.IsInvisible(), uie);
-  } else {
-    AddAttribute("/extras/styles/visibility",
-                 node_data.IsInvisible() ? "hidden" : "visible", uie);
-  }
+  AddAttribute("/extras/styles/visibility", !node_data.IsInvisible(), uie);
+
   // Add extra CSS attributes, such as text-align, hierarchical level, font
   // size, and font weight supported by both AXTree/AXNode and screen2x.
   // Screen2x expects these properties to be in the string format, so we
@@ -245,32 +241,16 @@ screenai::UiElement CreateUiElementProto(const ui::AXTree* tree,
   float float_attribute_value;
   if (node_data.GetFloatAttribute(ax::mojom::FloatAttribute::kFontSize,
                                   &float_attribute_value)) {
-    if (features::UseScreen2xV2()) {
-      AddAttribute("/extras/styles/font-size", float_attribute_value, uie);
-    } else {
-      AddAttribute("/extras/styles/font-size",
-                   base::StringPrintf("%.0fpx", float_attribute_value), uie);
-    }
+    AddAttribute("/extras/styles/font-size", float_attribute_value, uie);
   }
   if (node_data.GetFloatAttribute(ax::mojom::FloatAttribute::kFontWeight,
                                   &float_attribute_value)) {
-    if (features::UseScreen2xV2()) {
-      AddAttribute("/extras/styles/font-weight", float_attribute_value, uie);
-    } else {
-      AddAttribute("/extras/styles/font-weight",
-                   base::StringPrintf("%.0f", float_attribute_value), uie);
-    }
+    AddAttribute("/extras/styles/font-weight", float_attribute_value, uie);
   }
 
   // This is a fixed constant for Chrome requests to Screen2x.
   AddAttribute("class_name", "chrome.unicorn", uie);
-  if (features::UseScreen2xV2()) {
-    AddAttribute("chrome_role", ui::ToString(node_data.role), uie);
-  } else {
-    AddAttribute("chrome_role",
-                 GetMainContentExtractorRoleFromChromeRole(node_data.role),
-                 uie);
-  }
+  AddAttribute("chrome_role", ui::ToString(node_data.role), uie);
   AddAttribute("text",
                node_data.GetStringAttribute(ax::mojom::StringAttribute::kName),
                uie);

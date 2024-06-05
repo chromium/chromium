@@ -422,12 +422,6 @@ bool IsScreenAITestModeEnabled() {
   return base::FeatureList::IsEnabled(::features::kScreenAITestMode);
 }
 
-// TODO(crbug.com/40851192): Remove this flag when V2 is verified.
-BASE_FEATURE(kUseScreen2xV2, "UseScreen2xV2", base::FEATURE_ENABLED_BY_DEFAULT);
-bool UseScreen2xV2() {
-  return base::FeatureList::IsEnabled(::features::kUseScreen2xV2);
-}
-
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_MAC)

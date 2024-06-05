@@ -10,7 +10,6 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_proto_loader.h"
 #include "build/build_config.h"
 #include "services/screen_ai/proto/view_hierarchy.pb.h"
@@ -237,34 +236,14 @@ TEST_F(MainContentExtractorProtoConvertorTest, PreOrderTreeGeneration) {
   }
 }
 
-// TODO(crbug.com/40851192): Remove this test when v2 is confirmed and is used
-// by default.
-TEST_F(MainContentExtractorProtoConvertorTest, ProtoV1Test) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(::features::kUseScreen2xV2);
-
+TEST_F(MainContentExtractorProtoConvertorTest, ProtoTest) {
   ui::AXTree tree = CreateSampleTree();
 
   std::string generated_proto =
       ConvertProtoToText(SnapshotToViewHierarchy(&tree));
-  WriteDebugProto(generated_proto, "expected_v1_proto.pbtxt");
+  WriteDebugProto(generated_proto, "expected_proto.pbtxt");
   std::string expected_proto;
-  ASSERT_TRUE(base::ReadFileToString(GetTestFilePath("expected_v1_proto.pbtxt"),
-                                     &expected_proto));
-  ASSERT_EQ(generated_proto, expected_proto);
-}
-
-TEST_F(MainContentExtractorProtoConvertorTest, ProtoV2Test) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(::features::kUseScreen2xV2);
-
-  ui::AXTree tree = CreateSampleTree();
-
-  std::string generated_proto =
-      ConvertProtoToText(SnapshotToViewHierarchy(&tree));
-  WriteDebugProto(generated_proto, "expected_v2_proto.pbtxt");
-  std::string expected_proto;
-  ASSERT_TRUE(base::ReadFileToString(GetTestFilePath("expected_v2_proto.pbtxt"),
+  ASSERT_TRUE(base::ReadFileToString(GetTestFilePath("expected_proto.pbtxt"),
                                      &expected_proto));
   ASSERT_EQ(generated_proto, expected_proto);
 }
