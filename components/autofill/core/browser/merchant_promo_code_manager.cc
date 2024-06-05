@@ -5,11 +5,11 @@
 #include "components/autofill/core/browser/merchant_promo_code_manager.h"
 
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/browser/autofill_suggestion_generator.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/metrics/payments/offers_metrics.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
+#include "components/autofill/core/browser/payments_suggestion_generator.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/suggestions_context.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
@@ -156,7 +156,7 @@ void MerchantPromoCodeManager::SendPromoCodeSuggestions(
 
   std::move(on_suggestions_returned)
       .Run(field.global_id(),
-           AutofillSuggestionGenerator::
+           PaymentsSuggestionGenerator::
                GetPromoCodeSuggestionsFromPromoCodeOffers(promo_code_offers));
 
   // Log that promo code autofill suggestions were shown.

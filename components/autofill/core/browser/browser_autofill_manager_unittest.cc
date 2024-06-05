@@ -35,11 +35,11 @@
 #include "build/chromeos_buildflags.h"
 #include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/address_data_manager_test_api.h"
+#include "components/autofill/core/browser/address_suggestion_generator.h"
 #include "components/autofill/core/browser/autofill_compose_delegate.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/autofill_plus_address_delegate.h"
-#include "components/autofill/core/browser/autofill_suggestion_generator.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/browser_autofill_manager_test_api.h"
 #include "components/autofill/core/browser/crowdsourcing/mock_autofill_crowdsourcing_manager.h"
@@ -63,6 +63,7 @@
 #include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/test_payments_network_interface.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
+#include "components/autofill/core/browser/payments_suggestion_generator.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/profile_token_quality.h"
 #include "components/autofill/core/browser/strike_databases/payments/test_credit_card_save_strike_database.h"
@@ -167,7 +168,7 @@ gfx::Rect GetFakeCaretBounds(const FormFieldData& focused_field) {
 
 bool ShouldSplitCardNameAndLastFourDigitsForMetadata() {
   // Splitting card name and last four logic does not apply to iOS because the
-  // AutofillSuggestionGenerator on iOS doesn't currently support it.
+  // PaymentsSuggestionGenerator on iOS doesn't currently support it.
 #if BUILDFLAG(IS_IOS)
   return false;
 #else
@@ -225,7 +226,7 @@ std::vector<std::vector<Suggestion::Text>> GenerateLabelsFromCreditCard(
   return suggestion_labels;
 }
 // TODO(crbug.com/342446796): Move suggestion related test coverage in
-// BrowserAutofillManagerUnittest to AutofillSuggestionGeneratorUnittest
+// BrowserAutofillManagerUnittest to PaymentsSuggestionGeneratorUnittest
 Suggestion GenerateSuggestionFromCardDetails(
     const std::string& network,
     const Suggestion::Icon icon,
@@ -1840,8 +1841,8 @@ TEST_F(BrowserAutofillManagerTest,
                   Suggestion::Icon::kNoIcon, SuggestionType::kAddressEntry),
        Suggestion("Elvis", std::vector<std::vector<Suggestion::Text>>{},
                   Suggestion::Icon::kNoIcon, SuggestionType::kAddressEntry),
-       AutofillSuggestionGenerator::CreateSeparator(),
-       AutofillSuggestionGenerator::CreateManageAddressesEntry()});
+       AddressSuggestionGenerator::CreateSeparator(),
+       AddressSuggestionGenerator::CreateManageAddressesEntry()});
 
   // Check that there are no suggestions for the field without the autocomplete
   // attribute.
@@ -1874,8 +1875,8 @@ TEST_F(BrowserAutofillManagerTest,
                   SuggestionType::kAddressEntry),
        Suggestion("Elvis", "Elvis Aaron Presley", kAddressEntryIcon,
                   SuggestionType::kAddressEntry),
-       AutofillSuggestionGenerator::CreateSeparator(),
-       AutofillSuggestionGenerator::CreateManageAddressesEntry()});
+       AddressSuggestionGenerator::CreateSeparator(),
+       AddressSuggestionGenerator::CreateManageAddressesEntry()});
 
   GetAutofillSuggestions(form, form.fields[1]);
   external_delegate()->CheckSuggestions(
@@ -1884,8 +1885,8 @@ TEST_F(BrowserAutofillManagerTest,
                   SuggestionType::kAddressEntry),
        Suggestion("Presley", "Elvis Aaron Presley", kAddressEntryIcon,
                   SuggestionType::kAddressEntry),
-       AutofillSuggestionGenerator::CreateSeparator(),
-       AutofillSuggestionGenerator::CreateManageAddressesEntry()});
+       AddressSuggestionGenerator::CreateSeparator(),
+       AddressSuggestionGenerator::CreateManageAddressesEntry()});
 }
 
 // Tests that BrowserAutofillManager correctly returns virtual cards with usage
@@ -1941,8 +1942,8 @@ TEST_P(SuggestionMatchingTest, GetProfileSuggestions_EmptyValue) {
                   SuggestionType::kAddressEntry),
        Suggestion("Elvis", "3734 Elvis Presley Blvd.", kAddressEntryIcon,
                   SuggestionType::kAddressEntry),
-       AutofillSuggestionGenerator::CreateSeparator(),
-       AutofillSuggestionGenerator::CreateManageAddressesEntry()});
+       AddressSuggestionGenerator::CreateSeparator(),
+       AddressSuggestionGenerator::CreateManageAddressesEntry()});
 }
 
 // Test that we return only matching address profile suggestions when the
@@ -1961,8 +1962,8 @@ TEST_P(SuggestionMatchingTest, GetProfileSuggestions_MatchCharacter) {
       field.global_id(),
       {Suggestion("Elvis", "3734 Elvis Presley Blvd.", kAddressEntryIcon,
                   SuggestionType::kAddressEntry),
-       AutofillSuggestionGenerator::CreateSeparator(),
-       AutofillSuggestionGenerator::CreateManageAddressesEntry()});
+       AddressSuggestionGenerator::CreateSeparator(),
+       AddressSuggestionGenerator::CreateManageAddressesEntry()});
 }
 
 // Tests that we return address profile suggestions values when the section
@@ -2013,8 +2014,8 @@ TEST_P(SuggestionMatchingTest,
                   SuggestionType::kAddressEntry),
        Suggestion("Grimes", "1234 Smith Blvd.", kAddressEntryIcon,
                   SuggestionType::kAddressEntry),
-       AutofillSuggestionGenerator::CreateSeparator(),
-       AutofillSuggestionGenerator::CreateManageAddressesEntry()});
+       AddressSuggestionGenerator::CreateSeparator(),
+       AddressSuggestionGenerator::CreateManageAddressesEntry()});
 }
 
 // Tests that we return address profile suggestions values when the section
@@ -2038,8 +2039,8 @@ TEST_P(SuggestionMatchingTest,
       field.global_id(),
       {Suggestion("Elvis", "3734 Elvis Presley Blvd.", kAddressEntryIcon,
                   SuggestionType::kAddressEntry),
-       AutofillSuggestionGenerator::CreateSeparator(),
-       AutofillSuggestionGenerator::CreateManageAddressesEntry()});
+       AddressSuggestionGenerator::CreateSeparator(),
+       AddressSuggestionGenerator::CreateManageAddressesEntry()});
 }
 
 // Test that we return no suggestions when the form has no relevant fields.
@@ -2204,8 +2205,8 @@ TEST_P(SuggestionMatchingTest, GetProfileSuggestions_WithDuplicates) {
                   SuggestionType::kAddressEntry),
        Suggestion("Elvis", "3734 Elvis Presley Blvd.", kAddressEntryIcon,
                   SuggestionType::kAddressEntry),
-       AutofillSuggestionGenerator::CreateSeparator(),
-       AutofillSuggestionGenerator::CreateManageAddressesEntry()});
+       AddressSuggestionGenerator::CreateSeparator(),
+       AddressSuggestionGenerator::CreateManageAddressesEntry()});
 }
 
 // Test that we return no suggestions when autofill is disabled.
@@ -2448,8 +2449,8 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
   external_delegate()->CheckSuggestions(
       form.fields[1].global_id(),
       {GetCardSuggestion(kVisaCard), GetCardSuggestion(kMasterCard),
-       AutofillSuggestionGenerator::CreateSeparator(),
-       AutofillSuggestionGenerator::CreateManagePaymentMethodsEntry(
+       PaymentsSuggestionGenerator::CreateSeparator(),
+       PaymentsSuggestionGenerator::CreateManagePaymentMethodsEntry(
            /*with_gpay_logo=*/false)});
 }
 
@@ -2470,8 +2471,8 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
   external_delegate()->CheckSuggestions(
       field.global_id(),
       {GetCardSuggestion(kVisaCard), GetCardSuggestion(kMasterCard),
-       AutofillSuggestionGenerator::CreateSeparator(),
-       AutofillSuggestionGenerator::CreateManagePaymentMethodsEntry(
+       PaymentsSuggestionGenerator::CreateSeparator(),
+       PaymentsSuggestionGenerator::CreateManagePaymentMethodsEntry(
            /*with_gpay_logo=*/false)});
 }
 
@@ -2491,8 +2492,8 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
   external_delegate()->CheckSuggestions(
       field.global_id(),
       {GetCardSuggestion(kVisaCard), GetCardSuggestion(kMasterCard),
-       AutofillSuggestionGenerator::CreateSeparator(),
-       AutofillSuggestionGenerator::CreateManagePaymentMethodsEntry(
+       PaymentsSuggestionGenerator::CreateSeparator(),
+       PaymentsSuggestionGenerator::CreateManagePaymentMethodsEntry(
            /*with_gpay_logo=*/false)});
 }
 
@@ -2513,8 +2514,8 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
   external_delegate()->CheckSuggestions(
       field.global_id(),
       {GetCardSuggestion(kVisaCard), GetCardSuggestion(kMasterCard),
-       AutofillSuggestionGenerator::CreateSeparator(),
-       AutofillSuggestionGenerator::CreateManagePaymentMethodsEntry(
+       PaymentsSuggestionGenerator::CreateSeparator(),
+       PaymentsSuggestionGenerator::CreateManagePaymentMethodsEntry(
            /*with_gpay_logo=*/false)});
 }
 
@@ -2543,8 +2544,8 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
   external_delegate()->CheckSuggestions(
       field.global_id(),
       {GetCardSuggestion(kMasterCard),
-       AutofillSuggestionGenerator::CreateSeparator(),
-       AutofillSuggestionGenerator::CreateManagePaymentMethodsEntry(
+       PaymentsSuggestionGenerator::CreateSeparator(),
+       PaymentsSuggestionGenerator::CreateManagePaymentMethodsEntry(
            /*with_gpay_logo=*/false)});
 }
 
@@ -2566,8 +2567,8 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
   external_delegate()->CheckSuggestions(
       field.global_id(),
       {GetCardSuggestion(kVisaCard),
-       AutofillSuggestionGenerator::CreateSeparator(),
-       AutofillSuggestionGenerator::CreateManagePaymentMethodsEntry(
+       PaymentsSuggestionGenerator::CreateSeparator(),
+       PaymentsSuggestionGenerator::CreateManagePaymentMethodsEntry(
            /*with_gpay_logo=*/false)});
 }
 
@@ -2611,8 +2612,8 @@ TEST_F(CreditCardSuggestionTest, GetCreditCardSuggestions_CCNumber) {
        Suggestion(master_card_value, master_card_label,
                   Suggestion::Icon::kCardMasterCard,
                   SuggestionType::kCreditCardEntry),
-       AutofillSuggestionGenerator::CreateSeparator(),
-       AutofillSuggestionGenerator::CreateManagePaymentMethodsEntry(
+       PaymentsSuggestionGenerator::CreateSeparator(),
+       PaymentsSuggestionGenerator::CreateManagePaymentMethodsEntry(
            /*with_gpay_logo=*/false)});
 }
 
@@ -2666,8 +2667,8 @@ TEST_F(CreditCardSuggestionTest, GetCreditCardSuggestions_NonCCNumber) {
        Suggestion("Buddy Holly", master_card_label,
                   Suggestion::Icon::kCardMasterCard,
                   SuggestionType::kCreditCardEntry),
-       AutofillSuggestionGenerator::CreateSeparator(),
-       AutofillSuggestionGenerator::CreateManagePaymentMethodsEntry(
+       PaymentsSuggestionGenerator::CreateSeparator(),
+       PaymentsSuggestionGenerator::CreateManagePaymentMethodsEntry(
            /*with_gpay_logo=*/false)});
 }
 
@@ -2719,8 +2720,8 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
   external_delegate()->CheckSuggestions(
       form.fields[1].global_id(),
       {GetCardSuggestion(kVisaCard), GetCardSuggestion(kMasterCard),
-       AutofillSuggestionGenerator::CreateSeparator(),
-       AutofillSuggestionGenerator::CreateManagePaymentMethodsEntry(
+       PaymentsSuggestionGenerator::CreateSeparator(),
+       PaymentsSuggestionGenerator::CreateManagePaymentMethodsEntry(
            /*with_gpay_logo=*/false)});
 }
 
@@ -2741,8 +2742,8 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
   external_delegate()->CheckSuggestions(
       form.fields[1].global_id(),
       {GetCardSuggestion(kVisaCard), GetCardSuggestion(kMasterCard),
-       AutofillSuggestionGenerator::CreateSeparator(),
-       AutofillSuggestionGenerator::CreateManagePaymentMethodsEntry(
+       PaymentsSuggestionGenerator::CreateSeparator(),
+       PaymentsSuggestionGenerator::CreateManagePaymentMethodsEntry(
            /*with_gpay_logo=*/false)});
 }
 
@@ -2772,8 +2773,8 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
       form.fields[1].global_id(),
       {GetCardSuggestion(kVisaCard), GetCardSuggestion(kMasterCard),
        GetCardSuggestion(kMasterCard),
-       AutofillSuggestionGenerator::CreateSeparator(),
-       AutofillSuggestionGenerator::CreateManagePaymentMethodsEntry(
+       PaymentsSuggestionGenerator::CreateSeparator(),
+       PaymentsSuggestionGenerator::CreateManagePaymentMethodsEntry(
            /*with_gpay_logo=*/false)});
 }
 
@@ -2861,8 +2862,8 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
   external_delegate()->CheckSuggestions(
       form.fields[1].global_id(),
       {mastercard_suggestion, amex_suggestion, visa_suggestion,
-       AutofillSuggestionGenerator::CreateSeparator(),
-       AutofillSuggestionGenerator::CreateManagePaymentMethodsEntry(
+       PaymentsSuggestionGenerator::CreateSeparator(),
+       PaymentsSuggestionGenerator::CreateManagePaymentMethodsEntry(
            /*with_gpay_logo=*/false)});
 }
 
@@ -2919,8 +2920,8 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
          Suggestion("Clyde Barrow", GenerateLabelsFromCreditCard(credit_card1),
                     Suggestion::Icon::kCardVisa,
                     SuggestionType::kCreditCardEntry),
-         AutofillSuggestionGenerator::CreateSeparator(),
-         AutofillSuggestionGenerator::CreateManagePaymentMethodsEntry(
+         PaymentsSuggestionGenerator::CreateSeparator(),
+         PaymentsSuggestionGenerator::CreateManagePaymentMethodsEntry(
              /*with_gpay_logo=*/false)});
   }
 
@@ -2935,8 +2936,8 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
         {Suggestion("Bonnie Parker", GenerateLabelsFromCreditCard(credit_card0),
                     Suggestion::Icon::kCardMasterCard,
                     SuggestionType::kCreditCardEntry),
-         AutofillSuggestionGenerator::CreateSeparator(),
-         AutofillSuggestionGenerator::CreateManagePaymentMethodsEntry(
+         PaymentsSuggestionGenerator::CreateSeparator(),
+         PaymentsSuggestionGenerator::CreateManagePaymentMethodsEntry(
              /*with_gpay_logo=*/false)});
   }
 
@@ -2951,8 +2952,8 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
         {Suggestion("Clyde Barrow", GenerateLabelsFromCreditCard(credit_card1),
                     Suggestion::Icon::kCardVisa,
                     SuggestionType::kCreditCardEntry),
-         AutofillSuggestionGenerator::CreateSeparator(),
-         AutofillSuggestionGenerator::CreateManagePaymentMethodsEntry(
+         PaymentsSuggestionGenerator::CreateSeparator(),
+         PaymentsSuggestionGenerator::CreateManagePaymentMethodsEntry(
              /*with_gpay_logo=*/false)});
   }
 
@@ -2968,8 +2969,8 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
                     GenerateLabelsFromCreditCard(credit_card2),
                     Suggestion::Icon::kCardAmericanExpress,
                     SuggestionType::kCreditCardEntry),
-         AutofillSuggestionGenerator::CreateSeparator(),
-         AutofillSuggestionGenerator::CreateManagePaymentMethodsEntry(
+         PaymentsSuggestionGenerator::CreateSeparator(),
+         PaymentsSuggestionGenerator::CreateManagePaymentMethodsEntry(
              /*with_gpay_logo=*/false)});
   }
 }
@@ -3017,8 +3018,8 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
   external_delegate()->CheckSuggestions(
       form.fields[1].global_id(),
       {GetCardSuggestion(kAmericanExpressCard),
-       AutofillSuggestionGenerator::CreateSeparator(),
-       AutofillSuggestionGenerator::CreateManagePaymentMethodsEntry(
+       PaymentsSuggestionGenerator::CreateSeparator(),
+       PaymentsSuggestionGenerator::CreateManagePaymentMethodsEntry(
            /*with_gpay_logo=*/false)});
 
   // Query by cardholder name field.
@@ -3031,8 +3032,8 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
        Suggestion("Clyde Barrow", GenerateLabelsFromCreditCard(credit_card0),
                   Suggestion::Icon::kCardAmericanExpress,
                   SuggestionType::kCreditCardEntry),
-       AutofillSuggestionGenerator::CreateSeparator(),
-       AutofillSuggestionGenerator::CreateManagePaymentMethodsEntry(
+       PaymentsSuggestionGenerator::CreateSeparator(),
+       PaymentsSuggestionGenerator::CreateManagePaymentMethodsEntry(
            /*with_gpay_logo=*/false)});
 }
 
@@ -3052,8 +3053,8 @@ TEST_P(SuggestionMatchingTest, GetAddressAndCreditCardSuggestions) {
                   SuggestionType::kAddressEntry),
        Suggestion("Elvis", "3734 Elvis Presley Blvd.", kAddressEntryIcon,
                   SuggestionType::kAddressEntry),
-       AutofillSuggestionGenerator::CreateSeparator(),
-       AutofillSuggestionGenerator::CreateManageAddressesEntry()});
+       AddressSuggestionGenerator::CreateSeparator(),
+       AddressSuggestionGenerator::CreateManageAddressesEntry()});
 
   FormFieldData& field = form.fields[first_credit_card_field + 1];
   field = CreateTestFormField("Card Number", "cardnumber", "",
@@ -3064,8 +3065,8 @@ TEST_P(SuggestionMatchingTest, GetAddressAndCreditCardSuggestions) {
   external_delegate()->CheckSuggestions(
       field.global_id(),
       {GetCardSuggestion(kVisaCard), GetCardSuggestion(kMasterCard),
-       AutofillSuggestionGenerator::CreateSeparator(),
-       AutofillSuggestionGenerator::CreateManagePaymentMethodsEntry(
+       PaymentsSuggestionGenerator::CreateSeparator(),
+       PaymentsSuggestionGenerator::CreateManagePaymentMethodsEntry(
            /*with_gpay_logo=*/false)});
 }
 
@@ -3539,11 +3540,11 @@ TEST_P(SuggestionMatchingTest, GetFieldSuggestionsWhenFormIsAutofilled) {
                   SuggestionType::kAddressEntry),
        Suggestion("Elvis", "3734 Elvis Presley Blvd.", kAddressEntryIcon,
                   SuggestionType::kAddressEntry),
-       AutofillSuggestionGenerator::CreateSeparator(),
-       AutofillSuggestionGenerator::CreateManageAddressesEntry()});
+       AddressSuggestionGenerator::CreateSeparator(),
+       AddressSuggestionGenerator::CreateManageAddressesEntry()});
 }
 
-// The method `AutofillSuggestionGenerator::GetPrefixMatchedProfiles` prevents
+// The method `AddressSuggestionGenerator::GetPrefixMatchedProfiles` prevents
 // that Android users see values that would override already filled fields
 // due to the narrow surface and a missing preview.
 #if !BUILDFLAG(IS_ANDROID)
@@ -3570,9 +3571,9 @@ TEST_P(SuggestionMatchingTest, GetFieldSuggestionsWithDuplicateValues) {
       field.global_id(),
       {Suggestion("Elvis", "3734 Elvis Presley Blvd.", kAddressEntryIcon,
                   SuggestionType::kAddressEntry),
-       AutofillSuggestionGenerator::CreateSeparator(),
-       AutofillSuggestionGenerator::CreateClearFormSuggestion(),
-       AutofillSuggestionGenerator::CreateManageAddressesEntry()});
+       AddressSuggestionGenerator::CreateSeparator(),
+       AddressSuggestionGenerator::CreateClearFormSuggestion(),
+       AddressSuggestionGenerator::CreateManageAddressesEntry()});
 }
 #endif
 
@@ -3619,8 +3620,8 @@ TEST_F(BrowserAutofillManagerTest,
       form.fields[2].global_id(),
       {Suggestion("test@example.com", "Natty Bumppo", Suggestion::Icon::kEmail,
                   SuggestionType::kAddressEntry),
-       AutofillSuggestionGenerator::CreateSeparator(),
-       AutofillSuggestionGenerator::CreateManageAddressesEntry()});
+       AddressSuggestionGenerator::CreateSeparator(),
+       AddressSuggestionGenerator::CreateManageAddressesEntry()});
 }
 
 // Tests that when focusing on an autofilled field, the user gets field-by-field
@@ -3651,9 +3652,9 @@ TEST_F(BrowserAutofillManagerTest, GetProfileSuggestions_FieldSwapping) {
       {Suggestion("John H. Doe", std::vector<std::vector<Suggestion::Text>>{},
                   Suggestion::Icon::kNoIcon,
                   SuggestionType::kAddressFieldByFieldFilling),
-       AutofillSuggestionGenerator::CreateSeparator(),
-       AutofillSuggestionGenerator::CreateClearFormSuggestion(),
-       AutofillSuggestionGenerator::CreateManageAddressesEntry()});
+       AddressSuggestionGenerator::CreateSeparator(),
+       AddressSuggestionGenerator::CreateClearFormSuggestion(),
+       AddressSuggestionGenerator::CreateManageAddressesEntry()});
 }
 
 // Tests that fields with unrecognized autocomplete attribute don't contribute
@@ -5759,8 +5760,8 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
   external_delegate()->CheckSuggestions(
       form.fields[3].global_id(),
       {GetCardSuggestion(kVisaCard),
-       AutofillSuggestionGenerator::CreateSeparator(),
-       AutofillSuggestionGenerator::CreateManagePaymentMethodsEntry(
+       PaymentsSuggestionGenerator::CreateSeparator(),
+       PaymentsSuggestionGenerator::CreateManagePaymentMethodsEntry(
            /*with_gpay_logo=*/false)});
 }
 
@@ -6086,8 +6087,8 @@ TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_VirtualCard) {
       form.fields[1].global_id(),
       {expected_virtual_card_number_suggestion,
        expected_credit_card_number_suggestion,
-       AutofillSuggestionGenerator::CreateSeparator(),
-       AutofillSuggestionGenerator::CreateManagePaymentMethodsEntry(
+       PaymentsSuggestionGenerator::CreateSeparator(),
+       PaymentsSuggestionGenerator::CreateManagePaymentMethodsEntry(
            /*with_gpay_logo=*/true)});
 
   // Non card number field (cardholder name field).
@@ -6103,8 +6104,8 @@ TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_VirtualCard) {
       form.fields[0].global_id(),
       {expected_virtual_card_name_suggestion,
        expected_credit_card_name_suggestion,
-       AutofillSuggestionGenerator::CreateSeparator(),
-       AutofillSuggestionGenerator::CreateManagePaymentMethodsEntry(
+       PaymentsSuggestionGenerator::CreateSeparator(),
+       PaymentsSuggestionGenerator::CreateManagePaymentMethodsEntry(
            /*with_gpay_logo=*/true)});
 }
 
@@ -6146,8 +6147,8 @@ TEST_F(BrowserAutofillManagerTest,
   external_delegate()->CheckSuggestions(
       form.fields[1].global_id(),
       {virtual_card_number_suggestion, credit_card_number_suggestion,
-       AutofillSuggestionGenerator::CreateSeparator(),
-       AutofillSuggestionGenerator::CreateManagePaymentMethodsEntry(
+       PaymentsSuggestionGenerator::CreateSeparator(),
+       PaymentsSuggestionGenerator::CreateManagePaymentMethodsEntry(
            /*with_gpay_logo=*/true)});
 
   // Non card number field (cardholder name field).
@@ -6162,8 +6163,8 @@ TEST_F(BrowserAutofillManagerTest,
   external_delegate()->CheckSuggestions(
       form.fields[0].global_id(),
       {virtual_card_name_suggestion, credit_card_name_suggestion,
-       AutofillSuggestionGenerator::CreateSeparator(),
-       AutofillSuggestionGenerator::CreateManagePaymentMethodsEntry(
+       PaymentsSuggestionGenerator::CreateSeparator(),
+       PaymentsSuggestionGenerator::CreateManagePaymentMethodsEntry(
            /*with_gpay_logo=*/true)});
 }
 
@@ -7308,8 +7309,8 @@ TEST_F(BrowserAutofillManagerTest, NoComposeSuggestionsByDefault) {
        Suggestion("3734 Elvis Presley Blvd., Apt. 10",
                   "3734 Elvis Presley Blvd.", kAddressEntryIcon,
                   SuggestionType::kAddressEntry),
-       AutofillSuggestionGenerator::CreateSeparator(),
-       AutofillSuggestionGenerator::CreateManageAddressesEntry()});
+       AddressSuggestionGenerator::CreateSeparator(),
+       AddressSuggestionGenerator::CreateManageAddressesEntry()});
 }
 
 // Tests that Compose suggestions are queried if the trigger source indicates
@@ -7621,8 +7622,8 @@ TEST_P(BrowserAutofillManagerTestForSharingNickname,
   external_delegate()->CheckSuggestions(
       form.fields[1].global_id(),
       {GetCardSuggestion(kAmericanExpressCard, expected_nickname_),
-       AutofillSuggestionGenerator::CreateSeparator(),
-       AutofillSuggestionGenerator::CreateManagePaymentMethodsEntry(
+       PaymentsSuggestionGenerator::CreateSeparator(),
+       PaymentsSuggestionGenerator::CreateManagePaymentMethodsEntry(
            /*with_gpay_logo=*/true)});
 }
 
@@ -7655,8 +7656,8 @@ TEST_P(BrowserAutofillManagerTestForSharingNickname,
       form.fields[1].global_id(),
       {GetCardSuggestion(kAmericanExpressCard, local_nickname_),
        GetCardSuggestion(kAmericanExpressCard, server_nickname_),
-       AutofillSuggestionGenerator::CreateSeparator(),
-       AutofillSuggestionGenerator::CreateManagePaymentMethodsEntry(
+       PaymentsSuggestionGenerator::CreateSeparator(),
+       PaymentsSuggestionGenerator::CreateManagePaymentMethodsEntry(
            /*with_gpay_logo=*/false)});
 }
 

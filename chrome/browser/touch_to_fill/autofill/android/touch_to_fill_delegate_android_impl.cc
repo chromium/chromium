@@ -9,7 +9,6 @@
 #include "components/autofill/core/browser/autofill_browser_util.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_manager.h"
-#include "components/autofill/core/browser/autofill_suggestion_generator.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -19,6 +18,7 @@
 #include "components/autofill/core/browser/payments/iban_access_manager.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
+#include "components/autofill/core/browser/payments_suggestion_generator.h"
 #include "components/autofill/core/browser/ui/fast_checkout_client.h"
 #include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -162,7 +162,7 @@ TouchToFillDelegateAndroidImpl::DryRunForCreditCard(
   // Valid = unexpired with valid number format.
   // TODO(b/40227496): `*field` must contain the updated field information.
   std::vector<CreditCard> cards_to_suggest =
-      AutofillSuggestionGenerator(manager_->client())
+      PaymentsSuggestionGenerator(manager_->client())
           .GetTouchToFillCardsToSuggest(field, field.Type().GetStorableType());
   return cards_to_suggest.empty()
              ? DryRunResult(TriggerOutcome::kNoValidPaymentMethods, {})
@@ -407,7 +407,7 @@ std::vector<bool> TouchToFillDelegateAndroidImpl::GetCardAcceptabilities(
     base::span<const CreditCard> credit_cards) {
   std::vector<bool> card_acceptabilities;
   card_acceptabilities.reserve(credit_cards.size());
-  AutofillSuggestionGenerator autofill_suggestion_generator(manager_->client());
+  PaymentsSuggestionGenerator autofill_suggestion_generator(manager_->client());
 
   std::transform(
       credit_cards.begin(), credit_cards.end(),

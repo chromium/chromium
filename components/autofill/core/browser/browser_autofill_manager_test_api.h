@@ -46,10 +46,6 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
     manager_->PreProcessStateMatchingTypes(profiles, form_structure);
   }
 
-  AutofillSuggestionGenerator* suggestion_generator() {
-    return manager_->suggestion_generator_.get();
-  }
-
   FormInteractionsFlowId address_form_interactions_flow_id() const {
     return manager_->address_form_event_logger_
         ->form_interactions_flow_id_for_test();

@@ -6,9 +6,9 @@
 
 #include "base/containers/contains.h"
 #include "components/autofill/core/browser/autofill_optimization_guide.h"
-#include "components/autofill/core/browser/autofill_suggestion_generator.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
+#include "components/autofill/core/browser/payments_suggestion_generator.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/suggestions_context.h"
 #include "components/autofill/core/common/autofill_clock.h"
@@ -128,7 +128,7 @@ void IbanManager::SendIbanSuggestions(
 
   std::move(on_suggestions_returned)
       .Run(field.global_id(),
-           AutofillSuggestionGenerator::GetSuggestionsForIbans(
+           PaymentsSuggestionGenerator::GetSuggestionsForIbans(
                std::move(ibans)));
 
   uma_recorder_.OnIbanSuggestionsShown(field.global_id());
