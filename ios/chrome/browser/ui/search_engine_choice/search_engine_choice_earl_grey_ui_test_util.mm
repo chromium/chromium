@@ -16,6 +16,21 @@
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 
+namespace {
+
+// Returns the search engine button element interaction for the settings table
+// view controller.
+GREYElementInteraction* GetInteractionForSearchEngineSettingButton() {
+  return
+      [[EarlGrey selectElementWithMatcher:
+                     grey_allOf(chrome_test_util::SettingsSearchEngineButton(),
+                                grey_sufficientlyVisible(), nil)]
+             usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 100)
+          onElementWithMatcher:chrome_test_util::SettingsCollectionView()];
+}
+
+}  // namespace
+
 @implementation SearchEngineChoiceEarlGreyUI
 
 + (void)selectSearchEngineCellWithName:(NSString*)searchEngineName
@@ -68,13 +83,17 @@
   return;
 }
 
++ (void)openSearchEngineSettings {
+  [ChromeEarlGreyUI openSettingsMenu];
+  [GetInteractionForSearchEngineSettingButton() performAction:grey_tap()];
+}
+
 + (void)verifyDefaultSearchEngineSetting:(NSString*)searchEngineName {
   // Opens the default search engine settings menu.
   [ChromeEarlGreyUI openSettingsMenu];
   // Verifies that the correct search engine is selected. The default engine's
   // name appears in the name of the selected row.
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::SettingsSearchEngineButton()]
+  [GetInteractionForSearchEngineSettingButton()
       assertWithMatcher:grey_allOf(grey_accessibilityValue(searchEngineName),
                                    grey_sufficientlyVisible(), nil)];
 }

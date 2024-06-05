@@ -38,6 +38,9 @@ typedef NS_ENUM(NSUInteger, FakeOmniboxState) {
 // Checks that the search engine choice screen is being displayed.
 + (void)verifySearchEngineChoiceScreenIsDisplayed;
 
+// Opens the search engine settings.
++ (void)openSearchEngineSettings;
+
 // Checks that the default search engine was correctly set.
 + (void)verifyDefaultSearchEngineSetting:(NSString*)searchEngineName;
 

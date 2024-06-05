@@ -146,10 +146,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [ChromeEarlGrey waitForWebStateContainingText:kGoogleURL];
 
   // Change default search engine to Yahoo.
-  [ChromeEarlGreyUI openSettingsMenu];
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::SettingsSearchEngineButton()]
-      performAction:grey_tap()];
+  [SearchEngineChoiceEarlGreyUI openSearchEngineSettings];
 
   NSString* yahooSearchEngineName =
       [SearchEngineChoiceEarlGreyUI searchEngineNameWithPrepopulatedEngine:
@@ -288,10 +285,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
   [ChromeEarlGrey loadURL:self.testServer->GetURL(GetSearchExample())];
 
-  [ChromeEarlGreyUI openSettingsMenu];
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::SettingsSearchEngineButton()]
-      performAction:grey_tap()];
+  [SearchEngineChoiceEarlGreyUI openSearchEngineSettings];
 }
 
 - (BOOL)wasOpenSearchCalled {
