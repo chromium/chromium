@@ -74,14 +74,7 @@ IN_PROC_BROWSER_TEST_F(ChromeAppKioskLacrosTest, MAYBE_RegularOnlineKiosk) {
   EXPECT_TRUE(crosapi::BrowserManager::Get()->IsRunning());
 }
 
-// TODO(b/342108781): Disable the test on ci/linux-chromeos-chrome-with-lacros
-// since it fails.
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#define MAYBE_NonKioskAppLaunchError DISABLED_NonKioskAppLaunchError
-#else
-#define MAYBE_NonKioskAppLaunchError NonKioskAppLaunchError
-#endif
-IN_PROC_BROWSER_TEST_F(ChromeAppKioskLacrosTest, MAYBE_NonKioskAppLaunchError) {
+IN_PROC_BROWSER_TEST_F(ChromeAppKioskLacrosTest, NonKioskAppLaunchError) {
   if (!kiosk_ash_starter_.HasLacrosArgument()) {
     return;
   }

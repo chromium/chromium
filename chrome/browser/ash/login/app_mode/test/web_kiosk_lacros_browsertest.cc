@@ -62,14 +62,7 @@ void CloseBrowserAndWaitUntilHandled(Browser* browser) {
 
 using WebKioskLacrosTest = WebKioskLacrosBaseTest;
 
-// TODO(b/342108781): Disable the test on ci/linux-chromeos-chrome-with-lacros
-// since it is flaky.
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#define MAYBE_RegularOnlineKiosk DISABLED_RegularOnlineKiosk
-#else
-#define MAYBE_RegularOnlineKiosk RegularOnlineKiosk
-#endif
-IN_PROC_BROWSER_TEST_F(WebKioskLacrosTest, MAYBE_RegularOnlineKiosk) {
+IN_PROC_BROWSER_TEST_F(WebKioskLacrosTest, RegularOnlineKiosk) {
   if (!kiosk_ash_starter_.HasLacrosArgument()) {
     return;
   }
@@ -81,16 +74,7 @@ IN_PROC_BROWSER_TEST_F(WebKioskLacrosTest, MAYBE_RegularOnlineKiosk) {
   EXPECT_TRUE(crosapi::BrowserManager::Get()->IsRunning());
 }
 
-// TODO(b/342108781): Disable the test on ci/linux-chromeos-chrome-with-lacros
-// since it fails.
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#define MAYBE_ShouldCloseNewAshBrowserWindow \
-  DISABLED_ShouldCloseNewAshBrowserWindow
-#else
-#define MAYBE_ShouldCloseNewAshBrowserWindow ShouldCloseNewAshBrowserWindow
-#endif
-IN_PROC_BROWSER_TEST_F(WebKioskLacrosTest,
-                       MAYBE_ShouldCloseNewAshBrowserWindow) {
+IN_PROC_BROWSER_TEST_F(WebKioskLacrosTest, ShouldCloseNewAshBrowserWindow) {
   if (!kiosk_ash_starter_.HasLacrosArgument()) {
     return;
   }
@@ -120,17 +104,8 @@ IN_PROC_BROWSER_TEST_F(WebKioskLacrosTest, MAYBE_ShouldAllowSettingsWindow) {
   EXPECT_FALSE(DidSessionCloseNewWindow());
 }
 
-// TODO(b/342108781): Disable the test on ci/linux-chromeos-chrome-with-lacros
-// since it fails.
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#define MAYBE_ShouldNotEndSessionWhenSettingsWindowIsClosed \
-  DISABLED_ShouldNotEndSessionWhenSettingsWindowIsClosed
-#else
-#define MAYBE_ShouldNotEndSessionWhenSettingsWindowIsClosed \
-  ShouldNotEndSessionWhenSettingsWindowIsClosed
-#endif
 IN_PROC_BROWSER_TEST_F(WebKioskLacrosTest,
-                       MAYBE_ShouldNotEndSessionWhenSettingsWindowIsClosed) {
+                       ShouldNotEndSessionWhenSettingsWindowIsClosed) {
   if (!kiosk_ash_starter_.HasLacrosArgument()) {
     return;
   }
@@ -143,14 +118,7 @@ IN_PROC_BROWSER_TEST_F(WebKioskLacrosTest,
   EXPECT_FALSE(session().is_shutting_down());
 }
 
-// TODO(b/342108781): Disable the test on ci/linux-chromeos-chrome-with-lacros
-// since it fails.
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#define MAYBE_RecoverFromLacrosCrash DISABLED_RecoverFromLacrosCrash
-#else
-#define MAYBE_RecoverFromLacrosCrash RecoverFromLacrosCrash
-#endif
-IN_PROC_BROWSER_TEST_F(WebKioskLacrosTest, MAYBE_RecoverFromLacrosCrash) {
+IN_PROC_BROWSER_TEST_F(WebKioskLacrosTest, RecoverFromLacrosCrash) {
   if (!kiosk_ash_starter_.HasLacrosArgument()) {
     return;
   }

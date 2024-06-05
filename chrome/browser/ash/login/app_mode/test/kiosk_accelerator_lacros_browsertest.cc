@@ -60,15 +60,7 @@ class BrowserServiceDisconnectedWaiter
 // Tests system accelerators (ash-side) do not work with Lacros in kiosk.
 using WebKioskAcceleratorLacrosTest = WebKioskLacrosBaseTest;
 
-// TODO(b/342108781): Disable the test on ci/linux-chromeos-chrome-with-lacros
-// since it fails.
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#define MAYBE_SignOutDoesNotWork DISABLED_SignOutDoesNotWork
-#else
-#define MAYBE_SignOutDoesNotWork SignOutDoesNotWork
-#endif
-IN_PROC_BROWSER_TEST_F(WebKioskAcceleratorLacrosTest,
-                       MAYBE_SignOutDoesNotWork) {
+IN_PROC_BROWSER_TEST_F(WebKioskAcceleratorLacrosTest, SignOutDoesNotWork) {
   if (!kiosk_ash_starter_.HasLacrosArgument()) {
     return;
   }
