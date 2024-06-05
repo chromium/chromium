@@ -2188,10 +2188,6 @@ AuthenticatorTrustThisComputerCreationSheetModel::GetCancelButtonLabel() const {
   return l10n_util::GetStringUTF16(IDS_CANCEL);
 }
 
-void AuthenticatorTrustThisComputerCreationSheetModel::OnCancel() {
-  dialog_model()->StartOver();
-}
-
 bool AuthenticatorTrustThisComputerCreationSheetModel::IsAcceptButtonEnabled()
     const {
   return true;
