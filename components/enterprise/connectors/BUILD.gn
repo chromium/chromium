@@ -20,6 +20,7 @@ source_set("connectors") {
 
   deps = [
     "//base",
+    "//components/enterprise/buildflags:buildflags",
     "//components/policy/core/browser",
     "//components/policy/core/common",
     "//components/prefs",

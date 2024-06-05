@@ -8,13 +8,15 @@
 #include <string>
 #include <vector>
 
+#include "build/build_config.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/connectors/device_trust/prefs.h"
 #include "components/enterprise/connectors/service_provider_config.h"
 #include "components/prefs/pref_registry_simple.h"
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
 #include "components/enterprise/client_certificates/core/prefs.h"
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
 
 namespace enterprise_connectors {
 
@@ -70,9 +72,9 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kOnSecurityEventScopePref, 0);
   RegisterDeviceTrustConnectorProfilePrefs(registry);
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
   client_certificates::RegisterProfilePrefs(registry);
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
 }
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {

@@ -256,9 +256,9 @@
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_prefs.h"
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
 #include "components/enterprise/client_certificates/core/prefs.h"
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS_ASH)
@@ -2195,11 +2195,11 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
 #endif
 #endif // BUILDFLAG(CHROME_CERTIFICATE_POLICIES_SUPPORTED)
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
   { key::kProvisionManagedClientCertificateForUser,
     client_certificates::prefs::kProvisionManagedClientCertificateForUserPrefs,
     base::Value::Type::INTEGER },
-#endif  //
+#endif  // BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
 #if !BUILDFLAG(IS_ANDROID)
   { key::kLensOverlaySettings,
     lens::prefs::kLensOverlaySettings,

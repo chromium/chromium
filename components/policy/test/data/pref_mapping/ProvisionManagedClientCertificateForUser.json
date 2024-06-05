@@ -2,7 +2,8 @@
   {
     "os": [
       "mac",
-      "win"
+      "win",
+      "linux"
     ],
     "policy_pref_mapping_tests": [
       {
