@@ -10,6 +10,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
+#include "base/timer/timer.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/chromeos/mahi/mahi_browser_client_impl.h"
 #include "chrome/browser/chromeos/mahi/mahi_browser_util.h"
@@ -55,6 +56,10 @@ class MahiPDFObserver : public content::WebContentsObserver {
       const ui::AXUpdatesAndEvents& details) override;
 
  private:
+  // Timer to stop the observation if it's taking too long.
+  void OnTimerFired();
+  base::OneShotTimer timer_;
+
   // ID of the tree that contains the PDF.
   const ui::AXTreeID tree_id_;
   // Callback to extract the content from  update.
@@ -63,6 +68,8 @@ class MahiPDFObserver : public content::WebContentsObserver {
   std::vector<ui::AXTreeUpdate> updates_;
   // Enables the accessibility mode for PDF content.
   std::unique_ptr<content::ScopedAccessibilityMode> scoped_accessibility_mode_;
+
+  base::WeakPtrFactory<MahiPDFObserver> weak_ptr_factory_{this};
 };
 
 // `MahiWebContentsManager` is the central class for mahi web contents in the

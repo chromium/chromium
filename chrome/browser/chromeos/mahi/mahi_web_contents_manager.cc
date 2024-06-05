@@ -86,7 +86,12 @@ content::RenderFrameHost* GetPDFRenderFrameHost(
 
 // When the size of the AXTreeUpdate meets this threshold, we consider them
 // contain enough content and start extraction without subsequence updates.
-constexpr int kAXTreeUpdateByteSizeThreshold = 3000;
+constexpr int kAXTreeUpdateByteSizeThreshold = 2000;
+
+// When total observation time for accessibility changes for PDF greater than
+// this limit, we stop observing the changes, and processes whatever updates
+// received so far.
+constexpr base::TimeDelta kPdfObservationTimeLimit = base::Seconds(30);
 
 }  // namespace
 
@@ -96,6 +101,10 @@ MahiPDFObserver::MahiPDFObserver(content::WebContents* web_contents,
                                  PDFContentObservedCallback callback)
     : tree_id_(tree_id), callback_(std::move(callback)) {
   Observe(web_contents);
+
+  timer_.Start(FROM_HERE, kPdfObservationTimeLimit,
+               base::BindOnce(&MahiPDFObserver::OnTimerFired,
+                              weak_ptr_factory_.GetWeakPtr()));
 
   // Enable accessibility for the top level render frame and all descendants.
   // This causes AXTreeSerializer to reset and send accessibility events of
@@ -133,6 +142,13 @@ void MahiPDFObserver::AccessibilityEventReceived(
       return;
     }
   }
+}
+
+void MahiPDFObserver::OnTimerFired() {
+  if (!callback_) {
+    return;
+  }
+  std::move(callback_).Run(updates_);
 }
 
 // static

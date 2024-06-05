@@ -440,7 +440,7 @@ void MahiManagerImpl::OnGetPageContentForSummary(
     crosapi::mojom::MahiPageInfoPtr request_page_info,
     MahiSummaryCallback callback,
     crosapi::mojom::MahiPageContentPtr mahi_content_ptr) {
-  if (!mahi_content_ptr) {
+  if (!mahi_content_ptr || mahi_content_ptr->page_content.empty()) {
     std::move(callback).Run(u"summary text",
                             MahiResponseStatus::kContentExtractionError);
     return;
@@ -473,7 +473,7 @@ void MahiManagerImpl::OnGetPageContentForQA(
     const std::u16string& question,
     MahiAnswerQuestionCallback callback,
     crosapi::mojom::MahiPageContentPtr mahi_content_ptr) {
-  if (!mahi_content_ptr) {
+  if (!mahi_content_ptr || mahi_content_ptr->page_content.empty()) {
     std::move(callback).Run(std::nullopt,
                             MahiResponseStatus::kContentExtractionError);
     return;
