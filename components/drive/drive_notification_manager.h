@@ -86,9 +86,12 @@ class DriveNotificationManager : public KeyedService,
   // Returns true if `IsRegistered()` and `invalidation_service_` is enabled.
   bool AreInvalidationsEnabled() const;
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum NotificationSource {
-    NOTIFICATION_XMPP,
-    NOTIFICATION_POLLING,
+    kNotificationXMPP = 0,
+    kNotificationPolling = 1,
+    kMaxValue = kNotificationPolling
   };
 
   // Restarts the polling timer. Used for polling-based notification.

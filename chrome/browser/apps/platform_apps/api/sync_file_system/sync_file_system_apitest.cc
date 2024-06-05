@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync_file_system/file_status_observer.h"
@@ -35,10 +36,17 @@ using ::testing::WithArg;
 
 namespace {
 
+enum class SyncActionMetrics {
+  kNone = 0,
+  kAdded = 1,
+  kUpdated = 2,
+  kDeleted = 3,
+  kMaxValue = kDeleted
+};
+
 class SyncFileSystemApiTest : public extensions::ExtensionApiTest {
  public:
-  SyncFileSystemApiTest()
-      : mock_remote_service_(nullptr), real_default_quota_(0) {}
+  SyncFileSystemApiTest() = default;
 
   void SetUpInProcessBrowserTestFixture() override {
     extensions::ExtensionApiTest::SetUpInProcessBrowserTestFixture();
@@ -80,10 +88,13 @@ class SyncFileSystemApiTest : public extensions::ExtensionApiTest {
     return mock_remote_service_;
   }
 
+  const base::HistogramTester& histogram_tester() { return histogram_tester_; }
+
  private:
   raw_ptr<::testing::NiceMock<MockRemoteFileSyncService>, DanglingUntriaged>
-      mock_remote_service_;
-  int64_t real_default_quota_;
+      mock_remote_service_ = nullptr;
+  int64_t real_default_quota_ = 0;
+  base::HistogramTester histogram_tester_;
 };
 
 ACTION_P2(UpdateRemoteChangeQueue, origin, mock_remote_service) {
@@ -171,6 +182,8 @@ IN_PROC_BROWSER_TEST_F(SyncFileSystemApiTest, OnFileStatusChanged) {
   ASSERT_TRUE(RunExtensionTest("sync_file_system/on_file_status_changed",
                                {.launch_as_platform_app = true}))
       << message_;
+  histogram_tester().ExpectUniqueSample("Storage.SyncFileSystem.FileSyncAction",
+                                        SyncActionMetrics::kAdded, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(SyncFileSystemApiTest, OnFileStatusChangedDeleted) {
@@ -192,6 +205,8 @@ IN_PROC_BROWSER_TEST_F(SyncFileSystemApiTest, OnFileStatusChangedDeleted) {
       RunExtensionTest("sync_file_system/on_file_status_changed_deleted",
                        {.launch_as_platform_app = true}))
       << message_;
+  histogram_tester().ExpectUniqueSample("Storage.SyncFileSystem.FileSyncAction",
+                                        SyncActionMetrics::kDeleted, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(SyncFileSystemApiTest, OnServiceStatusChanged) {

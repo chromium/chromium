@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/drive/drive_notification_manager.h"
+
 #include <memory>
 
 #include "base/strings/strcat.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_mock_time_task_runner.h"
-#include "components/drive/drive_notification_manager.h"
 #include "components/drive/drive_notification_observer.h"
 #include "components/invalidation/impl/fake_invalidation_service.h"
 #include "components/invalidation/public/invalidation.h"
@@ -18,6 +20,12 @@ namespace drive {
 namespace {
 
 const invalidation::Topic kDefaultCorpusTopic = "Drive";
+
+enum NotificationSource {
+  kNotificationXMPP = 0,
+  kNotificationPolling = 1,
+  kMaxValue = kNotificationPolling
+};
 
 struct ShutdownHelper {
   template <typename T>
@@ -164,6 +172,8 @@ TEST_F(DriveNotificationManagerTest, RegisterTeamDrives) {
 }
 
 TEST_F(DriveNotificationManagerTest, TestBatchInvalidation) {
+  base::HistogramTester histogram_tester;
+
   // By default we'll be registered for the default change notification.
   EXPECT_TRUE(IsInvalidatorRegistered(kDefaultCorpusTopic));
 
@@ -180,6 +190,9 @@ TEST_F(DriveNotificationManagerTest, TestBatchInvalidation) {
   // invalidation version by 1 before sending it to observers.
   std::map<std::string, int64_t> expected_ids = {{"", 2}};
   EXPECT_EQ(expected_ids, drive_notification_observer_->GetNotificationIds());
+  histogram_tester.ExpectUniqueSample(
+      "Storage.SyncFileSystem.NotificationSource",
+      NotificationSource::kNotificationXMPP, 1);
   drive_notification_observer_->ClearNotificationIds();
 
   // Register a team drive for notifications.
@@ -200,6 +213,9 @@ TEST_F(DriveNotificationManagerTest, TestBatchInvalidation) {
   // Default corpus is has the id "" when sent to observers.
   expected_ids = {{"", 2}};
   EXPECT_EQ(expected_ids, drive_notification_observer_->GetNotificationIds());
+  histogram_tester.ExpectUniqueSample(
+      "Storage.SyncFileSystem.NotificationSource",
+      NotificationSource::kNotificationXMPP, 2);
   drive_notification_observer_->ClearNotificationIds();
 
   // Emit team drive invalidation
@@ -210,6 +226,9 @@ TEST_F(DriveNotificationManagerTest, TestBatchInvalidation) {
   task_runner_->FastForwardBy(base::Seconds(30));
   expected_ids = {{team_drive_id_1, 2}};
   EXPECT_EQ(expected_ids, drive_notification_observer_->GetNotificationIds());
+  histogram_tester.ExpectUniqueSample(
+      "Storage.SyncFileSystem.NotificationSource",
+      NotificationSource::kNotificationXMPP, 3);
   drive_notification_observer_->ClearNotificationIds();
 
   // Emit both default corpus and team drive.
@@ -227,6 +246,9 @@ TEST_F(DriveNotificationManagerTest, TestBatchInvalidation) {
   task_runner_->FastForwardBy(base::Seconds(30));
   expected_ids = {{"", 2}, {team_drive_id_1, 2}};
   EXPECT_EQ(expected_ids, drive_notification_observer_->GetNotificationIds());
+  histogram_tester.ExpectUniqueSample(
+      "Storage.SyncFileSystem.NotificationSource",
+      NotificationSource::kNotificationXMPP, 4);
 }
 
 TEST_F(DriveNotificationManagerTest, UnregisterOnNoObservers) {

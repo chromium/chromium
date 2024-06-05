@@ -448,6 +448,18 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="The user clicked on the positive button."/>
 </enum>
 
+<enum name="SyncFileSystemNotificationSource">
+  <int value="0" label="XMPP"/>
+  <int value="1" label="Polling"/>
+</enum>
+
+<enum name="SyncFileSystemSyncAction">
+  <int value="0" label="None"/>
+  <int value="1" label="Added"/>
+  <int value="2" label="Updated"/>
+  <int value="3" label="Deleted"/>
+</enum>
+
 <enum name="TopLevelStorageAccessRequestOutcome">
   <summary>
     Possible outcomes of a Top-Level Storage Access API permission request.

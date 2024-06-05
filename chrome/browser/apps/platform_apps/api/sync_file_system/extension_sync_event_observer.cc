@@ -6,7 +6,9 @@
 
 #include <utility>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "chrome/browser/apps/platform_apps/api/sync_file_system/sync_file_system_api_helpers.h"
 #include "chrome/browser/sync_file_system/sync_event_observer.h"
 #include "chrome/browser/sync_file_system/sync_file_system_service.h"
@@ -26,6 +28,35 @@ using ::sync_file_system::SyncEventObserver;
 
 namespace chrome_apps {
 namespace api {
+
+namespace {
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class SyncActionMetrics {
+  kNone = 0,
+  kAdded = 1,
+  kUpdated = 2,
+  kDeleted = 3,
+  kMaxValue = kDeleted
+};
+
+SyncActionMetrics convertToHistogramEnum(
+    ::sync_file_system::SyncAction action) {
+  switch (action) {
+    case ::sync_file_system::SyncAction::SYNC_ACTION_NONE:
+      return SyncActionMetrics::kNone;
+    case ::sync_file_system::SyncAction::SYNC_ACTION_ADDED:
+      return SyncActionMetrics::kAdded;
+    case ::sync_file_system::SyncAction::SYNC_ACTION_UPDATED:
+      return SyncActionMetrics::kUpdated;
+    case ::sync_file_system::SyncAction::SYNC_ACTION_DELETED:
+      return SyncActionMetrics::kDeleted;
+  }
+  NOTREACHED_NORETURN();
+}
+
+}  // namespace
 
 // static
 extensions::BrowserContextKeyedAPIFactory<ExtensionSyncEventObserver>*
@@ -99,6 +130,13 @@ void ExtensionSyncEventObserver::OnFileSynced(
   if (!entry)
     return;
   params.Append(std::move(*entry));
+
+  if (status == ::sync_file_system::SyncFileStatus::SYNC_FILE_STATUS_SYNCED &&
+      direction ==
+          ::sync_file_system::SyncDirection::SYNC_DIRECTION_REMOTE_TO_LOCAL) {
+    base::UmaHistogramEnumeration("Storage.SyncFileSystem.FileSyncAction",
+                                  convertToHistogramEnum(action));
+  }
 
   // Status, SyncAction and any optional notes to go here.
   sync_file_system::FileStatus status_enum =

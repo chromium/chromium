@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/rand_util.h"
@@ -201,7 +202,7 @@ void DriveNotificationManager::RestartPollingTimer() {
   polling_timer_.Start(
       FROM_HERE, base::Seconds(interval_secs + jitter),
       base::BindOnce(&DriveNotificationManager::NotifyObserversToUpdate,
-                     weak_ptr_factory_.GetWeakPtr(), NOTIFICATION_POLLING,
+                     weak_ptr_factory_.GetWeakPtr(), kNotificationPolling,
                      std::map<std::string, int64_t>()));
 }
 
@@ -223,7 +224,10 @@ void DriveNotificationManager::NotifyObserversToUpdate(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(1) << "Notifying observers: " << NotificationSourceToString(source);
 
-  if (source == NOTIFICATION_XMPP) {
+  base::UmaHistogramEnumeration("Storage.SyncFileSystem.NotificationSource",
+                                source);
+
+  if (source == kNotificationXMPP) {
     auto my_drive_invalidation = invalidations.find("");
     if (my_drive_invalidation != invalidations.end()) {
       // The invalidation version for My Drive is smaller than what's expected
@@ -282,7 +286,7 @@ void DriveNotificationManager::OnBatchTimerExpired() {
   std::map<std::string, int64_t> change_ids_to_update;
   invalidated_change_ids_.swap(change_ids_to_update);
   if (!change_ids_to_update.empty()) {
-    NotifyObserversToUpdate(NOTIFICATION_XMPP, std::move(change_ids_to_update));
+    NotifyObserversToUpdate(kNotificationXMPP, std::move(change_ids_to_update));
   }
 }
 
@@ -290,9 +294,9 @@ void DriveNotificationManager::OnBatchTimerExpired() {
 std::string DriveNotificationManager::NotificationSourceToString(
     NotificationSource source) {
   switch (source) {
-    case NOTIFICATION_XMPP:
+    case kNotificationXMPP:
       return "NOTIFICATION_XMPP";
-    case NOTIFICATION_POLLING:
+    case kNotificationPolling:
       return "NOTIFICATION_POLLING";
   }
 
