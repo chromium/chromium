@@ -33,6 +33,13 @@
 
 namespace content {
 
+// A kill switch for the DumpWithoutCrashing code in the ServiceWorker startup.
+// This is introduced to investigate if `cors_exempt_header_list` is
+// successfully initialized.
+BASE_FEATURE(kServiceWorkerDebugCorsExemptHeaderList,
+             "ServiceWorkerDebugCorsExemptHeaderList",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // static
 void EmbeddedWorkerInstanceClientImpl::Create(
     scoped_refptr<base::SingleThreadTaskRunner> initiator_thread_task_runner,
@@ -80,6 +87,22 @@ void EmbeddedWorkerInstanceClientImpl::StartWorker(
     // storage partition. After investigating when the empty list is passed and
     // what the intended behavior is, add CHECK(cors_exempt_header_list_ ==
     // params->cors_exempt_header_list) here if it's suitable.
+    //
+    // In other words, if the header length is different but
+    // `cors_exempt_header_list_` is not empty, that is an unexpected case.
+    if (cors_exempt_header_list_ != params->cors_exempt_header_list &&
+        cors_exempt_header_list_.size() > 0 &&
+        base::FeatureList::IsEnabled(kServiceWorkerDebugCorsExemptHeaderList)) {
+      static bool has_dumped_without_crashing = false;
+      if (!has_dumped_without_crashing) {
+        has_dumped_without_crashing = true;
+        SCOPED_CRASH_KEY_NUMBER("SWInit", "header_list_size",
+                                cors_exempt_header_list_.size());
+        SCOPED_CRASH_KEY_NUMBER("SWInit", "header_list_size_via_mojo",
+                                params->cors_exempt_header_list.size());
+        base::debug::DumpWithoutCrashing();
+      }
+    }
   }
 
   std::unique_ptr<blink::WebEmbeddedWorkerStartData> start_data =
