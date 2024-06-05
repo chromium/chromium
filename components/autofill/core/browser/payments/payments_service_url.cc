@@ -34,18 +34,10 @@ const char kSandboxGooglePayScriptOrigin[] = "https://pay.sandbox.google.com/";
 // URLs used when opening the Payment methods management page from
 // chrome://settings/payments.
 const char kProdPaymentsManageCardsUrl[] =
-    "https://pay.google.com/payments/"
-    "home?utm_source=chrome&utm_medium=settings&utm_campaign=payment-methods#"
-    "paymentMethods";
-const char kProdPaymentsManageCardsUrlForGPayWeb[] =
     "https://pay.google.com/"
     "pay?p=paymentmethods&utm_source=chrome&utm_medium=settings&utm_campaign="
     "payment_methods";
 const char kSandboxPaymentsManageCardsUrl[] =
-    "https://pay.sandbox.google.com/payments/"
-    "home?utm_source=chrome&utm_medium=settings&utm_campaign=payment-methods#"
-    "paymentMethods";
-const char kSandboxPaymentsManageCardsUrlForGPayWeb[] =
     "https://pay.sandbox.google.com/"
     "pay?p=paymentmethods&utm_source=chrome&utm_medium=settings&utm_campaign="
     "payment_methods";
@@ -78,18 +70,11 @@ url::Origin GetGooglePayScriptOrigin() {
 }
 
 GURL GetManageInstrumentsUrl() {
-  bool use_gpay_url = base::FeatureList::IsEnabled(
-      features::kAutofillUpdateChromeSettingsLinkToGPayWeb);
-  return GURL(IsPaymentsProductionEnabled()
-                  ? (use_gpay_url ? kProdPaymentsManageCardsUrlForGPayWeb
-                                  : kProdPaymentsManageCardsUrl)
-                  : (use_gpay_url ? kSandboxPaymentsManageCardsUrlForGPayWeb
-                                  : kSandboxPaymentsManageCardsUrl));
+  return GURL(IsPaymentsProductionEnabled() ? kProdPaymentsManageCardsUrl
+                                            : kSandboxPaymentsManageCardsUrl);
 }
 
 GURL GetManageInstrumentUrl(int64_t instrument_id) {
-  CHECK(base::FeatureList::IsEnabled(
-      features::kAutofillUpdateChromeSettingsLinkToGPayWeb));
   GURL url = GetManageInstrumentsUrl();
   std::string new_query =
       base::StrCat({url.query(), "&id=", base::NumberToString(instrument_id)});

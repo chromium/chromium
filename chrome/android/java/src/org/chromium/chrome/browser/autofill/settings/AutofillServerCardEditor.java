@@ -42,14 +42,10 @@ import java.lang.annotation.RetentionPolicy;
 
 /** Server credit card settings. */
 public class AutofillServerCardEditor extends AutofillCreditCardEditor {
-    private static final String AUTOFILL_MANAGE_PAYMENTS_CARDS_URL_FOR_GPAY_WEB =
+    private static final String AUTOFILL_MANAGE_PAYMENTS_CARDS_URL =
             "https://pay.google.com/pay?p=paymentmethods&utm_source=chrome&utm_medium=settings&utm_campaign=payment_methods";
-    private static final String AUTOFILL_MANAGE_PAYMENTS_CARDS_SANDBOX_URL_FOR_GPAY_WEB =
+    private static final String AUTOFILL_MANAGE_PAYMENTS_CARDS_SANDBOX_URL =
             "https://pay.sandbox.google.com/pay?p=paymentmethods&utm_source=chrome&utm_medium=settings&utm_campaign=payment_methods";
-    private static final String AUTOFILL_MANAGE_WALLET_CARD_URL =
-            "https://payments.google.com/#paymentMethods";
-    private static final String AUTOFILL_MANAGE_WALLET_CARD_SANDBOX_URL =
-            "https://payments.sandbox.google.com/#paymentMethods";
     private static final String SETTINGS_PAGE_ENROLLMENT_HISTOGRAM_TEXT =
             "Autofill.VirtualCard.SettingsPageEnrollment";
 
@@ -325,29 +321,17 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
 
     // Returns the URL for managing the card in GPay Web.
     private String getEditCardLink() {
-        // This flag enables a feature that redirects users to the card's details page in GPay Web
-        // instead of the generic methods page.
-        boolean isGPayFlagEnabled =
-                ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.AUTOFILL_UPDATE_CHROME_SETTINGS_LINK_TO_GPAY_WEB);
-
         // Check if sandbox is enabled.
         if (CommandLine.getInstance().hasSwitch(ChromeSwitches.USE_SANDBOX_WALLET_ENVIRONMENT)) {
-            if (isGPayFlagEnabled) {
-                return new StringBuilder(AUTOFILL_MANAGE_PAYMENTS_CARDS_SANDBOX_URL_FOR_GPAY_WEB)
-                        .append("&id=")
-                        .append(mCard.getInstrumentId())
-                        .toString();
-            }
-            return AUTOFILL_MANAGE_WALLET_CARD_SANDBOX_URL;
-        }
-        if (isGPayFlagEnabled) {
-            return new StringBuilder(AUTOFILL_MANAGE_PAYMENTS_CARDS_URL_FOR_GPAY_WEB)
+            return new StringBuilder(AUTOFILL_MANAGE_PAYMENTS_CARDS_SANDBOX_URL)
                     .append("&id=")
                     .append(mCard.getInstrumentId())
                     .toString();
         }
-        return AUTOFILL_MANAGE_WALLET_CARD_URL;
+        return new StringBuilder(AUTOFILL_MANAGE_PAYMENTS_CARDS_URL)
+                .append("&id=")
+                .append(mCard.getInstrumentId())
+                .toString();
     }
 
     @Override

@@ -96,11 +96,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   if (_creditCard.record_type() ==
           autofill::CreditCard::RecordType::kMaskedServerCard) {
     GURL paymentsURL =
-        base::FeatureList::IsEnabled(
-            autofill::features::kAutofillUpdateChromeSettingsLinkToGPayWeb)
-            ? autofill::payments::GetManageInstrumentUrl(
-                  _creditCard.instrument_id())
-            : autofill::payments::GetManageInstrumentsUrl();
+        autofill::payments::GetManageInstrumentUrl(_creditCard.instrument_id());
     OpenNewTabCommand* command =
         [OpenNewTabCommand commandWithURLFromChrome:paymentsURL];
     [self.applicationHandler closeSettingsUIAndOpenURL:command];

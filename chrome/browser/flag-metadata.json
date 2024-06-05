@@ -857,11 +857,6 @@
     "expiry_milestone": 135
   },
   {
-    "name": "autofill-update-chrome-settings-link-to-gpay-web",
-    "owners": ["averina@google.com", "payments-autofill-team@google.com"],
-    "expiry_milestone": 130
-  },
-  {
     "name": "autofill-use-two-dots-for-last-four-digits",
     "owners": [
       "smcgruer@chromium.org",

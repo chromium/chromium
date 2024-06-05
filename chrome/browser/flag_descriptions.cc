@@ -646,12 +646,6 @@ const char kAutofillSyncEwalletAccountsDescription[] =
     "servers and displayed on the payment methods settings page.";
 #endif  // BUILDFLAG(IS_ANDROID)
 
-const char kAutofillUpdateChromeSettingsLinkToGPayWebName[] =
-    "Update Chrome Settings Link to GPay Web";
-const char kAutofillUpdateChromeSettingsLinkToGPayWebDescription[] =
-    "When enabled, Chrome Settings link directs to GPay Web rather than "
-    "Payments Center for payment methods management.";
-
 const char kAutofillVirtualViewStructureAndroidName[] =
     "Enable the setting to provide a virtual view structure for Autofill";
 const char kAutofillVirtualViewStructureAndroidDescription[] =

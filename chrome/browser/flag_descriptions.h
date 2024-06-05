@@ -377,9 +377,6 @@ extern const char kAutofillSharedStorageServerCardDataDescription[];
 extern const char kAutofillSkipAndroidBottomSheetForIbanName[];
 extern const char kAutofillSkipAndroidBottomSheetForIbanDescription[];
 
-extern const char kAutofillUpdateChromeSettingsLinkToGPayWebName[];
-extern const char kAutofillUpdateChromeSettingsLinkToGPayWebDescription[];
-
 extern const char kAutofillMoreProminentPopupName[];
 extern const char kAutofillMoreProminentPopupDescription[];
 

@@ -862,7 +862,6 @@ suite('PaymentsSectionEditCreditCardLink', function() {
       managePaymentMethodsUrl: 'http://dummy.url/?',
       migrationEnabled: true,
       showIbansSettings: true,
-      updateChromeSettingsLinkToGPayWebEnabled: true,
     });
     openWindowProxy = new TestOpenWindowProxy();
     OpenWindowProxyImpl.setInstance(openWindowProxy);
@@ -900,33 +899,6 @@ suite('PaymentsSectionEditCreditCardLink', function() {
 
         creditCard.metadata!.isLocal = false;
         creditCard.instrumentId = '';
-
-        const section = await createPaymentsSection(
-            [creditCard], /*ibans=*/[], /*prefValues=*/ {});
-
-        const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
-        const menuButton = rowShadowRoot.querySelector('#creditCardMenu');
-        assertFalse(!!menuButton);
-
-        const outlinkButton = rowShadowRoot.querySelector<HTMLElement>(
-            'cr-icon-button.icon-external');
-        assertTrue(!!outlinkButton);
-        outlinkButton!.click();
-
-        const url = await openWindowProxy.whenCalled('openUrl');
-        assertEquals(loadTimeData.getString('managePaymentMethodsUrl'), url);
-      });
-
-  test(
-      'verifyServerCardLinkToGPayDoesNotAppendInstrumentId_FlagDisabled',
-      async function() {
-        loadTimeData.overrideValues({
-          updateChromeSettingsLinkToGPayWebEnabled: false,
-        });
-        const creditCard = createCreditCardEntry();
-
-        creditCard.metadata!.isLocal = false;
-        creditCard.instrumentId = '123';
 
         const section = await createPaymentsSection(
             [creditCard], /*ibans=*/[], /*prefValues=*/ {});

@@ -170,12 +170,6 @@ const char kAutofillStickyInfobarDescription[] =
     "Makes the Address Infobar sticky to only dismiss on navigation from user "
     "gesture.";
 
-const char kAutofillUpdateChromeSettingsLinkToGPayWebName[] =
-    "Update Chrome Settings Link to GPay Web";
-const char kAutofillUpdateChromeSettingsLinkToGPayWebDescription[] =
-    "When enabled, Chrome Settings link directs to GPay Web rather than "
-    "Payments Center for payment methods management.";
-
 const char kAutofillUseRendererIDsName[] =
     "Autofill logic uses unqiue renderer IDs";
 const char kAutofillUseRendererIDsDescription[] =

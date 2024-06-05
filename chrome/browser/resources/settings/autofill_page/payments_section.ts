@@ -124,19 +124,6 @@ export class SettingsPaymentsSectionElement extends
       },
 
       /**
-       * GPay-related links direct to the newer GPay Web site instead of
-       * the legacy Payments Center.
-       */
-      updateChromeSettingsLinkToGPayWebEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean(
-              'updateChromeSettingsLinkToGPayWebEnabled');
-        },
-        readOnly: true,
-      },
-
-      /**
        * The model for any credit card-related action menus or dialogs.
        */
       activeCreditCard_: Object,
@@ -214,7 +201,6 @@ export class SettingsPaymentsSectionElement extends
   creditCards: chrome.autofillPrivate.CreditCardEntry[];
   ibans: chrome.autofillPrivate.IbanEntry[];
   private showIbanSettingsEnabled_: boolean;
-  private updateChromeSettingsLinkToGPayWebEnabled_: boolean;
   private activeCreditCard_: chrome.autofillPrivate.CreditCardEntry|null;
   private activeIban_: chrome.autofillPrivate.IbanEntry|null;
   private showCreditCardDialog_: boolean;
@@ -399,8 +385,7 @@ export class SettingsPaymentsSectionElement extends
     this.paymentsManager_.logServerCardLinkClicked();
     const url = new URL(loadTimeData.getString('managePaymentMethodsUrl'));
     assert(this.activeCreditCard_);
-    if (this.updateChromeSettingsLinkToGPayWebEnabled_ &&
-        this.activeCreditCard_.instrumentId) {
+    if (this.activeCreditCard_.instrumentId) {
       url.searchParams.append('id', this.activeCreditCard_.instrumentId);
     }
     OpenWindowProxyImpl.getInstance().openUrl(url.toString());

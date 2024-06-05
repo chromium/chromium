@@ -140,11 +140,6 @@ extern const char kAutofillPruneSuggestionsDescription[];
 extern const char kAutofillStickyInfobarName[];
 extern const char kAutofillStickyInfobarDescription[];
 
-// Title and description for the flag to update GPay-related links in chrome
-// settings to GPay web instead of the legacy Payments Center.
-extern const char kAutofillUpdateChromeSettingsLinkToGPayWebName[];
-extern const char kAutofillUpdateChromeSettingsLinkToGPayWebDescription[];
-
 // Title and description for the flag that controls whether Autofill's
 // logic is using numeric unique renderer IDs instead of string IDs for
 // form and field elements.
