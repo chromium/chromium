@@ -694,6 +694,23 @@ const FeatureEntry::FeatureVariation
         {"High Performance Canonicalization", nullptr, 0, "3362133"},
 };
 
+const FeatureEntry::FeatureParam kTabResumption15DisableSalientImages[] = {
+    {kTR15SalientImageParam, "false"}};
+const FeatureEntry::FeatureParam kTabResumption15DisableSeeMoreButtonImages[] =
+    {{kTR15SeeMoreButtonParam, "false"}};
+const FeatureEntry::FeatureParam kTabResumption15UIChangeOnlyImages[] = {
+    {kTR15SeeMoreButtonParam, "false"},
+    {kTR15SalientImageParam, "false"}};
+
+const FeatureEntry::FeatureVariation kTabResumption15Variations[] = {
+    {"No Salient Image", kTabResumption15DisableSalientImages,
+     std::size(kTabResumption15DisableSalientImages), nullptr},
+    {"No See More Button", kTabResumption15DisableSeeMoreButtonImages,
+     std::size(kTabResumption15DisableSeeMoreButtonImages), nullptr},
+    {"UI changes only", kTabResumption15UIChangeOnlyImages,
+     std::size(kTabResumption15UIChangeOnlyImages), nullptr},
+};
+
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
 // . ENABLE_DISABLE_VALUE: entry is either enabled, disabled, or uses the
@@ -1658,7 +1675,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
                             kOmniboxSuggestionAnswerMigration)},
     {"tab-resumption1-5", flag_descriptions::kTabResumption1_5Name,
      flag_descriptions::kTabResumption1_5Description, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kTabResumption1_5)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kTabResumption1_5,
+                                    kTabResumption15Variations,
+                                    "TabResumption1_5")},
     {"send-tab-ios-push-notifications",
      flag_descriptions::kSendTabToSelfIOSPushNotificationsName,
      flag_descriptions::kSendTabToSelfIOSPushNotificationsDescription,

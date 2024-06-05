@@ -538,6 +538,14 @@ BASE_DECLARE_FEATURE(kTabResumption);
 // Feature that enables enhancements for Tab Resumption.
 BASE_DECLARE_FEATURE(kTabResumption1_5);
 
+// A parameter to indicate whether the Tab resumption tile should use salient
+// images.
+extern const char kTR15SalientImageParam[];
+
+// A parameter to indicate whether the Tab resumption tile should have a see
+// more button.
+extern const char kTR15SeeMoreButtonParam[];
+
 // Feature that enables tab resumption 2.0.
 BASE_DECLARE_FEATURE(kTabResumption2);
 
@@ -589,6 +597,12 @@ bool IsTabResumptionEnabledForMostRecentTabOnly();
 
 // Whether the tab resumption enhancements feature is enabled.
 bool IsTabResumption1_5Enabled();
+
+// Whether the tab resumption with salient images is enabled.
+bool IsTabResumption1_5SalientImageEnabled();
+
+// Whether the tab resumption with see more button is enabled.
+bool IsTabResumption1_5SeeMoreEnabled();
 
 // Convenience method for determining the tab resumption time threshold for
 // X-Devices tabs only.

@@ -450,12 +450,11 @@ const char kGStatic[] = ".gstatic.com";
 
 // Fetches a relevant image for the `item` to display.
 - (void)fetchImageForItem:(TabResumptionItem*)item {
-  if (IsTabResumption1_5Enabled() && _pageImageService &&
+  if (IsTabResumption1_5SalientImageEnabled() && _pageImageService &&
       base::FeatureList::IsEnabled(page_image_service::kImageService)) {
     [self fetchSalientImageForItem:item];
-  } else {
-    [self fetchFaviconForItem:item];
   }
+  [self fetchFaviconForItem:item];
 }
 
 // Fetches the salient image for `item`.
@@ -548,7 +547,6 @@ const char kGStatic[] = ".gstatic.com";
                                                             DistantSession*)
                                                            session {
   CHECK(!IsTabResumptionEnabledForMostRecentTabOnly());
-
   TabResumptionItem* item = [[TabResumptionItem alloc]
       initWithItemType:TabResumptionItemType::kLastSyncedTab];
   item.sessionName = base::SysUTF8ToNSString(session->name);
@@ -557,10 +555,7 @@ const char kGStatic[] = ".gstatic.com";
   item.tabURL = tab->virtual_url;
   item.commandHandler = self;
   item.delegate = self;
-  item.shouldShowSeeMore = IsTabResumption1_5Enabled();
-  if (IsTabResumption1_5Enabled()) {
-    [self showItem:item];
-  }
+  item.shouldShowSeeMore = IsTabResumption1_5SeeMoreEnabled();
   // Fetch the image.
   [self fetchImageForItem:item];
 }
@@ -575,10 +570,7 @@ const char kGStatic[] = ".gstatic.com";
   item.tabURL = webState->GetLastCommittedURL();
   item.commandHandler = self;
   item.delegate = self;
-  item.shouldShowSeeMore = IsTabResumption1_5Enabled();
-  if (IsTabResumption1_5Enabled()) {
-    [self showItem:item];
-  }
+  item.shouldShowSeeMore = IsTabResumption1_5SeeMoreEnabled();
   // Fetch the image.
   [self fetchImageForItem:item];
 }
@@ -634,7 +626,7 @@ const char kGStatic[] = ".gstatic.com";
   item.tabTitle = base::SysUTF16ToNSString(tab.visit.title);
   item.syncedTime = tab.visit.last_modified;
   item.tabURL = tab.visit.url;
-  item.shouldShowSeeMore = IsTabResumption1_5Enabled();
+  item.shouldShowSeeMore = IsTabResumption1_5SeeMoreEnabled();
   item.commandHandler = self;
   if (tab.id > 0 && tab.session_tag && !isLocal) {
     item.sessionName = base::SysUTF8ToNSString(tab.session_name.value());

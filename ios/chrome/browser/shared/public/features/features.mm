@@ -758,6 +758,21 @@ bool IsTabResumption1_5Enabled() {
          base::FeatureList::IsEnabled(kTabResumption1_5);
 }
 
+const char kTR15SalientImageParam[] = "tr15-salient-image";
+const char kTR15SeeMoreButtonParam[] = "tr15-see-more-button";
+
+bool IsTabResumption1_5SalientImageEnabled() {
+  return IsTabResumption1_5Enabled() &&
+         base::GetFieldTrialParamByFeatureAsBool(kTabResumption1_5,
+                                                 kTR15SalientImageParam, true);
+}
+
+bool IsTabResumption1_5SeeMoreEnabled() {
+  return IsTabResumption1_5Enabled() &&
+         base::GetFieldTrialParamByFeatureAsBool(kTabResumption1_5,
+                                                 kTR15SeeMoreButtonParam, true);
+}
+
 bool ShouldPutMostVisitedSitesInMagicStack() {
   return base::GetFieldTrialParamByFeatureAsBool(
       kMagicStack, kMagicStackMostVisitedModuleParam, false);
