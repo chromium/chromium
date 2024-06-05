@@ -3434,7 +3434,7 @@ def CheckEachPerfettoTestDataFileHasDepsEntry(input_api, output_api):
             old_deps_entry = old_deps['src/base/tracing/test/data']
     if not deps_entry:
         # TODO(312895063):Add back error when .sha256 files have been moved.
-        return [output_api.PresubmitNotifyResult(
+        return [output_api.PresubmitError(
             'You must update the DEPS file when you update a '
             '.sha256 file in base/tracing/test/data_sha256'
         )]

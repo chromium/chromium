@@ -2107,6 +2107,13 @@ deps = {
         'output_file': 'speedometer.perfetto_trace.gz'
       },
       {
+        'object_name': 'test_data/scroll_jank_with_pinch.pftrace-8587d2016fdb5d39b5f852704b6e3925e9e6527af01696396be767bed04d4a45',
+        'sha256sum': '8587d2016fdb5d39b5f852704b6e3925e9e6527af01696396be767bed04d4a45',
+        'size_bytes': 3914720,
+        'generation': 1717497788778335,
+        'output_file': 'scroll_jank_with_pinch.pftrace'
+      },
+      {
         'object_name': 'test_data/cpu_powerups_1.pb-70f5511ba0cd6ce1359e3cadb4d1d9301fb6e26be85158e3384b06f41418d386',
         'sha256sum': '70f5511ba0cd6ce1359e3cadb4d1d9301fb6e26be85158e3384b06f41418d386',
         'size_bytes': 2033064,
