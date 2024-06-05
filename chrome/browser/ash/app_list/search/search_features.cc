@@ -105,8 +105,10 @@ bool IsLauncherFuzzyMatchForOmniboxEnabled() {
 
 // Only enable image search for ICA supported devices.
 bool IsLauncherImageSearchEnabled() {
-  return base::FeatureList::IsEnabled(
-             ash::features::kFeatureManagementLocalImageSearch) &&
+  return (base::FeatureList::IsEnabled(
+              ash::features::kFeatureManagementLocalImageSearch) ||
+          base::FeatureList::IsEnabled(
+              ash::features::kLocalImageSearchOnCore)) &&
          base::FeatureList::IsEnabled(kLauncherImageSearch);
 }
 

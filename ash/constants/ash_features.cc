@@ -1825,6 +1825,11 @@ BASE_FEATURE(kFeatureManagementLocalImageSearch,
              "FeatureManagementLocalImageSearch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables local image search on core devices.
+BASE_FEATURE(kLocalImageSearchOnCore,
+             "LocalImageSearchOnCore",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables cross device supported reports within the feedback tool.
 // (This feature is only available for dogfooders)
 BASE_FEATURE(kLinkCrossDeviceDogfoodFeedback,
@@ -3915,7 +3920,8 @@ bool IsLauncherNudgeSessionResetEnabled() {
 
 bool IsLauncherSearchControlEnabled() {
   return base::FeatureList::IsEnabled(kLauncherSearchControl) &&
-         base::FeatureList::IsEnabled(kFeatureManagementLocalImageSearch);
+         (base::FeatureList::IsEnabled(kFeatureManagementLocalImageSearch) ||
+          base::FeatureList::IsEnabled(kLocalImageSearchOnCore));
 }
 
 bool IsLinkCrossDeviceDogfoodFeedbackEnabled() {
@@ -3957,7 +3963,8 @@ bool IsLockScreenNotificationsEnabled() {
 
 bool IsProductivityLauncherImageSearchEnabled() {
   return base::FeatureList::IsEnabled(kProductivityLauncherImageSearch) &&
-         base::FeatureList::IsEnabled(kFeatureManagementLocalImageSearch);
+         (base::FeatureList::IsEnabled(kFeatureManagementLocalImageSearch) ||
+          base::FeatureList::IsEnabled(kLocalImageSearchOnCore));
 }
 
 bool IsMacAddressRandomizationEnabled() {
