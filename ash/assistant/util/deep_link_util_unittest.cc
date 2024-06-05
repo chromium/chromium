@@ -746,8 +746,8 @@ TEST_F(DeepLinkUtilTest, GetAssistantUrl) {
     // For deep links that are not one of type {kLists, kNotes, kReminders},
     // we will hit NOTREACHED since this API isn't meant to be used in such
     // cases.
-    if (DCHECK_IS_ON() && !expected) {
-      EXPECT_DCHECK_DEATH(GetAssistantUrl(
+    if (!expected) {
+      EXPECT_NOTREACHED_DEATH(GetAssistantUrl(
           /*type=*/test_case.first.first, /*params=*/test_case.first.second));
       continue;
     }

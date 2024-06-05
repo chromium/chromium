@@ -123,16 +123,8 @@ TEST_F(OAuthHttpFetcherTest, ExecuteGetRequest_MultipleCalls) {
         ASSERT_EQ(result->http_response_error(),
                   net::HTTP_INTERNAL_SERVER_ERROR);
       }));
-#if DCHECK_IS_ON()
   EXPECT_DEATH(
       http_fetcher_->ExecuteGetRequest(GURL(kTestUrl), base::DoNothing()), "");
-#else
-  http_fetcher_->ExecuteGetRequest(
-      GURL(kTestUrl),
-      base::BindOnce(
-          [](std::unique_ptr<std::string> response,
-             std::unique_ptr<FastPairHttpResult> result) { FAIL(); }));
-#endif
   task_environment_.RunUntilIdle();
 }
 
@@ -169,32 +161,16 @@ TEST_F(OAuthHttpFetcherTest, ExecuteGetRequest_NoIdentityManager) {
   ON_CALL(*browser_delegate_, GetIdentityManager())
       .WillByDefault(testing::Return(nullptr));
 
-#if DCHECK_IS_ON()
   EXPECT_DEATH(
       http_fetcher_->ExecuteGetRequest(GURL(kTestUrl), base::DoNothing()), "");
-#else
-  http_fetcher_->ExecuteGetRequest(
-      GURL(kTestUrl),
-      base::BindOnce(
-          [](std::unique_ptr<std::string> response,
-             std::unique_ptr<FastPairHttpResult> result) { FAIL(); }));
-#endif
 
   task_environment_.RunUntilIdle();
 }
 
 TEST_F(OAuthHttpFetcherTest, ExecuteGetRequest_MultipleRaceCondition) {
   http_fetcher_->ExecuteGetRequest(GURL(kTestUrl), base::DoNothing());
-#if DCHECK_IS_ON()
   EXPECT_DEATH(
       http_fetcher_->ExecuteGetRequest(GURL(kTestUrl), base::DoNothing()), "");
-#else
-  http_fetcher_->ExecuteGetRequest(
-      GURL(kTestUrl),
-      base::BindOnce(
-          [](std::unique_ptr<std::string> response,
-             std::unique_ptr<FastPairHttpResult> result) { FAIL(); }));
-#endif
   task_environment_.RunUntilIdle();
 }
 

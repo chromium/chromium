@@ -402,8 +402,7 @@ std::optional<GURL> GetAssistantUrl(
       by_id_url = std::string("https://assistant.google.com/reminders/id/");
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return std::nullopt;
+      NOTREACHED();
   }
 
   const auto& id = GetDeepLinkParam(params, DeepLinkParam::kId);
