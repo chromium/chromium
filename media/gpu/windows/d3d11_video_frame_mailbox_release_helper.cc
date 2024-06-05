@@ -4,12 +4,17 @@
 
 #include "media/gpu/windows/d3d11_video_frame_mailbox_release_helper.h"
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/task/bind_post_task.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "media/base/media_log.h"
 
 namespace media {
+
+BASE_FEATURE(kCallMakeCurrentForReleaseHelper,
+             "CallMakeCurrentForReleaseHelper",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 D3D11VideoFrameMailboxReleaseHelper::D3D11VideoFrameMailboxReleaseHelper(
     std::unique_ptr<MediaLog> media_log,
@@ -32,14 +37,25 @@ void D3D11VideoFrameMailboxReleaseHelper::Initialize(InitCB init_cb) {
   helper_ = std::move(get_helper_cb_).Run();
 
   // Get the stub, register, and generally do stuff.
-  if (!helper_ || !helper_->MakeContextCurrent()) {
+  if (!helper_) {
     if (media_log_) {
-      MEDIA_LOG(ERROR, media_log_) << "Failed to make context current.";
+      MEDIA_LOG(ERROR, media_log_) << "Failed to get command buffer helper.";
     }
 
-    helper_.reset();
     std::move(init_cb).Run(false, ReleaseMailboxCB());
     return;
+  }
+
+  if (base::FeatureList::IsEnabled(kCallMakeCurrentForReleaseHelper)) {
+    if (!helper_->MakeContextCurrent()) {
+      if (media_log_) {
+        MEDIA_LOG(ERROR, media_log_) << "Failed to make context current.";
+      }
+
+      helper_.reset();
+      std::move(init_cb).Run(false, ReleaseMailboxCB());
+      return;
+    }
   }
 
   // Note: Since this is a RefCounted class it can't own any callbacks that are
