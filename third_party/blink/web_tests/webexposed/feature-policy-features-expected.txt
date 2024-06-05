@@ -35,6 +35,7 @@ clipboard-read
 clipboard-write
 compute-pressure
 cross-origin-isolated
+deferred-fetch
 display-capture
 encrypted-media
 execution-while-not-rendered
