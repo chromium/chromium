@@ -20,6 +20,7 @@
 #include "ui/display/display_features.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/types/display_snapshot.h"
+#include "ui/display/util/edid_parser.h"
 #include "ui/ozone/platform/drm/common/drm_wrapper.h"
 #include "ui/ozone/platform/drm/common/scoped_drm_types.h"
 #include "ui/ozone/platform/drm/common/tile_property.h"
@@ -96,6 +97,7 @@ class HardwareDisplayControllerInfo {
       ScopedDrmConnectorPtr connector,
       ScopedDrmCrtcPtr crtc,
       uint8_t index,
+      std::optional<display::EdidParser> edid_parser,
       std::optional<TileProperty> tile_property = std::nullopt);
 
   HardwareDisplayControllerInfo(const HardwareDisplayControllerInfo&) = delete;
@@ -107,6 +109,9 @@ class HardwareDisplayControllerInfo {
   drmModeConnector* connector() const { return connector_.get(); }
   drmModeCrtc* crtc() const { return crtc_.get(); }
   uint8_t index() const { return index_; }
+  const std::optional<display::EdidParser>& edid_parser() const {
+    return edid_parser_;
+  }
   const std::optional<TileProperty>& tile_property() const {
     return tile_property_;
   }
@@ -117,6 +122,8 @@ class HardwareDisplayControllerInfo {
   ScopedDrmConnectorPtr connector_;
   ScopedDrmCrtcPtr crtc_;
   uint8_t index_;
+  // This is an optional because reading the EDID can fail.
+  std::optional<display::EdidParser> edid_parser_;
   // Only populated for tiled displays.
   std::optional<TileProperty> tile_property_;
 };

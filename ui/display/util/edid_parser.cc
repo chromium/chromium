@@ -112,6 +112,8 @@ EdidParser::EdidParser(const std::vector<uint8_t>& edid_blob, bool is_external)
   ParseEdid(edid_blob);
 }
 
+EdidParser::EdidParser(EdidParser&& other) = default;
+EdidParser& EdidParser::operator=(EdidParser&& other) = default;
 EdidParser::~EdidParser() = default;
 
 uint32_t EdidParser::GetProductCode() const {

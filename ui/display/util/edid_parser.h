@@ -31,7 +31,8 @@ class DISPLAY_UTIL_EXPORT EdidParser {
 
   EdidParser(const EdidParser&) = delete;
   EdidParser& operator=(const EdidParser&) = delete;
-
+  EdidParser(EdidParser&&);
+  EdidParser& operator=(EdidParser&&);
   ~EdidParser();
 
   uint16_t manufacturer_id() const { return manufacturer_id_; }

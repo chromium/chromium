@@ -259,8 +259,10 @@ bool IsAspectPreserving(const DrmWrapper& drm, drmModeConnector* connector) {
           "Full aspect");
 }
 
-std::optional<TileProperty> GetTileProperty(const DrmWrapper& drm,
-                                            drmModeConnector* connector) {
+std::optional<TileProperty> GetTileProperty(
+    const DrmWrapper& drm,
+    const std::optional<display::EdidParser>& edid_parser,
+    drmModeConnector* connector) {
   const ScopedDrmPropertyBlobPtr tile_blob =
       drm.GetPropertyBlob(connector, "TILE");
   if (!tile_blob) {
@@ -270,6 +272,10 @@ std::optional<TileProperty> GetTileProperty(const DrmWrapper& drm,
   std::optional<TileProperty> tile_property = ParseTileBlob(*tile_blob);
   if (!tile_property.has_value()) {
     return std::nullopt;
+  }
+
+  if (edid_parser.has_value()) {
+    tile_property->scale_to_fit_display = edid_parser->TileCanScaleToFit();
   }
 
   return tile_property;
@@ -311,17 +317,37 @@ std::unique_ptr<HardwareDisplayControllerInfo> GetPrimaryTileInfo(
   }
 
   // TODO(b/324236939): Implement an actual primary tile selection logic.
+  // Select tile that can scale to fit as the primary.
+  HardwareDisplayControllerInfoList scalable_tiles, unscalable_tiles;
+  for (auto& tiled_info : tiled_infos) {
+    if (tiled_info->tile_property()->scale_to_fit_display) {
+      scalable_tiles.push_back(std::move(tiled_info));
+    } else {
+      unscalable_tiles.push_back(std::move(tiled_info));
+    }
+  }
+
+  if (scalable_tiles.size() == 1) {
+    return std::move(scalable_tiles.front());
+  }
+
+  HardwareDisplayControllerInfoList remaining_tiles;
+  if (!scalable_tiles.empty()) {
+    remaining_tiles = std::move(scalable_tiles);
+  } else {
+    remaining_tiles = std::move(unscalable_tiles);
+  }
+
   // As a placeholder, return the controller that is closest to the origin
   // (0,0).
   std::unique_ptr<HardwareDisplayControllerInfo> tile_closest_to_origin =
-      std::move(tiled_infos.front());
-  gfx::Point lowest_location =
-      tile_closest_to_origin->tile_property()->location;
-  for (size_t i = 1; i < tiled_infos.size(); i++) {
-    auto tiled_info = std::move(tiled_infos[i]);
+      std::move(remaining_tiles.front());
+  gfx::Point closest_point = tile_closest_to_origin->tile_property()->location;
+  for (size_t i = 1; i < remaining_tiles.size(); i++) {
+    auto tiled_info = std::move(remaining_tiles[i]);
     const gfx::Point& tile_location = tiled_info->tile_property()->location;
-    if (tile_location < lowest_location) {
-      lowest_location = tile_location;
+    if (tile_location < closest_point) {
+      closest_point = tile_location;
       tile_closest_to_origin = std::move(tiled_info);
     }
   }
@@ -404,10 +430,12 @@ HardwareDisplayControllerInfo::HardwareDisplayControllerInfo(
     ScopedDrmConnectorPtr connector,
     ScopedDrmCrtcPtr crtc,
     uint8_t index,
+    std::optional<display::EdidParser> edid_parser,
     std::optional<TileProperty> tile_property)
     : connector_(std::move(connector)),
       crtc_(std::move(crtc)),
       index_(index),
+      edid_parser_(std::move(edid_parser)),
       tile_property_(std::move(tile_property)) {}
 
 HardwareDisplayControllerInfo::~HardwareDisplayControllerInfo() = default;
@@ -499,13 +527,30 @@ GetDisplayInfosAndInvalidCrtcs(const DrmWrapper& drm) {
     const uint8_t index = connector_iter - connectors.begin();
     DCHECK_LT(index, connectors.size());
 
+    drmModeConnector* connector = connector_iter->get();
+    ScopedDrmPropertyBlobPtr edid_blob(
+        GetDrmPropertyBlob(drm, connector, "EDID"));
+    std::optional<display::EdidParser> edid_parser;
+    if (edid_blob) {
+      uint8_t* edid_blob_ptr = static_cast<uint8_t*>(edid_blob->data);
+      std::vector<uint8_t> edid(edid_blob_ptr,
+                                edid_blob_ptr + edid_blob->length);
+      const bool is_external = GetDisplayConnectionType(connector) !=
+                               display::DISPLAY_CONNECTION_TYPE_INTERNAL;
+      edid_parser = display::EdidParser(edid, is_external);
+    } else {
+      VLOG(1) << "Failed to get EDID blob for connector "
+              << connector->connector_id;
+    }
+
     std::optional<TileProperty> tile_property;
     if (display::features::IsTiledDisplaySupportEnabled()) {
-      tile_property = GetTileProperty(drm, connector_iter->get());
+      tile_property = GetTileProperty(drm, edid_parser, connector);
     }
 
     displays.push_back(std::make_unique<HardwareDisplayControllerInfo>(
-        std::move(*connector_iter), std::move(crtc), index, tile_property));
+        std::move(*connector_iter), std::move(crtc), index,
+        std::move(edid_parser), std::move(tile_property)));
   }
 
   return std::make_pair(std::move(displays), std::move(invalid_crtcs));
@@ -660,24 +705,26 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
 
   ScopedDrmPropertyBlobPtr edid_blob(
       GetDrmPropertyBlob(drm, info->connector(), "EDID"));
-  base::UmaHistogramBoolean("DrmUtil.CreateDisplaySnapshot.HasEdidBlob",
-                            !!edid_blob);
   std::vector<uint8_t> edid;
   if (edid_blob) {
     DCHECK(edid_blob->length);
     edid.assign(static_cast<uint8_t*>(edid_blob->data),
                 static_cast<uint8_t*>(edid_blob->data) + edid_blob->length);
-    const bool is_external = type != display::DISPLAY_CONNECTION_TYPE_INTERNAL;
-    display::EdidParser edid_parser(edid, is_external);
-    display_name = edid_parser.display_name();
-    active_pixel_size = edid_parser.active_pixel_size();
-    product_code = edid_parser.GetProductCode();
-    port_display_id = edid_parser.GetIndexBasedDisplayId(display_index);
-    edid_display_id = edid_parser.GetEdidBasedDisplayId();
-    year_of_manufacture = edid_parser.year_of_manufacture();
+  }
+
+  const std::optional<display::EdidParser>& edid_parser = info->edid_parser();
+  base::UmaHistogramBoolean("DrmUtil.CreateDisplaySnapshot.HasEdidBlob",
+                            edid_parser.has_value());
+  if (edid_parser.has_value()) {
+    display_name = edid_parser->display_name();
+    active_pixel_size = edid_parser->active_pixel_size();
+    product_code = edid_parser->GetProductCode();
+    port_display_id = edid_parser->GetIndexBasedDisplayId(display_index);
+    edid_display_id = edid_parser->GetEdidBasedDisplayId();
+    year_of_manufacture = edid_parser->year_of_manufacture();
     has_overscan =
-        edid_parser.has_overscan_flag() && edid_parser.overscan_flag();
-    color_info.color_space = display::GetColorSpaceFromEdid(edid_parser);
+        edid_parser->has_overscan_flag() && edid_parser->overscan_flag();
+    color_info.color_space = display::GetColorSpaceFromEdid(*edid_parser);
     // Populate the EDID primaries and gamma from the gfx::ColorSpace.
     // TODO(crbug.com/40945652): Extract this directly.
     if (auto sk_color_space = color_info.color_space.ToSkColorSpace()) {
@@ -691,14 +738,11 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
     }
     base::UmaHistogramBoolean("DrmUtil.CreateDisplaySnapshot.IsHDR",
                               color_info.color_space.IsHDR());
-    color_info.bits_per_channel = std::max(edid_parser.bits_per_channel(), 0);
+    color_info.bits_per_channel = std::max(edid_parser->bits_per_channel(), 0);
     base::UmaHistogramCounts100("DrmUtil.CreateDisplaySnapshot.BitsPerChannel",
                                 color_info.bits_per_channel);
-    color_info.hdr_static_metadata = edid_parser.hdr_static_metadata();
-    vsync_rate_min = edid_parser.vsync_rate_min();
-  } else {
-    VLOG(1) << "Failed to get EDID blob for connector "
-            << info->connector()->connector_id;
+    color_info.hdr_static_metadata = edid_parser->hdr_static_metadata();
+    vsync_rate_min = edid_parser->vsync_rate_min();
   }
 
   const display::DisplayMode* current_mode = nullptr;
@@ -972,9 +1016,9 @@ void ConsolidateTiledDisplayInfo(
   // For each tile display group, determine the primary tile and drop others in
   // the group.
   for (auto& tile_group : tile_groups) {
-    std::unique_ptr<HardwareDisplayControllerInfo> primary_tile_info =
+    std::unique_ptr<HardwareDisplayControllerInfo> primary_tiled_info =
         GetPrimaryTileInfo(std::move(tile_group.second));
-    display_infos.push_back(std::move(primary_tile_info));
+    display_infos.push_back(std::move(primary_tiled_info));
   }
 }
 

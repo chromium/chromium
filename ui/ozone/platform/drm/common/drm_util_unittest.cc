@@ -91,7 +91,8 @@ TEST_F(DrmUtilTest, TestDisplayModesExtraction) {
   *crtc_ptr = crtc;
 
   HardwareDisplayControllerInfo info(ScopedDrmConnectorPtr(connector_ptr),
-                                     ScopedDrmCrtcPtr(crtc_ptr), 0);
+                                     ScopedDrmCrtcPtr(crtc_ptr), 0,
+                                     /*edid_parser=*/std::nullopt);
 
   const display::DisplayMode* current_mode;
   const display::DisplayMode* native_mode;
@@ -599,7 +600,7 @@ TEST(CreateDisplaySnapshotTest, TiledDisplay) {
   HardwareDisplayControllerInfo info(
       fake_drm->GetConnector(primary_connector_id),
       fake_drm->GetCrtc(primary_crtc_id),
-      /*index=*/0, tile_property);
+      /*index=*/0, std::nullopt, tile_property);
 
   std::unique_ptr<display::DisplaySnapshot> tile_snapshot =
       CreateDisplaySnapshot(*fake_drm, &info, /*device_index=*/0);
@@ -660,10 +661,10 @@ TEST(ConsolidateTiledDisplayInfoTest, OnlyNontiled) {
   HardwareDisplayControllerInfoList infos;
   infos.push_back(std::make_unique<HardwareDisplayControllerInfo>(
       fake_drm->GetConnector(connector_1), fake_drm->GetCrtc(crtc_1),
-      /*index=*/0));
+      /*index=*/0, std::nullopt));
   infos.push_back(std::make_unique<HardwareDisplayControllerInfo>(
       fake_drm->GetConnector(connector_2), fake_drm->GetCrtc(crtc_2),
-      /*index=*/1));
+      /*index=*/1, std::nullopt));
 
   ConsolidateTiledDisplayInfo(infos);
 
@@ -713,7 +714,7 @@ TEST(ConsolidateTiledDisplayInfoTest, SingleTiled) {
   infos.push_back(std::make_unique<HardwareDisplayControllerInfo>(
       fake_drm->GetConnector(primary_connector_id),
       fake_drm->GetCrtc(primary_crtc_id),
-      /*index=*/0, tile_property));
+      /*index=*/0, std::nullopt, tile_property));
 
   ConsolidateTiledDisplayInfo(infos);
 
@@ -787,11 +788,11 @@ TEST(ConsolidateTiledDisplayInfoTest, AllTilesPresent) {
   infos.push_back(std::make_unique<HardwareDisplayControllerInfo>(
       fake_drm->GetConnector(primary_connector_id),
       fake_drm->GetCrtc(primary_crtc_id),
-      /*index=*/0, tile_property));
+      /*index=*/0, std::nullopt, tile_property));
   infos.push_back(std::make_unique<HardwareDisplayControllerInfo>(
       fake_drm->GetConnector(nonprimary_connector_id),
       fake_drm->GetCrtc(nonprimary_crtc_id),
-      /*index=*/1, nonprimary_tile_property));
+      /*index=*/1, std::nullopt, nonprimary_tile_property));
 
   ConsolidateTiledDisplayInfo(infos);
 
@@ -915,19 +916,19 @@ TEST(ConsolidateTiledDisplayInfoTest, AllTilesPresentMultipleGroups) {
   infos.push_back(std::make_unique<HardwareDisplayControllerInfo>(
       fake_drm->GetConnector(group1_primary_connector_id),
       fake_drm->GetCrtc(group1_primary_crtc_id),
-      /*index=*/0, group1_primary_tile_property));
+      /*index=*/0, std::nullopt, group1_primary_tile_property));
   infos.push_back(std::make_unique<HardwareDisplayControllerInfo>(
       fake_drm->GetConnector(group1_nonprimary_connector_id),
       fake_drm->GetCrtc(group1_nonprimary_crtc_id),
-      /*index=*/1, group1_nonprimary_tile_property));
+      /*index=*/1, std::nullopt, group1_nonprimary_tile_property));
   infos.push_back(std::make_unique<HardwareDisplayControllerInfo>(
       fake_drm->GetConnector(group2_primary_connector_id),
       fake_drm->GetCrtc(group2_primary_crtc_id),
-      /*index=*/2, group2_primary_tile_property));
+      /*index=*/2, std::nullopt, group2_primary_tile_property));
   infos.push_back(std::make_unique<HardwareDisplayControllerInfo>(
       fake_drm->GetConnector(group2_nonprimary_connector_id),
       fake_drm->GetCrtc(group2_nonprimary_crtc_id),
-      /*index=*/3, group2_nonprimary_tile_property));
+      /*index=*/3, std::nullopt, group2_nonprimary_tile_property));
 
   ConsolidateTiledDisplayInfo(infos);
 

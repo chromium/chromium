@@ -41,6 +41,12 @@ struct TileProperty {
   // ID that group tiles belonging to the same display.
   int group_id = 0;
 
+  // If true, contents of the tile will scale to fit the entire display
+  // when this tile is the only tile being transmitted.
+  // Described as one of the "tile capabilities" in the DisplayID tiled display
+  // blocks (both v1.3 and v2.0).
+  bool scale_to_fit_display = false;
+
   // Resolution of the individual tile (not the entire tiled display).
   gfx::Size tile_size;
 
