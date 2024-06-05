@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/authentication/signin/signin_coordinator.h"
-
 #import "base/test/ios/wait_util.h"
 #import "components/sync/service/sync_service_utils.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -15,8 +13,10 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/signin/model/trusted_vault_client_backend_factory.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_coordinator.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/providers/signin/fake_trusted_vault_client_backend.h"
+#import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/common/uikit_ui_util.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
@@ -34,7 +34,7 @@ class TrustedVaultReauthenticationCoordinatorTest : public PlatformTest {
 
     base_view_controller_ = [[UIViewController alloc] init];
     base_view_controller_.view.backgroundColor = UIColor.blueColor;
-    GetAnyKeyWindow().rootViewController = base_view_controller_;
+    [scoped_key_window_.Get() setRootViewController:base_view_controller_];
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
@@ -66,6 +66,7 @@ class TrustedVaultReauthenticationCoordinatorTest : public PlatformTest {
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
 
+  ScopedKeyWindow scoped_key_window_;
   UIViewController* base_view_controller_ = nil;
 };
 
