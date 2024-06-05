@@ -146,13 +146,14 @@ class TelemetryCommandGeneratorTest(unittest.TestCase):
         '--isolated-script-test-output=output',
         '--benchmarks=speedometer_3.0',
         '--benchmark-display-name=speedometer3.crossbench',
+        '--browser=./chrome',
     ]
     options = run_performance_tests.parse_arguments(fake_args)
 
     run_performance_tests.CrossbenchTest(options, 'dir').execute()
 
     mock_execute_benchmark.assert_called_with('speedometer_3.0',
-                                              'speedometer3.crossbench')
+                                              'speedometer3.crossbench', [])
 
   def testCrossbenchTestBenchmarksException(self):
     fake_args = ['./cp.py', '--isolated-script-test-output=output']
@@ -216,8 +217,10 @@ class TelemetryCommandGeneratorTest(unittest.TestCase):
   @mock.patch.dict(os.environ, {'GTEST_SHARD_INDEX': '0'})
   def testCrossbenchTestRunBenchmarkOnShardMap(self, mock_execute_benchmark):
     fake_args = [
-        'run_benchmark', '--isolated-script-test-output=output',
-        '--test-shard-map-filename=foo'
+        'run_benchmark',
+        '--isolated-script-test-output=output',
+        '--test-shard-map-filename=foo',
+        '--browser=./chrome',
     ]
     options = run_performance_tests.parse_arguments(fake_args)
     shard_map = {
@@ -236,7 +239,7 @@ class TelemetryCommandGeneratorTest(unittest.TestCase):
         shard_map, options, 'dir', [])
 
     self.assertEqual(return_code, 0)
-    mock_execute_benchmark.assert_called_with('my_benchmark', 'my_display')
+    mock_execute_benchmark.assert_called_with('my_benchmark', 'my_display', [])
 
   @mock.patch.object(run_performance_tests.CrossbenchTest, 'execute_benchmark')
   def testCrossbenchTestMissingShardIndex(self, mock_execute_benchmark):
@@ -256,8 +259,10 @@ class TelemetryCommandGeneratorTest(unittest.TestCase):
   @mock.patch.dict(os.environ, {'GTEST_SHARD_INDEX': '0'})
   def testCrossbenchTestMissingBenchmark(self, mock_execute_benchmark):
     fake_args = [
-        'run_benchmark', '--isolated-script-test-output=output',
-        '--test-shard-map-filename=foo'
+        'run_benchmark',
+        '--isolated-script-test-output=output',
+        '--test-shard-map-filename=foo',
+        '--browser=./chrome',
     ]
     options = run_performance_tests.parse_arguments(fake_args)
     shard_map = {'0': {'crossbench': {}}}
@@ -272,8 +277,10 @@ class TelemetryCommandGeneratorTest(unittest.TestCase):
   def testCrossbenchTestRunMultiBenchmarkOnShardMap(self,
                                                     mock_execute_benchmark):
     fake_args = [
-        'run_benchmark', '--isolated-script-test-output=output',
-        '--test-shard-map-filename=foo'
+        'run_benchmark',
+        '--isolated-script-test-output=output',
+        '--test-shard-map-filename=foo',
+        '--browser=./chrome',
     ]
     options = run_performance_tests.parse_arguments(fake_args)
     shard_map = {
@@ -297,5 +304,5 @@ class TelemetryCommandGeneratorTest(unittest.TestCase):
 
     self.assertEqual(return_code, 1)
     mock_execute_benchmark.assert_has_calls(
-        [mock.call('b1', 'display1'),
-         mock.call('b2', 'display2')])
+        [mock.call('b1', 'display1', []),
+         mock.call('b2', 'display2', [])])

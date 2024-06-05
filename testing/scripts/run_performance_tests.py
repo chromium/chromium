@@ -74,6 +74,13 @@ import xvfb
 import test_env
 from scripts import common
 
+CATAPULT_DIR = CHROMIUM_SRC_DIR / 'third_party/catapult'
+TELEMETRY_DIR = CATAPULT_DIR / 'telemetry'
+sys.path.append(str(TELEMETRY_DIR))
+from telemetry.internal.browser import browser_finder
+from telemetry.internal.browser import browser_options
+from telemetry.internal.util import binary_manager
+
 SHARD_MAPS_DIR = CHROMIUM_SRC_DIR / 'tools/perf/core/shard_maps'
 CROSSBENCH_TOOL = CHROMIUM_SRC_DIR / 'third_party/crossbench/cb.py'
 PERF_TOOLS = ['benchmarks', 'executables', 'crossbench']
@@ -659,20 +666,37 @@ class CrossbenchTest(object):
 
   EXECUTABLE = 'cb.py'
   OUTDIR = '--out-dir=%s/output'
-  CHROME_BROWSER = '--browser=./chrome'
+  CHROME_BROWSER = '--browser=%s'
 
   def __init__(self, options, isolated_out_dir):
     self.options = options
     self.isolated_out_dir = isolated_out_dir
+    self._find_desktop_browser(options.passthrough_args)
 
-  def _generate_command_list(self, benchmark, working_dir):
-    # In Swarming bot, use the Chrome build in the running path.
-    browser = [self.CHROME_BROWSER] if 'SWARMING_TASK_ID' in os.environ else []
+  # TODO: Implement similar method for Android.
+  def _find_desktop_browser(self, args):
+    browser_args = [arg for arg in args if arg.startswith('--browser=')]
+    if len(browser_args) != 1:
+      raise ValueError('Expects exactly one --browser=... arg on command line')
+    if '/' in browser_args[0] or '\\' in browser_args[0]:
+      # The --browser arg looks like a path. Use it as-is.
+      self.browser = browser_args[0]
+      return
+    options = browser_options.BrowserFinderOptions()
+    parser = options.CreateParser()
+    binary_manager.InitDependencyManager(None)
+    parser.parse_args(browser_args)
+    possible_browser = browser_finder.FindBrowser(options)
+    if not possible_browser:
+      raise ValueError(
+          f'Unable to find Chrome browser of type: {browser_args[0]}')
+    self.browser = self.CHROME_BROWSER % possible_browser._local_executable
+
+  def _generate_command_list(self, benchmark, benchmark_args, working_dir):
     return ([sys.executable] + [self.options.executable] + [benchmark] +
-            [self.OUTDIR % working_dir] + browser +
-            self.options.passthrough_args)
+            [self.OUTDIR % working_dir] + [self.browser] + benchmark_args)
 
-  def execute_benchmark(self, benchmark, display_name):
+  def execute_benchmark(self, benchmark, display_name, benchmark_args):
     start = time.time()
 
     env = os.environ.copy()
@@ -683,7 +707,8 @@ class CrossbenchTest(object):
     infra_failure = False
     try:
       working_dir = tempfile.mkdtemp(suffix='crossbench')
-      command = self._generate_command_list(benchmark, working_dir)
+      command = self._generate_command_list(benchmark, benchmark_args,
+                                            working_dir)
       if self.options.xvfb:
         # When running with xvfb, we currently output both to stdout and to the
         # file. It would be better to only output to the file to keep the logs
@@ -714,7 +739,7 @@ class CrossbenchTest(object):
         # Add ignore_errors=True because otherwise rmtree may fail due to leaky
         # processes of tests are still holding opened handles to files under
         # |tempfile_dir|. For example, see crbug.com/865896
-        shutil.rmtree(output_dir, ignore_errors=True)
+        shutil.rmtree(working_dir, ignore_errors=True)
 
     print_duration(f'Executing benchmark: {benchmark}', start)
 
@@ -736,7 +761,10 @@ class CrossbenchTest(object):
       raise Exception('No support to run multiple benchmarks at this time.')
     return self.execute_benchmark(
         self.options.benchmarks,
-        (self.options.benchmark_display_name or self.options.benchmarks))
+        (self.options.benchmark_display_name or self.options.benchmarks), [
+            arg for arg in self.options.passthrough_args
+            if not arg.startswith('--browser=')
+        ])
 
 
 def parse_arguments(args):
@@ -992,7 +1020,6 @@ def _run_benchmarks_on_shardmap(shard_map, options, isolated_out_dir,
       test_results_files.append(output_paths.test_results)
   if 'crossbench' in shard_configuration:
     benchmarks = shard_configuration['crossbench']
-    crossbench_args = options.passthrough_args
     crossbench_test = CrossbenchTest(options, isolated_out_dir)
     # Overwriting the "run_benchmark" with the Crossbench tool.
     options.executable = str(CROSSBENCH_TOOL)
@@ -1000,8 +1027,8 @@ def _run_benchmarks_on_shardmap(shard_map, options, isolated_out_dir,
       display_name = benchmark_config.get('display_name', benchmark)
       print(f'\n### {display_name} ###')
       benchmark_args = benchmark_config.get('arguments', [])
-      options.passthrough_args = list(set(crossbench_args + benchmark_args))
-      return_code = crossbench_test.execute_benchmark(benchmark, display_name)
+      return_code = crossbench_test.execute_benchmark(benchmark, display_name,
+                                                      benchmark_args)
       overall_return_code = return_code or overall_return_code
 
   return overall_return_code
