@@ -8545,6 +8545,7 @@
 <translation id="7416091793702109803"><ph name="FILE_NAME" />-г шалгах</translation>
 <translation id="7416263748877373774">Үйлчилгээний нөхцөлийг ачаалах боломжгүй. Сүлжээний холболтоо шалгаад, дахин оролдоно уу.</translation>
 <translation id="7416362041876611053">Үл мэдэгдэх сүлжээний алдаа.</translation>
+<translation id="7417435070053325657"><ph name="APPS_LIST_SIZE" />-с <ph name="BLOCKED_APPS_SIZE" /> аппыг блоклосон</translation>
 <translation id="741906494724992817">Энэхүү апп нь ямар ч тусгай зөвшөөрөл шаарддаггүй.</translation>
 <translation id="7419142833919893307">Ямар ч хэрэглэгчийн нэр нэмээгүй</translation>
 <translation id="7419565702166471774">Үргэлж аюулгүй холболт ашиглана</translation>

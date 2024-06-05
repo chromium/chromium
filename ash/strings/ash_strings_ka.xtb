@@ -961,7 +961,7 @@
 <translation id="4628757576491864469">მოწყობილობები</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, შეფასებულია <ph name="RATING_SCORE" /> ვარსკვლავით</translation>
 <translation id="4633636853437260449">წასაშლელად დააჭირეთ კლავიშთა კომბინაციას Ctrl+W</translation>
-<translation id="4635501805800894201">{0,plural, =0{დააბრუნეთ მოწყობილობის წინა ვერსია ახლავე}=1{დააბრუნეთ მოწყობილობის წინა ვერსია 1 წამში}other{დააბრუნეთ მოწყობილობის წინა ვერსია # წამში}}</translation>
+<translation id="4635501805800894201">{0,plural, =0{დააბრუნეთ მოწყობილობის წინა ვერსია ახლავე}=1{დააბრუნეთ მოწყობილობის წინა ვერსია 1 წამის განმავლობაში}other{დააბრუნეთ მოწყობილობის წინა ვერსია # წამის განმავლობაში}}</translation>
 <translation id="4642092649622328492">ეკრანის ნაწილობრივი ანაბეჭდის გადაღება</translation>
 <translation id="4644727592819780893">რეგიონი ზედმეტად პატარაა კამერის მოსათავსებლად</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, აპის რეკომენდაცია</translation>
@@ -1331,7 +1331,7 @@
 <translation id="5916646100036936191">ახალი შეტყობინება, ჯამში <ph name="NOTIFICATION_COUNT" /></translation>
 <translation id="5916664084637901428">ჩართვა</translation>
 <translation id="5920710855273935292">მიკროფონი დადუმებულია.</translation>
-<translation id="5928083197428724029">განახლებას ითხოვს <ph name="MANAGER" /></translation>
+<translation id="5928083197428724029"><ph name="MANAGER" />ითხოვს განახლებას</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> ჩართულია.</translation>
 <translation id="5947494881799873997">დაბრუნება</translation>
 <translation id="595202126637698455">ეფექტურობის ტრასირება ჩართულია</translation>
@@ -1685,7 +1685,7 @@
 <translation id="7303365578352795231">პასუხის გაცემა მიმდინარეობს სხვა მოწყობილობაზე.</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7312210124139670355">ადმინისტრატორი ახორციელებს თქვენი eSIM-ის გადაყენებას. ამას შეიძლება რამდენიმე წუთი დასჭირდეს.</translation>
-<translation id="7312761820869643657">მოწყობილობის წინა ვერსიაზე დაბრუნება</translation>
+<translation id="7312761820869643657">დააბრუნეთ მოწყობილობის წინა ვერსია</translation>
 <translation id="7313193732017069507">კამერის გაფართოება</translation>
 <translation id="7330397557116570022">კარნახის გამოსაყენებლად გადადით ტექსტურ ველზე</translation>
 <translation id="7331646370422660166">alt + ქვემოთ მიმართული ისარი</translation>

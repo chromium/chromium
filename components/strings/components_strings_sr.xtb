@@ -2683,6 +2683,7 @@
 <translation id="6165508094623778733">Сазнајте више</translation>
 <translation id="6167577165590485365">Последњи покушај преузимања:</translation>
 <translation id="617256461084925519">Google Chrome покушава да провери да ли сте то ви да би могао да унесе информације о плаћању.</translation>
+<translation id="6173208311907792313">Довршите куповину уз Windows Hello</translation>
 <translation id="6176387967264100435">Ова цена је висока</translation>
 <translation id="6177128806592000436">Веза са овим сајтом није безбедна</translation>
 <translation id="6177531123306197852">Коверта C2</translation>
@@ -3841,6 +3842,7 @@
 <translation id="8332188693563227489">Приступ хосту <ph name="HOST_NAME" /> је одбијен</translation>
 <translation id="833262891116910667">Истицање</translation>
 <translation id="8339163506404995330">Странице на језику <ph name="LANGUAGE" /> се неће преводити</translation>
+<translation id="8339275256517065202">Довршите куповину уз Touch ID</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Регистрација за виртуелну картицу је отворена у пуној висини</translation>
 <translation id="8349305172487531364">Трака са обележивачима</translation>
@@ -4035,6 +4037,7 @@
 <translation id="8726549941689275341">Величина странице:</translation>
 <translation id="8730621377337864115">Готово</translation>
 <translation id="8731268612289859741">Безбедносни кôд</translation>
+<translation id="8731917264694569036">Довршите куповину помоћу уређаја</translation>
 <translation id="8733345475331865475">Осигурање аутомобила</translation>
 <translation id="8733764070897080460">Можете да блокирате теме које не желите да делите са сајтовима. Chrome такође аутоматски брише теме старије од 4 недеље. Сазнајте више</translation>
 <translation id="8734529307927223492"><ph name="DEVICE_TYPE" />-ом управља <ph name="MANAGER" /></translation>
@@ -4228,6 +4231,7 @@
 <translation id="9116548361133462832">Више о огласима у Chrome-у</translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте наставили путањом и видели релевантне активности у историји Chrome-а</translation>
 <translation id="9119042192571987207">Отпремљено</translation>
+<translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> жели да потврди ваш идентитет</translation>
 <translation id="912327514020027767">Сукње</translation>
 <translation id="912414390325846156">Претходно сте одабрали опцију Не дозволи за овај сајт</translation>
 <translation id="9128870381267983090">Повезивање са мрежом</translation>

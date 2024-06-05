@@ -8546,6 +8546,7 @@
 <translation id="7416091793702109803">Посмотреть файл "<ph name="FILE_NAME" />"</translation>
 <translation id="7416263748877373774">Не удалось загрузить Условия использования. Проверьте подключение к интернету и повторите попытку.</translation>
 <translation id="7416362041876611053">Неизвестная сетевая ошибка.</translation>
+<translation id="7417435070053325657">Заблокировано приложений: <ph name="BLOCKED_APPS_SIZE" /> из <ph name="APPS_LIST_SIZE" />.</translation>
 <translation id="741906494724992817">Приложению не требуются особые разрешения.</translation>
 <translation id="7419142833919893307">Имя пользователя не указано</translation>
 <translation id="7419565702166471774">Всегда использовать безопасные соединения</translation>

@@ -178,6 +178,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1610778689852195798">'Undo'</translation>
 <translation id="1611993646327628135">On</translation>
 <translation id="1620510694547887537">Camera</translation>
+<translation id="1623768535032616219">Collapse Google Classroom</translation>
 <translation id="1632985212731562677">Switch Access can be disabled in Settings &gt; Accessibility.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> devices</translation>
 <translation id="1639239467298939599">Loading</translation>
@@ -303,6 +304,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2198625180564913276">Adding profile. This may take a few minutes.</translation>
 <translation id="219905428774326614">Launcher, all apps</translation>
 <translation id="2201071101391734388">Recent photo <ph name="INDEX" /> of <ph name="TOTAL_COUNT" />.</translation>
+<translation id="2201687081523799384">Collapse Google Tasks</translation>
 <translation id="2208323208084708176">Unified desktop mode</translation>
 <translation id="2220572644011485463">PIN or password</translation>
 <translation id="2222841058024245321">Desk 7</translation>
@@ -364,6 +366,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2427507373259914951">Left click</translation>
 <translation id="2429753432712299108">Bluetooth device "<ph name="DEVICE_NAME" />" would like permission to pair. Before accepting, please confirm that this passkey is shown on that device: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Show password</translation>
+<translation id="2437771564543046790">Low battery. Battery Saver is on</translation>
 <translation id="243878895369688216">Opened yesterday</translation>
 <translation id="2440978926514840421">GIF recording taken</translation>
 <translation id="2441427462554639370">Recording ended due to critically low storage space</translation>
@@ -1200,6 +1203,7 @@ No devices connected.</translation>
 <translation id="550391772491508736">Resume casting</translation>
 <translation id="5506975627792768506">Turn magnifier on or off</translation>
 <translation id="5512042095225963688">Delete previous word</translation>
+<translation id="5519005148254860683">Expand Google Tasks</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Your administrator has removed all eSIM profiles. Contact your administrator for more info.</translation>
 <translation id="5520909879404821039">Hi in French</translation>
@@ -1408,6 +1412,7 @@ No devices connected.</translation>
 <translation id="6200515304866777730">Not supported by app</translation>
 <translation id="6210042900243040400">Connect <ph name="NAME" /> previously saved to <ph name="EMAIL" /></translation>
 <translation id="6213808132343683860">Take partial screenshot or screen recording</translation>
+<translation id="621606890568890214">Expand Google Classroom</translation>
 <translation id="6220928844947387476">You can now record yourself and your screen at the same time</translation>
 <translation id="622484624075952240">Down</translation>
 <translation id="6228457605945141550">Turn brightness down</translation>

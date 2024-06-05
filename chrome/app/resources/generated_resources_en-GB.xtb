@@ -481,6 +481,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1353980523955420967">Can’t find PPD. Make sure that your Chromebook is online and try again.</translation>
 <translation id="1354045473509304750">Continue allowing <ph name="HOST" /> to use and move your camera</translation>
 <translation id="1355088139103479645">Delete all data?</translation>
+<translation id="1356376170199999104">Allowed – <ph name="PERMISSION_DETAILS" />. Turn on microphone using a physical switch.</translation>
 <translation id="1356959069439783953">Inactive tabs get a new look</translation>
 <translation id="1358741672408003399">Spelling and Grammar</translation>
 <translation id="1359923111303110318">Your device can be unlocked with Smart Lock. Press enter to unlock.</translation>
@@ -753,6 +754,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1557939148300698553">Create profile</translation>
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1558671750917454373">Resume casting to <ph name="DEVICE_NAME" /></translation>
+<translation id="1561331397460162942">This allows location access for apps, websites with the location permission and system services</translation>
 <translation id="1562119309884184621">Adding this contact will remember the next time that they share</translation>
 <translation id="1563137369682381456">Expiry date</translation>
 <translation id="1563702743503072935">Passwords from your Google Account will also be available on this device while you're signed in</translation>
@@ -1761,6 +1763,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2272570998639520080">Martini glass</translation>
 <translation id="2273119997271134996">Dock video-port issue</translation>
 <translation id="2274840746523584236">Charge your Chromebook</translation>
+<translation id="2275193525496879616">Allowed. Connect a camera to your device.</translation>
 <translation id="2276503375879033601">Add more apps</translation>
 <translation id="2278193750452754829">Extensions are allowed on this site. Select to open menu</translation>
 <translation id="2278562042389100163">Open browser window</translation>
@@ -1878,6 +1881,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2350133097354918058">Reloaded</translation>
 <translation id="2350182423316644347">Initialising application...</translation>
 <translation id="235028206512346451">If you move away from your device, your screen will lock automatically. When you're in front of your device, your screen will stay awake longer. If you aren't using a lock screen, your device will sleep instead of lock.</translation>
+<translation id="2351923523007389195">Allowed – <ph name="PERMISSION_DETAILS" />. Turn on <ph name="LINK_BEGIN" />system location access<ph name="LINK_END" />.</translation>
 <translation id="2352305801620974284">When you sign in on this device, you get your passwords and more from your Google Account</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2352810082280059586">Lock screen notes are automatically saved to <ph name="LOCK_SCREEN_APP_NAME" />. Your most recent note will remain on the lock screen.</translation>
@@ -3352,6 +3356,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3449839693241009168">Press <ph name="SEARCH_KEY" /> to send commands to <ph name="EXTENSION_NAME" /></translation>
 <translation id="3450157232394774192">Idle State Occupancy Percentage</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> requires you to connect to Wi-Fi now and download an update.</translation>
+<translation id="345078987193237421">This allows camera access for apps, websites with the camera permission and system services</translation>
 <translation id="3452999110156026232">Parent access</translation>
 <translation id="3453082738208775226">Clean up offline storage?</translation>
 <translation id="3453597230179205517">Location access is blocked</translation>
@@ -3523,6 +3528,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3587438013689771191">Learn more about: <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="3587482841069643663">All</translation>
 <translation id="3588790464166520201">Allowed to install payment handlers</translation>
+<translation id="3589010096969411438">Allowed. Turn on microphone using a physical switch.</translation>
 <translation id="3589766037099229847">Insecure content blocked</translation>
 <translation id="3590194807845837023">Unlock Profile and Relaunch</translation>
 <translation id="3590295622232282437">Entering managed session.</translation>
@@ -4727,6 +4733,7 @@ This can include information about installed software, files, your browser and t
 <translation id="4473996011558324141">estimating time</translation>
 <translation id="4474155171896946103">Bookmark all tabs...</translation>
 <translation id="4475299370877036544">This action might violate your organisation's policies</translation>
+<translation id="4476198534886170024">Allowed. Turn on <ph name="LINK_BEGIN" />system camera access<ph name="LINK_END" />.</translation>
 <translation id="4476590490540813026">Athlete</translation>
 <translation id="4476659815936224889">To scan this code, you can use a QR scanner app on your phone, or some camera apps.</translation>
 <translation id="4477015793815781985">Include Ctrl, Alt or ⌘</translation>
@@ -5075,6 +5082,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4742795653798179840">Deleted Chrome data</translation>
 <translation id="4742970037960872810">Remove highlight</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Find out how to update applications<ph name="END_LINK" /></translation>
+<translation id="4743990041512863976">Allowed – <ph name="PERMISSION_DETAILS" />. Turn on <ph name="LINK_BEGIN" />system microphone access<ph name="LINK_END" />.</translation>
 <translation id="4744268813103118742">Go to site</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Unmute site}other{Unmute sites}}</translation>
@@ -5589,6 +5597,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5143374789336132547">The extension "<ph name="EXTENSION_NAME" />" has changed the page that is shown when you click the Home button.</translation>
 <translation id="5143612243342258355">This file is dangerous</translation>
 <translation id="5143712164865402236">Enter Full Screen</translation>
+<translation id="5143960098217235598">This allows microphone access for apps, websites with the microphone permission and system services</translation>
 <translation id="5144815231216017543">alt + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="5145464978649806571">If you move away from your device, your screen will lock automatically. When you're in front of your device, your screen will stay awake longer. If lock screen is disabled, your device will sleep instead of lock.</translation>
 <translation id="514575469079499857">Use your IP address to determine location (default)</translation>
@@ -5786,6 +5795,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5291739252352359682">Automatically creates captions for media in Chrome Browser (currently available in English). Audio and captions are processed locally and never leave the device.</translation>
 <translation id="529175790091471945">Format this device</translation>
 <translation id="529296195492126134">Ephemeral mode is not supported. Please contact your administrator</translation>
+<translation id="5293043095535566171">Turn on location access?</translation>
 <translation id="5293170712604732402">Restore settings to their original defaults</translation>
 <translation id="5294068591166433464">If a site tries to steal your password, or when you download a harmful file, Chrome may also send URLs, including bits of page content, to Safe Browsing</translation>
 <translation id="5294097441441645251">Must start with a lowercase character or underscore</translation>
@@ -6977,6 +6987,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6200151268994853226">Manage extension</translation>
 <translation id="6201608810045805374">Remove this account?</translation>
 <translation id="6202304368170870640">You can use your PIN to sign in to or unlock your device.</translation>
+<translation id="6202935572248792580">Allowed. Connect a microphone to your device.</translation>
 <translation id="6203247599828309566">You saved a note for a password on this site. To view it, click the key icon.</translation>
 <translation id="6205314730813004066">Ads privacy</translation>
 <translation id="6205993460077903908"><ph name="WINDOW_TITLE" /> – Microphone recording</translation>
@@ -7031,6 +7042,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6238923052227198598">Keep latest note on lock screen</translation>
 <translation id="6238982280403036866">Allowed to use JavaScript</translation>
 <translation id="6239558157302047471">Reload &amp;frame</translation>
+<translation id="6240637845286751292">Allowed. Turn on <ph name="LINK_BEGIN" />system location access<ph name="LINK_END" />.</translation>
 <translation id="6240821072888636753">Ask every time</translation>
 <translation id="6240964651812394252">To use Google Password Manager with your operating system, relaunch Chrome and allow access to your computer's password manager. Your tabs will reopen after relaunching.</translation>
 <translation id="6241530762627360640">Access information about Bluetooth devices paired with your system and discover nearby Bluetooth devices.</translation>
@@ -8279,6 +8291,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7210499381659830293">Extension printers</translation>
 <translation id="7211783048245131419">No switch has been assigned yet</translation>
 <translation id="7212097698621322584">Enter your current PIN to change it. If you don’t know your PIN, you’ll need to reset the security key, then create a new PIN.</translation>
+<translation id="7214047272988222011">Allowed – <ph name="PERMISSION_DETAILS" />. Turn on <ph name="LINK_BEGIN" />system camera access<ph name="LINK_END" />.</translation>
 <translation id="721490496276866468">Import passwords</translation>
 <translation id="7218514093816577632">Make sure that notifications are turned on on your <ph name="DEVICE_NAME" />.</translation>
 <translation id="7219254577985949841">Delete site data?</translation>
@@ -8759,6 +8772,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7573172247376861652">Battery Charge</translation>
 <translation id="7573594921350120855">Sites usually use your video camera for communication features like video chatting</translation>
 <translation id="7575272930307342804">Navigation controls</translation>
+<translation id="757660455834887988">Allowed – <ph name="PERMISSION_DETAILS" />. Connect a camera to your device.</translation>
 <translation id="7576690715254076113">Collate</translation>
 <translation id="7576976045740938453">A problem with demo mode account occurred.</translation>
 <translation id="7578137152457315135">Fingerprint settings</translation>
@@ -9436,6 +9450,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8053278772142718589">PKCS No.12 Files</translation>
 <translation id="8053390638574070785">Reload This Page</translation>
 <translation id="8053629544194355894">Turn on sync to let Chrome suggest tab groups</translation>
+<translation id="8054500940978949009">Allowed. Turn on <ph name="LINK_BEGIN" />system microphone access<ph name="LINK_END" />.</translation>
 <translation id="8054517699425078995">This type of file can harm your device. Do you want to keep <ph name="FILE_NAME" /> anyway?</translation>
 <translation id="8054563304616131773">Please enter a valid email address</translation>
 <translation id="8054609631325628928">These numbers can be used to help activate service</translation>
@@ -10865,6 +10880,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="9096776523567481218">not locally installed</translation>
 <translation id="9098860402274800697">Remove Google Play and Android apps</translation>
 <translation id="9099220545925418560">Based on your browsing history. This setting is off.</translation>
+<translation id="910000385680858937">Allowed – <ph name="PERMISSION_DETAILS" />. Connect a microphone to your device.</translation>
 <translation id="9100416672768993722">To switch to the last used input method, press <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="9100765901046053179">Advanced settings</translation>
 <translation id="9101691533782776290">Launch app</translation>
