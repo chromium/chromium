@@ -2208,7 +2208,7 @@ BASE_FEATURE(kOrcaForceFetchContextOnGetEditorPanelContext,
 // If enabled, we force fetching input context
 BASE_FEATURE(kOrcaOnWorkspace,
              "OrcaOnWorkspace",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, Orca will only be available in English locales.
 BASE_FEATURE(kOrcaOnlyInEnglishLocales,
