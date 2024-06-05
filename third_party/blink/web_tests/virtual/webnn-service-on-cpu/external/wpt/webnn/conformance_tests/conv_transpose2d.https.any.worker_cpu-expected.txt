@@ -39,7 +39,5 @@ This is a testharness.js-based test.
   assert_true: assert_array_approx_equals_ulp: test convTranspose2d float32 actual 0.51953125 should be close enough to expected 0.5200390219688416 by the acceptable 18 ULP distance, but they have 8519 ULP distance expected true got false
 [FAIL] convTranspose2d float32 4D input and filter tensors, both negative input tensor and options.bias
   assert_true: assert_array_approx_equals_ulp: test convTranspose2d float32 actual -0.91259765625 should be close enough to expected -0.9128783941268921 by the acceptable 18 ULP distance, but they have 4710 ULP distance expected true got false
-[FAIL] convTranspose2d float32 4D input and filter tensors options.activation=relu
-  assert_true: assert_array_approx_equals_ulp: test convTranspose2d float32 actual 0.06829833984375 should be close enough to expected 0.06836532801389694 by the acceptable 18 ULP distance, but they have 8991 ULP distance expected true got false
 Harness: the test ran to completion.
 

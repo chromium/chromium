@@ -655,9 +655,6 @@ const buildBatchNorm = (operationName, builder, resources) => {
   if (batchNormOptions.bias) {
     batchNormOptions.bias = createConstantOperand(builder, batchNormOptions.bias);
   }
-  if (batchNormOptions.activation) {
-    batchNormOptions.activation = builder[batchNormOptions.activation]();
-  }
   // invoke builder.batchNormalization()
   namedOutputOperand[resources.expected.name] =
       builder[operationName](inputOperand, meanOperand, varianceOperand, batchNormOptions);
@@ -706,9 +703,6 @@ const buildConvTranspose2d = (operationName, builder, resources) => {
   if (convTranspose2dOptions.bias) {
     convTranspose2dOptions.bias = createConstantOperand(builder, convTranspose2dOptions.bias);
   }
-  if (convTranspose2dOptions.activation) {
-    convTranspose2dOptions.activation = builder[convTranspose2dOptions.activation]();
-  }
   namedOutputOperand[resources.expected.name] = builder[operationName](inputOperand, filterOperand, convTranspose2dOptions);
   return namedOutputOperand;
 };
@@ -720,9 +714,6 @@ const buildConv2d = (operationName, builder, resources) => {
   let conv2dOptions = {...resources.options};
   if (conv2dOptions.bias) {
     conv2dOptions.bias = createConstantOperand(builder, conv2dOptions.bias);
-  }
-  if (conv2dOptions.activation) {
-    conv2dOptions.activation = builder[conv2dOptions.activation]();
   }
   namedOutputOperand[resources.expected.name] = builder[operationName](inputOperand, filterOperand, conv2dOptions);
   return namedOutputOperand;

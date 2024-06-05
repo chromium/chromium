@@ -655,13 +655,6 @@ bool ValidateBatchNormalization(
     return false;
   }
 
-  // Validate the activation if the option is configured.
-  const auto& activation = batch_normalization->activation;
-  if (activation && !ValidateActivation(activation)) {
-    // The activation is invalid.
-    return false;
-  }
-
   const auto validated_output = ValidateBatchNormalizationAndInferOutput(
       MojoOperandToComponent(input), MojoOperandToComponent(mean),
       MojoOperandToComponent(variance),
@@ -796,13 +789,6 @@ bool ValidateConv2d(const mojom::ContextProperties& context_properties,
     bias_operand = MojoOperandToComponent(bias_operand_iterator->second.get());
   }
   processed_operands.insert(conv2d->output_operand_id);
-
-  // Validate the activation if the option is configured.
-  auto& activation = conv2d->activation;
-  if (activation && !ValidateActivation(activation)) {
-    // The activation is invalid.
-    return false;
-  }
 
   std::optional<base::expected<Operand, std::string>> validated_output;
   switch (conv2d->kind) {

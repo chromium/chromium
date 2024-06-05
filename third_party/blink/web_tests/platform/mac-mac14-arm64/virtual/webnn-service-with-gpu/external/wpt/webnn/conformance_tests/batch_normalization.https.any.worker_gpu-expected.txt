@@ -7,8 +7,6 @@ This is a testharness.js-based test.
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported rank for batchNormalization. It must be between 3 and 5."
 [FAIL] batchNormalization float32 4D NHWC tensor options.axis=3
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported axis for batchNormalization. It must be the channel dimension."
-[FAIL] batchNormalization float32 4D NCHW tensor options.activation relu
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Activations are not supported with batchNormalization."
 [FAIL] batchNormalization float32 4D NHWC tensor all options
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported axis for batchNormalization. It must be the channel dimension."
 Harness: the test ran to completion.

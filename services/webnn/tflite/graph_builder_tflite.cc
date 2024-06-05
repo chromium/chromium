@@ -206,50 +206,6 @@ base::expected<TfLitePadding, std::string> GetTfLitePaddingMode(
                        .paddings = explicit_padding};
 }
 
-base::expected<::tflite::ActivationFunctionType, std::string>
-GetActivationTypeForClamp(const mojom::Clamp& clamp) {
-  ASSIGN_OR_RETURN(ClampRange clamp_range, GetClampRange(clamp));
-  switch (clamp_range) {
-    case ClampRange::kRelu:
-      return ::tflite::ActivationFunctionType_RELU;
-    case ClampRange::kRelu1:
-      return ::tflite::ActivationFunctionType_RELU_N1_TO_1;
-    case ClampRange::kRelu6:
-      return ::tflite::ActivationFunctionType_RELU6;
-  }
-}
-
-base::expected<::tflite::ActivationFunctionType, std::string>
-GetActivationFunctionType(const mojom::Activation& activation) {
-  switch (activation.which()) {
-    case mojom::Activation::Tag::kClamp: {
-      return GetActivationTypeForClamp(*activation.get_clamp());
-    }
-    case mojom::Activation::Tag::kRelu:
-      return ::tflite::ActivationFunctionType_RELU;
-    case mojom::Activation::Tag::kTanh:
-      return ::tflite::ActivationFunctionType_TANH;
-    case mojom::Activation::Tag::kElu:
-      return base::unexpected("Elu activation is not supported.");
-    case mojom::Activation::Tag::kGelu:
-      return base::unexpected("Gelu activation is not supported.");
-    case mojom::Activation::Tag::kHardSigmoid:
-      return base::unexpected("HardSigmoid activation is not supported.");
-    case mojom::Activation::Tag::kLeakyRelu:
-      return base::unexpected("LeakyRelu activation is not supported.");
-    case mojom::Activation::Tag::kLinear:
-      return base::unexpected("Linear activation is not supported.");
-    case mojom::Activation::Tag::kSigmoid:
-      return base::unexpected("Sigmoid activation is not supported.");
-    case mojom::Activation::Tag::kSoftmax:
-      return base::unexpected("Softmax activation is not supported.");
-    case mojom::Activation::Tag::kSoftplus:
-      return base::unexpected("Softplus activation is not supported.");
-    case mojom::Activation::Tag::kSoftsign:
-      return base::unexpected("Softsign activation is not supported.");
-  }
-}
-
 }  // namespace
 
 // static
@@ -1080,14 +1036,6 @@ auto GraphBuilderTflite::SerializeConv2d(const mojom::Conv2d& conv2d)
   const bool depthwise =
       webnn::IsDepthwiseConv2d(input_channels, output_channels, conv2d.groups);
 
-  // Validate activation operator that is partial supported in tflite schema and
-  // convert to tflite function type.
-  ::tflite::ActivationFunctionType activation =
-      ::tflite::ActivationFunctionType_NONE;
-  if (conv2d.activation) {
-    ASSIGN_OR_RETURN(activation, GetActivationFunctionType(*conv2d.activation));
-  }
-
   // Get tflite padding mode with the size2d of input, filter, dilation.
   const webnn::Size2d<uint32_t> input_size2d = {.height = input_shape[1],
                                                 .width = input_shape[2]};
@@ -1112,6 +1060,9 @@ auto GraphBuilderTflite::SerializeConv2d(const mojom::Conv2d& conv2d)
                                         padding_mode.paddings.value()));
   }
 
+  // TODO(crbug.com/344633746): Consider fusing Conv2D activations when
+  // possible.
+
   ::tflite::BuiltinOperator operator_kind;
   ::tflite::BuiltinOptions builtin_options_type;
   flatbuffers::Offset<void> builtin_options;
@@ -1120,17 +1071,19 @@ auto GraphBuilderTflite::SerializeConv2d(const mojom::Conv2d& conv2d)
     operator_kind = ::tflite::BuiltinOperator_DEPTHWISE_CONV_2D;
     builtin_options = ::tflite::CreateDepthwiseConv2DOptions(
                           builder_, padding_mode.mode, conv2d.strides->width,
-                          conv2d.strides->height, depth_multiplier, activation,
+                          conv2d.strides->height, depth_multiplier,
+                          ::tflite::ActivationFunctionType_NONE,
                           conv2d.dilations->width, conv2d.dilations->height)
                           .Union();
     builtin_options_type = ::tflite::BuiltinOptions_DepthwiseConv2DOptions;
   } else {
     operator_kind = ::tflite::BuiltinOperator_CONV_2D;
-    builtin_options = ::tflite::CreateConv2DOptions(
-                          builder_, padding_mode.mode, conv2d.strides->width,
-                          conv2d.strides->height, activation,
-                          conv2d.dilations->width, conv2d.dilations->height)
-                          .Union();
+    builtin_options =
+        ::tflite::CreateConv2DOptions(
+            builder_, padding_mode.mode, conv2d.strides->width,
+            conv2d.strides->height, ::tflite::ActivationFunctionType_NONE,
+            conv2d.dilations->width, conv2d.dilations->height)
+            .Union();
     builtin_options_type = ::tflite::BuiltinOptions_Conv2DOptions;
   }
 

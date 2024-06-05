@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] batchNormalization float32 4D NCHW tensor options.activation relu
-  assert_true: assert_array_approx_equals_ulp: test batchNormalization float32 actual -16.84250259399414 should be close enough to expected 0 by the acceptable 6 ULP distance, but they have 1048134286 ULP distance expected true got false
-[FAIL] batchNormalization float32 4D NHWC tensor all options
-  assert_true: assert_array_approx_equals_ulp: test batchNormalization float32 actual -1039.008544921875 should be close enough to expected 0 by the acceptable 6 ULP distance, but they have 998121402 ULP distance expected true got false
-Harness: the test ran to completion.
-

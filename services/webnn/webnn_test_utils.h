@@ -142,11 +142,6 @@ class GraphInfoBuilder final {
     batch_normalization->axis = attributes.axis;
     batch_normalization->epsilon = attributes.epsilon;
 
-    if (attributes.activation.has_value()) {
-      batch_normalization->activation =
-          CreateActivation(attributes.activation.value());
-    }
-
     graph_info_->operations.push_back(mojom::Operation::NewBatchNormalization(
         std::move(batch_normalization)));
   }
@@ -198,10 +193,6 @@ class GraphInfoBuilder final {
         mojom::Size2d::New(attributes.dilations[0], attributes.dilations[1]);
     conv2d->groups = attributes.groups;
     conv2d->bias_operand_id = bias_operand_id;
-
-    if (attributes.activation.has_value()) {
-      conv2d->activation = CreateActivation(attributes.activation.value());
-    }
 
     graph_info_->operations.push_back(
         mojom::Operation::NewConv2d(std::move(conv2d)));

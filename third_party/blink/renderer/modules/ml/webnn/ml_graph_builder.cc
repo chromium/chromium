@@ -1046,11 +1046,6 @@ MLOperand* MLGraphBuilder::batchNormalization(
   }
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInputs(inputs), nullptr);
 
-  if (options->hasActivation()) {
-    THROW_AND_RETURN_TYPE_IF_ERROR(ValidateActivation(options->activation()),
-                                   nullptr);
-  }
-
   const auto validated_output = webnn::ValidateBatchNormalizationAndInferOutput(
       BlinkOperandToComponent(input), BlinkOperandToComponent(mean),
       BlinkOperandToComponent(variance),
@@ -1145,11 +1140,6 @@ MLOperand* MLGraphBuilder::conv2d(const MLOperand* input,
   }
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInputs(inputs), nullptr);
 
-  if (options->hasActivation()) {
-    THROW_AND_RETURN_TYPE_IF_ERROR(ValidateActivation(options->activation()),
-                                   nullptr);
-  }
-
   auto conv2d_attributes = ConvertToConv2dAttributes(options);
   if (!conv2d_attributes.has_value()) {
     exception_state.ThrowTypeError(conv2d_attributes.error());
@@ -1189,11 +1179,6 @@ MLOperand* MLGraphBuilder::convTranspose2d(
     inputs.push_back(options->bias());
   }
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInputs(inputs), nullptr);
-
-  if (options->hasActivation()) {
-    THROW_AND_RETURN_TYPE_IF_ERROR(ValidateActivation(options->activation()),
-                                   nullptr);
-  }
 
   auto convTranspose2d_attributes = ConvertToConvTranspose2dAttributes(options);
   if (!convTranspose2d_attributes.has_value()) {

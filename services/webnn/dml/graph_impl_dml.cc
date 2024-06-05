@@ -640,19 +640,14 @@ bool CanElementWiseBinarySupportFusion(
 // DML_OPERATOR_GEMM
 // DML_OPERATOR_MEAN_VARIANCE_NORMALIZATION
 // DML_OPERATOR_MEAN_VARIANCE_NORMALIZATION1
-//
-//  Conv2d and batch norm may already have fused activations supplied by JS code
-//  because WebNN spec supports fusion for these two operations.
 bool CanFuseStandaloneActivation(const Operation* operation,
                                  const IdToOperandMap& id_to_operand_map) {
   switch (operation->which()) {
-    case Operation::Tag::kConv2d:
-      return !operation->get_conv2d()->activation;
-    case Operation::Tag::kBatchNormalization:
-      return !operation->get_batch_normalization()->activation;
     case Operation::Tag::kElementWiseBinary:
       return CanElementWiseBinarySupportFusion(
           operation->get_element_wise_binary(), id_to_operand_map);
+    case Operation::Tag::kConv2d:
+    case Operation::Tag::kBatchNormalization:
     case Operation::Tag::kGemm:
     case Operation::Tag::kInstanceNormalization:
     case Operation::Tag::kLayerNormalization:
@@ -1133,15 +1128,6 @@ GraphFusionInfo GetGraphFusionInfo(const mojom::GraphInfoPtr& graph_info) {
   //        |
   //     [output]
   //
-  // Or if the base operation is already fused via WebNN, skip it:
-  //
-  //     [input]
-  //        |
-  // conv2d + relu
-  //        |
-  //       relu
-  //        |
-  //     [output]
 
   // A map of all matmul operations in `mojom::GraphInfo` using matmul's input
   // operand id as the key.
@@ -1407,20 +1393,11 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForBatchNormalization(
           operation_to_fusible_standalone_activation_map, operation);
   std::optional<ActivationOperatorDesc> activation_operator_desc;
   std::optional<DML_OPERATOR_DESC> activation_dml_desc;
-  if (fusible_activation || batch_normalization->activation) {
-    CHECK(!(fusible_activation && batch_normalization->activation));
-    if (fusible_activation) {
-      ASSIGN_OR_RETURN(
-          activation_operator_desc,
-          CreateActivationOperatorDesc(fusible_activation.value()));
-      output_id =
-          GetFusibleActivationOutputId(fusible_activation.value()).value();
-    } else {
-      ASSIGN_OR_RETURN(
-          activation_operator_desc,
-          CreateActivationOperatorDesc(batch_normalization->activation.get()));
-    }
-
+  if (fusible_activation) {
+    ASSIGN_OR_RETURN(activation_operator_desc,
+                     CreateActivationOperatorDesc(fusible_activation.value()));
+    output_id =
+        GetFusibleActivationOutputId(fusible_activation.value()).value();
     activation_dml_desc = activation_operator_desc->GetActivationDmlDesc();
   }
 
@@ -1616,19 +1593,11 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForConv2d(
           operation_to_fusible_standalone_activation_map, operation);
   std::optional<ActivationOperatorDesc> activation_operator_desc;
   std::optional<DML_OPERATOR_DESC> activation_dml_desc;
-  if (fusible_activation || conv2d->activation) {
-    CHECK(!(fusible_activation && conv2d->activation));
-    if (fusible_activation) {
-      ASSIGN_OR_RETURN(
-          activation_operator_desc,
-          CreateActivationOperatorDesc(fusible_activation.value()));
-      output_id =
-          GetFusibleActivationOutputId(fusible_activation.value()).value();
-    } else {
-      ASSIGN_OR_RETURN(activation_operator_desc,
-                       CreateActivationOperatorDesc(conv2d->activation.get()));
-    }
-
+  if (fusible_activation) {
+    ASSIGN_OR_RETURN(activation_operator_desc,
+                     CreateActivationOperatorDesc(fusible_activation.value()));
+    output_id =
+        GetFusibleActivationOutputId(fusible_activation.value()).value();
     activation_dml_desc = activation_operator_desc->GetActivationDmlDesc();
   }
 
