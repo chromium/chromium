@@ -12,12 +12,6 @@
     <message name="IDS_PLUS_ADDRESS_MODAL_DESCRIPTION" desc="The description text on the creation dialog for plus addresses." translateable="false">
     Lorem (<ph name="GAIA_EMAIL">$1<ex>foo@gmail.com</ex></ph>).
     </message>
-    <message name="IDS_PLUS_ADDRESS_MODAL_PLUS_ADDRESS_LABEL" desc="Label for the upper portion of the plus addresses modal" translateable="false">
-      Lorem Ipsum
-    </message>
-    <message name="IDS_PLUS_ADDRESS_MODAL_PROPOSED_PLUS_ADDRESS_AND_COPY" desc="The plus address with some descriptive text around it." translateable="false">
-      Use <ph name="PLUS_ADDRESS">$1<ex>plus@plus.plus</ex>?</ph>
-    </message>
     <message name="IDS_PLUS_ADDRESS_MODAL_PLUS_ADDRESS_LINK_TEXT" desc="The text of the link shown on the Plus Address modal." translateable="false">
       Settings
     </message>
@@ -26,9 +20,6 @@
     </message>
     <message name="IDS_PLUS_ADDRESS_MODAL_PLUS_ADDRESS_DESCRIPTION_END" desc="The end of the plus address description that has a placeholder for the primary email address." translateable="false">
       Lorem <ph name="REGULAR_ADDRESS">$1</ph>.
-    </message>
-    <message name="IDS_PLUS_ADDRESS_MODAL_ERROR_MESSAGE" desc="The error message shown on the modal." translateable="false">
-      Lorem ipsum or whatever
     </message>
     <message name="IDS_PLUS_ADDRESS_MODAL_ERROR_REPORT_LINK_TEXT" desc="The text of the link shown on the Plus Address error message." translateable="false">
       error-link
@@ -44,12 +35,6 @@
     </message>
     <message name="IDS_PLUS_ADDRESS_MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER" desc="A placeholder for the plus address" translateable="false">
       Lorem Ipsum or whatever
-    </message>
-    <message name="IDS_PLUS_ADDRESS_MODAL_REGULAR_ADDRESS_LABEL" desc="A label for the regular address in the plus address modal" translateable="false">
-      For <ph name="REGULAR_ADDRESS">$1<ex>test@example.test</ex></ph>
-    </message>
-    <message name="IDS_PLUS_ADDRESS_MODAL_PLUS_ADDRESS_DESCRIPTION" desc="An illustrative description of the plus addresses modal" translateable="false">
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
     </message>
     <message name="IDS_PLUS_ADDRESS_MODAL_CANCEL_TEXT" desc="Cancel button text for the experimental enterprise plus addresses feature modal" translateable="false">
       Dolor
