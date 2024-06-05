@@ -442,10 +442,6 @@ void WaylandEventSource::OnPointerAxisEvent(const gfx::Vector2dF& offset,
   pointer_scroll_data_->dy += offset.y();
 }
 
-void WaylandEventSource::OnResetPointerFlags() {
-  ResetPointerFlags();
-}
-
 void WaylandEventSource::RoundTripQueue() {
   event_watcher_->RoundTripQueue();
 }
@@ -870,7 +866,13 @@ bool WaylandEventSource::IsPointerButtonPressed(EventFlags button) const {
 void WaylandEventSource::ReleasePressedPointerButtons(
     WaylandWindow* window,
     base::TimeTicks timestamp) {
-  CHECK(pointer_flags_);
+  // This may be called through the pointer delegate to cleanup pointer state.
+  // Clients may call this proactively regardless of whether the any pointer
+  // buttons are registered as pressed.
+  if (!pointer_flags_) {
+    return;
+  }
+
   for (const auto& [button, name] : kMouseButtonToStringMap) {
     if (button & pointer_flags_) {
       VLOG(1) << "Synthesizing pointer release for: " << name;
@@ -931,10 +933,6 @@ void WaylandEventSource::OnPointerStylusTiltChanged(
 
 const WaylandWindow* WaylandEventSource::GetPointerTarget() const {
   return window_manager_->GetCurrentPointerFocusedWindow();
-}
-
-void WaylandEventSource::ResetPointerFlags() {
-  pointer_flags_ = 0;
 }
 
 void WaylandEventSource::OnDispatcherListChanged() {

@@ -132,6 +132,8 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   // Returns false iff the data is for a window dragging session.
   bool ShouldReleaseCaptureForDrag(ui::OSExchangeData* data) const;
 
+  bool IsWindowDragSessionRunning() const;
+
   void DumpState(std::ostream& out) const;
 
  private:

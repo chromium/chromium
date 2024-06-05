@@ -19,6 +19,7 @@
 #include "ui/base/hit_test.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/display/types/display_constants.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
@@ -149,7 +150,8 @@ void WaylandToplevelWindow::DispatchHostWindowDragMovement(
   connection()->Flush();
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
   // TODO(crbug.com/40917147): Revisit to resolve the correct impl.
-  connection()->event_source()->ResetPointerFlags();
+  connection()->event_source()->ReleasePressedPointerButtons(this,
+                                                             EventTimeForNow());
 #endif
 }
 

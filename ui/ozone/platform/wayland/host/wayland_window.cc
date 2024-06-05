@@ -865,7 +865,14 @@ void WaylandWindow::OnDragSessionClose(DragOperation operation) {
     return;
   }
   std::move(drag_finished_callback_).Run(operation);
-  connection()->event_source()->ResetPointerFlags();
+  // Skip releasing any pointer buttons for the case of a window drag driven by
+  // the data drag controller.
+  // TODO: crbug.com/40238145 - Refactor this per discussion at
+  // crrev.com/c/5570335/comment/0b8811fc_818028c9/.
+  if (!connection()->data_drag_controller()->IsWindowDragSessionRunning()) {
+    connection()->event_source()->ReleasePressedPointerButtons(
+        this, EventTimeForNow());
+  }
   std::move(drag_loop_quit_closure_).Run();
 }
 

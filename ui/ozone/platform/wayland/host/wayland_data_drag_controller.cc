@@ -252,6 +252,10 @@ bool WaylandDataDragController::ShouldReleaseCaptureForDrag(
   return !IsWindowDraggingSession(*data);
 }
 
+bool WaylandDataDragController::IsWindowDragSessionRunning() const {
+  return !!pointer_grabber_for_window_drag_;
+}
+
 void WaylandDataDragController::DumpState(std::ostream& out) const {
   constexpr auto kStateToString = base::MakeFixedFlatMap<State, const char*>(
       {{State::kIdle, "idle"},

@@ -63,7 +63,7 @@ WaylandPointer::~WaylandPointer() {
   // bugs.
   delegate_->OnPointerFocusChanged(nullptr, {}, EventTimeForNow(),
                                    wl::EventDispatchPolicy::kImmediate);
-  delegate_->OnResetPointerFlags();
+  delegate_->ReleasePressedPointerButtons(nullptr, EventTimeForNow());
 }
 
 // static
