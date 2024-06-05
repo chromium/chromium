@@ -137,6 +137,7 @@ export enum I18nString {
   // I18nString.NAME: Bypass the presubmit check for unused strings. Used here:
   // https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ash/system_web_apps/apps/camera_app/camera_system_web_app_info.cc
   // NAME = 'name',
+  NEW_PREVIEW_OCR_TOAST = 'new_preview_ocr_toast',
   NEXT_PAGE_COUNT = 'next_page_count',
   NO_DOCUMENT_GUIDE_MSG = 'no_document_guide_msg',
   OPEN_GRID_PANEL_BUTTON = 'open_grid_panel_button',

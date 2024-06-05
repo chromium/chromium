@@ -491,6 +491,7 @@ export enum LocalStorageKey {
   PREF_DEVICE_VIDEO_RESOLUTION_EXPERT = 'deviceVideoResolutionExpert',
   PREF_DEVICE_VIDEO_RESOLUTION_FPS = 'deviceVideoResolutionFps',
   PREF_DEVICE_VIDEO_RESOLUTION_LEVEL = 'deviceVideoResolutionLevel',
+  PREVIEW_OCR_TOAST_SHOWN = 'previewOcrToastShown',
   PRINT_PERFORMANCE_LOGS = 'printPerformanceLogs',
   SAVE_METADATA = 'saveMetadata',
   SHOW_ALL_RESOLUTIONS = 'showAllResolutions',

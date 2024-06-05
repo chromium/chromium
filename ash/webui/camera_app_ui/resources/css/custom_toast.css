@@ -40,7 +40,7 @@ Use these custom properties to control the feature toasts, for example:
 }
 
 @property --toast-ref-x {
-  syntax: 'left | right';
+  syntax: 'left | right | center';
   inherits: false;
   initial-value: left;
 }
@@ -185,4 +185,18 @@ Use these custom properties to control the feature toasts, for example:
 
 .ripple.animate {
   animation: ripple-scale var(--duration) cubic-bezier(0.4, 0, 0, 1), ripple-opacity var(--duration) cubic-bezier(0, 0, 0.4, 1);
+}
+
+
+mode-selector[i18n-new-feature=new_preview_ocr_toast] {
+  --ripple-start-height: 20px;
+  --ripple-start-width: 54px;
+
+  --toast-ref-x: center;
+  --toast-element-ref-x: center;
+  --toast-offset-x: 0;
+
+  --toast-ref-y: bottom;
+  --toast-element-ref-y: top;
+  --toast-offset-y: -20px;
 }

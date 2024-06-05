@@ -711,6 +711,9 @@ If your feedback is about image or video quality, please attach a sample photo o
       <message desc="Dialog button linking to help center page to let users learn more about the feature" name="IDS_SUPER_RES_INTRO_DIALOG_LEARN_MORE_BUTTON">
         Learn more
       </message>
+      <message desc="Toast message notifying preview OCR scanning is available." name="IDS_NEW_PREVIEW_OCR_TOAST">
+        Now you can directly copy text in your photo
+      </message>
     </messages>
   </release>
 </grit>

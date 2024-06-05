@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {assert, assertExists, checkEnumVariant} from './assert.js';
+import {showPreviewOCRToast} from './custom_effect.js';
 import * as dom from './dom.js';
 import {reportError} from './error.js';
 import {Flag} from './flag.js';
@@ -15,6 +16,7 @@ import {
   sendUnsupportedProtocolEvent,
 } from './metrics.js';
 import * as loadTimeData from './models/load_time_data.js';
+import * as localStorage from './models/local_storage.js';
 import {ChromeHelper} from './mojo/chrome_helper.js';
 import {
   OcrResult,
@@ -29,6 +31,7 @@ import {OneShotTimer} from './timer.js';
 import {
   ErrorLevel,
   ErrorType,
+  LocalStorageKey,
 } from './type.js';
 
 // Supported source types.
@@ -435,6 +438,13 @@ export function showBarcodeContent(content: string): void {
 export function showOcrContent(ocrResult: OcrResult): void {
   const content = ocrResult.lines.map((line) => line.text).join('\n');
   function setupChip() {
+    // TODO(b/303584151): Remove the toast around 3 milestones after the feature
+    // is launched.
+    if (!localStorage.getBool(LocalStorageKey.PREVIEW_OCR_TOAST_SHOWN)) {
+      const cameraView = dom.get('#view-camera', HTMLElement);
+      showPreviewOCRToast(cameraView);
+      localStorage.set(LocalStorageKey.PREVIEW_OCR_TOAST_SHOWN, true);
+    }
     // TODO(b/311592341): Check if we can show Wifi and URL chip when the source
     // is OCR.
     return showText(content, () => {
