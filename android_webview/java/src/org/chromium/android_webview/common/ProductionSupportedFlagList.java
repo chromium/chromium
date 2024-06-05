@@ -1017,6 +1017,8 @@ public final class ProductionSupportedFlagList {
         Flag.commandLine(
                 CookieSwitches.DISABLE_PARTITIONED_COOKIES_SWITCH,
                 "Disables paritioned cookies in WebView"),
+        Flag.baseFeature(
+                ContentFeatures.DIPS, "Enables the Bounce Tracking Mitigations feature."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
