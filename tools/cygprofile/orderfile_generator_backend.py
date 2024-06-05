@@ -1092,9 +1092,8 @@ class OrderfileGenerator:
         for filename in (self._GetUnpatchedOrderfileFilename(),
                          self._GetPathToOrderfile())
     ]
-    if self._options.arch == 'arm64':
-      # DEPS is updated as well in the new cloud flow.
-      paths.append(str(self._clank_dir / 'DEPS'))
+    # DEPS is updated as well in the new cloud flow.
+    paths.append(str(self._clank_dir / 'DEPS'))
     self._orderfile_updater._CommitStashedFiles(paths)
     return True
 
