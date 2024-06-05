@@ -85,7 +85,7 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
     case UserSelectableType::kReadingList:
       return {kReadingListTypeName, READING_LIST, {READING_LIST}};
     case UserSelectableType::kTabs:
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
       return {kTabsTypeName, SESSIONS, {SESSIONS, SAVED_TAB_GROUP}};
 #else
       return {kTabsTypeName, SESSIONS, {SESSIONS}};

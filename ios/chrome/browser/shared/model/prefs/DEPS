@@ -16,6 +16,7 @@ include_rules = [
   "+ios/chrome/browser/drive/model/drive_policy.h",
   "+ios/chrome/browser/web/model/annotations/annotations_util.h",
   "+ios/chrome/browser/parcel_tracking",
+  "+components/saved_tab_groups/pref_names.h",
 ]
 
 specific_include_rules = {
@@ -28,4 +29,3 @@ specific_include_rules = {
     "+ios/chrome/browser/upgrade/model/upgrade_constants.h",
   ],
 }
-

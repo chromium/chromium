@@ -1,0 +1,4 @@
+include_rules = [
+  "+components/saved_tab_groups",
+  "+ios/chrome/browser/sync/model/model_type_store_service_factory.h",
+]

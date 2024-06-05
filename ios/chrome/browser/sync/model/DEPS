@@ -1,6 +1,7 @@
 include_rules = [
   "+components/consent_auditor",
   "+components/data_sharing/public",
+  "+components/saved_tab_groups/tab_group_sync_service.h",
   "+components/trusted_vault",
   "+components/webauthn/core/browser",
   "+ios/chrome/browser/bookmarks/model",
@@ -18,6 +19,7 @@ include_rules = [
   "+ios/chrome/browser/plus_addresses/model",
   "+ios/chrome/browser/power_bookmarks/model",
   "+ios/chrome/browser/reading_list/model",
+  "+ios/chrome/browser/saved_tab_groups/model",
   "+ios/chrome/browser/search_engines/model",
   "+ios/chrome/browser/sessions",
   "+ios/chrome/browser/settings/model/sync",
