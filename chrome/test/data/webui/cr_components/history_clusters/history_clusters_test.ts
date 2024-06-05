@@ -246,12 +246,16 @@ suite('history-clusters', () => {
       result: {imageUrl: {url: 'https://example.com/image.png'}},
     }));
 
-    const urlVisit =
-        clustersElement.$.clusters.querySelector('history-cluster')!.$.container
-            .querySelector('url-visit');
+    const cluster = clustersElement.$.clusters.querySelector('history-cluster');
+    assertTrue(!!cluster);
+    const urlVisit = cluster.$.container.querySelector('url-visit');
     assertTrue(!!urlVisit);
     // Assign a copied visit object with `isKnownToSync` set to true.
-    urlVisit.visit = Object.assign({}, urlVisit.visit, {isKnownToSync: true});
+    const copiedVisit =
+        Object.assign({}, urlVisit.visit, {isKnownToSync: true});
+    const copiedCluster = Object.assign({}, cluster.cluster);
+    copiedCluster.visits[0] = copiedVisit;
+    cluster.cluster = copiedCluster;
 
     const [clientId, pageUrl] =
         await imageServiceHandler.whenCalled('getPageImageUrl');

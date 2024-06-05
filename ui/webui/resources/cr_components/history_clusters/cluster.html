@@ -1,151 +1,31 @@
-<style include="history-clusters-shared-style cr-icons">
-  :host {
-    --indentation: 52px;
-    --search-query-margin: 10px;
-    display: block;
-    /* Implements the spacing between containers. */
-    padding-bottom: var(--cluster-padding-vertical);
-  }
-
-  :host([in-side-panel]) {
-    --cr-icon-button-margin-start: 8px;
-    --search-query-margin: 4px;
-    padding-bottom: 0;
-    padding-top: 8px;
-  }
-
-  :host([in-side-panel]) #container {
-    background: var(--color-side-panel-card-background);
-    border-radius: 12px;
-    overflow: hidden;
-  }
-
-  :host([in-side-panel][is-first]) {
-    padding-top: 0;
-  }
-
-  :host-context(.focus-outline-visible):host(:focus) #container {
-    box-shadow: inset 0 0 0 2px var(--cr-focus-outline-color);
-  }
-
-  :host([has-hidden-visits_]) #container {
-    /* For containers with a "Show More" button, add some additional spacing for
-       the pill button by adding a margin on the container. */
-    margin-bottom: var(--cluster-padding-vertical);
-  }
-
-  :host([in-side-panel]) #container url-visit:last-of-type {
-    margin-bottom: 8px;
-  }
-
-  /* We need an inner container div to apply spacing between clusters. This is
-     because iron-list ignores the margin on the host element. */
-  :host(:not([in-side-panel])) #container {
-    background-color: var(--cr-card-background-color);
-    border-radius: var(--cr-card-border-radius);
-    box-shadow: var(--cr-card-shadow);
-    padding: var(--cluster-padding-vertical) 0;
-  }
-
-  .label-row {
-    align-items: center;
-    display: flex;
-    flex-grow: 1;
-    justify-content: space-between;
-    min-height: 48px;
-    min-width: 0;
-    padding-inline-start: var(--cluster-padding-horizontal);
-  }
-
-  :host([in-side-panel]) .label-row {
-    min-height: 44px;
-    padding-inline-start: 16px;
-  }
-
-  #label {
-    color: var(--cr-primary-text-color);
-    font-size: 1rem;  /* 16px */
-    font-weight: 500;
-  }
-
-  :host([in-side-panel]) #label {
-    font-size: .875rem;  /* 14px */
-    line-height: calc(10/7); /* 20px */
-    margin-inline-end: 16px;
-  }
-
-  :host([in-side-panel]) .timestamp {
-    font-size: .6875rem; /* 11px */
-    line-height: calc(5/3); /* 20px */
-  }
-
-  .debug-info {
-    color: var(--cr-secondary-text-color);
-  }
-
-  #related-searches-divider {
-    display: none;
-  }
-
-  :host([in-side-panel]) #related-searches-divider {
-    display: block;
-    background-color: var(--color-history-clusters-side-panel-divider);
-    height: 1px;
-    margin: 8px 16px;
-  }
-
-  #related-searches {
-    margin: 16px var(--cluster-padding-horizontal) 0px;
-  }
-
-  :host([in-side-panel]) #related-searches {
-    /* 2px left and right margin so related searches don't overlap container
-     * focus indicator. */
-    margin: 16px 2px;
-  }
-
-  /*TODO(mfacey): Figure out appropriate non side panel color to show carousel
-      buttons. */
-  :host([in-side-panel]) search-query {
-    flex-shrink: 0;
-    margin-top: 0;
-  }
-
-  search-query:not(:last-of-type) {
-    margin-inline-end: var(--search-query-margin);
-  }
-
-  :host([in-side-panel]) search-query:first-of-type {
-    margin-inline-start: 16px;
-  }
-</style>
-<div id="container" on-visit-clicked="onVisitClicked_"
-    on-open-all-visits="onOpenAllVisits_"
-    on-hide-all-visits="onHideAllVisits_"
-    on-remove-all-visits="onRemoveAllVisits_"
-    on-hide-visit="onHideVisit_"
-    on-remove-visit="onRemoveVisit_">
+<div id="container" @visit-clicked="${this.onVisitClicked_}"
+    @open-all-visits="${this.onOpenAllVisits_}"
+    @hide-all-visits="${this.onHideAllVisits_}"
+    @remove-all-visits="${this.onRemoveAllVisits_}"
+    @hide-visit="${this.onHideVisit_}"
+    @remove-visit="${this.onRemoveVisit_}">
   <div class="label-row">
     <span id="label" class="truncate"></span>
-    <img is="cr-auto-img" auto-src="[[imageUrl_]]">
-    <div class="debug-info">[[cluster.debugInfo]]</div>
+    <img is="cr-auto-img" auto-src="${this.imageUrl_}">
+    <div class="debug-info">${this.debugInfo_()}</div>
     <div class="timestamp-and-menu">
-      <div class="timestamp">[[cluster.visits.0.relativeDate]]</div>
+      <div class="timestamp">${this.timestamp_()}</div>
       <cluster-menu></cluster-menu>
     </div>
   </div>
-  <template is="dom-repeat" items="[[cluster.visits]]">
-    <url-visit visit="[[item]]" query="[[query]]" from-persistence="[[cluster.fromPersistence]]">
-    </url-visit>
-  </template>
-  <div id="related-searches-divider" hidden="[[!cluster.relatedSearches.length]]"></div>
-  <horizontal-carousel id="related-searches" hidden="[[!cluster.relatedSearches.length]]"
-      role="list" aria-label$="[[i18n('relatedSearchesHeader')]]"
-      on-related-search-clicked="onRelatedSearchClicked_" on-pointerdown="clearSelection_"
-      in-side-panel$="[[inSidePanel]]">
-    <template is="dom-repeat" items="[[relatedSearches_]]">
-      <search-query search-query="[[item]]" index="[[index]]" role="listitem">
-      </search-query>
-    </template>
+  ${this.visits_().map(item => html`<url-visit .visit="${item}"
+      .query="${this.query}" .fromPersistence="${this.cluster.fromPersistence}">
+    </url-visit>`)}
+  <div id="related-searches-divider" ?hidden="${this.hideRelatedSearches_()}">
+  </div>
+  <horizontal-carousel id="related-searches"
+      ?hidden="${this.hideRelatedSearches_()}"
+      role="list" aria-label="${this.i18n('relatedSearchesHeader')}"
+      @related-search-clicked="${this.onRelatedSearchClicked_}"
+      @pointerdown="${this.clearSelection_}"
+      ?in-side-panel="${this.inSidePanel}">
+    ${this.relatedSearches_.map((item, index) => html`<search-query
+        .searchQuery="${item}" .index="${index}" role="listitem">
+      </search-query>`)}
   </horizontal-carousel>
 </div>

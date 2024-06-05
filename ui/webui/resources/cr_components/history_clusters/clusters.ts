@@ -395,8 +395,12 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
    * Called when an image has become available for `clusterIndex`.
    */
   private onClusterImageUpdated_(clusterIndex: number, imageUrl: Url) {
+    const cluster = this.result_.clusters[clusterIndex];
+    const newCluster = Object.assign({}, cluster) as unknown as Cluster;
+    newCluster.imageUrl = imageUrl;
+
     // TODO(tommycli): Make deletions handle `clusterIndex` properly.
-    this.set(`result_.clusters.${clusterIndex}.imageUrl`, imageUrl);
+    this.set(`result_.clusters.${clusterIndex}`, newCluster);
   }
 
   /**
