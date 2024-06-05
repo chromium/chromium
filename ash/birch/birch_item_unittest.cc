@@ -10,6 +10,7 @@
 #include "ash/birch/birch_icon_cache.h"
 #include "ash/birch/birch_model.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/test/test_image_downloader.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "ash/shell.h"
@@ -25,6 +26,7 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/settings/scoped_timezone_settings.h"
+#include "components/prefs/pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -35,6 +37,10 @@
 
 namespace ash {
 namespace {
+
+PrefService* GetPrefService() {
+  return Shell::Get()->session_controller()->GetPrimaryUserPrefService();
+}
 
 class TestNewWindowDelegateImpl : public TestNewWindowDelegate {
  public:
@@ -396,6 +402,21 @@ TEST_F(BirchItemTest, Weather_PerformAction_Histograms) {
   histograms.ExpectBucketCount("Ash.Birch.Bar.Activate", true, 1);
   histograms.ExpectBucketCount("Ash.Birch.Chip.Activate",
                                BirchItemType::kWeather, 1);
+}
+
+// Weather item subtitles require an ash::Shell for the pref service.
+using BirchWeatherItemTest = AshTestBase;
+
+TEST_F(BirchWeatherItemTest, SubtitleInFahrenheit) {
+  GetPrefService()->SetBoolean(prefs::kBirchUseCelsius, false);
+  BirchWeatherItem item(u"item", 72.f, ui::ImageModel());
+  EXPECT_EQ(item.subtitle(), u"72\xB0 F");
+}
+
+TEST_F(BirchWeatherItemTest, SubtitleInCelsius) {
+  GetPrefService()->SetBoolean(prefs::kBirchUseCelsius, true);
+  BirchWeatherItem item(u"item", 72.f, ui::ImageModel());
+  EXPECT_EQ(item.subtitle(), u"22\xB0 C");
 }
 
 TEST_F(BirchItemTest, Tab_Subtitle_Recent) {

@@ -207,8 +207,16 @@ bool BirchBarController::IsDataLoading() const {
 }
 
 void BirchBarController::ToggleTemperatureUnits() {
-  // TODO(jamescook): Toggle the units preference.
-  // TODO(jamescook): Refresh the suggestion chips.
+  // Toggle the preference.
+  auto* pref_service = GetPrefService();
+  bool current_value = pref_service->GetBoolean(prefs::kBirchUseCelsius);
+  pref_service->SetBoolean(prefs::kBirchUseCelsius, !current_value);
+
+  // Refresh the suggestion chips.
+  for (auto& bar_view : bar_views_) {
+    bar_view->SetState(BirchBarView::State::kReloading);
+  }
+  MaybeFetchDataFromModel();
 }
 
 void BirchBarController::ExecuteCommand(int command_id, int event_flags) {

@@ -1070,6 +1070,42 @@ TEST_P(BirchBarMenuTest, ResetSuggestionsExtended) {
       {BirchItemType::kLastActive, BirchItemType::kMostVisited}, bar_chips));
 }
 
+TEST_P(BirchBarMenuTest, ToggleFahrenheitCelsiusPref) {
+  // The pref defaults to Fahrenheit.
+  EXPECT_FALSE(GetPrefService()->GetBoolean(prefs::kBirchUseCelsius));
+
+  // Show the birch bar with a weather item.
+  SetWeatherItems(/*num=*/1);
+  EnterOverview();
+
+  // Get the overview grid test api.
+  auto* root_window = Shell::GetPrimaryRootWindow();
+  auto grid_test_api = OverviewGridTestApi(root_window);
+  EXPECT_TRUE(grid_test_api.birch_bar_view());
+
+  // Get the weather chip.
+  raw_ptr<BirchChipButtonBase> chip = grid_test_api.GetBirchChips()[0];
+  ASSERT_TRUE(chip);
+
+  // Right-click on the chip to show the context menu.
+  RightClickOn(chip);
+  chip = nullptr;  // Avoid dangling pointer later.
+  auto* model_adapter =
+      BirchBarController::Get()->chip_menu_model_adapter_for_testing();
+  EXPECT_TRUE(model_adapter->IsShowingMenu());
+
+  // Click on the menu item to toggle temperature units.
+  auto* chip_menu = model_adapter->root_for_testing()->GetSubmenu();
+  auto* toggle_temperature_units = chip_menu->GetMenuItemAt(2);
+  EXPECT_EQ(toggle_temperature_units->GetCommand(),
+            base::to_underlying(
+                BirchChipContextMenuModel::CommandId::kToggleTemperatureUnits));
+  LeftClickOn(toggle_temperature_units);
+
+  // The pref is now set to use celsius.
+  EXPECT_TRUE(GetPrefService()->GetBoolean(prefs::kBirchUseCelsius));
+}
+
 // Tests that there is no crash if hiding the suggestions by toggle the switch
 // button in chip's submenu.
 TEST_P(BirchBarMenuTest, NoCrashHideSuggestionsByChipSubmenu) {
