@@ -2466,7 +2466,7 @@
     },
     {
       name: "MediaSessionChapterInformation",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "MediaSessionEnterPictureInPicture",
