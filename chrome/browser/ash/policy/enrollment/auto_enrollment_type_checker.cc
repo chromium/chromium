@@ -399,7 +399,13 @@ AutoEnrollmentTypeChecker::GetFRERequirementAccordingToVPD(
       LOG(ERROR) << "VPD could not be read, forcing auto-enrollment check.";
       return FRERequirement::kExplicitlyRequired;
     case ash::system::StatisticsProvider::VpdStatus::kUnknown:
-      NOTREACHED_IN_MIGRATION() << "VPD status is unknown";
+      // TODO(crbug.com/40580068): It looks like this is hit on
+      // ChromeSessionManagerRlzTest.DeviceIsUnlocked for instance (on the
+      // "linux-chromeos-chrome" bot) but doesn't seem to be hit in the wild. If
+      // the test setup is bad and this truly shouldn't be unreachable we should
+      // upgrade this to a NOTREACHED(), otherwise we should probably add a
+      // comment for why this can happen and remove the invariant.
+      DUMP_WILL_BE_NOTREACHED() << "VPD status is unknown";
       return FRERequirement::kRequired;
   }
 }
