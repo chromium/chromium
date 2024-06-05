@@ -493,6 +493,12 @@ class USER_MANAGER_EXPORT UserManager {
                              bool browser_restart,
                              bool is_child) const;
 
+  // Returns true if `user` is allowed, according to the given constraints.
+  // Accepted user types: kRegular, kGuest, kChild.
+  static bool IsUserAllowed(const User& user,
+                            bool is_guest_allowed,
+                            bool is_user_allowlisted);
+
  protected:
   // Sets UserManager instance.
   static void SetInstance(UserManager* user_manager);

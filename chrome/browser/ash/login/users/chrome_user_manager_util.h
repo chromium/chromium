@@ -18,12 +18,6 @@ bool AreAllUsersAllowed(const user_manager::UserList& users,
                         const enterprise_management::ChromeDeviceSettingsProto&
                             device_settings_proto);
 
-// Returns true if `user` is allowed, according to the given constraints.
-// Accepted user types: kRegular, kGuest, kChild.
-bool IsUserAllowed(const user_manager::User& user,
-                   bool is_guest_allowed,
-                   bool is_user_allowlisted);
-
 // Returns whether the active user is a managed guest session or non-regular
 // ephemeral user. Note: it assumes the active user exists (ie. at least one
 // user has logged in).

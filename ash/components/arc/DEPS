@@ -16,6 +16,7 @@ include_rules = [
 
 specific_include_rules = {
   ".*_unittest.cc": [
-    "+content/public/test/browser_task_environment.h"
+    "+content/public/test/browser_task_environment.h",
+    "+chromeos/ash/components/install_attributes/stub_install_attributes.h",
   ],
 }

@@ -116,25 +116,22 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerBase {
       const AccountId& account_id) const override;
 
   // UserManagerBase overrides:
-  void SetEphemeralModeConfig(
-      EphemeralModeConfig ephemeral_mode_config) override;
-
   void LoadDeviceLocalAccounts(
       std::set<AccountId>* device_local_accounts_set) override {}
   bool IsDeviceLocalAccountMarkedForRemoval(
       const AccountId& account_id) const override;
   void SetUserAffiliated(const AccountId& account_id,
                          bool is_affiliated) override {}
+
   // Just make it public for tests.
   using UserManagerBase::ResetOwnerId;
+  using UserManagerBase::SetEphemeralModeConfig;
   using UserManagerBase::SetOwnerId;
 
  protected:
   // If set this is the active user. If empty, the first created user is the
   // active user.
   AccountId active_account_id_ = EmptyAccountId();
-
-  bool IsEphemeralAccountIdByPolicy(const AccountId& account_id) const override;
 
  private:
   // We use this internal function for const-correctness.

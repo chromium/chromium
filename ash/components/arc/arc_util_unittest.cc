@@ -26,6 +26,7 @@
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
 #include "chromeos/ash/components/dbus/upstart/fake_upstart_client.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "components/account_id/account_id.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/prefs/testing_pref_service.h"
@@ -315,6 +316,9 @@ TEST_F(ArcUtilTest, IsArcOptInVerificationDisabled) {
 
 TEST_F(ArcUtilTest, IsArcAllowedForUser) {
   TestingPrefServiceSimple local_state;
+  ash::ScopedStubInstallAttributes install_attributes(
+      ash::StubInstallAttributes::CreateCloudManaged("test-domain",
+                                                     "FAKE_DEVICE_ID"));
   user_manager::TypedScopedUserManager fake_user_manager(
       std::make_unique<user_manager::FakeUserManager>(&local_state));
 

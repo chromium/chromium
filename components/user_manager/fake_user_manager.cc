@@ -341,16 +341,6 @@ bool FakeUserManager::IsUserAllowed(const User& user) const {
   return true;
 }
 
-void FakeUserManager::SetEphemeralModeConfig(
-    EphemeralModeConfig ephemeral_mode_config) {
-  UserManagerBase::SetEphemeralModeConfig(std::move(ephemeral_mode_config));
-}
-
-bool FakeUserManager::IsEphemeralAccountIdByPolicy(
-    const AccountId& account_id) const {
-  return GetEphemeralModeConfig().IsAccountIdIncluded(account_id);
-}
-
 bool FakeUserManager::IsDeviceLocalAccountMarkedForRemoval(
     const AccountId& account_id) const {
   return false;

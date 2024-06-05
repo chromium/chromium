@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/components/osauth/impl/auth_hub_common.h"
+#include "chromeos/ash/components/osauth/impl/auth_hub_impl.h"
 
 #include <memory>
 #include <optional>
@@ -14,7 +14,8 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
-#include "chromeos/ash/components/osauth/impl/auth_hub_impl.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
+#include "chromeos/ash/components/osauth/impl/auth_hub_common.h"
 #include "chromeos/ash/components/osauth/impl/auth_parts_impl.h"
 #include "chromeos/ash/components/osauth/public/auth_factor_engine.h"
 #include "chromeos/ash/components/osauth/public/auth_factor_status_consumer.h"
@@ -123,6 +124,8 @@ class AuthHubTestBase : public ::testing::Test {
 
   TestingPrefServiceSimple local_state_;
   std::unique_ptr<AuthFactorPresenceCache> factors_cache_;
+  ash::ScopedStubInstallAttributes install_attributes{
+      ash::StubInstallAttributes::CreateConsumerOwned()};
   std::unique_ptr<user_manager::FakeUserManager> user_manager_;
   std::unique_ptr<AuthPartsImpl> parts_;
 

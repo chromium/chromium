@@ -137,9 +137,8 @@ class FakeChromeUserManager : public user_manager::UserManagerBase {
   void SetUserAffiliationForTesting(const AccountId& account_id,
                                     bool is_affliated);
 
-  void set_ephemeral_mode_config(EphemeralModeConfig ephemeral_mode_config) {
-    fake_ephemeral_mode_config_ = std::move(ephemeral_mode_config);
-  }
+  // Just make it public for tests.
+  using UserManagerBase::SetEphemeralModeConfig;
 
   void set_current_user_ephemeral(bool user_ephemeral) {
     current_user_ephemeral_ = user_ephemeral;
@@ -153,14 +152,10 @@ class FakeChromeUserManager : public user_manager::UserManagerBase {
     last_session_active_account_id_ = last_session_active_account_id;
   }
 
- protected:
-  bool IsEphemeralAccountIdByPolicy(const AccountId& account_id) const override;
-
  private:
   // Returns the active user.
   user_manager::User* GetActiveUserInternal() const;
 
-  EphemeralModeConfig fake_ephemeral_mode_config_;
   bool current_user_ephemeral_ = false;
   bool current_user_child_ = false;
 

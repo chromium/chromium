@@ -5,3 +5,9 @@ include_rules = [
   "+chromeos/ash/components/login",
   "+components/user_manager",
 ]
+
+specific_include_rules = {
+  ".*_(unit)?test.cc": [
+    "+chromeos/ash/components/install_attributes/stub_install_attributes.h",
+  ]
+}

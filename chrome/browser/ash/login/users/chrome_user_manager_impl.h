@@ -55,12 +55,7 @@ class ChromeUserManagerImpl
 
   // UserManager implementation:
   void Shutdown() override;
-  bool IsGuestSessionAllowed() const override;
-  bool IsGaiaUserAllowed(const user_manager::User& user) const override;
-  bool IsUserAllowed(const user_manager::User& user) const override;
   void AsyncRemoveCryptohome(const AccountId& account_id) const override;
-  bool IsDeprecatedSupervisedAccountId(
-      const AccountId& account_id) const override;
 
   // DeviceSettingsService::Observer:
   void OwnershipStatusChanged() override;
@@ -88,9 +83,6 @@ class ChromeUserManagerImpl
   void RemoveNonCryptohomeData(const AccountId& account_id) override;
   void RemoveUserInternal(const AccountId& account_id,
                           user_manager::UserRemovalReason reason) override;
-  bool IsDeviceLocalAccountMarkedForRemoval(
-      const AccountId& account_id) const override;
-  bool IsEphemeralAccountIdByPolicy(const AccountId& account_id) const override;
 
  private:
   friend class UserManagerTest;

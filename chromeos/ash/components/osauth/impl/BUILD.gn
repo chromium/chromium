@@ -74,6 +74,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/dbus/userdataauth",
     "//chromeos/ash/components/dbus/userdataauth:test_support",
     "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
+    "//chromeos/ash/components/install_attributes:test_support",
     "//chromeos/ash/components/login/auth/public:authpublic",
     "//chromeos/ash/components/osauth/test_support",
     "//components/prefs:test_support",

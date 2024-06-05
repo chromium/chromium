@@ -483,6 +483,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/dbus/upstart",
     "//chromeos/ash/components/dbus/userdataauth",
     "//chromeos/ash/components/disks:test_support",
+    "//chromeos/ash/components/install_attributes:test_support",
     "//chromeos/ash/components/login/login_state",
     "//chromeos/ash/components/network:test_support",
     "//chromeos/components/disks:prefs",

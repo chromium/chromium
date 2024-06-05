@@ -155,4 +155,20 @@ UserType UserManager::CalculateUserType(const AccountId& account_id,
   return UserType::kRegular;
 }
 
+bool UserManager::IsUserAllowed(const user_manager::User& user,
+                                bool is_guest_allowed,
+                                bool is_user_allowlisted) {
+  DCHECK(user.GetType() == UserType::kRegular ||
+         user.GetType() == UserType::kGuest ||
+         user.GetType() == UserType::kChild);
+
+  if (user.GetType() == UserType::kGuest && !is_guest_allowed) {
+    return false;
+  }
+  if (user.HasGaiaAccount() && !is_user_allowlisted) {
+    return false;
+  }
+  return true;
+}
+
 }  // namespace user_manager

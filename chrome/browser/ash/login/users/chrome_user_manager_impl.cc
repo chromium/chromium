@@ -392,12 +392,6 @@ void ChromeUserManagerImpl::LoadDeviceLocalAccounts(
   }
 }
 
-bool ChromeUserManagerImpl::IsDeviceLocalAccountMarkedForRemoval(
-    const AccountId& account_id) const {
-  return account_id == AccountId::FromUserEmail(GetLocalState()->GetString(
-                           prefs::kDeviceLocalAccountPendingDataRemoval));
-}
-
 void ChromeUserManagerImpl::RetrieveTrustedDevicePolicies() {
   // Local state may not be initialized in unit_tests.
   if (!GetLocalState()) {
@@ -454,16 +448,6 @@ void ChromeUserManagerImpl::RetrieveTrustedDevicePolicies() {
   if (changed) {
     NotifyLocalStateChanged();
   }
-}
-
-bool ChromeUserManagerImpl::IsEphemeralAccountIdByPolicy(
-    const AccountId& account_id) const {
-  const bool device_is_owned =
-      ash::InstallAttributes::Get()->IsEnterpriseManaged() ||
-      GetOwnerAccountId().is_valid();
-
-  return device_is_owned &&
-         GetEphemeralModeConfig().IsAccountIdIncluded(account_id);
 }
 
 void ChromeUserManagerImpl::RemoveNonCryptohomeData(
@@ -649,24 +633,6 @@ void ChromeUserManagerImpl::UpdatePublicAccountDisplayName(
   }
 }
 
-bool ChromeUserManagerImpl::IsGuestSessionAllowed() const {
-  // In tests CrosSettings might not be initialized.
-  if (!cros_settings()) {
-    return false;
-  }
-
-  bool is_guest_allowed = false;
-  cros_settings()->GetBoolean(kAccountsPrefAllowGuest, &is_guest_allowed);
-  return is_guest_allowed;
-}
-
-bool ChromeUserManagerImpl::IsGaiaUserAllowed(
-    const user_manager::User& user) const {
-  DCHECK(user.HasGaiaAccount());
-  return cros_settings()->IsUserAllowlisted(user.GetAccountId().GetUserEmail(),
-                                            nullptr, user.GetType());
-}
-
 void ChromeUserManagerImpl::OnMinimumVersionStateChanged() {
   NotifyUsersSignInConstraintsChanged();
 }
@@ -730,29 +696,12 @@ void ChromeUserManagerImpl::OnProfileManagerDestroying() {
   profile_manager_observation_.Reset();
 }
 
-bool ChromeUserManagerImpl::IsUserAllowed(
-    const user_manager::User& user) const {
-  DCHECK(user.GetType() == user_manager::UserType::kRegular ||
-         user.GetType() == user_manager::UserType::kGuest ||
-         user.GetType() == user_manager::UserType::kChild);
-
-  return chrome_user_manager_util::IsUserAllowed(
-      user, IsGuestSessionAllowed(),
-      user.HasGaiaAccount() && IsGaiaUserAllowed(user));
-}
-
 void ChromeUserManagerImpl::AsyncRemoveCryptohome(
     const AccountId& account_id) const {
   cryptohome::AccountIdentifier identifier =
       cryptohome::CreateAccountIdentifierFromAccountId(account_id);
   mount_performer_->RemoveUserDirectoryByIdentifier(
       identifier, base::BindOnce(&OnRemoveUserComplete, account_id));
-}
-
-bool ChromeUserManagerImpl::IsDeprecatedSupervisedAccountId(
-    const AccountId& account_id) const {
-  return gaia::ExtractDomainName(account_id.GetUserEmail()) ==
-         user_manager::kSupervisedUserDomain;
 }
 
 std::unique_ptr<user_manager::User>

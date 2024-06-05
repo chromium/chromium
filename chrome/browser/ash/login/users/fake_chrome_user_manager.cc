@@ -560,11 +560,6 @@ void FakeChromeUserManager::SetUserAffiliationForTesting(
   NotifyUserAffiliationUpdated(*user);
 }
 
-bool FakeChromeUserManager::IsEphemeralAccountIdByPolicy(
-    const AccountId& account_id) const {
-  return fake_ephemeral_mode_config_.IsAccountIdIncluded(account_id);
-}
-
 user_manager::User* FakeChromeUserManager::GetActiveUserInternal() const {
   if (active_user_ != nullptr) {
     return active_user_;

@@ -10,6 +10,7 @@
 #include "base/test/test_future.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/userdataauth/mock_userdataauth_client.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/login/auth/public/key.h"
 #include "chromeos/ash/components/osauth/impl/cryptohome_core_impl.h"
 #include "chromeos/ash/components/osauth/impl/prefs.h"
@@ -89,6 +90,8 @@ class PrefsPinEngineTest : public ::testing::Test {
   ash::MockUserDataAuthClient mock_udac_;
   CryptohomeCoreImpl core_;
   TestingPrefServiceSimple prefs_;
+  ash::ScopedStubInstallAttributes install_attributes{
+      ash::StubInstallAttributes::CreateConsumerOwned()};
   user_manager::FakeUserManager user_manager_;
 
   // The engine under test. The `engine_` pointer variable provides easy access

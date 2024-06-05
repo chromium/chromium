@@ -47,26 +47,11 @@ bool AreAllUsersAllowed(const user_manager::UserList& users,
         allow_family_link && user->IsChild();
     const bool is_gaia_user_allowed =
         allow_new_user || is_user_allowlisted || is_allowed_because_family_link;
-    if (!IsUserAllowed(*user, is_guest_allowed,
-                       user->HasGaiaAccount() && is_gaia_user_allowed)) {
+    if (!user_manager::UserManager::IsUserAllowed(
+            *user, is_guest_allowed,
+            user->HasGaiaAccount() && is_gaia_user_allowed)) {
       return false;
     }
-  }
-  return true;
-}
-
-bool IsUserAllowed(const user_manager::User& user,
-                   bool is_guest_allowed,
-                   bool is_user_allowlisted) {
-  DCHECK(user.GetType() == user_manager::UserType::kRegular ||
-         user.GetType() == user_manager::UserType::kGuest ||
-         user.GetType() == user_manager::UserType::kChild);
-
-  if (user.GetType() == user_manager::UserType::kGuest && !is_guest_allowed) {
-    return false;
-  }
-  if (user.HasGaiaAccount() && !is_user_allowlisted) {
-    return false;
   }
   return true;
 }

@@ -918,7 +918,12 @@ bool UserManagerBase::IsEphemeralAccountId(const AccountId& account_id) const {
     return true;
   }
 
-  return IsEphemeralAccountIdByPolicy(account_id);
+  const bool device_is_owned =
+      ash::InstallAttributes::Get()->IsEnterpriseManaged() ||
+      GetOwnerAccountId().is_valid();
+
+  return device_is_owned &&
+         GetEphemeralModeConfig().IsAccountIdIncluded(account_id);
 }
 
 void UserManagerBase::AddObserver(UserManager::Observer* obs) {
@@ -1009,6 +1014,45 @@ void UserManagerBase::NotifyUserNotAllowed(const std::string& user_email) {
   for (auto& observer : observer_list_) {
     observer.OnUserNotAllowed(user_email);
   }
+}
+
+bool UserManagerBase::IsGuestSessionAllowed() const {
+  // In tests CrosSettings might not be initialized.
+  if (!cros_settings()) {
+    return false;
+  }
+
+  bool is_guest_allowed = false;
+  cros_settings()->GetBoolean(ash::kAccountsPrefAllowGuest, &is_guest_allowed);
+  return is_guest_allowed;
+}
+
+bool UserManagerBase::IsGaiaUserAllowed(const User& user) const {
+  DCHECK(user.HasGaiaAccount());
+  return cros_settings()->IsUserAllowlisted(user.GetAccountId().GetUserEmail(),
+                                            nullptr, user.GetType());
+}
+
+bool UserManagerBase::IsUserAllowed(const User& user) const {
+  DCHECK(user.GetType() == UserType::kRegular ||
+         user.GetType() == UserType::kGuest ||
+         user.GetType() == UserType::kChild);
+
+  return UserManager::IsUserAllowed(
+      user, IsGuestSessionAllowed(),
+      user.HasGaiaAccount() && IsGaiaUserAllowed(user));
+}
+
+bool UserManagerBase::IsDeprecatedSupervisedAccountId(
+    const AccountId& account_id) const {
+  return gaia::ExtractDomainName(account_id.GetUserEmail()) ==
+         kSupervisedUserDomain;
+}
+
+bool UserManagerBase::IsDeviceLocalAccountMarkedForRemoval(
+    const AccountId& account_id) const {
+  return account_id == AccountId::FromUserEmail(GetLocalState()->GetString(
+                           prefs::kDeviceLocalAccountPendingDataRemoval));
 }
 
 bool UserManagerBase::CanUserBeRemoved(const User* user) const {

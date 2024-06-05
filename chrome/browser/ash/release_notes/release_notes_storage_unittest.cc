@@ -9,13 +9,13 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
-#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/version.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
@@ -41,11 +41,8 @@ class ReleaseNotesStorageTest : public testing::Test,
   ReleaseNotesStorageTest& operator=(const ReleaseNotesStorageTest&) = delete;
 
  protected:
-  ReleaseNotesStorageTest()
-      : user_manager_(new FakeChromeUserManager()),
-        scoped_user_manager_(
-            std::unique_ptr<FakeChromeUserManager>(user_manager_)) {}
-  ~ReleaseNotesStorageTest() override {}
+  ReleaseNotesStorageTest() = default;
+  ~ReleaseNotesStorageTest() override = default;
 
   void SetUpProfile() {
     TestingProfile::Builder builder;
@@ -59,7 +56,7 @@ class ReleaseNotesStorageTest : public testing::Test,
       builder.OverridePolicyConnectorIsManagedForTesting(is_managed_);
       if (is_ephemeral_) {
         // Enabling ephemeral users passes the |IsEphemeralUserProfile| check.
-        user_manager_->set_ephemeral_mode_config(
+        user_manager_->SetEphemeralModeConfig(
             user_manager::UserManager::EphemeralModeConfig(
                 /* included_by_default= */ true,
                 /* include_list= */ std::vector<AccountId>{},
@@ -79,11 +76,11 @@ class ReleaseNotesStorageTest : public testing::Test,
         features::kReleaseNotesNotificationAllChannels);
   }
 
-  raw_ptr<FakeChromeUserManager, DanglingUntriaged> user_manager_;
-  user_manager::ScopedUserManager scoped_user_manager_;
+  user_manager::TypedScopedUserManager<FakeChromeUserManager> user_manager_{
+      std::make_unique<FakeChromeUserManager>()};
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<Profile> profile_;
+  std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<ReleaseNotesStorage> release_notes_storage_;
 
   // Data members for SetUpProfile().
@@ -150,6 +147,9 @@ TEST_F(ReleaseNotesStorageTest, ReleaseNotesShouldOnlyBeNotifiedOnce) {
 TEST_F(ReleaseNotesStorageTest, ShouldNotShowReleaseNotesForEphemeralProfile) {
   is_ephemeral_ = true;
   SetUpProfile();
+  profile_->ScopedCrosSettingsTestHelper()
+      ->InstallAttributes()
+      ->SetCloudManaged("test_domain", "FAKE_DEVICE_ID");
 
   EXPECT_EQ(false, release_notes_storage_->ShouldNotify());
 }

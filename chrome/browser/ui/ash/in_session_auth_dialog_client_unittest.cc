@@ -8,7 +8,6 @@
 #include "ash/public/cpp/in_session_auth_dialog_client.h"
 #include "ash/public/cpp/webauthn_dialog_controller.h"
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -18,6 +17,7 @@
 #include "chromeos/ash/components/dbus/userdataauth/fake_cryptohome_misc_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -129,10 +129,10 @@ class InSessionAuthDialogClientTest : public testing::Test {
  protected:
   const content::BrowserTaskEnvironment task_environment_;
 
-  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged> fake_user_manager_{
-      new ash::FakeChromeUserManager()};
-  user_manager::ScopedUserManager scoped_user_manager_{
-      base::WrapUnique(fake_user_manager_.get())};
+  ash::ScopedStubInstallAttributes install_attributes{
+      ash::StubInstallAttributes::CreateConsumerOwned()};
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
   std::unique_ptr<FakeInSessionAuthDialogController> fake_controller_{
       std::make_unique<FakeInSessionAuthDialogController>()};
   std::unique_ptr<InSessionAuthDialogClient> client_;
