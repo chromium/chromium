@@ -1,7 +1,54 @@
-#[allow(non_camel_case_types, unused)]
+{% macro declare_union(union) -%}
+
 #[derive(Debug)]
 pub enum {{union.name}} {
 {%- for field in union.fields %}
     r#{{field.name}}({{field.kind|rust_field_type}}),
 {%- endfor %}
 }
+
+#[derive(Debug)]
+#[repr(C)]
+pub struct {{union.name}}_Data {
+    size: u32,
+    tag: {{union.name}}_Tag,
+    inner: {{union.name}}_Inner
+}
+
+// All unions have a predefined size in the wire format. Assert it's correct.
+static_assertions::const_assert_eq!(
+    bindings::UNION_DATA_SIZE,
+    std::mem::size_of::<{{union.name}}_Data>()
+);
+
+#[derive(Debug)]
+#[repr(transparent)]
+pub struct {{union.name}}_Tag(u32);
+
+impl {{union.name}}_Tag {
+{%- for field in union.fields %}
+    pub const r#{{field.name|to_upper_snake_case}}: Self = Self({{loop.index0}});
+{%- endfor %}
+}
+
+#[repr(C)]
+pub union {{union.name}}_Inner {
+{%- for field in union.fields %}
+    pub r#{{field.name}}: {{field.kind|rust_union_field_type}},
+{%- endfor %}
+    pub _unknown: u64,
+}
+
+impl std::fmt::Debug for {{union.name}}_Inner {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        f.write_str("{{union.name}}_Inner { ... }")
+    }
+}
+
+// All unions have a predefined size in the wire format. Assert it's correct.
+static_assertions::const_assert_eq!(
+    bindings::UNION_INNER_SIZE,
+    std::mem::size_of::<{{union.name}}_Inner>()
+);
+
+{%- endmacro %}

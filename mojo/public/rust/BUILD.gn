@@ -94,11 +94,27 @@ rust_static_library("mojo_system_test_support") {
   ]
 }
 
+rust_static_library("mojo_bindings") {
+  crate_root = "bindings/lib.rs"
+  allow_unsafe = true
+
+  sources = [ "bindings/lib.rs" ]
+
+  deps = [
+    ":mojo_system",
+    "//third_party/rust/bitflags/v2:lib",
+    "//third_party/rust/static_assertions/v1:lib",
+  ]
+}
+
 # Convenience target to link both Mojo Rust components and reexport them under a
 # single `mojo` name.
 rust_static_library("mojo") {
   crate_root = "lib.rs"
 
   sources = [ "lib.rs" ]
-  deps = [ ":mojo_system" ]
+  deps = [
+    ":mojo_bindings",
+    ":mojo_system",
+  ]
 }

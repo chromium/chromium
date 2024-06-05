@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-//! Simply test that we can compile some generated Rust struct bindings and that
-//! they have the expected fields.
+//! Test Rust code generated for mojom test definitions, and associated code for
+//! bindings support.
 
 use rust_gtest_interop::prelude::*;
 

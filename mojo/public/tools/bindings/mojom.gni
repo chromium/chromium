@@ -1688,6 +1688,7 @@ template("mojom") {
             "",
             "chromium::import! {",
             "    \"//mojo/public/rust:mojo_system\" as mojo;",
+            "    \"//mojo/public/rust:mojo_bindings\" as bindings;",
             "}",
             "",
           ]
@@ -1713,7 +1714,9 @@ template("mojom") {
           deps = [
             ":$rust_crate_root_target_name",
             ":$rust_generator_target_name",
+            "//mojo/public/rust:mojo_bindings",
             "//mojo/public/rust:mojo_system",
+            "//third_party/rust/static_assertions/v1:lib",
           ]
 
           public_deps = []

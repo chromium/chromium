@@ -43,7 +43,12 @@ class Generator(generator.Generator):
     # under.
     self._path_import_map = {}
 
-  def _GetNameForKind(self, kind):
+  def _GetNameForKind(self, kind, is_data=False):
+    ''' Get the full Rust type name to refer to a generated binding.
+
+    Args:
+      is_data: If true, get the name of the wire-format type.
+    '''
     type_name = kind.name
 
     # If the type is defined in another type (e.g. an Enum defined in a
@@ -51,6 +56,9 @@ class Generator(generator.Generator):
     # type definitions, unlike C++.
     if kind.parent_kind:
       type_name = f"{kind.parent_kind.name}_{kind.name}"
+
+    if is_data:
+      type_name += "_Data"
 
     # Use the name as is if it's defined in the current module.
     if kind.module is self.module:
@@ -65,7 +73,7 @@ class Generator(generator.Generator):
 
     return f"crate::{source_name}::{type_name}"
 
-  def _GetRustFieldTypeImpl(self, kind):
+  def _GetRustFieldType(self, kind):
     if mojom.IsNullableKind(kind):
       return f"Option<{self._GetRustFieldType(kind.MakeUnnullableKind())}>"
     if mojom.IsEnumKind(kind):
@@ -88,9 +96,103 @@ class Generator(generator.Generator):
       return "()"
     return _kind_to_rust_type[kind]
 
-  def _GetRustFieldType(self, kind):
-    t = self._GetRustFieldTypeImpl(kind)
-    return t
+  def _GetRustDataFieldType(self, kind):
+    if mojom.IsEnumKind(kind):
+      return self._GetNameForKind(kind)
+    if mojom.IsStructKind(kind):
+      return f"bindings::Pointer<{self._GetNameForKind(kind, is_data=True)}>"
+    if mojom.IsArrayKind(kind):
+      return (f"bindings::Pointer<bindings::Array<"
+              f"{self._GetRustDataFieldType(kind.kind)}>>")
+    if mojom.IsStringKind(kind):
+      return "bindings::Pointer<bindings::Array<u8>>"
+    if mojom.IsMapKind(kind):
+      return (f"bindings::Pointer<bindings::Map<"
+              f"{self._GetRustDataFieldType(kind.key_kind)}, "
+              f"{self._GetRustDataFieldType(kind.value_kind)}>>")
+    if mojom.IsUnionKind(kind):
+      return self._GetNameForKind(kind, is_data=True)
+    if mojom.IsInterfaceKind(kind) or mojom.IsPendingRemoteKind(kind):
+      return "bindings::InterfaceData"
+    if mojom.IsPendingReceiverKind(kind):
+      return "bindings::HandleRef"
+    if mojom.IsPendingAssociatedRemoteKind(kind):
+      return "bindings::InterfaceData"
+    if mojom.IsPendingAssociatedReceiverKind(kind):
+      return "bindings::HandleRef"
+    if mojom.IsAnyHandleKind(kind):
+      return "bindings::HandleRef"
+    if kind not in _kind_to_rust_type:
+      return "()"
+    return _kind_to_rust_type[kind]
+
+  def _GetRustUnionFieldType(self, kind):
+    if kind == mojom.BOOL:
+      return "u8"
+    if mojom.IsUnionKind(kind):
+      return (f"bindings::Pointer<{self._GetNameForKind(kind, is_data=True)}>")
+    return self._GetRustDataFieldType(kind)
+
+  def _ToUpperSnakeCase(self, ident):
+    return generator.ToUpperSnakeCase(ident)
+
+  def _GetRustDataFields(self, packed_struct):
+    ''' Map pack.PackedStruct to a list of Rust fields.
+
+    Adjacent bitfield members are packed into u8 fields, and explicit padding is
+    added so that the resulting type has no possibly uninitialized bits.
+    '''
+    rust_fields = []
+    for i in range(len(packed_struct.packed_fields)):
+      packed_field = packed_struct.packed_fields[i]
+
+      # Compute padding needed, if any, between current and previous field.
+      if i > 0:
+        prev_pf = packed_struct.packed_fields[i - 1]
+        pad_start = prev_pf.offset + prev_pf.size
+        pad_size = packed_field.offset - pad_start
+        if pad_size > 0:
+          rust_fields.append({
+              "name": f"_pad_{pad_start}",
+              "type": f"[u8; {pad_size}]"
+          })
+
+      # Bitfields are packed together. Since Rust doesn't have C-style bitfields
+      # this must be done manually. On the first bool bit at a given offset,
+      # declare a unique u8 member. `packed_struct`'s fields are ordered by byte
+      # and bit offset so skip fields other than the first bit.
+      if packed_field.field.kind == mojom.BOOL:
+        if packed_field.bit == 0:
+          rust_fields.append({
+              "name": f"_packed_bits_{packed_field.offset}",
+              "type": "u8"
+          })
+        continue
+
+      # Pick the field name. If `pf.original_field` is present, this is a
+      # nullable primitive kind so its value component has a name which includes
+      # a special character; use the name from the original field. Otherwise use
+      # the name as-is.
+      if packed_field.original_field:
+        name = packed_field.original_field.name
+      else:
+        name = packed_field.field.name
+
+      rust_fields.append({
+          "name":
+          name,
+          "type":
+          self._GetRustDataFieldType(packed_field.field.kind)
+      })
+
+    # Create end padding, if needed.
+    if len(packed_struct.packed_fields) > 0:
+      last_pf = packed_struct.packed_fields[-1]
+      pad = pack.GetPad(last_pf.offset + last_pf.size, 8)
+      if pad > 0:
+        rust_fields.append({"name": "_pad_end", "type": f"[u8; {pad}]"})
+
+    return rust_fields
 
   @staticmethod
   def GetTemplatePrefix():
@@ -98,7 +200,11 @@ class Generator(generator.Generator):
 
   def GetFilters(self):
     rust_filters = {
+        "get_pad": pack.GetPad,
+        "get_rust_data_fields": self._GetRustDataFields,
         "rust_field_type": self._GetRustFieldType,
+        "rust_union_field_type": self._GetRustUnionFieldType,
+        "to_upper_snake_case": self._ToUpperSnakeCase,
     }
     return rust_filters
 

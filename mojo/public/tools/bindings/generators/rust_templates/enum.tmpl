@@ -1,5 +1,7 @@
-#[allow(non_camel_case_types)]
+{% macro declare_enum(name, enum) -%}
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[repr(transparent)]
 pub struct {{name}}(pub i32);
 
 impl {{name}} {
@@ -8,3 +10,5 @@ impl {{name}} {
     pub const r#{{field.name}}: Self = Self({{field.numeric_value}});
 {%- endfor %}
 }
+
+{%- endmacro -%}
