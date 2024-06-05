@@ -53,70 +53,68 @@ bool IsAllowedByCORS(const net::CookieSettingOverrides& overrides,
 
 constexpr StorageAccessResult GetStorageAccessResult(
     ThirdPartyCookieAllowMechanism mechanism) {
+  using AllowMechanism = ThirdPartyCookieAllowMechanism;
   switch (mechanism) {
-    case ThirdPartyCookieAllowMechanism::kNone:
+    case AllowMechanism::kNone:
       return StorageAccessResult::ACCESS_BLOCKED;
-    case ThirdPartyCookieAllowMechanism::kAllowByExplicitSetting:
-    case ThirdPartyCookieAllowMechanism::kAllowByTrackingProtectionException:
-    case ThirdPartyCookieAllowMechanism::kAllowByGlobalSetting:
-    case ThirdPartyCookieAllowMechanism::
-        kAllowByEnterprisePolicyCookieAllowedForUrls:
+    case AllowMechanism::kAllowByExplicitSetting:
+    case AllowMechanism::kAllowByTrackingProtectionException:
+    case AllowMechanism::kAllowByGlobalSetting:
+    case AllowMechanism::kAllowByEnterprisePolicyCookieAllowedForUrls:
       return StorageAccessResult::ACCESS_ALLOWED;
-    case ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSource1pDt:
-    case ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSource3pDt:
-    case ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSourceUnspecified:
-    case ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSourceTest:
-    case ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSourceDogFood:
-    case ThirdPartyCookieAllowMechanism::
-        kAllowBy3PCDMetadataSourceCriticalSector:
-    case ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSourceCuj:
-    case ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSourceGovEduTld:
+    case AllowMechanism::kAllowBy3PCDMetadataSource1pDt:
+    case AllowMechanism::kAllowBy3PCDMetadataSource3pDt:
+    case AllowMechanism::kAllowBy3PCDMetadataSourceUnspecified:
+    case AllowMechanism::kAllowBy3PCDMetadataSourceTest:
+    case AllowMechanism::kAllowBy3PCDMetadataSourceDogFood:
+    case AllowMechanism::kAllowBy3PCDMetadataSourceCriticalSector:
+    case AllowMechanism::kAllowBy3PCDMetadataSourceCuj:
+    case AllowMechanism::kAllowBy3PCDMetadataSourceGovEduTld:
       return StorageAccessResult::ACCESS_ALLOWED_3PCD_METADATA_GRANT;
-    case ThirdPartyCookieAllowMechanism::kAllowBy3PCD:
+    case AllowMechanism::kAllowBy3PCD:
       return StorageAccessResult::ACCESS_ALLOWED_3PCD_TRIAL;
-    case ThirdPartyCookieAllowMechanism::kAllowByTopLevel3PCD:
+    case AllowMechanism::kAllowByTopLevel3PCD:
       return StorageAccessResult::ACCESS_ALLOWED_TOP_LEVEL_3PCD_TRIAL;
-    case ThirdPartyCookieAllowMechanism::kAllowBy3PCDHeuristics:
+    case AllowMechanism::kAllowBy3PCDHeuristics:
       return StorageAccessResult::ACCESS_ALLOWED_3PCD_HEURISTICS_GRANT;
-    case ThirdPartyCookieAllowMechanism::kAllowByStorageAccess:
+    case AllowMechanism::kAllowByStorageAccess:
       return StorageAccessResult::ACCESS_ALLOWED_STORAGE_ACCESS_GRANT;
-    case ThirdPartyCookieAllowMechanism::kAllowByTopLevelStorageAccess:
+    case AllowMechanism::kAllowByTopLevelStorageAccess:
       return StorageAccessResult::ACCESS_ALLOWED_TOP_LEVEL_STORAGE_ACCESS_GRANT;
-    case ThirdPartyCookieAllowMechanism::kAllowByCORSException:
+    case AllowMechanism::kAllowByCORSException:
       return StorageAccessResult::ACCESS_ALLOWED_CORS_EXCEPTION;
-    case ThirdPartyCookieAllowMechanism::kAllowByScheme:
+    case AllowMechanism::kAllowByScheme:
       return StorageAccessResult::ACCESS_ALLOWED_SCHEME;
   }
 }
 
 constexpr std::optional<SettingSource> GetSettingSource(
     ThirdPartyCookieAllowMechanism mechanism) {
+  using AllowMechanism = ThirdPartyCookieAllowMechanism;
   switch (mechanism) {
     // 3PCD-related mechanisms all map to `kTpcdGrant`.
-    case ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSource1pDt:
-    case ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSource3pDt:
-    case ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSourceUnspecified:
-    case ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSourceTest:
-    case ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSourceDogFood:
-    case ThirdPartyCookieAllowMechanism::
-        kAllowBy3PCDMetadataSourceCriticalSector:
-    case ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSourceCuj:
-    case ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSourceGovEduTld:
-    case ThirdPartyCookieAllowMechanism::kAllowBy3PCD:
-    case ThirdPartyCookieAllowMechanism::kAllowBy3PCDHeuristics:
-    case ThirdPartyCookieAllowMechanism::kAllowByTopLevel3PCD:
+    case AllowMechanism::kAllowBy3PCDMetadataSource1pDt:
+    case AllowMechanism::kAllowBy3PCDMetadataSource3pDt:
+    case AllowMechanism::kAllowBy3PCDMetadataSourceUnspecified:
+    case AllowMechanism::kAllowBy3PCDMetadataSourceTest:
+    case AllowMechanism::kAllowBy3PCDMetadataSourceDogFood:
+    case AllowMechanism::kAllowBy3PCDMetadataSourceCriticalSector:
+    case AllowMechanism::kAllowBy3PCDMetadataSourceCuj:
+    case AllowMechanism::kAllowBy3PCDMetadataSourceGovEduTld:
+    case AllowMechanism::kAllowBy3PCD:
+    case AllowMechanism::kAllowBy3PCDHeuristics:
+    case AllowMechanism::kAllowByTopLevel3PCD:
       return SettingSource::kTpcdGrant;
     // Other mechanisms do not map to a `SettingSource`.
-    case ThirdPartyCookieAllowMechanism::kNone:
-    case ThirdPartyCookieAllowMechanism::kAllowByExplicitSetting:
-    case ThirdPartyCookieAllowMechanism::kAllowByTrackingProtectionException:
-    case ThirdPartyCookieAllowMechanism::kAllowByGlobalSetting:
-    case ThirdPartyCookieAllowMechanism::
-        kAllowByEnterprisePolicyCookieAllowedForUrls:
-    case ThirdPartyCookieAllowMechanism::kAllowByStorageAccess:
-    case ThirdPartyCookieAllowMechanism::kAllowByTopLevelStorageAccess:
-    case ThirdPartyCookieAllowMechanism::kAllowByCORSException:
-    case ThirdPartyCookieAllowMechanism::kAllowByScheme:
+    case AllowMechanism::kNone:
+    case AllowMechanism::kAllowByExplicitSetting:
+    case AllowMechanism::kAllowByTrackingProtectionException:
+    case AllowMechanism::kAllowByGlobalSetting:
+    case AllowMechanism::kAllowByEnterprisePolicyCookieAllowedForUrls:
+    case AllowMechanism::kAllowByStorageAccess:
+    case AllowMechanism::kAllowByTopLevelStorageAccess:
+    case AllowMechanism::kAllowByCORSException:
+    case AllowMechanism::kAllowByScheme:
       return std::nullopt;
   }
 }
@@ -153,16 +151,19 @@ bool CookieSettingsBase::CookieSettingWithMetadata::
 // static
 const CookieSettingsBase::CookieSettingsTypeSet&
 CookieSettingsBase::GetContentSettingsTypes() {
-  static constexpr auto kInstance = base::MakeFixedFlatSet<ContentSettingsType>(
-      {ContentSettingsType::COOKIES, ContentSettingsType::LEGACY_COOKIE_ACCESS,
-       ContentSettingsType::STORAGE_ACCESS,
-       ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
-       ContentSettingsType::TPCD_HEURISTICS_GRANTS,
-       ContentSettingsType::TPCD_TRIAL,
-       ContentSettingsType::TOP_LEVEL_TPCD_TRIAL,
-       ContentSettingsType::FEDERATED_IDENTITY_SHARING,
-       ContentSettingsType::TRACKING_PROTECTION,
-       ContentSettingsType::TOP_LEVEL_TPCD_ORIGIN_TRIAL});
+  static constexpr auto kInstance =
+      base::MakeFixedFlatSet<ContentSettingsType>({
+          ContentSettingsType::COOKIES,
+          ContentSettingsType::LEGACY_COOKIE_ACCESS,
+          ContentSettingsType::STORAGE_ACCESS,
+          ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
+          ContentSettingsType::TPCD_HEURISTICS_GRANTS,
+          ContentSettingsType::TPCD_TRIAL,
+          ContentSettingsType::TOP_LEVEL_TPCD_TRIAL,
+          ContentSettingsType::FEDERATED_IDENTITY_SHARING,
+          ContentSettingsType::TRACKING_PROTECTION,
+          ContentSettingsType::TOP_LEVEL_TPCD_ORIGIN_TRIAL,
+      });
   return kInstance;
 }
 
@@ -186,30 +187,29 @@ GURL CookieSettingsBase::GetFirstPartyURL(
 // static
 bool CookieSettingsBase::IsAnyTpcdMetadataAllowMechanism(
     const ThirdPartyCookieAllowMechanism& mechanism) {
+  using AllowMechanism = ThirdPartyCookieAllowMechanism;
   switch (mechanism) {
-    case ThirdPartyCookieAllowMechanism::kNone:
-    case ThirdPartyCookieAllowMechanism::kAllowByExplicitSetting:
-    case ThirdPartyCookieAllowMechanism::kAllowByTrackingProtectionException:
-    case ThirdPartyCookieAllowMechanism::kAllowByGlobalSetting:
-    case ThirdPartyCookieAllowMechanism::kAllowBy3PCD:
-    case ThirdPartyCookieAllowMechanism::kAllowBy3PCDHeuristics:
-    case ThirdPartyCookieAllowMechanism::kAllowByStorageAccess:
-    case ThirdPartyCookieAllowMechanism::kAllowByTopLevelStorageAccess:
-    case ThirdPartyCookieAllowMechanism::kAllowByCORSException:
-    case ThirdPartyCookieAllowMechanism::kAllowByTopLevel3PCD:
-    case ThirdPartyCookieAllowMechanism::
-        kAllowByEnterprisePolicyCookieAllowedForUrls:
-    case ThirdPartyCookieAllowMechanism::kAllowByScheme:
+    case AllowMechanism::kNone:
+    case AllowMechanism::kAllowByExplicitSetting:
+    case AllowMechanism::kAllowByTrackingProtectionException:
+    case AllowMechanism::kAllowByGlobalSetting:
+    case AllowMechanism::kAllowBy3PCD:
+    case AllowMechanism::kAllowBy3PCDHeuristics:
+    case AllowMechanism::kAllowByStorageAccess:
+    case AllowMechanism::kAllowByTopLevelStorageAccess:
+    case AllowMechanism::kAllowByCORSException:
+    case AllowMechanism::kAllowByTopLevel3PCD:
+    case AllowMechanism::kAllowByEnterprisePolicyCookieAllowedForUrls:
+    case AllowMechanism::kAllowByScheme:
       return false;
-    case ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSourceUnspecified:
-    case ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSourceTest:
-    case ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSource1pDt:
-    case ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSource3pDt:
-    case ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSourceDogFood:
-    case ThirdPartyCookieAllowMechanism::
-        kAllowBy3PCDMetadataSourceCriticalSector:
-    case ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSourceCuj:
-    case ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSourceGovEduTld:
+    case AllowMechanism::kAllowBy3PCDMetadataSourceUnspecified:
+    case AllowMechanism::kAllowBy3PCDMetadataSourceTest:
+    case AllowMechanism::kAllowBy3PCDMetadataSource1pDt:
+    case AllowMechanism::kAllowBy3PCDMetadataSource3pDt:
+    case AllowMechanism::kAllowBy3PCDMetadataSourceDogFood:
+    case AllowMechanism::kAllowBy3PCDMetadataSourceCriticalSector:
+    case AllowMechanism::kAllowBy3PCDMetadataSourceCuj:
+    case AllowMechanism::kAllowBy3PCDMetadataSourceGovEduTld:
       return true;
   }
 }
@@ -217,31 +217,29 @@ bool CookieSettingsBase::IsAnyTpcdMetadataAllowMechanism(
 // static
 bool CookieSettingsBase::Is1PDtRelatedAllowMechanism(
     const ThirdPartyCookieAllowMechanism& mechanism) {
+  using AllowMechanism = ThirdPartyCookieAllowMechanism;
   switch (mechanism) {
-    case ThirdPartyCookieAllowMechanism::kAllowByTopLevel3PCD:
-    case ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSource1pDt:
+    case AllowMechanism::kAllowByTopLevel3PCD:
+    case AllowMechanism::kAllowBy3PCDMetadataSource1pDt:
       return true;
-    case ThirdPartyCookieAllowMechanism::kNone:
-    case ThirdPartyCookieAllowMechanism::kAllowByExplicitSetting:
-    case ThirdPartyCookieAllowMechanism::kAllowByTrackingProtectionException:
-    case ThirdPartyCookieAllowMechanism::kAllowByGlobalSetting:
-    case ThirdPartyCookieAllowMechanism::kAllowBy3PCD:
-    case ThirdPartyCookieAllowMechanism::kAllowBy3PCDHeuristics:
-    case ThirdPartyCookieAllowMechanism::kAllowByStorageAccess:
-    case ThirdPartyCookieAllowMechanism::kAllowByTopLevelStorageAccess:
-    case ThirdPartyCookieAllowMechanism::kAllowByCORSException:
-    case ThirdPartyCookieAllowMechanism::
-        kAllowByEnterprisePolicyCookieAllowedForUrls:
-    case ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSourceUnspecified:
-    case ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSourceTest:
-
-    case ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSource3pDt:
-    case ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSourceDogFood:
-    case ThirdPartyCookieAllowMechanism::
-        kAllowBy3PCDMetadataSourceCriticalSector:
-    case ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSourceCuj:
-    case ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSourceGovEduTld:
-    case ThirdPartyCookieAllowMechanism::kAllowByScheme:
+    case AllowMechanism::kNone:
+    case AllowMechanism::kAllowByExplicitSetting:
+    case AllowMechanism::kAllowByTrackingProtectionException:
+    case AllowMechanism::kAllowByGlobalSetting:
+    case AllowMechanism::kAllowBy3PCD:
+    case AllowMechanism::kAllowBy3PCDHeuristics:
+    case AllowMechanism::kAllowByStorageAccess:
+    case AllowMechanism::kAllowByTopLevelStorageAccess:
+    case AllowMechanism::kAllowByCORSException:
+    case AllowMechanism::kAllowByEnterprisePolicyCookieAllowedForUrls:
+    case AllowMechanism::kAllowBy3PCDMetadataSourceUnspecified:
+    case AllowMechanism::kAllowBy3PCDMetadataSourceTest:
+    case AllowMechanism::kAllowBy3PCDMetadataSource3pDt:
+    case AllowMechanism::kAllowBy3PCDMetadataSourceDogFood:
+    case AllowMechanism::kAllowBy3PCDMetadataSourceCriticalSector:
+    case AllowMechanism::kAllowBy3PCDMetadataSourceCuj:
+    case AllowMechanism::kAllowBy3PCDMetadataSourceGovEduTld:
+    case AllowMechanism::kAllowByScheme:
       return false;
   }
 }
@@ -250,26 +248,25 @@ bool CookieSettingsBase::Is1PDtRelatedAllowMechanism(
 ThirdPartyCookieAllowMechanism
 CookieSettingsBase::TpcdMetadataSourceToAllowMechanism(
     const mojom::TpcdMetadataRuleSource& source) {
+  using TpcdMetadataRuleSource = mojom::TpcdMetadataRuleSource;
+  using AllowMechanism = ThirdPartyCookieAllowMechanism;
   switch (source) {
-    case mojom::TpcdMetadataRuleSource::SOURCE_1P_DT:
-      return ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSource1pDt;
-    case mojom::TpcdMetadataRuleSource::SOURCE_3P_DT:
-      return ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSource3pDt;
-    case mojom::TpcdMetadataRuleSource::SOURCE_UNSPECIFIED:
-      return ThirdPartyCookieAllowMechanism::
-          kAllowBy3PCDMetadataSourceUnspecified;
-    case mojom::TpcdMetadataRuleSource::SOURCE_TEST:
-      return ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSourceTest;
-    case mojom::TpcdMetadataRuleSource::SOURCE_DOGFOOD:
-      return ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSourceDogFood;
-    case mojom::TpcdMetadataRuleSource::SOURCE_CRITICAL_SECTOR:
-      return ThirdPartyCookieAllowMechanism::
-          kAllowBy3PCDMetadataSourceCriticalSector;
-    case mojom::TpcdMetadataRuleSource::SOURCE_CUJ:
-      return ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSourceCuj;
-    case mojom::TpcdMetadataRuleSource::SOURCE_GOV_EDU_TLD:
-      return ThirdPartyCookieAllowMechanism::
-          kAllowBy3PCDMetadataSourceGovEduTld;
+    case TpcdMetadataRuleSource::SOURCE_1P_DT:
+      return AllowMechanism::kAllowBy3PCDMetadataSource1pDt;
+    case TpcdMetadataRuleSource::SOURCE_3P_DT:
+      return AllowMechanism::kAllowBy3PCDMetadataSource3pDt;
+    case TpcdMetadataRuleSource::SOURCE_UNSPECIFIED:
+      return AllowMechanism::kAllowBy3PCDMetadataSourceUnspecified;
+    case TpcdMetadataRuleSource::SOURCE_TEST:
+      return AllowMechanism::kAllowBy3PCDMetadataSourceTest;
+    case TpcdMetadataRuleSource::SOURCE_DOGFOOD:
+      return AllowMechanism::kAllowBy3PCDMetadataSourceDogFood;
+    case TpcdMetadataRuleSource::SOURCE_CRITICAL_SECTOR:
+      return AllowMechanism::kAllowBy3PCDMetadataSourceCriticalSector;
+    case TpcdMetadataRuleSource::SOURCE_CUJ:
+      return AllowMechanism::kAllowBy3PCDMetadataSourceCuj;
+    case TpcdMetadataRuleSource::SOURCE_GOV_EDU_TLD:
+      return AllowMechanism::kAllowBy3PCDMetadataSourceGovEduTld;
   }
 }
 

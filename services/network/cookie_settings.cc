@@ -59,50 +59,39 @@ bool IsValidType(ContentSettingsType type) {
 
 net::CookieInclusionStatus::ExemptionReason GetExemptionReason(
     CookieSettings::ThirdPartyCookieAllowMechanism allow_mechanism) {
+  using AllowMechanism = CookieSettings::ThirdPartyCookieAllowMechanism;
+  using ExemptionReason = net::CookieInclusionStatus::ExemptionReason;
   switch (allow_mechanism) {
-    case CookieSettings::ThirdPartyCookieAllowMechanism::
-        kAllowByExplicitSetting:
-    case CookieSettings::ThirdPartyCookieAllowMechanism::
-        kAllowByTrackingProtectionException:
-      return net::CookieInclusionStatus::ExemptionReason::kUserSetting;
-    case CookieSettings::ThirdPartyCookieAllowMechanism::kAllowBy3PCDHeuristics:
-      return net::CookieInclusionStatus::ExemptionReason::k3PCDHeuristics;
-    case CookieSettings::ThirdPartyCookieAllowMechanism::
-        kAllowBy3PCDMetadataSourceUnspecified:
-    case CookieSettings::ThirdPartyCookieAllowMechanism::
-        kAllowBy3PCDMetadataSourceTest:
-    case CookieSettings::ThirdPartyCookieAllowMechanism::
-        kAllowBy3PCDMetadataSource1pDt:
-    case CookieSettings::ThirdPartyCookieAllowMechanism::
-        kAllowBy3PCDMetadataSource3pDt:
-    case CookieSettings::ThirdPartyCookieAllowMechanism::
-        kAllowBy3PCDMetadataSourceDogFood:
-    case CookieSettings::ThirdPartyCookieAllowMechanism::
-        kAllowBy3PCDMetadataSourceCriticalSector:
-    case CookieSettings::ThirdPartyCookieAllowMechanism::
-        kAllowBy3PCDMetadataSourceCuj:
-    case CookieSettings::ThirdPartyCookieAllowMechanism::
-        kAllowBy3PCDMetadataSourceGovEduTld:
-      return net::CookieInclusionStatus::ExemptionReason::k3PCDMetadata;
-    case CookieSettings::ThirdPartyCookieAllowMechanism::kAllowBy3PCD:
-    case CookieSettings::ThirdPartyCookieAllowMechanism::kAllowByTopLevel3PCD:
-      return net::CookieInclusionStatus::ExemptionReason::k3PCDDeprecationTrial;
-    case CookieSettings::ThirdPartyCookieAllowMechanism::kAllowByGlobalSetting:
-    case CookieSettings::ThirdPartyCookieAllowMechanism::
-        kAllowByEnterprisePolicyCookieAllowedForUrls:
-      return net::CookieInclusionStatus::ExemptionReason::kEnterprisePolicy;
-    case CookieSettings::ThirdPartyCookieAllowMechanism::kAllowByStorageAccess:
-      return net::CookieInclusionStatus::ExemptionReason::kStorageAccess;
-    case CookieSettings::ThirdPartyCookieAllowMechanism::
-        kAllowByTopLevelStorageAccess:
-      return net::CookieInclusionStatus::ExemptionReason::
-          kTopLevelStorageAccess;
-    case CookieSettings::ThirdPartyCookieAllowMechanism::kAllowByCORSException:
-      return net::CookieInclusionStatus::ExemptionReason::kCorsOptIn;
-    case CookieSettings::ThirdPartyCookieAllowMechanism::kNone:
-      return net::CookieInclusionStatus::ExemptionReason::kNone;
-    case CookieSettings::ThirdPartyCookieAllowMechanism::kAllowByScheme:
-      return net::CookieInclusionStatus::ExemptionReason::kScheme;
+    case AllowMechanism::kAllowByExplicitSetting:
+    case AllowMechanism::kAllowByTrackingProtectionException:
+      return ExemptionReason::kUserSetting;
+    case AllowMechanism::kAllowBy3PCDHeuristics:
+      return ExemptionReason::k3PCDHeuristics;
+    case AllowMechanism::kAllowBy3PCDMetadataSourceUnspecified:
+    case AllowMechanism::kAllowBy3PCDMetadataSourceTest:
+    case AllowMechanism::kAllowBy3PCDMetadataSource1pDt:
+    case AllowMechanism::kAllowBy3PCDMetadataSource3pDt:
+    case AllowMechanism::kAllowBy3PCDMetadataSourceDogFood:
+    case AllowMechanism::kAllowBy3PCDMetadataSourceCriticalSector:
+    case AllowMechanism::kAllowBy3PCDMetadataSourceCuj:
+    case AllowMechanism::kAllowBy3PCDMetadataSourceGovEduTld:
+      return ExemptionReason::k3PCDMetadata;
+    case AllowMechanism::kAllowBy3PCD:
+    case AllowMechanism::kAllowByTopLevel3PCD:
+      return ExemptionReason::k3PCDDeprecationTrial;
+    case AllowMechanism::kAllowByGlobalSetting:
+    case AllowMechanism::kAllowByEnterprisePolicyCookieAllowedForUrls:
+      return ExemptionReason::kEnterprisePolicy;
+    case AllowMechanism::kAllowByStorageAccess:
+      return ExemptionReason::kStorageAccess;
+    case AllowMechanism::kAllowByTopLevelStorageAccess:
+      return ExemptionReason::kTopLevelStorageAccess;
+    case AllowMechanism::kAllowByCORSException:
+      return ExemptionReason::kCorsOptIn;
+    case AllowMechanism::kNone:
+      return ExemptionReason::kNone;
+    case AllowMechanism::kAllowByScheme:
+      return ExemptionReason::kScheme;
   }
 }
 
