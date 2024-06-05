@@ -296,11 +296,11 @@ class CampaignsManagerTest : public testing::Test {
         .WillRepeatedly(testing::Return(std::string(country)));
   }
 
-  void InitilizeCampaignsExperimentTag(const std::string& exp_tag) {
+  void InitilizeCampaignsExperimentTag(const base::Feature& feature,
+                                       const std::string& exp_tag) {
     base::FieldTrialParams params;
     params[kCampaignsExperimentTag] = exp_tag;
-    base::test::FeatureRefAndParams campaigns_experiment_tag(
-        ash::features::kGrowthCampaignsExperimentTagTargeting, params);
+    base::test::FeatureRefAndParams campaigns_experiment_tag(feature, params);
 
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {campaigns_experiment_tag}, {});
@@ -397,13 +397,16 @@ class CampaignsManagerTest : public testing::Test {
         kValidCampaignsFileTemplate, session_targeting.c_str()));
   }
 
-  void LoadComponentWithExperimentTagTargeting(const std::string& exp_tags) {
-    auto session_targeting = base::StringPrintf(R"(
+  void LoadComponentWithExperimentTagTargeting(int feature_flag_index,
+                                               const std::string& exp_tags) {
+    auto session_targeting =
+        base::StringPrintf(R"(
             "session": {
+              "predefinedFeatureIndex": %d,
               "experimentTags": %s
             }
           )",
-                                                exp_tags.c_str());
+                           feature_flag_index, exp_tags.c_str());
     LoadComponentAndVerifyLoadComplete(base::StringPrintf(
         kValidCampaignsFileTemplate, session_targeting.c_str()));
   }
@@ -1404,27 +1407,47 @@ TEST_F(CampaignsManagerTest, GetCampaignTargetDeviceAgeEndOnlyMismatch) {
 }
 
 TEST_F(CampaignsManagerTest, GetCampaignExperimentTag) {
-  InitilizeCampaignsExperimentTag(/*exp_tag=*/"1");
+  InitilizeCampaignsExperimentTag(
+      /*feature*/ ash::features::kGrowthCampaignsExperiment2, /*exp_tag=*/"1");
 
-  LoadComponentWithExperimentTagTargeting(R"(["1", "2", "3"])");
+  LoadComponentWithExperimentTagTargeting(/*feature_flag_index=*/1,
+                                          R"(["1", "2", "3"])");
 
   VerifyDemoModePayload(
       campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 }
 
 TEST_F(CampaignsManagerTest, GetCampaignExperimentTagOrRelationship) {
-  InitilizeCampaignsExperimentTag(/*exp_tag=*/"2");
+  InitilizeCampaignsExperimentTag(
+      /*feature*/ ash::features::kGrowthCampaignsExperiment2,
+      /*exp_tag=*/"2");
 
-  LoadComponentWithExperimentTagTargeting(R"(["1", "2", "3"])");
+  LoadComponentWithExperimentTagTargeting(/*feature_flag_index=*/1,
+                                          R"(["1", "2", "3"])");
 
   VerifyDemoModePayload(
       campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 }
 
 TEST_F(CampaignsManagerTest, GetCampaignExperimentTagMismatch) {
-  InitilizeCampaignsExperimentTag(/*exp_tag=*/"4");
+  InitilizeCampaignsExperimentTag(
+      /*feature*/ ash::features::kGrowthCampaignsExperiment2,
+      /*exp_tag=*/"4");
 
-  LoadComponentWithExperimentTagTargeting(R"(["1", "2", "3"])");
+  LoadComponentWithExperimentTagTargeting(/*feature_flag_index=*/1,
+                                          R"(["1", "2", "3"])");
+
+  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest,
+       GetCampaignExperimentTagMismatchedFeatureFlagIndex) {
+  InitilizeCampaignsExperimentTag(
+      /*feature*/ ash::features::kGrowthCampaignsExperiment1,
+      /*exp_tag=*/"3");
+
+  LoadComponentWithExperimentTagTargeting(/*feature_flag_index=*/1,
+                                          R"(["1", "2", "3"])");
 
   ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 }

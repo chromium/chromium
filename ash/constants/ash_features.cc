@@ -1364,6 +1364,72 @@ BASE_FEATURE(kGrowthCampaignsExperimentTagTargeting,
              "GrowthCampaignsExperimentTagTargeting",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// List of predefined Growth Framework experiment flag that will be associated
+// with a finch study to deliver finch param for each experiment group to
+// create randomization group that match the experiment tag targeting in
+// Growth campaigns.
+// The group will be selected by `featureFlag` config in experimental campaigns.
+BASE_FEATURE(kGrowthCampaignsExperiment1,
+             "GrowthCampaignsExperiment1",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kGrowthCampaignsExperiment2,
+             "GrowthCampaignsExperiment2",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kGrowthCampaignsExperiment3,
+             "GrowthCampaignsExperiment3",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kGrowthCampaignsExperiment4,
+             "GrowthCampaignsExperiment4",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kGrowthCampaignsExperiment5,
+             "GrowthCampaignsExperiment5",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kGrowthCampaignsExperiment6,
+             "GrowthCampaignsExperiment6",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kGrowthCampaignsExperiment7,
+             "GrowthCampaignsExperiment7",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kGrowthCampaignsExperiment8,
+             "GrowthCampaignsExperiment8",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kGrowthCampaignsExperiment9,
+             "GrowthCampaignsExperiment9",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kGrowthCampaignsExperiment10,
+             "GrowthCampaignsExperiment10",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kGrowthCampaignsExperiment11,
+             "GrowthCampaignsExperiment11",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kGrowthCampaignsExperiment12,
+             "GrowthCampaignsExperiment12",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kGrowthCampaignsExperiment13,
+             "GrowthCampaignsExperiment13",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kGrowthCampaignsExperiment14,
+             "GrowthCampaignsExperiment14",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kGrowthCampaignsExperiment15,
+             "GrowthCampaignsExperiment15",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kGrowthCampaignsExperiment16,
+             "GrowthCampaignsExperiment16",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kGrowthCampaignsExperiment17,
+             "GrowthCampaignsExperiment17",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kGrowthCampaignsExperiment18,
+             "GrowthCampaignsExperiment18",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kGrowthCampaignsExperiment19,
+             "GrowthCampaignsExperiment19",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kGrowthCampaignsExperiment20,
+             "GrowthCampaignsExperiment20",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables consumer session customizations with growth campaigns.
 BASE_FEATURE(kGrowthCampaignsInConsumerSession,
              "GrowthCampaignsInConsumerSession",

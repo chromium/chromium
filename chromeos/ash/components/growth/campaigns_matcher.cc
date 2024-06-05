@@ -12,6 +12,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/features.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -115,9 +116,21 @@ bool MatchSchedulings(const std::vector<std::unique_ptr<TimeWindowTargeting>>&
   return false;
 }
 
-bool MatchExperimentTags(const base::Value::List* experiment_tags) {
+bool MatchExperimentTags(const base::Value::List* experiment_tags,
+                         std::optional<const base::Feature*> feature) {
   if (!ash::features::IsGrowthCampaignsExperimentTagTargetingEnabled()) {
     // Campaign not match if experiment tag targeting is not enabled.
+    return false;
+  }
+
+  if (!feature.has_value()) {
+    // Campaign matched if there is no targeted feature config.
+    return true;
+  }
+
+  const auto* targeted_feature = feature.value();
+  if (!targeted_feature) {
+    // Campaign not matched if feaure config is invalid.
     return false;
   }
 
@@ -127,8 +140,7 @@ bool MatchExperimentTags(const base::Value::List* experiment_tags) {
   }
 
   const auto exp_tag = base::GetFieldTrialParamValueByFeature(
-      ash::features::kGrowthCampaignsExperimentTagTargeting,
-      kCampaignsExperimentTag);
+      *targeted_feature, kCampaignsExperimentTag);
 
   if (exp_tag.empty()) {
     // Campaign not match if no experiment tag exists.
@@ -657,7 +669,8 @@ bool CampaignsMatcher::MatchSessionTargeting(
     return true;
   }
 
-  return MatchExperimentTags(targeting.GetExperimentTags()) &&
+  return MatchExperimentTags(targeting.GetExperimentTags(),
+                             targeting.GetFeature()) &&
          MatchMinorUser(targeting.GetMinorUser()) &&
          MatchOwner(targeting.GetIsOwner());
 }

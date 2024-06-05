@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "base/component_export.h"
+#include "base/features.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chromeos/ash/components/growth/action_performer.h"
@@ -289,6 +290,7 @@ class SessionTargeting : public TargetingBase {
   SessionTargeting& operator=(const SessionTargeting) = delete;
   ~SessionTargeting();
 
+  std::optional<const base::Feature*> GetFeature() const;
   const base::Value::List* GetExperimentTags() const;
 
   std::optional<bool> GetMinorUser() const;

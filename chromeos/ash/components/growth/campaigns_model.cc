@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 
+#include "ash/constants/ash_features.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
@@ -66,6 +67,7 @@ inline constexpr char kDeviceAgeInHours[] = "deviceAgeInHours";
 inline constexpr char kSessionTargeting[] = "session";
 
 // Experiment Tag Targeting paths.
+inline constexpr char kPredefinedFeatureIndex[] = "predefinedFeatureIndex";
 inline constexpr char kExperimentTargetings[] = "experimentTags";
 
 // User Targeting paths.
@@ -130,6 +132,30 @@ inline constexpr char kVectorIcon[] = "vectorIcon";
 
 // Vector Icon
 inline constexpr char kBuiltInVectorIcon[] = "builtInVectorIcon";
+
+// Each feature will be used in one finch study.
+inline const base::Feature* kPredefinedFeaturesForExperimentTagTargeting[] = {
+    &ash::features::kGrowthCampaignsExperiment1,
+    &ash::features::kGrowthCampaignsExperiment2,
+    &ash::features::kGrowthCampaignsExperiment3,
+    &ash::features::kGrowthCampaignsExperiment4,
+    &ash::features::kGrowthCampaignsExperiment5,
+    &ash::features::kGrowthCampaignsExperiment6,
+    &ash::features::kGrowthCampaignsExperiment7,
+    &ash::features::kGrowthCampaignsExperiment8,
+    &ash::features::kGrowthCampaignsExperiment9,
+    &ash::features::kGrowthCampaignsExperiment10,
+    &ash::features::kGrowthCampaignsExperiment11,
+    &ash::features::kGrowthCampaignsExperiment12,
+    &ash::features::kGrowthCampaignsExperiment13,
+    &ash::features::kGrowthCampaignsExperiment14,
+    &ash::features::kGrowthCampaignsExperiment15,
+    &ash::features::kGrowthCampaignsExperiment16,
+    &ash::features::kGrowthCampaignsExperiment17,
+    &ash::features::kGrowthCampaignsExperiment18,
+    &ash::features::kGrowthCampaignsExperiment19,
+    &ash::features::kGrowthCampaignsExperiment20,
+};
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // Image
@@ -475,6 +501,24 @@ SessionTargeting::SessionTargeting(const Targeting* targeting_dict)
     : TargetingBase(targeting_dict, kSessionTargeting) {}
 
 SessionTargeting::~SessionTargeting() = default;
+
+std::optional<const base::Feature*> SessionTargeting::GetFeature() const {
+  const auto feature_index = GetIntCriteria(kPredefinedFeatureIndex);
+  if (!feature_index) {
+    return std::nullopt;
+  }
+
+  const auto feature_index_value = feature_index.value();
+  if (feature_index_value < 0 ||
+      feature_index_value >=
+          static_cast<int>(
+              std::size(kPredefinedFeaturesForExperimentTagTargeting))) {
+    // TODO: b/344673533 - Record error metrics.
+    return nullptr;
+  }
+
+  return kPredefinedFeaturesForExperimentTagTargeting[feature_index_value];
+}
 
 const base::Value::List* SessionTargeting::GetExperimentTags() const {
   return GetListCriteria(kExperimentTargetings);
