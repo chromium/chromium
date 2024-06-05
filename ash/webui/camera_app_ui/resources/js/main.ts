@@ -435,7 +435,8 @@ function maybeIntroduceSuperRes() {
   // enabled for the first time.
   if (!loadTimeData.getChromeFlag(Flag.DIGITAL_ZOOM) ||
       !loadTimeData.getChromeFlag(Flag.SUPER_RES) ||
-      localStorage.getBool(LocalStorageKey.SUPER_RES_DIALOG_SHOWN)) {
+      localStorage.getBool(LocalStorageKey.SUPER_RES_DIALOG_SHOWN) ||
+      window.isInTestSession) {
     return;
   }
   nav.open(ViewName.SUPER_RES_INTRO_DIALOG);

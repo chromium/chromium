@@ -29,6 +29,11 @@ let pendingAppWindow: AppWindow|null = null;
 let fromColdStart = true;
 
 /**
+ * Whether the app is running in a test environment.
+ */
+let useInTestSession = false;
+
+/**
  * Registers a pending unbound AppWindow which will be bound with the URL
  * later once the window is created. This method is expected to be called in
  * Tast tests.
@@ -56,6 +61,21 @@ function bindWindow(url: string): (AppWindow&Comlink.ProxyMarked)|null {
   return null;
 }
 
+/**
+ * Returns whether the app is running in a test environment.
+ */
+function isInTestSession(): boolean {
+  return useInTestSession;
+}
+
+/**
+ * Sets that this camera app session is running in a test environment. This
+ * method is expected to be called from Tast tests.
+ */
+function setUseInTestSession(): void {
+  useInTestSession = true;
+}
+
 // This is needed since we currently have the same tsconfig for files running
 // in SharedWorker and in CCA.
 // TODO(b/213408699): Remove this after the tsconfig are separated.
@@ -64,7 +84,9 @@ const sharedWorkerScope = self as SharedWorkerGlobalScope;
 
 export interface TestBridge {
   bindWindow: typeof bindWindow;
+  isInTestSession: typeof isInTestSession;
   registerUnboundWindow: typeof registerUnboundWindow;
+  setUseInTestSession: typeof setUseInTestSession;
 }
 
 /**
@@ -75,7 +97,9 @@ sharedWorkerScope.onconnect = (event: MessageEvent) => {
   Comlink.expose(
       {
         bindWindow,
+        isInTestSession,
         registerUnboundWindow,
+        setUseInTestSession,
       },
       port);
   port.start();
