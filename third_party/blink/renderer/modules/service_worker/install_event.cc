@@ -23,8 +23,8 @@ namespace blink {
 
 namespace {
 
-void DidRegisterRouter(ScriptPromiseResolver<IDLUndefined>* resolver,
-                       bool is_parse_error) {
+void DidAddRoutes(ScriptPromiseResolver<IDLUndefined>* resolver,
+                  bool is_parse_error) {
   if (is_parse_error) {
     resolver->RejectWithTypeError("Could not parse provided condition regex");
     return;
@@ -88,7 +88,7 @@ ScriptPromise<IDLUndefined> InstallEvent::addRoutes(
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   global_scope->GetServiceWorkerHost()->AddRoutes(
-      rules, WTF::BindOnce(&DidRegisterRouter, WrapPersistent(resolver)));
+      rules, WTF::BindOnce(&DidAddRoutes, WrapPersistent(resolver)));
   return resolver->Promise();
 }
 
