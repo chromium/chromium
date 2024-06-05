@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/values.h"
 #include "components/attribution_reporting/suitable_origin.h"
+#include "content/browser/attribution_reporting/aggregatable_debug_report.h"
 #include "content/browser/attribution_reporting/attribution_debug_report.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_utils.h"
@@ -104,6 +105,16 @@ void AttributionReportNetworkSender::SendReport(
                      base::BindOnce(std::move(callback), std::move(report))));
 }
 
+void AttributionReportNetworkSender::SendReport(
+    const AggregatableDebugReport& report,
+    base::ValueView report_body) {
+  SendReport(report.ReportUrl(), report.reporting_origin(),
+             SerializeAttributionJson(report_body), net::HttpRequestHeaders(),
+             base::BindOnce(
+                 &AttributionReportNetworkSender::OnAggregatableDebugReportSent,
+                 base::Unretained(this)));
+}
+
 void AttributionReportNetworkSender::SendReport(GURL url,
                                                 url::Origin origin,
                                                 const std::string& body,
@@ -140,8 +151,8 @@ void AttributionReportNetworkSender::SendReport(GURL url,
             "a noisy low-entropy data value declared on the destination site."
             "Aggregatable reports include encrypted information generated "
             "from both source-side and trigger-side registrations."
-            "Verbose debug reports include data related to attribution source "
-            "or trigger registration failures."
+            "Debug reports include data related to attribution source or "
+            "trigger registration failures."
           destination:OTHER
         }
         policy {
@@ -281,6 +292,20 @@ void AttributionReportNetworkSender::OnVerboseDebugReportSent(
 
   loaders_in_progress_.erase(it);
   std::move(callback).Run(status);
+}
+
+void AttributionReportNetworkSender::OnAggregatableDebugReportSent(
+    UrlLoaderList::iterator it,
+    scoped_refptr<net::HttpResponseHeaders> headers) {
+  // HTTP statuses are positive; network errors are negative.
+  int status = headers ? headers->response_code() : (*it)->NetError();
+
+  // Since net errors are always negative and HTTP errors are always positive,
+  // it is fine to combine these in a single histogram.
+  base::UmaHistogramSparse(
+      "Conversions.AggregatableDebugReport.HttpResponseOrNetErrorCode", status);
+
+  loaders_in_progress_.erase(it);
 }
 
 }  // namespace content

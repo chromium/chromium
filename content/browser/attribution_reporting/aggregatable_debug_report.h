@@ -6,18 +6,23 @@
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_AGGREGATABLE_DEBUG_REPORT_H_
 
 #include <optional>
+#include <utility>
 #include <vector>
 
 #include "base/functional/function_ref.h"
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/common/content_export.h"
 #include "net/base/schemeful_site.h"
 #include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom-forward.h"
 
+class GURL;
+
 namespace content {
 
+class AggregatableReportRequest;
 class CreateReportResult;
 class StoreSourceResult;
 
@@ -69,11 +74,20 @@ class CONTENT_EXPORT AggregatableDebugReport {
 
   base::Time scheduled_report_time() const { return scheduled_report_time_; }
 
+  void set_report_id(base::Uuid report_id) {
+    report_id_ = std::move(report_id);
+  }
+
   int BudgetRequired() const;
 
   net::SchemefulSite ReportingSite() const;
 
   void ToNull();
+
+  GURL ReportUrl() const;
+
+  std::optional<AggregatableReportRequest> CreateAggregatableReportRequest()
+      const;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(AggregatableDebugReportTest, SourceDebugReport_Data);
@@ -97,6 +111,7 @@ class CONTENT_EXPORT AggregatableDebugReport {
   std::optional<attribution_reporting::SuitableOrigin>
       aggregation_coordinator_origin_;
   base::Time scheduled_report_time_;
+  base::Uuid report_id_;
 };
 
 }  // namespace content

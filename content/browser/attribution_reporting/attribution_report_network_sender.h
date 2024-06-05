@@ -58,6 +58,9 @@ class CONTENT_EXPORT AttributionReportNetworkSender
   void SendReport(AttributionDebugReport report,
                   DebugReportSentCallback) override;
 
+  void SendReport(const AggregatableDebugReport&,
+                  base::ValueView report_body) override;
+
  private:
   // This is a std::list so that iterators remain valid during modifications.
   using UrlLoaderList = std::list<std::unique_ptr<network::SimpleURLLoader>>;
@@ -84,6 +87,9 @@ class CONTENT_EXPORT AttributionReportNetworkSender
       base::OnceCallback<void(int status)> callback,
       UrlLoaderList::iterator it,
       scoped_refptr<net::HttpResponseHeaders> headers);
+
+  void OnAggregatableDebugReportSent(UrlLoaderList::iterator,
+                                     scoped_refptr<net::HttpResponseHeaders>);
 
   // Reports that are actively being sent.
   UrlLoaderList loaders_in_progress_;

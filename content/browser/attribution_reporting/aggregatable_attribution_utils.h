@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/numerics/checked_math.h"
+#include "base/values.h"
 #include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom-forward.h"
@@ -25,6 +26,10 @@ class FilterData;
 namespace base {
 class Time;
 }  // namespace base
+
+namespace net {
+class SchemefulSite;
+}  // namespace net
 
 namespace content {
 
@@ -58,6 +63,9 @@ CreateAggregatableReportRequest(const AttributionReport& report);
 
 base::CheckedNumeric<int64_t> GetTotalAggregatableValues(
     const std::vector<blink::mojom::AggregatableReportHistogramContribution>&);
+
+void SetAttributionDestination(base::Value::Dict&,
+                               const net::SchemefulSite& destination);
 
 }  // namespace content
 

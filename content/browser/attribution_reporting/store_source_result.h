@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/store_source_result.mojom-forward.h"
+#include "content/browser/attribution_reporting/stored_source.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -20,8 +21,10 @@ class CONTENT_EXPORT StoreSourceResult {
  public:
   struct Success {
     std::optional<base::Time> min_fake_report_time;
-    explicit Success(std::optional<base::Time> min_fake_report_time)
-        : min_fake_report_time(min_fake_report_time) {}
+    StoredSource::Id source_id;
+    Success(std::optional<base::Time> min_fake_report_time,
+            StoredSource::Id source_id)
+        : min_fake_report_time(min_fake_report_time), source_id(source_id) {}
   };
 
   struct InternalError {};

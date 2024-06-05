@@ -48,6 +48,7 @@
 #include "content/browser/aggregation_service/aggregation_service_impl.h"
 #include "content/browser/aggregation_service/report_scheduler_timer.h"
 #include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
+#include "content/browser/attribution_reporting/aggregatable_debug_report.h"
 #include "content/browser/attribution_reporting/attribution_cookie_checker.h"
 #include "content/browser/attribution_reporting/attribution_cookie_checker_impl.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
@@ -678,6 +679,8 @@ void AttributionManagerImpl::OnSourceStored(
   NotifySourcesChanged();
 
   MaybeSendVerboseDebugReport(result);
+
+  MaybeSendAggregatableDebugReport(result);
 }
 
 void AttributionManagerImpl::HandleTrigger(
@@ -924,6 +927,8 @@ void AttributionManagerImpl::OnReportStored(
   }
 
   MaybeSendVerboseDebugReport(is_debug_cookie_set, result);
+
+  MaybeSendAggregatableDebugReport(result);
 }
 
 void AttributionManagerImpl::MaybeSendDebugReport(AttributionReport&& report) {
@@ -1358,6 +1363,102 @@ void AttributionManagerImpl::NotifyReportsChanged() {
   for (auto& observer : observers_) {
     observer.OnReportsChanged();
   }
+}
+
+void AttributionManagerImpl::MaybeSendAggregatableDebugReport(
+    const StoreSourceResult& result) {
+  const auto is_operation_allowed = [&]() {
+    return IsOperationAllowed(
+        *storage_partition_,
+        ContentBrowserClient::AttributionReportingOperation::
+            kSourceAggregatableDebugReport,
+        /*rfh=*/nullptr, &*result.source().common_info().source_origin(),
+        /*destination_origin=*/nullptr,
+        &*result.source().common_info().reporting_origin());
+  };
+
+  if (std::optional<AggregatableDebugReport> debug_report =
+          AggregatableDebugReport::Create(is_operation_allowed, result)) {
+    std::optional<StoredSource::Id> source_id;
+    if (const auto* success =
+            absl::get_if<StoreSourceResult::Success>(&result.result())) {
+      source_id.emplace(success->source_id);
+    }
+
+    attribution_resolver_
+        .AsyncCall(&AttributionResolver::ProcessAggregatableDebugReport)
+        .WithArgs(std::move(*debug_report),
+                  result.source()
+                      .registration()
+                      .aggregatable_debug_reporting_config.budget(),
+                  source_id)
+        .Then(base::BindOnce(
+            &AttributionManagerImpl::OnAggregatableDebugReportProcessed,
+            weak_factory_.GetWeakPtr()));
+  }
+}
+
+void AttributionManagerImpl::MaybeSendAggregatableDebugReport(
+    const CreateReportResult& result) {
+  const auto is_operation_allowed = [&]() {
+    return IsOperationAllowed(
+        *storage_partition_,
+        ContentBrowserClient::AttributionReportingOperation::
+            kTriggerAggregatableDebugReport,
+        /*rfh=*/nullptr,
+        /*source_origin=*/nullptr, &*result.trigger().destination_origin(),
+        &*result.trigger().reporting_origin());
+  };
+
+  if (std::optional<AggregatableDebugReport> debug_report =
+          AggregatableDebugReport::Create(is_operation_allowed, result)) {
+    std::optional<StoredSource::Id> source_id;
+    if (const std::optional<StoredSource>& source = result.source();
+        source.has_value()) {
+      source_id.emplace(source->source_id());
+    }
+    attribution_resolver_
+        .AsyncCall(&AttributionResolver::ProcessAggregatableDebugReport)
+        .WithArgs(std::move(*debug_report),
+                  /*remaining_budget=*/std::nullopt, source_id)
+        .Then(base::BindOnce(
+            &AttributionManagerImpl::OnAggregatableDebugReportProcessed,
+            weak_factory_.GetWeakPtr()));
+  }
+}
+
+void AttributionManagerImpl::OnAggregatableDebugReportProcessed(
+    AggregatableDebugReport report) {
+  AggregationService* aggregation_service =
+      storage_partition_->GetAggregationService();
+  if (!aggregation_service) {
+    return;
+  }
+  std::optional<AggregatableReportRequest> request =
+      report.CreateAggregatableReportRequest();
+  if (!request.has_value()) {
+    return;
+  }
+
+  aggregation_service->AssembleReport(
+      std::move(*request),
+      base::BindOnce(
+          &AttributionManagerImpl::OnAggregatableDebugReportAssembled,
+          weak_factory_.GetWeakPtr(), std::move(report)));
+}
+
+void AttributionManagerImpl::OnAggregatableDebugReportAssembled(
+    const AggregatableDebugReport& report,
+    AggregatableReportRequest,
+    std::optional<AggregatableReport> assembled_report,
+    AggregationService::AssemblyStatus) {
+  if (!assembled_report.has_value()) {
+    return;
+  }
+
+  // TODO(linnan): Show aggregatable debug reports in internals UI.
+
+  report_sender_->SendReport(report, assembled_report->GetAsJson());
 }
 
 void AttributionManagerImpl::MaybeSendVerboseDebugReport(

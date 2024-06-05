@@ -15,8 +15,10 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "components/attribution_reporting/source_registration_time_config.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
+#include "content/browser/attribution_reporting/aggregatable_debug_report.h"
 #include "content/browser/attribution_reporting/attribution_debug_report.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
@@ -29,6 +31,7 @@
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
+#include "net/base/schemeful_site.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -900,6 +903,34 @@ TEST_F(AttributionReportNetworkSenderTest,
 
   histograms.ExpectUniqueSample(kVerboseDebugReportMetricName,
                                 net::ERR_CONNECTION_ABORTED, 1);
+}
+
+TEST_F(AttributionReportNetworkSenderTest, AggregatableDebugReportSent) {
+  static constexpr char kReportUrl[] =
+      "https://r.test/.well-known/attribution-reporting/debug/"
+      "report-aggregate-debug";
+
+  base::HistogramTester histograms;
+
+  network_sender_->SendReport(
+      AggregatableDebugReport::CreateForTesting(
+          /*contributions=*/{},
+          /*context_site=*/net::SchemefulSite::Deserialize("https://c.test"),
+          /*reporting_origin=*/*SuitableOrigin::Deserialize("https://r.test"),
+          /*effective_destination=*/
+          net::SchemefulSite::Deserialize("https://d.test"),
+          /*aggregation_coordinator_origin=*/std::nullopt,
+          /*scheduled_report_time=*/base::Time::Now()),
+      /*report_body=*/base::Value::Dict());
+
+  const network::ResourceRequest* pending_request;
+  EXPECT_TRUE(test_url_loader_factory_.IsPending(kReportUrl, &pending_request));
+  EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
+      kReportUrl, ""));
+
+  histograms.ExpectUniqueSample(
+      "Conversions.AggregatableDebugReport.HttpResponseOrNetErrorCode",
+      net::HttpStatusCode::HTTP_OK, 1);
 }
 
 }  // namespace content

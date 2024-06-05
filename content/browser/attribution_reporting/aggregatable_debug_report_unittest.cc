@@ -10,20 +10,27 @@
 #include "base/containers/enum_set.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
+#include "components/aggregation_service/aggregation_coordinator_utils.h"
 #include "components/attribution_reporting/aggregatable_debug_reporting_config.h"
 #include "components/attribution_reporting/debug_types.h"
 #include "components/attribution_reporting/debug_types.mojom.h"
 #include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/suitable_origin.h"
+#include "content/browser/aggregation_service/aggregatable_report.h"
+#include "content/browser/aggregation_service/aggregation_service_test_utils.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/create_report_result.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/store_source_result.h"
+#include "content/browser/attribution_reporting/stored_source.h"
 #include "net/base/schemeful_site.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace content {
 namespace {
@@ -51,6 +58,8 @@ using ::testing::UnorderedElementsAreArray;
 
 constexpr base::Time kSourceTime;
 constexpr base::Time kTriggerTime;
+
+constexpr StoredSource::Id kSourceId(1);
 
 bool OperationAllowed() {
   return true;
@@ -193,7 +202,8 @@ TEST_F(AggregatableDebugReportTest, SourceDebugReport) {
       },
       {
           DebugDataType::kSourceNoised,
-          StoreSourceResult::Success(/*min_fake_report_time=*/std::nullopt),
+          StoreSourceResult::Success(/*min_fake_report_time=*/std::nullopt,
+                                     kSourceId),
           true,
       },
       {
@@ -210,7 +220,8 @@ TEST_F(AggregatableDebugReportTest, SourceDebugReport) {
       },
       {
           DebugDataType::kSourceSuccess,
-          StoreSourceResult::Success(/*min_fake_report_time=*/std::nullopt),
+          StoreSourceResult::Success(/*min_fake_report_time=*/std::nullopt,
+                                     kSourceId),
       },
       {
           DebugDataType::kSourceTriggerStateCardinalityLimit,
@@ -950,6 +961,57 @@ TEST_F(AggregatableDebugReportTest, TriggerDebugReport_Data) {
           Field(&AggregatableDebugReport::effective_destination_,
                 net::SchemefulSite(destination_origin)),
           Property(&AggregatableDebugReport::BudgetRequired, 5))));
+}
+
+TEST_F(AggregatableDebugReportTest, CreateAggregatableReportRequest) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  ::aggregation_service::ScopedAggregationCoordinatorAllowlistForTesting
+      scoped_coordinator_allowlist_{
+          {url::Origin::Create(GURL("https://a.test"))}};
+
+  base::Time scheduled_report_time =
+      base::Time::FromMillisecondsSinceUnixEpoch(1652984901234);
+  base::Uuid report_id = DefaultExternalReportID();
+
+  auto report = AggregatableDebugReport::CreateForTesting(
+      /*contributions=*/{AggregatableReportHistogramContribution(
+          /*bucket=*/123,
+          /*value=*/456, /*filtering_id=*/std::nullopt)},
+      /*context_site=*/net::SchemefulSite::Deserialize("https://c.test"),
+      /*reporting_origin=*/*SuitableOrigin::Deserialize("https://r.test"),
+      /*effective_destination=*/
+      net::SchemefulSite::Deserialize("https://d.test"),
+      /*aggregation_coordinator_origin=*/
+      *SuitableOrigin::Deserialize("https://a.test"), scheduled_report_time);
+  report.set_report_id(report_id);
+
+  auto request = report.CreateAggregatableReportRequest();
+  ASSERT_TRUE(request.has_value());
+
+  auto expected_request = AggregatableReportRequest::Create(
+      AggregationServicePayloadContents(
+          AggregationServicePayloadContents::Operation::kHistogram,
+          {AggregatableReportHistogramContribution(
+              /*bucket=*/123,
+              /*value=*/456, /*filtering_id=*/std::nullopt)},
+          blink::mojom::AggregationServiceMode::kDefault,
+          /*aggregation_coordinator_origin=*/
+          url::Origin::Create(GURL("https://a.test")),
+          /*max_contributions_allowed=*/2,
+          /*filtering_id_max_bytes=*/std::nullopt),
+      AggregatableReportSharedInfo(
+          scheduled_report_time, report_id,
+          /*reporting_origin=*/
+          url::Origin::Create(GURL("https://r.test")),
+          AggregatableReportSharedInfo::DebugMode::kDisabled,
+          /*additional_fields=*/
+          base::Value::Dict().Set("attribution_destination", "https://d.test"),
+          /*api_version=*/"0.1",
+          /*api_identifier=*/"attribution-reporting-debug"));
+  ASSERT_TRUE(expected_request.has_value());
+
+  EXPECT_TRUE(
+      aggregation_service::ReportRequestsEqual(*request, *expected_request));
 }
 
 }  // namespace content

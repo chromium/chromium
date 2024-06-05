@@ -2874,6 +2874,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Conversions.AggregatableDebugReport.HttpResponseOrNetErrorCode"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-11-30">
+  <owner>linnan@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Error info for sending an aggregatable debug report, recorded for each sent
+    aggregatable debug report. The net error code is recorded if the HTTP
+    response code is unavailable.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.AggregatableDebugReport.ProcessResult"
     enum="ConversionAggregatableDebugReportProcessResult"
     expires_after="2024-11-29">

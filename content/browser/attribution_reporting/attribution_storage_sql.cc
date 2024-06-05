@@ -841,7 +841,8 @@ StoreSourceResult AttributionStorageSql::StoreSource(StorableSource source) {
                                  kCurrentVersionNumber, /*min=*/56,
                                  /*exclusive_max=*/86, /*buckets=*/30);
 
-  return make_result(StoreSourceResult::Success(min_fake_report_time));
+  return make_result(
+      StoreSourceResult::Success(min_fake_report_time, source_id));
 }
 
 // Checks whether a new report is allowed to be stored for the given source

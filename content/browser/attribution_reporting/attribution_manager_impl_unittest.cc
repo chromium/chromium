@@ -34,10 +34,14 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "components/attribution_reporting/aggregatable_debug_reporting_config.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
+#include "components/attribution_reporting/debug_types.mojom.h"
 #include "components/attribution_reporting/event_trigger_data.h"
+#include "components/attribution_reporting/features.h"
+#include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/os_registration.h"
 #include "components/attribution_reporting/privacy_math.h"
 #include "components/attribution_reporting/registrar.h"
@@ -48,6 +52,7 @@
 #include "content/browser/aggregation_service/aggregation_service.h"
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
 #include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
+#include "content/browser/attribution_reporting/aggregatable_debug_report.h"
 #include "content/browser/attribution_reporting/attribution_cookie_checker.h"
 #include "content/browser/attribution_reporting/attribution_debug_report.h"
 #include "content/browser/attribution_reporting/attribution_features.h"
@@ -95,12 +100,16 @@ namespace content {
 
 namespace {
 
+using ::attribution_reporting::AggregatableDebugReportingConfig;
 using ::attribution_reporting::OsRegistrationItem;
+using ::attribution_reporting::SourceAggregatableDebugReportingConfig;
 using ::attribution_reporting::SuitableOrigin;
+using ::attribution_reporting::mojom::DebugDataType;
 using ::attribution_reporting::mojom::OsRegistrationResult;
 
 using ::testing::_;
 using ::testing::AllOf;
+using ::testing::An;
 using ::testing::AnyOf;
 using ::testing::ElementsAre;
 using ::testing::Expectation;
@@ -190,6 +199,35 @@ AggregatableReport CreateExampleAggregatableReport() {
                             /*aggregation_coordinator_origin=*/std::nullopt);
 }
 
+AggregatableReport CreateExampleAggregatableDebugReport() {
+  std::vector<AggregatableReport::AggregationServicePayload> payloads;
+  payloads.emplace_back(/*payload=*/kABCD1234AsBytes,
+                        /*key_id=*/"key_1",
+                        /*debug_cleartext_payload=*/std::nullopt);
+  payloads.emplace_back(/*payload=*/kEFGH5678AsBytes,
+                        /*key_id=*/"key_2",
+                        /*debug_cleartext_payload=*/std::nullopt);
+
+  base::Value::Dict additional_fields;
+  additional_fields.Set(
+      "attribution_destination",
+      url::Origin::Create(GURL("https://example.destination")).Serialize());
+  AggregatableReportSharedInfo shared_info(
+      base::Time::FromMillisecondsSinceUnixEpoch(1234567890123),
+      DefaultExternalReportID(),
+      /*reporting_origin=*/
+      url::Origin::Create(GURL("https://example.reporting")),
+      AggregatableReportSharedInfo::DebugMode::kDisabled,
+      std::move(additional_fields),
+      /*api_version=*/"0.1",
+      /*api_identifier=*/"attribution-reporting-debug");
+
+  return AggregatableReport(std::move(payloads), shared_info.SerializeAsJson(),
+                            /*debug_key=*/std::nullopt,
+                            /*additional_fields=*/{},
+                            /*aggregation_coordinator_origin=*/std::nullopt);
+}
+
 // Time after impression that a conversion can first be sent. See
 // AttributionResolverDelegateImpl::GetReportTimeForConversion().
 constexpr base::TimeDelta kFirstReportingWindow = base::Days(2);
@@ -209,6 +247,11 @@ class MockReportSender : public AttributionReportSender {
   MOCK_METHOD(void,
               SendReport,
               (AttributionDebugReport report, DebugReportSentCallback callback),
+              (override));
+
+  MOCK_METHOD(void,
+              SendReport,
+              (const AggregatableDebugReport&, base::ValueView report_body),
               (override));
 };
 
@@ -2861,9 +2904,10 @@ TEST_F(AttributionManagerImplTest, TriggerVerboseDebugReport_ReportSent) {
   {
     InSequence seq;
 
-    EXPECT_CALL(*report_sender_, SendReport(_, _)).Times(0);
+    EXPECT_CALL(*report_sender_, SendReport(An<AttributionDebugReport>(), _))
+        .Times(0);
     EXPECT_CALL(checkpoint, Call(1));
-    EXPECT_CALL(*report_sender_, SendReport(_, _));
+    EXPECT_CALL(*report_sender_, SendReport(An<AttributionDebugReport>(), _));
   }
 
   // Failed without debug reporting.
@@ -2935,7 +2979,8 @@ TEST_F(AttributionManagerImplTest,
   const auto reporting_origin = *SuitableOrigin::Deserialize("https://r1.test");
   cookie_checker_->AddOriginWithDebugCookieSet(reporting_origin);
 
-  EXPECT_CALL(*report_sender_, SendReport(_, _)).Times(0);
+  EXPECT_CALL(*report_sender_, SendReport(An<AttributionDebugReport>(), _))
+      .Times(0);
 
   MockAttributionReportingContentBrowserClient browser_client;
   EXPECT_CALL(browser_client, IsAttributionReportingOperationAllowed(
@@ -3106,9 +3151,10 @@ TEST_F(AttributionManagerImplCookieBasedDebugReportTest,
   {
     InSequence seq;
 
-    EXPECT_CALL(*report_sender_, SendReport(_, _)).Times(0);
+    EXPECT_CALL(*report_sender_, SendReport(An<AttributionDebugReport>(), _))
+        .Times(0);
     EXPECT_CALL(checkpoint, Call(1));
-    EXPECT_CALL(*report_sender_, SendReport(_, _))
+    EXPECT_CALL(*report_sender_, SendReport(An<AttributionDebugReport>(), _))
         .WillOnce([](AttributionDebugReport report,
                      DebugReportSentCallback callback) {
           std::move(callback).Run(std::move(report), kExpectedStatus);
@@ -3177,7 +3223,8 @@ TEST_F(AttributionManagerImplCookieBasedDebugReportTest,
       .WillRepeatedly(Return(false));
   ScopedContentBrowserClientSetting setting(&browser_client);
 
-  EXPECT_CALL(*report_sender_, SendReport(_, _)).Times(0);
+  EXPECT_CALL(*report_sender_, SendReport(An<AttributionDebugReport>(), _))
+      .Times(0);
 
   cookie_checker_->AddOriginWithDebugCookieSet(reporting_origin);
 
@@ -3301,7 +3348,7 @@ TEST_F(AttributionManagerImplTest,
         .WillOnce(base::test::RunOnceCallback<2>(registration,
                                                  std::vector<bool>{true}));
 
-    EXPECT_CALL(*report_sender_, SendReport(_, _));
+    EXPECT_CALL(*report_sender_, SendReport(An<AttributionDebugReport>(), _));
 
     attribution_manager_->HandleOsRegistration(registration);
 
@@ -3333,7 +3380,8 @@ TEST_F(AttributionManagerImplTest,
             : std::nullopt,
         /*is_within_fenced_frame=*/false, kFrameId, kRegistrar);
 
-    EXPECT_CALL(*report_sender_, SendReport(_, _)).Times(0);
+    EXPECT_CALL(*report_sender_, SendReport(An<AttributionDebugReport>(), _))
+        .Times(0);
 
     MockAttributionReportingContentBrowserClient browser_client;
     EXPECT_CALL(browser_client,
@@ -3535,7 +3583,8 @@ TEST_F(AttributionManagerImplTest, RegistrationHeaderErrorDebugReport) {
         .WillOnce(Return(allowed));
     ScopedContentBrowserClientSetting setting(&browser_client);
 
-    EXPECT_CALL(*report_sender_, SendReport(_, _)).Times(allowed);
+    EXPECT_CALL(*report_sender_, SendReport(An<AttributionDebugReport>(), _))
+        .Times(allowed);
 
     attribution_manager_->ReportRegistrationHeaderError(
         *SuitableOrigin::Deserialize("https://r.test"),
@@ -3599,6 +3648,186 @@ TEST_F(AttributionManagerImplTest,
                               1);
   histograms.ExpectTotalCount(
       "Conversions.AggregatableReport.ContextID.ExtraReportDelay", 1);
+}
+
+TEST_F(AttributionManagerImplTest, AggregatableDebugReport_ReportSent) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      attribution_reporting::features::kAttributionAggregatableDebugReporting);
+
+  EXPECT_CALL(*aggregation_service_, AssembleReport)
+      .WillOnce([&](AggregatableReportRequest request,
+                    AggregationService::AssemblyCallback callback) {
+        EXPECT_THAT(request.payload_contents().contributions,
+                    UnorderedElementsAre(
+                        blink::mojom::AggregatableReportHistogramContribution(
+                            /*bucket=*/3,
+                            /*value=*/123, /*filtering_id=*/std::nullopt)));
+        std::move(callback).Run(std::move(request),
+                                CreateExampleAggregatableDebugReport(),
+                                AggregationService::AssemblyStatus::kOk);
+      })
+      .WillOnce([&](AggregatableReportRequest request,
+                    AggregationService::AssemblyCallback callback) {
+        EXPECT_THAT(request.payload_contents().contributions,
+                    UnorderedElementsAre(
+                        blink::mojom::AggregatableReportHistogramContribution(
+                            /*bucket=*/7,
+                            /*value=*/900, /*filtering_id=*/std::nullopt)));
+        std::move(callback).Run(std::move(request),
+                                CreateExampleAggregatableDebugReport(),
+                                AggregationService::AssemblyStatus::kOk);
+      })
+      .WillOnce([&](AggregatableReportRequest request,
+                    AggregationService::AssemblyCallback callback) {
+        EXPECT_THAT(request.payload_contents().contributions, IsEmpty());
+        std::move(callback).Run(std::move(request),
+                                CreateExampleAggregatableDebugReport(),
+                                AggregationService::AssemblyStatus::kOk);
+      });
+
+  EXPECT_CALL(*report_sender_,
+              SendReport(An<const AggregatableDebugReport&>(), _))
+      .Times(3);
+
+  attribution_manager_->HandleSource(
+      SourceBuilder()
+          .SetFilterData(
+              *attribution_reporting::FilterData::Create({{"x", {"a"}}}))
+          .SetAggregatableDebugReportingConfig(
+              *SourceAggregatableDebugReportingConfig::Create(
+                  /*budget=*/1024,
+                  AggregatableDebugReportingConfig(
+                      /*key_piece=*/1,
+                      /*debug_data=*/
+                      {{DebugDataType::kSourceSuccess,
+                        *attribution_reporting::
+                            AggregatableDebugReportingContribution::Create(
+                                /*key_piece=*/2, /*value=*/123)}},
+                      /*aggregation_coordinator_origin=*/std::nullopt)))
+          .Build(),
+      kFrameId);
+
+  const auto trigger =
+      TriggerBuilder()
+          .SetFilterPair(attribution_reporting::FilterPair(
+              /*positive=*/{*attribution_reporting::FilterConfig::Create(
+                  {{"x", {"b"}}})},
+              /*negative=*/{}))
+          .SetAggregatableDebugReportingConfig(AggregatableDebugReportingConfig(
+              /*key_piece=*/3,
+              /*debug_data=*/
+              {{DebugDataType::kTriggerNoMatchingFilterData,
+                *attribution_reporting::AggregatableDebugReportingContribution::
+                    Create(
+                        /*key_piece=*/4,
+                        /*value=*/900)}},
+              /*aggregation_coordinator_origin=*/std::nullopt))
+          .Build();
+
+  attribution_manager_->HandleTrigger(trigger, kFrameId);
+
+  // Insufficient budget, null report.
+  attribution_manager_->HandleTrigger(trigger, kFrameId);
+
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(AttributionManagerImplTest,
+       EmbedderDisallowsSourceAggregatableDebugReport_ReportNotSent) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      attribution_reporting::features::kAttributionAggregatableDebugReporting);
+
+  const auto source_origin = *SuitableOrigin::Deserialize("https://s.test");
+  const auto reporting_origin = *SuitableOrigin::Deserialize("https://r.test");
+
+  MockAttributionReportingContentBrowserClient browser_client;
+  EXPECT_CALL(
+      browser_client,
+      IsAttributionReportingOperationAllowed(
+          _,
+          AnyOf(
+              AttributionReportingOperation::kSource,
+              AttributionReportingOperation::kSourceTransitionalDebugReporting),
+          _, _, _, _, _))
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(
+      browser_client,
+      IsAttributionReportingOperationAllowed(
+          _, AttributionReportingOperation::kSourceAggregatableDebugReport, _,
+          Pointee(source_origin), IsNull(), Pointee(reporting_origin), _))
+      .WillOnce(Return(false));
+
+  ScopedContentBrowserClientSetting setting(&browser_client);
+
+  EXPECT_CALL(*aggregation_service_, AssembleReport).Times(0);
+
+  attribution_manager_->HandleSource(
+      SourceBuilder()
+          .SetSourceOrigin(source_origin)
+          .SetReportingOrigin(reporting_origin)
+          .SetDebugReporting(false)
+          .SetAggregatableDebugReportingConfig(
+              *SourceAggregatableDebugReportingConfig::Create(
+                  /*budget=*/1024,
+                  AggregatableDebugReportingConfig(
+                      /*key_piece=*/1,
+                      /*debug_data=*/
+                      {{DebugDataType::kSourceSuccess,
+                        *attribution_reporting::
+                            AggregatableDebugReportingContribution::Create(
+                                /*key_piece=*/2, /*value=*/123)}},
+                      /*aggregation_coordinator_origin=*/std::nullopt)))
+          .Build(),
+      kFrameId);
+
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(AttributionManagerImplTest,
+       EmbedderDisallowsTriggerAggregatableDebugReport_ReportNotSent) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      attribution_reporting::features::kAttributionAggregatableDebugReporting);
+
+  const auto destination_origin =
+      *SuitableOrigin::Deserialize("https://s.test");
+  const auto reporting_origin = *SuitableOrigin::Deserialize("https://r.test");
+
+  MockAttributionReportingContentBrowserClient browser_client;
+  EXPECT_CALL(browser_client, IsAttributionReportingOperationAllowed(
+                                  _,
+                                  AnyOf(AttributionReportingOperation::kTrigger,
+                                        AttributionReportingOperation::
+                                            kTriggerTransitionalDebugReporting),
+                                  _, _, _, _, _))
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(
+      browser_client,
+      IsAttributionReportingOperationAllowed(
+          _, AttributionReportingOperation::kTriggerAggregatableDebugReport, _,
+          IsNull(), Pointee(destination_origin), Pointee(reporting_origin), _))
+      .WillOnce(Return(false));
+
+  ScopedContentBrowserClientSetting setting(&browser_client);
+
+  EXPECT_CALL(*aggregation_service_, AssembleReport).Times(0);
+
+  attribution_manager_->HandleTrigger(
+      TriggerBuilder()
+          .SetDestinationOrigin(destination_origin)
+          .SetReportingOrigin(reporting_origin)
+          .SetAggregatableDebugReportingConfig(AggregatableDebugReportingConfig(
+              /*key_piece=*/1,
+              /*debug_data=*/
+              {{DebugDataType::kTriggerNoMatchingSource,
+                *attribution_reporting::AggregatableDebugReportingContribution::
+                    Create(
+                        /*key_piece=*/2,
+                        /*value=*/123)}},
+              /*aggregation_coordinator_origin=*/std::nullopt))
+          .Build(),
+      kFrameId);
+
+  task_environment_.RunUntilIdle();
 }
 
 }  // namespace content

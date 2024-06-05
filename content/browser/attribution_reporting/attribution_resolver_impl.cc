@@ -174,6 +174,8 @@ AggregatableDebugReport AttributionResolverImpl::ProcessAggregatableDebugReport(
     return std::move(report);
   };
 
+  report.set_report_id(delegate_->NewReportID());
+
   if (report.contributions().empty()) {
     return make_result(ProcessAggregatableDebugReportResult::kNoDebugData);
   }

@@ -968,16 +968,20 @@ class CONTENT_EXPORT ContentBrowserClient {
     kTriggerTransitionalDebugReporting,
     kOsSourceTransitionalDebugReporting,
     kOsTriggerTransitionalDebugReporting,
+    kSourceAggregatableDebugReport,
+    kTriggerAggregatableDebugReport,
     kAny,
   };
 
   // Allows the embedder to control if Attribution Reporting API operations can
   // happen in a given context. Origins must be provided for a given operation
   // as follows:
-  //   - `kSource`, `kOsSource`, `kSourceTransitionalDebugReporting` and
+  //   - `kSource`, `kOsSource`, `kSourceTransitionalDebugReporting`,
+  //   `kSourceVerboseDebugReport`, `kSourceAggregatableDebugReport` and
   //   `kOsSourceTransitionalDebugReporting` must provide a non-null
   //   `source_origin` and `reporting_origin`
-  //   - `kTrigger`, `kOsTrigger`, `kTriggerTransitionalDebugReporting` and
+  //   - `kTrigger`, `kOsTrigger`, `kTriggerTransitionalDebugReporting`,
+  //   `kTriggerVerboseDebugReport`, `kTriggerAggregatableDebugReport` and
   //   `kOsTriggerTransitionalDebugReporting` must provide a non-null
   //   `destination_origin` and `reporting_origin`
   //   - `kReport` must provide all non-null origins

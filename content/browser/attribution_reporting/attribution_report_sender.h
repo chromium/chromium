@@ -7,8 +7,13 @@
 
 #include "base/functional/callback_forward.h"
 
+namespace base {
+class ValueView;
+}  // namespace base
+
 namespace content {
 
+class AggregatableDebugReport;
 class AttributionDebugReport;
 class AttributionReport;
 
@@ -35,6 +40,9 @@ class AttributionReportSender {
                           ReportSentCallback sent_callback) = 0;
 
   virtual void SendReport(AttributionDebugReport, DebugReportSentCallback) = 0;
+
+  virtual void SendReport(const AggregatableDebugReport&,
+                          base::ValueView report_body) = 0;
 };
 
 }  // namespace content

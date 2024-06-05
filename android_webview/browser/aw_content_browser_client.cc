@@ -1284,6 +1284,8 @@ bool AwContentBrowserClient::IsAttributionReportingOperationAllowed(
     case AttributionReportingOperation::kReport:
     case AttributionReportingOperation::kSourceTransitionalDebugReporting:
     case AttributionReportingOperation::kTriggerTransitionalDebugReporting:
+    case AttributionReportingOperation::kSourceAggregatableDebugReport:
+    case AttributionReportingOperation::kTriggerAggregatableDebugReport:
       return false;
     case AttributionReportingOperation::kOsSourceTransitionalDebugReporting:
     case AttributionReportingOperation::kOsTriggerTransitionalDebugReporting: {

@@ -20,6 +20,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "components/attribution_reporting/aggregatable_debug_reporting_config.h"
 #include "components/attribution_reporting/aggregatable_utils.h"
 #include "components/attribution_reporting/debug_types.h"
@@ -28,6 +29,7 @@
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration.h"
+#include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
 #include "content/browser/attribution_reporting/aggregatable_result.mojom.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
@@ -40,6 +42,8 @@
 #include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -54,6 +58,9 @@ using ::blink::mojom::AggregatableReportHistogramContribution;
 using StoreSourceStatus = ::attribution_reporting::mojom::StoreSourceResult;
 
 constexpr size_t kMaxContributions = 2;
+
+constexpr char kApiIdentifier[] = "attribution-reporting-debug";
+constexpr char kVersion[] = "0.1";
 
 std::optional<DebugDataType> GetDebugType(const StoreSourceResult& result) {
   switch (result.status()) {
@@ -313,6 +320,36 @@ void AggregatableDebugReport::ToNull() {
   // Null contributions will be padded in
   // `ConstructUnencryptedTeeBasedPayload()`.
   contributions_.clear();
+}
+
+GURL AggregatableDebugReport::ReportUrl() const {
+  static constexpr char kPath[] =
+      "/.well-known/attribution-reporting/debug/report-aggregate-debug";
+
+  GURL::Replacements replacements;
+  replacements.SetPathStr(kPath);
+  return reporting_origin_->GetURL().ReplaceComponents(replacements);
+}
+
+std::optional<AggregatableReportRequest>
+AggregatableDebugReport::CreateAggregatableReportRequest() const {
+  CHECK(report_id_.is_valid());
+
+  base::Value::Dict additional_fields;
+  SetAttributionDestination(additional_fields, effective_destination_);
+  return AggregatableReportRequest::Create(
+      AggregationServicePayloadContents(
+          AggregationServicePayloadContents::Operation::kHistogram,
+          contributions_, blink::mojom::AggregationServiceMode::kDefault,
+          aggregation_coordinator_origin_
+              ? std::make_optional(**aggregation_coordinator_origin_)
+              : std::nullopt,
+          kMaxContributions,
+          /*filtering_id_max_bytes=*/std::nullopt),
+      AggregatableReportSharedInfo(
+          scheduled_report_time_, report_id_, reporting_origin_,
+          AggregatableReportSharedInfo::DebugMode::kDisabled,
+          std::move(additional_fields), kVersion, kApiIdentifier));
 }
 
 }  // namespace content

@@ -55,6 +55,7 @@ class Origin;
 
 namespace content {
 
+class AggregatableDebugReport;
 class AggregatableReport;
 class AggregatableReportRequest;
 class AttributionCookieChecker;
@@ -246,6 +247,14 @@ class CONTENT_EXPORT AttributionManagerImpl
                                    const CreateReportResult& result);
 
   void MaybeSendVerboseDebugReports(const OsRegistration&);
+
+  void MaybeSendAggregatableDebugReport(const StoreSourceResult& result);
+  void MaybeSendAggregatableDebugReport(const CreateReportResult& result);
+  void OnAggregatableDebugReportProcessed(AggregatableDebugReport);
+  void OnAggregatableDebugReportAssembled(const AggregatableDebugReport&,
+                                          AggregatableReportRequest,
+                                          std::optional<AggregatableReport>,
+                                          AggregationService::AssemblyStatus);
 
   void AddPendingAggregatableReportTiming(const AttributionReport&);
   void RecordPendingAggregatableReportsTimings();
