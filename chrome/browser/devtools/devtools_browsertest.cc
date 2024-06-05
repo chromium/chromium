@@ -3806,6 +3806,32 @@ IN_PROC_BROWSER_TEST_F(DevToolsSyncTest, GetSyncInformation) {
             "user@gmail.com");
 }
 
+IN_PROC_BROWSER_TEST_F(DevToolsTest, GetHostConfig) {
+  // Smoke test to make sure that `getHostConfig` works from JavaScript.
+  OpenDevToolsWindow("about:blank", true);
+  LoadLegacyFilesInFrontend(window_);
+
+  WebContents* wc = DevToolsWindowTesting::Get(window_)->main_web_contents();
+  const auto result = content::EvalJs(wc, content::JsReplace(R"(
+      (async function() {
+        return new Promise(resolve => {
+          Host.InspectorFrontendHost.getHostConfig(resolve);
+        });
+      })();
+    )"));
+  ASSERT_TRUE(result.value.is_dict());
+  EXPECT_TRUE(result.value.GetDict()
+                  .FindDict("devToolsConsoleInsights")
+                  ->FindBool("enabled"));
+  EXPECT_TRUE(result.value.GetDict()
+                  .FindDict("devToolsConsoleInsights")
+                  ->FindBool("optIn"));
+  EXPECT_EQ(*(result.value.GetDict()
+                  .FindDict("devToolsConsoleInsightsDogfood")
+                  ->FindDouble("aidaTemperature")),
+            0.2);
+}
+
 // Regression test for https://crbug.com/1270184.
 // TODO(crbug.com/40809266): Fix flakyness. Test is disabled for now.
 IN_PROC_BROWSER_TEST_F(DevToolsTest, DISABLED_NoCrashFor1270184) {
