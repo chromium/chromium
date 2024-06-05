@@ -272,8 +272,8 @@ void DataSharingServiceImpl::OnGroupsUpdated(
     const std::vector<std::string>& updated_group_ids,
     const std::vector<std::string>& deleted_group_ids) {
   // TODO(crbug.com/301390275): get rid of this method and corresponding
-  // asynchronous logic. Once caching is supported, observers should be notified
-  // upon cache updates instead.
+  // asynchronous logic. Once caching is supported, observers should be
+  // notified upon cache updates instead.
   if (!sdk_delegate_) {
     return;
   }
@@ -311,10 +311,10 @@ void DataSharingServiceImpl::OnGroupsUpdated(
 }
 
 void DataSharingServiceImpl::OnDataLoaded() {
-  // TODO(crbug.com/301390275): once caching is supported, this method should be
-  // removed and ReadAllGroups() should read cached groups instead. Right now it
-  // will read no groups before collaboration group data is loaded and we need
-  // to issue another read afterwards and notify observers.
+  // TODO(crbug.com/301390275): once caching is supported, this method should
+  // be removed and ReadAllGroups() should read cached groups instead. Right
+  // now it will read no groups before collaboration group data is loaded and
+  // we need to issue another read afterwards and notify observers.
   if (!sdk_delegate_) {
     return;
   }

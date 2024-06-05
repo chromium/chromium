@@ -66,6 +66,7 @@ public class DataSharingServiceFactoryTest {
     @Test
     @MediumTest
     @EnableFeatures(ChromeFeatureList.DATA_SHARING)
+    // TODO(b/343541441) : Fix this test with `chrome_internal_flag`.
     public void testServiceCreation_RealService() throws TimeoutException {
         LibraryLoader.getInstance().ensureInitialized();
         mActivityTestRule.startMainActivityOnBlankPage();
@@ -90,8 +91,7 @@ public class DataSharingServiceFactoryTest {
                                 result -> {
                                     Assert.assertTrue(result.groupDataSet == null);
                                     Assert.assertEquals(
-                                            result.actionFailure,
-                                            PeopleGroupActionFailure.PERSISTENT_FAILURE);
+                                            result.actionFailure, PeopleGroupActionFailure.UNKNOWN);
                                     callbackReceived();
                                 });
                         dataSharingService.readGroup(
@@ -100,7 +100,7 @@ public class DataSharingServiceFactoryTest {
                                     Assert.assertTrue(result.groupData == null);
                                     Assert.assertEquals(
                                             result.actionFailure,
-                                            PeopleGroupActionFailure.PERSISTENT_FAILURE);
+                                            PeopleGroupActionFailure.TRANSIENT_FAILURE);
                                     callbackReceived();
                                 });
                         dataSharingService.createGroup(
@@ -109,7 +109,7 @@ public class DataSharingServiceFactoryTest {
                                     Assert.assertTrue(result.groupData == null);
                                     Assert.assertEquals(
                                             result.actionFailure,
-                                            PeopleGroupActionFailure.PERSISTENT_FAILURE);
+                                            PeopleGroupActionFailure.TRANSIENT_FAILURE);
                                     callbackReceived();
                                 });
                         dataSharingService.deleteGroup(
@@ -117,7 +117,7 @@ public class DataSharingServiceFactoryTest {
                                 result -> {
                                     Assert.assertEquals(
                                             result.intValue(),
-                                            PeopleGroupActionOutcome.PERSISTENT_FAILURE);
+                                            PeopleGroupActionOutcome.TRANSIENT_FAILURE);
                                     callbackReceived();
                                 });
                         dataSharingService.inviteMember(
@@ -126,7 +126,7 @@ public class DataSharingServiceFactoryTest {
                                 result -> {
                                     Assert.assertEquals(
                                             result.intValue(),
-                                            PeopleGroupActionOutcome.PERSISTENT_FAILURE);
+                                            PeopleGroupActionOutcome.TRANSIENT_FAILURE);
                                     callbackReceived();
                                 });
                         dataSharingService.removeMember(
@@ -135,7 +135,7 @@ public class DataSharingServiceFactoryTest {
                                 result -> {
                                     Assert.assertEquals(
                                             result.intValue(),
-                                            PeopleGroupActionOutcome.PERSISTENT_FAILURE);
+                                            PeopleGroupActionOutcome.TRANSIENT_FAILURE);
                                     callbackReceived();
                                 });
                     }

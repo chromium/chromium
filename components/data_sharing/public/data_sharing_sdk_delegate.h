@@ -24,6 +24,10 @@ class DataSharingSDKDelegate {
 
   virtual ~DataSharingSDKDelegate() = default;
 
+#if BUILDFLAG(IS_ANDROID)
+  static std::unique_ptr<DataSharingSDKDelegate> CreateDelegate();
+#endif  // BUILDFLAG(IS_ANDROID)
+
   virtual void CreateGroup(
       const data_sharing_pb::CreateGroupParams& params,
       base::OnceCallback<

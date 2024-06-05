@@ -28,7 +28,9 @@ class IdentityManager;
 namespace data_sharing_pb {
 
 class CreateGroupResult;
+class LookupGaiaIdByEmailResult;
 class ReadGroupsResult;
+class LookupGaiaIdByEmailResult;
 
 }  // namespace data_sharing_pb
 

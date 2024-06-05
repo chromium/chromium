@@ -36,6 +36,8 @@ if (is_android) {
       "android/java/src/org/chromium/components/data_sharing/DataSharingNetworkLoader.java",
       "android/java/src/org/chromium/components/data_sharing/DataSharingNetworkUtils.java",
       "android/java/src/org/chromium/components/data_sharing/DataSharingRequestType.java",
+      "android/java/src/org/chromium/components/data_sharing/DataSharingSDKDelegate.java",
+      "android/java/src/org/chromium/components/data_sharing/DataSharingSDKDelegateProtoResponseCallback.java",
       "android/java/src/org/chromium/components/data_sharing/DataSharingService.java",
       "android/java/src/org/chromium/components/data_sharing/DataSharingUIDelegate.java",
       "android/java/src/org/chromium/components/data_sharing/GroupData.java",
@@ -47,7 +49,9 @@ if (is_android) {
 
     deps = [
       "//base:base_java",
+      "//components/data_sharing/public/protocol:proto_java",
       "//net/android:net_java",
+      "//third_party/android_deps:protobuf_lite_runtime_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
       "//url:gurl_java",

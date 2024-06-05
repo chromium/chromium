@@ -52,6 +52,8 @@ static_library("internal") {
       "android/data_sharing_conversion_bridge.h",
       "android/data_sharing_network_loader_android.cc",
       "android/data_sharing_network_loader_android.h",
+      "android/data_sharing_sdk_delegate_android.cc",
+      "android/data_sharing_sdk_delegate_android.h",
       "android/data_sharing_service_android.cc",
       "android/data_sharing_service_android.h",
     ]
@@ -81,6 +83,7 @@ source_set("unit_tests") {
   if (is_android) {
     sources += [
       "android/data_sharing_network_loader_android_unittest.cc",
+      "android/data_sharing_sdk_delegate_android_unittest.cc",
       "android/data_sharing_service_android_unittest.cc",
     ]
   }
@@ -113,6 +116,7 @@ if (is_android) {
     visibility = [
       "//chrome/android:chrome_all_java",
       "//components:*",
+      "//components/data_sharing/internal:native_test_helper_java",
     ]
     srcjar_deps = [
       ":jni_headers",
@@ -121,6 +125,8 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/components/data_sharing/DataSharingConversionBridge.java",
       "android/java/src/org/chromium/components/data_sharing/DataSharingNetworkLoaderImpl.java",
+      "android/java/src/org/chromium/components/data_sharing/DataSharingSDKDelegateBridge.java",
+      "android/java/src/org/chromium/components/data_sharing/DataSharingSDKDelegateImpl.java",
       "android/java/src/org/chromium/components/data_sharing/DataSharingServiceImpl.java",
       "android/java/src/org/chromium/components/data_sharing/ObserverBridge.java",
     ]
@@ -129,7 +135,9 @@ if (is_android) {
       "//base:base_java",
       "//build/android:build_java",
       "//components/data_sharing/public:public_java",
+      "//components/data_sharing/public/protocol:proto_java",
       "//net/android:net_java",
+      "//third_party/android_deps:protobuf_lite_runtime_java",
       "//third_party/jni_zero:jni_zero_java",
       "//url:gurl_java",
     ]
@@ -144,6 +152,7 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/components/data_sharing/DataSharingConversionBridge.java",
       "android/java/src/org/chromium/components/data_sharing/DataSharingNetworkLoaderImpl.java",
+      "android/java/src/org/chromium/components/data_sharing/DataSharingSDKDelegateBridge.java",
       "android/java/src/org/chromium/components/data_sharing/DataSharingServiceImpl.java",
       "android/java/src/org/chromium/components/data_sharing/ObserverBridge.java",
     ]
@@ -152,17 +161,29 @@ if (is_android) {
   android_library("native_test_helper_java") {
     srcjar_deps = [ ":test_jni_headers" ]
     testonly = true
-    sources = [ "android/java/src/org/chromium/components/data_sharing/TestServiceObserver.java" ]
+    sources = [
+      "android/java/src/org/chromium/components/data_sharing/DataSharingSDKDelegateAndroidTestSupport.java",
+      "android/java/src/org/chromium/components/data_sharing/DataSharingSDKDelegateTestImpl.java",
+      "android/java/src/org/chromium/components/data_sharing/TestServiceObserver.java",
+    ]
     deps = [
+      ":internal_java",
       "//base:base_java",
+      "//base:base_java_test_support",
       "//components/data_sharing/public:public_java",
+      "//components/data_sharing/public/protocol:proto_java",
+      "//third_party/android_deps:protobuf_lite_runtime_java",
       "//third_party/jni_zero:jni_zero_java",
+      "//third_party/junit",
     ]
   }
 
   generate_jni("test_jni_headers") {
     testonly = true
-    sources = [ "android/java/src/org/chromium/components/data_sharing/TestServiceObserver.java" ]
+    sources = [
+      "android/java/src/org/chromium/components/data_sharing/DataSharingSDKDelegateAndroidTestSupport.java",
+      "android/java/src/org/chromium/components/data_sharing/TestServiceObserver.java",
+    ]
   }
 
   robolectric_library("data_sharing_junit_tests") {

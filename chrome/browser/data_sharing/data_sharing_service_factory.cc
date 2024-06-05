@@ -13,6 +13,7 @@
 #include "chrome/common/channel_info.h"
 #include "components/data_sharing/internal/data_sharing_service_impl.h"
 #include "components/data_sharing/internal/empty_data_sharing_service.h"
+#include "components/data_sharing/public/data_sharing_sdk_delegate.h"
 #include "components/data_sharing/public/data_sharing_service.h"
 #include "components/data_sharing/public/data_sharing_ui_delegate.h"
 #include "components/data_sharing/public/features.h"
@@ -22,6 +23,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/data_sharing/data_sharing_ui_delegate_android.h"
+#include "components/data_sharing/public/data_sharing_sdk_delegate.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace data_sharing {
@@ -58,8 +60,11 @@ KeyedService* DataSharingServiceFactory::BuildServiceInstanceFor(
 
   Profile* profile = Profile::FromBrowserContext(context);
   std::unique_ptr<DataSharingUIDelegate> ui_delegate;
+  std::unique_ptr<DataSharingSDKDelegate> sdk_delegate;
+
 #if BUILDFLAG(IS_ANDROID)
   ui_delegate = std::make_unique<DataSharingUIDelegateAndroid>(profile);
+  sdk_delegate = DataSharingSDKDelegate::CreateDelegate();
 #endif  // BUILDFLAG(IS_ANDROID)
 
   return new DataSharingServiceImpl(
@@ -67,8 +72,7 @@ KeyedService* DataSharingServiceFactory::BuildServiceInstanceFor(
           ->GetURLLoaderFactoryForBrowserProcess(),
       IdentityManagerFactory::GetForProfile(profile),
       ModelTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory(),
-      chrome::GetChannel(),
-      /*sdk_delegate=*/nullptr, std::move(ui_delegate));
+      chrome::GetChannel(), std::move(sdk_delegate), std::move(ui_delegate));
 }
 
 }  // namespace data_sharing
