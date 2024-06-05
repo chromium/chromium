@@ -2393,6 +2393,13 @@ void CrasAudioHandler::SwitchToTopPriorityDevice(
 void CrasAudioHandler::SwitchToPreviousActiveDeviceIfAvailable(
     bool is_input,
     const AudioDeviceList& devices) {
+  // With new audio selection mechanism, activate the most recently active
+  // device first.
+  if (features::IsAudioSelectionImprovementEnabled() &&
+      ActivateMostRecentActiveDevice(is_input)) {
+    return;
+  }
+
   AudioDevice previous_active_device;
   if (GetActiveDeviceFromUserPref(is_input, &previous_active_device)) {
     DCHECK(previous_active_device.is_for_simple_usage());

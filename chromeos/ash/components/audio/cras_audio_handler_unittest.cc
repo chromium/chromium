@@ -1520,9 +1520,9 @@ TEST_P(CrasAudioHandlerTest,
 
   // Plug in another usb headphone.
   AudioNodeList audio_nodes;
-  AudioNode inernal_speaker = GenerateAudioNode(kInternalSpeaker);
-  inernal_speaker.active = true;
-  audio_nodes.push_back(inernal_speaker);
+  AudioNode internal_speaker = GenerateAudioNode(kInternalSpeaker);
+  internal_speaker.active = true;
+  audio_nodes.push_back(internal_speaker);
   AudioNode usb_headphone_1 = GenerateAudioNode(kUSBHeadphone1);
   usb_headphone_1.plugged_time = 80000000;
   audio_nodes.push_back(usb_headphone_1);
@@ -1550,7 +1550,7 @@ TEST_P(CrasAudioHandlerTest,
 
   // Unplug the 2nd usb headphone.
   audio_nodes.clear();
-  audio_nodes.push_back(inernal_speaker);
+  audio_nodes.push_back(internal_speaker);
   audio_nodes.push_back(usb_headphone_1);
   ChangeAudioNodes(audio_nodes);
 
@@ -7404,9 +7404,9 @@ TEST_P(CrasAudioHandlerTest,
 
   // Plug in a usb headphone without fast forward time.
   AudioNodeList audio_nodes;
-  AudioNode inernal_speaker = GenerateAudioNode(kInternalSpeaker);
-  inernal_speaker.active = true;
-  audio_nodes.push_back(inernal_speaker);
+  AudioNode internal_speaker = GenerateAudioNode(kInternalSpeaker);
+  internal_speaker.active = true;
+  audio_nodes.push_back(internal_speaker);
   AudioNode usb_headphone_1 = GenerateAudioNode(kUSBHeadphone1);
   audio_nodes.push_back(usb_headphone_1);
   ChangeAudioNodes(audio_nodes);
@@ -7502,6 +7502,73 @@ TEST_P(CrasAudioHandlerTest,
   EXPECT_EQ(
       l10n_util::GetStringUTF16(IDS_ASH_AUDIO_SELECTION_MULTIPLE_DEVICES_TITLE),
       title.value());
+}
+
+// Tests that in a rare case where both input and output have the same stable
+// id, manually switch output device should keep the input device unchanged.
+TEST_P(CrasAudioHandlerTest,
+       SwitchOutputShouldKeepInputUnchanged_AudioSelectionImprovementFlagOn) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kAudioSelectionImprovement);
+
+  // Initialize with internal devices.
+  SetupAudioNodesAndExpectActiveNodes(
+      /*initial_nodes=*/{kInternalMic, kInternalSpeaker},
+      /*expected_active_input_node=*/kInternalMic,
+      /*expected_active_output_node=*/kInternalSpeaker,
+      /*expected_has_alternative_input=*/false,
+      /*expected_has_alternative_output=*/false);
+
+  // Plug USB input and output devices with the same stable id.
+  AudioNodeList audio_nodes;
+  AudioNode inernal_mic = GenerateAudioNode(kInternalMic);
+  inernal_mic.active = true;
+  audio_nodes.push_back(inernal_mic);
+  AudioNode internal_speaker = GenerateAudioNode(kInternalSpeaker);
+  internal_speaker.active = true;
+  audio_nodes.push_back(internal_speaker);
+
+  uint64_t id = 100;
+  uint64_t stable_device_id_v1 = 12345;
+  uint64_t stable_device_id_v2 = 6789;
+  AudioNode usb_input = AudioNode(
+      /*is_input=*/true, id, /*has_v2_stable_device_id=*/true,
+      stable_device_id_v1, stable_device_id_v2,
+      /*device_name=*/"usb_input",
+      /*type=*/"USB", /*name=*/"usb_input", false /* is_active*/,
+      /*plugged_time=*/100, kInputMaxSupportedChannels, kInputAudioEffect,
+      /*number_of_volume_steps=*/0);
+  audio_nodes.push_back(usb_input);
+  AudioNode usb_output = AudioNode(
+      /*is_input=*/false, id, /*has_v2_stable_device_id=*/true,
+      stable_device_id_v1, stable_device_id_v2,
+      /*device_name=*/"usb_output",
+      /*type=*/"USB", /*name=*/"usb_output", false /* is_active*/,
+      /*plugged_time=*/100, kOutputMaxSupportedChannels, kOutputAudioEffect,
+      /*number_of_volume_steps=*/0);
+  audio_nodes.push_back(usb_output);
+  ChangeAudioNodes(audio_nodes);
+
+  // Verify internal device is still active.
+  ExpectActiveDevice(/*is_input=*/true,
+                     /*expected_active_device=*/kInternalMic,
+                     /*has_alternative_device=*/true);
+  ExpectActiveDevice(/*is_input=*/false,
+                     /*expected_active_device=*/kInternalSpeaker,
+                     /*has_alternative_device=*/true);
+
+  // Switch to usb_output.
+  AudioDevice usb_output_device(usb_output);
+  cras_audio_handler_->SwitchToDevice(usb_output_device, true,
+                                      DeviceActivateType::kActivateByUser);
+  ChangeAudioNodes(audio_nodes);
+
+  // Verify output is switched to usb_output, input statys the same.
+  ExpectActiveDevice(/*is_input=*/true,
+                     /*expected_active_device=*/kInternalMic,
+                     /*has_alternative_device=*/true);
+  EXPECT_EQ(usb_output_device.id,
+            cras_audio_handler_->GetPrimaryActiveOutputNode());
 }
 
 }  // namespace ash
