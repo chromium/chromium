@@ -27,8 +27,10 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.Promise;
+import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -55,6 +57,7 @@ import java.lang.ref.WeakReference;
 /** Unit tests for {@link SigninAccountPickerCoordinator}. */
 @Batch(Batch.UNIT_TESTS)
 @RunWith(BaseRobolectricTestRunner.class)
+@Config(shadows = {ShadowPostTask.class})
 @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
 public class SigninAccountPickerCoordinatorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -89,6 +92,7 @@ public class SigninAccountPickerCoordinatorTest {
                             mContainerView = new FrameLayout(mActivity);
                             mActivity.setContentView(mContainerView);
                         });
+        ShadowPostTask.setTestImpl((taskTraits, task, delay) -> task.run());
         mJniMocker.mock(SigninMetricsUtilsJni.TEST_HOOKS, mSigninMetricsUtilsNativeMock);
         AccountManagerFacadeProvider.setInstanceForTests(mAccountManagerFacadeMock);
         when(mAccountManagerFacadeMock.getCoreAccountInfos()).thenReturn(new Promise<>());

@@ -117,9 +117,15 @@ found in the LICENSE file.
         parent="Theme.Chromium.Activity.Fullscreen">
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowIsTranslucent">true</item>
-        <item name="android:windowEnterAnimation">@null</item>
-        <item name="android:windowExitAnimation">@null</item>
-        <item name="android:windowAnimationStyle">@null</item>
+        <item name="android:windowAnimationStyle">@style/SigninAndHistoryOptInActivityAnimation</item>
+    </style>
+
+    <!-- TODO(crbug.com/345176436): This animation style is used to set the
+         enter animation for the history sync dialog. This animation should be
+         configured using ModalDialogProperties instead. -->
+    <style name="SigninAndHistoryOptInActivityAnimation" parent="@android:style/Animation.Dialog">
+      <item name="android:windowExitAnimation">@null</item>
+      <item name="android:windowEnterAnimation">@anim/slide_in_up</item>
     </style>
 
     <!-- Trusted Web Activities -->

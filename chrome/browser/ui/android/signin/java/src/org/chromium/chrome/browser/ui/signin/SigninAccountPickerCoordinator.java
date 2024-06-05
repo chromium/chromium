@@ -14,6 +14,8 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.Callback;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.back_press.BackPressHelper;
 import org.chromium.chrome.browser.back_press.SecondaryActivityBackPressUma.SecondaryActivity;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -40,6 +42,8 @@ import org.chromium.ui.widget.Toast;
 
 /** Responsible of showing the sign-in bottom sheet. */
 public class SigninAccountPickerCoordinator implements AccountPickerDelegate {
+    private static final int HISTORY_SYNC_ENTER_ANIMATION_DELAY_MS = 100;
+
     private final WindowAndroid mWindowAndroid;
     private final ComponentActivity mActivity;
     private final ViewGroup mContainerView;
@@ -207,7 +211,10 @@ public class SigninAccountPickerCoordinator implements AccountPickerDelegate {
                                 mBottomSheetController.getCurrentSheetContent(),
                                 true,
                                 StateChangeReason.INTERACTION_COMPLETE);
-                        mDelegate.onSignInComplete();
+                        PostTask.postDelayedTask(
+                                TaskTraits.UI_DEFAULT,
+                                () -> mDelegate.onSignInComplete(),
+                                HISTORY_SYNC_ENTER_ANIMATION_DELAY_MS);
                     }
 
                     @Override
