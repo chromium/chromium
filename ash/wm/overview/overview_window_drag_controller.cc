@@ -1047,8 +1047,12 @@ void OverviewWindowDragController::MaybeScaleUpNewDeskButton() {
     return;
   }
 
+  // Do not reposition the windows while changing the desk icon button. This
+  // could cause items to shift around mid drag.
+  overview_session_->SuspendReposition();
   desks_bar_view->UpdateDeskIconButtonState(
       new_desk_button, /*target_state=*/DeskIconButton::State::kActive);
+  overview_session_->ResumeReposition();
 }
 
 }  // namespace ash
