@@ -90,10 +90,10 @@ TEST_F(GeneratedPasswordLeakDetectionPrefTest, NotifyPrefUpdates) {
   // Check that the observer fires for identity updates.
   identity_test_env()->EnableRemovalOfExtendedAccountInfo();
 
-  // Create a sync consented account so revoking the refresh token also triggers
+  // Create a signed-in account so revoking the refresh token also triggers
   // the preference updated observer.
-  identity_test_env()->MakePrimaryAccountAvailable(kTestProfileName,
-                                                   signin::ConsentLevel::kSync);
+  identity_test_env()->MakePrimaryAccountAvailable(
+      kTestProfileName, signin::ConsentLevel::kSignin);
   EXPECT_EQ(test_observer.GetUpdatedPrefName(),
             kGeneratedPasswordLeakDetectionPref);
 

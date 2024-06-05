@@ -131,7 +131,7 @@ void GeneratedPasswordLeakDetectionPref::OnIdentityManagerShutdown(
 
 void GeneratedPasswordLeakDetectionPref::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
-  switch (event_details.GetEventTypeFor(signin::ConsentLevel::kSync)) {
+  switch (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
     case signin::PrimaryAccountChangeEvent::Type::kSet:
     case signin::PrimaryAccountChangeEvent::Type::kCleared:
       NotifyObservers(kGeneratedPasswordLeakDetectionPref);
