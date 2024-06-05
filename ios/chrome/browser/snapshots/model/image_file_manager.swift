@@ -164,11 +164,10 @@ let kJPEGImageQuality: CGFloat = 1.0
   // Purges the storage of snapshots that are older than `date`. The snapshots for `liveSnapshotIDs`
   // will be kept. This will be done asynchronously on a background thread.
   func purgeImagesOlderThan(thresholdDate: Date, liveSnapshotIDs: [SnapshotIDWrapper]) {
-    var filesToKeep: Set<URL> = []
+    var filesToKeep: Set<String> = []
     for snapshotID in liveSnapshotIDs {
-      if let path = imagePath(snapshotID: snapshotID, imageType: ImageType.kImageTypeColor) {
-        filesToKeep.insert(path)
-      }
+      filesToKeep.insert(
+        imageFileName(snapshotID: snapshotID, imageType: ImageType.kImageTypeColor))
     }
 
     backgroundTaskGroup.enter()
@@ -184,7 +183,7 @@ let kJPEGImageQuality: CGFloat = 1.0
 
       for case let fileUrl as URL in enumerator {
         guard fileUrl.pathExtension == "jpg",
-          !filesToKeep.contains(fileUrl)
+          !filesToKeep.contains(fileUrl.lastPathComponent)
         else {
           continue
         }
@@ -363,15 +362,19 @@ let kJPEGImageQuality: CGFloat = 1.0
 
   // Returns the path of the image for `snapshotID` of type `imageType`.
   private func imagePath(snapshotID: SnapshotIDWrapper, imageType: ImageType) -> URL? {
-    let path =
-      String(
-        format: "%08d", snapshotID.identifier) + suffixForImageType(imageType: imageType)
-      + suffixForImageScale(imageScale: imageScale) + ".jpg"
+    let fileName = imageFileName(snapshotID: snapshotID, imageType: imageType)
     if #available(iOS 16, *) {
-      return storageDirectory.appending(path: path)
+      return storageDirectory.appending(path: fileName)
     } else {
-      return storageDirectory.appendingPathComponent(path)
+      return storageDirectory.appendingPathComponent(fileName)
     }
+  }
+
+  // Returns the file name of the image for `snapshotID` of type `imageType`.
+  private func imageFileName(snapshotID: SnapshotIDWrapper, imageType: ImageType) -> String {
+    return String(
+      format: "%08d", snapshotID.identifier) + suffixForImageType(imageType: imageType)
+      + suffixForImageScale(imageScale: imageScale) + ".jpg"
   }
 
   // Returns the legacy path of the image for `snapshotID` of type `imageType`.
