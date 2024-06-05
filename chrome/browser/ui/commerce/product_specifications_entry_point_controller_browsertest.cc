@@ -29,6 +29,10 @@ const char kTestUrl2[] = "chrome://version/";
 const char kTestUrl3[] = "chrome://flags/";
 const char kTestUrl4[] = "chrome://management/";
 
+static const int64_t kProductId1 = 1;
+static const int64_t kProductId2 = 2;
+static const int64_t kProductId3 = 3;
+static const int64_t kProductId4 = 4;
 }  // namespace
 
 class MockObserver
@@ -108,9 +112,11 @@ class ProductSpecificationsEntryPointControllerBrowserTest
 
 IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
                        TriggerEntryPointWithSelection) {
-  // Mock EntryPointInfo returned by ShoppingService.
+  // Mock EntryPointInfo returned by ClusterManager.
+  std::map<GURL, uint64_t> similar_products = {{GURL(kTestUrl1), kProductId1},
+                                               {GURL(kTestUrl2), kProductId2}};
   auto info =
-      std::make_optional<commerce::EntryPointInfo>(kTitle, std::set<GURL>());
+      std::make_optional<commerce::EntryPointInfo>(kTitle, similar_products);
   mock_cluster_manager_->SetResponseForGetEntryPointInfoForSelection(info);
 
   // Set up observer.
@@ -132,10 +138,42 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
+                       TriggerEntryPointWithSelection_NotShowForSameProduct) {
+  // Mock EntryPointInfo returned by ClusterManager which contains two products
+  // with the same product ID.
+  std::map<GURL, uint64_t> similar_products = {{GURL(kTestUrl1), kProductId1},
+                                               {GURL(kTestUrl2), kProductId1}};
+  auto info =
+      std::make_optional<commerce::EntryPointInfo>(kTitle, similar_products);
+  mock_cluster_manager_->SetResponseForGetEntryPointInfoForSelection(info);
+
+  // Set up observer.
+  EXPECT_CALL(*observer_, ShowEntryPointWithTitle(kTitle)).Times(0);
+
+  // Create two tabs and simulate selection.
+  ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 0, GURL(kTestUrl1),
+                                     ui::PAGE_TRANSITION_LINK, true));
+  ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 1, GURL(kTestUrl2),
+                                     ui::PAGE_TRANSITION_LINK, true));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_FALSE(controller_->entry_point_info_for_testing().has_value());
+
+  browser()->tab_strip_model()->ActivateTabAt(
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kMouse));
+  base::RunLoop().RunUntilIdle();
+  // Not trigger entry point because the two products have the same product ID.
+  ASSERT_FALSE(controller_->entry_point_info_for_testing().has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
                        TriggerEntryPointWithNavigation) {
-  // Mock EntryPointInfo returned by ShoppingService.
-  std::set<GURL> urls = {GURL(kTestUrl2), GURL(kTestUrl3), GURL(kTestUrl4)};
-  auto info = std::make_optional<commerce::EntryPointInfo>(kTitle, urls);
+  // Mock EntryPointInfo returned by ClusterManager.
+  std::map<GURL, uint64_t> similar_products = {{GURL(kTestUrl2), kProductId2},
+                                               {GURL(kTestUrl3), kProductId3},
+                                               {GURL(kTestUrl4), kProductId4}};
+  auto info =
+      std::make_optional<commerce::EntryPointInfo>(kTitle, similar_products);
   mock_cluster_manager_->SetResponseForGetEntryPointInfoForNavigation(info);
 
   // Set up observer.
@@ -163,10 +201,47 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
+                       TriggerEntryPointWithNavigation_NotShowForSameProduct) {
+  // Mock EntryPointInfo returned by ClusterManager which contains two products
+  // with the same product ID.
+  std::map<GURL, uint64_t> similar_products = {{GURL(kTestUrl2), kProductId2},
+                                               {GURL(kTestUrl3), kProductId2},
+                                               {GURL(kTestUrl4), kProductId4}};
+  auto info =
+      std::make_optional<commerce::EntryPointInfo>(kTitle, similar_products);
+  mock_cluster_manager_->SetResponseForGetEntryPointInfoForNavigation(info);
+
+  // Set up observer.
+  EXPECT_CALL(*observer_, ShowEntryPointWithTitle(kTitle)).Times(0);
+
+  // Current window has to have more than three unique and different products
+  // that are similar in order to trigger the entry point for navigation.
+  std::vector<std::string> urls_to_open = {kTestUrl2, kTestUrl3, kTestUrl3,
+                                           kTestUrl1};
+  for (auto& url : urls_to_open) {
+    ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 0, GURL(url),
+                                       ui::PAGE_TRANSITION_LINK, true));
+    base::RunLoop().RunUntilIdle();
+    controller_->OnClusterFinishedForNavigation(GURL(url));
+    base::RunLoop().RunUntilIdle();
+    ASSERT_FALSE(controller_->entry_point_info_for_testing().has_value());
+  }
+
+  ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 0, GURL(kTestUrl4),
+                                     ui::PAGE_TRANSITION_LINK, true));
+  base::RunLoop().RunUntilIdle();
+  controller_->OnClusterFinishedForNavigation(GURL(kTestUrl4));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_FALSE(controller_->entry_point_info_for_testing().has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
                        HideEntryPoint) {
   // Trigger entry point with selection.
+  std::map<GURL, uint64_t> similar_products = {{GURL(kTestUrl1), kProductId1},
+                                               {GURL(kTestUrl2), kProductId2}};
   auto info =
-      std::make_optional<commerce::EntryPointInfo>(kTitle, std::set<GURL>());
+      std::make_optional<commerce::EntryPointInfo>(kTitle, similar_products);
   mock_cluster_manager_->SetResponseForGetEntryPointInfoForSelection(info);
   ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 0, GURL(kTestUrl1),
                                      ui::PAGE_TRANSITION_LINK, true));
@@ -197,8 +272,10 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
       .WillByDefault(testing::Return(set));
 
   // Trigger entry point with selection.
-  std::set<GURL> urls = {GURL(kTestUrl1), GURL(kTestUrl2)};
-  auto info = std::make_optional<commerce::EntryPointInfo>(kTitle, urls);
+  std::map<GURL, uint64_t> similar_products = {{GURL(kTestUrl1), kProductId1},
+                                               {GURL(kTestUrl2), kProductId2}};
+  auto info =
+      std::make_optional<commerce::EntryPointInfo>(kTitle, similar_products);
   mock_cluster_manager_->SetResponseForGetEntryPointInfoForSelection(info);
   ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 0, GURL(kTestUrl1),
                                      ui::PAGE_TRANSITION_LINK, true));
@@ -234,8 +311,11 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
       .WillByDefault(testing::Return(set));
 
   // Mock EntryPointInfo returned by ShoppingService.
-  std::set<GURL> urls = {GURL(kTestUrl2), GURL(kTestUrl3), GURL(kTestUrl4)};
-  auto info = std::make_optional<commerce::EntryPointInfo>(kTitle, urls);
+  std::map<GURL, uint64_t> similar_products = {{GURL(kTestUrl2), kProductId2},
+                                               {GURL(kTestUrl3), kProductId3},
+                                               {GURL(kTestUrl4), kProductId4}};
+  auto info =
+      std::make_optional<commerce::EntryPointInfo>(kTitle, similar_products);
   mock_cluster_manager_->SetResponseForGetEntryPointInfoForNavigation(info);
 
   // Mock that there is only two currently open unique URLs based on
@@ -275,9 +355,12 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
                        InvalidEntryPointWithNavigation) {
-  // Mock EntryPointInfo returned by ShoppingService.
-  std::set<GURL> urls = {GURL(kTestUrl2), GURL(kTestUrl3), GURL(kTestUrl4)};
-  auto info = std::make_optional<commerce::EntryPointInfo>(kTitle, urls);
+  // Mock EntryPointInfo returned by ClusterManager.
+  std::map<GURL, uint64_t> similar_products = {{GURL(kTestUrl2), kProductId2},
+                                               {GURL(kTestUrl3), kProductId3},
+                                               {GURL(kTestUrl4), kProductId4}};
+  auto info =
+      std::make_optional<commerce::EntryPointInfo>(kTitle, similar_products);
   mock_cluster_manager_->SetResponseForGetEntryPointInfoForNavigation(info);
 
   // Set up observer.
@@ -313,8 +396,11 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
 IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
                        InvalidEntryPointWithClosure) {
   // Mock EntryPointInfo returned by ShoppingService.
-  std::set<GURL> urls = {GURL(kTestUrl2), GURL(kTestUrl3), GURL(kTestUrl4)};
-  auto info = std::make_optional<commerce::EntryPointInfo>(kTitle, urls);
+  std::map<GURL, uint64_t> similar_products = {{GURL(kTestUrl2), kProductId2},
+                                               {GURL(kTestUrl3), kProductId3},
+                                               {GURL(kTestUrl4), kProductId4}};
+  auto info =
+      std::make_optional<commerce::EntryPointInfo>(kTitle, similar_products);
   mock_cluster_manager_->SetResponseForGetEntryPointInfoForNavigation(info);
 
   // Set up observer.

@@ -115,6 +115,23 @@ void GetCategoryData(
       url, base::BindOnce(&OnGetCategoryDataDone, std::move(callback)));
 }
 
+void OnGetProductInfoDone(
+    base::OnceCallback<void(std::pair<GURL, const ProductInfo>)> callback,
+    const GURL& url,
+    const std::optional<const ProductInfo>& product_info) {
+  std::pair<GURL, const ProductInfo> pair(
+      url, product_info.has_value() ? product_info.value() : ProductInfo());
+  std::move(callback).Run(std::move(pair));
+}
+
+void GetProductInfo(
+    const GURL& url,
+    const ClusterManager::GetProductInfoCallback& get_product_info_cb,
+    base::OnceCallback<void(std::pair<GURL, const ProductInfo>)> callback) {
+  get_product_info_cb.Run(
+      url, base::BindOnce(&OnGetProductInfoDone, std::move(callback)));
+}
+
 bool IsCandidateProductInProductGroup(
     const GURL& candidate_product_url,
     const std::map<base::Uuid, std::unique_ptr<ProductGroup>>&
@@ -369,8 +386,16 @@ void ClusterManager::GetEntryPointInfoForNavigation(
 
   std::optional<std::string> title =
       GetShortestLabelAtBottom(candidate_product_map_[url]->category_data);
-  std::move(callback).Run(std::make_optional<EntryPointInfo>(
-      title ? title.value() : "", std::move(similar_urls)));
+
+  auto barrier_callback =
+      base::BarrierCallback<std::pair<GURL, const ProductInfo>>(
+          similar_urls.size(),
+          base::BindOnce(&ClusterManager::OnProductInfoFetchedForSimilarUrls,
+                         weak_ptr_factory_.GetWeakPtr(), title,
+                         std::move(callback)));
+  for (const auto& similar_url : similar_urls) {
+    GetProductInfo(similar_url, get_product_info_cb_, barrier_callback);
+  }
 }
 
 void ClusterManager::GetEntryPointInfoForSelection(
@@ -402,8 +427,30 @@ void ClusterManager::GetEntryPointInfoForSelection(
   } else {
     title = std::move(title_old);
   }
+
+  auto barrier_callback =
+      base::BarrierCallback<std::pair<GURL, const ProductInfo>>(
+          similar_urls.size(),
+          base::BindOnce(&ClusterManager::OnProductInfoFetchedForSimilarUrls,
+                         weak_ptr_factory_.GetWeakPtr(), title,
+                         std::move(callback)));
+  for (const auto& similar_url : similar_urls) {
+    GetProductInfo(similar_url, get_product_info_cb_, barrier_callback);
+  }
+}
+
+void ClusterManager::OnProductInfoFetchedForSimilarUrls(
+    std::optional<std::string> title,
+    GetEntryPointInfoCallback callback,
+    const std::vector<std::pair<GURL, const ProductInfo>>& product_infos) {
+  std::map<GURL, uint64_t> map;
+  for (auto pair : product_infos) {
+    if (pair.second.product_cluster_id.has_value()) {
+      map[pair.first] = pair.second.product_cluster_id.value();
+    }
+  }
   std::move(callback).Run(std::make_optional<EntryPointInfo>(
-      title ? title.value() : "", std::move(similar_urls)));
+      title ? title.value() : "", std::move(map)));
 }
 
 void ClusterManager::OnGetComparableUrls(

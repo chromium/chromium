@@ -64,11 +64,11 @@ UrlInfo::UrlInfo(const UrlInfo&) = default;
 UrlInfo& UrlInfo::operator=(const UrlInfo& other) = default;
 UrlInfo::~UrlInfo() = default;
 
-EntryPointInfo::EntryPointInfo(const std::string& title,
-                               std::set<GURL> similar_candidate_products_urls)
+EntryPointInfo::EntryPointInfo(
+    const std::string& title,
+    std::map<GURL, uint64_t> similar_candidate_products)
     : title(title),
-      similar_candidate_products_urls(
-          std::move(similar_candidate_products_urls)) {}
+      similar_candidate_products(std::move(similar_candidate_products)) {}
 
 EntryPointInfo::~EntryPointInfo() = default;
 EntryPointInfo::EntryPointInfo(const EntryPointInfo&) = default;

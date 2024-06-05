@@ -240,7 +240,7 @@ struct UrlInfo {
 // Class representing the tap strip entry point.
 struct EntryPointInfo {
   EntryPointInfo(const std::string& title,
-                 std::set<GURL> similar_candidate_products_urls);
+                 std::map<GURL, uint64_t> similar_candidate_products);
   ~EntryPointInfo();
   EntryPointInfo(const EntryPointInfo&);
   EntryPointInfo& operator=(const EntryPointInfo&);
@@ -248,9 +248,10 @@ struct EntryPointInfo {
   // Title of the product group to be clustered.
   std::string title;
 
-  // Set of URLs of candidate products that are similar and can
-  // be clustered into one product group.
-  std::set<GURL> similar_candidate_products_urls;
+  // Map of candidate products that are similar and can
+  // be clustered into one product group. Key is the product URL and value is
+  // the product cluster ID.
+  std::map<GURL, uint64_t> similar_candidate_products;
 };
 
 // Callbacks and typedefs for various accessors in the shopping service.

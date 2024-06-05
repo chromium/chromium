@@ -77,6 +77,8 @@ class ProductSpecificationsEntryPointController
 
   // Show the tab strip entry point for tab selection.
   void ShowEntryPointWithTitleForSelection(
+      const GURL old_url,
+      const GURL new_url,
       std::optional<EntryPointInfo> entry_point_info);
 
   // Show the tab strip entry point for navigation.

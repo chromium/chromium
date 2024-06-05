@@ -135,6 +135,11 @@ class ClusterManager : public ProductSpecificationsSet::Observer {
                            bool success,
                            const std::set<GURL>& comparable_urls);
 
+  void OnProductInfoFetchedForSimilarUrls(
+      std::optional<std::string> title,
+      GetEntryPointInfoCallback callback,
+      const std::vector<std::pair<GURL, const ProductInfo>>& product_infos);
+
   std::unique_ptr<ClusterServerProxy> cluster_server_proxy_;
 
   // Callback to get product info.

@@ -28,6 +28,12 @@
 
 namespace commerce {
 namespace {
+static const uint64_t kProductID1 = 1;
+static const uint64_t kProductID2 = 2;
+static const uint64_t kProductID3 = 3;
+static const uint64_t kProductID4 = 4;
+static const uint64_t kProductID5 = 5;
+
 const std::string kTestUrl1 = "http://www.foo1.com";
 const std::string kTestUrl2 = "http://www.foo2.com";
 const std::string kTestUrl3 = "http://www.foo3.com";
@@ -125,8 +131,9 @@ class ClusterManagerTest : public testing::Test {
     return CreateProductSpecificationsSet(url, 0);
   }
 
-  ProductInfo CreateProductInfo(const std::string& label) {
+  ProductInfo CreateProductInfo(const std::string& label, int64_t product_id) {
     ProductInfo product_info = ProductInfo();
+    product_info.product_cluster_id = product_id;
     product_info.category_data.add_product_categories()
         ->add_category_labels()
         ->set_category_default_label(label);
@@ -134,11 +141,16 @@ class ClusterManagerTest : public testing::Test {
   }
 
   void InitializeProductInfos() {
-    product_infos_[GURL(kTestUrl1)] = CreateProductInfo(kCategoryLamp);
-    product_infos_[GURL(kTestUrl2)] = CreateProductInfo(kCategoryChair);
-    product_infos_[GURL(kTestUrl3)] = CreateProductInfo(kCategoryLamp);
-    product_infos_[GURL(kProduct1Url)] = CreateProductInfo(kCategoryLamp);
-    product_infos_[GURL(kProduct2Url)] = CreateProductInfo(kCategoryChair);
+    product_infos_[GURL(kTestUrl1)] =
+        CreateProductInfo(kCategoryLamp, kProductID1);
+    product_infos_[GURL(kTestUrl2)] =
+        CreateProductInfo(kCategoryChair, kProductID2);
+    product_infos_[GURL(kTestUrl3)] =
+        CreateProductInfo(kCategoryLamp, kProductID3);
+    product_infos_[GURL(kProduct1Url)] =
+        CreateProductInfo(kCategoryLamp, kProductID4);
+    product_infos_[GURL(kProduct2Url)] =
+        CreateProductInfo(kCategoryChair, kProductID5);
   }
 
   void GetEntryPointInfoForNavigation(const GURL& url,
@@ -256,18 +268,22 @@ TEST_F(ClusterManagerTest, GetEntryPointInfoForNavigation) {
 
   std::optional<EntryPointInfo> info;
   GetEntryPointInfoForNavigation(foo1, &info);
-  ASSERT_EQ(info->similar_candidate_products_urls.size(), 2u);
-  ASSERT_EQ(info->similar_candidate_products_urls.count(foo1), 1u);
-  ASSERT_EQ(info->similar_candidate_products_urls.count(foo3), 1u);
+  ASSERT_EQ(info->similar_candidate_products.size(), 2u);
+  ASSERT_EQ(info->similar_candidate_products.count(foo1), 1u);
+  ASSERT_EQ(info->similar_candidate_products[foo1], kProductID1);
+  ASSERT_EQ(info->similar_candidate_products.count(foo3), 1u);
+  ASSERT_EQ(info->similar_candidate_products[foo3], kProductID3);
   ASSERT_EQ(info->title, "Lamp");
 
   GetEntryPointInfoForNavigation(foo2, &info);
   ASSERT_FALSE(info);
 
   GetEntryPointInfoForNavigation(foo3, &info);
-  ASSERT_EQ(info->similar_candidate_products_urls.size(), 2u);
-  ASSERT_EQ(info->similar_candidate_products_urls.count(foo1), 1u);
-  ASSERT_EQ(info->similar_candidate_products_urls.count(foo3), 1u);
+  ASSERT_EQ(info->similar_candidate_products.size(), 2u);
+  ASSERT_EQ(info->similar_candidate_products.count(foo1), 1u);
+  ASSERT_EQ(info->similar_candidate_products[foo1], kProductID1);
+  ASSERT_EQ(info->similar_candidate_products.count(foo3), 1u);
+  ASSERT_EQ(info->similar_candidate_products[foo3], kProductID3);
   ASSERT_EQ(info->title, "Lamp");
 }
 
@@ -309,22 +325,22 @@ TEST_F(ClusterManagerTest,
 
   std::optional<EntryPointInfo> info;
   GetEntryPointInfoForNavigation(foo1, &info);
-  ASSERT_EQ(info->similar_candidate_products_urls.size(), 3u);
-  ASSERT_EQ(info->similar_candidate_products_urls.count(foo1), 1u);
-  ASSERT_EQ(info->similar_candidate_products_urls.count(foo2), 1u);
-  ASSERT_EQ(info->similar_candidate_products_urls.count(foo3), 1u);
+  ASSERT_EQ(info->similar_candidate_products.size(), 3u);
+  ASSERT_EQ(info->similar_candidate_products.count(foo1), 1u);
+  ASSERT_EQ(info->similar_candidate_products.count(foo2), 1u);
+  ASSERT_EQ(info->similar_candidate_products.count(foo3), 1u);
   ASSERT_EQ(info->title, "Lamp");
 
   GetEntryPointInfoForNavigation(foo2, &info);
-  ASSERT_EQ(info->similar_candidate_products_urls.size(), 2u);
-  ASSERT_EQ(info->similar_candidate_products_urls.count(foo1), 1u);
-  ASSERT_EQ(info->similar_candidate_products_urls.count(foo2), 1u);
+  ASSERT_EQ(info->similar_candidate_products.size(), 2u);
+  ASSERT_EQ(info->similar_candidate_products.count(foo1), 1u);
+  ASSERT_EQ(info->similar_candidate_products.count(foo2), 1u);
   ASSERT_EQ(info->title, "GamingChair");
 
   GetEntryPointInfoForNavigation(foo3, &info);
-  ASSERT_EQ(info->similar_candidate_products_urls.size(), 2u);
-  ASSERT_EQ(info->similar_candidate_products_urls.count(foo1), 1u);
-  ASSERT_EQ(info->similar_candidate_products_urls.count(foo3), 1u);
+  ASSERT_EQ(info->similar_candidate_products.size(), 2u);
+  ASSERT_EQ(info->similar_candidate_products.count(foo1), 1u);
+  ASSERT_EQ(info->similar_candidate_products.count(foo3), 1u);
   ASSERT_EQ(info->title, "Lamp");
 }
 
@@ -343,9 +359,9 @@ TEST_F(ClusterManagerTest,
   ASSERT_EQ(3u, GetCandidateProductMap()->size());
   std::optional<EntryPointInfo> info;
   GetEntryPointInfoForNavigation(foo1, &info);
-  ASSERT_EQ(info->similar_candidate_products_urls.size(), 2u);
-  ASSERT_EQ(info->similar_candidate_products_urls.count(foo1), 1u);
-  ASSERT_EQ(info->similar_candidate_products_urls.count(foo3), 1u);
+  ASSERT_EQ(info->similar_candidate_products.size(), 2u);
+  ASSERT_EQ(info->similar_candidate_products.count(foo1), 1u);
+  ASSERT_EQ(info->similar_candidate_products.count(foo3), 1u);
   ASSERT_EQ(info->title, "Lamp");
   GetEntryPointInfoForNavigation(foo2, &info);
   ASSERT_FALSE(info);
@@ -463,15 +479,15 @@ TEST_F(ClusterManagerTest,
 
   std::optional<EntryPointInfo> info;
   GetEntryPointInfoForNavigation(foo2, &info);
-  ASSERT_EQ(3u, info->similar_candidate_products_urls.size());
-  ASSERT_EQ(info->similar_candidate_products_urls.count(foo1), 1u);
-  ASSERT_EQ(info->similar_candidate_products_urls.count(foo2), 1u);
-  ASSERT_EQ(info->similar_candidate_products_urls.count(foo4), 1u);
+  ASSERT_EQ(3u, info->similar_candidate_products.size());
+  ASSERT_EQ(info->similar_candidate_products.count(foo1), 1u);
+  ASSERT_EQ(info->similar_candidate_products.count(foo2), 1u);
+  ASSERT_EQ(info->similar_candidate_products.count(foo4), 1u);
   GetEntryPointInfoForNavigation(foo1, &info);
-  ASSERT_EQ(3u, info->similar_candidate_products_urls.size());
-  ASSERT_EQ(info->similar_candidate_products_urls.count(foo1), 1u);
-  ASSERT_EQ(info->similar_candidate_products_urls.count(foo2), 1u);
-  ASSERT_EQ(info->similar_candidate_products_urls.count(foo4), 1u);
+  ASSERT_EQ(3u, info->similar_candidate_products.size());
+  ASSERT_EQ(info->similar_candidate_products.count(foo1), 1u);
+  ASSERT_EQ(info->similar_candidate_products.count(foo2), 1u);
+  ASSERT_EQ(info->similar_candidate_products.count(foo4), 1u);
 
   // Similar candidates will not include `foo1` if it is added to a product
   // group.
@@ -480,9 +496,9 @@ TEST_F(ClusterManagerTest,
   cluster_manager_->OnProductSpecificationsSetAdded(set1);
 
   GetEntryPointInfoForNavigation(foo2, &info);
-  ASSERT_EQ(2u, info->similar_candidate_products_urls.size());
-  ASSERT_EQ(info->similar_candidate_products_urls.count(foo2), 1u);
-  ASSERT_EQ(info->similar_candidate_products_urls.count(foo4), 1u);
+  ASSERT_EQ(2u, info->similar_candidate_products.size());
+  ASSERT_EQ(info->similar_candidate_products.count(foo2), 1u);
+  ASSERT_EQ(info->similar_candidate_products.count(foo4), 1u);
   GetEntryPointInfoForNavigation(foo1, &info);
   ASSERT_FALSE(info);
 }
@@ -660,9 +676,11 @@ TEST_F(ClusterManagerTest, GetEntryPointInfoForSelection) {
   GetEntryPointInfoForSelection(foo1, foo3, &info);
   ASSERT_TRUE(info);
   ASSERT_EQ(info->title, "Lamp");
-  ASSERT_EQ(info->similar_candidate_products_urls.size(), 2u);
-  ASSERT_EQ(info->similar_candidate_products_urls.count(foo1), 1u);
-  ASSERT_EQ(info->similar_candidate_products_urls.count(foo3), 1u);
+  ASSERT_EQ(info->similar_candidate_products.size(), 2u);
+  ASSERT_EQ(info->similar_candidate_products.count(foo1), 1u);
+  ASSERT_EQ(info->similar_candidate_products[foo1], kProductID1);
+  ASSERT_EQ(info->similar_candidate_products.count(foo3), 1u);
+  ASSERT_EQ(info->similar_candidate_products[foo3], kProductID3);
 }
 
 TEST_F(ClusterManagerTest,
@@ -692,17 +710,17 @@ TEST_F(ClusterManagerTest,
   GetEntryPointInfoForSelection(foo1, foo2, &info);
   ASSERT_TRUE(info);
   ASSERT_EQ(info->title, "Lamp");
-  ASSERT_EQ(info->similar_candidate_products_urls.size(), 3u);
-  ASSERT_EQ(info->similar_candidate_products_urls.count(foo1), 1u);
-  ASSERT_EQ(info->similar_candidate_products_urls.count(foo2), 1u);
-  ASSERT_EQ(info->similar_candidate_products_urls.count(foo3), 1u);
+  ASSERT_EQ(info->similar_candidate_products.size(), 3u);
+  ASSERT_EQ(info->similar_candidate_products.count(foo1), 1u);
+  ASSERT_EQ(info->similar_candidate_products.count(foo2), 1u);
+  ASSERT_EQ(info->similar_candidate_products.count(foo3), 1u);
 
   GetEntryPointInfoForSelection(foo1, foo3, &info);
   ASSERT_EQ(info->title, "Lamp");
-  ASSERT_EQ(info->similar_candidate_products_urls.size(), 3u);
-  ASSERT_EQ(info->similar_candidate_products_urls.count(foo1), 1u);
-  ASSERT_EQ(info->similar_candidate_products_urls.count(foo2), 1u);
-  ASSERT_EQ(info->similar_candidate_products_urls.count(foo3), 1u);
+  ASSERT_EQ(info->similar_candidate_products.size(), 3u);
+  ASSERT_EQ(info->similar_candidate_products.count(foo1), 1u);
+  ASSERT_EQ(info->similar_candidate_products.count(foo2), 1u);
+  ASSERT_EQ(info->similar_candidate_products.count(foo3), 1u);
 
   GetEntryPointInfoForSelection(foo2, foo3, &info);
   ASSERT_FALSE(info);

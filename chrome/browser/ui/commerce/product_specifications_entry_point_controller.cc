@@ -28,22 +28,22 @@ bool CheckWindowContainsEntryPointURLs(
     TabStripModel* tab_strip_model,
     commerce::EntryPointInfo entry_point_info,
     size_t threshold) {
-  std::set<GURL> similar_urls =
-      entry_point_info.similar_candidate_products_urls;
-  if (similar_urls.size() < threshold) {
+  std::map<GURL, uint64_t> similar_products =
+      entry_point_info.similar_candidate_products;
+  if (similar_products.size() < threshold) {
     return false;
   }
-  std::set<GURL> eligible_urls_in_current_window;
+  std::set<uint64_t> similar_product_ids;
   for (int i = 0; i < tab_strip_model->count(); i++) {
     GURL tab_url = tab_strip_model->GetWebContentsAt(i)->GetLastCommittedURL();
-    if (similar_urls.find(tab_url) != similar_urls.end()) {
-      eligible_urls_in_current_window.insert(tab_url);
-      if (eligible_urls_in_current_window.size() >= threshold) {
+    if (similar_products.find(tab_url) != similar_products.end()) {
+      similar_product_ids.insert(similar_products[tab_url]);
+      if (similar_product_ids.size() >= threshold) {
         return true;
       }
     }
   }
-  return eligible_urls_in_current_window.size() >= threshold;
+  return similar_product_ids.size() >= threshold;
 }
 
 bool IsWindowValidForEntryPoint(TabStripModel* tab_strip_model,
@@ -97,13 +97,14 @@ void ProductSpecificationsEntryPointController::OnTabStripModelChanged(
       !selection.new_contents || !cluster_manager_) {
     return;
   }
+  const GURL old_url = selection.old_contents->GetLastCommittedURL();
+  const GURL new_url = selection.new_contents->GetLastCommittedURL();
 
   cluster_manager_->GetEntryPointInfoForSelection(
-      selection.old_contents->GetLastCommittedURL(),
-      selection.new_contents->GetLastCommittedURL(),
+      old_url, new_url,
       base::BindOnce(&ProductSpecificationsEntryPointController::
                          ShowEntryPointWithTitleForSelection,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), old_url, new_url));
 }
 
 void ProductSpecificationsEntryPointController::TabChangedAt(
@@ -134,7 +135,7 @@ void ProductSpecificationsEntryPointController::OnEntryPointExecuted() {
   DCHECK(product_specifications_service_);
   std::set<GURL> urls;
   auto candidate_products =
-      current_entry_point_info_->similar_candidate_products_urls;
+      current_entry_point_info_->similar_candidate_products;
   for (auto url_info : shopping_service_->GetUrlInfosForActiveWebWrappers()) {
     if (base::Contains(candidate_products, url_info.url)) {
       urls.insert(url_info.url);
@@ -179,11 +180,22 @@ void ProductSpecificationsEntryPointController::OnClusterFinishedForNavigation(
 
 void ProductSpecificationsEntryPointController::
     ShowEntryPointWithTitleForSelection(
+        const GURL old_url,
+        const GURL new_url,
         std::optional<EntryPointInfo> entry_point_info) {
   if (!entry_point_info.has_value()) {
     return;
   }
 
+  std::map<GURL, uint64_t> similar_products =
+      entry_point_info->similar_candidate_products;
+  if (similar_products.find(old_url) == similar_products.end() ||
+      similar_products.find(new_url) == similar_products.end()) {
+    return;
+  }
+  if (similar_products[old_url] == similar_products[new_url]) {
+    return;
+  }
   // TODO(qinmin): we should check whether tabstrips have changed while
   // waiting for the callback.
   ShowEntryPointWithTitle(std::move(entry_point_info));
