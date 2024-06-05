@@ -648,7 +648,6 @@ TEST_F(CreditCardFidoAuthenticatorTest,
 }
 
 TEST_F(CreditCardFidoAuthenticatorTest, OptOut_Success) {
-  base::HistogramTester histogram_tester;
   SetUserOptInPreference(true);
 
   EXPECT_TRUE(fido_authenticator().IsUserOptedIn());
@@ -661,8 +660,6 @@ TEST_F(CreditCardFidoAuthenticatorTest, OptOut_Success) {
   OptChange(AutofillClient::PaymentsRpcResult::kSuccess,
             /*user_is_opted_in=*/false);
   EXPECT_FALSE(fido_authenticator().IsUserOptedIn());
-  histogram_tester.ExpectTotalCount(
-      "Autofill.BetterAuth.OptOutCalled.FromSettingsPage", 1);
 }
 
 }  // namespace autofill

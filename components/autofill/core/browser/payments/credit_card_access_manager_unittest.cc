@@ -2690,11 +2690,8 @@ TEST_F(CreditCardAccessManagerTest, SettingsPage_FIDOEnrollment) {
       autofill_metrics::WebauthnOptInPromoUserDecisionMetric::kAccepted, 2);
 }
 
-// Ensure proper metrics are logged when user opts-out from settings page.
 TEST_F(CreditCardAccessManagerTest, SettingsPage_OptOut) {
   base::HistogramTester histogram_tester;
-  std::string histogram_name =
-      "Autofill.BetterAuth.OptOutCalled.FromSettingsPage";
   GetFIDOAuthenticator()->SetUserVerifiable(true);
   SetCreditCardFIDOAuthEnabled(true);
 
@@ -2705,7 +2702,6 @@ TEST_F(CreditCardAccessManagerTest, SettingsPage_OptOut) {
             /*user_is_opted_in=*/false);
 
   EXPECT_FALSE(IsCreditCardFIDOAuthEnabled());
-  histogram_tester.ExpectTotalCount(histogram_name, 1);
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

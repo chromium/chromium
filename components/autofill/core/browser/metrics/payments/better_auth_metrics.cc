@@ -87,8 +87,6 @@ void LogWebauthnOptChangeCalled(bool request_to_opt_in,
                                 WebauthnOptInParameters metric) {
   if (!request_to_opt_in) {
     DCHECK(!is_checkout_flow);
-    base::UmaHistogramBoolean(
-        "Autofill.BetterAuth.OptOutCalled.FromSettingsPage", true);
     return;
   }
 

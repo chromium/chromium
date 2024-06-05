@@ -179,6 +179,7 @@ class CreditCardFidoAuthenticator
       blink::mojom::PublicKeyCredentialCreationOptionsPtr creation_options);
 
   // Makes a request to payments to either opt-in or opt-out the user.
+  // TODO(crbug.com/345006413): Remove logic related to the FIDO opt-out flow.
   void OptChange(
       base::Value::Dict authenticator_response = base::Value::Dict());
 

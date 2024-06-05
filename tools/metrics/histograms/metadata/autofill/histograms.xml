@@ -1104,22 +1104,6 @@ chromium-metrics-reviews@google.com.
       variants="AutofillCreditCardWebauthnOptInOrigin"/>
 </histogram>
 
-<histogram name="Autofill.BetterAuth.OptOutCalled.FromSettingsPage"
-    enum="BooleanHit" expires_after="2024-11-03">
-  <owner>jsaul@google.com</owner>
-  <owner>siyua@chromium.org</owner>
-  <owner>autofill-auth-team@google.com</owner>
-  <summary>
-    Tracks the number of times UpdateAutofillUserPreference has been called with
-    the intention of opting out from FIDO authentication using the toggle switch
-    on the payments section on the settings page.
-
-    This will be useful when compared to values in
-    Autofill.BetterAuth.OptInCalled to give an idea of what percentage of users
-    decide to opt-out.
-  </summary>
-</histogram>
-
 <histogram
     name="Autofill.BetterAuth.PreflightCallResponseReceivedOnCardSelection.{AutofillFidoAuthenticationEnabledState}.{CardType}"
     enum="AutofillCreditCardPreflightCallEvent" expires_after="2025-07-01">
