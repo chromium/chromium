@@ -154,6 +154,9 @@ using ::chromeos::WindowStateType;
 constexpr const char kActiveWindowChangedFromOverview[] =
     "WindowSelector_ActiveWindowChanged";
 
+constexpr gfx::Rect kInitWindowBoundsToGrow(80, 80);
+constexpr gfx::Rect kInitWindowBoundsToShrink(600, 600);
+
 class TweenTester : public ui::LayerAnimationObserver {
  public:
   explicit TweenTester(aura::Window* window) : window_(window) {
@@ -4052,7 +4055,8 @@ class OverviewRasterScaleTest : public OverviewSessionTest {
 // overview mode.
 TEST_P(OverviewRasterScaleTest,
        RasterScaleAnimatedSingleWindowEnterGrowExitShrink) {
-  std::unique_ptr<aura::Window> window(CreateTestWindow(gfx::Rect(100, 100)));
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindow(kInitWindowBoundsToGrow));
   auto tracker = RasterScaleChangeTracker(window.get());
 
   gfx::Rect start_bounds = GetTransformedTargetBounds(window.get());
@@ -4092,7 +4096,8 @@ TEST_P(OverviewRasterScaleTest,
 // overview mode.
 TEST_P(OverviewRasterScaleTest,
        RasterScaleAnimatedSingleWindowEnterShrinkExitGrow) {
-  std::unique_ptr<aura::Window> window(CreateTestWindow(gfx::Rect(600, 600)));
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindow(kInitWindowBoundsToShrink));
   auto tracker = RasterScaleChangeTracker(window.get());
 
   gfx::Rect start_bounds = GetTransformedTargetBounds(window.get());
@@ -4130,7 +4135,8 @@ TEST_P(OverviewRasterScaleTest,
 // entering overview mode.
 TEST_P(OverviewRasterScaleTest,
        RasterScaleMinimizedSingleWindowEnterGrowExitShrink) {
-  std::unique_ptr<aura::Window> window(CreateTestWindow(gfx::Rect(100, 100)));
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindow(kInitWindowBoundsToGrow));
   auto tracker = RasterScaleChangeTracker(window.get());
 
   gfx::Rect start_bounds = GetTransformedTargetBounds(window.get());
@@ -4172,7 +4178,8 @@ TEST_P(OverviewRasterScaleTest,
 // entering overview mode.
 TEST_P(OverviewRasterScaleTest,
        RasterScaleMinimizedSingleWindowEnterShrinkExitGrow) {
-  std::unique_ptr<aura::Window> window(CreateTestWindow(gfx::Rect(600, 600)));
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindow(kInitWindowBoundsToShrink));
   auto tracker = RasterScaleChangeTracker(window.get());
 
   gfx::Rect start_bounds = GetTransformedTargetBounds(window.get());
@@ -4214,13 +4221,13 @@ TEST_P(OverviewRasterScaleTest,
 // different states.
 TEST_P(OverviewRasterScaleTest, RasterScaleMultipleWindows) {
   std::unique_ptr<aura::Window> window_grow_animated(
-      CreateTestWindow(gfx::Rect(100, 100)));
+      CreateTestWindow(kInitWindowBoundsToGrow));
   std::unique_ptr<aura::Window> window_shrink_animated(
-      CreateTestWindow(gfx::Rect(600, 600)));
+      CreateTestWindow(kInitWindowBoundsToShrink));
   std::unique_ptr<aura::Window> window_grow_minimized(
-      CreateTestWindow(gfx::Rect(100, 100)));
+      CreateTestWindow(kInitWindowBoundsToGrow));
   std::unique_ptr<aura::Window> window_shrink_minimized(
-      CreateTestWindow(gfx::Rect(600, 600)));
+      CreateTestWindow(kInitWindowBoundsToShrink));
 
   MinimizeAndCheckWindow(window_grow_minimized.get());
   MinimizeAndCheckWindow(window_shrink_minimized.get());
@@ -4311,9 +4318,9 @@ TEST_P(OverviewRasterScaleTest, RasterScaleMaximizedWithGrowingRestoredOnTop) {
   std::unique_ptr<aura::Window> window_maximized(
       CreateTestWindow(gfx::Rect(100, 100)));
   std::unique_ptr<aura::Window> window_grow(
-      CreateTestWindow(gfx::Rect(100, 100)));
+      CreateTestWindow(kInitWindowBoundsToGrow));
   std::unique_ptr<aura::Window> window_shrink(
-      CreateTestWindow(gfx::Rect(600, 600)));
+      CreateTestWindow(kInitWindowBoundsToShrink));
 
   MaximizeAndCheckWindow(window_maximized.get());
 
@@ -4381,9 +4388,9 @@ TEST_P(OverviewRasterScaleTest, RasterScaleMaximizedWithGrowingRestoredOnTop) {
 // Tests raster scale changes when a maximized window exists with windows below.
 TEST_P(OverviewRasterScaleTest, RasterScaleMaximizedWithGrowingRestoredBelow) {
   std::unique_ptr<aura::Window> window_grow(
-      CreateTestWindow(gfx::Rect(100, 100)));
+      CreateTestWindow(kInitWindowBoundsToGrow));
   std::unique_ptr<aura::Window> window_shrink(
-      CreateTestWindow(gfx::Rect(600, 600)));
+      CreateTestWindow(kInitWindowBoundsToShrink));
   std::unique_ptr<aura::Window> window_maximized(
       CreateTestWindow(gfx::Rect(100, 100)));
 
@@ -4458,19 +4465,19 @@ TEST_P(OverviewRasterScaleTest, RasterScaleMaximizedWithGrowingRestoredBelow) {
 // and exiting.
 TEST_P(OverviewRasterScaleTest, RasterScaleMultipleWindowsCancel) {
   std::unique_ptr<aura::Window> window_grow_covered(
-      CreateTestWindow(gfx::Rect(100, 100)));
+      CreateTestWindow(kInitWindowBoundsToGrow));
   std::unique_ptr<aura::Window> window_shrink_covered(
-      CreateTestWindow(gfx::Rect(600, 600)));
+      CreateTestWindow(kInitWindowBoundsToShrink));
   std::unique_ptr<aura::Window> window_maximized(
       CreateTestWindow(gfx::Rect(100, 100)));
   std::unique_ptr<aura::Window> window_grow_animated(
-      CreateTestWindow(gfx::Rect(100, 100)));
+      CreateTestWindow(kInitWindowBoundsToGrow));
   std::unique_ptr<aura::Window> window_shrink_animated(
-      CreateTestWindow(gfx::Rect(600, 600)));
+      CreateTestWindow(kInitWindowBoundsToShrink));
   std::unique_ptr<aura::Window> window_grow_minimized(
-      CreateTestWindow(gfx::Rect(100, 100)));
+      CreateTestWindow(kInitWindowBoundsToGrow));
   std::unique_ptr<aura::Window> window_shrink_minimized(
-      CreateTestWindow(gfx::Rect(600, 600)));
+      CreateTestWindow(kInitWindowBoundsToShrink));
 
   MinimizeAndCheckWindow(window_grow_minimized.get());
   MinimizeAndCheckWindow(window_shrink_minimized.get());
@@ -4696,19 +4703,19 @@ TEST_P(OverviewRasterScaleTest, RasterScaleMultipleWindowsCancel) {
 // Tests raster scale changes for transient windows.
 TEST_P(OverviewRasterScaleTest, RasterScaleTransientChildWindows) {
   std::unique_ptr<aura::Window> window_grow_covered(
-      CreateTestWindow(gfx::Rect(100, 100)));
+      CreateTestWindow(kInitWindowBoundsToGrow));
   std::unique_ptr<aura::Window> window_shrink_covered(
-      CreateTestWindow(gfx::Rect(600, 600)));
+      CreateTestWindow(kInitWindowBoundsToShrink));
   std::unique_ptr<aura::Window> window_maximized(
       CreateTestWindow(gfx::Rect(100, 100)));
   std::unique_ptr<aura::Window> window_grow_animated(
-      CreateTestWindow(gfx::Rect(100, 100)));
+      CreateTestWindow(kInitWindowBoundsToGrow));
   std::unique_ptr<aura::Window> window_shrink_animated(
-      CreateTestWindow(gfx::Rect(600, 600)));
+      CreateTestWindow(kInitWindowBoundsToShrink));
   std::unique_ptr<aura::Window> window_grow_minimized(
-      CreateTestWindow(gfx::Rect(100, 100)));
+      CreateTestWindow(kInitWindowBoundsToGrow));
   std::unique_ptr<aura::Window> window_shrink_minimized(
-      CreateTestWindow(gfx::Rect(600, 600)));
+      CreateTestWindow(kInitWindowBoundsToShrink));
 
   std::unique_ptr<aura::Window> window_grow_covered_transient(
       CreateTestWindow(gfx::Rect(25, 25)));
@@ -5130,7 +5137,7 @@ TEST_P(OverviewRasterScaleTest,
   std::unique_ptr<aura::Window> window(CreateTestWindow(gfx::Rect(100, 100)));
 
   std::unique_ptr<aura::Window> window_transient(
-      CreateTestWindow(gfx::Rect(600, 600)));
+      CreateTestWindow(kInitWindowBoundsToShrink));
 
   auto tracker = RasterScaleChangeTracker(window.get());
   auto tracker_transient = RasterScaleChangeTracker(window_transient.get());
