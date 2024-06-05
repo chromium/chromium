@@ -11,7 +11,9 @@ import './strings.m.js';
 
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
+// <if expr="is_chromeos">
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+// </if>
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -122,43 +124,43 @@ export class ManagementUiElement extends ManagementUiElementBase {
     };
   }
 
-  protected applications_: Application[]|null;
-  protected browserReportingInfo_: BrowserReportingData[]|null;
-  protected profileReportingInfo_: BrowserReportingData[]|null;
-  protected extensions_: Extension[]|null;
-  protected managedWebsites_: string[]|null;
-  protected managedWebsitesSubtitle_: string;
+  protected applications_: Application[]|null = null;
+  protected browserReportingInfo_: BrowserReportingData[]|null = null;
+  protected profileReportingInfo_: BrowserReportingData[]|null = null;
+  protected extensions_: Extension[]|null = null;
+  protected managedWebsites_: string[]|null = null;
+  protected managedWebsitesSubtitle_: string = '';
 
   // <if expr="is_chromeos">
-  protected deviceReportingInfo_: DeviceReportingResponse[]|null;
-  protected localTrustRoots_: string;
-  protected filesUploadToCloud_: string;
-  protected customerLogo_: string;
-  protected managementOverview_: string;
-  protected pluginVmDataCollectionEnabled_: boolean;
-  protected eolAdminMessage_: string;
-  protected eolMessage_: string;
-  protected showMonitoredNetworkPrivacyDisclosure_: boolean;
+  protected deviceReportingInfo_: DeviceReportingResponse[]|null = null;
+  protected localTrustRoots_: string = '';
+  protected filesUploadToCloud_: string = '';
+  protected customerLogo_: string = '';
+  protected managementOverview_: string = '';
+  protected pluginVmDataCollectionEnabled_: boolean = false;
+  protected eolAdminMessage_: string = '';
+  protected eolMessage_: string = '';
+  protected showMonitoredNetworkPrivacyDisclosure_: boolean = false;
   // </if>
 
-  protected subtitle_: string;
+  protected subtitle_: string = '';
 
   // <if expr="not chromeos_ash">
   protected managementNoticeHtml_: TrustedHTML = window.trustedTypes!.emptyHTML;
   // </if>
 
-  protected managed_: boolean;
-  protected applicationReportingSubtitle_: string;
-  protected extensionReportingSubtitle_: string;
-  protected threatProtectionInfo_: ThreatProtectionInfo;
-  private browserProxy_: ManagementBrowserProxy|null = null;
+  protected managed_: boolean = false;
+  protected applicationReportingSubtitle_: string = '';
+  protected extensionReportingSubtitle_: string = '';
+  protected threatProtectionInfo_: ThreatProtectionInfo|null = null;
+  private browserProxy_: ManagementBrowserProxy =
+      ManagementBrowserProxyImpl.getInstance();
 
   /** @override */
   override connectedCallback() {
     super.connectedCallback();
 
     document.documentElement.classList.remove('loading');
-    this.browserProxy_ = ManagementBrowserProxyImpl.getInstance();
     this.updateManagedFields_();
     this.initReportingInfo_();
     this.getThreatProtectionInfo_();
@@ -199,9 +201,9 @@ export class ManagementUiElement extends ManagementUiElementBase {
   }
 
   private initReportingInfo_() {
-    this.browserProxy_!.initBrowserReportingInfo().then(
+    this.browserProxy_.initBrowserReportingInfo().then(
         reportingInfo => this.onBrowserReportingInfoReceived_(reportingInfo));
-    this.browserProxy_!.initProfileReportingInfo().then(
+    this.browserProxy_.initProfileReportingInfo().then(
         reportingInfo => this.onProfileReportingInfoReceived_(reportingInfo));
   }
 
@@ -212,7 +214,7 @@ export class ManagementUiElement extends ManagementUiElementBase {
         icon: this.getIconForReportingType_(response.reportingType),
         messageIds: [],
       };
-      info[response.reportingType].messageIds.push(response.messageId);
+      info[response.reportingType]!.messageIds.push(response.messageId);
       return info;
     }, {} as {[k: string]: {icon: string, messageIds: string[]}});
 
@@ -227,8 +229,9 @@ export class ManagementUiElement extends ManagementUiElementBase {
 
     this.browserReportingInfo_ =
         Object.keys(reportingInfoMap)
-            .sort((a, b) => reportingTypeOrder[a] - reportingTypeOrder[b])
-            .map(reportingType => reportingInfoMap[reportingType]);
+            .sort((a, b) => reportingTypeOrder[a]! - reportingTypeOrder[b]!)
+            .map(reportingType => reportingInfoMap[reportingType]) as
+        BrowserReportingData[];
   }
 
 
@@ -240,25 +243,25 @@ export class ManagementUiElement extends ManagementUiElementBase {
                           }));
   }
   private getExtensions_() {
-    this.browserProxy_!.getExtensions().then(extensions => {
+    this.browserProxy_.getExtensions().then(extensions => {
       this.extensions_ = extensions;
     });
   }
 
   private getManagedWebsites_() {
-    this.browserProxy_!.getManagedWebsites().then(managedWebsites => {
+    this.browserProxy_.getManagedWebsites().then(managedWebsites => {
       this.managedWebsites_ = managedWebsites;
     });
   }
 
   private getApplications_() {
-    this.browserProxy_!.getApplications().then(applications => {
+    this.browserProxy_.getApplications().then(applications => {
       this.applications_ = applications;
     });
   }
 
   private getThreatProtectionInfo_() {
-    this.browserProxy_!.getThreatProtectionInfo().then(info => {
+    this.browserProxy_.getThreatProtectionInfo().then(info => {
       this.threatProtectionInfo_ = info;
     });
   }
@@ -273,7 +276,7 @@ export class ManagementUiElement extends ManagementUiElementBase {
 
   // <if expr="is_chromeos">
   private getLocalTrustRootsInfo_() {
-    this.browserProxy_!.getLocalTrustRootsInfo().then(trustRootsConfigured => {
+    this.browserProxy_.getLocalTrustRootsInfo().then(trustRootsConfigured => {
       this.localTrustRoots_ = trustRootsConfigured ?
           loadTimeData.getString('managementTrustRootsConfigured') :
           '';
@@ -281,19 +284,19 @@ export class ManagementUiElement extends ManagementUiElementBase {
   }
 
   private getFilesUploadToCloudInfo_() {
-    this.browserProxy_!.getFilesUploadToCloudInfo().then(info => {
+    this.browserProxy_.getFilesUploadToCloudInfo().then(info => {
       this.filesUploadToCloud_ = info;
     });
   }
 
   private getDeviceReportingInfo_() {
-    this.browserProxy_!.getDeviceReportingInfo().then(reportingInfo => {
+    this.browserProxy_.getDeviceReportingInfo().then(reportingInfo => {
       this.deviceReportingInfo_ = reportingInfo;
     });
   }
 
   private getPluginVmDataCollectionStatus_() {
-    this.browserProxy_!.getPluginVmDataCollectionStatus().then(
+    this.browserProxy_.getPluginVmDataCollectionStatus().then(
         pluginVmDataCollectionEnabled => {
           this.pluginVmDataCollectionEnabled_ = pluginVmDataCollectionEnabled;
         });
@@ -452,7 +455,7 @@ export class ManagementUiElement extends ManagementUiElementBase {
   }
 
   private updateManagedFields_() {
-    this.browserProxy_!.getContextualManagedData().then(data => {
+    this.browserProxy_.getContextualManagedData().then(data => {
       this.managed_ = data.managed;
       this.extensionReportingSubtitle_ = data.extensionReportingSubtitle;
       this.managedWebsitesSubtitle_ = data.managedWebsitesSubtitle;

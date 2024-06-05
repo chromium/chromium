@@ -49,7 +49,7 @@
       ${this.showThreatProtectionInfo_() ? html`
         <section>
           <h2 class="cr-title-text">$i18n{threatProtectionTitle}</h2>
-          <div class="subtitle">${this.threatProtectionInfo_.description}</div>
+          <div class="subtitle">${this.threatProtectionInfo_!.description}</div>
           <table class="content-indented">
             <tr>
               <th class="protection-name">$i18n{connectorEvent}</th>
@@ -57,7 +57,7 @@
                 $i18n{connectorVisibleData}
               </th>
             </tr>
-            ${this.threatProtectionInfo_.info.map(item => html`
+            ${this.threatProtectionInfo_!.info.map(item => html`
               <tr>
                 <td class="protection-name">${this.i18n(item.title)}</td>
                 <td class="protection-permissions">
@@ -139,7 +139,7 @@
             <div class="report">
               <ul class="profile">
                 ${this.profileReportingInfo_!.map(item => html`
-                  <li .innerHTML="${this.i18nAdvanced(item.messageIds[0])}">
+                  <li .innerHTML="${this.i18nAdvanced(item.messageIds[0]!)}">
                   </li>
                 `)}
               </ul>
