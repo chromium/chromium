@@ -439,6 +439,8 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
     suppress_preferred_format_warning_ = true;
   }
 
+  alpha_mode_ = descriptor->alphaMode().AsEnum();
+
   // In the scenario that the system doesn't support the requested format but
   // it's one that WebGPU is required to offer, a separate texture will be
   // returned instead with the desired format and the texture will be copied to
@@ -468,8 +470,6 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
     swap_texture_descriptor_.viewFormats = nullptr;
     swap_texture_descriptor_.viewFormatCount = 0;
   }
-
-  alpha_mode_ = descriptor->alphaMode().AsEnum();
 
   if (!ValidateAndConvertColorSpace(descriptor->colorSpace(), color_space_,
                                     exception_state)) {
