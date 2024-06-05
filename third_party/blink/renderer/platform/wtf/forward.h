@@ -42,6 +42,7 @@ class Vector;
 class AtomicString;
 class CaseMap;
 class OrdinalNumber;
+class SegmentedBuffer;
 class SharedBuffer;
 class StringImpl;
 class StringView;
@@ -54,6 +55,7 @@ using WTF::Vector;
 
 using WTF::AtomicString;
 using WTF::CaseMap;
+using WTF::SegmentedBuffer;
 using WTF::SharedBuffer;
 using WTF::StringBuffer;
 using WTF::StringImpl;

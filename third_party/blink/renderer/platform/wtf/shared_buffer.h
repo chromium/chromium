@@ -44,7 +44,9 @@
 
 namespace WTF {
 
-class WTF_EXPORT SharedBuffer : public RefCounted<SharedBuffer> {
+// This class is designed to store and manage large amounts of data that may be
+// split into multiple segments.
+class WTF_EXPORT SegmentedBuffer {
  public:
   class Segment {
    public:
@@ -64,9 +66,9 @@ class WTF_EXPORT SharedBuffer : public RefCounted<SharedBuffer> {
     Vector<char> data_;
   };
 
-  // Iterator for ShreadBuffer contents. An Iterator will get invalid once the
-  // associated SharedBuffer is modified (e.g., Append() is called). An Iterator
-  // doesn't retain the associated container.
+  // Iterator for SegmentedBuffer contents. An Iterator will get invalid once
+  // the associated SegmentedBuffer is modified (e.g., Append() is called). An
+  // Iterator doesn't retain the associated container.
   class WTF_EXPORT Iterator final {
    public:
     ~Iterator() = default;
@@ -92,56 +94,28 @@ class WTF_EXPORT SharedBuffer : public RefCounted<SharedBuffer> {
     }
 
    private:
-    friend class SharedBuffer;
+    friend class SegmentedBuffer;
     // for end()
-    explicit Iterator(const SharedBuffer* buffer);
+    explicit Iterator(const SegmentedBuffer* buffer);
     // for the rest
     Iterator(Vector<Segment>::const_iterator segment_it,
              size_t offset,
-             const SharedBuffer* buffer);
+             const SegmentedBuffer* buffer);
 
     void Init(size_t offset);
     bool IsEnd() const { return segment_it_ == buffer_->segments_.end(); }
 
     Vector<Segment>::const_iterator segment_it_;
     base::span<const char> value_;
-    const SharedBuffer* buffer_;
+    const SegmentedBuffer* buffer_;
   };
 
-  static scoped_refptr<SharedBuffer> Create() {
-    return base::AdoptRef(new SharedBuffer);
-  }
-
-  static scoped_refptr<SharedBuffer> Create(base::span<const char> data) {
-    return base::AdoptRef(new SharedBuffer(data));
-  }
-
-  static scoped_refptr<SharedBuffer> Create(
-      base::span<const unsigned char> data) {
-    return base::AdoptRef(new SharedBuffer(data));
-  }
-
-  HAS_STRICTLY_TYPED_ARG
-  static scoped_refptr<SharedBuffer> Create(const char* data,
-                                            STRICTLY_TYPED_ARG(size)) {
-    ALLOW_NUMERIC_ARG_TYPES_PROMOTABLE_TO(size_t);
-    return Create(
-        // SAFETY: The caller must ensure `data` points to `size` elements.
-        // TODO(crbug.com/40284755): Remove this in favor of the span versions.
-        UNSAFE_BUFFERS(base::span(data, size)));
-  }
-
-  HAS_STRICTLY_TYPED_ARG
-  static scoped_refptr<SharedBuffer> Create(const unsigned char* data,
-                                            STRICTLY_TYPED_ARG(size)) {
-    ALLOW_NUMERIC_ARG_TYPES_PROMOTABLE_TO(size_t);
-    return Create(
-        // SAFETY: The caller must ensure `data` points to `size` elements.
-        // TODO(crbug.com/40284755): Remove this in favor of the span versions.
-        UNSAFE_BUFFERS(base::span(data, size)));
-  }
-
-  static scoped_refptr<SharedBuffer> Create(Vector<char>&&);
+  SegmentedBuffer() = default;
+  ~SegmentedBuffer() = default;
+  SegmentedBuffer(const SegmentedBuffer&) = delete;
+  SegmentedBuffer& operator=(const SegmentedBuffer&) = delete;
+  SegmentedBuffer(SegmentedBuffer&&) = default;
+  SegmentedBuffer& operator=(SegmentedBuffer&&) = default;
 
   // DEPRECATED: use a segment iterator, FlatData or explicit Copy() instead.
   //
@@ -211,34 +185,26 @@ class WTF_EXPORT SharedBuffer : public RefCounted<SharedBuffer> {
 
   void GetMemoryDumpNameAndSize(String& dump_name, size_t& dump_size) const;
 
-  // Helper for providing a contiguous view of the data.  If the SharedBuffer is
-  // segmented, this will copy/merge all segments into a temporary buffer.
+  // Helper for providing a contiguous view of the data.  If the SegmentedBuffer
+  // is segmented, this will copy/merge all segments into a temporary buffer.
   // In general, clients should use the efficient/segmented accessors.
   class WTF_EXPORT DeprecatedFlatData {
     STACK_ALLOCATED();
 
    public:
-    explicit DeprecatedFlatData(scoped_refptr<const SharedBuffer>);
+    explicit DeprecatedFlatData(const SegmentedBuffer*);
 
     const char* Data() const { return data_; }
     size_t size() const { return buffer_->size(); }
 
    private:
-    scoped_refptr<const SharedBuffer> buffer_;
+    const SegmentedBuffer* buffer_;
     Vector<char> flat_buffer_;
     const char* data_;
   };
 
  private:
-  friend class RefCounted<SharedBuffer>;
-  ~SharedBuffer();
-
-  SharedBuffer();
-  explicit SharedBuffer(wtf_size_t);
-  explicit SharedBuffer(base::span<const char>);
-  explicit SharedBuffer(base::span<const unsigned char>);
-
-  // See SharedBuffer::data().
+  // See SegmentedBuffer::Data().
   void MergeSegmentsIntoBuffer();
 
   bool GetBytesInternal(void* dest, size_t) const;
@@ -250,7 +216,7 @@ class WTF_EXPORT SharedBuffer : public RefCounted<SharedBuffer> {
 
 // Current CopyAs specializations.
 template <>
-inline Vector<char> SharedBuffer::CopyAs() const {
+inline Vector<char> SegmentedBuffer::CopyAs() const {
   Vector<char> buffer;
   buffer.ReserveInitialCapacity(base::checked_cast<wtf_size_t>(size_));
 
@@ -262,7 +228,7 @@ inline Vector<char> SharedBuffer::CopyAs() const {
 }
 
 template <>
-inline Vector<uint8_t> SharedBuffer::CopyAs() const {
+inline Vector<uint8_t> SegmentedBuffer::CopyAs() const {
   Vector<uint8_t> buffer;
   buffer.ReserveInitialCapacity(base::checked_cast<wtf_size_t>(size_));
 
@@ -276,7 +242,7 @@ inline Vector<uint8_t> SharedBuffer::CopyAs() const {
 }
 
 template <>
-inline std::vector<char> SharedBuffer::CopyAs() const {
+inline std::vector<char> SegmentedBuffer::CopyAs() const {
   std::vector<char> buffer;
   buffer.reserve(size_);
 
@@ -288,7 +254,7 @@ inline std::vector<char> SharedBuffer::CopyAs() const {
 }
 
 template <>
-inline std::vector<uint8_t> SharedBuffer::CopyAs() const {
+inline std::vector<uint8_t> SegmentedBuffer::CopyAs() const {
   std::vector<uint8_t> buffer;
   buffer.reserve(size_);
 
@@ -299,6 +265,55 @@ inline std::vector<uint8_t> SharedBuffer::CopyAs() const {
   DCHECK_EQ(buffer.size(), size_);
   return buffer;
 }
+
+// This is a RefCounted version of the SegmentedBuffer class.
+class WTF_EXPORT SharedBuffer : public SegmentedBuffer,
+                                public RefCounted<SharedBuffer> {
+ public:
+  static scoped_refptr<SharedBuffer> Create() {
+    return base::AdoptRef(new SharedBuffer);
+  }
+
+  static scoped_refptr<SharedBuffer> Create(base::span<const char> data) {
+    return base::AdoptRef(new SharedBuffer(data));
+  }
+
+  static scoped_refptr<SharedBuffer> Create(
+      base::span<const unsigned char> data) {
+    return base::AdoptRef(new SharedBuffer(data));
+  }
+
+  HAS_STRICTLY_TYPED_ARG
+  static scoped_refptr<SharedBuffer> Create(const char* data,
+                                            STRICTLY_TYPED_ARG(size)) {
+    ALLOW_NUMERIC_ARG_TYPES_PROMOTABLE_TO(size_t);
+    return Create(
+        // SAFETY: The caller must ensure `data` points to `size` elements.
+        // TODO(crbug.com/40284755): Remove this in favor of the span versions.
+        UNSAFE_BUFFERS(base::span(data, size)));
+  }
+
+  HAS_STRICTLY_TYPED_ARG
+  static scoped_refptr<SharedBuffer> Create(const unsigned char* data,
+                                            STRICTLY_TYPED_ARG(size)) {
+    ALLOW_NUMERIC_ARG_TYPES_PROMOTABLE_TO(size_t);
+    return Create(
+        // SAFETY: The caller must ensure `data` points to `size` elements.
+        // TODO(crbug.com/40284755): Remove this in favor of the span versions.
+        UNSAFE_BUFFERS(base::span(data, size)));
+  }
+
+  static scoped_refptr<SharedBuffer> Create(Vector<char>&&);
+
+ private:
+  friend class RefCounted<SharedBuffer>;
+  ~SharedBuffer();
+
+  SharedBuffer();
+  explicit SharedBuffer(wtf_size_t);
+  explicit SharedBuffer(base::span<const char>);
+  explicit SharedBuffer(base::span<const unsigned char>);
+};
 
 }  // namespace WTF
 

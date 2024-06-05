@@ -164,7 +164,7 @@ TEST(SharedBufferTest, constructorWithFlatData) {
 
 TEST(SharedBufferTest, FlatData) {
   auto check_flat_data = [](scoped_refptr<const SharedBuffer> shared_buffer) {
-    const SharedBuffer::DeprecatedFlatData flat_buffer(shared_buffer);
+    const SegmentedBuffer::DeprecatedFlatData flat_buffer(shared_buffer.get());
 
     EXPECT_EQ(shared_buffer->size(), flat_buffer.size());
     size_t offset = 0;

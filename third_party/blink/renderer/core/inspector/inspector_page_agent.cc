@@ -313,7 +313,7 @@ static void MaybeEncodeTextContent(const String& text_content,
                                   base64_encoded);
   }
 
-  const SharedBuffer::DeprecatedFlatData flat_buffer(std::move(buffer));
+  const SegmentedBuffer::DeprecatedFlatData flat_buffer(buffer.get());
   return MaybeEncodeTextContent(
       text_content, flat_buffer.Data(),
       base::checked_cast<wtf_size_t>(flat_buffer.size()), result,
@@ -342,7 +342,7 @@ bool InspectorPageAgent::SharedBufferContent(
       CreateResourceTextDecoder(mime_type, text_encoding_name);
   WTF::TextEncoding encoding(text_encoding_name);
 
-  const SharedBuffer::DeprecatedFlatData flat_buffer(std::move(buffer));
+  const SegmentedBuffer::DeprecatedFlatData flat_buffer(buffer.get());
   if (decoder) {
     text_content = decoder->Decode(flat_buffer.Data(), flat_buffer.size());
     text_content = text_content + decoder->Flush();
@@ -372,7 +372,7 @@ bool InspectorPageAgent::CachedResourceContent(const Resource* cached_resource,
     if (!buffer)
       return false;
 
-    const SharedBuffer::DeprecatedFlatData flat_buffer(std::move(buffer));
+    const SegmentedBuffer::DeprecatedFlatData flat_buffer(buffer.get());
     *result = Base64Encode(base::as_bytes(
         base::make_span(flat_buffer.Data(), flat_buffer.size())));
     *base64_encoded = true;

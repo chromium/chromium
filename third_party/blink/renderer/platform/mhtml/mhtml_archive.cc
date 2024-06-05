@@ -403,7 +403,7 @@ void MHTMLArchive::GenerateMHTMLPart(const String& boundary,
   } else {
     // FIXME: ideally we would encode the content as a stream without having to
     // fetch it all.
-    const SharedBuffer::DeprecatedFlatData flat_data(resource.data);
+    const SegmentedBuffer::DeprecatedFlatData flat_data(resource.data.get());
     const char* data = flat_data.Data();
     wtf_size_t data_length = base::checked_cast<wtf_size_t>(flat_data.size());
     Vector<char> encoded_data;

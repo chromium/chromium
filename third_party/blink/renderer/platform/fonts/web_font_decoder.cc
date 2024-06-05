@@ -175,7 +175,7 @@ sk_sp<SkTypeface> WebFontDecoder::Decode(SharedBuffer* buffer) {
   // the original.
   ots::ExpandingMemoryStream output(buffer->size(), kMaxDecompressedSize);
   BlinkOTSContext ots_context;
-  SharedBuffer::DeprecatedFlatData flattened_buffer(buffer);
+  SegmentedBuffer::DeprecatedFlatData flattened_buffer(buffer);
 
   TRACE_EVENT_BEGIN0("blink", "DecodeFont");
   bool ok = ots_context.Process(

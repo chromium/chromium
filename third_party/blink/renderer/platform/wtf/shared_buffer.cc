@@ -38,26 +38,26 @@
 
 namespace WTF {
 
-SharedBuffer::Iterator& SharedBuffer::Iterator::operator++() {
+SegmentedBuffer::Iterator& SegmentedBuffer::Iterator::operator++() {
   DCHECK(!IsEnd());
   ++segment_it_;
   Init(0);
   return *this;
 }
 
-SharedBuffer::Iterator::Iterator(const SharedBuffer* buffer)
+SegmentedBuffer::Iterator::Iterator(const SegmentedBuffer* buffer)
     : segment_it_(buffer->segments_.end()), buffer_(buffer) {
   DCHECK(IsEnd());
 }
 
-SharedBuffer::Iterator::Iterator(Vector<Segment>::const_iterator segment_it,
-                                 size_t offset,
-                                 const SharedBuffer* buffer)
+SegmentedBuffer::Iterator::Iterator(Vector<Segment>::const_iterator segment_it,
+                                    size_t offset,
+                                    const SegmentedBuffer* buffer)
     : segment_it_(segment_it), buffer_(buffer) {
   Init(offset);
 }
 
-void SharedBuffer::Iterator::Init(size_t offset) {
+void SegmentedBuffer::Iterator::Init(size_t offset) {
   if (IsEnd()) {
     value_ = base::span<const char>();
     return;
@@ -65,24 +65,7 @@ void SharedBuffer::Iterator::Init(size_t offset) {
   value_ = base::span(segment_it_->data()).subspan(offset);
 }
 
-SharedBuffer::SharedBuffer() : size_(0) {}
-
-SharedBuffer::SharedBuffer(base::span<const char> data) {
-  Append(data);
-}
-
-SharedBuffer::SharedBuffer(base::span<const unsigned char> data)
-    : SharedBuffer(base::as_chars(data)) {}
-
-SharedBuffer::~SharedBuffer() = default;
-
-scoped_refptr<SharedBuffer> SharedBuffer::Create(Vector<char>&& vector) {
-  scoped_refptr<SharedBuffer> buffer = Create();
-  buffer->Append(std::move(vector));
-  return buffer;
-}
-
-const char* SharedBuffer::FlattenIfNeededAndGetData() {
+const char* SegmentedBuffer::FlattenIfNeededAndGetData() {
   MergeSegmentsIntoBuffer();
   if (segments_.empty()) {
     return nullptr;
@@ -90,14 +73,14 @@ const char* SharedBuffer::FlattenIfNeededAndGetData() {
   return segments_.begin()->data().data();
 }
 
-void SharedBuffer::Append(base::span<const char> data) {
+void SegmentedBuffer::Append(base::span<const char> data) {
   if (data.empty()) {
     return;
   }
   Append(Vector<char>(data));
 }
 
-void SharedBuffer::Append(Vector<char>&& vector) {
+void SegmentedBuffer::Append(Vector<char>&& vector) {
   if (vector.empty()) {
     return;
   }
@@ -106,20 +89,20 @@ void SharedBuffer::Append(Vector<char>&& vector) {
   segments_.emplace_back(start_position, std::move(vector));
 }
 
-void SharedBuffer::Clear() {
+void SegmentedBuffer::Clear() {
   segments_.clear();
   size_ = 0;
 }
 
-SharedBuffer::Iterator SharedBuffer::begin() const {
+SegmentedBuffer::Iterator SegmentedBuffer::begin() const {
   return GetIteratorAt(static_cast<size_t>(0));
 }
 
-SharedBuffer::Iterator SharedBuffer::end() const {
+SegmentedBuffer::Iterator SegmentedBuffer::end() const {
   return Iterator(this);
 }
 
-void SharedBuffer::MergeSegmentsIntoBuffer() {
+void SegmentedBuffer::MergeSegmentsIntoBuffer() {
   if (segments_.size() <= 1) {
     return;
   }
@@ -133,7 +116,7 @@ void SharedBuffer::MergeSegmentsIntoBuffer() {
   segments_.push_back(Segment(/*start_position=*/0, std::move(data)));
 }
 
-SharedBuffer::Iterator SharedBuffer::GetIteratorAtInternal(
+SegmentedBuffer::Iterator SegmentedBuffer::GetIteratorAtInternal(
     size_t position) const {
   if (position >= size()) {
     return cend();
@@ -150,7 +133,7 @@ SharedBuffer::Iterator SharedBuffer::GetIteratorAtInternal(
   return Iterator(it, position - it->start_position(), this);
 }
 
-bool SharedBuffer::GetBytesInternal(void* dest, size_t dest_size) const {
+bool SegmentedBuffer::GetBytesInternal(void* dest, size_t dest_size) const {
   if (!dest)
     return false;
 
@@ -165,15 +148,15 @@ bool SharedBuffer::GetBytesInternal(void* dest, size_t dest_size) const {
   return offset == dest_size;
 }
 
-void SharedBuffer::GetMemoryDumpNameAndSize(String& dump_name,
-                                            size_t& dump_size) const {
+void SegmentedBuffer::GetMemoryDumpNameAndSize(String& dump_name,
+                                               size_t& dump_size) const {
   dump_name = "/segments";
   dump_size = size_;
 }
 
-SharedBuffer::DeprecatedFlatData::DeprecatedFlatData(
-    scoped_refptr<const SharedBuffer> buffer)
-    : buffer_(std::move(buffer)) {
+SegmentedBuffer::DeprecatedFlatData::DeprecatedFlatData(
+    const SegmentedBuffer* buffer)
+    : buffer_(buffer) {
   DCHECK(buffer_);
   if (buffer_->segments_.empty()) {
     data_ = nullptr;
@@ -185,6 +168,23 @@ SharedBuffer::DeprecatedFlatData::DeprecatedFlatData(
   }
   flat_buffer_ = buffer_->CopyAs<Vector<char>>();
   data_ = flat_buffer_.data();
+}
+
+SharedBuffer::SharedBuffer() = default;
+
+SharedBuffer::SharedBuffer(base::span<const char> data) {
+  Append(data);
+}
+
+SharedBuffer::SharedBuffer(base::span<const unsigned char> data)
+    : SharedBuffer(base::as_chars(data)) {}
+
+SharedBuffer::~SharedBuffer() = default;
+
+scoped_refptr<SharedBuffer> SharedBuffer::Create(Vector<char>&& vector) {
+  scoped_refptr<SharedBuffer> buffer = Create();
+  buffer->Append(std::move(vector));
+  return buffer;
 }
 
 }  // namespace WTF
