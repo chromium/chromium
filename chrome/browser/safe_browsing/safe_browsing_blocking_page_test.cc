@@ -555,7 +555,6 @@ class TestSafeBrowsingBlockingPageFactory
 
     BaseSafeBrowsingErrorUI::SBErrorDisplayOptions display_options(
         BaseBlockingPage::IsMainPageLoadPending(unsafe_resources),
-        BaseBlockingPage::IsSubresource(unsafe_resources),
         is_extended_reporting_opt_in_allowed,
         web_contents->GetBrowserContext()->IsOffTheRecord(),
         IsExtendedReportingEnabled(*prefs),

@@ -42,7 +42,6 @@ class BaseSafeBrowsingErrorUI {
 
   struct SBErrorDisplayOptions {
     SBErrorDisplayOptions(bool is_main_frame_load_pending,
-                          bool is_subresource,
                           bool is_extended_reporting_opt_in_allowed,
                           bool is_off_the_record,
                           bool is_extended_reporting_enabled,
@@ -60,9 +59,6 @@ class BaseSafeBrowsingErrorUI {
     // Indicates if this SB interstitial is shown when the main frame load is
     // pending.
     bool is_main_frame_load_pending;
-
-    // Indicates if this SB interstitial is triggered by subresource.
-    bool is_subresource;
 
     // Indicates if user is allowed to opt-in extended reporting preference.
     bool is_extended_reporting_opt_in_allowed;
@@ -121,8 +117,6 @@ class BaseSafeBrowsingErrorUI {
   bool is_main_frame_load_pending() const {
     return display_options_.is_main_frame_load_pending;
   }
-
-  bool is_subresource() const { return display_options_.is_subresource; }
 
   bool is_extended_reporting_opt_in_allowed() const {
     return display_options_.is_extended_reporting_opt_in_allowed;

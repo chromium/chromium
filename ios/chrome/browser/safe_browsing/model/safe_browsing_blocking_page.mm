@@ -62,7 +62,7 @@ BaseSafeBrowsingErrorUI::SBErrorDisplayOptions GetDefaultDisplayOptions(
             SECURITY_SENSITIVE_SAFE_BROWSING_INTERSTITIAL);
   }
   return BaseSafeBrowsingErrorUI::SBErrorDisplayOptions(
-      resource.IsMainPageLoadPendingWithSyncCheck(), resource.is_subresource,
+      resource.IsMainPageLoadPendingWithSyncCheck(),
       /*is_extended_reporting_opt_in_allowed=*/false,
       /*is_off_the_record=*/false,
       /*is_extended_reporting=*/false,

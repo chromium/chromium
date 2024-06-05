@@ -122,7 +122,6 @@ class TestSafeBrowsingBlockingPage : public SafeBrowsingBlockingPage {
                 /*settings_helper=*/nullptr),
             BaseSafeBrowsingErrorUI::SBErrorDisplayOptions(
                 BaseBlockingPage::IsMainPageLoadPending(unsafe_resources),
-                BaseBlockingPage::IsSubresource(unsafe_resources),
                 false,                 // is_extended_reporting_opt_in_allowed
                 false,                 // is_off_the_record
                 false,                 // is_extended_reporting_enabled

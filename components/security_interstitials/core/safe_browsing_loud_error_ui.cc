@@ -263,11 +263,7 @@ void SafeBrowsingLoudErrorUI::PopulateMalwareLoadTimeData(
                                              IDS_MALWARE_V3_PRIMARY_PARAGRAPH));
   load_time_data.Set(
       "explanationParagraph",
-      is_subresource()
-          ? l10n_util::GetStringFUTF16(
-                IDS_MALWARE_V3_EXPLANATION_PARAGRAPH_SUBRESOURCE,
-                common_string_util::GetFormattedHostName(request_url()))
-          : l10n_util::GetStringUTF16(IDS_MALWARE_V3_EXPLANATION_PARAGRAPH));
+      l10n_util::GetStringUTF16(IDS_MALWARE_V3_EXPLANATION_PARAGRAPH));
   load_time_data.Set("finalParagraph", l10n_util::GetStringUTF16(
                                            IDS_MALWARE_V3_PROCEED_PARAGRAPH));
 }
@@ -281,11 +277,7 @@ void SafeBrowsingLoudErrorUI::PopulateHarmfulLoadTimeData(
                                              IDS_HARMFUL_V3_PRIMARY_PARAGRAPH));
   load_time_data.Set(
       "explanationParagraph",
-      is_subresource()
-          ? l10n_util::GetStringFUTF16(
-                IDS_HARMFUL_V3_EXPLANATION_PARAGRAPH_SUBRESOURCE,
-                common_string_util::GetFormattedHostName(request_url()))
-          : l10n_util::GetStringUTF16(IDS_HARMFUL_V3_EXPLANATION_PARAGRAPH));
+      l10n_util::GetStringUTF16(IDS_HARMFUL_V3_EXPLANATION_PARAGRAPH));
   load_time_data.Set("finalParagraph", l10n_util::GetStringUTF16(
                                            IDS_HARMFUL_V3_PROCEED_PARAGRAPH));
 }
@@ -300,11 +292,7 @@ void SafeBrowsingLoudErrorUI::PopulatePhishingLoadTimeData(
       l10n_util::GetStringUTF16(IDS_PHISHING_V4_PRIMARY_PARAGRAPH));
   load_time_data.Set(
       "explanationParagraph",
-      is_subresource()
-          ? l10n_util::GetStringFUTF16(
-                IDS_PHISHING_V4_EXPLANATION_PARAGRAPH_SUBRESOURCE,
-                common_string_util::GetFormattedHostName(request_url()))
-          : l10n_util::GetStringUTF16(IDS_PHISHING_V4_EXPLANATION_PARAGRAPH));
+      l10n_util::GetStringUTF16(IDS_PHISHING_V4_EXPLANATION_PARAGRAPH));
   load_time_data.Set("finalParagraph", l10n_util::GetStringUTF16(
                                            IDS_PHISHING_V4_PROCEED_PARAGRAPH));
 }
