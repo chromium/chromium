@@ -5715,6 +5715,12 @@ const char kArcDocumentsProviderUnknownSizeName[] =
 const char kArcDocumentsProviderUnknownSizeDescription[] =
     "Allow opening DocumentsProvider files where size is not reported.";
 
+const char kArcExtendInputAnrTimeoutName[] =
+    "Extend input event ANR timeout time";
+const char kArcExtendInputAnrTimeoutDescription[] =
+    "When enabled, the default input event ANR timeout time will be extended"
+    " from 5 seconds to 8 seconds.";
+
 const char kArcFilePickerExperimentName[] =
     "Enable file picker experiment for ARC";
 const char kArcFilePickerExperimentDescription[] =

@@ -96,6 +96,8 @@ void ArcChromeFeatureFlagsBridge::NotifyFeatureFlags() {
   flags->resize_compat = base::FeatureList::IsEnabled(arc::kResizeCompat);
   flags->ignore_hover_event_anr =
       base::FeatureList::IsEnabled(arc::kIgnoreHoverEventAnr);
+  flags->extend_input_anr_timeout =
+      base::FeatureList::IsEnabled(arc::kExtendInputAnrTimeout);
 
   chrome_feature_flags_instance->NotifyFeatureFlags(std::move(flags));
 }

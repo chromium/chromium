@@ -204,5 +204,17 @@ TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyIgnoreHoverEventAnr_Disabled) {
   EXPECT_FALSE(instance()->flags_called_value()->ignore_hover_event_anr);
 }
 
+TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyExtendInputAnrTimeout_Enabled) {
+  scoped_feature_list()->InitAndEnableFeature(arc::kExtendInputAnrTimeout);
+  Connect();
+  EXPECT_TRUE(instance()->flags_called_value()->extend_input_anr_timeout);
+}
+
+TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyExtendInputAnrTimeout_Disabled) {
+  scoped_feature_list()->InitAndDisableFeature(arc::kExtendInputAnrTimeout);
+  Connect();
+  EXPECT_FALSE(instance()->flags_called_value()->extend_input_anr_timeout);
+}
+
 }  // namespace
 }  // namespace arc

@@ -19323,6 +19323,7 @@ from previous Chrome versions.
   <int value="-454459100" label="ReadAnythingWithAlgorithm:enabled"/>
   <int value="-454362199" label="HelpAppV2:disabled"/>
   <int value="-454359275" label="kQuickAnswersMaterialNextUI:disabled"/>
+  <int value="-452734575" label="ArcExtendInputAnrTimeout:enabled"/>
   <int value="-451898735" label="private-aggregation-developer-mode"/>
   <int value="-450976085"
       label="AutofillSaveCreditCardUsesImprovedMessaging:disabled"/>
@@ -23818,6 +23819,7 @@ from previous Chrome versions.
   <int value="1504393761" label="AutofillEnableCardProductName:enabled"/>
   <int value="1505194447" label="disable-transition-compositing"/>
   <int value="1506372577" label="NearbySharingSelfShare:disabled"/>
+  <int value="1506384737" label="ArcExtendInputAnrTimeout:disabled"/>
   <int value="1507233295" label="FilesTrash:disabled"/>
   <int value="1508761653" label="disable-site-isolation-trials"/>
   <int value="1509300278"

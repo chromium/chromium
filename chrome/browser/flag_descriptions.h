@@ -3311,6 +3311,9 @@ extern const char kArcCustomTabsExperimentDescription[];
 extern const char kArcDocumentsProviderUnknownSizeName[];
 extern const char kArcDocumentsProviderUnknownSizeDescription[];
 
+extern const char kArcExtendInputAnrTimeoutName[];
+extern const char kArcExtendInputAnrTimeoutDescription[];
+
 extern const char kArcFilePickerExperimentName[];
 extern const char kArcFilePickerExperimentDescription[];
 

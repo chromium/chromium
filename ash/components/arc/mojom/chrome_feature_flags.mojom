@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 10
+// Next MinVersion: 11
 
 module arc.mojom;
 
@@ -41,6 +41,8 @@ struct FeatureFlags {
   [MinVersion=8] bool resize_compat;
   // chrome://flags#arc-ignore-hover-event-anr
   [MinVersion=9] bool ignore_hover_event_anr;
+  // chrome://flags#arc-extend-input-anr-timeout
+  [MinVersion=10] bool extend_input_anr_timeout;
 };
 
 // This interface provides methods to propagate the feature flag status to
