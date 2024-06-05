@@ -15,6 +15,8 @@ extern const char kPasswordStore[];
 extern const char kEnableEncryptionSelection[];
 #endif  // BUILDFLAG(IS_LINUX)
 
+extern const char kEnableShareButtonUnbranded[];
+
 // Specifies the user data directory, which is where the browser will look for
 // all of its state. Needs to be kept in sync with
 // chrome/common/chrome_switches.h

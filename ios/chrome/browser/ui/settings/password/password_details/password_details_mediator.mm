@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_mediator.h"
-#import "ios/chrome/browser/ui/settings/password/password_details/password_details_mediator+Testing.h"
 
 #import <memory>
 #import <utility>
@@ -14,6 +13,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/ranges/algorithm.h"
 #import "base/strings/sys_string_conversions.h"
+#import "build/branding_buildflags.h"
 #import "components/password_manager/core/browser/features/password_manager_features_util.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -32,9 +32,15 @@
 #import "ios/chrome/browser/ui/settings/password/account_storage_utils.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_consumer.h"
+#import "ios/chrome/browser/ui/settings/password/password_details/password_details_mediator+Testing.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_mediator_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_metrics_utils.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_controller_delegate.h"
+
+#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#import "base/command_line.h"
+#import "components/password_manager/core/browser/password_manager_switches.h"
+#endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 using base::SysNSStringToUTF16;
 using password_manager::CredentialUIEntry;
@@ -557,7 +563,15 @@ bool ShouldDisplayCredentialAsMuted(
 // Returns YES if all of the following conditions are met:
 // * User is syncing or signed in and opted in to account storage.
 // * Password sending feature is enabled.
+// * Build is branded (bypassed with a command line switch in EG tests).
 - (BOOL)shouldDisplayShareButton {
+#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          password_manager::kEnableShareButtonUnbranded)) {
+    return false;
+  }
+#endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
   return password_manager::sync_util::GetAccountForSaving(_prefService,
                                                           _syncService) &&
          base::FeatureList::IsEnabled(

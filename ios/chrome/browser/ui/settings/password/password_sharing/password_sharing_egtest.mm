@@ -30,6 +30,10 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ui/base/l10n/l10n_util.h"
 
+#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#import "components/password_manager/core/browser/password_manager_switches.h"
+#endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
 namespace {
 
 using base::test::ios::kWaitForActionTimeout;
@@ -119,6 +123,11 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
   // by default. Individual tests can override it.
   config.additional_args.push_back(std::string("-") +
                                    test_switches::kFamilyStatus + "=1");
+#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  // Make tests run on unbranded builds.
+  config.additional_args.push_back(
+      std::string("-") + password_manager::kEnableShareButtonUnbranded);
+#endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   if ([self isRunningTest:@selector
             (testShareButtonVisibilityWithSharingDisabled)]) {

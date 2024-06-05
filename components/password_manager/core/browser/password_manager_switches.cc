@@ -17,4 +17,8 @@ const char kPasswordStore[] = "password-store";
 const char kEnableEncryptionSelection[] = "enable-encryption-selection";
 #endif  // BUILDFLAG(IS_LINUX)
 
+// Enables Password Sharing button in password details UI in settings when
+// running unbranded builds.
+const char kEnableShareButtonUnbranded[] = "enable-share-button-unbranded";
+
 }  // namespace password_manager

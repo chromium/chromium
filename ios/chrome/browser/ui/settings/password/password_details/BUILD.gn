@@ -19,7 +19,9 @@ source_set("password_details") {
     "password_details_mediator_delegate.h",
   ]
   deps = [
+    "//build:branding_buildflags",
     "//components/autofill/core/common",
+    "//components/password_manager/core/browser:password_switches",
     "//components/password_manager/core/browser/form_parsing",
     "//components/password_manager/core/common",
     "//components/prefs",
