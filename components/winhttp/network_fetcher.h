@@ -10,6 +10,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -23,6 +24,7 @@
 #include "base/sequence_checker.h"
 #include "components/winhttp/proxy_configuration.h"
 #include "components/winhttp/scoped_hinternet.h"
+#include "components/winhttp/scoped_winttp_proxy_info.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -96,7 +98,13 @@ class NetworkFetcher : public base::RefCountedThreadSafe<NetworkFetcher> {
 
   HRESULT BeginFetch(
       const std::string& data,
-      base::flat_map<std::string, std::string> additional_headers);
+      const base::flat_map<std::string, std::string>& additional_headers);
+  std::optional<ScopedWinHttpProxyInfo> GetProxyForUrl();
+  void ContinueFetch(
+      const std::string& data,
+      base::flat_map<std::string, std::string> additional_headers,
+      std::optional<ScopedWinHttpProxyInfo> winhttp_proxy_info);
+
   ScopedHInternet Connect();
   ScopedHInternet OpenRequest();
   HRESULT SendRequest(const std::string& data);
