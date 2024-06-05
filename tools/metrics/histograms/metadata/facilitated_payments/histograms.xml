@@ -57,6 +57,25 @@ reviewer.
 </histogram>
 
 <histogram
+    name="FacilitatedPayments.{FacilitatedPaymentsType}.FopSelector.Shown"
+    enum="BooleanShown" expires_after="2024-09-01">
+  <owner>siashah@google.com</owner>
+  <owner>vishwasuppoor@google.com</owner>
+  <owner>rouslan@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Emits true when the FacilitatedPayments FOP(form of payment) selector is
+    shown to the user or false if the FOP selector was not shown for some
+    reason(e.g. another FOP selector already showing). [Frequency] Logged at
+    most once per page load. [Trigger] When a payment code supported for
+    {FacilitatedPaymentsType} is detected in the merchant webpage and all the
+    necessary conditions are met to facilitate a payment for that payment code,
+    the FOP selector is shown to the user.
+  </summary>
+  <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
+</histogram>
+
+<histogram
     name="FacilitatedPayments.{FacilitatedPaymentsType}.GetClientToken.Latency"
     units="ms" expires_after="2024-09-01">
   <owner>siashah@google.com</owner>

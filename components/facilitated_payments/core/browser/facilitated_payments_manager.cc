@@ -222,10 +222,11 @@ void FacilitatedPaymentsManager::OnApiAvailabilityReceived(
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
-  client_->ShowPixPaymentPrompt(
+  bool promptShown = client_->ShowPixPaymentPrompt(
       client_->GetPaymentsDataManager()->GetMaskedBankAccounts(),
       base::BindOnce(&FacilitatedPaymentsManager::OnPixPaymentPromptResult,
                      weak_ptr_factory_.GetWeakPtr()));
+  LogFopSelectorShown(promptShown);
 }
 
 void FacilitatedPaymentsManager::OnRiskDataLoaded(

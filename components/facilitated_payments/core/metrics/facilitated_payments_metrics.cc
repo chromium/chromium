@@ -53,4 +53,8 @@ void LogInitiatePurchaseActionResult(bool result, base::TimeDelta duration) {
       "FacilitatedPayments.Pix.InitiatePurchaseAction.Latency", duration);
 }
 
+void LogFopSelectorShown(bool shown) {
+  UMA_HISTOGRAM_BOOLEAN("FacilitatedPayments.Pix.FopSelector.Shown", shown);
+}
+
 }  // namespace payments::facilitated

@@ -108,6 +108,8 @@ class FacilitatedPaymentsManager {
                            NoPixPaymentPromptWhenApiClientNotAvailable);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            ShowsPixPaymentPromptWhenApiClientAvailable);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
+                           ShowsPixPaymentPrompt_HistogramLogged);
   FRIEND_TEST_ALL_PREFIXES(
       FacilitatedPaymentsManagerTest,
       ApiClientNotAvailable_RiskDataNotLoaded_DoesNotTriggerLoadRiskData);

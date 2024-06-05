@@ -40,6 +40,10 @@ void LogInitiatePaymentResult(bool result, base::TimeDelta duration);
 // payments platform (client).
 void LogInitiatePurchaseActionResult(bool result, base::TimeDelta duration);
 
+// Log whether the request to show the FOP(form of payment) selector is
+// successful or not.
+void LogFopSelectorShown(bool shown);
+
 }  // namespace payments::facilitated
 
 #endif  // COMPONENTS_FACILITATED_PAYMENTS_CORE_METRICS_FACILITATED_PAYMENTS_METRICS_H_

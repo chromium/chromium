@@ -80,4 +80,15 @@ TEST(FacilitatedPaymentsMetricsTest, LogInitiatePurchaseActionResult) {
       /*expected_bucket_count=*/1);
 }
 
+TEST(FacilitatedPaymentsMetricsTest, LogFopSelectorShown) {
+  base::HistogramTester histogram_tester;
+
+  LogFopSelectorShown(true);
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.FopSelector.Shown",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
+}
+
 }  // namespace payments::facilitated

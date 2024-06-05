@@ -871,6 +871,24 @@ TEST_F(FacilitatedPaymentsManagerTest,
   manager_->OnApiAvailabilityReceived(true);
 }
 
+// Test that a histogram is logged with the result of the ShowPixPaymentPrompt.
+TEST_F(FacilitatedPaymentsManagerTest, ShowsPixPaymentPrompt_HistogramLogged) {
+  base::HistogramTester histogram_tester;
+  autofill::BankAccount pix_account = CreatePixBankAccount(/*instrument_id=*/1);
+  payments_data_manager_->AddMaskedBankAccountForTest(pix_account);
+  EXPECT_CALL(*client_, ShowPixPaymentPrompt(
+                            testing::UnorderedElementsAreArray({pix_account}),
+                            testing::_))
+      .WillOnce(testing::Return(true));
+
+  manager_->OnApiAvailabilityReceived(true);
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.FopSelector.Shown",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
+}
+
 // If the API is not available, request for risk data is not made.
 TEST_F(FacilitatedPaymentsManagerTest,
        ApiClientNotAvailable_RiskDataNotLoaded_DoesNotTriggerLoadRiskData) {
