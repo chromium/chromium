@@ -30,11 +30,7 @@
   <svg>
     <rect width="75" height="75"/>
     <script>
-      onload = () => {
-        requestAnimationFrame(() => { requestAnimationFrame(() => {
-          requestAnimationFrame(() => { takeScreenshot() });
-        })});
-      };
+      document.querySelector('rect').onanimationend = takeScreenshot;
     </script>
   </svg>
 </body>
