@@ -13,6 +13,7 @@
 #include "ash/system/focus_mode/focus_mode_histogram_names.h"
 #include "ash/system/focus_mode/focus_mode_session.h"
 #include "ash/system/focus_mode/focus_mode_tasks_provider.h"
+#include "ash/system/focus_mode/sounds/focus_mode_sounds_controller.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -37,7 +38,9 @@ class FocusModeSoundsController;
 // keeps track of the system state to restore after a Focus Mode session ends.
 // Has a timer that runs while a session is active and notifies `observers_` on
 // every timer tick.
-class ASH_EXPORT FocusModeController : public SessionObserver {
+class ASH_EXPORT FocusModeController
+    : public SessionObserver,
+      public FocusModeSoundsController::Observer {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -119,6 +122,11 @@ class ASH_EXPORT FocusModeController : public SessionObserver {
 
   // SessionObserver:
   void OnActiveUserSessionChanged(const AccountId& account_id) override;
+
+  // FocusModeSoundsController::Observer:
+  // Will close/create the media widget for an active focus session depending on
+  // if there is a selected playlist or not.
+  void OnSelectedPlaylistChanged() override;
 
   // Extends an active focus session by ten minutes by clicking the `+10 min`
   // button.

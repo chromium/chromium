@@ -138,11 +138,13 @@ FocusModeController::FocusModeController(
   youtube_music_controller_ =
       std::make_unique<youtube_music::YouTubeMusicController>();
 
+  focus_mode_sounds_controller_->AddObserver(this);
   Shell::Get()->session_controller()->AddObserver(this);
 }
 
 FocusModeController::~FocusModeController() {
   Shell::Get()->session_controller()->RemoveObserver(this);
+  focus_mode_sounds_controller_->RemoveObserver(this);
 
   // TODO(b/338694884): Move this to startup.
   if (IsQuietModeOnSetByFocusMode()) {
@@ -209,6 +211,20 @@ void FocusModeController::OnActiveUserSessionChanged(
     const AccountId& account_id) {
   ResetFocusSession();
   UpdateFromUserPrefs();
+}
+
+void FocusModeController::OnSelectedPlaylistChanged() {
+  if (!in_focus_session()) {
+    return;
+  }
+
+  if (media_widget_) {
+    CloseMediaWidget();
+  }
+
+  if (!focus_mode_sounds_controller_->selected_playlist().empty()) {
+    CreateMediaWidget();
+  }
 }
 
 void FocusModeController::ExtendSessionDuration() {
@@ -469,9 +485,6 @@ void FocusModeController::StartFocusSession(
   SetFocusTrayVisibility(true);
   HideEndingMomentNudge();
 
-  // TODO: Check that there is a selected playlist. Eventually we also want to
-  // call CreateMediaWidget/CloseMediaWidget when a playlist is toggled during
-  // a session.
   if (!focus_mode_sounds_controller_->selected_playlist().empty() &&
       !media_widget_) {
     CreateMediaWidget();

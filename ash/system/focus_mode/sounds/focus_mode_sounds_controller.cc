@@ -267,9 +267,8 @@ void FocusModeSoundsController::SelectPlaylist(
     const SelectedPlaylist& playlist_data) {
   selected_playlist_ = playlist_data;
 
-  // TODO: If in an active focus session and toggling on a playlist, we should
-  // trigger the player to start playing and set the state as `kPlaying`
-  // instead.
+  // TODO(b/337063849): Update the sound state when the media stream
+  // actually starts playing.
   selected_playlist_.state = focus_mode_util::SoundState::kSelected;
 
   sound_type_ = selected_playlist_.type;
