@@ -37,6 +37,7 @@ chromium/try/chromeos-arm-generic-dbg
 chromium/try/chromeos-arm-generic-rel
 chromium/try/chromeos-arm64-generic-rel
 chromium/try/chromeos-jacuzzi-rel
+chromium/try/chromeos-libfuzzer-asan-rel
 chromium/try/chromeos-octopus-rel
 chromium/try/dawn-android-arm-deps-rel
 chromium/try/dawn-android-arm64-deps-rel
@@ -91,6 +92,7 @@ chromium/try/linux-asan-v8-arm-dbg
 chromium/try/linux-asan-v8-arm-rel
 chromium/try/linux-bfcache-rel
 chromium/try/linux-blink-web-tests-force-accessibility-rel
+chromium/try/linux-centipede-asan-rel
 chromium/try/linux-cfm-rel
 chromium/try/linux-chromeos-asan-rel
 chromium/try/linux-chromeos-compile-dbg
@@ -106,6 +108,7 @@ chromium/try/linux-gcc-rel
 chromium/try/linux-lacros-asan-lsan-rel
 chromium/try/linux-lacros-dbg
 chromium/try/linux-lacros-rel
+chromium/try/linux-libfuzzer-asan-rel
 chromium/try/linux-mbi-mode-per-render-process-host-rel
 chromium/try/linux-msan-chained-origins-rel
 chromium/try/linux-msan-no-origins-rel
@@ -155,6 +158,7 @@ chromium/try/win-asan-media-rel
 chromium/try/win-asan-rel
 chromium/try/win-clobber-rel
 chromium/try/win-dawn-rel
+chromium/try/win-libfuzzer-asan-rel
 chromium/try/win-official
 chromium/try/win-rel
 chromium/try/win11-arm64-dawn-rel

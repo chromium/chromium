@@ -859,6 +859,7 @@ def _set_builder_config_property(ctx):
             allowed_trybot_recipes = [
                 "chromium_trybot",
                 "chromium_trybot_internal",
+                "chromium/fuzz",
                 "chromium/orchestrator",
             ]
             is_excluded = False
