@@ -460,11 +460,15 @@ void DownloadController::OnDangerousDownload(download::DownloadItem* item) {
     return;
   }
 
-  app_verification_requests_.push_back(
+  if (base::Contains(app_verification_requests_, item)) {
+    return;
+  }
+
+  app_verification_requests_[item] =
       std::make_unique<DownloadAppVerificationRequest>(
           item, base::BindOnce(&DownloadController::OnAppVerificationComplete,
                                // Unretained is safe because this is a singleton
-                               base::Unretained(this))));
+                               base::Unretained(this)));
 }
 
 void DownloadController::ShowDangerousDownloadDialog(
@@ -522,20 +526,15 @@ ProfileKey* DownloadController::GetProfileKey(DownloadItem* download_item) {
 }
 
 void DownloadController::OnAppVerificationComplete(
-    DownloadAppVerificationRequest* request,
     bool showed_app_verification_dialog,
     download::DownloadItem* item) {
-  const auto it =
-      base::ranges::find(app_verification_requests_, request,
-                         &std::unique_ptr<DownloadAppVerificationRequest>::get);
+  const auto it = app_verification_requests_.find(item);
   CHECK(it != app_verification_requests_.end());
   app_verification_requests_.erase(it);
 
   has_seen_app_verification_dialog_ |= showed_app_verification_dialog;
 
-  if (item) {
-    ShowDangerousDownloadDialog(item);
-  }
+  ShowDangerousDownloadDialog(item);
 }
 
 // Encapsulates the process of checking whether app verification is
@@ -543,11 +542,10 @@ void DownloadController::OnAppVerificationComplete(
 class DownloadAppVerificationRequest : public download::DownloadItem::Observer {
  public:
   // On request completion, this class calls back with:
-  // - `this` pointer
   // - Whether a prompt was shown to the user
-  // - The associated `DownloadItem`, if it exists, and `nullptr` otherwise.
-  using AppVerificationCallback = base::OnceCallback<
-      void(DownloadAppVerificationRequest*, bool, download::DownloadItem*)>;
+  // - The associated `DownloadItem`
+  using AppVerificationCallback =
+      base::OnceCallback<void(bool, download::DownloadItem*)>;
   DownloadAppVerificationRequest(download::DownloadItem* item,
                                  AppVerificationCallback callback)
       : item_(item), callback_(std::move(callback)) {
@@ -558,18 +556,14 @@ class DownloadAppVerificationRequest : public download::DownloadItem::Observer {
                            weak_factory_.GetWeakPtr()));
   }
 
-  ~DownloadAppVerificationRequest() override {
-    if (item_) {
-      item_->RemoveObserver(this);
-    }
-  }
+  ~DownloadAppVerificationRequest() override { item_->RemoveObserver(this); }
 
  private:
   // DownloadItem::Observer
   void OnDownloadDestroyed(download::DownloadItem* item) override {
-    item_->RemoveObserver(this);
-    item_ = nullptr;
-    std::move(callback_).Run(this, false, nullptr);
+    // It's safe to pass `item` in the callback because the callback
+    // immediately deletes `this`.
+    std::move(callback_).Run(false, item);
     // Do not add code after this. Callback may delete `this`.
   }
 
@@ -578,7 +572,7 @@ class DownloadAppVerificationRequest : public download::DownloadItem::Observer {
         "SBClientDownload.AndroidAppVerificationResult", result);
 
     if (result != safe_browsing::VerifyAppsEnabledResult::SUCCESS_NOT_ENABLED) {
-      std::move(callback_).Run(this, false, item_);
+      std::move(callback_).Run(false, item_);
       // Do not add code after this. Callback may delete `this`.
       return;
     }
@@ -593,7 +587,7 @@ class DownloadAppVerificationRequest : public download::DownloadItem::Observer {
     base::UmaHistogramEnumeration(
         "SBClientDownload.AndroidAppVerificationPromptResult", result);
 
-    std::move(callback_).Run(this, true, item_);
+    std::move(callback_).Run(true, item_);
     // Do not add code after this. Callback may delete `this`.
   }
 

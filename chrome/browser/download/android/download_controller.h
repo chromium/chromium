@@ -101,8 +101,7 @@ class DownloadController : public DownloadControllerBase {
   ProfileKey* GetProfileKey(download::DownloadItem* download_item);
 
   // Callback for when a DownloadAppVerificationRequest has completed.
-  void OnAppVerificationComplete(DownloadAppVerificationRequest* request,
-                                 bool showed_app_verification_dialog,
+  void OnAppVerificationComplete(bool showed_app_verification_dialog,
                                  download::DownloadItem* item);
 
   // Show the "File might be harmful" dialog for this `item`.
@@ -118,7 +117,8 @@ class DownloadController : public DownloadControllerBase {
   bool has_seen_app_verification_dialog_ = false;
 
   // Contains all currently active app verification checks
-  std::vector<std::unique_ptr<DownloadAppVerificationRequest>>
+  std::map<download::DownloadItem*,
+           std::unique_ptr<DownloadAppVerificationRequest>>
       app_verification_requests_;
 };
 
