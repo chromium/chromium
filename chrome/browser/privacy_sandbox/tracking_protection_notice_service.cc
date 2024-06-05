@@ -61,9 +61,6 @@ void CreateHistogramNoticeServiceEvent(
           event);
       break;
     case TrackingProtectionOnboarding::NoticeType::kOffboarding:
-      base::UmaHistogramEnumeration(
-          "PrivacySandbox.TrackingProtection.Offboarding.NoticeServiceEvent",
-          event);
       break;
     case TrackingProtectionOnboarding::NoticeType::kSilentOnboarding:
       base::UmaHistogramEnumeration(
@@ -107,7 +104,6 @@ void TrackingProtectionNoticeService::Shutdown() {
   profile_ = nullptr;
   onboarding_service_ = nullptr;
   onboarding_notice_.reset();
-  offboarding_notice_.reset();
   silent_onboarding_notice_.reset();
   onboarding_observation_.Reset();
 }
@@ -278,25 +274,6 @@ TrackingProtectionNoticeService::OnboardingNotice::GetIPHFeature() {
   return feature_engagement::kIPHTrackingProtectionOnboardingFeature;
 }
 
-TrackingProtectionNoticeService::OffboardingNotice::OffboardingNotice(
-    Profile* profile,
-    TrackingProtectionOnboarding* onboarding_service,
-    TrackingProtectionNoticeService* notice_service)
-    : BaseIPHNotice(profile, onboarding_service, notice_service) {
-  CreateHistogramNoticeServiceEvent(
-      GetNoticeType(),
-      TrackingProtectionMetricsNoticeEvent::kNoticeObjectCreated);
-}
-
-const base::Feature&
-TrackingProtectionNoticeService::OffboardingNotice::GetIPHFeature() {
-  return feature_engagement::kIPHTrackingProtectionOffboardingFeature;
-}
-
-NoticeType TrackingProtectionNoticeService::OffboardingNotice::GetNoticeType() {
-  return NoticeType::kOffboarding;
-}
-
 void TrackingProtectionNoticeService::BaseIPHNotice::OnNoticeClosed(
     base::Time showed_when,
     user_education::FeaturePromoController* promo_controller) {
@@ -312,15 +289,6 @@ void TrackingProtectionNoticeService::BaseIPHNotice::OnNoticeClosed(
   }
   onboarding_service_->NoticeActionTaken(GetNoticeType(),
                                          ToNoticeAction(close_reason));
-}
-
-void TrackingProtectionNoticeService::OffboardingNotice::OnNoticeClosed(
-    base::Time showed_when,
-    user_education::FeaturePromoController* promo_controller) {
-  BaseIPHNotice::OnNoticeClosed(showed_when, promo_controller);
-  // At this point, the user is offboarded and we no longer
-  // need to show the notice, so we can stop observing the tab strip model
-  notice_service()->ResetTabStripTracker();
 }
 
 TrackingProtectionNoticeService::SilentOnboardingNotice::SilentOnboardingNotice(
@@ -383,9 +351,6 @@ void TrackingProtectionNoticeService::OnShouldShowNoticeUpdated() {
       InitializeTabStripTracker();
       return;
     case TrackingProtectionOnboarding::NoticeType::kOffboarding:
-      offboarding_notice_ = std::make_unique<OffboardingNotice>(
-          profile_, onboarding_service_, this);
-      InitializeTabStripTracker();
       return;
     case TrackingProtectionOnboarding::NoticeType::kSilentOnboarding:
       silent_onboarding_notice_ = std::make_unique<SilentOnboardingNotice>(
@@ -411,13 +376,7 @@ void TrackingProtectionNoticeService::OnTabStripModelChanged(
   if (!selection.active_tab_changed()) {
     return;
   }
-  if (offboarding_notice_) {
-    offboarding_notice_->MaybeUpdateNoticeVisibility(selection.new_contents);
-    CreateHistogramNoticeServiceEvent(
-        TrackingProtectionOnboarding::NoticeType::kOffboarding,
-        TrackingProtectionNoticeService::TrackingProtectionMetricsNoticeEvent::
-            kActiveTabChanged);
-  } else if (onboarding_notice_) {
+  if (onboarding_notice_) {
     onboarding_notice_->MaybeUpdateNoticeVisibility(selection.new_contents);
     CreateHistogramNoticeServiceEvent(
         TrackingProtectionOnboarding::NoticeType::kOnboarding,
@@ -463,14 +422,7 @@ void TrackingProtectionNoticeService::TabHelper::DidFinishNavigation(
 
   auto* notice_service =
       TrackingProtectionNoticeFactory::GetForProfile(profile);
-  if (notice_service->offboarding_notice_) {
-    notice_service->offboarding_notice_->MaybeUpdateNoticeVisibility(
-        web_contents());
-    CreateHistogramNoticeServiceEvent(
-        TrackingProtectionOnboarding::NoticeType::kOffboarding,
-        TrackingProtectionNoticeService::TrackingProtectionMetricsNoticeEvent::
-            kNavigationFinished);
-  } else if (notice_service->onboarding_notice_) {
+  if (notice_service->onboarding_notice_) {
     notice_service->onboarding_notice_->MaybeUpdateNoticeVisibility(
         web_contents());
     CreateHistogramNoticeServiceEvent(

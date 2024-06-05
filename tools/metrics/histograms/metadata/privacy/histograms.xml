@@ -1332,18 +1332,6 @@ reviewer.
 </histogram>
 
 <histogram
-    name="PrivacySandbox.TrackingProtection.Offboarding.NoticeServiceEvent"
-    enum="TrackingProtectionMetricsNoticeEvent" expires_after="2024-09-30">
-  <owner>jacobstanley@google.com</owner>
-  <owner>koilos@google.com</owner>
-  <summary>
-    Records different events, such as tab changes, navigation finishing, and
-    browser type being non normal, that occur in the notice service during
-    offboarding for 3PCD.
-  </summary>
-</histogram>
-
-<histogram
     name="PrivacySandbox.TrackingProtection.Onboarding.DidNoticeActionAckowledge"
     enum="Boolean" expires_after="2024-09-30">
   <owner>jacobstanley@google.com</owner>

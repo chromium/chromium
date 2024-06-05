@@ -17,7 +17,6 @@
 #include "components/privacy_sandbox/tracking_protection_onboarding.h"
 #include "components/user_education/common/feature_promo_controller.h"
 #include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -146,20 +145,6 @@ class TrackingProtectionNoticeService
     const base::Feature& GetIPHFeature() override;
   };
 
-  class OffboardingNotice : public BaseIPHNotice {
-   public:
-    OffboardingNotice(Profile* profile,
-                      TrackingProtectionOnboarding* onboarding_service,
-                      TrackingProtectionNoticeService* notice_service);
-
-   private:
-    TrackingProtectionOnboarding::NoticeType GetNoticeType() override;
-    const base::Feature& GetIPHFeature() override;
-    void OnNoticeClosed(
-        base::Time showed_when,
-        user_education::FeaturePromoController* promo_controller) override;
-  };
-
   class SilentOnboardingNotice : public BaseIPHNotice {
    public:
     SilentOnboardingNotice(Profile* profile,
@@ -205,14 +190,11 @@ class TrackingProtectionNoticeService
   raw_ptr<Profile> profile_;
   raw_ptr<TrackingProtectionOnboarding> onboarding_service_;
   std::unique_ptr<BaseIPHNotice> onboarding_notice_;
-  std::unique_ptr<BaseIPHNotice> offboarding_notice_;
   std::unique_ptr<BaseIPHNotice> silent_onboarding_notice_;
   std::unique_ptr<BrowserTabStripTracker> tab_strip_tracker_;
   base::ScopedObservation<TrackingProtectionOnboarding,
                           TrackingProtectionOnboarding::Observer>
       onboarding_observation_{this};
-
-  bool has_opened_first_ntp_ = false;
 };
 
 }  // namespace privacy_sandbox
