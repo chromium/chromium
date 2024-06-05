@@ -159,7 +159,8 @@ TEST_F(PickerSearchFieldViewTest,
 }
 
 TEST_F(PickerSearchFieldViewTest, ClickingBackButtonTriggersCallback) {
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   widget->Show();
   base::test::TestFuture<void> future;
   PickerKeyEventHandler key_event_handler;
