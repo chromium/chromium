@@ -519,8 +519,8 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
         return userSelectableTypeArray;
     }
 
-    @CalledByNative
-    private long getNativeSyncServiceAndroidBridge() {
+    @Override
+    public long getNativeSyncServiceAndroidBridge() {
         return mSyncServiceAndroidBridge;
     }
 

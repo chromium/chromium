@@ -329,6 +329,11 @@ public class FakeSyncServiceImpl implements SyncService {
     }
 
     @Override
+    public long getNativeSyncServiceAndroidBridge() {
+        return mDelegate.getNativeSyncServiceAndroidBridge();
+    }
+
+    @Override
     public long getLastSyncedTimeForDebugging() {
         return mDelegate.getLastSyncedTimeForDebugging();
     }

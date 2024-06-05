@@ -24,6 +24,7 @@ class SyncSetupInProgressHandle;
 // Must only be accessed from the UI thread.
 class SyncServiceAndroidBridge : public syncer::SyncServiceObserver {
  public:
+  // `j_sync_service` must be an object implementing the SyncService interface.
   static syncer::SyncService* FromJavaObject(
       const base::android::JavaRef<jobject>& j_sync_service);
 

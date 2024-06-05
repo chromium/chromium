@@ -7,6 +7,7 @@ package org.chromium.components.sync;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.jni_zero.CalledByNative;
 import org.json.JSONArray;
 
 import org.chromium.base.Callback;
@@ -273,6 +274,10 @@ public interface SyncService {
 
     /** @return Whether sync is enabled to sync urls with a non custom passphrase. */
     public boolean isSyncingUnencryptedUrls();
+
+    /** @return Returns the pointer the corresponding native object. */
+    @CalledByNative
+    public long getNativeSyncServiceAndroidBridge();
 
     /**
      * Returns the time when the last sync cycle was completed.

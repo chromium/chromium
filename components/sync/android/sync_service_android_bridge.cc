@@ -28,6 +28,7 @@
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/sync/android/jni_headers/SyncServiceImpl_jni.h"
+#include "components/sync/android/jni_headers/SyncService_jni.h"
 
 using base::android::AppendJavaStringArrayToStringVector;
 using base::android::AttachCurrentThread;
@@ -97,10 +98,10 @@ syncer::UserSelectableType IntToUserSelectableTypeChecked(int type) {
 // static
 syncer::SyncService* SyncServiceAndroidBridge::FromJavaObject(
     const base::android::JavaRef<jobject>& j_sync_service) {
-  return reinterpret_cast<SyncServiceAndroidBridge*>(
-             Java_SyncServiceImpl_getNativeSyncServiceAndroidBridge(
-                 AttachCurrentThread(), j_sync_service))
-      ->native_sync_service_;
+  auto* bridge = reinterpret_cast<SyncServiceAndroidBridge*>(
+      Java_SyncService_getNativeSyncServiceAndroidBridge(AttachCurrentThread(),
+                                                         j_sync_service));
+  return bridge ? bridge->native_sync_service_ : nullptr;
 }
 
 SyncServiceAndroidBridge::SyncServiceAndroidBridge(
