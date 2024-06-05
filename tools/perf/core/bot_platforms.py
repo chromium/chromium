@@ -873,7 +873,7 @@ ANDROID_PIXEL_FOLD = PerfPlatform('android-pixel-fold-perf', 'Android U',
     'android',
     executables=_ANDROID_PIXEL_FOLD_EXECUTABLE_CONFIGS)
 ANDROID_PIXEL_TANGOR = PerfPlatform('android-pixel-tangor-perf', 'Android U',
-    _ANDROID_PIXEL_TANGOR_BENCHMARK_CONFIGS, 16, 'android',
+    _ANDROID_PIXEL_TANGOR_BENCHMARK_CONFIGS, 8, 'android',
     executables=_ANDROID_PIXEL_TANGOR_EXECUTABLE_CONFIGS)
 ANDROID_GO_WEMBLEY = PerfPlatform('android-go-wembley-perf', 'Android U',
                                   _ANDROID_GO_BENCHMARK_CONFIGS, 15, 'android')
