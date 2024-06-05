@@ -538,6 +538,9 @@ BASE_DECLARE_FEATURE(kTabResumption);
 // Feature that enables enhancements for Tab Resumption.
 BASE_DECLARE_FEATURE(kTabResumption1_5);
 
+// Feature that enables tab resumption 2.0.
+BASE_DECLARE_FEATURE(kTabResumption2);
+
 // A parameter to indicate whether the Most Visited Tiles should be in the Magic
 // Stack.
 extern const char kMagicStackMostVisitedModuleParam[];
@@ -576,6 +579,10 @@ CGFloat HomeModuleMinimumPadding();
 
 // Whether the tab resumption feature is enabled.
 bool IsTabResumptionEnabled();
+
+// Whether the tab resumption feature is enabled in 2.0 version. Implies
+// `IsTabResumptionEnabled`.
+bool IsTabResumption2_0Enabled();
 
 // Whether the tab resumption feature is enabled for most recent tab only.
 bool IsTabResumptionEnabledForMostRecentTabOnly();

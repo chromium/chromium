@@ -95,6 +95,10 @@ NSString* HostnameFromGURL(GURL URL) {
   return [self.name containsString:@"TR15"];
 }
 
+- (BOOL)isUsingTabResumption2 {
+  return [self.name containsString:@"TR2"];
+}
+
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.additional_args.push_back(
@@ -106,6 +110,9 @@ NSString* HostnameFromGURL(GURL URL) {
     config.features_enabled.push_back(kTabResumption1_5);
   } else {
     config.features_disabled.push_back(kTabResumption1_5);
+  }
+  if ([self isUsingTabResumption2]) {
+    config.features_enabled.push_back(kTabResumption2);
   }
   config.additional_args.push_back("--test-ios-module-ranker=tab_resumption");
   return config;
@@ -169,7 +176,9 @@ NSString* HostnameFromGURL(GURL URL) {
   [[EarlGrey
       selectElementWithMatcher:TabResumptionLabelMatcher(@"FROM \"DESKTOP\"")]
       assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:TabResumptionLabelMatcher(@"Tab 3")]
+  // Tab resumption 2 displays Tab0 in that case.
+  NSString* displayedTab = [self isUsingTabResumption2] ? @"Tab 0" : @"Tab 3";
+  [[EarlGrey selectElementWithMatcher:TabResumptionLabelMatcher(displayedTab)]
       assertWithMatcher:grey_sufficientlyVisible()];
   NSString* footerLabel =
       [NSString stringWithFormat:@"%@ • %@",
@@ -187,6 +196,12 @@ NSString* HostnameFromGURL(GURL URL) {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
       assertWithMatcher:chrome_test_util::LocationViewContainingText(
                             self.testServer->base_url().host())];
+}
+
+// Tests that the tab resumption 2 tile is correctly displayed for a distant
+// tab.
+- (void)testTabResumptionTileDisplayedForDistantTabTR2 {
+  [self testTabResumptionTileDisplayedForDistantTab];
 }
 
 // Tests that the tab resumption tile is correctly displayed for a local tab.
@@ -232,6 +247,11 @@ NSString* HostnameFromGURL(GURL URL) {
       waitForWebStateContainingText:"Anyone know any good pony jokes?"];
 }
 
+// Tests that the tab resumption 2 tile is correctly displayed for a local tab.
+- (void)testTabResumptionTileDisplayedForLocalTabTR2 {
+  [self MAYBE_testTabResumptionTileDisplayedForLocalTab];
+}
+
 // Tests that interacting with the Magic Stack edit button works when the tab
 // resumption tile is displayed.
 - (void)testInteractWithAnotherTile {
@@ -259,6 +279,12 @@ NSString* HostnameFromGURL(GURL URL) {
       onElementWithMatcher:grey_accessibilityID(
                                kMagicStackScrollViewAccessibilityIdentifier)]
       assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that the tab resumption 2 tile is correctly displayed for a distant
+// tab.
+- (void)testInteractWithAnotherTileTR2 {
+  [self testInteractWithAnotherTile];
 }
 
 // Tests that the context menu has the correct action and correctly hides the
@@ -295,6 +321,12 @@ NSString* HostnameFromGURL(GURL URL) {
 
   // Check that the tile is hidden.
   WaitUntilTabResumptionTileVisibleOrTimeout(false);
+}
+
+// Tests that the context menu has the correct action and correctly hides the
+// tile.
+- (void)testTabResumptionTileLongPressTR2 {
+  [self testTabResumptionTileLongPress];
 }
 
 - (void)testShowMoreVisibleTR15 {

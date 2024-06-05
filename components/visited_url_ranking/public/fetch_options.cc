@@ -39,13 +39,23 @@ FetchOptions FetchOptions::CreateDefaultFetchOptionsForTabResumption() {
       features::kVisitedURLRankingFetchDurationInHoursParam, 24);
   return FetchOptions(
       {
+#if BUILDFLAG(IS_IOS)
+          {Fetcher::kTabModel, FetchOptions::kOriginSources},
+#endif
           {Fetcher::kHistory, FetchOptions::kOriginSources},
           {Fetcher::kSession, FetchOptions::kOriginSources},
       },
       base::Time::Now() - base::Hours(query_duration),
       {
+#if !BUILDFLAG(IS_IOS)
+          // components/history_clusters is not compiled on iOS.
+          // TODO(crbug/344615016): Enable on iOS.
           URLVisitAggregatesTransformType::kHistoryVisibilityScoreFilter,
+#endif
           URLVisitAggregatesTransformType::kBookmarkData,
+#if !BUILDFLAG(IS_IOS)
+          URLVisitAggregatesTransformType::kShoppingData,
+#endif
       });
 }
 

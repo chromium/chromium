@@ -685,6 +685,10 @@ BASE_FEATURE(kEnableFeedContainment,
 
 BASE_FEATURE(kTabResumption, "TabResumption", base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kTabResumption2,
+             "TabResumption2",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const char kMagicStackMostVisitedModuleParam[] = "MagicStackMostVisitedModule";
 
 const char kReducedSpaceParam[] = "ReducedNTPTopSpace";
@@ -725,6 +729,13 @@ bool IsTabResumptionEnabledForMostRecentTabOnly() {
   std::string feature_param = base::GetFieldTrialParamValueByFeature(
       kTabResumption, kTabResumptionParameterName);
   return feature_param != kTabResumptionAllTabsParam;
+}
+
+bool IsTabResumption2_0Enabled() {
+  if (!IsTabResumptionEnabled()) {
+    return false;
+  }
+  return base::FeatureList::IsEnabled(kTabResumption2);
 }
 
 const base::TimeDelta TabResumptionForXDevicesTimeThreshold() {

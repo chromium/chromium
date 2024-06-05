@@ -8,6 +8,7 @@ static_library("internal") {
     "//chrome/browser",
     "//chrome/browser/visited_url_ranking:*",
     "//chrome/test:*",
+    "//ios/chrome/browser/visited_url_ranking/model:*",
   ]
 
   sources = [

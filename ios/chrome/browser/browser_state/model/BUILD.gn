@@ -162,6 +162,7 @@ source_set("model") {
     "//ios/chrome/browser/ui/fullscreen",
     "//ios/chrome/browser/unified_consent/model",
     "//ios/chrome/browser/unit_conversion:unit_conversion_factory",
+    "//ios/chrome/browser/visited_url_ranking/model",
     "//ios/chrome/browser/voice/ui_bundled:voice",
     "//ios/chrome/browser/web/model/java_script_console",
     "//ios/chrome/browser/web/model/session_state",

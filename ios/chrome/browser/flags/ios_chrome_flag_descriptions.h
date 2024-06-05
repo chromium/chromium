@@ -1002,6 +1002,10 @@ extern const char kTabResumptionDescription[];
 extern const char kTabResumption1_5Name[];
 extern const char kTabResumption1_5Description[];
 
+// Title and description for the flag to enable tab resumption 2.0.
+extern const char kTabResumption2Name[];
+extern const char kTabResumption2Description[];
+
 // Title and description for the flag to undo the migration of syncing users to
 // the signed-in non-syncing state.
 extern const char kUndoMigrationOfSyncingUserToSignedInName[];

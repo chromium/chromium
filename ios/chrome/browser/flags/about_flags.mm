@@ -485,8 +485,7 @@ const FeatureEntry::FeatureVariation kTabResumptionVariations[] = {
      kTabResumptionAllTabs, std::size(kTabResumptionAllTabs), nullptr},
     {"Most recent tab and last synced tab (24 hours threshold)",
      kTabResumptionAllTabsOneDayThreshold,
-     std::size(kTabResumptionAllTabsOneDayThreshold), nullptr},
-};
+     std::size(kTabResumptionAllTabsOneDayThreshold), nullptr}};
 
 const FeatureEntry::FeatureParam kIOSEditMenuPartialTranslateNoIncognito[] = {
     {kIOSEditMenuPartialTranslateNoIncognitoParam, "true"}};
@@ -1665,6 +1664,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSendTabToSelfIOSPushNotificationsDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(send_tab_to_self::kSendTabToSelfIOSPushNotifications)},
+    {"tab-resumption-2", flag_descriptions::kTabResumption2Name,
+     flag_descriptions::kTabResumption2Description, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kTabResumption2)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
