@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<title>Don't break rubies in a container with `text-wrap:balance` or `text-wrap:pretty`</title>
+<style>
+.balance {
+  text-wrap: balance;
+}
+.pretty {
+  text-wrap: pretty;
+}
+
+p {
+  inline-size: 5em;
+}
+</style>
+
+<p class="balance"><ruby>二等辺三角形<rt>にとうへんさんかくけい</ruby></p>
+<p class="pretty"><ruby>二等辺三角形<rt>にとうへんさんかくけい</ruby></p>
+
+<script>
+test(() => {
+  assert_equals(document.querySelector('.balance ruby').getClientRects().length, 1);
+}, `text-wrap: balance`);
+
+test(() => {
+  assert_equals(document.querySelector('.pretty ruby').getClientRects().length, 1);
+}, `text-wrap: pretty`);
+</script>
