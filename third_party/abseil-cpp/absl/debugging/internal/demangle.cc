@@ -329,6 +329,22 @@ static bool ParseThreeCharToken(State *state, const char *three_char_token) {
   return false;
 }
 
+// Returns true and advances "mangled_idx" if we find a copy of the
+// NUL-terminated string "long_token" at "mangled_idx" position.
+static bool ParseLongToken(State *state, const char *long_token) {
+  ComplexityGuard guard(state);
+  if (guard.IsTooComplex()) return false;
+  int i = 0;
+  for (; long_token[i] != '\0'; ++i) {
+    // Note that we cannot run off the end of the NUL-terminated input here.
+    // Inside the loop body, long_token[i] is known to be different from NUL.
+    // So if we read the NUL on the end of the input here, we return at once.
+    if (RemainingInput(state)[i] != long_token[i]) return false;
+  }
+  state->parse_state.mangled_idx += i;
+  return true;
+}
+
 // Returns true and advances "mangled_cur" if we find any character in
 // "char_class" at "mangled_cur" position.
 static bool ParseCharClass(State *state, const char *char_class) {
@@ -583,8 +599,10 @@ static bool ParseDecltype(State *state);
 static bool ParseType(State *state);
 static bool ParseCVQualifiers(State *state);
 static bool ParseBuiltinType(State *state);
+static bool ParseVendorExtendedType(State *state);
 static bool ParseFunctionType(State *state);
 static bool ParseBareFunctionType(State *state);
+static bool ParseOverloadAttribute(State *state);
 static bool ParseClassEnumType(State *state);
 static bool ParseArrayType(State *state);
 static bool ParsePointerToMemberType(State *state);
@@ -595,6 +613,7 @@ static bool ParseTemplateArgs(State *state);
 static bool ParseTemplateArg(State *state);
 static bool ParseBaseUnresolvedName(State *state);
 static bool ParseUnresolvedName(State *state);
+static bool ParseUnresolvedQualifierLevel(State *state);
 static bool ParseUnionSelector(State* state);
 static bool ParseFunctionParam(State* state);
 static bool ParseBracedExpression(State *state);
@@ -603,6 +622,7 @@ static bool ParseExprPrimary(State *state);
 static bool ParseExprCastValueAndTrailingE(State *state);
 static bool ParseQRequiresClauseExpr(State *state);
 static bool ParseRequirement(State *state);
+static bool ParseTypeConstraint(State *state);
 static bool ParseLocalName(State *state);
 static bool ParseLocalNameSuffix(State *state);
 static bool ParseDiscriminator(State *state);
@@ -766,6 +786,7 @@ static bool ParseNestedName(State *state) {
 // <template-prefix> ::= <prefix> <(template) unqualified-name>
 //                   ::= <template-param>
 //                   ::= <substitution>
+//                   ::= <vendor-extended-type>
 static bool ParsePrefix(State *state) {
   ComplexityGuard guard(state);
   if (guard.IsTooComplex()) return false;
@@ -774,6 +795,11 @@ static bool ParsePrefix(State *state) {
     MaybeAppendSeparator(state);
     if (ParseTemplateParam(state) || ParseDecltype(state) ||
         ParseSubstitution(state, /*accept_std=*/true) ||
+        // Although the official grammar does not mention it, nested-names
+        // shaped like Nu14__some_builtinIiE6memberE occur in practice, and it
+        // is not clear what else a compiler is supposed to do when a
+        // vendor-extended type has named members.
+        ParseVendorExtendedType(state) ||
         ParseUnscopedName(state) ||
         (ParseOneCharToken(state, 'M') && ParseUnnamedTypeName(state))) {
       has_something = true;
@@ -1256,6 +1282,7 @@ static bool ParseDecltype(State *state) {
 //        ::= <substitution>
 //        ::= Dp <type>          # pack expansion of (C++0x)
 //        ::= Dv <num-elems> _   # GNU vector extension
+//        ::= Dk <type-constraint>  # constrained auto
 //
 static bool ParseType(State *state) {
   ComplexityGuard guard(state);
@@ -1328,7 +1355,15 @@ static bool ParseType(State *state) {
   }
   state->parse_state = copy;
 
-  return false;
+  if (ParseTwoCharToken(state, "Dk") && ParseTypeConstraint(state)) {
+    return true;
+  }
+  state->parse_state = copy;
+
+  // For this notation see CXXNameMangler::mangleType in Clang's source code.
+  // The relevant logic and its comment "not clear how to mangle this!" date
+  // from 2011, so it may be with us awhile.
+  return ParseLongToken(state, "_SUBSTPACK_");
 }
 
 // <CV-qualifiers> ::= [r] [V] [K]
@@ -1345,7 +1380,7 @@ static bool ParseCVQualifiers(State *state) {
 }
 
 // <builtin-type> ::= v, etc.  # single-character builtin types
-//                ::= u <source-name> [I <type> E]
+//                ::= <vendor-extended-type>
 //                ::= Dd, etc.  # two-character builtin types
 //
 // Not supported:
@@ -1368,6 +1403,16 @@ static bool ParseBuiltinType(State *state) {
       return true;  // ::= Dd, etc.  # two-character builtin types
     }
   }
+
+  return ParseVendorExtendedType(state);
+}
+
+// <vendor-extended-type> ::= u <source-name> [I <type> E]
+//
+// NOTE: [I <type> E] is a vendor extension (http://shortn/_FrINpH1XC5).
+static bool ParseVendorExtendedType(State *state) {
+  ComplexityGuard guard(state);
+  if (guard.IsTooComplex()) return false;
 
   ParseState copy = state->parse_state;
   if (ParseOneCharToken(state, 'u') && ParseSourceName(state)) {
@@ -1437,15 +1482,38 @@ static bool ParseFunctionType(State *state) {
   return true;
 }
 
-// <bare-function-type> ::= <(signature) type>+
+// <bare-function-type> ::= <overload-attribute>* <(signature) type>+
+//
+// The <overload-attribute>* prefix is nonstandard; see the comment on
+// ParseOverloadAttribute.
 static bool ParseBareFunctionType(State *state) {
   ComplexityGuard guard(state);
   if (guard.IsTooComplex()) return false;
   ParseState copy = state->parse_state;
   DisableAppend(state);
-  if (OneOrMore(ParseType, state)) {
+  if (ZeroOrMore(ParseOverloadAttribute, state) &&
+      OneOrMore(ParseType, state)) {
     RestoreAppend(state, copy.append);
     MaybeAppend(state, "()");
+    return true;
+  }
+  state->parse_state = copy;
+  return false;
+}
+
+// <overload-attribute> ::= Ua <name>
+//
+// The nonstandard <overload-attribute> production is sufficient to accept the
+// current implementation of __attribute__((enable_if(condition, "message")))
+// and future attributes of a similar shape.  See
+// https://clang.llvm.org/docs/AttributeReference.html#enable-if and the
+// definition of CXXNameMangler::mangleFunctionEncodingBareType in Clang's
+// source code.
+static bool ParseOverloadAttribute(State *state) {
+  ComplexityGuard guard(state);
+  if (guard.IsTooComplex()) return false;
+  ParseState copy = state->parse_state;
+  if (ParseTwoCharToken(state, "Ua") && ParseName(state)) {
     return true;
   }
   state->parse_state = copy;
@@ -1783,7 +1851,7 @@ static bool ParseUnresolvedName(State *state) {
 
   if (ParseTwoCharToken(state, "sr") && ParseOneCharToken(state, 'N') &&
       ParseUnresolvedType(state) &&
-      OneOrMore(/* <unresolved-qualifier-level> ::= */ ParseSimpleId, state) &&
+      OneOrMore(ParseUnresolvedQualifierLevel, state) &&
       ParseOneCharToken(state, 'E') && ParseBaseUnresolvedName(state)) {
     return true;
   }
@@ -1791,12 +1859,35 @@ static bool ParseUnresolvedName(State *state) {
 
   if (Optional(ParseTwoCharToken(state, "gs")) &&
       ParseTwoCharToken(state, "sr") &&
-      OneOrMore(/* <unresolved-qualifier-level> ::= */ ParseSimpleId, state) &&
+      OneOrMore(ParseUnresolvedQualifierLevel, state) &&
       ParseOneCharToken(state, 'E') && ParseBaseUnresolvedName(state)) {
     return true;
   }
   state->parse_state = copy;
 
+  return false;
+}
+
+// <unresolved-qualifier-level> ::= <simple-id>
+//                              ::= <substitution> <template-args>
+//
+// The production <substitution> <template-args> is nonstandard but is observed
+// in practice.  An upstream discussion on the best shape of <unresolved-name>
+// has not converged:
+//
+// https://github.com/itanium-cxx-abi/cxx-abi/issues/38
+static bool ParseUnresolvedQualifierLevel(State *state) {
+  ComplexityGuard guard(state);
+  if (guard.IsTooComplex()) return false;
+
+  if (ParseSimpleId(state)) return true;
+
+  ParseState copy = state->parse_state;
+  if (ParseSubstitution(state, /*accept_std=*/false) &&
+      ParseTemplateArgs(state)) {
+    return true;
+  }
+  state->parse_state = copy;
   return false;
 }
 
@@ -1877,11 +1968,17 @@ static bool ParseBracedExpression(State *state) {
 //              ::= cv <type> <expression>      # type (expression)
 //              ::= cv <type> _ <expression>* E # type (expr-list)
 //              ::= tl <type> <braced-expression>* E
+//              ::= il <braced-expression>* E
+//              ::= dc <type> <expression>
+//              ::= sc <type> <expression>
+//              ::= cc <type> <expression>
+//              ::= rc <type> <expression>
 //              ::= st <type>
 //              ::= <template-param>
 //              ::= <function-param>
 //              ::= sZ <template-param>
 //              ::= sZ <function-param>
+//              ::= sP <template-arg>* E
 //              ::= <expr-primary>
 //              ::= dt <expression> <unresolved-name> # expr.name
 //              ::= pt <expression> <unresolved-name> # expr->name
@@ -1894,6 +1991,7 @@ static bool ParseBracedExpression(State *state) {
 //              ::= sr <type> <unqualified-name>
 //              ::= u <source-name> <template-arg>* E  # vendor extension
 //              ::= rq <requirement>+ E
+//              ::= rQ <bare-function-type> _ <requirement>+ E
 static bool ParseExpression(State *state) {
   ComplexityGuard guard(state);
   if (guard.IsTooComplex()) return false;
@@ -1938,6 +2036,23 @@ static bool ParseExpression(State *state) {
   if (ParseTwoCharToken(state, "tl") && ParseType(state) &&
       ZeroOrMore(ParseBracedExpression, state) &&
       ParseOneCharToken(state, 'E')) {
+    return true;
+  }
+  state->parse_state = copy;
+
+  // <expression> ::= il <braced-expression>* E
+  if (ParseTwoCharToken(state, "il") &&
+      ZeroOrMore(ParseBracedExpression, state) &&
+      ParseOneCharToken(state, 'E')) {
+    return true;
+  }
+  state->parse_state = copy;
+
+  // dynamic_cast, static_cast, const_cast, reinterpret_cast.
+  //
+  // <expression> ::= (dc | sc | cc | rc) <type> <expression>
+  if (ParseCharClass(state, "dscr") && ParseOneCharToken(state, 'c') &&
+      ParseType(state) && ParseExpression(state)) {
     return true;
   }
   state->parse_state = copy;
@@ -1991,6 +2106,15 @@ static bool ParseExpression(State *state) {
   //              ::= sZ <function-param>
   if (ParseTwoCharToken(state, "sZ") &&
       (ParseFunctionParam(state) || ParseTemplateParam(state))) {
+    return true;
+  }
+  state->parse_state = copy;
+
+  // sizeof...(pack) captured from an alias template
+  //
+  // <expression> ::= sP <template-arg>* E
+  if (ParseTwoCharToken(state, "sP") && ZeroOrMore(ParseTemplateArg, state) &&
+      ParseOneCharToken(state, 'E')) {
     return true;
   }
   state->parse_state = copy;
@@ -2051,6 +2175,16 @@ static bool ParseExpression(State *state) {
   //
   // https://github.com/itanium-cxx-abi/cxx-abi/issues/24
   if (ParseTwoCharToken(state, "rq") && OneOrMore(ParseRequirement, state) &&
+      ParseOneCharToken(state, 'E')) {
+    return true;
+  }
+  state->parse_state = copy;
+
+  // <expression> ::= rQ <bare-function-type> _ <requirement>+ E
+  //
+  // https://github.com/itanium-cxx-abi/cxx-abi/issues/24
+  if (ParseTwoCharToken(state, "rQ") && ParseBareFunctionType(state) &&
+      ParseOneCharToken(state, '_') && OneOrMore(ParseRequirement, state) &&
       ParseOneCharToken(state, 'E')) {
     return true;
   }
@@ -2201,8 +2335,6 @@ static bool ParseQRequiresClauseExpr(State *state) {
 // <requirement> ::= T <type>
 // <requirement> ::= Q <constraint-expression>
 //
-// <type-constraint> ::= <name>
-//
 // <constraint-expression> ::= <expression>
 //
 // https://github.com/itanium-cxx-abi/cxx-abi/issues/24
@@ -2216,7 +2348,7 @@ static bool ParseRequirement(State *state) {
       Optional(ParseOneCharToken(state, 'N')) &&
       // This logic backtracks cleanly if we eat an R but a valid type doesn't
       // follow it.
-      (!ParseOneCharToken(state, 'R') || ParseName(state))) {
+      (!ParseOneCharToken(state, 'R') || ParseTypeConstraint(state))) {
     return true;
   }
   state->parse_state = copy;
@@ -2230,31 +2362,68 @@ static bool ParseRequirement(State *state) {
   return false;
 }
 
+// <type-constraint> ::= <name>
+static bool ParseTypeConstraint(State *state) {
+  return ParseName(state);
+}
+
 // <local-name> ::= Z <(function) encoding> E <(entity) name> [<discriminator>]
 //              ::= Z <(function) encoding> E s [<discriminator>]
+//              ::= Z <(function) encoding> E d [<(parameter) number>] _ <name>
 //
 // Parsing a common prefix of these two productions together avoids an
 // exponential blowup of backtracking.  Parse like:
 //   <local-name> := Z <encoding> E <local-name-suffix>
 //   <local-name-suffix> ::= s [<discriminator>]
+//                       ::= d [<(parameter) number>] _ <name>
 //                       ::= <name> [<discriminator>]
 
 static bool ParseLocalNameSuffix(State *state) {
   ComplexityGuard guard(state);
   if (guard.IsTooComplex()) return false;
+  ParseState copy = state->parse_state;
 
+  // <local-name-suffix> ::= d [<(parameter) number>] _ <name>
+  if (ParseOneCharToken(state, 'd') &&
+      (IsDigit(RemainingInput(state)[0]) || RemainingInput(state)[0] == '_')) {
+    int number = -1;
+    Optional(ParseNumber(state, &number));
+    if (number < -1 || number > 2147483645) {
+      // Work around overflow cases.  We do not expect these outside of a fuzzer
+      // or other source of adversarial input.  If we do detect overflow here,
+      // we'll print {default arg#1}.
+      number = -1;
+    }
+    number += 2;
+
+    // The ::{default arg#1}:: infix must be rendered before the lambda itself,
+    // so print this before parsing the rest of the <local-name-suffix>.
+    MaybeAppend(state, "::{default arg#");
+    MaybeAppendDecimal(state, number);
+    MaybeAppend(state, "}::");
+    if (ParseOneCharToken(state, '_') && ParseName(state)) return true;
+
+    // On late parse failure, roll back not only the input but also the output,
+    // whose trailing NUL was overwritten.
+    state->parse_state = copy;
+    if (state->parse_state.append) {
+      state->out[state->parse_state.out_cur_idx] = '\0';
+    }
+    return false;
+  }
+  state->parse_state = copy;
+
+  // <local-name-suffix> ::= <name> [<discriminator>]
   if (MaybeAppend(state, "::") && ParseName(state) &&
       Optional(ParseDiscriminator(state))) {
     return true;
   }
-
-  // Since we're not going to overwrite the above "::" by re-parsing the
-  // <encoding> (whose trailing '\0' byte was in the byte now holding the
-  // first ':'), we have to rollback the "::" if the <name> parse failed.
+  state->parse_state = copy;
   if (state->parse_state.append) {
-    state->out[state->parse_state.out_cur_idx - 2] = '\0';
+    state->out[state->parse_state.out_cur_idx] = '\0';
   }
 
+  // <local-name-suffix> ::= s [<discriminator>]
   return ParseOneCharToken(state, 's') && Optional(ParseDiscriminator(state));
 }
 
@@ -2270,12 +2439,22 @@ static bool ParseLocalName(State *state) {
   return false;
 }
 
-// <discriminator> := _ <(non-negative) number>
+// <discriminator> := _ <digit>
+//                 := __ <number (>= 10)> _
 static bool ParseDiscriminator(State *state) {
   ComplexityGuard guard(state);
   if (guard.IsTooComplex()) return false;
   ParseState copy = state->parse_state;
-  if (ParseOneCharToken(state, '_') && ParseNumber(state, nullptr)) {
+
+  // Both forms start with _ so parse that first.
+  if (!ParseOneCharToken(state, '_')) return false;
+
+  // <digit>
+  if (ParseDigit(state, nullptr)) return true;
+
+  // _ <number> _
+  if (ParseOneCharToken(state, '_') && ParseNumber(state, nullptr) &&
+      ParseOneCharToken(state, '_')) {
     return true;
   }
   state->parse_state = copy;

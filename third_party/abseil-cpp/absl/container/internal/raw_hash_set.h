@@ -3105,7 +3105,7 @@ class raw_hash_set {
   // this method returns void to reduce algorithmic complexity to O(1).  The
   // iterator is invalidated, so any increment should be done before calling
   // erase.  In order to erase while iterating across a map, use the following
-  // idiom (which also works for standard containers):
+  // idiom (which also works for some standard containers):
   //
   // for (auto it = m.begin(), end = m.end(); it != end;) {
   //   // `erase()` will invalidate `it`, so advance `it` first.

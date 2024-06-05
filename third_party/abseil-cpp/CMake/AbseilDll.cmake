@@ -439,6 +439,43 @@ set(ABSL_INTERNAL_DLL_FILES
   "debugging/leak_check.cc"
 )
 
+if(NOT MSVC)
+  list(APPEND ABSL_INTERNAL_DLL_FILES
+    "flags/commandlineflag.cc"
+    "flags/commandlineflag.h"
+    "flags/config.h"
+    "flags/declare.h"
+    "flags/flag.h"
+    "flags/internal/commandlineflag.cc"
+    "flags/internal/commandlineflag.h"
+    "flags/internal/flag.cc"
+    "flags/internal/flag.h"
+    "flags/internal/parse.h"
+    "flags/internal/path_util.h"
+    "flags/internal/private_handle_accessor.cc"
+    "flags/internal/private_handle_accessor.h"
+    "flags/internal/program_name.cc"
+    "flags/internal/program_name.h"
+    "flags/internal/registry.h"
+    "flags/internal/sequence_lock.h"
+    "flags/internal/usage.cc"
+    "flags/internal/usage.h"
+    "flags/marshalling.cc"
+    "flags/marshalling.h"
+    "flags/parse.cc"
+    "flags/parse.h"
+    "flags/reflection.cc"
+    "flags/reflection.h"
+    "flags/usage.cc"
+    "flags/usage.h"
+    "flags/usage_config.cc"
+    "flags/usage_config.h"
+    "log/flags.cc"
+    "log/flags.h"
+    "log/internal/flags.h"
+  )
+endif()
+
 set(ABSL_INTERNAL_DLL_TARGETS
   "absl_check"
   "absl_log"
@@ -601,6 +638,26 @@ set(ABSL_INTERNAL_DLL_TARGETS
   "vlog_config_internal"
 )
 
+if(NOT MSVC)
+  list(APPEND ABSL_INTERNAL_DLL_TARGETS
+    "flags"
+    "flags_commandlineflag"
+    "flags_commandlineflag_internal"
+    "flags_config"
+    "flags_internal"
+    "flags_marshalling"
+    "flags_parse"
+    "flags_path_util"
+    "flags_private_handle_accessor"
+    "flags_program_name"
+    "flags_reflection"
+    "flags_usage"
+    "flags_usage_internal"
+    "log_internal_flags"
+    "log_flags"
+  )
+endif()
+
 set(ABSL_INTERNAL_TEST_DLL_FILES
   "hash/hash_testing.h"
   "log/scoped_mock_log.cc"
@@ -746,7 +803,12 @@ function(absl_make_dll)
   else()
     set(_dll "abseil_dll")
     set(_dll_files ${ABSL_INTERNAL_DLL_FILES})
-    set(_dll_libs "")
+    set(_dll_libs
+      Threads::Threads
+      # TODO(#1495): Use $<LINK_LIBRARY:FRAMEWORK,CoreFoundation> once our
+      # minimum CMake version >= 3.24
+      $<$<PLATFORM_ID:Darwin>:-Wl,-framework,CoreFoundation>
+    )
     set(_dll_compile_definitions "")
     set(_dll_includes "")
     set(_dll_consume "ABSL_CONSUME_DLL")
@@ -764,7 +826,10 @@ function(absl_make_dll)
       ${_dll_libs}
       ${ABSL_DEFAULT_LINKOPTS}
   )
-  set_property(TARGET ${_dll} PROPERTY LINKER_LANGUAGE "CXX")
+  set_target_properties(${_dll} PROPERTIES
+    LINKER_LANGUAGE "CXX"
+    SOVERSION ${ABSL_SOVERSION}
+  )
   target_include_directories(
     ${_dll}
     PUBLIC

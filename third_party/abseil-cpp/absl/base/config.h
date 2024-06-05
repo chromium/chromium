@@ -274,52 +274,17 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 #define ABSL_HAVE_STD_IS_TRIVIALLY_COPYABLE 1
 #endif
 
+
 // ABSL_HAVE_THREAD_LOCAL
 //
+// DEPRECATED - `thread_local` is available on all supported platforms.
 // Checks whether C++11's `thread_local` storage duration specifier is
 // supported.
 #ifdef ABSL_HAVE_THREAD_LOCAL
 #error ABSL_HAVE_THREAD_LOCAL cannot be directly set
-#elif defined(__APPLE__)
-// Notes:
-// * Xcode's clang did not support `thread_local` until version 8, and
-//   even then not for all iOS < 9.0.
-// * Xcode 9.3 started disallowing `thread_local` for 32-bit iOS simulator
-//   targeting iOS 9.x.
-// * Xcode 10 moves the deployment target check for iOS < 9.0 to link time
-//   making ABSL_HAVE_FEATURE unreliable there.
-//
-#if ABSL_HAVE_FEATURE(cxx_thread_local) && \
-    !(TARGET_OS_IPHONE && __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_9_0)
+#else
 #define ABSL_HAVE_THREAD_LOCAL 1
 #endif
-#else  // !defined(__APPLE__)
-#define ABSL_HAVE_THREAD_LOCAL 1
-#endif
-
-// There are platforms for which TLS should not be used even though the compiler
-// makes it seem like it's supported (Android NDK < r12b for example).
-// This is primarily because of linker problems and toolchain misconfiguration:
-// Abseil does not intend to support this indefinitely. Currently, the newest
-// toolchain that we intend to support that requires this behavior is the
-// r11 NDK - allowing for a 5 year support window on that means this option
-// is likely to be removed around June of 2021.
-// TLS isn't supported until NDK r12b per
-// https://developer.android.com/ndk/downloads/revision_history.html
-// Since NDK r16, `__NDK_MAJOR__` and `__NDK_MINOR__` are defined in
-// <android/ndk-version.h>. For NDK < r16, users should define these macros,
-// e.g. `-D__NDK_MAJOR__=11 -D__NKD_MINOR__=0` for NDK r11.
-#if defined(__ANDROID__) && defined(__clang__)
-#if __has_include(<android/ndk-version.h>)
-#include <android/ndk-version.h>
-#endif  // __has_include(<android/ndk-version.h>)
-#if defined(__ANDROID__) && defined(__clang__) && defined(__NDK_MAJOR__) && \
-    defined(__NDK_MINOR__) &&                                               \
-    ((__NDK_MAJOR__ < 12) || ((__NDK_MAJOR__ == 12) && (__NDK_MINOR__ < 1)))
-#undef ABSL_HAVE_TLS
-#undef ABSL_HAVE_THREAD_LOCAL
-#endif
-#endif  // defined(__ANDROID__) && defined(__clang__)
 
 // ABSL_HAVE_INTRINSIC_INT128
 //
