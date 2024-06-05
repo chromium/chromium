@@ -109,11 +109,11 @@ TEST_F(PickerListItemViewTest, SetBadgeActionHasLabelText) {
 }
 
 TEST_F(PickerListItemViewTest, SetPreviewUpdatesIconWithPlaceholder) {
+  PickerPreviewBubbleController preview_controller;
   auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   auto* item_view = widget->SetContentsView(
       std::make_unique<PickerListItemView>(base::DoNothing()));
   widget->Show();
-  PickerPreviewBubbleController preview_controller;
 
   item_view->SetPreview(&preview_controller, base::FilePath(),
                         base::DoNothing());
@@ -127,13 +127,13 @@ TEST_F(PickerListItemViewTest, SetPreviewUpdatesIconWithPlaceholder) {
 }
 
 TEST_F(PickerListItemViewTest, SetPreviewUpdatesIconOncePreviewIconResolves) {
+  PickerPreviewBubbleController preview_controller;
   auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   auto* item_view = widget->SetContentsView(
       std::make_unique<PickerListItemView>(base::DoNothing()));
   widget->Show();
   base::RunLoop run_loop;
   SkBitmap bitmap = gfx::test::CreateBitmap(100, SK_ColorBLUE);
-  PickerPreviewBubbleController preview_controller;
 
   item_view->SetPrimaryText(u"abc");
   item_view->SetPreview(
