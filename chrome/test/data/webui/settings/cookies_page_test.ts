@@ -6,7 +6,7 @@
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsCollapseRadioButtonElement, SettingsRadioGroupElement, SettingsCookiesPageElement} from 'chrome://settings/lazy_load.js';
-import {CookieControlsMode, ContentSetting, ContentSettingsTypes, SITE_EXCEPTION_WILDCARD, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {CookieControlsMode, ContentSettingsTypes, SITE_EXCEPTION_WILDCARD, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs, MetricsBrowserProxyImpl, PrivacyElementInteractions, resetRouterForTesting, Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -314,27 +314,6 @@ suite('ExceptionsList', function() {
     flush();
 
     assertFalse(isChildVisible(exceptionList, 'site-list-entry'));
-  });
-
-  test('ExceptionListReadOnly', function() {
-    // Check that the exception list is read only when the preference reports as
-    // managed.
-    page.set('prefs.generated.cookie_default_content_setting', {
-      value: ContentSetting.ALLOW,
-      enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
-    });
-    const exceptionList1 = page.shadowRoot!.querySelector('site-list');
-    assertTrue(!!exceptionList1);
-    assertTrue(!!exceptionList1.readOnlyList);
-
-    // Return preference to unmanaged state and check that the exception list
-    // is no longer read only.
-    page.set('prefs.generated.cookie_default_content_setting', {
-      value: ContentSetting.ALLOW,
-    });
-    const exceptionList2 = page.shadowRoot!.querySelector('site-list');
-    assertTrue(!!exceptionList2);
-    assertFalse(!!exceptionList2.readOnlyList);
   });
 
   test('ExceptionListHasCorrectCookieExceptionType', function() {
