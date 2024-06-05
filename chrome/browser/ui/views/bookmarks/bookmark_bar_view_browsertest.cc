@@ -428,6 +428,7 @@ class PrerenderBookmarkBarNavigationTestBase
   }
 
  private:
+  content::test::PreloadingConfigOverride preloading_config_override_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
   std::unique_ptr<base::ScopedMockElapsedTimersForTest> scoped_test_timer_;
 };

@@ -76,6 +76,7 @@ class PreloadingDeciderBrowserTest : public ContentBrowserTest {
   }
 
  private:
+  content::test::PreloadingConfigOverride preloading_config_override_;
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
 };
