@@ -52,6 +52,9 @@ constexpr CGFloat kFaviconContainerBorderWidth = 1.5;
   [super configureCell:tableCell withStyler:styler];
   SettingsSearchEngineCell* cell =
       base::apple::ObjCCastStrict<SettingsSearchEngineCell>(tableCell);
+  cell.accessibilityIdentifier = [NSString
+      stringWithFormat:@"%@%@", kSettingsSearchEngineCellIdentifierPrefix,
+                       self.text];
   cell.textLabel.text = self.text;
   cell.detailTextLabel.text = self.detailText;
   cell.accessibilityTraits |= UIAccessibilityTraitButton;

@@ -7,6 +7,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/search_engines/prepopulated_engines.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_constants.h"
+#import "ios/chrome/browser/ui/settings/cells/settings_cells_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -78,18 +79,19 @@
                                    grey_sufficientlyVisible(), nil)];
 }
 
-+ (id<GREYMatcher>)settingsCustomSearchEngineAccessibilityLabelWithName:
-    (const char*)name {
-  NSString* label = [NSString stringWithFormat:@"%s, 127.0.0.1", name];
-  return grey_accessibilityLabel(label);
++ (id<GREYMatcher>)settingsSearchEngineMatcherWithName:(NSString*)name {
+  NSString* label = [NSString
+      stringWithFormat:@"%@%@", kSettingsSearchEngineCellIdentifierPrefix,
+                       name];
+  return grey_accessibilityID(label);
 }
 
-+ (GREYElementInteraction*)interactionForSettingsCustomSearchEngineWithName:
-    (const char*)name {
-  id<GREYMatcher> customSearchEngineCell =
-      [self settingsCustomSearchEngineAccessibilityLabelWithName:name];
++ (GREYElementInteraction*)interactionForSettingsSearchEngineWithName:
+    (NSString*)name {
+  id<GREYMatcher> searchEngineCellMatcher =
+      [self settingsSearchEngineMatcherWithName:name];
   return [[EarlGrey
-      selectElementWithMatcher:grey_allOf(customSearchEngineCell,
+      selectElementWithMatcher:grey_allOf(searchEngineCellMatcher,
                                           grey_sufficientlyVisible(), nil)]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 100)
       onElementWithMatcher:grey_accessibilityID(

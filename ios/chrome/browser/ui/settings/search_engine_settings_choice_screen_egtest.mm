@@ -24,10 +24,10 @@
 
 namespace {
 
+NSString* kCustomSearchEngineName = @"Custom Search Engine";
 const char kPageURL[] = "/";
 const char kOpenSearch[] = "/opensearch.xml";
 const char kSearchURL[] = "/search?q=";
-const char kCustomSearchEngineName[] = "Custom Search Engine";
 const char kGoogleURL[] = "google";
 const char kYahooURL[] = "yahoo";
 
@@ -72,7 +72,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
     http_response->set_content(
         "<OpenSearchDescription xmlns=\"http://a9.com/-/spec/opensearch/1.1/\">"
         "<ShortName>" +
-        std::string(kCustomSearchEngineName) +
+        base::SysNSStringToUTF8(kCustomSearchEngineName) +
         "</ShortName>"
         "<Description>Description</Description>"
         "<Url type=\"text/html\" method=\"get\" template=\"" +
@@ -186,18 +186,17 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [self enterSettingsWithCustomSearchEngine];
 
   [[SearchEngineChoiceEarlGreyUI
-      interactionForSettingsCustomSearchEngineWithName:kCustomSearchEngineName]
+      interactionForSettingsSearchEngineWithName:kCustomSearchEngineName]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Swipe all the way to the left, to delete the custom search engine.
-  id<GREYMatcher> customSearchEngineCell = [SearchEngineChoiceEarlGreyUI
-      settingsCustomSearchEngineAccessibilityLabelWithName:
-          kCustomSearchEngineName];
-  [[EarlGrey selectElementWithMatcher:customSearchEngineCell]
+  id<GREYMatcher> searchEngineCellMatcher = [SearchEngineChoiceEarlGreyUI
+      settingsSearchEngineMatcherWithName:kCustomSearchEngineName];
+  [[EarlGrey selectElementWithMatcher:searchEngineCellMatcher]
       performAction:grey_swipeSlowInDirectionWithStartPoint(kGREYDirectionLeft,
                                                             0.9, 0.5)];
 
-  [[EarlGrey selectElementWithMatcher:customSearchEngineCell]
+  [[EarlGrey selectElementWithMatcher:searchEngineCellMatcher]
       assertWithMatcher:grey_nil()];
 }
 
@@ -205,13 +204,12 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 - (void)testDeleteCustomSearchEngineSwipe {
   [self enterSettingsWithCustomSearchEngine];
   [[SearchEngineChoiceEarlGreyUI
-      interactionForSettingsCustomSearchEngineWithName:kCustomSearchEngineName]
+      interactionForSettingsSearchEngineWithName:kCustomSearchEngineName]
       performAction:grey_swipeSlowInDirectionWithStartPoint(kGREYDirectionLeft,
                                                             0.9, 0.5)];
-  id<GREYMatcher> customSearchEngineCell = [SearchEngineChoiceEarlGreyUI
-      settingsCustomSearchEngineAccessibilityLabelWithName:
-          kCustomSearchEngineName];
-  [[EarlGrey selectElementWithMatcher:customSearchEngineCell]
+  id<GREYMatcher> searchEngineCellMatcher = [SearchEngineChoiceEarlGreyUI
+      settingsSearchEngineMatcherWithName:kCustomSearchEngineName];
+  [[EarlGrey selectElementWithMatcher:searchEngineCellMatcher]
       assertWithMatcher:grey_nil()];
 }
 
@@ -219,16 +217,15 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 - (void)testRefuseToDeleteSelectedCustomSearchEngineBySwipe {
   [self enterSettingsWithCustomSearchEngine];
   [[SearchEngineChoiceEarlGreyUI
-      interactionForSettingsCustomSearchEngineWithName:kCustomSearchEngineName]
+      interactionForSettingsSearchEngineWithName:kCustomSearchEngineName]
       performAction:grey_tap()];
   [[SearchEngineChoiceEarlGreyUI
-      interactionForSettingsCustomSearchEngineWithName:kCustomSearchEngineName]
+      interactionForSettingsSearchEngineWithName:kCustomSearchEngineName]
       performAction:grey_swipeSlowInDirectionWithStartPoint(kGREYDirectionLeft,
                                                             0.9, 0.5)];
-  id<GREYMatcher> customSearchEngineCell = [SearchEngineChoiceEarlGreyUI
-      settingsCustomSearchEngineAccessibilityLabelWithName:
-          kCustomSearchEngineName];
-  [[EarlGrey selectElementWithMatcher:customSearchEngineCell]
+  id<GREYMatcher> searchEngineCellMatcher = [SearchEngineChoiceEarlGreyUI
+      settingsSearchEngineMatcherWithName:kCustomSearchEngineName];
+  [[EarlGrey selectElementWithMatcher:searchEngineCellMatcher]
       assertWithMatcher:grey_notNil()];
 }
 
@@ -243,13 +240,12 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       grey_not(grey_accessibilityTrait(UIAccessibilityTraitNotEnabled)), nil);
   [[EarlGrey selectElementWithMatcher:editButton] performAction:grey_tap()];
 
-  id<GREYMatcher> customSearchEngineCell = [SearchEngineChoiceEarlGreyUI
-      settingsCustomSearchEngineAccessibilityLabelWithName:
-          kCustomSearchEngineName];
+  id<GREYMatcher> searchEngineCellMatcher = [SearchEngineChoiceEarlGreyUI
+      settingsSearchEngineMatcherWithName:kCustomSearchEngineName];
   [[SearchEngineChoiceEarlGreyUI
-      interactionForSettingsCustomSearchEngineWithName:kCustomSearchEngineName]
+      interactionForSettingsSearchEngineWithName:kCustomSearchEngineName]
       assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:customSearchEngineCell]
+  [[EarlGrey selectElementWithMatcher:searchEngineCellMatcher]
       performAction:grey_tap()];
 
   id<GREYMatcher> deleteButton = grey_allOf(
@@ -258,7 +254,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       grey_not(grey_accessibilityTrait(UIAccessibilityTraitNotEnabled)), nil);
   [[EarlGrey selectElementWithMatcher:deleteButton] performAction:grey_tap()];
 
-  [[EarlGrey selectElementWithMatcher:customSearchEngineCell]
+  [[EarlGrey selectElementWithMatcher:searchEngineCellMatcher]
       assertWithMatcher:grey_nil()];
 }
 

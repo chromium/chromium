@@ -41,17 +41,14 @@ typedef NS_ENUM(NSUInteger, FakeOmniboxState) {
 // Checks that the default search engine was correctly set.
 + (void)verifyDefaultSearchEngineSetting:(NSString*)searchEngineName;
 
-// Returns GreyMatcher for the custom search engine for the settings table view.
-// The custom search engine URL needs to be 127.0.0.1.
-+ (id<GREYMatcher>)settingsCustomSearchEngineAccessibilityLabelWithName:
-    (const char*)name;
+// Returns GreyMatcher for the search engine for the settings table view.
++ (id<GREYMatcher>)settingsSearchEngineMatcherWithName:(NSString*)name;
 
 // Returns the GREYElementInteraction* for the item in the search engine list
 // with the given `matcher`. It scrolls in `direction` if necessary to ensure
 // that the matched item is sufficiently visible, thus interactable.
-// The custom search engine URL needs to be 127.0.0.1.
-+ (GREYElementInteraction*)interactionForSettingsCustomSearchEngineWithName:
-    (const char*)name;
++ (GREYElementInteraction*)interactionForSettingsSearchEngineWithName:
+    (NSString*)name;
 
 + (NSString*)searchEngineNameWithPrepopulatedEngine:
     (const TemplateURLPrepopulateData::PrepopulatedEngine&)prepopulatedEngine;
