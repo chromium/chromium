@@ -2107,6 +2107,14 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
                     }
                 };
         runTabRemovalAnimation(tab, listener);
+
+        // 3. Attempt to select the next expanded tab now. If none exists, we'll default to the
+        // normal auto-selection behavior (i.e. selecting the closest collapsed tab, or opening the
+        // GTS if none exist).
+        int nextIndex = getNearbyExpandedTabIndex();
+        if (nextIndex != TabModel.INVALID_TAB_INDEX) {
+            TabModelUtils.setIndex(mModel, nextIndex, /* skipLoadingTab= */ false);
+        }
     }
 
     private void runTabRemovalAnimation(StripLayoutTab tab, AnimatorListener listener) {
@@ -2611,31 +2619,33 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
         // tabs are collapsed, open a ntp.
         if (isCollapsed) {
             Tab selectedTab = getTabById(getSelectedTabId());
-            boolean expandedTabSelected = false;
             if (selectedTab != null && selectedTab.getRootId() == groupTitle.getRootId()) {
-                int index = getSelectedStripTabIndex();
-                for (int i = index; i >= 0; i--) {
-                    if (!mStripTabs[i].isCollapsed()) {
-                        expandedTabSelected = true;
-                        TabModelUtils.setIndex(mModel, i, false);
-                        break;
-                    }
-                }
-
-                if (!expandedTabSelected) {
-                    for (int i = index; i < mStripTabs.length; i++) {
-                        if (!mStripTabs[i].isCollapsed()) {
-                            expandedTabSelected = true;
-                            TabModelUtils.setIndex(mModel, i, false);
-                            break;
-                        }
-                    }
-                }
-                if (!expandedTabSelected) {
+                int nextIndex = getNearbyExpandedTabIndex();
+                if (nextIndex != TabModel.INVALID_TAB_INDEX) {
+                    TabModelUtils.setIndex(mModel, nextIndex, /* skipLoadingTab= */ false);
+                } else {
                     mTabCreator.launchNtp();
                 }
             }
         }
+    }
+
+    /**
+     * @return The index of the nearby expanded tab to the selected tab. Prioritizes tabs before the
+     *     selected tab. If none are found, return an invalid index.
+     */
+    private int getNearbyExpandedTabIndex() {
+        int index = getSelectedStripTabIndex();
+
+        for (int i = index - 1; i >= 0; --i) {
+            if (!mStripTabs[i].isCollapsed()) return i;
+        }
+
+        for (int i = index + 1; i < mStripTabs.length; ++i) {
+            if (!mStripTabs[i].isCollapsed()) return i;
+        }
+
+        return TabModel.INVALID_TAB_INDEX;
     }
 
     private void updateGroupTitle(StripLayoutGroupTitle groupTitle, String title, int widthPx) {

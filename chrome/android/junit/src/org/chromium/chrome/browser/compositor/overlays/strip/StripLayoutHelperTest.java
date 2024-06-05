@@ -2570,7 +2570,7 @@ public class StripLayoutHelperTest {
     public void testBottomIndicatorWidthAfterTabResize_GroupedTabClosed_TabGroupIndicators() {
         // Arrange
         int tabCount = 6;
-        initializeTest(false, false, false, 0, tabCount);
+        initializeTest(false, false, true, 0, tabCount);
         StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
         groupTabs(0, 2);
 
@@ -2596,30 +2596,10 @@ public class StripLayoutHelperTest {
         setupForAnimations();
         mStripLayoutHelper.updateLayout(TIMESTAMP);
 
-        // Act: Call on close tab button handler.
-        MockTabModel tabModel = new MockTabModel(mProfile, null);
-        when(tabs[0].getId()).thenReturn(0);
-        tabModel.addTab(0);
-        tabModel.setIndex(0, TabSelectionType.FROM_NEW, true);
-        tabModel.setActive(true);
-        mStripLayoutHelper.setTabModel(tabModel, null, false);
+        // Act: Close tab and remove from group.
         mStripLayoutHelper.handleCloseButtonClick(tabs[0], TIMESTAMP);
-
-        // Assert: Animations started.
-        assertTrue(
-                "MultiStepAnimations should have started.",
-                mStripLayoutHelper.isMultiStepCloseAnimationsRunningForTesting());
-
-        assertTrue(
-                "MultiStepAnimations should still be running.",
-                mStripLayoutHelper.isMultiStepCloseAnimationsRunningForTesting());
-
-        // Act: Set animation time forward by 250ms for next set of animations.
-        mStripLayoutHelper.getRunningAnimatorForTesting().end();
-
-        // Act: End the animations to apply final values.
-        Animator runningAnimator = mStripLayoutHelper.getRunningAnimatorForTesting();
-        runningAnimator.end();
+        when(mTabGroupModelFilter.getRelatedTabCountForRootId(eq(0))).thenReturn(1);
+        mStripLayoutHelper.finishAnimationsAndPushTabUpdates();
 
         // availableSize = width(800) - NTB(32) - endPadding(8) - offsetXLeft(10) - offsetXRight(20)
         // - groupTitleWidth(46) = 684.
@@ -2632,9 +2612,6 @@ public class StripLayoutHelperTest {
             assertEquals(
                     "Unexpected tab width after resize.", expectedWidth, stripTab.getWidth(), 0.1f);
         }
-        assertFalse(
-                "MultiStepAnimations should have ended.",
-                mStripLayoutHelper.isMultiStepCloseAnimationsRunningForTesting());
 
         // Check bottom indicator end width.
         float expectedEndWidth = calculateExpectedBottomIndicatorWidth(openTabWidth, 1, groupTitle);
