@@ -504,6 +504,65 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Platform.FbPreprocessor.Pseudonymization.DumpType"
+    enum="Platform.FbPreprocessor.FirmwareType" expires_after="2024-12-31">
+  <owner>norvez@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Type of the firmware dump that is submitted for pseudonymization. Emitted
+    every time a new pseudonymization is requested. Design doc:
+    go/cros-fbpreprocessord-dd
+  </summary>
+</histogram>
+
+<histogram name="Platform.FbPreprocessor.{FirmwareType}.Collection.Allowed"
+    enum="Platform.FbPreprocessor.CollectionAllowedStatus"
+    expires_after="2024-12-31">
+  <owner>norvez@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Reports whether the collection of {FirmwareType} firmware dumps is allowed
+    or not. Emitted every time the bit is updated (user logs in/out, Finch
+    updated, etc). Design doc: go/cros-fbpreprocessord-dd
+  </summary>
+  <token key="FirmwareType">
+    <variant name="UnknownType"/>
+    <variant name="WiFi"/>
+  </token>
+</histogram>
+
+<histogram name="Platform.FbPreprocessor.{FirmwareType}.Output.Number"
+    units="count" expires_after="2024-12-31">
+  <owner>norvez@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Number of firmware dumps of type {FirmwareType} that are available for
+    collection. Emitted periodically, every 5 minutes. Design doc:
+    go/cros-fbpreprocessord-dd
+  </summary>
+  <token key="FirmwareType">
+    <variant name="UnknownType"/>
+    <variant name="WiFi"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Platform.FbPreprocessor.{FirmwareType}.Pseudonymization.Result"
+    enum="Platform.FbPreprocessor.PseudonymizationResult"
+    expires_after="2024-12-31">
+  <owner>norvez@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Result of the pseudonymization operations of firmware dumps of type
+    {FirmwareType}. Emitted every time a new firmware dump completes
+    pseudonymization, succesfully or not. Design doc: go/cros-fbpreprocessord-dd
+  </summary>
+  <token key="FirmwareType">
+    <variant name="UnknownType"/>
+    <variant name="WiFi"/>
+  </token>
+</histogram>
+
 <histogram name="Platform.Featured.BootAttemptsSinceLastSafeSeed"
     units="number of boot attempts" expires_after="2024-10-06">
   <owner>iby@google.com</owner>

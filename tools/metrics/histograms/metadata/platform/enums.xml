@@ -822,6 +822,53 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="2" label="Error"/>
 </enum>
 
+<enum name="Platform.FbPreprocessor.CollectionAllowedStatus">
+  <summary>
+    Used to report if the collection of firmware dumps is allowed, and if not
+    why.
+  </summary>
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Allowed">Collection of firmware dumps is allowed</int>
+  <int value="2" label="DisallowedByPolicy">
+    Policy disallows the collection of firmware dumps,
+    UserFeedbackWithLowLevelDebugDataAllowed is not set
+  </int>
+  <int value="3" label="DisallowedByFinch">
+    Disabled by Finch kill-switch CrOSLateBootAllowFirmwareDumps
+  </int>
+  <int value="4" label="DisallowedForMultipleSessions">
+    Disabled because more than 1 user is logged in at the same time
+  </int>
+  <int value="5" label="DisallowedForUserDomain">
+    Collection not allowed for this domain
+  </int>
+</enum>
+
+<enum name="Platform.FbPreprocessor.FirmwareType">
+  <summary>
+    Lists the type of firmware debug dumps that can be collected in feedback
+    reports, as described in go/cros-fbpreprocessord-dd. Those types are defined
+    in fbpreprocessor.proto, enum DebugDump::Type.
+  </summary>
+  <int value="0" label="UnknownType"/>
+  <int value="1" label="WiFi"/>
+</enum>
+
+<enum name="Platform.FbPreprocessor.PseudonymizationResult">
+  <summary>
+    Used to report if the pseudonymization of firmware dumps succeeded, and if
+    not why.
+  </summary>
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Success">Pseudonymization completed successfully</int>
+  <int value="2" label="FailedToStart">
+    Failed to start the pseudonymization thread/process
+  </int>
+  <int value="3" label="NoOpFailedToMove">
+    The &quot;no-op&quot; pseudonymization failed to move the firmware dump
+  </int>
+</enum>
+
 <enum name="Platform.Memory.PsiPolicyError">
   <int value="0" label="MemInfo"/>
   <int value="1" label="Vmstat"/>
