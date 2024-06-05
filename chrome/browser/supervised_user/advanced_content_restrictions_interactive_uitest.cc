@@ -31,24 +31,29 @@
 namespace supervised_user {
 namespace {
 
-// UI test for the "Cookies" switch from Family Link parental controls.
-class SupervisedUserFamilyLinkCookiesSwitchUiTest
-    : public InteractiveFamilyLiveTest,
-      public testing::WithParamInterface<
-          std::tuple<FamilyIdentifier, FamilyLinkToggleState>> {
- public:
-  SupervisedUserFamilyLinkCookiesSwitchUiTest()
-      : InteractiveFamilyLiveTest(std::get<0>(GetParam())) {}
+FamilyLinkToggleType GetSwitchType(auto test_param) {
+  return std::get<1>(test_param);
+}
 
-  static FamilyLinkToggleState GetSwitchTargetState() {
-    return std::get<1>(GetParam());
-  }
+FamilyLinkToggleState GetSwitchTargetState(auto test_param) {
+  return std::get<2>(test_param);
+}
+
+// Live test for the Family Link Advanced Settings parental controls switches.
+class SupervisedUserFamilyLinkSwitchTest
+    : public InteractiveFamilyLiveTest,
+      public testing::WithParamInterface<std::tuple<FamilyIdentifier,
+                                                    FamilyLinkToggleType,
+                                                    FamilyLinkToggleState>> {
+ public:
+  SupervisedUserFamilyLinkSwitchTest()
+      : InteractiveFamilyLiveTest(std::get<0>(GetParam())) {}
 };
 
-// Tests that Chrome receives the value of the "Cookies" switch from
+// Tests that Chrome receives the value of the given switch from
 // Family Link parental controls.
-IN_PROC_BROWSER_TEST_P(SupervisedUserFamilyLinkCookiesSwitchUiTest,
-                       CookiesSwitchToggleReceivedByChromeTest) {
+IN_PROC_BROWSER_TEST_P(SupervisedUserFamilyLinkSwitchTest,
+                       SwitchToggleReceivedByChromeTest) {
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(BrowserState::Observer,
                                       kDefineStateObserverId);
   TurnOnSyncFor(head_of_household());
@@ -58,25 +63,31 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserFamilyLinkCookiesSwitchUiTest,
   RunTestSequence(WaitForStateSeeding(
       kDefineStateObserverId, head_of_household(), child(),
       BrowserState::AdvancedSettingsToggles({FamilyLinkToggleConfiguration(
-          {.type = FamilyLinkToggleType::kCookiesToggle,
-           .state = GetSwitchTargetState()})})));
+          {.type = GetSwitchType(GetParam()),
+           .state = GetSwitchTargetState(GetParam())})})));
 }
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    SupervisedUserFamilyLinkCookiesSwitchUiTest,
+    SupervisedUserFamilyLinkSwitchTest,
     testing::Combine(
         testing::Values(FamilyIdentifier("FAMILY_DMA_ELIGIBLE_WITH_CONSENT"),
                         FamilyIdentifier("FAMILY_DMA_ELIGIBLE_NO_CONSENT"),
                         FamilyIdentifier("FAMILY_DMA_INELIGIBLE")),
+        testing::Values(FamilyLinkToggleType::kPermissionsToggle,
+                        FamilyLinkToggleType::kCookiesToggle),
         testing::Values(FamilyLinkToggleState::kEnabled,
                         FamilyLinkToggleState::kDisabled)),
     [](const auto& info) {
       return std::string(std::get<0>(info.param)->data()) +
-             std::string(
-                 (std::get<1>(info.param) == FamilyLinkToggleState::kEnabled
-                      ? "_WithCookiesSwitchOn"
-                      : "_WithCookiesSwitchOff"));
+             std::string((GetSwitchType(info.param) ==
+                                  FamilyLinkToggleType::kCookiesToggle
+                              ? "_ForCookiesSwitch"
+                              : "_ForPermissionsSwitch")) +
+             std::string((GetSwitchTargetState(info.param) ==
+                                  FamilyLinkToggleState::kEnabled
+                              ? "_WithSwitchOn"
+                              : "_WithSwitchOff"));
     });
 }  // namespace
 }  // namespace supervised_user

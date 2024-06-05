@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/test/supervised_user/family_member.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/fetcher_config.h"
@@ -63,27 +64,6 @@ std::string GetToggleAbbrev(FamilyLinkToggleType toggle) {
     default:
       NOTREACHED_NORETURN();
   }
-}
-
-bool ToggleHasExpectedValue(const FamilyMember& browser_user,
-                            FamilyLinkToggleConfiguration toggle) {
-  if (toggle.type == FamilyLinkToggleType::kCookiesToggle) {
-    content_settings::ProviderType provider_type;
-    HostContentSettingsMap* map = HostContentSettingsMapFactory::GetForProfile(
-        browser_user.browser()->profile());
-    map->GetDefaultContentSetting(ContentSettingsType::COOKIES, &provider_type);
-    bool can_block_cookies = static_cast<bool>(toggle.state);
-    return can_block_cookies ==
-           (provider_type !=
-            content_settings::ProviderType::kSupervisedProvider);
-  }
-
-  std::string_view pref =
-      toggle.type == FamilyLinkToggleType::kExtensionsToggle
-          ? prefs::kSkipParentApprovalToInstallExtensions
-          : prefs::kSupervisedUserExtensionsMayRequestPermissions;
-  return browser_user.browser()->profile()->GetPrefs()->GetBoolean(pref) ==
-         static_cast<bool>(toggle.state);
 }
 
 net::NetworkTrafficAnnotationTag TestStateSeedTag() {
@@ -246,6 +226,49 @@ bool UrlFiltersAreEmpty(const FamilyMember& family_member) {
   return family_member.supervised_user_service()
       ->GetURLFilter()
       ->IsManualHostsEmpty();
+}
+
+bool ToggleHasExpectedValue(const FamilyMember& browser_user,
+                            FamilyLinkToggleConfiguration toggle) {
+  content_settings::ProviderType provider_type;
+  const HostContentSettingsMap& map =
+      *HostContentSettingsMapFactory::GetForProfile(
+          browser_user.browser()->profile());
+  PrefService& prefs = *browser_user.browser()->profile()->GetPrefs();
+
+  if (toggle.type == FamilyLinkToggleType::kCookiesToggle) {
+    bool can_block_cookies = static_cast<bool>(toggle.state);
+    map.GetDefaultContentSetting(ContentSettingsType::COOKIES, &provider_type);
+    // The supervised user can block the cookies if the corresponding content
+    // provider is not supervised.
+    return can_block_cookies ==
+           (provider_type !=
+            content_settings::ProviderType::kSupervisedProvider);
+  }
+  if (toggle.type == FamilyLinkToggleType::kPermissionsToggle) {
+    bool permission_pref_has_expected_value =
+        prefs.GetBoolean(
+            prefs::kSupervisedUserExtensionsMayRequestPermissions) ==
+        static_cast<bool>(toggle.state);
+
+    // Note: The Family Link permissions toggle is mapped to the above
+    // preference, but with the transition to the updated extension flow the
+    // preference will become deprecated. The switch will still apply to other
+    // features such as blocking geolocation.
+    bool is_geolocation_blocked = !static_cast<bool>(toggle.state);
+    // The supervised user has the geolocation blocked if the corresponding
+    // content setting is blocked.
+    bool is_geolocation_configured =
+        is_geolocation_blocked ==
+        (map.GetDefaultContentSetting(ContentSettingsType::GEOLOCATION,
+                                      &provider_type) ==
+         ContentSetting::CONTENT_SETTING_BLOCK);
+
+    return permission_pref_has_expected_value && is_geolocation_configured;
+  }
+  CHECK(toggle.type == FamilyLinkToggleType::kExtensionsToggle);
+  return prefs.GetBoolean(prefs::kSkipParentApprovalToInstallExtensions) ==
+         static_cast<bool>(toggle.state);
 }
 }  // namespace
 
