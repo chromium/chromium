@@ -12,9 +12,11 @@
 
 #include "base/base64.h"
 #include "base/base_paths.h"
+#include "base/check.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/function_ref.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
@@ -32,6 +34,7 @@
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
 #include "content/browser/aggregation_service/public_key.h"
 #include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
+#include "content/browser/attribution_reporting/aggregatable_debug_report.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/common/content_paths.h"
@@ -48,6 +51,7 @@
 namespace content {
 namespace {
 
+using ::attribution_reporting::SuitableOrigin;
 using ::blink::mojom::AggregatableReportHistogramContribution;
 
 constexpr char kKeyAggregationServicePayloads[] =
@@ -69,14 +73,9 @@ base::Value ParseJsonFromFile(const base::FilePath& file) {
 
 // See
 // //content/test/data/attribution_reporting/aggregatable_report_goldens/README.md.
-class AttributionAggregatableReportGoldenLatestVersionTest
-    : public testing::Test {
+class AggregatableReportGoldenLatestVersionTest : public testing::Test {
  public:
   void SetUp() override {
-    base::PathService::Get(content::DIR_TEST_DATA, &input_dir_);
-    input_dir_ = input_dir_.AppendASCII(
-        "attribution_reporting/aggregatable_report_goldens/latest");
-
     ASSERT_OK_AND_ASSIGN(
         PublicKeyset keyset,
         aggregation_service::ReadAndParsePublicKeys(
@@ -104,9 +103,16 @@ class AttributionAggregatableReportGoldenLatestVersionTest
   }
 
  protected:
-  void AssembleAndVerifyReport(AttributionReport report,
-                               std::string_view report_file,
-                               std::string_view cleartext_payloads_file) {
+  // Assembles the report for `request`, and verifies that the assembled report
+  // matches the expected report specified in `report_file` and
+  //`cleartext_payloads_file`.
+  // `get_report_body` is a function ref to create report body from the
+  // assembled report.
+  void AssembleAndVerifyReport(
+      AggregatableReportRequest request,
+      base::FunctionRef<base::Value::Dict(AggregatableReport)> get_report_body,
+      std::string_view report_file,
+      std::string_view cleartext_payloads_file) {
     base::Value expected_report =
         ParseJsonFromFile(input_dir_.AppendASCII(report_file));
     ASSERT_TRUE(expected_report.is_dict());
@@ -120,47 +126,34 @@ class AttributionAggregatableReportGoldenLatestVersionTest
         expected_cleartext_payloads.GetList().front().GetIfString();
     ASSERT_TRUE(base64_encoded_expected_cleartext_payload);
 
-    std::optional<AggregatableReportRequest> request =
-        CreateAggregatableReportRequest(report);
-    ASSERT_TRUE(request);
-
     base::RunLoop run_loop;
 
     aggregation_service().AssembleReport(
-        std::move(*request),
+        std::move(request),
         base::BindLambdaForTesting(
             [&](AggregatableReportRequest,
                 std::optional<AggregatableReport> assembled_report,
                 AggregationService::AssemblyStatus status) {
               EXPECT_EQ(status, AggregationService::AssemblyStatus::kOk);
               ASSERT_TRUE(assembled_report);
-              auto* data =
-                  absl::get_if<AttributionReport::AggregatableAttributionData>(
-                      &report.data());
-              if (data) {
-                data->common_data.assembled_report =
-                    std::move(*assembled_report);
-              } else {
-                auto* null_data =
-                    absl::get_if<AttributionReport::NullAggregatableData>(
-                        &report.data());
-                ASSERT_TRUE(null_data);
-                null_data->common_data.assembled_report =
-                    std::move(*assembled_report);
-              }
+
+              base::Value::Dict report_body =
+                  get_report_body(std::move(*assembled_report));
+
               EXPECT_TRUE(VerifyReport(
-                  report.ReportBody(), std::move(expected_report).TakeDict(),
+                  report_body.Clone(), std::move(expected_report).TakeDict(),
                   *base64_encoded_expected_cleartext_payload))
-                  << "There was an error, consider bumping "
-                     "AttributionReport::AggregatableAttributionData::kVersion,"
+                  << "There was an error, consider bumping report version, "
                      " actual output for "
                   << report_file << " is:\n"
-                  << report.ReportBody();
+                  << report_body;
               run_loop.Quit();
             }));
 
     run_loop.Run();
   }
+
+  base::FilePath input_dir_;
 
  private:
   AggregationServiceImpl& aggregation_service() {
@@ -322,15 +315,51 @@ class AttributionAggregatableReportGoldenLatestVersionTest
 
   BrowserTaskEnvironment task_environment_;
   TestBrowserContext browser_context_;
-  base::FilePath input_dir_;
   bssl::ScopedEVP_HPKE_KEY full_hpke_key_;
+};
+
+class AttributionAggregatableReportGoldenLatestVersionTest
+    : public AggregatableReportGoldenLatestVersionTest {
+ public:
+  void SetUp() override {
+    base::PathService::Get(content::DIR_TEST_DATA, &input_dir_);
+    input_dir_ = input_dir_.AppendASCII(
+        "attribution_reporting/aggregatable_report_goldens/latest");
+
+    AggregatableReportGoldenLatestVersionTest::SetUp();
+  }
+
+ protected:
+  void VerifyAttributionReport(AttributionReport report,
+                               std::string_view report_file,
+                               std::string_view cleartext_payloads_file) {
+    std::optional<AggregatableReportRequest> request =
+        CreateAggregatableReportRequest(report);
+    ASSERT_TRUE(request);
+
+    const auto get_report_body = [&](AggregatableReport assembled_report) {
+      auto* data = absl::get_if<AttributionReport::AggregatableAttributionData>(
+          &report.data());
+      if (data) {
+        data->common_data.assembled_report = std::move(assembled_report);
+      } else {
+        auto* null_data = absl::get_if<AttributionReport::NullAggregatableData>(
+            &report.data());
+        CHECK(null_data);
+        null_data->common_data.assembled_report = std::move(assembled_report);
+      }
+      return report.ReportBody();
+    };
+
+    AssembleAndVerifyReport(std::move(*request), get_report_body, report_file,
+                            cleartext_payloads_file);
+  }
 };
 
 TEST_F(AttributionAggregatableReportGoldenLatestVersionTest,
        VerifyGoldenReport) {
-  const auto kGcpCoordinatorOrigin =
-      *attribution_reporting::SuitableOrigin::Deserialize(
-          ::aggregation_service::kDefaultAggregationCoordinatorGcpCloud);
+  const auto kGcpCoordinatorOrigin = *SuitableOrigin::Deserialize(
+      ::aggregation_service::kDefaultAggregationCoordinatorGcpCloud);
 
   struct {
     AttributionReport report;
@@ -637,7 +666,7 @@ TEST_F(AttributionAggregatableReportGoldenLatestVersionTest,
   };
 
   for (auto& test_case : kTestCases) {
-    AssembleAndVerifyReport(std::move(test_case.report), test_case.report_file,
+    VerifyAttributionReport(std::move(test_case.report), test_case.report_file,
                             test_case.cleartext_payloads_file);
   }
 }
@@ -713,6 +742,111 @@ TEST_P(AttributionAggregatableReportGoldenLegacyVersionTest,
 INSTANTIATE_TEST_SUITE_P(,
                          AttributionAggregatableReportGoldenLegacyVersionTest,
                          ::testing::ValuesIn(GetLegacyVersions()));
+
+class AggregatableDebugReportGoldenLatestVersionTest
+    : public AggregatableReportGoldenLatestVersionTest {
+ public:
+  void SetUp() override {
+    base::PathService::Get(content::DIR_TEST_DATA, &input_dir_);
+    input_dir_ = input_dir_.AppendASCII(
+        "attribution_reporting/aggregatable_debug_report_goldens/latest");
+
+    AggregatableReportGoldenLatestVersionTest::SetUp();
+  }
+
+ protected:
+  void VerifyAggregatableDebugReport(AggregatableDebugReport report,
+                                     std::string_view report_file,
+                                     std::string_view cleartext_payloads_file) {
+    std::optional<AggregatableReportRequest> request =
+        report.CreateAggregatableReportRequest();
+    ASSERT_TRUE(request);
+
+    const auto get_report_body = [](AggregatableReport assembled_report) {
+      return assembled_report.GetAsJson();
+    };
+
+    AssembleAndVerifyReport(std::move(*request), get_report_body, report_file,
+                            cleartext_payloads_file);
+  }
+};
+
+TEST_F(AggregatableDebugReportGoldenLatestVersionTest, VerifyGoldenReport) {
+  const auto kGcpCoordinatorOrigin = *SuitableOrigin::Deserialize(
+      ::aggregation_service::kDefaultAggregationCoordinatorGcpCloud);
+
+  const auto context_site =
+      net::SchemefulSite::Deserialize("https://context.test");
+  const auto reporting_origin =
+      *SuitableOrigin::Deserialize("https://report.test");
+  const auto effective_destination =
+      net::SchemefulSite::Deserialize("https://conversion.test");
+  const auto time = base::Time::FromMillisecondsSinceUnixEpoch(1234486400000);
+
+  struct {
+    std::vector<AggregatableReportHistogramContribution> contributions;
+    std::optional<SuitableOrigin> aggregation_coordinator_origin;
+    std::string_view report_file;
+    std::string_view cleartext_payloads_file;
+  } kTestCases[] = {
+      {
+          .contributions = {AggregatableReportHistogramContribution(
+              /*bucket=*/123, /*value=*/456,
+              /*filtering_id=*/std::nullopt)},
+          .report_file = "report_1.json",
+          .cleartext_payloads_file = "report_1_cleartext_payloads.json",
+      },
+      {
+          .contributions = {AggregatableReportHistogramContribution(
+                                /*bucket=*/123, /*value=*/456,
+                                /*filtering_id=*/std::nullopt),
+                            AggregatableReportHistogramContribution(
+                                /*bucket=*/321, /*value=*/654,
+                                /*filtering_id=*/std::nullopt)},
+          .report_file = "report_2.json",
+          .cleartext_payloads_file = "report_2_cleartext_payloads.json",
+      },
+      {
+          // null report
+          .report_file = "report_3.json",
+          .cleartext_payloads_file = "report_3_cleartext_payloads.json",
+      },
+      {
+          .contributions = {AggregatableReportHistogramContribution(
+              /*bucket=*/123, /*value=*/456,
+              /*filtering_id=*/std::nullopt)},
+          .aggregation_coordinator_origin = kGcpCoordinatorOrigin,
+          .report_file = "report_gcp_1.json",
+          .cleartext_payloads_file = "report_gcp_1_cleartext_payloads.json",
+      },
+      {
+          .contributions = {AggregatableReportHistogramContribution(
+                                /*bucket=*/123, /*value=*/456,
+                                /*filtering_id=*/std::nullopt),
+                            AggregatableReportHistogramContribution(
+                                /*bucket=*/321, /*value=*/654,
+                                /*filtering_id=*/std::nullopt)},
+          .aggregation_coordinator_origin = kGcpCoordinatorOrigin,
+          .report_file = "report_gcp_2.json",
+          .cleartext_payloads_file = "report_gcp_2_cleartext_payloads.json",
+      },
+      {
+          // null report
+          .aggregation_coordinator_origin = kGcpCoordinatorOrigin,
+          .report_file = "report_gcp_3.json",
+          .cleartext_payloads_file = "report_gcp_3_cleartext_payloads.json",
+      },
+  };
+
+  for (auto& test_case : kTestCases) {
+    auto report = AggregatableDebugReport::CreateForTesting(
+        test_case.contributions, context_site, reporting_origin,
+        effective_destination, test_case.aggregation_coordinator_origin, time);
+    report.set_report_id(DefaultExternalReportID());
+    VerifyAggregatableDebugReport(std::move(report), test_case.report_file,
+                                  test_case.cleartext_payloads_file);
+  }
+}
 
 }  // namespace
 }  // namespace content
