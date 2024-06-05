@@ -1713,6 +1713,52 @@ TEST_F(FileUtilTest, DeleteFile) {
   EXPECT_FALSE(PathExists(file_name));
 }
 
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+TEST_F(FileUtilTest, DeleteDeep) {
+  // Create deeply nested directories.
+  const FilePath dir_path = temp_dir_.GetPath().AppendASCII("deep");
+  ASSERT_EQ(mkdir(dir_path.value().c_str(), 0777), 0);
+
+  {
+    ScopedFD fd(
+        HANDLE_EINTR(open(dir_path.value().c_str(), O_DIRECTORY | O_CLOEXEC)));
+    ASSERT_TRUE(fd.is_valid()) << strerror(errno);
+
+    for (char c = 'a'; c <= 'z'; ++c) {
+      const std::string name(NAME_MAX, c);
+      ASSERT_EQ(HANDLE_EINTR(mkdirat(fd.get(), name.c_str(), 0777)), 0)
+          << strerror(errno);
+
+      fd = ScopedFD(HANDLE_EINTR(
+          openat(fd.get(), name.c_str(), O_DIRECTORY | O_CLOEXEC)));
+      ASSERT_TRUE(fd.is_valid()) << strerror(errno);
+    }
+
+#if !BUILDFLAG(IS_FUCHSIA)
+    // Create a symlink at the bottom of the deep tree.
+    ASSERT_EQ(HANDLE_EINTR(symlinkat("..", fd.get(), "up")), 0)
+        << strerror(errno);
+#endif  // !BUILDFLAG(IS_FUCHSIA)
+
+    // Create a file at the bottom of the deep tree.
+    fd = ScopedFD(HANDLE_EINTR(openat(
+        fd.get(), "file.txt", O_WRONLY | O_CREAT | O_EXCL | O_CLOEXEC, 0666)));
+    ASSERT_TRUE(fd.is_valid()) << strerror(errno);
+
+    const std::string_view s = "This is a deep file";
+    ASSERT_EQ(HANDLE_EINTR(write(fd.get(), s.data(), s.size())),
+              static_cast<ssize_t>(s.size()));
+  }
+
+  // Delete the deep tree.
+  EXPECT_TRUE(PathExists(dir_path));
+  EXPECT_TRUE(DeletePathRecursively(dir_path));
+
+  // Check if the deep tree is deleted.
+  EXPECT_FALSE(PathExists(dir_path));
+}
+#endif  // BUILDFLAG(IS_POSIX)
+
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(FileUtilTest, DeleteContentUri) {
   // Get the path to the test file.

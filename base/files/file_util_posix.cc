@@ -26,6 +26,8 @@
 #include <unistd.h>
 
 #include <bit>
+#include <iomanip>
+#include <memory>
 #include <optional>
 
 #include "base/base_export.h"
@@ -85,7 +87,6 @@ extern "C" char* mkdtemp(char* path);
 #endif
 
 namespace base {
-
 namespace {
 
 #if BUILDFLAG(IS_MAC)
@@ -291,6 +292,86 @@ bool DoCopyDirectory(const FilePath& from_path,
   return true;
 }
 
+struct CloseDir {
+  void operator()(DIR* const p) const {
+    if (IGNORE_EINTR(closedir(p)) < 0) {
+      PLOG(ERROR) << "Cannot close dir";
+    }
+  }
+};
+
+// Deletes the file or removes the directory specified by `path` and `at_fd`. If
+// `path` is absolute, then `at_fd` is simply ignored. If `path` is relative,
+// then it is considered relative to the directory designated by the file
+// descriptor `at_fd`. If `path` is relative and `at_fd` has the special value
+// AT_FDCWD, then `path` is considered relative to the current working directory
+// of the running process.
+bool DoDeleteFile(const PlatformFile at_fd,
+                  const char* const path,
+                  const bool recursive) {
+  // Get info about item to remove.
+  stat_wrapper_t st;
+  if (HANDLE_EINTR(fstatat(at_fd, path, &st, AT_SYMLINK_NOFOLLOW)) < 0) {
+    VPLOG(1) << "Cannot stat " << std::quoted(path);
+    return errno == ENOENT;
+  }
+
+  // Check if it is a directory or a file.
+  if (!S_ISDIR(st.st_mode)) {
+    // It is a file or a symlink. Delete it.
+    const bool deleted = unlinkat(at_fd, path, 0) == 0;
+    VPLOG_IF(1, !deleted) << "Cannot delete " << std::quoted(path);
+    return deleted || errno == ENOENT;
+  }
+
+  // It is a directory.
+  if (recursive) {
+    // Recursively empty the directory.
+    // Open the directory.
+    const PlatformFile fd = HANDLE_EINTR(
+        openat(at_fd, path, O_RDONLY | O_DIRECTORY | O_NOFOLLOW | O_CLOEXEC));
+    if (fd < 0) {
+      VPLOG(1) << "Cannot open dir " << std::quoted(path);
+      return false;
+    }
+
+    // Create a DIR object from the directory file descriptor.
+    // This transfers the ownership of `fd` to `dir` in case of success.
+    const std::unique_ptr<DIR, CloseDir> dir(fdopendir(fd));
+    if (!dir) {
+      VPLOG(1) << "Cannot start reading dir " << std::quoted(path);
+      IGNORE_EINTR(close(fd));
+      return false;
+    }
+
+    // Check all the items in the directory.
+    while (true) {
+      errno = 0;
+      const dirent* const entry = readdir(dir.get());
+      if (!entry) {
+        break;
+      }
+
+      // Recursively delete the found item.
+      if (const std::string_view s = entry->d_name;
+          s != "." && s != ".." && !DoDeleteFile(fd, entry->d_name, true)) {
+        return false;
+      }
+    }
+
+    // Finished enumerating the items in the directory.
+    if (errno != 0) {
+      VPLOG(1) << "Cannot read dir " << std::quoted(path);
+      return false;
+    }
+  }
+
+  // Remove the (now possibly empty) directory.
+  const bool removed = unlinkat(at_fd, path, AT_REMOVEDIR) == 0;
+  VPLOG_IF(1, !removed) << "Cannot remove " << std::quoted(path);
+  return removed || errno == ENOENT;
+}
+
 // TODO(erikkay): The Windows version of this accepts paths like "foo/bar/*"
 // which works both with and without the recursive flag.  I'm not sure we need
 // that functionality. If not, remove from file_util_win.cc, otherwise add it
@@ -304,40 +385,7 @@ bool DoDeleteFile(const FilePath& path, bool recursive) {
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  stat_wrapper_t file_info;
-  if (File::Lstat(path, &file_info) != 0) {
-    // The Windows version defines this condition as success.
-    return (errno == ENOENT);
-  }
-  cstring_view path_str = path.value();
-  if (!S_ISDIR(file_info.st_mode)) {
-    return (unlink(path_str.c_str()) == 0) || (errno == ENOENT);
-  }
-  if (!recursive) {
-    return (rmdir(path_str.c_str()) == 0) || (errno == ENOENT);
-  }
-
-  bool success = true;
-  stack<std::string> directories;
-  directories.push(path.value());
-  FileEnumerator traversal(path, true,
-                           FileEnumerator::FILES | FileEnumerator::DIRECTORIES |
-                               FileEnumerator::SHOW_SYM_LINKS);
-  for (FilePath current = traversal.Next(); !current.empty();
-       current = traversal.Next()) {
-    if (traversal.GetInfo().IsDirectory()) {
-      directories.push(current.value());
-    } else {
-      success &= (unlink(current.value().c_str()) == 0) || (errno == ENOENT);
-    }
-  }
-
-  while (!directories.empty()) {
-    FilePath dir = FilePath(directories.top());
-    directories.pop();
-    success &= (rmdir(dir.value().c_str()) == 0) || (errno == ENOENT);
-  }
-  return success;
+  return DoDeleteFile(AT_FDCWD, path.value().c_str(), recursive);
 }
 
 #if !BUILDFLAG(IS_APPLE)
