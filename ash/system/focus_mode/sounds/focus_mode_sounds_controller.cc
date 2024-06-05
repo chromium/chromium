@@ -89,16 +89,45 @@ void OnOneThumbnailDownloaded(
                                                                  thumbnail));
 }
 
+// Re-order `playlists` according to the order of `data`.
+void ReorderPlaylists(
+    const std::vector<FocusModeSoundsDelegate::Playlist>& data,
+    base::OnceCallback<
+        void(std::vector<std::unique_ptr<FocusModeSoundsController::Playlist>>)>
+        sorted_playlists_callback,
+    std::vector<std::unique_ptr<FocusModeSoundsController::Playlist>>
+        unsorted_playlists) {
+  std::vector<std::unique_ptr<FocusModeSoundsController::Playlist>>
+      sorted_playlists;
+
+  // Create `sorted_playlists` to match the given order.
+  for (const auto& item : data) {
+    auto iter = std::find_if(
+        unsorted_playlists.begin(), unsorted_playlists.end(),
+        [item](const std::unique_ptr<FocusModeSoundsController::Playlist>&
+                   playlist) {
+          return playlist && playlist->playlist_id == item.id;
+        });
+    if (iter == unsorted_playlists.end()) {
+      continue;
+    }
+
+    sorted_playlists.push_back(std::move(*iter));
+  }
+
+  std::move(sorted_playlists_callback).Run(std::move(sorted_playlists));
+}
+
 // In response to receiving the playlists, start downloading the playlist
 // thumbnails.
 void DispatchRequests(
     base::OnceCallback<
         void(std::vector<std::unique_ptr<FocusModeSoundsController::Playlist>>)>
-        done_callback,
+        sorted_playlists_callback,
     const std::vector<FocusModeSoundsDelegate::Playlist>& data) {
   if (data.empty()) {
     LOG(WARNING) << "Retrieving Playlist data failed.";
-    std::move(done_callback).Run({});
+    std::move(sorted_playlists_callback).Run({});
     return;
   }
 
@@ -109,7 +138,9 @@ void DispatchRequests(
   // keep this cached and update if there are new playlists.
   using BarrierReturn = std::unique_ptr<FocusModeSoundsController::Playlist>;
   auto barrier_callback = base::BarrierCallback<BarrierReturn>(
-      /*num_callbacks=*/kPlaylistNum, std::move(done_callback));
+      /*num_callbacks=*/kPlaylistNum,
+      /*done_callback=*/base::BindOnce(&ReorderPlaylists, data,
+                                       std::move(sorted_playlists_callback)));
 
   for (const auto& item : data) {
     DownloadImageFromUrl(item.thumbnail_url,
@@ -226,17 +257,17 @@ void FocusModeSoundsController::DownloadPlaylistsForType(
     return;
   }
 
-  auto done_callback =
+  auto sorted_playlists_callback =
       base::BindOnce(&FocusModeSoundsController::OnAllThumbnailsDownloaded,
                      weak_factory_.GetWeakPtr(), is_soundscape_type,
                      std::move(update_sounds_view_callback));
 
   if (is_soundscape_type) {
-    soundscape_delegate_->GetPlaylists(
-        base::BindOnce(&DispatchRequests, std::move(done_callback)));
+    soundscape_delegate_->GetPlaylists(base::BindOnce(
+        &DispatchRequests, std::move(sorted_playlists_callback)));
   } else {
-    youtube_music_delegate_->GetPlaylists(
-        base::BindOnce(&DispatchRequests, std::move(done_callback)));
+    youtube_music_delegate_->GetPlaylists(base::BindOnce(
+        &DispatchRequests, std::move(sorted_playlists_callback)));
   }
 }
 
@@ -309,11 +340,11 @@ void FocusModeSoundsController::SelectPlaylist(
 void FocusModeSoundsController::OnAllThumbnailsDownloaded(
     bool is_soundscape_type,
     UpdateSoundsViewCallback update_sounds_view_callback,
-    std::vector<std::unique_ptr<Playlist>> playlists) {
+    std::vector<std::unique_ptr<Playlist>> sorted_playlists) {
   if (is_soundscape_type) {
-    soundscape_playlists_.swap(playlists);
+    soundscape_playlists_.swap(sorted_playlists);
   } else {
-    youtube_music_playlists_.swap(playlists);
+    youtube_music_playlists_.swap(sorted_playlists);
   }
 
   // Only trigger the observer function when all the thumbnails are finished

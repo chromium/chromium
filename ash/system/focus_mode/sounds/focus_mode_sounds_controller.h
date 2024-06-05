@@ -121,7 +121,7 @@ class ASH_EXPORT FocusModeSoundsController {
   void OnAllThumbnailsDownloaded(
       bool is_soundscape_type,
       UpdateSoundsViewCallback update_sounds_view_callback,
-      std::vector<std::unique_ptr<Playlist>> playlists);
+      std::vector<std::unique_ptr<Playlist>> sorted_playlists);
 
   std::unique_ptr<FocusModeSoundsDelegate> soundscape_delegate_;
   std::unique_ptr<FocusModeYouTubeMusicDelegate> youtube_music_delegate_;
