@@ -17,6 +17,20 @@ Diagnostic diagnostics[] = {
         Severity::kWarning,
         "Failed to parse.",
     },
+    {
+        Feature::kIconVariants,
+        Code::kIconVariantsEmpty,
+        Category::kManifest,
+        Severity::kWarning,
+        "There are no usable icon_variants.",
+    },
+    {
+        Feature::kIconVariants,
+        Code::kEmptyIconVariant,
+        Category::kManifest,
+        Severity::kWarning,
+        "Icon variant is empty.",
+    },
 };
 
 // TODO(crbug.com/343748805): Use e.g. flat_map when there are many diagnostics.

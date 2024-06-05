@@ -10,6 +10,7 @@
 
 #include "base/values.h"
 #include "extensions/common/icons/extension_icon_variant.h"
+#include "extensions/common/icons/extension_icon_variants_diagnostics.h"
 
 namespace extensions {
 
@@ -22,11 +23,12 @@ class ExtensionIconVariants {
   ExtensionIconVariants(ExtensionIconVariants&& other);
   ~ExtensionIconVariants();
 
-  bool Parse(const base::Value::List* list, std::u16string* error);
+  // Parse the provided list from manifest.json and set `list_` with the result.
+  bool Parse(const base::Value::List* list,
+             std::vector<diagnostics::icon_variants::Diagnostic>& diagnostics);
 
-  // Verify the `icon_variants` key, e.g. that at least one `icon_variant` is
-  // valid.
-  bool IsValid() const;
+  // Determine whether `list_` has at least one icon variant after parsing.
+  bool IsEmpty() const;
 
  private:
   std::vector<ExtensionIconVariant> list_;

@@ -20,6 +20,8 @@ namespace extensions::diagnostics::icon_variants {
 // order. Each id is unique and should remain unchanged.
 enum class Code {
   kFailedToParse,
+  kIconVariantsEmpty,
+  kEmptyIconVariant,
 };
 
 // Warning or error?

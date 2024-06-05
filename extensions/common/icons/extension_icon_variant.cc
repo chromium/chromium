@@ -45,20 +45,20 @@ void ExtensionIconVariant::MaybeAddColorSchemes(const base::Value& value) {
   for (const auto& item : value.GetList()) {
     // Ignore invalid types.
     if (!item.is_string()) {
+      // TODO(crbug.com/344639840): Add a warning.
       continue;
     }
 
     // A valid `color_scheme` is required.
     auto color_scheme = GetColorScheme(item.GetString());
     if (!color_scheme.has_value()) {
+      // TODO(crbug.com/344639840): Add a warning.
       continue;
     }
 
     // Add color_scheme to the list.
     color_schemes_.insert(color_scheme.value());
   }
-
-  return;
 }
 
 void ExtensionIconVariant::MaybeAddSizeEntry(
@@ -69,6 +69,7 @@ void ExtensionIconVariant::MaybeAddSizeEntry(
 
   // Verify that size is of type `int`.
   if (!size.has_value()) {
+    // TODO(crbug.com/344639840): Add a warning.
     return;
   }
 

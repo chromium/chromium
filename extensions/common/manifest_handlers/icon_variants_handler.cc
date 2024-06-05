@@ -35,7 +35,7 @@ void AddInstallWarning(Extension& extension, const std::string& warning) {
   extension.AddInstallWarning(InstallWarning(warning));
 }
 
-void AddInstallWarningFromCode(Extension& extension, Code code) {
+void AddInstallWarningForCode(Extension& extension, Code code) {
   auto diagnostic = extensions::diagnostics::icon_variants::GetDiagnosticForID(
       Feature::kIconVariants, code);
   if (diagnostic.severity != Severity::kWarning) {
@@ -69,14 +69,15 @@ bool IconVariantsHandler::Parse(Extension* extension, std::u16string* error) {
   // Don't return false on error. `DOMString` for `color_scheme` in .idl
   // wouldn't cause a parse error, but e.g. `enum` does. Therefore those will be
   // treated as warnings.
-  std::u16string warning;
+  std::u16string ignore_generated_parsing_errors;
   IconVariantsManifestKeys manifest_keys;
   if (!IconVariantsManifestKeys::ParseFromDictionary(
-          extension->manifest()->available_values(), manifest_keys, warning)) {
+          extension->manifest()->available_values(), manifest_keys,
+          ignore_generated_parsing_errors)) {
     // TODO(crbug.com/41419485): Maybe emit `warning`. A problem is that the
     // .idl parser returns false if manifest value doesn't match an .idl enum,
     // but `warning` is empty in that case.
-    AddInstallWarningFromCode(*extension, Code::kFailedToParse);
+    AddInstallWarningForCode(*extension, Code::kFailedToParse);
   }
 
   // Convert the input key into a list containing everything.
@@ -91,14 +92,24 @@ bool IconVariantsHandler::Parse(Extension* extension, std::u16string* error) {
   // Parse the `icon_variants` key.
   std::unique_ptr<ExtensionIconVariants> icon_variants =
       std::make_unique<ExtensionIconVariants>();
-  if (!icon_variants->Parse(icon_variants_list, error)) {
-    AddInstallWarningFromCode(*extension, Code::kFailedToParse);
+  // TODO(crbug.com/344639840): Consider moving icon_variant* impl here to avoid
+  // bubbling up warnings and errors.
+  std::vector<diagnostics::icon_variants::Diagnostic> diagnostics;
+  if (!icon_variants->Parse(icon_variants_list, diagnostics)) {
+    AddInstallWarningForCode(*extension, Code::kFailedToParse);
     // TODO(crbug.com/41419485): Use the WECG proposal to determine warn/error.
     return true;
   }
 
+  // If there are any parse warnings, add them to the install warnings.
+  for (const auto& diagnostic : diagnostics) {
+    AddInstallWarningForCode(*extension, diagnostic.code);
+  }
+
   // Verify `icon_variants`, e.g. that at least one `icon_variant` is valid.
-  if (!icon_variants->IsValid()) {
+  // TODO(crbug.com/344639840): Consider whether an empty list should be an
+  // error or just a warning instead.
+  if (icon_variants->IsEmpty()) {
     *error = std::u16string(u"Error: Invalid icon_variants.");
     return false;
   }

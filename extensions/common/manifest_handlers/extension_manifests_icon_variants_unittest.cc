@@ -99,10 +99,18 @@ TEST_F(IconVariantsManifestTest, SuccessWithOptionalWarnings) {
               "color_schemes": ["warning"]
             }
           ])"},
+      {"An empty icon variant.",
+       R"([
+            {
+              "16": "16.png",
+            },
+            {}
+          ])"},
   };
   for (const auto& test_case : test_cases) {
     SCOPED_TRACE(base::StringPrintf("Error: '%s'", test_case.title));
     LoadAndExpectSuccess(GetManifestData(test_case.icon_variants));
+    // TODO(crbug.com/344639840): Implement and verify warnings.
   }
 }
 
