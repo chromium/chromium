@@ -126,6 +126,14 @@ bool CanShowRootPopup(AutofillSuggestionController& controller) {
   return true;
 }
 
+// Returns true when the suggestion should open a sub popup menu automatically
+// when hovering the content area. This is used for manual fallback
+// suggestions.
+bool ContentCellShouldOpenSubPopupSuggestion(const Suggestion& suggestion) {
+  return !suggestion.is_acceptable && !suggestion.apply_deactivated_style &&
+         !suggestion.children.empty();
+}
+
 }  // namespace
 
 // Creates a new popup view instance. The Widget parent is taken either from
@@ -798,7 +806,7 @@ void PopupViewViews::SetSelectedCell(
     bool can_open_sub_popup =
         !suppress_popup &&
         (cell_index->second == PopupRowView::CellType::kControl ||
-         CanOpenSubPopupSuggestion(suggestion));
+         ContentCellShouldOpenSubPopupSuggestion(suggestion));
 
     CHECK(!can_open_sub_popup ||
           !controller_->GetSuggestionAt(cell_index->first).children.empty());
@@ -1255,12 +1263,6 @@ void PopupViewViews::SetRowWithOpenSubPopup(
       }
     }
   }
-}
-
-bool PopupViewViews::CanOpenSubPopupSuggestion(const Suggestion& suggestion) {
-  // Checking both `is_acceptable` and `apply_deactivated_style` because the
-  // latter is used for disabling virtual cards which cannot open a sub popup.
-  return !suggestion.is_acceptable && !suggestion.apply_deactivated_style;
 }
 
 bool PopupViewViews::SelectParentPopupContentCell() {

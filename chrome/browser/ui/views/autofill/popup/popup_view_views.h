@@ -231,11 +231,6 @@ class PopupViewViews : public PopupBaseView,
       AutoselectFirstSuggestion autoselect_first_suggestion =
           AutoselectFirstSuggestion(false));
 
-  // Returns true when fields `is_acceptable` and `apply_style_deactivated` are
-  // false for the suggestion as it indicates that the suggestion is a manual
-  // fallback suggestion.
-  bool CanOpenSubPopupSuggestion(const Suggestion& suggestion);
-
   // Attempts to select the content cell of the row with the currently open
   // sub-popup. This closes the sub-popup and has the effect of going one menu
   // level up. Returns whether this was successful.
