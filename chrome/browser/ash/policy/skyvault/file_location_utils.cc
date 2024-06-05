@@ -7,15 +7,13 @@
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/policy/handlers/screen_capture_location_policy_handler.h"
+#include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 
 namespace policy::local_user_files {
 
 namespace {
-
-constexpr char kGoogleDrivePolicyVariableName[] = "${google_drive}";
-constexpr char kOneDrivePolicyVariableName[] = "${microsoft_onedrive}";
 
 base::FilePath GetODFSPath() {
   Profile* profile = ProfileManager::GetPrimaryUserProfile();

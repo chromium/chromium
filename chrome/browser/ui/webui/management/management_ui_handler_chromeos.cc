@@ -28,6 +28,7 @@
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/handlers/minimum_version_policy_handler.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/metric_reporting_prefs.h"
+#include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/ash/policy/status_collector/device_status_collector.h"
 #include "chrome/browser/ash/policy/status_collector/status_collector.h"
 #include "chrome/browser/ash/policy/uploading/status_uploader.h"
@@ -414,6 +415,11 @@ void AddStatusOverviewManagedDeviceAndAccount(
                     base::UTF8ToUTF16(account_manager))));
   }
 }
+
+bool IsCloudDestination(policy::local_user_files::FileSaveDestination dest) {
+  return dest == policy::local_user_files::FileSaveDestination::kGoogleDrive ||
+         dest == policy::local_user_files::FileSaveDestination::kOneDrive;
+}
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
@@ -460,6 +466,11 @@ void ManagementUIHandlerChromeOS::RegisterMessages() {
       "getPluginVmDataCollectionStatus",
       base::BindRepeating(
           &ManagementUIHandlerChromeOS::HandleGetPluginVmDataCollectionStatus,
+          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "getFilesUploadToCloudInfo",
+      base::BindRepeating(
+          &ManagementUIHandlerChromeOS::HandleGetFilesUploadToCloudInfo,
           base::Unretained(this)));
 
   capture_policy::CheckGetAllScreensMediaAllowedForAnyOrigin(
@@ -824,6 +835,76 @@ void ManagementUIHandlerChromeOS::HandleGetLocalTrustRootsInfo(
   }
 
   ResolveJavascriptCallback(args[0] /* callback_id */, trust_roots_configured);
+}
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+std::u16string ManagementUIHandlerChromeOS::GetFilesUploadToCloudInfo(
+    Profile* profile) {
+  policy::local_user_files::FileSaveDestination download_destination =
+      policy::local_user_files::GetDownloadsDestination(profile);
+  policy::local_user_files::FileSaveDestination screenshot_destination =
+      policy::local_user_files::GetScreenCaptureDestination(profile);
+  int uploads_id = -1;
+  int destination_id = -1;
+  if (IsCloudDestination(download_destination) &&
+      IsCloudDestination(screenshot_destination)) {
+    uploads_id = IDS_MANAGEMENT_FILES_CLOUD_UPLOAD_DOWNLOADS_AND_SCREENSHOTS;
+    if (download_destination ==
+            policy::local_user_files::FileSaveDestination::kGoogleDrive &&
+        screenshot_destination ==
+            policy::local_user_files::FileSaveDestination::kGoogleDrive) {
+      destination_id = IDS_MANAGEMENT_FILES_CLOUD_UPLOAD_GOOGLE_DRIVE;
+    } else if (download_destination ==
+                   policy::local_user_files::FileSaveDestination::kOneDrive &&
+               screenshot_destination ==
+                   policy::local_user_files::FileSaveDestination::kOneDrive) {
+      destination_id = IDS_MANAGEMENT_FILES_CLOUD_UPLOAD_ONEDRIVE;
+    } else {
+      destination_id =
+          IDS_MANAGEMENT_FILES_CLOUD_UPLOAD_GOOGLE_DRIVE_AND_ONEDRIVE;
+    }
+  } else if (IsCloudDestination(download_destination)) {
+    uploads_id = IDS_MANAGEMENT_FILES_CLOUD_UPLOAD_DOWNLOADS;
+    if (download_destination ==
+        policy::local_user_files::FileSaveDestination::kGoogleDrive) {
+      destination_id = IDS_MANAGEMENT_FILES_CLOUD_UPLOAD_GOOGLE_DRIVE;
+    } else {
+      destination_id = IDS_MANAGEMENT_FILES_CLOUD_UPLOAD_ONEDRIVE;
+    }
+  } else if (IsCloudDestination(screenshot_destination)) {
+    uploads_id = IDS_MANAGEMENT_FILES_CLOUD_UPLOAD_SCREENSHOTS;
+    if (screenshot_destination ==
+        policy::local_user_files::FileSaveDestination::kGoogleDrive) {
+      destination_id = IDS_MANAGEMENT_FILES_CLOUD_UPLOAD_GOOGLE_DRIVE;
+    } else {
+      destination_id = IDS_MANAGEMENT_FILES_CLOUD_UPLOAD_ONEDRIVE;
+    }
+  }
+
+  if (uploads_id == -1) {
+    return std::u16string();
+  }
+
+  return l10n_util::GetStringFUTF16(
+      IDS_MANAGEMENT_FILES_CLOUD_UPLOAD_CONFIGURATION,
+      l10n_util::GetStringUTF16(uploads_id),
+      l10n_util::GetStringUTF16(destination_id));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+void ManagementUIHandlerChromeOS::HandleGetFilesUploadToCloudInfo(
+    const base::Value::List& args) {
+  CHECK_EQ(1U, args.size());
+
+  AllowJavascript();
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ResolveJavascriptCallback(
+      args[0] /* callback_id */,
+      base::Value(GetFilesUploadToCloudInfo(Profile::FromWebUI(web_ui()))));
+#else
+  ResolveJavascriptCallback(args[0] /* callback_id */, base::Value());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void ManagementUIHandlerChromeOS::HandleGetDeviceReportingInfo(

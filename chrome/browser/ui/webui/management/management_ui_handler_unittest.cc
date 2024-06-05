@@ -59,6 +59,7 @@
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_pref_names.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
@@ -70,6 +71,7 @@
 #include "chrome/browser/ash/policy/enrollment/device_cloud_policy_initializer.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/fake_start_crd_session_job_delegate.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/metric_reporting_prefs.h"
+#include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/ash/policy/status_collector/device_status_collector.h"
 #include "chrome/browser/ash/policy/status_collector/status_collector.h"
 #include "chrome/browser/ash/policy/uploading/status_uploader.h"
@@ -284,6 +286,10 @@ class TestManagementUIHandler : public ManagementUIHandlerBase {
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  std::u16string GetFilesUploadToCloudInfo(Profile* profile) {
+    return ManagementUIHandlerBase::GetFilesUploadToCloudInfo(profile);
+  }
+
   MOCK_METHOD(policy::DeviceCloudPolicyManagerAsh*,
               GetDeviceCloudPolicyManager,
               (),
@@ -1880,3 +1886,17 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
 
   EXPECT_EQ(expected_info, *info.FindList("info"));
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(ManagementUIHandlerTests, GetFilesUploadToCloud) {
+  ResetTestConfig();
+  SetUpProfileAndHandler();
+  EXPECT_TRUE(handler_.GetFilesUploadToCloudInfo(profile_.get()).empty());
+  profile_->GetTestingPrefService()->SetManagedPref(
+      ash::prefs::kCaptureModePolicySavePath,
+      std::make_unique<base::Value>(
+          policy::local_user_files::kOneDrivePolicyVariableName));
+
+  EXPECT_FALSE(handler_.GetFilesUploadToCloudInfo(profile_.get()).empty());
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
