@@ -43,11 +43,13 @@ class ManualFallbackEventLogger {
   void OnDidFillSuggestion(FillingProduct target_filling_product);
 
   // Called when context menu was opened on a qualifying field.
-  // `address_fallback_present` indicates where the address fallback was
-  // added. Similarly, `credit_cards_fallback_present` indicates whether a
-  // credit_card fallback option was added.
+  // `address_fallback_present` indicates where an address fallback was
+  // added. Similarly, `credit_cards_fallback_present` and
+  // `passwords_fallback_present` indicate whether a credit card or a password
+  // fallback option was added.
   void ContextMenuEntryShown(bool address_fallback_present,
-                             bool credit_cards_fallback_present);
+                             bool credit_cards_fallback_present,
+                             bool passwords_fallback_present);
 
   // Called when a fallback option was accepted (not just hovered).
   // `target_filling_product` specifies of the available options was
@@ -58,8 +60,25 @@ class ManualFallbackEventLogger {
   enum class ContextMenuEntryState { kNotShown = 0, kShown = 1, kAccepted = 2 };
   enum class SuggestionState { kNotShown = 0, kShown = 1, kFilled = 2 };
 
+  // Tries to change `old_state `to `new_state`. The context menu
+  // state should always be updated in the following order: `kNotShown` ->
+  // `kShown` -> `kAccepted`. Jumping over states (i.e. `kNotShown` ->
+  // 'kAccepted`) is not allowed. Trying to "decrease" the state (i.e.
+  // `kAccepted` -> `kShown`) is not possible.
+  // Note that a user can accept a context menu entry and then, on the same
+  // page, open another context menu. In this scenario, the code will try to
+  // change the state from `kAccepted` to `kShown`. This method will be called,
+  // but will not make the change.
+  static void UpdateContextMenuEntryState(ContextMenuEntryState new_state,
+                                          ContextMenuEntryState& old_state);
+
+  // Updates the `SuggestionState` corresponding to `filling_product` to
+  // `new_state`.
+  void UpdateSuggestionStateForFillingProduct(FillingProduct filling_product,
+                                              SuggestionState new_state);
+
   // If according to the `state` the context menu was used, emits into the
-  // `bucket` (address or credit_card) whether an entry was accepted or not
+  // `bucket` (address or credit_card) whether an entry was accepted or not.
   void EmitExplicitlyTriggeredMetric(ContextMenuEntryState state,
                                      std::string_view bucket);
 
@@ -70,17 +89,21 @@ class ManualFallbackEventLogger {
   void EmitFillAfterSuggestionMetric(SuggestionState suggestion_state,
                                      std::string_view bucket);
 
-  // For addresses and credit cards filling, tracks if the manual fallback
-  // context menu entry was shown or accepted.
+  // For addresses, credit cards and passwords filling, tracks if the manual
+  // fallback context menu entry was shown or accepted.
   ContextMenuEntryState not_classified_as_target_filling_address =
       ContextMenuEntryState::kNotShown;
   ContextMenuEntryState not_classified_as_target_filling_credit_card =
+      ContextMenuEntryState::kNotShown;
+  ContextMenuEntryState not_classified_as_target_filling_password =
       ContextMenuEntryState::kNotShown;
 
   // Tracks if address suggestions were shown/filled.
   SuggestionState address_suggestions_state_ = SuggestionState::kNotShown;
   // Tracks if credit card suggestions were shown/filled.
   SuggestionState credit_card_suggestions_state_ = SuggestionState::kNotShown;
+  // Tracks if password suggestions were shown/filled.
+  SuggestionState password_suggestions_state_ = SuggestionState::kNotShown;
 };
 
 }  // namespace autofill::autofill_metrics

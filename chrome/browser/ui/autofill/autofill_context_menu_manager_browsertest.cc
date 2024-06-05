@@ -12,6 +12,7 @@
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/notreached.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
@@ -300,6 +301,10 @@ class BaseAutofillContextMenuManagerTest : public InProcessBrowserTest {
   }
 
   virtual Profile* profile() { return browser()->profile(); }
+
+  ChromePasswordManagerClient* password_manager_client() {
+    return ChromePasswordManagerClient::FromWebContents(web_contents());
+  }
 
   void TearDownOnMainThread() override {
     autofill_context_menu_manager_.reset();
@@ -913,13 +918,20 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(PasswordsFallbackTest,
                        SelectPasswordTriggersSuggestions) {
+  // Faking the pref value so that the context menu believes the user has
+  // passwords saved.
+  password_manager_client()->GetPrefs()->SetBoolean(
+      password_manager::prefs::
+          kAutofillableCredentialsProfileStoreLoginDatabase,
+      true);
+  autofill_context_menu_manager()->AppendItems();
+
   EXPECT_CALL(
       *driver(),
       RendererShouldTriggerSuggestions(
           FieldGlobalId{LocalFrameToken(main_rfh()->GetFrameToken().value()),
                         form().fields[0].renderer_id()},
           AutofillSuggestionTriggerSource::kManualFallbackPasswords));
-
   autofill_context_menu_manager()->ExecuteCommand(
       IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD);
 }
@@ -1086,10 +1098,6 @@ class PasswordsFallbackWithPasswordDatabaseEntriesTest
     })) << "Adding the login timed out.";
   }
 
-  ChromePasswordManagerClient* password_manager_client() {
-    return ChromePasswordManagerClient::FromWebContents(web_contents());
-  }
-
   // If false, then use account store.
   bool use_profile_store() { return std::get<0>(GetParam()); }
 
@@ -1204,6 +1212,45 @@ class ManualFallbackMetricsTest
     : public BaseAutofillContextMenuManagerTest,
       public ::testing::WithParamInterface<ManualFallbackMetricsTestParams> {
  public:
+  ManualFallbackMetricsTest() {
+    features_.InitWithFeatures(
+        {features::kAutofillForUnclassifiedFieldsAvailable,
+         password_manager::features::kPasswordManualFallbackAvailable},
+        {});
+  }
+  void SetUpOnMainThread() override {
+    BaseAutofillContextMenuManagerTest::SetUpOnMainThread();
+    // When not testing addresses, make sure address fallback is not shown.
+    // This makes this test simpler since we will not have to handle the
+    // metrics also being emitted when the address manual fallback is shown,
+    // therefore also making the test more self contained.
+    // Address fallbacks are not shown when no profile exists and the user
+    // is in incognito mode.
+    if (GetParam().manual_fallback_option !=
+        AutofillSuggestionTriggerSource::kManualFallbackAddress) {
+      autofill_client()->set_is_off_the_record(true);
+    }
+
+    switch (GetParam().manual_fallback_option) {
+      case AutofillSuggestionTriggerSource::kManualFallbackAddress:
+        AddAutofillProfile(test::GetFullProfile());
+        break;
+      case AutofillSuggestionTriggerSource::kManualFallbackPayments:
+        AddCreditCard(test::GetCreditCard());
+        break;
+      case AutofillSuggestionTriggerSource::kManualFallbackPasswords:
+        // Faking the pref value so that the context menu believes the user has
+        // passwords saved.
+        password_manager_client()->GetPrefs()->SetBoolean(
+            password_manager::prefs::
+                kAutofillableCredentialsProfileStoreLoginDatabase,
+            true);
+        break;
+      default:
+        NOTREACHED();
+    }
+  }
+
   // Returns the expected metric that should be emitted depending on the
   // option displayed in the context menu and whether the user accepted it.
   std::string GetExplicitlyTriggeredMetricName() const {
@@ -1228,37 +1275,41 @@ class ManualFallbackMetricsTest
            GetFillingProductBucketName();
   }
 
- private:
-  // Returns the expected bucket (Address or CreditCard) depending on the
-  // fallback option being tested.
-  std::string GetFillingProductBucketName() const {
-    return GetParam().manual_fallback_option ==
-                   AutofillSuggestionTriggerSource::kManualFallbackAddress
-               ? ".Address"
-               : ".CreditCard";
+  int CommandToExecute() const {
+    switch (GetParam().manual_fallback_option) {
+      case AutofillSuggestionTriggerSource::kManualFallbackAddress:
+        return IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS;
+      case AutofillSuggestionTriggerSource::kManualFallbackPayments:
+        return IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PAYMENTS;
+      case AutofillSuggestionTriggerSource::kManualFallbackPasswords:
+        return IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD;
+      default:
+        NOTREACHED_NORETURN();
+    }
   }
-  base::test::ScopedFeatureList feature_{
-      features::kAutofillForUnclassifiedFieldsAvailable};
+
+ private:
+  // Returns the expected histogram variant (Address, CreditCard or Password)
+  // depending on the fallback option being tested.
+  std::string GetFillingProductBucketName() const {
+    switch (GetParam().manual_fallback_option) {
+      case AutofillSuggestionTriggerSource::kManualFallbackAddress:
+        return ".Address";
+      case AutofillSuggestionTriggerSource::kManualFallbackPayments:
+        return ".CreditCard";
+      case AutofillSuggestionTriggerSource::kManualFallbackPasswords:
+        return ".Password";
+      default:
+        NOTREACHED_NORETURN();
+    }
+  }
+
+  base::test::ScopedFeatureList features_;
 };
 
 IN_PROC_BROWSER_TEST_P(ManualFallbackMetricsTest,
                        EmitExplicitlyTriggeredMetric) {
   const ManualFallbackMetricsTestParams& params = GetParam();
-  const bool is_address_manual_fallback =
-      params.manual_fallback_option ==
-      AutofillSuggestionTriggerSource::kManualFallbackAddress;
-  if (is_address_manual_fallback) {
-    AddAutofillProfile(test::GetFullProfile());
-  } else {
-    // When testing credit cards, make sure address fallback is not shown.
-    // This makes this test simpler since we will not have to handle the
-    // metrics also being emitted when the address manual fallback is shown,
-    // therefore also making the test more self contained.
-    // Address fallbacks are not shown when no profile exists and the user is in
-    // incognito mode.
-    autofill_client()->set_is_off_the_record(true);
-    AddCreditCard(test::GetCreditCard());
-  }
   FormData form = params.is_field_unclassified
                       ? CreateAndAttachUnclassifiedForm()
                       : CreateAndAttachAutocompleteUnrecognizedForm();
@@ -1268,10 +1319,7 @@ IN_PROC_BROWSER_TEST_P(ManualFallbackMetricsTest,
   autofill_context_menu_manager()->AppendItems();
 
   if (params.option_accepted) {
-    autofill_context_menu_manager()->ExecuteCommand(
-        is_address_manual_fallback
-            ? IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS
-            : IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PAYMENTS);
+    autofill_context_menu_manager()->ExecuteCommand(CommandToExecute());
   }
   // Expect that when the autofill_manager() is destroyed, the explicitly
   // triggered metric is emitted correctly.
@@ -1334,6 +1382,20 @@ INSTANTIATE_TEST_SUITE_P(
              // ac=unrecognized fields.
              .is_field_unclassified = false,
              .test_name = "ClassifiedField_Address_Accepted",
+         },
+         {
+             .manual_fallback_option =
+                 AutofillSuggestionTriggerSource::kManualFallbackPasswords,
+             .option_accepted = true,
+             .is_field_unclassified = true,
+             .test_name = "UnclassifiedField_Passwords_Accepted",
+         },
+         {
+             .manual_fallback_option =
+                 AutofillSuggestionTriggerSource::kManualFallbackPasswords,
+             .option_accepted = false,
+             .is_field_unclassified = true,
+             .test_name = "UnclassifiedField_Passwords_NotAccepted",
          }})),
     [](const ::testing::TestParamInfo<ManualFallbackMetricsTest::ParamType>&
            info) { return info.param.test_name; });

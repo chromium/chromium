@@ -99,11 +99,17 @@ class AutofillContextMenuManager : public RenderViewContextMenuObserver {
   // Emits metrics about showing the manual fallback context menu entries to the
   // user.
   // `address_option_shown` specifies whether address manual fallback was
-  // available, same for `payments_option_shown`.
+  // available, same for `payments_option_shown` and
+  // `select_passwords_option_shown`.
+  // Out of all password entries, this method is only interested in the "select
+  // password" entry, because the rest of them don't trigger suggestions and are
+  // recorded by default separately (outside `AutofillContextMenuManager`).
   void LogManualFallbackContextMenuEntryShown(
       ContentAutofillDriver* autofill_driver,
+      password_manager::ContentPasswordManagerDriver* password_manager_driver,
       bool address_option_shown,
-      bool payments_option_shown);
+      bool payments_option_shown,
+      bool select_passwords_option_shown);
 
   // Emits metrics about accepting the manual fallback context menu entries
   // shown to the user. `filling_product` defines which manual fallback option

@@ -282,6 +282,12 @@ TEST_F(FormEventLoggerBaseTest, FilledFieldTypeStat) {
             .autocomplete_attribute = "address_line1"},
            {}}});
   autofill_manager().OnFormsSeen({form}, {});
+  // The manual fallback code assumes that suggestions have been shown before
+  // they can be filled. Not showing them will result in a crash.
+  autofill_manager().DidShowSuggestions(
+      std::vector<SuggestionType>{
+          SuggestionType::kCreditCardFieldByFieldFilling},
+      form, form.fields[0]);
   autofill_manager().FillOrPreviewProfileForm(
       mojom::ActionPersistence::kFill, form, form.fields[0],
       test::GetFullProfile(),
