@@ -8,11 +8,13 @@
  */
 import './os_japanese_dictionary_entry_row.js';
 
+import {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {JapaneseDictionary, JpPosType} from '../mojom-webui/user_data_japanese_dictionary.mojom-webui.js';
 
 import {getTemplate} from './os_japanese_dictionary_expand.html.js';
+import {UserDataServiceProvider} from './user_data_service_provider.js';
 
 class OsJapaneseDictionaryExpandElement extends PolymerElement {
   static get is() {
@@ -54,6 +56,18 @@ class OsJapaneseDictionaryExpandElement extends PolymerElement {
         {key: '', value: '', pos: JpPosType.kNoPos, comment: ''});
   }
 
+  // Renames the dictionary.
+  private async saveName_(e: Event): Promise<void> {
+    this.dict.name = (e.target as CrInputElement).value;
+    const dictionarySaved =
+        (await UserDataServiceProvider.getRemote().renameJapaneseDictionary(
+             this.dict.id, this.dict.name))
+            .status.success;
+    if (dictionarySaved) {
+      this.dispatchSavedEvent_();
+    }
+  }
+
   // Returns true if this entry is a locally added entry.
   private locallyAdded_(entryIndex: number): boolean {
     // This entry falls outside of the range of entries that were initially
@@ -68,6 +82,11 @@ class OsJapaneseDictionaryExpandElement extends PolymerElement {
   private shouldShowAddButton_(entriesLength: number): boolean {
     return entriesLength - 1 <= this.syncedEntriesCount;
   }
+
+  private dispatchSavedEvent_(): void {
+    this.dispatchEvent(
+        new CustomEvent('dictionary-saved', {bubbles: true, composed: true}));
+  }
 }
 
 customElements.define(
@@ -76,5 +95,11 @@ customElements.define(
 declare global {
   interface HTMLElementTagNameMap {
     [OsJapaneseDictionaryExpandElement.is]: OsJapaneseDictionaryExpandElement;
+  }
+}
+
+declare global {
+  interface HTMLElementEventMap {
+    ['dictionary-saved']: CustomEvent;
   }
 }
