@@ -76,6 +76,7 @@ std::unique_ptr<views::BoxLayoutView> CreateNonPremiumView() {
   label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
   label->SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
       TypographyToken::kCrosBody2));
+  label->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
 
   auto* learn_more_button = box_view->AddChildView(std::make_unique<PillButton>(
       views::Button::PressedCallback(base::BindRepeating([]() {

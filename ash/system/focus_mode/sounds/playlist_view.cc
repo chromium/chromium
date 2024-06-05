@@ -22,7 +22,7 @@ namespace {
 
 constexpr int kSinglePlaylistViewWidth = 72;
 constexpr int kSinglePlaylistViewSpacingBetweenChild = 10;
-constexpr int kPlaylistTitleLineHeight = 10;
+constexpr int kPlaylistTitleLineHeight = 16;
 
 }  // namespace
 
@@ -49,8 +49,8 @@ PlaylistView::PlaylistView(focus_mode_util::SoundType type,
   title_label_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
   title_label_->SetMaximumWidthSingleLine(kSinglePlaylistViewWidth);
   title_label_->SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
-      TypographyToken::kCrosLabel1));
-  title_label_->SetEnabledColorId(cros_tokens::kCrosSysSecondary);
+      TypographyToken::kCrosAnnotation2));
+  title_label_->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
   title_label_->SetLineHeight(kPlaylistTitleLineHeight);
   title_label_->GetViewAccessibility().SetName(
       std::u16string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
