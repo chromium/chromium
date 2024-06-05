@@ -99,12 +99,15 @@ ApiState ConvertToApiState(int value) {
   }
 }
 
-void GetMeasurementApiStatus() {
+void GetMeasurementApiStatus(base::OnceClosure callback) {
   base::ElapsedThreadTimer timer;
   Java_AttributionOsLevelManager_getMeasurementApiStatus(AttachCurrentThread());
   if (timer.is_supported()) {
     base::UmaHistogramTimes("Conversions.GetMeasurementStatusTime",
                             timer.Elapsed());
+  }
+  if (callback) {
+    std::move(callback).Run();
   }
 }
 
@@ -125,13 +128,19 @@ static void JNI_AttributionOsLevelManager_OnMeasurementStateReturned(
       base::BindOnce(&AttributionOsLevelManager::SetApiState, api_state));
 }
 
-AttributionOsLevelManagerAndroid::AttributionOsLevelManagerAndroid() {
+AttributionOsLevelManagerAndroid::AttributionOsLevelManagerAndroid(
+    base::OnceClosure get_measurement_api_status_invoked_callback) {
   jobj_ = Java_AttributionOsLevelManager_Constructor(
       AttachCurrentThread(), reinterpret_cast<intptr_t>(this));
 
   if (AttributionOsLevelManager::ShouldInitializeApiState()) {
     base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})
-        ->PostTask(FROM_HERE, base::BindOnce(&GetMeasurementApiStatus));
+        ->PostTask(FROM_HERE,
+                   base::BindOnce(
+                       &GetMeasurementApiStatus,
+                       std::move(get_measurement_api_status_invoked_callback)));
+  } else if (get_measurement_api_status_invoked_callback) {
+    std::move(get_measurement_api_status_invoked_callback).Run();
   }
 }
 

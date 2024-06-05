@@ -13,6 +13,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "content/browser/attribution_reporting/attribution_os_level_manager.h"
@@ -25,7 +26,12 @@ namespace content {
 class CONTENT_EXPORT AttributionOsLevelManagerAndroid
     : public AttributionOsLevelManager {
  public:
-  AttributionOsLevelManagerAndroid();
+  // `get_measurement_api_status_invoked_callback` will be run from a background
+  // thread where the JNI call to get measurement state is invoked, or from the
+  // main thread when the measurement state is already known.
+  explicit AttributionOsLevelManagerAndroid(
+      base::OnceClosure get_measurement_api_status_invoked_callback =
+          base::DoNothing());
   ~AttributionOsLevelManagerAndroid() override;
 
   AttributionOsLevelManagerAndroid(const AttributionOsLevelManagerAndroid&) =
