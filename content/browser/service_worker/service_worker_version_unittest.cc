@@ -2049,7 +2049,8 @@ TEST_P(ServiceWorkerVersionStaticRouterTest, SetRouterEvaluator) {
     blink::ServiceWorkerRouterRules rules;
     blink::ServiceWorkerRouterRule rule;
     rules.rules.emplace_back(rule);
-    EXPECT_FALSE(version->SetupRouterEvaluator(rules));
+    EXPECT_NE(version->SetupRouterEvaluator(rules),
+              ServiceWorkerRouterEvaluatorErrorEnums::kNoError);
     EXPECT_FALSE(version->router_evaluator());
   }
 
@@ -2065,7 +2066,8 @@ TEST_P(ServiceWorkerVersionStaticRouterTest, SetRouterEvaluator) {
     source.network_source = blink::ServiceWorkerRouterNetworkSource{};
     rule.sources.emplace_back(source);
     rules.rules.emplace_back(rule);
-    EXPECT_TRUE(version->SetupRouterEvaluator(rules));
+    EXPECT_EQ(version->SetupRouterEvaluator(rules),
+              ServiceWorkerRouterEvaluatorErrorEnums::kNoError);
     EXPECT_TRUE(version->router_evaluator());
   }
 
@@ -2084,7 +2086,8 @@ TEST_P(ServiceWorkerVersionStaticRouterTest, SetRouterEvaluator) {
     source.fetch_event_source = blink::ServiceWorkerRouterFetchEventSource{};
     rule.sources.emplace_back(source);
     rules.rules.emplace_back(rule);
-    EXPECT_TRUE(version->SetupRouterEvaluator(rules));
+    EXPECT_EQ(version->SetupRouterEvaluator(rules),
+              ServiceWorkerRouterEvaluatorErrorEnums::kNoError);
     EXPECT_TRUE(version->router_evaluator());
     EXPECT_EQ(version->router_evaluator()->rules().rules.size(), 2UL);
     auto first_rule = version->router_evaluator()->rules().rules[0];

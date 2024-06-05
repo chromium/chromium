@@ -64,6 +64,7 @@
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
 #include "third_party/blink/public/common/service_worker/service_worker_type_converters.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker.mojom.h"
 
 namespace content {
 namespace {
@@ -1930,15 +1931,22 @@ void ServiceWorkerVersion::AddRoutes(
         "Unexpected router registration call during the feature is disabled.");
     return;
   }
-  if (!SetupRouterEvaluator(rules)) {
-    // The renderer should have denied calling this method while the setup
-    // fails.
-    // TODO(crbug.com/40241479): revisit this to confirm no case for this error.
-    associated_interface_receiver_.ReportBadMessage(
-        "Failed to configure a router. Possibly a syntax error");
-    return;
+  auto error = SetupRouterEvaluator(rules);
+  bool is_parse_error = false;
+  switch (error) {
+    case ServiceWorkerRouterEvaluatorErrorEnums::kNoError:
+      break;
+    case ServiceWorkerRouterEvaluatorErrorEnums::kParseError:
+      is_parse_error = true;
+      break;
+    default:
+      // The renderer should have denied calling this method while the setup
+      // fails.
+      associated_interface_receiver_.ReportBadMessage(
+          "Failed to configure a router. Possibly a syntax error");
+      return;
   }
-  std::move(callback).Run();
+  std::move(callback).Run(is_parse_error);
 }
 
 void ServiceWorkerVersion::OnSetCachedMetadataFinished(int64_t callback_id,
@@ -3047,7 +3055,8 @@ void ServiceWorkerVersion::SetResources(
       script_url_, script_cache_map_, fetch_handler_type_);
 }
 
-bool ServiceWorkerVersion::SetupRouterEvaluator(
+ServiceWorkerRouterEvaluatorErrorEnums
+ServiceWorkerVersion::SetupRouterEvaluator(
     const blink::ServiceWorkerRouterRules& rules) {
   CHECK(IsStaticRouterEnabled());
   blink::ServiceWorkerRouterRules new_rules;
@@ -3064,16 +3073,22 @@ bool ServiceWorkerVersion::SetupRouterEvaluator(
   }
   router_evaluator_ = std::make_unique<ServiceWorkerRouterEvaluator>(new_rules);
   if (!router_evaluator_->IsValid()) {
+    auto error = router_evaluator_->invalid_error_code();
+    CHECK(error.has_value());
     router_evaluator_.reset();
-    return false;
+    return *error;
   }
   CHECK_NE(fetch_handler_existence(), FetchHandlerExistence::UNKNOWN);
+
+  // Check if we have fetch handler. This is a rare case, since this should have
+  // been validated in the renderer already when adding a new router rule.
   if (router_evaluator_->has_fetch_event_source() &&
       fetch_handler_existence() == FetchHandlerExistence::DOES_NOT_EXIST) {
     router_evaluator_.reset();
-    return false;
+    return ServiceWorkerRouterEvaluatorErrorEnums::
+        kFetchSourceWithoutFetchHandler;
   }
-  return true;
+  return ServiceWorkerRouterEvaluatorErrorEnums::kNoError;
 }
 
 bool ServiceWorkerVersion::NeedRouterEvaluate() const {

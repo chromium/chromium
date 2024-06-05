@@ -1127,9 +1127,10 @@ ServiceWorkerRegistry::GetOrCreateRegistration(
               PolicyContainerPolicies(*data.policy_container_policies)));
     }
     if (data.router_rules && version->IsStaticRouterEnabled()) {
-      bool status = version->SetupRouterEvaluator(*data.router_rules);
-      DCHECK(status) << "Failed to setup RouterEvaluator from the provided "
-                     << "rules. Possibly the database is corrupted.";
+      auto error = version->SetupRouterEvaluator(*data.router_rules);
+      DCHECK_EQ(error, ServiceWorkerRouterEvaluatorErrorEnums::kNoError)
+          << "Failed to setup RouterEvaluator from the provided "
+          << "rules. Possibly the database is corrupted.";
     }
   }
   version->set_script_response_time_for_devtools(data.script_response_time);

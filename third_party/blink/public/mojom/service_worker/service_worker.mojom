@@ -118,7 +118,12 @@ interface ServiceWorkerHost {
   // Corresponds to InstallEvent#addRoutes(). Adds service worker router rules,
   // which are evaluated before the regular navigation path. i.e. evaluated
   // before the service worker fetch handler is invoked.
-  AddRoutes(ServiceWorkerRouterRules rules) => ();
+  //
+  // The callback with |is_parse_error| true indicates that the evaluator faced
+  // a parse error of regex, and could not initialize the router evaluator.
+  // Otherwise, |is_parse_error| is false to indicate that the evaluator is
+  // initialized.
+  AddRoutes(ServiceWorkerRouterRules rules) => (bool is_parse_error);
 };
 
 struct ExtendableMessageEvent {

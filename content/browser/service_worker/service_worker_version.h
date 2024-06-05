@@ -257,10 +257,12 @@ class CONTENT_EXPORT ServiceWorkerVersion
   bool has_usb_event_handlers() const { return has_usb_event_handlers_; }
   void set_has_usb_event_handlers(bool has_usb_event_handlers);
 
-  // Returns true on setup success.
-  // Otherwise, setup error, and subsequent `router_evaluator()` will return
-  // `std::nullopt`.
-  bool SetupRouterEvaluator(const blink::ServiceWorkerRouterRules& rules);
+  // Returns `ServiceWorkerRouterEvaluatorErrorEnums::kNoError` on setup
+  // success.
+  // Otherwise, we encountered an setup error with the returned error code,
+  // and subsequent `router_evaluator()` will return `std::nullptr`.
+  ServiceWorkerRouterEvaluatorErrorEnums SetupRouterEvaluator(
+      const blink::ServiceWorkerRouterRules& rules);
   const ServiceWorkerRouterEvaluator* router_evaluator() const {
     return router_evaluator_.get();
   }

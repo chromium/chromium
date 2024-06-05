@@ -248,6 +248,7 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="kInvalidCondition"/>
   <int value="8" label="kExceedMaxConditionDepth"/>
   <int value="9" label="kExceedMaxRouterSize"/>
+  <int value="10" label="kFetchSourceWithoutFetchHandler"/>
 </enum>
 
 <enum name="ServiceWorkerWriteResponseResult">

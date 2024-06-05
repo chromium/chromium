@@ -18,6 +18,7 @@
 #include "services/network/public/cpp/request_destination.h"
 #include "services/network/public/cpp/request_mode.h"
 #include "third_party/blink/public/common/service_worker/service_worker_router_rule.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker.mojom.h"
 #include "third_party/liburlpattern/options.h"
 #include "third_party/liburlpattern/pattern.h"
 #include "third_party/liburlpattern/utils.h"

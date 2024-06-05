@@ -12,12 +12,10 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "third_party/blink/public/common/service_worker/embedded_worker_status.h"
 #include "third_party/blink/public/common/service_worker/service_worker_router_rule.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker.mojom.h"
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-// TODO(crbug.com/41492364): Move this to service_worker.mojom when
-// implementing feedback to the renderer to show that re2 has failed to compile
-// the provided regex.
 enum class ServiceWorkerRouterEvaluatorErrorEnums {
   kNoError = 0,
   kInvalidType = 1,
@@ -29,7 +27,8 @@ enum class ServiceWorkerRouterEvaluatorErrorEnums {
   kInvalidCondition = 7,
   kExceedMaxConditionDepth = 8,
   kExceedMaxRouterSize = 9,
-  kMaxValue = kExceedMaxRouterSize,
+  kFetchSourceWithoutFetchHandler = 10,
+  kMaxValue = kFetchSourceWithoutFetchHandler,
 };
 
 namespace content {
@@ -72,6 +71,10 @@ class CONTENT_EXPORT ServiceWorkerRouterEvaluator {
   std::string ToString() const;
   void RecordRouterRuleInfo() const;
   std::tuple<size_t, size_t> GetMaxDepthAndWidth() const;
+  const std::optional<ServiceWorkerRouterEvaluatorErrorEnums>&
+  invalid_error_code() const {
+    return invalid_error_code_;
+  }
 
  private:
   class RouterRule;

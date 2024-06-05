@@ -23,7 +23,12 @@ namespace blink {
 
 namespace {
 
-void DidRegisterRouter(ScriptPromiseResolver<IDLUndefined>* resolver) {
+void DidRegisterRouter(ScriptPromiseResolver<IDLUndefined>* resolver,
+                       bool is_parse_error) {
+  if (is_parse_error) {
+    resolver->RejectWithTypeError("Could not parse provided condition regex");
+    return;
+  }
   resolver->Resolve();
 }
 
