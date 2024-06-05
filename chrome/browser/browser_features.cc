@@ -162,11 +162,6 @@ BASE_FEATURE(kUseAppBoundEncryptionProviderForEncryption,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
-// Enables usage of the FedCM API without third party cookies at the same time.
-BASE_FEATURE(kFedCmWithoutThirdPartyCookies,
-             "FedCmWithoutThirdPartyCookies",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables showing the email of the flex org admin that setup CBCM in the
 // management disclosures.
 BASE_FEATURE(kFlexOrgManagementDisclosure,

@@ -65,7 +65,6 @@ BASE_DECLARE_FEATURE(kRegisterAppBoundEncryptionProvider);
 BASE_DECLARE_FEATURE(kUseAppBoundEncryptionProviderForEncryption);
 #endif
 
-BASE_DECLARE_FEATURE(kFedCmWithoutThirdPartyCookies);
 BASE_DECLARE_FEATURE(kFlexOrgManagementDisclosure);
 BASE_DECLARE_FEATURE(kIncomingCallNotifications);
 BASE_DECLARE_FEATURE(kKeyPinningComponentUpdater);

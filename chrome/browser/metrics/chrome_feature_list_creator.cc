@@ -109,10 +109,6 @@ GetSwitchDependentFeatureOverrides(const base::CommandLine& command_line) {
       {switches::kEnablePrivacySandboxAdsApis,
        std::cref(privacy_sandbox::kOverridePrivacySandboxSettingsLocalTesting),
        base::FeatureList::OVERRIDE_ENABLE_FEATURE},
-      // Enable FedCM to test behavior for third-party cookie phaseout.
-      {network::switches::kTestThirdPartyCookiePhaseout,
-       std::cref(features::kFedCmWithoutThirdPartyCookies),
-       base::FeatureList::OVERRIDE_ENABLE_FEATURE},
       // Enable 3PCD tracking protection UI.
       {network::switches::kTestThirdPartyCookiePhaseout,
        std::cref(content_settings::features::kTrackingProtection3pcd),
