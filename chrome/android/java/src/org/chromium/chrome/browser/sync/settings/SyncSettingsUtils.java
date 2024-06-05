@@ -136,16 +136,11 @@ public class SyncSettingsUtils {
             return SyncError.NO_ERROR;
         }
 
-        @SyncError int error = getCommonError(profile);
-        if (error != SyncError.NO_ERROR) {
-            return error;
-        }
-
         if (!syncService.isInitialSyncFeatureSetupComplete()) {
             return SyncError.SYNC_SETUP_INCOMPLETE;
         }
 
-        return SyncError.NO_ERROR;
+        return getCommonError(profile);
     }
 
     /**
@@ -638,6 +633,10 @@ public class SyncSettingsUtils {
                     : SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS;
         }
 
+        // This error doesn't lead to a SyncErrorMessage and thus should be thrown at the last.
+        // Otherwise this would block other errors from showing the SyncErrorMessage.
+        // TODO(crbug.com/345217772): Look for a better alternative. Maybe return all the sync
+        // errors at the moment and not just one.
         if (syncService.getSelectedTypes().contains(UserSelectableType.PASSWORDS)
                 && PasswordManagerUtilBridge.isGmsCoreUpdateRequired(
                         UserPrefs.get(profile), syncService)) {
