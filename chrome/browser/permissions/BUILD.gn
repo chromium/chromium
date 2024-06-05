@@ -63,6 +63,7 @@ source_set("permissions") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profiles",
     "//chrome/browser/safe_browsing",
+    "//chrome/browser/search_engines",
     "//chrome/browser/storage_access_api",
     "//chrome/browser/top_level_storage_access_api:permissions",
     "//chrome/common",
@@ -179,6 +180,7 @@ source_set("unit_tests") {
   deps = [
     ":permissions",
     ":permissions_proto",
+    "//chrome/browser/search_engines",
     "//chrome/test:test_support",
     "//components/site_engagement/content",
     "//components/ukm/content",

@@ -4,11 +4,15 @@
 
 package org.chromium.chrome.browser.locale;
 
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
+
 /**
- * A loader class for changes of template url in a given special locale. This is a JNI bridge and
- * it owns the native object. Make sure to call destroy() after this object is not used anymore.
+ * A loader class for changes of template url in a given special locale. This is a JNI bridge and it
+ * owns the native object. Make sure to call destroy() after this object is not used anymore.
  */
 public class LocaleTemplateUrlLoader {
     private final String mLocaleId;
@@ -22,7 +26,10 @@ public class LocaleTemplateUrlLoader {
     public LocaleTemplateUrlLoader(String localeId) {
         assert localeId.length() == 2;
         mLocaleId = localeId;
-        mNativeLocaleTemplateUrlLoader = LocaleTemplateUrlLoaderJni.get().init(localeId);
+        // TODO(b/344633755): Remove getLastUsedRegularProfile().
+        mNativeLocaleTemplateUrlLoader =
+                LocaleTemplateUrlLoaderJni.get()
+                        .init(localeId, ProfileManager.getLastUsedRegularProfile());
     }
 
     /** This *must* be called after the {@link LocaleTemplateUrlLoader} is not used anymore. */
@@ -72,7 +79,7 @@ public class LocaleTemplateUrlLoader {
 
     @NativeMethods
     interface Natives {
-        long init(String localeId);
+        long init(String localeId, @JniType("Profile*") Profile profile);
 
         void destroy(long nativeLocaleTemplateUrlLoader);
 

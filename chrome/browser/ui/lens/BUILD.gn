@@ -206,6 +206,7 @@ source_set("interactive_ui_tests") {
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/search_engines",
     "//chrome/browser/ui",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/test:test_support",

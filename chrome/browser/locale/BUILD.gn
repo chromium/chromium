@@ -79,6 +79,7 @@ android_library("util_java") {
   ]
   deps = [
     "//build/android:build_java",
+    "//chrome/browser/profiles/android:java",
     "//third_party/jni_zero:jni_zero_java",
   ]
 

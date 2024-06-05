@@ -3,12 +3,13 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/android/locale/locale_template_url_loader.h"
+
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/jni_weak_ref.h"
 #include "base/check_deref.h"
 #include "base/debug/dump_without_crashing.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "components/search_engines/prepopulated_engines.h"
 #include "components/search_engines/template_url_data.h"
@@ -27,9 +28,8 @@ using base::android::ConvertJavaStringToUTF8;
 
 static jlong JNI_LocaleTemplateUrlLoader_Init(
     JNIEnv* env,
-    const JavaParamRef<jstring>& jlocale) {
-  Profile* profile =
-      ProfileManager::GetActiveUserProfile()->GetOriginalProfile();
+    const JavaParamRef<jstring>& jlocale,
+    Profile* profile) {
   return reinterpret_cast<intptr_t>(new LocaleTemplateUrlLoader(
       ConvertJavaStringToUTF8(env, jlocale),
       TemplateURLServiceFactory::GetForProfile(profile), profile));

@@ -1,0 +1,61 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//rlz/buildflags/buildflags.gni")
+
+assert(is_win || is_mac || is_linux || is_chromeos || is_android)
+
+source_set("search_engines") {
+  public = [
+    "chrome_template_url_service_client.h",
+    "template_url_fetcher_factory.h",
+    "template_url_service_factory.h",
+    "ui_thread_search_terms_data.h",
+  ]
+
+  sources = [
+    "chrome_template_url_service_client.cc",
+    "template_url_fetcher_factory.cc",
+    "ui_thread_search_terms_data.cc",
+
+    # TODO(crbug.com/343754417): Add 'template_url_service_factory.cc' to this
+    # module.
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//components/history/core/browser",
+    "//components/search_engines",
+  ]
+
+  deps = [
+    "//chrome/browser:browser_process",
+    "//chrome/browser/google",
+    "//chrome/common:channel_info",
+    "//chrome/common:non_code_constants",
+    "//components/google/core/common",
+    "//components/version_info",
+    "//content/public/browser",
+    "//rlz/buildflags",
+    "//ui/base",
+    "//url",
+  ]
+
+  if (is_android) {
+    public += [ "ui_thread_search_terms_data_android.h" ]
+    sources += [
+      "template_url_service_factory_android.cc",
+      "ui_thread_search_terms_data_android.cc",
+    ]
+    deps += [
+      "//chrome/browser/android/locale:locale_manager",
+      "//chrome/browser/search_engines/android:jni_headers",
+    ]
+  }
+
+  if (enable_rlz) {
+    deps += [ "//components/rlz" ]
+  }
+}

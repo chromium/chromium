@@ -1,0 +1,33 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_android)
+
+source_set("locale") {
+  public = [ "locale_template_url_loader.h" ]
+
+  sources = [ "locale_template_url_loader.cc" ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//components/search_engines",
+  ]
+
+  deps = [
+    "//chrome/browser/locale:jni_headers",
+    "//chrome/browser/search_engines",
+  ]
+}
+
+source_set("locale_manager") {
+  public = [ "locale_manager.h" ]
+
+  sources = [ "locale_manager.cc" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/locale:jni_headers",
+  ]
+}
