@@ -47,14 +47,14 @@ class ProductSpecificationsEntryPointControllerBrowserTest
   ProductSpecificationsEntryPointControllerBrowserTest() = default;
 
   void SetUpOnMainThread() override {
-    auto* mock_shopping_service = static_cast<commerce::MockShoppingService*>(
+    mock_shopping_service_ = static_cast<commerce::MockShoppingService*>(
         commerce::ShoppingServiceFactory::GetForBrowserContext(
             browser()->profile()));
     mock_cluster_manager_ = static_cast<commerce::MockClusterManager*>(
-        mock_shopping_service->GetClusterManager());
+        mock_shopping_service_->GetClusterManager());
     mock_product_spec_service_ =
         static_cast<commerce::MockProductSpecificationsService*>(
-            mock_shopping_service->GetProductSpecificationsService());
+            mock_shopping_service_->GetProductSpecificationsService());
     controller_ = browser()
                       ->browser_window_features()
                       ->product_specifications_entry_point_controller();
@@ -87,6 +87,8 @@ class ProductSpecificationsEntryPointControllerBrowserTest
   }
 
  protected:
+  raw_ptr<commerce::MockShoppingService, AcrossTasksDanglingUntriaged>
+      mock_shopping_service_;
   raw_ptr<commerce::MockClusterManager, AcrossTasksDanglingUntriaged>
       mock_cluster_manager_;
   raw_ptr<commerce::MockProductSpecificationsService,
@@ -220,6 +222,55 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_EQ(commerce::GetProductSpecsTabUrlForID(uuid),
             current_tab->GetVisibleURL());
+}
+
+IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,
+                       ExecuteEntryPoint_IgnoreClosedTab) {
+  // Set up product spec service.
+  const base::Uuid uuid = base::Uuid::GenerateRandomV4();
+  commerce::ProductSpecificationsSet set(
+      uuid.AsLowercaseString(), 0, 0, {GURL(kTestUrl1), GURL(kTestUrl2)}, "");
+  ON_CALL(*mock_product_spec_service_, AddProductSpecificationsSet)
+      .WillByDefault(testing::Return(set));
+
+  // Mock EntryPointInfo returned by ShoppingService.
+  std::set<GURL> urls = {GURL(kTestUrl2), GURL(kTestUrl3), GURL(kTestUrl4)};
+  auto info = std::make_optional<commerce::EntryPointInfo>(kTitle, urls);
+  mock_cluster_manager_->SetResponseForGetEntryPointInfoForNavigation(info);
+
+  // Mock that there is only two currently open unique URLs based on
+  // ShoppingService.
+  std::vector<commerce::UrlInfo> url_infos;
+  commerce::UrlInfo info1;
+  info1.url = GURL(kTestUrl2);
+  url_infos.push_back(std::move(info1));
+  commerce::UrlInfo info2;
+  info2.url = GURL(kTestUrl3);
+  url_infos.push_back(std::move(info2));
+  commerce::UrlInfo info3;
+  info3.url = GURL(kTestUrl3);
+  url_infos.push_back(std::move(info3));
+  ON_CALL(*mock_shopping_service_, GetUrlInfosForActiveWebWrappers)
+      .WillByDefault(testing::Return(url_infos));
+
+  // Only open URLs should be added to the set.
+  std::vector<GURL> expected_urls = {GURL(kTestUrl3), GURL(kTestUrl2)};
+  EXPECT_CALL(*mock_product_spec_service_,
+              AddProductSpecificationsSet(kTitle, expected_urls))
+      .Times(1);
+
+  // Trigger entry point with navigations and execute the entry point.
+  std::vector<std::string> urls_to_open = {kTestUrl2, kTestUrl3, kTestUrl4};
+  for (auto& url : urls_to_open) {
+    ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 0, GURL(url),
+                                       ui::PAGE_TRANSITION_LINK, true));
+    base::RunLoop().RunUntilIdle();
+    controller_->OnClusterFinishedForNavigation(GURL(url));
+    base::RunLoop().RunUntilIdle();
+  }
+  ASSERT_TRUE(controller_->entry_point_info_for_testing().has_value());
+  controller_->OnEntryPointExecuted();
+  base::RunLoop().RunUntilIdle();
 }
 
 IN_PROC_BROWSER_TEST_F(ProductSpecificationsEntryPointControllerBrowserTest,

@@ -69,12 +69,12 @@ ProductSpecificationsEntryPointController::
     : browser_(browser) {
   CHECK(browser_);
   browser->tab_strip_model()->AddObserver(this);
-  ShoppingService* shopping_service =
+  shopping_service_ =
       ShoppingServiceFactory::GetForBrowserContext(browser->profile());
-  if (shopping_service) {
+  if (shopping_service_) {
     product_specifications_service_ =
-        shopping_service->GetProductSpecificationsService();
-    cluster_manager_ = shopping_service->GetClusterManager();
+        shopping_service_->GetProductSpecificationsService();
+    cluster_manager_ = shopping_service_->GetClusterManager();
     if (cluster_manager_) {
       cluster_manager_observations_.Observe(cluster_manager_);
     }
@@ -132,12 +132,18 @@ void ProductSpecificationsEntryPointController::OnEntryPointExecuted() {
     return;
   }
   DCHECK(product_specifications_service_);
-  std::vector<GURL> urls(
-      current_entry_point_info_->similar_candidate_products_urls.begin(),
-      current_entry_point_info_->similar_candidate_products_urls.end());
+  std::set<GURL> urls;
+  auto candidate_products =
+      current_entry_point_info_->similar_candidate_products_urls;
+  for (auto url_info : shopping_service_->GetUrlInfosForActiveWebWrappers()) {
+    if (base::Contains(candidate_products, url_info.url)) {
+      urls.insert(url_info.url);
+    }
+  }
+  std::vector<GURL> urls_in_set(urls.begin(), urls.end());
   const std::optional<ProductSpecificationsSet> set =
       product_specifications_service_->AddProductSpecificationsSet(
-          current_entry_point_info_->title, std::move(urls));
+          current_entry_point_info_->title, std::move(urls_in_set));
   if (set.has_value()) {
     chrome::AddTabAt(browser_,
                      commerce::GetProductSpecsTabUrlForID(set->uuid()),
