@@ -65,10 +65,9 @@ class NET_EXPORT_PRIVATE WebSocketHandshakeStreamCreateHelper
       std::set<std::string> dns_aliases) override;
 
  private:
-  const raw_ptr<WebSocketStream::ConnectDelegate, DanglingUntriaged>
-      connect_delegate_;
+  const raw_ptr<WebSocketStream::ConnectDelegate> connect_delegate_;
   const std::vector<std::string> requested_subprotocols_;
-  const raw_ptr<WebSocketStreamRequestAPI, DanglingUntriaged> request_;
+  const raw_ptr<WebSocketStreamRequestAPI> request_;
 };
 
 }  // namespace net
