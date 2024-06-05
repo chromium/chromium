@@ -20,9 +20,11 @@ import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/p
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
 import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from '../../components/behaviors/oobe_dialog_host_behavior.js';
-import {OobeI18nMixin, OobeI18nMixinInterface} from '../../components/mixins/oobe_i18n_mixin.js';
 import {OobeUiState} from '../../components/display_manager_types.js';
+import {OobeI18nMixin, OobeI18nMixinInterface} from '../../components/mixins/oobe_i18n_mixin.js';
 import {OobeCrLottie} from '../../components/oobe_cr_lottie.js';
+import {AppDownloadingPageHandlerRemote} from '../../mojom-webui/screens_common.mojom-webui.js';
+import {OobeScreensFactoryBrowserProxy} from '../../oobe_screens_factory_proxy.js';
 
 import {getTemplate} from './app_downloading.html.js';
 
@@ -45,6 +47,17 @@ export class AppDownloading extends AppDownloadingBase {
   static get properties(): PolymerElementProperties {
     return {};
   }
+
+  private handler: AppDownloadingPageHandlerRemote;
+
+  constructor() {
+    super();
+    this.handler = new AppDownloadingPageHandlerRemote();
+    OobeScreensFactoryBrowserProxy.getInstance()
+        .screenFactory.establishAppDownloadingScreenPipe(
+            this.handler.$.bindNewPipeAndPassReceiver());
+  }
+
 
   override ready(): void {
     super.ready();
@@ -81,7 +94,7 @@ export class AppDownloading extends AppDownloadingBase {
   }
 
   onContinue(): void {
-    this.userActed('appDownloadingContinueSetup');
+    this.handler.onContinueClicked();
   }
 
   private getDownloadingAppsLottiePlayer(): OobeCrLottie | null | undefined {

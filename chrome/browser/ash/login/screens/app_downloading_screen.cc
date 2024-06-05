@@ -8,20 +8,13 @@
 #include "chrome/browser/ui/webui/ash/login/app_downloading_screen_handler.h"
 
 namespace ash {
-namespace {
-
-// When user clicks "Continue setup", this will be sent to chrome to indicate
-// that user is proceeding to the next step.
-constexpr const char kUserActionButtonContinueSetup[] =
-    "appDownloadingContinueSetup";
-
-}  // namespace
 
 AppDownloadingScreen::AppDownloadingScreen(
     base::WeakPtr<AppDownloadingScreenView> view,
     const base::RepeatingClosure& exit_callback)
     : BaseScreen(AppDownloadingScreenView::kScreenId,
                  OobeScreenPriority::DEFAULT),
+      OobeMojoBinder(this),
       view_(std::move(view)),
       exit_callback_(exit_callback) {}
 
@@ -34,13 +27,11 @@ void AppDownloadingScreen::ShowImpl() {
 
 void AppDownloadingScreen::HideImpl() {}
 
-void AppDownloadingScreen::OnUserAction(const base::Value::List& args) {
-  const std::string& action_id = args[0].GetString();
-  if (action_id == kUserActionButtonContinueSetup) {
-    exit_callback_.Run();
+void AppDownloadingScreen::OnContinueClicked() {
+  if (is_hidden()) {
     return;
   }
-  BaseScreen::OnUserAction(args);
+  exit_callback_.Run();
 }
 
 }  // namespace ash

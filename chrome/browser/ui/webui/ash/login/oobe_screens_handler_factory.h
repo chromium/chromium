@@ -34,6 +34,10 @@ class OobeScreensHandlerFactory
 
  private:
   // screens_factory::mojom::ScreensFactory:
+  void EstablishAppDownloadingScreenPipe(
+      mojo::PendingReceiver<screens_common::mojom::AppDownloadingPageHandler>
+          receiver) override;
+
   void EstablishDrivePinningScreenPipe(
       mojo::PendingReceiver<screens_common::mojom::DrivePinningPageHandler>
           receiver,

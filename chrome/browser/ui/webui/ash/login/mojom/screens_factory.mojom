@@ -13,6 +13,12 @@ import "chrome/browser/ui/webui/ash/login/mojom/screens_osauth.mojom";
 interface ScreensFactory {
   // ash.screens_common.mojom
 
+  // Establish a AppDownloadingScreen pipe for handling the communication for
+  // the AppDownloadingPageHandler component.
+  EstablishAppDownloadingScreenPipe(
+      pending_receiver<ash.screens_common.mojom.AppDownloadingPageHandler>
+          handler);
+
   // Establish a DrivePinningScreen pipe for handling the communication for the
   // DrivePinningPageHandler and the DrivePinningPage component.
   EstablishDrivePinningScreenPipe(

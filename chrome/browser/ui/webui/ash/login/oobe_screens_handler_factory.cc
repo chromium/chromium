@@ -6,10 +6,12 @@
 
 #include "base/check.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
+#include "chrome/browser/ash/login/screens/app_downloading_screen.h"
 #include "chrome/browser/ash/login/screens/consumer_update_screen.h"
 #include "chrome/browser/ash/login/screens/gaia_info_screen.h"
 #include "chrome/browser/ash/login/screens/osauth/local_data_loss_warning_screen.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/ui/webui/ash/login/app_downloading_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/consumer_update_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/drive_pinning_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_info_screen_handler.h"
@@ -47,6 +49,15 @@ void OobeScreensHandlerFactory::BindScreensHandlerFactory() {
 
 void OobeScreensHandlerFactory::UnbindScreensHandlerFactory() {
   page_factory_receiver_.reset();
+}
+
+void OobeScreensHandlerFactory::EstablishAppDownloadingScreenPipe(
+    mojo::PendingReceiver<screens_common::mojom::AppDownloadingPageHandler>
+        receiver) {
+  CHECK(WizardController::default_controller());
+  AppDownloadingScreen* app_downloading =
+      WizardController::default_controller()->GetScreen<AppDownloadingScreen>();
+  app_downloading->BindPageHandlerReceiver(std::move(receiver));
 }
 
 void OobeScreensHandlerFactory::EstablishDrivePinningScreenPipe(
