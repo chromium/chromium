@@ -144,6 +144,18 @@ net::NSSCertDatabase* CertDbInitializerIOImpl::GetNssCertDatabase(
   return nullptr;
 }
 
+void CertDbInitializerIOImpl::InitReadOnlyPublicSlot(
+    base::OnceClosure done_callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  DCHECK(!pending_public_slot_);
+  DCHECK(!nss_cert_database_);
+
+  crypto::EnsureNSSInit();
+
+  pending_public_slot_ = crypto::ScopedPK11Slot(PK11_GetInternalKeySlot());
+  std::move(done_callback).Run();
+}
+
 void CertDbInitializerIOImpl::LoadSoftwareNssDb(
     const base::FilePath& user_nss_database_path,
     base::OnceClosure load_callback) {

@@ -130,6 +130,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "base/check_is_test.h"
 #include "chrome/browser/lacros/cert/cert_db_initializer_factory.h"
 #include "chrome/browser/lacros/cert/client_cert_store_lacros.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
@@ -1170,7 +1171,18 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
     const crosapi::mojom::DefaultPathsPtr& default_paths =
         chromeos::BrowserParamsProxy::Get()->DefaultPaths();
     // `default_paths` can be nullptr in tests.
-    if (default_paths && default_paths->user_nss_database.has_value()) {
+    if (!default_paths) {
+      CHECK_IS_TEST();
+    }
+    // Populating `nss_full_path` will make cert verifier load
+    // and use the corresponding NSS public slot. Kiosk sessions don't have
+    // the UI that could result in interactions with the public slot. Kiosk
+    // users are also not owner users and can't have the owner key in the
+    // public slot. Leaving it empty will make cert verifier ignore the
+    // public slot. This is done mainly because Chrome sometimes fails to
+    // load the public slot and has to crash because of that.
+    if (default_paths && default_paths->user_nss_database.has_value() &&
+        !chromeos::IsKioskSession()) {
       cert_verifier_creation_params->nss_full_path =
           default_paths->user_nss_database.value();
     }
@@ -1199,7 +1211,7 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
       // the UI that could result in interactions with the public slot. Kiosk
       // users are also not owner users and can't have the owner key in the
       // public slot. Leaving them empty will make cert verifier ignore the
-      // public slot.  This is done mainly because Chrome sometimes fails to
+      // public slot. This is done mainly because Chrome sometimes fails to
       // load the public slot and has to crash because of that.
       if (!chromeos::IsKioskSession()) {
         cert_verifier_creation_params->username_hash = user->username_hash();
