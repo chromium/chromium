@@ -36,6 +36,7 @@ import java.util.ArrayList;
 /** Tests for FeedActionDelegateImpl. */
 @RunWith(BaseRobolectricTestRunner.class)
 public final class FeedItemDecorationTest {
+    private static final int GUTTER_PADDING = 20;
     @Mock private Canvas mCanvas;
     @Mock private RecyclerView mRecyclerView;
     @Mock private RecyclerView.State mState;
@@ -145,7 +146,7 @@ public final class FeedItemDecorationTest {
         }
 
         FeedItemDecoration feedItemDecoration =
-                new FeedItemDecoration(mActivity, mCoordinator, mDrawableProvider);
+                new FeedItemDecoration(mActivity, mCoordinator, mDrawableProvider, GUTTER_PADDING);
         feedItemDecoration.onDraw(mCanvas, mRecyclerView, mState);
 
         verify(mTopRoundedDrawable, never()).setBounds(eq(mBoundsList.get(0)));
@@ -192,9 +193,7 @@ public final class FeedItemDecorationTest {
         mBoundsList.get(6).set(0, 500, 500, 600);
 
         FeedItemDecoration feedItemDecoration =
-                new FeedItemDecoration(mActivity, mCoordinator, mDrawableProvider);
-        int gutterPadding = feedItemDecoration.getGutterPaddingForTesting();
-        int extraPadding = feedItemDecoration.getExtraPaddingForTesting();
+                new FeedItemDecoration(mActivity, mCoordinator, mDrawableProvider, GUTTER_PADDING);
         feedItemDecoration.onDraw(mCanvas, mRecyclerView, mState);
 
         verify(mTopRoundedDrawable, never()).setBounds(eq(mBoundsList.get(0)));
@@ -203,23 +202,20 @@ public final class FeedItemDecorationTest {
         verify(mBottomRightRoundedDrawable, never()).setBounds(eq(mBoundsList.get(0)));
 
         Rect bounds1 = new Rect(mBoundsList.get(1));
-        bounds1.right += extraPadding;
         verify(mTopRoundedDrawable, times(1)).setBounds(eq(bounds1));
 
         Rect bounds2 = new Rect(mBoundsList.get(2));
-        bounds2.right += gutterPadding;
+        bounds2.right += GUTTER_PADDING * 2;
         verify(mNotRoundedDrawable, times(1)).setBounds(eq(bounds2));
 
         Rect bounds3 = new Rect(mBoundsList.get(3));
-        bounds3.right += extraPadding;
         verify(mNotRoundedDrawable, times(1)).setBounds(eq(bounds3));
 
         Rect bounds5 = new Rect(mBoundsList.get(5));
-        bounds5.right += extraPadding;
         verify(mBottomRightRoundedDrawable, times(1)).setBounds(eq(bounds5));
 
         Rect bounds4 = new Rect(mBoundsList.get(4));
-        bounds4.right += gutterPadding;
+        bounds4.right += GUTTER_PADDING * 2;
         bounds4.bottom = bounds5.bottom;
         verify(mBottomLeftRoundedDrawable, times(1)).setBounds(eq(bounds4));
 
@@ -262,9 +258,7 @@ public final class FeedItemDecorationTest {
         mBoundsList.get(6).set(0, 500, 500, 600);
 
         FeedItemDecoration feedItemDecoration =
-                new FeedItemDecoration(mActivity, mCoordinator, mDrawableProvider);
-        int gutterPadding = feedItemDecoration.getGutterPaddingForTesting();
-        int extraPadding = feedItemDecoration.getExtraPaddingForTesting();
+                new FeedItemDecoration(mActivity, mCoordinator, mDrawableProvider, GUTTER_PADDING);
         feedItemDecoration.onDraw(mCanvas, mRecyclerView, mState);
 
         verify(mTopRoundedDrawable, never()).setBounds(eq(mBoundsList.get(0)));
@@ -273,24 +267,20 @@ public final class FeedItemDecorationTest {
         verify(mBottomRightRoundedDrawable, never()).setBounds(eq(mBoundsList.get(0)));
 
         Rect bounds1 = new Rect(mBoundsList.get(1));
-        bounds1.right += extraPadding;
         verify(mTopRoundedDrawable, times(1)).setBounds(eq(bounds1));
 
         Rect bounds2 = new Rect(mBoundsList.get(2));
-        bounds2.right += gutterPadding;
+        bounds2.right += GUTTER_PADDING * 2;
         verify(mNotRoundedDrawable, times(1)).setBounds(eq(bounds2));
 
         Rect bounds3 = new Rect(mBoundsList.get(3));
-        bounds3.right += extraPadding;
         bounds3.bottom = bounds2.bottom;
         verify(mNotRoundedDrawable, times(1)).setBounds(eq(bounds3));
 
         Rect bounds4 = new Rect(mBoundsList.get(4));
-        bounds4.right += extraPadding;
         verify(mNotRoundedDrawable, times(1)).setBounds(eq(bounds4));
 
         Rect bounds5 = new Rect(mBoundsList.get(5));
-        bounds5.right += extraPadding;
         verify(mBottomRoundedDrawable, times(1)).setBounds(eq(bounds5));
 
         verify(mTopRoundedDrawable, never()).setBounds(eq(mBoundsList.get(6)));
@@ -333,7 +323,7 @@ public final class FeedItemDecorationTest {
         mBoundsList.get(6).set(0, 600, 500, 700);
 
         FeedItemDecoration feedItemDecoration =
-                new FeedItemDecoration(mActivity, mCoordinator, mDrawableProvider);
+                new FeedItemDecoration(mActivity, mCoordinator, mDrawableProvider, GUTTER_PADDING);
         feedItemDecoration.onDraw(mCanvas, mRecyclerView, mState);
 
         verify(mTopRoundedDrawable, never()).setBounds(eq(mBoundsList.get(0)));

@@ -850,11 +850,21 @@ public class FeedSurfaceCoordinator
 
         RecyclerView view;
         if (mHybridListRenderer != null) {
+            int gutterPadding = -1;
+            if (mUseStaggeredLayout) {
+                gutterPadding =
+                        mActivity
+                                .getResources()
+                                .getDimensionPixelSize(
+                                        ChromeFeatureList.isEnabled(
+                                                        ChromeFeatureList.FEED_CONTAINMENT)
+                                                ? R.dimen.feed_containment_gutter_padding_per_column
+                                                : R.dimen.feed_gutter_padding_per_column);
+            }
             // XSurface returns a View, but it should be a RecyclerView.
             view =
                     (RecyclerView)
-                            mHybridListRenderer.bind(
-                                    mContentManager, mViewportView, mUseStaggeredLayout);
+                            mHybridListRenderer.bind(mContentManager, mViewportView, gutterPadding);
             view.setId(R.id.feed_stream_recycler_view);
             view.setClipToPadding(false);
 
@@ -866,7 +876,8 @@ public class FeedSurfaceCoordinator
                                 this,
                                 (resId) -> {
                                     return AppCompatResources.getDrawable(mActivity, resId);
-                                }));
+                                },
+                                gutterPadding));
             }
             view.setBackground(
                     AppCompatResources.getDrawable(mActivity, R.drawable.home_surface_background));
