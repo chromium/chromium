@@ -68,6 +68,17 @@ class OsJapaneseDictionaryExpandElement extends PolymerElement {
     }
   }
 
+  // Renames the dictionary.
+  private async deleteDictionary_(): Promise<void> {
+    const dictionarySaved =
+        (await UserDataServiceProvider.getRemote().deleteJapaneseDictionary(
+             this.dict.id))
+            .status.success;
+    if (dictionarySaved) {
+      this.dispatchSavedEvent_();
+    }
+  }
+
   // Returns true if this entry is a locally added entry.
   private locallyAdded_(entryIndex: number): boolean {
     // This entry falls outside of the range of entries that were initially
