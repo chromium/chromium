@@ -7,6 +7,7 @@ import("//media/media_options.gni")
 # Implementations of media C++ interfaces using corresponding mojo services.
 source_set("clients") {
   visibility = [
+    ":test_support",
     "//chromecast/*",
 
     # Mirroring Service needs the video accelerated encoder mojom interfaces.
@@ -115,6 +116,20 @@ source_set("clients") {
 
     deps += [ "//third_party/blink/public:blink_headers" ]
   }
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "mock_mojo_video_encoder_metrics_provider_factory.cc",
+    "mock_mojo_video_encoder_metrics_provider_factory.h",
+  ]
+
+  deps = [
+    ":clients",
+    "//testing/gmock",
+  ]
 }
 
 source_set("unit_tests") {

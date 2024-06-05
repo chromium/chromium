@@ -55,7 +55,7 @@ class MojoVideoEncoderMetricsProviderFactory
       MojoVideoEncoderMetricsProviderFactory>;
   virtual ~MojoVideoEncoderMetricsProviderFactory();
 
-  // For easily mocking in RTCVideoEncoderTest.
+  // For easily mocking in unit tests.
   explicit MojoVideoEncoderMetricsProviderFactory(
       mojom::VideoEncoderUseCase use_case);
 

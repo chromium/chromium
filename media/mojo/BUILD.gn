@@ -62,6 +62,7 @@ source_set("test_support") {
   testonly = true
   public_deps = [
     "//media/mojo/clients",
+    "//media/mojo/clients:test_support",
     "//media/mojo/common",
     "//media/mojo/mojom",
     "//media/mojo/mojom:test_interfaces",

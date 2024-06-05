@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "third_party/blink/renderer/platform/peerconnection/rtc_video_encoder.h"
+
 #include <stdint.h>
 
 #include "base/functional/bind.h"
@@ -23,13 +25,13 @@
 #include "media/base/mock_filters.h"
 #include "media/base/video_encoder_metrics_provider.h"
 #include "media/capture/capture_switches.h"
+#include "media/mojo/clients/mock_mojo_video_encoder_metrics_provider_factory.h"
 #include "media/mojo/clients/mojo_video_encoder_metrics_provider.h"
 #include "media/video/fake_gpu_memory_buffer.h"
 #include "media/video/mock_gpu_video_accelerator_factories.h"
 #include "media/video/mock_video_encode_accelerator.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/renderer/platform/peerconnection/rtc_video_encoder.h"
 #include "third_party/blink/renderer/platform/webrtc/webrtc_video_frame_adapter.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/libyuv/include/libyuv/planar_functions.h"
@@ -289,21 +291,6 @@ class RTCVideoEncoderWrapper : public webrtc::VideoEncoder {
   // |webrtc_encoder_thread_| members.
   std::unique_ptr<RTCVideoEncoder> rtc_video_encoder_;
 };
-
-class MockMojoVideoEncoderMetricsProviderFactory
-    : public media::MojoVideoEncoderMetricsProviderFactory {
- public:
-  MockMojoVideoEncoderMetricsProviderFactory()
-      : MojoVideoEncoderMetricsProviderFactory(
-            media::mojom::VideoEncoderUseCase::kWebRTC) {}
-
-  ~MockMojoVideoEncoderMetricsProviderFactory() override = default;
-
-  MOCK_METHOD(std::unique_ptr<media::VideoEncoderMetricsProvider>,
-              CreateVideoEncoderMetricsProvider,
-              (),
-              (override));
-};
 }  // anonymous namespace
 
 MATCHER_P3(CheckConfig,
@@ -327,7 +314,8 @@ class RTCVideoEncoderTest {
             new media::MockGpuVideoAcceleratorFactories(nullptr)),
         mock_encoder_metrics_provider_factory_(
             base::MakeRefCounted<
-                MockMojoVideoEncoderMetricsProviderFactory>()) {
+                media::MockMojoVideoEncoderMetricsProviderFactory>(
+                media::mojom::VideoEncoderUseCase::kWebRTC)) {
     ON_CALL(*mock_encoder_metrics_provider_factory_,
             CreateVideoEncoderMetricsProvider())
         .WillByDefault(Return(::testing::ByMove(
@@ -648,7 +636,7 @@ class RTCVideoEncoderTest {
   base::Thread encoder_thread_;
 
   std::unique_ptr<media::MockGpuVideoAcceleratorFactories> mock_gpu_factories_;
-  scoped_refptr<MockMojoVideoEncoderMetricsProviderFactory>
+  scoped_refptr<media::MockMojoVideoEncoderMetricsProviderFactory>
       mock_encoder_metrics_provider_factory_;
 
  private:
