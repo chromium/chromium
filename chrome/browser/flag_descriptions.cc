@@ -132,8 +132,6 @@ const char kComputePressureRateObfuscationMitigationDescription[] =
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kContainerName[] = "Container";
 const char kContainerDescription[] = "Enables container.";
-const char kContainerContentsName[] = "Container Contents";
-const char kContainerContentsDescription[] = "Contents for the container.";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 const char kComputePressureBreakCalibrationMitigationName[] =

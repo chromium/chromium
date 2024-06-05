@@ -14,12 +14,6 @@ namespace chromeos::switches {
 const char kContainerAppPreinstallActivationTimeThreshold[] =
     "container-app-preinstall-activation-time-threshold";
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
-// The name for the command-line switch used to provide the key which gates
-// preinstallation of the container app.
-const char kContainerAppPreinstallKey[] = "container-app-preinstall-key";
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
-
 // Returns the value from the command-line switch for the activation time
 // threshold for the container app. Returns an absent value if the command-line
 // switch isn't present or cannot be parsed. Note that this switch will only be
@@ -35,15 +29,5 @@ std::optional<base::Time> GetContainerAppPreinstallActivationTimeThreshold() {
              ? std::make_optional(activation_time_threshold)
              : std::nullopt;
 }
-
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
-// Returns the value from the command-line switch for the key which gates
-// preinstallation of the container app. Returns an empty string if the
-// command-line switch isn't present.
-std::string GetContainerAppPreinstallKey() {
-  return base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-      kContainerAppPreinstallKey);
-}
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace chromeos::switches

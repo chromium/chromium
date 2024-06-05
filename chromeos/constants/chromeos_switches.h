@@ -21,17 +21,8 @@ namespace chromeos::switches {
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const char kContainerAppPreinstallActivationTimeThreshold[];
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
-extern const char kContainerAppPreinstallKey[];
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
-
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 std::optional<base::Time> GetContainerAppPreinstallActivationTimeThreshold();
-
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS) std::string GetContainerAppPreinstallKey();
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace chromeos::switches
 

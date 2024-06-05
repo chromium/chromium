@@ -1496,11 +1496,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "container-contents",
-    "owners": [ "dmblack@google.com", "xiaohuic@chromium.org" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "content-languages-in-language-picker",
     "owners": [
       "perrier@google.com",

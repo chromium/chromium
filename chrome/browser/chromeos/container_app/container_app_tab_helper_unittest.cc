@@ -62,11 +62,6 @@ class ContainerAppTabHelperTest
         {chromeos::features::kFeatureManagementContainerAppPreinstall,
          IsContainerAppPreinstallEnabled()},
     });
-    if (IsContainerAppPreinstallEnabled()) {
-      scoped_ignore_container_app_preinstall_key_ = std::make_unique<
-          base::AutoReset<bool>>(
-          chromeos::features::SetIgnoreContainerAppPreinstallKeyForTesting());
-    }
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
     crosapi::mojom::BrowserInitParamsPtr init_params =
         chromeos::BrowserInitParams::GetForTests()->Clone();
@@ -109,11 +104,6 @@ class ContainerAppTabHelperTest
   // Used to conditionally enable/disable the container app preinstallation
   // feature based on test parameterization.
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  // Used to conditionally ignore the container app preinstallation key when
-  // the preinstallation feature is enabled.
-  std::unique_ptr<base::AutoReset<bool>>
-      scoped_ignore_container_app_preinstall_key_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 

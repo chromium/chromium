@@ -11035,10 +11035,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kContainerDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kContainerAppPreinstall)},
 
-    {"container-contents", flag_descriptions::kContainerContentsName,
-     flag_descriptions::kContainerContentsDescription, kOsCrOS,
-     STRING_VALUE_TYPE(chromeos::switches::kContainerAppPreinstallKey, "")},
-
     {"mahi", flag_descriptions::kMahiName, flag_descriptions::kMahiDescription,
      kOsCrOS, FEATURE_VALUE_TYPE(chromeos::features::kMahi)},
 
