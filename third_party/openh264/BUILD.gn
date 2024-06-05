@@ -197,3 +197,19 @@ source_set("encoder") {
     deps += [ ":openh264_encoder_asm" ]
   }
 }
+
+source_set("decoder") {
+  testonly = true
+
+  sources = openh264_decoder_sources
+  include_dirs = openh264_decoder_include_dirs
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [ ":config" ]
+
+  deps = [
+    ":common",
+    ":processing",
+  ]
+}
