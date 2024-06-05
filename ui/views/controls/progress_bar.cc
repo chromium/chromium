@@ -61,13 +61,13 @@ int RoundToPercent(double fractional_value) {
 
 ProgressBar::ProgressBar() {
   SetFlipCanvasOnPaintForRTLUI(true);
-  GetViewAccessibility().SetProperties(ax::mojom::Role::kProgressIndicator);
 }
 
 ProgressBar::~ProgressBar() = default;
 
 void ProgressBar::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   View::GetAccessibleNodeData(node_data);
+  node_data->role = ax::mojom::Role::kProgressIndicator;
   if (IsIndeterminate()) {
     node_data->RemoveStringAttribute(ax::mojom::StringAttribute::kValue);
   } else {
