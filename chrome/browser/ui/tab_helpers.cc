@@ -148,6 +148,7 @@
 #include "components/permissions/features.h"
 #include "components/permissions/permission_recovery_success_rate_tracker.h"
 #include "components/permissions/permission_request_manager.h"
+#include "components/safe_browsing/content/browser/async_check_tracker.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer.h"
 #include "components/safe_browsing/content/browser/safe_browsing_tab_observer.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -511,6 +512,16 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
         web_contents,
         safe_browsing::TailoredSecurityServiceFactory::GetForProfile(profile));
   }
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kSafeBrowsingAsyncRealTimeCheck) &&
+      g_browser_process->safe_browsing_service()) {
+    safe_browsing::AsyncCheckTracker::CreateForWebContents(
+        web_contents, g_browser_process->safe_browsing_service()->ui_manager());
+  }
+  // SafeBrowsingTabObserver creates a ClientSideDetectionHost, which observes
+  // events from PermissionRequestManager and AsyncCheckTracker in its
+  // constructor. Therefore, PermissionRequestManager and AsyncCheckTracker need
+  // to be created before SafeBrowsingTabObserver is created.
   safe_browsing::SafeBrowsingTabObserver::CreateForWebContents(
       web_contents,
       std::make_unique<safe_browsing::ChromeSafeBrowsingTabObserverDelegate>());
