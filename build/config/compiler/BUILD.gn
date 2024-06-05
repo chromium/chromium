@@ -1909,7 +1909,7 @@ config("default_warnings") {
 
         if (llvm_force_head_revision) {
           # TODO(crbug.com/344680447): Fix and re-enable.
-          cflags += [ "-Wno-missing-template-arg-list-after-template-kw" ]
+          cflags_cc += [ "-Wno-missing-template-arg-list-after-template-kw" ]
         }
       }
     }
