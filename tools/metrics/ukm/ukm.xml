@@ -14087,6 +14087,9 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="IOS.URLMismatchInLegacyAndSlimNavigationManager">
+  <obsolete>
+    Deprecated 2024/06
+  </obsolete>
   <owner>ajuma@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <summary>

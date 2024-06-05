@@ -1111,14 +1111,6 @@ char const kFullScreenStateHistogram[] = "IOS.Fullscreen.State";
 
     DCHECK_EQ(documentOrigin, committedOrigin)
         << "Old and new URL detection system have a mismatch";
-
-    ukm::SourceId sourceID = ukm::ConvertToSourceId(
-        context->GetNavigationId(), ukm::SourceIdType::NAVIGATION_ID);
-    if (sourceID != ukm::kInvalidSourceId) {
-      ukm::builders::IOS_URLMismatchInLegacyAndSlimNavigationManager(sourceID)
-          .SetHasMismatch(documentOrigin != committedOrigin)
-          .Record(ukm::UkmRecorder::Get());
-    }
   }
 }
 
