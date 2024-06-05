@@ -554,12 +554,23 @@ void GlanceablesTaskView::AddExtraContentForEditState() {
         base::to_underlying(GlanceablesViewId::kAssignedTaskNotice));
 
     if (origin_surface_type_icon_) {
-      assigned_task_notice->AddChildView(std::make_unique<views::ImageView>(
-          origin_surface_type_icon_->GetImageModel()));
+      auto* const icon =
+          assigned_task_notice->AddChildView(std::make_unique<views::ImageView>(
+              origin_surface_type_icon_->GetImageModel()));
+      icon->SetProperty(views::kMarginsKey, kDetailItemsMargin);
     }
 
-    assigned_task_notice->AddChildView(std::make_unique<views::Label>(
-        l10n_util::GetStringUTF16(IDS_GLANCEABLES_TASKS_ASSIGNED_TASK_NOTICE)));
+    auto* const assigned_task_notice_label = assigned_task_notice->AddChildView(
+        std::make_unique<views::Label>(l10n_util::GetStringUTF16(
+            IDS_GLANCEABLES_TASKS_ASSIGNED_TASK_NOTICE)));
+    assigned_task_notice_label->SetFontList(
+        TypographyProvider::Get()->ResolveTypographyToken(
+            TypographyToken::kCrosAnnotation1));
+    assigned_task_notice_label->SetLineHeight(
+        TypographyProvider::Get()->ResolveLineHeight(
+            TypographyToken::kCrosAnnotation1));
+    assigned_task_notice_label->SetEnabledColorId(
+        cros_tokens::kCrosSysOnSurfaceVariant);
 
     extra_content->AddChildView(std::move(assigned_task_notice));
   }
