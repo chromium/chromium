@@ -4542,26 +4542,21 @@ message BrowserPublicKeyUploadResponse {
 // `FmRegistrationTokenUploadResponse`.
 // See go/cros-invalidation-with-direct-messaging.
 message FmRegistrationTokenUploadRequest {
-  message TokenData {
-    // Scope of the uploaded token.
-    enum TokenType {
-      DEVICE = 0;
-      BROWSER = 1;
-      USER = 2;
-    }
-
-    optional string token = 1;
-    // Invalidation protocol version that uploader currently supports.
-    optional int64 protocol_version = 2;
-    // Scope of the uploaded token.
-    optional TokenType token_type = 3;
-    // Token's expiration timestamp in milliseconds since Epoch in UTC timezone
-    // (Java time).
-    optional int64 expiration_timestamp_ms = 4;
+  // Scope of the uploaded token.
+  enum TokenType {
+    DEVICE = 0;
+    BROWSER = 1;
+    USER = 2;
   }
 
-  // Of type `FmRegistrationTokenUploadRequest.TokenData`.
-  optional SignedData signed_request = 1;
+  optional string token = 1;
+  // Invalidation protocol version that uploader currently supports.
+  optional int64 protocol_version = 2;
+  // Scope of the uploaded token.
+  optional TokenType token_type = 3;
+  // Token's expiration timestamp in milliseconds since Epoch in UTC timezone
+  // (Java time).
+  optional int64 expiration_timestamp_ms = 4;
 }
 
 // Response to `FmRegistrationTokenUploadRequest`.
