@@ -47,7 +47,7 @@ module.exports = {
                       // Exclude native DOM interfaces.
                       'UIEvent|UIEventInit|DOMError|' +
                       // Exclude ISearchUI.
-                      'ISearchUI|' +
+                      'ISearch|ISearchUI|' +
                       // Exclude the SA* classes.
                       'SACache|SACommands|SAChildNode|SANode|SARootNode)$',
                   match: false,

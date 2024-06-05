@@ -13,73 +13,65 @@ import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {ISearchHandler} from './i_search_handler.js';
 
-const Dir = constants.Dir;
+type AutomationNode = chrome.automation.AutomationNode;
+import Dir = constants.Dir;
 
 /** Controls an incremental search. */
 export class ISearch {
-  /** @param {!Cursor} cursor */
-  constructor(cursor) {
+  private callbackId_: number = 0;
+  private handler_?: ISearchHandler | null = null;
+
+  cursor: Cursor;
+
+  constructor(cursor: Cursor) {
     if (!cursor.node) {
       throw 'Incremental search started from invalid range.';
     }
 
-    /** @private {?ISearchHandler} */
-    this.handler_ = null;
+    const leaf: AutomationNode = AutomationUtil.findNodePre(
+        cursor.node, Dir.FORWARD, AutomationPredicate.leaf) || cursor.node;
 
-    const leaf = AutomationUtil.findNodePre(
-                     cursor.node, Dir.FORWARD, AutomationPredicate.leaf) ||
-        cursor.node;
-
-    /** @type {!Cursor} */
     this.cursor = Cursor.fromNode(leaf);
-
-    /** @private {number} */
-    this.callbackId_ = 0;
   }
 
-  /** @param {?ISearchHandler} handler */
-  set handler(handler) {
+  set handler(handler: ISearchHandler | null) {
     this.handler_ = handler;
   }
 
-  /**
-   * Performs a search.
-   * @param {string} searchStr
-   * @param {constants.Dir} dir
-   * @param {boolean=} opt_nextObject
-   */
-  search(searchStr, dir, opt_nextObject) {
+  /** Performs a search. */
+  search(searchStr: string, dir: Dir, nextObject?: boolean): void {
     clearTimeout(this.callbackId_);
-    const step = () => {
+    const step = (): void => {
       searchStr = searchStr.toLocaleLowerCase();
       const node = this.cursor.node;
-      let result = node;
+      let result: AutomationNode | null = node;
 
-      if (opt_nextObject) {
+      if (nextObject) {
         // We want to start/continue the search at the next object.
         result =
             AutomationUtil.findNextNode(node, dir, AutomationPredicate.object);
       }
 
+      // TODO(b/314203187): Not null asserted, check that this is correct.
       do {
         // Ask native to search the underlying data for a performance boost.
-        result = result.getNextTextMatch(searchStr, dir === Dir.BACKWARD);
+        result = result!.getNextTextMatch(searchStr, dir === Dir.BACKWARD);
       } while (result && !AutomationPredicate.object(result));
 
       if (result) {
         this.cursor = Cursor.fromNode(result);
-        const start = result.name.toLocaleLowerCase().indexOf(searchStr);
+        const start = result.name!.toLocaleLowerCase().indexOf(searchStr);
         const end = start + searchStr.length;
-        this.handler_.onSearchResultChanged(result, start, end);
+        this.handler_!.onSearchResultChanged(result, start, end);
       } else {
-        this.handler_.onSearchReachedBoundary(this.cursor.node);
+        this.handler_!.onSearchReachedBoundary(this.cursor.node);
       }
     };
 
     this.callbackId_ = setTimeout(() => step(), 0);
   }
 
-  clear() {
+  clear(): void {
     clearTimeout(this.callbackId_);
   }
 }
