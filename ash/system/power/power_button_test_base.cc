@@ -38,6 +38,9 @@ void PowerButtonTestBase::SetUp() {
 }
 
 void PowerButtonTestBase::TearDown() {
+  lock_state_test_api_.reset();
+  lock_state_controller_ = nullptr;
+
   AshTestBase::TearDown();
 }
 

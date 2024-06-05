@@ -53,7 +53,7 @@ class LockStateControllerTestApi {
   }
 
  private:
-  raw_ptr<LockStateController, DanglingUntriaged> controller_;  // not owned
+  raw_ptr<LockStateController> controller_;  // not owned
 };
 
 }  // namespace ash
