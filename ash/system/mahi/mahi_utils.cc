@@ -23,6 +23,9 @@ bool CalculateRetryLinkVisible(chromeos::MahiResponseStatus error) {
     case chromeos::MahiResponseStatus::kLowQuota:
     case chromeos::MahiResponseStatus::kSuccess:
       NOTREACHED_NORETURN();
+    default:
+      // TOOD(b/343472496): Remove this when UI is added.
+      return false;
   }
 }
 
@@ -40,6 +43,9 @@ int GetErrorStatusViewTextId(chromeos::MahiResponseStatus error) {
     case chromeos::MahiResponseStatus::kLowQuota:
     case chromeos::MahiResponseStatus::kSuccess:
       NOTREACHED_NORETURN();
+    default:
+      // TOOD(b/343472496): Remove this when UI is added.
+      return IDS_ASH_MAHI_ERROR_STATUS_LABEL_GENERAL;
   }
 }
 

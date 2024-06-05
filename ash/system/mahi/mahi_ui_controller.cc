@@ -30,6 +30,8 @@ bool IsErrorStatus(chromeos::MahiResponseStatus status) {
     case chromeos::MahiResponseStatus::kQuotaLimitHit:
     case chromeos::MahiResponseStatus::kResourceExhausted:
     case chromeos::MahiResponseStatus::kUnknownError:
+    case chromeos::MahiResponseStatus::kRestrictedCountry:
+    case chromeos::MahiResponseStatus::kUnsupportedLanguage:
       return true;
     case chromeos::MahiResponseStatus::kLowQuota:
     case chromeos::MahiResponseStatus::kSuccess:

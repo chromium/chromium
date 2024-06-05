@@ -55,10 +55,12 @@ MahiResponseStatus GetMahiResponseStatusFromMantaStatus(
     case manta::MantaStatusCode::kGenericError:
     case manta::MantaStatusCode::kBackendFailure:
     case manta::MantaStatusCode::kNoInternetConnection:
-    case manta::MantaStatusCode::kUnsupportedLanguage:
     case manta::MantaStatusCode::kNoIdentityManager:
-    case manta::MantaStatusCode::kRestrictedCountry:
       return MahiResponseStatus::kUnknownError;
+    case manta::MantaStatusCode::kRestrictedCountry:
+      return MahiResponseStatus::kRestrictedCountry;
+    case manta::MantaStatusCode::kUnsupportedLanguage:
+      return MahiResponseStatus::kUnsupportedLanguage;
     case manta::MantaStatusCode::kBlockedOutputs:
       return MahiResponseStatus::kInappropriate;
     case manta::MantaStatusCode::kResourceExhausted:

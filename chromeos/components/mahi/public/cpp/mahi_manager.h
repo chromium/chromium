@@ -38,6 +38,8 @@ enum class COMPONENT_EXPORT(MAHI_PUBLIC_CPP) MahiResponseStatus {
   kResourceExhausted = 5,
   kContentExtractionError = 6,
   kCantFindOutputData = 7,
+  kRestrictedCountry = 8,
+  kUnsupportedLanguage = 9,
   kMax = kCantFindOutputData,
 };
 
