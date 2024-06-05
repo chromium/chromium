@@ -95,6 +95,9 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFrameMapper::MapFrame(
       [](scoped_refptr<const FrameResource> frame,
          std::unique_ptr<VideoFrame::ScopedMapping> scoped_mapping) {
         CHECK(scoped_mapping);
+        // The VideoFrame::ScopedMapping must be destroyed before the
+        // FrameResource that produced it in order to avoid dangling pointers.
+        scoped_mapping.reset();
       },
       std::move(video_frame), std::move(scoped_mapping)));
   return mapped_frame;

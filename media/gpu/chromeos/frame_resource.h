@@ -99,7 +99,7 @@ class FrameResource : public base::RefCountedThreadSafe<FrameResource> {
   virtual gfx::GpuMemoryBuffer* GetGpuMemoryBuffer() const = 0;
 
   // Gets the ScopedMapping object which clients can use to access the CPU
-  // visible memory and other metadata for the gpu buffer backing |this|
+  // visible memory and other metadata for the gpu buffer backing |this|.
   virtual std::unique_ptr<VideoFrame::ScopedMapping> MapGMBOrSharedImage()
       const = 0;
 
