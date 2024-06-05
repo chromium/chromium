@@ -13,16 +13,15 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
 #include "components/input/event_with_latency_info.h"
 #include "components/viz/common/hit_test/hit_test_query.h"
 #include "components/viz/common/hit_test/hit_test_region_observer.h"
 #include "components/viz/common/surfaces/surface_id.h"
-#include "content/common/input/touch_emulator_client.h"
-#include "content/common/input/render_widget_targeter.h"
 #include "content/common/content_export.h"
 #include "content/common/input/render_widget_host_view_input_observer.h"
+#include "content/common/input/render_widget_targeter.h"
+#include "content/common/input/touch_emulator_client.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 #include "ui/gfx/geometry/transform.h"
@@ -365,22 +364,15 @@ class CONTENT_EXPORT RenderWidgetHostInputEventRouter final
 
   FrameSinkIdOwnerMap owner_map_;
   TargetMap touchscreen_gesture_target_map_;
-  // This field is not a raw_ptr<> because of a reference to raw_ptr in
-  // not-rewritten platform specific code.
-  RAW_PTR_EXCLUSION RenderWidgetHostViewInput* touch_target_ = nullptr;
+  raw_ptr<RenderWidgetHostViewInput> touch_target_ = nullptr;
   base::WeakPtr<RenderWidgetHostViewInput> touchscreen_gesture_target_;
   bool touchscreen_gesture_target_moved_recently_ = false;
   bool touchscreen_gesture_target_moved_recently_for_iov2_ = false;
-  // // This field is not a raw_ptr<> because of a reference to raw_ptr in
-  // not-rewritten platform specific code.
-  RAW_PTR_EXCLUSION RenderWidgetHostViewInput* touchpad_gesture_target_ =
-      nullptr;
+  raw_ptr<RenderWidgetHostViewInput> touchpad_gesture_target_ = nullptr;
   raw_ptr<RenderWidgetHostViewInput> bubbling_gesture_scroll_target_ = nullptr;
   raw_ptr<RenderWidgetHostViewInput> bubbling_gesture_scroll_origin_ = nullptr;
   // Used to target wheel events for the duration of a scroll.
-  // This field is not a raw_ptr<> because of missing |.get()| in not-rewritten
-  // platform specific code.
-  RAW_PTR_EXCLUSION RenderWidgetHostViewInput* wheel_target_ = nullptr;
+  raw_ptr<RenderWidgetHostViewInput> wheel_target_ = nullptr;
   // Maintains the same target between mouse down and mouse up.
   raw_ptr<RenderWidgetHostViewInput> mouse_capture_target_ = nullptr;
   // There is no mouse capture set if a mouse down event dispatches to main

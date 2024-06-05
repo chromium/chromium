@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/views_export.h"
 
@@ -118,9 +117,7 @@ class VIEWS_EXPORT LayoutManager {
 
  private:
   friend class views::View;
-  // This field is not a raw_ptr<> because of a reference to raw_ptr in
-  // not-rewritten platform specific code and #addr-of.
-  RAW_PTR_EXCLUSION View* view_setting_visibility_on_ = nullptr;
+  raw_ptr<View> view_setting_visibility_on_ = nullptr;
 };
 
 }  // namespace views

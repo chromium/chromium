@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
@@ -378,8 +379,8 @@ void FullscreenController::FullscreenTabOpeningPopup(
 
 void FullscreenController::OnTabDeactivated(
     content::WebContents* web_contents) {
-  base::AutoReset<content::WebContents*> auto_resetter(&deactivated_contents_,
-                                                       web_contents);
+  base::AutoReset<raw_ptr<content::WebContents>> auto_resetter(
+      &deactivated_contents_, web_contents);
   ExclusiveAccessControllerBase::OnTabDeactivated(web_contents);
 }
 

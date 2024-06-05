@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -159,11 +158,8 @@ struct NavigateParams {
   // new WebContents, this field will remain NULL and the WebContents deleted if
   // the WebContents it created is not added to a TabStripModel before
   // Navigate() returns.
-  //
-  // This field is not a raw_ptr<> because of missing |.get()| in not-rewritten
-  // platform specific code.
-  RAW_PTR_EXCLUSION content::WebContents* navigated_or_inserted_contents =
-      nullptr;
+  raw_ptr<content::WebContents, DanglingUntriaged>
+      navigated_or_inserted_contents = nullptr;
 
   // [in]  The WebContents that initiated the Navigate() request if such
   //       context is necessary. Default is NULL, i.e. no context.

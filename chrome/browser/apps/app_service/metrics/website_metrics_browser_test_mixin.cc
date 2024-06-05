@@ -112,7 +112,7 @@ Browser* WebsiteMetricsBrowserTestMixin::CreateBrowser() {
                         ::ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
   params.disposition = disposition;
   Navigate(&params);
-  auto* const contents = params.navigated_or_inserted_contents;
+  auto* const contents = params.navigated_or_inserted_contents.get();
   CHECK_EQ(::chrome::FindBrowserWithTab(params.navigated_or_inserted_contents),
            browser);
   ::content::TestNavigationObserver observer(contents);

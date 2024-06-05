@@ -38,7 +38,8 @@ class PopupNavigationDelegate {
 
   // Performs the navigation.
   struct NavigateResult {
-    raw_ptr<content::WebContents> navigated_or_inserted_contents = nullptr;
+    raw_ptr<content::WebContents, DanglingUntriaged>
+        navigated_or_inserted_contents = nullptr;
     WindowOpenDisposition disposition = WindowOpenDisposition::UNKNOWN;
   };
   virtual NavigateResult NavigateWithGesture(

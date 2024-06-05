@@ -370,7 +370,7 @@ void ChromeNewWindowClient::OpenUrl(const GURL& url,
         navigate_params.browser->window()->GetNativeWindow());
   }
 
-  auto* tab = navigate_params.navigated_or_inserted_contents;
+  auto* tab = navigate_params.navigated_or_inserted_contents.get();
   if (from == OpenUrlFrom::kArc && tab) {
     // Add a flag to remember this tab originated in the ARC context.
     tab->SetUserData(&arc::ArcWebContentsData::kArcTransitionFlag,

@@ -611,7 +611,7 @@ void BrowserServiceLacros::OpenUrlImpl(Profile* profile,
 
   Navigate(&navigate_params);
 
-  auto* tab = navigate_params.navigated_or_inserted_contents;
+  auto* tab = navigate_params.navigated_or_inserted_contents.get();
   if (tab && params->from == crosapi::mojom::OpenUrlFrom::kArc) {
     // Add a flag to remember this tab originated in the ARC context.
     tab->SetUserData(&arc::ArcWebContentsData::kArcTransitionFlag,

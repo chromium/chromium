@@ -258,7 +258,7 @@ class BrowserAppInstanceTrackerTest : public InProcessBrowserTest {
                           ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
     params.disposition = disposition;
     Navigate(&params);
-    auto* contents = params.navigated_or_inserted_contents;
+    auto* contents = params.navigated_or_inserted_contents.get();
     DCHECK_EQ(chrome::FindBrowserWithTab(params.navigated_or_inserted_contents),
               browser);
     content::TestNavigationObserver observer(contents);

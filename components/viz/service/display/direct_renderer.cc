@@ -14,6 +14,7 @@
 #include "base/auto_reset.h"
 #include "base/containers/circular_deque.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/timer/elapsed_timer.h"
@@ -587,7 +588,7 @@ void DirectRenderer::FlushPolygons(
 
 void DirectRenderer::DrawRenderPassAndExecuteCopyRequests(
     AggregatedRenderPass* render_pass) {
-  base::AutoReset<const AggregatedRenderPass*> current_render_pass(
+  base::AutoReset<raw_ptr<const AggregatedRenderPass>> current_render_pass(
       &current_frame()->current_render_pass, render_pass);
 
   if (render_pass_bypass_quads_.find(render_pass->id) !=

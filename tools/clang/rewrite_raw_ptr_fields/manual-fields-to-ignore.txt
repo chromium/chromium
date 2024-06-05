@@ -55,32 +55,6 @@ blink::SVGFilterBuilder::last_effect_
 # global variable is in a build configuration specific code
 base::android::ReachedAddressesBitset::reached_
 
-# Populated manually - missing |.get()| in not-rewritten platform specific code
-viz::OverlayCandidate::rpdq
-viz::CALayerOverlay::rpdq
-viz::DrawQuad::shared_quad_state
-content::RenderWidgetHostInputEventRouter::wheel_target_
-NavigateParams::navigated_or_inserted_contents
-web_app::WebAppTabStripBrowserTest::App::web_contents
-policy::ChromePolicyConversionsClient::profile_
-
-# Populated manually - reference to raw_ptr in not-rewritten platform specific code
-viz::DirectRenderer::DrawingFrame::current_render_pass
-TabGroupViews::header_
-TabGroupViews::underline_
-TabGroupViews::highlight_
-views::LayoutManager::view_setting_visibility_on_
-FullscreenController::deactivated_contents_
-content::RenderWidgetHostInputEventRouter::touch_target_
-content::RenderWidgetHostInputEventRouter::touchpad_gesture_target_
-base::MessagePumpLibevent::run_state_
-
-# Populated manually - incompatibilities with tracing in not-rewritten platform specific code
-TabStripModelChange::RemovedTab::contents
-
-# Populated manually - extra .get() added in not-rewritten platform specific code
-SECItem::data
-
 # Populated manually - the rewriter has trouble appending |.get()| inside macros
 # that work with |XDisplay*|.
 extensions::GlobalShortcutListenerX11::x_display_
@@ -169,10 +143,11 @@ courgette::LabelManagerTest_SimpleIndexAssigner_Test::TestBody()::TestCase::expe
 # as a pointer to PA memory
 sandbox::TargetProcess::base_address_ # https://crbug.com/1173374
 
-# Populated manually - pointers that kernel sees as raw pointers
-# https://crbug.com/1395075
-base::(anonymous namespace)::kernel_sigaction::k_sa_handler
-base::(anonymous namespace)::kernel_sigaction::k_sa_restorer
+# Populated manually - pointers that other code (e.g. kernel code) sees a
+# different version of the struct/class, which uses a raw pointer.
+base::(anonymous namespace)::kernel_sigaction::k_sa_handler   # https://crbug.com/1395075
+base::(anonymous namespace)::kernel_sigaction::k_sa_restorer  # as above
+SECItem::data
 
 # Populated manually - uninitialized memory reinterpret_cast to raw_ptr<T>
 # causing AddRef/Deref mismatch.
