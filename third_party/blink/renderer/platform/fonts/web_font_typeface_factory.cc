@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/platform/fonts/opentype/font_format_check.h"
 #include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/include/core/SkTypeface.h"
+#include "third_party/skia/include/ports/SkTypeface_fontations.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "third_party/blink/renderer/platform/fonts/win/dwrite_font_format_support.h"
@@ -21,9 +22,6 @@
 #include "third_party/skia/include/ports/SkFontMgr_empty.h"
 #endif
 
-#if BUILDFLAG(USE_FONTATIONS_BACKEND)
-#include "third_party/skia/include/ports/SkTypeface_fontations.h"
-#endif
 
 #include <functional>
 
@@ -32,8 +30,7 @@ namespace blink {
 namespace {
 
 sk_sp<SkTypeface> MakeTypefaceDefaultFontMgr(sk_sp<SkData> data) {
-#if BUILDFLAG(USE_FONTATIONS_BACKEND) && \
-    !(BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE))
+#if !(BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE))
   if (RuntimeEnabledFeatures::FontationsFontBackendEnabled()) {
     std::unique_ptr<SkStreamAsset> stream(new SkMemoryStream(data));
     return SkTypeface_Make_Fontations(std::move(stream), SkFontArguments());
@@ -51,8 +48,7 @@ sk_sp<SkTypeface> MakeTypefaceDefaultFontMgr(sk_sp<SkData> data) {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
 sk_sp<SkTypeface> MakeTypefaceFallback(sk_sp<SkData> data) {
-#if BUILDFLAG(USE_FONTATIONS_BACKEND) && \
-    (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
   if (RuntimeEnabledFeatures::FontationsFontBackendEnabled()) {
     std::unique_ptr<SkStreamAsset> stream(new SkMemoryStream(data));
     return SkTypeface_Make_Fontations(std::move(stream), SkFontArguments());
