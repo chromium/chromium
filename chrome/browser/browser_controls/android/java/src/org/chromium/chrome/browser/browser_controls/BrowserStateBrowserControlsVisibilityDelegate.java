@@ -26,7 +26,7 @@ import org.chromium.ui.util.TokenHolder;
 public class BrowserStateBrowserControlsVisibilityDelegate extends BrowserControlsVisibilityDelegate
         implements Destroyable {
     /** Minimum duration (in milliseconds) that the controls are shown when requested. */
-    @VisibleForTesting static final long MINIMUM_SHOW_DURATION_MS = 3000;
+    @VisibleForTesting public static final long MINIMUM_SHOW_DURATION_MS = 3000;
 
     private static boolean sDisableOverridesForTesting;
 

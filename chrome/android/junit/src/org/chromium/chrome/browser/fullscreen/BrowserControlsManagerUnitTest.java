@@ -39,6 +39,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
@@ -47,9 +48,11 @@ import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBrowserControlsOffsetHelper;
@@ -64,6 +67,7 @@ import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.ui.util.TokenHolder;
 
 import java.util.Collections;
+import java.util.concurrent.TimeUnit;
 
 /** Unit tests for {@link BrowserControlsManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -93,6 +97,7 @@ public class BrowserControlsManagerUnitTest {
 
     private UserDataHost mUserDataHost = new UserDataHost();
     private BrowserControlsManager mBrowserControlsManager;
+    private BrowserStateBrowserControlsVisibilityDelegate mControlsDelegate;
 
     @Before
     public void setUp() {
@@ -129,6 +134,7 @@ public class BrowserControlsManagerUnitTest {
                 mActivityTabProvider,
                 mTabModelSelector,
                 R.dimen.control_container_height);
+        mControlsDelegate = mBrowserControlsManager.getBrowserVisibilityDelegate();
         mBrowserControlsManager.addObserver(mBrowserControlsStateProviderObserver);
         when(mBrowserControlsManager.getTab()).thenReturn(mTab);
     }
@@ -143,9 +149,53 @@ public class BrowserControlsManagerUnitTest {
                 mTabModelSelector,
                 R.dimen.control_container_height);
         mBrowserControlsManager.addObserver(mBrowserControlsStateProviderObserver);
+        mControlsDelegate = mBrowserControlsManager.getBrowserVisibilityDelegate();
+
         doCallback((Runnable runnable) -> runnable.run())
                 .when(mContainerView)
                 .postOnAnimation(any());
+
+        // TabBrowserControlsOffsetHelper casts to TabImpl which is package private, mock instead.
+        mUserDataHost.setUserData(
+                TabBrowserControlsOffsetHelper.USER_DATA_KEY, mTabBrowserControlsOffsetHelper);
+    }
+
+    private void notifyAddTab(Tab tab) {
+        verify(mTabModel, atLeast(1)).addObserver(mTabModelObserverCaptor.capture());
+        for (TabModelObserver observer : mTabModelObserverCaptor.getAllValues()) {
+            observer.didAddTab(
+                    tab,
+                    TabLaunchType.FROM_LINK,
+                    TabCreationState.LIVE_IN_FOREGROUND,
+                    /* markedForSelection= */ false);
+        }
+    }
+
+    private void notifyCurrentTab(Tab tab) {
+        verify(mActivityTabProvider, atLeast(1)).addObserver(mCallbackTabCaptor.capture());
+        for (Callback<Tab> observer : mCallbackTabCaptor.getAllValues()) {
+            observer.onResult(tab);
+        }
+    }
+
+    private void notifyContentViewScrollingStateChanged(boolean scrolling) {
+        verify(mTab, atLeast(1)).addObserver(mTabObserverCaptor.capture());
+        for (TabObserver observer : mTabObserverCaptor.getAllValues()) {
+            observer.onContentViewScrollingStateChanged(scrolling);
+        }
+    }
+
+    private void notifyBrowserControlsOffsetChanged(int topControlsOffsetY) {
+        verify(mTab, atLeast(1)).addObserver(mTabObserverCaptor.capture());
+        for (TabObserver observer : mTabObserverCaptor.getAllValues()) {
+            observer.onBrowserControlsOffsetChanged(
+                    mTab,
+                    topControlsOffsetY,
+                    /* bottomControlsOffsetY= */ 0,
+                    /* contentOffsetY= */ 0,
+                    /* topControlsMinHeightOffsetY= */ 0,
+                    /* bottomControlsMinHeightOffsetY= */ 0);
+        }
     }
 
     @Test
@@ -395,29 +445,18 @@ public class BrowserControlsManagerUnitTest {
         remakeWithoutSpy();
         assertEquals(View.VISIBLE, mBrowserControlsManager.getAndroidControlsVisibility());
 
-        // TabBrowserControlsOffsetHelper casts to TabImpl which is package private, mock instead.
-        mUserDataHost.setUserData(
-                TabBrowserControlsOffsetHelper.USER_DATA_KEY, mTabBrowserControlsOffsetHelper);
-
         // Emit tab event such that we get an active tab observer.
-        verify(mTabModel, atLeast(1)).addObserver(mTabModelObserverCaptor.capture());
-        for (TabModelObserver observer : mTabModelObserverCaptor.getAllValues()) {
-            observer.didAddTab(
-                    mTab,
-                    TabLaunchType.FROM_LINK,
-                    TabCreationState.LIVE_IN_FOREGROUND,
-                    /* markedForSelection= */ false);
-        }
-        verify(mActivityTabProvider, atLeast(1)).addObserver(mCallbackTabCaptor.capture());
-        for (Callback<Tab> observer : mCallbackTabCaptor.getAllValues()) {
-            observer.onResult(mTab);
-        }
-        verify(mTab, atLeast(1)).addObserver(mTabObserverCaptor.capture());
+        notifyAddTab(mTab);
+        notifyCurrentTab(mTab);
+
+        // Wait for SHOWN otherwise the optimization doesn't take effect.
+        ShadowLooper.idleMainLooper(
+                BrowserStateBrowserControlsVisibilityDelegate.MINIMUM_SHOW_DURATION_MS,
+                TimeUnit.MILLISECONDS);
+        assertEquals(BrowserControlsState.BOTH, mControlsDelegate.get().intValue());
 
         // Hide should be eagerly be reacted to, regardless of scrolling or not.
-        for (TabObserver observer : mTabObserverCaptor.getAllValues()) {
-            observer.onContentViewScrollingStateChanged(true);
-        }
+        notifyContentViewScrollingStateChanged(true);
         int token =
                 mBrowserControlsManager.hideAndroidControlsAndClearOldToken(
                         TokenHolder.INVALID_TOKEN);
@@ -427,16 +466,12 @@ public class BrowserControlsManagerUnitTest {
         mBrowserControlsManager.releaseAndroidControlsHidingToken(token);
 
         // Now stop scrolling, and the visibility should update.
-        for (TabObserver observer : mTabObserverCaptor.getAllValues()) {
-            observer.onContentViewScrollingStateChanged(false);
-        }
+        notifyContentViewScrollingStateChanged(false);
         assertEquals(View.VISIBLE, mBrowserControlsManager.getAndroidControlsVisibility());
 
         // Set up the same situation where we're scrolling and have a hidden view that wants to be
         // shown once the scroll is over.
-        for (TabObserver observer : mTabObserverCaptor.getAllValues()) {
-            observer.onContentViewScrollingStateChanged(true);
-        }
+        notifyContentViewScrollingStateChanged(true);
         token =
                 mBrowserControlsManager.hideAndroidControlsAndClearOldToken(
                         TokenHolder.INVALID_TOKEN);
@@ -448,6 +483,41 @@ public class BrowserControlsManagerUnitTest {
         for (Callback<Tab> observer : mCallbackTabCaptor.getAllValues()) {
             observer.onResult(mTab);
         }
+        assertEquals(View.VISIBLE, mBrowserControlsManager.getAndroidControlsVisibility());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES)
+    public void testVisibilityOnShownConstraints() {
+        remakeWithoutSpy();
+
+        // Emit tab event such that we get an active tab observer.
+        notifyAddTab(mTab);
+        notifyCurrentTab(mTab);
+
+        // Switching tabs locks the controls, advance time past this.
+        assertEquals(BrowserControlsState.SHOWN, mControlsDelegate.get().intValue());
+        ShadowLooper.idleMainLooper(
+                BrowserStateBrowserControlsVisibilityDelegate.MINIMUM_SHOW_DURATION_MS,
+                TimeUnit.MILLISECONDS);
+        assertEquals(BrowserControlsState.BOTH, mControlsDelegate.get().intValue());
+
+        // Start scrolling to enable optimizations that delay actions.
+        notifyContentViewScrollingStateChanged(true);
+        assertEquals(View.VISIBLE, mBrowserControlsManager.getAndroidControlsVisibility());
+
+        // Reduce the size of the controls such that we should hide the java view.
+        notifyBrowserControlsOffsetChanged(TOOLBAR_HEIGHT);
+        assertEquals(View.INVISIBLE, mBrowserControlsManager.getAndroidControlsVisibility());
+
+        // Now scroll the controls back fully onscreen. Suppression layout optimizations should not
+        // restore visibility of the java views eagerly.
+        notifyBrowserControlsOffsetChanged(0);
+        assertEquals(View.INVISIBLE, mBrowserControlsManager.getAndroidControlsVisibility());
+
+        // However when entering SHOWN state, the optimization should ignore scrolling and
+        // immediately restore view visibility.
+        mControlsDelegate.set(BrowserControlsState.SHOWN);
         assertEquals(View.VISIBLE, mBrowserControlsManager.getAndroidControlsVisibility());
     }
 }

@@ -124,7 +124,8 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
                         return;
                     } else if (visibility == View.VISIBLE
                             && mContentViewScrolling
-                            && ToolbarFeatures.shouldSuppressCaptures()) {
+                            && ToolbarFeatures.shouldSuppressCaptures()
+                            && mBrowserVisibilityDelegate.get() == BrowserControlsState.BOTH) {
                         // Don't make the controls visible until scrolling has stopped to avoid
                         // doing it more often than we need to. onContentViewScrollingStateChanged
                         // will schedule us again when scrolling ceases.
@@ -188,6 +189,12 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
                 (constraints) -> {
                     if (constraints == BrowserControlsState.SHOWN) {
                         setPositionsForTabToNonFullscreen();
+
+                        // If controls become locked, it's possible we've previously delayed
+                        // actually setting visibility until a touch event is over. In this case, we
+                        // need to trigger an update again now, which should go through due to
+                        // constraints.
+                        scheduleVisibilityUpdate();
                     }
                 });
     }
