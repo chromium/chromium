@@ -4,7 +4,7 @@
     "clang_use_chrome_plugins": false,
     "clang_use_default_sample_profile": false,
     "debuggable_apks": false,
-    "default_min_sdk_version": 21,
+    "default_min_sdk_version": 29,
     "disable_file_support": true,
     "enable_base_tracing": false,
     "enable_reporting": true,

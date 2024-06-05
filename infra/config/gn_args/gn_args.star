@@ -400,6 +400,7 @@ gn_args.config(
     args = {
         "clang_base_path": "//third_party/cronet_android_mainline_clang/linux-amd64",
         "clang_use_chrome_plugins": False,
+        "default_min_sdk_version": 29,
         # https://crbug.com/1481060
         "llvm_android_mainline": True,
     },
