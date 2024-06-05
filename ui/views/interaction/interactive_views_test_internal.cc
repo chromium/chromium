@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/scoped_observation.h"
+#include "build/build_config.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/framework_specific_implementation.h"
@@ -17,7 +18,12 @@
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/widget_focus_observer.h"
 #include "ui/views/native_window_tracker.h"
+#include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ui/aura/test/aura_test_helper.h"
+#endif
 
 namespace views::test::internal {
 
@@ -48,6 +54,24 @@ class NativeViewWidgetFocusSupplier : public WidgetFocusSupplier,
     if (focused_now) {
       OnWidgetFocusChanged(focused_now);
     }
+  }
+
+ protected:
+  Widget::Widgets GetAllWidgets() const override {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // On Ash, WidgetTest::GetAllWidgets() requires special test utils to be set
+    // up that are incompatible with browser tests. If a test helper has been
+    // set up, then use it, otherwise assume that the browser version will
+    // handle fetching the widgets.
+    Widget::Widgets result;
+    if (aura::test::AuraTestHelper* const aura_test_helper =
+            aura::test::AuraTestHelper::GetInstance()) {
+      Widget::GetAllChildWidgets(aura_test_helper->GetContext(), &result);
+    }
+    return result;
+#else
+    return WidgetTest::GetAllWidgets();
+#endif
   }
 
  private:
@@ -114,7 +138,7 @@ void InteractiveViewsTestPrivate::OnSequenceAborted(
 void InteractiveViewsTestPrivate::DoTestSetUp() {
   InteractiveTestPrivate::DoTestSetUp();
   // Frame should exist from set up to tear down, to prevent framework/system
-  // listeners from receving events outside of the test.
+  // listeners from receiving events outside of the test.
   widget_focus_supplier_frame_ = std::make_unique<WidgetFocusSupplierFrame>();
   widget_focus_suppliers().MaybeRegister<NativeViewWidgetFocusSupplier>();
 }

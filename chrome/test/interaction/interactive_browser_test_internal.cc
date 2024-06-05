@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -24,6 +25,12 @@
 #include "ui/base/interaction/framework_specific_implementation.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/interaction/widget_focus_observer.h"
+#include "ui/views/widget/widget.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/shell.h"
+#include "ui/aura/window.h"
+#endif
 
 namespace internal {
 
@@ -49,6 +56,21 @@ class BrowserWidgetFocusSupplier
         }
       }
     }
+  }
+
+ protected:
+  views::Widget::Widgets GetAllWidgets() const override {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // On Ash, this call is required to include shell/desktop widgets in
+    // addition to other widgets - see documentation in widget_test_aura.cc.
+    views::Widget::Widgets result;
+    for (const auto& window : ash::Shell::GetAllRootWindows()) {
+      views::Widget::GetAllChildWidgets(window->GetRootWindow(), &result);
+    }
+    return result;
+#else
+    return views::Widget::Widgets();
+#endif
   }
 
  private:

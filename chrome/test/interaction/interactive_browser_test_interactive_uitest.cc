@@ -41,6 +41,7 @@
 #include "ui/views/interaction/interaction_sequence_views.h"
 #include "ui/views/interaction/widget_focus_observer.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/test/widget_activation_waiter.h"
 #include "url/gurl.h"
 
 namespace {
@@ -556,4 +557,15 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
       WaitForWebContentsPainted(kWebContentsId));
 
   bubble->GetWidget()->CloseNow();
+}
+
+// Ensure that the initial active window is detected by the focus observer.
+IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest, InitialWindowActive) {
+  auto* const widget =
+      BrowserView::GetBrowserViewForBrowser(browser())->GetWidget();
+  views::test::WaitForWidgetActive(widget, true);
+
+  RunTestSequence(ObserveState(views::test::kCurrentWidgetFocus),
+                  WaitForState(views::test::kCurrentWidgetFocus,
+                               [widget]() { return widget->GetNativeView(); }));
 }

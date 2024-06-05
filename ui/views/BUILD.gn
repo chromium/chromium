@@ -1300,6 +1300,7 @@ test("views_unittests") {
     "interaction/interaction_sequence_views_unittest.cc",
     "interaction/interaction_test_util_views_unittest.cc",
     "interaction/interactive_views_test_unittest.cc",
+    "interaction/widget_focus_observer_unittest.cc",
     "layout/animating_layout_manager_unittest.cc",
     "layout/box_layout_unittest.cc",
     "layout/box_layout_view_unittest.cc",
