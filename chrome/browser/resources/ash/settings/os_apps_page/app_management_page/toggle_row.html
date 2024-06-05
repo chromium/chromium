@@ -15,17 +15,15 @@
   }
 </style>
 
-<div id="left-content" aria-hidden="true">
-  <div class="horizontal-align">
-    <template is="dom-if" if="[[icon]]">
-      <iron-icon id="icon" icon="[[icon]]"></iron-icon>
-    </template>
-    <div class="vertical-align">
-      <div id="label">[[label]]</div>
-      <div id="description" class="secondary-text">
-        [[description]]
-        <slot name="description"></slot>
-      </div>
+<div id="left-content" class="horizontal-align">
+  <template is="dom-if" if="[[icon]]">
+    <iron-icon id="icon" icon="[[icon]]"></iron-icon>
+  </template>
+  <div class="vertical-align">
+    <div id="label">[[label]]</div>
+    <div id="description" class="secondary-text">
+      [[description]]
+      <slot name="description"></slot>
     </div>
   </div>
 </div>
