@@ -58,9 +58,7 @@ skcms_Matrix3x3 PlaneToOutputMatrix(
 
 }  // namespace
 
-HardwareDisplayPlaneList::HardwareDisplayPlaneList() {
-  atomic_property_set.reset(drmModeAtomicAlloc());
-}
+HardwareDisplayPlaneList::HardwareDisplayPlaneList() = default;
 
 HardwareDisplayPlaneList::~HardwareDisplayPlaneList() = default;
 
@@ -208,7 +206,6 @@ void HardwareDisplayPlaneManager::ResetCurrentPlaneList(
 
   plane_list->plane_list.clear();
   plane_list->legacy_page_flips.clear();
-  plane_list->atomic_property_set.reset(drmModeAtomicAlloc());
 }
 
 void HardwareDisplayPlaneManager::RestoreCurrentPlaneList(
@@ -221,7 +218,6 @@ void HardwareDisplayPlaneManager::RestoreCurrentPlaneList(
   }
   plane_list->plane_list.clear();
   plane_list->legacy_page_flips.clear();
-  plane_list->atomic_property_set.reset(drmModeAtomicAlloc());
 }
 
 void HardwareDisplayPlaneManager::BeginFrame(

@@ -61,8 +61,6 @@ struct HardwareDisplayPlaneList {
   // pageflipping.
   std::vector<PageFlipInfo> legacy_page_flips;
 
-  ScopedDrmAtomicReqPtr atomic_property_set;
-
   // Adds trace records to |context|.
   void WriteIntoTrace(perfetto::TracedValue context) const;
 };
