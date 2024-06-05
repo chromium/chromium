@@ -417,6 +417,7 @@ class VideoImageReaderImageBacking::SkiaGraphiteDawnImageRepresentation
     wgpu::SharedTextureMemoryAHardwareBufferDescriptor
         stm_ahardwarebuffer_desc = {};
     stm_ahardwarebuffer_desc.handle = scoped_hardware_buffer_->buffer();
+    stm_ahardwarebuffer_desc.useExternalFormat = true;
     desc.nextInChain = &stm_ahardwarebuffer_desc;
     shared_texture_memory_ = device.ImportSharedTextureMemory(&desc);
 
