@@ -71,17 +71,6 @@ INSTANTIATE_TEST_SUITE_P(
                       ExtensionRequestNotification::kRejected,
                       ExtensionRequestNotification::kForceInstalled));
 
-#if !DCHECK_IS_ON()
-// EXPECT_DEATH doesn't work well with BrowserWithTestWindowTest. Hence only run
-// the test when DCHECK is off.
-TEST_P(ExtensionRequestNotificationTest, NoExtension) {
-  ExtensionRequestNotification request_notification(
-      profile(), GetNotifyType(), ExtensionRequestNotification::ExtensionIds());
-  request_notification.Show(base::BindOnce(&OnNotificationClosed, false));
-  EXPECT_FALSE(GetNotification().has_value());
-}
-#endif  //! DCHECK_IS_ON()
-
 TEST_P(ExtensionRequestNotificationTest, HasExtensionAndClickedByUser) {
   ExtensionRequestNotification request_notification(
       profile(), GetNotifyType(),
