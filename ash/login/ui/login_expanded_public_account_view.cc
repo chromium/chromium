@@ -39,6 +39,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/text_constants.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
@@ -149,7 +150,7 @@ class SelectionButtonView : public LoginButton {
  public:
   SelectionButtonView(PressedCallback callback, const std::u16string& text)
       : LoginButton(std::move(callback)) {
-    SetAccessibleName(text);
+    GetViewAccessibility().SetName(text);
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);
     SetFocusBehavior(FocusBehavior::ALWAYS);
@@ -232,7 +233,7 @@ class SelectionButtonView : public LoginButton {
     label_->SetEnabledColorId(color_id);
   }
   void SetText(const std::u16string& text) {
-    SetAccessibleName(text);
+    GetViewAccessibility().SetName(text);
     label_->SetText(text);
     DeprecatedLayoutImmediately();
   }
@@ -816,7 +817,7 @@ LoginExpandedPublicAccountView::LoginExpandedPublicAccountView(
   submit_button_ = AddChildView(std::make_unique<ArrowButtonView>(
       base::BindRepeating(&RightPaneView::Login, base::Unretained(right_pane_)),
       kArrowButtonSizeDp));
-  submit_button_->SetAccessibleName(l10n_util::GetStringUTF16(
+  submit_button_->GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
       IDS_ASH_LOGIN_PUBLIC_ACCOUNT_LOG_IN_BUTTON_ACCESSIBLE_NAME));
   if (chromeos::features::IsJellyrollEnabled()) {
     submit_button_->SetBackgroundColorId(

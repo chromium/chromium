@@ -190,7 +190,7 @@ class RecentlyUsedImageButton : public views::ImageButton {
     if (text.empty() || !base::UTF8ToUTF16(text.c_str(), text.size(), &query)) {
       query.clear();
     }
-    SetAccessibleName(
+    GetViewAccessibility().SetName(
         query, query.empty() ? ax::mojom::NameFrom::kAttributeExplicitlyEmpty
                              : ax::mojom::NameFrom::kAttribute);
   }
@@ -326,7 +326,7 @@ class CreateImageButton : public views::Button {
                                           base::Unretained(this))),
         controller_(controller) {
     SetID(BubbleViewID::kCreateWithAiButton);
-    SetAccessibleName(
+    GetViewAccessibility().SetName(
         l10n_util::GetStringUTF16(IDS_ASH_VIDEO_CONFERENCE_CREAT_WITH_AI_NAME));
     SetLayoutManager(std::make_unique<views::FillLayout>());
     SetBackground(views::CreateThemedRoundedRectBackground(

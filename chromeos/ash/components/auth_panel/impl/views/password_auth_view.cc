@@ -27,6 +27,7 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
@@ -155,7 +156,7 @@ void PasswordAuthView::CreateAndConfigureSubmitButton() {
   submit_button_->SetBackgroundColorId(cros_tokens::kCrosSysSystemOnBase);
   submit_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_ASH_LOGIN_SUBMIT_BUTTON_ACCESSIBLE_NAME));
-  submit_button_->SetAccessibleName(
+  submit_button_->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_ASH_LOGIN_SUBMIT_BUTTON_ACCESSIBLE_NAME));
   submit_button_->SetEnabled(false);
 }

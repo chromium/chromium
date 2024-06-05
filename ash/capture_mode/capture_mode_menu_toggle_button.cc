@@ -9,6 +9,7 @@
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/style/ash_color_id.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -30,7 +31,7 @@ CaptureModeMenuToggleButton::CaptureModeMenuToggleButton(
       label_view_(AddChildView(std::make_unique<views::Label>(label_text))),
       toggle_button_(
           AddChildView(std::make_unique<Switch>(std::move(callback)))) {
-  toggle_button_->SetAccessibleName(label_text);
+  toggle_button_->GetViewAccessibility().SetName(label_text);
   CaptureModeSessionFocusCycler::HighlightHelper::Install(toggle_button_);
   icon_view_->SetImageSize(capture_mode::kSettingsIconSize);
   icon_view_->SetPreferredSize(capture_mode::kSettingsIconSize);

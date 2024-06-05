@@ -16,6 +16,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/layout/table_layout_view.h"
@@ -215,14 +216,14 @@ HttpAuthDialog::DialogView::DialogView(std::u16string_view authority,
           views::style::CONTEXT_LABEL, views::style::STYLE_PRIMARY));
   username_field_ =
       fields_container->AddChildView(std::make_unique<views::Textfield>());
-  username_field_->SetAccessibleName(username_label);
+  username_field_->GetViewAccessibility().SetName(*username_label);
   auto* password_label =
       fields_container->AddChildView(std::make_unique<views::Label>(
           l10n_util::GetStringUTF16(IDS_LOGIN_DIALOG_PASSWORD_FIELD),
           views::style::CONTEXT_LABEL, views::style::STYLE_PRIMARY));
   password_field_ =
       fields_container->AddChildView(std::make_unique<views::Textfield>());
-  password_field_->SetAccessibleName(password_label);
+  password_field_->GetViewAccessibility().SetName(*password_label);
   password_field_->SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
 }
 

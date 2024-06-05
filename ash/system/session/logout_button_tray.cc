@@ -29,6 +29,7 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/layout/fill_layout.h"
 
@@ -144,7 +145,7 @@ void LogoutButtonTray::UpdateButtonTextAndImage() {
     button_->SetMinSize(gfx::Size(0, kTrayItemSize));
   } else {
     button_->SetText(std::u16string());
-    button_->SetAccessibleName(title);
+    button_->GetViewAccessibility().SetName(title);
     button_->SetImageModel(
         views::Button::STATE_NORMAL,
         ui::ImageModel::FromVectorIcon(

@@ -99,7 +99,7 @@ class BasePinButton : public views::View {
                 const std::u16string& accessible_name,
                 const base::RepeatingClosure& on_press)
       : on_press_(on_press) {
-    SetAccessibleName(accessible_name);
+    GetViewAccessibility().SetName(accessible_name);
     SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
     SetPreferredSize(size);
 

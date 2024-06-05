@@ -31,6 +31,7 @@
 #include "ui/gfx/font.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
@@ -126,7 +127,7 @@ class InputMenuView::FeedbackButton : public views::LabelButton {
   explicit FeedbackButton(PressedCallback callback = PressedCallback(),
                           const std::u16string& text = std::u16string())
       : LabelButton(std::move(callback), text) {
-    SetAccessibleName(
+    GetViewAccessibility().SetName(
         l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_MENU_SEND_FEEDBACK));
     SetBorder(views::CreateEmptyBorder(
         gfx::Insets::TLBR(0, kSideInset, 0, kSideInset)));
@@ -244,7 +245,7 @@ void InputMenuView::Init(const gfx::Size& parent_size) {
         header_view->AddChildView(std::make_unique<views::ToggleButton>(
             base::BindRepeating(&InputMenuView::OnToggleGameControlPressed,
                                 base::Unretained(this))));
-    game_control_toggle_->SetAccessibleName(
+    game_control_toggle_->GetViewAccessibility().SetName(
         l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_GAME_CONTROLS_ALPHA));
     game_control_toggle_->SetIsOn(
         display_overlay_controller_->GetTouchInjectorEnable());
@@ -263,7 +264,7 @@ void InputMenuView::Init(const gfx::Size& parent_size) {
     close_button->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
     const auto button_name =
         l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_ACCESSIBILITY_ALPHA);
-    close_button->SetAccessibleName(button_name);
+    close_button->GetViewAccessibility().SetName(button_name);
     close_button->SetTooltipText(button_name);
     close_button_ = header_view->AddChildView(std::move(close_button));
     menu_title->SetBorder(
@@ -328,7 +329,7 @@ void InputMenuView::Init(const gfx::Size& parent_size) {
     show_mapping_toggle_ = hint_view->AddChildView(
         std::make_unique<views::ToggleButton>(base::BindRepeating(
             &InputMenuView::OnToggleShowHintPressed, base::Unretained(this))));
-    show_mapping_toggle_->SetAccessibleName(
+    show_mapping_toggle_->GetViewAccessibility().SetName(
         l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_MENU_SHOW_KEY_MAPPING));
     show_mapping_toggle_->SetEnabled(game_control_toggle_->GetIsOn());
     show_mapping_toggle_->SetIsOn(

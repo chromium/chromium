@@ -30,6 +30,7 @@
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets_f.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/layout/table_layout.h"
@@ -237,7 +238,7 @@ void CalendarDateCellView::OnSelectedDateUpdated() {
     is_selected_ = is_selected;
     SchedulePaint();
     if (!is_selected_) {
-      SetAccessibleName(tool_tip_);
+      GetViewAccessibility().SetName(tool_tip_);
       return;
     }
     // Sets accessible label. E.g. Calendar, week of July 16th 2021, [selected
@@ -248,7 +249,7 @@ void CalendarDateCellView::OnSelectedDateUpdated() {
     base::Time first_day_of_week =
         date_ - base::Days(date_exploded.day_of_week);
 
-    SetAccessibleName(l10n_util::GetStringFUTF16(
+    GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
         IDS_ASH_CALENDAR_SELECTED_DATE_CELL_ACCESSIBLE_DESCRIPTION,
         calendar_utils::GetMonthDayYear(first_day_of_week),
         calendar_utils::GetDayOfMonth(date_)));
@@ -294,7 +295,7 @@ void CalendarDateCellView::SetTooltipAndAccessibleName() {
     }
   }
   SetTooltipText(tool_tip_);
-  SetAccessibleName(tool_tip_);
+  GetViewAccessibility().SetName(tool_tip_);
 }
 
 void CalendarDateCellView::UpdateFetchStatus(bool is_fetched) {
@@ -336,7 +337,7 @@ void CalendarDateCellView::UpdateFetchStatus(bool is_fetched) {
 }
 
 void CalendarDateCellView::SetFirstOnFocusedAccessibilityLabel() {
-  SetAccessibleName(l10n_util::GetStringFUTF16(
+  GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
       IDS_ASH_CALENDAR_DATE_CELL_ON_FOCUS_ACCESSIBLE_DESCRIPTION, tool_tip_));
 }
 

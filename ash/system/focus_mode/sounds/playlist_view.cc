@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/label.h"
 
 namespace ash {
@@ -41,7 +42,7 @@ PlaylistView::PlaylistView(focus_mode_util::SoundType type,
       AddChildView(std::make_unique<PlaylistImageButton>());
   playlist_image_button_->SetCallback(base::BindRepeating(
       &PlaylistView::OnPlaylistViewToggled, base::Unretained(this)));
-  playlist_image_button_->SetAccessibleName(
+  playlist_image_button_->GetViewAccessibility().SetName(
       std::u16string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
 
   title_label_ = AddChildView(std::make_unique<views::Label>());
@@ -51,7 +52,7 @@ PlaylistView::PlaylistView(focus_mode_util::SoundType type,
       TypographyToken::kCrosLabel1));
   title_label_->SetEnabledColorId(cros_tokens::kCrosSysSecondary);
   title_label_->SetLineHeight(kPlaylistTitleLineHeight);
-  title_label_->SetAccessibleName(
+  title_label_->GetViewAccessibility().SetName(
       std::u16string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
 }
 
@@ -67,9 +68,9 @@ void PlaylistView::UpdateContents(
       !text.empty()) {
     title_label_->SetText(text);
     title_label_->SetTooltipText(text);
-    title_label_->SetAccessibleName(text);
+    title_label_->GetViewAccessibility().SetName(text);
     playlist_image_button_->SetTooltipText(text);
-    playlist_image_button_->SetAccessibleName(text);
+    playlist_image_button_->GetViewAccessibility().SetName(text);
   }
   playlist_image_button_->UpdateContents(playlist_data_.thumbnail);
 }

@@ -421,7 +421,7 @@ TEST_P(AppListControllerImplTest,
 
   // Focusable views need an accessible name to pass the accessibility paint
   // checks.
-  text_field->SetAccessibleName(u"Name");
+  text_field->GetViewAccessibility().SetName(u"Name");
 
   // Note that the bounds of |text_field| cannot be too small. Otherwise, it
   // may not receive the gesture event.

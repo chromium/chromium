@@ -248,7 +248,7 @@ CalendarEventListItemView::CalendarEventListItemView(
           IDS_ASH_CALENDAR_EVENT_POSITION_ACCESSIBLE_DESCRIPTION,
           base::NumberToString16(event_list_item_index.item_index),
           base::NumberToString16(event_list_item_index.total_count_of_events));
-  SetAccessibleName(l10n_util::GetStringFUTF16(
+  GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
       IDS_ASH_CALENDAR_EVENT_ENTRY_ACCESSIBLE_DESCRIPTION,
       event_item_index_in_list_string, base::UTF8ToUTF16(event.summary()),
       start_time_accessible_name, end_time_accessible_name,
@@ -351,7 +351,7 @@ CalendarEventListItemView::CalendarEventListItemView(
             weak_ptr_factory_.GetWeakPtr()),
         l10n_util::GetStringUTF16(IDS_ASH_CALENDAR_JOIN_BUTTON),
         PillButton::Type::kDefaultWithoutIcon);
-    join_button->SetAccessibleName(
+    join_button->GetViewAccessibility().SetName(
         l10n_util::GetStringFUTF16(IDS_ASH_CALENDAR_JOIN_BUTTON_ACCESSIBLE_NAME,
                                    base::UTF8ToUTF16(event.summary())));
     join_button->SetID(kJoinButtonID);

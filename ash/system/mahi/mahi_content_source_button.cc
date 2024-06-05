@@ -68,7 +68,7 @@ void MahiContentSourceButton::RefreshContentSourceInfo() {
 
   // TODO(b/331127382): Determine an appropriate a11y string.
   if (GetViewAccessibility().GetCachedName().empty()) {
-    SetAccessibleName(u"Content source info");
+    GetViewAccessibility().SetName(u"Content source info");
   }
 }
 

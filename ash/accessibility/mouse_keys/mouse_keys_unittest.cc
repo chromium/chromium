@@ -19,6 +19,7 @@
 #include "ui/events/event_utils.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/events/types/event_type.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/widget/widget.h"
@@ -43,7 +44,7 @@ class TestTextInputView : public views::WidgetDelegateView {
   TestTextInputView() : text_field_(new views::Textfield) {
     text_field_->SetTextInputType(ui::TEXT_INPUT_TYPE_TEXT);
     std::string name = "Hello, world";
-    text_field_->SetAccessibleName(base::UTF8ToUTF16(name));
+    text_field_->GetViewAccessibility().SetName(base::UTF8ToUTF16(name));
     AddChildView(text_field_.get());
     SetLayoutManager(std::make_unique<views::FillLayout>());
   }

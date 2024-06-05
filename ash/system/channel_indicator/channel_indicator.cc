@@ -168,7 +168,7 @@ void ChannelIndicatorView::Update() {
   SetTooltip();
 
   DCHECK(channel_indicator_utils::IsDisplayableChannel(channel_));
-  SetAccessibleName(l10n_util::GetStringUTF16(
+  GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
       channel_indicator_utils::GetChannelNameStringResourceID(
           channel_, /*append_channel=*/true)));
 }
@@ -263,13 +263,13 @@ void ChannelIndicatorView::OnAccessibleNameChanged(
   // If icon is showing, set it on the image view.
   if (image_view()) {
     DCHECK(!label());
-    image_view()->SetAccessibleName(new_name);
+    image_view()->GetViewAccessibility().SetName(new_name);
     return;
   }
 
   // Otherwise set it on the label.
   if (label())
-    label()->SetAccessibleName(new_name);
+    label()->GetViewAccessibility().SetName(new_name);
 }
 
 void ChannelIndicatorView::SetTooltip() {

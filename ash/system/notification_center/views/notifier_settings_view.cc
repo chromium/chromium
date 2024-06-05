@@ -50,6 +50,7 @@
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/vector_icons.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/checkbox.h"
@@ -437,7 +438,7 @@ NotifierSettingsView::NotifierButton::NotifierButton(
 
   checkbox->SetChecked(notifier.enabled);
   checkbox->SetFocusBehavior(FocusBehavior::NEVER);
-  checkbox->SetAccessibleName(notifier.name);
+  checkbox->GetViewAccessibility().SetName(notifier.name);
 
   if (notifier.enforced) {
     Button::SetEnabled(false);

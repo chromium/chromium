@@ -182,7 +182,7 @@ void HoverHighlightView::AddViewAndLabel(std::unique_ptr<views::View> view,
 
   AddSubRowContainer();
 
-  SetAccessibleName(text);
+  GetViewAccessibility().SetName(text);
 }
 
 void HoverHighlightView::AddLabelRow(const std::u16string& text) {
@@ -203,7 +203,7 @@ void HoverHighlightView::AddLabelRow(const std::u16string& text) {
 
   AddSubRowContainer();
 
-  SetAccessibleName(text);
+  GetViewAccessibility().SetName(text);
 }
 
 void HoverHighlightView::AddLabelRow(const std::u16string& text,

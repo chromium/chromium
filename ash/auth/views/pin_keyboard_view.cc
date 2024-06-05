@@ -25,6 +25,7 @@
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/layout/table_layout.h"
 #include "ui/views/view.h"
@@ -136,7 +137,8 @@ PinKeyboardView* PinKeyboardView::TestApi::GetView() {
 //----------------------- PinKeyboardView ------------------------
 
 PinKeyboardView::PinKeyboardView() {
-  SetAccessibleName(l10n_util::GetStringUTF16(IDS_ASH_AUTH_PIN_KEYBOARD));
+  GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(IDS_ASH_AUTH_PIN_KEYBOARD));
   // The pin pad is always LTR.
   SetFlipCanvasOnPaintForRTLUI(false);
 

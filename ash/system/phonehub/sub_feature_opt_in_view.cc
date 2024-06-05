@@ -143,9 +143,9 @@ void SubFeatureOptInView::SetStringIds() {
 
 void SubFeatureOptInView::UpdateLabels() {
   text_label_->SetText(l10n_util::GetStringUTF16(description_string_id_));
-  set_up_button_->SetAccessibleName(
+  set_up_button_->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(set_up_button_accessible_name_string_id_));
-  dismiss_button_->SetAccessibleName(
+  dismiss_button_->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(dismiss_button_accessible_name_string_id_));
 }
 
@@ -203,7 +203,7 @@ void SubFeatureOptInView::InitLayout() {
           IDS_ASH_PHONE_HUB_SUB_FEATURE_OPT_IN_DISMISS_BUTTON),
       PillButton::Type::kFloatingWithoutIcon, /*icon=*/nullptr));
   dismiss_button_->SetID(kSubFeatureOptInDismissButton);
-  dismiss_button_->SetAccessibleName(
+  dismiss_button_->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(dismiss_button_accessible_name_string_id_));
   set_up_button_ = button_container->AddChildView(std::make_unique<PillButton>(
       base::BindRepeating(&SubFeatureOptInView::SetUpButtonPressed,
@@ -212,7 +212,7 @@ void SubFeatureOptInView::InitLayout() {
           IDS_ASH_PHONE_HUB_NOTIFICATION_OPT_IN_SET_UP_BUTTON),
       PillButton::Type::kPrimaryWithoutIcon, /*icon=*/nullptr));
   set_up_button_->SetID(kSubFeatureOptInConfirmButton);
-  set_up_button_->SetAccessibleName(
+  set_up_button_->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(set_up_button_accessible_name_string_id_));
 
   // By default, the description will be set to the tooltip text, but the title

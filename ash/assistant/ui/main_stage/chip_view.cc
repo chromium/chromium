@@ -16,6 +16,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
@@ -189,7 +190,7 @@ gfx::ImageSkia ChipView::GetIcon() const {
 
 void ChipView::SetText(const std::u16string& text) {
   text_view_->SetText(text);
-  SetAccessibleName(text);
+  GetViewAccessibility().SetName(text);
 }
 
 const std::u16string& ChipView::GetText() const {

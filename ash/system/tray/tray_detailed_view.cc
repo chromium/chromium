@@ -220,7 +220,7 @@ HoverHighlightView* TrayDetailedView::AddScrollListCheckableItem(
     bool enterprise_managed) {
   HoverHighlightView* item = AddScrollListItem(container, icon, text);
   if (enterprise_managed) {
-    item->SetAccessibleName(l10n_util::GetStringFUTF16(
+    item->GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
         IDS_ASH_ACCESSIBILITY_FEATURE_MANAGED, text));
   }
   TrayPopupUtils::InitializeAsCheckableRow(item, checked, enterprise_managed);

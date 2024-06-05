@@ -37,6 +37,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/theme_provider.h"
 #include "ui/color/color_id.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/box_layout.h"
@@ -179,7 +180,8 @@ void SimpleWebViewDialog::Init() {
   back->SetImageHorizontalAlignment(views::ImageButton::ALIGN_RIGHT);
   back->SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_BACK));
   back->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
-  back->SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_BACK));
+  back->GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(IDS_ACCNAME_BACK));
   back->SetID(VIEW_ID_BACK_BUTTON);
   back_ = back.get();
 
@@ -190,7 +192,8 @@ void SimpleWebViewDialog::Init() {
                                     ui::EF_MIDDLE_MOUSE_BUTTON);
   forward->SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_FORWARD));
   forward->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
-  forward->SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_FORWARD));
+  forward->GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(IDS_ACCNAME_FORWARD));
   forward->SetID(VIEW_ID_FORWARD_BUTTON);
   forward_ = forward.get();
 
@@ -204,7 +207,8 @@ void SimpleWebViewDialog::Init() {
   reload->SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON |
                                    ui::EF_MIDDLE_MOUSE_BUTTON);
   reload->SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_RELOAD));
-  reload->SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_RELOAD));
+  reload->GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(IDS_ACCNAME_RELOAD));
   reload->SetID(VIEW_ID_RELOAD_BUTTON);
   reload_ = reload.get();
 

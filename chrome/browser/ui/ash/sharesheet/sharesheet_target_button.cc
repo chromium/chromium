@@ -22,6 +22,7 @@
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
 
@@ -113,7 +114,7 @@ SharesheetTargetButton::SharesheetTargetButton(
   }
 
   AddChildView(std::move(label_view));
-  SetAccessibleName(accessible_name);
+  GetViewAccessibility().SetName(accessible_name);
 
   if (is_dlp_blocked) {
     SetState(ButtonState::STATE_DISABLED);

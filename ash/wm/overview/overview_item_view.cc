@@ -27,6 +27,7 @@
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/label.h"
@@ -94,7 +95,7 @@ OverviewItemView::OverviewItemView(
 
   views::InkDrop::Get(close_button_)
       ->SetMode(views::InkDropHost::InkDropMode::ON_NO_GESTURE_HANDLER);
-  close_button_->SetAccessibleName(
+  close_button_->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_APP_ACCNAME_CLOSE));
   close_button_->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
 

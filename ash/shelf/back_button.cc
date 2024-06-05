@@ -26,14 +26,16 @@
 namespace ash {
 
 BackButton::BackButton(Shelf* shelf) : ShelfControlButton(shelf, this) {
-  SetAccessibleName(l10n_util::GetStringUTF16(IDS_ASH_SHELF_BACK_BUTTON_TITLE));
+  GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(IDS_ASH_SHELF_BACK_BUTTON_TITLE));
   SetFlipCanvasOnPaintForRTLUI(true);
 }
 
 BackButton::~BackButton() {}
 
 void BackButton::HandleLocaleChange() {
-  SetAccessibleName(l10n_util::GetStringUTF16(IDS_ASH_SHELF_BACK_BUTTON_TITLE));
+  GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(IDS_ASH_SHELF_BACK_BUTTON_TITLE));
   TooltipTextChanged();
 }
 

@@ -35,6 +35,7 @@
 #include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/highlight_border.h"
@@ -238,7 +239,7 @@ LocalAuthenticationRequestView::LocalAuthenticationRequestView(
                                      kCrossSizeDp));
   close_button_->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   close_button_->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
-  close_button_->SetAccessibleName(l10n_util::GetStringUTF16(
+  close_button_->GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
       IDS_ASH_LOGIN_LOCAL_AUTHENTICATION_CLOSE_DIALOG_BUTTON));
   close_button_->SetFocusBehavior(FocusBehavior::ALWAYS);
   close_button_view->AddChildView(close_button_.get());

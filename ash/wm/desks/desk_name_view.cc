@@ -13,6 +13,7 @@
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 namespace ash {
 
@@ -33,7 +34,8 @@ DeskNameView::DeskNameView(DeskMiniView* mini_view)
   set_use_default_focus_manager(mini_view_->owner_bar()->type() ==
                                 DeskBarViewBase::Type::kDeskButton);
 
-  SetAccessibleName(l10n_util::GetStringUTF16(IDS_ASH_DESKS_DESK_NAME));
+  GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(IDS_ASH_DESKS_DESK_NAME));
 }
 
 DeskNameView::~DeskNameView() = default;

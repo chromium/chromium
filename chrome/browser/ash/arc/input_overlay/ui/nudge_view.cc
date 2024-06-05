@@ -20,6 +20,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/label_button.h"
@@ -85,7 +86,7 @@ class ContentView : public views::LabelButton {
       : available_width_(available_width) {
     SetText(
         l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_SETTINGS_NUDGE_ALPHAV2));
-    SetAccessibleName(base::UTF8ToUTF16(GetClassName()));
+    GetViewAccessibility().SetName(base::UTF8ToUTF16(GetClassName()));
     SetBorder(views::CreateEmptyBorder(
         gfx::Insets::VH(kVerticalInset, kHorizontalInset)));
     SetImageModel(

@@ -122,7 +122,7 @@ class ImeListItemView : public views::Button {
           kHollowCheckCircleIcon, button_color_id, kMenuIconSize));
       tri_view->AddView(TriView::Container::END, checked_image);
     }
-    SetAccessibleName(label_view->GetText());
+    GetViewAccessibility().SetName(label_view->GetText());
     GetViewAccessibility().SetRole(ax::mojom::Role::kCheckBox);
     GetViewAccessibility().SetCheckedState(
         selected_ ? ax::mojom::CheckedState::kTrue
@@ -207,7 +207,7 @@ class KeyboardStatusRow : public views::View {
 
     // The on-screen keyboard toggle button.
     auto qs_toggle = std::make_unique<Switch>(std::move(callback));
-    qs_toggle->SetAccessibleName(l10n_util::GetStringUTF16(
+    qs_toggle->GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
         IDS_ASH_STATUS_TRAY_ACCESSIBILITY_VIRTUAL_KEYBOARD));
     qs_toggle->SetIsOn(keyboard::IsKeyboardEnabled());
     qs_toggle_ = qs_toggle.release();

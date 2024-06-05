@@ -29,6 +29,7 @@
 #include "ui/base/ui_base_types.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -57,7 +58,7 @@ void AddMargins(views::View* view) {
 void ConfigurePasswordField(views::Textfield* password_field) {
   const auto password_field_name =
       l10n_util::GetStringUTF16(IDS_ASH_LOGIN_POD_PASSWORD_PLACEHOLDER);
-  password_field->SetAccessibleName(password_field_name);
+  password_field->GetViewAccessibility().SetName(password_field_name);
   password_field->SetReadOnly(false);
   password_field->SetTextInputType(ui::TextInputType::TEXT_INPUT_TYPE_PASSWORD);
   password_field->SetPlaceholderText(password_field_name);

@@ -26,6 +26,7 @@
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -152,7 +153,7 @@ void PickerListItemView::SetPrimaryText(const std::u16string& primary_text) {
                                 cros_tokens::kCrosSysOnSurface));
   label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   label->SetElideBehavior(gfx::ElideBehavior::ELIDE_TAIL);
-  SetAccessibleName(primary_text);
+  GetViewAccessibility().SetName(primary_text);
 }
 
 void PickerListItemView::SetPrimaryImage(
@@ -167,7 +168,7 @@ void PickerListItemView::SetPrimaryImage(
         static_cast<float>(kImageDisplayHeight) / original_size.height()));
   }
   // TODO: b/316936418 - Get accessible name for image contents.
-  SetAccessibleName(u"image contents");
+  GetViewAccessibility().SetName(u"image contents");
 }
 
 void PickerListItemView::SetLeadingIcon(const ui::ImageModel& icon) {

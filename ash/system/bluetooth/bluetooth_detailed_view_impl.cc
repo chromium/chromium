@@ -110,7 +110,7 @@ void BluetoothDetailedViewImpl::UpdateBluetoothEnabledState(
       IDS_ASH_STATUS_TRAY_BLUETOOTH_TOGGLE_TOOLTIP, tooltip_template);
   toggle_row_->SetTooltipText(tooltip_text);
   toggle_button_->SetTooltipText(tooltip_text);
-  toggle_button_->SetAccessibleName(
+  toggle_button_->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_BLUETOOTH));
 
   // Ensure the toggle button is in sync with the current Bluetooth state.

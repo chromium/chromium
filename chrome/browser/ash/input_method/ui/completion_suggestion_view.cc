@@ -16,6 +16,7 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
@@ -165,7 +166,7 @@ void CompletionSuggestionView::SetSuggestionText(
   // focus. We can accomplish this by setting the labelled-by relationship so
   // that it points to `suggestion_label_`. That will cause this view's
   // accessible name to be the same as the label text.
-  SetAccessibleName(suggestion_label_);
+  GetViewAccessibility().SetName(*suggestion_label_);
 }
 
 void CompletionSuggestionView::SetHighlighted(bool highlighted) {

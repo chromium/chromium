@@ -11,6 +11,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/font_list.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/label.h"
 
 namespace ash {
@@ -39,7 +40,7 @@ PickerSymbolItemView::PickerSymbolItemView(
                        .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
                        .SetFontList(kPickerSymbolFont)
                        .Build());
-  SetAccessibleName(symbol_label_);
+  GetViewAccessibility().SetName(*symbol_label_);
 }
 
 PickerSymbolItemView::~PickerSymbolItemView() = default;

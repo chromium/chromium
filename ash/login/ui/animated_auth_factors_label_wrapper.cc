@@ -15,6 +15,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/layer_animator.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/view_class_properties.h"
 
@@ -125,7 +126,7 @@ void AnimatedAuthFactorsLabelWrapper::SetLabelTextAndAccessibleName(
   std::u16string previous_text = current_label_->GetText();
 
   current_label_->SetText(l10n_util::GetStringUTF16(label_id));
-  current_label_->SetAccessibleName(
+  current_label_->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(accessible_name_id));
   SetProperty(views::kMarginsKey,
               gfx::Insets::TLBR(kSpacingBetweenIconsAndLabelDp, 0, 0, 0));

@@ -676,7 +676,7 @@ HoverHighlightView* AccessibilityDetailedView::AddScrollListToggleItem(
               : HoverHighlightView::AccessibilityState::UNCHECKED_CHECKBOX);
   if (enterprise_managed) {
     // Show the enterprise "building" icon on the right.
-    item->SetAccessibleName(l10n_util::GetStringFUTF16(
+    item->GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
         IDS_ASH_ACCESSIBILITY_FEATURE_MANAGED, text));
     ui::ImageModel enterprise_managed_icon = ui::ImageModel::FromVectorIcon(
         kSystemMenuBusinessIcon, kColorAshIconColorPrimary, kMenuIconSize);

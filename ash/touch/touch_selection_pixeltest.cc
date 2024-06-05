@@ -11,6 +11,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/touch_selection/touch_selection_magnifier_aura.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_test_api.h"
 #include "ui/views/view.h"
@@ -61,7 +62,7 @@ TEST_F(TouchSelectionPixelTest, MagnifierOnTextfield) {
   auto widget = CreateContainerWidget();
   auto* textfield = widget->GetContentsView()->AddChildView(
       std::make_unique<views::Textfield>());
-  textfield->SetAccessibleName(u"Textfield");
+  textfield->GetViewAccessibility().SetName(u"Textfield");
   textfield->SetBoundsRect(gfx::Rect(100, 100, 200, 30));
   textfield->SetText(u"Text in a textfield");
   textfield->SetSelectedRange({0, 9});

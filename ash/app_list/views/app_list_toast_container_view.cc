@@ -218,8 +218,9 @@ void AppListToastContainerView::CreateTutorialNudgeView() {
 
   toast_view_ = AddChildView(toast_view_builder.Build());
   toast_view_->GetViewAccessibility().SetRole(ax::mojom::Role::kRegion);
-  toast_view_->toast_button()->SetAccessibleName(l10n_util::GetStringUTF16(
-      IDS_ASH_LAUNCHER_APPS_COLLECTIONS_NUDGE_DISMISS_BUTTON_SPOKEN_TEXT));
+  toast_view_->toast_button()->GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(
+          IDS_ASH_LAUNCHER_APPS_COLLECTIONS_NUDGE_DISMISS_BUTTON_SPOKEN_TEXT));
   if (available_width_) {
     toast_view_->SetAvailableWidth(*available_width_);
   }

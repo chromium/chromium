@@ -38,6 +38,7 @@
 #include "ui/color/color_provider.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/layout/box_layout.h"
@@ -238,7 +239,7 @@ void QsBatteryLabelView::Update() {
     SetText(status_string);
     SetVisible(!status_string.empty());
   }
-  SetAccessibleName(
+  GetViewAccessibility().SetName(
       PowerStatus::Get()->GetAccessibleNameString(/*full_description=*/true));
 }
 

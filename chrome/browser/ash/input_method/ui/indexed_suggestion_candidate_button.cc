@@ -8,6 +8,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_styles.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -37,7 +38,7 @@ IndexedSuggestionCandidateButton::IndexedSuggestionCandidateButton(
     const std::u16string& index_text,
     bool create_legacy_candidate)
     : views::Button(std::move(callback)) {
-  SetAccessibleName(candidate_text);
+  GetViewAccessibility().SetName(candidate_text);
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
       gfx::Insets()

@@ -15,6 +15,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/focus_ring.h"
@@ -171,7 +172,7 @@ const std::u16string& AssistantOnboardingSuggestionView::GetText() const {
 void AssistantOnboardingSuggestionView::InitLayout(
     const assistant::AssistantSuggestion& suggestion) {
   // A11y.
-  SetAccessibleName(base::UTF8ToUTF16(suggestion.text));
+  GetViewAccessibility().SetName(base::UTF8ToUTF16(suggestion.text));
 
   // Background.
   SetBackground(views::CreateRoundedRectBackground(GetBackgroundColor(index_),

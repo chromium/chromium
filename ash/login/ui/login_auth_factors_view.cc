@@ -29,6 +29,7 @@
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
@@ -243,7 +244,7 @@ LoginAuthFactorsView::LoginAuthFactorsView(
           kArrowButtonSizeDp));
   arrow_button_->SetInstallFocusRingOnFocus(true);
   views::InstallCircleHighlightPathGenerator(arrow_button_);
-  arrow_button_->SetAccessibleName(
+  arrow_button_->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_AUTH_FACTOR_LABEL_CLICK_TO_ENTER));
 
   arrow_nudge_animation_ =

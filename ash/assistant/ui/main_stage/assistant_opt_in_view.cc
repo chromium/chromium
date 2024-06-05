@@ -17,6 +17,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
@@ -176,7 +177,7 @@ void AssistantOptInView::UpdateLabel(int consent_status) {
       gfx::Range(offsets.at(1), offsets.at(1) + action.length()),
       CreateStyleInfo(gfx::Font::Weight::BOLD));
 
-  container_->SetAccessibleName(label_text);
+  container_->GetViewAccessibility().SetName(label_text);
 
   // After updating the |label_| we need to ensure that it is remeasured and
   // repainted to address a timing bug in which the AssistantOptInView was

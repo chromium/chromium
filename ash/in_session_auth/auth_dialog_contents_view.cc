@@ -195,17 +195,17 @@ class AuthDialogContentsView::FingerprintView : public views::View {
     if (state_ == FingerprintState::DISABLED_FROM_ATTEMPTS) {
       label_->SetText(l10n_util::GetStringUTF16(
           IDS_ASH_IN_SESSION_AUTH_FINGERPRINT_DISABLED_FROM_ATTEMPTS));
-      label_->SetAccessibleName(l10n_util::GetStringUTF16(
+      label_->GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
           IDS_ASH_IN_SESSION_AUTH_FINGERPRINT_ACCESSIBLE_DISABLED_FROM_ATTEMPTS));
     } else if (success) {
       label_->SetText(l10n_util::GetStringUTF16(
           IDS_ASH_IN_SESSION_AUTH_FINGERPRINT_SUCCESS));
-      label_->SetAccessibleName(l10n_util::GetStringUTF16(
+      label_->GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
           IDS_ASH_IN_SESSION_AUTH_FINGERPRINT_ACCESSIBLE_SUCCESS));
     } else {
       label_->SetText(l10n_util::GetStringUTF16(
           IDS_ASH_IN_SESSION_AUTH_FINGERPRINT_FAILED));
-      label_->SetAccessibleName(l10n_util::GetStringUTF16(
+      label_->GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
           IDS_ASH_IN_SESSION_AUTH_FINGERPRINT_ACCESSIBLE_FAILED));
     }
 
@@ -256,7 +256,7 @@ class AuthDialogContentsView::FingerprintView : public views::View {
       std::u16string fingerprint_text =
           l10n_util::GetStringUTF16(GetTextIdFromState());
       label_->SetText(fingerprint_text);
-      label_->SetAccessibleName(
+      label_->GetViewAccessibility().SetName(
           state_ == FingerprintState::DISABLED_FROM_ATTEMPTS
               ? l10n_util::GetStringUTF16(
                     IDS_ASH_IN_SESSION_AUTH_FINGERPRINT_ACCESSIBLE_DISABLED_FROM_ATTEMPTS)
@@ -354,14 +354,14 @@ class AuthDialogContentsView::TitleLabel : public views::Label {
     SetText(title);
     SetEnabledColorId(kColorAshTextColorPrimary);
     is_showing_error_ = false;
-    SetAccessibleName(title);
+    GetViewAccessibility().SetName(title);
   }
 
   void ShowError(const std::u16string& error_text) {
     SetText(error_text);
     SetEnabledColorId(kColorAshTextColorAlert);
     is_showing_error_ = true;
-    SetAccessibleName(error_text);
+    GetViewAccessibility().SetName(error_text);
     NotifyAccessibilityEvent(ax::mojom::Event::kAlert,
                              true /*send_native_event*/);
   }

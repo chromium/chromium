@@ -352,7 +352,8 @@ class FilterMenuAdapter : public views::MenuModelAdapter {
         menu, model->GetCommandIdAt(model_index), view_delegate_);
     menu_item_view->SetTitle(model->GetLabelAt(model_index));
     menu_item_view->SetIcon(model->GetIconAt(model_index));
-    menu_item_view->SetAccessibleName(model->GetAccessibleNameAt(model_index));
+    menu_item_view->GetViewAccessibility().SetName(
+        model->GetAccessibleNameAt(model_index));
 
     const ui::ElementIdentifier element_id =
         model->GetElementIdentifierAt(model_index);
@@ -536,7 +537,7 @@ SearchBoxView::SearchBoxView(SearchBoxViewDelegate* delegate,
     filter_button->SetFlipCanvasOnPaintForRTLUI(false);
     std::u16string filter_button_label(
         l10n_util::GetStringUTF16(IDS_ASH_SEARCH_BOX_FILTER_BUTTON_TOOLTIP));
-    filter_button->SetAccessibleName(
+    filter_button->GetViewAccessibility().SetName(
         l10n_util::GetStringUTF16(IDS_ASH_SEARCH_CATEGORY_FILTER_MENU_TITLE));
     filter_button->SetTooltipText(filter_button_label);
   }
@@ -545,7 +546,7 @@ SearchBoxView::SearchBoxView(SearchBoxViewDelegate* delegate,
       &SearchBoxView::CloseButtonPressed, base::Unretained(this)));
   std::u16string close_button_label(
       l10n_util::GetStringUTF16(IDS_APP_LIST_CLEAR_SEARCHBOX));
-  close_button->SetAccessibleName(close_button_label);
+  close_button->GetViewAccessibility().SetName(close_button_label);
   close_button->SetTooltipText(close_button_label);
 
   views::ImageButton* assistant_button =
@@ -554,7 +555,7 @@ SearchBoxView::SearchBoxView(SearchBoxViewDelegate* delegate,
   assistant_button->SetFlipCanvasOnPaintForRTLUI(false);
   std::u16string assistant_button_label(
       l10n_util::GetStringUTF16(IDS_APP_LIST_START_ASSISTANT));
-  assistant_button->SetAccessibleName(assistant_button_label);
+  assistant_button->GetViewAccessibility().SetName(assistant_button_label);
   assistant_button->SetTooltipText(assistant_button_label);
   SetShowAssistantButton(search_box_model->show_assistant_button());
 }
@@ -1277,7 +1278,7 @@ void SearchBoxView::UpdatePlaceholderTextAndAccessibleName() {
           IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_TEMPLATE,
           l10n_util::GetStringUTF16(
               IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_SHORTCUTS)));
-      search_box()->SetAccessibleName(l10n_util::GetStringFUTF16(
+      search_box()->GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
           a11y_name_template,
           l10n_util::GetStringUTF16(
               IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_SHORTCUTS)));
@@ -1286,7 +1287,7 @@ void SearchBoxView::UpdatePlaceholderTextAndAccessibleName() {
       search_box()->SetPlaceholderText(l10n_util::GetStringFUTF16(
           IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_TEMPLATE,
           l10n_util::GetStringUTF16(IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_TABS)));
-      search_box()->SetAccessibleName(l10n_util::GetStringFUTF16(
+      search_box()->GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
           a11y_name_template,
           l10n_util::GetStringUTF16(IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_TABS)));
       break;
@@ -1295,7 +1296,7 @@ void SearchBoxView::UpdatePlaceholderTextAndAccessibleName() {
           IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_TEMPLATE,
           l10n_util::GetStringUTF16(
               IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_SETTINGS)));
-      search_box()->SetAccessibleName(l10n_util::GetStringFUTF16(
+      search_box()->GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
           a11y_name_template,
           l10n_util::GetStringUTF16(
               IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_SETTINGS)));
@@ -1305,7 +1306,7 @@ void SearchBoxView::UpdatePlaceholderTextAndAccessibleName() {
           IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_TEMPLATE,
           l10n_util::GetStringUTF16(
               IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_GAMES)));
-      search_box()->SetAccessibleName(l10n_util::GetStringFUTF16(
+      search_box()->GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
           a11y_name_template, l10n_util::GetStringUTF16(
                                   IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_GAMES)));
       break;
@@ -1314,7 +1315,7 @@ void SearchBoxView::UpdatePlaceholderTextAndAccessibleName() {
           IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_TEMPLATE,
           l10n_util::GetStringUTF16(
               IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_IMAGES)));
-      search_box()->SetAccessibleName(l10n_util::GetStringFUTF16(
+      search_box()->GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
           a11y_name_template, l10n_util::GetStringUTF16(
                                   IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_IMAGES)));
       break;

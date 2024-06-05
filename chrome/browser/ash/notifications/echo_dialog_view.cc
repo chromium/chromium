@@ -13,6 +13,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/font.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/label.h"
@@ -39,7 +40,7 @@ EchoDialogView::EchoDialogView(EchoDialogListener* listener,
           base::BindRepeating(&EchoDialogListener::OnMoreInfoLinkClicked,
                               base::Unretained(listener)),
           vector_icons::kHelpOutlineIcon));
-  learn_more_button->SetAccessibleName(
+  learn_more_button->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_CHROMEOS_ACC_LEARN_MORE));
 
   if (params.echo_enabled) {

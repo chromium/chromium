@@ -27,6 +27,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/event.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/focus/focus_manager.h"
@@ -82,7 +83,7 @@ views::View* AddTextfield(views::Widget* widget) {
   result->SetSize(gfx::Size(20, 10));
   // Focusable views need an accessible name to pass the accessibility paint
   // checks.
-  result->SetAccessibleName(u"Name");
+  result->GetViewAccessibility().SetName(u"Name");
 
   return result;
 }

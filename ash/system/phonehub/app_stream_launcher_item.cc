@@ -17,6 +17,7 @@
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/text_constants.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
@@ -105,14 +106,14 @@ AppStreamLauncherItem::AppStreamLauncherItem(
   }
   recent_app_button_ = AddChildView(std::make_unique<PhoneHubRecentAppButton>(
       image, app_metadata.visible_app_name, callback));
-  recent_app_button_->SetAccessibleName(accessible_name);
+  recent_app_button_->GetViewAccessibility().SetName(accessible_name);
   recent_app_button_->SetTooltipText(accessible_name);
   recent_app_button_->SetEnabled(enabled);
 
   label_ = AddChildView(std::make_unique<AppNameLabel>(
       std::move(callback), app_metadata.visible_app_name));
   label_->SetEnabled(enabled);
-  label_->SetAccessibleName(accessible_name);
+  label_->GetViewAccessibility().SetName(accessible_name);
   label_->SetTooltipText(accessible_name);
 }
 

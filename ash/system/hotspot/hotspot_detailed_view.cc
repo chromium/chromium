@@ -141,11 +141,11 @@ void HotspotDetailedView::CreateContainer() {
   entry_row_->text_label()->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton1,
                                         *entry_row_->text_label());
-  entry_row_->SetAccessibleName(text_label);
+  entry_row_->GetViewAccessibility().SetName(text_label);
 
   auto toggle = std::make_unique<Switch>(base::BindRepeating(
       &HotspotDetailedView::OnToggleClicked, weak_factory_.GetWeakPtr()));
-  toggle->SetAccessibleName(l10n_util::GetStringUTF16(
+  toggle->GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
       IDS_ASH_HOTSPOT_DETAILED_VIEW_TOGGLE_A11Y_TEXT));
   toggle->SetID(static_cast<int>(HotspotDetailedViewChildId::kToggle));
   toggle_ = toggle.get();
@@ -283,7 +283,7 @@ void HotspotDetailedView::UpdateExtraIcon(
           : IDS_ASH_HOTSPOT_DETAILED_VIEW_INFO_TOOLTIP_MOBILE_DATA_NOT_SUPPORTED);
   extra_icon_->SetFocusBehavior(FocusBehavior::ALWAYS);
   extra_icon_->SetTooltipText(tooltip);
-  extra_icon_->SetAccessibleName(tooltip);
+  extra_icon_->GetViewAccessibility().SetName(tooltip);
 }
 
 BEGIN_METADATA(HotspotDetailedView)

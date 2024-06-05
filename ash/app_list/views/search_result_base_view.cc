@@ -159,7 +159,7 @@ void SearchResultBaseView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 }
 
 void SearchResultBaseView::UpdateAccessibleName() {
-  SetAccessibleName(ComputeAccessibleName());
+  GetViewAccessibility().SetName(ComputeAccessibleName());
 }
 
 void SearchResultBaseView::ClearResult() {

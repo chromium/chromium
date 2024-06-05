@@ -1505,7 +1505,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest,
 
   views::View* view = new views::View();
   view->GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
-  view->SetAccessibleName(u"hello");
+  view->GetViewAccessibility().SetName(u"hello");
   view->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   widget->GetRootView()->AddChildView(view);
 
@@ -1584,7 +1584,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, TouchExploreSecondaryDisplay) {
 
   views::View* view = new views::View();
   view->GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
-  view->SetAccessibleName(u"hello");
+  view->GetViewAccessibility().SetName(u"hello");
   view->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   widget->GetRootView()->AddChildView(view);
 

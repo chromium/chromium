@@ -23,6 +23,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -110,7 +111,7 @@ ReturnToAppButtonBase::ReturnToAppButtonBase(
   label->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
 
   label_ = AddChildView(std::move(label));
-  SetAccessibleName(GetPeripheralsAccessibleName() + display_text);
+  GetViewAccessibility().SetName(GetPeripheralsAccessibleName() + display_text);
 }
 
 ReturnToAppButtonBase::~ReturnToAppButtonBase() = default;

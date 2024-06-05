@@ -12,6 +12,7 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
 
@@ -44,7 +45,7 @@ PickerEmoticonItemView::PickerEmoticonItemView(
           .SetFontList(kPickerEmoticonFont)
           .SetBorder(views::CreateEmptyBorder(kPickerEmoticonItemMargins))
           .Build());
-  SetAccessibleName(emoticon_label_);
+  GetViewAccessibility().SetName(*emoticon_label_);
 }
 
 PickerEmoticonItemView::~PickerEmoticonItemView() = default;

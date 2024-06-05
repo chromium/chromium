@@ -15,6 +15,7 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/progress_bar.h"
@@ -137,7 +138,7 @@ FocusModeCountdownView::FocusModeCountdownView(bool include_end_button)
         l10n_util::GetStringUTF16(
             IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_END_BUTTON_LABEL),
         PillButton::Type::kPrimaryWithoutIcon, /*icon=*/nullptr));
-    end_button_->SetAccessibleName(l10n_util::GetStringUTF16(
+    end_button_->GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
         IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_END_BUTTON_ACCESSIBLE_NAME));
   }
 
@@ -150,8 +151,9 @@ FocusModeCountdownView::FocusModeCountdownView(bool include_end_button)
           include_end_button_ ? PillButton::Type::kSecondaryWithoutIcon
                               : PillButton::Type::kSecondaryLargeWithoutIcon,
           /*icon=*/nullptr));
-  extend_session_duration_button_->SetAccessibleName(l10n_util::GetStringUTF16(
-      IDS_ASH_STATUS_TRAY_FOCUS_MODE_INCREASE_TEN_MINUTES_BUTTON_ACCESSIBLE_NAME));
+  extend_session_duration_button_->GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(
+          IDS_ASH_STATUS_TRAY_FOCUS_MODE_INCREASE_TEN_MINUTES_BUTTON_ACCESSIBLE_NAME));
   views::InkDrop::Get(extend_session_duration_button_)
       ->SetMode(views::InkDropHost::InkDropMode::OFF);
 }

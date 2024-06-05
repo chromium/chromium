@@ -16,6 +16,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/image/image_skia_operations.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
@@ -228,7 +229,7 @@ void DeskActionContextMenu::ShowContextMenuForViewImpl(
        model_index++) {
     if (auto a11y_name = context_menu_model_.GetAccessibleNameAt(model_index);
         !a11y_name.empty()) {
-      item_views[view_index++]->SetAccessibleName(a11y_name);
+      item_views[view_index++]->GetViewAccessibility().SetName(a11y_name);
     }
   }
 }

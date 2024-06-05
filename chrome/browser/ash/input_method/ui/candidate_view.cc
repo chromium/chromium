@@ -185,7 +185,7 @@ void CandidateView::SetEntry(const ui::CandidateWindow::Entry& entry) {
   shortcut_label_->SetText(label);
   candidate_label_->SetText(entry.value);
   annotation_label_->SetText(entry.annotation);
-  SetAccessibleName(entry.value);
+  GetViewAccessibility().SetName(entry.value);
 }
 
 void CandidateView::SetInfolistIcon(bool enable) {

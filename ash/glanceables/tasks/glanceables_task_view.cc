@@ -129,7 +129,7 @@ class TaskViewTextField : public SystemTextfield,
       : SystemTextfield(Type::kMedium),
         SystemTextfieldController(/*textfield=*/this),
         on_finished_editing_(std::move(on_finished_editing)) {
-    SetAccessibleName(
+    GetViewAccessibility().SetName(
         l10n_util::GetStringUTF16(IDS_GLANCEABLES_TASKS_TEXTFIELD_PLACEHOLDER));
     SetBackgroundColor(SK_ColorTRANSPARENT);
     SetController(this);

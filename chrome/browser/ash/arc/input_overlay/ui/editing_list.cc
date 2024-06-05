@@ -186,7 +186,7 @@ class EditingList::AddContainerButton : public views::Button {
     title_->SetText(l10n_util::GetStringUTF16(
         is_zero_state ? IDS_INPUT_OVERLAY_EDITING_LIST_FIRST_CONTROL_LABEL
                       : IDS_INPUT_OVERLAY_EDITING_LIST_NEW_CONTROL_LABEL));
-    SetAccessibleName(title_->GetText());
+    GetViewAccessibility().SetName(title_->GetText());
   }
 
   void UpdateAddButtonState(size_t current_controls_size) {
@@ -347,7 +347,7 @@ void EditingList::AddHeader() {
           l10n_util::GetStringUTF16(
               IDS_INPUT_OVERLAY_EDITING_DONE_BUTTON_LABEL),
           ash::PillButton::Type::kSecondaryWithoutIcon));
-  done_button_->SetAccessibleName(l10n_util::GetStringUTF16(
+  done_button_->GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
       IDS_INPUT_OVERLAY_EDITING_LIST_DONE_BUTTON_A11Y_LABEL));
 }
 

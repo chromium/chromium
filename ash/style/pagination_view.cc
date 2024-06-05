@@ -20,6 +20,7 @@
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/scroll_view.h"
@@ -78,7 +79,7 @@ class IndicatorButton : public views::Button {
                   const std::u16string& accessible_name)
       : views::Button(std::move(callback)) {
     SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
-    SetAccessibleName(accessible_name);
+    GetViewAccessibility().SetName(accessible_name);
   }
 
   IndicatorButton(const IndicatorButton&) = delete;

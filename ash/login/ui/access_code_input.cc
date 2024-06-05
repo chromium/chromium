@@ -146,7 +146,7 @@ void FlexCodeInput::RequestFocus() {
 }
 
 void FlexCodeInput::SetAccessibleNameOnTextfield(const std::u16string& name) {
-  code_field_->SetAccessibleName(name);
+  code_field_->GetViewAccessibility().SetName(name);
 }
 
 void FlexCodeInput::ContentsChanged(views::Textfield* sender,

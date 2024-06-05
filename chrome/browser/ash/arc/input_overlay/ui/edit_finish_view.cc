@@ -22,6 +22,7 @@
 #include "ui/color/color_id.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
@@ -114,7 +115,7 @@ class EditFinishView::ChildButton : public views::LabelButton {
     label()->SetFontList(gfx::FontList({kFontStyle}, gfx::Font::NORMAL,
                                        kFontSize, gfx::Font::Weight::MEDIUM));
     SetEnabledTextColors(text_color);
-    SetAccessibleName(l10n_util::GetStringUTF16(text_source_id));
+    GetViewAccessibility().SetName(l10n_util::GetStringUTF16(text_source_id));
     SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(0, kButtonSideInset)));
     SetHorizontalAlignment(gfx::ALIGN_CENTER);
     SetMinSize(gfx::Size(

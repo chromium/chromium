@@ -1242,7 +1242,7 @@ void AppListItemView::SetItemName(const std::u16string& display_name,
   }
 
   // Use full name for accessibility.
-  SetAccessibleName(
+  GetViewAccessibility().SetName(
       is_folder_ ? l10n_util::GetStringFUTF16(
                        IDS_APP_LIST_FOLDER_BUTTON_ACCESSIBILE_NAME,
                        full_name.empty() ? folder_name_placeholder : full_name)
@@ -1251,7 +1251,7 @@ void AppListItemView::SetItemName(const std::u16string& display_name,
 }
 
 void AppListItemView::SetItemAccessibleName(const std::u16string& name) {
-  SetAccessibleName(name);
+  GetViewAccessibility().SetName(name);
 }
 
 void AppListItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {

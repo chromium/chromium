@@ -21,6 +21,7 @@
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -228,7 +229,7 @@ UnifiedMediaControlsView::UnifiedMediaControlsView(
   // played. That seems like the wrong string to use upon creation if nothing
   // is playing. Therefore setting the name to a string which lacks the "now
   // playing" information.
-  SetAccessibleName(l10n_util::GetStringUTF16(
+  GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
       IDS_ASH_QUICK_SETTINGS_BUBBLE_MEDIA_CONTROLS_SUB_MENU_ACCESSIBLE_DESCRIPTION));
 }
 
@@ -267,7 +268,7 @@ void UnifiedMediaControlsView::SetTitle(const std::u16string& title) {
     return;
 
   title_label_->SetText(title);
-  SetAccessibleName(l10n_util::GetStringFUTF16(
+  GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
       IDS_ASH_QUICK_SETTINGS_BUBBLE_MEDIA_CONTROLS_ACCESSIBLE_DESCRIPTION,
       title));
 }

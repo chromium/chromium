@@ -36,6 +36,7 @@
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -154,7 +155,7 @@ PhoneHubRecentAppsView::HeaderView::HeaderView(
     views::FocusRing::Get(error_button_)
         ->SetColorId(static_cast<ui::ColorId>(cros_tokens::kCrosSysFocusRing));
     views::InstallCircleHighlightPathGenerator(error_button_);
-    error_button_->SetAccessibleName(l10n_util::GetStringUTF16(
+    error_button_->GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
         IDS_ASH_ECHE_APP_STREMING_ERROR_DIALOG_TITLE));
     error_button_->SetVisible(false);
   }

@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 
 namespace ash {
@@ -32,7 +33,7 @@ PickerImageItemView::PickerImageItemView(
   image_view_->SetCanProcessEventsWithinSubtree(false);
 
   // TODO: b/316936418 - Get accessible name for image contents.
-  SetAccessibleName(u"image contents");
+  GetViewAccessibility().SetName(u"image contents");
 }
 
 PickerImageItemView::~PickerImageItemView() = default;

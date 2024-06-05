@@ -33,6 +33,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
@@ -155,7 +156,8 @@ void InSessionAuthDialogContentsView::AddCloseButton() {
           views::kIcCloseIcon);
 
   close_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_APP_CLOSE));
-  close_button->SetAccessibleName(l10n_util::GetStringUTF16(IDS_APP_CLOSE));
+  close_button->GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(IDS_APP_CLOSE));
   close_button->SizeToPreferredSize();
   close_button->SetVisible(true);
   close_button->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
@@ -197,7 +199,7 @@ void InSessionAuthDialogContentsView::AddTitle() {
       l10n_util::GetStringUTF16(IDS_ASH_IN_SESSION_AUTH_TITLE);
   title_->SetText(title_text);
   title_->SetEnabledColorId(kColorAshTextColorPrimary);
-  title_->SetAccessibleName(title_text);
+  title_->GetViewAccessibility().SetName(title_text);
 }
 
 void InSessionAuthDialogContentsView::AddPrompt(const std::string& prompt) {

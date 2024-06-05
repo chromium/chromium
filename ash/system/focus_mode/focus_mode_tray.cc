@@ -116,7 +116,7 @@ class FocusModeTray::TaskItemView : public views::BoxLayoutView {
                                            ? cros_tokens::kCrosSysPrimary
                                            : cros_tokens::kCrosSysDisabled,
                                        kIconSize));
-    radio_button_->SetAccessibleName(l10n_util::GetStringFUTF16(
+    radio_button_->GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
         IDS_ASH_STATUS_TRAY_FOCUS_MODE_TRAY_RADIO_BUTTON, title));
     radio_button_->SetTooltipText(
         radio_button_->GetViewAccessibility().GetCachedName());

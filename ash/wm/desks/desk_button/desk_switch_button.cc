@@ -158,7 +158,7 @@ void DeskSwitchButton::UpdateLocaleSpecificSettings() {
     const Desk* target_desk = desk_controller->GetDeskAtIndex(target_index);
     const int id = type_ == Type::kPrev ? IDS_SHELF_PREVIOUS_DESK_BUTTON_TITLE
                                         : IDS_SHELF_NEXT_DESK_BUTTON_TITLE;
-    SetAccessibleName(l10n_util::GetStringFUTF16(
+    GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
         id, target_desk->name(), base::NumberToString16(target_index + 1),
         base::NumberToString16(desk_count)));
   }

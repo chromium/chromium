@@ -42,6 +42,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_constants.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/image_view.h"
@@ -333,9 +334,10 @@ void TimeView::UpdateTextInternal(const base::Time& now) {
     return;
   }
   const std::u16string friendly_format_date = base::TimeFormatFriendlyDate(now);
-  SetAccessibleName(base::TimeFormatTimeOfDayWithHourClockType(
-                        now, model_->hour_clock_type(), base::kKeepAmPm) +
-                    u", " + friendly_format_date);
+  GetViewAccessibility().SetName(
+      base::TimeFormatTimeOfDayWithHourClockType(now, model_->hour_clock_type(),
+                                                 base::kKeepAmPm) +
+      u", " + friendly_format_date);
 
   switch (type_) {
     case kTime: {

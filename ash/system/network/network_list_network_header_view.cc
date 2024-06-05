@@ -39,7 +39,7 @@ NetworkListNetworkHeaderView::NetworkListNetworkHeaderView(
   auto toggle = std::make_unique<Switch>(
       base::BindRepeating(&NetworkListNetworkHeaderView::ToggleButtonPressed,
                           weak_factory_.GetWeakPtr()));
-  toggle->SetAccessibleName(l10n_util::GetStringUTF16(label_id));
+  toggle->GetViewAccessibility().SetName(l10n_util::GetStringUTF16(label_id));
   toggle->SetID(kToggleButtonId);
   toggle_ = toggle.get();
   auto image_view = std::make_unique<views::ImageView>();
@@ -49,7 +49,7 @@ NetworkListNetworkHeaderView::NetworkListNetworkHeaderView(
                                l10n_util::GetStringUTF16(label_id));
   // The tooltip provides a better accessibility label than the default
   // provided by AddViewAndLabel() above.
-  entry_row()->SetAccessibleName(u"");
+  entry_row()->GetViewAccessibility().SetName(u"");
   entry_row()->text_label()->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
   ash::TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosButton1,
                                              *entry_row()->text_label());

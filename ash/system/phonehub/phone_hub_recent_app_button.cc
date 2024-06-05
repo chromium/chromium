@@ -11,6 +11,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/image/image_skia_operations.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
@@ -39,7 +40,7 @@ PhoneHubRecentAppButton::PhoneHubRecentAppButton(
   SetImageVerticalAlignment(ALIGN_MIDDLE);
   StyleUtil::SetUpInkDropForButton(this);
   views::InstallCircleHighlightPathGenerator(this);
-  SetAccessibleName(visible_app_name);
+  GetViewAccessibility().SetName(visible_app_name);
   SetTooltipText(visible_app_name);
   views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
 }

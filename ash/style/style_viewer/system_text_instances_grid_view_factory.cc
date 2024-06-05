@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/style/style_viewer/system_ui_components_grid_view_factories.h"
-
 #include "ash/style/style_viewer/system_ui_components_grid_view.h"
+#include "ash/style/style_viewer/system_ui_components_grid_view_factories.h"
 #include "ash/style/system_textfield.h"
 #include "ash/style/system_textfield_controller.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 namespace ash {
 
@@ -53,25 +53,25 @@ CreateSystemTextfieldInstancesGridView() {
   // Small size textfield.
   auto textfield_small =
       std::make_unique<SystemTextfield>(SystemTextfield::Type::kSmall);
-  textfield_small->SetAccessibleName(u"Small Text");
+  textfield_small->GetViewAccessibility().SetName(u"Small Text");
   textfield_small->SetPlaceholderText(u"Small Text");
 
   // Medium size textfield.
   auto textfield_medium =
       std::make_unique<SystemTextfield>(SystemTextfield::Type::kMedium);
-  textfield_medium->SetAccessibleName(u"Medium Text");
+  textfield_medium->GetViewAccessibility().SetName(u"Medium Text");
   textfield_medium->SetPlaceholderText(u"Medium Text");
 
   // Large size textfield.
   auto textfield_large =
       std::make_unique<SystemTextfield>(SystemTextfield::Type::kLarge);
-  textfield_large->SetAccessibleName(u"Large Text");
+  textfield_large->GetViewAccessibility().SetName(u"Large Text");
   textfield_large->SetPlaceholderText(u"Large Text");
 
   // Disabled textfield.
   auto textfield_disabled =
       std::make_unique<SystemTextfield>(SystemTextfield::Type::kMedium);
-  textfield_disabled->SetAccessibleName(u"Disabled Text");
+  textfield_disabled->GetViewAccessibility().SetName(u"Disabled Text");
   textfield_disabled->SetPlaceholderText(u"Disable Text");
   textfield_disabled->SetEnabled(false);
 

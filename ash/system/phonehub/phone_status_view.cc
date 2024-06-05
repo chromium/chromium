@@ -33,6 +33,7 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_elider.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -245,7 +246,7 @@ void PhoneStatusView::UpdateBatteryStatus() {
   SetBatteryTooltipText();
   battery_label_->SetText(
       base::FormatPercent(phone_status.battery_percentage()));
-  battery_label_->SetAccessibleName(l10n_util::GetStringFUTF16(
+  battery_label_->GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
       IDS_ASH_PHONE_HUB_BATTERY_PERCENTAGE_ACCESSIBLE_TEXT,
       base::NumberToString16(phone_status.battery_percentage())));
 }

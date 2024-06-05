@@ -561,8 +561,9 @@ void GlanceablesClassroomStudentView::OnGetAssignments(
   list_footer_view_->SetVisible(!is_list_empty && !force_hide_footer_view_);
   list_footer_view_->SetProperty(views::kMarginsKey, kFooterMargins);
 
-  list_container_view_->SetAccessibleName(l10n_util::GetStringFUTF16(
-      IDS_GLANCEABLES_CLASSROOM_SELECTED_LIST_ACCESSIBLE_NAME, list_name));
+  list_container_view_->GetViewAccessibility().SetName(
+      l10n_util::GetStringFUTF16(
+          IDS_GLANCEABLES_CLASSROOM_SELECTED_LIST_ACCESSIBLE_NAME, list_name));
   list_container_view_->GetViewAccessibility().SetDescription(
       *list_footer_view_->items_count_label());
   list_container_view_->NotifyAccessibilityEvent(

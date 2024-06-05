@@ -48,6 +48,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
@@ -133,9 +134,11 @@ views::ImageView* GetPolicyIndicatorIcon() {
   policy_indicator_icon->SetImage(ui::ImageModel::FromVectorIcon(
       kSystemMenuBusinessIcon,
       static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)));
-  policy_indicator_icon->SetAccessibleName(l10n_util::GetStringFUTF16(
-      IDS_ASH_ACCESSIBILITY_FEATURE_MANAGED,
-      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_VPN_BUILT_IN_PROVIDER)));
+  policy_indicator_icon->GetViewAccessibility().SetName(
+      l10n_util::GetStringFUTF16(
+          IDS_ASH_ACCESSIBILITY_FEATURE_MANAGED,
+          l10n_util::GetStringUTF16(
+              IDS_ASH_STATUS_TRAY_VPN_BUILT_IN_PROVIDER)));
   return policy_indicator_icon;
 }
 
@@ -216,7 +219,7 @@ class VPNListProviderEntry : public views::Button {
 
     // The tooltip says "Add connection" which is fine for users who can see the
     // label with the provider name, but ChromeVox users need to hear the name.
-    add_vpn_button->SetAccessibleName(l10n_util::GetStringFUTF16(
+    add_vpn_button->GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
         IDS_ASH_STATUS_TRAY_ADD_VPN_CONNECTION_WITH, base::UTF8ToUTF16(name)));
 
     // Update enabled state for the whole row and the button.
@@ -324,8 +327,9 @@ void VPNListNetworkEntry::UpdateFromNetworkState(
                               base::Unretained(NetworkConnect::Get()), guid_),
           l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_VPN_DISCONNECT),
           PillButton::kPrimaryWithoutIcon);
-      disconnect_button->SetAccessibleName(l10n_util::GetStringFUTF16(
-          IDS_ASH_STATUS_TRAY_NETWORK_DISCONNECT_BUTTON_A11Y_LABEL, label));
+      disconnect_button->GetViewAccessibility().SetName(
+          l10n_util::GetStringFUTF16(
+              IDS_ASH_STATUS_TRAY_NETWORK_DISCONNECT_BUTTON_A11Y_LABEL, label));
       AddRightView(disconnect_button.release());
     }
     tri_view()->SetContainerBorder(
@@ -333,20 +337,20 @@ void VPNListNetworkEntry::UpdateFromNetworkState(
         views::CreateEmptyBorder(gfx::Insets::TLBR(
             0, kTrayPopupButtonEndMargin - kTrayPopupLabelHorizontalPadding, 0,
             kTrayPopupButtonEndMargin)));
-    SetAccessibleName(l10n_util::GetStringFUTF16(
+    GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
         IDS_ASH_STATUS_TRAY_NETWORK_A11Y_LABEL_OPEN_WITH_CONNECTION_STATUS,
         label,
         l10n_util::GetStringUTF16(
             IDS_ASH_STATUS_TRAY_NETWORK_STATUS_CONNECTED)));
   } else if (vpn->connection_state == ConnectionStateType::kConnecting) {
-    SetAccessibleName(l10n_util::GetStringFUTF16(
+    GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
         IDS_ASH_STATUS_TRAY_NETWORK_A11Y_LABEL_OPEN_WITH_CONNECTION_STATUS,
         label,
         l10n_util::GetStringUTF16(
             IDS_ASH_STATUS_TRAY_NETWORK_STATUS_CONNECTING)));
     SetupConnectingScrollListItem(this);
   } else {
-    SetAccessibleName(l10n_util::GetStringFUTF16(
+    GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
         IDS_ASH_STATUS_TRAY_NETWORK_A11Y_LABEL_CONNECT, label));
   }
 

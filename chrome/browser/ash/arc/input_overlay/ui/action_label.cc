@@ -26,6 +26,7 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/view_utils.h"
@@ -306,7 +307,7 @@ ActionLabel::~ActionLabel() = default;
 
 void ActionLabel::SetTextActionLabel(const std::u16string& text) {
   label()->SetText(text);
-  SetAccessibleName(CalculateAccessibleName());
+  GetViewAccessibility().SetName(CalculateAccessibleName());
 
   if (!IsBeta()) {
     return;
@@ -321,7 +322,7 @@ void ActionLabel::SetTextActionLabel(const std::u16string& text) {
 
 void ActionLabel::SetImageActionLabel(MouseAction mouse_action) {
   set_mouse_action(mouse_action);
-  SetAccessibleName(CalculateAccessibleName());
+  GetViewAccessibility().SetName(CalculateAccessibleName());
 }
 
 void ActionLabel::SetDisplayMode(DisplayMode mode) {

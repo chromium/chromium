@@ -368,7 +368,7 @@ void CalendarEventListView::UpdateListItems() {
   if (!calendar_view_controller_->selected_date().has_value()) {
     return;
   }
-  empty_button->SetAccessibleName(l10n_util::GetStringFUTF16(
+  empty_button->GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
       IDS_ASH_CALENDAR_NO_EVENT_BUTTON_ACCESSIBLE_DESCRIPTION,
       calendar_utils::GetMonthNameAndDayOfMonth(
           calendar_view_controller_->selected_date().value())));

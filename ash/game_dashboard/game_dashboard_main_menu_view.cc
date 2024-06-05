@@ -393,7 +393,7 @@ class ScreenSizeRow : public views::Button {
     const std::u16string title = l10n_util::GetStringUTF16(
         IDS_ASH_GAME_DASHBOARD_SCREEN_SIZE_SETTINGS_TITLE);
     SetTooltipText(tooltip ? l10n_util::GetStringUTF16(tooltip) : title);
-    SetAccessibleName(l10n_util::GetStringUTF16(
+    GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
         IDS_ASH_GAME_DASHBOARD_SCREEN_SIZE_SETTINGS_BUTTON_A11Y_LABEL));
 
     auto* layout =
@@ -1161,7 +1161,7 @@ void GameDashboardMainMenuView::AddUtilityClusterRow() {
                           base::Unretained(this)),
       VIEW_ID_GD_HELP_BUTTON, kGdHelpIcon,
       l10n_util::GetStringUTF16(IDS_ASH_GAME_DASHBOARD_HELP_TOOLTIP)));
-  help_button->SetAccessibleName(
+  help_button->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_ASH_GAME_DASHBOARD_HELP_BUTTON_A11Y_LABEL));
   container->AddChildView(CreateIconButton(
       base::BindRepeating(&GameDashboardMainMenuView::OnSettingsButtonPressed,
@@ -1306,11 +1306,12 @@ void GameDashboardMainMenuView::AddWelcomeDialogSettingsRow() {
 
 void GameDashboardMainMenuView::OnWelcomeDialogSwitchStateChanged(
     bool is_enabled) {
-  welcome_dialog_settings_switch_->SetAccessibleName(l10n_util::GetStringFUTF16(
-      IDS_ASH_GAME_DASHBOARD_SETTINGS_WELCOME_DIALOG_A11Y_LABEL,
-      l10n_util::GetStringUTF16(is_enabled
-                                    ? IDS_ASH_GAME_DASHBOARD_TILE_ON
-                                    : IDS_ASH_GAME_DASHBOARD_GC_TILE_OFF)));
+  welcome_dialog_settings_switch_->GetViewAccessibility().SetName(
+      l10n_util::GetStringFUTF16(
+          IDS_ASH_GAME_DASHBOARD_SETTINGS_WELCOME_DIALOG_A11Y_LABEL,
+          l10n_util::GetStringUTF16(is_enabled
+                                        ? IDS_ASH_GAME_DASHBOARD_TILE_ON
+                                        : IDS_ASH_GAME_DASHBOARD_GC_TILE_OFF)));
 }
 
 PillButton* GameDashboardMainMenuView::GetGameControlsSetupButton() {

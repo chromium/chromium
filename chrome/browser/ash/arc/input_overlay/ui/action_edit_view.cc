@@ -24,6 +24,7 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
@@ -147,7 +148,7 @@ ActionEditView::ActionEditView(DisplayOverlayController* controller,
       padding_width - labels_view_->GetPreferredSize().width());
 
   // Set a11y name after `labels_view_` is added.
-  SetAccessibleName(CalculateAccessibleLabel());
+  GetViewAccessibility().SetName(CalculateAccessibleLabel());
 
   // Set highlight path.
   views::HighlightPathGenerator::Install(
@@ -170,7 +171,7 @@ ActionEditView::~ActionEditView() = default;
 void ActionEditView::OnActionInputBindingUpdated() {
   labels_view_->OnActionInputBindingUpdated();
   if (for_editing_list_) {
-    SetAccessibleName(CalculateAccessibleLabel());
+    GetViewAccessibility().SetName(CalculateAccessibleLabel());
   }
 }
 

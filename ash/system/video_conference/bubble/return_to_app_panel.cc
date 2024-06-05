@@ -37,6 +37,7 @@
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/scoped_canvas.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/image_view.h"
@@ -329,7 +330,7 @@ void ReturnToAppButton::UpdateAccessibleName() {
                   : VIDEO_CONFERENCE_RETURN_TO_APP_COLLAPSED_ACCESSIBLE_NAME);
   }
 
-  SetAccessibleName(accessible_name);
+  GetViewAccessibility().SetName(accessible_name);
 }
 
 BEGIN_METADATA(ReturnToAppButton)

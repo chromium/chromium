@@ -317,7 +317,7 @@ void AudioDetailedView::CreateLiveCaptionView() {
                 IDS_ASH_STATUS_TRAY_LIVE_CAPTION_DISABLED_STATE_TOOLTIP);
   toggle->SetTooltipText(l10n_util::GetStringFUTF16(
       IDS_ASH_STATUS_TRAY_LIVE_CAPTION_TOGGLE_TOOLTIP, toggle_tooltip));
-  toggle->SetAccessibleName(
+  toggle->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_LIVE_CAPTION));
   live_caption_button_ = toggle.get();
   live_caption_view_->AddRightView(toggle.release());
@@ -778,7 +778,7 @@ void AudioDetailedView::UpdateAgcInfoRow() {
   std::u16string agc_info_text = GetTextForAgcInfo(app_names);
   text_label->SetText(agc_info_text);
 
-  agc_info_view->SetAccessibleName(agc_info_text);
+  agc_info_view->GetViewAccessibility().SetName(agc_info_text);
   agc_info_view->SetVisible(ShowAgcInfoRow() && !app_names.empty());
 }
 

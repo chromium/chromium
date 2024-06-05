@@ -18,6 +18,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button.h"
@@ -207,7 +208,7 @@ FocusModeTaskView::FocusModeTaskView(bool is_network_connected) {
                               base::Unretained(this), /*update=*/true)));
   const std::u16string radio_text = l10n_util::GetStringUTF16(
       IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_VIEW_RADIO_BUTTON);
-  radio_button_->SetAccessibleName(radio_text);
+  radio_button_->GetViewAccessibility().SetName(radio_text);
   radio_button_->SetTooltipText(radio_text);
 
   views::FocusRing::Install(radio_button_);
@@ -231,7 +232,7 @@ FocusModeTaskView::FocusModeTaskView(bool is_network_connected) {
       textfield_container_->AddChildView(std::make_unique<TaskTextfield>(
           base::BindRepeating(&FocusModeTaskView::PaintFocusRingAndUpdateStyle,
                               weak_factory_.GetWeakPtr())));
-  textfield_->SetAccessibleName(l10n_util::GetStringUTF16(
+  textfield_->GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
       IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_TEXTFIELD_PLACEHOLDER));
   textfield_->SetBackgroundEnabled(false);
   textfield_->UpdateBackground();
@@ -510,7 +511,7 @@ void FocusModeTaskView::UpdateStyle(bool show_selected_state,
                                      kIconSize));
 
   textfield_->set_show_selected_state(show_selected_state);
-  textfield_->SetAccessibleName(
+  textfield_->GetViewAccessibility().SetName(
       show_selected_state
           ? l10n_util::GetStringFUTF16(
                 IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_TEXTFIELD_SELECTED_ACCESSIBLE_NAME,

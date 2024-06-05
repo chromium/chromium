@@ -655,9 +655,10 @@ void GlanceablesTasksView::UpdateTasksInTaskList(
   task_list_combo_box_view_->SetTooltipText(
       l10n_util::GetStringFUTF16(IDS_GLANCEABLES_TASKS_DROPDOWN_ACCESSIBLE_NAME,
                                  base::UTF8ToUTF16(task_list_title)));
-  task_items_container_view_->SetAccessibleName(l10n_util::GetStringFUTF16(
-      IDS_GLANCEABLES_TASKS_SELECTED_LIST_ACCESSIBLE_NAME,
-      base::UTF8ToUTF16(task_list_title)));
+  task_items_container_view_->GetViewAccessibility().SetName(
+      l10n_util::GetStringFUTF16(
+          IDS_GLANCEABLES_TASKS_SELECTED_LIST_ACCESSIBLE_NAME,
+          base::UTF8ToUTF16(task_list_title)));
   task_items_container_view_->GetViewAccessibility().SetDescription(
       *list_footer_view_->items_count_label());
   task_items_container_view_->NotifyAccessibilityEvent(

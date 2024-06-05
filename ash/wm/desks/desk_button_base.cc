@@ -10,6 +10,7 @@
 #include "ash/wm/wm_constants.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -42,7 +43,7 @@ DeskButtonBase::DeskButtonBase(const std::u16string& text,
 
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
 
-  SetAccessibleName(text);
+  GetViewAccessibility().SetName(text);
   SetTooltipText(text);
 
   // Create an empty border, otherwise in `LabelButton` a default border with

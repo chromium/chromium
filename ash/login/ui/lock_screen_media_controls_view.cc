@@ -549,7 +549,7 @@ void LockScreenMediaControlsView::MediaSessionMetadataChanged(
   title_label_->SetText(session_metadata.title);
   artist_label_->SetText(session_metadata.artist);
 
-  SetAccessibleName(
+  GetViewAccessibility().SetName(
       media_message_center::GetAccessibleNameFromMetadata(session_metadata));
 }
 

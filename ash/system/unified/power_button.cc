@@ -359,7 +359,8 @@ PowerButtonContainer::PowerButtonContainer(PressedCallback callback)
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 
-  SetAccessibleName(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_POWER_MENU));
+  GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_POWER_MENU));
   SetTooltipText(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_POWER_MENU));
 }
 

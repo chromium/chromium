@@ -31,6 +31,7 @@
 #include "ui/display/tablet_state.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/focus_ring.h"
@@ -263,7 +264,7 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
                                      kCrossSizeDp));
   back_button_->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   back_button_->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
-  back_button_->SetAccessibleName(
+  back_button_->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_ASH_LOGIN_BACK_BUTTON_ACCESSIBLE_NAME));
   back_button_->SetFocusBehavior(FocusBehavior::ALWAYS);
   back_button_view->AddChildView(back_button_.get());
@@ -407,7 +408,7 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
                             kArrowButtonSizeDp);
     submit_button_->SetPreferredSize(
         gfx::Size(kArrowButtonSizeDp, kArrowButtonSizeDp));
-    submit_button_->SetAccessibleName(
+    submit_button_->GetViewAccessibility().SetName(
         l10n_util::GetStringUTF16(IDS_ASH_LOGIN_SUBMIT_BUTTON_ACCESSIBLE_NAME));
   }
   submit_button_->SetEnabled(false);

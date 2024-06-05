@@ -513,7 +513,7 @@ void FocusModeDetailedView::UpdateToggleButtonAccessibility(
     const std::u16string duration_string = focus_mode_util::GetDurationString(
         FocusModeController::Get()->session_duration(),
         /*digital_format=*/false);
-    toggle_button->SetAccessibleName(l10n_util::GetStringFUTF16(
+    toggle_button->GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
         IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_BUTTON_INACTIVE,
         duration_string));
     toggle_button->SetTooltipText(l10n_util::GetStringUTF16(
@@ -521,7 +521,7 @@ void FocusModeDetailedView::UpdateToggleButtonAccessibility(
     return;
   }
 
-  toggle_button->SetAccessibleName(l10n_util::GetStringUTF16(
+  toggle_button->GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
       IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_END_BUTTON_ACCESSIBLE_NAME));
   toggle_button->SetTooltipText(
       toggle_button->GetViewAccessibility().GetCachedName());
@@ -542,7 +542,7 @@ void FocusModeDetailedView::UpdateTimerAdjustmentButtonAccessibility() {
     const std::u16string accessible_name = l10n_util::GetStringFUTF16(
         id, focus_mode_util::GetDurationString(base::Minutes(delta),
                                                /*digital_format=*/false));
-    button->SetAccessibleName(accessible_name);
+    button->GetViewAccessibility().SetName(accessible_name);
     button->SetTooltipText(accessible_name);
   };
 
@@ -799,7 +799,7 @@ void FocusModeDetailedView::CreateDoNotDisturbContainer() {
                           weak_factory_.GetWeakPtr()));
   auto* controller = FocusModeController::Get();
   const bool do_not_disturb_enabled = controller->turn_on_do_not_disturb();
-  toggle->SetAccessibleName(l10n_util::GetStringUTF16(
+  toggle->GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
       IDS_ASH_STATUS_TRAY_FOCUS_MODE_DO_NOT_DISTURB_ACCESSIBLE_NAME));
   toggle->SetIsOn(do_not_disturb_enabled);
   do_not_disturb_toggle_button_ = toggle.get();
@@ -911,7 +911,7 @@ void FocusModeDetailedView::UpdateTimerSettingViewUI() {
   std::u16string new_session_duration_string =
       base::NumberToString16(session_duration.InMinutes());
   timer_textfield_->SetText(new_session_duration_string);
-  timer_textfield_->SetAccessibleName(l10n_util::GetStringFUTF16(
+  timer_textfield_->GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
       IDS_ASH_STATUS_TRAY_FOCUS_MODE_TIMER_TEXTFIELD,
       focus_mode_util::GetDurationString(session_duration,
                                          /*digital_format=*/false)));

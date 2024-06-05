@@ -29,6 +29,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/text_elider.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button.h"
@@ -494,7 +495,7 @@ void FolderHeaderView::UpdateFolderNameAccessibleName() {
   std::u16string accessible_name = folder_name_view_->GetText().empty()
                                        ? folder_name_placeholder_text_
                                        : std::u16string();
-  folder_name_view_->SetAccessibleName(accessible_name);
+  folder_name_view_->GetViewAccessibility().SetName(accessible_name);
 }
 
 const std::u16string& FolderHeaderView::GetFolderNameForTest() {

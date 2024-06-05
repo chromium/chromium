@@ -12,6 +12,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/font_list.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/view_class_properties.h"
 
@@ -41,7 +42,7 @@ PickerEmojiItemView::PickerEmojiItemView(
                                   .SetText(emoji)
                                   .SetFontList(kPickerEmojiFont)
                                   .Build());
-  SetAccessibleName(emoji_label_);
+  GetViewAccessibility().SetName(*emoji_label_);
 }
 
 std::u16string_view PickerEmojiItemView::GetTextForTesting() const {

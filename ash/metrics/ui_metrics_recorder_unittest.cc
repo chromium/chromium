@@ -67,7 +67,7 @@ class FakeTestView : public views::View {
  public:
   FakeTestView() {
     GetViewAccessibility().SetRole(ax::mojom::Role::kStaticText);
-    SetAccessibleName(u"FakeTestView");
+    GetViewAccessibility().SetName(u"FakeTestView");
   }
   ~FakeTestView() override = default;
 
@@ -85,7 +85,7 @@ class FakeTestView : public views::View {
 // engine.
 class FakeTextField : public views::Textfield {
  public:
-  FakeTextField() { SetAccessibleName(u"FakeTextField"); }
+  FakeTextField() { GetViewAccessibility().SetName(u"FakeTextField"); }
   ~FakeTextField() override = default;
 
   // views::View:

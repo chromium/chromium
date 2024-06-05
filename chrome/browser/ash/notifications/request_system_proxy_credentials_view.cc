@@ -25,6 +25,7 @@
 #include "ui/events/event.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -159,7 +160,7 @@ void RequestSystemProxyCredentialsView::Init() {
   username_textfield_ =
       auth_container->AddChildView(std::make_unique<views::Textfield>());
   username_textfield_->SetEnabled(true);
-  username_textfield_->SetAccessibleName(username_label);
+  username_textfield_->GetViewAccessibility().SetName(*username_label);
 
   const int related_vertical_spacing =
       provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL);
@@ -173,7 +174,7 @@ void RequestSystemProxyCredentialsView::Init() {
   password_textfield_ = auth_container->AddChildView(
       std::make_unique<chromeos::PassphraseTextfield>());
   password_textfield_->SetEnabled(true);
-  password_textfield_->SetAccessibleName(password_label);
+  password_textfield_->GetViewAccessibility().SetName(*password_label);
   auth_container->AddPaddingRow(views::TableLayout::kFixedSize,
                                 related_vertical_spacing);
 

@@ -16,6 +16,7 @@
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -145,7 +146,7 @@ ClipboardHistoryTextItemView::ClipboardHistoryTextItemView(
     views::MenuItemView* container)
     : ClipboardHistoryItemView(item_id, clipboard_history, container),
       text_(GetClipboardHistoryItem()->display_text()) {
-  SetAccessibleName(text_);
+  GetViewAccessibility().SetName(text_);
 }
 
 ClipboardHistoryTextItemView::~ClipboardHistoryTextItemView() = default;

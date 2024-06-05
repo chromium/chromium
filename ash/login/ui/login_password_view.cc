@@ -42,6 +42,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/resources/grit/ui_resources.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button.h"
@@ -422,7 +423,7 @@ LoginPasswordView::LoginPasswordView()
   submit_button_->SetBackgroundColorId(kColorAshControlBackgroundColorInactive);
   submit_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_ASH_LOGIN_SUBMIT_BUTTON_ACCESSIBLE_NAME));
-  submit_button_->SetAccessibleName(
+  submit_button_->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_ASH_LOGIN_SUBMIT_BUTTON_ACCESSIBLE_NAME));
   submit_button_->SetEnabled(false);
 
@@ -668,7 +669,7 @@ void LoginPasswordView::SetLoginArrowNavigationDelegate(
 
 void LoginPasswordView::SetAccessibleNameOnTextfield(
     const std::u16string& new_name) {
-  textfield_->SetAccessibleName(new_name);
+  textfield_->GetViewAccessibility().SetName(new_name);
 }
 
 BEGIN_METADATA(LoginPasswordView)

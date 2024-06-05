@@ -518,7 +518,7 @@ void DeskPreviewView::Swap(bool right) {
 
 void DeskPreviewView::UpdateAccessibleName() {
   if (Desk* desk = mini_view_->desk()) {
-    SetAccessibleName(l10n_util::GetStringFUTF16(
+    GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
         desk->is_active() ? IDS_ASH_DESKS_DESK_PREVIEW_ACTIVE
                           : IDS_ASH_DESKS_DESK_PREVIEW_INACTIVE,
         desk->name()));

@@ -42,6 +42,7 @@
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_elider.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -653,7 +654,7 @@ void LoginUserView::UpdateCurrentUserState() {
   } else {
     accessible_name = email;
   }
-  tap_button_->SetAccessibleName(accessible_name);
+  tap_button_->GetViewAccessibility().SetName(accessible_name);
   if (dropdown_) {
     // The accessible name for the dropdown depends on whether it also contains
     // the remove user button for the user in question.
@@ -662,7 +663,7 @@ void LoginUserView::UpdateCurrentUserState() {
             ? IDS_ASH_LOGIN_POD_REMOVE_ACCOUNT_DIALOG_BUTTON_ACCESSIBLE_NAME
             : IDS_ASH_LOGIN_POD_ACCOUNT_DIALOG_BUTTON_ACCESSIBLE_NAME,
         email);
-    dropdown_->SetAccessibleName(accessible_name);
+    dropdown_->GetViewAccessibility().SetName(accessible_name);
   }
 
   user_image_->UpdateForUser(current_user_);

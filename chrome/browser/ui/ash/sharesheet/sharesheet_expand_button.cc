@@ -15,6 +15,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/font_list.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/layout/box_layout.h"
 
 namespace ash {
@@ -54,7 +55,7 @@ void SharesheetExpandButton::SetToDefaultState() {
       kExpandButtonCaretIconSize));
   auto display_name = l10n_util::GetStringUTF16(IDS_SHARESHEET_MORE_APPS_LABEL);
   label_->SetText(display_name);
-  SetAccessibleName(display_name);
+  GetViewAccessibility().SetName(display_name);
 }
 
 void SharesheetExpandButton::SetToExpandedState() {
@@ -66,7 +67,7 @@ void SharesheetExpandButton::SetToExpandedState() {
   auto display_name =
       l10n_util::GetStringUTF16(IDS_SHARESHEET_FEWER_APPS_LABEL);
   label_->SetText(display_name);
-  SetAccessibleName(display_name);
+  GetViewAccessibility().SetName(display_name);
 }
 
 BEGIN_METADATA(SharesheetExpandButton)

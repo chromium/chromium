@@ -14,6 +14,7 @@
 #include "ui/color/color_id.h"
 #include "ui/events/devices/haptic_touchpad_effects.h"
 #include "ui/events/event.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/focus_ring.h"
 
@@ -32,7 +33,8 @@ TrayToggleButton::TrayToggleButton(PressedCallback callback,
         gfx::Insets::VH(vertical_padding, horizontal_padding)));
   }
   if (accessible_name_id.has_value())
-    SetAccessibleName(l10n_util::GetStringUTF16(accessible_name_id.value()));
+    GetViewAccessibility().SetName(
+        l10n_util::GetStringUTF16(accessible_name_id.value()));
   views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
 }
 

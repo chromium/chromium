@@ -20,6 +20,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/text_constants.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -191,7 +192,7 @@ void CameraRollView::Update() {
             IDS_ASH_PHONE_HUB_CAMERA_ROLL_THUMBNAIL_ACCESSIBLE_NAME,
             base::NumberToString16(index + 1),
             base::NumberToString16(camera_roll_items.size()));
-        item_thumbnail->SetAccessibleName(accessible_name);
+        item_thumbnail->GetViewAccessibility().SetName(accessible_name);
         item_thumbnail->SetTooltipText(accessible_name);
         items_view_->AddCameraRollItem(item_thumbnail);
       }

@@ -15,6 +15,7 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
@@ -92,7 +93,7 @@ MediaControlsHeaderView::MediaControlsHeaderView(
   close_button->SetFocusBehavior(View::FocusBehavior::ALWAYS);
   std::u16string close_button_label(
       l10n_util::GetStringUTF16(IDS_ASH_LOCK_SCREEN_MEDIA_CONTROLS_CLOSE));
-  close_button->SetAccessibleName(close_button_label);
+  close_button->GetViewAccessibility().SetName(close_button_label);
   views::InkDrop::Get(close_button.get())
       ->SetBaseColor(color_utils::DeriveDefaultIconColor(gfx::kGoogleGrey700));
   close_button_ = AddChildView(std::move(close_button));

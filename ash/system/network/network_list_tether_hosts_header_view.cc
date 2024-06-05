@@ -15,6 +15,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/view_class_properties.h"
@@ -29,7 +30,7 @@ NetworkListTetherHostsHeaderView::NetworkListTetherHostsHeaderView(
   auto* entry_row = AddChildView(std::make_unique<HoverHighlightView>(this));
   entry_row->SetID(
       static_cast<int>(NetworkListTetherHostsHeaderViewChildId::kEntryRow));
-  entry_row->SetAccessibleName(u"");
+  entry_row->GetViewAccessibility().SetName(u"");
   auto image_view = std::make_unique<views::ImageView>();
   image_view->SetImage(ui::ImageModel::FromVectorIcon(
       kUnifiedMenuSignalCellular0Icon, cros_tokens::kCrosSysOnSurface));

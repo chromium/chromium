@@ -642,7 +642,7 @@ views::View* CalendarView::CreateCalendarHeaderRow() {
       IDS_ASH_CALENDAR_INFO_BUTTON_ACCESSIBLE_DESCRIPTION);
   today_button->SetBackgroundColor(cros_tokens::kCrosSysBaseElevated);
   today_button->SetProperty(views::kMarginsKey, kHeaderIconButtonMargin);
-  today_button->SetAccessibleName(l10n_util::GetStringFUTF16(
+  today_button->GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
       IDS_ASH_CALENDAR_INFO_BUTTON_ACCESSIBLE_DESCRIPTION,
       calendar_utils::GetMonthDayYear(base::Time::Now())));
   today_button->SetTooltipText(
@@ -699,9 +699,10 @@ void CalendarView::CreateCalendarTitleRow() {
                           base::Unretained(this)),
       l10n_util::GetStringUTF16(IDS_ASH_CALENDAR_INFO_BUTTON),
       PillButton::Type::kDefaultWithoutIcon, /*icon=*/nullptr);
-  reset_to_today_button_->SetAccessibleName(l10n_util::GetStringFUTF16(
-      IDS_ASH_CALENDAR_INFO_BUTTON_ACCESSIBLE_DESCRIPTION,
-      calendar_utils::GetMonthDayYear(base::Time::Now())));
+  reset_to_today_button_->GetViewAccessibility().SetName(
+      l10n_util::GetStringFUTF16(
+          IDS_ASH_CALENDAR_INFO_BUTTON_ACCESSIBLE_DESCRIPTION,
+          calendar_utils::GetMonthDayYear(base::Time::Now())));
 
   reset_to_today_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_ASH_CALENDAR_TODAY_BUTTON_TOOLTIP));

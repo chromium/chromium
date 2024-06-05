@@ -111,7 +111,7 @@ ResizeToggleMenu::MenuButtonView::MenuButtonView(PressedCallback callback,
         ash::TypographyToken::kCrosButton2, *label);
   }
 
-  SetAccessibleName(l10n_util::GetStringUTF16(title_string_id));
+  GetViewAccessibility().SetName(l10n_util::GetStringUTF16(title_string_id));
   GetViewAccessibility().SetRole(ax::mojom::Role::kMenuItem);
 
   constexpr int kBorderThicknessDp = 1;

@@ -19,6 +19,7 @@
 #include "chromeos/ui/frame/default_frame_header.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/vector_icons.h"
 
 namespace arc {
@@ -93,7 +94,7 @@ void CompatModeButtonController::Update(aura::Window* window) {
                                views::FrameCaptionButton::Animate::kNo,
                                ash::compat_mode_util::GetIcon(mode));
   compat_mode_button->SetText(text);
-  compat_mode_button->SetAccessibleName(text);
+  compat_mode_button->GetViewAccessibility().SetName(text);
 
   if (auto button_state = GetButtonState(window)) {
     compat_mode_button->SetEnabled(button_state->enable);

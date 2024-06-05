@@ -13,6 +13,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/linear_gradient.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/label_button.h"
@@ -56,7 +57,7 @@ void SetupChip(views::LabelButton* chip, bool first) {
   views::InstallRoundRectHighlightPathGenerator(chip, gfx::Insets(1),
                                                 kChipCornerRadius);
   chip->SetNotifyEnterExitOnChild(true);
-  chip->SetAccessibleName(chip->GetText());
+  chip->GetViewAccessibility().SetName(chip->GetText());
   chip->SetTooltipText(chip->GetText());
 }
 
