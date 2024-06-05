@@ -9,7 +9,7 @@
 <script src="resources/utils.js"></script>
 <script src="/common/subset-tests.js"></script>
 <script src="../prefetch/no-vary-search/test-utils.js"></script>
-<script src="../prefetch/no-vary-search/test-inputs.js"></script>
+<script src="../prefetch/no-vary-search/hint-test-inputs.js"></script>
 
 <meta name="variant" content="?1-1">
 <meta name="variant" content="?2-2">
@@ -38,15 +38,13 @@
 <meta name="variant" content="?25-25">
 <meta name="variant" content="?26-26">
 <meta name="variant" content="?27-27">
-<meta name="variant" content="?28-28">
-<meta name="variant" content="?29-29">
-<meta name="variant" content="?30-last">
+<meta name="variant" content="?28-last">
 
 <body></body>
 <script>
 setup(() => assertSpeculationRulesIsSupported());
 
-function prerender_no_vary_search_test(description, noVarySearch, prefetchQuery, navigateQuery, shouldUse) {
+function prerender_no_vary_search_test(description, noVarySearch, noVarySearchHint, prefetchQuery, navigateQuery, shouldUse) {
   promise_test(async t => {
     const prefetchQueryParams = new URLSearchParams(prefetchQuery);
     const navigateQueryParams = new URLSearchParams(navigateQuery);
@@ -59,8 +57,18 @@ function prerender_no_vary_search_test(description, noVarySearch, prefetchQuery,
       'activating': navigateQueryParams
     };
 
+    const rule_extras = {
+      'expects_no_vary_search': noVarySearchHint
+    };
+
+    // TODO(crbug.com/343754418): Block serving a response to prerendering
+    // request until `tryToActivate` processes the No-Vary-Search hint and
+    // starts waiting for the response. See prefetch-single-with-hint.https.html
+    // and prefetch_nvs_hint.py. Without that, the No-Vary-Search header may
+    // arrive before the hint is processed. The case is not what this test want
+    // to confirm.
     const {tryToActivate, getNetworkRequestCount} =
-        await create_prerendered_page(t, params);
+        await create_prerendered_page(t, params, undefined, rule_extras);
 
     if (shouldUse) {
       // The request should be sent only one time for prerendering.
@@ -75,7 +83,7 @@ function prerender_no_vary_search_test(description, noVarySearch, prefetchQuery,
   }, description);
 }
 
-test_inputs.forEach(({description, noVarySearch, prefetchQuery, navigateQuery, shouldUse}) => {
+hint_test_inputs.forEach(({description, noVarySearch, noVarySearchHint, prefetchQuery, navigateQuery, shouldUse}) => {
   subsetTest(prerender_no_vary_search_test, description, noVarySearch, prefetchQuery, navigateQuery, shouldUse);
 });
 </script>
