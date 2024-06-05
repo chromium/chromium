@@ -601,6 +601,14 @@ _ANDROID_PIXEL_FOLD_BENCHMARK_CONFIGS = PerfSuite(
 _ANDROID_PIXEL_FOLD_EXECUTABLE_CONFIGS = frozenset([
     _components_perftests(60),
 ])
+# Pixel Tangor
+_ANDROID_PIXEL_TANGOR_BENCHMARK_CONFIGS = PerfSuite(
+    _OFFICIAL_EXCEPT_DISPLAY_LOCKING).Add([
+        _GetBenchmarkConfig('jetstream2-nominorms'),
+        _GetBenchmarkConfig('speedometer2-nominorms'),
+        _GetBenchmarkConfig('speedometer3-nominorms')])
+_ANDROID_PIXEL_TANGOR_EXECUTABLE_CONFIGS = frozenset([
+    _components_perftests(60)])
 _ANDROID_PIXEL2_AAB_FYI_BENCHMARK_CONFIGS = PerfSuite(
     [_GetBenchmarkConfig('startup.mobile')])
 _ANDROID_PIXEL2_FYI_BENCHMARK_CONFIGS = PerfSuite([
@@ -859,13 +867,14 @@ ANDROID_PIXEL6_PRO_PGO = PerfPlatform(
     'android',
     executables=_ANDROID_PIXEL6_PRO_EXECUTABLE_CONFIGS,
     pinpoint_only=True)
-ANDROID_PIXEL_FOLD = PerfPlatform(
-    'android-pixel-fold-perf',
-    'Android U',
+ANDROID_PIXEL_FOLD = PerfPlatform('android-pixel-fold-perf', 'Android U',
     _ANDROID_PIXEL_FOLD_BENCHMARK_CONFIGS,
     2,  # testing on the first two connected devices
     'android',
     executables=_ANDROID_PIXEL_FOLD_EXECUTABLE_CONFIGS)
+ANDROID_PIXEL_TANGOR = PerfPlatform('android-pixel-tangor-perf', 'Android U',
+    _ANDROID_PIXEL_TANGOR_BENCHMARK_CONFIGS, 16, 'android',
+    executables=_ANDROID_PIXEL_TANGOR_EXECUTABLE_CONFIGS)
 ANDROID_GO_WEMBLEY = PerfPlatform('android-go-wembley-perf', 'Android U',
                                   _ANDROID_GO_BENCHMARK_CONFIGS, 15, 'android')
 ANDROID_GO_WEMBLEY_WEBVIEW = PerfPlatform(

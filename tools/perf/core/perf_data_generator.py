@@ -692,6 +692,20 @@ BUILDERS = {
             'device_os_flavor': 'google',
         },
     },
+    'android-pixel-tangor-perf': {
+        'tests': [{
+            'isolate':
+            'performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle',
+        }],
+        'platform':
+        'android-trichrome-chrome-google-64-32-bundle',
+        'dimension': {
+            'pool': 'chrome.tests.perf',
+            'os': 'Android',
+            'device_type': 'tangorpro',
+            'device_os_flavor': 'google',
+        },
+    },
     'android-pixel6-pro-perf': {
         'tests': [{
             'isolate':
