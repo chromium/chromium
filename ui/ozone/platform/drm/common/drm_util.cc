@@ -310,45 +310,69 @@ std::optional<std::string> ReadFileAndTrim(const base::FilePath& path) {
       base::TrimWhitespaceASCII(data, base::TrimPositions::TRIM_ALL));
 }
 
-std::unique_ptr<HardwareDisplayControllerInfo> GetPrimaryTileInfo(
-    HardwareDisplayControllerInfoList&& tiled_infos) {
+// Given all |tiled_infos| belonging to the same display, select the "primary"
+// tile that will represent all the tiles. Primary tile is the only active tile
+// if the display is configured with a non-tile mode.
+const HardwareDisplayControllerInfo* GetPrimaryTileInfo(
+    const HardwareDisplayControllerInfoList& tiled_infos) {
   if (tiled_infos.empty()) {
     return nullptr;
   }
-
-  // TODO(b/324236939): Implement an actual primary tile selection logic.
-  // Select tile that can scale to fit as the primary.
-  HardwareDisplayControllerInfoList scalable_tiles, unscalable_tiles;
-  for (auto& tiled_info : tiled_infos) {
-    if (tiled_info->tile_property()->scale_to_fit_display) {
-      scalable_tiles.push_back(std::move(tiled_info));
+  // 1. Filter for tile switch scale to fit capability
+  std::vector<const HardwareDisplayControllerInfo*> scalable_tiles,
+      unscalable_tiles;
+  for (const auto& tiled_info : tiled_infos) {
+    const HardwareDisplayControllerInfo* tiled_info_ptr = tiled_info.get();
+    if (tiled_info_ptr->tile_property()->scale_to_fit_display) {
+      scalable_tiles.push_back(tiled_info_ptr);
     } else {
-      unscalable_tiles.push_back(std::move(tiled_info));
+      unscalable_tiles.push_back(tiled_info_ptr);
     }
   }
 
   if (scalable_tiles.size() == 1) {
-    return std::move(scalable_tiles.front());
+    return scalable_tiles.front();
   }
 
-  HardwareDisplayControllerInfoList remaining_tiles;
+  // If there were multiple tiles that could have scaled, then use those for
+  // round 2. Only if there were no tiles capable of scaling should we consider
+  // all the tiles for round 2.
+  std::vector<const HardwareDisplayControllerInfo*> primary_eligible_tiles;
   if (!scalable_tiles.empty()) {
-    remaining_tiles = std::move(scalable_tiles);
+    primary_eligible_tiles = std::move(scalable_tiles);
   } else {
-    remaining_tiles = std::move(unscalable_tiles);
+    primary_eligible_tiles = std::move(unscalable_tiles);
   }
 
-  // As a placeholder, return the controller that is closest to the origin
-  // (0,0).
-  std::unique_ptr<HardwareDisplayControllerInfo> tile_closest_to_origin =
-      std::move(remaining_tiles.front());
+  // 2. The tile with the most # of modes should be the primary.
+  std::vector<const HardwareDisplayControllerInfo*> max_mode_tiles;
+  int max_num_modes = -1;
+  for (const auto* tiled_info : primary_eligible_tiles) {
+    const int num_modes = tiled_info->connector()->count_modes;
+    if (num_modes > max_num_modes) {
+      max_num_modes = num_modes;
+      max_mode_tiles = {tiled_info};
+    } else if (num_modes == max_num_modes) {
+      max_mode_tiles.push_back(tiled_info);
+    }
+  }
+
+  if (max_mode_tiles.size() == 1) {
+    return max_mode_tiles.front();
+  }
+
+  // 3. Break ties by taking the tile with TileProperty::location closest to the
+  // origin. Breaking ties deterministically keeps EDID-based display IDs
+  // stable.
+  primary_eligible_tiles = std::move(max_mode_tiles);
+  const HardwareDisplayControllerInfo* tile_closest_to_origin =
+      primary_eligible_tiles.front();
   gfx::Point closest_point = tile_closest_to_origin->tile_property()->location;
-  for (size_t i = 1; i < remaining_tiles.size(); i++) {
-    auto tiled_info = std::move(remaining_tiles[i]);
-    const gfx::Point& tile_location = tiled_info->tile_property()->location;
+  for (const auto* tile : primary_eligible_tiles) {
+    const gfx::Point& tile_location = tile->tile_property()->location;
     if (tile_location < closest_point) {
       closest_point = tile_location;
-      tile_closest_to_origin = std::move(tiled_info);
+      tile_closest_to_origin = tile;
     }
   }
 
@@ -1016,10 +1040,14 @@ void ConsolidateTiledDisplayInfo(
   // For each tile display group, determine the primary tile and drop others in
   // the group.
   for (auto& tile_group : tile_groups) {
-    std::unique_ptr<HardwareDisplayControllerInfo> primary_tiled_info =
-        GetPrimaryTileInfo(std::move(tile_group.second));
-    display_infos.push_back(std::move(primary_tiled_info));
+    const HardwareDisplayControllerInfo* primary_tiled_info_ptr =
+        GetPrimaryTileInfo(tile_group.second);
+    for (auto& tiled_info : tile_group.second) {
+      if (tiled_info.get() == primary_tiled_info_ptr) {
+        display_infos.push_back(std::move(tiled_info));
+        break;
+      }
+    }
   }
 }
-
 }  // namespace ui

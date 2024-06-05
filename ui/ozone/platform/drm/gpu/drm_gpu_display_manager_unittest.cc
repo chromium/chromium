@@ -1278,6 +1278,81 @@ TEST_F(TiledDisplayGetDisplaysTest, PrimaryCanStretchToFit) {
                   Pointee(EqResAndRefresh({gfx::Size(1920, 1080), 60}))));
 }
 
+TEST_F(TiledDisplayGetDisplaysTest, MoreModesInOneTile) {
+  auto fake_drm = AddDrmDevice();
+  fake_drm->ResetStateWithAllProperties();
+
+  // Primary tile at (0,1) - has 3 modes.
+  const TileProperty expected_primary_tile_prop = {
+      .group_id = 1,
+      .scale_to_fit_display = false,
+      .tile_size = gfx::Size(3840, 4320),
+      .tile_layout = gfx::Size(2, 1),
+      .location = gfx::Point(1, 0)};
+  ScopedDrmPropertyBlob primary_tile_property_blob =
+      CreateTilePropertyBlob(*fake_drm, expected_primary_tile_prop);
+  {
+    fake_drm->AddCrtcWithPrimaryAndCursorPlanes();
+
+    auto& primary_encoder = fake_drm->AddEncoder();
+    primary_encoder.possible_crtcs = 0b1;
+
+    auto& primary_connector = fake_drm->AddConnector();
+    primary_connector.connection = true;
+    primary_connector.modes =
+        std::vector<ResolutionAndRefreshRate>{{gfx::Size(3840, 4320), 60},
+                                              {gfx::Size(1920, 1080), 60},
+                                              {gfx::Size(2560, 1440), 60}};
+    primary_connector.encoders = std::vector<uint32_t>{primary_encoder.id};
+    fake_drm->AddProperty(
+        primary_connector.id,
+        {.id = kTileBlobPropId, .value = primary_tile_property_blob->id()});
+  }
+
+  // Non-primary tile at (0,0) - has 1 mode.
+  TileProperty expected_nonprimary_tile_prop = expected_primary_tile_prop;
+  expected_nonprimary_tile_prop.location = gfx::Point(0, 0);
+  ScopedDrmPropertyBlob nonprimary_tile_property_blob =
+      CreateTilePropertyBlob(*fake_drm, expected_nonprimary_tile_prop);
+  {
+    fake_drm->AddCrtcWithPrimaryAndCursorPlanes();
+
+    auto& nonprimary_encoder = fake_drm->AddEncoder();
+    nonprimary_encoder.possible_crtcs = 0b10;
+
+    auto& nonprimary_connector = fake_drm->AddConnector();
+    nonprimary_connector.connection = true;
+
+    nonprimary_connector.modes =
+        std::vector<ResolutionAndRefreshRate>{{gfx::Size(3840, 4320), 60}};
+    nonprimary_connector.encoders =
+        std::vector<uint32_t>{nonprimary_encoder.id};
+    nonprimary_connector.properties.push_back(
+        {.id = kTileBlobPropId, .value = kTileBlobId + 1});
+    fake_drm->AddProperty(
+        nonprimary_connector.id,
+        {.id = kTileBlobPropId, .value = nonprimary_tile_property_blob->id()});
+  }
+
+  fake_drm->InitializeState(/* use_atomic */ true);
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(display::features::kTiledDisplaySupport);
+  ASSERT_TRUE(display::features::IsTiledDisplaySupportEnabled());
+
+  MovableDisplaySnapshots displays = drm_gpu_display_manager_->GetDisplays();
+
+  ASSERT_THAT(displays, SizeIs(1));
+
+  EXPECT_THAT(displays[0]->modes(),
+              UnorderedElementsAre(
+                  Pointee(EqResAndRefresh({gfx::Size(3840, 4320), 60})),
+                  Pointee(EqResAndRefresh({gfx::Size(1920, 1080), 60})),
+                  // The non-tile mode in the primary tile (but not in
+                  // non-primary) should live.
+                  Pointee(EqResAndRefresh({gfx::Size(2560, 1440), 60}))));
+}
+
 }  // namespace ui
 
 #endif  // UI_OZONE_PLATFORM_DRM_GPU_DRM_GPU_DISPLAY_MANAGER_UNITTEST_CC_
