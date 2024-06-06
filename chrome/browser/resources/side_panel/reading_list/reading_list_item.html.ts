@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
 import type {ReadingListItemElement} from './reading_list_item.js';
 
 export function getHtml(this: ReadingListItemElement) {
+  // clang-format off
   return html`<!--_html_template_start_-->
 <cr-url-list-item id="crUrlListItem"
     title="${this.data.title}"
@@ -30,4 +32,5 @@ export function getHtml(this: ReadingListItemElement) {
   </cr-icon-button>
 </cr-url-list-item>
 <!--_html_template_end_-->`;
+  // clang-format on
 }

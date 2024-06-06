@@ -7,6 +7,7 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {CrActionMenuDemoElement} from './cr_action_menu_demo.js';
 
 export function getHtml(this: CrActionMenuDemoElement) {
+  // clang-format off
   return html`
 <h1>cr-action-menu</h1>
 
@@ -102,4 +103,5 @@ export function getHtml(this: CrActionMenuDemoElement) {
   <hr>
   <button class="dropdown-item" disabled>Menu item 3</button>
 </cr-action-menu>`;
+  // clang-format on
 }

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
 import type {ReadingListAppElement} from './reading_list_app.js';
 
 export function getHtml(this: ReadingListAppElement) {

@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
 import type {CrToolbarSearchFieldElement} from './cr_toolbar_search_field.js';
 
 export function getHtml(this: CrToolbarSearchFieldElement) {
+  // clang-format off
   return html`
 <div id="background"></div>
 <div id="stateBackground"></div>
@@ -41,4 +43,5 @@ export function getHtml(this: CrToolbarSearchFieldElement) {
         title="${this.clearLabel}" @click="${this.clearSearch_}"
         ?disabled="${this.disabled}"></cr-icon-button>` : ''}
 </div>`;
+  // clang-format on
 }

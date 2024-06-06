@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
 import type {NuxGoogleAppsElement} from './nux_google_apps.js';
 
 export function getHtml(this: NuxGoogleAppsElement) {

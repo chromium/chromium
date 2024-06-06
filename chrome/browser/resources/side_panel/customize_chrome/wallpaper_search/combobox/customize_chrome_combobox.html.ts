@@ -7,6 +7,7 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {ComboboxGroup, ComboboxItem, CustomizeChromeComboboxElement} from './customize_chrome_combobox.js';
 
 export function getHtml(this: CustomizeChromeComboboxElement) {
+  // clang-format off
   return html`<!--_html_template_start_-->
 <button id="input" class="md-select"
     role="combobox" tabindex="0"
@@ -67,4 +68,5 @@ export function getHtml(this: CustomizeChromeComboboxElement) {
     `)}
   </div>
 </div><!--_html_template_end_-->`;
+  // clang-format on
 }

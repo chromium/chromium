@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
 import type {NuxNtpBackgroundElement} from './nux_ntp_background.js';
 
 export function getHtml(this: NuxNtpBackgroundElement) {

@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
 import type {ThemeHueSliderDialogElement} from './theme_hue_slider_dialog.js';
 
 export function getHtml(this: ThemeHueSliderDialogElement) {
+  // clang-format off
   return html`
 <dialog id="dialog">
   <div id="header">
@@ -26,4 +28,5 @@ export function getHtml(this: ThemeHueSliderDialogElement) {
       aria-labelledby="title">
   </cr-slider>
 </dialog>`;
+  // clang-format on
 }

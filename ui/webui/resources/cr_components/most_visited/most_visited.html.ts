@@ -7,6 +7,7 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {MostVisitedElement} from './most_visited.js';
 
 export function getHtml(this: MostVisitedElement) {
+  // clang-format off
   return html`<!--_html_template_start_-->
 <div id="container" ?hidden="${!this.visible_}"
     .style="--tile-background-color: ${this.getBackgroundColorStyle_()};
@@ -103,4 +104,5 @@ export function getHtml(this: MostVisitedElement) {
     </cr-button>` : ''}
 </cr-toast>
 <!--_html_template_end_-->`;
+  // clang-format on
 }

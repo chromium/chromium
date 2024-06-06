@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {html} from '//resources/lit/v3_0/lit.rollup.js';
+import {html, nothing} from '//resources/lit/v3_0/lit.rollup.js';
+
 import type {CrDialogElement} from './cr_dialog.js';
-import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
 
 export function getHtml(this: CrDialogElement) {
   // clang-format off

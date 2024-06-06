@@ -7,6 +7,7 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {CrDialogDemoElement} from './cr_dialog_demo.js';
 
 export function getHtml(this: CrDialogDemoElement) {
+  // clang-format off
   return html`
 <h1>cr-dialog</h1>
 <div class="demos">
@@ -72,4 +73,5 @@ ${this.isDialogOpen_ ? html`
     </div>
   </cr-dialog>
 ` : ''}`;
+  // clang-format on
 }

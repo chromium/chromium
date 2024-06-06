@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {html} from '//resources/lit/v3_0/lit.rollup.js';
+import {html, nothing} from '//resources/lit/v3_0/lit.rollup.js';
+
 import type {CrToolbarElement} from './cr_toolbar.js';
-import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
 
 export function getHtml(this: CrToolbarElement) {
+  // clang-format off
   return html`
 <div id="leftContent">
   <div id="leftSpacer">
@@ -46,4 +47,5 @@ export function getHtml(this: CrToolbarElement) {
     <slot></slot>
   </div>
 </div>`;
+  // clang-format on
 }
