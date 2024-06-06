@@ -30481,7 +30481,7 @@ be describing additional metrics about the same event.
 <event name="WebOTPImpact">
   <owner>yigu@chromium.org</owner>
   <owner>goto@chromium.org</owner>
-  <owner>web-identity@google.com</owner>
+  <owner>web-identity-eng@google.com</owner>
   <summary>
     Records in the browser process when a document is destroyed.
   </summary>
