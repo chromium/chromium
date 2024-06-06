@@ -7,13 +7,14 @@ import './app_home_empty_page.js';
 import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
 
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
 import type {AppInfo, PageCallbackRouter} from './app_home.mojom-webui.js';
 import {AppHomeUserAction, recordUserAction} from './app_home_utils.js';
 import type {AppItemElement} from './app_item.js';
-import {getTemplate} from './app_list.html.js';
+import {getCss} from './app_list.css.js';
+import {getHtml} from './app_list.html.js';
 import {BrowserProxy} from './browser_proxy.js';
 
 export interface ActionMenuModel {
@@ -22,35 +23,34 @@ export interface ActionMenuModel {
 
 type MenuHandleEvent = CustomEvent<ActionMenuModel>;
 
-export class AppListElement extends PolymerElement {
+export class AppListElement extends CrLitElement {
   static get is() {
     return 'app-list';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
-    return {
-      apps_: {
-        type: Array,
-        value() {
-          return [];
-        },
-      },
+  override render() {
+    return getHtml.bind(this)();
+  }
 
-      selectedAppItem_: Object,
+  static override get properties() {
+    return {
+      apps_: {type: Array},
+
+      selectedAppItem_: {type: Object},
     };
   }
 
-  private apps_: AppInfo[];
+  protected apps_: AppInfo[] = [];
+  private boundContextMenuListener_: any;
+  private boundKeydownListener_: any;
+  private listenerIds_: number[] = [];
   private mojoEventTarget_: PageCallbackRouter;
-  private listenerIds_: number[];
   // The app item that has the context menu click opened by user.
   private selectedAppItem_: AppItemElement|null = null;
-  private boundKeydownListener_: any;
-  private boundContextMenuListener_: any;
 
   constructor() {
     super();
@@ -65,8 +65,7 @@ export class AppListElement extends PolymerElement {
     this.boundContextMenuListener_ = this.closeCurrentAppMenu.bind(this);
   }
 
-  override ready() {
-    super.ready();
+  override firstUpdated() {
     this.addEventListener('on-menu-open-triggered', this.switchActiveMenu_);
     this.addEventListener('on-menu-closed', this.clearActiveMenu_);
     recordUserAction(AppHomeUserAction.APP_HOME_INIT);
@@ -125,9 +124,8 @@ export class AppListElement extends PolymerElement {
       return;
     }
 
-    const appElement =
-        (this.shadowRoot!.getElementById('container')
-             ?.querySelector('#' + this.apps_[currIndex].id) as HTMLElement);
+    const appElement = this.shadowRoot!.getElementById('container')
+                           ?.querySelector('#' + this.apps_[currIndex]!.id);
     if (!appElement) {
       return;
     }
@@ -156,8 +154,8 @@ export class AppListElement extends PolymerElement {
 
     const activeElementId = this.shadowRoot!.activeElement?.id;
     if (!activeElementId) {
-      (this.shadowRoot!.getElementById('container')
-           ?.querySelector('#' + this.apps_[0].id) as HTMLElement)!.focus();
+      this.shadowRoot!.getElementById('container')
+          ?.querySelector<HTMLElement>('#' + this.apps_[0]!.id)!.focus();
       return;
     }
 
@@ -174,23 +172,27 @@ export class AppListElement extends PolymerElement {
       nextIndex = currIndex;
     }
 
-    (this.shadowRoot!.getElementById('container')
-         ?.querySelector('#' + this.apps_[nextIndex].id) as
-     HTMLElement)!.focus();
+    this.shadowRoot!.getElementById('container')
+        ?.querySelector<HTMLElement>('#' + this.apps_[nextIndex]!.id)!.focus();
   }
 
   private addApp_(appInfo: AppInfo) {
     const currIndex = this.apps_.findIndex(app => app.id === appInfo.id);
     if (currIndex !== -1) {
-      this.set(`apps_.${currIndex}`, appInfo);
-    } else {
-      const newIndex = this.apps_.findIndex(app => app.name > appInfo.name);
-      if (newIndex === -1) {
-        this.push('apps_', appInfo);
-        return;
-      }
-      this.splice('apps_', newIndex, 0, appInfo);
+      this.apps_[currIndex] = appInfo;
+      this.requestUpdate();
+      return;
     }
+
+    const newIndex = this.apps_.findIndex(app => app.name > appInfo.name);
+    if (newIndex === -1) {
+      this.apps_.push(appInfo);
+      this.requestUpdate();
+      return;
+    }
+
+    this.apps_.splice(newIndex, 0, appInfo);
+    this.requestUpdate();
   }
 
   private removeApp_(appInfo: AppInfo) {
@@ -203,7 +205,8 @@ export class AppListElement extends PolymerElement {
     // the list of apps shown in current page, it's none of the concern
     // for this page to remove it.
     if (index !== -1) {
-      this.splice('apps_', index, 1);
+      this.apps_.splice(index, 1);
+      this.requestUpdate();
     }
   }
 
@@ -224,7 +227,7 @@ export class AppListElement extends PolymerElement {
     this.selectedAppItem_ = event.detail.appItem;
   }
 
-  private notLocallyInstalledString_(installed: boolean, i18nString: string) {
+  protected notLocallyInstalledString_(installed: boolean, i18nString: string) {
     if (!installed) {
       return ' (' + i18nString + ')';
     }

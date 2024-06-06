@@ -42,7 +42,20 @@ export class AppItemElement extends CrLitElement {
     };
   }
 
-  appInfo: AppInfo;
+  appInfo: AppInfo = {
+    id: '',
+    startUrl: {url: ''},
+    name: '',
+    iconUrl: {url: ''},
+    mayShowRunOnOsLoginMode: false,
+    mayToggleRunOnOsLoginMode: false,
+    runOnOsLoginMode: 0,
+    isLocallyInstalled: false,
+    openInWindow: false,
+    mayUninstall: false,
+    isDeprecatedApp: false,
+    storePageUrl: {url: ''},
+  };
 
   override firstUpdated() {
     this.addEventListener('contextmenu', this.handleContextMenu_);
