@@ -1462,21 +1462,17 @@ void BrowserCommandController::InitCommandState() {
 
   command_updater_.UpdateCommandEnabled(IDC_SHOW_BOOKMARK_SIDE_PANEL, true);
 
-  if (features::IsChromeRefresh2023()) {
-    if (browser_->is_type_normal()) {
+  if (browser_->is_type_normal()) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      command_updater_.UpdateCommandEnabled(IDC_SHOW_SEARCH_COMPANION, true);
+    command_updater_.UpdateCommandEnabled(IDC_SHOW_SEARCH_COMPANION, true);
 #endif
-      // Reading list commands.
-      command_updater_.UpdateCommandEnabled(IDC_READING_LIST_MENU, true);
-      command_updater_.UpdateCommandEnabled(IDC_READING_LIST_MENU_ADD_TAB,
-                                            true);
-      command_updater_.UpdateCommandEnabled(IDC_READING_LIST_MENU_SHOW_UI,
-                                            true);
-    }
-    if (IsChromeLabsEnabled()) {
-      command_updater_.UpdateCommandEnabled(IDC_SHOW_CHROME_LABS, true);
-    }
+    // Reading list commands.
+    command_updater_.UpdateCommandEnabled(IDC_READING_LIST_MENU, true);
+    command_updater_.UpdateCommandEnabled(IDC_READING_LIST_MENU_ADD_TAB, true);
+    command_updater_.UpdateCommandEnabled(IDC_READING_LIST_MENU_SHOW_UI, true);
+  }
+  if (IsChromeLabsEnabled()) {
+    command_updater_.UpdateCommandEnabled(IDC_SHOW_CHROME_LABS, true);
   }
 
   // Initialize other commands whose state changes based on various conditions.
