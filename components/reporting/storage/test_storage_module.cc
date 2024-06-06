@@ -16,8 +16,7 @@
 using ::testing::Invoke;
 using ::testing::WithArg;
 
-namespace reporting {
-namespace test {
+namespace reporting::test {
 
 TestStorageModuleStrict::TestStorageModuleStrict() {
   ON_CALL(*this, AddRecord)
@@ -50,5 +49,4 @@ void TestStorageModuleStrict::AddRecordSuccessfully(Priority priority,
   std::move(callback).Run(Status::StatusOK());
 }
 
-}  // namespace test
-}  // namespace reporting
+}  // namespace reporting::test

@@ -15,6 +15,7 @@
 
 #if !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/policy/messaging_layer/upload/upload_provider.h"
+#include "components/reporting/storage/storage_module_interface.h"
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 namespace reporting {
