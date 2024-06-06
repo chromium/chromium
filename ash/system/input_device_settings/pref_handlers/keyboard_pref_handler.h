@@ -82,6 +82,13 @@ class ASH_EXPORT KeyboardPrefHandler {
       PrefService* pref_service,
       const mojom::KeyboardPolicies& keyboard_policies,
       const mojom::Keyboard& keyboard) = 0;
+
+  // Force refreshes the passed in keyboard settings to match the defaults for
+  // the given `pref_service`.
+  virtual void ForceInitializeWithDefaultSettings(
+      PrefService* pref_service,
+      const mojom::KeyboardPolicies& keyboard_policies,
+      mojom::Keyboard* keyboard) = 0;
 };
 
 }  // namespace ash

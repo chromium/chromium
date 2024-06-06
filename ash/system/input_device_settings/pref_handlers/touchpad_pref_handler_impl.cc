@@ -428,14 +428,9 @@ void InitializeSettingsUpdateMetricInfo(
                         std::move(updated_metric_info));
 }
 
-}  // namespace
-
-TouchpadPrefHandlerImpl::TouchpadPrefHandlerImpl() = default;
-TouchpadPrefHandlerImpl::~TouchpadPrefHandlerImpl() = default;
-
-void TouchpadPrefHandlerImpl::InitializeTouchpadSettings(
-    PrefService* pref_service,
-    mojom::Touchpad* touchpad) {
+void InitializeTouchpadSettingsImpl(PrefService* pref_service,
+                                    mojom::Touchpad* touchpad,
+                                    bool force_initialize_to_default_settings) {
   if (!pref_service) {
     touchpad->settings = GetDefaultTouchpadSettings(pref_service, *touchpad);
     return;
@@ -451,6 +446,12 @@ void TouchpadPrefHandlerImpl::InitializeTouchpadSettings(
     const auto& devices_dict =
         pref_service->GetDict(prefs::kTouchpadDeviceSettingsDictPref);
     settings_dict = devices_dict.FindDict(touchpad->device_key);
+  }
+
+  // Do not lookup settings dict if we are force refreshing back to default
+  // settings.
+  if (force_initialize_to_default_settings) {
+    settings_dict = nullptr;
   }
 
   ForceTouchpadSettingPersistence force_persistence;
@@ -475,6 +476,19 @@ void TouchpadPrefHandlerImpl::InitializeTouchpadSettings(
   InitializeSettingsUpdateMetricInfo(pref_service, *touchpad, category);
 
   UpdateTouchpadSettingsImpl(pref_service, *touchpad, force_persistence);
+}
+
+}  // namespace
+
+TouchpadPrefHandlerImpl::TouchpadPrefHandlerImpl() = default;
+TouchpadPrefHandlerImpl::~TouchpadPrefHandlerImpl() = default;
+
+void TouchpadPrefHandlerImpl::InitializeTouchpadSettings(
+    PrefService* pref_service,
+    mojom::Touchpad* touchpad) {
+  InitializeTouchpadSettingsImpl(
+      pref_service, touchpad,
+      /*force_initialize_to_default_settings=*/false);
 }
 
 void TouchpadPrefHandlerImpl::UpdateTouchpadSettings(
@@ -543,6 +557,13 @@ void TouchpadPrefHandlerImpl::UpdateDefaultTouchpadSettings(
                             /*existing_settings_dict=*/nullptr);
   pref_service->SetDict(prefs::kTouchpadDefaultSettings,
                         std::move(settings_dict));
+}
+
+void TouchpadPrefHandlerImpl::ForceInitializeWithDefaultSettings(
+    PrefService* pref_service,
+    mojom::Touchpad* touchpad) {
+  InitializeTouchpadSettingsImpl(pref_service, touchpad,
+                                 /*force_initialize_to_default_settings=*/true);
 }
 
 }  // namespace ash

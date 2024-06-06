@@ -690,15 +690,11 @@ void InitializeSettingsUpdateMetricInfo(
                         std::move(updated_metric_info));
 }
 
-}  // namespace
-
-KeyboardPrefHandlerImpl::KeyboardPrefHandlerImpl() = default;
-KeyboardPrefHandlerImpl::~KeyboardPrefHandlerImpl() = default;
-
-void KeyboardPrefHandlerImpl::InitializeKeyboardSettings(
+void InitializeKeyboardSettingsImpl(
     PrefService* pref_service,
     const mojom::KeyboardPolicies& keyboard_policies,
-    mojom::Keyboard* keyboard) {
+    mojom::Keyboard* keyboard,
+    bool force_initialize_to_default_settings) {
   if (!pref_service) {
     keyboard->settings =
         GetDefaultKeyboardSettings(pref_service, keyboard_policies, *keyboard);
@@ -715,6 +711,12 @@ void KeyboardPrefHandlerImpl::InitializeKeyboardSettings(
     const auto& devices_dict =
         pref_service->GetDict(prefs::kKeyboardDeviceSettingsDictPref);
     settings_dict = devices_dict.FindDict(keyboard->device_key);
+  }
+
+  // Do not lookup settings dict if we are force refreshing back to default
+  // settings.
+  if (force_initialize_to_default_settings) {
+    settings_dict = nullptr;
   }
 
   ForceKeyboardSettingPersistence force_persistence;
@@ -804,6 +806,20 @@ void KeyboardPrefHandlerImpl::InitializeKeyboardSettings(
     keyboard->settings->six_pack_key_remappings->insert =
         keyboard_policies.insert_key_policy->value;
   }
+}
+
+}  // namespace
+
+KeyboardPrefHandlerImpl::KeyboardPrefHandlerImpl() = default;
+KeyboardPrefHandlerImpl::~KeyboardPrefHandlerImpl() = default;
+
+void KeyboardPrefHandlerImpl::InitializeKeyboardSettings(
+    PrefService* pref_service,
+    const mojom::KeyboardPolicies& keyboard_policies,
+    mojom::Keyboard* keyboard) {
+  InitializeKeyboardSettingsImpl(
+      pref_service, keyboard_policies, keyboard,
+      /*force_initialize_to_default_settings=*/false);
 }
 
 void KeyboardPrefHandlerImpl::InitializeLoginScreenKeyboardSettings(
@@ -905,6 +921,14 @@ void KeyboardPrefHandlerImpl::UpdateDefaultSplitModifierKeyboardSettings(
       /*existing_settings_dict=*/nullptr);
   pref_service->SetDict(prefs::kKeyboardDefaultSplitModifierSettings,
                         std::move(settings_dict));
+}
+
+void KeyboardPrefHandlerImpl::ForceInitializeWithDefaultSettings(
+    PrefService* pref_service,
+    const mojom::KeyboardPolicies& keyboard_policies,
+    mojom::Keyboard* keyboard) {
+  InitializeKeyboardSettingsImpl(pref_service, keyboard_policies, keyboard,
+                                 /*force_initialize_to_default_settings=*/true);
 }
 
 }  // namespace ash

@@ -9,7 +9,9 @@
 
 #include "ash/ash_export.h"
 #include "ash/bluetooth_devices_observer.h"
+#include "ash/login/ui/login_data_dispatcher.h"
 #include "ash/public/cpp/input_device_settings_controller.h"
+#include "ash/public/cpp/login_types.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/mojom/input_device_settings.mojom-forward.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
@@ -43,7 +45,8 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
     : public InputDeviceSettingsController,
       public input_method::InputMethodManager::Observer,
       public SessionObserver,
-      public device::BluetoothAdapter::Observer {
+      public device::BluetoothAdapter::Observer,
+      public LoginDataDispatcher::Observer {
  public:
   explicit InputDeviceSettingsControllerImpl(PrefService* local_state);
   InputDeviceSettingsControllerImpl(
@@ -133,6 +136,9 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
                             device::BluetoothDevice* device,
                             device::BluetoothDevice::BatteryType type) override;
 
+  // LoginDataDispatcher::Observer:
+  void OnOobeDialogStateChanged(OobeDialogState state) override;
+
   InputDeviceDuplicateIdFinder& duplicate_id_finder() {
     CHECK(duplicate_id_finder_);
     return *duplicate_id_finder_;
@@ -215,6 +221,13 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
   void RefreshInternalPointingStickSettings();
   void RefreshInternalTouchpadSettings();
 
+  // Refreshes the settings for the device to match the default settings.
+  void ForceInitializeDefaultChromeOSKeyboardSettings();
+  void ForceInitializeDefaultNonChromeOSKeyboardSettings();
+  void ForceInitializeDefaultSplitModifierKeyboardSettings();
+  void ForceInitializeDefaultTouchpadSettings();
+  void ForceInitializeDefaultMouseSettings();
+
   // Updates the default settings based on the most recently connected device.
   // This is called whenever a device is connected/disconnected or if settings
   // are updated.
@@ -285,6 +298,8 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
   void InitializeOnBluetoothReady(
       scoped_refptr<device::BluetoothAdapter> adapter);
 
+  bool IsOobe() const;
+
   base::ObserverList<InputDeviceSettingsController::Observer> observers_;
 
   std::unique_ptr<InputDeviceSettingsPolicyHandler> policy_handler_;
@@ -335,6 +350,8 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
 
   // Boolean which notes whether or not there is a settings update in progress.
   bool settings_refresh_pending_ = false;
+
+  OobeDialogState oobe_state_ = OobeDialogState::HIDDEN;
 
   // Task runner where settings refreshes are scheduled to run.
   scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;

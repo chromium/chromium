@@ -34,6 +34,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/ranges/functional.h"
+#include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_simple_task_runner.h"
@@ -41,6 +42,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/session_manager/session_manager_types.h"
 #include "components/user_manager/known_user.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/bluetooth_device.h"
@@ -347,6 +349,13 @@ class FakeKeyboardPrefHandler : public KeyboardPrefHandler {
       const mojom::KeyboardPolicies& keyboard_policies,
       const mojom::Keyboard& keyboard) override {}
 
+  void ForceInitializeWithDefaultSettings(
+      PrefService* pref_service,
+      const mojom::KeyboardPolicies& keyboard_policies,
+      mojom::Keyboard* keyboard) override {
+    ++num_force_initialize_with_default_settings_calls_;
+  }
+
   uint32_t num_keyboard_settings_initialized() {
     return num_keyboard_settings_initialized_;
   }
@@ -367,6 +376,10 @@ class FakeKeyboardPrefHandler : public KeyboardPrefHandler {
     return num_initialize_default_keyboard_settings_calls_;
   }
 
+  uint32_t num_force_initialize_with_default_settings_calls() {
+    return num_force_initialize_with_default_settings_calls_;
+  }
+
   void reset_num_keyboard_settings_initialized() {
     num_keyboard_settings_initialized_ = 0;
   }
@@ -374,6 +387,7 @@ class FakeKeyboardPrefHandler : public KeyboardPrefHandler {
  private:
   uint32_t num_keyboard_settings_initialized_ = 0;
   uint32_t num_keyboard_settings_updated_ = 0;
+  uint32_t num_force_initialize_with_default_settings_calls_ = 0;
   uint32_t num_login_screen_keyboard_settings_initialized_ = 0;
   uint32_t num_login_screen_keyboard_settings_updated_ = 0;
   uint32_t num_initialize_default_keyboard_settings_calls_ = 0;
@@ -1881,6 +1895,107 @@ TEST_F(InputDeviceSettingsControllerTest, BatteryInfoUpdates) {
   ui::DeviceDataManagerTestApi().SetKeyboardDevices({});
   bt_address_map = controller_->GetBluetoothAddressToDeviceIdMapForTesting();
   ASSERT_EQ(0u, bt_address_map.size());
+}
+
+TEST_F(InputDeviceSettingsControllerTest,
+       KeyboardInternalDefaultsUpdatedDuringOobe) {
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::OOBE);
+
+  fake_device_manager_->AddFakeKeyboard(kSampleKeyboardInternal,
+                                        kKbdTopRowLayout2Tag);
+  const auto* keyboard = controller_->GetKeyboard(kSampleKeyboardInternal.id);
+  ASSERT_TRUE(keyboard);
+  ASSERT_EQ(kDefaultTopRowAreFKeys, keyboard->settings->top_row_are_fkeys);
+
+  PrefService* active_pref_service =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  base::Value::Dict updated_defaults;
+  updated_defaults.Set(prefs::kKeyboardSettingTopRowAreFKeys,
+                       !kDefaultTopRowAreFKeys);
+  active_pref_service->SetDict(prefs::kKeyboardDefaultChromeOSSettings,
+                               std::move(updated_defaults));
+
+  ASSERT_EQ(1u, keyboard_pref_handler_
+                    ->num_force_initialize_with_default_settings_calls());
+}
+
+TEST_F(InputDeviceSettingsControllerTest,
+       KeyboardExternalDefaultsUpdatedDuringOobe) {
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::OOBE);
+
+  fake_device_manager_->AddFakeKeyboard(kSampleKeyboardUsb, "");
+
+  PrefService* active_pref_service =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  base::Value::Dict updated_defaults;
+  updated_defaults.Set(prefs::kKeyboardSettingTopRowAreFKeys,
+                       !kDefaultTopRowAreFKeys);
+  active_pref_service->SetDict(prefs::kKeyboardDefaultNonChromeOSSettings,
+                               std::move(updated_defaults));
+
+  ASSERT_EQ(1u, keyboard_pref_handler_
+                    ->num_force_initialize_with_default_settings_calls());
+}
+
+TEST_F(InputDeviceSettingsControllerTest,
+       KeyboardSplitModifierDefaultsUpdatedDuringOobe) {
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::OOBE);
+
+  fake_device_manager_->AddFakeKeyboard(kSampleSplitModifierKeyboard,
+                                        kKbdTopRowLayout1Tag);
+
+  PrefService* active_pref_service =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  base::Value::Dict updated_defaults;
+  updated_defaults.Set(prefs::kKeyboardSettingTopRowAreFKeys,
+                       !kDefaultTopRowAreFKeys);
+  active_pref_service->SetDict(prefs::kKeyboardDefaultSplitModifierSettings,
+                               std::move(updated_defaults));
+
+  ASSERT_EQ(1u, keyboard_pref_handler_
+                    ->num_force_initialize_with_default_settings_calls());
+}
+
+TEST_F(InputDeviceSettingsControllerTest, MouseDefaultsUpdatedDuringOobe) {
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::OOBE);
+
+  ui::DeviceDataManagerTestApi().SetMouseDevices({kSampleMouseUsb});
+  const auto* mouse = controller_->GetMouse(kSampleMouseUsb.id);
+  ASSERT_TRUE(mouse);
+  ASSERT_EQ(kDefaultReverseScrolling, mouse->settings->reverse_scrolling);
+
+  PrefService* active_pref_service =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  base::Value::Dict updated_defaults;
+  updated_defaults.Set(prefs::kMouseSettingReverseScrolling,
+                       !kDefaultReverseScrolling);
+  active_pref_service->SetDict(prefs::kMouseDefaultSettings,
+                               std::move(updated_defaults));
+
+  ASSERT_EQ(!kDefaultReverseScrolling, mouse->settings->reverse_scrolling);
+}
+
+TEST_F(InputDeviceSettingsControllerTest, TouchpadDefaultsUpdatedDuringOobe) {
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::OOBE);
+
+  ui::DeviceDataManagerTestApi().SetTouchpadDevices({kSampleTouchpadExternal});
+  const auto* touchpad = controller_->GetTouchpad(kSampleTouchpadExternal.id);
+  ASSERT_TRUE(touchpad);
+  ASSERT_EQ(kDefaultReverseScrolling, touchpad->settings->reverse_scrolling);
+
+  PrefService* active_pref_service =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  base::Value::Dict updated_defaults;
+  updated_defaults.Set(prefs::kTouchpadSettingReverseScrolling,
+                       !kDefaultReverseScrolling);
+  active_pref_service->SetDict(prefs::kTouchpadDefaultSettings,
+                               std::move(updated_defaults));
+  ASSERT_EQ(!kDefaultReverseScrolling, touchpad->settings->reverse_scrolling);
 }
 
 TEST_F(InputDeviceSettingsControllerNoSignInTest, ModifierKeyRefresh) {

@@ -64,6 +64,11 @@ class ASH_EXPORT KeyboardPrefHandlerImpl : public KeyboardPrefHandler {
       PrefService* pref_service,
       const mojom::KeyboardPolicies& keyboard_policies,
       const mojom::Keyboard& keyboard) override;
+
+  void ForceInitializeWithDefaultSettings(
+      PrefService* pref_service,
+      const mojom::KeyboardPolicies& keyboard_policies,
+      mojom::Keyboard* keyboard) override;
 };
 
 }  // namespace ash

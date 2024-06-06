@@ -314,15 +314,10 @@ void InitializeSettingsUpdateMetricInfo(
                         std::move(updated_metric_info));
 }
 
-}  // namespace
-
-MousePrefHandlerImpl::MousePrefHandlerImpl() = default;
-MousePrefHandlerImpl::~MousePrefHandlerImpl() = default;
-
-void MousePrefHandlerImpl::InitializeMouseSettings(
-    PrefService* pref_service,
-    const mojom::MousePolicies& mouse_policies,
-    mojom::Mouse* mouse) {
+void InitializeMouseSettingsImpl(PrefService* pref_service,
+                                 const mojom::MousePolicies& mouse_policies,
+                                 mojom::Mouse* mouse,
+                                 bool force_initialize_to_default_settings) {
   if (!pref_service) {
     mouse->settings = GetDefaultMouseSettings(pref_service, mouse_policies);
     return;
@@ -331,6 +326,9 @@ void MousePrefHandlerImpl::InitializeMouseSettings(
   const auto& devices_dict =
       pref_service->GetDict(prefs::kMouseDeviceSettingsDictPref);
   const auto* settings_dict = devices_dict.FindDict(mouse->device_key);
+  if (force_initialize_to_default_settings) {
+    settings_dict = nullptr;
+  }
 
   ForceMouseSettingPersistence force_persistence;
   SettingsUpdatedMetricsInfo::Category category;
@@ -386,6 +384,19 @@ void MousePrefHandlerImpl::InitializeMouseSettings(
           mojom::PolicyStatus::kManaged) {
     mouse->settings->swap_right = mouse_policies.swap_right_policy->value;
   }
+}
+
+}  // namespace
+
+MousePrefHandlerImpl::MousePrefHandlerImpl() = default;
+MousePrefHandlerImpl::~MousePrefHandlerImpl() = default;
+
+void MousePrefHandlerImpl::InitializeMouseSettings(
+    PrefService* pref_service,
+    const mojom::MousePolicies& mouse_policies,
+    mojom::Mouse* mouse) {
+  InitializeMouseSettingsImpl(pref_service, mouse_policies, mouse,
+                              /*force_initialize_to_default_settings=*/false);
 }
 
 void MousePrefHandlerImpl::UpdateMouseSettings(
@@ -485,6 +496,14 @@ void MousePrefHandlerImpl::UpdateDefaultMouseSettings(
       ConvertSettingsToDict(mouse, mouse_policies, /*force_persistence=*/{true},
                             /*existing_settings_dict=*/nullptr);
   pref_service->SetDict(prefs::kMouseDefaultSettings, std::move(settings_dict));
+}
+
+void MousePrefHandlerImpl::ForceInitializeWithDefaultSettings(
+    PrefService* pref_service,
+    const mojom::MousePolicies& mouse_policies,
+    mojom::Mouse* mouse) {
+  InitializeMouseSettingsImpl(pref_service, mouse_policies, mouse,
+                              /*force_initialize_to_default_settings=*/true);
 }
 
 }  // namespace ash

@@ -54,6 +54,12 @@ class ASH_EXPORT TouchpadPrefHandler {
   virtual void UpdateDefaultTouchpadSettings(
       PrefService* pref_service,
       const mojom::Touchpad& touchpad) = 0;
+
+  // Force refreshes the passed in touchpad settings to match the defaults for
+  // the given `pref_service`.
+  virtual void ForceInitializeWithDefaultSettings(
+      PrefService* pref_service,
+      mojom::Touchpad* touchpad) = 0;
 };
 
 }  // namespace ash

@@ -1008,6 +1008,33 @@ void InputDeviceSettingsControllerImpl::OnActiveUserPrefServiceChanged(
         base::BindRepeating(
             &InputDeviceSettingsControllerImpl::RefreshInternalTouchpadSettings,
             weak_ptr_factory_.GetWeakPtr()));
+    pref_change_registrar_->Add(
+        prefs::kMouseDefaultSettings,
+        base::BindRepeating(&InputDeviceSettingsControllerImpl::
+                                ForceInitializeDefaultMouseSettings,
+                            weak_ptr_factory_.GetWeakPtr()));
+    pref_change_registrar_->Add(
+        prefs::kTouchpadDefaultSettings,
+        base::BindRepeating(&InputDeviceSettingsControllerImpl::
+                                ForceInitializeDefaultTouchpadSettings,
+                            weak_ptr_factory_.GetWeakPtr()));
+    pref_change_registrar_->Add(
+        prefs::kKeyboardDefaultChromeOSSettings,
+        base::BindRepeating(&InputDeviceSettingsControllerImpl::
+                                ForceInitializeDefaultChromeOSKeyboardSettings,
+                            weak_ptr_factory_.GetWeakPtr()));
+    pref_change_registrar_->Add(
+        prefs::kKeyboardDefaultNonChromeOSSettings,
+        base::BindRepeating(
+            &InputDeviceSettingsControllerImpl::
+                ForceInitializeDefaultNonChromeOSKeyboardSettings,
+            weak_ptr_factory_.GetWeakPtr()));
+    pref_change_registrar_->Add(
+        prefs::kKeyboardDefaultSplitModifierSettings,
+        base::BindRepeating(
+            &InputDeviceSettingsControllerImpl::
+                ForceInitializeDefaultSplitModifierKeyboardSettings,
+            weak_ptr_factory_.GetWeakPtr()));
   }
 
   // Device settings must be refreshed when the user pref service is updated,
@@ -2402,6 +2429,11 @@ void InputDeviceSettingsControllerImpl::DispatchTouchpadBatteryInfoChanged(
   }
 }
 
+void InputDeviceSettingsControllerImpl::OnOobeDialogStateChanged(
+    OobeDialogState state) {
+  oobe_state_ = state;
+}
+
 void InputDeviceSettingsControllerImpl::RefreshInternalPointingStickSettings() {
   for (auto& [id, pointing_stick] : pointing_sticks_) {
     if (pointing_stick->is_external) {
@@ -2421,6 +2453,86 @@ void InputDeviceSettingsControllerImpl::RefreshInternalTouchpadSettings() {
 
     InitializeTouchpadSettings(touchpad.get());
     DispatchTouchpadSettingsChanged(id);
+  }
+}
+
+void InputDeviceSettingsControllerImpl::
+    ForceInitializeDefaultTouchpadSettings() {
+  if (!IsOobe()) {
+    return;
+  }
+
+  for (auto& [id, touchpad] : touchpads_) {
+    // Internal touchpad settings are fully synced, no need to force refresh
+    // them.
+    if (!touchpad->is_external) {
+      continue;
+    }
+
+    touchpad_pref_handler_->ForceInitializeWithDefaultSettings(
+        active_pref_service_, touchpad.get());
+  }
+}
+
+void InputDeviceSettingsControllerImpl::ForceInitializeDefaultMouseSettings() {
+  if (!IsOobe()) {
+    return;
+  }
+
+  for (auto& [id, mouse] : mice_) {
+    mouse_pref_handler_->ForceInitializeWithDefaultSettings(
+        active_pref_service_, policy_handler_->mouse_policies(), mouse.get());
+  }
+}
+
+void InputDeviceSettingsControllerImpl::
+    ForceInitializeDefaultChromeOSKeyboardSettings() {
+  if (!IsOobe()) {
+    return;
+  }
+
+  for (auto& [id, keyboard] : keyboards_) {
+    if (!IsChromeOSKeyboard(*keyboard)) {
+      continue;
+    }
+
+    keyboard_pref_handler_->ForceInitializeWithDefaultSettings(
+        active_pref_service_, policy_handler_->keyboard_policies(),
+        keyboard.get());
+  }
+}
+
+void InputDeviceSettingsControllerImpl::
+    ForceInitializeDefaultNonChromeOSKeyboardSettings() {
+  if (!IsOobe()) {
+    return;
+  }
+
+  for (auto& [id, keyboard] : keyboards_) {
+    if (IsChromeOSKeyboard(*keyboard) || IsSplitModifierKeyboard(*keyboard)) {
+      continue;
+    }
+
+    keyboard_pref_handler_->ForceInitializeWithDefaultSettings(
+        active_pref_service_, policy_handler_->keyboard_policies(),
+        keyboard.get());
+  }
+}
+
+void InputDeviceSettingsControllerImpl::
+    ForceInitializeDefaultSplitModifierKeyboardSettings() {
+  if (!IsOobe()) {
+    return;
+  }
+
+  for (auto& [id, keyboard] : keyboards_) {
+    if (!IsSplitModifierKeyboard(*keyboard)) {
+      continue;
+    }
+
+    keyboard_pref_handler_->ForceInitializeWithDefaultSettings(
+        active_pref_service_, policy_handler_->keyboard_policies(),
+        keyboard.get());
   }
 }
 
@@ -2640,6 +2752,19 @@ void InputDeviceSettingsControllerImpl::RefreshModifierKeys() {
     keyboard->modifier_keys =
         Shell::Get()->keyboard_capability()->GetModifierKeys(keyboard->id);
   }
+}
+
+bool InputDeviceSettingsControllerImpl::IsOobe() const {
+  session_manager::SessionState session_state =
+      Shell::Get()->session_controller()->GetSessionState();
+  // Default OOBE flow
+  const bool is_default_oobe_flow =
+      session_state == session_manager::SessionState::OOBE;
+  // OOBE enterprise enrollment -> add person flow
+  const bool is_add_person_flow =
+      session_state == session_manager::SessionState::LOGIN_PRIMARY &&
+      oobe_state_ != OobeDialogState::HIDDEN;
+  return is_default_oobe_flow || is_add_person_flow;
 }
 
 }  // namespace ash
