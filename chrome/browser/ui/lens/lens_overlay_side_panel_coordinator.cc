@@ -191,11 +191,13 @@ void LensOverlaySidePanelCoordinator::DidOpenRequestedURL(
   // https://issuetracker.google.com/285038653
   content::OpenURLParams params(url, referrer, disposition, transition,
                                 /*is_renderer_initiated=*/false);
-  Browser* browser = chrome::FindBrowserWithTab(GetTabWebContents());
-  if (!browser) {
-    return;
-  }
-  browser->OpenURL(params, /*navigation_handle_callback=*/{});
+
+  // We can't open a new tab while the observer is running because it might
+  // destroy this WebContents. Post as task instead.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&LensOverlaySidePanelCoordinator::OpenURLInBrowser,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(params)));
 }
 
 void LensOverlaySidePanelCoordinator::DidStartNavigation(
@@ -249,6 +251,21 @@ void LensOverlaySidePanelCoordinator::DOMContentLoaded(
   }
 
   lens_overlay_controller_->SetSidePanelIsLoadingResults(false);
+}
+
+void LensOverlaySidePanelCoordinator::OpenURLInBrowser(
+    const content::OpenURLParams& params) {
+  auto* controller = LensOverlayController::GetController(GetTabWebContents());
+  if (!controller) {
+    return;
+  }
+
+  auto* browser_window =
+      controller->GetTabInterface()->GetBrowserWindowInterface();
+  if (!browser_window) {
+    return;
+  }
+  browser_window->OpenURL(params.url, params.disposition);
 }
 
 void LensOverlaySidePanelCoordinator::RegisterEntry() {

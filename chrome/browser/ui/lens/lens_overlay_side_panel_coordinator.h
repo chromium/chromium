@@ -8,6 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents_observer.h"
 
 class Browser;
@@ -84,6 +85,9 @@ class LensOverlaySidePanelCoordinator : public SidePanelEntryObserver,
       content::NavigationHandle* navigation_handle) override;
   void DOMContentLoaded(content::RenderFrameHost* render_frame_host) override;
 
+  // Opens the provided url params in the main browser as a new tab.
+  void OpenURLInBrowser(const content::OpenURLParams& params);
+
   // Registers the entry in the side panel if it doesn't already exist.
   void RegisterEntry();
 
@@ -106,6 +110,7 @@ class LensOverlaySidePanelCoordinator : public SidePanelEntryObserver,
 
   base::WeakPtr<content::WebContents> tab_web_contents_;
   raw_ptr<LensOverlaySidePanelWebView> side_panel_web_view_;
+  base::WeakPtrFactory<LensOverlaySidePanelCoordinator> weak_ptr_factory_{this};
 };
 
 }  // namespace lens
