@@ -32,6 +32,15 @@
           on-hash-copied="onHashCopied_">
       </certificate-list-v2>
     </if>
+    <if expr="is_chromeos">
+      <certificate-list-v2
+          id="extensionsClientCerts"
+          cert-source="[[certificateSourceEnum_.kExtensionsClientCert]]"
+          header-text="From extensions"
+          hide-export
+          on-hash-copied="onHashCopied_">
+      </certificate-list-v2>
+    </if>
 
     <h3>Windows</h3>
     <!-- TODO(crbug.com/40928765): platform client certs list should be on a

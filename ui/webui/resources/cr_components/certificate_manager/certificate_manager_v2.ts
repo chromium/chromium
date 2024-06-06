@@ -40,6 +40,9 @@ export interface CertificateManagerV2Element {
     // <if expr="is_win or is_macosx">
     provisionedClientCerts: CertificateListV2Element,
     // </if>
+    // <if expr="is_chromeos">
+    extensionsClientCerts: CertificateListV2Element,
+    // </if>
     toast: CrToastElement,
     importOsCerts: CrToggleElement,
     importOsCertsManagedIcon: HTMLElement,

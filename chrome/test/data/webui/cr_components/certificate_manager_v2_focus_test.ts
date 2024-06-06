@@ -87,12 +87,12 @@ suite('CertificateManagerV2FocusTest', () => {
     await microtasksFinished();
     assertFalse(certManager.$.toast.open);
 
-    const matchEls = certManager.$.platformClientCerts.$.certs.querySelectorAll(
+    const entries = certManager.$.platformClientCerts.$.certs.querySelectorAll(
         'certificate-entry-v2');
-    assertEquals(1, matchEls.length, 'no certs displayed');
+    assertEquals(1, entries.length, 'no certs displayed');
 
     assertEquals('', await navigator.clipboard.readText());
-    matchEls[0]!.$.copy.click();
+    entries[0]!.$.copy.click();
     assertTrue(certManager.$.toast.open);
     assertEquals('deadbeef2', await navigator.clipboard.readText());
   });
@@ -120,15 +120,50 @@ suite('CertificateManagerV2FocusTest', () => {
     await microtasksFinished();
     assertFalse(certManager.$.toast.open);
 
-    const matchEls =
+    const entries =
         certManager.$.provisionedClientCerts.$.certs.querySelectorAll(
             'certificate-entry-v2');
-    assertEquals(1, matchEls.length, 'no certs displayed');
+    assertEquals(1, entries.length, 'no certs displayed');
 
     assertEquals('', await navigator.clipboard.readText());
-    matchEls[0]!.$.copy.click();
+    entries[0]!.$.copy.click();
     assertTrue(certManager.$.toast.open);
     assertEquals('deadbeef3', await navigator.clipboard.readText());
+  });
+  // </if>
+
+  // <if expr="is_chromeos">
+  test('Copy extensions client certs hash', async () => {
+    const getCertificatesResolver = new PromiseResolver<void>();
+    testProxy.handler.setCertificatesCallback((source: CertificateSource) => {
+      if (source === CertificateSource.kExtensionsClientCert) {
+        getCertificatesResolver.resolve();
+        return {
+          certs: [
+            {
+              sha256hashHex: 'deadbeef4',
+              displayName: 'cert4',
+            },
+          ],
+        };
+      }
+      return {certs: []};
+    });
+
+    initializeElement();
+    await getCertificatesResolver.promise;
+    await microtasksFinished();
+    assertFalse(certManager.$.toast.open);
+
+    const entries =
+        certManager.$.extensionsClientCerts.$.certs.querySelectorAll(
+            'certificate-entry-v2');
+    assertEquals(1, entries.length, 'no certs displayed');
+
+    assertEquals('', await navigator.clipboard.readText());
+    entries[0]!.$.copy.click();
+    assertTrue(certManager.$.toast.open);
+    assertEquals('deadbeef4', await navigator.clipboard.readText());
   });
   // </if>
 });
