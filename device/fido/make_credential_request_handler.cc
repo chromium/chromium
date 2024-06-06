@@ -893,7 +893,7 @@ void MakeCredentialRequestHandler::HandleExcludedAuthenticator(
   CancelActiveAuthenticators(authenticator->GetId());
   std::move(completion_callback_)
       .Run(MakeCredentialStatus::kUserConsentButCredentialExcluded,
-           std::nullopt, nullptr);
+           std::nullopt, authenticator);
 }
 
 void MakeCredentialRequestHandler::HandleInapplicableAuthenticator(
@@ -904,7 +904,7 @@ void MakeCredentialRequestHandler::HandleInapplicableAuthenticator(
 
   state_ = State::kFinished;
   CancelActiveAuthenticators(authenticator->GetId());
-  std::move(completion_callback_).Run(status, std::nullopt, nullptr);
+  std::move(completion_callback_).Run(status, std::nullopt, authenticator);
 }
 
 void MakeCredentialRequestHandler::OnSampleCollected(
