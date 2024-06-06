@@ -25,7 +25,7 @@ void URLLoaderTestDelegate::DidReceiveResponse(URLLoaderClient* original_client,
 
 void URLLoaderTestDelegate::DidReceiveData(URLLoaderClient* original_client,
                                            base::span<const char> data) {
-  original_client->DidReceiveData(data);
+  original_client->DidReceiveDataForTesting(data);
 }
 
 void URLLoaderTestDelegate::DidFail(URLLoaderClient* original_client,

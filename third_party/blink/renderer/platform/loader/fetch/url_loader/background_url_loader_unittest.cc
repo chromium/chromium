@@ -352,9 +352,6 @@ class FakeURLLoaderClient : public URLLoaderClient {
       response_body_buffer_ = std::move(absl::get<SegmentedBuffer>(body));
     }
   }
-  void DidReceiveData(base::span<const char> data) override {
-    NOTREACHED_NORETURN();
-  }
   void DidReceiveTransferSizeUpdate(int transfer_size_diff) override {
     DCHECK(unfreezable_task_runner_->BelongsToCurrentThread());
     transfer_size_diffs_.push_back(transfer_size_diff);

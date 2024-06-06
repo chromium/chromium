@@ -830,6 +830,10 @@ void ResourceLoader::DidReceiveResponse(
   data_pipe_completion_notifier_ = completion_notifier;
 }
 
+void ResourceLoader::DidReceiveDataForTesting(base::span<const char> data) {
+  DidReceiveData(data);
+}
+
 void ResourceLoader::DidReceiveResponseInternal(
     const ResourceResponse& response,
     std::optional<mojo_base::BigBuffer> cached_metadata) {

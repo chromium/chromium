@@ -145,7 +145,7 @@ class PLATFORM_EXPORT ResourceLoader final
       const WebURLResponse&,
       absl::variant<mojo::ScopedDataPipeConsumerHandle, SegmentedBuffer>,
       std::optional<mojo_base::BigBuffer> cached_metadata) override;
-  void DidReceiveData(base::span<const char> data) override;
+  void DidReceiveDataForTesting(base::span<const char> data) override;
   void DidReceiveTransferSizeUpdate(int transfer_size_diff) override;
   void DidFinishLoading(base::TimeTicks response_end_time,
                         int64_t encoded_data_length,
@@ -176,6 +176,7 @@ class PLATFORM_EXPORT ResourceLoader final
   void Run() override;
 
   // ResponseBodyLoaderClient implementation.
+  void DidReceiveData(base::span<const char> data) override;
   void DidReceiveDecodedData(
       const String& data,
       std::unique_ptr<ParkableStringImpl::SecureDigest> digest) override;

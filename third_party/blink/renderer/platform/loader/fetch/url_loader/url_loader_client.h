@@ -94,8 +94,9 @@ class BLINK_PLATFORM_EXPORT URLLoaderClient {
       std::optional<mojo_base::BigBuffer> cached_metadata) {}
 
   // Called when a chunk of response data is received. |data_length| is the
-  // number of bytes pointed to by |data|.
-  virtual void DidReceiveData(base::span<const char> data) {}
+  // number of bytes pointed to by |data|. This is used only for testing to
+  // pass the data to the ResourceLoader.
+  virtual void DidReceiveDataForTesting(base::span<const char> data) {}
 
   // Called when the number of bytes actually received from network including
   // HTTP headers is updated. |transfer_size_diff| is positive.

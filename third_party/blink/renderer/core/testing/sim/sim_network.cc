@@ -63,7 +63,7 @@ void SimNetwork::DidReceiveResponse(URLLoaderClient* client,
 void SimNetwork::DidReceiveData(URLLoaderClient* client,
                                 base::span<const char> data) {
   if (!current_request_)
-    client->DidReceiveData(data);
+    client->DidReceiveDataForTesting(data);
 }
 
 void SimNetwork::DidFail(URLLoaderClient* client,

@@ -215,7 +215,7 @@ TEST_P(DocumentLoaderTest, SingleChunk) {
                         base::span<const char> data) override {
       EXPECT_EQ(34u, data.size())
           << "foo.html was not served in a single chunk";
-      original_client->DidReceiveData(data);
+      original_client->DidReceiveDataForTesting(data);
     }
   } delegate;
 
@@ -238,7 +238,7 @@ TEST_P(DocumentLoaderTest, MultiChunkNoReentrancy) {
           << "foo.html was not served in a single chunk";
       // Chunk the reply into one byte chunks.
       for (size_t i = 0; i < data.size(); ++i) {
-        original_client->DidReceiveData(data.subspan(i, 1));
+        original_client->DidReceiveDataForTesting(data.subspan(i, 1));
       }
     }
   } delegate;

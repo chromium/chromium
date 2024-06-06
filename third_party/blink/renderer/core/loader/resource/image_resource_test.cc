@@ -822,7 +822,7 @@ TEST_F(ImageResourceTest, CancelOnDecodeError) {
 
   EXPECT_EQ(0, observer->ImageChangedCount());
 
-  image_resource->Loader()->DidReceiveData(
+  image_resource->Loader()->DidReceiveDataForTesting(
       base::span_from_cstring("notactuallyanimage"));
 
   EXPECT_EQ(ResourceStatus::kDecodeError, image_resource->GetStatus());
@@ -895,7 +895,7 @@ TEST_F(ImageResourceTest, PartialContentWithoutDimensions) {
       WrappedResourceResponse(partial_response),
       /*body=*/mojo::ScopedDataPipeConsumerHandle(),
       /*cached_metadata=*/std::nullopt);
-  image_resource->Loader()->DidReceiveData(
+  image_resource->Loader()->DidReceiveDataForTesting(
       base::make_span(reinterpret_cast<const char*>(kJpegImage),
                       kJpegImageSubrangeWithoutDimensionsLength));
 
