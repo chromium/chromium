@@ -7,7 +7,7 @@ import {BrowserProxy} from 'chrome-untrusted://read-anything-side-panel.top-chro
 import type {ReadAnythingElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {convertLangOrLocaleForVoicePackManager, VoiceClientSideStatusCode, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {VoicePackStatus} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertEquals, assertFalse} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {FakeSpeechSynthesis} from './fake_speech_synthesis.js';
@@ -36,6 +36,11 @@ suite('UpdateVoicePack', () => {
           {lang: lang, name: 'Andy (Natural)'} as SpeechSynthesisVoice,
       );
     };
+  }
+
+  function enabledLangs(): string[] {
+    // @ts-ignore
+    return app.enabledLanguagesInPref;
   }
 
   setup(() => {
@@ -164,5 +169,50 @@ suite('UpdateVoicePack', () => {
     assertEquals(
         getVoicePackLocalStatus(lang),
         VoiceClientSideStatusCode.ERROR_INSTALLING);
+  });
+
+  suite('updateVoicePackStatusFromInstallResponse', () => {
+    suite('with error code', () => {
+      const lang = 'pt-br';
+
+      setup(() => {
+        enabledLangs().push(lang);
+        assertTrue(enabledLangs().includes(lang));
+      });
+
+      test('and no other voices for language, disables language', () => {
+        app.synth.getVoices = () => [];
+        app.updateVoicePackStatusFromInstallResponse(lang, 'kOther');
+        assertFalse(enabledLangs().includes(lang));
+      });
+
+      test('and only eSpeak voices for language, disables language', () => {
+        app.synth.getVoices = () => {
+          return [
+            {lang: lang, name: 'eSpeak Portuguese'} as SpeechSynthesisVoice,
+          ];
+        };
+
+        app.updateVoicePackStatusFromInstallResponse(lang, 'kOther');
+
+        assertFalse(enabledLangs().includes(lang));
+      });
+
+      test(
+          'and has other Google voices for language, keeps language enabled',
+          () => {
+            app.synth.getVoices = () => {
+              return [
+                {lang: lang, name: 'ChromeOS Portuguese 1'} as
+                    SpeechSynthesisVoice,
+                {lang: lang, name: 'ChromeOS Portuguese 2'} as
+                    SpeechSynthesisVoice,
+              ];
+            };
+            app.updateVoicePackStatusFromInstallResponse(lang, 'kOther');
+
+            assertTrue(enabledLangs().includes(lang));
+          });
+    });
   });
 });

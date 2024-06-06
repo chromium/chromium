@@ -932,11 +932,21 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     const oldVoicePackStatus = this.getVoicePackServerStatus_(lang);
 
     if (isVoicePackStatusError(newVoicePackStatus)) {
-      // Keep the server responses
+      // Keep the server responses.
       this.setVoicePackServerStatus_(lang, newVoicePackStatus);
 
-      // Update application state
+      // Update application state.
       this.updateApplicationState(lang, newVoicePackStatus, oldVoicePackStatus);
+
+      // Disable the associated language if there are no other Google voices for
+      // it.
+      const availableVoicesForLang = this.getVoices().filter(
+          v => this.getConvertedLangIfExists_(v.lang) === lang);
+      if (availableVoicesForLang.length === 0 ||
+          availableVoicesForLang.every(v => isEspeak(v))) {
+        this.enabledLanguagesInPref = this.enabledLanguagesInPref.filter(
+            enabledLang => enabledLang !== lang);
+      }
     } else {
       // Do not rely on the status from Install response. It has responded
       // "installed" for voices that are not installed. Instead, request the
