@@ -179,6 +179,9 @@ int RunTestSuite(RunTestSuiteCallback run_test_suite,
           switches::kSingleProcessTests) ||
       CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kTestChildProcess) ||
+      CommandLine::ForCurrentProcess()->HasSwitch(switches::kFuzz) ||
+      CommandLine::ForCurrentProcess()->HasSwitch(switches::kFuzzFor) ||
+      CommandLine::ForCurrentProcess()->HasSwitch(switches::kListFuzzTests) ||
       force_single_process) {
     return std::move(run_test_suite).Run();
   }

@@ -183,6 +183,7 @@ static_library("test_support") {
   deps = [
     ":proto_test_support",
     "//build:chromeos_buildflags",
+    "//third_party/fuzztest:init_helper",
     "//third_party/google_benchmark",
     "//third_party/icu:icuuc",
     "//third_party/libxml:libxml_utils",
