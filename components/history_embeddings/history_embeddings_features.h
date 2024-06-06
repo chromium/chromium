@@ -12,6 +12,9 @@ namespace history_embeddings {
 
 BASE_DECLARE_FEATURE(kHistoryEmbeddings);
 
+// Displays source passages in the UI on chrome://history for debug purposes.
+extern const base::FeatureParam<bool> kShowSourcePassages;
+
 // Number of milliseconds to wait after `DidFinishLoad` before extracting
 // passages, computing and storing their embeddings, etc. Note, the
 // extraction will only begin if no tabs are loading. If any are

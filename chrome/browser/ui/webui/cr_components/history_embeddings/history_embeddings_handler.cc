@@ -34,7 +34,6 @@ void OnSearchCompleted(HistoryEmbeddingsHandler::SearchCallback callback,
     auto item = history_embeddings::mojom::SearchResultItem::New();
     item->title = base::UTF16ToUTF8(scored_url_row.row.title());
     item->url = scored_url_row.row.url();
-    item->source_passage = scored_url_row.scored_url.passage;
     item->relative_time = base::UTF16ToUTF8(ui::TimeFormat::Simple(
         ui::TimeFormat::FORMAT_ELAPSED, ui::TimeFormat::LENGTH_SHORT,
         base::Time::Now() - scored_url_row.row.last_visit()));
@@ -48,6 +47,10 @@ void OnSearchCompleted(HistoryEmbeddingsHandler::SearchCallback callback,
     item->url_for_display = base::UTF16ToUTF8(url_formatter::FormatUrl(
         scored_url_row.row.url(), format_types, base::UnescapeRule::SPACES,
         nullptr, nullptr, nullptr));
+
+    if (history_embeddings::kShowSourcePassages.Get()) {
+      item->source_passage = scored_url_row.scored_url.passage;
+    }
 
     mojom_search_result->items.push_back(std::move(item));
   }

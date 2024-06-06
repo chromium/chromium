@@ -14,6 +14,10 @@ BASE_FEATURE(kHistoryEmbeddings,
              "HistoryEmbeddings",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const base::FeatureParam<bool> kShowSourcePassages(&kHistoryEmbeddings,
+                                                   "ShowSourcePassages",
+                                                   false);
+
 const base::FeatureParam<int> kPassageExtractionDelay(&kHistoryEmbeddings,
                                                       "PassageExtractionDelay",
                                                       5000);
