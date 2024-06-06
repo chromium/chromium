@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
@@ -20,6 +21,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/aura/window.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
@@ -296,11 +298,16 @@ int GroupContainerCycleView::TryRemovingChildItem(
 }
 
 void GroupContainerCycleView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  views::View::GetAccessibleNodeData(node_data);
+  for (WindowCycleItemView* mini_view : mini_views_) {
+    if (mini_view->is_mini_view_focused()) {
+      mini_view->GetAccessibleNodeData(node_data);
+      break;
+    }
+  }
+
+  node_data->SetDescription(
+      l10n_util::GetStringUTF16(IDS_ASH_SNAP_GROUP_WINDOW_CYCLE_DESCRIPTION));
   node_data->role = ax::mojom::Role::kGroup;
-  // TODO(b/297062026): Update the string after been finalized by consulting
-  // with a11y team.
-  node_data->SetName(u"Group container view");
 }
 
 gfx::RoundedCornersF GroupContainerCycleView::GetRoundedCorners() const {
@@ -347,12 +354,14 @@ void GroupContainerCycleView::SetSelectedWindowForFocus(aura::Window* window) {
   if (old_is_first_focus_selection_request &&
       window_util::GetActiveWindow() == mini_views_[1]->source_window()) {
     mini_views_[0]->UpdateFocusState(/*focus=*/true);
+    NotifyAccessibilityEvent(ax::mojom::Event::kSelection, true);
   } else {
     // For normal use case, follow the window cycle order and `UpdateFocusState`
     // on the cycle item that contains the target window.
     for (WindowCycleItemView* mini_view : mini_views_) {
       if (mini_view->Contains(window)) {
         mini_view->UpdateFocusState(/*focus=*/true);
+        NotifyAccessibilityEvent(ax::mojom::Event::kSelection, true);
         break;
       }
     }
