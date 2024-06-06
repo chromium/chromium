@@ -211,11 +211,10 @@ bool CookieSettings::IsCookieAccessible(
                                    base::OptionalToPtr(top_frame_origin),
                                    overrides);
   bool allowed = IsCookieAllowed(cookie, setting_with_metadata);
-  bool is_third_party_request = IsThirdPartyRequest(url, site_for_cookies);
   if (cookie_inclusion_status) {
     AugmentInclusionStatus(cookie, base::OptionalToPtr(top_frame_origin),
-                           is_third_party_request, setting_with_metadata,
-                           first_party_set_metadata, *cookie_inclusion_status);
+                           setting_with_metadata, first_party_set_metadata,
+                           *cookie_inclusion_status);
   }
   return allowed;
 }
@@ -255,8 +254,9 @@ CookieSettings::GetCookieSettingWithMetadata(
     const url::Origin* top_frame_origin,
     net::CookieSettingOverrides overrides) const {
   return GetCookieSettingInternal(
-      url, FirstPartyURLForMetadata(site_for_cookies, top_frame_origin),
-      IsThirdPartyRequest(url, site_for_cookies), overrides, nullptr);
+      url, site_for_cookies,
+      FirstPartyURLForMetadata(site_for_cookies, top_frame_origin), overrides,
+      nullptr);
 }
 
 // static
@@ -279,21 +279,17 @@ bool CookieSettings::AnnotateAndMoveUserBlockedCookies(
   const CookieSettingWithMetadata setting_with_metadata =
       GetCookieSettingWithMetadata(url, site_for_cookies, top_frame_origin,
                                    overrides);
-  const bool is_third_party_request =
-      IsThirdPartyRequest(url, site_for_cookies);
   // Add `WARN_THIRD_PARTY_PHASEOUT` `WarningReason` for allowed cookies
   // that meets the conditions and add the `ExclusionReason` for cookies
   // that ought to be blocked.
   for (net::CookieWithAccessResult& cookie : maybe_included_cookies) {
     AugmentInclusionStatus(cookie.cookie, top_frame_origin,
-                           is_third_party_request, setting_with_metadata,
-                           first_party_set_metadata,
+                           setting_with_metadata, first_party_set_metadata,
                            cookie.access_result.status);
   }
   for (net::CookieWithAccessResult& cookie : excluded_cookies) {
     AugmentInclusionStatus(cookie.cookie, top_frame_origin,
-                           is_third_party_request, setting_with_metadata,
-                           first_party_set_metadata,
+                           setting_with_metadata, first_party_set_metadata,
                            cookie.access_result.status);
   }
   const auto to_be_moved = base::ranges::stable_partition(
@@ -389,7 +385,6 @@ bool CookieSettings::MitigationsEnabledFor3pcd() const {
 void CookieSettings::AugmentInclusionStatus(
     const net::CanonicalCookie& cookie,
     const url::Origin* top_frame_origin,
-    bool is_third_party_request,
     const CookieSettings::CookieSettingWithMetadata& setting_with_metadata,
     const net::FirstPartySetMetadata& first_party_set_metadata,
     net::CookieInclusionStatus& out_status) const {
@@ -398,7 +393,8 @@ void CookieSettings::AugmentInclusionStatus(
       IsBlockedByTopLevel3pcdOriginTrial(top_frame_origin->GetURL());
 
   if (IsCookieAllowed(cookie, setting_with_metadata)) {
-    if (!is_third_party_request || !ShouldApply3pcdRelatedReasons(cookie)) {
+    if (!setting_with_metadata.is_third_party_request() ||
+        !ShouldApply3pcdRelatedReasons(cookie)) {
       return;
     }
     if (ShouldBlockThirdPartyCookies() || affected_by_3pcd_origin_trial) {
@@ -417,7 +413,7 @@ void CookieSettings::AugmentInclusionStatus(
 
   // The cookie is blocked.
 
-  if (is_third_party_request &&
+  if (setting_with_metadata.is_third_party_request() &&
       setting_with_metadata.allow_partitioned_cookies()) {
     if (IsThirdPartyPhaseoutEnabled() &&
         !setting_with_metadata.is_explicit_setting()) {

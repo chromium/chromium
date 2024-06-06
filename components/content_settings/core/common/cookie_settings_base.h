@@ -157,7 +157,8 @@ class CookieSettingsBase {
         ContentSetting cookie_setting,
         bool allow_partitioned_cookies,
         bool is_explicit_setting,
-        ThirdPartyCookieAllowMechanism third_party_cookie_allow_mechanism);
+        ThirdPartyCookieAllowMechanism third_party_cookie_allow_mechanism,
+        bool is_third_party_request);
 
     // Returns true iff the setting is "block" due to the user's
     // third-party-cookie-blocking setting.
@@ -175,6 +176,8 @@ class CookieSettingsBase {
       return third_party_cookie_allow_mechanism_;
     }
 
+    bool is_third_party_request() const { return is_third_party_request_; }
+
    private:
     // The setting itself.
     ContentSetting cookie_setting_ = ContentSetting::CONTENT_SETTING_ALLOW;
@@ -188,6 +191,9 @@ class CookieSettingsBase {
 
     // The mechanism to enable third-party cookie access.
     ThirdPartyCookieAllowMechanism third_party_cookie_allow_mechanism_;
+
+    // Whether the request is considered third-party.
+    bool is_third_party_request_;
   };
 
   // Set of types relevant for CookieSettings.
@@ -320,10 +326,6 @@ class CookieSettingsBase {
       bool grants);
 
  protected:
-  // Returns true iff the request is considered third-party.
-  static bool IsThirdPartyRequest(const GURL& url,
-                                  const net::SiteForCookies& site_for_cookies);
-
   // Returns the URL to be considered "first-party" for the given request. If
   // the `top_frame_origin` is non-empty, it is chosen; otherwise, the
   // `site_for_cookies` is used.
@@ -332,8 +334,8 @@ class CookieSettingsBase {
 
   CookieSettingWithMetadata GetCookieSettingInternal(
       const GURL& url,
+      const net::SiteForCookies& site_for_cookies,
       const GURL& first_party_url,
-      bool is_third_party_request,
       net::CookieSettingOverrides overrides,
       SettingInfo* info) const;
 
