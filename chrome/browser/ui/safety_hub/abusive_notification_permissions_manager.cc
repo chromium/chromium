@@ -237,6 +237,10 @@ void AbusiveNotificationPermissionsManager::PerformSafeBrowsingChecks(
 bool AbusiveNotificationPermissionsManager::ShouldCheckOrigin(
     const ContentSettingPatternSource& setting) const {
   DCHECK(hcsm_);
+  // Skip wildcard patterns that don't belong to a single origin.
+  if (!setting.primary_pattern.MatchesSingleOrigin()) {
+    return false;
+  }
   if (setting.setting_value == CONTENT_SETTING_ALLOW) {
     // Secondary pattern should be wildcard for notification permissions. If
     // not, the permission should be ignored.
