@@ -67,7 +67,7 @@ HttpsUpgradesNavigationThrottle::MaybeCreateThrottleFor(
   if (base::FeatureList::IsEnabled(features::kHttpsFirstModeIncognito)) {
     if (profile->IsIncognitoProfile() && prefs &&
         prefs->GetBoolean(prefs::kHttpsFirstModeIncognito)) {
-      interstitial_state.enabled_by_pref = true;
+      interstitial_state.enabled_by_incognito = true;
     }
   }
 

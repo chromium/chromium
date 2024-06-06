@@ -150,9 +150,15 @@ enum class SiteEngagementHeuristicState {
 
 // Stores the parameters to decide whether to show an interstitial for the
 // current site.
+// TODO(crbug.com/40937027): Consider making this a variant used to track which
+// specific feature is being applied to simplify code reasoning elsewhere.
 struct HttpInterstitialState {
   // Whether HTTPS-First Mode is enabled using the global UI toggle.
   bool enabled_by_pref = false;
+
+  // Whether HTTPS-First Mode is enabled because the navigation is in Incognito
+  // (when HFM-in-Incognito is enabled).
+  bool enabled_by_incognito = false;
 
   // Whether HTTPS-First Mode is enabled for the current site due to the
   // site engagement heuristic.
@@ -195,8 +201,8 @@ void RecordSiteEngagementHeuristicEnforcementDuration(
 //
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. Values may be added to offer greater
-// specificity in the future. Keep in sync with SiteEngagementHeuristicState
-// in enums.xml.
+// specificity in the future. Keep in sync with HttpsFirstModeInterstitialReason
+// in security/enums.xml.
 enum class InterstitialReason {
   kUnknown = 0,
   // The interstitial was shown because the user enabled the UI pref.
@@ -207,9 +213,11 @@ enum class InterstitialReason {
   // The interstitial was shown because of the Site Engagement heuristic.
   kSiteEngagementHeuristic = 3,
   // The interstitial was shown because of the Typically Secure User heuristic.
-  kTypicallySecureUserHeuristic = 3,
+  kTypicallySecureUserHeuristic = 4,
+  // The interstitial was shown because of HTTPS-First Mode in Incognito.
+  kIncognito = 5,
 
-  kMaxValue = kTypicallySecureUserHeuristic,
+  kMaxValue = kIncognito,
 };
 
 void RecordInterstitialReason(const HttpInterstitialState& interstitial_state);

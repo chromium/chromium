@@ -116,6 +116,10 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="kTypicallySecureUserHeuristic">
     The interstitial was shown because of the Typically Secure User heuristic.
   </int>
+  <int value="5" label="kIncognito">
+    The interstitial was shown because the user was in Incognito mode and
+    HTTPS-First Mode in Incognito was enabled.
+  </int>
 </enum>
 
 <enum name="HttpsFirstModeNavigationEvent">

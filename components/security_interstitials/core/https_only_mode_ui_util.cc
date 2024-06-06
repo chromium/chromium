@@ -39,6 +39,10 @@ void PopulateHttpsOnlyModeStringsForBlockingPage(
     primary_paragraph_id =
         IDS_HTTPS_ONLY_MODE_FOR_TYPICALLY_SECURE_BROWSING_PRIMARY_PARAGRAPH;
   }
+  // TODO(crbug.com/40937027): Customize interstitial strings for
+  // HFM-in-Incognito here. (HTTPS-First Mode in Incognito is the least
+  // specific, so the customizations should only apply if the user has not opted
+  // in to full HTTPS-First Mode and no other feature applies.)
 
   load_time_data.Set("primaryParagraph",
                      l10n_util::GetStringUTF16(primary_paragraph_id));

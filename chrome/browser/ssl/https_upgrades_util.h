@@ -36,6 +36,13 @@ bool IsInterstitialEnabled(
     const security_interstitials::https_only_mode::HttpInterstitialState&
         state);
 
+// Returns true if non-unique hostnames should be exempted from warnings.
+// Different feature variations have different strictness levels on what to warn
+// the user about.
+bool ShouldExemptNonUniqueHostnames(
+    const security_interstitials::https_only_mode::HttpInterstitialState&
+        state);
+
 // An instance of this class adds `hostnames` to the HttpAllowlist enterprise
 // policy for testing and clears the allowlist when it goes out of scope.
 class ScopedAllowHttpForHostnamesForTesting {

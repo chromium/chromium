@@ -195,13 +195,6 @@ HttpsUpgradesInterceptor::MaybeCreateInterceptor(
   bool https_first_mode_enabled =
       prefs && prefs->GetBoolean(prefs::kHttpsOnlyModeEnabled);
 
-  if (base::FeatureList::IsEnabled(features::kHttpsFirstModeIncognito)) {
-    if (profile->IsIncognitoProfile() && prefs &&
-        prefs->GetBoolean(prefs::kHttpsFirstModeIncognito)) {
-      https_first_mode_enabled = true;
-    }
-  }
-
   return std::make_unique<HttpsUpgradesInterceptor>(
       frame_tree_node_id, https_first_mode_enabled, navigation_ui_data);
 }
@@ -267,6 +260,13 @@ void HttpsUpgradesInterceptor::MaybeCreateLoader(
   interstitial_state_ = std::make_unique<
       security_interstitials::https_only_mode::HttpInterstitialState>();
   interstitial_state_->enabled_by_pref = http_interstitial_enabled_by_pref_;
+  auto* prefs = profile->GetPrefs();
+  if (base::FeatureList::IsEnabled(features::kHttpsFirstModeIncognito)) {
+    if (prefs && prefs->GetBoolean(prefs::kHttpsFirstModeIncognito) &&
+        profile->IsIncognitoProfile()) {
+      interstitial_state_->enabled_by_incognito = true;
+    }
+  }
   // StatefulSSLHostStateDelegate can be null during tests.
   if (state && state->IsHttpsEnforcedForUrl(tentative_resource_request.url,
                                             storage_partition)) {
@@ -298,22 +298,20 @@ void HttpsUpgradesInterceptor::MaybeCreateLoader(
     return;
   }
 
-  // Don't exclude local-network requests (for now) but record metrics for them.
+  // For HTTPS-Upgrades and HTTPS-First Mode in Incognito (which is default
+  // enabled), skip attempting to upgrade non-unique hostnames as they can't get
+  // publicly-trusted certificates.
+  //
+  // Full HTTPS-First Mode does not exempt these hosts in order to ensure that
+  // Chrome shows the HTTP interstitial before navigation to them. Potentially,
+  // these could fast-fail instead and skip directly to the interstitial.
   if (net::IsHostnameNonUnique(tentative_resource_request.url.host())) {
+    // All feature variations should record the navigation metric.
     RecordNavigationRequestSecurityLevel(
         NavigationRequestSecurityLevel::kNonUniqueHostname);
 
-    // For HTTPS-Upgrades, skip attempting to upgrade non-unique hostnames
-    // as they can't get publicly-trusted certificates.
-    //
-    // HTTPS-First Mode does not exempt these hosts in order to ensure that
-    // Chrome shows the HTTP interstitial before navigation to them.
-    // Potentially, these could fast-fail instead and skip directly to the
-    // interstitial.
-    //
-    // In any case, record this as a fallback event so that we don't
-    // auto-enable HFM due to typically secure user heuristic and start showing
-    // interstitials on it.
+    // Record this as a fallback event so that we don't auto-enable HFM due to
+    // typically secure user heuristic and start showing interstitials on it.
     // HttpsUpgradesBrowserTest.
     //   UrlWithHttpScheme_NonUniqueHostname_ShouldNotInterstitial_TypicallySecureUser
     // should fail when this check is removed.
@@ -322,8 +320,7 @@ void HttpsUpgradesInterceptor::MaybeCreateLoader(
     if (hfm_service) {
       hfm_service->RecordHttpsUpgradeFallbackEvent();
     }
-    if (base::FeatureList::IsEnabled(features::kHttpsUpgrades) &&
-        !IsInterstitialEnabled(*interstitial_state_)) {
+    if (ShouldExemptNonUniqueHostnames(*interstitial_state_)) {
       std::move(callback).Run({});
       return;
     }

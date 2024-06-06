@@ -27,6 +27,9 @@ InterstitialReason GetInterstitialReason(
   if (interstitial_state.enabled_by_pref) {
     return InterstitialReason::kPref;
   }
+  if (interstitial_state.enabled_by_incognito) {
+    return InterstitialReason::kIncognito;
+  }
   return InterstitialReason::kUnknown;
 }
 
