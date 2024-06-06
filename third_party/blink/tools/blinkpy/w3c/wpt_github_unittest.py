@@ -44,7 +44,7 @@ class WPTGitHubTest(unittest.TestCase):
     def test_auth_token(self):
         self.assertEqual(
             self.wpt_github.auth_token(),
-            base64.encodestring(
+            base64.encodebytes(
                 'rutabaga:decafbad'.encode('utf-8')).strip().decode('utf-8'))
 
     def test_extract_link_next(self):
