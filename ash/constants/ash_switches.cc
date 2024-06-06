@@ -316,6 +316,10 @@ const char kAshUiModeTablet[] = "touch_view";
 // instead of displaying an interactive animation.
 const char kAuraLegacyPowerButton[] = "aura-legacy-power-button";
 
+// Sets the birch ranker to assume it is morning for birch chip ranking
+// purposes.
+const char kBirchIsMorning[] = "birch-is-morning";
+
 // Switch used to pass in a secret key for Campbell feature. Unless the correct
 // secret key is provided, Campbell feature will remain disabled, regardless of
 // the state of the associated feature flag.

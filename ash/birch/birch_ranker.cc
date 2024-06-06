@@ -7,7 +7,9 @@
 #include <algorithm>
 
 #include "ash/birch/birch_item.h"
+#include "ash/constants/ash_switches.h"
 #include "base/check.h"
+#include "base/command_line.h"
 #include "base/time/time.h"
 
 namespace {
@@ -254,6 +256,10 @@ float BirchRanker::GetReleaseNotesItemRanking(
 }
 
 bool BirchRanker::IsMorning() const {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kBirchIsMorning)) {
+    return true;
+  }
   base::Time last_midnight = now_.LocalMidnight();
   base::Time five_am_today = last_midnight + base::Hours(5);
   base::Time noon_today = last_midnight + base::Hours(12);
