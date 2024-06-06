@@ -5971,13 +5971,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.VideoCapture.Device.Effect.{VideoEffect}"
-    enum="BooleanSupported" expires_after="2025-01-23">
+<histogram name="Media.VideoCapture.Device.Effect2.{VideoEffect}"
+    enum="VideoEffectStatus" expires_after="2025-06-04">
   <owner>mfoltz@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
-    Records {VideoEffect} support for each video capture device opened. Recorded
-    in DeviceMediaToMojoAdapter::StartInternal in the video capture service.
+    Records {VideoEffect} support and whether it is enabled for each video
+    capture device opened. Recorded in DeviceMediaToMojoAdapter::StartInternal
+    in the video capture service.
   </summary>
   <token key="VideoEffect">
     <variant name="BackgroundBlur" summary="Background Blur"/>

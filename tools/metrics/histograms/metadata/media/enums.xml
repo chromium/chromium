@@ -2138,6 +2138,12 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Using DirectShow as fallback"/>
 </enum>
 
+<enum name="VideoEffectStatus">
+  <int value="0" label="Unsupported"/>
+  <int value="1" label="Supported"/>
+  <int value="2" label="Enabled"/>
+</enum>
+
 <enum name="VideoFrameStorageType">
   <int value="0" label="Invalid"/>
   <int value="1" label="Unknown"/>
