@@ -151,14 +151,10 @@ void TabManager::Start() {
   // PM. The TM and PM must always exist together.
   if (performance_manager::PerformanceManager::IsAvailable()) {
     performance_manager::PerformanceManager::CallOnGraph(
-        FROM_HERE, base::BindOnce(
-                       [](std::unique_ptr<ResourceCoordinatorSignalObserver>
-                              rc_signal_observer,
-                          performance_manager::Graph* graph) {
-                         graph->PassToGraph(std::move(rc_signal_observer));
-                       },
-                       std::make_unique<ResourceCoordinatorSignalObserver>(
-                           weak_ptr_factory_.GetWeakPtr())));
+        FROM_HERE, base::BindOnce([](performance_manager::Graph* graph) {
+          graph->PassToGraph(
+              std::make_unique<TabManagerResourceCoordinatorSignalObserver>());
+        }));
   }
 
   g_browser_process->resource_coordinator_parts()
