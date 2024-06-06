@@ -400,52 +400,64 @@ std::optional<base::span<const uint32_t>> GetConv2DOutputPermutation(
   }
 }
 
-blink::V8MLConv2dFilterOperandLayout::Enum GetMojoConv2dFilterLayout(
+std::optional<base::span<const uint32_t>> GetConv2DFilterPermutation(
     blink_mojom::InputOperandLayout input_layout,
-    bool depthwise) {
-  // These are the only filter layouts supported by the Mojo interface.
+    bool depthwise,
+    blink::V8MLConv2dFilterOperandLayout filter_layout) {
   switch (input_layout) {
     case blink_mojom::InputOperandLayout::kChannelsFirst:
-      return blink::V8MLConv2dFilterOperandLayout::Enum::kOihw;
+      // Mojo expects the OIHW layout.
+      switch (filter_layout.AsEnum()) {
+        case blink::V8MLConv2dFilterOperandLayout::Enum::kOihw:
+          return std::nullopt;
+        case blink::V8MLConv2dFilterOperandLayout::Enum::kHwio:
+          return base::span({3u, 2u, 0u, 1u});
+        case blink::V8MLConv2dFilterOperandLayout::Enum::kOhwi:
+          return base::span({0u, 3u, 1u, 2u});
+        case blink::V8MLConv2dFilterOperandLayout::Enum::kIhwo:
+          return base::span({3u, 0u, 1u, 2u});
+      }
+      break;
     case blink_mojom::InputOperandLayout::kChannelsLast:
-      return depthwise ? blink::V8MLConv2dFilterOperandLayout::Enum::kIhwo
-                       : blink::V8MLConv2dFilterOperandLayout::Enum::kOhwi;
+      if (depthwise) {
+        // Mojo expects the IHWO layout.
+        switch (filter_layout.AsEnum()) {
+          case blink::V8MLConv2dFilterOperandLayout::Enum::kOihw:
+            return base::span({1u, 2u, 3u, 0u});
+          case blink::V8MLConv2dFilterOperandLayout::Enum::kHwio:
+            return base::span({2u, 0u, 1u, 3u});
+          case blink::V8MLConv2dFilterOperandLayout::Enum::kOhwi:
+            return base::span({3u, 1u, 2u, 0u});
+          case blink::V8MLConv2dFilterOperandLayout::Enum::kIhwo:
+            return std::nullopt;
+        }
+      } else {
+        switch (filter_layout.AsEnum()) {
+          // Mojo expects the OHWI layout.
+          case blink::V8MLConv2dFilterOperandLayout::Enum::kOihw:
+            return base::span({0u, 2u, 3u, 1u});
+          case blink::V8MLConv2dFilterOperandLayout::Enum::kHwio:
+            return base::span({3u, 0u, 1u, 2u});
+          case blink::V8MLConv2dFilterOperandLayout::Enum::kOhwi:
+            return std::nullopt;
+          case blink::V8MLConv2dFilterOperandLayout::Enum::kIhwo:
+            return base::span({3u, 1u, 2u, 0u});
+        }
+      }
+      break;
   }
 }
 
-std::optional<base::span<const uint32_t>> GetConv2DFilterPermutation(
-    blink_mojom::InputOperandLayout input_layout,
-    blink::V8MLConv2dFilterOperandLayout filter_layout,
-    bool depthwise) {
-  blink::V8MLConv2dFilterOperandLayout::Enum expected_layout =
-      GetMojoConv2dFilterLayout(input_layout, depthwise);
-  if (filter_layout == expected_layout) {
-    return std::nullopt;
-  }
-
-  // TODO(https://crbug.com/332989710): Support more filter layouts by expanding
-  // this method. This only handles the cases which are accepted by
-  // ValidateConv2dDefaultFilterLayout().
+std::optional<base::span<const uint32_t>> GetConvTranspose2DFilterPermutation(
+    blink::V8MLConvTranspose2dFilterOperandLayout filter_layout) {
+  // Mojo always expects IOHW layout.
   switch (filter_layout.AsEnum()) {
-    case blink::V8MLConv2dFilterOperandLayout::Enum::kOihw:
-      switch (expected_layout) {
-        case blink::V8MLConv2dFilterOperandLayout::Enum::kIhwo:
-          return base::span({1u, 2u, 3u, 0u});
-        case blink::V8MLConv2dFilterOperandLayout::Enum::kOhwi:
-          return base::span({0u, 2u, 3u, 1u});
-        default:
-          NOTREACHED_NORETURN();
-      }
-    case blink::V8MLConv2dFilterOperandLayout::Enum::kIhwo:
-      CHECK_EQ(expected_layout,
-               blink::V8MLConv2dFilterOperandLayout::Enum::kOihw);
+    case blink::V8MLConvTranspose2dFilterOperandLayout::Enum::kIohw:
+      return std::nullopt;
+    case blink::V8MLConvTranspose2dFilterOperandLayout::Enum::kHwoi:
+      return base::span({3u, 2u, 0u, 1u});
+    case blink::V8MLConvTranspose2dFilterOperandLayout::Enum::kOhwi:
       return base::span({3u, 0u, 1u, 2u});
-    case blink::V8MLConv2dFilterOperandLayout::Enum::kOhwi:
-      CHECK_EQ(expected_layout,
-               blink::V8MLConv2dFilterOperandLayout::Enum::kOihw);
-      return base::span({0u, 3u, 1u, 2u});
-    default:
-      NOTREACHED_NORETURN();
   }
 }
 
@@ -588,23 +600,6 @@ bool IsDepthwiseConv2d(const MLOperator* conv2d) {
   return webnn::IsDepthwiseConv2d(input_channels, output_channels, groups);
 }
 
-std::optional<String> ValidateConv2dDefaultFilterLayout(
-    blink::V8MLInputOperandLayout input_layout,
-    blink::V8MLConv2dFilterOperandLayout filter_layout,
-    bool depthwise) {
-  blink::V8MLConv2dFilterOperandLayout::Enum expected_layout =
-      GetMojoConv2dFilterLayout(
-          BlinkInputOperandLayoutToMojo(input_layout.AsEnum()), depthwise);
-
-  // TODO(crbug.com/332989710): support other layouts by transposing the
-  // filter operand.
-  if (expected_layout != filter_layout) {
-    return String::Format("The filter layout %s is not supported.",
-                          filter_layout.AsCStr());
-  }
-
-  return std::nullopt;
-}
 
 template <typename MLConv2dOptionsType>
 std::optional<String> SerializeConv2dOperation(
@@ -652,45 +647,30 @@ std::optional<String> SerializeConv2dOperation(
   conv2d_mojo->output_operand_id = output_operand_id;
 
   const MLOperand* filter_operand = conv2d->Inputs()[1];
+  std::optional<base::span<const uint32_t>> filter_permutation;
+
   if constexpr (std::is_same<MLConv2dOptionsType, MLConv2dOptions>::value) {
-    bool depthwise = IsDepthwiseConv2d(conv2d);
     conv2d_mojo->kind = blink_mojom::Conv2d::Kind::kDirect;
 
-    // The filter layout is being discussed to simplify in working group
-    // https://github.com/webmachinelearning/webnn/issues/324.
-    const auto validation_result = ValidateConv2dDefaultFilterLayout(
-        options->inputLayout(), options->filterLayout(), depthwise);
-    if (validation_result) {
-      return validation_result.value();
-    }
-
-    const std::optional<base::span<const uint32_t>> filter_permutation =
+    bool depthwise = IsDepthwiseConv2d(conv2d);
+    filter_permutation =
         GetConv2DFilterPermutation(context_properties.conv2d_input_layout,
-                                   options->filterLayout(), depthwise);
-    if (filter_permutation.has_value()) {
-      conv2d_mojo->filter_operand_id = InsertInputTranspose(
-          operand_to_id_map, filter_operand, *filter_permutation, graph_info);
-    } else {
-      conv2d_mojo->filter_operand_id = operand_to_id_map.at(filter_operand);
-    }
+                                   depthwise, options->filterLayout());
   } else if constexpr (std::is_same<MLConv2dOptionsType,
                                     MLConvTranspose2dOptions>::value) {
     conv2d_mojo->kind = blink_mojom::Conv2d::Kind::kTransposed;
 
-    // TODO(crbug.com/332989710): support other layouts by transposing the
-    // filter operand.
-    if (options->filterLayout() !=
-        blink::V8MLConvTranspose2dFilterOperandLayout::Enum::kIohw) {
-      // The filter layout is being discussed to simplify other variants in
-      // WebNN working group
-      // https://github.com/webmachinelearning/webnn/issues/324.
-      return String::Format("The filter layout %s is not supported.",
-                            options->filterLayout().AsCStr());
-    }
-
-    conv2d_mojo->filter_operand_id = operand_to_id_map.at(filter_operand);
+    filter_permutation =
+        GetConvTranspose2DFilterPermutation(options->filterLayout());
   } else {
     NOTREACHED_NORETURN();
+  }
+
+  if (filter_permutation) {
+    conv2d_mojo->filter_operand_id = InsertInputTranspose(
+        operand_to_id_map, filter_operand, *filter_permutation, graph_info);
+  } else {
+    conv2d_mojo->filter_operand_id = operand_to_id_map.at(filter_operand);
   }
 
   // Set the padding from WebNN explicit padding that is in
