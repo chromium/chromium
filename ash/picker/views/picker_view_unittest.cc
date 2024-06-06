@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "ash/picker/metrics/picker_session_metrics.h"
 #include "ash/picker/mock_picker_asset_fetcher.h"
@@ -105,6 +106,7 @@ class FakePickerViewDelegate : public PickerViewDelegate {
     std::vector<PickerCategory> available_categories;
     FakeSearchFunction search_function;
     PickerActionType action_type = PickerActionType::kInsert;
+    std::vector<std::string> recent_emojis;
   };
 
   FakePickerViewDelegate() = default;
@@ -174,7 +176,7 @@ class FakePickerViewDelegate : public PickerViewDelegate {
 
   std::vector<std::string> GetRecentEmoji(
       ui::EmojiPickerCategory category) override {
-    return {};
+    return options_.recent_emojis;
   }
 
   std::optional<PickerSearchResult> last_inserted_result() const {
@@ -660,6 +662,21 @@ TEST_F(PickerViewTest, SearchingShowsExpressionResultsInEmojiBar) {
                   ->children(),
               ElementsAre(Truly(&views::IsViewClass<PickerEmojiItemView>),
                           Truly(&views::IsViewClass<PickerSymbolItemView>)));
+}
+
+TEST_F(PickerViewTest, InitiallyShowsRecentEmojis) {
+  FakePickerViewDelegate delegate({
+      .recent_emojis = {"😊"},
+  });
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+
+  PickerView* picker_view = GetPickerViewFromWidget(*widget);
+  EXPECT_TRUE(picker_view->emoji_bar_view_for_testing().GetVisible());
+  EXPECT_THAT(picker_view->emoji_bar_view_for_testing()
+                  .item_row_for_testing()
+                  ->children(),
+              ElementsAre(Truly(&views::IsViewClass<PickerEmojiItemView>)));
 }
 
 TEST_F(PickerViewTest, ClearsResultsWhenGoingBackToZeroState) {

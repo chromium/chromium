@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "ash/ash_element_identifiers.h"
 #include "ash/picker/metrics/picker_session_metrics.h"
@@ -28,6 +29,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -246,12 +248,6 @@ void PickerView::NotifyPseudoFocusChanged(views::View* view) {
   search_field_view_->SetTextfieldActiveDescendant(view);
 }
 
-std::vector<std::string> PickerView::GetRecentEmoji(
-    ui::EmojiPickerCategory category) {
-  return delegate_ == nullptr ? std::vector<std::string>()
-                              : delegate_->GetRecentEmoji(category);
-}
-
 void PickerView::SelectSearchResult(const PickerSearchResult& result) {
   if (const PickerSearchResult::CategoryData* category_data =
           std::get_if<PickerSearchResult::CategoryData>(&result.data())) {
@@ -369,12 +365,7 @@ void PickerView::StartSearch(const std::u16string& query) {
     SetActivePage(category_view_);
   } else {
     search_results_view_->ClearSearchResults();
-    // TODO: b/340692683 - Show recent emojis instead of placeholder emojis.
-    emoji_bar_view_->SetSearchResults(PickerSearchResultsSection(
-        PickerSectionType::kExpressions,
-        {{PickerSearchResult::Emoji(u"😀"), PickerSearchResult::Emoji(u"😃"),
-          PickerSearchResult::Emoji(u"😄")}},
-        /*has_more_results=*/false));
+    ResetEmojiBarToRecentEmojis();
     SetActivePage(zero_state_view_);
   }
 }
@@ -521,12 +512,7 @@ void PickerView::AddEmojiBarView() {
   emoji_bar_view_ = AddChildViewAt(
       std::make_unique<PickerEmojiBarView>(this, kPickerViewMaxSize.width()),
       0);
-  // TODO: b/340692683 - Show recent emojis instead of placeholder emojis.
-  emoji_bar_view_->SetSearchResults(PickerSearchResultsSection(
-      PickerSectionType::kExpressions,
-      {{PickerSearchResult::Emoji(u"😀"), PickerSearchResult::Emoji(u"😃"),
-        PickerSearchResult::Emoji(u"😄")}},
-      /*has_more_results=*/false));
+  ResetEmojiBarToRecentEmojis();
 }
 
 void PickerView::SetActivePage(PickerPageView* page_view) {
@@ -561,6 +547,25 @@ void PickerView::OnSearchBackButtonPressed() {
   search_field_view_->SetPlaceholderText(GetSearchFieldPlaceholderText());
   search_field_view_->SetQueryText(u"");
   SetActivePage(zero_state_view_);
+}
+
+void PickerView::ResetEmojiBarToRecentEmojis() {
+  if (delegate_ == nullptr) {
+    emoji_bar_view_->ClearSearchResults();
+    return;
+  }
+
+  std::vector<std::string> recent_emojis =
+      delegate_->GetRecentEmoji(ui::EmojiPickerCategory::kEmojis);
+  std::vector<PickerSearchResult> emoji_bar_results;
+  emoji_bar_results.reserve(recent_emojis.size());
+  for (const std::string& emoji : recent_emojis) {
+    emoji_bar_results.push_back(
+        PickerSearchResult::Emoji(base::UTF8ToUTF16(emoji)));
+  }
+  emoji_bar_view_->SetSearchResults(PickerSearchResultsSection(
+      PickerSectionType::kExpressions, emoji_bar_results,
+      /*has_more_results=*/false));
 }
 
 BEGIN_METADATA(PickerView)

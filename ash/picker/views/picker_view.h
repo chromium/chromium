@@ -75,8 +75,6 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   void GetSuggestedZeroStateEditorResults(
       SuggestedEditorResultsCallback callback) override;
   void NotifyPseudoFocusChanged(views::View* view) override;
-  std::vector<std::string> GetRecentEmoji(
-      ui::EmojiPickerCategory category) override;
 
   // PickerSearchResultsViewDelegate:
   void SelectSearchResult(const PickerSearchResult& result) override;
@@ -153,6 +151,10 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
 
   // Called when the search field back button is pressed.
   void OnSearchBackButtonPressed();
+
+  // Clears the current results in the emoji bar and shows recent emojis
+  // instead.
+  void ResetEmojiBarToRecentEmojis();
 
   std::optional<PickerCategory> selected_category_;
 

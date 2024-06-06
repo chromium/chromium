@@ -89,10 +89,6 @@ class MockZeroStateViewDelegate : public PickerZeroStateViewDelegate {
               GetActionForResult,
               (const PickerSearchResult& result),
               (override));
-  MOCK_METHOD(std::vector<std::string>,
-              GetRecentEmoji,
-              (ui::EmojiPickerCategory category),
-              (override));
 };
 
 class PickerZeroStateViewTest : public views::ViewsTestBase {

@@ -44,10 +44,6 @@ class ASH_EXPORT PickerZeroStateViewDelegate {
 
   virtual PickerActionType GetActionForResult(
       const PickerSearchResult& result) = 0;
-
-  // Gets history of emoji picker for certain `category`.
-  virtual std::vector<std::string> GetRecentEmoji(
-      ui::EmojiPickerCategory category) = 0;
 };
 
 }  // namespace ash
