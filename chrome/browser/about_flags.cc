@@ -10430,15 +10430,20 @@ const FeatureEntry kFeatureEntries[] = {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
+    {"site-search-settings-policy",
+     flag_descriptions::kSiteSearchSettingsPolicyName,
+     flag_descriptions::kSiteSearchSettingsPolicyDescription, kOsAll,
+     FEATURE_VALUE_TYPE(omnibox::kSiteSearchSettingsPolicy)},
+
     {"show-featured-enterprise-site-search",
      flag_descriptions::kShowFeaturedEnterpriseSiteSearchName,
      flag_descriptions::kShowFeaturedEnterpriseSiteSearchDescription, kOsAll,
      FEATURE_VALUE_TYPE(omnibox::kShowFeaturedEnterpriseSiteSearch)},
 
-    {"site-search-settings-policy",
-     flag_descriptions::kSiteSearchSettingsPolicyName,
-     flag_descriptions::kSiteSearchSettingsPolicyDescription, kOsAll,
-     FEATURE_VALUE_TYPE(omnibox::kSiteSearchSettingsPolicy)},
+    {"show-featured-enterprise-site-search-iph",
+     flag_descriptions::kShowFeaturedEnterpriseSiteSearchIPHName,
+     flag_descriptions::kShowFeaturedEnterpriseSiteSearchIPHDescription, kOsAll,
+     FEATURE_VALUE_TYPE(omnibox::kShowFeaturedEnterpriseSiteSearchIPH)},
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

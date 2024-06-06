@@ -3258,6 +3258,12 @@ const char kShowFeaturedEnterpriseSiteSearchName[] =
 const char kShowFeaturedEnterpriseSiteSearchDescription[] =
     "Allow Enterprise site search engines created by the SiteSearchSettings "
     "policy to be featured in the Omnibox on @ state.";
+
+const char kShowFeaturedEnterpriseSiteSearchIPHName[] =
+    "Show IPH for featured Enterprise search";
+const char kShowFeaturedEnterpriseSiteSearchIPHDescription[] =
+    "Show an IPH on zero-suggest in the Omnibox for featured Enterprise search "
+    "engines created by the SiteSearchSettings policy. ";
 #endif
 
 const char kShowPerformanceMetricsHudName[] = "Show performance metrics in HUD";

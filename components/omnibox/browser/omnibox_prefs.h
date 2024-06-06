@@ -95,6 +95,12 @@ inline constexpr char kZeroSuggestCachedResultsWithURL[] =
 // user deletes (presses the X button on) the suggestion.
 inline constexpr char kShowGeminiIPH[] = "omnibox.show_gemini_iph";
 
+// Boolean that specifies whether to show the featured Enterprise search IPH
+// suggestion at the bottom of the Omnibox in ZPS. This is true until a user
+// deletes (presses the X button on) the suggestion.
+inline constexpr char kShowFeaturedEnterpriseSiteSearchIPHPrefName[] =
+    "omnibox.show_featured_enterprise_search_iph";
+
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
 // Returns the stored visibility preference for |suggestion_group_id|.

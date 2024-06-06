@@ -1103,6 +1103,13 @@ bool IsStarterPackIPHEnabled() {
 }
 // <- Site Search Starter Pack
 // ---------------------------------------------------------
+// Featured Enterprise Site Search ->
+bool IsFeaturedEnterpriseSearchIPHEnabled() {
+  return base::FeatureList::IsEnabled(
+      omnibox::kShowFeaturedEnterpriseSiteSearchIPH);
+}
+// <- Featured Enterprise Site Search
+// ---------------------------------------------------------
 
 }  // namespace OmniboxFieldTrial
 

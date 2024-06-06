@@ -734,6 +734,10 @@ extern const base::FeatureParam<int> kStarterPackIPHPerSessionLimit;
 // directing users to certain starter pack engines.
 bool IsStarterPackIPHEnabled();
 
+// When true, enables an informational IPH message at the bottom of the Omnibox
+// directing users to featured Enterprise search created by policy.
+bool IsFeaturedEnterpriseSearchIPHEnabled();
+
 // <- Site Search Starter Pack
 // ---------------------------------------------------------
 

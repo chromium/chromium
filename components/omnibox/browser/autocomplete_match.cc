@@ -45,6 +45,10 @@
 #include "ui/gfx/vector_icon_types.h"
 #include "url/third_party/mozilla/url_parse.h"
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#include "components/omnibox/browser/featured_search_provider.h"
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
 #if (!BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !BUILDFLAG(IS_IOS)
 #include "components/omnibox/browser/suggestion_answer.h"
 #include "components/omnibox/browser/vector_icons.h"  // nogncheck
@@ -591,14 +595,21 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
     case Type::CALCULATOR:
       return omnibox::kCalculatorChromeRefreshIcon;
 
-    case Type::NULL_RESULT_MESSAGE: {
-      // The IPH suggestion uses the spark icon. Otherwise (for No Results
+    case Type::NULL_RESULT_MESSAGE:
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+      // Select the icon according to the type of IPH. Otherwise (for No Results
       // Found), fallthrough to use the empty icon.
       if (IsIPHSuggestion()) {
-        return omnibox::kSparkIcon;
+        switch (FeaturedSearchProvider::GetIPHType(*this)) {
+          case FeaturedSearchProvider::IPHType::kGemini:
+            return omnibox::kSparkIcon;
+          case FeaturedSearchProvider::IPHType::kFeaturedEnterpriseSearch:
+            return omnibox::kEnterpriseIcon;
+        }
       }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
       ABSL_FALLTHROUGH_INTENDED;
-    }
+
     case Type::SEARCH_SUGGEST_TAIL:
       return empty_icon;
 
@@ -1462,7 +1473,8 @@ bool AutocompleteMatch::IsTrendSuggestion() const {
 }
 
 bool AutocompleteMatch::IsIPHSuggestion() const {
-  if (!OmniboxFieldTrial::IsStarterPackIPHEnabled()) {
+  if (!OmniboxFieldTrial::IsStarterPackIPHEnabled() &&
+      !OmniboxFieldTrial::IsFeaturedEnterpriseSearchIPHEnabled()) {
     return false;
   }
 

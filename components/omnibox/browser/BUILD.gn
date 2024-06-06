@@ -64,6 +64,7 @@ aggregate_vector_icons("omnibox_vector_icons") {
     "drive_sheets.icon",
     "drive_slides.icon",
     "drive_video.icon",
+    "enterprise.icon",
     "extension_app.icon",
     "find_in_page.icon",
     "find_in_page_chrome_refresh.icon",

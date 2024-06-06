@@ -7882,6 +7882,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "show-featured-enterprise-site-search-iph",
+    "owners": [ "ftirelo@chromium.org", "pastarmovj@chromium.org" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "show-force-respect-ui-gains-toggle",
     "owners": ["eddyhsu@chromium.org"],
     "expiry_milestone": 130

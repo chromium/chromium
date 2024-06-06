@@ -497,6 +497,12 @@ BASE_FEATURE(kShowFeaturedEnterpriseSiteSearch,
              "ShowFeaturedEnterpriseSiteSearch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables an informational IPH message at the bottom of the Omnibox directing
+// users to featured Enterprise search engines created by policy.
+BASE_FEATURE(kShowFeaturedEnterpriseSiteSearchIPH,
+             "ShowFeaturedEnterpriseSiteSearchIPH",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, site search engines defined by policy are saved into prefs and
 // committed to the keyword database, so that they can be accessed from the
 // Omnibox and the Settings page.

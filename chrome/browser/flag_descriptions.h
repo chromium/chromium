@@ -1890,6 +1890,9 @@ extern const char kShowAutofillTypePredictionsDescription[];
     BUILDFLAG(IS_CHROMEOS)
 extern const char kShowFeaturedEnterpriseSiteSearchName[];
 extern const char kShowFeaturedEnterpriseSiteSearchDescription[];
+
+extern const char kShowFeaturedEnterpriseSiteSearchIPHName[];
+extern const char kShowFeaturedEnterpriseSiteSearchIPHDescription[];
 #endif
 
 extern const char kShowPerformanceMetricsHudName[];
