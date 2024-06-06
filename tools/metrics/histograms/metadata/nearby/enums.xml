@@ -31,6 +31,15 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Upgraded"/>
 </enum>
 
+<enum name="NearbyBluetoothAdapterAdvertisingSupport">
+  <int value="0" label="Extended Advertising And Scatternet Dual Role"/>
+  <int value="1" label="Extended Advertising Only"/>
+  <int value="2" label="Scatternet Dual Role Only"/>
+  <int value="3"
+      label="Neither Extended Advertising or Scatternet Dual Role, only
+             Legacy Advertising"/>
+</enum>
+
 <enum name="NearbyConnectionsConnectResult">
   <int value="0" label="Success"/>
   <int value="1" label="Auth Canceled"/>

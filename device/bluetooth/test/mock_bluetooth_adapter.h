@@ -143,6 +143,7 @@ class MockBluetoothAdapter : public BluetoothAdapter {
           std::unique_ptr<BluetoothLowEnergyScanFilter> filter,
           base::WeakPtr<BluetoothLowEnergyScanSession::Delegate> delegate));
   MOCK_METHOD0(GetSupportedRoles, std::vector<BluetoothRole>());
+  MOCK_CONST_METHOD0(IsExtendedAdvertisementsAvailable, bool());
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -190,9 +191,6 @@ class MockBluetoothAdapter : public BluetoothAdapter {
       std::unique_ptr<BluetoothAdvertisement::Data> advertisement_data,
       CreateAdvertisementCallback callback,
       AdvertisementErrorCallback error_callback) override;
-#if BUILDFLAG(IS_CHROMEOS)
-  MOCK_CONST_METHOD0(IsExtendedAdvertisementsAvailable, bool());
-#endif
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   void SetAdvertisingInterval(
       const base::TimeDelta& min,

@@ -30,6 +30,18 @@ chromium-metrics-reviews@google.com.
   <variant name=".WifiLan" summary="Wi-Fi LAN"/>
 </variants>
 
+<histogram name="Nearby.BluetoothAdapter.AdvertisingSupport"
+    enum="NearbyBluetoothAdapterAdvertisingSupport" expires_after="2025-04-30">
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the advertising support for the local Bluetooth Adapter. Emitted
+    when the Nearby utility process is started and the Bluetooth Adapter is
+    getting ready to be passed as a dependency; only emitted if Bluetooth is
+    supported.
+  </summary>
+</histogram>
+
 <histogram name="Nearby.Connections.BleV2.ConnectToGattServer.Duration"
     units="ms" expires_after="2025-04-30">
   <owner>julietlevesque@google.com</owner>
