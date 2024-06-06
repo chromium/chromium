@@ -1,0 +1,62 @@
+# Copyright 2024 The Crashpad Authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# This file is copied from
+# https://crsrc.org/c/build/config/fuchsia/gn_configs.gni?q=gn_configs.gni
+# with some local modifications to match the crashpad setup.
+
+# Path to the fuchsia SDK. This is intended for use in other templates &
+# rules to reference the contents of the fuchsia SDK.
+fuchsia_sdk = "//third_party/fuchsia/sdk/linux-amd64"
+
+# ID uniquely identifying the Fuchsia IDK build. This is exposed as a
+# property so it can be used to locate images and packages on GCS and
+# as a marker to indicate the "version" of the IDK.
+# Defaults to the id found in the manifest.json file of the SDK.
+fuchsia_sdk_id = ""
+
+# The target API level for this repository. Embedders should override this
+# value to specify the API level the packages produced from this repository
+# should be targeting, e.g. in their top-level //.gn file. A value of -1
+# means that no API level will be passed to the tools that consumes it.
+fuchsia_target_api_level = 18
+
+# The SDK manifest file. This is useful to include as a dependency
+# for some targets in order to cause a rebuild when the version of the
+# SDK is changed.
+fuchsia_sdk_manifest_file = "${fuchsia_sdk}/meta/manifest.json"
+
+# fuchsia_tool_dir is used to specify the directory in the SDK to locate
+# tools for the host cpu architecture. If the host_cpu is not recognized,
+# then tool dir defaults to x64.
+fuchsia_tool_dir = "${fuchsia_sdk}/tools/${host_cpu}"
+
+if (fuchsia_sdk_id == "") {
+  # Note: If we need to expose more than just the id in the future,
+  # we should consider exposing the entire json object for the metadata vs.
+  # adding a bunch of variables.
+  _meta = read_file(fuchsia_sdk_manifest_file, "json")
+  fuchsia_sdk_id = _meta.id
+}
+
+declare_args() {
+  # Specify a readelf_exec path to use. If not specified, the host's system
+  # executable will be used. Passed to populate_build_id_dir.py and
+  # prepare_package_inputs.py via the --readelf-exec flag.
+  # Must be a GN path (not an absolute path) since it is adjusted with
+  # rebase_path().
+  if (!defined(fuchsia_sdk_readelf_exec)) {
+    fuchsia_sdk_readelf_exec = ""
+  }
+}

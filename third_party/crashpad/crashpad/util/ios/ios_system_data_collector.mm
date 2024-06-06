@@ -27,29 +27,10 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "build/build_config.h"
+#include "util/mac/sysctl.h"
 #include "util/misc/clock.h"
 
 namespace {
-
-std::string ReadStringSysctlByName(const char* name) {
-  size_t buf_len;
-  if (sysctlbyname(name, nullptr, &buf_len, nullptr, 0) != 0) {
-    PLOG(WARNING) << "sysctlbyname (size) " << name;
-    return std::string();
-  }
-
-  if (buf_len == 0) {
-    return std::string();
-  }
-
-  std::string value(buf_len - 1, '\0');
-  if (sysctlbyname(name, &value[0], &buf_len, nullptr, 0) != 0) {
-    PLOG(WARNING) << "sysctlbyname " << name;
-    return std::string();
-  }
-
-  return value;
-}
 
 template <typename T, void (T::*M)(void)>
 void AddObserver(CFStringRef notification_name, T* observer) {
@@ -97,7 +78,7 @@ IOSSystemDataCollector::IOSSystemDataCollector()
   patch_version_ = base::saturated_cast<int>(version.patchVersion);
   processor_count_ =
       base::saturated_cast<int>([[NSProcessInfo processInfo] processorCount]);
-  build_ = ReadStringSysctlByName("kern.osversion");
+  build_ = ReadStringSysctlByName("kern.osversion", false);
   bundle_identifier_ =
       base::SysNSStringToUTF8([[NSBundle mainBundle] bundleIdentifier]);
 // If CRASHPAD_IS_IOS_APP_EXTENSION is defined, then the code is compiled with
@@ -110,7 +91,7 @@ IOSSystemDataCollector::IOSSystemDataCollector()
 #endif
 
 #if defined(ARCH_CPU_X86_64)
-  cpu_vendor_ = ReadStringSysctlByName("machdep.cpu.vendor");
+  cpu_vendor_ = ReadStringSysctlByName("machdep.cpu.vendor", false);
 #endif
   uint32_t addressable_bits = 0;
   size_t len = sizeof(uint32_t);

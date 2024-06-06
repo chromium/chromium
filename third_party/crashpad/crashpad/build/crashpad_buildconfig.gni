@@ -83,6 +83,9 @@ if (crashpad_is_in_chromium) {
   crashpad_is_posix = mini_chromium_is_posix
 
   crashpad_is_clang = mini_chromium_is_clang
+
+  # fuchsia-gn-sdk from chromium uses "is_fuchsia" condition.
+  is_fuchsia = crashpad_is_fuchsia
 }
 
 crashpad_flock_always_supported = !(crashpad_is_android || crashpad_is_fuchsia)
