@@ -60,6 +60,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_into_view_options.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/animation/document_animations.h"
+#include "third_party/blink/renderer/core/animation/document_timeline.h"
 #include "third_party/blink/renderer/core/css/font_face_set_document.h"
 #include "third_party/blink/renderer/core/css/post_style_update_scope.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
@@ -2668,6 +2669,10 @@ void LocalFrameView::RunPaintLifecyclePhase(PaintBenchmarkMode benchmark_mode) {
         frame_view.GetPage()->GetLinkHighlight().UpdateAfterPaint(
             paint_artifact_compositor_.Get());
         Document& document = frame_view.GetLayoutView()->GetDocument();
+        // Attach the compositor timeline during the commit as it blocks on
+        // the previous commit completion.
+        document.AttachCompositorTimeline(
+            document.Timeline().CompositorTimeline());
         {
           // Updating animations can notify ready promises which could mutate
           // the DOM. We should delay these until we have finished the lifecycle

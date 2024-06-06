@@ -2847,14 +2847,9 @@ void Document::LayoutUpdated() {
   // Plugins can run script inside layout which can detach the page.
   // TODO(dcheng): Does it make sense to do any of this work if detached?
   if (auto* frame = GetFrame()) {
-    if (frame->IsMainFrame())
+    if (frame->IsMainFrame()) {
       frame->GetPage()->GetChromeClient().MainFrameLayoutUpdated();
-
-    // We do attach here, during lifecycle update, because until then we
-    // don't have a good place that has access to its local root's FrameWidget.
-    // TODO(dcheng): If we create FrameWidget before Frame then we could move
-    // this to Document::Initialize().
-    AttachCompositorTimeline(Timeline().CompositorTimeline());
+    }
   }
 
   Markers().InvalidateRectsForAllTextMatchMarkers();
@@ -2865,12 +2860,13 @@ void Document::AttachCompositorTimeline(cc::AnimationTimeline* timeline) const {
       !GetSettings()->GetAcceleratedCompositingEnabled())
     return;
 
-  if (timeline->IsScrollTimeline() && timeline->animation_host())
-    return;
-
   if (cc::AnimationHost* host =
           GetPage()->GetChromeClient().GetCompositorAnimationHost(
               *GetFrame())) {
+    if (timeline->animation_host()) {
+      DCHECK_EQ(timeline->animation_host(), host);
+      return;
+    }
     host->AddAnimationTimeline(timeline);
   }
 }
