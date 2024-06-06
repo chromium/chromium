@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "components/viz/common/resources/resource_sizes.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/gl_utils.h"
 #include "gpu/command_buffer/service/shared_image/external_vk_image_gl_representation.h"
 #include "gpu/command_buffer/service/shared_image/external_vk_image_overlay_representation.h"
@@ -155,7 +156,7 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::Create(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage,
+    SharedImageUsageSet usage,
     std::string debug_label,
     const base::flat_map<VkFormat, VkImageUsageFlags>& image_usage_cache,
     base::span<const uint8_t> pixel_data) {
@@ -170,7 +171,7 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::Create(
   VkImageUsageFlags vk_usage = VK_IMAGE_USAGE_SAMPLED_BIT |
                                VK_IMAGE_USAGE_TRANSFER_SRC_BIT |
                                VK_IMAGE_USAGE_TRANSFER_DST_BIT;
-  if (usage & kUsageNeedsColorAttachment) {
+  if (usage.HasAny(kUsageNeedsColorAttachment)) {
     vk_usage |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
                 VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT;
     if (format.IsCompressed()) {

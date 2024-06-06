@@ -107,6 +107,91 @@ enum SharedImageUsage : uint32_t {
   LAST_SHARED_IMAGE_USAGE = SHARED_IMAGE_USAGE_CPU_UPLOAD
 };
 
+class SharedImageUsageSet {
+ public:
+  constexpr SharedImageUsageSet() = default;
+  // Permanent nolint to allow for natural conversion from mask to set.
+  // NOLINTBEGIN(google-explicit-constructor)
+  constexpr SharedImageUsageSet(SharedImageUsage mask) : set_storage_(mask) {}
+  // NOLINTEND(google-explicit-constructor)
+
+  // TODO(crbug.com/343347288): Eventually we should deprecate this constructor
+  // and replace its usage with a function named something like
+  // 'UntypedMaskCast'. This will allow easly track any remaining non typed
+  // usage.
+  explicit constexpr SharedImageUsageSet(uint32_t mask) : set_storage_(mask) {}
+
+  // Unions with 'set_b' and returns result.
+  inline constexpr void PutAll(gpu::SharedImageUsageSet set_b) {
+    set_storage_ = set_storage_ | static_cast<uint32_t>(set_b);
+  }
+
+  // Test set membership via intersection. Returns true if 'set_b' is a subset.
+  inline constexpr bool HasAll(gpu::SharedImageUsageSet set_b) const {
+    return (set_storage_ & set_b.set_storage_) == set_b.set_storage_;
+  }
+
+  // Test set membership via intersection.
+  inline constexpr bool HasAny(gpu::SharedImageUsageSet set_b) const {
+    return (set_storage_ & set_b.set_storage_) != 0;
+  }
+
+  inline constexpr void operator|=(gpu::SharedImageUsageSet mask_b) {
+    PutAll(mask_b);
+  }
+
+  // Temporary exception to allow for existing, non type safe, conversions.
+  // TODO(crbug.com/343347288): Remove after all usage has been converted to
+  // `SharedImageUsageSet`.
+  // NOLINTBEGIN(google-explicit-constructor)
+  inline constexpr operator uint32_t() const { return set_storage_; }
+  // NOLINTEND(google-explicit-constructor)
+
+ private:
+  friend inline constexpr gpu::SharedImageUsageSet operator|(
+      gpu::SharedImageUsageSet set_a,
+      gpu::SharedImageUsage mask_b);
+  friend inline constexpr gpu::SharedImageUsageSet operator|(
+      gpu::SharedImageUsage mask_a,
+      gpu::SharedImageUsageSet set_b);
+  friend inline constexpr gpu::SharedImageUsageSet operator|(
+      gpu::SharedImageUsage mask_a,
+      gpu::SharedImageUsage mask_b);
+
+  friend inline constexpr const SharedImageUsageSet Intersection(
+      gpu::SharedImageUsageSet set_a,
+      gpu::SharedImageUsageSet set_b);
+  uint32_t set_storage_ = 0;
+};
+
+inline constexpr const SharedImageUsageSet Intersection(
+    gpu::SharedImageUsageSet set_a,
+    gpu::SharedImageUsageSet set_b) {
+  return SharedImageUsageSet(set_a.set_storage_ & set_b.set_storage_);
+}
+// The global operators below cause 'SharedImageUsage' operations to result in
+// 'SharedImageUsageSet' and avoid the ambiguity with uint32_t.
+
+inline constexpr gpu::SharedImageUsageSet operator|(
+    gpu::SharedImageUsageSet set_a,
+    gpu::SharedImageUsage mask_b) {
+  set_a.PutAll(mask_b);
+  return set_a;
+}
+
+inline constexpr gpu::SharedImageUsageSet operator|(
+    gpu::SharedImageUsage mask_a,
+    gpu::SharedImageUsageSet set_b) {
+  // Set union is order independent.
+  return set_b | mask_a;
+}
+
+inline constexpr gpu::SharedImageUsageSet operator|(
+    gpu::SharedImageUsage mask_a,
+    gpu::SharedImageUsage mask_b) {
+  return gpu::SharedImageUsageSet(mask_a) | mask_b;
+}
+
 // This is used as the debug_label prefix for all shared images created by
 // importing buffers in Exo. This prefix is checked in the GPU process when
 // reporting if memory for shared images is attributed to exo imports or not.

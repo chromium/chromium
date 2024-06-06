@@ -197,8 +197,8 @@ ExternalVkImageBackingFactory::CreateSharedImage(
   CHECK(!is_thread_safe);
   return ExternalVkImageBacking::Create(
       context_state_, command_pool_.get(), mailbox, format, size, color_space,
-      surface_origin, alpha_type, usage, std::move(debug_label),
-      image_usage_cache_, base::span<const uint8_t>());
+      surface_origin, alpha_type, SharedImageUsageSet(usage),
+      std::move(debug_label), image_usage_cache_, base::span<const uint8_t>());
 }
 
 std::unique_ptr<SharedImageBacking>
@@ -216,8 +216,8 @@ ExternalVkImageBackingFactory::CreateSharedImage(
   CHECK(!is_thread_safe);
   return ExternalVkImageBacking::Create(
       context_state_, command_pool_.get(), mailbox, format, size, color_space,
-      surface_origin, alpha_type, usage, std::move(debug_label),
-      image_usage_cache_, pixel_data);
+      surface_origin, alpha_type, SharedImageUsageSet(usage),
+      std::move(debug_label), image_usage_cache_, pixel_data);
 }
 
 std::unique_ptr<SharedImageBacking>

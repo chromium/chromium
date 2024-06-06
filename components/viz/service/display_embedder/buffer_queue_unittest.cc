@@ -165,9 +165,10 @@ TEST(BufferQueueStandaloneTest, BufferCreationAndDestruction) {
     testing::InSequence dummy;
     EXPECT_CALL(*mock_skia_output_surface,
                 CreateSharedImage(_, _, _, _,
-                                  gpu::SHARED_IMAGE_USAGE_SCANOUT |
+                                  static_cast<uint32_t>(
+                                      gpu::SHARED_IMAGE_USAGE_SCANOUT |
                                       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-                                      gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE,
+                                      gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE),
                                   _, _))
         .WillOnce(Return(expected_mailbox));
     EXPECT_CALL(*mock_skia_output_surface,

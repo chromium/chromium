@@ -42,7 +42,7 @@ class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
-      uint32_t usage,
+      SharedImageUsageSet usage,
       std::string debug_label,
       const base::flat_map<VkFormat, VkImageUsageFlags>& image_usage_cache,
       base::span<const uint8_t> pixel_data);
