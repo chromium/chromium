@@ -124,6 +124,9 @@ export class ObjectLayerElement extends PolymerElement {
   private screenshotDataUri: string;
   // The objects rendered in this layer.
   private renderedObjects: OverlayObject[];
+  // The last object clicked on. Gets reset whenever the selection overlay
+  // receives a pointer down event.
+  private lastSelectedObjectIndex?: number;
   // Whether precise object highlighting is enabled.
   private preciseHighlight: boolean;
   // The overlay theme.
@@ -179,8 +182,14 @@ export class ObjectLayerElement extends PolymerElement {
       detail: this.getPostSelectionRegion(selectionRegion),
     }));
 
+    // Since the selection is made and rendering is being done by the post
+    // selection layer, act as the cursor left so the segmentation is no longer
+    // highlighted.
+    this.handlePointerLeave();
+
     recordLensOverlayInteraction(UserAction.OBJECT_CLICK);
 
+    this.lastSelectedObjectIndex = objectIndex;
     return true;
   }
 
@@ -202,6 +211,12 @@ export class ObjectLayerElement extends PolymerElement {
       bubbles: true,
       composed: true,
     }));
+
+    // Only show the pointer if the object has a segmentation mask.
+    const hasSegmentationMask = object.geometry!.segmentationPolygon.length > 0;
+    if (hasSegmentationMask) {
+      this.style.cursor = 'pointer';
+    }
   }
 
   private onSegmentationUnhovered() {
@@ -222,10 +237,18 @@ export class ObjectLayerElement extends PolymerElement {
       bubbles: true,
       composed: true,
     }));
+    this.style.cursor = 'unset';
   }
 
   private handlePointerEnter(event: PointerEvent) {
     assertInstanceof(event.target, HTMLElement);
+
+    // If the object being hovered is already selected, exit early.
+    const objectId = this.$.objectsContainer.indexForElement(event.target);
+    if (objectId === this.lastSelectedObjectIndex) {
+      return;
+    }
+
     const object = this.$.objectsContainer.itemForElement(event.target);
     if (this.preciseHighlight) {
       // Draw the object in the hidden canvas which is used to highlight the
@@ -266,7 +289,6 @@ export class ObjectLayerElement extends PolymerElement {
       this.canvasIsBlank = false;
       const object = this.$.objectsContainer.itemForElement(event.target);
       this.onSegmentationHovered(object);
-
     } else {
       // Ensure the canvas is cleared only once.
       if (this.canvasIsBlank) {
@@ -289,6 +311,10 @@ export class ObjectLayerElement extends PolymerElement {
       this.hiddenContext!.setTransform(
           window.devicePixelRatio, 0, 0, window.devicePixelRatio, 0, 0);
     }
+  }
+
+  clearSelectedObject() {
+    this.lastSelectedObjectIndex = undefined;
   }
 
   private drawObject(context: CanvasRenderingContext2D, object: OverlayObject) {
@@ -355,6 +381,10 @@ export class ObjectLayerElement extends PolymerElement {
 
   private clearCanvas(context: CanvasRenderingContext2D) {
     context.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+
+    // Create a new blank path so isPointInPath returns false.
+    context.beginPath();
+    context.closePath();
   }
 
   private focusShimmer(object: OverlayObject) {
@@ -420,11 +450,6 @@ export class ObjectLayerElement extends PolymerElement {
       return '';
     }
 
-    // If the object has a segmentation mask, then we want to use a pointer
-    // cursor. Otherwise, use a crosshair pointer.
-    const hasSegmentationMask = object.geometry!.segmentationPolygon.length > 0;
-    const cursorStyle = hasSegmentationMask ? 'pointer' : 'crosshair';
-
     // Put into an array instead of a long string to keep this code readable.
     const styles: string[] = [
       `width: ${toPercent(objectBoundingBox.box.width)}`,
@@ -436,7 +461,6 @@ export class ObjectLayerElement extends PolymerElement {
           toPercent(
               objectBoundingBox.box.x - (objectBoundingBox.box.width / 2))}`,
       `transform: rotate(${objectBoundingBox.rotation}rad)`,
-      `cursor: ${cursorStyle}`,
     ];
     return styles.join(';');
   }
