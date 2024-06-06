@@ -1085,9 +1085,8 @@ CreateIDLSequenceFromV8ArraySlow(v8::Isolate* isolate,
           NativeValueTraits<
               T>::supports_scriptwrappable_specific_fast_array_iteration) {
         if (witness.Matches(v8_element)) {
-          auto&& value = ToScriptWrappable(isolate, v8_element.As<v8::Object>())
-                             ->template ToImpl<T>();
-          callback_data->result.push_back(std::move(value));
+          callback_data->result.push_back(
+              ToScriptWrappable<T>(isolate, v8_element.As<v8::Object>()));
           return v8::Array::CallbackResult::kContinue;
         }
       }
@@ -1571,8 +1570,7 @@ struct NativeValueTraits<T> : public NativeValueTraitsBase<T*> {
     const WrapperTypeInfo* wrapper_type_info = T::GetStaticWrapperTypeInfo();
     if (V8PerIsolateData::From(isolate)->HasInstance(wrapper_type_info,
                                                      value)) {
-      return ToScriptWrappable(isolate, value.As<v8::Object>())
-          ->template ToImpl<T>();
+      return ToScriptWrappable<T>(isolate, value.As<v8::Object>());
     }
 
     bindings::NativeValueTraitsInterfaceNotOfType(wrapper_type_info,
@@ -1587,8 +1585,7 @@ struct NativeValueTraits<T> : public NativeValueTraitsBase<T*> {
     const WrapperTypeInfo* wrapper_type_info = T::GetStaticWrapperTypeInfo();
     if (V8PerIsolateData::From(isolate)->HasInstance(wrapper_type_info,
                                                      value)) {
-      return ToScriptWrappable(isolate, value.As<v8::Object>())
-          ->template ToImpl<T>();
+      return ToScriptWrappable<T>(isolate, value.As<v8::Object>());
     }
 
     bindings::NativeValueTraitsInterfaceNotOfType(
@@ -1607,8 +1604,7 @@ struct NativeValueTraits<IDLNullable<T>>
     const WrapperTypeInfo* wrapper_type_info = T::GetStaticWrapperTypeInfo();
     if (V8PerIsolateData::From(isolate)->HasInstance(wrapper_type_info,
                                                      value)) {
-      return ToScriptWrappable(isolate, value.As<v8::Object>())
-          ->template ToImpl<T>();
+      return ToScriptWrappable<T>(isolate, value.As<v8::Object>());
     }
 
     if (value->IsNullOrUndefined())
@@ -1626,8 +1622,7 @@ struct NativeValueTraits<IDLNullable<T>>
     const WrapperTypeInfo* wrapper_type_info = T::GetStaticWrapperTypeInfo();
     if (V8PerIsolateData::From(isolate)->HasInstance(wrapper_type_info,
                                                      value)) {
-      return ToScriptWrappable(isolate, value.As<v8::Object>())
-          ->template ToImpl<T>();
+      return ToScriptWrappable<T>(isolate, value.As<v8::Object>());
     }
 
     if (value->IsNullOrUndefined())

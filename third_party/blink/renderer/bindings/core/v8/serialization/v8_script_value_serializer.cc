@@ -926,7 +926,7 @@ v8::Maybe<bool> V8ScriptValueSerializer::WriteHostObject(
                                       "An object could not be cloned.");
     return v8::Nothing<bool>();
   }
-  ScriptWrappable* wrappable = ToScriptWrappable(isolate, object);
+  ScriptWrappable* wrappable = ToAnyScriptWrappable(isolate, object);
   // TODO(crbug.com/1353299): Remove this CHECK after an investigation.
   CHECK(wrappable);
   bool wrote_dom_object = WriteDOMObject(wrappable, exception_state);
@@ -956,9 +956,9 @@ DOMSharedArrayBuffer* ToSharedArrayBuffer(v8::Isolate* isolate,
 
   v8::Local<v8::SharedArrayBuffer> v8_shared_array_buffer =
       value.As<v8::SharedArrayBuffer>();
-  if (ScriptWrappable* shared_array_buffer =
-          ToScriptWrappable(isolate, v8_shared_array_buffer)) {
-    return shared_array_buffer->ToImpl<DOMSharedArrayBuffer>();
+  if (auto* shared_array_buffer = ToScriptWrappable<DOMSharedArrayBuffer>(
+          isolate, v8_shared_array_buffer)) {
+    return shared_array_buffer;
   }
 
   // Transfer the ownership of the allocated memory to a DOMArrayBuffer without

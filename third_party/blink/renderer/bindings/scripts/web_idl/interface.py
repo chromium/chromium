@@ -106,7 +106,8 @@ class Interface(UserDefinedType, WithExtendedAttributes, WithCodeGeneratorInfo,
             self.is_partial = is_partial
             self.is_mixin = is_mixin
             self.inherited = inherited
-            self.deriveds = []
+            self.direct_subclasses = []
+            self.subclasses = []
             self.attributes = list(attributes)
             self.constants = list(constants)
             self.constructors = list(constructors)
@@ -123,6 +124,8 @@ class Interface(UserDefinedType, WithExtendedAttributes, WithCodeGeneratorInfo,
             self.setlike = setlike
             self.async_iterator = None
             self.sync_iterator = None
+            self.tag = None
+            self.max_subclass_tag = None
 
         def iter_all_members(self):
             list_of_members = [
@@ -174,7 +177,7 @@ class Interface(UserDefinedType, WithExtendedAttributes, WithCodeGeneratorInfo,
 
         self._is_mixin = ir.is_mixin
         self._inherited = ir.inherited
-        self._deriveds = tuple(ir.deriveds)
+        self._subclasses = tuple(ir.subclasses)
         self._attributes = tuple([
             Attribute(attribute_ir, owner=self)
             for attribute_ir in ir.attributes
@@ -258,6 +261,8 @@ class Interface(UserDefinedType, WithExtendedAttributes, WithCodeGeneratorInfo,
         self._setlike = Setlike(ir.setlike, owner=self) if ir.setlike else None
         self._async_iterator = ir.async_iterator
         self._sync_iterator = ir.sync_iterator
+        self._tag = ir.tag
+        self._max_subclass_tag = ir.max_subclass_tag
 
     @property
     def is_mixin(self):
@@ -270,9 +275,9 @@ class Interface(UserDefinedType, WithExtendedAttributes, WithCodeGeneratorInfo,
         return self._inherited.target_object if self._inherited else None
 
     @property
-    def deriveds(self):
+    def subclasses(self):
         """Returns the list of the derived interfaces."""
-        return tuple(map(lambda ref: ref.target_object, self._deriveds))
+        return tuple(map(lambda ref: ref.target_object, self._subclasses))
 
     @property
     def inclusive_inherited_interfaces(self):
@@ -410,6 +415,16 @@ class Interface(UserDefinedType, WithExtendedAttributes, WithCodeGeneratorInfo,
     def sync_iterator(self):
         """Returns a SyncIterator or None."""
         return self._sync_iterator
+
+    @property
+    def tag(self):
+        """Returns a tag integer or None."""
+        return self._tag
+
+    @property
+    def max_subclass_tag(self):
+        """Returns a tag integer or None."""
+        return self._max_subclass_tag
 
     # UserDefinedType overrides
     @property

@@ -5502,7 +5502,7 @@ ${instance_object_template}->SetImmutableProto();
 ${prototype_object_template}->SetImmutableProto();
 """))
     elif interface and any("Global" in derived.extended_attributes
-                           for derived in interface.deriveds):
+                           for derived in interface.subclasses):
         body.append(
             TextNode("""\
 // [Global] - prototype object in the prototype chain of global objects
@@ -6294,14 +6294,28 @@ def make_wrapper_type_info(cg_context, function_name,
     assert isinstance(has_context_dependent_props, bool)
 
     F = FormatNode
+    class_like = cg_context.class_like
 
-    func_def = CxxFuncDefNode(
-        name=function_name,
-        arg_decls=[],
-        return_type="constexpr const WrapperTypeInfo*",
-        static=True)
+    func_def = CxxFuncDefNode(name=function_name,
+                              arg_decls=[],
+                              return_type="constexpr const WrapperTypeInfo*",
+                              static=True)
     func_def.set_base_template_vars(cg_context.template_bindings())
     func_def.body.append(TextNode("return &wrapper_type_info_;"))
+
+    public_defs = SequenceNode()
+    public_defs.append(func_def)
+
+    public_defs.append(
+        TextNode("""\
+  static constexpr v8::CppHeapPointerTag kThisTag =
+      static_cast<v8::CppHeapPointerTag>({this_tag});
+  static constexpr v8::CppHeapPointerTag kMaxSubclassTag =
+      static_cast<v8::CppHeapPointerTag>({max_subclass_tag});
+  static constexpr v8::CppHeapPointerTagRange kTagRange =
+      v8::CppHeapPointerTagRange(kThisTag, kMaxSubclassTag);
+""".format(this_tag=class_like.tag,
+           max_subclass_tag=class_like.max_subclass_tag)))
 
     member_var_def = TextNode(
         "static const WrapperTypeInfo wrapper_type_info_;")
@@ -6333,6 +6347,8 @@ const WrapperTypeInfo ${class_name}::wrapper_type_info_{{
     {install_context_dependent_func},
     "${{class_like.identifier}}",
     {wrapper_type_info_of_inherited},
+    ${class_name}::kThisTag,
+    ${class_name}::kMaxSubclassTag,
     {wrapper_type_prototype},
     {wrapper_class_id},
     {active_script_wrappable_inheritance},
@@ -6344,7 +6360,6 @@ const WrapperTypeInfo ${class_name}::wrapper_type_info_{{
 #pragma clang diagnostic pop
 #endif
 """
-    class_like = cg_context.class_like
     if has_context_dependent_props:
         install_context_dependent_func = _format(
             "${class_name}::{}", FN_INSTALL_CONTEXT_DEPENDENT_PROPS)
@@ -6421,7 +6436,7 @@ static_assert(
     if class_like.is_interface:
         wrapper_type_info_def.append(F(pattern, blink_class=blink_class))
 
-    return func_def, member_var_def, wrapper_type_info_def
+    return public_defs, member_var_def, wrapper_type_info_def
 
 
 # ----------------------------------------------------------------------------
@@ -6441,11 +6456,11 @@ def make_v8_context_snapshot_api(cg_context, component, attribute_entries,
     if not cg_context.interface:
         return None, None
 
-    derived_interfaces = cg_context.interface.deriveds
-    derived_names = list(
-        map(lambda interface: interface.identifier, derived_interfaces))
-    derived_names.append(cg_context.interface.identifier)
-    if not ("Window" in derived_names or "HTMLDocument" in derived_names):
+    subclass_interfaces = cg_context.interface.subclasses
+    subclass_names = list(
+        map(lambda interface: interface.identifier, subclass_interfaces))
+    subclass_names.append(cg_context.interface.identifier)
+    if not ("Window" in subclass_names or "HTMLDocument" in subclass_names):
         return None, None
 
     header_ns = CxxNamespaceNode(name_style.namespace("v8_context_snapshot"))

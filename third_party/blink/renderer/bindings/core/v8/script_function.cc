@@ -23,6 +23,8 @@ const WrapperTypeInfo callable_holder_info = {
     nullptr,
     "ScriptFunctionCallableHolder",
     nullptr,
+    kDOMWrappersTag,
+    kDOMWrappersTag,
     WrapperTypeInfo::kWrapperTypeNoPrototype,
     WrapperTypeInfo::kCustomWrappableId,
     WrapperTypeInfo::kNotInheritFromActiveScriptWrappable,
@@ -52,8 +54,7 @@ class CORE_EXPORT CallableHolder final : public ScriptWrappable {
                                                  "Blink_CallCallback");
     v8::Local<v8::Object> data = v8::Local<v8::Object>::Cast(args.Data());
     v8::Isolate* isolate = args.GetIsolate();
-    auto* holder =
-        static_cast<CallableHolder*>(ToScriptWrappable(isolate, data));
+    auto* holder = ToScriptWrappable<CallableHolder>(isolate, data);
     ScriptState* script_state = ScriptState::ForCurrentRealm(isolate);
     holder->callable_->CallRaw(script_state, args);
   }

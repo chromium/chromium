@@ -308,9 +308,9 @@ DOMArrayBuffer* ToDOMArrayBuffer(v8::Isolate* isolate,
     return nullptr;
 
   v8::Local<v8::ArrayBuffer> v8_array_buffer = value.As<v8::ArrayBuffer>();
-  if (ScriptWrappable* array_buffer =
-          ToScriptWrappable(isolate, v8_array_buffer)) {
-    return array_buffer->ToImpl<DOMArrayBuffer>();
+  if (auto* array_buffer =
+          ToScriptWrappable<DOMArrayBuffer>(isolate, v8_array_buffer)) {
+    return array_buffer;
   }
 
   // Transfer the ownership of the allocated memory to a DOMArrayBuffer without
@@ -330,9 +330,9 @@ DOMSharedArrayBuffer* ToDOMSharedArrayBuffer(v8::Isolate* isolate,
 
   v8::Local<v8::SharedArrayBuffer> v8_shared_array_buffer =
       value.As<v8::SharedArrayBuffer>();
-  if (ScriptWrappable* shared_array_buffer =
-          ToScriptWrappable(isolate, v8_shared_array_buffer)) {
-    return shared_array_buffer->ToImpl<DOMSharedArrayBuffer>();
+  if (auto* shared_array_buffer = ToScriptWrappable<DOMSharedArrayBuffer>(
+          isolate, v8_shared_array_buffer)) {
+    return shared_array_buffer;
   }
 
   // Transfer the ownership of the allocated memory to a DOMArrayBuffer without
@@ -367,8 +367,8 @@ DOMViewType* ToDOMViewType(v8::Isolate* isolate, v8::Local<v8::Value> value) {
 
   v8::Local<typename Trait::V8ViewType> v8_view =
       value.As<typename Trait::V8ViewType>();
-  if (ScriptWrappable* blink_view = ToScriptWrappable(isolate, v8_view)) {
-    return blink_view->ToImpl<DOMViewType>();
+  if (auto* blink_view = ToScriptWrappable<DOMViewType>(isolate, v8_view)) {
+    return blink_view;
   }
 
   v8::Local<v8::Object> v8_buffer = v8_view->Buffer();
@@ -399,8 +399,9 @@ DOMArrayBufferView* ToDOMArrayBufferView(v8::Isolate* isolate,
     return nullptr;
 
   v8::Local<v8::ArrayBufferView> v8_view = value.As<v8::ArrayBufferView>();
-  if (ScriptWrappable* blink_view = ToScriptWrappable(isolate, v8_view)) {
-    return blink_view->ToImpl<DOMArrayBufferView>();
+  if (auto* blink_view =
+          ToScriptWrappable<DOMArrayBufferView>(isolate, v8_view)) {
+    return blink_view;
   }
 
   if (v8_view->IsInt8Array())

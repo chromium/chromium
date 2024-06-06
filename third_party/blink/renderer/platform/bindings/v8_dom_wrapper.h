@@ -69,7 +69,10 @@ class V8DOMWrapper {
   static void SetNativeInfo(v8::Isolate* isolate,
                             v8::Local<v8::Object> wrapper,
                             ScriptWrappable* script_wrappable);
-  static void ClearNativeInfo(v8::Isolate*, v8::Local<v8::Object>);
+
+  static void ClearNativeInfo(v8::Isolate*,
+                              v8::Local<v8::Object>,
+                              const WrapperTypeInfo*);
 
   // HasInternalFieldsSet only checks if the value has the internal fields for
   // wrapper object and type, and does not check if it's valid or not. The value
@@ -85,12 +88,15 @@ inline void V8DOMWrapper::SetNativeInfo(
     ScriptWrappable* wrappable) {
   DCHECK(wrappable);
   DCHECK(!WrapperTypeInfo::HasLegacyInternalFieldsSet(wrapper));
-  v8::Object::Wrap<kDOMWrappersTag>(isolate, wrapper, wrappable);
+  v8::Object::Wrap(isolate, wrapper, wrappable,
+                   wrappable->GetWrapperTypeInfo()->this_tag);
 }
 
-inline void V8DOMWrapper::ClearNativeInfo(v8::Isolate* isolate,
-                                          v8::Local<v8::Object> wrapper) {
-  v8::Object::Wrap<kDOMWrappersTag>(isolate, wrapper, nullptr);
+inline void V8DOMWrapper::ClearNativeInfo(
+    v8::Isolate* isolate,
+    v8::Local<v8::Object> wrapper,
+    const WrapperTypeInfo* wrapper_type_info) {
+  v8::Object::Wrap(isolate, wrapper, nullptr, wrapper_type_info->this_tag);
 }
 
 inline v8::Local<v8::Object> V8DOMWrapper::AssociateObjectWithWrapper(
@@ -104,7 +110,7 @@ inline v8::Local<v8::Object> V8DOMWrapper::AssociateObjectWithWrapper(
     SetNativeInfo(isolate, wrapper, impl);
     DCHECK(HasInternalFieldsSet(isolate, wrapper));
   }
-  SECURITY_CHECK(ToScriptWrappable(isolate, wrapper) == impl);
+  SECURITY_CHECK(ToAnyScriptWrappable(isolate, wrapper) == impl);
   return wrapper;
 }
 

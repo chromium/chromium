@@ -32,6 +32,8 @@ const WrapperTypeInfo DOMArrayBuffer::wrapper_type_info_body_{
     nullptr,
     "ArrayBuffer",
     nullptr,
+    kDOMWrappersTag,
+    kDOMWrappersTag,
     WrapperTypeInfo::kWrapperTypeObjectPrototype,
     WrapperTypeInfo::kObjectClassId,
     WrapperTypeInfo::kNotInheritFromActiveScriptWrappable,

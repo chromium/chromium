@@ -23,12 +23,13 @@ class V8InterfaceBridge : public V8InterfaceBridgeBase {
                : nullptr;
   }
 
-  // This method will cause a bad cast if called on an object of the wrong type.
-  // For use only inside bindings/, and only when the type of the object is
-  // absolutely certain.
+  // TODO(japhet): Now that v8::Object::Unwrap uses tag ranges to enforce
+  // type safety, this returns nullptr if types are mismatched. It is therefore
+  // no longer "unsafe", and should be renamed or merged with ToWrappable().
   static inline T* ToWrappableUnsafe(v8::Isolate* isolate,
                                      v8::Local<v8::Object> value) {
-    return ToScriptWrappable(isolate, value)->ToImpl<T>();
+    return v8::Object::Unwrap<ScriptWrappable>(isolate, value, V8T::kTagRange)
+        ->template ToImpl<T>();
   }
 
   static inline bool HasInstance(v8::Isolate* isolate,

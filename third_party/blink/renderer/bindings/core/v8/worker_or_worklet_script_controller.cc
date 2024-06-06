@@ -103,8 +103,10 @@ void WorkerOrWorkletScriptController::DisposeContextIfNeeded() {
     v8::Local<v8::Object> global_object =
         global_proxy_object->GetPrototype().As<v8::Object>();
     DCHECK(!global_object.IsEmpty());
-    V8DOMWrapper::ClearNativeInfo(isolate_, global_object);
-    V8DOMWrapper::ClearNativeInfo(isolate_, global_proxy_object);
+    V8DOMWrapper::ClearNativeInfo(isolate_, global_object,
+                                  global_scope_->GetWrapperTypeInfo());
+    V8DOMWrapper::ClearNativeInfo(isolate_, global_proxy_object,
+                                  global_scope_->GetWrapperTypeInfo());
 
     // This detaches v8::MicrotaskQueue pointer from v8::Context, so that we can
     // destroy EventLoop safely.

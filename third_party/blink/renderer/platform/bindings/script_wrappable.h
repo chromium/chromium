@@ -47,7 +47,7 @@ class ScriptState;
 
 // ScriptWrappable provides a way to map from/to C++ DOM implementation to/from
 // JavaScript object (platform object).  ToV8() converts a ScriptWrappable to
-// a v8::Object and toScriptWrappable() converts a v8::Object back to
+// a v8::Object and ToScriptWrappable() converts a v8::Object back to
 // a ScriptWrappable.  v8::Object as platform object is called "wrapper object".
 // The wrapper object for the main world is stored in ScriptWrappable.  Wrapper
 // objects for other worlds are stored in DOMDataStore.
@@ -190,6 +190,17 @@ class PLATFORM_EXPORT ScriptWrappable
   TraceWrapperV8Reference<v8::Object> wrapper_;
   friend class DOMDataStore;
 };
+
+template <typename T>
+  requires std::derived_from<T, ScriptWrappable>
+T* ToScriptWrappable(v8::Isolate* isolate, v8::Local<v8::Object> wrapper) {
+  const WrapperTypeInfo* wrapper_type_info = T::GetStaticWrapperTypeInfo();
+  return v8::Object::Unwrap<ScriptWrappable>(
+             isolate, wrapper,
+             v8::CppHeapPointerTagRange(wrapper_type_info->this_tag,
+                                        wrapper_type_info->max_subclass_tag))
+      ->template ToImpl<T>();
+}
 
 // Defines |GetWrapperTypeInfo| virtual method which returns the WrapperTypeInfo
 // of the instance. Also declares a static member of type WrapperTypeInfo, of

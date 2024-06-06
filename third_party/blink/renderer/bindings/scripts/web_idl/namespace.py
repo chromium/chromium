@@ -70,6 +70,12 @@ class Namespace(UserDefinedType, WithExtendedAttributes, WithCodeGeneratorInfo,
             self.operations = list(operations)
             self.operation_groups = []
 
+            self.inherited = None
+            self.direct_subclasses = []
+            self.subclasses = []
+            self.tag = None
+            self.max_subclass_tag = None
+
         def iter_all_members(self):
             list_of_members = [
                 self.attributes,
@@ -113,6 +119,8 @@ class Namespace(UserDefinedType, WithExtendedAttributes, WithCodeGeneratorInfo,
                            owner=self)
             for operation_group_ir in ir.operation_groups
         ])
+        self._tag = ir.tag
+        self._max_subclass_tag = ir.max_subclass_tag
 
     @property
     def inherited(self):
@@ -120,7 +128,7 @@ class Namespace(UserDefinedType, WithExtendedAttributes, WithCodeGeneratorInfo,
         return None
 
     @property
-    def deriveds(self):
+    def subclasses(self):
         """Returns the list of the derived namespaces."""
         return ()
 
@@ -168,6 +176,16 @@ class Namespace(UserDefinedType, WithExtendedAttributes, WithCodeGeneratorInfo,
     def exposed_constructs(self):
         """Returns exposed constructs."""
         return ()
+
+    @property
+    def tag(self):
+        """Returns a tag integer or None."""
+        return self._tag
+
+    @property
+    def max_subclass_tag(self):
+        """Returns a tag integer or None."""
+        return self._max_subclass_tag
 
     # UserDefinedType overrides
     @property

@@ -196,9 +196,12 @@ class PLATFORM_EXPORT ObservableArrayExoticObject final
  public:
   // Returns the backing list object extracted from the proxy target object
   // of type JS Array.
-  static bindings::ObservableArrayBase* ProxyTargetToObservableArrayBaseOrDie(
-      v8::Isolate* isolate,
-      v8::Local<v8::Array> v8_proxy_target);
+  template <typename T>
+  static T* ProxyTargetToObservableArray(v8::Isolate* isolate,
+                                         v8::Local<v8::Array> v8_proxy_target) {
+    return ToScriptWrappable<T>(
+        isolate, GetBackingObjectFromProxyTarget(isolate, v8_proxy_target));
+  }
 
   explicit ObservableArrayExoticObject(
       bindings::ObservableArrayBase* observable_array_backing_list_object);
@@ -218,6 +221,10 @@ class PLATFORM_EXPORT ObservableArrayExoticObject final
   void Trace(Visitor* visitor) const final;
 
  private:
+  static v8::Local<v8::Object> GetBackingObjectFromProxyTarget(
+      v8::Isolate*,
+      v8::Local<v8::Array> v8_proxy_target);
+
   Member<bindings::ObservableArrayBase> observable_array_backing_list_object_;
 };
 

@@ -26,6 +26,8 @@ const WrapperTypeInfo kWrapperTypeInfoBody{
     /*install_context_dependent_props_func=*/nullptr,
     "ObservableArrayExoticObject",
     /*parent_class=*/nullptr,
+    kDOMWrappersTag,
+    kDOMWrappersTag,
     WrapperTypeInfo::kWrapperTypeNoPrototype,
     // v8::Proxy (without an internal field) is used as a (pseudo) wrapper.
     WrapperTypeInfo::kNoInternalFieldClassId,
@@ -73,8 +75,8 @@ const WrapperTypeInfo& ObservableArrayExoticObject::wrapper_type_info_ =
     kWrapperTypeInfoBody;
 
 // static
-bindings::ObservableArrayBase*
-ObservableArrayExoticObject::ProxyTargetToObservableArrayBaseOrDie(
+v8::Local<v8::Object>
+ObservableArrayExoticObject::GetBackingObjectFromProxyTarget(
     v8::Isolate* isolate,
     v8::Local<v8::Array> v8_proxy_target) {
   // See the implementation comment in ObservableArrayExoticObject::Wrap.
@@ -85,10 +87,8 @@ ObservableArrayExoticObject::ProxyTargetToObservableArrayBaseOrDie(
   // Crash when author script managed to pass something else other than the
   // right proxy target object.
   CHECK(backing_list_wrapper->IsObject());
-  return ToScriptWrappable(isolate, backing_list_wrapper.As<v8::Object>())
-      ->ToImpl<bindings::ObservableArrayBase>();
+  return backing_list_wrapper.As<v8::Object>();
 }
-
 
 ObservableArrayExoticObject::ObservableArrayExoticObject(
     bindings::ObservableArrayBase* observable_array_backing_list_object)

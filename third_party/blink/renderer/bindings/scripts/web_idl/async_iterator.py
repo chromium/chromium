@@ -72,6 +72,12 @@ class AsyncIterator(UserDefinedType, WithExtendedAttributes,
             self.operations = list(operations)
             self.operation_groups = []
 
+            self.inherited = None
+            self.direct_subclasses = []
+            self.subclasses = []
+            self.tag = None
+            self.max_subclass_tag = None
+
         def iter_all_members(self):
             return list(self.operations)
 
@@ -104,6 +110,8 @@ class AsyncIterator(UserDefinedType, WithExtendedAttributes,
                            self._operations)),
                 owner=self) for group_ir in ir.operation_groups
         ])
+        self._tag = ir.tag
+        self._max_subclass_tag = ir.max_subclass_tag
 
     @property
     def interface(self):
@@ -126,7 +134,7 @@ class AsyncIterator(UserDefinedType, WithExtendedAttributes,
         return None
 
     @property
-    def deriveds(self):
+    def subclasses(self):
         # Just to be compatible with web_idl.Interface.
         return ()
 
@@ -174,6 +182,16 @@ class AsyncIterator(UserDefinedType, WithExtendedAttributes,
     def exposed_constructs(self):
         """Returns exposed constructs."""
         return ()
+
+    @property
+    def tag(self):
+        """Returns a tag integer or None."""
+        return self._tag
+
+    @property
+    def max_subclass_tag(self):
+        """Returns a tag integer or None."""
+        return self._max_subclass_tag
 
     # UserDefinedType overrides
     @property

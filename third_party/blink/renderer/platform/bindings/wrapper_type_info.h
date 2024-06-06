@@ -158,6 +158,15 @@ struct PLATFORM_EXPORT WrapperTypeInfo final {
       install_context_dependent_props_func;
   const char* interface_name;
   const WrapperTypeInfo* parent_class;
+
+  // When wrapping, we provide `this_tag` to v8's type checking.
+  // When unwrapping, we provide `this_tag` and `max_subclass_tag` as the valid
+  // range of tags for the object  being unwrapped. The bindings generator is
+  // responsible for ensuring the subclass tags are a contiguous range
+  // (`this_tag', `max_subclass_tag`].
+  v8::CppHeapPointerTag this_tag;
+  v8::CppHeapPointerTag max_subclass_tag;
+
   unsigned wrapper_type_prototype : 2;  // WrapperTypePrototype
   unsigned wrapper_class_id : 2;        // WrapperClassId
   unsigned                              // ActiveScriptWrappableInheritance
@@ -172,17 +181,22 @@ struct PLATFORM_EXPORT WrapperTypeInfo final {
   bool is_skipped_in_interface_object_prototype_chain : 1;
 };
 
-// The return value can be null if |wrapper| is a global proxy, which points to
-// nothing while a navigation.
-inline ScriptWrappable* ToScriptWrappable(
+// `ToAnyScriptWrappable()` is only for use in cases where the subtype of
+// ScriptWrappable is unknown and any subtype must be permitted.
+// `ToScriptWrappable()` should be used whenever possible for stronger type
+// enforcement.
+// The return value may be null.
+inline ScriptWrappable* ToAnyScriptWrappable(
     v8::Isolate* isolate,
     const v8::TracedReference<v8::Object>& wrapper) {
-  return v8::Object::Unwrap<kDOMWrappersTag, ScriptWrappable>(isolate, wrapper);
+  return v8::Object::Unwrap<ScriptWrappable>(isolate, wrapper,
+                                             v8::kAnyCppHeapPointer);
 }
 
-inline ScriptWrappable* ToScriptWrappable(v8::Isolate* isolate,
-                                          v8::Local<v8::Object> wrapper) {
-  return v8::Object::Unwrap<kDOMWrappersTag, ScriptWrappable>(isolate, wrapper);
+inline ScriptWrappable* ToAnyScriptWrappable(v8::Isolate* isolate,
+                                             v8::Local<v8::Object> wrapper) {
+  return v8::Object::Unwrap<ScriptWrappable>(isolate, wrapper,
+                                             v8::kAnyCppHeapPointer);
 }
 
 PLATFORM_EXPORT const WrapperTypeInfo* ToWrapperTypeInfo(

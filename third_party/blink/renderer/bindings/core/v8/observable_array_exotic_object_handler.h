@@ -465,10 +465,8 @@ class ObservableArrayExoticObjectHandler {
  private:
   static BackingListWrappable& ToWrappableOrDie(v8::Isolate* isolate,
                                                 v8::Local<v8::Array> target) {
-    bindings::ObservableArrayBase* base =
-        ObservableArrayExoticObject::ProxyTargetToObservableArrayBaseOrDie(
-            isolate, target);
-    return *static_cast<BackingListWrappable*>(base);
+    return *ObservableArrayExoticObject::ProxyTargetToObservableArray<
+        BackingListWrappable>(isolate, target);
   }
 
   // https://webidl.spec.whatwg.org/#observable-array-exotic-object-set-the-length

@@ -74,13 +74,15 @@ void RemoteWindowProxy::DisposeContext(Lifecycle next_status,
       !global_proxy_.IsEmpty()) {
     v8::HandleScope handle_scope(GetIsolate());
     v8::Local<v8::Object> global = global_proxy_.Get(GetIsolate());
-    V8DOMWrapper::ClearNativeInfo(GetIsolate(), global);
-    world_->DomDataStore().ClearIfEqualTo(GetFrame()->DomWindow(), global);
+    auto* window = GetFrame()->DomWindow();
+    V8DOMWrapper::ClearNativeInfo(GetIsolate(), global,
+                                  V8Window::GetWrapperTypeInfo());
+    world_->DomDataStore().ClearIfEqualTo(window, global);
 #if DCHECK_IS_ON()
     HeapVector<Member<DOMWrapperWorld>> all_worlds;
     DOMWrapperWorld::AllWorldsInIsolate(GetIsolate(), all_worlds);
     for (auto& world : all_worlds) {
-      DCHECK(!world->DomDataStore().EqualTo(GetFrame()->DomWindow(), global));
+      DCHECK(!world->DomDataStore().EqualTo(window, global));
     }
 
     DidDetachGlobalObject();

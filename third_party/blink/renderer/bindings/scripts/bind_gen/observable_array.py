@@ -82,6 +82,8 @@ const WrapperTypeInfo ${class_name}::wrapper_type_info_body_{
     nullptr,
     "${class_name}",
     nullptr,  // parent_class
+    kDOMWrappersTag,
+    kDOMWrappersTag,
     WrapperTypeInfo::kWrapperTypeNoPrototype,
     WrapperTypeInfo::kObjectClassId,
     WrapperTypeInfo::kNotInheritFromActiveScriptWrappable,

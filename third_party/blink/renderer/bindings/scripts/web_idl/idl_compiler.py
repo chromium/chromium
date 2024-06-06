@@ -112,6 +112,9 @@ class IdlCompiler(object):
         # Process inheritances.
         self._process_interface_inheritances()
 
+        # Assign v8::CppHeapPointerTag values
+        self._assign_tags()
+
         # Temporary mitigation of misuse of [HTMLConstructor]
         # This should be removed once the IDL definitions get fixed.
         self._supplement_missing_html_constructor_operation()
@@ -565,7 +568,8 @@ class IdlCompiler(object):
 
         self._ir_map.move_to_new_phase()
 
-        identifier_to_derived_set = {}
+        identifier_to_subclass_set = {}
+        identifier_to_direct_subclass_set = {}
 
         for old_interface in old_interfaces.values():
             new_interface = make_copy(old_interface)
@@ -589,16 +593,25 @@ class IdlCompiler(object):
                     if is_own_member(operation)
                 ])
 
-                identifier_to_derived_set.setdefault(
+                identifier_to_subclass_set.setdefault(
                     interface.identifier, set()).add(new_interface.identifier)
+                if new_interface.inherited.identifier == interface.identifier:
+                    identifier_to_direct_subclass_set.setdefault(
+                        interface.identifier, set()).add(new_interface)
+
 
         for new_interface in self._ir_map.irs_of_kind(IRMap.IR.Kind.INTERFACE):
-            assert not new_interface.deriveds
-            derived_set = identifier_to_derived_set.get(
+            assert not new_interface.subclasses
+            assert not new_interface.direct_subclasses
+            subclass_set = identifier_to_subclass_set.get(
                 new_interface.identifier, set())
-            new_interface.deriveds = list(
+            new_interface.subclasses = list(
                 map(lambda id_: self._ref_to_idl_def_factory.create(id_),
-                    sorted(derived_set)))
+                    sorted(subclass_set)))
+            direct_subclass_set = identifier_to_direct_subclass_set.get(
+                new_interface.identifier, set())
+            new_interface.direct_subclasses = sorted(
+                direct_subclass_set, key=lambda subclass: subclass.identifier)
 
     def _supplement_missing_html_constructor_operation(self):
         # Temporary mitigation of misuse of [HTMLConstructor]
@@ -1084,3 +1097,34 @@ class IdlCompiler(object):
                     observable_array)
             self._db.register(DatabaseBody.Kind.OBSERVABLE_ARRAY,
                               observable_array)
+
+    def _assign_tags(self):
+
+        def assign_tags_for_tree(old_ir, next_tag):
+            new_ir = self._maybe_make_copy(old_ir)
+            self._ir_map.add(new_ir)
+            assert new_ir.tag is None
+            assert new_ir.max_subclass_tag is None
+
+            new_ir.tag = next_tag
+            new_ir.max_subclass_tag = next_tag + len(new_ir.subclasses)
+            next_tag += 1
+            for direct_subclass in new_ir.direct_subclasses:
+                next_tag = assign_tags_for_tree(direct_subclass, next_tag)
+            assert next_tag == new_ir.max_subclass_tag + 1
+            return next_tag
+
+        next_tag = 256
+
+        old_irs = self._ir_map.irs_of_kinds(IRMap.IR.Kind.ASYNC_ITERATOR,
+                                            IRMap.IR.Kind.INTERFACE,
+                                            IRMap.IR.Kind.CALLBACK_INTERFACE,
+                                            IRMap.IR.Kind.NAMESPACE,
+                                            IRMap.IR.Kind.SYNC_ITERATOR)
+        self._ir_map.move_to_new_phase()
+
+        for old_ir in old_irs:
+            # Inheritance trees will be processed together. Always start from
+            # the root.
+            if old_ir.inherited is None:
+                next_tag = assign_tags_for_tree(old_ir, next_tag)

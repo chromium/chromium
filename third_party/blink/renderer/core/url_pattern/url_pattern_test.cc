@@ -110,8 +110,8 @@ TEST(URLPatternTest, CompatibleFromURLPattern) {
                                                     ASSERT_NO_EXCEPTION);
   auto* url_pattern = URLPattern::From(scope.GetIsolate(), compatible, base_url,
                                        ASSERT_NO_EXCEPTION);
-  EXPECT_EQ(url_pattern,
-            ToScriptWrappable(scope.GetIsolate(), wrapper.As<v8::Object>()));
+  EXPECT_EQ(url_pattern, V8URLPattern::ToWrappable(scope.GetIsolate(),
+                                                   wrapper.As<v8::Object>()));
 }
 
 }  // namespace blink

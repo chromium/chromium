@@ -49,7 +49,7 @@ class BlinkRootsHandler final : public v8::EmbedderRootsHandler {
   void ResetRoot(const v8::TracedReference<v8::Value>& handle) final {
     const v8::TracedReference<v8::Object>& traced = handle.As<v8::Object>();
     const bool success = DOMDataStore::ClearWrapperInAnyWorldIfEqualTo(
-        ToScriptWrappable(isolate_, traced), traced);
+        ToAnyScriptWrappable(isolate_, traced), traced);
     // Since V8 found a handle, Blink needs to find it as well when trying to
     // remove it. Note that this is even true for the case where a
     // DOMWrapperWorld and DOMDataStore are already unreachable as the internal
@@ -62,7 +62,7 @@ class BlinkRootsHandler final : public v8::EmbedderRootsHandler {
   bool TryResetRoot(const v8::TracedReference<v8::Value>& handle) final {
     const v8::TracedReference<v8::Object>& traced = handle.As<v8::Object>();
     return DOMDataStore::ClearInlineStorageWrapperIfEqualTo(
-        ToScriptWrappable(isolate_, traced), traced);
+        ToAnyScriptWrappable(isolate_, traced), traced);
   }
 
  private:
