@@ -175,7 +175,7 @@ each histogram.
   </token>
 </histogram>
 
-<histogram name="PerformanceManager.DiskStats.UserDataDirAvailableSpaceMb"
+<histogram name="PerformanceManager.DiskStats.UserDataDirFreeSpaceMb"
     units="MB" expires_after="2024-09-22">
   <owner>anthonyvd@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
@@ -186,7 +186,7 @@ each histogram.
   </summary>
 </histogram>
 
-<histogram name="PerformanceManager.DiskStats.UserDataDirAvailableSpacePercent"
+<histogram name="PerformanceManager.DiskStats.UserDataDirFreeSpacePercent"
     units="%" expires_after="2024-09-22">
   <owner>anthonyvd@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
