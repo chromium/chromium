@@ -82,17 +82,9 @@ void LogUserVerifiabilityCheckDuration(const base::TimeDelta& duration) {
       "Autofill.BetterAuth.UserVerifiabilityCheckDuration", duration);
 }
 
-void LogWebauthnOptChangeCalled(bool request_to_opt_in,
-                                bool is_checkout_flow,
-                                WebauthnOptInParameters metric) {
-  if (!request_to_opt_in) {
-    DCHECK(!is_checkout_flow);
-    return;
-  }
-
-  std::string histogram_name = "Autofill.BetterAuth.OptInCalled.";
-  histogram_name += is_checkout_flow ? "FromCheckoutFlow" : "FromSettingsPage";
-  base::UmaHistogramEnumeration(histogram_name, metric);
+void LogWebauthnOptChangeCalled(WebauthnOptInParameters metric) {
+  base::UmaHistogramEnumeration(
+      "Autofill.BetterAuth.OptInCalled.FromCheckoutFlow", metric);
 }
 
 void LogWebauthnOptInPromoNotOfferedReason(
@@ -106,20 +98,15 @@ void LogWebauthnEnrollmentPromptOffered(bool offered) {
                             /*sample=*/offered);
 }
 
-void LogWebauthnOptInPromoShown(bool is_checkout_flow) {
-  std::string suffix =
-      is_checkout_flow ? "FromCheckoutFlow" : "FromSettingsPage";
-  base::UmaHistogramBoolean("Autofill.BetterAuth.OptInPromoShown." + suffix,
-                            true);
+void LogWebauthnOptInPromoShown() {
+  base::UmaHistogramBoolean(
+      "Autofill.BetterAuth.OptInPromoShown.FromCheckoutFlow", true);
 }
 
 void LogWebauthnOptInPromoUserDecision(
-    bool is_checkout_flow,
     WebauthnOptInPromoUserDecisionMetric metric) {
-  std::string suffix =
-      (is_checkout_flow ? "FromCheckoutFlow" : "FromSettingsPage");
   base::UmaHistogramEnumeration(
-      "Autofill.BetterAuth.OptInPromoUserDecision." + suffix, metric);
+      "Autofill.BetterAuth.OptInPromoUserDecision.FromCheckoutFlow", metric);
 }
 
 void LogWebauthnResult(WebauthnFlowEvent event, WebauthnResultMetric metric) {

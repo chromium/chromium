@@ -2642,45 +2642,6 @@ TEST_F(CreditCardAccessManagerTest,
       autofill_metrics::WebauthnOptInParameters::kWithRequestChallenge, 1);
 }
 
-// Ensures WebAuthn result is logged correctly for a settings page opt-in.
-TEST_F(CreditCardAccessManagerTest, SettingsPage_FIDOEnrollment) {
-  base::HistogramTester histogram_tester;
-  std::string opt_in_histogram_name =
-      "Autofill.BetterAuth.OptInCalled.FromSettingsPage";
-  std::string promo_shown_histogram_name =
-      "Autofill.BetterAuth.OptInPromoShown.FromSettingsPage";
-  std::string promo_user_decision_histogram_name =
-      "Autofill.BetterAuth.OptInPromoUserDecision.FromSettingsPage";
-
-  GetFIDOAuthenticator()->SetUserVerifiable(true);
-
-  for (bool did_succeed : {false, true}) {
-    SetCreditCardFIDOAuthEnabled(false);
-    credit_card_access_manager().OnSettingsPageFIDOAuthToggled(true);
-
-    // Mock user and payments response.
-    AcceptWebauthnOfferDialog(/*did_accept=*/true);
-    OptChange(AutofillClient::PaymentsRpcResult::kSuccess,
-              /*user_is_opted_in=*/false,
-              /*include_creation_options=*/true);
-    // Mock user response and payments response.
-    TestCreditCardFidoAuthenticator::MakeCredential(GetFIDOAuthenticator(),
-                                                    did_succeed);
-  }
-
-  histogram_tester.ExpectTotalCount(opt_in_histogram_name, 3);
-  histogram_tester.ExpectBucketCount(
-      opt_in_histogram_name,
-      autofill_metrics::WebauthnOptInParameters::kFetchingChallenge, 2);
-  histogram_tester.ExpectBucketCount(
-      opt_in_histogram_name,
-      autofill_metrics::WebauthnOptInParameters::kWithCreationChallenge, 1);
-  histogram_tester.ExpectTotalCount(promo_shown_histogram_name, 2);
-  histogram_tester.ExpectUniqueSample(
-      promo_user_decision_histogram_name,
-      autofill_metrics::WebauthnOptInPromoUserDecisionMetric::kAccepted, 2);
-}
-
 TEST_F(CreditCardAccessManagerTest, SettingsPage_OptOut) {
   base::HistogramTester histogram_tester;
   GetFIDOAuthenticator()->SetUserVerifiable(true);

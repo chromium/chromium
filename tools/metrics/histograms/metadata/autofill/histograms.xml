@@ -305,11 +305,6 @@ chromium-metrics-reviews@google.com.
       summary="saved security code at the same time"/>
 </variants>
 
-<variants name="AutofillCreditCardWebauthnOptInOrigin">
-  <variant name=".FromCheckoutFlow" summary="Opt-in from a checkout flow"/>
-  <variant name=".FromSettingsPage" summary="Opt-in from settings page"/>
-</variants>
-
 <variants name="AutofillFidoAuthenticationEnabledState">
   <variant name="OptedIn" summary="FIDO authentication enabled"/>
   <variant name="OptedOut" summary="FIDO authentication disabled"/>
@@ -1034,21 +1029,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram
-    name="Autofill.BetterAuth.OptInCalled{AutofillCreditCardWebauthnOptInOrigin}"
+<histogram name="Autofill.BetterAuth.OptInCalled.FromCheckoutFlow"
     enum="AutofillCreditCardWebauthnOptInParameters" expires_after="2025-07-01">
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <owner>autofill-auth-team@google.com</owner>
   <summary>
-    Tracks when users opt-in either from the settings page or from a checkout
-    flow, making an UpdateAutofillUserPreference call. For each call to
-    payments, logs if the call was made in order to verify an existing
-    credential, to create a new credential, or to fetch a challenge.
-    {AutofillCreditCardWebauthnOptInOrigin}
+    Tracks when users opt-in from a checkout flow, making an
+    UpdateAutofillUserPreference call. For each call to payments, logs if the
+    call was made in order to verify an existing credential, to create a new
+    credential, or to fetch a challenge.
   </summary>
-  <token key="AutofillCreditCardWebauthnOptInOrigin"
-      variants="AutofillCreditCardWebauthnOptInOrigin"/>
 </histogram>
 
 <histogram name="Autofill.BetterAuth.OptInPromoNotOfferedReason"
@@ -1064,8 +1055,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Autofill.BetterAuth.OptInPromoShown{AutofillCreditCardWebauthnOptInOrigin}"
+<histogram name="Autofill.BetterAuth.OptInPromoShown.FromCheckoutFlow"
     enum="BooleanHit" expires_after="2025-07-01">
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
@@ -1081,14 +1071,10 @@ chromium-metrics-reviews@google.com.
     Autofill.BetterAuth.UserPerceivedLatencyOnCardSelection.OptedOut), then the
     promo should eventually show if the user selects a masked card and
     successfully authenticates through CVC.
-    {AutofillCreditCardWebauthnOptInOrigin}
   </summary>
-  <token key="AutofillCreditCardWebauthnOptInOrigin"
-      variants="AutofillCreditCardWebauthnOptInOrigin"/>
 </histogram>
 
-<histogram
-    name="Autofill.BetterAuth.OptInPromoUserDecision{AutofillCreditCardWebauthnOptInOrigin}"
+<histogram name="Autofill.BetterAuth.OptInPromoUserDecision.FromCheckoutFlow"
     enum="AutofillWebauthnOptInPromoUserDecision" expires_after="2025-07-01">
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
@@ -1098,10 +1084,8 @@ chromium-metrics-reviews@google.com.
     for card unmasking. The user can either accept the promo and proceed to
     perform user-verification, can decline the promo immediately, or first
     accept the promo but then decline while the challenge is being fetched. Only
-    applicable on Desktop. {AutofillCreditCardWebauthnOptInOrigin}
+    applicable on Desktop.
   </summary>
-  <token key="AutofillCreditCardWebauthnOptInOrigin"
-      variants="AutofillCreditCardWebauthnOptInOrigin"/>
 </histogram>
 
 <histogram

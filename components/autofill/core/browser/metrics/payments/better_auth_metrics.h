@@ -182,9 +182,7 @@ void LogUserVerifiabilityCheckDuration(const base::TimeDelta& duration);
 
 // Logs the count of calls to PaymentsNetworkInterface::OptChange() (aka
 // UpdateAutofillUserPreference).
-void LogWebauthnOptChangeCalled(bool request_to_opt_in,
-                                bool is_checkout_flow,
-                                WebauthnOptInParameters metric);
+void LogWebauthnOptChangeCalled(WebauthnOptInParameters metric);
 
 // Records when the Better Auth (FIDO) opt-in promo could have been offered on
 // Desktop, but wasn't. Logged at the time of the promo not being shown. This
@@ -201,12 +199,11 @@ void LogWebauthnEnrollmentPromptOffered(bool offered);
 
 // Logs the number of times the opt-in promo for enabling FIDO authentication
 // for card unmasking has been shown.
-void LogWebauthnOptInPromoShown(bool is_checkout_flow);
+void LogWebauthnOptInPromoShown();
 
 // Logs the user response to the opt-in promo for enabling FIDO authentication
 // for card unmasking.
 void LogWebauthnOptInPromoUserDecision(
-    bool is_checkout_flow,
     WebauthnOptInPromoUserDecisionMetric metric);
 
 // Logs the result of a WebAuthn prompt.

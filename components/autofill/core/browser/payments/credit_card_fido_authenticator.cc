@@ -235,8 +235,7 @@ void CreditCardFidoAuthenticator::OnWebauthnOfferDialogRequested(
   // Cancel any previous pending WebAuthn requests.
   authenticator()->Cancel();
 
-  autofill_metrics::LogWebauthnOptInPromoShown(
-      /*is_checkout_flow=*/!card_authorization_token_.empty());
+  autofill_metrics::LogWebauthnOptInPromoShown();
 
   // At this point, it must be the case that the user is opted-out, otherwise
   // there would be no need to register the user. However, if the user is
@@ -258,7 +257,6 @@ void CreditCardFidoAuthenticator::OnWebauthnOfferDialogUserResponse(
     // If user declined, log user decision. User may have initially accepted the
     // dialog, but then chose to cancel while the challenge was being fetched.
     autofill_metrics::LogWebauthnOptInPromoUserDecision(
-        /*is_checkout_flow=*/!card_authorization_token_.empty(),
         current_flow_ == OPT_IN_FETCH_CHALLENGE_FLOW
             ? autofill_metrics::WebauthnOptInPromoUserDecisionMetric::
                   kDeclinedAfterAccepting
@@ -324,7 +322,6 @@ void CreditCardFidoAuthenticator::GetAssertion(
       // Now that the dialog has closed and will proceed to a WebAuthn prompt,
       // the user must have accepted the dialog without cancelling.
       autofill_metrics::LogWebauthnOptInPromoUserDecision(
-          /*is_checkout_flow=*/!card_authorization_token_.empty(),
           autofill_metrics::WebauthnOptInPromoUserDecisionMetric::kAccepted);
     } else {
       current_flow_ = NONE_FLOW;
@@ -349,7 +346,6 @@ void CreditCardFidoAuthenticator::MakeCredential(
     // Now that the dialog has closed and will proceed to a WebAuthn prompt,
     // the user must have accepted the dialog without cancelling.
     autofill_metrics::LogWebauthnOptInPromoUserDecision(
-        /*is_checkout_flow=*/!card_authorization_token_.empty(),
         autofill_metrics::WebauthnOptInPromoUserDecisionMetric::kAccepted);
   } else {
     current_flow_ = NONE_FLOW;
@@ -396,7 +392,6 @@ void CreditCardFidoAuthenticator::OptChange(
   // challenge, in which case |card_authorization_token_| will be required for
   // the subsequent OptChange call.
   autofill_metrics::WebauthnOptInParameters opt_change_metric;
-  bool is_checkout_flow = !card_authorization_token_.empty();
   if (!authenticator_response.empty()) {
     request_details.fido_authenticator_response =
         std::move(authenticator_response);
@@ -420,9 +415,7 @@ void CreditCardFidoAuthenticator::OptChange(
 
   // Logging call if user was attempting to change their opt-in state.
   if (current_flow_ != FOLLOWUP_AFTER_CVC_AUTH_FLOW) {
-    bool request_to_opt_in = (current_flow_ != OPT_OUT_FLOW);
-    autofill_metrics::LogWebauthnOptChangeCalled(
-        request_to_opt_in, is_checkout_flow, opt_change_metric);
+    autofill_metrics::LogWebauthnOptChangeCalled(opt_change_metric);
   }
 }
 
