@@ -589,10 +589,6 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
   void AssertFragmentTreeChildren(bool allow_destroyed_or_moved = false) const;
 #endif
 
- protected:
-  friend class PhysicalFragment;
-  void Dispose();
-
  private:
   using BitField = WTF::ConcurrentlyReadBitField<uint32_t>;
   using ConstHasFragmentItemsFlag =

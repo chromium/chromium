@@ -476,21 +476,6 @@ PhysicalFragment::PhysicalFragment(const PhysicalFragment& other)
   DCHECK(children_valid_);
 }
 
-PhysicalFragment::~PhysicalFragment() {
-  Dispose();
-}
-
-void PhysicalFragment::Dispose() {
-  switch (Type()) {
-    case kFragmentBox:
-      static_cast<PhysicalBoxFragment*>(this)->Dispose();
-      break;
-    case kFragmentLineBox:
-      static_cast<PhysicalLineBoxFragment*>(this)->Dispose();
-      break;
-  }
-}
-
 bool PhysicalFragment::IsBlockFlow() const {
   return !IsLineBox() && layout_object_->IsLayoutBlockFlow();
 }

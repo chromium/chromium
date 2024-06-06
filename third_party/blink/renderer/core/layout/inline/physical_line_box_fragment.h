@@ -75,10 +75,6 @@ class CORE_EXPORT PhysicalLineBoxFragment final : public PhysicalFragment {
     return layout_object_.Get();
   }
 
- protected:
-  friend class PhysicalFragment;
-  void Dispose();
-
  private:
   FontHeight metrics_;
 

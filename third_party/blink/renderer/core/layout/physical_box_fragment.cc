@@ -401,12 +401,6 @@ PhysicalBoxFragment::PhysicalBoxFragment(
 }
 
 PhysicalBoxFragment::~PhysicalBoxFragment() {
-  // Note: This function may not always be called because the dtor of
-  // PhysicalFragment is made non-virtual for memory efficiency.
-  SetInkOverflowType(ink_overflow_.Reset(InkOverflowType()));
-}
-
-void PhysicalBoxFragment::Dispose() {
   if (HasInkOverflow())
     SetInkOverflowType(ink_overflow_.Reset(InkOverflowType()));
   if (HasItems())

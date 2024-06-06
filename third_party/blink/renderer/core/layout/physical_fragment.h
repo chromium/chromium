@@ -131,10 +131,6 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
 
   PhysicalFragment(const PhysicalFragment& other);
 
-  ~PhysicalFragment();
-
-  void Dispose();
-
   FragmentType Type() const { return static_cast<FragmentType>(type_); }
   bool IsContainer() const {
     return Type() == FragmentType::kFragmentBox ||
@@ -731,6 +727,8 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
   bool NeedsOOFPositionedInfoPropagation() const;
 
  protected:
+  ~PhysicalFragment() = default;
+
   const ComputedStyle& SlowEffectiveStyle() const;
 
   void AddOutlineRectsForNormalChildren(
