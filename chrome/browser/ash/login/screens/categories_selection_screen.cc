@@ -4,8 +4,11 @@
 
 #include "chrome/browser/ash/login/screens/categories_selection_screen.h"
 
+#include <memory>
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -161,8 +164,9 @@ void CategoriesSelectionScreen::OnUserAction(const base::Value::List& args) {
   const std::string& action_id = args[0].GetString();
 
   if (action_id == kUserActionLoaded) {
-    delay_overview_timer_.Start(FROM_HERE, delay_overview_step_, this,
-                                &CategoriesSelectionScreen::ShowOverviewStep);
+    delay_overview_timer_ = std::make_unique<base::OneShotTimer>();
+    delay_overview_timer_->Start(FROM_HERE, delay_overview_step_, this,
+                                 &CategoriesSelectionScreen::ShowOverviewStep);
     return;
   }
 

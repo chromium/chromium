@@ -66,7 +66,7 @@ class CategoriesSelectionScreen : public BaseScreen {
   // Called when the user selects categories on the screen.
   void OnSelect(base::Value::List screens);
 
-  base::OneShotTimer delay_overview_timer_;
+  std::unique_ptr<base::OneShotTimer> delay_overview_timer_;
   base::TimeDelta delay_overview_step_ = base::Seconds(2);
 
   base::WeakPtr<CategoriesSelectionScreenView> view_;

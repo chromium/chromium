@@ -38,7 +38,7 @@ export const CategoriesScreenElementBase =
           MultiStepBehaviorInterface,
     };
 
-enum CaegoriesStep {
+enum CategoriesStep {
   LOADING = 'loading',
   OVERVIEW = 'overview',
 }
@@ -77,12 +77,12 @@ export class CategoriesScreenElement extends CategoriesScreenElementBase {
   private numberOfSelectedCategories: number;
 
   override get UI_STEPS() {
-    return CaegoriesStep;
+    return CategoriesStep;
   }
 
   // eslint-disable-next-line @typescript-eslint/naming-convention
   override defaultUIStep() {
-    return CaegoriesStep.LOADING;
+    return CategoriesStep.LOADING;
   }
 
   override ready(): void {
@@ -102,6 +102,16 @@ export class CategoriesScreenElement extends CategoriesScreenElementBase {
     return OobeUiState.ONBOARDING;
   }
 
+  override onBeforeShow(): void {
+    this.setUIStep(CategoriesStep.LOADING);
+  }
+
+
+  onBeforeHide(): void {
+    this.shadowRoot!.querySelector<OobeCategoriesList>(
+                        '#categoriesList')!.reset();
+  }
+
   setCategoriesData(categoriesData: CategoriesScreenData): void {
     assert('categories' in categoriesData);
     this.shadowRoot!.querySelector<OobeCategoriesList>('#categoriesList')!
@@ -109,7 +119,7 @@ export class CategoriesScreenElement extends CategoriesScreenElementBase {
   }
 
   setOverviewStep(): void {
-    this.setUIStep(CaegoriesStep.OVERVIEW);
+    this.setUIStep(CategoriesStep.OVERVIEW);
     const categoriesList =
         this.shadowRoot?.querySelector<HTMLElement>('#categoriesList');
     if (categoriesList instanceof HTMLElement) {
