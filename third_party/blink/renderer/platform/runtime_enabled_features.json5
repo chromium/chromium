@@ -1309,7 +1309,7 @@
       // Dispatch selectionchange event per element according to the new spec:
       // https://w3c.github.io/selection-api/#selectionchange-event
       name: "DispatchSelectionchangeEventPerElement",
-      status: "experimental",
+      status: "stable",
     },
     {
       // Allowing elements with display:contents to have focus.
