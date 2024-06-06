@@ -27,6 +27,7 @@
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/saved_tab_group_test_utils.h"
 #include "components/sync/engine/commit_queue.h"
+#include "components/sync/model/conflict_resolution.h"
 #include "components/sync/model/data_batch.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/metadata_batch.h"
@@ -46,6 +47,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+using syncer::ConflictResolution;
+using syncer::EntityData;
 using testing::_;
 
 namespace tab_groups {
@@ -225,6 +228,104 @@ TEST_F(SavedTabGroupSyncBridgeTest, MergeFullSyncData) {
     EXPECT_TRUE(AreSavedTabGroupTabsEqual(
         tab, *group_from_model->GetTab(tab.saved_tab_guid())));
   }
+}
+
+TEST_F(SavedTabGroupSyncBridgeTest, ConflictResolutionForTabGroup) {
+  ASSERT_TRUE(saved_tab_group_model_.saved_tab_groups().empty());
+
+  SavedTabGroup group(u"Test Title`", tab_groups::TabGroupColorId::kCyan, {},
+                      1);
+  SavedTabGroupTab tab(GURL("https://website1.com"), u"Website Title1",
+                       group.saved_guid(), /*position=*/std::nullopt);
+  group.AddTabLocally(tab);
+  base::Uuid group_id = group.saved_guid();
+  saved_tab_group_model_.Add(std::move(group));
+  ASSERT_EQ(saved_tab_group_model_.saved_tab_groups().size(), 1u);
+  const SavedTabGroup* group_from_model = saved_tab_group_model_.Get(group_id);
+
+  sync_pb::SavedTabGroupSpecifics group_specific =
+      SavedTabGroupSyncBridge::SavedTabGroupToSpecificsForTest(
+          *group_from_model);
+  syncer::EntityData remote_data = CreateEntityData(group_specific);
+  ASSERT_FALSE(remote_data.is_deleted());
+
+  // Remote is old.
+  group_specific.set_update_time_windows_epoch_micros(
+      group_specific.update_time_windows_epoch_micros() - 10);
+  remote_data = CreateEntityData(group_specific);
+  EXPECT_THAT(bridge_->ResolveConflict("storagekey1", remote_data),
+              testing::Eq(syncer::ConflictResolution::kUseLocal));
+
+  // Remote is more recent.
+  group_specific.set_update_time_windows_epoch_micros(
+      group_specific.update_time_windows_epoch_micros() + 10);
+  remote_data = CreateEntityData(group_specific);
+  EXPECT_THAT(bridge_->ResolveConflict("storagekey1", remote_data),
+              testing::Eq(syncer::ConflictResolution::kUseRemote));
+
+  // Remote is deleted.
+  syncer::EntityData remote_data2;
+  remote_data2.name = group_specific.guid();
+  ASSERT_TRUE(remote_data2.is_deleted());
+  EXPECT_THAT(bridge_->ResolveConflict("storagekey1", remote_data2),
+              testing::Eq(syncer::ConflictResolution::kUseLocal));
+
+  // Local doesn't exist.
+  saved_tab_group_model_.Remove(group_id);
+  EXPECT_EQ(saved_tab_group_model_.saved_tab_groups().size(), 0u);
+  remote_data = CreateEntityData(group_specific);
+  EXPECT_THAT(bridge_->ResolveConflict("storagekey1", remote_data),
+              testing::Eq(syncer::ConflictResolution::kUseRemote));
+}
+
+TEST_F(SavedTabGroupSyncBridgeTest, ConflictResolutionForTab) {
+  ASSERT_TRUE(saved_tab_group_model_.saved_tab_groups().empty());
+
+  SavedTabGroup group(u"Test Title`", tab_groups::TabGroupColorId::kCyan, {},
+                      1);
+  SavedTabGroupTab tab(GURL("https://website1.com"), u"Website Title1",
+                       group.saved_guid(), /*position=*/std::nullopt);
+  group.AddTabLocally(tab);
+  base::Uuid group_id = group.saved_guid();
+  base::Uuid tab_id = tab.saved_tab_guid();
+  saved_tab_group_model_.Add(std::move(group));
+  EXPECT_EQ(saved_tab_group_model_.saved_tab_groups().size(), 1u);
+  const SavedTabGroup* group_from_model = saved_tab_group_model_.Get(group_id);
+
+  const SavedTabGroupTab* tab_from_model = group_from_model->GetTab(tab_id);
+  ASSERT_TRUE(tab_from_model);
+  sync_pb::SavedTabGroupSpecifics tab_specific =
+      SavedTabGroupSyncBridge::SavedTabGroupTabToSpecificsForTest(
+          *tab_from_model);
+
+  // Remote is old.
+  tab_specific.set_update_time_windows_epoch_micros(
+      tab_specific.update_time_windows_epoch_micros() - 10);
+  syncer::EntityData remote_data = CreateEntityData(tab_specific);
+  ASSERT_FALSE(remote_data.is_deleted());
+  EXPECT_THAT(bridge_->ResolveConflict("storagekey1", remote_data),
+              testing::Eq(syncer::ConflictResolution::kUseLocal));
+
+  // Remote is more recent.
+  tab_specific.set_update_time_windows_epoch_micros(
+      tab_specific.update_time_windows_epoch_micros() + 10);
+  remote_data = CreateEntityData(tab_specific);
+  EXPECT_THAT(bridge_->ResolveConflict("storagekey1", remote_data),
+              testing::Eq(syncer::ConflictResolution::kUseRemote));
+
+  // Remote is deleted.
+  syncer::EntityData remote_data2;
+  remote_data2.name = tab_specific.guid();
+  ASSERT_TRUE(remote_data2.is_deleted());
+  EXPECT_THAT(bridge_->ResolveConflict("storagekey1", remote_data2),
+              testing::Eq(syncer::ConflictResolution::kUseLocal));
+
+  // Local doesn't exist.
+  saved_tab_group_model_.Remove(group_id);
+  EXPECT_EQ(saved_tab_group_model_.saved_tab_groups().size(), 0u);
+  remote_data = CreateEntityData(tab_specific);
+  EXPECT_THAT(bridge_->ResolveConflict("storagekey1", remote_data),
+              testing::Eq(syncer::ConflictResolution::kUseRemote));
 }
 
 // Verify merging with preexisting data in the model merges the correct

@@ -30,6 +30,7 @@
 #include "components/saved_tab_groups/types.h"
 #include "components/sync/base/deletion_origin.h"
 #include "components/sync/base/model_type.h"
+#include "components/sync/model/conflict_resolution.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
@@ -429,6 +430,43 @@ SavedTabGroupSyncBridge::ApplyIncrementalSyncChanges(
   return {};
 }
 
+syncer::ConflictResolution SavedTabGroupSyncBridge::ResolveConflict(
+    const std::string& storage_key,
+    const syncer::EntityData& remote_data) const {
+  if (remote_data.is_deleted()) {
+    return syncer::ConflictResolution::kUseLocal;
+  }
+
+  CHECK(IsEntityDataValid(remote_data));
+  const sync_pb::SavedTabGroupSpecifics& remote_specifics =
+      remote_data.specifics.saved_tab_group();
+
+  // Do a conflict resolution based on last update timestamp.
+  base::Uuid guid = base::Uuid::ParseLowercase(remote_specifics.guid());
+  base::Time local_timestamp;
+  if (remote_specifics.has_group()) {
+    if (const SavedTabGroup* group = model_->Get(guid)) {
+      local_timestamp = group->update_time_windows_epoch_micros();
+    }
+  } else {
+    CHECK(remote_specifics.has_tab());
+    base::Uuid group_guid =
+        base::Uuid::ParseLowercase(remote_specifics.tab().group_guid());
+    const SavedTabGroup* group = model_->Get(group_guid);
+    if (const SavedTabGroupTab* tab = group ? group->GetTab(guid) : nullptr) {
+      local_timestamp = tab->update_time_windows_epoch_micros();
+    }
+  }
+
+  base::Time remote_timestamp = TimeFromWindowsEpochMicros(
+      remote_specifics.update_time_windows_epoch_micros());
+  bool local_is_more_recent =
+      !local_timestamp.is_null() && local_timestamp > remote_timestamp;
+
+  return local_is_more_recent ? syncer::ConflictResolution::kUseLocal
+                              : syncer::ConflictResolution::kUseRemote;
+}
+
 void SavedTabGroupSyncBridge::ApplyDisableSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
   // Close the local groups that were created before sign-in.
@@ -500,6 +538,13 @@ void SavedTabGroupSyncBridge::GetAllDataForDebugging(DataCallback callback) {
   }
 
   std::move(callback).Run(std::move(batch));
+}
+
+bool SavedTabGroupSyncBridge::IsEntityDataValid(
+    const syncer::EntityData& entity_data) const {
+  const sync_pb::SavedTabGroupSpecifics& specifics =
+      entity_data.specifics.saved_tab_group();
+  return specifics.has_group() || specifics.has_tab();
 }
 
 // SavedTabGroupModelObserver
