@@ -76,11 +76,6 @@ constexpr size_t kMaxPages = 10000u;
 // user experience.
 constexpr size_t kMaxPagesPerBatch = 20u;
 
-// Backlight has an internal multiplier that we need to apply in order to
-// calculate bounding box information correctly and use it to update the
-// viewport.
-constexpr float kBacklightInternalScaleFactor = 1.25f;
-
 AXMediaAppUntrustedHandler::AXMediaAppUntrustedHandler(
     content::BrowserContext& context,
     gfx::NativeWindow native_window,
@@ -309,15 +304,6 @@ void AXMediaAppUntrustedHandler::PerformAction(
                                      page_index + (has_landmark_node_ ? 1 : 0))
                                  ->data()
                                  .relative_bounds.bounds.OffsetFromOrigin());
-        // `viewport_box` being passed to `ViewportUpdated()` will contain
-        // values that are not multiplied with `kBacklightInternalScaleFactor`.
-        // But `page_bitmap` via `RequestBitmap()` has the image resolution
-        // that's applied with this internal scale factor. As all bounding
-        // boxes for text extracted by OCR are created with this internal scale
-        // factor already being applied, we need to divide their global bounds
-        // by `kBacklightInternalScaleFactor` to compare the global bounds with
-        // the viewport and then, if necessary, update the viewport, correctly.
-        global_bounds.Scale(1.0f / kBacklightInternalScaleFactor);
         if (global_bounds.x() < viewport_box_.x()) {
           viewport_box_.set_x(global_bounds.x());
         } else if (global_bounds.right() > viewport_box_.right()) {
@@ -1030,19 +1016,16 @@ bool AXMediaAppUntrustedHandler::HasRendererTerminatedDueToBadPageId(
 std::unique_ptr<gfx::Transform>
 AXMediaAppUntrustedHandler::MakeTransformFromOffsetAndScale() const {
   auto transform = std::make_unique<gfx::Transform>();
+  // `viewport_box_.origin()` represents the offset from which the viewport
+  // starts, based on the origin of PDF content; e.g. if it's (-100, -10), it
+  // indicates that PDF content starts at (100, 10) from the viewport's origin.
   const float device_pixel_ratio = display::Screen::GetScreen()
                                        ->GetDisplayNearestView(native_window_)
                                        .device_scale_factor();
   transform->Scale(device_pixel_ratio);
   transform->Scale(scale_factor_);
-  // `viewport_box_.origin()` represents the offset from which the viewport
-  // starts, based on the origin of PDF content; e.g. if it's (-100, -10), it
-  // indicates that PDF content starts at (100, 10) from the viewport's origin.
-  // It needs to be multiplied with Backlight's internal scale factor to offset
-  // bounding boxes in an accessibility tree correctly.
-  transform->Translate(
-      -viewport_box_.origin().x() * kBacklightInternalScaleFactor,
-      -viewport_box_.origin().y() * kBacklightInternalScaleFactor);
+  transform->Translate(-viewport_box_.origin().x(),
+                       -viewport_box_.origin().y());
   return transform;
 }
 
