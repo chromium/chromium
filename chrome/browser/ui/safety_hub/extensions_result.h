@@ -14,8 +14,6 @@
 #include "extensions/browser/extension_prefs_observer.h"
 #include "extensions/browser/extension_registry_observer.h"
 
-// TODO(crbug.com/40267370): Reuse the result in Safety Check extensions
-// handler.
 class SafetyHubExtensionsResult : public SafetyHubService::Result {
  public:
   SafetyHubExtensionsResult() = delete;
