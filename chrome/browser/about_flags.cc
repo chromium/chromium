@@ -6625,11 +6625,6 @@ const FeatureEntry kFeatureEntries[] = {
      commerce::flag_descriptions::kProductSpecificationsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(commerce::kProductSpecifications)},
 
-    {"product-specifications-sync",
-     commerce::flag_descriptions::kProductSpecificationsSyncName,
-     commerce::flag_descriptions::kProductSpecificationsSyncDescription,
-     kOsDesktop, FEATURE_VALUE_TYPE(commerce::kProductSpecificationsSync)},
-
     {"shopping-list", commerce::flag_descriptions::kShoppingListName,
      commerce::flag_descriptions::kShoppingListDescription,
      kOsAndroid | kOsDesktop, FEATURE_VALUE_TYPE(commerce::kShoppingList)},

@@ -34,11 +34,10 @@ namespace commerce {
 commerce::ProductSpecificationsService*
 ProductSpecificationsServiceFactory::GetForBrowserContext(
     content::BrowserContext* context) {
-  // Not available in incognito mode. Only available if
-  // kProductSpecificationsSync is enabled. as the sync integration
-  // is still under development
+  // Not available in incognito mode. Only available if kProductSpecifications
+  // is enabled as the service is gated along with the rest of the feature.
   if (!context->IsOffTheRecord() &&
-      base::FeatureList::IsEnabled(commerce::kProductSpecificationsSync)) {
+      base::FeatureList::IsEnabled(commerce::kProductSpecifications)) {
     return static_cast<commerce::ProductSpecificationsService*>(
         GetInstance()->GetServiceForBrowserContext(context, true));
   }

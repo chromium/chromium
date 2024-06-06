@@ -167,10 +167,8 @@ class HistoryProductSpecificationsListTest : public WebUIMochaBrowserTest {
  protected:
   HistoryProductSpecificationsListTest() {
     set_test_loader_host(chrome::kChromeUIHistoryHost);
-    scoped_feature_list_.InitWithFeatures(
-        {commerce::kProductSpecifications,
-         commerce::kProductSpecificationsSync},
-        {});
+    scoped_feature_list_.InitWithFeatures({commerce::kProductSpecifications},
+                                          {});
   }
 
  private:

@@ -91,7 +91,6 @@ BASE_DECLARE_FEATURE(kPriceTrackingIconColors);
 
 BASE_DECLARE_FEATURE(kProductSpecifications);
 BASE_DECLARE_FEATURE(kProductSpecificationsRegionLaunched);
-BASE_DECLARE_FEATURE(kProductSpecificationsSync);
 
 BASE_DECLARE_FEATURE(kShoppingIconColorVariant);
 BASE_DECLARE_FEATURE(kShoppingList);

@@ -65,7 +65,7 @@ class SingleClientProductSpecificationsSyncTest : public SyncTest {
 
  private:
   base::test::ScopedFeatureList features_override_{
-      commerce::kProductSpecificationsSync};
+      commerce::kProductSpecifications};
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientProductSpecificationsSyncTest,

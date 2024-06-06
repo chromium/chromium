@@ -11,10 +11,8 @@ class ProductSpecificationsTest : public WebUIMochaBrowserTest {
  protected:
   ProductSpecificationsTest() {
     set_test_loader_host(commerce::kChromeUICompareHost);
-    scoped_feature_list_.InitWithFeatures(
-        {commerce::kProductSpecifications,
-         commerce::kProductSpecificationsSync},
-        {});
+    scoped_feature_list_.InitWithFeatures({commerce::kProductSpecifications},
+                                          {});
   }
 
  private:

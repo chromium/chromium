@@ -34,14 +34,13 @@ class ProductSpecificationsServiceFactoryTest : public testing::Test {
     different_profile_ = different_profile_builder.Build();
   }
 
-  void enable_product_spec_sync_flag() {
-    scoped_feature_list_.InitAndEnableFeature(
-        commerce::kProductSpecificationsSync);
+  void enable_product_spec_flag() {
+    scoped_feature_list_.InitAndEnableFeature(commerce::kProductSpecifications);
   }
 
-  void disable_product_spec_sync_flag() {
+  void disable_product_spec_flag() {
     scoped_feature_list_.InitAndDisableFeature(
-        commerce::kProductSpecificationsSync);
+        commerce::kProductSpecifications);
   }
 
   Profile* profile() { return profile_.get(); }
@@ -65,7 +64,7 @@ TEST_F(ProductSpecificationsServiceFactoryTest, TestIncognitoProfile) {
 
 TEST_F(ProductSpecificationsServiceFactoryTest,
        TestRegularProfileProductSpecSyncFlagOn) {
-  enable_product_spec_sync_flag();
+  enable_product_spec_flag();
   EXPECT_NE(nullptr,
             commerce::ProductSpecificationsServiceFactory::GetInstance()
                 ->GetForBrowserContext(profile()));
@@ -73,14 +72,14 @@ TEST_F(ProductSpecificationsServiceFactoryTest,
 
 TEST_F(ProductSpecificationsServiceFactoryTest,
        TestRegularProfileProductSpecSyncFlagOff) {
-  disable_product_spec_sync_flag();
+  disable_product_spec_flag();
   EXPECT_EQ(nullptr,
             commerce::ProductSpecificationsServiceFactory::GetInstance()
                 ->GetForBrowserContext(profile()));
 }
 
 TEST_F(ProductSpecificationsServiceFactoryTest, TestSameProfile) {
-  enable_product_spec_sync_flag();
+  enable_product_spec_flag();
   EXPECT_EQ(commerce::ProductSpecificationsServiceFactory::GetInstance()
                 ->GetForBrowserContext(profile()),
             commerce::ProductSpecificationsServiceFactory::GetInstance()
@@ -88,7 +87,7 @@ TEST_F(ProductSpecificationsServiceFactoryTest, TestSameProfile) {
 }
 
 TEST_F(ProductSpecificationsServiceFactoryTest, TestDifferentProfile) {
-  enable_product_spec_sync_flag();
+  enable_product_spec_flag();
   EXPECT_NE(commerce::ProductSpecificationsServiceFactory::GetInstance()
                 ->GetForBrowserContext(different_profile()),
             commerce::ProductSpecificationsServiceFactory::GetInstance()
