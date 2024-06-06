@@ -52,7 +52,6 @@
 #include "ash/utility/forest_util.h"
 #include "ash/wallpaper/views/wallpaper_widget_controller.h"
 #include "ash/wm/always_on_top_controller.h"
-#include "ash/wm/bounds_tracker/window_bounds_tracker.h"
 #include "ash/wm/container_finder.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
@@ -205,12 +204,8 @@ void ReparentWindow(aura::Window* window, aura::Window* new_parent) {
   gfx::Rect restore_bounds;
   const bool has_restore_bounds = state && state->HasRestoreBounds();
 
-  auto* window_bounds_tracker = Shell::Get()->window_bounds_tracker();
-  // `WindowBoundsTracker` will handle the window's bounds on root window
-  // changes if the feature `kWindowBoundsTracker` is enabled.
   const bool update_bounds =
-      state && (state->IsNormalStateType() || state->IsMinimized()) &&
-      !window_bounds_tracker;
+      state && (state->IsNormalStateType() || state->IsMinimized());
   gfx::Rect work_area_in_new_parent =
       screen_util::GetDisplayWorkAreaBoundsInParent(new_parent);
 
@@ -225,10 +220,6 @@ void ReparentWindow(aura::Window* window, aura::Window* new_parent) {
     restore_bounds = state->GetRestoreBoundsInParent();
     MoveOriginRelativeToSize(src_size, dst_size, &restore_bounds);
     restore_bounds.AdjustToFit(work_area_in_new_parent);
-  }
-
-  if (window_bounds_tracker) {
-    window_bounds_tracker->AddWindowDisplayIdOnDisplayRemoval(window);
   }
 
   new_parent->AddChild(window);

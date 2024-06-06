@@ -3153,12 +3153,6 @@ BASE_FEATURE(kWifiSyncApplyDeletes,
              "WifiSyncApplyDeletes",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls whether to enable the new mechanisms to track window bounds, to do
-// window bounds remapping and restoration when necessary.
-BASE_FEATURE(kWindowBoundsTracker,
-             "WindowBoundsTracker",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables an experimental feature that splits windows by dragging one window
 // over another window.
 BASE_FEATURE(kWindowSplitting,
@@ -4729,10 +4723,6 @@ bool IsWifiDirectEnabled() {
 
 bool IsWifiSyncAndroidEnabled() {
   return base::FeatureList::IsEnabled(kWifiSyncAndroid);
-}
-
-bool IsWindowBoundsTrackerEnabled() {
-  return base::FeatureList::IsEnabled(kWindowBoundsTracker);
 }
 
 bool IsWindowSplittingEnabled() {

@@ -204,7 +204,6 @@
 #include "ash/utility/occlusion_tracker_pauser.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/ash_focus_rules.h"
-#include "ash/wm/bounds_tracker/window_bounds_tracker.h"
 #include "ash/wm/container_finder.h"
 #include "ash/wm/coral/coral_controller.h"
 #include "ash/wm/cursor_manager_chromeos.h"
@@ -888,8 +887,6 @@ Shell::~Shell() {
   // before |window_tree_host_manager_| is deleted.
   persistent_window_controller_.reset();
 
-  window_bounds_tracker_.reset();
-
   display_highlight_controller_.reset();
 
   // VideoActivityNotifier must be deleted before |video_detector_| is
@@ -1422,12 +1419,6 @@ void Shell::Init(
   focus_controller_ = std::make_unique<::wm::FocusController>(focus_rules_);
   focus_controller_->AddObserver(this);
 
-  // `WindowBoundsTracker` depends on `FocusController`, as it needs to track
-  // the window's activation changes.
-  if (features::IsWindowBoundsTrackerEnabled()) {
-    window_bounds_tracker_ = std::make_unique<WindowBoundsTracker>();
-  }
-
   overview_controller_ = std::make_unique<OverviewController>();
 
   // `GameDashboardController` has dependencies on `OverviewController` and
@@ -1875,13 +1866,8 @@ void Shell::InitializeDisplayManager() {
   display_configuration_observer_ =
       std::make_unique<DisplayConfigurationObserver>();
 
-  // `window_bounds_tracker_` will be used to remap or restore windows on
-  // display removal, reconnection and rotation if the corresponding flag is
-  // enabled.
-  if (!features::IsWindowBoundsTrackerEnabled()) {
-    persistent_window_controller_ =
-        std::make_unique<PersistentWindowController>();
-  }
+  persistent_window_controller_ =
+      std::make_unique<PersistentWindowController>();
 
   projecting_observer_ =
       std::make_unique<ProjectingObserver>(display_manager_->configurator());

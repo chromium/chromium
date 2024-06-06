@@ -212,10 +212,6 @@ class ASH_EXPORT WindowTreeHostManager
   // are rendered on the correct display.
   void UpdateHostOfDisplayProviders();
 
-  // True if display addition happens, and restore the windows back to it if
-  // they were previously inside it.
-  bool should_restore_windows_on_display_added_ = false;
-
   typedef std::map<int64_t, AshWindowTreeHost*> WindowTreeHostMap;
   // The mapping from display ID to its window tree host.
   WindowTreeHostMap window_tree_hosts_;

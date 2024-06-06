@@ -25,7 +25,6 @@
 #include "ash/shell.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/unified/unified_system_tray.h"
-#include "ash/wm/bounds_tracker/window_bounds_tracker.h"
 #include "ash/wm/window_util.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
@@ -657,10 +656,6 @@ void WindowTreeHostManager::CreateDisplay(const display::Display& display) {
   if (display::features::IsRoundedDisplayEnabled()) {
     EnableRoundedCorners(display);
   }
-
-  if (Shell::Get()->window_bounds_tracker()) {
-    should_restore_windows_on_display_added_ = true;
-  }
 }
 
 void WindowTreeHostManager::DeleteHost(AshWindowTreeHost* host_to_delete) {
@@ -932,12 +927,6 @@ void WindowTreeHostManager::SetPrimaryDisplayId(int64_t id) {
   const int64_t old_primary_id = old_primary_display.id();
   DCHECK_EQ(old_primary_id, primary_display_id);
 
-  auto* window_bounds_tracker = Shell::Get()->window_bounds_tracker();
-  if (window_bounds_tracker) {
-    window_bounds_tracker->OnWillSwapDisplayRootWindows(old_primary_id,
-                                                        new_primary_id);
-  }
-
   // Swap root windows between current and new primary display.
   AshWindowTreeHost* primary_host = window_tree_hosts_[primary_display_id];
   CHECK(primary_host);
@@ -992,11 +981,6 @@ void WindowTreeHostManager::SetPrimaryDisplayId(int64_t id) {
   GetDisplayManager()->set_force_bounds_changed(true);
   GetDisplayManager()->UpdateDisplays();
   GetDisplayManager()->set_force_bounds_changed(false);
-
-  if (window_bounds_tracker) {
-    window_bounds_tracker->OnDisplayRootWindowsSwapped(old_primary_id,
-                                                       new_primary_id);
-  }
 }
 
 void WindowTreeHostManager::PostDisplayConfigurationChange() {
@@ -1009,11 +993,6 @@ void WindowTreeHostManager::PostDisplayConfigurationChange() {
   // Enable cursor compositing, so that cursor could be mirrored to
   // destination displays along with other display content.
   Shell::Get()->UpdateCursorCompositingEnabled();
-
-  if (should_restore_windows_on_display_added_) {
-    Shell::Get()->window_bounds_tracker()->MaybeRestoreWindowsOnDisplayAdded();
-    should_restore_windows_on_display_added_ = false;
-  }
 
   // Unpause occlusion tracking.
   scoped_pause_.reset();
