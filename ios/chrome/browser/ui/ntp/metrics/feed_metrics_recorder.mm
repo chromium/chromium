@@ -1232,7 +1232,7 @@ using feed::FeedUserActionType;
   if (additionalTimeInFeed.is_negative()) {
     // TODO(crbug.com/340554892): Fix Good Visits metric.
     // Temporary fix, but it should reduce the number of occurances.
-    self.feedBecameVisibleTime = base::Time::Now();
+    self.feedBecameVisibleTime = now;
     additionalTimeInFeed = now - self.feedBecameVisibleTime;
   }
   // Temporary fix to resolve negative values in prefs.
