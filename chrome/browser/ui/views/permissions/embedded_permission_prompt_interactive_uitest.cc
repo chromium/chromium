@@ -732,7 +732,8 @@ class EmbeddedPermissionPromptPositioningInteractiveTest
     feature_list_.InitWithFeaturesAndParameters(
         {
             {blink::features::kPermissionElement, {}},
-            {permissions::features::kPermissionElementDialogPositioning, {}},
+            {permissions::features::kPermissionElementPromptPositioning,
+             {{"PermissionElementPromptPositioningParam", "near_element"}}},
             {permissions::features::kOneTimePermission, {}},
             {blink::features::kBypassPepcSecurityForTesting, {}},
         },

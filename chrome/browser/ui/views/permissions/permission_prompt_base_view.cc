@@ -6,7 +6,10 @@
 
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
+#include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/views/bubble_anchor_util_views.h"
 #include "chrome/browser/ui/views/title_origin_label.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/permissions/features.h"
@@ -36,7 +39,8 @@ PermissionPromptBaseView::PermissionPromptBaseView(
                                /*autosize=*/true),
       url_identity_(GetUrlIdentity(browser, *delegate)),
       is_for_picture_in_picture_window_(browser &&
-                                        browser->is_type_picture_in_picture()) {
+                                        browser->is_type_picture_in_picture()),
+      browser_(browser) {
   // To prevent permissions being accepted accidentally, and as a security
   // measure against crbug.com/619429, permission prompts should not be accepted
   // as the default action.
@@ -52,6 +56,26 @@ void PermissionPromptBaseView::AddedToWidget() {
   }
 
   StartTrackingPictureInPictureOcclusion();
+}
+
+void PermissionPromptBaseView::AnchorToPageInfoOrChip() {
+  bubble_anchor_util::AnchorConfiguration configuration =
+      bubble_anchor_util::GetPermissionPromptBubbleAnchorConfiguration(
+          browser_);
+  SetAnchorView(configuration.anchor_view);
+  // In fullscreen, `anchor_view` may be nullptr because the toolbar is hidden,
+  // therefore anchor to the browser window instead.
+  if (configuration.anchor_view) {
+    set_parent_window(configuration.anchor_view->GetWidget()->GetNativeView());
+  } else {
+    set_parent_window(
+        platform_util::GetViewForWindow(browser_->window()->GetNativeWindow()));
+  }
+  SetHighlightedButton(configuration.highlighted_button);
+  if (!configuration.anchor_view) {
+    SetAnchorRect(bubble_anchor_util::GetPageInfoAnchorRect(browser_));
+  }
+  SetArrow(configuration.bubble_arrow);
 }
 
 bool PermissionPromptBaseView::ShouldIgnoreButtonPressedEventHandling(

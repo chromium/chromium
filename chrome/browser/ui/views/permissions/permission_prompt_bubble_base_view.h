@@ -103,8 +103,6 @@ class PermissionPromptBubbleBaseView : public PermissionPromptBaseView {
     return static_cast<PermissionDialogButton>(button_id);
   }
 
-  const raw_ptr<Browser> browser_;
-
  private:
   void SetPromptStyle(PermissionPromptStyle prompt_style);
 

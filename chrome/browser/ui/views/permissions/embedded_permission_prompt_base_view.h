@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_view_delegate.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_base_view.h"
 #include "components/favicon_base/favicon_types.h"
+#include "components/permissions/features.h"
 #include "components/permissions/permission_prompt.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -124,9 +125,8 @@ class EmbeddedPermissionPromptBaseView : public PermissionPromptBaseView {
                  const ButtonConfiguration& button);
   std::unique_ptr<views::FlexLayoutView> CreateLoadingIcon();
   gfx::Rect GetBubbleBounds() override;
-  bool ShouldOverrideBubbleBounds() const;
-
-  const raw_ptr<Browser> browser_;
+  permissions::feature_params::PermissionElementPromptPosition
+  GetPromptPosition() const;
   gfx::Rect element_rect_;
   base::WeakPtr<EmbeddedPermissionPromptViewDelegate> delegate_;
 };

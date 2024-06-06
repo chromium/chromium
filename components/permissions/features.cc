@@ -53,8 +53,8 @@ BASE_FEATURE(kFailFastQuietChip,
 // Enables different positioning of the permission dialog, so that it's placed
 // near the permission element, if possible.
 // This feature should be enabled with blink::features::kPermissionElement.
-BASE_FEATURE(kPermissionElementDialogPositioning,
-             "PermissionElementDialogPositioning",
+BASE_FEATURE(kPermissionElementPromptPositioning,
+             "PermissionElementPromptPositioning",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, use the value of the `service_url` FeatureParam as the url
@@ -161,6 +161,19 @@ const base::FeatureParam<base::TimeDelta> kOneTimePermissionTimeout{
 const base::FeatureParam<base::TimeDelta> kOneTimePermissionLongTimeout{
     &features::kOneTimePermission, "one_time_permission_long_timeout",
     base::Hours(16)};
+
+const base::FeatureParam<PermissionElementPromptPosition>::Option
+    kPromptPositioningOptions[] = {
+        {PermissionElementPromptPosition::kWindowMiddle, "window_middle"},
+        {PermissionElementPromptPosition::kNearElement, "near_element"},
+        {PermissionElementPromptPosition::kLegacyPrompt, "legacy_prompt"}};
+
+const base::FeatureParam<PermissionElementPromptPosition>
+    kPermissionElementPromptPositioningParam = {
+        &features::kPermissionElementPromptPositioning,
+        "PermissionElementPromptPositioningParam",
+        PermissionElementPromptPosition::kWindowMiddle,
+        &kPromptPositioningOptions};
 
 const base::FeatureParam<std::string> kPermissionPredictionServiceUrlOverride{
     &permissions::features::kPermissionPredictionServiceUseUrlOverride,

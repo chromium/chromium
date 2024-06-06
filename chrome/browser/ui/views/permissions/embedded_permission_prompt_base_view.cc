@@ -40,6 +40,8 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(EmbeddedPermissionPromptBaseView,
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(EmbeddedPermissionPromptBaseView,
                                       kTitleViewId);
 
+using permissions::feature_params::PermissionElementPromptPosition;
+
 namespace {
 
 constexpr int BODY_TOP_MARGIN = 10;
@@ -83,7 +85,6 @@ EmbeddedPermissionPromptBaseView::EmbeddedPermissionPromptBaseView(
     base::WeakPtr<EmbeddedPermissionPromptViewDelegate> delegate)
     : PermissionPromptBaseView(browser,
                                delegate->GetPermissionPromptDelegate()),
-      browser_(browser),
       delegate_(delegate) {
   SetProperty(views::kElementIdentifierKey, kMainViewId);
 
@@ -108,7 +109,7 @@ bool EmbeddedPermissionPromptBaseView::ShowLoadingIcon() const {
 }
 
 void EmbeddedPermissionPromptBaseView::CreateWidget() {
-  DCHECK(browser_->window());
+  DCHECK(browser()->window());
   views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(this);
 
   widget->SetZOrderSublevel(ChromeWidgetSublevel::kSublevelSecurity);
@@ -192,11 +193,15 @@ void EmbeddedPermissionPromptBaseView::ShowWidget() {
 }
 
 void EmbeddedPermissionPromptBaseView::UpdateAnchor(views::Widget* widget) {
+  if (GetPromptPosition() == PermissionElementPromptPosition::kLegacyPrompt) {
+    AnchorToPageInfoOrChip();
+    return;
+  }
   SetAnchorView(widget->GetContentsView());
   set_parent_window(
-      platform_util::GetViewForWindow(browser_->window()->GetNativeWindow()));
+      platform_util::GetViewForWindow(browser()->window()->GetNativeWindow()));
 
-  if (ShouldOverrideBubbleBounds()) {
+  if (GetPromptPosition() == PermissionElementPromptPosition::kNearElement) {
     SetArrow(views::BubbleBorder::Arrow::BOTTOM_LEFT);
   } else {
     SetArrow(views::BubbleBorder::Arrow::FLOAT);
@@ -301,7 +306,7 @@ void EmbeddedPermissionPromptBaseView::AddButton(
 }
 
 gfx::Rect EmbeddedPermissionPromptBaseView::GetBubbleBounds() {
-  if (!ShouldOverrideBubbleBounds()) {
+  if (GetPromptPosition() != PermissionElementPromptPosition::kNearElement) {
     return views::BubbleDialogDelegateView::GetBubbleBounds();
   }
 
@@ -344,11 +349,22 @@ gfx::Rect EmbeddedPermissionPromptBaseView::GetBubbleBounds() {
       default_bounds.width(), default_bounds.height());
 }
 
-bool EmbeddedPermissionPromptBaseView::ShouldOverrideBubbleBounds() const {
-  return base::FeatureList::IsEnabled(blink::features::kPermissionElement) &&
-         base::FeatureList::IsEnabled(
-             permissions::features::kPermissionElementDialogPositioning) &&
-         !element_rect_.IsEmpty();
+PermissionElementPromptPosition
+EmbeddedPermissionPromptBaseView::GetPromptPosition() const {
+  CHECK(base::FeatureList::IsEnabled(blink::features::kPermissionElement));
+  if (!base::FeatureList::IsEnabled(
+          permissions::features::kPermissionElementPromptPositioning)) {
+    return PermissionElementPromptPosition::kWindowMiddle;
+  }
+
+  if (permissions::feature_params::kPermissionElementPromptPositioningParam
+              .Get() == PermissionElementPromptPosition::kNearElement &&
+      element_rect_.IsEmpty()) {
+    return PermissionElementPromptPosition::kWindowMiddle;
+  }
+
+  return permissions::feature_params::kPermissionElementPromptPositioningParam
+      .Get();
 }
 
 BEGIN_METADATA(EmbeddedPermissionPromptBaseView)

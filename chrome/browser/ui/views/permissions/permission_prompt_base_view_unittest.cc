@@ -145,6 +145,8 @@ TEST_F(PermissionPromptBaseViewTest, IncludedInTrackedPictureInPictureWidgets) {
       PictureInPictureWindowManager::GetInstance()->GetOcclusionTracker();
   EXPECT_TRUE(
       base::Contains(tracker->GetPictureInPictureWidgetsForTesting(), bubble));
+
+  bubble->CloseNow();
 }
 
 }  // namespace

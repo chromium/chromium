@@ -68,6 +68,10 @@ class PermissionPromptBaseView : public views::BubbleDialogDelegateView,
   // without calling `PermissionPromptBaseView::AddedToWidget()`.
   void StartTrackingPictureInPictureOcclusion();
 
+  void AnchorToPageInfoOrChip();
+
+  Browser* browser() const { return browser_; }
+
  private:
   const UrlIdentity url_identity_;
 
@@ -78,6 +82,8 @@ class PermissionPromptBaseView : public views::BubbleDialogDelegateView,
   // means it will be in an always-on-top window, and needs to be tracked by the
   // PictureInPictureOcclusionTracker.
   const bool is_for_picture_in_picture_window_;
+
+  const raw_ptr<Browser> browser_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PERMISSIONS_PERMISSION_PROMPT_BASE_VIEW_H_

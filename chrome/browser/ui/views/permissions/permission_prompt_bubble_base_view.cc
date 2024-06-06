@@ -12,18 +12,15 @@
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
-#include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/browser/ui/views/bubble_anchor_util_views.h"
 #include "chrome/browser/ui/views/chrome_widget_sublevel.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_uma_util.h"
-#include "components/permissions/permission_util.h"
 #include "components/permissions/request_type.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -54,11 +51,10 @@ PermissionPromptBubbleBaseView::PermissionPromptBubbleBaseView(
     base::TimeTicks permission_requested_time,
     PermissionPromptStyle prompt_style)
     : PermissionPromptBaseView(browser, delegate),
-      browser_(browser),
       delegate_(delegate),
       permission_requested_time_(permission_requested_time),
       is_one_time_permission_(IsOneTimePermission(*delegate.get())) {
-  // Note that browser_ may be null in unit tests.
+  // Note that browser() may be null in unit tests.
   SetPromptStyle(prompt_style);
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -180,7 +176,7 @@ void PermissionPromptBubbleBaseView::Show() {
 }
 
 void PermissionPromptBubbleBaseView::CreateWidget() {
-  DCHECK(browser_->window());
+  CHECK(browser()->window());
 
   UpdateAnchorPosition();
 
@@ -199,7 +195,7 @@ void PermissionPromptBubbleBaseView::CreateWidget() {
 void PermissionPromptBubbleBaseView::ShowWidget() {
   // If a browser window (or popup) other than the bubble parent has focus,
   // don't take focus.
-  if (browser_->window()->IsActive()) {
+  if (browser()->window()->IsActive()) {
     GetWidget()->Show();
   } else {
     GetWidget()->ShowInactive();
@@ -207,23 +203,7 @@ void PermissionPromptBubbleBaseView::ShowWidget() {
 }
 
 void PermissionPromptBubbleBaseView::UpdateAnchorPosition() {
-  bubble_anchor_util::AnchorConfiguration configuration =
-      bubble_anchor_util::GetPermissionPromptBubbleAnchorConfiguration(
-          browser_);
-  SetAnchorView(configuration.anchor_view);
-  // In fullscreen, `anchor_view` may be nullptr because the toolbar is hidden,
-  // therefore anchor to the browser window instead.
-  if (configuration.anchor_view) {
-    set_parent_window(configuration.anchor_view->GetWidget()->GetNativeView());
-  } else {
-    set_parent_window(
-        platform_util::GetViewForWindow(browser_->window()->GetNativeWindow()));
-  }
-  SetHighlightedButton(configuration.highlighted_button);
-  if (!configuration.anchor_view) {
-    SetAnchorRect(bubble_anchor_util::GetPageInfoAnchorRect(browser_));
-  }
-  SetArrow(configuration.bubble_arrow);
+  AnchorToPageInfoOrChip();
 }
 
 void PermissionPromptBubbleBaseView::SetPromptStyle(
