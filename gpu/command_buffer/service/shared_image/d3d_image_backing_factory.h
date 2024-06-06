@@ -16,6 +16,7 @@
 
 #include "gpu/command_buffer/service/shared_image/shared_image_backing_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
+#include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/gpu_gles2_export.h"
 #include "third_party/skia/include/core/SkColor.h"
 
@@ -35,7 +36,8 @@ class GPU_GLES2_EXPORT D3DImageBackingFactory
   D3DImageBackingFactory(
       Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
       scoped_refptr<DXGISharedHandleManager> dxgi_shared_handle_manager,
-      const GLFormatCaps& gl_format_caps);
+      const GLFormatCaps& gl_format_caps,
+      const GpuDriverBugWorkarounds& workarounds = GpuDriverBugWorkarounds());
 
   D3DImageBackingFactory(const D3DImageBackingFactory&) = delete;
   D3DImageBackingFactory& operator=(const D3DImageBackingFactory&) = delete;
@@ -168,6 +170,9 @@ class GPU_GLES2_EXPORT D3DImageBackingFactory
   // Capabilities needed for getting the correct GL format for creating GL
   // textures.
   const GLFormatCaps gl_format_caps_;
+
+  // True if using UpdateSubresource1() in UploadFromMemory() is allowed.
+  const bool use_update_subresource1_;
 };
 
 }  // namespace gpu

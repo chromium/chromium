@@ -64,7 +64,8 @@ class GPU_GLES2_EXPORT D3DImageBacking final
       const GLFormatCaps& gl_format_caps,
       GLenum texture_target,
       size_t array_slice,
-      size_t plane_index);
+      size_t plane_index,
+      bool use_update_subresource1 = false);
 
   static std::unique_ptr<D3DImageBacking> CreateFromSwapChainBuffer(
       const Mailbox& mailbox,
@@ -239,7 +240,8 @@ class GPU_GLES2_EXPORT D3DImageBacking final
                   size_t array_slice = 0u,
                   size_t plane_index = 0u,
                   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain = nullptr,
-                  bool is_back_buffer = false);
+                  bool is_back_buffer = false,
+                  bool use_update_subresource1 = false);
 
   bool use_fence_synchronization() const {
     // Fences are needed if we're sharing between devices and there's no keyed
@@ -311,6 +313,9 @@ class GPU_GLES2_EXPORT D3DImageBacking final
 
   // Set if this backing corresponds to the back buffer of |swap_chain_|.
   const bool is_back_buffer_;
+
+  // True if using UpdateSubresource1() in UploadFromMemory() is allowed.
+  const bool use_update_subresource1_;
 
   // Staging texture used for copy to/from shared memory GMB.
   Microsoft::WRL::ComPtr<ID3D11Texture2D> staging_texture_;

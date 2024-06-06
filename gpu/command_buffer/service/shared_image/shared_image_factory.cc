@@ -277,7 +277,7 @@ SharedImageFactory::SharedImageFactory(
     // could be nullptr.
     bool use_passthrough = gpu_preferences.use_passthrough_cmd_decoder &&
                            gles2::PassthroughCommandDecoderSupported();
-    feature_info = new gles2::FeatureInfo(workarounds, gpu_feature_info);
+    feature_info = new gles2::FeatureInfo(workarounds_, gpu_feature_info);
     feature_info->Initialize(ContextType::CONTEXT_TYPE_OPENGLES2,
                              use_passthrough, gles2::DisallowedFeatures());
   }
@@ -302,7 +302,7 @@ SharedImageFactory::SharedImageFactory(
     bool supports_cpu_upload = !BUILDFLAG(IS_WIN);
     auto gl_texture_backing_factory =
         std::make_unique<GLTextureImageBackingFactory>(
-            gpu_preferences, workarounds, feature_info.get(),
+            gpu_preferences_, workarounds_, feature_info.get(),
             context_state_->progress_reporter(), supports_cpu_upload);
     factories_.push_back(std::move(gl_texture_backing_factory));
   }
@@ -316,14 +316,14 @@ SharedImageFactory::SharedImageFactory(
     auto d3d_factory = std::make_unique<D3DImageBackingFactory>(
         context_state_->GetD3D11Device(),
         shared_image_manager_->dxgi_shared_handle_manager(),
-        context_state_->GetGLFormatCaps());
+        context_state_->GetGLFormatCaps(), workarounds_);
     d3d_backing_factory_ = d3d_factory.get();
     factories_.push_back(std::move(d3d_factory));
   }
   {
     auto gl_texture_backing_factory =
         std::make_unique<GLTextureImageBackingFactory>(
-            gpu_preferences, workarounds, feature_info.get(),
+            gpu_preferences_, workarounds_, feature_info.get(),
             context_state_->progress_reporter(),
             /*supports_cpu_upload=*/true);
     factories_.push_back(std::move(gl_texture_backing_factory));

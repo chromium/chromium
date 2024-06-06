@@ -2321,6 +2321,12 @@ void D3DImageBackingFactoryTest::RunMultiplanarUploadAndReadback(
         features::kD3DBackingUploadWithUpdateSubresource);
   }
 
+  // Recreate a new share image factory which will pick up the
+  // kD3DBackingUploadWithUpdateSubresource feature.
+  shared_image_factory_ = std::make_unique<D3DImageBackingFactory>(
+      gl::QueryD3D11DeviceObjectFromANGLE(),
+      shared_image_manager_.dxgi_shared_handle_manager(), GLFormatCaps());
+
   constexpr gfx::Size size(32, 32);
   constexpr size_t kDataSize = size.width() * size.height() * 3 / 2;
   constexpr SkAlphaType alpha_type = kPremul_SkAlphaType;

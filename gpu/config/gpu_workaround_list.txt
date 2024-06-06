@@ -24,6 +24,7 @@ disable_blend_equation_advanced
 disable_canvas_oop_rasterization
 disable_chromium_framebuffer_multisample
 disable_d3d11
+disable_d3d11_update_subresource1
 disable_d3d11_video_decoder
 disable_d3d11_vp9_ksvc_decoding
 disable_decode_swap_chain

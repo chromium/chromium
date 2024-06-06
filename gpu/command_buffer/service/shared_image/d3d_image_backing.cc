@@ -26,7 +26,6 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/shared_image/skia_gl_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/skia_graphite_dawn_image_representation.h"
-#include "gpu/config/gpu_finch_features.h"
 #include "third_party/libyuv/include/libyuv/planar_functions.h"
 #include "ui/gl/egl_util.h"
 #include "ui/gl/gl_angle_util_win.h"
@@ -294,7 +293,8 @@ std::unique_ptr<D3DImageBacking> D3DImageBacking::Create(
     const GLFormatCaps& gl_format_caps,
     GLenum texture_target,
     size_t array_slice,
-    size_t plane_index) {
+    size_t plane_index,
+    bool use_update_subresource1) {
   const bool has_webgpu_usage = !!(usage & (SHARED_IMAGE_USAGE_WEBGPU_READ |
                                             SHARED_IMAGE_USAGE_WEBGPU_WRITE));
   // DXGI shared handle is required for WebGPU/Dawn/D3D12 interop.
@@ -303,7 +303,8 @@ std::unique_ptr<D3DImageBacking> D3DImageBacking::Create(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       std::move(debug_label), std::move(d3d11_texture),
       std::move(dxgi_shared_handle_state), gl_format_caps, texture_target,
-      array_slice, plane_index));
+      array_slice, plane_index, /*swap_chain=*/nullptr,
+      /*is_back_buffer=*/false, use_update_subresource1));
   return backing;
 }
 
@@ -380,7 +381,8 @@ D3DImageBacking::D3DImageBacking(
     size_t array_slice,
     size_t plane_index,
     Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain,
-    bool is_back_buffer)
+    bool is_back_buffer,
+    bool use_update_subresource1)
     : ClearTrackingSharedImageBacking(mailbox,
                                       format,
                                       size,
@@ -399,6 +401,7 @@ D3DImageBacking::D3DImageBacking(
       plane_index_(plane_index),
       swap_chain_(std::move(swap_chain)),
       is_back_buffer_(is_back_buffer),
+      use_update_subresource1_(use_update_subresource1),
       angle_d3d11_device_(gl::QueryD3D11DeviceObjectFromANGLE()) {
   if (d3d11_texture_) {
     d3d11_texture_->GetDevice(&texture_d3d11_device_);
@@ -458,9 +461,7 @@ void D3DImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
 bool D3DImageBacking::UploadFromMemory(const std::vector<SkPixmap>& pixmaps) {
   DCHECK_EQ(pixmaps.size(), static_cast<size_t>(format().NumberOfPlanes()));
 
-  if (base::FeatureList::IsEnabled(
-          features::kD3DBackingUploadWithUpdateSubresource) &&
-      CanUseUpdateSubresource(pixmaps)) {
+  if (use_update_subresource1_ && CanUseUpdateSubresource(pixmaps)) {
     CHECK(texture_d3d11_device_);
     Microsoft::WRL::ComPtr<ID3D11DeviceContext> device_context;
     Microsoft::WRL::ComPtr<ID3D11DeviceContext1> device_context_1;

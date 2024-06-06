@@ -3366,6 +3366,24 @@
       "features": [
         "disable_media_foundation_hardware_security"
       ]
+    },
+    {
+      "id": 429,
+      "cr_bugs": [
+        344109884
+      ],
+      "description": "Updating multiplanar textures crashes in UpdateSubresourc1() with old Intel driver",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "driver_version": {
+        "op": "<=",
+        "value": "21.20.16.4551"
+      },
+      "features": [
+        "disable_d3d11_update_subresource1"
+      ]
     }
   ]
 }
