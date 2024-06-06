@@ -31,9 +31,6 @@ bool IsSourceFromAnExtension(const std::u16string& source) {
 }  // namespace extensions
 
 namespace extension_urls {
-namespace {
-GURL* g_item_snippet_url_for_test_ = nullptr;
-}  // namespace
 
 const char kChromeWebstoreBaseURL[] = "https://chrome.google.com/webstore";
 const char kNewChromeWebstoreBaseURL[] = "https://chromewebstore.google.com/";
@@ -88,19 +85,9 @@ GURL GetWebstoreItemJsonDataURL(const extensions::ExtensionId& extension_id) {
 }
 
 GURL GetWebstoreItemSnippetURL(const std::string& extension_id) {
-  const char kItemSnippetsURL[] =
-      "https://chromewebstore.googleapis.com/v2/items/";
-
-  return GURL(
-      base::StringPrintf("%s%s:fetchItemSnippet",
-                         g_item_snippet_url_for_test_
-                             ? g_item_snippet_url_for_test_->spec().c_str()
-                             : kItemSnippetsURL,
-                         extension_id.c_str()));
-}
-
-void SetMockItemSnippetURLForTesting(GURL* url) {
-  g_item_snippet_url_for_test_ = url;
+  return GURL(base::StringPrintf(
+      "https://chromewebstore.googleapis.com/v2/items/%s:fetchItemSnippet",
+      extension_id.c_str()));
 }
 
 GURL GetDefaultWebstoreUpdateUrl() {

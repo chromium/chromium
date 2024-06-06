@@ -17,7 +17,6 @@
 #include "base/functional/bind.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_tags.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/speech_monitor.h"
@@ -57,7 +56,6 @@
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "extensions/components/native_app_window/native_app_window_views.h"
@@ -164,10 +162,6 @@ class KioskDeviceOwnedTest : public KioskBaseTest {
     settings_helper_.Set(kDeviceOwner,
                          base::Value(test_owner_account_id_.GetUserEmail()));
     login_manager_.AppendRegularUsers(1);
-    // TODO(crbug.com/325314721): Remove this feature override once test-only
-    // handling for the item snippets API is complete.
-    scoped_feature_list_.InitAndDisableFeature(
-        extensions_features::kUseItemSnippetsAPI);
   }
 
   void SetUpOnMainThread() override {
@@ -188,7 +182,6 @@ class KioskDeviceOwnedTest : public KioskBaseTest {
     return CHECK_DEREF(static_cast<ash::FakeChromeUserManager*>(
         user_manager::UserManager::Get()));
   }
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest, InstallAndLaunchApp) {

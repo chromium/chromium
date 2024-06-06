@@ -13,7 +13,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
 #include "base/threading/thread_restrictions.h"
@@ -50,7 +49,6 @@
 #include "content/public/browser/browser_main_parts.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "extensions/common/extension_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -325,12 +323,7 @@ class DeviceCommandFetchSupportPacketBrowserTestManualKioskSession
     : public DeviceCommandFetchSupportPacketBrowserTestBase<
           ash::KioskBaseTest> {
  protected:
-  DeviceCommandFetchSupportPacketBrowserTestManualKioskSession() {
-    // TODO(crbug.com/325314721): Remove this feature override once test-only
-    // handling for the item snippets API is complete.
-    scoped_feature_list_.InitAndDisableFeature(
-        extensions_features::kUseItemSnippetsAPI);
-  }
+  DeviceCommandFetchSupportPacketBrowserTestManualKioskSession() = default;
 
   void SetLogUploadEnabledPolicy(bool enabled) {
     em::ChromeDeviceSettingsProto& proto(
@@ -345,7 +338,6 @@ class DeviceCommandFetchSupportPacketBrowserTestManualKioskSession
   ash::DeviceStateMixin device_state_{
       &mixin_host_,
       ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 }  // namespace

@@ -10,7 +10,6 @@
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/app_mode/fake_cws.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
@@ -38,7 +37,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "google_apis/gaia/fake_gaia.h"
 #include "google_apis/gaia/gaia_constants.h"
@@ -83,12 +81,7 @@ class KioskEnterpriseTest : public KioskBaseTest {
   KioskEnterpriseTest& operator=(const KioskEnterpriseTest&) = delete;
 
  protected:
-  KioskEnterpriseTest() {
-    // TODO(crbug.com/325314721): Remove this feature override once test-only
-    // handling for the item snippets API is complete.
-    scoped_feature_list_.InitAndDisableFeature(
-        extensions_features::kUseItemSnippetsAPI);
-  }
+  KioskEnterpriseTest() = default;
 
   // KioskBaseTest:
   void SetUpOnMainThread() override {
@@ -148,7 +141,6 @@ class KioskEnterpriseTest : public KioskBaseTest {
  private:
   DeviceStateMixin device_state_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(KioskEnterpriseTest, EnterpriseKioskApp) {

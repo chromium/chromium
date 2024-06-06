@@ -4,7 +4,6 @@
 
 #include <type_traits>
 
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_apps_mixin.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_base_test.h"
 #include "chrome/browser/ash/login/app_mode/test/managed_guest_session_test_helpers.h"
@@ -22,7 +21,6 @@
 #include "components/policy/core/common/remote_commands/test_support/remote_command_builders.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "content/public/test/browser_test.h"
-#include "extensions/common/extension_features.h"
 
 namespace em = enterprise_management;
 
@@ -89,19 +87,10 @@ IN_PROC_BROWSER_TEST_F(DeviceCommandRebootJobAutoLaunchKioskBrowserTest,
 
 class DeviceCommandRebootJobKioskBrowserTest
     : public DeviceCommandRebootBaseTest<ash::KioskBaseTest> {
- public:
-  DeviceCommandRebootJobKioskBrowserTest() {
-    // TODO(crbug.com/325314721): Remove this feature override once test-only
-    // handling for the item snippets API is complete.
-    scoped_feature_list_.InitAndDisableFeature(
-        extensions_features::kUseItemSnippetsAPI);
-  }
-
  private:
   ash::DeviceStateMixin device_state_{
       &mixin_host_,
       ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(DeviceCommandRebootJobKioskBrowserTest,

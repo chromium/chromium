@@ -70,14 +70,12 @@ std::unique_ptr<FetchItemSnippetResponse> CreateMockResponse(
 class WebstoreReinstallerBrowserTest : public WebstoreInstallerTest {
  public:
   WebstoreReinstallerBrowserTest()
-      : WebstoreInstallerTest(kWebstoreDomain,
-                              kTestDataPath,
-                              kCrxFilename,
-                              kAppDomain,
-                              kNonAppDomain) {
-    scoped_feature_list_.InitAndDisableFeature(
-        extensions_features::kUseItemSnippetsAPI);
-  }
+      : WebstoreInstallerTest(
+            kWebstoreDomain,
+            kTestDataPath,
+            kCrxFilename,
+            kAppDomain,
+            kNonAppDomain) {}
   ~WebstoreReinstallerBrowserTest() override {}
 
   void OnInstallCompletion(base::OnceClosure quit_closure,
@@ -88,7 +86,6 @@ class WebstoreReinstallerBrowserTest : public WebstoreInstallerTest {
   bool last_install_result() const { return last_install_result_; }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   bool last_install_result_;
 };
 

@@ -10,7 +10,6 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/test/gtest_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
@@ -62,7 +61,6 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
-#include "extensions/common/extension_features.h"
 #include "net/http/http_status_code.h"
 
 namespace ash {
@@ -1360,12 +1358,7 @@ IN_PROC_BROWSER_TEST_F(KioskEnrollmentPolicyServerTest,
 
 class KioskEnrollmentTest : public EnrollmentEmbeddedPolicyServerBase {
  public:
-  KioskEnrollmentTest() {
-    // TODO(crbug.com/325314721): Remove this feature override once test-only
-    // handling for the item snippets API is complete.
-    scoped_feature_list_.InitAndDisableFeature(
-        extensions_features::kUseItemSnippetsAPI);
-  }
+  KioskEnrollmentTest() = default;
 
   // EnrollmentEmbeddedPolicyServerBase:
   void SetUp() override {
@@ -1383,7 +1376,6 @@ class KioskEnrollmentTest : public EnrollmentEmbeddedPolicyServerBase {
   KioskAppsMixin kiosk_apps_{&mixin_host_, embedded_test_server()};
   base::AutoReset<bool> skip_splash_wait_override_ =
       KioskTestHelper::SkipSplashScreenWait();
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(KioskEnrollmentTest,

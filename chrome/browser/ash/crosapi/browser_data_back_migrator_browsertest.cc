@@ -27,7 +27,6 @@
 #include "components/user_manager/fake_user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
-#include "extensions/common/extension_features.h"
 
 namespace ash {
 
@@ -145,11 +144,8 @@ class BrowserDataBackMigratorForKiosk : public KioskBaseTest {
   ~BrowserDataBackMigratorForKiosk() override = default;
 
   void SetUp() override {
-    // TODO(crbug.com/325314721): Remove the kUseItemSnippetsAPI feature
-    // override once test-only handling for the item snippets API is complete.
     feature_list_.InitWithFeatures(
-        {ash::features::kLacrosProfileBackwardMigration},
-        {extensions_features::kUseItemSnippetsAPI});
+        {ash::features::kLacrosProfileBackwardMigration}, {});
 
     KioskBaseTest::SetUp();
   }

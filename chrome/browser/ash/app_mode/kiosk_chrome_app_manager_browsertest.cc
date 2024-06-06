@@ -19,7 +19,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/repeating_test_future.h"
 #include "base/test/scoped_chromeos_version_info.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
@@ -46,7 +45,6 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/sandboxed_unpacker.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/extension_features.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
@@ -158,12 +156,7 @@ class ChromeAppKioskAppManagerTest : public InProcessBrowserTest {
   ChromeAppKioskAppManagerTest()
       : settings_helper_(false),
         fake_cws_(new FakeCWS()),
-        verifier_format_override_(crx_file::VerifierFormat::CRX3) {
-    // TODO(crbug.com/325314721): Remove this feature override once test-only
-    // handling for the item snippets API is complete.
-    scoped_feature_list_.InitAndDisableFeature(
-        extensions_features::kUseItemSnippetsAPI);
-  }
+        verifier_format_override_(crx_file::VerifierFormat::CRX3) {}
   ChromeAppKioskAppManagerTest(const ChromeAppKioskAppManagerTest&) = delete;
   ChromeAppKioskAppManagerTest& operator=(const ChromeAppKioskAppManagerTest&) =
       delete;
@@ -400,7 +393,6 @@ class ChromeAppKioskAppManagerTest : public InProcessBrowserTest {
   std::unique_ptr<FakeCWS> fake_cws_;
   extensions::SandboxedUnpacker::ScopedVerifierFormatOverrideForTest
       verifier_format_override_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(ChromeAppKioskAppManagerTest, Basic) {

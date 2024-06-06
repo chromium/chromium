@@ -10,7 +10,6 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
-#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_tokenizer.h"
@@ -21,7 +20,6 @@
 #include "chrome/common/initialize_extensions_client.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "crypto/sha2.h"
-#include "extensions/common/extension_urls.h"
 #include "extensions/common/extensions_client.h"
 #include "net/base/url_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -40,7 +38,6 @@ const char kWebstoreDomain[] = "cws.com";
 const char kCrxDownloadPath[] = "/chromeos/app_mode/webstore/downloads/";
 const char kDetailsURLPrefix[] =
     "/chromeos/app_mode/webstore/inlineinstall/detail/";
-const char kItemSnippetsURLSuffix[] = ":fetchItemSnippet";
 
 const char kAppNoUpdateTemplate[] =
     "<app appid=\"$AppId\" status=\"ok\">"
@@ -286,10 +283,6 @@ void FakeCWS::SetupWebStoreURL(const GURL& test_server_url) {
   GURL::Replacements replace_webstore_host;
   replace_webstore_host.SetHostStr(kWebstoreDomain);
   web_store_url_ = test_server_url.ReplaceComponents(replace_webstore_host);
-
-  // Replace part of the item snippets URL with the `web_store_url_` with the
-  // embedded test server's port so requests can be handled in `HandleRequest`.
-  extension_urls::SetMockItemSnippetURLForTesting(&web_store_url_);
 }
 
 void FakeCWS::OverrideGalleryCommandlineSwitches() {
@@ -385,13 +378,6 @@ std::unique_ptr<HttpResponse> FakeCWS::HandleRequest(
       http_response->set_content(details);
       return std::move(http_response);
     }
-  }
-
-  if (request_path.ends_with(kItemSnippetsURLSuffix)) {
-    NOTREACHED_IN_MIGRATION()
-        << "TODO(crbug.com/325314721): Add fake CWS handling for item snippets "
-        << "API calls. For now, please disable the "
-        << "extensions_features::kUseItemSnippetsAPI feature.";
   }
 
   return nullptr;

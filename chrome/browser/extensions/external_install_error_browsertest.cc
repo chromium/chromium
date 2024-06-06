@@ -45,16 +45,7 @@ std::unique_ptr<FetchItemSnippetResponse> CreateMockResponse(
 
 }  // namespace
 
-class ExternalInstallErrorTest : public ExtensionBrowserTest {
- public:
-  ExternalInstallErrorTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        extensions_features::kUseItemSnippetsAPI);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+using ExternalInstallErrorTest = ExtensionBrowserTest;
 
 // Test that global errors don't crash on shutdown. See crbug.com/720081.
 // TODO(crbug.com/325314721): Remove this test once we stop using the old item

@@ -74,9 +74,6 @@ GURL GetWebstoreItemJsonDataURL(const extensions::ExtensionId& extension_id);
 // etc.) about an extension from the webstore using the new itemSnippets API.
 GURL GetWebstoreItemSnippetURL(const std::string& extension_id);
 
-// Sets the prefix for the itemSnippets API URL to `url`.
-void SetMockItemSnippetURLForTesting(GURL* url);
-
 // Returns the compile-time constant webstore update url specific to
 // Chrome. Usually you should prefer using GetWebstoreUpdateUrl.
 GURL GetDefaultWebstoreUpdateUrl();
