@@ -352,28 +352,9 @@ void PickerController::ToggleWidget(
   }
 
   if (widget_) {
-    session_metrics_->SetOutcome(
-        PickerSessionMetrics::SessionOutcome::kAbandoned);
-    widget_->Close();
-    model_.reset();
+    CloseWidget();
   } else {
-    session_metrics_ = std::make_unique<PickerSessionMetrics>();
-    show_editor_callback_ = client_->CacheEditorContext();
-
-    model_ = std::make_unique<PickerModel>(
-        GetFocusedTextInputClient(), &GetImeKeyboard(),
-        show_editor_callback_.is_null() ? PickerModel::EditorStatus::kDisabled
-                                        : PickerModel::EditorStatus::kEnabled);
-    widget_ = PickerWidget::Create(
-        this,
-        GetPickerAnchorBounds(GetCaretBounds(), GetCursorPoint(),
-                              GetFocusedWindowBounds()),
-        trigger_event_timestamp);
-    widget_->Show();
-
-    feature_usage_metrics_.StartUsage();
-    session_metrics_->OnStartSession(GetFocusedTextInputClient());
-    widget_observation_.Observe(widget_.get());
+    ShowWidget(trigger_event_timestamp);
   }
 }
 
@@ -694,6 +675,33 @@ void PickerController::FetchFileThumbnail(const base::FilePath& path,
                                           const gfx::Size& size,
                                           FetchFileThumbnailCallback callback) {
   client_->FetchFileThumbnail(path, size, std::move(callback));
+}
+
+void PickerController::ShowWidget(base::TimeTicks trigger_event_timestamp) {
+  session_metrics_ = std::make_unique<PickerSessionMetrics>();
+  show_editor_callback_ = client_->CacheEditorContext();
+
+  model_ = std::make_unique<PickerModel>(
+      GetFocusedTextInputClient(), &GetImeKeyboard(),
+      show_editor_callback_.is_null() ? PickerModel::EditorStatus::kDisabled
+                                      : PickerModel::EditorStatus::kEnabled);
+  widget_ = PickerWidget::Create(
+      this,
+      GetPickerAnchorBounds(GetCaretBounds(), GetCursorPoint(),
+                            GetFocusedWindowBounds()),
+      trigger_event_timestamp);
+  widget_->Show();
+
+  feature_usage_metrics_.StartUsage();
+  session_metrics_->OnStartSession(GetFocusedTextInputClient());
+  widget_observation_.Observe(widget_.get());
+}
+
+void PickerController::CloseWidget() {
+  session_metrics_->SetOutcome(
+      PickerSessionMetrics::SessionOutcome::kAbandoned);
+  widget_->Close();
+  model_.reset();
 }
 
 void PickerController::UpdateRecentEmoji(ui::EmojiPickerCategory category,

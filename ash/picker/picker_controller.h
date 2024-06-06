@@ -114,6 +114,8 @@ class ASH_EXPORT PickerController : public PickerViewDelegate,
   static void DisableFeatureKeyCheckForTesting();
 
  private:
+  void ShowWidget(base::TimeTicks trigger_event_timestamp);
+  void CloseWidget();
   void UpdateRecentEmoji(ui::EmojiPickerCategory category,
                          std::u16string_view text);
 
