@@ -77,7 +77,7 @@ bool IsConfirmationRequired(ConfirmationType confirmation_type,
 std::string GetCountry(variations::VariationsService* variations_service) {
   if (privacy_sandbox::kPrivacySandboxLocalNoticeConfirmationDefaultToOSCountry
           .Get()) {
-    return GetCurrentCountryCode(variations_service);
+    return base::ToLowerASCII(GetCurrentCountryCode(variations_service));
   } else {
     if (!variations_service) {
       return "";
