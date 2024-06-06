@@ -10,13 +10,16 @@
 #include "ash/birch/birch_item.h"
 #include "base/functional/bind.h"
 #include "base/hash/sha1.h"
+#include "base/task/task_traits.h"
 #include "base/time/time.h"
 
 namespace ash {
 
 BirchItemRemover::BirchItemRemover(base::FilePath path,
                                    base::OnceClosure on_init_callback)
-    : removed_items_proto_(path, /*write_delay=*/base::TimeDelta()) {
+    : removed_items_proto_(path,
+                           /*write_delay=*/base::TimeDelta(),
+                           base::TaskPriority::USER_VISIBLE) {
   removed_items_proto_.RegisterOnInitUnsafe(std::move(on_init_callback));
   removed_items_proto_.Init();
 }

@@ -101,7 +101,10 @@ class ASH_EXPORT PersistentProto {
   using InitCallback = base::OnceClosure;
   using WriteCallback = base::RepeatingCallback<void(/*success=*/bool)>;
 
-  PersistentProto(const base::FilePath& path, const base::TimeDelta write_delay)
+  PersistentProto(
+      const base::FilePath& path,
+      const base::TimeDelta write_delay,
+      base::TaskPriority task_priority = base::TaskPriority::BEST_EFFORT)
       : path_(path),
         write_delay_(write_delay),
         on_init_callbacks_(
@@ -110,7 +113,7 @@ class ASH_EXPORT PersistentProto {
             std::make_unique<
                 base::RepeatingCallbackList<WriteCallback::RunType>>()),
         task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
-            {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
+            {task_priority, base::MayBlock(),
              base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {}
 
   ~PersistentProto() = default;
