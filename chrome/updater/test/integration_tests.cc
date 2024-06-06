@@ -28,6 +28,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "build/branding_buildflags.h"
@@ -1782,6 +1783,63 @@ TEST_F(IntegrationTest, UninstallCmdLine) {
   ASSERT_NO_FATAL_FAILURE(RunUninstallCmdLine());
   ASSERT_TRUE(WaitForUpdaterExit());
 }
+
+#if BUILDFLAG(IS_WIN)
+TEST_F(IntegrationTest, LogFileInTmpAfterUninstall) {
+  ASSERT_NO_FATAL_FAILURE(Install());
+  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
+  ASSERT_NO_FATAL_FAILURE(ExpectVersionActive(kUpdaterVersion));
+
+  // Delete any old updater logs in %TMP%.
+  base::FilePath temp_dir;
+  ASSERT_TRUE(base::GetTempDir(&temp_dir));
+  base::FileEnumerator(temp_dir, false, base::FileEnumerator::FILES,
+                       FILE_PATH_LITERAL("updater*.log"))
+      .ForEach([](const base::FilePath& item) {
+        ASSERT_TRUE(base::DeleteFile(item));
+      });
+
+  // Running the uninstall command does not uninstall this instance of the
+  // updater right after installing it (not enough server starts).
+  ASSERT_NO_FATAL_FAILURE(RunUninstallCmdLine());
+  ASSERT_TRUE(WaitForUpdaterExit());
+  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
+
+  // Expect no updater logs in %TMP%.
+  base::FileEnumerator(temp_dir, false, base::FileEnumerator::FILES,
+                       FILE_PATH_LITERAL("updater*.log"))
+      .ForEach([](const base::FilePath& item) {
+        ADD_FAILURE() << "Unexpected updater log file found: " << item;
+      });
+
+  ASSERT_NO_FATAL_FAILURE(SetServerStarts(24));
+
+  // Uninstall the idle updater.
+  ASSERT_NO_FATAL_FAILURE(RunUninstallCmdLine());
+  ASSERT_TRUE(WaitForUpdaterExit());
+
+  // Expect a single updater log in %TMP%, and print it out.
+  int invocation_count = 0;
+  base::FileEnumerator(temp_dir, false, base::FileEnumerator::FILES,
+                       FILE_PATH_LITERAL("updater*.log"))
+      .ForEach([&](const base::FilePath& item) {
+        ++invocation_count;
+        if (invocation_count == 1) {
+          updater::test::PrintFile(item);
+          std::wstring item_base = item.BaseName().value();
+          EXPECT_TRUE(base::StartsWith(item_base, L"updater"));
+          EXPECT_TRUE(base::EndsWith(item_base, L".log"));
+          base::ReplaceSubstringsAfterOffset(&item_base, 0, L"updater", {});
+          base::ReplaceSubstringsAfterOffset(&item_base, 0, L".log", {});
+          EXPECT_TRUE(base::Uuid::ParseLowercase(base::WideToUTF8(item_base))
+                          .is_valid());
+        } else {
+          ADD_FAILURE() << "Unexpected, more than one updater log found: "
+                        << item;
+        }
+      });
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 TEST_F(IntegrationTest, AppLogoUrl) {
   ScopedServer test_update_server(test_commands_);

@@ -483,21 +483,25 @@ void InstallUpdaterAndApp(UpdaterScope scope,
   }
 }
 
-void PrintLog(UpdaterScope scope) {
+void PrintFile(const base::FilePath& file) {
   std::string contents;
-  std::optional<base::FilePath> path = GetInstallDirectory(scope);
-  EXPECT_TRUE(path);
-  if (path &&
-      base::ReadFileToString(path->AppendASCII("updater.log"), &contents)) {
-    VLOG(0) << "Contents of updater.log for " << GetTestName() << " in "
-            << path.value() << ":";
+  if (base::ReadFileToString(file, &contents)) {
+    VLOG(0) << "Contents of " << file << " for " << GetTestName();
     const std::string demarcation(72, '=');
     VLOG(0) << demarcation;
     VLOG(0) << contents;
-    VLOG(0) << "End contents of updater.log for " << GetTestName() << ".";
+    VLOG(0) << "End contents of " << file << " for " << GetTestName() << ".";
     VLOG(0) << demarcation;
   } else {
-    VLOG(0) << "No updater.log at " << path.value() << " for " << GetTestName();
+    VLOG(0) << file << " not found for " << GetTestName();
+  }
+}
+
+void PrintLog(UpdaterScope scope) {
+  std::optional<base::FilePath> path = GetInstallDirectory(scope);
+  EXPECT_TRUE(path);
+  if (path) {
+    PrintFile(path->AppendASCII("updater.log"));
   }
 }
 

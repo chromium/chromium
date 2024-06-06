@@ -104,6 +104,9 @@ void CleanProcesses();
 // Verifies that test processes are not running.
 void ExpectCleanProcesses();
 
+// Prints the provided file to stdout.
+void PrintFile(const base::FilePath& file);
+
 // Prints the updater.log file to stdout.
 void PrintLog(UpdaterScope scope);
 
