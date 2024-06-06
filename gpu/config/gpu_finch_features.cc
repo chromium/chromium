@@ -196,7 +196,7 @@ BASE_FEATURE(kEnableMSAAOnNewIntelGPUs,
 // TODO(crbug.com/339171225): Remove post-safe rollout.
 BASE_FEATURE(kDawnSIRepsUseClientProvidedInternalUsages,
              "DawnSIRepsUseClientProvidedInternalUsages",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_WIN)
 // Use a high priority for GPU process on Windows.
