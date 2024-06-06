@@ -1,1 +1,3 @@
 bazel
+/luci-go
+/resultdb
