@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Token;
+import org.chromium.cc.input.BrowserControlsOffsetTagsInfo;
 import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.components.find_in_page.FindMatchRectsDetails;
 import org.chromium.components.find_in_page.FindNotificationDetails;
@@ -328,6 +329,7 @@ public interface TabObserver {
     /**
      * Called when offset values related with the browser controls have been changed by the
      * renderer.
+     *
      * @param topControlsOffsetY The Y offset of the top controls in physical pixels.
      * @param bottomControlsOffsetY The Y offset of the bottom controls in physical pixels.
      * @param contentOffsetY The Y offset of the content in physical pixels.
@@ -341,6 +343,14 @@ public interface TabObserver {
             int contentOffsetY,
             int topControlsMinHeightOffsetY,
             int bottomControlsMinHeightOffsetY);
+
+    /**
+     * @see BrowserControlsStateProvider.onControlsConstraintsChanged
+     */
+    void onBrowserControlsConstraintsChanged(
+            Tab tab,
+            BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
+            BrowserControlsOffsetTagsInfo offsetTagsInfo);
 
     /**
      * Called when the tab is about to notify its renderer to show the browser controls.

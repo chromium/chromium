@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Token;
+import org.chromium.cc.input.BrowserControlsOffsetTagsInfo;
 import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.components.find_in_page.FindMatchRectsDetails;
 import org.chromium.components.find_in_page.FindNotificationDetails;
@@ -152,6 +153,12 @@ public class EmptyTabObserver implements TabObserver {
             int contentOffsetY,
             int topControlsMinHeightOffsetY,
             int bottomControlsMinHeightOffsetY) {}
+
+    @Override
+    public void onBrowserControlsConstraintsChanged(
+            Tab tab,
+            BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
+            BrowserControlsOffsetTagsInfo offsetTagsInfo) {}
 
     @Override
     public void onWillShowBrowserControls(Tab tab, boolean viewTransitionOptIn) {}

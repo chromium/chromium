@@ -13,6 +13,7 @@ include_rules = [
   # Restrict dependencies to xsurface by default (crbug.com/1115137)
   "-chrome/browser/xsurface",
 
+  "+cc/input/android/java",
   "+components/browser_ui/accessibility/android",
   "+components/browser_ui/banners/android",
   "+components/browser_ui/bottomsheet/android",

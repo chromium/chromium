@@ -60,15 +60,17 @@ SkColor StaticTabSceneLayer::GetBackgroundColor() {
   return background_color_;
 }
 
-void StaticTabSceneLayer::UpdateTabLayer(JNIEnv* env,
-                                         const JavaParamRef<jobject>& jobj,
-                                         jint id,
-                                         jboolean can_use_live_layer,
-                                         jint default_background_color,
-                                         jfloat x,
-                                         jfloat y,
-                                         jfloat static_to_view_blend,
-                                         jfloat saturation) {
+void StaticTabSceneLayer::UpdateTabLayer(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& jobj,
+    jint id,
+    jboolean can_use_live_layer,
+    jint default_background_color,
+    jfloat x,
+    jfloat y,
+    jfloat static_to_view_blend,
+    jfloat saturation,
+    const JavaParamRef<jobject>& joffset_tag) {
   DCHECK(tab_content_manager_)
       << "TabContentManager must be set before updating the layer";
 
@@ -95,6 +97,8 @@ void StaticTabSceneLayer::UpdateTabLayer(JNIEnv* env,
 
   content_layer_->layer()->SetPosition(gfx::PointF(x, y));
   content_layer_->layer()->SetIsDrawable(true);
+
+  // TODO(peilinwang): update content_layer with this new tag.
 }
 
 void StaticTabSceneLayer::SetTabContentManager(

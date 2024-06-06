@@ -4,6 +4,7 @@
 import("//build/config/sanitizers/sanitizers.gni")
 import("//gpu/vulkan/features.gni")
 import("//skia/features.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 import("//ui/gl/features.gni")
 
 import("//cc/cc.gni")
@@ -38,6 +39,7 @@ cc_component("cc") {
     "input/browser_controls_offset_manager.cc",
     "input/browser_controls_offset_manager.h",
     "input/browser_controls_offset_manager_client.h",
+    "input/browser_controls_offset_tags_info.h",
     "input/browser_controls_state.h",
     "input/compositor_input_interfaces.h",
     "input/hit_test_opaqueness.cc",
@@ -484,6 +486,15 @@ cc_component("cc") {
     "//ui/gl",
     "//ui/latency",
   ]
+
+  if (is_android) {
+    sources += [
+      "input/android/offset_tag_android.cc",
+      "input/android/offset_tag_android.h",
+    ]
+
+    deps += [ ":cc_jni_headers" ]
+  }
 
   defines = [ "CC_IMPLEMENTATION=1" ]
 }
@@ -1041,10 +1052,31 @@ if (is_android) {
     sources = [ "//cc/input/browser_controls_state.h" ]
   }
 
+  generate_jni("cc_jni_headers") {
+    sources = [
+      "input/android/java/src/org/chromium/cc/input/BrowserControlsOffsetTagsInfo.java",
+      "input/android/java/src/org/chromium/cc/input/OffsetTag.java",
+    ]
+  }
+
   android_library("cc_java") {
     # Right now, this only includes the Java switches. But if we need more Java
     # files, they should be added here as necessary.
-    srcjar_deps = [ ":cc_android_java_enums_srcjar" ]
-    deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+    srcjar_deps = [
+      ":cc_android_java_enums_srcjar",
+      ":cc_jni_headers",
+    ]
+
+    sources = [
+      "input/android/java/src/org/chromium/cc/input/BrowserControlsOffsetTagsInfo.java",
+      "input/android/java/src/org/chromium/cc/input/OffsetTag.java",
+    ]
+
+    deps = [
+      "//base:base_java",
+      "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
+    ]
   }
 }

@@ -23,6 +23,7 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.cc.input.BrowserControlsOffsetTagsInfo;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
@@ -40,6 +41,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.util.TokenHolder;
 
@@ -270,6 +272,27 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
                                     contentOffset,
                                     topControlsMinHeightOffset,
                                     bottomControlsMinHeightOffset);
+                        }
+                    }
+
+                    @Override
+                    public void onBrowserControlsConstraintsChanged(
+                            Tab tab,
+                            BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
+                            BrowserControlsOffsetTagsInfo offsetTagsInfo) {
+                        if (tab == getTab() && tab.isUserInteractable() && !tab.isNativePage()) {
+                            WebContents webContents = tab.getWebContents();
+                            if (webContents != null) {
+                                // TODO(peilinwang) Refactor so this this function only gets passed
+                                // OffsetTags as only this class needs to know/use the width/height
+                                // for creating the OffsetTagConstraint.
+                                offsetTagsInfo.mTopControlsHeight = mTopControlContainerHeight;
+                                offsetTagsInfo.mTopControlsWidth =
+                                        mControlContainer.getView().getWidth();
+                                webContents.notifyControlsConstraintsChanged(
+                                        oldOffsetTagsInfo, offsetTagsInfo);
+                            }
+                            notifyConstraintsChanged(oldOffsetTagsInfo, offsetTagsInfo);
                         }
                     }
 
@@ -678,9 +701,18 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
         }
     }
 
+    private void notifyConstraintsChanged(
+            BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
+            BrowserControlsOffsetTagsInfo offsetTagsInfo) {
+        for (BrowserControlsStateProvider.Observer obs : mControlsObservers) {
+            obs.onControlsConstraintsChanged(oldOffsetTagsInfo, offsetTagsInfo);
+        }
+    }
+
     /**
      * Called when offset values related with fullscreen functionality has been changed by the
      * compositor.
+     *
      * @param topControlsOffsetY The Y offset of the top controls in physical pixels.
      * @param bottomControlsOffsetY The Y offset of the bottom controls in physical pixels.
      * @param contentOffsetY The Y offset of the content in physical pixels.

@@ -11,6 +11,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
+#include "cc/input/browser_controls_offset_tags_info.h"
 #include "cc/layers/deadline_policy.h"
 #include "components/viz/client/frame_evictor.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
@@ -178,6 +179,9 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
   viz::SurfaceId GetFirstSurfaceIdAfterNavigationForTesting() const;
 
   void SetIsFrameSinkIdOwner(bool is_owner);
+
+  void RegisterOffsetTags(const cc::BrowserControlsOffsetTagsInfo& tags_info);
+  void UnregisterOffsetTags(const cc::BrowserControlsOffsetTagsInfo& tags_info);
 
  private:
   // FrameEvictorClient implementation.

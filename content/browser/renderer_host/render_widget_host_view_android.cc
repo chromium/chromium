@@ -27,6 +27,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "cc/base/math_util.h"
+#include "cc/input/browser_controls_offset_tags_info.h"
 #include "cc/slim/layer.h"
 #include "components/input/web_input_event_builders_android.h"
 #include "components/viz/common/features.h"
@@ -3346,6 +3347,15 @@ const cc::slim::SurfaceLayer* RenderWidgetHostViewAndroid::GetSurfaceLayer()
     return nullptr;
   }
   return delegated_frame_host_->content_layer();
+}
+
+void RenderWidgetHostViewAndroid::OnControlsConstraintsChanged(
+    const cc::BrowserControlsOffsetTagsInfo& old_tags_info,
+    const cc::BrowserControlsOffsetTagsInfo& tags_info) {
+  if (delegated_frame_host_) {
+    delegated_frame_host_->UnregisterOffsetTags(old_tags_info);
+    delegated_frame_host_->RegisterOffsetTags(tags_info);
+  }
 }
 
 void RenderWidgetHostViewAndroid::BeginRotationBatching() {

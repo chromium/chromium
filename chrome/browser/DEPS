@@ -1,6 +1,8 @@
 include_rules = [
   "+apps",
   "+cc/input/browser_controls_state.h",
+  "+cc/input/android/java",
+  "+cc/input/android/offset_tag_android.h",
   "+cc/metrics",
   "+cc/paint",
   "+cc/test",

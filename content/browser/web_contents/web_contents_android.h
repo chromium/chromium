@@ -218,6 +218,11 @@ class CONTENT_EXPORT WebContentsAndroid {
 
   void UpdateWebContentsVisibility(JNIEnv* env, jint visibiity);
 
+  void NotifyControlsConstraintsChanged(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& jold_offset_tag_bundle,
+      const base::android::JavaParamRef<jobject>& joffset_tag_bundle);
+
   RenderWidgetHostViewAndroid* GetRenderWidgetHostViewAndroid();
 
   class DestructionObserver : public base::CheckedObserver {

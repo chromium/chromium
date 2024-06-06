@@ -13,6 +13,7 @@ import android.os.Handler;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.cc.input.BrowserControlsOffsetTagsInfo;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.compositor.scene_layer.StaticTabSceneLayer;
@@ -204,6 +205,15 @@ public class StaticLayout extends Layout {
         mModel.set(LayoutTab.CONTENT_OFFSET, mBrowserControlsStateProvider.getContentOffset());
         mBrowserControlsStateProviderObserver =
                 new BrowserControlsStateProvider.Observer() {
+                    @Override
+                    public void onControlsConstraintsChanged(
+                            BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
+                            BrowserControlsOffsetTagsInfo offsetTagsInfo) {
+                        mModel.set(
+                                LayoutTab.CONTENT_OFFSET_TAG,
+                                offsetTagsInfo.getTopControlsOffsetTag());
+                    }
+
                     @Override
                     public void onControlsOffsetChanged(
                             int topOffset,

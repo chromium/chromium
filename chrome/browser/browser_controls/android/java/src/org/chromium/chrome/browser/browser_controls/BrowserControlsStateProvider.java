@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.browser_controls;
 
 import androidx.annotation.ColorInt;
 
+import org.chromium.cc.input.BrowserControlsOffsetTagsInfo;
+
 /** An interface for retrieving and monitoring browser controls state. */
 public interface BrowserControlsStateProvider {
     /** An observer to be notified of browser controls changes */
@@ -41,6 +43,21 @@ public interface BrowserControlsStateProvider {
 
         /** Called when the visibility of the controls container changes. */
         default void onAndroidControlsVisibilityChanged(int visibility) {}
+
+        /**
+         * Called when the visibility constraints of the controls are changed. Visibility here
+         * refers to if the browser is forcing the controls to be fully shown/hidden, which is not
+         * the same as the visibility of the controls container, which is observed by
+         * onAndroidControlsVisibilityChanged.
+         *
+         * @param oldOffsetTagsInfo the old OffsetTags for moving browser controls in viz.
+         * @param offsetTagsInfo the new OffsetTags moving browser controls in viz. A null tag means
+         *     the controls will no longer be moved by viz, which happens only when the browser is
+         *     forcing the controls to be fully shown/hidden.
+         */
+        default void onControlsConstraintsChanged(
+                BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
+                BrowserControlsOffsetTagsInfo offsetTagsInfo) {}
 
         /** Called when the background color of the controls container changes. */
         default void onBottomControlsBackgroundColorChanged(@ColorInt int color) {}

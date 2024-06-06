@@ -5,6 +5,7 @@ include_rules = [
   "+base/android/java/src/org/chromium/base",
   "+base/test/android",
   "+build/android/java/src/org/chromium/build",
+  "+cc/input/android/java",
   "+chrome/browser/android/crypto/java",
   '+chrome/browser/commerce/android/java',
   '+chrome/browser/commerce/price_tracking/android/java',

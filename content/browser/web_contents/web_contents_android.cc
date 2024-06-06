@@ -22,6 +22,7 @@
 #include "base/logging.h"
 #include "base/metrics/user_metrics.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "cc/input/android/offset_tag_android.h"
 #include "content/browser/android/java/gin_java_bridge_dispatcher_host.h"
 #include "content/browser/media/media_web_contents_observer.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
@@ -928,6 +929,22 @@ jint WebContentsAndroid::GetCurrentBackForwardTransitionStage(JNIEnv* env) {
     stage = animation->GetCurrentAnimationStage();
   }
   return static_cast<jint>(stage);
+}
+
+void WebContentsAndroid::NotifyControlsConstraintsChanged(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jold_tags_info,
+    const base::android::JavaParamRef<jobject>& jtags_info) {
+  RenderWidgetHostViewAndroid* rwhva = GetRenderWidgetHostViewAndroid();
+  if (!rwhva) {
+    return;
+  }
+
+  cc::BrowserControlsOffsetTagsInfo old_tags_info =
+      cc::android::FromJavaBrowserControlsOffsetTagsInfo(env, jold_tags_info);
+  cc::BrowserControlsOffsetTagsInfo tags_info =
+      cc::android::FromJavaBrowserControlsOffsetTagsInfo(env, jtags_info);
+  rwhva->OnControlsConstraintsChanged(old_tags_info, tags_info);
 }
 
 }  // namespace content

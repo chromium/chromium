@@ -12,6 +12,7 @@ import android.os.Parcel;
 import androidx.annotation.Nullable;
 
 import org.chromium.blink_public.input.SelectionGranularity;
+import org.chromium.cc.input.BrowserControlsOffsetTagsInfo;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.ImageDownloadCallback;
 import org.chromium.content_public.browser.JavaScriptCallback;
@@ -381,4 +382,9 @@ public class MockWebContents implements WebContents {
     public int getCurrentBackForwardTransitionStage() {
         return AnimationStage.NONE;
     }
+
+    @Override
+    public void notifyControlsConstraintsChanged(
+            BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
+            BrowserControlsOffsetTagsInfo offsetTagsInfo) {}
 }

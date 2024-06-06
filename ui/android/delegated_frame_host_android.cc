@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
+#include "cc/input/browser_controls_offset_tags_info.h"
 #include "cc/slim/layer.h"
 #include "cc/slim/layer_tree.h"
 #include "cc/slim/surface_layer.h"
@@ -121,6 +122,24 @@ void DelegatedFrameHostAndroid::SetIsFrameSinkIdOwner(bool is_owner) {
         frame_sink_id_, this, viz::ReportFirstSurfaceActivation::kNo);
     host_frame_sink_manager_->SetFrameSinkDebugLabel(
         frame_sink_id_, "DelegatedFrameHostAndroid");
+  }
+}
+
+void DelegatedFrameHostAndroid::RegisterOffsetTags(
+    const cc::BrowserControlsOffsetTagsInfo& tags_info) {
+  const viz::OffsetTag top_controls_offset_tag =
+      tags_info.top_controls_offset_tag;
+  if (!top_controls_offset_tag.IsEmpty()) {
+    // TODO(peilinwang) register tag in content_layer_
+  }
+}
+
+void DelegatedFrameHostAndroid::UnregisterOffsetTags(
+    const cc::BrowserControlsOffsetTagsInfo& tags_info) {
+  const viz::OffsetTag top_controls_offset_tag =
+      tags_info.top_controls_offset_tag;
+  if (!top_controls_offset_tag.IsEmpty()) {
+    // TODO(peilinwang) unregister tag in content_layer_
   }
 }
 

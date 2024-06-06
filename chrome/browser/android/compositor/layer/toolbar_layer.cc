@@ -12,6 +12,7 @@
 #include "cc/slim/ui_resource_layer.h"
 #include "chrome/browser/android/compositor/resources/toolbar_resource.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
+#include "components/viz/common/quads/offset_tag.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/android/resources/nine_patch_resource.h"
 #include "ui/android/resources/resource_manager.h"
@@ -36,7 +37,8 @@ void ToolbarLayer::PushResource(int toolbar_resource_id,
                                 float x_offset,
                                 float content_offset,
                                 bool show_debug,
-                                bool clip_shadow) {
+                                bool clip_shadow,
+                                const viz::OffsetTag& offset_tag) {
   ToolbarResource* resource =
       ToolbarResource::From(resource_manager_->GetResource(
           ui::ANDROID_RESOURCE_TYPE_DYNAMIC, toolbar_resource_id));
@@ -115,6 +117,8 @@ void ToolbarLayer::PushResource(int toolbar_resource_id,
   // Position the toolbar at the bottom of the space available for top controls.
   layer_->SetPosition(
       gfx::PointF(x_offset, content_offset - layer_->bounds().height()));
+
+  // TODO(peilinwang): update layer_ with offset_tag.
 }
 
 int ToolbarLayer::GetIndexOfLayer(scoped_refptr<cc::slim::Layer> layer) {

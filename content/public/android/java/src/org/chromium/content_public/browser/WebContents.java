@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.blink_public.input.SelectionGranularity;
+import org.chromium.cc.input.BrowserControlsOffsetTagsInfo;
 import org.chromium.content_public.browser.back_forward_transition.AnimationStage;
 import org.chromium.ui.OverscrollRefreshHandler;
 import org.chromium.ui.base.EventForwarder;
@@ -618,4 +619,13 @@ public interface WebContents extends Parcelable {
      */
     @AnimationStage
     int getCurrentBackForwardTransitionStage();
+
+    /**
+     * Notify that the constraints of the browser controls have changed. This means that the the
+     * browser controls went from being forced fully visible/hidden to not being forced (or
+     * vice-versa).
+     */
+    void notifyControlsConstraintsChanged(
+            BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
+            BrowserControlsOffsetTagsInfo offsetTagsInfo);
 }

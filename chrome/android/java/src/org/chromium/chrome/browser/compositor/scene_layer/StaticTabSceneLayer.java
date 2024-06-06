@@ -9,6 +9,7 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.cc.input.OffsetTag;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.tab.Tab;
@@ -63,11 +64,13 @@ public class StaticTabSceneLayer extends SceneLayer {
                         x,
                         y,
                         model.get(LayoutTab.STATIC_TO_VIEW_BLEND),
-                        model.get(LayoutTab.SATURATION));
+                        model.get(LayoutTab.SATURATION),
+                        model.get(LayoutTab.CONTENT_OFFSET_TAG));
     }
 
     /**
      * Set {@link TabContentManager}.
+     *
      * @param tabContentManager {@link TabContentManager} to set.
      */
     public void setTabContentManager(TabContentManager tabContentManager) {
@@ -103,7 +106,8 @@ public class StaticTabSceneLayer extends SceneLayer {
                 float x,
                 float y,
                 float staticToViewBlend,
-                float saturation);
+                float saturation,
+                OffsetTag contentLayerOffsetToken);
 
         void setTabContentManager(
                 long nativeStaticTabSceneLayer,

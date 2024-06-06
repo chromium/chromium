@@ -12,6 +12,7 @@ import androidx.annotation.ColorInt;
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.cc.input.BrowserControlsOffsetTagsInfo;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
@@ -170,6 +171,15 @@ public class TopToolbarOverlayMediator {
                             mIsBrowserControlsAndroidViewVisible = visibility == View.VISIBLE;
                             updateShadowState();
                         }
+                    }
+
+                    @Override
+                    public void onControlsConstraintsChanged(
+                            BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
+                            BrowserControlsOffsetTagsInfo offsetTagsInfo) {
+                        mModel.set(
+                                TopToolbarOverlayProperties.TOOLBAR_OFFSET_TAG,
+                                offsetTagsInfo.getTopControlsOffsetTag());
                     }
                 };
         mBrowserControlsStateProvider.addObserver(mBrowserControlsObserver);

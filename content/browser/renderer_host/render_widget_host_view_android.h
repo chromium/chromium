@@ -23,6 +23,7 @@
 #include "base/process/process.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "cc/input/browser_controls_offset_tags_info.h"
 #include "cc/mojom/render_frame_metadata.mojom-shared.h"
 #include "cc/trees/render_frame_metadata.h"
 #include "components/viz/common/quads/selection.h"
@@ -432,6 +433,10 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   void SetNeedsBeginFrameForFlingProgress();
 
   const cc::slim::SurfaceLayer* GetSurfaceLayer() const;
+
+  void OnControlsConstraintsChanged(
+      const cc::BrowserControlsOffsetTagsInfo& old_tags_info,
+      const cc::BrowserControlsOffsetTagsInfo& tags_info);
 
  protected:
   ~RenderWidgetHostViewAndroid() override;

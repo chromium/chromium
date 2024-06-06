@@ -33,6 +33,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.UserData;
 import org.chromium.base.UserDataHost;
 import org.chromium.blink_public.input.SelectionGranularity;
+import org.chromium.cc.input.BrowserControlsOffsetTagsInfo;
 import org.chromium.content.browser.AppWebMessagePort;
 import org.chromium.content.browser.GestureListenerManagerImpl;
 import org.chromium.content.browser.MediaSessionImpl;
@@ -1239,6 +1240,16 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
                 .getCurrentBackForwardTransitionStage(mNativeWebContentsAndroid);
     }
 
+    @Override
+    public void notifyControlsConstraintsChanged(
+            BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
+            BrowserControlsOffsetTagsInfo offsetTagsInfo) {
+        if (mNativeWebContentsAndroid == 0) return;
+        WebContentsImplJni.get()
+                .notifyControlsConstraintsChanged(
+                        mNativeWebContentsAndroid, oldOffsetTagsInfo, offsetTagsInfo);
+    }
+
     private void checkNotDestroyed() {
         if (mNativeWebContentsAndroid != 0) return;
         throw new IllegalStateException(
@@ -1448,5 +1459,10 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
 
         @AnimationStage
         int getCurrentBackForwardTransitionStage(long nativeWebContentsAndroid);
+
+        void notifyControlsConstraintsChanged(
+                long nativeWebContentsAndroid,
+                BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
+                BrowserControlsOffsetTagsInfo offsetTagsInfo);
     }
 }

@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
 
+import org.chromium.cc.input.OffsetTag;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -116,6 +117,10 @@ public class LayoutTab extends PropertyModel {
     public static final PropertyModel.WritableObjectPropertyKey<IsActiveLayoutSupplier>
             IS_ACTIVE_LAYOUT_SUPPLIER = new WritableObjectPropertyKey<>();
 
+    /** The tag indicating that this layer should be moved by viz. */
+    public static final PropertyModel.WritableObjectPropertyKey<OffsetTag> CONTENT_OFFSET_TAG =
+            new WritableObjectPropertyKey<>();
+
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 TAB_ID,
@@ -146,15 +151,16 @@ public class LayoutTab extends PropertyModel {
                 TOOLBAR_BACKGROUND_COLOR,
                 TEXT_BOX_BACKGROUND_COLOR,
                 CONTENT_OFFSET,
-                IS_ACTIVE_LAYOUT_SUPPLIER
+                IS_ACTIVE_LAYOUT_SUPPLIER,
+                CONTENT_OFFSET_TAG
             };
 
     /**
      * Default constructor for a {@link LayoutTab}.
      *
-     * @param tabId                   The id of the source {@link Tab}.
-     * @param isIncognito             Whether the tab in the in the incognito stack.
-     * @param maxContentTextureWidth  The maximum width for drawing the content in px.
+     * @param tabId The id of the source {@link Tab}.
+     * @param isIncognito Whether the tab in the in the incognito stack.
+     * @param maxContentTextureWidth The maximum width for drawing the content in px.
      * @param maxContentTextureHeight The maximum height for drawing the content in px.
      */
     public LayoutTab(
