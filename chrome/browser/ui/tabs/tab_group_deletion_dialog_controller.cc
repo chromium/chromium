@@ -201,6 +201,7 @@ bool DeletionDialogController::MaybeShowDialog(
   }
 
   if (IsDialogSkippedByUserSettings(browser_->profile(), type)) {
+    std::move(on_ok_callback).Run();
     return false;
   }
 
