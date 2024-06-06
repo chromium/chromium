@@ -21,6 +21,9 @@ public class SafetyHubModuleProperties {
     public static final PropertyModel.WritableIntPropertyKey SITES_WITH_UNUSED_PERMISSIONS_COUNT =
             new PropertyModel.WritableIntPropertyKey();
 
+    public static final PropertyModel.WritableIntPropertyKey
+            NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT = new PropertyModel.WritableIntPropertyKey();
+
     public static final PropertyKey[] COMMON_SAFETY_HUB_MODULE_KEYS = {
         IS_VISIBLE, ON_CLICK_LISTENER
     };
@@ -37,4 +40,9 @@ public class SafetyHubModuleProperties {
             PropertyModel.concatKeys(
                     COMMON_SAFETY_HUB_MODULE_KEYS,
                     new PropertyKey[] {SITES_WITH_UNUSED_PERMISSIONS_COUNT});
+
+    public static final PropertyKey[] NOTIFICATIONS_REVIEW_MODULE_KEYS =
+            PropertyModel.concatKeys(
+                    COMMON_SAFETY_HUB_MODULE_KEYS,
+                    new PropertyKey[] {NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT});
 }

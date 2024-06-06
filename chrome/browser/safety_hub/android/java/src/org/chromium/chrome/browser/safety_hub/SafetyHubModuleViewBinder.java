@@ -57,6 +57,14 @@ public class SafetyHubModuleViewBinder {
         }
     }
 
+    public static void bindNotificationsReviewProperties(
+            PropertyModel model, Preference preference, PropertyKey propertyKey) {
+        bindCommonProperties(model, preference, propertyKey);
+        if (SafetyHubModuleProperties.NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT == propertyKey) {
+            updateNotificationsReviewModule(preference, model);
+        }
+    }
+
     private static void updatePasswordCheckModule(Preference preference, PropertyModel model) {
         int compromisedPasswordsCount =
                 model.get(SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT);
@@ -126,6 +134,34 @@ public class SafetyHubModuleViewBinder {
             iconDrawable = getWarningIcon(preference);
         } else {
             title = preference.getContext().getString(R.string.safety_hub_permissions_ok_title);
+            iconDrawable = getCheckmarkIcon(preference);
+        }
+        preference.setTitle(title);
+        preference.setIcon(iconDrawable);
+    }
+
+    private static void updateNotificationsReviewModule(
+            Preference preference, PropertyModel model) {
+        int notificationPermissionsForReviewCount =
+                model.get(SafetyHubModuleProperties.NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT);
+        String title;
+        Drawable iconDrawable;
+        if (notificationPermissionsForReviewCount > 0) {
+            title =
+                    preference
+                            .getContext()
+                            .getResources()
+                            .getQuantityString(
+                                    R.plurals.safety_hub_notifications_review_warning_title,
+                                    notificationPermissionsForReviewCount,
+                                    notificationPermissionsForReviewCount);
+
+            iconDrawable = getWarningIcon(preference);
+        } else {
+            title =
+                    preference
+                            .getContext()
+                            .getString(R.string.safety_hub_notifications_review_ok_title);
             iconDrawable = getCheckmarkIcon(preference);
         }
         preference.setTitle(title);

@@ -1678,6 +1678,12 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_HUB_MULTIPLE_PERMISSIONS_SNACKBAR" translateable="false">
         Permissions allowed again for <ph name="SITE_NUMBER">%1$s<ex>3</ex></ph> sites
       </message>
+      <message name="IDS_SAFETY_HUB_NOTIFICATIONS_REVIEW_OK_TITLE" translateable="false">
+        Notifications look good
+      </message>
+      <message name="IDS_SAFETY_HUB_NOTIFICATIONS_REVIEW_WARNING_TITLE" translateable="false">
+        {NUM_SITES, plural, =1 {1 site recently sent a lot of notifications} other {# sites recently sent a lot of notifications}}
+      </message>
 
        <!-- Safe Browsing preferences -->
       <message name="IDS_PREFS_SAFE_BROWSING_TITLE" desc="Title for the Safe Browsing preferences. [CHAR_LIMIT=32]">

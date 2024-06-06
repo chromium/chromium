@@ -18,15 +18,20 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Fragment containing Safety hub. */
 public class SafetyHubFragment extends SafetyHubBaseFragment
-        implements FragmentSettingsLauncher, UnusedSitePermissionsBridge.Observer {
+        implements FragmentSettingsLauncher,
+                UnusedSitePermissionsBridge.Observer,
+                NotificationPermissionReviewBridge.Observer {
     private static final String PREF_PASSWORDS = "passwords_account";
     private static final String PREF_UPDATE = "update_check";
     private static final String PREF_UNUSED_PERMISSIONS = "permissions";
+    private static final String PREF_NOTIFICATIONS_REVIEW = "notifications_review";
 
     private SafetyHubModuleDelegate mDelegate;
     private SettingsLauncher mSettingsLauncher;
     private UnusedSitePermissionsBridge mUnusedSitePermissionsBridge;
     private PropertyModel mPermissionsModel;
+    private NotificationPermissionReviewBridge mNotificationPermissionReviewBridge;
+    private PropertyModel mNotificationsModel;
 
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
@@ -92,6 +97,24 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
 
         mUnusedSitePermissionsBridge = UnusedSitePermissionsBridge.getForProfile(getProfile());
         mUnusedSitePermissionsBridge.addObserver(this);
+
+        // Set up notifications review preference.
+        Preference notificationsPreference = findPreference(PREF_NOTIFICATIONS_REVIEW);
+
+        mNotificationsModel =
+                new PropertyModel.Builder(
+                                SafetyHubModuleProperties.NOTIFICATIONS_REVIEW_MODULE_KEYS)
+                        .with(SafetyHubModuleProperties.IS_VISIBLE, true)
+                        .build();
+
+        PropertyModelChangeProcessor.create(
+                mNotificationsModel,
+                notificationsPreference,
+                SafetyHubModuleViewBinder::bindNotificationsReviewProperties);
+
+        mNotificationPermissionReviewBridge =
+                NotificationPermissionReviewBridge.getForProfile(getProfile());
+        mNotificationPermissionReviewBridge.addObserver(this);
     }
 
     @Override
@@ -99,11 +122,17 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         super.onResume();
 
         updatePermissionsPreference();
+        updateNotificationsReviewPreference();
     }
 
     @Override
     public void revokedPermissionsChanged() {
         updatePermissionsPreference();
+    }
+
+    @Override
+    public void notificationPermissionsChanged() {
+        updateNotificationsReviewPreference();
     }
 
     @Override
@@ -121,5 +150,13 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         mPermissionsModel.set(
                 SafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT,
                 sitesWithUnusedPermissionsCount);
+    }
+
+    private void updateNotificationsReviewPreference() {
+        int notificationPermissionsForReviewCount =
+                mNotificationPermissionReviewBridge.getNotificationPermissions().size();
+        mNotificationsModel.set(
+                SafetyHubModuleProperties.NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT,
+                notificationPermissionsForReviewCount);
     }
 }

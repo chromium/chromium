@@ -38,6 +38,8 @@ public class SafetyHubModuleViewBinderTest {
     private Preference mUpdateCheckPreference;
     private PropertyModel mPermissionsPropertyModel;
     private Preference mPermissionsPreference;
+    private PropertyModel mNotificationsReviewPropertyModel;
+    private Preference mNotificationsReviewPreference;
 
     @Before
     public void setUp() {
@@ -76,6 +78,17 @@ public class SafetyHubModuleViewBinderTest {
                 mPermissionsPropertyModel,
                 mPermissionsPreference,
                 SafetyHubModuleViewBinder::bindPermissionsProperties);
+
+        // Set up notifications review preference.
+        mNotificationsReviewPreference = new Preference(mActivity);
+        mNotificationsReviewPropertyModel =
+                new PropertyModel.Builder(
+                                SafetyHubModuleProperties.NOTIFICATIONS_REVIEW_MODULE_KEYS)
+                        .build();
+        PropertyModelChangeProcessor.create(
+                mNotificationsReviewPropertyModel,
+                mNotificationsReviewPreference,
+                SafetyHubModuleViewBinder::bindNotificationsReviewProperties);
     }
 
     @Test
@@ -192,5 +205,40 @@ public class SafetyHubModuleViewBinderTest {
         assertNull(mPermissionsPreference.getSummary());
         assertEquals(
                 WARNING_ICON, shadowOf(mPermissionsPreference.getIcon()).getCreatedFromResId());
+    }
+
+    @Test
+    public void testNotificationsReviewModule_NoNotificationPermissions() {
+        mNotificationsReviewPropertyModel.set(
+                SafetyHubModuleProperties.NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT, 0);
+
+        String expectedTitle =
+                mActivity.getString(R.string.safety_hub_notifications_review_ok_title);
+
+        assertEquals(expectedTitle, mNotificationsReviewPreference.getTitle().toString());
+        assertNull(mNotificationsReviewPreference.getSummary());
+        assertEquals(
+                OK_ICON, shadowOf(mNotificationsReviewPreference.getIcon()).getCreatedFromResId());
+    }
+
+    @Test
+    public void testNotificationsReviewModule_NotificationPermissionsExist() {
+        int notificationPermissionsForReviewCount = 5;
+        mNotificationsReviewPropertyModel.set(
+                SafetyHubModuleProperties.NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT,
+                notificationPermissionsForReviewCount);
+        String expectedTitle =
+                mActivity
+                        .getResources()
+                        .getQuantityString(
+                                R.plurals.safety_hub_notifications_review_warning_title,
+                                notificationPermissionsForReviewCount,
+                                notificationPermissionsForReviewCount);
+
+        assertEquals(expectedTitle, mNotificationsReviewPreference.getTitle().toString());
+        assertNull(mNotificationsReviewPreference.getSummary());
+        assertEquals(
+                WARNING_ICON,
+                shadowOf(mNotificationsReviewPreference.getIcon()).getCreatedFromResId());
     }
 }

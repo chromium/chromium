@@ -23,4 +23,9 @@ found in the LICENSE file.
         android:key="permissions"
         android:title="@string/safety_hub_permissions_ok_title" />
 
+    <!-- Notification review -->
+    <Preference
+        android:key="notifications_review"
+        android:title="@string/safety_hub_notifications_review_ok_title" />
+
 </PreferenceScreen>
