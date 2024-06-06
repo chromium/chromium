@@ -18,6 +18,7 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 import org.chromium.android_webview.AwCrashyClassUtils;
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.AwSwitches;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
@@ -26,9 +27,9 @@ import org.chromium.base.test.util.Features;
  * Tests that WebView only enables test crashes under the right conditions when the correct flags
  * are flipped.
  */
-// TODO(crbug.com/344662662): Failing when batched, batch this again.
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+@DoNotBatch(reason = "needsBrowserProcessStarted false and @Batch are incompatible")
 public class AwCrashyClassUtilsTest extends AwParameterizedTest {
 
     @Rule public AwActivityTestRule mRule;
