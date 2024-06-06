@@ -74,7 +74,9 @@ export class SettingsCreditCardEditDialogElement extends
       prefs: Object,
 
       /**
-       * The credit card being edited.
+       * The underlying credit card object for the dialog. After initialization
+       * of the dialog, this object is only modified once the 'Save' button is
+       * clicked.
        */
       creditCard: Object,
 
@@ -108,6 +110,10 @@ export class SettingsCreditCardEditDialogElement extends
       /** The list of years to show in the dropdown. */
       yearList_: Array,
 
+      /**
+       * Backing data for inputs in the dialog, each bound to the corresponding
+       * HTML elements.
+       */
       name_: String,
       cardNumber_: String,
       cvc_: String,
@@ -121,6 +127,10 @@ export class SettingsCreditCardEditDialogElement extends
         value: false,
       },
 
+      /**
+       * Computed property that tracks if the entered credit card is expired -
+       * that is, if its expiration month and year are in the past.
+       */
       expired_: {
         type: Boolean,
         computed: 'computeExpired_(expirationMonth_, expirationYear_)',
@@ -147,31 +157,13 @@ export class SettingsCreditCardEditDialogElement extends
   private yearList_: string[];
   private name_?: string;
   private cardNumber_: string;
+  private cvc_?: string;
   private nickname_?: string;
   private expirationYear_?: string;
   private expirationMonth_?: string;
   private nicknameInvalid_: boolean;
   private expired_: boolean;
-  private cvc_?: string;
   private cvcStorageAvailable_: boolean;
-
-  /**
-   * @return True iff the provided expiration date is passed.
-   */
-  private computeExpired_(): boolean {
-    if (this.expirationYear_ === undefined ||
-        this.expirationMonth_ === undefined) {
-      return false;
-    }
-    const now = new Date();
-    // Convert string (e.g. '06') to number (e.g. 6) for comparison.
-    const expirationYear = parseInt(this.expirationYear_, 10);
-    const expirationMonth = parseInt(this.expirationMonth_, 10);
-    return (
-        expirationYear < now.getFullYear() ||
-        (expirationYear === now.getFullYear() &&
-         expirationMonth <= now.getMonth()));
-  }
 
   override connectedCallback() {
     super.connectedCallback();
@@ -257,16 +249,6 @@ export class SettingsCreditCardEditDialogElement extends
     this.expirationYear_ = this.yearList_[this.$.year.selectedIndex];
   }
 
-  private saveEnabled_() {
-    // The save button is enabled if:
-    // There is a name or number for the card
-    // and the expiration date is valid
-    // and the nickname is valid if present.
-    return ((this.name_ && this.name_.trim()) ||
-            (this.cardNumber_ && this.cardNumber_.trim())) &&
-        !this.expired_ && !this.nicknameInvalid_;
-  }
-
   /**
    * Handles a11y error announcement the same way as in cr-input.
    */
@@ -290,6 +272,38 @@ export class SettingsCreditCardEditDialogElement extends
   }
 
   /**
+   * @return 'true' or 'false' for the aria-invalid attribute
+   *     of expiration selectors.
+   */
+  private getExpirationAriaInvalid_(): string {
+    return this.expired_ ? 'true' : 'false';
+  }
+
+  private checkIfCvcStorageIsAvailable_(cvcStorageToggleEnabled: boolean):
+      boolean {
+    return this.cvcStorageAvailable_ && cvcStorageToggleEnabled;
+  }
+
+  private getCvcImageSource_(): string {
+    // An icon is shown to the user to help them look for their CVC.
+    // The location differs for AmEx and non-AmEx cards, so we have to get
+    // the first two digits of the card number for AmEx cards before we can
+    // update the icon.
+    return this.isCardAmex_() ? 'chrome://settings/images/cvc_amex.svg' :
+                                'chrome://settings/images/cvc.svg';
+  }
+
+  private getCvcImageTooltip_(): string {
+    // An icon is shown to the user to help them look for their CVC.
+    // The location differs for AmEx and non-AmEx cards, so we have to get
+    // the first two digits of the card number for AmEx cards before we can
+    // update the icon.
+    return this.i18n(
+        this.isCardAmex_() ? 'creditCardCvcAmexImageTitle' :
+                             'creditCardCvcImageTitle');
+  }
+
+  /**
    * Validate no digits are used in nickname. Display error message and disable
    * the save button when invalid.
    */
@@ -305,12 +319,32 @@ export class SettingsCreditCardEditDialogElement extends
     return (nickname || '').length;
   }
 
+  private saveEnabled_() {
+    // The save button is enabled if:
+    // There is a name or number for the card
+    // and the expiration date is valid
+    // and the nickname is valid.
+    return ((this.name_ && this.name_.trim()) ||
+            (this.cardNumber_ && this.cardNumber_.trim())) &&
+        !this.expired_ && !this.nicknameInvalid_;
+  }
+
   /**
-   * @return 'true' or 'false' for the aria-invalid attribute
-   *     of expiration selectors.
+   * @return True iff the provided expiration date is passed.
    */
-  private getExpirationAriaInvalid_(): string {
-    return this.expired_ ? 'true' : 'false';
+  private computeExpired_(): boolean {
+    if (this.expirationYear_ === undefined ||
+        this.expirationMonth_ === undefined) {
+      return false;
+    }
+    const now = new Date();
+    // Convert string (e.g. '06') to number (e.g. 6) for comparison.
+    const expirationYear = parseInt(this.expirationYear_, 10);
+    const expirationMonth = parseInt(this.expirationMonth_, 10);
+    return (
+        expirationYear < now.getFullYear() ||
+        (expirationYear === now.getFullYear() &&
+         expirationMonth <= now.getMonth()));
   }
 
   /**
@@ -331,30 +365,6 @@ export class SettingsCreditCardEditDialogElement extends
   private isCardAmex_(): boolean {
     return !!this.cardNumber_ && this.cardNumber_.length >= 2 &&
         !!this.cardNumber_.match('^(34|37)');
-  }
-
-  private getCvcImageTooltip_(): string {
-    // An icon is shown to the user to help them look for their CVC.
-    // The location differs for AmEx and non-AmEx cards, so we have to get
-    // the first two digits of the card number for AmEx cards before we can
-    // update the icon.
-    return this.i18n(
-        this.isCardAmex_() ? 'creditCardCvcAmexImageTitle' :
-                             'creditCardCvcImageTitle');
-  }
-
-  private getCvcImageSource_(): string {
-    // An icon is shown to the user to help them look for their CVC.
-    // The location differs for AmEx and non-AmEx cards, so we have to get
-    // the first two digits of the card number for AmEx cards before we can
-    // update the icon.
-    return this.isCardAmex_() ? 'chrome://settings/images/cvc_amex.svg' :
-                                'chrome://settings/images/cvc.svg';
-  }
-
-  private checkIfCvcStorageIsAvailable_(cvcStorageToggleEnabled: boolean):
-      boolean {
-    return this.cvcStorageAvailable_ && cvcStorageToggleEnabled;
   }
 }
 
