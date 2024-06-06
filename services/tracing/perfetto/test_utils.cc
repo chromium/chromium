@@ -5,6 +5,7 @@
 
 #include <utility>
 
+#include "base/containers/heap_array.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -54,16 +55,16 @@ TestDataSource::TestDataSource(const std::string& data_source_name,
 TestDataSource::~TestDataSource() = default;
 
 void TestDataSource::WritePacketBigly() {
-  std::unique_ptr<char[]> payload(new char[kLargeMessageSize]);
-  memset(payload.get(), '.', kLargeMessageSize);
-  payload.get()[kLargeMessageSize - 1] = 0;
+  auto payload = base::HeapArray<char>::Uninit(kLargeMessageSize);
+  std::ranges::fill(payload, '.');
+  payload.as_span().back() = 0;
 
   std::unique_ptr<perfetto::TraceWriter> writer =
       producer_->CreateTraceWriter(config_.target_buffer());
   CHECK(writer);
 
-  writer->NewTracePacket()->set_for_testing()->set_str(payload.get(),
-                                                       kLargeMessageSize);
+  writer->NewTracePacket()->set_for_testing()->set_str(payload.data(),
+                                                       payload.size());
 }
 
 void TestDataSource::StartTracingImpl(
