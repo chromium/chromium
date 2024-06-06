@@ -439,6 +439,7 @@ chrome_java_resources = [
   "java/res/layout/autofill_save_address_profile_prompt.xml",
   "java/res/layout/autofill_save_card_base_layout.xml",
   "java/res/layout/autofill_save_card_bottom_sheet.xml",
+  "java/res/layout/autofill_save_iban_bottom_sheet.xml",
   "java/res/layout/autofill_server_card_editor.xml",
   "java/res/layout/autofill_server_data_edit_link.xml",
   "java/res/layout/autofill_server_data_label.xml",

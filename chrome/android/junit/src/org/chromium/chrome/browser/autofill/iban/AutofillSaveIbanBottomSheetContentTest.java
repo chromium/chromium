@@ -9,12 +9,15 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertFalse;
 
-import android.content.Context;
+import android.app.Activity;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RuntimeEnvironment;
+import org.mockito.MockitoAnnotations;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
@@ -23,13 +26,16 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 /** Unit tests for {@link AutofillSaveIbanBottomSheetContent} */
 @RunWith(BaseRobolectricTestRunner.class)
 public class AutofillSaveIbanBottomSheetContentTest {
-    private Context mContext;
+    private Activity mActivity;
     private AutofillSaveIbanBottomSheetContent mContent;
 
     @Before
     public void setUp() {
-        mContext = RuntimeEnvironment.getApplication().getApplicationContext();
-        mContent = new AutofillSaveIbanBottomSheetContent(mContext);
+        MockitoAnnotations.initMocks(this);
+        mActivity = Robolectric.buildActivity(AppCompatActivity.class).setup().get();
+        // set a MaterialComponents theme which is required for the `OutlinedBox` text field.
+        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        mContent = new AutofillSaveIbanBottomSheetContent(mActivity);
     }
 
     @Test
@@ -50,6 +56,25 @@ public class AutofillSaveIbanBottomSheetContentTest {
     @Test
     public void testBottomSheetPriority() {
         assertThat(mContent.getPriority(), equalTo(BottomSheetContent.ContentPriority.HIGH));
+    }
+
+    @Test
+    public void testBottomSheetCannotPeek() {
+        assertThat(mContent.getPeekHeight(), equalTo(BottomSheetContent.HeightMode.DISABLED));
+    }
+
+    @Test
+    public void testHalfHeightRatio() {
+        assertThat(
+                mContent.getHalfHeightRatio(),
+                equalTo((float) BottomSheetContent.HeightMode.DISABLED));
+    }
+
+    @Test
+    public void testFullHeightRatio() {
+        assertThat(
+                mContent.getFullHeightRatio(),
+                equalTo((float) BottomSheetContent.HeightMode.WRAP_CONTENT));
     }
 
     @Test

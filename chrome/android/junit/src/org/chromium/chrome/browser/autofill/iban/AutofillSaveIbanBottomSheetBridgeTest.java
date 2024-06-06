@@ -26,6 +26,7 @@ import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.layouts.LayoutManagerAppUtils;
 import org.chromium.chrome.browser.layouts.ManagedLayoutManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -57,6 +58,8 @@ public final class AutofillSaveIbanBottomSheetBridgeTest {
     public void setUp() {
         mJniMocker.mock(AutofillSaveIbanBottomSheetBridgeJni.TEST_HOOKS, mBridgeNatives);
         Activity activity = Robolectric.buildActivity(Activity.class).create().get();
+        // set a MaterialComponents theme which is required for the `OutlinedBox` text field.
+        activity.setTheme(R.style.Theme_BrowserUI_DayNight);
         mWindow = new WindowAndroid(activity);
         BottomSheetControllerFactory.attach(mWindow, mBottomSheetController);
         LayoutManagerAppUtils.attach(mWindow, mLayoutManager);

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <!-- Drag handlebar -->
+    <ImageView
+        android:importantForAccessibility="no"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/autofill_bottom_sheet_drag_handlebar_spacing_top"
+        android:src="@drawable/drag_handlebar"
+        app:tint="@macro/drag_handlebar_color" />
+
+    <ScrollView
+        android:id="@+id/autofill_save_iban_scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="@dimen/autofill_bottom_sheet_padding_horizontal"
+            android:paddingRight="@dimen/autofill_bottom_sheet_padding_horizontal"
+            android:layout_marginTop="@dimen/autofill_bottom_sheet_spacing_extra_small">
+
+            <!-- "Save IBAN to this device?" dialog title -->
+            <TextView
+                android:id="@+id/autofill_local_save_iban_title_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/autofill_bottom_sheet_title_top_margin"
+                android:textAlignment="center"
+                android:textAppearance="@style/TextAppearance.Headline.Primary"/>
+
+            <RelativeLayout
+                android:id="@+id/autofill_iban_chip"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/autofill_bottom_sheet_chip_top_margin"
+                android:padding="@dimen/autofill_bottom_sheet_spacing_medium"
+                android:background="@drawable/autofill_save_card_credit_card_surface"
+                android:descendantFocusability="blocksDescendants"
+                android:importantForAccessibility="yes">
+
+                <!-- IBAN icon -->
+                <ImageView
+                    android:id="@+id/autofill_save_iban_icon"
+                    android:src="@drawable/iban_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:importantForAccessibility="no"
+                    android:layout_gravity="center" />
+
+                <!-- IBAN label e.g., CH56 **** **** **** *800 9-->
+                <TextView
+                    android:id="@+id/autofill_save_iban_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearance.TextMedium.Primary"
+                    android:layout_marginStart="@dimen/autofill_bottom_sheet_spacing_medium"
+                    android:layout_toEndOf="@id/autofill_save_iban_icon"/>
+            </RelativeLayout>
+
+            <!-- Nickname -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/autofill_save_iban_nickname_input_layout"
+                android:labelFor="@+id/autofill_save_iban_nickname_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/autofill_bottom_sheet_iban_text_input_top_margin"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                app:hintTextAppearance="@style/TextAppearance.TextMedium.Primary"
+                app:shapeAppearanceOverlay="@style/ShapeAppearance.App.MediumComponent">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/autofill_save_iban_nickname_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start"
+                    android:textAlignment="viewStart"
+                    android:imeOptions="actionDone"
+                    android:inputType="textCapWords"
+                    android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+                    android:hint="@string/autofill_save_iban_bottom_sheet_nickname_hint" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- "Save" button -->
+            <org.chromium.ui.widget.ButtonCompat
+                android:id="@+id/autofill_save_iban_confirm_button"
+                style="@style/FilledButton.Flat"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:layout_marginTop="@dimen/autofill_bottom_sheet_confirm_button_top_margin"
+                android:layout_marginBottom="@dimen/autofill_bottom_sheet_spacing_extra_small"
+                android:minHeight="@dimen/min_touch_target_size"
+                android:minWidth="@dimen/min_touch_target_size"
+                android:text="@string/save"/>
+
+            <!-- "No thanks" button -->
+            <org.chromium.ui.widget.ButtonCompat
+                android:id="@+id/autofill_save_iban_cancel_button"
+                style="@style/TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:layout_marginTop="@dimen/autofill_bottom_sheet_spacing_extra_small"
+                android:layout_marginBottom="@dimen/autofill_bottom_sheet_spacing_extra_small"
+                android:minHeight="@dimen/min_touch_target_size"
+                android:minWidth="@dimen/min_touch_target_size"
+                android:text="@string/no_thanks"/>
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

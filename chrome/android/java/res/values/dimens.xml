@@ -391,6 +391,9 @@ found in the LICENSE file.
     <dimen name="autofill_bottom_sheet_spacing_large">22dp</dimen>
     <dimen name="autofill_bottom_sheet_spacing_small">12dp</dimen>
 
+    <!-- Autofill "save IBAN" bottom sheet dimensions. -->
+    <dimen name="autofill_bottom_sheet_iban_text_input_top_margin">20dp</dimen>
+
     <!-- Common autofill bottom sheet dimensions. -->
     <dimen name="autofill_bottom_sheet_chip_top_margin">22dp</dimen>
     <dimen name="autofill_bottom_sheet_confirm_button_top_margin">22dp</dimen>

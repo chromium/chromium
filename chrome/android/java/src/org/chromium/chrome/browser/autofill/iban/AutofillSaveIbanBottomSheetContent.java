@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.autofill.iban;
 
 import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
 
 import org.chromium.chrome.R;
@@ -15,7 +16,9 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
     private final View mView;
 
     AutofillSaveIbanBottomSheetContent(Context context) {
-        mView = new View(context);
+        mView =
+                LayoutInflater.from(context)
+                        .inflate(R.layout.autofill_save_iban_bottom_sheet, null);
     }
 
     @Override
@@ -50,6 +53,21 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
     @Override
     public int getPriority() {
         return ContentPriority.HIGH;
+    }
+
+    @Override
+    public int getPeekHeight() {
+        return HeightMode.DISABLED;
+    }
+
+    @Override
+    public float getHalfHeightRatio() {
+        return HeightMode.DISABLED;
+    }
+
+    @Override
+    public float getFullHeightRatio() {
+        return HeightMode.WRAP_CONTENT;
     }
 
     @Override

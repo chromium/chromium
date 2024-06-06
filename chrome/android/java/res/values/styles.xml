@@ -323,6 +323,11 @@ found in the LICENSE file.
         <item name="android:textSize">@dimen/text_size_medium</item>
     </style>
 
+    <!-- Autofill IBAN -->
+    <style name="ShapeAppearance.App.MediumComponent" parent="ShapeAppearance.MaterialComponents.MediumComponent">
+        <item name="cornerSize">@dimen/card_rounded_corner_radius</item>
+    </style>
+
     <!-- Tab Layout -->
     <style name="TabLayoutStyle" parent="Widget.MaterialComponents.TabLayout">
         <item name="android:background">@android:color/transparent</item>

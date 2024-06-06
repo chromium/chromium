@@ -23,6 +23,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -44,6 +45,8 @@ public final class AutofillSaveIbanBottomSheetCoordinatorTest {
     @Before
     public void setUp() {
         mActivity = Robolectric.buildActivity(Activity.class).create().get();
+        // set a MaterialComponents theme which is required for the `OutlinedBox` text field.
+        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
         mCoordinator =
                 new AutofillSaveIbanBottomSheetCoordinator(
                         mBridge,

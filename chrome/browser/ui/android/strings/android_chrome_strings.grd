@@ -596,7 +596,9 @@ CHAR_LIMIT guidelines:
       <message name="IDS_AUTOFILL_IBAN_EDITOR_LOCAL_SAVE_FOOTER" desc="Footer informing users that the IBAN will be saved locally, shown in the add/edit IBAN form.">
         This IBAN will be saved to this device only
       </message>
-
+      <message name="IDS_AUTOFILL_SAVE_IBAN_BOTTOM_SHEET_NICKNAME_HINT" desc="Hint label for text input field containing the optional nickname in save IBAN bottom sheet. [CHAR_LIMIT=25]">
+        Nickname (optional)
+      </message>
 
        <!-- Payment Request section preview strings -->
        <message name="IDS_PAYMENT_REQUEST_PAYMENT_METHODS_PREVIEW" desc="This is a snippet of a payment method a user has saved to Chrome, plus an indication of the number of additional payment methods the user has saved.
