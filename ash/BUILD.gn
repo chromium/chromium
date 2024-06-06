@@ -3581,6 +3581,7 @@ test("ash_unittests") {
     "assistant/ui/main_stage/ui_element_container_view_unittest.cc",
     "assistant/util/deep_link_util_unittest.cc",
     "assistant/util/resource_util_unittest.cc",
+    "auth/views/auth_textfield_unittest.cc",
     "auth/views/pin_keyboard_view_unittest.cc",
     "birch/birch_icon_cache_unittest.cc",
     "birch/birch_item_remover_unittest.cc",
