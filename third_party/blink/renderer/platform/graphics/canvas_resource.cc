@@ -243,11 +243,6 @@ viz::SharedImageFormat CanvasResource::GetSharedImageFormat() const {
   return viz::SkColorTypeToSinglePlaneSharedImageFormat(info_.colorType());
 }
 
-gfx::BufferFormat CanvasResource::GetBufferFormat() const {
-  return viz::SinglePlaneSharedImageFormatToBufferFormat(
-      GetSharedImageFormat());
-}
-
 gfx::ColorSpace CanvasResource::GetColorSpace() const {
   SkColorSpace* color_space = info_.colorSpace();
   return color_space ? gfx::ColorSpace(*color_space)
