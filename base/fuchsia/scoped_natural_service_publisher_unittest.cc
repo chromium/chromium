@@ -17,6 +17,7 @@
 #include "base/fuchsia/test_component_context_for_process.h"
 #include "base/fuchsia/test_interface_natural_impl.h"
 #include "base/test/task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -50,10 +51,14 @@ TEST_F(ScopedNaturalServicePublisherTest, OutgoingDirectory) {
   // Existing channels remain valid after the publisher goes out of scope.
   EXPECT_EQ(VerifyTestInterface(client_a), ZX_OK);
 
-  // New connections attempts will be dropped.
+  // New connection attempts should fail immediately.
   auto client_b = base::CreateTestInterfaceClient(
       test_context_.published_services_natural());
-  EXPECT_EQ(VerifyTestInterface(client_b), ZX_ERR_PEER_CLOSED);
+  // TODO(https://fxbug.dev/293955890): Only check for ZX_ERR_NOT_FOUND once
+  // https://fuchsia-review.git.corp.google.com/c/fuchsia/+/1058032 lands.
+  EXPECT_THAT(VerifyTestInterface(client_b),
+              testing::AnyOf(testing::Eq(ZX_ERR_PEER_CLOSED),
+                             testing::Eq(ZX_ERR_NOT_FOUND)));
 }
 
 TEST_F(ScopedNaturalServicePublisherTest, PseudoDir) {
@@ -80,10 +85,14 @@ TEST_F(ScopedNaturalServicePublisherTest, PseudoDir) {
   // Existing channels remain valid after the publisher goes out of scope.
   EXPECT_EQ(VerifyTestInterface(client_a), ZX_OK);
 
-  // New connection attempts will be dropped.
+  // New connection attempts should fail immediately.
   auto client_b =
       base::CreateTestInterfaceClient(pseudodir_endpoints->client.borrow());
-  EXPECT_EQ(VerifyTestInterface(client_b), ZX_ERR_PEER_CLOSED);
+  // TODO(https://fxbug.dev/293955890): Only check for ZX_ERR_NOT_FOUND once
+  // https://fuchsia-review.git.corp.google.com/c/fuchsia/+/1058032 lands.
+  EXPECT_THAT(VerifyTestInterface(client_b),
+              testing::AnyOf(testing::Eq(ZX_ERR_PEER_CLOSED),
+                             testing::Eq(ZX_ERR_NOT_FOUND)));
 }
 
 }  // namespace base

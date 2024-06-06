@@ -15,6 +15,7 @@
 #include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -84,7 +85,11 @@ TEST_F(ScopedServiceBindingTest, ConnectDebugService) {
   // Verify that the service does not appear in the outgoing service directory.
   auto release_stub =
       test_context_.published_services()->Connect<testfidl::TestInterface>();
-  EXPECT_EQ(VerifyTestInterface(release_stub), ZX_ERR_PEER_CLOSED);
+  // TODO(https://fxbug.dev/293955890): Only check for ZX_ERR_NOT_FOUND once
+  // https://fuchsia-review.git.corp.google.com/c/fuchsia/+/1058032 lands.
+  EXPECT_THAT(VerifyTestInterface(release_stub),
+              testing::AnyOf(testing::Eq(ZX_ERR_PEER_CLOSED),
+                             testing::Eq(ZX_ERR_NOT_FOUND)));
 }
 
 // Verifies that ScopedSingleClientServiceBinding allows a different name.
@@ -184,7 +189,11 @@ TEST_F(ScopedServiceBindingTest, SingleClientPublishToPseudoDir) {
   // Verify that the service does not appear in the outgoing service directory.
   auto release_stub =
       test_context_.published_services()->Connect<testfidl::TestInterface>();
-  EXPECT_EQ(VerifyTestInterface(release_stub), ZX_ERR_PEER_CLOSED);
+  // TODO(https://fxbug.dev/293955890): Only check for ZX_ERR_NOT_FOUND once
+  // https://fuchsia-review.git.corp.google.com/c/fuchsia/+/1058032 lands.
+  EXPECT_THAT(VerifyTestInterface(release_stub),
+              testing::AnyOf(testing::Eq(ZX_ERR_PEER_CLOSED),
+                             testing::Eq(ZX_ERR_NOT_FOUND)));
 }
 
 TEST_F(ScopedServiceBindingTest, SingleBindingSetOnLastClientCallback) {
