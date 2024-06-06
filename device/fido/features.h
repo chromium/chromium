@@ -131,6 +131,11 @@ BASE_DECLARE_FEATURE(kWebAuthnCredProtectWin10BugWorkaround);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnICloudRecoveryKey);
 
+// Cache responses from the security domain. To be used if we're overloading the
+// security domain service.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnCacheSecurityDomain);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_

@@ -2656,7 +2656,13 @@ IN_PROC_BROWSER_TEST_F(EnclaveICloudRecoveryKeyTest, Recovery) {
 
 #endif  // BUILDFLAG(IS_MAC)
 
-IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest, Caching) {
+class EnclaveAuthenticatorCachingTest
+    : public EnclaveAuthenticatorWithoutPinBrowserTest {
+  base::test::ScopedFeatureList scoped_feature_list{
+      device::kWebAuthnCacheSecurityDomain};
+};
+
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorCachingTest, Caching) {
   EnableUVKeySupport();
   trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
       registration_state_result;
@@ -2827,6 +2833,9 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
 
   model_observer()->SetStepToObserve(
       AuthenticatorRequestDialogController::Step::kMechanismSelection);
+  registration_state_result.state = trusted_vault::
+      DownloadAuthenticationFactorsRegistrationStateResult::State::kRecoverable;
+  SetMockVaultConnectionOnRequestDelegate(std::move(registration_state_result));
   dialog_model()->StartOver();
   model_observer()->WaitForStep();
 
@@ -2851,6 +2860,10 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
   // Cancel and send a new request so newly-enumerated credentials will be used.
   dialog_model()->CancelAuthenticatorRequest();
   delegate_observer()->WaitForDelegateDestruction();
+
+  registration_state_result.state = trusted_vault::
+      DownloadAuthenticationFactorsRegistrationStateResult::State::kRecoverable;
+  SetMockVaultConnectionOnRequestDelegate(std::move(registration_state_result));
   content::ExecuteScriptAsync(web_contents, kGetAssertionUvRequired);
   delegate_observer()->WaitForUI();
 

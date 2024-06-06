@@ -1314,7 +1314,6 @@ void ChromeAuthenticatorRequestDelegate::SetPassEmptyUsbDeviceManagerForTesting(
 
 void ChromeAuthenticatorRequestDelegate::SetTrustedVaultConnectionForTesting(
     std::unique_ptr<trusted_vault::TrustedVaultConnection> connection) {
-  CHECK(!enclave_controller_);
   pending_trusted_vault_connection_ = std::move(connection);
 }
 

@@ -317,8 +317,10 @@ class AccountStateCache {
 
   void Put(base::Clock* clock,
            const GPMEnclaveController::DownloadedAccountState& state) {
-    cache_time_ = clock->Now();
-    value_ = state;
+    if (base::FeatureList::IsEnabled(device::kWebAuthnCacheSecurityDomain)) {
+      cache_time_ = clock->Now();
+      value_ = state;
+    }
   }
 
  private:
