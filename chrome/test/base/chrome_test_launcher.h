@@ -51,7 +51,6 @@ class ChromeTestChromeMainDelegate
 #endif
 
   // ChromeMainDelegateOverrides.
-  content::ContentBrowserClient* CreateContentBrowserClient() override;
   content::ContentUtilityClient* CreateContentUtilityClient() override;
 #if !BUILDFLAG(IS_ANDROID)
   std::optional<int> PostEarlyInitialization(InvokedIn invoked_in) override;
