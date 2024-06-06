@@ -274,6 +274,7 @@ template("chrome_extra_paks") {
         "$root_gen_dir/ash/webui/connectivity_diagnostics_resources.pak",
         "$root_gen_dir/ash/webui/file_manager/resources/file_manager_swa_resources.pak",
         "$root_gen_dir/ash/webui/file_manager/untrusted_resources/file_manager_untrusted_resources.pak",
+        "$root_gen_dir/ash/webui/recorder_app_ui/resources/recorder_app_resources.pak",
         "$root_gen_dir/chrome/add_supervision_resources.pak",
         "$root_gen_dir/chrome/app_install_resources.pak",
         "$root_gen_dir/chrome/arc_account_picker_resources.pak",
@@ -346,6 +347,7 @@ template("chrome_extra_paks") {
         "//ash/webui/personalization_app/resources:resources",
         "//ash/webui/print_management/resources:resources",
         "//ash/webui/print_preview_cros/resources:resources",
+        "//ash/webui/recorder_app_ui/resources",
         "//ash/webui/resources:annotator_untrusted_resources",
         "//ash/webui/resources:camera_app_resources",
         "//ash/webui/resources:demo_mode_app_resources",
@@ -385,12 +387,6 @@ template("chrome_extra_paks") {
           "//ash/webui/sample_system_web_app_ui/resources/trusted:resources",
           "//ash/webui/sample_system_web_app_ui/resources/untrusted:resources",
         ]
-      }
-
-      if (is_chrome_branded) {
-        sources +=
-            [ "$root_gen_dir/ash/webui/conch/resources/conch_resources.pak" ]
-        deps += [ "//ash/webui/conch/resources" ]
       }
 
       if (include_ash_ambient_animation_resources) {

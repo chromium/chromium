@@ -807,10 +807,6 @@
     "META": {"sizes": {"includes": [5]}},
     "includes": [5860],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/conch/resources/resources.grd": {
-    "META": {"sizes": {"includes": [200],}},
-    "includes": [5880],
-  },
   "<(SHARED_INTERMEDIATE_DIR)/ash/webui/connectivity_diagnostics/resources/resources.grd": {
     "META": {"sizes": {"includes": [50],}},
     "includes": [5900],
@@ -834,6 +830,10 @@
   "<(SHARED_INTERMEDIATE_DIR)/ash/webui/focus_mode/resources/resources.grd": {
     "META": {"sizes": {"includes": [10],}},
     "includes": [5990],
+  },
+  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/recorder_app_ui/resources/resources.grd": {
+    "META": {"sizes": {"includes": [200],}},
+    "includes": [5995],
   },
   "<(SHARED_INTERMEDIATE_DIR)/ash/webui/common/resources/resources.grd": {
     "META": {"sizes": {"includes": [1000]}},

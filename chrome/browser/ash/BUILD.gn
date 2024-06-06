@@ -3758,6 +3758,8 @@ source_set("ash") {
     "//ash/webui/print_preview_cros",
     "//ash/webui/print_preview_cros:url_constants",
     "//ash/webui/projector_app",
+    "//ash/webui/recorder_app_ui",
+    "//ash/webui/recorder_app_ui/mojom",
     "//ash/webui/sanitize_ui",
     "//ash/webui/scanning",
     "//ash/webui/scanning/mojom",
@@ -4126,13 +4128,6 @@ source_set("ash") {
     "//ui/wm/public",
     "//url",
   ]
-
-  if (is_chrome_branded) {
-    public_deps += [
-      "//ash/webui/conch",
-      "//ash/webui/conch/mojom",
-    ]
-  }
 
   deps = [
     ":add_remove_user_event_proto",

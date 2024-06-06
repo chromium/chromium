@@ -38,6 +38,7 @@
 #include "ash/webui/personalization_app/personalization_app_ui.h"
 #include "ash/webui/print_management/print_management_ui.h"
 #include "ash/webui/print_preview_cros/print_preview_cros_ui.h"
+#include "ash/webui/recorder_app_ui/recorder_app_ui.h"
 #include "ash/webui/sanitize_ui/sanitize_ui.h"
 #include "ash/webui/scanning/scanning_ui.h"
 #include "ash/webui/shimless_rma/shimless_rma.h"
@@ -114,9 +115,6 @@
 #include "chrome/browser/ui/webui/nearby_share/nearby_share_dialog_ui.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chromeos/ash/components/kiosk/vision/webui/ui_controller.h"
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "ash/webui/conch/conch_ui.h"
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #if !defined(OFFICIAL_BUILD)
 #include "ash/webui/sample_system_web_app_ui/sample_system_web_app_ui.h"
 #if !defined(USE_REAL_DBUS_CLIENTS)
@@ -317,6 +315,7 @@ void RegisterAshChromeWebUIConfigs() {
   map.AddWebUIConfig(
       std::make_unique<printing::print_preview::PrintPreviewCrosUIConfig>());
   map.AddWebUIConfig(std::make_unique<multidevice::ProximityAuthUIConfig>());
+  map.AddWebUIConfig(std::make_unique<RecorderAppUIConfig>());
   map.AddWebUIConfig(std::make_unique<RemoteMaintenanceCurtainUIConfig>());
   map.AddWebUIConfig(MakeSanitizeUIConfig());
   map.AddWebUIConfig(
@@ -339,9 +338,6 @@ void RegisterAshChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<VmUIConfig>());
   map.AddWebUIConfig(std::make_unique<vc_background_ui::VcBackgroundUIConfig>(
       base::BindRepeating(vc_background_ui::CreateVcBackgroundUI)));
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  map.AddWebUIConfig(std::make_unique<ConchUIConfig>());
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #if !defined(OFFICIAL_BUILD)
   map.AddWebUIConfig(std::make_unique<SampleSystemWebAppUIConfig>());
   map.AddWebUIConfig(std::make_unique<StatusAreaInternalsUIConfig>());

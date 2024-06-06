@@ -34005,6 +34005,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="-1690355375" label="chrome://mobilesetup/"/>
   <int value="-1681544613" label="chrome://print/"/>
   <int value="-1667471433" label="chrome://vc-background/"/>
+  <int value="-1663881220" label="chrome://recorder-app/"/>
   <int value="-1649429396" label="chrome://chrome-signin/edu-coexistence/"/>
   <int value="-1647734092" label="chrome://net-export/"/>
   <int value="-1638649228" label="chrome://webapks/"/>

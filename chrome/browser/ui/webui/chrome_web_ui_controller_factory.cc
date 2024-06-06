@@ -171,6 +171,7 @@
 #include "ash/webui/mall/url_constants.h"
 #include "ash/webui/multidevice_debug/url_constants.h"
 #include "ash/webui/print_preview_cros/url_constants.h"
+#include "ash/webui/recorder_app_ui/url_constants.h"
 #include "ash/webui/vc_background_ui/url_constants.h"
 #include "chrome/browser/ash/extensions/url_constants.h"
 #include "chrome/browser/extensions/extension_keeplist_chromeos.h"
@@ -178,11 +179,6 @@
 #include "chromeos/ash/components/kiosk/vision/webui/constants.h"
 #include "chromeos/ash/components/kiosk/vision/webui/ui_controller.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_constants.h"
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "ash/webui/conch/url_constants.h"
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1050,6 +1046,7 @@ ChromeWebUIControllerFactory::GetListOfAcceptableURLs() {
     GURL(ash::kChromeUIMallUrl),
     GURL(ash::kChromeUIPrintPreviewCrosURL),
     GURL(ash::multidevice::kChromeUIProximityAuthURL),
+    GURL(ash::kChromeUIRecorderAppURL),
     GURL(ash::vc_background_ui::kChromeUIVcBackgroundURL),
     GURL(chrome::kChromeUIAccountManagerErrorURL),
     GURL(chrome::kChromeUIAccountMigrationWelcomeURL),
@@ -1107,10 +1104,6 @@ ChromeWebUIControllerFactory::GetListOfAcceptableURLs() {
     GURL(chrome::kChromeUIUserImageURL),
     GURL(chrome::kChromeUIVmUrl),
     GURL(scalable_iph::kScalableIphDebugURL),
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    GURL(ash::kChromeUIConchURL),
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
     // Pages that only exist in Lacros, where they are reachable via chrome://.

@@ -253,11 +253,6 @@
 #include "ui/webui/resources/cr_components/customize_themes/customize_themes.mojom.h"
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "ash/webui/conch/conch_ui.h"
-#include "ash/webui/conch/mojom/conch.mojom.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #include "ash/public/mojom/hid_preserving_bluetooth_state_controller.mojom.h"
@@ -308,6 +303,8 @@
 #include "ash/webui/print_preview_cros/print_preview_cros_ui.h"
 #include "ash/webui/projector_app/mojom/untrusted_projector.mojom.h"
 #include "ash/webui/projector_app/untrusted_projector_ui.h"
+#include "ash/webui/recorder_app_ui/mojom/recorder_app.mojom.h"
+#include "ash/webui/recorder_app_ui/recorder_app_ui.h"
 #include "ash/webui/scanning/mojom/scanning.mojom.h"
 #include "ash/webui/scanning/scanning_ui.h"
 #include "ash/webui/shimless_rma/shimless_rma.h"
@@ -1873,11 +1870,11 @@ void PopulateChromeWebUIFrameInterfaceBrokers(
       .Add<ash::mojom::status_area_internals::PageHandler>();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OFFICIAL_BUILD)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  registry.ForWebUI<ash::ConchUI>()
-      .Add<ash::conch::mojom::PageHandler>()
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  registry.ForWebUI<ash::RecorderAppUI>()
+      .Add<ash::recorder_app::mojom::PageHandler>()
       .Add<color_change_listener::mojom::PageHandler>();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   registry.ForWebUI<ash::CameraAppUI>()
