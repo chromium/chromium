@@ -64,6 +64,7 @@ using ::testing::ElementsAre;
 using ::testing::Field;
 using ::testing::IsEmpty;
 using ::testing::Optional;
+using ::testing::UnorderedElementsAre;
 
 constexpr char kPlusAddress[] = "plus+remote@plus.plus";
 
@@ -251,7 +252,7 @@ TEST_F(PlusAddressServiceTest, GetPlusProfiles) {
   service().SavePlusProfile(profile2);
 
   EXPECT_THAT(service().GetPlusProfiles(),
-              testing::UnorderedElementsAre(profile1, profile2));
+              UnorderedElementsAre(profile1, profile2));
 }
 
 // Tests the PlusAddressService ability to make network requests.
@@ -342,7 +343,7 @@ TEST_F(PlusAddressServiceRequestsTest, ConfirmPlusAddress_Successful) {
   MockPlusAddressServiceObserver observer;
   service().AddObserver(&observer);
   EXPECT_CALL(observer,
-              OnPlusAddressesChanged(testing::ElementsAre(PlusAddressDataChange(
+              OnPlusAddressesChanged(ElementsAre(PlusAddressDataChange(
                   PlusAddressDataChange::Type::kAdd, profile))));
   base::test::TestFuture<const PlusProfileOrError&> future;
   service().ConfirmPlusAddress(OriginFromFacet(profile.facet),
@@ -810,7 +811,7 @@ TEST_F(PlusAddressServiceWebDataTest, OnWebDataChangedBySync) {
   table().AddOrUpdatePlusProfile(profile2);
 
   service().SavePlusProfile(profile1);
-  EXPECT_THAT(service().GetPlusProfiles(), testing::ElementsAre(profile1));
+  EXPECT_THAT(service().GetPlusProfiles(), ElementsAre(profile1));
 
   MockPlusAddressServiceObserver observer;
   service().AddObserver(&observer);
@@ -818,21 +819,20 @@ TEST_F(PlusAddressServiceWebDataTest, OnWebDataChangedBySync) {
   // the service and therefore should not be included as part of the updates
   // sent to the `observer`.
   EXPECT_CALL(observer,
-              OnPlusAddressesChanged(testing::ElementsAre(PlusAddressDataChange(
+              OnPlusAddressesChanged(ElementsAre(PlusAddressDataChange(
                   PlusAddressDataChange::Type::kAdd, profile2))));
   service().OnWebDataChangedBySync(
       {PlusAddressDataChange(PlusAddressDataChange::Type::kAdd, profile1),
        PlusAddressDataChange(PlusAddressDataChange::Type::kAdd, profile2)});
   EXPECT_THAT(service().GetPlusProfiles(),
-              testing::UnorderedElementsAre(profile1, profile2));
+              UnorderedElementsAre(profile1, profile2));
 
   table().RemovePlusProfile(profile1.profile_id);
   std::vector<PlusAddressDataChange> remove_changes = {
       PlusAddressDataChange(PlusAddressDataChange::Type::kRemove, profile1)};
   EXPECT_CALL(observer, OnPlusAddressesChanged(remove_changes));
   service().OnWebDataChangedBySync(remove_changes);
-  EXPECT_THAT(service().GetPlusProfiles(),
-              testing::UnorderedElementsAre(profile2));
+  EXPECT_THAT(service().GetPlusProfiles(), UnorderedElementsAre(profile2));
   service().RemoveObserver(&observer);
 }
 
