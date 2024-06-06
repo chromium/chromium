@@ -2264,6 +2264,7 @@ H266Parser::Result H266Parser::ParsePPS(const H266NALU& nalu, int* pps_id) {
                                  0, pps->pps_tile_row_height_minus1[tile_y]);
               slice_height_in_ctus =
                   pps->pps_exp_slice_height_in_ctus_minus1[i][j] + 1;
+              LE_OR_RETURN(i + j, kMaxSlices - 1);
               pps->slice_height_in_ctus[i + j] = slice_height_in_ctus;
               slice_top_left_ctu_x[i + j] = ctu_x;
               slice_top_left_ctu_y[i + j] = ctu_y;
@@ -2273,6 +2274,7 @@ H266Parser::Result H266Parser::ParsePPS(const H266NALU& nalu, int* pps_id) {
             uniform_slice_height =
                 1 + pps->pps_exp_slice_height_in_ctus_minus1[i][j - 1];
             while (remaining_height_in_ctbs_y > uniform_slice_height) {
+              LE_OR_RETURN(i + j, kMaxSlices - 1);
               pps->slice_height_in_ctus[i + j] = uniform_slice_height;
               slice_top_left_ctu_x[i + j] = ctu_x;
               slice_top_left_ctu_y[i + j] = ctu_y;
@@ -2280,6 +2282,7 @@ H266Parser::Result H266Parser::ParsePPS(const H266NALU& nalu, int* pps_id) {
               j++;
             }
             if (remaining_height_in_ctbs_y > 0) {
+              LE_OR_RETURN(i + j, kMaxSlices - 1);
               pps->slice_height_in_ctus[i + j] = remaining_height_in_ctbs_y;
               slice_top_left_ctu_x[i + j] = ctu_x;
               slice_top_left_ctu_y[i + j] = ctu_y;
