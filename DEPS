@@ -5886,13 +5886,6 @@ hooks = [
 # Add any corresponding DEPS files from this list to chromium.exclusions in
 # //testing/buildbot/trybot_analyze_config.json
 # ctx: https://crbug.com/1201994
-# NOTE: PLEASE COMPLETE THE ENROLLMENT PROCESS BELOW BEFORE ADDING A PROJECT
-#   INTO THIS LIST, OTHERWISE IT WILL BREAK CHROME RELEASE WORKFLOW.
-#   By default, projects added here are branched and rolled by automation
-#   managed by the Chrome Release Infra team.
-#   Follow the guide here to enroll: go/enroll-chrome-dep-project
-#   For other desired configuration or behaviors, please contact the team
-#   directly: go/chrome-deps-rolling#support
 recursedeps = [
   # ANGLE manages DEPS that it also owns the build files for, such as dEQP.
   'src/third_party/angle',
