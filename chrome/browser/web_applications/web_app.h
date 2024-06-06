@@ -298,6 +298,8 @@ class WebApp {
     ExternalManagementConfig(
         const ExternalManagementConfig& external_management_config);
     ExternalManagementConfig& operator=(
+        const ExternalManagementConfig& external_management_config);
+    ExternalManagementConfig& operator=(
         ExternalManagementConfig&& external_management_config);
 
     base::Value::Dict AsDebugValue() const;

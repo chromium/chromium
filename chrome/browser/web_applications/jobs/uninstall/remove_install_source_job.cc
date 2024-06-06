@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/jobs/uninstall/remove_install_source_job.h"
 
+#include "base/containers/contains.h"
 #include "base/strings/to_string.h"
 #include "chrome/browser/web_applications/jobs/uninstall/remove_web_app_job.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
@@ -122,6 +123,14 @@ void RemoveInstallSourceJob::
         app->SetParentAppId(std::nullopt);
       }
     }
+    WebApp::ExternalConfigMap modified_config_map;
+    for (const auto& [type, config_data] :
+         app->management_to_external_config_map()) {
+      if (!base::Contains(install_managements_to_remove_, type)) {
+        modified_config_map.insert_or_assign(type, config_data);
+      }
+    }
+    app->SetWebAppManagementExternalConfigMap(std::move(modified_config_map));
     // TODO(crbug.com/40913556): Make sync uninstall not synchronously
     // remove its sync install source even while a command has an app lock so
     // that we can CHECK(app->HasAnySources()) here.

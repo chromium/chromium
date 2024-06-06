@@ -862,7 +862,8 @@ WebApp::ExternalManagementConfig::~ExternalManagementConfig() = default;
 
 WebApp::ExternalManagementConfig::ExternalManagementConfig(
     const ExternalManagementConfig& external_management_config) = default;
-
+WebApp::ExternalManagementConfig& WebApp::ExternalManagementConfig::operator=(
+    const ExternalManagementConfig& external_management_config) = default;
 WebApp::ExternalManagementConfig& WebApp::ExternalManagementConfig::operator=(
     ExternalManagementConfig&& external_management_config) = default;
 
