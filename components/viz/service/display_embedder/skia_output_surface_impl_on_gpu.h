@@ -434,24 +434,18 @@ class SkiaOutputSurfaceImplOnGpu
       void* finished_context = nullptr);
 
   // Creates surfaces needed to store the data in NV12 format.
-  // |mailbox_access_datas| will be populated with information needed to access
-  // the NV12 planes.
-  bool CreateSurfacesForNV12Planes(
-      const SkYUVAInfo& yuva_info,
-      const gfx::ColorSpace& color_space,
-      std::array<MailboxAccessData, CopyOutputResult::kNV12MaxPlanes>&
-          mailbox_access_datas,
-      bool is_multiplane);
+  // `mailbox_access_datas` will be populated with information needed to access
+  // the NV12 texture.
+  bool CreateSurfacesForNV12(gfx::Size dst_size,
+                             const gfx::ColorSpace& color_space,
+                             MailboxAccessData& mailbox_access_data);
 
   // Imports surfaces needed to store the data in NV12 format from a blit
-  // request. |mailbox_access_datas| will be populated with information needed
-  // to access the NV12 planes.
-  bool ImportSurfacesForNV12Planes(
-      const BlitRequest& blit_request,
-      gfx::Size intermediate_dst_size,
-      std::array<MailboxAccessData, CopyOutputResult::kNV12MaxPlanes>&
-          mailbox_access_datas,
-      bool is_multiplane);
+  // request. `mailbox_access_data` will be populated with information needed
+  // to access the NV12 texture.
+  bool ImportSurfacesForNV12(const BlitRequest& blit_request,
+                             gfx::Size intermediate_dst_size,
+                             MailboxAccessData& mailbox_access_data);
 
   // Helper, blends `BlendBitmap`s set on the |blit_request| over the |canvas|.
   // Used to implement handling of `CopyOutputRequest`s that contain
