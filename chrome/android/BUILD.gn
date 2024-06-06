@@ -3354,37 +3354,6 @@ if (current_toolchain == default_toolchain) {
       }
     }
 
-    if (is_official_build) {
-      # Used for binary size monitoring.
-      create_app_bundle_minimal_apks("monochrome_public_minimal_apks") {
-        deps = [ ":$_main_monochrome_public_bundle_target" ]
-        bundle_path = "$root_build_dir/apks/MonochromePublic.aab"
-      }
-
-      _monochrome_minimal_apks_filename = "MonochromePublic.minimal.apks"
-      android_resource_sizes_test(
-          "resource_sizes_monochrome_public_minimal_apks") {
-        file_path = "$root_build_dir/apks/${_monochrome_minimal_apks_filename}"
-        data_deps = [ ":monochrome_public_minimal_apks" ]
-      }
-
-      if (android_64bit_target_cpu && !skip_secondary_abi_for_cq) {
-        # Used for binary size monitoring.
-        create_app_bundle_minimal_apks("monochrome_32_public_minimal_apks") {
-          deps = [ ":monochrome_32_public_bundle" ]
-          bundle_path = "$root_build_dir/apks/MonochromePublic32.aab"
-        }
-
-        _monochrome_32_minimal_apks_filename = "MonochromePublic32.minimal.apks"
-        android_resource_sizes_test(
-            "resource_sizes_monochrome_32_public_minimal_apks") {
-          file_path =
-              "$root_build_dir/apks/${_monochrome_32_minimal_apks_filename}"
-          data_deps = [ ":monochrome_32_public_minimal_apks" ]
-        }
-      }
-    }
-
     chrome_public_bundle(_main_trichrome_chrome_bundle_target) {
       is_trichrome = true
       bundle_name = "TrichromeChrome"
@@ -3421,7 +3390,8 @@ if (current_toolchain == default_toolchain) {
       fuse_apk = true
     }
 
-    if (is_official_build) {
+    # Used for binary size monitoring things:
+    if (is_official_build && !skip_secondary_abi_for_cq) {
       _trichrome_library_basename = "TrichromeLibrary.apk"
       _trichrome_chrome_basename = "TrichromeChrome.minimal.apks"
       _trichrome_webview_basename = "TrichromeWebView.minimal.apks"
@@ -3450,7 +3420,6 @@ if (current_toolchain == default_toolchain) {
           trichrome_webview_basename = _trichrome_webview_32_basename
         }
 
-        # Used for binary size monitoring.
         create_app_bundle_minimal_apks("trichrome_chrome_32_minimal_apks") {
           deps = [ ":trichrome_chrome_32_bundle" ]
           bundle_path = "$root_build_dir/apks/TrichromeChrome32.aab"
@@ -3468,7 +3437,6 @@ if (current_toolchain == default_toolchain) {
         _symbol_dir_for_size = "android_clang_arm/lib.unstripped"
         _ssargs_filename_for_size = _ssargs_32_filename
       } else {
-        # Used for binary size monitoring.
         create_app_bundle_minimal_apks("trichrome_chrome_minimal_apks") {
           deps = [ ":$_main_trichrome_chrome_bundle_target" ]
           bundle_path = "$root_build_dir/apks/TrichromeChrome.aab"

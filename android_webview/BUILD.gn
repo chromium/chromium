@@ -141,19 +141,6 @@ if (android_64bit_target_cpu && skip_secondary_abi_for_cq) {
     bundle_name = "SystemWebView"
     min_sdk_version = default_min_sdk_version
   }
-
-  if (is_official_build) {
-    # Used for binary size monitoring.
-    create_app_bundle_minimal_apks("system_webview_minimal_apks") {
-      deps = [ ":$_main_system_webview_bundle_target" ]
-      bundle_path = "$root_build_dir/apks/SystemWebView.aab"
-    }
-
-    android_resource_sizes_test("resource_sizes_system_webview_bundle") {
-      file_path = "$root_build_dir/apks/SystemWebView.minimal.apks"
-      data_deps = [ ":system_webview_minimal_apks" ]
-    }
-  }
 }
 
 if (android_64bit_target_cpu) {
@@ -303,16 +290,11 @@ if (android_64bit_target_cpu) {
   }
 }
 
-if (is_official_build && !skip_secondary_abi_for_cq) {
+if (is_official_build && !android_64bit_target_cpu) {
   # Used for binary size monitoring.
   create_app_bundle_minimal_apks("trichrome_webview_minimal_apks") {
     deps = [ ":$_main_trichrome_webview_bundle_target" ]
     bundle_path = "$root_build_dir/apks/TrichromeWebView.aab"
-  }
-
-  android_resource_sizes_test("resource_sizes_trichrome_webview_bundle") {
-    file_path = "$root_build_dir/apks/TrichromeWebView.minimal.apks"
-    data_deps = [ ":trichrome_webview_minimal_apks" ]
   }
 }
 
