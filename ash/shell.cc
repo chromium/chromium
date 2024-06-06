@@ -101,6 +101,7 @@
 #include "ash/media/media_controller_impl.h"
 #include "ash/metrics/feature_discovery_duration_reporter_impl.h"
 #include "ash/metrics/login_unlock_throughput_recorder.h"
+#include "ash/metrics/unlock_throughput_recorder.h"
 #include "ash/metrics/user_metrics_recorder.h"
 #include "ash/multi_capture/multi_capture_service_client.h"
 #include "ash/multi_device_setup/multi_device_notification_presenter.h"
@@ -724,6 +725,7 @@ Shell::~Shell() {
   }
 #endif
   booting_animation_controller_.reset();
+  unlock_throughput_recorder_.reset();
   login_unlock_throughput_recorder_.reset();
 
   hud_display::HUDDisplayView::Destroy();
@@ -1201,6 +1203,7 @@ void Shell::Init(
   native_display_delegate_ = std::move(native_display_delegate);
   login_unlock_throughput_recorder_ =
       std::make_unique<LoginUnlockThroughputRecorder>();
+  unlock_throughput_recorder_ = std::make_unique<UnlockThroughputRecorder>();
 
   // Required by DetachableBaseHandler.
   chromeos::InitializeDBusClient<HammerdClient>(dbus_bus.get());

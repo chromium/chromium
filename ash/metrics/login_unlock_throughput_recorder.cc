@@ -13,7 +13,6 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
-#include "ash/session/session_controller_impl.h"
 #include "ash/shelf/hotseat_widget.h"
 #include "ash/shelf/scrollable_shelf_view.h"
 #include "ash/shelf/shelf.h"
@@ -158,24 +157,6 @@ void ReportLoginTotalAnimationThroughput(
   RecordDurationMetrics(
       start, data, "Ash.LoginAnimation.Smoothness.", "Ash.LoginAnimation.Jank.",
       "Ash.LoginAnimation.Duration.", "Ash.LoginAnimation.Duration2.");
-}
-
-void ReportUnlock(const cc::FrameSequenceMetrics::CustomReportData& data) {
-  if (!data.frames_expected_v3) {
-    LOG(WARNING) << "Zero frames expected in unlock animation throughput data";
-    return;
-  }
-
-  // Report could happen during Shell shutdown. Early out in that case.
-  if (!Shell::HasInstance() || !Shell::Get()->tablet_mode_controller()) {
-    return;
-  }
-
-  const int smoothness = metrics_util::CalculateSmoothnessV3(data);
-
-  constexpr char smoothness_name[] = "Ash.UnlockAnimation.Smoothness.";
-  const std::string suffix = GetDeviceModeSuffix();
-  base::UmaHistogramPercentage(smoothness_name + suffix, smoothness);
 }
 
 bool HasBrowserIcon(const ShelfModel* model) {
@@ -331,7 +312,6 @@ LoginUnlockThroughputRecorder::LoginUnlockThroughputRecorder()
     : post_login_deferred_task_runner_(
           base::MakeRefCounted<base::DeferredSequencedTaskRunner>(
               base::SequencedTaskRunner::GetCurrentDefault())) {
-  Shell::Get()->session_controller()->AddObserver(this);
   LoginState::Get()->AddObserver(this);
 
   window_restore_tracker_.Init(
@@ -348,20 +328,7 @@ LoginUnlockThroughputRecorder::LoginUnlockThroughputRecorder()
 }
 
 LoginUnlockThroughputRecorder::~LoginUnlockThroughputRecorder() {
-  Shell::Get()->session_controller()->RemoveObserver(this);
   LoginState::Get()->RemoveObserver(this);
-}
-
-void LoginUnlockThroughputRecorder::OnLockStateChanged(bool locked) {
-  auto logged_in_user = LoginState::Get()->GetLoggedInUserType();
-
-  if (!locked && (logged_in_user == LoginState::LOGGED_IN_USER_OWNER ||
-                  logged_in_user == LoginState::LOGGED_IN_USER_REGULAR)) {
-    auto* primary_root = Shell::GetPrimaryRootWindow();
-    new ui::TotalAnimationThroughputReporter(
-        primary_root->GetHost()->compositor(), base::BindOnce(&ReportUnlock),
-        /*should_delete=*/true);
-  }
 }
 
 LoginUnlockThroughputRecorder::TimeMarker::TimeMarker(const std::string& name)

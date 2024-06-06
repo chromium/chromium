@@ -11,7 +11,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/metrics/ui_metrics_recorder.h"
-#include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -100,8 +99,7 @@ class ASH_EXPORT ShelfTracker {
   base::OnceClosure on_ready_;
 };
 
-class ASH_EXPORT LoginUnlockThroughputRecorder : public SessionObserver,
-                                                 public LoginState::Observer {
+class ASH_EXPORT LoginUnlockThroughputRecorder : public LoginState::Observer {
  public:
   enum RestoreWindowType {
     kBrowser,
@@ -113,9 +111,6 @@ class ASH_EXPORT LoginUnlockThroughputRecorder : public SessionObserver,
   LoginUnlockThroughputRecorder& operator=(
       const LoginUnlockThroughputRecorder&) = delete;
   ~LoginUnlockThroughputRecorder() override;
-
-  // ShellObserver:
-  void OnLockStateChanged(bool locked) override;
 
   // LoginState::Observer:
   void LoggedInStateChanged() override;
