@@ -83,9 +83,8 @@ class FakeWifiDirectManager
 
   void GetWifiP2PCapabilities(
       GetWifiP2PCapabilitiesCallback callback) override {
-    // TODO(b/341325756): This is currently ignored, so no need to build a real
-    // response.
     auto response = ash::wifi_direct::mojom::WifiP2PCapabilities::New();
+    response->is_p2p_supported = is_interface_valid_;
     std::move(callback).Run(std::move(response));
   }
 
@@ -95,8 +94,11 @@ class FakeWifiDirectManager
     return connection_.get();
   }
 
+  void SetIsInterfaceValid(bool is_valid) { is_interface_valid_ = is_valid; }
+
  private:
   std::unique_ptr<FakeWifiDirectConnection> connection_;
+  bool is_interface_valid_ = true;
 };
 
 }  // namespace
@@ -151,13 +153,22 @@ class WifiDirectMediumTest : public ::testing::Test {
   std::unique_ptr<WifiDirectMedium> medium_;
 };
 
-// TODO(b/341325756): This test needs to be replaced once a resolution is found
-// for the expected response.
-TEST_F(WifiDirectMediumTest, IsInterfaceValid_Temporary) {
+TEST_F(WifiDirectMediumTest, IsInterfaceValid_Valid) {
+  manager()->SetIsInterfaceValid(true);
   RunOnTaskRunner(base::BindOnce(
       [](WifiDirectMedium* medium) {
         base::ScopedAllowBaseSyncPrimitivesForTesting allow;
         EXPECT_TRUE(medium->IsInterfaceValid());
+      },
+      medium()));
+}
+
+TEST_F(WifiDirectMediumTest, IsInterfaceValid_Invalid) {
+  manager()->SetIsInterfaceValid(false);
+  RunOnTaskRunner(base::BindOnce(
+      [](WifiDirectMedium* medium) {
+        base::ScopedAllowBaseSyncPrimitivesForTesting allow;
+        EXPECT_FALSE(medium->IsInterfaceValid());
       },
       medium()));
 }

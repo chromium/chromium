@@ -172,12 +172,7 @@ void WifiDirectMedium::OnCapabilities(
     base::WaitableEvent* waitable_event,
     ash::wifi_direct::mojom::WifiP2PCapabilitiesPtr capabilities) const {
   CHECK(io_thread_->task_runner()->RunsTasksInCurrentSequence());
-  // TODO(b/341325756): The current mojo API only has `is_client_ready` and
-  // `is_owner_ready`, both of which return false. There are two options here:
-  //    1. Update the mojo API to include `is_p2p_supported` and use that.
-  //    2. Update the Nearby API to specify owner or client AND fix the current
-  //       mojo responses.
-  *is_capability_supported = true;
+  *is_capability_supported = capabilities->is_p2p_supported;
   waitable_event->Signal();
 }
 
