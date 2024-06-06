@@ -2793,7 +2793,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
 
         int viewIndex = 0;
         // First view will be tab group title if first tab is grouped.
-        Tab firstTab = mModel.getTabAt(0);
+        Tab firstTab = getTabById(mStripTabs[0].getId());
         if (mTabGroupModelFilter.isTabInTabGroup(firstTab)) {
             int rootId = firstTab.getRootId();
             StripLayoutGroupTitle groupTitle = findOrCreateGroupTitle(rootId);
