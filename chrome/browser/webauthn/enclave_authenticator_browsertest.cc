@@ -944,11 +944,16 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   delegate_observer()->WaitForUI();
 
   EXPECT_EQ(dialog_model()->step(),
-            AuthenticatorRequestDialogModel::Step::kGPMOnboarding);
+            AuthenticatorRequestDialogModel::Step::kMechanismSelection);
   EXPECT_EQ(request_delegate()
                 ->enclave_controller_for_testing()
                 ->account_state_for_testing(),
             GPMEnclaveController::AccountState::kEmpty);
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogController::Step::kGPMOnboarding);
+  SimulateEnclaveMechanismSelection();
+  model_observer()->WaitForStep();
+
   dialog_model()->OnGPMOnboardingAccepted();
   EXPECT_EQ(dialog_model()->step(),
             AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
@@ -995,7 +1000,12 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   delegate_observer()->WaitForUI();
 
   EXPECT_EQ(dialog_model()->step(),
-            AuthenticatorRequestDialogModel::Step::kGPMOnboarding);
+            AuthenticatorRequestDialogModel::Step::kMechanismSelection);
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogController::Step::kGPMOnboarding);
+  SimulateEnclaveMechanismSelection();
+  model_observer()->WaitForStep();
+
   dialog_model()->OnGPMOnboardingAccepted();
   EXPECT_EQ(dialog_model()->step(),
             AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
@@ -1023,7 +1033,11 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   delegate_observer()->WaitForUI();
 
   EXPECT_EQ(dialog_model()->step(),
-            AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey);
+            AuthenticatorRequestDialogModel::Step::kMechanismSelection);
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogController::Step::kGPMCreatePasskey);
+  SimulateEnclaveMechanismSelection();
+  model_observer()->WaitForStep();
 #if !BUILDFLAG(IS_MAC)
   model_observer()->SetStepToObserve(
       AuthenticatorRequestDialogController::Step::kGPMEnterPin);
@@ -1140,11 +1154,16 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   delegate_observer()->WaitForUI();
 
   EXPECT_EQ(dialog_model()->step(),
-            AuthenticatorRequestDialogModel::Step::kGPMOnboarding);
+            AuthenticatorRequestDialogModel::Step::kMechanismSelection);
   EXPECT_EQ(request_delegate()
                 ->enclave_controller_for_testing()
                 ->account_state_for_testing(),
             GPMEnclaveController::AccountState::kEmpty);
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogController::Step::kGPMOnboarding);
+  SimulateEnclaveMechanismSelection();
+  model_observer()->WaitForStep();
+
   dialog_model()->OnGPMOnboardingAccepted();
   EXPECT_EQ(dialog_model()->step(),
             AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
@@ -1193,11 +1212,16 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   delegate_observer()->WaitForUI();
 
   EXPECT_EQ(dialog_model()->step(),
-            AuthenticatorRequestDialogModel::Step::kTrustThisComputerCreation);
+            AuthenticatorRequestDialogModel::Step::kMechanismSelection);
   EXPECT_EQ(request_delegate()
                 ->enclave_controller_for_testing()
                 ->account_state_for_testing(),
             GPMEnclaveController::AccountState::kRecoverable);
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogController::Step::kTrustThisComputerCreation);
+  SimulateEnclaveMechanismSelection();
+  model_observer()->WaitForStep();
+
   model_observer()->SetStepToObserve(
       AuthenticatorRequestDialogController::Step::kRecoverSecurityDomain);
   dialog_model()->OnTrustThisComputer();
@@ -1248,11 +1272,16 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   delegate_observer()->WaitForUI();
 
   EXPECT_EQ(dialog_model()->step(),
-            AuthenticatorRequestDialogModel::Step::kTrustThisComputerCreation);
+            AuthenticatorRequestDialogModel::Step::kMechanismSelection);
   EXPECT_EQ(request_delegate()
                 ->enclave_controller_for_testing()
                 ->account_state_for_testing(),
             GPMEnclaveController::AccountState::kRecoverable);
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogController::Step::kTrustThisComputerCreation);
+  SimulateEnclaveMechanismSelection();
+  model_observer()->WaitForStep();
+
   model_observer()->SetStepToObserve(
       AuthenticatorRequestDialogController::Step::kRecoverSecurityDomain);
   dialog_model()->OnTrustThisComputer();
@@ -1292,11 +1321,16 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   delegate_observer()->WaitForUI();
 
   EXPECT_EQ(dialog_model()->step(),
-            AuthenticatorRequestDialogModel::Step::kTrustThisComputerCreation);
+            AuthenticatorRequestDialogModel::Step::kMechanismSelection);
   EXPECT_EQ(request_delegate()
                 ->enclave_controller_for_testing()
                 ->account_state_for_testing(),
             GPMEnclaveController::AccountState::kRecoverable);
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogController::Step::kTrustThisComputerCreation);
+  SimulateEnclaveMechanismSelection();
+  model_observer()->WaitForStep();
+
   model_observer()->SetStepToObserve(
       AuthenticatorRequestDialogController::Step::kRecoverSecurityDomain);
   dialog_model()->OnTrustThisComputer();
@@ -1433,11 +1467,16 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   delegate_observer()->WaitForUI();
 
   EXPECT_EQ(dialog_model()->step(),
-            AuthenticatorRequestDialogModel::Step::kGPMOnboarding);
+            AuthenticatorRequestDialogModel::Step::kMechanismSelection);
   EXPECT_EQ(request_delegate()
                 ->enclave_controller_for_testing()
                 ->account_state_for_testing(),
             GPMEnclaveController::AccountState::kEmpty);
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogController::Step::kGPMOnboarding);
+  SimulateEnclaveMechanismSelection();
+  model_observer()->WaitForStep();
+
   dialog_model()->OnGPMOnboardingAccepted();
   EXPECT_EQ(dialog_model()->step(),
             AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
@@ -1452,7 +1491,12 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   delegate_observer()->WaitForUI();
 
   EXPECT_EQ(dialog_model()->step(),
-            AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey);
+            AuthenticatorRequestDialogModel::Step::kMechanismSelection);
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogController::Step::kGPMCreatePasskey);
+  SimulateEnclaveMechanismSelection();
+  model_observer()->WaitForStep();
+
   model_observer()->SetStepToObserve(
       AuthenticatorRequestDialogController::Step::kGPMEnterPin);
   dialog_model()->OnGPMCreatePasskey();
@@ -1537,11 +1581,16 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   delegate_observer()->WaitForUI();
 
   EXPECT_EQ(dialog_model()->step(),
-            AuthenticatorRequestDialogModel::Step::kGPMOnboarding);
+            AuthenticatorRequestDialogModel::Step::kMechanismSelection);
   EXPECT_EQ(request_delegate()
                 ->enclave_controller_for_testing()
                 ->account_state_for_testing(),
             GPMEnclaveController::AccountState::kEmpty);
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogController::Step::kGPMOnboarding);
+  SimulateEnclaveMechanismSelection();
+  model_observer()->WaitForStep();
+
   dialog_model()->OnGPMOnboardingAccepted();
   EXPECT_EQ(dialog_model()->step(),
             AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
@@ -1585,11 +1634,16 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest, UserCancelsUV) {
   delegate_observer()->WaitForUI();
 
   EXPECT_EQ(dialog_model()->step(),
-            AuthenticatorRequestDialogModel::Step::kGPMOnboarding);
+            AuthenticatorRequestDialogModel::Step::kMechanismSelection);
   EXPECT_EQ(request_delegate()
                 ->enclave_controller_for_testing()
                 ->account_state_for_testing(),
             GPMEnclaveController::AccountState::kEmpty);
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogController::Step::kGPMOnboarding);
+  SimulateEnclaveMechanismSelection();
+  model_observer()->WaitForStep();
+
   dialog_model()->OnGPMOnboardingAccepted();
   EXPECT_EQ(dialog_model()->step(),
             AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
@@ -1811,11 +1865,16 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   delegate_observer()->WaitForUI();
 
   EXPECT_EQ(dialog_model()->step(),
-            AuthenticatorRequestDialogModel::Step::kGPMOnboarding);
+            AuthenticatorRequestDialogModel::Step::kMechanismSelection);
   EXPECT_EQ(request_delegate()
                 ->enclave_controller_for_testing()
                 ->account_state_for_testing(),
             GPMEnclaveController::AccountState::kEmpty);
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogController::Step::kGPMOnboarding);
+  SimulateEnclaveMechanismSelection();
+  model_observer()->WaitForStep();
+
   dialog_model()->OnGPMOnboardingAccepted();
   EXPECT_EQ(dialog_model()->step(),
             AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
@@ -1839,7 +1898,12 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   delegate_observer()->WaitForUI();
 
   EXPECT_EQ(dialog_model()->step(),
-            AuthenticatorRequestDialogModel::Step::kGPMOnboarding);
+            AuthenticatorRequestDialogModel::Step::kMechanismSelection);
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogController::Step::kGPMOnboarding);
+  SimulateEnclaveMechanismSelection();
+  model_observer()->WaitForStep();
+
   dialog_model()->OnGPMOnboardingAccepted();
   EXPECT_EQ(dialog_model()->step(),
             AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
@@ -1863,11 +1927,16 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   delegate_observer()->WaitForUI();
 
   EXPECT_EQ(dialog_model()->step(),
-            AuthenticatorRequestDialogModel::Step::kGPMOnboarding);
+            AuthenticatorRequestDialogModel::Step::kMechanismSelection);
   EXPECT_EQ(request_delegate()
                 ->enclave_controller_for_testing()
                 ->account_state_for_testing(),
             GPMEnclaveController::AccountState::kEmpty);
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogController::Step::kGPMOnboarding);
+  SimulateEnclaveMechanismSelection();
+  model_observer()->WaitForStep();
+
   dialog_model()->OnGPMOnboardingAccepted();
   EXPECT_EQ(dialog_model()->step(),
             AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
@@ -1886,7 +1955,11 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   delegate_observer()->WaitForUI();
 
   EXPECT_EQ(dialog_model()->step(),
-            AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey);
+            AuthenticatorRequestDialogModel::Step::kMechanismSelection);
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogController::Step::kGPMCreatePasskey);
+  SimulateEnclaveMechanismSelection();
+  model_observer()->WaitForStep();
 }
 
 class EnclaveAuthenticatorWithoutPinBrowserTest
@@ -2090,9 +2163,15 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
   delegate_observer()->WaitForUI();
 
   EXPECT_EQ(dialog_model()->step(),
-            AuthenticatorRequestDialogModel::Step::kTrustThisComputerCreation);
+            AuthenticatorRequestDialogModel::Step::kMechanismSelection);
   EXPECT_TRUE(
       request_delegate()->enclave_controller_for_testing()->is_active());
+
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogController::Step::kTrustThisComputerCreation);
+  SimulateEnclaveMechanismSelection();
+  model_observer()->WaitForStep();
+
   model_observer()->SetStepToObserve(
       AuthenticatorRequestDialogController::Step::kRecoverSecurityDomain);
   dialog_model()->OnTrustThisComputer();
@@ -2230,11 +2309,16 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   delegate_observer()->WaitForUI();
 
   EXPECT_EQ(dialog_model()->step(),
-            AuthenticatorRequestDialogModel::Step::kTrustThisComputerCreation);
+            AuthenticatorRequestDialogModel::Step::kMechanismSelection);
   EXPECT_EQ(request_delegate()
                 ->enclave_controller_for_testing()
                 ->account_state_for_testing(),
             GPMEnclaveController::AccountState::kRecoverable);
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogController::Step::kTrustThisComputerCreation);
+  SimulateEnclaveMechanismSelection();
+  model_observer()->WaitForStep();
+
   model_observer()->SetStepToObserve(AuthenticatorRequestDialogController::
                                          Step::kGPMConfirmOffTheRecordCreate);
   dialog_model()->OnTrustThisComputer();
@@ -2266,7 +2350,12 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   delegate_observer()->WaitForUI();
 
   EXPECT_EQ(dialog_model()->step(),
-            AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey);
+            AuthenticatorRequestDialogModel::Step::kMechanismSelection);
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogController::Step::kGPMCreatePasskey);
+  SimulateEnclaveMechanismSelection();
+  model_observer()->WaitForStep();
+
   model_observer()->SetStepToObserve(AuthenticatorRequestDialogController::
                                          Step::kGPMConfirmOffTheRecordCreate);
   dialog_model()->OnGPMCreatePasskey();
@@ -2432,11 +2521,16 @@ IN_PROC_BROWSER_TEST_F(EnclaveICloudRecoveryKeyTest, Enroll) {
   delegate_observer()->WaitForUI();
 
   EXPECT_EQ(dialog_model()->step(),
-            AuthenticatorRequestDialogModel::Step::kGPMOnboarding);
+            AuthenticatorRequestDialogModel::Step::kMechanismSelection);
   EXPECT_EQ(request_delegate()
                 ->enclave_controller_for_testing()
                 ->account_state_for_testing(),
             GPMEnclaveController::AccountState::kEmpty);
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogController::Step::kGPMOnboarding);
+  SimulateEnclaveMechanismSelection();
+  model_observer()->WaitForStep();
+
   dialog_model()->OnGPMOnboardingAccepted();
   EXPECT_EQ(dialog_model()->step(),
             AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
@@ -2504,11 +2598,16 @@ IN_PROC_BROWSER_TEST_F(EnclaveICloudRecoveryKeyTest,
   delegate_observer()->WaitForUI();
 
   EXPECT_EQ(dialog_model()->step(),
-            AuthenticatorRequestDialogModel::Step::kGPMOnboarding);
+            AuthenticatorRequestDialogModel::Step::kMechanismSelection);
   EXPECT_EQ(request_delegate()
                 ->enclave_controller_for_testing()
                 ->account_state_for_testing(),
             GPMEnclaveController::AccountState::kEmpty);
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogController::Step::kGPMOnboarding);
+  SimulateEnclaveMechanismSelection();
+  model_observer()->WaitForStep();
+
   dialog_model()->OnGPMOnboardingAccepted();
   EXPECT_EQ(dialog_model()->step(),
             AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
@@ -2565,11 +2664,16 @@ IN_PROC_BROWSER_TEST_F(EnclaveICloudRecoveryKeyTest, Recovery) {
     delegate_observer()->WaitForUI();
 
     EXPECT_EQ(dialog_model()->step(),
-              AuthenticatorRequestDialogModel::Step::kGPMOnboarding);
+              AuthenticatorRequestDialogModel::Step::kMechanismSelection);
     EXPECT_EQ(request_delegate()
                   ->enclave_controller_for_testing()
                   ->account_state_for_testing(),
               GPMEnclaveController::AccountState::kEmpty);
+    model_observer()->SetStepToObserve(
+        AuthenticatorRequestDialogController::Step::kGPMOnboarding);
+    SimulateEnclaveMechanismSelection();
+    model_observer()->WaitForStep();
+
     dialog_model()->OnGPMOnboardingAccepted();
     EXPECT_EQ(dialog_model()->step(),
               AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
@@ -2621,13 +2725,18 @@ IN_PROC_BROWSER_TEST_F(EnclaveICloudRecoveryKeyTest, Recovery) {
     content::ExecuteScriptAsync(web_contents, kMakeCredentialUvDiscouraged);
     delegate_observer()->WaitForUI();
 
-    EXPECT_EQ(
-        dialog_model()->step(),
-        AuthenticatorRequestDialogModel::Step::kTrustThisComputerCreation);
+    EXPECT_EQ(dialog_model()->step(),
+              AuthenticatorRequestDialogModel::Step::kMechanismSelection);
     EXPECT_EQ(request_delegate()
                   ->enclave_controller_for_testing()
                   ->account_state_for_testing(),
               GPMEnclaveController::AccountState::kRecoverable);
+
+    model_observer()->SetStepToObserve(
+        AuthenticatorRequestDialogController::Step::kTrustThisComputerCreation);
+    SimulateEnclaveMechanismSelection();
+    model_observer()->WaitForStep();
+
     model_observer()->SetStepToObserve(
         AuthenticatorRequestDialogController::Step::kRecoverSecurityDomain);
     dialog_model()->OnTrustThisComputer();
@@ -2743,11 +2852,16 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   delegate_observer()->WaitForUI();
 
   EXPECT_EQ(dialog_model()->step(),
-            AuthenticatorRequestDialogModel::Step::kGPMOnboarding);
+            AuthenticatorRequestDialogModel::Step::kMechanismSelection);
   EXPECT_EQ(request_delegate()
                 ->enclave_controller_for_testing()
                 ->account_state_for_testing(),
             GPMEnclaveController::AccountState::kEmpty);
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogController::Step::kGPMOnboarding);
+  SimulateEnclaveMechanismSelection();
+  model_observer()->WaitForStep();
+
   dialog_model()->OnGPMOnboardingAccepted();
   EXPECT_EQ(dialog_model()->step(),
             AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
@@ -2787,8 +2901,13 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   // passkey creation dialog.
   content::ExecuteScriptAsync(web_contents, kMakeCredentialAttachmentPlatform);
   delegate_observer()->WaitForUI();
+#if BUILDFLAG(IS_MAC)
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kCreatePasskey);
+#else
   EXPECT_EQ(dialog_model()->step(),
             AuthenticatorRequestDialogModel::Step::kMechanismSelection);
+#endif
   dialog_model()->CancelAuthenticatorRequest();
   delegate_observer()->WaitForDelegateDestruction();
 }

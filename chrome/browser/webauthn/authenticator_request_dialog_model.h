@@ -535,7 +535,7 @@ struct AuthenticatorRequestDialogModel {
 };
 
 std::ostream& operator<<(std::ostream& os,
-                         const AuthenticatorRequestDialogModel::Step& step);
+                         AuthenticatorRequestDialogModel::Step& step);
 
 // Encapsulates the logic behind the WebAuthn UI flow.
 // flow. This is essentially a state machine going through the states defined in
