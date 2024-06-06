@@ -90,7 +90,7 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
   // as revisit surface to update their UI accordingly.
 
   // Mutator methods that result in group metadata mutation.
-  virtual void AddGroup(const SavedTabGroup& group) = 0;
+  virtual void AddGroup(SavedTabGroup group) = 0;
   virtual void RemoveGroup(const LocalTabGroupID& local_id) = 0;
   virtual void RemoveGroup(const base::Uuid& sync_id) = 0;
   virtual void UpdateVisualData(

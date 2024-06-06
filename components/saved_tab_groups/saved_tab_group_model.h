@@ -181,10 +181,10 @@ class SavedTabGroupModel {
   // stored groups in `saved_tab_groups_`. It should be noted that
   // `saved_tab_groups` must already be in sorted order for this function to
   // work as intended. To do this, UpdatePositionsImpl() can be called.
-  void InsertGroupImpl(const SavedTabGroup& group);
+  void InsertGroupImpl(SavedTabGroup group);
 
   // Implementations of CRUD operations.
-  std::unique_ptr<SavedTabGroup> RemoveImpl(int index);
+  SavedTabGroup RemoveImpl(size_t index);
   void UpdateVisualDataImpl(int index,
                             const tab_groups::TabGroupVisualData* visual_data);
 

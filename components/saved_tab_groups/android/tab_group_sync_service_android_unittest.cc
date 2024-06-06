@@ -43,7 +43,7 @@ class MockTabGroupSyncService : public TabGroupSyncService {
   MockTabGroupSyncService() = default;
   ~MockTabGroupSyncService() override = default;
 
-  MOCK_METHOD(void, AddGroup, (const SavedTabGroup&));
+  MOCK_METHOD(void, AddGroup, (SavedTabGroup));
   MOCK_METHOD(void, RemoveGroup, (const LocalTabGroupID&));
   MOCK_METHOD(void, RemoveGroup, (const base::Uuid&));
   MOCK_METHOD(void,

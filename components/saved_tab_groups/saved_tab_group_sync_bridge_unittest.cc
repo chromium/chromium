@@ -5,6 +5,7 @@
 #include "components/saved_tab_groups/saved_tab_group_sync_bridge.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <memory>
 #include <optional>
 #include <string>
@@ -437,7 +438,7 @@ TEST_F(SavedTabGroupSyncBridgeTest,
   EXPECT_EQ(group1_from_model->saved_tabs().size(), 1u);
 
   const SavedTabGroup* group2_from_model =
-      saved_tab_group_model_.Get(group2.saved_guid());
+      saved_tab_group_model_.Get(group_id2);
   EXPECT_EQ(group2_from_model->saved_tabs().size(), 1u);
 
   EXPECT_TRUE(group1_from_model->created_before_syncing_tab_groups());

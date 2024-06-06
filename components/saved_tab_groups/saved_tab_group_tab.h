@@ -35,6 +35,9 @@ class SavedTabGroupTab {
       std::optional<base::Time> update_time_windows_epoch_micros = std::nullopt,
       std::optional<gfx::Image> favicon = std::nullopt);
   SavedTabGroupTab(const SavedTabGroupTab& other);
+  SavedTabGroupTab& operator=(const SavedTabGroupTab& other);
+  SavedTabGroupTab(SavedTabGroupTab&& other);
+  SavedTabGroupTab& operator=(SavedTabGroupTab&& other);
   ~SavedTabGroupTab();
 
   // Accessors.

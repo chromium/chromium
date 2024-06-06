@@ -17,6 +17,7 @@
 #include "components/saved_tab_groups/shared_tab_group_data_sync_bridge.h"
 #include "components/saved_tab_groups/stats.h"
 #include "components/saved_tab_groups/tab_group_store.h"
+#include "components/saved_tab_groups/types.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync/model/model_type_controller_delegate.h"
@@ -95,14 +96,15 @@ TabGroupSyncServiceImpl::GetSharedTabGroupControllerDelegate() {
   return shared_bridge_->change_processor()->GetControllerDelegate();
 }
 
-void TabGroupSyncServiceImpl::AddGroup(const SavedTabGroup& group) {
+void TabGroupSyncServiceImpl::AddGroup(SavedTabGroup group) {
   VLOG(2) << __func__;
-  // TODO(shaktisahu): Figure out a way to avoid copy.
-  SavedTabGroup group_copy(group);
-  group_copy.SetCreatedBeforeSyncingTabGroups(saved_bridge_.IsSyncing());
-  model_->Add(group_copy);
-  tab_group_store_->StoreTabGroupIDMetadata(
-      group.saved_guid(), TabGroupIDMetadata(group.local_group_id().value()));
+  // Copy values before moving the value.
+  base::Uuid group_id = group.saved_guid();
+  LocalTabGroupID local_group_id = group.local_group_id().value();
+  group.SetCreatedBeforeSyncingTabGroups(saved_bridge_.IsSyncing());
+  model_->Add(std::move(group));
+  tab_group_store_->StoreTabGroupIDMetadata(group_id,
+                                            TabGroupIDMetadata(local_group_id));
 }
 
 void TabGroupSyncServiceImpl::RemoveGroup(const LocalTabGroupID& local_id) {

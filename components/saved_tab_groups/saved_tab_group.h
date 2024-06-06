@@ -39,6 +39,9 @@ class SavedTabGroup {
                 std::optional<base::Time> update_time_windows_epoch_micros =
                     std::nullopt);
   SavedTabGroup(const SavedTabGroup& other);
+  SavedTabGroup& operator=(const SavedTabGroup& other);
+  SavedTabGroup(SavedTabGroup&& other);
+  SavedTabGroup& operator=(SavedTabGroup&& other);
   ~SavedTabGroup();
 
   // Metadata accessors.

@@ -49,6 +49,10 @@ SavedTabGroup::SavedTabGroup(
           update_time_windows_epoch_micros.value_or(base::Time::Now())) {}
 
 SavedTabGroup::SavedTabGroup(const SavedTabGroup& other) = default;
+SavedTabGroup& SavedTabGroup::operator=(const SavedTabGroup& other) = default;
+
+SavedTabGroup::SavedTabGroup(SavedTabGroup&& other) = default;
+SavedTabGroup& SavedTabGroup::operator=(SavedTabGroup&& other) = default;
 
 SavedTabGroup::~SavedTabGroup() = default;
 

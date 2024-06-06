@@ -37,7 +37,13 @@ SavedTabGroupTab::SavedTabGroupTab(
           update_time_windows_epoch_micros.has_value()
               ? update_time_windows_epoch_micros.value()
               : base::Time::Now()) {}
+
 SavedTabGroupTab::SavedTabGroupTab(const SavedTabGroupTab& other) = default;
+SavedTabGroupTab& SavedTabGroupTab::operator=(const SavedTabGroupTab& other) =
+    default;
+SavedTabGroupTab::SavedTabGroupTab(SavedTabGroupTab&& other) = default;
+SavedTabGroupTab& SavedTabGroupTab::operator=(SavedTabGroupTab&& other) =
+    default;
 SavedTabGroupTab::~SavedTabGroupTab() = default;
 
 bool SavedTabGroupTab::ShouldMergeTab(

@@ -13,6 +13,7 @@
 #include "components/saved_tab_groups/android/tab_group_sync_conversions_bridge.h"
 #include "components/saved_tab_groups/android/tab_group_sync_conversions_utils.h"
 #include "components/saved_tab_groups/tab_group_sync_service.h"
+#include "components/saved_tab_groups/types.h"
 #include "url/android/gurl_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -110,14 +111,18 @@ ScopedJavaLocalRef<jstring> TabGroupSyncServiceAndroid::CreateGroup(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_caller,
     const JavaParamRef<jobject>& j_group_id) {
-  auto group_id =
+  LocalTabGroupID group_id =
       TabGroupSyncConversionsBridge::FromJavaTabGroupId(env, j_group_id);
 
   SavedTabGroup group(std::u16string(), tab_groups::TabGroupColorId::kGrey,
                       std::vector<SavedTabGroupTab>(), std::nullopt,
                       std::nullopt, group_id);
-  tab_group_sync_service_->AddGroup(group);
-  return UuidToJavaString(env, group.saved_guid());
+
+  // Copy group GUID before moving the group.
+  const base::Uuid group_guid = group.saved_guid();
+  tab_group_sync_service_->AddGroup(std::move(group));
+
+  return UuidToJavaString(env, group_guid);
 }
 
 void TabGroupSyncServiceAndroid::RemoveGroupByLocalId(
