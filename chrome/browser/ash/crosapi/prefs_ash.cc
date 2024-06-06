@@ -38,8 +38,6 @@ std::string_view GetProfilePrefNameForPref(mojom::PrefPath path) {
       base::MakeFixedFlatMap<mojom::PrefPath, std::string_view>({
           {mojom::PrefPath::kAccessibilitySpokenFeedbackEnabled,
            ash::prefs::kAccessibilitySpokenFeedbackEnabled},
-          {mojom::PrefPath::kAccessibilityPdfOcrAlwaysActive,
-           ::prefs::kAccessibilityPdfOcrAlwaysActive},
           {mojom::PrefPath::kAccessibilityReducedAnimationsEnabled,
            ash::prefs::kAccessibilityReducedAnimationsEnabled},
           {mojom::PrefPath::kUserGeolocationAccessLevel,
@@ -277,6 +275,7 @@ std::optional<PrefsAsh::State> PrefsAsh::GetState(mojom::PrefPath path) {
     case mojom::PrefPath::kDnsOverHttpsTemplates:
     case mojom::PrefPath::kDnsOverHttpsTemplatesWithIdentifiers:
     case mojom::PrefPath::kDnsOverHttpsSalt:
+    case mojom::PrefPath::kAccessibilityPdfOcrAlwaysActiveDeprecated:
       LOG(WARNING) << "Unknown pref path: " << path;
       return std::nullopt;
     case mojom::PrefPath::kMetricsReportingEnabled:
@@ -301,7 +300,6 @@ std::optional<PrefsAsh::State> PrefsAsh::GetState(mojom::PrefPath path) {
     case mojom::PrefPath::kAccessCodeCastDeviceAdditionTime:
     case mojom::PrefPath::kDefaultSearchProviderDataPrefName:
     case mojom::PrefPath::kIsolatedWebAppsEnabled:
-    case mojom::PrefPath::kAccessibilityPdfOcrAlwaysActive:
     case mojom::PrefPath::kAccessibilityReducedAnimationsEnabled:
     case mojom::PrefPath::kMahiEnabled: {
       if (!profile_prefs_registrar_) {

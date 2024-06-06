@@ -121,8 +121,8 @@ enum PrefPath {
   // M116: prefs::kAccessCodeCastDeviceAdditionTime (profile)
   [MinVersion=11] kAccessCodeCastDeviceAdditionTime = 39,
   [MinVersion=12] kAccessToGetAllScreensMediaInSessionAllowedForUrls = 40,
-  // M117: pref::kAccessibilityPdfOcrAlwaysActive (local_state)
-  [MinVersion=13] kAccessibilityPdfOcrAlwaysActive = 41,
+  // Deprecated in m126: The feature is always active.
+  [MinVersion=13] kAccessibilityPdfOcrAlwaysActiveDeprecated = 41,
   // M117 proxy_config::prefs::kProxy (profile)
   [MinVersion=14] kProxy = 42,
   // M121: DefaultSearchManager::kDefaultSearchProviderDataPrefName

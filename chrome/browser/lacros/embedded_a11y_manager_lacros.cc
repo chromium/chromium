@@ -106,12 +106,6 @@ void EmbeddedA11yManagerLacros::Init() {
             weak_ptr_factory_.GetWeakPtr()));
   }
 
-  pdf_ocr_always_active_observer_ = std::make_unique<CrosapiPrefObserver>(
-      crosapi::mojom::PrefPath::kAccessibilityPdfOcrAlwaysActive,
-      base::BindRepeating(
-          &EmbeddedA11yManagerLacros::OnPdfOcrAlwaysActiveChanged,
-          weak_ptr_factory_.GetWeakPtr()));
-
   reduced_animations_enabled_observer_ = std::make_unique<CrosapiPrefObserver>(
       crosapi::mojom::PrefPath::kAccessibilityReducedAnimationsEnabled,
       base::BindRepeating(
@@ -137,7 +131,6 @@ void EmbeddedA11yManagerLacros::Init() {
     observed_profiles_.AddObservation(profile);
   }
 
-  UpdatePdfOcrEnabledOnAllProfiles();
   UpdateEmbeddedA11yHelperExtension();
   UpdateChromeVoxHelperExtension();
 }
@@ -174,39 +167,14 @@ void EmbeddedA11yManagerLacros::OnProfileWillBeDestroyed(Profile* profile) {
 void EmbeddedA11yManagerLacros::OnOffTheRecordProfileCreated(
     Profile* off_the_record) {
   observed_profiles_.AddObservation(off_the_record);
-  UpdatePdfOcrEnabledOnProfile(off_the_record);
 }
 
 void EmbeddedA11yManagerLacros::OnProfileAdded(Profile* profile) {
   observed_profiles_.AddObservation(profile);
-  UpdatePdfOcrEnabledOnProfile(profile);
 }
 
 void EmbeddedA11yManagerLacros::OnProfileManagerDestroying() {
   profile_manager_observation_.Reset();
-}
-
-void EmbeddedA11yManagerLacros::UpdatePdfOcrEnabledOnAllProfiles() {
-  std::vector<Profile*> profiles =
-      g_browser_process->profile_manager()->GetLoadedProfiles();
-  for (auto* profile : profiles) {
-    UpdatePdfOcrEnabledOnProfile(profile);
-    if (profile->HasAnyOffTheRecordProfile()) {
-      const auto& otr_profiles = profile->GetAllOffTheRecordProfiles();
-      for (auto* otr_profile : otr_profiles) {
-        UpdatePdfOcrEnabledOnProfile(otr_profile);
-      }
-    }
-  }
-}
-
-void EmbeddedA11yManagerLacros::UpdatePdfOcrEnabledOnProfile(Profile* profile) {
-  if (pdf_ocr_always_active_enabled_.has_value()) {
-    PrefService* const pref_service = profile->GetPrefs();
-    CHECK(pref_service);
-    pref_service->SetBoolean(::prefs::kAccessibilityPdfOcrAlwaysActive,
-                             pdf_ocr_always_active_enabled_.value());
-  }
 }
 
 void EmbeddedA11yManagerLacros::UpdateOverscrollHistoryNavigationEnabled() {
@@ -249,14 +217,6 @@ void EmbeddedA11yManagerLacros::OnFocusHighlightEnabledChanged(
   } else {
     focus_changed_subscription_ = {};
   }
-}
-
-void EmbeddedA11yManagerLacros::OnPdfOcrAlwaysActiveChanged(base::Value value) {
-  // TODO(crbug.com/40267312): Add browser test to ensure the pref is synced on
-  // all profiles.
-  CHECK(value.is_bool());
-  pdf_ocr_always_active_enabled_ = value.GetBool();
-  UpdatePdfOcrEnabledOnAllProfiles();
 }
 
 void EmbeddedA11yManagerLacros::OnReducedAnimationsEnabledChanged(
