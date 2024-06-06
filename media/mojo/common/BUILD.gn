@@ -34,6 +34,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "audio_data_s16_converter_unittest.cc",
     "media_type_converters_unittest.cc",
     "mojo_data_pipe_read_write_unittest.cc",
     "mojo_decoder_buffer_converter_unittest.cc",

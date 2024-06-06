@@ -78,6 +78,7 @@ mojom("mojom") {
   public_deps = [
     ":audio_data",
     ":encryption_pattern",
+    ":speech_recognition",
     ":web_speech_recognition",
     "//gpu/ipc/common:interfaces",
     "//media/learning/mojo/public/mojom",
@@ -101,10 +102,6 @@ mojom("mojom") {
     # TODO(xhwang): Ideally media should not worry about sandbox. Find a way to
     # remove this dependency.
     public_deps += [ "//sandbox/mac/mojom" ]
-  }
-
-  if (!is_android) {
-    public_deps += [ ":speech_recognition" ]
   }
 
   enabled_features = []
@@ -791,6 +788,7 @@ mojom("speech_recognition_audio_forwarder") {
 # Speech recognition API used between renderer/browser/service and between
 # LaCrOS/Ash.
 mojom("speech_recognition") {
+  generate_java = true
   sources = [ "speech_recognition.mojom" ]
   cpp_typemaps = [
     {
@@ -884,6 +882,7 @@ source_set("unit_tests") {
   }
 
   deps = [
+    ":speech_recognition",
     "//base",
     "//base/test:test_support",
     "//media:test_support",
@@ -893,10 +892,6 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//ui/gfx:test_support",
   ]
-
-  if (!is_android) {
-    deps += [ ":speech_recognition" ]
-  }
 }
 
 mojom("web_speech_recognition") {

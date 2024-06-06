@@ -21,6 +21,8 @@ blink_modules_sources("speech") {
     "speech_recognition_error_event.h",
     "speech_recognition_event.cc",
     "speech_recognition_event.h",
+    "speech_recognition_media_stream_audio_sink.cc",
+    "speech_recognition_media_stream_audio_sink.h",
     "speech_recognition_result.cc",
     "speech_recognition_result.h",
     "speech_recognition_result_list.cc",
@@ -35,5 +37,11 @@ blink_modules_sources("speech") {
     "speech_synthesis_utterance.h",
     "speech_synthesis_voice.cc",
     "speech_synthesis_voice.h",
+  ]
+
+  deps = [
+    "//media",
+    "//media/mojo/mojom:speech_recognition_audio_forwarder_blink",
+    "//third_party/blink/renderer/modules/mediastream",
   ]
 }
