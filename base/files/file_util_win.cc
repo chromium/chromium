@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/files/file_util.h"
 
 #include <windows.h>
@@ -21,6 +16,7 @@
 #include <time.h>
 
 #include <algorithm>
+#include <array>
 #include <limits>
 #include <string>
 #include <utility>
@@ -69,9 +65,9 @@ int g_extra_allowed_path_for_no_execute = 0;
 
 bool g_disable_secure_system_temp_for_testing = false;
 
-const DWORD kFileShareAll =
+constexpr DWORD kFileShareAll =
     FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE;
-const wchar_t kDefaultTempDirPrefix[] = L"ChromiumTemp";
+constexpr std::wstring_view kDefaultTempDirPrefix = L"ChromiumTemp";
 
 // Returns the Win32 last error code or ERROR_SUCCESS if the last error code is
 // ERROR_FILE_NOT_FOUND or ERROR_PATH_NOT_FOUND. This is useful in cases where
@@ -669,7 +665,7 @@ ScopedFILE CreateAndOpenTemporaryStreamInDir(const FilePath& dir,
 }
 
 bool CreateTemporaryDirInDir(const FilePath& base_dir,
-                             const FilePath::StringType& prefix,
+                             FilePath::StringPieceType prefix,
                              FilePath* new_dir) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
 
@@ -855,26 +851,28 @@ bool DevicePathToDriveLetterPath(const FilePath& nt_device_path,
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
 
   // Get the mapping of drive letters to device paths.
-  const int kDriveMappingSize = 1024;
-  wchar_t drive_mapping[kDriveMappingSize] = {'\0'};
-  if (!::GetLogicalDriveStrings(kDriveMappingSize - 1, drive_mapping)) {
+  std::array<wchar_t, 1024> drive_mapping_buffer = {L'\0'};
+  if (!::GetLogicalDriveStrings(drive_mapping_buffer.size() - 1u,
+                                drive_mapping_buffer.data())) {
     DLOG(ERROR) << "Failed to get drive mapping.";
     return false;
   }
 
   // The drive mapping is a sequence of null terminated strings.
   // The last string is empty.
-  wchar_t* drive_map_ptr = drive_mapping;
+  std::wstring_view drive_mapping(drive_mapping_buffer.data(),
+                                  drive_mapping_buffer.size());
   wchar_t device_path_as_string[MAX_PATH];
   wchar_t drive[] = FILE_PATH_LITERAL(" :");
 
   // For each string in the drive mapping, get the junction that links
   // to it.  If that junction is a prefix of |device_path|, then we
   // know that |drive| is the real path prefix.
-  while (*drive_map_ptr) {
-    drive[0] = drive_map_ptr[0];  // Copy the drive letter.
+  while (drive_mapping[0u]) {
+    drive[0u] = drive_mapping[0u];  // Copy the drive letter.
 
-    if (QueryDosDevice(drive, device_path_as_string, MAX_PATH)) {
+    if (QueryDosDevice(drive, device_path_as_string,
+                       sizeof(device_path_as_string))) {
       FilePath device_path(device_path_as_string);
       if (device_path == nt_device_path ||
           device_path.IsParent(nt_device_path)) {
@@ -886,7 +884,9 @@ bool DevicePathToDriveLetterPath(const FilePath& nt_device_path,
     }
     // Move to the next drive letter string, which starts one
     // increment after the '\0' that terminates the current string.
-    while (*drive_map_ptr++) {}
+    size_t idx = drive_mapping.find(L'\0');
+    CHECK(idx != std::wstring_view::npos);
+    drive_mapping = drive_mapping.substr(idx);
   }
 
   // No drive matched.  The path does not start with a device junction

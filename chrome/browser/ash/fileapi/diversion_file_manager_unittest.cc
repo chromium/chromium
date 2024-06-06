@@ -209,11 +209,11 @@ TEST_F(DiversionFileManagerTest, Writes) {
          const storage::FileSystemURL& url, base::ScopedFD scoped_fd,
          int64_t file_size, base::File::Error error) {
         ASSERT_TRUE(scoped_fd.is_valid());
-        EXPECT_EQ(file_size, 9);
+        EXPECT_EQ(file_size, 9u);
         EXPECT_EQ(base::File::FILE_OK, error);
         char buf[9] = {0};
-        EXPECT_TRUE(base::ReadFromFD(scoped_fd.get(), buf, sizeof(buf)));
-        EXPECT_EQ(std::string("hi there."), std::string(buf, sizeof(buf)));
+        EXPECT_TRUE(base::ReadFromFD(scoped_fd.get(), buf));
+        EXPECT_EQ(buf, base::span_from_cstring("hi there."));
         *called = true;
       };
   ASSERT_EQ(FinishDivertingResult::kOK,

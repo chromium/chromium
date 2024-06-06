@@ -30,9 +30,8 @@ TEST_F(BackupUtilTest, TestExcludeFileFromBackups_Persists) {
   FilePath excluded_file_path = temp_dir_.GetPath().Append("excluded");
   constexpr char placeholder_data[] = "All your base are belong to us!";
   // Dump something real into the file.
-  ASSERT_EQ(checked_cast<int>(std::size(placeholder_data)),
-            WriteFile(excluded_file_path, placeholder_data,
-                      std::size(placeholder_data)));
+  ASSERT_TRUE(WriteFile(excluded_file_path,
+                        base::byte_span_from_cstring(placeholder_data)));
   // Initial state should be non-excluded.
   EXPECT_FALSE(GetBackupExclusion(excluded_file_path));
   // Exclude the file.
@@ -48,9 +47,8 @@ TEST_F(BackupUtilTest, TestExcludeFileFromBackups_NotByPath) {
       apple::FilePathToCFURL(excluded_file_path);
 
   constexpr char placeholder_data[] = "All your base are belong to us!";
-  ASSERT_EQ(checked_cast<int>(std::size(placeholder_data)),
-            WriteFile(excluded_file_path, placeholder_data,
-                      std::size(placeholder_data)));
+  ASSERT_TRUE(WriteFile(excluded_file_path,
+                        base::byte_span_from_cstring(placeholder_data)));
 
   ASSERT_TRUE(SetBackupExclusion(excluded_file_path));
   EXPECT_TRUE(GetBackupExclusion(excluded_file_path))
@@ -58,9 +56,8 @@ TEST_F(BackupUtilTest, TestExcludeFileFromBackups_NotByPath) {
 
   // Re-create the file.
   ASSERT_TRUE(DeleteFile(excluded_file_path));
-  ASSERT_EQ(checked_cast<int>(std::size(placeholder_data)),
-            WriteFile(excluded_file_path, placeholder_data,
-                      std::size(placeholder_data)));
+  ASSERT_TRUE(WriteFile(excluded_file_path,
+                        base::byte_span_from_cstring(placeholder_data)));
   EXPECT_FALSE(GetBackupExclusion(excluded_file_path))
       << "Re-created file should not be excluded from backup";
 }

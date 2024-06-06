@@ -29,8 +29,7 @@ void QuicheRecordTestOutputToFile(std::string_view filename,
   auto path = base::FilePath::FromUTF8Unsafe(output_dir)
                   .Append(base::FilePath::FromUTF8Unsafe(filename));
 
-  int bytes_written = base::WriteFile(path, data.data(), data.size());
-  if (bytes_written < 0) {
+  if (!base::WriteFile(path, base::as_byte_span(data))) {
     QUIC_LOG(WARNING) << "Failed to write into " << path;
     return;
   }

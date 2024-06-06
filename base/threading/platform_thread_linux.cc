@@ -77,10 +77,7 @@ void SetThreadCgroup(PlatformThreadId thread_id,
                      const FilePath& cgroup_directory) {
   FilePath tasks_filepath = cgroup_directory.Append(FILE_PATH_LITERAL("tasks"));
   std::string tid = NumberToString(thread_id);
-  // TODO(crbug.com/40227936): Remove cast.
-  const int size = static_cast<int>(tid.size());
-  int bytes_written = WriteFile(tasks_filepath, tid.data(), size);
-  if (bytes_written != size) {
+  if (!WriteFile(tasks_filepath, as_byte_span(tid))) {
     DVLOG(1) << "Failed to add " << tid << " to " << tasks_filepath.value();
   }
 }

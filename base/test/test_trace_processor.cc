@@ -155,8 +155,7 @@ absl::Status TestTraceProcessor::StopAndParseTrace() {
 
   if (CommandLine::ForCurrentProcess()->HasSwitch(kSaveTraceSwitch)) {
     ScopedAllowBlockingForTesting allow;
-    WriteFile(base::FilePath::FromASCII("test.pftrace"), trace.data(),
-              trace.size());
+    WriteFile(base::FilePath::FromASCII("test.pftrace"), as_byte_span(trace));
   }
 
   return test_trace_processor_.ParseTrace(trace);

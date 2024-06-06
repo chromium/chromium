@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/files/file_util.h"
 
 #include <stddef.h>
@@ -51,6 +46,7 @@
 #include "base/uuid.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
 #include "testing/platform_test.h"
@@ -2807,21 +2803,21 @@ TEST_F(FileUtilTest, CopyAndDeleteDirectoryTest) {
 }
 
 TEST_F(FileUtilTest, GetTempDirTest) {
-  static const TCHAR* kTmpKey = _T("TMP");
-  static const TCHAR* kTmpValues[] = {_T(""), _T("C:"), _T("C:\\"),
-                                      _T("C:\\tmp"), _T("C:\\tmp\\")};
+  const TCHAR* kTmpKey = _T("TMP");
+  std::array<const TCHAR*, 5> kTmpValues = {_T(""), _T("C:"), _T("C:\\"),
+                                            _T("C:\\tmp"), _T("C:\\tmp\\")};
   // Save the original $TMP.
   size_t original_tmp_size;
   TCHAR* original_tmp;
   ASSERT_EQ(0, ::_tdupenv_s(&original_tmp, &original_tmp_size, kTmpKey));
   // original_tmp may be NULL.
 
-  for (unsigned int i = 0; i < std::size(kTmpValues); ++i) {
+  for (const TCHAR* val : kTmpValues) {
     FilePath path;
-    ::_tputenv_s(kTmpKey, kTmpValues[i]);
+    ::_tputenv_s(kTmpKey, val);
     GetTempDir(&path);
     EXPECT_TRUE(path.IsAbsolute())
-        << "$TMP=" << kTmpValues[i] << " result=" << path.value();
+        << "$TMP=" << val << " result=" << path.value();
   }
 
   // Restore the original $TMP.
@@ -2881,14 +2877,14 @@ TEST_F(FileUtilTest, CreateAndOpenTemporaryFileInDir) {
 }
 
 TEST_F(FileUtilTest, CreateTemporaryFileTest) {
-  FilePath temp_files[3];
+  std::array<FilePath, 3> temp_files;
   for (auto& i : temp_files) {
     ASSERT_TRUE(CreateTemporaryFile(&i));
     EXPECT_TRUE(PathExists(i));
     EXPECT_FALSE(DirectoryExists(i));
   }
-  for (int i = 0; i < 3; i++) {
-    EXPECT_FALSE(temp_files[i] == temp_files[(i + 1) % 3]);
+  for (size_t i = 0u; i < 3u; i++) {
+    EXPECT_NE(temp_files[i], temp_files[(i + 1u) % 3u]);
   }
   for (const auto& i : temp_files) {
     EXPECT_TRUE(DeleteFile(i));
@@ -2896,24 +2892,24 @@ TEST_F(FileUtilTest, CreateTemporaryFileTest) {
 }
 
 TEST_F(FileUtilTest, CreateAndOpenTemporaryStreamTest) {
-  FilePath names[3];
-  ScopedFILE fps[3];
-  int i;
+  std::array<FilePath, 3> names;
+  std::array<ScopedFILE, 3> fps;
+  size_t i;
 
   // Create; make sure they are open and exist.
-  for (i = 0; i < 3; ++i) {
+  for (i = 0u; i < 3u; ++i) {
     fps[i] = CreateAndOpenTemporaryStream(&(names[i]));
     ASSERT_TRUE(fps[i]);
     EXPECT_TRUE(PathExists(names[i]));
   }
 
   // Make sure all names are unique.
-  for (i = 0; i < 3; ++i) {
-    EXPECT_FALSE(names[i] == names[(i + 1) % 3]);
+  for (i = 0u; i < 3u; ++i) {
+    EXPECT_NE(names[i], names[(i + 1u) % 3u]);
   }
 
   // Close and delete.
-  for (i = 0; i < 3; ++i) {
+  for (i = 0u; i < 3u; ++i) {
     fps[i].reset();
     EXPECT_TRUE(DeleteFile(names[i]));
   }
@@ -3108,43 +3104,40 @@ TEST_F(FileUtilTest, GetShmemTempDirTest) {
 }
 
 TEST_F(FileUtilTest, AllocateFileRegionTest_ZeroOffset) {
-  const int kTestFileLength = 9;
-  char test_data[] = "test_data";
+  std::string_view test_data = "test_data";
   FilePath file_path = temp_dir_.GetPath().Append(
       FILE_PATH_LITERAL("allocate_file_region_test_zero_offset"));
-  WriteFile(file_path, test_data, kTestFileLength);
+  WriteFile(file_path, test_data);
 
   File file(file_path, base::File::FLAG_OPEN | base::File::FLAG_READ |
                            base::File::FLAG_WRITE);
   ASSERT_TRUE(file.IsValid());
-  ASSERT_EQ(file.GetLength(), kTestFileLength);
+  ASSERT_GE(file.GetLength(), 0);
+  ASSERT_EQ(checked_cast<size_t>(file.GetLength()), test_data.size());
 
   const int kExtendedFileLength = 23;
   ASSERT_TRUE(AllocateFileRegion(&file, 0, kExtendedFileLength));
   EXPECT_EQ(file.GetLength(), kExtendedFileLength);
 
-  char data_read[32];
+  char data_read[32] = {};
   int bytes_read = file.Read(0, data_read, kExtendedFileLength);
   EXPECT_EQ(bytes_read, kExtendedFileLength);
-  for (int i = 0; i < kTestFileLength; ++i) {
-    EXPECT_EQ(test_data[i], data_read[i]);
-  }
-  for (int i = kTestFileLength; i < kExtendedFileLength; ++i) {
-    EXPECT_EQ(0, data_read[i]);
-  }
+  auto [front, back] = base::span(data_read).split_at(test_data.size());
+  EXPECT_EQ(front, test_data);
+  EXPECT_THAT(back, testing::Each('\0'));
 }
 
 TEST_F(FileUtilTest, AllocateFileRegionTest_NonZeroOffset) {
-  const int kTestFileLength = 9;
-  char test_data[] = "test_data";
+  std::string_view test_data = "test_data";
   FilePath file_path = temp_dir_.GetPath().Append(
       FILE_PATH_LITERAL("allocate_file_region_test_non_zero_offset"));
-  WriteFile(file_path, test_data, kTestFileLength);
+  WriteFile(file_path, test_data);
 
   File file(file_path, base::File::FLAG_OPEN | base::File::FLAG_READ |
                            base::File::FLAG_WRITE);
   ASSERT_TRUE(file.IsValid());
-  ASSERT_EQ(file.GetLength(), kTestFileLength);
+  ASSERT_GE(file.GetLength(), 0);
+  ASSERT_EQ(checked_cast<size_t>(file.GetLength()), test_data.size());
 
   const int kExtensionOffset = 5;
   const int kExtensionSize = 10;
@@ -3152,32 +3145,30 @@ TEST_F(FileUtilTest, AllocateFileRegionTest_NonZeroOffset) {
   const int kExtendedFileLength = kExtensionOffset + kExtensionSize;
   EXPECT_EQ(file.GetLength(), kExtendedFileLength);
 
-  char data_read[32];
+  char data_read[32] = {};
   int bytes_read = file.Read(0, data_read, kExtendedFileLength);
   EXPECT_EQ(bytes_read, kExtendedFileLength);
-  for (int i = 0; i < kTestFileLength; ++i) {
-    EXPECT_EQ(test_data[i], data_read[i]);
-  }
-  for (int i = kTestFileLength; i < kExtendedFileLength; ++i) {
-    EXPECT_EQ(0, data_read[i]);
-  }
+  auto [front, back] = base::span(data_read).split_at(test_data.size());
+  EXPECT_EQ(front, test_data);
+  EXPECT_THAT(back, testing::Each('\0'));
 }
 
 TEST_F(FileUtilTest, AllocateFileRegionTest_DontTruncate) {
-  const int kTestFileLength = 9;
-  char test_data[] = "test_data";
+  std::string_view test_data = "test_data";
   FilePath file_path = temp_dir_.GetPath().Append(
       FILE_PATH_LITERAL("allocate_file_region_test_dont_truncate"));
-  WriteFile(file_path, test_data, kTestFileLength);
+  WriteFile(file_path, test_data);
 
   File file(file_path, base::File::FLAG_OPEN | base::File::FLAG_READ |
                            base::File::FLAG_WRITE);
   ASSERT_TRUE(file.IsValid());
-  ASSERT_EQ(file.GetLength(), kTestFileLength);
+  ASSERT_GE(file.GetLength(), 0);
+  ASSERT_EQ(checked_cast<size_t>(file.GetLength()), test_data.size());
 
   const int kTruncatedFileLength = 4;
   ASSERT_TRUE(AllocateFileRegion(&file, 0, kTruncatedFileLength));
-  EXPECT_EQ(file.GetLength(), kTestFileLength);
+  ASSERT_GE(file.GetLength(), 0);
+  EXPECT_EQ(checked_cast<size_t>(file.GetLength()), test_data.size());
 }
 #endif
 
@@ -3592,21 +3583,21 @@ TEST_F(FileUtilTest, ReadFileToStringWithUnknownFileSize) {
 #define ChildMainString "WriteToPipeChildMain"
 
 MULTIPROCESS_TEST_MAIN(ChildMain) {
-  const char kTestData[] = "0123";
   CommandLine* command_line = CommandLine::ForCurrentProcess();
   const FilePath pipe_path = command_line->GetSwitchValuePath("pipe-path");
 
   int fd = open(pipe_path.value().c_str(), O_WRONLY);
   CHECK_NE(-1, fd);
-  size_t written = 0;
-  while (written < strlen(kTestData)) {
-    ssize_t res = write(fd, kTestData + written, strlen(kTestData) - written);
+
+  base::span<const char> to_write = base::span_from_cstring("0123");
+  while (!to_write.empty()) {
+    ssize_t res = write(fd, to_write.data(), to_write.size());
     if (res == -1) {
       break;
     }
-    written += res;
+    to_write = to_write.subspan(checked_cast<size_t>(res));
   }
-  CHECK_EQ(strlen(kTestData), written);
+  CHECK_EQ(to_write.size(), 0u);
   CHECK_EQ(0, close(fd));
   return 0;
 }
@@ -3623,15 +3614,15 @@ MULTIPROCESS_TEST_MAIN(MoreThanBufferSizeChildMain) {
   int fd = open(pipe_path.value().c_str(), O_WRONLY);
   CHECK_NE(-1, fd);
 
-  size_t written = 0;
-  while (written < data.size()) {
-    ssize_t res = write(fd, data.c_str() + written, data.size() - written);
+  base::span<const char> to_write = base::span(data);
+  while (!to_write.empty()) {
+    ssize_t res = write(fd, to_write.data(), to_write.size());
     if (res == -1) {
       // We are unable to write because reading process has already read
       // requested number of bytes and closed pipe.
       break;
     }
-    written += res;
+    to_write = to_write.subspan(checked_cast<size_t>(res));
   }
   CHECK_EQ(0, close(fd));
   return 0;
