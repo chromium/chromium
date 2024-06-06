@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>
+  Static Router: raise promise error on invalid regex.
+</title>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/service-workers/service-worker/resources/test-helpers.sub.js">
+</script>
+<script src="/service-workers/service-worker/resources/static-router-helpers.sub.js">
+</script>
+<body>
+<script>
+const COMPATIBLE_ROUTER_KEY = 'condition-compatible-regex-pattern';
+const INCOMPATIBLE_ROUTER_KEY = 'condition-incompatible-regex-pattern';
+
+const SW_SCRIPT = 'resources/static-router-sw.js';
+const SW_SCOPE = 'resources/';
+
+promise_test(async t => {
+  const worker = await registerAndActivate(t, COMPATIBLE_ROUTER_KEY, SW_SCRIPT, SW_SCOPE);
+  const data = await get_info_from_worker(worker);
+  assert_equals(data.errors.length, 0);
+}, 'Static Router parsed compatible regex');
+
+promise_test(async t => {
+  const worker = await registerAndActivate(t, INCOMPATIBLE_ROUTER_KEY, SW_SCRIPT, SW_SCOPE);
+  const data = await get_info_from_worker(worker);
+  assert_equals(data.errors.length, 1);
+}, 'Static Router could not parse the provided regex');
+</script>
+</body>

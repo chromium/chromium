@@ -37,12 +37,15 @@ const scriptDir = document.currentScript.src.match(/.*\//)[0];
 // Register the ServiceWorker and wait until activated.
 // {ruleKey} represents the key of routerRules defined in router-rules.js.
 // {swScript} represents the service worker source URL.
-const registerAndActivate = async (test, ruleKey, swScript) => {
+// {swScope} represents the service worker resource scope.
+const registerAndActivate = async (test, ruleKey, swScript, swScope) => {
   if (!swScript) {
     swScript = scriptDir + 'static-router-sw.js'
   }
+  if (!swScope) {
+    swScope = scriptDir;
+  }
   const swURL = `${swScript}?key=${ruleKey}`;
-  const swScope = scriptDir;
   const reg = await service_worker_unregister_and_register(
     test, swURL, swScope, { type: 'module' });
   add_completion_callback(() => reg.unregister());
