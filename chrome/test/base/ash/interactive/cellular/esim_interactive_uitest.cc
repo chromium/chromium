@@ -88,6 +88,10 @@ IN_PROC_BROWSER_TEST_F(EsimInteractiveUITest, InstallProfileWithSMDS) {
   RunTestSequenceInContext(
       context,
 
+      Log("Navigating to the internet page"),
+
+      NavigateSettingsToInternetPage(kOSSettingsId),
+
       Log("Waiting for cellular summary item to exist then click it"),
 
       WaitForElementExists(kOSSettingsId,

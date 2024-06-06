@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/json/string_escape.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/test_switches.h"
 #include "chrome/browser/ash/app_restore/full_restore_app_launch_handler.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
@@ -76,6 +77,18 @@ ui::ElementContext InteractiveAshTest::LaunchSystemWebApp(
                   }));
   CHECK(browser);
   return browser->window()->GetElementContext();
+}
+
+ui::test::internal::InteractiveTestPrivate::MultiStep
+InteractiveAshTest::NavigateSettingsToInternetPage(
+    const ui::ElementIdentifier& element_id) {
+  return NavigateSettingsToPage(element_id, /*path=*/"/internet");
+}
+
+ui::test::internal::InteractiveTestPrivate::MultiStep
+InteractiveAshTest::NavigateSettingsToBluetoothPage(
+    const ui::ElementIdentifier& element_id) {
+  return NavigateSettingsToPage(element_id, /*path=*/"/bluetooth");
 }
 
 Profile* InteractiveAshTest::GetActiveUserProfile() {
@@ -217,4 +230,16 @@ ui::test::internal::InteractiveTestPrivate::MultiStep
 InteractiveAshTest::ClickElement(const ui::ElementIdentifier& element_id,
                                  const DeepQuery& query) {
   return Steps(MoveMouseTo(element_id, query), ClickMouse());
+}
+
+ui::test::internal::InteractiveTestPrivate::MultiStep
+InteractiveAshTest::NavigateSettingsToPage(
+    const ui::ElementIdentifier& element_id,
+    const char* path) {
+  CHECK(path);
+  const WebContentsInteractionTestUtil::DeepQuery menu_item(
+      {{"os-settings-ui", "os-settings-menu",
+        base::StringPrintf("os-settings-menu-item[path=\"%s\"]", path)}});
+  return Steps(ScrollIntoView(element_id, menu_item),
+               MoveMouseTo(element_id, menu_item), ClickMouse());
 }

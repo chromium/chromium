@@ -58,6 +58,16 @@ class InteractiveAshTest
       ash::SystemWebAppType type,
       const ui::ElementIdentifier& element_id);
 
+  // Navigates the Settings app, which is expected to be associated with
+  // |element_id|, to the top-level internet page.
+  ui::test::internal::InteractiveTestPrivate::MultiStep
+  NavigateSettingsToInternetPage(const ui::ElementIdentifier& element_id);
+
+  // Navigates the Settings app, which is expected to be associated with
+  // |element_id|, to the top-level bluetooth page.
+  ui::test::internal::InteractiveTestPrivate::MultiStep
+  NavigateSettingsToBluetoothPage(const ui::ElementIdentifier& element_id);
+
   // Returns the active user profile.
   Profile* GetActiveUserProfile();
 
@@ -131,6 +141,14 @@ class InteractiveAshTest
   ui::test::internal::InteractiveTestPrivate::MultiStep ClickElement(
       const ui::ElementIdentifier& element_id,
       const DeepQuery& query);
+
+ private:
+  // Helper function that navigates to a top-level page of the Settings app.
+  // This function expects the Settings app to already be open. The `path`
+  // parameter should correspond to a top-level menu item.
+  ui::test::internal::InteractiveTestPrivate::MultiStep NavigateSettingsToPage(
+      const ui::ElementIdentifier& element_id,
+      const char* path);
 };
 
 #endif  // CHROME_TEST_BASE_ASH_INTERACTIVE_INTERACTIVE_ASH_TEST_H_
