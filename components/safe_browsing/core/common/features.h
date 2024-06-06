@@ -173,6 +173,10 @@ BASE_DECLARE_FEATURE(kHashPrefixRealTimeLookupsFasterOhttpKeyRotation);
 // UX improvements to download warnings on chrome://downloads page.
 BASE_DECLARE_FEATURE(kImprovedDownloadPageWarnings);
 
+// Show referrer URL on download item on chrome://downloads page. This will
+// replace the downloads url.
+BASE_DECLARE_FEATURE(kDownloadsPageReferrerUrl);
+
 // Enable logging of the account enhanced protection setting in Protego pings.
 BASE_DECLARE_FEATURE(kLogAccountEnhancedProtectionStateInProtegoPings);
 

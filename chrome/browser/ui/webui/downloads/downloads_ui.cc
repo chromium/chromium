@@ -178,9 +178,14 @@ content::WebUIDataSource* CreateAndAddDownloadsUIHTMLSource(Profile* profile) {
       // Dangerous File
       {"noSafeBrowsingDesc",
        IDS_BLOCK_DOWNLOAD_REASON_UNVERIFIED_NO_SAFE_BROWSING},
+
+      {"referrerLine", IDS_DOWNLOADS_PAGE_REFERRER_LINE},
   };
   source->AddLocalizedStrings(kStrings);
 
+  source->AddBoolean(
+      "showReferrerUrl",
+      base::FeatureList::IsEnabled(safe_browsing::kDownloadsPageReferrerUrl));
   // New chrome://downloads icons, colors, strings, etc. to be consistent with
   // download bubble.
   bool improved_download_warnings_ux = base::FeatureList::IsEnabled(

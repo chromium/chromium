@@ -189,6 +189,10 @@ BASE_FEATURE(kImprovedDownloadPageWarnings,
              "ImprovedDownloadPageWarnings",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kDownloadsPageReferrerUrl,
+             "DownloadsPageReferrerUrl",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kLogAccountEnhancedProtectionStateInProtegoPings,
              "TailoredSecurityLogAccountEnhancedProtectionStateInProtegoPings",
              base::FEATURE_DISABLED_BY_DEFAULT);

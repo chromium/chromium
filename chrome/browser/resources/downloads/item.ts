@@ -48,6 +48,7 @@ export interface DownloadsItemElement {
     'controlled-by': HTMLElement,
     'file-icon': HTMLImageElement,
     'file-link': HTMLAnchorElement,
+    'referrer-url': HTMLAnchorElement,
     'url': HTMLAnchorElement,
   };
 }
@@ -199,6 +200,11 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       // </if>
 
       useFileIcon_: Boolean,
+
+      showReferrerUrl_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('showReferrerUrl'),
+      },
     };
   }
 
@@ -803,14 +809,41 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     }
   }
 
+  getReferrerUrlAnchorElement(): HTMLAnchorElement|null {
+    return this.$['referrer-url'].querySelector('a') || null;
+  }
+
   private observeDisplayType_() {
     const removeFileUrlLinks = () => {
       this.$.url.removeAttribute('href');
       this.$['file-link'].removeAttribute('href');
     };
 
+    const updateReferrerUrlLinkHref = (hrefValue?: string) => {
+      const referrerUrlLink = this.getReferrerUrlAnchorElement();
+      if (!referrerUrlLink) {
+        // No <a> tag, nothing to do.
+        return;
+      }
+      if (!hrefValue) {
+        referrerUrlLink.removeAttribute('href');
+        return;
+      }
+      referrerUrlLink.setAttribute('href', hrefValue);
+      referrerUrlLink.setAttribute('focus-row-control', '');
+      referrerUrlLink.setAttribute('focus-type', 'referrerUrl');
+      referrerUrlLink.setAttribute('target', '_blank');
+      referrerUrlLink.setAttribute('rel', 'noopener');
+    };
+
     if (!this.data) {
       return;
+    }
+
+    if (this.data.displayReferrerUrl) {
+      const referrerLine = loadTimeData.getStringF(
+          'referrerLine', mojoString16ToString(this.data.displayReferrerUrl));
+      this.$['referrer-url'].innerHTML = sanitizeInnerHtml(referrerLine);
     }
 
     // Returns whether to use the file icon, and additionally clears file url
@@ -820,6 +853,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
         const use = this.displayType_ === DisplayType.NORMAL;
         if (!use) {
           removeFileUrlLinks();
+          updateReferrerUrlLinkHref();
         }
         return use;
       }
@@ -833,6 +867,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       ];
       if (this.isDangerous_) {
         removeFileUrlLinks();
+        updateReferrerUrlLinkHref();
         return false;
       }
       if (OVERRIDDEN_ICON_TYPES.includes(this.data.dangerType as DangerType)) {
@@ -856,6 +891,13 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       this.$.url.href = this.data.url.url;
     } else {
       removeFileUrlLinks();
+    }
+
+    // The file is not dangerous. Link the referrer_url if supplied.
+    if (this.data.referrerUrl) {
+      updateReferrerUrlLinkHref(this.data.referrerUrl.url);
+    } else {
+      updateReferrerUrlLinkHref();
     }
 
     const path = this.data.filePath;

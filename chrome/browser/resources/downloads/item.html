@@ -233,11 +233,35 @@
     text-align: end;
   }
 
+  #referrer-url {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: flex;
+    flex-wrap: nowrap;
+  }
+
+  #referrer-url a {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    direction: rtl;
+    text-align: end;
+    margin-left: 4px;
+    margin-right: 4px;
+    text-decoration: none;
+    min-height: 0;
+    color: inherit;
+  }
+
   :host-context([dir=rtl]) #url {
     direction: ltr;
   }
 
   .is-active #url {
+    color: var(--cr-secondary-text-color);
+  }
+  .is-active #referrer-url a {
     color: var(--cr-secondary-text-color);
   }
 
@@ -365,8 +389,12 @@
       </div>
 
       <div role="gridcell">
-        <a id="url" target="_blank" on-click="onUrlClick_" focus-row-control
-            focus-type="url">[[getDisplayUrlStr_(data.displayUrl)]]</a>
+        <div id="referrer-url" hidden="[[!showReferrerUrl_]]">
+          <!-- Text populated dynamically -->
+        </div>
+        <a id="url" hidden="[[showReferrerUrl_]]" target="_blank"
+          on-click="onUrlClick_" focus-row-control
+          focus-type="url">[[getDisplayUrlStr_(data.displayUrl)]]</a>
       </div>
 
       <div class="description" role="gridcell"

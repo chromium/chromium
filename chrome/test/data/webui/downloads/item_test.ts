@@ -64,18 +64,106 @@ suite('item tests', function() {
     assertEquals(displayUrl, item.$.url.text);
   });
 
+  test('referrer url is hidden when showReferrerUrl disabled', () => {
+    loadTimeData.overrideValues({showReferrerUrl: false});
+    const item = document.createElement('downloads-item');
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    document.body.appendChild(item);
+    item.set('data', createDownload({
+               hideDate: false,
+               state: State.kComplete,
+               referrerUrl: stringToMojoUrl('http://test.com'),
+             }));
+    flush();
+
+    assertTrue(isVisible(item.$.url));
+    assertFalse(isVisible(item.$['referrer-url']));
+  });
+
+  test(
+      'referrer url on downloads without referrer url in data isn\'t displayed',
+      () => {
+        loadTimeData.overrideValues({showReferrerUrl: true});
+        const item = document.createElement('downloads-item');
+        document.body.innerHTML = window.trustedTypes!.emptyHTML;
+        document.body.appendChild(item);
+        item.set('data', createDownload({
+                   hideDate: false,
+                   state: State.kComplete,
+                   referrerUrl: undefined,
+                   displayReferrerUrl: undefined,
+                 }));
+        flush();
+
+        assertFalse(isVisible(item.$.url));
+        assertFalse(isVisible(item.$['referrer-url']));
+        assertEquals(null, item.getReferrerUrlAnchorElement());
+      });
+
+  test('referrer url on dangerous downloads isn\'t linkable', () => {
+    const item = document.createElement('downloads-item');
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    document.body.appendChild(item);
+    const referrerUrl = 'https://test.com';
+    const displayReferrerUrl = 'https://displaytest.com';
+    item.set('data', createDownload({
+               dangerType: DangerType.kDangerousFile,
+               fileExternallyRemoved: false,
+               hideDate: true,
+               state: State.kDangerous,
+               referrerUrl: stringToMojoUrl(referrerUrl),
+               displayReferrerUrl: stringToMojoString16(displayReferrerUrl),
+             }));
+    flush();
+
+    const referrerUrlLink = item.getReferrerUrlAnchorElement();
+    assertTrue(!!referrerUrlLink);
+    assertTrue(isVisible(referrerUrlLink));
+    assertFalse(referrerUrlLink.hasAttribute('href'));
+    assertEquals(displayReferrerUrl, referrerUrlLink.text);
+  });
+
+  test('referrer url display string is a link to the referrer url', () => {
+    const url = 'https://' +
+        'b'.repeat(1000) + '.com/document.pdf';
+    const referrerUrl = 'https://' +
+        'a'.repeat(1000) + '.com/document.pdf';
+    const displayReferrerUrl = 'https://' +
+        '啊'.repeat(1000) + '.com/document.pdf';
+    item.set('data', createDownload({
+               hideDate: false,
+               state: State.kComplete,
+               url: stringToMojoUrl(url),
+               referrerUrl: stringToMojoUrl(referrerUrl),
+               displayReferrerUrl: stringToMojoString16(displayReferrerUrl),
+             }));
+    flush();
+
+    assertEquals(url, item.$.url.href);
+    const referrerUrlLink = item.getReferrerUrlAnchorElement();
+    assertTrue(!!referrerUrlLink);
+    assertEquals(referrerUrl, referrerUrlLink.href);
+    assertEquals(displayReferrerUrl, referrerUrlLink.text);
+  });
+
   test('failed deep scans aren\'t linkable', () => {
+    loadTimeData.overrideValues({showReferrerUrl: true});
     item.set('data', createDownload({
                dangerType: DangerType.kDeepScannedFailed,
                fileExternallyRemoved: false,
                hideDate: true,
                state: State.kComplete,
                url: stringToMojoUrl('http://evil.com'),
+               referrerUrl: stringToMojoUrl('http://referrer.com'),
+               displayReferrerUrl: stringToMojoString16('http://display.com'),
              }));
     flush();
 
     assertFalse(isVisible(item.$['file-link']));
     assertFalse(item.$.url.hasAttribute('href'));
+    const referrerUrlLink = item.getReferrerUrlAnchorElement();
+    assertTrue(!!referrerUrlLink);
+    assertFalse(referrerUrlLink.hasAttribute('href'));
   });
 
   test('url display string is a link to the original url', () => {
