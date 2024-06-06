@@ -5,6 +5,7 @@
 #include "content/browser/interest_group/bidding_and_auction_serializer.h"
 
 #include <algorithm>
+#include <array>
 #include <set>
 #include <string>
 #include <vector>
@@ -34,8 +35,8 @@ namespace content {
 
 namespace {
 
-const size_t kFramingHeaderSize = 5;  // bytes
-const size_t kOhttpEncIdSize = 7;     // bytes
+const size_t kFramingHeaderSize = 5;       // bytes
+const size_t kOhttpEncIdSize = 7;          // bytes
 const size_t kOhttpSharedSecretSize = 48;  // bytes
 const size_t kOhttpHeaderSize = kOhttpEncIdSize + kOhttpSharedSecretSize;
 
@@ -43,6 +44,11 @@ const uint8_t kRequestVersion = 0;
 const uint8_t kRequestVersionBitOffset = 5;
 const uint8_t kGzipCompression = 2;
 const uint8_t kCompressionBitOffset = 0;
+
+// The 7 sizes we are allowed to use when the request size isn't explicitly
+// specified.
+const std::array<uint32_t, 7> kBinSizes = {
+    {0, 5 * 1024, 10 * 1024, 20 * 1024, 30 * 1024, 40 * 1024, 55 * 1024}};
 
 struct ValueAndSize {
   cbor::Value value;
@@ -840,7 +846,9 @@ void BiddingAndAuctionSerializer::AddGroups(
 
 BiddingAndAuctionData BiddingAndAuctionSerializer::Build() {
   DCHECK(config_);
-  if (accumulated_groups_.empty()) {
+  // If we are serializing all groups then we can return an empty list.
+  // Otherwise we still need to return a fixed size request (all padding).
+  if (config_->per_buyer_configs.empty() && accumulated_groups_.empty()) {
     return {};
   }
 
@@ -913,17 +921,25 @@ BiddingAndAuctionData BiddingAndAuctionSerializer::Build() {
   }
 
   // If we don't fit in the desired size, don't send anything.
-  if (config_->request_size &&
-      total_size_before_groups.ValueOrDie() > config_->request_size.value()) {
+  if (total_size_before_groups.ValueOrDie() >
+      config_->request_size.value_or(kBinSizes.back())) {
     return {};
   }
 
+  blink::mojom::AuctionDataConfigPtr config = config_->Clone();
+  if (!config->request_size) {
+    // If size isn't specified, then we need to fit in the biggest bin.
+    config->request_size = kBinSizes.back();
+  }
+
   SerializedBiddersMap groups = SerializeBidderGroupsWithConfig(
-      accumulated_groups_, *config_, total_size_before_groups.ValueOrDie(),
+      accumulated_groups_, *config, total_size_before_groups.ValueOrDie(),
       start_time_);
 
-  // If we have no groups, don't send anything.
-  if (groups.bidders.empty()) {
+  // If we have no groups and the buyers weren't specified, don't send anything.
+  // We still need to provide a non-empty request if the buyers are specified in
+  // order to avoid leaking interest groups state.
+  if (config->per_buyer_configs.empty() && groups.bidders.empty()) {
     return {};
   }
 
@@ -933,12 +949,13 @@ BiddingAndAuctionData BiddingAndAuctionSerializer::Build() {
       cbor::Value(std::move(groups.bidders));
 
   // UMA requires integers, so we scale the relative compressed size by 100.
-  CHECK_NE(0u, groups.uncompressed_size);
-  int relative_compressed_size =
-      (100 * groups.compressed_size) / groups.uncompressed_size;
-  base::UmaHistogramPercentage(
-      "Ads.InterestGroup.ServerAuction.Request.RelativeCompressedSize",
-      relative_compressed_size);
+  if (groups.uncompressed_size > 0) {
+    int relative_compressed_size =
+        (100 * groups.compressed_size) / groups.uncompressed_size;
+    base::UmaHistogramPercentage(
+        "Ads.InterestGroup.ServerAuction.Request.RelativeCompressedSize",
+        relative_compressed_size);
+  }
   base::UmaHistogramCounts1000(
       "Ads.InterestGroup.ServerAuction.Request.NumGroups", groups.num_groups);
 
@@ -949,25 +966,38 @@ BiddingAndAuctionData BiddingAndAuctionSerializer::Build() {
   DCHECK(maybe_msg);
   DCHECK_EQ(static_cast<size_t>(total_size.ValueOrDie()), maybe_msg->size());
 
-  const size_t size_before_padding =
-      base::CheckAdd(framing_size, maybe_msg->size()).ValueOrDie();
-  uint32_t desired_size = absl::bit_ceil(size_before_padding);
+  base::CheckedNumeric<uint32_t> desired_size;
+  if (config->per_buyer_configs.empty()) {
+    // If we didn't set a list of buyers then use the requested size as the
+    // maximum size bucket.
+    const size_t size_before_padding =
+        base::CheckAdd(framing_size, maybe_msg->size()).ValueOrDie();
+    DCHECK_GE(config->request_size.value(), size_before_padding);
 
-  if (config_->request_size) {
-    DCHECK_GE(*config_->request_size, size_before_padding);
-    if (config_->per_buyer_configs.empty()) {
-      // If we didn't set a list of buyers then use the requested size as the
-      // maximum size bucket.
-      desired_size = std::min(desired_size, config_->request_size.value());
+    auto size_iter = std::lower_bound(kBinSizes.begin(), kBinSizes.end(),
+                                      size_before_padding);
+    if (size_iter != kBinSizes.end()) {
+      desired_size = std::min(*size_iter, config->request_size.value());
     } else {
-      // For customized requests we always use the requested size.
-      desired_size = config_->request_size.value();
+      desired_size = config->request_size.value();
     }
+  } else {
+    // For customized requests we *MUST* always use the requested size.
+    // Since the page can specify which buyers are included in the request, the
+    // request size could leak interest group state for a specific buyer if the
+    // size was allowed to vary.
+    desired_size = config->request_size.value();
   }
-  size_t padded_size = desired_size - framing_size + kFramingHeaderSize;
-  CHECK_GE(padded_size, maybe_msg->size() + kFramingHeaderSize);
+  base::CheckedNumeric<size_t> padded_size =
+      desired_size - framing_size + kFramingHeaderSize;
+  if (!padded_size.IsValid()) {
+    DLOG(ERROR) << "padded_size is invalid";
+    return {};
+  }
+  CHECK_GE(static_cast<size_t>(padded_size.ValueOrDie()),
+           maybe_msg->size() + kFramingHeaderSize);
 
-  std::vector<uint8_t> request(padded_size);
+  std::vector<uint8_t> request(padded_size.ValueOrDie());
   // first byte is version and compression
   request[0] = (kRequestVersion << kRequestVersionBitOffset) |
                (kGzipCompression << kCompressionBitOffset);
