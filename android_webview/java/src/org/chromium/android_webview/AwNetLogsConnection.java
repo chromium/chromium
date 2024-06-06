@@ -30,7 +30,7 @@ public class AwNetLogsConnection {
     private static boolean sIsLogging;
 
     public static void startConnectNetLogService() {
-        if (!sIsLogging) {
+        if (sIsLogging) {
             return;
         }
         final Context context = ContextUtils.getApplicationContext();

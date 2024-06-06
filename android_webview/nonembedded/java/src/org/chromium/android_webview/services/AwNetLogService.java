@@ -11,12 +11,9 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.os.ParcelFileDescriptor;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.android_webview.common.services.INetLogService;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
-import org.chromium.base.PathUtils;
 import org.chromium.base.metrics.RecordHistogram;
 
 import java.io.File;
@@ -30,7 +27,8 @@ public class AwNetLogService extends Service {
     private static final String TAG = "AwNetLogs";
     private static final String JSON_EXTENSION = ".json";
     private static final long MAX_TOTAL_CAPACITY = 1000L * 1024 * 1024; // 1 GB
-    private static final File NET_LOG_DIR = new File(PathUtils.getDataDirectory() + "/net_logs");
+    private static final File NET_LOG_DIR =
+            new File(ContextUtils.getApplicationContext().getFilesDir() + "/aw_net_logs");
 
     private final INetLogService.Stub mBinder =
             new INetLogService.Stub() {
@@ -75,13 +73,9 @@ public class AwNetLogService extends Service {
         return mBinder;
     }
 
-    @VisibleForTesting
-    public static File[] getAllNetLogFiles() {
-        File[] files = NET_LOG_DIR.listFiles();
-        if (files == null) {
-            return new File[0];
-        }
-        return files;
+    public static File getNetLogFileDirectory() {
+        NET_LOG_DIR.mkdir();
+        return NET_LOG_DIR;
     }
 
     private boolean isCorrectPackage(String packageName) {
@@ -103,7 +97,7 @@ public class AwNetLogService extends Service {
     public static void cleanUpNetLogDirectory() {
         // Date thirty days ago
         long expirationDate = System.currentTimeMillis() - (1000L * 60 * 60 * 24 * 30);
-        File[] files = getAllNetLogFiles();
+        File[] files = getNetLogFileDirectory().listFiles();
 
         long totalBytes = 0L;
         for (File file : files) {

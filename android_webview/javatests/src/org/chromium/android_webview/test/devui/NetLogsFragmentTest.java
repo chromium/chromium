@@ -42,6 +42,7 @@ import org.chromium.android_webview.devui.MainActivity;
 import org.chromium.android_webview.devui.NetLogsFragment;
 import org.chromium.android_webview.devui.R;
 import org.chromium.android_webview.nonembedded_util.WebViewPackageHelper;
+import org.chromium.android_webview.services.AwNetLogService;
 import org.chromium.android_webview.test.AwJUnit4ClassRunner;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseActivityTestRule;
@@ -110,13 +111,11 @@ public class NetLogsFragmentTest {
             String fileName =
                     MOCK_PID
                             + Long.toString(mFileTime + i)
-                            + MOCK_PACKAGE_NAME
                             + "_"
+                            + MOCK_PACKAGE_NAME
                             + package_num
                             + JSON_TAG;
-            File file =
-                    new File(
-                            ContextUtils.getApplicationContext().getFilesDir().getPath(), fileName);
+            File file = new File(AwNetLogService.getNetLogFileDirectory(), fileName);
             try {
                 file.createNewFile();
                 files.add(file);
@@ -163,6 +162,7 @@ public class NetLogsFragmentTest {
             fileInteraction
                     .onChildView(withId(R.id.file_name))
                     .check(matches(withText(MOCK_PACKAGE_NAME + package_num)));
+
             fileInteraction
                     .onChildView(withId(R.id.file_capacity))
                     .check(matches(withText("0.00 MB")));
@@ -190,11 +190,11 @@ public class NetLogsFragmentTest {
         ListView filesList = mRule.getActivity().findViewById(R.id.net_log_list);
 
         File prevFile = (File) filesList.getAdapter().getItem(0);
-        long prevTime = NetLogsFragment.getCreationTimeFromFileName(prevFile.getName());
+        long prevTime = AwNetLogService.getCreationTimeFromFileName(prevFile.getName());
 
         for (int i = 1; i < filesList.getCount(); i++) {
             File currFile = (File) filesList.getAdapter().getItem(i);
-            long currTime = NetLogsFragment.getCreationTimeFromFileName(currFile.getName());
+            long currTime = AwNetLogService.getCreationTimeFromFileName(currFile.getName());
             assertThat(currTime, greaterThan(prevTime));
 
             prevTime = currTime;
