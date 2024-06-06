@@ -130,30 +130,18 @@ void SharedTabGroupDataSyncBridge::OnStoreCreated(
   }
 
   store_ = std::move(store);
-  store_->ReadAllData(
-      base::BindOnce(&SharedTabGroupDataSyncBridge::OnDatabaseLoad,
+  store_->ReadAllDataAndMetadata(
+      base::BindOnce(&SharedTabGroupDataSyncBridge::OnReadAllDataAndMetadata,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void SharedTabGroupDataSyncBridge::OnDatabaseLoad(
+void SharedTabGroupDataSyncBridge::OnReadAllDataAndMetadata(
     const std::optional<syncer::ModelError>& error,
-    std::unique_ptr<syncer::ModelTypeStore::RecordList> entries) {
-  if (error) {
-    change_processor()->ReportError(*error);
-    return;
-  }
-
-  store_->ReadAllMetadata(
-      base::BindOnce(&SharedTabGroupDataSyncBridge::OnReadAllMetadata,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(entries)));
-}
-
-void SharedTabGroupDataSyncBridge::OnReadAllMetadata(
     std::unique_ptr<syncer::ModelTypeStore::RecordList> entries,
-    const std::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
   if (error) {
-    change_processor()->ReportError({FROM_HERE, "Failed to read metadata."});
+    change_processor()->ReportError(
+        {FROM_HERE, "Failed to read data or metadata."});
     return;
   }
 

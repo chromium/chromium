@@ -241,26 +241,14 @@ void ProductSpecificationsSyncBridge::OnStoreCreated(
   }
 
   store_ = std::move(store);
-  store_->ReadAllData(
-      base::BindOnce(&ProductSpecificationsSyncBridge::OnReadAllData,
+  store_->ReadAllDataAndMetadata(
+      base::BindOnce(&ProductSpecificationsSyncBridge::OnReadAllDataAndMetadata,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void ProductSpecificationsSyncBridge::OnReadAllData(
+void ProductSpecificationsSyncBridge::OnReadAllDataAndMetadata(
     const std::optional<syncer::ModelError>& error,
-    std::unique_ptr<syncer::ModelTypeStore::RecordList> record_list) {
-  if (error) {
-    change_processor()->ReportError(*error);
-    return;
-  }
-  store_->ReadAllMetadata(
-      base::BindOnce(&ProductSpecificationsSyncBridge::OnReadAllMetadata,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(record_list)));
-}
-
-void ProductSpecificationsSyncBridge::OnReadAllMetadata(
     std::unique_ptr<syncer::ModelTypeStore::RecordList> record_list,
-    const std::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
   if (error) {
     change_processor()->ReportError({FROM_HERE, "Failed to read metadata."});

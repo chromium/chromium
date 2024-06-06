@@ -70,14 +70,10 @@ class WebAppDatabase {
                         const std::optional<syncer::ModelError>& error,
                         std::unique_ptr<syncer::ModelTypeStore> store);
 
-  void OnAllDataRead(
+  void OnAllDataAndMetadataRead(
       RegistryOpenedCallback callback,
       const std::optional<syncer::ModelError>& error,
-      std::unique_ptr<syncer::ModelTypeStore::RecordList> data_records);
-  void OnAllMetadataRead(
       std::unique_ptr<syncer::ModelTypeStore::RecordList> data_records,
-      RegistryOpenedCallback callback,
-      const std::optional<syncer::ModelError>& error,
       std::unique_ptr<syncer::MetadataBatch> metadata_batch);
 
   void OnDataWritten(CompletionCallback callback,

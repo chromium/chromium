@@ -156,24 +156,14 @@ void PlusAddressSettingSyncBridge::OnStoreCreated(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RETURN_IF_ERROR(error);
   store_ = std::move(store);
-  store_->ReadAllData(
-      base::BindOnce(&PlusAddressSettingSyncBridge::OnReadAllData,
-                     weak_factory_.GetWeakPtr()));
-}
-
-void PlusAddressSettingSyncBridge::OnReadAllData(
-    const std::optional<syncer::ModelError>& error,
-    std::unique_ptr<syncer::ModelTypeStore::RecordList> data) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  RETURN_IF_ERROR(error);
-  store_->ReadAllMetadata(base::BindOnce(
+  store_->ReadAllDataAndMetadata(base::BindOnce(
       &PlusAddressSettingSyncBridge::StartSyncingWithDataAndMetadata,
-      weak_factory_.GetWeakPtr(), std::move(data)));
+      weak_factory_.GetWeakPtr()));
 }
 
 void PlusAddressSettingSyncBridge::StartSyncingWithDataAndMetadata(
-    std::unique_ptr<syncer::ModelTypeStore::RecordList> data,
     const std::optional<syncer::ModelError>& error,
+    std::unique_ptr<syncer::ModelTypeStore::RecordList> data,
     std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RETURN_IF_ERROR(error);

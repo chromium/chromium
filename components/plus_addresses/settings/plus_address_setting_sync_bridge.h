@@ -51,11 +51,9 @@ class PlusAddressSettingSyncBridge : public syncer::ModelTypeSyncBridge {
   // Callbacks for various asynchronous operations of the `store_`.
   void OnStoreCreated(const std::optional<syncer::ModelError>& error,
                       std::unique_ptr<syncer::ModelTypeStore> store);
-  void OnReadAllData(const std::optional<syncer::ModelError>& error,
-                     std::unique_ptr<syncer::ModelTypeStore::RecordList> data);
   void StartSyncingWithDataAndMetadata(
-      std::unique_ptr<syncer::ModelTypeStore::RecordList> data,
       const std::optional<syncer::ModelError>& error,
+      std::unique_ptr<syncer::ModelTypeStore::RecordList> data,
       std::unique_ptr<syncer::MetadataBatch> metadata_batch);
   void ReportErrorIfSet(const std::optional<syncer::ModelError>& error);
 

@@ -82,12 +82,9 @@ class ProductSpecificationsSyncBridge : public syncer::ModelTypeSyncBridge {
 
   void OnStoreCreated(const std::optional<syncer::ModelError>& error,
                       std::unique_ptr<syncer::ModelTypeStore> store);
-  void OnReadAllData(
+  void OnReadAllDataAndMetadata(
       const std::optional<syncer::ModelError>& error,
-      std::unique_ptr<syncer::ModelTypeStore::RecordList> record_list);
-  void OnReadAllMetadata(
       std::unique_ptr<syncer::ModelTypeStore::RecordList> record_list,
-      const std::optional<syncer::ModelError>& error,
       std::unique_ptr<syncer::MetadataBatch> metadata_batch);
   void Commit(std::unique_ptr<syncer::ModelTypeStore::WriteBatch> batch);
   void OnCommit(const std::optional<syncer::ModelError>& error);

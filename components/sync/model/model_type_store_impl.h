@@ -42,6 +42,7 @@ class ModelTypeStoreImpl : public ModelTypeStore {
   void ReadData(const IdList& id_list, ReadDataCallback callback) override;
   void ReadAllData(ReadAllDataCallback callback) override;
   void ReadAllMetadata(ReadMetadataCallback callback) override;
+  void ReadAllDataAndMetadata(ReadAllDataAndMetadataCallback callback) override;
   void ReadAllDataAndPreprocess(
       PreprocessCallback preprocess_on_backend_sequence_callback,
       CallbackWithResult completion_on_frontend_sequence_callback) override;
@@ -59,6 +60,15 @@ class ModelTypeStoreImpl : public ModelTypeStore {
   void ReadAllDataDone(ReadAllDataCallback callback,
                        std::unique_ptr<RecordList> record_list,
                        const std::optional<ModelError>& error);
+  void ReadMetadataAfterReadAllDataDone(
+      ReadAllDataAndMetadataCallback callback,
+      const std::optional<ModelError>& error,
+      std::unique_ptr<RecordList> record_list);
+  void ReadAllDataAndMetadataDone(
+      ReadAllDataAndMetadataCallback callback,
+      std::unique_ptr<RecordList> record_list,
+      const std::optional<ModelError>& error,
+      std::unique_ptr<MetadataBatch> metadata_batch);
   void ReadAllMetadataDone(ReadMetadataCallback callback,
                            std::unique_ptr<MetadataBatch> metadata_batch,
                            const std::optional<ModelError>& error);

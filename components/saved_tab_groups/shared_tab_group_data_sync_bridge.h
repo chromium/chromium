@@ -67,17 +67,11 @@ class SharedTabGroupDataSyncBridge : public syncer::ModelTypeSyncBridge {
   void OnStoreCreated(const std::optional<syncer::ModelError>& error,
                       std::unique_ptr<syncer::ModelTypeStore> store);
 
-  // Loads all sync_pb::SharedTabGroupDataSpecifics stored in `entries`
-  // passing the specifics into OnReadAllMetadata.
-  void OnDatabaseLoad(
-      const std::optional<syncer::ModelError>& error,
-      std::unique_ptr<syncer::ModelTypeStore::RecordList> entries);
-
   // Calls ModelReadyToSync if there are no errors to report and loads the
   // stored entries into `model_`.
-  void OnReadAllMetadata(
-      std::unique_ptr<syncer::ModelTypeStore::RecordList> entries,
+  void OnReadAllDataAndMetadata(
       const std::optional<syncer::ModelError>& error,
+      std::unique_ptr<syncer::ModelTypeStore::RecordList> entries,
       std::unique_ptr<syncer::MetadataBatch> metadata_batch);
 
   SEQUENCE_CHECKER(sequence_checker_);

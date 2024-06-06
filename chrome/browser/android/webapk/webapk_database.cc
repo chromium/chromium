@@ -97,36 +97,20 @@ void WebApkDatabase::OnDatabaseOpened(
   }
 
   store_ = std::move(store);
-  store_->ReadAllData(base::BindOnce(&WebApkDatabase::OnAllDataRead,
-                                     weak_ptr_factory_.GetWeakPtr(),
-                                     std::move(callback)));
+  store_->ReadAllDataAndMetadata(
+      base::BindOnce(&WebApkDatabase::OnAllDataAndMetadataRead,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void WebApkDatabase::OnAllDataRead(
+void WebApkDatabase::OnAllDataAndMetadataRead(
     RegistryOpenedCallback callback,
     const std::optional<syncer::ModelError>& error,
-    std::unique_ptr<syncer::ModelTypeStore::RecordList> data_records) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (error) {
-    error_callback_.Run(*error);
-    DLOG(ERROR) << "WebApks LevelDB data read error: " << error->ToString();
-    return;
-  }
-
-  store_->ReadAllMetadata(base::BindOnce(
-      &WebApkDatabase::OnAllMetadataRead, weak_ptr_factory_.GetWeakPtr(),
-      std::move(data_records), std::move(callback)));
-}
-
-void WebApkDatabase::OnAllMetadataRead(
     std::unique_ptr<syncer::ModelTypeStore::RecordList> data_records,
-    RegistryOpenedCallback callback,
-    const std::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (error) {
     error_callback_.Run(*error);
-    DLOG(ERROR) << "WebApks LevelDB metadata read error: " << error->ToString();
+    DLOG(ERROR) << "WebApks LevelDB read error: " << error->ToString();
     return;
   }
 

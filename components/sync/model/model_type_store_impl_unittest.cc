@@ -14,6 +14,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/storage_type.h"
 #include "components/sync/model/model_error.h"
@@ -138,7 +139,7 @@ void ReadStoreContents(
 }
 
 void VerifyMetadata(
-    std::unique_ptr<MetadataBatch> batch,
+    const std::unique_ptr<MetadataBatch>& batch,
     const sync_pb::ModelTypeState& state,
     std::map<std::string, sync_pb::EntityMetadata> expected_metadata) {
   EXPECT_EQ(state.SerializeAsString(),
@@ -331,6 +332,21 @@ TEST_P(ModelTypeStoreImplTest, ReadMissingDataRecords) {
   ASSERT_THAT(*records,
               testing::UnorderedElementsAre(RecordMatches("id1", "data1")));
   ASSERT_THAT(*missing_id_list, testing::UnorderedElementsAre("id3"));
+}
+
+TEST_P(ModelTypeStoreImplTest, ReadAllDataAndMetadata) {
+  WriteData(store(), "id", "data");
+  WriteMetadata(store(), "id", CreateEntityMetadata("metadata"));
+  base::test::TestFuture<const std::optional<ModelError>&,
+                         std::unique_ptr<ModelTypeStore::RecordList>,
+                         std::unique_ptr<MetadataBatch>>
+      result;
+  store()->ReadAllDataAndMetadata(result.GetCallback());
+  EXPECT_EQ(result.Get<0>(), std::nullopt);
+  EXPECT_THAT(result.Get<1>(), testing::Pointee(testing::UnorderedElementsAre(
+                                   RecordMatches("id", "data"))));
+  VerifyMetadata(result.Get<2>(), sync_pb::ModelTypeState(),
+                 {{"id", CreateEntityMetadata("metadata")}});
 }
 
 // Test that stores for different types that share the same backend don't

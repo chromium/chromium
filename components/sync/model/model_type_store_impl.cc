@@ -150,6 +150,46 @@ void ModelTypeStoreImpl::ReadAllMetadataDone(
   std::move(callback).Run({}, std::move(metadata_batch));
 }
 
+void ModelTypeStoreImpl::ReadAllDataAndMetadata(
+    ReadAllDataAndMetadataCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!callback.is_null());
+  // Read data and metadata by calling `ReadAllData()` and `ReadAllMetadata()`
+  // in sequence - aborting early if an error occurs.
+  ReadAllData(
+      base::BindOnce(&ModelTypeStoreImpl::ReadMetadataAfterReadAllDataDone,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ModelTypeStoreImpl::ReadMetadataAfterReadAllDataDone(
+    ReadAllDataAndMetadataCallback callback,
+    const std::optional<ModelError>& error,
+    std::unique_ptr<RecordList> record_list) {
+  if (error) {
+    std::move(callback).Run(error, std::make_unique<RecordList>(),
+                            std::make_unique<MetadataBatch>());
+    return;
+  }
+  ReadAllMetadata(
+      base::BindOnce(&ModelTypeStoreImpl::ReadAllDataAndMetadataDone,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     std::move(record_list)));
+}
+
+void ModelTypeStoreImpl::ReadAllDataAndMetadataDone(
+    ReadAllDataAndMetadataCallback callback,
+    std::unique_ptr<RecordList> record_list,
+    const std::optional<ModelError>& error,
+    std::unique_ptr<MetadataBatch> metadata_batch) {
+  if (error) {
+    std::move(callback).Run(error, std::make_unique<RecordList>(),
+                            std::make_unique<MetadataBatch>());
+  } else {
+    std::move(callback).Run(std::nullopt, std::move(record_list),
+                            std::move(metadata_batch));
+  }
+}
+
 void ModelTypeStoreImpl::ReadAllDataAndPreprocess(
     PreprocessCallback preprocess_on_backend_sequence_callback,
     CallbackWithResult completion_on_frontend_sequence_callback) {

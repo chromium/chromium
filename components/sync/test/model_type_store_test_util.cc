@@ -38,6 +38,10 @@ class ForwardingModelTypeStore : public ModelTypeStore {
   void ReadAllMetadata(ReadMetadataCallback callback) override {
     other_->ReadAllMetadata(std::move(callback));
   }
+  void ReadAllDataAndMetadata(
+      ReadAllDataAndMetadataCallback callback) override {
+    other_->ReadAllDataAndMetadata(std::move(callback));
+  }
 
   void ReadAllDataAndPreprocess(
       PreprocessCallback preprocess_on_backend_sequence_callback,
