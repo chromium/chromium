@@ -276,6 +276,7 @@ class ASH_EXPORT BirchLastActiveItem : public BirchItem {
  public:
   BirchLastActiveItem(const std::u16string& title,
                       const GURL& url,
+                      base::Time last_visit,
                       ui::ImageModel icon);
   BirchLastActiveItem(BirchLastActiveItem&&);
   BirchLastActiveItem(const BirchLastActiveItem&);
@@ -293,7 +294,7 @@ class ASH_EXPORT BirchLastActiveItem : public BirchItem {
   const GURL& url() const { return url_; }
 
  private:
-  static std::u16string GetSubtitle();
+  static std::u16string GetSubtitle(base::Time last_visit);
 
   GURL url_;
   ui::ImageModel icon_;

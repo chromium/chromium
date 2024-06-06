@@ -414,7 +414,7 @@ class BirchBarTestBase : public AshTestBase {
     std::vector<BirchLastActiveItem> item_list;
     for (size_t i = 0; i < num; ++i) {
       item_list.emplace_back(u"last active", GURL("https://yahoo.com/"),
-                             ui::ImageModel());
+                             base::Time(), ui::ImageModel());
       item_list.back().set_ranking(1.0f);
     }
     birch_client_->SetLastActiveItems(item_list);

@@ -574,8 +574,9 @@ std::u16string BirchTabItem::GetSubtitle(const std::string& session_name,
 
 BirchLastActiveItem::BirchLastActiveItem(const std::u16string& title,
                                          const GURL& url,
+                                         base::Time last_visit,
                                          ui::ImageModel icon)
-    : BirchItem(title, GetSubtitle()), url_(url), icon_(icon) {}
+    : BirchItem(title, GetSubtitle(last_visit)), url_(url), icon_(icon) {}
 
 BirchLastActiveItem::BirchLastActiveItem(BirchLastActiveItem&&) = default;
 
@@ -620,8 +621,23 @@ void BirchLastActiveItem::LoadIcon(LoadIconCallback callback) const {
 }
 
 // static
-std::u16string BirchLastActiveItem::GetSubtitle() {
-  return l10n_util::GetStringUTF16(IDS_ASH_BIRCH_LAST_ACTIVE_SUBTITLE);
+std::u16string BirchLastActiveItem::GetSubtitle(base::Time last_visit) {
+  std::u16string prefix;
+  if (last_visit < base::Time::Now().LocalMidnight()) {
+    // TODO(jamescook): Add support for more than 1 day ago.
+    prefix =
+        l10n_util::GetStringUTF16(IDS_ASH_BIRCH_LAST_ACTIVE_SUBTITLE_YESTERDAY);
+  } else {
+    // Builds a string like "12 hours ago".
+    int hours = (base::Time::Now() - last_visit).InHours();
+    prefix = l10n_util::GetPluralStringFUTF16(
+        IDS_ASH_BIRCH_LAST_ACTIVE_SUBTITLE_PREFIX, hours);
+  }
+
+  // Builds a string like "Continue browsing".
+  std::u16string suffix =
+      l10n_util::GetStringUTF16(IDS_ASH_BIRCH_LAST_ACTIVE_SUBTITLE_SUFFIX);
+  return prefix + u" · " + suffix;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -754,18 +770,18 @@ std::u16string BirchSelfShareItem::GetSubtitle(
     // Builds the string "Yesterday". We only show tabs within the last 24 hours
     // so we don't need to worry about days before yesterday.
     prefix =
-        l10n_util::GetStringUTF16(IDS_ASH_BIRCH_RECENT_TAB_SUBTITLE_YESTERDAY);
+        l10n_util::GetStringUTF16(IDS_ASH_BIRCH_SELF_SHARE_SUBTITLE_YESTERDAY);
   } else {
     // Builds a string like "12 hours ago". We only show tabs within the last
     // 24 hours so we don't need to worry about a day count.
     const int hours = (base::Time::Now() - shared_time).InHours();
     prefix = l10n_util::GetPluralStringFUTF16(
-        IDS_ASH_BIRCH_RECENT_TAB_SUBTITLE_PREFIX, hours);
+        IDS_ASH_BIRCH_SELF_SHARE_SUBTITLE_PREFIX, hours);
   }
 
-  // Builds a string like "From Chromebook".
+  // Builds a string like "Sent from Chromebook".
   std::u16string suffix = l10n_util::GetStringFUTF16(
-      IDS_ASH_BIRCH_RECENT_TAB_SUBTITLE_SUFFIX, device_name);
+      IDS_ASH_BIRCH_SELF_SHARE_SUBTITLE_SUFFIX, device_name);
   return prefix + u" · " + suffix;
 }
 

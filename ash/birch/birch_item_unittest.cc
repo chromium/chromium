@@ -424,7 +424,7 @@ TEST_F(BirchItemTest, Tab_Subtitle_Recent) {
                     /*timestamp=*/base::Time::Now() - base::Minutes(5),
                     /*favicon_url=*/GURL(), /*session_name=*/"Chromebook",
                     BirchTabItem::DeviceFormFactor::kDesktop);
-  EXPECT_EQ(item.subtitle(), u"< 1 hour ago · From Chromebook");
+  EXPECT_EQ(item.subtitle(), u"Within 1 hr · From Chromebook");
 }
 
 TEST_F(BirchItemTest, Tab_Subtitle_OneHour) {
@@ -432,7 +432,7 @@ TEST_F(BirchItemTest, Tab_Subtitle_OneHour) {
                     /*timestamp=*/base::Time::Now() - base::Minutes(65),
                     /*favicon_url=*/GURL(), /*session_name=*/"Chromebook",
                     BirchTabItem::DeviceFormFactor::kDesktop);
-  EXPECT_EQ(item.subtitle(), u"1 hour ago · From Chromebook");
+  EXPECT_EQ(item.subtitle(), u"1 hr ago · From Chromebook");
 }
 
 TEST_F(BirchItemTest, Tab_Subtitle_TwoHours) {
@@ -440,7 +440,7 @@ TEST_F(BirchItemTest, Tab_Subtitle_TwoHours) {
                     /*timestamp=*/base::Time::Now() - base::Minutes(125),
                     /*favicon_url=*/GURL(), /*session_name=*/"Chromebook",
                     BirchTabItem::DeviceFormFactor::kDesktop);
-  EXPECT_EQ(item.subtitle(), u"2 hours ago · From Chromebook");
+  EXPECT_EQ(item.subtitle(), u"2 hr ago · From Chromebook");
 }
 
 TEST_F(BirchItemTest, Tab_Subtitle_Yesterday) {
@@ -484,7 +484,7 @@ TEST_F(BirchItemTest, Tab_PerformAction_Histograms) {
 }
 
 TEST_F(BirchItemTest, LastActive_PerformAction) {
-  BirchLastActiveItem item(u"item", GURL("http://example.com/"),
+  BirchLastActiveItem item(u"item", GURL("http://example.com/"), base::Time(),
                            ui::ImageModel());
   item.PerformAction();
   EXPECT_EQ(new_window_delegate_->last_opened_url_,

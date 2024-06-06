@@ -46,6 +46,7 @@ class BirchLastActiveProvider : public BirchDataProvider {
   // Callback from favicon service with the icon image.
   void OnGotFaviconImage(const std::u16string& title,
                          const GURL& url,
+                         base::Time last_visit,
                          const favicon_base::FaviconImageResult& image_result);
 
   void set_history_service_for_test(history::HistoryService* service) {

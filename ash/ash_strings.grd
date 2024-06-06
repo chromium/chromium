@@ -8240,18 +8240,39 @@ To shut down the device, press and hold the power button on the device again.
       </message>
       <message name="IDS_ASH_BIRCH_RECENT_TAB_SUBTITLE_PREFIX" desc="Start of the subtitle for the suggestion chip with recent tabs from other devices">
         {HOURS, plural,
-         =0 {&lt; 1 hour ago}
-         =1 {1 hour ago}
-         other {# hours ago}}
+         =0 {Within 1 hr}
+         =1 {1 hr ago}
+         other {# hr ago}}
       </message>
       <message name="IDS_ASH_BIRCH_RECENT_TAB_SUBTITLE_SUFFIX" desc="End of the subtitle for the suggestion chip with recent tabs from other devices">
         From <ph name="SESSION_NAME">$1<ex>Chromebook</ex></ph>
       </message>
-      <message name="IDS_ASH_BIRCH_LAST_ACTIVE_SUBTITLE" desc="The subtitle for a suggestion chip for a web site that was the last browser tab open">
-        Last tab opened
+      <message name="IDS_ASH_BIRCH_SELF_SHARE_SUBTITLE_YESTERDAY" desc="Subtitle for the suggestion chip with tabs shared from other devices shared yesterday">
+        Yesterday
+      </message>
+      <message name="IDS_ASH_BIRCH_SELF_SHARE_SUBTITLE_PREFIX" desc="Start of the subtitle for the suggestion chip with tabs shared from other devices">
+        {HOURS, plural,
+         =0 {Within 1 hr}
+         =1 {1 hr ago}
+         other {# hr ago}}
+      </message>
+      <message name="IDS_ASH_BIRCH_SELF_SHARE_SUBTITLE_SUFFIX" desc="End of the subtitle for the suggestion chip with tabs shared from other devices">
+        Sent from <ph name="SESSION_NAME">$1<ex>Chromebook</ex></ph>
+      </message>
+      <message name="IDS_ASH_BIRCH_LAST_ACTIVE_SUBTITLE_YESTERDAY" desc="Subtitle for the suggestion chip with the last active tab">
+        Yesterday
+      </message>
+      <message name="IDS_ASH_BIRCH_LAST_ACTIVE_SUBTITLE_PREFIX" desc="Start of the subtitle for the suggestion chip with the last active tab">
+        {HOURS, plural,
+         =0 {Within 1 hr}
+         =1 {1 hr ago}
+         other {# hr ago}}
+      </message>
+      <message name="IDS_ASH_BIRCH_LAST_ACTIVE_SUBTITLE_SUFFIX" desc="End of the subtitle for the suggestion chip with the last active tab">
+        Continue browsing
       </message>
       <message name="IDS_ASH_BIRCH_MOST_VISITED_SUBTITLE" desc="The subtitle for a suggestion chip for a web site that is frequently visited">
-        Frequently visited
+        Frequently opened
       </message>
       <message name="IDS_ASH_BIRCH_RELEASE_NOTES_TITLE" desc="Title for the suggestion chip that links to release notes">
         See what's new

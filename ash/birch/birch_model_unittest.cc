@@ -526,7 +526,7 @@ TEST_F(BirchModelTest, DisablingPrefsClearsModel) {
   model->SetRecentTabItems(std::move(tab_item_list));
   std::vector<BirchLastActiveItem> last_active_list;
   last_active_list.emplace_back(u"active", GURL("https://yahoo.com/"),
-                                ui::ImageModel());
+                                base::Time(), ui::ImageModel());
   model->SetLastActiveItems(std::move(last_active_list));
   std::vector<BirchMostVisitedItem> most_visited_list;
   most_visited_list.emplace_back(u"visited", GURL("https://google.com/"),
@@ -1023,7 +1023,7 @@ TEST_F(BirchModelTest, ResponseAfterFirstTimeout) {
   model->SetRecentTabItems(std::move(tab_item_list));
   std::vector<BirchLastActiveItem> last_active_list;
   last_active_list.emplace_back(u"active", GURL("https://yahoo.com/"),
-                                ui::ImageModel());
+                                base::Time(), ui::ImageModel());
   model->SetLastActiveItems(std::move(last_active_list));
   std::vector<BirchMostVisitedItem> most_visited_list;
   most_visited_list.emplace_back(u"visited", GURL("https://google.com/"),
@@ -1092,7 +1092,7 @@ TEST_F(BirchModelTest, GetAllItems) {
   model->SetRecentTabItems(std::move(tab_item_list));
   std::vector<BirchLastActiveItem> last_active_list;
   last_active_list.emplace_back(u"active", GURL("https://yahoo.com/"),
-                                ui::ImageModel());
+                                base::Time(), ui::ImageModel());
   model->SetLastActiveItems(std::move(last_active_list));
   std::vector<BirchMostVisitedItem> most_visited_list;
   most_visited_list.emplace_back(u"visited", GURL("https://google.com/"),
@@ -1134,7 +1134,7 @@ TEST_F(BirchModelTest, SetItemListRecordsHistogram) {
   model->SetRecentTabItems(std::move(tab_item_list));
   std::vector<BirchLastActiveItem> last_active_list;
   last_active_list.emplace_back(u"active", GURL("https://yahoo.com/"),
-                                ui::ImageModel());
+                                base::Time(), ui::ImageModel());
   model->SetLastActiveItems(std::move(last_active_list));
   model->SetFileSuggestItems(MakeFileItemList(/*item_count=*/1));
   std::vector<BirchWeatherItem> weather_item_list;
@@ -1566,8 +1566,9 @@ TEST_F(BirchModelTest, DuplicateLastActiveAndRecentTabItem) {
   model->SetRecentTabItems(std::move(tab_item_list));
 
   std::vector<BirchLastActiveItem> last_active_item_list;
-  last_active_item_list.emplace_back(
-      u"last active", GURL("https://www.example.com/"), ui::ImageModel());
+  last_active_item_list.emplace_back(u"last active",
+                                     GURL("https://www.example.com/"),
+                                     base::Time(), ui::ImageModel());
   model->SetLastActiveItems(std::move(last_active_item_list));
 
   // The last active item has the higher priority and hence is shown.
@@ -1702,8 +1703,9 @@ TEST_F(BirchModelTest, LastActiveItemShownByTime) {
 
   // Create a last active item.
   std::vector<BirchLastActiveItem> last_active_item_list;
-  last_active_item_list.emplace_back(
-      u"last active", GURL("https://www.example.com/"), ui::ImageModel());
+  last_active_item_list.emplace_back(u"last active",
+                                     GURL("https://www.example.com/"),
+                                     base::Time(), ui::ImageModel());
   model->SetLastActiveItems(std::move(last_active_item_list));
 
   // The first time we query for items, it is shown.

@@ -113,7 +113,7 @@ TEST_F(BirchLastActiveProviderTest, RequestBirchDataFetch) {
 
   // Once the favicon is fetched the birch model is populated.
   provider.OnGotFaviconImage(u"title", GURL("http://example.com/"),
-                             image_result);
+                             base::Time(), image_result);
   auto* birch_model = Shell::Get()->birch_model();
   EXPECT_EQ(birch_model->GetLastActiveItemsForTest().size(), 1u);
 

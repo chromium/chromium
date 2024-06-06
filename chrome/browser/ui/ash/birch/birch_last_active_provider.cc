@@ -30,9 +30,11 @@ BirchLastActiveProvider::~BirchLastActiveProvider() = default;
 
 void BirchLastActiveProvider::RequestBirchDataFetch() {
   // Get the last active URL. The query results are sorted most-recent first, so
-  // we only need to get the first entry to find the last active URL.
+  // we only need to get the first entry to find the last active URL. We only
+  // care about URLs in the last week.
   history::QueryOptions options;
   options.max_count = 1;
+  options.SetRecentDayRange(7);
   history_service_->QueryHistory(
       u"", options,
       base::BindOnce(&BirchLastActiveProvider::OnGotHistory,
@@ -51,6 +53,7 @@ void BirchLastActiveProvider::OnGotHistory(history::QueryResults results) {
   if (last_active.url() == previous_url_) {
     std::vector<BirchLastActiveItem> last_active_items;
     last_active_items.emplace_back(last_active.title(), last_active.url(),
+                                   last_active.last_visit(),
                                    ui::ImageModel::FromImage(previous_image_));
     Shell::Get()->birch_model()->SetLastActiveItems(
         std::move(last_active_items));
@@ -62,13 +65,14 @@ void BirchLastActiveProvider::OnGotHistory(history::QueryResults results) {
       last_active.url(),
       base::BindOnce(&BirchLastActiveProvider::OnGotFaviconImage,
                      weak_factory_.GetWeakPtr(), last_active.title(),
-                     last_active.url()),
+                     last_active.url(), last_active.last_visit()),
       &cancelable_task_tracker_);
 }
 
 void BirchLastActiveProvider::OnGotFaviconImage(
     const std::u16string& title,
     const GURL& url,
+    base::Time last_visit,
     const favicon_base::FaviconImageResult& image_result) {
   // Don't show the result if there's no icon available (should be rare).
   if (image_result.image.IsEmpty()) {
@@ -77,7 +81,7 @@ void BirchLastActiveProvider::OnGotFaviconImage(
   }
   // Populate the BirchModel with this URL.
   std::vector<BirchLastActiveItem> last_active_items;
-  last_active_items.emplace_back(title, url,
+  last_active_items.emplace_back(title, url, last_visit,
                                  ui::ImageModel::FromImage(image_result.image));
   Shell::Get()->birch_model()->SetLastActiveItems(std::move(last_active_items));
 
