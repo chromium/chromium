@@ -55,11 +55,6 @@ interface CameraAppDeviceProvider {
   // feature.
   IsSupported() => (bool is_supported);
 
-  // Add/Remove a virtual device for recording stream according to |enabled|.
-  // The virtual device has the same config as |device_id| except facing
-  // attribute.
-  SetVirtualDeviceEnabled(string device_id, bool enabled) => (bool success);
-
   // Check if the device with |source_id| is in use.
   IsDeviceInUse(string source_id) => (bool in_use);
 };

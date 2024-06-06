@@ -58,29 +58,6 @@ void CameraAppDeviceProviderImpl::IsSupported(IsSupportedCallback callback) {
   bridge_->IsSupported(std::move(callback));
 }
 
-void CameraAppDeviceProviderImpl::SetVirtualDeviceEnabled(
-    const std::string& source_id,
-    bool enabled,
-    SetVirtualDeviceEnabledCallback callback) {
-  mapping_callback_.Run(
-      source_id,
-      base::BindPostTaskToCurrentDefault(base::BindOnce(
-          &CameraAppDeviceProviderImpl::SetVirtualDeviceEnabledWithDeviceId,
-          weak_ptr_factory_.GetWeakPtr(), enabled, std::move(callback))));
-}
-
-void CameraAppDeviceProviderImpl::SetVirtualDeviceEnabledWithDeviceId(
-    bool enabled,
-    SetVirtualDeviceEnabledCallback callback,
-    const std::optional<std::string>& device_id) {
-  if (!device_id.has_value()) {
-    std::move(callback).Run(false);
-    return;
-  }
-
-  bridge_->SetVirtualDeviceEnabled(*device_id, enabled, std::move(callback));
-}
-
 void CameraAppDeviceProviderImpl::IsDeviceInUse(
     const std::string& source_id,
     IsDeviceInUseCallback callback) {

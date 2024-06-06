@@ -722,34 +722,6 @@ export class DeviceOperator {
   }
 
   /**
-   * Enables/Disables virtual device on target camera device. The extra
-   * stream will be reported as virtual video device from
-   * navigator.mediaDevices.enumerateDevices().
-   *
-   * @param deviceId The id of target camera device.
-   * @param enabled True for enabling virtual device.
-   */
-  async setVirtualDeviceEnabled(deviceId: string, enabled: boolean):
-      Promise<void> {
-    assert(this.deviceProvider !== null);
-    // TODO(pihsun): Check if there's actually case that deviceId is empty
-    // string here.
-    if (deviceId !== '') {
-      await this.deviceProvider.setVirtualDeviceEnabled(deviceId, enabled);
-    }
-  }
-
-  /**
-   * Enables/Disables the multiple streams feature for video recording on the
-   * target camera device.
-   */
-  async setMultipleStreamsEnabled(deviceId: string, enabled: boolean):
-      Promise<void> {
-    const device = await this.getDevice(deviceId);
-    await device.setMultipleStreamsEnabled(enabled);
-  }
-
-  /**
    * Registers a document corners observer and triggers |callback| if the
    * detected corners are updated.
    *

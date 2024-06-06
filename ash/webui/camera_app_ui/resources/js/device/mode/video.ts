@@ -4,13 +4,11 @@
 
 import {
   assert,
-  assertExists,
   assertInstanceof,
 } from '../../assert.js';
 import {AsyncJobQueue} from '../../async_job_queue.js';
 import * as dom from '../../dom.js';
 import {reportError} from '../../error.js';
-import * as expert from '../../expert.js';
 import * as h264 from '../../h264.js';
 import {I18nString} from '../../i18n_string.js';
 import {LowStorageActionType, sendLowStorageEvent} from '../../metrics.js';
@@ -46,8 +44,6 @@ import {
 import {getFpsRangeFromConstraints, sleep} from '../../util.js';
 import {WaitableEvent} from '../../waitable_event.js';
 import {StreamConstraints} from '../stream_constraints.js';
-import {StreamManager} from '../stream_manager.js';
-import {StreamManagerChrome} from '../stream_manager_chrome.js';
 
 import {ModeBase, ModeFactory} from './mode_base.js';
 import {PhotoResult} from './photo.js';
@@ -225,8 +221,6 @@ type RecordType = typeof RecordType[keyof typeof RecordType];
 export class Video extends ModeBase {
   private readonly captureResolution: Resolution;
 
-  private captureStream: MediaStream|null = null;
-
   /**
    * MediaRecorder object to record motion pictures.
    */
@@ -280,7 +274,6 @@ export class Video extends ModeBase {
 
   constructor(
       video: PreviewVideo,
-      private readonly captureConstraints: StreamConstraints|null,
       captureResolution: Resolution|null,
       private readonly snapshotResolution: Resolution|null,
       facing: Facing,
@@ -300,13 +293,6 @@ export class Video extends ModeBase {
 
   override async clear(): Promise<void> {
     await this.stopCapture();
-
-    if (StreamManagerChrome.getInstance().getCaptureStream() !== null) {
-      StreamManagerChrome.getInstance().stopCaptureStream();
-    } else if (this.captureStream !== null) {
-      await StreamManager.getInstance().closeCaptureStream(this.captureStream);
-    }
-    this.captureStream = null;
   }
 
   /**
@@ -521,9 +507,6 @@ export class Video extends ModeBase {
   }
 
   private getRecordingStream(): MediaStream {
-    if (this.captureStream !== null) {
-      return this.captureStream;
-    }
     return this.video.getStream();
   }
 
@@ -561,22 +544,6 @@ export class Video extends ModeBase {
       throw new CanceledError('Recording stopped');
     }
 
-    if (this.captureStream === null) {
-      if (expert.isEnabled(
-              expert.ExpertOption.ENABLE_MULTISTREAM_RECORDING_CHROME)) {
-        this.captureStream =
-            assertExists(StreamManagerChrome.getInstance().getCaptureStream());
-      } else if (this.captureConstraints !== null) {
-        this.captureStream =
-            await StreamManager.getInstance().openCaptureStream(
-                this.captureConstraints);
-      }
-    }
-
-    if (this.stopped) {
-      throw new CanceledError('Recording stopped');
-    }
-
     // TODO(b/191950622): Remove complex state logic bind with this enable flag
     // after GIF recording move outside of expert mode and replace it with
     // |RECORD_TYPE_GIF|.
@@ -602,8 +569,6 @@ export class Video extends ModeBase {
       }
 
       const gifName = (new Filenamer()).newVideoName(VideoType.GIF);
-      // TODO(b/191950622): Close capture stream before onGifCaptureDone()
-      // opening preview page when multi-stream recording enabled.
       return [this.handler.onGifCaptureDone({
         name: gifName,
         gifSaver,
@@ -739,8 +704,6 @@ export class Video extends ModeBase {
    * by stop shutter or time out over 5 seconds.
    */
   private async captureGif(): Promise<GifSaver> {
-    // TODO(b/191950622): Grab frames from capture stream when multistream
-    // enabled.
     const video = this.video.video;
     const videoTrack = this.getVideoTrack();
     let {videoWidth: width, videoHeight: height} = video;
@@ -940,25 +903,12 @@ export class VideoFactory extends ModeFactory {
   }
 
   produce(): ModeBase {
-    let captureConstraints = null;
-    if (expert.isEnabled(expert.ExpertOption.ENABLE_MULTISTREAM_RECORDING)) {
-      const {width, height} = assertExists(this.captureResolution);
-      captureConstraints = {
-        deviceId: this.constraints.deviceId,
-        audio: this.constraints.audio,
-        video: {
-          frameRate: this.constraints.video.frameRate,
-          width,
-          height,
-        },
-      };
-    }
     assert(this.previewVideo !== null);
     assert(this.facing !== null);
     const frameRate =
         getFpsRangeFromConstraints(this.constraints.video.frameRate).minFps;
     return new Video(
-        this.previewVideo, captureConstraints, this.captureResolution,
-        this.snapshotResolution, this.facing, this.handler, frameRate);
+        this.previewVideo, this.captureResolution, this.snapshotResolution,
+        this.facing, this.handler, frameRate);
   }
 }
