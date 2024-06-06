@@ -271,9 +271,11 @@ SidePanel::SidePanel(BrowserView* browser_view,
                      HorizontalAlignment horizontal_alignment)
     : views::AnimationDelegateViews(this),
       browser_view_(browser_view),
-      visible_bounds_view_clipper_(
-          std::make_unique<VisibleBoundsViewClipper>(this)),
       horizontal_alignment_(horizontal_alignment) {
+  if (lens::features::IsLensOverlayEnabled()) {
+    visible_bounds_view_clipper_ =
+        std::make_unique<VisibleBoundsViewClipper>(this);
+  }
   std::unique_ptr<BorderView> border_view =
       std::make_unique<BorderView>(browser_view);
   border_view_ = border_view.get();
