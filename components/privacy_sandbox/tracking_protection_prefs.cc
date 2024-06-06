@@ -56,6 +56,11 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterTimePref(prefs::kTrackingProtectionSilentOnboardedSince,
                              base::Time());
 
+  // Tracking Protection Reminder Prefs
+  registry->RegisterIntegerPref(
+      prefs::kTrackingProtectionReminderStatus,
+      static_cast<int>(TrackingProtectionReminderStatus::kUnset));
+
   // Tracking Protection Settings Prefs
   registry->RegisterBooleanPref(
       prefs::kBlockAll3pcToggleEnabled, false,

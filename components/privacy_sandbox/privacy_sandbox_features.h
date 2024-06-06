@@ -254,6 +254,10 @@ extern const base::FeatureParam<bool> kPsRedesignAdPrivacyPageEnableToggles;
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kTrackingProtectionReminder);
 
+// Defines if the reminder should be silent.
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+extern const base::FeatureParam<bool> kTrackingProtectionIsSilentReminder;
+
 // Enables Activity Type Storage
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kPrivacySandboxActivityTypeStorage);

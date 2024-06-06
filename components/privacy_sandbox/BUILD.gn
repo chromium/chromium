@@ -58,7 +58,8 @@ source_set("tracking_protection_reminder_service") {
 
   deps = [
     ":features",
-    ":privacy_sandbox_prefs",
+    ":tracking_protection_onboarding",
+    ":tracking_protection_prefs",
     "//components/keyed_service/core:core",
     "//components/prefs",
   ]
@@ -214,6 +215,7 @@ source_set("unit_tests") {
   sources = [
     "privacy_sandbox_notice_storage_unittest.cc",
     "tracking_protection_onboarding_unittest.cc",
+    "tracking_protection_reminder_service_unittest.cc",
   ]
 
   deps = [
@@ -222,6 +224,7 @@ source_set("unit_tests") {
     ":privacy_sandbox_prefs",
     ":tracking_protection_onboarding",
     ":tracking_protection_prefs",
+    ":tracking_protection_reminder_service",
     ":tracking_protection_settings",
     "//base/test:test_support",
     "//components/content_settings/core/common",

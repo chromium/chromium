@@ -79,6 +79,12 @@ inline constexpr char kTrackingProtectionSilentEligibleSince[] =
 inline constexpr char kTrackingProtectionSilentOnboardedSince[] =
     "tracking_protection.tracking_protection_silent_onboarded_since";
 
+// Tracking Protection Reminder Prefs.
+
+// Unsynced pref that indicates the reminder status for a profile.
+inline constexpr char kTrackingProtectionReminderStatus[] =
+    "tracking_protection.reminder_status";
+
 // Tracking Protection Settings Prefs.
 
 // Synced boolean that indicates whether the "block all 3pc" toggle on the
@@ -152,6 +158,17 @@ enum class TrackingProtectionOnboardingAckAction {
   // Acked by clicking the close button/ESC/Swipe away.
   kClosed = 5,
   kMaxValue = kClosed,
+};
+
+// Tracking protection reminder statues.
+enum class TrackingProtectionReminderStatus {
+  kUnset = 0,
+  kInvalid = 1,
+  kPendingReminder = 2,
+  kExperiencedReminder = 3,
+  kModeBUserSkipped = 4,
+  kFeatureDisabledSkipped = 5,
+  kMaxValue = kFeatureDisabledSkipped,
 };
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry);

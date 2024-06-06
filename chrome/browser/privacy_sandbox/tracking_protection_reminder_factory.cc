@@ -5,6 +5,7 @@
 #include "chrome/browser/privacy_sandbox/tracking_protection_reminder_factory.h"
 
 #include "base/no_destructor.h"
+#include "chrome/browser/privacy_sandbox/tracking_protection_onboarding_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "components/privacy_sandbox/tracking_protection_reminder_service.h"
@@ -26,12 +27,15 @@ TrackingProtectionReminderFactory::TrackingProtectionReminderFactory()
                                  // Exclude Ash login and lockscreen.
                                  ProfileSelections::Builder()
                                      .WithAshInternals(ProfileSelection::kNone)
-                                     .Build()) {}
+                                     .Build()) {
+  DependsOn(TrackingProtectionOnboardingFactory::GetInstance());
+}
 
 std::unique_ptr<KeyedService>
 TrackingProtectionReminderFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<privacy_sandbox::TrackingProtectionReminderService>(
-      profile->GetPrefs());
+      profile->GetPrefs(),
+      TrackingProtectionOnboardingFactory::GetForProfile(profile));
 }
