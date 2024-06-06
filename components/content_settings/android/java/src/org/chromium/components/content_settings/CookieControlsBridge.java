@@ -118,8 +118,12 @@ public class CookieControlsBridge {
             @CookieBlocking3pcdStatus int blockingStatus,
             long expiration,
             List<TrackingProtectionFeature> features) {
+        // Old cookies API.
         mObserver.onStatusChanged(
                 controlsVisible, protectionsOn, enforcement, blockingStatus, expiration);
+        // New Tracking Protection API.
+        mObserver.onTrackingProtectionStatusChanged(
+                controlsVisible, protectionsOn, expiration, features);
     }
 
     @CalledByNative

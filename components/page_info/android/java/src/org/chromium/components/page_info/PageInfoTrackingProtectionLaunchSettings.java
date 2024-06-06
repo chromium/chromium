@@ -179,7 +179,7 @@ public class PageInfoTrackingProtectionLaunchSettings extends BaseSiteSettingsFr
                         .show();
     }
 
-    public void setCookieStatus(
+    public void setTrackingProtectionStatus(
             boolean controlsVisible,
             boolean protectionsOn,
             @CookieControlsEnforcement int enforcement,
