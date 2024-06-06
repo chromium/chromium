@@ -22,9 +22,6 @@ template("symlink") {
       rebase_path(invoker.source, get_path_info(invoker.output, "dir")),
       rebase_path(invoker.output, root_build_dir),
     ]
-    if (defined(invoker.touch) && invoker.touch) {
-      args += [ "--touch=" + rebase_path(invoker.source, root_build_dir) ]
-    }
   }
 }
 
