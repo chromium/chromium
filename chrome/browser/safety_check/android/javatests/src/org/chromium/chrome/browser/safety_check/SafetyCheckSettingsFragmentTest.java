@@ -46,6 +46,9 @@ import org.chromium.components.sync.UserSelectableType;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.Collections;
+import java.util.Set;
+
 /** Tests {@link SafetyCheckSettingsFragment} together with {@link SafetyCheckViewBinder}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @DoNotBatch(
@@ -155,10 +158,13 @@ public class SafetyCheckSettingsFragmentTest {
                 });
     }
 
-    private void configureMockSyncService(boolean isSyncFeatureEnabled) {
-        when(mSyncService.isSyncFeatureEnabled()).thenReturn(isSyncFeatureEnabled);
-        when(mSyncService.getSelectedTypes())
-                .thenReturn(CollectionUtil.newHashSet(UserSelectableType.PASSWORDS));
+    private void configureMockSyncService(boolean isPasswordSyncEnabled) {
+        when(mSyncService.isSyncFeatureEnabled()).thenReturn(true);
+        Set<Integer> selectedTypes =
+                isPasswordSyncEnabled
+                        ? CollectionUtil.newHashSet(UserSelectableType.PASSWORDS)
+                        : Collections.EMPTY_SET;
+        when(mSyncService.getSelectedTypes()).thenReturn(selectedTypes);
         when(mSyncService.getAccountInfo())
                 .thenReturn(CoreAccountInfo.createFromEmailAndGaiaId(TEST_EMAIL_ADDRESS, "0"));
     }
@@ -168,8 +174,9 @@ public class SafetyCheckSettingsFragmentTest {
                 .thenReturn(usesSplitStores);
     }
 
-    private void verifyNullStateDisplayedCorrectly(boolean isSyncEnabled, boolean usesSplitStores) {
-        configureMockSyncService(isSyncEnabled);
+    private void verifyNullStateDisplayedCorrectly(
+            boolean isPasswordSyncEnabled, boolean usesSplitStores) {
+        configureMockSyncService(isPasswordSyncEnabled);
         configurePasswordManagerUtilBridge(usesSplitStores);
         createFragmentAndModel();
         // Binds the account model.
@@ -187,8 +194,8 @@ public class SafetyCheckSettingsFragmentTest {
         Preference safeBrowsing = mFragment.findPreference(SAFE_BROWSING);
         Preference updates = mFragment.findPreference(UPDATES);
 
-        assertEquals(!isSyncEnabled || usesSplitStores, passwordsLocal.isVisible());
-        assertEquals(isSyncEnabled, passwordsAccount.isVisible());
+        assertEquals(!isPasswordSyncEnabled || usesSplitStores, passwordsLocal.isVisible());
+        assertEquals(isPasswordSyncEnabled, passwordsAccount.isVisible());
         assertEquals("", passwordsLocal.getSummary());
         assertEquals("", passwordsAccount.getSummary());
         assertEquals("", safeBrowsing.getSummary());
@@ -198,19 +205,22 @@ public class SafetyCheckSettingsFragmentTest {
     @Test
     @MediumTest
     public void testNullStateDisplayedCorrectlySyncOffNoUsingSplitStores() {
-        verifyNullStateDisplayedCorrectly(/* isSyncEnabled= */ false, /* usesSplitStores= */ false);
+        verifyNullStateDisplayedCorrectly(
+                /* isPasswordSyncEnabled= */ false, /* usesSplitStores= */ false);
     }
 
     @Test
     @MediumTest
     public void testNullStateDisplayedCorrectlySyncOffUsingSplitStores() {
-        verifyNullStateDisplayedCorrectly(/* isSyncEnabled= */ false, /* usesSplitStores= */ true);
+        verifyNullStateDisplayedCorrectly(
+                /* isPasswordSyncEnabled= */ false, /* usesSplitStores= */ true);
     }
 
     @Test
     @MediumTest
     public void testNullStateDisplayedCorrectlySyncOnNoUsingSplitStores() {
-        verifyNullStateDisplayedCorrectly(/* isSyncEnabled= */ true, /* usesSplitStores= */ false);
+        verifyNullStateDisplayedCorrectly(
+                /* isPasswordSyncEnabled= */ true, /* usesSplitStores= */ false);
     }
 
     @Test

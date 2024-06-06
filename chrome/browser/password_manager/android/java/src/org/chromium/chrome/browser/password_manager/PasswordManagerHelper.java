@@ -359,15 +359,15 @@ public class PasswordManagerHelper {
     }
 
     /**
-     * Checks whether the sync feature is enabled and the user has chosen to sync passwords. Note
-     * that this doesn't mean that passwords are actively syncing.
+     * Checks whether the user has chosen to store passwords in their Google Account (no matter
+     * whether sync-the-feature is on or not). Note that this doesn't mean that passwords are
+     * actively syncing.
      *
      * @param syncService the service to query about the sync status.
      * @return true if syncing passwords is enabled
      */
     public static boolean hasChosenToSyncPasswords(SyncService syncService) {
         return syncService != null
-                && syncService.isSyncFeatureEnabled()
                 && syncService.getSelectedTypes().contains(UserSelectableType.PASSWORDS);
     }
 
