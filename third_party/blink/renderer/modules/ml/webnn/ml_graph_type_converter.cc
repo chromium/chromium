@@ -447,8 +447,6 @@ std::optional<base::span<const uint32_t>> GetConv2DFilterPermutation(
     default:
       NOTREACHED_NORETURN();
   }
-
-  NOTREACHED_NORETURN();
 }
 
 ActivationPtr CreateActivation(const OperandToIdMap& operand_to_id_map,
