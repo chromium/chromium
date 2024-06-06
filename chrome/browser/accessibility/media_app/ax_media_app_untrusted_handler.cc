@@ -383,6 +383,7 @@ void AXMediaAppUntrustedHandler::PageMetadataUpdated(
   const bool is_first_load = page_metadata_.empty();
 
   if (is_first_load) {
+    base::UmaHistogramBoolean("Accessibility.PdfOcr.MediaApp.PdfLoaded", true);
     for (size_t i = 0; i < num_pages; ++i) {
       if (page_metadata_.contains(page_metadata.at(i)->id)) {
         mojo::ReportBadMessage(

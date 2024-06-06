@@ -277,6 +277,52 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, PageMetadataUpdated) {
 }
 
 IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
+                       CheckUMAMetricsForPageMetadataUpdated) {
+  base::HistogramTester histograms;
+  const size_t kTestNumPages = 3u;
+  std::vector<PageMetadataPtr> fake_metadata =
+      CreateFakePageMetadata(kTestNumPages);
+  handler_->PageMetadataUpdated(ClonePageMetadataPtrs(fake_metadata));
+
+  histograms.ExpectBucketCount("Accessibility.PdfOcr.MediaApp.PdfLoaded", true,
+                               /*expected_count=*/1);
+  histograms.ExpectTotalCount("Accessibility.PdfOcr.MediaApp.PdfLoaded",
+                              /*expected_count=*/1);
+  WaitForOcringPages(1u);
+  histograms.ExpectBucketCount("Accessibility.PdfOcr.MediaApp.PdfLoaded", true,
+                               /*expected_count=*/1);
+  histograms.ExpectTotalCount("Accessibility.PdfOcr.MediaApp.PdfLoaded",
+                              /*expected_count=*/1);
+  WaitForOcringPages(1u);
+  histograms.ExpectBucketCount("Accessibility.PdfOcr.MediaApp.PdfLoaded", true,
+                               /*expected_count=*/1);
+  histograms.ExpectTotalCount("Accessibility.PdfOcr.MediaApp.PdfLoaded",
+                              /*expected_count=*/1);
+  WaitForOcringPages(1u);
+  histograms.ExpectBucketCount("Accessibility.PdfOcr.MediaApp.PdfLoaded", true,
+                               /*expected_count=*/1);
+  histograms.ExpectTotalCount("Accessibility.PdfOcr.MediaApp.PdfLoaded",
+                              /*expected_count=*/1);
+  WaitForOcringPages(1u);
+  histograms.ExpectBucketCount("Accessibility.PdfOcr.MediaApp.PdfLoaded", true,
+                               /*expected_count=*/1);
+  histograms.ExpectTotalCount("Accessibility.PdfOcr.MediaApp.PdfLoaded",
+                              /*expected_count=*/1);
+
+  // 'Rotate' the third page.
+  fake_metadata[2]->rect.set_height(kTestPageWidth);
+  fake_metadata[2]->rect.set_width(kTestPageHeight);
+  handler_->PageMetadataUpdated(ClonePageMetadataPtrs(fake_metadata));
+  handler_->PageContentsUpdated("PageC");
+  WaitForOcringPages(1u);
+
+  histograms.ExpectBucketCount("Accessibility.PdfOcr.MediaApp.PdfLoaded", true,
+                               /*expected_count=*/1);
+  histograms.ExpectTotalCount("Accessibility.PdfOcr.MediaApp.PdfLoaded",
+                              /*expected_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest,
                        PageMetadataUpdatedNoDuplicatePageIds) {
   handler_->DisableStatusNodesForTesting();
   handler_->DisablePostamblePageForTesting();
