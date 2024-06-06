@@ -8,8 +8,10 @@
 #include <memory>
 
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "chromeos/ash/components/kiosk/vision/webui/kiosk_vision_internals.mojom.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/browser/webui_config.h"
@@ -21,6 +23,8 @@
 #include "ui/webui/mojo_web_ui_controller.h"
 
 namespace ash::kiosk_vision {
+
+BASE_DECLARE_FEATURE(kEnableKioskVisionInternalsPage);
 
 // Alias for a callback with the same signature as the webui helper function
 // `webui::SetupWebUIDataSource`.
@@ -66,6 +70,8 @@ class UIConfig : public content::WebUIConfig {
   ~UIConfig() override;
 
   // `content::WebUIConfig` implementation:
+  bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
+
   std::unique_ptr<content::WebUIController> CreateWebUIController(
       content::WebUI* web_ui,
       const GURL& url) override;

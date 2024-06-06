@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "chromeos/ash/components/grit/kiosk_vision_internals_resources.h"
 #include "chromeos/ash/components/grit/kiosk_vision_internals_resources_map.h"
 #include "chromeos/ash/components/kiosk/vision/webui/constants.h"
@@ -25,6 +26,10 @@
 #include "ui/webui/mojo_web_ui_controller.h"
 
 namespace ash::kiosk_vision {
+
+BASE_FEATURE(kEnableKioskVisionInternalsPage,
+             "EnableKioskVisionInternalsPage",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 UIController::UIController(content::WebUI* web_ui,
                            SetupWebUIDataSourceCallback setup_callback)
@@ -59,6 +64,10 @@ UIConfig::UIConfig(SetupWebUIDataSourceCallback setup_callback)
       setup_callback_(std::move(setup_callback)) {}
 
 UIConfig::~UIConfig() = default;
+
+bool UIConfig::IsWebUIEnabled(content::BrowserContext* browser_context) {
+  return base::FeatureList::IsEnabled(kEnableKioskVisionInternalsPage);
+}
 
 std::unique_ptr<content::WebUIController> UIConfig::CreateWebUIController(
     content::WebUI* web_ui,

@@ -451,7 +451,9 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (url.host_piece() ==
-      ash::kiosk_vision::kChromeUIKioskVisionInternalsHost) {
+          ash::kiosk_vision::kChromeUIKioskVisionInternalsHost &&
+      base::FeatureList::IsEnabled(
+          ash::kiosk_vision::kEnableKioskVisionInternalsPage)) {
     return &NewWebUI<ash::kiosk_vision::UIController>;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
