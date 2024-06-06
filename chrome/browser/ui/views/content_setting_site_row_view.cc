@@ -16,7 +16,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/controls/image_view.h"
@@ -64,9 +63,7 @@ ContentSettingSiteRowView::ContentSettingSiteRowView(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kUnbounded));
-  if (features::IsChromeRefresh2023()) {
-    title_label->SetTextStyle(views::style::STYLE_BODY_3_MEDIUM);
-  }
+  title_label->SetTextStyle(views::style::STYLE_BODY_3_MEDIUM);
 
   toggle_button_ = AddChildView(std::make_unique<views::ToggleButton>(
       base::BindRepeating(&ContentSettingSiteRowView::OnToggleButtonPressed,
