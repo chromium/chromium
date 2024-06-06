@@ -1038,6 +1038,33 @@ bool KeyboardCapability::HasRightAltKey(int device_id) const {
   return HasRightAltKey(*keyboard);
 }
 
+bool KeyboardCapability::HasRightAltKeyForOobe(
+    const KeyboardDevice& keyboard) const {
+  if (modifier_split_dogfood_controller_->IsEnabled()) {
+    return false;
+  }
+
+  if (ash::features::IsSplitKeyboardRefactorEnabled()) {
+    return true;
+  }
+
+  if (kRightAltBlocklist.contains(board_name_)) {
+    return false;
+  }
+
+  return keyboard.type == InputDeviceType::INPUT_DEVICE_INTERNAL &&
+         keyboard.has_assistant_key;
+}
+
+bool KeyboardCapability::HasRightAltKeyForOobe(int device_id) const {
+  auto keyboard = FindKeyboardWithId(device_id);
+  if (!keyboard) {
+    return false;
+  }
+
+  return HasRightAltKeyForOobe(*keyboard);
+}
+
 ui::mojom::MetaKey KeyboardCapability::GetMetaKey(
     const KeyboardDevice& keyboard) const {
   const auto device_type = GetDeviceType(keyboard);

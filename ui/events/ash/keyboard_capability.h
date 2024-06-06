@@ -369,6 +369,10 @@ class KeyboardCapability : public InputDeviceEventObserver {
   bool HasRightAltKey(const KeyboardDevice& keyboard) const;
   bool HasRightAltKey(int device_id) const;
 
+  // Check if the RightAlt key exists, but only for on OOBE screen.
+  bool HasRightAltKeyForOobe(const KeyboardDevice& keyboard) const;
+  bool HasRightAltKeyForOobe(int device_id) const;
+
   // Returns the appropriate meta key present on the given keyboard.
   ui::mojom::MetaKey GetMetaKey(const KeyboardDevice& keyboard) const;
 

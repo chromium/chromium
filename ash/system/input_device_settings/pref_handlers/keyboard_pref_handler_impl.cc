@@ -26,6 +26,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/ash/mojom/extended_fkeys_modifier.mojom-shared.h"
 #include "ui/events/ash/mojom/extended_fkeys_modifier.mojom.h"
 #include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
@@ -440,8 +441,19 @@ mojom::KeyboardSettingsPtr GetDefaultKeyboardSettings(
                                     default_settings_dict);
   }
 
+  base::Value::Dict settings_dict;
+  if (Shell::Get()->keyboard_capability()->HasRightAltKeyForOobe(keyboard.id)) {
+    base::Value::Dict modifier_remappings_dict;
+    modifier_remappings_dict.Set(
+        base::NumberToString(
+            static_cast<int>(ui::mojom::ModifierKey::kAssistant)),
+        static_cast<int>(ui::mojom::ModifierKey::kCapsLock));
+    settings_dict.Set(prefs::kKeyboardSettingModifierRemappings,
+                      std::move(modifier_remappings_dict));
+  }
+
   return RetrieveKeyboardSettings(pref_service, keyboard_policies, keyboard,
-                                  /*settings_dict=*/{});
+                                  std::move(settings_dict));
 }
 
 base::Value::Dict ConvertModifierRemappingsToDict(
