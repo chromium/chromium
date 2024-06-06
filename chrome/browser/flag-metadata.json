@@ -2505,6 +2505,10 @@
     "owners": [ "tbansal@chromium.org", "chrome-intelligence-core@chromium.org"],
     "expiry_milestone":120
   },
+  {"name": "enable-chromeos-live-translate",
+   "owners": ["robsc@chromium.org", "amoylan@chromium.org", "zufeng@google.com"],
+   "expiry_milestone": 145
+  },
   {"name": "enable-chromeos-soda-languages",
    "owners": ["robsc@chromium.org", "amoylan@chromium.org"],
    "expiry_milestone": 140

@@ -4867,6 +4867,11 @@ const char kEnableLiveCaptionMultilangDescription[] =
     "Enables the multilingual Live Caption Feature which allows "
     "for many language choices and automated language choices.";
 
+const char kEnableCrOSLiveTranslateName[] = "Live Translate CrOS";
+const char kEnableCrOSLiveTranslateDescription[] =
+    "Enables the live translate feature on ChromeOS which allows for live "
+    "translation of captions into a target language.";
+
 const char kEnableCrOSSodaLanguagesName[] = "SODA language expansion";
 const char kEnableCrOSSodaLanguagesDescription[] =
     "Enable language expansion for SODA on device to "

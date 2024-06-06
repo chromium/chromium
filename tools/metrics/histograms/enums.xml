@@ -17977,6 +17977,7 @@ from previous Chrome versions.
   <int value="-1039889738" label="NativeNotifications:enabled"/>
   <int value="-1039555838" label="GamepadExtensions:enabled"/>
   <int value="-1039219684" label="ShoppingPageTypes:disabled"/>
+  <int value="-1039169415" label="LiveTranslate:enabled"/>
   <int value="-1037955654" label="FastPairHandshakeLongTermRefactor:disabled"/>
   <int value="-1037950113"
       label="ResamplingScrollEventsExperimentalPrediction:enabled"/>
@@ -19666,6 +19667,7 @@ from previous Chrome versions.
   <int value="-303006847"
       label="FriendlierSafeBrowsingSettingsStandardProtection:enabled"/>
   <int value="-302948746" label="DeferBeginMainFrameDuringLoading:disabled"/>
+  <int value="-302756891" label="LiveTranslate:disabled"/>
   <int value="-302407285" label="WipeDataOnChildAccountSignin:disabled"/>
   <int value="-302078301" label="RequestDesktopSiteDefaults:enabled"/>
   <int value="-301689561" label="PermissionQuietChip:disabled"/>

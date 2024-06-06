@@ -2832,6 +2832,9 @@ extern const char kEnableAccessibilityLiveCaptionDescription[];
 extern const char kEnableLiveCaptionMultilangName[];
 extern const char kEnableLiveCaptionMultilangDescription[];
 
+extern const char kEnableCrOSLiveTranslateName[];
+extern const char kEnableCrOSLiveTranslateDescription[];
+
 extern const char kEnableCrOSSodaLanguagesName[];
 extern const char kEnableCrOSSodaLanguagesDescription[];
 

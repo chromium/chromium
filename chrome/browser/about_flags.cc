@@ -7286,6 +7286,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(media::kLiveCaptionMultiLanguage)},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"enable-chromeos-live-translate",
+     flag_descriptions::kEnableCrOSLiveTranslateName,
+     flag_descriptions::kEnableCrOSLiveTranslateDescription,
+     kOsCrOS | kOsLacros, FEATURE_VALUE_TYPE(media::kLiveTranslate)},
     {"enable-chromeos-soda-languages",
      flag_descriptions::kEnableCrOSSodaLanguagesName,
      flag_descriptions::kEnableCrOSSodaLanguagesDescription,
