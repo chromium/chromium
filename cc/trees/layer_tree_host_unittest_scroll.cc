@@ -763,7 +763,8 @@ class LayerTreeHostScrollTestCaseWithChild : public LayerTreeHostScrollTest {
 };
 
 // TODO(crbug.com/41490731): Test is flaky on asan on multiple platforms.
-#if defined(ADDRESS_SANITIZER)
+// TODO(crbug.com/345499781): Test is flaky on Linux.
+#if defined(ADDRESS_SANITIZER) || defined(IS_LINUX)
 #define MAYBE_DeviceScaleFactor1_ScrollChild \
   DISABLED_DeviceScaleFactor1_ScrollChild
 #else
@@ -777,7 +778,8 @@ TEST_F(LayerTreeHostScrollTestCaseWithChild,
 }
 
 // TODO(crbug.com/41490731): Test is flaky on (at least) Mac and Linux asan.
-#if defined(ADDRESS_SANITIZER)
+// TODO(crbug.com/345499781): Test is flaky on Linux.
+#if defined(ADDRESS_SANITIZER) || defined(IS_LINUX)
 #define MAYBE_DeviceScaleFactor15_ScrollChild \
   DISABLED_DeviceScaleFactor15_ScrollChild
 #else
@@ -791,7 +793,8 @@ TEST_F(LayerTreeHostScrollTestCaseWithChild,
 }
 
 // TODO(crbug.com/41494888): Test is flaky on asan on multiple platforms.
-#if defined(ADDRESS_SANITIZER)
+// TODO(crbug.com/345499781): Test is flaky on Linux.
+#if defined(ADDRESS_SANITIZER) || defined(IS_LINUX)
 #define MAYBE_DeviceScaleFactor2_ScrollChild \
   DISABLED_DeviceScaleFactor2_ScrollChild
 #else
@@ -822,8 +825,9 @@ TEST_F(LayerTreeHostScrollTestCaseWithChild,
 
 // TODO(crbug.com/41494893): Test is flaky on Win asan.
 // TODO(crbug.com/41490731): Test is flaky on Mac asan.
+// TODO(crbug.com/345499781): Test is flaky on Linux.
 // Test is flaky on asan on multiple platforms.
-#if defined(ADDRESS_SANITIZER)
+#if defined(ADDRESS_SANITIZER) || defined(IS_LINUX)
 #define MAYBE_DeviceScaleFactor15_ScrollRootScrollLayer \
   DISABLED_DeviceScaleFactor15_ScrollRootScrollLayer
 #else
@@ -837,9 +841,10 @@ TEST_F(LayerTreeHostScrollTestCaseWithChild,
   RunTest(CompositorMode::THREADED);
 }
 
-// Test is flaky on asan on multiple platforms.
-#if defined(ADDRESS_SANITIZER)
 // TODO(crbug.com/41494746): Fix the flakiness on Mac ASan and re-enable.
+// TODO(crbug.com/345499781): Test is flaky on Linux.
+// Test is flaky on asan on multiple platforms.
+#if defined(ADDRESS_SANITIZER) || defined(IS_LINUX)
 #define MAYBE_DeviceScaleFactor2_ScrollRootScrollLayer \
   DISABLED_DeviceScaleFactor2_ScrollRootScrollLayer
 #else
