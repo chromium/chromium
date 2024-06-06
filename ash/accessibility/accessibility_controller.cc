@@ -2047,10 +2047,17 @@ void AccessibilityController::ToggleDictationFromSource(
 }
 
 void AccessibilityController::EnableSelectToSpeakWithDialog() {
-  // TODO(b/286006143): Return early or show a toast (depending on feedback from
-  // UX) if Select to Speak is blocked by a policy.
   if (!::features::IsAccessibilitySelectToSpeakShortcutEnabled() ||
       select_to_speak().enabled()) {
+    return;
+  }
+
+  if (active_user_prefs_
+          ->FindPreference(prefs::kAccessibilitySelectToSpeakEnabled)
+          ->IsManaged() &&
+      !active_user_prefs_->GetBoolean(
+          prefs::kAccessibilitySelectToSpeakEnabled)) {
+    // Don't show the dialog if Select to speak has been disabled by a policy.
     return;
   }
 

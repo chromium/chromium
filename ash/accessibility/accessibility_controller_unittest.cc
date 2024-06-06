@@ -2112,4 +2112,28 @@ TEST_F(AccessibilityControllerSelectToSpeakKeyboardShortcutTest,
   ASSERT_EQ(nullptr, controller->GetConfirmationDialogForTest());
 }
 
+TEST_F(AccessibilityControllerSelectToSpeakKeyboardShortcutTest,
+       NoDialogIfDisabledByPolicy) {
+  AccessibilityController* controller =
+      Shell::Get()->accessibility_controller();
+  TestAccessibilityControllerClient client;
+  controller->SetClient(&client);
+
+  SetDialogAcceptedPref(false);
+  ASSERT_FALSE(controller->select_to_speak().enabled());
+
+  // Ensure that Select to Speak is disabled by policy.
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+  static_cast<TestingPrefServiceSimple*>(prefs)->SetManagedPref(
+      prefs::kAccessibilitySelectToSpeakEnabled,
+      std::make_unique<base::Value>(false));
+
+  controller->EnableSelectToSpeakWithDialog();
+
+  // No dialog should be shown if Select to speak is disabled by a policy.
+  ASSERT_EQ(nullptr, controller->GetConfirmationDialogForTest());
+  ASSERT_FALSE(controller->select_to_speak().enabled());
+}
+
 }  // namespace ash
