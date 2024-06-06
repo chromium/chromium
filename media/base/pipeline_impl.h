@@ -137,22 +137,6 @@ class MEDIA_EXPORT PipelineImpl : public Pipeline {
   friend class MediaLog;
   class RendererWrapper;
 
-  // Pipeline states, as described above.
-  // TODO(alokp): Move this to RendererWrapper after removing the references
-  // from MediaLog.
-  enum State {
-    kCreated,
-    kStarting,
-    kSeeking,
-    kPlaying,
-    kStopping,
-    kStopped,
-    kSuspending,
-    kSuspended,
-    kResuming,
-  };
-  static const char* GetStateString(State state);
-
   // Create a Renderer asynchronously. Must be called on the main task runner
   // and the callback will be called on the main task runner as well.
   void AsyncCreateRenderer(std::optional<RendererType> renderer_type,
