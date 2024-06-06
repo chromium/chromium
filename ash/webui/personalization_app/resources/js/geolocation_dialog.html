@@ -1,10 +1,6 @@
 <style include="cr-icons common cros-button-style">
-  #dialogBody {
-    padding-top: 10px;
-  }
-
   cr-dialog::part(dialog) {
-    width: 370px;
+    width: 410px;
   }
 </style>
 
@@ -13,7 +9,7 @@
     $i18n{systemGeolocationDialogTitle}
   </div>
   <div slot="body" id="dialogBody">
-    <localized-link localized-string="$i18n{systemGeolocationDialogBody}"
+    <localized-link localized-string="[[bodyText]]"
         link-url="$i18n{geolocationAccuracyLearnMoreUrl}">
     </localized-link>
   </div>
@@ -21,12 +17,12 @@
     <cr-button id="cancelButton"
         class="cancel-button"
         on-click="onCancelClicked_">
-      $i18n{systemGeolocationDialogCancelButton}
+      [[cancelButtonText]]
     </cr-button>
     <cr-button id="confirmButton"
         class="action-button"
         on-click="onEnableClicked_">
-      $i18n{systemGeolocationDialogConfirmButton}
+      [[confirmButtonText]]
     </cr-button>
   </div>
 </cr-dialog>

@@ -65,6 +65,20 @@
     margin-inline-end: 5px;
     min-width: var(--iron-icon-width);
   }
+
+  #autoMode {
+    overflow: visible;
+  }
+
+  #infoIcon {
+    border-radius: 50%;
+    bottom: -2px;
+    box-shadow: inset 0 0 0 3px var(--cros-sys-primary_container);
+    fill: var(--cros-sys-primary_container);
+    position: absolute;
+    right: -2px;
+    stroke: var(--cros-text-color-primary);
+  }
 </style>
 <div id="container">
   <dynamic-color></dynamic-color>
@@ -98,21 +112,21 @@
         role="radio">
       <iron-icon icon="personalization:auto" aria-hidden="true"></iron-icon>
       <div class="text">$i18n{autoColorMode}</div>
+      <template is="dom-if"
+          if="[[computeShouldShowTooltipIcon_(colorModeAutoScheduleEnabled_, geolocationPermissionEnabled_)]]"
+          restamp>
+        <iron-icon id="infoIcon" icon="cr:error" title="$i18n{errorTooltipAutoColorMode}">
+        </iron-icon>
+      </template>
     </cr-button>
   </iron-selector>
-  <template is="dom-if" if="[[shouldShowGeolocationWarningText_]]" restamp>
-    <div id="geolocationWarningDiv">
-      <iron-icon id="warningIcon" icon="cr20:warning"></iron-icon>
-      <localized-link
-          on-link-clicked="openGeolocationDialog_"
-          localized-string="[[geolocationWarningText_]]">
-      </localized-link>
-    </div>
-  </template>
 </div>
 
 <template is="dom-if" if="[[shouldShowGeolocationDialog_]]" restamp>
   <geolocation-dialog id="geolocationDialog"
+      body-text="[[computeAutoModeGeolocationDialogText_(sunriseTime_, sunsetTime_)]]"
+      confirm-button-text="$i18n{autoModeGeolocationDialogConfirmButton}"
+      cancel-button-text="$i18n{autoModeGeolocationDialogCancelButton}"
       on-geolocation-enabled="onGeolocationEnabled_"
       on-close="onGeolocationDialogClose_">
   </geolocation-dialog>

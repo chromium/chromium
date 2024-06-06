@@ -30,6 +30,24 @@ class GeolocationDialog extends PolymerElement {
     return getTemplate();
   }
 
+  static get properties() {
+    return {
+      bodyText: {
+        type: String,
+      },
+      cancelButtonText: {
+        type: String,
+      },
+      confirmButtonText: {
+        type: String,
+      },
+    };
+  }
+
+  bodyText: string;
+  cancelButtonText: string;
+  confirmButtonText: string;
+
   /**
    * Callback on user accepting the geolocation dialog, with the intent to
    * enable geolocation for system services.

@@ -54,6 +54,9 @@
 
 <template is="dom-if" if="[[shouldShowGeolocationDialog_]]" restamp>
   <geolocation-dialog id="geolocationDialog"
+      body-text="$i18n{systemGeolocationDialogBody}"
+      confirm-button-text="$i18n{systemGeolocationDialogConfirmButton}"
+      cancel-button-text="$i18n{systemGeolocationDialogCancelButton}"
       on-geolocation-enabled="onGeolocationEnabled_"
       on-close="onGeolocationDialogClose_">
   </geolocation-dialog>

@@ -2527,11 +2527,17 @@
         <message name="IDS_PERSONALIZATION_APP_THEME_AUTO_COLOR_MODE" desc="Label for auto color mode setting">
           Auto
         </message>
-        <message name="IDS_PERSONALIZATION_APP_THEME_GEOLOCATION_WARNING_TEXT_FOR_WALLPAPER" desc="In Personalization>Wallpaper, the warning text that tells users that system geolocation permission is needed for auto theme mode scheduling">
-          Current schedule is set to <ph name="SUNRISE">$1<ex>6am</ex></ph> - <ph name="SUNSET">$2<ex>6pm</ex></ph>. To automatically update the dark mode schedule, <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>turn on location access<ph name="END_LINK">&lt;/a&gt;</ph>
-        </message>
         <message name="IDS_PERSONALIZATION_APP_THEME_GEOLOCATION_WARNING_TEXT_FOR_WEATHER" desc="In Personalization > Screen saver, the warning text that tells users that system geolocation permission is needed for displaying local weather info">
           OFF - To display local weather <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>turn on system location access<ph name="END_LINK">&lt;/a&gt;</ph>
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_THEME_GEOLOCATION_DIALOG_BODY" desc="Description of the dialog that prompts the user to enable system geolocation access. This gives detailed explanation of the outcomes of enabling system geolocation access for system services.">
+          Current schedule is set to <ph name="SUNRISE">$1<ex>6am</ex></ph>-<ph name="SUNSET">$2<ex>6pm</ex></ph>. To automatically update the sunset and sunrise schedule, turn on system location access.
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_THEME_GEOLOCATION_DIALOG_CONFIRM_BUTTON" desc="Label of the confirm button for the geolocation dialog, that enables geolocation for ChromeOS system services.">
+          Turn on system location access
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_THEME_GEOLOCATION_DIALOG_CANCEL_BUTTON" desc="Label of the cancel button, that dismisses the geolocation dialog.">
+          Use without location
         </message>
         <message name="IDS_PERSONALIZATION_APP_GEOLOCATION_DIALOG_TITLE" desc="Title for the dialog, that enables users to grant the system geolocation permission for system services. This pop-up is used in few places (e.g. Automatic Time Zone) to let users conveniently enable geolocation and make the underlying feature fucntional, without navigating to the settings page.">
           Allow system services to use your location?
@@ -2743,6 +2749,9 @@
         </message>
         <message name="IDS_PERSONALIZATION_APP_TOOLTIP_AUTO_COLOR_MODE" desc="Tooltip for the button to enable auto color mode.">
           Automatically switch to dark theme at sunset
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_ERROR_TOOLTIP_AUTO_COLOR_MODE" desc="Tooltip for the button to enable auto color mode.">
+          Time based changes may not be accurate. Turn on system location access in settings.
         </message>
         <message name="IDS_PERSONALIZATION_APP_ARIA_LABEL_GO_TO_ACCOUNT_SETTINGS" desc="Aria label for the link to account settings.">
           Go to account settings
