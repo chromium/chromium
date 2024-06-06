@@ -124,6 +124,7 @@
       'linux-builder-perf-rel': 'official_linux_perf',
       'mac-arm-builder-perf': 'official_reclient_mac_arm_perf',
       'mac-arm-builder-perf-pgo': 'official_reclient_mac_arm_perf_pgo',
+      'mac-arm-no-brp-builder-perf': 'official_reclient_mac_arm_no_brp_perf',
       'mac-builder-perf': 'official_reclient_mac_perf',
       'mac-builder-perf-pgo': 'official_reclient_mac_perf_pgo',
       'win64-builder-perf': 'official_reclient_perf_win_cross',
@@ -749,6 +750,10 @@
       'official', 'reclient', 'no_widevine_cdm_host_verification', 'arm64',
     ],
 
+    'official_reclient_mac_arm_no_brp_perf': [
+      'official', 'reclient', 'no_keystone_registration_framework', 'no_widevine_cdm_host_verification', 'minimal_symbols', 'arm64', 'pgo_phase_0', 'no_brp',
+    ],
+
     'official_reclient_mac_arm_perf': [
       'official', 'reclient', 'no_keystone_registration_framework', 'no_widevine_cdm_host_verification', 'minimal_symbols', 'arm64', 'pgo_phase_0',
     ],
@@ -1267,6 +1272,10 @@
 
     'ml_internal': {
       'gn_args': 'enable_ml_internal=true',
+    },
+
+    'no_brp': {
+      'gn_args': 'enable_backup_ref_ptr_support=false use_raw_ptr_backup_ref_impl=false',
     },
 
     'no_default_afdo': {
