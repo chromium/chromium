@@ -242,6 +242,9 @@ BASE_DECLARE_FEATURE(kUseGammaContrastRegistrySettings);
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kBubbleFrameViewTitleIsHeading);
 
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+BASE_DECLARE_FEATURE(kEnableGestureBeginEndTypes);
+
 }  // namespace features
 
 #endif  // UI_BASE_UI_BASE_FEATURES_H_

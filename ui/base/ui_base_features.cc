@@ -516,4 +516,9 @@ BASE_FEATURE(kUseGammaContrastRegistrySettings,
 BASE_FEATURE(kBubbleFrameViewTitleIsHeading,
              "BubbleFrameViewTitleIsHeading",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kEnableGestureBeginEndTypes,
+             "EnableGestureBeginEndTypes",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features

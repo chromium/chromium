@@ -10,6 +10,7 @@
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/trace_event/typed_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/gesture_event_details.h"
 
 namespace ui {
@@ -318,6 +319,15 @@ void TouchDispositionGestureFilter::FilterAndSendPacket(
     DCHECK_LE(gesture.details.type(), ET_GESTURE_TYPE_END);
     if (state_.Filter(gesture.details.type())) {
       CancelTapIfNecessary(packet);
+
+      // Send the gesture begin and end events when the touch start event is
+      // consumed. For every touch press and release, the gesture begin and end
+      // events are always generated.
+      if (base::FeatureList::IsEnabled(features::kEnableGestureBeginEndTypes) &&
+          (gesture.details.type() == ET_GESTURE_BEGIN ||
+           gesture.details.type() == ET_GESTURE_END)) {
+        SendGesture(gesture, packet);
+      }
       continue;
     }
     if (gesture.type() == ET_GESTURE_TAP_CANCEL) {

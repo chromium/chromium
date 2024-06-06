@@ -6,6 +6,7 @@
 
 #include "base/android/build_info.h"
 #include "base/memory/singleton.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/android/view_configuration.h"
 
@@ -44,7 +45,11 @@ class GestureConfigurationAndroid : public GestureConfiguration {
 #if defined(USE_AURA)
     set_gesture_begin_end_types_enabled(true);
 #else
-    set_gesture_begin_end_types_enabled(false);
+    if (base::FeatureList::IsEnabled(features::kEnableGestureBeginEndTypes)) {
+      set_gesture_begin_end_types_enabled(true);
+    } else {
+      set_gesture_begin_end_types_enabled(false);
+    }
 #endif
     set_long_press_time_in_ms(ViewConfiguration::GetLongPressTimeoutInMs());
     set_max_distance_between_taps_for_double_tap(

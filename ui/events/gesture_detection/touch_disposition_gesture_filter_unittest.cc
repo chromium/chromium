@@ -9,7 +9,9 @@
 
 #include <memory>
 
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/test/motion_event_test_utils.h"
 #include "ui/events/types/event_type.h"
 
@@ -342,11 +344,16 @@ TEST_F(TouchDispositionGestureFilterTest, BasicGestures) {
 }
 
 TEST_F(TouchDispositionGestureFilterTest, BasicGesturesConsumed) {
-  // A consumed touch's gesture should not be sent.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kEnableGestureBeginEndTypes);
+
+  // A consumed touch's gesture should only be sent on Android.
   SendPacket(PressTouchPoint(),
              Gestures(ET_GESTURE_BEGIN, ET_GESTURE_SCROLL_BEGIN));
   SendTouchConsumedAckForLastTouch();
-  EXPECT_FALSE(GesturesSent());
+  EXPECT_TRUE(
+      GesturesMatch(Gestures(ET_GESTURE_BEGIN), GetAndResetSentGestures()));
 
   SendPacket(MoveTouchPoint(), Gestures(ET_GESTURE_SCROLL_UPDATE));
   SendTouchConsumedAckForLastTouch();
@@ -356,7 +363,8 @@ TEST_F(TouchDispositionGestureFilterTest, BasicGesturesConsumed) {
       ReleaseTouchPoint(),
       Gestures(ET_SCROLL_FLING_START, ET_SCROLL_FLING_CANCEL, ET_GESTURE_END));
   SendTouchConsumedAckForLastTouch();
-  EXPECT_FALSE(GesturesSent());
+  EXPECT_TRUE(
+      GesturesMatch(Gestures(ET_GESTURE_END), GetAndResetSentGestures()));
 }
 
 TEST_F(TouchDispositionGestureFilterTest, ConsumedThenNotConsumed) {
@@ -1269,6 +1277,65 @@ TEST_F(TouchDispositionGestureFilterTest,
   SendTouchNotConsumedAck(touch_release_event_id);
   EXPECT_TRUE(GesturesMatch(Gestures(ET_GESTURE_END),
                             GetAndResetSentGestures()));
+}
+
+TEST_F(TouchDispositionGestureFilterTest,
+       GestureBeginEndWhenTouchStartConsumed) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kEnableGestureBeginEndTypes);
+
+  // Queue a touch press, and the touch start event is consumed.
+  SendPacket(PressTouchPoint(),
+             Gestures(ET_GESTURE_BEGIN, ET_GESTURE_TAP_DOWN));
+  SendTouchConsumedAckForLastTouch();
+  // The gesture begin event is sent when the touch start is consumed.
+  EXPECT_TRUE(
+      GesturesMatch(Gestures(ET_GESTURE_BEGIN), GetAndResetSentGestures()));
+
+  // Queue a touch release, and the gesture end event is sent.
+  SendPacket(ReleaseTouchPoint(), Gestures(ET_GESTURE_END));
+  SendTouchConsumedAckForLastTouch();
+  EXPECT_TRUE(
+      GesturesMatch(Gestures(ET_GESTURE_END), GetAndResetSentGestures()));
+}
+
+TEST_F(TouchDispositionGestureFilterTest, GestureBeginEndWhenTouchEndConsumed) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kEnableGestureBeginEndTypes);
+
+  // Queue a touch press.
+  SendPacket(PressTouchPoint(),
+             Gestures(ET_GESTURE_BEGIN, ET_GESTURE_TAP_DOWN));
+  SendTouchNotConsumedAckForLastTouch();
+  EXPECT_TRUE(GesturesMatch(Gestures(ET_GESTURE_BEGIN, ET_GESTURE_TAP_DOWN),
+                            GetAndResetSentGestures()));
+
+  // Queue a touch release, and the touch end event is consumed.
+  SendPacket(ReleaseTouchPoint(), Gestures(ET_GESTURE_TAP, ET_GESTURE_END));
+  SendTouchConsumedAckForLastTouch();
+  // The gesture end event is sent when the touch end is consumed with the tap
+  // cancel gesture event.
+  EXPECT_TRUE(GesturesMatch(Gestures(ET_GESTURE_TAP_CANCEL, ET_GESTURE_END),
+                            GetAndResetSentGestures()));
+}
+
+TEST_F(TouchDispositionGestureFilterTest, GestureBeginEndWhenTouchNotConsumed) {
+  // Queue a touch press.
+  SendPacket(PressTouchPoint(),
+             Gestures(ET_GESTURE_BEGIN, ET_GESTURE_TAP_DOWN));
+  SendTouchNotConsumedAckForLastTouch();
+  EXPECT_TRUE(GesturesMatch(Gestures(ET_GESTURE_BEGIN, ET_GESTURE_TAP_DOWN),
+                            GetAndResetSentGestures()));
+
+  // Queue a touch release.
+  SendPacket(ReleaseTouchPoint(), Gestures(ET_GESTURE_TAP, ET_GESTURE_END));
+  SendTouchNotConsumedAckForLastTouch();
+  // The gesture end event is sent with the tap gesture event.
+  EXPECT_TRUE(GesturesMatch(
+      Gestures(ET_GESTURE_SHOW_PRESS, ET_GESTURE_TAP, ET_GESTURE_END),
+      GetAndResetSentGestures()));
 }
 
 }  // namespace ui
