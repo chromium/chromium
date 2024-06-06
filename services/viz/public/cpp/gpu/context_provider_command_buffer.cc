@@ -385,13 +385,9 @@ gpu::raster::RasterInterface* ContextProviderCommandBuffer::RasterInterface() {
   }
 
 #if BUILDFLAG(IS_ANDROID)
-  // The last few usages of RasterImplementationGLES are removed from Android
-  // with switching to use RasterInterface in VideoResourceUpdater. Thus,
-  // Android should never need a RasterImplementationGLES through
-  // ContextProviderCommandBuffer. This DUMP_WILL_BE_CHECK helps validate it.
-  DUMP_WILL_BE_CHECK(false);
-#endif
-
+  // Android uses RasterDecoder exclusively.
+  NOTREACHED();
+#else
   if (!gles2_impl_.get()) {
     return nullptr;
   }
@@ -399,6 +395,7 @@ gpu::raster::RasterInterface* ContextProviderCommandBuffer::RasterInterface() {
   raster_interface_ = std::make_unique<gpu::raster::RasterImplementationGLES>(
       gles2_impl_.get(), gles2_impl_.get(), ContextCapabilities());
   return raster_interface_.get();
+#endif
 }
 
 gpu::ContextSupport* ContextProviderCommandBuffer::ContextSupport() {
