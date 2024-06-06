@@ -2326,6 +2326,12 @@
       // Enabled by features::kLegacyWindowsDWriteFontFallback;
       base_feature: "none",
     },
+     {
+      name: "LimitThirdPartyCookies",
+      origin_trial_feature_name: "LimitThirdPartyCookies",
+      status: "experimental",
+      base_feature: "none",
+    },
     {
       name: "LockedMode",
       status: "test",
