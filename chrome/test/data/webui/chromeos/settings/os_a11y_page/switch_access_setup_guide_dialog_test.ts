@@ -6,7 +6,7 @@ import 'chrome://os-settings/lazy_load.js';
 import 'chrome://os-settings/os_settings.js';
 
 import {SettingsSwitchAccessActionAssignmentPaneElement, SettingsSwitchAccessSetupGuideDialogElement} from 'chrome://os-settings/lazy_load.js';
-import {CrRadioGroupElement} from 'chrome://os-settings/os_settings.js';
+import {CrRadioGroupElement, Router, routes} from 'chrome://os-settings/os_settings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertLE, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -501,5 +501,18 @@ suite('<settings-switch-access-setup-guide-dialog>', () => {
         (assignContents.firstChild as
          SettingsSwitchAccessActionAssignmentPaneElement)
             .action);
+  });
+
+  test('setup guide dialog closes after navigating to bluetooth page', () => {
+    assertTrue(dialog.$.switchAccessSetupGuideDialog.open);
+
+    const bluetoothButton =
+        dialog.shadowRoot!.querySelector<HTMLButtonElement>('#bluetooth');
+    assertTrue(!!bluetoothButton);
+
+    bluetoothButton.click();
+    assertFalse(dialog.$.switchAccessSetupGuideDialog.open);
+
+    assertEquals(routes.BLUETOOTH_DEVICES, Router.getInstance().currentRoute);
   });
 });

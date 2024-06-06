@@ -435,6 +435,7 @@ export class SettingsSwitchAccessSetupGuideDialogElement extends
 
   private onBluetoothClick_(): void {
     Router.getInstance().navigateTo(routes.BLUETOOTH_DEVICES);
+    this.$.switchAccessSetupGuideDialog.close();
   }
 
   private onAutoScanSpeedFaster_(): void {
