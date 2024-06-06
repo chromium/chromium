@@ -211,7 +211,7 @@ TEST_P(
       /*revision_number=*/8, Widget()));
 }
 
-TEST_P(CalendarUpNextViewPixelTest, DISABLED_ShouldShowJoinMeetingButton) {
+TEST_P(CalendarUpNextViewPixelTest, ShouldShowJoinMeetingButton) {
   // Set time and timezone override.
   ash::system::ScopedTimezoneSettings timezone_settings(u"America/Los_Angeles");
   calendar_test_utils::ScopedLibcTimeZone scoped_libc_timezone(
@@ -233,7 +233,7 @@ TEST_P(CalendarUpNextViewPixelTest, DISABLED_ShouldShowJoinMeetingButton) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "calendar_up_next_join_button",
-      /*revision_number=*/8, Widget()));
+      /*revision_number=*/9, Widget()));
 }
 
 }  // namespace ash

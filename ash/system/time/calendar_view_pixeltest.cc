@@ -28,12 +28,13 @@ std::unique_ptr<google_apis::calendar::CalendarEvent> CreateEvent(
     const char* id,
     const base::Time start_time,
     const base::Time end_time,
-    const char* summary) {
+    const char* summary,
+    const GURL video_conference_url = GURL()) {
   return calendar_test_utils::CreateEvent(
       id, summary, start_time, end_time,
       google_apis::calendar::CalendarEvent::EventStatus::kConfirmed,
       google_apis::calendar::CalendarEvent::ResponseStatus::kAccepted, false,
-      GURL());
+      video_conference_url);
 }
 
 }  // namespace
@@ -174,7 +175,8 @@ TEST_P(CalendarViewPixelTest, EventList) {
   events.push_back(CreateEvent(
       "id_1", start_time2, end_time2,
       "Event with a very very very very very very very long name that should "
-      "ellipsis"));
+      "ellipsis",
+      GURL("https://meet.google.com/abc-123")));
   InsertEvents(std::move(events));
 
   OpenCalendarView();
@@ -182,7 +184,7 @@ TEST_P(CalendarViewPixelTest, EventList) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "event_list_view",
-      /*revision_number=*/10, GetEventListView()));
+      /*revision_number=*/11, GetEventListView()));
 }
 
 }  // namespace ash

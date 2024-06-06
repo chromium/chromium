@@ -293,6 +293,9 @@ CalendarEventListItemView::CalendarEventListItemView(
   auto horizontal_layout_manager = std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, kEventListItemInsets,
       kEventListItemHorizontalChildSpacing);
+  horizontal_layout_manager->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
+
   views::View* horizontal_container =
       AddChildView(std::make_unique<views::View>());
   auto* horizontal_container_layout_manager =
@@ -338,13 +341,6 @@ CalendarEventListItemView::CalendarEventListItemView(
 
   // Join button. Only shows it if the event is not the past event.
   if (!video_conference_url_.is_empty() && !is_past_event_) {
-    views::View* join_button_container =
-        horizontal_container->AddChildView(std::make_unique<views::View>());
-    auto* layout_vertical_center = join_button_container->SetLayoutManager(
-        std::make_unique<views::BoxLayout>(
-            views::BoxLayout::Orientation::kVertical));
-    layout_vertical_center->set_main_axis_alignment(
-        views::BoxLayout::MainAxisAlignment::kCenter);
     auto join_button = std::make_unique<PillButton>(
         base::BindRepeating(
             &CalendarEventListItemView::OnJoinMeetingButtonPressed,
@@ -355,7 +351,7 @@ CalendarEventListItemView::CalendarEventListItemView(
         l10n_util::GetStringFUTF16(IDS_ASH_CALENDAR_JOIN_BUTTON_ACCESSIBLE_NAME,
                                    base::UTF8ToUTF16(event.summary())));
     join_button->SetID(kJoinButtonID);
-    join_button_container->AddChildView(std::move(join_button));
+    horizontal_container->AddChildView(std::move(join_button));
   }
 }
 
