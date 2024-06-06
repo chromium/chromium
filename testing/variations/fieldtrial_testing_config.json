@@ -4032,7 +4032,7 @@
                         "exp_tag": "file_app_gamgee_exp"
                     },
                     "enable_features": [
-                        "GrowthCampaignsExperiment2"
+                        "GrowthCampaignsExperimentFileAppGamgee"
                     ],
                     "disable_features": [
                         "GoogleOneOfferFilesBanner"
@@ -4041,7 +4041,7 @@
             ]
         }
     ],
-    "ChromeOSGrowthFrameworkSpark": [
+    "ChromeOSGrowthFrameworkStudy1": [
         {
             "platforms": [
                 "chromeos"
@@ -4050,7 +4050,7 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "exp_tag": "spark_exp"
+                        "exp_tag": "exp_tag_1_1"
                     },
                     "enable_features": [
                         "GrowthCampaignsExperiment1"
@@ -4071,7 +4071,7 @@
                         "exp_tag": "g1_gmail"
                     },
                     "enable_features": [
-                        "GrowthCampaignsExperimentTagTargeting"
+                        "GrowthCampaignsExperimentG1Nudge"
                     ]
                 },
                 {
@@ -4080,7 +4080,7 @@
                         "exp_tag": "g1_docs"
                     },
                     "enable_features": [
-                        "GrowthCampaignsExperimentTagTargeting"
+                        "GrowthCampaignsExperimentG1Nudge"
                     ]
                 },
                 {
@@ -4089,7 +4089,7 @@
                         "exp_tag": "g1_drive"
                     },
                     "enable_features": [
-                        "GrowthCampaignsExperimentTagTargeting"
+                        "GrowthCampaignsExperimentG1Nudge"
                     ]
                 },
                 {
@@ -4098,7 +4098,7 @@
                         "exp_tag": "g1_photos"
                     },
                     "enable_features": [
-                        "GrowthCampaignsExperimentTagTargeting"
+                        "GrowthCampaignsExperimentG1Nudge"
                     ]
                 },
                 {
@@ -4107,7 +4107,7 @@
                         "exp_tag": "g1_counterfactual"
                     },
                     "enable_features": [
-                        "GrowthCampaignsExperimentTagTargeting"
+                        "GrowthCampaignsExperimentG1Nudge"
                     ]
                 },
                 {
@@ -4116,7 +4116,7 @@
                         "exp_tag": "g1_counterfactual_docs"
                     },
                     "enable_features": [
-                        "GrowthCampaignsExperimentTagTargeting"
+                        "GrowthCampaignsExperimentG1Nudge"
                     ]
                 },
                 {
@@ -4125,7 +4125,7 @@
                         "exp_tag": "g1_counterfactual_drive"
                     },
                     "enable_features": [
-                        "GrowthCampaignsExperimentTagTargeting"
+                        "GrowthCampaignsExperimentG1Nudge"
                     ]
                 },
                 {
@@ -4134,7 +4134,7 @@
                         "exp_tag": "g1_counterfactual_gmail"
                     },
                     "enable_features": [
-                        "GrowthCampaignsExperimentTagTargeting"
+                        "GrowthCampaignsExperimentG1Nudge"
                     ]
                 },
                 {
@@ -4143,7 +4143,7 @@
                         "exp_tag": "g1_counterfactual_photos"
                     },
                     "enable_features": [
-                        "GrowthCampaignsExperimentTagTargeting"
+                        "GrowthCampaignsExperimentG1Nudge"
                     ]
                 }
             ]
