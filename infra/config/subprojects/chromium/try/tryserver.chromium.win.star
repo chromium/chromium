@@ -349,8 +349,10 @@ try_.orchestrator_builder(
     ),
     mirrors = [
         "ci/win-arm64-rel",
-        "ci/win11-arm64-rel-tests",
-    ],
+        # TODO (https://crbug.com/341773363): Until the testing pool is
+        # stabilized, the ci tester is disabled on the branches, so it can only
+        # be mirrored on trunk
+    ] + (["ci/win11-arm64-rel-tests"] if settings.is_main else []),
     gn_args = gn_args.config(
         configs = [
             "ci/win-arm64-rel",
