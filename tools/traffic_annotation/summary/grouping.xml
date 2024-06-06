@@ -335,6 +335,7 @@ after discussions on the right group.
       <annotation id="glanceables_icon_downloader"/>
       <annotation id="dbsc_registration"/>
       <annotation id="google_calendar_page_handler"/>
+      <annotation id="nearby_connections_wifi_direct"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">

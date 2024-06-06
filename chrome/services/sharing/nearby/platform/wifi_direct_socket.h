@@ -18,6 +18,7 @@
 namespace net {
 class StreamSocket;
 class IOBufferWithSize;
+class DrainableIOBuffer;
 }
 
 namespace base {
@@ -52,12 +53,25 @@ class SocketInputStream : public InputStream {
 
 class SocketOutputStream : public OutputStream {
  public:
-  SocketOutputStream();
-  ~SocketOutputStream() override = default;
+  SocketOutputStream(raw_ptr<net::StreamSocket> stream_socket,
+                     scoped_refptr<base::SequencedTaskRunner> task_runner);
+  ~SocketOutputStream() override;
 
   Exception Write(const ByteArray& data) override;
   Exception Flush() override;
   Exception Close() override;
+
+ private:
+  void WriteToSocket(scoped_refptr<net::DrainableIOBuffer>* buf,
+                     base::WaitableEvent* waitable_event,
+                     Exception* output);
+  void OnWrite(scoped_refptr<net::DrainableIOBuffer>* buf,
+               base::WaitableEvent* waitable_event,
+               Exception* output,
+               int result);
+
+  raw_ptr<net::StreamSocket> stream_socket_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 };
 
 // This class takes ownership of a socket that must be operated on the provided

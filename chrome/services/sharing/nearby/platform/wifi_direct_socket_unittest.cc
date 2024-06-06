@@ -16,6 +16,8 @@
 
 namespace {
 
+const std::vector<uint8_t> kTestData = {0x01, 0x02, 0x03, 0x04};
+
 void RunOnTaskRunner(base::OnceClosure task) {
   base::RunLoop run_loop;
   base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})
@@ -32,7 +34,8 @@ class FakeStreamSocket : public net::StreamSocket {
  public:
   ~FakeStreamSocket() override = default;
 
-  void SetData(std::vector<uint8_t> data) { data_to_read_ = data; }
+  const std::vector<uint8_t>& GetWriteData() { return write_data_; }
+  void SetReadData(std::vector<uint8_t> data) { data_to_read_ = data; }
   void SetReadError(int error) { read_error_ = error; }
 
   // net::Socket
@@ -62,7 +65,8 @@ class FakeStreamSocket : public net::StreamSocket {
       int buf_len,
       net::CompletionOnceCallback callback,
       const net::NetworkTrafficAnnotationTag& traffic_annotation) override {
-    return net::ERR_NOT_IMPLEMENTED;
+    write_data_ = std::vector(buf->bytes(), buf->bytes() + buf_len);
+    return buf_len;
   }
 
   int SetReceiveBufferSize(int32_t size) override {
@@ -111,6 +115,7 @@ class FakeStreamSocket : public net::StreamSocket {
 
  private:
   net::NetLogWithSource net_log_;
+  std::vector<uint8_t> write_data_;
   std::vector<uint8_t> data_to_read_;
   std::optional<int> read_error_;
 };
@@ -184,18 +189,16 @@ class SocketInputStreamTest : public ::testing::Test {
 };
 
 TEST_F(SocketInputStreamTest, Read) {
-  const std::vector<uint8_t> data = {0x01, 0x02, 0x03, 0x04};
-  stream_socket()->SetData(data);
+  stream_socket()->SetReadData(kTestData);
 
   RunOnTaskRunner(base::BindOnce(
-      [](SocketInputStream* input_stream,
-         const std::vector<uint8_t>& expected) {
+      [](SocketInputStream* input_stream) {
         base::ScopedAllowBaseSyncPrimitivesForTesting allow;
-        auto result = input_stream->Read(expected.size());
+        auto result = input_stream->Read(kTestData.size());
         EXPECT_TRUE(result.ok());
-        EXPECT_EQ(result.GetResult(), ToByteArray(expected));
+        EXPECT_EQ(result.GetResult(), ToByteArray(kTestData));
       },
-      input_stream(), data));
+      input_stream()));
 }
 
 TEST_F(SocketInputStreamTest, Read_Error) {
@@ -212,8 +215,7 @@ TEST_F(SocketInputStreamTest, Read_Error) {
 }
 
 TEST_F(SocketInputStreamTest, Read_AfterClose) {
-  const std::vector<uint8_t> data = {0x01, 0x02, 0x03, 0x04};
-  stream_socket()->SetData(data);
+  stream_socket()->SetReadData(kTestData);
 
   RunOnTaskRunner(base::BindOnce(
       [](SocketInputStream* input_stream) {
@@ -224,6 +226,49 @@ TEST_F(SocketInputStreamTest, Read_AfterClose) {
         EXPECT_EQ(result.GetException(), Exception{Exception::kFailed});
       },
       input_stream()));
+}
+
+// SocketOutputStream
+class SocketOutputStreamTest : public ::testing::Test {
+ public:
+  // ::testing::Test
+  void SetUp() override {
+    stream_socket_ = std::make_unique<FakeStreamSocket>();
+    output_stream_ = std::make_unique<SocketOutputStream>(
+        stream_socket_.get(), task_environment_.GetMainThreadTaskRunner());
+  }
+
+  SocketOutputStream* output_stream() { return output_stream_.get(); }
+  FakeStreamSocket* stream_socket() { return stream_socket_.get(); }
+
+ private:
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::MainThreadType::IO};
+  std::unique_ptr<FakeStreamSocket> stream_socket_;
+  std::unique_ptr<SocketOutputStream> output_stream_;
+};
+
+TEST_F(SocketOutputStreamTest, Write) {
+  RunOnTaskRunner(base::BindOnce(
+      [](SocketOutputStream* output_stream, FakeStreamSocket* socket) {
+        base::ScopedAllowBaseSyncPrimitivesForTesting allow;
+        auto result = output_stream->Write(ToByteArray(kTestData));
+        EXPECT_TRUE(result.Ok());
+        EXPECT_EQ(socket->GetWriteData(), kTestData);
+      },
+      output_stream(), stream_socket()));
+}
+
+TEST_F(SocketOutputStreamTest, Write_AfterClose) {
+  RunOnTaskRunner(base::BindOnce(
+      [](SocketOutputStream* output_stream, FakeStreamSocket* socket) {
+        base::ScopedAllowBaseSyncPrimitivesForTesting allow;
+        output_stream->Close();
+        auto result = output_stream->Write(ToByteArray(kTestData));
+        EXPECT_FALSE(result.Ok());
+        EXPECT_TRUE(socket->GetWriteData().empty());
+      },
+      output_stream(), stream_socket()));
 }
 
 }  // namespace nearby::chrome

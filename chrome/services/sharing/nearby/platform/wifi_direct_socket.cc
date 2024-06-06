@@ -10,6 +10,54 @@
 #include "base/threading/thread_restrictions.h"
 #include "net/base/io_buffer.h"
 #include "net/socket/stream_socket.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
+
+namespace {
+
+constexpr net::NetworkTrafficAnnotationTag kSocketTrafficAnnotiation =
+    net::DefineNetworkTrafficAnnotation("nearby_connections_wifi_direct", R"(
+        semantics {
+          sender: "Nearby Connections - WiFi Direct Medium"
+          description:
+            "The Nearby Connections WiFi Direct Medium transfers data over the "
+            "network (eg. to send a file via Quick Share). This socket talks "
+            "directly to another Nearby Connections client over an established "
+            "WiFi Direct interface."
+          trigger:
+            "Nearby Connections successfully upgrades mediums to WiFi Direct."
+          data:
+            "After the WiFi Direct connection between devices is established, "
+            "encrypted, and authenticated, feature-specific bytes are "
+            "transferred. For example, Nearby Share might send/receive files "
+            "and Phone Hub might receive message notification data from the "
+            "phone."
+          destination: OTHER
+          destination_other:
+            "A peer Nearby device that receives this data."
+          internal {
+            contacts {
+              email: "jackshira@google.com"
+            }
+            contacts {
+              email: "chromeos-cross-device-eng@google.com"
+            }
+          }
+          user_data {
+            type: ARBITRARY_DATA
+          }
+          last_reviewed: "2024-06-05"
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "This feature is enabled for Nearby Connections clients that "
+            "opt-in to WiFi Direct as an upgrade medium, which is handled on a "
+            "client-by-client basis."
+          policy_exception_justification:
+            "The individual features that leverage Nearby Connections have "
+            "their own policies associated with them."
+        })");
+}  // namespace
 
 namespace nearby::chrome {
 
@@ -86,11 +134,27 @@ void SocketInputStream::OnRead(int* bytes_read,
   waitable_event->Signal();
 }
 
-SocketOutputStream::SocketOutputStream() = default;
+SocketOutputStream::SocketOutputStream(
+    raw_ptr<net::StreamSocket> stream_socket,
+    scoped_refptr<base::SequencedTaskRunner> task_runner)
+    : stream_socket_(stream_socket), task_runner_(task_runner) {}
+
+SocketOutputStream::~SocketOutputStream() = default;
 
 Exception SocketOutputStream::Write(const ByteArray& data) {
-  NOTIMPLEMENTED();
-  return {Exception::kSuccess};
+  auto buffer = base::MakeRefCounted<net::StringIOBuffer>(data.string_data());
+  auto response_buffer = base::MakeRefCounted<net::DrainableIOBuffer>(
+      std::move(buffer), data.size());
+
+  base::WaitableEvent waitable_event;
+  Exception output = {Exception::kFailed};
+  task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&SocketOutputStream::WriteToSocket, base::Unretained(this),
+                     &response_buffer, &waitable_event, &output));
+  waitable_event.Wait();
+
+  return output;
 }
 
 Exception SocketOutputStream::Flush() {
@@ -98,7 +162,52 @@ Exception SocketOutputStream::Flush() {
 }
 
 Exception SocketOutputStream::Close() {
+  stream_socket_ = nullptr;
   return {Exception::kSuccess};
+}
+
+void SocketOutputStream::WriteToSocket(
+    scoped_refptr<net::DrainableIOBuffer>* buf,
+    base::WaitableEvent* waitable_event,
+    Exception* output) {
+  if (!stream_socket_) {
+    *output = Exception{Exception::kFailed};
+    waitable_event->Signal();
+    return;
+  }
+
+  auto result = stream_socket_->Write(
+      buf->get(), buf->get()->BytesRemaining(),
+      base::BindOnce(&SocketOutputStream::OnWrite, base::Unretained(this), buf,
+                     waitable_event, output),
+      kSocketTrafficAnnotiation);
+  // If the `Write` call was unable to complete synchronously, a result value of
+  // `ERR_IO_PENDING` is returned to indicate that the callback will be called
+  // at some point in the future, when the write actually completes. If the call
+  // is completed synchronously, the callback must be manually triggered.
+  if (result != net::ERR_IO_PENDING) {
+    OnWrite(buf, waitable_event, output, result);
+  }
+}
+
+void SocketOutputStream::OnWrite(scoped_refptr<net::DrainableIOBuffer>* buf,
+                                 base::WaitableEvent* waitable_event,
+                                 Exception* output,
+                                 int result) {
+  if (result < 0) {
+    *output = {Exception::kFailed};
+    waitable_event->Signal();
+    return;
+  }
+
+  buf->get()->DidConsume(result);
+  if (buf->get()->BytesRemaining() > 0) {
+    WriteToSocket(buf, waitable_event, output);
+    return;
+  }
+
+  *output = {Exception::kSuccess};
+  waitable_event->Signal();
 }
 
 WifiDirectSocket::WifiDirectSocket(
@@ -106,7 +215,8 @@ WifiDirectSocket::WifiDirectSocket(
     std::unique_ptr<net::StreamSocket> stream_socket)
     : task_runner_(task_runner),
       stream_socket_(std::move(stream_socket)),
-      input_stream_(stream_socket_.get(), task_runner_) {}
+      input_stream_(stream_socket_.get(), task_runner),
+      output_stream_(stream_socket_.get(), task_runner) {}
 
 WifiDirectSocket::~WifiDirectSocket() {
   Close();
