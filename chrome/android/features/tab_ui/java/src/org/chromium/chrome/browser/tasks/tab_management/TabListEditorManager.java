@@ -96,8 +96,6 @@ public class TabListEditorManager {
         if (mTabListEditorCoordinator != null) {
             mTabListEditorCoordinator.destroy();
         }
-
-        mTabGroupCreationDialogManager.destroy();
     }
 
     /** Initializes the tab list editor. */

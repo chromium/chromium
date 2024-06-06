@@ -9,7 +9,6 @@ import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 
-import org.chromium.base.lifetime.Destroyable;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabGroupCreationDialogResultAction;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabGroupCreationFinalSelections;
@@ -23,7 +22,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import java.util.Objects;
 
 /** Manager of the observers that trigger a modal dialog on new tab group creation. */
-public class TabGroupCreationDialogManager implements Destroyable {
+public class TabGroupCreationDialogManager {
     private class TabGroupCreationDialogController implements ModalDialogProperties.Controller {
         private int mRootId;
         private TabGroupModelFilter mTabGroupModelFilter;
@@ -96,15 +95,6 @@ public class TabGroupCreationDialogManager implements Destroyable {
                         modalDialogManager,
                         TabGroupVisualDataDialogManager.DialogType.TAB_GROUP_CREATION,
                         R.string.tab_group_creation_dialog_title);
-    }
-
-    /** Destroy any members that need clean up. */
-    @Override
-    public void destroy() {
-        if (mTabGroupVisualDataDialogManager != null) {
-            mTabGroupVisualDataDialogManager.destroy();
-            mTabGroupVisualDataDialogManager = null;
-        }
     }
 
     /**

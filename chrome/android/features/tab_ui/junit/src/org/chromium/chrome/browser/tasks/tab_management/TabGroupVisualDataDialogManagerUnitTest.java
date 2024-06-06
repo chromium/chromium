@@ -12,7 +12,6 @@ import android.app.Activity;
 
 import androidx.appcompat.widget.DialogTitle;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -55,11 +54,6 @@ public class TabGroupVisualDataDialogManagerUnitTest {
                         mModalDialogManager,
                         TabGroupVisualDataDialogManager.DialogType.TAB_GROUP_CREATION,
                         R.string.tab_group_creation_dialog_title);
-    }
-
-    @After
-    public void tearDown() {
-        mTabGroupVisualDataDialogManager.destroy();
     }
 
     @Test

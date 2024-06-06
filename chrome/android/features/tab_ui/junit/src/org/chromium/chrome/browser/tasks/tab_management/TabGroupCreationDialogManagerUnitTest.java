@@ -8,7 +8,6 @@ import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,11 +46,6 @@ public class TabGroupCreationDialogManagerUnitTest {
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mTabGroupCreationDialogManager =
                 new TabGroupCreationDialogManager(mActivity, mModalDialogManager);
-    }
-
-    @After
-    public void tearDown() {
-        mTabGroupCreationDialogManager.destroy();
     }
 
     @Test

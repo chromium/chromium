@@ -92,9 +92,7 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
     }
 
     @Override
-    public void onDestroy() {
-        mTabGroupCreationDialogManager.destroy();
-    }
+    public void onDestroy() {}
 
     @Override
     public String getPageTitle() {

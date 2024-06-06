@@ -381,7 +381,6 @@ class TabListMediator {
     private final TabListGroupMenuCoordinator.OnItemClickedCallback mOnMenuItemClickedCallback =
             this::onMenuItemClicked;
     private final ActionConfirmationManager mActionConfirmationManager;
-    private final TabGroupCreationDialogManager mTabGroupCreationDialogManager;
 
     private @Nullable Profile mProfile;
     private Size mDefaultGridCardSize;
@@ -397,7 +396,6 @@ class TabListMediator {
     // enabled.
     private @Nullable RecyclerView mRecyclerView;
     private @Nullable OnScrollListener mOnScrollListener;
-    private TabGroupVisualDataDialogManager mTabGroupVisualDataDialogManager;
 
     private final TabActionListener mTabSelectedListener =
             new TabActionListener() {
@@ -973,10 +971,7 @@ class TabListMediator {
         mTabActionState = initialTabActionState;
         mPriceWelcomeMessageControllerSupplier = priceWelcomeMessageControllerSupplier;
         mProfile = mCurrentTabModelFilterSupplier.get().getTabModel().getProfile();
-        mTabGroupVisualDataDialogManager = null;
         mActionConfirmationManager = actionConfirmationManager;
-        mTabGroupCreationDialogManager =
-                new TabGroupCreationDialogManager(context, modalDialogManager);
 
         mTabModelObserver =
                 new TabModelObserver() {
@@ -1235,10 +1230,12 @@ class TabListMediator {
                                     });
                 };
 
+        var tabGroupCreationDialogManager =
+                new TabGroupCreationDialogManager(context, modalDialogManager);
         mTabGridItemTouchHelperCallback =
                 new TabGridItemTouchHelperCallback(
                         context,
-                        mTabGroupCreationDialogManager,
+                        tabGroupCreationDialogManager,
                         mModel,
                         mCurrentTabModelFilterSupplier,
                         swipeSafeTabActionListener,
@@ -1893,13 +1890,6 @@ class TabListMediator {
             mContext.unregisterComponentCallbacks(mComponentCallbacks);
         }
         unregisterOnScrolledListener();
-
-        if (mTabGroupVisualDataDialogManager != null) {
-            mTabGroupVisualDataDialogManager.destroy();
-            mTabGroupVisualDataDialogManager = null;
-        }
-
-        mTabGroupCreationDialogManager.destroy();
     }
 
     void setTabActionState(@TabActionState int tabActionState) {
@@ -2822,7 +2812,7 @@ class TabListMediator {
         int rootId = TabModelUtils.getTabById(tabModel, tabId).getRootId();
         TabGroupModelFilter filter = (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
 
-        mTabGroupVisualDataDialogManager =
+        var tabGroupVisualDataDialogManager =
                 new TabGroupVisualDataDialogManager(
                         mContext,
                         mModalDialogManager,
@@ -2834,8 +2824,8 @@ class TabListMediator {
                     @Override
                     public void onClick(PropertyModel model, int buttonType) {
                         if (buttonType == ModalDialogProperties.ButtonType.POSITIVE
-                                && !mTabGroupVisualDataDialogManager.validateCurrentGroupTitle()) {
-                            mTabGroupVisualDataDialogManager.focusCurrentGroupTitle();
+                                && !tabGroupVisualDataDialogManager.validateCurrentGroupTitle()) {
+                            tabGroupVisualDataDialogManager.focusCurrentGroupTitle();
                             return;
                         }
 
@@ -2854,13 +2844,13 @@ class TabListMediator {
                         if (dismissalCause == DialogDismissalCause.POSITIVE_BUTTON_CLICKED) {
                             @TabGroupColorId
                             int currentColorId =
-                                    mTabGroupVisualDataDialogManager.getCurrentColorId();
+                                    tabGroupVisualDataDialogManager.getCurrentColorId();
                             filter.setTabGroupColor(rootId, currentColorId);
 
                             String defaultGroupTitle =
-                                    mTabGroupVisualDataDialogManager.getDefaultGroupTitle();
+                                    tabGroupVisualDataDialogManager.getDefaultGroupTitle();
                             String inputGroupTitle =
-                                    mTabGroupVisualDataDialogManager.getCurrentGroupTitle();
+                                    tabGroupVisualDataDialogManager.getCurrentGroupTitle();
                             boolean didChangeTitle =
                                     !Objects.equals(defaultGroupTitle, inputGroupTitle);
                             // This check must be included in case the user has a null title
@@ -2870,13 +2860,11 @@ class TabListMediator {
                             }
                         }
 
-                        mTabGroupVisualDataDialogManager.hideDialog();
-                        // Reset the stored manager each time it is used.
-                        mTabGroupVisualDataDialogManager = null;
+                        tabGroupVisualDataDialogManager.hideDialog();
                     }
                 };
 
-        mTabGroupVisualDataDialogManager.showDialog(rootId, filter, dialogController);
+        tabGroupVisualDataDialogManager.showDialog(rootId, filter, dialogController);
     }
 
     private void ungroupTabGroup(int tabId) {

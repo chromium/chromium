@@ -142,6 +142,7 @@ public class TabGroupVisualDataDialogManager {
                             dialog.getWindow()
                                     .setSoftInputMode(
                                             WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+                            mModalDialogManager.removeObserver(this);
                         }
                     }
                 };
@@ -153,11 +154,6 @@ public class TabGroupVisualDataDialogManager {
     public void hideDialog() {
         // Reset the model to null after each usage.
         mModel = null;
-        destroy();
-    }
-
-    /** Destroy any members that need clean up. */
-    public void destroy() {
         if (mModalDialogManagerObserver != null) {
             mModalDialogManager.removeObserver(mModalDialogManagerObserver);
         }
