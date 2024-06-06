@@ -412,22 +412,31 @@ gfx::ImageSkia MahiWebContentsManager::GetFavicon(
 }
 
 bool MahiWebContentsManager::ShouldSkip(content::WebContents* web_contents) {
-  const std::string& url = web_contents->GetURL().spec();
+  const auto url = web_contents->GetURL();
 
-  static constexpr auto kSkipUrls = base::MakeFixedFlatSet<std::string_view>({
-      // blank and default pages.
-      "about:blank",
-      "chrome://newtab/",
-  });
-  // A tab should be skipped if it is empty, blank or default page.
-  if (url.empty() || base::Contains(kSkipUrls, url)) {
+  static constexpr auto kSkipUrls = base::MakeFixedFlatSet<std::string_view>(
+      {// blank and default pages.
+       "about:blank", "chrome://newtab/",
+       // Workspace
+       "mail.google.com", "meet.google.com", "calendar.google.com",
+       "tasks.google.com", "drive.google.com", "docs.google.com",
+       "keep.google.com", "script.google.com", "voice.google.com"});
+  // A tab should be skipped if it is empty, or have the domain in the
+  // `kSkipUrls` list
+  if (url.spec().empty()) {
     return true;
   }
+  for (const auto& skip_url : kSkipUrls) {
+    if (url.DomainIs(skip_url)) {
+      return true;
+    }
+  }
 
-  // Also skip urls that begins with `chrome`. They are usually web UI and
-  // internal pages. E.g., `chrome://`, `chrome-internal://` and
-  // `chrome-untrusted://`.
-  return url.rfind("chrome", 0) == 0;
+  // Also skip urls that begins with `chrome` and `view-source`. They are
+  // usually web UI and internal pages. E.g., `chrome://`, `chrome-internal://`
+  // and `chrome-untrusted://`.
+  return (url.spec().rfind("chrome", 0) == 0) ||
+         (url.spec().rfind("view-source", 0) == 0);
 }
 
 }  // namespace mahi
