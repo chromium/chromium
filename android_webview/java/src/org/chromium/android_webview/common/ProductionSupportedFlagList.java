@@ -1018,6 +1018,10 @@ public final class ProductionSupportedFlagList {
                 "Disables paritioned cookies in WebView"),
         Flag.baseFeature(
                 ContentFeatures.DIPS, "Enables the Bounce Tracking Mitigations feature."),
+        Flag.baseFeature(
+                "LevelDBProtoAsyncWrite",
+                "Makes writes to leveldb_proto databases asynchronous. This should reduce disk"
+                    + " contention at the cost of potential lost writes on OS or power failure."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
