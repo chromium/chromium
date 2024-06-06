@@ -6,6 +6,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
+#include "build/build_config.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
@@ -45,7 +46,12 @@ const FirstRunTestParam kTestParams[] = {
     {.pixel_test_param = {.test_suffix = "DarkThemeFixedSize",
                           .use_dark_theme = true},
      .use_fixed_size = true},
+#if !BUILDFLAG(IS_WIN)
+    // TODO(https://crbug.com/40261456): The following test has been frequently
+    // flaking on "Win10 Tests x64" since 2024-05-09:
+    // FirstRunIntroPixelTest.InvokeUi_default/LightTheme
     {.pixel_test_param = {.test_suffix = "LightTheme"}},
+#endif
     {.pixel_test_param = {.test_suffix = "LongerStringsFixedSize"},
      .use_fixed_size = true,
      .use_longer_strings = true},
