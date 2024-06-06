@@ -1599,10 +1599,12 @@ AudioDevice CrasAudioHandler::ConvertAudioNodeWithModifiedPriority(
 }
 
 const AudioDevice* CrasAudioHandler::GetDeviceFromStableDeviceId(
+    bool is_input,
     uint64_t stable_device_id) const {
   for (const auto& item : audio_devices_) {
     const AudioDevice& device = item.second;
-    if (device.stable_device_id == stable_device_id) {
+    if (device.is_input == is_input &&
+        device.stable_device_id == stable_device_id) {
       return &device;
     }
   }
@@ -2002,7 +2004,7 @@ bool CrasAudioHandler::HasDeviceChange(const AudioNodeList& new_nodes,
 CrasAudioHandler::DeviceStatus CrasAudioHandler::CheckDeviceStatus(
     const AudioDevice& device) {
   const AudioDevice* device_found =
-      GetDeviceFromStableDeviceId(device.stable_device_id);
+      GetDeviceFromStableDeviceId(device.is_input, device.stable_device_id);
   if (!device_found) {
     return NEW_DEVICE;
   }
@@ -2290,7 +2292,8 @@ bool CrasAudioHandler::ActivateMostRecentActiveDevice(bool is_input) {
     if (!device_stable_id.has_value()) {
       continue;
     }
-    const AudioDevice* device = GetDeviceFromStableDeviceId(*device_stable_id);
+    const AudioDevice* device =
+        GetDeviceFromStableDeviceId(is_input, *device_stable_id);
     if (!device) {
       continue;
     }
@@ -3128,7 +3131,7 @@ CrasAudioHandler::GetPreferredDeviceIfDeviceSetSeenBefore(
     return std::nullopt;
   }
 
-  const AudioDevice* device = GetDeviceFromStableDeviceId(id.value());
+  const AudioDevice* device = GetDeviceFromStableDeviceId(is_input, id.value());
   if (!device) {
     return std::nullopt;
   }

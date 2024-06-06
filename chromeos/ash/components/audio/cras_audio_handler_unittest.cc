@@ -779,6 +779,20 @@ class CrasAudioHandlerTest : public testing::TestWithParam<int> {
     task_environment_.FastForwardBy(delta);
   }
 
+  // Helper function to call GetDeviceFromStableDeviceId.
+  std::optional<AudioDevice> GetDeviceFromStableDeviceId(
+      bool is_input,
+      uint64_t stable_device_id) {
+    const AudioDevice* device =
+        cras_audio_handler_->GetDeviceFromStableDeviceId(is_input,
+                                                         stable_device_id);
+    if (device) {
+      return *device;
+    } else {
+      return std::nullopt;
+    }
+  }
+
  protected:
   FakeCrasAudioClient* fake_cras_audio_client() {
     return FakeCrasAudioClient::Get();
@@ -7569,6 +7583,50 @@ TEST_P(CrasAudioHandlerTest,
                      /*has_alternative_device=*/true);
   EXPECT_EQ(usb_output_device.id,
             cras_audio_handler_->GetPrimaryActiveOutputNode());
+}
+
+// Tests that GetDeviceFromStableDeviceId can get the correct device when an
+// input and an output device have the same stable id.
+TEST_P(CrasAudioHandlerTest,
+       GetDeviceFromStableDeviceId_AudioSelectionImprovementFlagOn) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kAudioSelectionImprovement);
+
+  // Plug USB input and output devices with the same stable id.
+  AudioNodeList audio_nodes;
+  uint64_t stable_device_id = 12345;
+  std::string input_device_name = "usb_input";
+  std::string output_device_name = "usb_output";
+  AudioNode usb_input = AudioNode(
+      /*is_input=*/true, /*id=*/800, /*has_v2_stable_device_id=*/true,
+      stable_device_id, stable_device_id,
+      /*device_name=*/input_device_name,
+      /*type=*/"USB", /*name=*/input_device_name, /*active=*/false,
+      /*plugged_time=*/100, kInputMaxSupportedChannels, kInputAudioEffect,
+      /*number_of_volume_steps=*/0);
+
+  AudioNode usb_output = AudioNode(
+      /*is_input=*/false, /*id=*/900, /*has_v2_stable_device_id=*/true,
+      stable_device_id, stable_device_id,
+      /*device_name=*/output_device_name,
+      /*type=*/"USB", /*name=*/output_device_name, /*active=*/false,
+      /*plugged_time=*/100, kOutputMaxSupportedChannels, kOutputAudioEffect,
+      /*number_of_volume_steps=*/0);
+  audio_nodes.push_back(usb_input);
+  audio_nodes.push_back(usb_output);
+  SetUpCrasAudioHandler(audio_nodes);
+
+  std::optional<AudioDevice> device1 =
+      GetDeviceFromStableDeviceId(/*is_input=*/false, stable_device_id);
+  EXPECT_TRUE(device1.has_value());
+  EXPECT_FALSE(device1->is_input);
+  EXPECT_EQ(device1->device_name, output_device_name);
+
+  std::optional<AudioDevice> device2 =
+      GetDeviceFromStableDeviceId(/*is_input=*/true, stable_device_id);
+  EXPECT_TRUE(device2.has_value());
+  EXPECT_TRUE(device2->is_input);
+  EXPECT_EQ(device2->device_name, input_device_name);
 }
 
 }  // namespace ash

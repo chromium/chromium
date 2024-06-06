@@ -759,6 +759,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   AudioDevice ConvertAudioNodeWithModifiedPriority(const AudioNode& node);
 
   const AudioDevice* GetDeviceFromStableDeviceId(
+      bool is_input,
       uint64_t stable_device_id) const;
 
   const AudioDevice* GetKeyboardMic() const;
