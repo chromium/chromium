@@ -122,6 +122,7 @@ android_library("javatests") {
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java",
+    "//ui/android:ui_java_test_support",
   ]
   resources_package =
       "org.chromium.chrome.browser.password_manager.account_storage_notice"

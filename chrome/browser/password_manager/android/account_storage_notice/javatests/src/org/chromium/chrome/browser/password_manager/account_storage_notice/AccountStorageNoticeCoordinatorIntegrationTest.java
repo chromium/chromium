@@ -28,6 +28,7 @@ import org.mockito.quality.Strictness;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -39,11 +40,14 @@ import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+
+import java.io.IOException;
 
 /**
  * Tests that verify AccountStorageNoticeCoordinator's interaction with the view, e.g. click
@@ -59,6 +63,12 @@ public class AccountStorageNoticeCoordinatorIntegrationTest {
     @Rule public SigninTestRule mSigninTestRule = new SigninTestRule();
 
     @Rule public ChromeTabbedActivityTestRule mActivityRule = new ChromeTabbedActivityTestRule();
+
+    @Rule
+    public final ChromeRenderTestRule mRenderTestRule =
+            ChromeRenderTestRule.Builder.withPublicCorpus()
+                    .setBugComponent(ChromeRenderTestRule.Component.SERVICES_SYNC)
+                    .build();
 
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
@@ -88,6 +98,17 @@ public class AccountStorageNoticeCoordinatorIntegrationTest {
                     UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
                             .clearPref(Pref.ACCOUNT_STORAGE_NOTICE_SHOWN);
                 });
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testView() throws IOException {
+        AccountStorageNoticeCoordinator coordinator = createCoordinator();
+        waitSheetVisible(true);
+
+        mRenderTestRule.render(
+                coordinator.getBottomSheetViewForTesting(), "account_storage_notice_view");
     }
 
     @Test

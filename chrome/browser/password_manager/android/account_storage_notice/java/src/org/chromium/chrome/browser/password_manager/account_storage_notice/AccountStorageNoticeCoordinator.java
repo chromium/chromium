@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.password_manager.account_storage_notice;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.annotation.Nullable;
 
@@ -137,5 +138,9 @@ class AccountStorageNoticeCoordinator extends EmptyBottomSheetObserver {
     interface Natives {
         // See docs in account_storage_notice.h as to when this should be called.
         void onClosed(long nativeCoordinatorObserver);
+    }
+
+    public View getBottomSheetViewForTesting() {
+        return mView.getContentView();
     }
 }

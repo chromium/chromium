@@ -100,9 +100,8 @@ class AccountStorageNoticeView implements BottomSheetContent {
     }
 
     @Override
-    public float getHalfHeightRatio() {
-        // Slightly less than the default value (.75).
-        return 0.6f;
+    public float getFullHeightRatio() {
+        return HeightMode.WRAP_CONTENT;
     }
 
     @Override
