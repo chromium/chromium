@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
+import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
 import {BrowserProxy} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {ReadAnythingElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {convertLangOrLocaleForVoicePackManager, VoiceClientSideStatusCode, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
@@ -51,6 +52,7 @@ suite('UpdateVoicePack', () => {
     app = document.createElement('read-anything-app');
     document.body.appendChild(app);
     app.synth = new FakeSpeechSynthesis();
+    app.getSpeechSynthesisVoice();
   });
 
   suite('updateVoicePackStatus', () => {
@@ -81,6 +83,62 @@ suite('UpdateVoicePack', () => {
             getVoicePackServerInstallStatus(lang).id, 'Successful response');
         assertEquals(sentInstallRequestFor, voicePackLang);
       });
+    });
+  });
+
+  suite('download notification', () => {
+    let toast: CrToastElement;
+
+    setup(() => {
+      toast = document.querySelector<CrToastElement>('#toast')!;
+      app.getSpeechSynthesisVoice();
+    });
+
+    test('does not show if already installed', () => {
+      const lang = 'en';
+
+      // The first call to update status should be the existing status from
+      // the server.
+      app.updateVoicePackStatus(lang, 'kInstalled');
+
+      assertFalse(toast.open);
+    });
+
+    test('does not show if still installing', () => {
+      const lang = 'en';
+
+      // existing status
+      app.updateVoicePackStatus(lang, 'kInstalled');
+      // then we request install
+      app.updateVoicePackStatus(lang, 'kInstalling');
+
+      assertFalse(toast.open);
+    });
+
+    test('does not show if error while installing', () => {
+      const lang = 'en';
+
+      // existing status
+      app.updateVoicePackStatus(lang, 'kInstalled');
+      // then we request install
+      app.updateVoicePackStatus(lang, 'kInstalling');
+      // install error
+      app.updateVoicePackStatus(lang, 'kOther');
+
+      assertFalse(toast.open);
+    });
+
+    test('shows after installed', () => {
+      const lang = 'en';
+
+      // existing status
+      app.updateVoicePackStatus(lang, 'kInstalled');
+      // then we request install
+      app.updateVoicePackStatus(lang, 'kInstalling');
+      // install completes
+      app.updateVoicePackStatus(lang, 'kInstalled');
+
+      assertTrue(toast.open);
     });
   });
 
@@ -137,8 +195,10 @@ suite('UpdateVoicePack', () => {
   test(
       'refreshes getVoices() and marks newly available voices as available',
       () => {
-        // Confirm en-us is not in the voice list yet
         const lang = 'en-us';
+        // set installing status so that the old status is not empty.
+        app.updateVoicePackStatus(lang, 'kInstalling');
+        // Confirm en-us is not in the voice list yet
         assertFalse(
             app.synth.getVoices().some(v => v.lang.toLowerCase() === lang));
 
@@ -175,23 +235,26 @@ suite('UpdateVoicePack', () => {
     suite('with error code', () => {
       const lang = 'pt-br';
 
+      function setAvailableVoices(voices: SpeechSynthesisVoice[]) {
+        // @ts-ignore
+        app.availableVoices = voices;
+      }
+
       setup(() => {
         enabledLangs().push(lang);
         assertTrue(enabledLangs().includes(lang));
       });
 
       test('and no other voices for language, disables language', () => {
-        app.synth.getVoices = () => [];
+        setAvailableVoices([]);
         app.updateVoicePackStatusFromInstallResponse(lang, 'kOther');
         assertFalse(enabledLangs().includes(lang));
       });
 
       test('and only eSpeak voices for language, disables language', () => {
-        app.synth.getVoices = () => {
-          return [
-            {lang: lang, name: 'eSpeak Portuguese'} as SpeechSynthesisVoice,
-          ];
-        };
+        setAvailableVoices([
+          {lang: lang, name: 'eSpeak Portuguese'} as SpeechSynthesisVoice,
+        ]);
 
         app.updateVoicePackStatusFromInstallResponse(lang, 'kOther');
 
@@ -201,14 +264,12 @@ suite('UpdateVoicePack', () => {
       test(
           'and has other Google voices for language, keeps language enabled',
           () => {
-            app.synth.getVoices = () => {
-              return [
-                {lang: lang, name: 'ChromeOS Portuguese 1'} as
-                    SpeechSynthesisVoice,
-                {lang: lang, name: 'ChromeOS Portuguese 2'} as
-                    SpeechSynthesisVoice,
-              ];
-            };
+            setAvailableVoices([
+              {lang: lang, name: 'ChromeOS Portuguese 1'} as
+                  SpeechSynthesisVoice,
+              {lang: lang, name: 'ChromeOS Portuguese 2'} as
+                  SpeechSynthesisVoice,
+            ]);
             app.updateVoicePackStatusFromInstallResponse(lang, 'kOther');
 
             assertTrue(enabledLangs().includes(lang));

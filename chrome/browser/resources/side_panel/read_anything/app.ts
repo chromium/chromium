@@ -1004,9 +1004,11 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
           break;
         case VoicePackServerStatusSuccessCode.INSTALLED:
           // See if voice is newly downloaded and should have a toast notifying
-          // the user.
-          if (oldVoicePackStatus?.code !==
-              VoicePackServerStatusSuccessCode.INSTALLED) {
+          // the user. If there is no old status, then we are opening for the
+          // first time and therefore should not be showing a notification.
+          if (oldVoicePackStatus &&
+              oldVoicePackStatus.code !==
+                  VoicePackServerStatusSuccessCode.INSTALLED) {
             const possibleLanguageConversion =
                 convertLangToAnAvailableLangIfPresent(
                     lang, this.availableLangs, true);
