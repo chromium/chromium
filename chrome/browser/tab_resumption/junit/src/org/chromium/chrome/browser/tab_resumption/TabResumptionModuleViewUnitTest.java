@@ -15,6 +15,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.text.TextUtils;
 import android.util.Size;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -163,13 +164,14 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
 
         // Check tile texts.
         TabResumptionTileView tile1 = (TabResumptionTileView) mTileContainerView.getChildAt(0);
-        Assert.assertEquals(
-                "From Desktop", ((TextView) tile1.findViewById(R.id.tile_pre_info_text)).getText());
+        Assert.assertTrue(
+                TextUtils.isEmpty(
+                        ((TextView) tile1.findViewById(R.id.tile_pre_info_text)).getText()));
         Assert.assertEquals(
                 "Google Dog", ((TextView) tile1.findViewById(R.id.tile_display_text)).getText());
         // Actual code would remove "www." prefix, but the test's JNI mock doesn't do so.
         Assert.assertEquals(
-                "www.google.com \u2022 3 hr ago",
+                "www.google.com \u2022 Desktop \u2022 3 hr ago",
                 ((TextView) tile1.findViewById(R.id.tile_post_info_text)).getText());
 
         // Image is not loaded yet.
@@ -222,13 +224,14 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
 
         // Check tile texts.
         TabResumptionTileView tile1 = (TabResumptionTileView) mTileContainerView.getChildAt(0);
-        Assert.assertEquals(
-                "From Desktop", ((TextView) tile1.findViewById(R.id.tile_pre_info_text)).getText());
+        Assert.assertTrue(
+                TextUtils.isEmpty(
+                        ((TextView) tile1.findViewById(R.id.tile_pre_info_text)).getText()));
         Assert.assertEquals(
                 "Google Dog", ((TextView) tile1.findViewById(R.id.tile_display_text)).getText());
         // Actual code would remove "www." prefix, but the test's JNI mock doesn't do so.
         Assert.assertEquals(
-                "www.google.com \u2022 3 hr ago",
+                "www.google.com \u2022 Desktop \u2022 3 hr ago",
                 ((TextView) tile1.findViewById(R.id.tile_post_info_text)).getText());
 
         // Image is not loaded yet.
@@ -413,7 +416,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
                 "Blue website with a very long title that might not fit",
                 ((TextView) tile1.findViewById(R.id.tile_display_text)).getText());
         Assert.assertEquals(
-                "16 min ago \u2022 From My Tablet",
+                "My Tablet \u2022 16 min ago",
                 ((TextView) tile1.findViewById(R.id.tile_info_text)).getText());
 
         View divider = (View) mTileContainerView.getChildAt(1);
@@ -423,7 +426,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
         Assert.assertEquals(
                 "Google Dog", ((TextView) tile2.findViewById(R.id.tile_display_text)).getText());
         Assert.assertEquals(
-                "3 hr ago \u2022 From Desktop",
+                "Desktop \u2022 3 hr ago",
                 ((TextView) tile2.findViewById(R.id.tile_info_text)).getText());
 
         // Images are not loaded yet.
@@ -488,7 +491,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
         Assert.assertEquals(
                 TAB_TITLE, ((TextView) tile1.findViewById(R.id.tile_display_text)).getText());
         Assert.assertEquals(
-                "3 hr ago \u2022 Your last tab",
+                "Your last tab \u2022 3 hr ago",
                 ((TextView) tile1.findViewById(R.id.tile_info_text)).getText());
 
         View divider = (View) mTileContainerView.getChildAt(1);
@@ -498,7 +501,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
         Assert.assertEquals(
                 "Google Dog", ((TextView) tile2.findViewById(R.id.tile_display_text)).getText());
         Assert.assertEquals(
-                "3 hr ago \u2022 From Desktop",
+                "Desktop \u2022 3 hr ago",
                 ((TextView) tile2.findViewById(R.id.tile_info_text)).getText());
 
         // Images are not loaded yet.

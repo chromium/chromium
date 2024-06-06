@@ -19,6 +19,9 @@ import org.chromium.components.browser_ui.widget.RoundedCornerImageView;
  * "single-tile" case, and a smaller one for the "multi-tile" case.
  */
 public class TabResumptionTileView extends RelativeLayout {
+    static final String SEPARATE_COMMA = ", ";
+    static final String SEPARATE_PERIOD = ". ";
+
     private RoundedCornerImageView mIconView;
     private final int mSalientImageCornerRadiusPx;
 
@@ -42,30 +45,54 @@ public class TabResumptionTileView extends RelativeLayout {
     }
 
     /**
-     * Assigns all texts for the "single-tile" case.
+     * Assigns all texts for the "single-tile" case and returns the content description string.
      *
      * @param preInfoText Info to show above main text.
      * @param displayText Main text (page title).
      * @param postInfoText Info to show below main text.
      */
-    public void setSuggestionTextsSingle(
-            String preInfoText, String displayText, String postInfoText) {
+    public String setSuggestionTextsSingle(
+            @Nullable String preInfoText, String displayText, String postInfoText) {
+        // TODO(b/337858147): Change the visibility and text of TextView R.id.tile_pre_info_text
+        // for Tab resumption V2 UX.
         ((TextView) findViewById(R.id.tile_pre_info_text)).setText(preInfoText);
         ((TextView) findViewById(R.id.tile_display_text)).setText(displayText);
         ((TextView) findViewById(R.id.tile_post_info_text)).setText(postInfoText);
-        setContentDescription(preInfoText + ", " + displayText + ", " + postInfoText);
+
+        StringBuilder stringBuilder = new StringBuilder();
+        if (preInfoText != null) {
+            stringBuilder.append(preInfoText);
+            stringBuilder.append(SEPARATE_COMMA);
+        }
+        stringBuilder.append(displayText);
+        stringBuilder.append(SEPARATE_COMMA);
+        stringBuilder.append(postInfoText);
+        stringBuilder.append(SEPARATE_PERIOD);
+
+        String contentDescription = stringBuilder.toString();
+        setContentDescription(contentDescription);
+        return contentDescription;
     }
 
     /**
-     * Assigns all texts for the "multi-tile" case.
+     * Assigns all texts for the "multi-tile" case and returns the content description string.
      *
      * @param displayText Main text (page title).
-     * @param postInfoText Info to show below main text.
+     * @param infoText Info to show below main text.
      */
-    public void setSuggestionTextsMulti(String displayText, String infoText) {
+    public String setSuggestionTextsMulti(String displayText, String infoText) {
         ((TextView) findViewById(R.id.tile_display_text)).setText(displayText);
         ((TextView) findViewById(R.id.tile_info_text)).setText(infoText);
-        setContentDescription(displayText + ", " + infoText);
+
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(displayText);
+        stringBuilder.append(SEPARATE_COMMA);
+        stringBuilder.append(infoText);
+        stringBuilder.append(SEPARATE_PERIOD);
+
+        String contentDescription = stringBuilder.toString();
+        setContentDescription(contentDescription);
+        return contentDescription;
     }
 
     /** Assigns the main URL image. */
