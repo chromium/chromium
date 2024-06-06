@@ -56,10 +56,8 @@ extern const base::FeatureParam<bool> kUseMlEmbedder;
 // the '@history' scope.
 extern const base::FeatureParam<bool> kOmniboxUnscoped;
 
-// The minimum and maximum number of embeddings to submit to the primary (ML)
-// embedder via the scheduling embedder. Controlling these allows embedding
-// computations to be either batched together or broken down as needed.
-extern const base::FeatureParam<int> kScheduledEmbeddingsMin;
+// The maximum number of embeddings to submit to the primary (ML) embedder
+// in a single batch via the scheduling embedder.
 extern const base::FeatureParam<int> kScheduledEmbeddingsMax;
 
 // Whether quality logging data should be sent.

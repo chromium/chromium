@@ -27,7 +27,6 @@ namespace history_embeddings {
 class SchedulingEmbedder : public Embedder {
  public:
   SchedulingEmbedder(std::unique_ptr<Embedder> embedder,
-                     size_t scheduled_min,
                      size_t scheduled_max);
   ~SchedulingEmbedder() override;
 
@@ -55,15 +54,13 @@ class SchedulingEmbedder : public Embedder {
     Job(Job&&);
     Job& operator=(Job&&);
 
+    // Data for the job is saved from calls to `ComputePassagesEmbeddings`.
     PassageKind kind;
     std::vector<std::string> passages;
     ComputePassagesEmbeddingsCallback callback;
 
     // Completed embeddings; may be partial.
     std::vector<Embedding> embeddings;
-  };
-  struct JobComparator {
-    bool operator()(const Job& a, const Job& b) { return a.kind > b.kind; }
   };
 
   // Intercepts metadata so that work can be queued up while the primary
@@ -78,26 +75,20 @@ class SchedulingEmbedder : public Embedder {
                             std::vector<Embedding> embedding,
                             ComputeEmbeddingsStatus status);
 
-  // Pop top priority job from `waiting_jobs_` and return it.
-  Job PopTopJob();
-
-  // Pull jobs into work queue as needed, and submit work to embedder.
+  // Stable-sort jobs by priority and submit a batch of work to embedder.
+  // This should only be called when the embedder is not already working.
   void SubmitWorkToEmbedder();
 
-  // Jobs that haven't started yet, organized by priority.
-  // TODO: b/343523145 - Simplify SchedulingEmbedder to use a single dequeue
-  //  instead of dequeue + priority_queue. We can append work to the
-  //  back of a single dequeue, reorder it in between work submissions,
-  //  and then submit work batches from the front of the queue.
-  std::priority_queue<Job, std::vector<Job>, JobComparator> waiting_jobs_;
-
-  // Jobs that have started, organized in order of submission to embedder.
-  // When this is non-empty, the embedder is working and its results will
-  // be applied from front to back when `OnEmbeddingsComputed` is called.
-  // Not all jobs in `working_jobs_` are necessarily being worked on by the
-  // embedder. `working_jobs_` will contain jobs that were partially
-  // completed, since a subset of a job's passages may be sent in each batch.
-  std::deque<Job> working_jobs_;
+  // When this is non-empty, the embedder is working and its results will be
+  // applied from front to back when `OnEmbeddingsComputed` is called. Not all
+  // of these jobs are necessarily being worked on by the embedder. It may
+  // contain a mix of in-progress, partially completed, and not-yet-started
+  // jobs. In-progress jobs are ordered first, and in the same order as
+  // submitted to the embedder. Partially completed jobs may follow,
+  // still in the order they were last submitted to the embedder.
+  // Not-yet-started jobs are ordered last. All jobs will be re-ordered by
+  // priority before submitting the next batch to the embedder.
+  std::deque<Job> jobs_;
 
   // The primary embedder that does the actual embedding computations.
   // This may be slow, and we await results before sending the next request.
@@ -106,10 +97,7 @@ class SchedulingEmbedder : public Embedder {
   // Starts false; set true when valid metadata is received from `embedder_`.
   bool embedder_ready_{false};
 
-  // The minimum and maximum number of embeddings to submit to the primary
-  // embedder via the scheduling embedder. Controlling these allows embedding
-  // computations to be either batched together or broken down as needed.
-  size_t scheduled_min_;
+  // The maximum number of embeddings to submit to the primary embedder.
   size_t scheduled_max_;
 
   base::WeakPtrFactory<SchedulingEmbedder> weak_ptr_factory_{this};

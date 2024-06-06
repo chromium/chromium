@@ -158,8 +158,7 @@ HistoryEmbeddingsService::HistoryEmbeddingsService(
   }
 
   embedder_ = std::make_unique<SchedulingEmbedder>(
-      std::move(embedder_), kScheduledEmbeddingsMin.Get(),
-      kScheduledEmbeddingsMax.Get());
+      std::move(embedder_), kScheduledEmbeddingsMax.Get());
 
   if (kUseMlAnswerer.Get()) {
     answerer_ = std::make_unique<MlAnswerer>();
