@@ -4,6 +4,8 @@
 
 package org.chromium.base.test.transit;
 
+import android.util.Pair;
+
 import org.chromium.base.test.transit.ConditionalState.Phase;
 
 import java.util.ArrayList;
@@ -15,13 +17,13 @@ import java.util.List;
  * <p>Also keeps track of which test is currently running for batched tests.
  */
 public class TrafficControl {
-    private static final List<Station> sAllStations = new ArrayList<>();
+    private static final List<Pair<String, Station>> sAllStations = new ArrayList<>();
     private static String sCurrentTestCase;
 
     private static Station sActiveStation;
 
     static void notifyCreatedStation(Station station) {
-        sAllStations.add(station);
+        sAllStations.add(Pair.create(sCurrentTestCase, station));
     }
 
     static void notifyEntryPointSentinelStationCreated(EntryPointSentinelStation sentinelStation) {
@@ -38,7 +40,7 @@ public class TrafficControl {
         sActiveStation = newActiveStation;
     }
 
-    public static List<Station> getAllStations() {
+    public static List<Pair<String, Station>> getAllStations() {
         return sAllStations;
     }
 

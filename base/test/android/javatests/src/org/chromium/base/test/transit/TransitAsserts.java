@@ -4,6 +4,8 @@
 
 package org.chromium.base.test.transit;
 
+import android.util.Pair;
+
 import org.chromium.base.test.transit.ConditionalState.Phase;
 
 import java.util.List;
@@ -75,18 +77,23 @@ public class TransitAsserts {
     }
 
     private static void raiseAssertion(String message) {
-        List<Station> allStations = TrafficControl.getAllStations();
+        List<Pair<String, Station>> allStations = TrafficControl.getAllStations();
         assert false : message + "\n" + stationListToString(allStations);
     }
 
-    private static String stationListToString(List<Station> allStations) {
+    private static String stationListToString(List<Pair<String, Station>> allStations) {
         StringBuilder builder = new StringBuilder();
         int i = 1;
-        for (Station station : allStations) {
+        for (Pair<String, Station> pair : allStations) {
+            Station station = pair.second;
+            String testName = pair.first != null ? pair.first : "__outside_test__";
             builder.append(
                     String.format(
-                            "  [%d] (%s) %s\n",
-                            i, ConditionalState.phaseToShortString(station.getPhase()), station));
+                            "  [%d] (%s) %s (#%s)\n",
+                            i,
+                            ConditionalState.phaseToShortString(station.getPhase()),
+                            station,
+                            testName));
             i++;
         }
         return builder.toString();
