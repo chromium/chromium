@@ -16,9 +16,11 @@
 #include "chrome/browser/ash/app_restore/full_restore_app_launch_handler.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/test/base/chromeos/crosier/aura_window_title_observer.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "url/gurl.h"
 
 namespace {
@@ -59,6 +61,21 @@ void InteractiveAshTest::InstallSystemApps() {
   Profile* profile = ProfileManager::GetActiveUserProfile();
   CHECK(profile);
   ash::SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
+}
+
+ui::ElementContext InteractiveAshTest::LaunchSystemWebApp(
+    ash::SystemWebAppType type,
+    const ui::ElementIdentifier& element_id) {
+  Profile* profile = GetActiveUserProfile();
+  CHECK(profile);
+  Browser* browser = nullptr;
+  RunTestSequence(InstrumentNextTab(element_id, AnyBrowser()),
+                  Do([&]() { LaunchSystemWebAppAsync(profile, type); }),
+                  InAnyContext(WaitForShow(element_id)), Do([&]() {
+                    browser = FindSystemWebAppBrowser(profile, type);
+                  }));
+  CHECK(browser);
+  return browser->window()->GetElementContext();
 }
 
 Profile* InteractiveAshTest::GetActiveUserProfile() {
@@ -121,6 +138,34 @@ InteractiveAshTest::WaitForElementDoesNotExist(
 }
 
 ui::test::internal::InteractiveTestPrivate::MultiStep
+InteractiveAshTest::WaitForElementEnabled(
+    const ui::ElementIdentifier& element_id,
+    WebContentsInteractionTestUtil::DeepQuery element) {
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementEnabled);
+
+  WebContentsInteractionTestUtil::StateChange state_change;
+  state_change.event = kElementEnabled;
+  state_change.where = element;
+  state_change.type = StateChange::Type::kExistsAndConditionTrue;
+  state_change.test_function = "(el) => { return !el.disabled; }";
+  return WaitForStateChange(element_id, state_change);
+}
+
+ui::test::internal::InteractiveTestPrivate::MultiStep
+InteractiveAshTest::WaitForElementDisabled(
+    const ui::ElementIdentifier& element_id,
+    WebContentsInteractionTestUtil::DeepQuery element) {
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementDisabled);
+
+  WebContentsInteractionTestUtil::StateChange state_change;
+  state_change.event = kElementDisabled;
+  state_change.where = element;
+  state_change.type = StateChange::Type::kExistsAndConditionTrue;
+  state_change.test_function = "(el) => { return el.disabled; }";
+  return WaitForStateChange(element_id, state_change);
+}
+
+ui::test::internal::InteractiveTestPrivate::MultiStep
 InteractiveAshTest::WaitForElementTextContains(
     const ui::ElementIdentifier& element_id,
     const WebContentsInteractionTestUtil::DeepQuery& query,
@@ -135,6 +180,22 @@ InteractiveAshTest::WaitForElementTextContains(
                                base::GetQuotedJSONString(expected) +
                                ") >= 0; }";
   state_change.event = kTextFound;
+  return WaitForStateChange(element_id, state_change);
+}
+
+ui::test::internal::InteractiveTestPrivate::MultiStep
+InteractiveAshTest::WaitForElementHasAttribute(
+    const ui::ElementIdentifier& element_id,
+    WebContentsInteractionTestUtil::DeepQuery element,
+    const std::string& attribute) {
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementHasAttribute);
+
+  WebContentsInteractionTestUtil::StateChange state_change;
+  state_change.event = kElementHasAttribute;
+  state_change.where = element;
+  state_change.type = StateChange::Type::kExistsAndConditionTrue;
+  state_change.test_function = base::StringPrintf(
+      "(el) => { return el.hasAttribute('%s'); }", attribute.c_str());
   return WaitForStateChange(element_id, state_change);
 }
 

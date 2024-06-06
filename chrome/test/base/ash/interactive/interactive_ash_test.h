@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/memory/weak_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
@@ -51,6 +52,12 @@ class InteractiveAshTest
   // default because this speeds up tests that don't need the apps.
   void InstallSystemApps();
 
+  // Launches the system web app of type `type`. Associates `element_id` with
+  // the app window and returns a Kombucha context for the app window.
+  ui::ElementContext LaunchSystemWebApp(
+      ash::SystemWebAppType type,
+      const ui::ElementIdentifier& element_id);
+
   // Returns the active user profile.
   Profile* GetActiveUserProfile();
 
@@ -82,22 +89,34 @@ class InteractiveAshTest
   WaitForElementDoesNotExist(const ui::ElementIdentifier& element_id,
                              const DeepQuery& query);
 
-  // Waits until the element or any of its children have the requested text.
-  //
-  // element_id
-  //     The identifier of the WebContents to query.
-  //
-  // query
-  //     The DeepQuery is a path to the element to start with, it can be {} to
-  //     query the entire page.
-  //
-  // expected
-  //     The text to search for.
+  // Waits for an element identified by `query` to both exist in the DOM of an
+  // instrumented WebUI identified by `element_id` and be enabled.
+  InteractiveTestApi::MultiStep WaitForElementEnabled(
+      const ui::ElementIdentifier& element_id,
+      WebContentsInteractionTestUtil::DeepQuery query);
+
+  // Waits for an element identified by `query` to both exist in the DOM of an
+  // instrumented WebUI identified by `element_id` and be disabled.
+  InteractiveTestApi::MultiStep WaitForElementDisabled(
+      const ui::ElementIdentifier& element_id,
+      WebContentsInteractionTestUtil::DeepQuery query);
+
+  // Waits for an element identified by `query` to both exist in the DOM of an
+  // instrumented WebUI identified by `element_id` and have its text, or the
+  // text of any of its children, match `expected`.
   ui::test::internal::InteractiveTestPrivate::MultiStep
   WaitForElementTextContains(
       const ui::ElementIdentifier& element_id,
       const WebContentsInteractionTestUtil::DeepQuery& query,
       const std::string& expected);
+
+  // Waits for an element identified by `query` to both exist in the DOM of an
+  // instrumented WebUI identified by `element_id` and have attribute
+  // `attribute`.
+  InteractiveTestApi::MultiStep WaitForElementHasAttribute(
+      const ui::ElementIdentifier& element_id,
+      WebContentsInteractionTestUtil::DeepQuery element,
+      const std::string& attribute);
 
   // Waits for an element to render by using `getBoundingClientRect()` to verify
   // the element is visible and ready for interactions. Helps to prevent
