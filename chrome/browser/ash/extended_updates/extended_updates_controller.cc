@@ -14,6 +14,7 @@
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/logging.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -180,10 +181,17 @@ void ExtendedUpdatesController::OnEolInfo(
     return;
   }
 
-  // This function is called upon login, so owner settings may not have finished
-  // loading yet. Defer decision to show notification until then.
   auto* owner_settings =
       OwnerSettingsServiceAshFactory::GetForBrowserContext(context);
+  if (!owner_settings) {
+    // In some sessions OwnerSettingsService may be completely uninitialized,
+    // for example Guest Mode.
+    LOG(WARNING) << "OwnerSettingsService is uninitialized for the profile."
+                    " Will not notify about extended updates";
+    return;
+  }
+  // This function is called upon login, so owner settings may not have finished
+  // loading yet. Defer decision to show notification until then.
   owner_settings->IsOwnerAsync(base::IgnoreArgs<bool>(
       base::BindOnce(&ExtendedUpdatesController::OnOwnershipDetermined,
                      weak_factory_.GetWeakPtr(), context->GetWeakPtr())));
