@@ -2,5 +2,37 @@
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file. -->
 
+<style>
+  #feature-running-text,
+  #feature-disabled-text,
+  #feature-enabled-text {
+    font-weight: bold;
+  }
+</style>
+
 <h1>Kiosk Vision Internals</h1>
-<div>Message: [[message_]]</div>
+
+<template is="dom-if" if="[[statusIs_(state_, 'kRunning')]]">
+  <p>The Kiosk Vision feature <span id="feature-running-text">is running</span>.</p>
+  <p>There are [[state_.boxes.length]] boxes to be displayed.</p>
+</template>
+
+<template is="dom-if" if="[[statusIs_(state_, 'kUnknown')]]">
+  <p>Unknown status. Possibly still loading...</p>
+</template>
+
+<template is="dom-if" if="[[statusIs_(state_, 'kFeatureDisabled')]]">
+  <p>The Kiosk Vision feature <span id="feature-disabled-text">is disabled</span>.</p>
+</template>
+
+<template is="dom-if" if="[[statusIs_(state_, 'kFeatureNotInitialized')]]">
+  <p>
+    The Kiosk Vision feature <span id="feature-enabled-text">is enabled</span>
+    but not yet initialized.
+  </p>
+  <p>Possibly still loading...</p>
+</template>
+
+<template is="dom-if" if="[[statusIs_(state_, 'kError')]]">
+  <p>There has been an error.</p>
+</template>

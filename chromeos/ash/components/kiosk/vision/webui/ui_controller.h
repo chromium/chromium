@@ -9,10 +9,16 @@
 
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
+#include "chromeos/ash/components/kiosk/vision/webui/kiosk_vision_internals.mojom.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/browser/webui_config.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "ui/base/webui/resource_path.h"
+#include "ui/webui/mojo_web_ui_controller.h"
 
 namespace ash::kiosk_vision {
 
@@ -28,13 +34,27 @@ using SetupWebUIDataSourceCallback = base::RepeatingCallback<void(
 
 // The WebUI controller for chrome://kiosk-vision-internals. This page displays
 // development and debugging information for the Kiosk Vision feature.
-class UIController : public content::WebUIController {
+class UIController : public ui::MojoWebUIController,
+                     public mojom::PageConnector {
  public:
   UIController(content::WebUI* web_ui,
                SetupWebUIDataSourceCallback setup_callback);
   UIController(const UIController&) = delete;
   UIController& operator=(const UIController&) = delete;
   ~UIController() override;
+
+  // Binds `this` object to the given `receiver`.
+  void BindInterface(mojo::PendingReceiver<mojom::PageConnector> receiver);
+
+ private:
+  // `ash::kiosk_vision::mojom::PageConnector` implementation.
+  void BindPage(mojo::PendingRemote<mojom::Page> page_remote) override;
+
+  mojo::Remote<mojom::Page> page_;
+
+  mojo::Receiver<mojom::PageConnector> receiver_{this};
+
+  WEB_UI_CONTROLLER_TYPE_DECL();
 };
 
 // The WebUIConfig for chrome://kiosk-vision-internals.

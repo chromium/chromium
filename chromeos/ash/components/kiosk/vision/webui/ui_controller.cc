@@ -12,18 +12,23 @@
 #include "chromeos/ash/components/grit/kiosk_vision_internals_resources.h"
 #include "chromeos/ash/components/grit/kiosk_vision_internals_resources_map.h"
 #include "chromeos/ash/components/kiosk/vision/webui/constants.h"
+#include "chromeos/ash/components/kiosk/vision/webui/kiosk_vision_internals.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
+#include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "ui/webui/mojo_web_ui_controller.h"
 
 namespace ash::kiosk_vision {
 
 UIController::UIController(content::WebUI* web_ui,
                            SetupWebUIDataSourceCallback setup_callback)
-    : content::WebUIController(web_ui) {
+    : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
       std::string(kChromeUIKioskVisionInternalsHost));
@@ -32,11 +37,22 @@ UIController::UIController(content::WebUI* web_ui,
                      base::make_span(kKioskVisionInternalsResources,
                                      kKioskVisionInternalsResourcesSize),
                      IDR_KIOSK_VISION_INTERNALS_KIOSK_VISION_INTERNALS_HTML);
-
-  source->AddString("message", "Placeholder Kiosk Vision internals page.");
 }
 
 UIController::~UIController() = default;
+
+WEB_UI_CONTROLLER_TYPE_IMPL(UIController)
+
+void UIController::BindInterface(
+    mojo::PendingReceiver<mojom::PageConnector> receiver) {
+  receiver_.reset();
+  receiver_.Bind(std::move(receiver));
+}
+
+void UIController::BindPage(mojo::PendingRemote<mojom::Page> page_remote) {
+  page_.reset();
+  page_.Bind(std::move(page_remote));
+}
 
 UIConfig::UIConfig(SetupWebUIDataSourceCallback setup_callback)
     : WebUIConfig(content::kChromeUIScheme, kChromeUIKioskVisionInternalsHost),
