@@ -289,6 +289,7 @@ IN_PROC_BROWSER_TEST_F(ThumbnailTabHelperInteractiveTest,
   constexpr int kTabCount = 4;
   AddSomeTabs(browser2, kTabCount - browser2->tab_strip_model()->count());
   EXPECT_EQ(kTabCount, browser2->tab_strip_model()->count());
+  const int active_tab_index = browser2->tab_strip_model()->active_index();
   CloseBrowserSynchronously(browser2);
 
   // Set up the tab loader to ensure tabs are left unloaded.
@@ -303,7 +304,7 @@ IN_PROC_BROWSER_TEST_F(ThumbnailTabHelperInteractiveTest,
   browser2 = GetBrowser(1);
 
   EXPECT_EQ(kTabCount, browser2->tab_strip_model()->count());
-  EXPECT_EQ(0, browser2->tab_strip_model()->active_index());
+  EXPECT_EQ(active_tab_index, browser2->tab_strip_model()->active_index());
 
   // These tabs shouldn't want to be loaded.
   for (int tab_idx = 1; tab_idx < kTabCount - 1; ++tab_idx) {

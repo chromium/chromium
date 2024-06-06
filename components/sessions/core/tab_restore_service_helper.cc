@@ -622,10 +622,19 @@ std::vector<LiveTab*> TabRestoreServiceHelper::RestoreEntryById(
             window.show_state, window.workspace, window.user_title,
             window.extra_data);
 
+        CHECK(!window.tabs.empty());
+        const int selected_tab_index =
+            window.selected_tab_index >= 0 &&
+                    window.selected_tab_index <
+                        static_cast<int>(window.tabs.size())
+                ? window.selected_tab_index
+                : 0;
+        const SessionID selected_tab_id = window.tabs[selected_tab_index]->id;
+
         for (const auto& tab : window.tabs) {
-          const bool first_tab = window.tabs[0]->id == tab->id;
+          const bool select_tab = tab->id == selected_tab_id;
           LiveTab* restored_tab = context->AddRestoredTab(
-              *tab.get(), context->GetTabCount(), first_tab);
+              *tab.get(), context->GetTabCount(), select_tab);
 
           if (restored_tab) {
             client_->OnTabRestored(

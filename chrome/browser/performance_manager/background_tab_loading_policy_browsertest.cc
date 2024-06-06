@@ -133,6 +133,8 @@ IN_PROC_BROWSER_TEST_F(BackgroundTabLoadingBrowserTest, RestoreTab) {
              get_tab_titles(browser_to_restore->tab_strip_model()));
 
   // Close and restore the browser; capturing the newly-restored browser.
+  const int active_tab_index =
+      browser_to_restore->tab_strip_model()->active_index();
   CloseBrowserSynchronously(std::exchange(browser_to_restore, nullptr));
   Browser* restored_browser = nullptr;
   {
@@ -145,7 +147,8 @@ IN_PROC_BROWSER_TEST_F(BackgroundTabLoadingBrowserTest, RestoreTab) {
   EXPECT_EQ(kDesiredNumberOfTabs, restored_browser->tab_strip_model()->count())
       << ::testing::PrintToString(
              get_tab_titles(restored_browser->tab_strip_model()));
-  EXPECT_EQ(0, restored_browser->tab_strip_model()->active_index());
+  EXPECT_EQ(active_tab_index,
+            restored_browser->tab_strip_model()->active_index());
 
   // All tabs should be loaded by BackgroundTabLoadingPolicy.
   int index = 0;
@@ -180,6 +183,8 @@ IN_PROC_BROWSER_TEST_F(BackgroundTabLoadingBrowserTest,
       kDesiredNumberOfTabs - browser_to_restore->tab_strip_model()->count());
   EXPECT_EQ(kDesiredNumberOfTabs,
             browser_to_restore->tab_strip_model()->count());
+  const int active_tab_index =
+      browser_to_restore->tab_strip_model()->active_index();
   CloseBrowserSynchronously(browser_to_restore);
 
   // Restore recently closed window.
@@ -188,7 +193,8 @@ IN_PROC_BROWSER_TEST_F(BackgroundTabLoadingBrowserTest,
   Browser* restored_browser = BrowserList::GetInstance()->get(1);
 
   EXPECT_EQ(kDesiredNumberOfTabs, restored_browser->tab_strip_model()->count());
-  EXPECT_EQ(0, restored_browser->tab_strip_model()->active_index());
+  EXPECT_EQ(active_tab_index,
+            restored_browser->tab_strip_model()->active_index());
 
   // These tabs should be loaded by BackgroundTabLoadingPolicy.
   EnsureTabFinishedRestoring(

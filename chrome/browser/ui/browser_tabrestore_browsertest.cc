@@ -73,6 +73,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTabRestoreTest, RecentTabsMenuTabDisposition) {
   EXPECT_EQ(2u, active_browser_list->size());
 
   // Close the first browser.
+  const int active_tab_index = browser()->tab_strip_model()->active_index();
   CloseBrowserSynchronously(browser());
   EXPECT_EQ(1u, active_browser_list->size());
 
@@ -108,8 +109,8 @@ IN_PROC_BROWSER_TEST_F(BrowserTabRestoreTest, RecentTabsMenuTabDisposition) {
     }
   }
 
-  // Only the first tab should have visible disposition.
-  CheckVisbility(restored_browser->tab_strip_model(), 0);
+  // Previously active tab should have visible disposition.
+  CheckVisbility(restored_browser->tab_strip_model(), active_tab_index);
 }
 
 // Expect a selected restored tab to start loading synchronously.
@@ -175,6 +176,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTabRestoreTest, DelegateRestoreTabDisposition) {
   EXPECT_EQ(2u, active_browser_list->size());
 
   // Close the first browser.
+  const int active_tab_index = browser()->tab_strip_model()->active_index();
   CloseBrowserSynchronously(browser());
   EXPECT_EQ(1u, active_browser_list->size());
 
@@ -212,6 +214,6 @@ IN_PROC_BROWSER_TEST_F(BrowserTabRestoreTest, DelegateRestoreTabDisposition) {
     }
   }
 
-  // Only the first tab should have visible disposition.
-  CheckVisbility(browser->tab_strip_model(), 0);
+  // Previously active tab should have visible disposition.
+  CheckVisbility(browser->tab_strip_model(), active_tab_index);
 }
