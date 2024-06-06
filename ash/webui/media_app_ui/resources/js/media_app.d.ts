@@ -208,6 +208,10 @@ declare interface ClientApiDelegate {
    */
   notifyCurrentFile(name?: string, type?: string): void;
   /**
+   * Notify MediaApp that a file has been opened.
+   */
+  notifyFileOpened(name?: string, type?: string): void;
+  /**
    * Attempts to extract a JPEG "preview" from a RAW image file. Throws on any
    * failure. Note this is typically a full-sized preview, not a thumbnail.
    * @return A Blob-backed File with type: image/jpeg.

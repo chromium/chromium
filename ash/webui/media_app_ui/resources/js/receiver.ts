@@ -346,13 +346,15 @@ const DELEGATE: ClientApiDelegate = {
   },
   notifyCurrentFile(name?: string, type?: string) {
     parentMessagePipe.sendMessage(Message.NOTIFY_CURRENT_FILE, {name, type});
+  },
+  notifyFileOpened(name?: string, type?: string) {
+    // Close any existing pipes when opening a new file.
+    ocrUntrustedPageHandler?.$.close();
+    mahiUntrustedPageHandler?.$.close();
+
     if (type === 'application/pdf') {
       ocrUntrustedPageHandler = connectToOcrHandler();
       mahiUntrustedPageHandler = connectToMahiHandler(name);
-    } else {
-      // If the new file is not PDF, disconnect PDF page handlers if any.
-      ocrUntrustedPageHandler?.$.close();
-      mahiUntrustedPageHandler?.$.close();
     }
   },
   async extractPreview(file: Blob) {

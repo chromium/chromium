@@ -180,6 +180,9 @@ class BacklightApp extends HTMLElement implements ClientApi {
 
     this.replaceChild(child, this.currentMedia);
     this.currentMedia = child;
+    if (mimeType === 'application/pdf') {
+      this.delegate!.notifyFileOpened(file.name, mimeType);
+    }
     this.delegate!.notifyCurrentFile(file.name, mimeType);
     this.appBar.setFilename(file.name);
   }
