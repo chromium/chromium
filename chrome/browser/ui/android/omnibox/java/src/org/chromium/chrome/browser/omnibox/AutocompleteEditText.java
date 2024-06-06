@@ -95,7 +95,7 @@ public class AutocompleteEditText extends VerticallyFixedEditText
     private void ensureModel() {
         if (mModel != null) return;
 
-        mModel = new SpannableAutocompleteEditTextModel(this);
+        mModel = new SpannableAutocompleteEditTextModel(this, getContext());
         mModel.setIgnoreTextChangeFromAutocomplete(true);
         mModel.setLayoutDirectionIsLtr(getLayoutDirection() != LAYOUT_DIRECTION_RTL);
         mModel.onFocusChanged(hasFocus());

@@ -13,9 +13,12 @@ import static org.mockito.Mockito.spy;
 
 import android.app.Activity;
 import android.content.Context;
+import android.text.Editable;
 import android.text.SpannableString;
 import android.text.TextUtils;
+import android.text.style.ForegroundColorSpan;
 import android.util.AttributeSet;
+import android.view.ContextThemeWrapper;
 import android.view.KeyEvent;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityManager;
@@ -33,15 +36,17 @@ import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowAccessibilityManager;
 import org.robolectric.shadows.ShadowLog;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
+import org.chromium.chrome.browser.omnibox.test.R;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.accessibility.AccessibilityState;
 
@@ -257,7 +262,9 @@ public class AutocompleteEditTextTest {
     public void setUp() {
         if (DEBUG) Log.i(TAG, "setUp started.");
         MockitoAnnotations.initMocks(this);
-        mContext = RuntimeEnvironment.application;
+        mContext =
+                new ContextThemeWrapper(
+                        ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
 
         mHasEditableInputConnectionEndBatchEditBug =
                 testEditableInputConnectionEndBatchEditBug(mContext);
@@ -604,6 +611,50 @@ public class AutocompleteEditTextTest {
         assertTexts("hello ", "world", "www.foobar.com");
         assertVerifierCallCounts(0, 0);
         mInOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    public void testAdditionalTextColor() {
+        OmniboxFeatures.sRichInlineAutocomplete.setForTesting(true);
+        OmniboxFeatures.sRichInlineShowFullUrl.setForTesting(true);
+        OmniboxFeatures.sRichInlineMinimumInputChars.setForTesting(1);
+
+        // User types "h".
+        assertTrue(mInputConnection.commitText("h", 1));
+        mInOrder.verify(mVerifier).onUpdateSelection(1, 1);
+        verifyOnPopulateAccessibilityEvent(
+                AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED, "h", "", -1, 0, -1, 0, 1);
+        verifyOnPopulateAccessibilityEvent(
+                AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED, "h", "", 1, 1, 1, -1, -1);
+        mInOrder.verify(mVerifier).onAutocompleteTextStateChanged(false);
+        assertVerifierCallCounts(2, 2);
+
+        mInOrder.verifyNoMoreInteractions();
+        assertTrue(mAutocomplete.shouldAutocomplete());
+
+        // The controller kicks in.
+        mAutocomplete.setAutocompleteText("h", "ello world", Optional.of("www.foo.com"));
+        assertFalse(mAutocomplete.isCursorVisible());
+        verifyOnPopulateAccessibilityEvent(
+                AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED,
+                "hello world - www.foo.com",
+                "h",
+                -1,
+                1,
+                -1,
+                0,
+                10);
+        assertVerifierCallCounts(0, 1);
+        mInOrder.verifyNoMoreInteractions();
+        assertTrue(mAutocomplete.shouldAutocomplete());
+
+        Editable editable = mAutocomplete.getEditableText();
+        ForegroundColorSpan[] spans =
+                editable.getSpans(0, editable.length(), ForegroundColorSpan.class);
+        assertEquals(1, spans.length);
+        assertEquals(
+                SemanticColorUtils.getDefaultTextColorSecondary(mContext),
+                spans[0].getForegroundColor());
     }
 
     @Test

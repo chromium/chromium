@@ -99,7 +99,7 @@ public class UrlBarUnitTest {
     public void setUp() {
         var ctx =
                 new ContextThemeWrapper(
-                        ContextUtils.getApplicationContext(), R.style.Theme_AppCompat);
+                        ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
         mUrlBar = spy(new UrlBarApi26(ctx, null));
         mUrlBar.setDelegate(mUrlBarDelegate);
 

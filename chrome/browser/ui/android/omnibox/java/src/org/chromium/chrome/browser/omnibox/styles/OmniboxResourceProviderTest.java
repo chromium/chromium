@@ -457,4 +457,14 @@ public class OmniboxResourceProviderTest {
                 originalContext,
                 OmniboxResourceProvider.maybeReplaceContextForSmallTabletWindow(originalContext));
     }
+
+    @Test
+    public void getAdditionalTextColor() {
+        final int defaultTextColorSecondary =
+                MaterialColors.getColor(mActivity, R.attr.colorOnSurfaceVariant, TAG);
+        assertEquals(
+                "Wrong additional text color.",
+                defaultTextColorSecondary,
+                OmniboxResourceProvider.getAdditionalTextColor(mActivity));
+    }
 }

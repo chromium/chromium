@@ -17,7 +17,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
+import android.content.Context;
 import android.text.SpannableStringBuilder;
+import android.view.ContextThemeWrapper;
 import android.view.KeyEvent;
 
 import org.junit.Before;
@@ -28,7 +30,9 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.omnibox.test.R;
 
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -45,8 +49,11 @@ public class SpannableAutocompleteEditTextModelUnitTest {
 
     @Before
     public void setUp() {
+        Context context =
+                new ContextThemeWrapper(
+                        ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
         doReturn(new SpannableStringBuilder("text")).when(mDelegate).getText();
-        mModel = new SpannableAutocompleteEditTextModel(mDelegate);
+        mModel = new SpannableAutocompleteEditTextModel(mDelegate, context);
         mModel.setInputConnectionForTesting(mConnection);
         mImeCommandNestLevel = new AtomicInteger();
         mCurrentState = mModel.getCurrentAutocompleteState();
