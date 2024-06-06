@@ -81,91 +81,18 @@ BrokerServices* g_broker_services = NULL;
 // of it, see:
 // https://sites.google.com/a/chromium.org/dev/Home/third-party-developers
 const wchar_t* const kTroublesomeDlls[] = {
-    L"adialhk.dll",                // Kaspersky Internet Security.
-    L"acpiz.dll",                  // Unknown.
-    L"activedetect32.dll",         // Lenovo One Key Theater (crbug.com/536056).
-    L"activedetect64.dll",         // Lenovo One Key Theater (crbug.com/536056).
-    L"airfoilinject3.dll",         // Airfoil.
-    L"akinsofthook32.dll",         // Akinsoft Software Engineering.
-    L"assistant_x64.dll",          // Unknown.
-    L"atcuf64.dll",                // Bit Defender Internet Security x64.
-    L"avcuf64.dll",                // Bit Defender Internet Security x64.
-    L"avgrsstx.dll",               // AVG 8.
-    L"babylonchromepi.dll",        // Babylon translator.
     L"btkeyind.dll",               // Widcomm Bluetooth.
-    L"cmcsyshk.dll",               // CMC Internet Security.
-    L"cmsetac.dll",                // Unknown (suspected malware).
-    L"cooliris.dll",               // CoolIris.
-    L"cplushook.dll",              // Unknown (suspected malware).
     L"dockshellhook.dll",          // Stardock Objectdock.
     L"easyhook32.dll",             // GDIPP and others.
     L"easyhook64.dll",             // Symantec BlueCoat and others.
-    L"esspd.dll",                  // Samsung Smart Security ESCORT.
-    L"googledesktopnetwork3.dll",  // Google Desktop Search v5.
-    L"fwhook.dll",                 // PC Tools Firewall Plus.
     L"guard64.dll",                // Comodo Internet Security x64.
-    L"hookprocesscreation.dll",    // Blumentals Program protector.
-    L"hookterminateapis.dll",      // Blumentals and Cyberprinter.
-    L"hookprintapis.dll",          // Cyberprinter.
-    L"imon.dll",                   // NOD32 Antivirus.
-    L"icatcdll.dll",               // Samsung Smart Security ESCORT.
-    L"icdcnl.dll",                 // Samsung Smart Security ESCORT.
-    L"ioloHL.dll",                 // Iolo (System Mechanic).
-    L"kloehk.dll",                 // Kaspersky Internet Security.
-    L"lawenforcer.dll",            // Spyware-Browser AntiSpyware (Spybro).
-    L"libdivx.dll",                // DivX.
-    L"lvprcinj01.dll",             // Logitech QuickCam.
-    L"madchook.dll",               // Madshi (generic hooking library).
     L"mdnsnsp.dll",                // Bonjour.
-    L"moonsysh.dll",               // Moon Secure Antivirus.
-    L"mpk.dll",                    // KGB Spy.
     L"n64hooks.dll",               // Neilsen//NetRatings NetSight.
-    L"npdivx32.dll",               // DivX.
-    L"npggNT.des",                 // GameGuard 2008.
-    L"npggNT.dll",                 // GameGuard (older).
-    L"nphooks.dll",                // Neilsen//NetRatings NetSight.
-    L"oawatch.dll",                // Online Armor.
-    L"opls64.dll",                 // PremierOpinion and Relevant-Knowledge.
-    L"pastali32.dll",              // PastaLeads.
-    L"pavhook.dll",                // Panda Internet Security.
-    L"pavlsphook.dll",             // Panda Antivirus.
-    L"pavshook.dll",               // Panda Antivirus.
-    L"pavshookwow.dll",            // Panda Antivirus.
-    L"pctavhook.dll",              // PC Tools Antivirus.
-    L"pctgmhk.dll",                // PC Tools Spyware Doctor.
-    L"picrmi32.dll",               // PicRec.
-    L"picrmi64.dll",               // PicRec.
     L"pmls64.dll",                 // PremierOpinion and Relevant-Knowledge.
-    L"prls64.dll",                 // PremierOpinion and Relevant-Knowledge.
-    L"prntrack.dll",               // Pharos Systems.
     L"prochook.dll",               // Unknown (GBill-Tools?) (crbug.com/974722).
-    L"protector.dll",              // Unknown (suspected malware).
-    L"radhslib.dll",               // Radiant Naomi Internet Filter.
-    L"radprlib.dll",               // Radiant Naomi Internet Filter.
-    L"rapportnikko.dll",           // Trustware Rapport.
-    L"rlhook.dll",                 // Trustware Bufferzone.
     L"rlls.dll",                   // PremierOpinion and Relevant-Knowledge.
     L"rlls64.dll",                 // PremierOpinion and Relevant-Knowledge.
-    L"rooksdol.dll",               // Trustware Rapport.
-    L"rndlpepperbrowserrecordhelper.dll",  // RealPlayer.
     L"rpchromebrowserrecordhelper.dll",    // RealPlayer.
-    L"r3hook.dll",                         // Kaspersky Internet Security.
-    L"sahook.dll",                         // McAfee Site Advisor.
-    L"sbrige.dll",                         // Unknown.
-    L"sc2hook.dll",                        // Supercopier 2.
-    L"sdhook32.dll",             // Spybot - Search & Destroy Live Protection.
-    L"sguard.dll",               // Iolo (System Guard).
-    L"smum32.dll",               // Spyware Doctor version 6.
-    L"smumhook.dll",             // Spyware Doctor version 5.
-    L"ssldivx.dll",              // DivX.
-    L"syncor11.dll",             // SynthCore Midi interface.
-    L"systools.dll",             // Panda Antivirus.
-    L"tfwah.dll",                // Threatfire (PC tools).
-    L"wblind.dll",               // Stardock Object desktop.
-    L"wbhelp.dll",               // Stardock Object desktop.
-    L"windowsapihookdll32.dll",  // Lenovo One Key Theater (crbug.com/536056).
-    L"windowsapihookdll64.dll",  // Lenovo One Key Theater (crbug.com/536056).
-    L"winstylerthemehelper.dll"  // Tuneup utilities 2006.
 };
 
 // This is for finch. See also crbug.com/464430 for details.
