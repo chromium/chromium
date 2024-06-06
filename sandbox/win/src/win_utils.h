@@ -20,10 +20,6 @@ namespace sandbox {
 
 // Prefix for path used by NT calls.
 const wchar_t kNTPrefix[] = L"\\??\\";
-const size_t kNTPrefixLen = std::size(kNTPrefix) - 1;
-
-const wchar_t kNTDevicePrefix[] = L"\\Device\\";
-const size_t kNTDevicePrefixLen = std::size(kNTDevicePrefix) - 1;
 
 // List of handles mapped to their kernel object type name.
 using ProcessHandleMap = std::map<std::wstring, std::vector<HANDLE>>;

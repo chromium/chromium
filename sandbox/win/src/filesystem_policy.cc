@@ -84,11 +84,10 @@ bool FileSystemPolicy::GenerateRules(const wchar_t* name,
 
   bool is_pipe = IsPipe(mod_name);
 
-  // TODO(cpu) bug 32224: This prefix add is a hack because we don't have the
-  // infrastructure to normalize names. In any case we need to escape the
-  // question marks.
-  if (_wcsnicmp(mod_name.c_str(), kNTDevicePrefix, kNTDevicePrefixLen)) {
-    mod_name = FixNTPrefixForMatch(mod_name);
+  // If the path starts with '\' then we assume it's a native path, otherwise
+  // it's a Win32 path and we need to add the NT DOS devices prefix.
+  if (mod_name[0] != L'\\') {
+    mod_name.insert(0, kNTPrefix);
     name = mod_name.c_str();
   }
 
@@ -276,28 +275,6 @@ bool FileSystemPolicy::SetInformationFileAction(EvalResult eval_result,
       local_handle, io_block, file_info, length, file_info_class);
 
   return true;
-}
-
-std::wstring FixNTPrefixForMatch(const std::wstring& name) {
-  std::wstring mod_name = name;
-
-  // NT prefix escaped for rule matcher
-  const wchar_t kNTPrefixEscaped[] = L"\\/?/?\\";
-  const int kNTPrefixEscapedLen = std::size(kNTPrefixEscaped) - 1;
-
-  if (0 != mod_name.compare(0, kNTPrefixLen, kNTPrefix)) {
-    if (0 != mod_name.compare(0, kNTPrefixEscapedLen, kNTPrefixEscaped)) {
-      // TODO(nsylvain): Find a better way to do name resolution. Right now we
-      // take the name and we expand it.
-      mod_name.insert(0, kNTPrefixEscaped);
-    }
-  } else {
-    // Start of name matches NT prefix, replace with escaped format
-    // Fixes bug: 334882
-    mod_name.replace(0, kNTPrefixLen, kNTPrefixEscaped);
-  }
-
-  return mod_name;
 }
 
 }  // namespace sandbox

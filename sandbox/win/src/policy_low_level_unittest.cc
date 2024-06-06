@@ -32,8 +32,6 @@ TEST(PolicyEngineTest, StringPatternsBAD) {
   PolicyRule pr(ASK_BROKER);
   EXPECT_FALSE(pr.AddStringMatch(IF, 0, L"one**two"));
   EXPECT_FALSE(pr.AddStringMatch(IF, 0, L"**three"));
-  EXPECT_FALSE(pr.AddStringMatch(IF, 0, L"five?six*?seven"));
-  EXPECT_FALSE(pr.AddStringMatch(IF, 0, L"eight?*nine"));
 }
 
 // Helper function to allocate space (on the heap) for policy.
@@ -228,74 +226,6 @@ TEST(PolicyEngineTest, IfNotStrMatchTwoRulesWild1) {
   delete[] reinterpret_cast<char*>(policy);
 }
 
-TEST(PolicyEngineTest, IfNotStrMatchTwoRulesWild2) {
-  PolicyRule pr(ASK_BROKER);
-  EXPECT_TRUE(pr.AddNumberMatch(IF, 1, 24, EQUAL));
-  EXPECT_TRUE(pr.AddStringMatch(IF_NOT, 0, L"c:\\GoogleV?\\*.txt"));
-  EXPECT_TRUE(pr.AddNumberMatch(IF, 2, 66, EQUAL));
-
-  PolicyGlobal* policy = MakePolicyMemory();
-  const IpcTag kFakeService = IpcTag::NTCREATEFILE;
-  LowLevelPolicy policyGen(policy);
-
-  EXPECT_TRUE(policyGen.AddRule(kFakeService, &pr));
-  EXPECT_TRUE(policyGen.Done());
-
-  const wchar_t* filename = nullptr;
-  uint32_t access = 0;
-  uint32_t sharing = 66;
-
-  POLPARAMS_BEGIN(eval_params)
-    POLPARAM(filename)  // Argument 0
-    POLPARAM(access)    // Argument 1
-    POLPARAM(sharing)   // Argument 2
-  POLPARAMS_END;
-
-  PolicyResult result;
-  PolicyProcessor pol_ev(policy->entry[static_cast<size_t>(kFakeService)]);
-
-  filename = L"c:\\GoogleV2\\domo.txt";
-  access = 24;
-  result = pol_ev.Evaluate(kShortEval, eval_params, _countof(eval_params));
-  EXPECT_EQ(NO_POLICY_MATCH, result);
-
-  filename = L"c:\\GoogleV2\\domo.bmp";
-  access = 24;
-  result = pol_ev.Evaluate(kShortEval, eval_params, _countof(eval_params));
-  EXPECT_EQ(POLICY_MATCH, result);
-  EXPECT_EQ(ASK_BROKER, pol_ev.GetAction());
-
-  filename = L"c:\\GoogleV23\\domo.txt";
-  access = 24;
-  result = pol_ev.Evaluate(kShortEval, eval_params, _countof(eval_params));
-  EXPECT_EQ(POLICY_MATCH, result);
-  EXPECT_EQ(ASK_BROKER, pol_ev.GetAction());
-
-  filename = L"c:\\GoogleV2\\domo.txt";
-  access = 42;
-  result = pol_ev.Evaluate(kShortEval, eval_params, _countof(eval_params));
-  EXPECT_EQ(NO_POLICY_MATCH, result);
-
-  filename = L"c:\\Google\\domo.txt";
-  access = 24;
-  result = pol_ev.Evaluate(kShortEval, eval_params, _countof(eval_params));
-  EXPECT_EQ(POLICY_MATCH, result);
-  EXPECT_EQ(ASK_BROKER, pol_ev.GetAction());
-
-  filename = L"c:\\Micronesia\\domo.txt";
-  access = 42;
-  result = pol_ev.Evaluate(kShortEval, eval_params, _countof(eval_params));
-  EXPECT_EQ(NO_POLICY_MATCH, result);
-
-  filename = L"c:\\GoogleV2\\domo.bmp";
-  access = 24;
-  sharing = 0;
-  result = pol_ev.Evaluate(kShortEval, eval_params, _countof(eval_params));
-  EXPECT_EQ(NO_POLICY_MATCH, result);
-
-  delete[] reinterpret_cast<char*>(policy);
-}
-
 // Testing one single rule in one single service. The service is made to
 // resemble NtCreateFile.
 TEST(PolicyEngineTest, OneRuleTest) {
@@ -369,7 +299,7 @@ TEST(PolicyEngineTest, OneRuleTest) {
 // Testing 3 rules in 3 services. Two of the services resemble File services.
 TEST(PolicyEngineTest, ThreeRulesTest) {
   PolicyRule pr_pipe(FAKE_SUCCESS);
-  EXPECT_TRUE(pr_pipe.AddStringMatch(IF, 0, L"\\\\/?/?\\Pipe\\Chrome.*"));
+  EXPECT_TRUE(pr_pipe.AddStringMatch(IF, 0, L"\\\\??\\Pipe\\Chrome.*"));
   EXPECT_TRUE(pr_pipe.AddNumberMatch(IF, 1, OPEN_EXISTING, EQUAL));
   EXPECT_TRUE(pr_pipe.AddNumberMatch(IF, 2, FILE_ATTRIBUTE_NORMAL, EQUAL));
 
@@ -377,7 +307,7 @@ TEST(PolicyEngineTest, ThreeRulesTest) {
   EXPECT_EQ(3u, opc1);
 
   PolicyRule pr_dump(ASK_BROKER);
-  EXPECT_TRUE(pr_dump.AddStringMatch(IF, 0, L"\\\\/?/?\\*\\Crash Reports\\*"));
+  EXPECT_TRUE(pr_dump.AddStringMatch(IF, 0, L"\\\\??\\*\\Crash Reports\\*"));
   EXPECT_TRUE(pr_dump.AddNumberMatch(IF, 1, CREATE_ALWAYS, EQUAL));
   EXPECT_TRUE(pr_dump.AddNumberMatch(IF, 2, FILE_ATTRIBUTE_NORMAL, EQUAL));
 
@@ -385,25 +315,18 @@ TEST(PolicyEngineTest, ThreeRulesTest) {
   EXPECT_EQ(4u, opc2);
 
   PolicyRule pr_winexe(SIGNAL_ALARM);
-  EXPECT_TRUE(pr_winexe.AddStringMatch(IF, 0, L"\\\\/?/?\\C:\\Windows\\*.exe"));
+  EXPECT_TRUE(pr_winexe.AddStringMatch(IF, 0, L"\\\\??\\C:\\Windows\\*.exe"));
   EXPECT_TRUE(pr_winexe.AddNumberMatch(IF, 2, FILE_ATTRIBUTE_NORMAL, EQUAL));
 
   size_t opc3 = pr_winexe.GetOpcodeCount();
   EXPECT_EQ(3u, opc3);
 
-  PolicyRule pr_adobe(FAKE_SUCCESS);
-  EXPECT_TRUE(pr_adobe.AddStringMatch(IF, 0, L"c:\\adobe\\ver?.?\\"));
-  EXPECT_TRUE(pr_adobe.AddNumberMatch(IF, 2, FILE_ATTRIBUTE_NORMAL, EQUAL));
-
-  size_t opc4 = pr_adobe.GetOpcodeCount();
-  EXPECT_EQ(4u, opc4);
-
   PolicyRule pr_none(FAKE_SUCCESS);
   EXPECT_TRUE(pr_none.AddNumberMatch(IF, 2, FILE_ATTRIBUTE_READONLY, AND));
   EXPECT_TRUE(pr_none.AddNumberMatch(IF, 2, FILE_ATTRIBUTE_SYSTEM, AND));
 
-  size_t opc5 = pr_none.GetOpcodeCount();
-  EXPECT_EQ(2u, opc5);
+  size_t opc4 = pr_none.GetOpcodeCount();
+  EXPECT_EQ(2u, opc4);
 
   PolicyGlobal* policy = MakePolicyMemory();
 
@@ -417,7 +340,6 @@ TEST(PolicyEngineTest, ThreeRulesTest) {
   EXPECT_TRUE(policyGen.AddRule(kNtFakeCreateFile, &pr_dump));
   EXPECT_TRUE(policyGen.AddRule(kNtFakeCreateFile, &pr_winexe));
 
-  EXPECT_TRUE(policyGen.AddRule(kNtFakeOpenFile, &pr_adobe));
   EXPECT_TRUE(policyGen.AddRule(kNtFakeOpenFile, &pr_pipe));
 
   EXPECT_TRUE(policyGen.AddRule(kNtFakeNone, &pr_none));
@@ -440,7 +362,6 @@ TEST(PolicyEngineTest, ThreeRulesTest) {
   ++opc2;
   ++opc3;
   ++opc4;
-  ++opc5;
 
   size_t tc1 = policy->entry[static_cast<size_t>(kNtFakeNone)]->opcode_count;
   size_t tc2 =
@@ -448,9 +369,9 @@ TEST(PolicyEngineTest, ThreeRulesTest) {
   size_t tc3 =
       policy->entry[static_cast<size_t>(kNtFakeOpenFile)]->opcode_count;
 
-  EXPECT_EQ(opc5, tc1);
+  EXPECT_EQ(opc4, tc1);
   EXPECT_EQ((opc1 + opc2 + opc3), tc2);
-  EXPECT_EQ((opc1 + opc4), tc3);
+  EXPECT_EQ(opc1, tc3);
 
   // Check the type of the first and last opcode of each service.
 
@@ -526,19 +447,6 @@ TEST(PolicyEngineTest, ThreeRulesTest) {
   EXPECT_EQ(SIGNAL_ALARM, eval_CreateFile.GetAction());
   result = eval_None.Evaluate(kShortEval, params, _countof(params));
   EXPECT_EQ(NO_POLICY_MATCH, result);
-  result = eval_OpenFile.Evaluate(kShortEval, params, _countof(params));
-  EXPECT_EQ(NO_POLICY_MATCH, result);
-
-  filename = L"c:\\adobe\\ver3.2\\temp";
-  result = eval_CreateFile.Evaluate(kShortEval, params, _countof(params));
-  EXPECT_EQ(NO_POLICY_MATCH, result);
-  result = eval_None.Evaluate(kShortEval, params, _countof(params));
-  EXPECT_EQ(NO_POLICY_MATCH, result);
-  result = eval_OpenFile.Evaluate(kShortEval, params, _countof(params));
-  EXPECT_EQ(POLICY_MATCH, result);
-  EXPECT_EQ(FAKE_SUCCESS, eval_OpenFile.GetAction());
-
-  filename = L"c:\\adobe\\ver3.22\\temp";
   result = eval_OpenFile.Evaluate(kShortEval, params, _countof(params));
   EXPECT_EQ(NO_POLICY_MATCH, result);
 

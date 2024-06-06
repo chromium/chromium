@@ -29,6 +29,11 @@
 
 namespace sandbox {
 
+namespace {
+constexpr wchar_t kNTDevicePrefix[] = L"\\Device\\";
+constexpr size_t kNTDevicePrefixLen = std::size(kNTDevicePrefix) - 1;
+}  // namespace
+
 const ULONG kSharing = FILE_SHARE_WRITE | FILE_SHARE_READ | FILE_SHARE_DELETE;
 
 // Creates a file using different desired access. Returns if the call succeeded
@@ -705,30 +710,6 @@ TEST(FilePolicyTest, TestReparsePoint) {
   // Cleanup.
   EXPECT_TRUE(::DeleteFile(temp_file_in_temp.c_str()));
   EXPECT_TRUE(::RemoveDirectory(subfolder.c_str()));
-}
-
-TEST(FilePolicyTest, CheckExistingNTPrefixEscape) {
-  std::wstring name = L"\\??\\NAME";
-
-  std::wstring result = FixNTPrefixForMatch(name);
-
-  EXPECT_STREQ(result.c_str(), L"\\/?/?\\NAME");
-}
-
-TEST(FilePolicyTest, CheckEscapedNTPrefixNoEscape) {
-  std::wstring name = L"\\/?/?\\NAME";
-
-  std::wstring result = FixNTPrefixForMatch(name);
-
-  EXPECT_STREQ(result.c_str(), name.c_str());
-}
-
-TEST(FilePolicyTest, CheckMissingNTPrefixEscape) {
-  std::wstring name = L"C:\\NAME";
-
-  std::wstring result = FixNTPrefixForMatch(name);
-
-  EXPECT_STREQ(result.c_str(), L"\\/?/?\\C:\\NAME");
 }
 
 TEST(FilePolicyTest, TestCopyFile) {
