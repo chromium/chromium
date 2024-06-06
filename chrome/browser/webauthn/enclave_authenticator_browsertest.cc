@@ -2720,8 +2720,14 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest, Caching) {
   delegate_observer()->WaitForDelegateDestruction();
 }
 
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_MakeCredentialDeclineGPM DISABLED_MakeCredentialDeclineGPM
+#else
+#define MAYBE_MakeCredentialDeclineGPM MakeCredentialDeclineGPM
+#endif
+// TODO(crbug.com/345308672): Failing on various Mac bots.
 IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
-                       MakeCredentialDeclineGPM) {
+                       MAYBE_MakeCredentialDeclineGPM) {
   trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
       registration_state_result;
   registration_state_result.state = trusted_vault::
