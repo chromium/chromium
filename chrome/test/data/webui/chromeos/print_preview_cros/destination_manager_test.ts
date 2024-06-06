@@ -77,10 +77,33 @@ suite('DestinationManager', () => {
     assertNotEquals(instance1, instance2, 'Reset clears static instance');
   });
 
-  // Verify `hasLoadedAnInitialDestination` returns false by default.
-  test('on create hasLoadedAnInitialDestination is false', () => {
-    assertFalse(instance.hasLoadedAnInitialDestination());
-  });
+  // Verify `hasLoadedAnInitialDestination` returns false if destination manager
+  // is not initialized, fetch has not resolved, or no destinations are
+  // available after fetch.
+  test(
+      'hasLoadedAnInitialDestination is false until fetch resolves with ' +
+          'valid destinations',
+      async () => {
+        assertFalse(
+            instance.hasLoadedAnInitialDestination(),
+            'Manager not initialized');
+
+        // Initialize manager but do not resolve fetch.
+        const fetchState =
+            eventToPromise(DESTINATION_MANAGER_STATE_CHANGED, instance);
+        const loadedState =
+            eventToPromise(DESTINATION_MANAGER_STATE_CHANGED, instance);
+        instance.initializeSession(FAKE_PRINT_SESSION_CONTEXT_SUCCESSFUL);
+        await fetchState;
+        assertFalse(instance.hasLoadedAnInitialDestination(), 'Fetch pending');
+
+        // Resolve fetch.
+        mockTimer.tick(testDelay);
+        await loadedState;
+        assertTrue(
+            instance.hasLoadedAnInitialDestination(),
+            'Has an initial destination');
+      });
 
   // Verify PDF printer included in destinations.
   test('getDestinations contains PDF printer', () => {

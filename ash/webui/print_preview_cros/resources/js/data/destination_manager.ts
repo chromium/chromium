@@ -114,11 +114,11 @@ export class DestinationManager extends EventTarget implements
     return this.destinationCache.has(destinationId);
   }
 
-  // TODO(b/323421684): Returns true if initial fetch has returned
-  // and there are valid destinations available in the destination
-  // cache.
+  // Returns true if initial fetch has returned and there are valid destinations
+  // available.
   hasLoadedAnInitialDestination(): boolean {
-    return this.initialDestinationsLoaded;
+    return this.isSessionInitialized() && this.initialDestinationsLoaded &&
+        this.destinations.length > 0;
   }
 
   // Retrieve destination by ID.

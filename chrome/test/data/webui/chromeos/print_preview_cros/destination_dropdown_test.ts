@@ -21,7 +21,7 @@ import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://
 import {MockController} from 'chrome://webui-test/chromeos/mock_controller.m.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
-import {createTestDestination, resetDataManagersAndProviders, waitForInitialDestinationSet} from './test_utils.js';
+import {createTestDestination, resetDataManagersAndProviders, waitForInitialDestinationSet, waitForPrintTicketManagerInitialized} from './test_utils.js';
 
 suite('DestinationDropdown', () => {
   let element: DestinationDropdownElement;
@@ -160,10 +160,10 @@ suite('DestinationDropdown', () => {
 
   // Verify clicking dropdown's selected UI toggles content visibility.
   test('clicking dropdown toggles content visibility', async () => {
-    const getDestinationsFn =
-        mockController.createFunctionMock(controller, 'getDestinations');
-    getDestinationsFn.returnValue = [PDF_DESTINATION];
+    await waitForInitialDestinationSet();
+    await waitForPrintTicketManagerInitialized();
 
+    assertFalse(element.disabled);
     assertTrue(isVisible(getSelectedDestinationRow()));
     const content = getDropdownContent();
     assertFalse(isVisible(content), 'Content is not initially displayed');
@@ -264,6 +264,7 @@ suite('DestinationDropdown', () => {
         const selectedChanged = eventToPromise(
             DESTINATION_DROPDOWN_UPDATE_SELECTED_DESTINATION, controller);
         await waitForInitialDestinationSet();
+        await waitForPrintTicketManagerInitialized();
         await selectedChanged;
         const updateFn = mockController.createFunctionMock(
             controller, 'updateActiveDestination');
@@ -295,6 +296,7 @@ suite('DestinationDropdown', () => {
       async () => {
         mockController.reset();
         await waitForInitialDestinationSet();
+        await waitForPrintTicketManagerInitialized();
         assertEquals(
             PDF_DESTINATION.displayName, getSelectedDestinationRowLabel());
 
@@ -309,6 +311,8 @@ suite('DestinationDropdown', () => {
 
   // Verify click ignored if disabled is true.
   test('cannot toggle open content when disabled', async () => {
+    await waitForInitialDestinationSet();
+    await waitForPrintTicketManagerInitialized();
     assertFalse(element.disabled);
 
     // Force disabled to true and emit change event to update UI.
@@ -325,6 +329,8 @@ suite('DestinationDropdown', () => {
 
   // Verify dropdown closed if open when disabled event returns true.
   test('dropdown closed when disabled', async () => {
+    await waitForInitialDestinationSet();
+    await waitForPrintTicketManagerInitialized();
     // Open dropdown.
     assertFalse(element.disabled);
     await toggleDropdown();
