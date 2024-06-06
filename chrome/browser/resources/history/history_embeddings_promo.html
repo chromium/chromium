@@ -6,10 +6,12 @@
 
   #promo {
     display: flex;
+    align-items: center;
+    background: var(--cr-card-background-color);
     border-radius: 8px;
     box-shadow: var(--cr-elevation-3);
     box-sizing: border-box;
-    padding: 24px 92px 24px 27px;
+    padding: 24px 48px 24px 27px;
     gap: 18px;
     position: relative;
     width: 100%;
@@ -30,7 +32,19 @@
         no-repeat center center;
   }
 
+  @media (prefers-color-scheme: dark) {
+    #illustration {
+      background-image: url(images/history_embeddings_promo_dark.svg);
+    }
+  }
+
+  #text {
+    max-width: 573px;
+  }
+
   #title {
+    margin-block-start: 0;
+    margin-block-end: 8px;
     color: var(--cr-primary-text-color);
     font-size: 16px;
     font-weight: 500;
@@ -56,7 +70,7 @@
   </cr-icon-button>
 
   <div id="illustration" aria-hidden="true"></div>
-  <div>
+  <div id="text">
     <h2 id="title">$i18n{historyEmbeddingsPromoHeading}</h2>
     <div id="description">$i18nRaw{historyEmbeddingsPromoBody}</div>
   </div>
