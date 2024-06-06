@@ -58,6 +58,7 @@ class OidcAuthenticationSigninInterceptor : public WebSigninInterceptor,
   virtual void MaybeInterceptOidcAuthentication(
       content::WebContents* intercepted_contents,
       ProfileManagementOicdTokens oidc_tokens,
+      std::string issuer_id,
       std::string subject_id,
       OidcInterceptionCallback oidc_callback);
 
@@ -109,9 +110,11 @@ class OidcAuthenticationSigninInterceptor : public WebSigninInterceptor,
   std::string client_id_;
   std::string user_display_name_;
   std::string user_email_;
-  // 'sub' idenitifer of the OIDC response, unique for each user identity from
-  // the IDP.
-  std::string subject_id_;
+  // Unique id for the OIDC user, format:
+  // "iss:<value of 'iss' field>,sub:<value of 'sub'field>"
+  // For context, 'iss' is the ID of the OIDC issuer and 'sub' is the
+  // unique-per-user subject ID within the issuer.
+  std::string unique_user_identifier_;
   bool dasher_based_ = true;
   std::string preset_profile_id_;
   raw_ptr<const ProfileAttributesEntry> switch_to_entry_ = nullptr;

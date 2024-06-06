@@ -44,10 +44,12 @@ constexpr char kOidcEntraKmsiUrl[] = "https://login.microsoftonline.com/kmsi";
 
 constexpr char kUserPrincipleNameClaimName[] = "upn";
 constexpr char kSubjectClaimName[] = "sub";
+constexpr char kIssuerClaimName[] = "iss";
 
 constexpr char kExampleUserPrincipleName[] = "example@org.com";
 constexpr char kExampleAuthSubject[] = "example_auth_subject";
 constexpr char kExampleIdSubject[] = "example_id_subject";
+constexpr char kExampleIdIssuer[] = "example_id_issuer";
 
 const char kOidcEnrollmentHistogramName[] = "Enterprise.OidcEnrollment";
 
@@ -124,7 +126,7 @@ class OidcAuthResponseCaptureNavigationThrottleTest
       ASSERT_EQ(nullptr, oidc_interceptor);
     } else {
       EXPECT_CALL(*oidc_interceptor,
-                  MaybeInterceptOidcAuthentication(_, _, _, _))
+                  MaybeInterceptOidcAuthentication(_, _, _, _, _))
           .Times(0);
     }
     auto throttle =
@@ -193,7 +195,8 @@ TEST_P(OidcAuthResponseCaptureNavigationThrottleTest,
   std::string id_token = BuildTokenFromDict(
       base::Value::Dict()
           .Set(kUserPrincipleNameClaimName, kExampleUserPrincipleName)
-          .Set(kSubjectClaimName, kExampleIdSubject));
+          .Set(kSubjectClaimName, kExampleIdSubject)
+          .Set(kIssuerClaimName, kExampleIdIssuer));
 
   std::string direct_navigate_url = BuildOidcResponseUrl(auth_token, id_token);
 
@@ -204,7 +207,8 @@ TEST_P(OidcAuthResponseCaptureNavigationThrottleTest,
   if (!enable_oidc_interception()) {
     ASSERT_EQ(nullptr, oidc_interceptor);
   } else {
-    EXPECT_CALL(*oidc_interceptor, MaybeInterceptOidcAuthentication(_, _, _, _))
+    EXPECT_CALL(*oidc_interceptor,
+                MaybeInterceptOidcAuthentication(_, _, _, _, _))
         .Times(0);
   }
 
@@ -223,7 +227,8 @@ TEST_P(OidcAuthResponseCaptureNavigationThrottleTest, SuccessfulInterception) {
   std::string id_token = BuildTokenFromDict(
       base::Value::Dict()
           .Set(kUserPrincipleNameClaimName, kExampleUserPrincipleName)
-          .Set(kSubjectClaimName, kExampleIdSubject));
+          .Set(kSubjectClaimName, kExampleIdSubject)
+          .Set(kIssuerClaimName, kExampleIdIssuer));
 
   std::string redirection_url = BuildOidcResponseUrl(auth_token, id_token);
 
@@ -239,10 +244,10 @@ TEST_P(OidcAuthResponseCaptureNavigationThrottleTest, SuccessfulInterception) {
                     web_contents(),
                     ProfileManagementOicdTokens{.auth_token = auth_token,
                                                 .id_token = id_token},
-                    kExampleIdSubject, _))
+                    kExampleIdIssuer, kExampleIdSubject, _))
         .WillOnce([](content::WebContents* intercepted_contents,
                      ProfileManagementOicdTokens oidc_tokens,
-                     std::string subject_id,
+                     std::string issuer_id, std::string subject_id,
                      OidcInterceptionCallback oidc_callback) {
           std::move(oidc_callback).Run();
         });
@@ -270,7 +275,8 @@ TEST_P(OidcAuthResponseCaptureNavigationThrottleTest, MissingAuthToken) {
   std::string id_token = BuildTokenFromDict(
       base::Value::Dict()
           .Set(kUserPrincipleNameClaimName, kExampleUserPrincipleName)
-          .Set(kSubjectClaimName, kExampleIdSubject));
+          .Set(kSubjectClaimName, kExampleIdSubject)
+          .Set(kIssuerClaimName, kExampleIdIssuer));
 
   std::string redirection_url = BuildOidcResponseUrl(std::string(), id_token);
 
@@ -315,8 +321,28 @@ TEST_P(OidcAuthResponseCaptureNavigationThrottleTest, MsftKmsiThrottling) {
 TEST_P(OidcAuthResponseCaptureNavigationThrottleTest, MissingIdTokenSubClaim) {
   std::string auth_token = BuildTokenFromDict(base::Value::Dict().Set(
       kUserPrincipleNameClaimName, kExampleUserPrincipleName));
-  std::string id_token = BuildTokenFromDict(base::Value::Dict().Set(
+  std::string id_token = BuildTokenFromDict(
+      base::Value::Dict()
+          .Set(kUserPrincipleNameClaimName, kExampleUserPrincipleName)
+          .Set(kIssuerClaimName, kExampleIdIssuer));
+
+  std::string redirection_url = BuildOidcResponseUrl(auth_token, id_token);
+
+  auto* oidc_interceptor = GetMockOidcInterceptor();
+  ExpectNoOidcInterception(oidc_interceptor, redirection_url,
+                           NavigationThrottle::DEFER);
+  CheckFunnelAndResultHistogram(
+      OidcInterceptionFunnelStep::kValidRedirectionCaptured,
+      OidcInterceptionResult::kInvalidUrlOrTokens);
+}
+
+TEST_P(OidcAuthResponseCaptureNavigationThrottleTest, MissingIdTokenIssClaim) {
+  std::string auth_token = BuildTokenFromDict(base::Value::Dict().Set(
       kUserPrincipleNameClaimName, kExampleUserPrincipleName));
+  std::string id_token = BuildTokenFromDict(
+      base::Value::Dict()
+          .Set(kUserPrincipleNameClaimName, kExampleUserPrincipleName)
+          .Set(kSubjectClaimName, kExampleIdSubject));
 
   std::string redirection_url = BuildOidcResponseUrl(auth_token, id_token);
 
@@ -385,7 +411,7 @@ TEST_P(OidcAuthResponseCaptureNavigationThrottleTest, DecodeFailure) {
   std::string auth_token = BuildTokenFromDict(
       base::Value::Dict()
           .Set(kUserPrincipleNameClaimName, kExampleUserPrincipleName)
-          .Set(kSubjectClaimName, kExampleIdSubject));
+          .Set(kSubjectClaimName, kExampleAuthSubject));
 
   std::string redirection_url =
       BuildOidcResponseUrl(auth_token, malformed_id_token);
@@ -407,7 +433,8 @@ TEST_P(OidcAuthResponseCaptureNavigationThrottleTest, DataDecoderFailure) {
   std::string id_token = BuildTokenFromDict(
       base::Value::Dict()
           .Set(kUserPrincipleNameClaimName, kExampleUserPrincipleName)
-          .Set(kSubjectClaimName, kExampleIdSubject));
+          .Set(kSubjectClaimName, kExampleIdSubject)
+          .Set(kIssuerClaimName, kExampleIdIssuer));
 
   std::string redirection_url = BuildOidcResponseUrl(auth_token, id_token);
 

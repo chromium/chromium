@@ -64,6 +64,8 @@ using enterprise::ProfileIdServiceFactory;
 
 namespace {
 
+constexpr char kUniqueIdentifierTemplate[] = "iss:%s,sub:%s";
+
 bool IsValidOidcToken(ProfileManagementOicdTokens oidc_tokens) {
   return !oidc_tokens.auth_token.empty() && !oidc_tokens.id_token.empty();
 }
@@ -84,6 +86,7 @@ OidcAuthenticationSigninInterceptor::~OidcAuthenticationSigninInterceptor() =
 void OidcAuthenticationSigninInterceptor::MaybeInterceptOidcAuthentication(
     content::WebContents* intercepted_contents,
     ProfileManagementOicdTokens oidc_tokens,
+    std::string issuer_id,
     std::string subject_id,
     OidcInterceptionCallback oidc_callback) {
   RecordOidcInterceptionFunnelStep(
@@ -117,7 +120,8 @@ void OidcAuthenticationSigninInterceptor::MaybeInterceptOidcAuthentication(
 
   web_contents_ = intercepted_contents->GetWeakPtr();
   oidc_tokens_ = oidc_tokens;
-  subject_id_ = subject_id;
+  unique_user_identifier_ = base::StringPrintf(
+      kUniqueIdentifierTemplate, issuer_id.c_str(), subject_id.c_str());
 
   CHECK(!switch_to_entry_);
   base::FilePath profile_path = profile_->GetPath();
@@ -125,7 +129,7 @@ void OidcAuthenticationSigninInterceptor::MaybeInterceptOidcAuthentication(
                                ->GetProfileAttributesStorage()
                                .GetAllProfilesAttributes()) {
     if (!entry->GetProfileManagementOidcTokens().auth_token.empty() &&
-        entry->GetProfileManagementId() == subject_id_) {
+        entry->GetProfileManagementId() == unique_user_identifier_) {
       switch_to_entry_ = entry;
       break;
     }
@@ -190,6 +194,7 @@ void OidcAuthenticationSigninInterceptor::Reset() {
   client_id_.clear();
   user_display_name_.clear();
   user_email_.clear();
+  unique_user_identifier_.clear();
   dasher_based_ = true;
   switch_to_entry_ = nullptr;
   profile_creator_.reset();
@@ -318,7 +323,7 @@ void OidcAuthenticationSigninInterceptor::OnClientRegistered(
 
   // Unretained is fine because the profile creator is owned by this.
   profile_creator_ = std::make_unique<ManagedProfileCreator>(
-      profile_, subject_id_,
+      profile_, unique_user_identifier_,
       (user_display_name_.empty())
           ? profiles::GetDefaultNameForNewEnterpriseProfile()
           : base::UTF8ToUTF16(user_display_name_),

@@ -193,9 +193,17 @@ void OidcAuthResponseCaptureNavigationThrottle::RegisterWithOidcTokens(
   }
 
   const std::string* subject_id = parsed_json->FindString("sub");
+  const std::string* issuer_id = parsed_json->FindString("iss");
   if (!subject_id || (*subject_id).empty()) {
     LOG_POLICY(ERROR, OIDC_ENROLLMENT)
         << "Subject ID is missing in token payload.";
+    RecordOidcInterceptionResult(OidcInterceptionResult::kInvalidUrlOrTokens);
+    return Resume();
+  }
+
+  if (!issuer_id || (*issuer_id).empty()) {
+    LOG_POLICY(ERROR, OIDC_ENROLLMENT)
+        << "Issuer identifier is missing in token payload.";
     RecordOidcInterceptionResult(OidcInterceptionResult::kInvalidUrlOrTokens);
     return Resume();
   }
@@ -211,7 +219,7 @@ void OidcAuthResponseCaptureNavigationThrottle::RegisterWithOidcTokens(
       OidcInterceptionFunnelStep::kSuccessfulInfoParsed);
 
   interceptor->MaybeInterceptOidcAuthentication(
-      navigation_handle()->GetWebContents(), tokens, *subject_id,
+      navigation_handle()->GetWebContents(), tokens, *issuer_id, *subject_id,
       base::BindOnce(&OidcAuthResponseCaptureNavigationThrottle::Resume,
                      weak_ptr_factory_.GetWeakPtr()));
 }

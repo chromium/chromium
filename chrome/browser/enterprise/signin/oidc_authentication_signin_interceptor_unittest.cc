@@ -66,11 +66,14 @@ const char kOidcEnrollmentHistogramName[] = "Enterprise.OidcEnrollment";
 const ProfileManagementOicdTokens kExampleOidcTokens =
     ProfileManagementOicdTokens{.auth_token = "example_auth_token",
                                 .id_token = "example_id_token"};
-constexpr char kExampleSubjectIdentifier[] = "example_sbuject_id";
+constexpr char kExampleSubjectIdentifier[] = "example_subject_id";
+constexpr char kExampleIssuerIdentifier[] = "example_issuer_id";
 constexpr char kExampleUserDisplayName[] = "Test User";
 constexpr char kExampleUserEmail[] = "user@test.com";
 constexpr char kExampleGaiaId[] = "123";
 constexpr char kExampleDmToken[] = "example_dm_token";
+
+constexpr char kUniqueIdentifierTemplate[] = "iss:%s,sub:%s";
 
 const char kOidcInterceptionSuffix[] = ".Interception";
 const char kOidcProfileCreationSuffix[] = ".ProfileCreation";
@@ -318,6 +321,7 @@ class OidcAuthenticationSigninInterceptorTest
   // class with supplied arguments.
   void TestProfileCreationOrSwitch(
       const ProfileManagementOicdTokens& oidc_tokens,
+      const std::string& issuer_id,
       const std::string& subject_id,
       bool expect_profile_created,
       int expected_number_of_windows,
@@ -397,7 +401,7 @@ class OidcAuthenticationSigninInterceptorTest
     }
 
     interceptor_->MaybeInterceptOidcAuthentication(
-        web_contents(), oidc_tokens, subject_id,
+        web_contents(), oidc_tokens, issuer_id, subject_id,
         task_environment()->QuitClosure());
 
     if (expect_registration_attempt !=
@@ -421,7 +425,9 @@ class OidcAuthenticationSigninInterceptorTest
               .GetProfileAttributesWithPath(added_profile_->GetPath());
 
       EXPECT_EQ(entry->GetProfileManagementOidcTokens(), oidc_tokens);
-      EXPECT_EQ(entry->GetProfileManagementId(), subject_id);
+      EXPECT_EQ(entry->GetProfileManagementId(),
+                base::StringPrintf(kUniqueIdentifierTemplate, issuer_id.c_str(),
+                                   subject_id.c_str()));
       if (will_policy_fetch_succeed_) {
         CoreAccountId account_id =
             IdentityManagerFactory::GetForProfile(added_profile_)
@@ -520,13 +526,13 @@ class OidcAuthenticationSigninInterceptorTest
 };
 
 TEST_P(OidcAuthenticationSigninInterceptorTest, ProfileCreationThenSwitch) {
-  TestProfileCreationOrSwitch(kExampleOidcTokens, kExampleSubjectIdentifier,
-                              /*expect_profile_created=*/true,
-                              /*expected_number_of_windows=*/2,
-                              GetLastFunnelStepForSuccess());
+  TestProfileCreationOrSwitch(
+      kExampleOidcTokens, kExampleIssuerIdentifier, kExampleSubjectIdentifier,
+      /*expect_profile_created=*/true,
+      /*expected_number_of_windows=*/2, GetLastFunnelStepForSuccess());
 
   TestProfileCreationOrSwitch(
-      kExampleOidcTokens, kExampleSubjectIdentifier,
+      kExampleOidcTokens, kExampleIssuerIdentifier, kExampleSubjectIdentifier,
       /*expect_profile_created=*/false,
       /*expected_number_of_windows=*/0,
       OidcProfileCreationFunnelStep::kPolicyFetchStarted,
@@ -535,20 +541,35 @@ TEST_P(OidcAuthenticationSigninInterceptorTest, ProfileCreationThenSwitch) {
       RegistrationResult::kNoRegistrationExpected);
 }
 
-TEST_P(OidcAuthenticationSigninInterceptorTest, MultipleProfileCreation) {
-  TestProfileCreationOrSwitch(kExampleOidcTokens, kExampleSubjectIdentifier,
-                              /*expect_profile_created=*/true,
-                              /*expected_number_of_windows=*/1,
-                              GetLastFunnelStepForSuccess());
+TEST_P(OidcAuthenticationSigninInterceptorTest,
+       MultipleProfileCreationSameIssuer) {
+  TestProfileCreationOrSwitch(
+      kExampleOidcTokens, kExampleIssuerIdentifier, kExampleSubjectIdentifier,
+      /*expect_profile_created=*/true,
+      /*expected_number_of_windows=*/1, GetLastFunnelStepForSuccess());
 
-  TestProfileCreationOrSwitch(kExampleOidcTokens, "new_subject_id",
-                              /*expect_profile_created=*/true,
-                              /*expected_number_of_windows=*/1,
-                              GetLastFunnelStepForSuccess());
+  TestProfileCreationOrSwitch(
+      kExampleOidcTokens, kExampleIssuerIdentifier, "new_subject_id",
+      /*expect_profile_created=*/true,
+      /*expected_number_of_windows=*/1, GetLastFunnelStepForSuccess());
+}
+
+TEST_P(OidcAuthenticationSigninInterceptorTest,
+       MultipleProfileCreationSameSubject) {
+  TestProfileCreationOrSwitch(
+      kExampleOidcTokens, kExampleIssuerIdentifier, kExampleSubjectIdentifier,
+      /*expect_profile_created=*/true,
+      /*expected_number_of_windows=*/1, GetLastFunnelStepForSuccess());
+
+  TestProfileCreationOrSwitch(
+      kExampleOidcTokens, "some_other_issuer", kExampleSubjectIdentifier,
+      /*expect_profile_created=*/true,
+      /*expected_number_of_windows=*/1, GetLastFunnelStepForSuccess());
 }
 
 TEST_P(OidcAuthenticationSigninInterceptorTest, UserDidNotAccept) {
-  TestProfileCreationOrSwitch(kExampleOidcTokens, kExampleSubjectIdentifier,
+  TestProfileCreationOrSwitch(kExampleOidcTokens, kExampleIssuerIdentifier,
+                              kExampleSubjectIdentifier,
                               /*expect_profile_created=*/false,
                               /*expected_number_of_windows=*/0,
                               OidcInterceptionFunnelStep::kConsetDialogShown,
@@ -556,7 +577,8 @@ TEST_P(OidcAuthenticationSigninInterceptorTest, UserDidNotAccept) {
                               RegistrationResult::kNoRegistrationExpected,
                               SigninInterceptionResult::kDeclined);
 
-  TestProfileCreationOrSwitch(kExampleOidcTokens, kExampleSubjectIdentifier,
+  TestProfileCreationOrSwitch(kExampleOidcTokens, kExampleIssuerIdentifier,
+                              kExampleSubjectIdentifier,
                               /*expect_profile_created=*/false,
                               /*expected_number_of_windows=*/0,
                               OidcInterceptionFunnelStep::kConsetDialogShown,
@@ -564,7 +586,8 @@ TEST_P(OidcAuthenticationSigninInterceptorTest, UserDidNotAccept) {
                               RegistrationResult::kNoRegistrationExpected,
                               SigninInterceptionResult::kIgnored);
 
-  TestProfileCreationOrSwitch(kExampleOidcTokens, kExampleSubjectIdentifier,
+  TestProfileCreationOrSwitch(kExampleOidcTokens, kExampleIssuerIdentifier,
+                              kExampleSubjectIdentifier,
                               /*expect_profile_created=*/false,
                               /*expected_number_of_windows=*/0,
                               OidcInterceptionFunnelStep::kConsetDialogShown,
@@ -573,7 +596,7 @@ TEST_P(OidcAuthenticationSigninInterceptorTest, UserDidNotAccept) {
                               SigninInterceptionResult::kDismissed);
 
   TestProfileCreationOrSwitch(
-      kExampleOidcTokens, kExampleSubjectIdentifier,
+      kExampleOidcTokens, kExampleIssuerIdentifier, kExampleSubjectIdentifier,
       /*expect_profile_created=*/false, /*expected_number_of_windows=*/0,
       OidcInterceptionFunnelStep::kConsetDialogShown,
       OidcInterceptionResult::kConsetDialogRejected,
@@ -593,10 +616,12 @@ TEST_P(OidcAuthenticationSigninInterceptorTest, InterceptionForSameProfile) {
           .GetProfileAttributesWithPath(profile()->GetPath());
 
   entry->SetProfileManagementOidcTokens(kExampleOidcTokens);
-  entry->SetProfileManagementId(kExampleSubjectIdentifier);
+  entry->SetProfileManagementId(base::StringPrintf(kUniqueIdentifierTemplate,
+                                                   kExampleIssuerIdentifier,
+                                                   kExampleSubjectIdentifier));
 
   TestProfileCreationOrSwitch(
-      new_example_token, kExampleSubjectIdentifier,
+      new_example_token, kExampleIssuerIdentifier, kExampleSubjectIdentifier,
       /*expect_profile_created=*/false,
       /*expected_number_of_windows=*/0,
       OidcInterceptionFunnelStep::kEnrollmentStarted,
@@ -608,7 +633,7 @@ TEST_P(OidcAuthenticationSigninInterceptorTest, InterceptionForSameProfile) {
 
 TEST_P(OidcAuthenticationSigninInterceptorTest, RegistrationFailure) {
   TestProfileCreationOrSwitch(
-      kExampleOidcTokens, kExampleSubjectIdentifier,
+      kExampleOidcTokens, kExampleIssuerIdentifier, kExampleSubjectIdentifier,
       /*expect_profile_created=*/false, /*expected_number_of_windows=*/0,
       OidcInterceptionFunnelStep::kProfileRegistrationStarted,
       OidcInterceptionResult::kFailedToRegisterProfile,
@@ -630,7 +655,7 @@ class OidcAuthenticationSigninInterceptorFailureTest
 
 TEST_P(OidcAuthenticationSigninInterceptorFailureTest, PolicyFetchFailure) {
   TestProfileCreationOrSwitch(
-      kExampleOidcTokens, kExampleSubjectIdentifier,
+      kExampleOidcTokens, kExampleIssuerIdentifier, kExampleSubjectIdentifier,
       /*expect_profile_created=*/true, /*expected_number_of_windows=*/1,
       OidcProfileCreationFunnelStep::kPolicyFetchStarted,
       OidcProfileCreationResult::kFailedToFetchPolicy,
