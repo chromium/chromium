@@ -620,8 +620,6 @@ IN_PROC_BROWSER_TEST_F(RichAnswersBrowserTest,
   ui::ImageModel expected_image_model = ui::ImageModel::FromVectorIcon(
       omnibox::kAnswerDictionaryIcon, ui::kColorSysBaseContainerElevated,
       /*icon_size=*/kQuickAnswersResultTypeIconSizeDip);
-  EXPECT_TRUE(GetQuickAnswersView()->GetIconImageModelForTesting() ==
-              expected_image_model);
 
   views::Widget* rich_answers_view_widget =
       ShowRichAnswersWidget(quick_answers_view_widget);
@@ -652,8 +650,6 @@ IN_PROC_BROWSER_TEST_F(RichAnswersBrowserTest,
   ui::ImageModel expected_image_model = ui::ImageModel::FromVectorIcon(
       omnibox::kAnswerTranslationIcon, ui::kColorSysBaseContainerElevated,
       /*icon_size=*/kQuickAnswersResultTypeIconSizeDip);
-  EXPECT_TRUE(GetQuickAnswersView()->GetIconImageModelForTesting() ==
-              expected_image_model);
 
   views::Widget* rich_answers_view_widget =
       ShowRichAnswersWidget(quick_answers_view_widget);
@@ -684,8 +680,6 @@ IN_PROC_BROWSER_TEST_F(RichAnswersBrowserTest,
   ui::ImageModel expected_image_model = ui::ImageModel::FromVectorIcon(
       omnibox::kAnswerCalculatorIcon, ui::kColorSysBaseContainerElevated,
       /*icon_size=*/kQuickAnswersResultTypeIconSizeDip);
-  EXPECT_TRUE(GetQuickAnswersView()->GetIconImageModelForTesting() ==
-              expected_image_model);
 
   views::Widget* rich_answers_view_widget =
       ShowRichAnswersWidget(quick_answers_view_widget);

@@ -37,6 +37,9 @@ struct QuickAnswer;
 class QuickAnswersUiController {
  public:
   using FakeOnRetryLabelPressedCallback = base::RepeatingCallback<void()>;
+  using FakeOpenSettingsCallback = base::RepeatingCallback<void()>;
+  using FakeOpenFeedbackPageCallback =
+      base::RepeatingCallback<void(const std::string&)>;
 
   explicit QuickAnswersUiController(QuickAnswersControllerImpl* controller);
   ~QuickAnswersUiController();
@@ -49,6 +52,11 @@ class QuickAnswersUiController {
                               const std::string& title,
                               const std::string& query,
                               bool is_internal);
+
+  void CreateQuickAnswersViewForPixelTest(
+      Profile* profile,
+      const std::string& query,
+      quick_answers::QuickAnswersView::Params params);
 
   // Returns true if there was a QuickAnswersView to close.
   bool CloseQuickAnswersView();
@@ -81,15 +89,16 @@ class QuickAnswersUiController {
   // Closes the user consent view.
   void CloseUserConsentView();
 
-  // Invoked when user clicks the Dogfood button on Quick-Answers related views.
-  void OnDogfoodButtonPressed();
-
   // Invoked when user clicks the settings button on Quick-Answers related
   // views.
   void OnSettingsButtonPressed();
+  void SetFakeOpenSettingsCallbackForTesting(
+      FakeOpenSettingsCallback fake_open_settings_callback);
 
   // Invoked when user clicks the report query button on Quick Answers view.
   void OnReportQueryButtonPressed();
+  void SetFakeOpenFeedbackPageCallbackForTesting(
+      FakeOpenFeedbackPageCallback fake_open_feedback_page_callback);
 
   // Handle consent result from user consent view.
   void OnUserConsentResult(bool consented);
@@ -124,6 +133,14 @@ class QuickAnswersUiController {
   }
 
  private:
+  void OpenSettings();
+  void OpenFeedbackPage(const std::string& feedback_template);
+
+  void CreateQuickAnswersViewInternal(
+      Profile* profile,
+      const std::string& query,
+      quick_answers::QuickAnswersView::Params params);
+
   // Constructs/resets the Quick Answers rich card view.
   void CreateRichAnswersView();
 
@@ -139,6 +156,8 @@ class QuickAnswersUiController {
   std::string query_;
 
   FakeOnRetryLabelPressedCallback fake_on_retry_label_pressed_callback_;
+  FakeOpenSettingsCallback fake_open_settings_callback_;
+  FakeOpenFeedbackPageCallback fake_open_feedback_page_callback_;
 
   base::WeakPtrFactory<QuickAnswersUiController> weak_factory_{this};
 };

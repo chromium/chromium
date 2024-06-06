@@ -21,6 +21,8 @@ class ResultView : public views::FlexLayoutView {
   METADATA_HEADER(ResultView, views::FlexLayoutView)
 
  public:
+  static constexpr int kMaxLines = 2;
+
   using GenerateTtsCallback =
       base::RepeatingCallback<void(const PhoneticsInfo&)>;
 

@@ -19,6 +19,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event_handler.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/view.h"
@@ -46,11 +47,26 @@ class QuickAnswersView : public chromeos::ReadWriteCardsView {
   METADATA_HEADER(QuickAnswersView, chromeos::ReadWriteCardsView)
 
  public:
+  enum class Design { kCurrent, kRefresh, kMagicBoost };
+
+  // Unlike `ResultType`, `Intent` won't change depending on a response from the
+  // backend. e.g., (Intent::kDefinition, ResultType::kNoResult) can happen if
+  // our local code thinks we can find a definition but the backend doesn't.
+  enum class Intent { kUndefined, kDefinition, kUnitConversion, kTranslation };
+
+  struct Params {
+   public:
+    std::string title;
+    Design design = Design::kCurrent;
+    Intent intent = Intent::kUndefined;
+    // Set true to show a Google internal variant of Qucik Answers UI.
+    bool is_internal = false;
+  };
+
   using MockGenerateTtsCallback =
       base::RepeatingCallback<void(const PhoneticsInfo&)>;
 
-  QuickAnswersView(const std::string& title,
-                   bool is_internal,
+  QuickAnswersView(const Params& params,
                    base::WeakPtr<QuickAnswersUiController> controller);
 
   QuickAnswersView(const QuickAnswersView&) = delete;
@@ -62,7 +78,6 @@ class QuickAnswersView : public chromeos::ReadWriteCardsView {
   void RequestFocus() override;
   bool HasFocus() const override;
   void OnFocus() override;
-  void OnThemeChanged() override;
   views::FocusTraversable* GetPaneFocusTraversable() override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   gfx::Size GetMaximumSize() const override;
@@ -76,13 +91,13 @@ class QuickAnswersView : public chromeos::ReadWriteCardsView {
 
   void ShowRetryView();
 
-  ui::ImageModel GetIconImageModelForTesting();
-
   LoadingView* GetLoadingViewForTesting() { return loading_view_; }
   RetryView* GetRetryViewForTesting() { return retry_view_; }
   ResultView* GetResultViewForTesting() { return result_view_; }
   void SetMockGenerateTtsCallbackForTesting(
       MockGenerateTtsCallback mock_generate_tts_callback);
+  views::ImageButton* GetSettingsButtonForTesting() { return settings_button_; }
+  views::ImageButton* GetDogfoodButtonForTesting() { return dogfood_button_; }
 
  private:
   bool HasFocusInside();
@@ -108,18 +123,17 @@ class QuickAnswersView : public chromeos::ReadWriteCardsView {
 
   base::WeakPtr<QuickAnswersUiController> controller_;
   std::string title_;
+  const Design design_;
+  const Intent intent_;
   const bool is_internal_;
-  const bool is_rich_answers_enabled_;
-  const bool maximum_view_height_;
 
   raw_ptr<QuickAnswersStageButton> quick_answers_stage_button_ = nullptr;
+  raw_ptr<views::ImageView> icon_view_ = nullptr;
   raw_ptr<LoadingView> loading_view_ = nullptr;
   raw_ptr<RetryView> retry_view_ = nullptr;
   raw_ptr<ResultView> result_view_ = nullptr;
-
-  raw_ptr<views::ImageButton> dogfood_feedback_button_ = nullptr;
   raw_ptr<views::ImageButton> settings_button_ = nullptr;
-  raw_ptr<views::ImageView> result_type_icon_ = nullptr;
+  raw_ptr<views::ImageButton> dogfood_button_ = nullptr;
 
   MockGenerateTtsCallback mock_generate_tts_callback_;
 

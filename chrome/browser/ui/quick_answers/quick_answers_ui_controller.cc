@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_ui_controller.h"
 #include "chrome/browser/ui/quick_answers/quick_answers_controller_impl.h"
 #include "chrome/browser/ui/quick_answers/ui/quick_answers_util.h"
+#include "chrome/browser/ui/quick_answers/ui/quick_answers_view.h"
 #include "chrome/browser/ui/quick_answers/ui/rich_answers_definition_view.h"
 #include "chrome/browser/ui/quick_answers/ui/rich_answers_translation_view.h"
 #include "chrome/browser/ui/quick_answers/ui/rich_answers_unit_conversion_view.h"
@@ -84,6 +85,31 @@ void QuickAnswersUiController::CreateQuickAnswersView(Profile* profile,
                                                       const std::string& title,
                                                       const std::string& query,
                                                       bool is_internal) {
+  CreateQuickAnswersViewInternal(
+      profile, query,
+      {
+          .title = title,
+          .design = quick_answers::QuickAnswersView::Design::kCurrent,
+          // Use `kDefinition` as a placeholder for now. `Design::kCurrent`
+          // doesn't care intent.
+          // TODO(b/340628664): wire the correct intent.
+          .intent = quick_answers::QuickAnswersView::Intent::kDefinition,
+          .is_internal = is_internal,
+      });
+}
+
+void QuickAnswersUiController::CreateQuickAnswersViewForPixelTest(
+    Profile* profile,
+    const std::string& query,
+    quick_answers::QuickAnswersView::Params params) {
+  CHECK_IS_TEST();
+  CreateQuickAnswersViewInternal(profile, query, params);
+}
+
+void QuickAnswersUiController::CreateQuickAnswersViewInternal(
+    Profile* profile,
+    const std::string& query,
+    quick_answers::QuickAnswersView::Params params) {
   // Currently there are timing issues that causes the quick answers view is not
   // dismissed. TODO(updowndota): Remove the special handling after the root
   // cause is found.
@@ -97,7 +123,7 @@ void QuickAnswersUiController::CreateQuickAnswersView(Profile* profile,
 
   auto* view = GetReadWriteCardsUiController().SetQuickAnswersUi(
       std::make_unique<quick_answers::QuickAnswersView>(
-          title, is_internal,
+          params,
           /*controller=*/weak_factory_.GetWeakPtr()));
   quick_answers_view_.SetView(view);
 }
@@ -226,6 +252,16 @@ void QuickAnswersUiController::OnSettingsButtonPressed() {
   // Route dismissal through |controller_| for logging impressions.
   controller_->DismissQuickAnswers(QuickAnswersExitPoint::kSettingsButtonClick);
 
+  OpenSettings();
+}
+
+void QuickAnswersUiController::OpenSettings() {
+  if (!fake_open_settings_callback_.is_null()) {
+    CHECK_IS_TEST();
+    fake_open_settings_callback_.Run();
+    return;
+  }
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   OpenUrl(profile_, GURL(kQuickAnswersSettingsUrl));
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -240,12 +276,39 @@ void QuickAnswersUiController::OnSettingsButtonPressed() {
 #endif
 }
 
+void QuickAnswersUiController::SetFakeOpenSettingsCallbackForTesting(
+    QuickAnswersUiController::FakeOpenSettingsCallback
+        fake_open_settings_callback) {
+  CHECK_IS_TEST();
+  CHECK(!fake_open_settings_callback.is_null());
+  CHECK(fake_open_settings_callback_.is_null());
+  fake_open_settings_callback_ = fake_open_settings_callback;
+}
+
 void QuickAnswersUiController::OnReportQueryButtonPressed() {
   controller_->DismissQuickAnswers(
       QuickAnswersExitPoint::kReportQueryButtonClick);
 
-  auto feedback_template =
-      base::StringPrintf(kFeedbackDescriptionTemplate, query_.c_str());
+  OpenFeedbackPage(
+      base::StringPrintf(kFeedbackDescriptionTemplate, query_.c_str()));
+}
+
+void QuickAnswersUiController::SetFakeOpenFeedbackPageCallbackForTesting(
+    QuickAnswersUiController::FakeOpenFeedbackPageCallback
+        fake_open_feedback_page_callback) {
+  CHECK_IS_TEST();
+  CHECK(!fake_open_feedback_page_callback.is_null());
+  CHECK(fake_open_feedback_page_callback_.is_null());
+  fake_open_feedback_page_callback_ = fake_open_feedback_page_callback;
+}
+
+void QuickAnswersUiController::OpenFeedbackPage(
+    const std::string& feedback_template) {
+  if (!fake_open_feedback_page_callback_.is_null()) {
+    CHECK_IS_TEST();
+    fake_open_feedback_page_callback_.Run(feedback_template);
+    return;
+  }
 
   // TODO(b/229007013): Merge the logics after resolve the deps cycle with
   // //c/b/ui in ash chrome build.

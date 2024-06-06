@@ -36,8 +36,6 @@ constexpr auto kPhoneticsAudioButtonMarginInsets =
 constexpr int kPhoneticsAudioButtonSizeDip = 14;
 constexpr int kPhoneticsAudioButtonBorderDip = 3;
 
-constexpr int kMaxLines = 2;
-
 constexpr int kItemSpacing = 4;
 
 views::Builder<views::ImageButton> PhoneticsAudioButton() {
