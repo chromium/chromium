@@ -3951,4 +3951,36 @@ TEST_F(StyleResolverTest, CursorHandNotApplied) {
   EXPECT_FALSE(IsUseCounted(WebFeature::kQuirksModeCursorHandApplied));
 }
 
+TEST_F(StyleResolverTest, TextSizeAdjustUseCounter) {
+  EXPECT_FALSE(IsUseCounted(WebFeature::kTextSizeAdjustNotAuto));
+  EXPECT_FALSE(IsUseCounted(WebFeature::kTextSizeAdjustPercentNot100));
+
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      .text-size-adjust-100 { text-size-adjust: 100%; }
+      .text-size-adjust-101 { text-size-adjust: 101%; }
+    </style>
+    <div id="target">target</div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_FALSE(IsUseCounted(WebFeature::kTextSizeAdjustNotAuto));
+  EXPECT_FALSE(IsUseCounted(WebFeature::kTextSizeAdjustPercentNot100));
+
+  Element* target = GetDocument().getElementById(AtomicString("target"));
+  target->setAttribute(html_names::kClassAttr,
+                       AtomicString("text-size-adjust-100"));
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_TRUE(IsUseCounted(WebFeature::kTextSizeAdjustNotAuto));
+  EXPECT_FALSE(IsUseCounted(WebFeature::kTextSizeAdjustPercentNot100));
+
+  target->setAttribute(html_names::kClassAttr,
+                       AtomicString("text-size-adjust-101"));
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_TRUE(IsUseCounted(WebFeature::kTextSizeAdjustNotAuto));
+  EXPECT_TRUE(IsUseCounted(WebFeature::kTextSizeAdjustPercentNot100));
+}
+
 }  // namespace blink

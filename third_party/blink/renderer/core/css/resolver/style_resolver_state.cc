@@ -279,6 +279,14 @@ void StyleResolverState::SetTextSizeAdjust(
   if (StyleBuilder().GetTextSizeAdjust() == new_text_size_adjust) {
     return;
   }
+
+  if (!new_text_size_adjust.IsAuto()) {
+    GetDocument().CountUse(WebFeature::kTextSizeAdjustNotAuto);
+    if (new_text_size_adjust.Multiplier() != 1.f) {
+      GetDocument().CountUse(WebFeature::kTextSizeAdjustPercentNot100);
+    }
+  }
+
   StyleBuilder().SetTextSizeAdjust(new_text_size_adjust);
   // When `TextSizeAdjustImprovements` is enabled, text-size-adjust affects
   // font-size during style building.

@@ -11018,6 +11018,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4991" label="SelectElementAppearanceNone"/>
   <int value="4992" label="RubyPositionAlternate"/>
   <int value="4993" label="RubyPositionInterCharacter"/>
+  <int value="4994" label="TextSizeAdjustNotAuto"/>
+  <int value="4995" label="TextSizeAdjustPercentNot100"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">
