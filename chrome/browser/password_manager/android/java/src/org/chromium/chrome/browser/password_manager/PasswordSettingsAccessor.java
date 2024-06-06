@@ -79,12 +79,8 @@ public interface PasswordSettingsAccessor {
      *     value if none was set.
      * @param failureCallback called with an error if the retrieval did not succeed.
      */
-    default void getUseBiometricsForCredentials(
+    void getUseBiometricsForCredentials(
             Optional<Account> account,
             Callback<Optional<Boolean>> successCallback,
-            Callback<Exception> failureCallback) {
-        // TODO(crbug.com/343879727) : Remove this after the implementation in the internal repo.
-        // For now just always return true for testing purposes.
-        successCallback.onResult(Optional.of(true));
-    }
+            Callback<Exception> failureCallback);
 }
