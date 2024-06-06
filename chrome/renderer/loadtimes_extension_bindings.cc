@@ -209,7 +209,8 @@ class LoadTimesExtensionWrapper : public v8::Extension {
           .ToLocalChecked();
     };
 
-    // Defines a property on |load_times| object with given name and value.
+    // Defines a property on |load_times| object with given name and value,
+    // returns true on success, false otherwise.
     auto define_prop = [=](std::string_view name, v8::Local<v8::Value> value) {
       v8::Local<v8::String> name_str =
           v8::String::NewFromUtf8(isolate, name.data(),
@@ -217,10 +218,10 @@ class LoadTimesExtensionWrapper : public v8::Extension {
                                   name.length())
               .ToLocalChecked();
 
-      return !load_times
-                  ->SetNativeDataProperty(ctx, name_str, LoadtimesGetter,
-                                          EmptySetter, value)
-                  .FromMaybe(false);
+      return load_times
+          ->SetNativeDataProperty(ctx, name_str, LoadtimesGetter, EmptySetter,
+                                  value)
+          .FromMaybe(false);
     };
 
     if (!define_prop("requestTime", v8_num(request_time))) {
@@ -309,7 +310,8 @@ class LoadTimesExtensionWrapper : public v8::Extension {
     // Helper lambda for creating v8::Number.
     auto v8_num = [=](double value) { return v8::Number::New(isolate, value); };
 
-    // Defines a property on |csi| object with given name and value.
+    // Defines a property on |csi| object with given name and value,
+    // returns true on success, false otherwise.
     auto define_prop = [=](std::string_view name, v8::Local<v8::Value> value) {
       v8::Local<v8::String> name_str =
           v8::String::NewFromUtf8(isolate, name.data(),
@@ -317,9 +319,9 @@ class LoadTimesExtensionWrapper : public v8::Extension {
                                   name.length())
               .ToLocalChecked();
 
-      return !csi->SetNativeDataProperty(ctx, name_str, CSIGetter, EmptySetter,
-                                         value)
-                  .FromMaybe(false);
+      return csi
+          ->SetNativeDataProperty(ctx, name_str, CSIGetter, EmptySetter, value)
+          .FromMaybe(false);
     };
 
     if (!define_prop("startE", v8_num(start.InMillisecondsSinceUnixEpoch()))) {
