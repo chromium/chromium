@@ -5,6 +5,8 @@
 //! Test Rust code generated for mojom test definitions, and associated code for
 //! bindings support.
 
+mod validation;
+
 use rust_gtest_interop::prelude::*;
 
 chromium::import! {

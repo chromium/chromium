@@ -12,6 +12,53 @@
 
 use bytemuck::{Pod, Zeroable};
 
+/// The mojo message header. Messages contain this before their payload.
+///
+/// This matches the representation of a version 2 header. Note that, depending
+/// on the message header's specified version, the serialized representation may
+/// be smaller than this Rust type.
+///
+/// See //mojo/public/cpp/bindings/lib/message_internal.h for the corresponding
+/// C++ definitions.
+#[derive(Clone, Copy, Debug, Pod, Zeroable)]
+#[repr(C)]
+pub struct MessageHeader {
+    pub header: StructHeader,
+    pub interface_id: u32,
+    pub name: u32,
+    pub flags: MessageHeaderFlags,
+    pub trace_nonce: u32,
+    // Min version 1:
+    pub request_id: u64,
+    // Min version 2:
+    pub payload: u64,
+    pub payload_interface_ids: Pointer<Array<u32>>,
+}
+
+pub const MESSAGE_HEADER_V0_SIZE: usize = 24;
+pub const MESSAGE_HEADER_V1_SIZE: usize = 32;
+pub const MESSAGE_HEADER_V2_SIZE: usize = 48;
+
+static_assertions::assert_eq_size!([u8; MESSAGE_HEADER_V2_SIZE], MessageHeader);
+
+bitflags::bitflags! {
+    /// See flags in //mojo/public/cpp/bindings/message.h.
+    #[repr(transparent)]
+    #[derive(Clone, Copy, Debug)]
+    pub struct MessageHeaderFlags: u32 {
+        const EXPECTS_RESPONSE = 0b001;
+        const IS_RESPONSE = 0b010;
+        const IS_SYNC = 0b100;
+    }
+}
+
+// SAFETY: MessageHeaderFlags is repr(transparent) with `u32` which is POD, and
+// has no invariants which would make any bit pattern invalid.
+//
+// Bitflags has a feature to allow bytemuck derives but we don't enable it.
+unsafe impl Zeroable for MessageHeaderFlags {}
+unsafe impl Pod for MessageHeaderFlags {}
+
 /// A relative pointer in a mojom serialized message.
 ///
 /// `offset` is a byte offset relative to the location of `self` in the buffer.

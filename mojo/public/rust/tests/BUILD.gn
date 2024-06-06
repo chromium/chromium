@@ -27,9 +27,20 @@ if (enable_rust_mojom_bindings) {
     testonly = true
     is_gtest_unittests = true
     crate_root = "bindings/lib.rs"
-    sources = [ "bindings/lib.rs" ]
+    sources = [
+      "bindings/lib.rs",
+      "bindings/validation.rs",
+    ]
+
+    inputs = []
+    foreach(f, mojo_public_interfaces_bindings_test_validation_data_files) {
+      inputs += [ get_path_info(
+              rebase_path(f, ".", "//mojo/public/interfaces/bindings/tests/"),
+              "abspath") ]
+    }
 
     deps = [
+      ":test_util",
       "//mojo/public/interfaces/bindings/tests:test_interfaces_rust",
       "//mojo/public/interfaces/bindings/tests:test_mojom_import_rust",
       "//mojo/public/rust:mojo_bindings",
@@ -44,13 +55,21 @@ rust_static_library("test_util") {
   allow_unsafe = true
   crate_root = "util/lib.rs"
   edition = "2021"
+
   sources = [ "util/lib.rs" ]
-  deps = [ "//testing/rust_gtest_interop" ]
+  cxx_bindings = [ "util/lib.rs" ]
+  deps = [
+    ":c_test_support",
+    "//testing/rust_gtest_interop",
+  ]
 }
 
 static_library("c_test_support") {
   testonly = true
-  sources = [ "test_support.cc" ]
+  sources = [
+    "test_support.cc",
+    "test_support.h",
+  ]
   deps = [
     "//base",
     "//mojo/core/embedder",

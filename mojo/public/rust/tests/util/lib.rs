@@ -5,10 +5,8 @@
 //! This module contains useful functions for testing.
 
 use std::env;
-use std::ffi::{CStr, CString};
+use std::ffi::CString;
 use std::os::raw::c_char;
-use std::ptr;
-use std::slice;
 use std::vec::Vec;
 
 /// Calls Mojo initialization code on first call. Can be called multiple times.
@@ -32,66 +30,48 @@ pub fn init() {
         // `InitializeMojoEmbedder` is safe to call only once. We ensure this
         // by using `std::sync::Once::call_once` above.
         unsafe {
-            InitializeMojoEmbedder(argc, argv);
+            ffi::InitializeMojoEmbedder(argc, argv);
         }
     });
 }
 
-extern "C" {
-    fn free(ptr: *mut u8);
-}
+pub fn parse_validation_test_input(input: &str) -> Result<(Vec<u8>, usize), String> {
+    cxx::let_cxx_string!(input_c = input);
+    cxx::let_cxx_string!(error_message = "");
 
-extern "C" {
-    pub fn InitializeMojoEmbedder(argc: u32, argv: *const *const c_char);
-}
+    let mut data_c = cxx::CxxVector::new();
+    let mut num_handles = 0usize;
 
-extern "C" {
-    #[allow(dead_code)]
-    fn ParseValidationTest(
-        input: *const c_char,
-        num_handles: *mut usize,
-        data: *mut *mut u8,
-        data_len: *mut usize,
-    ) -> *mut c_char;
-}
-
-#[allow(dead_code)]
-pub fn parse_validation_test(input: &str) -> Result<(Vec<u8>, usize), String> {
-    let input_c = CString::new(input.to_string()).unwrap();
-    let mut num_handles: usize = 0;
-    let mut data: *mut u8 = ptr::null_mut();
-    let mut data_len: usize = 0;
-    let error = unsafe {
-        ParseValidationTest(
-            input_c.as_ptr(),
-            &mut num_handles as *mut usize,
-            &mut data as *mut *mut u8,
-            &mut data_len as *mut usize,
+    let success = unsafe {
+        ffi::ParseValidationTestInput(
+            input_c.as_ref().get_ref(),
+            data_c.as_mut().unwrap().get_unchecked_mut(),
+            &mut num_handles as *mut _,
+            error_message.as_mut().get_unchecked_mut() as *mut _,
         )
     };
-    if error == ptr::null_mut() {
-        if data == ptr::null_mut() || data_len == 0 {
-            // We assume we were just given an empty file
-            Ok((Vec::new(), 0))
-        } else {
-            // Make a copy of the buffer
-            let buffer;
-            unsafe {
-                buffer = slice::from_raw_parts(data, data_len).to_vec();
-                free(data);
-            }
-            Ok((buffer, num_handles))
-        }
-    } else {
-        let err_str;
-        unsafe {
-            // Copy the error string
-            err_str = CStr::from_ptr(error)
-                .to_str()
-                .expect("Could not convert error message to UTF-8!")
-                .to_owned();
-            free(error as *mut u8);
-        }
-        Err(err_str)
+
+    if !success {
+        return Err(error_message.to_string_lossy().into_owned());
+    }
+
+    let output = data_c.iter().copied().collect();
+    Ok((output, num_handles))
+}
+
+#[cxx::bridge]
+mod ffi {
+    extern "C++" {
+        include!("mojo/public/rust/tests/test_support.h");
+
+        unsafe fn InitializeMojoEmbedder(argc: u32, argv: *const *const c_char);
+
+        #[namespace = "mojo::test"]
+        unsafe fn ParseValidationTestInput(
+            input: &CxxString,
+            data: *mut CxxVector<u8>,
+            num_handles: *mut usize,
+            error_message: *mut CxxString,
+        ) -> bool;
     }
 }
