@@ -361,18 +361,21 @@
   }
   _magicStackRankingModel.homeStartDataSource = self.homeStartDataSource;
 
-  self.contentSuggestionsViewController =
-      [[ContentSuggestionsViewController alloc] init];
-  self.contentSuggestionsViewController.audience = self;
-  self.contentSuggestionsViewController.urlLoadingBrowserAgent =
-      UrlLoadingBrowserAgent::FromBrowser(self.browser);
-  self.contentSuggestionsViewController.contentSuggestionsMetricsRecorder =
-      self.contentSuggestionsMetricsRecorder;
-  self.contentSuggestionsViewController.layoutGuideCenter =
-      LayoutGuideCenterForBrowser(self.browser);
-  self.contentSuggestionsViewController.parcelTrackingCommandHandler =
-      HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                         ParcelTrackingOptInCommands);
+  if (!IsIOSMagicStackCollectionViewEnabled() ||
+      !ShouldPutMostVisitedSitesInMagicStack()) {
+    ContentSuggestionsViewController* viewController =
+        [[ContentSuggestionsViewController alloc] init];
+    viewController.audience = self;
+    viewController.urlLoadingBrowserAgent =
+        UrlLoadingBrowserAgent::FromBrowser(self.browser);
+    viewController.contentSuggestionsMetricsRecorder =
+        self.contentSuggestionsMetricsRecorder;
+    viewController.layoutGuideCenter =
+        LayoutGuideCenterForBrowser(self.browser);
+    viewController.parcelTrackingCommandHandler = HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), ParcelTrackingOptInCommands);
+    self.contentSuggestionsViewController = viewController;
+  }
 
   if (IsIOSMagicStackCollectionViewEnabled()) {
     _magicStackCollectionView =

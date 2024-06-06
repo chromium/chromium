@@ -203,7 +203,6 @@ BASE_FEATURE(kMagicStackRemoveGradientView,
   [super viewDidLoad];
 
   DCHECK(self.feedWrapperViewController);
-  DCHECK(self.contentSuggestionsViewController);
 
   self.view.accessibilityIdentifier = kNTPViewIdentifier;
 
@@ -455,7 +454,6 @@ BASE_FEATURE(kMagicStackRemoveGradientView,
 
 - (void)layoutContentInParentCollectionView {
   DCHECK(self.feedWrapperViewController);
-  DCHECK(self.contentSuggestionsViewController);
 
   // Ensure the view is loaded so we can set the accessibility identifier.
   [self.feedWrapperViewController loadViewIfNeeded];
@@ -512,7 +510,10 @@ BASE_FEATURE(kMagicStackRemoveGradientView,
     [self addViewControllerAboveFeed:self.magicStackCollectionView];
   }
 
-  [self addViewControllerAboveFeed:self.contentSuggestionsViewController];
+  if (!IsIOSMagicStackCollectionViewEnabled() ||
+      !ShouldPutMostVisitedSitesInMagicStack()) {
+    [self addViewControllerAboveFeed:self.contentSuggestionsViewController];
+  }
 
   [self addViewControllerAboveFeed:self.headerViewController];
 
@@ -601,7 +602,10 @@ BASE_FEATURE(kMagicStackRemoveGradientView,
 
   [self removeFromViewHierarchy:self.feedWrapperViewController];
   [self removeFromViewHierarchy:self.magicStackCollectionView];
-  [self removeFromViewHierarchy:self.contentSuggestionsViewController];
+  if (!IsIOSMagicStackCollectionViewEnabled() ||
+      !ShouldPutMostVisitedSitesInMagicStack()) {
+    [self removeFromViewHierarchy:self.contentSuggestionsViewController];
+  }
 
   for (UIViewController* viewController in self.viewControllersAboveFeed) {
     [self removeFromViewHierarchy:viewController];
@@ -1230,10 +1234,20 @@ BASE_FEATURE(kMagicStackRemoveGradientView,
 // the width animation.
 - (void)setInitialFakeOmniboxConstraints {
   [NSLayoutConstraint deactivateConstraints:self.fakeOmniboxConstraints];
-  self.fakeOmniboxConstraints = @[
-    [self.contentSuggestionsViewController.view.topAnchor
-        constraintEqualToAnchor:self.headerViewController.view.bottomAnchor],
-  ];
+  if (self.contentSuggestionsViewController) {
+    self.fakeOmniboxConstraints = @[
+      [self.contentSuggestionsViewController.view.topAnchor
+          constraintEqualToAnchor:self.headerViewController.view.bottomAnchor],
+    ];
+  } else {
+    // If `contentSuggestionsViewController` is nil, that means MVTs are in the
+    // Magic Stack.
+    self.fakeOmniboxConstraints = @[
+      [self.magicStackCollectionView.view.topAnchor
+          constraintEqualToAnchor:self.headerViewController.view.bottomAnchor
+                         constant:content_suggestions::HeaderBottomPadding()],
+    ];
+  }
   [NSLayoutConstraint activateConstraints:self.fakeOmniboxConstraints];
 }
 
@@ -1342,14 +1356,15 @@ BASE_FEATURE(kMagicStackRemoveGradientView,
     bottomView = self.feedTopSectionViewController.view;
   }
 
-  NSLayoutConstraint* feedHeaderTopAnchor =
-      [self.feedHeaderViewController.view.topAnchor
-          constraintEqualToAnchor:self.contentSuggestionsViewController.view
-                                      .bottomAnchor];
+  NSLayoutConstraint* feedHeaderTopAnchor;
   if (IsIOSMagicStackCollectionViewEnabled()) {
     feedHeaderTopAnchor = [self.feedHeaderViewController.view.topAnchor
         constraintEqualToAnchor:self.magicStackCollectionView.view.bottomAnchor
                        constant:kBottomMagicStackPadding];
+  } else {
+    feedHeaderTopAnchor = [self.feedHeaderViewController.view.topAnchor
+        constraintEqualToAnchor:self.contentSuggestionsViewController.view
+                                    .bottomAnchor];
   }
   self.feedHeaderConstraints = @[
     feedHeaderTopAnchor,
@@ -1556,7 +1571,8 @@ BASE_FEATURE(kMagicStackRemoveGradientView,
     } else {
       [NSLayoutConstraint activateConstraints:@[
         [self.collectionView.topAnchor
-            constraintEqualToAnchor:contentSuggestionsView.bottomAnchor],
+            constraintEqualToAnchor:self.contentSuggestionsViewController.view
+                                        .bottomAnchor],
       ]];
     }
   }
@@ -1579,20 +1595,29 @@ BASE_FEATURE(kMagicStackRemoveGradientView,
         constraintEqualToAnchor:self.headerViewController.view.leadingAnchor],
     [[self containerView].safeAreaLayoutGuide.trailingAnchor
         constraintEqualToAnchor:self.headerViewController.view.trailingAnchor],
-    [contentSuggestionsView.leadingAnchor
-        constraintEqualToAnchor:self.moduleLayoutGuide.leadingAnchor],
-    [contentSuggestionsView.trailingAnchor
-        constraintEqualToAnchor:self.moduleLayoutGuide.trailingAnchor],
   ]];
+  if (self.contentSuggestionsViewController) {
+    [NSLayoutConstraint activateConstraints:@[
+      [self.contentSuggestionsViewController.view.leadingAnchor
+          constraintEqualToAnchor:self.moduleLayoutGuide.leadingAnchor],
+      [self.contentSuggestionsViewController.view.trailingAnchor
+          constraintEqualToAnchor:self.moduleLayoutGuide.trailingAnchor],
+    ]];
+  }
   if (IsIOSMagicStackCollectionViewEnabled()) {
     [NSLayoutConstraint activateConstraints:@[
       [self.magicStackCollectionView.view.leadingAnchor
           constraintEqualToAnchor:self.moduleLayoutGuide.leadingAnchor],
       [self.magicStackCollectionView.view.trailingAnchor
           constraintEqualToAnchor:self.moduleLayoutGuide.trailingAnchor],
-      [self.magicStackCollectionView.view.topAnchor
-          constraintEqualToAnchor:contentSuggestionsView.bottomAnchor],
     ]];
+    if (!ShouldPutMostVisitedSitesInMagicStack()) {
+      [NSLayoutConstraint activateConstraints:@[
+        [self.magicStackCollectionView.view.topAnchor
+            constraintEqualToAnchor:self.contentSuggestionsViewController.view
+                                        .bottomAnchor],
+      ]];
+    }
   }
   [self setInitialFakeOmniboxConstraints];
 }
@@ -1813,28 +1838,32 @@ BASE_FEATURE(kMagicStackRemoveGradientView,
   // self.feedWrapperViewController.view ->
   // self.feedWrapperViewController.feedViewController.view ->
   // self.collectionView -> self.contentSuggestionsViewController.view.
-  if (![self.collectionView.subviews
-          containsObject:self.contentSuggestionsViewController.view]) {
-    // Remove child VC from old parent.
-    [self.contentSuggestionsViewController willMoveToParentViewController:nil];
-    [self.contentSuggestionsViewController removeFromParentViewController];
-    [self.contentSuggestionsViewController.view removeFromSuperview];
-    [self.contentSuggestionsViewController didMoveToParentViewController:nil];
+  if (self.contentSuggestionsViewController) {
+    if (![self.collectionView.subviews
+            containsObject:self.contentSuggestionsViewController.view]) {
+      // Remove child VC from old parent.
+      [self.contentSuggestionsViewController
+          willMoveToParentViewController:nil];
+      [self.contentSuggestionsViewController removeFromParentViewController];
+      [self.contentSuggestionsViewController.view removeFromSuperview];
+      [self.contentSuggestionsViewController didMoveToParentViewController:nil];
 
-    // Add child VC to new parent.
-    [self.contentSuggestionsViewController
-        willMoveToParentViewController:self.feedWrapperViewController
-                                           .feedViewController];
-    [self.feedWrapperViewController.feedViewController
-        addChildViewController:self.contentSuggestionsViewController];
-    [self.collectionView addSubview:self.contentSuggestionsViewController.view];
-    [self.contentSuggestionsViewController
-        didMoveToParentViewController:self.feedWrapperViewController
-                                          .feedViewController];
+      // Add child VC to new parent.
+      [self.contentSuggestionsViewController
+          willMoveToParentViewController:self.feedWrapperViewController
+                                             .feedViewController];
+      [self.feedWrapperViewController.feedViewController
+          addChildViewController:self.contentSuggestionsViewController];
+      [self.collectionView
+          addSubview:self.contentSuggestionsViewController.view];
+      [self.contentSuggestionsViewController
+          didMoveToParentViewController:self.feedWrapperViewController
+                                            .feedViewController];
 
-    [self.feedMetricsRecorder
-        recordBrokenNTPHierarchy:BrokenNTPHierarchyRelationship::
-                                     kContentSuggestionsParent];
+      [self.feedMetricsRecorder
+          recordBrokenNTPHierarchy:BrokenNTPHierarchyRelationship::
+                                       kContentSuggestionsParent];
+    }
   }
 
   [self ensureView:self.headerViewController.view
