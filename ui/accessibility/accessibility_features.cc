@@ -107,7 +107,7 @@ bool IsUseAXPositionForDocumentMarkersEnabled() {
 
 BASE_FEATURE(kUseMoveNotCopyInAXTreeCombiner,
              "UseMoveNotCopyInAXTreeCombiner",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsUseMoveNotCopyInAXTreeCombinerEnabled() {
   return base::FeatureList::IsEnabled(
       ::features::kUseMoveNotCopyInAXTreeCombiner);
@@ -115,7 +115,7 @@ bool IsUseMoveNotCopyInAXTreeCombinerEnabled() {
 
 BASE_FEATURE(kUseMoveNotCopyInMergeTreeUpdate,
              "UseMoveNotCopyInMergeTreeUpdate",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsUseMoveNotCopyInMergeTreeUpdateEnabled() {
   return base::FeatureList::IsEnabled(
       ::features::kUseMoveNotCopyInMergeTreeUpdate);
