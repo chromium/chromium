@@ -1085,8 +1085,8 @@ def _ParseCommandArguments():
       type=int,
       default=None,
       help='Run N jobs to build in parallel. If not specified, a default value '
-      'will be derived based on CPUs and goma availability. Please refer to '
-      '\'autoninja -h\' for more details.')
+      'will be derived based on CPUs and reclient/siso availability. Please '
+      'refer to \'autoninja -h\' for more details.')
 
   arg_parser.add_argument(
       '--format',
