@@ -118,7 +118,6 @@ ts_library("library") {
     "//chrome/browser/resources/lens/overlay/search_bubble:build_ts",
     "//chrome/browser/resources/media_router/cast_feedback:build_ts",
     "//chrome/browser/resources/new_tab_page:build_ts",
-    "//chrome/browser/resources/new_tab_page_third_party:build_ts",
     "//chrome/browser/resources/omnibox_popup:build_ts",
     "//chrome/browser/resources/on_device_internals:build_ts",
     "//chrome/browser/resources/password_manager:build_ts",
