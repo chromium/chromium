@@ -7124,6 +7124,21 @@
             ]
         }
     ],
+    "DeviceAuthenticatorAndroidx": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DeviceAuthenticatorAndroidx"
+                    ]
+                }
+            ]
+        }
+    ],
     "DexFixer": [
         {
             "platforms": [
