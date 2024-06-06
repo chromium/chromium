@@ -84,7 +84,7 @@ namespace {
 
 // The splash screen should be removed either when this timeout passes or the
 // demo mode launches and enters the full screen, whichever comes first.
-inline constexpr base::TimeDelta kRemoveSplashScreenTimeout = base::Seconds(10);
+inline constexpr base::TimeDelta kRemoveSplashScreenTimeout = base::Seconds(20);
 
 // Global DemoSession instance.
 DemoSession* g_demo_session = nullptr;
