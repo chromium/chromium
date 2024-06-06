@@ -61,10 +61,26 @@ wgpu::Texture ExternalVkImageDawnImageRepresentation::BeginAccess(
   texture_descriptor.viewFormatCount = view_formats_.size();
   texture_descriptor.viewFormats = view_formats_.data();
 
+  const GrBackendTexture& backend_texture = backing_impl()->backend_texture();
+  GrVkImageInfo image_info;
+  GrBackendTextures::GetVkImageInfo(backend_texture, &image_info);
+
   wgpu::DawnTextureInternalUsageDescriptor internalDesc;
   if (base::FeatureList::IsEnabled(
           features::kDawnSIRepsUseClientProvidedInternalUsages)) {
     internalDesc.internalUsage = internal_usage;
+
+    if (image_info.fImageLayout == VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL) {
+      // We pass `image_info.fImageLayout` to Dawn in the
+      // ExternalImageDescriptor below as the old/new layout for it to use. For
+      // a Vulkan-backed Dawn texture to be usable with the Vulkan color
+      // attachment layout, it must have RenderAttachment usage.
+      // TODO(crbug.com/339171225): Determine if it is possible to eliminate the
+      // need for this workaround, which turns these Dawn accesses into write
+      // accesses regardless of whether the client has specified any write
+      // usages.
+      internalDesc.internalUsage |= wgpu::TextureUsage::RenderAttachment;
+    }
   } else {
     // We need to have internal usages of CopySrc for copies,
     // RenderAttachment for clears, and TextureBinding for
@@ -84,9 +100,6 @@ wgpu::Texture ExternalVkImageDawnImageRepresentation::BeginAccess(
   descriptor.memoryTypeIndex = backing_impl()->image()->memory_type_index();
   descriptor.memoryFD = dup(memory_fd_.get());
 
-  const GrBackendTexture& backend_texture = backing_impl()->backend_texture();
-  GrVkImageInfo image_info;
-  GrBackendTextures::GetVkImageInfo(backend_texture, &image_info);
   // We should either be importing the image from the external queue, or it
   // was just created with no queue ownership.
   DCHECK(image_info.fCurrentQueueFamily == VK_QUEUE_FAMILY_IGNORED ||
