@@ -98,8 +98,7 @@ class NET_EXPORT ReportingContext {
 
   std::unique_ptr<ReportingCache> cache_;
 
-  const raw_ptr<ReportingCache::PersistentReportingStore, DanglingUntriaged>
-      store_;
+  const raw_ptr<ReportingCache::PersistentReportingStore> store_;
 
   // |delivery_agent_| must come after |tick_clock_|, |delegate_|, |uploader_|,
   // and |cache_|.

@@ -208,9 +208,13 @@ void ReportingTestBase::UsePolicy(const ReportingPolicy& new_policy) {
 }
 
 void ReportingTestBase::UseStore(
-    ReportingCache::PersistentReportingStore* store) {
-  store_ = store;
-  CreateContext(policy(), clock()->Now(), tick_clock()->NowTicks());
+    std::unique_ptr<ReportingCache::PersistentReportingStore> store) {
+  // Must destroy old context, if there is one, before destroying old store.
+  // Need to copy policy first, since the context owns it.
+  ReportingPolicy policy_copy = policy();
+  context_.reset();
+  store_ = std::move(store);
+  CreateContext(policy_copy, clock()->Now(), tick_clock()->NowTicks());
 }
 
 const ReportingEndpoint ReportingTestBase::FindEndpointInCache(
@@ -291,7 +295,7 @@ void ReportingTestBase::CreateContext(const ReportingPolicy& policy,
                                       base::Time now,
                                       base::TimeTicks now_ticks) {
   context_ = std::make_unique<TestReportingContext>(&clock_, &tick_clock_,
-                                                    policy, store_);
+                                                    policy, store_.get());
   clock()->SetNow(now);
   tick_clock()->SetNowTicks(now_ticks);
 }

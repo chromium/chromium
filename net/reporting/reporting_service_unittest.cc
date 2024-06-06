@@ -77,6 +77,12 @@ class ReportingServiceTest : public ::testing::TestWithParam<bool>,
 
   // Initializes, or re-initializes, |service_| and its dependencies.
   void Init() {
+    // Must destroy old service, if there is one, before destroying old store.
+    // Need to clear `context_` first, since it points to an object owned by the
+    // service.
+    context_ = nullptr;
+    service_.reset();
+
     if (GetParam()) {
       store_ = std::make_unique<MockPersistentReportingStore>();
     } else {

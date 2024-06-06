@@ -48,11 +48,12 @@ class ReportingHeaderParserTestBase
     policy.max_endpoint_count = 20;
     UsePolicy(policy);
 
-    if (GetParam())
-      store_ = std::make_unique<MockPersistentReportingStore>();
-    else
-      store_ = nullptr;
-    UseStore(store_.get());
+    std::unique_ptr<MockPersistentReportingStore> store;
+    if (GetParam()) {
+      store = std::make_unique<MockPersistentReportingStore>();
+    }
+    store_ = store.get();
+    UseStore(std::move(store));
   }
   ~ReportingHeaderParserTestBase() override = default;
 
@@ -66,7 +67,7 @@ class ReportingHeaderParserTestBase
     }
   }
 
-  MockPersistentReportingStore* mock_store() { return store_.get(); }
+  MockPersistentReportingStore* mock_store() { return store_; }
 
   base::test::ScopedFeatureList feature_list_;
   const GURL kUrl1_ = GURL("https://origin1.test/path");
@@ -103,7 +104,7 @@ class ReportingHeaderParserTestBase
       ReportingEndpointGroupKey(kNak_, kOrigin2_, kGroup2_);
 
  private:
-  std::unique_ptr<MockPersistentReportingStore> store_;
+  raw_ptr<MockPersistentReportingStore> store_;
 };
 
 // This test is parametrized on a boolean that represents whether to use a

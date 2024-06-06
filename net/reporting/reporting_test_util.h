@@ -195,7 +195,8 @@ class ReportingTestBase : public TestWithTaskEnvironment {
   ~ReportingTestBase() override;
 
   void UsePolicy(const ReportingPolicy& policy);
-  void UseStore(ReportingCache::PersistentReportingStore* store);
+  void UseStore(
+      std::unique_ptr<ReportingCache::PersistentReportingStore> store);
 
   // Finds a particular endpoint in the cache and returns it (or an invalid
   // ReportingEndpoint, if not found).
@@ -271,7 +272,7 @@ class ReportingTestBase : public TestWithTaskEnvironment {
   ReportingGarbageCollector* garbage_collector() {
     return context_->garbage_collector();
   }
-  ReportingCache::PersistentReportingStore* store() { return store_; }
+  ReportingCache::PersistentReportingStore* store() { return store_.get(); }
 
   base::TimeTicks yesterday();
   base::TimeTicks now();
@@ -289,9 +290,8 @@ class ReportingTestBase : public TestWithTaskEnvironment {
 
   base::SimpleTestClock clock_;
   base::SimpleTestTickClock tick_clock_;
+  std::unique_ptr<ReportingCache::PersistentReportingStore> store_;
   std::unique_ptr<TestReportingContext> context_;
-  raw_ptr<ReportingCache::PersistentReportingStore, DanglingUntriaged> store_ =
-      nullptr;
 };
 
 class TestReportingService : public ReportingService {
