@@ -208,7 +208,7 @@ gfx::Size PinKeyboardView::CalculatePreferredSize(
 
 void PinKeyboardView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kKeyboard;
-  node_data->SetName(GetAccessibleName());
+  node_data->SetName(GetViewAccessibility().GetCachedName());
 }
 
 void PinKeyboardView::OnDigitButtonPressed(int digit) {

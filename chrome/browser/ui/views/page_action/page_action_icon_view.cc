@@ -22,6 +22,7 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
@@ -123,7 +124,7 @@ void PageActionIconView::InstallLoadingIndicatorForTesting() {
 }
 
 std::u16string PageActionIconView::GetTextForTooltipAndAccessibleName() const {
-  return GetAccessibleName();
+  return GetViewAccessibility().GetCachedName();
 }
 
 std::u16string PageActionIconView::GetTooltipText(const gfx::Point& p) const {
