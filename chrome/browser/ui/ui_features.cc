@@ -210,7 +210,7 @@ const base::FeatureParam<PreloadTopChromeWebUIMode> kPreloadTopChromeWebUIMode{
 // Enables exiting browser fullscreen (users putting the browser itself into the
 // fullscreen mode via the browser UI or shortcuts) with press-and-hold Esc.
 #if !BUILDFLAG(IS_ANDROID)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC)
 BASE_FEATURE(kPressAndHoldEscToExitBrowserFullscreen,
              "PressAndHoldEscToExitBrowserFullscreen",
              base::FEATURE_DISABLED_BY_DEFAULT);
