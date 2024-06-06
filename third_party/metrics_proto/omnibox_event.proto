@@ -436,7 +436,7 @@ message OmniboxEventProto {
     // (excluding Navsuggest and Document URLs) and only when there is a click
     // on a URL suggestion.
     // Only recorded on desktop platforms (Windows, Mac, Linux, ChromeOS).
-    // Next tag: 26
+    // Next tag: 27
     message ScoringSignals {
       // Number of times the URL was navigated to using the Omnibox for this
       // profile on this device, and all other devices syncing with this
@@ -548,10 +548,20 @@ message OmniboxEventProto {
       // This signal contains the raw score received from the Suggest service
       // ("google:suggestrelevance") and does not reflect any client-side
       // adjustments (unlike the value of the `relevance` field above).
-      // As such, this signal will only be set for server-provided Search
-      // suggestions and will remain unset for all other types of suggestions
-      // (including server-provided URL suggestions).
+      // As such, this signal will take on the following values:
+      //   - Non-zero: Non-navigational Search suggestion (obtained from the
+      //               Suggest service)
+      //   - Zero:     Navigational Search suggestion OR non-Search suggestion
+      //               (obtained from any source)
+      //   - Unset:    Otherwise (due to unexpected client-side behavior)
       optional int32 search_suggest_relevance = 25;
+      // Whether this particular Search suggestion refers to an entity. As such,
+      // this signal will take on the following values:
+      //   - True:  Search suggestion refers to an entity
+      //   - False: Non-Search suggestion OR Search suggestion does not refer to
+      //            an entity
+      //   - Unset: Otherwise (due to unexpected client-side behavior)
+      optional bool is_search_suggest_entity = 26;
     }
     optional ScoringSignals scoring_signals = 10;
   }
