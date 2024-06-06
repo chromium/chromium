@@ -16,7 +16,6 @@
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "v8/include/v8.h"
@@ -121,7 +120,7 @@ class MODULES_EXPORT IDBValueWrapper {
   //
   // This method must be called at most once, and must be called after
   // WrapIfBiggerThan().
-  scoped_refptr<SharedBuffer> TakeWireBytes();
+  Vector<char> TakeWireBytes();
 
   // Obtains the BlobDataHandles from the serialized value's Blob array.
   //
@@ -235,13 +234,12 @@ class MODULES_EXPORT IDBValueUnwrapper {
   // Unwraps an IDBValue that has wrapped Blob data.
   //
   // The caller should own the IDBValue (have a std::unique_ptr for it).
-  static void Unwrap(scoped_refptr<SharedBuffer>&& wrapper_blob_content,
+  static void Unwrap(Vector<char>&& wrapper_blob_content,
                      IDBValue* wrapped_value);
 
   // Decompresses the value in `buffer` and stores in `out_buffer`. Returns true
   // on success.
-  static bool Decompress(SharedBuffer& buffer,
-                         scoped_refptr<SharedBuffer>* out_buffer);
+  static bool Decompress(const Vector<char>& buffer, Vector<char>* out_buffer);
 
   // Parses the wrapper Blob information from a wrapped IDBValue.
   //
@@ -273,7 +271,7 @@ class MODULES_EXPORT IDBValueUnwrapper {
   // Resets the parsing state.
   bool Reset();
 
-  // Deserialization cursor in the SharedBuffer of the IDBValue being unwrapped.
+  // Deserialization cursor in the `data_` of the IDBValue being unwrapped.
   const uint8_t* current_;
 
   // Smallest invalid position_ value.

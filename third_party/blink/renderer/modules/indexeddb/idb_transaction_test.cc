@@ -60,7 +60,6 @@
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/url_loader_mock_factory.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
-#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -389,15 +388,13 @@ TEST_F(IDBTransactionTest, ValueSizeTest) {
   // of memory, which crashes on memory-constrained systems.
   const size_t kMaxValueSizeForTesting = 10 * 1024 * 1024;  // 10 MB
 
-  const Vector<char> data(kMaxValueSizeForTesting + 1);
-  const scoped_refptr<SharedBuffer> value_data =
-      SharedBuffer::Create(&data.front(), data.size());
+  const Vector<char> value_data = Vector<char>(kMaxValueSizeForTesting + 1);
   const Vector<WebBlobInfo> blob_info;
   auto value = std::make_unique<IDBValue>(value_data, blob_info);
   std::unique_ptr<IDBKey> key = IDBKey::CreateNumber(0);
   const int64_t object_store_id = 2;
 
-  ASSERT_GT(value_data->size() + key->SizeEstimate(), kMaxValueSizeForTesting);
+  ASSERT_GT(value_data.size() + key->SizeEstimate(), kMaxValueSizeForTesting);
   ThreadState::Current()->CollectAllGarbageForTesting();
 
   bool got_error = false;
@@ -425,9 +422,8 @@ TEST_F(IDBTransactionTest, KeyAndValueSizeTest) {
   const size_t kMaxValueSizeForTesting = 10 * 1024 * 1024;  // 10 MB
   const size_t kKeySize = 1024 * 1024;
 
-  const Vector<char> data(kMaxValueSizeForTesting - kKeySize);
-  const scoped_refptr<SharedBuffer> value_data =
-      SharedBuffer::Create(&data.front(), data.size());
+  const Vector<char> value_data =
+      Vector<char>(kMaxValueSizeForTesting - kKeySize);
   const Vector<WebBlobInfo> blob_info;
   auto value = std::make_unique<IDBValue>(value_data, blob_info);
   const int64_t object_store_id = 2;
@@ -444,9 +440,9 @@ TEST_F(IDBTransactionTest, KeyAndValueSizeTest) {
   DCHECK_EQ(key_string.length(), number_of_chars);
 
   std::unique_ptr<IDBKey> key = IDBKey::CreateString(key_string);
-  DCHECK_EQ(value_data->size(), kMaxValueSizeForTesting - kKeySize);
+  DCHECK_EQ(value_data.size(), kMaxValueSizeForTesting - kKeySize);
   DCHECK_GT(key->SizeEstimate() - kKeySize, static_cast<size_t>(0));
-  DCHECK_GT(value_data->size() + key->SizeEstimate(), kMaxValueSizeForTesting);
+  DCHECK_GT(value_data.size() + key->SizeEstimate(), kMaxValueSizeForTesting);
 
   ThreadState::Current()->CollectAllGarbageForTesting();
 

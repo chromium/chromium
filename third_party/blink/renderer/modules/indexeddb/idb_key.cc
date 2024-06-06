@@ -28,6 +28,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -107,10 +108,10 @@ IDBKey::IDBKey(const String& value)
       size_estimate_(kIDBKeyOverheadSize + (string_.length() * sizeof(UChar))) {
 }
 
-IDBKey::IDBKey(scoped_refptr<SharedBuffer> value)
+IDBKey::IDBKey(scoped_refptr<base::RefCountedData<Vector<char>>> value)
     : type_(mojom::IDBKeyType::Binary),
       binary_(std::move(value)),
-      size_estimate_(kIDBKeyOverheadSize + binary_.get()->size()) {}
+      size_estimate_(kIDBKeyOverheadSize + binary_->data.size()) {}
 
 IDBKey::IDBKey(KeyArray key_array)
     : type_(mojom::IDBKeyType::Array),
@@ -157,13 +158,12 @@ int IDBKey::Compare(const IDBKey* other) const {
       }
       return CompareNumbers(array_.size(), other->array_.size());
     case mojom::IDBKeyType::Binary:
-      if (int result =
-              memcmp(binary_->FlattenIfNeededAndGetData(),
-                     other->binary_->FlattenIfNeededAndGetData(),
-                     std::min(binary_->size(), other->binary_->size()))) {
+      if (int result = memcmp(
+              binary_->data.data(), other->binary_->data.data(),
+              std::min(binary_->data.size(), other->binary_->data.size()))) {
         return result < 0 ? -1 : 1;
       }
-      return CompareNumbers(binary_->size(), other->binary_->size());
+      return CompareNumbers(binary_->data.size(), other->binary_->data.size());
     case mojom::IDBKeyType::String:
       return CodeUnitCompare(string_, other->string_);
     case mojom::IDBKeyType::Date:
@@ -198,8 +198,9 @@ v8::Local<v8::Value> IDBKey::ToV8(ScriptState* script_state) const {
       return V8String(isolate, GetString());
     case mojom::IDBKeyType::Binary:
       // https://w3c.github.io/IndexedDB/#convert-a-value-to-a-key
-      return ToV8Traits<DOMArrayBuffer>::ToV8(script_state,
-                                              DOMArrayBuffer::Create(Binary()));
+      return ToV8Traits<DOMArrayBuffer>::ToV8(
+          script_state,
+          DOMArrayBuffer::Create(base::as_byte_span(Binary()->data)));
     case mojom::IDBKeyType::Date:
       return v8::Date::New(context, Date()).ToLocalChecked();
     case mojom::IDBKeyType::Array: {

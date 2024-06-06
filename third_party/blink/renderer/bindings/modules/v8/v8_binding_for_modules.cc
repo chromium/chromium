@@ -57,7 +57,6 @@
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
-#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -98,7 +97,9 @@ static std::unique_ptr<IDBKey> CreateIDBKeyFromSimpleValue(
     }
     const char* start = static_cast<const char*>(buffer->Data());
     size_t length = buffer->ByteLength();
-    return IDBKey::CreateBinary(SharedBuffer::Create(start, length));
+    return IDBKey::CreateBinary(
+        base::MakeRefCounted<base::RefCountedData<Vector<char>>>(
+            Vector<char>(base::span(start, length))));
   }
 
   if (value->IsArrayBufferView()) {
@@ -114,7 +115,9 @@ static std::unique_ptr<IDBKey> CreateIDBKeyFromSimpleValue(
     }
     const char* start = static_cast<const char*>(view->BaseAddress());
     size_t length = view->byteLength();
-    return IDBKey::CreateBinary(SharedBuffer::Create(start, length));
+    return IDBKey::CreateBinary(
+        base::MakeRefCounted<base::RefCountedData<Vector<char>>>(
+            Vector<char>(base::span(start, length))));
   }
 
   return IDBKey::CreateInvalid();

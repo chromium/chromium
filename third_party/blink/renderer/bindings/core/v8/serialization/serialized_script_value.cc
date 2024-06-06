@@ -61,7 +61,6 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
@@ -225,22 +224,6 @@ scoped_refptr<SerializedScriptValue> SerializedScriptValue::Create(
 
   DataBufferPtr data_buffer = AllocateBuffer(data.size());
   data_buffer.as_span().copy_from(data);
-  SwapWiredDataIfNeeded(data_buffer.as_span());
-
-  return base::AdoptRef(new SerializedScriptValue(std::move(data_buffer)));
-}
-
-scoped_refptr<SerializedScriptValue> SerializedScriptValue::Create(
-    scoped_refptr<const SharedBuffer> buffer) {
-  if (!buffer)
-    return Create();
-
-  DataBufferPtr data_buffer = AllocateBuffer(buffer->size());
-  size_t offset = 0u;
-  for (base::span<const char> span : *buffer) {
-    data_buffer.subspan(offset, span.size()).copy_from(base::as_bytes(span));
-    offset += span.size();
-  }
   SwapWiredDataIfNeeded(data_buffer.as_span());
 
   return base::AdoptRef(new SerializedScriptValue(std::move(data_buffer)));

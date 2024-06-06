@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/modules/indexeddb/idb_key_path.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_value_wrapping.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
-#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -23,10 +22,7 @@ std::unique_ptr<IDBValue> CreateNullIDBValueForTesting(v8::Isolate* isolate) {
 
   base::span<const uint8_t> ssv_wire_bytes = null_ssv->GetWireData();
 
-  scoped_refptr<SharedBuffer> idb_value_buffer = SharedBuffer::Create();
-  idb_value_buffer->Append(reinterpret_cast<const char*>(ssv_wire_bytes.data()),
-                           ssv_wire_bytes.size());
-  auto idb_value = std::make_unique<IDBValue>(std::move(idb_value_buffer),
+  auto idb_value = std::make_unique<IDBValue>(Vector<char>(ssv_wire_bytes),
                                               Vector<WebBlobInfo>());
   idb_value->SetInjectedPrimaryKey(IDBKey::CreateNumber(42.0),
                                    IDBKeyPath(String("primaryKey")));
@@ -52,9 +48,8 @@ std::unique_ptr<IDBValue> CreateIDBValueForTesting(v8::Isolate* isolate,
   Vector<scoped_refptr<BlobDataHandle>> blob_data_handles =
       wrapper.TakeBlobDataHandles();
   Vector<WebBlobInfo> blob_infos = wrapper.TakeBlobInfo();
-  scoped_refptr<SharedBuffer> wrapped_marker_buffer = wrapper.TakeWireBytes();
 
-  auto idb_value = std::make_unique<IDBValue>(std::move(wrapped_marker_buffer),
+  auto idb_value = std::make_unique<IDBValue>(wrapper.TakeWireBytes(),
                                               std::move(blob_infos));
   idb_value->SetInjectedPrimaryKey(IDBKey::CreateNumber(42.0),
                                    IDBKeyPath(String("primaryKey")));

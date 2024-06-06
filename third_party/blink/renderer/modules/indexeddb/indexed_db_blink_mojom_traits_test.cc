@@ -26,13 +26,13 @@ TEST(IDBMojomTraitsTest, IDBKeyBinary) {
   wtf_size_t test_data_size = 10000;
   Vector<char> test_data(test_data_size);
   std::generate(test_data.begin(), test_data.end(), rng);
-  scoped_refptr<SharedBuffer> input_data =
-      SharedBuffer::Create(test_data.data(), test_data.size());
-  Vector<uint8_t> input_vector = input_data->CopyAs<Vector<uint8_t>>();
+  scoped_refptr<base::RefCountedData<Vector<char>>> input_data =
+      base::MakeRefCounted<base::RefCountedData<Vector<char>>>(
+          Vector<char>(test_data));
 
   // Verify expectations.
-  ASSERT_EQ(input_data->size(), test_data_size);
-  ASSERT_EQ(input_vector.size(), test_data_size);
+  ASSERT_EQ(input_data->data.size(), test_data_size);
+  ASSERT_EQ(test_data.size(), test_data_size);
 
   // Create IDBKey binary key type mojom message.
   std::unique_ptr<IDBKey> input = IDBKey::CreateBinary(input_data);
@@ -42,13 +42,12 @@ TEST(IDBMojomTraitsTest, IDBKeyBinary) {
   std::unique_ptr<IDBKey> output;
   ASSERT_TRUE(mojom::blink::IDBKey::DeserializeFromMessage(
       std::move(mojo_message), &output));
-  scoped_refptr<SharedBuffer> output_data = output->Binary();
-  Vector<uint8_t> output_vector = output_data->CopyAs<Vector<uint8_t>>();
+  scoped_refptr<base::RefCountedData<Vector<char>>> output_data =
+      output->Binary();
 
   // Verify expectations.
-  ASSERT_EQ(output_data->size(), test_data_size);
-  ASSERT_EQ(output_vector.size(), test_data_size);
-  ASSERT_EQ(input_vector, output_vector);
+  ASSERT_EQ(output_data->data.size(), test_data_size);
+  ASSERT_EQ(test_data, output_data->data);
 }
 
 TEST(IDBMojomTraitsTest, IDBValue) {
@@ -57,13 +56,11 @@ TEST(IDBMojomTraitsTest, IDBValue) {
   wtf_size_t test_data_size = 10000;
   Vector<char> test_data(test_data_size);
   std::generate(test_data.begin(), test_data.end(), rng);
-  scoped_refptr<SharedBuffer> input_data =
-      SharedBuffer::Create(test_data.data(), test_data.size());
-  Vector<uint8_t> input_vector = input_data->CopyAs<Vector<uint8_t>>();
+  Vector<char> input_data = Vector<char>(test_data);
 
   // Verify expectations.
-  ASSERT_EQ(input_data->size(), test_data_size);
-  ASSERT_EQ(input_vector.size(), test_data_size);
+  ASSERT_EQ(input_data.size(), test_data_size);
+  ASSERT_EQ(test_data.size(), test_data_size);
 
   // Create IDBValue mojom message.
   auto input =
@@ -75,13 +72,12 @@ TEST(IDBMojomTraitsTest, IDBValue) {
   std::unique_ptr<IDBValue> output;
   ASSERT_TRUE(mojom::blink::IDBValue::DeserializeFromMessage(
       std::move(mojo_message), &output));
-  scoped_refptr<SharedBuffer> output_data = output->Data();
-  Vector<uint8_t> output_vector = output_data->CopyAs<Vector<uint8_t>>();
+  const std::optional<Vector<char>>& output_data = output->Data();
 
   // Verify expectations.
+  ASSERT_TRUE(output_data);
   ASSERT_EQ(output_data->size(), test_data_size);
-  ASSERT_EQ(output_vector.size(), test_data_size);
-  ASSERT_EQ(input_vector, output_vector);
+  ASSERT_EQ(test_data, *output_data);
 }
 
 }  // namespace blink

@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_binding_for_modules.h"
 
+#include "base/memory/scoped_refptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-shared.h"
 #include "third_party/blink/public/platform/web_blob_info.h"
@@ -46,7 +47,6 @@
 #include "third_party/blink/renderer/modules/indexeddb/idb_value.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
-#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 
 namespace blink {
@@ -215,9 +215,8 @@ std::unique_ptr<IDBValue> CreateIDBValue(v8::Isolate* isolate,
                                          Vector<char>&& wire_bytes,
                                          double primary_key,
                                          const String& key_path) {
-  WebData web_data(SharedBuffer::Create(std::move(wire_bytes)));
-  scoped_refptr<SharedBuffer> data(web_data);
-  auto value = std::make_unique<IDBValue>(data, Vector<WebBlobInfo>());
+  auto value =
+      std::make_unique<IDBValue>(std::move(wire_bytes), Vector<WebBlobInfo>());
   value->SetInjectedPrimaryKey(IDBKey::CreateNumber(primary_key),
                                IDBKeyPath(key_path));
 
@@ -330,14 +329,14 @@ TEST(IDBKeyFromValue, Binary) {
   {
     auto key = ScriptToKey(scope, "new ArrayBuffer(3)");
     EXPECT_EQ(key->GetType(), mojom::IDBKeyType::Binary);
-    EXPECT_EQ(key->Binary()->size(), 3UL);
+    EXPECT_EQ(key->Binary()->data.size(), 3UL);
   }
 
   // Key which is a TypedArray view on an ArrayBuffer.
   {
     auto key = ScriptToKey(scope, "new Uint8Array([0,1,2])");
     EXPECT_EQ(key->GetType(), mojom::IDBKeyType::Binary);
-    EXPECT_EQ(key->Binary()->size(), 3UL);
+    EXPECT_EQ(key->Binary()->data.size(), 3UL);
   }
 }
 

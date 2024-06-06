@@ -30,6 +30,7 @@
 
 #include <atomic>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/debug/stack_trace.h"
@@ -55,7 +56,6 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
-#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 
 namespace blink {
 
@@ -465,9 +465,9 @@ void IDBRequest::HandleResponseAdvanceCursor(
   DCHECK(transit_blob_handles_.empty());
 
   std::unique_ptr<IDBValue> value =
-      optional_value ? std::move(optional_value)
-                     : std::make_unique<IDBValue>(scoped_refptr<SharedBuffer>(),
-                                                  Vector<WebBlobInfo>());
+      optional_value
+          ? std::move(optional_value)
+          : std::make_unique<IDBValue>(std::nullopt, Vector<WebBlobInfo>());
   value->SetIsolate(GetIsolate());
   transaction_->EnqueueResult(std::make_unique<IDBRequestQueueItem>(
       this, std::move(key), std::move(primary_key), std::move(value),
@@ -559,8 +559,7 @@ void IDBRequest::OnOpenCursor(
   if (result->get_value()->value) {
     value = std::move(*result->get_value()->value);
   } else {
-    value = std::make_unique<IDBValue>(scoped_refptr<SharedBuffer>(),
-                                       Vector<WebBlobInfo>());
+    value = std::make_unique<IDBValue>(std::nullopt, Vector<WebBlobInfo>());
   }
 
   value->SetIsolate(GetIsolate());

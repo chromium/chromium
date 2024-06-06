@@ -124,8 +124,10 @@ bool UnionTraits<blink::mojom::IDBKeyDataView, std::unique_ptr<blink::IDBKey>>::
     case blink::mojom::IDBKeyDataView::Tag::kBinary: {
       ArrayDataView<uint8_t> bytes;
       data.GetBinaryDataView(&bytes);
-      *out = blink::IDBKey::CreateBinary(SharedBuffer::Create(
-          reinterpret_cast<const char*>(bytes.data()), bytes.size()));
+      *out = blink::IDBKey::CreateBinary(
+          base::MakeRefCounted<base::RefCountedData<Vector<char>>>(
+              Vector<char>(base::span(
+                  reinterpret_cast<const char*>(bytes.data()), bytes.size()))));
       return true;
     }
     case blink::mojom::IDBKeyDataView::Tag::kString: {
@@ -160,14 +162,14 @@ UnionTraits<blink::mojom::IDBKeyDataView, std::unique_ptr<blink::IDBKey>>::
 Vector<uint8_t>
 UnionTraits<blink::mojom::IDBKeyDataView, std::unique_ptr<blink::IDBKey>>::
     binary(const std::unique_ptr<blink::IDBKey>& key) {
-  return key->Binary()->CopyAs<Vector<uint8_t>>();
+  return Vector<uint8_t>(key->Binary()->data);
 }
 
 // static
 Vector<uint8_t>
 StructTraits<blink::mojom::IDBValueDataView, std::unique_ptr<blink::IDBValue>>::
     bits(const std::unique_ptr<blink::IDBValue>& input) {
-  return input->Data()->CopyAs<Vector<uint8_t>>();
+  return Vector<uint8_t>(*input->Data());
 }
 
 // static
@@ -219,13 +221,10 @@ bool StructTraits<blink::mojom::IDBValueDataView,
   }
 
   if (value_bits.empty()) {
-    *out = std::make_unique<blink::IDBValue>(scoped_refptr<SharedBuffer>(),
+    *out = std::make_unique<blink::IDBValue>(std::nullopt,
                                              Vector<blink::WebBlobInfo>());
     return true;
   }
-
-  scoped_refptr<SharedBuffer> value_buffer =
-      SharedBuffer::Create(std::move(value_bits));
 
   Vector<blink::mojom::blink::IDBExternalObjectPtr> external_objects;
   if (!data.ReadExternalObjects(&external_objects))
@@ -259,7 +258,7 @@ bool StructTraits<blink::mojom::IDBValueDataView,
   }
 
   *out = std::make_unique<blink::IDBValue>(
-      std::move(value_buffer), std::move(value_blob_info),
+      std::move(value_bits), std::move(value_blob_info),
       std::move(file_system_access_tokens));
   return true;
 }

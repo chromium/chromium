@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_INDEXEDDB_IDB_VALUE_H_
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
@@ -15,7 +16,6 @@
 #include "third_party/blink/renderer/modules/indexeddb/idb_key.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_key_path.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -41,7 +41,7 @@ class WebBlobInfo;
 class MODULES_EXPORT IDBValue final {
  public:
   IDBValue(
-      scoped_refptr<SharedBuffer>,
+      std::optional<Vector<char>> data,
       Vector<WebBlobInfo>,
       Vector<mojo::PendingRemote<mojom::blink::FileSystemAccessTransferToken>> =
           {});
@@ -56,7 +56,7 @@ class MODULES_EXPORT IDBValue final {
   bool IsNull() const;
   scoped_refptr<SerializedScriptValue> CreateSerializedValue() const;
   const Vector<WebBlobInfo>& BlobInfo() const { return blob_info_; }
-  const scoped_refptr<SharedBuffer>& Data() const { return data_; }
+  const std::optional<Vector<char>>& Data() const { return data_; }
   const IDBKey* PrimaryKey() const { return primary_key_.get(); }
   const IDBKeyPath& KeyPath() const { return key_path_; }
 
@@ -86,7 +86,7 @@ class MODULES_EXPORT IDBValue final {
   // Replaces this value's wire bytes.
   //
   // Used when unwrapping a value whose wire bytes are stored in a Blob.
-  void SetData(scoped_refptr<SharedBuffer>);
+  void SetData(Vector<char>&&);
 
   // Removes the last Blob from the IDBValue.
   //
@@ -101,9 +101,7 @@ class MODULES_EXPORT IDBValue final {
  private:
   friend class IDBValueUnwrapper;
 
-  // Keep this private to prevent new refs because we manually bookkeep the
-  // memory to V8.
-  scoped_refptr<SharedBuffer> data_;
+  std::optional<Vector<char>> data_;
 
   Vector<WebBlobInfo> blob_info_;
 
