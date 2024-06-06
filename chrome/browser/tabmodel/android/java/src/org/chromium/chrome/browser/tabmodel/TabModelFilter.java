@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ObserverList;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -218,6 +219,8 @@ public abstract class TabModelFilter implements TabModelObserver, TabList {
     // TabModelObserver implementation.
     @Override
     public void didSelectTab(Tab tab, int type, int lastId) {
+        RecordHistogram.recordBooleanHistogram(
+                "TabGroups.SelectedTabInTabGroup", isTabInTabGroup(tab));
         selectTab(tab);
         if (!shouldNotifyObserversOnSetIndex()) return;
         for (TabModelObserver observer : mFilteredObservers) {

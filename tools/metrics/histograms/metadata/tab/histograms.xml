@@ -783,6 +783,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="TabGroups.SelectedTabInTabGroup" enum="Boolean"
+    expires_after="2024-12-30">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    Recorded on Android when a user switches tabs. Records whether the tab that
+    was selected was in a tab group.
+  </summary>
+</histogram>
+
 <histogram name="TabGroups.SpecificsToDataMigration.ParseFailurePercentage"
     units="%" expires_after="2024-12-01">
   <owner>shaktisahu@chromium.org</owner>
