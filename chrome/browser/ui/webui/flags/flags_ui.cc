@@ -38,6 +38,7 @@
 #include "content/public/browser/web_ui_message_handler.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/resources/grit/webui_resources.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_switches.h"
@@ -84,6 +85,15 @@ content::WebUIDataSource* CreateAndAddFlagsUIHTMLSource(Profile* profile) {
   webui::SetupWebUIDataSource(
       source, base::make_span(kFlagsUiResources, kFlagsUiResourcesSize),
       IDR_FLAGS_UI_FLAGS_HTML);
+
+  // Make it possible to test chrome://flags/deprecated
+  source->AddResourcePath("deprecated/test_loader.js",
+                          IDR_WEBUI_JS_TEST_LOADER_JS);
+  source->AddResourcePath("deprecated/test_loader_util.js",
+                          IDR_WEBUI_JS_TEST_LOADER_UTIL_JS);
+  source->AddResourcePath("deprecated/test_loader.html",
+                          IDR_WEBUI_TEST_LOADER_HTML);
+
   return source;
 }
 
@@ -91,8 +101,7 @@ content::WebUIDataSource* CreateAndAddFlagsUIHTMLSource(Profile* profile) {
 // after finishing it the UI can be properly populated. This function is the
 // callback for whether the owner is signed in. It will respectively pick the
 // proper PrefService for the flags interface.
-template <class T>
-void FinishInitialization(base::WeakPtr<T> flags_ui,
+void FinishInitialization(base::WeakPtr<FlagsUI> flags_ui,
                           Profile* profile,
                           FlagsUIHandler* dom_handler,
                           std::unique_ptr<flags_ui::FlagsStorage> storage,
@@ -162,54 +171,29 @@ void FlagsUI::AddStrings(content::WebUIDataSource* source) {
       {"title", IDS_FLAGS_UI_TITLE},
       {"unavailable", IDS_FLAGS_UI_UNAVAILABLE_FEATURE},
       {"searchResultsSingular", IDS_FLAGS_UI_SEARCH_RESULTS_SINGULAR},
-      {"searchResultsPlural", IDS_FLAGS_UI_SEARCH_RESULTS_PLURAL}};
-  source->AddLocalizedStrings(kLocalizedStrings);
-}
+      {"searchResultsPlural", IDS_FLAGS_UI_SEARCH_RESULTS_PLURAL},
 
-// static
-void FlagsDeprecatedUI::AddStrings(content::WebUIDataSource* source) {
-  source->AddString("page-warning", std::string());
-
-  static constexpr webui::LocalizedString kLocalizedStrings[] = {
-      {flags_ui::kFlagsRestartNotice, IDS_FLAGS_UI_RELAUNCH_NOTICE},
-      {"available", IDS_FLAGS_UI_AVAILABLE_FEATURE},
-      {"clear-search", IDS_FLAGS_UI_CLEAR_SEARCH},
-      {"disabled", IDS_FLAGS_UI_DISABLED_FEATURE},
-      {"enabled", IDS_FLAGS_UI_ENABLED_FEATURE},
-      {"experiment-enabled", IDS_FLAGS_UI_EXPERIMENT_ENABLED},
-      {"heading", IDS_DEPRECATED_FEATURES_HEADING},
-      {"no-results", IDS_DEPRECATED_FEATURES_NO_RESULTS},
-      {"not-available-platform", IDS_FLAGS_UI_NOT_AVAILABLE_ON_PLATFORM},
-      {"page-warning-explanation",
+      // Strings that are slightly modified when on chrome://flags/deprecated.
+      {"deprecatedHeading", IDS_DEPRECATED_FEATURES_HEADING},
+      {"deprecatedNoResults", IDS_DEPRECATED_FEATURES_NO_RESULTS},
+      {"deprecatedPageWarningExplanation",
        IDS_DEPRECATED_FEATURES_PAGE_WARNING_EXPLANATION},
-      {"relaunch", IDS_FLAGS_UI_RELAUNCH},
-      {"reset", IDS_FLAGS_UI_PAGE_RESET},
-      {"reset-acknowledged", IDS_FLAGS_UI_RESET_ACKNOWLEDGED},
-      {"search-label", IDS_FLAGS_UI_SEARCH_LABEL},
-      {"search-placeholder", IDS_DEPRECATED_FEATURES_SEARCH_PLACEHOLDER},
-#if BUILDFLAG(IS_CHROMEOS)
-      {"os-flags-link", IDS_FLAGS_UI_OS_FLAGS_LINK},
-      {"os-flags-text1", IDS_FLAGS_UI_OS_FLAGS_TEXT1},
-      {"os-flags-text2", IDS_FLAGS_UI_OS_FLAGS_TEXT2},
-#endif
-      {"title", IDS_DEPRECATED_FEATURES_TITLE},
-      {"unavailable", IDS_FLAGS_UI_UNAVAILABLE_FEATURE},
-      {"searchResultsSingular", IDS_FLAGS_UI_SEARCH_RESULTS_SINGULAR},
-      {"searchResultsPlural", IDS_FLAGS_UI_SEARCH_RESULTS_PLURAL}};
+      {"deprecatedSearchPlaceholder",
+       IDS_DEPRECATED_FEATURES_SEARCH_PLACEHOLDER},
+      {"deprecatedTitle", IDS_DEPRECATED_FEATURES_TITLE}};
   source->AddLocalizedStrings(kLocalizedStrings);
 }
 
-template <class T>
 FlagsUIHandler* InitializeHandler(content::WebUI* web_ui,
                                   Profile* profile,
-                                  base::WeakPtrFactory<T>& weak_factory) {
+                                  base::WeakPtrFactory<FlagsUI>& weak_factory) {
   auto handler_owner = std::make_unique<FlagsUIHandler>();
   FlagsUIHandler* handler = handler_owner.get();
   web_ui->AddMessageHandler(std::move(handler_owner));
 
   about_flags::GetStorage(
-      profile, base::BindOnce(&FinishInitialization<T>,
-                              weak_factory.GetWeakPtr(), profile, handler));
+      profile, base::BindOnce(&FinishInitialization, weak_factory.GetWeakPtr(),
+                              profile, handler));
   return handler;
 }
 
@@ -218,7 +202,6 @@ FlagsUI::FlagsUI(content::WebUI* web_ui)
   Profile* profile = Profile::FromWebUI(web_ui);
   auto* handler = InitializeHandler(web_ui, profile, weak_factory_);
   DCHECK(handler);
-  handler->set_deprecated_features_only(false);
 
   // Set up the about:flags source.
   content::WebUIDataSource* source = CreateAndAddFlagsUIHTMLSource(profile);
@@ -232,23 +215,4 @@ base::RefCountedMemory* FlagsUI::GetFaviconResourceBytes(
     ui::ResourceScaleFactor scale_factor) {
   return ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytesForScale(
       IDR_FLAGS_FAVICON, scale_factor);
-}
-
-FlagsDeprecatedUI::FlagsDeprecatedUI(content::WebUI* web_ui)
-    : WebUIController(web_ui) {
-  Profile* profile = Profile::FromWebUI(web_ui);
-  auto* handler = InitializeHandler(web_ui, profile, weak_factory_);
-  DCHECK(handler);
-  handler->set_deprecated_features_only(true);
-
-  // Set up the about:flags/deprecated source.
-  content::WebUIDataSource* source = CreateAndAddFlagsUIHTMLSource(profile);
-  AddStrings(source);
-}
-
-FlagsDeprecatedUI::~FlagsDeprecatedUI() {}
-
-// static
-bool FlagsDeprecatedUI::IsDeprecatedUrl(const GURL& url) {
-  return url.path() == "/deprecated" || url.path() == "/deprecated/";
 }

@@ -8217,7 +8217,6 @@ test("unit_tests") {
       "../browser/ui/webui/favicon_source_unittest.cc",
       "../browser/ui/webui/feedback/feedback_ui_unittest.cc",
       "../browser/ui/webui/flags/flags_ui_handler_unittest.cc",
-      "../browser/ui/webui/flags/flags_ui_unittest.cc",
       "../browser/ui/webui/history/browsing_history_handler_unittest.cc",
       "../browser/ui/webui/history/foreign_session_handler_unittest.cc",
       "../browser/ui/webui/history_clusters/history_clusters_handler_unittest.cc",

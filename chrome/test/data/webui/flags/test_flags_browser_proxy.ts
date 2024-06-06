@@ -29,6 +29,7 @@ export class TestFlagsBrowserProxy extends TestBrowserProxy implements
       'crosUrlFlagsRedirect',
       // </if>
       'resetAllFlags',
+      'requestDeprecatedFeatures',
       'requestExperimentalFeatures',
       'enableExperimentalFeature',
       'selectExperimentalFeature',
@@ -53,6 +54,11 @@ export class TestFlagsBrowserProxy extends TestBrowserProxy implements
 
   resetAllFlags() {
     this.methodCalled('resetAllFlags');
+  }
+
+  requestDeprecatedFeatures() {
+    this.methodCalled('requestDeprecatedFeatures');
+    return Promise.resolve(structuredClone(this.featureData));
   }
 
   requestExperimentalFeatures() {

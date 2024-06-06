@@ -202,6 +202,10 @@ export class FlagsAppElement extends CustomElement {
   private lastFocused: HTMLElement|null = null;
   private restartButton: HTMLButtonElement =
       this.getRequiredElement<HTMLButtonElement>('#experiment-restart-button');
+
+  // Whether the current URL is chrome://flags/deprecated. Only updated on
+  // initial load.
+  private isFlagsDeprecatedUrl_: boolean = false;
   // </if>
 
   tabs: Tab[] = [
@@ -218,6 +222,12 @@ export class FlagsAppElement extends CustomElement {
   ];
 
   connectedCallback() {
+    // <if expr="not is_ios">
+    const pathname = new URL(window.location.href).pathname;
+    this.isFlagsDeprecatedUrl_ =
+        ['/deprecated', '/deprecated/test_loader.html'].includes(pathname);
+    // </if>
+
     // Get and display the data upon loading.
     this.requestExperimentalFeaturesData();
     // There is no restart button on iOS.
@@ -227,6 +237,24 @@ export class FlagsAppElement extends CustomElement {
     FocusOutlineManager.forDocument(document);
     // Update the highlighted flag when the hash changes.
     window.addEventListener('hashchange', () => this.highlightReferencedFlag);
+
+    // <if expr="not is_ios">
+    if (this.isFlagsDeprecatedUrl_) {
+      // Update strings that are slightly different when on
+      // chrome://flags/deprecated
+      document.title = loadTimeData.getString('deprecatedTitle');
+      this.getRequiredElement('.section-header-title').textContent =
+          loadTimeData.getString('deprecatedHeading');
+      this.getRequiredElement('.blurb-warning').textContent = '';
+      this.getRequiredElement('.blurb-warning + span').textContent =
+          loadTimeData.getString('deprecatedPageWarningExplanation');
+      this.getRequiredElement<HTMLInputElement>('#search').placeholder =
+          loadTimeData.getString('deprecatedSearchPlaceholder');
+      for (const element of this.$all('.no-match')) {
+        element.textContent = loadTimeData.getString('deprecatedNoResults');
+      }
+    }
+    // </if>
   }
 
   setAnnounceStatusDelayMsForTesting(delay: number) {
@@ -387,9 +415,17 @@ export class FlagsAppElement extends CustomElement {
    * Gets details and configuration about the available features. The
    * |returnExperimentalFeatures()| will be called with reply.
    */
-  private requestExperimentalFeaturesData() {
-    FlagsBrowserProxyImpl.getInstance().requestExperimentalFeatures().then(
-        this.returnExperimentalFeatures.bind(this));
+  private async requestExperimentalFeaturesData() {
+    // <if expr="not is_ios">
+    const data = this.isFlagsDeprecatedUrl_ ?
+        await FlagsBrowserProxyImpl.getInstance().requestDeprecatedFeatures() :
+        await FlagsBrowserProxyImpl.getInstance().requestExperimentalFeatures();
+    // </if>
+    // <if expr="is_ios">
+    const data =
+        await FlagsBrowserProxyImpl.getInstance().requestExperimentalFeatures();
+    // </if>
+    this.returnExperimentalFeatures(data);
   }
 
   /** Reset all flags to their default values and refresh the UI. */

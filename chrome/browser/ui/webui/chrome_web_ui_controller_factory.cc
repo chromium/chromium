@@ -433,9 +433,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<chromeos::DeviceLogUI>;
   if (url.host_piece() == chrome::kChromeUIDownloadInternalsHost)
     return &NewWebUI<DownloadInternalsUI>;
-  if (url.host_piece() == chrome::kChromeUIFlagsHost &&
-      FlagsDeprecatedUI::IsDeprecatedUrl(url))
-    return &NewWebUI<FlagsDeprecatedUI>;
   if (url.host_piece() == chrome::kChromeUIFlagsHost) {
     return &NewWebUI<FlagsUI>;
   }

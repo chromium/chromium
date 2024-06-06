@@ -39,20 +39,4 @@ class FlagsUI : public content::WebUIController {
  private:
   base::WeakPtrFactory<FlagsUI> weak_factory_{this};
 };
-
-class FlagsDeprecatedUI : public content::WebUIController {
- public:
-  explicit FlagsDeprecatedUI(content::WebUI* web_ui);
-
-  FlagsDeprecatedUI(const FlagsDeprecatedUI&) = delete;
-  FlagsDeprecatedUI& operator=(const FlagsDeprecatedUI&) = delete;
-
-  ~FlagsDeprecatedUI() override;
-
-  static void AddStrings(content::WebUIDataSource* source);
-  static bool IsDeprecatedUrl(const GURL& url);
-
- private:
-  base::WeakPtrFactory<FlagsDeprecatedUI> weak_factory_{this};
-};
 #endif  // CHROME_BROWSER_UI_WEBUI_FLAGS_FLAGS_UI_H_
