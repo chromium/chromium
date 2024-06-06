@@ -577,20 +577,39 @@ def AutoUpdate(args):
     upstream_branch = args.upstream_branch
     CheckoutInitialBranch(upstream_branch)
 
-    crate_ids = FindUpdateableCrates()
-    if not crate_ids:
+    todo_crate_ids = FindUpdateableCrates()
+    if not todo_crate_ids:
         print("There were no updates - exiting early...")
         return 0
 
     update_sizes = dict()
-    for crate_id in crate_ids:
+    for crate_id in todo_crate_ids:
         update_sizes[crate_id] = FindSizeOfCrateUpdate(crate_id)
 
-    crate_ids = sorted(crate_ids, key=lambda crate_id: update_sizes[crate_id])
-    print(f"** Updating {len(crate_ids)} crates! "
-          f"Expect this to take about {len(crate_ids) * 2} minutes.")
-    for crate_id in crate_ids:
-        upstream_branch = UpdateCrate(args, crate_id, upstream_branch)
+    todo_crate_ids = sorted(todo_crate_ids,
+                            key=lambda crate_id: update_sizes[crate_id])
+    print(f"** Updating {len(todo_crate_ids)} crates! "
+          f"Expect this to take about {len(todo_crate_ids) * 2} minutes.")
+    while todo_crate_ids:
+        old_crate_ids = GetCurrentCrateIds()
+        for crate_id in todo_crate_ids:
+            upstream_branch = UpdateCrate(args, crate_id, upstream_branch)
+
+        new_crate_ids = GetCurrentCrateIds()
+        diff = DiffCrateIds(old_crate_ids, new_crate_ids)
+        actually_updated_crate_ids = set([u.old_crate_id for u in diff.updates])
+        missed_crate_ids = [
+            crate_id for crate_id in todo_crate_ids
+            if crate_id not in actually_updated_crate_ids
+        ]
+        if missed_crate_ids:
+            if len(missed_crate_ids) == len(todo_crate_ids):
+                print("ERROR: Failed to make progress with these crates:")
+                print(f"{', '.join(todo_crate_ids)}")
+                raise RuntimeError("Failed to make progress")
+            else:
+                print(f"** Retrying {len(missed_crate_ids)} crates.")
+        todo_crate_ids = missed_crate_ids
 
 
 def SingleCrate(args):
