@@ -256,7 +256,10 @@ export class MockCdpNetworkEvents {
       statusCode: 302,
       headersText:
         'HTTP/1.1 302 Found\r\nlocation: http://localhost:37363/empty.html\r\nDate: Mon, 15 Apr 2024 11:53:20 GMT\r\nConnection: keep-alive\r\nTransfer-Encoding: chunked\r\n\r\n',
-      cookiePartitionKey: 'http://localhost',
+      cookiePartitionKey: {
+        topLevelSite: 'http://localhost',
+        hasCrossSiteAncestor: false,
+      },
       cookiePartitionKeyOpaque: false,
       exemptedCookies: [],
     });

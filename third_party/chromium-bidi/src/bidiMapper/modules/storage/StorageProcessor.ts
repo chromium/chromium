@@ -77,7 +77,7 @@ export class StorageProcessor {
         // are returned.
         (c) =>
           partitionKey.sourceOrigin === undefined ||
-          c.partitionKey === partitionKey.sourceOrigin
+          c.partitionKey?.topLevelSite === partitionKey.sourceOrigin
       )
       .filter((cdpCookie) => {
         const bidiCookie = cdpToBiDiCookie(cdpCookie);
@@ -126,7 +126,7 @@ export class StorageProcessor {
         // are returned.
         (c) =>
           partitionKey.sourceOrigin === undefined ||
-          c.partitionKey === partitionKey.sourceOrigin
+          c.partitionKey?.topLevelSite === partitionKey.sourceOrigin
       )
       .map((c) => cdpToBiDiCookie(c))
       .filter((c) => this.#matchCookie(c, params.filter));

@@ -428,7 +428,10 @@ async def test_cookies_set_params_cookie_cdp_specific_fields(
                 SOME_COOKIE_NAME, SOME_COOKIE_VALUE, SOME_DOMAIN, secure=True)
             | {
                 # CDP-specific fields.
-                'goog:partitionKey': SOME_ORIGIN_WITHOUT_PORT,
+                'goog:partitionKey': {
+                    'topLevelSite': SOME_ORIGIN_WITHOUT_PORT,
+                    'hasCrossSiteAncestor': False,
+                },
                 'goog:priority': 'High',
                 # `someParty` is not set for whatever reason.
                 # TODO: add test for `sameParty: true`.
