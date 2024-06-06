@@ -71,47 +71,6 @@ size_t NumPlanes(DXGI_FORMAT dxgi_format) {
   }
 }
 
-viz::SharedImageFormat VideoPlaneFormat(DXGI_FORMAT dxgi_format, size_t plane) {
-  DCHECK_LT(plane, NumPlanes(dxgi_format));
-  viz::SharedImageFormat format;
-  switch (dxgi_format) {
-    case DXGI_FORMAT_NV12:
-      // Y plane is accessed as R8 and UV plane is accessed as R8G8 in D3D.
-      return plane == 0 ? viz::SinglePlaneFormat::kR_8
-                        : viz::SinglePlaneFormat::kRG_88;
-    case DXGI_FORMAT_P010:
-      // Y plane is accessed as R16 and UV plane is accessed as R16G16 in D3D.
-      return plane == 0 ? viz::SinglePlaneFormat::kR_16
-                        : viz::SinglePlaneFormat::kRG_1616;
-    case DXGI_FORMAT_B8G8R8A8_UNORM:
-      return viz::SinglePlaneFormat::kBGRA_8888;
-    case DXGI_FORMAT_R10G10B10A2_UNORM:
-      return viz::SinglePlaneFormat::kRGBA_1010102;
-    case DXGI_FORMAT_R16G16B16A16_FLOAT:
-      return viz::SinglePlaneFormat::kRGBA_F16;
-    default:
-      NOTREACHED_NORETURN() << "Unsupported DXGI video format: " << dxgi_format;
-  }
-}
-
-gfx::Size VideoPlaneSize(DXGI_FORMAT dxgi_format,
-                         const gfx::Size& size,
-                         size_t plane) {
-  DCHECK_LT(plane, NumPlanes(dxgi_format));
-  switch (dxgi_format) {
-    case DXGI_FORMAT_NV12:
-    case DXGI_FORMAT_P010:
-      // Y plane is full size and UV plane is accessed as half size in D3D.
-      return plane == 0 ? size : gfx::Size(size.width() / 2, size.height() / 2);
-    case DXGI_FORMAT_B8G8R8A8_UNORM:
-    case DXGI_FORMAT_R10G10B10A2_UNORM:
-    case DXGI_FORMAT_R16G16B16A16_FLOAT:
-      return size;
-    default:
-      NOTREACHED_NORETURN() << "Unsupported DXGI video format: " << dxgi_format;
-  }
-}
-
 // `row_bytes` is the number of bytes that need to be copied in each row, which
 // can be smaller than `source_stride` or `dest_stride`.
 void CopyPlane(const uint8_t* source_memory,
@@ -306,63 +265,6 @@ std::unique_ptr<D3DImageBacking> D3DImageBacking::Create(
       array_slice, plane_index, /*swap_chain=*/nullptr,
       /*is_back_buffer=*/false, use_update_subresource1));
   return backing;
-}
-
-// static
-std::vector<std::unique_ptr<SharedImageBacking>>
-D3DImageBacking::CreateFromVideoTexture(
-    base::span<const Mailbox> mailboxes,
-    DXGI_FORMAT dxgi_format,
-    const gfx::Size& size,
-    uint32_t usage,
-    unsigned array_slice,
-    const GLFormatCaps& gl_format_caps,
-    Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
-    scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state) {
-  CHECK(d3d11_texture);
-  CHECK_EQ(mailboxes.size(), NumPlanes(dxgi_format));
-
-  // DXGI shared handle is required for WebGPU/Dawn/D3D12 interop.
-  const bool has_webgpu_usage = usage & (SHARED_IMAGE_USAGE_WEBGPU_READ |
-                                         SHARED_IMAGE_USAGE_WEBGPU_WRITE);
-  CHECK(!has_webgpu_usage || dxgi_shared_handle_state);
-
-  std::vector<std::unique_ptr<SharedImageBacking>> shared_images(
-      NumPlanes(dxgi_format));
-  for (size_t plane_index = 0; plane_index < shared_images.size();
-       plane_index++) {
-    const auto& mailbox = mailboxes[plane_index];
-
-    const auto plane_format = VideoPlaneFormat(dxgi_format, plane_index);
-    const auto plane_size = VideoPlaneSize(dxgi_format, size, plane_index);
-
-    // Shared image does not need to store the colorspace since it is already
-    // stored on the VideoFrame which is provided upon presenting the overlay.
-    // To prevent the developer from mistakenly using it, provide the invalid
-    // value from default-construction.
-    constexpr gfx::ColorSpace kInvalidColorSpace;
-
-    // The target must be GL_TEXTURE_EXTERNAL_OES as the texture is not created
-    // with D3D11_BIND_RENDER_TARGET bind flag and so it cannot be bound to the
-    // framebuffer. To prevent Skia trying to bind it for read pixels, we need
-    // it to be GL_TEXTURE_EXTERNAL_OES.
-    constexpr GLenum kTextureTarget = GL_TEXTURE_EXTERNAL_OES;
-
-    // Do not cache GL textures in the backing since it's owned by the video
-    // decoder, and there could be no GL context to MakeCurrent in the
-    // destructor.
-    shared_images[plane_index] = base::WrapUnique(new D3DImageBacking(
-        mailbox, plane_format, plane_size, kInvalidColorSpace,
-        kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage, "VideoTexture",
-        d3d11_texture, dxgi_shared_handle_state, gl_format_caps, kTextureTarget,
-        array_slice, plane_index));
-    if (!shared_images[plane_index])
-      return {};
-
-    shared_images[plane_index]->SetCleared();
-  }
-
-  return shared_images;
 }
 
 D3DImageBacking::D3DImageBacking(

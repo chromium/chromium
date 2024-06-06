@@ -80,18 +80,6 @@ class GPU_GLES2_EXPORT D3DImageBacking final
       const GLFormatCaps& gl_format_caps,
       bool is_back_buffer);
 
-  // Helper used by D3D11VideoDecoder to create backings directly.
-  static std::vector<std::unique_ptr<SharedImageBacking>>
-  CreateFromVideoTexture(
-      base::span<const Mailbox> mailboxes,
-      DXGI_FORMAT dxgi_format,
-      const gfx::Size& size,
-      uint32_t usage,
-      unsigned array_slice,
-      const GLFormatCaps& gl_format_caps,
-      Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
-      scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state);
-
   D3DImageBacking(const D3DImageBacking&) = delete;
   D3DImageBacking& operator=(const D3DImageBacking&) = delete;
 
