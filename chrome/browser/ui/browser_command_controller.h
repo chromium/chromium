@@ -207,10 +207,10 @@ class BrowserCommandController : public CommandUpdater,
   void UpdateCommandsForTabStripStateChanged();
 
   // Returns the relevant action for the current browser for a given
-  // |action_id|.
+  // `action_id`.
   actions::ActionItem* FindAction(actions::ActionId action_id);
 
-  // Updates the enabled status for both |command_id| and |action_id|, given
+  // Updates the enabled status for both `command_id` and `action_id`, given
   // that it exists.
   void UpdateCommandAndActionEnabled(int command_id,
                                      actions::ActionId action_id,
