@@ -159,10 +159,8 @@ class CONTENT_EXPORT IndexedDBContextImpl
   // unit tests.
   void ForceSingleThreadForTesting() { force_single_thread_ = true; }
   const base::FilePath GetFirstPartyDataPathForTesting() const;
-  IndexedDBBucketContext* GetBucketContextForTesting(
+  base::SequenceBound<IndexedDBBucketContext>* GetBucketContextForTesting(
       const storage::BucketId& id);
-  base::SequenceBound<IndexedDBBucketContext>*
-  GetShardedBucketContextForTesting(const storage::BucketId& id);
 
  private:
   friend class IndexedDBTest;
@@ -362,11 +360,8 @@ class CONTENT_EXPORT IndexedDBContextImpl
   mojo::PendingReceiver<storage::mojom::MockFailureInjector>
       pending_failure_injector_;
 
-  // Only one of these two maps should be non-empty.
-  std::map<storage::BucketId, std::unique_ptr<IndexedDBBucketContext>>
-      bucket_contexts_;
   std::map<storage::BucketId, base::SequenceBound<IndexedDBBucketContext>>
-      bucket_contexts_sharded_;
+      bucket_contexts_;
 
   IndexedDBBucketContext::InstanceClosure for_each_bucket_context_;
 

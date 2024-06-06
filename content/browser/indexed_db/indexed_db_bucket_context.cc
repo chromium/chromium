@@ -628,16 +628,10 @@ void IndexedDBBucketContext::StartMetadataRecording() {
   RecordInternalsSnapshot();  // Capture the initial snapshot.
 }
 
-void IndexedDBBucketContext::StopMetadataRecording(
-    base::OnceCallback<void(std::vector<storage::mojom::IdbBucketMetadataPtr>)>
-        callback) {
+std::vector<storage::mojom::IdbBucketMetadataPtr>
+IndexedDBBucketContext::StopMetadataRecording() {
   metadata_recording_enabled_ = false;
-
-  std::vector<storage::mojom::IdbBucketMetadataPtr> result;
-  std::move(metadata_recording_buffer_.begin(),
-            metadata_recording_buffer_.end(), std::back_inserter(result));
-  metadata_recording_buffer_.clear();
-  std::move(callback).Run(std::move(result));
+  return std::move(metadata_recording_buffer_);
 }
 
 int64_t IndexedDBBucketContext::GetInMemorySize() {

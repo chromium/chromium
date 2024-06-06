@@ -207,11 +207,7 @@ void IndexedDBInternalsUI::StartMetadataRecording(
   }
 
   control->StartMetadataRecording(
-      bucket_id, base::BindOnce(
-                     [](StartMetadataRecordingCallback callback) {
-                       std::move(callback).Run(std::nullopt);
-                     },
-                     std::move(callback)));
+      bucket_id, base::BindOnce(std::move(callback), std::nullopt));
 }
 void IndexedDBInternalsUI::StopMetadataRecording(
     storage::BucketId bucket_id,
@@ -225,13 +221,7 @@ void IndexedDBInternalsUI::StopMetadataRecording(
   }
 
   control->StopMetadataRecording(
-      bucket_id,
-      base::BindOnce(
-          [](StopMetadataRecordingCallback callback,
-             std::vector<storage::mojom::IdbBucketMetadataPtr> data) {
-            std::move(callback).Run(std::nullopt, std::move(data));
-          },
-          std::move(callback)));
+      bucket_id, base::BindOnce(std::move(callback), std::nullopt));
 }
 
 void IndexedDBInternalsUI::OnDownloadDataReady(

@@ -199,10 +199,11 @@ class CONTENT_EXPORT IndexedDBBucketContext
   // Normally, in-memory bucket contexts never self-close. If this is called
   // with `doom` set to true, they will self-close.
   void ForceClose(bool doom);
+
+  // Starts capturing state data for indexeddb-internals. The data will be
+  // returned the next time `StopMetadataRecording()` is invoked.
   void StartMetadataRecording();
-  void StopMetadataRecording(
-      base::OnceCallback<
-          void(std::vector<storage::mojom::IdbBucketMetadataPtr>)> callback);
+  std::vector<storage::mojom::IdbBucketMetadataPtr> StopMetadataRecording();
 
   int64_t GetInMemorySize();
 

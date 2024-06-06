@@ -484,18 +484,14 @@ class IndexedDBTest
 
   // This will assert if `ForceSingleThreadForTesting()` has not been called.
   IndexedDBBucketContext* GetBucketContext(storage::BucketId id) {
-    if (BackingStoresSharded()) {
-      auto* sequence_bound = context_->GetShardedBucketContextForTesting(id);
-      if (!sequence_bound) {
-        return nullptr;
-      }
-      base::test::TestFuture<IndexedDBBucketContext*> future;
-      sequence_bound->AsyncCall(&IndexedDBBucketContext::GetReferenceForTesting)
-          .Then(future.GetCallback());
-      return future.Get();
+    auto* sequence_bound = context_->GetBucketContextForTesting(id);
+    if (!sequence_bound) {
+      return nullptr;
     }
-
-    return context_->GetBucketContextForTesting(id);
+    base::test::TestFuture<IndexedDBBucketContext*> future;
+    sequence_bound->AsyncCall(&IndexedDBBucketContext::GetReferenceForTesting)
+        .Then(future.GetCallback());
+    return future.Get();
   }
 
   storage::BucketInfo GetOrCreateBucket(
@@ -1526,26 +1522,15 @@ TEST_P(IndexedDBTestFirstOrThirdParty, ForceCloseOpenDatabasesOnDelete) {
 TEST_P(IndexedDBTestFirstOrThirdParty, ForceCloseOpenDatabasesOnCommitFailure) {
   storage::BucketInfo bucket_info;
   VerifyForcedClosedCalled(
-      BackingStoresSharded()
-          ? base::BindOnce(
-                [](IndexedDBContextImpl* context,
-                   storage::BucketInfo* bucket_info) {
-                  context->GetShardedBucketContextForTesting(bucket_info->id)
-                      ->AsyncCall(&IndexedDBBucketContext::OnDatabaseError)
-                      .WithArgs(leveldb::Status::NotSupported(
-                                    "operation not supported"),
-                                std::string());
-                },
-                context(), &bucket_info)
-          : base::BindOnce(
-                [](IndexedDBContextImpl* context,
-                   storage::BucketInfo* bucket_info) {
-                  context->GetBucketContextForTesting(bucket_info->id)
-                      ->OnDatabaseError(leveldb::Status::NotSupported(
-                                            "operation not supported"),
-                                        {});
-                },
-                context(), &bucket_info),
+      base::BindOnce(
+          [](IndexedDBContextImpl* context, storage::BucketInfo* bucket_info) {
+            context->GetBucketContextForTesting(bucket_info->id)
+                ->AsyncCall(&IndexedDBBucketContext::OnDatabaseError)
+                .WithArgs(
+                    leveldb::Status::NotSupported("operation not supported"),
+                    std::string());
+          },
+          context(), &bucket_info),
       &bucket_info);
 }
 
@@ -1936,14 +1921,13 @@ TEST_P(IndexedDBTest, InMemoryFactoriesStay) {
       bucket_locator.id,
       storage::mojom::ForceCloseReason::FORCE_CLOSE_INTERNALS_PAGE,
       base::DoNothing());
-  if (BackingStoresSharded()) {
-    // Verify the in-memory factory sticks around. Since it would be destroyed
-    // asynchronously, there's no reliable point in time to verify that
-    // destruction *hasn't* happened, so just wait a bit before verifying.
-    RunPostedTasks();
-    RunPostedTasks();
-    RunPostedTasks();
-  }
+  // Verify the in-memory factory sticks around. Since it would be destroyed
+  // asynchronously, there's no reliable point in time to verify that
+  // destruction *hasn't* happened, so just wait a bit before verifying.
+  RunPostedTasks();
+  RunPostedTasks();
+  RunPostedTasks();
+
   VerifyBucketContext(bucket_locator.id, /*expected_context_exists=*/true,
                       /*expected_backing_store_exists=*/true);
 
@@ -2016,33 +2000,27 @@ TEST_P(IndexedDBTest, CloseThenAddReceiver) {
   // should trigger the destruction of the bucket context.
   factory_remote1.reset();
 
-  if (BackingStoresSharded()) {
-    // However, the bucket context still exists for now because shutdown is not
-    // synchronous.
-    ASSERT_TRUE(context()->BucketContextExists(bucket_locator.id));
+  // However, the bucket context still exists for now because shutdown is not
+  // synchronous.
+  ASSERT_TRUE(context()->BucketContextExists(bucket_locator.id));
 
-    // Bind another IDB factory. It's important that this is called
-    // synchronously because it will initially attempt to bind to the existing
-    // bucket context above, but that fails in
-    // IndexedDBBucketContext::AddReceiver().
-    mojo::Remote<blink::mojom::IDBFactory> factory_remote2;
-    BindIndexedDBFactory(
-        mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>(),
-        factory_remote2.BindNewPipeAndPassReceiver(),
-        ToBucketInfo(bucket_locator));
+  // Bind another IDB factory. It's important that this is called
+  // synchronously because it will initially attempt to bind to the existing
+  // bucket context above, but that fails in
+  // IndexedDBBucketContext::AddReceiver().
+  mojo::Remote<blink::mojom::IDBFactory> factory_remote2;
+  BindIndexedDBFactory(
+      mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>(),
+      factory_remote2.BindNewPipeAndPassReceiver(),
+      ToBucketInfo(bucket_locator));
 
-    // Round trip a message through the new mojo pipe to verify that it is set
-    // up correctly.
-    factory_remote2.FlushForTesting();
+  // Round trip a message through the new mojo pipe to verify that it is set
+  // up correctly.
+  factory_remote2.FlushForTesting();
 
-    // It would be nice to re-verify that the new BucketContext is not the same
-    // as the old one, but there's no good way to identify them through mojo and
-    // no guarantee their memory addresses are different either.
-  } else {
-    ASSERT_TRUE(context()->BucketContextExists(bucket_locator.id));
-    RunPostedTasks();
-    ASSERT_FALSE(context()->BucketContextExists(bucket_locator.id));
-  }
+  // It would be nice to re-verify that the new BucketContext is not the same
+  // as the old one, but there's no good way to identify them through mojo and
+  // no guarantee their memory addresses are different either.
 }
 
 // Tests that the backing store is closed when the connection is closed during
