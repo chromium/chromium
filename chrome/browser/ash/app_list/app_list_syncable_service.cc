@@ -72,10 +72,6 @@
 #include "extensions/common/constants.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "chrome/browser/web_applications/preinstalled_web_apps/container.h"
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
 using syncer::SyncChange;
 
 namespace app_list {

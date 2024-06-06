@@ -14,10 +14,6 @@
 #include "content/public/browser/browser_context.h"
 #include "extensions/common/constants.h"
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "chrome/browser/web_applications/preinstalled_web_apps/container.h"
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
 namespace {
 
 bool ShouldAddHelpApp(content::BrowserContext* browser_context) {

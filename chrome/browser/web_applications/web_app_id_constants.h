@@ -27,6 +27,11 @@ inline constexpr char kCameraAppId[] = "njfbnohfdkmbmnjapinfcopialeghnmh";
 //     "https://canvas.apps.chrome/"))
 inline constexpr char kCanvasAppId[] = "ieailfmhaghpphfffooibmlghaeopach";
 
+// Generated as: web_app::GenerateAppIdFromManifestId(
+//     web_app::GenerateManifestIdFromStartUrlOnly(GURL(
+//         "https://gemini.google.com/")));
+inline constexpr char kContainerAppId[] = "caidcmannjgahlnbpmidmiecjcoiiigg";
+
 // Generated as: web_app::GenerateAppId(/*manifest_id=*/std::nullopt, GURL(
 //     "chrome-untrusted://crosh/"))
 inline constexpr char kCroshAppId[] = "cgfnfgkafmcdkdgilmojlnaadileaach";

@@ -12,12 +12,6 @@
 
 namespace web_app {
 
-// TODO(http://b/330737988): Move to `web_app_id_constants.h`.
-// Generated as: web_app::GenerateAppIdFromManifestId(
-//     web_app::GenerateManifestIdFromStartUrlOnly(GURL(
-//         "https://gemini.google.com/")));
-inline constexpr char kContainerAppId[] = "caidcmannjgahlnbpmidmiecjcoiiigg";
-
 // Returns the config for preinstalling the container app.
 ExternalInstallOptions GetConfigForContainer(
     const std::optional<DeviceInfo>& device_info);

@@ -15,10 +15,6 @@
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "extensions/common/constants.h"
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/web_applications/preinstalled_web_apps/container.h"
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS)
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"

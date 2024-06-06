@@ -61,10 +61,6 @@
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "extensions/common/constants.h"
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "chrome/browser/web_applications/preinstalled_web_apps/container.h"
-#endif  // GOOGLE_CHROME_BRANDING
-
 namespace {
 
 // Returns a result after `lhs` and before `rhs` if they are valid, else returns
