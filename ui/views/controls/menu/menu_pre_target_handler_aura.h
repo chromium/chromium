@@ -50,6 +50,9 @@ class VIEWS_EXPORT MenuPreTargetHandlerAura
   void OnCancelMode(ui::CancelModeEvent* event) override;
   void OnKeyEvent(ui::KeyEvent* event) override;
 
+  // Return true, if the key event is supposed to perform some task.
+  bool ShouldCancelMenuForEvent(const ui::KeyEvent& event);
+
  private:
   void Cleanup();
 
