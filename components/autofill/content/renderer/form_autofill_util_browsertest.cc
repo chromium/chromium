@@ -552,6 +552,14 @@ TEST_F(FormAutofillUtilsTest, GetButtonTitles_NoCache) {
   EXPECT_EQ(expected, actual);
 }
 
+TEST_F(FormAutofillUtilsTest, GetButtonTitles_NoForm) {
+  // Attempting to get button titles from a null form should produce an empty
+  // list and not crash.
+  WebFormElement form;
+  ASSERT_FALSE(form);
+  EXPECT_EQ(GetButtonTitles(form, /*button_titles_cache=*/nullptr).size(), 0u);
+}
+
 TEST_F(FormAutofillUtilsTest, IsEnabled) {
   LoadHTML(
       "<input type='text' id='name1'>"
