@@ -551,7 +551,7 @@ void MaybeRegisterChromeFeaturePromos(
           feature_engagement::
               kIPHExplicitBrowserSigninPreferenceRememberedFeature,
           kToolbarAvatarButtonElementId,
-          IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_IPH_TEXT_SIGNIN,
+          IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_IPH_TEXT_SIGNIN_REMINDER,
           IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_IPH_SETTINGS_BUTTON,
           base::BindRepeating([](ui::ElementContext ctx,
                                  user_education::FeaturePromoHandle
@@ -564,7 +564,7 @@ void MaybeRegisterChromeFeaturePromos(
             params.bubble_anchor_id = kToolbarAvatarButtonElementId;
             params.bubble_arrow = user_education::HelpBubbleArrow::kTopRight;
             params.bubble_text = l10n_util::GetStringUTF16(
-                IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_IPH_TEXT_SIGNIN);
+                IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_IPH_TEXT_SIGNIN_REMINDER);
             ShowPromoInPage::Start(browser, std::move(params));
             chrome::ShowSettingsSubPage(browser, chrome::kSyncSetupSubPage);
             base::RecordAction(
@@ -574,7 +574,8 @@ void MaybeRegisterChromeFeaturePromos(
           .SetPromoSubtype(user_education::FeaturePromoSpecification::
                                PromoSubtype::kKeyedNotice)
           .SetBubbleTitleText(
-              IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_IPH_TITLE_SIGNIN)
+              IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_IPH_TITLE_SIGNIN_REMINDER)
+          .SetBubbleIcon(&vector_icons::kCelebrationIcon)
           .SetCustomActionIsDefault(false)));
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 
