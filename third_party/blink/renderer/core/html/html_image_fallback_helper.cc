@@ -189,6 +189,13 @@ class HTMLAltTextImageElement : public HTMLImageElement {
 
  private:
   void ShowBrokenImageIcon(ComputedStyleBuilder& builder) {
+    // See AdjustStyleForDisplay() in style_adjuster.cc.
+    if (builder.IsInInlinifyingDisplay()) {
+      builder.SetDisplay(EDisplay::kInline);
+      builder.SetFloating(EFloat::kNone);
+      return;
+    }
+
     // Note that floating elements are blockified by StyleAdjuster.
     builder.SetDisplay(EDisplay::kBlock);
 
