@@ -85,6 +85,12 @@ export class NetworkProcessor {
       NetworkProcessor.parseUrlString(params.url);
     }
 
+    if (params.method !== undefined) {
+      if (!NetworkProcessor.isMethodValid(params.method)) {
+        throw new InvalidArgumentException(`Method '${method}' is invalid.`);
+      }
+    }
+
     if (params.headers) {
       NetworkProcessor.validateHeaders(params.headers);
     }
@@ -344,6 +350,11 @@ export class NetworkProcessor {
         );
       }
     }
+  }
+
+  static isMethodValid(method: string) {
+    // https://httpwg.org/specs/rfc9110.html#method.overview
+    return /^[!#$%&'*+\-.^_`|~a-zA-Z\d]+$/.test(method);
   }
 
   /**

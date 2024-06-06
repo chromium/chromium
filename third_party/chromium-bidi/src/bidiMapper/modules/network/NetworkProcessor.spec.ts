@@ -174,4 +174,19 @@ describe('NetworkProcessor', () => {
       ]);
     });
   });
+
+  describe('isMethodValid', () => {
+    it('validates method according to the HTTP spec', () => {
+      expect(NetworkProcessor.isMethodValid('GET')).to.be.true;
+      expect(NetworkProcessor.isMethodValid('DELETE')).to.be.true;
+      expect(NetworkProcessor.isMethodValid('1PUT')).to.be.true;
+      expect(NetworkProcessor.isMethodValid('*')).to.be.true;
+      expect(NetworkProcessor.isMethodValid('-')).to.be.true;
+      expect(NetworkProcessor.isMethodValid('{')).to.be.false;
+      expect(NetworkProcessor.isMethodValid('GET{')).to.be.false;
+      expect(NetworkProcessor.isMethodValid('\\')).to.be.false;
+      expect(NetworkProcessor.isMethodValid('"')).to.be.false;
+      expect(NetworkProcessor.isMethodValid('')).to.be.false;
+    });
+  });
 });
