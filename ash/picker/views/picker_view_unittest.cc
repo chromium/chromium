@@ -14,17 +14,21 @@
 #include "ash/picker/views/picker_category_type.h"
 #include "ash/picker/views/picker_category_view.h"
 #include "ash/picker/views/picker_contents_view.h"
+#include "ash/picker/views/picker_emoji_bar_view.h"
+#include "ash/picker/views/picker_emoji_item_view.h"
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_search_field_view.h"
 #include "ash/picker/views/picker_search_results_view.h"
 #include "ash/picker/views/picker_section_list_view.h"
 #include "ash/picker/views/picker_section_view.h"
+#include "ash/picker/views/picker_symbol_item_view.h"
 #include "ash/picker/views/picker_view_delegate.h"
 #include "ash/picker/views/picker_widget.h"
 #include "ash/picker/views/picker_zero_state_view.h"
 #include "ash/public/cpp/picker/picker_category.h"
 #include "ash/public/cpp/picker/picker_search_result.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/icon_button.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/view_drawn_waiter.h"
 #include "base/test/bind.h"
@@ -626,6 +630,38 @@ TEST_F(PickerViewTest, SearchingReplacesOldResultsWithNewResults) {
           Property("text", &views::Label::GetText, u"Matching links")))));
 }
 
+TEST_F(PickerViewTest, SearchingShowsExpressionResultsInEmojiBar) {
+  base::test::TestFuture<void> search_called;
+  FakePickerViewDelegate::SearchResultsCallback search_callback;
+  FakePickerViewDelegate delegate({
+      .search_function = base::BindLambdaForTesting(
+          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+            search_callback = std::move(callback);
+            search_called.SetValue();
+          }),
+  });
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+
+  PickerView* picker_view = GetPickerViewFromWidget(*widget);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+  ASSERT_TRUE(search_called.Wait());
+
+  search_callback.Run({
+      PickerSearchResultsSection(PickerSectionType::kExpressions,
+                                 {{PickerSearchResult::Emoji(u"😊"),
+                                   PickerSearchResult::Symbol(u"♬")}},
+                                 /*has_more_results=*/false),
+  });
+
+  EXPECT_TRUE(picker_view->emoji_bar_view_for_testing().GetVisible());
+  EXPECT_THAT(picker_view->emoji_bar_view_for_testing()
+                  .item_row_for_testing()
+                  ->children(),
+              ElementsAre(Truly(&views::IsViewClass<PickerEmojiItemView>),
+                          Truly(&views::IsViewClass<PickerSymbolItemView>)));
+}
+
 TEST_F(PickerViewTest, ClearsResultsWhenGoingBackToZeroState) {
   base::test::TestFuture<void> search_called;
   FakePickerViewDelegate delegate({
@@ -941,7 +977,7 @@ TEST_F(PickerViewTest, PressingEnterDefaultSelectsFirstSearchResult) {
               Optional(PickerSearchResult::Text(u"Result A")));
 }
 
-TEST_F(PickerViewTest, RightArrowKeyNavigatesSearchResults) {
+TEST_F(PickerViewTest, ArrowKeysNavigateEmojiBar) {
   base::test::TestFuture<void> future;
   FakePickerViewDelegate delegate({
       .search_function = base::BindLambdaForTesting(
@@ -959,6 +995,7 @@ TEST_F(PickerViewTest, RightArrowKeyNavigatesSearchResults) {
   widget->Show();
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
   ASSERT_TRUE(future.Wait());
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_UP, ui::EF_NONE);
   PressAndReleaseKey(ui::KeyboardCode::VKEY_RIGHT, ui::EF_NONE);
   PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN, ui::EF_NONE);
 
@@ -1033,6 +1070,9 @@ TEST_F(PickerViewTest, ShiftTabKeyNavigatesSearchResults) {
           [&](FakePickerViewDelegate::SearchResultsCallback callback) {
             future.SetValue();
             callback.Run({
+                PickerSearchResultsSection(PickerSectionType::kExpressions,
+                                           {{PickerSearchResult::Emoji(u"😊")}},
+                                           /*has_more_results=*/false),
                 PickerSearchResultsSection(
                     PickerSectionType::kSuggestions,
                     {{PickerSearchResult::Text(u"Result A"),
@@ -1050,12 +1090,14 @@ TEST_F(PickerViewTest, ShiftTabKeyNavigatesSearchResults) {
                              .section_list_view_for_testing()
                              ->GetTopItem());
 
-  PressAndReleaseKey(ui::KeyboardCode::VKEY_TAB, ui::EF_NONE);
+  // Navigate backward, to emoji bar.
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_TAB, ui::EF_SHIFT_DOWN);
+  // Navigate backward, to the last search result.
   PressAndReleaseKey(ui::KeyboardCode::VKEY_TAB, ui::EF_SHIFT_DOWN);
   PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN, ui::EF_NONE);
 
   EXPECT_THAT(delegate.last_inserted_result(),
-              Optional(PickerSearchResult::Text(u"Result A")));
+              Optional(PickerSearchResult::Text(u"Result B")));
 }
 
 TEST_F(PickerViewTest, ClearsSearchWhenClickingOnCategoryResult) {
@@ -1121,7 +1163,7 @@ TEST_F(PickerViewTest, PerformsCategorySearchWhenClickingOnSeeMoreResults) {
 }
 
 TEST_F(PickerViewTest,
-       OpensEmojiPickerWithQueryCategorySearchWhenClickingOnSeeMoreResults) {
+       OpensEmojiPickerWithQuerySearchAfterClickingMoreEmojisButton) {
   base::test::TestFuture<void> future;
   FakePickerViewDelegate delegate({
       .search_function = base::BindLambdaForTesting(
@@ -1139,12 +1181,11 @@ TEST_F(PickerViewTest,
   ASSERT_TRUE(future.Wait());
   future.Clear();
   PickerView* view = GetPickerViewFromWidget(*widget);
-  views::View* trailing_link = view->search_results_view_for_testing()
-                                   .section_views_for_testing()[0]
-                                   ->title_trailing_link_for_testing();
+  views::View* more_emojis_button =
+      view->emoji_bar_view_for_testing().more_emojis_button_for_testing();
 
-  ViewDrawnWaiter().Wait(trailing_link);
-  LeftClickOn(trailing_link);
+  ViewDrawnWaiter().Wait(more_emojis_button);
+  LeftClickOn(more_emojis_button);
 
   EXPECT_TRUE(widget->IsClosed());
   EXPECT_THAT(delegate.emoji_picker_query(), Optional(Eq(u"a")));

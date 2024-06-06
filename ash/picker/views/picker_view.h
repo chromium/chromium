@@ -33,6 +33,7 @@ class NonClientFrameView;
 namespace ash {
 
 enum class PickerLayoutType;
+class PickerEmojiBarView;
 class PickerMainContainerView;
 class PickerSearchFieldView;
 class PickerPageView;
@@ -109,6 +110,7 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   PickerZeroStateView& zero_state_view_for_testing() {
     return *zero_state_view_;
   }
+  PickerEmojiBarView& emoji_bar_view_for_testing() { return *emoji_bar_view_; }
 
  private:
   // Starts a search with `query`, with search results being returned to
@@ -138,8 +140,16 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   // pages.
   void AddMainContainerView(PickerLayoutType layout_type);
 
+  // Adds the emoji bar, which contains emoji and other expression results and
+  // is shown above the main container.
+  void AddEmojiBarView();
+
   // Sets `page_view` as the active page in `main_container_view_`.
   void SetActivePage(PickerPageView* page_view);
+
+  // Moves pseudo focus between different parts of the PickerView, i.e. between
+  // the emoji bar and the main container.
+  void AdvanceActivePseudoFocusHandler(PseudoFocusDirection direction);
 
   // Called when the search field back button is pressed.
   void OnSearchBackButtonPressed();
@@ -156,6 +166,10 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   raw_ptr<PickerZeroStateView> zero_state_view_ = nullptr;
   raw_ptr<PickerCategoryView> category_view_ = nullptr;
   raw_ptr<PickerSearchResultsView> search_results_view_ = nullptr;
+
+  raw_ptr<PickerEmojiBarView> emoji_bar_view_ = nullptr;
+
+  raw_ptr<PickerPseudoFocusHandler> active_pseudo_focus_handler_ = nullptr;
 
   // Whether the first set of results for the current search have been published
   // yet.

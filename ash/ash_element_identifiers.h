@@ -57,6 +57,13 @@ DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
 // See go/palette-next for more information about Picker.
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT, kPickerElementId);
 
+// Identifies the emoji bar of Picker.
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT, kPickerEmojiBarElementId);
+
+// Identifies an emoji result in the emoji bar of Picker.
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT,
+                                          kPickerEmojiItemElementId);
+
 // Identifies the textfield that implements the Picker search field.
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT,
                                           kPickerSearchFieldTextfieldElementId);
@@ -64,11 +71,6 @@ DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT,
 // Identifies the search results page of Picker.
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT,
                                           kPickerSearchResultsPageElementId);
-
-// Identifies an emoji result in the search results page of Picker.
-DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
-    ASH_EXPORT,
-    kPickerSearchResultsEmojiItemElementId);
 
 // Identifies a list result in the search results page of Picker.
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(

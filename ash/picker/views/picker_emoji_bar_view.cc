@@ -8,6 +8,7 @@
 #include <utility>
 #include <variant>
 
+#include "ash/ash_element_identifiers.h"
 #include "ash/picker/model/picker_search_results_section.h"
 #include "ash/picker/views/picker_emoji_item_view.h"
 #include "ash/picker/views/picker_emoticon_item_view.h"
@@ -112,6 +113,8 @@ PickerEmojiBarView::PickerEmojiBarView(
     PickerSearchResultsViewDelegate* delegate,
     int picker_view_width)
     : delegate_(delegate), picker_view_width_(picker_view_width) {
+  SetProperty(views::kElementIdentifierKey, kPickerEmojiBarElementId);
+
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kHorizontal)
       .SetCrossAxisAlignment(views::LayoutAlignment::kCenter);

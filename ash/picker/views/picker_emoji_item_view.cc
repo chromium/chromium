@@ -35,8 +35,7 @@ PickerEmojiItemView::PickerEmojiItemView(
     : PickerItemView(std::move(select_item_callback)) {
   SetUseDefaultFillLayout(true);
   SetCornerRadius(kPickerEmojiItemCornerRadius);
-  SetProperty(views::kElementIdentifierKey,
-              kPickerSearchResultsEmojiItemElementId);
+  SetProperty(views::kElementIdentifierKey, kPickerEmojiItemElementId);
 
   emoji_label_ = AddChildView(views::Builder<views::Label>()
                                   .SetText(emoji)

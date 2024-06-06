@@ -12,6 +12,7 @@
 #include "ash/picker/model/picker_action_type.h"
 #include "ash/picker/model/picker_search_results_section.h"
 #include "ash/picker/views/picker_category_view.h"
+#include "ash/picker/views/picker_emoji_bar_view.h"
 #include "ash/picker/views/picker_key_event_handler.h"
 #include "ash/picker/views/picker_main_container_view.h"
 #include "ash/picker/views/picker_page_view.h"
@@ -28,6 +29,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "build/branding_buildflags.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/emoji/emoji_panel_helper.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -58,6 +60,8 @@
 namespace ash {
 namespace {
 
+constexpr int kVerticalPaddingBetweenPickerContainers = 8;
+
 // Padding to separate the Picker window from the screen edge.
 constexpr gfx::Insets kPaddingFromScreenEdge(16);
 
@@ -65,6 +69,7 @@ std::unique_ptr<views::BubbleBorder> CreateBorder() {
   auto border = std::make_unique<views::BubbleBorder>(
       views::BubbleBorder::NONE, views::BubbleBorder::NO_SHADOW);
   border->SetCornerRadius(kPickerContainerBorderRadius);
+  border->SetColor(SK_ColorTRANSPARENT);
   return border;
 }
 
@@ -171,9 +176,13 @@ PickerView::PickerView(PickerViewDelegate* delegate,
   SetProperty(views::kElementIdentifierKey, kPickerElementId);
 
   SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetOrientation(views::LayoutOrientation::kVertical);
+      ->SetOrientation(views::LayoutOrientation::kVertical)
+      .SetCollapseMargins(true)
+      .SetDefault(views::kMarginsKey,
+                  gfx::Insets::VH(kVerticalPaddingBetweenPickerContainers, 0));
 
   AddMainContainerView(layout_type);
+  AddEmojiBarView();
 
   // Automatically focus on the search field.
   SetInitiallyFocusedView(search_field_view_);
@@ -281,63 +290,49 @@ void PickerView::SelectMoreResults(PickerSectionType type) {
 }
 
 bool PickerView::DoPseudoFocusedAction() {
-  if (main_container_view_->active_page() == nullptr) {
-    return false;
-  }
-  return main_container_view_->active_page()->DoPseudoFocusedAction();
+  return active_pseudo_focus_handler_ == nullptr
+             ? false
+             : active_pseudo_focus_handler_->DoPseudoFocusedAction();
 }
 
 bool PickerView::MovePseudoFocusUp() {
-  if (main_container_view_->active_page() == nullptr) {
+  if (active_pseudo_focus_handler_ == nullptr) {
     return false;
   }
-  if (!main_container_view_->active_page()->MovePseudoFocusUp()) {
-    // TODO: b/340692819 - Once the emoji bar is implemented, we should transfer
-    // focus between the main container and emoji bar here.
-    main_container_view_->active_page()->LosePseudoFocus();
-    main_container_view_->active_page()->GainPseudoFocus(
-        PseudoFocusDirection::kBackward);
+  if (!active_pseudo_focus_handler_->MovePseudoFocusUp()) {
+    AdvanceActivePseudoFocusHandler(PseudoFocusDirection::kBackward);
   }
   return true;
 }
 
 bool PickerView::MovePseudoFocusDown() {
-  if (main_container_view_->active_page() == nullptr) {
+  if (active_pseudo_focus_handler_ == nullptr) {
     return false;
   }
-  if (!main_container_view_->active_page()->MovePseudoFocusDown()) {
-    // TODO: b/340692819 - Once the emoji bar is implemented, we should transfer
-    // focus between the main container and emoji bar here.
-    main_container_view_->active_page()->LosePseudoFocus();
-    main_container_view_->active_page()->GainPseudoFocus(
-        PseudoFocusDirection::kForward);
+  if (!active_pseudo_focus_handler_->MovePseudoFocusDown()) {
+    AdvanceActivePseudoFocusHandler(PseudoFocusDirection::kForward);
   }
   return true;
 }
 
 bool PickerView::MovePseudoFocusLeft() {
-  if (main_container_view_->active_page() == nullptr) {
-    return false;
-  }
-  return main_container_view_->active_page()->MovePseudoFocusLeft();
+  return active_pseudo_focus_handler_ == nullptr
+             ? false
+             : active_pseudo_focus_handler_->MovePseudoFocusLeft();
 }
 
 bool PickerView::MovePseudoFocusRight() {
-  if (main_container_view_->active_page() == nullptr) {
-    return false;
-  }
-  return main_container_view_->active_page()->MovePseudoFocusRight();
+  return active_pseudo_focus_handler_ == nullptr
+             ? false
+             : active_pseudo_focus_handler_->MovePseudoFocusRight();
 }
 
 bool PickerView::AdvancePseudoFocus(PseudoFocusDirection direction) {
-  if (main_container_view_->active_page() == nullptr) {
+  if (active_pseudo_focus_handler_ == nullptr) {
     return false;
   }
-  if (!main_container_view_->active_page()->AdvancePseudoFocus(direction)) {
-    // TODO: b/340692819 - Once the emoji bar is implemented, we should transfer
-    // focus between the main container and emoji bar here.
-    main_container_view_->active_page()->LosePseudoFocus();
-    main_container_view_->active_page()->GainPseudoFocus(direction);
+  if (!active_pseudo_focus_handler_->AdvancePseudoFocus(direction)) {
+    AdvanceActivePseudoFocusHandler(direction);
   }
   return true;
 }
@@ -356,7 +351,8 @@ void PickerView::LosePseudoFocus() {
 gfx::Rect PickerView::GetTargetBounds(const gfx::Rect& anchor_bounds,
                                       PickerLayoutType layout_type) {
   return GetPickerViewBounds(anchor_bounds, layout_type, size(),
-                             search_field_view_->bounds().CenterPoint().y());
+                             search_field_view_->bounds().CenterPoint().y() +
+                                 main_container_view_->bounds().y());
 }
 
 void PickerView::StartSearch(const std::u16string& query) {
@@ -373,6 +369,12 @@ void PickerView::StartSearch(const std::u16string& query) {
     SetActivePage(category_view_);
   } else {
     search_results_view_->ClearSearchResults();
+    // TODO: b/340692683 - Show recent emojis instead of placeholder emojis.
+    emoji_bar_view_->SetSearchResults(PickerSearchResultsSection(
+        PickerSectionType::kExpressions,
+        {{PickerSearchResult::Emoji(u"😀"), PickerSearchResult::Emoji(u"😃"),
+          PickerSearchResult::Emoji(u"😄")}},
+        /*has_more_results=*/false));
     SetActivePage(zero_state_view_);
   }
 }
@@ -396,9 +398,11 @@ void PickerView::PublishSearchResults(
     // Do not show GIFs.
     if (result.type() == PickerSectionType::kGifs) {
       continue;
+    } else if (result.type() == PickerSectionType::kExpressions) {
+      emoji_bar_view_->SetSearchResults(std::move(result));
+    } else {
+      search_results_view_->AppendSearchResults(std::move(result));
     }
-
-    search_results_view_->AppendSearchResults(std::move(result));
   }
   performance_metrics_.MarkSearchResultsUpdated();
 }
@@ -513,9 +517,44 @@ void PickerView::AddMainContainerView(PickerLayoutType layout_type) {
   SetActivePage(zero_state_view_);
 }
 
+void PickerView::AddEmojiBarView() {
+  emoji_bar_view_ = AddChildViewAt(
+      std::make_unique<PickerEmojiBarView>(this, kPickerViewMaxSize.width()),
+      0);
+  // TODO: b/340692683 - Show recent emojis instead of placeholder emojis.
+  emoji_bar_view_->SetSearchResults(PickerSearchResultsSection(
+      PickerSectionType::kExpressions,
+      {{PickerSearchResult::Emoji(u"😀"), PickerSearchResult::Emoji(u"😃"),
+        PickerSearchResult::Emoji(u"😄")}},
+      /*has_more_results=*/false));
+}
+
 void PickerView::SetActivePage(PickerPageView* page_view) {
   search_field_view_->SetBackButtonVisible(page_view == category_view_);
   main_container_view_->SetActivePage(page_view);
+  if (active_pseudo_focus_handler_ != nullptr) {
+    active_pseudo_focus_handler_->LosePseudoFocus();
+  }
+  if (GetWidget() != nullptr) {
+    // If there is no widget or the page is empty, `GainPseudoFocus` does
+    // nothing here and the page will instead gain pseudo focus after it is
+    // populated with results.
+    page_view->GainPseudoFocus(PseudoFocusDirection::kForward);
+  }
+  active_pseudo_focus_handler_ = page_view;
+}
+
+void PickerView::AdvanceActivePseudoFocusHandler(
+    PseudoFocusDirection direction) {
+  if (active_pseudo_focus_handler_ == emoji_bar_view_) {
+    emoji_bar_view_->LosePseudoFocus();
+    main_container_view_->active_page()->GainPseudoFocus(direction);
+    active_pseudo_focus_handler_ = main_container_view_->active_page();
+  } else {
+    main_container_view_->active_page()->LosePseudoFocus();
+    emoji_bar_view_->GainPseudoFocus(direction);
+    active_pseudo_focus_handler_ = emoji_bar_view_;
+  }
 }
 
 void PickerView::OnSearchBackButtonPressed() {
