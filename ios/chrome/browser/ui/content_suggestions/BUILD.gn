@@ -12,6 +12,7 @@ source_set("content_suggestions") {
     "content_suggestions_mediator.mm",
   ]
   deps = [
+    ":commands",
     ":constants",
     ":content_suggestions_constant",
     ":content_suggestions_ui",
@@ -104,6 +105,10 @@ source_set("content_suggestions") {
     deps += [ "//ios/chrome/browser/widget_kit/model:model_swift" ]
   }
   public_deps = [ "//ios/third_party/material_components_ios" ]
+}
+
+source_set("commands") {
+  sources = [ "content_suggestions_commands.h" ]
 }
 
 source_set("metrics") {

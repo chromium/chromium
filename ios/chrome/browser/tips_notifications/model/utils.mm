@@ -39,9 +39,7 @@ ContentIDs ContentIDsForType(TipsNotificationType type) {
 }
 
 // A bitfield with all notification types enabled.
-// TODO(crbug.com/342621716) Enable SetUpList Continuation Notif by setting
-// kEnableAllNotifications to 23.
-const int kEnableAllNotifications = 7;
+const int kEnableAllNotifications = 23;
 
 }  // namespace
 
@@ -93,14 +91,15 @@ UNNotificationContent* ContentForTipsNotificationType(
   return content;
 }
 
+base::TimeDelta TipsNotificationTriggerDelta() {
+  return GetFieldTrialParamByFeatureAsTimeDelta(
+      kIOSTipsNotifications, kIOSTipsNotificationsTriggerTimeParam,
+      kTipsNotificationDefaultTriggerDelta);
+}
+
 UNNotificationTrigger* TipsNotificationTrigger() {
-  NSTimeInterval trigger_interval =
-      GetFieldTrialParamByFeatureAsTimeDelta(
-          kIOSTipsNotifications, kIOSTipsNotificationsTriggerTimeParam,
-          kTipsNotificationDefaultTriggerDelta)
-          .InSecondsF();
   return [UNTimeIntervalNotificationTrigger
-      triggerWithTimeInterval:trigger_interval
+      triggerWithTimeInterval:TipsNotificationTriggerDelta().InSecondsF()
                       repeats:NO];
 }
 

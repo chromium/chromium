@@ -501,13 +501,15 @@ const float kMagicStackReplaceModuleFadeAnimationDistance = 50;
       titleStringForModule:[self currentlyShownModule]];
 }
 
+#pragma mark - MagicStackModuleContainerDelegate
+
 - (void)seeMoreWasTappedForModuleType:(ContentSuggestionsModuleType)type {
   switch (type) {
     case ContentSuggestionsModuleType::kSafetyCheck:
       [self.audience didSelectSafetyCheckItem:SafetyCheckItemType::kDefault];
       break;
     case ContentSuggestionsModuleType::kCompactedSetUpList:
-      [self.audience showSetUpListShowMoreMenu];
+      [self.audience showSetUpListSeeMoreMenu];
       break;
     case ContentSuggestionsModuleType::kParcelTracking:
       [self.audience showMagicStackParcelList];

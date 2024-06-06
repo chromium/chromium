@@ -157,8 +157,8 @@ enum class TabGridOpeningMode {
 // Open a new window with `userActivity`
 - (void)openNewWindowWithActivity:(NSUserActivity*)userActivity;
 
-// Closes all open modals and ensures that a non-incognito tab is open. If
-// incognito is forced, then it will ensure an incognito tab is open.
+// Closes all open modals and ensures that a non-incognito NTP tab is open. If
+// incognito is forced, then it will ensure an incognito NTP tab is open.
 - (void)prepareToPresentModal:(ProceduralBlock)completion;
 
 @end

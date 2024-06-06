@@ -79,6 +79,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/most_visited_tiles_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/shortcuts_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_image_data_source.h"
@@ -128,6 +129,7 @@
 #import "url/gurl.h"
 
 @interface ContentSuggestionsCoordinator () <
+    ContentSuggestionsCommands,
     ContentSuggestionsViewControllerAudience,
     MagicStackCollectionViewControllerAudience,
     MagicStackHalfSheetTableViewControllerDelegate,
@@ -392,6 +394,9 @@
   }
   self.contentSuggestionsMediator.consumer =
       self.contentSuggestionsViewController;
+  [self.browser->GetCommandDispatcher()
+      startDispatchingToTarget:self
+                   forProtocol:@protocol(ContentSuggestionsCommands)];
 }
 
 - (void)stop {
@@ -427,6 +432,8 @@
   [self dismissParcelTrackingAlertCoordinator];
   [_notificationsOptInAlertCoordinator stop];
   _notificationsOptInAlertCoordinator = nil;
+  [self.browser->GetCommandDispatcher()
+      stopDispatchingForProtocol:@protocol(ContentSuggestionsCommands)];
   _started = NO;
 }
 
@@ -439,6 +446,32 @@
 - (void)refresh {
   // Refresh in case there are new MVT to show.
   [_mostVisitedTilesMediator refreshMostVisitedTiles];
+}
+
+#pragma mark - ContentSuggestionsCommands
+
+- (void)showSetUpListSeeMoreMenu {
+  [_setUpListShowMoreViewController.presentingViewController
+      dismissViewControllerAnimated:NO
+                         completion:nil];
+  NSArray<SetUpListItemViewData*>* items = [self.setUpListMediator allItems];
+  _setUpListShowMoreViewController =
+      [[SetUpListShowMoreViewController alloc] initWithItems:items
+                                                 tapDelegate:self];
+  _setUpListShowMoreViewController.modalPresentationStyle =
+      UIModalPresentationPageSheet;
+  UISheetPresentationController* presentationController =
+      _setUpListShowMoreViewController.sheetPresentationController;
+  presentationController.prefersEdgeAttachedInCompactHeight = YES;
+  presentationController.widthFollowsPreferredContentSizeWhenEdgeAttached = YES;
+  presentationController.detents = @[
+    UISheetPresentationControllerDetent.mediumDetent,
+    UISheetPresentationControllerDetent.largeDetent
+  ];
+  presentationController.preferredCornerRadius = 16;
+  [self.viewController presentViewController:_setUpListShowMoreViewController
+                                    animated:YES
+                                  completion:nil];
 }
 
 #pragma mark - ContentSuggestionsViewControllerAudience
@@ -521,7 +554,7 @@
       [self didSelectSafetyCheckItem:SafetyCheckItemType::kDefault];
       break;
     case ContentSuggestionsModuleType::kCompactedSetUpList:
-      [self showSetUpListShowMoreMenu];
+      [self showSetUpListSeeMoreMenu];
       break;
     case ContentSuggestionsModuleType::kParcelTracking:
       [self showMagicStackParcelList];
@@ -813,27 +846,6 @@
                       CredentialProviderPromoCommands)
       showCredentialProviderPromoWithTrigger:CredentialProviderPromoTrigger::
                                                  SetUpList];
-}
-
-- (void)showSetUpListShowMoreMenu {
-  NSArray<SetUpListItemViewData*>* items = [self.setUpListMediator allItems];
-  _setUpListShowMoreViewController =
-      [[SetUpListShowMoreViewController alloc] initWithItems:items
-                                                 tapDelegate:self];
-  _setUpListShowMoreViewController.modalPresentationStyle =
-      UIModalPresentationPageSheet;
-  UISheetPresentationController* presentationController =
-      _setUpListShowMoreViewController.sheetPresentationController;
-  presentationController.prefersEdgeAttachedInCompactHeight = YES;
-  presentationController.widthFollowsPreferredContentSizeWhenEdgeAttached = YES;
-  presentationController.detents = @[
-    UISheetPresentationControllerDetent.mediumDetent,
-    UISheetPresentationControllerDetent.largeDetent
-  ];
-  presentationController.preferredCornerRadius = 16;
-  [self.viewController presentViewController:_setUpListShowMoreViewController
-                                    animated:YES
-                                  completion:nil];
 }
 
 - (void)showContentNotificationBottomSheet {

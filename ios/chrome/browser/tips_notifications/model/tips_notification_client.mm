@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/default_browser/model/promo_source.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -35,6 +36,8 @@
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/tips_notifications/model/utils.h"
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_commands.h"
+#import "ios/chrome/browser/ui/content_suggestions/set_up_list/utils.h"
 
 namespace {
 
@@ -122,22 +125,13 @@ void TipsNotificationClient::HandleNotificationInteraction(
 void TipsNotificationClient::HandleNotificationInteraction(
     TipsNotificationType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  switch (type) {
-    case TipsNotificationType::kDefaultBrowser:
-      ShowDefaultBrowserPromo();
-      break;
-    case TipsNotificationType::kWhatsNew:
-      ShowWhatsNew();
-      break;
-    case TipsNotificationType::kSignin:
-      ShowSignin();
-      break;
-    case TipsNotificationType::kSetUpListContinuation:
-      ShowSetUpListContinuation();
-      break;
-    case TipsNotificationType::kError:
-      NOTREACHED();
-  }
+  id<ApplicationCommands> application_handler =
+      HandlerForProtocol(Dispatcher(), ApplicationCommands);
+  [application_handler
+      prepareToPresentModal:
+          base::CallbackToBlock(
+              base::BindOnce(&TipsNotificationClient::ShowUIForNotificationType,
+                             weak_ptr_factory_.GetWeakPtr(), type))];
 }
 
 UIBackgroundFetchResult TipsNotificationClient::HandleNotificationReception(
@@ -349,8 +343,18 @@ bool TipsNotificationClient::ShouldSendSignin() {
 }
 
 bool TipsNotificationClient::ShouldSendSetUpListContinuation() {
-  // TODO(crbug.com/342621716) Implement SetUpList continuation notif.
-  return false;
+  PrefService* local_state = GetApplicationContext()->GetLocalState();
+  if (!set_up_list_utils::IsSetUpListActive(local_state)) {
+    return false;
+  }
+
+  // The Set Up List only shows for 14 days after FirstRun, so this
+  // notification should only be requested 14 days minus the trigger interval
+  // after FirstRun.
+  if (!IsFirstRunRecent(base::Days(14) - TipsNotificationTriggerDelta())) {
+    return false;
+  }
+  return !set_up_list_prefs::AllItemsComplete(local_state);
 }
 
 bool TipsNotificationClient::IsSceneLevelForegroundActive() {
@@ -358,31 +362,46 @@ bool TipsNotificationClient::IsSceneLevelForegroundActive() {
   return GetSceneLevelForegroundActiveBrowser() != nullptr;
 }
 
+CommandDispatcher* TipsNotificationClient::Dispatcher() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return GetSceneLevelForegroundActiveBrowser()->GetCommandDispatcher();
+}
+
+void TipsNotificationClient::ShowUIForNotificationType(
+    TipsNotificationType type) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  switch (type) {
+    case TipsNotificationType::kDefaultBrowser:
+      ShowDefaultBrowserPromo();
+      break;
+    case TipsNotificationType::kWhatsNew:
+      ShowWhatsNew();
+      break;
+    case TipsNotificationType::kSignin:
+      ShowSignin();
+      break;
+    case TipsNotificationType::kSetUpListContinuation:
+      ShowSetUpListContinuation();
+      break;
+    case TipsNotificationType::kError:
+      NOTREACHED();
+  }
+}
+
 void TipsNotificationClient::ShowDefaultBrowserPromo() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  Browser* browser = GetSceneLevelForegroundActiveBrowser();
-  id<ApplicationCommands> application_handler =
-      HandlerForProtocol(browser->GetCommandDispatcher(), ApplicationCommands);
-  [application_handler prepareToPresentModal:^{
-    id<SettingsCommands> settings_handler =
-        HandlerForProtocol(browser->GetCommandDispatcher(), SettingsCommands);
-    [settings_handler
-        showDefaultBrowserSettingsFromViewController:nil
-                                        sourceForUMA:
-                                            DefaultBrowserSettingsPageSource::
-                                                kTipsNotification];
-  }];
+  id<SettingsCommands> settings_handler =
+      HandlerForProtocol(Dispatcher(), SettingsCommands);
+  [settings_handler
+      showDefaultBrowserSettingsFromViewController:nil
+                                      sourceForUMA:
+                                          DefaultBrowserSettingsPageSource::
+                                              kTipsNotification];
 }
 
 void TipsNotificationClient::ShowWhatsNew() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  Browser* browser = GetSceneLevelForegroundActiveBrowser();
-  id<ApplicationCommands> application_handler =
-      HandlerForProtocol(browser->GetCommandDispatcher(), ApplicationCommands);
-  [application_handler prepareToPresentModal:^{
-    [HandlerForProtocol(browser->GetCommandDispatcher(),
-                        BrowserCoordinatorCommands) showWhatsNew];
-  }];
+  [HandlerForProtocol(Dispatcher(), BrowserCoordinatorCommands) showWhatsNew];
 }
 
 void TipsNotificationClient::ShowSignin() {
@@ -404,16 +423,13 @@ void TipsNotificationClient::ShowSignin() {
                             PROMO_ACTION_NO_SIGNIN_PROMO
                callback:nil];
 
-  id<ApplicationCommands> application_handler =
-      HandlerForProtocol(browser->GetCommandDispatcher(), ApplicationCommands);
-  [application_handler prepareToPresentModal:^{
-    [HandlerForProtocol(browser->GetCommandDispatcher(), SigninPresenter)
-        showSignin:command];
-  }];
+  [HandlerForProtocol(Dispatcher(), SigninPresenter) showSignin:command];
 }
 
 void TipsNotificationClient::ShowSetUpListContinuation() {
-  // TODO(crbug.com/342621716) Implement SetUpList continuation notif.
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  [HandlerForProtocol(Dispatcher(), ContentSuggestionsCommands)
+      showSetUpListSeeMoreMenu];
 }
 
 void TipsNotificationClient::MarkNotificationTypeSent(

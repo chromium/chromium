@@ -16,7 +16,7 @@ enum class SafetyCheckItemType;
 - (void)viewWillDisappear;
 
 // Notifies the audience to present the Set Up List Show More Menu.
-- (void)showSetUpListShowMoreMenu;
+- (void)showSetUpListSeeMoreMenu;
 
 // Notifies the audience that the module of `type` should be never shown
 // anymore.

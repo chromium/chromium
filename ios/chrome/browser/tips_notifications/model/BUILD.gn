@@ -14,6 +14,7 @@ source_set("client") {
     "//ios/chrome/browser/default_browser/model",
     "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/ntp/model:set_up_list_prefs",
     "//ios/chrome/browser/push_notification/model:constants",
     "//ios/chrome/browser/push_notification/model:push_notification_client",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
@@ -25,6 +26,8 @@ source_set("client") {
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/ui/authentication:signin_presenter",
+    "//ios/chrome/browser/ui/content_suggestions:commands",
+    "//ios/chrome/browser/ui/content_suggestions/set_up_list:utils",
   ]
   frameworks = [ "UserNotifications.framework" ]
 }
@@ -62,6 +65,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/ui/content_suggestions:commands",
     "//ios/chrome/test:test_support",
     "//ios/testing:block_swizzler",
     "//third_party/ocmock",

@@ -2048,16 +2048,20 @@ using UserFeedbackDataCallback =
 }
 
 - (void)prepareToPresentModal:(ProceduralBlock)completion {
+  __weak __typeof(self) weakSelf = self;
+  ProceduralBlock ensureNTP = ^{
+    [weakSelf ensureNTP];
+    completion();
+  };
   if (self.mainCoordinator.isTabGridActive ||
       (self.currentInterface.incognito && ![self isIncognitoForced])) {
-    __weak __typeof(self) weakSelf = self;
     [self closePresentedViews:YES
                    completion:^{
-                     [weakSelf openNonIncognitoTab:completion];
+                     [weakSelf openNonIncognitoTab:ensureNTP];
                    }];
     return;
   }
-  [self dismissModalDialogsWithCompletion:completion];
+  [self dismissModalDialogsWithCompletion:ensureNTP];
 }
 
 // Returns YES if the current Tab is available to present a view controller.
@@ -3734,6 +3738,19 @@ using UserFeedbackDataCallback =
                                       dismissOmnibox:YES
                                           completion:completion];
   }
+}
+
+// Ensures that a non-incognito NTP tab is open. If incognito is forced, then
+// it will ensure an incognito NTP tab is open.
+- (void)ensureNTP {
+  // If the tab does not exist, open a new tab.
+  UrlLoadParams params = UrlLoadParams::InCurrentTab(GURL(kChromeUINewTabURL));
+  ApplicationMode mode = self.currentInterface.incognito
+                             ? ApplicationMode::INCOGNITO
+                             : ApplicationMode::NORMAL;
+  [self openOrReuseTabInMode:mode
+           withUrlLoadParams:params
+         tabOpenedCompletion:nil];
 }
 
 #pragma mark - IncognitoInterstitialCoordinatorDelegate

@@ -87,6 +87,10 @@ void MarkAllItemsComplete(PrefService* prefs) {
   set_up_list_metrics::RecordAllItemsCompleted();
 }
 
+bool AllItemsComplete(PrefService* prefs) {
+  return prefs->GetBoolean(kAllItemsComplete);
+}
+
 bool IsSetUpListDisabled(PrefService* prefs) {
   return prefs->GetBoolean(kDisabled);
 }
