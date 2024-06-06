@@ -59,19 +59,19 @@ class STGEverythingMenu : public views::MenuDelegate,
  private:
   friend class STGEverythingMenuUnitTest;
 
-  int GetAndIncrementNextTabGroupItemID();
-  const SavedTabGroup* GetTabGroupForCommandId(int command_id);
+  int GenerateTabGroupCommandID(int idx_in_sorted_tab_groups);
+  base::Uuid GetTabGroupIdFromCommandId(int command_id);
   std::unique_ptr<ui::SimpleMenuModel> CreateMenuModel();
 
   // Returns sorted saved tab groups with the most recently created as the
   // first.
-  std::vector<const SavedTabGroup*> GetSortedTabGroupsByCreationTime(
+  std::vector<base::Uuid> GetSortedTabGroupsByCreationTime(
       const SavedTabGroupModel* stg_model);
 
   const SavedTabGroupModel* GetSavedTabGroupModelFromBrowser();
 
   // Saved tab groups with the most recently created as the first.
-  std::vector<const SavedTabGroup*> sorted_tab_groups_;
+  std::vector<base::Uuid> sorted_tab_groups_;
 
   // Owned by the Everything button.
   raw_ptr<views::MenuButtonController> menu_button_controller_;
@@ -85,10 +85,6 @@ class STGEverythingMenu : public views::MenuDelegate,
   // items.
   std::unique_ptr<views::DialogModelContextMenuController>
       context_menu_controller_;
-
-  // TODO(pengchaocai): Explore a generic command id solution if there are more
-  // use cases than app menu.
-  int next_tab_group_item_command_id_ = AppMenuModel::kMinTabGroupsCommandId;
 
   std::unique_ptr<views::MenuRunner> menu_runner_;
   std::unique_ptr<ui::SimpleMenuModel> model_;

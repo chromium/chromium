@@ -22,6 +22,11 @@
 
 namespace {
 static constexpr int kUIUpdateIconSize = 16;
+
+// TODO(pengchaocai): Explore a generic command id solution if there are more
+// use cases than app menu.
+static constexpr int min_command_id = AppMenuModel::kMinTabGroupsCommandId;
+static constexpr int interval = AppMenuModel::kNumUnboundedMenuTypes;
 }
 
 namespace tab_groups {
@@ -36,17 +41,12 @@ STGEverythingMenu::STGEverythingMenu(views::MenuButtonController* controller,
       widget_(views::Widget::GetWidgetForNativeWindow(
           browser->window()->GetNativeWindow())) {}
 
-int STGEverythingMenu::GetAndIncrementNextTabGroupItemID() {
-  const int current_id = next_tab_group_item_command_id_;
-  next_tab_group_item_command_id_ += AppMenuModel::kNumUnboundedMenuTypes;
-  return current_id;
+int STGEverythingMenu::GenerateTabGroupCommandID(int idx_in_sorted_tab_groups) {
+  return min_command_id + interval * idx_in_sorted_tab_groups;
 }
 
-const SavedTabGroup* STGEverythingMenu::GetTabGroupForCommandId(
-    int command_id) {
-  const int idx_in_sorted_tab_group =
-      (command_id - AppMenuModel::kMinTabGroupsCommandId) /
-      AppMenuModel::kNumUnboundedMenuTypes;
+base::Uuid STGEverythingMenu::GetTabGroupIdFromCommandId(int command_id) {
+  const int idx_in_sorted_tab_group = (command_id - min_command_id) / interval;
   return sorted_tab_groups_[idx_in_sorted_tab_group];
 }
 
@@ -59,18 +59,23 @@ STGEverythingMenu::GetSavedTabGroupModelFromBrowser() {
   return keyed_service->model();
 }
 
-std::vector<const SavedTabGroup*>
-STGEverythingMenu::GetSortedTabGroupsByCreationTime(
+std::vector<base::Uuid> STGEverythingMenu::GetSortedTabGroupsByCreationTime(
     const SavedTabGroupModel* stg_model) {
   CHECK(stg_model);
-  std::vector<const SavedTabGroup*> sorted_tab_groups;
+  std::vector<base::Uuid> sorted_tab_groups;
   for (const SavedTabGroup& group : stg_model->saved_tab_groups()) {
-    sorted_tab_groups.push_back(&group);
+    sorted_tab_groups.push_back(group.saved_guid());
   }
-  auto compare_by_creation_time = [=](const SavedTabGroup* a,
-                                      const SavedTabGroup* b) {
-    return a->creation_time_windows_epoch_micros() >
-           b->creation_time_windows_epoch_micros();
+  auto compare_by_creation_time = [=](const base::Uuid& a,
+                                      const base::Uuid& b) {
+    const auto* const saved_tab_group_a = stg_model->Get(a);
+    const auto* const saved_tab_group_b = stg_model->Get(b);
+    // If either gets deleted while creating the model, ignore the order.
+    if (!saved_tab_group_a || !saved_tab_group_b) {
+      return false;
+    }
+    return saved_tab_group_a->creation_time_windows_epoch_micros() >
+           saved_tab_group_b->creation_time_windows_epoch_micros();
   };
   std::sort(sorted_tab_groups.begin(), sorted_tab_groups.end(),
             compare_by_creation_time);
@@ -96,14 +101,18 @@ std::unique_ptr<ui::SimpleMenuModel> STGEverythingMenu::CreateMenuModel() {
   sorted_tab_groups_ = GetSortedTabGroupsByCreationTime(stg_model);
   const auto* const color_provider = browser_->window()->GetColorProvider();
   for (size_t i = 0; i < sorted_tab_groups_.size(); ++i) {
-    const auto* const tab_group = sorted_tab_groups_[i];
+    const auto* const tab_group = stg_model->Get(sorted_tab_groups_[i]);
+    // In case any tab group gets deleted while creating the model.
+    if (!tab_group) {
+      continue;
+    }
     const auto color_id = GetTabGroupDialogColorId(tab_group->color());
     const auto group_icon = ui::ImageModel::FromVectorIcon(
         kTabGroupIcon, color_provider->GetColor(color_id), gfx::kFaviconSize);
     const auto title = tab_group->title();
     // For saved tab group items, use the indice in `sorted_tab_groups_` as the
     // command ids.
-    const int command_id = GetAndIncrementNextTabGroupItemID();
+    const int command_id = GenerateTabGroupCommandID(i);
     menu_model->AddItemWithIcon(
         command_id,
         title.empty() ? l10n_util::GetPluralStringFUTF16(
@@ -151,13 +160,10 @@ void STGEverythingMenu::ExecuteCommand(int command_id, int event_flags) {
   } else {
     base::RecordAction(base::UserMetricsAction(
         "TabGroups_SavedTabGroups_OpenedFromEverythingMenu"));
-    const auto* const group = GetTabGroupForCommandId(command_id);
-    if (group->saved_tabs().empty()) {
-      return;
-    }
+    const auto group_id = GetTabGroupIdFromCommandId(command_id);
     auto* const keyed_service =
         SavedTabGroupServiceFactory::GetForProfile(browser_->profile());
-    keyed_service->OpenSavedTabGroupInBrowser(browser_, group->saved_guid());
+    keyed_service->OpenSavedTabGroupInBrowser(browser_, group_id);
   }
 }
 
@@ -170,13 +176,13 @@ bool STGEverythingMenu::ShowContextMenu(views::MenuItemView* source,
   }
   base::RecordAction(base::UserMetricsAction(
       "TabGroups_SavedTabGroups_ContextMenuTriggeredFromEverythingMenu"));
-  const auto* const group = GetTabGroupForCommandId(command_id);
+  const auto group_id = GetTabGroupIdFromCommandId(command_id);
   context_menu_controller_ =
       std::make_unique<views::DialogModelContextMenuController>(
           widget_->GetRootView(),
           base::BindRepeating(
               &SavedTabGroupUtils::CreateSavedTabGroupContextMenuModel,
-              browser_, group->saved_guid(), show_pin_unpin_option_),
+              browser_, group_id, show_pin_unpin_option_),
           views::MenuRunner::CONTEXT_MENU | views::MenuRunner::IS_NESTED);
   context_menu_controller_->ShowContextMenuForViewImpl(widget_->GetRootView(),
                                                        p, source_type);

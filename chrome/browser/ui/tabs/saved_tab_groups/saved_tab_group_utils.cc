@@ -162,8 +162,15 @@ void SavedTabGroupUtils::OpenUrlToBrowser(Browser* browser,
 
 void SavedTabGroupUtils::OpenOrMoveSavedGroupToNewWindow(
     Browser* browser,
-    const SavedTabGroup* save_group,
-    int event_flags) {
+    const base::Uuid& saved_group_guid) {
+  auto* const service =
+      SavedTabGroupServiceFactory::GetForProfile(browser->profile());
+  const auto* const save_group = service->model()->Get(saved_group_guid);
+  // In case the group has been deleted.
+  if (!save_group) {
+    return;
+  }
+
   const auto& local_group_id = save_group->local_group_id();
   Browser* const browser_with_local_group_id =
       local_group_id.has_value()
@@ -175,49 +182,14 @@ void SavedTabGroupUtils::OpenOrMoveSavedGroupToNewWindow(
     // NOTE: This action could cause `this` to be deleted. Make sure lines
     // following this have either copied data by value or hold pointers to the
     // objects it needs.
-    auto* service =
-        SavedTabGroupServiceFactory::GetForProfile(browser->profile());
     service->OpenSavedTabGroupInBrowser(browser_with_local_group_id,
-                                        save_group->saved_guid());
+                                        saved_group_guid);
   }
 
   // Move the open group to a new browser window.
   browser_with_local_group_id->tab_strip_model()
       ->delegate()
       ->MoveGroupToNewWindow(save_group->local_group_id().value());
-}
-
-void SavedTabGroupUtils::DeleteSavedTabGroup(Browser* browser,
-                                             const SavedTabGroup* saved_group,
-                                             int event_flags) {
-  const auto& local_group_id = saved_group->local_group_id();
-  auto* const service =
-      SavedTabGroupServiceFactory::GetForProfile(browser->profile());
-
-  if (local_group_id.has_value()) {
-    const Browser* const browser_with_local_group_id =
-        SavedTabGroupUtils::GetBrowserWithTabGroupId(local_group_id.value());
-
-    // Keep the opened tab group in the tabstrip but remove the SavedTabGroup
-    // data from the model.
-    TabGroup* const tab_group = browser_with_local_group_id->tab_strip_model()
-                                    ->group_model()
-                                    ->GetTabGroup(local_group_id.value());
-
-    service->UnsaveGroup(local_group_id.value());
-
-    // Notify observers to update the tab group header.
-    // TODO(dljames): Find a way to move this into
-    // SavedTabGroupKeyedService::DisconnectLocalTabGroup. The goal is to
-    // abstract this logic from the button in case we need to do similar
-    // functionality elsewhere in the future. Ensure this change works when
-    // dragging a Saved group out of the window.
-    tab_group->SetVisualData(*tab_group->visual_data());
-  } else {
-    // Remove the SavedTabGroup from the model. No need to worry about updating
-    // tabstrip, since this group is not open.
-    service->model()->Remove(saved_group->saved_guid());
-  }
 }
 
 void SavedTabGroupUtils::ToggleGroupPinState(Browser* browser,
@@ -236,9 +208,12 @@ SavedTabGroupUtils::CreateSavedTabGroupContextMenuModel(
   const auto* const service =
       SavedTabGroupServiceFactory::GetForProfile(browser->profile());
   const auto* const saved_group = service->model()->Get(saved_guid);
-  const auto& local_group_id = saved_group->local_group_id();
-
   ui::DialogModel::Builder dialog_model = ui::DialogModel::Builder();
+  // In case the group has been deleted, return an empty dialog model.
+  if (!saved_group) {
+    return dialog_model.Build();
+  }
+  const auto& local_group_id = saved_group->local_group_id();
 
   const std::u16string move_or_open_group_text =
       local_group_id.has_value()
@@ -267,8 +242,13 @@ SavedTabGroupUtils::CreateSavedTabGroupContextMenuModel(
           kMoveGroupToNewWindowRefreshIcon, ui::kColorMenuIcon,
           is_ui_update ? kUIUpdateIconSize : kOldIconSize),
       move_or_open_group_text,
-      base::BindRepeating(&SavedTabGroupUtils::OpenOrMoveSavedGroupToNewWindow,
-                          browser, saved_group),
+      base::BindRepeating(
+          [](Browser* browser, const base::Uuid& saved_group_guid,
+             int event_flags) {
+            SavedTabGroupUtils::OpenOrMoveSavedGroupToNewWindow(
+                browser, saved_group_guid);
+          },
+          browser, saved_group->saved_guid()),
       ui::DialogModelMenuItem::Params()
           .SetId(kMoveGroupToNewWindowMenuItem)
           .SetIsEnabled(should_enable_move_menu_item));

@@ -52,14 +52,9 @@ class SavedTabGroupUtils {
                                const GURL& url,
                                int event_flags);
 
-  static void OpenOrMoveSavedGroupToNewWindow(Browser* browser,
-                                              const SavedTabGroup* saved_group,
-                                              int event_flags);
-
-  // Delete the `saved_group`.
-  static void DeleteSavedTabGroup(Browser* browser,
-                                  const SavedTabGroup* saved_group,
-                                  int event_flags);
+  static void OpenOrMoveSavedGroupToNewWindow(
+      Browser* browser,
+      const base::Uuid& saved_group_guid);
 
   // Pin the saved tab group if it's unpinned, or unpin the saved tab group if
   // it's pinned.
