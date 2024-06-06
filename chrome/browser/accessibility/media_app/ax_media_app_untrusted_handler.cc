@@ -283,11 +283,11 @@ void AXMediaAppUntrustedHandler::PerformAction(
       }
 
       DCHECK_NE(action_data.target_node_id, ui::kInvalidAXNodeID);
-      DCHECK_EQ(pages_.size(), document_.GetRoot()->GetUnignoredChildCount() -
+      // Some pages might not be in the document yet, because of page batching.
+      DCHECK_GE(pages_.size(), document_.GetRoot()->GetUnignoredChildCount() -
                                    (has_landmark_node_ ? 1u : 0u) -
                                    (has_postamble_page_ ? 1u : 0u));
-
-      for (int32_t page_index = 0; const auto& page : pages_) {
+      for (const auto& page : pages_) {
         const std::unique_ptr<ui::AXTreeManager>& page_manager = page.second;
         if (page_manager->GetTreeID() != action_data.target_tree_id) {
           continue;
@@ -298,14 +298,24 @@ void AXMediaAppUntrustedHandler::PerformAction(
           break;
         }
         DCHECK(page_manager->ax_tree());
+        auto child_iter = target_node->UnignoredChildrenBegin();
+        for (; child_iter != target_node->UnignoredChildrenEnd();
+             ++child_iter) {
+          const std::optional<ui::AXTreeID> child_tree_id =
+              target_node->data().GetChildTreeID();
+          if (child_tree_id && *child_tree_id == action_data.target_tree_id) {
+            break;
+          }
+        }
+        size_t page_index =
+            std::distance(target_node->UnignoredChildrenBegin(), child_iter);
         // Passing an empty `RectF` for the node bounds will initialize it
         // automatically to `target_node->data().relative_bounds.bounds`.
         gfx::RectF global_bounds =
             page_manager->ax_tree()->RelativeToTreeBounds(
                 target_node, /*node_bounds=*/gfx::RectF());
         global_bounds.Offset(document_.GetRoot()
-                                 ->GetUnignoredChildAtIndex(
-                                     page_index + (has_landmark_node_ ? 1 : 0))
+                                 ->GetUnignoredChildAtIndex(page_index)
                                  ->data()
                                  .relative_bounds.bounds.OffsetFromOrigin());
         if (global_bounds.x() < viewport_box_.x()) {

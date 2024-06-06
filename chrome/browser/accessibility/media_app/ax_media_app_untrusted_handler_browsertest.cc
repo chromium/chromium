@@ -1176,17 +1176,24 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, ScrollToMakeVisible) {
   constexpr float kViewportWidth = 2.0f;
   constexpr float kViewportHeight = 4.0f;
   std::vector<PageMetadataPtr> fake_metadata;
-  PageMetadataPtr fake_page = ash::media_app_ui::mojom::PageMetadata::New();
-  fake_page->id = std::format("Page{}", kTestPageIds[0]);
-  fake_page->rect =
-      gfx::RectF(/*x=*/kPageX, /*y=*/kPageY, kTestPageWidth, kTestPageHeight);
-  fake_metadata.push_back(std::move(fake_page));
+  PageMetadataPtr fake_page1 = ash::media_app_ui::mojom::PageMetadata::New();
+  fake_page1->id = std::format("Page{}", kTestPageIds[0]);
+  fake_page1->rect = gfx::RectF(/*x=*/kPageX,
+                                /*y=*/kPageY, kTestPageWidth, kTestPageHeight);
+  fake_metadata.push_back(std::move(fake_page1));
+  PageMetadataPtr fake_page2 = ash::media_app_ui::mojom::PageMetadata::New();
+  fake_page2->id = std::format("Page{}", kTestPageIds[1]);
+  fake_page2->rect =
+      gfx::RectF(/*x=*/kPageX + 20.0f,
+                 /*y=*/kPageY + 20.0f, kTestPageWidth, kTestPageHeight);
+  fake_metadata.push_back(std::move(fake_page2));
   handler_->PageMetadataUpdated(ClonePageMetadataPtrs(fake_metadata));
-  WaitForOcringPages(1u);
+  WaitForOcringPages(2u);
 
   // All pages must have gone through OCR.
-  ASSERT_EQ(1u, fake_media_app_.PageIdsWithBitmap().size());
+  ASSERT_EQ(2u, fake_media_app_.PageIdsWithBitmap().size());
   EXPECT_EQ("PageA", fake_media_app_.PageIdsWithBitmap()[0]);
+  EXPECT_EQ("PageB", fake_media_app_.PageIdsWithBitmap()[1]);
 
   ui::AXActionData scroll_action_data;
   scroll_action_data.action = ax::mojom::Action::kScrollToMakeVisible;
@@ -1248,6 +1255,23 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedHandlerTest, ScrollToMakeVisible) {
       /*scale_factor=*/1.0f);
   handler_->PerformAction(scroll_action_data);
   EXPECT_EQ(gfx::RectF(kPageX, kPageY, kViewportWidth, kViewportHeight),
+            fake_media_app_.ViewportBox());
+
+  // View the second page.
+  scroll_action_data.target_tree_id =
+      handler_->GetPagesForTesting().at(fake_metadata[1]->id)->GetTreeID();
+  ASSERT_NE(nullptr,
+            handler_->GetPagesForTesting().at(fake_metadata[1]->id)->GetRoot());
+  scroll_action_data.target_node_id =
+      handler_->GetPagesForTesting().at(fake_metadata[1]->id)->GetRoot()->id();
+
+  handler_->ViewportUpdated(
+      gfx::RectF(/*x=*/0.0f, /*y=*/0.0f, kViewportWidth, kViewportHeight),
+      /*scale_factor=*/1.0f);
+  handler_->PerformAction(scroll_action_data);
+  EXPECT_EQ(gfx::RectF(/*x=*/kPageX + 20.0f + kTestPageWidth - kViewportWidth,
+                       /*y=*/kPageY + 20.0f + kTestPageHeight - kViewportHeight,
+                       kViewportWidth, kViewportHeight),
             fake_media_app_.ViewportBox());
 }
 
