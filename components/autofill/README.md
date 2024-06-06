@@ -420,7 +420,7 @@ Autofill votes are theoretically uploaded
 
   `observed_submission=false` is passed.
 
-In practice we allow only one upload per (form x submission source) every
+In practice we allow only one vote upload per (form x submission source) every
 `kAutofillUploadThrottlingPeriodInDays` days.
 
 In case `observed_submission == true`, the votes are generated on a background

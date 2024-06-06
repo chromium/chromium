@@ -35,6 +35,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/proto/server.pb.h"
 #include "components/autofill/core/browser/randomized_encoder.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
@@ -1604,23 +1605,31 @@ TEST_P(AutofillUploadTest, RichMetadata) {
     const AutofillUploadContents& upload = request.upload();
     EXPECT_EQ(upload.language(),
               form_structure.current_page_language().value());
-    ASSERT_TRUE(upload.has_randomized_form_metadata());
-    EXPECT_TRUE(upload.randomized_form_metadata().has_id());
-    EXPECT_TRUE(upload.randomized_form_metadata().has_name());
-    EXPECT_TRUE(upload.randomized_form_metadata().has_url());
-    ASSERT_TRUE(upload.randomized_form_metadata().url().has_checksum());
-    EXPECT_EQ(upload.randomized_form_metadata().url().checksum(), 3608731642);
-    EXPECT_EQ(3, upload.field_size());
-    for (const auto& f : upload.field()) {
-      ASSERT_TRUE(f.has_randomized_field_metadata());
-      EXPECT_TRUE(f.randomized_field_metadata().has_id());
-      EXPECT_TRUE(f.randomized_field_metadata().has_name());
-      EXPECT_TRUE(f.randomized_field_metadata().has_type());
-      EXPECT_TRUE(f.randomized_field_metadata().has_label());
-      EXPECT_TRUE(f.randomized_field_metadata().has_aria_label());
-      EXPECT_TRUE(f.randomized_field_metadata().has_aria_description());
-      EXPECT_TRUE(f.randomized_field_metadata().has_css_class());
-      EXPECT_TRUE(f.randomized_field_metadata().has_placeholder());
+    // Only first upload has metadata.
+    const bool expect_metadata = i == 0;
+    EXPECT_EQ(upload.has_randomized_form_metadata(), expect_metadata);
+    ASSERT_EQ(std::all_of(upload.field().begin(), upload.field().end(),
+                          [](AutofillUploadContents::Field field) {
+                            return field.has_randomized_field_metadata();
+                          }),
+              expect_metadata);
+    if (expect_metadata) {
+      EXPECT_TRUE(upload.randomized_form_metadata().has_id());
+      EXPECT_TRUE(upload.randomized_form_metadata().has_name());
+      EXPECT_TRUE(upload.randomized_form_metadata().has_url());
+      ASSERT_TRUE(upload.randomized_form_metadata().url().has_checksum());
+      EXPECT_EQ(upload.randomized_form_metadata().url().checksum(), 3608731642);
+      EXPECT_EQ(upload.field_size(), 3);
+      for (const auto& f : upload.field()) {
+        EXPECT_TRUE(f.randomized_field_metadata().has_id());
+        EXPECT_TRUE(f.randomized_field_metadata().has_name());
+        EXPECT_TRUE(f.randomized_field_metadata().has_type());
+        EXPECT_TRUE(f.randomized_field_metadata().has_label());
+        EXPECT_TRUE(f.randomized_field_metadata().has_aria_label());
+        EXPECT_TRUE(f.randomized_field_metadata().has_aria_description());
+        EXPECT_TRUE(f.randomized_field_metadata().has_css_class());
+        EXPECT_TRUE(f.randomized_field_metadata().has_placeholder());
+      }
     }
   }
 }

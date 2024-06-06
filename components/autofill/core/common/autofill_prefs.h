@@ -80,13 +80,21 @@ inline constexpr char kAutofillStatesDataDir[] = "autofill.states_data_dir";
 // metadata for randomized uploads. The value of this pref is a string.
 inline constexpr char kAutofillUploadEncodingSeed[] =
     "autofill.upload_encoding_seed";
-// Dictionary pref used to track which form signature uploads have been
+// Dictionary pref used to track which form signature vote uploads have been
 // performed. Each entry in the dictionary maps a form signature (reduced
-// via a 10-bit modulus) to a integer bit-field where each bit denotes whether
-// or not a given upload event has occurred.
-inline constexpr char kAutofillUploadEvents[] = "autofill.upload_events";
+// via a 10-bit modulus) to an integer bit-field where each bit denotes whether
+// or not a given vote upload event has occurred.
+inline constexpr char kAutofillVoteUploadEvents[] = "autofill.upload_events";
+// Dictionary pref used to track which form signature metadata uploads have been
+// performed. Each entry in the dictionary maps a form signature (reduced
+// via a 10-bit modulus) to an integer flag that denotes whether or not a given
+// metadata upload event has occurred.
+// TODO: b/333508542 - Update the description once metadata throttling is
+// implemented on Password Manager side as well.
+inline constexpr char kAutofillMetadataUploadEvents[] =
+    "autofill.metadata_upload_events";
 // The timestamp (seconds since the Epoch UTC) for when the the upload event
-// pref was last reset.
+// prefs was last reset.
 inline constexpr char kAutofillUploadEventsLastResetTimestamp[] =
     "autofill.upload_events_last_reset_timestamp";
 // Integer that is set to the last major version where the Autocomplete
