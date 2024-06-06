@@ -147,15 +147,18 @@ public class TabResumptionModuleBuilder implements ModuleProviderBuilder, Module
         if (mSuggestionEntrySourceRefCount == 0) {
             assert mSuggestionEntrySource == null;
             Profile profile = getRegularProfile();
-            boolean isV2Enabled = TabResumptionModuleUtils.TAB_RESUMPTION_V2.getValue();
             SuggestionBackend suggestionBackend =
-                    isV2Enabled
+                    TabResumptionModuleEnablement.SyncDerived.isV2Enabled()
                             ? new VisitedUrlRankingBackend(profile)
                             : new ForeignSessionSuggestionBackend(
                                     new ForeignSessionHelper(profile),
                                     (url) -> TabResumptionModuleUtils.shouldExcludeUrl(url));
             mSuggestionEntrySource =
-                    SyncDerivedSuggestionEntrySource.createFromProfile(profile, suggestionBackend);
+                    SyncDerivedSuggestionEntrySource.createFromProfile(
+                            profile,
+                            suggestionBackend,
+                            /* servesLocalTabs= */ TabResumptionModuleEnablement.SyncDerived
+                                    .isV2EnabledWithLocalTabs());
         }
         ++mSuggestionEntrySourceRefCount;
     }

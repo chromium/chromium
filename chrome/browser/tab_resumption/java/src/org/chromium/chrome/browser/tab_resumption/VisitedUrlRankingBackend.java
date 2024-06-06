@@ -53,7 +53,7 @@ public class VisitedUrlRankingBackend implements SuggestionBackend {
 
     /** Implements {@link SuggestionBackend} */
     @Override
-    public void readCached(Callback<List<SuggestionEntry>> callback) {
+    public void read(Callback<List<SuggestionEntry>> callback) {
         List<SuggestionEntry> suggestions = new ArrayList<SuggestionEntry>();
 
         // TODO(b/337858147): handles showing local Tabs if returned from

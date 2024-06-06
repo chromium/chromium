@@ -51,7 +51,7 @@ public class SyncDerivedSuggestionEntrySourceTest extends TestSupport {
     @Captor private ArgumentCaptor<Runnable> mUpdateObserverCaptor;
     @Captor private ArgumentCaptor<SignInStateObserver> mSignInStateObserverCaptor;
     @Captor private ArgumentCaptor<SyncStateChangedListener> mSyncStateChangedListenerCaptor;
-    @Captor private ArgumentCaptor<Callback<List<SuggestionEntry>>> mReadCachedCallbackCaptor;
+    @Captor private ArgumentCaptor<Callback<List<SuggestionEntry>>> mReadCallbackCaptor;
 
     private long mFakeTime;
     private List<ForeignSession> mFakeSuggestions;
@@ -92,9 +92,10 @@ public class SyncDerivedSuggestionEntrySourceTest extends TestSupport {
     @Test
     @SmallTest
     public void testMainFlow() {
-        plantSuggestionBackendReadCachedResult(makeForeignSessionSuggestionsA());
+        plantSuggestionBackendReadResult(makeForeignSessionSuggestionsA());
 
-        createEntrySource(/* isSignedIn= */ true, /* isSynced= */ true);
+        createEntrySource(
+                /* isSignedIn= */ true, /* isSynced= */ true, /* servesLocalTabs= */ false);
         Assert.assertTrue(mSource.canUseData());
 
         // Load initial suggestions.
@@ -111,7 +112,7 @@ public class SyncDerivedSuggestionEntrySourceTest extends TestSupport {
 
         // 3s elapses, change ForeignSession data, trigger update.
         mFakeTime += TimeUnit.SECONDS.toMillis(3);
-        plantSuggestionBackendReadCachedResult(makeForeignSessionSuggestionsB());
+        plantSuggestionBackendReadResult(makeForeignSessionSuggestionsB());
         mUpdateObserver.run();
 
         // Check data update callback.
@@ -127,9 +128,10 @@ public class SyncDerivedSuggestionEntrySourceTest extends TestSupport {
     @Test
     @SmallTest
     public void testPermissionChange() {
-        plantSuggestionBackendReadCachedResult(makeForeignSessionSuggestionsA());
+        plantSuggestionBackendReadResult(makeForeignSessionSuggestionsA());
 
-        createEntrySource(/* isSignedIn= */ true, /* isSynced= */ true);
+        createEntrySource(
+                /* isSignedIn= */ true, /* isSynced= */ true, /* servesLocalTabs= */ false);
         Assert.assertTrue(mSource.canUseData());
 
         // Load initial suggestions.
@@ -188,10 +190,11 @@ public class SyncDerivedSuggestionEntrySourceTest extends TestSupport {
     @Test
     @SmallTest
     public void testInitiallyNotSignedIn() {
-        plantSuggestionBackendReadCachedResult(makeForeignSessionSuggestionsA());
+        plantSuggestionBackendReadResult(makeForeignSessionSuggestionsA());
 
         // Initially not signed in, and sync is off.
-        createEntrySource(/* isSignedIn= */ false, /* isSynced= */ false);
+        createEntrySource(
+                /* isSignedIn= */ false, /* isSynced= */ false, /* servesLocalTabs= */ false);
         Assert.assertFalse(mSource.canUseData());
 
         // Load suggestions: There is none.
@@ -225,7 +228,55 @@ public class SyncDerivedSuggestionEntrySourceTest extends TestSupport {
         Assert.assertEquals(2, mDataChangedCounter);
     }
 
-    private void createEntrySource(boolean isSignedIn, boolean isSynced) {
+    @Test
+    @SmallTest
+    public void testServesLocalTabFalse() {
+        createEntrySource(
+                /* isSignedIn= */ true, /* isSynced= */ true, /* servesLocalTabs= */ false);
+        Assert.assertTrue(mSource.canUseData());
+
+        // Disable sync: Now Source is not usable. Re-enable sync.
+        toggleIsSyncedThenNotify(false);
+        Assert.assertFalse(mSource.canUseData());
+        toggleIsSyncedThenNotify(true);
+
+        // Plant, read, and verify first set of suggestion.
+        plantSuggestionBackendReadResult(makeForeignSessionSuggestionsA());
+        List<SuggestionEntry> suggestions1 = getSuggestionsSync();
+        assertSuggestionsEqual(makeForeignSessionSuggestionsA(), suggestions1);
+
+        // Plant new suggestions, but do not trigger sync.
+        plantSuggestionBackendReadResult(makeForeignSessionSuggestionsB());
+        List<SuggestionEntry> suggestions2 = getSuggestionsSync();
+        // Despite new suggestions, without triggering sync, cached suggestions are returned.
+        assertSuggestionsEqual(makeForeignSessionSuggestionsA(), suggestions2);
+    }
+
+    @Test
+    @SmallTest
+    public void testServesLocalTabTrue() {
+        createEntrySource(
+                /* isSignedIn= */ true, /* isSynced= */ true, /* servesLocalTabs= */ true);
+        Assert.assertTrue(mSource.canUseData());
+
+        // Disable sync: With `servesLocalTabs = true` the Source is still usable. Re-enable sync.
+        toggleIsSyncedThenNotify(false);
+        Assert.assertTrue(mSource.canUseData());
+        toggleIsSyncedThenNotify(true);
+
+        // Plant, read, and verify first set of suggestion.
+        plantSuggestionBackendReadResult(makeForeignSessionSuggestionsA());
+        List<SuggestionEntry> suggestions1 = getSuggestionsSync();
+        assertSuggestionsEqual(makeForeignSessionSuggestionsA(), suggestions1);
+
+        // Plant new suggestions, but do not trigger sync.
+        plantSuggestionBackendReadResult(makeForeignSessionSuggestionsB());
+        List<SuggestionEntry> suggestions2 = getSuggestionsSync();
+        // `servesLocalTabs = true` disables caching, thus new suggestions are read.
+        assertSuggestionsEqual(makeForeignSessionSuggestionsB(), suggestions2);
+    }
+
+    private void createEntrySource(boolean isSignedIn, boolean isSynced, boolean servesLocalTabs) {
         when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(isSignedIn);
         when(mSyncService.hasKeepEverythingSynced()).thenReturn(isSynced);
         mSource =
@@ -233,7 +284,8 @@ public class SyncDerivedSuggestionEntrySourceTest extends TestSupport {
                         /* signinManager= */ mSigninManager,
                         /* identityManager= */ mIdentityManager,
                         /* syncService= */ mSyncService,
-                        /* foreignSessionHelper= */ mSuggestionBackend);
+                        /* foreignSessionHelper= */ mSuggestionBackend,
+                        servesLocalTabs);
         mSource.addObserver(mSourceDataChangedObserver);
 
         verify(mSigninManager).addSignInStateObserver(mSignInStateObserverCaptor.capture());
@@ -262,10 +314,11 @@ public class SyncDerivedSuggestionEntrySourceTest extends TestSupport {
     }
 
     /**
-     * Plants callback-passed results for mSuggestionBackend.readCached(), similar to
-     * when(...).thenReturn(...) and less committal than using ArgumentCaptor.
+     * Plants callback-passed results for mSuggestionBackend.read(), similar to
+     * when(...).thenReturn(...), but less committal than using ArgumentCaptor, allowing for the
+     * possibility that read() never gets called.
      */
-    private void plantSuggestionBackendReadCachedResult(List<SuggestionEntry> suggestions) {
+    private void plantSuggestionBackendReadResult(List<SuggestionEntry> suggestions) {
         doAnswer(
                         (InvocationOnMock invocation) -> {
                             ((Callback<List<SuggestionEntry>>) invocation.getArguments()[0])
@@ -273,7 +326,7 @@ public class SyncDerivedSuggestionEntrySourceTest extends TestSupport {
                             return null;
                         })
                 .when(mSuggestionBackend)
-                .readCached(any(Callback.class));
+                .read(any(Callback.class));
     }
 
     /** Adapts `mSource.getSuggestions()` call to return results synchronously. */

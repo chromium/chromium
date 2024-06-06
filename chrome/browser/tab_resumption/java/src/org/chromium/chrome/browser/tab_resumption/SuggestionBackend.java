@@ -30,8 +30,8 @@ public interface SuggestionBackend {
     public void setUpdateObserver(Runnable listener);
 
     /**
-     * Reads a list of SuggstionEntry. This should run relatively fast, and can pass back cached or
-     * stale data.
+     * Reads a list of SuggstionEntry. This should run relatively fast, and may pass back cached or
+     * stale results.
      */
-    public void readCached(Callback<List<SuggestionEntry>> callback);
+    public void read(Callback<List<SuggestionEntry>> callback);
 }

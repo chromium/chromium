@@ -59,11 +59,19 @@ public class TabResumptionModuleEnablement {
             return SyncServiceFactory.getForProfile(profile).hasKeepEverythingSynced();
         }
 
+        static boolean isV2Enabled() {
+            return TabResumptionModuleUtils.TAB_RESUMPTION_V2.getValue();
+        }
+
+        static boolean isV2EnabledWithLocalTabs() {
+            return isV2Enabled()
+                    && TabResumptionModuleUtils.TAB_RESUMPTION_FETCH_LOCAL_TABS_BACKEND.getValue();
+        }
+
         static boolean shouldMakeProvider(Profile profile) {
             return isFeatureEnabled()
                     && isAllowedByConfig()
-                    && isSignedIn(profile)
-                    && isSyncEnabled(profile);
+                    && (isV2Enabled() || (isSignedIn(profile) && isSyncEnabled(profile)));
         }
     }
 

@@ -39,6 +39,7 @@ public class SyncDerivedSuggestionEntrySource
     private final SigninManager mSigninManager;
     private final SyncService mSyncService;
     private final SuggestionBackend mSuggestionBackend;
+    private final boolean mServesLocalTabs;
 
     private final ObserverList<SourceDataChangedObserver> mSourceDataChangedObservers;
 
@@ -55,17 +56,20 @@ public class SyncDerivedSuggestionEntrySource
      * @param identityManager To get initial signin state.
      * @param syncService To observe sync state changes.
      * @param foreignSessionHelper To fetch ForenSession data.
+     * @param servesLocalTabs Whether Local Tabs may be served as results.
      */
     @VisibleForTesting
     protected SyncDerivedSuggestionEntrySource(
             SigninManager signinManager,
             IdentityManager identityManager,
             SyncService syncService,
-            SuggestionBackend suggestionBackend) {
+            SuggestionBackend suggestionBackend,
+            boolean servesLocalTabs) {
         super();
         mSigninManager = signinManager;
         mSyncService = syncService;
         mSuggestionBackend = suggestionBackend;
+        mServesLocalTabs = servesLocalTabs;
 
         mSourceDataChangedObservers = new ObserverList<SourceDataChangedObserver>();
 
@@ -84,12 +88,13 @@ public class SyncDerivedSuggestionEntrySource
     }
 
     public static SyncDerivedSuggestionEntrySource createFromProfile(
-            Profile profile, SuggestionBackend suggestionBackend) {
+            Profile profile, SuggestionBackend suggestionBackend, boolean servesLocalTabs) {
         return new SyncDerivedSuggestionEntrySource(
                 /* signinManager= */ IdentityServicesProvider.get().getSigninManager(profile),
                 /* identityManager= */ IdentityServicesProvider.get().getIdentityManager(profile),
                 /* syncService= */ SyncServiceFactory.getForProfile(profile),
-                /* suggestionBackend= */ suggestionBackend);
+                suggestionBackend,
+                servesLocalTabs);
     }
 
     /** Implements {@link TabResumptionDataProvider} */
@@ -104,7 +109,7 @@ public class SyncDerivedSuggestionEntrySource
      * @return Whether user settings permit SuggestionBackend data to be used.
      */
     public boolean canUseData() {
-        return mIsSignedIn && mIsSynced;
+        return mServesLocalTabs || (mIsSignedIn && mIsSynced);
     }
 
     /** Adds observer for data change events. */
@@ -148,17 +153,18 @@ public class SyncDerivedSuggestionEntrySource
      */
     void getSuggestions(Callback<List<SuggestionEntry>> callback) {
         if (canUseData()) {
-            // Read cached data but trigger sync. If there's no new data then cached data is good
-            // enough. Otherwise new data would notify all observers, which might cause caller to
-            // call getSuggestion() again for data update.
+            // Read results and trigger sync. If there's no new data then results is good enough.
+            // Otherwise new data would notify all observers, which might cause caller to call
+            // getSuggestion() again for data update.
             mSuggestionBackend.triggerUpdate();
 
             if (mPassUseCachedResults) {
                 callback.onResult(mCachedSuggestionEntries);
             } else {
-                mPassUseCachedResults = true;
+                // Local tab info can update quickly, so don't cache if they're served.
+                mPassUseCachedResults = !mServesLocalTabs;
 
-                mSuggestionBackend.readCached(
+                mSuggestionBackend.read(
                         (List<SuggestionEntry> suggestions) -> {
                             mCachedSuggestionEntries.clear();
                             mCachedSuggestionEntries.addAll(suggestions);

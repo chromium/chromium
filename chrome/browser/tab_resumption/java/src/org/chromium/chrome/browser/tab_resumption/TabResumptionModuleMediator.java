@@ -176,15 +176,15 @@ public class TabResumptionModuleMediator {
             //
             // One way to address the ping issue is to always trigger INIT -> SHOW, render a
             // placeholder, and use a timeout that races against data request. If the timeout
-            // expires then cached data are deemed good-enough, and rendered.
+            // expires then potentially-cached data are deemed good-enough, and rendered.
             //
             // A drawback of the placeholder-timeout approach is that having no updates is common.
-            // So often placeholder would show, only to surrender to module rendered using cached
-            // data that was readily available to start with;
+            // So often placeholder would show, only to surrender to module rendered using
+            // potentially-cached data that was readily available to start with;
             //
-            // To better use cached data, we take the following hybrid approach:
-            // * TENTATIVE / "fast path" data: Fetch cached data on initial load. If "something"
-            //   then render and enter SHOWN. If "nothing" then stay in INIT and wait.
+            // To better use potentially-cached data, we take the following hybrid approach:
+            // * TENTATIVE / "fast path" data: Fetch potentially-cached data on initial load. If
+            //   "something" then render and enter SHOWN. If "nothing" then stay in INIT and wait.
             // * STABLE / "slow path" data: *If* "slow path" data arrives (can be triggered by
             //   `mDataProvider`), render UI with it, and enter SHOWN or GONE.
             //

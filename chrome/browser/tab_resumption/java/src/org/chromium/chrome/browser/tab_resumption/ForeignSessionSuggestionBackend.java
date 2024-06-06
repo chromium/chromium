@@ -52,7 +52,7 @@ public class ForeignSessionSuggestionBackend implements SuggestionBackend {
 
     /** Implements {@link SuggestionBackend} */
     @Override
-    public void readCached(Callback<List<SuggestionEntry>> callback) {
+    public void read(Callback<List<SuggestionEntry>> callback) {
         List<SuggestionEntry> suggestions = new ArrayList<SuggestionEntry>();
 
         long currentTimeMs = TabResumptionModuleUtils.getCurrentTimeMs();
