@@ -17,6 +17,7 @@
 #include "base/values.h"
 #include "components/attribution_reporting/aggregatable_debug_reporting_config.h"
 #include "components/attribution_reporting/aggregation_keys.h"
+#include "components/attribution_reporting/debug_types.mojom.h"
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_level_epsilon.h"
 #include "components/attribution_reporting/event_report_windows.h"
@@ -388,7 +389,11 @@ TEST(SourceRegistrationTest, ToJson) {
             "priority": "0",
             "source_event_id": "0",
             "trigger_data_matching": "modulus",
-            "trigger_specs": []
+            "trigger_specs": [],
+            "aggregatable_debug_reporting": {
+              "budget": 0,
+              "key_piece": "0x0"
+            }
           })json",
       },
       {
@@ -408,6 +413,16 @@ TEST(SourceRegistrationTest, ToJson) {
                 r.event_level_epsilon = EventLevelEpsilon(0);
                 r.trigger_specs =
                     TriggerSpecs(SourceType::kNavigation, EventReportWindows());
+                r.aggregatable_debug_reporting_config =
+                    *SourceAggregatableDebugReportingConfig::Create(
+                        /*budget=*/123,
+                        AggregatableDebugReportingConfig(
+                            /*key_piece=*/1,
+                            /*debug_data=*/
+                            {{mojom::DebugDataType::kSourceSuccess,
+                              *AggregatableDebugReportingContribution::Create(
+                                  /*key_piece=*/10, /*value=*/12)}},
+                            /*aggregation_coordinator_origin=*/std::nullopt));
               }),
           R"json({
             "aggregatable_report_window": 1,
@@ -428,7 +443,18 @@ TEST(SourceRegistrationTest, ToJson) {
             "source_event_id": "7",
             "max_event_level_reports": 8,
             "trigger_data_matching": "exact",
-            "event_level_epsilon": 0.0
+            "event_level_epsilon": 0.0,
+            "aggregatable_debug_reporting": {
+              "budget": 123,
+              "key_piece": "0x1",
+              "debug_data": [
+                {
+                  "key_piece": "0xa",
+                  "types": ["source-success"],
+                  "value": 12
+                }
+              ]
+            }
           })json",
       },
   };

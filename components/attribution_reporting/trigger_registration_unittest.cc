@@ -23,6 +23,7 @@
 #include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
+#include "components/attribution_reporting/debug_types.mojom.h"
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/filters.h"
@@ -312,7 +313,10 @@ TEST(TriggerRegistrationTest, ToJson) {
           TriggerRegistration(),
           R"json({
             "aggregatable_source_registration_time": "exclude",
-            "debug_reporting": false
+            "debug_reporting": false,
+            "aggregatable_debug_reporting": {
+              "key_piece": "0x0"
+            }
           })json",
       },
       {
@@ -332,6 +336,14 @@ TEST(TriggerRegistrationTest, ToJson) {
             r.aggregatable_trigger_config = *AggregatableTriggerConfig::Create(
                 SourceRegistrationTimeConfig::kExclude,
                 /*trigger_context_id=*/"123");
+            r.aggregatable_debug_reporting_config =
+                AggregatableDebugReportingConfig(
+                    /*key_piece=*/1,
+                    /*debug_data=*/
+                    {{mojom::DebugDataType::kTriggerNoMatchingSource,
+                      *AggregatableDebugReportingContribution::Create(
+                          /*key_piece=*/10, /*value=*/12)}},
+                    /*aggregation_coordinator_origin=*/std::nullopt);
           }),
           R"json({
             "aggregatable_source_registration_time": "exclude",
@@ -343,7 +355,17 @@ TEST(TriggerRegistrationTest, ToJson) {
             "event_trigger_data": [{"priority":"0","trigger_data":"0"}],
             "filters": [{"b": []}],
             "not_filters": [{"c": [], "_lookback_window": 2}],
-            "trigger_context_id": "123"
+            "trigger_context_id": "123",
+            "aggregatable_debug_reporting": {
+              "key_piece": "0x1",
+              "debug_data": [
+                {
+                  "types": ["trigger-no-matching-source"],
+                  "key_piece": "0xa",
+                  "value": 12
+                }
+              ]
+            }
           })json",
       },
   };
@@ -414,7 +436,10 @@ TEST(TriggerRegistrationTest, SerializeAggregationCoordinator) {
           TriggerRegistration(),
           R"json({
             "aggregatable_source_registration_time": "exclude",
-            "debug_reporting": false
+            "debug_reporting": false,
+            "aggregatable_debug_reporting": {
+              "key_piece": "0x0"
+            }
           })json",
       },
       {
@@ -425,7 +450,10 @@ TEST(TriggerRegistrationTest, SerializeAggregationCoordinator) {
           R"json({
             "aggregatable_source_registration_time": "exclude",
             "aggregation_coordinator_origin": "https://a.test",
-            "debug_reporting": false
+            "debug_reporting": false,
+            "aggregatable_debug_reporting": {
+              "key_piece": "0x0"
+            }
           })json",
       },
   };
