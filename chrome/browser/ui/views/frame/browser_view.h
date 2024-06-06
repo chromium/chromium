@@ -723,11 +723,9 @@ class BrowserView : public BrowserWindow,
 
   // content::WebContentsObserver:
   void DidFirstVisuallyNonEmptyPaint() override;
+
 #if BUILDFLAG(ENTERPRISE_WATERMARK) || \
     BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
-  void DidStartNavigation(
-      content::NavigationHandle* navigation_handle) override;
-
   // TODO: b/330960313 - DocumentOnLoad is not the best signal to use for
   // determining when a data protections should be enabled, FCP is a better
   // signal.
@@ -849,6 +847,20 @@ class BrowserView : public BrowserWindow,
   // NonClientFrameView to get the correct offset. See
   // TopContainerBackground::PaintThemeCustomImage for details.
   gfx::Point GetThemeOffsetFromBrowserView() const;
+
+  // Applies data protection settings if there are any to apply, otherwise
+  // delay clearing the data protection settings until the page loads.
+  //
+  // This is called from a finish navigation event to handle the case where the
+  // browser view is switching from a tab with data protections enabled to one
+  // without.  At the end of the navigation, the existing page is still visible
+  // to the user since the UI has not yet refreshed.  In this case the
+  // protections should remain in place.  Once the document finishes loading,
+  // `ApplyDataProtectionSettings()` will be called.  See
+  // `DocumentOnLoadCompletedInPrimaryMainFrame()`.
+  void DelayApplyDataProtectionSettingsIfEmpty(
+      base::WeakPtr<content::WebContents> expected_web_contents,
+      const enterprise_data_protection::UrlSettings& settings);
 
  protected:
   // Enumerates where the devtools are docked relative to the browser's main
@@ -1084,20 +1096,6 @@ class BrowserView : public BrowserWindow,
 
 #endif  // BUILDFLAG(ENTERPRISE_WATERMARK) ||
         // BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
-
-  // Applies data protection settings if there are any to apply, otherwise
-  // delay clearing the data protection settings until the page loads.
-  //
-  // This is called from a finish navigation event to handle the case where the
-  // browser view is switching from a tab with data protections enabled to one
-  // without.  At the end of the navigation, the existing page is still visible
-  // to the user since the UI has not yet refreshed.  In this case the
-  // protections should remain in place.  Once the document finishes loading,
-  // `ApplyDataProtectionSettings()` will be called.  See
-  // `DocumentOnLoadCompletedInPrimaryMainFrame()`.
-  void DelayApplyDataProtectionSettingsIfEmpty(
-      base::WeakPtr<content::WebContents> expected_web_contents,
-      const enterprise_data_protection::UrlSettings& settings);
 
   // The BrowserFrame that hosts this view.
   raw_ptr<BrowserFrame, DanglingUntriaged> frame_ = nullptr;

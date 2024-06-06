@@ -2740,17 +2740,6 @@ void BrowserView::TouchModeChanged() {
 
 #if BUILDFLAG(ENTERPRISE_WATERMARK) || \
     BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
-void BrowserView::DidStartNavigation(
-    content::NavigationHandle* navigation_handle) {
-  if (base::FeatureList::IsEnabled(features::kEnableWatermarkView)) {
-    enterprise_data_protection::DataProtectionNavigationObserver::
-        CreateForNavigationIfNeeded(
-            GetProfile(), navigation_handle,
-            base::BindOnce(
-                &BrowserView::DelayApplyDataProtectionSettingsIfEmpty,
-                weak_ptr_factory_.GetWeakPtr(), web_contents()->GetWeakPtr()));
-  }
-}
 
 void BrowserView::DocumentOnLoadCompletedInPrimaryMainFrame() {
   // It is possible for `clear_watermark_text_on_page_load_` to be set to false
