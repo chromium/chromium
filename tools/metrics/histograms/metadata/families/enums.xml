@@ -260,6 +260,12 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<enum name="OnDeviceControlsPinDialogError">
+  <int value="0" label="Invalid PIN format on setup"/>
+  <int value="1" label="Incorrect PIN on verification"/>
+  <int value="2" label="Forgot PIN link clicked"/>
+</enum>
+
 <enum name="ParentAccessCodeAction">
   <summary>Action resulting from parent access code dialog</summary>
   <int value="0" label="Validation success"/>

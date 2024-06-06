@@ -4,28 +4,29 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {AppSetupPinDialogElement} from 'chrome://os-settings/lazy_load.js';
+import {AppSetupPinDialogElement, AppSetupPinKeyboardElement, ParentalControlsPinDialogError} from 'chrome://os-settings/lazy_load.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
+import {FakeMetricsPrivate} from '../../fake_metrics_private.js';
 import {hasStringProperty} from '../../utils.js';
 
 suite('AppSetupPinKeyboardElementTest', () => {
   let setupPinDialog: AppSetupPinDialogElement;
+  let fakeMetricsPrivate: FakeMetricsPrivate;
 
-  async function initPage(): Promise<void> {
+  setup(() => {
+    fakeMetricsPrivate = new FakeMetricsPrivate();
+    chrome.metricsPrivate = fakeMetricsPrivate;
     setupPinDialog = document.createElement('app-setup-pin-dialog');
     document.body.appendChild(setupPinDialog);
-    await flushTasks();
-  }
+  });
 
   teardown(() => {
     setupPinDialog.remove();
   });
 
-  test(`Writing a pin that's too long shows an error message`, async () => {
-    await initPage();
-
+  test('Writing a pin that is too long shows an error message', async () => {
     const setupPinKeyboard =
         setupPinDialog.shadowRoot!.getElementById('setupPinKeyboard');
     assertTrue(!!setupPinKeyboard);
@@ -51,9 +52,7 @@ suite('AppSetupPinKeyboardElementTest', () => {
     assertFalse(problemDiv.hasAttribute('invisible'));
   });
 
-  test(`Writing a pin that's too short shows an error message`, async () => {
-    await initPage();
-
+  test('Writing a pin that is too short shows an error message', async () => {
     const setupPinKeyboard =
         setupPinDialog.shadowRoot!.getElementById('setupPinKeyboard');
     assertTrue(!!setupPinKeyboard);
@@ -79,10 +78,8 @@ suite('AppSetupPinKeyboardElementTest', () => {
   });
 
   test(
-      `Writing a pin that contains non-digits shows an error message`,
+      'Writing a pin that contains non-digits shows an error message',
       async () => {
-        await initPage();
-
         const setupPinKeyboard =
             setupPinDialog.shadowRoot!.getElementById('setupPinKeyboard');
         assertTrue(!!setupPinKeyboard);
@@ -108,10 +105,8 @@ suite('AppSetupPinKeyboardElementTest', () => {
       });
 
   test(
-      `Writing a pin that meets the requirements shows no error message`,
+      'Writing a pin that meets the requirements shows no error message',
       async () => {
-        await initPage();
-
         const setupPinKeyboard =
             setupPinDialog.shadowRoot!.getElementById('setupPinKeyboard');
         assertTrue(!!setupPinKeyboard);
@@ -135,4 +130,29 @@ suite('AppSetupPinKeyboardElementTest', () => {
         assertTrue(problemDiv.hasAttribute('invisible'));
         assertEquals(errorMessage, '');
       });
+
+  test('Submitting an invalid PIN records error to histogram', async () => {
+    const setupPinKeyboard =
+        setupPinDialog.shadowRoot!.querySelector<AppSetupPinKeyboardElement>(
+            '#setupPinKeyboard');
+    assertTrue(!!setupPinKeyboard);
+
+    const pinKeyboard =
+        setupPinKeyboard.shadowRoot!.getElementById('pinKeyboard');
+    assertTrue(!!pinKeyboard);
+    assertTrue(hasStringProperty(pinKeyboard, 'value'));
+
+    const pin = '1234';
+    pinKeyboard.value = pin;
+    await flushTasks();
+
+    setupPinKeyboard.doSubmit();
+    await flushTasks();
+
+    assertEquals(
+        1,
+        fakeMetricsPrivate.countMetricValue(
+            'ChromeOS.OnDeviceControls.PinDialogError',
+            ParentalControlsPinDialogError.INVALID_PIN_ON_SETUP));
+  });
 });

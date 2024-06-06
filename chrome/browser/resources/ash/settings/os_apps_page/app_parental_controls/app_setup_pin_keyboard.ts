@@ -19,6 +19,7 @@ import {PinKeyboardElement} from 'chrome://resources/ash/common/quick_unlock/pin
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app_setup_pin_keyboard.html.js';
+import {ParentalControlsPinDialogError, recordPinDialogError} from './metrics_utils.js';
 
 /**
  * Error type mapped to the corresponding i18n string.
@@ -180,6 +181,8 @@ export class AppSetupPinKeyboardElement extends AppSetupPinKeyboardElementBase {
   doSubmit(): void {
     if (!this.isConfirmStep) {
       if (!this.enableSubmit) {
+        recordPinDialogError(
+            ParentalControlsPinDialogError.INVALID_PIN_ON_SETUP);
         return;
       }
       this.initialPin_ = this.pinKeyboardValue_;

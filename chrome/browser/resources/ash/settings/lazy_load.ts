@@ -274,9 +274,10 @@ export {SettingsAppNotificationsManagerSubpage} from './os_apps_page/app_notific
 export {AppNotificationsSubpage} from './os_apps_page/app_notifications_page/app_notifications_subpage.js';
 export {SettingsAppParentalControlsSubpageElement} from './os_apps_page/app_parental_controls/app_parental_controls_subpage.js';
 export {AppSetupPinDialogElement} from './os_apps_page/app_parental_controls/app_setup_pin_dialog.js';
+export {AppSetupPinKeyboardElement} from './os_apps_page/app_parental_controls/app_setup_pin_keyboard.js';
 export {AppVerifyPinDialogElement} from './os_apps_page/app_parental_controls/app_verify_pin_dialog.js';
 export {BlockAppItemElement} from './os_apps_page/app_parental_controls/block_app_item.js';
-export {ParentalControlsDialogAction} from './os_apps_page/app_parental_controls/metrics_utils.js';
+export {ParentalControlsDialogAction, ParentalControlsPinDialogError} from './os_apps_page/app_parental_controls/metrics_utils.js';
 export {ManageIsolatedWebAppsSubpageElement} from './os_apps_page/manage_isolated_web_apps_page/manage_isolated_web_apps_subpage.js';
 export {SettingsBluetoothChangeDeviceNameDialogElement} from './os_bluetooth_page/os_bluetooth_change_device_name_dialog.js';
 export {SettingsBluetoothDeviceDetailSubpageElement} from './os_bluetooth_page/os_bluetooth_device_detail_subpage.js';

@@ -22,6 +22,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {PIN_LENGTH} from './app_setup_pin_keyboard.js';
 import {getTemplate} from './app_verify_pin_dialog.html.js';
+import {ParentalControlsPinDialogError, recordPinDialogError} from './metrics_utils.js';
 
 const AppVerifyPinDialogElementBase = PrefsMixin(I18nMixin(PolymerElement));
 
@@ -135,9 +136,14 @@ export class AppVerifyPinDialogElement extends AppVerifyPinDialogElementBase {
       this.showError_ = true;
       const length = this.pinValue_ ? this.pinValue_.length : 0;
       this.$.pinKeyboard.focusInput(0, length + 1);
+      recordPinDialogError(ParentalControlsPinDialogError.INCORRECT_PIN);
     }
 
     this.isVerificationPending_ = false;
+  }
+
+  private onForgotPinClick_(): void {
+    recordPinDialogError(ParentalControlsPinDialogError.FORGOT_PIN);
   }
 }
 

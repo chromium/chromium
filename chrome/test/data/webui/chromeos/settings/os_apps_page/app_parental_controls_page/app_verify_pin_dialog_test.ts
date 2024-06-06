@@ -4,17 +4,29 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {AppVerifyPinDialogElement} from 'chrome://os-settings/lazy_load.js';
-import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {AppVerifyPinDialogElement, ParentalControlsPinDialogError} from 'chrome://os-settings/lazy_load.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
+import {FakeMetricsPrivate} from '../../fake_metrics_private.js';
 import {hasStringProperty} from '../../utils.js';
 
 suite('AppVerifyPinDialogTest', () => {
   let verifyPinDialog: AppVerifyPinDialogElement;
+  let fakeMetricsPrivate: FakeMetricsPrivate;
 
   setup(() => {
+    fakeMetricsPrivate = new FakeMetricsPrivate();
+    chrome.metricsPrivate = fakeMetricsPrivate;
+
     verifyPinDialog = document.createElement('app-verify-pin-dialog');
+    verifyPinDialog.prefs = {
+      on_device_app_controls: {
+        pin: {
+          value: '123456',
+        },
+      },
+    };
     document.body.appendChild(verifyPinDialog);
   });
 
@@ -23,8 +35,7 @@ suite('AppVerifyPinDialogTest', () => {
   });
 
   test(
-      `Submit button should be disabled if a PIN with the wrong length is entered`,
-      async () => {
+      'Incorrect PIN length disables submit button', async () => {
         const verifyPinKeyboard =
             verifyPinDialog.shadowRoot!.getElementById('pinKeyboard');
 
@@ -43,8 +54,7 @@ suite('AppVerifyPinDialogTest', () => {
       });
 
   test(
-      `Submit button should be enabled if a PIN with the right length is entered`,
-      async () => {
+      'Correct PIN length enables submit button', async () => {
         const verifyPinKeyboard =
             verifyPinDialog.shadowRoot!.getElementById('pinKeyboard');
 
@@ -61,4 +71,43 @@ suite('AppVerifyPinDialogTest', () => {
         assertTrue(!!verifyPinSubmitButton);
         assertFalse(verifyPinSubmitButton.disabled);
       });
+
+  test('Submitting incorrect PIN records error to histogram', async () => {
+    const verifyPinKeyboard =
+        verifyPinDialog.shadowRoot!.getElementById('pinKeyboard');
+
+    assertTrue(!!verifyPinKeyboard);
+    assertTrue(hasStringProperty(verifyPinKeyboard, 'value'));
+
+    verifyPinKeyboard.value = '123123';
+    await flushTasks();
+    const verifyPinSubmitButton =
+        verifyPinDialog.shadowRoot!.querySelector<HTMLElement>('#dialog')!
+            .querySelector<HTMLButtonElement>('.action-button');
+
+    assertTrue(!!verifyPinSubmitButton);
+    verifyPinSubmitButton.click();
+    await flushTasks();
+
+    assertEquals(
+        1,
+        fakeMetricsPrivate.countMetricValue(
+            'ChromeOS.OnDeviceControls.PinDialogError',
+            ParentalControlsPinDialogError.INCORRECT_PIN));
+  });
+
+  test('Clicking forgot PIN records error to histogram', async () => {
+    const forgotPinLink =
+        verifyPinDialog.shadowRoot!.querySelector<HTMLElement>(
+            '#forgotPinLink');
+    assertTrue(!!forgotPinLink);
+    forgotPinLink.click();
+    await flushTasks();
+
+    assertEquals(
+        1,
+        fakeMetricsPrivate.countMetricValue(
+            'ChromeOS.OnDeviceControls.PinDialogError',
+            ParentalControlsPinDialogError.FORGOT_PIN));
+  });
 });

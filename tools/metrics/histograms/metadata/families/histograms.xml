@@ -296,6 +296,16 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="ChromeOS.OnDeviceControls.PinDialogError"
+    enum="OnDeviceControlsPinDialogError" expires_after="2024-12-12">
+  <owner>courtneywong@chromium.org</owner>
+  <owner>cros-families-eng@google.com</owner>
+  <summary>
+    Records if the user encounters an error when verifying or setting up a PIN
+    for on-device parental controls.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.OnDeviceControls.PinSetupCompleted" enum="Boolean"
     expires_after="2024-12-12">
   <owner>courtneywong@chromium.org</owner>
