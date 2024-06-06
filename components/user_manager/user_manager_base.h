@@ -172,7 +172,6 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   bool IsLoggedInAsManagedGuestSession() const override;
   bool IsLoggedInAsGuest() const override;
   bool IsLoggedInAsKioskApp() const override;
-  bool IsLoggedInAsArcKioskApp() const override;
   bool IsLoggedInAsWebKioskApp() const override;
   bool IsLoggedInAsAnyKioskApp() const override;
   bool IsLoggedInAsStub() const override;

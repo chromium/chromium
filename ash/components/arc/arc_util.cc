@@ -288,14 +288,13 @@ bool IsArcKioskAvailable() {
 }
 
 bool IsArcKioskMode() {
-  return user_manager::UserManager::IsInitialized() &&
-         user_manager::UserManager::Get()->IsLoggedInAsArcKioskApp();
+  // TODO(b/336756417): Remove
+  return false;
 }
 
 bool IsRobotOrOfflineDemoAccountMode() {
   return user_manager::UserManager::IsInitialized() &&
-         (user_manager::UserManager::Get()->IsLoggedInAsArcKioskApp() ||
-          user_manager::UserManager::Get()->IsLoggedInAsManagedGuestSession());
+         user_manager::UserManager::Get()->IsLoggedInAsManagedGuestSession();
 }
 
 bool IsArcAllowedForUser(const user_manager::User* user) {

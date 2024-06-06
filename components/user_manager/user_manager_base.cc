@@ -199,7 +199,7 @@ UserList UserManagerBase::FindLoginAllowedUsersFrom(
   for (User* user : users) {
     // Skip kiosk apps for login screen user list. Kiosk apps as pods (aka new
     // kiosk UI) is currently disabled and it gets the apps directly from
-    // KioskChromeAppManager, ArcKioskAppManager and WebKioskAppManager.
+    // KioskChromeAppManager and WebKioskAppManager.
     if (user->IsKioskType()) {
       continue;
     }
@@ -828,11 +828,6 @@ bool UserManagerBase::IsLoggedInAsGuest() const {
 bool UserManagerBase::IsLoggedInAsKioskApp() const {
   DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
   return IsUserLoggedIn() && active_user_->GetType() == UserType::kKioskApp;
-}
-
-bool UserManagerBase::IsLoggedInAsArcKioskApp() const {
-  // TODO(b/336756417): Remove this method
-  return false;
 }
 
 bool UserManagerBase::IsLoggedInAsWebKioskApp() const {

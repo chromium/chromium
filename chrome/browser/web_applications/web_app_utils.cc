@@ -324,10 +324,6 @@ bool AreWebAppsEnabled(Profile* profile) {
     return false;
   }
   auto* user_manager = user_manager::UserManager::Get();
-  // Never enable for ARC Kiosk sessions.
-  if (user_manager && user_manager->IsLoggedInAsArcKioskApp()) {
-    return false;
-  }
   // Don't enable if SWAs in Kiosk session are disabled for the next session
   // types.
   if (!base::FeatureList::IsEnabled(ash::features::kKioskEnableSystemWebApps)) {

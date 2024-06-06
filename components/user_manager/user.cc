@@ -278,11 +278,6 @@ User* User::CreateKioskAppUser(const AccountId& kiosk_app_account_id) {
   return new User(kiosk_app_account_id, UserType::kKioskApp);
 }
 
-User* User::CreateArcKioskAppUser(const AccountId& arc_kiosk_account_id) {
-  // TODO(b/336756417): Remove this method
-  NOTREACHED_NORETURN();
-}
-
 User* User::CreateWebKioskAppUser(const AccountId& web_kiosk_account_id) {
   return new User(web_kiosk_account_id, UserType::kWebKioskApp);
 }

@@ -305,10 +305,6 @@ bool FakeUserManager::IsLoggedInAsKioskApp() const {
   return active_user ? active_user->GetType() == UserType::kKioskApp : false;
 }
 
-bool FakeUserManager::IsLoggedInAsArcKioskApp() const {
-  return false;
-}
-
 bool FakeUserManager::IsLoggedInAsWebKioskApp() const {
   const User* active_user = GetActiveUser();
   return active_user ? active_user->GetType() == UserType::kWebKioskApp : false;

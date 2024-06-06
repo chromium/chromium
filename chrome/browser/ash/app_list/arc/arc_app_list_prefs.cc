@@ -1183,7 +1183,6 @@ void ArcAppListPrefs::SetLastLaunchTimeInternal(const std::string& app_id) {
         user_manager::UserManager::Get();
     if (arc::ArcSessionManager::Get()->skipped_terms_of_service_negotiation() &&
         !user_manager->IsLoggedInAsKioskApp() &&
-        !user_manager->IsLoggedInAsArcKioskApp() &&
         !ash::UserSessionManager::GetInstance()->ui_shown_time().is_null()) {
       UMA_HISTOGRAM_CUSTOM_TIMES(
           "Arc.FirstAppLaunchRequest.TimeDelta",
