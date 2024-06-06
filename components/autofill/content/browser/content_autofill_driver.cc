@@ -204,6 +204,14 @@ R RouteToAgent(AutofillDriverRouter& router,
                ActualArgs&&... args) {
   return (router.*router_fun)(
       [&agent_fun](autofill::AutofillDriver& target, AgentArgs... args) {
+        if (!target.IsInActiveFrame()) {
+          // We early-return rather than crashing or killing the renderer
+          // because Autofill might want to communicate with a frame that just
+          // became inactive due to race conditions. See crbug.com/345195973.
+          LOG_IF(WARNING, !target.IsInActiveFrame())
+              << "Skipped Autofill message for inactive frame";
+          return;
+        }
         mojom::AutofillAgent& agent =
             *static_cast<ContentAutofillDriver&>(target).GetAutofillAgent();
         (agent.*agent_fun)(std::forward<AgentArgs>(args)...);
