@@ -1448,7 +1448,7 @@ TEST(HlsTagsTest, ParseXPartTag) {
   EXPECT_EQ(result.tag.gap, false);
   ErrorTest<XPartTag>(
       "URI=\"foo.ts\",DURATION=" + base::NumberToString(MaxSeconds() + 1),
-      variable_dict, sub_buffer, ParseStatusCode::kValueOverflowsTimeDelta);
+      variable_dict, sub_buffer, ParseStatusCode::kMalformedTag);
 
   // Test BYTERANGE attribute
   ErrorTest<XPartTag>("URI=\"foo.ts\",DURATION=1,BYTERANGE=\"{$UNDEFINED}\"",
