@@ -471,7 +471,7 @@
     ],
 
     'chromeos_betty_include_unwind_tables_official_reclient': [
-      'chromeos_device_reclient', 'betty', 'include_unwind_tables', 'official',
+      'chromeos_device_reclient', 'betty', 'include_unwind_tables', 'official', 'is_skylab',
       'also_build_lacros_chrome_for_architecture_amd64', 'ozone_headless'
     ],
 
