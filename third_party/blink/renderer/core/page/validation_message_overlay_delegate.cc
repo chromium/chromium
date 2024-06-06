@@ -176,8 +176,8 @@ void ValidationMessageOverlayDelegate::CreatePage(const FrameOverlay& overlay) {
           ? mojom::blink::PreferredColorScheme::kDark
           : mojom::blink::PreferredColorScheme::kLight);
 
-  scoped_refptr<SharedBuffer> data = SharedBuffer::Create();
-  WriteDocument(data.get());
+  SegmentedBuffer data;
+  WriteDocument(data);
   float zoom_factor = anchor_->GetDocument().GetFrame()->PageZoomFactor();
   frame->SetPageZoomFactor(zoom_factor);
 
@@ -188,7 +188,8 @@ void ValidationMessageOverlayDelegate::CreatePage(const FrameOverlay& overlay) {
   bool destroyed = false;
   DCHECK(!destroyed_ptr_);
   destroyed_ptr_ = &destroyed;
-  frame->ForceSynchronousDocumentInstall(AtomicString("text/html"), data);
+  frame->ForceSynchronousDocumentInstall(AtomicString("text/html"),
+                                         std::move(data));
   if (destroyed)
     return;
   destroyed_ptr_ = nullptr;
@@ -222,13 +223,12 @@ void ValidationMessageOverlayDelegate::CreatePage(const FrameOverlay& overlay) {
   FrameView().UpdateAllLifecyclePhases(DocumentUpdateReason::kOverlay);
 }
 
-void ValidationMessageOverlayDelegate::WriteDocument(SharedBuffer* data) {
-  DCHECK(data);
+void ValidationMessageOverlayDelegate::WriteDocument(SegmentedBuffer& data) {
   PagePopupClient::AddString(
       "<!DOCTYPE html><head><meta charset='UTF-8'><meta name='color-scheme' "
       "content='light dark'><style>",
       data);
-  data->Append(UncompressResourceAsBinary(IDR_VALIDATION_BUBBLE_CSS));
+  data.Append(UncompressResourceAsBinary(IDR_VALIDATION_BUBBLE_CSS));
   PagePopupClient::AddString("</style></head>", data);
   PagePopupClient::AddString(
       Locale::DefaultLocale().IsRTL() ? "<body dir=rtl>" : "<body dir=ltr>",
@@ -240,7 +240,7 @@ void ValidationMessageOverlayDelegate::WriteDocument(SharedBuffer* data) {
       "<div id=spacer-top></div>"
       "<main id=bubble-body>",
       data);
-  data->Append(UncompressResourceAsBinary(IDR_VALIDATION_BUBBLE_ICON));
+  data.Append(UncompressResourceAsBinary(IDR_VALIDATION_BUBBLE_ICON));
   PagePopupClient::AddString(message_dir_ == TextDirection::kLtr
                                  ? "<div dir=ltr id=main-message></div>"
                                  : "<div dir=rtl id=main-message></div>",

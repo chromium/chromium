@@ -56,10 +56,10 @@ float PagePopupClient::ScaledZoomFactor() {
   return ZoomFactor() / scale_factor;
 }
 
-#define addLiteral(literal, data) data->Append(literal, sizeof(literal) - 1)
+#define addLiteral(literal, data) data.Append(literal, sizeof(literal) - 1)
 
 void PagePopupClient::AddJavaScriptString(const String& str,
-                                          SharedBuffer* data) {
+                                          SegmentedBuffer& data) {
   addLiteral("\"", data);
   StringBuilder builder;
   builder.ReserveCapacity(str.length());
@@ -88,8 +88,8 @@ void PagePopupClient::AddJavaScriptString(const String& str,
 
 void PagePopupClient::AddProperty(const char* name,
                                   const String& value,
-                                  SharedBuffer* data) {
-  data->Append(name, strlen(name));
+                                  SegmentedBuffer& data) {
+  data.Append(name, strlen(name));
   addLiteral(": ", data);
   AddJavaScriptString(value, data);
   addLiteral(",\n", data);
@@ -97,8 +97,8 @@ void PagePopupClient::AddProperty(const char* name,
 
 void PagePopupClient::AddProperty(const char* name,
                                   int value,
-                                  SharedBuffer* data) {
-  data->Append(name, strlen(name));
+                                  SegmentedBuffer& data) {
+  data.Append(name, strlen(name));
   addLiteral(": ", data);
   AddString(String::Number(value), data);
   addLiteral(",\n", data);
@@ -106,8 +106,8 @@ void PagePopupClient::AddProperty(const char* name,
 
 void PagePopupClient::AddProperty(const char* name,
                                   unsigned value,
-                                  SharedBuffer* data) {
-  data->Append(name, strlen(name));
+                                  SegmentedBuffer& data) {
+  data.Append(name, strlen(name));
   addLiteral(": ", data);
   AddString(String::Number(value), data);
   addLiteral(",\n", data);
@@ -115,8 +115,8 @@ void PagePopupClient::AddProperty(const char* name,
 
 void PagePopupClient::AddProperty(const char* name,
                                   bool value,
-                                  SharedBuffer* data) {
-  data->Append(name, strlen(name));
+                                  SegmentedBuffer& data) {
+  data.Append(name, strlen(name));
   addLiteral(": ", data);
   if (value)
     addLiteral("true", data);
@@ -127,8 +127,8 @@ void PagePopupClient::AddProperty(const char* name,
 
 void PagePopupClient::AddProperty(const char* name,
                                   double value,
-                                  SharedBuffer* data) {
-  data->Append(name, strlen(name));
+                                  SegmentedBuffer& data) {
+  data.Append(name, strlen(name));
   addLiteral(": ", data);
   AddString(String::Number(value), data);
   addLiteral(",\n", data);
@@ -136,8 +136,8 @@ void PagePopupClient::AddProperty(const char* name,
 
 void PagePopupClient::AddProperty(const char* name,
                                   const Vector<String>& values,
-                                  SharedBuffer* data) {
-  data->Append(name, strlen(name));
+                                  SegmentedBuffer& data) {
+  data.Append(name, strlen(name));
   addLiteral(": [", data);
   for (unsigned i = 0; i < values.size(); ++i) {
     if (i)
@@ -149,8 +149,8 @@ void PagePopupClient::AddProperty(const char* name,
 
 void PagePopupClient::AddProperty(const char* name,
                                   const gfx::Rect& rect,
-                                  SharedBuffer* data) {
-  data->Append(name, strlen(name));
+                                  SegmentedBuffer& data) {
+  data.Append(name, strlen(name));
   addLiteral(": {", data);
   AddProperty("x", rect.x(), data);
   AddProperty("y", rect.y(), data);
@@ -161,7 +161,7 @@ void PagePopupClient::AddProperty(const char* name,
 
 void PagePopupClient::AddLocalizedProperty(const char* name,
                                            int resource_id,
-                                           SharedBuffer* data) {
+                                           SegmentedBuffer& data) {
   AddProperty(name, GetLocale().QueryString(resource_id), data);
 }
 

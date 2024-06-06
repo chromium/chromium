@@ -404,8 +404,8 @@ WebPagePopupImpl::WebPagePopupImpl(
 
   page_->DidInitializeCompositing(*widget_base_->AnimationHost());
 
-  scoped_refptr<SharedBuffer> data = SharedBuffer::Create();
-  popup_client_->WriteDocument(data.get());
+  SegmentedBuffer data;
+  popup_client_->WriteDocument(data);
   frame->SetPageZoomFactor(popup_client_->ZoomFactor());
   frame->ForceSynchronousDocumentInstall(AtomicString("text/html"),
                                          std::move(data));

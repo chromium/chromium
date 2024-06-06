@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/core/html/html_style_element.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 
 namespace blink {
 
@@ -338,9 +339,10 @@ TEST_F(ElementRuleCollectorTest, MatchesNonUniversalHighlights) {
       "<bar xmlns='http://example.org/bar'/>"
       "<default xmlns='http://example.org/default'/>"
       "</body></html>";
-  scoped_refptr<SharedBuffer> data =
-      SharedBuffer::Create(markup.Utf8().data(), markup.length());
-  GetFrame().ForceSynchronousDocumentInstall(AtomicString("text/xml"), data);
+  SegmentedBuffer data;
+  data.Append(markup.Utf8().data(), markup.length());
+  GetFrame().ForceSynchronousDocumentInstall(AtomicString("text/xml"),
+                                             std::move(data));
 
   // Creates a StyleSheetContents with selector and optional default @namespace,
   // matches rules for originating element, then returns the non-universal flag

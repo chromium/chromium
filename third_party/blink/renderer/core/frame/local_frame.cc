@@ -2475,9 +2475,8 @@ bool LocalFrame::NeedsOcclusionTracking() const {
   return false;
 }
 
-void LocalFrame::ForceSynchronousDocumentInstall(
-    const AtomicString& mime_type,
-    scoped_refptr<const SharedBuffer> data) {
+void LocalFrame::ForceSynchronousDocumentInstall(const AtomicString& mime_type,
+                                                 const SegmentedBuffer& data) {
   CHECK(GetDocument()->IsInitialEmptyDocument());
   DCHECK(!Client()->IsLocalFrameClientImpl());
   DCHECK(GetPage());
@@ -2495,8 +2494,9 @@ void LocalFrame::ForceSynchronousDocumentInstall(
   DCHECK_EQ(document, GetDocument());
   DocumentParser* parser = document->OpenForNavigation(
       kForceSynchronousParsing, mime_type, AtomicString("UTF-8"));
-  for (const auto& segment : *data)
+  for (const auto& segment : data) {
     parser->AppendBytes(segment.data(), segment.size());
+  }
   parser->Finish();
 
   // Upon loading of SVGImages, log PageVisits in UseCounter if we did not

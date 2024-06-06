@@ -1377,13 +1377,14 @@ void InspectorOverlayAgent::LoadOverlayPageResource() {
   frame->View()->SetCanHaveScrollbars(false);
   frame->View()->SetBaseBackgroundColor(Color::kTransparent);
 
-  scoped_refptr<SharedBuffer> data = SharedBuffer::Create();
+  SegmentedBuffer data;
 
-  data->Append("<script>", static_cast<size_t>(8));
-  data->Append(UncompressResourceAsBinary(IDR_INSPECT_TOOL_MAIN_JS));
-  data->Append("</script>", static_cast<size_t>(9));
+  data.Append("<script>", static_cast<size_t>(8));
+  data.Append(UncompressResourceAsBinary(IDR_INSPECT_TOOL_MAIN_JS));
+  data.Append("</script>", static_cast<size_t>(9));
 
-  frame->ForceSynchronousDocumentInstall(AtomicString("text/html"), data);
+  frame->ForceSynchronousDocumentInstall(AtomicString("text/html"),
+                                         std::move(data));
 
   v8::Isolate* isolate = ToIsolate(frame);
   ScriptState* script_state = ToScriptStateForMainWorld(frame);
