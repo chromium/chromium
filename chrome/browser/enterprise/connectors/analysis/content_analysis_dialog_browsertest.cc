@@ -1201,7 +1201,8 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests,
   ui::AXNodeData textarea_data;
   textarea->GetViewAccessibility().GetAccessibleNodeData(&textarea_data);
   EXPECT_EQ(textarea_data.role, ax::mojom::Role::kTextField);
-  EXPECT_EQ(textarea->GetAccessibleRole(), ax::mojom::Role::kTextField);
+  EXPECT_EQ(textarea->GetViewAccessibility().GetCachedRole(),
+            ax::mojom::Role::kTextField);
   EXPECT_EQ(
       textarea_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
       label->GetViewAccessibility().GetCachedName());

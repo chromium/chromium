@@ -126,7 +126,8 @@ TEST_F(RequestSystemProxyCredentialsViewTest, TextfieldAccessibility) {
   auto* username_field = system_proxy_dialog_->username_textfield_for_testing();
   username_field->GetViewAccessibility().GetAccessibleNodeData(&username_data);
   EXPECT_EQ(username_data.role, ax::mojom::Role::kTextField);
-  EXPECT_EQ(username_field->GetAccessibleRole(), ax::mojom::Role::kTextField);
+  EXPECT_EQ(username_field->GetViewAccessibility().GetCachedRole(),
+            ax::mojom::Role::kTextField);
   EXPECT_EQ(
       username_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
       l10n_util::GetStringUTF16(IDS_SYSTEM_PROXY_AUTH_DIALOG_USERNAME_LABEL));
@@ -145,7 +146,8 @@ TEST_F(RequestSystemProxyCredentialsViewTest, TextfieldAccessibility) {
   auto* password_field = system_proxy_dialog_->password_textfield_for_testing();
   password_field->GetViewAccessibility().GetAccessibleNodeData(&password_data);
   EXPECT_EQ(password_data.role, ax::mojom::Role::kTextField);
-  EXPECT_EQ(password_field->GetAccessibleRole(), ax::mojom::Role::kTextField);
+  EXPECT_EQ(password_field->GetViewAccessibility().GetCachedRole(),
+            ax::mojom::Role::kTextField);
   EXPECT_EQ(
       password_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
       l10n_util::GetStringUTF16(IDS_SYSTEM_PROXY_AUTH_DIALOG_PASSWORD_LABEL));

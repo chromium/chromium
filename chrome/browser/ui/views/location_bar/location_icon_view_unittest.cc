@@ -163,7 +163,8 @@ TEST_F(LocationIconViewTest, IconViewAccessibleNameAndRole) {
             l10n_util::GetStringUTF16(IDS_TOOLTIP_LOCATION_ICON));
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
             l10n_util::GetStringUTF16(IDS_TOOLTIP_LOCATION_ICON));
-  EXPECT_EQ(view()->GetAccessibleRole(), ax::mojom::Role::kPopUpButton);
+  EXPECT_EQ(view()->GetViewAccessibility().GetCachedRole(),
+            ax::mojom::Role::kPopUpButton);
   EXPECT_EQ(data.role, ax::mojom::Role::kPopUpButton);
 
   delegate()->set_is_editing_or_empty(true);
@@ -174,7 +175,8 @@ TEST_F(LocationIconViewTest, IconViewAccessibleNameAndRole) {
             l10n_util::GetStringUTF16(IDS_ACC_SEARCH_ICON));
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
             l10n_util::GetStringUTF16(IDS_ACC_SEARCH_ICON));
-  EXPECT_EQ(view()->GetAccessibleRole(), ax::mojom::Role::kImage);
+  EXPECT_EQ(view()->GetViewAccessibility().GetCachedRole(),
+            ax::mojom::Role::kImage);
   EXPECT_EQ(data.role, ax::mojom::Role::kImage);
 
   delegate()->set_is_editing_or_empty(false);
@@ -185,6 +187,7 @@ TEST_F(LocationIconViewTest, IconViewAccessibleNameAndRole) {
   EXPECT_EQ(view()->GetViewAccessibility().GetCachedName(), u"Insecure");
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
             u"Insecure");
-  EXPECT_EQ(view()->GetAccessibleRole(), ax::mojom::Role::kPopUpButton);
+  EXPECT_EQ(view()->GetViewAccessibility().GetCachedRole(),
+            ax::mojom::Role::kPopUpButton);
   EXPECT_EQ(data.role, ax::mojom::Role::kPopUpButton);
 }
