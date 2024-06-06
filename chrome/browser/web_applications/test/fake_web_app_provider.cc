@@ -343,8 +343,9 @@ void FakeWebAppProvider::Shutdown() {
     icon_manager_->Shutdown();
   if (install_finalizer_)
     install_finalizer_->Shutdown();
-  if (registrar_)
-    registrar_->Shutdown();
+  if (os_integration_manager_) {
+    os_integration_manager_->Shutdown();
+  }
   is_registry_ready_ = false;
 }
 

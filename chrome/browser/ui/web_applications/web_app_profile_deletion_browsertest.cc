@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/app_service/web_app_publisher_helper.h"
+#include "chrome/browser/web_applications/locks/noop_lock.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
@@ -42,6 +43,38 @@
 #endif
 
 namespace web_app {
+
+class ProfileMarkedForDeletionObserver : public ProfileManagerObserver {
+ public:
+  explicit ProfileMarkedForDeletionObserver(Profile* profile)
+      : profile_(profile) {
+    if (ProfileManager* profile_manager =
+            g_browser_process->profile_manager()) {
+      profile_manager_observation_.Observe(profile_manager);
+    }
+  }
+
+  void Wait() { run_loop_.Run(); }
+
+  void OnProfileMarkedForPermanentDeletion(
+      Profile* profile_to_be_deleted) override {
+    if (profile_to_be_deleted != profile_) {
+      return;
+    }
+
+    run_loop_.Quit();
+  }
+
+  void OnProfileManagerDestroying() override {
+    profile_manager_observation_.Reset();
+  }
+
+ private:
+  raw_ptr<Profile> profile_ = nullptr;
+  base::RunLoop run_loop_;
+  base::ScopedObservation<ProfileManager, ProfileManagerObserver>
+      profile_manager_observation_{this};
+};
 
 class WebAppProfileDeletionBrowserTest : public WebAppBrowserTestBase {
  public:
@@ -137,49 +170,6 @@ class NoOpWebAppPublisherDelegate : public WebAppPublisherHelper::Delegate {
       std::optional<bool> accessing_microphone) override {}
 };
 
-// Flaky on Windows: https://crbug.com/1247547.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_AppRegistrarNotifiesProfileDeletion \
-  DISABLED_AppRegistrarNotifiesProfileDeletion
-#else
-#define MAYBE_AppRegistrarNotifiesProfileDeletion \
-  AppRegistrarNotifiesProfileDeletion
-#endif
-IN_PROC_BROWSER_TEST_F(WebAppProfileDeletionBrowserTest,
-                       MAYBE_AppRegistrarNotifiesProfileDeletion) {
-  GURL app_url(GetInstallableAppURL());
-  const webapps::AppId app_id = InstallPWA(app_url);
-
-  base::RunLoop run_loop;
-  WebAppTestRegistryObserverAdapter observer(&registrar());
-  observer.SetWebAppProfileWillBeDeletedDelegate(base::BindLambdaForTesting(
-      [&](const webapps::AppId& app_to_be_uninstalled) {
-        EXPECT_EQ(app_to_be_uninstalled, app_id);
-        EXPECT_TRUE(registrar().IsInstalled(app_id));
-        EXPECT_TRUE(registrar().GetAppById(app_id));
-
-        run_loop.Quit();
-      }));
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  // Create an additional profile. ScheduleProfileForDeletion() ensures another
-  // profile exists. If one does not exist, it will create one (async). As
-  // creation is async, and ScheduleProfileForDeletion() will close all
-  // browsers, triggering shutdown, creation will fail (DCHECK). By creating
-  // another profile first, we ensure this doesn't happen.
-  base::FilePath path_profile2 =
-      profile_manager->GenerateNextProfileDirectoryPath();
-  profiles::testing::CreateProfileSync(profile_manager, path_profile2);
-#endif
-
-  ScheduleCurrentProfileForDeletion();
-  run_loop.Run();
-
-  EXPECT_FALSE(registrar().IsInstalled(app_id));
-  EXPECT_FALSE(registrar().GetAppById(app_id));
-}
-
 IN_PROC_BROWSER_TEST_F(WebAppProfileDeletionBrowserTest, OsIntegrationRemoved) {
   const GURL app_url = GetInstallableAppURL();
 
@@ -213,6 +203,42 @@ IN_PROC_BROWSER_TEST_F(WebAppProfileDeletionBrowserTest, OsIntegrationRemoved) {
 
   ASSERT_TRUE(app_id_future.Wait());
   EXPECT_EQ(app_id_future.Get(), app_id);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppProfileDeletionBrowserTest,
+                       CommandsNotScheduledAfterProfileMarkedForDeletion) {
+  // Create a new profile.
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  CreateSession(test_account_id_);
+  Profile& profile_to_delete = StartUserSession(test_account_id_);
+#else
+  base::FilePath profile_path_to_delete =
+      profile_manager->GenerateNextProfileDirectoryPath();
+  Profile& profile_to_delete = profiles::testing::CreateProfileSync(
+      profile_manager, profile_path_to_delete);
+#endif
+
+  WebAppCommandScheduler& command_scheduler =
+      WebAppProvider::GetForTest(&profile_to_delete)->scheduler();
+  ProfileMarkedForDeletionObserver deletion_observer(&profile_to_delete);
+
+  profile_manager->GetDeleteProfileHelper().MaybeScheduleProfileForDeletion(
+      profile_to_delete.GetPath(), base::DoNothing(),
+      ProfileMetrics::DELETE_PROFILE_USER_MANAGER);
+  deletion_observer.Wait();
+
+  // Scheduling a test command post profile deletion should automatically be
+  // stopped and the callback run.
+  base::test::TestFuture<bool> commands_not_scheduled_future;
+  command_scheduler.ScheduleCallbackWithResult(
+      "TestCommandPostProfileDeletion", web_app::NoopLockDescription(),
+      base::BindOnce(
+          [](web_app::NoopLock&, base::Value::Dict&) { return true; }),
+      commands_not_scheduled_future.GetCallback(), /*arg_for_shutdown=*/false);
+
+  ASSERT_TRUE(commands_not_scheduled_future.Wait());
+  ASSERT_FALSE(commands_not_scheduled_future.Get());
 }
 
 using WebAppProfileDeletionBrowserTest_WebAppPublisher =

@@ -154,21 +154,10 @@ void WebAppTestRegistryObserverAdapter::
   app_protocol_settings_changed_delegate_ = std::move(delegate);
 }
 
-void WebAppTestRegistryObserverAdapter::SetWebAppProfileWillBeDeletedDelegate(
-    WebAppProfileWillBeDeletedDelegate delegate) {
-  app_profile_will_be_deleted_delegate_ = std::move(delegate);
-}
-
 void WebAppTestRegistryObserverAdapter::OnWebAppsWillBeUpdatedFromSync(
     const std::vector<const WebApp*>& new_apps_state) {
   if (app_will_be_updated_from_sync_delegate_)
     app_will_be_updated_from_sync_delegate_.Run(new_apps_state);
-}
-
-void WebAppTestRegistryObserverAdapter::OnWebAppProfileWillBeDeleted(
-    const webapps::AppId& app_id) {
-  if (app_profile_will_be_deleted_delegate_)
-    app_profile_will_be_deleted_delegate_.Run(app_id);
 }
 
 void WebAppTestRegistryObserverAdapter::OnWebAppLastBadgingTimeChanged(

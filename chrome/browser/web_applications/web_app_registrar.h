@@ -21,7 +21,6 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/types/strong_alias.h"
-#include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
@@ -36,7 +35,7 @@
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/skia/include/core/SkColor.h"
 
-class ProfileManager;
+class Profile;
 
 namespace apps {
 struct ShareTarget;
@@ -71,12 +70,12 @@ using InstallableAppCount =
     base::StrongAlias<class InstallableAppCountTag, int>;
 
 // A registry model. This is a read-only container, which owns WebApp objects.
-class WebAppRegistrar : public ProfileManagerObserver {
+class WebAppRegistrar {
  public:
   explicit WebAppRegistrar(Profile* profile);
   WebAppRegistrar(const WebAppRegistrar&) = delete;
   WebAppRegistrar& operator=(const WebAppRegistrar&) = delete;
-  ~WebAppRegistrar() override;
+  ~WebAppRegistrar();
 
   bool is_empty() const { return registry_.empty(); }
 
@@ -92,7 +91,6 @@ class WebAppRegistrar : public ProfileManagerObserver {
 
   void SetProvider(base::PassKey<WebAppProvider>, WebAppProvider& provider);
   void Start();
-  void Shutdown();
 
   base::WeakPtr<WebAppRegistrar> AsWeakPtr();
 
@@ -594,11 +592,6 @@ class WebAppRegistrar : public ProfileManagerObserver {
       bool is_preferred);
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-  // ProfileManagerObserver:
-  void OnProfileMarkedForPermanentDeletion(
-      Profile* profile_to_be_deleted) override;
-  void OnProfileManagerDestroying() override;
-
   // A filter must return false to skip the |web_app|.
   using Filter = bool (*)(const WebApp& web_app);
 
@@ -645,7 +638,7 @@ class WebAppRegistrar : public ProfileManagerObserver {
       Filter filter_;
     };
 
-    AppSet(const WebAppRegistrar* registrar, Filter filter, bool empty);
+    AppSet(const WebAppRegistrar* registrar, Filter filter);
     AppSet(AppSet&&) = default;
     AppSet(const AppSet&) = delete;
     AppSet& operator=(const AppSet&) = delete;
@@ -662,7 +655,6 @@ class WebAppRegistrar : public ProfileManagerObserver {
    private:
     const raw_ptr<const WebAppRegistrar> registrar_;
     const Filter filter_;
-    const bool empty_;
 #if DCHECK_IS_ON()
     const size_t mutations_count_;
 #endif
@@ -684,8 +676,6 @@ class WebAppRegistrar : public ProfileManagerObserver {
  protected:
   Profile* profile() const { return profile_; }
 
-  void NotifyWebAppProfileWillBeDeleted(const webapps::AppId& app_id);
-
   Registry& registry() { return registry_; }
   void SetRegistry(Registry&& registry);
 
@@ -693,8 +683,6 @@ class WebAppRegistrar : public ProfileManagerObserver {
 
   // Gets the IDs for all apps in `app_set`.
   std::vector<webapps::AppId> GetAppIdsForAppSet(const AppSet& app_set) const;
-
-  bool registry_profile_being_deleted_ = false;
 
  private:
   // Returns if the given app_id is the most recently installed application of
@@ -716,8 +704,6 @@ class WebAppRegistrar : public ProfileManagerObserver {
   const raw_ptr<Profile> profile_;
   raw_ptr<WebAppProvider> provider_ = nullptr;
 
-  base::ScopedObservation<ProfileManager, ProfileManagerObserver>
-      profile_manager_observation_{this};
   base::ObserverList<WebAppRegistrarObserver, /*check_empty=*/true> observers_;
 
   Registry registry_;
@@ -739,7 +725,7 @@ class WebAppRegistrar : public ProfileManagerObserver {
 class WebAppRegistrarMutable : public WebAppRegistrar {
  public:
   explicit WebAppRegistrarMutable(Profile* profile);
-  ~WebAppRegistrarMutable() override;
+  ~WebAppRegistrarMutable();
 
   void InitRegistry(Registry&& registry);
 

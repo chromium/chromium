@@ -306,7 +306,7 @@ void WebAppProvider::Shutdown() {
   web_app_policy_manager_->Shutdown();
   icon_manager_->Shutdown();
   install_finalizer_->Shutdown();
-  registrar_->Shutdown();
+  os_integration_manager_->Shutdown();
   is_registry_ready_ = false;
 }
 

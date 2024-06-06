@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_protocol_handler_manager.h"
@@ -24,13 +25,12 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
-#include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/browser/web_applications/web_app_registrar_observer.h"
 #include "components/custom_handlers/protocol_handler.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/webapps/common/web_app_id.h"
 
+class ProfileManager;
 class Profile;
 class ScopedProfileKeepAlive;
 
@@ -50,7 +50,7 @@ using GetShortcutInfoCallback =
 // all OS hooks during Web App lifecycle.
 // It contains individual OS integration managers and takes
 // care of inter-dependencies among them.
-class OsIntegrationManager : public WebAppRegistrarObserver {
+class OsIntegrationManager : public ProfileManagerObserver {
  public:
   using UpdateShortcutsForAllAppsCallback =
       base::RepeatingCallback<void(Profile*, base::OnceClosure)>;
@@ -89,6 +89,7 @@ class OsIntegrationManager : public WebAppRegistrarObserver {
                            WebAppProvider& provider);
 
   virtual void Start();
+  void Shutdown();
 
   // Start OS Integration synchronization from external callsites. This should
   // be the only point of call into OsIntegrationManager from external places
@@ -138,12 +139,13 @@ class OsIntegrationManager : public WebAppRegistrarObserver {
 
   virtual FakeOsIntegrationManager* AsTestOsIntegrationManager();
 
-  // WebAppRegistrarObserver:
-  void OnWebAppProfileWillBeDeleted(const webapps::AppId& app_id) override;
-  void OnAppRegistrarDestroyed() override;
-
   void SetForceUnregisterCalledForTesting(
       base::RepeatingCallback<void(const webapps::AppId&)> on_force_unregister);
+
+  // ProfileManagerObserver:
+  void OnProfileMarkedForPermanentDeletion(
+      Profile* profile_to_be_deleted) override;
+  void OnProfileManagerDestroying() override;
 
  protected:
   WebAppProtocolHandlerManager* protocol_handler_manager() {
@@ -183,6 +185,11 @@ class OsIntegrationManager : public WebAppRegistrarObserver {
       const webapps::AppId& app_id,
       std::unique_ptr<proto::WebAppOsIntegrationState> desired_states,
       base::OnceClosure callback);
+
+  // If a profile is marked for deletion, remove all OS integration for an app
+  // installed for that profile.
+  void UnregisterOsIntegrationOnProfileMarkedForDeletion(
+      const webapps::AppId& app_id);
 
   // Called when ForceUnregisterOsIntegrationSubManager has finished
   // unregistering sub managers. `keep_alive` is reset to allow the
@@ -224,8 +231,8 @@ class OsIntegrationManager : public WebAppRegistrarObserver {
   base::RepeatingCallback<void(const webapps::AppId&)>
       force_unregister_callback_for_testing_ = base::DoNothing();
 
-  base::ScopedObservation<WebAppRegistrar, WebAppRegistrarObserver>
-      registrar_observation_{this};
+  base::ScopedObservation<ProfileManager, ProfileManagerObserver>
+      profile_manager_observation_{this};
 
   base::WeakPtrFactory<OsIntegrationManager> weak_ptr_factory_{this};
 };

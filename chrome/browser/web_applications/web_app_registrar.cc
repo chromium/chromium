@@ -27,7 +27,6 @@
 #include "base/strings/to_string.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/web_applications/install_state.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
@@ -204,13 +203,6 @@ void WebAppRegistrar::NotifyWebAppFirstInstallTimeChanged(
     const base::Time& time) {
   for (WebAppRegistrarObserver& observer : observers_) {
     observer.OnWebAppFirstInstallTimeChanged(app_id, time);
-  }
-}
-
-void WebAppRegistrar::NotifyWebAppProfileWillBeDeleted(
-    const webapps::AppId& app_id) {
-  for (WebAppRegistrarObserver& observer : observers_) {
-    observer.OnWebAppProfileWillBeDeleted(app_id);
   }
 }
 
@@ -574,9 +566,6 @@ void WebAppRegistrar::NotifyAlwaysShowToolbarInFullscreenChanged(
 #endif
 
 const WebApp* WebAppRegistrar::GetAppById(const webapps::AppId& app_id) const {
-  if (registry_profile_being_deleted_)
-    return nullptr;
-
   auto it = registry_.find(app_id);
   if (it != registry_.end() && WebAppSourceSupported(*it->second))
     return it->second.get();
@@ -585,9 +574,6 @@ const WebApp* WebAppRegistrar::GetAppById(const webapps::AppId& app_id) const {
 }
 
 const WebApp* WebAppRegistrar::GetAppByStartUrl(const GURL& start_url) const {
-  if (registry_profile_being_deleted_)
-    return nullptr;
-
   for (auto const& it : registry_) {
     if (WebAppSourceSupported(*it.second) &&
         it.second->start_url() == start_url)
@@ -598,13 +584,11 @@ const WebApp* WebAppRegistrar::GetAppByStartUrl(const GURL& start_url) const {
 
 std::vector<webapps::AppId>
 WebAppRegistrar::GetAppsFromSyncAndPendingInstallation() const {
-  AppSet apps_in_sync_install = AppSet(
-      this,
-      [](const WebApp& web_app) {
+  AppSet apps_in_sync_install =
+      AppSet(this, [](const WebApp& web_app) {
         return WebAppSourceSupported(web_app) &&
                web_app.is_from_sync_and_pending_installation();
-      },
-      /*empty=*/registry_profile_being_deleted_);
+      });
 
   std::vector<webapps::AppId> app_ids;
   for (const WebApp& app : apps_in_sync_install)
@@ -614,14 +598,12 @@ WebAppRegistrar::GetAppsFromSyncAndPendingInstallation() const {
 }
 
 std::vector<webapps::AppId> WebAppRegistrar::GetAppsPendingUninstall() const {
-  AppSet apps_in_sync_uninstall = AppSet(
-      this,
-      [](const WebApp& web_app) {
+  AppSet apps_in_sync_uninstall =
+      AppSet(this, [](const WebApp& web_app) {
         return WebAppSourceSupported(web_app) &&
                !web_app.is_from_sync_and_pending_installation() &&
                web_app.is_uninstalling();
-      },
-      /*empty=*/registry_profile_being_deleted_);
+      });
 
   std::vector<webapps::AppId> app_ids;
   for (const WebApp& app : apps_in_sync_uninstall)
@@ -644,10 +626,6 @@ void WebAppRegistrar::SetProvider(base::PassKey<WebAppProvider>,
 }
 
 void WebAppRegistrar::Start() {
-  // Profile manager can be null in unit tests.
-  if (ProfileManager* profile_manager = g_browser_process->profile_manager())
-    profile_manager_observation_.Observe(profile_manager);
-
   int num_user_installed_apps =
       std::get<InstallableAppCount>(CountTotalUserInstalledAppsIncludingDiy())
           .value();
@@ -676,10 +654,6 @@ void WebAppRegistrar::Start() {
   base::UmaHistogramCounts1000("WebApp.InstalledCount.ByUserInMultipleProfiles",
                                num_multi_profile_apps);
 #endif
-}
-
-void WebAppRegistrar::Shutdown() {
-  profile_manager_observation_.Reset();
 }
 
 base::WeakPtr<WebAppRegistrar> WebAppRegistrar::AsWeakPtr() {
@@ -1628,31 +1602,9 @@ bool WebAppRegistrar::GetWindowControlsOverlayEnabled(
   return web_app ? web_app->window_controls_overlay_enabled() : false;
 }
 
-void WebAppRegistrar::OnProfileMarkedForPermanentDeletion(
-    Profile* profile_to_be_deleted) {
-  if (profile() != profile_to_be_deleted)
-    return;
-
-  for (const webapps::AppId& app_id :
-       GetAppIdsForAppSet(GetAppsIncludingStubs())) {
-    NotifyWebAppProfileWillBeDeleted(app_id);
-  }
-  // We can't do registry_.clear() here because it makes in-memory registry
-  // diverged from the sync server registry and from the on-disk registry
-  // (WebAppDatabase/LevelDB and "Web Applications" profile directory).
-  registry_profile_being_deleted_ = true;
-}
-
-void WebAppRegistrar::OnProfileManagerDestroying() {
-  profile_manager_observation_.Reset();
-}
-
-WebAppRegistrar::AppSet::AppSet(const WebAppRegistrar* registrar,
-                                Filter filter,
-                                bool empty)
+WebAppRegistrar::AppSet::AppSet(const WebAppRegistrar* registrar, Filter filter)
     : registrar_(registrar),
-      filter_(filter),
-      empty_(empty)
+      filter_(filter)
 #if DCHECK_IS_ON()
       ,
       mutations_count_(registrar->mutations_count_)
@@ -1668,8 +1620,6 @@ WebAppRegistrar::AppSet::~AppSet() {
 }
 
 WebAppRegistrar::AppSet::iterator WebAppRegistrar::AppSet::begin() {
-  if (empty_)
-    return end();
   return iterator(registrar_->registry_.begin(), registrar_->registry_.end(),
                   filter_);
 }
@@ -1680,8 +1630,6 @@ WebAppRegistrar::AppSet::iterator WebAppRegistrar::AppSet::end() {
 }
 
 WebAppRegistrar::AppSet::const_iterator WebAppRegistrar::AppSet::begin() const {
-  if (empty_)
-    return end();
   return const_iterator(registrar_->registry_.begin(),
                         registrar_->registry_.end(), filter_);
 }
@@ -1692,21 +1640,18 @@ WebAppRegistrar::AppSet::const_iterator WebAppRegistrar::AppSet::end() const {
 }
 
 WebAppRegistrar::AppSet WebAppRegistrar::GetAppsIncludingStubs() const {
-  return AppSet(
-      this,
-      [](const WebApp& web_app) { return WebAppSourceSupported(web_app); },
-      /*empty=*/registry_profile_being_deleted_);
+  return AppSet(this, [](const WebApp& web_app) {
+    return WebAppSourceSupported(web_app);
+  });
 }
 
 WebAppRegistrar::AppSet WebAppRegistrar::GetApps() const {
   return AppSet(
-      this,
-      [](const WebApp& web_app) {
+      this, [](const WebApp& web_app) {
         return WebAppSourceSupported(web_app) &&
                !web_app.is_from_sync_and_pending_installation() &&
                !web_app.is_uninstalling();
-      },
-      /*empty=*/registry_profile_being_deleted_);
+      });
 }
 
 base::Value WebAppRegistrar::AsDebugValue() const {
@@ -1805,13 +1750,11 @@ WebApp* WebAppRegistrarMutable::GetAppByIdMutable(
 
 WebAppRegistrar::AppSet WebAppRegistrarMutable::GetAppsMutable() {
   return AppSet(
-      this,
-      [](const WebApp& web_app) {
+      this, [](const WebApp& web_app) {
         return WebAppSourceSupported(web_app) &&
                !web_app.is_from_sync_and_pending_installation() &&
                !web_app.is_uninstalling();
-      },
-      /*empty=*/registry_profile_being_deleted_);
+      });
 }
 
 bool IsRegistryEqual(const Registry& registry,

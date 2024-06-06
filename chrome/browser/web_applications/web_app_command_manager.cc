@@ -20,7 +20,10 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/pass_key.h"
 #include "base/values.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/locks/lock.h"
 #include "chrome/browser/web_applications/locks/web_app_lock_manager.h"
@@ -52,6 +55,10 @@ void WebAppCommandManager::SetProvider(base::PassKey<WebAppProvider>,
 
 void WebAppCommandManager::Start() {
   started_ = true;
+  // Profile manager can be null in unit tests.
+  if (ProfileManager* profile_manager = g_browser_process->profile_manager()) {
+    profile_manager_observation_.Observe(profile_manager);
+  }
   std::vector<std::pair<std::unique_ptr<internal::CommandBase>, base::Location>>
       to_schedule;
   std::swap(commands_waiting_for_start_, to_schedule);
@@ -137,6 +144,7 @@ void WebAppCommandManager::Shutdown() {
     return;
   }
   is_in_shutdown_ = true;
+  profile_manager_observation_.Reset();
   weak_ptr_factory_reset_on_shutdown_.InvalidateWeakPtrs();
   AddValueToLog(base::Value("Shutdown has begun"));
 
@@ -265,6 +273,18 @@ void WebAppCommandManager::OnCommandComplete(
   if (commands_.empty() && run_loop_for_testing_) {
     run_loop_for_testing_->Quit();
   }
+}
+
+void WebAppCommandManager::OnProfileMarkedForPermanentDeletion(
+    Profile* profile_to_be_deleted) {
+  if (profile_ != profile_to_be_deleted) {
+    return;
+  }
+  Shutdown();
+}
+
+void WebAppCommandManager::OnProfileManagerDestroying() {
+  profile_manager_observation_.Reset();
 }
 
 void WebAppCommandManager::ClearSharedWebContentsIfUnused() {

@@ -3,8 +3,11 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/web_applications/isolated_web_apps/test/iwa_test_server_configurator.h"
+
 #include <string>
+
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
 
