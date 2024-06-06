@@ -1211,6 +1211,13 @@ void RenderViewContextMenu::InitMenu() {
     AppendPrintItem();
   }
 
+  // ITEM_GROUP_SMART_SELECTION is for selected text that is not a link.
+  if (features::IsReadAnythingEnabled() &&
+      content_type_->SupportsGroup(
+          ContextMenuContentType::ITEM_GROUP_SMART_SELECTION)) {
+    AppendReadingModeItem();
+  }
+
   // Partial Translate is not supported on ChromeOS.
 #if !BUILDFLAG(IS_CHROMEOS)
   if (content_type_->SupportsGroup(
@@ -1238,21 +1245,6 @@ void RenderViewContextMenu::InitMenu() {
     menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
     AppendLanguageSettings();
     AppendPlatformEditableItems();
-  }
-
-  // Show Read Anything option if it's not already open in the side panel.
-  // Only show it on the context menu for the page, selections without links,
-  // and editables.
-  if (features::IsReadAnythingEnabled() &&
-      (content_type_->SupportsGroup(ContextMenuContentType::ITEM_GROUP_PAGE) ||
-       content_type_->SupportsGroup(
-           ContextMenuContentType::ITEM_GROUP_SMART_SELECTION) ||
-       content_type_->SupportsGroup(
-           ContextMenuContentType::ITEM_GROUP_EDITABLE))) {
-    if (GetBrowser() && GetBrowser()->is_type_normal() &&
-        !IsReadAnythingEntryShowing(GetBrowser())) {
-      AppendReadingModeItem();
-    }
   }
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
@@ -2212,6 +2204,9 @@ void RenderViewContextMenu::AppendPageItems() {
   if (IsRegionSearchEnabled()) {
     AppendRegionSearchItem();
   }
+  if (features::IsReadAnythingEnabled()) {
+    AppendReadingModeItem();
+  }
 
   // Note: `has_sharing_menu_items = true` also implies a separator was added
   // for sharing section.
@@ -2322,8 +2317,12 @@ void RenderViewContextMenu::AppendMediaRouterItem() {
 }
 
 void RenderViewContextMenu::AppendReadingModeItem() {
-  menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE,
-                                  IDS_CONTENT_CONTEXT_READING_MODE);
+  // Show Read Anything option if it's not already open in the side panel.
+  if (GetBrowser() && GetBrowser()->is_type_normal() &&
+      !IsReadAnythingEntryShowing(GetBrowser())) {
+    menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE,
+                                    IDS_CONTENT_CONTEXT_READING_MODE);
+  }
 }
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
@@ -2550,6 +2549,9 @@ void RenderViewContextMenu::AppendOtherEditableItems() {
                                     IDS_CONTENT_CONTEXT_SELECTALL);
   }
 
+  if (features::IsReadAnythingEnabled()) {
+    AppendReadingModeItem();
+  }
   menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
 }
 
