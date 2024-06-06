@@ -22,6 +22,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   std::vector<uint8_t> edid;
   edid.assign(data, data + size);
   // Ctor already parses |edid|, which is what we want here.
-  display::EdidParser edid_parser(edid);
+  display::EdidParser edid_parser(std::move(edid));
   return 0;
 }

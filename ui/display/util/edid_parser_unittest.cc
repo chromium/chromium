@@ -888,6 +888,10 @@ class EDIDParserTest : public TestWithParam<TestParams> {
 };
 
 TEST_P(EDIDParserTest, ParseEdids) {
+  std::vector<uint8_t> expected_edid(
+      GetParam().edid_blob, GetParam().edid_blob + GetParam().edid_blob_length);
+  EXPECT_EQ(parser_.edid_blob(), expected_edid);
+
   EXPECT_EQ(parser_.manufacturer_id(), GetParam().manufacturer_id);
   EXPECT_EQ(parser_.product_id(), GetParam().product_id);
   EXPECT_EQ(parser_.block_zero_serial_number_hash(),

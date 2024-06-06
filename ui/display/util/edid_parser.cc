@@ -100,8 +100,9 @@ BlockZeroSerialNumberType GetSerialNumberType(
 }
 }  // namespace
 
-EdidParser::EdidParser(const std::vector<uint8_t>& edid_blob, bool is_external)
-    : is_external_display_(is_external),
+EdidParser::EdidParser(std::vector<uint8_t>&& edid_blob, bool is_external)
+    : edid_blob_(std::move(edid_blob)),
+      is_external_display_(is_external),
       manufacturer_id_(0),
       product_id_(0),
       year_of_manufacture_(display::kInvalidYearOfManufacture),
@@ -109,7 +110,7 @@ EdidParser::EdidParser(const std::vector<uint8_t>& edid_blob, bool is_external)
       bits_per_channel_(-1),
       primaries_({0}),
       audio_formats_(0) {
-  ParseEdid(edid_blob);
+  ParseEdid(edid_blob_);
 }
 
 EdidParser::EdidParser(EdidParser&& other) = default;

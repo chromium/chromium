@@ -140,9 +140,11 @@ uint32_t ScanEdidBitstreams() {
 
     if (first) {
       first = false;
-      bitstream_mask = display::EdidParser(edid_blob).audio_formats();
+      bitstream_mask =
+          display::EdidParser(std::move(edid_blob)).audio_formats();
     } else {
-      bitstream_mask &= display::EdidParser(edid_blob).audio_formats();
+      bitstream_mask &=
+          display::EdidParser(std::move(edid_blob)).audio_formats();
     }
   }
 

@@ -186,14 +186,14 @@ TEST(DisplayUtilTest, GetColorSpaceFromEdid) {
       .fWY = 0.329102f};
   skcms_Matrix3x3 expected_hpz32x_toXYZ50_matrix;
   expected_hpz32x_primaries.toXYZD50(&expected_hpz32x_toXYZ50_matrix);
-  const std::vector<uint8_t> hpz32x_edid(kHPz32x,
-                                         kHPz32x + std::size(kHPz32x) - 1);
+  std::vector<uint8_t> hpz32x_edid(kHPz32x, kHPz32x + std::size(kHPz32x) - 1);
   const gfx::ColorSpace expected_hpz32x_color_space =
       gfx::ColorSpace::CreateCustom(
           expected_hpz32x_toXYZ50_matrix,
           skcms_TransferFunction({2.2, 1, 0, 0, 0, 0, 0}));
   EXPECT_EQ(expected_hpz32x_color_space.ToString(),
-            GetColorSpaceFromEdid(display::EdidParser(hpz32x_edid)).ToString());
+            GetColorSpaceFromEdid(display::EdidParser(std::move(hpz32x_edid)))
+                .ToString());
   histogram_tester.ExpectBucketCount(
       "DrmUtil.GetColorSpaceFromEdid.ChecksOutcome",
       static_cast<base::HistogramBase::Sample>(
@@ -211,13 +211,14 @@ TEST(DisplayUtilTest, GetColorSpaceFromEdid) {
                                                               .fWY = 0.329102f};
   skcms_Matrix3x3 expected_samus_toXYZ50_matrix;
   expected_samus_primaries.toXYZD50(&expected_samus_toXYZ50_matrix);
-  const std::vector<uint8_t> samus_edid(kSamus, kSamus + std::size(kSamus) - 1);
+  std::vector<uint8_t> samus_edid(kSamus, kSamus + std::size(kSamus) - 1);
   const gfx::ColorSpace expected_samus_color_space =
       gfx::ColorSpace::CreateCustom(
           expected_samus_toXYZ50_matrix,
           skcms_TransferFunction({2.5, 1, 0, 0, 0, 0, 0}));
   EXPECT_EQ(expected_samus_color_space.ToString(),
-            GetColorSpaceFromEdid(display::EdidParser(samus_edid)).ToString());
+            GetColorSpaceFromEdid(display::EdidParser(std::move(samus_edid)))
+                .ToString());
   histogram_tester.ExpectBucketCount(
       "DrmUtil.GetColorSpaceFromEdid.ChecksOutcome",
       static_cast<base::HistogramBase::Sample>(
@@ -239,9 +240,10 @@ TEST(DisplayUtilTest, GetColorSpaceFromEdid) {
       gfx::ColorSpace::PrimaryID::BT709, gfx::ColorSpace::TransferID::CUSTOM,
       gfx::ColorSpace::MatrixID::RGB, gfx::ColorSpace::RangeID::FULL,
       /*custom_primary_matrix=*/nullptr, &eve_transfer);
-  const std::vector<uint8_t> eve_edid(kEve, kEve + std::size(kEve) - 1);
+  std::vector<uint8_t> eve_edid(kEve, kEve + std::size(kEve) - 1);
   EXPECT_EQ(expected_eve_color_space.ToString(),
-            GetColorSpaceFromEdid(display::EdidParser(eve_edid)).ToString());
+            GetColorSpaceFromEdid(display::EdidParser(std::move(eve_edid)))
+                .ToString());
   histogram_tester.ExpectBucketCount(
       "DrmUtil.GetColorSpaceFromEdid.ChecksOutcome",
       static_cast<base::HistogramBase::Sample>(
@@ -259,13 +261,14 @@ TEST(DisplayUtilTest, GetColorSpaceFromEdid) {
                                                             .fWY = 0.32910f};
   skcms_Matrix3x3 expected_hdr_toXYZ50_matrix;
   expected_hdr_primaries.toXYZD50(&expected_hdr_toXYZ50_matrix);
-  const std::vector<uint8_t> hdr_edid(kHDR, kHDR + std::size(kHDR) - 1);
+  std::vector<uint8_t> hdr_edid(kHDR, kHDR + std::size(kHDR) - 1);
   const gfx::ColorSpace expected_hdr_color_space =
       gfx::ColorSpace::CreateCustom(expected_hdr_toXYZ50_matrix,
                                     gfx::ColorSpace::TransferID::PQ);
   EXPECT_TRUE(expected_hdr_color_space.IsHDR());
   EXPECT_EQ(expected_hdr_color_space.ToString(),
-            GetColorSpaceFromEdid(display::EdidParser(hdr_edid)).ToString());
+            GetColorSpaceFromEdid(display::EdidParser(std::move(hdr_edid)))
+                .ToString());
   histogram_tester.ExpectBucketCount(
       "DrmUtil.GetColorSpaceFromEdid.ChecksOutcome",
       static_cast<base::HistogramBase::Sample>(
@@ -273,10 +276,10 @@ TEST(DisplayUtilTest, GetColorSpaceFromEdid) {
       4);
 
   // Test with gamma marked as non-existent.
-  const std::vector<uint8_t> no_gamma_edid(
+  std::vector<uint8_t> no_gamma_edid(
       kEdidWithNoGamma, kEdidWithNoGamma + std::size(kEdidWithNoGamma) - 1);
   const gfx::ColorSpace no_gamma_color_space =
-      GetColorSpaceFromEdid(display::EdidParser(no_gamma_edid));
+      GetColorSpaceFromEdid(display::EdidParser(std::move(no_gamma_edid)));
   EXPECT_FALSE(no_gamma_color_space.IsValid());
   histogram_tester.ExpectBucketCount(
       "DrmUtil.GetColorSpaceFromEdid.ChecksOutcome",
@@ -297,30 +300,31 @@ TEST(DisplayUtilTest, GetColorSpaceFromEdid) {
                                                            .fWY = 0.3290};
   skcms_Matrix3x3 expected_p3_to_XYZ50_matrix;
   expected_p3_primaries.toXYZD50(&expected_p3_to_XYZ50_matrix);
-  const std::vector<uint8_t> p3_edid(kScreeboP3,
-                                     kScreeboP3 + std::size(kScreeboP3) - 1);
+  std::vector<uint8_t> p3_edid(kScreeboP3,
+                               kScreeboP3 + std::size(kScreeboP3) - 1);
   const gfx::ColorSpace expected_p3_color_space = gfx::ColorSpace::CreateCustom(
       expected_p3_to_XYZ50_matrix, gfx::ColorSpace::TransferID::PQ);
   EXPECT_TRUE(expected_p3_color_space.IsWide());
   EXPECT_EQ(expected_p3_color_space.ToString(),
-            GetColorSpaceFromEdid(display::EdidParser(p3_edid)).ToString());
+            GetColorSpaceFromEdid(display::EdidParser(std::move(p3_edid)))
+                .ToString());
 }
 
 TEST(DisplayUtilTest, GetInvalidColorSpaceFromEdid) {
   base::HistogramTester histogram_tester;
-  const std::vector<uint8_t> empty_edid;
+  std::vector<uint8_t> empty_edid;
   EXPECT_EQ(gfx::ColorSpace(),
-            GetColorSpaceFromEdid(display::EdidParser(empty_edid)));
+            GetColorSpaceFromEdid(display::EdidParser(std::move(empty_edid))));
   histogram_tester.ExpectBucketCount(
       "DrmUtil.GetColorSpaceFromEdid.ChecksOutcome",
       static_cast<base::HistogramBase::Sample>(
           EdidColorSpaceChecksOutcome::kErrorPrimariesAreaTooSmall),
       1);
 
-  const std::vector<uint8_t> invalid_edid(
-      kInvalidEdid, kInvalidEdid + std::size(kInvalidEdid) - 1);
+  std::vector<uint8_t> invalid_edid(kInvalidEdid,
+                                    kInvalidEdid + std::size(kInvalidEdid) - 1);
   const gfx::ColorSpace invalid_color_space =
-      GetColorSpaceFromEdid(display::EdidParser(invalid_edid));
+      GetColorSpaceFromEdid(display::EdidParser(std::move(invalid_edid)));
   EXPECT_FALSE(invalid_color_space.IsValid());
   histogram_tester.ExpectBucketCount(
       "DrmUtil.GetColorSpaceFromEdid.ChecksOutcome",
@@ -328,10 +332,9 @@ TEST(DisplayUtilTest, GetInvalidColorSpaceFromEdid) {
           EdidColorSpaceChecksOutcome::kErrorPrimariesAreaTooSmall),
       2);
 
-  const std::vector<uint8_t> sst210_edid(kSST210,
-                                         kSST210 + std::size(kSST210) - 1);
+  std::vector<uint8_t> sst210_edid(kSST210, kSST210 + std::size(kSST210) - 1);
   const gfx::ColorSpace sst210_color_space =
-      GetColorSpaceFromEdid(display::EdidParser(sst210_edid));
+      GetColorSpaceFromEdid(display::EdidParser(std::move(sst210_edid)));
   EXPECT_FALSE(sst210_color_space.IsValid()) << sst210_color_space.ToString();
   histogram_tester.ExpectBucketCount(
       "DrmUtil.GetColorSpaceFromEdid.ChecksOutcome",
@@ -339,10 +342,10 @@ TEST(DisplayUtilTest, GetInvalidColorSpaceFromEdid) {
           EdidColorSpaceChecksOutcome::kErrorBadCoordinates),
       1);
 
-  const std::vector<uint8_t> sst210_edid_2(
+  std::vector<uint8_t> sst210_edid_2(
       kSST210Corrected, kSST210Corrected + std::size(kSST210Corrected) - 1);
   const gfx::ColorSpace sst210_color_space_2 =
-      GetColorSpaceFromEdid(display::EdidParser(sst210_edid_2));
+      GetColorSpaceFromEdid(display::EdidParser(std::move(sst210_edid_2)));
   EXPECT_FALSE(sst210_color_space_2.IsValid())
       << sst210_color_space_2.ToString();
   histogram_tester.ExpectBucketCount(
@@ -351,11 +354,11 @@ TEST(DisplayUtilTest, GetInvalidColorSpaceFromEdid) {
           EdidColorSpaceChecksOutcome::kErrorPrimariesAreaTooSmall),
       3);
 
-  const std::vector<uint8_t> broken_blue_edid(
+  std::vector<uint8_t> broken_blue_edid(
       kBrokenBluePrimaries,
       kBrokenBluePrimaries + std::size(kBrokenBluePrimaries) - 1);
   const gfx::ColorSpace broken_blue_color_space =
-      GetColorSpaceFromEdid(display::EdidParser(broken_blue_edid));
+      GetColorSpaceFromEdid(display::EdidParser(std::move(broken_blue_edid)));
   EXPECT_FALSE(broken_blue_color_space.IsValid())
       << broken_blue_color_space.ToString();
   histogram_tester.ExpectBucketCount(
@@ -368,9 +371,9 @@ TEST(DisplayUtilTest, GetInvalidColorSpaceFromEdid) {
 }
 
 TEST(DisplayUtilTest, GetAudioPassthroughFromEdid) {
-  const std::vector<uint8_t> audio_edid(kDTSAudio,
-                                        kDTSAudio + std::size(kDTSAudio) - 1);
-  EXPECT_EQ(display::EdidParser(audio_edid).audio_formats(),
+  std::vector<uint8_t> audio_edid(kDTSAudio,
+                                  kDTSAudio + std::size(kDTSAudio) - 1);
+  EXPECT_EQ(display::EdidParser(std::move(audio_edid)).audio_formats(),
             display::EdidParser::kAudioBitstreamPcmLinear |
                 display::EdidParser::kAudioBitstreamDts |
                 display::EdidParser::kAudioBitstreamDtsHd);

@@ -561,7 +561,7 @@ GetDisplayInfosAndInvalidCrtcs(const DrmWrapper& drm) {
                                 edid_blob_ptr + edid_blob->length);
       const bool is_external = GetDisplayConnectionType(connector) !=
                                display::DISPLAY_CONNECTION_TYPE_INTERNAL;
-      edid_parser = display::EdidParser(edid, is_external);
+      edid_parser = display::EdidParser(std::move(edid), is_external);
     } else {
       VLOG(1) << "Failed to get EDID blob for connector "
               << connector->connector_id;
@@ -727,18 +727,12 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
   gfx::Size active_pixel_size;
   std::optional<uint16_t> vsync_rate_min;
 
-  ScopedDrmPropertyBlobPtr edid_blob(
-      GetDrmPropertyBlob(drm, info->connector(), "EDID"));
-  std::vector<uint8_t> edid;
-  if (edid_blob) {
-    DCHECK(edid_blob->length);
-    edid.assign(static_cast<uint8_t*>(edid_blob->data),
-                static_cast<uint8_t*>(edid_blob->data) + edid_blob->length);
-  }
-
   const std::optional<display::EdidParser>& edid_parser = info->edid_parser();
   base::UmaHistogramBoolean("DrmUtil.CreateDisplaySnapshot.HasEdidBlob",
                             edid_parser.has_value());
+  const std::vector<uint8_t>& edid = edid_parser.has_value()
+                                         ? edid_parser->edid_blob()
+                                         : std::vector<uint8_t>();
   if (edid_parser.has_value()) {
     display_name = edid_parser->display_name();
     active_pixel_size = edid_parser->active_pixel_size();
