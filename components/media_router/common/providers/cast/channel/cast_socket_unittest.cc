@@ -600,14 +600,17 @@ class SslCastSocketTest : public CastSocketTestBase {
 
   std::unique_ptr<TestCastSocketBase> socket_;
 
-  // |server_socket_| is used for the *RealSSL tests in order to test the
+  // `server_socket_` is used for the *RealSSL tests in order to test the
   // CastSocket over a real SSL socket.  The other members below are used to
-  // initialize |server_socket_|.
-  std::unique_ptr<net::SSLServerSocket> server_socket_;
+  // initialize `server_socket_`.
   std::unique_ptr<net::SSLServerContext> server_context_;
   std::unique_ptr<crypto::RSAPrivateKey> server_private_key_;
   scoped_refptr<net::X509Certificate> server_cert_;
   net::SSLServerConfig server_ssl_config_;
+
+  // `server_socket_` must be declared below objects that are passed to it as
+  // raw pointers, to avoid dangling pointer warnings.
+  std::unique_ptr<net::SSLServerSocket> server_socket_;
 };
 
 }  // namespace
