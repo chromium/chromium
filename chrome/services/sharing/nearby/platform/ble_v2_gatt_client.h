@@ -6,6 +6,7 @@
 #define CHROME_SERVICES_SHARING_NEARBY_PLATFORM_BLE_V2_GATT_CLIENT_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "device/bluetooth/public/mojom/device.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
@@ -92,6 +93,7 @@ class BleV2GattClient : public ::nearby::api::ble_v2::GattClient {
       std::optional<std::string>* read_characteristic_result,
       base::WaitableEvent* read_characteristic_waitable_event);
   void OnReadCharacteristic(
+      base::TimeTicks gatt_read_characteristic_start_time,
       std::optional<std::string>* read_characteristic_result,
       base::WaitableEvent* read_characteristic_waitable_event,
       bluetooth::mojom::GattResult result,

@@ -8,6 +8,7 @@
 #include "base/time/time.h"
 #include "device/bluetooth/bluetooth_gatt_service.h"
 #include "device/bluetooth/public/mojom/adapter.mojom.h"
+#include "device/bluetooth/public/mojom/device.mojom.h"
 
 namespace nearby::chrome::metrics {
 
@@ -53,6 +54,10 @@ void RecordConnectToRemoteGattServerResult(bool success);
 void RecordConnectToRemoteGattServerFailureReason(
     bluetooth::mojom::ConnectResult failure_reason);
 void RecordConnectToRemoteGattServerDuration(base::TimeDelta duration);
+void RecordGattClientReadCharacteristicResult(bool success);
+void RecordGattClientReadCharacteristicFailureReason(
+    bluetooth::mojom::GattResult failure_reason);
+void RecordGattClientReadCharacteristicDuration(base::TimeDelta duration);
 
 }  // namespace nearby::chrome::metrics
 

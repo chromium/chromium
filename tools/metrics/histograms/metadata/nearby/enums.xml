@@ -64,6 +64,21 @@ chromium-metrics-reviews@google.com.
   <int value="20" label="Wakelock"/>
 </enum>
 
+<enum name="NearbyConnectionsGattResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Unknown"/>
+  <int value="2" label="Failed"/>
+  <int value="3" label="In Progress"/>
+  <int value="4" label="Invalid Length"/>
+  <int value="5" label="Not Permitted"/>
+  <int value="6" label="Not Authorized"/>
+  <int value="7" label="Not Paired"/>
+  <int value="8" label="Not Supported"/>
+  <int value="9" label="Service Not Found"/>
+  <int value="10" label="Characteristic Not Found"/>
+  <int value="11" label="Descriptor Not Found"/>
+</enum>
+
 <enum name="NearbyConnectionsMedium">
   <int value="0" label="Unknown"/>
   <int value="1" label="mDNS (deprecated)"/>

@@ -80,6 +80,53 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Nearby.Connections.BleV2.GattClient.ReadCharacteristic.Duration"
+    units="ms" expires_after="2025-04-30">
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the success or failure of reading a GATT characteristic from a
+    remote GATT server once a GATT connection has been established. Emitted when
+    the local ChromeOS device has established a GATT connection with the remote
+    device during the BLE V2 scanning flow and is attempting to read data from
+    the remote device's GATT server. Records the duration of successfully
+    reading a GATT characteristic from a remote GATT server once a GATT
+    connection has been established. No metric is emitted on failures.
+  </summary>
+</histogram>
+
+<histogram
+    name="Nearby.Connections.BleV2.GattClient.ReadCharacteristic.FailureReason"
+    enum="NearbyConnectionsGattResult" expires_after="2025-04-30">
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the error code of a failure of reading a GATT characteristic from a
+    remote GATT server once a GATT connection has been established. Emitted when
+    the local ChromeOS device has established a GATT connection with the remote
+    device during the BLE V2 scanning flow and is attempting to read data from
+    the remote device's GATT server. This metrics tracks the failure reason of
+    the Bluetooth layer read attempt, and does not capture other failure reasons
+    like if the characteristic or service uuid is not already known to the GATT
+    client. Note: because this metric is solely about failure reason, there are
+    no metrics expected to be emitted to the Success bucket.
+  </summary>
+</histogram>
+
+<histogram name="Nearby.Connections.BleV2.GattClient.ReadCharacteristic.Result"
+    enum="BooleanSuccess" expires_after="2025-04-30">
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the success or failure of reading a GATT characteristic from a
+    remote GATT server once a GATT connection has been established. Emitted when
+    the local ChromeOS device has established a GATT connection with the remote
+    device during the BLE V2 scanning flow and is attempting to read data from
+    the remote device's GATT server.
+  </summary>
+</histogram>
+
+<histogram
     name="Nearby.Connections.BleV2.GattServer.CreateCharacteristic.Result"
     enum="BooleanSuccess" expires_after="2025-04-30">
   <owner>julietlevesque@google.com</owner>

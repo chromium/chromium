@@ -109,4 +109,24 @@ void RecordConnectToRemoteGattServerDuration(base::TimeDelta duration) {
       "Nearby.Connections.BleV2.ConnectToGattServer.Duration", duration);
 }
 
+void RecordGattClientReadCharacteristicResult(bool success) {
+  base::UmaHistogramBoolean(
+      "Nearby.Connections.BleV2.GattClient.ReadCharacteristic.Result", success);
+}
+
+void RecordGattClientReadCharacteristicFailureReason(
+    bluetooth::mojom::GattResult failure_reason) {
+  CHECK(failure_reason != bluetooth::mojom::GattResult::SUCCESS)
+      << __func__ << ": Only failure reasons are expected in metric logging";
+  base::UmaHistogramEnumeration(
+      "Nearby.Connections.BleV2.GattClient.ReadCharacteristic.FailureReason",
+      failure_reason);
+}
+
+void RecordGattClientReadCharacteristicDuration(base::TimeDelta duration) {
+  base::UmaHistogramTimes(
+      "Nearby.Connections.BleV2.GattClient.ReadCharacteristic.Duration",
+      duration);
+}
+
 }  // namespace nearby::chrome::metrics

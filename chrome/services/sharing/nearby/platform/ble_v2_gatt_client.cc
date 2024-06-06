@@ -12,6 +12,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/services/sharing/nearby/platform/bluetooth_utils.h"
+#include "chrome/services/sharing/nearby/platform/nearby_platform_metrics.h"
 
 namespace {
 
@@ -275,6 +276,7 @@ std::optional<std::string> BleV2GattClient::ReadCharacteristic(
   if (!characteristic_info) {
     LOG(WARNING) << __func__
                  << ": no match for characteristic in the GATT client";
+    metrics::RecordGattClientReadCharacteristicResult(/*success=*/false);
     return std::nullopt;
   }
 
@@ -294,6 +296,8 @@ std::optional<std::string> BleV2GattClient::ReadCharacteristic(
   base::ScopedAllowBaseSyncPrimitives allow_wait;
   read_characteristic_waitable_event.Wait();
 
+  metrics::RecordGattClientReadCharacteristicResult(
+      /*success=*/read_characteristic_result.has_value());
   return read_characteristic_result;
 }
 
@@ -425,12 +429,14 @@ void BleV2GattClient::DoReadCharacteristic(
 
   remote_device_->ReadValueForCharacteristic(
       service_id, characteristic_id,
-      base::BindOnce(&BleV2GattClient::OnReadCharacteristic,
-                     base::Unretained(this), read_characteristic_result,
-                     read_characteristic_waitable_event));
+      base::BindOnce(
+          &BleV2GattClient::OnReadCharacteristic, base::Unretained(this),
+          /*gatt_read_characteristic_start_time=*/base::TimeTicks::Now(),
+          read_characteristic_result, read_characteristic_waitable_event));
 }
 
 void BleV2GattClient::OnReadCharacteristic(
+    base::TimeTicks gatt_read_characteristic_start_time,
     std::optional<std::string>* read_characteristic_result,
     base::WaitableEvent* read_characteristic_waitable_event,
     bluetooth::mojom::GattResult result,
@@ -449,12 +455,16 @@ void BleV2GattClient::OnReadCharacteristic(
                               << ": expected no value read from characteristic "
                                  "due to failure returned";
     *read_characteristic_result = std::nullopt;
+    metrics::RecordGattClientReadCharacteristicFailureReason(result);
   } else {
     CHECK(value.has_value())
         << __func__
         << ": expected value read from characteristic due to success returned";
     *read_characteristic_result =
         std::string(value.value().begin(), value.value().end());
+    metrics::RecordGattClientReadCharacteristicDuration(
+        /*duration=*/base::TimeTicks::Now() -
+        gatt_read_characteristic_start_time);
   }
 
   if (!read_characteristic_waitable_event->IsSignaled()) {

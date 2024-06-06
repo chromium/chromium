@@ -7,6 +7,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -174,6 +175,7 @@ class BleV2GattClientTest : public testing::Test {
   raw_ptr<FakeGattServiceFactory> fake_gatt_service_factory_;
   raw_ptr<bluetooth::FakeDevice> fake_device_;
   mojo::SelfOwnedReceiverRef<bluetooth::mojom::Device> device_receiver_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(BleV2GattClientTest, DiscoverServiceAndCharacteristics_Success) {
@@ -270,6 +272,11 @@ TEST_F(BleV2GattClientTest, ReadCharacteristic_Success) {
                          kServiceUuid1, kCharacteristicUuid1),
           run_loop.QuitClosure());
   run_loop.Run();
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Connections.BleV2.GattClient.ReadCharacteristic.Result",
+      /*bucket: success=*/1, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Nearby.Connections.BleV2.GattClient.ReadCharacteristic.Duration", 1);
 }
 
 TEST_F(BleV2GattClientTest,
@@ -286,6 +293,9 @@ TEST_F(BleV2GattClientTest,
                          kServiceUuid2, kCharacteristicUuid1),
           run_loop.QuitClosure());
   run_loop.Run();
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Connections.BleV2.GattClient.ReadCharacteristic.Result",
+      /*bucket: failure=*/0, 1);
 }
 
 TEST_F(BleV2GattClientTest,
@@ -302,6 +312,9 @@ TEST_F(BleV2GattClientTest,
                          kServiceUuid1, kCharacteristicUuid2),
           run_loop.QuitClosure());
   run_loop.Run();
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Connections.BleV2.GattClient.ReadCharacteristic.Result",
+      /*bucket: failure=*/0, 1);
 }
 
 TEST_F(BleV2GattClientTest,
@@ -320,6 +333,12 @@ TEST_F(BleV2GattClientTest,
                          kServiceUuid1, kCharacteristicUuid1),
           run_loop.QuitClosure());
   run_loop.Run();
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Connections.BleV2.GattClient.ReadCharacteristic.Result",
+      /*bucket: failure=*/0, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Connections.BleV2.GattClient.ReadCharacteristic.FailureReason",
+      /*bucket: Not Paired=*/7, 1);
 }
 
 TEST_F(BleV2GattClientTest, DisconnectHandler) {

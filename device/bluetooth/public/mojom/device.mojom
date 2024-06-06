@@ -41,6 +41,10 @@ enum Property {
   WRITE_ENCRYPTED_AUTHENTICATED = 8192
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. This enum should be kept in sync
+// with the NearbyConnectionsGattResult enum in
+// src/tools/metrics/metadata/nearby/enums.xml.
 enum GattResult {
   SUCCESS,
   UNKNOWN,
