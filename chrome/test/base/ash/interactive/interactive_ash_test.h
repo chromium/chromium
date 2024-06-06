@@ -111,6 +111,12 @@ class InteractiveAshTest
       const ui::ElementIdentifier& element_id,
       WebContentsInteractionTestUtil::DeepQuery query);
 
+  // Waits for an element identified by `query` to exist in the DOM of an
+  // instrumented WebUI identified by `element_id` and be focused.
+  ui::test::internal::InteractiveTestPrivate::MultiStep WaitForElementFocused(
+      const ui::ElementIdentifier& element_id,
+      const DeepQuery& query);
+
   // Waits for an element identified by `query` to both exist in the DOM of an
   // instrumented WebUI identified by `element_id` and have its text, or the
   // text of any of its children, match `expected`.
@@ -133,7 +139,7 @@ class InteractiveAshTest
   // `element_bounds.IsEmpty()` flakes.
   ui::test::internal::InteractiveTestPrivate::MultiStep WaitForElementToRender(
       const ui::ElementIdentifier& element_id,
-      const DeepQuery& element);
+      const DeepQuery& query);
 
   // Clicks on an element in the DOM. `element_id` is the identifier
   // of the WebContents to query. `query` is a DeepQuery path to the

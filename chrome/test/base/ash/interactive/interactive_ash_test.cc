@@ -196,6 +196,19 @@ InteractiveAshTest::WaitForElementDisabled(
 }
 
 ui::test::internal::InteractiveTestPrivate::MultiStep
+InteractiveAshTest::WaitForElementFocused(
+    const ui::ElementIdentifier& element_id,
+    const DeepQuery& query) {
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementFocused);
+  StateChange element_focused;
+  element_focused.event = kElementFocused;
+  element_focused.where = query;
+  element_focused.test_function =
+      "(el) => { return el === document.activeElement; }";
+  return WaitForStateChange(element_id, element_focused);
+}
+
+ui::test::internal::InteractiveTestPrivate::MultiStep
 InteractiveAshTest::WaitForElementTextContains(
     const ui::ElementIdentifier& element_id,
     const WebContentsInteractionTestUtil::DeepQuery& query,
@@ -232,11 +245,11 @@ InteractiveAshTest::WaitForElementHasAttribute(
 ui::test::internal::InteractiveTestPrivate::MultiStep
 InteractiveAshTest::WaitForElementToRender(
     const ui::ElementIdentifier& element_id,
-    const DeepQuery& element) {
+    const DeepQuery& query) {
   DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementRenders);
   StateChange element_renders;
   element_renders.event = kElementRenders;
-  element_renders.where = element;
+  element_renders.where = query;
   element_renders.test_function =
       "(el) => { if (el !== null) { let rect = el.getBoundingClientRect(); "
       "return rect.width > 0 && rect.height > 0; } return false; }";
