@@ -1223,7 +1223,7 @@
     ],
     "args": ["--disable-features=ThirdPartyStoragePartitioning",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jul 1, 2024"
+    "expires": "Feb 4, 2025"
   },
   {
     "prefix": "post-message-first-party-to-third-party-different-bucket-same-origin-blocked",
