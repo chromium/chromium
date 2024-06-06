@@ -83,6 +83,38 @@ void KeyboardBrightnessController::OnActiveUserSessionChanged(
       weak_ptr_factory_.GetWeakPtr()));
 }
 
+// SessionObserver:
+void KeyboardBrightnessController::OnActiveUserPrefServiceChanged(
+    PrefService* pref_service) {
+  pref_service_ = pref_service;
+
+  // Don't restore the ambient light sensor value if the relevant flag is
+  // disabled.
+  if (!features::IsKeyboardBacklightControlInSettingsEnabled()) {
+    return;
+  }
+
+  // Only restore the profile-synced ambient light sensor setting if it's a
+  // user's first time logging in to a new device.
+  if (!session_controller_->IsUserFirstLogin()) {
+    return;
+  }
+
+  // Observe the state of the synced profile pref so that the keyboard ambient
+  // light sensor setting will be restored as soon as the pref finishes syncing
+  // on the new device.
+  pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
+  if (pref_service_) {
+    pref_change_registrar_->Init(pref_service_);
+    pref_change_registrar_->Add(
+        prefs::kKeyboardAmbientLightSensorLastEnabled,
+        base::BindRepeating(
+            &KeyboardBrightnessController::
+                RestoreKeyboardAmbientLightSensorSettingOnFirstLogin,
+            weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
 // PowerManagerClient::Observer:
 void KeyboardBrightnessController::KeyboardAmbientLightSensorEnabledChanged(
     const power_manager::AmbientLightSensorChange& change) {
@@ -222,6 +254,23 @@ void KeyboardBrightnessController::RestoreKeyboardBrightnessSettings(
 
   HandleSetKeyboardAmbientLightSensorEnabled(
       keyboard_ambient_light_sensor_enabled_for_account);
+}
+
+void KeyboardBrightnessController::
+    RestoreKeyboardAmbientLightSensorSettingOnFirstLogin() {
+  if (!features::IsKeyboardBacklightControlInSettingsEnabled() ||
+      !pref_service_ ||
+      has_keyboard_ambient_light_sensor_been_restored_for_new_user_) {
+    return;
+  }
+
+  // Restore the keyboard ambient light sensor setting.
+  const bool ambient_light_sensor_last_enabled_for_account =
+      pref_service_->GetBoolean(prefs::kKeyboardAmbientLightSensorLastEnabled);
+  HandleSetKeyboardAmbientLightSensorEnabled(
+      ambient_light_sensor_last_enabled_for_account);
+
+  has_keyboard_ambient_light_sensor_been_restored_for_new_user_ = true;
 }
 
 void KeyboardBrightnessController::OnReceiveHasKeyboardBacklight(

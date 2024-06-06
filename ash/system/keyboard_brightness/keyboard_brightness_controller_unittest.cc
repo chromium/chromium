@@ -659,4 +659,144 @@ TEST_F(KeyboardBrightnessControllerTest, KeyboardAmbientLightEnabledUserPref) {
           prefs::kKeyboardAmbientLightSensorLastEnabled));
 }
 
+TEST_F(KeyboardBrightnessControllerTest,
+       RestoreKeyboardALSSettingForNewUser_FlagEnabled) {
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kEnableKeyboardBacklightControlInSettings);
+
+  // Set initial ALS and keyboard brightness.
+  power_manager_client()->SetKeyboardAmbientLightSensorEnabled(true);
+  power_manager_client()->set_keyboard_brightness_percent(
+      kInitialKeyboardBrightness);
+
+  // Clear user sessions and reset to the primary login screen.
+  ClearLogin();
+
+  // On the login screen, select and login with an existing user.
+  AccountId account_id = AccountId::FromUserEmail(kUserEmail);
+  login_data_dispatcher()->NotifyFocusPod(account_id);
+  LoginScreenFocusAccount(account_id);
+  SimulateUserLogin(kUserEmail);
+
+  // The ambient light sensor should be enabled by default.
+  EXPECT_TRUE(
+      Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
+          prefs::kKeyboardAmbientLightSensorLastEnabled));
+  ExpectKeyboardAmbientLightSensorEnabled(true);
+
+  // Set Keyboard ALS status to false.
+  SetKeyboardAmbientLightSensorEnabled(
+      false,
+      power_manager::AmbientLightSensorChange_Cause_USER_REQUEST_SETTINGS_APP);
+
+  // The synced profile pref should have the correct value (false).
+  EXPECT_FALSE(
+      Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
+          prefs::kKeyboardAmbientLightSensorLastEnabled));
+  ExpectKeyboardAmbientLightSensorEnabled(false);
+
+  // Simulate a reboot, which resets the value of the ambient light sensor and
+  // the keyboard brightness.
+  ClearLogin();
+  power_manager_client()->SetKeyboardAmbientLightSensorEnabled(true);
+  power_manager_client()->set_keyboard_brightness_percent(
+      kInitialKeyboardBrightness);
+
+  // Simulate a login with a second user.
+  SimulateNewUserFirstLogin(kUserEmailSecondary);
+
+  // Verify default keyboard brightness settings.
+  EXPECT_TRUE(
+      Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
+          prefs::kKeyboardAmbientLightSensorLastEnabled));
+  ExpectKeyboardAmbientLightSensorEnabled(true);
+
+  // Manually set the user pref, which will be synced to the first user later.
+  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
+      prefs::kKeyboardAmbientLightSensorLastEnabled, false);
+
+  // Now, login the first user again, as if it's that user's first time
+  // logging in on this device.
+  SimulateNewUserFirstLogin(kUserEmail);
+
+  // The value of the synced profile pref for the keyboard ambient light sensor
+  // should be false, because on the "other device" that value was set to false.
+  EXPECT_FALSE(
+      Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
+          prefs::kKeyboardAmbientLightSensorLastEnabled));
+  ExpectKeyboardAmbientLightSensorEnabled(false);
+}
+
+TEST_F(KeyboardBrightnessControllerTest,
+       RestoreKeyboardALSSettingForNewUser_FlagDisabled) {
+  scoped_feature_list_.InitAndDisableFeature(
+      features::kEnableKeyboardBacklightControlInSettings);
+
+  // Set initial ALS and keyboard brightness.
+  power_manager_client()->SetKeyboardAmbientLightSensorEnabled(true);
+  power_manager_client()->set_keyboard_brightness_percent(
+      kInitialKeyboardBrightness);
+
+  // Clear user sessions and reset to the primary login screen.
+  ClearLogin();
+
+  // On the login screen, select and login with an existing user.
+  AccountId account_id = AccountId::FromUserEmail(kUserEmail);
+  login_data_dispatcher()->NotifyFocusPod(account_id);
+  LoginScreenFocusAccount(account_id);
+  SimulateUserLogin(kUserEmail);
+
+  // The ambient light sensor should be enabled by default.
+  EXPECT_TRUE(
+      Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
+          prefs::kKeyboardAmbientLightSensorLastEnabled));
+  ExpectKeyboardAmbientLightSensorEnabled(true);
+
+  // Set Keyboard ALS status to false.
+  SetKeyboardAmbientLightSensorEnabled(
+      false,
+      power_manager::AmbientLightSensorChange_Cause_USER_REQUEST_SETTINGS_APP);
+
+  // The synced profile pref should have the correct value (false).
+  EXPECT_FALSE(
+      Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
+          prefs::kKeyboardAmbientLightSensorLastEnabled));
+  ExpectKeyboardAmbientLightSensorEnabled(false);
+
+  // Simulate a reboot, which resets the value of the ambient light sensor and
+  // the keyboard brightness.
+  ClearLogin();
+  power_manager_client()->SetKeyboardAmbientLightSensorEnabled(true);
+  power_manager_client()->set_keyboard_brightness_percent(
+      kInitialKeyboardBrightness);
+
+  // Simulate a login with a second user.
+  SimulateNewUserFirstLogin(kUserEmailSecondary);
+
+  // Verify default keyboard brightness settings.
+  EXPECT_TRUE(
+      Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
+          prefs::kKeyboardAmbientLightSensorLastEnabled));
+  ExpectKeyboardAmbientLightSensorEnabled(true);
+
+  // Manually set the user pref, which will be synced to the first user later.
+  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
+      prefs::kKeyboardAmbientLightSensorLastEnabled, false);
+
+  // Now, login the first user again, as if it's that user's first time
+  // logging in on this device.
+  SimulateNewUserFirstLogin(kUserEmail);
+
+  // The value of the synced profile pref for the keyboard ambient light sensor
+  // should be false, because on the "other device" that value was set to false.
+  EXPECT_FALSE(
+      Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
+          prefs::kKeyboardAmbientLightSensorLastEnabled));
+
+  // However, because the flag is disabled, the keyboard  ambient light sensor
+  // preference will not be restored, and thus the keyboard ambient light sensor
+  // should be disabled.
+  ExpectKeyboardAmbientLightSensorEnabled(true);
+}
+
 }  // namespace ash

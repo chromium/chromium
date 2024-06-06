@@ -13,6 +13,7 @@
 #include "ash/system/keyboard_brightness_control_delegate.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/dbus/power/power_manager_client.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 
 class AccountId;
@@ -45,6 +46,7 @@ class ASH_EXPORT KeyboardBrightnessController
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // SessionObserver:
+  void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
   void OnActiveUserSessionChanged(const AccountId& account_id) override;
 
   // PowerManagerClient::Observer:
@@ -71,6 +73,9 @@ class ASH_EXPORT KeyboardBrightnessController
   // Restore keyboard brightness settings during reboot.
   void RestoreKeyboardBrightnessSettings(const AccountId& account_id);
 
+  // Restore keyboard ambient light sensor setting when first login.
+  void RestoreKeyboardAmbientLightSensorSettingOnFirstLogin();
+
   void OnReceiveHasKeyboardBacklight(std::optional<bool> has_backlight);
   void OnReceiveKeyboardBrightnessAfterLogin(
       std::optional<double> keyboard_brightness);
@@ -80,7 +85,16 @@ class ASH_EXPORT KeyboardBrightnessController
   std::optional<AccountId> active_account_id_;
 
   raw_ptr<PrefService> local_state_;                   // unowned.
+  raw_ptr<PrefService> pref_service_;                  // unowned.
   raw_ptr<SessionControllerImpl> session_controller_;  // unowned.
+
+  // True if the keyboard ambient light sensor value has already been restored
+  // for a user's first login.
+  bool has_keyboard_ambient_light_sensor_been_restored_for_new_user_ = false;
+
+  // This PrefChangeRegistrar is used to check when the synced profile pref for
+  // the keyboard ambient light sensor value has finished syncing.
+  std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
   base::WeakPtrFactory<KeyboardBrightnessController> weak_ptr_factory_{this};
 };
