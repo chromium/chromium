@@ -154,18 +154,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [super tearDown];
 }
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  if ([self isRunningTest:@selector(testPromoNotShownWhenSyncDataNotRemoved)]) {
-    config.features_disabled.push_back(kEnableBatchUploadFromBookmarksManager);
-  }
-  if ([self isRunningTest:@selector
-            (testPromoShownWhenSyncDataNotRemovedWithBookmarksUpload)]) {
-    config.features_enabled.push_back(kEnableBatchUploadFromBookmarksManager);
-  }
-  return config;
-}
-
 #pragma mark - Sign-in promo and snackbar
 
 // Test that the Reading List sign-in promo is in the "no accounts" mode when
@@ -364,20 +352,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   OpenReadingList();
   [SigninEarlGreyUI
       verifySigninPromoVisibleWithMode:SigninPromoViewModeNoAccounts];
-}
-
-// Tests that the signin promo is not shown when last signed-in user did not
-// remove data during sign-out.
-- (void)testPromoNotShownWhenSyncDataNotRemoved {
-  // Simulate data from a previous account being leftover by setting
-  // kGoogleServicesLastSyncingGaiaId.
-  FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity1];
-  [ChromeEarlGrey setStringValue:fakeIdentity1.gaiaID
-                     forUserPref:prefs::kGoogleServicesLastSyncingGaiaId];
-
-  OpenReadingList();
-  [SigninEarlGreyUI verifySigninPromoNotVisible];
 }
 
 // Tests that the signin promo is shown when last syncing user did not remove

@@ -324,9 +324,6 @@ BASE_DECLARE_FEATURE(kIOSSaveToPhotos);
 // Feature flag enabling a fix for the Download manager mediator.
 BASE_DECLARE_FEATURE(kIOSDownloadNoUIUpdateInBackground);
 
-// Enables batch upload entry point from the Bookmarks Manager.
-BASE_DECLARE_FEATURE(kEnableBatchUploadFromBookmarksManager);
-
 // Enables linking account settings in the Privacy Settings page footer for
 // signed in non syncing users.
 BASE_DECLARE_FEATURE(kLinkAccountSettingsToPrivacyFooter);

@@ -41,21 +41,6 @@ using chrome_test_util::SecondarySignInButton;
 
 @implementation BookmarksAccountStoragePromoTestCase
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  if ([self isRunningTest:@selector
-            (testPromoViewNotShownWhenSyncDataNotRemoved)]) {
-    config.features_disabled.push_back(kEnableBatchUploadFromBookmarksManager);
-  } else if ([self
-                 isRunningTest:@selector
-                 (testSignInPromoWhenSyncDataNotRemovedIfBatchUploadEnabled)]) {
-    config.features_enabled.push_back(kEnableBatchUploadFromBookmarksManager);
-  } else {
-    config.features_enabled.push_back(kEnableBatchUploadFromBookmarksManager);
-  }
-  return config;
-}
-
 - (void)setUp {
   [super setUp];
   [BookmarkEarlGrey waitForBookmarkModelsLoaded];
@@ -121,24 +106,6 @@ using chrome_test_util::SecondarySignInButton;
   // Result: the sign-in is successful without any issue.
   [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity2.userEmail
                                         consent:signin::ConsentLevel::kSignin];
-}
-
-// Tests that the signin promo is not shown when last signed-in user did not
-// remove data during sign-out.
-- (void)testPromoViewNotShownWhenSyncDataNotRemoved {
-  // Simulate data from a previous account being leftover by setting
-  // kGoogleServicesLastSyncingGaiaId.
-  FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity1];
-  [ChromeEarlGrey setStringValue:fakeIdentity1.gaiaID
-                     forUserPref:prefs::kGoogleServicesLastSyncingGaiaId];
-
-  [BookmarkEarlGrey
-      setupStandardBookmarksInStorage:BookmarkModelType::kLocalOrSyncable];
-  [BookmarkEarlGreyUI openBookmarks];
-  [BookmarkEarlGrey verifyPromoAlreadySeen:NO];
-
-  [SigninEarlGreyUI verifySigninPromoNotVisible];
 }
 
 // Tests that signin promo is shown even if local data exists.

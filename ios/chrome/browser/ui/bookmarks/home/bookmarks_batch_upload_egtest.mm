@@ -151,50 +151,10 @@ void DismissBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
 @end
 
-@interface BookmarksBatchUploadDisabledTestCase : BookmarksBatchUploadTestCase
-@end
-
-@implementation BookmarksBatchUploadDisabledTestCase
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  config.features_disabled.push_back(kEnableBatchUploadFromBookmarksManager);
-  return config;
-}
-
-#pragma mark - BookmarksBatchUploadDisabledTestCase Tests
-
-// Tests that the batch upload dialog is not shown when the feature is disabled.
-- (void)testNoBatchUploadDialogIfFeatureDisabled {
-  // Add one local bookmark.
-  [BookmarkEarlGrey addBookmarkWithTitle:@"example1"
-                                     URL:@"https://www.example1.com"
-                               inStorage:BookmarkModelType::kLocalOrSyncable];
-  [ChromeEarlGreyUI waitForAppToIdle];
-
-  // Adds and signs in with `fakeIdentity`.
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
-  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
-
-  [BookmarkEarlGreyUI openBookmarks];
-
-  // Verify that the batch upload section is not visible.
-  ExpectNoBatchUploadDialog();
-}
-
-@end
-
 @interface BookmarksBatchUploadEnabledTestCase : BookmarksBatchUploadTestCase
 @end
 
 @implementation BookmarksBatchUploadEnabledTestCase
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  config.features_enabled.push_back(kEnableBatchUploadFromBookmarksManager);
-  return config;
-}
 
 - (void)setUp {
   [super setUp];

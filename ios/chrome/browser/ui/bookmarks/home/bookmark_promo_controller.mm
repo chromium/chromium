@@ -106,19 +106,7 @@
 
   std::optional<SigninPromoAction> signinPromoAction;
   if (!identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    PrefService* prefs = browserState->GetPrefs();
-    const std::string lastSignedInGaiaId =
-        prefs->GetString(prefs::kGoogleServicesLastSyncingGaiaId);
-    if (lastSignedInGaiaId.empty() ||
-        base::FeatureList::IsEnabled(kEnableBatchUploadFromBookmarksManager)) {
-      signinPromoAction = SigninPromoAction::kInstantSignin;
-    } else {
-      // If the last signed-in user did not remove data during sign-out, don't
-      // show the signin promo if kEnableBatchUploadFromBookmarksManager is not
-      // enabled.
-      self.shouldShowSigninPromo = NO;
-      return;
-    }
+    signinPromoAction = SigninPromoAction::kInstantSignin;
   } else if (identityManager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     // TODO(crbug.com/40066949): Simplify once kSync becomes unreachable or is
     // deleted from the codebase. See ConsentLevel::kSync documentation for
