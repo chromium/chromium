@@ -89,13 +89,6 @@ void SignInToFakeIdentity() {
                  @"Failed to dismiss context menu.");
 }
 
-// TODO(crbug.com/40809664): Test fails on device.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_testSignedInOpenAndCloseFeedMenu testSignedInOpenAndCloseFeedMenu
-#else
-#define MAYBE_testSignedInOpenAndCloseFeedMenu \
-  DISABLED_testSignedInOpenAndCloseFeedMenu
-#endif
 - (void)testSignedInOpenAndCloseFeedMenu {
   SignInToFakeIdentity();
   SelectFeedMenu();
@@ -111,14 +104,7 @@ void SignInToFakeIdentity() {
                  @"Failed to dismiss context menu.");
 }
 
-// TODO(crbug.com/40809664): Test fails on device.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_testOpenFeedManagementSurface testOpenFeedManagementSurface
-#else
-#define MAYBE_testOpenFeedManagementSurface \
-  DISABLED_testOpenFeedManagementSurface
-#endif
-- (void)MAYBE_testOpenFeedManagementSurface {
+- (void)testOpenFeedManagementSurface {
   SignInToFakeIdentity();
   SelectFeedMenu();
 
