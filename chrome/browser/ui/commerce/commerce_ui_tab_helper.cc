@@ -467,9 +467,6 @@ void CommerceUiTabHelper::MakeShoppingInsightsSidePanelAvailable() {
 
   auto entry = std::make_unique<SidePanelEntry>(
       SidePanelEntry::Id::kShoppingInsights,
-      l10n_util::GetStringUTF16(IDS_SHOPPING_INSIGHTS_SIDE_PANEL_TITLE),
-      ui::ImageModel::FromVectorIcon(vector_icons::kShoppingBagIcon,
-                                     ui::kColorIcon, /*icon_size=*/16),
       base::BindRepeating(
           &CommerceUiTabHelper::CreateShoppingInsightsWebView,
           base::Unretained(this)));

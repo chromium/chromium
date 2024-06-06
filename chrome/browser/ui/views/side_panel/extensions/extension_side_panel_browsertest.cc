@@ -91,8 +91,6 @@ class TestSidePanelEntryWaiter : public SidePanelEntryObserver {
 
   void WaitForEntryHidden() { entry_hidden_run_loop_.Run(); }
 
-  void WaitForIconUpdated() { icon_updated_run_loop_.Run(); }
-
  private:
   void OnEntryShown(SidePanelEntry* entry) override {
     entry_shown_run_loop_.QuitWhenIdle();
@@ -102,13 +100,8 @@ class TestSidePanelEntryWaiter : public SidePanelEntryObserver {
     entry_hidden_run_loop_.QuitWhenIdle();
   }
 
-  void OnEntryIconUpdated(SidePanelEntry* entry) override {
-    icon_updated_run_loop_.QuitWhenIdle();
-  }
-
   base::RunLoop entry_shown_run_loop_;
   base::RunLoop entry_hidden_run_loop_;
-  base::RunLoop icon_updated_run_loop_;
   base::ScopedObservation<SidePanelEntry, SidePanelEntryObserver>
       side_panel_entry_observation_{this};
 };
@@ -544,16 +537,16 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
       test_data_dir_.AppendASCII("api_test/side_panel/simple_default"));
   ASSERT_TRUE(extension);
 
-  SidePanelEntry::Key extension_key = GetKey(extension->id());
-  SidePanelEntry* extension_entry =
-      global_registry()->GetEntryForKey(extension_key);
+  BrowserActions* browser_actions = browser()->browser_actions();
+  actions::ActionItem* action_item =
+      GetActionItemForExtension(extension.get(), browser_actions);
 
   // Check that the entry's icon bitmap is identical to the bitmap of the
   // extension's icon scaled down to `extension_misc::EXTENSION_ICON_BITTY`.
   SkBitmap expected_icon_bitmap = TestImageLoader::LoadAndGetExtensionBitmap(
       extension.get(), "icon.png", extension_misc::EXTENSION_ICON_BITTY);
   const SkBitmap& actual_icon_bitmap =
-      *extension_entry->icon().GetImage().ToSkBitmap();
+      *action_item->GetImage().GetImage().ToSkBitmap();
   EXPECT_TRUE(
       gfx::test::AreBitmapsEqual(expected_icon_bitmap, actual_icon_bitmap));
 }

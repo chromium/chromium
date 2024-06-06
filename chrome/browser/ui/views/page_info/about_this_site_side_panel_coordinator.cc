@@ -76,14 +76,8 @@ void AboutThisSideSidePanelCoordinator::RegisterEntry(
   // Check if the view is already registered.
   if (!registry->GetEntryForKey(
           SidePanelEntry::Key(SidePanelEntry::Id::kAboutThisSite))) {
-    const int icon_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
-        ChromeDistanceMetric::DISTANCE_SIDE_PANEL_HEADER_VECTOR_ICON_SIZE);
     auto entry = std::make_unique<SidePanelEntry>(
         SidePanelEntry::Id::kAboutThisSite,
-        l10n_util::GetStringUTF16(IDS_PAGE_INFO_ABOUT_THIS_PAGE_TITLE),
-        ui::ImageModel::FromVectorIcon(
-            PageInfoViewFactory::GetAboutThisSiteColorVectorIcon(),
-            ui::kColorIcon, icon_size),
         base::BindRepeating(
             &AboutThisSideSidePanelCoordinator::CreateAboutThisSiteWebView,
             base::Unretained(this)),

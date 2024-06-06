@@ -89,9 +89,9 @@ IN_PROC_BROWSER_TEST_F(SidePanelInteractiveTest, SidePanelNotShownOnPwa) {
             browser()->tab_strip_model()->GetActiveWebContents();
         auto* registry = SidePanelRegistry::Get(active_contents);
         registry->Register(std::make_unique<SidePanelEntry>(
-            SidePanelEntry::Id::kCustomizeChrome, u"testing1", ui::ImageModel(),
-            base::BindRepeating(
-                []() { return std::make_unique<views::View>(); })));
+            SidePanelEntry::Id::kCustomizeChrome, base::BindRepeating([]() {
+              return std::make_unique<views::View>();
+            })));
         coordinator->Show(SidePanelEntry::Id::kCustomizeChrome);
       })),
       WaitForShow(kSidePanelElementId), FlushEvents(),
@@ -209,7 +209,7 @@ IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
   auto* registry = SidePanelCoordinator::GetGlobalSidePanelRegistry(browser());
   registry->Deregister(SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything));
   registry->Register(std::make_unique<SidePanelEntry>(
-      SidePanelEntry::Id::kReadAnything, u"testing1", ui::ImageModel(),
+      SidePanelEntry::Id::kReadAnything,
       base::BindRepeating([]() { return std::make_unique<views::View>(); })));
 
   SidePanelCoordinator* const coordinator =
@@ -229,7 +229,7 @@ IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
   registry->Deregister(
       SidePanelEntry::Key(SidePanelEntry::Id::kHistoryClusters));
   registry->Register(std::make_unique<SidePanelEntry>(
-      SidePanelEntry::Id::kHistoryClusters, u"testing1", ui::ImageModel(),
+      SidePanelEntry::Id::kHistoryClusters,
       base::BindRepeating([]() { return std::make_unique<views::View>(); })));
 
   SidePanelCoordinator* const coordinator =
@@ -281,7 +281,7 @@ IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
   auto* registry = SidePanelCoordinator::GetGlobalSidePanelRegistry(browser());
   registry->Deregister(SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything));
   registry->Register(std::make_unique<SidePanelEntry>(
-      SidePanelEntry::Id::kReadAnything, u"testing1", ui::ImageModel(),
+      SidePanelEntry::Id::kReadAnything,
       base::BindRepeating([]() { return std::make_unique<views::View>(); })));
 
   PinnedToolbarActionsModel* const actions_model =

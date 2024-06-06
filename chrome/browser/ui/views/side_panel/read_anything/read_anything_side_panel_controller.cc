@@ -127,9 +127,6 @@ void ReadAnythingSidePanelController::CreateAndRegisterEntry() {
 
   auto side_panel_entry = std::make_unique<SidePanelEntry>(
       SidePanelEntry::Id::kReadAnything,
-      l10n_util::GetStringUTF16(IDS_READING_MODE_TITLE),
-      ui::ImageModel::FromVectorIcon(kMenuBookChromeRefreshIcon,
-                                     ui::kColorIcon),
       base::BindRepeating(&ReadAnythingSidePanelController::CreateContainerView,
                           base::Unretained(this)));
   side_panel_entry->AddObserver(this);

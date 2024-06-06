@@ -34,8 +34,6 @@ class SidePanelEntry final : public ui::PropertyHandler {
   // must also add a relevant entry in actions.xml because a user action is
   // logged on button click.
   SidePanelEntry(Id id,
-                 std::u16string name,
-                 ui::ImageModel icon,
                  base::RepeatingCallback<std::unique_ptr<views::View>()>
                      create_content_callback,
                  base::RepeatingCallback<GURL()> open_in_new_tab_url_callback =
@@ -43,8 +41,6 @@ class SidePanelEntry final : public ui::PropertyHandler {
   // Constructor used for extensions. Extensions don't have 'Open in New Tab'
   // functionality.
   SidePanelEntry(Key key,
-                 std::u16string name,
-                 ui::ImageModel icon,
                  base::RepeatingCallback<std::unique_ptr<views::View>()>
                      create_content_callback);
   SidePanelEntry(const SidePanelEntry&) = delete;
@@ -60,15 +56,11 @@ class SidePanelEntry final : public ui::PropertyHandler {
     return content_view_ ? content_view_.get() : nullptr;
   }
 
-  void ResetIcon(ui::ImageModel icon);
-
   // Called when the entry has been shown/hidden in the side panel.
   void OnEntryShown();
   void OnEntryHidden();
 
   const Key& key() const { return key_; }
-  const std::u16string& name() const { return name_; }
-  const ui::ImageModel& icon() const { return icon_; }
 
   void AddObserver(SidePanelEntryObserver* observer);
   void RemoveObserver(SidePanelEntryObserver* observer);
@@ -91,8 +83,6 @@ class SidePanelEntry final : public ui::PropertyHandler {
 
  private:
   const Key key_;
-  const std::u16string name_;
-  ui::ImageModel icon_;
   std::unique_ptr<views::View> content_view_;
 
   base::RepeatingCallback<std::unique_ptr<views::View>()>

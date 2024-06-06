@@ -132,11 +132,6 @@ void SidePanelRegistry::OnEntryShown(SidePanelEntry* entry) {
   active_entry_ = entry;
 }
 
-void SidePanelRegistry::OnEntryIconUpdated(SidePanelEntry* entry) {
-  for (SidePanelRegistryObserver& observer : observers_)
-    observer.OnEntryIconUpdated(entry);
-}
-
 std::unique_ptr<SidePanelEntry> SidePanelRegistry::RemoveEntry(
     SidePanelEntry* entry) {
   auto it = std::find_if(entries_.begin(), entries_.end(),

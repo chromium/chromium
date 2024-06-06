@@ -56,14 +56,8 @@ PerformanceSidePanelCoordinator::~PerformanceSidePanelCoordinator() {
 
 void PerformanceSidePanelCoordinator::CreateAndRegisterEntry(
     SidePanelRegistry* global_registry) {
-  const int icon_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
-      ChromeDistanceMetric::DISTANCE_SIDE_PANEL_HEADER_VECTOR_ICON_SIZE);
-
   global_registry->Register(std::make_unique<SidePanelEntry>(
       SidePanelEntry::Id::kPerformance,
-      l10n_util::GetStringUTF16(IDS_SHOW_PERFORMANCE),
-      ui::ImageModel::FromVectorIcon(kMemorySaverIcon, ui::kColorIcon,
-                                     icon_size),
       base::BindRepeating(
           &PerformanceSidePanelCoordinator::CreatePerformanceWebUIView,
           base::Unretained(this))));

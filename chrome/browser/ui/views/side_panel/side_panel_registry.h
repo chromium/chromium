@@ -69,7 +69,6 @@ class SidePanelRegistry final : public base::SupportsUserData::Data,
 
   // SidePanelEntryObserver:
   void OnEntryShown(SidePanelEntry* id) override;
-  void OnEntryIconUpdated(SidePanelEntry* entry) override;
 
  private:
   std::unique_ptr<SidePanelEntry> RemoveEntry(SidePanelEntry* entry);

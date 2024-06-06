@@ -13,26 +13,18 @@ DEFINE_UI_CLASS_PROPERTY_KEY(bool, kShouldShowTitleInSidePanelHeaderKey, true)
 
 SidePanelEntry::SidePanelEntry(
     Id id,
-    std::u16string name,
-    ui::ImageModel icon,
     base::RepeatingCallback<std::unique_ptr<views::View>()>
         create_content_callback,
     base::RepeatingCallback<GURL()> open_in_new_tab_url_callback)
     : key_(id),
-      name_(std::move(name)),
-      icon_(std::move(icon)),
       create_content_callback_(std::move(create_content_callback)),
       open_in_new_tab_url_callback_(std::move(open_in_new_tab_url_callback)) {}
 
 SidePanelEntry::SidePanelEntry(
     Key key,
-    std::u16string name,
-    ui::ImageModel icon,
     base::RepeatingCallback<std::unique_ptr<views::View>()>
         create_content_callback)
     : key_(key),
-      name_(std::move(name)),
-      icon_(std::move(icon)),
       create_content_callback_(std::move(create_content_callback)) {
   DCHECK(create_content_callback_);
 }
@@ -52,12 +44,6 @@ void SidePanelEntry::CacheView(std::unique_ptr<views::View> view) {
 
 void SidePanelEntry::ClearCachedView() {
   content_view_.reset(nullptr);
-}
-
-void SidePanelEntry::ResetIcon(ui::ImageModel icon) {
-  icon_ = std::move(icon);
-  for (SidePanelEntryObserver& observer : observers_)
-    observer.OnEntryIconUpdated(this);
 }
 
 void SidePanelEntry::OnEntryShown() {

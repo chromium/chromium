@@ -39,8 +39,6 @@ CustomizeChromeSidePanelController::~CustomizeChromeSidePanelController() =
     default;
 
 void CustomizeChromeSidePanelController::CreateAndRegisterEntry() {
-  const int icon_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
-      ChromeDistanceMetric::DISTANCE_SIDE_PANEL_HEADER_VECTOR_ICON_SIZE);
   auto* registry = SidePanelRegistry::Get(web_contents_);
 
   if (!registry)
@@ -48,9 +46,6 @@ void CustomizeChromeSidePanelController::CreateAndRegisterEntry() {
 
   auto entry = std::make_unique<SidePanelEntry>(
       SidePanelEntry::Id::kCustomizeChrome,
-      l10n_util::GetStringUTF16(IDS_SIDE_PANEL_CUSTOMIZE_CHROME_TITLE),
-      ui::ImageModel::FromVectorIcon(vector_icons::kEditChromeRefreshIcon,
-                                     ui::kColorIcon, icon_size),
       base::BindRepeating(
           &CustomizeChromeSidePanelController::CreateCustomizeChromeWebView,
           base::Unretained(this)));

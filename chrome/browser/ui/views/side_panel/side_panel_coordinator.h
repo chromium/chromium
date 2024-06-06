@@ -136,8 +136,6 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
             bool supress_animations = false);
   void OnClosed();
 
-  views::View* GetContentContainerView() const;
-
   // Returns the corresponding entry for `entry_key` or a nullptr if this key is
   // not registered in the currently observed registries. This looks through the
   // active contextual registry first, then the global registry.

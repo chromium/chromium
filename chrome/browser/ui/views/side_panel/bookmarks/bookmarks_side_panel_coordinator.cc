@@ -41,9 +41,6 @@ void BookmarksSidePanelCoordinator::CreateAndRegisterEntry(
     SidePanelRegistry* global_registry) {
   global_registry->Register(std::make_unique<SidePanelEntry>(
       SidePanelEntry::Id::kBookmarks,
-      l10n_util::GetStringUTF16(IDS_BOOKMARK_MANAGER_TITLE),
-      ui::ImageModel::FromVectorIcon(kBookmarksSidePanelRefreshIcon,
-                                     ui::kColorIcon),
       base::BindRepeating(
           &BookmarksSidePanelCoordinator::CreateBookmarksWebView,
           base::Unretained(this))));

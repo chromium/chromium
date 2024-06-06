@@ -65,13 +65,8 @@ void CompanionSidePanelController::CreateAndRegisterEntry() {
     return;
   }
 
-  auto* coordinator =
-      SearchCompanionSidePanelCoordinator::GetOrCreateForBrowser(browser);
-
   auto entry = std::make_unique<SidePanelEntry>(
-      SidePanelEntry::Id::kSearchCompanion, coordinator->name(),
-      ui::ImageModel::FromVectorIcon(coordinator->icon(), ui::kColorIcon,
-                                     /*icon_size=*/16),
+      SidePanelEntry::Id::kSearchCompanion,
       base::BindRepeating(
           &companion::CompanionSidePanelController::CreateCompanionWebView,
           base::Unretained(this)),

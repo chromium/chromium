@@ -261,10 +261,6 @@ void LensOverlaySidePanelCoordinator::RegisterEntry() {
     // TODO(b/328295358): Change title and icon when available.
     auto entry = std::make_unique<SidePanelEntry>(
         SidePanelEntry::Id::kLensOverlayResults,
-        l10n_util::GetStringUTF16(IDS_SIDE_PANEL_COMPANION_TITLE),
-        ui::ImageModel::FromVectorIcon(vector_icons::kSearchIcon,
-                                       ui::kColorIcon,
-                                       /*icon_size=*/16),
         base::BindRepeating(
             &LensOverlaySidePanelCoordinator::CreateLensOverlayResultsView,
             base::Unretained(this)),

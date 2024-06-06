@@ -21,9 +21,6 @@ class SidePanelRegistryObserver : public base::CheckedObserver {
   virtual void OnEntryWillDeregister(SidePanelRegistry* registry,
                                      SidePanelEntry* entry) {}
 
-  // Called when a SidePanelEntry's icon has been updated.
-  virtual void OnEntryIconUpdated(SidePanelEntry* entry) {}
-
   // Called when the `registry` is being destroyed.
   virtual void OnRegistryDestroying(SidePanelRegistry* registry) {}
 
