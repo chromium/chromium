@@ -8398,28 +8398,22 @@ Keep your key file in a safe place. You will need it to create new versions of y
         <ph name="BREAK">&lt;br&gt;</ph>
         You can manage settings from the card menu or see more options in Customize Chrome.
       </message>
-      <message name="IDS_NTP_MODULES_TODAY_CALENDAR_HEADER" desc="Header of the Calendar module when showing today's calendar on the NTP." meaning="Header of the calendar module to indicate that the events shown are for today." translateable="false">
-        Today's Calendar
+      <message name="IDS_NTP_MODULES_GOOGLE_CALENDAR_DISMISS_BUTTON_TEXT" desc="Text shown on the dismiss button of a Google Calendar NTP card.">
+        Hide Google Calendar
       </message>
-      <message name="IDS_NTP_MODULES_TODAY_CALENDAR_DISABLE_BUTTON_TEXT" desc="Text shown on the disable button of a NTP card showing today's calendar." translateable="false">
-        Don't show Today's Calendar
+      <message name="IDS_NTP_MODULES_GOOGLE_CALENDAR_DISMISS_TOAST_MESSAGE" desc="Text shown on the toast on the NTP indicating that the Google Calendar card has been dismissed.">
+        Google Calendar hidden
       </message>
-      <message name="IDS_NTP_MODULES_TODAY_CALENDAR_DISMISS_BUTTON_TEXT" desc="Text shown on the dismiss button of a NTP card showing today's calendar." translateable="false">
-        Hide Today's Calendar
+      <message name="IDS_NTP_MODULES_GOOGLE_CALENDAR_DISABLE_TOAST_MESSAGE" desc="Text shown on the toast on the NTP indicating that the Google Calendar card has been disabled.">
+        You won't see Google Calendar on this page again
       </message>
-      <message name="IDS_NTP_MODULES_TODAY_CALENDAR_DISMISS_TOAST_MESSAGE" desc="Text shown on the toast on the NTP indicating that a card showing today's calendar has been dismissed." translateable="false">
-        Today's Calendar hidden
-      </message>
-      <message name="IDS_NTP_MODULES_TODAY_CALENDAR_DISABLE_TOAST_MESSAGE" desc="Text shown on the toast on the NTP indicating that a card showing today's calendar has been disabled." translateable="false">
-        You won't see Today's Calendar on this page again
-      </message>
-      <message name="IDS_NTP_MODULES_TODAY_CALENDAR_MORE_ACTIONS" desc="Text shown on the tooltip for the 3 dot menu on the card showing today's calendar." translateable="false">
-        More actions for Today's Calendar
+      <message name="IDS_NTP_MODULES_GOOGLE_CALENDAR_MORE_ACTIONS" desc="Text shown on the tooltip for the 3 dot menu on the Google Calendar card on the NTP.">
+        More actions for Google Calendar
       </message>
       <message name="IDS_NTP_MODULES_GOOGLE_CALENDAR_TITLE" desc="Title of the Google Calendar module shown in various UIs for Customize Chrome and the NTP." meaning="Title of feature for showing a glimpse of a user's Google Calendar.">
         Google Calendar
       </message>
-      <message name="IDS_NTP_MODULES_GOOGLE_CALENDAR_DISABLE_BUTTON_TEXT" desc="Text shown on the disable button of a NTP Google Calendar card." translateable="false">
+      <message name="IDS_NTP_MODULES_GOOGLE_CALENDAR_DISABLE_BUTTON_TEXT" desc="Text shown on the disable button of a NTP Google Calendar card.">
         Don't show Google Calendar
       </message>
       <message name="IDS_NTP_MODULES_OUTLOOK_CALENDAR_TITLE" desc="Title of the Google Calendar module shown in various UIs for Customize Chrome and the NTP." meaning="Title of feature for showing a glimpse of a user's Google Calendar.">

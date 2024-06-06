@@ -61,12 +61,12 @@ private handler_:
         {
           action: 'dismiss',
           icon: 'modules:visibility_off',
-          text: this.i18n('modulesTodayCalendarDismissButtonText'),
+          text: this.i18n('modulesGoogleCalendarDismissButtonText'),
         },
         {
           action: 'disable',
           icon: 'modules:block',
-          text: this.i18n('modulesTodayCalendarDisableButtonText'),
+          text: this.i18n('modulesGoogleCalendarDisableButtonText'),
         },
       ],
       [
@@ -83,7 +83,7 @@ private handler_:
     const disableEvent = new CustomEvent('disable-module', {
       composed: true,
       detail: {
-        message: this.i18n('modulesTodayCalendarDisableToastMessage'),
+        message: this.i18n('modulesGoogleCalendarDisableToastMessage'),
       },
     });
     this.dispatchEvent(disableEvent);
@@ -95,7 +95,7 @@ private handler_:
       bubbles: true,
       composed: true,
       detail: {
-        message: this.i18n('modulesTodayCalendarDismissToastMessage'),
+        message: this.i18n('modulesGoogleCalendarDismissToastMessage'),
         restoreCallback: this.handler_.restoreModule,
       },
     }));

@@ -20,8 +20,8 @@ suite('NewTabPageModulesGoogleCalendarModuleTest', () => {
   let handler: TestMock<GoogleCalendarPageHandlerRemote>;
   let module: GoogleCalendarModuleElement;
 
-  const title = `Today's Calendar`;
-  const dismissToast = `Today's Calendar hidden`;
+  const title = `Google Calendar`;
+  const dismissToast = `Google Calendar hidden`;
 
   async function initializeModule(numEvents: number = 0) {
     handler.setResultFor(
@@ -34,8 +34,8 @@ suite('NewTabPageModulesGoogleCalendarModuleTest', () => {
 
   setup(async () => {
     loadTimeData.overrideValues({
-      modulesTodayCalendarHeader: title,
-      modulesTodayCalendarDismissToastMessage: dismissToast,
+      modulesGoogleCalendarTitle: title,
+      modulesGoogleCalendarDismissToastMessage: dismissToast,
     });
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     handler = installMock(
