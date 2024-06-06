@@ -7,12 +7,12 @@ pub enum {{union.name}} {
 {%- endfor %}
 }
 
-#[derive(Debug)]
+#[derive(Clone, Copy, Debug, bytemuck::Pod, bytemuck::Zeroable)]
 #[repr(C)]
 pub struct {{union.name}}_Data {
     size: u32,
     tag: {{union.name}}_Tag,
-    inner: {{union.name}}_Inner
+    inner: {{union.name}}_Inner,
 }
 
 // All unions have a predefined size in the wire format. Assert it's correct.
@@ -21,7 +21,7 @@ static_assertions::const_assert_eq!(
     std::mem::size_of::<{{union.name}}_Data>()
 );
 
-#[derive(Debug)]
+#[derive(Clone, Copy, Debug, bytemuck::Pod, bytemuck::Zeroable)]
 #[repr(transparent)]
 pub struct {{union.name}}_Tag(u32);
 
@@ -31,19 +31,9 @@ impl {{union.name}}_Tag {
 {%- endfor %}
 }
 
-#[repr(C)]
-pub union {{union.name}}_Inner {
-{%- for field in union.fields %}
-    pub r#{{field.name}}: {{field.kind|rust_union_field_type}},
-{%- endfor %}
-    pub _unknown: u64,
-}
-
-impl std::fmt::Debug for {{union.name}}_Inner {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        f.write_str("{{union.name}}_Inner { ... }")
-    }
-}
+#[derive(Clone, Copy, Debug, bytemuck::Pod, bytemuck::Zeroable)]
+#[repr(transparent)]
+pub struct {{union.name}}_Inner(u64);
 
 // All unions have a predefined size in the wire format. Assert it's correct.
 static_assertions::const_assert_eq!(

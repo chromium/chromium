@@ -1716,6 +1716,7 @@ template("mojom") {
             ":$rust_generator_target_name",
             "//mojo/public/rust:mojo_bindings",
             "//mojo/public/rust:mojo_system",
+            "//third_party/rust/bytemuck/v1:lib",
             "//third_party/rust/static_assertions/v1:lib",
           ]
 

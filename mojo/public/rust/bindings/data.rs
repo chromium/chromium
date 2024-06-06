@@ -10,6 +10,8 @@
 //!
 //! Some are helpers used in generated code.
 
+use bytemuck::{Pod, Zeroable};
+
 /// A relative pointer in a mojom serialized message.
 ///
 /// `offset` is a byte offset relative to the location of `self` in the buffer.
@@ -25,6 +27,20 @@ pub struct Pointer<T: ?Sized> {
     pub _phantom: std::marker::PhantomData<*mut T>,
 }
 
+// SAFETY: `Pointer<_>` is repr(transparent) with `u64`, which is itself `Pod`.
+//
+// Impl'ed manually because the derive macro doesn't handle generic args.
+unsafe impl<T: ?Sized + 'static> Pod for Pointer<T> {}
+unsafe impl<T: ?Sized + 'static> Zeroable for Pointer<T> {}
+
+impl<T: ?Sized> Copy for Pointer<T> {}
+
+impl<T: ?Sized> Clone for Pointer<T> {
+    fn clone(&self) -> Self {
+        *self
+    }
+}
+
 /// A reference to a handle transmitted in a message.
 ///
 /// `index` is an index (*not* a byte offset) into the message's handle vector.
@@ -32,7 +48,7 @@ pub struct Pointer<T: ?Sized> {
 ///
 /// Note that while this `impl Copy` for storage in a `union`, care should be
 /// taken not to use it in a different context. It represents an owned handle.
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Pod, Zeroable)]
 #[repr(transparent)]
 pub struct HandleRef {
     pub index: u32,
@@ -42,7 +58,7 @@ pub struct HandleRef {
 ///
 /// Note that while this `impl Copy` for storage in a `union`, care should be
 /// taken not to use it in a different context. It represents an owned handle.
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Pod, Zeroable)]
 #[repr(C)]
 pub struct InterfaceData {
     pub handle: HandleRef,
@@ -56,33 +72,34 @@ pub struct Array<T> {
     pub elems: [T],
 }
 
-#[derive(Debug)]
+#[derive(Copy, Clone, Debug)]
+#[repr(C)]
 pub struct Map<K, V> {
     pub header: StructHeader,
     pub keys: Pointer<Array<K>>,
     pub vals: Pointer<Array<V>>,
 }
 
-#[derive(Debug)]
+// SAFETY: `Map<_, _>` is repr(C) and consists of three fields which are `Pod`.
+// They have size 8 and have alignment at most 8, so there are no padding bits.
+// Hence all bits of `Map<_, _>` belong to one of the `Pod` fields.
+//
+// Impl'ed manually because the derive macro doesn't handle generic args.
+unsafe impl<K: Copy + 'static, V: Copy + 'static> Pod for Map<K, V> {}
+unsafe impl<K: Copy + 'static, V: Copy + 'static> Zeroable for Map<K, V> {}
+
+#[derive(Copy, Clone, Debug, Pod, Zeroable)]
 #[repr(C)]
 pub struct StructHeader {
     pub size: u32,
     pub version: u32,
 }
 
-#[derive(Debug)]
+#[derive(Copy, Clone, Debug, Pod, Zeroable)]
 #[repr(C)]
 pub struct ArrayHeader {
     pub size: u32,
     pub num_elems: u32,
-}
-
-impl<T: ?Sized> Copy for Pointer<T> {}
-
-impl<T: ?Sized> Clone for Pointer<T> {
-    fn clone(&self) -> Self {
-        *self
-    }
 }
 
 pub const UNION_DATA_SIZE: usize = 16;

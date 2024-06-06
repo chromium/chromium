@@ -32,7 +32,9 @@ if (enable_rust_mojom_bindings) {
     deps = [
       "//mojo/public/interfaces/bindings/tests:test_interfaces_rust",
       "//mojo/public/interfaces/bindings/tests:test_mojom_import_rust",
+      "//mojo/public/rust:mojo_bindings",
       "//testing/rust_gtest_interop",
+      "//third_party/rust/bytemuck/v1:lib",
     ]
   }
 }

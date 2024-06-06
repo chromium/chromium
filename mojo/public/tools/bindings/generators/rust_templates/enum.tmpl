@@ -1,6 +1,6 @@
 {% macro declare_enum(name, enum) -%}
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, bytemuck::Pod, bytemuck::Zeroable)]
 #[repr(transparent)]
 pub struct {{name}}(pub i32);
 

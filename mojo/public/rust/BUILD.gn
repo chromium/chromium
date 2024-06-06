@@ -106,6 +106,7 @@ rust_static_library("mojo_bindings") {
   deps = [
     ":mojo_system",
     "//third_party/rust/bitflags/v2:lib",
+    "//third_party/rust/bytemuck/v1:lib",
     "//third_party/rust/static_assertions/v1:lib",
   ]
 }

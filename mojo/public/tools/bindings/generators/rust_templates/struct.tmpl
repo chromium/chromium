@@ -11,7 +11,7 @@ pub struct {{name}} {
 
 {%- set packed_fields = struct.packed.packed_fields %}
 
-#[derive(Debug)]
+#[derive(Clone, Copy, Debug, bytemuck::Pod, bytemuck::Zeroable)]
 #[repr(C)]
 pub struct {{name}}_Data {
     pub _header: bindings::data::StructHeader,
