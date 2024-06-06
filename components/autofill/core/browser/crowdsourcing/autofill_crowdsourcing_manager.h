@@ -84,7 +84,7 @@ class AutofillCrowdsourcingManager {
   virtual bool StartUploadRequest(
       std::vector<AutofillUploadContents> upload_contents,
       mojom::SubmissionSource form_submission_source,
-      PrefService* prefs);
+      bool is_password_manager_upload);
 
   // Returns true if the autofill server communication is enabled.
   bool IsEnabled() const;

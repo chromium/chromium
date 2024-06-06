@@ -978,7 +978,7 @@ bool VotesUploader::SendUploadRequest(
                           login_form_signature, password_attributes,
                           should_set_passwords_were_revealed),
       form_to_upload.submission_source(),
-      /*pref_service=*/nullptr);
+      /*is_password_manager_upload=*/true);
 }
 
 bool VotesUploader::SetSingleUsernameVoteOnUsernameForm(

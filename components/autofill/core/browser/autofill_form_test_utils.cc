@@ -78,6 +78,10 @@ FormFieldData CreateFieldByRole(FieldType role) {
       field.set_label(u"Card Number");
       field.set_name(u"cardNumber");
       break;
+    case FieldType::PASSWORD:
+      field.set_label(u"Password");
+      field.set_name(u"password");
+      break;
     case FieldType::EMPTY_TYPE:
     default:
       break;

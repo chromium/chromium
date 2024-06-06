@@ -428,10 +428,9 @@ LogBuffer& operator<<(LogBuffer& out, const AutofillUploadContents& upload) {
 // If `upload_type` equals `UploadType::kVote`, the check is done on the vote
 // part of the upload. Vote throttling is only used on the Autofill side.
 // If `upload_type` equals `UploadType::kMetadata` the check is done on the
-// metadata part of the upload. Metadata throttling is used on the Autofill
-// side and will be used on Password Manager side later on.
-// TODO: b/333508542 - Update the comment once Password Manager starts metadata
-// throttling.
+// metadata part of the upload. Metadata throttling is shared by Autofill and
+// the Password Manager, ensuring that together they don't upload metadata more
+// frequently than desired.
 bool ShouldThrottleUpload(FormSignature form_signature,
                           UploadType upload_type,
                           base::TimeDelta throttle_reset_period,
@@ -440,13 +439,8 @@ bool ShouldThrottleUpload(FormSignature form_signature,
                               form_submission_source_for_vote_upload) {
   // `form_submission_source_for_vote_upload` must be set only on vote uploads.
   CHECK(upload_type == UploadType::kMetadata ||
-        form_submission_source_for_vote_upload != std::nullopt);
-  // PasswordManager uploads are triggered via specific first occurrences and
-  // do not participate in the pref-service tracked throttling mechanism. Return
-  // false for these uploads.
-  if (!pref_service) {
-    return false;
-  }
+        form_submission_source_for_vote_upload.has_value());
+  CHECK(pref_service);
   // If the upload event pref needs to be reset, clear it now.
   base::Time now = AutofillClock::Now();
   base::Time last_reset =
@@ -718,7 +712,7 @@ bool AutofillCrowdsourcingManager::StartQueryRequest(
 bool AutofillCrowdsourcingManager::StartUploadRequest(
     std::vector<AutofillUploadContents> upload_contents,
     mojom::SubmissionSource form_submission_source,
-    PrefService* prefs) {
+    bool is_password_manager_upload) {
   if (!IsEnabled()) {
     return false;
   }
@@ -726,8 +720,16 @@ bool AutofillCrowdsourcingManager::StartUploadRequest(
     return false;
   }
 
+  PrefService* prefs = client_->GetPrefs();
   const FormSignature form_signature(upload_contents[0].form_signature());
+  // Autofill vote uploads are limited via throttling so that only one vote is
+  // uploaded per form_submission_source and form signature in a given period of
+  // time.
+  // Password Manager votes uploaded via specific first occurrences and do not
+  // participate in the pref-service tracked throttling mechanism. Always allow
+  // Password Manager vote uploads.
   const bool allow_upload =
+      is_password_manager_upload ||
       !ShouldThrottleUpload(form_signature, UploadType::kVote,
                             throttle_reset_period_, prefs,
                             form_submission_source) ||
@@ -735,7 +737,7 @@ bool AutofillCrowdsourcingManager::StartUploadRequest(
 
   AutofillMetrics::LogUploadEvent(form_submission_source, allow_upload);
 
-  // Metadata throttling does not cancel the upload, but only clear all
+  // Metadata throttling does not cancel the upload, but only clears all
   // metadata related entries.
   if (ShouldThrottleUpload(
           form_signature, UploadType::kMetadata, throttle_reset_period_, prefs,

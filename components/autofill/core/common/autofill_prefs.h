@@ -89,8 +89,7 @@ inline constexpr char kAutofillVoteUploadEvents[] = "autofill.upload_events";
 // performed. Each entry in the dictionary maps a form signature (reduced
 // via a 10-bit modulus) to an integer flag that denotes whether or not a given
 // metadata upload event has occurred.
-// TODO: b/333508542 - Update the description once metadata throttling is
-// implemented on Password Manager side as well.
+// Throttling is done for both Autofill and Password Manager metadata uploads.
 inline constexpr char kAutofillMetadataUploadEvents[] =
     "autofill.metadata_upload_events";
 // The timestamp (seconds since the Epoch UTC) for when the the upload event
