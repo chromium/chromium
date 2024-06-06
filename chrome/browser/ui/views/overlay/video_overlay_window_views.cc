@@ -332,16 +332,15 @@ std::unique_ptr<VideoOverlayWindowViews> VideoOverlayWindowViews::Create(
     }
   }
 
-  InputScope input_scope = overlay_window->GetController()
-                                   ->GetWebContents()
-                                   ->GetRenderWidgetHostView()
-                                   ->GetTextInputClient()
-                                   ->ShouldDoLearning()
-                               ? IS_DEFAULT
-                               : IS_PRIVATE;
-  ui::tsf_inputscope::SetInputScope(
-      overlay_window->GetNativeWindow()->GetHost()->GetAcceleratedWidget(),
-      input_scope);
+  bool is_private = !(overlay_window->GetController()
+                          ->GetWebContents()
+                          ->GetRenderWidgetHostView()
+                          ->GetTextInputClient()
+                          ->ShouldDoLearning());
+  if (is_private) {
+    ui::tsf_inputscope::SetPrivateInputScope(
+        overlay_window->GetNativeWindow()->GetHost()->GetAcceleratedWidget());
+  }
 #endif  // BUILDFLAG(IS_WIN)
 
   PictureInPictureOcclusionTracker* tracker =
