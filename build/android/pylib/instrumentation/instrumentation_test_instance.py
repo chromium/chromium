@@ -56,9 +56,6 @@ _BUNDLE_CURRENT_ID = 'current'
 _BUNDLE_CLASS_ID = 'class'
 # The ID of the bundle value Instrumentation uses to report the test name.
 _BUNDLE_TEST_ID = 'test'
-# The ID of the bundle value Instrumentation uses to report if a test was
-# skipped.
-_BUNDLE_SKIPPED_ID = 'test_skipped'
 # The ID of the bundle value Instrumentation uses to report the crash stack, if
 # the test crashed.
 _BUNDLE_STACK_ID = 'stack'
@@ -100,6 +97,16 @@ def GenerateTestResults(result_code, result_bundle, statuses, duration_ms,
   """
 
   results = []
+  # Results from synthetic ClassName#null tests, which occur from exceptions in
+  # @BeforeClass / @AfterClass.
+  class_failure_results = []
+
+  def add_result(result):
+    if result.GetName().endswith('#null'):
+      assert result.GetType() == base_test_result.ResultType.FAIL
+      class_failure_results.append(result)
+    else:
+      results.append(result)
 
   current_result = None
   cumulative_duration = 0
@@ -132,14 +139,12 @@ def GenerateTestResults(result_code, result_bundle, statuses, duration_ms,
 
     if status_code == instrumentation_parser.STATUS_CODE_START:
       if current_result:
-        results.append(current_result)
+        add_result(current_result)
       current_result = test_result.InstrumentationTestResult(
           test_name, base_test_result.ResultType.UNKNOWN, duration_ms)
     else:
       if status_code == instrumentation_parser.STATUS_CODE_OK:
-        if bundle.get(_BUNDLE_SKIPPED_ID, '').lower() in ('true', '1', 'yes'):
-          current_result.SetType(base_test_result.ResultType.SKIP)
-        elif current_result.GetType() == base_test_result.ResultType.UNKNOWN:
+        if current_result.GetType() == base_test_result.ResultType.UNKNOWN:
           current_result.SetType(base_test_result.ResultType.PASS)
       elif status_code == instrumentation_parser.STATUS_CODE_SKIP:
         current_result.SetType(base_test_result.ResultType.SKIP)
@@ -160,12 +165,23 @@ def GenerateTestResults(result_code, result_bundle, statuses, duration_ms,
       if crashed:
         current_result.SetType(base_test_result.ResultType.CRASH)
 
-    results.append(current_result)
+    add_result(current_result)
 
   if results:
     logging.info('Adding cumulative overhead to test %s: %dms',
                  results[0].GetName(), duration_ms - cumulative_duration)
     results[0].SetDuration(duration_ms - cumulative_duration)
+
+  # Copy failures from @BeforeClass / @AfterClass into all tests that are
+  # marked as passing.
+  for class_result in class_failure_results:
+    prefix = class_result.GetName()[:-len('null')]
+    for result in results:
+      if (result.GetName().startswith(prefix)
+          and result.GetType() == base_test_result.ResultType.PASS):
+        result.SetType(base_test_result.ResultType.FAIL)
+        result.SetLog(class_result.GetLog())
+        result.SetFailureReason(class_result.GetFailureReason())
 
   return results
 
