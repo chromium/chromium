@@ -10,8 +10,11 @@ assert(!is_android, "!is_android check failed")
 build_webui("build") {
   grd_prefix = "management"
   static_files = [ "management.html" ]
-  web_component_files = [ "management_ui.ts" ]
-  non_web_component_files = [ "management_browser_proxy.ts" ]
+  non_web_component_files = [
+    "management_browser_proxy.ts",
+    "management_ui.html.ts",
+    "management_ui.ts",
+  ]
   css_files = [ "management_ui.css" ]
   icons_html_files = [ "icons.html" ]
   html_to_wrapper_template = "detect"
