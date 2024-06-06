@@ -16,6 +16,8 @@ namespace {
 
 constexpr char kTestIPv4Address[] = "127.0.0.1";
 constexpr int kTestPort = 61234;
+constexpr char kTestSSID[] = "DIRECT-xx";
+constexpr char kTestPassword[] = "ABCD1234";
 
 class FakeWifiDirectConnection
     : public ash::wifi_direct::mojom::WifiDirectConnection {
@@ -31,6 +33,8 @@ class FakeWifiDirectConnection
         ash::wifi_direct::mojom::WifiDirectConnectionProperties::New();
     properties->ipv4_address = ipv4_address;
     properties->credentials = ash::wifi_direct::mojom::WifiCredentials::New();
+    properties->credentials->ssid = kTestSSID;
+    properties->credentials->passphrase = kTestPassword;
     std::move(callback).Run(std::move(properties));
   }
 
@@ -179,6 +183,8 @@ TEST_F(WifiDirectMediumTest, StartWifiDirect_ValidConnection) {
         EXPECT_TRUE(medium->StartWifiDirect(&credentials));
         EXPECT_EQ(credentials.GetIPAddress(), kTestIPv4Address);
         EXPECT_EQ(credentials.GetGateway(), kTestIPv4Address);
+        EXPECT_EQ(credentials.GetSSID(), kTestSSID);
+        EXPECT_EQ(credentials.GetPassword(), kTestPassword);
       },
       medium()));
 }
@@ -239,7 +245,6 @@ TEST_F(WifiDirectMediumTest, ListenForService_Success) {
   RunOnTaskRunner(base::BindOnce(
       [](WifiDirectMedium* medium) {
         base::ScopedAllowBaseSyncPrimitivesForTesting allow;
-        WifiDirectCredentials credentials;
         EXPECT_TRUE(medium->ListenForService(kTestPort));
       },
       medium()));
@@ -262,7 +267,6 @@ TEST_F(WifiDirectMediumTest, ListenForService_MissingConnection) {
   RunOnTaskRunner(base::BindOnce(
       [](WifiDirectMedium* medium) {
         base::ScopedAllowBaseSyncPrimitivesForTesting allow;
-        WifiDirectCredentials credentials;
         EXPECT_FALSE(medium->ListenForService(kTestPort));
       },
       medium()));
@@ -285,7 +289,6 @@ TEST_F(WifiDirectMediumTest, ListenForService_FailToAssociatesSocket) {
   RunOnTaskRunner(base::BindOnce(
       [](WifiDirectMedium* medium) {
         base::ScopedAllowBaseSyncPrimitivesForTesting allow;
-        WifiDirectCredentials credentials;
         EXPECT_FALSE(medium->ListenForService(kTestPort));
       },
       medium()));
@@ -308,7 +311,6 @@ TEST_F(WifiDirectMediumTest, ListenForService_FailToOpenFirewallHole) {
   RunOnTaskRunner(base::BindOnce(
       [](WifiDirectMedium* medium) {
         base::ScopedAllowBaseSyncPrimitivesForTesting allow;
-        WifiDirectCredentials credentials;
         EXPECT_FALSE(medium->ListenForService(kTestPort));
       },
       medium()));
@@ -332,7 +334,6 @@ TEST_F(WifiDirectMediumTest, ListenForService_InvalidAddress) {
   RunOnTaskRunner(base::BindOnce(
       [](WifiDirectMedium* medium) {
         base::ScopedAllowBaseSyncPrimitivesForTesting allow;
-        WifiDirectCredentials credentials;
         EXPECT_FALSE(medium->ListenForService(kTestPort));
       },
       medium()));

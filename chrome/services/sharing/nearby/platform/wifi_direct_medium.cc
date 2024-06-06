@@ -231,6 +231,8 @@ void WifiDirectMedium::OnProperties(
     WifiDirectCredentials* credentials,
     base::WaitableEvent* waitable_event,
     ash::wifi_direct::mojom::WifiDirectConnectionPropertiesPtr properties) {
+  credentials->SetSSID(properties->credentials->ssid);
+  credentials->SetPassword(properties->credentials->passphrase);
   credentials->SetIPAddress(properties->ipv4_address);
   credentials->SetGateway(properties->ipv4_address);
   ipv4_address_ = properties->ipv4_address;
