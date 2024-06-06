@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/commerce/product_specifications_page_action_controller.h"
 
+#include "base/containers/contains.h"
 #include "components/commerce/core/feature_utils.h"
 #include "components/commerce/core/product_specifications/product_specifications_service.h"
 #include "components/commerce/core/shopping_service.h"
@@ -15,7 +16,15 @@ ProductSpecificationsPageActionController::
         base::RepeatingCallback<void()> notify_callback,
         ShoppingService* shopping_service)
     : CommercePageActionController(std::move(notify_callback)),
-      shopping_service_(shopping_service) {}
+      shopping_service_(shopping_service) {
+  if (shopping_service_) {
+    product_specifications_service_ =
+        shopping_service_->GetProductSpecificationsService();
+    if (product_specifications_service_) {
+      obs_.Observe(product_specifications_service_);
+    }
+  }
+}
 
 ProductSpecificationsPageActionController::
     ~ProductSpecificationsPageActionController() = default;
@@ -69,6 +78,41 @@ void ProductSpecificationsPageActionController::ResetForNewNavigation(
           weak_ptr_factory_.GetWeakPtr()));
 }
 
+void ProductSpecificationsPageActionController::OnProductSpecificationsSetAdded(
+    const ProductSpecificationsSet& product_specifications_set) {
+  auto& urls = product_specifications_set.urls();
+  if (std::find(urls.begin(), urls.end(), current_url_) != urls.end()) {
+    product_group_for_page_ = std::nullopt;
+    is_in_recommended_set_ = false;
+    NotifyHost();
+  }
+}
+
+void ProductSpecificationsPageActionController::
+    OnProductSpecificationsSetUpdate(
+        const ProductSpecificationsSet& before_set,
+        const ProductSpecificationsSet& after_set) {
+  if (!product_group_for_page_.has_value() ||
+      product_group_for_page_->uuid != after_set.uuid()) {
+    return;
+  }
+  bool is_in_set = base::Contains(after_set.urls(), current_url_);
+  if (is_in_set != is_in_recommended_set_) {
+    is_in_recommended_set_ = is_in_set;
+    NotifyHost();
+  }
+}
+
+void ProductSpecificationsPageActionController::
+    OnProductSpecificationsSetRemoved(const ProductSpecificationsSet& set) {
+  if (product_group_for_page_.has_value() &&
+      product_group_for_page_->uuid == set.uuid()) {
+    product_group_for_page_ = std::nullopt;
+    is_in_recommended_set_ = false;
+    NotifyHost();
+  }
+}
+
 void ProductSpecificationsPageActionController::OnIconClicked() {
   CHECK(product_group_for_page_.has_value());
   if (!shopping_service_ ||
@@ -76,10 +120,8 @@ void ProductSpecificationsPageActionController::OnIconClicked() {
       !product_group_for_page_.has_value()) {
     return;
   }
-  auto* product_specifications_service =
-      shopping_service_->GetProductSpecificationsService();
   std::optional<ProductSpecificationsSet> product_specifications_set =
-      product_specifications_service->GetSetByUuid(
+      product_specifications_service_->GetSetByUuid(
           product_group_for_page_->uuid);
   if (!product_specifications_set.has_value()) {
     return;
@@ -96,8 +138,8 @@ void ProductSpecificationsPageActionController::OnIconClicked() {
     }
     is_in_recommended_set_ = false;
   }
-  product_specifications_service->SetUrls(product_group_for_page_->uuid,
-                                          std::move(existing_urls));
+  product_specifications_service_->SetUrls(product_group_for_page_->uuid,
+                                           std::move(existing_urls));
   NotifyHost();
 }
 

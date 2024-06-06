@@ -215,4 +215,117 @@ TEST_F(ProductSpecificationsPageActionControllerUnittest, IconExecute) {
   ASSERT_FALSE(controller_->IsInRecommendedSet());
 }
 
+TEST_F(ProductSpecificationsPageActionControllerUnittest,
+       OnProductSpecificationsSetAdded) {
+  // Set up ClusterManager to trigger page action.
+  auto product_group = CreateProductGroup();
+  mock_cluster_manager_->SetResponseForGetProductGroupForCandidateProduct(
+      product_group);
+  shopping_service_->SetResponseForGetProductInfoForUrl(
+      CreateProductInfo(kClusterId));
+
+  // Trigger page action.
+  controller_->ResetForNewNavigation(GURL(kTestUrl1));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(controller_->ShouldShowForNavigation().has_value());
+  ASSERT_TRUE(controller_->ShouldShowForNavigation().value());
+  ASSERT_FALSE(controller_->IsInRecommendedSet());
+
+  // No change if a set is added but doesn't include the current URL.
+  ProductSpecificationsSet set1 = ProductSpecificationsSet(
+      product_group->uuid.AsLowercaseString(), 0, 0, {GURL(kTestUrl2)}, "set1");
+  controller_->OnProductSpecificationsSetAdded(std::move(set1));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(controller_->ShouldShowForNavigation().has_value());
+  ASSERT_TRUE(controller_->ShouldShowForNavigation().value());
+  ASSERT_FALSE(controller_->IsInRecommendedSet());
+
+  // Hide the page action if a set is added with the current URL.
+  EXPECT_CALL(notify_host_callback_, Run()).Times(1);
+  ProductSpecificationsSet set2 =
+      ProductSpecificationsSet(product_group->uuid.AsLowercaseString(), 0, 0,
+                               {GURL(kTestUrl1), GURL(kTestUrl2)}, "set2");
+  controller_->OnProductSpecificationsSetAdded(std::move(set2));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(controller_->ShouldShowForNavigation().has_value());
+  ASSERT_FALSE(controller_->ShouldShowForNavigation().value());
+  ASSERT_FALSE(controller_->IsInRecommendedSet());
+}
+
+TEST_F(ProductSpecificationsPageActionControllerUnittest,
+       OnProductSpecificationsSetRemoved) {
+  // Set up ClusterManager to trigger page action.
+  auto product_group = CreateProductGroup();
+  mock_cluster_manager_->SetResponseForGetProductGroupForCandidateProduct(
+      product_group);
+  shopping_service_->SetResponseForGetProductInfoForUrl(
+      CreateProductInfo(kClusterId));
+
+  // Trigger page action.
+  controller_->ResetForNewNavigation(GURL(kTestUrl1));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(controller_->ShouldShowForNavigation().has_value());
+  ASSERT_TRUE(controller_->ShouldShowForNavigation().value());
+  ASSERT_FALSE(controller_->IsInRecommendedSet());
+
+  // No change if a irrelevant set is removed.
+  ProductSpecificationsSet set1 = ProductSpecificationsSet(
+      base::Uuid::GenerateRandomV4().AsLowercaseString(), 0, 0,
+      {GURL(kTestUrl2)}, "set1");
+  controller_->OnProductSpecificationsSetRemoved(std::move(set1));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(controller_->ShouldShowForNavigation().has_value());
+  ASSERT_TRUE(controller_->ShouldShowForNavigation().value());
+  ASSERT_FALSE(controller_->IsInRecommendedSet());
+
+  // Hide the page action if the recommended set is removed.
+  EXPECT_CALL(notify_host_callback_, Run()).Times(1);
+  ProductSpecificationsSet set2 = ProductSpecificationsSet(
+      product_group->uuid.AsLowercaseString(), 0, 0, {GURL(kTestUrl2)}, "set2");
+  controller_->OnProductSpecificationsSetRemoved(std::move(set2));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(controller_->ShouldShowForNavigation().has_value());
+  ASSERT_FALSE(controller_->ShouldShowForNavigation().value());
+  ASSERT_FALSE(controller_->IsInRecommendedSet());
+}
+
+TEST_F(ProductSpecificationsPageActionControllerUnittest,
+       OnProductSpecificationsSetUpdated) {
+  // Set up ClusterManager to trigger page action.
+  auto product_group = CreateProductGroup();
+  mock_cluster_manager_->SetResponseForGetProductGroupForCandidateProduct(
+      product_group);
+  shopping_service_->SetResponseForGetProductInfoForUrl(
+      CreateProductInfo(kClusterId));
+
+  // Trigger page action.
+  controller_->ResetForNewNavigation(GURL(kTestUrl1));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(controller_->ShouldShowForNavigation().has_value());
+  ASSERT_TRUE(controller_->ShouldShowForNavigation().value());
+  ASSERT_FALSE(controller_->IsInRecommendedSet());
+
+  EXPECT_CALL(notify_host_callback_, Run()).Times(2);
+  ProductSpecificationsSet set1 = ProductSpecificationsSet(
+      product_group->uuid.AsLowercaseString(), 0, 0, {GURL(kTestUrl2)}, "set");
+  ProductSpecificationsSet set2 =
+      ProductSpecificationsSet(product_group->uuid.AsLowercaseString(), 0, 0,
+                               {GURL(kTestUrl1), GURL(kTestUrl2)}, "set");
+
+  // Notify the controller that the current page has been added to the
+  // recommended set.
+  controller_->OnProductSpecificationsSetUpdate(set1, set2);
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(controller_->ShouldShowForNavigation().has_value());
+  ASSERT_TRUE(controller_->ShouldShowForNavigation().value());
+  ASSERT_TRUE(controller_->IsInRecommendedSet());
+
+  // Notify the controller that the current page has been removed from the
+  // recommended set.
+  controller_->OnProductSpecificationsSetUpdate(set2, set1);
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(controller_->ShouldShowForNavigation().has_value());
+  ASSERT_TRUE(controller_->ShouldShowForNavigation().value());
+  ASSERT_FALSE(controller_->IsInRecommendedSet());
+}
 }  // namespace commerce
