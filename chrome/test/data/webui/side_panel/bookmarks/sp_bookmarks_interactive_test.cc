@@ -8,7 +8,7 @@
 #include "components/user_notes/user_notes_features.h"
 #include "content/public/test/browser_test.h"
 
-class SidePanelBookmarksTest : public WebUIMochaBrowserTest {
+class SidePanelBookmarksTest : public WebUIMochaFocusTest {
  protected:
   SidePanelBookmarksTest() {
     set_test_loader_host(chrome::kChromeUIBookmarksSidePanelHost);

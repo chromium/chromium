@@ -495,17 +495,19 @@ suite('SidePanelPowerBookmarksListTest', () => {
 
     await flushTasks();
 
-    const rowElement =
-        powerBookmarksList.shadowRoot!.querySelector<PowerBookmarkRowElement>(
-            `#bookmark-${renamedBookmarkId}`);
+    const rowElement = getPowerBookmarksRowElement(renamedBookmarkId);
     assertTrue(!!rowElement);
     let input =
         rowElement.shadowRoot!.querySelector<CrInputElement>('cr-input');
     assertTrue(!!input);
+
+    const inputChange = eventToPromise('input-change', rowElement);
+
     const newName = 'foo';
     input.value = newName;
     input.inputElement.dispatchEvent(new Event('change'));
 
+    await inputChange;
     await flushTasks();
 
     // Committing a new input value should rename the bookmark and remove the
@@ -518,8 +520,7 @@ suite('SidePanelPowerBookmarksListTest', () => {
     assertFalse(!!input);
   });
 
-  // TODO(crbug.com/40276462): Fix flaky test.
-  test.skip('BlursRenameInput', async () => {
+  test('BlursRenameInput', async () => {
     const renamedBookmarkId = '4';
     powerBookmarksList.setRenamingIdForTests(renamedBookmarkId);
 

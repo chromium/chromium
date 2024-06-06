@@ -59,7 +59,6 @@ source_set("browser_tests") {
     "privacy_sandbox/privacy_sandbox_dialog_browsertest.cc",
     "sandbox/sandbox_browsertest.cc",
     "settings/settings_browsertest.cc",
-    "side_panel/bookmarks/sp_bookmarks_browsertest.cc",
     "side_panel/commerce/commerce_browsertest.cc",
     "side_panel/customize_chrome/customize_chrome_browsertest.cc",
     "side_panel/performance_controls/performance_controls_browsertest.cc",
@@ -223,6 +222,7 @@ source_set("interactive_ui_tests") {
     "new_tab_page/new_tab_page_focus_test.cc",
     "password_manager/password_manager_focus_test.cc",
     "settings/settings_focus_test.cc",
+    "side_panel/bookmarks/sp_bookmarks_interactive_test.cc",
     "support_tool/support_tool_focus_test.cc",
     "tab_search/tab_search_focus_test.cc",
   ]
@@ -253,7 +253,9 @@ source_set("interactive_ui_tests") {
   deps = [
     "//chrome/test:test_support",
     "//components/password_manager/content/common:common",
+    "//components/power_bookmarks/core:features",
     "//components/search:search",
+    "//components/user_notes:features",
   ]
 
   if (enable_compose) {
