@@ -344,6 +344,7 @@ enum {
   kAccessibilityFaceGazeActionsEnabled = 100285,
   kAccessibilityFaceGazeCursorControlEnabled = 100286,
   kAccessibilityFaceGazeAdjustSpeedSeparately = 100287,
+  kKeyboardAmbientLightSensorLastEnabled = 100288,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -1153,6 +1154,10 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       sync_preferences::MergeBehavior::kNone}},
     {ash::prefs::kDisplayAmbientLightSensorLastEnabled,
      {syncable_prefs_ids::kDisplayAmbientLightSensorLastEnabled,
+      syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {ash::prefs::kKeyboardAmbientLightSensorLastEnabled,
+     {syncable_prefs_ids::kKeyboardAmbientLightSensorLastEnabled,
       syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
     {ash::prefs::kSyncableVersionedWallpaperInfo,

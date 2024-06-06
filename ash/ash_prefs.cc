@@ -57,6 +57,7 @@
 #include "ash/system/input_device_settings/input_device_tracker.h"
 #include "ash/system/input_device_settings/keyboard_modifier_metrics_recorder.h"
 #include "ash/system/keyboard_brightness/keyboard_backlight_color_controller.h"
+#include "ash/system/keyboard_brightness/keyboard_brightness_controller.h"
 #include "ash/system/media/media_tray.h"
 #include "ash/system/network/cellular_setup_notifier.h"
 #include "ash/system/network/vpn_detailed_view.h"
@@ -168,6 +169,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry,
   ShelfController::RegisterProfilePrefs(registry);
   SnoopingProtectionController::RegisterProfilePrefs(registry);
   system::BrightnessControllerChromeos::RegisterProfilePrefs(registry);
+  KeyboardBrightnessController::RegisterProfilePrefs(registry);
   TabletModeTuckEducation::RegisterProfilePrefs(registry);
   TouchDevicesController::RegisterProfilePrefs(registry, for_test);
   UserEducationController::RegisterProfilePrefs(registry);

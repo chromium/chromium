@@ -628,4 +628,35 @@ TEST_F(KeyboardBrightnessControllerTest, KeyboardALSDisabledReasonPref) {
                                                            account_id));
 }
 
+TEST_F(KeyboardBrightnessControllerTest, KeyboardAmbientLightEnabledUserPref) {
+  // Activate user session.
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::ACTIVE);
+
+  // Set the ambient light sensor to be enabled initially.
+  power_manager_client()->SetKeyboardAmbientLightSensorEnabled(true);
+  run_loop_.RunUntilIdle();
+
+  // User pref is default to true.
+  EXPECT_TRUE(
+      Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
+          prefs::kKeyboardAmbientLightSensorLastEnabled));
+
+  // Disable the sensor via user settings and verify the preference updates.
+  SetKeyboardAmbientLightSensorEnabled(
+      false, power_manager::AmbientLightSensorChange_Cause::
+                 AmbientLightSensorChange_Cause_USER_REQUEST_SETTINGS_APP);
+  EXPECT_FALSE(
+      Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
+          prefs::kKeyboardAmbientLightSensorLastEnabled));
+
+  // Re-enable the sensor via user settings and verify the preference updates.
+  SetKeyboardAmbientLightSensorEnabled(
+      true, power_manager::AmbientLightSensorChange_Cause::
+                AmbientLightSensorChange_Cause_USER_REQUEST_SETTINGS_APP);
+  EXPECT_TRUE(
+      Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
+          prefs::kKeyboardAmbientLightSensorLastEnabled));
+}
+
 }  // namespace ash

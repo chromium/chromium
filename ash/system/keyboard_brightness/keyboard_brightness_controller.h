@@ -13,6 +13,7 @@
 #include "ash/system/keyboard_brightness_control_delegate.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/dbus/power/power_manager_client.h"
+#include "components/prefs/pref_registry_simple.h"
 
 class AccountId;
 class PrefService;
@@ -39,6 +40,9 @@ class ASH_EXPORT KeyboardBrightnessController
       delete;
 
   ~KeyboardBrightnessController() override;
+
+  // static:
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // SessionObserver:
   void OnActiveUserSessionChanged(const AccountId& account_id) override;

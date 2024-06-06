@@ -13,6 +13,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
+#include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
 
 namespace ash {
@@ -61,6 +63,15 @@ KeyboardBrightnessController::~KeyboardBrightnessController() {
   }
 }
 
+// static:
+void KeyboardBrightnessController::RegisterProfilePrefs(
+    PrefRegistrySimple* registry) {
+  registry->RegisterBooleanPref(
+      prefs::kKeyboardAmbientLightSensorLastEnabled,
+      /*default_value=*/true,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+}
+
 // SessionObserver:
 void KeyboardBrightnessController::OnActiveUserSessionChanged(
     const AccountId& account_id) {
@@ -102,6 +113,14 @@ void KeyboardBrightnessController::KeyboardAmbientLightSensorEnabledChanged(
   known_user.SetPath(active_account_id_.value(),
                      prefs::kKeyboardAmbientLightSensorEnabled,
                      std::make_optional<base::Value>(change.sensor_enabled()));
+
+  // Save a user pref so that we can restore users' settings when they login to
+  // a new device.
+  PrefService* primary_user_prefs = session_controller_->GetActivePrefService();
+  if (primary_user_prefs) {
+    primary_user_prefs->SetBoolean(
+        prefs::kKeyboardAmbientLightSensorLastEnabled, change.sensor_enabled());
+  }
 }
 
 // PowerManagerClient::Observer:

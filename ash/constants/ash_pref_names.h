@@ -964,12 +964,18 @@ inline constexpr char kAmbientLightSensorDisabledReason[] =
 
 // A double pref which stores the current keyboard brightness.
 const char kKeyboardBrightnessPercent[] =
-    "settings.keyboard_brightness_percent";
+    "settings.keyboard.brightness_percent";
 
 // A boolean pref which stores whether the keyboard ambient light sensor is
 // enabled.
 inline constexpr char kKeyboardAmbientLightSensorEnabled[] =
-    "settings.keyboard_ambient_light_sensor_enabled";
+    "settings.keyboard.ambient_light_sensor_enabled";
+
+// A boolean pref which stores whether the keyboard ambient light sensor is
+// enabled. This is a synced profile pref that stores the most recent value for
+// a given user.
+inline constexpr char kKeyboardAmbientLightSensorLastEnabled[] =
+    "settings.keyboard.ambient_light_sensor_last_enabled";
 
 // An integer pref which stores the reason that the keyboard ambient light
 // sensor was disabled. This pref can be used if we need to systematically
