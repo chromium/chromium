@@ -11,6 +11,8 @@ import "mojo/public/mojom/base/values.mojom";
 
 // Status codes returned in response to a StartPrint request. It is based on
 // the PrinterError enum in extensions/common/api/printer_provider.idl.
+//
+// LINT.IfChange(StartPrintStatus)
 [Stable, Extensible]
 enum StartPrintStatus {
   [Default] kUnknown,
@@ -23,6 +25,7 @@ enum StartPrintStatus {
   //  Specifies that the document is invalid.
   kInvalidData
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/printing/enums.xml:ExtensionPrintJobStatus)
 
 // Interface between the Ash system and lacros browser. Implemented in Ash,
 // Interface to allow lacros-chrome to register a service provider and to

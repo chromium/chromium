@@ -8,7 +8,12 @@
 #include <cstddef>
 
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "printing/mojom/print.mojom-forward.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/crosapi/mojom/extension_printer.mojom-forward.h"
+#endif
 
 namespace base {
 class TimeTicks;
@@ -91,6 +96,12 @@ void ReportUserActionHistogram(UserActionBuckets event);
 
 void RecordGetPrintersTimeHistogram(mojom::PrinterType printer_type,
                                     const base::TimeTicks& start_time);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Record the print job status sending to lacros extension printers from ash.
+void ReportLacrosExtensionPrintJobStatusFromAshHistogram(
+    crosapi::mojom::StartPrintStatus status);
+#endif
 
 }  // namespace printing
 

@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/extension_printer_service_ash.h"
+#include "chrome/browser/ui/webui/print_preview/print_preview_metrics.h"
 #include "chromeos/crosapi/mojom/extension_printer.mojom-forward.h"
 
 namespace printing {
@@ -64,6 +65,7 @@ void ExtensionPrinterHandlerAdapterAsh::StartPrint(
       job_title, std::move(settings), print_data,
       base::BindOnce(
           [](PrintCallback callback, StartPrintStatus status) {
+            ReportLacrosExtensionPrintJobStatusFromAshHistogram(status);
             // When the status is OK, print preview UI expects a none value.
             std::move(callback).Run(
                 status == StartPrintStatus::KOk

@@ -19,6 +19,10 @@
 #include "printing/print_job_constants.h"
 #include "printing/print_settings.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/crosapi/mojom/extension_printer.mojom-shared.h"
+#endif
+
 namespace printing {
 
 namespace {
@@ -203,5 +207,13 @@ void RecordGetPrintersTimeHistogram(mojom::PrinterType printer_type,
       /*min=*/base::Milliseconds(1),
       /*max=*/base::Minutes(1), /*buckets=*/50);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void ReportLacrosExtensionPrintJobStatusFromAshHistogram(
+    crosapi::mojom::StartPrintStatus status) {
+  base::UmaHistogramEnumeration("Printing.LacrosExtensions.FromAsh.Job.Result",
+                                status);
+}
+#endif
 
 }  // namespace printing
