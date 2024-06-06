@@ -11,7 +11,6 @@
 #include "ui/base/default_style.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/theme_provider.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
@@ -90,9 +89,7 @@ ui::ResourceBundle::FontDetails ChromeTypographyProvider::GetFontDetailsImpl(
     case views::style::CONTEXT_BUTTON_MD:
       details.weight = MediumWeightForUI();
       details.size_delta =
-          features::IsChromeRefresh2023()
-              ? gfx::PlatformFont::GetFontSizeDelta(kCR23ButtonTextSize)
-              : ui::kLabelFontSizeDelta;
+          gfx::PlatformFont::GetFontSizeDelta(kCR23ButtonTextSize);
       break;
     case views::style::CONTEXT_DIALOG_TITLE:
       details.size_delta = gfx::PlatformFont::GetFontSizeDelta(kTitleSize);
