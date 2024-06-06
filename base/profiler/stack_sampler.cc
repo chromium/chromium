@@ -10,7 +10,7 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/stack_allocated.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/profiler/metadata_recorder.h"
@@ -44,6 +44,8 @@ UnwinderStateCapture* GetStateCapture(const UnwinderCapture& state) {
 // Notifies the unwinders about the stack capture, and records metadata, while
 // the thread is suspended.
 class StackCopierDelegate : public StackCopier::Delegate {
+  STACK_ALLOCATED();
+
  public:
   StackCopierDelegate(const std::vector<UnwinderCapture>* unwinders,
                       ProfileBuilder* profile_builder,
@@ -69,10 +71,10 @@ class StackCopierDelegate : public StackCopier::Delegate {
   }
 
  private:
-  raw_ptr<const std::vector<UnwinderCapture>> unwinders_;
+  const std::vector<UnwinderCapture>* unwinders_;
 
-  const raw_ptr<ProfileBuilder> profile_builder_;
-  const raw_ptr<const MetadataRecorder::MetadataProvider> metadata_provider_;
+  ProfileBuilder* const profile_builder_;
+  const MetadataRecorder::MetadataProvider* const metadata_provider_;
 };
 
 }  // namespace

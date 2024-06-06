@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "base/i18n/unicodestring.h"
+#include "base/memory/stack_allocated.h"
 #include "base/synchronization/lock.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
 #include "third_party/icu/source/i18n/unicode/translit.h"
@@ -17,6 +18,8 @@ namespace autofill {
 // This RAII class provides a thread-safe interface to a shared transliterator.
 // Sharing a single transliterator is advisable due its high construction cost.
 class BorrowedTransliterator {
+  STACK_ALLOCATED();
+
  public:
   BorrowedTransliterator();
   virtual ~BorrowedTransliterator();

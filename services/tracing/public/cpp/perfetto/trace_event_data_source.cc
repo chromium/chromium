@@ -19,6 +19,7 @@
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/memory/stack_allocated.h"
 #include "base/no_destructor.h"
 #include "base/process/current_process.h"
 #include "base/sequence_checker.h"
@@ -82,6 +83,8 @@ static_assert(
 // Helper class used to ensure no tasks are posted while
 // TraceEventDataSource::lock_ is held.
 class SCOPED_LOCKABLE AutoLockWithDeferredTaskPosting {
+  STACK_ALLOCATED();
+
  public:
   explicit AutoLockWithDeferredTaskPosting(base::Lock& lock)
       EXCLUSIVE_LOCK_FUNCTION(lock)

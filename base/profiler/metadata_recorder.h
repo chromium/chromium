@@ -11,7 +11,7 @@
 #include <utility>
 
 #include "base/base_export.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/stack_allocated.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/threading/platform_thread.h"
@@ -189,6 +189,8 @@ class BASE_EXPORT MetadataRecorder {
   //     item_count = provider.GetItems(arr);
   //   }
   class SCOPED_LOCKABLE BASE_EXPORT MetadataProvider {
+    STACK_ALLOCATED();
+
    public:
     // Acquires an exclusive read lock on the metadata recorder which is held
     // until the object is destroyed.
@@ -209,7 +211,7 @@ class BASE_EXPORT MetadataRecorder {
     size_t GetItems(ItemArray* const items) const NO_THREAD_SAFETY_ANALYSIS;
 
    private:
-    const raw_ptr<const MetadataRecorder> metadata_recorder_;
+    const MetadataRecorder* const metadata_recorder_;
     PlatformThreadId thread_id_;
     base::AutoLock auto_lock_;
   };

@@ -11,8 +11,8 @@
 #include <memory>
 
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/stack_allocated.h"
 #include "base/synchronization/lock.h"
 #include "components/viz/common/gpu/context_cache_controller.h"
 #include "components/viz/common/gpu/context_lost_observer.h"
@@ -42,6 +42,8 @@ namespace viz {
 class VIZ_COMMON_EXPORT RasterContextProvider {
  public:
   class VIZ_COMMON_EXPORT ScopedRasterContextLock {
+    STACK_ALLOCATED();
+
    public:
     explicit ScopedRasterContextLock(RasterContextProvider* context_provider,
                                      const char* url = nullptr);
@@ -52,7 +54,7 @@ class VIZ_COMMON_EXPORT RasterContextProvider {
     }
 
    private:
-    const raw_ptr<RasterContextProvider> context_provider_;
+    RasterContextProvider* const context_provider_;
     base::AutoLock context_lock_;
     std::unique_ptr<ContextCacheController::ScopedBusy> busy_;
   };
