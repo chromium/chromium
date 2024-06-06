@@ -158,7 +158,7 @@ class AutocompleteResultTest : public testing::Test {
     mock_provider_list_.push_back(new FakeAutocompleteProvider(
         AutocompleteProvider::Type::TYPE_ON_DEVICE_HEAD));
     mock_provider_list_.push_back(new FakeAutocompleteProvider(
-        AutocompleteProvider::Type::TYPE_VERBATIM_MATCH));
+        AutocompleteProvider::Type::TYPE_FEATURED_SEARCH));
 
     for (const auto& provider : mock_provider_list_)
       provider->done_ = false;
@@ -2629,6 +2629,134 @@ TEST_F(AutocompleteResultTest, Desktop_TwoColumnRealbox) {
 
     // Verify that the secondary zero-prefix suggestions were not triggered.
     VerifyTriggeredFeatures(triggered_feature_service(), {});
+  }
+}
+
+TEST_F(AutocompleteResultTest, Desktop_ZpsGroupingIPH) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(omnibox::kStarterPackIPH);
+
+  const auto group1 = omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST;
+  const auto group2 = omnibox::GROUP_ZERO_SUGGEST_IN_PRODUCT_HELP;
+  TestData data[] = {
+      {0, 1, 500, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
+      {1, 1, 490, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
+      {2, 1, 480, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
+      {3, 1, 470, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
+      {4, 1, 460, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
+      {5, 1, 450, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
+      {6, 1, 440, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
+      {7, 1, 430, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
+      {8,
+       4,
+       420,
+       false,
+       {},
+       AutocompleteMatchType::NULL_RESULT_MESSAGE,
+       group2},
+  };
+  ACMatches matches;
+  PopulateAutocompleteMatches(data, std::size(data), &matches);
+
+  // Suggestion groups have the omnibox::SECTION_DEFAULT by default.
+  omnibox::GroupConfigMap suggestion_groups_map;
+  suggestion_groups_map[group1];
+  suggestion_groups_map[group2];
+
+  // Set up input for zero-prefix suggestions from the omnibox.
+  AutocompleteInput omnibox_zps_input(
+      u"",
+      metrics::OmniboxEventProto::INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS,
+      TestSchemeClassifier());
+  omnibox_zps_input.set_focus_type(
+      metrics::OmniboxFocusType::INTERACTION_FOCUS);
+
+  {
+    SCOPED_TRACE("Query from omnibox - with IPH");
+
+    AutocompleteResult result;
+    result.MergeSuggestionGroupsMap(suggestion_groups_map);
+    result.AppendMatches(matches);
+    result.SortAndCull(omnibox_zps_input, template_url_service_.get(),
+                       triggered_feature_service());
+
+    // There should be 8 total suggestions, including the IPH suggestion.
+    // With the IPH suggestion present, the 8th group1 suggestion should be
+    // culled in favor of the IPH suggestion.
+    const std::array<TestData, 8> expected_data{{
+        {0, 1, 500, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
+        {1, 1, 490, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
+        {2, 1, 480, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
+        {3, 1, 470, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
+        {4, 1, 460, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
+        {5, 1, 450, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
+        {6, 1, 440, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
+        {8,
+         4,
+         420,
+         false,
+         {},
+         AutocompleteMatchType::NULL_RESULT_MESSAGE,
+         group2},
+    }};
+    AssertResultMatches(result, expected_data);
+  }
+
+  // Set up input for zero-prefix suggestions from the realbox.
+  AutocompleteInput realbox_zps_input(
+      u"", metrics::OmniboxEventProto::NTP_REALBOX, TestSchemeClassifier());
+  realbox_zps_input.set_focus_type(
+      metrics::OmniboxFocusType::INTERACTION_FOCUS);
+
+  {
+    SCOPED_TRACE("Query from realbox");
+    AutocompleteResult result;
+    result.MergeSuggestionGroupsMap(suggestion_groups_map);
+    result.AppendMatches(matches);
+    result.SortAndCull(realbox_zps_input, template_url_service_.get(),
+                       triggered_feature_service());
+
+    // The IPH suggestion should not be shown in the Realbox, even if it's
+    // present in the list of matches.
+    const std::array<TestData, 8> expected_data{{
+        {0, 1, 500, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
+        {1, 1, 490, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
+        {2, 1, 480, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
+        {3, 1, 470, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
+        {4, 1, 460, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
+        {5, 1, 450, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
+        {6, 1, 440, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
+        {7, 1, 430, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
+    }};
+    AssertResultMatches(result, expected_data);
+  }
+
+  {
+    SCOPED_TRACE("Query from omnibox - without IPH");
+    // Remove the IPH suggestion from the list of matches.
+    matches.clear();
+    PopulateAutocompleteMatches(data, std::size(data) - 1, &matches);
+
+    AutocompleteResult result;
+    result.MergeSuggestionGroupsMap(suggestion_groups_map);
+    result.AppendMatches(matches);
+    result.SortAndCull(omnibox_zps_input, template_url_service_.get(),
+                       triggered_feature_service());
+
+    // There should be 8 total suggestions, including the IPH suggestion.
+    // With the IPH suggestion not present, all suggestion slots should be
+    // filled with group1 suggestions.
+    const std::array<TestData, 8> expected_data{{
+        {0, 1, 500, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
+        {1, 1, 490, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
+        {2, 1, 480, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
+        {3, 1, 470, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
+        {4, 1, 460, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
+        {5, 1, 450, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
+        {6, 1, 440, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
+        {7, 1, 430, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, group1},
+    }};
+    AssertResultMatches(result, expected_data);
   }
 }
 
