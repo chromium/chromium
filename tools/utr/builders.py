@@ -59,8 +59,8 @@ def find_builder_props(bucket_name, builder_name):
 
   if not possible_matches:
     logging.error(
-        '[red]No prop file found for %s.%s. Are you sure you have the '
-        'correct bucket and builder name?[/]', bucket_name, builder_name)
+        '[red]No prop file found. Are you sure you have the correct bucket '
+        '("%s") and builder name ("%s")?[/]', bucket_name, builder_name)
     if not _INTERNAL_BUILDER_PROP_DIRS.exists():
       logging.warning(
           'src-internal not detected in this checkout. Perhaps the builder '
