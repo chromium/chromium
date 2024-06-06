@@ -251,7 +251,7 @@ void ProductSpecificationsSyncBridge::OnReadAllDataAndMetadata(
     std::unique_ptr<syncer::ModelTypeStore::RecordList> record_list,
     std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
   if (error) {
-    change_processor()->ReportError({FROM_HERE, "Failed to read metadata."});
+    change_processor()->ReportError(*error);
     return;
   }
 
