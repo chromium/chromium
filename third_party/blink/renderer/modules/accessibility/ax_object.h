@@ -1551,7 +1551,8 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   void SerializeChooserPopupAttributes(ui::AXNodeData* node_data) const;
   void SerializeColorAttributes(ui::AXNodeData* node_data) const;
   void SerializeElementAttributes(ui::AXNodeData* node_data) const;
-  void SerializeHTMLIdTagAndClass(ui::AXNodeData* node_data) const;
+  void SerializeHTMLTagAndClass(ui::AXNodeData* node_data) const;
+  void SerializeHTMLId(ui::AXNodeData* node_data) const;
   void SerializeHTMLAttributes(ui::AXNodeData* node_data) const;
   void SerializeInlineTextBoxAttributes(ui::AXNodeData* node_data) const;
   void SerializeLangAttribute(ui::AXNodeData* node_data) const;
