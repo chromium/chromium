@@ -32,6 +32,7 @@
 #include "ui/display/display.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/views/widget/widget.h"
 
 namespace aura {
 class Window;
@@ -60,12 +61,6 @@ class DisplayManagerTestApi;
 namespace gfx {
 class Rect;
 }
-
-namespace views {
-class View;
-class Widget;
-class WidgetDelegate;
-}  // namespace views
 
 namespace ash {
 
@@ -137,14 +132,26 @@ class AshTestBase : public testing::Test {
 
   // Creates and shows a widget. See ash/public/cpp/shell_window_ids.h for
   // values for |container_id|.
+  // TODO(crbug.com/339619005) - Remove this function in favor of the next
+  // one so that callers have to explicitly specify the ownership mode.
   static std::unique_ptr<views::Widget> CreateTestWidget(
       views::WidgetDelegate* delegate = nullptr,
       int container_id = desks_util::GetActiveDeskContainerId(),
       const gfx::Rect& bounds = gfx::Rect(),
       bool show = true);
 
+  static std::unique_ptr<views::Widget> CreateTestWidget(
+      views::Widget::InitParams::Ownership ownership,
+      views::WidgetDelegate* delegate = nullptr,
+      int container_id = desks_util::GetActiveDeskContainerId(),
+      const gfx::Rect& bounds = gfx::Rect(),
+      bool show = true);
+
   // Creates a frameless widget for testing.
-  static std::unique_ptr<views::Widget> CreateFramelessTestWidget();
+  // TODO(crbug.com/339619005) - Make the ownership parameter required.
+  static std::unique_ptr<views::Widget> CreateFramelessTestWidget(
+      views::Widget::InitParams::Ownership ownership =
+          views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
 
   // Creates a widget with a visible WINDOW_TYPE_NORMAL window with the given
   // |app_type|. If |app_type| is chromeos::AppType::NON_APP, this window is
