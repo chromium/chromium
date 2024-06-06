@@ -10,14 +10,30 @@ import logging
 import os
 import requests
 import sys
+import traceback
 
 import constants
+
+# import protos for exceptions reporting
+THIS_DIR = os.path.abspath(os.path.dirname(__file__))
+CHROMIUM_SRC_DIR = os.path.abspath(os.path.join(THIS_DIR, '../../../..'))
+sys.path.append(
+    os.path.abspath(os.path.join(CHROMIUM_SRC_DIR, 'build/util/lib/proto')))
+import exception_occurrences_pb2
+
+from google.protobuf import json_format
+from google.protobuf import any_pb2
 
 LOGGER = logging.getLogger(__name__)
 # VALID_STATUSES is a list of valid status values for test_result['status'].
 # The full list can be obtained at
 # https://source.chromium.org/chromium/infra/infra/+/main:go/src/go.chromium.org/luci/resultdb/proto/v1/test_result.proto;drc=ca12b9f52b27f064b0fa47c39baa3b011ffa5790;l=151-174
 VALID_STATUSES = {"PASS", "FAIL", "CRASH", "ABORT", "SKIP"}
+
+
+def format_exception_stacktrace(e: Exception):
+  exception_trace = traceback.format_exception(type(e), e, e.__traceback__)
+  return exception_trace
 
 
 def _compose_test_result(test_id,
@@ -106,6 +122,33 @@ def _compose_test_result(test_id,
   return test_result
 
 
+def _compose_exception_occurrence(exception):
+  """Composes the exception_occurrence item to be posted to result sink.
+
+  Args:
+    exception: (Exception) the exception to be posted to result sink.
+
+  Returns:
+    exception_occurrence: Conforming to protos defined in
+          //build/util/lib/proto/exception_occurrences.proto
+  """
+
+  occurrence = exception_occurrences_pb2.ExceptionOccurrence(
+      name=type(exception).__name__,
+      stacktrace=format_exception_stacktrace(exception),
+  )
+  occurrence.occurred_time.GetCurrentTime()
+  return occurrence
+
+
+class ExceptionResults:
+  results = []  # Static variable to hold exception results
+
+  @staticmethod
+  def add_result(exception):
+    ExceptionResults.results.append(exception)
+
+
 class ResultSinkClient(object):
   """Stores constants and handles posting to ResultSink."""
 
@@ -168,6 +211,19 @@ class ResultSinkClient(object):
     self._post_test_result(
         _compose_test_result(test_id, status, expected, **kwargs))
 
+  def post_exceptions(self, exceptions):
+    """Composes and posts exception result to server.
+
+    Args:
+      exception: [Exception] list of exceptions to be posted to result sink.
+    """
+    if not self.sink:
+      return
+    exception_occurrences = []
+    for exception in exceptions:
+      exception_occurrences.append(_compose_exception_occurrence(exception))
+    self._post_exceptions(exception_occurrences)
+
   def _post_test_result(self, test_result):
     """Posts single test result to server.
 
@@ -181,5 +237,43 @@ class ResultSinkClient(object):
         url=self.url,
         headers=self.headers,
         data=json.dumps({'testResults': [test_result]}),
+    )
+    res.raise_for_status()
+
+  def _post_exceptions(self, exception_occurrences):
+    """Posts exception result to server.
+
+    This method assumes |self.sink| is not None.
+
+    Args:
+        exception_occurrences: list of exception_occurrences,
+          conforming to protos defined in
+          //build/util/lib/proto/exception_occurrences.proto
+    """
+
+    occurrences = exception_occurrences_pb2.ExceptionOccurrences()
+    occurrences.datapoints.extend(exception_occurrences)
+    any_msg = any_pb2.Any()
+    any_msg.Pack(occurrences)
+    invo_data = json.dumps({
+        'invocation': {
+            'extended_properties': {
+                'exception_occurrences': json_format.MessageToDict(any_msg)
+            }
+        },
+        'update_mask': {
+            'paths': ['extended_properties.exception_occurrences'],
+        }
+    })
+
+    LOGGER.info(invo_data)
+
+    updateInvo_url = (
+        'http://%s/prpc/luci.resultsink.v1.Sink/UpdateInvocation' %
+        self.sink['address'])
+    res = self._session.post(
+        url=updateInvo_url,
+        headers=self.headers,
+        data=invo_data,
     )
     res.raise_for_status()

@@ -37,6 +37,8 @@ import wpr_runner
 import xcodebuild_runner
 import xcode_util as xcode
 
+from result_sink_util import ExceptionResults, ResultSinkClient
+
 # if the current directory is in scripts, then we need to add plugin
 # path in order to import from that directory
 if os.path.split(os.path.dirname(__file__))[1] != 'plugin':
@@ -93,26 +95,27 @@ class Runner():
     """
     Main coordinating function.
     """
-    self.parse_args(args)
-
-    # This logic is run by default before the otool command is invoked such that
-    # otool has the correct Xcode selected for command line dev tools.
-    install_success, is_legacy_xcode = xcode.install_xcode(
-        self.args.mac_toolchain_cmd, self.args.xcode_build_version,
-        self.args.xcode_path, self.args.runtime_cache_prefix, self.args.version)
-    if not install_success:
-      raise test_runner.XcodeVersionNotFoundError(self.args.xcode_build_version)
-
-    # Sharding env var is required to shard GTest.
-    env_vars = self.args.env_var + self.sharding_env_vars()
-
     summary = {}
     tr = None
-
-    if not os.path.exists(self.args.out_dir):
-      os.makedirs(self.args.out_dir)
-
+    is_legacy_xcode = True
+    self.parse_args(args)
     try:
+      # This logic is run by default before the otool command is invoked such
+      # that otool has the correct Xcode selected for command line dev tools.
+      install_success, is_legacy_xcode = xcode.install_xcode(
+          self.args.mac_toolchain_cmd, self.args.xcode_build_version,
+          self.args.xcode_path, self.args.runtime_cache_prefix,
+          self.args.version)
+      if not install_success:
+        raise test_runner_errors.XcodeInstallFailedError(
+            self.args.xcode_build_version)
+
+      # Sharding env var is required to shard GTest.
+      env_vars = self.args.env_var + self.sharding_env_vars()
+
+      if not os.path.exists(self.args.out_dir):
+        os.makedirs(self.args.out_dir)
+
       if self.args.xcodebuild_sim_runner:
         tr = xcodebuild_runner.SimulatorParallelTestRunner(
             self.args.app,
@@ -216,37 +219,28 @@ class Runner():
 
       logging.info("Using test runner %s" % type(tr).__name__)
       return 0 if tr.launch() else 1
-    except shard_util.ExcessShardsError as e:
-      logging.error(e)
-      summary['step_text'] = format_exception_step_text(e)
-      return 2
-    except test_runner_errors.XcodeEnumerateTestsError as e:
-      logging.error(e)
-      summary['step_text'] = format_exception_step_text(e)
-      return 2
     except test_runner.DeviceError as e:
       sys.stderr.write(traceback.format_exc())
       summary['step_text'] = format_exception_step_text(e)
       # Swarming infra marks device status unavailable for any device related
       # issue using this return code.
+      ExceptionResults.add_result(e)
       return 3
-    except (test_runner.SimulatorNotFoundError,
-            test_runner.HostIsDownError) as e:
+    except test_runner.SimulatorNotFoundError as e:
       # This means there's probably some issue in simulator runtime so we don't
       # want to cache it anymore (when it's in new Xcode format).
       self.should_move_xcode_runtime_to_cache = False
       sys.stderr.write(traceback.format_exc())
       summary['step_text'] = format_exception_step_text(e)
+      ExceptionResults.add_result(e)
       return 2
-    except test_runner.MIGServerDiedError as e:
-      self.should_delete_xcode_cache = True
-      return 2
-    except test_runner.TestRunnerError as e:
+    except Exception as e:
       sys.stderr.write(traceback.format_exc())
       summary['step_text'] = format_exception_step_text(e)
       # test_runner.Launch returns 0 on success, 1 on failure, so return 2
       # on exception to distinguish between a test failure, and a failure
       # to launch the test at all.
+      ExceptionResults.add_result(e)
       return 2
     finally:
       if tr:
@@ -293,6 +287,10 @@ class Runner():
 
       test_runner.defaults_delete('com.apple.CoreSimulator',
                                   'FramebufferServerRendererPolicy')
+
+      if ExceptionResults.results:
+        result_sink_client = ResultSinkClient()
+        result_sink_client.post_exceptions(ExceptionResults.results)
 
   def parse_args(self, args):
     """Parse the args into args and test_args.

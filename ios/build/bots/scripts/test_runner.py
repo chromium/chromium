@@ -134,20 +134,6 @@ class ParallelSimDisabledError(TestRunnerError):
         'Running in parallel on simulator clones has not been implemented!')
 
 
-class HostIsDownError(TestRunnerError):
-  """Simulator host is down, usually due to a corrupted runtime."""
-  def __init__(self):
-    super(HostIsDownError, self).__init__('Simulator host is down!')
-
-
-class MIGServerDiedError(TestRunnerError):
-  """(ipc/mig) server died error, causing simulator unable to start"""
-
-  def __init__(self):
-    super(MIGServerDiedError,
-          self).__init__('iOS runtime embedded in Xcode might be corrupted.')
-
-
 def get_device_ios_version(udid):
   """Gets device iOS version.
 
@@ -273,18 +259,6 @@ def print_process_output(proc,
       parser.ProcessLine(line)
     LOGGER.info(line)
     sys.stdout.flush()
-
-    # This is a temporary mitigation to surface this issue so that
-    # test runner can clear runtime cache for the next run.
-    # TODO(crbug.com/40241048): remove this workaround once the issue
-    # is resolved.
-    if HOST_IS_DOWN_ERROR in line:
-      raise HostIsDownError()
-
-    # crbug/1449927: Mitigation to exit earlier to clear Xcode cache
-    # in order to self-recover on the next run.
-    if MIG_SERVER_DIED_ERROR in line:
-      raise MIGServerDiedError()
 
   if parser:
     parser.Finalize()

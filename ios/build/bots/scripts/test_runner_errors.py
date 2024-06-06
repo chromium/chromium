@@ -28,6 +28,15 @@ class XcodeInstallError(Error):
   pass
 
 
+class XcodeInstallFailedError(Error):
+  """The requested version of Xcode was not successfully installed."""
+
+  def __init__(self, xcode_version):
+    super(XcodeInstallFailedError, self).__init__(
+        'Xcode version %s failed to install. File a ticket to go/ios-ops-ticket'
+        % xcode_version)
+
+
 class XcodeUnsupportedFeatureError(Error):
   """Base class for unsupported features related with Xcode."""
   pass

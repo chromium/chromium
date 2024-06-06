@@ -6,14 +6,28 @@
 import base64
 import json
 import mock
+import os
 import requests
+import sys
 import unittest
 
 import result_sink_util
+import test_runner
+
+# import protos for exceptions reporting
+THIS_DIR = os.path.abspath(os.path.dirname(__file__))
+CHROMIUM_SRC_DIR = os.path.abspath(os.path.join(THIS_DIR, '../../../..'))
+sys.path.append(
+    os.path.abspath(os.path.join(CHROMIUM_SRC_DIR, 'build/util/lib/proto')))
+import exception_occurrences_pb2
+
+from google.protobuf import json_format
+from google.protobuf import any_pb2
 
 
 SINK_ADDRESS = 'sink/address'
 SINK_POST_URL = 'http://%s/prpc/luci.resultsink.v1.Sink/ReportTestResults' % SINK_ADDRESS
+UPATE_POST_URL = 'http://%s/prpc/luci.resultsink.v1.Sink/UpdateInvocation' % SINK_ADDRESS
 AUTH_TOKEN = 'some_sink_token'
 LUCI_CONTEXT_FILE_DATA = """
 {
@@ -85,6 +99,15 @@ class UnitTest(unittest.TestCase):
         },
     }
     self.assertEqual(test_result, expected)
+
+  def test_compose_exception_occurrence(self):
+    """Tests compose_exception_occurrence function."""
+    test_exception = test_runner.XcodeVersionNotFoundError("15abcd")
+
+    occurrence = result_sink_util._compose_exception_occurrence(test_exception)
+    self.assertEqual(occurrence.name, "XcodeVersionNotFoundError")
+    self.assertIn("Xcode version not found: 15abcd",
+                  '\n'.join(occurrence.stacktrace))
 
   def test_parsing_crash_message(self):
     """Tests parsing crash message from test log and setting it as the
@@ -235,6 +258,35 @@ class UnitTest(unittest.TestCase):
         url=SINK_POST_URL,
         headers=HEADERS,
         data=json.dumps({'testResults': [test_result]}))
+
+  @mock.patch.object(requests.Session, 'post')
+  @mock.patch('%s.open' % 'result_sink_util',
+              mock.mock_open(read_data=LUCI_CONTEXT_FILE_DATA))
+  @mock.patch('os.environ.get', return_value='filename')
+  def test_post_exceptions(self, mock_open_file, mock_session_post):
+    test_exception = test_runner.XcodeVersionNotFoundError("15abcd")
+    occurrences = [
+        result_sink_util._compose_exception_occurrence(test_exception)
+    ]
+    exception_occurrences = exception_occurrences_pb2.ExceptionOccurrences()
+    exception_occurrences.datapoints.extend(occurrences)
+    any_msg = any_pb2.Any()
+    any_msg.Pack(exception_occurrences)
+    invo_data = json.dumps({
+        'invocation': {
+            'extended_properties': {
+                'exception_occurrences': json_format.MessageToDict(any_msg)
+            }
+        },
+        'update_mask': {
+            'paths': ['extended_properties.exception_occurrences'],
+        }
+    })
+    client = result_sink_util.ResultSinkClient()
+
+    client._post_exceptions(occurrences)
+    mock_session_post.assert_called_with(
+        url=UPATE_POST_URL, headers=HEADERS, data=invo_data)
 
   @mock.patch.object(requests.Session, 'close')
   @mock.patch.object(requests.Session, 'post')
