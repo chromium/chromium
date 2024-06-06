@@ -140,8 +140,11 @@ bool IsValidModifier(int val) {
 }
 
 std::string BuildDeviceKey(const ui::InputDevice& device) {
-  return base::StrCat(
-      {HexEncode(device.vendor_id), ":", HexEncode(device.product_id)});
+  return BuildDeviceKey(device.vendor_id, device.product_id);
+}
+
+std::string BuildDeviceKey(uint16_t vendor_id, uint16_t product_id) {
+  return base::StrCat({HexEncode(vendor_id), ":", HexEncode(product_id)});
 }
 
 template <typename T>

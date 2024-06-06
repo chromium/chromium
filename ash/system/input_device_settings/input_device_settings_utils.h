@@ -35,7 +35,8 @@ bool IsValidModifier(int val);
 
 // Builds `device_key` for use in storing device settings in prefs.
 ASH_EXPORT std::string BuildDeviceKey(const ui::InputDevice& device);
-
+// Builds a unique device key string based on vendor and product IDs.
+ASH_EXPORT std::string BuildDeviceKey(uint16_t vendor_id, uint16_t product_id);
 // Decides based on the existing settings storage and default value if the given
 // setting should be persisted.
 // Settings should be persisted if any of the following are true:

@@ -29,6 +29,9 @@ class ASH_EXPORT InputDeviceKeyAliasManager {
   // Builds the device key for `device` and checks to see if it's an alias
   // to a device's primary key or not before returning.
   std::string GetAliasedDeviceKey(const ui::InputDevice& device);
+  // Builds the device key based on vendor and product IDs and checks to see
+  // if it's an alias to a device's primary key or not before returning.
+  std::string GetAliasedDeviceKey(uint16_t vendor_id, uint16_t product_id);
   // Uses `primary_device_key` to retrieve all aliased device keys for a given
   // device.
   const base::flat_set<std::string>* GetAliasesForPrimaryDeviceKey(
