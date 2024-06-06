@@ -1,0 +1,27 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Recorder app is ash-chrome only")
+
+static_library("recorder_app_ui") {
+  sources = [
+    "recorder_app_ui.cc",
+    "recorder_app_ui.h",
+    "url_constants.cc",
+    "url_constants.h",
+  ]
+
+  public_deps = [ "resources" ]
+
+  deps = [
+    "//ash/constants",
+    "//ash/webui/common:trusted_types_util",
+    "//ash/webui/recorder_app_ui/mojom",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//ui/webui",
+  ]
+}

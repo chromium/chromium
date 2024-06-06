@@ -1,0 +1,18 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.recorder_app.mojom;
+
+import "mojo/public/mojom/base/uuid.mojom";
+import "services/on_device_model/public/mojom/on_device_model.mojom";
+
+// Primary interface for the chrome://recorder-app WebUI.
+interface PageHandler {
+  // Binds a new OnDeviceModel interface if possible using model from DLC
+  // specified by `model_id`.
+  LoadModel(
+      mojo_base.mojom.Uuid model_id,
+      pending_receiver<on_device_model.mojom.OnDeviceModel> model)
+      => (on_device_model.mojom.LoadModelResult result);
+};

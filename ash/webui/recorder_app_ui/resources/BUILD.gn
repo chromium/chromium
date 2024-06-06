@@ -1,0 +1,55 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//ui/webui/resources/tools/build_webui.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+assert(is_chromeos_ash)
+
+static_grdp_file = "$target_gen_dir/static.grdp"
+
+# Static files without any processing. Note that we don't use the static_files
+# in build_webui, since that would run preprocess step on anything that is not
+# .jpg, .png or .svg.
+# TODO(pihsun): We likely would want to move index.html to files that needs
+# preprocess, to use the i18n for title.
+generate_grd("build_static_grdp") {
+  grd_prefix = "static"
+  input_files_base_dir = rebase_path(".", "//")
+  input_files = [ "index.html" ]
+  out_grd = static_grdp_file
+}
+
+build_webui("build") {
+  grd_prefix = "recorder_app"
+
+  static_files = []
+  non_web_component_files = [ "init.ts" ]
+
+  ts_tsconfig_base = "tsconfig_base.json"
+
+  ts_deps = [ "//ui/webui/resources/mojo:build_ts" ]
+
+  mojo_files = [
+    "$root_gen_dir/services/on_device_model/public/mojom/on_device_model.mojom-webui.ts",
+    "$root_gen_dir/ash/webui/recorder_app_ui/mojom/recorder_app.mojom-webui.ts",
+    "$root_gen_dir/chromeos/services/machine_learning/public/mojom/soda.mojom-webui.ts",
+  ]
+
+  mojo_files_deps = [
+    "//ash/webui/recorder_app_ui/mojom:mojom_ts__generator",
+    "//chromeos/services/machine_learning/public/mojom:soda_ts__generator",
+    "//services/on_device_model/public/mojom:mojom_ts__generator",
+  ]
+
+  mojo_base_path = "/mojom/"
+
+  extra_grdp_deps = [ ":build_static_grdp" ]
+  extra_grdp_files = [ static_grdp_file ]
+
+  grit_output_dir = target_gen_dir
+
+  webui_context_type = "trusted"
+}
