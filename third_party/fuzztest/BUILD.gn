@@ -12,6 +12,7 @@
 # - fuzztest, a way of building new fuzzing targets using simpler macros.
 
 import("//build/buildflag_header.gni")
+import("//build/config/android/config.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build_overrides/build.gni")
 
@@ -215,6 +216,11 @@ if (use_centipede || enable_fuzztest_fuzz) {
 # Parts of fuzztest internals which are safe to include in all sorts
 # of test-related code, including other fuzzers.
 source_set("fuzztest_internal") {
+  if (defined(android_ndk_major_version) && android_ndk_major_version < 28) {
+    # Android API level 28+ has posix_spawnp
+    defines = [ "FUZZTEST_DISABLE_SUBPROCESS" ]
+  }
+
   sources = [
     "src/fuzztest/domain.h",
     "src/fuzztest/domain_core.h",
