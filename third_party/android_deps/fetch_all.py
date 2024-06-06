@@ -348,8 +348,8 @@ def _CheckVulnerabilities(build_android_deps_dir, report_dst):
 
     try:
         logging.info('CMD: %s', ' '.join(gradle_cmd))
-        subprocess.run(gradle_cmd, check=True)
-    except subprocess.CalledProcessError:
+        RunCommand(gradle_cmd, print_stdout=True)
+    except Exception:
         report_path = os.path.join(report_dst, 'dependency-check-report.html')
         logging.error(
             textwrap.dedent("""
@@ -580,7 +580,7 @@ def main():
         if args.ignore_licenses:
             gradle_cmd.append('-PskipLicenses=true')
 
-        subprocess.run(gradle_cmd, check=True)
+        RunCommand(gradle_cmd, print_stdout=True)
 
         logging.info('# Reformat %s.',
                      os.path.join(args.android_deps_dir, _BUILD_GN))
