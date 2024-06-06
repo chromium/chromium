@@ -302,7 +302,8 @@ NearbyDependenciesProvider::GetWifiLanDependencies() {
 
 sharing::mojom::WifiDirectDependenciesPtr
 NearbyDependenciesProvider::GetWifiDirectDependencies() {
-  if (!base::FeatureList::IsEnabled(::features::kNearbySharingWifiDirect)) {
+  if (!ash::features::IsWifiDirectEnabled() ||
+      !base::FeatureList::IsEnabled(::features::kNearbySharingWifiDirect)) {
     return nullptr;
   }
 
