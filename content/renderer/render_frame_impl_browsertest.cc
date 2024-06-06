@@ -1362,8 +1362,11 @@ TEST_F(RenderFrameImplTest, ContentSettingsSameDocumentNavigation) {
 class RenderFrameImplMojoJsTest : public RenderViewTest {
  public:
   RenderFrameImplMojoJsTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kEnableMojoJSProtectedMemory);
+    // An empty scoped feature list is used here to make sure that the feature
+    // list can be (re)initialized in the death test successfully, otherwise a
+    // CHECK will hit when tracing tries to reinitiailize in the same process.
+    // This is an unfortunate quirk of how death tests work for browser tests.
+    scoped_feature_list_.InitWithFeatures({}, {});
   }
 
   void SetUp() override {

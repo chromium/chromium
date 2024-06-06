@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/context_features/context_feature_settings.h"
 
 #include "base/memory/protected_memory.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 
@@ -46,9 +45,7 @@ void ContextFeatureSettings::AllowMojoJSForProcess() {
 
 // static
 void ContextFeatureSettings::CrashIfMojoJSNotAllowed() {
-  if (blink::features::IsEnableMojoJSProtectedMemoryEnabled()) {
-    CHECK(*mojo_js_allowed_);
-  }
+  CHECK(*mojo_js_allowed_);
 }
 
 void ContextFeatureSettings::Trace(Visitor* visitor) const {

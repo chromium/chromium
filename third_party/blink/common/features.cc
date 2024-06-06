@@ -806,12 +806,6 @@ BASE_FEATURE(kDeprecateUnloadByAllowList,
 const base::FeatureParam<std::string> kDeprecateUnloadAllowlist{
     &kDeprecateUnloadByAllowList, "allowlist", ""};
 
-// Enables using a base::ProtectedMemory<bool> value to provide extra protection
-// against MojoJS bindings being enabled via a data-only attack.
-BASE_FEATURE(kEnableMojoJSProtectedMemory,
-             "EnableMojoJSProtectedMemory",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enable reporting the modal dialog start time as an alternative end time for
 // duration measurement in performance event timing.
 BASE_FEATURE(kEventTimingFallbackToModalDialogStart,
@@ -2611,11 +2605,6 @@ bool IsAllowURNsInIframeEnabled() {
 bool DisplayWarningDeprecateURNIframesUseFencedFrames() {
   return base::FeatureList::IsEnabled(
       blink::features::kDisplayWarningDeprecateURNIframesUseFencedFrames);
-}
-
-bool IsEnableMojoJSProtectedMemoryEnabled() {
-  return base::FeatureList::IsEnabled(
-      blink::features::kEnableMojoJSProtectedMemory);
 }
 
 bool IsFencedFramesEnabled() {

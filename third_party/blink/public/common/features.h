@@ -433,8 +433,6 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<int> kDeprecateUnloadBucket;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
     kDeprecateUnloadAllowlist;
 
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kEnableMojoJSProtectedMemory);
-
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kEventTimingFallbackToModalDialogStart);
 
@@ -1679,8 +1677,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebviewAccelerateSmallCanvases);
 BLINK_COMMON_EXPORT bool IsAllowURNsInIframeEnabled();
 
 BLINK_COMMON_EXPORT bool DisplayWarningDeprecateURNIframesUseFencedFrames();
-
-BLINK_COMMON_EXPORT bool IsEnableMojoJSProtectedMemoryEnabled();
 
 BLINK_COMMON_EXPORT bool IsFencedFramesEnabled();
 
