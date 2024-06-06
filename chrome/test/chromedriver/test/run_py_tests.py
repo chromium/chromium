@@ -483,8 +483,8 @@ def _InferBrowserPath(browser_name,
     path_list = _GetHeadlessShellPathList(driver_path, platform)
   for path in path_list:
     if path_exists(path):
-      return path
-  return None
+      return (path, path_list)
+  return (None, path_list)
 
 class RunnerSelfTest(unittest.TestCase):
   def testPathListsForKnownPlatforms(self):
@@ -520,14 +520,31 @@ class RunnerSelfTest(unittest.TestCase):
     is_not_headless_shell = lambda path: 'chrome-headless-shell' not in path
     driver_path = os.path.dirname(_CHROMEDRIVER_BINARY)
     for platform in ['linux', 'mac', 'win']:
-      self.assertGreater(len(_InferBrowserPath('chrome',
+      # Successful inference
+      self.assertIsNotNone(_InferBrowserPath('chrome',
                                 driver_path,
                                 platform,
-                                is_not_headless_shell)), 0)
-      self.assertGreater(len(_InferBrowserPath('chrome-headless-shell',
+                                             is_not_headless_shell)[0],
+                           'platform=%s' % platform)
+      self.assertIsNotNone(_InferBrowserPath('chrome-headless-shell',
                                                driver_path,
                                                platform,
-                                               is_headless_shell)), 0)
+                                             is_headless_shell)[0],
+                           'platform=%s' % platform)
+      # Failed inference
+      (path, path_list) = _InferBrowserPath('chrome',
+                                            driver_path,
+                                            platform,
+                                            lambda _: False)
+      self.assertIsNone(path, 'platform=%s' % platform)
+      self.assertGreater(len(path_list), 0, 'platform=%s' % platform)
+      (path, path_list) = _InferBrowserPath('chrome-headless-shell',
+                                            driver_path,
+                                            platform,
+                                            lambda _: False)
+      self.assertIsNone(path, 'platform=%s' % platform)
+      self.assertGreater(len(path_list), 0, 'platform=%s' % platform)
+
 
 
 class ChromeDriverBaseTest(unittest.TestCase):
@@ -8597,12 +8614,19 @@ if __name__ == '__main__':
 
     if browser_name is None:
       browser_name = 'chrome'
-    _CHROME_BINARY = _InferBrowserPath(browser_name,
+    (_CHROME_BINARY, path_list) = _InferBrowserPath(browser_name,
                                        driver_path,
                                        util.GetPlatformName())
     if _CHROME_BINARY is None:
-      print(('Failed to find the browser "%s". ' % browser_name) +
-            'Delegating this task to ChromeDriver')
+      joined_path_list = '  * ' + '\n  * '.join(path_list)
+      if len(path_list) == 0:
+        joined_path_list = '    <empty list>'
+
+      print('''Failed to find the browser "%s".
+Attempted paths:
+%s
+Delegating this task to ChromeDriver'''
+            % (browser_name, joined_path_list))
 
   # If the browser lookup mechanism of the tests fails then this task is
   # delegated to ChromeDriver. The later needs to know which browser to search.
