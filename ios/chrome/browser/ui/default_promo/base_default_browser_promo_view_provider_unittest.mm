@@ -6,6 +6,7 @@
 
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/metrics/user_action_tester.h"
+#import "components/feature_engagement/public/feature_constants.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/default_browser/model/utils_test_support.h"
 #import "ios/chrome/browser/ui/default_promo/all_tabs_default_browser_promo_view_provider.h"
@@ -15,20 +16,56 @@
 
 #pragma mark - Fixture.
 
+@interface TestDefaultBrowserPromoViewProvider
+    : BaseDefaultBrowserPromoViewProvider
+@end
+
+@implementation TestDefaultBrowserPromoViewProvider
+
+- (UIImage*)promoImage {
+  return [UIImage imageNamed:@"all_your_tabs"];
+}
+
+- (NSString*)promoTitle {
+  return @"Test Title";
+}
+
+- (NSString*)promoSubtitle {
+  return @"Test Subtitle";
+}
+
+- (promos_manager::Promo)promoIdentifier {
+  return promos_manager::Promo::AllTabsDefaultBrowser;
+}
+
+- (const base::Feature*)featureEngagmentIdentifier {
+  return &feature_engagement::kIPHiOSPromoAllTabsFeature;
+}
+
+- (DefaultPromoType)defaultBrowserPromoType {
+  return DefaultPromoTypeAllTabs;
+}
+
+// Open settings.
+- (void)openSettings {
+  // Do nothing.
+}
+
+@end
+
 // Fixture to test BaseDefaultBrowserPromoViewProvider.
 class BaseDefaultBrowserPromoViewProviderTest : public PlatformTest {
  protected:
   void SetUp() override {
     PlatformTest::SetUp();
 
-    all_tabs_view_provider_ =
-        [[AllTabsDefaultBrowserPromoViewProvider alloc] init];
+    test_provider_ = [[TestDefaultBrowserPromoViewProvider alloc] init];
 
     ClearDefaultBrowserPromoData();
   }
 
   IOSChromeScopedTestingLocalState local_state_;
-  AllTabsDefaultBrowserPromoViewProvider* all_tabs_view_provider_;
+  TestDefaultBrowserPromoViewProvider* test_provider_;
 };
 
 #pragma mark - Tests.
@@ -41,7 +78,7 @@ TEST_F(BaseDefaultBrowserPromoViewProviderTest, TestRecordMetricsOnDisplay) {
   EXPECT_EQ(0, DisplayedFullscreenPromoCount());
 
   // Notify the view provider that promo was displayed.
-  [all_tabs_view_provider_ promoWasDisplayed];
+  [test_provider_ promoWasDisplayed];
 
   // Check that all expected UMA histograms are recorded.
   histogram_tester.ExpectTotalCount(
@@ -69,7 +106,7 @@ TEST_F(BaseDefaultBrowserPromoViewProviderTest,
   EXPECT_FALSE(HasUserInteractedWithTailoredFullscreenPromoBefore());
 
   // Notify the view provider that primary button was tapped.
-  [all_tabs_view_provider_ standardPromoPrimaryAction];
+  [test_provider_ standardPromoPrimaryAction];
 
   // Check that all expected UMA histograms are recorded.
   histogram_tester.ExpectTotalCount(
@@ -93,7 +130,7 @@ TEST_F(BaseDefaultBrowserPromoViewProviderTest,
   EXPECT_FALSE(HasUserInteractedWithTailoredFullscreenPromoBefore());
 
   // Notify the view provider that secondary button was tapped.
-  [all_tabs_view_provider_ standardPromoSecondaryAction];
+  [test_provider_ standardPromoSecondaryAction];
 
   // Check that all expected UMA histograms are recorded.
   histogram_tester.ExpectTotalCount(
@@ -115,7 +152,7 @@ TEST_F(BaseDefaultBrowserPromoViewProviderTest, TestRecordMetricsOnLearnMore) {
   EXPECT_FALSE(HasUserInteractedWithTailoredFullscreenPromoBefore());
 
   // Notify the view provider that learn more was tapped.
-  [all_tabs_view_provider_ standardPromoLearnMoreAction];
+  [test_provider_ standardPromoLearnMoreAction];
 
   // Check that all expected UMA histograms are recorded.
   EXPECT_EQ(1,
@@ -134,7 +171,7 @@ TEST_F(BaseDefaultBrowserPromoViewProviderTest, TestRecordMetricsOnDismiss) {
   EXPECT_FALSE(HasUserInteractedWithTailoredFullscreenPromoBefore());
 
   // Notify the view provider that promo was dismissed.
-  [all_tabs_view_provider_ standardPromoDismissSwipe];
+  [test_provider_ standardPromoDismissSwipe];
 
   // Check that all expected UMA histograms are recorded.
   histogram_tester.ExpectTotalCount(
