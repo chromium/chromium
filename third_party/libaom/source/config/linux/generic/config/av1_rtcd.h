@@ -379,7 +379,7 @@ void av1_resize_horz_dir_c(const uint8_t* const input,
                            int in_stride,
                            uint8_t* intbuf,
                            int height,
-                           int filteredlength,
+                           int filtered_length,
                            int width2);
 #define av1_resize_horz_dir av1_resize_horz_dir_c
 
