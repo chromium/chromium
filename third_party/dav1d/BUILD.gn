@@ -104,6 +104,14 @@ if (is_win) {
   }
 }
 
+if (is_clang && (current_cpu == "arm" || current_cpu == "arm64")) {
+  if (is_win) {
+    dav1d_copts += [ "/clang:-fno-align-functions" ]
+  } else {
+    dav1d_copts += [ "-fno-align-functions" ]
+  }
+}
+
 if (enable_nasm) {
   nasm_assemble("dav1d_asm") {
     sources = x86_asm_sources
