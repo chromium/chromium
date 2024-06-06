@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_MAHI_TEST_MOCK_MAHI_MEDIA_APP_EVENTS_PROXY_H_
-#define CHROME_BROWSER_CHROMEOS_MAHI_TEST_MOCK_MAHI_MEDIA_APP_EVENTS_PROXY_H_
+#ifndef ASH_SYSTEM_MAHI_TEST_MOCK_MAHI_MEDIA_APP_EVENTS_PROXY_H_
+#define ASH_SYSTEM_MAHI_TEST_MOCK_MAHI_MEDIA_APP_EVENTS_PROXY_H_
 
 #include "base/unguessable_token.h"
 #include "chromeos/components/mahi/public/cpp/mahi_media_app_events_proxy.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace mahi {
+namespace ash {
 
 // A mock class for testing.
 class MockMahiMediaAppEventsProxy : public chromeos::MahiMediaAppEventsProxy {
@@ -32,5 +32,5 @@ class MockMahiMediaAppEventsProxy : public chromeos::MahiMediaAppEventsProxy {
   MOCK_METHOD(void, RemoveObserver, (Observer*), (override));
 };
 
-}  // namespace mahi
-#endif  // CHROME_BROWSER_CHROMEOS_MAHI_TEST_MOCK_MAHI_MEDIA_APP_EVENTS_PROXY_H_
+}  // namespace ash
+#endif  // ASH_SYSTEM_MAHI_TEST_MOCK_MAHI_MEDIA_APP_EVENTS_PROXY_H_

@@ -388,6 +388,14 @@ void MahiManagerImpl::MediaAppPDFClosed(
   media_app_client_id_ = base::UnguessableToken::Null();
 }
 
+std::optional<base::UnguessableToken> MahiManagerImpl::GetMediaAppPDFClientId()
+    const {
+  if (media_app_pdf_focused_) {
+    return media_app_client_id_;
+  }
+  return std::nullopt;
+}
+
 void MahiManagerImpl::NotifyRefreshAvailability(bool available) {
   if (ui_controller_.IsMahiPanelOpen()) {
     ui_controller_.NotifyRefreshAvailabilityChanged(available);

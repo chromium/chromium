@@ -7,12 +7,12 @@
 #include <cstdint>
 
 #include "ash/shell.h"
+#include "ash/system/mahi/test/mock_mahi_media_app_content_manager.h"
+#include "ash/system/mahi/test/mock_mahi_media_app_events_proxy.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_window_builder.h"
 #include "ash/webui/media_app_ui/media_app_ui_untrusted.mojom.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/chromeos/mahi/test/mock_mahi_media_app_content_manager.h"
-#include "chrome/browser/chromeos/mahi/test/mock_mahi_media_app_events_proxy.h"
 #include "chromeos/components/mahi/public/cpp/mahi_media_app_content_manager.h"
 #include "chromeos/components/mahi/public/cpp/mahi_media_app_events_proxy.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -59,13 +59,13 @@ class MahiMediaAppClientTest : public AshTestBase {
   }
 
  protected:
-  testing::NiceMock<::mahi::MockMahiMediaAppContentManager>
+  testing::NiceMock<MockMahiMediaAppContentManager>
       mock_mahi_media_app_content_manager_;
   chromeos::ScopedMahiMediaAppContentManagerSetter
       scoped_mahi_media_app_content_manager_{
           &mock_mahi_media_app_content_manager_};
 
-  testing::NiceMock<::mahi::MockMahiMediaAppEventsProxy>
+  testing::NiceMock<MockMahiMediaAppEventsProxy>
       mock_mahi_media_app_events_proxy_;
   chromeos::ScopedMahiMediaAppEventsProxySetter
       scoped_mahi_media_app_events_proxy_{&mock_mahi_media_app_events_proxy_};

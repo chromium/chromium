@@ -9,12 +9,14 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/no_destructor.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ash/mahi/media_app/mahi_media_app_client.h"
 #include "chromeos/components/mahi/public/cpp/mahi_media_app_content_manager.h"
 #include "chromeos/components/mahi/public/cpp/mahi_media_app_events_proxy.h"
 #include "chromeos/components/mahi/public/cpp/mahi_util.h"
 #include "chromeos/crosapi/mojom/mahi.mojom.h"
+#include "ui/aura/window_observer.h"
 
 namespace ash {
 
@@ -24,7 +26,8 @@ namespace ash {
 // active media app instance.
 class MahiMediaAppContentManagerImpl
     : public chromeos::MahiMediaAppEventsProxy::Observer,
-      public chromeos::MahiMediaAppContentManager {
+      public chromeos::MahiMediaAppContentManager,
+      public aura::WindowObserver {
  public:
   MahiMediaAppContentManagerImpl();
   MahiMediaAppContentManagerImpl(const MahiMediaAppContentManagerImpl&) =
@@ -50,11 +53,32 @@ class MahiMediaAppContentManagerImpl
                  MahiMediaAppClient* client) override;
   void RemoveClient(base::UnguessableToken client_id) override;
   bool ObservingWindow(const aura::Window* window) const override;
+  bool ActivateClientWindow(const base::UnguessableToken client_id) override;
+
+  // aura::WindowObserver:
+  void OnWindowDestroying(aura::Window* window) override;
 
  private:
+  // Removes all records related to this closed window.
+  void RemoveClosedWindow(aura::Window* window);
+
   std::map<base::UnguessableToken, raw_ptr<MahiMediaAppClient>>
       client_id_to_client_;
-  std::set<raw_ptr<const aura::Window, SetExperimental>> observed_windows_;
+  std::set<raw_ptr<const aura::Window, SetExperimental>>
+      windows_of_live_clients_;
+
+  // Keeps the mapping from client_id to aura::Window*, and reversed mapping,
+  // too. Elements are removed only when the window closes. That means if a
+  // client is removed but its associated window is still live, their mapping is
+  // still kept.
+  std::map<base::UnguessableToken, raw_ptr<aura::Window>>
+      client_id_to_window_record_;
+  std::map<aura::Window*, std::vector<base::UnguessableToken>>
+      window_to_client_id_vec_;
+
+  // This class observes all windows that have been associated to a client.
+  base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
+      media_app_window_observations_{this};
 };
 
 }  // namespace ash

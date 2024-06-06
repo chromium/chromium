@@ -74,6 +74,11 @@ MahiManager::~MahiManager() {
   g_instance = nullptr;
 }
 
+std::optional<base::UnguessableToken> MahiManager::GetMediaAppPDFClientId()
+    const {
+  return std::nullopt;
+}
+
 // static
 ScopedMahiManagerSetter* ScopedMahiManagerSetter::instance_ = nullptr;
 

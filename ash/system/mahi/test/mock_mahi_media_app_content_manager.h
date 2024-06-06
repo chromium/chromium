@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_MAHI_TEST_MOCK_MAHI_MEDIA_APP_CONTENT_MANAGER_H_
-#define CHROME_BROWSER_CHROMEOS_MAHI_TEST_MOCK_MAHI_MEDIA_APP_CONTENT_MANAGER_H_
+#ifndef ASH_SYSTEM_MAHI_TEST_MOCK_MAHI_MEDIA_APP_CONTENT_MANAGER_H_
+#define ASH_SYSTEM_MAHI_TEST_MOCK_MAHI_MEDIA_APP_CONTENT_MANAGER_H_
 
 #include "base/unguessable_token.h"
 #include "chromeos/components/mahi/public/cpp/mahi_media_app_content_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace mahi {
+namespace ash {
 class MockMahiMediaAppContentManager
     : public chromeos::MahiMediaAppContentManager {
  public:
@@ -43,7 +43,11 @@ class MockMahiMediaAppContentManager
               (override));
   MOCK_METHOD(void, RemoveClient, (base::UnguessableToken), (override));
   MOCK_METHOD(bool, ObservingWindow, (const aura::Window*), (const override));
+  MOCK_METHOD(bool,
+              ActivateClientWindow,
+              (const base::UnguessableToken),
+              (override));
 };
 }  // namespace mahi
 
-#endif  // CHROME_BROWSER_CHROMEOS_MAHI_TEST_MOCK_MAHI_MEDIA_APP_CONTENT_MANAGER_H_
+#endif  // ASH_SYSTEM_MAHI_TEST_MOCK_MAHI_MEDIA_APP_CONTENT_MANAGER_H_

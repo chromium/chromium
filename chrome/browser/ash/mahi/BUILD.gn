@@ -33,8 +33,9 @@ source_set("unit_tests") {
     "//ash:test_support",
     "//base/test:test_support",
     "//chrome/browser/ash",
-    "//chrome/browser/chromeos:test_support",
+    "//components/signin/public/identity_manager:test_support",
     "//content/test:test_support",
+    "//services/network:test_support",
     "//ui/aura:test_support",
   ]
 }

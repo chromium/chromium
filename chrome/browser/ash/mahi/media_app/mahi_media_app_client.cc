@@ -72,6 +72,12 @@ MahiMediaAppClient::MahiMediaAppClient(
 }
 
 MahiMediaAppClient::~MahiMediaAppClient() {
+  // If `media_app_window_` is null, it means the media app window is closed and
+  // `OnWindowDestroying` is already called, the following part is done at that
+  // time.
+  if (media_app_window_ == nullptr) {
+    return;
+  }
   // Broadcasts the PDF closed event.
   chromeos::MahiMediaAppEventsProxy::Get()->OnPdfClosed(client_id_);
 
@@ -166,6 +172,11 @@ void MahiMediaAppClient::OnWindowDestroying(aura::Window* window) {
   if (window == media_app_window_) {
     media_app_window_ = nullptr;
     window_observation_.Reset();
+
+    // Broadcasts the PDF closed event.
+    chromeos::MahiMediaAppEventsProxy::Get()->OnPdfClosed(client_id_);
+    // Manually calls `RemoveClient()` when window destories.
+    chromeos::MahiMediaAppContentManager::Get()->RemoveClient(client_id_);
   }
 }
 

@@ -113,6 +113,10 @@ class COMPONENT_EXPORT(MAHI_PUBLIC_CPP) MahiManager {
   virtual void MediaAppPDFClosed(
       const base::UnguessableToken media_app_client_id) {}
 
+  // If current page info is associated to a Media app PDF window, returns its
+  // client id.
+  virtual std::optional<base::UnguessableToken> GetMediaAppPDFClientId() const;
+
  protected:
   MahiManager();
 };

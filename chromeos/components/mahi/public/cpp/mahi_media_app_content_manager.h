@@ -64,6 +64,9 @@ class COMPONENT_EXPORT(MAHI_PUBLIC_CPP) MahiMediaAppContentManager {
   // avoid overriding the media app pdf focus events.
   virtual bool ObservingWindow(const aura::Window* window) const = 0;
 
+  // Tries to activate the `client_id`'s associated window.
+  virtual bool ActivateClientWindow(const base::UnguessableToken client_id) = 0;
+
  protected:
   MahiMediaAppContentManager();
 
