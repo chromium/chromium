@@ -354,10 +354,10 @@ void V4L2StatelessVideoDecoder::ConfigureInputQueue() {
     }
   }
 
-  // TODO(frkoenig): There only needs to be a single buffer in order to
-  // decode. This should be investigated later to see if additional buffers
-  // provide better performance.
-  constexpr size_t kInputBuffers = 1;
+  // There only needs to be a single buffer in order for the client to decode.
+  // Profiling shows a large performance increase from 1 -> 2 and diminishing
+  // returns as the buffer count increases.
+  constexpr size_t kInputBuffers = 4;
 
   if (!input_queue_) {
     const VideoCodec codec =
