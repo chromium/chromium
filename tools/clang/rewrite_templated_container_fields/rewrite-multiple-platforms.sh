@@ -73,6 +73,7 @@ EOF
     linux)
         cat <<EOF
 target_os = "linux"
+clang_use_chrome_plugins = false
 dcheck_always_on = true
 is_chrome_branded = true
 is_debug = false
@@ -86,6 +87,7 @@ EOF
     cros)
         cat <<EOF
 target_os = "chromeos"
+clang_use_chrome_plugins = false
 chromeos_is_browser_only = true
 dcheck_always_on = true
 is_chrome_branded = true
@@ -100,6 +102,7 @@ EOF
     ash)
         cat <<EOF
 target_os = "chromeos"
+clang_use_chrome_plugins = false
 dcheck_always_on = true
 is_debug = false
 is_official_build = true
@@ -112,6 +115,7 @@ EOF
     mac)
         cat <<EOF
 target_os = "mac"
+clang_use_chrome_plugins = false
 dcheck_always_on = true
 is_chrome_branded = true
 is_debug = false
