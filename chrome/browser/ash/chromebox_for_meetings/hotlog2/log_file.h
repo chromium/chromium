@@ -34,7 +34,6 @@ class LogFile {
  private:
   const base::FilePath filepath_;
   std::ifstream file_stream_;
-  std::streampos last_read_offset_;
 };
 
 }  // namespace ash::cfm
