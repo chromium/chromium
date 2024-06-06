@@ -78,34 +78,6 @@
 
 namespace blink {
 
-namespace {
-
-class HitTestLatencyRecorder {
- public:
-  HitTestLatencyRecorder(bool allows_child_frame_content)
-      : start_(base::TimeTicks::Now()),
-        allows_child_frame_content_(allows_child_frame_content) {}
-
-  ~HitTestLatencyRecorder() {
-    base::TimeDelta duration = base::TimeTicks::Now() - start_;
-    if (allows_child_frame_content_) {
-      DEFINE_STATIC_LOCAL(CustomCountHistogram, recursive_latency_histogram,
-                          ("Event.Latency.HitTestRecursive", 0, 10000000, 100));
-      recursive_latency_histogram.CountMicroseconds(duration);
-    } else {
-      DEFINE_STATIC_LOCAL(CustomCountHistogram, latency_histogram,
-                          ("Event.Latency.HitTest", 0, 10000000, 100));
-      latency_histogram.CountMicroseconds(duration);
-    }
-  }
-
- private:
-  base::TimeTicks start_;
-  bool allows_child_frame_content_;
-};
-
-}  // namespace
-
 LayoutView::LayoutView(ContainerNode* document)
     : LayoutNGBlockFlow(document),
       frame_view_(To<Document>(document)->View()),
@@ -175,8 +147,6 @@ bool LayoutView::HitTest(const HitTestLocation& location,
   if (!FirstFragment().HasLocalBorderBoxProperties())
     return false;
 
-  HitTestLatencyRecorder hit_test_latency_recorder(
-      result.GetHitTestRequest().AllowsChildFrameContent());
   return HitTestNoLifecycleUpdate(location, result);
 }
 

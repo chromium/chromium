@@ -228,43 +228,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Event.Latency.HitTest" units="microseconds"
-    expires_after="2023-10-22">
-  <owner>pdr@chromium.org</owner>
-  <owner>paint-dev@chromium.org</owner>
-  <summary>
-    Duration of a non-resurive hitTest operation. The hit test is non-recursive
-    when the AllowChildFrameContent flag is clear. See also
-    Event.Latency.HitTestRecusrive.
-
-    Team: paint-dev@chromium.org.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
-  </summary>
-</histogram>
-
-<histogram name="Event.Latency.HitTestRecursive" units="microseconds"
-    expires_after="2023-10-22">
-  <owner>pdr@chromium.org</owner>
-  <owner>paint-dev@chromium.org</owner>
-  <summary>
-    Duration of a recursive hitTest operation. The hit test is recursive when
-    the AllowChildFrameContent flag is set. See also Event.Latency.HitTest.
-
-    Team: paint-dev@chromium.org.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
-  </summary>
-</histogram>
-
 <histogram name="Event.Latency.OS2.{EventType}" units="ms"
     expires_after="2024-10-13">
   <owner>flackr@chromium.org</owner>
