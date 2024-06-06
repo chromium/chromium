@@ -15,11 +15,12 @@ import androidx.annotation.Nullable;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 
-import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
+import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.ui.widget.ButtonCompat;
 
-public class SafetyHubPermissionsFragment extends ChromeBaseSettingsFragment
+public class SafetyHubPermissionsFragment extends SafetyHubBaseFragment
         implements Preference.OnPreferenceClickListener, UnusedSitePermissionsBridge.Observer {
     private static final String PERMISSIONS_LIST_PREFERENCE = "permissions_list";
 
@@ -73,7 +74,22 @@ public class SafetyHubPermissionsFragment extends ChromeBaseSettingsFragment
         mUnusedSitePermissionsBridge.removeObserver(this);
 
         if (mPermissionsRevocationConfirmed) {
+            PermissionsData[] permissionsDataList =
+                    mUnusedSitePermissionsBridge.getRevokedPermissions();
             mUnusedSitePermissionsBridge.clearRevokedPermissionsReviewList();
+            showSnackbarOnLastFocusedActivity(
+                    getString(
+                            R.string.safety_hub_multiple_permissions_snackbar,
+                            permissionsDataList.length),
+                    Snackbar.UMA_SAFETY_HUB_REGRANT_MULTIPLE_PERMISSIONS,
+                    new SnackbarManager.SnackbarController() {
+                        @Override
+                        public void onAction(Object actionData) {
+                            mUnusedSitePermissionsBridge.restoreRevokedPermissionsReviewList(
+                                    (PermissionsData[]) actionData);
+                        }
+                    },
+                    permissionsDataList);
         }
     }
 
@@ -83,6 +99,19 @@ public class SafetyHubPermissionsFragment extends ChromeBaseSettingsFragment
             PermissionsData permissionsData =
                     ((SafetyHubPermissionsPreference) preference).getPermissionsData();
             mUnusedSitePermissionsBridge.regrantPermissions(permissionsData.getOrigin());
+            showSnackbar(
+                    getString(
+                            R.string.safety_hub_single_permission_snackbar,
+                            permissionsData.getOrigin()),
+                    Snackbar.UMA_SAFETY_HUB_REGRANT_SINGLE_PERMISSION,
+                    new SnackbarManager.SnackbarController() {
+                        @Override
+                        public void onAction(Object actionData) {
+                            mUnusedSitePermissionsBridge.undoRegrantPermissions(
+                                    (PermissionsData) actionData);
+                        }
+                    },
+                    permissionsData);
         }
         return false;
     }

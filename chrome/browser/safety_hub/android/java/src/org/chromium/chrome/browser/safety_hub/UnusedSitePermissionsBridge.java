@@ -50,8 +50,19 @@ class UnusedSitePermissionsBridge {
         notifyRevokedPermissionsChanged();
     }
 
+    void undoRegrantPermissions(PermissionsData permissionsData) {
+        UnusedSitePermissionsBridgeJni.get().undoRegrantPermissions(mProfile, permissionsData);
+        notifyRevokedPermissionsChanged();
+    }
+
     void clearRevokedPermissionsReviewList() {
         UnusedSitePermissionsBridgeJni.get().clearRevokedPermissionsReviewList(mProfile);
+        notifyRevokedPermissionsChanged();
+    }
+
+    void restoreRevokedPermissionsReviewList(PermissionsData[] permissionsDataList) {
+        UnusedSitePermissionsBridgeJni.get()
+                .restoreRevokedPermissionsReviewList(mProfile, permissionsDataList);
         notifyRevokedPermissionsChanged();
     }
 

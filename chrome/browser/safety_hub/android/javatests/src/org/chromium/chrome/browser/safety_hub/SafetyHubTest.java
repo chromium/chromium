@@ -83,8 +83,13 @@ public final class SafetyHubTest {
                 new PermissionsData[] {PERMISSIONS_DATA_1});
         mPermissionsFragmentTestRule.startSettingsActivity();
 
+        // Regrant the permissions by clicking the corresponding action button.
         clickOnButtonNextToText(PERMISSIONS_DATA_1.getOrigin());
         onView(withText(PERMISSIONS_DATA_1.getOrigin())).check(doesNotExist());
+
+        // Click on the action button of the snackbar to undo the above action.
+        onViewWaiting(withText(R.string.undo)).perform(click());
+        onViewWaiting(withText(PERMISSIONS_DATA_1.getOrigin())).check(matches(isDisplayed()));
     }
 
     @Test
@@ -110,12 +115,17 @@ public final class SafetyHubTest {
         onView(withText(PERMISSIONS_DATA_2.getOrigin())).check(matches(isDisplayed()));
 
         // Click the button at the bottom of the page.
-        onView(withText(R.string.safety_hub_permissions_button_text)).perform(click());
+        onView(withText(R.string.got_it)).perform(click());
 
         // Verify tha the permissions subpage has been dismissed and the state of the permissions
         // module has changed.
         onViewWaiting(withText(R.string.safety_hub_permissions_ok_title))
                 .check(matches(isDisplayed()));
+
+        // Click on the snackbar action button and verify that the warning is displayed
+        // again.
+        onViewWaiting(withText(R.string.undo)).perform(click());
+        onViewWaiting(withText(permissionsTitle)).check(matches(isDisplayed()));
     }
 
     private void clickOnButtonNextToText(String text) {

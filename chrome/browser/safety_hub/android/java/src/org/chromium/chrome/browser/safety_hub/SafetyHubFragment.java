@@ -9,7 +9,6 @@ import android.os.Bundle;
 import androidx.preference.Preference;
 
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.components.browser_ui.settings.FragmentSettingsLauncher;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
@@ -18,7 +17,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Fragment containing Safety hub. */
-public class SafetyHubFragment extends ChromeBaseSettingsFragment
+public class SafetyHubFragment extends SafetyHubBaseFragment
         implements FragmentSettingsLauncher, UnusedSitePermissionsBridge.Observer {
     private static final String PREF_PASSWORDS = "passwords_account";
     private static final String PREF_UPDATE = "update_check";

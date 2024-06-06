@@ -32,7 +32,7 @@ class SafetyHubPermissionsPreference extends ChromeBasePreference implements Vie
         super.onBindViewHolder(holder);
 
         ButtonCompat button = (ButtonCompat) holder.findViewById(R.id.button);
-        button.setText(R.string.safety_hub_permissions_preference_undo);
+        button.setText(R.string.undo);
         button.setOnClickListener(this);
     }
 

@@ -1672,14 +1672,11 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_HUB_PERMISSIONS_PAGE_HEADER" translateable="false">
         To protect your data, permissions were removed from sites you haven’t visited recently
       </message>
-      <message name="IDS_SAFETY_HUB_PERMISSIONS_LIST_HEADER" translateable="false">
-        Permissions
+      <message name="IDS_SAFETY_HUB_SINGLE_PERMISSION_SNACKBAR" translateable="false">
+        Permissions allowed again for <ph name="SITE_NAME">%1$s<ex>https://example.com:443</ex></ph>
       </message>
-      <message name="IDS_SAFETY_HUB_PERMISSIONS_PREFERENCE_UNDO" translateable="false">
-        Undo
-      </message>
-      <message name="IDS_SAFETY_HUB_PERMISSIONS_BUTTON_TEXT" translateable="false">
-        Got it
+      <message name="IDS_SAFETY_HUB_MULTIPLE_PERMISSIONS_SNACKBAR" translateable="false">
+        Permissions allowed again for <ph name="SITE_NUMBER">%1$s<ex>3</ex></ph> sites
       </message>
 
        <!-- Safe Browsing preferences -->
