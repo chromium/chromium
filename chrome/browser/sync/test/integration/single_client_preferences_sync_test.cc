@@ -210,21 +210,28 @@ class SingleClientPreferencesWithAccountStorageSyncTest
   SingleClientPreferencesWithAccountStorageSyncTest()
       : feature_list_(syncer::kEnablePreferencesAccountStorage) {}
 
-  bool DoesAccountPreferencesFileExist() const {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    base::FilePath file_path =
-        GetProfile(0)->GetPath().Append(chrome::kAccountPreferencesFilename);
-    return base::PathExists(file_path);
-  }
+  // This returns nullopt if there was an error reading the account preferences
+  // from the file, for e.g., the file or the key doesn't exist.
+  std::optional<base::Value::Dict> GetAccountPreferencesFromFile() const {
+    std::optional<base::Value::Dict> result;
+    // ASSERT_* returns void. Thus using a lambda to not exit from the function,
+    // but still generate fatal failures.
+    [&]() {
+      base::ScopedAllowBlockingForTesting allow_blocking;
 
-  std::optional<base::Value> GetAccountPreferencesFileContent() const {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-
-    base::FilePath file_path =
-        GetProfile(0)->GetPath().Append(chrome::kAccountPreferencesFilename);
-    std::string json_content;
-    EXPECT_TRUE(base::ReadFileToString(file_path, &json_content));
-    return base::JSONReader::Read(json_content);
+      base::FilePath file_path =
+          GetProfile(0)->GetPath().Append(chrome::kAccountPreferencesFilename);
+      ASSERT_TRUE(base::PathExists(file_path))
+          << "Preference file " << file_path << " does not exist.";
+      std::string file_content;
+      ASSERT_TRUE(base::ReadFileToString(file_path, &file_content));
+      std::optional<base::Value> json_content =
+          base::JSONReader::Read(file_content);
+      ASSERT_TRUE(json_content.has_value() && json_content->is_dict())
+          << "Failed to parse file content: " << file_content;
+      result = std::move(json_content->GetDict());
+    }();
+    return result;
   }
 
   void CommitToDiskAndWait() const {
@@ -664,14 +671,14 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
             "account value");
 
   CommitToDiskAndWait();
-  ASSERT_TRUE(DoesAccountPreferencesFileExist());
 
   // Verify file content, `kSyncablePrefForTesting` is present.
-  std::optional<base::Value> file_content = GetAccountPreferencesFileContent();
-  ASSERT_TRUE(file_content.has_value() && file_content->is_dict());
+  std::optional<base::Value::Dict> file_content =
+      GetAccountPreferencesFromFile();
+  ASSERT_TRUE(file_content.has_value());
 
-  std::string* value = file_content->GetDict().FindString(
-      sync_preferences::kSyncablePrefForTesting);
+  std::string* value =
+      file_content->FindString(sync_preferences::kSyncablePrefForTesting);
   ASSERT_TRUE(value);
   EXPECT_EQ(*value, "account value");
 
@@ -687,9 +694,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
   CommitToDiskAndWait();
 
   // Account prefs have been removed from the file.
-  file_content = GetAccountPreferencesFileContent();
-  ASSERT_TRUE(file_content.has_value() && file_content->is_dict());
-  EXPECT_TRUE(file_content->GetDict().empty());
+  file_content = GetAccountPreferencesFromFile();
+  ASSERT_TRUE(file_content.has_value());
+  EXPECT_TRUE(file_content->empty());
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -719,14 +726,14 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
             "account value");
 
   CommitToDiskAndWait();
-  ASSERT_TRUE(DoesAccountPreferencesFileExist());
 
   // Verify file content, `kSyncablePrefForTesting` is present.
-  std::optional<base::Value> file_content = GetAccountPreferencesFileContent();
-  ASSERT_TRUE(file_content.has_value() && file_content->is_dict());
+  std::optional<base::Value::Dict> file_content =
+      GetAccountPreferencesFromFile();
+  ASSERT_TRUE(file_content.has_value());
 
-  std::string* value = file_content->GetDict().FindString(
-      sync_preferences::kSyncablePrefForTesting);
+  std::string* value =
+      file_content->FindString(sync_preferences::kSyncablePrefForTesting);
   ASSERT_TRUE(value);
   EXPECT_EQ(*value, "account value");
 
@@ -740,9 +747,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
   CommitToDiskAndWait();
 
   // Account prefs have been removed from the file.
-  file_content = GetAccountPreferencesFileContent();
-  ASSERT_TRUE(file_content.has_value() && file_content->is_dict());
-  EXPECT_TRUE(file_content->GetDict().empty());
+  file_content = GetAccountPreferencesFromFile();
+  ASSERT_TRUE(file_content.has_value());
+  EXPECT_TRUE(file_content->empty());
 }
 
 #endif  // !BUILDFLAG(IS_CHROMEOS)
