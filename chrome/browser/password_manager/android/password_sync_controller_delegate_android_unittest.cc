@@ -83,7 +83,7 @@ class PasswordSyncControllerDelegateAndroidTest : public testing::Test {
 TEST_F(PasswordSyncControllerDelegateAndroidTest,
        OnSyncStatusEnabledOnStartup) {
   CoreAccountInfo test_info = GetTestAccountInfo();
-  sync_service()->SetAccountInfo(test_info);
+  sync_service()->SetSignedInWithSyncFeatureOn(test_info);
 
   EXPECT_CALL(*bridge(), NotifyCredentialManagerWhenSyncing(test_info.email));
   EXPECT_CALL(*sync_state_changed_cb(), Run);
@@ -114,8 +114,7 @@ TEST_F(PasswordSyncControllerDelegateAndroidTest,
 
 TEST_F(PasswordSyncControllerDelegateAndroidTest,
        OnSyncStatusDisabledOnStartup) {
-  sync_service()->SetDisableReasons(
-      {syncer::SyncService::DISABLE_REASON_NOT_SIGNED_IN});
+  sync_service()->SetSignedOut();
 
   EXPECT_CALL(*bridge(), NotifyCredentialManagerWhenNotSyncing);
   EXPECT_CALL(*sync_state_changed_cb(), Run);
@@ -130,15 +129,13 @@ TEST_F(PasswordSyncControllerDelegateAndroidTest,
 
 TEST_F(PasswordSyncControllerDelegateAndroidTest,
        OnSyncStatusChangedToEnabledAfterStartup) {
-  sync_service()->SetDisableReasons(
-      {syncer::SyncService::DISABLE_REASON_NOT_SIGNED_IN});
+  sync_service()->SetSignedOut();
   EXPECT_CALL(*bridge(), NotifyCredentialManagerWhenNotSyncing());
   EXPECT_CALL(*sync_state_changed_cb(), Run);
   sync_controller_delegate()->OnSyncServiceInitialized(sync_service());
 
   CoreAccountInfo test_info = GetTestAccountInfo();
-  sync_service()->SetAccountInfo(test_info);
-  sync_service()->SetDisableReasons({});
+  sync_service()->SetSignedInWithSyncFeatureOn(test_info);
 
   EXPECT_CALL(*bridge(), NotifyCredentialManagerWhenSyncing(test_info.email));
   EXPECT_CALL(*sync_state_changed_cb(), Run);
@@ -154,7 +151,7 @@ TEST_F(PasswordSyncControllerDelegateAndroidTest,
 TEST_F(PasswordSyncControllerDelegateAndroidTest,
        OnSyncStatusChangedToEnabledExcludingPasswords) {
   CoreAccountInfo test_info = GetTestAccountInfo();
-  sync_service()->SetAccountInfo(test_info);
+  sync_service()->SetSignedInWithSyncFeatureOn(test_info);
   sync_service()->GetUserSettings()->SetSelectedTypes(/*sync_everything=*/true,
                                                       /*types=*/{});
 
@@ -173,14 +170,12 @@ TEST_F(PasswordSyncControllerDelegateAndroidTest,
 TEST_F(PasswordSyncControllerDelegateAndroidTest,
        OnSyncStatusChangedToDisabledAfterStartup) {
   CoreAccountInfo test_info = GetTestAccountInfo();
-  sync_service()->SetAccountInfo(test_info);
-  sync_service()->SetDisableReasons({});
+  sync_service()->SetSignedInWithSyncFeatureOn(test_info);
   EXPECT_CALL(*bridge(), NotifyCredentialManagerWhenSyncing(test_info.email));
   EXPECT_CALL(*sync_state_changed_cb(), Run);
   sync_controller_delegate()->OnSyncServiceInitialized(sync_service());
 
-  sync_service()->SetDisableReasons(
-      {syncer::SyncService::DISABLE_REASON_NOT_SIGNED_IN});
+  sync_service()->SetSignedOut();
 
   EXPECT_CALL(*bridge(), NotifyCredentialManagerWhenNotSyncing());
   EXPECT_CALL(*sync_state_changed_cb(), Run);

@@ -91,7 +91,7 @@ TEST_F(LocalPasswordsMigrationWarningUtilTest, TestShouldShowWhenMoreThanADay) {
       password_manager::prefs::kLocalPasswordsMigrationWarningShownTimestamp,
       base::Time::Now());
   task_env()->FastForwardBy(base::Hours(25));
-  sync_service()->SetHasSyncConsent(false);
+  sync_service()->SetSignedOut();
   EXPECT_TRUE(local_password_migration::ShouldShowWarning(profile()));
 }
 
@@ -108,7 +108,7 @@ TEST_F(LocalPasswordsMigrationWarningUtilTest,
       password_manager::prefs::kLocalPasswordsMigrationWarningShownTimestamp,
       base::Time::Now());
   task_env()->FastForwardBy(base::Hours(23));
-  sync_service()->SetHasSyncConsent(false);
+  sync_service()->SetSignedOut();
   EXPECT_FALSE(local_password_migration::ShouldShowWarning(profile()));
 }
 
@@ -136,7 +136,7 @@ TEST_F(LocalPasswordsMigrationWarningUtilTest,
       password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
       static_cast<int>(
           password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
-  sync_service()->SetHasSyncConsent(true);
+  sync_service()->SetSignedInWithSyncFeatureOn();
   sync_service()->GetUserSettings()->SetSelectedTypes(
       /* sync_everything = */ false, {syncer::UserSelectableType::kPasswords});
   EXPECT_FALSE(local_password_migration::ShouldShowWarning(profile()));
@@ -151,7 +151,7 @@ TEST_F(LocalPasswordsMigrationWarningUtilTest,
       password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
       static_cast<int>(
           password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
-  sync_service()->SetHasSyncConsent(true);
+  sync_service()->SetSignedInWithSyncFeatureOn();
   sync_service()->GetUserSettings()->SetSelectedTypes(
       /* sync_everything = */ true, {});
   EXPECT_FALSE(local_password_migration::ShouldShowWarning(profile()));
@@ -170,7 +170,7 @@ TEST_F(LocalPasswordsMigrationWarningUtilTest,
       password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
       static_cast<int>(
           password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
-  sync_service()->SetHasSyncConsent(true);
+  sync_service()->SetSignedInWithSyncFeatureOn();
   sync_service()->GetUserSettings()->SetSelectedTypes(
       /* sync_everything = */ false, {syncer::UserSelectableType::kBookmarks});
   EXPECT_TRUE(local_password_migration::ShouldShowWarning(profile()));

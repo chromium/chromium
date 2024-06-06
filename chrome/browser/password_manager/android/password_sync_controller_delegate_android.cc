@@ -9,16 +9,14 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/password_manager/core/browser/password_store/android_backend_error.h"
-#include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 
 namespace password_manager {
 
 namespace {
-
-// TODO(crbug.com/40067770): Migrate away from `ConsentLevel::kSync` on Android.
-using sync_util::IsSyncFeatureEnabledIncludingPasswords;
 
 std::string BuildCredentialManagerNotificationMetricName(
     const std::string& suffix) {
@@ -86,10 +84,10 @@ void PasswordSyncControllerDelegateAndroid::OnCredentialManagerError(
 
 void PasswordSyncControllerDelegateAndroid::UpdateCredentialManagerSyncStatus(
     syncer::SyncService* sync_service) {
-  // TODO(crbug.com/40067770): Migrate away from `ConsentLevel::kSync` on
-  // Android.
+  CHECK(sync_service);
   IsPwdSyncEnabled is_enabled =
-      IsPwdSyncEnabled(IsSyncFeatureEnabledIncludingPasswords(sync_service));
+      IsPwdSyncEnabled(sync_service->GetUserSettings()->GetSelectedTypes().Has(
+          syncer::UserSelectableType::kPasswords));
   if (credential_manager_sync_setting_.has_value() &&
       credential_manager_sync_setting_ == is_enabled) {
     return;

@@ -12,10 +12,12 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_store/split_stores_and_local_upm.h"
-#include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync/base/user_selectable_type.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "components/version_info/android/channel_getter.h"
 #include "ui/android/window_android.h"
 #include "ui/gfx/native_widget_types.h"
@@ -118,10 +120,14 @@ bool ShouldShowWarning(Profile* profile) {
     return false;
   }
 
-  // TODO(crbug.com/40067770): Migrate away from `ConsentLevel::kSync` on
-  // Android.
-  if (password_manager::sync_util::IsSyncFeatureEnabledIncludingPasswords(
-          SyncServiceFactory::GetForProfile(profile))) {
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(profile);
+  if (sync_service && sync_service->GetUserSettings()->GetSelectedTypes().Has(
+                          syncer::UserSelectableType::kPasswords)) {
+    // No signed-in / syncing users with password sync enabled should see the
+    // warning. This is an oversimplification to avoid confusion, in reality
+    // some users in this group *do* save to LoginDatabase (e.g. if GmsCore is
+    // outdated).
     return false;
   }
 

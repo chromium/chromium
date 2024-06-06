@@ -18,7 +18,6 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend.h"
-#include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -27,9 +26,6 @@
 namespace password_manager {
 
 namespace {
-
-// TODO(crbug.com/40067770): Migrate away from `ConsentLevel::kSync` on Android.
-using sync_util::IsSyncFeatureEnabledIncludingPasswords;
 
 // Threshold for the next migration attempt. This is needed in order to prevent
 // clients from spamming GMS Core API.

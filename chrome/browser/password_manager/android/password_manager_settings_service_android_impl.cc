@@ -18,12 +18,12 @@
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_manager_setting.h"
 #include "components/password_manager/core/browser/password_store/split_stores_and_local_upm.h"
-#include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
@@ -31,7 +31,6 @@
 using password_manager::PasswordManagerSetting;
 using password_manager::PasswordSettingsUpdaterAndroidBridgeHelper;
 using password_manager::UsesSplitStoresAndUPMForLocal;
-using password_manager::sync_util::IsSyncFeatureEnabledIncludingPasswords;
 using password_manager_upm_eviction::IsCurrentUserEvicted;
 
 namespace {
@@ -78,7 +77,7 @@ const PrefService::Preference* GetRegularPrefFromSetting(
 }
 
 bool HasChosenToSyncPreferences(const syncer::SyncService* sync_service) {
-  return sync_service && sync_service->IsSyncFeatureEnabled() &&
+  return sync_service &&
          sync_service->GetUserSettings()->GetSelectedTypes().Has(
              syncer::UserSelectableType::kPreferences);
 }
@@ -239,8 +238,6 @@ void PasswordManagerSettingsServiceAndroidImpl::RequestSettingsFromBackend() {
 }
 
 void PasswordManagerSettingsServiceAndroidImpl::TurnOffAutoSignIn() {
-  // TODO(crbug.com/40067770): Migrate away from `ConsentLevel::kSync` on
-  // Android.
   if (!UsesUPMBackend()) {
     pref_service_->SetBoolean(
         password_manager::prefs::kCredentialsEnableAutosignin, false);
@@ -254,8 +251,6 @@ void PasswordManagerSettingsServiceAndroidImpl::TurnOffAutoSignIn() {
   pref_service_->SetBoolean(password_manager::prefs::kAutoSignInEnabledGMS,
                             false);
   std::optional<SyncingAccount> account = std::nullopt;
-  // TODO(crbug.com/40067770): Migrate away from `ConsentLevel::kSync` on
-  // Android.
   if (is_password_sync_enabled_) {
     account = SyncingAccount(sync_service_->GetAccountInfo().email);
   }
@@ -272,11 +267,11 @@ void PasswordManagerSettingsServiceAndroidImpl::Init() {
   lifecycle_helper_->RegisterObserver(base::BindRepeating(
       &PasswordManagerSettingsServiceAndroidImpl::OnChromeForegrounded,
       weak_ptr_factory_.GetWeakPtr()));
-  // TODO(crbug.com/40067770): Migrate away from `ConsentLevel::kSync` on
-  // Android.
-  is_password_sync_enabled_ =
-      IsSyncFeatureEnabledIncludingPasswords(sync_service_);
+  is_password_sync_enabled_ = false;
   if (sync_service_) {
+    is_password_sync_enabled_ =
+        sync_service_->GetUserSettings()->GetSelectedTypes().Has(
+            syncer::UserSelectableType::kPasswords);
     // The `sync_service_` can be null when --disable-sync has been passed in as
     // a command line flag.
     sync_service_->AddObserver(this);
@@ -428,17 +423,16 @@ void PasswordManagerSettingsServiceAndroidImpl::WriteToTheCacheAndRegularPref(
 
 void PasswordManagerSettingsServiceAndroidImpl::OnStateChanged(
     syncer::SyncService* sync) {
+  CHECK(sync);
   // Return early if the setting didn't change and no sync errors were resolved.
-  // TODO(crbug.com/40067770): Migrate away from `ConsentLevel::kSync` on
-  // Android.
-  if (IsSyncFeatureEnabledIncludingPasswords(sync) ==
-      is_password_sync_enabled_) {
+  bool is_password_sync_enabled =
+      sync_service_->GetUserSettings()->GetSelectedTypes().Has(
+          syncer::UserSelectableType::kPasswords);
+  if (is_password_sync_enabled == is_password_sync_enabled_) {
     return;
   }
 
-  // TODO(crbug.com/40067770): Migrate away from `ConsentLevel::kSync` on
-  // Android.
-  is_password_sync_enabled_ = IsSyncFeatureEnabledIncludingPasswords(sync);
+  is_password_sync_enabled_ = is_password_sync_enabled;
 
   if (is_password_sync_enabled_ && IsCurrentUserEvicted(pref_service_)) {
     return;
@@ -487,14 +481,16 @@ void PasswordManagerSettingsServiceAndroidImpl::FetchSettings() {
       !is_password_sync_enabled_ &&
       !UsesSplitStoresAndUPMForLocal(pref_service_);
   if (is_password_sync_enabled_ || is_final_fetch_for_local_user_without_upm) {
-    // Note: This method also handles the case where the previously-syncing
+    // Note: This method also handles the case where the previously signed-in
     // account has just signed out. So the account can't be queried via
     // `sync_service_->GetAccountInfo().email` but instead needs to be retrieved
-    // via kGoogleServices*Last*SyncingUsername.
-    // TODO(crbug.com/40284768): Revisit this logic - does anything need to be
-    // done for signed-in non-syncing users too?
-    account = SyncingAccount(
-        pref_service_->GetString(::prefs::kGoogleServicesLastSyncingUsername));
+    // via kGoogleServices*Last*SignedInUsername.
+    std::string last_account_pref = pref_service_->GetString(
+        base::FeatureList::IsEnabled(
+            syncer::kEnablePasswordsAccountStorageForNonSyncingUsers)
+            ? prefs::kGoogleServicesLastSignedInUsername
+            : prefs::kGoogleServicesLastSyncingUsername);
+    account = SyncingAccount(last_account_pref);
   }
   for (PasswordManagerSetting setting : kAllPasswordSettings) {
     bridge_helper_->GetPasswordSettingValue(account, setting);

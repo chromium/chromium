@@ -24,19 +24,24 @@
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
 #include "components/password_manager/core/browser/password_store/split_stores_and_local_upm.h"
-#include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/model/proxy_model_type_controller_delegate.h"
 #include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
 namespace password_manager {
 
 namespace {
 
-using sync_util::IsSyncFeatureEnabledIncludingPasswords;
+bool IsPasswordSyncEnabled(const syncer::SyncService* sync_service) {
+  return sync_service &&
+         sync_service->GetUserSettings()->GetSelectedTypes().Has(
+             syncer::UserSelectableType::kPasswords);
+}
 
 bool ShouldErrorResultInFallback(PasswordStoreBackendError error) {
   switch (error.recovery_type) {
@@ -325,7 +330,7 @@ void PasswordStoreProxyBackend::OnSyncServiceInitialized(
   android_backend_->OnSyncServiceInitialized(sync_service);
   MaybeClearBuiltInBackend();
 
-  if (!IsSyncFeatureEnabledIncludingPasswords(sync_service_)) {
+  if (!IsPasswordSyncEnabled(sync_service_)) {
     // Reset initial UPM migration if password sync is disabled.
     prefs_->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices,
                        0);
@@ -373,7 +378,7 @@ PasswordStoreBackend* PasswordStoreProxyBackend::shadow_backend() {
 }
 
 void PasswordStoreProxyBackend::OnStateChanged(syncer::SyncService* sync) {
-  if (!IsSyncFeatureEnabledIncludingPasswords(sync_service_)) {
+  if (!IsPasswordSyncEnabled(sync_service_)) {
     // Reset initial UPM migration if password sync is disabled.
     prefs_->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices,
                        0);
@@ -400,7 +405,7 @@ void PasswordStoreProxyBackend::OnRemoteFormChangesReceived(
 
 bool PasswordStoreProxyBackend::UsesAndroidBackendAsMainBackend() {
   CHECK(sync_service_);
-  if (!IsSyncFeatureEnabledIncludingPasswords(sync_service_)) {
+  if (!IsPasswordSyncEnabled(sync_service_)) {
     return false;
   }
 
@@ -444,7 +449,7 @@ void PasswordStoreProxyBackend::MaybeClearBuiltInBackend() {
   }
 
   // Don't do anything if password syncing is not enabled.
-  if (!IsSyncFeatureEnabledIncludingPasswords(sync_service_)) {
+  if (!IsPasswordSyncEnabled(sync_service_)) {
     return;
   }
 

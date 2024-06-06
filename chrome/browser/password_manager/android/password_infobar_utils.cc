@@ -9,9 +9,11 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sync/base/user_selectable_type.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "content/public/browser/web_contents.h"
 
 namespace password_manager {
@@ -19,16 +21,16 @@ namespace password_manager {
 std::optional<AccountInfo> GetAccountInfoForPasswordMessages(Profile* profile) {
   DCHECK(profile);
 
-  // TODO(crbug.com/40067770): Migrate away from `ConsentLevel::kSync` on
-  // Android.
-  if (!sync_util::IsSyncFeatureEnabledIncludingPasswords(
-          SyncServiceFactory::GetForProfile(profile))) {
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(profile);
+  if (!sync_service || !sync_service->GetUserSettings()->GetSelectedTypes().Has(
+                           syncer::UserSelectableType::kPasswords)) {
     return std::nullopt;
   }
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   CoreAccountId account_id =
-      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSync);
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
   return identity_manager->FindExtendedAccountInfoByAccountId(account_id);
 }
 
