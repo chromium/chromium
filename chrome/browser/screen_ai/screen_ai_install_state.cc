@@ -8,17 +8,12 @@
 
 #include "base/check_is_test.h"
 #include "base/files/file_path.h"
-#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
-#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/screen_ai/pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "content/public/browser/browser_thread.h"
 #include "services/screen_ai/public/cpp/utilities.h"
 #include "ui/accessibility/accessibility_features.h"
 

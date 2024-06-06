@@ -20,7 +20,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/screen_ai/screen_ai_install_state.h"
-#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/browser/service_process_host_passkeys.h"
 #include "mojo/public/mojom/base/file_path.mojom.h"
