@@ -280,7 +280,8 @@ TEST_P(AshMessagePopupCollectionTest, AutoHide) {
 
   // Create a window, otherwise autohide doesn't work.
   std::unique_ptr<views::Widget> widget = CreateTestWidget(
-      nullptr, desks_util::GetActiveDeskContainerId(), gfx::Rect(0, 0, 50, 50));
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET, nullptr,
+      desks_util::GetActiveDeskContainerId(), gfx::Rect(0, 0, 50, 50));
   Shelf* shelf = GetPrimaryShelf();
   shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
   EXPECT_EQ(origin_x, popup_collection->GetPopupOriginX(popup_size));
@@ -377,7 +378,8 @@ TEST_P(AshMessagePopupCollectionTest, DISABLED_MixedFullscreenNone) {
   UpdateWorkArea(&collection2, GetSecondaryDisplay());
 
   // No fullscreens, both receive notification.
-  std::unique_ptr<views::Widget> widget1 = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget1 =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   widget1->SetFullscreen(false);
   AddNotification();
   EXPECT_TRUE(collection1.popup_shown());
@@ -405,7 +407,8 @@ TEST_P(AshMessagePopupCollectionTest, DISABLED_MixedFullscreenSome) {
   UpdateWorkArea(&collection2, GetSecondaryDisplay());
 
   // One fullscreen, non-fullscreen receives notification.
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   widget->SetFullscreen(true);
   AddNotification();
   EXPECT_FALSE(collection1.popup_shown());
@@ -432,10 +435,11 @@ TEST_P(AshMessagePopupCollectionTest, DISABLED_MixedFullscreenAll) {
   TestMessagePopupCollection collection2(shelf2);
   UpdateWorkArea(&collection2, GetSecondaryDisplay());
 
-  std::unique_ptr<views::Widget> widget1 = CreateTestWidget();
-  std::unique_ptr<views::Widget> widget2 =
-      CreateTestWidget(nullptr, desks_util::GetActiveDeskContainerId(),
-                       gfx::Rect(700, 0, 50, 50));
+  std::unique_ptr<views::Widget> widget1 =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+  std::unique_ptr<views::Widget> widget2 = CreateTestWidget(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET, nullptr,
+      desks_util::GetActiveDeskContainerId(), gfx::Rect(700, 0, 50, 50));
 
   // Both fullscreen, no notifications.
   widget1->SetFullscreen(true);
@@ -497,7 +501,8 @@ TEST_P(AshMessagePopupCollectionTest, BaselineInOverview) {
 
   const int baseline_with_visible_shelf = popup_collection->GetBaseline();
 
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   widget->SetFullscreen(true);
   ASSERT_EQ(SHELF_HIDDEN, GetPrimaryShelf()->GetVisibilityState());
   const int baseline_with_hidden_shelf = popup_collection->GetBaseline();
@@ -687,7 +692,8 @@ TEST_P(AshMessagePopupCollectionTest,
   // Create a window, otherwise autohide doesn't work.
   Shelf* shelf = GetPrimaryShelf();
   std::unique_ptr<views::Widget> widget = CreateTestWidget(
-      nullptr, desks_util::GetActiveDeskContainerId(), gfx::Rect(0, 0, 50, 50));
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET, nullptr,
+      desks_util::GetActiveDeskContainerId(), gfx::Rect(0, 0, 50, 50));
   shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
   ASSERT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
 
@@ -840,7 +846,8 @@ TEST_P(AshMessagePopupCollectionTest,
   // Create a window, otherwise autohide doesn't work.
   Shelf* shelf = GetPrimaryShelf();
   std::unique_ptr<views::Widget> widget = CreateTestWidget(
-      nullptr, desks_util::GetActiveDeskContainerId(), gfx::Rect(0, 0, 50, 50));
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET, nullptr,
+      desks_util::GetActiveDeskContainerId(), gfx::Rect(0, 0, 50, 50));
   shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
 
   auto* popup_collection = GetPrimaryPopupCollection();
@@ -1559,7 +1566,8 @@ TEST_P(AshMessagePopupCollectionTest, QsBubbleNotCloseWhenPopupClose) {
 
   // Create a window to simulate the step from b/291988617.
   std::unique_ptr<views::Widget> widget = CreateTestWidget(
-      nullptr, desks_util::GetActiveDeskContainerId(), gfx::Rect(0, 0, 50, 50));
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET, nullptr,
+      desks_util::GetActiveDeskContainerId(), gfx::Rect(0, 0, 50, 50));
 
   auto* unified_system_tray = GetPrimaryUnifiedSystemTray();
   unified_system_tray->ShowBubble();

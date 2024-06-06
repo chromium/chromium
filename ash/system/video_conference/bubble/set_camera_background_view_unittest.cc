@@ -41,7 +41,8 @@ class SetCameraBackgroundViewTest : public AshTestBase {
     MockCameraEffectsController();
 
     // This widget is required to implicitly create ColorProvider.
-    widget_ = CreateTestWidget();
+    widget_ =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     widget_->GetContentsView()->AddChildView(
         std::make_unique<SetCameraBackgroundView>(nullptr, controller()));
   }

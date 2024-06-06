@@ -211,7 +211,8 @@ TEST_F(AppListMetricsTest, TapOnItemDuringTabletModeAnimation) {
 
   CreateShelfItem(/*wait_for_tablet_mode=*/true);
 
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   ClickShelfItem();
@@ -396,7 +397,8 @@ TEST_F(AppListShowSourceMetricTest, TabletInAppToHome) {
       ->accessibility_controller()
       ->SetTabletModeShelfNavigationButtonsEnabled(true);
 
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
 
   ClickHomeButton();
@@ -423,7 +425,8 @@ TEST_F(AppListShowSourceMetricTest, TabletInAppToHome) {
 TEST_F(AppListShowSourceMetricTest, TabletModeWithWindowOpen) {
   base::HistogramTester histogram_tester;
 
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   GetAppListTestHelper()->CheckVisibility(false);
 
@@ -487,7 +490,8 @@ TEST_F(AppListShowSourceMetricTest, TabletModeDoesNotRecordAppListBubbleShow) {
 
   // Go to tablet mode, the tablet mode (non bubble) launcher will show. Create
   // a test widget so the launcher will show in the background.
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   auto* app_list_bubble_presenter =
       Shell::Get()->app_list_controller()->bubble_presenter_for_test();

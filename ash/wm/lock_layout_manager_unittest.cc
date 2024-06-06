@@ -190,7 +190,8 @@ TEST_F(LockLayoutManagerTest, AccessibilityPanel) {
   // Create accessibility panel and set its height.
   int accessibility_panel_height = 45;
   std::unique_ptr<views::Widget> accessibility_panel_widget =
-      CreateTestWidget(nullptr, kShellWindowId_AccessibilityPanelContainer);
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                       nullptr, kShellWindowId_AccessibilityPanelContainer);
   SetAccessibilityPanelHeight(accessibility_panel_height);
 
   views::Widget::InitParams widget_params(
@@ -349,7 +350,8 @@ TEST_F(LockLayoutManagerTest, AccessibilityPanelWithMultipleMonitors) {
   // Create accessibility panel and set its height.
   const int kAccessibilityPanelHeight = 45;
   std::unique_ptr<views::Widget> accessibility_panel_widget =
-      CreateTestWidget(nullptr, kShellWindowId_AccessibilityPanelContainer);
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                       nullptr, kShellWindowId_AccessibilityPanelContainer);
   SetAccessibilityPanelHeight(kAccessibilityPanelHeight);
 
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();

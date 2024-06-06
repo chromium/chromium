@@ -3852,7 +3852,8 @@ TEST_F(AppListPresenterTest, TapAppListThenSystemTrayShowsAutoHiddenShelf) {
   shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
 
   // Create a normal unmaximized window; the shelf should be hidden.
-  std::unique_ptr<views::Widget> window = CreateTestWidget();
+  std::unique_ptr<views::Widget> window =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   window->SetBounds(gfx::Rect(0, 0, 100, 100));
   GetAppListTestHelper()->CheckVisibility(false);
   EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
@@ -3881,7 +3882,8 @@ TEST_F(AppListPresenterTest, TapAppListThenShelfHidesAutoHiddenShelf) {
   shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
 
   // Create a normal unmaximized window; the shelf should be hidden.
-  std::unique_ptr<views::Widget> window = CreateTestWidget();
+  std::unique_ptr<views::Widget> window =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   window->SetBounds(gfx::Rect(0, 0, 100, 100));
   EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
 

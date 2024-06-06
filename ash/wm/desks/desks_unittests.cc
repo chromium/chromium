@@ -3918,7 +3918,8 @@ TEST_P(DesksTest, AutohiddenShelfAnimatesAfterDeskSwitch) {
   NewDesk();
 
   // Create a window on the first desk so that the shelf will auto-hide there.
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   widget->Maximize();
   // LayoutShelf() forces the animation to completion, at which point the
   // shelf should go off the screen.

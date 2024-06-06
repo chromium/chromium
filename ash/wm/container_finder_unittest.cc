@@ -20,7 +20,8 @@ using ContainerFinderTest = AshTestBase;
 TEST_F(ContainerFinderTest, GetContainerForWindow) {
   // Create a normal widget in the default container.
   std::unique_ptr<views::Widget> widget = CreateTestWidget(
-      nullptr, desks_util::GetActiveDeskContainerId(), gfx::Rect(1, 2, 3, 4));
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET, nullptr,
+      desks_util::GetActiveDeskContainerId(), gfx::Rect(1, 2, 3, 4));
   aura::Window* window = widget->GetNativeWindow();
 
   // The window itself is not a container.

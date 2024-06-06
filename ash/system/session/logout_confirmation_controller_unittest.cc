@@ -258,8 +258,10 @@ TEST_F(LastWindowClosedTest, ManagedGuestSession) {
   EXPECT_FALSE(controller->dialog_for_testing());
 
   // Opening windows does not show the dialog.
-  std::unique_ptr<views::Widget> widget1 = CreateTestWidget();
-  std::unique_ptr<views::Widget> widget2 = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget1 =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+  std::unique_ptr<views::Widget> widget2 =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   EXPECT_FALSE(controller->dialog_for_testing());
 
   // Closing the last window shows the dialog.
@@ -280,8 +282,10 @@ TEST_F(LastWindowClosedTest, SuggestLogoutAfterClosingLastWindowPolicy) {
   EXPECT_FALSE(controller->dialog_for_testing());
 
   // Opening windows does not show the dialog.
-  std::unique_ptr<views::Widget> widget1 = CreateTestWidget();
-  std::unique_ptr<views::Widget> widget2 = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget1 =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+  std::unique_ptr<views::Widget> widget2 =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   EXPECT_FALSE(controller->dialog_for_testing());
 
   // Closing the last window does not show the dialog because the
@@ -323,7 +327,8 @@ TEST_F(LastWindowClosedTest, AlwaysOnTop) {
   StartManagedGuestSession();
 
   // The new widget starts in the default window container.
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
 
   // Moving the widget to the always-on-top container does not trigger the
   // dialog because the window didn't close.
@@ -341,8 +346,10 @@ TEST_F(LastWindowClosedTest, MultipleContainers) {
   StartManagedGuestSession();
 
   // Create two windows in different containers.
-  std::unique_ptr<views::Widget> normal_widget = CreateTestWidget();
-  std::unique_ptr<views::Widget> always_on_top_widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> normal_widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+  std::unique_ptr<views::Widget> always_on_top_widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   always_on_top_widget->SetZOrderLevel(ui::ZOrderLevel::kFloatingWindow);
 
   // Closing the last window shows the dialog.

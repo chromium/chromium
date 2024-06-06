@@ -76,7 +76,8 @@ class ShortcutInputProviderTest : public AshTestBase {
     shortcut_input_provider_->StartObservingShortcutInput(
         observer_->receiver.BindNewPipeAndPassRemote());
 
-    widget_ = CreateTestWidget();
+    widget_ =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     widget_->Show();
     widget_->Activate();
   }

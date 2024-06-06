@@ -1350,6 +1350,7 @@ class AshNotificationViewDragTestBase : public AshNotificationViewTestBase {
 
     // Configure the widget that handles notification drop.
     drop_handling_widget_ = CreateTestWidget(
+        views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
         /*delegate=*/nullptr, desks_util::GetActiveDeskContainerId(),
         /*bounds=*/gfx::Rect(100, 100, 300, 300), /*show=*/true);
     aura::client::SetDragDropDelegate(drop_handling_widget_->GetNativeView(),

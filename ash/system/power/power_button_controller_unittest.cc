@@ -938,7 +938,8 @@ TEST_F(PowerButtonControllerTest, SuspendWithMenuOn) {
 
 // Tests the formerly-active window state in showing power menu.
 TEST_F(PowerButtonControllerTest, FormerlyActiveWindowInShowingMenu) {
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   ASSERT_TRUE(widget->IsActive());
 
   OpenPowerButtonMenu();

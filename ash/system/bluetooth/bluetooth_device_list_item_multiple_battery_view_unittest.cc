@@ -61,7 +61,8 @@ class BluetoothDeviceListItemMultipleBatteryViewTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
 
-    widget_ = CreateTestWidget();
+    widget_ =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     bluetooth_device_list_multiple_battery_item_ =
         std::make_unique<BluetoothDeviceListItemMultipleBatteryView>();
     // Add the item to widget hierarchy to make sure `ui::ColorProvider` will

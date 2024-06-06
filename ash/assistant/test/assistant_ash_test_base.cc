@@ -275,7 +275,8 @@ aura::Window* AssistantAshTestBase::SwitchToNewAppWindow() {
 }
 
 views::Widget* AssistantAshTestBase::SwitchToNewWidget() {
-  widgets_.push_back(CreateTestWidget());
+  widgets_.push_back(
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET));
 
   views::Widget* result = widgets_.back().get();
   // Give the widget a non-zero size, otherwise things like tapping and clicking

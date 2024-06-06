@@ -377,7 +377,8 @@ TEST_F(DisplayMoveWindowUtilTest, WindowWithTransientChild) {
 // target instead.
 TEST_F(DisplayMoveWindowUtilTest, ActiveTransientChildWindow) {
   UpdateDisplay("400x300,400x300");
-  std::unique_ptr<views::Widget> window = CreateTestWidget();
+  std::unique_ptr<views::Widget> window =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   window->SetBounds(gfx::Rect(10, 20, 200, 100));
 
   // Create a |child| transient widget of |window|. When |child| is shown, it is

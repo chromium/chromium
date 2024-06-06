@@ -100,7 +100,8 @@ TEST_F(AppListPresenterImplTest,
   for (int id : AppListPresenterImpl::kIdsOfContainersThatWontHideAppList) {
     // Create a widget with a specific container id and make sure that the
     // kHomeLauncher background is still shown.
-    std::unique_ptr<views::Widget> widget = CreateTestWidget(nullptr, id);
+    std::unique_ptr<views::Widget> widget = CreateTestWidget(
+        views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET, nullptr, id);
 
     EXPECT_EQ(ShelfBackgroundType::kHomeLauncher,
               shelf_layout_manager->shelf_background_type())

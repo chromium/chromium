@@ -112,7 +112,8 @@ TEST_P(OverviewFocusCyclerOldTest, BasicTabKeyNavigationTablet) {
 
 // Tests that pressing Ctrl+W while a window is selected in overview closes it.
 TEST_P(OverviewFocusCyclerOldTest, CloseWindowWithKey) {
-  std::unique_ptr<views::Widget> widget(CreateTestWidget());
+  std::unique_ptr<views::Widget> widget(
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET));
   ToggleOverview();
 
   SendKeyUntilOverviewItemIsFocused(ui::VKEY_RIGHT, GetEventGenerator());
@@ -170,9 +171,12 @@ TEST_P(OverviewFocusCyclerOldTest, BasicArrowKeyNavigation) {
 // and when we tab again we pick up where we left off.
 // TODO(http://b/325335020): Port this test to `OverviewFocusCyclerTest`.
 TEST_P(OverviewFocusCyclerOldTest, ItemClosed) {
-  auto widget1 = CreateTestWidget();
-  auto widget2 = CreateTestWidget();
-  auto widget3 = CreateTestWidget();
+  auto widget1 =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+  auto widget2 =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+  auto widget3 =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   ToggleOverview();
 
   auto* event_generator = GetEventGenerator();

@@ -34,7 +34,8 @@ class SplitViewHighlightViewTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
 
-    widget_ = CreateTestWidget();
+    widget_ =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     left_highlight_ =
         widget_->widget_delegate()->GetContentsView()->AddChildView(
             std::make_unique<SplitViewHighlightView>(false));

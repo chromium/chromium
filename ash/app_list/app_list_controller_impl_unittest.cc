@@ -277,7 +277,8 @@ TEST_P(AppListControllerImplTest, PageResetByTimerInTabletMode) {
   apps_grid_view->pagination_model()->SelectPage(1, false /* animate */);
 
   // Create a test window to hide the app list.
-  std::unique_ptr<views::Widget> dummy = CreateTestWidget();
+  std::unique_ptr<views::Widget> dummy =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   EXPECT_FALSE(Shell::Get()->app_list_controller()->IsVisible());
 
   // When timer is not skipped the selected page should not change when app list
@@ -310,7 +311,8 @@ TEST_P(AppListControllerImplTest, PagePersistanceTabletModeTest) {
   apps_grid_view->pagination_model()->SelectPage(1, false /* animate */);
 
   // Close and re-open the app list to ensure the current page persists.
-  std::unique_ptr<views::Widget> dummy = CreateTestWidget();
+  std::unique_ptr<views::Widget> dummy =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   EXPECT_FALSE(Shell::Get()->app_list_controller()->IsVisible());
   dummy->Minimize();
   EXPECT_TRUE(Shell::Get()->app_list_controller()->IsVisible());

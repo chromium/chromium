@@ -39,8 +39,10 @@ std::unique_ptr<views::Widget> CreateTransientChild(
 // transience, WindowPreviewView's internal collection will contain both those
 // two windows.
 TEST_F(WindowPreviewViewTest, Basic) {
-  auto widget1 = CreateTestWidget();
-  auto widget2 = CreateTestWidget();
+  auto widget1 =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+  auto widget2 =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
 
   wm::AddTransientChild(widget1->GetNativeWindow(), widget2->GetNativeWindow());
   auto preview_view =
@@ -66,9 +68,12 @@ TEST_F(WindowPreviewViewTest, AspectRatio) {
 // Tests that WindowPreviewView behaves as expected when we add or remove
 // transient children.
 TEST_F(WindowPreviewViewTest, TransientChildAddedAndRemoved) {
-  auto widget1 = CreateTestWidget();
-  auto widget2 = CreateTestWidget();
-  auto widget3 = CreateTestWidget();
+  auto widget1 =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+  auto widget2 =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+  auto widget3 =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
 
   ::wm::AddTransientChild(widget1->GetNativeWindow(),
                           widget2->GetNativeWindow());
@@ -91,7 +96,8 @@ TEST_F(WindowPreviewViewTest, TransientChildAddedAndRemoved) {
 // WindowPreviewView is observing transient windows additions.
 // https://crbug.com/1003544.
 TEST_F(WindowPreviewViewTest, NoCrashWithTransientChildWithNoWindowState) {
-  auto widget1 = CreateTestWidget();
+  auto widget1 =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
 
   auto transient_child1 = CreateTransientChild(
       widget1.get(), views::Widget::InitParams::TYPE_WINDOW);
@@ -133,7 +139,8 @@ TEST_F(WindowPreviewViewTest, NoCrashWithTransientChildWithNoWindowState) {
 // doesn't introduce a crash. https://crbug.com/1014543.
 TEST_F(WindowPreviewViewTest,
        NoCrashWhenWindowCyclingIsCanceledWithATransientPopup) {
-  auto widget1 = CreateTestWidget();
+  auto widget1 =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
 
   auto preview_view =
       std::make_unique<WindowPreviewView>(widget1->GetNativeWindow());
@@ -153,8 +160,10 @@ TEST_F(WindowPreviewViewTest, LayoutChildWithinParentBounds) {
 
   // Create two widgets linked transiently. The child window is within the
   // bounds of the parent window.
-  auto widget1 = CreateTestWidget();
-  auto widget2 = CreateTestWidget();
+  auto widget1 =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+  auto widget2 =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   WindowState::Get(widget1->GetNativeWindow())
       ->SetBoundsDirectForTesting(gfx::Rect(0, -20, 100, 120));
   widget1->GetNativeWindow()->SetProperty(aura::client::kTopViewInset, 20);
@@ -186,8 +195,10 @@ TEST_F(WindowPreviewViewTest, LayoutChildOutsideParentBounds) {
 
   // Create two widgets linked transiently. The child window is outside of the
   // bounds of the parent window.
-  auto widget1 = CreateTestWidget();
-  auto widget2 = CreateTestWidget();
+  auto widget1 =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+  auto widget2 =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   WindowState::Get(widget1->GetNativeWindow())
       ->SetBoundsDirectForTesting(gfx::Rect(0, -20, 200, 220));
   widget1->GetNativeWindow()->SetProperty(aura::client::kTopViewInset, 20);

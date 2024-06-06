@@ -614,7 +614,8 @@ TEST_F(ShelfLayoutManagerTest, VisibleWhenLockScreenShowing) {
             GetShelfWidget()->GetWindowBoundsInScreen().y());
 
   std::unique_ptr<views::Widget> lock_widget(AshTestBase::CreateTestWidget(
-      nullptr, kShellWindowId_LockScreenContainer, gfx::Rect(200, 200)));
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET, nullptr,
+      kShellWindowId_LockScreenContainer, gfx::Rect(200, 200)));
   lock_widget->Maximize();
 
   // Lock the screen.

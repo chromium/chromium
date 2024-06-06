@@ -1409,7 +1409,8 @@ TEST_F(ClientControlledStateTest, Pinned) {
   EXPECT_FALSE(GetScreenPinningController()->IsPinned());
 
   // Two windows cannot be pinned simultaneously.
-  auto widget2 = CreateTestWidget();
+  auto widget2 =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   WindowState* window_state_2 = WindowState::Get(widget2->GetNativeWindow());
   window_state_2->OnWMEvent(&pin_event);
   EXPECT_TRUE(window_state_2->IsPinned());
@@ -1473,7 +1474,8 @@ TEST_F(ClientControlledStateTest, TrustedPinnedBasic) {
   EXPECT_FALSE(GetScreenPinningController()->IsPinned());
 
   // Two windows cannot be trusted-pinned simultaneously.
-  auto widget2 = CreateTestWidget();
+  auto widget2 =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   WindowState* window_state_2 = WindowState::Get(widget2->GetNativeWindow());
   window_state_2->OnWMEvent(&trusted_pin_event);
   EXPECT_TRUE(window_state_2->IsTrustedPinned());

@@ -161,7 +161,8 @@ using NonClientFrameViewAshTest = AshTestBase;
 // Verifies the client view is not placed at a y location of 0.
 TEST_F(NonClientFrameViewAshTest, ClientViewCorrectlyPlaced) {
   std::unique_ptr<views::Widget> widget =
-      CreateTestWidget(new NonClientFrameViewAshTestWidgetDelegate);
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                       new NonClientFrameViewAshTestWidgetDelegate);
   EXPECT_NE(0, widget->client_view()->bounds().y());
 }
 
@@ -170,8 +171,8 @@ TEST_F(NonClientFrameViewAshTest, ClientViewCorrectlyPlaced) {
 TEST_F(NonClientFrameViewAshTest, HeaderHeight) {
   NonClientFrameViewAshTestWidgetDelegate* delegate =
       new NonClientFrameViewAshTestWidgetDelegate;
-
-  std::unique_ptr<views::Widget> widget = CreateTestWidget(delegate);
+  std::unique_ptr<views::Widget> widget = CreateTestWidget(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET, delegate);
 
   // The header should have enough room for the window controls. The
   // header/content separator line overlays the window controls.
@@ -185,7 +186,8 @@ TEST_F(NonClientFrameViewAshTest, HeaderHeight) {
 TEST_F(NonClientFrameViewAshTest, ActiveStateOfButtonMatchesWidget) {
   NonClientFrameViewAshTestWidgetDelegate* delegate =
       new NonClientFrameViewAshTestWidgetDelegate;
-  std::unique_ptr<views::Widget> widget = CreateTestWidget(delegate);
+  std::unique_ptr<views::Widget> widget = CreateTestWidget(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET, delegate);
   FrameCaptionButtonContainerView::TestApi test_api(
       delegate->non_client_frame_view()
           ->GetHeaderView()
@@ -199,7 +201,8 @@ TEST_F(NonClientFrameViewAshTest, ActiveStateOfButtonMatchesWidget) {
 
   // Activate a different widget so the original one loses activation.
   std::unique_ptr<views::Widget> widget2 =
-      CreateTestWidget(new NonClientFrameViewAshTestWidgetDelegate);
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                       new NonClientFrameViewAshTestWidgetDelegate);
   widget2->Show();
   ui::DrawWaiterForTest::WaitForCommit(widget->GetLayer()->GetCompositor());
 
@@ -211,7 +214,8 @@ TEST_F(NonClientFrameViewAshTest, ActiveStateOfButtonMatchesWidget) {
 // frame sizes when the client view does not specify any size constraints.
 TEST_F(NonClientFrameViewAshTest, NoSizeConstraints) {
   TestWidgetConstraintsDelegate* delegate = new TestWidgetConstraintsDelegate;
-  std::unique_ptr<views::Widget> widget = CreateTestWidget(delegate);
+  std::unique_ptr<views::Widget> widget = CreateTestWidget(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET, delegate);
 
   NonClientFrameViewAsh* non_client_frame_view =
       delegate->non_client_frame_view();
@@ -233,7 +237,8 @@ TEST_F(NonClientFrameViewAshTest, MinimumAndMaximumSize) {
   TestWidgetConstraintsDelegate* delegate = new TestWidgetConstraintsDelegate;
   delegate->set_minimum_size(min_client_size);
   delegate->set_maximum_size(max_client_size);
-  std::unique_ptr<views::Widget> widget = CreateTestWidget(delegate);
+  std::unique_ptr<views::Widget> widget = CreateTestWidget(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET, delegate);
 
   NonClientFrameViewAsh* non_client_frame_view =
       delegate->non_client_frame_view();
@@ -252,7 +257,8 @@ TEST_F(NonClientFrameViewAshTest, MinimumAndMaximumSize) {
 // avatar icon window property.
 TEST_F(NonClientFrameViewAshTest, AvatarIcon) {
   TestWidgetConstraintsDelegate* delegate = new TestWidgetConstraintsDelegate;
-  std::unique_ptr<views::Widget> widget = CreateTestWidget(delegate);
+  std::unique_ptr<views::Widget> widget = CreateTestWidget(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET, delegate);
 
   NonClientFrameViewAsh* non_client_frame_view =
       delegate->non_client_frame_view();
@@ -275,7 +281,8 @@ TEST_F(NonClientFrameViewAshTest, AvatarIcon) {
 TEST_F(NonClientFrameViewAshTest, ToggleTabletModeOnMinimizedWindow) {
   NonClientFrameViewAshTestWidgetDelegate* delegate =
       new NonClientFrameViewAshTestWidgetDelegate;
-  std::unique_ptr<views::Widget> widget = CreateTestWidget(delegate);
+  std::unique_ptr<views::Widget> widget = CreateTestWidget(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET, delegate);
   FrameCaptionButtonContainerView::TestApi test(
       delegate->non_client_frame_view()
           ->GetHeaderView()
@@ -306,7 +313,8 @@ TEST_F(NonClientFrameViewAshTest, ToggleTabletModeOnMinimizedWindow) {
 TEST_F(NonClientFrameViewAshTest, FrameHiddenInTabletModeForMaximizedWindows) {
   NonClientFrameViewAshTestWidgetDelegate* delegate =
       new NonClientFrameViewAshTestWidgetDelegate;
-  std::unique_ptr<views::Widget> widget = CreateTestWidget(delegate);
+  std::unique_ptr<views::Widget> widget = CreateTestWidget(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET, delegate);
   widget->Maximize();
 
   ash::TabletModeControllerTestApi().EnterTabletMode();
@@ -318,7 +326,8 @@ TEST_F(NonClientFrameViewAshTest, FrameHiddenInTabletModeForMaximizedWindows) {
 TEST_F(NonClientFrameViewAshTest,
        FrameShownInTabletModeForNonMaximizedWindows) {
   auto* delegate = new NonClientFrameViewAshTestWidgetDelegate();
-  std::unique_ptr<views::Widget> widget = CreateTestWidget(delegate);
+  std::unique_ptr<views::Widget> widget = CreateTestWidget(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET, delegate);
 
   ash::TabletModeControllerTestApi().EnterTabletMode();
   EXPECT_EQ(views::GetCaptionButtonLayoutSize(
@@ -333,7 +342,8 @@ TEST_F(NonClientFrameViewAshTest,
        FrameRemainsHiddenInTabletModeWhenTogglingFullscreen) {
   NonClientFrameViewAshTestWidgetDelegate* delegate =
       new NonClientFrameViewAshTestWidgetDelegate;
-  std::unique_ptr<views::Widget> widget = CreateTestWidget(delegate);
+  std::unique_ptr<views::Widget> widget = CreateTestWidget(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET, delegate);
 
   widget->SetFullscreen(true);
   EXPECT_EQ(0, delegate->GetNonClientFrameViewTopBorderHeight());
@@ -345,7 +355,8 @@ TEST_F(NonClientFrameViewAshTest,
 
 TEST_F(NonClientFrameViewAshTest, OpeningAppsInTabletMode) {
   auto* delegate = new TestWidgetConstraintsDelegate;
-  std::unique_ptr<views::Widget> widget = CreateTestWidget(delegate);
+  std::unique_ptr<views::Widget> widget = CreateTestWidget(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET, delegate);
   widget->Maximize();
 
   ash::TabletModeControllerTestApi().EnterTabletMode();
@@ -406,7 +417,8 @@ TEST_F(NonClientFrameViewAshTest, GetPreferredOnScreenHeightInTabletMaximzied) {
   ash::TabletModeControllerTestApi().EnterTabletMode();
 
   auto* delegate = new TestWidgetConstraintsDelegate;
-  std::unique_ptr<views::Widget> widget = CreateTestWidget(delegate);
+  std::unique_ptr<views::Widget> widget = CreateTestWidget(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET, delegate);
   auto* frame_view = static_cast<NonClientFrameViewAsh*>(
       widget->non_client_view()->frame_view());
   auto* header_view = frame_view->GetHeaderView();
@@ -425,7 +437,8 @@ TEST_F(NonClientFrameViewAshTest, GetPreferredOnScreenHeightInTabletMaximzied) {
 // no header when unminimized in tablet mode.
 TEST_F(NonClientFrameViewAshTest, MinimizedWindowsInTabletMode) {
   std::unique_ptr<views::Widget> widget =
-      CreateTestWidget(new NonClientFrameViewAshTestWidgetDelegate);
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                       new NonClientFrameViewAshTestWidgetDelegate);
   widget->GetNativeWindow()->SetProperty(
       aura::client::kResizeBehaviorKey,
       aura::client::kResizeBehaviorCanMaximize);
@@ -440,7 +453,8 @@ TEST_F(NonClientFrameViewAshTest, MinimizedWindowsInTabletMode) {
 
 TEST_F(NonClientFrameViewAshTest, HeaderVisibilityInFullscreen) {
   auto* delegate = new NonClientFrameViewAshTestWidgetDelegate();
-  std::unique_ptr<views::Widget> widget = CreateTestWidget(delegate);
+  std::unique_ptr<views::Widget> widget = CreateTestWidget(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET, delegate);
 
   auto* controller = ImmersiveFullscreenController::Get(widget.get());
   ImmersiveFullscreenControllerTestApi test_api(controller);
@@ -531,9 +545,9 @@ TEST_F(NonClientFrameViewAshTest, BackButton) {
   TestButtonModel* model_ptr = model.get();
 
   auto* delegate = new NonClientFrameViewAshTestWidgetDelegate();
-  std::unique_ptr<views::Widget> widget =
-      CreateTestWidget(delegate, desks_util::GetActiveDeskContainerId(),
-                       gfx::Rect(0, 0, 400, 500));
+  std::unique_ptr<views::Widget> widget = CreateTestWidget(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET, delegate,
+      desks_util::GetActiveDeskContainerId(), gfx::Rect(0, 0, 400, 500));
 
   ui::Accelerator accelerator_back_press(ui::VKEY_BROWSER_BACK, ui::EF_NONE);
   accelerator_back_press.set_key_state(ui::Accelerator::KeyState::PRESSED);
@@ -594,7 +608,8 @@ TEST_F(NonClientFrameViewAshTest, FrameVisibility) {
       new NonClientFrameViewAshTestWidgetDelegate;
   gfx::Rect window_bounds(10, 10, 200, 100);
   std::unique_ptr<views::Widget> widget = CreateTestWidget(
-      delegate, desks_util::GetActiveDeskContainerId(), window_bounds);
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET, delegate,
+      desks_util::GetActiveDeskContainerId(), window_bounds);
 
   // The height is smaller by the top border height.
   gfx::Size client_bounds(200, 68);
@@ -626,7 +641,8 @@ TEST_F(NonClientFrameViewAshTest, CustomButtonModel) {
   TestButtonModel* model_ptr = model.get();
 
   auto* delegate = new NonClientFrameViewAshTestWidgetDelegate();
-  std::unique_ptr<views::Widget> widget = CreateTestWidget(delegate);
+  std::unique_ptr<views::Widget> widget = CreateTestWidget(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET, delegate);
 
   NonClientFrameViewAsh* non_client_frame_view =
       delegate->non_client_frame_view();
@@ -716,9 +732,9 @@ TEST_F(NonClientFrameViewAshTest, CustomButtonModel) {
 
 TEST_F(NonClientFrameViewAshTest, WideFrame) {
   auto* delegate = new NonClientFrameViewAshTestWidgetDelegate();
-  std::unique_ptr<views::Widget> widget =
-      CreateTestWidget(delegate, desks_util::GetActiveDeskContainerId(),
-                       gfx::Rect(100, 0, 400, 500));
+  std::unique_ptr<views::Widget> widget = CreateTestWidget(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET, delegate,
+      desks_util::GetActiveDeskContainerId(), gfx::Rect(100, 0, 400, 500));
 
   NonClientFrameViewAsh* non_client_frame_view =
       delegate->non_client_frame_view();
@@ -795,9 +811,9 @@ TEST_F(NonClientFrameViewAshTest, WideFrame) {
 
 TEST_F(NonClientFrameViewAshTest, WideFrameButton) {
   auto* delegate = new NonClientFrameViewAshTestWidgetDelegate();
-  std::unique_ptr<views::Widget> widget =
-      CreateTestWidget(delegate, desks_util::GetActiveDeskContainerId(),
-                       gfx::Rect(100, 0, 400, 500));
+  std::unique_ptr<views::Widget> widget = CreateTestWidget(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET, delegate,
+      desks_util::GetActiveDeskContainerId(), gfx::Rect(100, 0, 400, 500));
   widget->Maximize();
   std::unique_ptr<WideFrameView> wide_frame_view =
       std::make_unique<WideFrameView>(widget.get());
@@ -836,9 +852,9 @@ TEST_F(NonClientFrameViewAshTest, MoveFullscreenWideFrameBetweenDisplay) {
   auto display_list = screen->GetAllDisplays();
 
   auto* delegate = new NonClientFrameViewAshTestWidgetDelegate();
-  std::unique_ptr<views::Widget> widget =
-      CreateTestWidget(delegate, desks_util::GetActiveDeskContainerId(),
-                       gfx::Rect(100, 0, 400, 500));
+  std::unique_ptr<views::Widget> widget = CreateTestWidget(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET, delegate,
+      desks_util::GetActiveDeskContainerId(), gfx::Rect(100, 0, 400, 500));
   widget->SetFullscreen(true);
   std::unique_ptr<WideFrameView> wide_frame_view =
       std::make_unique<WideFrameView>(widget.get());
@@ -901,7 +917,8 @@ class TestWidgetDelegate : public TestWidgetConstraintsDelegate {
 // kFrameActiveColorKey window property.
 TEST_P(NonClientFrameViewAshFrameColorTest, kFrameActiveColorKey) {
   TestWidgetDelegate* delegate = new TestWidgetDelegate(GetParam());
-  std::unique_ptr<views::Widget> widget = CreateTestWidget(delegate);
+  std::unique_ptr<views::Widget> widget = CreateTestWidget(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET, delegate);
 
   SkColor active_color =
       widget->GetNativeWindow()->GetProperty(kFrameActiveColorKey);
@@ -931,7 +948,8 @@ TEST_P(NonClientFrameViewAshFrameColorTest, kFrameActiveColorKey) {
 // kFrameInactiveColorKey window property.
 TEST_P(NonClientFrameViewAshFrameColorTest, KFrameInactiveColor) {
   TestWidgetDelegate* delegate = new TestWidgetDelegate(GetParam());
-  std::unique_ptr<views::Widget> widget = CreateTestWidget(delegate);
+  std::unique_ptr<views::Widget> widget = CreateTestWidget(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET, delegate);
 
   SkColor active_color =
       widget->GetNativeWindow()->GetProperty(kFrameInactiveColorKey);
@@ -980,7 +998,8 @@ TEST_P(NonClientFrameViewAshFrameColorTest, KFrameColorCtor) {
 // kFrameActiveColorKey window property.
 TEST_P(NonClientFrameViewAshFrameColorTest, WideFrameInitialColor) {
   TestWidgetDelegate* delegate = new TestWidgetDelegate(GetParam());
-  std::unique_ptr<views::Widget> widget = CreateTestWidget(delegate);
+  std::unique_ptr<views::Widget> widget = CreateTestWidget(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET, delegate);
   widget->Maximize();
   aura::Window* window = widget->GetNativeWindow();
   SkColor active_color = window->GetProperty(kFrameActiveColorKey);
@@ -1010,7 +1029,8 @@ TEST_P(NonClientFrameViewAshFrameColorTest, DefaultFrameColorsDarkAndLight) {
       dark_light_mode_controller->IsDarkModeEnabled();
 
   TestWidgetDelegate* delegate = new TestWidgetDelegate(GetParam());
-  std::unique_ptr<views::Widget> widget = CreateTestWidget(delegate);
+  std::unique_ptr<views::Widget> widget = CreateTestWidget(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET, delegate);
   aura::Window* window = widget->GetNativeWindow();
 
   auto* color_provider = delegate->non_client_frame_view()->GetColorProvider();
@@ -1056,7 +1076,8 @@ TEST_P(NonClientFrameViewAshFrameColorTest,
       dark_light_mode_controller->IsDarkModeEnabled();
 
   TestWidgetDelegate* delegate = new TestWidgetDelegate(GetParam());
-  std::unique_ptr<views::Widget> widget = CreateTestWidget(delegate);
+  std::unique_ptr<views::Widget> widget = CreateTestWidget(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET, delegate);
   aura::Window* window = widget->GetNativeWindow();
 
   constexpr SkColor new_active_color = SK_ColorWHITE;

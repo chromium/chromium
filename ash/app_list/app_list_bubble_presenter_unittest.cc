@@ -276,8 +276,10 @@ TEST_F(AppListBubblePresenterTest, ShowAfterDisconnectingDisplay) {
 TEST_F(AppListBubblePresenterTest, ToggleByFocusingWindowOnSecondaryDisplay) {
   UpdateDisplay("1600x1200,1366x768");
 
-  std::unique_ptr<views::Widget> primary_display_widget = CreateTestWidget();
-  std::unique_ptr<views::Widget> secondary_display_widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> primary_display_widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+  std::unique_ptr<views::Widget> secondary_display_widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   secondary_display_widget->SetBounds(
       gfx::Rect(gfx::Point(1600, 0), gfx::Size(1366, 768)));
 
@@ -620,6 +622,7 @@ TEST_F(AppListBubblePresenterTest, FocusHelpBubbleContainerChild) {
   ASSERT_TRUE(presenter->IsShowing());
 
   std::unique_ptr<views::Widget> widget = CreateTestWidget(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
       /*delegate=*/nullptr, kShellWindowId_HelpBubbleContainer);
   EXPECT_TRUE(widget->GetNativeView()->HasFocus());
 

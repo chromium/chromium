@@ -250,7 +250,8 @@ TEST_F(AccessibilityHighlightControllerTest, CursorWorksOnMultipleDisplays) {
 TEST_F(AccessibilityHighlightControllerTest, CaretRingDrawnOnlyWithinBounds) {
   // Given caret bounds that are not within the active window, expect that the
   // caret ring highlight is not drawn.
-  std::unique_ptr<views::Widget> window = CreateTestWidget();
+  std::unique_ptr<views::Widget> window =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   window->SetBounds(gfx::Rect(5, 5, 300, 300));
 
   AccessibilityHighlightController highlight_controller;
@@ -308,7 +309,8 @@ TEST_F(AccessibilityHighlightControllerTest, ZeroWidthCaretRingVisible) {
 // Tests setting the caret bounds explicitly via AccessibilityController, rather
 // than via the input method observer. This path is used in production in mash.
 TEST_F(AccessibilityHighlightControllerTest, SetCaretBounds) {
-  std::unique_ptr<views::Widget> window = CreateTestWidget();
+  std::unique_ptr<views::Widget> window =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   window->SetBounds(gfx::Rect(5, 5, 300, 300));
 
   AccessibilityController* accessibility_controller =

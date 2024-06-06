@@ -62,7 +62,8 @@ class DefaultFrameHeaderTest : public AshTestBase {
 // Ensure the title text is vertically aligned with the window icon.
 TEST_F(DefaultFrameHeaderTest, TitleIconAlignment) {
   std::unique_ptr<Widget> widget = CreateTestWidget(
-      nullptr, desks_util::GetActiveDeskContainerId(), gfx::Rect(1, 2, 3, 4));
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET, nullptr,
+      desks_util::GetActiveDeskContainerId(), gfx::Rect(1, 2, 3, 4));
   FrameCaptionButtonContainerView container(widget.get());
   views::StaticSizedView window_icon(gfx::Size(16, 16));
   window_icon.SetBounds(0, 0, 16, 16);
@@ -79,8 +80,9 @@ TEST_F(DefaultFrameHeaderTest, TitleIconAlignment) {
 }
 
 TEST_F(DefaultFrameHeaderTest, BackButtonAlignment) {
-  std::unique_ptr<Widget> widget = CreateTestWidget(
-      nullptr, desks_util::GetActiveDeskContainerId(), gfx::Rect(1, 2, 3, 4));
+  std::unique_ptr<views::Widget> widget = CreateTestWidget(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET, nullptr,
+      desks_util::GetActiveDeskContainerId(), gfx::Rect(1, 2, 3, 4));
   FrameCaptionButtonContainerView container(widget.get());
   FrameBackButton back;
 
@@ -98,7 +100,8 @@ TEST_F(DefaultFrameHeaderTest, BackButtonAlignment) {
 TEST_F(DefaultFrameHeaderTest, MinimumHeaderWidthRTL) {
   base::test::ScopedRestoreICUDefaultLocale restore_locale;
   std::unique_ptr<Widget> widget = CreateTestWidget(
-      nullptr, desks_util::GetActiveDeskContainerId(), gfx::Rect(1, 2, 3, 4));
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET, nullptr,
+      desks_util::GetActiveDeskContainerId(), gfx::Rect(1, 2, 3, 4));
   FrameCaptionButtonContainerView container(widget.get());
 
   DefaultFrameHeader frame_header(

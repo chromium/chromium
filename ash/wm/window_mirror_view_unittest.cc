@@ -19,14 +19,16 @@ namespace {
 using WindowMirrorViewTest = AshTestBase;
 
 TEST_F(WindowMirrorViewTest, LocalWindowOcclusionMadeVisible) {
-  auto widget = CreateTestWidget();
+  auto widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   widget->Hide();
   aura::Window* widget_window = widget->GetNativeWindow();
   widget_window->TrackOcclusionState();
   EXPECT_EQ(aura::Window::OcclusionState::HIDDEN,
             widget_window->GetOcclusionState());
 
-  auto mirror_widget = CreateTestWidget();
+  auto mirror_widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   auto mirror_view = std::make_unique<WindowMirrorView>(widget_window);
   mirror_widget->widget_delegate()->GetContentsView()->AddChildView(
       mirror_view.get());
@@ -43,12 +45,14 @@ TEST_F(WindowMirrorViewTest, LocalWindowOcclusionMadeVisible) {
 TEST_F(WindowMirrorViewTest, MirrorLayerHasNoTransformWhenNonClientViewShown) {
   // Create a window that has a transform already. When the layer is mirrored,
   // the transform will be copied with it.
-  auto widget = CreateTestWidget();
+  auto widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   aura::Window* widget_window = widget->GetNativeWindow();
   const auto transform = gfx::Transform::MakeTranslation(100.f, 100.f);
   widget_window->SetTransform(transform);
 
-  auto mirror_widget = CreateTestWidget();
+  auto mirror_widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   auto mirror_view = std::make_unique<WindowMirrorView>(
       widget_window, /*show_non_client_view=*/true);
   mirror_view->RecreateMirrorLayers();

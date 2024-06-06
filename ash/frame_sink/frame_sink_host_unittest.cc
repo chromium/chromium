@@ -57,7 +57,9 @@ class FrameSinkHostTest : public AshTestBase {
     auto* root_window = ash_test_helper()->GetHost()->window();
     gfx::Rect screen_bounds = root_window->GetBoundsInScreen();
 
-    widget_ = CreateTestWidget(nullptr, kShellWindowId_OverlayContainer);
+    widget_ =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                         nullptr, kShellWindowId_OverlayContainer);
     widget_->SetBounds(screen_bounds);
     host_window_ = widget_->GetNativeWindow();
 

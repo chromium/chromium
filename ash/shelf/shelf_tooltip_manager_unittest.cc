@@ -122,7 +122,8 @@ TEST_F(ShelfTooltipManagerTest, HideWhenShelfIsHidden) {
   ASSERT_TRUE(tooltip_manager_->IsVisible());
 
   // Create a full-screen window to hide the shelf.
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   widget->SetFullscreen(true);
 
   // Once the shelf is hidden, the tooltip should be invisible.
@@ -141,7 +142,8 @@ TEST_F(ShelfTooltipManagerTest, HideWhenShelfIsHidden) {
 
 TEST_F(ShelfTooltipManagerTest, HideWhenShelfIsAutoHideHidden) {
   // Create a visible window so auto-hide behavior can actually hide the shelf.
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   ShowTooltipForFirstAppIcon();
   ASSERT_TRUE(tooltip_manager_->IsVisible());
 

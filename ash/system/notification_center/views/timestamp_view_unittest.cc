@@ -24,7 +24,8 @@ class TimestampViewTest : public AshTestBase {
     AshTestBase::SetUp();
 
     // `widget_` owns `timestamp_view_`.
-    widget_ = CreateTestWidget();
+    widget_ =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     timestamp_view_ = widget_->GetContentsView()->AddChildView(
         std::make_unique<TimestampView>());
   }

@@ -285,8 +285,10 @@ class OverviewSessionTest
 // Tests that close buttons on windows in overview do not work
 // when one window is being dragged.
 TEST_P(OverviewSessionTest, CloseButtonDisabledOnDrag) {
-  std::unique_ptr<views::Widget> widget1(CreateTestWidget());
-  std::unique_ptr<views::Widget> widget2(CreateTestWidget());
+  std::unique_ptr<views::Widget> widget1(
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET));
+  std::unique_ptr<views::Widget> widget2(
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET));
 
   aura::Window* window1 = widget1->GetNativeWindow();
   aura::Window* window2 = widget2->GetNativeWindow();
@@ -349,7 +351,8 @@ TEST_P(OverviewSessionTest, CloseButtonDisabledOnDrag) {
 // Tests that close buttons on windows in overview are re-enabled
 // when one window is snapped to a side of the screen.
 TEST_P(OverviewSessionTest, CloseButtonEnabledOnSnap) {
-  std::unique_ptr<views::Widget> widget2 = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget2 =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
 
   std::unique_ptr<aura::Window> window1 = CreateTestWindow();
   aura::Window* window2 = widget2->GetNativeWindow();
@@ -666,7 +669,8 @@ TEST_P(OverviewSessionTest, ActiveWindowChangedUserActionNotRecorded) {
 TEST_P(OverviewSessionTest, ActiveWindowChangedUserActionWindowClose) {
   base::UserActionTester user_action_tester;
   std::unique_ptr<views::Widget> widget(CreateTestWidget(
-      nullptr, desks_util::GetActiveDeskContainerId(), gfx::Rect(400, 400)));
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET, nullptr,
+      desks_util::GetActiveDeskContainerId(), gfx::Rect(400, 400)));
 
   ToggleOverview();
   aura::Window* window = widget->GetNativeWindow();
@@ -769,8 +773,10 @@ TEST_P(OverviewSessionTest, WindowDoesNotReceiveEvents) {
 
 // Tests that clicking on the close button effectively closes the window.
 TEST_P(OverviewSessionTest, CloseButton) {
-  std::unique_ptr<views::Widget> widget(CreateTestWidget());
-  std::unique_ptr<views::Widget> minimized_widget(CreateTestWidget());
+  std::unique_ptr<views::Widget> widget(
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET));
+  std::unique_ptr<views::Widget> minimized_widget(
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET));
   minimized_widget->Minimize();
 
   ToggleOverview();
@@ -812,7 +818,8 @@ TEST_P(OverviewSessionTest, CloseAnimationShadow) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
 
   ToggleOverview();
   ShellTestApi().WaitForOverviewAnimationState(
@@ -832,7 +839,8 @@ TEST_P(OverviewSessionTest, CloseAnimationShadow) {
 
 // Tests minimizing/unminimizing in overview mode.
 TEST_P(OverviewSessionTest, MinimizeUnminimize) {
-  std::unique_ptr<views::Widget> widget(CreateTestWidget());
+  std::unique_ptr<views::Widget> widget(
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET));
   aura::Window* window = widget->GetNativeWindow();
 
   ToggleOverview();
@@ -859,7 +867,8 @@ TEST_P(OverviewSessionTest, CloseButtonOnMultipleDisplay) {
   // closed or not. Parent the window to a window in a non-primary root window.
   std::unique_ptr<aura::Window> window(
       CreateTestWindow(gfx::Rect(650, 300, 250, 450)));
-  std::unique_ptr<views::Widget> widget(CreateTestWidget());
+  std::unique_ptr<views::Widget> widget(
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET));
   widget->SetBounds(gfx::Rect(650, 0, 400, 400));
   aura::Window* window2 = widget->GetNativeWindow();
   window2->SetProperty(aura::client::kTopViewInset,
@@ -1158,7 +1167,8 @@ TEST_P(OverviewSessionTest, DesksWidgetBoundsChangeWhenDisableChromeVox) {
   // ChromeVox layout manager relies on the widget to validate ChromaVox panel's
   // exist. Check AccessibilityPanelLayoutManager::SetPanelBounds.
   std::unique_ptr<views::Widget> widget =
-      CreateTestWidget(nullptr, kShellWindowId_AccessibilityPanelContainer);
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                       nullptr, kShellWindowId_AccessibilityPanelContainer);
   SetAccessibilityPanelHeight(kAccessibilityPanelHeight);
   accessibility_controller->SetSpokenFeedbackEnabled(true,
                                                      A11Y_NOTIFICATION_NONE);
@@ -2057,8 +2067,10 @@ TEST_P(OverviewSessionTest, ExitOverviewWhenAllGridsEmpty) {
   // Create two windows with widgets (widgets are needed to close the windows
   // later in the test), one each on the first two monitors.
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
-  std::unique_ptr<views::Widget> widget1(CreateTestWidget());
-  std::unique_ptr<views::Widget> widget2(CreateTestWidget());
+  std::unique_ptr<views::Widget> widget1(
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET));
+  std::unique_ptr<views::Widget> widget2(
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET));
   aura::Window* window1 = widget1->GetNativeWindow();
   aura::Window* window2 = widget2->GetNativeWindow();
   ASSERT_TRUE(
@@ -2274,7 +2286,8 @@ TEST_P(OverviewSessionTest, HandleActiveWindowNotInOverviewGrid) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   // Create and active a new window should exit overview without error.
-  auto widget = CreateTestWidget();
+  auto widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
 
   TweenTester tester1(window1.get());
   TweenTester tester2(window2.get());
@@ -6559,8 +6572,10 @@ TEST_F(OverviewSessionFlingTest, BasicFling) {
 TEST_F(TabletModeOverviewSessionTest, VerticalScrollingOnOverviewItem) {
   constexpr int kNumWidgets = 8;
   std::vector<std::unique_ptr<views::Widget>> widgets(kNumWidgets);
-  for (int i = kNumWidgets - 1; i >= 0; --i)
-    widgets[i] = CreateTestWidget();
+  for (int i = kNumWidgets - 1; i >= 0; --i) {
+    widgets[i] =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+  }
   ToggleOverview();
   ASSERT_TRUE(InOverviewSession());
 
@@ -6718,7 +6733,8 @@ TEST_F(TabletModeOverviewSessionTest, DragOverviewWindowToSnap) {
 // will be closed.
 TEST_F(TabletModeOverviewSessionTest, DragToClose) {
   // This test requires a widget.
-  std::unique_ptr<views::Widget> widget(CreateTestWidget());
+  std::unique_ptr<views::Widget> widget(
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET));
 
   ToggleOverview();
   ASSERT_TRUE(GetOverviewController()->InOverviewSession());
@@ -6750,7 +6766,8 @@ TEST_F(TabletModeOverviewSessionTest, DragToClose) {
 // will be closed.
 TEST_F(TabletModeOverviewSessionTest, FlingToClose) {
   // This test requires a widget.
-  std::unique_ptr<views::Widget> widget(CreateTestWidget());
+  std::unique_ptr<views::Widget> widget(
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET));
 
   ToggleOverview();
   ASSERT_TRUE(GetOverviewController()->InOverviewSession());

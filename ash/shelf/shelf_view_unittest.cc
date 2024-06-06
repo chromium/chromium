@@ -1844,7 +1844,8 @@ TEST_P(LtrRtlShelfViewTest, TabletModeStartAndEndClosesContextMenu) {
 // Tests that ShelfWindowWatcher buttons show a context menu on right click.
 TEST_P(LtrRtlShelfViewTest, ShelfWindowWatcherButtonShowsContextMenu) {
   ui::test::EventGenerator* generator = GetEventGenerator();
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   widget->Show();
   aura::Window* window = widget->GetNativeWindow();
   ShelfID shelf_id("123");
@@ -1860,7 +1861,8 @@ TEST_P(LtrRtlShelfViewTest, ShelfWindowWatcherButtonShowsContextMenu) {
 // Tests that the drag view is set on left click and not set on right click.
 TEST_P(LtrRtlShelfViewTest, ShelfDragViewAndContextMenu) {
   ui::test::EventGenerator* generator = GetEventGenerator();
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   widget->Show();
   aura::Window* window = widget->GetNativeWindow();
   ShelfID shelf_id("123");
@@ -2108,7 +2110,8 @@ TEST_P(LtrRtlShelfViewTest, DragAppAfterContextMenuIsShownInAutoHideShelf) {
   const int last_index = model_->items().size() - 1;
 
   Shelf* shelf = GetPrimaryShelf();
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   widget->Show();
   shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
   EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
@@ -2422,7 +2425,8 @@ TEST_P(LtrRtlShelfViewTest, ClickItemInFullscreen) {
                                    std::move(selection_tracker_owned));
 
   // Create a fullscreen widget.
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   widget->SetFullscreen(true);
   WindowState* window_state = WindowState::Get(widget->GetNativeWindow());
   window_state->SetHideShelfWhenFullscreen(true);
@@ -2460,7 +2464,8 @@ TEST_P(LtrRtlShelfViewTest, TapInFullscreen) {
                                    std::move(selection_tracker_owned));
 
   // Create a fullscreen widget.
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   widget->SetFullscreen(true);
   WindowState* window_state = WindowState::Get(widget->GetNativeWindow());
   window_state->SetHideShelfWhenFullscreen(true);

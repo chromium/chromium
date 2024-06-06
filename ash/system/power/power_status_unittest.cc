@@ -196,7 +196,8 @@ TEST_F(PowerStatusTest, BatteryImageInfoIconBadge) {
 // Tests that the battery image changes appropriately with various power supply
 // property values.
 TEST_F(PowerStatusTest, BatteryImageInfoChargeLevel) {
-  const std::unique_ptr<views::Widget> test_widget = CreateTestWidget();
+  const std::unique_ptr<views::Widget> test_widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   PowerSupplyProperties prop;
 
   // No charge level is drawn when the battery is not present.
@@ -317,7 +318,8 @@ TEST_F(PowerStatusTest, BatteryImageColorResolution) {
   prop.set_external_power(PowerSupplyProperties::DISCONNECTED);
   prop.set_battery_state(PowerSupplyProperties::DISCHARGING);
   power_status_->SetProtoForTesting(prop);
-  const std::unique_ptr<views::Widget> test_widget = CreateTestWidget();
+  const std::unique_ptr<views::Widget> test_widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   const ui::ColorProvider* color_provider =
       test_widget->GetRootView()->GetColorProvider();
 

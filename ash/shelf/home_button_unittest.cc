@@ -650,7 +650,8 @@ TEST_P(HomeButtonTest, ClipRectDoesNotClipHomeButtonBounds) {
       EXPECT_TRUE(clip_rect_bounds().Contains(home_button_bounds()));
 
     // Create a test widget to transition to in-app shelf.
-    std::unique_ptr<views::Widget> widget = CreateTestWidget();
+    std::unique_ptr<views::Widget> widget =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     shelf_test_api.RunMessageLoopUntilAnimationsDone(
         test_api.GetBoundsAnimator());
 
@@ -667,7 +668,8 @@ TEST_P(HomeButtonTest, ClipRectDoesNotClipHomeButtonBounds) {
 
     // Open another window and go back to clamshell.
     ash::TabletModeControllerTestApi().LeaveTabletMode();
-    widget = CreateTestWidget();
+    widget =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     shelf_test_api.RunMessageLoopUntilAnimationsDone(
         test_api.GetBoundsAnimator());
 
@@ -775,7 +777,8 @@ TEST_P(HomeButtonTest, ButtonPositionInTabletMode) {
   }
 
   // Switch to in-app shelf.
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
 
   // Wait for the navigation widget's animation.
   shelf_test_api.RunMessageLoopUntilAnimationsDone(

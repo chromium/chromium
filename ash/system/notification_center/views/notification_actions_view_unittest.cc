@@ -32,7 +32,8 @@ class NotificationActionsViewTest : public AshTestBase {
     AshTestBase::SetUp();
 
     // `widget_` owns `actions_view_`.
-    widget_ = CreateTestWidget();
+    widget_ =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
 
     actions_view_ = widget_->GetContentsView()->AddChildView(
         std::make_unique<NotificationActionsView>());

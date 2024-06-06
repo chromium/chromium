@@ -109,7 +109,8 @@ TEST_F(UserChooserDetailedViewControllerTest, SwitchUserWithOverview) {
   ASSERT_NE(GetActiveUser(), secondary_user);
 
   // Create an activatable widget.
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
 
   // Enter overview mode.
   EnterOverview();

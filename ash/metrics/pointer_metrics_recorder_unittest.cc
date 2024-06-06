@@ -64,7 +64,8 @@ void PointerMetricsRecorderTest::SetUp() {
   AshTestBase::SetUp();
   pointer_metrics_recorder_ = std::make_unique<PointerMetricsRecorder>();
   histogram_tester_ = std::make_unique<base::HistogramTester>();
-  widget_ = CreateTestWidget();
+  widget_ =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
 }
 
 void PointerMetricsRecorderTest::TearDown() {

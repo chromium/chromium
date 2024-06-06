@@ -896,7 +896,8 @@ TEST_F(AutoclickTest, ShelfAutohidesWithAutoclickBubble) {
 
   // Create a visible window so auto-hide behavior is enforced.
   std::unique_ptr<views::Widget> widget =
-      CreateTestWidget(nullptr, desks_util::GetActiveDeskContainerId(),
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                       nullptr, desks_util::GetActiveDeskContainerId(),
                        gfx::Rect(0, 0, 200, 200), true /* show */);
 
   // Turn on auto-hide for the shelf.
@@ -919,7 +920,8 @@ TEST_F(AutoclickTest, BubbleMovesWithShelfPositionChange) {
 
   // Create a visible window so WMEvents occur.
   std::unique_ptr<views::Widget> widget =
-      CreateTestWidget(nullptr, desks_util::GetActiveDeskContainerId(),
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                       nullptr, desks_util::GetActiveDeskContainerId(),
                        gfx::Rect(0, 0, 200, 200), true /* show */);
 
   // Set up autoclick and the shelf.
@@ -1059,7 +1061,8 @@ TEST_F(AutoclickTest, HidesBubbleInFullscreenWhenCursorHides) {
     UpdateDisplay(test.display_spec);
 
     std::unique_ptr<views::Widget> widget = CreateTestWidget(
-        nullptr, desks_util::GetActiveDeskContainerId(), test.widget_position,
+        views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET, nullptr,
+        desks_util::GetActiveDeskContainerId(), test.widget_position,
         /*show=*/true);
     EXPECT_TRUE(GetAutoclickBubbleWidget()->IsVisible());
 
@@ -1113,7 +1116,8 @@ TEST_F(AutoclickTest, DoesNotHideBubbleWhenNotOverFullscreenWindow) {
   cursor_manager->SetCursor(ui::mojom::CursorType::kPointer);
 
   std::unique_ptr<views::Widget> widget =
-      CreateTestWidget(nullptr, desks_util::GetActiveDeskContainerId(),
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                       nullptr, desks_util::GetActiveDeskContainerId(),
                        gfx::Rect(1000, 0, 200, 200), true);
 
   EXPECT_TRUE(GetAutoclickBubbleWidget()->IsVisible());
@@ -1133,9 +1137,9 @@ TEST_F(AutoclickTest, DoesNotHideBubbleWhenOverInactiveFullscreenWindow) {
   ::wm::CursorManager* cursor_manager = Shell::Get()->cursor_manager();
   cursor_manager->SetCursor(ui::mojom::CursorType::kPointer);
 
-  std::unique_ptr<views::Widget> widget =
-      CreateTestWidget(nullptr, desks_util::GetActiveDeskContainerId(),
-                       gfx::Rect(0, 0, 200, 200), true);
+  std::unique_ptr<views::Widget> widget = CreateTestWidget(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET, nullptr,
+      desks_util::GetActiveDeskContainerId(), gfx::Rect(0, 0, 200, 200), true);
   GetEventGenerator()->MoveMouseTo(gfx::Point(10, 10));
   widget->SetFullscreen(true);
   EXPECT_TRUE(widget->IsActive());

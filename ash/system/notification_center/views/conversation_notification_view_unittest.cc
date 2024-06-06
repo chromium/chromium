@@ -28,7 +28,8 @@ class ConversationNotificationViewTest : public AshTestBase {
     notification_ = CreateConversationNotification();
 
     // `widget_` owns `notification_view_`.
-    widget_ = CreateTestWidget();
+    widget_ =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     notification_view_ = widget_->GetContentsView()->AddChildView(
         std::make_unique<ConversationNotificationView>(*notification_.get()));
   }

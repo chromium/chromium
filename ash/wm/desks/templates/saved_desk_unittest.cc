@@ -934,7 +934,8 @@ TEST_F(SavedDeskTest, SaveDeskButtonContainerAligned) {
   auto test_window1 = CreateAppWindow();
   auto test_window2 = CreateAppWindow();
   // A widget is needed to close.
-  auto test_widget = CreateTestWidget();
+  auto test_widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
 
   ToggleOverview();
   aura::Window* root_window = Shell::GetPrimaryRootWindow();
@@ -4006,8 +4007,10 @@ TEST_F(SavedDeskTest, SaveDeskButtonContainerVisibleAfterSwipeToClose) {
   // Use a test widget so we can close it properly after swiping to close. The
   // order matters here; overview items are ordered by MRU order, so the most
   // recently created widget corresponds to the first overview item.
-  auto widget2 = CreateTestWidget();
-  auto widget1 = CreateTestWidget();
+  auto widget2 =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+  auto widget1 =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
 
   ToggleOverview();
 

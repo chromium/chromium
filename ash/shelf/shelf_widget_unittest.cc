@@ -876,7 +876,8 @@ TEST_F(ShelfWidgetTest, NoAnimationAfterDragPastIdealBounds) {
   ASSERT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
 
   // Create a widget to make sure that the shelf does auto-hide.
-  auto widget = CreateTestWidget();
+  auto widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   ASSERT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
   ASSERT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
 

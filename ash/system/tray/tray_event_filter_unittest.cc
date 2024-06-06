@@ -362,12 +362,14 @@ TEST_F(TrayEventFilterTest, CloseTrayBubbleWhenWindowActivated) {
             system_tray->bubble()->GetBubbleView());
 
   // Showing a new window and activating it will close the system bubble.
-  std::unique_ptr<views::Widget> widget(CreateTestWidget());
+  std::unique_ptr<views::Widget> widget(
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET));
   EXPECT_TRUE(widget->IsActive());
   EXPECT_FALSE(system_tray->bubble());
 
   // Show a second widget.
-  std::unique_ptr<views::Widget> second_widget(CreateTestWidget());
+  std::unique_ptr<views::Widget> second_widget(
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET));
   EXPECT_TRUE(second_widget->IsActive());
 
   // Re-show the system bubble.

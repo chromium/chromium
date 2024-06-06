@@ -2767,7 +2767,8 @@ TEST_F(SplitViewControllerTest, ActivateNonSnappableWindow) {
 // Tests that if a snapped window has a bubble transient child, the bubble's
 // bounds should always align with the snapped window's bounds.
 TEST_F(SplitViewControllerTest, AdjustTransientChildBounds) {
-  std::unique_ptr<views::Widget> widget(CreateTestWidget());
+  std::unique_ptr<views::Widget> widget(
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET));
   aura::Window* window = widget->GetNativeWindow();
   window->SetProperty(aura::client::kResizeBehaviorKey,
                       aura::client::kResizeBehaviorCanResize |
@@ -3247,7 +3248,8 @@ TEST_F(SplitViewControllerTest, DoNotObserveTransientIfNotInSplitview) {
 
   // Add another two windows with one being a bubble transient child of the
   // other.
-  std::unique_ptr<views::Widget> widget(CreateTestWidget());
+  std::unique_ptr<views::Widget> widget(
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET));
   aura::Window* parent = widget->GetNativeWindow();
   parent->SetProperty(aura::client::kResizeBehaviorKey,
                       aura::client::kResizeBehaviorCanResize |
@@ -4074,7 +4076,8 @@ TEST_F(SplitViewControllerTest,
 TEST_F(SplitViewControllerTest,
        ClamshellConversionWithSnappedWindowWithTransient) {
   // Create a widget with a transient bubble widget.
-  std::unique_ptr<views::Widget> widget(CreateTestWidget());
+  std::unique_ptr<views::Widget> widget(
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET));
   aura::Window* window = widget->GetNativeWindow();
   window->SetProperty(aura::client::kResizeBehaviorKey,
                       aura::client::kResizeBehaviorCanResize |

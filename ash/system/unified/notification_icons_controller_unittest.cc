@@ -82,7 +82,8 @@ class NotificationIconsControllerTest : public AshTestBase {
                      kShelfAutoHideBehaviorAlways);
 
     // Verify that the shelf auto-hides by creating and showing a window.
-    auto window = CreateTestWidget();
+    auto window =
+        CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     window->SetBounds(gfx::Rect(0, 0, 100, 100));
     CHECK(GetPrimaryShelf()->GetAutoHideState() ==
           ShelfAutoHideState::SHELF_AUTO_HIDE_HIDDEN);

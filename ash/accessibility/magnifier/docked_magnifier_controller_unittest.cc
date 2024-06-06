@@ -156,8 +156,9 @@ class DockedMagnifierTest : public NoSessionAshTestBase {
       const gfx::Rect& bounds) {
     auto* widget_delegate_view = new views::WidgetDelegateView();
     widget_delegate_view->SetModalType(ui::MODAL_TYPE_SYSTEM);
-    return CreateTestWidget(widget_delegate_view,
-                            kShellWindowId_LockSystemModalContainer, bounds);
+    return CreateTestWidget(
+        views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+        widget_delegate_view, kShellWindowId_LockSystemModalContainer, bounds);
   }
 
   // Test that display work area and a modal window is adjusted correctly

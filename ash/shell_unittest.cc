@@ -563,7 +563,8 @@ TEST_F(ShellTest, NoWindowTabFocus) {
   ShelfNavigationWidget* home_button = GetPrimaryShelf()->navigation_widget();
 
   // Create a normal window.  It is not maximized.
-  auto widget = CreateTestWidget();
+  auto widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
 
   // Hit tab with window open, and expect that focus is not on the navigation
   // widget or status widget.

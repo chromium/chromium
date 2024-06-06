@@ -1299,7 +1299,8 @@ TEST_F(AcceleratorControllerTest, DontRepeatToggleFullscreen) {
 
 TEST_F(AcceleratorControllerTest, DontToggleFullscreenWhenOverviewStarts) {
   std::unique_ptr<views::Widget> widget(CreateTestWidget(
-      nullptr, desks_util::GetActiveDeskContainerId(), gfx::Rect(400, 400)));
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET, nullptr,
+      desks_util::GetActiveDeskContainerId(), gfx::Rect(400, 400)));
 
   ui::test::EventGenerator* generator = GetEventGenerator();
 

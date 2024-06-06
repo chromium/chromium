@@ -775,7 +775,8 @@ TEST_F(HoldingSpaceTrayTest, ShelfConfigChangeWithDelayedItemRemoval) {
   StartSession();
 
   // Create a test widget to force in-app shelf in tablet mode.
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   ASSERT_TRUE(widget);
 
   // The tray button should be hidden if the user has previously pinned an item,
@@ -2247,7 +2248,8 @@ TEST_F(HoldingSpacePreviewsTrayTest, UpdateTrayIconSizeForInAppShelf) {
   TabletModeControllerTestApi().EnterTabletMode();
 
   // Create a test widget to force in-app shelf.
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   ASSERT_TRUE(widget);
 
   EXPECT_TRUE(test_api()->IsShowingInShelf());
@@ -2278,7 +2280,8 @@ TEST_F(
   GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
 
   // Create a test widget and minimize it to transition to home screen.
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   ASSERT_TRUE(widget);
   widget->Minimize();
 

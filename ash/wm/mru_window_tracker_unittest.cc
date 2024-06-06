@@ -205,7 +205,8 @@ TEST_P(MruWindowTrackerOrderTest, Basic) {
   auto delegate = std::make_unique<views::WidgetDelegateView>();
   delegate->SetModalType(ui::MODAL_TYPE_SYSTEM);
   std::unique_ptr<views::Widget> modal =
-      CreateTestWidget(delegate.release(), kShellWindowId_Invalid);
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                       delegate.release(), kShellWindowId_Invalid);
   EXPECT_EQ(modal.get()->GetNativeView()->parent()->GetId(),
             kShellWindowId_SystemModalContainer);
 

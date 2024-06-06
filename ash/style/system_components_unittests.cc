@@ -89,6 +89,7 @@ class WidgetWithSystemUIComponentView : public views::WidgetDelegateView {
 std::unique_ptr<views::Widget> CreateWidgetWithComponent(
     std::unique_ptr<views::View> component) {
   return AshTestBase::CreateTestWidget(
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
       new WidgetWithSystemUIComponentView(std::move(component)));
 }
 
@@ -342,7 +343,8 @@ class SystemDialogSizeTest
     } else {
       UpdateDisplay("1280x720");
       host_widget_ =
-          CreateTestWidget(nullptr, desks_util::GetActiveDeskContainerId(),
+          CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                           nullptr, desks_util::GetActiveDeskContainerId(),
                            gfx::Rect(host_size), /*show=*/true);
     }
 

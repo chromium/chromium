@@ -340,7 +340,8 @@ TEST_F(LockActionHandlerLayoutManagerTest, KeyboardBounds) {
 
   const int kAccessibilityPanelHeight = 45;
   std::unique_ptr<views::Widget> widget =
-      CreateTestWidget(nullptr, kShellWindowId_AccessibilityPanelContainer);
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                       nullptr, kShellWindowId_AccessibilityPanelContainer);
   SetAccessibilityPanelHeight(kAccessibilityPanelHeight);
 
   target_bounds.Inset(gfx::Insets().set_top(kAccessibilityPanelHeight));

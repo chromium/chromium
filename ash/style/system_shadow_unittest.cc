@@ -68,6 +68,7 @@ class SystemShadowColorTest
         {chromeos::features::kJelly, chromeos::features::kJellyroll}, {});
     // Create a test widget as the owner of the shadow instances.
     widget_ = CreateTestWidget(
+        views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
         /*delegate=*/nullptr,
         /*container_id=*/desks_util::GetActiveDeskContainerId(),
         /*bounds=*/gfx::Rect(100, 100, 320, 200));

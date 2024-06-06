@@ -8002,7 +8002,8 @@ TEST_F(SnapGroupA11yTest, ResizeVertical) {
   // Simulate enabling ChromeVox.
   const int kAccessibilityPanelHeight = 45;
   std::unique_ptr<views::Widget> widget =
-      CreateTestWidget(nullptr, kShellWindowId_AccessibilityPanelContainer);
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+                       nullptr, kShellWindowId_AccessibilityPanelContainer);
   SetAccessibilityPanelHeight(kAccessibilityPanelHeight);
   Shell::Get()->accessibility_controller()->spoken_feedback().SetEnabled(true);
   const gfx::Rect work_area_with_cvox(work_area_bounds());

@@ -203,7 +203,8 @@ TEST_P(ShelfContextMenuModelTest, AutohideShelfOptionOnExternalDisplay) {
   int64_t secondary_id = GetSecondaryDisplay().id();
 
   // Create a normal window on the primary display.
-  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   widget->Show();
   widget->SetFullscreen(true);
 
