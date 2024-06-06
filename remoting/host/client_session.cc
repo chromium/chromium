@@ -550,6 +550,10 @@ void ClientSession::OnConnectionAuthenticated() {
   host_capabilities_.append(protocol::kWebrtcIceSdpRestartAction);
   host_capabilities_.append(" ");
   host_capabilities_.append(protocol::kFractionalCoordinatesCapability);
+  if (InputInjector::SupportsTouchEvents()) {
+    host_capabilities_.append(" ");
+    host_capabilities_.append(protocol::kTouchEventsCapability);
+  }
 
   // Create the object that controls the screen resolution.
   screen_controls_ = desktop_environment_->CreateScreenControls();

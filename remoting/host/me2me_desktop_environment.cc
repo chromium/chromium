@@ -20,7 +20,6 @@
 #include "remoting/host/desktop_resizer.h"
 #include "remoting/host/host_window.h"
 #include "remoting/host/host_window_proxy.h"
-#include "remoting/host/input_injector.h"
 #include "remoting/host/input_monitor/local_input_monitor.h"
 #include "remoting/host/remote_open_url/remote_open_url_util.h"
 #include "remoting/host/resizing_host_observer.h"
@@ -92,11 +91,6 @@ std::string Me2MeDesktopEnvironment::GetCapabilities() const {
     capabilities += " ";
   }
   capabilities += protocol::kRateLimitResizeRequests;
-
-  if (InputInjector::SupportsTouchEvents()) {
-    capabilities += " ";
-    capabilities += protocol::kTouchEventsCapability;
-  }
 
   if (desktop_environment_options().enable_file_transfer()) {
     capabilities += " ";
