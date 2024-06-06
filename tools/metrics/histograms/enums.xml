@@ -1875,11 +1875,6 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="1" label="Pinned"/>
 </enum>
 
-<enum name="BooleanPrepopulated">
-  <int value="0" label="Not Prepopulated"/>
-  <int value="1" label="Prepopulated"/>
-</enum>
-
 <enum name="BooleanPresent">
   <int value="0" label="Not Present"/>
   <int value="1" label="Present"/>
