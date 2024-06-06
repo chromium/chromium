@@ -16,6 +16,7 @@
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 
 namespace base {
@@ -31,7 +32,7 @@ namespace blink {
 class BLINK_PLATFORM_EXPORT BackgroundResponseProcessor {
  public:
   using BodyVariant =
-      absl::variant<mojo::ScopedDataPipeConsumerHandle, Deque<Vector<char>>>;
+      absl::variant<mojo::ScopedDataPipeConsumerHandle, SegmentedBuffer>;
   class Client {
    public:
     virtual ~Client() = default;

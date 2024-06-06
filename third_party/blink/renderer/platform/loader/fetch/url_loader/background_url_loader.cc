@@ -373,14 +373,9 @@ class BackgroundURLLoader::Context
       CHECK(background_task_runner_->RunsTasksInCurrentSequence());
       background_response_processor_.reset();
       waiting_for_background_response_processor_ = false;
-      if (absl::holds_alternative<Deque<Vector<char>>>(body)) {
-        size_t raw_data_size = 0u;
-        for (const auto& data : absl::get<Deque<Vector<char>>>(body)) {
-          raw_data_size =
-              base::CheckAdd(raw_data_size, data.size()).ValueOrDie();
-        }
+      if (absl::holds_alternative<SegmentedBuffer>(body)) {
         context_->DidReadDataByBackgroundResponseProcessorOnBackground(
-            raw_data_size);
+            absl::get<SegmentedBuffer>(body).size());
       }
       context_->PostTaskToMainThread(CrossThreadBindOnce(
           &Context::DidFinishBackgroundResponseProcessor, context_,
@@ -586,13 +581,13 @@ class BackgroundURLLoader::Context
             ? std::move(absl::get<mojo::ScopedDataPipeConsumerHandle>(body))
             : mojo::ScopedDataPipeConsumerHandle(),
         std::move(cached_metadata), request_id);
-    if (absl::holds_alternative<Deque<Vector<char>>>(body)) {
-      Deque<Vector<char>> raw_data =
-          std::move(absl::get<Deque<Vector<char>>>(body));
-      while (!raw_data.empty()) {
-        Vector<char> data = raw_data.TakeFirst();
+    if (absl::holds_alternative<SegmentedBuffer>(body)) {
+      SegmentedBuffer buffer = std::move(absl::get<SegmentedBuffer>(body));
+      // TODO(crbug.com/40244488): Consider passing the SegmentedBuffer to the
+      // client without data copying.
+      for (const auto& segment : buffer) {
         if (client_) {
-          client_->DidReceiveData(data);
+          client_->DidReceiveData(segment);
         }
       }
     }

@@ -27,7 +27,7 @@ struct CrossThreadCopier<blink::ScriptDecoder::Result> {
 namespace blink {
 
 ScriptDecoder::Result::Result(
-    Deque<Vector<char>> raw_data,
+    SegmentedBuffer raw_data,
     String decoded_data,
     std::unique_ptr<ParkableStringImpl::SecureDigest> digest)
     : raw_data(std::move(raw_data)),
@@ -55,7 +55,7 @@ void ScriptDecoder::DidReceiveData(Vector<char> data) {
   CHECK(!client_task_runner_->RunsTasksInCurrentSequence());
 
   AppendData(decoder_->Decode(data.data(), data.size()));
-  raw_data_.emplace_back(std::move(data));
+  raw_data_.Append(std::move(data));
 }
 
 void ScriptDecoder::FinishDecode(

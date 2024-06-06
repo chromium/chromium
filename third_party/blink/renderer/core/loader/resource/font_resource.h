@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/background_response_processor.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 
 namespace blink {

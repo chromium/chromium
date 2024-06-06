@@ -867,12 +867,9 @@ class DummyBackgroundResponseProcessorClient
       base::span<const char> expected_body,
       std::optional<base::span<const uint8_t>> expected_cached_metadata) {
     EXPECT_TRUE(head_);
-    if (absl::holds_alternative<Deque<Vector<char>>>(body_)) {
-      Deque<Vector<char>> raw_body = absl::get<Deque<Vector<char>>>(body_);
-      Vector<char> concatenated_body;
-      for (const auto& chunk : raw_body) {
-        concatenated_body.AppendVector(chunk);
-      }
+    if (absl::holds_alternative<SegmentedBuffer>(body_)) {
+      const SegmentedBuffer& raw_body = absl::get<SegmentedBuffer>(body_);
+      const Vector<char> concatenated_body = raw_body.CopyAs<Vector<char>>();
       EXPECT_THAT(concatenated_body, testing::ElementsAreArray(expected_body));
     } else {
       CHECK(absl::holds_alternative<mojo::ScopedDataPipeConsumerHandle>(body_));

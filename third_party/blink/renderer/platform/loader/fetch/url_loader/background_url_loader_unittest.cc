@@ -73,9 +73,9 @@ struct CrossThreadCopier<std::optional<mojo_base::BigBuffer>> {
 };
 
 template <>
-struct CrossThreadCopier<Deque<Vector<char>>> {
+struct CrossThreadCopier<SegmentedBuffer> {
   STATIC_ONLY(CrossThreadCopier);
-  using Type = Deque<Vector<char>>;
+  using Type = SegmentedBuffer;
   static Type Copy(Type&& value) { return std::move(value); }
 };
 
@@ -232,10 +232,10 @@ mojo::ScopedDataPipeConsumerHandle CreateTestBody() {
   return CreateDataPipeConsumerHandleFilledWithString(kTestBodyString);
 }
 
-Deque<Vector<char>> CreateTestBodyRawData() {
-  Deque<Vector<char>> result;
-  result.emplace_back(
-      base::make_span(kTestBodyString.begin(), kTestBodyString.size()));
+SegmentedBuffer CreateTestBodyRawData() {
+  SegmentedBuffer result;
+  result.Append(Vector<char>(
+      base::make_span(kTestBodyString.begin(), kTestBodyString.size())));
   return result;
 }
 
@@ -1585,8 +1585,8 @@ TEST_F(BackgroundResourceFecherTest,
 
   background_url_loader->Freeze(LoaderFreezeMode::kBufferIncoming);
 
-  Deque<Vector<char>> body_raw_data;
-  body_raw_data.emplace_back(Vector<char>(kBodySize, '*'));
+  SegmentedBuffer body_raw_data;
+  body_raw_data.Append(Vector<char>(kBodySize, '*'));
 
   // Call Client::DidFinishBackgroundResponseProcessor() on the background
   // thread.

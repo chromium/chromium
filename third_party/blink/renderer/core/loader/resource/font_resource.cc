@@ -76,9 +76,9 @@ struct CrossThreadCopier<ResultOrError> {
 };
 
 template <>
-struct CrossThreadCopier<Deque<Vector<char>>> {
+struct CrossThreadCopier<SegmentedBuffer> {
   STATIC_ONLY(CrossThreadCopier);
-  using Type = Deque<Vector<char>>;
+  using Type = SegmentedBuffer;
   static Type Copy(Type&& value) { return std::move(value); }
 };
 
@@ -95,7 +95,7 @@ constexpr base::TimeDelta kFontLoadWaitShort = base::Milliseconds(100);
 constexpr base::TimeDelta kFontLoadWaitLong = base::Milliseconds(3000);
 
 base::expected<FontResource::DecodedResult, String> DecodeFont(
-    SharedBuffer* buffer) {
+    SegmentedBuffer* buffer) {
   if (buffer->empty()) {
     // We don't have any data to decode. Just return an empty error string.
     return base::unexpected("");
@@ -156,11 +156,11 @@ class FontResource::BackgroundFontProcessor final
 
  private:
   static void DecodeOnBackgroundThread(
-      Deque<Vector<char>> data,
+      SegmentedBuffer data,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
       base::WeakPtr<BackgroundFontProcessor> weak_this);
 
-  void OnDecodeComplete(ResultOrError result_or_error, Vector<char> data);
+  void OnDecodeComplete(ResultOrError result_or_error, SegmentedBuffer data);
 
   network::mojom::URLResponseHeadPtr head_;
   std::optional<mojo_base::BigBuffer> cached_metadata_buffer_;
@@ -168,7 +168,7 @@ class FontResource::BackgroundFontProcessor final
   BackgroundResponseProcessor::Client* client_;
 
   std::unique_ptr<mojo::DataPipeDrainer> pipe_drainer_;
-  Deque<Vector<char>> data_;
+  SegmentedBuffer buffer_;
   CrossThreadWeakHandle<FontResource> resource_handle_;
   base::WeakPtrFactory<BackgroundFontProcessor> weak_factory_{this};
 };
@@ -212,10 +212,9 @@ bool FontResource::BackgroundFontProcessor::MaybeStartProcessingResponse(
 
 void FontResource::BackgroundFontProcessor::OnDataAvailable(const void* data,
                                                             size_t num_bytes) {
-  Vector<char> vec;
-  vec.Append(static_cast<const char*>(data),
-             base::checked_cast<wtf_size_t>(num_bytes));
-  data_.push_back(std::move(vec));
+  buffer_.Append(
+      Vector<char>(base::span(static_cast<const char*>(data),
+                              base::checked_cast<wtf_size_t>(num_bytes))));
 }
 
 void FontResource::BackgroundFontProcessor::OnDataComplete() {
@@ -223,46 +222,33 @@ void FontResource::BackgroundFontProcessor::OnDataComplete() {
       *GetFontDecodingTaskRunner(), FROM_HERE,
       CrossThreadBindOnce(
           &FontResource::BackgroundFontProcessor::DecodeOnBackgroundThread,
-          std::move(data_), background_task_runner_,
+          std::move(buffer_), background_task_runner_,
           weak_factory_.GetWeakPtr()));
 }
 
 // static
 void FontResource::BackgroundFontProcessor::DecodeOnBackgroundThread(
-    Deque<Vector<char>> data,
+    SegmentedBuffer data,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner,
     base::WeakPtr<BackgroundFontProcessor> weak_this) {
-  scoped_refptr<SharedBuffer> buffer = SharedBuffer::Create();
-  while (!data.empty()) {
-    buffer->Append(std::move(data.front()));
-    data.pop_front();
-  }
-  base::expected<DecodedResult, String> result_or_error =
-      DecodeFont(buffer.get());
-  // TODO(crbug.com/40244488): Consider moving the data in SharedBuffer to the
-  // background task runner instead of calling CopyAs() to reduce the memory
-  // copy.
+  base::expected<DecodedResult, String> result_or_error = DecodeFont(&data);
   PostCrossThreadTask(
       *background_task_runner, FROM_HERE,
       CrossThreadBindOnce(
           &FontResource::BackgroundFontProcessor::OnDecodeComplete,
-          std::move(weak_this), std::move(result_or_error),
-          buffer->CopyAs<Vector<char>>()));
+          std::move(weak_this), std::move(result_or_error), std::move(data)));
 }
 
 void FontResource::BackgroundFontProcessor::OnDecodeComplete(
     base::expected<DecodedResult, String> result_or_error,
-    Vector<char> data) {
+    SegmentedBuffer data) {
   DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
-  Deque<Vector<char>> body;
-  body.push_back(std::move(data));
-
   client_->PostTaskToMainThread(CrossThreadBindOnce(
       &FontResource::OnBackgroundDecodeFinished,
       MakeUnwrappingCrossThreadWeakHandle(std::move(resource_handle_)),
       std::move(result_or_error)));
   client_->DidFinishBackgroundResponseProcessor(
-      std::move(head_), std::move(body), std::move(cached_metadata_buffer_));
+      std::move(head_), std::move(data), std::move(cached_metadata_buffer_));
 }
 
 FontResource::BackgroundFontProcessorFactory::BackgroundFontProcessorFactory(

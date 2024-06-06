@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -44,7 +45,7 @@ class CORE_EXPORT ScriptDecoder {
  public:
   class CORE_EXPORT Result {
    public:
-    Result(Deque<Vector<char>> raw_data,
+    Result(SegmentedBuffer raw_data,
            String decoded_data,
            std::unique_ptr<ParkableStringImpl::SecureDigest> digest);
     ~Result() = default;
@@ -55,7 +56,7 @@ class CORE_EXPORT ScriptDecoder {
     Result(Result&&) = default;
     Result& operator=(Result&&) = default;
 
-    Deque<Vector<char>> raw_data;
+    SegmentedBuffer raw_data;
     String decoded_data;
     std::unique_ptr<ParkableStringImpl::SecureDigest> digest;
   };
@@ -90,7 +91,7 @@ class CORE_EXPORT ScriptDecoder {
   scoped_refptr<base::SequencedTaskRunner> decoding_task_runner_;
   StringBuilder builder_;
 
-  Deque<Vector<char>> raw_data_;
+  SegmentedBuffer raw_data_;
 };
 
 struct CORE_EXPORT ScriptDecoderWithClientDeleter {
