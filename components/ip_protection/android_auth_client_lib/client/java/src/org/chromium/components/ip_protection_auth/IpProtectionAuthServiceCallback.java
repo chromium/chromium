@@ -9,12 +9,20 @@ import androidx.annotation.VisibleForTesting;
 @VisibleForTesting
 public interface IpProtectionAuthServiceCallback {
     /**
-     * Called when IpProtectionAuthClient.CreateConnectedInstance has completed.
+     * Called if/when IpProtectionAuthClient.CreateConnectedInstance has completed.
+     *
+     * <p>Will be called on the UI thread.
      *
      * @param client will not be null.
      */
     public void onResult(IpProtectionAuthClient client);
 
-    // TODO(elburrito): use this function instead of throwing exceptions
+    /**
+     * Called if/when IpProtectionAuthClient.CreateConnectedInstance fails.
+     *
+     * <p>Will be called on the UI thread.
+     *
+     * @param error unstructured description of error.
+     */
     public void onError(String error);
 }

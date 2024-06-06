@@ -8,5 +8,13 @@
   <application android:label="Ip Protection Auth">
     <service android:name="org.chromium.components.ip_protection_auth.mock_service.IpProtectionAuthServiceMock"
           android:exported="true" />
+    <service android:name="org.chromium.components.ip_protection_auth.mock_service.NullBindingService"
+          android:exported="true" />
+    <service android:name="org.chromium.components.ip_protection_auth.mock_service.NullBindingService.DisabledService"
+          android:enabled="false"
+          android:exported="true" />
+    <service android:name="org.chromium.components.ip_protection_auth.mock_service.NullBindingService.RestrictedService"
+          android:permission="permission-which-the-client-does-not-have"
+          android:exported="true" />
   </application>
 </manifest>

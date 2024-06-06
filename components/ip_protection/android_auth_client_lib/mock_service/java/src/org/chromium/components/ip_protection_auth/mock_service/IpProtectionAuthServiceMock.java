@@ -18,13 +18,14 @@ import com.google.privacy.ppn.proto.GetInitialDataResponse;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 
+import org.chromium.base.Log;
 import org.chromium.components.ip_protection_auth.common.IIpProtectionAuthAndSignCallback;
 import org.chromium.components.ip_protection_auth.common.IIpProtectionAuthService;
 import org.chromium.components.ip_protection_auth.common.IIpProtectionGetInitialDataCallback;
 
 /** Mock implementation of the IP Protection Auth Service */
 public final class IpProtectionAuthServiceMock extends Service {
-    private static final String TAG = "IpProtectionAuthServiceMock";
+    private static final String TAG = "IppAuthServiceMock";
     private static final String TEST_STRING = "test";
     private static final String EXPECTED_SERVICE_TYPE = "webviewipblinding";
 
@@ -33,6 +34,7 @@ public final class IpProtectionAuthServiceMock extends Service {
                 @Override
                 public void getInitialData(
                         byte[] bytes, IIpProtectionGetInitialDataCallback callback) {
+                    Log.i(TAG, "got getInitialData request");
                     try {
                         GetInitialDataRequest request =
                                 GetInitialDataRequest.parser().parseFrom(bytes);
@@ -65,6 +67,7 @@ public final class IpProtectionAuthServiceMock extends Service {
 
                 @Override
                 public void authAndSign(byte[] bytes, IIpProtectionAuthAndSignCallback callback) {
+                    Log.i(TAG, "got authAndSign request");
                     try {
                         AuthAndSignRequest request = AuthAndSignRequest.parser().parseFrom(bytes);
                         if (!request.getOauthToken().equals(TEST_STRING)) {
@@ -89,9 +92,20 @@ public final class IpProtectionAuthServiceMock extends Service {
                 }
             };
 
+    @Override
+    public void onCreate() {
+        Log.i(TAG, "onCreate");
+    }
+
+    @Override
+    public void onDestroy() {
+        Log.i(TAG, "onDestroy");
+    }
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
+        Log.i(TAG, "returning binding for %s", intent.toString());
         return mBinder;
     }
 }

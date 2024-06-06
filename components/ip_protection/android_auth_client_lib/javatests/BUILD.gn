@@ -28,6 +28,7 @@ android_library("ip_protection_auth_javatests") {
     "//components/ip_protection/android_auth_client_lib/common/proto:ip_protection_auth_proto_java",
     "//net/third_party/quiche:blind_sign_auth_proto_java",
     "//third_party/android_deps:protobuf_lite_runtime_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_ext_junit_java",
     "//third_party/androidx:androidx_test_runner_java",
