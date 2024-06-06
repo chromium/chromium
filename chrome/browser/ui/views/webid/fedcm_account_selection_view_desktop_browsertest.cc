@@ -210,3 +210,16 @@ IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest, AddTabHidesUI) {
   ASSERT_TRUE(GetDialog());
   EXPECT_TRUE(GetDialog()->IsVisible());
 }
+
+// Tests that detaching a tab with FedCM UI does not trigger a crash.
+IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest,
+                       DetachTabForInsertion) {
+  Show();
+  ASSERT_TRUE(GetDialog());
+  EXPECT_TRUE(GetDialog()->IsVisible());
+
+  // Add a new tab and detach the FedCM tab without closing it.
+  ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
+  browser()->tab_strip_model()->DetachTabAtForInsertion(0);
+  ASSERT_FALSE(GetDialog());
+}

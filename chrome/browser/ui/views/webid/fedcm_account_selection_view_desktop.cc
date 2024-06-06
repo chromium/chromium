@@ -577,6 +577,7 @@ void FedCmAccountSelectionView::OnTabStripModelChanged(
   // window.
   if (index == TabStripModel::kNoTab) {
     Close();
+    return;
   }
   if (index != tab_strip_model->active_index() &&
       GetDialogWidget()->IsVisible()) {
