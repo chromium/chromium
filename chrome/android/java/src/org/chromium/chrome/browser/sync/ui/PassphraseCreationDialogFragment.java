@@ -20,6 +20,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.fragment.app.DialogFragment;
@@ -30,16 +31,21 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeStringConstants;
 import org.chromium.chrome.browser.feedback.FragmentHelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.settings.ProfileDependentSetting;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
 
 /** Dialog to ask the user to enter a new custom passphrase. */
 public class PassphraseCreationDialogFragment extends DialogFragment
-        implements FragmentHelpAndFeedbackLauncher {
+        implements FragmentHelpAndFeedbackLauncher, ProfileDependentSetting {
     public interface Listener {
         void onPassphraseCreated(String passphrase);
     }
 
+    private Profile mProfile;
     private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
     private EditText mEnterPassphrase;
     private EditText mConfirmPassphrase;
@@ -47,6 +53,11 @@ public class PassphraseCreationDialogFragment extends DialogFragment
     @Override
     public void setHelpAndFeedbackLauncher(HelpAndFeedbackLauncher helpAndFeedbackLauncher) {
         mHelpAndFeedbackLauncher = helpAndFeedbackLauncher;
+    }
+
+    @Override
+    public void setProfile(@NonNull Profile profile) {
+        mProfile = profile;
     }
 
     @Override
@@ -86,8 +97,15 @@ public class PassphraseCreationDialogFragment extends DialogFragment
 
     private SpannableString getInstructionsText() {
         final Context context = getActivity();
+        boolean shouldReplaceSyncSettingsWithAccountSettings =
+                ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+                        && !SyncServiceFactory.getForProfile(mProfile).hasSyncConsent();
         return SpanApplier.applySpans(
-                getString(R.string.sync_encryption_create_passphrase),
+                getString(
+                        shouldReplaceSyncSettingsWithAccountSettings
+                                ? R.string.sync_encryption_create_passphrase
+                                : R.string.legacy_sync_encryption_create_passphrase),
                 new SpanInfo(
                         "BEGIN_LINK",
                         "END_LINK",

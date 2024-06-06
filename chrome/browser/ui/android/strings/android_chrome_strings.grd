@@ -2400,7 +2400,11 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SYNC_ENTER_PASSPHRASE_TITLE" desc="Title of dialog to ask user to enter their passphrase. [CHAR_LIMIT=32]">
         Enter passphrase
       </message>
-      <message name="IDS_SYNC_ENCRYPTION_CREATE_PASSPHRASE" desc="Prompt user to create a custom sync password.">
+      <message name="IDS_SYNC_ENCRYPTION_CREATE_PASSPHRASE"  desc="The message displayed when the signed in user needs to enter its sync passphrase.">
+        Payment methods and addresses won’t be encrypted. Browsing history from Chrome won’t sync.
+Only someone with your passphrase can read your encrypted data. The passphrase is not sent to or stored by Google. If you forget your passphrase or want to change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>clear the Chrome data in your account<ph name="END_LINK">END_LINK</ph>.
+      </message>
+      <message name="IDS_LEGACY_SYNC_ENCRYPTION_CREATE_PASSPHRASE" desc="Prompt user to create a custom sync password.">
         Payment methods and addresses from Google Pay won’t be encrypted. Browsing history from Chrome won’t sync.
 Only someone with your passphrase can read your encrypted data. The passphrase is not sent to or stored by Google. If you forget your passphrase or want to change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome data in your account<ph name="END_LINK">END_LINK</ph>.
       </message>
