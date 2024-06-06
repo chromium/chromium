@@ -57,14 +57,16 @@ class PLATFORM_EXPORT SubresourceIntegrity final {
   // The version with the IntegrityMetadataSet passed as the first argument
   // assumes that the integrity attribute has already been parsed, and the
   // IntegrityMetadataSet represents the result of that parsing.
+  // Edge case: If a resource has zero bytes then this method is called with a
+  // null `buffer`.
   static bool CheckSubresourceIntegrity(const IntegrityMetadataSet&,
-                                        base::span<const uint8_t> content,
+                                        const SegmentedBuffer* buffer,
                                         const KURL& resource_url,
                                         const Resource&,
                                         ReportInfo&);
   static bool CheckSubresourceIntegrity(const String&,
                                         IntegrityFeatures,
-                                        base::span<const uint8_t> content,
+                                        const SegmentedBuffer* buffer,
                                         const KURL& resource_url,
                                         ReportInfo&);
 
@@ -87,7 +89,7 @@ class PLATFORM_EXPORT SubresourceIntegrity final {
 
   // The core implementation for all CheckSubresoureIntegrity functions.
   static bool CheckSubresourceIntegrityImpl(const IntegrityMetadataSet&,
-                                            base::span<const uint8_t> content,
+                                            const SegmentedBuffer* buffer,
                                             const KURL& resource_url,
                                             ReportInfo&);
 
@@ -105,7 +107,7 @@ class PLATFORM_EXPORT SubresourceIntegrity final {
                                 const String&);
 
   static bool CheckSubresourceIntegrityDigest(const IntegrityMetadata&,
-                                              base::span<const uint8_t>);
+                                              const SegmentedBuffer* buffer);
   static bool CheckSubresourceIntegritySignature(const IntegrityMetadata&,
                                                  const char*,
                                                  size_t);

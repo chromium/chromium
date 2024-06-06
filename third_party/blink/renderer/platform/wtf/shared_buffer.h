@@ -165,6 +165,8 @@ class WTF_EXPORT SegmentedBuffer {
   template <typename T>
   T CopyAs() const;
 
+  Vector<Vector<char>> TakeData() &&;
+
   // Returns an iterator for the given position of bytes. Returns |cend()| if
   // |position| is greater than or equal to |size()|.
   HAS_STRICTLY_TYPED_ARG

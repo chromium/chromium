@@ -33,11 +33,29 @@
 #include <algorithm>
 #include <cstdlib>
 #include <memory>
+
 #include "base/memory/scoped_refptr.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
+
+TEST(SegmentedBufferTest, TakeData) {
+  char test_data0[] = "Hello";
+  char test_data1[] = "World";
+  char test_data2[] = "Goodbye";
+
+  SegmentedBuffer buffer;
+  buffer.Append(test_data0, strlen(test_data0));
+  buffer.Append(test_data1, strlen(test_data1));
+  buffer.Append(test_data2, strlen(test_data2));
+  Vector<Vector<char>> data = std::move(buffer).TakeData();
+  ASSERT_EQ(3U, data.size());
+  EXPECT_EQ(data[0], base::make_span(test_data0, strlen(test_data0)));
+  EXPECT_EQ(data[1], base::make_span(test_data1, strlen(test_data1)));
+  EXPECT_EQ(data[2], base::make_span(test_data2, strlen(test_data2)));
+}
 
 TEST(SharedBufferTest, getAsBytes) {
   char test_data0[] = "Hello";

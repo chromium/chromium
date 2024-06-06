@@ -6,6 +6,7 @@
 
 #include "base/numerics/safe_conversions.h"
 #include "crypto/openssl_util.h"
+#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 
 namespace blink {
@@ -72,6 +73,19 @@ bool ComputeDigest(HashAlgorithm algorithm,
                    DigestValue& digest_result) {
   Digestor digestor(algorithm);
   digestor.Update(digestable);
+  digestor.Finish(digest_result);
+  return !digestor.has_failed();
+}
+
+bool ComputeDigest(HashAlgorithm algorithm,
+                   const SegmentedBuffer* buffer,
+                   DigestValue& digest_result) {
+  Digestor digestor(algorithm);
+  if (buffer) {
+    for (const auto& span : *buffer) {
+      digestor.Update(base::as_bytes(span));
+    }
+  }
   digestor.Finish(digest_result);
   return !digestor.has_failed();
 }

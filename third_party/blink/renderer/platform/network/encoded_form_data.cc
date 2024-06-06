@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/platform/file_metadata.h"
 #include "third_party/blink/renderer/platform/network/form_data_encoder.h"
 #include "third_party/blink/renderer/platform/network/wrapped_data_pipe_getter.h"
+#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 
 namespace blink {
@@ -34,6 +35,9 @@ FormDataElement::FormDataElement() : type_(kData) {}
 
 FormDataElement::FormDataElement(const Vector<char>& array)
     : type_(kData), data_(array) {}
+
+FormDataElement::FormDataElement(Vector<char>&& array)
+    : type_(kData), data_(std::move(array)) {}
 
 FormDataElement::FormDataElement(
     const String& filename,
@@ -116,6 +120,12 @@ scoped_refptr<EncodedFormData> EncodedFormData::Create(
   return result;
 }
 
+scoped_refptr<EncodedFormData> EncodedFormData::Create(SegmentedBuffer&& data) {
+  scoped_refptr<EncodedFormData> result = Create();
+  result->AppendData(std::move(data));
+  return result;
+}
+
 scoped_refptr<EncodedFormData> EncodedFormData::Copy() const {
   return base::AdoptRef(new EncodedFormData(*this));
 }
@@ -162,6 +172,13 @@ void EncodedFormData::AppendData(const void* data, wtf_size_t size) {
     elements_.push_back(FormDataElement());
   FormDataElement& e = elements_.back();
   e.data_.Append(static_cast<const char*>(data), size);
+}
+
+void EncodedFormData::AppendData(SegmentedBuffer&& buffer) {
+  Vector<Vector<char>> data_list = std::move(buffer).TakeData();
+  for (auto& data : data_list) {
+    elements_.push_back(FormDataElement(std::move(data)));
+  }
 }
 
 void EncodedFormData::AppendFile(

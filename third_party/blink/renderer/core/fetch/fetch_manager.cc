@@ -366,8 +366,7 @@ class FetchManager::Loader final
           loader_(loader),
           integrity_metadata_(integrity_metadata),
           url_(url),
-          response_type_(response_type),
-          finished_(false) {
+          response_type_(response_type) {
       body_->SetClient(this);
 
       OnStateChange();
@@ -387,7 +386,8 @@ class FetchManager::Loader final
         size_t available;
         result = body_->BeginRead(&buffer, &available);
         if (result == Result::kOk) {
-          buffer_.Append(buffer, base::checked_cast<wtf_size_t>(available));
+          buffer_.Append(base::make_span(
+              buffer, base::checked_cast<wtf_size_t>(available)));
           result = body_->EndRead(available);
         }
         if (result == Result::kShouldWait)
@@ -413,13 +413,13 @@ class FetchManager::Loader final
               integrity_metadata_,
               SubresourceIntegrityHelper::GetFeatures(
                   loader_->GetExecutionContext()),
-              base::as_byte_span(buffer_), url_, report_info);
+              &buffer_, url_, report_info);
         }
         SubresourceIntegrityHelper::DoReport(*loader_->GetExecutionContext(),
                                              report_info);
         if (check_result) {
-          updater_->Update(MakeGarbageCollected<FormDataBytesConsumer>(
-              buffer_.data(), buffer_.size()));
+          updater_->Update(
+              MakeGarbageCollected<FormDataBytesConsumer>(std::move(buffer_)));
           loader_->resolver_->Resolve(response_);
           loader_->resolver_.Clear();
           return;
@@ -455,8 +455,8 @@ class FetchManager::Loader final
     String integrity_metadata_;
     KURL url_;
     const FetchResponseType response_type_;
-    Vector<char> buffer_;
-    bool finished_;
+    SegmentedBuffer buffer_;
+    bool finished_ = false;
   };
 
  private:

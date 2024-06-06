@@ -54,7 +54,7 @@ void SubresourceIntegrity::ReportInfo::Clear() {
 
 bool SubresourceIntegrity::CheckSubresourceIntegrity(
     const IntegrityMetadataSet& metadata_set,
-    base::span<const uint8_t> content,
+    const SegmentedBuffer* buffer,
     const KURL& resource_url,
     const Resource& resource,
     ReportInfo& report_info) {
@@ -73,14 +73,14 @@ bool SubresourceIntegrity::CheckSubresourceIntegrity(
     return false;
   }
 
-  return CheckSubresourceIntegrityImpl(metadata_set, content, resource_url,
+  return CheckSubresourceIntegrityImpl(metadata_set, buffer, resource_url,
                                        report_info);
 }
 
 bool SubresourceIntegrity::CheckSubresourceIntegrity(
     const String& integrity_metadata,
     IntegrityFeatures features,
-    base::span<const uint8_t> content,
+    const SegmentedBuffer* buffer,
     const KURL& resource_url,
     ReportInfo& report_info) {
   if (integrity_metadata.empty())
@@ -89,7 +89,7 @@ bool SubresourceIntegrity::CheckSubresourceIntegrity(
   IntegrityMetadataSet metadata_set;
   ParseIntegrityAttribute(integrity_metadata, features, metadata_set,
                           &report_info);
-  return CheckSubresourceIntegrityImpl(metadata_set, content, resource_url,
+  return CheckSubresourceIntegrityImpl(metadata_set, buffer, resource_url,
                                        report_info);
 }
 
@@ -120,7 +120,7 @@ blink::HashAlgorithm IntegrityAlgorithmToHashAlgorithm(
 
 bool SubresourceIntegrity::CheckSubresourceIntegrityImpl(
     const IntegrityMetadataSet& metadata_set,
-    base::span<const uint8_t> content,
+    const SegmentedBuffer* buffer,
     const KURL& resource_url,
     ReportInfo& report_info) {
   if (!metadata_set.size())
@@ -130,7 +130,7 @@ bool SubresourceIntegrity::CheckSubresourceIntegrityImpl(
   IntegrityAlgorithm max_algorithm = FindBestAlgorithm(metadata_set);
   for (const IntegrityMetadata& metadata : metadata_set) {
     if (metadata.Algorithm() == max_algorithm &&
-        CheckSubresourceIntegrityDigest(metadata, content)) {
+        CheckSubresourceIntegrityDigest(metadata, buffer)) {
       report_info.AddUseCount(ReportInfo::UseCounterFeature::
                                   kSRIElementWithMatchingIntegrityAttribute);
       return true;
@@ -140,7 +140,7 @@ bool SubresourceIntegrity::CheckSubresourceIntegrityImpl(
   // If we arrive here, none of the "strongest" constaints have validated
   // the data we received. Report this fact.
   DigestValue digest;
-  if (ComputeDigest(IntegrityAlgorithmToHashAlgorithm(max_algorithm), content,
+  if (ComputeDigest(IntegrityAlgorithmToHashAlgorithm(max_algorithm), buffer,
                     digest)) {
     // This message exposes the digest of the resource to the console.
     // Because this is only to the console, that's okay for now, but we
@@ -187,12 +187,12 @@ IntegrityAlgorithm SubresourceIntegrity::FindBestAlgorithm(
 
 bool SubresourceIntegrity::CheckSubresourceIntegrityDigest(
     const IntegrityMetadata& metadata,
-    base::span<const uint8_t> content) {
+    const SegmentedBuffer* buffer) {
   blink::HashAlgorithm hash_algo =
       IntegrityAlgorithmToHashAlgorithm(metadata.Algorithm());
 
   DigestValue digest;
-  if (!ComputeDigest(hash_algo, content, digest)) {
+  if (!ComputeDigest(hash_algo, buffer, digest)) {
     return false;
   }
 

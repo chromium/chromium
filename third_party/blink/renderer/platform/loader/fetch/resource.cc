@@ -210,19 +210,8 @@ void Resource::CheckResourceIntegrity() {
     return;
   }
 
-  base::span<const uint8_t> data;
-
-  // Edge case: If a resource actually has zero bytes then it will not
-  // typically have a resource buffer, but we still need to check integrity
-  // because people might want to assert a zero-length resource.
-  CHECK(DecodedSize() == 0 || Data());
-  if (Data()) {
-    data = base::as_bytes(
-        base::span(Data()->FlattenIfNeededAndGetData(), Data()->size()));
-  }
-
   if (SubresourceIntegrity::CheckSubresourceIntegrity(
-          IntegrityMetadata(), data, Url(), *this, integrity_report_info_)) {
+          IntegrityMetadata(), Data(), Url(), *this, integrity_report_info_)) {
     integrity_disposition_ = ResourceIntegrityDisposition::kPassed;
   } else {
     integrity_disposition_ = ResourceIntegrityDisposition::kFailed;

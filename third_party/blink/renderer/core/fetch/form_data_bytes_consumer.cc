@@ -513,6 +513,10 @@ FormDataBytesConsumer::FormDataBytesConsumer(DOMArrayBufferView* view)
           view->BaseAddress(),
           base::checked_cast<wtf_size_t>(view->byteLength())) {}
 
+FormDataBytesConsumer::FormDataBytesConsumer(SegmentedBuffer&& buffer)
+    : impl_(MakeGarbageCollected<SimpleFormDataBytesConsumer>(
+          EncodedFormData::Create(std::move(buffer)))) {}
+
 FormDataBytesConsumer::FormDataBytesConsumer(const void* data, wtf_size_t size)
     : impl_(MakeGarbageCollected<SimpleFormDataBytesConsumer>(
           EncodedFormData::Create(data, size))) {}

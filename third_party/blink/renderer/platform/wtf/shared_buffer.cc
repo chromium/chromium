@@ -170,6 +170,16 @@ SegmentedBuffer::DeprecatedFlatData::DeprecatedFlatData(
   data_ = flat_buffer_.data();
 }
 
+Vector<Vector<char>> SegmentedBuffer::TakeData() && {
+  Vector<Vector<char>> result;
+  result.ReserveInitialCapacity(segments_.size());
+  for (auto& segment : segments_) {
+    result.push_back(std::move(segment.data()));
+  }
+  Clear();
+  return result;
+}
+
 SharedBuffer::SharedBuffer() = default;
 
 SharedBuffer::SharedBuffer(base::span<const char> data) {
