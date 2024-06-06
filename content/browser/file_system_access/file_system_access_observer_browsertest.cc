@@ -391,18 +391,18 @@ class FileSystemAccessObserverBrowserTest
       return true;
     }
 
-    // TODO(crbug.com/321980270, crbug.com/321980447): Some platforms do not
-    // support reporting the modified path.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+    // TODO(crbug.com/321980270): Some platforms do not support reporting the
+    // modified path.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
     return true;
 #else
     return false;
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
   }
 
   bool SupportsChangeInfo() const {
-    // TODO(crbug.com/321980270, crbug.com/321980447): Reporting change info and
-    // the modified path are both only supported on inotify, for now.
+    // TODO(crbug.com/321980270): Reporting change info and the modified path
+    // are both only supported on inotify, for now.
     return SupportsReportingModifiedPath();
   }
 };
@@ -638,6 +638,10 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
   EXPECT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
 }
 
+// TODO(crbug.com/343961295): Windows reports two events when a swap file is
+// closed: a "disappear" for the target file being overwritten, and a "move" for
+// the swap file being moved to the target file.
+#if !BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
                        ObserveFileReportsType) {
   base::FilePath file_path = CreateFileToBePicked();
@@ -653,14 +657,14 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
   // clang-format on
   auto records = EvalJs(shell(), script).ExtractList();
   ASSERT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
-  // TODO(crbug.com/321980270, crbug.com/321980447): Support change types for
-  // the local file system on more platforms.
+  // TODO(crbug.com/321980270): Support change types for the local file system
+  // on more platforms.
   //
-  // TODO(crbug.com/340584120): Consider reporting a consistent change
-  // type when writing to a file via a WritableFileStream. On the local file
-  // system, changes are naively considered "appeared" events because the swap
-  // file is moved over the target file. Meanwhile, the BucketFS intentionally
-  // reports the move as a modification if the move overwrote an existing file.
+  // TODO(crbug.com/340584120): Consider reporting a consistent change type when
+  // writing to a file via a WritableFileStream. On the local file system,
+  // changes are naively considered "created" events because the swap file is
+  // moved over the target file. Meanwhile, the BucketFS intentionally reports
+  // the move as a modification if the move overwrote an existing file.
   const std::string expected_change_type =
       SupportsChangeInfo()
           ? (GetTestFileSystemType() == TestFileSystemType::kBucket
@@ -670,6 +674,7 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
   EXPECT_THAT(*records.GetList().front().GetDict().FindString("type"),
               testing::StrEq(expected_change_type));
 }
+#endif  // !BUILDFLAG(IS_WIN)
 
 IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
                        ObserveFileReportsCorrectHandle) {
@@ -720,9 +725,9 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
                        ObserveDirectoryReportsCorrectHandle) {
   base::FilePath dir_path = CreateDirectoryToBePicked();
 
-  // TODO(crbug.com/321980270, crbug.com/321980447): Some platforms do not
-  // report the modified path. In these cases, `changedHandle` will always be
-  // the handle passed to observe().
+  // TODO(crbug.com/321980270): Some platforms do not report the modified path.
+  // In these cases, `changedHandle` will always be the handle passed to
+  // observe().
   const std::string changed_handle =
       SupportsReportingModifiedPath() ? "subDir" : "dir";
 
@@ -748,6 +753,12 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
   EXPECT_TRUE(EvalJs(shell(), script).ExtractBool());
 }
 
+// There is no way to know the correct handle type on Windows in this scenario.
+//
+// Window's content::FilePathWatcher uses base::GetFileInfo to figure out the
+// file path type. Since `fileInDir` is deleted, there is nothing to call
+// base::GetFileInfo on.
+#if !BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
                        ObserveDirectoryReportsCorrectHandleType) {
   base::FilePath dir_path = CreateDirectoryToBePicked();
@@ -755,9 +766,9 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
   // The modified handle is a file, so the change record should contain a
   // FileSystemFileHandle.
   //
-  // TODO(crbug.com/321980270, crbug.com/321980447): Some platforms do not
-  // report the modified path. In these cases, `changedHandle` will always be
-  // the handle passed to observe().
+  // TODO(crbug.com/321980270): Some platforms do not report the modified path.
+  // In these cases, `changedHandle` will always be the handle passed to
+  // observe().
   const std::string changed_handle =
       SupportsReportingModifiedPath() ? "fileInDir" : "dir";
 
@@ -782,6 +793,7 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
   // clang-format on
   EXPECT_TRUE(EvalJs(shell(), script).ExtractBool());
 }
+#endif  // !BUILDFLAG(IS_WIN)
 
 IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
                        ObserveDirectoryReportsCorrectRelativePathComponents) {
@@ -1157,6 +1169,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverWithBFCacheBrowserTest,
   auto records = EvalJs(shell(), script).ExtractList();
   ASSERT_THAT(records.GetList(), testing::IsEmpty());
 }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) &&
+        // !BUILDFLAG(IS_FUCHSIA)
 
 }  // namespace content

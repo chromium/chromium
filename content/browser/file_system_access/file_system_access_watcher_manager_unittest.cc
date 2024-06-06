@@ -62,24 +62,22 @@ void SpinEventLoopForABit() {
   loop.Run();
 }
 
-// TODO(crbug.com/321980270, crbug.com/321980447): Report the modified path on
-// more platforms.
+// TODO(crbug.com/321980270): Report the modified path on more platforms.
 bool ReportsModifiedPathForLocalObservations() {
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
   return true;
 #else
   return false;
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 }
 
-// TODO(crbug.com/321980270, crbug.com/321980447): Report change info on more
-// platforms.
+// TODO(crbug.com/321980270): Report change info on more platforms.
 bool ReportsChangeInfoForLocalObservations() {
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
   return true;
 #else
   return false;
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA) &&
@@ -911,11 +909,22 @@ TEST_F(FileSystemAccessWatcherManagerTest, WatchLocalFile) {
   // Deleting the watched file should notify `accumulator`.
   base::DeleteFile(file_path);
 
+#if BUILDFLAG(IS_WIN)
+  // There is no way to know the correct handle type on Windows in this
+  // scenario.
+  //
+  // Window's content::FilePathWatcher uses base::GetFileInfo to figure out the
+  // file path type. Since `fileInDir` is deleted, there is nothing to call
+  // base::GetFileInfo on.
+  ChangeInfo change_info(FilePathType::kUnknown, ChangeType::kDeleted,
+                         file_url.path());
+#else
   ChangeInfo change_info =
       ReportsChangeInfoForLocalObservations()
           ? ChangeInfo(FilePathType::kFile, ChangeType::kDeleted,
                        file_url.path())
           : ChangeInfo();
+#endif
   std::list<Change> expected_changes = {{file_url, change_info}};
   EXPECT_TRUE(base::test::RunUntil([&]() {
     return testing::Matches(testing::ContainerEq(expected_changes))(
@@ -972,11 +981,22 @@ TEST_F(FileSystemAccessWatcherManagerTest,
   // Deleting the watched file should notify each `accumulator`.
   base::DeleteFile(file_path);
 
+#if BUILDFLAG(IS_WIN)
+  // There is no way to know the correct handle type on Windows in this
+  // scenario.
+  //
+  // Window's content::FilePathWatcher uses base::GetFileInfo to figure out the
+  // file path type. Since `fileInDir` is deleted, there is nothing to call
+  // base::GetFileInfo on.
+  ChangeInfo change_info(FilePathType::kUnknown, ChangeType::kDeleted,
+                         file_url.path());
+#else
   ChangeInfo change_info =
       ReportsChangeInfoForLocalObservations()
           ? ChangeInfo(FilePathType::kFile, ChangeType::kDeleted,
                        file_url.path())
           : ChangeInfo();
+#endif
   std::list<Change> expected_changes = {{file_url, change_info}};
   const auto expected_changes_matcher = testing::ContainerEq(expected_changes);
   EXPECT_TRUE(base::test::RunUntil([&]() {

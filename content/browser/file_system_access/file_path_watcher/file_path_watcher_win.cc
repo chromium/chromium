@@ -239,6 +239,8 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
   void ProcessNotificationBatch(base::FilePath watched_path,
                                 base::HeapArray<uint8_t> notification_batch);
 
+  base::FilePath& GetReportedPath(base::FilePath& modified_path);
+
   // Callback to notify upon changes.
   FilePathWatcher::CallbackWithChangeInfo callback_;
 
@@ -246,6 +248,9 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
   base::FilePath target_;
 
   std::optional<CompletionIOPortThread::WatcherEntryId> watcher_id_;
+
+  // True if should report the modified path rather than the watched path.
+  bool report_modified_path_ = false;
 
   std::optional<FilePathWatcherChangeTracker> change_tracker_;
 
@@ -460,6 +465,7 @@ bool FilePathWatcherImpl::WatchWithChangeInfo(
   set_task_runner(base::SequencedTaskRunner::GetCurrentDefault());
   callback_ = callback;
   target_ = path;
+  report_modified_path_ = options.report_modified_path;
 
   change_tracker_ = FilePathWatcherChangeTracker(target_, options.type);
 
@@ -501,6 +507,8 @@ void FilePathWatcherImpl::WatchedDirectoryDeleted(
     return;
   }
 
+  bool target_was_deleted = watched_path == target_;
+
   if (!notification_batch.empty()) {
     auto self = weak_factory_.GetWeakPtr();
     // `ProcessNotificationBatch` may delete `this`.
@@ -511,11 +519,12 @@ void FilePathWatcherImpl::WatchedDirectoryDeleted(
     }
   }
 
-  bool target_was_deleted =
-      watched_path == target_ || change_tracker_->KnowTargetExists();
-  if (target_was_deleted) {
+  if (target_was_deleted || change_tracker_->KnowTargetExists()) {
     // `this` may be deleted after `callback_` is run.
-    callback_.Run(FilePathWatcher::ChangeInfo(), target_, /*error=*/false);
+    callback_.Run(FilePathWatcher::ChangeInfo(
+                      FilePathWatcher::FilePathType::kDirectory,
+                      FilePathWatcher::ChangeType::kDeleted, target_),
+                  target_, /*error=*/false);
   }
 
   change_tracker_->MayHaveMissedChanges();
@@ -549,10 +558,10 @@ void FilePathWatcherImpl::ProcessNotificationBatch(
     change_tracker_->AddChange(std::move(change_path), file_notify_info.Action);
   }
 
-  const int change_count = change_tracker_->PopChangeCount();
-  for (int i = 0; i < change_count; i++) {
+  for (auto& change : change_tracker_->PopChanges()) {
     // `this` may be deleted after `callback_` is run.
-    callback_.Run(FilePathWatcher::ChangeInfo(), target_, /*error=*/false);
+    callback_.Run(std::move(change), GetReportedPath(change.modified_path),
+                  /*error=*/false);
     if (!self) {
       return;
     }
@@ -630,6 +639,11 @@ void FilePathWatcherImpl::CloseWatchHandle() {
     CompletionIOPortThread::Get()->RemoveWatcher(watcher_id_.value());
     watcher_id_.reset();
   }
+}
+
+base::FilePath& FilePathWatcherImpl::GetReportedPath(
+    base::FilePath& modified_path) {
+  return report_modified_path_ ? modified_path : target_;
 }
 
 }  // namespace

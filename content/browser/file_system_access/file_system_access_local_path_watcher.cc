@@ -62,7 +62,7 @@ void FileSystemAccessLocalPathWatcher::Initialize(
   FilePathWatcher::WatchOptions watch_options{
       .type = scope().IsRecursive() ? FilePathWatcher::Type::kRecursive
                                     : FilePathWatcher::Type::kNonRecursive,
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
       // Note: `report_modified_path` is also present on Android
       // and Fuchsia. Update this switch if support for watching
       // the local file system is added on those platforms.
@@ -70,7 +70,7 @@ void FileSystemAccessLocalPathWatcher::Initialize(
       // TODO(crbug.com/40260973): Report the affected
       // path on more platforms.
       .report_modified_path = true,
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
   };
 
   watcher_.AsyncCall(&FilePathWatcher::WatchWithChangeInfo)

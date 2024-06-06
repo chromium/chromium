@@ -71,12 +71,23 @@ FilePathWatcher::ChangeType ToChangeType(DWORD win_change_type) {
   }
 }
 
-}  // namespace
+// Returns the path `descendant_path` would be in if `ancestor_path` was moved
+// to or from `moved_path`.
+base::FilePath GetMovedPathOfDescendant(const base::FilePath& descendant_path,
+                                        const base::FilePath& ancestor_path,
+                                        const base::FilePath& moved_path) {
+  const auto ancestor_components = ancestor_path.GetComponents();
+  const auto descendant_components = descendant_path.GetComponents();
+  auto moved_path_of_descendant = moved_path;
+  for (size_t i = ancestor_components.size(); i < descendant_components.size();
+       ++i) {
+    moved_path_of_descendant =
+        moved_path_of_descendant.Append(descendant_components[i]);
+  }
+  return moved_path_of_descendant;
+}
 
-FilePathWatcherChangeTracker::ChangeInfo::ChangeInfo() = default;
-FilePathWatcherChangeTracker::ChangeInfo::ChangeInfo(
-    FilePathWatcherChangeTracker::ChangeInfo&&) = default;
-FilePathWatcherChangeTracker::ChangeInfo::~ChangeInfo() = default;
+}  // namespace
 
 FilePathWatcherChangeTracker::FilePathWatcherChangeTracker(
     base::FilePath target_path,
@@ -103,12 +114,12 @@ void FilePathWatcherChangeTracker::AddChange(base::FilePath path,
 
   PathRelation path_relation = FindPathRelation(target_path_, path);
 
-  FilePathWatcherChangeTracker::ChangeInfo change;
+  ChangeInfo change;
   change.change_type = ToChangeType(win_change_type);
   change.modified_path = std::move(path);
 
   if (win_change_type == FILE_ACTION_RENAMED_NEW_NAME) {
-    change.moved_from_path = last_moved_from_path_;
+    change.moved_from_path = std::move(last_moved_from_path_);
   }
 
   switch (path_relation) {
@@ -137,7 +148,8 @@ void FilePathWatcherChangeTracker::MayHaveMissedChanges() {
           : ExistenceStatus::kExists;
 }
 
-int FilePathWatcherChangeTracker::PopChangeCount() {
+std::vector<FilePathWatcher::ChangeInfo>
+FilePathWatcherChangeTracker::PopChanges() {
   if (target_status_ == ExistenceStatus::kMayHaveMovedIntoPlace) {
     // Decide whether the target moved into place or not.
     ExistenceStatus status =
@@ -147,11 +159,23 @@ int FilePathWatcherChangeTracker::PopChangeCount() {
 
     HandleChangeEffect(status, status);
   }
-  return std::exchange(change_count_, 0);
+  return std::move(changes_);
 }
 
 bool FilePathWatcherChangeTracker::KnowTargetExists() {
   return target_status_ == ExistenceStatus::kExists;
+}
+
+void FilePathWatcherChangeTracker::ConvertMoveToCreateIfOutOfScope(
+    ChangeInfo& change) {
+  CHECK_EQ(change.change_type, ChangeType::kMoved);
+  CHECK(change.moved_from_path.has_value());
+
+  if (FindPathRelation(target_path_, *change.moved_from_path) ==
+      PathRelation::kOther) {
+    change.moved_from_path = std::nullopt;
+    change.change_type = ChangeType::kCreated;
+  }
 }
 
 void FilePathWatcherChangeTracker::HandleChangeEffect(
@@ -161,33 +185,43 @@ void FilePathWatcherChangeTracker::HandleChangeEffect(
   // then it definitely moved into place.
   if (target_status_ == ExistenceStatus::kMayHaveMovedIntoPlace &&
       before_action == ExistenceStatus::kExists) {
-    ++change_count_;
+    CHECK(!last_move_change_.moved_from_path.has_value());
+
+    last_move_change_.modified_path = target_path_;
+    last_move_change_.file_path_type = GetFilePathType(target_path_);
+
+    changes_.push_back(std::move(last_move_change_));
   }
 
   target_status_ = after_action;
 }
 
-void FilePathWatcherChangeTracker::HandleSelfChange(
-    FilePathWatcherChangeTracker::ChangeInfo change) {
+void FilePathWatcherChangeTracker::HandleSelfChange(ChangeInfo change) {
   switch (change.change_type) {
-    case FilePathWatcher::ChangeType::kCreated:
-    case FilePathWatcher::ChangeType::kMoved:
+    case ChangeType::kCreated:
       HandleChangeEffect(ExistenceStatus::kGone, ExistenceStatus::kExists);
-      ++change_count_;
+      change.file_path_type = GetFilePathType(target_path_);
+      changes_.push_back(std::move(change));
       break;
-    case FilePathWatcher::ChangeType::kDeleted:
+    case ChangeType::kMoved:
+      HandleChangeEffect(ExistenceStatus::kGone, ExistenceStatus::kExists);
+      change.file_path_type = GetFilePathType(target_path_);
+      ConvertMoveToCreateIfOutOfScope(change);
+      changes_.push_back(std::move(change));
+      break;
+    case ChangeType::kDeleted:
       HandleChangeEffect(ExistenceStatus::kExists, ExistenceStatus::kGone);
-      ++change_count_;
+      changes_.push_back(std::move(change));
       break;
-    case FilePathWatcher::ChangeType::kModified:
+    case ChangeType::kModified:
       HandleChangeEffect(ExistenceStatus::kExists, ExistenceStatus::kExists);
+      change.file_path_type = GetFilePathType(target_path_);
       // Don't report modifications on directories.
-      if (GetFilePathType(target_path_) !=
-          FilePathWatcher::FilePathType::kDirectory) {
-        ++change_count_;
+      if (change.file_path_type != FilePathWatcher::FilePathType::kDirectory) {
+        changes_.push_back(std::move(change));
       }
       break;
-    case FilePathWatcher::ChangeType::kUnknown:
+    case ChangeType::kUnknown:
       // All changes passed into here come from `ToChangeType` which doesn't
       // return `kUnknown`.
       NOTREACHED_NORETURN();
@@ -195,7 +229,7 @@ void FilePathWatcherChangeTracker::HandleSelfChange(
 }
 
 void FilePathWatcherChangeTracker::HandleDescendantChange(
-    FilePathWatcherChangeTracker::ChangeInfo change,
+    ChangeInfo change,
     bool is_direct_child) {
   // Any notification on a descendant means the target existed before and
   // after.
@@ -206,33 +240,42 @@ void FilePathWatcherChangeTracker::HandleDescendantChange(
     return;
   }
 
+  // Get the `file_path_type` if it's not a deleted event. If it's a deleted
+  // event, then there's no way to know.
+  change.file_path_type = change.change_type == ChangeType::kDeleted
+                              ? FilePathWatcher::FilePathType::kUnknown
+                              : GetFilePathType(change.modified_path);
+
   // Don't report modifications on directories.
-  if (change.change_type == FilePathWatcher::ChangeType::kModified &&
-      GetFilePathType(change.modified_path) ==
-          FilePathWatcher::FilePathType::kDirectory) {
+  if (change.change_type == ChangeType::kModified &&
+      change.file_path_type == FilePathWatcher::FilePathType::kDirectory) {
     return;
   }
+  if (change.change_type == ChangeType::kMoved) {
+    ConvertMoveToCreateIfOutOfScope(change);
+  }
 
-  ++change_count_;
+  changes_.push_back(std::move(change));
 }
 
-void FilePathWatcherChangeTracker::HandleAncestorChange(
-    FilePathWatcherChangeTracker::ChangeInfo change) {
+void FilePathWatcherChangeTracker::HandleAncestorChange(ChangeInfo change) {
   switch (change.change_type) {
-    case FilePathWatcher::ChangeType::kDeleted:
-    case FilePathWatcher::ChangeType::kCreated:
+    case ChangeType::kDeleted:
+    case ChangeType::kCreated:
       // Can't delete a directory until all its children are gone. Can't create
       // a directory with existing children.
       HandleChangeEffect(ExistenceStatus::kGone, ExistenceStatus::kGone);
       break;
-    case FilePathWatcher::ChangeType::kMoved:
+    case ChangeType::kMoved:
       HandleChangeEffect(ExistenceStatus::kGone,
                          ExistenceStatus::kMayHaveMovedIntoPlace);
+      ConvertMoveToCreateIfOutOfScope(change);
+      last_move_change_ = std::move(change);
       break;
-    case FilePathWatcher::ChangeType::kModified:
+    case ChangeType::kModified:
       // This tells us nothing.
       break;
-    case FilePathWatcher::ChangeType::kUnknown:
+    case ChangeType::kUnknown:
       // All changes passed into here come from `ToChangeType` which doesn't
       // return `kUnknown`.
       NOTREACHED_NORETURN();
@@ -241,16 +284,27 @@ void FilePathWatcherChangeTracker::HandleAncestorChange(
 
 void FilePathWatcherChangeTracker::HandleOtherChange(ChangeInfo change) {
   // Only moved types have the possibility of being in scope.
-  if (change.change_type != FilePathWatcher::ChangeType::kMoved) {
+  if (change.change_type != ChangeType::kMoved) {
     return;
   }
 
   CHECK(change.moved_from_path.has_value());
 
-  switch (FindPathRelation(target_path_, *change.moved_from_path)) {
+  base::FilePath moved_from_path = *std::move(change.moved_from_path);
+  base::FilePath moved_to_path = std::move(change.modified_path);
+
+  // Move out of scopes are reported as deleted.
+  change.change_type = ChangeType::kDeleted;
+  change.moved_from_path = std::nullopt;
+
+  switch (FindPathRelation(target_path_, moved_from_path)) {
     case PathRelation::kSelf:
       HandleChangeEffect(ExistenceStatus::kExists, ExistenceStatus::kGone);
-      ++change_count_;
+
+      change.file_path_type = GetFilePathType(moved_to_path);
+      change.modified_path = std::move(moved_from_path);
+
+      changes_.push_back(std::move(change));
       break;
     case PathRelation::kAncestor: {
       bool target_exists_before_move =
@@ -263,7 +317,15 @@ void FilePathWatcherChangeTracker::HandleOtherChange(ChangeInfo change) {
         break;
       }
 
-      ++change_count_;
+      // Figure out where the target was exists now so that you can get its
+      // `file_path_type`.
+      base::FilePath target_move_to_path = GetMovedPathOfDescendant(
+          target_path_, moved_from_path, moved_to_path);
+
+      change.file_path_type = GetFilePathType(target_move_to_path);
+      change.modified_path = target_path_;
+
+      changes_.push_back(std::move(change));
       break;
     }
     case PathRelation::kDescendant:
@@ -271,7 +333,11 @@ void FilePathWatcherChangeTracker::HandleOtherChange(ChangeInfo change) {
       // Any notification on a descendant means the target existed before and
       // after.
       HandleChangeEffect(ExistenceStatus::kExists, ExistenceStatus::kExists);
-      ++change_count_;
+
+      change.file_path_type = GetFilePathType(moved_to_path);
+      change.modified_path = std::move(moved_from_path);
+
+      changes_.push_back(std::move(change));
       break;
     case PathRelation::kOther:
       // We don't care about files moving around out of scope.

@@ -12,21 +12,8 @@ namespace content {
 
 class FilePathWatcherChangeTracker {
  public:
-  // TODO(crbug/321980205): Get rid of this struct once
-  // FilePathWatcher::ChangeInfo has the same fields.
-  struct ChangeInfo {
-    ChangeInfo();
-    ~ChangeInfo();
-
-    ChangeInfo(ChangeInfo&&);
-    ChangeInfo& operator=(ChangeInfo&&) = default;
-
-    FilePathWatcher::ChangeType change_type =
-        FilePathWatcher::ChangeType::kUnknown;
-
-    base::FilePath modified_path;
-    std::optional<base::FilePath> moved_from_path;
-  };
+  using ChangeInfo = FilePathWatcher::ChangeInfo;
+  using ChangeType = FilePathWatcher::ChangeType;
 
   FilePathWatcherChangeTracker(base::FilePath target_path,
                                FilePathWatcher::Type type);
@@ -49,9 +36,8 @@ class FilePathWatcherChangeTracker {
   // Call when changes may have been missed.
   void MayHaveMissedChanges();
 
-  // Gets the number of changes to report since the last call to
-  // `PopChangeCount`.
-  int PopChangeCount();
+  // Gets the ChangeInfo's to report since the last call to `PopChanges`.
+  std::vector<ChangeInfo> PopChanges();
 
  private:
   enum class ExistenceStatus {
@@ -62,6 +48,11 @@ class FilePathWatcherChangeTracker {
     // The file may or may not exist because an ancestor was moved into place.
     kMayHaveMovedIntoPlace,
   };
+
+  // Converts a `change_info` from `kMoved` to `kCreated` if it's a move from
+  // out of scope to in scope. All moves into scope should be reported as
+  // created.
+  void ConvertMoveToCreateIfOutOfScope(ChangeInfo& change_info);
 
   void HandleChangeEffect(ExistenceStatus before_action,
                           ExistenceStatus after_action);
@@ -82,13 +73,16 @@ class FilePathWatcherChangeTracker {
   // been passed to `AddChange` and calls to `GetFileInfo`.
   ExistenceStatus target_status_;
 
-  // The number of changes to report based on what OS changes have been passed
-  // to `AddChange`.
-  int change_count_ = 0;
+  // Changes to report based on what OS changes have been passed to `AddChange`.
+  std::vector<ChangeInfo> changes_;
 
   // The path of the last `FILE_ACTION_RENAMED_OLD_NAME` OS change that was
   // passed to `AddChange`. Used to coalesce the move into a single event.
   base::FilePath last_moved_from_path_;
+
+  // The `ChangeInfo` of the last `FILE_ACTION_RENAMED_OLD_NAME` OS change that
+  // was passed to `AddChange`. Used to coalesce the move into a single event.
+  ChangeInfo last_move_change_;
 };
 }  // namespace content
 
