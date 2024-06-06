@@ -747,6 +747,9 @@ class CrossbenchTest(object):
         # |tempfile_dir|. For example, see crbug.com/865896
         shutil.rmtree(working_dir, ignore_errors=True)
 
+    write_simple_test_results(return_code, output_paths.test_results,
+                              display_name)
+
     print_duration(f'Executing benchmark: {benchmark}', start)
 
     if infra_failure:
@@ -1036,6 +1039,8 @@ def _run_benchmarks_on_shardmap(shard_map, options, isolated_out_dir,
       return_code = crossbench_test.execute_benchmark(benchmark, display_name,
                                                       benchmark_args)
       overall_return_code = return_code or overall_return_code
+      test_results_files.append(
+          OutputFilePaths(isolated_out_dir, display_name).test_results)
 
   return overall_return_code
 
