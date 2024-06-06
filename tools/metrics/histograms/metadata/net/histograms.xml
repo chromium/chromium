@@ -2098,6 +2098,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.HttpRequestSSLUpgradeDecision"
+    enum="HttpRequestSSLUpgradeDecision" expires_after="2024-11-06">
+  <owner>cthomp@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <owner>joenotcharles@google.com</owner>
+  <summary>
+    Recorded for all top-frame HTTP/HTTPS/WS/WSS requests made by
+    UrlRequestHttpJob. Records whether the request was upgraded from HTTP (or
+    WS) to HTTPS (or WSS), and whether the decision to upgrade required dynamic
+    STS data.
+  </summary>
+</histogram>
+
 <histogram name="Net.HttpRequestStsState" enum="HttpRequestStsState"
     expires_after="2024-11-09">
   <owner>jdeblasio@chromium.org</owner>

@@ -277,14 +277,36 @@ base::Value::Dict TransportSecurityState::NetLogUpgradeToSSLParam(
   return dict;
 }
 
-bool TransportSecurityState::ShouldUpgradeToSSL(
+SSLUpgradeDecision TransportSecurityState::GetSSLUpgradeDecision(
     const std::string& host,
     const NetLogWithSource& net_log) {
-  STSState sts_state;
   net_log.AddEvent(
       NetLogEventType::TRANSPORT_SECURITY_STATE_SHOULD_UPGRADE_TO_SSL,
       [&] { return NetLogUpgradeToSSLParam(host); });
-  return GetSTSState(host, &sts_state) && sts_state.ShouldUpgradeToSSL();
+  STSState sts_state;
+  if (GetDynamicSTSState(host, &sts_state)) {
+    if (sts_state.ShouldUpgradeToSSL()) {
+      // If the static state also requires an upgrade, the dynamic state didn't
+      // need to be used in the decision.
+      STSState static_sts_state;
+      if (GetStaticSTSState(host, &static_sts_state) &&
+          static_sts_state.ShouldUpgradeToSSL()) {
+        return SSLUpgradeDecision::kStaticUpgrade;
+      }
+      return SSLUpgradeDecision::kDynamicUpgrade;
+    }
+    return SSLUpgradeDecision::kNoUpgrade;
+  }
+  if (GetStaticSTSState(host, &sts_state) && sts_state.ShouldUpgradeToSSL()) {
+    return SSLUpgradeDecision::kStaticUpgrade;
+  }
+  return SSLUpgradeDecision::kNoUpgrade;
+}
+
+bool TransportSecurityState::ShouldUpgradeToSSL(
+    const std::string& host,
+    const NetLogWithSource& net_log) {
+  return GetSSLUpgradeDecision(host, net_log) != SSLUpgradeDecision::kNoUpgrade;
 }
 
 TransportSecurityState::PKPStatus TransportSecurityState::CheckPublicKeyPins(

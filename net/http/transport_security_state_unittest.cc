@@ -488,6 +488,44 @@ TEST_F(TransportSecurityStateTest, DynamicDomainState) {
   EXPECT_EQ("foo.example.com", pkp_state.domain);
 }
 
+// Tests that GetSSLUpgradeDecision() matches the result of ShouldUpgradeToSSL()
+// and correctly identifies the source of the decision.
+TEST_F(TransportSecurityStateTest, StaticOrDynamicSource) {
+  TransportSecurityState state;
+  SetTransportSecurityStateSourceForTesting(&test1::kHSTSSource);
+
+  // Check preconditions of preloaded states.
+  TransportSecurityState::STSState sts_state;
+  ASSERT_TRUE(state.GetStaticSTSState("hsts.example.com", &sts_state));
+  ASSERT_EQ(sts_state.upgrade_mode,
+            TransportSecurityState::STSState::MODE_FORCE_HTTPS);
+  ASSERT_TRUE(sts_state.include_subdomains);
+  ASSERT_FALSE(state.GetStaticSTSState("dynamic.example.com", &sts_state));
+
+  const base::Time current_time(base::Time::Now());
+  const base::Time expiry = current_time + base::Seconds(1000);
+
+  EXPECT_EQ(state.GetSSLUpgradeDecision("dynamic.example.com"),
+            SSLUpgradeDecision::kNoUpgrade);
+  EXPECT_FALSE(state.ShouldUpgradeToSSL("dynamic.example.com"));
+
+  EXPECT_EQ(state.GetSSLUpgradeDecision("hsts.example.com"),
+            SSLUpgradeDecision::kStaticUpgrade);
+  EXPECT_TRUE(state.ShouldUpgradeToSSL("hsts.example.com"));
+
+  state.AddHSTS("dynamic.example.com", expiry, false);
+  EXPECT_EQ(state.GetSSLUpgradeDecision("dynamic.example.com"),
+            SSLUpgradeDecision::kDynamicUpgrade);
+  EXPECT_TRUE(state.ShouldUpgradeToSSL("dynamic.example.com"));
+
+  // Dynamic state for a host that already has static state doesn't change the
+  // decision.
+  state.AddHSTS("subdomain.hsts.example.com", expiry, false);
+  EXPECT_EQ(state.GetSSLUpgradeDecision("subdomain.hsts.example.com"),
+            SSLUpgradeDecision::kStaticUpgrade);
+  EXPECT_TRUE(state.ShouldUpgradeToSSL("subdomain.hsts.example.com"));
+}
+
 // Tests that new pins always override previous pins. This should be true for
 // both pins at the same domain or includeSubdomains pins at a parent domain.
 TEST_F(TransportSecurityStateTest, NewPinsOverride) {

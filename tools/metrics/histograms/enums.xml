@@ -12903,6 +12903,19 @@ Called by update_permissions_policy_enum.py.-->
   <int value="1074610802" label="MF_I_MANUAL_PROXY"/>
 </enum>
 
+<!-- LINT.IfChange(HttpRequestSSLUpgradeDecision) -->
+
+<enum name="HttpRequestSSLUpgradeDecision">
+  <int value="0" label="kInsecureNoUpgrade"/>
+  <int value="1" label="kSSLNoUpgrade"/>
+  <int value="2" label="kInsecureStaticUpgrade"/>
+  <int value="3" label="kSSLStaticUpgrade"/>
+  <int value="4" label="kInsecureDynamicUpgrade"/>
+  <int value="5" label="kSSLDynamicUpgrade"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/url_request/url_request_http_job.cc:HttpRequestSSLUpgradeDecision) -->
+
 <enum name="HttpResponseCode">
   <int value="100" label="100: Continue"/>
   <int value="101" label="101: Switching Protocols"/>

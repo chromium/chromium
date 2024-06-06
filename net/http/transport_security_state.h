@@ -42,6 +42,18 @@ class X509Certificate;
 void NET_EXPORT_PRIVATE SetTransportSecurityStateSourceForTesting(
     const TransportSecurityStateSource* source);
 
+// Whether an insecure connection should be upgraded to use SSL. For metrics
+// this includes whether the decision came from static or dynamic state.
+enum class SSLUpgradeDecision {
+  // No state indicated an upgrade.
+  kNoUpgrade,
+  // Dynamic state indicated an upgrade.
+  kDynamicUpgrade,
+  // Static state indicated an upgrade. If dynamic state existed, it gave the
+  // same result as the static state.
+  kStaticUpgrade,
+};
+
 // Tracks which hosts have enabled strict transport security and/or public
 // key pins.
 //
@@ -273,6 +285,12 @@ class NET_EXPORT TransportSecurityState {
   TransportSecurityState& operator=(const TransportSecurityState&) = delete;
 
   ~TransportSecurityState();
+
+  // As ShouldUpgradeToSSL(), but also returns whether the decision came from
+  // static or dynamic state, for metrics.
+  SSLUpgradeDecision GetSSLUpgradeDecision(
+      const std::string& host,
+      const NetLogWithSource& net_log = NetLogWithSource());
 
   // These functions search for static and dynamic STS and PKP states, and
   // invoke the functions of the same name on them. These functions are the
