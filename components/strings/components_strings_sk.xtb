@@ -245,7 +245,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="1432187715652018471">stránka chce nainštalovať obslužný nástroj služby.</translation>
 <translation id="1432581352905426595">Spravovať vyhľadávače</translation>
 <translation id="1433225466058025572">Skúste súbory znova preniesť</translation>
-<translation id="1434317006812369578">Chrome má integrované bezpečnostné funkcie, ktoré vás chránia pri prehliadaní, napríklad Bezpečné prehliadanie Google. Bezpečné prehliadanie <ph name="BEGIN_LINK" />nedávno našlo malvér na webe <ph name="SITE" /><ph name="END_LINK" /> vloženom na webe, ktorý sa pokúšate navštíviť.</translation>
 <translation id="1435940442311036198">Použiť prístupový kľúč v inom zariadení</translation>
 <translation id="1436185428532214179">Môže žiadať o povolenie upravovať súbory a priečinky v zariadení</translation>
 <translation id="1441816242347931036">Otvorte a pokračujte</translation>
@@ -1466,7 +1465,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3767485424735936570">Pravidlá správcu neodporúčajú skopírovanie tohto obsahu a jeho prilepenie do umiestnenia <ph name="VM_NAME" /></translation>
 <translation id="3772211998634047851">Papier (listinový)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, postupným stlačením klávesov Tab a Enter vytvoríte rýchlym spôsobom novú poznámku v službe Google Keep</translation>
-<translation id="378026377453746707">Chrome má integrované bezpečnostné funkcie, ktoré vás chránia pri prehliadaní, napríklad Bezpečné prehliadanie Google. Bezpečné prehliadanie nedávno <ph name="BEGIN_LINK" />našlo škodlivý softvér na webe <ph name="SITE" /><ph name="END_LINK" /> vloženom na webe, ktorý sa pokúšate navštíviť.</translation>
 <translation id="3780694243617746492">Výstupná priehradka</translation>
 <translation id="3781428340399460090">Jasnoružová</translation>
 <translation id="3783418713923659662">Mastercard</translation>
@@ -1550,7 +1548,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3950820424414687140">Prihlásiť sa</translation>
 <translation id="3953505489397572035">Táto cena je bežná</translation>
 <translation id="3958057596965527988">4 × 4 palcov</translation>
-<translation id="3959121317419633580">Chrome má integrované bezpečnostné funkcie, ktoré vás chránia pri prehliadaní, napríklad Bezpečné prehliadanie Google. Bezpečné prehliadanie nedávno <ph name="BEGIN_LINK" />zistilo phishing na webe <ph name="SITE" /><ph name="END_LINK" /> vloženom na webe, ktorý sa pokúšate navštíviť.<ph name="NEW_LINE" />Útočníci môžu niekedy napadnúť aj weby, ktoré sú zvyčajne bezpečné. Ak si myslíte, že ide o omyl a tento web nie je nebezpečný, <ph name="BEGIN_ERROR_LINK" />oznámte nám to<ph name="END_ERROR_LINK" />.</translation>
 <translation id="3961148744525529027">Hárok obslužného nástroja platieb je dopoly otvorený</translation>
 <translation id="3962859241508114581">Predchádzajúca stopa</translation>
 <translation id="3963721102035795474">Režim čítačky</translation>

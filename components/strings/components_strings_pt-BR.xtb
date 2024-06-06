@@ -245,7 +245,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1432187715652018471">A página quer instalar um manipulador de serviço.</translation>
 <translation id="1432581352905426595">Gerenciar mecanismos de pesquisa</translation>
 <translation id="1433225466058025572">Tente mover os arquivos de novo</translation>
-<translation id="1434317006812369578">O Chrome tem medidas de segurança integradas para proteger você, como o recurso Navegação segura do Google. O recurso Navegação segura <ph name="BEGIN_LINK" />encontrou um malware recentemente em <ph name="SITE" /><ph name="END_LINK" />, que está incorporado ao site que você está tentando acessar.</translation>
 <translation id="1435940442311036198">Usar uma chave de acesso em outro dispositivo</translation>
 <translation id="1436185428532214179">Pode pedir para editar arquivos e pastas no dispositivo</translation>
 <translation id="1441816242347931036">Abra para continuar</translation>
@@ -1470,7 +1469,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3767485424735936570">De acordo com a política do administrador, não é recomendado copiar e colar esse conteúdo no <ph name="VM_NAME" />.</translation>
 <translation id="3772211998634047851">Papel sulfite</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para criar rapidamente uma nova nota no Google Keep</translation>
-<translation id="378026377453746707">O Chrome tem medidas de segurança integradas para proteger você, como o recurso Navegação segura do Google. Recentemente, esse <ph name="BEGIN_LINK" />encontrou software nocivo em <ph name="SITE" /><ph name="END_LINK" />, que é incorporado ao site quando você tenta acessá-lo.</translation>
 <translation id="3780694243617746492">Bandeja de saída</translation>
 <translation id="3781428340399460090">Rosa-escuro</translation>
 <translation id="3783418713923659662">Mastercard</translation>
@@ -1554,7 +1552,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3950820424414687140">Fazer login</translation>
 <translation id="3953505489397572035">Esse preço está normal</translation>
 <translation id="3958057596965527988">4 x 4 pol.</translation>
-<translation id="3959121317419633580">O Chrome tem medidas de segurança integradas para proteger você, como o recurso Navegação segura do Google. Recentemente, esse recurso <ph name="BEGIN_LINK" />encontrou phishing em <ph name="SITE" /><ph name="END_LINK" />, que está incorporado no site que você está tentando acessar.<ph name="NEW_LINE" />Até mesmo sites normalmente seguros podem ser comprometidos por invasores. <ph name="BEGIN_ERROR_LINK" />Entre em contato<ph name="END_ERROR_LINK" /> se você acreditar que houve um engano e que este site não é perigoso.</translation>
 <translation id="3961148744525529027">A página do gerenciador de pagamento está parcialmente aberta</translation>
 <translation id="3962859241508114581">Faixa anterior</translation>
 <translation id="3963721102035795474">Modo leitor</translation>

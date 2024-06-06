@@ -72,6 +72,7 @@
 <translation id="1235458158152011030">既知のネットワーク</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> を接続しました。</translation>
 <translation id="1240638468526743569">アプリ</translation>
+<translation id="1242198791279543032">通知はミュートされています</translation>
 <translation id="1242883863226959074">デバイス</translation>
 <translation id="1245644940275736236">アシスタントに移動</translation>
 <translation id="124678866338384709">現在のタブを閉じる</translation>
@@ -178,6 +179,7 @@
 <translation id="1610778689852195798">"元に戻す"</translation>
 <translation id="1611993646327628135">オン</translation>
 <translation id="1620510694547887537">カメラ</translation>
+<translation id="1623768535032616219">Google Classroom を折りたたむ</translation>
 <translation id="1632985212731562677">スイッチ アクセスは [設定] &gt; [ユーザー補助機能] で無効にできます。</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> 台のデバイス</translation>
 <translation id="1639239467298939599">読み込んでいます</translation>
@@ -303,6 +305,7 @@
 <translation id="2198625180564913276">プロファイルを追加しています。この処理には数分かかることがあります。</translation>
 <translation id="219905428774326614">ランチャー、すべてのアプリ</translation>
 <translation id="2201071101391734388">最近の <ph name="INDEX" /> / <ph name="TOTAL_COUNT" /> 件の写真。</translation>
+<translation id="2201687081523799384">Google ToDo リストを折りたたむ</translation>
 <translation id="2208323208084708176">デスクトップ統合モード</translation>
 <translation id="2220572644011485463">PIN またはパスワード</translation>
 <translation id="2222841058024245321">デスク 7</translation>
@@ -364,6 +367,7 @@
 <translation id="2427507373259914951">左クリック</translation>
 <translation id="2429753432712299108">Bluetooth デバイス「<ph name="DEVICE_NAME" />」がペア設定の権限をリクエストしています。許可するにあたっては、このデバイスで次のパスキーが表示されることを確認してください: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">パスワードを表示</translation>
+<translation id="2437771564543046790">バッテリー残量が低下しています。バッテリー セーバーがオンになっています</translation>
 <translation id="243878895369688216">昨日開いたファイル</translation>
 <translation id="2440978926514840421">GIF の録画が完了しました</translation>
 <translation id="2441427462554639370">保存容量が非常に少なくなっているため、録画を終了しました</translation>
@@ -1200,6 +1204,7 @@
 <translation id="550391772491508736">キャストを再開</translation>
 <translation id="5506975627792768506">拡大鏡をオンまたはオフにします</translation>
 <translation id="5512042095225963688">前の単語を削除する</translation>
+<translation id="5519005148254860683">Google ToDo リストを展開</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">管理者によって eSIM プロファイルがすべて削除されています。詳しくは管理者にお問い合わせください。</translation>
 <translation id="5520909879404821039">フランス語でこんにちは</translation>
@@ -1408,6 +1413,7 @@
 <translation id="6200515304866777730">アプリが対応していません</translation>
 <translation id="6210042900243040400"><ph name="EMAIL" /> に保存済みの <ph name="NAME" /> に接続します</translation>
 <translation id="6213808132343683860">部分的なスクリーンショットを撮影、または画面を録画します</translation>
+<translation id="621606890568890214">Google Classroom を展開</translation>
 <translation id="6220928844947387476">画面と自分を同時に録画できるようになりました</translation>
 <translation id="622484624075952240">下矢印キー</translation>
 <translation id="6228457605945141550">明るさを下げる</translation>

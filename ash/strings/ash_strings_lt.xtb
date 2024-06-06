@@ -178,6 +178,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1610778689852195798">„Anuliuoti“</translation>
 <translation id="1611993646327628135">Įjungta</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1623768535032616219">Sutraukti „Google Classroom“</translation>
 <translation id="1632985212731562677">Prieigos jungikliu funkciją galima išjungti skiltyje „Nustatymai“ &gt; „Pritaikomumas“.</translation>
 <translation id="1637505162081889933">Įrenginių: <ph name="NUM_DEVICES" /></translation>
 <translation id="1639239467298939599">Įkeliama</translation>
@@ -303,6 +304,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="2198625180564913276">Pridedamas profilis. Tai gali užtrukti kelias minutes.</translation>
 <translation id="219905428774326614">Paleidimo priemonė, visos programos</translation>
 <translation id="2201071101391734388">Naujausia <ph name="INDEX" /> nuotrauka iš <ph name="TOTAL_COUNT" />.</translation>
+<translation id="2201687081523799384">Sutraukti „Google Tasks“</translation>
 <translation id="2208323208084708176">Vieno darbalaukio režimas</translation>
 <translation id="2220572644011485463">PIN kodas arba slaptažodis</translation>
 <translation id="2222841058024245321">7 darbalaukis</translation>
@@ -364,6 +366,7 @@ Prijungtų įrenginių: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2427507373259914951">Spustelėti kairiuoju klavišu</translation>
 <translation id="2429753432712299108">„Bluetooth“ įrenginys „<ph name="DEVICE_NAME" />“ prašo leidimo susieti. Prieš sutikdami, patvirtinkite, kad šiame įrenginyje rodomas šis slaptasis raktas: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Rodyti slaptažodį</translation>
+<translation id="2437771564543046790">Akumuliatorius senka. Akumuliatoriaus tausojimo priemonė įjungta</translation>
 <translation id="243878895369688216">Atidaryta vakar</translation>
 <translation id="2440978926514840421">GIF įrašas įrašytas</translation>
 <translation id="2441427462554639370">Įrašymas baigtas, nes yra labai mažai saugyklos vietos</translation>
@@ -1200,6 +1203,7 @@ Nėra jokių prijungtų įrenginių.</translation>
 <translation id="550391772491508736">Tęsti perdavimą</translation>
 <translation id="5506975627792768506">Įjungti arba išjungti didintuvą</translation>
 <translation id="5512042095225963688">Ištrinti ankstesnį žodį</translation>
+<translation id="5519005148254860683">Išskleisti „Google Tasks“</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Administratorius pašalino visus „eSIM“ kortelių profilius. Susisiekite su administratoriumi, jei reikia daugiau informacijos.</translation>
 <translation id="5520909879404821039">„Labas“ prancūzų k.</translation>
@@ -1408,6 +1412,7 @@ Nėra jokių prijungtų įrenginių.</translation>
 <translation id="6200515304866777730">Nepalaikoma programoje</translation>
 <translation id="6210042900243040400">Susiekite su įrenginiu „<ph name="NAME" />“, kuris anksčiau buvo išsaugotas adresu <ph name="EMAIL" /></translation>
 <translation id="6213808132343683860">Kurti dalies ekrano kopiją ar dalies ekrano vaizdo įrašą</translation>
+<translation id="621606890568890214">Išskleisti „Google Classroom“</translation>
 <translation id="6220928844947387476">Dabar galite įrašyti save ir savo ekraną tuo pačiu metu</translation>
 <translation id="622484624075952240">Žemiau</translation>
 <translation id="6228457605945141550">Sumažinti šviesumą</translation>

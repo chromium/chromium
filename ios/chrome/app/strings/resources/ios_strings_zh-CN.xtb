@@ -5,6 +5,7 @@
 <translation id="1013952917065545813">您只需回到这里，便可重新打开最近关闭的标签页</translation>
 <translation id="1016495303386450659">书签已更新</translation>
 <translation id="1025514696883950875">{COUNT,plural, =1{将密码保存到账号}other{将密码保存到账号}}</translation>
+<translation id="102916930470544692">通行密钥</translation>
 <translation id="1035980983510608210">关闭所有标签页也会关闭固定标签页。</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1043592663436934089">您将自动退出账号，而且浏览数据将被删除</translation>
@@ -1016,6 +1017,7 @@
 <translation id="6173499589275053515">密码已保存到您的 Google 账号 <ph name="EMAIL" /> 中</translation>
 <translation id="6184086493125982861">显示标签页</translation>
 <translation id="6187302354554850004">上次同步时间：<ph name="LAST_USED_TIME" /></translation>
+<translation id="6188737759358894319">创建日期：<ph name="DATE" /></translation>
 <translation id="6189413832092199491">未读</translation>
 <translation id="6196207969502475924">语音搜索</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{关闭 {COUNT} 个标签页}other{关闭 {COUNT} 个标签页}}</translation>
@@ -1303,7 +1305,6 @@
 <translation id="7557508262441527045">已退出账号</translation>
 <translation id="7561196759112975576">永远</translation>
 <translation id="7564917801238348224">保存…</translation>
-<translation id="758132317817089442">开启增强型保护…</translation>
 <translation id="7582857256643797524">您的设备已启用此设置</translation>
 <translation id="7583004045319035904">请使用<ph name="BIOMETRIC_AUTHENITCATION_TYPE" />解锁您的无痕式标签页。</translation>
 <translation id="7598439272585186139">获享更高的安全性</translation>

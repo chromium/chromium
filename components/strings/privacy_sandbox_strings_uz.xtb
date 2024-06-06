@@ -1,5 +1,9 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="uz">
+<translation id="33479675708419823">Chrome hisobiga kirsangiz, bu sozlama IP manzilingizni maxfiy saqlashga yordam beradi. Chrome saytning sizni kuzatishini gumon qilsa, trafikning ayrim qismi maxfiylik serverlariga yuborilishi mumkin. <ph name="LINK_BEGIN" />IP himoyasi qanday ishlashi haqida<ph name="LINK_END" /> batafsil</translation>
+<translation id="3529311220178827364">IP manzilni yashirish haqida batafsil</translation>
 <translation id="4301151630239508244">Reklama mavzulari sayt reklamani moslashtirishda ishlatadigan maʼlumotlarning faqat bir qismi hisoblanadi. Mavzusiz reklamalar ham chiqishda davom etishi mumkin, lekin ular sizga moslanmagan boʻlishi mumkin. <ph name="BEGIN_LINK_1" />Reklamada maxfiylikni boshqarish<ph name="END_LINK_1" /> haqida batafsil.</translation>
+<translation id="4598427486995631491">IP manzilni yashiring</translation>
+<translation id="6371812158043974664">Chromium hisobiga kirsangiz, bu sozlama IP manzilingizni maxfiy saqlashga yordam beradi. Chromium saytning sizni kuzatishini gumon qilsa, trafikning ayrim qismi maxfiylik serverlariga yuborilishi mumkin. <ph name="LINK_BEGIN" />IP himoyasi qanday ishlashi haqida<ph name="LINK_END" /> batafsil</translation>
 </translationbundle>

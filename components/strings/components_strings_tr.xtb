@@ -245,7 +245,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1432187715652018471">sayfa bir servis işleyici yüklemek istiyor.</translation>
 <translation id="1432581352905426595">Arama motorlarını yönet</translation>
 <translation id="1433225466058025572">Dosyalarınızı tekrar taşımayı deneyin</translation>
-<translation id="1434317006812369578">Chrome, internette gezinirken sizi koruyacak Google Güvenli Tarama gibi yerleşik güvenlik özelliklerine sahiptir. Güvenli Tarama kısa süre önce, ziyaret etmeye çalıştığınız siteye yerleştirilmiş <ph name="BEGIN_LINK" /><ph name="SITE" /> sitesinde kötü amaçlı yazılım tespit etti<ph name="END_LINK" />.</translation>
 <translation id="1435940442311036198">Farklı bir cihazdaki geçiş anahtarını kullanın</translation>
 <translation id="1436185428532214179">Cihazınızdaki dosyaları veya klasörleri düzenlemek için izin isteyebilir</translation>
 <translation id="1441816242347931036">Devam etmek için açın</translation>
@@ -1470,7 +1469,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3767485424735936570">Yönetici politikası, bu içeriğin <ph name="VM_NAME" /> sanal makinesine kopyalanıp yapıştırılmasını önermiyor</translation>
 <translation id="3772211998634047851">Kağıt (Bond)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Keep'te hızlıca yeni bir not oluşturmak için Sekme'ye, ardından Enter'a basın</translation>
-<translation id="378026377453746707">Chrome, internette gezinirken sizi koruyacak Google Güvenli Tarama gibi yerleşik güvenlik özelliklerine sahiptir. Güvenli Tarama kısa süre önce, ziyaret etmeye çalıştığınız siteye yerleştirilmiş <ph name="BEGIN_LINK" /><ph name="SITE" /> sitesinde zararlı yazılım tespit etti<ph name="END_LINK" />.</translation>
 <translation id="3780694243617746492">Çıkış kutusu</translation>
 <translation id="3781428340399460090">Canlı Pembe</translation>
 <translation id="3783418713923659662">Mastercard</translation>
@@ -1554,7 +1552,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3950820424414687140">Oturum açın</translation>
 <translation id="3953505489397572035">Bu fiyat normal</translation>
 <translation id="3958057596965527988">4 x 4 inç</translation>
-<translation id="3959121317419633580">Chrome, internette gezinirken sizi koruyacak Google Güvenli Tarama gibi yerleşik güvenlik özelliklerine sahiptir. Güvenli Tarama kısa süre önce, ziyaret etmeye çalıştığınız siteye yerleştirilmiş <ph name="BEGIN_LINK" /><ph name="SITE" /> sitesinde kimlik avı tespit etti<ph name="END_LINK" />.<ph name="NEW_LINE" />Normalde güvenli olan siteler bile bazen saldırganlar tarafından ele geçirilebilir. Bir hata olduğunu ve bu sitenin tehlike arz etmediğini düşünüyorsanız <ph name="BEGIN_ERROR_LINK" />bize bildirin<ph name="END_ERROR_LINK" />.</translation>
 <translation id="3961148744525529027">Ödeme işleyici sayfası yarım olarak açıldı</translation>
 <translation id="3962859241508114581">Önceki Parça</translation>
 <translation id="3963721102035795474">Okuyucu Modu</translation>

@@ -1131,6 +1131,7 @@ Možete da koristite i tastersku prečicu. Prvo istaknite tekst, pa pritisnite <
 <translation id="5208059991603368177">Uključeno</translation>
 <translation id="5216991270656129561">Isključeno do <ph name="TIME" /></translation>
 <translation id="5222676887888702881">Odjavi me</translation>
+<translation id="5228195526683428788">Razdelnik podeljenog ekrana</translation>
 <translation id="5229343007215035173">Uključi/isključi ekran za privatnost</translation>
 <translation id="5230516054153933099">Prozor</translation>
 <translation id="5234764350956374838">Odbaci</translation>
@@ -1518,6 +1519,7 @@ Novo instaliranje</translation>
 <translation id="6613765291890844037">Koristi se <ph name="STORAGE_IN_USE_SIZE" /> memorijskog prostora | Ukupno <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">Ekran za privatnost je uključen</translation>
 <translation id="6622679827379792051">Podesite pregled aplikacija na telefonu</translation>
+<translation id="662279009180869175">Pomoću strelica nalevo i nadesno možete da promenite veličinu podeljenog ekrana</translation>
 <translation id="6624493541160101248">Aktuelna radna površina: <ph name="DESK_NAME" />. <ph name="DESK_INDEX" />. radna površina od <ph name="DESK_COUNT" />.</translation>
 <translation id="6625718907317144388">Obaveštenja aplikacija <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> i druga obaveštenja su skrivena jer je zaštita od pregleda uključena</translation>
 <translation id="6627638273713273709">Taster za pretragu+Shift+K</translation>
@@ -1536,6 +1538,7 @@ Novo instaliranje</translation>
 <translation id="6670153871843998651">Radna površina 3</translation>
 <translation id="6671495933530132209">Kopiraj sliku</translation>
 <translation id="6671661918848783005">Otključavanje Chromebook-a nije uspelo</translation>
+<translation id="6676552993057022464">Koristite strelice nagore i nadole da biste promenili veličinu podeljenog ekrana</translation>
 <translation id="6682029141988159141">Nalepi sadržaj iz privremene memorije</translation>
 <translation id="6683022854667115063">Slušalice</translation>
 <translation id="6686023075541098243">Podesite pregled obaveštenja na telefonu</translation>

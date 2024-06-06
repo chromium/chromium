@@ -100,7 +100,6 @@
 <translation id="6333260925957816943">Renseignements à propos de ce magasin</translation>
 <translation id="6381032505162537930">Vous trouverez vos groupes d'onglets ici</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Dégrouper <ph name="TABS_COUNT_ONE" /> onglet sélectionné}one{Dégrouper <ph name="TABS_COUNT_MANY" /> onglet sélectionné}other{Dégrouper <ph name="TABS_COUNT_MANY" /> onglets sélectionnés}}</translation>
-<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Vous trouverez vos onglets fermés dans la section des onglets récents du menu principal de Chrome. Votre onglet de navigation privée ne sera pas accessible.}one{Vous trouverez vos onglets fermés dans la section des onglets récents du menu principal de Chrome. # onglet de navigation privée ne sera pas accessible.}other{Vous trouverez vos onglets fermés dans la section des onglets récents du menu principal de Chrome. Vos # onglets de navigation privée ne seront pas accessibles.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> onglet}one{<ph name="TABS_COUNT_MANY" /> onglet}other{<ph name="TABS_COUNT_MANY" /> onglets}}</translation>
 <translation id="6549021453810473782">Affichez les renseignements sur le magasin</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>

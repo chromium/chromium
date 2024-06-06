@@ -245,7 +245,6 @@
 <translation id="1432187715652018471">cette page veut installer un module de traitement de service.</translation>
 <translation id="1432581352905426595">Gérer les moteurs de recherche</translation>
 <translation id="1433225466058025572">Réessayez de déplacer vos fichiers</translation>
-<translation id="1434317006812369578">Chrome est doté de fonctionnalités de sécurité intégrées pour vous protéger pendant votre navigation, comme la Navigation sécurisée Google. La Navigation sécurisée <ph name="BEGIN_LINK" />a récemment détecté un logiciel malveillant sur <ph name="SITE" /><ph name="END_LINK" />, qui est intégré au site que vous essayez de visiter.</translation>
 <translation id="1435940442311036198">Utiliser une clé d'accès sur un autre appareil</translation>
 <translation id="1436185428532214179">Les sites peuvent demander à modifier les fichiers et les dossiers de votre appareil</translation>
 <translation id="1441816242347931036">Ouvrir pour continuer</translation>
@@ -1470,7 +1469,6 @@
 <translation id="3767485424735936570">La politique de l'administrateur ne recommande pas de copier-coller ce contenu dans <ph name="VM_NAME" /></translation>
 <translation id="3772211998634047851">Papier (bond)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour rapidement créer une note dans Google Keep</translation>
-<translation id="378026377453746707">Chrome est doté de fonctionnalités de sécurité intégrées pour vous protéger pendant votre navigation, comme la Navigation sécurisée Google. La Navigation sécurisée a récemment <ph name="BEGIN_LINK" />détecté un logiciel malveillant sur <ph name="SITE" /><ph name="END_LINK" />, qui est intégré au site si vous essayez de le visiter.</translation>
 <translation id="3780694243617746492">Bac de sortie</translation>
 <translation id="3781428340399460090">Rose indien</translation>
 <translation id="3783418713923659662">Mastercard</translation>
@@ -1554,7 +1552,6 @@
 <translation id="3950820424414687140">Connexion</translation>
 <translation id="3953505489397572035">Ce prix est habituel</translation>
 <translation id="3958057596965527988">4 po x 4 po</translation>
-<translation id="3959121317419633580">Chrome est doté de fonctionnalités de sécurité intégrées pour vous protéger pendant votre navigation, comme la Navigation sécurisée Google. La Navigation sécurisée a récemment <ph name="BEGIN_LINK" />détecté du hameçonnage sur <ph name="SITE" /><ph name="END_LINK" />, qui est intégré au site que vous essayez de visiter.<ph name="NEW_LINE" />Même les sites normalement sûrs sont parfois compromis par des pirates informatiques. <ph name="BEGIN_ERROR_LINK" />Indiquez-nous<ph name="END_ERROR_LINK" /> si vous pensez qu'il y a eu une erreur et que ce site ne présente aucun danger.</translation>
 <translation id="3961148744525529027">La feuille du module de traitement du paiement est ouverte à moitié</translation>
 <translation id="3962859241508114581">Chanson précédente</translation>
 <translation id="3963721102035795474">Mode Lecteur</translation>

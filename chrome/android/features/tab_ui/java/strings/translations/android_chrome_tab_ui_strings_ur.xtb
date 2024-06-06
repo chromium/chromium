@@ -100,7 +100,6 @@
 <translation id="6333260925957816943">اس اسٹور سے متعلق معلومات</translation>
 <translation id="6381032505162537930">آپ کو اپنے ٹیب گروپس یہاں ملیں گے</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> کو منتخب کردہ ٹیب سے گروپ ختم کریں}other{<ph name="TABS_COUNT_MANY" /> کو منتخب کردہ ٹیبز سے گروپ ختم کریں}}</translation>
-<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{‏آپ اپنے بند ٹیبز Chrome کے مرکزی مینو کے تحت حالیہ ٹیبز میں تلاش کر سکتے ہیں۔ آپ کا پوشیدگی ٹیب دستیاب نہیں ہوگا۔}other{‏آپ اپنے بند ٹیبز Chrome کے مرکزی مینو کے تحت حالیہ ٹیبز میں تلاش کر سکتے ہیں۔ آپ کے # پوشیدگی ٹیبز دستیاب نہیں ہوں گے۔}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ٹیب}other{<ph name="TABS_COUNT_MANY" /> ٹیبز}}</translation>
 <translation id="6549021453810473782">اسٹور کی معلومات دیکھیں</translation>
 <translation id="6557858706263317126"><ph name="HIDDEN_TABS_COUNT" />+</translation>

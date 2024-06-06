@@ -147,6 +147,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> cambiouse con <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Mostrar todas as suxestións</translation>
 <translation id="1501946871587957338">Queres cambiar a fonte de audio?</translation>
+<translation id="1505542291183484463">Colocar ventá de cambio de tamaño de mosaico cara abaixo</translation>
 <translation id="1510238584712386396">Menú de aplicacións</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Mostrar a configuración de notificacións. Están desactivadas para unha aplicación}other{Mostrar a configuración de notificacións. Están desactivadas para # aplicacións}}</translation>
 <translation id="1523032696246003">Batería: <ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> para completar a carga</translation>
@@ -177,6 +178,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1610778689852195798">"Desfai"</translation>
 <translation id="1611993646327628135">Activado</translation>
 <translation id="1620510694547887537">Cámara</translation>
+<translation id="1623768535032616219">Contraer Google Classroom</translation>
 <translation id="1632985212731562677">A función Acceso con interruptores pódese desactivar en Configuración &gt; Accesibilidade.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> dispositivos</translation>
 <translation id="1639239467298939599">Cargando</translation>
@@ -296,11 +298,13 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2149229036084364364">Ir á pista anterior</translation>
 <translation id="2152895518047545149">Parece que xa tes todo feito. Bo traballo!</translation>
 <translation id="2161132820593978283">Proba o zoom automático para aparecer no centro da pantalla durante as videochamadas. Actívao en Configuración rápida.</translation>
+<translation id="216955976692983107">Colocar ventá de cambio de tamaño de mosaico cara á dereita</translation>
 <translation id="2185166372312820725">Vai á pestana anterior</translation>
 <translation id="2185444992308415167">Ir da pestana 1 á 8</translation>
 <translation id="2198625180564913276">Engadindo perfil. Esta acción pode tardar uns minutos.</translation>
 <translation id="219905428774326614">Menú de aplicacións, todas as aplicacións</translation>
 <translation id="2201071101391734388">Foto recente <ph name="INDEX" /> de <ph name="TOTAL_COUNT" />.</translation>
+<translation id="2201687081523799384">Contraer Tarefas de Google</translation>
 <translation id="2208323208084708176">Modo de escritorio unificado</translation>
 <translation id="2220572644011485463">PIN ou contrasinal</translation>
 <translation id="2222841058024245321">Escritorio 7</translation>
@@ -362,6 +366,7 @@ Hai <ph name="DEVICECOUNT" /> dispositivos conectados.</translation>
 <translation id="2427507373259914951">Clic co botón esquerdo do rato</translation>
 <translation id="2429753432712299108">O dispositivo Bluetooth "<ph name="DEVICE_NAME" />" quere recibir permiso para sincronizarse. Antes de aceptalo, confirma que se mostra esta clave de acceso nese dispositivo: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Mostrar contrasinal</translation>
+<translation id="2437771564543046790">Queda pouca batería. A función Aforro de batería está activada</translation>
 <translation id="243878895369688216">Abriuse onte</translation>
 <translation id="2440978926514840421">Gravouse o GIF</translation>
 <translation id="2441427462554639370">A gravación finalizou porque queda pouquísimo espazo de almacenamento</translation>
@@ -642,6 +647,7 @@ Hai <ph name="DEVICECOUNT" /> dispositivos conectados.</translation>
 <translation id="3509391053705095206">Non puidemos atopar o teu teléfono. Asegúrate de que teña o Bluetooth activado.</translation>
 <translation id="3510164367642747937">Destacar o cursor do rato</translation>
 <translation id="3513798432020909783">A conta está xestionada por <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3516000762115478502">Colocar ventá de cambio de tamaño de mosaico cara arriba</translation>
 <translation id="3517037892157925473">Última actualización das tarefas: <ph name="TIME" />, <ph name="DATE" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{Actualiza o dispositivo en 1 minuto}other{Actualiza o dispositivo en # minutos}}</translation>
 <translation id="3522979239100719575">Buscando perfís dispoñibles. Esta acción pode tardar uns minutos.</translation>
@@ -759,6 +765,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="3899995891769452915">Entrada de voz</translation>
 <translation id="3900355044994618856">A sesión finalizará dentro de <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">Conectando con <ph name="NAME" /></translation>
+<translation id="3904768293285573640">Colocar ventá de cambio de tamaño de mosaico cara á esquerda</translation>
 <translation id="3906954721959377182">Tableta</translation>
 <translation id="3923494859158167397">Non se configurou ningunha rede móbil</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, cargando eventos.</translation>
@@ -1197,6 +1204,7 @@ Non hai ningún dispositivo conectado.</translation>
 <translation id="550391772491508736">Retomar emisión</translation>
 <translation id="5506975627792768506">Activa ou desactiva a lupa</translation>
 <translation id="5512042095225963688">Elimina a palabra anterior</translation>
+<translation id="5519005148254860683">Despregar Tarefas de Google</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">O teu administrador quitou todos os perfís de eSIM. Para obter máis información, ponte en contacto con el.</translation>
 <translation id="5520909879404821039">"Ola" en francés</translation>
@@ -1405,6 +1413,7 @@ Non hai ningún dispositivo conectado.</translation>
 <translation id="6200515304866777730">Función non admitida pola aplicación</translation>
 <translation id="6210042900243040400">Conecta o dispositivo (<ph name="NAME" />), que xa está gardado en <ph name="EMAIL" /></translation>
 <translation id="6213808132343683860">Fai unha captura de pantalla parcial ou grava a pantalla</translation>
+<translation id="621606890568890214">Despregar Google Classroom</translation>
 <translation id="6220928844947387476">Xa podes gravarte ao mesmo tempo que gravas a túa pantalla</translation>
 <translation id="622484624075952240">Frecha abaixo</translation>
 <translation id="6228457605945141550">Reduce o brillo</translation>

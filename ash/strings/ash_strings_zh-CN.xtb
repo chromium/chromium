@@ -178,6 +178,7 @@
 <translation id="1610778689852195798">“撤消”</translation>
 <translation id="1611993646327628135">开启</translation>
 <translation id="1620510694547887537">摄像头</translation>
+<translation id="1623768535032616219">收起 Google 课堂</translation>
 <translation id="1632985212731562677">您可在“设置”&gt;“无障碍”中停用“开关控制”功能。</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> 部设备</translation>
 <translation id="1639239467298939599">正在加载</translation>
@@ -303,6 +304,7 @@
 <translation id="2198625180564913276">正在添加配置文件。这可能需要几分钟的时间。</translation>
 <translation id="219905428774326614">启动器，所有应用</translation>
 <translation id="2201071101391734388">近期照片中的第 <ph name="INDEX" /> 张，共 <ph name="TOTAL_COUNT" /> 张。</translation>
+<translation id="2201687081523799384">收起 Google Tasks</translation>
 <translation id="2208323208084708176">统一桌面模式</translation>
 <translation id="2220572644011485463">PIN 码或密码</translation>
 <translation id="2222841058024245321">桌面 7</translation>
@@ -364,6 +366,7 @@
 <translation id="2427507373259914951">点击鼠标左键</translation>
 <translation id="2429753432712299108">蓝牙设备“<ph name="DEVICE_NAME" />”需要配对许可。在接受之前，请确保该设备上显示以下配对密钥：<ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">显示密码</translation>
+<translation id="2437771564543046790">电池电量低。省电模式已开启</translation>
 <translation id="243878895369688216">昨天打开过</translation>
 <translation id="2440978926514840421">已完成 GIF 录制</translation>
 <translation id="2441427462554639370">已停止录制，因为存储空间严重不足</translation>
@@ -1198,6 +1201,7 @@
 <translation id="550391772491508736">继续投放</translation>
 <translation id="5506975627792768506">开启或关闭放大镜</translation>
 <translation id="5512042095225963688">删除上一个字词</translation>
+<translation id="5519005148254860683">展开 Google Tasks</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">您的管理员已移除所有 eSIM 卡配置文件。如需了解详情，请与您的管理员联系。</translation>
 <translation id="5520909879404821039">用法语说“你好”</translation>
@@ -1406,6 +1410,7 @@
 <translation id="6200515304866777730">应用不支持</translation>
 <translation id="6210042900243040400">关联已保存到 <ph name="EMAIL" /> 的“<ph name="NAME" />”</translation>
 <translation id="6213808132343683860">截取局部屏幕或录屏</translation>
+<translation id="621606890568890214">展开 Google 课堂</translation>
 <translation id="6220928844947387476">现在，您可以同时录制您本人和屏幕内容</translation>
 <translation id="622484624075952240">向下箭头键</translation>
 <translation id="6228457605945141550">调低亮度</translation>

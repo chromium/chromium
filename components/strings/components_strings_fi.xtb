@@ -245,7 +245,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1432187715652018471">sivu haluaa asentaa palvelukäsittelijän.</translation>
 <translation id="1432581352905426595">Hallinnoi hakukoneita</translation>
 <translation id="1433225466058025572">Kokeile siirtää tiedostot uudelleen</translation>
-<translation id="1434317006812369578">Chromessa on sisäänrakennettuja turvallisuusominaisuuksia, jotka suojaavat sinua selaamisen aikana. Yksi niistä on Googlen selaussuoja. Selaussuoja <ph name="BEGIN_LINK" />löysi äskettäin haittaohjelman osoitteesta <ph name="SITE" /><ph name="END_LINK" />. Se on upotettu sivustolle, jolle yrität siirtyä.</translation>
 <translation id="1435940442311036198">Käytä avainkoodia eri laitteella</translation>
 <translation id="1436185428532214179">Saa pyytää lupaa muokata laitteen tiedostoja ja kansioita</translation>
 <translation id="1441816242347931036">Jatka avaamalla</translation>
@@ -1471,7 +1470,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3767485424735936570">Järjestelmänvalvojan käytännössä ei suositella tämän sisällön kopioimista ja liittämistä tänne: <ph name="VM_NAME" /></translation>
 <translation id="3772211998634047851">Paperi (kirjepaperi)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, luo uusi muistiinpano nopeasti Google Keepissa painamalla sarkainta ja sitten Enter</translation>
-<translation id="378026377453746707">Chromessa on sisäänrakennettuja turvallisuusominaisuuksia, jotka suojaavat sinua selaamisen aikana. Yksi niistä on Googlen selaussuoja. Selaussuoja <ph name="BEGIN_LINK" />löysi äskettäin haittaohjelmia osoitteesta <ph name="SITE" /><ph name="END_LINK" />. Se on upotettu sivustolle, jolle yrität siirtyä.</translation>
 <translation id="3780694243617746492">Tulostuslokero</translation>
 <translation id="3781428340399460090">Pinkki</translation>
 <translation id="3783418713923659662">Mastercard</translation>
@@ -1555,7 +1553,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3950820424414687140">Kirjaudu sisään</translation>
 <translation id="3953505489397572035">Tämä on tyypillinen hinta</translation>
 <translation id="3958057596965527988">4 x 4 tuumaa</translation>
-<translation id="3959121317419633580">Chromessa on sisäänrakennettuja turvallisuusominaisuuksia, jotka suojaavat sinua selaamisen aikana. Yksi niistä on Googlen selaussuoja. Selaussuoja <ph name="BEGIN_LINK" />löysi äskettäin tietojenkalasteluyrityksen osoitteesta <ph name="SITE" /><ph name="END_LINK" />. Se on upotettu sivustolle, jolle yrität siirtyä.<ph name="NEW_LINE" />Myös tavallisesti turvalliset sivustot voivat toisinaan joutua hyökkäyksen kohteiksi. <ph name="BEGIN_ERROR_LINK" />Kerro meille<ph name="END_ERROR_LINK" />, jos kyseessä on mielestäsi virhe eikä sivusto ole vaarallinen.</translation>
 <translation id="3961148744525529027">Maksujenkäsittelytaulukko on puoliksi avattu</translation>
 <translation id="3962859241508114581">Edellinen kappale</translation>
 <translation id="3963721102035795474">Lukijatila</translation>

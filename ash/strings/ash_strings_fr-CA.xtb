@@ -178,6 +178,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1610778689852195798">« Annuler »</translation>
 <translation id="1611993646327628135">Activé</translation>
 <translation id="1620510694547887537">Caméra</translation>
+<translation id="1623768535032616219">Réduire Google Classroom</translation>
 <translation id="1632985212731562677">Switch Access peut être désactivé sous Paramètres &gt; Accessibilité.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> appareils</translation>
 <translation id="1639239467298939599">Chargement en cours</translation>
@@ -303,6 +304,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2198625180564913276">Ajout du profil en cours… Cette opération peut prendre quelques minutes.</translation>
 <translation id="219905428774326614">Lanceur d'applications, toutes les applications</translation>
 <translation id="2201071101391734388">Photo récente : <ph name="INDEX" /> de <ph name="TOTAL_COUNT" />.</translation>
+<translation id="2201687081523799384">Réduire Google Tâches</translation>
 <translation id="2208323208084708176">Mode Bureau unifié</translation>
 <translation id="2220572644011485463">NIP ou mot de passe</translation>
 <translation id="2222841058024245321">Bureau 7</translation>
@@ -364,6 +366,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2427507373259914951">Clic gauche</translation>
 <translation id="2429753432712299108">L'appareil Bluetooth « <ph name="DEVICE_NAME" /> » demande l'autorisation de s'associer avec votre appareil. Avant d'accepter, veuillez confirmer que le code d'authentification suivant s'affiche sur l'appareil : <ph name="PASSKEY" />.</translation>
 <translation id="2435457462613246316">Affich. mot de passe</translation>
+<translation id="2437771564543046790">Pile faible. La fonctionnalité Économiseur de pile est activée</translation>
 <translation id="243878895369688216">Ouvert hier</translation>
 <translation id="2440978926514840421">Enregistrement GIF pris</translation>
 <translation id="2441427462554639370">L'enregistrement a pris fin parce que l'espace de stockage est presque plein</translation>
@@ -1199,6 +1202,7 @@ Aucun appareil n'est connecté.</translation>
 <translation id="550391772491508736">Reprendre la diffusion</translation>
 <translation id="5506975627792768506">Activer ou désactiver la loupe</translation>
 <translation id="5512042095225963688">Supprimer le mot précédent</translation>
+<translation id="5519005148254860683">Développer Google Tâches</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Votre administrateur a retiré tous les profils eSIM. Pour en savoir plus, communiquez avec votre administrateur.</translation>
 <translation id="5520909879404821039">Salut en anglais</translation>
@@ -1407,6 +1411,7 @@ Aucun appareil n'est connecté.</translation>
 <translation id="6200515304866777730">Non pris en charge par l'application</translation>
 <translation id="6210042900243040400">Connectez <ph name="NAME" /> précédemment enregistré dans <ph name="EMAIL" /></translation>
 <translation id="6213808132343683860">Prendre une capture d'écran partielle ou un enregistrement d'écran</translation>
+<translation id="621606890568890214">Développer Google Classroom</translation>
 <translation id="6220928844947387476">Vous pouvez maintenant vous enregistrer en même temps que votre écran</translation>
 <translation id="622484624075952240">Bas</translation>
 <translation id="6228457605945141550">Baisser la luminosité</translation>

@@ -245,7 +245,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1432187715652018471">Sidan vill installera en tjänsthanterare.</translation>
 <translation id="1432581352905426595">Hantera sökmotorer</translation>
 <translation id="1433225466058025572">Testa att flytta filerna igen</translation>
-<translation id="1434317006812369578">Chrome har inbyggda säkerhetsfunktioner som skyddar dig när du surfar, till exempel Google Säker webbsökning. Säker webbsökning <ph name="BEGIN_LINK" />hittade nyligen skadlig kod på <ph name="SITE" /><ph name="END_LINK" />, som är inbäddad på webbplatsen som du försöker besöka.</translation>
 <translation id="1435940442311036198">Använd en nyckel på en annan enhet</translation>
 <translation id="1436185428532214179">Får begära tillstånd att redigera filer eller mappar på enheten</translation>
 <translation id="1441816242347931036">Öppna för att fortsätta</translation>
@@ -1470,7 +1469,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3767485424735936570">Att kopiera och klistra in i <ph name="VM_NAME" /> rekommenderas inte enligt en administratörspolicy</translation>
 <translation id="3772211998634047851">Papper (bond)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />: tryck på Tabb och sedan på Retur om du snabbt vill skapa en ny anteckning i Google Keep</translation>
-<translation id="378026377453746707">Chrome har inbyggda säkerhetsfunktioner som skyddar dig när du surfar, till exempel Google Säker webbsökning. Säker webbsökning <ph name="BEGIN_LINK" />hittade nyligen skadlig kod på <ph name="SITE" /><ph name="END_LINK" />, som är inbäddad på webbplatsen som du försöker besöka.</translation>
 <translation id="3780694243617746492">Utmatningsfack</translation>
 <translation id="3781428340399460090">Cerise</translation>
 <translation id="3783418713923659662">Mastercard</translation>
@@ -1554,7 +1552,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3950820424414687140">Logga in</translation>
 <translation id="3953505489397572035">Det här är normalpris</translation>
 <translation id="3958057596965527988">4 x 4 tum</translation>
-<translation id="3959121317419633580">Chrome har inbyggda säkerhetsfunktioner som skyddar dig när du surfar, till exempel Google Säker webbsökning. Säker webbsökning <ph name="BEGIN_LINK" />hittade nyligen nätfiske på <ph name="SITE" /><ph name="END_LINK" />, som är inbäddad på webbplatsen som du försöker besöka.<ph name="NEW_LINE" />Även webbplatser som vanligtvis är säkra utsätts ibland för angripare. <ph name="BEGIN_ERROR_LINK" />Kontakta oss<ph name="END_ERROR_LINK" /> om du anser att detta är ett misstag och att webbplatsen inte utgör en fara.</translation>
 <translation id="3961148744525529027">Arbetsbladet för betalningshantering visas på halva skärmen</translation>
 <translation id="3962859241508114581">Föregående spår</translation>
 <translation id="3963721102035795474">Läsarläge</translation>

@@ -178,6 +178,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1610778689852195798">"Desfés"</translation>
 <translation id="1611993646327628135">Activat</translation>
 <translation id="1620510694547887537">Càmera</translation>
+<translation id="1623768535032616219">Replega Google Classroom</translation>
 <translation id="1632985212731562677">L'accés amb interruptors es pot desactivar a Configuració &gt; Accessibilitat.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> dispositius</translation>
 <translation id="1639239467298939599">S'està carregant</translation>
@@ -303,6 +304,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2198625180564913276">S'està afegint el perfil. Aquest procés pot tardar uns minuts.</translation>
 <translation id="219905428774326614">Menú d'aplicacions, totes les aplicacions</translation>
 <translation id="2201071101391734388">Foto recent <ph name="INDEX" /> de <ph name="TOTAL_COUNT" />.</translation>
+<translation id="2201687081523799384">Replega Google Tasks</translation>
 <translation id="2208323208084708176">Mode d'escriptori unificat</translation>
 <translation id="2220572644011485463">PIN o contrasenya</translation>
 <translation id="2222841058024245321">Escriptori 7</translation>
@@ -364,6 +366,7 @@ Hi ha <ph name="DEVICECOUNT" /> dispositius connectats.</translation>
 <translation id="2427507373259914951">Fes clic amb el botó esquerre</translation>
 <translation id="2429753432712299108">El dispositiu Bluetooth "<ph name="DEVICE_NAME" />" sol·licita permís per vincular-se. Abans d'acceptar, comproveu que aquesta clau d'accés es mostri al dispositiu: <ph name="PASSKEY" />.</translation>
 <translation id="2435457462613246316">Mostra la contrasenya</translation>
+<translation id="2437771564543046790">Bateria baixa. La funció Estalvi de bateria està activada.</translation>
 <translation id="243878895369688216">Obert ahir</translation>
 <translation id="2440978926514840421">S'ha gravat el GIF</translation>
 <translation id="2441427462554639370">La gravació ha finalitzat perquè queda molt poc espai d'emmagatzematge.</translation>
@@ -1200,6 +1203,7 @@ No hi ha cap dispositiu connectat.</translation>
 <translation id="550391772491508736">Reprèn l'emissió</translation>
 <translation id="5506975627792768506">Activa o desactiva la lupa</translation>
 <translation id="5512042095225963688">Suprimeix la paraula anterior</translation>
+<translation id="5519005148254860683">Desplega Google Tasks</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">L'administrador ha suprimit tots els perfils d'eSIM. Contacta amb l'administrador per obtenir més informació.</translation>
 <translation id="5520909879404821039">Hola en francès</translation>
@@ -1408,6 +1412,7 @@ No hi ha cap dispositiu connectat.</translation>
 <translation id="6200515304866777730">No compatible amb l'aplicació</translation>
 <translation id="6210042900243040400">Connecta <ph name="NAME" />, desat anteriorment a <ph name="EMAIL" /></translation>
 <translation id="6213808132343683860">Fes una captura o una gravació de pantalla parcials</translation>
+<translation id="621606890568890214">Desplega Google Classroom</translation>
 <translation id="6220928844947387476">Ara pots gravar-te a tu i gravar la teva pantalla alhora</translation>
 <translation id="622484624075952240">Avall</translation>
 <translation id="6228457605945141550">Disminueix la brillantor</translation>

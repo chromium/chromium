@@ -285,6 +285,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="2515921719039583189">Brišete Chrome podatke sa ovog uređaja?</translation>
 <translation id="2517113738956581680">Tabela u punoj veličini</translation>
 <translation id="2523184218357549926">URL-ovi stranica koje posećujete se šalju Google-u</translation>
+<translation id="2524132927880411790">Idi na glasovnu pretragu aplikacije Google</translation>
 <translation id="2527209463677295330">Ako uvrstite veći deo teksta stranice, možete da dobijete bolje rezultate</translation>
 <translation id="2527497042232966453">Prebacili ste na kartice bez arhiviranja</translation>
 <translation id="2527779675047087889">Sakrij sadržaj privremene memorije</translation>
@@ -520,6 +521,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="363596933471559332">Automatski se prijavljujte na veb-sajtove pomoću sačuvanih akreditiva. Kada je ova funkcija isključena, tražićemo vam da se verifikujete pre svakog prijavljivanja na veb-sajt.</translation>
 <translation id="3636940436873918441">Željeni jezici</translation>
 <translation id="3637744895182738742">Ako ste zaboravili pristupnu frazu ili želite da promenite ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome podatke na nalogu<ph name="END_LINK" />.</translation>
+<translation id="3674208116086565128">Idi na početnu stranicu aplikacije Google</translation>
 <translation id="368329460027487650">Odjavljeni ste. Otvara opcije za prijavljivanje.</translation>
 <translation id="3687645719033307815">Pregledate ovu stranicu</translation>
 <translation id="3690369331356918524">Upozorava vas ako su lozinke otkrivene pri upadu u podatke</translation>
@@ -606,6 +608,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="4101475238162928417">Sinhronizujte podatke da biste preuzeli lozinke, obeleživače i drugo na ostalim uređajima</translation>
 <translation id="4108314971463891922">Prati</translation>
 <translation id="4108998448622696017">Otkriva opasne događaje kada se dogode i upozorava vas na njih.</translation>
+<translation id="4113030288477039509">Ovim upravlja administrator</translation>
 <translation id="4116038641877404294">Preuzmite stranice da biste ih koristili oflajn</translation>
 <translation id="4121654769234887259">Ne morate da zapamtite ovu lozinku. Čuva se u Google menadžeru lozinki za <ph name="USERNAME" />.</translation>
 <translation id="4124152339699379357">Tok dozvole za obaveštenja je otvoren u punoj visini</translation>
@@ -1474,6 +1477,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="813082847718468539">Pogledajte informacije o sajtu</translation>
 <translation id="8135406045838672858">Preuzeti PDF-ovi se automatski otvaraju pomoću aplikacije <ph name="APP_NAME" /></translation>
 <translation id="8137562778192957619">Ne morate da zapamtite ovu lozinku. Čuva se u Google menadžeru lozinki.</translation>
+<translation id="8152331954420209374">Idi na Objektiv</translation>
 <translation id="8163820386638255770">Da biste koristili i čuvali lozinke na Google nalogu, potvrdite svoj identitet</translation>
 <translation id="8171286197772512427">Deljenje pomoću tabele sa rezimeom povratnih informacija je otvoreno</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -1510,6 +1514,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="8348430946834215779">Koristite HTTPS kad god je to moguće i dobijajte upozorenje pre učitavanja sajtova koji ga ne podržavaju</translation>
 <translation id="8354977102499939946">Brzo pretražujte pomoću glasa. Da biste izmenili ovu prečicu, idite u Podešavanja.</translation>
 <translation id="835847953965672673">Vraćena su preuzimanja (<ph name="NUMBER_OF_DOWNLOADS" />)</translation>
+<translation id="8367705492654390392">Pitajte bilo šta</translation>
 <translation id="8368001212524806591">Prati cenu</translation>
 <translation id="8378850197701296741">Imate obeleživače, istoriju i ostala podešavanja iz naloga <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="8387617938027387193">Potvrdite svoj identitet</translation>

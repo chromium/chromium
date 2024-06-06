@@ -178,6 +178,7 @@
 <translation id="1610778689852195798">「復原」</translation>
 <translation id="1611993646327628135">開啟</translation>
 <translation id="1620510694547887537">攝影機</translation>
+<translation id="1623768535032616219">收合 Google Classroom</translation>
 <translation id="1632985212731562677">你可以依序點選 [設定] &gt; [無障礙設定] 來停用切換控制功能。</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> 部裝置</translation>
 <translation id="1639239467298939599">載入中</translation>
@@ -303,6 +304,7 @@
 <translation id="2198625180564913276">正在新增設定檔。請稍候片刻。</translation>
 <translation id="219905428774326614">啟動器，所有應用程式</translation>
 <translation id="2201071101391734388">第 <ph name="INDEX" /> 張近期相片，共 <ph name="TOTAL_COUNT" /> 張。</translation>
+<translation id="2201687081523799384">收合 Google Tasks</translation>
 <translation id="2208323208084708176">整合桌面模式</translation>
 <translation id="2220572644011485463">PIN 或密碼</translation>
 <translation id="2222841058024245321">桌面 7</translation>
@@ -364,6 +366,7 @@
 <translation id="2427507373259914951">按左鍵</translation>
 <translation id="2429753432712299108">藍牙裝置「<ph name="DEVICE_NAME" />」要求配對權限。接受要求前，請確認裝置顯示以下密碼金鑰：<ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">顯示密碼</translation>
+<translation id="2437771564543046790">電力不足，省電模式已開啟</translation>
 <translation id="243878895369688216">昨天開啟過</translation>
 <translation id="2440978926514840421">已錄製 GIF</translation>
 <translation id="2441427462554639370">儲存空間嚴重不足，因此已停止錄製</translation>
@@ -1197,6 +1200,7 @@
 <translation id="550391772491508736">繼續投放</translation>
 <translation id="5506975627792768506">開啟或關閉放大鏡</translation>
 <translation id="5512042095225963688">刪除上一個字詞</translation>
+<translation id="5519005148254860683">展開 Google Tasks</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">你的管理員已移除所有 eSIM 卡設定檔。如需更多資訊，請向管理員洽詢。</translation>
 <translation id="5520909879404821039">法文的「你好」</translation>
@@ -1405,6 +1409,7 @@
 <translation id="6200515304866777730">應用程式不支援這項功能</translation>
 <translation id="6210042900243040400">連線到 <ph name="EMAIL" /> 先前儲存的「<ph name="NAME" />」</translation>
 <translation id="6213808132343683860">擷取部分螢幕截圖或錄製部分螢幕畫面</translation>
+<translation id="621606890568890214">展開 Google Classroom</translation>
 <translation id="6220928844947387476">你現在可以同時錄製鏡頭畫面和螢幕畫面</translation>
 <translation id="622484624075952240">向下鍵</translation>
 <translation id="6228457605945141550">調低亮度</translation>

@@ -5,6 +5,7 @@
 <translation id="1013952917065545813">Gallwch ddod yn ôl yma i ailagor tabiau rydych wedi'u cau yn ddiweddar</translation>
 <translation id="1016495303386450659">Diweddarwyd yr eitem</translation>
 <translation id="1025514696883950875">{COUNT,plural, =1{Cadw Cyfrinair yn y Cyfrif}zero{Cadw Cyfrineiriau yn y Cyfrif}two{Cadw Cyfrineiriau yn y Cyfrif}few{Cadw Cyfrineiriau yn y Cyfrif}many{Cadw Cyfrineiriau yn y Cyfrif}other{Cadw Cyfrineiriau yn y Cyfrif}}</translation>
+<translation id="102916930470544692">Cod pas</translation>
 <translation id="1035980983510608210">Bydd cau pob tab yn cau tabiau sydd wedi'u pinio hefyd.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1043592663436934089">Byddwch yn cael eich allgofnodi a bydd data pori yn cael eu dileu</translation>
@@ -1016,6 +1017,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="6173499589275053515">Cyfrinair wedi'i gadw yn eich Cyfrif Google, <ph name="EMAIL" /></translation>
 <translation id="6184086493125982861">Dangos Tabiau</translation>
 <translation id="6187302354554850004">Cysonwyd ddiwethaf: <ph name="LAST_USED_TIME" /></translation>
+<translation id="6188737759358894319">Crëwyd ar <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Heb eu darllen</translation>
 <translation id="6196207969502475924">Chwilio â Llais</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Cau {COUNT} Tab}zero{Cau {COUNT} Tab}two{Cau {COUNT} Dab}few{Cau {COUNT} Thab}many{Cau {COUNT} Thab}other{Cau {COUNT} Tab}}</translation>
@@ -1303,7 +1305,6 @@ Pan fyddwch yn y modd Anhysbys, ni all gwefannau ddefnyddio cwcis i weld eich gw
 <translation id="7557508262441527045">Rydych wedi'ch allgofnodi</translation>
 <translation id="7561196759112975576">Bob tro</translation>
 <translation id="7564917801238348224">CADW...</translation>
-<translation id="758132317817089442">Troi gwell amddiffyniad ymlaen...</translation>
 <translation id="7582857256643797524">Mae'r gosodiad hwn wedi'i alluogi ar eich dyfais</translation>
 <translation id="7583004045319035904">Defnyddiwch <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> i ddatgloi eich tabiau Anhysbys.</translation>
 <translation id="7598439272585186139">Cael mwy o ddiogelwch</translation>

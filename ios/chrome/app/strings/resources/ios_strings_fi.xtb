@@ -5,6 +5,7 @@
 <translation id="1013952917065545813">Voit palata tähän avataksesi uudelleen äskettäin sulkemasi välilehdet</translation>
 <translation id="1016495303386450659">Kohde päivitettiin</translation>
 <translation id="1025514696883950875">{COUNT,plural, =1{Tallenna salasana tilille}other{Tallenna salasanat tilille}}</translation>
+<translation id="102916930470544692">Avainkoodi</translation>
 <translation id="1035980983510608210">Jos suljet kaikki välilehdet, myös kiinnitetyt välilehdet suljetaan.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1043592663436934089">Sinut kirjataan ulos ja selausdata poistetaan</translation>
@@ -1016,6 +1017,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="6173499589275053515">Salasana tallennettu Google-tilillesi, <ph name="EMAIL" /></translation>
 <translation id="6184086493125982861">Näytä välilehdet</translation>
 <translation id="6187302354554850004">Viim. synkronoitu: <ph name="LAST_USED_TIME" /></translation>
+<translation id="6188737759358894319">Luotu <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Lukematon</translation>
 <translation id="6196207969502475924">Puhehaku</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Sulje {COUNT} välilehti}other{Sulje {COUNT} välilehteä}}</translation>
@@ -1303,7 +1305,6 @@ Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoil
 <translation id="7557508262441527045">Kirjautunut ulos</translation>
 <translation id="7561196759112975576">Aina</translation>
 <translation id="7564917801238348224">TALLENNA…</translation>
-<translation id="758132317817089442">Laita parannettu suojaus päälle…</translation>
 <translation id="7582857256643797524">Asetus on käytössä laitteellasi</translation>
 <translation id="7583004045319035904">Valitse <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> incognito-välilehtien lukituksen avaamiseen.</translation>
 <translation id="7598439272585186139">Lisää tietoturvaa</translation>

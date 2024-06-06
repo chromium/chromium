@@ -313,6 +313,7 @@
 <translation id="2618015542787108131">ເນີນຊາຍ</translation>
 <translation id="2619761439309613843">ການໂຫຼດຂໍ້ມູນໃໝ່ປະຈຳວັນ</translation>
 <translation id="2620436844016719705">ລະ​ບົບ</translation>
+<translation id="2637303424821734920">ປິດ - ເພື່ອສະແດງສະພາບອາກາດໃນທ້ອງຖິ່ນ, ໃຫ້ <ph name="BEGIN_LINK" />ເປີດສິດເຂົ້າເຖິງສະຖານທີ່ຂອງລະບົບ<ph name="END_LINK" /></translation>
 <translation id="2638662041295312666">ຮູບການເຂົ້າສູ່ລະບົບ</translation>
 <translation id="2640549051766135490">ເລືອກອະລະບໍ້າ <ph name="TITLE" /> <ph name="DESC" /> ແລ້ວ</translation>
 <translation id="2645380101799517405">ການຄວບຄຸມ</translation>
@@ -961,7 +962,6 @@
 <translation id="6412715219990689313">ແປ້ນພິມໃນຕົວ</translation>
 <translation id="6417265370957905582">ຜູ້ຊ່ວຍ Google</translation>
 <translation id="6423239382391657905">ເປີດVPN</translation>
-<translation id="6438073885402882007">ການດຳເນີນການນີ້ຈະຊ່ວຍໃຫ້ບໍລິການລະບົບທີ່ມີການອະນຸຍາດດັ່ງກ່າວໃຊ້ສະຖານທີ່ຂອງທ່ານໄດ້. ສະຖານທີ່ອາດໃຊ້ຂໍ້ມູນຈາກແຫຼ່ງທີ່ມາຕ່າງໆ ເຊັ່ນ: Wi‑Fi, ເຄືອຂ່າຍມືຖື ແລະ ເຊັນເຊີເພື່ອຊ່ວຍຄາດຄະເນສະຖານທີ່ຂອງອຸປະກອນຂອງທ່ານ. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
 <translation id="6439505561246192797">ອ່ອນ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">ໄປຫາການຕັ້ງຄ່າບັນຊີ</translation>
 <translation id="6462978824459367242">ເປີດການນຳໃຊ້ປຸ່ມເພີ່ມ APN ແລ້ວ</translation>

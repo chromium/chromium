@@ -295,6 +295,7 @@
 <translation id="1203942045716040624">共有ワーカー: <ph name="SCRIPT_URL" /></translation>
 <translation id="1205104724635486855">リンクをプレビュー</translation>
 <translation id="1206832039833782423">セキュリティ コードはカードの裏面に記載されています</translation>
+<translation id="1208392090861059168">現在のスケジュールは <ph name="SUNRISE" />～<ph name="SUNSET" /> に設定されています。日の入りと日の出のスケジュールを自動的に更新するには、<ph name="BEGIN_LINK" />システムの位置情報へのアクセスをオンにしてください<ph name="END_LINK" />。</translation>
 <translation id="1210678701920254279">プリンタを表示または追加して、アクティブな印刷ジョブを確認する</translation>
 <translation id="1211769675100312947">ユーザーが選択したショートカットが表示されます</translation>
 <translation id="1213254615020057352">使用状況データや診断データを送信します。診断データやデバイスとアプリの使用状況データを Google に自動送信して、お子様向けの Android 機能の向上にご協力ください。この情報を使ってお子様個人が特定されることはありません。この情報は、システムとアプリの安定性の向上やその他の機能の改善に役立てられます。また、Google のアプリやパートナー（Android デベロッパーなど）も、集計データとしてこの情報を活用します。この設定は所有者によって管理されています。このデバイスの診断データや使用状況データを Google に送信するよう所有者が設定している可能性があります。お子様の [その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータはお子様の Google アカウントに保存されます。</translation>
@@ -481,6 +482,7 @@
 <translation id="1353980523955420967">PPD が見つかりません。Chromebook がオンラインになっていることを確認して、もう一度お試しください。</translation>
 <translation id="1354045473509304750"><ph name="HOST" /> によるカメラの使用と移動を引き続き許可する</translation>
 <translation id="1355088139103479645">すべてのデータを削除しますか？</translation>
+<translation id="1356376170199999104">許可 – <ph name="PERMISSION_DETAILS" />。マイク本体のスイッチをオンにしてください。</translation>
 <translation id="1356959069439783953">アクティブでないタブのデザインを刷新</translation>
 <translation id="1358741672408003399">スペルと文法</translation>
 <translation id="1359923111303110318">Smart Lock でデバイスのロックを解除できます。解除するには Enter キーを押してください。</translation>
@@ -752,6 +754,7 @@
 <translation id="1557939148300698553">プロフィールを作成</translation>
 <translation id="155865706765934889">タッチパッド</translation>
 <translation id="1558671750917454373"><ph name="DEVICE_NAME" /> へのキャストを再開する</translation>
+<translation id="1561331397460162942">位置情報へのアクセス権を持つアプリとウェブサイト、システム サービスに対して、位置情報へのアクセスを許可します</translation>
 <translation id="1562119309884184621">この連絡先を追加すると、次回ファイルが共有されたときに表示されます</translation>
 <translation id="1563137369682381456">有効期限</translation>
 <translation id="1563702743503072935">Google アカウントに保存したパスワードをこのデバイスでもログイン中に使用できるようになります</translation>
@@ -809,6 +812,7 @@
 <translation id="1594703455918849716">チェックアップ ページに移動</translation>
 <translation id="1594781465361405478">音量のオン / オフ</translation>
 <translation id="1594963087419619323">分割画面の概要</translation>
+<translation id="1595018168143352126">Chrome でウェブサイトのカメラへのアクセス権を管理する</translation>
 <translation id="1595492813686795610">Linux をアップグレードしています</translation>
 <translation id="1596286373007273895">使用可能</translation>
 <translation id="1596709061955594992">Bluetooth　がオフになっています。使用可能なデバイスを表示するには、Bluetooth をオンにしてください。</translation>
@@ -1243,6 +1247,7 @@
 <translation id="1900305421498694955">Google Play のアプリで外部ストレージ デバイスのファイルの読み取りと書き込みを行うには、ファイル システムへのフルアクセスが必要となる場合があります。デバイス上に作成されたファイルやフォルダは、外部ドライブを使用する全員に表示されます。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="1901213235765457754">このアプリを更新するよう管理者に依頼してください</translation>
 <translation id="1901303067676059328">すべて選択(&amp;A)</translation>
+<translation id="1901760057081700494">タイムゾーンは現在 <ph name="TIME_ZONE_ENTRY" /> に設定されています。タイムゾーンを自動的に更新するには、<ph name="BEGIN_LINK" />システムの位置情報へのアクセスをオンにしてください<ph name="END_LINK" />。</translation>
 <translation id="1904580727789512086">アクセスした URL は Google アカウントに保存されます</translation>
 <translation id="1906181697255754968">多くのサイトは、作業内容を自動的に保存するためにデバイスのファイルやフォルダにアクセスします。</translation>
 <translation id="1906488504371069394"><ph name="BEGIN_LINK" />Chrome ウェブストア<ph name="END_LINK" />では他にもさまざまな拡張機能やテーマを入手できます</translation>
@@ -1739,11 +1744,13 @@
 <translation id="2270612886833477697"><ph name="BEGIN_PARAGRAPH1" />インストールすると、<ph name="BEGIN_BOLD" />ハードドライブのデータはすべて消去されます<ph name="END_BOLD" />。データをバックアップしていることを確認してください。<ph name="END_PARAGRAPH1" /><ph name="BEGIN_PARAGRAPH2" />インストールを開始した後にキャンセルすることはできません。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">ドメイン <ph name="DOMAINS" /> のデバイスとのデータ交換</translation>
 <translation id="2270666014403455717">スイッチを「選択」に割り当てます</translation>
+<translation id="2271452184061378400">タブグループはここに保存されます</translation>
 <translation id="2271986192355138465">ウェブアプリをインストールする方法</translation>
 <translation id="2272430695183451567">割り当てられているスイッチはありません</translation>
 <translation id="2272570998639520080">マティーニ グラス</translation>
 <translation id="2273119997271134996">ドックのビデオポートに関する問題</translation>
 <translation id="2274840746523584236">Chromebook を充電してください</translation>
+<translation id="2275193525496879616">許可。デバイスにカメラを接続してください。</translation>
 <translation id="2276503375879033601">アプリを追加</translation>
 <translation id="2278193750452754829">拡張機能はこのサイトで許可されています。メニューを開くには選択してください。</translation>
 <translation id="2278562042389100163">ブラウザ ウィンドウを開く</translation>
@@ -1860,6 +1867,7 @@
 <translation id="2350133097354918058">再読み込みされました</translation>
 <translation id="2350182423316644347">アプリケーションを初期化しています...</translation>
 <translation id="235028206512346451">デバイスの前から離れると、画面が自動的にロックされます。デバイスの前にいるときは、画面がロックされるまでの時間が長くなります。ロック画面を使用しない場合、デバイスはロックされずにスリープ状態になります。</translation>
+<translation id="2351923523007389195">許可 – <ph name="PERMISSION_DETAILS" />。<ph name="LINK_BEGIN" />システムの位置情報へのアクセス<ph name="LINK_END" />をオンにする。</translation>
 <translation id="2352305801620974284">このデバイスでログインすると、Google アカウントに保存したパスワードなどの情報を利用できます</translation>
 <translation id="2352662711729498748">1 MB 未満</translation>
 <translation id="2352810082280059586">ロック画面のメモは<ph name="LOCK_SCREEN_APP_NAME" />に自動的に保存されます。最新のメモはロック画面に表示されます。</translation>
@@ -1974,7 +1982,6 @@
 <translation id="2435248616906486374">ネットワークが切断されました</translation>
 <translation id="2435457462613246316">パスワードを表示</translation>
 <translation id="2436385001956947090">リンクをコピー(&amp;L)</translation>
-<translation id="2436746748253887661">システム サービスによる位置情報の使用を許可するかどうかを指定します。デバイスの位置情報の特定には、Wi-Fi、モバイル ネットワーク、センサーなどのソースが使用される場合があります。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="2438853563451647815">プリンタに接続されていません</translation>
 <translation id="2439152382014731627"><ph name="DEVICE_TYPE" /> のパスワードを再設定</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> を読み込んでいます</translation>
@@ -2190,6 +2197,7 @@
 <translation id="2581992808349413349">安全な接続を使用して、DNS（ドメイン ネーム システム）でサイトの IP アドレスを検索します。これには、<ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> のマネージド サービス プロバイダを使用します</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" />（プラットフォーム <ph name="PLATFORM_VERSION" />）<ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">Kerberos チケットを取得できませんでした。もう一度お試しいただくか、組織のデバイス管理者にお問い合わせください。（エラーコード <ph name="ERROR_CODE" />）。</translation>
+<translation id="2584974473573720127">Chrome でウェブサイトのマイクへのアクセス権を管理する</translation>
 <translation id="2586561813241011046"><ph name="APP_NAME" /> をインストールできませんでした。もう一度お試しいただくか、管理者にお問い合わせください。エラーコード: <ph name="ERROR_CODE" />。</translation>
 <translation id="2586657967955657006">クリップボード</translation>
 <translation id="2586672484245266891">URL を短くしてください</translation>
@@ -2379,6 +2387,9 @@
 <translation id="2727744317940422214">エラーが発生しました。説明に #bruschetta と入力してフィードバックを送信してください。エラーコード: <ph name="ERROR" />。クリーンアップできませんでした。手動でのクリーンアップが必要な場合があります。</translation>
 <translation id="2729327310379176711">Chrome では、ブラウジング時のトラッキングを抑制して、セキュリティを強化する新しい方法を検討しています。また、<ph name="ESTIMATE_INTERESTS_LINK" />して管理できるようにします。これにより、アクセスしたサイトでユーザーの興味 / 関心を Chrome にリクエストして、広告を表示することができます。</translation>
 <translation id="2729577602370119849">プリンタに簡単にアクセスして管理</translation>
+<translation id="2729661575355442512"><ph name="BEGIN_PARAGRAPH1" />[位置情報の精度] をオンにした場合、Wi-Fi アクセス ポイントやモバイル ネットワーク基地局などのワイヤレス シグナルに関する情報と、加速度計やジャイロスコープなどのデバイスのセンサーデータに基づき、デバイスのより正確な位置情報が推定され、Android アプリやサービスの位置情報を利用した機能で使用されます。この設定では、クラウドソースのワイヤレス シグナルを利用した位置情報の向上に役立てるため、デバイスのセンサーに関する情報やこのデバイスの付近のワイヤレス シグナルが Google で定期的に処理されます。<ph name="END_PARAGRAPH1" />
+　　　　<ph name="BEGIN_PARAGRAPH2" />Google は、位置情報の精度と、位置情報を利用したサービスを改善し、Google のサービスを全般的に改善、提供、維持する目的でこの情報を使用します。また、ユーザーのニーズに応えるうえでの Google およびサードパーティの正当な利益に基づき、この情報を処理します。この情報が個人の特定に使用されることはありません。<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />[位置情報の精度] は、このデバイスの位置情報の設定（[設定] &gt; [プライバシーとセキュリティ] &gt; [プライバシー管理] &gt; [位置情報へのアクセス] &gt; [位置情報の詳細設定]）でいつでもオフにできます。[位置情報の精度] をオフにした場合、位置情報の精度に関するデータは一切収集されません。Android アプリやサービスでは、IP アドレスのみを使用して（可能な場合）、このデバイスの位置情報を判断します。そのため、Google マップなどの Android アプリやサービスでの位置情報の利用範囲と精度に影響する可能性があります。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2730029791981212295">Linux アプリとファイルのバックアップ</translation>
 <translation id="2730596696987224099">自身で選択</translation>
 <translation id="2730647855013151888">すべての個人情報を含める</translation>
@@ -3230,6 +3241,7 @@
 <translation id="338323348408199233">VPN 以外のトラフィックをブロック</translation>
 <translation id="3384362484379805487">ディスク領域を節約するため、言語ファイルはユーザー間で共有されます。</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
+<translation id="3385172418915595177">[位置情報の精度] 設定では、アプリやサービスで使用される位置情報の精度を高めることができます。この設定では、クラウドソースのワイヤレス シグナルを利用した位置情報の向上に役立てるため、デバイスのセンサーに関する情報やデバイスから送信されるワイヤレス シグナルが Google で定期的に処理されます。この情報は、ユーザーを特定することなく、位置情報の精度と、位置情報を利用したサービスを改善する目的で使用されます。また、ユーザーのニーズに応えるうえでの Google とサードパーティの正当な利益に基づき、Google のサービスを全般的に改善、提供、維持する目的でも使用されます。</translation>
 <translation id="338583716107319301">セパレータ</translation>
 <translation id="3385916046075724800">タブグループが自動的に保存されるようになりました。</translation>
 <translation id="3387023983419383865">、</translation>
@@ -3331,6 +3343,7 @@
 <translation id="3449839693241009168"><ph name="SEARCH_KEY" /> を押すと <ph name="EXTENSION_NAME" /> にコマンドが送信されます</translation>
 <translation id="3450157232394774192">アイドル状態の占有率（%）</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> が、Wi-Fi に接続して、今すぐアップデートをダウンロードするよう求めています。</translation>
+<translation id="345078987193237421">カメラへのアクセス権を持つアプリとウェブサイト、システム サービスに対して、カメラへのアクセスを許可します</translation>
 <translation id="3452999110156026232">保護者によるアクセス</translation>
 <translation id="3453082738208775226">オフライン ストレージをクリーンアップしますか？</translation>
 <translation id="3453597230179205517">位置情報へのアクセスはブロックされています</translation>
@@ -3501,6 +3514,7 @@
 <translation id="3587438013689771191"><ph name="SUBPAGE_TITLE" /> の詳細</translation>
 <translation id="3587482841069643663">すべて</translation>
 <translation id="3588790464166520201">支払いハンドラのインストールを許可するサイト</translation>
+<translation id="3589010096969411438">許可。マイク本体のスイッチをオンにしてください。</translation>
 <translation id="3589766037099229847">安全でないコンテンツがブロックされました</translation>
 <translation id="3590194807845837023">プロフィールのロックを解除して再起動</translation>
 <translation id="3590295622232282437">管理対象セッションを開始しています。</translation>
@@ -4034,6 +4048,7 @@
 <translation id="3950841222883198950">音声入力</translation>
 <translation id="3953834000574892725">マイ アカウント</translation>
 <translation id="3954354850384043518">ダウンロード中</translation>
+<translation id="3954468641195530330">アプリでのマイクの使用は許可されていません</translation>
 <translation id="3954469006674843813"><ph name="WIDTH" /> x <ph name="HEIGHT" />（<ph name="REFRESH_RATE" /> Hz）</translation>
 <translation id="3954953195017194676">最近記録された WebRTC イベントログはありません。</translation>
 <translation id="3955321697524543127">サイトに USB デバイスへの接続を許可しない</translation>
@@ -4092,6 +4107,10 @@
 <translation id="3988124842897276887">このタブは USB デバイスに接続されています</translation>
 <translation id="3988996860813292272">タイムゾーンの選択</translation>
 <translation id="3991055816270226534">サードパーティ Cookie とトラッキング防止機能を管理します</translation>
+<translation id="3991746210745534318"><ph name="BEGIN_PARAGRAPH1" />[位置情報の精度] をオンにした場合、Wi-Fi アクセス ポイントやモバイル ネットワーク基地局などのワイヤレス シグナルに関する情報と、加速度計やジャイロスコープなどのデバイスのセンサーデータに基づき、デバイスのより正確な位置情報が推定され、Android アプリやサービスの位置情報を利用した機能で使用されます。この設定では、クラウドソースのワイヤレス シグナルを利用した位置情報の向上に役立てるため、デバイスのセンサーに関する情報やこのデバイスの付近のワイヤレス シグナルが Google で定期的に処理されます。<ph name="END_PARAGRAPH1" />
+　　　　<ph name="BEGIN_PARAGRAPH2" />Google は、位置情報の精度と、位置情報を利用したサービスを改善し、Google のサービスを全般的に改善、提供、維持する目的でこの情報を使用します。また、ユーザーのニーズに応えるうえでの Google およびサードパーティの正当な利益に基づき、この情報を処理します。この情報が個人の特定に使用されることはありません。<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />[位置情報の精度] は、このデバイスの位置情報の設定（[設定] &gt; [プライバシーとセキュリティ] &gt; [プライバシー管理] &gt; [位置情報へのアクセス] &gt; [位置情報の詳細設定]）でいつでもオフにできます。[位置情報の精度] をオフにした場合、位置情報の精度に関するデータは一切収集されません。Android アプリやサービスでは、IP アドレスのみを使用して（可能な場合）、このデバイスの位置情報を判断します。そのため、Google マップなどの Android アプリやサービスでの位置情報の利用範囲と精度に影響する可能性があります。<ph name="END_PARAGRAPH3" />
+    <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />位置情報の精度に関する詳細<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="399179161741278232">インポートしたブックマーク</translation>
 <translation id="3992008114154328194"><ph name="FILE_NAME" /> をダウンロードしています、<ph name="STATUS" /></translation>
 <translation id="3993259701827857030">データをバックアップ</translation>
@@ -4247,6 +4266,10 @@
 <translation id="4110485659976215879">警告を復元</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" />（オフライン）</translation>
 <translation id="4113743276555482284">ファイルのパスワード</translation>
+<translation id="4113888471797244232"><ph name="BEGIN_PARAGRAPH1" />[位置情報の精度] をオンにした場合、Wi-Fi アクセス ポイントやモバイル ネットワーク基地局などのワイヤレス シグナルに関する情報と、加速度計やジャイロスコープなどのデバイスのセンサーデータに基づき、デバイスのより正確な位置情報が推定され、Android アプリやサービスの位置情報を利用した機能で使用されます。この設定では、クラウドソースのワイヤレス シグナルを利用した位置情報の向上に役立てるため、デバイスのセンサーに関する情報やユーザーの付近のワイヤレス シグナルが Google で定期的に処理されます。<ph name="END_PARAGRAPH1" />
+　　　　<ph name="BEGIN_PARAGRAPH2" />Google は、ユーザーを特定することなく、位置情報の精度と、位置情報を利用したサービスを改善し、Google のサービスを全般的に改善、提供、維持する目的で、この情報を使用します。また、ユーザーのニーズに応えるうえでの Google およびサードパーティの正当な利益に基づき、この情報を処理します。<ph name="END_PARAGRAPH2" />
+　　　　<ph name="BEGIN_PARAGRAPH3" />[位置情報の精度] は、デバイスの位置情報の設定（[設定] &gt; [プライバシーとセキュリティ] &gt; [プライバシー管理] &gt; [位置情報へのアクセス] &gt; [位置情報の詳細設定]）でいつでもオフにできます。[位置情報の精度] をオフにした場合、位置情報の精度に関するデータは一切収集されません。Android アプリやサービスでは、IP アドレスのみを使用して（可能な場合）、デバイスの位置情報を判断します。そのため、Google マップなどの Android アプリやサービスでの位置情報の利用範囲と精度に影響する可能性があります。<ph name="END_PARAGRAPH3" />
+    <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />位置情報の精度に関する詳細<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="4114524937989710624">Google ドライブで最近使用したファイルに簡単にアクセスできるよう、ファイルの候補が表示されています。
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -4703,6 +4726,7 @@
 <translation id="4473996011558324141">所要時間の目安</translation>
 <translation id="4474155171896946103">すべてのタブをブックマークに追加...</translation>
 <translation id="4475299370877036544">このアクションは組織のポリシーに違反している可能性があります</translation>
+<translation id="4476198534886170024">許可。<ph name="LINK_BEGIN" />システムのカメラへのアクセス<ph name="LINK_END" />をオンにする。</translation>
 <translation id="4476590490540813026">競技選手</translation>
 <translation id="4476659815936224889">このコードをスキャンするには、スマートフォンの QR スキャンアプリまたはカメラアプリを使用してください。</translation>
 <translation id="4477015793815781985">Ctrl キー、Alt キー、⌘ キーのいずれかが必要です</translation>
@@ -5021,6 +5045,7 @@
 <translation id="4716483597559580346">セキュリティ強化に向けて Powerwash を実行する</translation>
 <translation id="4716715661140829720">十分な空き容量がありません</translation>
 <translation id="471759229191973607">テーマを変更</translation>
+<translation id="4719276504493791870">アプリでの位置情報の使用は許可されていません</translation>
 <translation id="4722735765955348426"><ph name="USERNAME" /> のパスワード</translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> が画面を共有しています。</translation>
 <translation id="4722989931633062466">サードパーティのログイン メッセージの表示を許可しないサイト</translation>
@@ -5051,6 +5076,7 @@
 <translation id="4742795653798179840">Chrome データを削除しました</translation>
 <translation id="4742970037960872810">テキストの選択を解除</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />アプリケーションの更新方法を確認<ph name="END_LINK" /></translation>
+<translation id="4743990041512863976">許可 – <ph name="PERMISSION_DETAILS" />。<ph name="LINK_BEGIN" />システムのマイクへのアクセス<ph name="LINK_END" />をオンにする。</translation>
 <translation id="4744268813103118742">サイトに移動</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{サイトのミュートを解除}other{サイトのミュートを解除}}</translation>
@@ -5233,6 +5259,7 @@
 <translation id="4879491255372875719">自動（デフォルト）</translation>
 <translation id="4880315242806573837">まもなくセキュリティ アップデートの提供が終了します。新しい Chromebook にアップグレードしましょう。</translation>
 <translation id="4880827082731008257">履歴を検索</translation>
+<translation id="4881632956374597321">位置情報へのアクセス権を持つアプリとウェブサイト、システム サービスは位置情報を使用できます。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="4881685975363383806">次回表示しない</translation>
 <translation id="4881695831933465202">開く</translation>
 <translation id="4882312758060467256">このサイトへのアクセスが許可されています</translation>
@@ -5565,6 +5592,7 @@
 <translation id="5143374789336132547">拡張機能「<ph name="EXTENSION_NAME" />」により、ホームボタンをクリックしたときに表示されるページが変更されました。</translation>
 <translation id="5143612243342258355">このファイルは危険です</translation>
 <translation id="5143712164865402236">全画面表示にする</translation>
+<translation id="5143960098217235598">マイクへのアクセス権を持つアプリとウェブサイト、システム サービスに対して、マイクへのアクセスを許可します</translation>
 <translation id="5144815231216017543">Alt+<ph name="TOP_ROW_KEY" /></translation>
 <translation id="5145464978649806571">デバイスの前から離れると、画面が自動的にロックされます。デバイスの前にいるときは、画面がロックされるまでの時間が長くなります。ロック画面を無効にしている場合、デバイスはロックされずにスリープ状態になります。</translation>
 <translation id="514575469079499857">IP アドレスを使用して現在地を特定する（デフォルト）</translation>
@@ -5627,6 +5655,7 @@
 <translation id="5186788525428341874">このパスキーを使用してどのデバイスでもすばやくログインできます。パスキーは <ph name="ACCOUNT_NAME" /> の Google パスワード マネージャーに保存されます。</translation>
 <translation id="5187641678926990264">ページをアプリとしてインストール(&amp;I)...</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" />（<ph name="DEVICE" />）</translation>
+<translation id="5188648870018555788">位置情報を使用するとともに、位置情報へのアクセス権を持つ ChromeOS アプリ、Android アプリ、ウェブサイト、サービスに対して、デバイスの位置情報の使用を許可します。[位置情報の精度] 設定では、Android アプリやサービスで使用される位置情報の精度を高めることができます。この設定では、クラウドソースのワイヤレス シグナルを利用した位置情報の向上に役立てるため、デバイスのセンサーに関する情報やデバイスから送信されるワイヤレス シグナルが Google で定期的に処理されます。この情報は、ユーザーを特定することなく、位置情報の精度と、位置情報を利用したサービスを改善する目的で使用されます。また、ユーザーのニーズに応えるうえでの Google とサードパーティの正当な利益に基づき、Google のサービスを改善、提供、維持する目的でも使用されます。<ph name="BEGIN_LINK1" />位置情報の使用に関する詳細<ph name="END_LINK1" /></translation>
 <translation id="5190577235024772869">使用量: <ph name="USED_SPACE" /></translation>
 <translation id="5190926251776387065">ポートを有効にする</translation>
 <translation id="5190959794678983197">マイクがありません</translation>
@@ -5671,6 +5700,7 @@
 <translation id="5225324770654022472">アプリのショートカットを表示</translation>
 <translation id="52254442782792731">公開設定はまだ設定されていません</translation>
 <translation id="5225463052809312700">カメラをオンにする</translation>
+<translation id="5226731562812684363">ウェブサイトでの位置情報の使用は許可されていません</translation>
 <translation id="5227679487546032910">デフォルトの青緑のアバター</translation>
 <translation id="5228245824943774148"><ph name="NUM_DEVICES_CONNECTED" /> 台のデバイスが接続されています</translation>
 <translation id="5228579091201413441">同期を有効にする</translation>
@@ -5760,6 +5790,7 @@
 <translation id="5291739252352359682">Chrome ブラウザで再生するメディアの字幕を自動的に作成します（現在のところ英語に対応）音声と字幕はローカルで処理され、デバイスの外部へ送信されることはありません。</translation>
 <translation id="529175790091471945">このデバイスをフォーマット</translation>
 <translation id="529296195492126134">一時的ログインモードはサポートされていません。管理者にお問い合わせください</translation>
+<translation id="5293043095535566171">位置情報へのアクセスをオンにしますか？</translation>
 <translation id="5293170712604732402">設定を元の既定値に戻す</translation>
 <translation id="5294068591166433464">サイトがパスワードを不正に取得しようとしている場合や、ユーザーが安全でないファイルをダウンロードしようとした場合は、URL とページ コンテンツの一部を　Google に送信することがあります</translation>
 <translation id="5294097441441645251">先頭は英小文字かアンダースコアにしてください</translation>
@@ -6542,6 +6573,7 @@
 <translation id="5885314688092915589">このプロフィールは組織によって管理されます</translation>
 <translation id="5885470467814103868">スキャンを開始</translation>
 <translation id="5885631909150054232">トークンをコピー</translation>
+<translation id="5886000783338788034">ChromeOS の設定で位置情報がオフになっています</translation>
 <translation id="5886009770935151472">指 1</translation>
 <translation id="5886112770923972514">近くにあるファスト ペアリング デバイスを接続して、すばやくセットアップする</translation>
 <translation id="5886384907280980632">今すぐオフにする</translation>
@@ -6950,6 +6982,7 @@
 <translation id="6200151268994853226">拡張機能を管理</translation>
 <translation id="6201608810045805374">このアカウントを削除しますか？</translation>
 <translation id="6202304368170870640">デバイスのログインやロック解除に PIN を使用できます。</translation>
+<translation id="6202935572248792580">許可。デバイスにマイクを接続してください。</translation>
 <translation id="6203247599828309566">このサイトでパスワードのメモを保存しました。メモを表示するには、鍵アイコンをクリックします。</translation>
 <translation id="6205314730813004066">広告プライバシー</translation>
 <translation id="6205993460077903908"><ph name="WINDOW_TITLE" /> - マイク録音</translation>
@@ -7004,6 +7037,7 @@
 <translation id="6238923052227198598">ロック画面に最新のメモを表示する</translation>
 <translation id="6238982280403036866">JavaScript の使用を許可するサイト</translation>
 <translation id="6239558157302047471">フレームを再読み込み(&amp;F)</translation>
+<translation id="6240637845286751292">許可。<ph name="LINK_BEGIN" />システムの位置情報へのアクセス<ph name="LINK_END" />をオンにする。</translation>
 <translation id="6240821072888636753">毎回確認</translation>
 <translation id="6240964651812394252">お使いのオペレーティング システムで Google パスワード マネージャーを使用するには、Chrome を再起動してパソコンのパスワード マネージャーへのアクセスを許可してください。再起動すると、タブが再度開きます。</translation>
 <translation id="6241530762627360640">システムでペア設定されている Bluetooth デバイスの情報へのアクセスと、近くにある Bluetooth デバイスの検出。</translation>
@@ -7072,6 +7106,7 @@
 <translation id="628352644014831790">4秒</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> は一般的にダウンロードされているファイルではなく、危害を及ぼす可能性があります。</translation>
 <translation id="6285770818046456882">共有元のデバイスによって転送がキャンセルされました</translation>
+<translation id="628699625505156622">位置情報を使用するとともに、位置情報へのアクセス権を持つ ChromeOS アプリ、Android アプリ、ウェブサイト、サービスに対して、このデバイスの位置情報の使用を許可します。[位置情報の精度] 設定では、Android アプリやサービスで使用される位置情報の精度を高めることができます。この設定では、クラウドソースのワイヤレス シグナルを利用した位置情報の向上に役立てるため、デバイスのセンサーに関する情報やこのデバイスから送信されるワイヤレス シグナルが Google で定期的に処理されます。この情報は、ユーザーを特定することなく、位置情報の精度と、位置情報を利用したサービスを改善する目的で使用されます。また、ユーザーのニーズに応えるうえでの Google とサードパーティの正当な利益に基づき、Google のサービスを改善、提供、維持する目的でも使用されます。<ph name="BEGIN_LINK1" />位置情報の使用に関する詳細<ph name="END_LINK1" /></translation>
 <translation id="628726841779494414">プリンタ設定でプリンタを管理</translation>
 <translation id="6287828400772161253">Android スマートフォン（<ph name="HOST_DEVICE_NAME" />）</translation>
 <translation id="6290613030083731160">近くに共有可能なデバイスはありません。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
@@ -7595,6 +7630,7 @@
 <translation id="6703613667804166784">このファイルは、個人アカウントやソーシャル ネットワークのアカウント（<ph name="USER_EMAIL" /> など）に危害を及ぼす可能性があります</translation>
 <translation id="6707122714992751648">ChromeOS 診断テストを実行する</translation>
 <translation id="6707389671160270963">SSL クライアント証明書</translation>
+<translation id="6707671917294473995">ウェブサイトでカメラの使用は許可されていません</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" />、他 1 個のタブ}other{<ph name="PAGE_TITLE" />、他 # 個のタブ}}</translation>
 <translation id="6709133671862442373">ニュース</translation>
 <translation id="6709357832553498500">「<ph name="EXTENSIONNAME" />」を使用して接続</translation>
@@ -7604,6 +7640,7 @@
 <translation id="6713233729292711163">仕事用プロファイルを追加</translation>
 <translation id="6713441551032149301">ファンクション キーとシステムの最上段のキーを切り替えるには、ランチャーキーを長押しします</translation>
 <translation id="6713668088933662563">翻訳するか確認しない言語</translation>
+<translation id="6715735940363172819">ウェブサイトでのマイクの使用は許可されていません</translation>
 <translation id="6715803357256707211">Linux アプリケーションのインストール中にエラーが発生しました。詳細を確認するには通知をクリックしてください。</translation>
 <translation id="6716798148881908873">ネットワーク接続が切断されました。ネットワーク接続を確認するか、別の Wi-Fi ネットワークをお試しください。</translation>
 <translation id="6718849325281682232">ダークモードかライトモードかにかかわらず、すべての人が快適に作業できるように Chrome のテーマの色を一新しました</translation>
@@ -8250,6 +8287,7 @@
 <translation id="7210499381659830293">拡張プリンタ</translation>
 <translation id="7211783048245131419">割り当てられたスイッチはありません</translation>
 <translation id="7212097698621322584">PIN を変更するには、現在の PIN を入力してください。PIN がわからない場合は、セキュリティ キーをリセットしたうえで新しい PIN を作成する必要があります。</translation>
+<translation id="7214047272988222011">許可 – <ph name="PERMISSION_DETAILS" />。<ph name="LINK_BEGIN" />システムのカメラへのアクセス<ph name="LINK_END" />をオンにする。</translation>
 <translation id="721490496276866468">パスワードをインポート</translation>
 <translation id="7218514093816577632"><ph name="DEVICE_NAME" /> で通知がオンになっていることを確認してください。</translation>
 <translation id="7219254577985949841">サイトデータを削除しますか？</translation>
@@ -8626,6 +8664,7 @@
 <translation id="7489761397368794366">デバイスから発信</translation>
 <translation id="749028671485790643">ユーザー <ph name="VALUE" /></translation>
 <translation id="7490683549040131791">他のパスワードを確認</translation>
+<translation id="7490938136316476492">位置情報がオフになっています。この ChromeOS デバイスでは位置情報にアクセスしません。ただし、IP アドレスなどを通じて、おおよその現在地がアプリやウェブサイトに公開される場合があります。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="7491962110804786152">タブ</translation>
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{1 件の Cookie}other{{NUM_COOKIES} 件の Cookie}}</translation>
 <translation id="7493386493263658176"><ph name="EXTENSION_NAME" /> 拡張機能では、パスワードやクレジット カード番号などの個人データを含むすべての入力テキストが収集される可能性があります。この拡張機能を使用しますか？</translation>
@@ -8729,6 +8768,7 @@
 <translation id="7573172247376861652">バッテリー充電</translation>
 <translation id="7573594921350120855">多くのサイトは、ビデオチャットなどの通信機能にビデオカメラを使用します。</translation>
 <translation id="7575272930307342804">ナビゲーション コントロール</translation>
+<translation id="757660455834887988">許可 – <ph name="PERMISSION_DETAILS" />。デバイスにカメラを接続してください。</translation>
 <translation id="7576690715254076113">部単位で印刷</translation>
 <translation id="7576976045740938453">デモモード アカウントで問題が発生しました。</translation>
 <translation id="7578137152457315135">指紋の設定</translation>
@@ -8986,6 +9026,7 @@
 <translation id="7758450972308449809">ディスプレイの外枠を調整します</translation>
 <translation id="7758884017823246335">サイト内検索を追加</translation>
 <translation id="7759809451544302770">省略可</translation>
+<translation id="7760176388948986635">位置情報へのアクセス権を持つ ChromeOS アプリ、Android アプリ、ウェブサイト、サービスに対して、このデバイスの位置情報の使用を許可します。[位置情報の精度] 設定では、Android アプリやサービスで使用される位置情報の精度を高めることができます。この設定では、クラウドソースのワイヤレス シグナルを利用した位置情報の向上に役立てるため、デバイスのセンサーに関する情報やこのデバイスから送信されるワイヤレス シグナルが Google で定期的に処理されます。この情報は、ユーザーを特定することなく、位置情報の精度と、位置情報を利用したサービスを改善する目的で使用されます。また、ユーザーのニーズに応えるうえでの Google とサードパーティの正当な利益に基づき、Google のサービスを改善、提供、維持する目的でも使用されます。</translation>
 <translation id="7762024824096060040">このアカウントを使用することはできません</translation>
 <translation id="7764225426217299476">住所を追加</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" />（<ph name="DOWNLOAD_DOMAIN" /> から）</translation>
@@ -9042,7 +9083,6 @@
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7788948939674438635">サイトにキーボードのロックを許可しない</translation>
 <translation id="7789963078219276159">スタートページの背景が<ph name="CATEGORY" />に変更されました。</translation>
-<translation id="7790689625219600437">PDF OCR</translation>
 <translation id="7791269138074599214">入力方法</translation>
 <translation id="7791429245559955092">このアプリケーションは、現在使用している Chrome プロフィールにインストールされます</translation>
 <translation id="7791436592012979144">逆スクロールは有効です</translation>
@@ -9106,6 +9146,7 @@
 <translation id="7839051173341654115">メディアを表示 / バックアップ</translation>
 <translation id="7839192898639727867">証明書のサブジェクトのキー ID</translation>
 <translation id="7839696104613959439">ネットワーク選択をレンダリング</translation>
+<translation id="7840222916565569061">アプリでのカメラの使用は許可されていません</translation>
 <translation id="7842062217214609161">ショートカットなし</translation>
 <translation id="7842692330619197998">新しいアカウントを作成するには、g.co/ChromeEnterpriseAccount にアクセスします。</translation>
 <translation id="784273751836026224">Linux のアンインストール</translation>
@@ -9405,6 +9446,7 @@
 <translation id="8053278772142718589">PKCS #12 ファイル</translation>
 <translation id="8053390638574070785">ページを再読み込み</translation>
 <translation id="8053629544194355894">同期をオンにして Chrome でタブグループの提案を表示</translation>
+<translation id="8054500940978949009">許可。<ph name="LINK_BEGIN" />システムのマイクへのアクセス<ph name="LINK_END" />をオンにする。</translation>
 <translation id="8054517699425078995">この種類のファイルはお使いのデバイスに悪影響を与える可能性があります。<ph name="FILE_NAME" />を保存しますか？</translation>
 <translation id="8054563304616131773">有効なメールアドレスを入力してください</translation>
 <translation id="8054609631325628928">これらの番号を使用して、サービスを有効にできます</translation>
@@ -9797,6 +9839,7 @@
 <translation id="8336739000755212683">デバイスのアカウント画像を変更</translation>
 <translation id="8337020675372081178">{HOURS,plural, =1{このデバイスは 1 時間保存され、次回はコードなしで接続できます。これは管理者によって設定されています。}other{このデバイスは {HOURS} 時間保存され、次回はコードなしで接続できます。これは管理者によって設定されています。}}</translation>
 <translation id="8337399713761067085">現在オフラインです</translation>
+<translation id="8338427544764842461">タブグループはここに保存され、ログインしているすべてのデバイスで更新されます</translation>
 <translation id="8338952601723052325">デベロッパーのウェブサイト</translation>
 <translation id="8339288417038613756">ディスプレイとテキストのサイズ</translation>
 <translation id="833986336429795709">このリンクを開くにはアプリを選択します</translation>
@@ -10116,6 +10159,7 @@
 <translation id="8584843865238667486">使用状況ページ <ph name="USAGE_PAGE" /> で使用状況 <ph name="USAGE" /> が収集されている HID デバイス</translation>
 <translation id="8585480574870650651">Crostini の削除</translation>
 <translation id="8585841788766257444">次のサイトでは、デフォルトではなくカスタムの設定が使用されます</translation>
+<translation id="8586421813321819377">位置情報へのアクセス権を持つ ChromeOS アプリ、Android アプリ、ウェブサイト、サービスに対して、デバイスの位置情報の使用を許可します。[位置情報の精度] 設定では、Android アプリやサービスで使用される位置情報の精度を高めることができます。この設定では、クラウドソースのワイヤレス シグナルを利用した位置情報の向上に役立てるため、デバイスのセンサーに関する情報やデバイスから送信されるワイヤレス シグナルが Google で定期的に処理されます。この情報は、ユーザーを特定することなく、位置情報の精度と、位置情報を利用したサービスを改善する目的で使用されます。また、ユーザーのニーズに応えるうえでの Google とサードパーティの正当な利益に基づき、Google のサービスを改善、提供、維持する目的でも使用されます。</translation>
 <translation id="8587660243683137365">このページをアプリとしてインストール</translation>
 <translation id="8588866096426746242">プロフィール統計情報を表示</translation>
 <translation id="8588868914509452556"><ph name="WINDOW_TITLE" /> - VR をヘッドセットに配信しています</translation>
@@ -10337,6 +10381,7 @@
 <translation id="8736288397686080465">このサイトはバックグラウンドで更新されました。</translation>
 <translation id="8737709691285775803">サクラ</translation>
 <translation id="8737914367566358838">ページを翻訳する言語を選択してください</translation>
+<translation id="8737966899544698733">位置情報の精度（Android のみ）</translation>
 <translation id="8738418093147087440">国、言語、入力名で検索</translation>
 <translation id="8740086188450289493">Google アカウントのパスワードを使用</translation>
 <translation id="8740247629089392745">この Chromebook を <ph name="SUPERVISED_USER_NAME" /> に渡す準備ができました。設定はあと少しで完了です。</translation>
@@ -10408,12 +10453,16 @@
 <translation id="8793390639824829328">サイトによる共有タブのスクロールやズームの機能です</translation>
 <translation id="879413103056696865">アクセス ポイントが有効な場合、<ph name="PHONE_NAME" /> は次のように動作します。</translation>
 <translation id="8795916974678578410">新規ウインドウ</translation>
+<translation id="8796907593900732741">システム サービスのみが位置情報を使用できます。ただし、IP アドレスなどを通じて、おおよその現在地がアプリやウェブサイトに公開される場合があります。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="8796919761992612392">Chrome をカスタマイズ(&amp;U)</translation>
 <translation id="8797459392481275117">このサイトは翻訳しない</translation>
 <translation id="8798099450830957504">既定</translation>
 <translation id="8800034312320686233">サイトが動作していない場合</translation>
 <translation id="8803526663383843427">有効にした場合</translation>
 <translation id="8803953437405899238">新しいタブをワンクリックで開くことができます</translation>
+<translation id="8803972455568900492"><ph name="BEGIN_PARAGRAPH1" />[位置情報の精度] をオンにした場合、Wi-Fi アクセス ポイントやモバイル ネットワーク基地局などのワイヤレス シグナルに関する情報と、加速度計やジャイロスコープなどのデバイスのセンサーデータに基づき、デバイスのより正確な位置情報が推定され、Android アプリやサービスの位置情報を利用した機能で使用されます。この設定では、クラウドソースのワイヤレス シグナルを利用した位置情報の向上に役立てるため、デバイスのセンサーに関する情報やユーザーの付近のワイヤレス シグナルが Google で定期的に処理されます。<ph name="END_PARAGRAPH1" />
+　　　　<ph name="BEGIN_PARAGRAPH2" />Google は、ユーザーを特定することなく、位置情報の精度と、位置情報を利用したサービスを改善し、Google のサービスを全般的に改善、提供、維持する目的で、この情報を使用します。また、ユーザーのニーズに応えるうえでの Google およびサードパーティの正当な利益に基づき、この情報を処理します。<ph name="END_PARAGRAPH2" />
+　　　　<ph name="BEGIN_PARAGRAPH3" />[位置情報の精度] は、デバイスの位置情報の設定（[設定] &gt; [プライバシーとセキュリティ] &gt; [プライバシー管理] &gt; [位置情報へのアクセス] &gt; [位置情報の詳細設定]）でいつでもオフにできます。[位置情報の精度] をオフにした場合、位置情報の精度に関するデータは一切収集されません。Android アプリやサービスでは、IP アドレスのみを使用して（可能な場合）、このデバイスの位置情報を判断します。そのため、Google マップなどの Android アプリやサービスでの位置情報の利用範囲と精度に影響する可能性があります。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8804419452060773146">次で開く</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{タブを別のウィンドウに移動}other{タブを別のウィンドウに移動}}</translation>
 <translation id="8805140816472474147">同期を開始するには同期設定を確認してください。</translation>
@@ -10834,6 +10883,7 @@
 <translation id="9096776523567481218">ローカルにインストールされていません</translation>
 <translation id="9098860402274800697">Google Play と Android アプリを削除する</translation>
 <translation id="9099220545925418560">ユーザーの閲覧履歴に基づいて特定されます。この設定は無効になっています。</translation>
+<translation id="910000385680858937">許可 – <ph name="PERMISSION_DETAILS" />。デバイスにマイクを接続してください。</translation>
 <translation id="9100416672768993722">前回使用した入力方法に切り替えるには、<ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> キーを押します</translation>
 <translation id="9100765901046053179">詳細設定</translation>
 <translation id="9101691533782776290">アプリを起動</translation>

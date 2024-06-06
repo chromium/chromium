@@ -5,6 +5,7 @@
 <translation id="1013952917065545813">You can come back here to reopen tabs that you've recently closed</translation>
 <translation id="1016495303386450659">Item updated</translation>
 <translation id="1025514696883950875">{COUNT,plural, =1{Save password in account}other{Save passwords in account}}</translation>
+<translation id="102916930470544692">Passkey</translation>
 <translation id="1035980983510608210">Closing all tabs will close pinned tabs as well.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1043592663436934089">You will be signed out and browsing data will be deleted</translation>
@@ -1016,6 +1017,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6173499589275053515">Password saved in your Google Account, <ph name="EMAIL" /></translation>
 <translation id="6184086493125982861">Show Tabs</translation>
 <translation id="6187302354554850004">Last synced: <ph name="LAST_USED_TIME" /></translation>
+<translation id="6188737759358894319">Created on <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Unread</translation>
 <translation id="6196207969502475924">Voice Search</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Close {COUNT} tab}other{Close {COUNT} tabs}}</translation>
@@ -1303,7 +1305,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7557508262441527045">Signed out</translation>
 <translation id="7561196759112975576">Always</translation>
 <translation id="7564917801238348224">SAVE…</translation>
-<translation id="758132317817089442">Turn on enhanced protection…</translation>
 <translation id="7582857256643797524">This setting is enabled on your device</translation>
 <translation id="7583004045319035904">Use <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> to unlock your incognito tabs.</translation>
 <translation id="7598439272585186139">Get more security</translation>

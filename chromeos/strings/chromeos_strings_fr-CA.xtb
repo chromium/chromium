@@ -961,7 +961,6 @@
 <translation id="6412715219990689313">Clavier intégré</translation>
 <translation id="6417265370957905582">Assistant Google</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
-<translation id="6438073885402882007">Cela permet aux services système autorisés d'utiliser votre position. Les services de localisation peuvent utiliser des sources comme le Wi-Fi, les réseaux cellulaires et les capteurs pour estimer la position de votre appareil. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="6439505561246192797">Faible (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Accéder aux paramètres du compte</translation>
 <translation id="6462978824459367242">Le bouton Ajouter un nom de point d'accès est maintenant activé</translation>

@@ -245,7 +245,6 @@
 <translation id="1432187715652018471">このページはサービス ハンドラのインストールを求めています。</translation>
 <translation id="1432581352905426595">検索エンジンを管理</translation>
 <translation id="1433225466058025572">ファイルをもう一度移動してみてください</translation>
-<translation id="1434317006812369578">Chrome には、ブラウジング中のユーザーを保護する安全機能が組み込まれています。その一部である Google セーフ ブラウジングにより、<ph name="BEGIN_LINK" />最近 <ph name="SITE" /> で検出されたマルウェア<ph name="END_LINK" />が、アクセスしようとしているサイトに埋め込まれています。</translation>
 <translation id="1435940442311036198">別のデバイスのパスキーを使用する</translation>
 <translation id="1436185428532214179">デバイスのファイルやフォルダの編集を要求できる</translation>
 <translation id="1441816242347931036">開いて続行</translation>
@@ -1470,7 +1469,6 @@
 <translation id="3767485424735936570">このコンテンツの <ph name="VM_NAME" /> へのコピーと貼り付けは、管理者のポリシーで推奨されていません</translation>
 <translation id="3772211998634047851">紙（ボンド）</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、Google Keep で新しいメモをすばやく作成します</translation>
-<translation id="378026377453746707">Chrome には、ブラウジング中のユーザーを保護する安全機能が組み込まれています。その一部である Google セーフ ブラウジングにより、最近 <ph name="BEGIN_LINK" /><ph name="SITE" /> で検出された有害なソフトウェア<ph name="END_LINK" />が、アクセスしようとしているサイトに埋め込まれています。</translation>
 <translation id="3780694243617746492">排紙トレイ</translation>
 <translation id="3781428340399460090">ホットピンク</translation>
 <translation id="3783418713923659662">Mastercard</translation>
@@ -1554,7 +1552,6 @@
 <translation id="3950820424414687140">ログイン</translation>
 <translation id="3953505489397572035">この価格は標準です</translation>
 <translation id="3958057596965527988">4x4 インチ</translation>
-<translation id="3959121317419633580">Chrome には、ブラウジング中のユーザーを保護する安全機能が組み込まれています。その一部である Google セーフ ブラウジングにより、最近 <ph name="BEGIN_LINK" /><ph name="SITE" /> で検出されたフィッシング<ph name="END_LINK" />が、アクセスしようとしているサイトに埋め込まれています。<ph name="NEW_LINE" />通常は安全なサイトであっても、攻撃者によって侵害されることがあります。この情報が間違いで、このサイトに危険がないと思われる場合は、<ph name="BEGIN_ERROR_LINK" />Google までお知らせください<ph name="END_ERROR_LINK" />。</translation>
 <translation id="3961148744525529027">支払いハンドラのシートが半分開いています</translation>
 <translation id="3962859241508114581">前の曲</translation>
 <translation id="3963721102035795474">リーダーモード</translation>
@@ -2684,6 +2681,7 @@
 <translation id="6165508094623778733">詳細</translation>
 <translation id="6167577165590485365">最後に取得を試行した時間:</translation>
 <translation id="617256461084925519">Google Chrome でお支払い情報を入力するため、本人確認を行います。</translation>
+<translation id="6173208311907792313">Windows Hello を使用して購入手続きを完了してください</translation>
 <translation id="6176387967264100435">この価格は高額です</translation>
 <translation id="6177128806592000436">このサイトへの接続は保護されていません</translation>
 <translation id="6177531123306197852">C2 封筒</translation>
@@ -3843,6 +3841,7 @@
 <translation id="8332188693563227489"><ph name="HOST_NAME" /> へのアクセスが拒否されました</translation>
 <translation id="833262891116910667">ハイライト表示</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" />のページは翻訳されません</translation>
+<translation id="8339275256517065202">Touch ID を使用して購入手続きを完了してください</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" /> / <ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">仮想カードの登録が画面全体に表示されています</translation>
 <translation id="8349305172487531364">ブックマーク バー</translation>
@@ -4037,6 +4036,7 @@
 <translation id="8726549941689275341">ページサイズ:</translation>
 <translation id="8730621377337864115">完了</translation>
 <translation id="8731268612289859741">セキュリティ コード</translation>
+<translation id="8731917264694569036">デバイスを使用して購入手続きを完了してください</translation>
 <translation id="8733345475331865475">自動車保険</translation>
 <translation id="8733764070897080460">ユーザーはウェブサイトと共有したくないトピックをブロックできます。また、4 週間以上経過したトピックは自動削除されます。詳細</translation>
 <translation id="8734529307927223492">この <ph name="DEVICE_TYPE" /> は <ph name="MANAGER" /> によって管理されています</translation>
@@ -4230,6 +4230,7 @@
 <translation id="9116548361133462832">Chrome で表示される広告の詳細</translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、ジャーニーを再開して、Chrome 履歴で関連するアクティビティを確認できます</translation>
 <translation id="9119042192571987207">アップロード済み</translation>
+<translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> が本人確認を求めています</translation>
 <translation id="912327514020027767">スカート</translation>
 <translation id="912414390325846156">以前にこのサイトへのアクセスを許可しないことを選択しています</translation>
 <translation id="9128870381267983090">ネットワークに接続する</translation>

@@ -464,9 +464,9 @@
 <translation id="3606583719724308068">Đường kết nối đến các trang web HTTPS có độ trễ cao</translation>
 <translation id="361575905210396100">Cảm ơn bạn đã phản hồi</translation>
 <translation id="3621072146987826699">con voi</translation>
-<translation id="3632040286124154621">Đề xuất hữu ích</translation>
+<translation id="3632040286124154621">Đề xuất tốt</translation>
 <translation id="3632579075709132555">Bật/tắt Màn hình bảo vệ quyền riêng tư</translation>
-<translation id="3644695927181369554">Đề xuất không hợp lệ</translation>
+<translation id="3644695927181369554">Đề xuất không tốt</translation>
 <translation id="3651050199673793219">Chọn đơn vị nhiệt độ</translation>
 <translation id="3661106764436337772">Viết nhanh hơn và tự tin hơn</translation>
 <translation id="3662461537616691585">đỏ tía và nâu sẫm</translation>
@@ -961,7 +961,6 @@
 <translation id="6412715219990689313">Bàn phím tích hợp</translation>
 <translation id="6417265370957905582">Trợ lý Google</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
-<translation id="6438073885402882007">Nếu bạn cho phép, các dịch vụ hệ thống sẽ có quyền sử dụng thông tin vị trí của bạn. Dịch vụ vị trí có thể sử dụng những nguồn như Wi‑Fi, mạng di động và cảm biến để giúp ước chừng vị trí của thiết bị. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="6439505561246192797">Yếu (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Chuyển đến phần cài đặt tài khoản</translation>
 <translation id="6462978824459367242">Nút Thêm APN hiện đã bật</translation>

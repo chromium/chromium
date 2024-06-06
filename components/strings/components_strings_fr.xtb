@@ -245,7 +245,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1432187715652018471">Cette page veut installer un gestionnaire de services.</translation>
 <translation id="1432581352905426595">Gérer les moteurs de recherche</translation>
 <translation id="1433225466058025572">Réessayez de déplacer vos fichiers</translation>
-<translation id="1434317006812369578">Chrome dispose de fonctionnalités de sécurité intégrées pour vous protéger sur Internet, comme la navigation sécurisée Google. La navigation sécurisée <ph name="BEGIN_LINK" />a récemment détecté un logiciel malveillant sur le site <ph name="SITE" /><ph name="END_LINK" />, qui est intégré au site que vous essayez de consulter.</translation>
 <translation id="1435940442311036198">Utiliser une clé d'accès sur un autre appareil</translation>
 <translation id="1436185428532214179">Peut demander à modifier des fichiers et des dossiers sur votre appareil</translation>
 <translation id="1441816242347931036">Ouvrir pour continuer</translation>
@@ -1470,7 +1469,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3767485424735936570">La règle définie par l'administrateur déconseille de copier et de coller ce contenu vers <ph name="VM_NAME" /></translation>
 <translation id="3772211998634047851">Papier (bond)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour créer rapidement une note dans Google Keep</translation>
-<translation id="378026377453746707">Chrome dispose de fonctionnalités de sécurité intégrées pour vous protéger sur Internet, comme la navigation sécurisée Google. La navigation sécurisée <ph name="BEGIN_LINK" />a récemment détecté un logiciel malveillant sur le site <ph name="SITE" /><ph name="END_LINK" />, qui est intégré au site que vous essayez de consulter.</translation>
 <translation id="3780694243617746492">Bac de sortie</translation>
 <translation id="3781428340399460090">Rose foncé</translation>
 <translation id="3783418713923659662">Mastercard</translation>
@@ -1554,7 +1552,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3950820424414687140">Se connecter</translation>
 <translation id="3953505489397572035">Ce prix est dans la gamme habituelle</translation>
 <translation id="3958057596965527988">4 x 4 pouces</translation>
-<translation id="3959121317419633580">Chrome dispose de fonctionnalités de sécurité intégrées pour vous protéger sur Internet, comme la navigation sécurisée Google. La navigation sécurisée <ph name="BEGIN_LINK" />a récemment détecté un procédé d'hameçonnage sur le site <ph name="SITE" /><ph name="END_LINK" />, qui est intégré au site que vous essayez de consulter.<ph name="NEW_LINE" />Même des sites normalement sûrs sont parfois compromis par des pirates informatiques. <ph name="BEGIN_ERROR_LINK" />Contactez-nous<ph name="END_ERROR_LINK" /> si vous pensez qu'il s'agit d'une erreur et que ce site ne présente aucun danger.</translation>
 <translation id="3961148744525529027">La feuille du gestionnaire de paiement est ouverte à moitié</translation>
 <translation id="3962859241508114581">Titre précédent</translation>
 <translation id="3963721102035795474">Mode lecture</translation>

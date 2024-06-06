@@ -481,6 +481,7 @@
 <translation id="1353980523955420967">找不到 PPD。请确保您的 Chromebook 已连接到网络，然后重试。</translation>
 <translation id="1354045473509304750">继续允许 <ph name="HOST" /> 使用和移动您的摄像头</translation>
 <translation id="1355088139103479645">删除所有数据？</translation>
+<translation id="1356376170199999104">已允许 - <ph name="PERMISSION_DETAILS" />。请使用实物开关开启麦克风。</translation>
 <translation id="1356959069439783953">闲置标签页外观焕然一新</translation>
 <translation id="1358741672408003399">拼写和语法</translation>
 <translation id="1359923111303110318">您的设备可通过 Smart Lock 解锁。按 Enter 键即可解锁。</translation>
@@ -747,6 +748,7 @@
 <translation id="1557939148300698553">创建个人资料</translation>
 <translation id="155865706765934889">触控板</translation>
 <translation id="1558671750917454373">继续投放到“<ph name="DEVICE_NAME" />”</translation>
+<translation id="1561331397460162942">这将允许具有位置信息权限的应用和网站以及系统服务使用位置信息</translation>
 <translation id="1562119309884184621">如果您添加了此联系人，当他/她下次分享内容时，系统会识别出此联系人</translation>
 <translation id="1563137369682381456">失效日期</translation>
 <translation id="1563702743503072935">登录后，您在此设备上也能获取您 Google 账号中保存的密码</translation>
@@ -1736,11 +1738,13 @@
     <ph name="BEGIN_PARAGRAPH2" />安装流程一旦开始就无法取消。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">与下列网域中的任何设备交换数据：<ph name="DOMAINS" /></translation>
 <translation id="2270666014403455717">为“选择”操作分配开关</translation>
+<translation id="2271452184061378400">您的标签页分组会保存在此处</translation>
 <translation id="2271986192355138465">了解如何安装 Web 应用</translation>
 <translation id="2272430695183451567">已分配 0 个开关键</translation>
 <translation id="2272570998639520080">马天尼酒杯</translation>
 <translation id="2273119997271134996">基座视频端口出问题了</translation>
 <translation id="2274840746523584236">您的 Chromebook 需要充电</translation>
+<translation id="2275193525496879616">已允许。请将相机连接到您的设备。</translation>
 <translation id="2276503375879033601">添加更多应用</translation>
 <translation id="2278193750452754829">已允许在此网站上使用扩展程序。选择即可打开菜单</translation>
 <translation id="2278562042389100163">打开浏览器窗口</translation>
@@ -1858,6 +1862,7 @@
 <translation id="2350133097354918058">已重新加载</translation>
 <translation id="2350182423316644347">正在初始化应用…</translation>
 <translation id="235028206512346451">如果您离开设备，设备屏幕就会自动锁定。当您位于设备前时，设备屏幕将会维持解锁状态更长时间。如果您没有设置屏幕锁定方式，您的设备将进入休眠状态，而不是锁定状态。</translation>
+<translation id="2351923523007389195">已允许 - <ph name="PERMISSION_DETAILS" />。请开启<ph name="LINK_BEGIN" />系统位置信息使用权<ph name="LINK_END" />。</translation>
 <translation id="2352305801620974284">在该设备上登录后，您可以从您的 Google 账号中获取密码等信息</translation>
 <translation id="2352662711729498748">&lt; 1MB</translation>
 <translation id="2352810082280059586">锁定屏幕记事会自动保存到 <ph name="LOCK_SCREEN_APP_NAME" /> 中。最近的记事将保留在锁定屏幕上。</translation>
@@ -1972,7 +1977,6 @@
 <translation id="2435248616906486374">网络连接已断开</translation>
 <translation id="2435457462613246316">显示密码</translation>
 <translation id="2436385001956947090">复制链接(&amp;L)</translation>
-<translation id="2436746748253887661">这将允许具有相应权限的系统服务使用您的位置信息。位置信息服务可能会根据 Wi-Fi、移动网络和传感器等来源提供的信息推测设备所在的位置。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="2438853563451647815">未连接到打印机</translation>
 <translation id="2439152382014731627">重置 <ph name="DEVICE_TYPE" /> 密码</translation>
 <translation id="2439626940657133600">正在加载“<ph name="WINDOW_TITLE" />”</translation>
@@ -3329,6 +3333,7 @@
 <translation id="3449839693241009168">按 <ph name="SEARCH_KEY" /> 可向<ph name="EXTENSION_NAME" />发送命令</translation>
 <translation id="3450157232394774192">闲置状态占用率</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> 要求您立即连接到 Wi-Fi 并下载更新。</translation>
+<translation id="345078987193237421">这将允许具有相机权限的应用和网站以及系统服务使用相机</translation>
 <translation id="3452999110156026232">家长访问</translation>
 <translation id="3453082738208775226">清理离线存储空间？</translation>
 <translation id="3453597230179205517">已禁止使用位置信息</translation>
@@ -3500,6 +3505,7 @@
 <translation id="3587438013689771191">详细了解：<ph name="SUBPAGE_TITLE" /></translation>
 <translation id="3587482841069643663">全部</translation>
 <translation id="3588790464166520201">允许安装付款处理程序</translation>
+<translation id="3589010096969411438">已允许。请使用实物开关开启麦克风。</translation>
 <translation id="3589766037099229847">已拦截不安全内容</translation>
 <translation id="3590194807845837023">解锁个人资料并重新启动</translation>
 <translation id="3590295622232282437">正在进入受管理自助服务终端。</translation>
@@ -4703,6 +4709,7 @@
 <translation id="4473996011558324141">正在估算用时</translation>
 <translation id="4474155171896946103">为所有标签页添加书签...</translation>
 <translation id="4475299370877036544">此操作可能违反了贵组织的政策</translation>
+<translation id="4476198534886170024">已允许。请开启<ph name="LINK_BEGIN" />系统相机使用权<ph name="LINK_END" />。</translation>
 <translation id="4476590490540813026">运动员</translation>
 <translation id="4476659815936224889">要扫描此二维码，您可以使用手机上的二维码扫描器应用，也可以使用某些相机应用。</translation>
 <translation id="4477015793815781985">必须以 Ctrl 键、Alt 键或 ⌘ 键开头</translation>
@@ -5051,6 +5058,7 @@
 <translation id="4742795653798179840">已删除 Chrome 数据</translation>
 <translation id="4742970037960872810">撤消突出显示</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />了解如何更新应用<ph name="END_LINK" /></translation>
+<translation id="4743990041512863976">已允许 - <ph name="PERMISSION_DETAILS" />。请开启<ph name="LINK_BEGIN" />系统麦克风使用权<ph name="LINK_END" />。</translation>
 <translation id="4744268813103118742">前往网站</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{将这个网站取消静音}other{将这些网站取消静音}}</translation>
@@ -5565,6 +5573,7 @@
 <translation id="5143374789336132547">“<ph name="EXTENSION_NAME" />”扩展程序更改了您点击“主页”按钮后系统显示的页面。</translation>
 <translation id="5143612243342258355">此文件包含危险内容</translation>
 <translation id="5143712164865402236">进入全屏模式</translation>
+<translation id="5143960098217235598">这将允许具有麦克风权限的应用和网站以及系统服务使用麦克风</translation>
 <translation id="5144815231216017543">Alt + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="5145464978649806571">如果您离开设备，设备屏幕就会自动锁定。当您在设备前时，设备屏幕将会持续保持不锁定状态。锁定屏幕功能处于停用状态时，您的设备将会休眠，而非锁定。</translation>
 <translation id="514575469079499857">根据您的 IP 地址确定位置（默认）</translation>
@@ -5761,6 +5770,7 @@
 <translation id="5291739252352359682">在 Chrome 浏览器中自动为媒体创建字幕（目前仅提供英文版）。音频和字幕的处理工作都会在设备上完成，相关数据绝不会外泄。</translation>
 <translation id="529175790091471945">将此设备格式化</translation>
 <translation id="529296195492126134">暂存模式不受支持。请与您的管理员联系</translation>
+<translation id="5293043095535566171">要开启位置信息使用权吗？</translation>
 <translation id="5293170712604732402">将设置还原为原始默认设置</translation>
 <translation id="5294068591166433464">如果某个网站企图窃取您的密码，或者您下载了有害的文件，Chrome 可能还会将相应网址连同少量网页内容发送给 Google</translation>
 <translation id="5294097441441645251">必须以小写字符或下划线开头</translation>
@@ -6949,6 +6959,7 @@
 <translation id="6200151268994853226">管理扩展程序</translation>
 <translation id="6201608810045805374">移除此账号？</translation>
 <translation id="6202304368170870640">您可以使用 PIN 码登录或解锁您的设备。</translation>
+<translation id="6202935572248792580">已允许。请将麦克风连接到您的设备。</translation>
 <translation id="6203247599828309566">您在这个网站上保存了与密码相关的备注。如需查看该备注，请点击钥匙图标。</translation>
 <translation id="6205314730813004066">广告隐私权设置</translation>
 <translation id="6205993460077903908"><ph name="WINDOW_TITLE" /> - 麦克风正在录音</translation>
@@ -7003,6 +7014,7 @@
 <translation id="6238923052227198598">始终将最新记事显示在锁定屏幕上</translation>
 <translation id="6238982280403036866">允许使用 JavaScript</translation>
 <translation id="6239558157302047471">重新加载框架(&amp;F)</translation>
+<translation id="6240637845286751292">已允许。请开启<ph name="LINK_BEGIN" />系统位置信息使用权<ph name="LINK_END" />。</translation>
 <translation id="6240821072888636753">每次都询问</translation>
 <translation id="6240964651812394252">若要在您的操作系统中使用 Google 密码管理工具，请重新启动 Chrome 并允许使用计算机的密码管理工具。待 Chrome 重新启动后，您的标签页会自动重新打开。</translation>
 <translation id="6241530762627360640">获取与您的系统配对的蓝牙设备的相关信息，以及发现附近的蓝牙设备。</translation>
@@ -8251,6 +8263,7 @@
 <translation id="7210499381659830293">扩展打印机</translation>
 <translation id="7211783048245131419">尚未分配任何开关</translation>
 <translation id="7212097698621322584">请输入您的当前 PIN 码以更改它。如果您不知道 PIN 码，则需要重置安全密钥，然后创建新 PIN 码。</translation>
+<translation id="7214047272988222011">已允许 - <ph name="PERMISSION_DETAILS" />。请开启<ph name="LINK_BEGIN" />系统相机使用权<ph name="LINK_END" />。</translation>
 <translation id="721490496276866468">导入密码</translation>
 <translation id="7218514093816577632">请确保在您的“<ph name="DEVICE_NAME" />”上开启通知功能。</translation>
 <translation id="7219254577985949841">删除网站数据？</translation>
@@ -8731,6 +8744,7 @@
 <translation id="7573172247376861652">电池充电</translation>
 <translation id="7573594921350120855">网站通常会使用您的摄像头以实现通信功能（例如视频聊天）</translation>
 <translation id="7575272930307342804">导航控件</translation>
+<translation id="757660455834887988">已允许 - <ph name="PERMISSION_DETAILS" />。请将相机连接到您的设备。</translation>
 <translation id="7576690715254076113">自动分页</translation>
 <translation id="7576976045740938453">演示模式账号出问题了。</translation>
 <translation id="7578137152457315135">指纹设置</translation>
@@ -9045,7 +9059,6 @@
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7788948939674438635">不允许网站锁定键盘</translation>
 <translation id="7789963078219276159">初始页背景已更改为 <ph name="CATEGORY" />。</translation>
-<translation id="7790689625219600437">PDF OCR</translation>
 <translation id="7791269138074599214">输入法</translation>
 <translation id="7791429245559955092">系统会将此应用安装到您当前使用的 Chrome 个人资料中</translation>
 <translation id="7791436592012979144">已启用反向滚动</translation>
@@ -9408,6 +9421,7 @@
 <translation id="8053278772142718589">PKCS #12 文件</translation>
 <translation id="8053390638574070785">重新加载此页</translation>
 <translation id="8053629544194355894">开启同步功能后即可让 Chrome 提供标签页分组建议</translation>
+<translation id="8054500940978949009">已允许。请开启<ph name="LINK_BEGIN" />系统麦克风使用权<ph name="LINK_END" />。</translation>
 <translation id="8054517699425078995">此类型的文件可能会危害您的设备。仍要保留 <ph name="FILE_NAME" /> 吗？</translation>
 <translation id="8054563304616131773">请输入有效的电子邮件地址</translation>
 <translation id="8054609631325628928">这些号码可用于帮助激活服务</translation>
@@ -9800,6 +9814,7 @@
 <translation id="8336739000755212683">更改设备账号图片</translation>
 <translation id="8337020675372081178">{HOURS,plural, =1{此设备将被保存 1 小时，下次您无需代码即可连接。这项设置是由您的管理员指定的。}other{此设备将被保存 {HOURS} 小时，下次您无需代码即可连接。这项设置是由您的管理员指定的。}}</translation>
 <translation id="8337399713761067085">您目前处于离线状态</translation>
+<translation id="8338427544764842461">您的标签页分组会保存在此处，并在您所有已登录账号的设备上更新。</translation>
 <translation id="8338952601723052325">开发者网站</translation>
 <translation id="8339288417038613756">显示大小和文字大小</translation>
 <translation id="833986336429795709">要打开此链接，请选择一个应用</translation>
@@ -10837,6 +10852,7 @@
 <translation id="9096776523567481218">未在本地安装</translation>
 <translation id="9098860402274800697">移除 Google Play 和 Android 应用</translation>
 <translation id="9099220545925418560">根据您的浏览记录。此设置已关闭。</translation>
+<translation id="910000385680858937">已允许 - <ph name="PERMISSION_DETAILS" />。请将麦克风连接到您的设备。</translation>
 <translation id="9100416672768993722">若要切换到上次使用的输入法，请按 <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR" /><ph name="BEGIN_SPACE" />空格键<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="9100765901046053179">高级设置</translation>
 <translation id="9101691533782776290">启动应用</translation>

@@ -245,7 +245,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1432187715652018471">Strona chce zainstalować moduł do obsługiwania usługi.</translation>
 <translation id="1432581352905426595">Zarządzaj wyszukiwarkami</translation>
 <translation id="1433225466058025572">Spróbuj przenieść pliki ponownie</translation>
-<translation id="1434317006812369578">Chrome ma wbudowane zabezpieczenia takie jak Bezpieczne przeglądanie Google, które chronią Cię podczas korzystania z internetu. Niedawno funkcja Bezpieczne przeglądanie <ph name="BEGIN_LINK" />wykryła złośliwe oprogramowanie na stronie <ph name="SITE" /><ph name="END_LINK" /> umieszczonej w witrynie, którą chcesz odwiedzić.</translation>
 <translation id="1435940442311036198">Użyj klucza na innym urządzeniu</translation>
 <translation id="1436185428532214179">Może prosić o zgodę na edytowanie plików i folderów na urządzeniu</translation>
 <translation id="1441816242347931036">Otwórz, aby kontynuować</translation>
@@ -1470,7 +1469,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3767485424735936570">Kopiowanie i wklejanie tej zawartości do systemu <ph name="VM_NAME" /> nie jest zalecane przez zasady administratora</translation>
 <translation id="3772211998634047851">Papier (Bond)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />; naciśnij Tab, a potem Enter, aby szybko utworzyć nową notatkę w Google Keep</translation>
-<translation id="378026377453746707">Chrome ma wbudowane zabezpieczenia takie jak Bezpieczne przeglądanie Google, które chronią Cię podczas korzystania z internetu. Niedawno Bezpieczne przeglądanie <ph name="BEGIN_LINK" />znalazło szkodliwe oprogramowanie na stronie<ph name="SITE" /><ph name="END_LINK" /> umieszczonej w witrynie, którą chcesz odwiedzić.</translation>
 <translation id="3780694243617746492">Pojemnik wyjściowy</translation>
 <translation id="3781428340399460090">Ciepłoróżowy</translation>
 <translation id="3783418713923659662">Mastercard</translation>
@@ -1554,7 +1552,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3950820424414687140">Zaloguj się</translation>
 <translation id="3953505489397572035">To typowa cena</translation>
 <translation id="3958057596965527988">4 x 4 cale</translation>
-<translation id="3959121317419633580">Chrome ma wbudowane zabezpieczenia takie jak Bezpieczne przeglądanie Google, które chronią Cię podczas korzystania z internetu. Niedawno Bezpieczne przeglądanie <ph name="BEGIN_LINK" />wykryło próbę wyłudzenia informacji na stronie <ph name="SITE" /><ph name="END_LINK" /> umieszczonej w witrynie, którą chcesz odwiedzić.<ph name="NEW_LINE" />Zaatakowane mogą zostać nawet strony, które zazwyczaj są bezpieczne. <ph name="BEGIN_ERROR_LINK" />Daj nam znać<ph name="END_ERROR_LINK" />, jeśli uważasz, że zaszła pomyłka i że ta witryna nie stanowi zagrożenia.</translation>
 <translation id="3961148744525529027">Arkusz modułu do obsługi płatności jest w połowie otwarty</translation>
 <translation id="3962859241508114581">Poprzedni utwór</translation>
 <translation id="3963721102035795474">Tryb czytnika</translation>

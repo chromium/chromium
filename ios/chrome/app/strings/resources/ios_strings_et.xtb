@@ -5,6 +5,7 @@
 <translation id="1013952917065545813">Võite siia tagasi tulla, et avada hiljuti suletud vahelehti uuesti.</translation>
 <translation id="1016495303386450659">Üksus on värskendatud</translation>
 <translation id="1025514696883950875">{COUNT,plural, =1{Salvesta parool kontole}other{Salvesta paroolid kontole}}</translation>
+<translation id="102916930470544692">Pääsuvõti</translation>
 <translation id="1035980983510608210">Kui sulete kõik vahelehed, suletakse ja kinnitatud vahelehed.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1043592663436934089">Teid logitakse välja ja sirvimisandmed kustutatakse</translation>
@@ -1016,6 +1017,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="6173499589275053515">Parool salvestati teie Google'i kontole <ph name="EMAIL" /></translation>
 <translation id="6184086493125982861">Kuva vahelehed</translation>
 <translation id="6187302354554850004">Viimati sünkr.: <ph name="LAST_USED_TIME" /></translation>
+<translation id="6188737759358894319">Loodi kuupäeval <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Lugemata</translation>
 <translation id="6196207969502475924">Häälotsing</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Sule {COUNT} vaheleht}other{Sule {COUNT} vahelehte}}</translation>
@@ -1303,7 +1305,6 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <translation id="7557508262441527045">Välja logitud</translation>
 <translation id="7561196759112975576">Alati</translation>
 <translation id="7564917801238348224">SALVESTA...</translation>
-<translation id="758132317817089442">Täiustatud kaitse sisselülitamine …</translation>
 <translation id="7582857256643797524">See seade on teie seadmes lubatud</translation>
 <translation id="7583004045319035904">Kasutage oma inkognito vahelehtede avamiseks meetodit <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />.</translation>
 <translation id="7598439272585186139">Parandage turvalisust</translation>

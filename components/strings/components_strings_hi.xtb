@@ -245,7 +245,6 @@
 <translation id="1432187715652018471">यह पेज, सेवा हैंडलर इंस्टॉल करना चाहता है.</translation>
 <translation id="1432581352905426595">सर्च इंजन प्रबंधित करें</translation>
 <translation id="1433225466058025572">अपनी फ़ाइलें फिर से मूव करने की कोशिश करें</translation>
-<translation id="1434317006812369578">ब्राउज़ करते समय आपको सुरक्षित रखने के लिए, Chrome में सुरक्षा से जुड़ी सुविधाएं पहले से ही मौजूद हैं. उदाहरण के लिए, Google सुरक्षित ब्राउज़िंग. सुरक्षित ब्राउज़िंग ने हाल ही में <ph name="BEGIN_LINK" /><ph name="SITE" /> पर मैलवेयर होने का पता<ph name="END_LINK" /> लगाया है, जो उस साइट में एम्बेड है जिसे आपको ब्राउज़ करना है.</translation>
 <translation id="1435940442311036198">Use a passkey on a different device</translation>
 <translation id="1436185428532214179">साइट, आपके डिवाइस पर फ़ाइलों या फ़ोल्डर में बदलाव करने की अनुमति मांग सकती है</translation>
 <translation id="1441816242347931036">जारी रखने के लिए खोलें</translation>
@@ -1470,7 +1469,6 @@
 <translation id="3767485424735936570">एडमिन नीति के मुताबिक, इस कॉन्टेंट को कॉपी करके <ph name="VM_NAME" /> में चिपकाने का सुझाव नहीं दिया जाता</translation>
 <translation id="3772211998634047851">पेपर (बॉन्ड)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Keep में जल्दी से नया नोट बनाने के लिए, पहले Tab दबाएं और फिर Enter दबाएं</translation>
-<translation id="378026377453746707">ब्राउज़ करते समय आपको सुरक्षित रखने के लिए, Chrome में सुरक्षा से जुड़ी सुविधाएं पहले से ही मौजूद हैं. उदाहरण के लिए, Google सुरक्षित ब्राउज़िंग. सुरक्षित ब्राउज़िंग ने हाल ही में <ph name="BEGIN_LINK" /><ph name="SITE" /> पर नुकसान पहुंचाने वाला सॉफ़्टवेयर होने का पता<ph name="END_LINK" /> लगाया है, जो उस साइट में एम्बेड है जिसे आपको ब्राउज़ करना है.</translation>
 <translation id="3780694243617746492">आउटपुट बिन</translation>
 <translation id="3781428340399460090">चमकीला गुलाबी</translation>
 <translation id="3783418713923659662">Mastercard</translation>
@@ -1554,7 +1552,6 @@
 <translation id="3950820424414687140">साइन इन करें</translation>
 <translation id="3953505489397572035">यह औसत कीमत है</translation>
 <translation id="3958057596965527988">4 x 4 इंच</translation>
-<translation id="3959121317419633580">ब्राउज़ करते समय आपको सुरक्षित रखने के लिए, Chrome में सुरक्षा से जुड़ी सुविधाएं पहले से ही मौजूद हैं. उदाहरण के लिए, Google सुरक्षित ब्राउज़िंग. सुरक्षित ब्राउज़िंग ने हाल ही में <ph name="BEGIN_LINK" /><ph name="SITE" /> पर फ़िशिंग का पता<ph name="END_LINK" /> लगाया है, जो उस साइट में एम्बेड है जिसे आपको ब्राउज़ करना है.<ph name="NEW_LINE" />यहां तक कि आम तौर पर सुरक्षित मानी जाने वाली साइटें भी कभी-कभार हमलावरों का शिकार हो जाती हैं. अगर आपको लगता है कि हमारी जांच में कोई गलती हुई है और इस साइट से कोई खतरा नहीं है, तो <ph name="BEGIN_ERROR_LINK" />हमें बताएं<ph name="END_ERROR_LINK" />.</translation>
 <translation id="3961148744525529027">पैसे चुकाने की हैंडलर शीट आधी स्क्रीन में खुली है</translation>
 <translation id="3962859241508114581">पिछला ट्रैक</translation>
 <translation id="3963721102035795474">रीडर मोड</translation>

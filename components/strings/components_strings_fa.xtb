@@ -245,7 +245,6 @@
 <translation id="1432187715652018471">این صفحه می‌خواهد کنترل‌کننده سرویس نصب کند.</translation>
 <translation id="1432581352905426595">مدیریت موتورهای جستجو</translation>
 <translation id="1433225466058025572">فایل‌ها را دوباره جابه‌جا کنید</translation>
-<translation id="1434317006812369578">‏Chrome دارای ویژگی‌های ایمنی داخلی است که از شما درحین مرور محافظت می‌کند، مثل «مرور ایمن Google». «مرور ایمن» اخیراً <ph name="BEGIN_LINK" />بدافزار در <ph name="SITE" /> پیدا کرده است<ph name="END_LINK" />، که این بدافزار در سایتی که می‌خواهید بازدید کنید جاسازی شده است.</translation>
 <translation id="1435940442311036198">استفاده از گذرکلید در دستگاهی دیگر</translation>
 <translation id="1436185428532214179">می‌تواند برای ویرایش فایل‌ها و پوشه‌های موجود در دستگاهتان درخواست دهد</translation>
 <translation id="1441816242347931036">برای ادامه دادن، باز کنید</translation>
@@ -1470,7 +1469,6 @@
 <translation id="3767485424735936570">براساس خط‌مشی سرپرست، کپی کردن و جای‌گذاری این محتوا در <ph name="VM_NAME" /> توصیه نمی‌شود</translation>
 <translation id="3772211998634047851">کاغذ (باند)</translation>
 <translation id="377451872037045164">‏<ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای ایجاد سریع یادداشت جدید در Google Keep، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
-<translation id="378026377453746707">‏Chrome دارای ویژگی‌های ایمنی داخلی است که از شما درحین مرور محافظت می‌کند، مثل «مرور ایمن Google». «مرور ایمن» اخیراً <ph name="BEGIN_LINK" />نرم‌افزار مخربی در <ph name="SITE" /> پیدا کرده است<ph name="END_LINK" />، که این نرم‌افزار مخرب در سایتی که می‌خواهید بازدید کنید جاسازی شده است.</translation>
 <translation id="3780694243617746492">مخزن خروجی</translation>
 <translation id="3781428340399460090">صورتی پررنگ</translation>
 <translation id="3783418713923659662">مسترکارت</translation>
@@ -1554,7 +1552,6 @@
 <translation id="3950820424414687140">ورود به سیستم</translation>
 <translation id="3953505489397572035">این قیمت معمول است</translation>
 <translation id="3958057596965527988">۴ × ۴ اینچ</translation>
-<translation id="3959121317419633580">‏Chrome دارای ویژگی‌های ایمنی داخلی است که از شما درحین مرور محافظت می‌کند، مثل «مرور ایمن Google». «مرور ایمن» اخیراً <ph name="BEGIN_LINK" />رمزگیری در <ph name="SITE" /> پیدا کرده است<ph name="END_LINK" />، که این رمزگیری در سایتی که می‌خواهید بازدید کنید جاسازی شده است.<ph name="NEW_LINE" />حتی سایت‌هایی که معمولاً امن هستند گاهی اوقات توسط مهاجمان درمعرض خطر قرار می‌گیرند. اگر فکر می‌کنید اشتباهی روی داده است و این سایت خطری ندارد، <ph name="BEGIN_ERROR_LINK" />به ما اطلاع دهید<ph name="END_ERROR_LINK" />.</translation>
 <translation id="3961148744525529027">برگ کنترل‌کننده پرداخت نیمه‌باز است</translation>
 <translation id="3962859241508114581">آهنگ قبلی</translation>
 <translation id="3963721102035795474">حالت «خواننده»</translation>

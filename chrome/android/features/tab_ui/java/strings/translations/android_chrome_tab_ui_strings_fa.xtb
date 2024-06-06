@@ -100,7 +100,6 @@
 <translation id="6333260925957816943">اطلاعات مربوط به این فروشگاه</translation>
 <translation id="6381032505162537930">گروه‌های برگه‌تان را اینجا خواهید دید</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{لغو گروه‌بندی <ph name="TABS_COUNT_ONE" /> برگه انتخاب‌شده}one{لغو گروه‌بندی <ph name="TABS_COUNT_MANY" /> برگه انتخاب‌شده}other{لغو گروه‌بندی <ph name="TABS_COUNT_MANY" /> برگه انتخاب‌شده}}</translation>
-<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{‏می‌توانید برگه‌های بسته‌شده را در «برگه‌های اخیر» تحت منوِ اصلی Chrome پیدا کنید. «برگه ناشناس» دردسترس نخواهد بود.}one{‏می‌توانید برگه‌های بسته‌شده را در «برگه‌های اخیر» تحت منوِ اصلی Chrome پیدا کنید. # «برگه ناشناس» دردسترس نخواهد بود.}other{‏می‌توانید برگه‌های بسته‌شده را در «برگه‌های اخیر» تحت منوِ اصلی Chrome پیدا کنید. # «برگه ناشناس» دردسترس نخواهد بود.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> برگه}one{<ph name="TABS_COUNT_MANY" /> برگه}other{<ph name="TABS_COUNT_MANY" /> برگه}}</translation>
 <translation id="6549021453810473782">مشاهده اطلاعات فروشگاه</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>

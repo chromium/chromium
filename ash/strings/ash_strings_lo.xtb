@@ -72,6 +72,7 @@
 <translation id="1235458158152011030">ເຄືອຂ່າຍທີ່ຮູ້ຈັກ</translation>
 <translation id="1239161794459865856">ເຊື່ອມຕໍ່ <ph name="FEATURE_NAME" /> ແລ້ວ.</translation>
 <translation id="1240638468526743569">ແອັບ</translation>
+<translation id="1242198791279543032">ປິດສຽງການແຈ້ງເຕືອນໄວ້</translation>
 <translation id="1242883863226959074">ອຸປະກອນ</translation>
 <translation id="1245644940275736236">ໄປຫາຜູ້ຊ່ວຍ</translation>
 <translation id="124678866338384709">ປິດແຖບປັດຈຸບັນ</translation>
@@ -147,6 +148,7 @@
 <translation id="1487931858675166540">ສະຫຼັບ <ph name="FIRST_ITEM_TITLE" /> ກັບ <ph name="SECOND_ITEM_TITLE" /> ແລ້ວ</translation>
 <translation id="1500926532737552529">ສະແດງການແນະນຳທັງໝົດ</translation>
 <translation id="1501946871587957338">ປ່ຽນແຫຼ່ງທີ່ມາຂອງສຽງບໍ?</translation>
+<translation id="1505542291183484463">ປັບຂະໜາດໜ້າຈໍແບບຮຽງຕໍ່ກັນລົງລຸ່ມ</translation>
 <translation id="1510238584712386396">ຕົວ​ເປີດ​ໃຊ້</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{ສະແດງການຕັ້ງຄ່າການແຈ້ງເຕືອນ. ການແຈ້ງເຕືອນປິດຢູ່ສຳລັບໜຶ່ງແອັບ}other{ສະແດງການຕັ້ງຄ່າການແຈ້ງເຕືອນ. ການແຈ້ງເຕືອນປິດຢູ່ສຳລັບ # ແອັບ}}</translation>
 <translation id="1523032696246003">ແບັດເຕີຣີ <ph name="BATTERY_PERCENTAGE" />% | ອີກ <ph name="TIME" /> ຈະເຕັມ</translation>
@@ -177,6 +179,7 @@
 <translation id="1610778689852195798">"ຍົກເລີກ"</translation>
 <translation id="1611993646327628135">ເປີດ</translation>
 <translation id="1620510694547887537">ກ້ອງ​ຖ່າຍ​ຮູບ</translation>
+<translation id="1623768535032616219">ຫຍໍ້ Google ຫ້ອງຮຽນລົງ</translation>
 <translation id="1632985212731562677">ປິດການນຳໃຊ້ການເຂົ້າເຖິງດ້ວຍປຸ່ມກົດໄດ້ໃນການຕັ້ງຄ່າ &gt; ການຊ່ວຍເຂົ້າເຖິງ.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> ອຸປະກອນ</translation>
 <translation id="1639239467298939599">ກໍາລັງໂຫຼດ</translation>
@@ -296,11 +299,13 @@
 <translation id="2149229036084364364">ໄປຫາແທຣັກກ່ອນໜ້າ</translation>
 <translation id="2152895518047545149">ບໍ່ໜ້າຈະມີຫຍັງຂາດຫາຍໄປ. ດີຫຼາຍ!</translation>
 <translation id="2161132820593978283">ລອງໃຊ້ການວາງເຟຣມກ້ອງຖ່າຍຮູບເພື່ອໃຫ້ທ່ານຢູ່ກາງຈໍໃນເວລາໂທວິດີໂອ ເປີດໃຊ້ມັນໃນການຕັ້ງຄ່າດ່ວນ.</translation>
+<translation id="216955976692983107">ປັບຂະໜາດໜ້າຈໍແບບຮຽງຕໍ່ກັນໄປທາງຂວາ</translation>
 <translation id="2185166372312820725">ໄປຫາແຖບກ່ອນນີ້</translation>
 <translation id="2185444992308415167">ເຂົ້າໄປແຖບ 1 ຫາ 8</translation>
 <translation id="2198625180564913276">ກຳລັງເພີ່ມໂປຣໄຟລ໌. ຂັ້ນຕອນນີ້ອາດໃຊ້ເວລາສອງສາມນາທີ.</translation>
 <translation id="219905428774326614">ຕົວເປີດນຳໃຊ້, ແອັບທັງໝົດ</translation>
 <translation id="2201071101391734388">ຮູບຫຼ້າສຸດທີ <ph name="INDEX" /> ຈາກທັງໝົດ <ph name="TOTAL_COUNT" />.</translation>
+<translation id="2201687081523799384">ຫຍໍ້ Google Tasks ລົງ</translation>
 <translation id="2208323208084708176">​ໂໝດ​ໜ້າ​ຈໍ​ເຮັດ​ເຂົ້າ​ກັນ​ແລ້ວ</translation>
 <translation id="2220572644011485463">PIN ຫຼື ລະຫັດຜ່ານ</translation>
 <translation id="2222841058024245321">ໂຕະ 7</translation>
@@ -362,6 +367,7 @@
 <translation id="2427507373259914951">ຄລິກຊ້າຍ</translation>
 <translation id="2429753432712299108">ອຸປະກອນ Bluetooth "<ph name="DEVICE_NAME" />" ຢາກໄດ້ການອະນຸຍາດຈັບຄູ່. ກ່ອນຍອມຮັບ, ກະລຸນາຢືນຢັນວ່າ ປຸ່ມຜ່ານສະແດງຂຶ້ນຢູ່ອຸປະກອນນັ້ນແລ້ວ: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">ສະ​ແດງ​ລະ​ຫັດ​ຜ່ານ</translation>
+<translation id="2437771564543046790">ແບັດເຕີຣີເຫຼືອໜ້ອຍ. ຕົວປະຢັດແບັດເຕີຣີເປີດຢູ່</translation>
 <translation id="243878895369688216">ເປີດມື້ວານນີ້</translation>
 <translation id="2440978926514840421">ເຮັດການບັນທຶກ GIF ແລ້ວ</translation>
 <translation id="2441427462554639370">ການບັນທຶກສິ້ນສຸດລົງເນື່ອງຈາກພື້ນທີ່ຈັດເກັບຂໍ້ມູນເຫຼືອໜ້ອຍສຸດຂີດ</translation>
@@ -642,6 +648,7 @@
 <translation id="3509391053705095206">ບໍ່ສາມາດຊອກເຫັນໂທລະສັບຂອງທ່ານໄດ້. ກະລຸນາກວດສອບວ່າ Bluetooth ຂອງໂທລະສັບທ່ານເປີດຢູ່.</translation>
 <translation id="3510164367642747937">ໝາຍເຄີເຊີເມົ້າ</translation>
 <translation id="3513798432020909783">ບັນຊີທີ່ຈັດການໂດຍ <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3516000762115478502">ປັບຂະໜາດໜ້າຈໍແບບຮຽງຕໍ່ກັນຂຶ້ນເທິງ</translation>
 <translation id="3517037892157925473">ອັບເດດໜ້າວຽກຫຼ້າສຸດ: <ph name="TIME" />, <ph name="DATE" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{ອັບເດດອຸປະກອນພາຍໃນ 1 ນາທີ}other{ອັບເດດອຸປະກອນພາຍໃນ # ນາທີ}}</translation>
 <translation id="3522979239100719575">ກຳລັງຊອກຫາໂປຣໄຟລ໌ທີ່ສາມາດໃຊ້ໄດ້. ຂັ້ນຕອນນີ້ອາດໃຊ້ເວລາສອງສາມນາທີ.</translation>
@@ -758,6 +765,7 @@
 <translation id="3899995891769452915">ການປ້ອນ​ຂໍ້ມູນ​ດ້ວຍສຽງ</translation>
 <translation id="3900355044994618856">ເຊດຊັນຂອງທ່ານຈະສິ້ນສຸດໃນ <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">ກໍາລເຊື່ອມຕໍ່ກັບ <ph name="NAME" /></translation>
+<translation id="3904768293285573640">ປັບຂະໜາດໜ້າຈໍແບບຮຽງຕໍ່ກັນໄປທາງຊ້າຍ</translation>
 <translation id="3906954721959377182">ແທັບເລັດ</translation>
 <translation id="3923494859158167397">ບໍ່ໄດ້ຕັ້ງຄ່າເຄືອຂ່າຍມືຖື</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, ກຳລັງໂຫຼດນັດໝາຍ.</translation>
@@ -1196,6 +1204,7 @@
 <translation id="550391772491508736">ສືບຕໍ່ການສົ່ງສັນຍານ</translation>
 <translation id="5506975627792768506">ເປີດ ຫຼື ປິດແວ່ນຂະຫຍາຍ</translation>
 <translation id="5512042095225963688">ລຶບຄຳກ່ອນໜ້າ</translation>
+<translation id="5519005148254860683">ຂະຫຍາຍ Google Tasks</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານໄດ້ລຶບໂປຣໄຟລ໌ eSIM ທັງໝົດອອກແລ້ວ. ກະລຸນາຕິດຕໍ່ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານສຳລັບຂໍ້ມູນເພີ່ມເຕີມ.</translation>
 <translation id="5520909879404821039">ສະບາຍດີເປັນພາສາອັງກິດ</translation>
@@ -1404,6 +1413,7 @@
 <translation id="6200515304866777730">ແອັບບໍ່ຮອງຮັບ</translation>
 <translation id="6210042900243040400">ເຊື່ອມຕໍ່ <ph name="NAME" /> ທີ່ບັນທຶກໄວ້ກ່ອນໜ້ານີ້ໃສ່ <ph name="EMAIL" /></translation>
 <translation id="6213808132343683860">ຖ່າຍຮູບໜ້າຈໍ ຫຼື ການບັນທຶກໜ້າຈໍບາງສ່ວນ</translation>
+<translation id="621606890568890214">ຂະຫຍາຍ Google ຫ້ອງຮຽນ</translation>
 <translation id="6220928844947387476">ຕອນນີ້ທ່ານສາມາດບັນທຶກຕົວທ່ານເອງ ແລະ ໜ້າຈໍຂອງທ່ານພ້ອມກັນໄດ້ແລ້ວ</translation>
 <translation id="622484624075952240">ລົງ</translation>
 <translation id="6228457605945141550">ຫຼຸດຄວາມສະຫວ່າງລົງ</translation>

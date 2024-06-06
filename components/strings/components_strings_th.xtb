@@ -245,7 +245,6 @@
 <translation id="1432187715652018471">หน้าเว็บต้องการติดตั้งเครื่องจัดการบริการ</translation>
 <translation id="1432581352905426595">จัดการเครื่องมือค้นหา</translation>
 <translation id="1433225466058025572">ลองย้ายไฟล์อีกครั้ง</translation>
-<translation id="1434317006812369578">Chrome มีฟีเจอร์ความปลอดภัยในตัวเพื่อปกป้องคุณขณะท่องเว็บ เช่น Google Safe Browsing เมื่อเร็วๆ นี้ Google Safe Browsing <ph name="BEGIN_LINK" />พบมัลแวร์ใน <ph name="SITE" /><ph name="END_LINK" /> ที่ฝังอยู่ในเว็บไซต์ที่คุณพยายามเข้าชม</translation>
 <translation id="1435940442311036198">ใช้พาสคีย์ในอุปกรณ์อื่น</translation>
 <translation id="1436185428532214179">สามารถขอแก้ไขไฟล์และโฟลเดอร์ในอุปกรณ์ของคุณได้</translation>
 <translation id="1441816242347931036">เปิดเพื่อดำเนินการต่อ</translation>
@@ -1469,7 +1468,6 @@
 <translation id="3767485424735936570">นโยบายของผู้ดูแลระบบไม่แนะนำให้คัดลอกและวางเนื้อหานี้ใน <ph name="VM_NAME" /></translation>
 <translation id="3772211998634047851">กระดาษ (ผนึก)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อสร้างโน้ตใหม่ใน Google Keep อย่างรวดเร็ว</translation>
-<translation id="378026377453746707">Chrome มีฟีเจอร์ความปลอดภัยในตัวเพื่อปกป้องคุณขณะท่องเว็บ เช่น Google Safe Browsing เมื่อเร็วๆ นี้ Google Safe Browsing <ph name="BEGIN_LINK" />พบซอฟต์แวร์ที่เป็นอันตรายใน <ph name="SITE" /><ph name="END_LINK" /> ซึ่งฝังอยู่ในเว็บไซต์ที่คุณพยายามเข้าชม</translation>
 <translation id="3780694243617746492">ถาดกระดาษออก</translation>
 <translation id="3781428340399460090">ชมพูเจิดจ้า</translation>
 <translation id="3783418713923659662">Mastercard</translation>
@@ -1553,7 +1551,6 @@
 <translation id="3950820424414687140">ลงชื่อเข้าใช้</translation>
 <translation id="3953505489397572035">ราคานี้เป็นราคาปกติ</translation>
 <translation id="3958057596965527988">4 x 4 นิ้ว</translation>
-<translation id="3959121317419633580">Chrome มีฟีเจอร์ความปลอดภัยในตัวเพื่อปกป้องคุณขณะท่องเว็บ เช่น Google Safe Browsing เมื่อเร็วๆ นี้ Google Safe Browsing <ph name="BEGIN_LINK" />พบฟิชชิงใน <ph name="SITE" /><ph name="END_LINK" /> ที่ฝังอยู่ในเว็บไซต์ที่คุณพยายามเข้าชม<ph name="NEW_LINE" />บางครั้งเว็บไซต์ที่โดยปกติจะปลอดภัยก็อาจถูกบุกรุกจากผู้โจมตีได้ โปรด<ph name="BEGIN_ERROR_LINK" />แจ้งให้เราทราบ<ph name="END_ERROR_LINK" />หากคุณคิดว่ามีข้อผิดพลาดเกิดขึ้นและเว็บไซต์นี้ไม่ก่อให้เกิดอันตราย</translation>
 <translation id="3961148744525529027">แผ่นงานของเครื่องจัดการการชำระเงินเปิดอยู่ครึ่งเดียว</translation>
 <translation id="3962859241508114581">แทร็กก่อนหน้า</translation>
 <translation id="3963721102035795474">โหมดนักอ่าน</translation>

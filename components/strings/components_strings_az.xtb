@@ -245,7 +245,6 @@
 <translation id="1432187715652018471">səhifə xidmət işləyici quraşdırmaq istəyir.</translation>
 <translation id="1432581352905426595">Axtarış sistemlərini idarə edin</translation>
 <translation id="1433225466058025572">Faylları yenidən köçürün</translation>
-<translation id="1434317006812369578">Chrome axtarış zamanı sizi qoruyan Google güvənli baxış kimi daxili güvənlik funksiyalarına malikdir. Bu yaxınlarda Güvənli baxış daxil olduğunuz <ph name="BEGIN_LINK" /><ph name="SITE" /> saytında zərərli proqram tapıb<ph name="END_LINK" />.</translation>
 <translation id="1435940442311036198">Fərqli cihazda şifrə istifadə edin</translation>
 <translation id="1436185428532214179">Saytlar cihazınızdakı faylları və qovluqları redaktə etmək üçün icazə istəyə bilər</translation>
 <translation id="1441816242347931036">Açaraq davam edin</translation>
@@ -1466,7 +1465,6 @@
 <translation id="3767485424735936570">Bu məzmunun kopyalanması və <ph name="VM_NAME" /> bölməsinə yerləşdirilməsi administrator siyasəti tərəfindən tövsiyə edilmir</translation>
 <translation id="3772211998634047851">Kağız (yüksəkkeyfiyyətli)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq Google Keep'də cəld yeni qeyd yaradın</translation>
-<translation id="378026377453746707">Chrome axtarış zamanı sizi qoruyan Google güvənli baxış kimi daxili güvənlik funksiyalarına malikdir. Bu yaxınlarda Güvənli baxış <ph name="BEGIN_LINK" /><ph name="SITE" /> saytında zərərli proqram təminatı tapıb<ph name="END_LINK" />.</translation>
 <translation id="3780694243617746492">Çıxış qabı</translation>
 <translation id="3781428340399460090">Parlaq Çəhrayı</translation>
 <translation id="3783418713923659662">Mastercard</translation>
@@ -1550,7 +1548,6 @@
 <translation id="3950820424414687140">Giriş</translation>
 <translation id="3953505489397572035">Bu qiymət tipikdir</translation>
 <translation id="3958057596965527988">4 x 4 düym</translation>
-<translation id="3959121317419633580">Chrome axtarış zamanı sizi qoruyan Google güvənli baxış kimi daxili güvənlik funksiyalarına malikdir. Bu yaxınlarda Güvənli baxış daxil olduğunuz <ph name="BEGIN_LINK" /><ph name="SITE" /> saytında fişinq tapıb<ph name="END_LINK" />.<ph name="NEW_LINE" />Bəzən hücumçular təhlükəsiz saytları da ələ keçirir. Yanlışlıq olduğunu və saytın təhlükəli olmadığını düşünürsünüzsə, <ph name="BEGIN_ERROR_LINK" />bizə bildirin<ph name="END_ERROR_LINK" />.</translation>
 <translation id="3961148744525529027">Ödəniş səhifəsi yarım açıqdır</translation>
 <translation id="3962859241508114581">Əvvəlki trek</translation>
 <translation id="3963721102035795474">Oxu Rejimi</translation>
@@ -2680,6 +2677,7 @@
 <translation id="6165508094623778733">Ətraflı öyrənin</translation>
 <translation id="6167577165590485365">Son əldə etmə cəhdi:</translation>
 <translation id="617256461084925519">Google Chrome ödəniş məlumatlarını doldurmaq üçün kimliyinizi yoxlayır.</translation>
+<translation id="6173208311907792313">Windows Hello ilə alışı tamamlayın</translation>
 <translation id="6176387967264100435">Bu qiymət yüksəkdir</translation>
 <translation id="6177128806592000436">Bu sayta olan bağlantınız güvənli deyil</translation>
 <translation id="6177531123306197852">Zərf C2</translation>
@@ -3838,6 +3836,7 @@
 <translation id="8332188693563227489"><ph name="HOST_NAME" /> hostuna giriş rədd edildi</translation>
 <translation id="833262891116910667">Vurğulama</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" /> dilində olan səhifələr tərcümə edilməyəcək</translation>
+<translation id="8339275256517065202">Sensor ID ilə alışı tamamlayın</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Virtual kart qeydiyyatı tam uzunluqda açıldı</translation>
 <translation id="8349305172487531364">Əlfəcin paneli</translation>
@@ -4031,6 +4030,7 @@
 <translation id="8726549941689275341">Səhifə ölçüsü:</translation>
 <translation id="8730621377337864115">Tamamdır</translation>
 <translation id="8731268612289859741">Təhlükəsizlik kodu</translation>
+<translation id="8731917264694569036">Cihaz ilə alışı tamamlayın</translation>
 <translation id="8733345475331865475">Avto Sığorta</translation>
 <translation id="8733764070897080460">Saytlarla paylaşılmasını istəmədiyiniz mövzuları bloklaya bilərsiniz. Chrome həmçinin 4 həftədən köhnə mövzularınızı avtomatik silir. Ətraflı məlumat</translation>
 <translation id="8734529307927223492"><ph name="DEVICE_TYPE" /> cihazınız <ph name="MANAGER" /> tərəfindən idarə edilir</translation>
@@ -4224,6 +4224,7 @@
 <translation id="9116548361133462832">Chrome'da reklamlar haqqında ətraflı</translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq baxışa davam edin və Chrome tarixçəsində əlaqəli fəaliyyəti görün</translation>
 <translation id="9119042192571987207">Yüklənib</translation>
+<translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> kimliyinizi doğrulamaq istəyir</translation>
 <translation id="912327514020027767">Ətəklər</translation>
 <translation id="912414390325846156">Daha əvvəl bu sayta icazə verməməyi seçmisiniz</translation>
 <translation id="9128870381267983090">Şəbəkəyə qoşulun</translation>

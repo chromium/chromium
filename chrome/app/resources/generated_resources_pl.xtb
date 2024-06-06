@@ -1745,6 +1745,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
     <ph name="BEGIN_PARAGRAPH2" />Rozpoczętej instalacji nie będzie można anulować.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">Wymiana danych z dowolnym urządzeniem w domenach: <ph name="DOMAINS" /></translation>
 <translation id="2270666014403455717">Przypisywanie przełącznika do czynności „Wybierz”</translation>
+<translation id="2271452184061378400">Tutaj są zapisane Twoje grupy kart</translation>
 <translation id="2271986192355138465">Dowiedz się, jak instalować aplikacje internetowe</translation>
 <translation id="2272430695183451567">Nie przypisano żadnych przełączników</translation>
 <translation id="2272570998639520080">Kieliszek do martini</translation>
@@ -1972,7 +1973,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2435248616906486374">Sieć odłączona</translation>
 <translation id="2435457462613246316">Pokaż hasło</translation>
 <translation id="2436385001956947090">Kopiuj &amp;link</translation>
-<translation id="2436746748253887661">Pozwoli to usługom systemowym z odpowiednim uprawnieniem na korzystanie z Twojej lokalizacji. Lokalizacja może używać takich źródeł jak Wi-Fi, sieci komórkowe i czujniki, aby łatwiej określać lokalizację urządzenia. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="2438853563451647815">Brak połączenia z drukarką</translation>
 <translation id="2439152382014731627">Resetuj hasło urządzenia <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600">Ładuję: <ph name="WINDOW_TITLE" /></translation>
@@ -9080,7 +9080,6 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7788948939674438635">Nie zezwalaj witrynom na blokowanie klawiatury</translation>
 <translation id="7789963078219276159">Zmieniono tło strony startowej na <ph name="CATEGORY" />.</translation>
-<translation id="7790689625219600437">OCR w plikach PDF</translation>
 <translation id="7791269138074599214">Metoda wprowadzania</translation>
 <translation id="7791429245559955092">Ta aplikacja zostanie zainstalowana w aktualnie używanym profilu Chrome</translation>
 <translation id="7791436592012979144">Odwrotne przewijanie włączone</translation>
@@ -9837,6 +9836,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8336739000755212683">Zmień obraz konta na urządzeniu</translation>
 <translation id="8337020675372081178">{HOURS,plural, =1{To urządzenie będzie zapisane przez godzinę. Następnym razem możesz połączyć się bez podawania kodu. Tę opcję ustawia administrator.}few{To urządzenie będzie zapisane przez {HOURS} godziny. Następnym razem możesz połączyć się bez podawania kodu. Tę opcję ustawia administrator.}many{To urządzenie będzie zapisane przez {HOURS} godzin. Następnym razem możesz połączyć się bez podawania kodu. Tę opcję ustawia administrator.}other{To urządzenie będzie zapisane przez {HOURS} godziny. Następnym razem możesz połączyć się bez podawania kodu. Tę opcję ustawia administrator.}}</translation>
 <translation id="8337399713761067085">Jesteś teraz w trybie offline.</translation>
+<translation id="8338427544764842461">Tutaj są zapisywane grupy kart. Będą one aktualizowane na wszystkich urządzeniach, na których się zalogujesz</translation>
 <translation id="8338952601723052325">Witryna dewelopera</translation>
 <translation id="8339288417038613756">Rozmiar wyświetlacza i tekstu</translation>
 <translation id="833986336429795709">Aby otworzyć ten link, wybierz aplikację</translation>

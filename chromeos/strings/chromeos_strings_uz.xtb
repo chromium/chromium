@@ -313,6 +313,7 @@
 <translation id="2618015542787108131">qumtepa</translation>
 <translation id="2619761439309613843">Kundalik yangilash</translation>
 <translation id="2620436844016719705">Tizim</translation>
+<translation id="2637303424821734920">OʻCHIQ - Mahalliy ob-havo axborotini chiqarish uchun <ph name="BEGIN_LINK" />tizim joylashuv ruxsatini yoqing<ph name="END_LINK" /></translation>
 <translation id="2638662041295312666">Kirish sahifasidagi rasm</translation>
 <translation id="2640549051766135490">Albom: <ph name="TITLE" /> <ph name="DESC" /> tanlandi</translation>
 <translation id="2645380101799517405">Boshqaruv</translation>
@@ -361,6 +362,7 @@
 <translation id="3017079585324758401">Orqa fon</translation>
 <translation id="3027578600144895987">Kamerani yopish</translation>
 <translation id="3031560714565892478">Qurilma — video kamera.</translation>
+<translation id="3051968340259309715">Bunda joylashuvingizni aniqlash uchun tizim xizmatlari Joylashuv aniqligidan foydalanishga ruxsat oladi. Joylashuv aniqligi qurilma joylashuvini taxmin qilishida GPS orqali simsiz signallar haqidagi axborot jamlanadi, jumladan, Wi-Fi ulanish nuqtalari, mobil tarmoq antennalari va hokazo. Shuningdek, funksiya akselerometr va giroskop kabi sensorlardan axborot olishi mumkin. Joylashuv ruxsatini faolsizlantirish uchun Sozlamalar &gt; Maxfiylik va xavfsizlik &gt; Maxfiylik sozlamalari &gt; Joylashuv axborotiga ruxsat sahifasini oching. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">Oxirgi nuqta</translation>
 <translation id="3060579846059757016">Konturlar</translation>
@@ -961,7 +963,6 @@
 <translation id="6412715219990689313">Ichki klaviatura</translation>
 <translation id="6417265370957905582">Google Assistent</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
-<translation id="6438073885402882007">Bu tizim xizmatlariga joylashuvingizdan foydalanishga ruxsat beradi. Joylashuvni aniqlash xizmati bu qurilmaning joylashuvini bilish uchun Wi-Fi, mobil tarmoqlar va sensorlar kabi manbalardan foydalanadi. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="6439505561246192797">Zaif (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Hisob sozlamalarini ochish</translation>
 <translation id="6462978824459367242">APN kiritish tugmasi yoqildi</translation>

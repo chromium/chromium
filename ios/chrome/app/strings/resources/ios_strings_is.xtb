@@ -5,6 +5,7 @@
 <translation id="1013952917065545813">Þú getur farið aftur hingað til að opna flipa sem þú lokaðir nýlega</translation>
 <translation id="1016495303386450659">Atriði uppfært</translation>
 <translation id="1025514696883950875">{COUNT,plural, =1{Vista aðgangsorð á reikningi}one{Vista aðgangsorð á reikningi}other{Vista aðgangsorð á reikningi}}</translation>
+<translation id="102916930470544692">Aðgangslykill</translation>
 <translation id="1035980983510608210">Ef öllum flipum er lokað verður festum flipum einnig lokað.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1043592663436934089">Þú skráist út og vefskoðunargögnum verður eytt</translation>
@@ -1016,6 +1017,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6173499589275053515">Aðgangsorð vistað á Google-reikningnum þínum, <ph name="EMAIL" /></translation>
 <translation id="6184086493125982861">Sýna flipa</translation>
 <translation id="6187302354554850004">Síðast samstillt: <ph name="LAST_USED_TIME" /></translation>
+<translation id="6188737759358894319">Búið til <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Ólesið</translation>
 <translation id="6196207969502475924">Raddleit</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Loka {COUNT} flipa}one{Loka {COUNT} flipa}other{Loka {COUNT} flipum}}</translation>
@@ -1303,7 +1305,6 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="7557508262441527045">Útskráð(ur)</translation>
 <translation id="7561196759112975576">Alltaf</translation>
 <translation id="7564917801238348224">VISTA...</translation>
-<translation id="758132317817089442">Kveikja á aukinni vörn...</translation>
 <translation id="7582857256643797524">Kveikt er á þessari stillingu í tækinu þínu</translation>
 <translation id="7583004045319035904">Notaðu <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> til að taka huliðsflipana þína úr lás.</translation>
 <translation id="7598439272585186139">Fáðu meira öryggi</translation>

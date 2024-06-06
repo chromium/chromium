@@ -100,7 +100,6 @@
 <translation id="6333260925957816943">यो स्टोरसम्बन्धी जानकारी</translation>
 <translation id="6381032505162537930">तपाईं आफ्ना ट्याब समूहहरू यहाँ भेट्टाउनु हुने छ</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{चयन गरिएको <ph name="TABS_COUNT_ONE" /> वटा ट्याब समूहबाट हटाउनुहोस्}other{चयन गरिएका <ph name="TABS_COUNT_MANY" /> वटा ट्याब समूहबाट हटाउनुहोस्}}</translation>
-<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{तपाईं Chrome को मुख्य मेनुअन्तर्गत रहेको "हालसालै खोलिएका ट्याब" मा गई आफूले बन्द गरेका ट्याबहरू भेट्टाउन सक्नुहुन्छ। तपाईंको इन्कोग्निटो ट्याब उपलब्ध हुने छैन।}other{तपाईं Chrome को मुख्य मेनुअन्तर्गत रहेको "हालसालै खोलिएका ट्याब" मा गई आफूले बन्द गरेका ट्याबहरू भेट्टाउन सक्नुहुन्छ। तपाईंका # वटा इन्कोग्निटो ट्याब उपलब्ध हुने छैनन्।}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> वटा ट्याब}other{<ph name="TABS_COUNT_MANY" /> वटा ट्याब}}</translation>
 <translation id="6549021453810473782">स्टोरसम्बन्धी जानकारी हेर्नुहोस्</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>

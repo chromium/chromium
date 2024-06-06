@@ -178,6 +178,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1610778689852195798">"Deshacer"</translation>
 <translation id="1611993646327628135">Sí</translation>
 <translation id="1620510694547887537">Cámara</translation>
+<translation id="1623768535032616219">Contraer Google Classroom</translation>
 <translation id="1632985212731562677">Accesibilidad con interruptores se puede inhabilitar en Configuración &gt; Accesibilidad.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> dispositivos</translation>
 <translation id="1639239467298939599">Cargando</translation>
@@ -303,6 +304,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2198625180564913276">Se está agregando un perfil. Es posible que este proceso demore unos minutos.</translation>
 <translation id="219905428774326614">Launcher, todas las apps</translation>
 <translation id="2201071101391734388">Foto reciente <ph name="INDEX" /> de <ph name="TOTAL_COUNT" />.</translation>
+<translation id="2201687081523799384">Contraer Google Tasks</translation>
 <translation id="2208323208084708176">Modo de escritorio unificado</translation>
 <translation id="2220572644011485463">PIN o contraseña</translation>
 <translation id="2222841058024245321">Escritorio 7</translation>
@@ -364,6 +366,7 @@ Se conectaron <ph name="DEVICECOUNT" /> dispositivos.</translation>
 <translation id="2427507373259914951">Clic con botón izquierdo</translation>
 <translation id="2429753432712299108">El dispositivo Bluetooth "<ph name="DEVICE_NAME" />" solicita permiso para sincronizarse. Antes de aceptar, debes confirmar que aparece la siguiente clave de contraseña en el dispositivo: <ph name="PASSKEY" />.</translation>
 <translation id="2435457462613246316">Mostrar contraseña</translation>
+<translation id="2437771564543046790">Batería baja; el Ahorro de batería está activado</translation>
 <translation id="243878895369688216">Se abrió ayer</translation>
 <translation id="2440978926514840421">Se grabó un GIF</translation>
 <translation id="2441427462554639370">Finalizó la grabación porque hay muy poco espacio de almacenamiento disponible</translation>
@@ -1201,6 +1204,7 @@ No hay dispositivos conectados.</translation>
 <translation id="550391772491508736">Reanudar transmisión</translation>
 <translation id="5506975627792768506">Activar o desactivar la lupa</translation>
 <translation id="5512042095225963688">Borrar la palabra anterior</translation>
+<translation id="5519005148254860683">Expandir Google Tasks</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Tu administrador quitó todos los perfiles de eSIM. Para obtener más información, comunícate con el administrador.</translation>
 <translation id="5520909879404821039">Hola en francés</translation>
@@ -1409,6 +1413,7 @@ No hay dispositivos conectados.</translation>
 <translation id="6200515304866777730">No es compatible con la app</translation>
 <translation id="6210042900243040400">Conectar <ph name="NAME" /> que guardaste anteriormente en <ph name="EMAIL" /></translation>
 <translation id="6213808132343683860">Tomar una captura de pantalla parcial o grabar la pantalla</translation>
+<translation id="621606890568890214">Expandir Google Classroom</translation>
 <translation id="6220928844947387476">Ahora puedes grabarte a ti y a tu pantalla al mismo tiempo</translation>
 <translation id="622484624075952240">Abajo</translation>
 <translation id="6228457605945141550">Disminuir el brillo</translation>

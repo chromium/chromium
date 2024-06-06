@@ -72,6 +72,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1235458158152011030">Poznate mreže</translation>
 <translation id="1239161794459865856">Funkcija <ph name="FEATURE_NAME" /> je povezana.</translation>
 <translation id="1240638468526743569">Aplikacija</translation>
+<translation id="1242198791279543032">Obavijesti su zanemarene</translation>
 <translation id="1242883863226959074">uređaj</translation>
 <translation id="1245644940275736236">Otvorite Asistenta</translation>
 <translation id="124678866338384709">Zatvori trenutnu karticu</translation>
@@ -147,7 +148,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1487931858675166540">Stavka <ph name="FIRST_ITEM_TITLE" /> je zamijenjena stavkom <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Prikaži sve prijedloge</translation>
 <translation id="1501946871587957338">Promijeniti izvor zvuka?</translation>
-<translation id="1505542291183484463">Prozor za promjenu veličine pločica prema dolje</translation>
+<translation id="1505542291183484463">Promjena veličine prozora s karticama nadolje</translation>
 <translation id="1510238584712386396">Pokretač</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Prikaži postavke obavještenja. Obavještenja aplikacije su isključena.}one{Prikaži postavke obavještenja. Obavještenja za # aplikaciju su isključena.}few{Prikaži postavke obavještenja. Obavještenja za # aplikacije su isključena.}other{Prikaži postavke obavještenja. Obavještenja za # aplikacija su isključena.}}</translation>
 <translation id="1523032696246003">Baterija je napunjena <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> do potpune napunjenosti</translation>
@@ -298,7 +299,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="2149229036084364364">Odlazak na prethodnu numeru</translation>
 <translation id="2152895518047545149">Izgleda da je sve tu. Odlično!</translation>
 <translation id="2161132820593978283">Isprobajte kadriranje kamere da budete na sredini ekrana prilikom video poziva. Uključite ga u Brzim postavkama.</translation>
-<translation id="216955976692983107">Prozor za promjenu veličine pločica udesno</translation>
+<translation id="216955976692983107">Promjena veličine prozora s karticama udesno</translation>
 <translation id="2185166372312820725">Idi na prethodnu karticu</translation>
 <translation id="2185444992308415167">Kretanje od 1. od 8. kartice</translation>
 <translation id="2198625180564913276">Dodavanje profila. To može potrajati nekoliko minuta.</translation>
@@ -647,7 +648,7 @@ Povezano je više uređaja (ukupno <ph name="DEVICECOUNT" />).</translation>
 <translation id="3509391053705095206">Nije moguće pronaći vaš telefon. Provjerite je li Bluetooth na telefonu uključen.</translation>
 <translation id="3510164367642747937">Istakni kursor miša</translation>
 <translation id="3513798432020909783">Računom upravlja <ph name="MANAGER_EMAIL" /></translation>
-<translation id="3516000762115478502">Prozor za promjenu veličine pločica prema gore</translation>
+<translation id="3516000762115478502">Promjena veličine prozora s karticama nagore</translation>
 <translation id="3517037892157925473">Zadaci su posljednji put ažurirani u <ph name="TIME" />, <ph name="DATE" /></translation>
 <translation id="352245152354538528">{0,plural, =1{Ažurirajte uređaj u roku od 1 minute}one{Ažurirajte uređaj u roku od # minute}few{Ažurirajte uređaj u roku od # minute}other{Ažurirajte uređaj u roku od # minuta}}</translation>
 <translation id="3522979239100719575">Traženje dostupnih profila. Ovo može potrajati nekoliko minuta.</translation>
@@ -764,7 +765,7 @@ Povežite uređaj na napajanje.</translation>
 <translation id="3899995891769452915">Glasovni unos</translation>
 <translation id="3900355044994618856">Vaša sesija će završiti za <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">Povezivanje na mrežu <ph name="NAME" /></translation>
-<translation id="3904768293285573640">Prozor za promjenu veličine pločica ulijevo</translation>
+<translation id="3904768293285573640">Promjena veličine prozora s karticama ulijevo</translation>
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3923494859158167397">Nije postavljena nijedna mobilna mreža</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, učitavanje događaja.</translation>

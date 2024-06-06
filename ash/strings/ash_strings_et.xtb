@@ -147,6 +147,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> vahetati üksuse <ph name="SECOND_ITEM_TITLE" /> vastu</translation>
 <translation id="1500926532737552529">Kuva kõik soovitused</translation>
 <translation id="1501946871587957338">Kas vahetada heliallikat?</translation>
+<translation id="1505542291183484463">Paanidega muudetava suurusega aken allapoole</translation>
 <translation id="1510238584712386396">Käivitaja</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Kuvab märguandeseaded. Märguanded on rakenduse jaoks välja lülitatud}other{Kuvab märguandeseaded. Märguanded on # rakenduse jaoks välja lülitatud}}</translation>
 <translation id="1523032696246003">Aku laetuse tase: <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> kuni aku saab täis</translation>
@@ -177,6 +178,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1610778689852195798">„Võta tagasi“</translation>
 <translation id="1611993646327628135">Sees</translation>
 <translation id="1620510694547887537">Kaamera</translation>
+<translation id="1623768535032616219">Google Classroomi ahendamine</translation>
 <translation id="1632985212731562677">Lülitiga juurdepääsu saab keelata menüüs Seaded &gt; Juurdepääsetavus.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> seadet</translation>
 <translation id="1639239467298939599">Laadimine</translation>
@@ -296,11 +298,13 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2149229036084364364">Mine eelmisele loole</translation>
 <translation id="2152895518047545149">Tundub, et midagi ei ole puudu. Väga hea!</translation>
 <translation id="2161132820593978283">Proovige kaamera kadreerimist, et oleksite videokõnedes ekraanikuva keskel. Lülitage see sisse kiirseadete kaudu.</translation>
+<translation id="216955976692983107">Paanidega muudetava suurusega aken paremale</translation>
 <translation id="2185166372312820725">Eelmisele vahelehele liikumine</translation>
 <translation id="2185444992308415167">Vahelehtede 1 kuni 8 läbivaatamine</translation>
 <translation id="2198625180564913276">Profiili lisamine. See võib võtta mõne minuti.</translation>
 <translation id="219905428774326614">Käivitaja, kõik rakendused</translation>
 <translation id="2201071101391734388">Hiljutine foto <ph name="INDEX" />/<ph name="TOTAL_COUNT" />.</translation>
+<translation id="2201687081523799384">Google Tasksi ahendamine</translation>
 <translation id="2208323208084708176">Ühendatud töölaua režiim</translation>
 <translation id="2220572644011485463">PIN-kood või parool</translation>
 <translation id="2222841058024245321">Töölaud 7</translation>
@@ -362,6 +366,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2427507373259914951">Vasakklikk</translation>
 <translation id="2429753432712299108">Bluetoothi seade „<ph name="DEVICE_NAME" />” küsib luba sidumiseks. Enne nõustumist veenduge, et selles seadmes oleks kuvatud see pääsuvõti: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Kuva parool</translation>
+<translation id="2437771564543046790">Aku hakkab tühjaks saama. Akusäästja on sisse lülitatud.</translation>
 <translation id="243878895369688216">Eile avatud</translation>
 <translation id="2440978926514840421">GIF-i salvestis on tehtud</translation>
 <translation id="2441427462554639370">Salvestamine lõppes liiga vähese salvestusruumi tõttu</translation>
@@ -642,6 +647,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="3509391053705095206">Teie telefoni ei õnnestu leida. Veenduge, et telefonis oleks Bluetooth sisse lülitatud.</translation>
 <translation id="3510164367642747937">Hiirekursori esiletõstmine</translation>
 <translation id="3513798432020909783">Kontohaldur: <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3516000762115478502">Paanidega muudetava suurusega aken ülespoole</translation>
 <translation id="3517037892157925473">Ülesannete viimase värskendamise aeg: <ph name="TIME" />, <ph name="DATE" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{Värskendage seadet 1 minuti jooksul}other{Värskendage seadet # minuti jooksul}}</translation>
 <translation id="3522979239100719575">Otsitakse saadaolevaid profiile. See võib võtta mõne minuti.</translation>
@@ -759,6 +765,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="3899995891769452915">Häälsisend</translation>
 <translation id="3900355044994618856">Teie seanss lõpeb <ph name="SESSION_TIME_REMAINING" /> pärast</translation>
 <translation id="3901991538546252627">Võrguga <ph name="NAME" /> ühenduse loomine</translation>
+<translation id="3904768293285573640">Paanidega muudetava suurusega aken vasakule</translation>
 <translation id="3906954721959377182">Tahvelarvuti</translation>
 <translation id="3923494859158167397">Ühtegi mobiilsidevõrku pole seadistatud</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, sündmusi laaditakse.</translation>
@@ -1197,6 +1204,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="550391772491508736">Jätka ülekandmist</translation>
 <translation id="5506975627792768506">Lülita luup sisse või välja</translation>
 <translation id="5512042095225963688">Eelmise sõna kustutamine</translation>
+<translation id="5519005148254860683">Google Tasksi laiendamine</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Teie administraator on kõik eSIM-i profiilid eemaldanud. Lisateabe saamiseks võtke ühendust administraatoriga.</translation>
 <translation id="5520909879404821039">Tere prantsuse keeles</translation>
@@ -1405,6 +1413,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="6200515304866777730">Rakendus ei toeta</translation>
 <translation id="6210042900243040400">Ühendage <ph name="NAME" />, mis oli varem salvestatud kontole <ph name="EMAIL" /></translation>
 <translation id="6213808132343683860">Jäädvusta osaline ekraanipilt või ekraanisalvestis</translation>
+<translation id="621606890568890214">Google Classroomi laiendamine</translation>
 <translation id="6220928844947387476">Saate nüüd ennast ja oma ekraanikuva salvestada samaaegselt</translation>
 <translation id="622484624075952240">Alla</translation>
 <translation id="6228457605945141550">Heleduse vähendamine</translation>

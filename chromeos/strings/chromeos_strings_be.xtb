@@ -313,6 +313,7 @@
 <translation id="2618015542787108131">пясчаная дзюна</translation>
 <translation id="2619761439309613843">Штодзённае абнаўленне</translation>
 <translation id="2620436844016719705">Сістэма</translation>
+<translation id="2637303424821734920">ВЫКЛЮЧАНА. Каб бачыць звесткі пра надвор’е, <ph name="BEGIN_LINK" />уключыце доступ да сістэмных даных пра месцазнаходжанне<ph name="END_LINK" />.</translation>
 <translation id="2638662041295312666">Відарыс уліковага запісу</translation>
 <translation id="2640549051766135490">Выбраны альбом "<ph name="TITLE" />" (<ph name="DESC" />)</translation>
 <translation id="2645380101799517405">Элементы кіравання</translation>
@@ -961,7 +962,6 @@
 <translation id="6412715219990689313">Убудаваная клавіятура</translation>
 <translation id="6417265370957905582">Памочнік Google</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
-<translation id="6438073885402882007">Гэта дазволіць сістэмным службам з дазволам выкарыстоўваць даныя пра ваша месцазнаходжанне. Для вызначэння месцазнаходжання прылады могуць выкарыстоўвацца даныя Wi-Fi, мабільных сетак і датчыкаў. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="6439505561246192797">Слабы (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Перайсці ў налады ўліковага запісу</translation>
 <translation id="6462978824459367242">Кнопка "Дадаць APN" уключана</translation>

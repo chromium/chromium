@@ -313,6 +313,7 @@
 <translation id="2618015542787108131">砂丘</translation>
 <translation id="2619761439309613843">毎日更新する</translation>
 <translation id="2620436844016719705">システム</translation>
+<translation id="2637303424821734920">オフ - 地域の天気情報を表示するには、<ph name="BEGIN_LINK" />システムの位置情報へのアクセスをオンにします<ph name="END_LINK" /></translation>
 <translation id="2638662041295312666">サインイン画像</translation>
 <translation id="2640549051766135490">アルバム「<ph name="TITLE" />」の <ph name="DESC" />を選択中</translation>
 <translation id="2645380101799517405">コントロール</translation>
@@ -961,7 +962,6 @@
 <translation id="6412715219990689313">デバイス内蔵キーボード</translation>
 <translation id="6417265370957905582">Google アシスタント</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
-<translation id="6438073885402882007">システム サービスによる位置情報の使用を許可するかどうかを指定します。デバイスの位置情報の特定には、Wi-Fi、モバイル ネットワーク、センサーなどのソースが使用される場合があります。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="6439505561246192797">弱い（<ph name="SIGNAL_STRENGTH" />）</translation>
 <translation id="6447630859861661624">アカウント設定に移動</translation>
 <translation id="6462978824459367242">[APN を追加] ボタンが有効になりました</translation>

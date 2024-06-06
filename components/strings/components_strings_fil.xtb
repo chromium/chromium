@@ -245,7 +245,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1432187715652018471">Gusto ng page na mag-install ng tagapangasiwa ng serbisyo.</translation>
 <translation id="1432581352905426595">Pamahalaan ang mga search engine</translation>
 <translation id="1433225466058025572">Subukang ilipat ulit ang iyong mga file</translation>
-<translation id="1434317006812369578">May mga built-in na feature na pangkaligtasan ang Chrome para maprotektahan ka habang nagba-browse ka, tulad ng Ligtas na Pag-browse sa Google. Kamakailang <ph name="BEGIN_LINK" />nakakita ng malware sa <ph name="SITE" /><ph name="END_LINK" /> ang Ligtas na Pag-browse, na naka-embed sa site na sinusubukan mong bisitahin.</translation>
 <translation id="1435940442311036198">Gumamit ng passkey sa ibang device</translation>
 <translation id="1436185428532214179">Puwedeng hilinging mag-edit ng mga file at folder sa iyong device</translation>
 <translation id="1441816242347931036">Buksan para magpatuloy</translation>
@@ -1470,7 +1469,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3767485424735936570">Hindi inirerekomenda ng patakaran ng administrator ang pagkopya at pag-paste ng content na ito sa <ph name="VM_NAME" /></translation>
 <translation id="3772211998634047851">Papel (Bond)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, pindutin ang Tab at pagkatapos ay ang Enter para gumawa ng bagong tala sa Google Keep nang mabilis</translation>
-<translation id="378026377453746707">May mga built-in na feature na pangkaligtasan ang Chrome para maprotektahan ka habang nagba-browse ka, tulad ng Ligtas na Pag-browse sa Google. Kamakailang <ph name="BEGIN_LINK" />nakakita ng mapanganib na software sa <ph name="SITE" /><ph name="END_LINK" /> ang Ligtas na Pag-browse, na naka-embed sa site na sinusubukan mong bisitahin.</translation>
 <translation id="3780694243617746492">Output bin</translation>
 <translation id="3781428340399460090">Hot Pink</translation>
 <translation id="3783418713923659662">Mastercard</translation>
@@ -1554,7 +1552,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3950820424414687140">Mag-sign in</translation>
 <translation id="3953505489397572035">Karaniwan ang presyong ito</translation>
 <translation id="3958057596965527988">4 x 4 in</translation>
-<translation id="3959121317419633580">May mga built-in na feature na pangkaligtasan ang Chrome para maprotektahan ka habang nagba-browse ka, tulad ng Ligtas na Pag-browse sa Google. Kamakailang <ph name="BEGIN_LINK" />nakakita ng phishing sa <ph name="SITE" /><ph name="END_LINK" /> ang Ligtas na Pag-browse, na naka-embed sa site na sinusubukan mong bisitahin.<ph name="NEW_LINE" />Kung minsan, nakokompromiso ng mga attacker pati ang mga site na karaniwang ligtas. <ph name="BEGIN_ERROR_LINK" />Ipaalam sa amin<ph name="END_ERROR_LINK" /> kung sa palagay mo ay isa itong pagkakamali at hindi mapanganib ang site na ito.</translation>
 <translation id="3961148744525529027">Nakabukas nang kalahati ang sheet ng tagapangasiwa ng pagbabayad</translation>
 <translation id="3962859241508114581">Nakaraang Track</translation>
 <translation id="3963721102035795474">Reader Mode</translation>

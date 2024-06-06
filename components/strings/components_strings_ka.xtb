@@ -245,7 +245,6 @@
 <translation id="1432187715652018471">გვერდს სურს სერვისის დამმუშავებლის ინსტალაცია.</translation>
 <translation id="1432581352905426595">საძიებო სისტემების მართვა</translation>
 <translation id="1433225466058025572">ცადეთ თქვენი ფაილების ხელახლა გადატანა</translation>
-<translation id="1434317006812369578">Chrome-ში ჩაშენებულია უსაფრთხოების ფუნქციები, მაგალითად, Google Safe Browsing, რომლებიც დაგიცავთ ვების დათვალიერებისას. Safe Browsing-მა ახლახან <ph name="BEGIN_LINK" /><ph name="SITE" />-ზე აღმოაჩინა მავნე პროგრამა<ph name="END_LINK" />, რომელიც ჩაშენებულია საიტში, რომლის მონახულებასაც ცდილობთ.</translation>
 <translation id="1435940442311036198">წვდომის გასაღების გამოყენება სხვა მოწყობილობაზე</translation>
 <translation id="1436185428532214179">შეუძლია თქვენს მოწყობილობაზე არსებული ფაილებისა და საქაღალდეების რედაქტირების თხოვნა</translation>
 <translation id="1441816242347931036">გახსენით გასაგრძელებლად</translation>
@@ -1470,7 +1469,6 @@
 <translation id="3767485424735936570">ამ კონტენტის კოპირება და <ph name="VM_NAME" />-ში ჩასმა არ არის რეკომენდებული ადმინისტრატორის წესების მიხედვით</translation>
 <translation id="3772211998634047851">ქაღალდი (გადაბმული)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Keep-ში ახალი ჩანიშვნის სწრაფად შესაქმნელად დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს</translation>
-<translation id="378026377453746707">Chrome-ში ჩაშენებულია უსაფრთხოების ფუნქციები, მაგალითად, Google Safe Browsing, რომლებიც დაგიცავთ ვების დათვალიერებისას. Safe Browsing-მა ახლახან <ph name="BEGIN_LINK" /><ph name="SITE" />-ზე აღმოაჩინა საზიანო პროგრამული უზრუნველყოფა<ph name="END_LINK" />, რომელიც ჩაშენებულია იმ საიტში, რომლის მონახულებასაც ცდილობთ.</translation>
 <translation id="3780694243617746492">გამოსასვლელი</translation>
 <translation id="3781428340399460090">მკვეთრი ვარდისფერი</translation>
 <translation id="3783418713923659662">Mastercard</translation>
@@ -1554,7 +1552,6 @@
 <translation id="3950820424414687140">შესვლა</translation>
 <translation id="3953505489397572035">ეს ფასი სტანდარტულია</translation>
 <translation id="3958057596965527988">4 x 4 დუიმი</translation>
-<translation id="3959121317419633580">Chrome-ში ჩაშენებულია უსაფრთხოების ფუნქციები, მაგალითად, Google Safe Browsing, რომლებიც დაგიცავთ ვების დათვალიერებისას. Safe Browsing-მა ახლახან <ph name="BEGIN_LINK" /><ph name="SITE" />-ზე აღმოაჩინა ფიშინგი<ph name="END_LINK" />, რომელიც ჩაშენებულია საიტში, რომლის მონახულებასაც ცდილობთ.<ph name="NEW_LINE" />თავდამსხმელები ზოგჯერ ისეთ საიტებსაც ტეხენ, რომლებიც, როგორც წესი, უსაფრთხოა. <ph name="BEGIN_ERROR_LINK" />შეგვატყობინეთ<ph name="END_ERROR_LINK" />, თუ თვლით, რომ რაღაც შეცდომაა და საიტი არ წარმოადგენს საფრთხეს.</translation>
 <translation id="3961148744525529027">გადახდების დამმუშავებლის გვერდი ნახევრადგახსნილია</translation>
 <translation id="3962859241508114581">წინა ჩანაწერი</translation>
 <translation id="3963721102035795474">წამკითხველის რეჟიმი</translation>

@@ -245,7 +245,6 @@
 <translation id="1432187715652018471">تريد هذه الصفحة تثبيت معالج الخدمة.</translation>
 <translation id="1432581352905426595">إدارة محركات البحث</translation>
 <translation id="1433225466058025572">حاوِل نقل ملفاتك مرة أخرى.</translation>
-<translation id="1434317006812369578">‏يحتوي متصفِّح Chrome على ميزات أمان مدمجة لحمايتك أثناء التصفُّح، مثل "التصفُّح الآمن من Google". وقد رصدت ميزة "التصفُّح الآمن" <ph name="BEGIN_LINK" />مؤخرًا برامج ضارة على <ph name="SITE" /><ph name="END_LINK" /> مُضمّنة في الموقع الإلكتروني الذي تحاول الانتقال إليه.</translation>
 <translation id="1435940442311036198">استخدام مفتاح مرور على جهاز آخر</translation>
 <translation id="1436185428532214179">السماح للموقع الإلكتروني بطلب تعديل الملفات والمجلدات على جهازك</translation>
 <translation id="1441816242347931036">افتح للمتابعة.</translation>
@@ -1471,7 +1470,6 @@
 <translation id="3767485424735936570">لا تقترح سياسة المشرف نسخ هذا المحتوى ولصقه في <ph name="VM_NAME" />.</translation>
 <translation id="3772211998634047851">ورق (سندات)</translation>
 <translation id="377451872037045164">‏<ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />: اضغط على مفتاح التبويب (Tab) ثم Enter لإنشاء ملاحظة جديدة في Google Keep بسرعة.</translation>
-<translation id="378026377453746707">‏يحتوي متصفِّح Chrome على ميزات أمان مدمجة لحمايتك أثناء التصفُّح، مثل "التصفُّح الآمن من Google". رصدت ميزة "التصفُّح الآمن" مؤخرًا <ph name="BEGIN_LINK" />برامج ضارة على <ph name="SITE" /><ph name="END_LINK" /> مضمّنة في الموقع الإلكتروني الذي تحاول الانتقال إليه.</translation>
 <translation id="3780694243617746492">سلّة الإخراج</translation>
 <translation id="3781428340399460090">وردي برّاق</translation>
 <translation id="3783418713923659662">Mastercard</translation>
@@ -1556,7 +1554,6 @@
 <translation id="3950820424414687140">تسجيل الدخول</translation>
 <translation id="3953505489397572035">هذا السعر عادي</translation>
 <translation id="3958057596965527988">4 × 4 بوصة</translation>
-<translation id="3959121317419633580">‏يحتوي متصفِّح Chrome على ميزات أمان مدمجة لحمايتك أثناء التصفُّح، مثل "التصفُّح الآمن من Google". وقد رصدت ميزة "التصفُّح الآمن" مؤخرًا <ph name="BEGIN_LINK" />عملية تصيُّد احتيالي على <ph name="SITE" /><ph name="END_LINK" /> مضمّنة في الموقع الإلكتروني الذي تحاول الانتقال إليه.<ph name="NEW_LINE" />جدير بالذكر أنّه حتى المواقع الإلكترونية التي تكون آمنة في العادة قد تتعرض أحيانًا للاختراق من قِبل المهاجمين. <ph name="BEGIN_ERROR_LINK" />يُرجى إعلامنا<ph name="END_ERROR_LINK" /> إذا كنت تعتقد أنّ هناك خطأ وأنّ هذا الموقع الإلكتروني لا يشكِّل خطرًا.</translation>
 <translation id="3961148744525529027">جدول بيانات معالج الدفع مفتوح جزئيًا</translation>
 <translation id="3962859241508114581">المقطع الصوتي السابق</translation>
 <translation id="3963721102035795474">وضع القارئ</translation>
@@ -2687,6 +2684,7 @@
 <translation id="6165508094623778733">مزيد من المعلومات</translation>
 <translation id="6167577165590485365">وقت آخر محاولة استرجاع:</translation>
 <translation id="617256461084925519">‏يحاول Google Chrome إثبات هويتك لملء معلومات الدفع.</translation>
+<translation id="6173208311907792313">‏أكمِل عملية الشراء باستخدام Windows Hello</translation>
 <translation id="6176387967264100435">هذا السعر مرتفع</translation>
 <translation id="6177128806592000436">إن اتصالك بهذا الموقع غير آمن</translation>
 <translation id="6177531123306197852">‏ظرف C2</translation>
@@ -3846,6 +3844,7 @@
 <translation id="8332188693563227489">تم رفض الدخول إلى <ph name="HOST_NAME" />.</translation>
 <translation id="833262891116910667">تمييز</translation>
 <translation id="8339163506404995330">لن تتم ترجمة الصفحات باللغة <ph name="LANGUAGE" /></translation>
+<translation id="8339275256517065202">‏أكمِل عملية الشراء باستخدام ميزة Touch ID</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">تم فتح تسجيل البطاقة الافتراضية بطول الشاشة.</translation>
 <translation id="8349305172487531364">شريط الإشارات</translation>
@@ -4041,6 +4040,7 @@
 <translation id="8726549941689275341">حجم الصفحة:</translation>
 <translation id="8730621377337864115">تم</translation>
 <translation id="8731268612289859741">رمز الأمان</translation>
+<translation id="8731917264694569036">أكمِل عملية الشراء باستخدام جهازك</translation>
 <translation id="8733345475331865475">تأمين على السيارات</translation>
 <translation id="8733764070897080460">‏يمكنك حظر المواضيع التي لا تريد مشاركتها مع المواقع الإلكترونية. يحذف Chrome أيضًا تلقائيًا من القائمة المواضيع التي مر عليها أكثر من 4 أسابيع. مزيد من المعلومات</translation>
 <translation id="8734529307927223492">يدير <ph name="MANAGER" /> الجهاز <ph name="DEVICE_TYPE" />.</translation>
@@ -4234,6 +4234,7 @@
 <translation id="9116548361133462832">‏مزيد من المعلومات حول الإعلانات في Chrome</translation>
 <translation id="9118692854637641831">‏<ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح التبويب (Tab)، ثم Enter لاستئناف عملية البحث والاطّلاع على النشاط ذي الصلة في سجلّ Chrome.</translation>
 <translation id="9119042192571987207">تم التحميل</translation>
+<translation id="9119308212838450857">يريد "<ph name="PROVIDER_ORIGIN" />" التحقّق من هويتك</translation>
 <translation id="912327514020027767">تنانير</translation>
 <translation id="912414390325846156">لقد سبق أن اخترت عدم منح هذا الإذن إلى هذا الموقع الإلكتروني</translation>
 <translation id="9128870381267983090">الاتصال بالشبكة</translation>

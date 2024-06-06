@@ -5,6 +5,7 @@
 <translation id="1013952917065545813">يمكنك الرجوع إلى هذه الصفحة لإعادة فتح علامات التبويب التي أغلقتها مؤخرًا.</translation>
 <translation id="1016495303386450659">تم تحديث العنصر</translation>
 <translation id="1025514696883950875">{COUNT,plural, =1{حفظ كلمة المرور في الحساب}zero{حفظ كلمات المرور في الحساب}two{حفظ كلمتَيْ المرور في الحساب}few{حفظ كلمات المرور في الحساب}many{حفظ كلمات المرور في الحساب}other{حفظ كلمات المرور في الحساب}}</translation>
+<translation id="102916930470544692">مفتاح المرور</translation>
 <translation id="1035980983510608210">سيؤدي إغلاق جميع علامات التبويب إلى إغلاق علامات التبويب المثبّتة أيضًا.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1043592663436934089">سيتم تسجيل خروجك من الحساب وحذف بيانات التصفُّح</translation>
@@ -1018,6 +1019,7 @@
 <translation id="6173499589275053515">‏تم حفظ كلمة المرور في حساب Google الخاص بك: <ph name="EMAIL" />.</translation>
 <translation id="6184086493125982861">إظهار علامات التبويب</translation>
 <translation id="6187302354554850004">تاريخ آخر مزامنة: <ph name="LAST_USED_TIME" /></translation>
+<translation id="6188737759358894319">‏تم إنشاء الخلفية بتاريخ ‎<ph name="DATE" />.</translation>
 <translation id="6189413832092199491">غير مقروءة</translation>
 <translation id="6196207969502475924">البحث الصوتي</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{إغلاق علامة تبويب واحدة ({COUNT})}zero{إغلاق {COUNT} علامة تبويب}two{إغلاق علامتَي تبويب ({COUNT})}few{إغلاق {COUNT} علامات تبويب}many{إغلاق {COUNT} علامة تبويب}other{إغلاق {COUNT} علامة تبويب}}</translation>
@@ -1034,6 +1036,7 @@
 <translation id="6232329973559504466">البحث في وضع التصفُّح المتخفي</translation>
 <translation id="6236952928980352967">استعادة التحذير</translation>
 <translation id="6247557882553405851">‏مدير كلمات المرور في Google</translation>
+<translation id="6251835855431997163">ملء <ph name="VALUE" /> تلقائيًا</translation>
 <translation id="6254066287920239840">فتح الروابط في التطبيق بدلاً من المتصفح.</translation>
 <translation id="6255097610484507482">تعديل بطاقة الائتمان</translation>
 <translation id="6266039999629596120">يستدعي الانتباه</translation>
@@ -1212,6 +1215,7 @@
 <translation id="7022197654033719543">معلومات الموقع الإلكتروني</translation>
 <translation id="7029809446516969842">كلمات المرور</translation>
 <translation id="704692552158601232">تطبيق المتصفِّح التلقائي</translation>
+<translation id="7055240621761583113">ملء كلمة المرور تلقائيًا</translation>
 <translation id="7063811929043357292">يدير أحد والدَيك حسابك.
 <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="7069695992271320873">‏إزالة حساب Google من هذا الجهاز</translation>
@@ -1305,7 +1309,6 @@
 <translation id="7557508262441527045">تمّ تسجيل الخروج.</translation>
 <translation id="7561196759112975576">دائمًا</translation>
 <translation id="7564917801238348224">جارٍ حفظ...</translation>
-<translation id="758132317817089442">تفعيل مستوى "الحماية المحسَّنة"...</translation>
 <translation id="7582857256643797524">هذه الإعدادات مفعَّلة على جهازك</translation>
 <translation id="7583004045319035904">يمكنك استخدام <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> لفتح علامات التبويب في وضع التصفّح المتخفي.</translation>
 <translation id="7598439272585186139">تعزيز مستوى الأمان</translation>

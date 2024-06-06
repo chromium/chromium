@@ -1741,6 +1741,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
     <ph name="BEGIN_PARAGRAPH2" />Pasi të fillojë instalimi, nuk mund të anulohet.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">Shkëmbe të dhëna me çdo pajisje në domenet: <ph name="DOMAINS" /></translation>
 <translation id="2270666014403455717">Cakto çelësin për veprimin “Zgjidh”</translation>
+<translation id="2271452184061378400">Grupet e skedave ruhen këtu</translation>
 <translation id="2271986192355138465">Mëso se si të instalosh aplikacionet e uebit</translation>
 <translation id="2272430695183451567">0 çelësa të caktuar</translation>
 <translation id="2272570998639520080">Gotë Martini</translation>
@@ -1977,7 +1978,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2435248616906486374">Rrjeti u shkëput</translation>
 <translation id="2435457462613246316">Shfaq fjalëkalimin</translation>
 <translation id="2436385001956947090">Kopjo &amp;lidhjen</translation>
-<translation id="2436746748253887661">Kjo i lejon shërbimet e sistemit që kanë leje që të përdorin vendndodhjen tënde. Vendndodhja mund të përdorë burime si Wi-Fi, rrjetet celulare dhe sensorët për të ndihmuar në përllogaritjen e vendndodhjes së pajisjes sate. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="2438853563451647815">Nuk është lidhur me printerin</translation>
 <translation id="2439152382014731627">Rivendos fjalëkalimin e pajisjes <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> po ngarkohet</translation>
@@ -8532,6 +8532,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7416091793702109803">Rishiko <ph name="FILE_NAME" /></translation>
 <translation id="7416263748877373774">"Kushtet e shërbimit" nuk mund të ngarkohen. Kontrollo lidhjen me rrjetin dhe provo përsëri.</translation>
 <translation id="7416362041876611053">Gabim i panjohur i rrjetit.</translation>
+<translation id="7417435070053325657">Të bllokuara: <ph name="BLOCKED_APPS_SIZE" /> nga <ph name="APPS_LIST_SIZE" /> aplikacione</translation>
 <translation id="741906494724992817">Ky aplikacion nuk kërkon leje të veçanta.</translation>
 <translation id="7419142833919893307">Nuk është shtuar asnjë emër përdoruesi</translation>
 <translation id="7419565702166471774">Përdor gjithmonë lidhje të sigurta</translation>
@@ -9052,7 +9053,6 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7788948939674438635">Mos lejo që sajtet të kyçin tastierën</translation>
 <translation id="7789963078219276159">Sfondi i faqes së nisjes është ndryshuar në <ph name="CATEGORY" />.</translation>
-<translation id="7790689625219600437">OCR për PDF</translation>
 <translation id="7791269138074599214">Metoda e hyrjes</translation>
 <translation id="7791429245559955092">Ky aplikacion do të instalohet në profilin tënd të Chrome të përdorur aktualisht.</translation>
 <translation id="7791436592012979144">Lëvizja në të kundërt u aktivizua</translation>
@@ -9806,6 +9806,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8336739000755212683">Ndrysho imazhin e llogarisë së pajisjes</translation>
 <translation id="8337020675372081178">{HOURS,plural, =1{Kjo pajisje do të ruhet për 1 orë dhe mund të lidhesh pa kod herën tjetër. Kjo është caktuar nga administratori yt.}other{Kjo pajisje do të ruhet për {HOURS} orë dhe mund të lidhesh pa kod herën tjetër. Kjo është caktuar nga administratori yt.}}</translation>
 <translation id="8337399713761067085">Aktualisht je offline</translation>
+<translation id="8338427544764842461">Grupet e tua të skedave ruhen këtu dhe përditësohen në të gjitha pajisjet ku je identifikuar</translation>
 <translation id="8338952601723052325">Uebsajti i zhvilluesit</translation>
 <translation id="8339288417038613756">Madhësia e ekranit dhe e tekstit</translation>
 <translation id="833986336429795709">Për të hapur këtë lidhje, zgjidh një aplikacion</translation>

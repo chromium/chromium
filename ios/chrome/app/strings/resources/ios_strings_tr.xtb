@@ -5,6 +5,7 @@
 <translation id="1013952917065545813">En son kapattığınız sekmeleri yeniden açmak için buraya geri gelebilirsiniz</translation>
 <translation id="1016495303386450659">Öğe güncellendi</translation>
 <translation id="1025514696883950875">{COUNT,plural, =1{Şifreyi Hesaba Kaydet}other{Şifreleri Hesaba Kaydet}}</translation>
+<translation id="102916930470544692">Geçiş anahtarı</translation>
 <translation id="1035980983510608210">Tüm sekmelerin kapatılması, sabit sekmelerin de kapanmasına neden olur.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1043592663436934089">Oturumunuz kapatılacak ve tarama verileri silinecek</translation>
@@ -1016,6 +1017,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="6173499589275053515">Şifre Google Hesabınıza (<ph name="EMAIL" />) kaydedildi</translation>
 <translation id="6184086493125982861">Sekmeleri Göster</translation>
 <translation id="6187302354554850004">Son senkronizasyon tarihi: <ph name="LAST_USED_TIME" /></translation>
+<translation id="6188737759358894319">Oluşturulma tarihi: <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Okunmamış girişler</translation>
 <translation id="6196207969502475924">Sesli Arama</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{{COUNT} Sekmeyi Kapat}other{{COUNT} Sekmeyi Kapat}}</translation>
@@ -1303,7 +1305,6 @@ Gizli moddayken siteler, örneğin reklamları kişiselleştirmek amacıyla fark
 <translation id="7557508262441527045">Oturum kapatıldı</translation>
 <translation id="7561196759112975576">Her zaman</translation>
 <translation id="7564917801238348224">KAYDET...</translation>
-<translation id="758132317817089442">Gelişmiş korumayı aç...</translation>
 <translation id="7582857256643797524">Bu ayar, cihazınızda etkinleştirildi</translation>
 <translation id="7583004045319035904">Gizli sekmelerinizin kilidini açmak için <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> kullanın.</translation>
 <translation id="7598439272585186139">Daha fazla güvenlikten yararlanın</translation>

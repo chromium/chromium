@@ -178,6 +178,7 @@
 <translation id="1610778689852195798">"နောက်ပြန်ရန်"</translation>
 <translation id="1611993646327628135">ဖွင့်</translation>
 <translation id="1620510694547887537">ကင်မရာ</translation>
+<translation id="1623768535032616219">Google Classroom ကို လျှော့ပြပါ</translation>
 <translation id="1632985212731562677">'ဆက်တင်များ' &gt; 'အများသုံးနိုင်မှု' တွင် 'ခလုတ်သုံးခြင်း' ကို ပိတ်နိုင်သည်။</translation>
 <translation id="1637505162081889933">စက် <ph name="NUM_DEVICES" /> ခု</translation>
 <translation id="1639239467298939599">တင်ပေးနေ</translation>
@@ -303,6 +304,7 @@
 <translation id="2198625180564913276">ပရိုဖိုင် ထည့်နေသည်။ မိနစ်အနည်းငယ် ကြာနိုင်ပါသည်။</translation>
 <translation id="219905428774326614">Launcher၊ အက်ပ်များအားလုံး</translation>
 <translation id="2201071101391734388">လတ်တလောဓာတ်ပုံ <ph name="TOTAL_COUNT" /> ပုံအနက် <ph name="INDEX" /> ပုံမြောက်။</translation>
+<translation id="2201687081523799384">Google Tasks ကို လျှော့ပြပါ</translation>
 <translation id="2208323208084708176">တစ်စုတစ်စည်းတည်းပြ ဒက်စတော့ မုဒ်</translation>
 <translation id="2220572644011485463">ပင်နံပါတ် သို့မဟုတ် စကားဝှက်</translation>
 <translation id="2222841058024245321">မျက်နှာပြင်နေရာ ၇</translation>
@@ -364,6 +366,7 @@
 <translation id="2427507373259914951">ဘယ်ဘက်ခလုတ်ကို နှိပ်ရန်</translation>
 <translation id="2429753432712299108">"<ph name="DEVICE_NAME" />" ဘလူးတုရှ် စက်ပစ္စည်းသည် တွဲရန်ခွင့်ပြုချက် လိုသည်။ လက်မခံမှီ၊ ဤလျှို့ဝှက်ကီးသည် ၎င်း၏မျက်နှာပြင်ပေါ်တွင် ပေါ်မပေါ် ကျေးဇူးပြု၍ အတည်ပြုပါ: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">စကားဝှက်ကို ပြပါ</translation>
+<translation id="2437771564543046790">ဘက်ထရီ အားနည်းနေသည်။ ဘက်ထရီ အားထိန်း ဖွင့်ထားသည်</translation>
 <translation id="243878895369688216">မနေ့က ဖွင့်ထားသည်</translation>
 <translation id="2440978926514840421">GIF ရုပ်သံဖမ်းယူလိုက်သည်</translation>
 <translation id="2441427462554639370">သိုလှောင်ခန်းနေရာ အလွန်နည်းနေသဖြင့် ရိုက်ကူးမှု ရပ်သွားသည်</translation>
@@ -1200,6 +1203,7 @@
 <translation id="550391772491508736">ကာစ် ဆက်လုပ်ရန်</translation>
 <translation id="5506975627792768506">မှန်ဘီလူး ဖွင့် (သို့) ပိတ်ရန်</translation>
 <translation id="5512042095225963688">ယခင်စကားလုံးကို ဖျက်ရန်</translation>
+<translation id="5519005148254860683">Google Tasks ကို ပိုပြပါ</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">သင်၏စီမံခန့်ခွဲသူသည် eSIM ပရိုဖိုင်အားလုံးကို ဖယ်ရှားလိုက်သည်။ နောက်ထပ် အချက်အလက်များအတွက် သင်၏စီမံခန့်ခွဲသူကို ဆက်သွယ်ပါ။</translation>
 <translation id="5520909879404821039">မင်္ဂလာပါကို ပြင်သစ်လိုပြောပါ</translation>
@@ -1408,6 +1412,7 @@
 <translation id="6200515304866777730">အက်ပ်က ပံ့ပိုးမထားပါ</translation>
 <translation id="6210042900243040400">ယခင်က <ph name="EMAIL" /> သို့ သိမ်းထားသော <ph name="NAME" /> သို့ ချိတ်ဆက်ပါ</translation>
 <translation id="6213808132343683860">ဖန်သားပြင်ဓာတ်ပုံ (သို့) ဖန်သားပြင်ရိုက်ကူးမှု တစ်စိတ်တစ်ပိုင်း ရယူရန်</translation>
+<translation id="621606890568890214">Google Classroom ကို ပိုပြပါ</translation>
 <translation id="6220928844947387476">သင့်စခရင်နှင့် သင့်ကို တစ်ချိန်တည်း ယခု မှတ်တမ်းတင်နိုင်ပါပြီ</translation>
 <translation id="622484624075952240">အောက်သို့</translation>
 <translation id="6228457605945141550">တောက်ပမှုကို လျှော့ချရန်</translation>

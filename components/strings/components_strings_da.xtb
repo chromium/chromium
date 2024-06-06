@@ -245,7 +245,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1432187715652018471">Denne side ønsker at installere en tjenestehandler.</translation>
 <translation id="1432581352905426595">Administrer søgemaskiner</translation>
 <translation id="1433225466058025572">Prøv at flytte dine filer igen</translation>
-<translation id="1434317006812369578">Chrome har indbyggede sikkerhedsfunktioner, der beskytter dig, når du er på nettet, f.eks. Google Beskyttet browsing. Beskyttet browsing har <ph name="BEGIN_LINK" />for nylig fundet malware på <ph name="SITE" /><ph name="END_LINK" />, og dette website er indlejret på det website, du forsøger at besøge.</translation>
 <translation id="1435940442311036198">Brug en adgangsnøgle på en anden enhed</translation>
 <translation id="1436185428532214179">Websitet kan anmode om tilladelse til at redigere filer og mapper på din enhed</translation>
 <translation id="1441816242347931036">Åbn for at fortsætte</translation>
@@ -1470,7 +1469,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3767485424735936570">Administratorpolitikken fraråder at kopiere og indsætte dette indhold i <ph name="VM_NAME" /></translation>
 <translation id="3772211998634047851">Papir (bankpost)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, tryk på Tab-tasten efterfulgt af Enter for hurtigt at oprette en ny note i Google Keep</translation>
-<translation id="378026377453746707">Chrome har indbyggede sikkerhedsfunktioner, der beskytter dig, når du er på nettet, f.eks. Google Beskyttet browsing. Beskyttet browsing har for nylig <ph name="BEGIN_LINK" />fundet skadelig software på <ph name="SITE" /><ph name="END_LINK" />, og dette website er indlejret på det website, du forsøger at besøge.</translation>
 <translation id="3780694243617746492">Outputbakke</translation>
 <translation id="3781428340399460090">Varm lyserød</translation>
 <translation id="3783418713923659662">Mastercard</translation>
@@ -1554,7 +1552,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3950820424414687140">Log ind</translation>
 <translation id="3953505489397572035">Dette er normalprisen</translation>
 <translation id="3958057596965527988">4 x 4 tommer</translation>
-<translation id="3959121317419633580">Chrome har indbyggede sikkerhedsfunktioner, der beskytter dig, når du er på nettet, f.eks. Google Beskyttet browsing. Beskyttet browsing har for nylig <ph name="BEGIN_LINK" />fundet phishing på <ph name="SITE" /><ph name="END_LINK" />, og dette website er indlejret på det website, du forsøger at besøge.<ph name="NEW_LINE" />Selv websites, der normalt er sikre, kan nogle gange blive kompromitteret af hackere. <ph name="BEGIN_ERROR_LINK" />Giv os besked<ph name="END_ERROR_LINK" />, hvis du mener, at der er sket en fejl, og at websitet ikke udgør en fare.</translation>
 <translation id="3961148744525529027">Regnearket for betalingshandler er åbnet halvt</translation>
 <translation id="3962859241508114581">Forrige nummer</translation>
 <translation id="3963721102035795474">Læser-tilstand</translation>

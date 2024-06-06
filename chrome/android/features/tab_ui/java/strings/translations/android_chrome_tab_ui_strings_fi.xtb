@@ -100,7 +100,6 @@
 <translation id="6333260925957816943">Tietoja tästä kaupasta</translation>
 <translation id="6381032505162537930">Näet välilehtiryhmäsi täällä</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Poista <ph name="TABS_COUNT_ONE" /> valitun välilehden ryhmittely}other{Poista <ph name="TABS_COUNT_MANY" /> valitun välilehden ryhmittely}}</translation>
-<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Löydät suljetut välilehdet Chromen päävalikon Viimeaikaiset välilehdet ‑kohdasta. Incognito-välilehti ei ole käytettävissä.}other{Löydät suljetut välilehdet Chromen päävalikon Viimeaikaiset välilehdet ‑kohdasta. # incognito-välilehteä ei ole käytettävissä.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> välilehti}other{<ph name="TABS_COUNT_MANY" /> välilehteä}}</translation>
 <translation id="6549021453810473782">Katso kaupan tiedot</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>

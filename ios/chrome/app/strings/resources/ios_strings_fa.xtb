@@ -5,6 +5,7 @@
 <translation id="1013952917065545813">می‌توانید به اینجا برگردید و برگه‌هایی را که اخیراً بسته‌اید مجدداً باز کنید</translation>
 <translation id="1016495303386450659">مورد به‌روز شد</translation>
 <translation id="1025514696883950875">{COUNT,plural, =1{ذخیره گذرواژه در حساب}one{ذخیره گذرواژه در حساب}other{ذخیره گذرواژه‌ها در حساب}}</translation>
+<translation id="102916930470544692">گذرکلید</translation>
 <translation id="1035980983510608210">با بستن همه برگه‌ها، برگه‌های سنجاق‌شده نیز بسته خواهند شد.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1043592663436934089">از سیستم خارج خواهید شد و داده‌های مرور حذف خواهد شد</translation>
@@ -1016,6 +1017,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6173499589275053515">‏گذرواژه در «حساب Google» شما ذخیره شد، <ph name="EMAIL" /></translation>
 <translation id="6184086493125982861">نمایش برگه‌ها</translation>
 <translation id="6187302354554850004">آخرین همگام‌سازی: <ph name="LAST_USED_TIME" /></translation>
+<translation id="6188737759358894319">تاریخ ایجاد: <ph name="DATE" /></translation>
 <translation id="6189413832092199491">خوانده‌نشده</translation>
 <translation id="6196207969502475924">جستجوی گفتاری</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{بستن {COUNT} برگه}one{بستن {COUNT} برگه}other{بستن {COUNT} برگه}}</translation>
@@ -1303,7 +1305,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7557508262441527045">از سیستم خارج شدید</translation>
 <translation id="7561196759112975576">همیشه</translation>
 <translation id="7564917801238348224">ذخیره…</translation>
-<translation id="758132317817089442">روشن کردن محافظت بهبودیافته…</translation>
 <translation id="7582857256643797524">این تنظیم در دستگاه شما فعال است</translation>
 <translation id="7583004045319035904">برای باز کردن قفل «برگه‌های ناشناس» از <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> استفاده کنید.</translation>
 <translation id="7598439272585186139">امنیت بیشتری داشته باشید</translation>

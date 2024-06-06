@@ -100,7 +100,6 @@
 <translation id="6333260925957816943">Informazioni su questo negozio</translation>
 <translation id="6381032505162537930">Qui troverai i tuoi gruppi di schede</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Separa <ph name="TABS_COUNT_ONE" /> scheda selezionata}other{Separa <ph name="TABS_COUNT_MANY" /> schede selezionate}}</translation>
-<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Puoi trovare le tue schede chiuse in Schede recenti sotto al menu principale di Chrome. La scheda di navigazione in incognito non sarà disponibile.}other{Puoi trovare le tue schede chiuse in Schede recenti sotto al menu principale di Chrome. # schede di navigazione in incognito non saranno disponibili.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> scheda}other{<ph name="TABS_COUNT_MANY" /> schede}}</translation>
 <translation id="6549021453810473782">Visualizza informazioni sul negozio</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>

@@ -362,6 +362,7 @@
 <translation id="3017079585324758401">Pozadina</translation>
 <translation id="3027578600144895987">Zatvorite kameru</translation>
 <translation id="3031560714565892478">Uređaj je video kamera.</translation>
+<translation id="3051968340259309715">Ovo omogućava sistemskim uslugama da koriste preciznost lokacije za utvrđivanje lokacije. Preciznost lokacije koristi informacije o bežičnim signalima kao što su pristupne tačke za WiFi, repetitori mobilnih mreža i GPS, zajedno sa podacima senzora uređaja, kao što su akcelerometar i žiroskop, za procenu lokacije uređaja. Možete da isključite lokaciju u odeljku Podešavanja &gt; Privatnost i bezbednost &gt; Kontrole privatnosti &gt; Pristup lokaciji. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Krajnja tačka</translation>
 <translation id="3060579846059757016">Okviri</translation>
@@ -962,7 +963,6 @@
 <translation id="6412715219990689313">Ugrađena tastatura</translation>
 <translation id="6417265370957905582">Google pomoćnik</translation>
 <translation id="6423239382391657905">Otvorena VPN</translation>
-<translation id="6438073885402882007">Ovo omogućava sistemskim uslugama sa dozvolom da koriste lokaciju. Lokacija može da koristi izvore kao što su WiFi, mobilne mreže i senzori da bi se lakše odredila lokacija uređaja. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="6439505561246192797">Slab (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Otvorite podešavanja naloga</translation>
 <translation id="6462978824459367242">Dugme Dodaj naziv pristupne tačke je sada omogućeno</translation>

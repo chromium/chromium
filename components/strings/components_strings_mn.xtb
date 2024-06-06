@@ -245,7 +245,6 @@
 <translation id="1432187715652018471">хуудас үйлчилгээ зохицуулагчийг суулгахыг хүсэж байна.</translation>
 <translation id="1432581352905426595">Хайлтын системийг удирдах</translation>
 <translation id="1433225466058025572">Файлуудаа дахин зөөж үзнэ үү</translation>
-<translation id="1434317006812369578">Chrome-д Google-н аюулгүй хөтөч зэрэг таныг үзэх үед хамгаалах аюулгүй байдлын бүрэлдэхүүн онцлогууд байдаг. Аюулгүй хөтөч саяхан <ph name="BEGIN_LINK" /><ph name="SITE" />-с хортой программ олсон<ph name="END_LINK" /> бөгөөд үүнийг таны зочлохоор оролдож буй сайтад оруулсан.</translation>
 <translation id="1435940442311036198">Өөр төхөөрөмж дээрх passkey ашиглах</translation>
 <translation id="1436185428532214179">Таны төхөөрөмж дээрх файлууд эсвэл фолдеруудыг засахыг хүсэх боломжтой</translation>
 <translation id="1441816242347931036">Үргэлжлүүлэхийн тулд нээх</translation>
@@ -1471,7 +1470,6 @@
 <translation id="3767485424735936570">Энэ контентыг <ph name="VM_NAME" /> руу хуулаад буулгахыг администраторын бодлогоор санал болгодоггүй</translation>
 <translation id="3772211998634047851">Цаас (бонд)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Keep-д шинэ тэмдэглэл шуурхай үүсгэхийн тулд эхлээд Tab, дараа нь Enter дээр дарна уу</translation>
-<translation id="378026377453746707">Chrome-д Google-н аюулгүй хөтөч зэрэг таныг үзэх үед хамгаалах аюулгүй байдлын бүрэлдэхүүн онцлогууд байдаг. Аюулгүй хөтөч саяхан <ph name="BEGIN_LINK" /><ph name="SITE" />-с аюултай программ хангамж олсон<ph name="END_LINK" /> бөгөөд үүнийг таны зочлохоор оролдож буй сайтад оруулсан.</translation>
 <translation id="3780694243617746492">Гарах цаасны сав</translation>
 <translation id="3781428340399460090">Тод ягаан</translation>
 <translation id="3783418713923659662">Mastercard</translation>
@@ -1555,7 +1553,6 @@
 <translation id="3950820424414687140">Нэвтрэх</translation>
 <translation id="3953505489397572035">Энэ нь дундаж үнэ юм</translation>
 <translation id="3958057596965527988">4 x 4 инч</translation>
-<translation id="3959121317419633580">Chrome-д Google-н аюулгүй хөтөч зэрэг таныг үзэх үед хамгаалах аюулгүй байдлын бүрэлдэхүүн онцлогууд байдаг. Аюулгүй хөтөч саяхан <ph name="BEGIN_LINK" /><ph name="SITE" />-с фишинг олсон<ph name="END_LINK" /> бөгөөд үүнийг таны зочлохоор оролдож буй сайтад оруулсан.<ph name="NEW_LINE" />Ихэвчлэн аюулгүй байдаг сайтууд хүртэл зарим тохиолдолд халдагчдын халдлагад өртдөг. Хэрэв та алдаа гарсан бөгөөд энэ сайт аюулгүй гэж үзэж байвал <ph name="BEGIN_ERROR_LINK" />бидэнд мэдэгдэнэ үү<ph name="END_ERROR_LINK" />.</translation>
 <translation id="3961148744525529027">Төлбөр хариуцагчийн хүснэгт хагас нээлттэй байна</translation>
 <translation id="3962859241508114581">Өмнөх бичлэг</translation>
 <translation id="3963721102035795474">Уншигчийн горим</translation>

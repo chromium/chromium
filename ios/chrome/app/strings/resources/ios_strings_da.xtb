@@ -5,6 +5,7 @@
 <translation id="1013952917065545813">Du kan vende tilbage hertil for at åbne dine senest lukkede faner igen</translation>
 <translation id="1016495303386450659">Elementet blev opdateret</translation>
 <translation id="1025514696883950875">{COUNT,plural, =1{Gem adgangskoden på kontoen}one{Gem adgangskoden på kontoen}other{Gem adgangskoderne på kontoen}}</translation>
+<translation id="102916930470544692">Adgangsnøgle</translation>
 <translation id="1035980983510608210">Hvis du lukker alle faner, lukkes de fastgjorte faner også.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1043592663436934089">Du logges ud, og browserdataene slettes</translation>
@@ -1016,6 +1017,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6173499589275053515">Adgangskoden er blevet gemt på din Google-konto, <ph name="EMAIL" /></translation>
 <translation id="6184086493125982861">Vis faner</translation>
 <translation id="6187302354554850004">Sidst synkroniseret: <ph name="LAST_USED_TIME" /></translation>
+<translation id="6188737759358894319">Oprettet <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Ulæst</translation>
 <translation id="6196207969502475924">Talesøgning</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Luk {COUNT} fane}one{Luk {COUNT} fane}other{Luk {COUNT} faner}}</translation>
@@ -1303,7 +1305,6 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="7557508262441527045">Logget ud</translation>
 <translation id="7561196759112975576">Altid</translation>
 <translation id="7564917801238348224">GEM...</translation>
-<translation id="758132317817089442">Aktivér Forbedret beskyttelse…</translation>
 <translation id="7582857256643797524">Denne indstilling er aktiveret på din enhed</translation>
 <translation id="7583004045319035904">Brug <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> til at låse dine inkognitofaner op.</translation>
 <translation id="7598439272585186139">Få mere sikkerhed</translation>

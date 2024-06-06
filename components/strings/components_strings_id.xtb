@@ -245,7 +245,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1432187715652018471">Halaman ingin menginstal pengendali layanan.</translation>
 <translation id="1432581352905426595">Kelola mesin telusur</translation>
 <translation id="1433225466058025572">Coba pindahkan file lagi</translation>
-<translation id="1434317006812369578">Chrome memiliki fitur keamanan bawaan untuk melindungi Anda saat menjelajah, seperti Google Safe Browsing. Safe Browsing <ph name="BEGIN_LINK" />baru-baru ini menemukan malware di <ph name="SITE" /><ph name="END_LINK" />, yang disematkan di situs yang Anda coba kunjungi.</translation>
 <translation id="1435940442311036198">Gunakan kunci sandi di perangkat lain</translation>
 <translation id="1436185428532214179">Dapat meminta untuk mengedit file dan folder di perangkat Anda</translation>
 <translation id="1441816242347931036">Buka untuk melanjutkan</translation>
@@ -1470,7 +1469,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="3767485424735936570">Menyalin dan menempelkan konten ini ke <ph name="VM_NAME" /> tidak direkomendasikan oleh kebijakan administrator</translation>
 <translation id="3772211998634047851">Kertas (Bond)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk membuat catatan baru di Google Keep dengan cepat</translation>
-<translation id="378026377453746707">Chrome memiliki fitur keamanan bawaan untuk melindungi Anda saat menjelajah, seperti Google Safe Browsing. Safe Browsing baru-baru ini <ph name="BEGIN_LINK" />menemukan software berbahaya di <ph name="SITE" /><ph name="END_LINK" />, yang disematkan di situs jika Anda mencoba membukanya.</translation>
 <translation id="3780694243617746492">Tampungan keluaran</translation>
 <translation id="3781428340399460090">Merah Muda Terang</translation>
 <translation id="3783418713923659662">Mastercard</translation>
@@ -1554,7 +1552,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="3950820424414687140">Login</translation>
 <translation id="3953505489397572035">Harganya standar</translation>
 <translation id="3958057596965527988">4 x 4 inci (10 x 10 cm)</translation>
-<translation id="3959121317419633580">Chrome memiliki fitur keamanan bawaan untuk melindungi Anda saat menjelajah, seperti Google Safe Browsing. Safe Browsing baru-baru ini <ph name="BEGIN_LINK" />menemukan phishing di <ph name="SITE" /><ph name="END_LINK" />, yang disematkan di situs yang Anda coba kunjungi.<ph name="NEW_LINE" />Bahkan situs yang biasanya aman terkadang disusupi oleh penyerang. <ph name="BEGIN_ERROR_LINK" />Beri tahu kami<ph name="END_ERROR_LINK" /> jika menurut Anda hal ini merupakan kekeliruan dan situs ini tidak berbahaya.</translation>
 <translation id="3961148744525529027">Lembar handler pembayaran setengah terbuka</translation>
 <translation id="3962859241508114581">Lagu Sebelumnya</translation>
 <translation id="3963721102035795474">Mode Pembaca</translation>

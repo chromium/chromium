@@ -245,7 +245,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1432187715652018471">La pàgina vol instal·lar un gestor de serveis</translation>
 <translation id="1432581352905426595">Gestiona els motors de cerca</translation>
 <translation id="1433225466058025572">Prova de tornar a moure els fitxers</translation>
-<translation id="1434317006812369578">Chrome té funcions de seguretat integrades que et protegeixen mentre navegues, com ara Navegació segura de Google. Recentment, Navegació segura <ph name="BEGIN_LINK" />ha trobat programari maliciós a <ph name="SITE" /><ph name="END_LINK" />, que està inserit al lloc web que proves de visitar.</translation>
 <translation id="1435940442311036198">Utilitza una clau d'accés en un altre dispositiu</translation>
 <translation id="1436185428532214179">Pot demanar permís per editar fitxers i carpetes del dispositiu</translation>
 <translation id="1441816242347931036">Obre per continuar</translation>
@@ -1470,7 +1469,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3767485424735936570">La política de l'administrador no recomana copiar i enganxar aquest contingut a <ph name="VM_NAME" /></translation>
 <translation id="3772211998634047851">Paper (valors)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />: prem Tab i després Retorn per crear una nota ràpidament a Google Keep</translation>
-<translation id="378026377453746707">Chrome té funcions de seguretat integrades que et protegeixen mentre navegues, com ara Navegació segura de Google. Recentment, Navegació segura <ph name="BEGIN_LINK" />ha trobat programari nociu a <ph name="SITE" /><ph name="END_LINK" />, que està inserit al lloc web que proves de visitar.</translation>
 <translation id="3780694243617746492">Safata de sortida</translation>
 <translation id="3781428340399460090">Rosa fúcsia</translation>
 <translation id="3783418713923659662">Mastercard</translation>
@@ -1554,7 +1552,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3950820424414687140">Inicia la sessió</translation>
 <translation id="3953505489397572035">Aquest preu és habitual</translation>
 <translation id="3958057596965527988">4 x 4 polzades</translation>
-<translation id="3959121317419633580">Chrome té funcions de seguretat integrades que et protegeixen mentre navegues, com ara Navegació segura de Google. Recentment, Navegació segura <ph name="BEGIN_LINK" />ha trobat pesca de credencials a <ph name="SITE" /><ph name="END_LINK" />, que està inserit al lloc web que proves de visitar.<ph name="NEW_LINE" />De vegades, alguns atacants poden posar en perill llocs web que acostumen a ser segurs. Si creus que hi ha hagut un error i que aquest lloc web no suposa cap perill, <ph name="BEGIN_ERROR_LINK" />fes-nos-ho saber<ph name="END_ERROR_LINK" />.</translation>
 <translation id="3961148744525529027">El full del gestor de pagaments està obert fins a la meitat</translation>
 <translation id="3962859241508114581">Pista anterior</translation>
 <translation id="3963721102035795474">Mode de lector</translation>

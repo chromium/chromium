@@ -147,6 +147,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> ir samainīts ar <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Rādīt visus ieteikumus</translation>
 <translation id="1501946871587957338">Vai mainīt audio avotu?</translation>
+<translation id="1505542291183484463">Loga izmēra mainīšana mozaīkas skatā — uz leju</translation>
 <translation id="1510238584712386396">Lietojumprogrammu palaidējs</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Rādīt paziņojumu iestatījumus. Paziņojumi lietotnei ir izslēgti}zero{Rādīt paziņojumu iestatījumus. Paziņojumi ir izslēgti # lietotnēm}one{Rādīt paziņojumu iestatījumus. Paziņojumi ir izslēgti # lietotnei}other{Rādīt paziņojumu iestatījumus. Paziņojumi ir izslēgti # lietotnēm}}</translation>
 <translation id="1523032696246003">Akumulatora uzlādes līmenis: <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> līdz pilnai uzlādei</translation>
@@ -296,6 +297,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2149229036084364364">Pāriet uz iepriekšējo ierakstu</translation>
 <translation id="2152895518047545149">Šķiet, viss vajadzīgais ir iesniegts. Lieliski!</translation>
 <translation id="2161132820593978283">Izmēģiniet kameras kadrēšanu, lai videozvanu laikā jūs būtu ekrāna centrā. Varat to ieslēgt ātrajos iestatījumos.</translation>
+<translation id="216955976692983107">Loga izmēra mainīšana mozaīkas skatā — pa labi</translation>
 <translation id="2185166372312820725">Pāriet uz iepriekšējo cilni</translation>
 <translation id="2185444992308415167">Secīgi pāriet no 1. līdz 8. cilnei</translation>
 <translation id="2198625180564913276">Notiek profila pievienošana. Tas var ilgt dažas minūtes.</translation>
@@ -642,6 +644,7 @@ Pievienoto ierīču skaits: <ph name="DEVICECOUNT" />.</translation>
 <translation id="3509391053705095206">Nevar atrast jūsu tālruni. Tālrunī ir jābūt ieslēgtam Bluetooth savienojumam.</translation>
 <translation id="3510164367642747937">Izcelt peles kursoru</translation>
 <translation id="3513798432020909783">Kontu pārvalda <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3516000762115478502">Loga izmēra mainīšana mozaīkas skatā — uz augšu</translation>
 <translation id="3517037892157925473">Uzdevumi pēdējoreiz atjaunināti: <ph name="TIME" />, <ph name="DATE" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{Ierīce jāatjaunina 1 minūtes laikā}zero{Ierīce jāatjaunina # minūšu laikā}one{Ierīce jāatjaunina # minūtes laikā}other{Ierīce jāatjaunina # minūšu laikā}}</translation>
 <translation id="3522979239100719575">Notiek pieejamu profilu meklēšana… Tā var ilgt dažas minūtes.</translation>
@@ -758,6 +761,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="3899995891769452915">Balss ievade</translation>
 <translation id="3900355044994618856">Atlikušais laiks līdz jūsu sesijas beigām: <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">Notiek savienojuma izveide ar <ph name="NAME" /></translation>
+<translation id="3904768293285573640">Loga izmēra mainīšana mozaīkas skatā — pa kreisi</translation>
 <translation id="3906954721959377182">Planšetdators</translation>
 <translation id="3923494859158167397">Nav iestatīts neviens mobilais tīkls</translation>
 <translation id="3925540965556789199"><ph name="DATE" />: notiek pasākumu ielāde.</translation>

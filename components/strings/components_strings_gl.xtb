@@ -245,7 +245,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1432187715652018471">esta páxina quere instalar un controlador de servizo.</translation>
 <translation id="1432581352905426595">Xestionar motores de busca</translation>
 <translation id="1433225466058025572">Proba a mover os ficheiros de novo</translation>
-<translation id="1434317006812369578">Chrome inclúe funcións de seguranza para protexerte cando navegas, como, por exemplo, Navegación segura de Google. Esta función <ph name="BEGIN_LINK" />detectou hai pouco software malicioso en <ph name="SITE" /><ph name="END_LINK" />, que está integrado no sitio ao que tentas acceder.</translation>
 <translation id="1435940442311036198">Usar clave de acceso dun dispositivo distinto</translation>
 <translation id="1436185428532214179">Pode pedirche permiso para editar ficheiros e cartafoles do teu dispositivo</translation>
 <translation id="1441816242347931036">Abrir para continuar</translation>
@@ -1470,7 +1469,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3767485424735936570">A política do administrador non recomenda copiar e pegar este contido en <ph name="VM_NAME" /></translation>
 <translation id="3772211998634047851">Papel (carta)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Preme Tabulador e, a continuación, Introducir para crear rapidamente unha nota nova en Google Keep</translation>
-<translation id="378026377453746707">Chrome inclúe funcións de seguranza para protexerte cando navegas, como, por exemplo, Navegación segura de Google. Esta función <ph name="BEGIN_LINK" />detectou hai pouco software daniño en <ph name="SITE" /><ph name="END_LINK" />, que está integrado no sitio ao que tentas acceder.</translation>
 <translation id="3780694243617746492">Bandexa de saída</translation>
 <translation id="3781428340399460090">Rosa fucsia</translation>
 <translation id="3783418713923659662">Mastercard</translation>
@@ -1554,7 +1552,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3950820424414687140">Iniciar sesión</translation>
 <translation id="3953505489397572035">Este prezo é habitual</translation>
 <translation id="3958057596965527988">4 x 4 polgadas</translation>
-<translation id="3959121317419633580">Chrome inclúe funcións de seguranza para protexerte cando navegas, como, por exemplo, Navegación segura de Google. Esta función <ph name="BEGIN_LINK" />detectou hai pouco phishing en <ph name="SITE" /><ph name="END_LINK" />, que está integrado no sitio ao que tentas acceder.<ph name="NEW_LINE" />Ás veces, mesmo os sitios que adoitan ser seguros poden verse vulnerados por atacantes. <ph name="BEGIN_ERROR_LINK" />Infórmanos<ph name="END_ERROR_LINK" /> se consideras que se cometeu un erro e que o sitio non representa ningún perigo.</translation>
 <translation id="3961148744525529027">A folla do controlador de pagos está medio aberta</translation>
 <translation id="3962859241508114581">Pista anterior</translation>
 <translation id="3963721102035795474">Modo de lector</translation>

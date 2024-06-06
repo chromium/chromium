@@ -481,6 +481,7 @@
 <translation id="1353980523955420967">PPD файлът не може да бъде намерен. Уверете се, че вашият Chromebook е онлайн, и опитайте отново.</translation>
 <translation id="1354045473509304750">Използването и местенето на камерата ви от <ph name="HOST" /> продължават да са разрешени</translation>
 <translation id="1355088139103479645">Да се изтрият ли всички данни?</translation>
+<translation id="1356376170199999104">Разрешено – <ph name="PERMISSION_DETAILS" />. Включете микрофона посредством физически превключвател.</translation>
 <translation id="1356959069439783953">Неактивните раздели имат нов облик</translation>
 <translation id="1358741672408003399">Правопис и граматика</translation>
 <translation id="1359923111303110318">Устройството ви може да бъде отключвано чрез Smart Lock. Натиснете Enter, за да потвърдите.</translation>
@@ -750,6 +751,7 @@
 <translation id="1557939148300698553">Създаване на потребителски профил</translation>
 <translation id="155865706765934889">Сензорен панел</translation>
 <translation id="1558671750917454373">Възобновяване на предаването към „<ph name="DEVICE_NAME" />“</translation>
+<translation id="1561331397460162942">Това разрешава достъп до местоположението за приложенията и уебсайтовете със съответното разрешение и за системните услуги</translation>
 <translation id="1562119309884184621">Добавянето на този контакт ще се запомни за следващия път, когато той споделя с вас</translation>
 <translation id="1563137369682381456">Срок на валидност</translation>
 <translation id="1563702743503072935">Паролите от профила ви в Google ще бъдат достъпни на това устройство, когато сте влезли в профила си на него</translation>
@@ -1752,11 +1754,13 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
     <ph name="BEGIN_PARAGRAPH2" />След като инсталирането започне, не може да бъде отменено.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">Обмен на данни с всяко устройство в домейните: <ph name="DOMAINS" /></translation>
 <translation id="2270666014403455717">Задаване на превключвател за „Избиране“</translation>
+<translation id="2271452184061378400">Групите ви раздели се запазват тук</translation>
 <translation id="2271986192355138465">Научете как да инсталирате уеб приложения</translation>
 <translation id="2272430695183451567">0 зададени превключвателя</translation>
 <translation id="2272570998639520080">Чаша за мартини</translation>
 <translation id="2273119997271134996">Проблем с порта за видео на докинг станцията</translation>
 <translation id="2274840746523584236">Заредете своя Chromebook</translation>
+<translation id="2275193525496879616">Разрешено. Свържете камера към устройството си.</translation>
 <translation id="2276503375879033601">Добавяне на още приложения</translation>
 <translation id="2278193750452754829">Разширения, разрешени в този сайт. Изберете, за да отворите менюто</translation>
 <translation id="2278562042389100163">Отваряне на прозореца на браузъра</translation>
@@ -1874,6 +1878,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2350133097354918058">Презареждането завърши</translation>
 <translation id="2350182423316644347">Приложението се подготвя за работа...</translation>
 <translation id="235028206512346451">Ако се отдалечите от устройството си, екранът ще се заключи автоматично. Когато сте пред устройството, екранът ще остане активен по-дълго време. Ако не използвате опция за заключен екран, вместо да се заключва, устройството ви ще преминава в спящ режим.</translation>
+<translation id="2351923523007389195">Разрешено – <ph name="PERMISSION_DETAILS" />. Включете <ph name="LINK_BEGIN" />достъпа до системното местоположение<ph name="LINK_END" />.</translation>
 <translation id="2352305801620974284">Когато влезете в профила си на това устройство, получавате паролите си и още много други неща от профила си в Google</translation>
 <translation id="2352662711729498748">&lt; 1 МБ</translation>
 <translation id="2352810082280059586">Бележките на заключения екран автоматично се запазват в/ъв <ph name="LOCK_SCREEN_APP_NAME" />. Най-новата ви бележка ще остане на заключения екран.</translation>
@@ -1988,7 +1993,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2435248616906486374">Няма връзка с мрежата</translation>
 <translation id="2435457462613246316">Показване на паролата</translation>
 <translation id="2436385001956947090">Копиране на &amp;връзката</translation>
-<translation id="2436746748253887661">Това дава възможност на системните услуги, които разполагат с разрешението, да използват местоположението ви. Функцията за местоположението може да използва източници като Wi‑Fi, мобилни мрежи и сензори, за да определя къде се намира устройството ви. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="2438853563451647815">Няма връзка с принтера</translation>
 <translation id="2439152382014731627">Задаване на нова парола за <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600">Зарежда се <ph name="WINDOW_TITLE" /></translation>
@@ -3348,6 +3352,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3449839693241009168">Натиснете <ph name="SEARCH_KEY" /> за да изпратите командите до <ph name="EXTENSION_NAME" /></translation>
 <translation id="3450157232394774192">Процент на използване в състояние на неактивност</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> изисква да се свържете с Wi-Fi сега и да изтеглите актуализация.</translation>
+<translation id="345078987193237421">Това разрешава достъп до камерата за приложенията и уебсайтовете със съответното разрешение и за системните услуги</translation>
 <translation id="3452999110156026232">Достъп на родител</translation>
 <translation id="3453082738208775226">Искате ли да изчистите офлайн хранилището?</translation>
 <translation id="3453597230179205517">Достъпът до местоположението е блокиран</translation>
@@ -3519,6 +3524,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3587438013689771191">Научете повече за: <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="3587482841069643663">Всички</translation>
 <translation id="3588790464166520201">Сайтове с разрешение за инсталиране на инструменти за обработване на плащания</translation>
+<translation id="3589010096969411438">Разрешено. Включете микрофона посредством физически превключвател.</translation>
 <translation id="3589766037099229847">Незащитеното съдържание е блокирано</translation>
 <translation id="3590194807845837023">Отключване на потребителския профил и повторно стартиране</translation>
 <translation id="3590295622232282437">Влиза се в управлявана сесия.</translation>
@@ -4724,6 +4730,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4473996011558324141">изчислява се оставащото време</translation>
 <translation id="4474155171896946103">Запазване на отметки към всички раздели…</translation>
 <translation id="4475299370877036544">Това действие може да нарушава правилата на организацията ви</translation>
+<translation id="4476198534886170024">Разрешено. Включете <ph name="LINK_BEGIN" />достъпа до системната камера<ph name="LINK_END" />.</translation>
 <translation id="4476590490540813026">Спортист</translation>
 <translation id="4476659815936224889">За да сканирате този код, можете да използвате приложение за сканиране на QR кодове на телефона си или някои приложения за камера.</translation>
 <translation id="4477015793815781985">Добавете Ctrl, Alt или ⌘</translation>
@@ -5072,6 +5079,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4742795653798179840">Данните в Chrome бяха изтрити</translation>
 <translation id="4742970037960872810">Премахване на открояването</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Научете как да актуализирате приложения<ph name="END_LINK" /></translation>
+<translation id="4743990041512863976">Разрешено – <ph name="PERMISSION_DETAILS" />. Включете <ph name="LINK_BEGIN" />достъпа до системния микрофон<ph name="LINK_END" />.</translation>
 <translation id="4744268813103118742">Към сайта</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Включване отново на звука на сайта}other{Включване отново на звука на сайтовете}}</translation>
@@ -5586,6 +5594,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5143374789336132547">Разширението „<ph name="EXTENSION_NAME" />“ промени страницата, която се показва при кликване върху бутона „Начална страница“.</translation>
 <translation id="5143612243342258355">Този файл е опасен</translation>
 <translation id="5143712164865402236">Вход за цял екран</translation>
+<translation id="5143960098217235598">Това разрешава достъп до микрофона за приложенията и уебсайтовете със съответното разрешение и за системните услуги</translation>
 <translation id="5144815231216017543">Alt + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="5145464978649806571">Ако се отдалечите от устройството си, екранът ще се заключи автоматично. Когато сте пред устройството, екранът ще остане активен по-дълго време. Ако опцията за заключен екран е деактивирана, вместо да се заключва, устройството ви ще преминава в спящ режим.</translation>
 <translation id="514575469079499857">Определяне на местоположението посредством IP адреса ви (по подразбиране)</translation>
@@ -5783,6 +5792,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5291739252352359682">Автоматично създава надписи за мултимедията в браузъра Chrome (понастоящем се предлага на английски). Аудиозаписите и надписите се обработват локално и остават на устройството ви.</translation>
 <translation id="529175790091471945">Форматиране на това устройство</translation>
 <translation id="529296195492126134">Преходният режим не се поддържа. Моля, обърнете се към администратора си</translation>
+<translation id="5293043095535566171">Да се включи ли достъпът до местоположението?</translation>
 <translation id="5293170712604732402">Възстановяване на настройките към първоначалните им стандартни стойности</translation>
 <translation id="5294068591166433464">Ако сайт се опита да открадне паролата ви или изтеглите опасен файл, Chrome може също да изпрати до Google URL адресите и част от съдържанието на страницата</translation>
 <translation id="5294097441441645251">Трябва да започва с малка буква или долна черта</translation>
@@ -6975,6 +6985,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6200151268994853226">Управление на разширението</translation>
 <translation id="6201608810045805374">Да се премахне ли този профил?</translation>
 <translation id="6202304368170870640">Можете да използвате ПИН кода си, за да влизате в устройството си и да го отключвате.</translation>
+<translation id="6202935572248792580">Разрешено. Свържете микрофон към устройството си.</translation>
 <translation id="6203247599828309566">Запазихте бележка за парола на този сайт. За да я видите, кликнете върху иконата на ключ.</translation>
 <translation id="6205314730813004066">Поверителност при рекламите</translation>
 <translation id="6205993460077903908"><ph name="WINDOW_TITLE" /> – записва чрез микрофона</translation>
@@ -7029,6 +7040,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6238923052227198598">Запазване на най-новата бележка на заключения екран</translation>
 <translation id="6238982280403036866">Сайтове с разрешение за използване на JavaScript</translation>
 <translation id="6239558157302047471">Презареждане на рамката</translation>
+<translation id="6240637845286751292">Разрешено. Включете <ph name="LINK_BEGIN" />достъпа до системното местоположение<ph name="LINK_END" />.</translation>
 <translation id="6240821072888636753">Запитване всеки път</translation>
 <translation id="6240964651812394252">За да използвате Google Мениджър на пароли с операционната си система, стартирайте повторно Chrome и разрешете достъпа до мениджъра на паролите на компютъра си. След повторното стартиране разделите ви ще се отворят отново.</translation>
 <translation id="6241530762627360640">Да осъществява достъп до информацията за сдвоените със системата ви устройства с Bluetooth и да открива тези, които са наблизо.</translation>
@@ -8277,6 +8289,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7210499381659830293">Принтери, свързани чрез разширение</translation>
 <translation id="7211783048245131419">Не е зададен превключвател</translation>
 <translation id="7212097698621322584">Въведете текущия си ПИН код, за да го промените. Ако не го знаете, трябва да нулирате ключа за сигурност, след което да създадете нов ПИН код.</translation>
+<translation id="7214047272988222011">Разрешено – <ph name="PERMISSION_DETAILS" />. Включете <ph name="LINK_BEGIN" />достъпа до системната камера<ph name="LINK_END" />.</translation>
 <translation id="721490496276866468">Импортиране на пароли</translation>
 <translation id="7218514093816577632">Уверете се, че известията са включени на устройството ви <ph name="DEVICE_NAME" />.</translation>
 <translation id="7219254577985949841">Да се изтрият ли данните за сайтовете?</translation>
@@ -8757,6 +8770,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7573172247376861652">Заряд на батерията</translation>
 <translation id="7573594921350120855">Сайтовете обикновено използват видеокамерата ви, за да осигуряват функции за комуникация, като например видеочат</translation>
 <translation id="7575272930307342804">Навигационни контроли</translation>
+<translation id="757660455834887988">Разрешено – <ph name="PERMISSION_DETAILS" />. Свържете камера към устройството си.</translation>
 <translation id="7576690715254076113">Комплектуване</translation>
 <translation id="7576976045740938453">Възникна проблем с профила за демонстрационен режим.</translation>
 <translation id="7578137152457315135">Настройки за отпечатъци</translation>
@@ -9071,7 +9085,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7788948939674438635">Да не се разрешава на сайтовете да заключват клавиатурата</translation>
 <translation id="7789963078219276159">Фонът на началната страница бе променен на „<ph name="CATEGORY" />“.</translation>
-<translation id="7790689625219600437">OCR на PDF файлове</translation>
 <translation id="7791269138074599214">Метод на въвеждане</translation>
 <translation id="7791429245559955092">Това приложение ще бъде инсталирано в понастоящем използвания от вас потребителски профил в Chrome</translation>
 <translation id="7791436592012979144">Обратното превъртане е активирано</translation>
@@ -9434,6 +9447,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8053278772142718589">Файлове PKCS #12</translation>
 <translation id="8053390638574070785">Презареждане на тази страница</translation>
 <translation id="8053629544194355894">Включете синхронизирането, за да позволите на Chrome да предлага групи раздели</translation>
+<translation id="8054500940978949009">Разрешено. Включете <ph name="LINK_BEGIN" />достъпа до системния микрофон<ph name="LINK_END" />.</translation>
 <translation id="8054517699425078995">Този тип файл може да навреди на устройството ви. Искате ли да запазите „<ph name="FILE_NAME" />“ въпреки това?</translation>
 <translation id="8054563304616131773">Моля, въведете валиден имейл адрес</translation>
 <translation id="8054609631325628928">Тези номера могат да се използват за активиране на услугата</translation>
@@ -9826,6 +9840,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8336739000755212683">Промяна на изображението за профила на устройството</translation>
 <translation id="8337020675372081178">{HOURS,plural, =1{Това устройство ще бъде запазено за 1 час. Следващия път ще можете да се свържете без код. Настройката е зададена от администратора ви.}other{Това устройство ще бъде запазено за {HOURS} часа. Следващия път ще можете да се свържете без код. Настройката е зададена от администратора ви.}}</translation>
 <translation id="8337399713761067085">Понастоящем сте офлайн.</translation>
+<translation id="8338427544764842461">Групите ви раздели се запазват тук и се актуализират на всички устройства, на които сте влезли в профила си</translation>
 <translation id="8338952601723052325">Уебсайт за програмисти</translation>
 <translation id="8339288417038613756">Размер на текста и елементите на екрана</translation>
 <translation id="833986336429795709">За да отворите тази връзка, изберете приложение</translation>
@@ -10863,6 +10878,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="9096776523567481218">не е инсталирано локално</translation>
 <translation id="9098860402274800697">Премахване на Google Play и приложенията за Android</translation>
 <translation id="9099220545925418560">Въз основа на историята ви на сърфиране. Тази настройка е изключена.</translation>
+<translation id="910000385680858937">Разрешено – <ph name="PERMISSION_DETAILS" />. Свържете микрофон към устройството си.</translation>
 <translation id="9100416672768993722">За да превключите към последния използван метод на въвеждане, натиснете <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /> <ph name="SEPARATOR" /> <ph name="BEGIN_SPACE" />интервал<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="9100765901046053179">Разширени настройки</translation>
 <translation id="9101691533782776290">Стартиране на приложението</translation>

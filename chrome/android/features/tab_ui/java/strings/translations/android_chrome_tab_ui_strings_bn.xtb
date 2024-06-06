@@ -100,7 +100,6 @@
 <translation id="6333260925957816943">এই স্টোরের বিষয়ে তথ্য</translation>
 <translation id="6381032505162537930">আপনার ট্যাব গ্রুপ এখানে দেখতে পাবেন</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{বেছে নেওয়া <ph name="TABS_COUNT_ONE" />টি ট্যাব আনগ্রুপ করুন}one{বেছে নেওয়া <ph name="TABS_COUNT_MANY" />টি ট্যাব আনগ্রুপ করুন}other{বেছে নেওয়া <ph name="TABS_COUNT_MANY" />টি ট্যাব আনগ্রুপ করুন}}</translation>
-<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Chrome-এর প্রধান মেনুতে, 'সাম্প্রতিক' ট্যাবের মধ্যে আপনার বন্ধ করে দেওয়া ট্যাব দেখতে পারবেন। আপনার জন্য 'ছদ্মবেশী' ট্যাবের সুবিধা উপলভ্য হবে না।}one{Chrome-এর প্রধান মেনুতে, 'সাম্প্রতিক' ট্যাবের মধ্যে আপনার বন্ধ করে দেওয়া ট্যাব দেখতে পারবেন। আপনার জন্য #টি 'ছদ্মবেশী' ট্যাবের সুবিধা উপলভ্য হবে না।}other{Chrome-এর প্রধান মেনুতে, 'সাম্প্রতিক' ট্যাবের মধ্যে আপনার বন্ধ করে দেওয়া ট্যাব দেখতে পারবেন। আপনার জন্য #টি 'ছদ্মবেশী' ট্যাবের সুবিধা উপলভ্য হবে না।}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />টি ট্যাব}one{<ph name="TABS_COUNT_MANY" />টি ট্যাব}other{<ph name="TABS_COUNT_MANY" />টি ট্যাব}}</translation>
 <translation id="6549021453810473782">স্টোর সংক্রান্ত তথ্য দেখুন</translation>
 <translation id="6557858706263317126">আরও <ph name="HIDDEN_TABS_COUNT" /></translation>

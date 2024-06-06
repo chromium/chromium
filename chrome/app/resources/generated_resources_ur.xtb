@@ -1746,6 +1746,7 @@
     <ph name="BEGIN_PARAGRAPH2" />ایک بار انسٹالیشن شروع ہو جانے کے بعد اسے منسوخ نہیں کیا جا سکتا۔<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">ڈومینز میں موجود کسی بھی آلے کے ساتھ ڈیٹا کا تبادلہ کریں: <ph name="DOMAINS" /></translation>
 <translation id="2270666014403455717">"منتخب کرنے" کیلئے سوئچ تفویض کریں</translation>
+<translation id="2271452184061378400">آپ کے ٹیب گروپس یہاں محفوظ کیے جاتے ہیں</translation>
 <translation id="2271986192355138465">ویب ایپس کو انسٹال کرنے کا طریقہ جانیں</translation>
 <translation id="2272430695183451567">0 سوئچز تفویض کیے گئے</translation>
 <translation id="2272570998639520080">مارٹنی گلاس</translation>
@@ -1985,7 +1986,6 @@
 <translation id="2435248616906486374">نیٹ ورک منقطع ہوگیا</translation>
 <translation id="2435457462613246316">پاس ورڈ دکھائیں</translation>
 <translation id="2436385001956947090">لنک کاپی کریں</translation>
-<translation id="2436746748253887661">‏یہ سسٹم سروسز کو آپ کا مقام استعمال کرنے کی اجازت دیتا ہے۔ آپ کے آلہ کے مقام کا اندازہ لگانے میں مدد کرنے کے لیے، مقام Wi‑Fi، موبائل نیٹ ورکس اور سینسرز جیسے وسائل کا استعمال کر سکتا ہے۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="2438853563451647815">پرنٹر سے منسلک نہیں ہے</translation>
 <translation id="2439152382014731627"><ph name="DEVICE_TYPE" /> پاس ورڈ ری سیٹ کریں</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> لوڈ ہو رہی ہے</translation>
@@ -9071,7 +9071,6 @@
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7788948939674438635">سائٹس کو اپنے کی بورڈ کو مقفل کرنے کی اجازت نہ دیں</translation>
 <translation id="7789963078219276159">ابتدائی صفحہ کا پس منظر <ph name="CATEGORY" /> میں تبدیل کر دیا گیا ہے۔</translation>
-<translation id="7790689625219600437">PDF OCR</translation>
 <translation id="7791269138074599214">اندراج کا طریقہ</translation>
 <translation id="7791429245559955092">‏یہ ایپلیکیشن آپ کی فی الحال استعمال کردہ Chrome پروفائل پر انسٹال ہو جائے گی</translation>
 <translation id="7791436592012979144">معکوس اسکرولنگ فعال ہے</translation>
@@ -9826,6 +9825,7 @@
 <translation id="8336739000755212683">آلے کے اکاؤنٹ کی تصویر تبدیل کریں</translation>
 <translation id="8337020675372081178">{HOURS,plural, =1{یہ آلہ 1 گھنٹے کے لیے محفوظ رہے گا اور آپ اگلی بار بغیر کوڈ کے منسلک ہو سکتے ہیں۔ اس کو آپ کے منتظم نے سیٹ کیا ہے۔}other{یہ آلہ {HOURS} گھنٹوں کے لیے محفوظ رہے گا اور آپ اگلی بار بغیر کوڈ کے منسلک ہو سکتے ہیں۔ اس کو آپ کے منتظم نے سیٹ کیا ہے۔}}</translation>
 <translation id="8337399713761067085">آپ فی الحال آف لائن ہیں</translation>
+<translation id="8338427544764842461">آپ کے ٹیب گروپس یہاں محفوظ کیے جاتے ہیں اور آپ کے تمام سائن ان کردہ آلات پر اپ ڈیٹ ہوتے ہیں</translation>
 <translation id="8338952601723052325">ڈویلپر کی ویب سائٹ</translation>
 <translation id="8339288417038613756">ڈسپلے اور ٹیکسٹ کا سائز</translation>
 <translation id="833986336429795709">یہ لنک کھولنے کیلئے، ایک ایپ منتخب کریں</translation>

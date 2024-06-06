@@ -313,6 +313,7 @@
 <translation id="2618015542787108131">ਰੇਤ ਦਾ ਟਿੱਬਾ</translation>
 <translation id="2619761439309613843">ਰੋਜ਼ਾਨਾ ਰਿਫ੍ਰੈਸ਼ ਕਰੋ</translation>
 <translation id="2620436844016719705">ਸਿਸਟਮ</translation>
+<translation id="2637303424821734920">ਬੰਦ - ਸਥਾਨਕ ਮੌਸਮ ਦਿਖਾਉਣ ਲਈ <ph name="BEGIN_LINK" />ਸਿਸਟਮ ਟਿਕਾਣਾ ਪਹੁੰਚ ਚਾਲੂ ਕਰੋ<ph name="END_LINK" /></translation>
 <translation id="2638662041295312666">ਸਾਈਨ-ਇਨ ਚਿੱਤਰ</translation>
 <translation id="2640549051766135490">ਐਲਬਮ <ph name="TITLE" /> <ph name="DESC" /> ਚੁਣੀ ਗਈ</translation>
 <translation id="2645380101799517405">ਕੰਟਰੋਲ</translation>
@@ -961,7 +962,6 @@
 <translation id="6412715219990689313">ਬਿਲਟ-ਇਨ ਕੀ-ਬੋਰਡ</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
-<translation id="6438073885402882007">ਇਸ ਨਾਲ ਇਜਾਜ਼ਤ ਵਾਲੀਆਂ ਸਿਸਟਮ ਸੇਵਾਵਾਂ ਨੂੰ ਤੁਹਾਡੇ ਟਿਕਾਣੇ ਦੀ ਵਰਤੋਂ ਕਰਨ ਦੀ ਆਗਿਆ ਮਿਲਦੀ ਹੈ। ਟਿਕਾਣਾ ਸੇਵਾ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਦੇ ਟਿਕਾਣੇ ਦਾ ਅੰਦਾਜ਼ਾ ਲਗਾਉਣ ਵਿੱਚ ਮਦਦ ਲਈ ਵਾਈ-ਫਾਈ, ਮੋਬਾਈਲ ਨੈੱਟਵਰਕਾਂ ਅਤੇ ਸੈਂਸਰਾਂ ਵਰਗੇ ਸਰੋਤਾਂ ਦੀ ਵਰਤੋਂ ਕਰ ਸਕਦੀ ਹੈ। <ph name="LINK_BEGIN" />ਹੋਰ ਜਾਣੋ<ph name="LINK_END" /></translation>
 <translation id="6439505561246192797">ਕਮਜ਼ੋਰ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">ਖਾਤਾ ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ</translation>
 <translation id="6462978824459367242">'APN ਸ਼ਾਮਲ ਕਰੋ' ਬਟਨ ਹੁਣ ਚਾਲੂ ਹੈ</translation>

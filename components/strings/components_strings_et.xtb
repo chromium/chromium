@@ -245,7 +245,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1432187715652018471">leht soovib installida teenusetöötleja.</translation>
 <translation id="1432581352905426595">Halda otsingumootoreid</translation>
 <translation id="1433225466058025572">Proovige oma failid uuesti teisaldada</translation>
-<translation id="1434317006812369578">Chrome'il on sisseehitatud ohutusfunktsioonid, mis kaitsevad teid sirvimise ajal, näiteks Google'i ohutu sirvimine. Google'i ohutu sirvimine <ph name="BEGIN_LINK" />leidis hiljuti saidilt <ph name="SITE" /> pahavara<ph name="END_LINK" />, mis on manustatud saidile, mida proovite külastada.</translation>
 <translation id="1435940442311036198">Kasuta pääsuvõtit teises seadmes</translation>
 <translation id="1436185428532214179">Saab küsida luba teie seadmes olevate failide ja kaustade muutmiseks</translation>
 <translation id="1441816242347931036">Jätkamiseks avage</translation>
@@ -1470,7 +1469,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3767485424735936570">Selle sisu kopeerimine ja kleepimine virtuaalmasinasse <ph name="VM_NAME" /> pole administraatori reegliga soovitatav</translation>
 <translation id="3772211998634047851">Paber (võlakirjapaber)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, rakenduses Google Keep kiirelt uue märkuse loomiseks vajutage tabulaatorit ja seejärel sisestusklahvi</translation>
-<translation id="378026377453746707">Chrome'il on sisseehitatud ohutusfunktsioonid, mis kaitsevad teid sirvimise ajal, näiteks Google'i ohutu sirvimine. Google'i ohutu sirvimine <ph name="BEGIN_LINK" />leidis hiljuti saidilt <ph name="SITE" /> kahjulikku tarkvara<ph name="END_LINK" />, mis manustatakse saidile, kui proovite seda külastada.</translation>
 <translation id="3780694243617746492">Väljundsalv</translation>
 <translation id="3781428340399460090">Erkroosa</translation>
 <translation id="3783418713923659662">Mastercard</translation>
@@ -1554,7 +1552,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3950820424414687140">Logige sisse</translation>
 <translation id="3953505489397572035">See on tavaline hind</translation>
 <translation id="3958057596965527988">4 × 4 tolli</translation>
-<translation id="3959121317419633580">Chrome'il on sisseehitatud ohutusfunktsioonid, mis kaitsevad teid sirvimise ajal, näiteks Google'i ohutu sirvimine. Google'i ohutu sirvimine <ph name="BEGIN_LINK" />leidis hiljuti saidilt <ph name="SITE" /> andmepüügi<ph name="END_LINK" />, mis on manustatud saidile, mida proovite külastada.<ph name="NEW_LINE" />Mõnikord ohustavad ründajad isegi tavaliselt turvalisi saite. <ph name="BEGIN_ERROR_LINK" />Andke meile teada<ph name="END_ERROR_LINK" />, kui arvate, et tegemist on veaga ja see sait ei kujuta endast ohtu.</translation>
 <translation id="3961148744525529027">Maksetöötleja leht on poolenisti avatud</translation>
 <translation id="3962859241508114581">Eelmine lugu</translation>
 <translation id="3963721102035795474">Lugejarežiim</translation>

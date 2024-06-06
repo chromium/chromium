@@ -5,6 +5,7 @@
 <translation id="1013952917065545813">तपाईं पछि यहाँ फर्केर आफूले हालसालै बन्द गरेका ट्याबहरू पुनः खोल्न सक्नुहुन्छ</translation>
 <translation id="1016495303386450659">वस्तु अद्यावधिक गरियो</translation>
 <translation id="1025514696883950875">{COUNT,plural, =1{यो पासवर्ड खातामा सेभ गर्नुहोस्}other{यी पासवर्डहरू खातामा सेभ गर्नुहोस्}}</translation>
+<translation id="102916930470544692">पासकी</translation>
 <translation id="1035980983510608210">तपाईंले सबै ट्याबहरू बन्द गर्नुभयो भने पिन गरिएका ट्याबहरू पनि बन्द हुने छन्।</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1043592663436934089">तपाईंलाई साइन आउट गरिने छ र ब्राउजिङ डेटा मेटाइने छ</translation>
@@ -1016,6 +1017,7 @@
 <translation id="6173499589275053515">यो पासवर्ड तपाईंको Google खाता <ph name="EMAIL" /> मा सेभ गरिएको छ</translation>
 <translation id="6184086493125982861">ट्याबहरू देखाउनुहोस्</translation>
 <translation id="6187302354554850004">पछिल्लोपटक सिंक भएको: <ph name="LAST_USED_TIME" /></translation>
+<translation id="6188737759358894319"><ph name="DATE" /> मा बनाइएको</translation>
 <translation id="6189413832092199491">नपढिएको</translation>
 <translation id="6196207969502475924">आवाज खोज</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{{COUNT} वटा ट्याब बन्द गर्नुहोस्}other{{COUNT} वटा ट्याब बन्द गर्नुहोस्}}</translation>
@@ -1303,7 +1305,6 @@
 <translation id="7557508262441527045">साइन आउट गरिएको छ</translation>
 <translation id="7561196759112975576">सधैं</translation>
 <translation id="7564917801238348224">सेभ गर्नुहोस्...</translation>
-<translation id="758132317817089442">उन्नत सुरक्षा अन गर्नुहोस्...</translation>
 <translation id="7582857256643797524">यो सेटिङ तपाईंको डिभाइसमा अन गरिएको छ</translation>
 <translation id="7583004045319035904">आफ्ना इन्कोग्निटो ट्याबहरू अनलक गर्न <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> प्रयोग गर्नुहोस्।</translation>
 <translation id="7598439272585186139">थप सुरक्षा प्राप्त गर्नुहोस्</translation>

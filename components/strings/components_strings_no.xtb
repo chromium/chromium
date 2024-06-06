@@ -245,7 +245,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1432187715652018471">siden vil installere en tjenestebehandler</translation>
 <translation id="1432581352905426595">Administrer søkemotorer</translation>
 <translation id="1433225466058025572">Prøv å flytte filene på nytt</translation>
-<translation id="1434317006812369578">Chrome har innebygde sikkerhetsfunksjoner som beskytter deg mens du surfer, for eksempel Google Safe Browsing. Safe Browsing <ph name="BEGIN_LINK" />har nylig funnet skadelig programvare på <ph name="SITE" /><ph name="END_LINK" />, som er innebygd i nettstedet du prøver å besøke.</translation>
 <translation id="1435940442311036198">Bruk en passnøkkel på en annen enhet</translation>
 <translation id="1436185428532214179">Kan be om å få redigere filer og mapper på enheten</translation>
 <translation id="1441816242347931036">Åpne for å fortsette</translation>
@@ -1470,7 +1469,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3767485424735936570">Kopiering og innliming av dette innholdet i <ph name="VM_NAME" /> frarådes av en administratorregel</translation>
 <translation id="3772211998634047851">Papir (obligasjon)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å opprette et nytt notat i Google Keep raskt</translation>
-<translation id="378026377453746707">Chrome har innebygde sikkerhetsfunksjoner som beskytter deg mens du surfer, for eksempel Google Safe Browsing. Safe Browsing har nylig <ph name="BEGIN_LINK" />funnet skadelig programvare på <ph name="SITE" /><ph name="END_LINK" />, som er innebygd i nettstedet du prøver å besøke.</translation>
 <translation id="3780694243617746492">Ut-skuff</translation>
 <translation id="3781428340399460090">Knallrosa</translation>
 <translation id="3783418713923659662">Mastercard</translation>
@@ -1554,7 +1552,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3950820424414687140">Logg på</translation>
 <translation id="3953505489397572035">Denne prisen er vanlig</translation>
 <translation id="3958057596965527988">4 x 4 tommer</translation>
-<translation id="3959121317419633580">Chrome har innebygde sikkerhetsfunksjoner som beskytter deg mens du surfer, for eksempel Google Safe Browsing. Safe Browsing har nylig <ph name="BEGIN_LINK" />funnet nettfisking på <ph name="SITE" /><ph name="END_LINK" />, som er innebygd i nettstedet du prøver å besøke.<ph name="NEW_LINE" />Selv nettsteder som vanligvis er trygge, blir noen ganger kompromittert av angripere. <ph name="BEGIN_ERROR_LINK" />Gi oss beskjed<ph name="END_ERROR_LINK" /> hvis du tror det har skjedd en feil, og at dette nettstedet ikke utgjør noen fare.</translation>
 <translation id="3961148744525529027">Arket for betalingsbehandling er halvveis åpnet</translation>
 <translation id="3962859241508114581">Forrige spor</translation>
 <translation id="3963721102035795474">Lesermodus</translation>

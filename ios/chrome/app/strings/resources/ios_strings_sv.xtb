@@ -5,6 +5,7 @@
 <translation id="1013952917065545813">Du kan återkomma hit och öppna nyligen stängda flikar</translation>
 <translation id="1016495303386450659">Bokmärket har uppdaterats</translation>
 <translation id="1025514696883950875">{COUNT,plural, =1{Spara lösenordet i kontot}other{Spara lösenorden i kontot}}</translation>
+<translation id="102916930470544692">Nyckel</translation>
 <translation id="1035980983510608210">Om du stänger alla flikar stängs även fästa flikar.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1043592663436934089">Du loggas ut och webbinformationen rensas</translation>
@@ -1016,6 +1017,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6173499589275053515">Lösenordet har sparats i Google-kontot <ph name="EMAIL" /></translation>
 <translation id="6184086493125982861">Visa flikar</translation>
 <translation id="6187302354554850004">Synkroniserades senast: <ph name="LAST_USED_TIME" /></translation>
+<translation id="6188737759358894319">Skapades den <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Olästa</translation>
 <translation id="6196207969502475924">Röstsökning</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Stäng {COUNT} flik}other{Stäng {COUNT} flikar}}</translation>
@@ -1303,7 +1305,6 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="7557508262441527045">Utloggad</translation>
 <translation id="7561196759112975576">Alltid</translation>
 <translation id="7564917801238348224">SPARA …</translation>
-<translation id="758132317817089442">Aktivera utökat skydd …</translation>
 <translation id="7582857256643797524">Inställningen är aktiverad på enheten</translation>
 <translation id="7583004045319035904">Lås upp inkognitoflikarna med <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />.</translation>
 <translation id="7598439272585186139">Öka säkerheten</translation>

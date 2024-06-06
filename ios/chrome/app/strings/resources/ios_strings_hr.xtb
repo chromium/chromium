@@ -5,6 +5,7 @@
 <translation id="1013952917065545813">Ovdje se možete vratiti da biste ponovo otvorili kartice koje ste nedavno zatvorili</translation>
 <translation id="1016495303386450659">Stavka je ažurirana</translation>
 <translation id="1025514696883950875">{COUNT,plural, =1{Spremi zaporku na račun}one{Spremi zaporke na račun}few{Spremi zaporke na račun}other{Spremi zaporke na račun}}</translation>
+<translation id="102916930470544692">Pristupni ključ</translation>
 <translation id="1035980983510608210">Zatvaranjem svih kartica zatvorit će se i prikvačene kartice.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1043592663436934089">Odjavit ćete se i izbrisat će se podaci o pregledavanju</translation>
@@ -1016,6 +1017,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="6173499589275053515">Zaporka je spremljena na vaš Google račun, <ph name="EMAIL" /></translation>
 <translation id="6184086493125982861">Prikaz kartica</translation>
 <translation id="6187302354554850004">Posljednja sinkr.: <ph name="LAST_USED_TIME" /></translation>
+<translation id="6188737759358894319">Izrađeno <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Nepročitano</translation>
 <translation id="6196207969502475924">Glasovno pretraživanje</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Zatvori {COUNT} karticu}one{Zatvori {COUNT} karticu}few{Zatvori {COUNT} kartice}other{Zatvori {COUNT} kartica}}</translation>
@@ -1032,6 +1034,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="6232329973559504466">Anonimno pretraživanje</translation>
 <translation id="6236952928980352967">Vrati upozorenje</translation>
 <translation id="6247557882553405851">Google upravitelj zaporki</translation>
+<translation id="6251835855431997163">Automatski unesite <ph name="VALUE" /></translation>
 <translation id="6254066287920239840">Otvaranje veza u aplikaciji, a ne u pregledniku.</translation>
 <translation id="6255097610484507482">Uredi kreditnu karticu</translation>
 <translation id="6266039999629596120">Zahtijeva pozornost</translation>
@@ -1210,6 +1213,7 @@ Dok ste u anonimnom načinu, web-lokacije ne mogu upotrebljavati kolačiće za u
 <translation id="7022197654033719543">Informacije o web-lokaciji</translation>
 <translation id="7029809446516969842">Zaporke</translation>
 <translation id="704692552158601232">Zadana aplikacija preglednika</translation>
+<translation id="7055240621761583113">Automatski unesite zaporku</translation>
 <translation id="7063811929043357292">Tvojim računom upravlja roditelj.
 <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="7069695992271320873">Ukloni s ovog uređaja</translation>
@@ -1303,7 +1307,6 @@ Dok ste u anonimnom načinu, web-lokacije ne mogu upotrebljavati kolačiće za u
 <translation id="7557508262441527045">Odjavljeni ste</translation>
 <translation id="7561196759112975576">Uvijek</translation>
 <translation id="7564917801238348224">SPREMANJE...</translation>
-<translation id="758132317817089442">Uključi poboljšanu zaštitu…</translation>
 <translation id="7582857256643797524">Ta je postavka omogućena na vašem uređaju</translation>
 <translation id="7583004045319035904">Koristite <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> za otključavanje anonimnih kartica.</translation>
 <translation id="7598439272585186139">Dodatna zaštita</translation>

@@ -245,7 +245,6 @@
 <translation id="1432187715652018471">ገፅ የአገልግሎት ተቆጣጣሪን መጫን ይፈልጋል።</translation>
 <translation id="1432581352905426595">የፍለጋ ፕሮግራሞችን ያቀናብሩ</translation>
 <translation id="1433225466058025572">ፋይሎችዎን እንደገና ለማንቀሳቀስ ይሞክሩ</translation>
-<translation id="1434317006812369578">Chrome እንደ የGoogle ጥንቃቄ አሰሳ ያሉ በሚያስሱበት ጊዜ እርስዎን የሚጠብቁ ደህንነታቸው የተጠበቀ አብሮገነብ ባህሪያት አለው። ደህንነቱ የተጠበቀ አሰሳ ለመጎብኘት በሚሞክሩበት ጣቢያ ውስጥ የሚካተት <ph name="BEGIN_LINK" /><ph name="SITE" /> ላይ በቅርብ ጊዜ ተንኮል አዘል ዌር አግኝቷል<ph name="END_LINK" />።</translation>
 <translation id="1435940442311036198">አንድ የይለፍ ቁልፍን በተለየ መሣሪያ ላይ ይጠቀሙ</translation>
 <translation id="1436185428532214179">በመሣሪያዎ ላይ ያሉ ፋይሎችን እና አቃፊዎችን ለማርትዕ መጠየቅ ይችላል</translation>
 <translation id="1441816242347931036">ለመቀጠል ይክፈቱ</translation>
@@ -1469,7 +1468,6 @@
 <translation id="3767485424735936570">ይህንን ይዘት ወደ <ph name="VM_NAME" /> መቅዳት እና መለጠፍ በአስተዳዳሪው መመሪያ የሚመከር አይደለም</translation>
 <translation id="3772211998634047851">ወረቀት (ቦንድ)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ በGoogle Keep ውስጥ በፍጥነት አዲስ ማስታወሻ ለመፍጠር ትርን ከዚያ አስገባን ይጫኑ</translation>
-<translation id="378026377453746707">Chrome እንደ የGoogle ጥንቃቄ አሰሳ ያሉ በሚያስሱበት ጊዜ እርስዎን የሚጠብቁ ደህንነታቸው የተጠበቀ አብሮገነብ ባህሪያት አለው። ደህንነቱ የተጠበቀ አሰሳ ለመጎብኘት በሚሞክሩበት ጣቢያው ውስጥ የተካተተ <ph name="BEGIN_LINK" />በቅርብ ጊዜ <ph name="SITE" /> ላይ አደገኛ ሶፍትዌር ተገኝቷል<ph name="END_LINK" />።</translation>
 <translation id="3780694243617746492">የውጽዓት መጣያ</translation>
 <translation id="3781428340399460090">ደመቅ ያለ ሮዝ</translation>
 <translation id="3783418713923659662">Mastercard</translation>
@@ -1553,7 +1551,6 @@
 <translation id="3950820424414687140">በመለያ ይግቡ</translation>
 <translation id="3953505489397572035">ዋጋው የተለመደ ነው</translation>
 <translation id="3958057596965527988">4 x 4 ኢንች</translation>
-<translation id="3959121317419633580">Chrome እንደ የGoogle ጥንቃቄ አሰሳ ያሉ በሚያስሱበት ጊዜ እርስዎን የሚጠብቁ ደህንነታቸው የተጠበቀ አብሮገነብ ባህሪያት አለው። ደህንነቱ የተጠበቀ አሰሳ በቅርብ ጊዜ ለመጎብኘት በሚሞክሩበት ጣቢያ ውስጥ የሚካተት <ph name="BEGIN_LINK" /><ph name="SITE" /> ላይ ማስገር አግኝቷል<ph name="END_LINK" />።<ph name="NEW_LINE" />በተለምዶ ደህንነታቸው የተጠበቀ ጣቢያዎች እንኳን አንዳንድ ጊዜ በጥቃት አድራሾች ይጠለፋሉ። ስህተት ተፈጥሯል ብለው ካሰቡ እና ይህ ጣቢያ አደጋ የማያስከትል ከሆነ <ph name="BEGIN_ERROR_LINK" />ያሳወቁን<ph name="END_ERROR_LINK" />።</translation>
 <translation id="3961148744525529027">ክፍያ ተቆጣጣሪ ሉህ በግማሽ ተከፍቷል</translation>
 <translation id="3962859241508114581">ቀዳሚ ትራክ</translation>
 <translation id="3963721102035795474">የአንባቢ ሁነታ</translation>

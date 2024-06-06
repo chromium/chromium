@@ -5,6 +5,7 @@
 <translation id="1013952917065545813">Unaweza kurudi hapa ili ufungue tena vichupo ambavyo ulifunga hivi majuzi</translation>
 <translation id="1016495303386450659">Umesasisha kipengee</translation>
 <translation id="1025514696883950875">{COUNT,plural, =1{Hifadhi Nenosiri kwenye Akaunti}other{Hifadhi Manenosiri kwenye Akaunti}}</translation>
+<translation id="102916930470544692">Ufunguo wa siri</translation>
 <translation id="1035980983510608210">Kufunga vichupo vyote kutafunga vichupo vilivyobandikwa pia.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1043592663436934089">Utaondolewa kwenye akaunti na data yako ya kuvinjari itafutwa</translation>
@@ -1016,6 +1017,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="6173499589275053515">Manenosiri yaliyohifadhiwa kwenye Akaunti yako ya Google, <ph name="EMAIL" /></translation>
 <translation id="6184086493125982861">Onyesha Vichupo</translation>
 <translation id="6187302354554850004">Ilisawazishwa mara ya mwisho: <ph name="LAST_USED_TIME" /></translation>
+<translation id="6188737759358894319">Yalitayarishwa tarehe <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Ambazo Hazijasomwa</translation>
 <translation id="6196207969502475924">Utafutaji wa Sauti</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Funga Kichupo {COUNT}}other{Funga Vichupo {COUNT}}}</translation>
@@ -1303,7 +1305,6 @@ Katika hali fiche, tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvin
 <translation id="7557508262441527045">Umeondoka kwenye akaunti</translation>
 <translation id="7561196759112975576">Kila wakati</translation>
 <translation id="7564917801238348224">HIFADHI...</translation>
-<translation id="758132317817089442">Washa kipengele cha ulinzi ulioboreshwa...</translation>
 <translation id="7582857256643797524">Mpangilio huu umeruhusiwa kwenye kifaa chako</translation>
 <translation id="7583004045319035904">Tumia <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> kufungua vichupo vyako Fiche.</translation>
 <translation id="7598439272585186139">Pata usalama zaidi</translation>

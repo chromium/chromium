@@ -5,6 +5,7 @@
 <translation id="1013952917065545813">Varat atgriezties šeit, lai atkārtoti atvērtu nesen aizvērtās cilnes.</translation>
 <translation id="1016495303386450659">Vienums atjaunināts</translation>
 <translation id="1025514696883950875">{COUNT,plural, =1{Saglabāt paroli kontā}zero{Saglabāt paroles kontā}one{Saglabāt paroles kontā}other{Saglabāt paroles kontā}}</translation>
+<translation id="102916930470544692">Piekļuves atslēga</translation>
 <translation id="1035980983510608210">Aizverot visas cilnes, tiks aizvērtas arī piespraustās cilnes.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1043592663436934089">Jūs tiksiet izrakstīts, un pārlūkošanas dati tiks dzēsti</translation>
@@ -1016,6 +1017,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="6173499589275053515">Parole ir saglabāta jūsu Google kontā (<ph name="EMAIL" />).</translation>
 <translation id="6184086493125982861">Rādīt cilnes</translation>
 <translation id="6187302354554850004">Pēdējoreiz sinhr.: <ph name="LAST_USED_TIME" /></translation>
+<translation id="6188737759358894319">Izveides datums: <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Nelasīts</translation>
 <translation id="6196207969502475924">Meklēšana ar balsi</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Aizvērt {COUNT} cilni}zero{Aizvērt {COUNT} cilnes}one{Aizvērt {COUNT} cilni}other{Aizvērt {COUNT} cilnes}}</translation>
@@ -1303,7 +1305,6 @@ Inkognito režīmā vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu p�
 <translation id="7557508262441527045">Izrakstījies</translation>
 <translation id="7561196759112975576">Vienmēr</translation>
 <translation id="7564917801238348224">SAGLABĀT...</translation>
-<translation id="758132317817089442">Ieslēgt uzlabotu aizsardzību…</translation>
 <translation id="7582857256643797524">Šis iestatījums ir iespējots jūsu ierīcē</translation>
 <translation id="7583004045319035904"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ļaus atbloķēt inkognito cilnes.</translation>
 <translation id="7598439272585186139">Uzlabojiet drošību</translation>

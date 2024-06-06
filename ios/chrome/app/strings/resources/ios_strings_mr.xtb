@@ -5,6 +5,7 @@
 <translation id="1013952917065545813">तुम्ही नुकतीच बंद केलेले टॅब पुन्हा उघडण्यासाठी, तुम्ही परत येथे येऊ शकता</translation>
 <translation id="1016495303386450659">आयटम अपडेट केला</translation>
 <translation id="1025514696883950875">{COUNT,plural, =1{खाते मध्ये पासवर्ड सेव्ह करा}other{खाते मध्ये पासवर्ड सेव्ह करा}}</translation>
+<translation id="102916930470544692">पासकी</translation>
 <translation id="1035980983510608210">सर्व टॅब बंद केल्यामुळे पिन केलेले टॅबदेखील बंद केले जातील.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1043592663436934089">तुम्हाला साइन आउट केले जाईल आणि ब्राउझिंग डेटा हटवला जाईल</translation>
@@ -1016,6 +1017,7 @@
 <translation id="6173499589275053515">तुमच्या Google खाते, <ph name="EMAIL" /> मध्ये पासवर्ड सेव्ह केला आहे</translation>
 <translation id="6184086493125982861">टॅब दर्शवा</translation>
 <translation id="6187302354554850004">अखेरचे संंकालित: <ph name="LAST_USED_TIME" /></translation>
+<translation id="6188737759358894319"><ph name="DATE" /> रोजी तयार केला</translation>
 <translation id="6189413832092199491">न वाचलेले</translation>
 <translation id="6196207969502475924">व्हॉइस शोध</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{{COUNT} टॅब बंद करा}other{{COUNT} टॅब बंद करा}}</translation>
@@ -1304,7 +1306,6 @@
 <translation id="7557508262441527045">साइन आउट केले आहे</translation>
 <translation id="7561196759112975576">नेहमी</translation>
 <translation id="7564917801238348224">सेव्ह करा...</translation>
-<translation id="758132317817089442">वर्धित संरक्षण सुरू करा...</translation>
 <translation id="7582857256643797524">तुमच्या डिव्हाइसवर हे सेटिंग सुरू केलेले आहे</translation>
 <translation id="7583004045319035904">तुमचे गुप्त टॅब अनलॉक करण्यासाठी <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> वापरा.</translation>
 <translation id="7598439272585186139">आणखी सुरक्षा मिळवा</translation>

@@ -72,6 +72,7 @@
 <translation id="1235458158152011030">જાણીતા નેટવર્ક્સ</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> કનેક્ટ કરેલું છે.</translation>
 <translation id="1240638468526743569">ઍપ</translation>
+<translation id="1242198791279543032">નોટિફિકેશન મ્યૂટ કરવામાં આવ્યા છે</translation>
 <translation id="1242883863226959074">ડિવાઇસ</translation>
 <translation id="1245644940275736236">Assistant પર જાઓ</translation>
 <translation id="124678866338384709">વર્તમાન ટૅબ બંધ કરો</translation>
@@ -147,6 +148,7 @@
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> અને <ph name="SECOND_ITEM_TITLE" />ની ફેરબદલ કરવામાં આવી</translation>
 <translation id="1500926532737552529">બધા સૂચનો બતાવો</translation>
 <translation id="1501946871587957338">ઑડિયો સૉર્સ સ્વિચ કરીએ?</translation>
+<translation id="1505542291183484463">windowના કદમાં વધઘટ કરીને નીચેની તરફ ટાઇલ કરી</translation>
 <translation id="1510238584712386396">લૉન્ચર</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{નોટિફિકેશનની સેટિંગ બતાવો. ઍપ માટે નોટિફિકેશન બંધ છે}one{નોટિફિકેશનની સેટિંગ બતાવો. # ઍપ માટે નોટિફિકેશન બંધ છે}other{નોટિફિકેશનની સેટિંગ બતાવો. # ઍપ માટે નોટિફિકેશન બંધ છે}}</translation>
 <translation id="1523032696246003">બૅટરી <ph name="BATTERY_PERCENTAGE" />% | પૂર્ણ ચાર્જ થવા માટે <ph name="TIME" /> બાકી</translation>
@@ -177,6 +179,7 @@
 <translation id="1610778689852195798">"છેલ્લો ફેરફાર રદ કરો"</translation>
 <translation id="1611993646327628135">ચાલુ</translation>
 <translation id="1620510694547887537">કૅમેરા</translation>
+<translation id="1623768535032616219">Google Classroomને નાનું કરો</translation>
 <translation id="1632985212731562677">સ્વિચ ઍક્સેસને સેટિંગ &gt; ઍક્સેસિબિલિટીમાંથી બંધ કરી શકાય છે.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> ડિવાઇસ</translation>
 <translation id="1639239467298939599">લોડ થઇ રહી છે</translation>
@@ -296,11 +299,13 @@
 <translation id="2149229036084364364">પાછલા ટ્રૅક પર જાઓ</translation>
 <translation id="2152895518047545149">એવું લાગે છે કે કંઈપણ ખૂટતું નથી. ખૂબ સરસ!</translation>
 <translation id="2161132820593978283">કૅમેરા ફ્રેમિંગ અજમાવી જુઓ, જેથી તમે વીડિયો કૉલમાં સ્ક્રીનની મધ્યમાં રહેશો. ઝડપી સેટિંગમાં જઈને તેને ચાલુ કરો.</translation>
+<translation id="216955976692983107">windowના કદમાં વધઘટ કરીને જમણી તરફ ટાઇલ કરી</translation>
 <translation id="2185166372312820725">પાછલી ટૅબ પર જાઓ</translation>
 <translation id="2185444992308415167">ટૅબ 1થી 8 પર જાઓ</translation>
 <translation id="2198625180564913276">પ્રોફાઇલ ઉમેરી રહ્યાં છીએ. આમાં થોડો સમય લાગી શકે છે.</translation>
 <translation id="219905428774326614">લૉન્ચર, બધી ઍપ</translation>
 <translation id="2201071101391734388">તાજેતરના <ph name="TOTAL_COUNT" /> ફોટામાંથી <ph name="INDEX" /> નંબરનો ફોટો.</translation>
+<translation id="2201687081523799384">Google Tasksને નાનું કરો</translation>
 <translation id="2208323208084708176">એકીકૃત ડેસ્કટૉપ મોડ</translation>
 <translation id="2220572644011485463">PIN અથવા પાસવર્ડ</translation>
 <translation id="2222841058024245321">ડેસ્ક 7</translation>
@@ -362,6 +367,7 @@
 <translation id="2427507373259914951">લેફ્ટ ક્લિક કરો</translation>
 <translation id="2429753432712299108">Bluetooth ડિવાઇસ "<ph name="DEVICE_NAME" />" ને જોડી બનાવવા માટે પરવાનગી જોઈએ છે. સ્વીકારતાં પહેલાં, કૃપા કરીને તે ડિવાઇસ પર બતાવેલ આ પાસકીની પુષ્ટિ કરો: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">પાસવર્ડ બતાવો</translation>
+<translation id="2437771564543046790">ઓછી બૅટરી. બૅટરી સેવર ચાલુ છે</translation>
 <translation id="243878895369688216">ગઈકાલે ખોલેલી</translation>
 <translation id="2440978926514840421">GIFનું રેકોર્ડિંગ લેવામાં આવ્યું છે</translation>
 <translation id="2441427462554639370">સ્ટોરેજ સ્પેસ અત્યંત ઓછી હોવાથી રેકોર્ડિંગ સમાપ્ત થયું</translation>
@@ -642,6 +648,7 @@
 <translation id="3509391053705095206">ફોન શોધી શકતા નથી. ખાતરી કરો કે તમારા ફોનનું બ્લૂટૂથ ચાલુ છે.</translation>
 <translation id="3510164367642747937">માઉસ કર્સરને હાઇલાઇટ કરો</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> દ્વારા મેનેજ કરાતું એકાઉન્ટ</translation>
+<translation id="3516000762115478502">windowના કદમાં વધઘટ કરીને ઉપર તરફ ટાઇલ કરી</translation>
 <translation id="3517037892157925473">છેલ્લે કાર્યો અપડેટ કર્યાનો સમય: <ph name="TIME" />, <ph name="DATE" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{1 મિનિટની અંદર ડિવાઇસ અપડેટ કરો}one{# મિનિટની અંદર ડિવાઇસ અપડેટ કરો}other{# મિનિટની અંદર ડિવાઇસ અપડેટ કરો}}</translation>
 <translation id="3522979239100719575">ઉપલબ્ધ પ્રોફાઇલ શોધી રહ્યાં છીએ. આમાં થોડો સમય લાગી શકે છે.</translation>
@@ -758,6 +765,7 @@
 <translation id="3899995891769452915">વૉઇસ ઇનપુટ</translation>
 <translation id="3900355044994618856">તમારું સત્ર <ph name="SESSION_TIME_REMAINING" />માં સમાપ્ત થશે</translation>
 <translation id="3901991538546252627"><ph name="NAME" /> થી કનેક્ટ કરી રહ્યું છે</translation>
+<translation id="3904768293285573640">windowના કદમાં વધઘટ કરીને ડાબી તરફ ટાઇલ કરી</translation>
 <translation id="3906954721959377182">ટૅબ્લેટ</translation>
 <translation id="3923494859158167397">કોઈ મોબાઇલ નેટવર્ક સેટઅપ કરેલા નથી</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, ઇવેન્ટ લોડ થઈ રહી છે.</translation>
@@ -1196,6 +1204,7 @@
 <translation id="550391772491508736">કાસ્ટ કરવાની પ્રક્રિયા ફરી શરૂ કરો</translation>
 <translation id="5506975627792768506">મેગ્નિફાયર ચાલુ કે બંધ કરો</translation>
 <translation id="5512042095225963688">અગાઉનો શબ્દ ડિલીટ કરો</translation>
+<translation id="5519005148254860683">Google Tasksને મોટું કરો</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">તમારા વ્યવસ્થાપકે બધી ઇ-સિમ પ્રોફાઇલ કાઢી નાખી છે. વધુ માહિતી માટે તમારા વ્યવસ્થાપકનો સંપર્ક કરો.</translation>
 <translation id="5520909879404821039">ફ્રેન્ચમાં નમસ્તે</translation>
@@ -1404,6 +1413,7 @@
 <translation id="6200515304866777730">ઍપ દ્વારા સપોર્ટ કરવામાં આવતી નથી</translation>
 <translation id="6210042900243040400">અગાઉ <ph name="EMAIL" /> પર સાચવેલા <ph name="NAME" />ને કનેક્ટ કરો</translation>
 <translation id="6213808132343683860">આંશિક સ્ક્રીનશૉટ અથવા આંશિક સ્ક્રીન રેકોર્ડિંગ લો</translation>
+<translation id="621606890568890214">Google Classroomને મોટું કરો</translation>
 <translation id="6220928844947387476">હવે તમે તમારું અને તમારી સ્ક્રીનનું રેકોર્ડિંગ એક સાથે કરી શકો છો</translation>
 <translation id="622484624075952240">Down</translation>
 <translation id="6228457605945141550">બ્રાઇટનેસ ઘટાડો</translation>

@@ -5,6 +5,7 @@
 <translation id="1013952917065545813">আপুনি শেহতীয়াকৈ বন্ধ কৰা টেবসমূহ পুনৰ খুলিবলৈ আপুনি পাছত ইয়ালৈ উভতি আহিব পাৰে</translation>
 <translation id="1016495303386450659">বস্তু আপডে’ট কৰা হ’ল</translation>
 <translation id="1025514696883950875">{COUNT,plural, =1{পাছৱৰ্ডটো একাউণ্টত ছেভ কৰক}one{পাছৱৰ্ডসমূহ একাউণ্টত ছেভ কৰক}other{পাছৱৰ্ডসমূহ একাউণ্টত ছেভ কৰক}}</translation>
+<translation id="102916930470544692">পাছকী</translation>
 <translation id="1035980983510608210">আটাইবোৰ টেব বন্ধ কৰিলে পিন কৰি থোৱা টেবসমূহো বন্ধ হ’ব।</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1043592663436934089">আপোনাক ছাইন আউট কৰোৱা হ’ব আৰু ব্ৰাউজিঙৰ ডেটা মচি পেলোৱা হ’ব</translation>
@@ -1016,6 +1017,7 @@
 <translation id="6173499589275053515">পাছৱৰ্ড আপোনাৰ Google Account, <ph name="EMAIL" />ত ছেভ কৰা হৈছে</translation>
 <translation id="6184086493125982861">টেব দেখুওৱাক</translation>
 <translation id="6187302354554850004">অন্তিমবাৰ ছিংক কৰাৰ সময় <ph name="LAST_USED_TIME" /></translation>
+<translation id="6188737759358894319"><ph name="DATE" />ত সৃষ্টি কৰা হৈছে</translation>
 <translation id="6189413832092199491">নপঢ়া</translation>
 <translation id="6196207969502475924">কণ্ঠধ্বনিৰদ্বাৰা সন্ধান</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{{COUNT} টা টেব বন্ধ কৰক}one{{COUNT} টা টেব বন্ধ কৰক}other{{COUNT} টা টেব বন্ধ কৰক}}</translation>
@@ -1032,6 +1034,7 @@
 <translation id="6232329973559504466">ইনক’গনিট’ টেবত সন্ধান কৰা</translation>
 <translation id="6236952928980352967">সকীয়নি পুনঃস্থাপন কৰক</translation>
 <translation id="6247557882553405851">Google পাছৱৰ্ড পৰিচালক</translation>
+<translation id="6251835855431997163"><ph name="VALUE" /> স্বয়ংক্ৰিয়ভাৱে পূৰ হোৱাৰ সুবিধা</translation>
 <translation id="6254066287920239840">ব্ৰাউজাৰৰ পৰিৱৰ্তে এপত লিংকসমূহ খোলক৷</translation>
 <translation id="6255097610484507482">ক্ৰেডিট কাৰ্ড সম্পাদনা কৰক</translation>
 <translation id="6266039999629596120">মনোযোগ দিয়াৰ প্ৰয়োজন</translation>
@@ -1210,6 +1213,7 @@
 <translation id="7022197654033719543">ছাইটৰ তথ্য</translation>
 <translation id="7029809446516969842">পাছৱৰ্ডসমূহ</translation>
 <translation id="704692552158601232">ডিফ’ল্ট ব্ৰাউজাৰ এপ্‌</translation>
+<translation id="7055240621761583113">পাছৱর্ড স্বয়ংক্ৰিয়ভাৱে পূৰ হোৱাৰ সুবিধা</translation>
 <translation id="7063811929043357292">আপোনাৰ অভিভাৱকে আপোনাৰ একাউণ্টটো পৰিচালনা কৰে।
 <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="7069695992271320873">এই ডিভাইচটোৰ পৰা আঁতৰাওক</translation>
@@ -1303,7 +1307,6 @@
 <translation id="7557508262441527045">ছাইন আউট কৰা আছে</translation>
 <translation id="7561196759112975576">সদায়</translation>
 <translation id="7564917801238348224">ছেভ কৰক...</translation>
-<translation id="758132317817089442">বৰ্ধিত সুৰক্ষাৰ সুবিধা অন কৰক...</translation>
 <translation id="7582857256643797524">এই ছেটিংটো আপোনাৰ ডিভাইচত সক্ষম কৰা আছে</translation>
 <translation id="7583004045319035904">আপোনাৰ ইনক’গনিট’ টেবসমূহ আনলক কৰিবলৈ <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ব্যৱহাৰ কৰক।</translation>
 <translation id="7598439272585186139">অধিক সুৰক্ষা লাভ কৰক</translation>

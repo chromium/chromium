@@ -245,7 +245,6 @@
 <translation id="1432187715652018471">পৃষ্ঠাটি একটি পরিষেবা নিয়ন্ত্রক ইনস্টল করতে চায়।</translation>
 <translation id="1432581352905426595">সার্চ ইঞ্জিনগুলি পরিচালনা করুন</translation>
 <translation id="1433225466058025572">আপনার ফাইল আবার সরানোর চেষ্টা করে দেখুন</translation>
-<translation id="1434317006812369578">আপনি ব্রাউজ করার সময় আপনাকে সুরক্ষিত রাখতে, Chrome-এ বিল্ট-ইন নিরাপত্তা সম্পর্কিত ফিচার আছে, যেমন Google Safe Browsing। Safe Browsing <ph name="BEGIN_LINK" />সম্প্রতি <ph name="SITE" />-এ ম্যালওয়্যার খুঁজে পেয়েছে<ph name="END_LINK" />, যেটি আপনি দেখার চেষ্টা করছেন যে সাইট, তার মধ্যে এম্বেড করা আছে।</translation>
 <translation id="1435940442311036198">অন্য কোনও ডিভাইসে পাসকী ব্যবহার করুন</translation>
 <translation id="1436185428532214179">আপনার ডিভাইসের ফাইল ও ফোল্ডার এডিট করার অনুমতি চাইতে পারে</translation>
 <translation id="1441816242347931036">চালিয়ে যেতে খুলুন</translation>
@@ -1471,7 +1470,6 @@
 <translation id="3767485424735936570">অ্যাডমিনিস্ট্রেটর নীতি অনুযায়ী <ph name="VM_NAME" />-এ এই কন্টেন্ট কপি ও পেস্ট না করার সাজেস্ট করা হচ্ছে</translation>
 <translation id="3772211998634047851">পেপার (বন্ড)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Keep-এ চটপট নতুন নোট তৈরি করতে প্রথমে Tab, তারপরে Enter প্রেস করুন</translation>
-<translation id="378026377453746707">আপনি ব্রাউজ করার সময় আপনাকে সুরক্ষিত রাখতে, Chrome-এ বিল্ট-ইন নিরাপত্তা সম্পর্কিত ফিচার আছে, যেমন Google Safe Browsing। Safe Browsing <ph name="BEGIN_LINK" />সম্প্রতি <ph name="SITE" />-এ ক্ষতিকর সফ্টওয়্যার খুঁজে পেয়েছে<ph name="END_LINK" />, যেটি আপনি দেখার চেষ্টা করছেন যে সাইট, তার মধ্যে এম্বেড করা আছে।</translation>
 <translation id="3780694243617746492">আউটপুট বিন</translation>
 <translation id="3781428340399460090">হট গোলাপী</translation>
 <translation id="3783418713923659662">Mastercard</translation>
@@ -1555,7 +1553,6 @@
 <translation id="3950820424414687140">সাইন-ইন করুন</translation>
 <translation id="3953505489397572035">এটিই সাধারণ দাম</translation>
 <translation id="3958057596965527988">৪ x ৪ ইঞ্চি</translation>
-<translation id="3959121317419633580">আপনি ব্রাউজ করার সময় আপনাকে সুরক্ষিত রাখতে, Chrome-এ বিল্ট-ইন নিরাপত্তা সম্পর্কিত ফিচার আছে, যেমন Google Safe Browsing। Safe Browsing <ph name="BEGIN_LINK" />সম্প্রতি <ph name="SITE" />-এ ফিশিং খুঁজে পেয়েছে<ph name="END_LINK" />, যেটি আপনি দেখার চেষ্টা করছেন যে সাইট, তার মধ্যে এম্বেড করা আছে।<ph name="NEW_LINE" />সাধারণত সুরক্ষিত আছে এমন সাইটও কখনও কখনও আক্রমণকারীদের মাধ্যমে হ্যাক হয়ে যায়। আপনি যদি মনে করেন যে কোনও সমস্যা হয়েছে এবং এই সাইট বিপজ্জনক নয়, তাহলে <ph name="BEGIN_ERROR_LINK" />আমাদের জানান<ph name="END_ERROR_LINK" />।</translation>
 <translation id="3961148744525529027">পেমেন্ট হ্যান্ডলার শিট অর্ধেক খোলা আছে</translation>
 <translation id="3962859241508114581">আগের ট্র্যাক চালান</translation>
 <translation id="3963721102035795474">পাঠক মোড</translation>

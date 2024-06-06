@@ -5,6 +5,7 @@
 <translation id="1013952917065545813">คุณกลับมาที่นี่เพื่อเปิดแท็บที่เพิ่งปิดไปอีกครั้งได้</translation>
 <translation id="1016495303386450659">อัปเดตรายการแล้ว</translation>
 <translation id="1025514696883950875">{COUNT,plural, =1{บันทึกรหัสผ่านในบัญชี}other{บันทึกรหัสผ่านในบัญชี}}</translation>
+<translation id="102916930470544692">พาสคีย์</translation>
 <translation id="1035980983510608210">การปิดแท็บทั้งหมดจะเป็นการปิดแท็บที่ปักหมุดด้วยเช่นกัน</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1043592663436934089">คุณจะออกจากระบบ และข้อมูลการท่องเว็บจะถูกลบ</translation>
@@ -1016,6 +1017,7 @@
 <translation id="6173499589275053515">บันทึกรหัสผ่านไว้ในบัญชี Google <ph name="EMAIL" /> แล้ว</translation>
 <translation id="6184086493125982861">แสดงแท็บ</translation>
 <translation id="6187302354554850004">ซิงค์ครั้งล่าสุด: <ph name="LAST_USED_TIME" /></translation>
+<translation id="6188737759358894319">สร้างเมื่อ <ph name="DATE" /></translation>
 <translation id="6189413832092199491">ยังไม่ได้อ่าน</translation>
 <translation id="6196207969502475924">การค้นหาด้วยเสียง</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{ปิด {COUNT} แท็บ}other{ปิด {COUNT} แท็บ}}</translation>
@@ -1303,7 +1305,6 @@
 <translation id="7557508262441527045">ออกจากระบบแล้ว</translation>
 <translation id="7561196759112975576">ทุกครั้ง</translation>
 <translation id="7564917801238348224">บันทึก...</translation>
-<translation id="758132317817089442">เปิดใช้การปกป้องที่ดียิ่งขึ้น...</translation>
 <translation id="7582857256643797524">การตั้งค่านี้เปิดใช้อยู่ในอุปกรณ์ของคุณ</translation>
 <translation id="7583004045319035904">ใช้ <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> เพื่อปลดล็อกแท็บที่ไม่ระบุตัวตน</translation>
 <translation id="7598439272585186139">เพิ่มความปลอดภัย</translation>

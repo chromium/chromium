@@ -72,6 +72,7 @@
 <translation id="1235458158152011030">ਗਿਆਤ ਨੈੱਟਵਰਕ</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> ਕਨੈਕਟ ਹੈ।</translation>
 <translation id="1240638468526743569">ਐਪ</translation>
+<translation id="1242198791279543032">ਸੂਚਨਾਵਾਂ ਮਿਊਟ ਕੀਤੀਆਂ ਗਈਆਂ ਹਨ</translation>
 <translation id="1242883863226959074">ਡੀਵਾਈਸ</translation>
 <translation id="1245644940275736236">Assistant 'ਤੇ ਜਾਓ</translation>
 <translation id="124678866338384709">ਮੌਜੂਦਾ ਟੈਬ ਬੰਦ ਕਰੋ</translation>
@@ -147,6 +148,7 @@
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> ਨੂੰ <ph name="SECOND_ITEM_TITLE" /> ਨਾਲ ਬਦਲਿਆ ਗਿਆ</translation>
 <translation id="1500926532737552529">ਸਾਰੇ ਸੁਝਾਅ ਦਿਖਾਓ</translation>
 <translation id="1501946871587957338">ਕੀ ਆਡੀਓ ਸਰੋਤ ਨੂੰ ਸਵਿੱਚ ਕਰਨਾ ਹੈ?</translation>
+<translation id="1505542291183484463">ਟਾਇਲਡ ਮੁੜ-ਆਕਾਰ ਵਾਲੀ ਵਿੰਡੋ ਹੇਠਾਂ ਵੱਲ</translation>
 <translation id="1510238584712386396">ਲੌਂਚਰ</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{ਸੂਚਨਾ ਸੈਟਿੰਗਾਂ ਦਿਖਾਓ। ਇੱਕ ਐਪ ਲਈ ਸੂਚਨਾਵਾਂ ਬੰਦ ਹਨ}one{ਸੂਚਨਾ ਸੈਟਿੰਗਾਂ ਦਿਖਾਓ। # ਐਪ ਲਈ ਸੂਚਨਾਵਾਂ ਬੰਦ ਹਨ}other{ਸੂਚਨਾ ਸੈਟਿੰਗਾਂ ਦਿਖਾਓ। # ਐਪਾਂ ਲਈ ਸੂਚਨਾਵਾਂ ਬੰਦ ਹਨ}}</translation>
 <translation id="1523032696246003">ਬੈਟਰੀ <ph name="BATTERY_PERCENTAGE" />% | ਪੂਰੀ ਤਰ੍ਹਾਂ ਚਾਰਜ ਹੋਣ ਵਿੱਚ <ph name="TIME" /> ਬਾਕੀ</translation>
@@ -177,6 +179,7 @@
 <translation id="1610778689852195798">"ਅਣਕੀਤਾ ਕਰੋ"</translation>
 <translation id="1611993646327628135">ਚਾਲੂ ਹੈ</translation>
 <translation id="1620510694547887537">ਕੈਮਰਾ</translation>
+<translation id="1623768535032616219">Google Classroom ਨੂੰ ਸਮੇਟੋ</translation>
 <translation id="1632985212731562677">ਸਵਿੱਚ ਪਹੁੰਚ ਨੂੰ ਸੈਟਿੰਗਾਂ &gt; ਪਹੁੰਚਯੋਗਤਾ ਵਿੱਚ ਜਾ ਕੇ ਬੰਦ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ।</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> ਡੀਵਾਈਸ</translation>
 <translation id="1639239467298939599">ਲੋਡ ਕਰ ਰਿਹਾ ਹੈ</translation>
@@ -296,11 +299,13 @@
 <translation id="2149229036084364364">ਪਿਛਲੇ ਟਰੈਕ 'ਤੇ ਜਾਓ</translation>
 <translation id="2152895518047545149">ਇੰਝ ਲੱਗਦਾ ਹੈ ਕਿ ਕੁਝ ਵੀ ਖੁੰਝਿਆ ਹੋਇਆ ਨਹੀਂ ਹੈ। ਬਹੁਤ ਵਧੀਆ!</translation>
 <translation id="2161132820593978283">ਕੈਮਰਾ ਫ੍ਰੇਮਿੰਗ ਨੂੰ ਵਰਤ ਕੇ ਦੇਖੋ ਤਾਂ ਜੋ ਤੁਸੀਂ ਵੀਡੀਓ ਕਾਲਾਂ ਵਿੱਚ ਸਕ੍ਰੀਨ ਦੇ ਕੇਂਦਰ ਵਿੱਚ ਹੋਵੋ। ਤਤਕਾਲ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਇਸਨੂੰ ਚਾਲੂ ਕਰੋ।</translation>
+<translation id="216955976692983107">ਟਾਇਲਡ ਮੁੜ-ਆਕਾਰ ਵਾਲੀ ਵਿੰਡੋ ਸੱਜੇ ਵੱਲ</translation>
 <translation id="2185166372312820725">ਪਿੱਛਲੀ ਟੈਬ 'ਤੇ ਜਾਓ</translation>
 <translation id="2185444992308415167">1 ਤੋਂ 8 ਤੱਕ ਟੈਬਾਂ 'ਤੇ ਜਾਓ</translation>
 <translation id="2198625180564913276">ਪ੍ਰੋਫਾਈਲ ਨੂੰ ਸ਼ਾਮਲ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ। ਇਸ ਵਿੱਚ ਕੁਝ ਮਿੰਟ ਲੱਗ ਸਕਦੇ ਹਨ।</translation>
 <translation id="219905428774326614">ਲਾਂਚਰ, ਸਭ ਐਪਾਂ</translation>
 <translation id="2201071101391734388">ਹਾਲੀਆ ਫ਼ੋਟੋ <ph name="TOTAL_COUNT" /> ਵਿੱਚੋਂ <ph name="INDEX" />।</translation>
+<translation id="2201687081523799384">Google Tasks ਨੂੰ ਸਮੇਟੋ</translation>
 <translation id="2208323208084708176">ਯੂਨੀਫਾਈਡ ਡੈਸਕਟਾਪ ਮੋਡ</translation>
 <translation id="2220572644011485463">ਪਿੰਨ ਜਾਂ ਪਾਸਵਰਡ</translation>
 <translation id="2222841058024245321">ਡੈਸਕ 7</translation>
@@ -362,6 +367,7 @@
 <translation id="2427507373259914951">ਖੱਬਾ ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="2429753432712299108">ਬਲੂਟੁੱਥ ਡਿਵਾਈਸ "<ph name="DEVICE_NAME" />" ਜੋੜਾਬੱਧ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਚਾਹੁੰਦੀ ਹੈ। ਸਵੀਕਾਰ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ, ਕਿਰਪਾ ਕਰਕੇ ਪੁਸ਼ਟੀ ਕਰੋ ਕਿ ਇਹ ਪਾਸਕੁੰਜੀ ਉਸ ਡੀਵਾਈਸ 'ਤੇ ਦਿਖਾਈ ਜਾਂਦੀ ਹੈ: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">ਪਾਸਵਰਡ ਵੇਖੋ</translation>
+<translation id="2437771564543046790">ਬੈਟਰੀ ਘੱਟ ਹੈ। ਬੈਟਰੀ ਸੇਵਰ ਚਾਲੂ ਹੈ</translation>
 <translation id="243878895369688216">ਬੀਤੇ ਕੱਲ੍ਹ ਖੋਲ੍ਹੀ ਗਈ</translation>
 <translation id="2440978926514840421">GIF ਰਿਕਾਰਡਿੰਗ ਕੀਤੀ ਗਈ</translation>
 <translation id="2441427462554639370">ਸਟੋਰੇਜ ਵਿੱਚ ਬਹੁਤ ਘੱਟ ਜਗ੍ਹਾ ਹੋਣ ਕਰਕੇ ਰਿਕਾਰਡਿੰਗ ਸਮਾਪਤ ਹੋਈ</translation>
@@ -642,6 +648,7 @@
 <translation id="3509391053705095206">ਤੁਹਾਡਾ ਫ਼ੋਨ ਨਹੀਂ ਲੱਭਿਆ ਜਾ ਸਕਦਾ। ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਹਾਡੇ ਫ਼ੋਨ ਦਾ ਬਲੂਟੁੱਥ ਚਾਲੂ ਹੈ।</translation>
 <translation id="3510164367642747937">ਮਾਊਸ ਕਰਸਰ ਨੂੰ ਉਜਾਗਰ ਕਰੋ</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> ਵੱਲੋਂ ਖਾਤੇ ਦਾ ਪ੍ਰਬੰਧਨ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
+<translation id="3516000762115478502">ਟਾਇਲਡ ਮੁੜ-ਆਕਾਰ ਵਾਲੀ ਵਿੰਡੋ ਉੱਤੇ ਵੱਲ</translation>
 <translation id="3517037892157925473">ਕਾਰਜਾਂ ਨੂੰ ਆਖਰੀ ਵਾਰ ਅੱਪਡੇਟ ਕਰਨ ਦਾ ਸਮਾਂ: <ph name="TIME" />, <ph name="DATE" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{ਡੀਵਾਈਸ ਨੂੰ 1 ਮਿੰਟ ਦੇ ਅੰਦਰ ਅੱਪਡੇਟ ਕਰੋ}one{ਡੀਵਾਈਸ ਨੂੰ # ਮਿੰਟ ਦੇ ਅੰਦਰ ਅੱਪਡੇਟ ਕਰੋ}other{ਡੀਵਾਈਸ ਨੂੰ # ਮਿੰਟਾਂ ਦੇ ਅੰਦਰ ਅੱਪਡੇਟ ਕਰੋ}}</translation>
 <translation id="3522979239100719575">ਉਪਲਬਧ ਪ੍ਰੋਫਾਈਲਾਂ ਨੂੰ ਲੱਭਿਆ ਜਾ ਰਿਹਾ ਹੈ। ਇਸ ਵਿੱਚ ਕੁਝ ਮਿੰਟ ਲੱਗ ਸਕਦੇ ਹਨ।</translation>
@@ -758,6 +765,7 @@
 <translation id="3899995891769452915">ਵੌਇਸ ਇਨਪੁੱਟ</translation>
 <translation id="3900355044994618856">ਤੁਹਾਡਾ ਸੈਸ਼ਨ <ph name="SESSION_TIME_REMAINING" /> ਵਿੱਚ ਸਮਾਪਤ ਹੋ ਜਾਵੇਗਾ</translation>
 <translation id="3901991538546252627"><ph name="NAME" /> ਨਾਲ ਕਨੈਕਟ ਕਰ ਰਿਹਾ ਹੈ</translation>
+<translation id="3904768293285573640">ਟਾਇਲਡ ਮੁੜ-ਆਕਾਰ ਵਾਲੀ ਵਿੰਡੋ ਖੱਬੇ ਵੱਲ</translation>
 <translation id="3906954721959377182">ਟੈਬਲੈੱਟ</translation>
 <translation id="3923494859158167397">ਕਿਸੇ ਵੀ ਮੋਬਾਈਲ ਨੈੱਟਵਰਕ ਦਾ ਸੈੱਟਅੱਪ ਨਹੀਂ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, ਇਵੈਂਟ ਲੋਡ ਕੀਤੇ ਜਾ ਰਹੇ ਹਨ।</translation>
@@ -1197,6 +1205,7 @@
 <translation id="550391772491508736">ਕਾਸਟ ਕਰਨਾ ਮੁੜ-ਚਾਲੂ ਕਰੋ</translation>
 <translation id="5506975627792768506">ਵੱਡਦਰਸ਼ੀ ਨੂੰ ਚਾਲੂ ਜਾਂ ਬੰਦ ਕਰੋ</translation>
 <translation id="5512042095225963688">ਪਿਛਲਾ ਸ਼ਬਦ ਮਿਟਾਓ</translation>
+<translation id="5519005148254860683">Google Tasks ਦਾ ਵਿਸਤਾਰ ਕਰੋ</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਸਾਰੇ ਈ-ਸਿਮ ਪ੍ਰੋਫਾਈਲਾਂ ਨੂੰ ਹਟਾ ਦਿੱਤਾ ਹੈ। ਹੋਰ ਜਾਣਕਾਰੀ ਲਈ ਆਪਣੇ ਪ੍ਰਸ਼ਾਸਕ ਨਾਲ ਸੰਪਰਕ ਕਰੋ।</translation>
 <translation id="5520909879404821039">ਫ਼ਰਾਂਸੀਸੀ ਵਿੱਚ ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ</translation>
@@ -1405,6 +1414,7 @@
 <translation id="6200515304866777730">ਐਪ ਰਾਹੀਂ ਸਮਰਥਿਤ ਨਹੀਂ</translation>
 <translation id="6210042900243040400"><ph name="EMAIL" /> ਵਿੱਚ ਪਹਿਲਾਂ ਤੋਂ ਰੱਖਿਅਤ ਕੀਤੇ <ph name="NAME" /> ਨੂੰ ਕਨੈਕਟ ਕਰੋ</translation>
 <translation id="6213808132343683860">ਅੰਸ਼ਕ ਸਕ੍ਰੀਨਸ਼ਾਟ ਲਓ ਜਾਂ ਸਕ੍ਰੀਨ ਰਿਕਾਰਡਿੰਗ ਕਰੋ</translation>
+<translation id="621606890568890214">Google Classroom ਦਾ ਵਿਸਤਾਰ ਕਰੋ</translation>
 <translation id="6220928844947387476">ਤੁਸੀਂ ਹੁਣ ਖੁਦ ਨੂੰ ਅਤੇ ਆਪਣੀ ਸਕ੍ਰੀਨ ਨੂੰ ਇੱਕੋ ਸਮੇਂ ਰਿਕਾਰਡ ਕਰ ਸਕਦੇ ਹੋ</translation>
 <translation id="622484624075952240">ਹੇਠਾਂ</translation>
 <translation id="6228457605945141550">ਚਮਕ ਘਟਾਓ</translation>

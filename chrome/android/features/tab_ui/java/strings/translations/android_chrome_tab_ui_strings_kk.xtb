@@ -100,7 +100,6 @@
 <translation id="6333260925957816943">Бұл дүкен туралы ақпарат</translation>
 <translation id="6381032505162537930">Қойындылар топтарын осы жерден табуға болады</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Таңдалған <ph name="TABS_COUNT_ONE" /> қойындыны топтан шығару}other{Таңдалған <ph name="TABS_COUNT_MANY" /> қойындыны топтан шығару}}</translation>
-<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Жабылған қойындыларды Chrome бас мәзіріндегі "Соңғы қойындылар" бөлімінен таба аласыз. Инкогнито қойындыңыз қолжетімді болмайды.}other{Жабылған қойындыларды Chrome бас мәзіріндегі "Соңғы қойындылар" бөлімінен таба аласыз. # инкогнито қойындыңыз қолжетімді болмайды.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> қойынды}other{<ph name="TABS_COUNT_MANY" /> қойынды}}</translation>
 <translation id="6549021453810473782">Дүкен туралы ақпаратты көру</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>

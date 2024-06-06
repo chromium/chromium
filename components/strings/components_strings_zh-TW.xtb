@@ -245,7 +245,6 @@
 <translation id="1432187715652018471">網頁想要安裝服務處理常式。</translation>
 <translation id="1432581352905426595">管理搜尋引擎</translation>
 <translation id="1433225466058025572">再次嘗試移動檔案</translation>
-<translation id="1434317006812369578">Chrome 內建安全性功能，可在你瀏覽網站時提供保護，Google 安全瀏覽功能就是其中之一。這項功能<ph name="BEGIN_LINK" />最近在 <ph name="SITE" /> 發現惡意軟體<ph name="END_LINK" />，而且你嘗試造訪的網站也內嵌該軟體。</translation>
 <translation id="1435940442311036198">在其他裝置上使用密碼金鑰</translation>
 <translation id="1436185428532214179">可以要求編輯裝置上的檔案和資料夾</translation>
 <translation id="1441816242347931036">開啟即可繼續</translation>
@@ -1468,7 +1467,6 @@
 <translation id="3767485424735936570">系統管理員政策不建議複製這項內容並貼到「<ph name="VM_NAME" />」</translation>
 <translation id="3772211998634047851">紙 (證券紙)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可在 Google Keep 中快速建立新記事</translation>
-<translation id="378026377453746707">Chrome 內建安全性功能，可在你瀏覽網站時提供保護，Google 安全瀏覽功能就是其中之一。這項功能最近在 <ph name="BEGIN_LINK" /><ph name="SITE" /> 發現有害軟體<ph name="END_LINK" />，而且你嘗試造訪的網站也內嵌該軟體。</translation>
 <translation id="3780694243617746492">輸出紙槽</translation>
 <translation id="3781428340399460090">亮粉色</translation>
 <translation id="3783418713923659662">Mastercard</translation>
@@ -1552,7 +1550,6 @@
 <translation id="3950820424414687140">登入</translation>
 <translation id="3953505489397572035">這個價格符合一般行情</translation>
 <translation id="3958057596965527988">4 x 4 吋</translation>
-<translation id="3959121317419633580">Chrome 內建安全性功能，可在你瀏覽網站時提供保護，Google 安全瀏覽功能就是其中之一。這項功能最近在 <ph name="BEGIN_LINK" /><ph name="SITE" /> 發現網路釣魚內容<ph name="END_LINK" />，而且你嘗試造訪的網站也內嵌該內容。<ph name="NEW_LINE" />即使是平常可以安心造訪的網站，有時也會遭到攻擊者入侵。如果你認為我們的判斷有誤，而且這個網站沒有危險，請<ph name="BEGIN_ERROR_LINK" />告訴我們<ph name="END_ERROR_LINK" />。</translation>
 <translation id="3961148744525529027">已在畫面下半部顯示付款處理常式工作表</translation>
 <translation id="3962859241508114581">上一首曲目</translation>
 <translation id="3963721102035795474">閱讀器模式</translation>

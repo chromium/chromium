@@ -100,7 +100,6 @@
 <translation id="6333260925957816943">Информации за продавницава</translation>
 <translation id="6381032505162537930">Вашите групи картички ќе ги најдете овде</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Одгрупирајте <ph name="TABS_COUNT_ONE" /> избрана картичка}one{Одгрупирајте <ph name="TABS_COUNT_MANY" /> избрана картичка}other{Одгрупирајте <ph name="TABS_COUNT_MANY" /> избрани картички}}</translation>
-<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Вашите затворени картички може да ги најдете во „Неодамнешни картички“ во главното мени на Chrome. Картичката „Инкогнито“ нема да биде достапна.}one{Вашите затворени картички може да ги најдете во „Неодамнешни картички“ во главното мени на Chrome. Вашите # картичка „Инкогнито“ нема да бидат достапни.}other{Вашите затворени картички може да ги најдете во „Неодамнешни картички“ во главното мени на Chrome. Вашите # картички „Инкогнито“ нема да бидат достапни.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> картичка}one{<ph name="TABS_COUNT_MANY" /> картичка}other{<ph name="TABS_COUNT_MANY" /> картички}}</translation>
 <translation id="6549021453810473782">Прегледајте ги информациите за продавницата</translation>
 <translation id="6557858706263317126">уште <ph name="HIDDEN_TABS_COUNT" /></translation>

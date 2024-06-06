@@ -147,6 +147,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" />, <ph name="SECOND_ITEM_TITLE" /> ile değiştirildi</translation>
 <translation id="1500926532737552529">Tüm önerileri göster</translation>
 <translation id="1501946871587957338">Ses kaynağı değiştirilsin mi?</translation>
+<translation id="1505542291183484463">Kutu içindeki yeniden boyutlandırma penceresini aşağı taşı</translation>
 <translation id="1510238584712386396">Başlatıcı</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Bildirim ayarlarını göster. Bildirimler bir uygulama için kapalı}other{Bildirim ayarlarını göster. Bildirimler # uygulama için kapalı}}</translation>
 <translation id="1523032696246003">Pil seviyesi %<ph name="BATTERY_PERCENTAGE" /> | Tamamen dolmasına <ph name="TIME" /> kaldı</translation>
@@ -296,6 +297,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2149229036084364364">Önceki parçaya gidin</translation>
 <translation id="2152895518047545149">Eksik bir şey yok gibi görünüyor. Harika!</translation>
 <translation id="2161132820593978283">Görüntülü görüşmelerde kendinizi ekranın ortasına yerleştirmek için kamera çerçevelemesini deneyin. Bu özelliği Hızlı Ayarlar'dan açın.</translation>
+<translation id="216955976692983107">Kutu içindeki yeniden boyutlandırma penceresini sağa taşı</translation>
 <translation id="2185166372312820725">Önceki sekmeye gider</translation>
 <translation id="2185444992308415167">1 ile 8 arasındaki sekmelere git</translation>
 <translation id="2198625180564913276">Profil ekleniyor. Bu işlem birkaç dakika sürebilir.</translation>
@@ -642,6 +644,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3509391053705095206">Telefonunuz bulunamıyor. Telefonunuzun Bluetooth'unun açık olduğundan emin olun.</translation>
 <translation id="3510164367642747937">Fare imlecini vurgula</translation>
 <translation id="3513798432020909783">Hesap <ph name="MANAGER_EMAIL" /> tarafından yönetiliyor</translation>
+<translation id="3516000762115478502">Kutu içindeki yeniden boyutlandırma penceresini yukarı taşı</translation>
 <translation id="3517037892157925473">Görevlerin son güncellenme zamanı: <ph name="TIME" />, <ph name="DATE" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{Cihazı 1 dakika içinde güncelleyin}other{Cihazı # dakika içinde güncelleyin}}</translation>
 <translation id="3522979239100719575">Mevcut profiller aranıyor. Bu işlem birkaç dakika sürebilir.</translation>
@@ -758,6 +761,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="3899995891769452915">Ses girişi</translation>
 <translation id="3900355044994618856">Oturumunuz <ph name="SESSION_TIME_REMAINING" /> içinde sona erecek</translation>
 <translation id="3901991538546252627"><ph name="NAME" /> ağına bağlanılıyor</translation>
+<translation id="3904768293285573640">Kutu içindeki yeniden boyutlandırma penceresini sola taşı</translation>
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3923494859158167397">Kurulu mobil ağ yok</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, Etkinlikler yükleniyor.</translation>

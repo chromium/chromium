@@ -245,7 +245,6 @@
 <translation id="1432187715652018471">‏התקבלה מהדף הזה בקשה להתקין handler של שירות.</translation>
 <translation id="1432581352905426595">ניהול מנועי חיפוש</translation>
 <translation id="1433225466058025572">רוצה לנסות שוב להזיז את הקבצים?</translation>
-<translation id="1434317006812369578">‏ב-Chrome יש תכונות בטיחות מובנות שנועדו להגן עליך בזמן הגלישה, כמו הגלישה הבטוחה של Google. התכונה 'גלישה בטוחה' <ph name="BEGIN_LINK" />מצאה לאחרונה תוכנה זדונית באתר <ph name="SITE" /><ph name="END_LINK" />, שמוטמעת באתר שאליו ניסית להיכנס.</translation>
 <translation id="1435940442311036198">שימוש במפתח גישה במכשיר אחר</translation>
 <translation id="1436185428532214179">האתר יכול לבקש הרשאה לערוך קבצים ותיקיות במכשיר</translation>
 <translation id="1441816242347931036">צריך לפתוח כדי להמשיך</translation>
@@ -1470,7 +1469,6 @@
 <translation id="3767485424735936570">לפי המדיניות של מנהל המערכת, לא מומלץ להעתיק את התוכן ולהדביק אותו ב-<ph name="VM_NAME" /></translation>
 <translation id="3772211998634047851">Paper (Bond)</translation>
 <translation id="377451872037045164">‏<ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, מקישים על Tab ואז על Enter כדי ליצור הערה חדשה במהירות ב-Google Keep</translation>
-<translation id="378026377453746707">‏ב-Chrome יש תכונות בטיחות מובנות שנועדו להגן עליך בזמן הגלישה, כמו הגלישה הבטוחה של Google. התכונה 'גלישה בטוחה' <ph name="BEGIN_LINK" />מצאה לאחרונה תוכנה מזיקה באתר <ph name="SITE" /><ph name="END_LINK" />, שמוטמעת באתר שאליו ניסית להיכנס.</translation>
 <translation id="3780694243617746492">סל פלט</translation>
 <translation id="3781428340399460090">ורוד בוהק</translation>
 <translation id="3783418713923659662">מאסטרקארד</translation>
@@ -1554,7 +1552,6 @@
 <translation id="3950820424414687140">כניסה</translation>
 <translation id="3953505489397572035">זהו המחיר הרגיל</translation>
 <translation id="3958057596965527988">‏4x4 אינץ'</translation>
-<translation id="3959121317419633580">‏ב-Chrome יש תכונות בטיחות מובנות שנועדו להגן עליך בזמן הגלישה, כמו הגלישה הבטוחה של Google. התכונה 'גלישה בטוחה' <ph name="BEGIN_LINK" />מצאה לאחרונה פישינג באתר <ph name="SITE" /><ph name="END_LINK" />, שמוטמע באתר שאליו ניסית להיכנס.<ph name="NEW_LINE" />גם אתרים שבדרך כלל נחשבים לבטוחים נפרצים לפעמים על ידי תוקפים. <ph name="BEGIN_ERROR_LINK" />חשוב לנו לדעת<ph name="END_ERROR_LINK" /> אם לדעתך מדובר בטעות והאתר לא מהווה סכנה.</translation>
 <translation id="3961148744525529027">גיליון פרטי התשלום פתוח בחצי גובה המסך</translation>
 <translation id="3962859241508114581">הטראק הקודם</translation>
 <translation id="3963721102035795474">מצב קורא</translation>

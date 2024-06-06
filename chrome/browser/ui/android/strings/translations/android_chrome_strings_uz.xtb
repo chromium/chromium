@@ -285,6 +285,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="2515921719039583189">Chrome maʼlumotlari bu qurilmadan oʻchirilsinmi?</translation>
 <translation id="2517113738956581680">Butun ekran</translation>
 <translation id="2523184218357549926">Siz tashrif buyurgan URL manzillarni Google serverlariga yuboradi</translation>
+<translation id="2524132927880411790">Google ilovasida ovozli qidiruvni ochish</translation>
 <translation id="2527209463677295330">Sahifada koʻproq matn tanlansa, yanada yaxshi natija berishi mumkin</translation>
 <translation id="2527497042232966453">Inkognito rejimidagi varaqlar ochildi</translation>
 <translation id="2527779675047087889">Vaqtincha xotira kontentini berkitish</translation>
@@ -520,6 +521,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="363596933471559332">Saytlarga kirish vaqtida saqlangan hisob ma’lumotlaridan foydalanish. Agar funksiya o‘chiq bo‘lsa, har safar kirish vaqtida hisob ma’lumotlarini to‘ldirish kerak bo‘ladi.</translation>
 <translation id="3636940436873918441">Afzal tillar</translation>
 <translation id="3637744895182738742">Agar kodli iborani unutsangiz yoki bu sozlamani oʻzgartirmoqchi boʻlsangiz, <ph name="BEGIN_LINK" />hisobingizda Chrome maʼlumotlarini oʻchiring<ph name="END_LINK" />.</translation>
+<translation id="3674208116086565128">Google ilovasida bosh sahifani ochish</translation>
 <translation id="368329460027487650">Hisobdan chiqqansiz. Kirish uchun parametrlar ochiladi.</translation>
 <translation id="3687645719033307815">Shu sahifaga razm solyapsiz</translation>
 <translation id="3690369331356918524">Parollaringiz oshkor etilganda xabar olasiz</translation>
@@ -606,6 +608,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="4101475238162928417">Boshqa qurilmalaringizdagi parol va xatchoʻp kabilarni olish uchun sinxronlang</translation>
 <translation id="4108314971463891922">Kuzatish</translation>
 <translation id="4108998448622696017">Xavfli tahdidlarni aniqlaydi va sizni ulardan himoya qiladi.</translation>
+<translation id="4113030288477039509">Administratoringiz tomonidan boshqariladi</translation>
 <translation id="4116038641877404294">Saytlarni oflayn ko‘rish uchun yuklab oling</translation>
 <translation id="4121654769234887259">Bu parolni eslab qolishingiz shart emas. U Google Parollar menejeri xotirasida <ph name="USERNAME" /> hisobiga saqlanadi.</translation>
 <translation id="4124152339699379357">Bildirishnomalarga ruxsat zanjiri toʻliq hajmda ochildi</translation>
@@ -1474,6 +1477,7 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="813082847718468539">Sayt haqidagi ma’lumotlar</translation>
 <translation id="8135406045838672858">Yuklab olingan PDF fayllar avtomatik <ph name="APP_NAME" /> ilovasida ochiladi</translation>
 <translation id="8137562778192957619">Bu parolni eslab qolishingiz shart emas. U Google Parollar menejeri xotirasida saqlanadi.</translation>
+<translation id="8152331954420209374">Lensni ochish</translation>
 <translation id="8163820386638255770">Parollarni Google hisobiga saqlashda va ulardan foydalanish uchun shaxsingizni tasdiqlang</translation>
 <translation id="8171286197772512427">Xulosa sahifasini ulashish oynasi ochildi</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -1510,6 +1514,7 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="8348430946834215779">Imkon qadar HTTPS ishlating va bu protokolda ishlamaydigan saytlarni yuklashdan oldin ogohlantirish oling</translation>
 <translation id="8354977102499939946">Ovoz bilan tezda qidirish. Bu yorliqni tahrirlash uchun Sozlamalarga kiring.</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> ta yuklanma tiklandi</translation>
+<translation id="8367705492654390392">Savol bering</translation>
 <translation id="8368001212524806591">Narxni kuzatish</translation>
 <translation id="8378850197701296741"><ph name="FROM_ACCOUNT" /> hisobidan saqlangan bukmarklar, tarix va boshqa sozlamalar mavjud.</translation>
 <translation id="8387617938027387193">Bu siz ekaningizni isbotlang</translation>

@@ -100,7 +100,6 @@
 <translation id="6333260925957816943">ข้อมูลเกี่ยวกับร้านนี้</translation>
 <translation id="6381032505162537930">คุณจะเห็นกลุ่มแท็บที่นี่</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{เลิกจัดกลุ่มแท็บที่เลือก <ph name="TABS_COUNT_ONE" /> แท็บ}other{เลิกจัดกลุ่มแท็บที่เลือก <ph name="TABS_COUNT_MANY" /> แท็บ}}</translation>
-<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{คุณค้นหาแท็บที่ปิดไปได้ในแท็บล่าสุดในส่วนเมนูหลักของ Chrome แท็บที่ไม่ระบุตัวตนจะไม่พร้อมใช้งาน}other{คุณค้นหาแท็บที่ปิดไปได้ในแท็บล่าสุดในส่วนเมนูหลักของ Chrome แท็บที่ไม่ระบุตัวตน # แท็บจะไม่พร้อมใช้งาน}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> แท็บ}other{<ph name="TABS_COUNT_MANY" /> แท็บ}}</translation>
 <translation id="6549021453810473782">ดูข้อมูลร้านค้า</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>

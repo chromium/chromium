@@ -147,6 +147,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> har bytts ut mot <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Visa alla förslag</translation>
 <translation id="1501946871587957338">Vill du byta ljudkälla?</translation>
+<translation id="1505542291183484463">Flytta storleksändrat rutat fönster nedåt</translation>
 <translation id="1510238584712386396">Starttangent</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Visa aviseringsinställningar. Aviseringar har inaktiverats för 1 app}other{Visa aviseringsinställningar. Aviseringar har inaktiverats för # appar}}</translation>
 <translation id="1523032696246003">Batteri <ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> tills batteriet är fulladdat</translation>
@@ -177,6 +178,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1610778689852195798">”Ångra”</translation>
 <translation id="1611993646327628135">På</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1623768535032616219">Komprimera Google Classroom</translation>
 <translation id="1632985212731562677">Brytarstyrning kan inaktiveras under Inställningar &gt; Tillgänglighet</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> enheter</translation>
 <translation id="1639239467298939599">Profilen läses in</translation>
@@ -296,11 +298,13 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2149229036084364364">Tillbaka till föregående spår</translation>
 <translation id="2152895518047545149">Inget verkar saknas. Bra gjort!</translation>
 <translation id="2161132820593978283">Testa kamerainramning så att du hamnar i mitten av skärmen i videosamtal. Aktivera det i snabbinställningarna.</translation>
+<translation id="216955976692983107">Flytta storleksändrat rutat fönster åt höger</translation>
 <translation id="2185166372312820725">Öppna föregående flik</translation>
 <translation id="2185444992308415167">Gå igenom flikarna 1 till 8</translation>
 <translation id="2198625180564913276">Lägger till profil. Det kan ta några minuter.</translation>
 <translation id="219905428774326614">Startprogram, alla appar</translation>
 <translation id="2201071101391734388">Foto <ph name="INDEX" /> av <ph name="TOTAL_COUNT" /> nya foton.</translation>
+<translation id="2201687081523799384">Komprimera Google Tasks</translation>
 <translation id="2208323208084708176">Enhetligt skrivbordsläge</translation>
 <translation id="2220572644011485463">Pinkod eller lösenord</translation>
 <translation id="2222841058024245321">Skrivbord 7</translation>
@@ -362,6 +366,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2427507373259914951">Vänsterklicka</translation>
 <translation id="2429753432712299108">Bluetooth-enheten <ph name="DEVICE_NAME" /> har begärt tillstånd för koppling. Innan du godkänner bekräftar du att den här lösenordsnyckeln visas på den enheten: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Visa lösenord</translation>
+<translation id="2437771564543046790">Låg batterinivå. Batterisparläget är aktiverat</translation>
 <translation id="243878895369688216">Öppnades i går</translation>
 <translation id="2440978926514840421">GIF-inspelningen har tagits</translation>
 <translation id="2441427462554639370">Inspelningen avslutades eftersom det är mycket ont om lagringsutrymme</translation>
@@ -642,6 +647,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3509391053705095206">Det gick inte att hitta telefonen. Kontrollera att Bluetooth har aktiverats på telefonen.</translation>
 <translation id="3510164367642747937">Markera muspekaren</translation>
 <translation id="3513798432020909783">Kontot hanteras av <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3516000762115478502">Flytta storleksändrat rutat fönster uppåt</translation>
 <translation id="3517037892157925473">Uppgifterna uppdaterades senast: <ph name="TIME" />, <ph name="DATE" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{Uppdatera enheten inom 1 minut}other{Uppdatera enheten inom # minuter}}</translation>
 <translation id="3522979239100719575">Söker efter tillgängliga profiler. Det kan ta några minuter.</translation>
@@ -758,6 +764,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="3899995891769452915">Röstinmatning</translation>
 <translation id="3900355044994618856">Sessionen avslutas om <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">Ansluter till <ph name="NAME" /></translation>
+<translation id="3904768293285573640">Flytta storleksändrat rutat fönster åt vänster</translation>
 <translation id="3906954721959377182">Surfplatta</translation>
 <translation id="3923494859158167397">Inga mobilnätverk har konfigurerats</translation>
 <translation id="3925540965556789199">Läser in händelser den <ph name="DATE" />.</translation>
@@ -1196,6 +1203,7 @@ Inga enheter är anslutna.</translation>
 <translation id="550391772491508736">Återuppta castingen</translation>
 <translation id="5506975627792768506">Aktivera och inaktivera skärmförstoraren</translation>
 <translation id="5512042095225963688">Radera föregående ord</translation>
+<translation id="5519005148254860683">Utöka Google Tasks</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Administratören har tagit bort alla eSIM-profiler. Kontakta administratören för mer information.</translation>
 <translation id="5520909879404821039">Hej på franska</translation>
@@ -1404,6 +1412,7 @@ Inga enheter är anslutna.</translation>
 <translation id="6200515304866777730">Stöds inte av appen</translation>
 <translation id="6210042900243040400">Anslut <ph name="NAME" /> som tidigare sparats i <ph name="EMAIL" /></translation>
 <translation id="6213808132343683860">Ta en skärmbild eller skärminspelning av en del av skärmen</translation>
+<translation id="621606890568890214">Utöka Google Classroom</translation>
 <translation id="6220928844947387476">Nu kan du spela in dig själv och skärmen på samma gång</translation>
 <translation id="622484624075952240">Ner</translation>
 <translation id="6228457605945141550">Minska ljusstyrkan</translation>

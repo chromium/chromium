@@ -100,7 +100,6 @@
 <translation id="6333260925957816943">Informasjon om denne butikken</translation>
 <translation id="6381032505162537930">Her finner du fanegruppene dine</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Opphev grupperingen av <ph name="TABS_COUNT_ONE" /> valgt fane}other{Opphev grupperingen av <ph name="TABS_COUNT_MANY" /> valgte faner}}</translation>
-<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Du finner de lukkede fanene dine under Nylige faner på hovedmenyen i Chrome. Inkognitofanen din kommer ikke til å være tilgjengelig.}other{Du finner de lukkede fanene dine under Nylige faner på hovedmenyen i Chrome. De # inkognitofanene dine kommer ikke til å være tilgjengelige.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> fane}other{<ph name="TABS_COUNT_MANY" /> faner}}</translation>
 <translation id="6549021453810473782">Se butikkinformasjon</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>

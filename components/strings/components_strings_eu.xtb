@@ -245,7 +245,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1432187715652018471">orriak zerbitzu-kudeatzaile bat instalatu nahi du.</translation>
 <translation id="1432581352905426595">Kudeatu bilatzaileak</translation>
 <translation id="1433225466058025572">Saiatu berriro fitxategiak mugitzen</translation>
-<translation id="1434317006812369578">Chrome-k segurtasun-eginbide integratuak ditu, arakatzen duzun bitartean babesten zaituztenak. Google-ren Arakatze segurua eginbide horietako bat da. Duela gutxi, arakatze seguruak <ph name="BEGIN_LINK" />malwarea aurkitu du <ph name="SITE" /> webgunean<ph name="END_LINK" />, bisitatu nahi duzun webgunean kapsulatuta dagoena.</translation>
 <translation id="1435940442311036198">Erabili sarbide-gako bat beste gailu batean</translation>
 <translation id="1436185428532214179">Gailuko fitxategiak eta karpetak editatzea eska dezake</translation>
 <translation id="1441816242347931036">Aurrera egiteko, ireki hau</translation>
@@ -1466,7 +1465,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3767485424735936570">Administratzailearen gidalerroek ez dute gomendatzen edukia kopiatu eta <ph name="VM_NAME" /> makina birtualean itsastea</translation>
 <translation id="3772211998634047851">Papera (bonu-papera)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />: sakatu tabuladorea eta, ondoren, "Sartu", Google Keep-en ohar bat bizkor sortzeko</translation>
-<translation id="378026377453746707">Chrome-k segurtasun-eginbide integratuak ditu, arakatzen duzun bitartean babesten zaituztenak. Google-ren Arakatze segurua eginbide horietako bat da. Duela gutxi, arakatze seguruak <ph name="BEGIN_LINK" />software kaltegarria aurkitu du <ph name="SITE" /> webgunean<ph name="END_LINK" />, bisitatu nahi duzun webgunean kapsulatuta dagoena.</translation>
 <translation id="3780694243617746492">Papera irteteko erretilua</translation>
 <translation id="3781428340399460090">Arrosa bizia</translation>
 <translation id="3783418713923659662">Mastercard</translation>
@@ -1550,7 +1548,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3950820424414687140">Hasi saioa</translation>
 <translation id="3953505489397572035">Ohikoa da prezioa</translation>
 <translation id="3958057596965527988">10,16 × 10,16 cm (4 × 4 in)</translation>
-<translation id="3959121317419633580">Chrome-k segurtasun-eginbide integratuak ditu, arakatzen duzun bitartean babesten zaituztenak. Google-ren Arakatze segurua eginbide horietako bat da. Duela gutxi, arakatze seguruak <ph name="BEGIN_LINK" />phishinga aurkitu du <ph name="SITE" /> webgunean<ph name="END_LINK" />, bisitatu nahi duzun webgunean kapsulatuta dagoena.<ph name="NEW_LINE" />Normalean seguruak diren webguneak ere kutsatzen dituzte erasotzaileek. Akats bat izan dela eta webgune hau arriskutsua ez dela uste baduzu, <ph name="BEGIN_ERROR_LINK" />jakinaraz iezaguzu<ph name="END_ERROR_LINK" />.</translation>
 <translation id="3961148744525529027">Ordainketa kudeatzeko orria erdi irekita dago</translation>
 <translation id="3962859241508114581">Aurreko pista</translation>
 <translation id="3963721102035795474">Irakurgailu modua</translation>

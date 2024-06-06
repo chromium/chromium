@@ -178,6 +178,7 @@
 <translation id="1610778689852195798">"Αναίρεση"</translation>
 <translation id="1611993646327628135">Ενεργό</translation>
 <translation id="1620510694547887537">Κάμερα</translation>
+<translation id="1623768535032616219">Σύμπτυξη του Google Classroom</translation>
 <translation id="1632985212731562677">Η πρόσβαση με διακόπτη μπορεί να απενεργοποιηθεί από τις Ρυθμίσεις &gt; Προσβασιμότητα.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> συσκευές</translation>
 <translation id="1639239467298939599">Φόρτωση</translation>
@@ -303,6 +304,7 @@
 <translation id="2198625180564913276">Προσθήκη προφίλ. Ενδέχεται να χρειαστούν μερικά λεπτά.</translation>
 <translation id="219905428774326614">Εφαρμογή εκκίνησης, όλες οι εφαρμογές</translation>
 <translation id="2201071101391734388">Πρόσφατη φωτογραφία <ph name="INDEX" /> από <ph name="TOTAL_COUNT" />.</translation>
+<translation id="2201687081523799384">Σύμπτυξη του Google Tasks</translation>
 <translation id="2208323208084708176">Ενιαία λειτουργία επιφάνειας εργασίας.</translation>
 <translation id="2220572644011485463">PIN ή κωδικός πρόσβασης</translation>
 <translation id="2222841058024245321">Γραφείο 7</translation>
@@ -364,6 +366,7 @@
 <translation id="2427507373259914951">Αριστερό κλικ</translation>
 <translation id="2429753432712299108">Η συσκευή Bluetooth "<ph name="DEVICE_NAME" />" ζητά δικαιώματα σύζευξης. Προτού αποδεχτείτε, επιβεβαιώστε ότι αυτό το κλειδί πρόσβασης εμφανίζεται στη συγκεκριμένη συσκευή: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Εμφάνιση κωδικού πρόσβασης</translation>
+<translation id="2437771564543046790">Χαμηλή στάθμη μπαταρίας. Η Εξοικονόμηση μπαταρίας είναι ενεργή</translation>
 <translation id="243878895369688216">Ανοίχτηκαν χθες</translation>
 <translation id="2440978926514840421">Λήψη εγγραφής GIF</translation>
 <translation id="2441427462554639370">Η εγγραφή ολοκληρώθηκε λόγω του εξαιρετικά περιορισμένου αποθηκευτικού χώρου.</translation>
@@ -1200,6 +1203,7 @@
 <translation id="550391772491508736">Συνέχιση μετάδοσης</translation>
 <translation id="5506975627792768506">Ενεργοποίηση ή απενεργοποίηση μεγεθυντικού φακού</translation>
 <translation id="5512042095225963688">Διαγραφή προηγούμενης λέξης</translation>
+<translation id="5519005148254860683">Ανάπτυξη του Google Tasks</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Ο διαχειριστής σας κατάργησε όλα τα προφίλ eSIM. Επικοινωνήστε με τον διαχειριστή σας για περισσότερες πληροφορίες.</translation>
 <translation id="5520909879404821039">"Γεια σας" στα Γαλλικά</translation>
@@ -1408,6 +1412,7 @@
 <translation id="6200515304866777730">Δεν υποστηρίζεται από την εφαρμογή</translation>
 <translation id="6210042900243040400">Σύνδεση της συσκευής <ph name="NAME" /> που είχε αποθηκευτεί στη διεύθυνση <ph name="EMAIL" /></translation>
 <translation id="6213808132343683860">Λήψη μερικού στιγμιότυπου οθόνης ή μερικής εγγραφής οθόνης</translation>
+<translation id="621606890568890214">Ανάπτυξη του Google Classroom</translation>
 <translation id="6220928844947387476">Μπορείτε πλέον να κάνετε ταυτόχρονη εγγραφή του εαυτού σας και της οθόνης σας.</translation>
 <translation id="622484624075952240">Κάτω</translation>
 <translation id="6228457605945141550">Μείωση φωτεινότητας</translation>

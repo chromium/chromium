@@ -961,7 +961,6 @@
 <translation id="6412715219990689313">Innebygd tastatur</translation>
 <translation id="6417265370957905582">Google Assistent</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
-<translation id="6438073885402882007">Dette gjør at systemtjenester med tillatelse kan bruke posisjonen din. Posisjonstjenestene kan bruke kilder som wifi, mobilnettverk og sensorer for å anslå enhetens posisjon. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="6439505561246192797">Svak (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Gå til kontoinnstillingene</translation>
 <translation id="6462978824459367242">Legg til APN-knappen er nå aktivert</translation>

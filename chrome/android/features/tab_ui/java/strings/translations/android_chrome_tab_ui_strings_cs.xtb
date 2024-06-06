@@ -100,7 +100,6 @@
 <translation id="6333260925957816943">Informace o této prodejně</translation>
 <translation id="6381032505162537930">Tady najdete své skupiny karet</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Zrušit seskupení <ph name="TABS_COUNT_ONE" /> vybrané karty}few{Zrušit seskupení <ph name="TABS_COUNT_MANY" /> vybraných karet}many{Zrušit seskupení <ph name="TABS_COUNT_MANY" /> vybrané karty}other{Zrušit seskupení <ph name="TABS_COUNT_MANY" /> vybraných karet}}</translation>
-<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Své zavřené karty najdete v sekci Nedávno použité karty v hlavní nabídce prohlížeče Chrome. Vaše anonymní karta nebude k dispozici.}few{Své zavřené karty najdete v sekci Nedávno použité karty v hlavní nabídce prohlížeče Chrome. # vaše anonymní karty nebudou k dispozici.}many{Své zavřené karty najdete v sekci Nedávno použité karty v hlavní nabídce prohlížeče Chrome. # vašich anonymních karet nebude k dispozici.}other{Své zavřené karty najdete v sekci Nedávno použité karty v hlavní nabídce prohlížeče Chrome. # vašich anonymních karet nebude k dispozici.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> karta}few{<ph name="TABS_COUNT_MANY" /> karty}many{<ph name="TABS_COUNT_MANY" /> karty}other{<ph name="TABS_COUNT_MANY" /> karet}}</translation>
 <translation id="6549021453810473782">Zobrazit informace o prodejně</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>

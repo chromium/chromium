@@ -245,7 +245,6 @@
 <translation id="1432187715652018471">Бет қызмет өңдегішін орнатпақ.</translation>
 <translation id="1432581352905426595">Іздеу жүйелерін басқару</translation>
 <translation id="1433225466058025572">Файлдарды қайта жылжытып көріңіз</translation>
-<translation id="1434317006812369578">Chrome-ның браузерді пайдалану кезінде қорғайтын Google Safe Browsing сияқты ендірілген қауіпсіздік мүмкіндіктері бар. Safe Browsing <ph name="BEGIN_LINK" />жақында <ph name="SITE" /> сайтында зиянды бағдарламаны анықтады<ph name="END_LINK" />, ол сіз кіргелі жатқан сайтқа ендірілген.</translation>
 <translation id="1435940442311036198">Басқа құрылғыдағы кіру кілтін пайдалану</translation>
 <translation id="1436185428532214179">Құрылғыңыздағы файлдар мен қалталарды өзгертуге рұқсат сұрай алады.</translation>
 <translation id="1441816242347931036">Жалғастыру үшін ашыңыз</translation>
@@ -1469,7 +1468,6 @@
 <translation id="3767485424735936570">Әкімші саясаты бойынша бұл контентті <ph name="VM_NAME" /> құрылғысына көшіру және қою әрекеттерін орындамаған дұрыс.</translation>
 <translation id="3772211998634047851">Қағаз (бонд)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Keep-те жылдам жаңа ескертпе жасау үшін Tab, содан кейін Enter пернесін басыңыз.</translation>
-<translation id="378026377453746707">Chrome-ның браузерді пайдалану кезінде қорғайтын Google Safe Browsing сияқты ендірілген қауіпсіздік мүмкіндіктері бар. Safe Browsing жақында <ph name="BEGIN_LINK" /><ph name="SITE" /> сайтында зиянды бағдарламалық құралды анықтады<ph name="END_LINK" />, ол сіз кіргелі жатқан сайтқа ендірілген.</translation>
 <translation id="3780694243617746492">Шығу деректері</translation>
 <translation id="3781428340399460090">Қою алқызыл</translation>
 <translation id="3783418713923659662">Mastercard</translation>
@@ -1553,7 +1551,6 @@
 <translation id="3950820424414687140">Кіру</translation>
 <translation id="3953505489397572035">Бұл – әдеттегі баға.</translation>
 <translation id="3958057596965527988">4 x 4 дюйм</translation>
-<translation id="3959121317419633580">Chrome-ның браузерді пайдалану кезінде қорғайтын Google Safe Browsing сияқты ендірілген қауіпсіздік мүмкіндіктері бар. Safe Browsing жақында <ph name="BEGIN_LINK" /><ph name="SITE" /> сайтында фишинг әрекеті<ph name="END_LINK" /> бар екенін анықтады. Бұл зиянды әрекет сіз кіргелі жатқан сайтқа ендірілген.<ph name="NEW_LINE" />Әдетте қауіпсіз болатын сайттардың өзінде кейде шабуылдаушылар болуы мүмкін. Бұл қате болса және осы сайт қауіпті болмаса, <ph name="BEGIN_ERROR_LINK" />бізге хабарлаңыз<ph name="END_ERROR_LINK" />.</translation>
 <translation id="3961148744525529027">Төлем өңдегіш парағы жартылай ашық.</translation>
 <translation id="3962859241508114581">Алдыңғы аудиотрек</translation>
 <translation id="3963721102035795474">Оқу құралы режимі</translation>

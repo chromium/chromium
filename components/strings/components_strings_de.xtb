@@ -245,7 +245,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1432187715652018471">Seite möchte einen Service-Handler installieren.</translation>
 <translation id="1432581352905426595">Suchmaschinen verwalten</translation>
 <translation id="1433225466058025572">Versuche noch einmal, deine Dateien zu verschieben</translation>
-<translation id="1434317006812369578">Chrome verfügt über integrierte Sicherheitsfunktionen wie Google Safe Browsing, die dich beim Surfen schützen. Safe Browsing hat kürzlich <ph name="BEGIN_LINK" />Malware auf <ph name="SITE" /> gefunden<ph name="END_LINK" />, eingebettet in die Website, die du besuchen möchtest.</translation>
 <translation id="1435940442311036198">Passkey auf einem anderen Gerät verwenden</translation>
 <translation id="1436185428532214179">Darf Anfragen, Dateien und Ordner auf meinem Gerät zu bearbeiten</translation>
 <translation id="1441816242347931036">Zum Fortfahren öffnen</translation>
@@ -1468,7 +1467,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3767485424735936570">Die Administratorrichtlinie empfiehlt, keine Inhalte zu kopieren und an dieser Stelle (<ph name="VM_NAME" />) einzufügen</translation>
 <translation id="3772211998634047851">Papier (Hartpost)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um schnell eine neue Notiz in Google Notizen zu erstellen</translation>
-<translation id="378026377453746707">Chrome verfügt über integrierte Sicherheitsfunktionen wie Google Safe Browsing, die dich beim Surfen schützen. Safe Browsing hat kürzlich <ph name="BEGIN_LINK" />Schadsoftware auf <ph name="SITE" /> gefunden<ph name="END_LINK" />, eingebettet in die Website, die du besuchen möchtest.</translation>
 <translation id="3780694243617746492">Ausgabefach</translation>
 <translation id="3781428340399460090">Dunkelrosa</translation>
 <translation id="3783418713923659662">Mastercard</translation>
@@ -1552,7 +1550,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3950820424414687140">Anmelden</translation>
 <translation id="3953505489397572035">Dieser Preis entspricht dem Normalpreis</translation>
 <translation id="3958057596965527988">4 × 4 Zoll</translation>
-<translation id="3959121317419633580">Chrome verfügt über integrierte Sicherheitsfunktionen wie Google Safe Browsing, die dich beim Surfen schützen. Safe Browsing hat kürzlich <ph name="BEGIN_LINK" />Phishingversuche auf <ph name="SITE" /> festgestellt<ph name="END_LINK" />, eingebettet in die Website, die du besuchen möchtest.<ph name="NEW_LINE" />Selbst Websites, die normalerweise sicher sind, werden manchmal gehackt. Wenn du der Meinung bist, dass es sich um einen Fehler handelt und diese Website keine Gefahr darstellt, melde uns das bitte <ph name="BEGIN_ERROR_LINK" />unter diesem Link<ph name="END_ERROR_LINK" />.</translation>
 <translation id="3961148744525529027">Das Dokument zur Zahlungsabwicklung ist zur Hälfte geöffnet</translation>
 <translation id="3962859241508114581">Vorheriger Titel</translation>
 <translation id="3963721102035795474">Lesemodus</translation>

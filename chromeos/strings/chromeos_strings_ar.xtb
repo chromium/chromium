@@ -313,6 +313,7 @@
 <translation id="2618015542787108131">كثيب رملي</translation>
 <translation id="2619761439309613843">إعادة التحميل يوميًا</translation>
 <translation id="2620436844016719705">النظام</translation>
+<translation id="2637303424821734920">الإذن غير مفعَّل: للاطّلاع على حالة الطقس المحلي، يجب <ph name="BEGIN_LINK" />تفعيل إذن الوصول إلى الموقع الجغرافي للنظام<ph name="END_LINK" /></translation>
 <translation id="2638662041295312666">صورة الملف الشخصي</translation>
 <translation id="2640549051766135490">تمّ اختيار ألبوم <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="2645380101799517405">عناصر التحكّم</translation>
@@ -961,7 +962,6 @@
 <translation id="6412715219990689313">لوحة مفاتيح مُدمَجة</translation>
 <translation id="6417265370957905582">‏مساعد Google</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
-<translation id="6438073885402882007">‏يتيح ذلك لخدمات النظام التي لديها الإذن إمكانية استخدام موقعك الجغرافي. يمكن لخدمة الموقع الجغرافي استخدام مصادر، مثل شبكة Wi-Fi وشبكات الجوّال وأدوات الاستشعار للمساعدة في تقدير الموقع الجغرافي لجهازك. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="6439505561246192797">إشارة ضعيفة (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">الانتقال إلى إعدادات الحساب</translation>
 <translation id="6462978824459367242">‏زر "إضافة اسم نقطة الوصول" (APN) مفعّل الآن</translation>

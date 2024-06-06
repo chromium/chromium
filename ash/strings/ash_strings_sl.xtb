@@ -178,6 +178,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1610778689852195798">»Razveljavi«</translation>
 <translation id="1611993646327628135">Vklopljeno</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1623768535032616219">Strnitev Učilnice Google</translation>
 <translation id="1632985212731562677">Stikalni dostop lahko onemogočite v »Nastavitve &gt; Dostopnost«.</translation>
 <translation id="1637505162081889933">Št. naprav: <ph name="NUM_DEVICES" /></translation>
 <translation id="1639239467298939599">Nalaganje</translation>
@@ -303,6 +304,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="2198625180564913276">Dodajanje profila. To lahko traja nekaj minut.</translation>
 <translation id="219905428774326614">Zaganjalnik, vse aplikacije</translation>
 <translation id="2201071101391734388">Nedavna fotografija <ph name="INDEX" /> od <ph name="TOTAL_COUNT" />.</translation>
+<translation id="2201687081523799384">Strnitev Google Opravil</translation>
 <translation id="2208323208084708176">Način enotnega namizja</translation>
 <translation id="2220572644011485463">Koda PIN ali geslo</translation>
 <translation id="2222841058024245321">Namizje 7</translation>
@@ -364,6 +366,7 @@ Povezanih je toliko naprav: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2427507373259914951">Levi klik</translation>
 <translation id="2429753432712299108">Naprava Bluetooth »<ph name="DEVICE_NAME" />« želi dovoljenje za seznanjanje. Preden sprejmete, se prepričajte, da je na napravi prikazano to geslo: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Pokaži geslo</translation>
+<translation id="2437771564543046790">Baterija je skoraj izpraznjena. Varčevanje z energijo baterije je vklopljeno.</translation>
 <translation id="243878895369688216">Odprto včeraj</translation>
 <translation id="2440978926514840421">Posnetek GIF je posnet</translation>
 <translation id="2441427462554639370">Snemanje se je končalo, ker kritično primanjkuje prostora za shranjevanje.</translation>
@@ -1200,6 +1203,7 @@ Nobena naprava ni povezana.</translation>
 <translation id="550391772491508736">Nadaljuj predvajanje</translation>
 <translation id="5506975627792768506">Vklop ali izklop lupe</translation>
 <translation id="5512042095225963688">Brisanje prejšnje besede</translation>
+<translation id="5519005148254860683">Razširitev Google Opravil</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Skrbnik je odstranil vse profile za eSIM. Če želite več informacij, se obrnite na skrbnika.</translation>
 <translation id="5520909879404821039">Živijo v francoščini</translation>
@@ -1408,6 +1412,7 @@ Nobena naprava ni povezana.</translation>
 <translation id="6200515304866777730">Aplikacija ne podpira</translation>
 <translation id="6210042900243040400">Vzpostavite povezavo z napravo <ph name="NAME" />, ki je že shranjena v računu <ph name="EMAIL" />.</translation>
 <translation id="6213808132343683860">Ustvarjanje delnega posnetka zaslona ali snemanja zaslona</translation>
+<translation id="621606890568890214">Razširitev Učilnice Google</translation>
 <translation id="6220928844947387476">Sebe in zaslon lahko zdaj posnamete istočasno.</translation>
 <translation id="622484624075952240">Dol</translation>
 <translation id="6228457605945141550">Zmanjšanje svetlosti</translation>

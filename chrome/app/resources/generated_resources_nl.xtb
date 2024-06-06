@@ -295,6 +295,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1203942045716040624">Gedeelde worker: <ph name="SCRIPT_URL" /></translation>
 <translation id="1205104724635486855">Voorbeeld van link weergeven</translation>
 <translation id="1206832039833782423">De beveiligingscode staat op de achterkant van je kaart</translation>
+<translation id="1208392090861059168">Huidige planning is ingesteld op <ph name="SUNRISE" /> - <ph name="SUNSET" />. Als je de planning voor zonsondergang en zonsopgang automatisch wilt updaten, <ph name="BEGIN_LINK" />zet je locatietoegang voor het systeem aan<ph name="END_LINK" />.</translation>
 <translation id="1210678701920254279">Printers bekijken of toevoegen en actieve afdruktaken zien</translation>
 <translation id="1211769675100312947">Snelkoppelingen worden door jou beheerd</translation>
 <translation id="1213254615020057352">Stuur gebruiks- en diagnostische gegevens. Verbeter de Android-functionaliteit voor je kind door automatisch diagnostische, apparaat- en app-gebruiksgegevens naar Google te sturen. Deze gegevens worden niet gebruikt om je kind te identificeren en kunnen helpen om de systeem- en app-stabiliteit te verbeteren en andere optimalisaties mogelijk te maken. Daarnaast zijn bepaalde verzamelde gegevens nuttig voor Google-apps en -partners, zoals Android-ontwikkelaars. Deze instelling wordt afgedwongen door de eigenaar. De eigenaar kan ervoor kiezen diagnostische en gebruiksgegevens voor dit apparaat naar Google te sturen. Als je de instelling voor aanvullende Web- en app-activiteit hebt aangezet voor je kind, kunnen deze gegevens worden opgeslagen in het Google-account van je kind.</translation>
@@ -481,6 +482,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1353980523955420967">PPD kan niet worden gevonden. Zorg dat je Chromebook online is en probeer het opnieuw.</translation>
 <translation id="1354045473509304750">Blijven toestaan dat <ph name="HOST" /> de camera gebruikt en beweegt</translation>
 <translation id="1355088139103479645">Alle gegevens verwijderen?</translation>
+<translation id="1356376170199999104">Toegestaan: <ph name="PERMISSION_DETAILS" />. Zet de microfoon aan met de fysieke schakelaar.</translation>
 <translation id="1356959069439783953">Inactieve tabbladen krijgen een nieuwe look</translation>
 <translation id="1358741672408003399">Spelling en grammatica</translation>
 <translation id="1359923111303110318">Je apparaat kan worden ontgrendeld met Smart Lock. Druk op Enter om te ontgrendelen.</translation>
@@ -752,6 +754,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1557939148300698553">Profiel maken</translation>
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1558671750917454373">Casten naar <ph name="DEVICE_NAME" /> hervatten</translation>
+<translation id="1561331397460162942">Zo geef je locatietoegang aan apps, websites met locatierechten en systeemservices.</translation>
 <translation id="1562119309884184621">Als je dit contact toevoegt, wordt hij of zij onthouden voor de volgende keer dat het contact content deelt</translation>
 <translation id="1563137369682381456">Vervaldatum</translation>
 <translation id="1563702743503072935">Wachtwoorden uit je Google-account zijn ook beschikbaar voor gebruik op dit apparaat als je bent ingelogd</translation>
@@ -809,6 +812,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1594703455918849716">Naar de controlepagina</translation>
 <translation id="1594781465361405478">Volume aan/uit</translation>
 <translation id="1594963087419619323">Overzicht van gesplitst scherm</translation>
+<translation id="1595018168143352126">Camerarechten voor websites beheren in Chrome</translation>
 <translation id="1595492813686795610">Linux wordt geüpgraded</translation>
 <translation id="1596286373007273895">Beschikbaar</translation>
 <translation id="1596709061955594992">Bluetooth staat uit. Zet bluetooth aan om beschikbare apparaten te zien.</translation>
@@ -1246,6 +1250,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1900305421498694955">Apps uit Google Play hebben mogelijk toegang nodig tot het volledige bestandssysteem om bestanden te lezen en schrijven op externe opslagapparaten. Bestanden en mappen die zijn gemaakt op het apparaat, zijn zichtbaar voor iedereen die de externe schijf gebruikt. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="1901213235765457754">Vraag je beheerder om deze app te updaten</translation>
 <translation id="1901303067676059328">&amp;Alles selecteren</translation>
+<translation id="1901760057081700494">De tijdzone is op dit moment ingesteld op <ph name="TIME_ZONE_ENTRY" />. Als je de tijdzone automatisch wilt updaten, <ph name="BEGIN_LINK" />zet je locatietoegang voor het systeem aan<ph name="END_LINK" />.</translation>
 <translation id="1904580727789512086">De URL's die je bezoekt, worden opgeslagen in je Google-account</translation>
 <translation id="1906181697255754968">Sites vragen meestal toegang tot bestanden en mappen op je apparaat voor functies zoals het automatisch opslaan van je werk</translation>
 <translation id="1906488504371069394">Ontdek meer extensies en thema's in de <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
@@ -1743,11 +1748,13 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
     <ph name="BEGIN_PARAGRAPH2" />Nadat de installatie is gestart, kun je deze niet meer annuleren.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">Gegevens uitwisselen met elk apparaat in de volgende domeinen: <ph name="DOMAINS" /></translation>
 <translation id="2270666014403455717">Schakelaar toewijzen voor Selecteren</translation>
+<translation id="2271452184061378400">Je tabbladgroepen worden hier opgeslagen</translation>
 <translation id="2271986192355138465">Meer informatie over hoe je web-apps installeert</translation>
 <translation id="2272430695183451567">0 schakelaars toegewezen</translation>
 <translation id="2272570998639520080">Martiniglas</translation>
 <translation id="2273119997271134996">Probleem met videopoort van dock</translation>
 <translation id="2274840746523584236">Laad je Chromebook op</translation>
+<translation id="2275193525496879616">Toegestaan. Sluit een camera aan op je apparaat.</translation>
 <translation id="2276503375879033601">Meer apps toevoegen</translation>
 <translation id="2278193750452754829">Extensies zijn toegestaan op deze site. Selecteer om het menu te openen.</translation>
 <translation id="2278562042389100163">Browservenster openen</translation>
@@ -1865,6 +1872,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="2350133097354918058">Opnieuw geladen</translation>
 <translation id="2350182423316644347">App initialiseren...</translation>
 <translation id="235028206512346451">Als je wegloopt bij je apparaat, wordt het scherm automatisch vergrendeld. Het scherm blijft actief langer als je voor het apparaat staat. Als je geen vergrendelscherm gebruikt, wordt de slaapstand van je apparaat geactiveerd in plaats van de vergrendeling.</translation>
+<translation id="2351923523007389195">Toegestaan: <ph name="PERMISSION_DETAILS" />. Zet <ph name="LINK_BEGIN" />locatietoegang voor het systeem<ph name="LINK_END" /> aan.</translation>
 <translation id="2352305801620974284">Als je inlogt op dit apparaat, krijg je onder andere je wachtwoorden uit je Google-account</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2352810082280059586">Notities op het vergrendelscherm worden automatisch opgeslagen in <ph name="LOCK_SCREEN_APP_NAME" />. Je laatste notitie blijft op het vergrendelscherm staan.</translation>
@@ -1979,7 +1987,6 @@ Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.
 <translation id="2435248616906486374">Geen verbinding met netwerk</translation>
 <translation id="2435457462613246316">Wachtwoord bekijken</translation>
 <translation id="2436385001956947090">&amp;Link kopiëren</translation>
-<translation id="2436746748253887661">Hiermee krijgen systeemservices toestemming om je locatie te gebruiken. Voor de schatting van je apparaatlocatie kunnen bronnen worden gebruikt zoals wifi, mobiele netwerken en sensoren. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="2438853563451647815">Niet verbonden met printer</translation>
 <translation id="2439152382014731627"><ph name="DEVICE_TYPE" />-wachtwoord resetten</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> laden</translation>
@@ -2196,6 +2203,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2581992808349413349">Gebruik een beveiligde verbinding om het IP-adres van een site op te zoeken in het DNS (Domain Name System). Hiervoor wordt een beheerde serviceprovider gebruikt op <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />.</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (Platform <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">Kan Kerberos-ticket niet ophalen. Probeer het opnieuw of neem contact op met de apparaatbeheerder van je organisatie. (Foutcode <ph name="ERROR_CODE" />).</translation>
+<translation id="2584974473573720127">Microfoonrechten voor websites beheren in Chrome</translation>
 <translation id="2586561813241011046">Kan <ph name="APP_NAME" /> niet installeren. Probeer het opnieuw of neem contact op met je beheerder. Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="2586657967955657006">Klembord</translation>
 <translation id="2586672484245266891">Geef een kortere URL op</translation>
@@ -2385,6 +2393,9 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2727744317940422214">Er is iets misgegaan. Dien je feedback in met #bruschetta in de beschrijving. De foutcode is <ph name="ERROR" />. Opschonen is mislukt. Je moet dit misschien handmatig doen.</translation>
 <translation id="2729327310379176711">Chrome zoekt nieuwe manieren om tracking te verminderen en je nog beter te beschermen terwijl je browst. Chrome <ph name="ESTIMATE_INTERESTS_LINK" /> en biedt je mogelijkheden om ze te beheren. Daarna kunnen sites die je bezoekt Chrome om je interesses vragen, zodat ze je relevante advertenties kunnen laten zien.</translation>
 <translation id="2729577602370119849">Krijg makkelijk toegang tot printers en beheer ze</translation>
+<translation id="2729661575355442512"><ph name="BEGIN_PARAGRAPH1" />Als Locatienauwkeurigheid aanstaat, worden gegevens over draadloze signalen, zoals wifi-toegangspunten en mobiele-netwerktorens, samen met de gegevens van apparaatsensoren, zoals de versnellingsmeter en gyroscoop, gebruikt om een nauwkeurigere apparaatlocatie te schatten, die Android-apps en -services gebruiken om locatiegebaseerde functies te bieden. Hiervoor verzamelt Google periodiek gegevens over apparaatsensoren en draadloze signalen in de buurt van dit apparaat om bij te dragen aan draadloze signaallocaties op basis van crowdsourcing.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Google gebruikt deze gegevens die zijn verzameld op dit apparaat om de locatienauwkeurigheid en services op een fysieke locatie te verbeteren en om de services van Google in het algemeen te verbeteren, aan te bieden en te onderhouden. We verwerken deze gegevens op basis van de gerechtvaardigde belangen van Google en derden om aan de behoeften van gebruikers te voldoen. Deze gegevens worden niet gebruikt om een bepaalde persoon te identificeren.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Je kunt Locatietoegankelijkheid op elk moment uitzetten in de locatie-instellingen van dit apparaat via Instellingen &gt; Privacy en beveiliging &gt; Privacyopties &gt; Locatietoegang &gt; Geavanceerde locatie-instellingen. Als Locatienauwkeurigheid uitstaat, worden er geen gegevens voor locatienauwkeurigheid verzameld. Voor Android-apps en -services wordt alleen het IP-adres gebruikt (indien beschikbaar) om de locatie van dit apparaat te bepalen. Dit kan van invloed zijn op de beschikbaarheid en nauwkeurigheid van locaties voor Android-apps en -services zoals Google Maps.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2730029791981212295">Een back-up maken van Linux-apps en -bestanden</translation>
 <translation id="2730596696987224099">Zelf een wachtwoord kiezen</translation>
 <translation id="2730647855013151888">Alle persoonlijke informatie opnemen</translation>
@@ -3236,6 +3247,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="338323348408199233">Verkeer zonder VPN blokkeren</translation>
 <translation id="3384362484379805487">Taalbestanden worden gedeeld onder gebruikers om schijfruimte te besparen.</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
+<translation id="3385172418915595177">Locatienauwkeurigheid biedt een nauwkeurigere locatie voor apps en services. Hiervoor verwerkt Google periodiek gegevens over apparaatsensoren en draadloze signalen van je apparaat om bij te dragen aan draadloze signaallocaties op basis van crowdsourcing. Deze worden zonder je te identificeren gebruikt om de locatienauwkeurigheid en services op een fysieke locatie te verbeteren. Ze worden ook in het algemeen gebruikt om de services van Google te verbeteren, aan te bieden en te onderhouden op basis van de gerechtvaardigde belangen van Google en derden om aan de behoeften van gebruikers te voldoen.</translation>
 <translation id="338583716107319301">Separator</translation>
 <translation id="3385916046075724800">Je tabbladgroepen worden nu automatisch opgeslagen.</translation>
 <translation id="3387023983419383865">,</translation>
@@ -3337,6 +3349,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3449839693241009168">Druk op <ph name="SEARCH_KEY" /> om opdrachten te verzenden naar <ph name="EXTENSION_NAME" /></translation>
 <translation id="3450157232394774192">Bezettingspercentage van inactieve status</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> vereist dat je nu verbinding maakt met wifi en een update downloadt.</translation>
+<translation id="345078987193237421">Zo geef je cameratoegang aan apps, websites met camerarechten en systeemservices.</translation>
 <translation id="3452999110156026232">Toegang door ouders</translation>
 <translation id="3453082738208775226">Offline opslag opschonen?</translation>
 <translation id="3453597230179205517">Locatietoegang is geblokkeerd</translation>
@@ -3508,6 +3521,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3587438013689771191">Meer informatie over: <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="3587482841069643663">Alles</translation>
 <translation id="3588790464166520201">Toestemming om betalingshandlers te installeren</translation>
+<translation id="3589010096969411438">Toegestaan. Zet de microfoon aan met de fysieke schakelaar.</translation>
 <translation id="3589766037099229847">Onbeveiligde content geblokkeerd</translation>
 <translation id="3590194807845837023">Profiel ontgrendelen en opnieuw starten</translation>
 <translation id="3590295622232282437">Beheerde sessie wordt geopend.</translation>
@@ -4041,6 +4055,7 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser 
 <translation id="3950841222883198950">Spraakgestuurd typen</translation>
 <translation id="3953834000574892725">Mijn accounts</translation>
 <translation id="3954354850384043518">In behandeling</translation>
+<translation id="3954468641195530330">Apps mogen je microfoon niet gebruiken</translation>
 <translation id="3954469006674843813"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> hertz)</translation>
 <translation id="3954953195017194676">Je hebt geen onlangs vastgelegde WebRTC-gebeurtenislogboeken.</translation>
 <translation id="3955321697524543127">Niet toestaan dat sites verbinding maken met USB-apparaten</translation>
@@ -4099,6 +4114,10 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser 
 <translation id="3988124842897276887">Dit tabblad is gekoppeld aan een USB-apparaat</translation>
 <translation id="3988996860813292272">Tijdzone selecteren</translation>
 <translation id="3991055816270226534">Cookies van derden en trackingbeveiliging beheren</translation>
+<translation id="3991746210745534318"><ph name="BEGIN_PARAGRAPH1" />Als Locatienauwkeurigheid aanstaat, worden gegevens over draadloze signalen, zoals wifi-toegangspunten en mobiele-netwerktorens, samen met de gegevens van apparaatsensoren, zoals de versnellingsmeter en gyroscoop, gebruikt om een nauwkeurigere apparaatlocatie te schatten, die Android-apps en -services gebruiken om locatiegebaseerde functies te bieden. Hiervoor verzamelt Google periodiek gegevens over apparaatsensoren en draadloze signalen in de buurt van dit apparaat om bij te dragen aan draadloze signaallocaties op basis van crowdsourcing.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Google gebruikt deze gegevens die zijn verzameld op dit apparaat om de locatienauwkeurigheid en services op een fysieke locatie te verbeteren en om de services van Google in het algemeen te verbeteren, aan te bieden en te onderhouden. We verwerken deze gegevens op basis van de gerechtvaardigde belangen van Google en derden om aan de behoeften van gebruikers te voldoen. Deze gegevens worden niet gebruikt om een bepaalde persoon te identificeren.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Je kunt Locatietoegankelijkheid op elk moment uitzetten in de locatie-instellingen van dit apparaat via Instellingen &gt; Privacy en beveiliging &gt; Privacyopties &gt; Locatietoegang &gt; Geavanceerde locatie-instellingen. Als Locatienauwkeurigheid uitstaat, worden er geen gegevens voor locatienauwkeurigheid verzameld. Voor Android-apps en -services wordt alleen het IP-adres gebruikt (indien beschikbaar) om de locatie van dit apparaat te bepalen. Dit kan van invloed zijn op de beschikbaarheid en nauwkeurigheid van locaties voor Android-apps en -services zoals Google Maps.<ph name="END_PARAGRAPH3" />
+    <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Meer informatie over Locatienauwkeurigheid<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="399179161741278232">Geïmporteerd</translation>
 <translation id="3992008114154328194"><ph name="FILE_NAME" /> downloaden, <ph name="STATUS" /></translation>
 <translation id="3993259701827857030">Back-up maken van gegevens</translation>
@@ -4254,6 +4273,10 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser 
 <translation id="4110485659976215879">Waarschuwing herstellen</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
 <translation id="4113743276555482284">Wachtwoord van bestand</translation>
+<translation id="4113888471797244232"><ph name="BEGIN_PARAGRAPH1" />Als Locatienauwkeurigheid aanstaat, worden gegevens over draadloze signalen, zoals wifi-toegangspunten en mobiele-netwerktorens, samen met de gegevens van apparaatsensoren, zoals de versnellingsmeter en gyroscoop, gebruikt om een nauwkeurigere apparaatlocatie te schatten, die Android-apps en -services gebruiken om locatiegebaseerde functies te bieden. Hiervoor verzamelt Google periodiek gegevens over apparaatsensoren en draadloze signalen bij jou in de buurt om bij te dragen aan draadloze signaallocaties op basis van crowdsourcing.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Google gebruikt deze gegevens zonder je te identificeren om de locatienauwkeurigheid en services op een fysieke locatie te verbeteren en om de services van Google te verbeteren, aan te bieden en te onderhouden. We verwerken deze gegevens op basis van de gerechtvaardigde belangen van Google en derden om aan de behoeften van gebruikers te voldoen.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Je kunt Locatietoegankelijkheid op elk moment uitzetten in de locatie-instellingen van je apparaat via Instellingen &gt; Privacy en beveiliging &gt; Privacyopties &gt; Locatietoegang &gt; Geavanceerde locatie-instellingen. Als Locatienauwkeurigheid uitstaat, worden er geen gegevens voor locatienauwkeurigheid verzameld. Voor Android-apps en -services wordt alleen het IP-adres gebruikt (indien beschikbaar) om de locatie van je apparaat te bepalen. Dit kan van invloed zijn op de beschikbaarheid en nauwkeurigheid van locaties voor Android-apps en -services zoals Google Maps.<ph name="END_PARAGRAPH3" />
+    <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Meer informatie over Locatienauwkeurigheid<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="4114524937989710624">Je ziet voorgestelde bestanden om makkelijk terug te gaan naar je meest recente activiteit in Google Drive.
         <ph name="BREAK" /><ph name="BREAK" />
 Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het gedeelte Chrome aanpassen.</translation>
@@ -4711,6 +4734,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4473996011558324141">tijd wordt geschat</translation>
 <translation id="4474155171896946103">Bookmark toevoegen aan alle tabbladen...</translation>
 <translation id="4475299370877036544">Deze actie schendt misschien het beleid van je organisatie</translation>
+<translation id="4476198534886170024">Toegestaan. Zet <ph name="LINK_BEGIN" />cameratoegang voor het systeem<ph name="LINK_END" /> aan.</translation>
 <translation id="4476590490540813026">Atlete</translation>
 <translation id="4476659815936224889">Je kunt een QR-scanner-app op je telefoon of sommige camera-apps gebruiken om deze code te scannen.</translation>
 <translation id="4477015793815781985">Neem Ctrl, Alt of ⌘ op</translation>
@@ -5028,6 +5052,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4716483597559580346">Powerwash voor extra beveiliging</translation>
 <translation id="4716715661140829720">Niet genoeg opslagruimte</translation>
 <translation id="471759229191973607">Thema wijzigen</translation>
+<translation id="4719276504493791870">Apps mogen je locatie niet gebruiken</translation>
 <translation id="4722735765955348426">Wachtwoord voor <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> deelt je scherm.</translation>
 <translation id="4722989931633062466">Geen toestemming om externe inlogprompts te tonen</translation>
@@ -5058,6 +5083,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4742795653798179840">Verwijderde Chrome-gegevens</translation>
 <translation id="4742970037960872810">Markering verwijderen</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Meer informatie over hoe je apps updatet<ph name="END_LINK" /></translation>
+<translation id="4743990041512863976">Toegestaan: <ph name="PERMISSION_DETAILS" />. Zet <ph name="LINK_BEGIN" />microfoontoegang voor het systeem<ph name="LINK_END" /> aan.</translation>
 <translation id="4744268813103118742">Naar site</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Geluid van site aanzetten}other{Geluid van sites aanzetten}}</translation>
@@ -5240,6 +5266,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4879491255372875719">Automatisch (standaard)</translation>
 <translation id="4880315242806573837">Beveiligingsupdates worden binnenkort beëindigd. Upgrade naar een nieuwe Chromebook.</translation>
 <translation id="4880827082731008257">Geschiedenis doorzoeken</translation>
+<translation id="4881632956374597321">Zowel apps en websites met locatierechten als systeemservices kunnen je locatie gebruiken. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="4881685975363383806">Niet opnieuw herinneren</translation>
 <translation id="4881695831933465202">Openen</translation>
 <translation id="4882312758060467256">Heeft toegang tot deze site</translation>
@@ -5572,6 +5599,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5143374789336132547">De extensie <ph name="EXTENSION_NAME" /> heeft gewijzigd welke pagina je ziet als je op de Homepage-knop klikt.</translation>
 <translation id="5143612243342258355">Dit bestand is gevaarlijk</translation>
 <translation id="5143712164865402236">Volledig scherm openen</translation>
+<translation id="5143960098217235598">Zo geef je microfoontoegang aan apps, websites met microfoonrechten en systeemservices.</translation>
 <translation id="5144815231216017543">Alt + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="5145464978649806571">Als je wegloopt bij je apparaat, wordt het scherm automatisch vergrendeld. Het scherm blijft langer actief als je je voor het apparaat bevindt. Als het vergrendelscherm uitstaat, wordt de slaapstand van je apparaat geactiveerd in plaats van de vergrendeling.</translation>
 <translation id="514575469079499857">Je IP-adres gebruiken om je locatie te bepalen (standaard)</translation>
@@ -5634,6 +5662,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5186788525428341874">Je kunt deze toegangssleutel gebruiken om sneller in te loggen op al je apparaten. Deze wordt opgeslagen in Google Wachtwoordmanager voor <ph name="ACCOUNT_NAME" />.</translation>
 <translation id="5187641678926990264">Pagina &amp;installeren als app...</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
+<translation id="5188648870018555788">Gebruik de locatie. Sta toe dat ChromeOS- en Android-apps, websites en services met locatierechten de locatie van je apparaat gebruiken. Locatienauwkeurigheid biedt een nauwkeurigere locatie voor Android-apps en -services. Hiervoor verwerkt Google periodiek gegevens over apparaatsensoren en draadloze signalen van je apparaat om bij te dragen aan draadloze signaallocaties op basis van crowdsourcing. Deze worden zonder je te identificeren gebruikt om de locatienauwkeurigheid en services op een fysieke locatie te verbeteren. Ze worden ook gebruikt om de services van Google te verbeteren, aan te bieden en te onderhouden op basis van de gerechtvaardigde belangen van Google en derden om aan de behoeften van gebruikers te voldoen. <ph name="BEGIN_LINK1" />Meer informatie over het gebruik van locatie<ph name="END_LINK1" /></translation>
 <translation id="5190577235024772869"><ph name="USED_SPACE" /> in gebruik</translation>
 <translation id="5190926251776387065">Poort activeren</translation>
 <translation id="5190959794678983197">Geen microfoon</translation>
@@ -5679,6 +5708,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5225324770654022472">Snelle link voor apps bekijken</translation>
 <translation id="52254442782792731">Huidige zichtbaarheidsinstelling is nog niet ingesteld</translation>
 <translation id="5225463052809312700">Camera aanzetten</translation>
+<translation id="5226731562812684363">Websites mogen je locatie niet gebruiken</translation>
 <translation id="5227679487546032910">Standaard blauwgroene avatar</translation>
 <translation id="5228245824943774148"><ph name="NUM_DEVICES_CONNECTED" /> verbonden apparaten</translation>
 <translation id="5228579091201413441">Synchronisatie aanzetten</translation>
@@ -5768,6 +5798,7 @@ Zichtbaar als <ph name="DEVICE_TYPE" />…</translation>
 <translation id="5291739252352359682">Maakt automatisch een ondertiteling voor media in de Chrome-browser (momenteel alleen beschikbaar in het Engels). Audio en ondertiteling worden lokaal verwerkt en worden nooit doorgestuurd vanaf het apparaat.</translation>
 <translation id="529175790091471945">Dit apparaat formatteren</translation>
 <translation id="529296195492126134">Kortstondige modus wordt niet ondersteund. Neem contact op met je beheerder.</translation>
+<translation id="5293043095535566171">Locatietoegang aanzetten?</translation>
 <translation id="5293170712604732402">Instellingen terugzetten naar de oorspronkelijke standaardwaarden</translation>
 <translation id="5294068591166433464">Als een site je wachtwoord probeert te stelen of als je een schadelijk bestand downloadt, kan Chrome ook URL's, inclusief delen van de paginacontent, naar Google sturen</translation>
 <translation id="5294097441441645251">Moet beginnen met een kleine letter of underscore</translation>
@@ -6549,6 +6580,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="5885314688092915589">Je organisatie beheert dit profiel</translation>
 <translation id="5885470467814103868">Scan starten</translation>
 <translation id="5885631909150054232">Token kopiëren</translation>
+<translation id="5886000783338788034">Locatie staat uit in de ChromeOS-instellingen</translation>
 <translation id="5886009770935151472">Vinger 1</translation>
 <translation id="5886112770923972514">Maak verbinding en stel apparaten in de buurt makkelijk in via Snel koppelen</translation>
 <translation id="5886384907280980632">Nu uitzetten</translation>
@@ -6955,6 +6987,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6200151268994853226">Extensie beheren</translation>
 <translation id="6201608810045805374">Dit account verwijderen?</translation>
 <translation id="6202304368170870640">Je kunt je pincode gebruiken om in te loggen of je apparaat te ontgrendelen.</translation>
+<translation id="6202935572248792580">Toegestaan. Sluit een microfoon aan op je apparaat.</translation>
 <translation id="6203247599828309566">Je hebt een notitie voor een wachtwoord op deze site opgeslagen. Klik op het sleutelicoon om de notitie te bekijken.</translation>
 <translation id="6205314730813004066">Advertentieprivacy</translation>
 <translation id="6205993460077903908"><ph name="WINDOW_TITLE" />: microfoonopname</translation>
@@ -7009,6 +7042,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6238923052227198598">Laatste notitie op vergrendelscherm laten staan</translation>
 <translation id="6238982280403036866">Toestemming om JavaScript te gebruiken</translation>
 <translation id="6239558157302047471">&amp;Frame opnieuw laden</translation>
+<translation id="6240637845286751292">Toegestaan. Zet <ph name="LINK_BEGIN" />locatietoegang voor het systeem<ph name="LINK_END" /> aan.</translation>
 <translation id="6240821072888636753">Altijd vragen</translation>
 <translation id="6240964651812394252">Als je Google Wachtwoordmanager wilt gebruiken met je besturingssysteem, start je Chrome opnieuw en geef je toegang tot de wachtwoordmanager van je computer. Je tabbladen worden opnieuw geopend na de herstart.</translation>
 <translation id="6241530762627360640">Toegang krijgen tot informatie over Bluetooth-apparaten die zijn gekoppeld met je systeem en Bluetooth-apparaten in de buurt detecteren.</translation>
@@ -7077,6 +7111,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="628352644014831790">4 seconden</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> wordt niet vaak gedownload en kan gevaarlijk zijn.</translation>
 <translation id="6285770818046456882">Het apparaat dat met je deelt, heeft de overdracht geannuleerd</translation>
+<translation id="628699625505156622">Gebruik de locatie. Sta toe dat ChromeOS- en Android-apps, websites en services met locatierechten de locatie van dit apparaat gebruiken. Locatienauwkeurigheid biedt een nauwkeurigere locatie voor Android-apps en -services. Hiervoor verwerkt Google periodiek gegevens over apparaatsensoren en draadloze signalen van dit apparaat om bij te dragen aan draadloze signaallocaties op basis van crowdsourcing. Deze worden zonder een bepaalde persoon te identificeren gebruikt om de locatienauwkeurigheid en services op een fysieke locatie te verbeteren. Ze worden ook gebruikt om de services van Google te verbeteren, aan te bieden en te onderhouden op basis van de gerechtvaardigde belangen van Google en derden om aan de behoeften van gebruikers te voldoen. <ph name="BEGIN_LINK1" />Meer informatie over het gebruik van locatie<ph name="END_LINK1" /></translation>
 <translation id="628726841779494414">Beheer je printers in de printerinstellingen</translation>
 <translation id="6287828400772161253">Android-telefoon (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">Geen beschikbare apparaten die delen in de buurt. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
@@ -7601,6 +7636,7 @@ Als <ph name="SUPERVISED_USER_NAME" /> hulp nodig heeft bij het lezen, laat je k
 <translation id="6703613667804166784">Dit bestand kan schadelijk zijn voor je persoonlijke en socialenetwerk-accounts, waaronder <ph name="USER_EMAIL" /></translation>
 <translation id="6707122714992751648">Diagnostische tests voor ChromeOS uitvoeren</translation>
 <translation id="6707389671160270963">SSL-clientcertificaat</translation>
+<translation id="6707671917294473995">Websites mogen je camera niet gebruiken</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> en 1 ander tabblad}other{<ph name="PAGE_TITLE" /> en # andere tabbladen}}</translation>
 <translation id="6709133671862442373">Nieuws</translation>
 <translation id="6709357832553498500">Verbinding maken via <ph name="EXTENSIONNAME" /></translation>
@@ -7610,6 +7646,7 @@ Als <ph name="SUPERVISED_USER_NAME" /> hulp nodig heeft bij het lezen, laat je k
 <translation id="6713233729292711163">Werkprofiel toevoegen</translation>
 <translation id="6713441551032149301">Houd de Launcher-toets ingedrukt om te schakelen tussen functietoetsen en systeemtoetsen op de bovenste rij</translation>
 <translation id="6713668088933662563">Nooit aanbieden om deze talen te vertalen</translation>
+<translation id="6715735940363172819">Websites mogen je microfoon niet gebruiken</translation>
 <translation id="6715803357256707211">Er is een fout opgetreden tijdens de installatie van je Linux-app. Klik op de melding voor meer informatie.</translation>
 <translation id="6716798148881908873">De netwerkverbinding is verbroken. Check je netwerkverbinding of probeer een ander wifi-netwerk.</translation>
 <translation id="6718849325281682232">De kleuren van het Chrome-thema zijn vernieuwd en werken voor iedereen beter, of je nu de donkere of lichte modus gebruikt</translation>
@@ -8256,6 +8293,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7210499381659830293">Printers via extensie</translation>
 <translation id="7211783048245131419">Er is nog geen schakelaar toegewezen</translation>
 <translation id="7212097698621322584">Voer je huidige pincode in om deze te wijzigen. Als je je pincode niet weet, moet je de beveiligingssleutel resetten en vervolgens een nieuwe pincode maken.</translation>
+<translation id="7214047272988222011">Toegestaan: <ph name="PERMISSION_DETAILS" />. Zet <ph name="LINK_BEGIN" />cameratoegang voor het systeem<ph name="LINK_END" /> aan.</translation>
 <translation id="721490496276866468">Wachtwoorden importeren</translation>
 <translation id="7218514093816577632">Zorg dat meldingen aanstaan op je <ph name="DEVICE_NAME" />.</translation>
 <translation id="7219254577985949841">Sitegegevens verwijderen?</translation>
@@ -8632,6 +8670,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7489761397368794366">Bellen vanaf je apparaat</translation>
 <translation id="749028671485790643">Persoon <ph name="VALUE" /></translation>
 <translation id="7490683549040131791">Resterende wachtwoorden checken</translation>
+<translation id="7490938136316476492">Locatie is uitgezet. Je ChromeOS-apparaat heeft geen toegang tot je locatie. Je algemene locatie is misschien nog wel zichtbaar voor apps en websites via bijvoorbeeld je IP-adres. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="7491962110804786152">tab</translation>
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{1 cookie}other{{NUM_COOKIES} cookies}}</translation>
 <translation id="7493386493263658176">De extensie <ph name="EXTENSION_NAME" /> kan alle tekst verzamelen die je typt, waaronder persoonsgegevens zoals wachtwoorden en creditcardnummers. Wil je deze extensie gebruiken?</translation>
@@ -8735,6 +8774,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7573172247376861652">Acculading</translation>
 <translation id="7573594921350120855">Sites gebruiken je videocamera meestal voor communicatiefuncties zoals videochatten</translation>
 <translation id="7575272930307342804">Besturingselementen voor navigatie</translation>
+<translation id="757660455834887988">Toegestaan: <ph name="PERMISSION_DETAILS" />. Sluit een camera aan op je apparaat.</translation>
 <translation id="7576690715254076113">Sorteren</translation>
 <translation id="7576976045740938453">Er is een probleem opgetreden met het demomodus-account.</translation>
 <translation id="7578137152457315135">Vingerafdrukinstellingen</translation>
@@ -8992,6 +9032,7 @@ Je kunt instellingen voor deze kaart beheren via het kaartmenu of meer opties be
 <translation id="7758450972308449809">De grenzen van je display aanpassen</translation>
 <translation id="7758884017823246335">Zoekopdracht op site toevoegen</translation>
 <translation id="7759809451544302770">Optioneel</translation>
+<translation id="7760176388948986635">Sta toe dat ChromeOS- en Android-apps, websites en services met locatierechten de locatie van dit apparaat gebruiken. Locatienauwkeurigheid biedt een nauwkeurigere locatie voor Android-apps en -services. Hiervoor verwerkt Google periodiek gegevens over apparaatsensoren en draadloze signalen van dit apparaat om bij te dragen aan draadloze signaallocaties op basis van crowdsourcing. Deze worden zonder een bepaalde persoon te identificeren gebruikt om de locatienauwkeurigheid en services op een fysieke locatie te verbeteren. Ze worden ook gebruikt om de services van Google te verbeteren, aan te bieden en te onderhouden op basis van de gerechtvaardigde belangen van Google en derden om aan de behoeften van gebruikers te voldoen.</translation>
 <translation id="7762024824096060040">Kan dit account niet gebruiken</translation>
 <translation id="7764225426217299476">Adres toevoegen</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> van <ph name="DOWNLOAD_DOMAIN" /></translation>
@@ -9047,7 +9088,6 @@ Zichtbaar voor apparaten in de buurt als <ph name="QUICK_START_DEVICE_DISPLAY_NA
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7788948939674438635">Niet toestaan dat sites je toetsenbord vergrendelen</translation>
 <translation id="7789963078219276159">Achtergrond van homepage is gewijzigd in <ph name="CATEGORY" />.</translation>
-<translation id="7790689625219600437">Pdf-OCR</translation>
 <translation id="7791269138074599214">Invoermethode</translation>
 <translation id="7791429245559955092">Deze app wordt geïnstalleerd in je huidige gebruikte Chrome-profiel</translation>
 <translation id="7791436592012979144">Omgekeerd scrollen staat aan</translation>
@@ -9111,6 +9151,7 @@ Zichtbaar voor apparaten in de buurt als <ph name="QUICK_START_DEVICE_DISPLAY_NA
 <translation id="7839051173341654115">Media bekijken/back-up maken</translation>
 <translation id="7839192898639727867">Sleutel-ID van certificaatonderwerp</translation>
 <translation id="7839696104613959439">Netwerkselectie tonen</translation>
+<translation id="7840222916565569061">Apps mogen je camera niet gebruiken</translation>
 <translation id="7842062217214609161">Geen snelkoppeling</translation>
 <translation id="7842692330619197998">Ga naar g.co/ChromeEnterpriseAccount als je een nieuw account moet maken.</translation>
 <translation id="784273751836026224">Linux verwijderen</translation>
@@ -9410,6 +9451,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8053278772142718589">Bestanden van het type PKCS #12</translation>
 <translation id="8053390638574070785">Laad pagina opnieuw</translation>
 <translation id="8053629544194355894">Zet synchronisatie aan zodat Chrome tabbladgroepen kan voorstellen</translation>
+<translation id="8054500940978949009">Toegestaan. Zet <ph name="LINK_BEGIN" />microfoontoegang voor het systeem<ph name="LINK_END" /> aan.</translation>
 <translation id="8054517699425078995">Dit type bestand kan schade toebrengen aan je apparaat. Wil je <ph name="FILE_NAME" /> toch blijven gebruiken?</translation>
 <translation id="8054563304616131773">Voer een geldig e-mailadres in</translation>
 <translation id="8054609631325628928">Met deze nummers kun je de service activeren</translation>
@@ -9802,6 +9844,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8336739000755212683">Accountafbeelding van apparaat wijzigen</translation>
 <translation id="8337020675372081178">{HOURS,plural, =1{Dit apparaat wordt 1 uur bewaard en je kunt de volgende keer verbinding maken zonder een code. Dit wordt ingesteld door je beheerder.}other{Dit apparaat wordt {HOURS} uur bewaard en je kunt de volgende keer verbinding maken zonder een code. Dit wordt ingesteld door je beheerder.}}</translation>
 <translation id="8337399713761067085">Je bent momenteel offline</translation>
+<translation id="8338427544764842461">Je tabbladgroepen worden hier opgeslagen en worden geüpdatet op al je ingelogde apparaten</translation>
 <translation id="8338952601723052325">Website van ontwikkelaar</translation>
 <translation id="8339288417038613756">Weergave- en tekstgrootte</translation>
 <translation id="833986336429795709">Kies een app om deze link te openen</translation>
@@ -10121,6 +10164,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8584843865238667486">HID-apparaten met gebruik <ph name="USAGE" /> van gebruikspagina <ph name="USAGE_PAGE" /></translation>
 <translation id="8585480574870650651">Crostini verwijderen</translation>
 <translation id="8585841788766257444">De hieronder vermelde sites volgen een aangepaste instelling in plaats van de standaardinstelling</translation>
+<translation id="8586421813321819377">Sta toe dat ChromeOS- en Android-apps, websites en services met locatierechten de locatie van je apparaat gebruiken. Locatienauwkeurigheid biedt een nauwkeurigere locatie voor Android-apps en -services. Hiervoor verwerkt Google periodiek gegevens over apparaatsensoren en draadloze signalen van je apparaat om bij te dragen aan draadloze signaallocaties op basis van crowdsourcing. Deze worden zonder je te identificeren gebruikt om de locatienauwkeurigheid en services op een fysieke locatie te verbeteren. Ze worden ook gebruikt om de services van Google te verbeteren, aan te bieden en te onderhouden op basis van de gerechtvaardigde belangen van Google en derden om aan de behoeften van gebruikers te voldoen.</translation>
 <translation id="8587660243683137365">Deze pagina installeren als app</translation>
 <translation id="8588866096426746242">Profielstatistieken bekijken</translation>
 <translation id="8588868914509452556"><ph name="WINDOW_TITLE" /> - VR presenteren op headset</translation>
@@ -10342,6 +10386,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8736288397686080465">Deze site is geüpdatet op de achtergrond.</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Kies de taal waarnaar je de pagina wilt vertalen</translation>
+<translation id="8737966899544698733">Locatienauwkeurigheid (alleen Android)</translation>
 <translation id="8738418093147087440">Zoeken op landen, taal of invoernamen</translation>
 <translation id="8740086188450289493">Wachtwoord van Google-account gebruiken</translation>
 <translation id="8740247629089392745">Je kunt deze Chromebook aan <ph name="SUPERVISED_USER_NAME" /> geven. Het instellen is bijna afgerond. Daarna is het tijd om te verkennen.</translation>
@@ -10414,12 +10459,16 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8793390639824829328">Sites gebruiken deze functie om te scrollen en te zoomen op gedeelde tabbladen</translation>
 <translation id="879413103056696865">Wanneer de hotspot aanstaat, doet je <ph name="PHONE_NAME" /> het volgende:</translation>
 <translation id="8795916974678578410">Nieuw venster</translation>
+<translation id="8796907593900732741">Alleen systeemservices kunnen je locatie gebruiken. Je algemene locatie is misschien nog wel zichtbaar voor apps en websites via bijvoorbeeld je IP-adres. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="8796919761992612392">Chrome &amp;personaliseren</translation>
 <translation id="8797459392481275117">Deze site nooit vertalen</translation>
 <translation id="8798099450830957504">Standaard</translation>
 <translation id="8800034312320686233">Werkt de site niet?</translation>
 <translation id="8803526663383843427">Als dit aanstaat</translation>
 <translation id="8803953437405899238">Je kunt met één klik een nieuw tabblad openen</translation>
+<translation id="8803972455568900492"><ph name="BEGIN_PARAGRAPH1" />Als Locatienauwkeurigheid aanstaat, worden gegevens over draadloze signalen, zoals wifi-toegangspunten en mobiele-netwerktorens, samen met de gegevens van apparaatsensoren, zoals de versnellingsmeter en gyroscoop, gebruikt om een nauwkeurigere apparaatlocatie te schatten, die Android-apps en -services gebruiken om locatiegebaseerde functies te bieden. Hiervoor verzamelt Google periodiek gegevens over apparaatsensoren en draadloze signalen bij jou in de buurt om bij te dragen aan draadloze signaallocaties op basis van crowdsourcing.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Google gebruikt deze gegevens zonder je te identificeren om de locatienauwkeurigheid en services op een fysieke locatie te verbeteren en om de services van Google te verbeteren, aan te bieden en te onderhouden. We verwerken deze gegevens op basis van de gerechtvaardigde belangen van Google en derden om aan de behoeften van gebruikers te voldoen.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Je kunt Locatietoegankelijkheid op elk moment uitzetten in de locatie-instellingen van je apparaat via Instellingen &gt; Privacy en beveiliging &gt; Privacyopties &gt; Locatietoegang &gt; Geavanceerde locatie-instellingen. Als Locatienauwkeurigheid uitstaat, worden er geen gegevens voor locatienauwkeurigheid verzameld. Voor Android-apps en -services wordt alleen het IP-adres gebruikt (indien beschikbaar) om de locatie van je apparaat te bepalen. Dit kan van invloed zijn op de beschikbaarheid en nauwkeurigheid van locaties voor Android-apps en -services zoals Google Maps.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8804419452060773146">Wordt geopend in</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{Tabblad verplaatsen naar ander venster}other{Tabbladen verplaatsen naar ander venster}}</translation>
 <translation id="8805140816472474147">Bevestig de synchronisatie-instellingen om de synchronisatie te starten.</translation>
@@ -10840,6 +10889,7 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="9096776523567481218">niet lokaal geïnstalleerd</translation>
 <translation id="9098860402274800697">Google Play- en Android-apps verwijderen</translation>
 <translation id="9099220545925418560">Gebaseerd op je browsegeschiedenis. Deze instelling staat uit.</translation>
+<translation id="910000385680858937">Toegestaan: <ph name="PERMISSION_DETAILS" />. Sluit een microfoon aan op je apparaat.</translation>
 <translation id="9100416672768993722">Als je wilt overschakelen naar de laatstgebruikte invoermethode, druk je op <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR" /><ph name="BEGIN_SPACE" />spatiebalk<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="9100765901046053179">Geavanceerde instellingen</translation>
 <translation id="9101691533782776290">App starten</translation>

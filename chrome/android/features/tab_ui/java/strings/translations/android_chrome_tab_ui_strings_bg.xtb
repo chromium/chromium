@@ -100,7 +100,6 @@
 <translation id="6333260925957816943">Информация за този магазин</translation>
 <translation id="6381032505162537930">Тук ще намерите групите си раздели</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Разгрупиране на <ph name="TABS_COUNT_ONE" /> избран раздел}other{Разгрупиране на <ph name="TABS_COUNT_MANY" /> избрани раздела}}</translation>
-<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Можете да намерите затворените си раздели в секцията „Скорошни раздели“ в главното меню на Chrome. Разделът ви в режим „инкогнито“ няма да е налице.}other{Можете да намерите затворените си раздели в секцията „Скорошни раздели“ в главното меню на Chrome. # раздела в режим „инкогнито“ няма да са налице.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> раздел}other{<ph name="TABS_COUNT_MANY" /> раздела}}</translation>
 <translation id="6549021453810473782">Преглед на информацията за магазина</translation>
 <translation id="6557858706263317126">+ <ph name="HIDDEN_TABS_COUNT" /></translation>

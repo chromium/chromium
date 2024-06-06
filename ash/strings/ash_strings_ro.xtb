@@ -178,6 +178,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1610778689852195798">Anulează</translation>
 <translation id="1611993646327628135">Activat</translation>
 <translation id="1620510694547887537">Cameră</translation>
+<translation id="1623768535032616219">Restrânge Google Classroom</translation>
 <translation id="1632985212731562677">Accesul prin comutare poate fi dezactivat din Setări &gt; Accesibilitate.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> dispozitive</translation>
 <translation id="1639239467298939599">Se încarcă</translation>
@@ -303,6 +304,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2198625180564913276">Se adaugă profilul. Poate dura câteva minute.</translation>
 <translation id="219905428774326614">Lansator, toate aplicațiile</translation>
 <translation id="2201071101391734388">Fotografia recentă <ph name="INDEX" /> din <ph name="TOTAL_COUNT" />.</translation>
+<translation id="2201687081523799384">Restrânge Google Tasks</translation>
 <translation id="2208323208084708176">Modul Desktop unificat</translation>
 <translation id="2220572644011485463">PIN sau parolă</translation>
 <translation id="2222841058024245321">Desktop 7</translation>
@@ -364,6 +366,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2427507373259914951">Clic stânga</translation>
 <translation id="2429753432712299108">Dispozitivul Bluetooth „<ph name="DEVICE_NAME" />” solicită permisiunea de a se conecta. Înainte de a continua, verificați dacă această parolă apare pe dispozitivul respectiv: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Afișați parola</translation>
+<translation id="2437771564543046790">Nivel scăzut al bateriei. Economisirea bateriei este activată</translation>
 <translation id="243878895369688216">Deschis ieri</translation>
 <translation id="2440978926514840421">S-a înregistrat GIF-ul</translation>
 <translation id="2441427462554639370">Înregistrarea s-a oprit din cauza epuizării spațiului de stocare</translation>
@@ -1200,6 +1203,7 @@ Niciun dispozitiv conectat.</translation>
 <translation id="550391772491508736">Reia proiectarea</translation>
 <translation id="5506975627792768506">Activează sau dezactivează lupa</translation>
 <translation id="5512042095225963688">Șterge cuvântul anterior</translation>
+<translation id="5519005148254860683">Extinde Google Tasks</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Administratorul a eliminat toate profilurile eSIM. Contactează administratorul pentru mai multe informații.</translation>
 <translation id="5520909879404821039">Bună în franceză</translation>
@@ -1408,6 +1412,7 @@ Niciun dispozitiv conectat.</translation>
 <translation id="6200515304866777730">Nu este acceptată de aplicație</translation>
 <translation id="6210042900243040400">Conectează <ph name="NAME" /> salvat anterior în <ph name="EMAIL" /></translation>
 <translation id="6213808132343683860">Fă o captură de ecran sau o înregistrare de ecran parțială</translation>
+<translation id="621606890568890214">Extinde Google Classroom</translation>
 <translation id="6220928844947387476">Acum poți să te înregistrezi pe tine și ecranul tău în același timp</translation>
 <translation id="622484624075952240">Jos</translation>
 <translation id="6228457605945141550">Redu luminozitatea</translation>

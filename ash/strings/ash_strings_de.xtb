@@ -178,6 +178,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1610778689852195798">„Rückgängig machen“</translation>
 <translation id="1611993646327628135">An</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1623768535032616219">Google Classroom minimieren</translation>
 <translation id="1632985212731562677">Der Schalterzugriff kann unter "Einstellungen" &gt; "Bedienungshilfen" deaktiviert werden.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> Geräte</translation>
 <translation id="1639239467298939599">Wird geladen</translation>
@@ -303,6 +304,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2198625180564913276">Profil wird hinzugefügt. Das kann einige Minuten dauern.</translation>
 <translation id="219905428774326614">Launcher, alle Apps</translation>
 <translation id="2201071101391734388">Vor Kurzem aufgenommenes Foto <ph name="INDEX" /> von <ph name="TOTAL_COUNT" />.</translation>
+<translation id="2201687081523799384">Google Tasks minimieren</translation>
 <translation id="2208323208084708176">Unified Desktop-Modus</translation>
 <translation id="2220572644011485463">PIN oder Passwort</translation>
 <translation id="2222841058024245321">Desktop 7</translation>
@@ -364,6 +366,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2427507373259914951">Linksklick</translation>
 <translation id="2429753432712299108">Das Bluetooth-Gerät „<ph name="DEVICE_NAME" />“ bittet um Erlaubnis für Kopplung. Bevor du akzeptierst, überprüfe, ob folgender Zugangscode auf dem Gerät angezeigt wird: <ph name="PASSKEY" />.</translation>
 <translation id="2435457462613246316">Passwort anzeigen</translation>
+<translation id="2437771564543046790">Niedriger Akkustand. Energiesparmodus ist aktiviert.</translation>
 <translation id="243878895369688216">Gestern geöffnet</translation>
 <translation id="2440978926514840421">GIF aufgezeichnet</translation>
 <translation id="2441427462554639370">Die Aufnahme wurde aufgrund des sehr geringen Speicherplatzes beendet</translation>
@@ -1200,6 +1203,7 @@ Keine Geräte verbunden.</translation>
 <translation id="550391772491508736">Stream fortsetzen</translation>
 <translation id="5506975627792768506">Lupe aktivieren oder deaktivieren</translation>
 <translation id="5512042095225963688">Vorheriges Wort löschen</translation>
+<translation id="5519005148254860683">Google Tasks maximieren</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Dein Administrator hat alle eSIM-Profile entfernt. Weitere Informationen erhältst du von deinem Administrator.</translation>
 <translation id="5520909879404821039">Hallo auf Französisch</translation>
@@ -1408,6 +1412,7 @@ Keine Geräte verbunden.</translation>
 <translation id="6200515304866777730">Wird von der App nicht unterstützt</translation>
 <translation id="6210042900243040400"><ph name="NAME" /> verbinden, wurde(n) bereits in <ph name="EMAIL" /> gespeichert</translation>
 <translation id="6213808132343683860">Screenshot oder Bildschirmaufzeichnung eines Bildschirmausschnitts erstellen</translation>
+<translation id="621606890568890214">Google Classroom maximieren</translation>
 <translation id="6220928844947387476">Jetzt kannst du dich selbst und deinen Bildschirm gleichzeitig aufnehmen</translation>
 <translation id="622484624075952240">Abwärts</translation>
 <translation id="6228457605945141550">Helligkeit verringern</translation>

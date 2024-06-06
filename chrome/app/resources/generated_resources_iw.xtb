@@ -1757,6 +1757,7 @@
     <ph name="BEGIN_PARAGRAPH2" />אין אפשרות לבטל את ההתקנה לאחר שהחלה.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">החלפת נתונים עם כל מכשיר בדומיינים: <ph name="DOMAINS" /></translation>
 <translation id="2270666014403455717">הקצאת מתג לפעולה "בחירה"</translation>
+<translation id="2271452184061378400">קבוצות הכרטיסיות שלך נשמרות כאן</translation>
 <translation id="2271986192355138465">כך מתקינים אפליקציות אינטרנט</translation>
 <translation id="2272430695183451567">הוקצו אפס מתגים</translation>
 <translation id="2272570998639520080">כוס מרטיני</translation>
@@ -1995,7 +1996,6 @@
 <translation id="2435248616906486374">הרשת מנותקת</translation>
 <translation id="2435457462613246316">הצגת סיסמה</translation>
 <translation id="2436385001956947090">העתקת &amp;הקישור</translation>
-<translation id="2436746748253887661">‏הפעולה הזו מאפשרת לשירותי מערכת שקיבלו הרשאה להשתמש במיקום שלך. שירות המיקום משתמש במקורות כמו Wi‑Fi, רשתות סלולריות וחיישנים כדי לעזור בהערכת המיקום של המכשיר שלך. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="2438853563451647815">אין מדפסת מחוברת</translation>
 <translation id="2439152382014731627">איפוס הסיסמה ל-<ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> בטעינה</translation>
@@ -9090,7 +9090,6 @@
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7788948939674438635">לא לאפשר לאתרים לנעול את המקלדת</translation>
 <translation id="7789963078219276159">הרקע של דף הפתיחה הוחלף, ועכשיו מופיעה בו התמונה<ph name="CATEGORY" />.</translation>
-<translation id="7790689625219600437">PDF OCR</translation>
 <translation id="7791269138074599214">שיטת הקלט</translation>
 <translation id="7791429245559955092">‏האפליקציה הזו תותקן בפרופיל ב-Chrome שבשימוש כרגע</translation>
 <translation id="7791436592012979144">הגלילה ההפוכה מופעלת</translation>
@@ -9848,6 +9847,7 @@
 <translation id="8336739000755212683">שינוי תמונת החשבון במכשיר</translation>
 <translation id="8337020675372081178">{HOURS,plural, =1{המכשיר הזה יישמר למשך שעה אחת ותהיה לך אפשרות להתחבר ללא קוד בפעם הבאה. ההגדרה נקבעת על ידי האדמין שלך.}one{המכשיר הזה יישמר למשך {HOURS} שעות ותהיה לך אפשרות להתחבר ללא קוד בפעם הבאה. ההגדרה נקבעת על ידי האדמין שלך.}two{המכשיר הזה יישמר למשך שעתיים ({HOURS}) ותהיה לך אפשרות להתחבר ללא קוד בפעם הבאה. ההגדרה נקבעת על ידי האדמין שלך.}other{המכשיר הזה יישמר למשך {HOURS} שעות ותהיה לך אפשרות להתחבר ללא קוד בפעם הבאה. ההגדרה נקבעת על ידי האדמין שלך.}}</translation>
 <translation id="8337399713761067085">אינך מחובר לאינטרנט כרגע</translation>
+<translation id="8338427544764842461">קבוצות הכרטיסיות שלך נשמרות כאן ומתעדכנות בכל המכשירים שמחוברים לחשבון</translation>
 <translation id="8338952601723052325">אתר האינטרנט של המפתח</translation>
 <translation id="8339288417038613756">גודל הטקסט והתצוגה</translation>
 <translation id="833986336429795709">צריך לבחור אפליקציה כדי לפתוח את הקישור הזה</translation>

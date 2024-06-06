@@ -1755,6 +1755,7 @@
     <ph name="BEGIN_PARAGRAPH2" />وقتی نصب شروع شود، نمی‌توان آن را لغو کرد.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">تباد داده با هر دستگاهی در دامنه‌های: <ph name="DOMAINS" /></translation>
 <translation id="2270666014403455717">اختصاص دادن کلید به کنش «انتخاب»</translation>
+<translation id="2271452184061378400">گروه‌های برگه شما اینجا ذخیره می‌شود</translation>
 <translation id="2271986192355138465">آشنایی با نحوه نصب برنامه‌های وب</translation>
 <translation id="2272430695183451567">۰ کلید اختصاص داده شده است</translation>
 <translation id="2272570998639520080">جام مارتینی</translation>
@@ -1993,7 +1994,6 @@
 <translation id="2435248616906486374">شبکه قطع شد</translation>
 <translation id="2435457462613246316">نمایش گذرواژه</translation>
 <translation id="2436385001956947090">کپی کردن پیوند</translation>
-<translation id="2436746748253887661">‏این کار به خدمات سیستم اجازه می‌دهد از مکان شما استفاده کند. «مکان» ممکن است برای تخمین زدن مکان دستگاهتان از منابعی مثل Wi-Fi، شبکه‌های تلفن همراه، و حسگرها استفاده کند. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="2438853563451647815">به چاپگر متصل نیست</translation>
 <translation id="2439152382014731627">بازنشانی گذرواژه <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600">درحال بار کردن <ph name="WINDOW_TITLE" /></translation>
@@ -9085,7 +9085,6 @@
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7788948939674438635">به سایت‌ها اجازه داده نشود صفحه‌کلید را قفل کنند</translation>
 <translation id="7789963078219276159">پس‌زمینه صفحه شروع به <ph name="CATEGORY" /> تغییر کرد.</translation>
-<translation id="7790689625219600437">PDF OCR</translation>
 <translation id="7791269138074599214">روش ورودی</translation>
 <translation id="7791429245559955092">‏این برنامه در نمایه Chrome که اکنون استفاده می‌کنید نصب خواهد شد</translation>
 <translation id="7791436592012979144">پیمایش معکوس فعال است</translation>
@@ -9841,6 +9840,7 @@
 <translation id="8336739000755212683">تغییر تصویر حساب دستگاه</translation>
 <translation id="8337020675372081178">{HOURS,plural, =1{این دستگاه به‌مدت یک ساعت ذخیره خواهد شد و دفعه بعد می‌توانید بدون کد متصل شوید. سرپرستتان این مورد را تنظیم کرده است.}one{این دستگاه به‌مدت {HOURS} ساعت ذخیره خواهد شد و دفعه بعد می‌توانید بدون کد متصل شوید. سرپرستتان این مورد را تنظیم کرده است.}other{این دستگاه به‌مدت {HOURS} ساعت ذخیره خواهد شد و دفعه بعد می‌توانید بدون کد متصل شوید. سرپرستتان این مورد را تنظیم کرده است.}}</translation>
 <translation id="8337399713761067085">در حال حاضر شما آفلاين هستید</translation>
+<translation id="8338427544764842461">گروه‌های برگه شما اینجا ذخیره می‌شود و در همه دستگاه‌های واردشده به حساب به‌روز می‌شود</translation>
 <translation id="8338952601723052325">وب‌سایت برنامه‌نویس</translation>
 <translation id="8339288417038613756">اندازه نوشتار و نمایش</translation>
 <translation id="833986336429795709">برای باز کردن این پیوند، برنامه‌ای انتخاب کنید</translation>

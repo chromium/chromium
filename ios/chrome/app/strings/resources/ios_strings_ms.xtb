@@ -5,6 +5,7 @@
 <translation id="1013952917065545813">Anda boleh kembali ke sini untuk membuka semula tab yang baru anda tutup</translation>
 <translation id="1016495303386450659">Item dikemas kini</translation>
 <translation id="1025514696883950875">{COUNT,plural, =1{Simpan Kata Laluan dalam Akaun}other{Simpan Kata Laluan dalam Akaun}}</translation>
+<translation id="102916930470544692">Kunci laluan</translation>
 <translation id="1035980983510608210">Penutupan semua tab akan menutup tab tersemat juga.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1043592663436934089">Anda akan dilog keluar dan data semakan imbas akan dipadamkan</translation>
@@ -1016,6 +1017,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="6173499589275053515">Kata laluan disimpan dalam Google Account anda, <ph name="EMAIL" /></translation>
 <translation id="6184086493125982861">Paparkan Tab</translation>
 <translation id="6187302354554850004">Terakhir disgrkkan: <ph name="LAST_USED_TIME" /></translation>
+<translation id="6188737759358894319">Dibuat pada <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Belum dibaca</translation>
 <translation id="6196207969502475924">Carian Suara</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Tutup {COUNT} Tab}other{Tutup {COUNT} Tab}}</translation>
@@ -1305,7 +1307,6 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="7557508262441527045">Dilog keluar</translation>
 <translation id="7561196759112975576">Sentiasa</translation>
 <translation id="7564917801238348224">SIMPAN...</translation>
-<translation id="758132317817089442">Hidupkan perlindungan dipertingkat...</translation>
 <translation id="7582857256643797524">Tetapan ini didayakan pada peranti anda</translation>
 <translation id="7583004045319035904">Gunakan <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> untuk membuka kunci tab Inkognito anda.</translation>
 <translation id="7598439272585186139">Dapatkan perlindungan lanjut</translation>

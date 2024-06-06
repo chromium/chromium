@@ -245,7 +245,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1432187715652018471">page wants to install a service handler.</translation>
 <translation id="1432581352905426595">Manage search engines</translation>
 <translation id="1433225466058025572">Try moving your files again</translation>
-<translation id="1434317006812369578">Chrome has built-in safety features to protect you while you browse, like Google Safe Browsing. Safe Browsing <ph name="BEGIN_LINK" />recently found malware on <ph name="SITE" /><ph name="END_LINK" />, which is embedded in the site you're trying to visit.</translation>
 <translation id="1435940442311036198">Use a passkey on a different device</translation>
 <translation id="1436185428532214179">Can ask to edit files and folders on your device</translation>
 <translation id="1441816242347931036">Open to continue</translation>
@@ -1470,7 +1469,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3767485424735936570">Copying and pasting this content to <ph name="VM_NAME" /> is not recommended by administrator policy</translation>
 <translation id="3772211998634047851">Paper (bond)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />: press Tab then Enter to create a new note in Google Keep quickly</translation>
-<translation id="378026377453746707">Chrome has built-in safety features to protect you while you browse, like Google Safe Browsing. Safe Browsing recently <ph name="BEGIN_LINK" />found harmful software on <ph name="SITE" /><ph name="END_LINK" />, which is embedded in the site if you're trying to visit.</translation>
 <translation id="3780694243617746492">Output bin</translation>
 <translation id="3781428340399460090">Hot pink</translation>
 <translation id="3783418713923659662">Mastercard</translation>
@@ -1554,7 +1552,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3950820424414687140">Sign in</translation>
 <translation id="3953505489397572035">This price is typical</translation>
 <translation id="3958057596965527988">4.0 in x 4.0 in</translation>
-<translation id="3959121317419633580">Chrome has built-in safety features to protect you while you browse, like Google Safe Browsing. Safe Browsing recently <ph name="BEGIN_LINK" />found phishing on <ph name="SITE" /><ph name="END_LINK" />, which is embedded in the site you're trying to visit.<ph name="NEW_LINE" />Even sites that are normally safe are sometimes compromised by attackers. <ph name="BEGIN_ERROR_LINK" />Let us know<ph name="END_ERROR_LINK" /> if you think there's been a mistake and that this site doesn't pose a danger.</translation>
 <translation id="3961148744525529027">Payment handler sheet is half-opened</translation>
 <translation id="3962859241508114581">Previous track</translation>
 <translation id="3963721102035795474">Reader Mode</translation>

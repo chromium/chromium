@@ -1759,6 +1759,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
     <ph name="BEGIN_PARAGRAPH2" />Unwaith y bydd gosod yn dechrau, ni ellir ei ganslo.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">Cyfnewid data ag unrhyw ddyfais sydd yn y parthau: <ph name="DOMAINS" /></translation>
 <translation id="2270666014403455717">Aseinio switsh ar gyfer "Dewis"</translation>
+<translation id="2271452184061378400">Mae eich grwpiau tabiau yn cael eu cadw yma</translation>
 <translation id="2271986192355138465">Dysgu sut i osod apiau gwe</translation>
 <translation id="2272430695183451567">0 switshys wedi'u haseinio</translation>
 <translation id="2272570998639520080">Gwydr Martini</translation>
@@ -1995,7 +1996,6 @@ Mae Voice Match yn helpu Google Assistant i adnabod llais <ph name="SUPERVISED_U
 <translation id="2435248616906486374">Mae'r rhwydwaith wedi'i ddatgysylltu</translation>
 <translation id="2435457462613246316">Dangos y cyfrinair</translation>
 <translation id="2436385001956947090">Copïo &amp;dolen</translation>
-<translation id="2436746748253887661">Mae hyn yn caniatáu i wasanaethau system gyda chaniatâd i ddefnyddio'ch lleoliad. Gall lleoliad ddefnyddio ffynonellau megis Wi-Fi, rhwydweithiau symudol, a synwyryddion i helpu i amcangyfrif lleoliad eich dyfais. <ph name="LINK_BEGIN" />Dysgu rhagor<ph name="LINK_END" /></translation>
 <translation id="2438853563451647815">Heb ei gysylltu ag argraffydd</translation>
 <translation id="2439152382014731627">Ailosod cyfrinair <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600">Wrthi'n llwytho <ph name="WINDOW_TITLE" /></translation>
@@ -9083,7 +9083,6 @@ Pwyswch switsh neu fysell a aseiniwyd i dynnu aseiniad.</translation>
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7788948939674438635">Peidio â chaniatáu i wefannau gloi eich bysellfwrdd</translation>
 <translation id="7789963078219276159">Mae cefndir y dudalen gychwynnol wedi newid i <ph name="CATEGORY" />.</translation>
-<translation id="7790689625219600437">OCR PDF</translation>
 <translation id="7791269138074599214">Dull mewnbynnu</translation>
 <translation id="7791429245559955092">Bydd yr ap hwn yn cael ei osod ar eich proffil Chrome a ddefnyddir ar hyn o bryd</translation>
 <translation id="7791436592012979144">Mae sgrolio tuag yn ôl wedi'i alluogi</translation>
@@ -9837,6 +9836,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8336739000755212683">Newid llun cyfrif y ddyfais</translation>
 <translation id="8337020675372081178">{HOURS,plural, =1{Bydd y ddyfais hon yn cael ei chadw am 1 awr a gallwch gysylltu heb god y tro nesaf. Mae hyn yn cael ei osod gan eich gweinyddwr.}zero{Bydd y ddyfais hon yn cael ei chadw am {HOURS} awr a gallwch gysylltu heb god y tro nesaf. Mae hyn yn cael ei osod gan eich gweinyddwr.}two{Bydd y ddyfais hon yn cael ei chadw am {HOURS} awr a gallwch gysylltu heb god y tro nesaf. Mae hyn yn cael ei osod gan eich gweinyddwr.}few{Bydd y ddyfais hon yn cael ei chadw am {HOURS} awr a gallwch gysylltu heb god y tro nesaf. Mae hyn yn cael ei osod gan eich gweinyddwr.}many{Bydd y ddyfais hon yn cael ei chadw am {HOURS} awr a gallwch gysylltu heb god y tro nesaf. Mae hyn yn cael ei osod gan eich gweinyddwr.}other{Bydd y ddyfais hon yn cael ei chadw am {HOURS} awr a gallwch gysylltu heb god y tro nesaf. Mae hyn yn cael ei osod gan eich gweinyddwr.}}</translation>
 <translation id="8337399713761067085">Rydych chi all-lein ar hyn o bryd</translation>
+<translation id="8338427544764842461">Mae eich grwpiau tabiau yn cael eu cadw yma ac yn cael eu diweddaru ar draws pob un o'ch dyfeisiau sydd wedi mewngofnodi</translation>
 <translation id="8338952601723052325">Gwefan datblygwyr</translation>
 <translation id="8339288417038613756">Arddangos a maint testun</translation>
 <translation id="833986336429795709">I agor y ddolen hon, dewiswch ap</translation>

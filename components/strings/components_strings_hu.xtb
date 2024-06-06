@@ -245,7 +245,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1432187715652018471">Ez az oldal szolgáltatáskezelőt kíván telepíteni.</translation>
 <translation id="1432581352905426595">Keresőmotorok beállítása</translation>
 <translation id="1433225466058025572">Próbálja meg ismét áthelyezni a fájlokat</translation>
-<translation id="1434317006812369578">A Chrome beépített biztonsági funkciókkal védi Önt böngészés közben (ilyen például a Google Biztonságos Böngészés). A Biztonságos Böngészés <ph name="BEGIN_LINK" />nemrég rosszindulatú programot talált a(z) <ph name="SITE" /> webhelyen<ph name="END_LINK" />, amely az Ön által felkeresni próbált webhelybe van beágyazva.</translation>
 <translation id="1435940442311036198">Azonosítókulcs használata másik eszközön</translation>
 <translation id="1436185428532214179">Engedélyt kérhet arra, hogy szerkeszthesse az Ön eszközén található fájlokat és mappákat</translation>
 <translation id="1441816242347931036">Nyissa meg a folytatáshoz</translation>
@@ -1468,7 +1467,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3767485424735936570">A rendszergazda által beállított házirend nem javasolja, hogy ezt a tartalmat másolja vagy beillessze ide: <ph name="VM_NAME" /></translation>
 <translation id="3772211998634047851">Papír (bankpostai)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, tartsa lenyomva a Tab billentyűt, majd nyomja meg az Enter billentyűt új jegyzet gyors létrehozásához a Google Keep szolgáltatással</translation>
-<translation id="378026377453746707">A Chrome beépített biztonsági funkciókkal védi Önt böngészés közben (ilyen például a Google Biztonságos Böngészés). A Biztonságos Böngészés nemrég <ph name="BEGIN_LINK" />kártékony szoftvert talált a(z) <ph name="SITE" /> webhelyen<ph name="END_LINK" />, amely az Ön által felkeresni kívánt webhelybe van beágyazva.</translation>
 <translation id="3780694243617746492">Kimeneti tálca</translation>
 <translation id="3781428340399460090">Élénk rózsaszín</translation>
 <translation id="3783418713923659662">Mastercard</translation>
@@ -1552,7 +1550,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3950820424414687140">Bejelentkezés</translation>
 <translation id="3953505489397572035">Ez az ár átlagos</translation>
 <translation id="3958057596965527988">4 × 4 hüvelyk</translation>
-<translation id="3959121317419633580">A Chrome beépített biztonsági funkciókkal védi Önt böngészés közben (ilyen például a Google Biztonságos Böngészés). A Biztonságos Böngészés nemrég <ph name="BEGIN_LINK" />adathalászatot észlelt a(z) <ph name="SITE" /> webhelyen<ph name="END_LINK" />, amely az Ön által felkeresni kívánt webhelybe van beágyazva.<ph name="NEW_LINE" />A támadók néha még az alapvetően biztonságos webhelyekhez is hozzáférhetnek illetéktelenül. <ph name="BEGIN_ERROR_LINK" />Tudassa velünk<ph name="END_ERROR_LINK" />, ha úgy gondolja, hogy hiba történt, és ez a webhely nem jelent veszélyt.</translation>
 <translation id="3961148744525529027">A fizetési információkat tartalmazó munkalap félmagasságban van megnyitva</translation>
 <translation id="3962859241508114581">Előző szám</translation>
 <translation id="3963721102035795474">Olvasási mód</translation>

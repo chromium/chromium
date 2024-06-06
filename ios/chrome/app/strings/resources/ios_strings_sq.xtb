@@ -5,6 +5,7 @@
 <translation id="1013952917065545813">Mund të kthehesh përsëri këtu për të rihapur skedat që ke mbyllur së fundi</translation>
 <translation id="1016495303386450659">Elementi u përditësua</translation>
 <translation id="1025514696883950875">{COUNT,plural, =1{Ruaj fjalëkalimin në llogari}other{Ruaj fjalëkalimet në llogari}}</translation>
+<translation id="102916930470544692">Çelësi i kalimit</translation>
 <translation id="1035980983510608210">Mbyllja e të gjitha skedave do të mbyllë edhe skedat e gozhduara.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1043592663436934089">Do të dalësh nga llogaria dhe të dhënat e shfletimit do të fshihen</translation>
@@ -1016,6 +1017,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6173499589275053515">Fjalëkalimi u ruajt në "Llogarinë tënde të Google", <ph name="EMAIL" /></translation>
 <translation id="6184086493125982861">Trego skedat</translation>
 <translation id="6187302354554850004">Sinkronizimi i fundit: <ph name="LAST_USED_TIME" /></translation>
+<translation id="6188737759358894319">Krijuar më <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Të palexuara</translation>
 <translation id="6196207969502475924">Kërkimi me zë</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Mbyll {COUNT} skedë}other{Mbyll {COUNT} skeda}}</translation>
@@ -1303,7 +1305,6 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="7557508262441527045">Ke dalë</translation>
 <translation id="7561196759112975576">Gjithmonë</translation>
 <translation id="7564917801238348224">RUAJ...</translation>
-<translation id="758132317817089442">Aktivizo mbrojtjen e përmirësuar...</translation>
 <translation id="7582857256643797524">Ky cilësim është i aktivizuar në pajisjen tënde</translation>
 <translation id="7583004045319035904">Përdor <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> për të shkyçur skedat "e fshehta".</translation>
 <translation id="7598439272585186139">Rrit sigurinë</translation>

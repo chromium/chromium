@@ -5,6 +5,7 @@
 <translation id="1013952917065545813">Možete da se vratite ovde da biste ponovo otvorili kartice koje ste nedavno zatvorili</translation>
 <translation id="1016495303386450659">Stavka je ažurirana</translation>
 <translation id="1025514696883950875">{COUNT,plural, =1{Sačuvaj lozinku na nalogu}one{Sačuvaj lozinke na nalogu}few{Sačuvaj lozinke na nalogu}other{Sačuvaj lozinke na nalogu}}</translation>
+<translation id="102916930470544692">Pristupni ključ</translation>
 <translation id="1035980983510608210">Zatvaranjem svih kartica zatvarate i zakačene kartice.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1043592663436934089">Odjavićete se i podaci pregledanja će biti izbrisani</translation>
@@ -147,6 +148,7 @@
 <translation id="1752547299766512813">Sačuvane lozinke</translation>
 <translation id="1753905327828125965">Najposećenije</translation>
 <translation id="1757699834933698436">{count,plural, =1{{count} slaba lozinka}one{{count} slaba lozinka}few{{count} slabe lozinke}other{{count} slabih lozinki}}</translation>
+<translation id="1764070164487214210">Putanja</translation>
 <translation id="1766411844240160513">Automatski popuni obrazac</translation>
 <translation id="1767766085187034454">Google prevodilac</translation>
 <translation id="1769106850515800431">Personalizovani sadržaj</translation>
@@ -540,12 +542,14 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="3771033907050503522">Kartice Bez arhiviranja</translation>
 <translation id="3775743491439407556">Sinhronizacija ne radi</translation>
 <translation id="3779810277399252432">Nema internet veze.</translation>
+<translation id="3785672280731998727">Ime za prikaz</translation>
 <translation id="3789294999358192700">Pratite korake ispod:</translation>
 <translation id="3789841737615482174">Instaliraj</translation>
 <translation id="380329542618494757">Ime</translation>
 <translation id="3803696231112616155">Ponudi prevod ovog sajta</translation>
 <translation id="3808311849069021992">Pregledajte detalje o pretraživaču</translation>
 <translation id="3810973564298564668">Upravljaj</translation>
+<translation id="3812308602011798782">Recenzije</translation>
 <translation id="3818045793209708987">Praćenje ovog paketa je zaustavljeno</translation>
 <translation id="3818293389945649617">Pronalazi sledeće</translation>
 <translation id="3819183753496523827">Oflajn ste. Proverite internet vezu i probajte ponovo.</translation>
@@ -593,6 +597,7 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="4045648459118332842">Pristupajte sačuvanim lozinkama u bilo kojoj aplikaciji jednim dodirom</translation>
 <translation id="4049507953662678203">Proverite da li ste povezani na mrežu i pokušajte ponovo.</translation>
 <translation id="4054572406751135230">Pratite vesti, sport i drugo.</translation>
+<translation id="4068959193278821990">Uključi Poboljšanu zaštitu…</translation>
 <translation id="4092655288299341041">Prikazuje pomoć</translation>
 <translation id="4105841739161771091">{count,plural, =1{Izbriši adresu}one{Izbriši adrese}few{Izbriši adrese}other{Izbriši adrese}}</translation>
 <translation id="4108998448622696017">Otkriva opasne događaje kada se dogode i upozorava vas na njih.</translation>
@@ -604,6 +609,7 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="4121993058175073134">Za slanje podataka neto izvoza podesite nalog e-pošte u aplikaciji Podešavanja.</translation>
 <translation id="4124987746317609294">Vremenski opseg</translation>
 <translation id="4133265950310064865">Napredna zaštita</translation>
+<translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google slike</translation>
 <translation id="4148023517926189160">Ovaj veb-sajt želi da preuzme fajl i doda ga u kalendar.</translation>
 <translation id="4152011295694446843">Ovde ćete pronaći obeleživače</translation>
@@ -1016,6 +1022,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="6173499589275053515">Lozinka je sačuvana na Google nalogu, <ph name="EMAIL" /></translation>
 <translation id="6184086493125982861">Prikaži kartice</translation>
 <translation id="6187302354554850004">Poslednja sinhron.: <ph name="LAST_USED_TIME" /></translation>
+<translation id="6188737759358894319">Napravljeno <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Nepročitano</translation>
 <translation id="6196207969502475924">Glasovna pretraga</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Zatvori {COUNT} karticu}one{Zatvori {COUNT} karticu}few{Zatvori {COUNT} kartice}other{Zatvori {COUNT} kartica}}</translation>
@@ -1305,7 +1312,6 @@ Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi
 <translation id="7557508262441527045">Odjavljeni ste</translation>
 <translation id="7561196759112975576">Uvek</translation>
 <translation id="7564917801238348224">SAČUVAJ…</translation>
-<translation id="758132317817089442">Uključi poboljšanu zaštitu…</translation>
 <translation id="7582857256643797524">Ovo podešavanje je omogućeno na uređaju</translation>
 <translation id="7583004045319035904">Otključajte kartice bez arhiviranja pomoću opcije <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7598439272585186139">Poboljšajte bezbednost</translation>
@@ -1471,6 +1477,7 @@ Sajtovi mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na
 <translation id="834783239627985533">Najposećeniji sajtovi</translation>
 <translation id="8358401059263985056">Uključi obaveštenja</translation>
 <translation id="8364841868226993049">Čuva se slika u Google slikama naloga <ph name="USER_EMAIL" />…</translation>
+<translation id="8369246252708539904">Izbriši pristupni ključ</translation>
 <translation id="8370406443343902172">Idi u podešavanja…</translation>
 <translation id="8374977641764177587">Želite da uključite obaveštenja?</translation>
 <translation id="8378714024927312812">Ovim upravlja organizacija</translation>

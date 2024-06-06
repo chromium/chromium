@@ -100,7 +100,6 @@
 <translation id="6333260925957816943">Informações acerca desta loja</translation>
 <translation id="6381032505162537930">Os seus grupos de separadores vão ser apresentados aqui</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Desagrupar <ph name="TABS_COUNT_ONE" /> separador selecionado}other{Desagrupar <ph name="TABS_COUNT_MANY" /> separadores selecionados}}</translation>
-<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Pode encontrar os seus separadores fechados em Separadores recentes no menu principal do Chrome. O separador de navegação anónima não vai estar disponível.}other{Pode encontrar os seus separadores fechados em Separadores recentes no menu principal do Chrome. Os # separadores de navegação anónima não vão estar disponíveis.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> separador}other{<ph name="TABS_COUNT_MANY" /> separadores}}</translation>
 <translation id="6549021453810473782">Veja as informações da loja</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>

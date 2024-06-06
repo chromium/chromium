@@ -245,7 +245,6 @@
 <translation id="1432187715652018471">сторінка хоче встановити обробник сервісів.</translation>
 <translation id="1432581352905426595">Керувати пошуковими системами</translation>
 <translation id="1433225466058025572">Спробуйте повторно перемістити файли</translation>
-<translation id="1434317006812369578">Chrome має вбудовані функції безпеки, що захищають вас під час веб-перегляду, як-от Безпечний перегляд Google. Зокрема, ця функція <ph name="BEGIN_LINK" />нещодавно виявила зловмисне програмне забезпечення на сайті <ph name="SITE" /><ph name="END_LINK" />, який ви намагалися відвідати.</translation>
 <translation id="1435940442311036198">Використати ключ доступу на іншому пристрої</translation>
 <translation id="1436185428532214179">Може просити дозвіл змінювати файли та папки на пристрої</translation>
 <translation id="1441816242347931036">Відкрийте, щоб продовжити</translation>
@@ -1470,7 +1469,6 @@
 <translation id="3767485424735936570">Адміністратор не радить копіювати й вставляти цей контент на віртуальну машину <ph name="VM_NAME" /></translation>
 <translation id="3772211998634047851">Папір (для документів)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб швидко створити нову нотатку в Google Keep</translation>
-<translation id="378026377453746707">Chrome має вбудовані функції безпеки, що захищають вас під час веб-перегляду, як-от Безпечний перегляд Google. Зокрема, ця функція нещодавно <ph name="BEGIN_LINK" />виявила шкідливе програмне забезпечення на сайті <ph name="SITE" /><ph name="END_LINK" />, який ви намагалися відвідати.</translation>
 <translation id="3780694243617746492">Вихідний контейнер</translation>
 <translation id="3781428340399460090">Яскраво-рожевий</translation>
 <translation id="3783418713923659662">Mastercard</translation>
@@ -1554,7 +1552,6 @@
 <translation id="3950820424414687140">Вхід</translation>
 <translation id="3953505489397572035">Це звичайна ціна</translation>
 <translation id="3958057596965527988">4 x 4 дюйм.</translation>
-<translation id="3959121317419633580">Chrome має вбудовані функції безпеки, що захищають вас під час веб-перегляду, як-от Безпечний перегляд Google. Зокрема, ця функція нещодавно <ph name="BEGIN_LINK" />виявила фішинг на сайті <ph name="SITE" /><ph name="END_LINK" />, який ви намагалися відвідати.<ph name="NEW_LINE" />Іноді зловмисники зламують навіть зазвичай безпечні сайти. Якщо ви вважаєте, що сталася помилка й цей сайт не становить небезпеки, <ph name="BEGIN_ERROR_LINK" />повідомте нас<ph name="END_ERROR_LINK" />.</translation>
 <translation id="3961148744525529027">Аркуш обробника платежу відкрито на половину висоти</translation>
 <translation id="3962859241508114581">Попередня композиція</translation>
 <translation id="3963721102035795474">Режим перегляду</translation>

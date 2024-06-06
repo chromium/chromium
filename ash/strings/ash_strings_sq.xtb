@@ -147,6 +147,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> u ndërrua me <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Shfaq të gjitha sugjerimet</translation>
 <translation id="1501946871587957338">Të ndryshohet burimi i audios?</translation>
+<translation id="1505542291183484463">Ndrysho përmasat e dritares me pllakëza në drejtimin poshtë</translation>
 <translation id="1510238584712386396">Nisësi</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Shfaq cilësimet e njoftimeve. Njoftimet janë joaktive për një aplikacion}other{Shfaq cilësimet e njoftimeve. Njoftimet janë joaktive për # aplikacione}}</translation>
 <translation id="1523032696246003">Bateria <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> deri në karikimin e plotë</translation>
@@ -296,6 +297,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2149229036084364364">Shko te pjesa muzikore e mëparshme</translation>
 <translation id="2152895518047545149">Me sa duket nuk mungon asgjë. Shumë mirë!</translation>
 <translation id="2161132820593978283">Provo inkuadrimin e kamerës që të shfaqesh në qendër të ekranit në videotelefonata. Aktivizoje te "Cilësimet e shpejta".</translation>
+<translation id="216955976692983107">Ndrysho përmasat e dritares me pllakëza në drejtimin djathtas</translation>
 <translation id="2185166372312820725">Shko te skeda e mëparshme</translation>
 <translation id="2185444992308415167">Kalo nëpër skedat 1 deri në 8</translation>
 <translation id="2198625180564913276">Po shton profilin. Kjo mund të zgjasë disa minuta.</translation>
@@ -642,6 +644,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3509391053705095206">Telefoni yt nuk mund të gjendet. Sigurohu që të jetë aktivizuar Bluetooth-i i telefonit tënd.</translation>
 <translation id="3510164367642747937">Thekso kursorin e miut</translation>
 <translation id="3513798432020909783">Llogaria menaxhohet nga <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3516000762115478502">Ndrysho përmasat e dritares me pllakëza në drejtimin lart</translation>
 <translation id="3517037892157925473">Përditësimi i fundit i detyrave: <ph name="TIME" />, <ph name="DATE" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{Përditëso pajisjen brenda 1 minute}other{Përditëso pajisjen brenda # minutash}}</translation>
 <translation id="3522979239100719575">Po kërkon për profilet e disponueshme. Kjo mund të zgjasë disa minuta.</translation>
@@ -758,6 +761,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="3899995891769452915">Hyrja zanore</translation>
 <translation id="3900355044994618856">Sesioni do të përfundojë për <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">Po lidhet me <ph name="NAME" /></translation>
+<translation id="3904768293285573640">Ndrysho përmasat e dritares me pllakëza në drejtimin majtas</translation>
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3923494859158167397">Nuk ka asnjë rrjet celular të konfiguruar</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, ngjarjet po ngarkohen.</translation>

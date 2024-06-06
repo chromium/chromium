@@ -245,7 +245,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1432187715652018471">stranica želi instalirati obrađivača usluge.</translation>
 <translation id="1432581352905426595">Upravljaj pretraživačima</translation>
 <translation id="1433225466058025572">Ponovo pokušajte premjestiti fajlove</translation>
-<translation id="1434317006812369578">Chrome ima ugrađene sigurnosne funkcije koje vas štite prilikom pregledanja, kao što je Sigurno pregledanje na Googleu. Sigurno pregledanje je <ph name="BEGIN_LINK" />nedavno pronašlo zlonamjerni softver na web lokaciji <ph name="SITE" /><ph name="END_LINK" />, koja je ugrađena na web lokaciji koju pokušavate posjetiti.</translation>
 <translation id="1435940442311036198">Koristi pristupni ključ na drugom uređaju</translation>
 <translation id="1436185428532214179">Može tražiti da uređuje fajlove i foldere na vašem uređaju</translation>
 <translation id="1441816242347931036">Otvorite da nastavite</translation>
@@ -1470,7 +1469,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3767485424735936570">U administratorskim pravilima se ne preporučuje kopiranje i lijepljenje ovog sadržaja na operativni sistem <ph name="VM_NAME" /></translation>
 <translation id="3772211998634047851">Papir (bond)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da brzo kreirate novu bilješku u Google Keepu</translation>
-<translation id="378026377453746707">Chrome ima ugrađene sigurnosne funkcije koje vas štite prilikom pregledanja, kao što je Sigurno pregledanje na Googleu. Sigurno pregledanje je nedavno <ph name="BEGIN_LINK" />pronašlo štetan softver na web lokaciji <ph name="SITE" /><ph name="END_LINK" />, koja je ugrađena na web lokaciji koju pokušavate posjetiti.</translation>
 <translation id="3780694243617746492">Spremnik izlaza</translation>
 <translation id="3781428340399460090">Vatreno ružičasta</translation>
 <translation id="3783418713923659662">MasterCard</translation>
@@ -1554,7 +1552,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3950820424414687140">Prijava</translation>
 <translation id="3953505489397572035">Ova cijena je uobičajena</translation>
 <translation id="3958057596965527988">4 x 4 in</translation>
-<translation id="3959121317419633580">Chrome ima ugrađene sigurnosne funkcije koje vas štite prilikom pregledanja, kao što je Sigurno pregledanje na Googleu. Sigurno pregledanje je nedavno <ph name="BEGIN_LINK" />pronašlo krađu identiteta na web lokaciji <ph name="SITE" /><ph name="END_LINK" />, koja je ugrađena na web lokaciji koju pokušavate posjetiti.<ph name="NEW_LINE" />Napadači ponekad ugrožavaju čak i web lokacije koje su inače sigurne. <ph name="BEGIN_ERROR_LINK" />Javite nam<ph name="END_ERROR_LINK" /> ako mislite da je došlo do greške i da ova web lokacija nije opasna.</translation>
 <translation id="3961148744525529027">Stranica obrađivača uplate otvorena je do pola ekrana</translation>
 <translation id="3962859241508114581">Prethodna numera</translation>
 <translation id="3963721102035795474">Način rada za čitanje</translation>
@@ -2684,6 +2681,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6165508094623778733">Saznajte više</translation>
 <translation id="6167577165590485365">Vrijeme pokušaja posljednjeg dohvatanja:</translation>
 <translation id="617256461084925519">Google Chrome pokušava potvrditi vaš identitet radi popunjavanja vaših podataka o plaćanju.</translation>
+<translation id="6173208311907792313">Dovršite kupnju pomoću značajke Windows Hello</translation>
 <translation id="6176387967264100435">Ova cijena je visoka</translation>
 <translation id="6177128806592000436">Vaša veza s ovom web lokacijom nije sigurna</translation>
 <translation id="6177531123306197852">Koverta C2</translation>
@@ -3842,6 +3840,7 @@ Dodatni detalji:
 <translation id="8332188693563227489">Pristup host računaru <ph name="HOST_NAME" /> je zabranjen</translation>
 <translation id="833262891116910667">Istaknuto</translation>
 <translation id="8339163506404995330">Stranice čiji je jezik <ph name="LANGUAGE" /> neće se prevoditi</translation>
+<translation id="8339275256517065202">Dovršite kupnju pomoću Touch ID-ja</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Registracija virtuelne kartice je otvorena u punoj visini</translation>
 <translation id="8349305172487531364">Traka oznaka</translation>
@@ -4035,6 +4034,7 @@ Dodatni detalji:
 <translation id="8726549941689275341">Veličina stranice:</translation>
 <translation id="8730621377337864115">Gotovo</translation>
 <translation id="8731268612289859741">Sigurnosni kôd</translation>
+<translation id="8731917264694569036">Dovršite kupnju pomoću uređaja</translation>
 <translation id="8733345475331865475">Osiguranje automobila</translation>
 <translation id="8733764070897080460">Možete blokirati teme koje ne želite dijeliti s web lokacijama. Chrome također automatski briše teme koje su starije od 4 sedmice. Saznajte više</translation>
 <translation id="8734529307927223492">Uređajem <ph name="DEVICE_TYPE" /> upravlja <ph name="MANAGER" /></translation>
@@ -4228,6 +4228,7 @@ Dodatni detalji:
 <translation id="9116548361133462832">Više o oglasima u Chromeu</translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da nastavite pregledati te da vidite relevantne aktivnosti u historiji Chromea</translation>
 <translation id="9119042192571987207">Otpremljeno</translation>
+<translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> želi potvrditi da ste to vi</translation>
 <translation id="912327514020027767">Suknje</translation>
 <translation id="912414390325846156">Ranije niste dozvolili za tu web lokaciju</translation>
 <translation id="9128870381267983090">Spoji se na mrežu</translation>

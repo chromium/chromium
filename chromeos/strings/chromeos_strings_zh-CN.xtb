@@ -961,7 +961,6 @@
 <translation id="6412715219990689313">内置键盘</translation>
 <translation id="6417265370957905582">Google 助理</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
-<translation id="6438073885402882007">这将允许具有相应权限的系统服务使用您的位置信息。位置信息服务可能会根据 Wi-Fi、移动网络和传感器等来源提供的信息推测设备所在的位置。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="6439505561246192797">很弱 (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">打开账号设置</translation>
 <translation id="6462978824459367242">APN“添加”按钮现已启用</translation>

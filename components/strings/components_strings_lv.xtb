@@ -245,7 +245,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1432187715652018471">lapa vēlas instalēt pakalpojumu apdarinātāju.</translation>
 <translation id="1432581352905426595">Pārvaldīt meklējumprogrammas</translation>
 <translation id="1433225466058025572">Mēģiniet vēlreiz pārvietot savus failus.</translation>
-<translation id="1434317006812369578">Pārlūkā Chrome ir iebūvētas drošības funkcijas, piemēram, Google droša pārlūkošana, lai aizsargātu jūs pārlūkošanas laikā. Droša pārlūkošana <ph name="BEGIN_LINK" />nesen konstatēja ļaunprātīgu programmatūru vietnē <ph name="SITE" /><ph name="END_LINK" />, kas ir iegulta vietnē, kuru mēģināt apmeklēt.</translation>
 <translation id="1435940442311036198">Izmantot piekļuves atslēgu citā ierīcē</translation>
 <translation id="1436185428532214179">Var pieprasīt atļauju rediģēt failus un mapes jūsu ierīcē</translation>
 <translation id="1441816242347931036">Atveriet, lai turpinātu</translation>
@@ -1469,7 +1468,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3767485424735936570">Saskaņā ar administratora iestatīto politiku nav ieteicams kopēt un ielīmēt šo saturu šeit: <ph name="VM_NAME" />.</translation>
 <translation id="3772211998634047851">Papīrs (biroja)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Lai ātri izveidotu jaunu piezīmi lietotnē Google Keep, nospiediet tabulēšanas taustiņu un pēc tam — taustiņu Enter.</translation>
-<translation id="378026377453746707">Pārlūkā Chrome ir iebūvētas drošības funkcijas, piemēram, Google droša pārlūkošana, lai aizsargātu jūs pārlūkošanas laikā. Droša pārlūkošana nesen <ph name="BEGIN_LINK" />konstatēja kaitīgu programmatūru vietnē <ph name="SITE" /><ph name="END_LINK" />, kas ir iegulta vietnē, kuru mēģināt apmeklēt.</translation>
 <translation id="3780694243617746492">Izvades nodalījums</translation>
 <translation id="3781428340399460090">Spilgti rozā</translation>
 <translation id="3783418713923659662">Mastercard</translation>
@@ -1553,7 +1551,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3950820424414687140">Pierakstīties</translation>
 <translation id="3953505489397572035">Šī ir parastā cena</translation>
 <translation id="3958057596965527988">4 x 4 collas</translation>
-<translation id="3959121317419633580">Pārlūkā Chrome ir iebūvētas drošības funkcijas, piemēram, Google droša pārlūkošana, lai aizsargātu jūs pārlūkošanas laikā. Droša pārlūkošana nesen <ph name="BEGIN_LINK" />konstatēja pikšķerēšanu vietnē <ph name="SITE" /><ph name="END_LINK" />, kas ir iegulta vietnē, kuru mēģināt apmeklēt.<ph name="NEW_LINE" />Dažkārt uzbrucēji apdraud pat vietnes, kuras parasti ir drošas. <ph name="BEGIN_ERROR_LINK" />Informējiet mūs<ph name="END_ERROR_LINK" />, ja uzskatāt, ka ir pieļauta kļūda un šī vietne nerada apdraudējumu.</translation>
 <translation id="3961148744525529027">Maksājumu apstrādātāja lapa ir līdz pusei atvērta</translation>
 <translation id="3962859241508114581">Iepriekšējais ieraksts</translation>
 <translation id="3963721102035795474">Lasītāja režīms</translation>

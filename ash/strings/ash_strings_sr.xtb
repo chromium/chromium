@@ -1131,6 +1131,7 @@
 <translation id="5208059991603368177">Укључено</translation>
 <translation id="5216991270656129561">Искључено до <ph name="TIME" /></translation>
 <translation id="5222676887888702881">Одјави ме</translation>
+<translation id="5228195526683428788">Разделник подељеног екрана</translation>
 <translation id="5229343007215035173">Укључи/искључи екран за приватност</translation>
 <translation id="5230516054153933099">Прозор</translation>
 <translation id="5234764350956374838">Одбаци</translation>
@@ -1518,6 +1519,7 @@
 <translation id="6613765291890844037">Користи се <ph name="STORAGE_IN_USE_SIZE" /> меморијског простора | Укупно <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">Екран за приватност је укључен</translation>
 <translation id="6622679827379792051">Подесите преглед апликација на телефону</translation>
+<translation id="662279009180869175">Помоћу стрелица налево и надесно можете да промените величину подељеног екрана</translation>
 <translation id="6624493541160101248">Актуелна радна површина: <ph name="DESK_NAME" />. <ph name="DESK_INDEX" />. радна површина од <ph name="DESK_COUNT" />.</translation>
 <translation id="6625718907317144388">Обавештења апликација <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> и друга обавештења су скривена јер је заштита од прегледа укључена</translation>
 <translation id="6627638273713273709">Тастер за претрагу+Shift+K</translation>
@@ -1536,6 +1538,7 @@
 <translation id="6670153871843998651">Радна површина 3</translation>
 <translation id="6671495933530132209">Копирај слику</translation>
 <translation id="6671661918848783005">Откључавање Chromebook-а није успело</translation>
+<translation id="6676552993057022464">Користите стрелице нагоре и надоле да бисте променили величину подељеног екрана</translation>
 <translation id="6682029141988159141">Налепи садржај из привремене меморије</translation>
 <translation id="6683022854667115063">Слушалице</translation>
 <translation id="6686023075541098243">Подесите преглед обавештења на телефону</translation>

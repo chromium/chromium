@@ -147,6 +147,7 @@
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> lecserélve erre: <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Az összes javaslat megjelenítése</translation>
 <translation id="1501946871587957338">Hangforrást szeretne váltani?</translation>
+<translation id="1505542291183484463">Ablak mozaikszerű átméretezése lefelé</translation>
 <translation id="1510238584712386396">Indító</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Értesítési beállítások megjelenítése. Az értesítések egyetlen alkalmazásnál vannak kikapcsolva}other{Értesítési beállítások megjelenítése. Az értesítések # alkalmazásnál ki vannak kapcsolva}}</translation>
 <translation id="1523032696246003">Akkumulátor <ph name="BATTERY_PERCENTAGE" />%-on | <ph name="TIME" /> a teljes feltöltésig</translation>
@@ -177,6 +178,7 @@
 <translation id="1610778689852195798">„Undo” (Visszavonás)</translation>
 <translation id="1611993646327628135">Be</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1623768535032616219">A Google Tanterem összecsukása</translation>
 <translation id="1632985212731562677">A Kapcsolóalapú hozzáférés a Beállítások Kisegítő lehetőségek pontjában kapcsolható ki.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> eszköz</translation>
 <translation id="1639239467298939599">Betöltés</translation>
@@ -296,11 +298,13 @@
 <translation id="2149229036084364364">Ugrás az előző számra</translation>
 <translation id="2152895518047545149">A jelek szerint semmi sem hiányzik. Szép munka!</translation>
 <translation id="2161132820593978283">Próbálja ki a keretezést, hogy videohívás közben a képernyő közepére kerüljön. Ezt a funkciót a Gyorsbeállításokban kapcsolhatja be.</translation>
+<translation id="216955976692983107">Ablak mozaikszerű átméretezése jobbra</translation>
 <translation id="2185166372312820725">Ugrás az előző lapra</translation>
 <translation id="2185444992308415167">Lapozás az 1–8. lapon</translation>
 <translation id="2198625180564913276">A profil hozzáadása folyamatban van. Ez eltarthat néhány percig.</translation>
 <translation id="219905428774326614">Indító, minden alkalmazás</translation>
 <translation id="2201071101391734388"><ph name="INDEX" />. fénykép a legutóbbi <ph name="TOTAL_COUNT" /> fénykép közül.</translation>
+<translation id="2201687081523799384">A Google Tasks összecsukása</translation>
 <translation id="2208323208084708176">Egységes asztali mód</translation>
 <translation id="2220572644011485463">PIN-kód vagy jelszó</translation>
 <translation id="2222841058024245321">7. asztal</translation>
@@ -362,6 +366,7 @@
 <translation id="2427507373259914951">Kattintás bal egérgombbal</translation>
 <translation id="2429753432712299108">A(z) „<ph name="DEVICE_NAME" />” Bluetooth-eszköz engedélyt kér a párosításra. Mielőtt elfogadná, ellenőrizze, hogy ez a biztonsági kód látható-e azon az eszközön is: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Jelszó megjelenítése</translation>
+<translation id="2437771564543046790">Alacsony töltöttség. Akkumulátorkímélő mód bekapcsolva</translation>
 <translation id="243878895369688216">Tegnap nyitotta meg</translation>
 <translation id="2440978926514840421">GIF-felvétel rögzítve</translation>
 <translation id="2441427462554639370">Felvétel megszakítva a kritikusan kevés tárhely miatt</translation>
@@ -642,6 +647,7 @@
 <translation id="3509391053705095206">Telefonja nem található. Ne felejtse el bekapcsolni a telefon Bluetooth funkcióját.</translation>
 <translation id="3510164367642747937">Egérmutató kiemelése</translation>
 <translation id="3513798432020909783">A fiókot a(z) <ph name="MANAGER_EMAIL" /> kezeli</translation>
+<translation id="3516000762115478502">Ablak mozaikszerű átméretezése felfelé</translation>
 <translation id="3517037892157925473">Feladatok legutóbb frissítve: <ph name="DATE" />, <ph name="TIME" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{1 percen belül frissítse az eszközt}other{# percen belül frissítse az eszközt}}</translation>
 <translation id="3522979239100719575">Folyamatban van a rendelkezésre álló profilok keresése. Ez eltarthat néhány percig.</translation>
@@ -759,6 +765,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="3899995891769452915">Hangbevitel</translation>
 <translation id="3900355044994618856">Munkamenete <ph name="SESSION_TIME_REMAINING" /> elteltével lejár</translation>
 <translation id="3901991538546252627">Csatlakozás a következőhöz: <ph name="NAME" /></translation>
+<translation id="3904768293285573640">Ablak mozaikszerű átméretezése balra</translation>
 <translation id="3906954721959377182">Táblagép</translation>
 <translation id="3923494859158167397">Nincs beállítva mobilhálózat</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, események betöltése…</translation>
@@ -1197,6 +1204,7 @@ Nincsenek csatlakoztatott eszközök.</translation>
 <translation id="550391772491508736">Átküldés újraindítása</translation>
 <translation id="5506975627792768506">Nagyító be- vagy kikapcsolása</translation>
 <translation id="5512042095225963688">Előző szó törlése</translation>
+<translation id="5519005148254860683">A Google Tasks kibontása</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">A rendszergazda az összes eSIM-profilt eltávolította. További információért forduljon a rendszergazdához.</translation>
 <translation id="5520909879404821039">Szia franciául</translation>
@@ -1405,6 +1413,7 @@ Nincsenek csatlakoztatott eszközök.</translation>
 <translation id="6200515304866777730">Nem támogatja az alkalmazás</translation>
 <translation id="6210042900243040400">A(z) <ph name="EMAIL" /> fiókhoz korábban mentett <ph name="NAME" /> csatlakoztatása</translation>
 <translation id="6213808132343683860">Részleges képernyőkép vagy képernyőfelvétel készítése</translation>
+<translation id="621606890568890214">A Google Tanterem kibontása</translation>
 <translation id="6220928844947387476">Mostantól egyszerre veheti fel magát és képernyőjét</translation>
 <translation id="622484624075952240">Le</translation>
 <translation id="6228457605945141550">A fényerő csökkentése</translation>

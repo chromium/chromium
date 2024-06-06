@@ -5,6 +5,7 @@
 <translation id="1013952917065545813">Bura qayıdaraq son zamanlarda bağladığınız tabları yenidən aça bilərsiniz</translation>
 <translation id="1016495303386450659">Element yeniləndi</translation>
 <translation id="1025514696883950875">{COUNT,plural, =1{Parolu hesabda yadda saxlayın}other{Parolları hesabda yadda saxlayın}}</translation>
+<translation id="102916930470544692">Giriş açarı</translation>
 <translation id="1035980983510608210">Bütün tabları bağladıqda sancılmış tablar da bağlanacaq.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1043592663436934089">Çıxış ediləcək və baxış datası silinəcək</translation>
@@ -1016,6 +1017,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6173499589275053515">Parol Google Hesabınızda (<ph name="EMAIL" />) yadda saxlanıldı</translation>
 <translation id="6184086493125982861">Panelləri Göstərin</translation>
 <translation id="6187302354554850004">Son sinxronizasiya: <ph name="LAST_USED_TIME" /></translation>
+<translation id="6188737759358894319">Yaradılıb: <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Oxunmamış</translation>
 <translation id="6196207969502475924">Səsli Axtarış</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{{COUNT} Tabı bağlayın}other{{COUNT} Tabı bağlayın}}</translation>
@@ -1032,6 +1034,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6232329973559504466">Anonim Axtarış</translation>
 <translation id="6236952928980352967">Xəbərdarlığı bərpa edin</translation>
 <translation id="6247557882553405851">Google Parol Meneceri</translation>
+<translation id="6251835855431997163">Avtomatik doldurun: <ph name="VALUE" /></translation>
 <translation id="6254066287920239840">Linkləri brauzer əvəzinə tətbiqdə açın</translation>
 <translation id="6255097610484507482">Kredit Kartına Düzəliş edin</translation>
 <translation id="6266039999629596120">Diqqət tələb olunur</translation>
@@ -1210,6 +1213,7 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="7022197654033719543">Sayt Haqqında</translation>
 <translation id="7029809446516969842">Parollar</translation>
 <translation id="704692552158601232">Defolt brauzer tətbiqi</translation>
+<translation id="7055240621761583113">Parolu avtomatik doldurun</translation>
 <translation id="7063811929043357292">Hesabı valideyn idarə edir.
 <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="7069695992271320873">Bu cihazdan silin</translation>
@@ -1303,7 +1307,6 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="7557508262441527045">Çıxılıb</translation>
 <translation id="7561196759112975576">Həmişə</translation>
 <translation id="7564917801238348224">YADDA SAXLAYIN...</translation>
-<translation id="758132317817089442">Təkmil qorumanı yandırın...</translation>
 <translation id="7582857256643797524">Bu ayar cihazda aktivləşdirilib</translation>
 <translation id="7583004045319035904">Anonim tabları kiliddən çıxarmaq üçün <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> istifadə edin.</translation>
 <translation id="7598439272585186139">Güvənliyi artırın</translation>

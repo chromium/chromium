@@ -5,6 +5,7 @@
 <translation id="1013952917065545813">אפשר לחזור לפה כדי לפתוח כרטיסיות שסגרת לאחרונה</translation>
 <translation id="1016495303386450659">הפריט עודכן</translation>
 <translation id="1025514696883950875">{COUNT,plural, =1{שמירת הסיסמה בחשבון}one{שמירת הסיסמאות בחשבון}two{שמירת הסיסמאות בחשבון}other{שמירת הסיסמאות בחשבון}}</translation>
+<translation id="102916930470544692">מפתח גישה</translation>
 <translation id="1035980983510608210">אם סוגרים את כל הכרטיסיות, גם הכרטיסיות המוצמדות נסגרות.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1043592663436934089">המערכת תוציא אותך מהחשבון ונתוני הגלישה יימחקו</translation>
@@ -1016,6 +1017,7 @@
 <translation id="6173499589275053515">‏הסיסמה נשמרה בחשבון Google שלך, <ph name="EMAIL" /></translation>
 <translation id="6184086493125982861">הצגת כרטיסיות</translation>
 <translation id="6187302354554850004">סונכרן לאחרונה: <ph name="LAST_USED_TIME" /></translation>
+<translation id="6188737759358894319">נוצר בתאריך <ph name="DATE" /></translation>
 <translation id="6189413832092199491">פריטים שלא נקראו</translation>
 <translation id="6196207969502475924">חיפוש קולי</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{סגירת כרטיסייה אחת ({COUNT})}one{סגירת {COUNT} כרטיסיות}two{סגירת {COUNT} כרטיסיות}other{סגירת {COUNT} כרטיסיות}}</translation>
@@ -1303,7 +1305,6 @@
 <translation id="7557508262441527045">החשבון לא מחובר</translation>
 <translation id="7561196759112975576">תמיד</translation>
 <translation id="7564917801238348224">שמירה…</translation>
-<translation id="758132317817089442">הפעלת ההגנה המשופרת…</translation>
 <translation id="7582857256643797524">ההגדרה הזו מופעלת במכשיר</translation>
 <translation id="7583004045319035904">ביטול הנעילה של כרטיסיות מצב אנונימי יתבצע באמצעות <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />.</translation>
 <translation id="7598439272585186139">רוצה לשפר את האבטחה?</translation>

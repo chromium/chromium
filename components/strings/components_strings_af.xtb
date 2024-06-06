@@ -245,7 +245,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1432187715652018471">bladsy wil 'n dienshanteerder installeer.</translation>
 <translation id="1432581352905426595">Bestuur soekenjins</translation>
 <translation id="1433225466058025572">Probeer jou lêers weer skuif</translation>
-<translation id="1434317006812369578">Chrome het ingeboude veiligheidkenmerke om jou te beskerm terwyl jy blaai, soos Google Veiligblaai. Veiligblaai <ph name="BEGIN_LINK" />het onlangs wanware op <ph name="SITE" /><ph name="END_LINK" />, gevind, wat ingebed is in die werf wat jy probeer besoek.</translation>
 <translation id="1435940442311036198">Gebruik ’n toegangsleutel op ’n ander toestel</translation>
 <translation id="1436185428532214179">Kan vra om lêers of vouers op jou toestel te wysig</translation>
 <translation id="1441816242347931036">Maak oop om voort te gaan</translation>
@@ -1470,7 +1469,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3767485424735936570">Administrateursbeleid beveel nie aan dat hierdie inhoud op <ph name="VM_NAME" /> gekopieer en geplak word nie</translation>
 <translation id="3772211998634047851">Papier (bond)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk Tab en dan Enter om vinnig 'n nuwe nota in Google Keep te skep</translation>
-<translation id="378026377453746707">Chrome het ingeboude veiligheidkenmerke om jou te beskerm terwyl jy blaai, soos Google Veiligblaai. Veiligblaai het onlangs <ph name="BEGIN_LINK" />skadelike sagteware op <ph name="SITE" /> gevind<ph name="END_LINK" />, wat in die werf ingebed is wat jy probeer besoek.</translation>
 <translation id="3780694243617746492">Uitvoerbak</translation>
 <translation id="3781428340399460090">Helderpienk</translation>
 <translation id="3783418713923659662">Mastercard</translation>
@@ -1554,7 +1552,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3950820424414687140">Meld aan</translation>
 <translation id="3953505489397572035">Hierdie prys is tipies</translation>
 <translation id="3958057596965527988">4x4 dm.</translation>
-<translation id="3959121317419633580">Chrome het ingeboude veiligheidkenmerke om jou te beskerm terwyl jy blaai, soos Google Veiligblaai. Veiligblaai het onlangs <ph name="BEGIN_LINK" />op <ph name="SITE" /> uitvissing gevind<ph name="END_LINK" />, wat ingebed is in die werf wat jy probeer besoek.<ph name="NEW_LINE" />Selfs werwe wat normaalweg veilig is, word soms deur aanvallers gekompromitteer. <ph name="BEGIN_ERROR_LINK" />Laat ons weet<ph name="END_ERROR_LINK" /> as jy dink daar ’n fout is en dat hierdie werf nie ’n gevaar inhou nie.</translation>
 <translation id="3961148744525529027">Betalinghanteerdersigblad is halfoop</translation>
 <translation id="3962859241508114581">Vorige snit</translation>
 <translation id="3963721102035795474">Lesermodus</translation>

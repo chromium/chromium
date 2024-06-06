@@ -5,6 +5,7 @@
 <translation id="1013952917065545813">Poți să revii aici mai târziu ca să redeschizi file pe care le-ai închis recent.</translation>
 <translation id="1016495303386450659">Element actualizat</translation>
 <translation id="1025514696883950875">{COUNT,plural, =1{Salvează parola în cont}few{Salvează parole în cont}other{Salvează parole în cont}}</translation>
+<translation id="102916930470544692">Cheie de acces</translation>
 <translation id="1035980983510608210">Dacă închizi toate filele, se vor închide și filele fixate.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1043592663436934089">Vei fi deconectat(ă) și datele de navigare vor fi șterse</translation>
@@ -1016,6 +1017,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6173499589275053515">Parola s-a salvat în Contul Google, <ph name="EMAIL" /></translation>
 <translation id="6184086493125982861">Afișează butonul File</translation>
 <translation id="6187302354554850004">Ultima sincronizare: <ph name="LAST_USED_TIME" /></translation>
+<translation id="6188737759358894319">Data creării: <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Necitite</translation>
 <translation id="6196207969502475924">Căutare vocală</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Închide {COUNT} filă}few{Închide {COUNT} file}other{Închide {COUNT} de file}}</translation>
@@ -1303,7 +1305,6 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="7557508262441527045">Te-ai deconectat</translation>
 <translation id="7561196759112975576">Întotdeauna</translation>
 <translation id="7564917801238348224">SALVEAZĂ...</translation>
-<translation id="758132317817089442">Activează Protecția îmbunătățită...</translation>
 <translation id="7582857256643797524">Această setare este activată pe dispozitiv</translation>
 <translation id="7583004045319035904">Folosește <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> pentru a debloca filele incognito.</translation>
 <translation id="7598439272585186139">Beneficiază de mai multă securitate</translation>

@@ -100,7 +100,6 @@
 <translation id="6333260925957816943">या स्टोअरविषयी माहिती</translation>
 <translation id="6381032505162537930">तुम्हाला तुमचे टॅब गट इथे दिसतील</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{निवडलेला <ph name="TABS_COUNT_ONE" /> टॅब गटामधून काढून टाका}other{निवडलेले <ph name="TABS_COUNT_MANY" /> टॅब गटामधून काढून टाका}}</translation>
-<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Chrome च्या मुख्य मेनू अंतर्गत अलीकडील टॅबमध्ये तुम्ही तुमचे बंद केलेले टॅब पाहू शकता. तुमचा गुप्त टॅब उपलब्ध असणार नाही.}other{Chrome च्या मुख्य मेनू अंतर्गत अलीकडील टॅबमध्ये तुम्ही तुमचे बंद केलेले टॅब पाहू शकता. तुमचे # गुप्त टॅब उपलब्ध असणार नाहीत.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> टॅब}other{<ph name="TABS_COUNT_MANY" /> टॅब}}</translation>
 <translation id="6549021453810473782">स्टोअरची माहिती पहा</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>

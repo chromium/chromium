@@ -147,6 +147,7 @@
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> लाई <ph name="SECOND_ITEM_TITLE" /> सँग साटियो</translation>
 <translation id="1500926532737552529">सबै सुझावहरू देखाउनुहोस्</translation>
 <translation id="1501946871587957338">अडियोको स्रोत बदल्ने हो?</translation>
+<translation id="1505542291183484463">विन्डोको टाइलको आकार तलतिरबाट बदल्नुहोस्</translation>
 <translation id="1510238584712386396">लन्चर</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{सूचनासम्बन्धी सेटिङहरू देखाउनुहोस्। एउटा एपका लागि सूचनाहरू निष्क्रिय छन्}other{सूचनासम्बन्धी सेटिङहरू देखाउनुहोस्। # एपका लागि सूचनाहरू निष्क्रिय छन्}}</translation>
 <translation id="1523032696246003"><ph name="BATTERY_PERCENTAGE" />% ब्याट्री बाँकी छ | पूरा चार्ज हुन <ph name="TIME" /> लाग्छ</translation>
@@ -296,6 +297,7 @@
 <translation id="2149229036084364364">अघिल्लो ट्रयाक प्ले गर्नुहोस्</translation>
 <translation id="2152895518047545149">तपाईंले सबै असाइनमेन्ट पेस गरिसक्नुभयो जस्तो देखिन्छ। राम्रो काम!</translation>
 <translation id="2161132820593978283">भिडियो कल गर्दा आफूलाई स्क्रिनको बिचमा राखिराख्न क्यामेरा फ्रेमिङ प्रयोग गरी हेर्नुहोस्। "द्रुत सेटिङ" मा गई यो सुविधा अन गर्नुहोस्।</translation>
+<translation id="216955976692983107">विन्डोको टाइलको आकार दायाँतिरबाट बदल्नुहोस्</translation>
 <translation id="2185166372312820725">अघिल्लो ट्याबमा जानुहोस्</translation>
 <translation id="2185444992308415167">ट्याब १ बाट ट्याब ८ मा जानुहोस्</translation>
 <translation id="2198625180564913276">प्रोफाइल थपिँदै छ। यो कार्य पूरा हुन केही बेर लाग्न सक्छ।</translation>
@@ -642,6 +644,7 @@
 <translation id="3509391053705095206">तपाईंको फोन भेट्टाउन सकिएन। आफ्नो फोनको ब्लुटुथ अन गरिएको छ भन्ने कुरा सुनिश्चित गर्नुहोस्।</translation>
 <translation id="3510164367642747937">माउसको कर्सरलाई हाइलाइट</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> ले व्यवस्थापन गरेको खाता</translation>
+<translation id="3516000762115478502">विन्डोको टाइलको आकार माथितिरबाट बदल्नुहोस्</translation>
 <translation id="3517037892157925473">कार्यहरू अपडेट गरिएको पछिल्लो समय र मिति: <ph name="TIME" />, <ph name="DATE" />।</translation>
 <translation id="352245152354538528">{0,plural, =1{१ मिनेटभित्र डिभाइस रिस्टार्ट गर्नुहोस्}other{# मिनेटभित्र डिभाइस रिस्टार्ट गर्नुहोस्}}</translation>
 <translation id="3522979239100719575">उपलब्ध प्रोफाइलहरू खोजिँदै छ। यो कार्य गर्न केही बेर लाग्न सक्छ।</translation>
@@ -758,6 +761,7 @@
 <translation id="3899995891769452915">आवाज मार्फत इनपुट</translation>
 <translation id="3900355044994618856">तपाईंको सत्र <ph name="SESSION_TIME_REMAINING" /> मा समाप्त हुने छ</translation>
 <translation id="3901991538546252627"><ph name="NAME" /> मा कनेक्ट गरिँदै छ</translation>
+<translation id="3904768293285573640">विन्डोको टाइलको आकार बायाँतिरबाट बदल्नुहोस्</translation>
 <translation id="3906954721959377182">ट्याब्लेट</translation>
 <translation id="3923494859158167397">कुनै पनि मोबाइल नेटवर्क सेटअप गरिएको छैन</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, कार्यक्रमहरू लोड गरिँदै छन्।</translation>

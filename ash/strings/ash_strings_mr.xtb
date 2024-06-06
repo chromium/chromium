@@ -147,6 +147,7 @@
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> हा <ph name="SECOND_ITEM_TITLE" /> सोबत स्वॅप केला</translation>
 <translation id="1500926532737552529">सर्व सूचना दाखवा</translation>
 <translation id="1501946871587957338">ऑडिओ स्रोत स्विच करायचा आहे का?</translation>
+<translation id="1505542291183484463">विंडोच्या टाइलचा आकार खालच्या दिशेने बदला</translation>
 <translation id="1510238584712386396">लाँचर</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{सूचना सेटिंग्ज दाखवा. ॲपसाठी सूचना बंद आहेत}other{सूचना सेटिंग्ज दाखवा. # ॲप्ससाठी सूचना बंद आहेत}}</translation>
 <translation id="1523032696246003">बॅटरी <ph name="BATTERY_PERCENTAGE" />% | पूर्ण होण्यासाठी <ph name="TIME" /></translation>
@@ -177,6 +178,7 @@
 <translation id="1610778689852195798">"पहिल्यासारखे करा"</translation>
 <translation id="1611993646327628135">सुरू करा</translation>
 <translation id="1620510694547887537">कॅमेरा</translation>
+<translation id="1623768535032616219">Google Classroom कोलॅप्स करा</translation>
 <translation id="1632985212731562677">सेटिंग्ज &gt; अ‍ॅक्सेसिबिलिटी मध्ये स्विच अ‍ॅक्सेस बंद केले जाऊ शकते.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> डिव्हाइस</translation>
 <translation id="1639239467298939599">लोड करत आहे</translation>
@@ -296,11 +298,13 @@
 <translation id="2149229036084364364">मागील ट्रॅकवर जा</translation>
 <translation id="2152895518047545149">असे दिसते, की सर्व असाइनमेंट पूर्ण केल्या आहेत. छान!</translation>
 <translation id="2161132820593978283">कॅमेरा फ्रेमिंग वापरून पहा, जेणेकरून व्हिडिओ कॉलवर तुम्ही स्क्रीनच्या मध्यभागी राहाल. ते क्विक सेटिंग्जमध्ये सुरू करा.</translation>
+<translation id="216955976692983107">विंडोच्या टाइलचा आकार उजवीकडून बदला</translation>
 <translation id="2185166372312820725">आधीच्या टॅबवर जा</translation>
 <translation id="2185444992308415167">एक ते आठ टॅबमधून जा</translation>
 <translation id="2198625180564913276">प्रोफाइल जोडत आहे. याला काही मिनिटे लागू शकतात.</translation>
 <translation id="219905428774326614">लाँचर, सर्व अ‍ॅप्स</translation>
 <translation id="2201071101391734388"><ph name="TOTAL_COUNT" /> पैकी <ph name="INDEX" /> अलीकडील फोटो.</translation>
+<translation id="2201687081523799384">Google Tasks कोलॅप्स करा</translation>
 <translation id="2208323208084708176">एकीकृत डेस्कटॉप मोड</translation>
 <translation id="2220572644011485463">पिन किंवा पासवर्ड</translation>
 <translation id="2222841058024245321">डेस्‍क ७</translation>
@@ -362,6 +366,7 @@
 <translation id="2427507373259914951">लेफ्ट क्लिक करा</translation>
 <translation id="2429753432712299108">"<ph name="DEVICE_NAME" />" Bluetooth डिव्हाइस जोडण्यासाठी परवानगी घेऊ इच्छिते. स्वीकार करण्यापूर्वी, कृपया त्या डिव्हाइसवर ही पासकी दर्शवली असल्याची पुष्टी करा: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">पासवर्ड दर्शवा</translation>
+<translation id="2437771564543046790">बॅटरी कमी आहे. बॅटरी सेव्हर सुरू आहे</translation>
 <translation id="243878895369688216">काल उघडलेली</translation>
 <translation id="2440978926514840421">GIF चे रेकॉर्डिंग केले आहे</translation>
 <translation id="2441427462554639370">स्टोरेज जागा अतिशय कमी असल्यामुळे रेकॉर्डिंग संपले</translation>
@@ -642,6 +647,7 @@
 <translation id="3509391053705095206">तुमचा फोन शोधू शकत नाही. तुमच्या फोनचे ब्लूटूथ सुरू असल्याची खात्री करा.</translation>
 <translation id="3510164367642747937">माउसचा कर्सर हायलाइट करा</translation>
 <translation id="3513798432020909783">खाते <ph name="MANAGER_EMAIL" /> ने व्‍यवस्‍थापित केले आहे</translation>
+<translation id="3516000762115478502">विंडोच्या टाइलचा आकार वरच्या दिशेने बदला</translation>
 <translation id="3517037892157925473">टास्क शेवटच्या अपडेट केल्या आहेत: <ph name="TIME" />, <ph name="DATE" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{डिव्हाइस एका मिनिटाच्या आत अपडेट करा}other{डिव्हाइस # मिनिटांच्या आत अपडेट करा}}</translation>
 <translation id="3522979239100719575">उपलब्ध प्रोफाइल शोधत आहे. यासाठी काही मिनिटे लागू शकतात.</translation>
@@ -758,6 +764,7 @@
 <translation id="3899995891769452915">व्हॉइस इनपुट</translation>
 <translation id="3900355044994618856"><ph name="SESSION_TIME_REMAINING" /> मध्ये तुमचे सेशन समाप्त होईल</translation>
 <translation id="3901991538546252627"><ph name="NAME" /> वर कनेक्ट करीत आहे</translation>
+<translation id="3904768293285573640">विंडोच्या टाइलचा आकार डावीकडून बदला</translation>
 <translation id="3906954721959377182">टॅबलेट</translation>
 <translation id="3923494859158167397">कोणतीही मोबाइल नेटवर्क सेट केलेली नाहीत</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, इव्हेंट लोड करत आहे.</translation>
@@ -1196,6 +1203,7 @@
 <translation id="550391772491508736">कास्ट करणे पुन्हा सुरू करा</translation>
 <translation id="5506975627792768506">मॅग्निफायर सुरू किंवा बंद करा</translation>
 <translation id="5512042095225963688">मागील शब्द हटवा</translation>
+<translation id="5519005148254860683">Google Tasks चा विस्तार करा</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">तुमच्या अ‍ॅडमिनिस्ट्रेटरने सर्व eSIM प्रोफाइल काढून टाकल्या आहेत. अधिक माहितीसाठी तुमच्या अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा.</translation>
 <translation id="5520909879404821039">फ्रेंचमध्ये हाय म्हणणे</translation>
@@ -1404,6 +1412,7 @@
 <translation id="6200515304866777730">अ‍ॅप सपोर्ट करत नाही</translation>
 <translation id="6210042900243040400">याआधी <ph name="EMAIL" /> मध्ये सेव्ह केलेले <ph name="NAME" /> कनेक्ट करा</translation>
 <translation id="6213808132343683860">आंशिक स्क्रीनशॉट किंवा स्क्रीन रेकॉर्डिंग करा</translation>
+<translation id="621606890568890214">Google Classroom चा विस्तार करा</translation>
 <translation id="6220928844947387476">तुम्ही आता एकाच वेळी स्वतःला आणि तुमची स्क्रीन रेकॉर्ड करू शकता</translation>
 <translation id="622484624075952240">Down</translation>
 <translation id="6228457605945141550">उजळपणा कमी करा</translation>

@@ -5,6 +5,7 @@
 <translation id="1013952917065545813">Vous pouvez revenir ici plus tard pour rouvrir les onglets que vous avez fermés récemment</translation>
 <translation id="1016495303386450659">Élément mis à jour</translation>
 <translation id="1025514696883950875">{COUNT,plural, =1{Enregistrer le mot de passe dans le compte}one{Enregistrer le mot de passe dans le compte}other{Enregistrer les mots de passe dans le compte}}</translation>
+<translation id="102916930470544692">Clé d'accès</translation>
 <translation id="1035980983510608210">La fermeture de tous les onglets fermera également les onglets épinglés.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1043592663436934089">Vous serez déconnecté, et les données de navigation seront supprimées</translation>
@@ -1016,6 +1017,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="6173499589275053515">Mot de passe enregistré dans votre compte Google, <ph name="EMAIL" /></translation>
 <translation id="6184086493125982861">Afficher les onglets</translation>
 <translation id="6187302354554850004">Dernière synchro : <ph name="LAST_USED_TIME" /></translation>
+<translation id="6188737759358894319">Créé le <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Non lu</translation>
 <translation id="6196207969502475924">Recherche vocale</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Fermer {COUNT} onglet}one{Fermer {COUNT} onglet}other{Fermer {COUNT} onglets}}</translation>
@@ -1303,7 +1305,6 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="7557508262441527045">Déconnecté</translation>
 <translation id="7561196759112975576">Toujours</translation>
 <translation id="7564917801238348224">ENREGISTRER…</translation>
-<translation id="758132317817089442">Activation de la protection renforcée en cours…</translation>
 <translation id="7582857256643797524">Ce paramètre est activé sur votre appareil</translation>
 <translation id="7583004045319035904">Utiliser <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> pour déverrouiller vos onglets de navigation privée.</translation>
 <translation id="7598439272585186139">Obtenir plus de sécurité</translation>

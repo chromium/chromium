@@ -147,6 +147,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1487931858675166540">Troca de <ph name="FIRST_ITEM_TITLE" /> por <ph name="SECOND_ITEM_TITLE" /> realizada</translation>
 <translation id="1500926532737552529">Mostrar todas as sugestões</translation>
 <translation id="1501946871587957338">Trocar a fonte de áudio?</translation>
+<translation id="1505542291183484463">Redimensionar janela em mosaico para baixo</translation>
 <translation id="1510238584712386396">Iniciador</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Mostrar configurações de notificação. As notificações estão desativadas para um app}one{Mostrar configurações de notificação. As notificações estão desativadas para # app}other{Mostrar configurações de notificação. As notificações estão desativadas para # apps}}</translation>
 <translation id="1523032696246003">Bateria em <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> até a carga completa</translation>
@@ -296,6 +297,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2149229036084364364">Ir para a faixa anterior</translation>
 <translation id="2152895518047545149">Parece que não há nada pendente. Bom trabalho!</translation>
 <translation id="2161132820593978283">Use o enquadramento da câmera para ficar no centro da tela durante videochamadas. Ative essa opção nas Configurações rápidas.</translation>
+<translation id="216955976692983107">Redimensionar janela em mosaico para a direita</translation>
 <translation id="2185166372312820725">Ir para a guia anterior</translation>
 <translation id="2185444992308415167">Percorrer as guias 1 a 8</translation>
 <translation id="2198625180564913276">Adicionando perfil. Pode levar alguns minutos..</translation>
@@ -642,6 +644,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="3509391053705095206">Não foi possível encontrar o smartphone. Confira se o Bluetooth está ativado.</translation>
 <translation id="3510164367642747937">Destacar cursor do mouse</translation>
 <translation id="3513798432020909783">Conta gerenciada por <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3516000762115478502">Redimensionar janela em mosaico para cima</translation>
 <translation id="3517037892157925473">Última atualização das tarefas: <ph name="TIME" />, <ph name="DATE" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{Atualize o dispositivo em 1 minuto}one{Atualize o dispositivo em # minuto}other{Atualize o dispositivo em # minutos}}</translation>
 <translation id="3522979239100719575">Procurando perfis disponíveis. Pode levar alguns minutos..</translation>
@@ -758,6 +761,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="3899995891769452915">Entrada de texto por voz</translation>
 <translation id="3900355044994618856">Sua sessão terminará em <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">Conectando-se a <ph name="NAME" /></translation>
+<translation id="3904768293285573640">Redimensionar janela em mosaico para a esquerda</translation>
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3923494859158167397">Nenhuma rede móvel configurada</translation>
 <translation id="3925540965556789199"><ph name="DATE" />. Carregando eventos.</translation>

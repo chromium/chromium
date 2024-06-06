@@ -100,7 +100,6 @@
 <translation id="6333260925957816943">Informasi tentang toko ini</translation>
 <translation id="6381032505162537930">Anda akan menemukan grup tab di sini</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Pisahkan <ph name="TABS_COUNT_ONE" /> tab yang dipilih}other{Pisahkan <ph name="TABS_COUNT_MANY" /> tab yang dipilih}}</translation>
-<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Anda dapat menemukan tab yang ditutup di Tab terbaru di bagian menu utama Chrome. Tab Samaran Anda tidak akan tersedia.}other{Anda dapat menemukan tab yang ditutup di Tab terbaru di bagian menu utama Chrome. # tab Samaran Anda tidak akan tersedia.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}other{<ph name="TABS_COUNT_MANY" /> tab}}</translation>
 <translation id="6549021453810473782">Lihat info toko</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>

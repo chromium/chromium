@@ -100,7 +100,6 @@
 <translation id="6333260925957816943">இந்த ஸ்டோர் குறித்த தகவல்கள்</translation>
 <translation id="6381032505162537930">உங்கள் பக்கக் குழுக்கள் இங்கே காட்டப்படும்</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{தேர்ந்தெடுத்த <ph name="TABS_COUNT_ONE" /> பக்கத்தைப் பிரிக்கும்}other{தேர்ந்தெடுத்த <ph name="TABS_COUNT_MANY" /> பக்கங்களைப் பிரிக்கும்}}</translation>
-<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Chrome முதன்மை மெனுவின் கீழ் உள்ள சமீபத்திய உலாவிப் பக்கங்கள் என்பதில் மூடிய பக்கங்களைப் பார்க்கலாம். உங்களின் மறைநிலைப் பக்கத்தைப் பார்க்க முடியாது.}other{Chrome முதன்மை மெனுவின் கீழ் உள்ள சமீபத்திய உலாவிப் பக்கங்கள் என்பதில் மூடிய பக்கங்களைப் பார்க்கலாம். உங்களின் # மறைநிலைப் பக்கங்களைப் பார்க்க முடியாது.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> பக்கம்}other{<ph name="TABS_COUNT_MANY" /> பக்கங்கள்}}</translation>
 <translation id="6549021453810473782">ஸ்டோர் தகவலைக் காட்டும்</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>

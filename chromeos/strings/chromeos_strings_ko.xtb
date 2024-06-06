@@ -961,7 +961,6 @@
 <translation id="6412715219990689313">내장 키보드</translation>
 <translation id="6417265370957905582">Google 어시스턴트</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
-<translation id="6438073885402882007">이렇게 하면 권한이 있는 시스템 서비스에서 위치를 사용할 수 있습니다. 기기의 위치를 추정하는 데 Wi-Fi, 모바일 네트워크, 센서 등의 데이터가 사용될 수 있습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="6439505561246192797">약함(<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">계정 설정으로 이동</translation>
 <translation id="6462978824459367242">이제 APN 추가 버튼이 사용 설정되었습니다</translation>

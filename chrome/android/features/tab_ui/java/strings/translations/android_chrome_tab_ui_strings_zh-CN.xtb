@@ -100,7 +100,6 @@
 <translation id="6333260925957816943">此商店的相关信息</translation>
 <translation id="6381032505162537930">您的标签页分组会显示在此处</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{为 <ph name="TABS_COUNT_ONE" /> 个所选标签页取消分组}other{为 <ph name="TABS_COUNT_MANY" /> 个所选标签页取消分组}}</translation>
-<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{通过在 Chrome 主菜单中点击“最近打开的标签页”，您可以找到已关闭的标签页。不过，那里不会显示您已关闭的无痕式标签页。}other{通过在 Chrome 主菜单中点击“最近打开的标签页”，您可以找到已关闭的标签页。不过，那里不会显示您已关闭的 # 个无痕式标签页。}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 个标签页}other{<ph name="TABS_COUNT_MANY" /> 个标签页}}</translation>
 <translation id="6549021453810473782">查看商店信息</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>

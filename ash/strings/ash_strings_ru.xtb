@@ -178,6 +178,7 @@
 <translation id="1610778689852195798">"Отменить"</translation>
 <translation id="1611993646327628135">Включено</translation>
 <translation id="1620510694547887537">Камера</translation>
+<translation id="1623768535032616219">Скрыть информацию из Google Класса</translation>
 <translation id="1632985212731562677">Функцию Switch Access можно отключить в разделе "Настройки &gt; Специальные возможности".</translation>
 <translation id="1637505162081889933">Устройств: <ph name="NUM_DEVICES" /></translation>
 <translation id="1639239467298939599">Загрузка…</translation>
@@ -303,6 +304,7 @@
 <translation id="2198625180564913276">Профиль добавляется. Это может занять несколько минут.</translation>
 <translation id="219905428774326614">Панель запуска, все приложения</translation>
 <translation id="2201071101391734388">Недавнее фото <ph name="INDEX" /> из <ph name="TOTAL_COUNT" /></translation>
+<translation id="2201687081523799384">Скрыть информацию из Google Задач</translation>
 <translation id="2208323208084708176">Единый рабочий стол</translation>
 <translation id="2220572644011485463">PIN-код или пароль</translation>
 <translation id="2222841058024245321">Рабочий стол 7</translation>
@@ -364,6 +366,7 @@
 <translation id="2427507373259914951">Нажатие на левую кнопку мыши</translation>
 <translation id="2429753432712299108">Устройству <ph name="DEVICE_NAME" /> требуется разрешение на подключение через Bluetooth. Проверьте, отображается ли на нем код: <ph name="PASSKEY" />.</translation>
 <translation id="2435457462613246316">Показать пароль</translation>
+<translation id="2437771564543046790">Низкий заряд батареи. Включен режим энергосбережения</translation>
 <translation id="243878895369688216">Открыто вчера</translation>
 <translation id="2440978926514840421">Выполнена запись в формате GIF</translation>
 <translation id="2441427462554639370">Запись приостановлена, потому что в хранилище почти нет свободного места.</translation>
@@ -1200,6 +1203,7 @@
 <translation id="550391772491508736">Возобновить трансляцию</translation>
 <translation id="5506975627792768506">Включить или отключить лупу</translation>
 <translation id="5512042095225963688">Удалить предыдущее слово</translation>
+<translation id="5519005148254860683">Показать информацию из Google Задач</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Ваш администратор удалил все профили eSIM. Обратитесь к нему за подробной информацией.</translation>
 <translation id="5520909879404821039">"Привет" на французском</translation>
@@ -1408,6 +1412,7 @@
 <translation id="6200515304866777730">Не поддерживается приложением</translation>
 <translation id="6210042900243040400">Можно подключиться к устройству <ph name="NAME" />, которое уже сохранено в аккаунте <ph name="EMAIL" />.</translation>
 <translation id="6213808132343683860">Сделать скриншот или запись видео с части экрана</translation>
+<translation id="621606890568890214">Показать информацию из Google Класса</translation>
 <translation id="6220928844947387476">Теперь можно вести запись экрана и изображения с веб-камеры одновременно.</translation>
 <translation id="622484624075952240">Вниз</translation>
 <translation id="6228457605945141550">Уменьшить яркость</translation>

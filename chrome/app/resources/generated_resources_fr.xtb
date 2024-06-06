@@ -1744,6 +1744,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
     <ph name="BEGIN_PARAGRAPH2" />Une fois l'installation lancée, elle ne peut plus être annulée.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">Échanger des données avec n'importe quel appareil dans les domaines suivants : "<ph name="DOMAINS" />"</translation>
 <translation id="2270666014403455717">Associer un contacteur à "Sélectionner"</translation>
+<translation id="2271452184061378400">Vos groupes d'onglets sont enregistrés ici</translation>
 <translation id="2271986192355138465">Découvrir comment installer des applis Web</translation>
 <translation id="2272430695183451567">0 touche attribuée</translation>
 <translation id="2272570998639520080">Verre à martini</translation>
@@ -1980,7 +1981,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2435248616906486374">Réseau déconnecté.</translation>
 <translation id="2435457462613246316">Afficher le mot de passe</translation>
 <translation id="2436385001956947090">Copier le &amp;lien</translation>
-<translation id="2436746748253887661">Cette autorisation permettra aux services système d'utiliser votre position. Le service basé sur la localisation peut utiliser des sources, comme les réseaux Wi-Fi et mobiles, ainsi que les capteurs, pour estimer la position de votre appareil. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="2438853563451647815">Non connecté à l'imprimante</translation>
 <translation id="2439152382014731627">Réinitialiser le mot de passe du <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> : chargement…</translation>
@@ -6753,7 +6753,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6042308850641462728">Plus</translation>
 <translation id="604388835206766544">Échec de l'analyse de la configuration</translation>
 <translation id="6043994281159824495">Se déconnecter maintenant</translation>
-<translation id="604424701295382420">Épinglé. Vous pouvez de nouveau accéder à Google Lens à l'aide du nouveau bouton de la barre d'outils.</translation>
+<translation id="604424701295382420">Épinglé. Vous pouvez accéder à Google Lens à l'aide du nouveau bouton de la barre d'outils.</translation>
 <translation id="6045114302329202345">Bouton TrackPoint principal</translation>
 <translation id="6047632800149092791">La synchronisation ne fonctionne pas. Essayez de vous déconnecter, puis de vous reconnecter.</translation>
 <translation id="6048747414605857443">Sélectionnez et personnalisez les voix de la synthèse vocale pour ChromeVox et Sélectionner pour écouter</translation>
@@ -8539,6 +8539,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7416091793702109803">Vérifier <ph name="FILE_NAME" /></translation>
 <translation id="7416263748877373774">Impossible de charger les conditions d'utilisation. Veuillez vérifier votre connexion réseau et réessayer.</translation>
 <translation id="7416362041876611053">Erreur réseau inconnue.</translation>
+<translation id="7417435070053325657"><ph name="BLOCKED_APPS_SIZE" /> appli(s) bloquée(s) sur <ph name="APPS_LIST_SIZE" /></translation>
 <translation id="741906494724992817">Cette application fonctionne sans autorisation spéciale.</translation>
 <translation id="7419142833919893307">Aucun nom d'utilisateur ajouté</translation>
 <translation id="7419565702166471774">Toujours utiliser une connexion sécurisée</translation>
@@ -9060,7 +9061,6 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7788948939674438635">Ne pas autoriser les sites à verrouiller votre clavier</translation>
 <translation id="7789963078219276159">L'arrière-plan par défaut de la page d'accueil a été remplacé par <ph name="CATEGORY" />.</translation>
-<translation id="7790689625219600437">OCR dans les PDF</translation>
 <translation id="7791269138074599214">Mode de saisie</translation>
 <translation id="7791429245559955092">Cette application sera installée sur le profil Chrome actuellement utilisé</translation>
 <translation id="7791436592012979144">Défilement inversé activé</translation>
@@ -9815,6 +9815,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8336739000755212683">Modifier l'image du compte sur l'appareil</translation>
 <translation id="8337020675372081178">{HOURS,plural, =1{Pendant 1 heure, cet appareil sera enregistré et vous n'aurez pas besoin de code pour vous reconnecter. Ce paramètre est défini par votre administrateur.}one{Pendant {HOURS} heure, cet appareil sera enregistré et vous n'aurez pas besoin de code pour vous reconnecter. Ce paramètre est défini par votre administrateur.}other{Pendant {HOURS} heures, cet appareil sera enregistré et vous n'aurez pas besoin de code pour vous reconnecter. Ce paramètre est défini par votre administrateur.}}</translation>
 <translation id="8337399713761067085">Vous êtes actuellement hors connexion.</translation>
+<translation id="8338427544764842461">Vos groupes d'onglets sont enregistrés ici et mis à jour sur tous les appareils connectés à votre compte</translation>
 <translation id="8338952601723052325">Site Web du développeur</translation>
 <translation id="8339288417038613756">Taille de police et d'affichage</translation>
 <translation id="833986336429795709">Pour ouvrir ce lien, sélectionner une application</translation>

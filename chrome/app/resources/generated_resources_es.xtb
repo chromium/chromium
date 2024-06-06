@@ -1247,7 +1247,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1901213235765457754">Pide a tu administrador que actualice esta aplicación</translation>
 <translation id="1901303067676059328">Seleccionar &amp;todo</translation>
 <translation id="1904580727789512086">Las URLs que visitas se guardan en tu cuenta de Google</translation>
-<translation id="1906181697255754968">Los sitios suelen acceder a archivos y carpetas del dispositivo para usarlos en funciones como el guardado automáticamente del trabajo.</translation>
+<translation id="1906181697255754968">Los sitios suelen acceder a archivos y carpetas de tu dispositivo para usarlos en funciones como la de guardar automáticamente tu trabajo.</translation>
 <translation id="1906488504371069394">Descubre más extensiones y temas en <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
 <translation id="1907044622262489040">Escribe con la voz. Pulsa la tecla de búsqueda + D y empieza a hablar.</translation>
 <translation id="1907659324308286326">Algunos accesorios Thunderbolt o USB4 necesitan acceder a la memoria para funcionar correctamente.</translation>
@@ -1744,6 +1744,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
     <ph name="BEGIN_PARAGRAPH2" />Una vez que empiece, la instalación no se podrá cancelar.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">Intercambiar datos con cualquier dispositivo de los dominios <ph name="DOMAINS" /></translation>
 <translation id="2270666014403455717">Asignar interruptor para "Seleccionar"</translation>
+<translation id="2271452184061378400">Tus grupos de pestañas se guardan aquí</translation>
 <translation id="2271986192355138465">Consulta cómo instalar aplicaciones web</translation>
 <translation id="2272430695183451567">0 interruptores asignados</translation>
 <translation id="2272570998639520080">Copa de Martini</translation>
@@ -1980,7 +1981,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2435248616906486374">Red desconectada</translation>
 <translation id="2435457462613246316">Mostrar contraseña</translation>
 <translation id="2436385001956947090">Copiar &amp;enlace</translation>
-<translation id="2436746748253887661">Esto permite que los servicios del sistema que tengan permiso puedan usar tu ubicación. Se pueden usar distintas fuentes (como redes Wi-Fi o móviles, o sensores) para estimar la ubicación de tu dispositivo. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="2438853563451647815">No conectado a la impresora</translation>
 <translation id="2439152382014731627">Cambiar contraseña de <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600">Cargando <ph name="WINDOW_TITLE" /></translation>
@@ -9058,7 +9058,6 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7788948939674438635">No permitir que los sitios bloqueen el teclado</translation>
 <translation id="7789963078219276159">Se ha cambiado el fondo de la página de inicio a <ph name="CATEGORY" />.</translation>
-<translation id="7790689625219600437">OCR para PDFs</translation>
 <translation id="7791269138074599214">Método de introducción de texto</translation>
 <translation id="7791429245559955092">Esta aplicación se instalará en el perfil de Chrome que estás usando en este momento</translation>
 <translation id="7791436592012979144">Desplazamiento invertido habilitado</translation>
@@ -9813,6 +9812,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8336739000755212683">Cambiar imagen de cuenta de dispositivo</translation>
 <translation id="8337020675372081178">{HOURS,plural, =1{Este dispositivo se guardará durante 1 hora y podrás conectarte sin un código la próxima vez. Este ajuste lo establece tu administrador.}other{Este dispositivo se guardará durante {HOURS} horas y podrás conectarte sin un código la próxima vez. Este ajuste lo establece tu administrador.}}</translation>
 <translation id="8337399713761067085">Actualmente no tienes conexión.</translation>
+<translation id="8338427544764842461">Tus grupos de pestañas se guardan aquí y se actualizan en todos los dispositivos en los que has iniciado sesión</translation>
 <translation id="8338952601723052325">Sitio web para desarrolladores</translation>
 <translation id="8339288417038613756">Tamaño de visualización y del texto</translation>
 <translation id="833986336429795709">Para abrir este enlace, elige una aplicación</translation>

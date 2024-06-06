@@ -147,6 +147,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> is geruil met <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Wys alle voorstelle</translation>
 <translation id="1501946871587957338">Wissel oudiobron?</translation>
+<translation id="1505542291183484463">Verander grootte van geteëlde venster afwaarts</translation>
 <translation id="1510238584712386396">Lanseerder</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Wys kennisgewinginstellings. Kennisgewings is af vir 'n program}other{Wys kennisgewinginstellings. Kennisgewings is af vir # programme}}</translation>
 <translation id="1523032696246003">Battery <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> tot vol</translation>
@@ -177,6 +178,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1610778689852195798">"Ontdoen"</translation>
 <translation id="1611993646327628135">Aan</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1623768535032616219">Vou Google Klaskamer in</translation>
 <translation id="1632985212731562677">Skakelaartoegang kan in Instellings &gt; Toeganklikheid gedeaktiveer word.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> toestelle</translation>
 <translation id="1639239467298939599">Laai tans</translation>
@@ -296,11 +298,13 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2149229036084364364">Gaan na vorige snit</translation>
 <translation id="2152895518047545149">Lyk of niks ontbreek nie. Mooi so!</translation>
 <translation id="2161132820593978283">Probeer kamera se raamfunksie sodat jy met video-oproepe in die middel van die skerm is. Skakel dit aan in Kitsinstellings.</translation>
+<translation id="216955976692983107">Verander grootte van geteëlde venster na regs</translation>
 <translation id="2185166372312820725">Gaan na vorige oortjie</translation>
 <translation id="2185444992308415167">Gaan deur oortjies 1 tot 8</translation>
 <translation id="2198625180564913276">Voeg tans profiel by. Dit kan 'n paar minute neem.</translation>
 <translation id="219905428774326614">Lanseerder, alle programme</translation>
 <translation id="2201071101391734388">Onlangse foto <ph name="INDEX" /> van <ph name="TOTAL_COUNT" />.</translation>
+<translation id="2201687081523799384">Vou Google Take in</translation>
 <translation id="2208323208084708176">Verenigde werkskermmodus</translation>
 <translation id="2220572644011485463">PIN of wagwoord</translation>
 <translation id="2222841058024245321">Lessenaar 7</translation>
@@ -362,6 +366,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2427507373259914951">Linksklik</translation>
 <translation id="2429753432712299108">Bluetooth-toestel "<ph name="DEVICE_NAME" />" soek toestemming om saam te bind. Voor jy aanvaar, bevestig asseblief dat hierdie toegangsleutel op daardie toestel gewys word: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Wys wagwoord</translation>
+<translation id="2437771564543046790">Min batterykrag. Batterybespaarder is aan</translation>
 <translation id="243878895369688216">Gister oopgemaak</translation>
 <translation id="2440978926514840421">GIF-opname is geneem</translation>
 <translation id="2441427462554639370">Opname het geëindig omdat skyfspasie gevaarlik min was</translation>
@@ -642,6 +647,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="3509391053705095206">Kan nie jou foon kry nie. Maak seker jou foon se Bluetooth is aangeskakel.</translation>
 <translation id="3510164367642747937">Lig muismerker uit</translation>
 <translation id="3513798432020909783">Rekening word bestuur deur <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3516000762115478502">Verander grootte van geteëlde venster opwaarts</translation>
 <translation id="3517037892157925473">Take is laas opgedateer: <ph name="TIME" />, <ph name="DATE" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{Dateer toestel binne 1 minuut op}other{Dateer toestel binne # minute op}}</translation>
 <translation id="3522979239100719575">Soek tans beskikbare profiele. Dit kan ’n paar minute neem.</translation>
@@ -759,6 +765,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="3899995891769452915">Steminvoer</translation>
 <translation id="3900355044994618856">Jou sessie sal oor <ph name="SESSION_TIME_REMAINING" /> eindig</translation>
 <translation id="3901991538546252627">Koppel tans aan <ph name="NAME" /></translation>
+<translation id="3904768293285573640">Verander grootte van geteëlde venster na links</translation>
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3923494859158167397">Geen selnetwerke is opgestel nie</translation>
 <translation id="3925540965556789199"><ph name="DATE" />; laai tans geleenthede.</translation>
@@ -1197,6 +1204,7 @@ Geen toestelle is gekoppel nie.</translation>
 <translation id="550391772491508736">Hervat uitsending</translation>
 <translation id="5506975627792768506">Skakel vergrootglas aan of af</translation>
 <translation id="5512042095225963688">Vee vorige woord uit</translation>
+<translation id="5519005148254860683">Vou Google Take uit</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Jou administrateur het alle e-SIM-profiele verwyder. Kontak jou administrateur vir meer inligting.</translation>
 <translation id="5520909879404821039">Hallo in Frans</translation>
@@ -1405,6 +1413,7 @@ Geen toestelle is gekoppel nie.</translation>
 <translation id="6200515304866777730">Nie deur app gesteun nie</translation>
 <translation id="6210042900243040400">Koppel <ph name="NAME" /> wat vroeër in <ph name="EMAIL" /> gestoor is</translation>
 <translation id="6213808132343683860">Neem gedeeltelike skermskoot of skermopname</translation>
+<translation id="621606890568890214">Vou Google Klaskamer uit</translation>
 <translation id="6220928844947387476">Jy kan jouself en jou skerm nou op dieselfde tyd opneem</translation>
 <translation id="622484624075952240">Af</translation>
 <translation id="6228457605945141550">Verlaag helderheid</translation>

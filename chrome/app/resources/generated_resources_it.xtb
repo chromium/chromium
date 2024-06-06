@@ -1743,6 +1743,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
     <ph name="BEGIN_PARAGRAPH2" />Non è possibile annullare l'installazione dopo averla avviata.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">Scambiare dati con qualsiasi dispositivo nei domini: <ph name="DOMAINS" /></translation>
 <translation id="2270666014403455717">Assegna sensore per "Seleziona"</translation>
+<translation id="2271452184061378400">I tuoi gruppi di schede vengono salvati qui</translation>
 <translation id="2271986192355138465">Scopri come installare app web</translation>
 <translation id="2272430695183451567">0 sensori assegnati</translation>
 <translation id="2272570998639520080">Bicchiere da cocktail</translation>
@@ -1979,7 +1980,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2435248616906486374">Rete scollegata</translation>
 <translation id="2435457462613246316">Mostra password</translation>
 <translation id="2436385001956947090">Copia &amp;link</translation>
-<translation id="2436746748253887661">Questa autorizzazione consente ai servizi di sistema che dispongono dell'autorizzazione di utilizzare la tua posizione. Il servizio di geolocalizzazione potrebbe usare fonti quali reti Wi-Fi e mobili o i sensori per stabilire la posizione approssimativa del dispositivo. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
 <translation id="2438853563451647815">Nessun collegamento alla stampante</translation>
 <translation id="2439152382014731627">Reimposta la password di <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600">Caricamento di <ph name="WINDOW_TITLE" /> in corso…</translation>
@@ -9056,7 +9056,6 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7788948939674438635">Non consentire ai siti di bloccare la tastiera</translation>
 <translation id="7789963078219276159">Lo sfondo della pagina iniziale è ora <ph name="CATEGORY" />.</translation>
-<translation id="7790689625219600437">OCR per PDF</translation>
 <translation id="7791269138074599214">Metodo di immissione</translation>
 <translation id="7791429245559955092">Questa applicazione verrà installata sul profilo Chrome attualmente in uso</translation>
 <translation id="7791436592012979144">Scorrimento inverso attivato</translation>
@@ -9811,6 +9810,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8336739000755212683">Modifica l'immagine dell'account del dispositivo</translation>
 <translation id="8337020675372081178">{HOURS,plural, =1{Questo dispositivo verrà salvato per 1 ora e la prossima volta potrai connetterti senza un codice. Questa impostazione è stata configurata dal tuo amministratore.}other{Questo dispositivo verrà salvato per {HOURS} ore e la prossima volta potrai connetterti senza un codice. Questa impostazione è stata configurata dal tuo amministratore.}}</translation>
 <translation id="8337399713761067085">Al momento sei offline.</translation>
+<translation id="8338427544764842461">I tuoi gruppi di schede vengono salvati qui e vengono aggiornati su tutti i dispositivi su cui è stato eseguito l'accesso</translation>
 <translation id="8338952601723052325">Sito web dello sviluppatore</translation>
 <translation id="8339288417038613756">Dimensioni display e testo</translation>
 <translation id="833986336429795709">Scegli un'app per aprire il link</translation>

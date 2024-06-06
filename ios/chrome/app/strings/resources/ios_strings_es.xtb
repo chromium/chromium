@@ -5,6 +5,7 @@
 <translation id="1013952917065545813">Puedes volver aquí para abrir de nuevo las últimas pestañas que hayas cerrado recientemente.</translation>
 <translation id="1016495303386450659">Elemento actualizado</translation>
 <translation id="1025514696883950875">{COUNT,plural, =1{Guardar contraseña en la cuenta}other{Guardar contraseñas en la cuenta}}</translation>
+<translation id="102916930470544692">Llave de acceso</translation>
 <translation id="1035980983510608210">Si cierras todas las pestañas, también se cerrarán las pestañas fijas.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1043592663436934089">Tu sesión se cerrará y los datos de navegación se eliminarán</translation>
@@ -1016,6 +1017,7 @@ Handoff también debe estar habilitado en la sección General de Configuración,
 <translation id="6173499589275053515">Contraseña guardada en tu cuenta de Google (<ph name="EMAIL" />)</translation>
 <translation id="6184086493125982861">Mostrar pestañas</translation>
 <translation id="6187302354554850004">Última sincronización: <ph name="LAST_USED_TIME" /></translation>
+<translation id="6188737759358894319">Fecha de creación: <ph name="DATE" /></translation>
 <translation id="6189413832092199491">No leídas</translation>
 <translation id="6196207969502475924">Búsqueda por voz</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Cerrar {COUNT} pestaña}other{Cerrar {COUNT} pestañas}}</translation>
@@ -1303,7 +1305,6 @@ Mientras estás en modo Incógnito, los sitios no pueden usar tus cookies para v
 <translation id="7557508262441527045">Se ha cerrado la sesión</translation>
 <translation id="7561196759112975576">Siempre</translation>
 <translation id="7564917801238348224">GUARDAR...</translation>
-<translation id="758132317817089442">Activar protección mejorada...</translation>
 <translation id="7582857256643797524">Esta opción está habilitada en tu dispositivo</translation>
 <translation id="7583004045319035904">Usa <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> para desbloquear tus pestañas de incógnito.</translation>
 <translation id="7598439272585186139">Aumenta la seguridad</translation>

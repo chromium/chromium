@@ -178,6 +178,7 @@
 <translation id="1610778689852195798">„Undo“</translation>
 <translation id="1611993646327628135">Вкл.</translation>
 <translation id="1620510694547887537">Камера</translation>
+<translation id="1623768535032616219">Свиване на Google Classroom</translation>
 <translation id="1632985212731562677">Функцията „Достъп с превключване“ може да бъде деактивирана в „Настройки &gt; Достъпност“.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> устройства</translation>
 <translation id="1639239467298939599">Зарежда се</translation>
@@ -303,6 +304,7 @@
 <translation id="2198625180564913276">Профилът за мобилна мрежа се добавя. Това може да отнеме няколко минути.</translation>
 <translation id="219905428774326614">Стартов панел, всички приложения</translation>
 <translation id="2201071101391734388">Скорошна снимка <ph name="INDEX" /> от <ph name="TOTAL_COUNT" />.</translation>
+<translation id="2201687081523799384">Свиване на Google Tasks</translation>
 <translation id="2208323208084708176">Режим на обединен работен плот</translation>
 <translation id="2220572644011485463">ПИН код или парола</translation>
 <translation id="2222841058024245321">Работен кът 7</translation>
@@ -364,6 +366,7 @@
 <translation id="2427507373259914951">Кликване с левия бутон</translation>
 <translation id="2429753432712299108">Устройството с Bluetooth „<ph name="DEVICE_NAME" />“ иска разрешение за сдвояване. Преди да приемете, моля, уверете се, че на него се показва следният ключ за достъп: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Показване на паролата</translation>
+<translation id="2437771564543046790">Батерията е изтощена. Режимът за запазване на батерията е включен</translation>
 <translation id="243878895369688216">Отваряно вчера</translation>
 <translation id="2440978926514840421">Записването на GIF е направено</translation>
 <translation id="2441427462554639370">Записът завърши, тъй като мястото в хранилището е критично малко</translation>
@@ -1200,6 +1203,7 @@
 <translation id="550391772491508736">Възобновяване на предаването</translation>
 <translation id="5506975627792768506">Включване или изключване на лупата</translation>
 <translation id="5512042095225963688">Изтриване на предишната дума</translation>
+<translation id="5519005148254860683">Разгъване на Google Tasks</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Администраторът ви е премахнал всички потребителски профили за електронната SIM карта. За повече информация се обърнете към него.</translation>
 <translation id="5520909879404821039">„Здравей“ на френски</translation>
@@ -1408,6 +1412,7 @@
 <translation id="6200515304866777730">Не се поддържа от приложението</translation>
 <translation id="6210042900243040400">Свържете устройството <ph name="NAME" />, запазено преди това в(ъв) <ph name="EMAIL" /></translation>
 <translation id="6213808132343683860">Създаване на частична екранна снимка или записване на част от екрана</translation>
+<translation id="621606890568890214">Разгъване на Google Classroom</translation>
 <translation id="6220928844947387476">Вече можете да записвате себе си и екрана си едновременно</translation>
 <translation id="622484624075952240">Клавиш за надолу</translation>
 <translation id="6228457605945141550">Намаляване на яркостта</translation>

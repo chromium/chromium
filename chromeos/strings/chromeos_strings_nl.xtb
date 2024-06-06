@@ -313,6 +313,7 @@
 <translation id="2618015542787108131">duin</translation>
 <translation id="2619761439309613843">Dagelijks vernieuwen</translation>
 <translation id="2620436844016719705">Systeem</translation>
+<translation id="2637303424821734920">UIT: Als je het lokale weer wilt weergeven, <ph name="BEGIN_LINK" />zet je locatietoegang aan voor het systeem<ph name="END_LINK" /></translation>
 <translation id="2638662041295312666">Inlogafbeelding</translation>
 <translation id="2640549051766135490">Album geselecteerd: <ph name="TITLE" /> (<ph name="DESC" />)</translation>
 <translation id="2645380101799517405">Bedieningselementen</translation>
@@ -961,7 +962,6 @@
 <translation id="6412715219990689313">Geïntegreerd toetsenbord</translation>
 <translation id="6417265370957905582">Google Assistent</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
-<translation id="6438073885402882007">Hiermee krijgen systeemservices toestemming om je locatie te gebruiken. Voor de schatting van je apparaatlocatie kunnen bronnen worden gebruikt zoals wifi, mobiele netwerken en sensoren. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="6439505561246192797">Zwak (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Naar Accountinstellingen gaan</translation>
 <translation id="6462978824459367242">De knop APN toevoegen staat nu aan</translation>

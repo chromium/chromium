@@ -147,6 +147,7 @@
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> се замени со <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Прикажи ги сите предлози</translation>
 <translation id="1501946871587957338">Да се смени изворот на аудио?</translation>
+<translation id="1505542291183484463">Прозорец за променување големина со плочки надолу</translation>
 <translation id="1510238584712386396">Стартер</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Прикажи ги поставките за известувања. Известувањата се исклучени за една апликација}one{Прикажи ги поставките за известувања. Известувањата се исклучени за # апликација}other{Прикажи ги поставките за известувања. Известувањата се исклучени за # апликации}}</translation>
 <translation id="1523032696246003">Батерија: <ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> до полна батерија</translation>
@@ -296,6 +297,7 @@
 <translation id="2149229036084364364">Одење на претходната песна</translation>
 <translation id="2152895518047545149">Сѐ чини дека не недостасува ниедна задача. Одлично!</translation>
 <translation id="2161132820593978283">Пробајте врамување на камера за да бидете во средината на екранот на видеоповици. Вклучете го во „Брзи поставки“.</translation>
+<translation id="216955976692983107">Прозорец за променување големина со плочки надесно</translation>
 <translation id="2185166372312820725">Одете на претходната картичка</translation>
 <translation id="2185444992308415167">Оди од 1. до 8. картичка</translation>
 <translation id="2198625180564913276">Се додава профил. Може да потрае неколку минути.</translation>
@@ -642,6 +644,7 @@
 <translation id="3509391053705095206">Не може да се најде телефонот. Проверете дали ви е вклучен Bluetooth на телефонот.</translation>
 <translation id="3510164367642747937">Нагласи го покажувачот на глувчето</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> управува со сметката</translation>
+<translation id="3516000762115478502">Прозорец за променување големина со плочки нагоре</translation>
 <translation id="3517037892157925473">Последно ажурирање на задачите: <ph name="TIME" />, <ph name="DATE" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{Ажурирајте го уредот во рок од 1 минута}one{Ажурирајте го уредот во рок од # минута}other{Ажурирајте го уредот во рок од # минути}}</translation>
 <translation id="3522979239100719575">Се бараат достапни профили. Ова може да трае неколку минути.</translation>
@@ -759,6 +762,7 @@
 <translation id="3899995891769452915">Гласовно внесување</translation>
 <translation id="3900355044994618856">Вашата сесија ќе заврши по <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">Се поврзува со <ph name="NAME" /></translation>
+<translation id="3904768293285573640">Прозорец за променување големина со плочки налево</translation>
 <translation id="3906954721959377182">Таблет</translation>
 <translation id="3923494859158167397">Не се поставени мобилни мрежи</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, вчитување настани.</translation>

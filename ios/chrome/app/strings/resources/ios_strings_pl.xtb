@@ -5,6 +5,7 @@
 <translation id="1013952917065545813">Możesz wrócić tu później, by ponownie otworzyć ostatnio zamknięte karty</translation>
 <translation id="1016495303386450659">Zaktualizowano element</translation>
 <translation id="1025514696883950875">{COUNT,plural, =1{Zapisz hasło na koncie}few{Zapisz hasła na koncie}many{Zapisz hasła na koncie}other{Zapisz hasła na koncie}}</translation>
+<translation id="102916930470544692">Klucz dostępu</translation>
 <translation id="1035980983510608210">Zamknięcie wszystkich kart spowoduje też zamknięcie przypiętych kart.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1043592663436934089">Nastąpi wylogowanie, a dane przeglądania zostaną usunięte</translation>
@@ -1016,6 +1017,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6173499589275053515">Hasło zostało zapisane na Twoim koncie Google (<ph name="EMAIL" />)</translation>
 <translation id="6184086493125982861">Pokaż karty</translation>
 <translation id="6187302354554850004">Ostatnia synchronizacja: <ph name="LAST_USED_TIME" /></translation>
+<translation id="6188737759358894319">Utworzono <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Nieprzeczytane</translation>
 <translation id="6196207969502475924">Wyszukiwanie głosowe</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Zamknij {COUNT} kartę}few{Zamknij {COUNT} karty}many{Zamknij {COUNT} kart}other{Zamknij {COUNT} karty}}</translation>
@@ -1305,7 +1307,6 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="7557508262441527045">Wylogowano</translation>
 <translation id="7561196759112975576">Zawsze</translation>
 <translation id="7564917801238348224">ZAPISZ…</translation>
-<translation id="758132317817089442">Włącz silniejszą ochronę…</translation>
 <translation id="7582857256643797524">To ustawienie jest włączone na Twoim urządzeniu</translation>
 <translation id="7583004045319035904">Używaj <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> do odblokowywania kart incognito.</translation>
 <translation id="7598439272585186139">Zwiększ bezpieczeństwo</translation>

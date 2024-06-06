@@ -5,6 +5,7 @@
 <translation id="1013952917065545813">Бул жерге кайтып келип, жакында жабылган өтмөктөрдү кайра ача аласыз</translation>
 <translation id="1016495303386450659">Нерсе жаңырды</translation>
 <translation id="1025514696883950875">{COUNT,plural, =1{Сырсөздү аккаунтка сактоо}other{Сырсөздөрдү аккаунтка сактоо}}</translation>
+<translation id="102916930470544692">Киргизүүчү ачкыч</translation>
 <translation id="1035980983510608210">Бардык өтмөктөр жабылса, кадалган өтмөктөр да жабылат.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1043592663436934089">Аккаунттан чыгарыласыз жана серептөө дайындары өчүрүлөт</translation>
@@ -1016,6 +1017,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="6173499589275053515">Сырсөз Google аккаунтуңузга сакталды, <ph name="EMAIL" /></translation>
 <translation id="6184086493125982861">Өтмөктөрдү көрсөтүү</translation>
 <translation id="6187302354554850004">Акркы жолу шайкешт: <ph name="LAST_USED_TIME" /></translation>
+<translation id="6188737759358894319"><ph name="DATE" /> түзүлдү</translation>
 <translation id="6189413832092199491">Окулбагандар</translation>
 <translation id="6196207969502475924">Айтып издөө</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{{COUNT} өтмөктү жабуу}other{{COUNT} өтмөктү жабуу}}</translation>
@@ -1303,7 +1305,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="7557508262441527045">Аккаунтуңуздан чыктыңыз</translation>
 <translation id="7561196759112975576">Ар дайым</translation>
 <translation id="7564917801238348224">САКТОО...</translation>
-<translation id="758132317817089442">Мыктылап коргоону күйгүзүү...</translation>
 <translation id="7582857256643797524">Бул параметр түзмөгүңүздө иштетилген</translation>
 <translation id="7583004045319035904">Жашыруун өтмөктөрүңүздүн кулпусун <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> менен ачыңыз.</translation>
 <translation id="7598439272585186139">Коопсуздукту арттырыңыз</translation>

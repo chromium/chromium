@@ -5,6 +5,7 @@
 <translation id="1013952917065545813">Դուք կարող եք վերադառնալ այստեղ՝ վերջերս փակած ներդիրները նորից բացելու համար։</translation>
 <translation id="1016495303386450659">Տարրը թարմացվեց</translation>
 <translation id="1025514696883950875">{COUNT,plural, =1{Պահել գաղտնաբառը հաշվում}one{Պահել գաղտնաբառը հաշվում}other{Պահել գաղտնաբառերը հաշվում}}</translation>
+<translation id="102916930470544692">Մուտքի բանալի</translation>
 <translation id="1035980983510608210">Եթե փակեք բոլոր ներդիրները, ամրացված ներդիրները նույնպես կփակվեն։</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1043592663436934089">Դուք դուրս կգաք հաշվից, իսկ այցելությունների պատմությունը կջնջվի</translation>
@@ -1016,6 +1017,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6173499589275053515">Գաղտնաբառը պահվեց ձեր Google հաշվում (<ph name="EMAIL" />)</translation>
 <translation id="6184086493125982861">Ցույց տալ ներդիրները</translation>
 <translation id="6187302354554850004">Վերջին անգամ համաժամացվել է՝ <ph name="LAST_USED_TIME" /></translation>
+<translation id="6188737759358894319">Ստեղծվել է՝ <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Չկարդացված</translation>
 <translation id="6196207969502475924">Ձայնային որոնում</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Փակել {COUNT} ներդիր}one{Փակել {COUNT} ներդիր}other{Փակել {COUNT} ներդիր}}</translation>
@@ -1303,7 +1305,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7557508262441527045">Դուք դուրս եք գրվել հաշվից</translation>
 <translation id="7561196759112975576">Միշտ</translation>
 <translation id="7564917801238348224">ՊԱՀԵԼ…</translation>
-<translation id="758132317817089442">Միացնել բարելավված պաշտպանությունը</translation>
 <translation id="7582857256643797524">Այս կարգավորումը միացված է ձեր սարքում</translation>
 <translation id="7583004045319035904">Ապակողպեք ձեր ինկոգնիտո ներդիրները՝ օգտագործելով <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />։</translation>
 <translation id="7598439272585186139">Ստացեք ավելի շատ անվտանգություն</translation>

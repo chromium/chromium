@@ -100,7 +100,6 @@
 <translation id="6333260925957816943">Información sobre esta tenda</translation>
 <translation id="6381032505162537930">Atoparás os teus grupos de pestanas aquí</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Desagrupar <ph name="TABS_COUNT_ONE" /> pestana seleccionada}other{Desagrupar <ph name="TABS_COUNT_MANY" /> pestanas seleccionadas}}</translation>
-<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Na opción Pestanas recentes (no menú principal de Chrome) poderás atopar as pestanas que peches. A pestana do modo de incógnito non estará dispoñible.}other{Na opción Pestanas recentes (no menú principal de Chrome) poderás atopar as pestanas que peches. As # pestanas do modo de incógnito non estarán dispoñibles.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> pestana}other{<ph name="TABS_COUNT_MANY" /> pestanas}}</translation>
 <translation id="6549021453810473782">Ver información da tenda</translation>
 <translation id="6557858706263317126"><ph name="HIDDEN_TABS_COUNT" /> máis</translation>

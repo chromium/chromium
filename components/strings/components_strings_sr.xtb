@@ -47,6 +47,7 @@
 <translation id="1082026381988252344">Скролујте и зумирајте садржај дељене картице</translation>
 <translation id="1089439967362294234">Промена лозинке</translation>
 <translation id="1090629319939036170">ВР мени</translation>
+<translation id="1091779689406092804">снимке екрана</translation>
 <translation id="1094777233105318927">Информације о прегледачу, ОС-у, уређају, инсталираном софтверу и фајловима</translation>
 <translation id="1096545575934602868">Ово поље не сме да има више од <ph name="MAX_ITEMS_LIMIT" /> уноса. Сви додатни уноси ће бити одбачени.</translation>
 <translation id="1097803577928227769">Регионални паркови и баште</translation>
@@ -245,7 +246,6 @@
 <translation id="1432187715652018471">Страница жели да инсталира обрађивача услуге.</translation>
 <translation id="1432581352905426595">Управљај претраживачима</translation>
 <translation id="1433225466058025572">Пробајте да поново преместите фајлове</translation>
-<translation id="1434317006812369578">Chrome има уграђене безбедносне функције које вас штите током прегледања, као што је Google безбедно прегледање. Безбедно прегледање је <ph name="BEGIN_LINK" />недавно пронашло малвер на <ph name="SITE" /><ph name="END_LINK" />, који је уграђен у сајт који покушавате да посетите.</translation>
 <translation id="1435940442311036198">Користите приступни кôд на другом уређају</translation>
 <translation id="1436185428532214179">Може да тражи да мења фајлове и фолдере на уређају</translation>
 <translation id="1441816242347931036">Отворите да бисте наставили</translation>
@@ -473,6 +473,7 @@
 <translation id="1840009953725035797">Кућни биоскопи</translation>
 <translation id="1842969606798536927">Плати</translation>
 <translation id="1846432862466000825">Пластика (архивска)</translation>
+<translation id="1848640291751752317">преузимања</translation>
 <translation id="1848982255014129637">Слика (високи сјај)</translation>
 <translation id="1853392626017747777">Регистрација за виртуелну картицу је затворена</translation>
 <translation id="1854180393107901205">Заустави пребацивање</translation>
@@ -755,6 +756,7 @@
 <translation id="2366689192918515749">Месо и плодови мора</translation>
 <translation id="2367567093518048410">Ниво</translation>
 <translation id="23703388716193220">Опрема за голф</translation>
+<translation id="2370368710215137370">Учитавање фајлова</translation>
 <translation id="2374629208601905275">На основу закона у вашем региону Chrome тражи да одаберете подразумевани претраживач. Ови претраживачи су популарни у вашем региону и приказују се насумичним редоследом.</translation>
 <translation id="2377241607395428273">Софтвер за графику и анимацију</translation>
 <translation id="2378084239755710604">Упит за чување картице је затворен.</translation>
@@ -1424,6 +1426,7 @@
 <translation id="3682094733650754138">Изабрана је опција за попуњавање адресе</translation>
 <translation id="3687920599421452763">Комби и мини-комби</translation>
 <translation id="3693327506115126094">Одаберите начин на који ћете потврдити да сте то ви</translation>
+<translation id="3698353241727597930">Администратор је конфигурисао да чува <ph name="FILES" /> у меморијском простору од <ph name="CLOUD_STORAGE" /> којим се управља на нивоу предузећа. Ове фајлове можемо да надгледамо, проверавамо и задржавамо када их избришете.</translation>
 <translation id="3698629142018988477">Дугме Направи сајт, активирајте га да бисте брзо направили нов сајт у Google сајтовима</translation>
 <translation id="3701325639446035885">Продаја карата за догађаје</translation>
 <translation id="3701427423622901115">Ресетовање је потврђено.</translation>
@@ -1470,7 +1473,6 @@
 <translation id="3767485424735936570">Смернице администратора не препоручују копирање и лепљење овог садржаја у <ph name="VM_NAME" /></translation>
 <translation id="3772211998634047851">Папир (издржљив)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте брзо направили нову белешку у Google Keep-у</translation>
-<translation id="378026377453746707">Chrome има уграђене безбедносне функције које вас штите током прегледања, као што је Google безбедно прегледање. Безбедно прегледање је недавно <ph name="BEGIN_LINK" />открило штетан софтвер на сајту <ph name="SITE" /><ph name="END_LINK" />, који је уграђен у сајт који покушавате да посетите.</translation>
 <translation id="3780694243617746492">Излазна преграда</translation>
 <translation id="3781428340399460090">Јаркорозе</translation>
 <translation id="3783418713923659662">Mastercard</translation>
@@ -1500,6 +1502,7 @@
 <translation id="3826050100957962900">Пријављивање треће стране</translation>
 <translation id="3827112369919217609">Апсолут</translation>
 <translation id="3828924085048779000">Није дозвољено да поље за приступну фразу буде празно.</translation>
+<translation id="3830139096297532361">Не можете да приступите овом PDF-у. Није могуће преузети фајлове за екстракцију текста. Пробајте поново касније.</translation>
 <translation id="3830470485672984938">Користите други приступни кључ</translation>
 <translation id="3831065134033923230">Проверите сачуване лозинке</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> је инсталирао додатке за додатне функције. Додаци имају приступ некима од података.</translation>
@@ -1554,7 +1557,6 @@
 <translation id="3950820424414687140">Пријави ме</translation>
 <translation id="3953505489397572035">Ова цена је уобичајена</translation>
 <translation id="3958057596965527988">4×4 in</translation>
-<translation id="3959121317419633580">Chrome има уграђене безбедносне функције које вас штите током прегледања, као што је Google безбедно прегледање. Безбедно прегледање је недавно <ph name="BEGIN_LINK" />пронашло „пецање“ на <ph name="SITE" /><ph name="END_LINK" />, које је уграђено у сајт који покушавате да посетите.<ph name="NEW_LINE" />Нападачи понекад угрожавају чак и сајтове који су обично безбедни. <ph name="BEGIN_ERROR_LINK" />Обавестите нас<ph name="END_ERROR_LINK" /> ако мислите да је дошло до грешке и да овај сајт не представља опасност.</translation>
 <translation id="3961148744525529027">Страница обрађивача плаћања је полуотворена</translation>
 <translation id="3962859241508114581">Претходна песма</translation>
 <translation id="3963721102035795474">Режим читаоца</translation>
@@ -1675,6 +1677,7 @@
 <translation id="4202554117186904723">Пети котур</translation>
 <translation id="4203769790323223880">Камера није дозвољена</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />да проверите конфигурацију заштитног зида и антивируса<ph name="END_LINK" /></translation>
+<translation id="4207195957038009075">Google диск</translation>
 <translation id="4209092469652827314">Велика</translation>
 <translation id="4210602799576081649">Верификациони кôд је истекао, затражите нови</translation>
 <translation id="421066178035138955">користи уређаје и податке виртуелне реалности</translation>
@@ -2736,6 +2739,7 @@
 <translation id="6270066318535733958">Вожња чамцем</translation>
 <translation id="6272088941196661550">Наставите пут да бисте видели релевантне активности у историји Chrome-а</translation>
 <translation id="6272383483618007430">Google ажурирање</translation>
+<translation id="6278015583149890680">Google диск и OneDrive</translation>
 <translation id="6280223929691119688">Испорука на ову адресу није могућа. Изаберите другу адресу.</translation>
 <translation id="6284292079994426700">26×38 in</translation>
 <translation id="6284449872909111707">Размена текстуалних и тренутних порука</translation>
@@ -3175,6 +3179,7 @@
 <translation id="7119063404975271297">ТВ драме</translation>
 <translation id="7119371694555167493">Време за копирање је истекло</translation>
 <translation id="7119414471315195487">Затворите друге картице или програме</translation>
+<translation id="7120588595737538743">преузимања и снимке екрана</translation>
 <translation id="7124354851782353862">Унесите CVC</translation>
 <translation id="7129409597930077180">Слање на ову адресу није могуће. Изаберите другу адресу.</translation>
 <translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
@@ -3374,6 +3379,7 @@
 <translation id="7483863401933039889"><ph name="CHROME_TIP" />, притисните Tab, па Enter да бисте одбацили савет за Chrome.</translation>
 <translation id="7485085230273446323">Врсте пословања и индустрија</translation>
 <translation id="7485870689360869515">Нису пронађени подаци.</translation>
+<translation id="7486880426035242089">OneDrive</translation>
 <translation id="7489392576326061356">Шампони и регенератори</translation>
 <translation id="7495528107193238112">Овај садржај је блокиран. Обратите се власнику сајта да бисте решили проблем.</translation>
 <translation id="749865518782565832">Водоинсталатерске услуге</translation>

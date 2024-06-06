@@ -72,6 +72,7 @@
 <translation id="1235458158152011030">الشبكات المعروفة</translation>
 <translation id="1239161794459865856">ميزة <ph name="FEATURE_NAME" /> متصلة.</translation>
 <translation id="1240638468526743569">تطبيق</translation>
+<translation id="1242198791279543032">تم كتم صوت الإشعارات</translation>
 <translation id="1242883863226959074">جهاز</translation>
 <translation id="1245644940275736236">‏الانتقال إلى "مساعد Google"</translation>
 <translation id="124678866338384709">إغلاق علامة التبويب الحالية</translation>
@@ -148,6 +149,7 @@
 <translation id="1487931858675166540">تم استبدال <ph name="FIRST_ITEM_TITLE" /> بالعنصر <ph name="SECOND_ITEM_TITLE" />.</translation>
 <translation id="1500926532737552529">عرض كل الاقتراحات</translation>
 <translation id="1501946871587957338">هل تريد تبديل مصدر الصوت؟</translation>
+<translation id="1505542291183484463">تغيير حجم النافذة المنقسمة بسحب حافتها للأسفل</translation>
 <translation id="1510238584712386396">مشغِّل التطبيقات</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{عرض إعدادات الإشعارات. تم إيقاف الإشعارات لتطبيق واحد}zero{عرض إعدادات الإشعارات. تم إيقاف الإشعارات لـ # تطبيق}two{عرض إعدادات الإشعارات. تم إيقاف الإشعارات لتطبيقين (#)}few{عرض إعدادات الإشعارات. تم إيقاف الإشعارات لـ # تطبيقات}many{عرض إعدادات الإشعارات. تم إيقاف الإشعارات لـ # تطبيقًا}other{عرض إعدادات الإشعارات. تم إيقاف الإشعارات لـ # تطبيق}}</translation>
 <translation id="1523032696246003">مستوى شحن البطارية: %<ph name="BATTERY_PERCENTAGE" /> | الوقت المتبقي على اكتمال الشحن: <ph name="TIME" /></translation>
@@ -298,6 +300,7 @@
 <translation id="2149229036084364364">الانتقال إلى المقطع الصوتي السابق</translation>
 <translation id="2152895518047545149">يبدو أنّ كل المهام مكتملة. أحسنت.</translation>
 <translation id="2161132820593978283">جرِّب استخدام ميزة "تكبير تلقائي" حتى تظهر صورة وجهك في وسط الشاشة أثناء مكالمات الفيديو. يمكنك تفعيل هذه الميزة من خلال قائمة "الإعدادات السريعة".</translation>
+<translation id="216955976692983107">تغيير حجم النافذة المنقسمة بسحب حافتها جهة اليمين</translation>
 <translation id="2185166372312820725">الانتقال إلى علامة التبويب السابقة</translation>
 <translation id="2185444992308415167">التنقّل بين علامات التبويب من الأولى حتى الثامنة</translation>
 <translation id="2198625180564913276">جارٍ إضافة الملف الشخصي. قد تستغرق هذه العملية بضع دقائق.</translation>
@@ -646,6 +649,7 @@
 <translation id="3509391053705095206">يتعذَّر العثور على هاتفك. تأكّد من أنّ البلوتوث مفعَّل على هاتفك.</translation>
 <translation id="3510164367642747937">تمييز مؤشر الماوس</translation>
 <translation id="3513798432020909783">يُدير <ph name="MANAGER_EMAIL" /> الحساب.</translation>
+<translation id="3516000762115478502">تغيير حجم النافذة المنقسمة بسحب حافتها للأعلى</translation>
 <translation id="3517037892157925473">‏تاريخ آخر تعديل للمهام: ‎<ph name="TIME" />، <ph name="DATE" /></translation>
 <translation id="352245152354538528">{0,plural, =1{تحديث الجهاز خلال دقيقة واحدة}zero{تحديث الجهاز خلال # دقيقة}two{تحديث الجهاز خلال دقيقتين}few{تحديث الجهاز خلال # دقائق}many{تحديث الجهاز خلال # دقيقة}other{تحديث الجهاز خلال # دقيقة}}</translation>
 <translation id="3522979239100719575">جارٍ البحث عن الملفات التعريفية المتوفّرة. قد يستغرق ذلك بضع دقائق.</translation>
@@ -763,6 +767,7 @@
 <translation id="3899995891769452915">الإدخال الصوتي</translation>
 <translation id="3900355044994618856">ستنتهي جلستك في غضون <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">جارٍ الاتصال بـ <ph name="NAME" /></translation>
+<translation id="3904768293285573640">تغيير حجم النافذة المنقسمة بسحب حافتها جهة اليسار</translation>
 <translation id="3906954721959377182">جهاز لوحي</translation>
 <translation id="3923494859158167397">ما مِن شبكات جوّال تم إعدادها.</translation>
 <translation id="3925540965556789199"><ph name="DATE" />، جارٍ تحميل الأحداث</translation>

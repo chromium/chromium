@@ -72,6 +72,7 @@
 <translation id="1235458158152011030">চিনাকী নেটৱর্ক</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" />ৰ সৈতে সংযোগ কৰা হ’ল।</translation>
 <translation id="1240638468526743569">এটা এপ্‌</translation>
+<translation id="1242198791279543032">জাননীসমূহ মিউট কৰা হৈছে</translation>
 <translation id="1242883863226959074">ডিভাইচ</translation>
 <translation id="1245644940275736236">Assistantলৈ যাওক</translation>
 <translation id="124678866338384709">বর্তমানৰ টেবটো বন্ধ কৰক</translation>
@@ -147,6 +148,7 @@
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" />ক <ph name="SECOND_ITEM_TITLE" />ৰ সৈতে সলনাসলনি কৰা হৈছে</translation>
 <translation id="1500926532737552529">আটাইবোৰ পৰামর্শ দেখুৱাওক</translation>
 <translation id="1501946871587957338">অডিঅ’ৰ উৎস সলনি কৰিবনে?</translation>
+<translation id="1505542291183484463">টাইল কৰা ৱিণ্ড’ৰ আকাৰ তলৰ ফালে সলনি কৰা</translation>
 <translation id="1510238584712386396">লঞ্চাৰ</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{জাননীৰ ছেটিংসমূহ দেখুৱাওক। কোনো এপৰ বাবে জাননী বন্ধ কৰা আছে}one{জাননীৰ ছেটিংসমূহ দেখুৱাওক। #টা এপৰ বাবে জাননী অফ কৰা আছে}other{জাননীৰ ছেটিংসমূহ দেখুৱাওক। #টা এপৰ বাবে জাননী অফ কৰা আছে}}</translation>
 <translation id="1523032696246003">বেটাৰী <ph name="BATTERY_PERCENTAGE" />% | সম্পূৰ্ণ হ'বলৈ <ph name="TIME" /> সময় বাকী আছে</translation>
@@ -177,6 +179,7 @@
 <translation id="1610778689852195798">"আনডু কৰক"</translation>
 <translation id="1611993646327628135">অন আছে</translation>
 <translation id="1620510694547887537">কেমেৰা</translation>
+<translation id="1623768535032616219">Google Classroom সংকোচন কৰক</translation>
 <translation id="1632985212731562677">ছুইচৰ দ্বাৰা এক্সেছ ছেটিংসমূহ ইয়াত অক্ষম কৰিব পৰা যায় &gt; সাধ্য সুবিধা।</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> টা ডিভাইচ</translation>
 <translation id="1639239467298939599">ল'ড কৰি থকা হৈছে</translation>
@@ -296,11 +299,13 @@
 <translation id="2149229036084364364">পূৰ্বৱৰ্তী ট্ৰেকটোলৈ যাওক</translation>
 <translation id="2152895518047545149">একো মিছ হোৱা নাই যেন লাগিছে। বঢ়িয়া!</translation>
 <translation id="2161132820593978283">কেমেৰা ফ্ৰে’মিং ব্যৱহাৰ কৰি চাওক যাতে ভিডিঅ’ কলৰ সময়ত আপুনি স্ক্ৰীনখনৰ মাজত থাকে। এইটো ক্ষিপ্ৰ ছেটিঙত অন কৰক।</translation>
+<translation id="216955976692983107">টাইল কৰা ৱিণ্ড’ৰ আকাৰ সোঁফালে সলনি কৰা</translation>
 <translation id="2185166372312820725">পূর্বৱর্তী টেবলৈ যাওক</translation>
 <translation id="2185444992308415167">টেব ১ৰ পৰা ৮লৈকে যাওক</translation>
 <translation id="2198625180564913276">প্ৰ’ফাইল যোগ দি থকা হৈছে। এই কামত কেইমিনিটমান সময় লাগিব পাৰে।</translation>
 <translation id="219905428774326614">লঞ্চাৰ, সকলো এপ্</translation>
 <translation id="2201071101391734388">শেহতীয়া ফট’ <ph name="TOTAL_COUNT" /> খনৰ ভিতৰত <ph name="INDEX" /> খন।</translation>
+<translation id="2201687081523799384">Google Tasks সংকোচন কৰক</translation>
 <translation id="2208323208084708176">সমন্বিত ডেস্কটপ ম'ড</translation>
 <translation id="2220572644011485463">পিন বা পাছৱৰ্ড</translation>
 <translation id="2222841058024245321">ডেস্ক ৭</translation>
@@ -362,6 +367,7 @@
 <translation id="2427507373259914951">বাওঁফালে ক্লিক কৰা কার্য</translation>
 <translation id="2429753432712299108">ব্লুটুথ ডিভাইচ "<ph name="DEVICE_NAME" />"এ পেয়াৰ কৰিবলৈ অনুমতি বিচাৰে। গ্ৰহণ কৰাৰ আগতে অনুগ্ৰহ কৰি এই পাছকীটো যে সেই ডিভাইচটোত দেখুওৱা হৈছে সেইয়া নিশ্চিত কৰক: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">পাছৱৰ্ড দেখুৱাওক</translation>
+<translation id="2437771564543046790">বেটাৰী কমিছে। বেটাৰী সঞ্চয়কাৰী অন কৰা আছে</translation>
 <translation id="243878895369688216">কালি খুলিছিল</translation>
 <translation id="2440978926514840421">GIF ৰেকৰ্ড কৰা হ’ল</translation>
 <translation id="2441427462554639370">ষ্ট’ৰেজৰ ঠাই একেবাৰে কমি যোৱাৰ কাৰণে ৰেকৰ্ডিং সমাপ্ত হৈছে</translation>
@@ -642,6 +648,7 @@
 <translation id="3509391053705095206">আপোনাৰ ফ’নটো বিচাৰি পোৱা নাই। আপোনাৰ ফ’নৰ ব্লুটুথ অন হৈ থকাটো নিশ্চিত কৰক।</translation>
 <translation id="3510164367642747937">মাউছৰ কাৰ্ছৰ হাইলাইট কৰক</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" />এ একাউণ্ট পৰিচালনা কৰে</translation>
+<translation id="3516000762115478502">টাইল কৰা ৱিণ্ড’ৰ আকাৰ ওপৰৰ ফালে সলনি কৰা</translation>
 <translation id="3517037892157925473">কাৰ্যসমূহ শেষবাৰ আপডে’ট কৰাৰ সময়: <ph name="TIME" />, <ph name="DATE" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{১ মিনিটৰ ভিতৰত ডিভাইচটো আপডে’ট কৰক}one{# মিনিটৰ ভিতৰত ডিভাইচটো আপডে’ট কৰক}other{# মিনিটৰ ভিতৰত ডিভাইচটো আপডে’ট কৰক}}</translation>
 <translation id="3522979239100719575">উপলব্ধ প্ৰ’ফাইল বিচাৰি থকা হৈছে। এই কামত কেইমিনিটমান সময় লাগিব পাৰে।</translation>
@@ -758,6 +765,7 @@
 <translation id="3899995891769452915">ধ্বনি ইনপুট</translation>
 <translation id="3900355044994618856">আপোনাৰ ছেশ্বনটো <ph name="SESSION_TIME_REMAINING" />ত অন্ত পৰিব</translation>
 <translation id="3901991538546252627"><ph name="NAME" />ৰ সৈতে সংযোগ কৰি থকা হৈছে</translation>
+<translation id="3904768293285573640">টাইল কৰা ৱিণ্ড’ৰ আকাৰ বাওঁফালে সলনি কৰা</translation>
 <translation id="3906954721959377182">টেবলেট</translation>
 <translation id="3923494859158167397">কোনো ম'বাইলৰ নেটৱৰ্ক ছেট আপ কৰা হোৱা নাই</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, অনুষ্ঠান ল’ড কৰি থকা হৈছে।</translation>
@@ -1196,6 +1204,7 @@
 <translation id="550391772491508736">কাষ্ট কৰাটো পুনৰ আৰম্ভ কৰক</translation>
 <translation id="5506975627792768506">বিৱৰ্ধক অন অথবা অফ কৰক</translation>
 <translation id="5512042095225963688">পূৰ্বৱৰ্তী শব্দটো মচক</translation>
+<translation id="5519005148254860683">Google Tasks বিস্তাৰ কৰক</translation>
 <translation id="5519195206574732858">এলটিই</translation>
 <translation id="5520229639206813572">আপোনাৰ প্ৰশাসকে আটাইবোৰ ই-ছিমৰ প্ৰ’ফাইল আঁতৰাইছে। অধিক তথ্যৰ বাবে আপোনাৰ প্ৰশাসকৰ সৈতে যোগাযোগ কৰক।</translation>
 <translation id="5520909879404821039">ফ্ৰেন্সত নমস্কাৰ</translation>
@@ -1404,6 +1413,7 @@
 <translation id="6200515304866777730">এপ্‌টোৰ দ্বাৰা সমৰ্থিত নহয়</translation>
 <translation id="6210042900243040400">আগতে <ph name="EMAIL" />ত ছেভ হৈ থকা <ph name="NAME" /> সংযোগ কৰক</translation>
 <translation id="6213808132343683860">আংশিক স্ক্ৰীনশ্বট লওক অথবা স্ক্ৰীন ৰেকৰ্ডিং কৰক</translation>
+<translation id="621606890568890214">Google Classroom বিস্তাৰ কৰক</translation>
 <translation id="6220928844947387476">আপুনি এতিয়া একে সময়তে নিজক আৰু আপোনাৰ স্ক্ৰীনখন ৰেকৰ্ড কৰিব পাৰে</translation>
 <translation id="622484624075952240">Down</translation>
 <translation id="6228457605945141550">উজ্জ্বলতা কমাওক</translation>

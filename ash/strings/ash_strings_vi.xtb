@@ -147,6 +147,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1487931858675166540">Đã hoán đổi <ph name="FIRST_ITEM_TITLE" /> cho <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Hiển thị tất cả mục đề xuất</translation>
 <translation id="1501946871587957338">Chuyển nguồn âm thanh?</translation>
+<translation id="1505542291183484463">Đổi kích thước cửa sổ trong bố cục ô xếp hướng xuống dưới</translation>
 <translation id="1510238584712386396">Trình chạy</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Hiển thị tùy chọn cài đặt thông báo. Các thông báo hiện đang tắt cho một ứng dụng}other{Hiển thị tùy chọn cài đặt thông báo. Các thông báo hiện đang tắt cho # ứng dụng}}</translation>
 <translation id="1523032696246003"><ph name="BATTERY_PERCENTAGE" />% pin | Còn <ph name="TIME" /> cho đến khi pin đầy</translation>
@@ -297,6 +298,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2149229036084364364">Quay về bản nhạc trước</translation>
 <translation id="2152895518047545149">Có vẻ bạn không nộp thiếu bài tập nào cả. Tuyệt vời!</translation>
 <translation id="2161132820593978283">Dùng thử tính năng lấy khung hình của máy ảnh để bạn luôn xuất hiện ở chính giữa màn hình khi gọi video. Bạn có thể bật tính năng này trong phần Cài đặt nhanh.</translation>
+<translation id="216955976692983107">Đổi kích thước cửa sổ trong bố cục ô xếp hướng sang phải</translation>
 <translation id="2185166372312820725">Quay về thẻ trước</translation>
 <translation id="2185444992308415167">Xem qua các thẻ từ 1 đến 8</translation>
 <translation id="2198625180564913276">Đang thêm hồ sơ. Quá trình này có thể mất vài phút.</translation>
@@ -645,6 +647,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3509391053705095206">Không tìm được điện thoại của bạn. Hãy đảm bảo bạn đã bật Bluetooth trên điện thoại.</translation>
 <translation id="3510164367642747937">Đánh dấu con trỏ chuột</translation>
 <translation id="3513798432020909783">Người quản lý tài khoản: <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3516000762115478502">Đổi kích thước cửa sổ trong bố cục ô xếp hướng lên trên</translation>
 <translation id="3517037892157925473">Lần cập nhật việc cần làm gần đây nhất: <ph name="TIME" />, <ph name="DATE" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{Cập nhật thiết bị trong vòng 1 phút}other{Cập nhật thiết bị trong vòng # phút}}</translation>
 <translation id="3522979239100719575">Đang tìm hồ sơ có sẵn. Quá trình này có thể mất vài phút.</translation>
@@ -761,6 +764,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="3899995891769452915">Nhập bằng giọng nói</translation>
 <translation id="3900355044994618856">Phiên hoạt động của bạn sẽ kết thúc sau <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">Đang kết nối với <ph name="NAME" /></translation>
+<translation id="3904768293285573640">Đổi kích thước cửa sổ trong bố cục ô xếp hướng sang trái</translation>
 <translation id="3906954721959377182">Máy tính bảng</translation>
 <translation id="3923494859158167397">Bạn chưa thiết lập mạng di động nào</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, Đang tải sự kiện.</translation>

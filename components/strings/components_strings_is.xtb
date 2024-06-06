@@ -245,7 +245,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1432187715652018471">síða vill setja upp þjónustuhjálparforrit.</translation>
 <translation id="1432581352905426595">Stjórna leitarvélum</translation>
 <translation id="1433225466058025572">Prófaðu að flytja skrárnar þínar aftur</translation>
-<translation id="1434317006812369578">Chrome er með innbyggða öryggiseiginleika sem vernda þig þegar þú vafrar, s.s. örugga vefskoðun Google. Örugg vefskoðun <ph name="BEGIN_LINK" />fann nýlega spilliforrit á <ph name="SITE" /><ph name="END_LINK" /> sem er innfellt í vefsvæðið sem þú ert að reyna að opna.</translation>
 <translation id="1435940442311036198">Nota aðgangslykil í öðru tæki</translation>
 <translation id="1436185428532214179">Getur beðið um leyfi til að breyta skrám og möppum í tækinu þínu</translation>
 <translation id="1441816242347931036">Opnaðu til að halda áfram</translation>
@@ -1470,7 +1469,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3767485424735936570">Reglur stjórnanda mæla ekki með að þetta efni sé afritað og límt í <ph name="VM_NAME" /></translation>
 <translation id="3772211998634047851">Pappír (teikningapappír)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, ýttu á Tab og svo Enter til að búa til nýja glósu í Google Keep á skjótan hátt</translation>
-<translation id="378026377453746707">Chrome er með innbyggða öryggiseiginleika sem vernda þig þegar þú vafrar, s.s. örugga vefskoðun Google. Örugg vefskoðun <ph name="BEGIN_LINK" />fann nýlega skaðlegan hugbúnað á <ph name="SITE" /><ph name="END_LINK" />, sem er innfellt á vefsvæðið sem þú ert að reyna að opna.</translation>
 <translation id="3780694243617746492">Útbakki</translation>
 <translation id="3781428340399460090">Dökkbleikur</translation>
 <translation id="3783418713923659662">Mastercard</translation>
@@ -1554,7 +1552,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3950820424414687140">Skrá inn</translation>
 <translation id="3953505489397572035">Þetta er dæmigert verð</translation>
 <translation id="3958057596965527988">4 x 4 to.</translation>
-<translation id="3959121317419633580">Chrome er með innbyggða öryggiseiginleika sem vernda þig þegar þú vafrar, s.s. örugga vefskoðun Google. Örugg vefskoðun <ph name="BEGIN_LINK" />fann nýlega vefveiðar á <ph name="SITE" /><ph name="END_LINK" /> sem er innfellt í vefsvæðið sem þú ert að reyna að opna.<ph name="NEW_LINE" />Jafnvel vefsvæði sem eru almennt örugg lenda stundum í klóm árásaraðila. <ph name="BEGIN_ERROR_LINK" />Láttu okkur vita<ph name="END_ERROR_LINK" /> ef þú telur þetta vera mistök og að þetta vefsvæði sé ekki hættulegt.</translation>
 <translation id="3961148744525529027">Greiðsluhjálparforritið er opið á hálfum skjánum</translation>
 <translation id="3962859241508114581">Fyrra lag</translation>
 <translation id="3963721102035795474">Lestrarstilling</translation>

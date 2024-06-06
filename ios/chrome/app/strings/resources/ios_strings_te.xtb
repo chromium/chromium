@@ -5,6 +5,7 @@
 <translation id="1013952917065545813">మీరు ఇక్కడికి తిరిగి వచ్చి మీరు ఇటీవల మూసివేసిన ట్యాబ్‌లను మళ్లీ తెరవవచ్చు</translation>
 <translation id="1016495303386450659">అంశం అప్‌డేట్ చేయబడింది</translation>
 <translation id="1025514696883950875">{COUNT,plural, =1{ఖాతాలో పాస్‌వర్డ్‌ను సేవ్ చేయండి}other{ఖాతాలో పాస్‌వర్డ్‌లను సేవ్ చేయండి}}</translation>
+<translation id="102916930470544692">పాస్-కీ</translation>
 <translation id="1035980983510608210">అన్ని ట్యాబ్‌లను మూసివేయడం వలన పిన్ చేసిన ట్యాబ్‌లు కూడా మూసివేయబడతాయి.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1043592663436934089">మీరు సైన్ అవుట్ చేయబడతారు, ఇంకా బ్రౌజింగ్ డేటా తొలగించబడుతుంది</translation>
@@ -1016,6 +1017,7 @@
 <translation id="6173499589275053515">పాస్‌వర్డ్ మీ Google ఖాతా, <ph name="EMAIL" />లో సేవ్ చేయబడింది</translation>
 <translation id="6184086493125982861">ట్యాబ్‌లను చూపించు</translation>
 <translation id="6187302354554850004">చివరగా సింక్ చేసింది: <ph name="LAST_USED_TIME" /></translation>
+<translation id="6188737759358894319"><ph name="DATE" />‌ తేదీన క్రియేట్ చేయబడింది</translation>
 <translation id="6189413832092199491">చదవనివి</translation>
 <translation id="6196207969502475924">వాయిస్ శోధన</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{{COUNT} ట్యాబ్‌ను మూసివేయండి}other{{COUNT} ట్యాబ్‌లను మూసివేయండి}}</translation>
@@ -1303,7 +1305,6 @@
 <translation id="7557508262441527045">సైన్ అవుట్ చేశారు</translation>
 <translation id="7561196759112975576">ఎల్లప్పుడూ</translation>
 <translation id="7564917801238348224">సేవ్ చేయండి...</translation>
-<translation id="758132317817089442">మెరుగైన రక్షణను ఆన్ చేయండి...</translation>
 <translation id="7582857256643797524">మీ పరికరంలో ఈ సెట్టింగ్ ఎనేబుల్ చేయబడింది</translation>
 <translation id="7583004045319035904">మీ అజ్ఞాత ట్యాబ్‌లను అన్‌లాక్ చేయడానికి <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />ను ఉపయోగించండి.</translation>
 <translation id="7598439272585186139">మరింత మెరుగైన సెక్యూరిటీని పొందండి</translation>

@@ -5,6 +5,7 @@
 <translation id="1013952917065545813">നിങ്ങൾ അടുത്തിടെ അടച്ച ടാബുകൾ ഇവിടേക്ക് തിരികെ വന്ന് നിങ്ങൾക്ക് വീണ്ടും തുറക്കാം</translation>
 <translation id="1016495303386450659">ഇനം അപ്‌ഡേറ്റ് ചെയ്‌തു</translation>
 <translation id="1025514696883950875">{COUNT,plural, =1{അക്കൗണ്ടിൽ പാസ്‌വേഡ് സംരക്ഷിക്കുക}other{അക്കൗണ്ടിൽ പാസ്‌വേഡുകൾ സംരക്ഷിക്കുക}}</translation>
+<translation id="102916930470544692">പാസ്‌കീ</translation>
 <translation id="1035980983510608210">എല്ലാ ടാബുകളും അടച്ചാൽ പിൻ ചെയ്‌ത ടാബുകളും അടയും.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1043592663436934089">നിങ്ങൾ സൈൻ ഔട്ട് ആകും, ബ്രൗസിംഗ് ഡാറ്റ ഇല്ലാതാക്കും</translation>
@@ -1016,6 +1017,7 @@
 <translation id="6173499589275053515">നിങ്ങളുടെ <ph name="EMAIL" /> എന്ന Google അക്കൗണ്ടിൽ സംരക്ഷിച്ച പാസ്‌വേഡ്</translation>
 <translation id="6184086493125982861">ടാബുകൾ കാണിക്കുക</translation>
 <translation id="6187302354554850004">അവസാനം സമന്വയിപ്പിച്ചത്: <ph name="LAST_USED_TIME" /></translation>
+<translation id="6188737759358894319"><ph name="DATE" />-ന് സൃഷ്‌ടിച്ചത്</translation>
 <translation id="6189413832092199491">വായിക്കാത്തവ</translation>
 <translation id="6196207969502475924">ശബ്ദ തിരയൽ</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{{COUNT} ടാബ് അടയ്‌ക്കുക}other{{COUNT} ടാബുകൾ അടയ്‌ക്കുക}}</translation>
@@ -1303,7 +1305,6 @@
 <translation id="7557508262441527045">സൈൻ ഔട്ട് ചെയ്‌തു</translation>
 <translation id="7561196759112975576">എല്ലായ്പ്പോഴും</translation>
 <translation id="7564917801238348224">സംരക്ഷിക്കുക...</translation>
-<translation id="758132317817089442">മെച്ചപ്പെടുത്തിയ പരിരക്ഷ ഓണാക്കൂ...</translation>
 <translation id="7582857256643797524">നിങ്ങളുടെ ഉപകരണത്തിൽ ഈ ക്രമീകരണം പ്രവർത്തനക്ഷമമാക്കി</translation>
 <translation id="7583004045319035904">നിങ്ങളുടെ അദൃശ്യ ടാബുകൾ അൺലോക്ക് ചെയ്യാൻ <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ഉപയോഗിക്കുക.</translation>
 <translation id="7598439272585186139">കൂടുതൽ സുരക്ഷ നേടൂ</translation>

@@ -245,7 +245,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1432187715652018471">La pagina vuole installare un gestore di servizi.</translation>
 <translation id="1432581352905426595">Gestisci motori di ricerca</translation>
 <translation id="1433225466058025572">Prova a spostare di nuovo i file</translation>
-<translation id="1434317006812369578">Chrome ha funzionalità di sicurezza integrate che ti proteggono durante la navigazione, come Google Navigazione sicura. Navigazione sicura <ph name="BEGIN_LINK" />ha recentemente rilevato malware sul sito <ph name="SITE" /><ph name="END_LINK" />, incorporato nel sito che vuoi visitare.</translation>
 <translation id="1435940442311036198">Usa una passkey su un altro dispositivo</translation>
 <translation id="1436185428532214179">Può chiedere di modificare file o cartelle sul dispositivo</translation>
 <translation id="1441816242347931036">Apri per continuare</translation>
@@ -1467,7 +1466,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3767485424735936570">Il criterio dell'amministratore sconsiglia di copiare e incollare questi contenuti su <ph name="VM_NAME" /></translation>
 <translation id="3772211998634047851">Carta (per scrivere)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab e poi Invio per creare rapidamente una nuova nota in Google Keep</translation>
-<translation id="378026377453746707">Chrome ha funzionalità di sicurezza integrate che ti proteggono durante la navigazione, come Google Navigazione sicura. La funzione Navigazione sicura <ph name="BEGIN_LINK" />ha rilevato di recente software dannoso sul sito <ph name="SITE" /><ph name="END_LINK" />, che è incorporato nel sito che vuoi visitare.</translation>
 <translation id="3780694243617746492">Raccoglitore</translation>
 <translation id="3781428340399460090">Fucsia</translation>
 <translation id="3783418713923659662">Mastercard</translation>
@@ -1551,7 +1549,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3950820424414687140">Accedi</translation>
 <translation id="3953505489397572035">Questo prezzo rientra nella fascia di prezzo tipica</translation>
 <translation id="3958057596965527988">4 x 4 in</translation>
-<translation id="3959121317419633580">Chrome ha funzionalità di sicurezza integrate che ti proteggono durante la navigazione, come Google Navigazione sicura. La funzione Navigazione sicura ha recentemente <ph name="BEGIN_LINK" />rilevato attività di phishing sul sito <ph name="SITE" /><ph name="END_LINK" />, che è incorporato nel sito che vuoi visitare.<ph name="NEW_LINE" />Anche i siti che in genere sono sicuri possono essere compromessi da utenti malintenzionati. <ph name="BEGIN_ERROR_LINK" />Contattaci<ph name="END_ERROR_LINK" /> se ritieni che sia stato commesso un errore e che questo sito non rappresenti un pericolo.</translation>
 <translation id="3961148744525529027">Il foglio per la gestione dei pagamenti è aperto nella parte inferiore dello schermo</translation>
 <translation id="3962859241508114581">Traccia precedente</translation>
 <translation id="3963721102035795474">Modalità Reader</translation>
@@ -1601,7 +1598,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4067774859633143413">Per uscire dalla modalità a schermo intero e visualizzare il download, tieni premuto |<ph name="ACCELERATOR" />|</translation>
 <translation id="4067947977115446013">Aggiungi un indirizzo valido</translation>
 <translation id="4072486802667267160">Si è verificato un errore durante l'elaborazione dell'ordine. Riprova.</translation>
-<translation id="4073376909608563327">Impossibile usare lo sblocco con il dispositivo</translation>
+<translation id="4073376909608563327">Impossibile usare lo sblocco del dispositivo</translation>
 <translation id="4073797364926776829">Visualizza carta</translation>
 <translation id="4075732493274867456">Il client e il server non supportano una suite di crittografia o una versione del protocollo SSL comuni.</translation>
 <translation id="4079302484614802869">L'impostazione della configurazione proxy prevede l'utilizzo di un URL script .pac, non di server proxy fissi.</translation>
@@ -2828,7 +2825,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6433490469411711332">Modifica informazioni di contatto</translation>
 <translation id="6433501201775827830">Scegli il motore di ricerca</translation>
 <translation id="6433595998831338502">Connessione negata da <ph name="HOST_NAME" />.</translation>
-<translation id="6433797564277305076">Conferma le tue carte più velocemente utilizzando la funzionalità di sblocco del dispositivo d'ora in poi</translation>
+<translation id="6433797564277305076">D'ora in poi conferma le tue carte più velocemente usando lo sblocco del dispositivo</translation>
 <translation id="643917412048333145">Abiti</translation>
 <translation id="6440503408713884761">Ignorata</translation>
 <translation id="6443406338865242315">Le estensioni e i plug-in che hai installato</translation>

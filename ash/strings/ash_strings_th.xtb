@@ -178,6 +178,7 @@
 <translation id="1610778689852195798">"เลิกทำ"</translation>
 <translation id="1611993646327628135">เปิด</translation>
 <translation id="1620510694547887537">กล้องถ่ายรูป</translation>
+<translation id="1623768535032616219">ยุบ Google Classroom</translation>
 <translation id="1632985212731562677">ปิดใช้ "การเข้าถึงด้วยสวิตช์" ได้ในการตั้งค่า &gt; การช่วยเหลือพิเศษ</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> อุปกรณ์</translation>
 <translation id="1639239467298939599">กำลังโหลด</translation>
@@ -303,6 +304,7 @@
 <translation id="2198625180564913276">กำลังเพิ่มโปรไฟล์ การดำเนินการนี้อาจใช้เวลาสักครู่</translation>
 <translation id="219905428774326614">Launcher, แอปทั้งหมด</translation>
 <translation id="2201071101391734388">รูปภาพล่าสุด <ph name="INDEX" /> จาก <ph name="TOTAL_COUNT" /></translation>
+<translation id="2201687081523799384">ยุบ Google Tasks</translation>
 <translation id="2208323208084708176">โหมดเดสก์ท็อปแบบรวม</translation>
 <translation id="2220572644011485463">PIN หรือรหัสผ่าน</translation>
 <translation id="2222841058024245321">เดสก์ 7</translation>
@@ -364,6 +366,7 @@
 <translation id="2427507373259914951">คลิกซ้าย</translation>
 <translation id="2429753432712299108">อุปกรณ์บลูทูธ "<ph name="DEVICE_NAME" />" ต้องการสิทธิ์ในการจับคู่ ก่อนที่จะยอมรับ โปรดยืนยันว่ารหัสผ่านนี้ปรากฏบนอุปกรณ์นั้น: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">แสดงรหัสผ่าน</translation>
+<translation id="2437771564543046790">แบตเตอรี่เหลือน้อย เปิดโหมดประหยัดแบตเตอรี่อยู่</translation>
 <translation id="243878895369688216">เปิดเมื่อวานนี้</translation>
 <translation id="2440978926514840421">บันทึก GIF แล้ว</translation>
 <translation id="2441427462554639370">การบันทึกสิ้นสุดเนื่องจากพื้นที่เก็บข้อมูลใกล้เต็มแล้ว</translation>
@@ -1195,6 +1198,7 @@
 <translation id="550391772491508736">แคสต์ต่อ</translation>
 <translation id="5506975627792768506">เปิดหรือปิดแว่นขยาย</translation>
 <translation id="5512042095225963688">ลบคำก่อนหน้า</translation>
+<translation id="5519005148254860683">ขยาย Google Tasks</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">ผู้ดูแลระบบได้นำโปรไฟล์ eSIM ทั้งหมดออก ติดต่อผู้ดูแลระบบเพื่อสอบถามข้อมูลเพิ่มเติม</translation>
 <translation id="5520909879404821039">"สวัสดี" ภาษาฝรั่งเศส</translation>
@@ -1403,6 +1407,7 @@
 <translation id="6200515304866777730">แอปไม่รองรับ</translation>
 <translation id="6210042900243040400">เชื่อมต่อ <ph name="NAME" /> ที่บันทึกไว้ก่อนหน้านี้ใน <ph name="EMAIL" /></translation>
 <translation id="6213808132343683860">จับภาพหน้าจอหรือบันทึกหน้าจอแบบบางส่วน</translation>
+<translation id="621606890568890214">ขยาย Google Classroom</translation>
 <translation id="6220928844947387476">ตอนนี้สามารถบันทึกตัวคุณเองไปพร้อมกับหน้าจอได้แล้ว</translation>
 <translation id="622484624075952240">ลง</translation>
 <translation id="6228457605945141550">ลดความสว่าง</translation>

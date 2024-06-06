@@ -5,6 +5,7 @@
 <translation id="1013952917065545813">Puoi tornare più tardi per riaprire le schede che hai chiuso di recente</translation>
 <translation id="1016495303386450659">Elemento aggiornato</translation>
 <translation id="1025514696883950875">{COUNT,plural, =1{Salva password nell'account}other{Salva password nell'account}}</translation>
+<translation id="102916930470544692">Passkey</translation>
 <translation id="1035980983510608210">Se chiudi tutte le schede, verranno chiuse anche le schede bloccate.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1043592663436934089">Il tuo account verrà disconnesso e i dati di navigazione verranno eliminati</translation>
@@ -1016,6 +1017,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6173499589275053515">Password salvata nel tuo Account Google: <ph name="EMAIL" /></translation>
 <translation id="6184086493125982861">Mostra schede</translation>
 <translation id="6187302354554850004">Ultima sincronizzazione: <ph name="LAST_USED_TIME" /></translation>
+<translation id="6188737759358894319">Creato il giorno <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Da leggere</translation>
 <translation id="6196207969502475924">Ricerca vocale</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Chiudi {COUNT} scheda}other{Chiudi {COUNT} schede}}</translation>
@@ -1303,7 +1305,6 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="7557508262441527045">Account disconnesso</translation>
 <translation id="7561196759112975576">Sempre</translation>
 <translation id="7564917801238348224">SALVATAGGIO IN CORSO…</translation>
-<translation id="758132317817089442">Attiva la Protezione avanzata…</translation>
 <translation id="7582857256643797524">Questa impostazione è attiva sul tuo dispositivo</translation>
 <translation id="7583004045319035904">Utilizza <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> per sbloccare le schede di navigazione in incognito.</translation>
 <translation id="7598439272585186139">Ottieni maggiore sicurezza</translation>

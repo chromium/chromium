@@ -1758,6 +1758,7 @@ You can manage this account’s settings by installing the Family Link app on yo
     <ph name="BEGIN_PARAGRAPH2" />Once installation starts it can’t be cancelled.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">Exchange data with any device in the domains: <ph name="DOMAINS" /></translation>
 <translation id="2270666014403455717">Assign switch for 'Select'</translation>
+<translation id="2271452184061378400">Your tab groups are saved here</translation>
 <translation id="2271986192355138465">Learn how to install web apps</translation>
 <translation id="2272430695183451567">0 switches assigned</translation>
 <translation id="2272570998639520080">Martini glass</translation>
@@ -1996,7 +1997,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2435248616906486374">Network disconnected</translation>
 <translation id="2435457462613246316">Show password</translation>
 <translation id="2436385001956947090">Copy &amp;link</translation>
-<translation id="2436746748253887661">This allows system services with permissions to use your location. Location may use sources like Wi-Fi, mobile networks and sensors to help estimate your device's location. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="2438853563451647815">Not connected to printer</translation>
 <translation id="2439152382014731627">Reset <ph name="DEVICE_TYPE" /> password</translation>
 <translation id="2439626940657133600">Loading <ph name="WINDOW_TITLE" /></translation>
@@ -9087,7 +9087,6 @@ Press an assigned switch or key to remove assignment.</translation>
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7788948939674438635">Don't allow sites to lock your keyboard</translation>
 <translation id="7789963078219276159">Start page background has been changed to <ph name="CATEGORY" />.</translation>
-<translation id="7790689625219600437">PDF OCR</translation>
 <translation id="7791269138074599214">Input method</translation>
 <translation id="7791429245559955092">This application will be installed on your currently-used Chrome profile</translation>
 <translation id="7791436592012979144">Reverse scrolling enabled</translation>
@@ -9843,6 +9842,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8336739000755212683">Change device account image</translation>
 <translation id="8337020675372081178">{HOURS,plural, =1{This device will be saved for one hour and you can connect without a code next time. This is set by your administrator.}other{This device will be saved for {HOURS} hours and you can connect without a code next time. This is set by your administrator.}}</translation>
 <translation id="8337399713761067085">You are currently offline.</translation>
+<translation id="8338427544764842461">Your tab groups are saved here and get updated across all your signed-in devices</translation>
 <translation id="8338952601723052325">Developer website</translation>
 <translation id="8339288417038613756">Display and text size</translation>
 <translation id="833986336429795709">To open this link, choose an app</translation>

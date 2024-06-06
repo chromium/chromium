@@ -5,6 +5,7 @@
 <translation id="1013952917065545813">Môžete sa sem vrátiť a znova otvoriť karty, ktoré ste nedávno zatvorili</translation>
 <translation id="1016495303386450659">Položka bola aktualizovaná</translation>
 <translation id="1025514696883950875">{COUNT,plural, =1{Uložiť heslo do účtu}few{Uložiť heslá do účtu}many{Save Passwords in Account}other{Uložiť heslá do účtu}}</translation>
+<translation id="102916930470544692">Prístupový kľúč</translation>
 <translation id="1035980983510608210">Zavretím všetkých kariet zavriete aj pripnuté karty.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1043592663436934089">Systém vás odhlási a dáta prehliadania budú odstránené</translation>
@@ -1016,6 +1017,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="6173499589275053515">Heslo bolo uložené do vášho účtu Google, <ph name="EMAIL" /></translation>
 <translation id="6184086493125982861">Zobraziť karty</translation>
 <translation id="6187302354554850004">Synchronizované <ph name="LAST_USED_TIME" /></translation>
+<translation id="6188737759358894319">Vytvorené: <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Neprečítané</translation>
 <translation id="6196207969502475924">Hlasové vyhľadávanie</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Zavrieť {COUNT} kartu}few{Zavrieť {COUNT} karty}many{Close {COUNT} Tabs}other{Zavrieť {COUNT} kariet}}</translation>
@@ -1305,7 +1307,6 @@ Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktiv
 <translation id="7557508262441527045">Účet je odhlásený</translation>
 <translation id="7561196759112975576">Vždy</translation>
 <translation id="7564917801238348224">ULOŽIŤ...</translation>
-<translation id="758132317817089442">Zapnúť rozšírenú ochranu…</translation>
 <translation id="7582857256643797524">Toto nastavenie je vo vašom zariadení povolené</translation>
 <translation id="7583004045319035904">Odomknite karty inkognito funkciou <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />.</translation>
 <translation id="7598439272585186139">Získajte lepšie zabezpečenie</translation>

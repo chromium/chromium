@@ -100,7 +100,6 @@
 <translation id="6333260925957816943">Энэ дэлгүүрийн талаарх мэдээлэл</translation>
 <translation id="6381032505162537930">Та табын бүлгээ эндээс олно</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Сонгосон <ph name="TABS_COUNT_ONE" /> табыг бүлэглэхээ болих}other{Сонгосон <ph name="TABS_COUNT_MANY" /> табыг бүлэглэхээ болих}}</translation>
-<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Та хаасан табуудаа Chrome-н үндсэн цэсийн доор байх Саяхны табуудаас олох боломжтой. Таны Нууцлалтай таб боломжгүй байх болно.}other{Та хаасан табуудаа Chrome-н үндсэн цэсийн доор байх Саяхны табуудаас олох боломжтой. Таны Нууцлалтай # таб боломжгүй байх болно.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> таб}other{<ph name="TABS_COUNT_MANY" /> таб}}</translation>
 <translation id="6549021453810473782">Дэлгүүрийн мэдээллийг үзэх</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>

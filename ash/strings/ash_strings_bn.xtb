@@ -147,6 +147,7 @@
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" />-কে <ph name="SECOND_ITEM_TITLE" /> দিয়ে পাল্টানো হয়েছে</translation>
 <translation id="1500926532737552529">সমস্ত পরামর্শ দেখুন</translation>
 <translation id="1501946871587957338">অডিও সোর্স পরিবর্তন করতে চান?</translation>
+<translation id="1505542291183484463">নিচের দিকে সাইজ ছোট বড় করার উইন্ডো টাইল করুন</translation>
 <translation id="1510238584712386396">লঞ্চার</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{বিজ্ঞপ্তির সেটিংস দেখান। একটি অ্যাপের জন্য বিজ্ঞপ্তির নোটিফিকেশন বন্ধ আছে}one{বিজ্ঞপ্তির সেটিংস দেখান। #টি অ্যাপের জন্য নোটিফিকেশন বন্ধ আছে}other{বিজ্ঞপ্তির সেটিংস দেখান। #টি অ্যাপের জন্য নোটিফিকেশন বন্ধ আছে}}</translation>
 <translation id="1523032696246003">ব্যাটারি <ph name="BATTERY_PERCENTAGE" />% | সম্পূর্ণ চার্জ হতে <ph name="TIME" /> বাকি আছে</translation>
@@ -296,6 +297,7 @@
 <translation id="2149229036084364364">আগের ট্র্যাকে যান</translation>
 <translation id="2152895518047545149">মনে হচ্ছে কোনও কিছু বাদ যায়নি। অসাধারণ!</translation>
 <translation id="2161132820593978283">ভিডিও কলের কেন্দ্রে থাকার জন্য ক্যামেরা ফ্রেমিং ব্যবহার করুন। 'দ্রুত সেটিংস' থেকে এটি চালু করুন।</translation>
+<translation id="216955976692983107">ডানদিকে সাইজ ছোট বড় করার উইন্ডো টাইল করুন</translation>
 <translation id="2185166372312820725">আগের ট্যাবে যান</translation>
 <translation id="2185444992308415167">ট্যাব ১ থেকে ৮ যান</translation>
 <translation id="2198625180564913276">প্রোফাইল যোগ করা হচ্ছে। এর জন্য কয়েক মিনিট সময় লাগতে পারে।</translation>
@@ -642,6 +644,7 @@
 <translation id="3509391053705095206">আপনার ফোন খুঁজে পাওয়া যায়নি। আপনার ফোনের ব্লুটুথ চালু আছে কিনা তা ভালভাবে দেখে নিন।</translation>
 <translation id="3510164367642747937">মাউস কার্সার হাইলাইট করুন</translation>
 <translation id="3513798432020909783">অ্যাকাউন্টটি <ph name="MANAGER_EMAIL" /> ম্যানেজ করছেন</translation>
+<translation id="3516000762115478502">উপরের দিকে সাইজ ছোট বড় করার উইন্ডো টাইল করুন</translation>
 <translation id="3517037892157925473">টাস্ক শেষবার আপডেট করা হয়েছে: <ph name="TIME" />, <ph name="DATE" />।</translation>
 <translation id="352245152354538528">{0,plural, =1{১ মিনিটের মধ্যে ডিভাইস আপডেট করুন}one{# মিনিটের মধ্যে ডিভাইস আপডেট করুন}other{# মিনিটের মধ্যে ডিভাইস আপডেট করুন}}</translation>
 <translation id="3522979239100719575">উপলভ্য প্রোফাইল খুঁজে দেখা হচ্ছে। এর জন্য কয়েক মিনিট সময় লাগতে পারে।</translation>
@@ -758,6 +761,7 @@
 <translation id="3899995891769452915">ভয়েস ইনপুট</translation>
 <translation id="3900355044994618856">আপনার সেশনটি <ph name="SESSION_TIME_REMAINING" /> এ শেষ হবে</translation>
 <translation id="3901991538546252627"><ph name="NAME" />-এ সংযোগ করা হচ্ছে</translation>
+<translation id="3904768293285573640">বাঁদিকে সাইজ ছোট বড় করার উইন্ডো টাইল করুন</translation>
 <translation id="3906954721959377182">ট্যাবলেট</translation>
 <translation id="3923494859158167397">কোনও মোবাইল নেটওয়ার্ক সেট-আপ করা নেই</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, ইভেন্ট লোড করা হচ্ছে।</translation>

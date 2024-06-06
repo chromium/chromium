@@ -5,6 +5,7 @@
 <translation id="1013952917065545813">Galite grįžę čia atidaryti neseniai uždarytus skirtukus iš naujo</translation>
 <translation id="1016495303386450659">Elementas atnaujintas</translation>
 <translation id="1025514696883950875">{COUNT,plural, =1{Išsaugoti slaptažodį paskyroje}one{Išsaugoti slaptažodžius paskyroje}few{Išsaugoti slaptažodžius paskyroje}many{Išsaugoti slaptažodžius paskyroje}other{Išsaugoti slaptažodžius paskyroje}}</translation>
+<translation id="102916930470544692">Prieigos raktas</translation>
 <translation id="1035980983510608210">Uždarius visus skirtukus, taip pat bus uždaryti prisegti skirtukai.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1043592663436934089">Būsite atjungti, o naršymo duomenys bus ištrinti</translation>
@@ -1016,6 +1017,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="6173499589275053515">Slaptažodis išsaugotas „Google“ paskyroje <ph name="EMAIL" /></translation>
 <translation id="6184086493125982861">Rodyti skirtukus</translation>
 <translation id="6187302354554850004">Pask. k. sinchr.: <ph name="LAST_USED_TIME" /></translation>
+<translation id="6188737759358894319">Sukurta <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Neskaityti</translation>
 <translation id="6196207969502475924">Paieška balsu</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Uždaryti {COUNT} skirtuką}one{Uždaryti {COUNT} skirtuką}few{Uždaryti {COUNT} skirtukus}many{Uždaryti {COUNT} skirtuko}other{Uždaryti {COUNT} skirtukų}}</translation>
@@ -1303,7 +1305,6 @@ Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos 
 <translation id="7557508262441527045">Atsijungta</translation>
 <translation id="7561196759112975576">Visada</translation>
 <translation id="7564917801238348224">IŠSAUGOTI...</translation>
-<translation id="758132317817089442">Įjungti sustiprintą apsaugą...</translation>
 <translation id="7582857256643797524">Šis nustatymas įgalintas jūsų įrenginyje</translation>
 <translation id="7583004045319035904">Naudokite <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />, kad atrakintumėte inkognito skirtukus.</translation>
 <translation id="7598439272585186139">Didesnė sauga</translation>

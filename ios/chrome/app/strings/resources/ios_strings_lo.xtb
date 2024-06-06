@@ -5,6 +5,7 @@
 <translation id="1013952917065545813">ທ່ານສາມາດກັບມາບ່ອນນີ້ເພື່ອເປີດແຖບຄືນໃໝ່ທີ່ທ່ານໄດ້ປິດເມື່ອບໍ່ດົນມານີ້</translation>
 <translation id="1016495303386450659">ອັບ​ເດດ​ລາຍ​ການ​ແລ້ວ</translation>
 <translation id="1025514696883950875">{COUNT,plural, =1{ບັນທຶກລະຫັດຜ່ານໃນບັນຊີ}other{ບັນທຶກລະຫັດຜ່ານໃນບັນຊີ}}</translation>
+<translation id="102916930470544692">ກະແຈຜ່ານ</translation>
 <translation id="1035980983510608210">ການປິດແຖບທັງໝົດຈະເປັນການປິດແຖບທີ່ປັກໝຸດແລ້ວນຳເຊັ່ນກັນ.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1043592663436934089">ທ່ານຈະຖືກອອກຈາກລະບົບ ແລະ ຂໍ້ມູນການທ່ອງເວັບຈະຖືກລຶບ</translation>
@@ -1016,6 +1017,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="6173499589275053515">ລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ໃນບັນຊີ Google ຂອງທ່ານ, <ph name="EMAIL" /></translation>
 <translation id="6184086493125982861">ສະ​ແດງ​ແຖບ</translation>
 <translation id="6187302354554850004">ຊິ້ງຂໍ້ມູນຫຼ້າສຸດ: <ph name="LAST_USED_TIME" /></translation>
+<translation id="6188737759358894319">ສ້າງເມື່ອ <ph name="DATE" /></translation>
 <translation id="6189413832092199491">ຍັງບໍ່ໄດ້ອ່ານ</translation>
 <translation id="6196207969502475924">​ການຄົ້ນຫາ​ສຽງ</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{ປິດ {COUNT} ແຖບ}other{ປິດ {COUNT} ແຖບ}}</translation>
@@ -1032,6 +1034,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="6232329973559504466">ການຊອກຫາແບບບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
 <translation id="6236952928980352967">ກູ້ຄຳເຕືອນຄືນ</translation>
 <translation id="6247557882553405851">ຕົວຈັດການລະຫັດຜ່ານ Google</translation>
+<translation id="6251835855431997163">ຕື່ມຂໍ້ມູນ <ph name="VALUE" /> ອັດຕະໂນມັດ</translation>
 <translation id="6254066287920239840">ເປີດລິ້ງຕ່າງໆໃນແອັບແທນໂປຣແກຣມທ່ອງເວັບ.</translation>
 <translation id="6255097610484507482">ແກ້ໄຂບັດເຄຣດິດ</translation>
 <translation id="6266039999629596120">ຕ້ອງເອົາໃຈໃສ່</translation>
@@ -1210,6 +1213,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="7022197654033719543">ຂໍ້ມູນເວັບໄຊ</translation>
 <translation id="7029809446516969842">ລະ​ຫັດ​ຜ່ານ</translation>
 <translation id="704692552158601232">ແອັບໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນ</translation>
+<translation id="7055240621761583113">ຕື່ມຂໍ້ມູນລະຫັດຜ່ານອັດຕະໂນມັດ</translation>
 <translation id="7063811929043357292">ບັນຊີຂອງທ່ານໄດ້ຮັບການຈັດການໂດຍພໍ່ແມ່ຂອງທ່ານ.
 <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="7069695992271320873">ລຶບອອກຈາກອຸປະກອນນີ້</translation>
@@ -1303,7 +1307,6 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="7557508262441527045">ອອກຈາກລະບົບແລ້ວ</translation>
 <translation id="7561196759112975576">ຢູ່ສະເໝີ</translation>
 <translation id="7564917801238348224">ບັນທຶກ...</translation>
-<translation id="758132317817089442">ເປີດການປົກປ້ອງທີ່ປັບປຸງດີຂຶ້ນ...</translation>
 <translation id="7582857256643797524">ການຕັ້ງຄ່ານີ້ຖືກເປີດໃຊ້ຢູ່ອຸປະກອນຂອງທ່ານ</translation>
 <translation id="7583004045319035904">ໃຊ້ <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ເພື່ອປົດລັອກແຖບບໍ່ເປີດເຜີຍຕົວຕົນຂອງທ່ານ.</translation>
 <translation id="7598439272585186139">ຮັບຄວາມປອດໄພເພີ່ມເຕີມ</translation>

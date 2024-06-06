@@ -481,6 +481,7 @@
 <translation id="1353980523955420967">PPD सापडत नाही. तुमचे Chromebook ऑनलाइन असल्याची खात्री करा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="1354045473509304750"><ph name="HOST" /> ला तुमचा कॅमेरा वापरण्याची आणि हलवण्याची अनुमती देणे सुरू ठेवा</translation>
 <translation id="1355088139103479645">सर्व डेटा हटवायचा का?</translation>
+<translation id="1356376170199999104">अनुमती दिली आहे – <ph name="PERMISSION_DETAILS" />. प्रत्यक्ष स्विच वापरून मायक्रोफोन सुरू करा.</translation>
 <translation id="1356959069439783953">इनॅक्टिव्ह टॅबना नवीन लुक मिळतो</translation>
 <translation id="1358741672408003399">शुद्धलेखन आणि व्याकरण</translation>
 <translation id="1359923111303110318">तुमचे डिव्हाइस Smart Lock वापरून अनलॉक केले जाऊ शकते. अनलॉक करण्यासाठी एंटर प्रेस करा.</translation>
@@ -753,6 +754,7 @@
 <translation id="1557939148300698553">प्रोफाइल तयार करा</translation>
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1558671750917454373"><ph name="DEVICE_NAME" /> वर कास्ट करणे पुन्हा सुरू करा</translation>
+<translation id="1561331397460162942">हे स्थानाची परवानगी असलेली ॲप्स, वेबसाइट आणि सिस्टीम सेवा यांसाठी स्थान ॲक्सेसची अनुमती देते</translation>
 <translation id="1562119309884184621">हा संपर्क जोडल्याने पुढील वेळी त्यांनी काही शेअर केल्यास, लक्षात ठेवले जाईल</translation>
 <translation id="1563137369682381456">एक्स्पायरीची तारीख</translation>
 <translation id="1563702743503072935">तुमच्या Google खाते मधील तुमचे पासवर्ड तुम्ही साइन इन केलेले असताना या डिव्हाइसवरदेखील उपलब्ध असतील</translation>
@@ -1755,11 +1757,13 @@
     <ph name="BEGIN_PARAGRAPH2" />इंस्टॉलेशन सुरू झाल्यावर ते रद्द करता येऊ शकत नाही.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">डोमेनमध्ये कोणत्याही डिव्हाइससह डेटा अदलाबदल करा: <ph name="DOMAINS" /></translation>
 <translation id="2270666014403455717">“निवडा” साठी स्विच असाइन करा</translation>
+<translation id="2271452184061378400">तुमचे टॅब गट इथे सेव्ह केलेले आहेत</translation>
 <translation id="2271986192355138465">वेब अ‍ॅप कशी इंस्टॉल करायची ते जाणून घ्या</translation>
 <translation id="2272430695183451567">शून्य स्विच नियुक्त केले</translation>
 <translation id="2272570998639520080">मार्टिनी ग्लास</translation>
 <translation id="2273119997271134996">व्हिडिओ-पोर्ट समस्या डॉक करा</translation>
 <translation id="2274840746523584236">तुमचे Chromebook चार्ज करा</translation>
+<translation id="2275193525496879616">अनुमती दिली आहे. तुमच्या डिव्हाइसशी कॅमेरा कनेक्ट करा.</translation>
 <translation id="2276503375879033601">अधिक ॲप्लिकेशन जोडा</translation>
 <translation id="2278193750452754829">या साइटवर एक्स्टेंशनना अनुमती आहे. मेनू उघडण्यासाठी निवडा</translation>
 <translation id="2278562042389100163">ब्राउझर विंडो उघडा</translation>
@@ -1877,6 +1881,7 @@
 <translation id="2350133097354918058">रीलोड केलेले</translation>
 <translation id="2350182423316644347">ॲप्लिकेशन सुरू करत आहे...</translation>
 <translation id="235028206512346451">तुम्ही तुमच्या डिव्हाइसपासून दूर गेल्यास, तुमची स्क्रीन आपोआप लॉक होईल. तुम्ही तुमच्या डिव्हाइससमोर असता, तेव्हा तुमची स्क्रीन जास्त वेळ सुरू राहील. तुम्ही लॉक स्‍क्रीन वापरत नसल्यास, तुमचे डिव्हाइस लॉक होण्याऐवजी स्लीप मोडवर जाईल.</translation>
+<translation id="2351923523007389195">अनुमती दिली आहे – <ph name="PERMISSION_DETAILS" />. <ph name="LINK_BEGIN" />सिस्टीम स्थान अ‍ॅक्सेस<ph name="LINK_END" /> सुरू करा.</translation>
 <translation id="2352305801620974284">तुम्ही या डिव्हाइसवर साइन इन करता, तेव्हा तुम्हाला तुमच्या Google खाते वरून तुमचे पासवर्ड आणि इतर बऱ्याच गोष्टी मिळतात</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2352810082280059586">लॉक स्‍क्रीन नोट <ph name="LOCK_SCREEN_APP_NAME" /> वर आपोआप सेव्ह केल्या जातात. तुमची सर्वात अलीकडील नोट लॉक स्‍क्रीनवर राहील.</translation>
@@ -1991,7 +1996,6 @@
 <translation id="2435248616906486374">नेटवर्क डिस्कनेक्ट झाले</translation>
 <translation id="2435457462613246316">पासवर्ड दर्शवा</translation>
 <translation id="2436385001956947090">लिंक कॉपी करा</translation>
-<translation id="2436746748253887661">हे परवानगी असलेल्या सिस्टीम सेवांना तुमचे स्थान वापरण्याची अनुमती देते. तुमच्या डिव्हाइसच्या स्थानाचा अंदाज लावण्यात मदत व्हावी, यासाठी स्थान हे वाय-फाय, मोबाइल नेटवर्क आणि सेन्सर यांसारखे स्रोत वापरू शकते. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="2438853563451647815">प्रिंटरशी कनेक्ट केले नाही</translation>
 <translation id="2439152382014731627"><ph name="DEVICE_TYPE" /> पासवर्ड रीसेट करा</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> लोड करत आहे</translation>
@@ -3351,6 +3355,7 @@
 <translation id="3449839693241009168"><ph name="EXTENSION_NAME" /> कडे कमांड पाठविण्यासाठी <ph name="SEARCH_KEY" /> प्रेस करा</translation>
 <translation id="3450157232394774192">निष्क्रिय स्थिती कब्जा टक्केवारी</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> नुसार तुम्ही आता वाय-फायशी कनेक्ट करून अपडेट डाउनलोड करणे आवश्यक आहे.</translation>
+<translation id="345078987193237421">हे कॅमेराची परवानगी असलेली ॲप्स, वेबसाइट आणि सिस्टीम सेवा यांसाठी कॅमेरा ॲक्सेसची अनुमती देते.</translation>
 <translation id="3452999110156026232">पालक ॲक्सेस</translation>
 <translation id="3453082738208775226">ऑफलाइन स्टोरेज साफ करायचे आहे का?</translation>
 <translation id="3453597230179205517">स्थानाचा अ‍ॅक्सेस ब्लॉक केला गेला आहे</translation>
@@ -3522,6 +3527,7 @@
 <translation id="3587438013689771191">याबद्दल अधिक जाणून घ्या: <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="3587482841069643663">सर्व</translation>
 <translation id="3588790464166520201">पेमेंट हँडलर इंस्टॉल करण्याची अनुमती आहे</translation>
+<translation id="3589010096969411438">अनुमती दिली आहे. प्रत्यक्ष स्विच वापरून मायक्रोफोन सुरू करा.</translation>
 <translation id="3589766037099229847">असुरक्षित आशय ब्लॉक केला</translation>
 <translation id="3590194807845837023">प्रोफाईल अनलॉक करा आणि रीलाँच करा</translation>
 <translation id="3590295622232282437">व्यवस्थापित केलेल्या सेशनमध्ये एंटर करत आहे.</translation>
@@ -4724,6 +4730,7 @@
 <translation id="4473996011558324141">वेळेचा अंदाज लावत आहे</translation>
 <translation id="4474155171896946103">सर्व टॅब बुकमार्क करा...</translation>
 <translation id="4475299370877036544">ही कृती तुमच्या संस्थेच्या धोरणांचे उल्लंघन करू शकते</translation>
+<translation id="4476198534886170024">अनुमती दिली आहे. <ph name="LINK_BEGIN" />सिस्टीम कॅमेरा अ‍ॅक्सेस<ph name="LINK_END" /> सुरू करा.</translation>
 <translation id="4476590490540813026">व्यायामपटू</translation>
 <translation id="4476659815936224889">हा कोड स्कॅन करण्यासाठी, तुम्ही तुमच्या फोनवरील QR स्कॅनर अ‍ॅप किंवा काही कॅमेरा अ‍ॅप्स वापरू शकता.</translation>
 <translation id="4477015793815781985">Ctrl, Alt किंवा ⌘ चा समावेश करा</translation>
@@ -5072,6 +5079,7 @@
 <translation id="4742795653798179840">Chrome डेटा हटवला</translation>
 <translation id="4742970037960872810">हायलाइट काढून टाका</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />ॲप्लिकेशन कशी अपडेट करायची ते शिका<ph name="END_LINK" /></translation>
+<translation id="4743990041512863976">अनुमती दिली आहे – <ph name="PERMISSION_DETAILS" />. <ph name="LINK_BEGIN" />सिस्टीम मायक्रोफोन अ‍ॅक्सेस<ph name="LINK_END" /> सुरू करा.</translation>
 <translation id="4744268813103118742">साइटवर जा</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{साइट अनम्यूट करा}other{साइट अनम्यूट करा}}</translation>
@@ -5586,6 +5594,7 @@
 <translation id="5143374789336132547">The extension "<ph name="EXTENSION_NAME" />" has changed what page is shown when you click the Home button.</translation>
 <translation id="5143612243342258355">ही फाइल धोकादायक आहे</translation>
 <translation id="5143712164865402236">पूर्ण स्क्रीनमध्ये जा</translation>
+<translation id="5143960098217235598">हे मायक्रोफोनची परवानगी असलेली ॲप्स, वेबसाइट आणि सिस्टीम सेवा यांसाठी मायक्रोफोन ॲक्सेसची अनुमती देते.</translation>
 <translation id="5144815231216017543">alt + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="5145464978649806571">तुम्ही तुमच्या डिव्हाइसपासून दूर गेल्यास, तुमची स्क्रीन आपोआप लॉक होईल. तुम्ही तुमच्या डिव्हाइससमोर असता, तेव्हा तुमची स्क्रीन जास्त वेळ चालू राहील. लॉक स्‍क्रीन बंद असल्यास, तुमचे डिव्हाइस लॉक होण्याऐवजी स्लीप मोडवर जाईल.</translation>
 <translation id="514575469079499857">स्थान निर्धारित करण्यासाठी तुमचा आयपी ॲड्रेस वापरा (डीफॉल्ट)</translation>
@@ -5783,6 +5792,7 @@
 <translation id="5291739252352359682">Chrome ब्राउझरमध्ये मीडियासाठी आपोआप कॅप्शन तयार करते (सध्या इंग्रजीमध्ये उपलब्ध आहे). ऑडिओ आणि कॅप्शनवर स्थानिकरीत्या प्रक्रिया केली जाते व या गोष्टी डिव्हाइसमधून कधीही जात नाहीत.</translation>
 <translation id="529175790091471945">हे डिव्हाइस स्वरूपित करा</translation>
 <translation id="529296195492126134">क्षणिक मोडला सपोर्ट नाही. कृपया तुमच्या अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा</translation>
+<translation id="5293043095535566171">स्थान ॲक्सेस सुरू करायचा आहे का?</translation>
 <translation id="5293170712604732402">सेटिंग्ज त्यांच्या मूळ डीफॉल्टवर रिस्टोअर करा</translation>
 <translation id="5294068591166433464">साइटने तुमचा पासवर्ड चोरण्याचा प्रयत्न केल्यास किंवा तुम्ही हानिकारक फाइल डाउनलोड केल्यास, Chrome कदाचित पेज आशयाच्या भागांसह URLs देखील Google ला पाठवेल</translation>
 <translation id="5294097441441645251">लोअरकेस वर्ण किंवा अंडरस्कोअरने सुरू होणे आवश्यक आहे</translation>
@@ -6975,6 +6985,7 @@
 <translation id="6200151268994853226">एक्स्टेंशन व्यवस्थापित करा</translation>
 <translation id="6201608810045805374">हे खाते काढून टाकायचे आहे का?</translation>
 <translation id="6202304368170870640">तुमच्या डिव्हाइसमध्ये साइन इन करण्यासाठी किंवा ते अनलॉक करण्यासाठी तुम्ही तुमचा पिन वापरू शकता.</translation>
+<translation id="6202935572248792580">अनुमती दिली आहे. तुमच्या डिव्हाइसशी मायक्रोफोन कनेक्ट करा.</translation>
 <translation id="6203247599828309566">तुम्ही या साइटवर पासवर्डसाठी टीप सेव्ह केली आहे. ती पाहण्यासाठी, की आयकनवर क्लिक करा.</translation>
 <translation id="6205314730813004066">जाहिरातींशी संबंधित गोपनीयता</translation>
 <translation id="6205993460077903908"><ph name="WINDOW_TITLE" /> - मायक्रोफोन रेकॉर्डिंग</translation>
@@ -7029,6 +7040,7 @@
 <translation id="6238923052227198598">लॉक स्क्रीनवर नवीनतम टीप ठेवा</translation>
 <translation id="6238982280403036866">JavaScript वापरण्याची अनुमती आहे</translation>
 <translation id="6239558157302047471">रीलोड आणि फ्रेम करा</translation>
+<translation id="6240637845286751292">अनुमती दिली आहे. <ph name="LINK_BEGIN" />सिस्टीम स्थान अ‍ॅक्सेस<ph name="LINK_END" /> सुरू करा.</translation>
 <translation id="6240821072888636753">प्रत्येक वेळी विचारा</translation>
 <translation id="6240964651812394252">तुमच्या ऑपरेटिंग सिस्टीमसह Google Password Manager वापरण्यासाठी, Chrome पुन्हा लाँच करा आणि तुमच्या कॉंप्युटरच्या पासवर्ड व्यवस्थापकाचा अ‍ॅक्सेस द्या. पुन्हा लाँच केल्यानंतर तुमचे टॅब पुन्हा उघडतील.</translation>
 <translation id="6241530762627360640">तुमच्या सिस्टमशी जोडलेल्या ब्लूटूथ डिव्हाइसविषयीची माहिती ॲक्सेस करा आणि जवळपासचे ब्लूटूथ डिव्हाइस शोधा.</translation>
@@ -8277,6 +8289,7 @@
 <translation id="7210499381659830293">एक्स्टेंशन प्रिंटर</translation>
 <translation id="7211783048245131419">अद्याप कोणताही स्विच असाइन करण्यात आलेला नाही</translation>
 <translation id="7212097698621322584">बदलण्यासाठी तुमचा सध्याचा पिन एंटर करा. तुम्हाला तुमचा पिन माहित नसल्यास, तुम्हाला तुमची सिक्युरिटी की रीसेट करणे आवश्यक असेल, त्यानंतर तुम्ही नविन पिन तयार करू शकता.</translation>
+<translation id="7214047272988222011">अनुमती दिली आहे – <ph name="PERMISSION_DETAILS" />. <ph name="LINK_BEGIN" />सिस्टीम कॅमेरा अ‍ॅक्सेस<ph name="LINK_END" /> सुरू करा.</translation>
 <translation id="721490496276866468">पासवर्ड इंपोर्ट करा</translation>
 <translation id="7218514093816577632">तुमच्या <ph name="DEVICE_NAME" /> वर सूचना सुरू केलेल्या असल्याची खात्री करा.</translation>
 <translation id="7219254577985949841">साइट डेटा हटवायचा आहे का?</translation>
@@ -8549,6 +8562,7 @@
 <translation id="7416091793702109803"><ph name="FILE_NAME" /> चे पुनरावलोकन करा</translation>
 <translation id="7416263748877373774">सेवा अटी लोड करता आल्या नाहीत. कृपया तुमचे नेटवर्क कनेक्शन तपासा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="7416362041876611053">अज्ञात नेटवर्क एरर.</translation>
+<translation id="7417435070053325657"><ph name="APPS_LIST_SIZE" /> पैकी <ph name="BLOCKED_APPS_SIZE" /> अ‍ॅप्स ब्लॉक केली आहेत</translation>
 <translation id="741906494724992817">हा ॲप ला कोणत्याही विशेष परवानग्यांची आवश्यकता नाही.</translation>
 <translation id="7419142833919893307">कोणतेही वापरकर्ता नाव जोडले नाही</translation>
 <translation id="7419565702166471774">नेहमी सुरक्षित कनेक्शन वापरा</translation>
@@ -8756,6 +8770,7 @@
 <translation id="7573172247376861652">बॅटरी चार्ज</translation>
 <translation id="7573594921350120855">व्हिडिओ चॅटिंगसारख्या संवाद वैशिष्ट्यांसाठी साइट सामान्यपणे तुमचा व्हिडिओ कॅमेरा वापरतात</translation>
 <translation id="7575272930307342804">नेव्हिगेशन नियंत्रणे</translation>
+<translation id="757660455834887988">अनुमती दिली आहे – <ph name="PERMISSION_DETAILS" />. तुमच्या डिव्हाइसशी कॅमेरा कनेक्ट करा.</translation>
 <translation id="7576690715254076113">तुलनात्मक</translation>
 <translation id="7576976045740938453">डेमो मोड खात्याला समस्या आली.</translation>
 <translation id="7578137152457315135">फिंगरप्रिंट सेटिंग्ज</translation>
@@ -9068,7 +9083,6 @@
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7788948939674438635">साइटना तुमचा कीबोर्ड लॉक करण्याची अनुमती देऊ नका</translation>
 <translation id="7789963078219276159">पेज बॅकग्राउंड सुरू करा <ph name="CATEGORY" /> असे बदलले गेले आहे.</translation>
-<translation id="7790689625219600437">PDF OCR</translation>
 <translation id="7791269138074599214">इनपुट पद्धत</translation>
 <translation id="7791429245559955092">हे अ‍ॅप्लिकेशन तुम्ही सध्या वापरत असलेल्या Chrome प्रोफाइलवर इंस्टॉल केले जाईल</translation>
 <translation id="7791436592012979144">रिव्हर्स स्क्रोलिंग सुरू केले आहे</translation>
@@ -9431,6 +9445,7 @@
 <translation id="8053278772142718589">PKCS #12 फाइल</translation>
 <translation id="8053390638574070785">हे पेज रीलोड करा</translation>
 <translation id="8053629544194355894">Chrome ला टॅब गट सुचवू देण्यासाठी सिंक सुरू करा</translation>
+<translation id="8054500940978949009">अनुमती दिली आहे. <ph name="LINK_BEGIN" />सिस्टीम मायक्रोफोन अ‍ॅक्सेस<ph name="LINK_END" /> सुरू करा.</translation>
 <translation id="8054517699425078995">या प्रकारची फाईल आपल्‍या डिव्‍हाइसला हानी पोहचवू शकते. तुम्ही <ph name="FILE_NAME" /> तरीही ठेवू इच्‍छिता?</translation>
 <translation id="8054563304616131773">कृपया एक वैध ईमेल ॲड्रेस एंटर करा</translation>
 <translation id="8054609631325628928">हे नंबर सेवा ॲक्टिव्हेट करण्यात मदत करण्यासाठी वापरले जाऊ शकतात</translation>
@@ -9823,6 +9838,7 @@
 <translation id="8336739000755212683">डिव्हाइस खाते इमेज बदला</translation>
 <translation id="8337020675372081178">{HOURS,plural, =1{हे डिव्हाइस एका तासासाठी सेव्ह केले जाईल आणि तुम्ही पुढच्या वेळी कोडशिवाय कनेक्ट करू शकता. हे तुमच्या अ‍ॅडमिनिस्ट्रेटरने सेट केलेले आहे.}other{हे डिव्हाइस {HOURS} तासांसाठी सेव्ह केले जाईल आणि तुम्ही पुढच्या वेळी कोडशिवाय कनेक्ट करू शकता. हे तुमच्या अ‍ॅडमिनिस्ट्रेटरने सेट केलेले आहे.}}</translation>
 <translation id="8337399713761067085">तुम्ही सध्या ऑफलाइन आहात</translation>
+<translation id="8338427544764842461">तुमचे टॅब गट इथे सेव्ह केलेले आहेत आणि ते तुमच्या सर्व साइन-इन केलेल्या डिव्हाइसवर अपडेट केले जातात</translation>
 <translation id="8338952601723052325">डेव्हलपर वेबसाइट</translation>
 <translation id="8339288417038613756">डिस्प्ले आणि मजकुराचा आकार</translation>
 <translation id="833986336429795709">ही लिंक उघडण्यासाठी, अ‍ॅप निवडा</translation>
@@ -10861,6 +10877,7 @@
 <translation id="9096776523567481218">स्थानिकरीत्या इंस्टॉल केलेले नाही</translation>
 <translation id="9098860402274800697">Google Play आणि Android अ‍ॅप्स काढून टाका</translation>
 <translation id="9099220545925418560">तुमच्या ब्राउझिंग इतिहासावर आधारित. हे सेटिंग बंद आहे.</translation>
+<translation id="910000385680858937">अनुमती दिली आहे – <ph name="PERMISSION_DETAILS" />. तुमच्या डिव्हाइसशी मायक्रोफोन कनेक्ट करा.</translation>
 <translation id="9100416672768993722">यापूर्वी वापरलेल्या इनपुट पद्धतीवर स्विच करण्यासाठी, <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> प्रेस करा</translation>
 <translation id="9100765901046053179">प्रगत सेटिंग्ज</translation>
 <translation id="9101691533782776290">ॲप लाँच करा</translation>

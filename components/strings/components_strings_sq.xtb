@@ -245,7 +245,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1432187715652018471">faqja kërkon të instalojë një përpunues të shërbimit.</translation>
 <translation id="1432581352905426595">Menaxho motorët e kërkimit</translation>
 <translation id="1433225466058025572">Provo t'i zhvendosësh përsëri skedarët e tu</translation>
-<translation id="1434317006812369578">Chrome ka veçori sigurie të integruara për të të mbrojtur ndërsa shfleton, si p.sh. "Shfletimi i sigurt i Google". "Shfletimi i sigurt" <ph name="BEGIN_LINK" />së fundi gjeti një mashtrim në <ph name="SITE" /><ph name="END_LINK" />, i cili është i integruar në sajtin që po përpiqesh të vizitosh.</translation>
 <translation id="1435940442311036198">Përdor një çelës kalimi në një pajisje tjetër</translation>
 <translation id="1436185428532214179">Mund të kërkojë të modifikojë skedarët ose dosjet në pajisjen tënde</translation>
 <translation id="1441816242347931036">Hape për të vazhduar</translation>
@@ -1470,7 +1469,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3767485424735936570">Kopjimi dhe ngjitja e kësaj përmbajtjeje në <ph name="VM_NAME" /> nuk rekomandohet nga politika e administratorit</translation>
 <translation id="3772211998634047851">Letër (me ngjitje)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp Tab pastaj Enter për të krijuar shpejt një shënim të ri në Google Keep</translation>
-<translation id="378026377453746707">Chrome ka veçori sigurie të integruara për të të mbrojtur ndërsa shfleton, si p.sh. "Shfletimi i sigurt i Google". "Shfletimi i sigurt" së fundi <ph name="BEGIN_LINK" />gjeti softuer të dëmshëm në <ph name="SITE" /><ph name="END_LINK" />, i cili është i integruar në sajtin që po përpiqesh të vizitosh.</translation>
 <translation id="3780694243617746492">Koshi i daljes</translation>
 <translation id="3781428340399460090">Rozë e ndezur</translation>
 <translation id="3783418713923659662">Mastercard</translation>
@@ -1554,7 +1552,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3950820424414687140">Identifikohu</translation>
 <translation id="3953505489397572035">Ky çmim është normal</translation>
 <translation id="3958057596965527988">4 x 4 inç</translation>
-<translation id="3959121317419633580">Chrome ka veçori sigurie të integruara për të të mbrojtur ndërsa shfleton, si p.sh. "Shfletimi i sigurt i Google". "Shfletimi i sigurt" së fundi <ph name="BEGIN_LINK" />gjeti mashtrim në <ph name="SITE" /><ph name="END_LINK" />, i cili është i integruar në sajtin që po përpiqesh të vizitosh.<ph name="NEW_LINE" />Edhe sajtet që janë zakonisht të sigurta, ndonjëherë kompromentohen nga sulmuesit. <ph name="BEGIN_ERROR_LINK" />Na njofto<ph name="END_ERROR_LINK" /> nëse mendon se ka ndodhur një gabim dhe se ky sajt nuk përbën rrezik.</translation>
 <translation id="3961148744525529027">Fleta e përpunuesit të pagesës është gjysmë e hapur</translation>
 <translation id="3962859241508114581">Kënga e mëparshme</translation>
 <translation id="3963721102035795474">Modaliteti i lexuesit</translation>

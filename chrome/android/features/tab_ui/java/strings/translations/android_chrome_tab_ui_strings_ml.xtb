@@ -100,7 +100,6 @@
 <translation id="6333260925957816943">ഈ സ്റ്റോറിനെ കുറിച്ചുള്ള വിവരങ്ങൾ</translation>
 <translation id="6381032505162537930">നിങ്ങളുടെ ടാബ് ഗ്രൂപ്പുകൾ ഇവിടെ കാണാം</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{തിരഞ്ഞെടുത്ത <ph name="TABS_COUNT_ONE" /> ടാബ് അൺഗ്രൂപ്പ് ചെയ്യുക}other{തിരഞ്ഞെടുത്ത <ph name="TABS_COUNT_MANY" /> ടാബുകൾ അൺഗ്രൂപ്പ് ചെയ്യുക}}</translation>
-<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Chrome പ്രധാന മെനുവിന് കീഴിലുള്ള 'അടുത്തിടെ തുറന്ന ടാബുകളിൽ' നിങ്ങളുടെ അടച്ച ടാബുകൾ കണ്ടെത്താം. നിങ്ങളുടെ അദൃശ്യ ടാബ് ലഭ്യമാകില്ല.}other{Chrome പ്രധാന മെനുവിന് കീഴിലുള്ള 'അടുത്തിടെ തുറന്ന ടാബുകളിൽ' നിങ്ങളുടെ അടച്ച ടാബുകൾ കണ്ടെത്താം. നിങ്ങളുടെ # അദൃശ്യ ടാബുകൾ ലഭ്യമാകില്ല.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ടാബ്}other{<ph name="TABS_COUNT_MANY" /> ടാബുകൾ}}</translation>
 <translation id="6549021453810473782">സ്റ്റോർ വിവരങ്ങൾ കാണുക</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>

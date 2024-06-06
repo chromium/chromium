@@ -5,6 +5,7 @@
 <translation id="1013952917065545813">Та саяхан хаасан табуудаа дахин нээхийн тулд энд дараа эргэн ирэх боломжтой</translation>
 <translation id="1016495303386450659">Шинэчлэгдсэн зүйл</translation>
 <translation id="1025514696883950875">{COUNT,plural, =1{Нууц үгийг бүртгэлд хадгалах}other{Нууц үгнүүдийг бүртгэлд хадгалах}}</translation>
+<translation id="102916930470544692">Нэвтрэх түлхүүр</translation>
 <translation id="1035980983510608210">Бүх табыг хааснаар бэхэлсэн табуудыг мөн хаана.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1043592663436934089">Таныг гаргах бөгөөд интернэтээр үзсэн өгөгдлийг устгана</translation>
@@ -1016,6 +1017,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6173499589275053515">Таны <ph name="EMAIL" /> Google Бүртгэлд нууц үг хадгалсан</translation>
 <translation id="6184086493125982861">Цонхнуудыг харуул</translation>
 <translation id="6187302354554850004">Хамгийн сүүлд синк хийсэн: <ph name="LAST_USED_TIME" /></translation>
+<translation id="6188737759358894319"><ph name="DATE" />-нд үүсгэсэн</translation>
 <translation id="6189413832092199491">Уншаагүй</translation>
 <translation id="6196207969502475924">Дуугаар хайх</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{{COUNT} табыг хаах}other{{COUNT} табыг хаах}}</translation>
@@ -1303,7 +1305,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="7557508262441527045">Гарсан</translation>
 <translation id="7561196759112975576">Үргэлж</translation>
 <translation id="7564917801238348224">ХАДГАЛАХ...</translation>
-<translation id="758132317817089442">Сайжруулсан хамгаалалтыг асаах...</translation>
 <translation id="7582857256643797524">Энэ тохиргоог таны төхөөрөмжид идэвхжүүлсэн</translation>
 <translation id="7583004045319035904">Нууцлалтай табуудынхаа түгжээг тайлахын тулд <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />-г ашиглана уу.</translation>
 <translation id="7598439272585186139">Аюулгүй байдлаа сайжруулаарай</translation>

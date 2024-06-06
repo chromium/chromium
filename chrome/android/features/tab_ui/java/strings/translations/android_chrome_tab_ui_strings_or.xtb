@@ -100,7 +100,6 @@
 <translation id="6333260925957816943">ଏହି ଷ୍ଟୋର ବିଷୟରେ ସୂଚନା</translation>
 <translation id="6381032505162537930">ଆପଣ ଆପଣଙ୍କ ଟାବ ଗ୍ରୁପକୁ ଏଠାରେ ପାଇବେ</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />ଟି ଚୟନିତ ଟାବକୁ ଗୋଷ୍ଠୀଭୁକ୍ତ କରନ୍ତୁ ନାହିଁ}other{<ph name="TABS_COUNT_MANY" />ଟି ଚୟନିତ ଟାବକୁ ଗୋଷ୍ଠୀଭୁକ୍ତ କରନ୍ତୁ ନାହିଁ}}</translation>
-<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{ଆପଣ ଆପଣଙ୍କ ବନ୍ଦ କରାଯାଇଥିବା ଟାବଗୁଡ଼ିକୁ Chrome ମୁଖ୍ୟ ମେନୁ ଅଧୀନରେ "ବର୍ତ୍ତମାନର ଟାବଗୁଡ଼ିକ"ରେ ପାଇପାରିବେ। ଆପଣଙ୍କର ଇନକଗ୍ନିଟୋ ଟାବ ଉପଲବ୍ଧ ହେବ ନାହିଁ।}other{ଆପଣ ଆପଣଙ୍କ ବନ୍ଦ କରାଯାଇଥିବା ଟାବଗୁଡ଼ିକୁ Chrome ମୁଖ୍ୟ ମେନୁ ଅଧୀନରେ "ବର୍ତ୍ତମାନର ଟାବଗୁଡ଼ିକ"ରେ ପାଇପାରିବେ। ଆପଣଙ୍କର #ଟି ଇନକଗ୍ନିଟୋ ଟାବ ଉପଲବ୍ଧ ହେବ ନାହିଁ।}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />ଟି ଟାବ}other{<ph name="TABS_COUNT_MANY" />ଟି ଟାବ}}</translation>
 <translation id="6549021453810473782">ଷ୍ଟୋର୍ ସୂଚନା ଦେଖନ୍ତୁ</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>

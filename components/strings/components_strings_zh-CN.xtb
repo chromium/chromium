@@ -245,7 +245,6 @@
 <translation id="1432187715652018471">此页面想安装一款服务处理程序。</translation>
 <translation id="1432581352905426595">管理搜索引擎</translation>
 <translation id="1433225466058025572">尝试重新移动文件</translation>
-<translation id="1434317006812369578">Chrome 内置的安全功能可在您浏览网页时为您提供保护，例如 Google 安全浏览功能。安全浏览功能<ph name="BEGIN_LINK" />近期在您尝试访问的网站 <ph name="SITE" /> 上发现了内嵌的恶意软件<ph name="END_LINK" />。</translation>
 <translation id="1435940442311036198">使用另一部设备上的通行密钥</translation>
 <translation id="1436185428532214179">可以请求修改您设备上的文件和文件夹</translation>
 <translation id="1441816242347931036">打开以继续</translation>
@@ -1466,7 +1465,6 @@
 <translation id="3767485424735936570">管理员政策不建议将此内容复制并粘贴到 <ph name="VM_NAME" /></translation>
 <translation id="3772211998634047851">纸（证券纸）</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可在 Google Keep 中快速创建新记事</translation>
-<translation id="378026377453746707">Chrome 内置的安全功能可在您浏览网页时为您提供保护，例如 Google 安全浏览功能。安全浏览功能近期<ph name="BEGIN_LINK" />在您尝试访问的网站 <ph name="SITE" /> 上发现了内嵌的有害软件<ph name="END_LINK" />。</translation>
 <translation id="3780694243617746492">出纸槽</translation>
 <translation id="3781428340399460090">艳粉色</translation>
 <translation id="3783418713923659662">Mastercard</translation>
@@ -1550,7 +1548,6 @@
 <translation id="3950820424414687140">登录</translation>
 <translation id="3953505489397572035">此价格即是一般价格</translation>
 <translation id="3958057596965527988">4 x 4 英寸</translation>
-<translation id="3959121317419633580">Chrome 内置的安全功能可在您浏览网页时为您提供保护，例如 Google 安全浏览功能。安全浏览功能近期<ph name="BEGIN_LINK" />在您尝试访问的网站 <ph name="SITE" /> 上发现了内嵌的钓鱼式攻击<ph name="END_LINK" />。<ph name="NEW_LINE" />即使是通常很安全的网站，有时也会遭到攻击者的入侵。如果您认为我们的判定有误，并认为此网站不会构成危险，请<ph name="BEGIN_ERROR_LINK" />告知我们<ph name="END_ERROR_LINK" />。</translation>
 <translation id="3961148744525529027">付款处理程序工作表已在下半屏中打开</translation>
 <translation id="3962859241508114581">上一首</translation>
 <translation id="3963721102035795474">阅读器模式</translation>

@@ -5,6 +5,7 @@
 <translation id="1013952917065545813">Μπορείτε να επιστρέψετε εδώ για να ανοίξετε ξανά τις καρτέλες που κλείσατε πρόσφατα.</translation>
 <translation id="1016495303386450659">Το στοιχείο ενημερώθηκε</translation>
 <translation id="1025514696883950875">{COUNT,plural, =1{Αποθήκευση κωδικού πρόσβασης στον λογαριασμό}other{Αποθήκευση κωδικών πρόσβασης στον λογαριασμό}}</translation>
+<translation id="102916930470544692">Κλειδί πρόσβασης</translation>
 <translation id="1035980983510608210">Αν κλείσετε όλες τις καρτέλες, θα κλείσουν και οι καρφιτσωμένες καρτέλες.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1043592663436934089">Θα αποσυνδεθείτε και τα δεδομένα περιήγησης θα διαγραφούν</translation>
@@ -1016,6 +1017,7 @@
 <translation id="6173499589275053515">Ο κωδικός πρόσβασης αποθηκεύτηκε στον Λογαριασμό σας Google, <ph name="EMAIL" />.</translation>
 <translation id="6184086493125982861">Εμφάνιση καρτελών</translation>
 <translation id="6187302354554850004">Τελευτ. συγχρ.: <ph name="LAST_USED_TIME" /></translation>
+<translation id="6188737759358894319">Δημιουργήθηκε στις <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Μη αναγνωσμένα</translation>
 <translation id="6196207969502475924">Φωνητική αναζήτηση</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Κλείσιμο {COUNT} καρτέλας}other{Κλείσιμο {COUNT} καρτελών}}</translation>
@@ -1304,7 +1306,6 @@
 <translation id="7557508262441527045">Έγινε αποσύνδεση</translation>
 <translation id="7561196759112975576">Πάντα</translation>
 <translation id="7564917801238348224">ΑΠΟΘΗΚΕΥΣΗ…</translation>
-<translation id="758132317817089442">Ενεργοποίηση Βελτιωμένης προστασίας…</translation>
 <translation id="7582857256643797524">Αυτή η ρύθμιση είναι ενεργοποιημένη στη συσκευή σας</translation>
 <translation id="7583004045319035904">Χρήση <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> για ξεκλείδωμα των καρτελών ανώνυμης περιήγησης.</translation>
 <translation id="7598439272585186139">Αποκτήστε περισσότερη ασφάλεια</translation>

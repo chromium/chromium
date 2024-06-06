@@ -5,6 +5,7 @@
 <translation id="1013952917065545813">Ungabuya lapha futhi ukuze uphinde uvule amathebhu osanda kuwavala</translation>
 <translation id="1016495303386450659">Into ibuyekeziwe</translation>
 <translation id="1025514696883950875">{COUNT,plural, =1{Londoloza Iphasiwedi ku-Akhawunti}one{Londoloza Amaphasiwedi ku-Akhawunti}other{Londoloza amaphasiwedi ku-akhawunti}}</translation>
+<translation id="102916930470544692">Ukhiye wokudlula</translation>
 <translation id="1035980983510608210">Ukuvala wonke amathebhu kuzovala namathebhu aphiniwe.</translation>
 <translation id="1036017604683756002">I-UPS</translation>
 <translation id="1043592663436934089">Uzokhishwa ngemvume futhi idatha yopheqululo izosulwa</translation>
@@ -1016,6 +1017,7 @@ I-Handoff futhi kufanele inikwe amandla esigabeni sokuvamile zezilungiselelo, fu
 <translation id="6173499589275053515">Iphasiwedi ilondolozwe ku-GoogleAccount yakho, <ph name="EMAIL" /></translation>
 <translation id="6184086493125982861">Bonisa amthebhu</translation>
 <translation id="6187302354554850004">Ukugcina ukuvumelanisa: <ph name="LAST_USED_TIME" /></translation>
+<translation id="6188737759358894319">Kudalwe ngo-<ph name="DATE" /></translation>
 <translation id="6189413832092199491">Akufundiwe</translation>
 <translation id="6196207969502475924">Usesho lwezwi</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Vala ithebhu engu-{COUNT}}one{Vala amathebhu angu-{COUNT}}other{Vala amathebhu angu-{COUNT}}}</translation>
@@ -1303,7 +1305,6 @@ Lapho uku-Incognito, amasayithi awakwazi ukusebenzisa amakhukhi wakho ukubona um
 <translation id="7557508262441527045">Uphume ngemvume</translation>
 <translation id="7561196759112975576">Njalo</translation>
 <translation id="7564917801238348224">LONDOLOZA...</translation>
-<translation id="758132317817089442">Vula ukuvikeleka okuthuthukisiwe...</translation>
 <translation id="7582857256643797524">Le sethingi linikwe amandla kudivayisi yakho</translation>
 <translation id="7583004045319035904">Sebenzisa i-<ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ukuvula amathebhu wakho we-Incognito.</translation>
 <translation id="7598439272585186139">Thola ukuvikelwa okuningi</translation>

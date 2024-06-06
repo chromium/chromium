@@ -293,6 +293,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1203942045716040624">Ortaq İşçi: <ph name="SCRIPT_URL" /></translation>
 <translation id="1205104724635486855">Keçidi önizləyin</translation>
 <translation id="1206832039833782423">Güvənlik kodu kartın arxasındadır</translation>
+<translation id="1208392090861059168">Cari cədvəl: <ph name="SUNRISE" /> - <ph name="SUNSET" />. Gün batımı və gün çıxımı cədvəlini avtomatik güncəlləmək üçün <ph name="BEGIN_LINK" />sistem məkan girişini yandırın<ph name="END_LINK" /></translation>
 <translation id="1210678701920254279">Printerlərə baxın, onları əlavə edin və aktiv çap işləri görün</translation>
 <translation id="1211769675100312947">Qısayolları siz seçirsiniz</translation>
 <translation id="1213254615020057352">İstifadə və diaqnostika datasını göndərin. Diaqnostika, cihaz və tətbiqdən istifadə datasını avtomatik olaraq Google'a göndərməklə uşağınızın Android təcrübəsini təkmilləşdirməyə kömək edin. Bu məlumatlardan uşağınızı müəyyən etmək üçün istifadə edilməyəcək. Onlar sistem və tətbiq sabitliyi və digər təkmilləşdirmələrə kömək edəcək. Bəzi ümumiləşdirilmiş məlumatlar Google tətbiqlərinə və Android tərtibatçıları kimi partnyorlara da kömək edəcək. Bu ayar sahibi tərəfindən tətbiq edilir. Sahibi bu cihaz üzrə diaqnostika və istifadə datasını Google'a göndərməyi seçə bilər. Uşağınız üçün əlavə Veb və Tətbiq Fəaliyyəti ayarı aktiv edilərsə, bu data Google Hesabınızda saxlanıla bilər.</translation>
@@ -479,6 +480,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1353980523955420967">PPD tapılmadı. Chromebook'un onlayn olduğuna əmin olun və yenidən cəhd edin.</translation>
 <translation id="1354045473509304750"><ph name="HOST" /> hostuna kameranızı istifadə etmək və hərəkət etdirmək icazəsi verməyə davam edin</translation>
 <translation id="1355088139103479645">Bütün data silinsin?</translation>
+<translation id="1356376170199999104">İcazə verilib – <ph name="PERMISSION_DETAILS" />. Fiziki dəyişdirici istifadə edərək mikrofonu yandırın.</translation>
 <translation id="1356959069439783953">Qeyri-aktiv tablar yeni görünüş əldə edir</translation>
 <translation id="1358741672408003399">Orfoqrafiya və Qrammatika</translation>
 <translation id="1359923111303110318">Cihazınız Smart Lock ilə kiliddən çıxarıla bilər. Kiliddən çıxarmaq üçün Enter düyməsinə basın.</translation>
@@ -750,6 +752,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1557939148300698553">Profil yaradın</translation>
 <translation id="155865706765934889">Taçped</translation>
 <translation id="1558671750917454373"><ph name="DEVICE_NAME" /> cihazında yayımı bərpa edin</translation>
+<translation id="1561331397460162942">Bu, tətbiqlərlərə, məkan icazəsi olan veb-saytlara və sistem xidmətlərinə məkana giriş imkanı verir</translation>
 <translation id="1562119309884184621">Bu kontaktı əlavə etdikdə, onun növbəti dəfə paylaşımı yadda saxlanacaq</translation>
 <translation id="1563137369682381456">Bitmə tarixi</translation>
 <translation id="1563702743503072935">Google Hesabınızdakı parollar da daxil olduğunuz halda bu cihazda əlçatan olacaq</translation>
@@ -805,6 +808,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1594703455918849716">Yoxlama səhifəsinə keçin</translation>
 <translation id="1594781465361405478">Səs səviyyəsini aktiv/deaktiv edin</translation>
 <translation id="1594963087419619323">Bölünmüş ekran icmalı</translation>
+<translation id="1595018168143352126">Chrome-da veb-sayt kamera icazələrini idarə edin</translation>
 <translation id="1595492813686795610">Linux güncəllənir</translation>
 <translation id="1596286373007273895">Əlçatan</translation>
 <translation id="1596709061955594992">Bluetooth deaktivdir. Əlçatan cihazları görmək üçün Bluetooth'u aktiv edin.</translation>
@@ -1242,6 +1246,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1900305421498694955">Google Play tətbiqləri xarici yaddaş cihazlarında faylları oxumaq və yazmaq üçün bütün fayl sisteminə giriş istəyə bilər. Cihazda yaradılan fayl və qovluqları xarici diskdən istifadə edən hər kəs görə bilər. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="1901213235765457754">Admininizdən bu tətbiqi güncəlləməsini istəyin</translation>
 <translation id="1901303067676059328">Hamısını seçin</translation>
+<translation id="1901760057081700494">Cari saat qurşağı: <ph name="TIME_ZONE_ENTRY" />. Saat qurşağını avtomatik yeniləmək üçün <ph name="BEGIN_LINK" />sistem məkan girişini yandırın<ph name="END_LINK" />.</translation>
 <translation id="1904580727789512086">Ziyarət etdiyiniz keçidlər Google Hesabınızda saxlanılır</translation>
 <translation id="1906181697255754968">Saytlar adətən işinizi avtomatik yaddaşda saxlamaq kimi xüsusiyyətlər üçün cihazınızdakı fayllar və qovluqlara giriş edir</translation>
 <translation id="1906488504371069394"><ph name="BEGIN_LINK" />Chrome Veb Dükanında<ph name="END_LINK" /> digər artırma və temaları kəşf edin</translation>
@@ -1742,11 +1747,13 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
     <ph name="BEGIN_PARAGRAPH2" />Quraşdırma başladıqdan sonra ləğv edilə bilməz.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">Bu domenlərdə istənilən cihazla datanı mübadilə edin: <ph name="DOMAINS" /></translation>
 <translation id="2270666014403455717">"Seçin" əməliyyatına keçirici təyin edin</translation>
+<translation id="2271452184061378400">Tab qruplarınız burada yaddaşda saxlanılır</translation>
 <translation id="2271986192355138465">Veb-tətbiq quraşdırma qaydası haqqında</translation>
 <translation id="2272430695183451567">0 dəyişdirici təyin edilib</translation>
 <translation id="2272570998639520080">Martini şüşə</translation>
 <translation id="2273119997271134996">Dok video portu problemi</translation>
 <translation id="2274840746523584236">Chromebook'unuzu şarj edin</translation>
+<translation id="2275193525496879616">İcazə verilib. Cihaza kamera qoşun.</translation>
 <translation id="2276503375879033601">Daha çox tətbiq əlavə edin</translation>
 <translation id="2278193750452754829">Bu saytda artırmalara icazə verilir. Menyunu açmaq üçün seçin</translation>
 <translation id="2278562042389100163">Brauzer pəncərəsini açın</translation>
@@ -1864,6 +1871,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2350133097354918058">Yenidən yükləndi</translation>
 <translation id="2350182423316644347">Proqram başladılır...</translation>
 <translation id="235028206512346451">Cihazınızdan uzaqlaşsanız, ekranınız avtomatik olaraq kilidlənəcək. Cihazınızın qarşısında olduğunuz zaman ekranınız daha uzun müddət açıq qalacaq. Kilid ekranından istifadə etmirsinizsə, cihazınız kilidlənmək əvəzinə yuxu rejiminə keçəcək.</translation>
+<translation id="2351923523007389195">İcazə verilib – <ph name="PERMISSION_DETAILS" />. <ph name="LINK_BEGIN" />Sistem məkan girişini<ph name="LINK_END" /> yandırın.</translation>
 <translation id="2352305801620974284">Bu cihazda daxil olduğunuz zaman Google Hesabından parol və s. datanı əldə edirsiniz</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2352810082280059586">Ekran kilidi qeydləri avtomatik olaraq <ph name="LOCK_SCREEN_APP_NAME" /> tətbiqində yadda saxlanılır. Ən son edilən qeydlər ekran kilidində qalacaq.</translation>
@@ -1978,7 +1986,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2435248616906486374">Şəbəkə bağlantısı kəsildi</translation>
 <translation id="2435457462613246316">Parol görünsün</translation>
 <translation id="2436385001956947090">Keçidi &amp;kopyalayın</translation>
-<translation id="2436746748253887661">Bu, icazəsi olan sistem xidmətlərinə məkandan istifadə imkanı verir. Məkan icazəsi cihaz məkanını təxmin etmək üçün Wi‑Fi, mobil şəbəkə və sensor kimi mənbələrdən istifadə edə bilər. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="2438853563451647815">Printerə qoşulmayıb</translation>
 <translation id="2439152382014731627"><ph name="DEVICE_TYPE" /> parolunu sıfırlayın</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> yüklənir</translation>
@@ -2195,6 +2202,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2581992808349413349">DNS-də (Domain Name System) saytın IP ünvanını axtarmaq üçün təhlükəsiz bağlantıdan istifadə edin. Bu, <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> bölməsində idarə olunan xidmət təminatçısından istifadə edir</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (Platform <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">Kerberos bileti əldə edilmədi. Yenidən cəhd edin və ya cihaz admini ilə əlaqə saxlayın. (Xəta kodu <ph name="ERROR_CODE" />).</translation>
+<translation id="2584974473573720127">Chrome-da veb-sayt mikrofon icazələrini idarə edin</translation>
 <translation id="2586561813241011046"><ph name="APP_NAME" /> tətbiqini quraşdırmaq mümkün olmadı. Yenidən cəhd edin və ya administratorunuz ilə əlaqə saxlayın. Xəta kodu: <ph name="ERROR_CODE" />.</translation>
 <translation id="2586657967955657006">Mübadilə buferi</translation>
 <translation id="2586672484245266891">Qısa link daxil edin</translation>
@@ -2384,6 +2392,9 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2727744317940422214">Xəta baş verdi. Təsvirdə #bruschetta ilə rəy bildirin. Xəta kodu: <ph name="ERROR" />. Təmizlənmədi. Bunu əl ilə etməli ola bilərsiniz.</translation>
 <translation id="2729327310379176711">Chrome izləməni azaltmaq və gözdən keçirərkən sizi daha da təhlükəsiz saxlamaq üçün yeni yollar tapır. Chrome həmçinin <ph name="ESTIMATE_INTERESTS_LINK" /> və onları idarə etmənizə imkan verir. Sonra ziyarət etdiyiniz saytlar sizə reklam göstərmək üçün Chrome'dan maraqlarınızı tələb edə bilər.</translation>
 <translation id="2729577602370119849">Printerlərə asanlıqla daxil olub, idarə edin</translation>
+<translation id="2729661575355442512"><ph name="BEGIN_PARAGRAPH1" />Məkan Dəqiqliyi yanılı olduqda cihaz məkanını daha dəqiq təxmin etmək üçün Wi‑Fi giriş nöqtələri, mobil şəbəkə qüllələri və GPS kimi simsiz siqnallar haqqında məlumatlar, eləcə də tətbiq və xidmətlərin məkan əsaslı funksiyalar təmin etmək üçün istifadə etdiyi cihazın akselerometr və giroskop datası kimi sensor datası istifadə edilir. Bunun üçün Google kraudsors simsiz siqnal məkanlarına töhfə vermək məqsədilə mütəmadi olaraq bu cihazın yaxınlığında əlçatan olan cihaz sensorları və simsiz siqnallar haqqında məlumatları emal edir.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Google bu cihazdan toplanmış bu məlumatları aşağıdakı məqsədlər üçün istifadə edir: məkan dəqiqliyi və məkan əsaslı xidmətləri təkmilləşdirmək; və ümumilikdə Google xidmətlərini təkmilləşdirmək, təmin etmək və işlək vəziyyətdə saxlamaq. İstifadəçilərin ehtiyaclarına xidmət etmək üçün bu məlumatları Google və üçüncü tərəflərin qanuni maraqlarına əsasən emal edirik. Bu məlumatlar hər hansı şəxsin kimliyini müəyyənləşdirmək üçün istifadə edilmir.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Bu cihazın məkan ayarlarında Ayarlar &gt; Məxfilik və güvənlik &gt; Məxfilik nizamlayıcıları &gt; Məkana giriş &gt; Təkmil məkan ayarları bölməsində Məkan Dəqiqliyini söndürə bilərsiniz. Məkan Dəqiqliyi sönülü olarsa, Məkan Dəqiqliyi datası toplanılmayacaq. Android tətbiq və xidmətlərində bu cihazın məkanını müəyyən etmək üçün yalnız IP ünvanı (əlçatandırsa) istifadə olunur ki, bu da Google Xəritə kimi Android tətbiq və xidmətləri üçün məkanın əlçatanlığına və dəqiqliyinə təsir edə bilər.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2730029791981212295">Linux tətbiq və faylları yedəklənir</translation>
 <translation id="2730596696987224099">Özünüz seçin</translation>
 <translation id="2730647855013151888">Bütün şəxsi məlumatları daxil edin</translation>
@@ -3237,6 +3248,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="338323348408199233">VPN'siz trafiki blok edin</translation>
 <translation id="3384362484379805487">Diskdə yer saxlamaq üçün dil faylları istifadəçilər arasında paylaşılır.</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
+<translation id="3385172418915595177">Məkan Dəqiqliyi tətbiq və xidmətlər üçün daha dəqiq məkan təmin edir. Bunun üçün Google simsiz siqnal məkanları üzrə kütləvi qaynaq yaratmaq məqsədilə cihaz sensorları və cihazdan gələn simsiz siqnallar haqqında məlumatları vaxtaşırı emal edir. Bu məlumatlar kimliyinizi müəyyən etmədən məkan dəqiqliyini və məkan əsaslı xidmətləri təkmilləşdirmək, həmçinin ümumilikdə Google xidmətlərini Google və üçüncü tərəflərin qanuni maraqlarına uyğun olmaqla istifadəçilərin ehtiyaclarına xidmət edəcək şəkildə təkmilləşdirmək, təmin etmək və işlək vəziyyətdə saxlamaq kimi məqsədlər üçün istifadə edilir.</translation>
 <translation id="338583716107319301">Ayırıcı</translation>
 <translation id="3385916046075724800">Tab qrupları artıq avtomatik yadda saxlanılır.</translation>
 <translation id="3387023983419383865">,</translation>
@@ -3338,6 +3350,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3449839693241009168"><ph name="EXTENSION_NAME" /> artırmasına əmr göndərmək üçün <ph name="SEARCH_KEY" /> düyməsini basın</translation>
 <translation id="3450157232394774192">İnaktiv Durum Məşğuliyyət Faizi</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> sizdən indi Wi-Fi'a qoşulmağınızı və güncəlləməni endirməyinizi tələb edir.</translation>
+<translation id="345078987193237421">Bu, tətbiqlərlərə, kamera icazəsi olan veb-saytlara və sistem xidmətlərinə kameraya giriş imkanı verir</translation>
 <translation id="3452999110156026232">Valideyn Girişi</translation>
 <translation id="3453082738208775226">Oflayn yaddaş təmizlənsin?</translation>
 <translation id="3453597230179205517">Məkana giriş bloklanıb</translation>
@@ -3509,6 +3522,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3587438013689771191"><ph name="SUBPAGE_TITLE" /> haqqında ətraflı məlumat</translation>
 <translation id="3587482841069643663">Hamısı</translation>
 <translation id="3588790464166520201">Ödəniş vasitələri quraşdırmaq icazəsi verilib</translation>
+<translation id="3589010096969411438">İcazə verilib. Fiziki dəyişdirici istifadə edərək mikrofonu yandırın.</translation>
 <translation id="3589766037099229847">Təhlükəli kontent blok edildi</translation>
 <translation id="3590194807845837023">Profili kiliddən çıxarın və yenidən başladın</translation>
 <translation id="3590295622232282437">İdarə edilən sessiya daxil edilir.</translation>
@@ -4042,6 +4056,7 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="3950841222883198950">Səslə yazma</translation>
 <translation id="3953834000574892725">Hesablarım</translation>
 <translation id="3954354850384043518">İcra olunur</translation>
+<translation id="3954468641195530330">Tətbiqlərə mikrofonunuzdan istifadə etmək icazəsi verilməyib</translation>
 <translation id="3954469006674843813"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hertz)</translation>
 <translation id="3954953195017194676">Son vaxtlar WebRTC tədbir girişləri çəkməmisiniz.</translation>
 <translation id="3955321697524543127">Saytlara USB cihazlarına qoşulmaq icazəsi verməyin</translation>
@@ -4100,6 +4115,10 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="3988124842897276887">Bu tab USB cihazına qoşuludur</translation>
 <translation id="3988996860813292272">Vaxt zonası seçin</translation>
 <translation id="3991055816270226534">Üçüncü tərəf kukiləri və izləmənin qorunmasını idarə edin</translation>
+<translation id="3991746210745534318"><ph name="BEGIN_PARAGRAPH1" />Məkan Dəqiqliyi yanılı olduqda cihaz məkanını daha dəqiq təxmin etmək üçün Wi‑Fi giriş nöqtələri, mobil şəbəkə qüllələri və GPS kimi simsiz siqnallar haqqında məlumatlar, eləcə də tətbiq və xidmətlərin məkan əsaslı funksiyalar təmin etmək üçün istifadə etdiyi cihazın akselerometr və giroskop datası kimi sensor datası istifadə edilir. Bunun üçün Google kraudsors simsiz siqnal məkanlarına töhfə vermək məqsədilə mütəmadi olaraq bu cihazın yaxınlığında əlçatan olan cihaz sensorları və simsiz siqnallar haqqında məlumatları emal edir.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Google bu cihazdan toplanmış bu məlumatları aşağıdakı məqsədlər üçün istifadə edir: məkan dəqiqliyi və məkan əsaslı xidmətləri təkmilləşdirmək; və ümumilikdə Google xidmətlərini təkmilləşdirmək, təmin etmək və işlək vəziyyətdə saxlamaq. İstifadəçilərin ehtiyaclarına xidmət etmək üçün bu məlumatları Google və üçüncü tərəflərin qanuni maraqlarına əsasən emal edirik. Bu məlumatlar hər hansı şəxsin kimliyini müəyyənləşdirmək üçün istifadə edilmir.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Bu cihazın məkan ayarlarında Ayarlar &gt; Məxfilik və güvənlik &gt; Məxfilik nizamlayıcıları &gt; Məkana giriş &gt; Təkmil məkan ayarları bölməsində Məkan Dəqiqliyini söndürə bilərsiniz. Məkan Dəqiqliyi sönülü olarsa, Məkan Dəqiqliyi datası toplanılmayacaq. Android tətbiq və xidmətlərində bu cihazın məkanını müəyyən etmək üçün yalnız IP ünvanı (əlçatandırsa) istifadə olunur ki, bu da Google Xəritə kimi Android tətbiq və xidmətləri üçün məkanın əlçatanlığına və dəqiqliyinə təsir edə bilər.<ph name="END_PARAGRAPH3" />
+    <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Məkan Dəqiqliyi haqqında ətraflı<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="399179161741278232">İmport edilmiş</translation>
 <translation id="3992008114154328194"><ph name="FILE_NAME" /> endirilir, <ph name="STATUS" /></translation>
 <translation id="3993259701827857030">Datanı yedəkləyin</translation>
@@ -4253,6 +4272,10 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="4110485659976215879">Xəbərdarlığı bərpa edin</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (oflayn)</translation>
 <translation id="4113743276555482284">Fayl parolu</translation>
+<translation id="4113888471797244232"><ph name="BEGIN_PARAGRAPH1" />Məkan Dəqiqliyi yanılı olduqda cihaz məkanını daha dəqiq təxmin etmək üçün Wi‑Fi giriş nöqtələri, mobil şəbəkə qüllələri və GPS kimi simsiz siqnallar haqqında məlumatlar, eləcə də tətbiq və xidmətlərin məkan əsaslı funksiyalar təmin etmək üçün istifadə etdiyi cihazın akselerometr və giroskop datası kimi sensor datası istifadə edilir. Bunun üçün Google kraudsors simsiz siqnal məkanlarına töhfə vermək məqsədilə mütəmadi olaraq yaxınlığınızda əlçatan olan cihaz sensorları və simsiz siqnallar haqqında məlumatları toplayır.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Google bu məlumatı kimliyinizi müəyyən etmədən bu məqsədlər üçün istifadə edir: məkan dəqiqliyi və məkan əsaslı xidmətləri təkmilləşdirmək; və ümumilikdə Google xidmətlərini təkmilləşdirmək, təmin etmək və işlək vəziyyətdə saxlamaq. İstifadəçilərin ehtiyaclarına xidmət etmək üçün bu məlumatları Google və üçüncü tərəflərin qanuni maraqlarına əsasən emal edirik.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Cihazın məkan ayarlarında Ayarlar &gt; Məxfilik və güvənlik &gt; Məxfilik nizamlayıcıları &gt; Məkana giriş &gt; Təkmil məkan ayarları bölməsində Məkan Dəqiqliyini söndürə bilərsiniz. Məkan Dəqiqliyi sönülü olarsa, Məkan Dəqiqliyi datası toplanılmayacaq. Android tətbiq və xidmətlərində cihazın məkanını müəyyən etmək üçün yalnız IP ünvanı (əlçatandırsa) istifadə olunur ki, bu da Gogole Xəritə kimi Android tətbiq və xidmətləri üçün məkanın əlçatanlığına və dəqiqliyinə təsir edə bilər.<ph name="END_PARAGRAPH3" />
+    <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Məkan Dəqiqliyi haqqında ətraflı<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="4114524937989710624">Google Diskdəki ən son fəaliyyətinizə asanlıqla qayıtmağınıza kömək etmək üçün təklif olunan faylları görürsünüz.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -4711,6 +4734,7 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="4473996011558324141">vaxt hesablanır</translation>
 <translation id="4474155171896946103">Bütün panelləri əlfəcinləyin...</translation>
 <translation id="4475299370877036544">Bu əməliyyat təşkilatın siyasətini poza bilər</translation>
+<translation id="4476198534886170024">İcazə verilib. <ph name="LINK_BEGIN" />Sistem kamera girişini<ph name="LINK_END" /> yandırın.</translation>
 <translation id="4476590490540813026">Atlet</translation>
 <translation id="4476659815936224889">Bu kodu skan etmək üçün telefonunuzdakı QR skaner tətbiqini və ya bəzi kamera tətbiqlərini istifadə edə bilərsiniz.</translation>
 <translation id="4477015793815781985">Ctrl, Alt və ya ⌘ daxil edin</translation>
@@ -5029,6 +5053,7 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="4716483597559580346">Əlavə təhlükəsizlik üçün fabrika sıfırlaması</translation>
 <translation id="4716715661140829720">Yaddaş yeri yetərli deyil</translation>
 <translation id="471759229191973607">Temanı dəyişin</translation>
+<translation id="4719276504493791870">Tətbiqlərə məkanınızdan istifadə etmək icazəsi verilməyib</translation>
 <translation id="4722735765955348426"><ph name="USERNAME" /> üçün parol</translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> ekranınızı paylaşır</translation>
 <translation id="4722989931633062466">Üçüncü tərəfin giriş sorğularını göstərməyə icazə verilmir</translation>
@@ -5059,6 +5084,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="4742795653798179840">Chrome datası silindi</translation>
 <translation id="4742970037960872810">Vurğulamanı silin</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Tətbiqləri necə güncəlləmək lazım olduğunu öyrənin<ph name="END_LINK" /></translation>
+<translation id="4743990041512863976">İcazə verilib – <ph name="PERMISSION_DETAILS" />. <ph name="LINK_BEGIN" />Sistem mikrofon girişini<ph name="LINK_END" /> yandırın.</translation>
 <translation id="4744268813103118742">Sayta keçin</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Saytı səssiz rejimdən çıxarın}other{Saytları səssiz rejimdən çıxarın}}</translation>
@@ -5241,6 +5267,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="4879491255372875719">Avtomatik (defolt)</translation>
 <translation id="4880315242806573837">Təhlükəsizlik güncəllənmələri tezliklə başa çatacaq. Yeni Chromebook-a təkmilləşdirin.</translation>
 <translation id="4880827082731008257">Axtarış tarixçəsi</translation>
+<translation id="4881632956374597321">Məkan icazəsi olan tətbiq və veb-saytlar, eləcə də sistem xidmətləri məkandan istifadə edə bilər. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="4881685975363383806">Növbəti dəfə xatırlatmayın</translation>
 <translation id="4881695831933465202">Açın</translation>
 <translation id="4882312758060467256">Bu sayta girişi var</translation>
@@ -5573,6 +5600,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="5143374789336132547">"<ph name="EXTENSION_NAME" />" artırması əsas səhifə düyməsinə kliklədiyiniz zaman hansı səhifənin göstərildiyini dəyişdi.</translation>
 <translation id="5143612243342258355">Bu fayl təhlükəlidir</translation>
 <translation id="5143712164865402236">Tam Ekrana Daxil Olun</translation>
+<translation id="5143960098217235598">Bu, tətbiqlərlərə, mikrofon icazəsi olan veb-saytlara və sistem xidmətlərinə mikrofona giriş imkanı verir</translation>
 <translation id="5144815231216017543">alt + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="5145464978649806571">Cihazınızdan uzaqlaşsanız, ekranınız avtomatik olaraq kilidlənəcək. Cihazınızın qarşısında olduğunuz zaman ekranınız daha uzun müddət açıq qalacaq. Kilid ekranı deaktiv edilibsə, cihazınız kilidlənmək əvəzinə yuxu rejiminə keçəcək.</translation>
 <translation id="514575469079499857">Məkanı müəyyən etmək (defolt) üçün IP ünvanından istifadə edin</translation>
@@ -5635,6 +5663,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="5186788525428341874">Cihazlarda daha sürətlə daxil olmaq üçün bu giriş açarından istifadə edə bilərsiniz. <ph name="ACCOUNT_NAME" /> üçün Google Parol Menecerində yadda saxlanılacaq.</translation>
 <translation id="5187641678926990264">&amp;Səhifəni tətbiq kimi quraşdırın...</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
+<translation id="5188648870018555788">Məkandan istifadə. Məkan icazəsi olan ChromeOS, habelə Android tətbiq, veb-sayt və xidmətlərinə cihaz məkanından istifadə etmək icazəsi verin. Məkan Dəqiqliyi Android tətbiq və xidmətləri üçün daha dəqiq məkan təmin edir. Bunun üçün Google simsiz siqnal məkanları üzrə kütləvi qaynaq yaratmaq məqsədilə cihaz sensorları və cihazdan gələn simsiz siqnallar haqqında məlumatları vaxtaşırı emal edir. Bu məlumatlar kimliyinizi müəyyənləşdirmədən məkan dəqiqliyini və məkan əsaslı xidmətləri təkmilləşdirmək, Google xidmətlərini Google və üçüncü tərəflərin qanuni maraqlarına uyğun olmaqla istifadəçilərin ehtiyaclarına xidmət edəcək şəkildə təkmilləşdirmək, təmin etmək və davam etdirmək üçün istifadə edilir. <ph name="BEGIN_LINK1" />Məkandan istifadə haqqında ətraflı məlumat əldə edin<ph name="END_LINK1" /></translation>
 <translation id="5190577235024772869"><ph name="USED_SPACE" /> istifadə edilir</translation>
 <translation id="5190926251776387065">Portu aktiv edin</translation>
 <translation id="5190959794678983197">Mikrofon yoxdur</translation>
@@ -5680,6 +5709,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="5225324770654022472">Tətbiqlərin qısayolunu göstərin</translation>
 <translation id="52254442782792731">Cari görünmə ayarı hələ ayarlanmayıb</translation>
 <translation id="5225463052809312700">Kameranı aktiv edin</translation>
+<translation id="5226731562812684363">Veb-saytlara məkanınızdan istifadə etmək icazəsi verilməyib</translation>
 <translation id="5227679487546032910">Defolt firuzəyi avatar</translation>
 <translation id="5228245824943774148"><ph name="NUM_DEVICES_CONNECTED" /> cihaz qoşulub</translation>
 <translation id="5228579091201413441">Sinxronizasiyanı aktiv edin</translation>
@@ -5770,6 +5800,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="5291739252352359682">Chrome brauzerində avtomatik olaraq media üçün altyazılar yaradır (hazırda İngilis dilində əlçatandır). Audio və altyazılar cihazda işlənilir və heç vaxt paylaşılmır.</translation>
 <translation id="529175790091471945">Bu cihazı format edin</translation>
 <translation id="529296195492126134">Efemer rejim dəstəklənmir. Administratorunuz ilə əlaqə saxlayın</translation>
+<translation id="5293043095535566171">Məkana giriş yandırılsın?</translation>
 <translation id="5293170712604732402">Ayarları orijinal defolt ayarlarına sıfırlayın</translation>
 <translation id="5294068591166433464">Sayt parolu oğurlamağa çalışdıqda və ya zərərli fayl endirdiyinizdə Chrome səhifə kontentindən kiçik nümunələr daxil olmaqla URL-i Google-a göndərə bilər</translation>
 <translation id="5294097441441645251">Kiçik hərf simvolu və ya altdan xətt ilə başlamalıdır</translation>
@@ -6553,6 +6584,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="5885314688092915589">Təşkilatınız bu profili idarə edəcək</translation>
 <translation id="5885470467814103868">Skana başlayın</translation>
 <translation id="5885631909150054232">Açarı kopyalayın</translation>
+<translation id="5886000783338788034">ChromeOS ayarlarında Məkan söndürülüb</translation>
 <translation id="5886009770935151472">Barmaq 1</translation>
 <translation id="5886112770923972514">Yaxınlıqdakı Sürətli Birləşdirmə cihazlarını qoşun və tez ayarlayın</translation>
 <translation id="5886384907280980632">İndi deaktiv edin</translation>
@@ -6959,6 +6991,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="6200151268994853226">Artırmanı idarə edin</translation>
 <translation id="6201608810045805374">Bu hesab silinsin?</translation>
 <translation id="6202304368170870640">Cihaza daxil olmaq və ya kiliddən çıxarmaq üçün PIN-dən istifadə edə bilərsiniz.</translation>
+<translation id="6202935572248792580">İcazə verilib. Cihaza mikrofon qoşun.</translation>
 <translation id="6203247599828309566">Bu saytda parol üçün qeyd saxladınız. Baxmaq üçün açar ikonasına klikləyin.</translation>
 <translation id="6205314730813004066">Reklam məxfiliyi</translation>
 <translation id="6205993460077903908"><ph name="WINDOW_TITLE" /> - Mikrofon qeydə alır</translation>
@@ -7013,6 +7046,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="6238923052227198598">Ən son qeydi kilid ekranında saxlayın</translation>
 <translation id="6238982280403036866">JavaScript istifadəsinə icazə verilib</translation>
 <translation id="6239558157302047471">Çərçivəni yenidən yükləyin</translation>
+<translation id="6240637845286751292">İcazə verilib. <ph name="LINK_BEGIN" />Sistem məkan girişini<ph name="LINK_END" /> yandırın.</translation>
 <translation id="6240821072888636753">Həmişə soruşulsun</translation>
 <translation id="6240964651812394252">Əməliyyat sisteminiz ilə Google Parol menecerindən istifadə üçün Chrome-u yenidən başladın və kompüterin parol menecerinə giriş imkanı verin. Yenidən başlatmadan sonra tablar təkrar açılacaq.</translation>
 <translation id="6241530762627360640">Sisteminizlə cütlənmiş Bluetooth cihazları haqqında öyrənin və yaxınlıqdakı Bluetooth cihazlarını tapın.</translation>
@@ -7081,6 +7115,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="628352644014831790">4 saniyə</translation>
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> adətən endirilmir və təhlükəli ola bilər.</translation>
 <translation id="6285770818046456882">Sizinlə paylaşım edən cihaz köçürməni ləğv etdi</translation>
+<translation id="628699625505156622">Məkandan istifadə. Məkan icazəsi olan ChromeOS, habelə Android tətbiq, veb-sayt və xidmətlərinə bu cihazın məkanından istifadə etmək icazəsi verin. Məkan Dəqiqliyi Android tətbiq və xidmətləri üçün daha dəqiq məkan təmin edir. Bunun üçün Google simsiz siqnal məkanları üzrə kütləvi qaynaq yaratmaq məqsədilə cihaz sensorları və bu cihazdan gələn simsiz siqnallar haqqında məlumatları vaxtaşırı emal edir. Bu məlumatlar heç kəsin kimliyini müəyyən etmədən məkan dəqiqliyini və məkan əsaslı xidmətləri təkmilləşdirmək, həmçinin Google xidmətlərini Google və üçüncü tərəflərin qanuni maraqlarına uyğun olmaqla istifadəçilərin ehtiyaclarına xidmət edəcək şəkildə təkmilləşdirmək, təmin etmək və işlək vəziyyətdə saxlamaq kimi məqsədlər üçün istifadə edilir. <ph name="BEGIN_LINK1" />Məkandan istifadə haqqında ətraflı məlumat əldə edin<ph name="END_LINK1" /></translation>
 <translation id="628726841779494414">Printer ayarlarında printerləri idarə edin</translation>
 <translation id="6287828400772161253">Android telefonu (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">Yaxınlıqda paylaşım edən əlçatan cihaz yoxdur. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
@@ -7605,6 +7640,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6703613667804166784">Bu fayl <ph name="USER_EMAIL" /> daxil olmaqla şəxsi və sosial şəbəkə hesablarını zədələyə bilər</translation>
 <translation id="6707122714992751648">ChromeOS diaqnostik testlərini işə salmaq</translation>
 <translation id="6707389671160270963">SSL Klient Sertifikatı</translation>
+<translation id="6707671917294473995">Veb-saytlara kameranızdan istifadə etmək icazəsi verilməyib</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> və Daha 1 Tab}other{<ph name="PAGE_TITLE" /> və Daha # Tab}}</translation>
 <translation id="6709133671862442373">Xəbərlər</translation>
 <translation id="6709357832553498500"><ph name="EXTENSIONNAME" /> istifadə edərək qoşulun</translation>
@@ -7614,6 +7650,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6713233729292711163">İş Profili əlavə edin</translation>
 <translation id="6713441551032149301">Funksiya düymələri və sistemin yuxarı sıra düymələri arasında dəyişmək üçün başladıcı düyməsini basıb saxlayın</translation>
 <translation id="6713668088933662563">Heç vaxt bu dilləri tərcümə etməyi təklif etməyin</translation>
+<translation id="6715735940363172819">Veb-saytlara mikrofonunuzdan istifadə etmək icazəsi verilməyib</translation>
 <translation id="6715803357256707211">Linux tətbiqi quraşdırılan zaman xəta baş verdi. Detallar üçün bildirişə toxunun.</translation>
 <translation id="6716798148881908873">Şəbəkə bağlantısı itdi. Şəbəkə bağlantısını yoxlayın və ya digər Wi-Fi şəbəkəsinə qoşulun.</translation>
 <translation id="6718849325281682232">Tünd və ya işıqlı rejim seçməyinizdən asılı olmayaraq Chrome tema rəngləri hər kəsə uyğun təzələnib</translation>
@@ -8260,6 +8297,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7210499381659830293">Artırma printerləri</translation>
 <translation id="7211783048245131419">Hələ heç bir düymə təyin edilməyib</translation>
 <translation id="7212097698621322584">Dəyişmək üçün cari PIN-i daxil edin. PIN-i bilmirsinizsə, güvənlik açarını sıfırlamalı, sonra isə yeni PIN yaratmalısınız.</translation>
+<translation id="7214047272988222011">İcazə verilib – <ph name="PERMISSION_DETAILS" />. <ph name="LINK_BEGIN" />Sistem kamera girişini<ph name="LINK_END" /> yandırın.</translation>
 <translation id="721490496276866468">Parolları import edin</translation>
 <translation id="7218514093816577632"><ph name="DEVICE_NAME" /> cihazında bildirişlərin aktiv olduğuna əmin olun.</translation>
 <translation id="7219254577985949841">Sayt datası silinsin?</translation>
@@ -8532,6 +8570,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7416091793702109803"><ph name="FILE_NAME" /> faylını nəzərdən keçirin</translation>
 <translation id="7416263748877373774">Xidmət Şərtlərini yükləmək olmur. Şəbəkə bağlantınızı yoxlayıb yenidən cəhd edin.</translation>
 <translation id="7416362041876611053">Naməlum şəbəkə xətası.</translation>
+<translation id="7417435070053325657"><ph name="BLOCKED_APPS_SIZE" />/<ph name="APPS_LIST_SIZE" /> tətbiq bloklandı</translation>
 <translation id="741906494724992817">Bu tətbiq xüsusi icazə tələb etmir.</translation>
 <translation id="7419142833919893307">İstifadəçi adı əlavə edilməyib</translation>
 <translation id="7419565702166471774">Həmişə güvənli bağlantılardan istifadə edin</translation>
@@ -8636,6 +8675,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7489761397368794366">Cihazınızdan zəng</translation>
 <translation id="749028671485790643">Şəxs <ph name="VALUE" /></translation>
 <translation id="7490683549040131791">Qalan Parolları Yoxlayın</translation>
+<translation id="7490938136316476492">Məkan sönülüdür. ChromeOS cihazı məkanınıza daxil olmur. Lakin ümumi ərazi hələ də IP ünvanı kimi vasitələrlə tətbiq və veb-saytlara görünə bilər. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="7491962110804786152">tab</translation>
 <translation id="7491963308094506985">{NUM_COOKIES,plural, =1{1 kuki}other{{NUM_COOKIES} kuki}}</translation>
 <translation id="7493386493263658176"><ph name="EXTENSION_NAME" /> artırması parol və kredit kart nömrələri kimi şəxsi data daxil olmaqla yazdığınız bütün mətni toplaya bilər. Bu artırmanı istifadə etmək istəyirsiniz?</translation>
@@ -8739,6 +8779,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7573172247376861652">Batareya qidalanması</translation>
 <translation id="7573594921350120855">Saytlar adətən video çat kimi ünsiyyət xüsusiyyətləri üçün video kameranızdan istifadə edir</translation>
 <translation id="7575272930307342804">Naviqasiya nəzarətləri</translation>
+<translation id="757660455834887988">İcazə verilib – <ph name="PERMISSION_DETAILS" />. Cihaza kamera qoşun.</translation>
 <translation id="7576690715254076113">Rəy</translation>
 <translation id="7576976045740938453">Demo rejimi hesabında problem yarandı.</translation>
 <translation id="7578137152457315135">Barmaq izi ayarları</translation>
@@ -8997,6 +9038,7 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="7758450972308449809">Ekran hüdudlarını tənzimləyin</translation>
 <translation id="7758884017823246335">Sayt axtarışı əlavə edin</translation>
 <translation id="7759809451544302770">İstəyə görə</translation>
+<translation id="7760176388948986635">Məkan icazəsi olan ChromeOS, habelə Android tətbiq, veb-sayt və xidmətlərinə bu cihazın məkanından istifadə etmək icazəsi verin. Məkan Dəqiqliyi Android tətbiq və xidmətləri üçün daha dəqiq məkan təmin edir. Bunun üçün Google simsiz siqnal məkanları üzrə kütləvi qaynaq yaratmaq məqsədilə cihaz sensorları və bu cihazdan gələn simsiz siqnallar haqqında məlumatları vaxtaşırı emal edir. Bu məlumatlar heç kəsin kimliyini müəyyən etmədən məkan dəqiqliyini və məkan əsaslı xidmətləri təkmilləşdirmək, həmçinin Google xidmətlərini Google və üçüncü tərəflərin qanuni maraqlarına uyğun olmaqla istifadəçilərin ehtiyaclarına xidmət edəcək şəkildə təkmilləşdirmək, təmin etmək və işlək vəziyyətdə saxlamaq kimi məqsədlər üçün istifadə edilir.</translation>
 <translation id="7762024824096060040">Bu hesabı istifadə etmək mümkün deyil</translation>
 <translation id="7764225426217299476">Ünvan əlavə edin</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_DOMAIN" /> domenindən <ph name="DOWNLOAD_RECEIVED" /></translation>
@@ -9053,7 +9095,6 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7788948939674438635">Saytlara klaviaturanı kilidləmək icazəsi verməyin</translation>
 <translation id="7789963078219276159">Başlanğıc səhifəsinin arxa fonu <ph name="CATEGORY" /> ilə dəyişdirilib.</translation>
-<translation id="7790689625219600437">PDF OCR</translation>
 <translation id="7791269138074599214">Daxiletmə metodu</translation>
 <translation id="7791429245559955092">Bu tətbiq hazırda istifadə etdiyiniz Chrome profilində quraşdırılacaq</translation>
 <translation id="7791436592012979144">Əksinə sürüşdürmə aktivdir</translation>
@@ -9117,6 +9158,7 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="7839051173341654115">Mediaya baxın/yedəkləyin</translation>
 <translation id="7839192898639727867">Sertifikat Subyekti Açarı ID</translation>
 <translation id="7839696104613959439">Şəbəkə seçimini göstərin</translation>
+<translation id="7840222916565569061">Tətbiqlərə kameranızdan istifadə etmək icazəsi verilməyib</translation>
 <translation id="7842062217214609161">Qısayol yoxdur</translation>
 <translation id="7842692330619197998">Yeni hesab yaratmaq istəyirsinizsə, g.co/ChromeEnterpriseAccount ünvanına daxil olun.</translation>
 <translation id="784273751836026224">Linux'u silin</translation>
@@ -9415,6 +9457,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8053278772142718589">PKCS #12 Fayl</translation>
 <translation id="8053390638574070785">Bu səhifəni yenidən yükləyin</translation>
 <translation id="8053629544194355894">Chrome-un tab qrupları təklif etməsi üçün sinxronlaşdırmanı aktiv edin</translation>
+<translation id="8054500940978949009">İcazə verilib. <ph name="LINK_BEGIN" />Sistem mikrofon girişini<ph name="LINK_END" /> yandırın.</translation>
 <translation id="8054517699425078995">Bu fayl növü cihazınızı zədələyə bilər. <ph name="FILE_NAME" /> faylını yenə də saxlamaq istəyirsiniz?</translation>
 <translation id="8054563304616131773">Lütfən, düzgün e-poçt ünvanı daxil edin.</translation>
 <translation id="8054609631325628928">Bu nömrələr xidməti aktivləşdirmək üçün istifadə edilə bilər</translation>
@@ -9807,6 +9850,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8336739000755212683">Cihazın hesab şəklini dəyişin</translation>
 <translation id="8337020675372081178">{HOURS,plural, =1{Bu cihaz 1 saat saxlanacaq və növbəti dəfə kod olmadan qoşula bilərsiniz. Bu, administratorunuz tərəfindən ayarlanıb.}other{Bu cihaz {HOURS} saat saxlanacaq və növbəti dəfə kod olmadan qoşula bilərsiniz. Bu, administratorunuz tərəfindən ayarlanıb.}}</translation>
 <translation id="8337399713761067085">Hazırda oflaynsınız</translation>
+<translation id="8338427544764842461">Tab qruplarınız burada yaddaşda saxlanılır və bütün giriş edilmiş cihazlarınızda yenilənir</translation>
 <translation id="8338952601723052325">Developer veb saytı</translation>
 <translation id="8339288417038613756">Displey və mətn ölçüsü</translation>
 <translation id="833986336429795709">Bu linki açmaq üçün tətbiq seçin</translation>
@@ -10126,6 +10170,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8584843865238667486"><ph name="USAGE_PAGE" /> istifadə səhifəsindən <ph name="USAGE" /> icazəsi olan HID cihazları</translation>
 <translation id="8585480574870650651">Crostini'ni silin</translation>
 <translation id="8585841788766257444">Aşağıda sıralanmış saytlar defolt əvəzinə fərdi ayarı izləyir</translation>
+<translation id="8586421813321819377">Məkan icazəsi olan ChromeOS, habelə Android tətbiq, veb-sayt və xidmətlərinə cihaz məkanından istifadə etmək icazəsi verin. Məkan Dəqiqliyi Android tətbiq və xidmətləri üçün daha dəqiq məkan təmin edir. Bunun üçün Google simsiz siqnal məkanları üzrə kütləvi qaynaq yaratmaq məqsədilə cihaz sensorları və cihazdan gələn simsiz siqnallar haqqında məlumatları vaxtaşırı emal edir. Bu məlumatlar kimliyinizi müəyyənləşdirmədən məkan dəqiqliyini və məkan əsaslı xidmətləri təkmilləşdirmək, Google xidmətlərini Google və üçüncü tərəflərin qanuni maraqlarına uyğun olmaqla istifadəçilərin ehtiyaclarına xidmət edəcək şəkildə təkmilləşdirmək, təmin etmək və davam etdirmək üçün istifadə edilir.</translation>
 <translation id="8587660243683137365">Bu səhifəni tətbiq kimi quraşdırın</translation>
 <translation id="8588866096426746242">Profil statistikasını göstərin</translation>
 <translation id="8588868914509452556"><ph name="WINDOW_TITLE" /> - Qulaqlıq üçün göstərilən VR</translation>
@@ -10347,6 +10392,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8736288397686080465">Bu sayt arxa fonda güncəlləşdi.</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Səhifənin tərcümə ediləcəyi dili seçin</translation>
+<translation id="8737966899544698733">Məkan dəqiqliyi (yalnız Android)</translation>
 <translation id="8738418093147087440">Ölkə, dil və ya daxiletmə adı ilə axtarın</translation>
 <translation id="8740086188450289493">Google Hesabı parolundan istifadə edin</translation>
 <translation id="8740247629089392745">Bu Chromebook'u <ph name="SUPERVISED_USER_NAME" /> adlı istifadəçiyə verə bilərsiniz. Ayarlama tamamlanmaq üzrədir, bundan sonra araşdırmağa başlaya bilərsiniz.</translation>
@@ -10416,12 +10462,16 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8793390639824829328">Saytlar paylaşılan tabları sürüşdürüb zumlamaq üçün bu funksiyadan istifadə edir</translation>
 <translation id="879413103056696865">Hotspot aktiv olduqda, <ph name="PHONE_NAME" /> telefonunun edə biləcəkləri:</translation>
 <translation id="8795916974678578410">Yeni Pəncərə</translation>
+<translation id="8796907593900732741">Yalnız sistem xidmətləri məkandan istifadə edə bilər. Lakin ümumi ərazi hələ də IP ünvanı kimi vasitələrlə tətbiq və veb-saytlara görünə bilər. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="8796919761992612392">Chrome-u f&amp;ərdiləşdirin</translation>
 <translation id="8797459392481275117">Bu Saytı Heç Vaxt Tərcümə Etməyin</translation>
 <translation id="8798099450830957504">Defolt</translation>
 <translation id="8800034312320686233">Sayt işləmir?</translation>
 <translation id="8803526663383843427">Aktiv olduqda</translation>
 <translation id="8803953437405899238">Bir klik ilə yeni tab açın</translation>
+<translation id="8803972455568900492"><ph name="BEGIN_PARAGRAPH1" />Məkan Dəqiqliyi yanılı olduqda cihaz məkanını daha dəqiq təxmin etmək üçün Wi‑Fi giriş nöqtələri, mobil şəbəkə qüllələri və GPS kimi simsiz siqnallar haqqında məlumatlar, eləcə də tətbiq və xidmətlərin məkan əsaslı funksiyalar təmin etmək üçün istifadə etdiyi cihazın akselerometr və giroskop datası kimi sensor datası istifadə edilir. Bunun üçün Google kraudsors simsiz siqnal məkanlarına töhfə vermək məqsədilə mütəmadi olaraq yaxınlığınızda əlçatan olan cihaz sensorları və simsiz siqnallar haqqında məlumatları toplayır.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Google bu məlumatı kimliyinizi müəyyən etmədən bu məqsədlər üçün istifadə edir: məkan dəqiqliyi və məkan əsaslı xidmətləri təkmilləşdirmək; və ümumilikdə Google xidmətlərini təkmilləşdirmək, təmin etmək və işlək vəziyyətdə saxlamaq. İstifadəçilərin ehtiyaclarına xidmət etmək üçün bu məlumatları Google və üçüncü tərəflərin qanuni maraqlarına əsasən emal edirik.<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />Cihazın məkan ayarlarında Ayarlar &gt; Məxfilik və güvənlik &gt; Məxfilik nizamlayıcıları &gt; Məkana giriş &gt; Təkmil məkan ayarları bölməsində Məkan Dəqiqliyini söndürə bilərsiniz. Məkan Dəqiqliyi sönülü olarsa, Məkan Dəqiqliyi datası toplanılmayacaq. Android tətbiq və xidmətlərində cihazın məkanını müəyyən etmək üçün yalnız IP ünvanı (əlçatandırsa) istifadə olunur ki, bu da Gogole Xəritə kimi Android tətbiq və xidmətləri üçün məkanın əlçatanlığına və dəqiqliyinə təsir edə bilər.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="8804419452060773146">Burada açılır:</translation>
 <translation id="8804999695258552249">{NUM_TABS,plural, =1{Tabı Başqa Pəncərəyə Köçürün}other{Tabları Başqa Pəncərəyə Köçürün}}</translation>
 <translation id="8805140816472474147">Sinxronizasiyaya başlamaq üçün sinxronizasiyanı təsdiq edin.</translation>
@@ -10842,6 +10892,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="9096776523567481218">lokal qaydada quraşdırılmayıb</translation>
 <translation id="9098860402274800697">Google Play və Android tətbiqlərini silin</translation>
 <translation id="9099220545925418560">Axtarış tarixçənizə əsaslanır. Bu ayar deaktivdir.</translation>
+<translation id="910000385680858937">İcazə verilib – <ph name="PERMISSION_DETAILS" />. Cihaza mikrofon qoşun.</translation>
 <translation id="9100416672768993722">Son istifadə edilən giriş metoduna keçmək üçün buna basın: <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR" /><ph name="BEGIN_SPACE" />Boşluq<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="9100765901046053179">Qabaqcıl ayarlar</translation>
 <translation id="9101691533782776290">Tətbiqi işə salın</translation>

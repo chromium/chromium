@@ -245,7 +245,6 @@
 <translation id="1432187715652018471">網頁想要安裝服務處理常式。</translation>
 <translation id="1432581352905426595">管理搜尋引擎</translation>
 <translation id="1433225466058025572">嘗試再次移動檔案</translation>
-<translation id="1434317006812369578">Chrome 內置安全功能，可在你瀏覽網站時提供保護，例如「Google 安全瀏覽」。此功能<ph name="BEGIN_LINK" />最近在 <ph name="SITE" /> 發現惡意軟件<ph name="END_LINK" />，而且你嘗試瀏覽的網站亦已嵌入該軟件。</translation>
 <translation id="1435940442311036198">在其他裝置上使用密鑰</translation>
 <translation id="1436185428532214179">可要求編輯裝置中的檔案和資料夾</translation>
 <translation id="1441816242347931036">開啟即可繼續</translation>
@@ -1469,7 +1468,6 @@
 <translation id="3767485424735936570">管理員政策不建議將此內容複製並貼到 <ph name="VM_NAME" /></translation>
 <translation id="3772211998634047851">紙 (證券紙)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以喺 Google Keep 度快速建立新筆記</translation>
-<translation id="378026377453746707">Chrome 內置安全功能，可在你瀏覽網站時提供保護，例如「Google 安全瀏覽」。此功能最近在 <ph name="BEGIN_LINK" /><ph name="SITE" /> 發現有害軟件體<ph name="END_LINK" />，而且你嘗試瀏覽的網站亦已嵌入該軟件。</translation>
 <translation id="3780694243617746492">出紙槽</translation>
 <translation id="3781428340399460090">豔粉紅色</translation>
 <translation id="3783418713923659662">Mastercard</translation>
@@ -1553,7 +1551,6 @@
 <translation id="3950820424414687140">登入</translation>
 <translation id="3953505489397572035">這是一般價格</translation>
 <translation id="3958057596965527988">4 x 4 吋</translation>
-<translation id="3959121317419633580">Chrome 內置安全功能，可在你瀏覽網站時提供保護，例如「Google 安全瀏覽」。此功能最近在 <ph name="BEGIN_LINK" /><ph name="SITE" /> 發現仿冒詐騙內容<ph name="END_LINK" />，而且你嘗試瀏覽的網站亦已嵌入該軟件。<ph name="NEW_LINE" />即使是平常可安心瀏覽的網站，有時亦會受攻擊者入侵。如果你認為我們的判斷有誤，且這個網站沒有危險，請<ph name="BEGIN_ERROR_LINK" />告訴我們<ph name="END_ERROR_LINK" />。</translation>
 <translation id="3961148744525529027">付款處理常式工作表只係顯示咁一半</translation>
 <translation id="3962859241508114581">上一首曲目</translation>
 <translation id="3963721102035795474">閱讀器模式</translation>

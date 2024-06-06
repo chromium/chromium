@@ -245,7 +245,6 @@
 <translation id="1432187715652018471">ಈ ಪುಟ ಸೇವೆಯ ನಿರ್ವಾಹಕವನ್ನು ಸೇರಿಸಲು ಬಯಸುತ್ತಿದೆ.</translation>
 <translation id="1432581352905426595">ಹುಡುಕಾಟದ ಇಂಜಿನ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="1433225466058025572">ಪುನಃ ನಿಮ್ಮ ಫೈಲ್‌ಗಳನ್ನು ಸರಿಸಲು ಪ್ರಯತ್ನಿಸಿ</translation>
-<translation id="1434317006812369578">ಬ್ರೌಸ್ ಮಾಡುತ್ತಿರುವಾಗ ನಿಮ್ಮನ್ನು ರಕ್ಷಿಸಲು Google Safe Browsing ನಂತಹ ಅಂತರ್ನಿರ್ಮಿತ ಭದ್ರತಾ ಫೀಚರ್‌ಗಳನ್ನು Chrome ಹೊಂದಿದೆ. ಸುರಕ್ಷಿತ ಬ್ರೌಸಿಂಗ್‌ <ph name="BEGIN_LINK" />ಇತ್ತೀಚೆಗೆ <ph name="SITE" /> ನಲ್ಲಿ ಮಾಲ್‌ವೇರ್‌ ಅನ್ನು ಕಂಡುಹಿಡಿದಿದೆ<ph name="END_LINK" />, ಅದನ್ನು ನೀವು ಭೇಟಿ ನೀಡಲು ಪ್ರಯತ್ನಿಸುತ್ತಿರುವ ಸೈಟ್‌ನಲ್ಲಿ ಎಂಬೆಡ್ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="1435940442311036198">ಬೇರೆ ಸಾಧನದಲ್ಲಿ ಪಾಸ್‌ಕೀ ಅನ್ನು ಬಳಸಿ</translation>
 <translation id="1436185428532214179">ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿನ ಫೈಲ್‌ಗಳು ಮತ್ತು ಫೋಲ್ಡರ್‌ಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಲು ಕೇಳಬಹುದು</translation>
 <translation id="1441816242347931036">ಮುಂದುವರೆಯಲು ತೆರೆಯಿರಿ</translation>
@@ -1467,7 +1466,6 @@
 <translation id="3767485424735936570">ಈ ಕಂಟೆಂಟ್ ಅನ್ನು <ph name="VM_NAME" /> ನಲ್ಲಿ ನಕಲಿಸುವುದನ್ನು ಮತ್ತು ಪೇಸ್ಟ್ ಮಾಡುವುದನ್ನು ನಿರ್ವಾಹಕರ ನೀತಿಯು ಶಿಫಾರಸು ಮಾಡುವುದಿಲ್ಲ</translation>
 <translation id="3772211998634047851">ಕಾಗದ (ಬಾಂಡ್)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Keep ನಲ್ಲಿ ಹೊಸ ಟಿಪ್ಪಣಿಯನ್ನು ತ್ವರಿತವಾಗಿ ರಚಿಸಲು Tab ಒತ್ತಿ, ನಂತರ Enter ಒತ್ತಿ</translation>
-<translation id="378026377453746707">ಬ್ರೌಸ್ ಮಾಡುತ್ತಿರುವಾಗ ನಿಮ್ಮನ್ನು ರಕ್ಷಿಸಲು Google Safe Browsing ನಂತಹ ಅಂತರ್ನಿರ್ಮಿತ ಭದ್ರತಾ ಫೀಚರ್‌ಗಳನ್ನು Chrome ಹೊಂದಿದೆ. ಸುರಕ್ಷಿತ ಬ್ರೌಸಿಂಗ್‌ ಇತ್ತೀಚೆಗೆ <ph name="BEGIN_LINK" /><ph name="SITE" /> ನಲ್ಲಿ ಹಾನಿಕಾರಕ ಸಾಫ್ಟ್‌ವೇರ್ ಅನ್ನು ಕಂಡುಹಿಡಿದಿದೆ<ph name="END_LINK" />, ಅದನ್ನು ನೀವು ಭೇಟಿ ನೀಡಲು ಪ್ರಯತ್ನಿಸುತ್ತಿರುವ ಸೈಟ್‌ನಲ್ಲಿ ಎಂಬೆಡ್ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="3780694243617746492">ಔಟ್‌ಪುಟ್ ಬಿನ್</translation>
 <translation id="3781428340399460090">ಗಾಢ ಗುಲಾಬಿ</translation>
 <translation id="3783418713923659662">Mastercard</translation>
@@ -1551,7 +1549,6 @@
 <translation id="3950820424414687140">ಸೈನ್ ಇನ್</translation>
 <translation id="3953505489397572035">ಇದು ಸಾಮಾನ್ಯ ದರವಾಗಿದೆ</translation>
 <translation id="3958057596965527988">4 x 4 ಇಂಚು</translation>
-<translation id="3959121317419633580">ಬ್ರೌಸ್ ಮಾಡುತ್ತಿರುವಾಗ ನಿಮ್ಮನ್ನು ರಕ್ಷಿಸಲು Google Safe Browsing ನಂತಹ ಅಂತರ್ನಿರ್ಮಿತ ಭದ್ರತಾ ಫೀಚರ್‌ಗಳನ್ನು Chrome ಹೊಂದಿದೆ. ಸುರಕ್ಷಿತ ಬ್ರೌಸಿಂಗ್‌ ಇತ್ತೀಚೆಗೆ <ph name="BEGIN_LINK" /><ph name="SITE" /> ನಲ್ಲಿ ಫಿಶಿಂಗ್‌ ಅನ್ನು ಕಂಡುಹಿಡಿದಿದೆ<ph name="END_LINK" />, ಅದನ್ನು ನೀವು ಭೇಟಿ ನೀಡಲು ಪ್ರಯತ್ನಿಸುತ್ತಿರುವ ಸೈಟ್‌ನಲ್ಲಿ ಎಂಬೆಡ್ ಮಾಡಲಾಗಿದೆ.<ph name="NEW_LINE" />ದಾಳಿಕೋರರು ಕೆಲವೊಮ್ಮೆ ಸುರಕ್ಷಿತವಾಗಿರುವ ವೆಬ್‌ಸೈಟ್‌ಗಳನ್ನು ಹ್ಯಾಕ್ ಮಾಡುತ್ತಾರೆ. ಇದು ತಪ್ಪಾಗಿದ್ದರೆ ಮತ್ತು ಈ ಸೈಟ್ ಅಪಾಯಕಾರಿ ಅಲ್ಲ ಎಂದು ನೀವು ಭಾವಿಸಿದರೆ <ph name="BEGIN_ERROR_LINK" />ನಮಗೆ ವರದಿ ಮಾಡಿ<ph name="END_ERROR_LINK" />.</translation>
 <translation id="3961148744525529027">ಪಾವತಿ ಹ್ಯಾಂಡ್‌ಲರ್ ಶೀಟ್ ಅರ್ಧ ತೆರೆದಿದೆ</translation>
 <translation id="3962859241508114581">ಹಿಂದಿನ ಟ್ರ್ಯಾಕ್</translation>
 <translation id="3963721102035795474">ರೀಡರ್‌ ಮೋಡ್‌</translation>

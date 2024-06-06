@@ -5,6 +5,7 @@
 <translation id="1013952917065545813">آپ ان ٹیبز کو دوبارہ کھولنے کے لیے یہاں واپس آ سکتے ہیں جنہیں آپ نے حال ہی میں بند کر دیا ہے</translation>
 <translation id="1016495303386450659">آئٹم اپ ڈيٹ ہوگیا</translation>
 <translation id="1025514696883950875">{COUNT,plural, =1{اکاؤنٹ میں پاس ورڈ محفوظ کریں}other{اکاؤنٹ میں پاس ورڈز محفوظ کریں}}</translation>
+<translation id="102916930470544692">پاس کی</translation>
 <translation id="1035980983510608210">سبھی ٹیبز کو بند کرنے سے پن کردہ ٹیبز بھی بند ہو جائیں گے۔</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1043592663436934089">آپ سائن آؤٹ ہو جائیں گے اور براؤزنگ ڈیٹا کو حذف کر دیا جائے گا</translation>
@@ -1016,6 +1017,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6173499589275053515">‏آپ کے Google اکاؤنٹ <ph name="EMAIL" /> میں پاس ورڈ محفوظ کیا گیا ہے</translation>
 <translation id="6184086493125982861">ٹیبز دکھائیں</translation>
 <translation id="6187302354554850004">آخری مطابقت پذیری: <ph name="LAST_USED_TIME" /></translation>
+<translation id="6188737759358894319"><ph name="DATE" /> کو تخلیق کیا گیا</translation>
 <translation id="6189413832092199491">نہ پڑھے ہوئے</translation>
 <translation id="6196207969502475924">صوتی تلاش</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{{COUNT} ٹیب بند کریں}other{{COUNT} ٹیبز بند کریں}}</translation>
@@ -1303,7 +1305,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7557508262441527045">سائن آؤٹ ہو گئے</translation>
 <translation id="7561196759112975576">ہمیشہ</translation>
 <translation id="7564917801238348224">...محفوظ کریں</translation>
-<translation id="758132317817089442">بہتر کردہ حفاظت کو آن کریں...</translation>
 <translation id="7582857256643797524">یہ ترتیب آپ کے آلے پر فعال ہے</translation>
 <translation id="7583004045319035904">اپنے پوشیدگی ٹیبز کو غیر مقفل کرنے کیلئے <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> کا استعمال کریں۔</translation>
 <translation id="7598439272585186139">مزید سیکیورٹی حاصل کریں</translation>

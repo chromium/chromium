@@ -1745,6 +1745,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
     <ph name="BEGIN_PARAGRAPH2" />Não pode cancelar a instalação depois de a iniciar.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">Trocar dados com com qualquer dispositivo nos seguintes domínios: <ph name="DOMAINS" /></translation>
 <translation id="2270666014403455717">Atribua o interruptor para "Selecionar"</translation>
+<translation id="2271452184061378400">Os seus grupos de separadores são guardados aqui</translation>
 <translation id="2271986192355138465">Saiba como instalar apps Web</translation>
 <translation id="2272430695183451567">0 interruptores atribuídos</translation>
 <translation id="2272570998639520080">Copo de Martini</translation>
@@ -1983,7 +1984,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2435248616906486374">Rede desligada</translation>
 <translation id="2435457462613246316">Mostrar palavra-passe</translation>
 <translation id="2436385001956947090">Copiar &amp;link</translation>
-<translation id="2436746748253887661">Isto permite que os serviços do sistema com autorização usem a sua localização. A localização pode usar fontes como redes Wi-Fi, redes móveis e sensores para ajudar a calcular a localização do seu dispositivo. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="2438853563451647815">Não tem ligação estabelecida à impressora</translation>
 <translation id="2439152382014731627">Repor palavra-passe do <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600">A carregar <ph name="WINDOW_TITLE" /></translation>
@@ -9076,7 +9076,6 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7788948939674438635">Não permitir que os sites bloqueiem o teclado</translation>
 <translation id="7789963078219276159">O fundo da página de início foi alterado para <ph name="CATEGORY" />.</translation>
-<translation id="7790689625219600437">OCR do PDF</translation>
 <translation id="7791269138074599214">Método de introdução</translation>
 <translation id="7791429245559955092">Esta aplicação vai ser instalada no seu perfil do Chrome usado atualmente</translation>
 <translation id="7791436592012979144">Deslocamento inverso ativado</translation>
@@ -9832,6 +9831,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8336739000755212683">Alterar imagem da conta do dispositivo</translation>
 <translation id="8337020675372081178">{HOURS,plural, =1{Este dispositivo vai ser guardado durante 1 hora e pode associar sem um código da próxima vez. Esta opção é definida pelo administrador.}other{Este dispositivo vai ser guardado durante {HOURS} horas e pode associar sem um código da próxima vez. Esta opção é definida pelo administrador.}}</translation>
 <translation id="8337399713761067085">De momento, está offline</translation>
+<translation id="8338427544764842461">Os seus grupos de separadores são guardados aqui e atualizados em todos os dispositivos com sessão iniciada</translation>
 <translation id="8338952601723052325">Website para programadores</translation>
 <translation id="8339288417038613756">Tamanho da visualização e do texto</translation>
 <translation id="833986336429795709">Para abrir este link, escolher uma aplicação</translation>

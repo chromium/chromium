@@ -5,6 +5,7 @@
 <translation id="1013952917065545813">您可回來重新開啟最近關閉的分頁</translation>
 <translation id="1016495303386450659">已更新項目</translation>
 <translation id="1025514696883950875">{COUNT,plural, =1{將密碼儲存至帳戶中}other{將密碼儲存至帳戶中}}</translation>
+<translation id="102916930470544692">密鑰</translation>
 <translation id="1035980983510608210">如果關閉所有分頁，系統亦會關閉固定分頁。</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1043592663436934089">系統會將你登出並刪除瀏覽資料</translation>
@@ -1016,6 +1017,7 @@
 <translation id="6173499589275053515">密碼已儲存至您的 Google 帳戶 (<ph name="EMAIL" />)</translation>
 <translation id="6184086493125982861">顯示分頁</translation>
 <translation id="6187302354554850004">上次同步時間：<ph name="LAST_USED_TIME" /></translation>
+<translation id="6188737759358894319">建立時間：<ph name="DATE" /></translation>
 <translation id="6189413832092199491">未讀</translation>
 <translation id="6196207969502475924">語音搜尋</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{關閉 {COUNT} 個分頁}other{關閉 {COUNT} 個分頁}}</translation>
@@ -1303,7 +1305,6 @@
 <translation id="7557508262441527045">已登出</translation>
 <translation id="7561196759112975576">永遠使用</translation>
 <translation id="7564917801238348224">儲存…</translation>
-<translation id="758132317817089442">開啟強化保護功能…</translation>
 <translation id="7582857256643797524">裝置已啟用此設定</translation>
 <translation id="7583004045319035904">使用 <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> 解鎖無痕式分頁。</translation>
 <translation id="7598439272585186139">提升安全性</translation>

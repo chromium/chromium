@@ -100,7 +100,6 @@
 <translation id="6333260925957816943">Informacije o ovoj trgovini</translation>
 <translation id="6381032505162537930">Ovdje ćete pronaći svoje grupe kartica</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Poništite grupiranje <ph name="TABS_COUNT_ONE" /> odabrane kartice}one{Poništite grupiranje <ph name="TABS_COUNT_MANY" /> odabrane kartice}few{Poništite grupiranje <ph name="TABS_COUNT_MANY" /> odabrane kartice}other{Poništite grupiranje <ph name="TABS_COUNT_MANY" /> odabranih kartica}}</translation>
-<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Zatvorene kartice nalaze se u kategoriji Nedavne kartice u glavnom izborniku Chromea. Vaša anonimna kartica neće biti dostupna.}one{Zatvorene kartice nalaze se u kategoriji Nedavne kartice u glavnom izborniku Chromea. Vaša # anonimna kartica neće biti dostupna.}few{Zatvorene kartice nalaze se u kategoriji Nedavne kartice u glavnom izborniku Chromea. Vaše # anonimne kartice neće biti dostupne.}other{Zatvorene kartice nalaze se u kategoriji Nedavne kartice u glavnom izborniku Chromea. Vaših # anonimnih kartica neće biti dostupne.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> kartica}one{<ph name="TABS_COUNT_MANY" /> kartica}few{<ph name="TABS_COUNT_MANY" /> kartice}other{<ph name="TABS_COUNT_MANY" /> kartica}}</translation>
 <translation id="6549021453810473782">Prikaži podatke o trgovini</translation>
 <translation id="6557858706263317126">+ <ph name="HIDDEN_TABS_COUNT" /></translation>

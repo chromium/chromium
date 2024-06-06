@@ -313,6 +313,7 @@
 <translation id="2618015542787108131">pješčana dina</translation>
 <translation id="2619761439309613843">Dnevno osvježavanje</translation>
 <translation id="2620436844016719705">Sistem</translation>
+<translation id="2637303424821734920">ISKLJUČENO – za prikaz lokalnih vremenskih prilika <ph name="BEGIN_LINK" />uključite pristup lokaciji sustava<ph name="END_LINK" /></translation>
 <translation id="2638662041295312666">Slika prilikom prijave</translation>
 <translation id="2640549051766135490">Odabran je album <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="2645380101799517405">Kontrole</translation>
@@ -961,7 +962,6 @@
 <translation id="6412715219990689313">Ugrađena tastatura</translation>
 <translation id="6417265370957905582">Google Asistent</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
-<translation id="6438073885402882007">Ovo dozvoljava sistemskim lokacijama s odobrenjem da koriste vašu lokaciju. Lokacija može koristiti izvore kao što su WiFi, mobilne mreže i senzori radi lakše procjene lokacije vašeg uređaja. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="6439505561246192797">Slabo (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Odlazak u postavke računa</translation>
 <translation id="6462978824459367242">Dugme za dodavanje APN-a je sada omogućeno</translation>

@@ -100,7 +100,6 @@
 <translation id="6333260925957816943">此商店的資料</translation>
 <translation id="6381032505162537930">你可在這裡找到分頁群組</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{將 <ph name="TABS_COUNT_ONE" /> 個揀咗嘅分頁移出群組}other{將 <ph name="TABS_COUNT_MANY" /> 個揀咗嘅分頁移出群組}}</translation>
-<translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{在 Chrome 主選單下的「最近開啟的分頁」中，可以查看關閉了的分頁。你將無法查看無痕式分頁。}other{在 Chrome 主選單下的「最近開啟的分頁」中，可以查看關閉了的分頁。你將無法查看 # 個無痕式分頁。}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 個分頁}other{<ph name="TABS_COUNT_MANY" /> 個分頁}}</translation>
 <translation id="6549021453810473782">查看商店資料</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>

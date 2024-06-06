@@ -72,6 +72,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1235458158152011030">Tanish tarmoqlar</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> ulandi.</translation>
 <translation id="1240638468526743569">Ilova</translation>
+<translation id="1242198791279543032">Bildirishnomalar sukut qilingan</translation>
 <translation id="1242883863226959074">qurilma</translation>
 <translation id="1245644940275736236">Assistentni ochish</translation>
 <translation id="124678866338384709">Joriy varaqni yopish</translation>
@@ -1126,6 +1127,7 @@ Klaviatura tezkor tugmalaridan foydalanishingiz ham mumkin. Avval matnni belgila
 <translation id="5208059991603368177">Yoniq</translation>
 <translation id="5216991270656129561">Oʻchiqlik muddati: <ph name="TIME" /></translation>
 <translation id="5222676887888702881">Tizimdan chiqish</translation>
+<translation id="5228195526683428788">Ekranni ikkiga ajratish chizigʻi</translation>
 <translation id="5229343007215035173">Maxfiylik ekranini yoqish/oʻchirish</translation>
 <translation id="5230516054153933099">Oyna</translation>
 <translation id="5234764350956374838">Yopish</translation>
@@ -1511,6 +1513,7 @@ yangi oʻrnatilgan</translation>
 <translation id="6613765291890844037"><ph name="STORAGE_IN_USE_SIZE" /> xotira band | jami <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">Maxfiylik ekrani yoniq</translation>
 <translation id="6622679827379792051">Telefondagi ilovalarni koʻrishni sozlash</translation>
+<translation id="662279009180869175">Ekranni ajratishda chapga va oʻngga strelkalardan foydalaning</translation>
 <translation id="6624493541160101248">Joriy ish stoli: <ph name="DESK_NAME" /> Ish stoli: <ph name="DESK_INDEX" />/<ph name="DESK_COUNT" />.</translation>
 <translation id="6625718907317144388">Xavfsiz koʻrish rejimi yoniqligi uchun <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> va boshqa ilovalar bildirishnomalari yashirildi</translation>
 <translation id="6627638273713273709">Qidiruv+Shift+K</translation>
@@ -1529,6 +1532,7 @@ yangi oʻrnatilgan</translation>
 <translation id="6670153871843998651">Desk 3</translation>
 <translation id="6671495933530132209">Rasmni nusxalash</translation>
 <translation id="6671661918848783005">Chromebook qulfi ochilmadi</translation>
+<translation id="6676552993057022464">Ekranni ikkiga ajratishda yuqoriga va pastga strelkalardan foydalaning</translation>
 <translation id="6682029141988159141">Vaqtincha xotiradagi kontentni joylash</translation>
 <translation id="6683022854667115063">Quloqliklar</translation>
 <translation id="6686023075541098243">Telefondagi bildirishnomalarni koʻrishni sozlash</translation>

@@ -245,7 +245,6 @@
 <translation id="1432187715652018471">પેજ સેવાનું હૅન્ડલર ઇન્સ્ટૉલ કરવા માગે છે.</translation>
 <translation id="1432581352905426595">શોધ એન્જિન મેનેજ કરો</translation>
 <translation id="1433225466058025572">તમારી ફાઇલોની ફરીથી ખસેડવાનો પ્રયાસ કરો</translation>
-<translation id="1434317006812369578">તમે બ્રાઉઝ કરી રહ્યાં હો એ દરમિયાન તમને સુરક્ષિત રાખવા માટે Chrome બિલ્ટ ઇન સલામતી સંબંધી સુવિધાઓ ધરાવે છે — જેમ કે Google Safe Browsing. Safe Browsing દ્વારા <ph name="BEGIN_LINK" /><ph name="SITE" /> પર તાજેતરમાં માલવેર શોધવા<ph name="END_LINK" />માં આવ્યું હતું, તમે મુલાકાત લેવાનો પ્રયાસ કરી રહ્યાં છો, તે સાઇટમાં તે શામેલ હતું.</translation>
 <translation id="1435940442311036198">કોઈ બીજા ડિવાઇસ પર પાસકીનો ઉપયોગ કરો</translation>
 <translation id="1436185428532214179">તમારા ડિવાઇસમાંની ફાઇલોમાં અને ફોલ્ડરોમાં ફેરફાર કરવાનું પૂછી શકે છે</translation>
 <translation id="1441816242347931036">ચાલુ રાખવા માટે ખોલો</translation>
@@ -1470,7 +1469,6 @@
 <translation id="3767485424735936570">વ્યવસ્થાપક પૉલિસી અંતર્ગત આ કન્ટેન્ટને <ph name="VM_NAME" />માં કૉપિ કરીને પેસ્ટ કરવાનો સુઝાવ આપવામાં આવતો નથી</translation>
 <translation id="3772211998634047851">પેપર (બોન્ડ)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Keepમાં ઝડપથી કોઈ નવી નોંધ બનાવવા માટે, પહેલાં Tab અને પછી Enter કી દબાવો</translation>
-<translation id="378026377453746707">તમે બ્રાઉઝ કરી રહ્યાં હો એ દરમિયાન તમને સુરક્ષિત રાખવા માટે Chrome બિલ્ટ ઇન સલામતી સંબંધી સુવિધાઓ ધરાવે છે — જેમ કે Google Safe Browsing. તાજેતરમાં Safe Browsing દ્વારા <ph name="BEGIN_LINK" /><ph name="SITE" /> પર હાનિકારક સૉફ્ટવેર શોધવા<ph name="END_LINK" />માં આવ્યું હતું, જો તમે એની મુલાકાત લેવાનો પ્રયાસ કરી રહ્યાં હો, તો તે સાઇટમાં શામેલ હતું એ ધ્યાનમાં રાખો.</translation>
 <translation id="3780694243617746492">આઉટપુટ બિન</translation>
 <translation id="3781428340399460090">ચળકતો ગુલાબી</translation>
 <translation id="3783418713923659662">Mastercard</translation>
@@ -1554,7 +1552,6 @@
 <translation id="3950820424414687140">સાઇન ઇન</translation>
 <translation id="3953505489397572035">આ કિંમત સામાન્ય છે</translation>
 <translation id="3958057596965527988">4 x 4 ઇંચ</translation>
-<translation id="3959121317419633580">તમે બ્રાઉઝ કરી રહ્યાં હો એ દરમિયાન તમને સુરક્ષિત રાખવા માટે Chrome બિલ્ટ ઇન સલામતી સંબંધી સુવિધાઓ ધરાવે છે — જેમ કે Google Safe Browsing. તાજેતરમાં Safe Browsing દ્વારા <ph name="BEGIN_LINK" /><ph name="SITE" /> પર ફિશિંગ શોધવા<ph name="END_LINK" />માં આવ્યું હતું, તમે મુલાકાત લેવાનો પ્રયાસ કરી રહ્યાં છો, તે સાઇટમાં તે શામેલ હતું.<ph name="NEW_LINE" />ઘણી વાર સામાન્ય રીતે સુરક્ષિત ગણાતી સાઇટ પર પણ હુમલાખોરો દ્વારા ચેડાં કરવામાં આવી શકે છે. જો તમે માનતા હો કે આ કોઈ ભૂલ છે અને આ સાઇટ કોઈ રીતે જોખમી નથી, તો <ph name="BEGIN_ERROR_LINK" />અમને જણાવો<ph name="END_ERROR_LINK" />.</translation>
 <translation id="3961148744525529027">ચુકવણી માટેની હૅન્ડલર શીટ અડધી ખુલ્લી છે</translation>
 <translation id="3962859241508114581">પાછલું ટ્રૅક</translation>
 <translation id="3963721102035795474">રીડર મોડ</translation>
@@ -2684,6 +2681,7 @@
 <translation id="6165508094623778733">વધુ જાણો</translation>
 <translation id="6167577165590485365">છેલ્લે પ્રાપ્ત કરવા માટે થયેલા પ્રયાસનો સમય:</translation>
 <translation id="617256461084925519">આ તમે જ છો તેની ચકાસણી કરવાનો પ્રયાસ Google Chrome કરી રહ્યું છે, જેથી તે ચુકવણી માટેની તમારી માહિતી ભરી શકે.</translation>
+<translation id="6173208311907792313">Windows Helloનો ઉપયોગ કરીને તમારી ખરીદી પૂર્ણ કરો</translation>
 <translation id="6176387967264100435">આ કિંમત વધુ છે</translation>
 <translation id="6177128806592000436">આ સાઇટ પરનું તમારું કનેક્શન સુરક્ષિત નથી</translation>
 <translation id="6177531123306197852">એન્વલપ C2</translation>
@@ -3842,6 +3840,7 @@
 <translation id="8332188693563227489"><ph name="HOST_NAME" /> ની ઍક્સેસ નકારાઈ હતી</translation>
 <translation id="833262891116910667">હાઇલાઇટ</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" />માં છે તે પેજનો અનુવાદ થશે નહીં</translation>
+<translation id="8339275256517065202">Touch IDનો ઉપયોગ કરીને તમારી ખરીદી પૂર્ણ કરો</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">વર્ચ્યુઅલ કાર્ડની નોંધણી પૂરી ઊંચાઈ સુધી ખોલવામાં આવી છે</translation>
 <translation id="8349305172487531364">બુકમાર્ક બાર</translation>
@@ -4035,6 +4034,7 @@
 <translation id="8726549941689275341">પેજનું કદ:</translation>
 <translation id="8730621377337864115">થઈ ગયું</translation>
 <translation id="8731268612289859741">સિક્યુરિટી કોડ</translation>
+<translation id="8731917264694569036">તમારા ડિવાઇસનો ઉપયોગ કરીને તમારી ખરીદી પૂર્ણ કરો</translation>
 <translation id="8733345475331865475">ઑટોમોબાઇલ વીમો</translation>
 <translation id="8733764070897080460">અન્ય સાઇટ સાથે શેર કરવા માગતા ન હો એવા વિષયોને તમે બ્લૉક કરી શકો છો. Chrome તમારા 4 અઠવાડિયાથી જૂના વિષયોને પણ ઑટોમૅટિક રીતે ડિલીટ કરે છે. વધુ જાણો</translation>
 <translation id="8734529307927223492"><ph name="MANAGER" /> દ્વારા તમારા <ph name="DEVICE_TYPE" />ને મેનેજ કરવામાં આવે છે</translation>
@@ -4228,6 +4228,7 @@
 <translation id="9116548361133462832">Chromeમાં જાહેરાતો વિશે વધુ</translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab કી દબાવો તેમજ તમારી યાત્રા ફરી શરૂ કરવા અને તમારા Chrome ઇતિહાસમાં સંબંધિત પ્રવૃત્તિ જોવા માટે Enter કી દબાવો</translation>
 <translation id="9119042192571987207">અપલોડ કર્યો</translation>
+<translation id="9119308212838450857">આ તમે જ હોવાની ચકાસણી <ph name="PROVIDER_ORIGIN" /> કરવા માગે છે</translation>
 <translation id="912327514020027767">સ્કર્ટ</translation>
 <translation id="912414390325846156">તમે અગાઉ આ સાઇટ માટે 'મંજૂરી આપશો નહીં' વિકલ્પ પસંદ કર્યો છે</translation>
 <translation id="9128870381267983090">નેટવર્કથી કનેક્ટ કરો</translation>

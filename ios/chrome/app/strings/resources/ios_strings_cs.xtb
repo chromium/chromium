@@ -5,6 +5,7 @@
 <translation id="1013952917065545813">Tady můžete znovu otevřít karty, které jste nedávno zavřeli</translation>
 <translation id="1016495303386450659">Položka byla aktualizována</translation>
 <translation id="1025514696883950875">{COUNT,plural, =1{Uložit heslo do účtu}few{Uložit hesla do účtu}many{Uložit hesla do účtu}other{Uložit hesla do účtu}}</translation>
+<translation id="102916930470544692">Přístupový klíč</translation>
 <translation id="1035980983510608210">Zavřením všech karet zavřete i připnuté karty.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1043592663436934089">Budete odhlášeni a vymažou se údaje o prohlížení</translation>
@@ -1016,6 +1017,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="6173499589275053515">Heslo bylo uloženo do vašeho účtu Google (<ph name="EMAIL" />).</translation>
 <translation id="6184086493125982861">Zobrazit karty</translation>
 <translation id="6187302354554850004">Synchronizace: <ph name="LAST_USED_TIME" /></translation>
+<translation id="6188737759358894319">Vytvořeno <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Nepřečtené</translation>
 <translation id="6196207969502475924">Hlasové vyhledávání</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Zavřít {COUNT} kartu}few{Zavřít {COUNT} karty}many{Zavřít {COUNT} karty}other{Zavřít {COUNT} karet}}</translation>
@@ -1303,7 +1305,6 @@ V anonymním režimu weby nemohou používat soubory cookie ke sledování vaš
 <translation id="7557508262441527045">Odhlášeno</translation>
 <translation id="7561196759112975576">Vždy</translation>
 <translation id="7564917801238348224">ULOŽIT…</translation>
-<translation id="758132317817089442">Zapnout vylepšenou ochranu…</translation>
 <translation id="7582857256643797524">Toto nastavení je na vašem zařízení povoleno</translation>
 <translation id="7583004045319035904">Anonymní karty odemknete pomocí <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />.</translation>
 <translation id="7598439272585186139">Získejte větší bezpečnost</translation>

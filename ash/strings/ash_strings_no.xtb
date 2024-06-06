@@ -178,6 +178,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1610778689852195798">«Angre»</translation>
 <translation id="1611993646327628135">På</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1623768535032616219">Skjul Google Classroom</translation>
 <translation id="1632985212731562677">Brytertilgang kan slås av i Innstillinger &gt; Tilgjengelighet.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> enheter</translation>
 <translation id="1639239467298939599">Laster inn</translation>
@@ -303,6 +304,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2198625180564913276">Legger til profil. Dette kan ta noen minutter.</translation>
 <translation id="219905428774326614">Appoversikt, alle apper</translation>
 <translation id="2201071101391734388">Nylig bilde <ph name="INDEX" /> av <ph name="TOTAL_COUNT" />.</translation>
+<translation id="2201687081523799384">Skjul Google Huskeliste</translation>
 <translation id="2208323208084708176">Enhetlig skrivebordsmodus</translation>
 <translation id="2220572644011485463">PIN-kode eller passord</translation>
 <translation id="2222841058024245321">Skrivebord 7</translation>
@@ -364,6 +366,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2427507373259914951">Venstreklikk</translation>
 <translation id="2429753432712299108">Bluetooth-enheten «<ph name="DEVICE_NAME" />» ber om tillatelse til å koble til. Før du godtar dette, må du bekrefte at denne tilgangskoden vises på den aktuelle enheten: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Vis passord</translation>
+<translation id="2437771564543046790">Lavt batterinivå. Batterisparing er på</translation>
 <translation id="243878895369688216">Åpnet i går</translation>
 <translation id="2440978926514840421">Et GIF-opptak er tatt</translation>
 <translation id="2441427462554639370">Opptaket ble avsluttet på grunn av kritisk lite lagringsplass</translation>
@@ -1200,6 +1203,7 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="550391772491508736">Gjenoppta castingen</translation>
 <translation id="5506975627792768506">Slå på forstørreren av eller på</translation>
 <translation id="5512042095225963688">Slett forrige ord</translation>
+<translation id="5519005148254860683">Vis Google Huskeliste</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Administratoren din har fjernet alle eSIM-kortprofiler. Kontakt administratoren for å få mer informasjon.</translation>
 <translation id="5520909879404821039">«Hei» på fransk</translation>
@@ -1408,6 +1412,7 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="6200515304866777730">Støttes ikke av appen</translation>
 <translation id="6210042900243040400">Koble til <ph name="NAME" /> som tidligere har blitt lagret i <ph name="EMAIL" /></translation>
 <translation id="6213808132343683860">Ta delvis skjermdump eller skjermopptak</translation>
+<translation id="621606890568890214">Vis Google Classroom</translation>
 <translation id="6220928844947387476">Nå kan du ta opp deg selv og skjermen din samtidig</translation>
 <translation id="622484624075952240">Ned</translation>
 <translation id="6228457605945141550">Skru ned lysstyrken</translation>

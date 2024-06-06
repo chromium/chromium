@@ -178,6 +178,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1610778689852195798">"I-undo"</translation>
 <translation id="1611993646327628135">Naka-on</translation>
 <translation id="1620510694547887537">Camera</translation>
+<translation id="1623768535032616219">I-collapse ang Google Classroom</translation>
 <translation id="1632985212731562677">Puwedeng i-disable ang Switch Access sa Mga Setting &gt; Accessibility.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> (na) device</translation>
 <translation id="1639239467298939599">Naglo-load</translation>
@@ -303,6 +304,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2198625180564913276">Idinaragdag ang profile. Puwede itong tumagal nang ilang minuto.</translation>
 <translation id="219905428774326614">Launcher, lahat ng app</translation>
 <translation id="2201071101391734388">Kamakailang larawan <ph name="INDEX" /> ng <ph name="TOTAL_COUNT" />.</translation>
+<translation id="2201687081523799384">I-collapse ang Google Tasks</translation>
 <translation id="2208323208084708176">Unified desktop mode</translation>
 <translation id="2220572644011485463">PIN o password</translation>
 <translation id="2222841058024245321">Desk 7</translation>
@@ -364,6 +366,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2427507373259914951">Mag-left click</translation>
 <translation id="2429753432712299108">Gusto ng bluetooth device na "<ph name="DEVICE_NAME" />" ng pahintulot na magpares . Bago tanggapin, pakikumpirma na ipinapakita ang passkey na ito sa device na iyon: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Ipakita ang password</translation>
+<translation id="2437771564543046790">Paubos na ang baterya. Naka-on ang Pantipid ng Baterya</translation>
 <translation id="243878895369688216">Binuksan kahapon</translation>
 <translation id="2440978926514840421">Nag-record ng GIF</translation>
 <translation id="2441427462554639370">Natapos ang pag-record dahil sa sobrang kaunting storage space</translation>
@@ -1200,6 +1203,7 @@ Walang nakakonektang device.</translation>
 <translation id="550391772491508736">Ipagpatuloy ang pag-cast</translation>
 <translation id="5506975627792768506">I-on o i-off ang magnifier</translation>
 <translation id="5512042095225963688">I-delete ang nakaraang salita</translation>
+<translation id="5519005148254860683">Palawakin ang Google Tasks</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Inalis ng iyong administrator ang lahat ng profile ng eSIM. Makipag-ugnayan sa iyong administrator para sa higit pang impormasyon.</translation>
 <translation id="5520909879404821039">Hi sa French</translation>
@@ -1408,6 +1412,7 @@ Walang nakakonektang device.</translation>
 <translation id="6200515304866777730">Hindi sinusuportahan ng app</translation>
 <translation id="6210042900243040400">Ikonekta ang <ph name="NAME" /> na dating na-save sa <ph name="EMAIL" /></translation>
 <translation id="6213808132343683860">Kumuha ng hindi buong screenshot o recording ng screen</translation>
+<translation id="621606890568890214">Palawakin ang Google Classroom</translation>
 <translation id="6220928844947387476">Puwede mo na ngayong sabay na i-record ang iyong sarili at ang screen mo</translation>
 <translation id="622484624075952240">Down</translation>
 <translation id="6228457605945141550">Babaan ang brightness</translation>

@@ -5,6 +5,7 @@
 <translation id="1013952917065545813">በቅርብ ጊዜ የዘጓቸውን ትሮች መልሰው ለመክፈት ወደዚህ ተመልሰው መምጣት ይችላሉ</translation>
 <translation id="1016495303386450659">ንጥል ተዘምኗል</translation>
 <translation id="1025514696883950875">{COUNT,plural, =1{የይለፍ ቃል በመለያ ውስጥ ያስቀምጡ}one{የይለፍ ቃል በመለያ ውስጥ ያስቀምጡ}other{የይለፍ ቃላትን በመለያ ውስጥ ያስቀምጡ}}</translation>
+<translation id="102916930470544692">የይለፍ ቁልፍ</translation>
 <translation id="1035980983510608210">ሁሉንም ትሮች መዝጋት እንዲሁም የተሰኩ ትሮችን ይዘጋል።</translation>
 <translation id="1036017604683756002">ዩፒኤስ</translation>
 <translation id="1043592663436934089">ዘግተው እንዲወጡ ይደረጉና የአሰሳ ውሂብ ይሰረዛል</translation>
@@ -1016,6 +1017,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6173499589275053515">የይለፍ ቃል የእርስዎ Google መለያ <ph name="EMAIL" /> ውስጥ ተቀምጧል</translation>
 <translation id="6184086493125982861">ትሮችን አሳይ</translation>
 <translation id="6187302354554850004">ለመጨረሻ ጊዜ የተመሳሰለው፦ <ph name="LAST_USED_TIME" /></translation>
+<translation id="6188737759358894319"><ph name="DATE" /> ላይ የተፈጠረ</translation>
 <translation id="6189413832092199491">ያልተነበበ</translation>
 <translation id="6196207969502475924">የድምጽ ፍለጋ</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{{COUNT} ትር ዝጋ}one{{COUNT} ትሮችን ዝጋ}other{{COUNT} ትሮችን ዝጋ}}</translation>
@@ -1303,7 +1305,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="7557508262441527045">ዘግተው ወጥተዋል</translation>
 <translation id="7561196759112975576">ሁልጊዜ</translation>
 <translation id="7564917801238348224">አስቀምጥ...</translation>
-<translation id="758132317817089442">የላቀ ጥበቃን አብራ...</translation>
 <translation id="7582857256643797524">ይህ ቅንብር በመሣሪያዎ ላይ ነቅቷል</translation>
 <translation id="7583004045319035904">የእርስዎን ማንነት የማያሳውቁ ትሮችን ለመከፈት <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ይጠቀሙ።</translation>
 <translation id="7598439272585186139">ተጨማሪ ደኅንነት ያግኙ</translation>

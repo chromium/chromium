@@ -1745,6 +1745,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
     <ph name="BEGIN_PARAGRAPH2" />Kad instalēšana būs sākta, to nevarēs atcelt.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">apmainīties datiem ar jebkuru ierīci šādos domēnos: <ph name="DOMAINS" /></translation>
 <translation id="2270666014403455717">Slēdža piešķiršana darbībai Atlasīt</translation>
+<translation id="2271452184061378400">Jūsu ciļņu grupas ir saglabātas šeit</translation>
 <translation id="2271986192355138465">Uzziniet, kā instalēt tīmekļa lietotnes</translation>
 <translation id="2272430695183451567">Piešķirts 0 slēdža taustiņu</translation>
 <translation id="2272570998639520080">Martini glāze</translation>
@@ -1981,7 +1982,6 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2435248616906486374">Tika pārtraukts tīkla savienojums.</translation>
 <translation id="2435457462613246316">Rādīt paroli</translation>
 <translation id="2436385001956947090">Kopēt &amp;saiti</translation>
-<translation id="2436746748253887661">Tādējādi sistēmas pakalpojumi, kuriem ir piešķirta atļauja, var izmantot jūsu atrašanās vietas datus. Lai noteiktu jūsu ierīces atrašanās vietu, var tikt izmantoti tādi avoti kā Wi-Fi, mobilie tīkli un sensori. <ph name="LINK_BEGIN" />Uzziniet vairāk<ph name="LINK_END" />.</translation>
 <translation id="2438853563451647815">Nav izveidots savienojums ar printeri</translation>
 <translation id="2439152382014731627">Ierīces (<ph name="DEVICE_TYPE" />) paroles atiestatīšana</translation>
 <translation id="2439626940657133600">Notiek produkta <ph name="WINDOW_TITLE" /> ielāde</translation>
@@ -8538,6 +8538,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7416091793702109803">Pārskatīt failu “<ph name="FILE_NAME" />”</translation>
 <translation id="7416263748877373774">Nevar ielādēt pakalpojumu sniegšanas noteikumus. Lūdzu, pārbaudiet tīkla savienojumu un mēģiniet vēlreiz.</translation>
 <translation id="7416362041876611053">Nezināma tīkla kļūda.</translation>
+<translation id="7417435070053325657">Bloķēto lietotņu skaits: <ph name="BLOCKED_APPS_SIZE" /> no <ph name="APPS_LIST_SIZE" /></translation>
 <translation id="741906494724992817">Šai lietotnei nav nepieciešamas īpašas atļaujas.</translation>
 <translation id="7419142833919893307">Nav pievienots neviens lietotājvārds</translation>
 <translation id="7419565702166471774">Vienmēr izmantot drošus savienojumus</translation>
@@ -9058,7 +9059,6 @@ Lai noņemtu piešķīrumu, nospiediet piešķirto slēdzi vai taustiņu.</trans
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7788948939674438635">Neļaut vietnēm bloķēt tastatūru</translation>
 <translation id="7789963078219276159">Sākumlapas fons tika nomainīts uz <ph name="CATEGORY" />.</translation>
-<translation id="7790689625219600437">Optiskā rakstzīmju atpazīšana PDF failos</translation>
 <translation id="7791269138074599214">Ievades metode</translation>
 <translation id="7791429245559955092">Šī lietojumprogramma tiks instalēta jūsu pašlaik izmantotajā Chrome profilā.</translation>
 <translation id="7791436592012979144">Ritināšana pretējā virzienā ir iespējota</translation>
@@ -9813,6 +9813,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8336739000755212683">Mainīt ierīces konta attēlu</translation>
 <translation id="8337020675372081178">{HOURS,plural, =1{Šī ierīce uz stundu tiks saglabāta, un nākamreiz varēsiet izveidot savienojumu bez koda. Šo iestatījumu pārvalda administrators.}zero{Šī ierīce tiks saglabāta uz {HOURS} stundām, un nākamreiz varēsiet izveidot savienojumu bez koda. Šo iestatījumu pārvalda administrators.}one{Šī ierīce tiks saglabāta uz {HOURS} stundu, un nākamreiz varēsiet izveidot savienojumu bez koda. Šo iestatījumu pārvalda administrators.}other{Šī ierīce tiks saglabāta uz {HOURS} stundām, un nākamreiz varēsiet izveidot savienojumu bez koda. Šo iestatījumu pārvalda administrators.}}</translation>
 <translation id="8337399713761067085">Šobrīd esat bezsaistē</translation>
+<translation id="8338427544764842461">Jūsu ciļņu grupas ir saglabātas šeit un tiek atjauninātas visās ierīcēs, kurās esat pierakstījies.</translation>
 <translation id="8338952601723052325">Izstrādātāja vietne</translation>
 <translation id="8339288417038613756">Attēlojuma un teksta lielums</translation>
 <translation id="833986336429795709">Lai atvērtu šo saiti, izvēlieties lietotni.</translation>

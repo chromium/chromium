@@ -1743,6 +1743,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
     <ph name="BEGIN_PARAGRAPH2" />Instalazio-prozesua hasiz gero, ezin da bertan behera utzi.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">Trukatu datuak domeinu hauetako edozein gailurekin: <ph name="DOMAINS" /></translation>
 <translation id="2270666014403455717">Esleitu erabilerraztasun-etengailu bat "Hautatu" ekintzari</translation>
+<translation id="2271452184061378400">Hemen gordetzen dira fitxa taldeak</translation>
 <translation id="2271986192355138465">Lortu sareko aplikazioak instalatzeko argibideak</translation>
 <translation id="2272430695183451567">Ez da esleitu erabilerraztasun-etengailurik</translation>
 <translation id="2272570998639520080">Martini kopa</translation>
@@ -1979,7 +1980,6 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2435248616906486374">Sarea deskonektatu da</translation>
 <translation id="2435457462613246316">Erakutsi pasahitza</translation>
 <translation id="2436385001956947090">Kopiatu esteka</translation>
-<translation id="2436746748253887661">Sistemaren zerbitzuei zure kokapena erabiltzeko baimena emango zaie. Gailuaren kokapena zehazteko, wifi-sarea, sare mugikorrak, sentsoreak eta antzeko iturburuak erabiltzen ditu kokapenaren eginbideak. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="2438853563451647815">Ez dago konektatuta inprimagailura</translation>
 <translation id="2439152382014731627">Berrezarri <ph name="DEVICE_TYPE" /> gailuko pasahitza</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> kargatzen</translation>
@@ -8531,6 +8531,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7416091793702109803">Berrikusi <ph name="FILE_NAME" /></translation>
 <translation id="7416263748877373774">Ezin dira kargatu Zerbitzu-baldintzak. Egiaztatu sarera konektatuta zaudela eta saiatu berriro.</translation>
 <translation id="7416362041876611053">Sareko errore ezezaguna.</translation>
+<translation id="7417435070053325657"><ph name="BLOCKED_APPS_SIZE" />/<ph name="APPS_LIST_SIZE" /> aplikazio blokeatuta</translation>
 <translation id="741906494724992817">Aplikazio honek ez du baimen berezirik eskatzen.</translation>
 <translation id="7419142833919893307">Ez da gehitu erabiltzaile-izenik</translation>
 <translation id="7419565702166471774">Erabili beti konexio seguruak</translation>
@@ -9051,7 +9052,6 @@ Esleipen bat kentzeko, berriz, sakatu esleipen bat daukan erabilerraztasun-eteng
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7788948939674438635">Ez eman baimena webguneei teklatua blokeatzeko</translation>
 <translation id="7789963078219276159"><ph name="CATEGORY" /> jarri dira orri nagusiko atzeko planoan.</translation>
-<translation id="7790689625219600437">PDF OCR</translation>
 <translation id="7791269138074599214">Idazketa-metodoa</translation>
 <translation id="7791429245559955092">Aplikazio hau orain darabilzun Chrome-ko profilean instalatuko da</translation>
 <translation id="7791436592012979144">Gaituta dago gora edo behera alderantziz egiteko aukera</translation>
@@ -9805,6 +9805,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8336739000755212683">Aldatu gailuko kontuaren irudia</translation>
 <translation id="8337020675372081178">{HOURS,plural, =1{Gailua ordubetez gordeko da; hurrengoan, koderik erabili gabe konektatu ahal izango zara. Administratzaileak ezarri du arau hori.}other{Gailua {HOURS} orduz gordeko da; hurrengoan, koderik erabili gabe konektatu ahal izango zara. Administratzaileak ezarri du arau hori.}}</translation>
 <translation id="8337399713761067085">Ez duzu konexiorik</translation>
+<translation id="8338427544764842461">Fitxa taldeak hemen gordetzen dira, eta zure kontuan saioa hasita daukaten gailu guztietan eguneratzen dira</translation>
 <translation id="8338952601723052325">Garatzaileen webgunea</translation>
 <translation id="8339288417038613756">Pantailaren eta testuaren tamaina</translation>
 <translation id="833986336429795709">Esteka hau irekitzeko, aukeratu aplikazio bat</translation>

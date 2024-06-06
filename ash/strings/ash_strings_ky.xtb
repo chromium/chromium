@@ -147,6 +147,7 @@
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> <ph name="SECOND_ITEM_TITLE" /> менен алмаштырылды</translation>
 <translation id="1500926532737552529">Бардык сунуштарды көрсөтүү</translation>
 <translation id="1501946871587957338">Башка аудио булакка которуласызбы?</translation>
+<translation id="1505542291183484463">Көп терезе режиминде терезени ылдый тартуу</translation>
 <translation id="1510238584712386396">Жүргүзгүч</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Билдирмелердин параметрлерин көрсөтүү. Колдонмонун билдирмелери өчүк}other{Билдирмелердин параметрлерин көрсөтүү. # колдонмонун билдирмелери өчүк}}</translation>
 <translation id="1523032696246003">Батареянын кубаты: <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> кийин толот</translation>
@@ -296,6 +297,7 @@
 <translation id="2149229036084364364">Мурунку композицияга өтүү</translation>
 <translation id="2152895518047545149">Баары аткарылды окшойт. Жарайсыз!</translation>
 <translation id="2161132820593978283">Видео чалуу учурунда сиз экрандын борборунда болгудай кылып камеранын алкагын колдонуп көрүңүз. Аны Ыкчам параметрлерден колдонуп көрүңүз.</translation>
+<translation id="216955976692983107">Көп терезе режиминде терезени оңго тартуу</translation>
 <translation id="2185166372312820725">Мурунку өтмөккө өтүү</translation>
 <translation id="2185444992308415167">Өтмөктөргө (1–8) өтүү</translation>
 <translation id="2198625180564913276">Профиль кошулууда. Бир нече мүнөткө созулушу мүмкүн.</translation>
@@ -642,6 +644,7 @@
 <translation id="3509391053705095206">Телефонуңуз табылбай жатат. Телефонуңуздагы Bluetooth күйгүзүлгөнүн текшериңиз.</translation>
 <translation id="3510164367642747937">Чычкан курсору баса белгиленсин</translation>
 <translation id="3513798432020909783">Аккаунтту башкарган: <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3516000762115478502">Көп терезе режиминде терезени өйдө тартуу</translation>
 <translation id="3517037892157925473">Жасалчу иш акыркы жолу качан жаңырган: <ph name="TIME" />, <ph name="DATE" /></translation>
 <translation id="352245152354538528">{0,plural, =1{Түзмөктү 1 мүнөттүн ичинде жаңыртыңыз}other{Түзмөктү # мүнөттүн ичинде жаңыртыңыз}}</translation>
 <translation id="3522979239100719575">Жеткиликтүү профилдер изделүүдө. Бир нече мүнөткө созулушу мүмкүн.</translation>
@@ -758,6 +761,7 @@
 <translation id="3899995891769452915">Айтып киргизүү</translation>
 <translation id="3900355044994618856">Сеансыңыз <ph name="SESSION_TIME_REMAINING" /> кийин аяктайт</translation>
 <translation id="3901991538546252627"><ph name="NAME" /> менен туташууда</translation>
+<translation id="3904768293285573640">Көп терезе режиминде терезени солго тартуу</translation>
 <translation id="3906954721959377182">Планшет</translation>
 <translation id="3923494859158167397">Мобилдик тармактак жөндөлгөн жок</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, иш-чаралар жүктөлүүдө.</translation>

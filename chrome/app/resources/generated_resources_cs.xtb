@@ -1745,6 +1745,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
     <ph name="BEGIN_PARAGRAPH2" />Po spuštění již instalaci nelze zrušit.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">Výměna dat s libovolným zařízením v následujících doménách: <ph name="DOMAINS" /></translation>
 <translation id="2270666014403455717">Přiřazení přepínače pro akci Vybrat</translation>
+<translation id="2271452184061378400">Tady jsou uloženy vaše skupiny karet</translation>
 <translation id="2271986192355138465">Přečtěte si, jak nainstalovat webové aplikace</translation>
 <translation id="2272430695183451567">Přiřazeno 0 přepínačů</translation>
 <translation id="2272570998639520080">Sklenička martini</translation>
@@ -1981,7 +1982,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2435248616906486374">Síť odpojena</translation>
 <translation id="2435457462613246316">Zobrazit heslo</translation>
 <translation id="2436385001956947090">Kopírovat odkaz</translation>
-<translation id="2436746748253887661">Systémové služby s potřebným oprávněním budou moci používat vaši polohu. Poloha zařízení se určuje pomocí zdrojů, jako jsou sítě Wi-Fi, mobilní sítě a senzory. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="2438853563451647815">Nejste připojeni k tiskárně</translation>
 <translation id="2439152382014731627">Obnovit heslo k zařízení <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600">Načítání služby <ph name="WINDOW_TITLE" /></translation>
@@ -8537,6 +8537,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7416091793702109803">Zkontrolovat soubor <ph name="FILE_NAME" /></translation>
 <translation id="7416263748877373774">Smluvní podmínky se nepodařilo načíst. Zkontrolujte připojení k síti a zkuste to znovu.</translation>
 <translation id="7416362041876611053">Neznámá chyba sítě.</translation>
+<translation id="7417435070053325657">Zablokováno: <ph name="BLOCKED_APPS_SIZE" /> z <ph name="APPS_LIST_SIZE" /> aplikací</translation>
 <translation id="741906494724992817">Tato aplikace nevyžaduje žádná speciální oprávnění.</translation>
 <translation id="7419142833919893307">Nebylo přidáno žádné uživatelské jméno</translation>
 <translation id="7419565702166471774">Vždy používat zabezpečená připojení</translation>
@@ -9057,7 +9058,6 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7788948939674438635">Nepovolovat webům zamykat klávesnici</translation>
 <translation id="7789963078219276159">Pozadí úvodní stránky bylo změněno na: <ph name="CATEGORY" />.</translation>
-<translation id="7790689625219600437">OCR pro PDF</translation>
 <translation id="7791269138074599214">Metoda zadávání dat</translation>
 <translation id="7791429245559955092">Tato aplikace bude nainstalována do vašeho aktuálně používaného profilu Chrome</translation>
 <translation id="7791436592012979144">Opačné posouvání je zapnuté</translation>
@@ -9812,6 +9812,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8336739000755212683">Změnit obrázek účtu zařízení</translation>
 <translation id="8337020675372081178">{HOURS,plural, =1{Toto zařízení bude 1 hodinu uloženo a příště se budete moci připojit bez kódu. Toto nastavuje váš administrátor.}few{Toto zařízení bude {HOURS} hodiny uloženo a příště se budete moci připojit bez kódu. Toto nastavuje váš administrátor.}many{Toto zařízení bude {HOURS} hodiny uloženo a příště se budete moci připojit bez kódu. Toto nastavuje váš administrátor.}other{Toto zařízení bude {HOURS} hodin uloženo a příště se budete moci připojit bez kódu. Toto nastavuje váš administrátor.}}</translation>
 <translation id="8337399713761067085">Momentálně jste v režimu offline.</translation>
+<translation id="8338427544764842461">Vaše skupiny karet se ukládají sem a aktualizují se na všech zařízeních, ve kterých jste přihlášeni</translation>
 <translation id="8338952601723052325">Webové stránky pro vývojáře</translation>
 <translation id="8339288417038613756">Velikost zobrazení a textu</translation>
 <translation id="833986336429795709">Chcete-li otevřít tento odkaz, vyberte aplikaci</translation>

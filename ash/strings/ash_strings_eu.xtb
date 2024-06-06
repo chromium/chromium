@@ -147,6 +147,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1487931858675166540"><ph name="SECOND_ITEM_TITLE" /> elementuarekin trukatu da <ph name="FIRST_ITEM_TITLE" /></translation>
 <translation id="1500926532737552529">Erakutsi iradokizun guztiak</translation>
 <translation id="1501946871587957338">Audio-iturburua aldatu nahi duzu?</translation>
+<translation id="1505542291183484463">Aldatu leiho-lauzaren tamaina beherantz</translation>
 <translation id="1510238584712386396">Abiarazlea</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Erakutsi jakinarazpen-ezarpenak. Aplikazio batean desaktibatuta daude jakinarazpenak.}other{Erakutsi jakinarazpen-ezarpenak. # aplikaziotan desaktibatuta daude jakinarazpenak.}}</translation>
 <translation id="1523032696246003">Bateria: % <ph name="BATTERY_PERCENTAGE" /> | <ph name="TIME" /> guztiz kargatu arte</translation>
@@ -296,6 +297,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2149229036084364364">Joan aurreko pistara</translation>
 <translation id="2152895518047545149">Ez duzu egitekorik. Bikain!</translation>
 <translation id="2161132820593978283">Probatu kamerako markoa beti pantailaren erdian egon zaitezen bideodeietan. Aktiba ezazu ezarpen bizkorretan.</translation>
+<translation id="216955976692983107">Aldatu leiho-lauzaren tamaina eskuinerantz</translation>
 <translation id="2185166372312820725">Joan aurreko fitxara</translation>
 <translation id="2185444992308415167">Mugitu lehenengo zortzi fitxen artean</translation>
 <translation id="2198625180564913276">Profila gehitzen. Agian minutu batzuk beharko dira.</translation>
@@ -642,6 +644,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="3509391053705095206">Ezin da aurkitu telefonoa. Ziurtatu telefonoaren Bluetootha aktibatuta dagoela.</translation>
 <translation id="3510164367642747937">Nabarmendu saguaren kurtsorea</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> kontuaren bidez kudeatzen da kontu hau</translation>
+<translation id="3516000762115478502">Aldatu leiho-lauzaren tamaina gorantz</translation>
 <translation id="3517037892157925473">Zereginen azken eguneratzea: <ph name="TIME" />, <ph name="DATE" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{Eguneratu gailua minutu bat barru}other{Eguneratu gailua # minutu barru}}</translation>
 <translation id="3522979239100719575">Erabilgarri dauden profilak bilatzen. Agian minutu batzuk beharko dira.</translation>
@@ -759,6 +762,7 @@ Aurrera egiteko, erabiltzaile guztiek saioa amaitu behar dute.</translation>
 <translation id="3899995891769452915">Ahozko idazketa</translation>
 <translation id="3900355044994618856"><ph name="SESSION_TIME_REMAINING" /> barru amaituko da saioa</translation>
 <translation id="3901991538546252627"><ph name="NAME" /> sarera konektatzen</translation>
+<translation id="3904768293285573640">Aldatu leiho-lauzaren tamaina ezkerrerantz</translation>
 <translation id="3906954721959377182">Tableta</translation>
 <translation id="3923494859158167397">Ez da konfiguratu sare mugikorrik</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, Gertaerak kargatzen.</translation>

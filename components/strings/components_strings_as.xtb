@@ -245,7 +245,6 @@
 <translation id="1432187715652018471">পৃষ্ঠাখনে এটা সেৱা হেণ্ডলাৰ ইনষ্টল কৰিব বিচাৰে।</translation>
 <translation id="1432581352905426595">সন্ধানৰ ইঞ্জিন পৰিচালনা কৰক</translation>
 <translation id="1433225466058025572">আপোনাৰ ফাইলসমূহ পুনৰ স্থানান্তৰ কৰি চাওক</translation>
-<translation id="1434317006812369578">আপুনি ব্ৰাউজ কৰি থকাৰ সময়ত আপোনাক সুৰক্ষিত কৰিবলৈ, Chromeৰ ওচৰত Googleৰ সুৰক্ষিত ব্ৰাউজিঙৰ দৰে বিল্ট-ইন সুৰক্ষা সুবিধা আছে। সুৰক্ষিত ব্ৰাউজিঙে <ph name="BEGIN_LINK" />শেহতীয়াকৈ <ph name="SITE" />ত মালৱেৰ ধৰা পেলাইছে<ph name="END_LINK" />, যিটো আপুনি যাবলৈ চেষ্টা কৰি থকা ছাইটটোত এম্বেড কৰা আছে।</translation>
 <translation id="1435940442311036198">অন্য এটা ডিভাইচত এটা পাছকী ব্যৱহাৰ কৰক</translation>
 <translation id="1436185428532214179">আপোনাৰ ডিভাইচত ফাইল আৰু ফ’ল্ডাৰ সম্পাদনা কৰিবলৈ বিচাৰিব পাৰে</translation>
 <translation id="1441816242347931036">অব্যাহত ৰাখিবলৈ খোলক</translation>
@@ -1467,7 +1466,6 @@
 <translation id="3767485424735936570">প্ৰশাসকৰ নীতিয়ে এই সমল <ph name="VM_NAME" />ত প্ৰতিলিপি কৰি পে’ষ্ট কৰাটো চুপাৰিছ নকৰে</translation>
 <translation id="3772211998634047851">কাগজ (বণ্ড)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Keepত ক্ষিপ্ৰভাৱে এটা নতুন টোকা সৃষ্টি কৰিবলৈ প্ৰথমে টেব তাৰ পাছত এণ্টাৰ টিপক</translation>
-<translation id="378026377453746707">আপুনি ব্ৰাউজ কৰি থকাৰ সময়ত আপোনাক সুৰক্ষিত কৰিবলৈ, Chromeৰ ওচৰত Googleৰ সুৰক্ষিত ব্ৰাউজিঙৰ দৰে বিল্ট-ইন সুৰক্ষা সুবিধা আছে। সুৰক্ষিত ব্ৰাউজিঙে শেহতীয়াকৈ <ph name="BEGIN_LINK" /><ph name="SITE" />ত ক্ষতিকাৰক ছফ্টৱেৰ ধৰা পেলাইছে<ph name="END_LINK" />, যিটো আপুনি যাবলৈ চেষ্টা কৰি থকা ছাইটটোত এম্বেড কৰা আছে।</translation>
 <translation id="3780694243617746492">আউটপুট বিন</translation>
 <translation id="3781428340399460090">উজ্জ্বল গুলপীয়া</translation>
 <translation id="3783418713923659662">MasterCard গ্ৰহণ কৰে</translation>
@@ -1551,7 +1549,6 @@
 <translation id="3950820424414687140">ছাইন ইন কৰক</translation>
 <translation id="3953505489397572035">এয়া সচৰাচৰ মূল্য</translation>
 <translation id="3958057596965527988">৪ x ৪ ইঞ্চি</translation>
-<translation id="3959121317419633580">আপুনি ব্ৰাউজ কৰি থকাৰ সময়ত আপোনাক সুৰক্ষিত কৰিবলৈ, Chromeৰ ওচৰত Googleৰ সুৰক্ষিত ব্ৰাউজিঙৰ দৰে বিল্ট-ইন সুৰক্ষা সুবিধা আছে। সুৰক্ষিত ব্ৰাউজিঙে শেহতীয়াকৈ <ph name="BEGIN_LINK" /><ph name="SITE" />ত ফিশ্বিং ধৰা পেলাইছে<ph name="END_LINK" />, যিটো আপুনি যাবলৈ চেষ্টা কৰি থকা ছাইটটোত এম্বেড কৰা আছে।<ph name="NEW_LINE" />আনকি সাধাৰণতে সুৰক্ষিত ছাইটসমূহো কেতিয়াবা আক্ৰমণকাৰীয়ে হেক কৰে। আপুনি যদি কিবা ভুল হৈছে আৰু এই ছাইটটোত কোনো বিপদ নাই বুলি ভাবে <ph name="BEGIN_ERROR_LINK" />আমাক জনাওক<ph name="END_ERROR_LINK" />।</translation>
 <translation id="3961148744525529027">পৰিশোধ নিয়ন্ত্ৰক শ্বীটখন আধা খোলা আছে</translation>
 <translation id="3962859241508114581">পূৰ্বৱৰ্তী ট্ৰেক</translation>
 <translation id="3963721102035795474">ৰীডাৰ ম’ড</translation>
@@ -2679,6 +2676,7 @@
 <translation id="6165508094623778733">অধিক জানক</translation>
 <translation id="6167577165590485365">শেষবাৰ আহৰণ কৰাৰ প্ৰয়াস:</translation>
 <translation id="617256461084925519">Google Chromeএ এইগৰাকী আপুনিয়েই বুলি সত্যাপন কৰিবলৈ চেষ্টা কৰি আছে যাতে এইটোৱে আপোনাৰ পৰিশোধৰ তথ্য পূৰ কৰিব পাৰে।</translation>
+<translation id="6173208311907792313">Windows Hello ব্যৱহাৰ কৰি আপোনাৰ ক্ৰয় সম্পূৰ্ণ কৰক</translation>
 <translation id="6176387967264100435">এয়া বেছি মূল্যৰ</translation>
 <translation id="6177128806592000436">এই ছাইটলৈ থকা আপোনাৰ সংযোগটো সুৰক্ষিত নহয়</translation>
 <translation id="6177531123306197852">এনভেল’প C2</translation>
@@ -3837,6 +3835,7 @@
 <translation id="8332188693563227489"><ph name="HOST_NAME" />লৈ এক্সেছ অগ্ৰাহ্য কৰা হৈছিল</translation>
 <translation id="833262891116910667">হাইলাইট</translation>
 <translation id="8339163506404995330"><ph name="LANGUAGE" /> ভাষাৰ পৃষ্ঠাসমূহ অনুবাদ কৰা নহয়</translation>
+<translation id="8339275256517065202">স্পৰ্শ আইডি ব্যৱহাৰ কৰি আপোনাৰ ক্ৰয় সম্পূৰ্ণ কৰক</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">ভাৰ্চুৱেল কাৰ্ডৰ পঞ্জীয়ন পূৰ্ণ উচ্চতাত খোলা হৈছে</translation>
 <translation id="8349305172487531364">বুকমাৰ্কৰ বাৰ</translation>
@@ -4030,6 +4029,7 @@
 <translation id="8726549941689275341">পৃষ্ঠাৰ আকাৰ:</translation>
 <translation id="8730621377337864115">হ’ল</translation>
 <translation id="8731268612289859741">সুৰক্ষা ক’ড</translation>
+<translation id="8731917264694569036">আপোনাৰ ডিভাইচ ব্যৱহাৰ কৰি আপোনাৰ ক্ৰয় সম্পূৰ্ণ কৰক</translation>
 <translation id="8733345475331865475">বাহন বীমা</translation>
 <translation id="8733764070897080460">আপুনি ছাইটসমূহৰ সৈতে শ্বেয়াৰ কৰিবলৈ নিবিচৰা বিষয়বস্তু অৱৰোধ কৰিব পাৰে। Chromeএ ৪ সপ্তাহতকৈ পুৰণি হোৱা আপোনাৰ বিষয়সমূহো স্বয়ংক্ৰিয়ভাৱে মচে। অধিক জানক</translation>
 <translation id="8734529307927223492">আপোনাৰ <ph name="DEVICE_TYPE" /> <ph name="MANAGER" />এ পৰিচালনা কৰে</translation>
@@ -4223,6 +4223,7 @@
 <translation id="9116548361133462832">Chromeত বিজ্ঞাপনৰ বিষয়ে অধিক</translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, টেব টিপক তাৰ পাছত আপোনাৰ যাত্ৰা পুনৰ আৰম্ভ কৰিবলৈ এণ্টাৰ টিপক আৰু আপোনাৰ Chromeৰ ইতিহাসত প্ৰাসংগিক কাৰ্যকলাপ চাওক</translation>
 <translation id="9119042192571987207">আপল’ড কৰা হৈছে</translation>
+<translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" />এ এয়া আপুনিয়েই বুলি সত্যাপন কৰিব বিচাৰে</translation>
 <translation id="912327514020027767">স্কাৰ্ট</translation>
 <translation id="912414390325846156">আপুনি পূৰ্বতে এই ছাইটৰ বাবে অনুমতি নিদিয়াটো বাছনি কৰিছিল</translation>
 <translation id="9128870381267983090">নেটৱৰ্কত সংযোগ কৰক</translation>

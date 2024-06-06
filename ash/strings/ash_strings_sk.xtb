@@ -179,6 +179,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1610778689852195798">Späť</translation>
 <translation id="1611993646327628135">Zapnuté</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1623768535032616219">Zbaliť Učebňu Google</translation>
 <translation id="1632985212731562677">Ovládanie prepínačmi je možné deaktivovať v sekcii Nastavenia &gt; Dostupnosť.</translation>
 <translation id="1637505162081889933">Zariadenia: <ph name="NUM_DEVICES" /></translation>
 <translation id="1639239467298939599">Načítava sa</translation>
@@ -304,6 +305,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="2198625180564913276">Pridáva sa profil. Môže to trvať niekoľko minút.</translation>
 <translation id="219905428774326614">Spúšťač, všetky aplikácie</translation>
 <translation id="2201071101391734388"><ph name="INDEX" /> nedávna fotka z <ph name="TOTAL_COUNT" />.</translation>
+<translation id="2201687081523799384">Zbaliť Úlohy Google</translation>
 <translation id="2208323208084708176">Režim zjednotenej pracovnej plochy</translation>
 <translation id="2220572644011485463">PIN alebo heslo</translation>
 <translation id="2222841058024245321">7. plocha</translation>
@@ -365,6 +367,7 @@ Pripojených je viacero zariadení (<ph name="DEVICECOUNT" />).</translation>
 <translation id="2427507373259914951">Kliknutie ľavým tlačidlom myši</translation>
 <translation id="2429753432712299108">Zariadenie Bluetooth s názvom <ph name="DEVICE_NAME" /> žiada o povolenie párovania. Skôr ako žiadosti vyhoviete, overte, či sa na danom zariadení zobrazuje nasledujúci prístupový kľúč: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Zobraziť heslo</translation>
+<translation id="2437771564543046790">Slabá batéria. Šetrič batérie je zapnutý.</translation>
 <translation id="243878895369688216">Otvorené včera</translation>
 <translation id="2440978926514840421">GIF bol zaznamenaný</translation>
 <translation id="2441427462554639370">Nahrávanie bolo ukončené, pretože sa takmer úplne minul voľný priestor</translation>
@@ -1201,6 +1204,7 @@ Nie sú pripojené žiadne zariadenia.</translation>
 <translation id="550391772491508736">Znovu spustiť prenos</translation>
 <translation id="5506975627792768506">Zapnutie alebo vypnutie lupy</translation>
 <translation id="5512042095225963688">Odstránenie predchádzajúceho slova</translation>
+<translation id="5519005148254860683">Rozbaliť Úlohy Google</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Váš správca odstránil všetky profily eSIM. Ďalšie informácie vám poskytne správca.</translation>
 <translation id="5520909879404821039">Dobrý deň po francúzsky</translation>
@@ -1409,6 +1413,7 @@ Nie sú pripojené žiadne zariadenia.</translation>
 <translation id="6200515304866777730">Aplikácia to nepodporuje</translation>
 <translation id="6210042900243040400">Pripojte zariadenie <ph name="NAME" />, ktoré bolo v minulosti uložené v účte <ph name="EMAIL" /></translation>
 <translation id="6213808132343683860">Vytvorenie čiastočnej snímky obrazovky alebo záznamu obrazovky</translation>
+<translation id="621606890568890214">Rozbaliť Učebňu Google</translation>
 <translation id="6220928844947387476">Teraz môžete súčasne nahrať seba aj svoju obrazovku</translation>
 <translation id="622484624075952240">Dole</translation>
 <translation id="6228457605945141550">Zníženie jasu</translation>

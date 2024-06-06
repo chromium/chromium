@@ -245,7 +245,6 @@
 <translation id="1432187715652018471">Старонка спрабуе ўсталяваць апрацоўшчык сэрвісу.</translation>
 <translation id="1432581352905426595">Кіраваць пошукавымі сістэмамі</translation>
 <translation id="1433225466058025572">Паспрабуйце перамясціць файлы яшчэ раз</translation>
-<translation id="1434317006812369578">Chrome мае ўбудаваныя функцыі бяспекі, якія абараняюць вас падчас прагляду вэб-старонак, – напрыклад, "Google Бяспечны прагляд". Гэта функцыя нядаўна <ph name="BEGIN_LINK" />выявіла шкодныя праграмы на <ph name="SITE" /><ph name="END_LINK" />, убудаваныя ў сайт, які вы спрабуеце наведаць.</translation>
 <translation id="1435940442311036198">Выкарыстаць ключ доступу на іншай прыладзе</translation>
 <translation id="1436185428532214179">Сайт можа запытваць дазвол на змяненне файлаў або папак на прыладзе</translation>
 <translation id="1441816242347931036">Адкрыйце, каб працягнуць</translation>
@@ -1470,7 +1469,6 @@
 <translation id="3767485424735936570">Адміністратар не рэкамендуе капіраваць і ўстаўляць гэта змесціва ў <ph name="VM_NAME" /></translation>
 <translation id="3772211998634047851">Папера для дакументаў</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб хутка стварыць новую нататку ў Google Keep, націсніце Tab, затым Enter</translation>
-<translation id="378026377453746707">Chrome мае ўбудаваныя функцыі бяспекі, якія абараняюць вас падчас прагляду вэб-старонак, – напрыклад, "Google Бяспечны прагляд". Гэта функцыя нядаўна <ph name="BEGIN_LINK" />выявіла шкоднае праграмнае забеспячэнне на <ph name="SITE" /><ph name="END_LINK" />, убудаванае ў сайт, які вы спрабуеце наведаць.</translation>
 <translation id="3780694243617746492">Выхадны латок</translation>
 <translation id="3781428340399460090">Ярка-ружовы</translation>
 <translation id="3783418713923659662">Mastercard</translation>
@@ -1554,7 +1552,6 @@
 <translation id="3950820424414687140">Увайсці</translation>
 <translation id="3953505489397572035">Гэта звычайная цана</translation>
 <translation id="3958057596965527988">4 x 4 цалі</translation>
-<translation id="3959121317419633580">Chrome мае ўбудаваныя функцыі бяспекі, якія абараняюць вас падчас прагляду вэб-старонак, – напрыклад, "Google Бяспечны прагляд". Гэта функцыя нядаўна <ph name="BEGIN_LINK" />выявіла фішынг на <ph name="SITE" /><ph name="END_LINK" />, убудаваны ў сайт, які вы спрабуеце наведаць.<ph name="NEW_LINE" />Часам зламыснікі ўзломваюць нават сайты, якія звычайна бяспечныя. Калі вы лічыце, што гэта памылка і сайт не ўяўляе небяспекі, <ph name="BEGIN_ERROR_LINK" />паведаміце нам<ph name="END_ERROR_LINK" />.</translation>
 <translation id="3961148744525529027">Аркуш апрацоўшчыка плацяжоў адкрыты напалову</translation>
 <translation id="3962859241508114581">Папярэдні трэк</translation>
 <translation id="3963721102035795474">Рэжым чытання</translation>
@@ -2684,6 +2681,7 @@
 <translation id="6165508094623778733">Даведацца больш</translation>
 <translation id="6167577165590485365">Апошняя спроба атрымання:</translation>
 <translation id="617256461084925519">Google Chrome спрабуе спраўдзіць, ці сапраўды гэта вы, каб увесці плацежную інфармацыю.</translation>
+<translation id="6173208311907792313">Завяршыце куплю з дапамогай Windows Hello</translation>
 <translation id="6176387967264100435">Гэта высокая цана</translation>
 <translation id="6177128806592000436">Ваша падключэнне да гэтага сайта небяспечнае</translation>
 <translation id="6177531123306197852">Канверт C2</translation>
@@ -3843,6 +3841,7 @@
 <translation id="8332188693563227489">Доступ да хоста <ph name="HOST_NAME" /> забаронены</translation>
 <translation id="833262891116910667">Вылучэнне</translation>
 <translation id="8339163506404995330">Старонкі на мове <ph name="LANGUAGE" /> не будуць перакладацца</translation>
+<translation id="8339275256517065202">Завяршыце куплю з дапамогай Touch ID</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Дыялогавае акно рэгістрацыі віртуальнай карткі разгорнута на ўвесь экран</translation>
 <translation id="8349305172487531364">Панэль закладак</translation>
@@ -4036,6 +4035,7 @@
 <translation id="8726549941689275341">Памер старонкі:</translation>
 <translation id="8730621377337864115">Гатова</translation>
 <translation id="8731268612289859741">Код бяспекі</translation>
+<translation id="8731917264694569036">Завяршыце куплю з дапамогай прылады</translation>
 <translation id="8733345475331865475">Страхаванне аўтамабіляў</translation>
 <translation id="8733764070897080460">Вы можаце блакіраваць тэмы, якія не хочаце абагульваць з сайтамі. Акрамя таго, Chrome аўтаматычна выдаляе тэмы, дададзеныя больш чым 4 тыдні таму назад. Даведацца больш</translation>
 <translation id="8734529307927223492">Вашай прыладай <ph name="DEVICE_TYPE" /> кіруе <ph name="MANAGER" />.</translation>
@@ -4229,6 +4229,7 @@
 <translation id="9116548361133462832">Падрабязней пра рэкламу ў браўзеры Chrome</translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб пашукаць звязаныя дзеянні ў гісторыі праглядаў Chrome, націсніце Tab, затым Enter</translation>
 <translation id="9119042192571987207">Запампавана</translation>
+<translation id="9119308212838450857">Сайту "<ph name="PROVIDER_ORIGIN" />" трэба спраўдзіць вашу асобу</translation>
 <translation id="912327514020027767">Спадніцы</translation>
 <translation id="912414390325846156">Раней вы забаранілі доступ да гэтай функцыі для дадзенага сайта</translation>
 <translation id="9128870381267983090">Падключыцеся да сеткі</translation>

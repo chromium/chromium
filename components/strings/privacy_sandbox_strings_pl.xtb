@@ -1,5 +1,9 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pl">
+<translation id="33479675708419823">Gdy logujesz się w Chrome, to ustawienie pomaga chronić prywatność Twojego adresu IP. Kiedy Chrome przypuszcza, że jakaś witryna może Cię śledzić, wysyła część Twojego ruchu przez serwery prywatności. Dowiedz się więcej na temat <ph name="LINK_BEGIN" />działania ochrony IP<ph name="LINK_END" />.</translation>
+<translation id="3529311220178827364">Więcej informacji na temat ukrywania adresu IP</translation>
 <translation id="4301151630239508244">Tematy reklam to tylko 1 z wielu czynników, na podstawie których witryna może personalizować reklamy. Nawet jeśli nie wybierzesz tematów reklam, witryny nadal będą mogły wyświetlać reklamy, ale mogą być one mniej spersonalizowane. Dowiedz się więcej o <ph name="BEGIN_LINK_1" />zarządzaniu prywatnością w reklamach<ph name="END_LINK_1" />.</translation>
+<translation id="4598427486995631491">Ukryj swój adres IP</translation>
+<translation id="6371812158043974664">Gdy logujesz się w Chromium, to ustawienie pomaga chronić prywatność Twojego adresu IP. Kiedy Chromium przypuszcza, że jakaś witryna może Cię śledzić, wysyła część Twojego ruchu przez serwery prywatności. Dowiedz się więcej na temat <ph name="LINK_BEGIN" />działania ochrony IP<ph name="LINK_END" />.</translation>
 </translationbundle>

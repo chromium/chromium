@@ -245,7 +245,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1432187715652018471">Esta página quiere instalar un controlador de servicios.</translation>
 <translation id="1432581352905426595">Administrar motores de búsqueda</translation>
 <translation id="1433225466058025572">Intenta volver a mover tus archivos</translation>
-<translation id="1434317006812369578">Chrome tiene funciones de seguridad integradas para protegerte mientras navegas, como la Navegación segura de Google. Recientemente, la Navegación segura <ph name="BEGIN_LINK" />encontró software malicioso en <ph name="SITE" /><ph name="END_LINK" />, que está incorporado en el sitio que intentas visitar.</translation>
 <translation id="1435940442311036198">Usar una clave de acceso en otro dispositivo</translation>
 <translation id="1436185428532214179">Puede solicitar permiso para editar archivos y carpetas del dispositivo</translation>
 <translation id="1441816242347931036">Abrir el elemento para continuar</translation>
@@ -1471,7 +1470,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3767485424735936570">La política del administrador no recomienda copiar y pegar este contenido en <ph name="VM_NAME" />.</translation>
 <translation id="3772211998634047851">Papel (bond)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para crear una nueva nota en Google Keep rápidamente</translation>
-<translation id="378026377453746707">Chrome tiene funciones de seguridad integradas para protegerte mientras navegas, como la Navegación segura de Google. Recientemente, la Navegación segura <ph name="BEGIN_LINK" />encontró software dañino en <ph name="SITE" /><ph name="END_LINK" />, que está incorporado en el sitio que intentas visitar.</translation>
 <translation id="3780694243617746492">Bandeja de salida</translation>
 <translation id="3781428340399460090">Fucsia</translation>
 <translation id="3783418713923659662">Mastercard</translation>
@@ -1555,7 +1553,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3950820424414687140">Acceder</translation>
 <translation id="3953505489397572035">Este es el precio habitual</translation>
 <translation id="3958057596965527988">10.2 × 10.2 cm (4 × 4 in)</translation>
-<translation id="3959121317419633580">Chrome tiene funciones de seguridad integradas para protegerte mientras navegas, como la Navegación segura de Google. Recientemente, la Navegación segura <ph name="BEGIN_LINK" />encontró un caso de phishing en <ph name="SITE" /><ph name="END_LINK" />, que está incorporado en el sitio que intentas visitar.<ph name="NEW_LINE" />A veces, incluso los sitios que suelen ser seguros son hackeados por atacantes. <ph name="BEGIN_ERROR_LINK" />Cuéntanos<ph name="END_ERROR_LINK" /> si crees que hubo un error y que este sitio no representa un peligro.</translation>
 <translation id="3961148744525529027">La hoja del controlador de pagos está abierta a la mitad</translation>
 <translation id="3962859241508114581">Pista anterior</translation>
 <translation id="3963721102035795474">Modo de lectura</translation>

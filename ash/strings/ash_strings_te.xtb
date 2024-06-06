@@ -147,6 +147,7 @@
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" />, <ph name="SECOND_ITEM_TITLE" />గా మార్చబడింది</translation>
 <translation id="1500926532737552529">అన్ని సూచనలను చూడండి</translation>
 <translation id="1501946871587957338">ఆడియో సోర్స్‌ను మార్చాలా?</translation>
+<translation id="1505542291183484463">కింది వైపు నుండి విండో టైల్ సైజ్ మార్చండి</translation>
 <translation id="1510238584712386396">లాంచర్</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{ నోటిఫికేషన్ సెట్టింగ్‌లను చూపుతుంది. యాప్ కోసం నోటిఫికేషన్‌లు ఆఫ్ చేయబడి ఉన్నాయి}other{ నోటిఫికేషన్ సెట్టింగ్‌లను చూపుతుంది. # యాప్‌ల కోసం నోటిఫికేషన్‌లు ఆఫ్ చేయబడి ఉన్నాయి}}</translation>
 <translation id="1523032696246003">బ్యాటరీ <ph name="BATTERY_PERCENTAGE" />% | పూర్తిగా ఛార్జ్ అవ్వడానికి <ph name="TIME" /> సమయం మిగిలి ఉంది</translation>
@@ -177,6 +178,7 @@
 <translation id="1610778689852195798">"చర్య రద్దు చేయండి"</translation>
 <translation id="1611993646327628135">ఆన్</translation>
 <translation id="1620510694547887537">కెమెరా</translation>
+<translation id="1623768535032616219">Google Classroomను కుదించండి</translation>
 <translation id="1632985212731562677">సెట్టింగ్‌లు &gt; యాక్సెసిబిలిటీలో స్విచ్ యాక్సెస్‌ను డిజేబుల్ చేయవచ్చు.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> పరికరాలు</translation>
 <translation id="1639239467298939599">లోడ్ చేస్తోంది</translation>
@@ -296,11 +298,13 @@
 <translation id="2149229036084364364">మునుపటి ట్రాక్‌కు వెళ్లండి</translation>
 <translation id="2152895518047545149">ఒక్కటి కూడా మిస్ అయినట్లుగా అనిపించడం లేదు. చాలా చక్కగా పని చేశారు!</translation>
 <translation id="2161132820593978283">కెమెరా ఫ్రేమింగ్‌ను ట్రై చేయండి, తద్వారా మీరు వీడియో కాల్స్ సమయంలో స్క్రీన్ మధ్యలో ఉండగలరు. దాన్ని క్విక్ సెట్టింగ్‌లలో ఆన్ చేయండి.</translation>
+<translation id="216955976692983107">కుడి వైపు నుండి విండో టైల్ సైజ్ మార్చండి</translation>
 <translation id="2185166372312820725">మునుపటి ట్యాబ్‌కు వెళ్లండి</translation>
 <translation id="2185444992308415167">1 నుండి 8 ట్యాబ్‌ల వరకు చూడండి</translation>
 <translation id="2198625180564913276">ప్రొఫైల్‌ను జోడిస్తోంది. దీనికి కొన్ని నిమిషాలు పట్టవచ్చు.</translation>
 <translation id="219905428774326614">లాంచర్, అన్ని యాప్‌లు</translation>
 <translation id="2201071101391734388">తాజా ఫోటోలలో <ph name="TOTAL_COUNT" />లో <ph name="INDEX" />వది.</translation>
+<translation id="2201687081523799384">Google Tasksను కుదించండి</translation>
 <translation id="2208323208084708176">ఏకీకృత డెస్క్‌టాప్ మోడ్</translation>
 <translation id="2220572644011485463">PIN లేదా పాస్‌వర్డ్</translation>
 <translation id="2222841058024245321">డెస్క్ 7</translation>
@@ -362,6 +366,7 @@
 <translation id="2427507373259914951">ఎడమ క్లిక్</translation>
 <translation id="2429753432712299108">బ్లూటూత్ పరికరం "<ph name="DEVICE_NAME" />" జత కావడానికి అనుమతి కోరుతోంది. ఆమోదించడానికి ముందు, దయచేసి ఆ పరికరంలో ఈ పాస్‌కీ చూపబడుతోందని నిర్ధారించుకోండి: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">పాస్‌వర్డ్‌ను చూపించు</translation>
+<translation id="2437771564543046790">బ్యాటరీ తక్కువగా ఉంది. బ్యాటరీ సేవర్ ఆన్‌లో ఉంది</translation>
 <translation id="243878895369688216">నిన్న తెరిచారు</translation>
 <translation id="2440978926514840421">GIF రికార్డింగ్ తీసుకోబడింది</translation>
 <translation id="2441427462554639370">చాలా తక్కువ స్టోరేజ్ స్పేస్ కారణంగా రికార్డ్ చేయడం ముగించబడింది</translation>
@@ -642,6 +647,7 @@
 <translation id="3509391053705095206">మీ ఫోన్‌ను కనుగొనడం సాధ్యపడలేదు. మీ ఫోన్‌లో బ్లూటూత్ ఆన్‌లో ఉందని నిర్ధారించుకోండి.</translation>
 <translation id="3510164367642747937">మౌస్ కర్సర్‌ను హైలైట్ చేయి</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> ద్వారా ఖాతా నిర్వహించబడుతోంది</translation>
+<translation id="3516000762115478502">పై నుండి విండో టైల్ సైజ్ మార్చండి</translation>
 <translation id="3517037892157925473">చివరిగా టాస్క్‌లు అప్‌డేట్ అయిన సమయం, తేదీ: <ph name="TIME" />, <ph name="DATE" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{1 నిమిషం లోపు పరికరాన్ని అప్‌డేట్ చేయండి}other{# నిమిషాల లోపు పరికరాన్ని అప్‌డేట్ చేయండి}}</translation>
 <translation id="3522979239100719575">అందుబాటులో ఉన్న ప్రొఫైల్స్ కోసం వెతుకుతోంది. దీనికి కొన్ని నిమిషాలు పట్టవచ్చు.</translation>
@@ -759,6 +765,7 @@
 <translation id="3899995891769452915">వాయిస్ ఇన్‌పుట్</translation>
 <translation id="3900355044994618856"><ph name="SESSION_TIME_REMAINING" /> తర్వాత మీ సెషన్ ముగుస్తుంది</translation>
 <translation id="3901991538546252627"><ph name="NAME" />కి కనెక్ట్ చేస్తోంది</translation>
+<translation id="3904768293285573640">ఎడమ వైపు నుండి విండో టైల్ సైజ్ మార్చండి</translation>
 <translation id="3906954721959377182">టాబ్లెట్</translation>
 <translation id="3923494859158167397">ఎలాంటి మొబైల్ నెట్‌వర్క్‌లు సెటప్ చేయబడలేదు</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, ఈవెంట్‌లు లోడ్ అవుతున్నాయి.</translation>
@@ -1197,6 +1204,7 @@
 <translation id="550391772491508736">ప్రసారాన్ని కొనసాగించండి</translation>
 <translation id="5506975627792768506">మ్యాగ్నిఫైయర్‌ను ఆన్ లేదా ఆఫ్ చేయండి</translation>
 <translation id="5512042095225963688">మునుపటి పదాన్ని తొలగించండి</translation>
+<translation id="5519005148254860683">Google Tasksను విస్తరించండి</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">మీ అడ్మినిస్ట్రేటర్ అన్ని eSIM ప్రొఫైళ్లను తీసివేశారు. మరింత సమాచారం కోసం మీ అడ్మినిస్ట్రేటర్‌ను సంప్రదించండి.</translation>
 <translation id="5520909879404821039">ఫ్రెంచ్‌లో హాయ్</translation>
@@ -1405,6 +1413,7 @@
 <translation id="6200515304866777730">యాప్ సపోర్ట్ చేయనివి</translation>
 <translation id="6210042900243040400"><ph name="EMAIL" /> ఈమెయిల్‌కు మునుపు సేవ్ చేయబడిన <ph name="NAME" />‌కు కనెక్ట్ చేయండి</translation>
 <translation id="6213808132343683860">పాక్షిక స్క్రీన్‌షాట్ తీయండి లేదా స్క్రీన్ రికార్డింగ్ చేయండి</translation>
+<translation id="621606890568890214">Google Classroomను విస్తరించండి</translation>
 <translation id="6220928844947387476">ఇప్పుడు మీరు మిమ్మల్ని, మీ స్క్రీన్‌ను ఒకే సమయంలో రికార్డ్ చేయవచ్చు</translation>
 <translation id="622484624075952240">Down</translation>
 <translation id="6228457605945141550">ప్రకాశాన్ని తగ్గించండి</translation>

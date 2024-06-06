@@ -245,7 +245,6 @@
 <translation id="1432187715652018471">Pagina dorește să instaleze un handler de serviciu.</translation>
 <translation id="1432581352905426595">Gestionați motoarele de căutare</translation>
 <translation id="1433225466058025572">Încearcă să muți din nou fișierele</translation>
-<translation id="1434317006812369578">Chrome are funcții de siguranță încorporate pentru a te proteja în timp ce navighezi, cum ar fi Navigarea sigură Google. Navigarea sigură <ph name="BEGIN_LINK" />a detectat recent programe malware pe <ph name="SITE" /><ph name="END_LINK" />, care este încorporat în site-ul pe care încerci să-l accesezi.</translation>
 <translation id="1435940442311036198">Folosește o cheie de acces pe alt dispozitiv</translation>
 <translation id="1436185428532214179">Poate solicita permisiunea de a modifica fișiere și dosare de pe dispozitiv</translation>
 <translation id="1441816242347931036">Deschide pentru a continua</translation>
@@ -1470,7 +1469,6 @@
 <translation id="3767485424735936570">Politica implementată de administrator nu recomandă copierea și inserarea acestui conținut pe <ph name="VM_NAME" /></translation>
 <translation id="3772211998634047851">Hârtie (cretată)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a crea rapid o notă în Google Keep</translation>
-<translation id="378026377453746707">Chrome are funcții de siguranță încorporate pentru a te proteja în timp ce navighezi, cum ar fi Navigarea sigură Google. Navigarea sigură <ph name="BEGIN_LINK" />a detectat recent software dăunător pe <ph name="SITE" /><ph name="END_LINK" />, care este încorporat în site-ul pe care încerci să-l accesezi.</translation>
 <translation id="3780694243617746492">Tavă de ieșire</translation>
 <translation id="3781428340399460090">Roz aprins</translation>
 <translation id="3783418713923659662">Mastercard</translation>
@@ -1554,7 +1552,6 @@
 <translation id="3950820424414687140">Conectează-te</translation>
 <translation id="3953505489397572035">Acest preț este standard</translation>
 <translation id="3958057596965527988">4 x 4 in</translation>
-<translation id="3959121317419633580">Chrome are funcții de siguranță încorporate pentru a te proteja în timp ce navighezi, cum ar fi Navigarea sigură Google. Navigarea sigură <ph name="BEGIN_LINK" />a detectat recent activități de phishing pe <ph name="SITE" /><ph name="END_LINK" />, care este încorporat în site-ul pe care încerci să-l accesezi.<ph name="NEW_LINE" />Chiar și site-urile care sunt de obicei sigure sunt uneori compromise de atacatori. <ph name="BEGIN_ERROR_LINK" />Anunță-ne<ph name="END_ERROR_LINK" /> dacă ești de părere că este o greșeală și că acest site nu reprezintă un pericol.</translation>
 <translation id="3961148744525529027">Foaia handlerului pentru plăți este pe jumătate deschisă</translation>
 <translation id="3962859241508114581">Melodia anterioară</translation>
 <translation id="3963721102035795474">Modul Cititor</translation>

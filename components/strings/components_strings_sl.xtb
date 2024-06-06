@@ -245,7 +245,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1432187715652018471">stran želi namestiti rutino za obravnavo storitev.</translation>
 <translation id="1432581352905426595">Upravljanje iskalnikov</translation>
 <translation id="1433225466058025572">Poskusite znova premakniti datoteke</translation>
-<translation id="1434317006812369578">Chrome ima vgrajene varnostne funkcije, ki vas ščitijo med brskanjem, kot je Google Varno brskanje. Varno brskanje je <ph name="BEGIN_LINK" />nedavno našlo zlonamerno programsko opremo na <ph name="SITE" /><ph name="END_LINK" />, ki je vdelana v spletno mesto, ki ga poskušate obiskati.</translation>
 <translation id="1435940442311036198">Uporaba gesla v drugi napravi</translation>
 <translation id="1436185428532214179">Lahko zahteva urejanje datotek in map v napravi.</translation>
 <translation id="1441816242347931036">Odprite, če želite nadaljevati</translation>
@@ -1470,7 +1469,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3767485424735936570">Pravilnik skrbnika ne priporoča, da to vsebino kopirate in prilepite v <ph name="VM_NAME" />.</translation>
 <translation id="3772211998634047851">Paper (Bond)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite hitro ustvariti nov zapisek v Googlu Keep</translation>
-<translation id="378026377453746707">Chrome ima vgrajene varnostne funkcije, ki vas ščitijo med brskanjem, kot je Google Varno brskanje. Varno brskanje je nedavno <ph name="BEGIN_LINK" />odkrilo škodljivo programsko opremo na <ph name="SITE" /><ph name="END_LINK" />, ki je vdelana v spletno mesto, ki ga poskušate obiskati.</translation>
 <translation id="3780694243617746492">Izhodni koš</translation>
 <translation id="3781428340399460090">Živo rožnata</translation>
 <translation id="3783418713923659662">Mastercard</translation>
@@ -1554,7 +1552,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3950820424414687140">Prijava</translation>
 <translation id="3953505489397572035">Ta cena je običajna</translation>
 <translation id="3958057596965527988">4 x 4 palcev</translation>
-<translation id="3959121317419633580">Chrome ima vgrajene varnostne funkcije, ki vas ščitijo med brskanjem, kot je Google Varno brskanje. Varno brskanje je nedavno <ph name="BEGIN_LINK" />odkrilo lažno predstavljanje na <ph name="SITE" /><ph name="END_LINK" />, ki je vdelano v spletno mesto, ki ga poskušate obiskati.<ph name="NEW_LINE" />Celo spletna mesta, ki so običajno varna, včasih ogrozijo napadalci. <ph name="BEGIN_ERROR_LINK" />Sporočite nam<ph name="END_ERROR_LINK" />, če menite, da je prišlo do napake in da to spletno mesto ne predstavlja nevarnosti.</translation>
 <translation id="3961148744525529027">List rutine za obravnavo plačil je napol odprt</translation>
 <translation id="3962859241508114581">Prejšnja skladba</translation>
 <translation id="3963721102035795474">Način bralnika</translation>

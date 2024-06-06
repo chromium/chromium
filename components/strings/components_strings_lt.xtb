@@ -245,7 +245,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1432187715652018471">puslapis prašo leidimo įdiegti paslaugos doroklę.</translation>
 <translation id="1432581352905426595">Tvarkyti paieškos sistemas</translation>
 <translation id="1433225466058025572">Pabandykite dar kartą perkelti failus</translation>
-<translation id="1434317006812369578">„Chrome“ integruotos saugos funkcijos, skirtos apsaugoti jus naršant, pvz., „Google“ saugus naršymas. Naudojant Saugaus naršymo funkciją <ph name="BEGIN_LINK" />neseniai aptikta kenkėjiškų programų svetainėje <ph name="SITE" /><ph name="END_LINK" />, kuri yra įterpta svetainėje, kurioje bandote apsilankyti.</translation>
 <translation id="1435940442311036198">Naudoti slaptažodį kitame įrenginyje</translation>
 <translation id="1436185428532214179">Gali būti prašoma redaguoti failus ir aplankus jūsų įrenginyje</translation>
 <translation id="1441816242347931036">Atidaryti ir tęsti</translation>
@@ -1471,7 +1470,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3767485424735936570">Vadovaujantis administratoriaus politika nerekomenduojama kopijuoti ir įklijuoti šio turinio sistemoje „<ph name="VM_NAME" />“</translation>
 <translation id="3772211998634047851">Popierius (standusis)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, paspauskite tabuliavimo klavišą, tada – klavišą „Enter“, jei norite greitai sukurti naują „Google Keep“ užrašą</translation>
-<translation id="378026377453746707">„Chrome“ integruotos saugos funkcijos, skirtos apsaugoti jus naršant, pvz., „Google“ saugus naršymas. Naudojant Saugaus naršymo funkciją neseniai <ph name="BEGIN_LINK" />rasta žalinga programinė įranga svetainėje <ph name="SITE" /><ph name="END_LINK" />, kuri įterpiama svetainėje, jei bandote apsilankyti.</translation>
 <translation id="3780694243617746492">Išvesties dėklas</translation>
 <translation id="3781428340399460090">Ryškiai rausva</translation>
 <translation id="3783418713923659662">Mastercard</translation>
@@ -1555,7 +1553,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3950820424414687140">Prisijungti</translation>
 <translation id="3953505489397572035">Tai yra įprasta kaina</translation>
 <translation id="3958057596965527988">4 x 4 col.</translation>
-<translation id="3959121317419633580">„Chrome“ integruotos saugos funkcijos, skirtos apsaugoti jus naršant, pvz., „Google“ saugus naršymas. Naudojant Saugaus naršymo funkciją neseniai <ph name="BEGIN_LINK" />aptiktas sukčiavimas svetainėje <ph name="SITE" /><ph name="END_LINK" />, kuri yra įterpta svetainėje, kurioje bandote apsilankyti.<ph name="NEW_LINE" />Net svetaines, kurios paprastai yra saugios, kartais pažeidžia atakų vykdytojai. <ph name="BEGIN_ERROR_LINK" />Praneškite mums<ph name="END_ERROR_LINK" />, jei manote, kad įvyko klaida ir ši svetainė nekelia pavojaus.</translation>
 <translation id="3961148744525529027">Mokėjimo doroklės lapas atidarytas iki pusės ekrano</translation>
 <translation id="3962859241508114581">Ankstesnis takelis</translation>
 <translation id="3963721102035795474">Skaitytojo režimas</translation>

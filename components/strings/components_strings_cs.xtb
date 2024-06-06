@@ -245,7 +245,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1432187715652018471">stránka chce instalovat obslužný nástroj služby.</translation>
 <translation id="1432581352905426595">Spravovat vyhledávače</translation>
 <translation id="1433225466058025572">Zkuste soubory přesunout znovu</translation>
-<translation id="1434317006812369578">V Chromu jsou vestavěny bezpečnostní funkce, které vás při procházení chrání – například Bezpečné prohlížení Google. Bezpečné prohlížení <ph name="BEGIN_LINK" />nedávno nalezlo malware na webu <ph name="SITE" /><ph name="END_LINK" />, který je vložen na webu, který se pokoušíte navštívit.</translation>
 <translation id="1435940442311036198">Použití přístupového klíče na jiném zařízení</translation>
 <translation id="1436185428532214179">Může žádat o úpravu souborů a složek v zařízení</translation>
 <translation id="1441816242347931036">Pokud chcete pokračovat, otevřete</translation>
@@ -1466,7 +1465,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3767485424735936570">Kopírování a vkládání tohoto obsahu do počítače <ph name="VM_NAME" /> nedoporučují zásady administrátora</translation>
 <translation id="3772211998634047851">Papír (dluhopisový)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím klávesy Tab a poté Enter rychle vytvoříte novou poznámku v aplikaci Google Keep</translation>
-<translation id="378026377453746707">V Chromu jsou vestavěny bezpečnostní funkce, které vás při procházení chrání – například Bezpečné prohlížení Google. Bezpečné prohlížení nedávno nalezlo <ph name="BEGIN_LINK" />škodlivý software na webu <ph name="SITE" /><ph name="END_LINK" />, který je vložen na webu, který se pokoušíte navštívit.</translation>
 <translation id="3780694243617746492">Výstupní přihrádka</translation>
 <translation id="3781428340399460090">Jasně růžová</translation>
 <translation id="3783418713923659662">Mastercard</translation>
@@ -1550,7 +1548,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3950820424414687140">Přihlaste se</translation>
 <translation id="3953505489397572035">Tato cena je obvyklá</translation>
 <translation id="3958057596965527988">4 × 4″</translation>
-<translation id="3959121317419633580">V Chromu jsou vestavěny bezpečnostní funkce, které vás při procházení chrání – například Bezpečné prohlížení Google. Bezpečné prohlížení <ph name="BEGIN_LINK" />nedávno nalezlo phishing na webu <ph name="SITE" /><ph name="END_LINK" />, který je vložen na webu, který se pokoušíte navštívit.<ph name="NEW_LINE" />Někdy mohou útočníci číhat dokonce i na webech, které jsou běžně bezpečné. Pokud se domníváte, že došlo k chybě a že tento web nepředstavuje nebezpečí, <ph name="BEGIN_ERROR_LINK" />dejte nám vědět<ph name="END_ERROR_LINK" />.</translation>
 <translation id="3961148744525529027">List obslužného nástroje pro platby je otevřený na půlce</translation>
 <translation id="3962859241508114581">Předchozí skladba</translation>
 <translation id="3963721102035795474">Režim čtečky</translation>

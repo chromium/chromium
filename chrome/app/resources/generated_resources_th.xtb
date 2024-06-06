@@ -481,6 +481,7 @@
 <translation id="1353980523955420967">ไม่พบ PPD โปรดตรวจสอบว่า Chromebook ออนไลน์อยู่และลองอีกครั้ง</translation>
 <translation id="1354045473509304750">อนุญาตให้ <ph name="HOST" /> ใช้และเคลื่อนย้ายกล้องของคุณต่อไป</translation>
 <translation id="1355088139103479645">ลบข้อมูลทั้งหมดใช่ไหม</translation>
+<translation id="1356376170199999104">อนุญาต – <ph name="PERMISSION_DETAILS" /> เปิดไมโครโฟนโดยใช้สวิตช์จริง</translation>
 <translation id="1356959069439783953">แท็บที่ไม่ได้ใช้งานจะมีรูปลักษณ์ใหม่</translation>
 <translation id="1358741672408003399">ตัวสะกดและไวยากรณ์</translation>
 <translation id="1359923111303110318">อุปกรณ์ปลดล็อกได้ด้วย Smart Lock กด Enter เพื่อปลดล็อก</translation>
@@ -752,6 +753,7 @@
 <translation id="1557939148300698553">สร้างโปรไฟล์</translation>
 <translation id="155865706765934889">ทัชแพด</translation>
 <translation id="1558671750917454373">แคสต์ไปยัง <ph name="DEVICE_NAME" /> ต่อ</translation>
+<translation id="1561331397460162942">การดำเนินการนี้จะอนุญาตให้เข้าถึงตำแหน่งสำหรับแอป เว็บไซต์ที่มีสิทธิ์เข้าถึงตำแหน่ง และบริการของระบบ</translation>
 <translation id="1562119309884184621">การเพิ่มรายชื่อติดต่อนี้จะทำให้ระบบจำได้เมื่อรายชื่อนี้แชร์ครั้งถัดไป</translation>
 <translation id="1563137369682381456">วันที่หมดอายุ</translation>
 <translation id="1563702743503072935">รหัสผ่านจากบัญชี Google จะพร้อมใช้งานในอุปกรณ์นี้ด้วยในระหว่างที่คุณลงชื่อเข้าใช้</translation>
@@ -1743,11 +1745,13 @@
     <ph name="BEGIN_PARAGRAPH2" />เมื่อเริ่มการติดตั้งแล้วจะยกเลิกไม่ได้<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">แลกเปลี่ยนข้อมูลกับอุปกรณ์ในโดเมน <ph name="DOMAINS" /></translation>
 <translation id="2270666014403455717">กำหนดสวิตช์ให้กับ "เลือก"</translation>
+<translation id="2271452184061378400">กลุ่มแท็บจะบันทึกไว้ที่นี่</translation>
 <translation id="2271986192355138465">ดูวิธีติดตั้งเว็บแอป</translation>
 <translation id="2272430695183451567">กำหนดสวิตช์ 0 รายการแล้ว</translation>
 <translation id="2272570998639520080">แก้วมาร์ตินี่</translation>
 <translation id="2273119997271134996">พอร์ตวิดีโอบนแท่นชาร์จมีปัญหา</translation>
 <translation id="2274840746523584236">ชาร์จ Chromebook ของคุณ</translation>
+<translation id="2275193525496879616">อนุญาต เชื่อมต่อกล้องกับอุปกรณ์</translation>
 <translation id="2276503375879033601">เพิ่มแอปพลิเคชันอื่นๆ</translation>
 <translation id="2278193750452754829">ส่วนขยายที่อนุญาตในเว็บไซต์นี้ เลือกเพื่อเปิดเมนู</translation>
 <translation id="2278562042389100163">เปิดหน้าต่างเบราว์เซอร์</translation>
@@ -1865,6 +1869,7 @@
 <translation id="2350133097354918058">โหลดซ้ำแล้ว</translation>
 <translation id="2350182423316644347">กำลังเริ่มต้นแอปพลิเคชัน...</translation>
 <translation id="235028206512346451">หากคุณไม่ได้อยู่ด้านหน้าอุปกรณ์ หน้าจอจะล็อกโดยอัตโนมัติ หน้าจอจะเปิดค้างไว้นานขึ้นเมื่อคุณอยู่ด้านหน้าอุปกรณ์ หากคุณไม่ได้ใช้หน้าจอล็อก อุปกรณ์จะเข้าสู่โหมดสลีปแทนการล็อก</translation>
+<translation id="2351923523007389195">อนุญาต – <ph name="PERMISSION_DETAILS" /> เปิด<ph name="LINK_BEGIN" />การเข้าถึงตำแหน่งของระบบ<ph name="LINK_END" /></translation>
 <translation id="2352305801620974284">เมื่อลงชื่อเข้าใช้ในอุปกรณ์นี้ คุณจะได้รับรหัสผ่านและอื่นๆ จากบัญชี Google</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2352810082280059586">บันทึกบนหน้าจอล็อกจะบันทึกไว้โดยอัตโนมัติไปยัง <ph name="LOCK_SCREEN_APP_NAME" /> บันทึกล่าสุดของคุณจะยังคงอยู่บนหน้าจอล็อก</translation>
@@ -1979,7 +1984,6 @@
 <translation id="2435248616906486374">เครือข่ายถูกตัดการเชื่อมต่อ</translation>
 <translation id="2435457462613246316">แสดงรหัสผ่าน</translation>
 <translation id="2436385001956947090">คัดลอกลิงก์</translation>
-<translation id="2436746748253887661">การตั้งค่านี้จะช่วยให้บริการของระบบที่มีสิทธิ์ดังกล่าวใช้ตำแหน่งของคุณได้ ตำแหน่งอาจใช้ข้อมูลจากแหล่งที่มาต่างๆ อย่างเช่น Wi-Fi, เครือข่ายมือถือ และเซ็นเซอร์ เพื่อช่วยระบุตำแหน่งคร่าวๆ ของอุปกรณ์ <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="2438853563451647815">ไม่ได้เชื่อมต่อเครื่องพิมพ์</translation>
 <translation id="2439152382014731627">รีเซ็ตรหัสผ่าน <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600">กำลังโหลด <ph name="WINDOW_TITLE" /></translation>
@@ -3337,6 +3341,7 @@
 <translation id="3449839693241009168">กด <ph name="SEARCH_KEY" /> เพื่อส่งคำสั่งไปที่ <ph name="EXTENSION_NAME" /></translation>
 <translation id="3450157232394774192">เปอร์เซ็นต์การเกิดขึ้นของสถานะไม่มีการใช้งาน</translation>
 <translation id="3450180775417907283"><ph name="MANAGER" /> ต้องการให้คุณเชื่อมต่อ Wi-Fi ตอนนี้และดาวน์โหลดอัปเดต</translation>
+<translation id="345078987193237421">การดำเนินการนี้จะอนุญาตให้เข้าถึงกล้องสำหรับแอป เว็บไซต์ที่มีสิทธิ์เข้าถึงกล้อง และบริการของระบบ</translation>
 <translation id="3452999110156026232">การเข้าถึงของผู้ปกครอง</translation>
 <translation id="3453082738208775226">ล้างพื้นที่เก็บข้อมูลออฟไลน์ใช่ไหม</translation>
 <translation id="3453597230179205517">การเข้าถึงตำแหน่งถูกบล็อก</translation>
@@ -3508,6 +3513,7 @@
 <translation id="3587438013689771191">ดูข้อมูลเพิ่มเติมเกี่ยวกับ <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="3587482841069643663">ทั้งหมด</translation>
 <translation id="3588790464166520201">ได้รับอนุญาตให้ติดตั้งเครื่องจัดการการชำระเงิน</translation>
+<translation id="3589010096969411438">อนุญาต เปิดไมโครโฟนโดยใช้สวิตช์จริง</translation>
 <translation id="3589766037099229847">บล็อกเนื้อหาที่ไม่ปลอดภัย</translation>
 <translation id="3590194807845837023">ปลดล็อกโปรไฟล์และเปิดใหม่</translation>
 <translation id="3590295622232282437">กำลังเข้าสู่เซสชันที่มีการจัดการ</translation>
@@ -4712,6 +4718,7 @@
 <translation id="4473996011558324141">กำลังประมาณเวลา</translation>
 <translation id="4474155171896946103">บุ๊กมาร์กแท็บทั้งหมด...</translation>
 <translation id="4475299370877036544">การดําเนินการนี้อาจละเมิดนโยบายขององค์กร</translation>
+<translation id="4476198534886170024">อนุญาต เปิด<ph name="LINK_BEGIN" />การเข้าถึงกล้องของระบบ<ph name="LINK_END" /></translation>
 <translation id="4476590490540813026">นักกีฬา</translation>
 <translation id="4476659815936224889">หากต้องการสแกนโค้ดนี้ คุณใช้ตัวสแกนคิวอาร์โค้ดในโทรศัพท์หรือแอปกล้องถ่ายรูปบางแอปสแกนได้</translation>
 <translation id="4477015793815781985">รวม Ctrl, Alt หรือ ⌘</translation>
@@ -5060,6 +5067,7 @@
 <translation id="4742795653798179840">ลบข้อมูลใน Chrome แล้ว</translation>
 <translation id="4742970037960872810">นำไฮไลต์ออก</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />ดูวิธีอัปเดตแอปพลิเคชัน<ph name="END_LINK" /></translation>
+<translation id="4743990041512863976">อนุญาต – <ph name="PERMISSION_DETAILS" /> เปิด<ph name="LINK_BEGIN" />การเข้าถึงไมโครโฟนของระบบ<ph name="LINK_END" /></translation>
 <translation id="4744268813103118742">ไปที่เว็บไซต์</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{เปิดเสียงเว็บไซต์}other{เปิดเสียงเว็บไซต์}}</translation>
@@ -5574,6 +5582,7 @@
 <translation id="5143374789336132547">ส่วนขยาย "<ph name="EXTENSION_NAME" />" ได้เปลี่ยนหน้าที่จะแสดงเมื่อคุณคลิกปุ่มหน้าแรก</translation>
 <translation id="5143612243342258355">ไฟล์นี้เป็นอันตราย</translation>
 <translation id="5143712164865402236">เข้าสู่โหมดเต็มหน้าจอ</translation>
+<translation id="5143960098217235598">การดำเนินการนี้จะอนุญาตให้เข้าถึงไมโครโฟนสำหรับแอป เว็บไซต์ที่มีสิทธิ์เข้าถึงไมโครโฟน และบริการของระบบ</translation>
 <translation id="5144815231216017543">Alt + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="5145464978649806571">หากคุณไม่ได้อยู่ด้านหน้าอุปกรณ์ หน้าจอจะล็อกโดยอัตโนมัติ หน้าจอจะเปิดค้างไว้นานขึ้นเมื่อคุณอยู่ด้านหน้าอุปกรณ์ หากปิดใช้หน้าจอล็อก อุปกรณ์จะเข้าสู่โหมดสลีปแทนการล็อก</translation>
 <translation id="514575469079499857">ใช้ที่อยู่ IP ของคุณเพื่อระบุตำแหน่ง (ค่าเริ่มต้น)</translation>
@@ -5770,6 +5779,7 @@
 <translation id="5291739252352359682">สร้างคำบรรยายแทนเสียงสำหรับสื่อในเบราว์เซอร์ Chrome โดยอัตโนมัติ (ปัจจุบันพร้อมให้บริการเป็นภาษาอังกฤษ) เสียงและคำบรรยายแทนเสียงจะประมวลผลในอุปกรณ์และจะไม่มีการส่งออกไปจากอุปกรณ์</translation>
 <translation id="529175790091471945">ฟอร์แมตอุปกรณ์นี้</translation>
 <translation id="529296195492126134">ไม่รองรับโหมดชั่วคราว โปรดติดต่อผู้ดูแลระบบ</translation>
+<translation id="5293043095535566171">เปิดการเข้าถึงตำแหน่งไหม</translation>
 <translation id="5293170712604732402">คืนค่าการตั้งค่าเป็นค่าเริ่มต้นเดิม</translation>
 <translation id="5294068591166433464">หากเว็บไซต์พยายามขโมยรหัสผ่าน หรือคุณดาวน์โหลดไฟล์ที่เป็นอันตราย Chrome อาจส่ง URL รวมถึงเนื้อหาบางส่วนในหน้าไปยัง Google ด้วย</translation>
 <translation id="5294097441441645251">ต้องขึ้นต้นด้วยอักขระตัวพิมพ์เล็กหรือขีดล่าง</translation>
@@ -6958,6 +6968,7 @@
 <translation id="6200151268994853226">จัดการส่วนขยาย</translation>
 <translation id="6201608810045805374">นำบัญชีนี้ออกใช่ไหม</translation>
 <translation id="6202304368170870640">คุณใช้ PIN เพื่อลงชื่อเข้าใช้หรือปลดล็อกอุปกรณ์ได้</translation>
+<translation id="6202935572248792580">อนุญาต เชื่อมต่อไมโครโฟนกับอุปกรณ์</translation>
 <translation id="6203247599828309566">คุณบันทึกหมายเหตุเกี่ยวกับรหัสผ่านในเว็บไซต์นี้แล้ว หากต้องการดู ให้คลิกไอคอนรูปลูกกุญแจ</translation>
 <translation id="6205314730813004066">ความเป็นส่วนตัวเกี่ยวกับโฆษณา</translation>
 <translation id="6205993460077903908"><ph name="WINDOW_TITLE" /> - กำลังบันทึกไมโครโฟน</translation>
@@ -7012,6 +7023,7 @@
 <translation id="6238923052227198598">เก็บโน้ตล่าสุดไว้ในหน้าจอล็อก</translation>
 <translation id="6238982280403036866">ได้รับอนุญาตให้ใช้ JavaScript</translation>
 <translation id="6239558157302047471">โหลดเ&amp;ฟรมซ้ำ</translation>
+<translation id="6240637845286751292">อนุญาต เปิด<ph name="LINK_BEGIN" />การเข้าถึงตำแหน่งของระบบ<ph name="LINK_END" /></translation>
 <translation id="6240821072888636753">ถามทุกครั้ง</translation>
 <translation id="6240964651812394252">หากต้องการใช้เครื่องมือจัดการรหัสผ่านบน Google กับระบบปฏิบัติการ ให้เปิด Chrome อีกครั้งและอนุญาตการเข้าถึงเครื่องมือจัดการรหัสผ่านของคอมพิวเตอร์ แท็บจะเปิดขึ้นมาใหม่หลังจากที่เปิดอีกครั้ง</translation>
 <translation id="6241530762627360640">เข้าถึงข้อมูลเกี่ยวกับอุปกรณ์บลูทูธที่จับคู่กับระบบของคุณ และสำรวจอุปกรณ์บลูทูธใกล้เคียง</translation>
@@ -8260,6 +8272,7 @@
 <translation id="7210499381659830293">เครื่องพิมพ์ที่สั่งการผ่านส่วนขยาย</translation>
 <translation id="7211783048245131419">ยังไม่ได้กำหนดสวิตช์</translation>
 <translation id="7212097698621322584">ป้อน PIN ปัจจุบันเพื่อเปลี่ยน PIN หากไม่ทราบ PIN คุณจะต้องรีเซ็ตคีย์ความปลอดภัย แล้วสร้าง PIN ใหม่</translation>
+<translation id="7214047272988222011">อนุญาต – <ph name="PERMISSION_DETAILS" /> เปิด<ph name="LINK_BEGIN" />การเข้าถึงกล้องของระบบ<ph name="LINK_END" /></translation>
 <translation id="721490496276866468">นำเข้ารหัสผ่าน</translation>
 <translation id="7218514093816577632">ตรวจสอบว่าการแจ้งเตือนใน "<ph name="DEVICE_NAME" />" เปิดอยู่</translation>
 <translation id="7219254577985949841">ลบข้อมูลเว็บไซต์ใช่ไหม</translation>
@@ -8739,6 +8752,7 @@
 <translation id="7573172247376861652">ชาร์จแบตเตอรี่</translation>
 <translation id="7573594921350120855">โดยปกติแล้วเว็บไซต์จะใช้กล้องวิดีโอของคุณเพื่อดำเนินการตามฟีเจอร์ในการสื่อสาร เช่น วิดีโอแชท</translation>
 <translation id="7575272930307342804">การควบคุมการไปยังส่วนต่างๆ</translation>
+<translation id="757660455834887988">อนุญาต – <ph name="PERMISSION_DETAILS" /> เชื่อมต่อกล้องกับอุปกรณ์</translation>
 <translation id="7576690715254076113">เรียง</translation>
 <translation id="7576976045740938453">เกิดปัญหาเกี่ยวกับบัญชีโหมดสาธิต</translation>
 <translation id="7578137152457315135">การตั้งค่าลายนิ้วมือ</translation>
@@ -9053,7 +9067,6 @@
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7788948939674438635">ไม่อนุญาตให้เว็บไซต์ล็อกแป้นพิมพ์</translation>
 <translation id="7789963078219276159">เปลี่ยนพื้นหลังของหน้าเริ่มต้นเป็น <ph name="CATEGORY" /></translation>
-<translation id="7790689625219600437">OCR สำหรับ PDF</translation>
 <translation id="7791269138074599214">วิธีการป้อนข้อมูล</translation>
 <translation id="7791429245559955092">แอปพลิเคชันนี้จะได้รับการติดตั้งในโปรไฟล์ Chrome ที่คุณใช้งานอยู่ในปัจจุบัน</translation>
 <translation id="7791436592012979144">เปิดใช้การเลื่อนแบบย้อนกลับอยู่</translation>
@@ -9416,6 +9429,7 @@
 <translation id="8053278772142718589">ไฟล์ PKCS #12</translation>
 <translation id="8053390638574070785">โหลดหน้านี้ใหม่</translation>
 <translation id="8053629544194355894">เปิดการซิงค์เพื่อให้ Chrome แนะนำกลุ่มแท็บ</translation>
+<translation id="8054500940978949009">อนุญาต เปิด<ph name="LINK_BEGIN" />การเข้าถึงไมโครโฟนของระบบ<ph name="LINK_END" /></translation>
 <translation id="8054517699425078995">ไฟล์ประเภทนี้อาจเป็นอันตรายต่ออุปกรณ์ของคุณ คุณยังต้องการเก็บไฟล์ <ph name="FILE_NAME" /> ไว้ไหม</translation>
 <translation id="8054563304616131773">โปรดป้อนที่อยู่อีเมลที่ถูกต้อง</translation>
 <translation id="8054609631325628928">คุณใช้หมายเลขเหล่านี้เพื่อช่วยเปิดใช้งานบริการได้</translation>
@@ -9808,6 +9822,7 @@
 <translation id="8336739000755212683">เปลี่ยนรูปภาพของบัญชีอุปกรณ์</translation>
 <translation id="8337020675372081178">{HOURS,plural, =1{อุปกรณ์นี้จะได้รับการบันทึกไว้เป็นเวลา 1 ชั่วโมงและคุณสามารถเชื่อมต่อโดยไม่ใช้รหัสได้ในครั้งถัดไป ผู้ดูแลระบบเป็นคนตั้งค่านี้}other{อุปกรณ์นี้จะได้รับการบันทึกไว้เป็นเวลา {HOURS} ชั่วโมงและคุณสามารถเชื่อมต่อโดยไม่ใช้รหัสได้ในครั้งถัดไป ผู้ดูแลระบบเป็นคนตั้งค่านี้}}</translation>
 <translation id="8337399713761067085">ขณะนี้คุณอยู่ในสถานะออฟไลน์</translation>
+<translation id="8338427544764842461">ระบบจะบันทึกกลุ่มแท็บไว้ที่นี่และอัปเดตในอุปกรณ์ทั้งหมดที่ลงชื่อเข้าใช้</translation>
 <translation id="8338952601723052325">เว็บไซต์สำหรับนักพัฒนาซอฟต์แวร์</translation>
 <translation id="8339288417038613756">ขนาดการแสดงผลและข้อความ</translation>
 <translation id="833986336429795709">เลือกแอปที่จะเปิดลิงก์นี้</translation>
@@ -10845,6 +10860,7 @@
 <translation id="9096776523567481218">ไม่ได้ติดตั้งไว้ในเครื่อง</translation>
 <translation id="9098860402274800697">นําแอป Google Play และ Android ออก</translation>
 <translation id="9099220545925418560">อิงจากประวัติการท่องเว็บของคุณ การตั้งค่านี้ปิดอยู่</translation>
+<translation id="910000385680858937">อนุญาต – <ph name="PERMISSION_DETAILS" /> เชื่อมต่อไมโครโฟนกับอุปกรณ์</translation>
 <translation id="9100416672768993722">หากต้องการเปลี่ยนวิธีการป้อนข้อมูลที่ใช้ครั้งล่าสุด ให้กด <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="9100765901046053179">การตั้งค่าขั้นสูง</translation>
 <translation id="9101691533782776290">เปิดแอป</translation>

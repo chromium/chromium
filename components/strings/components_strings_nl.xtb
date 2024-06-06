@@ -245,7 +245,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1432187715652018471">De pagina wil een servicehandler installeren.</translation>
 <translation id="1432581352905426595">Zoekmachines beheren</translation>
 <translation id="1433225466058025572">Probeer je bestanden opnieuw te verplaatsen</translation>
-<translation id="1434317006812369578">Chrome bevat ingebouwde veiligheidsfuncties, zoals Google Safe Browsing, die je beschermen terwijl je browst. Safe Browsing heeft <ph name="BEGIN_LINK" />recent malware gevonden op <ph name="SITE" /><ph name="END_LINK" />, die is ingesloten in de site die je wilt bezoeken.</translation>
 <translation id="1435940442311036198">Een toegangscode gebruiken op een ander apparaat</translation>
 <translation id="1436185428532214179">Kan vragen of deze site bestanden en mappen op je apparaat mag bewerken</translation>
 <translation id="1441816242347931036">Open om door te gaan</translation>
@@ -1465,7 +1464,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3767485424735936570">Deze content kopiëren en plakken in <ph name="VM_NAME" /> wordt afgeraden op basis van het beheerdersbeleid</translation>
 <translation id="3772211998634047851">Papier (gebonden)</translation>
 <translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om snel een nieuwe notitie in Google Keep te maken</translation>
-<translation id="378026377453746707">Chrome bevat ingebouwde veiligheidsfuncties, zoals Google Safe Browsing, die je beschermen terwijl je browst. Safe Browsing heeft recent <ph name="BEGIN_LINK" />schadelijke software gevonden op <ph name="SITE" /><ph name="END_LINK" />, die is ingesloten in de site die je wilt bezoeken.</translation>
 <translation id="3780694243617746492">Uitvoerbak</translation>
 <translation id="3781428340399460090">Felroze</translation>
 <translation id="3783418713923659662">Mastercard</translation>
@@ -1549,7 +1547,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3950820424414687140">Inloggen</translation>
 <translation id="3953505489397572035">Deze prijs is gebruikelijk</translation>
 <translation id="3958057596965527988">4 x 4 inch</translation>
-<translation id="3959121317419633580">Chrome bevat ingebouwde veiligheidsfuncties, zoals Google Safe Browsing, die je beschermen terwijl je browst. Safe Browsing heeft recent <ph name="BEGIN_LINK" />phishing gevonden op <ph name="SITE" /><ph name="END_LINK" />, die is ingesloten in de site die je wilt bezoeken.<ph name="NEW_LINE" />Ook sites die normaal gesproken veilig zijn, worden soms gehackt door aanvallers. <ph name="BEGIN_ERROR_LINK" />Laat het ons weten<ph name="END_ERROR_LINK" /> als je denkt dat er een fout is gemaakt en dat deze site geen gevaar vormt.</translation>
 <translation id="3961148744525529027">Blad voor betalingshandler is half geopend</translation>
 <translation id="3962859241508114581">Vorig nummer</translation>
 <translation id="3963721102035795474">Lezermodus</translation>
@@ -2678,6 +2675,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="6165508094623778733">Meer informatie</translation>
 <translation id="6167577165590485365">Laatste ophaalpoging:</translation>
 <translation id="617256461084925519">Google Chrome probeert te verifiëren dat jij het bent zodat je betalingsgegevens kunnen worden ingevuld.</translation>
+<translation id="6173208311907792313">Rond je aankoop af met Windows Hello</translation>
 <translation id="6176387967264100435">Deze prijs is hoog</translation>
 <translation id="6177128806592000436">Je verbinding met deze site is niet beveiligd</translation>
 <translation id="6177531123306197852">Envelop C2</translation>
@@ -3836,6 +3834,7 @@ Aanvullende informatie:
 <translation id="8332188693563227489">Toegang tot <ph name="HOST_NAME" /> is geweigerd</translation>
 <translation id="833262891116910667">Markeren</translation>
 <translation id="8339163506404995330">Pagina's in het <ph name="LANGUAGE" /> worden niet vertaald</translation>
+<translation id="8339275256517065202">Rond je aankoop af met Touch ID</translation>
 <translation id="8340095855084055290"><ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="8344776605855290140">Inschrijving via virtuele kaart is op volledige hoogte geopend</translation>
 <translation id="8349305172487531364">Bookmarkbalk</translation>
@@ -4029,6 +4028,7 @@ Aanvullende informatie:
 <translation id="8726549941689275341">Paginagrootte:</translation>
 <translation id="8730621377337864115">Klaar</translation>
 <translation id="8731268612289859741">Beveiligingscode</translation>
+<translation id="8731917264694569036">Rond je aankoop af met je apparaat</translation>
 <translation id="8733345475331865475">Autoverzekering</translation>
 <translation id="8733764070897080460">Je kunt onderwerpen blokkeren die je niet wilt delen met sites. Chrome verwijdert ook automatisch onderwerpen die ouder zijn dan 4 weken. Meer informatie</translation>
 <translation id="8734529307927223492">Je <ph name="DEVICE_TYPE" /> wordt beheerd door <ph name="MANAGER" /></translation>
@@ -4222,6 +4222,7 @@ Aanvullende informatie:
 <translation id="9116548361133462832">Meer informatie over advertenties in Chrome</translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />. Druk op Tab en daarna op Enter om je reis te hervatten en relevante activiteit in je Chrome-geschiedenis te bekijken.</translation>
 <translation id="9119042192571987207">Geüpload</translation>
+<translation id="9119308212838450857"><ph name="PROVIDER_ORIGIN" /> wil verifiëren dat jij het bent</translation>
 <translation id="912327514020027767">Rokken</translation>
 <translation id="912414390325846156">Je hebt eerder 'niet toestaan voor deze site' gekozen</translation>
 <translation id="9128870381267983090">Verbinding maken met netwerk</translation>

@@ -147,6 +147,7 @@
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" />, <ph name="SECOND_ITEM_TITLE" />-മായി സ്വാപ്പ് ചെയ്‌തു</translation>
 <translation id="1500926532737552529">എല്ലാ നിർദ്ദേശങ്ങളും കാണിക്കുക</translation>
 <translation id="1501946871587957338">ഓഡിയോ ഉറവിടം മാറണോ?</translation>
+<translation id="1505542291183484463">ടൈൽ ചെയ്ത, വലുപ്പം‌ മാറ്റിയ വിൻഡോ താഴേക്ക് നീക്കുക</translation>
 <translation id="1510238584712386396">ലോഞ്ചർ</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{അറിയിപ്പ് ക്രമീകരണം കാണിക്കുക. ഒരു ആപ്പിന് അറിയിപ്പുകൾ ഓഫാണ്}other{അറിയിപ്പ് ക്രമീകരണം കാണിക്കുക. # ആപ്പുകൾക്ക് അറിയിപ്പുകൾ ഓഫാണ്}}</translation>
 <translation id="1523032696246003"><ph name="BATTERY_PERCENTAGE" />% ബാറ്ററി | ഫുൾ ആവാൻ <ph name="TIME" /> എടുക്കും</translation>
@@ -177,6 +178,7 @@
 <translation id="1610778689852195798">"പഴയപടിയാക്കുക"</translation>
 <translation id="1611993646327628135">ഓണാണ്</translation>
 <translation id="1620510694547887537">ക്യാമറ</translation>
+<translation id="1623768535032616219">Google Classroom ചുരുക്കുക</translation>
 <translation id="1632985212731562677">ക്രമീകരണം &gt; ഉപയോഗസഹായി എന്നതിൽ 'സ്വിച്ച് ആക്‌സസ്' പ്രവർത്തനരഹിതമാക്കാം.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> ഉപകരണങ്ങൾ</translation>
 <translation id="1639239467298939599">ലോഡുചെയ്യുന്നു</translation>
@@ -296,11 +298,13 @@
 <translation id="2149229036084364364">മുമ്പത്തെ ട്രാക്കിലേക്ക് പോകുക</translation>
 <translation id="2152895518047545149">എല്ലാം സമർപ്പിച്ചെന്ന് തോന്നുന്നു. കൊള്ളാം!</translation>
 <translation id="2161132820593978283">വീഡിയോ കോളുകളിൽ നിങ്ങൾ സ്ക്രീനിന്റെ മധ്യഭാഗത്ത് ആയിരിക്കാൻ ക്യാമറാ ഫ്രെയിമിംഗ് പരീക്ഷിക്കുക. ദ്രുത ക്രമീകരണത്തിൽ ഇത് ഓണാക്കുക.</translation>
+<translation id="216955976692983107">ടൈൽ ചെയ്ത, വലുപ്പം‌ മാറ്റിയ വിൻഡോ വലത്തേക്ക് നീക്കുക</translation>
 <translation id="2185166372312820725">മുമ്പത്തെ ടാബിലേക്ക് പോവുക</translation>
 <translation id="2185444992308415167">1 മുതൽ 8 വരെയുള്ള ടാബുകളിലൂടെ പോകുക</translation>
 <translation id="2198625180564913276">പ്രൊഫെെൽ ചേർക്കുന്നു. ഇതിന് കുറച്ച് സമയമെടുത്തേക്കാം.</translation>
 <translation id="219905428774326614">ലോഞ്ചർ, എല്ലാ ആപ്പുകളും</translation>
 <translation id="2201071101391734388">അടുത്തിടെയുള്ള <ph name="TOTAL_COUNT" /> ഫോട്ടോകളിൽ <ph name="INDEX" />-മത്തേത്.</translation>
+<translation id="2201687081523799384">Google Tasks ചുരുക്കുക</translation>
 <translation id="2208323208084708176">ഏകീകൃത ഡെസ്‌ക്‌ടോപ്പ് മോഡ്</translation>
 <translation id="2220572644011485463">പിൻ അല്ലെങ്കിൽ പാസ്‌വേഡ്</translation>
 <translation id="2222841058024245321">ഡെസ്ക് 7</translation>
@@ -362,6 +366,7 @@
 <translation id="2427507373259914951">ഇടത് ക്ലിക്ക്</translation>
 <translation id="2429753432712299108">"<ph name="DEVICE_NAME" />" എന്ന Bluetooth ഉപകരണം ജോടിയാക്കുന്നതിനുള്ള അനുമതി ആവശ്യപ്പെടുന്നു. അനുമതി നൽകുന്നതിനുമുമ്പ്, ആ ഉപകരണത്തിൽ ഈ പാസ്‌കീ കാണിച്ചിരിക്കുന്നുവെന്ന് സ്ഥിരീകരിക്കുക: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">പാസ്‌വേഡ് കാണിക്കുക</translation>
+<translation id="2437771564543046790">ബാറ്ററി ചാർജ് കുറവാണ്. ബാറ്ററി സേവർ ഓണാണ്</translation>
 <translation id="243878895369688216">ഇന്നലെ തുറന്നത്</translation>
 <translation id="2440978926514840421">GIF റെക്കോർഡിംഗ് എടുത്തു</translation>
 <translation id="2441427462554639370">സ്റ്റോറേജ് ഇടം വളരെ കുറവായതിനാൽ റെക്കോർഡിംഗ് അവസാനിച്ചു</translation>
@@ -642,6 +647,7 @@
 <translation id="3509391053705095206">നിങ്ങളുടെ ഫോൺ കണ്ടെത്താനാകുന്നില്ല. ഫോണിൻ്റെ Bluetooth ഓണാണെന്ന് ഉറപ്പുവരുത്തുക.</translation>
 <translation id="3510164367642747937">മൗസ് കഴ്‌സർ ഹൈലൈറ്റ് ചെയ്യുക</translation>
 <translation id="3513798432020909783">അക്കൗണ്ട് മാനേജ് ചെയ്യുന്നത് <ph name="MANAGER_EMAIL" /> ആണ്</translation>
+<translation id="3516000762115478502">ടൈൽ ചെയ്ത, വലുപ്പം‌ മാറ്റിയ വിൻഡോ മുകളിലേക്ക് നീക്കുക</translation>
 <translation id="3517037892157925473">ടാസ്‌കുകൾ അവസാനം അപ്ഡേറ്റ് ചെയ്‌തത്: <ph name="TIME" />, <ph name="DATE" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{ഒരു മിനിറ്റിനുള്ളിൽ ഉപകരണം അപ്‌ഡേറ്റ് ചെയ്യുക}other{# മിനിറ്റിനുള്ളിൽ ഉപകരണം അപ്‌ഡേറ്റ് ചെയ്യുക}}</translation>
 <translation id="3522979239100719575">ലഭ്യമായ പ്രൊഫൈലുകൾ തിരയുന്നു. ഇതിന് കുറച്ച് സമയമെടുത്തേക്കാം.</translation>
@@ -758,6 +764,7 @@
 <translation id="3899995891769452915">വോയ്‌സ് ഇൻപുട്ട്</translation>
 <translation id="3900355044994618856"><ph name="SESSION_TIME_REMAINING" />-ൽ നിങ്ങളുടെ സെഷൻ അവസാനിക്കുന്നു</translation>
 <translation id="3901991538546252627"><ph name="NAME" /> എന്നതിലേക്ക് കണക്റ്റുചെയ്യുന്നു</translation>
+<translation id="3904768293285573640">ടൈൽ ചെയ്ത, വലുപ്പം‌ മാറ്റിയ വിൻഡോ ഇടത്തേക്ക് നീക്കുക</translation>
 <translation id="3906954721959377182">ടാബ്‌ലെറ്റ്</translation>
 <translation id="3923494859158167397">മൊബൈൽ നെറ്റ്‌വർക്കുകളൊന്നും സജ്ജീകരിച്ചിട്ടില്ല</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, ഇവന്റുകൾ ലോഡ് ചെയ്യുന്നു.</translation>
@@ -1196,6 +1203,7 @@
 <translation id="550391772491508736">കാസ്റ്റ് ചെയ്യൽ പുനരാരംഭിക്കുക</translation>
 <translation id="5506975627792768506">മാഗ്നിഫയർ ഓണാക്കുകയോ ഓഫാക്കുകയോ ചെയ്യുക</translation>
 <translation id="5512042095225963688">മുമ്പത്തെ വാക്ക് ഇല്ലാതാക്കുക</translation>
+<translation id="5519005148254860683">Google Tasks വികസിപ്പിക്കുക</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">നിങ്ങളുടെ അഡ്‌മിൻ എല്ലാ eSIM പ്രൊഫൈലുകളും നീക്കം ചെയ്തു. കൂടുതൽ വിവരങ്ങൾക്ക് നിങ്ങളുടെ അഡ്‌മിനെ ബന്ധപ്പെടുക.</translation>
 <translation id="5520909879404821039">ഹായ് എന്നത് ഫ്രഞ്ചിൽ</translation>
@@ -1404,6 +1412,7 @@
 <translation id="6200515304866777730">ആപ്പ് പിന്തുണയ്ക്കുന്നില്ല</translation>
 <translation id="6210042900243040400"><ph name="EMAIL" /> എന്നതിലേക്ക് മുമ്പ് സംരക്ഷിച്ച <ph name="NAME" /> കണക്റ്റ് ചെയ്യുക</translation>
 <translation id="6213808132343683860">ഭാഗിക സ്ക്രീൻഷോട്ടോ സ്ക്രീൻ റെക്കോർഡിംഗോ എടുക്കുക</translation>
+<translation id="621606890568890214">Google Classroom വികസിപ്പിക്കുക</translation>
 <translation id="6220928844947387476">നിങ്ങൾക്ക് ഇപ്പോൾ നിങ്ങളെയും ഒപ്പം സ്ക്രീനും ഒരേസമയം റെക്കോർഡ് ചെയ്യാം</translation>
 <translation id="622484624075952240">താഴേക്കുള്ള കീ</translation>
 <translation id="6228457605945141550">തെളിച്ചം കുറയ്‌ക്കുക</translation>

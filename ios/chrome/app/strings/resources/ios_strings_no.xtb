@@ -5,6 +5,7 @@
 <translation id="1013952917065545813">Du kan komme tilbake hit for å gjenåpne faner du nylig har lukket</translation>
 <translation id="1016495303386450659">Elementet er oppdatert</translation>
 <translation id="1025514696883950875">{COUNT,plural, =1{Lagre passordet i kontoen}other{Lagre passordene i kontoen}}</translation>
+<translation id="102916930470544692">Passnøkkel</translation>
 <translation id="1035980983510608210">Hvis du lukker alle faner, blir også festede faner lukket.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1043592663436934089">Du blir logget av, og nettlesingsdata blir slettet</translation>
@@ -1016,6 +1017,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6173499589275053515">Passordet er lagret i Google-kontoen din, <ph name="EMAIL" /></translation>
 <translation id="6184086493125982861">Vis faner</translation>
 <translation id="6187302354554850004">Sist synkronisert: <ph name="LAST_USED_TIME" /></translation>
+<translation id="6188737759358894319">Laget <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Ulest</translation>
 <translation id="6196207969502475924">Google Talesøk</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Lukk {COUNT} fane}other{Lukk {COUNT} faner}}</translation>
@@ -1303,7 +1305,6 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="7557508262441527045">Logget av</translation>
 <translation id="7561196759112975576">Alltid</translation>
 <translation id="7564917801238348224">LAGRE…</translation>
-<translation id="758132317817089442">Slå på økt beskyttelse …</translation>
 <translation id="7582857256643797524">Denne innstillingen er aktivert på enheten din</translation>
 <translation id="7583004045319035904">Bruk <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> for å låse opp inkognitofanene dine.</translation>
 <translation id="7598439272585186139">Øk sikkerheten</translation>

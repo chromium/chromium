@@ -961,7 +961,6 @@
 <translation id="6412715219990689313">Eingebaute Tastatur</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
-<translation id="6438073885402882007">Dadurch können Systemdienste mit dieser Berechtigung deinen Standorts verwenden. Der Standortdienst nutzt möglicherweise Quellen wie WLANs, Mobilfunknetze und Sensoren, um den Standort deines Geräts zu ermitteln. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="6439505561246192797">Schwach (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Kontoeinstellungen aufrufen</translation>
 <translation id="6462978824459367242">Schaltfläche „APN hinzufügen“ ist jetzt aktiviert</translation>

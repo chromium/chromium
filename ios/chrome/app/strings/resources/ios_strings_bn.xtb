@@ -5,6 +5,7 @@
 <translation id="1013952917065545813">আপনি যেসব ট্যাবগুলি সম্প্রতি বন্ধ করেছন, সেগুলি আবার খুলতে আপনি এখানে ফিরে আসতে পারেন</translation>
 <translation id="1016495303386450659">আইটেম আপডেট হয়েছে</translation>
 <translation id="1025514696883950875">{COUNT,plural, =1{অ্যাকাউন্টে পাসওয়ার্ড সেভ করুন}one{অ্যাকাউন্টে পাসওয়ার্ড সেভ করুন}other{অ্যাকাউন্টে পাসওয়ার্ড সেভ করুন}}</translation>
+<translation id="102916930470544692">পাসকী</translation>
 <translation id="1035980983510608210">সমস্ত ট্যাব বন্ধ করে দিলে পিন করা ট্যাবও বন্ধ হয়ে যাবে।</translation>
 <translation id="1036017604683756002">ইউপিএস</translation>
 <translation id="1043592663436934089">আপনি সাইন-আউট হয়ে যাবেন এবং ব্রাউজ করা ডেটা মুছে দেওয়া হবে</translation>
@@ -1017,6 +1018,7 @@
 <translation id="6173499589275053515">পাসওয়ার্ড আপনার Google অ্যাকাউন্ট, <ph name="EMAIL" />-এ সেভ করা আছে</translation>
 <translation id="6184086493125982861">ট্যাব দেখান</translation>
 <translation id="6187302354554850004">শেষে সিঙ্ক হয়েছে: <ph name="LAST_USED_TIME" /></translation>
+<translation id="6188737759358894319"><ph name="DATE" /> তারিখে তৈরি করা হয়েছে</translation>
 <translation id="6189413832092199491">অপঠিত</translation>
 <translation id="6196207969502475924">ভয়েস সার্চ</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{{COUNT}টি ট্যাব বন্ধ করুন}one{{COUNT}টি ট্যাব বন্ধ করুন}other{{COUNT}টি ট্যাব বন্ধ করুন}}</translation>
@@ -1304,7 +1306,6 @@
 <translation id="7557508262441527045">সাইন-আউট করুন</translation>
 <translation id="7561196759112975576">সবসময়</translation>
 <translation id="7564917801238348224">সেভ করুন...</translation>
-<translation id="758132317817089442">উন্নত সুরক্ষা চালু করুন...</translation>
 <translation id="7582857256643797524">আপনার ডিভাইসে এই সেটিং চালু করা আছে</translation>
 <translation id="7583004045319035904">আপনার ছদ্মবেশী ট্যাব আনলক করতে, <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ব্যবহার করুন।</translation>
 <translation id="7598439272585186139">আরও সুরক্ষা পান</translation>

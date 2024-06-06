@@ -313,6 +313,7 @@
 <translation id="2618015542787108131">বালিৰ স্তূপ</translation>
 <translation id="2619761439309613843">দৈনিক নতুন ৱালপেপাৰ</translation>
 <translation id="2620436844016719705">ছিষ্টেম</translation>
+<translation id="2637303424821734920">অফ কৰা আছে - স্থানীয় বতৰৰ তথ্য প্ৰদৰ্শন কৰিবলৈ <ph name="BEGIN_LINK" />ছিষ্টেমৰ অৱস্থানৰ এক্সেছ অন কৰক<ph name="END_LINK" /></translation>
 <translation id="2638662041295312666">ছাইন-ইন প্ৰতিচ্ছবি</translation>
 <translation id="2640549051766135490">এলবাম <ph name="TITLE" /> <ph name="DESC" /> বাছনি কৰা হৈছে</translation>
 <translation id="2645380101799517405">নিয়ন্ত্ৰণ</translation>
@@ -961,7 +962,6 @@
 <translation id="6412715219990689313">বিল্ট-ইন কীব’ৰ্ড</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
 <translation id="6423239382391657905">VPN খোলক</translation>
-<translation id="6438073885402882007">ই অনুমতি থকা ছিষ্টেম সেৱাসমূহক আপোনাৰ অৱস্থান ব্যৱহাৰ কৰাৰ অনুমতি দিয়ে। অৱস্থান সেৱাই আপোনাৰ ডিভাইচৰ অৱস্থান অনুমান কৰাত সহায় কৰিবলৈ ৱাই-ফাই, ম’বাইল নেটৱৰ্ক আৰু ছেন্সৰৰ দৰে উৎসসমূহ ব্যৱহাৰ কৰিব পাৰে। <ph name="LINK_BEGIN" />অধিক জানক<ph name="LINK_END" /></translation>
 <translation id="6439505561246192797">দুৰ্বল (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">একাউণ্টৰ ছেটিঙলৈ যাওক</translation>
 <translation id="6462978824459367242">এতিয়া APN যোগ কৰাৰ বুটামটো এতিয়া সক্ষম কৰা হৈছে</translation>

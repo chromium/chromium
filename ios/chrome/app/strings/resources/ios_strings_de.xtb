@@ -5,6 +5,7 @@
 <translation id="1013952917065545813">Hier kannst du kürzlich geschlossene Tabs wieder öffnen</translation>
 <translation id="1016495303386450659">Element aktualisiert</translation>
 <translation id="1025514696883950875">{COUNT,plural, =1{Passwort im Konto speichern}other{Passwörter im Konto speichern}}</translation>
+<translation id="102916930470544692">Passkey</translation>
 <translation id="1035980983510608210">Wenn du alle Tabs schließt, werden auch angepinnte Tabs geschlossen.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1043592663436934089">Du wirst abgemeldet und Browserdaten werden gelöscht</translation>
@@ -1016,6 +1017,7 @@ Handoff muss auch im Abschnitt "Allgemein" deiner Einstellungen aktiviert sein u
 <translation id="6173499589275053515">Passwort in deinem Google-Konto <ph name="EMAIL" /> gespeichert</translation>
 <translation id="6184086493125982861">Tabs anzeigen</translation>
 <translation id="6187302354554850004">Letzte Synchr.: <ph name="LAST_USED_TIME" /></translation>
+<translation id="6188737759358894319">Erstellt am <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Ungelesen</translation>
 <translation id="6196207969502475924">Sprachsuche</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{{COUNT} Tab schließen}other{{COUNT} Tabs schließen}}</translation>
@@ -1303,7 +1305,6 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7557508262441527045">Abgemeldet</translation>
 <translation id="7561196759112975576">Immer</translation>
 <translation id="7564917801238348224">SPEICHERN…</translation>
-<translation id="758132317817089442">Erweiterten Schutz aktivieren</translation>
 <translation id="7582857256643797524">Diese Einstellung ist auf deinem Gerät aktiviert</translation>
 <translation id="7583004045319035904">Nutze <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />, um deine Inkognitotabs zu entsperren.</translation>
 <translation id="7598439272585186139">Mehr Sicherheit</translation>

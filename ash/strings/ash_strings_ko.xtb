@@ -178,6 +178,7 @@
 <translation id="1610778689852195798">"실행취소"</translation>
 <translation id="1611993646327628135">켜짐</translation>
 <translation id="1620510694547887537">카메라</translation>
+<translation id="1623768535032616219">Google 클래스룸 접기</translation>
 <translation id="1632985212731562677">설정 &gt; 접근성에서 스위치 제어를 사용 중지할 수 있습니다.</translation>
 <translation id="1637505162081889933">기기 <ph name="NUM_DEVICES" />대</translation>
 <translation id="1639239467298939599">로드 중</translation>
@@ -303,6 +304,7 @@
 <translation id="2198625180564913276">프로필을 추가하는 중입니다. 몇 분 정도 소요될 수 있습니다.</translation>
 <translation id="219905428774326614">런처, 모든 앱</translation>
 <translation id="2201071101391734388">최근 사진 총 <ph name="TOTAL_COUNT" />개 중 <ph name="INDEX" />번째입니다.</translation>
+<translation id="2201687081523799384">Google Tasks 접기</translation>
 <translation id="2208323208084708176">통합 바탕화면 모드</translation>
 <translation id="2220572644011485463">PIN 또는 비밀번호</translation>
 <translation id="2222841058024245321">데스크 7</translation>
@@ -364,6 +366,7 @@
 <translation id="2427507373259914951">왼쪽 클릭</translation>
 <translation id="2429753432712299108">블루투스 기기 '<ph name="DEVICE_NAME" />'에서 페어링 허가를 요청합니다. 허가하기 전에 다음 패스키가 기기에 표시되는지 확인하세요. <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">비밀번호 표시</translation>
+<translation id="2437771564543046790">배터리가 부족합니다. 절전 모드가 사용 설정되었습니다</translation>
 <translation id="243878895369688216">어제 열림</translation>
 <translation id="2440978926514840421">GIF 녹화 완료됨</translation>
 <translation id="2441427462554639370">저장공간이 매우 부족하여 녹화가 종료되었습니다.</translation>
@@ -1200,6 +1203,7 @@
 <translation id="550391772491508736">전송 재개</translation>
 <translation id="5506975627792768506">돋보기 사용 설정 또는 사용 중지</translation>
 <translation id="5512042095225963688">이전 단어 삭제</translation>
+<translation id="5519005148254860683">Google Tasks 펼치기</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">관리자가 모든 eSIM 프로필을 삭제했습니다. 자세한 내용은 관리자에게 문의하세요.</translation>
 <translation id="5520909879404821039">프랑스어로 안녕</translation>
@@ -1408,6 +1412,7 @@
 <translation id="6200515304866777730">앱에서 지원되지 않음</translation>
 <translation id="6210042900243040400">이전에 <ph name="EMAIL" />에 저장된 <ph name="NAME" /> 연결</translation>
 <translation id="6213808132343683860">부분 스크린샷 찍기 또는 화면 녹화</translation>
+<translation id="621606890568890214">Google 클래스룸 펼치기</translation>
 <translation id="6220928844947387476">이제 내 모습과 화면을 동시에 녹화할 수 있습니다.</translation>
 <translation id="622484624075952240">아래</translation>
 <translation id="6228457605945141550">어둡게</translation>

@@ -147,6 +147,7 @@
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> ከ<ph name="SECOND_ITEM_TITLE" /> ጋር ተቀያይሯል</translation>
 <translation id="1500926532737552529">ሁሉንም የአስተያየት ጥቆማዎች አሳይ</translation>
 <translation id="1501946871587957338">የኦዲዮ ምንጭ ይቀየር?</translation>
+<translation id="1505542291183484463">የባለጡብ መስኮት መጠንን ወደ ታች ቀይር</translation>
 <translation id="1510238584712386396">ማስጀመሪያ</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{የማሳወቂያ ቅንብሮችን አሳይ። ማሳወቂያዎች ለአንድ መተግበሪያ ጠፍተዋል}one{የማሳወቂያ ቅንብሮችን አሳይ። ማሳወቂያዎች ለ# መተግበሪያዎች ጠፍተዋል}other{የማሳወቂያ ቅንብሮችን አሳይ። ማሳወቂያዎች ለ# መተግበሪያዎች ጠፍተዋል}}</translation>
 <translation id="1523032696246003">ባትሪ <ph name="BATTERY_PERCENTAGE" />% | እስከሚሞላ ድረስ <ph name="TIME" /></translation>
@@ -296,6 +297,7 @@
 <translation id="2149229036084364364">ወደ ቀዳሚ ትራክ ሂድ</translation>
 <translation id="2152895518047545149">ምንም የጎደለ ነገር ያለ አይመስልም። በጣም ጥሩ ሥራ!</translation>
 <translation id="2161132820593978283">የቪድዮ ጥሪዎች ላይ በማያ ገጹ መሃል ላይ እንዲሆኑ የካሜራ ክፈፍ መስራትን ይሞክሩ። በፈጣን ቅንብሮች ውስጥ ያብሩት።</translation>
+<translation id="216955976692983107">የባለጡብ መስኮት መጠንን ወደ ቀኝ ቀይር</translation>
 <translation id="2185166372312820725">ወደ ቀዳሚው ትር ሂድ</translation>
 <translation id="2185444992308415167">ከ1 እስከ 8 ድረስ ያሉ ትሮችን ይመልከቱ</translation>
 <translation id="2198625180564913276">መገለጫን በማከል ላይ። ይህ ጥቂት ደቂቃዎችን ሊወስድ ይችላል።</translation>
@@ -642,6 +644,7 @@
 <translation id="3509391053705095206">የእርስዎን ስልክ ማግኘት አልተቻለም። የእርስዎ ስልክ ብሉቱዝ እንደበራ ያረጋግጡ።</translation>
 <translation id="3510164367642747937">የመዳፊት ጠቋሚን አድምቅ</translation>
 <translation id="3513798432020909783">መለያው በ<ph name="MANAGER_EMAIL" /> ነው የሚቀናበረው</translation>
+<translation id="3516000762115478502">የባለጡብ መስኮት መጠንን ወደ ላይ ቀይር</translation>
 <translation id="3517037892157925473">መጨረሻ የተዘመኑት ተግባራት፡- <ph name="TIME" />፣ <ph name="DATE" />።</translation>
 <translation id="352245152354538528">{0,plural, =1{በ1 ደቂቃ ውስጥ መሣሪያን ያዘምኑ}one{በ# ደቂቃዎች ውስጥ መሣሪያን ያዘምኑ}other{በ# ደቂቃዎች ውስጥ መሣሪያን ያዘምኑ}}</translation>
 <translation id="3522979239100719575">የሚገኙ መገለጫዎችን በመፈለግ ላይ። ይህ ጥቂት ደቂቃዎችን ሊወስድ ይችላል።</translation>
@@ -758,6 +761,7 @@
 <translation id="3899995891769452915">የድምፅ ግቤት</translation>
 <translation id="3900355044994618856">የእርስዎ ክፍለ ጊዜ በ<ph name="SESSION_TIME_REMAINING" /> ውስጥ ያበቃል</translation>
 <translation id="3901991538546252627">ከ<ph name="NAME" /> ጋር በመገናኘት ላይ</translation>
+<translation id="3904768293285573640">የባለጡብ መስኮት መጠንን ወደ ግራ ቀይር</translation>
 <translation id="3906954721959377182">ጡባዊ</translation>
 <translation id="3923494859158167397">ምንም የተንቀሳቃሽ ስልክ አውታረ መረቦች አልተቀናበሩም</translation>
 <translation id="3925540965556789199">የ<ph name="DATE" /> ክስተቶችን በመጫን ላይ።</translation>

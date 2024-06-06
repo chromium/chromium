@@ -5,6 +5,7 @@
 <translation id="1013952917065545813">Адсюль вы можаце адкрываць нядаўна закрытыя ўкладкі</translation>
 <translation id="1016495303386450659">Элемент абноўлены</translation>
 <translation id="1025514696883950875">{COUNT,plural, =1{Захаваць пароль ва ўліковым запісе}one{Захаваць паролі ва ўліковым запісе}few{Захаваць паролі ва ўліковым запісе}many{Захаваць паролі ва ўліковым запісе}other{Захаваць паролі ва ўліковым запісе}}</translation>
+<translation id="102916930470544692">Ключ доступу</translation>
 <translation id="1035980983510608210">Пры закрыцці ўсіх укладак закрыюцца і замацаваныя ўкладкі.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1043592663436934089">Вы выйдзеце з уліковага запісу, а даныя пра работу ў браўзеры будуць выдалены</translation>
@@ -1016,6 +1017,7 @@
 <translation id="6173499589275053515">Пароль захаваны ў вашым Уліковым запісе Google (<ph name="EMAIL" />)</translation>
 <translation id="6184086493125982861">Паказваць укладкі</translation>
 <translation id="6187302354554850004">Апошняя сінхранізацыя: <ph name="LAST_USED_TIME" /></translation>
+<translation id="6188737759358894319">Дата стварэння: <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Непрачытанае</translation>
 <translation id="6196207969502475924">Галасавы пошук</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Закрыць {COUNT} укладку}one{Закрыць {COUNT} укладку}few{Закрыць {COUNT} укладкі}many{Закрыць {COUNT} укладак}other{Закрыць {COUNT} укладкі}}</translation>
@@ -1032,6 +1034,7 @@
 <translation id="6232329973559504466">Пошук у рэжыме інкогніта</translation>
 <translation id="6236952928980352967">Аднавіць папярэджанне</translation>
 <translation id="6247557882553405851">Менеджар пароляў Google</translation>
+<translation id="6251835855431997163">Запоўніць аўтаматычна "<ph name="VALUE" />"</translation>
 <translation id="6254066287920239840">Адкрываць спасылкі ў праграме замест браўзера.</translation>
 <translation id="6255097610484507482">Рэдагаванне крэдытнай карткі</translation>
 <translation id="6266039999629596120">Патрабуе ўвагі</translation>
@@ -1210,6 +1213,7 @@
 <translation id="7022197654033719543">Звесткі пра сайт</translation>
 <translation id="7029809446516969842">Паролі</translation>
 <translation id="704692552158601232">Стандартны браўзер</translation>
+<translation id="7055240621761583113">Запоўніць поле пароля аўтаматычна</translation>
 <translation id="7063811929043357292">Вашым уліковым запісам кіруюць бацькі.
 <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="7069695992271320873">Выдаліць з гэтай прылады</translation>
@@ -1303,7 +1307,6 @@
 <translation id="7557508262441527045">Выкананы выхад</translation>
 <translation id="7561196759112975576">Заўсёды</translation>
 <translation id="7564917801238348224">ЗАХАВАЦЬ...</translation>
-<translation id="758132317817089442">Уключыць палепшаную абарону</translation>
 <translation id="7582857256643797524">Гэта налада ўключана на вашай прыладзе</translation>
 <translation id="7583004045319035904">Выкарыстоўвайце <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> для разблакіроўкі ўкладак у рэжыме інкогніта</translation>
 <translation id="7598439272585186139">Павысьце бяспеку</translation>

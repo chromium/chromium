@@ -1757,6 +1757,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
     <ph name="BEGIN_PARAGRAPH2" />Ekki er hægt að hætta við uppsetninguna eftir að hún hefst.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2270627217422354837">Skiptast á gögnum við hvaða tæki sem er á lénunum: <ph name="DOMAINS" /></translation>
 <translation id="2270666014403455717">Úthlutaðu rofa fyrir „Velja“</translation>
+<translation id="2271452184061378400">Flipahóparnir þínir eru vistaðir hér</translation>
 <translation id="2271986192355138465">Kynntu þér uppsetningu vefforrita</translation>
 <translation id="2272430695183451567">0 rofum úthlutað</translation>
 <translation id="2272570998639520080">Martini-glas</translation>
@@ -1993,7 +1994,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2435248616906486374">Nettenging slitnaði</translation>
 <translation id="2435457462613246316">Sýna aðgangsorð</translation>
 <translation id="2436385001956947090">Afrita tengil</translation>
-<translation id="2436746748253887661">Þetta gerir kerfisþjónustum með heimild kleift að nota staðsetninguna þína. Staðsetning kann að nota tækni á borð við Wi-Fi, farsímakerfi og skynjara til að áætla staðsetningu tækisins. <ph name="LINK_BEGIN" />Nánar<ph name="LINK_END" /></translation>
 <translation id="2438853563451647815">Ekki tengt við prentara</translation>
 <translation id="2439152382014731627">Endurstilla <ph name="DEVICE_TYPE" /> aðgangsorð</translation>
 <translation id="2439626940657133600">Hleður <ph name="WINDOW_TITLE" /></translation>
@@ -9075,7 +9075,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7788948939674438635">Ekki leyfa vefsvæðum að læsa lyklaborðinu</translation>
 <translation id="7789963078219276159">Bakgrunni upphafssíðu hefur verið breytt í <ph name="CATEGORY" />.</translation>
-<translation id="7790689625219600437">Textagreining PDF-skráa</translation>
 <translation id="7791269138074599214">Innsláttaraðferð</translation>
 <translation id="7791429245559955092">Þetta forrit verður sett upp á Chrome-prófílnum sem þú ert að nota</translation>
 <translation id="7791436592012979144">Kveikt á flettingu aftur á bak</translation>
@@ -9829,6 +9828,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8336739000755212683">Breyta reikningsmynd í tækinu</translation>
 <translation id="8337020675372081178">{HOURS,plural, =1{Þetta tæki verður vistað í 1 klukkustund og þú getur tengst án kóða næst. Stjórnandinn þinn stillir þetta.}one{Þetta tæki verður vistað í {HOURS} klukkustund og þú getur tengst án kóða næst. Stjórnandinn þinn stillir þetta.}other{Þetta tæki verður vistað í {HOURS} klukkustundir og þú getur tengst án kóða næst. Stjórnandinn þinn stillir þetta.}}</translation>
 <translation id="8337399713761067085">Þú ert ekki á netinu</translation>
+<translation id="8338427544764842461">Flipahóparnir þínir eru vistaðir hér og verða uppfærðir í öllum innskráðu tækjunum þínum</translation>
 <translation id="8338952601723052325">Vefsvæði þróunaraðila</translation>
 <translation id="8339288417038613756">Stærð skjás og texta</translation>
 <translation id="833986336429795709">Veldu forrit til að opna þennan tengil</translation>

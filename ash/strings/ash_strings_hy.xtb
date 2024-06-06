@@ -147,6 +147,7 @@
 <translation id="1487931858675166540">«<ph name="FIRST_ITEM_TITLE" />» և «<ph name="SECOND_ITEM_TITLE" />» տարրերը տեղերով փոխվեցին</translation>
 <translation id="1500926532737552529">Ցույց տալ բոլոր առաջարկները</translation>
 <translation id="1501946871587957338">Փոխե՞լ աուդիո աղբյուրը</translation>
+<translation id="1505542291183484463">Սալիկապատված չափափոխման պատուհանը դեպի ներքև</translation>
 <translation id="1510238584712386396">Գործարկիչ</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Ցուցադրել ծանուցումների կարգավորումները: Ծանուցումներն անջատված են մեկ հավելվածի համար:}one{Ցուցադրել ծանուցումների կարգավորումները: Ծանուցումներն անջատված են # հավելվածի համար:}other{Ցուցադրել ծանուցումների կարգավորումները: Ծանուցումներն անջատված են # հավելվածի համար:}}</translation>
 <translation id="1523032696246003">Մարտկոցի լիցքը՝ <ph name="BATTERY_PERCENTAGE" />% | Լրիվ լիցքավորմանը մնացել է <ph name="TIME" /></translation>
@@ -177,6 +178,7 @@
 <translation id="1610778689852195798">«Undo» (հետարկել)</translation>
 <translation id="1611993646327628135">Միացված է</translation>
 <translation id="1620510694547887537">Տեսախցիկ</translation>
+<translation id="1623768535032616219">Ծալել Google Classroom-ը</translation>
 <translation id="1632985212731562677">Switch Access-ն անջատելու համար անցեք Կարգավորումներ &gt; Հատուկ գործառույթներ։</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> սարք</translation>
 <translation id="1639239467298939599">Բեռնում</translation>
@@ -296,11 +298,13 @@
 <translation id="2149229036084364364">Անցնել նախորդ կատարմանը</translation>
 <translation id="2152895518047545149">Ոչինչ բաց չեք թողել։ Կեցցե՛ք։</translation>
 <translation id="2161132820593978283">Տեսազանգերում փորձեք օգտագործել տեսախցիկի կադրավորումը էկրանի կենտրոնով։ Միացրեք այն Արագ կարգավորումներում։</translation>
+<translation id="216955976692983107">Սալիկապատված չափափոխման պատուհանը դեպի աջ</translation>
 <translation id="2185166372312820725">Անցնել նախորդ ներդիր</translation>
 <translation id="2185444992308415167">Անցնել 1–8 ներդիրներ</translation>
 <translation id="2198625180564913276">Պրոֆիլն ավելացվում է։ Դա կարող է մի քանի րոպե տևել։</translation>
 <translation id="219905428774326614">Գործարկիչ, բոլոր հավելվածները</translation>
 <translation id="2201071101391734388">Վերջին լուսանկար <ph name="INDEX" />/<ph name="TOTAL_COUNT" />։</translation>
+<translation id="2201687081523799384">Ծալել Google Tasks-ը</translation>
 <translation id="2208323208084708176">Միասնական աշխատասեղանի ռեժիմ</translation>
 <translation id="2220572644011485463">PIN կոդը կամ գաղտնաբառը</translation>
 <translation id="2222841058024245321">Աշխատասեղան 7</translation>
@@ -362,6 +366,7 @@
 <translation id="2427507373259914951">Ձախ սեղմում</translation>
 <translation id="2429753432712299108">«<ph name="DEVICE_NAME" />» Bluetooth սարքը զուգավորման թույլտվություն է խնդրում: Նախքան ընդունելը հաստատեք, որ սարքի վրա ցուցադրվում է այս կոդը` <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Ցույց տալ գաղտնաբառը</translation>
+<translation id="2437771564543046790">Մարտկոցի լիցքը քիչ է։ Մարտկոցի տնտեսումը միացված է</translation>
 <translation id="243878895369688216">Երեկ բացել եք</translation>
 <translation id="2440978926514840421">GIF ձևաչափով տեսագրումն արվել է</translation>
 <translation id="2441427462554639370">Ձայնագրումն ավարտվեց ոչ բավարար տարածքի պատճառով</translation>
@@ -642,6 +647,7 @@
 <translation id="3509391053705095206">Չհաջողվեց գտնել ձեր հեռախոսը։ Համոզվեք, որ հեռախոսի Bluetooth-ը միացված է։</translation>
 <translation id="3510164367642747937">Ընդգծել մկնիկի նշորդը</translation>
 <translation id="3513798432020909783">Հաշվի կառավարիչ՝ <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3516000762115478502">Սալիկապատված չափափոխման պատուհանը դեպի վեր</translation>
 <translation id="3517037892157925473">Առաջադրանքները վերջին անգամ թարմացվել են՝ <ph name="DATE" />, <ph name="TIME" />։</translation>
 <translation id="352245152354538528">{0,plural, =1{Թարմացրեք սարքը 1 րոպեի ընթացքում}one{Թարմացրեք սարքը # րոպեի ընթացքում}other{Թարմացրեք սարքը # րոպեի ընթացքում}}</translation>
 <translation id="3522979239100719575">Հասանելի պրոֆիլների որոնում։ Դա կարող է մի քանի րոպե տևել։</translation>
@@ -758,6 +764,7 @@
 <translation id="3899995891769452915">Ձայնային ներածում</translation>
 <translation id="3900355044994618856">Ձեր աշխատաշրջանը կավարտվի <ph name="SESSION_TIME_REMAINING" />-ից</translation>
 <translation id="3901991538546252627">Միացում <ph name="NAME" />-ին</translation>
+<translation id="3904768293285573640">Սալիկապատված չափափոխման պատուհանը դեպի ձախ</translation>
 <translation id="3906954721959377182">Պլանշետ</translation>
 <translation id="3923494859158167397">Բջջային ցանց կարգավորված չէ</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, միջոցառումների բեռնում։</translation>
@@ -1196,6 +1203,7 @@
 <translation id="550391772491508736">Վերսկսել հեռարձակումը</translation>
 <translation id="5506975627792768506">Միացնել կամ անջատել խոշորացույցը</translation>
 <translation id="5512042095225963688">Ջնջել նախորդ բառը</translation>
+<translation id="5519005148254860683">Ծավալել Google Tasks-ը</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Ադմինիստրատորը հեռացրել է բոլոր eSIM պրոֆիլները։ Լրացուցիչ տեղեկությունների համար դիմեք ձեր ադմինիստրատորին։</translation>
 <translation id="5520909879404821039">«Ողջույն» ֆրանսերենով</translation>
@@ -1404,6 +1412,7 @@
 <translation id="6200515304866777730">Չի աջակցվում հավելվածի կողմից</translation>
 <translation id="6210042900243040400">Միացեք սարքին (<ph name="NAME" />), որը նախկինում պահել եք <ph name="EMAIL" /> հաշվում</translation>
 <translation id="6213808132343683860">Էկրանի մի մասի սքրինշոթ կամ տեսագրություն անել</translation>
+<translation id="621606890568890214">Ծավալել Google Classroom-ը</translation>
 <translation id="6220928844947387476">Այժմ դուք կարող եք միաժամանակ տեսագրել ձեզ և ձեր էկրանը</translation>
 <translation id="622484624075952240">Վար</translation>
 <translation id="6228457605945141550">Նվազեցնել պայծառությունը</translation>

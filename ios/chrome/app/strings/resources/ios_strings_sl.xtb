@@ -5,6 +5,7 @@
 <translation id="1013952917065545813">Tukaj lahko znova odprete zavihke, ki ste jih nedavno zaprli</translation>
 <translation id="1016495303386450659">Item updated</translation>
 <translation id="1025514696883950875">{COUNT,plural, =1{Shrani geslo v računu}one{Shrani gesla v računu}two{Shrani gesla v računu}few{Shrani gesla v računu}other{Shrani gesla v računu}}</translation>
+<translation id="102916930470544692">Ključ za dostop</translation>
 <translation id="1035980983510608210">Če zaprete vse zavihke, zaprete tudi pripete zavihke.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1043592663436934089">Odjavljeni boste in podatki brskanja bodo izbrisani</translation>
@@ -1016,6 +1017,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6173499589275053515">Geslo je shranjeno v računu Google, <ph name="EMAIL" /></translation>
 <translation id="6184086493125982861">Pokaži zavihke</translation>
 <translation id="6187302354554850004">Nazadnje sinhronizirano: <ph name="LAST_USED_TIME" /></translation>
+<translation id="6188737759358894319">Ustvarjeno dne <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Neprebrano</translation>
 <translation id="6196207969502475924">Glasovno iskanje</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Zapri {COUNT} zavihek}one{Zapri {COUNT} zavihek}two{Zapri {COUNT} zavihka}few{Zapri {COUNT} zavihke}other{Zapri {COUNT} zavihkov}}</translation>
@@ -1303,7 +1305,6 @@ Ko uporabljate anonimni način, spletna mesta ne smejo uporabljati piškotkov za
 <translation id="7557508262441527045">Odjavljen</translation>
 <translation id="7561196759112975576">Vedno</translation>
 <translation id="7564917801238348224">SHRANI …</translation>
-<translation id="758132317817089442">Vklop izboljšane zaščite …</translation>
 <translation id="7582857256643797524">Ta nastavitev je omogočena v vaši napravi</translation>
 <translation id="7583004045319035904">Za odklepanje anonimnih zavihkov uporabite to: <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />.</translation>
 <translation id="7598439272585186139">Več varnosti</translation>

@@ -72,6 +72,7 @@
 <translation id="1235458158152011030">Вядомыя сеткі</translation>
 <translation id="1239161794459865856">Функцыя "<ph name="FEATURE_NAME" />" падключана.</translation>
 <translation id="1240638468526743569">адна з праграм</translation>
+<translation id="1242198791279543032">Апавяшчэнні адключаны</translation>
 <translation id="1242883863226959074">прыладзе</translation>
 <translation id="1245644940275736236">Перайсці да Памочніка</translation>
 <translation id="124678866338384709">Закрыць бягучую ўкладку</translation>
@@ -147,6 +148,7 @@
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> і <ph name="SECOND_ITEM_TITLE" /> памяняліся месцамі</translation>
 <translation id="1500926532737552529">Паказаць усе прапановы</translation>
 <translation id="1501946871587957338">Пераключыць крыніцу аўдыя?</translation>
+<translation id="1505542291183484463">Размясціць акно ў ніжняй частцы экрана</translation>
 <translation id="1510238584712386396">Панэль запуску</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Паказаць налады апавяшчэнняў. Апавяшчэнні выключаны для адной праграмы}one{Паказаць налады апавяшчэнняў. Апавяшчэнні выключаны для # праграмы}few{Паказаць налады апавяшчэнняў. Апавяшчэнні выключаны для # праграм}many{Паказаць налады апавяшчэнняў. Апавяшчэнні выключаны для # праграм}other{Паказаць налады апавяшчэнняў. Апавяшчэнні выключаны для # праграмы}}</translation>
 <translation id="1523032696246003">Акумулятар зараджаны на <ph name="BATTERY_PERCENTAGE" />% | Да поўнай зарадкі застаецца <ph name="TIME" /></translation>
@@ -177,6 +179,7 @@
 <translation id="1610778689852195798">"Адрабіць"</translation>
 <translation id="1611993646327628135">Уключана</translation>
 <translation id="1620510694547887537">Камера</translation>
+<translation id="1623768535032616219">Згарнуць Google Клас</translation>
 <translation id="1632985212731562677">Доступ праз пераключальнікі можна выключыць у раздзеле "Налады &gt; Спецыяльныя магчымасці".</translation>
 <translation id="1637505162081889933">Прылад: <ph name="NUM_DEVICES" /></translation>
 <translation id="1639239467298939599">Ідзе загрузка</translation>
@@ -296,11 +299,13 @@
 <translation id="2149229036084364364">Перайсці да папярэдняга трэка</translation>
 <translation id="2152895518047545149">Здаецца, нічога не прапушчана. Выдатна!</translation>
 <translation id="2161132820593978283">Апрабуйце функцыю кадравання – яна дазволіць вам заставацца ў цэнтры экрана падчас відэавыклікаў. Яе можна ўключыць у хуткіх наладах.</translation>
+<translation id="216955976692983107">Размясціць акно ў правай частцы экрана</translation>
 <translation id="2185166372312820725">Вярнуцца на папярэднюю ўкладку</translation>
 <translation id="2185444992308415167">Перайсці па ўкладках 1-8</translation>
 <translation id="2198625180564913276">Ідзе дадаванне профілю. Гэта можа заняць некалькі хвілін.</translation>
 <translation id="219905428774326614">Панэль запуску, усе праграмы</translation>
 <translation id="2201071101391734388">Нядаўняе фота <ph name="INDEX" /> з <ph name="TOTAL_COUNT" />.</translation>
+<translation id="2201687081523799384">Згарнуць Google Задачы</translation>
 <translation id="2208323208084708176">Рэжым адзінага працоўнага стала</translation>
 <translation id="2220572644011485463">PIN-код або пароль</translation>
 <translation id="2222841058024245321">Працоўны стол 7</translation>
@@ -362,6 +367,7 @@
 <translation id="2427507373259914951">Націсканне левай кнопкай мышы</translation>
 <translation id="2429753432712299108">Прылада Bluetooth "<ph name="DEVICE_NAME" />" запытвае дазволу на спалучэнне. Перш чым пагадзіцца, упэўніцеся, што на прыладзе паказаны гэты ключ доступу: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Паказаць пароль</translation>
+<translation id="2437771564543046790">Нізкі зарад акумулятара – уключаны рэжым энергазберажэння</translation>
 <translation id="243878895369688216">Адкрывалася ўчора</translation>
 <translation id="2440978926514840421">Файл GIF запісаны</translation>
 <translation id="2441427462554639370">Запіс закончыўся з-за крытычна малога аб'ёму вольнага месца ў сховішчы</translation>
@@ -642,6 +648,7 @@
 <translation id="3509391053705095206">Не ўдалося знайсці тэлефон. Пераканайцеся, што на тэлефоне ўключаны Bluetooth.</translation>
 <translation id="3510164367642747937">Вылучаць курсор мышы</translation>
 <translation id="3513798432020909783">Уліковы запіс пад кіраваннем <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3516000762115478502">Размясціць акно ў верхняй частцы экрана</translation>
 <translation id="3517037892157925473">Апошняе абнаўленне задач: <ph name="TIME" />, <ph name="DATE" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{Абнавіце прыладу на працягу 1 хвіліны}one{Абнавіце прыладу на працягу # хвіліны}few{Абнавіце прыладу на працягу # хвілін}many{Абнавіце прыладу на працягу # хвілін}other{Абнавіце прыладу на працягу # хвілін}}</translation>
 <translation id="3522979239100719575">Ідзе пошук даступных профіляў. Гэта можа заняць некалькі хвілін.</translation>
@@ -758,6 +765,7 @@
 <translation id="3899995891769452915">Галасавы ўвод</translation>
 <translation id="3900355044994618856">Сеанс завершыцца праз <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">Ідзе падключэнне да сеткі <ph name="NAME" /></translation>
+<translation id="3904768293285573640">Размясціць акно ў левай частцы экрана</translation>
 <translation id="3906954721959377182">Планшэт</translation>
 <translation id="3923494859158167397">Мабільныя сеткі не наладжаны</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, падзеі загружаюцца.</translation>
@@ -1196,6 +1204,7 @@
 <translation id="550391772491508736">Узнавіць трансляцыю</translation>
 <translation id="5506975627792768506">Уключыць або выключыць лупу</translation>
 <translation id="5512042095225963688">Выдаліць папярэдняе слова</translation>
+<translation id="5519005148254860683">Разгарнуць Google Задачы</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Адміністратар выдаліў усе профілі eSIM-карт. Па дадатковую інфармацыю звяртайцеся да яго.</translation>
 <translation id="5520909879404821039">"Прывітанне" па-французску</translation>
@@ -1404,6 +1413,7 @@
 <translation id="6200515304866777730">Не падтрымліваецца праграмай</translation>
 <translation id="6210042900243040400">Можна падключыцца да прылады "<ph name="NAME" />", якая была захавана раней ва ўліковым запісе <ph name="EMAIL" /></translation>
 <translation id="6213808132343683860">Зрабіць здымак або запіс часткі экрана</translation>
+<translation id="621606890568890214">Разгарнуць Google Клас</translation>
 <translation id="6220928844947387476">Цяпер можна адначасова весці запіс экрана і відарыса з камеры</translation>
 <translation id="622484624075952240">Уніз</translation>
 <translation id="6228457605945141550">Паменшыць яркасць</translation>

@@ -5,6 +5,7 @@
 <translation id="1013952917065545813">Puwede kang bumalik dito para buksan ulit ang mga tab na isinara mo kamakailan</translation>
 <translation id="1016495303386450659">Na-update ang item</translation>
 <translation id="1025514696883950875">{COUNT,plural, =1{I-save ang Password sa Account}one{I-save ang Mga Password sa Account}other{I-save ang Mga Password sa Account}}</translation>
+<translation id="102916930470544692">Passkey</translation>
 <translation id="1035980983510608210">Kapag isinara ang lahat ng tab, magsasara rin ang mga naka-pin na tab.</translation>
 <translation id="1036017604683756002">UPS</translation>
 <translation id="1043592663436934089">Masa-sign out ka at ide-delete ang data mula sa pag-browse</translation>
@@ -1016,6 +1017,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="6173499589275053515">Na-save ang password sa iyong Google Account, <ph name="EMAIL" /></translation>
 <translation id="6184086493125982861">Ipakita ang Mga Tab</translation>
 <translation id="6187302354554850004">Huling na-sync: <ph name="LAST_USED_TIME" /></translation>
+<translation id="6188737759358894319">Ginawa noong <ph name="DATE" /></translation>
 <translation id="6189413832092199491">Hindi pa nababasa</translation>
 <translation id="6196207969502475924">Paghahanap gamit ang boses</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Isara ang {COUNT} Tab}one{Isara ang {COUNT} Tab}other{Isara ang {COUNT} na Tab}}</translation>
@@ -1303,7 +1305,6 @@ Habang nasa Incognito, hindi magagamit ng mga site ang cookies para makita ang i
 <translation id="7557508262441527045">Nag-sign out</translation>
 <translation id="7561196759112975576">Palagi</translation>
 <translation id="7564917801238348224">I-SAVE...</translation>
-<translation id="758132317817089442">I-on ang pinaigting na proteksyon...</translation>
 <translation id="7582857256643797524">Naka-enable ang setting na ito sa iyong device</translation>
 <translation id="7583004045319035904">Gamitin ang <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> para i-unlock ang iyong mga tab na Incognito.</translation>
 <translation id="7598439272585186139">Magkaroon ng higit pang seguridad</translation>
