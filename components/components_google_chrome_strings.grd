@@ -255,24 +255,12 @@
 
       <!-- About Flags UI -->
       <if expr="not chromeos_ash">
-        <message name="IDS_FLAGS_UI_RELAUNCH_NOTICE" translateable="false" desc="Notifies the user that they need to relaunch Chrome. Shown next to a button that says 'Relaunch Now'.">
+        <message name="IDS_FLAGS_UI_RELAUNCH_NOTICE" desc="Notifies the user that they need to relaunch Chrome. Shown next to a button that says 'Relaunch Now'.">
           Your changes will take effect the next time you relaunch Chrome.
         </message>
       </if>
       <if expr="chromeos_ash">
-        <message name="IDS_FLAGS_UI_RELAUNCH_NOTICE" translateable="false" desc="Notifies the user that they need to restart ChromeOS. Shown next to a button that says 'Restart Now'.">
-          Your changes will take effect the next time you restart your device.
-        </message>
-      </if>
-
-      <!-- about:flags/deprecated strings -->
-      <if expr="not chromeos_ash">
-        <message name="IDS_DEPRECATED_FEATURES_RELAUNCH_NOTICE" desc="Notifies the user that they need to relaunch Chrome. Shown next to a button that says 'Relaunch Now'.">
-          Your changes will take effect the next time you relaunch Chrome.
-        </message>
-      </if>
-      <if expr="chromeos_ash">
-        <message name="IDS_DEPRECATED_FEATURES_RELAUNCH_NOTICE" desc="Notifies the user that they need to restart ChromeOS. Shown next to a button that says 'Restart Now'.">
+        <message name="IDS_FLAGS_UI_RELAUNCH_NOTICE" desc="Notifies the user that they need to restart ChromeOS. Shown next to a button that says 'Restart Now'.">
           Your changes will take effect the next time you restart your device.
         </message>
       </if>
