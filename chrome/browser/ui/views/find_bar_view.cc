@@ -39,7 +39,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/theme_provider.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/events/event.h"
@@ -187,8 +186,7 @@ FindBarView::FindBarView(FindBarHost* host) {
   // border. This gives us symmetry between the left margin of the FindBarView
   // which is lined up with the Textfield and the right margin of
   // the FindBarView which is lined up with the close button.
-  gfx::Insets textfield_hover_padding =
-      features::IsChromeRefresh2023() ? vector_button : gfx::Insets();
+  gfx::Insets textfield_hover_padding = vector_button;
   textfield_hover_padding.set_top_bottom(0, 0);
 
   auto main_container =
@@ -221,11 +219,8 @@ FindBarView::FindBarView(FindBarHost* host) {
                   .SetColorId(ui::kColorSeparator)
                   .SetProperty(
                       views::kMarginsKey,
-                      gfx::Insets(
-                          horizontal_margin +
-                          (features::IsChromeRefresh2023()
-                               ? chrome_refresh_separator_vertical_margin
-                               : toast_control_vertical_margin))),
+                      gfx::Insets(horizontal_margin +
+                                  chrome_refresh_separator_vertical_margin)),
               views::Builder<views::ImageButton>()
                   .CopyAddressTo(&find_previous_button_)
                   .SetAccessibleName(
@@ -328,11 +323,9 @@ FindBarView::FindBarView(FindBarHost* host) {
             .Build());
   }
 
-  if (features::IsChromeRefresh2023()) {
-    find_text_->SetFontList(
-        views::Textfield::GetDefaultFontList().DeriveWithWeight(
-            gfx::Font::Weight::MEDIUM));
-  }
+  find_text_->SetFontList(
+      views::Textfield::GetDefaultFontList().DeriveWithWeight(
+          gfx::Font::Weight::MEDIUM));
   SetCommonButtonAttributes(find_previous_button_);
   SetCommonButtonAttributes(find_next_button_);
   SetCommonButtonAttributes(close_button_);
@@ -579,19 +572,12 @@ void FindBarView::OnThemeChanged() {
   const SkColor fg_disabled_color =
       color_provider->GetColor(kColorFindBarButtonIconDisabled);
   views::SetImageFromVectorIconWithColor(find_previous_button_,
-                                         features::IsChromeRefresh2023()
-                                             ? kKeyboardArrowUpChromeRefreshIcon
-                                             : vector_icons::kCaretUpIcon,
+                                         kKeyboardArrowUpChromeRefreshIcon,
                                          fg_color, fg_disabled_color);
-  views::SetImageFromVectorIconWithColor(
-      find_next_button_,
-      features::IsChromeRefresh2023() ? kKeyboardArrowDownChromeRefreshIcon
-                                      : vector_icons::kCaretDownIcon,
-      fg_color, fg_disabled_color);
-  views::SetImageFromVectorIconWithColor(close_button_,
-                                         features::IsChromeRefresh2023()
-                                             ? kCloseChromeRefreshIcon
-                                             : vector_icons::kCloseRoundedIcon,
+  views::SetImageFromVectorIconWithColor(find_next_button_,
+                                         kKeyboardArrowDownChromeRefreshIcon,
+                                         fg_color, fg_disabled_color);
+  views::SetImageFromVectorIconWithColor(close_button_, kCloseChromeRefreshIcon,
                                          fg_color, fg_disabled_color);
 }
 
