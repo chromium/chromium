@@ -15,14 +15,24 @@
 # allocator functions into the shim provided by PartitionAlloc so that Rust and
 # C++ use the same allocator backend.
 
+import("//base/allocator/partition_allocator/partition_alloc.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/coverage/coverage.gni")
 import("//build/config/rust.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 
 if (toolchain_has_rust) {
-  # Equivalent of allocator symbols injected by rustc.
+  # If clang performs the link step, we need to provide the allocator symbols
+  # that are normally injected by rustc during linking.
+  #
+  # We also "happen to" use this to redirect allocations to PartitionAlloc,
+  # though that would be better done through a #[global_allocator] crate (see
+  # above).
   source_set("remap_alloc") {
+    public_deps = [
+      "//base/allocator/partition_allocator:buildflags",
+      "//base/allocator/partition_allocator:partition_alloc",
+    ]
     sources = [
       # `alias.*`, `compiler_specific.h`, and `immediate_crash.*` have been
       # copied from `//base`.
@@ -268,32 +278,27 @@ if (toolchain_has_rust) {
       rustc_sanitizer_runtimes += [ ":sanitizer_rt_hwasan" ]
     }
 
-    group("local_stdlib_libs") {
+    # Builds and links against the Rust stdlib. Both Rust and C++ targets should
+    # depend on this, as it provides the path to the library and includes the
+    # allocator hooks.
+    group("std") {
       assert(toolchain_has_rust,
              "Some C++ target is depending on Rust code even though " +
                  "toolchain_has_rust=false. Usually this would mean" +
                  "a NaCl target is depending on Rust, as there's no Rust " +
                  "toolchain targetting NaCl.")
-      all_dependent_configs = [ ":stdlib_dependent_libs" ]
+      all_dependent_configs = [
+        ":stdlib_public_dependent_libs",
+        ":local_stdlib_sysroot",
+        ":stdlib_dependent_libs",
+      ]
       deps = []
       foreach(libname, stdlib_files + skip_stdlib_files) {
         deps += [ "rules:$libname" ]
       }
       deps += rustc_sanitizer_runtimes
-      visibility = [ ":*" ]
-    }
 
-    # Builds and links against the Rust stdlib. Used by targets for which
-    # linking is driven by C++.
-    group("std") {
-      all_dependent_configs = [
-        ":stdlib_public_dependent_libs",
-        ":local_stdlib_sysroot",
-      ]
-      public_deps = [
-        ":local_stdlib_libs",
-        ":remap_alloc",
-      ]
+      public_deps = [ ":remap_alloc" ]
     }
   } else {
     action("find_stdlib") {
