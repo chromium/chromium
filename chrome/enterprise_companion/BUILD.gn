@@ -38,6 +38,7 @@ test("enterprise_companion_tests") {
     "mojom/",
     "//base",
     "//base/test:test_support",
+    "//chrome/enterprise_companion/device_management_storage:unit_tests",
     "//components/named_mojo_ipc_server",
     "//testing/gtest",
   ]

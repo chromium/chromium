@@ -537,6 +537,8 @@ if (is_win || is_mac || is_linux) {
       "//chrome/browser",
       "//chrome/browser/ui",
       "//chrome/browser/updater:*",
+      "//chrome/enterprise_companion:*",
+      "//chrome/enterprise_companion/device_management_storage:*",
       "//chrome/test:*",
       "//chrome/test:unit_tests",
     ]
