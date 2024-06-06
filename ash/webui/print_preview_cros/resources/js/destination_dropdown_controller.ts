@@ -55,7 +55,7 @@ export class DestinationDropdownController extends EventTarget {
   // - Initial destinations have not been loaded.
   // - Print request is in progress.
   shouldDisableDropdown(): boolean {
-    return !this.destinationManager.hasLoadedAnInitialDestination() ||
+    return !this.destinationManager.hasAnyDestinations() ||
         this.printTicketManager.isPrintRequestInProgress();
   }
 

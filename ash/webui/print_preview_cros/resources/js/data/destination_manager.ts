@@ -116,7 +116,7 @@ export class DestinationManager extends EventTarget implements
 
   // Returns true if initial fetch has returned and there are valid destinations
   // available.
-  hasLoadedAnInitialDestination(): boolean {
+  hasAnyDestinations(): boolean {
     return this.isSessionInitialized() && this.initialDestinationsLoaded &&
         this.destinations.length > 0;
   }

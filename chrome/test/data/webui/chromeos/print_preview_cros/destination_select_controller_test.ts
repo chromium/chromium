@@ -48,13 +48,13 @@ suite('DestinationSelectController', () => {
   });
 
   // Verify shouldShowLoadingUi returns true if
-  // DestinationManager's `hasLoadedAnInitialDestination` call is false.
+  // DestinationManager's `hasAnyDestinations` call is false.
   test(
       'shouldShowLoadingUi returns true when destination manager has not ' +
           'received initial destinations',
       () => {
         const hasDestinationsFn = mockController.createFunctionMock(
-            destinationManager, 'hasLoadedAnInitialDestination');
+            destinationManager, 'hasAnyDestinations');
         hasDestinationsFn.returnValue = false;
         const initializedFn = mockController.createFunctionMock(
             destinationManager, 'isSessionInitialized');
@@ -71,7 +71,7 @@ suite('DestinationSelectController', () => {
           'received initial destinations',
       () => {
         const hasDestinationsFn = mockController.createFunctionMock(
-            destinationManager, 'hasLoadedAnInitialDestination');
+            destinationManager, 'hasAnyDestinations');
         hasDestinationsFn.returnValue = true;
         const initializedFn = mockController.createFunctionMock(
             destinationManager, 'isSessionInitialized');
@@ -81,14 +81,14 @@ suite('DestinationSelectController', () => {
       });
 
   // Verify shouldShowLoadingUi returns false if
-  // DestinationManager's `hasLoadedAnInitialDestination` and
+  // DestinationManager's `hasAnyDestinations` and
   // `isSessionInitialized` call is true.
   test(
       'shouldShowLoadingUi returns false when destination manager has ' +
           'received initial destinations',
       () => {
         const hasDestinationsFn = mockController.createFunctionMock(
-            destinationManager, 'hasLoadedAnInitialDestination');
+            destinationManager, 'hasAnyDestinations');
         hasDestinationsFn.returnValue = true;
         const initializedFn = mockController.createFunctionMock(
             destinationManager, 'isSessionInitialized');

@@ -40,7 +40,7 @@ export class DestinationSelectController extends EventTarget {
   // is initialized.
   shouldShowLoadingUi(): boolean {
     return !this.destinationManager.isSessionInitialized() ||
-        !this.destinationManager.hasLoadedAnInitialDestination();
+        !this.destinationManager.hasAnyDestinations();
   }
 
   // Handles notifying UI to update when destination manager

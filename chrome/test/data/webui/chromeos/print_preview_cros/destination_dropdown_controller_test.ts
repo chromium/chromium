@@ -250,11 +250,11 @@ suite('DestinationDropdownController', () => {
       'shouldDisableSelect returns true if initial destinations are not ' +
           'loaded',
       async () => {
-        // Initialize manager and force hasLoadedAnInitialDestination to false.
+        // Initialize manager and force hasAnyDestinations to false.
         await waitForInitialDestinationSet(mockTimer, testDelay);
         await waitForPrintTicketManagerInitialized();
         const hasInitialDestFn = mockController.createFunctionMock(
-            destinationManager, 'hasLoadedAnInitialDestination');
+            destinationManager, 'hasAnyDestinations');
         hasInitialDestFn.returnValue = false;
         assertTrue(
             controller.shouldDisableDropdown(),
