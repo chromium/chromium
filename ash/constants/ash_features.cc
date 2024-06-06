@@ -66,15 +66,10 @@ BASE_FEATURE(kAllowAmbientEQ,
 // Enables Cross-Device features, e.g. Nearby Share, Smart Lock, Fast Pair, etc.
 // This flag is used to disable Cross-Device on platforms where we cannot yet
 // guarantee a good experience with the stock Bluetooth hardware (e.g. Reven /
-// ChromeOS Flex).
+// ChromeOS Flex). Access through IsCrossDeviceFeatureSuiteAllowed().
 BASE_FEATURE(kAllowCrossDeviceFeatureSuite,
              "AllowCrossDeviceFeatureSuite",
-#if BUILDFLAG(IS_REVEN)
-             base::FEATURE_DISABLED_BY_DEFAULT
-#else
-             base::FEATURE_ENABLED_BY_DEFAULT
-#endif  // BUILDFLAG(IS_REVEN)
-);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Allows DevTools to open from the context menu and shortcut keys in Ash if
 // Lacros is the only browser.
@@ -3497,6 +3492,14 @@ bool IsCrosPrivacyHubLocationEnabled() {
   return base::FeatureList::IsEnabled(kCrosPrivacyHub);
 }
 
+bool IsCrossDeviceFeatureSuiteAllowed() {
+  if (switches::IsRevenBranding()) {
+    return false;
+  }
+
+  return base::FeatureList::IsEnabled(kAllowCrossDeviceFeatureSuite);
+}
+
 bool IsDeskButtonEnabled() {
   return base::FeatureList::IsEnabled(kDeskButton);
 }
@@ -4239,16 +4242,13 @@ bool IsOobeLazyLoadingEnabled() {
 }
 
 bool IsOobeQuickStartEnabled() {
-  if (switches::IsRevenBranding()) {
-    return false;
-  }
-
   // QuickStart directly depends on the 'Local Password' feature.
   if (!base::FeatureList::IsEnabled(kLocalPasswordForConsumers)) {
     return false;
   }
 
-  return base::FeatureList::IsEnabled(kOobeQuickStart);
+  return IsCrossDeviceFeatureSuiteAllowed() &&
+         base::FeatureList::IsEnabled(kOobeQuickStart);
 }
 
 bool IsOobeQuickStartOnLoginScreenEnabled() {

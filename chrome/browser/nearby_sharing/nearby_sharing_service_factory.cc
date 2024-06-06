@@ -56,8 +56,7 @@ bool NearbySharingServiceFactory::IsNearbyShareSupportedForBrowserContext(
     return *IsSupportedTesting();
   }
 
-  if (!base::FeatureList::IsEnabled(
-          ash::features::kAllowCrossDeviceFeatureSuite)) {
+  if (!ash::features::IsCrossDeviceFeatureSuiteAllowed()) {
     return false;
   }
 

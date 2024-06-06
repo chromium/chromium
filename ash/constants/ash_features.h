@@ -1052,6 +1052,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCopyClientKeysCertsToChapsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCrosPrivacyHubAppPermissionsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCrosPrivacyHubAppPermissionsV2Enabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCrosPrivacyHubLocationEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCrossDeviceFeatureSuiteAllowed();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsCryptauthAttestationSyncingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsDeepLinkingEnabled();

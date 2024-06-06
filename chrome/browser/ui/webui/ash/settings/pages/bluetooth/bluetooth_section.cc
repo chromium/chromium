@@ -468,8 +468,7 @@ void BluetoothSection::UpdateSearchTags() {
   updater.AddSearchTags(GetBluetoothSearchConcepts());
 
   if (features::IsFastPairEnabled() &&
-      base::FeatureList::IsEnabled(
-          ash::features::kAllowCrossDeviceFeatureSuite)) {
+      features::IsCrossDeviceFeatureSuiteAllowed()) {
     if (pref_service_->GetBoolean(ash::prefs::kFastPairEnabled)) {
       updater.AddSearchTags(GetFastPairOnSearchConcepts());
     } else {

@@ -12,7 +12,7 @@ namespace ash {
 namespace quick_pair {
 
 bool HasHardwareSupport(scoped_refptr<device::BluetoothAdapter> adapter) {
-  if (!base::FeatureList::IsEnabled(features::kAllowCrossDeviceFeatureSuite)) {
+  if (!features::IsCrossDeviceFeatureSuiteAllowed()) {
     return false;
   }
 

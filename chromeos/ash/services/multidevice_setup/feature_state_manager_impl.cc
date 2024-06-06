@@ -398,7 +398,7 @@ bool FeatureStateManagerImpl::IsAllowedByPolicy(mojom::Feature feature) {
 }
 
 bool FeatureStateManagerImpl::IsSupportedByChromebook(mojom::Feature feature) {
-  if (!base::FeatureList::IsEnabled(features::kAllowCrossDeviceFeatureSuite)) {
+  if (!features::IsCrossDeviceFeatureSuiteAllowed()) {
     return false;
   }
 

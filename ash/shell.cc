@@ -1256,9 +1256,11 @@ void Shell::Init(
       std::make_unique<PolicyRecommendationRestorer>();
   screen_switch_check_controller_ =
       std::make_unique<ScreenSwitchCheckController>();
-  multidevice_notification_presenter_ =
-      std::make_unique<MultiDeviceNotificationPresenter>(
-          message_center::MessageCenter::Get());
+  if (features::IsCrossDeviceFeatureSuiteAllowed()) {
+    multidevice_notification_presenter_ =
+        std::make_unique<MultiDeviceNotificationPresenter>(
+            message_center::MessageCenter::Get());
+  }
   media_controller_ = std::make_unique<MediaControllerImpl>();
   media_notification_provider_ =
       shell_delegate_->CreateMediaNotificationProvider();
