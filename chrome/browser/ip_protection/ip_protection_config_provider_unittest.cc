@@ -10,6 +10,7 @@
 #include "base/base64.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -124,28 +125,41 @@ class MockBlindSignAuth : public quiche::BlindSignAuthInterface {
 class MockIpProtectionProxyConfigRetriever
     : public IpProtectionProxyConfigRetriever {
  public:
+  using MockGetProxyConfig = base::RepeatingCallback<
+      base::expected<ip_protection::GetProxyConfigResponse, std::string>()>;
+  // Construct a mock retriever that will call the given closure for each call
+  // to GetProxyConfig.
   explicit MockIpProtectionProxyConfigRetriever(
-      std::optional<ip_protection::GetProxyConfigResponse>
-          proxy_config_response)
+      MockGetProxyConfig get_proxy_config)
       : IpProtectionProxyConfigRetriever(
             base::MakeRefCounted<network::TestSharedURLLoaderFactory>(),
             "test_service_type",
             "test_api_key"),
-        proxy_config_response_(proxy_config_response) {}
+        get_proxy_config_(get_proxy_config) {}
+
+  // Construct a mock retriever that always returns the same response.
+  explicit MockIpProtectionProxyConfigRetriever(
+      std::optional<ip_protection::GetProxyConfigResponse>
+          proxy_config_response)
+      : MockIpProtectionProxyConfigRetriever(base::BindLambdaForTesting(
+            [proxy_config_response = std::move(proxy_config_response)]()
+                -> base::expected<ip_protection::GetProxyConfigResponse,
+                                  std::string> {
+              if (!proxy_config_response.has_value()) {
+                return base::unexpected("uhoh");
+              }
+              return base::ok(*proxy_config_response);
+            })) {}
 
   void GetProxyConfig(
       std::optional<std::string> oauth_token,
       IpProtectionProxyConfigRetriever::GetProxyConfigCallback callback,
       bool for_testing = false) override {
-    if (!proxy_config_response_.has_value()) {
-      std::move(callback).Run(base::unexpected("uhoh"));
-      return;
-    }
-    std::move(callback).Run(*proxy_config_response_);
+    std::move(callback).Run(get_proxy_config_.Run());
   }
 
  private:
-  std::optional<ip_protection::GetProxyConfigResponse> proxy_config_response_;
+  MockGetProxyConfig get_proxy_config_;
 };
 
 enum class PrimaryAccountBehavior {
@@ -868,9 +882,84 @@ TEST_F(IpProtectionConfigProviderTest, ProxyOverrideFlagsAll) {
 }
 
 TEST_F(IpProtectionConfigProviderTest, GetProxyListFailure) {
-  getter_->GetProxyList(proxy_list_future_.GetCallback());
-  ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyList did not call back";
-  EXPECT_EQ(proxy_list_future_.Get(), std::nullopt);
+  // Count each call to the retriever's GetProxyConfig and return an error.
+  int get_proxy_config_calls = 0;
+  bool get_proxy_config_fails = true;
+  MockIpProtectionProxyConfigRetriever::MockGetProxyConfig
+      mock_get_proxy_config = base::BindLambdaForTesting(
+          [&]() -> base::expected<ip_protection::GetProxyConfigResponse,
+                                  std::string> {
+            get_proxy_config_calls++;
+            if (get_proxy_config_fails) {
+              return base::unexpected("uhoh");
+            } else {
+              ip_protection::GetProxyConfigResponse response;
+              return base::ok(response);
+            }
+          });
+
+  getter_->SetUpForTesting(
+      std::make_unique<MockIpProtectionProxyConfigRetriever>(
+          mock_get_proxy_config),
+      std::make_unique<IpProtectionConfigHttp>(
+          base::MakeRefCounted<network::TestSharedURLLoaderFactory>()),
+      bsa_.get());
+
+  auto call_get_proxy_list = [this](bool expect_success) {
+    base::test::TestFuture<const std::optional<std::vector<net::ProxyChain>>&>
+        future;
+    this->getter_->GetProxyList(future.GetCallback());
+    ASSERT_TRUE(future.Wait());
+    if (expect_success) {
+      EXPECT_EQ(future.Get(),
+                std::make_optional<std::vector<net::ProxyChain>>({}));
+    } else {
+      EXPECT_EQ(future.Get(), std::nullopt);
+    }
+  };
+
+  call_get_proxy_list(/*expect_success=*/false);
+  EXPECT_EQ(get_proxy_config_calls, 1);
+
+  // An immediate second call to GetProxyList should not call the retriever
+  // again.
+  call_get_proxy_list(/*expect_success=*/false);
+  EXPECT_EQ(get_proxy_config_calls, 1);
+
+  const base::TimeDelta timeout =
+      IpProtectionConfigProvider::kGetProxyConfigFailureTimeout;
+
+  // A call after the timeout is allowed to proceed, but fails so the new
+  // backoff is 2*timeout.
+  task_environment_.FastForwardBy(timeout);
+  call_get_proxy_list(/*expect_success=*/false);
+  EXPECT_EQ(get_proxy_config_calls, 2);
+
+  // A call another timeout later does nothing because the backoff is 2*timeout
+  // now.
+  task_environment_.FastForwardBy(timeout);
+  call_get_proxy_list(/*expect_success=*/false);
+  EXPECT_EQ(get_proxy_config_calls, 2);
+
+  // A call another timeout later is allowed to proceed, and this time succeeds.
+  get_proxy_config_fails = false;
+  task_environment_.FastForwardBy(timeout);
+  call_get_proxy_list(/*expect_success=*/true);
+  EXPECT_EQ(get_proxy_config_calls, 3);
+
+  // An immediate second call to GetProxyList is also allowed to proceed.
+  // Note that the network service also applies a minimum time between calls,
+  // so this would not happen in production.
+  get_proxy_config_fails = true;
+  call_get_proxy_list(/*expect_success=*/false);
+  EXPECT_EQ(get_proxy_config_calls, 4);
+
+  // The backoff timeout starts over.
+  call_get_proxy_list(/*expect_success=*/false);
+  EXPECT_EQ(get_proxy_config_calls, 4);
+  task_environment_.FastForwardBy(timeout);
+  call_get_proxy_list(/*expect_success=*/false);
+  EXPECT_EQ(get_proxy_config_calls, 5);
 }
 
 TEST_F(IpProtectionConfigProviderTest, GetProxyList_IpProtectionDisabled) {

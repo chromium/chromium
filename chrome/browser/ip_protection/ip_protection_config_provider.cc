@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
+#include "base/time/time.h"
 #include "chrome/browser/ip_protection/ip_protection_config_http.h"
 #include "chrome/browser/ip_protection/ip_protection_switches.h"
 #include "chrome/browser/profiles/profile.h"
@@ -182,6 +183,12 @@ void IpProtectionConfigProvider::GetProxyList(GetProxyListCallback callback) {
     return;
   }
 
+  // If we are not able to call `GetProxyConfig` yet, return early.
+  if (no_get_proxy_config_until_ > base::Time::Now()) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
   // This feature flag is false by default.
   if (!net::features::kIpPrivacyIncludeOAuthTokenInGetProxyConfig.Get()) {
     CallGetProxyConfig(std::move(callback), std::nullopt);
@@ -301,9 +308,19 @@ void IpProtectionConfigProvider::OnGetProxyConfigCompleted(
         response) {
   if (!response.has_value()) {
     VLOG(2) << "IPATP::GetProxyList failed: " << response.error();
+
+    // Apply exponential backoff to this sort of failure.
+    no_get_proxy_config_until_ =
+        base::Time::Now() + next_get_proxy_config_backoff_;
+    next_get_proxy_config_backoff_ *= 2;
+
     std::move(callback).Run(std::nullopt);
     return;
   }
+
+  // Cancel any backoff on success.
+  no_get_proxy_config_until_ = base::Time();
+  next_get_proxy_config_backoff_ = kGetProxyConfigFailureTimeout;
 
   std::vector<net::ProxyChain> proxy_list =
       IpProtectionConfigProviderHelper::GetProxyListFromProxyConfigResponse(

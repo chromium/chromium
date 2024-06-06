@@ -102,6 +102,11 @@ class IpProtectionConfigProvider
       std::unique_ptr<IpProtectionConfigHttp> ip_protection_config_http,
       quiche::BlindSignAuthInterface* bsa);
 
+  // Timeout for failures from GetProxyConfig. This is doubled for
+  // each subsequent failure.
+  static constexpr base::TimeDelta kGetProxyConfigFailureTimeout =
+      base::Minutes(1);
+
  private:
   friend class IpProtectionConfigProviderTest;
   FRIEND_TEST_ALL_PREFIXES(IpProtectionConfigProviderTest, CalculateBackoff);
@@ -244,6 +249,12 @@ class IpProtectionConfigProvider
   IpProtectionTryGetAuthTokensResult last_try_get_auth_tokens_result_ =
       IpProtectionTryGetAuthTokensResult::kSuccess;
   std::optional<base::TimeDelta> last_try_get_auth_tokens_backoff_;
+
+  // The time before the retriever's GetProxyConfig should not be called, and
+  // the exponential backoff to be applied next time such a call fails.
+  base::Time no_get_proxy_config_until_;
+  base::TimeDelta next_get_proxy_config_backoff_ =
+      kGetProxyConfigFailureTimeout;
 
   // The `mojo::Receiver` objects allowing the network service to call methods
   // on `this`.
