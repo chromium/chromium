@@ -54,6 +54,14 @@ public class ViewElement {
     }
 
     /**
+     * Alias for {@link #sharedViewElement(Matcher, Options)} as the default way to declare
+     * ViewElements.
+     */
+    public static ViewElement viewElement(Matcher<View> viewMatcher, Options options) {
+        return sharedViewElement(viewMatcher, options);
+    }
+
+    /**
      * Version of {@link #sharedViewElement(Matcher, Options)} using default Options.
      *
      * <p>This is a good default method to the declare ViewElements; when in doubt, use this.
@@ -186,6 +194,7 @@ public class ViewElement {
         static final Options DEFAULT = new Options();
         protected boolean mExpectEnabled = true;
         protected String mElementId;
+        protected Integer mDisplayedPercentageRequired = MIN_DISPLAYED_PERCENT;
 
         protected Options() {}
 
@@ -211,6 +220,16 @@ public class ViewElement {
              */
             public Builder expectDisabled() {
                 mExpectEnabled = false;
+                return this;
+            }
+
+            /**
+             * Changes the minimum percentage of the View that needs be displayed to fulfill the
+             * enter Condition. Default is >=90% visible, which matches the minimum requirement for
+             * ViewInteractions like click().
+             */
+            public Builder displayingAtLeast(int percentage) {
+                mDisplayedPercentageRequired = percentage;
                 return this;
             }
         }

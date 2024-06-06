@@ -39,9 +39,11 @@ public class ViewElementInState implements ElementInState {
         mGate = gate;
 
         Matcher<View> viewMatcher = mViewElement.getViewMatcher();
+        ViewElement.Options elementOptions = mViewElement.getOptions();
         DisplayedCondition.Options conditionOptions =
                 DisplayedCondition.newOptions()
-                        .withExpectEnabled(mViewElement.getOptions().mExpectEnabled)
+                        .withExpectEnabled(elementOptions.mExpectEnabled)
+                        .withDisplayingAtLeast(elementOptions.mDisplayedPercentageRequired)
                         .build();
         if (mGate != null) {
             GatedDisplayedCondition gatedDisplayedCondition =

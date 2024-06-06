@@ -82,7 +82,7 @@ public class ViewConditions {
 
         public DisplayedCondition(Matcher<View> matcher, Options options) {
             super();
-            mMatcher = allOf(matcher, isDisplayingAtLeast(ViewElement.MIN_DISPLAYED_PERCENT));
+            mMatcher = allOf(matcher, isDisplayingAtLeast(options.mDisplayedPercentageRequired));
             mOptions = options;
         }
 
@@ -159,6 +159,7 @@ public class ViewConditions {
         /** Extra options for declaring DisplayedCondition. */
         public static class Options {
             boolean mExpectEnabled = true;
+            int mDisplayedPercentageRequired = ViewElement.MIN_DISPLAYED_PERCENT;
 
             private Options() {}
 
@@ -167,9 +168,15 @@ public class ViewConditions {
                     return Options.this;
                 }
 
-                /** Whether the view is expected to be enabled or disabled. */
+                /** Whether the View is expected to be enabled or disabled. */
                 public Builder withExpectEnabled(boolean state) {
                     mExpectEnabled = state;
+                    return this;
+                }
+
+                /** Minimum percentage of the View that needs to be displayed. */
+                public Builder withDisplayingAtLeast(int displayedPercentageRequired) {
+                    mDisplayedPercentageRequired = displayedPercentageRequired;
                     return this;
                 }
             }

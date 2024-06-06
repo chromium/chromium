@@ -45,8 +45,11 @@ public class HubNewTabGroupDialogFacility extends Facility<HubTabSwitcherBaseSta
             viewElement(allOf(withId(R.id.visual_data_dialog_title), withText("New tab group")));
     public static final Matcher<View> TITLE_INPUT_MATCHER =
             allOf(withId(R.id.title_input_text), isAssignableFrom(EditText.class));
+    // TODO(crbug.com/345489175): Partially cut off in android_30_google_apis_x86.textpb
     public static final ViewElement COLOR_PICKER_CONTAINER =
-            viewElement(withId(R.id.color_picker_container));
+            viewElement(
+                    withId(R.id.color_picker_container),
+                    ViewElement.newOptions().displayingAtLeast(50).build());
     public static final ViewElement DONE_BUTTON = viewElement(withId(R.id.positive_button));
 
     private final List<Integer> mTabIdsToGroup;
