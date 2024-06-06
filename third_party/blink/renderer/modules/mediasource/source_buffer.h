@@ -157,7 +157,7 @@ class SourceBuffer final : public EventTarget,
 
   bool PrepareAppend(double media_time, size_t new_data_size, ExceptionState&);
   bool EvictCodedFrames(double media_time, size_t new_data_size);
-  void AppendBufferInternal(const unsigned char*, size_t, ExceptionState&);
+  void AppendBufferInternal(base::span<const unsigned char>, ExceptionState&);
   void AppendEncodedChunksAsyncPart();
   void AppendBufferAsyncPart();
   void AppendError(MediaSourceAttachmentSupplement::ExclusiveKey /* passkey */);
@@ -195,8 +195,7 @@ class SourceBuffer final : public EventTarget,
       ExceptionState* exception_state,
       MediaSourceAttachmentSupplement::ExclusiveKey /* passkey */);
   void AppendBufferInternal_Locked(
-      const unsigned char*,
-      size_t,
+      base::span<const unsigned char>,
       ExceptionState*,
       MediaSourceAttachmentSupplement::ExclusiveKey /* passkey */);
   void AppendEncodedChunksAsyncPart_Locked(

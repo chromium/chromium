@@ -134,10 +134,9 @@ bool WebSourceBufferImpl::EvictCodedFrames(double currentPlaybackTime,
                                     newDataSize);
 }
 
-// TODO(feras): Change this to take a span instead of ptr + size.
-bool WebSourceBufferImpl::AppendToParseBuffer(const unsigned char* data,
-                                              size_t length) {
-  return demuxer_->AppendToParseBuffer(id_, base::span(data, length));
+bool WebSourceBufferImpl::AppendToParseBuffer(
+    base::span<const unsigned char> data) {
+  return demuxer_->AppendToParseBuffer(id_, data);
 }
 
 media::StreamParser::ParseStatus WebSourceBufferImpl::RunSegmentParserLoop(

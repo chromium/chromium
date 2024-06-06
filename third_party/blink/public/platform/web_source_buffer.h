@@ -81,8 +81,8 @@ class WebSourceBuffer {
   // one RunSegmentParserLoop() call will be necessary to actually parse the new
   // bytes. Note, for zero-length appendBuffers, the caller can skip this call
   // and just run the segment parser loop asynchronously once.
-  [[nodiscard]] virtual bool AppendToParseBuffer(const unsigned char* data,
-                                                 size_t length) = 0;
+  [[nodiscard]] virtual bool AppendToParseBuffer(
+      base::span<const unsigned char> data) = 0;
 
   // Intended to be called potentially asynchronously after
   // SourceBuffer.appendBuffer() and potentially repeatedly, runs the segment

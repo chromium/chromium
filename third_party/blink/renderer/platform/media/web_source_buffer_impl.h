@@ -40,8 +40,8 @@ class PLATFORM_EXPORT WebSourceBufferImpl : public WebSourceBuffer {
   double HighestPresentationTimestamp() override;
   bool EvictCodedFrames(double currentPlaybackTime,
                         size_t newDataSize) override;
-  [[nodiscard]] bool AppendToParseBuffer(const unsigned char* data,
-                                         size_t length) override;
+  [[nodiscard]] bool AppendToParseBuffer(
+      base::span<const unsigned char> data) override;
   [[nodiscard]] media::StreamParser::ParseStatus RunSegmentParserLoop(
       double* timestamp_offset) override;
   bool AppendChunks(
