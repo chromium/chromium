@@ -53,6 +53,8 @@ source_set("permissions") {
     "quiet_notification_permission_ui_config.h",
     "quiet_notification_permission_ui_state.cc",
     "quiet_notification_permission_ui_state.h",
+    "system/system_permission_settings.cc",
+    "system/system_permission_settings.h",
   ]
 
   deps = [
@@ -124,6 +126,19 @@ source_set("permissions") {
 
   if (is_chromeos_ash) {
     deps += [ "//chrome/browser/ash" ]
+  } else if (is_chromeos_lacros) {
+    deps += [ "//chromeos/lacros" ]
+  }
+
+  if (is_mac) {
+    sources += [ "system/system_permission_settings_mac.cc" ]
+    deps += [ "//chrome//browser/web_applications" ]
+  } else if (is_chromeos_ash) {
+    sources += [ "system/system_permission_settings_chromeos.cc" ]
+  } else if (is_chromeos_lacros) {
+    sources += [ "system/system_permission_settings_lacros.cc" ]
+  } else {
+    sources += [ "system/system_permission_settings_default.cc" ]
   }
 
   if (toolkit_views) {

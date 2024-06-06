@@ -5,11 +5,13 @@
 #include "chrome/browser/ui/page_info/chrome_page_info_ui_delegate.h"
 
 #include "base/feature_list.h"
+#include "base/notreached.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/page_info/about_this_site_tab_helper.h"
 #include "chrome/browser/page_info/page_info_features.h"
 #include "chrome/browser/permissions/permission_manager_factory.h"
+#include "chrome/browser/permissions/system/system_permission_settings.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -18,6 +20,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/page_info/core/about_this_site_service.h"
 #include "components/page_info/core/features.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
@@ -51,7 +54,6 @@
 #include "chrome/browser/web_applications/app_shim_registry_mac.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut_mac.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
-#include "components/content_settings/core/common/features.h"
 #endif
 
 ChromePageInfoUiDelegate::ChromePageInfoUiDelegate(
@@ -212,9 +214,16 @@ bool ChromePageInfoUiDelegate::ShouldShowSettingsLinkForPermission(
     ContentSettingsType type,
     int* text_id,
     int* link_id) {
-#if BUILDFLAG(IS_MAC)
   switch (type) {
     case ContentSettingsType::NOTIFICATIONS:
+#if BUILDFLAG(IS_MAC)
+      // This can be extracted into
+      // SystemPermissionSettings::IsPermissionDenied() in a similar way as it
+      // is done for camera and mic. I attempted to do this (see
+      // https://chromium-review.googlesource.com/c/chromium/src/+/5424111/27..28
+      // ), however as we don't have any testcase for this branch, the changes
+      // were refused by the test coverage bot.
+      // TODO(b/345431801): Add a testcase to cover this case.
       if (base::FeatureList::IsEnabled(
               features::kAppShimNotificationAttribution)) {
         // If this notification permission is associated with a locally
@@ -248,12 +257,13 @@ bool ChromePageInfoUiDelegate::ShouldShowSettingsLinkForPermission(
         *link_id = IDS_PAGE_INFO_SYSTEM_SETTINGS_LINK;
         return true;
       }
+#endif
       return false;
     case ContentSettingsType::MEDIASTREAM_CAMERA:
       if (base::FeatureList::IsEnabled(
               content_settings::features::kLeftHandSideActivityIndicators) &&
-          (system_media_permissions::CheckSystemVideoCapturePermission() ==
-           system_media_permissions::SystemPermission::kDenied)) {
+          SystemPermissionSettings::Create()->IsPermissionDenied(web_contents_,
+                                                                 type)) {
         *text_id = IDS_PAGE_INFO_CAMERA_SYSTEM_SETTINGS_DESCRIPTION;
         *link_id = IDS_PAGE_INFO_SETTINGS_OF_A_SYSTEM_LINK;
         return true;
@@ -262,8 +272,8 @@ bool ChromePageInfoUiDelegate::ShouldShowSettingsLinkForPermission(
     case ContentSettingsType::MEDIASTREAM_MIC:
       if (base::FeatureList::IsEnabled(
               content_settings::features::kLeftHandSideActivityIndicators) &&
-          (system_media_permissions::CheckSystemAudioCapturePermission() ==
-           system_media_permissions::SystemPermission::kDenied)) {
+          SystemPermissionSettings::Create()->IsPermissionDenied(web_contents_,
+                                                                 type)) {
         *text_id = IDS_PAGE_INFO_MICROPHONE_SYSTEM_SETTINGS_DESCRIPTION;
         *link_id = IDS_PAGE_INFO_SETTINGS_OF_A_SYSTEM_LINK;
         return true;
@@ -272,42 +282,10 @@ bool ChromePageInfoUiDelegate::ShouldShowSettingsLinkForPermission(
     default:
       return false;
   }
-#else
-  return false;
-#endif
 }
 
 void ChromePageInfoUiDelegate::SettingsLinkClicked(ContentSettingsType type) {
-#if BUILDFLAG(IS_MAC)
-  switch (type) {
-    case ContentSettingsType::NOTIFICATIONS: {
-      const webapps::AppId* app_id =
-          web_app::WebAppTabHelper::GetAppId(web_contents_);
-      if (!app_id) {
-        return;
-      }
-      base::mac::OpenSystemSettingsPane(
-          base::mac::SystemSettingsPane::kNotifications,
-          web_app::GetBundleIdentifierForShim(*app_id));
-      return;
-    }
-    case ContentSettingsType::MEDIASTREAM_CAMERA: {
-      base::mac::OpenSystemSettingsPane(
-          base::mac::SystemSettingsPane::kPrivacySecurity_Camera);
-      return;
-    }
-    case ContentSettingsType::MEDIASTREAM_MIC: {
-      base::mac::OpenSystemSettingsPane(
-          base::mac::SystemSettingsPane::kPrivacySecurity_Microphone);
-      return;
-    }
-    default:
-      NOTREACHED_IN_MIGRATION();
-      return;
-  }
-#else
-  NOTREACHED_IN_MIGRATION();
-#endif
+  SystemPermissionSettings::Create()->OpenSystemSettings(web_contents_, type);
 }
 
 bool ChromePageInfoUiDelegate::IsBlockAutoPlayEnabled() {

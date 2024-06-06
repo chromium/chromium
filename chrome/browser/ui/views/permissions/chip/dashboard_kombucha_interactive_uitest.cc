@@ -4,6 +4,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/permissions/system/system_permission_settings.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -120,6 +121,7 @@ IN_PROC_BROWSER_TEST_F(DashboardKombuchaInteractiveUITest,
 // 3. Click on the indicator to open PageInfo
 // 4. Verify that Camera permission is shown in PageInfo
 // 5. Verify that Camera permission has "Using now" subtitle.
+// 6. Verify that the system settings link is not shown.
 IN_PROC_BROWSER_TEST_F(DashboardKombuchaInteractiveUITest, CameraUsingTest) {
   SetPermission(ContentSettingsType::MEDIASTREAM_CAMERA, CONTENT_SETTING_ALLOW);
 
@@ -152,9 +154,56 @@ IN_PROC_BROWSER_TEST_F(DashboardKombuchaInteractiveUITest, CameraUsingTest) {
       CheckViewProperty(
           kFirstPermissionRow,
           &PermissionToggleRowView::GetRowSubTitleForTesting,
-          l10n_util::GetStringUTF16(IDS_PAGE_INFO_PERMISSION_USING_NOW))
+          l10n_util::GetStringUTF16(IDS_PAGE_INFO_PERMISSION_USING_NOW)),
+      EnsureNotPresent(
+          PermissionToggleRowView::kPermissionDisabledAtSystemLevelElementId));
+}
 
-  );
+// 1. Enable Camera permission
+// 2. Use `getUserMedia` to show camera activity indicator
+// 3. Click on the indicator to open PageInfo
+// 4. Verify that Camera permission is shown in PageInfo
+// 5. Verify that Camera permission has "Using now" subtitle.
+// 6. Verify that the system settings link is shown.
+IN_PROC_BROWSER_TEST_F(DashboardKombuchaInteractiveUITest,
+                       CameraUsingTestWithSystemBlock) {
+  SetPermission(ContentSettingsType::MEDIASTREAM_CAMERA, CONTENT_SETTING_ALLOW);
+
+  ScopedSystemPermissionSettingsForTesting scoped_system_permission(
+      ContentSettingsType::MEDIASTREAM_CAMERA, true);
+
+  RunTestSequence(
+      InstrumentTab(kWebContentsElementId),
+      NavigateWebContents(kWebContentsElementId, GetURL()),
+      EnsureNotPresent(PermissionDashboardView::kDashboardElementId),
+      EnsureNotPresent(PermissionChipView::kIndicatorChipElementId),
+      ExecuteJs(kWebContentsElementId, "requestCamera"),
+      WaitForShow(PermissionChipView::kIndicatorChipElementId),
+      CheckViewProperty(PermissionChipView::kIndicatorChipElementId,
+                        &PermissionChipView::GetText,
+                        l10n_util::GetStringUTF16(IDS_CAMERA_IN_USE)),
+      // Request chip should be hidden.
+      EnsureNotPresent(PermissionChipView::kRequestChipElementId),
+      FlushEvents(), PressButton(PermissionChipView::kIndicatorChipElementId),
+      WaitForShow(PageInfoMainView::kPermissionsElementId),
+      CheckViewProperty(PageInfoMainView::kMainLayoutElementId,
+                        &PageInfoMainView::GetVisiblePermissionsCountForTesting,
+                        1),
+      // Set id to the first children of `kPermissionsElementId` -
+      // permissions view in PageInfo.
+      NameChildView(PageInfoMainView::kPermissionsElementId,
+                    kFirstPermissionRow, 0u),
+      // Verify the row label is Camera
+      CheckViewProperty(
+          kFirstPermissionRow, &PermissionToggleRowView::GetRowTitleForTesting,
+          l10n_util::GetStringUTF16(IDS_SITE_SETTINGS_TYPE_CAMERA)),
+      WaitForShow(PermissionToggleRowView::kRowSubTitleCameraElementId),
+      CheckViewProperty(
+          kFirstPermissionRow,
+          &PermissionToggleRowView::GetRowSubTitleForTesting,
+          l10n_util::GetStringUTF16(IDS_PAGE_INFO_PERMISSION_USING_NOW)),
+      WaitForShow(
+          PermissionToggleRowView::kPermissionDisabledAtSystemLevelElementId));
 }
 
 IN_PROC_BROWSER_TEST_F(DashboardKombuchaInteractiveUITest,
@@ -190,7 +239,52 @@ IN_PROC_BROWSER_TEST_F(DashboardKombuchaInteractiveUITest,
       CheckViewProperty(
           kFirstPermissionRow,
           &PermissionToggleRowView::GetRowSubTitleForTesting,
-          l10n_util::GetStringUTF16(IDS_PAGE_INFO_PERMISSION_USING_NOW))
+          l10n_util::GetStringUTF16(IDS_PAGE_INFO_PERMISSION_USING_NOW)),
+      EnsureNotPresent(
+          PermissionToggleRowView::kPermissionDisabledAtSystemLevelElementId)
+
+  );
+}
+
+IN_PROC_BROWSER_TEST_F(DashboardKombuchaInteractiveUITest,
+                       MicrophoneUsingTestWithSystemBlock) {
+  SetPermission(ContentSettingsType::MEDIASTREAM_MIC, CONTENT_SETTING_ALLOW);
+
+  ScopedSystemPermissionSettingsForTesting scoped_system_permission(
+      ContentSettingsType::MEDIASTREAM_MIC, true);
+
+  RunTestSequence(
+      InstrumentTab(kWebContentsElementId),
+      NavigateWebContents(kWebContentsElementId, GetURL()),
+      EnsureNotPresent(PermissionDashboardView::kDashboardElementId),
+      EnsureNotPresent(PermissionChipView::kIndicatorChipElementId),
+      ExecuteJs(kWebContentsElementId, "requestMicrophone"),
+      WaitForShow(PermissionChipView::kIndicatorChipElementId),
+      CheckViewProperty(PermissionChipView::kIndicatorChipElementId,
+                        &PermissionChipView::GetText,
+                        l10n_util::GetStringUTF16(IDS_MICROPHONE_IN_USE)),
+      // Request chip should be hidden.
+      EnsureNotPresent(PermissionChipView::kRequestChipElementId),
+      FlushEvents(), PressButton(PermissionChipView::kIndicatorChipElementId),
+      WaitForShow(PageInfoMainView::kPermissionsElementId),
+      CheckViewProperty(PageInfoMainView::kMainLayoutElementId,
+                        &PageInfoMainView::GetVisiblePermissionsCountForTesting,
+                        1),
+      // Set id to the first children of `kPermissionsElementId` -
+      // permissions view in PageInfo.
+      NameChildView(PageInfoMainView::kPermissionsElementId,
+                    kFirstPermissionRow, 0u),
+      // Verify the row label is Mic
+      CheckViewProperty(kFirstPermissionRow,
+                        &PermissionToggleRowView::GetRowTitleForTesting,
+                        l10n_util::GetStringUTF16(IDS_SITE_SETTINGS_TYPE_MIC)),
+      WaitForShow(PermissionToggleRowView::kRowSubTitleMicrophoneElementId),
+      CheckViewProperty(
+          kFirstPermissionRow,
+          &PermissionToggleRowView::GetRowSubTitleForTesting,
+          l10n_util::GetStringUTF16(IDS_PAGE_INFO_PERMISSION_USING_NOW)),
+      WaitForShow(
+          PermissionToggleRowView::kPermissionDisabledAtSystemLevelElementId)
 
   );
 }

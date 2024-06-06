@@ -44,6 +44,9 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PermissionToggleRowView,
                                       kRowSubTitleCameraElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PermissionToggleRowView,
                                       kRowSubTitleMicrophoneElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(
+    PermissionToggleRowView,
+    kPermissionDisabledAtSystemLevelElementId);
 
 using content_settings::SettingSource;
 
@@ -105,6 +108,12 @@ PermissionToggleRowView::PermissionToggleRowView(
     blocked_on_system_level_label_->AddStyleRange(
         gfx::Range(offset, offset + settings_text_for_link.length()),
         views::StyledLabel::RangeStyleInfo::CreateForLink(clicked));
+
+    // Setting the element identifier key to easily get a handle to the label in
+    // tests.
+    blocked_on_system_level_label_->SetProperty(
+        views::kElementIdentifierKey,
+        kPermissionDisabledAtSystemLevelElementId);
 
     // When permission is blocked on the system level, all control elements are
     // disabled. The permission row's title should match color with disabled
