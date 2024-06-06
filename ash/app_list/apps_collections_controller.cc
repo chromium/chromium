@@ -99,11 +99,12 @@ bool AppsCollectionsController::ShouldShowAppsCollection() {
     return true;
   }
 
-  if (GetUserExperimentalArm() != ExperimentalArm::kDefaultValue) {
-    return GetUserExperimentalArm() == ExperimentalArm::kEnabled;
-  }
-
   const auto* const session_controller = Shell::Get()->session_controller();
+
+  if (GetUserExperimentalArm() != ExperimentalArm::kDefaultValue) {
+    return GetUserExperimentalArm() == ExperimentalArm::kEnabled &&
+           session_controller->IsUserFirstLogin();
+  }
 
   if (const auto user_type = session_controller->GetUserType();
       user_type != user_manager::UserType::kRegular) {

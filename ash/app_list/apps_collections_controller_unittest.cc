@@ -204,6 +204,24 @@ TEST_F(AppsCollectionsControllerTest,
   EXPECT_TRUE(helper->GetBubbleAppsPage()->GetVisible());
 }
 
+// Verifies that the apps collections is not shown after the user logs back in
+// again.
+TEST_F(AppsCollectionsControllerTest, AppsCollectionsDismissedAfterRestart) {
+  auto* helper = GetAppListTestHelper();
+  helper->ShowAppList();
+
+  EXPECT_TRUE(helper->GetBubbleAppsCollectionsPage()->GetVisible());
+
+  // Logout and simulate that the user logs back in again.
+  helper->Dismiss();
+  ClearLogin();
+  SimulateUserLogin("primary@test");
+
+  // The bubble should not be shown.
+  helper->ShowAppList();
+  EXPECT_FALSE(helper->GetBubbleAppsCollectionsPage()->GetVisible());
+}
+
 // Class for tests of the `AppsCollectionsController` which are
 // concerned with user eligibility, parameterized by:
 // (a) whether the user should be considered "new" locally
