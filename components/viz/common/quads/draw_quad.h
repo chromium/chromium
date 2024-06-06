@@ -8,7 +8,7 @@
 #include <stddef.h>
 
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "components/viz/common/quads/shared_quad_state.h"
 #include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/viz_common_export.h"
@@ -76,7 +76,9 @@ class VIZ_COMMON_EXPORT DrawQuad {
   // Stores state common to a large bundle of quads; kept separate for memory
   // efficiency. There is special treatment to reconstruct these pointers
   // during serialization.
-  raw_ptr<const SharedQuadState, DanglingUntriaged> shared_quad_state;
+  // RAW_PTR_EXCLUSION: Performance reasons (rendering.mobile,
+  // Graphics.Smoothness, see crbug.com/345298647)
+  RAW_PTR_EXCLUSION const SharedQuadState* shared_quad_state;
 
   bool IsDebugQuad() const { return material == Material::kDebugBorder; }
 

@@ -3853,7 +3853,7 @@ void SkiaRenderer::PrepareRenderPassOverlay(
                                      current_frame()->root_render_pass);
 
   auto* shared_quad_state =
-      const_cast<SharedQuadState*>(quad->shared_quad_state.get());
+      const_cast<SharedQuadState*>(quad->shared_quad_state);
 
   std::optional<gfx::Transform> quad_to_target_transform_inverse;
   if (shared_quad_state->quad_to_target_transform.IsInvertible()) {

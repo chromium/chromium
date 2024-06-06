@@ -504,7 +504,7 @@ void SurfaceAggregator::AddRenderPassFilterDamageToDamageList(
         GetExpandedRectWithPixelMovingForegroundFilter(
             *render_pass_quad, child_render_pass.filters);
   } else if (child_render_pass.backdrop_filters.HasFilterThatMovesPixels()) {
-    const auto* shared_quad_state = render_pass_quad->shared_quad_state.get();
+    const auto* shared_quad_state = render_pass_quad->shared_quad_state;
     damage_rect_in_target_space = cc::MathUtil::MapEnclosingClippedRect(
         shared_quad_state->quad_to_target_transform, damage_rect);
     if (shared_quad_state->clip_rect) {
