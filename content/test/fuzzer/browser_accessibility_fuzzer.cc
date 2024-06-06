@@ -123,7 +123,10 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   tree.nodes[0].id = 1;
   tree.nodes[0].role = ax::mojom::Role::kRootWebArea;
   tree.nodes[0].child_ids = {2, 3, 4};
-  AddStates(fdp, &tree.nodes[0]);
+  // The root node cannot be ignored, so we'll only try invisible.
+  if (fdp.ConsumeBool()) {
+    tree.nodes[0].AddState(ax::mojom::State::kInvisible);
+  }
 
   tree.nodes[1].id = 2;
   tree.nodes[1].role = GetInterestingRole(fdp);
@@ -212,7 +215,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   // Add a node, possibly clearing old children.
   int node_id = num_nodes + 1;
-  int parent = fdp.ConsumeIntegralInRange(0, num_nodes);
+  int parent = fdp.ConsumeIntegralInRange(1, num_nodes);
 
   ui::AXTreeUpdate update;
   update.nodes.resize(2);

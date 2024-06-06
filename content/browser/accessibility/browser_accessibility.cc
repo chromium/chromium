@@ -254,8 +254,9 @@ BrowserAccessibility* BrowserAccessibility::PlatformDeepestFirstChild() const {
   if (IsLeaf())
     return nullptr;
   BrowserAccessibility* deepest_child = PlatformGetFirstChild();
-  while (!deepest_child->IsLeaf())
+  while (deepest_child && !deepest_child->IsLeaf()) {
     deepest_child = deepest_child->PlatformGetFirstChild();
+  }
   return deepest_child;
 }
 
@@ -265,8 +266,9 @@ BrowserAccessibility* BrowserAccessibility::PlatformDeepestLastChild() const {
   if (IsLeaf())
     return nullptr;
   BrowserAccessibility* deepest_child = PlatformGetLastChild();
-  while (!deepest_child->IsLeaf())
+  while (deepest_child && !deepest_child->IsLeaf()) {
     deepest_child = deepest_child->PlatformGetLastChild();
+  }
   return deepest_child;
 }
 
