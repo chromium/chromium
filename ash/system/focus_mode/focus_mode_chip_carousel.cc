@@ -54,7 +54,8 @@ void SetupChip(views::LabelButton* chip, bool first) {
   chip->SetMinSize(gfx::Size(0, kChipHeight));
   chip->SetMaxSize(gfx::Size(kChipMaxWidth, kChipHeight));
   views::FocusRing::Get(chip)->SetColorId(cros_tokens::kCrosSysFocusRing);
-  views::InstallRoundRectHighlightPathGenerator(chip, gfx::Insets(1),
+  // Remove the padding between the focus ring and the `chip`.
+  views::InstallRoundRectHighlightPathGenerator(chip, gfx::Insets(4),
                                                 kChipCornerRadius);
   chip->SetNotifyEnterExitOnChild(true);
   chip->GetViewAccessibility().SetName(chip->GetText());
