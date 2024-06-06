@@ -458,22 +458,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       this.clearReadAloudState();
 
       this.synth.onvoiceschanged = () => {
-        // Get a new list of voices. This should be done before we call
-        // refreshVoicePackStatuses();
-        this.getVoices(/*refresh =*/ true);
-
-        // Now that the voice list has changed, refresh the VoicePackStatuses in
-        // case a language has been uninstalled.
-        this.refreshVoicePackStatuses();
-
-        // If the selected voice is now unavailable, such as after an install,
-        // reselect a new voice.
-        if (this.selectedVoice &&
-            !this.availableVoices.some(
-                voice => areVoicesEqual(voice, this.selectedVoice!))) {
-          this.selectedVoice = undefined;
-          this.getSpeechSynthesisVoice();
-        }
+        this.onVoicesChanged_();
       };
     }
 
@@ -1078,6 +1063,38 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   private showToast_(): void {
     const toast = document.querySelector<CrToastElement>('#toast')!;
     toast.show();
+  }
+
+  private onVoicesChanged_() {
+    // Get a new list of voices. This should be done before we call
+    // refreshVoicePackStatuses();
+    this.getVoices(/*refresh =*/ true);
+
+    // If voice was selected automatically and not by the user, check if
+    // there's a higher quality voice available now.
+    if (!this.currentVoiceIsUserChosen_()) {
+      const naturalVoicesForLang = this.availableVoices.filter(
+          voice => isNatural(voice) &&
+              voice.lang.startsWith(chrome.readingMode.baseLanguageForSpeech));
+
+      if (naturalVoicesForLang) {
+        this.selectedVoice = naturalVoicesForLang[0];
+        this.resetSpeechPostSettingChange_();
+      }
+    }
+
+    // Now that the voice list has changed, refresh the VoicePackStatuses in
+    // case a language has been uninstalled.
+    this.refreshVoicePackStatuses();
+
+    // If the selected voice is now unavailable, such as after an uninstall,
+    // reselect a new voice.
+    if (this.selectedVoice &&
+        !this.availableVoices.some(
+            voice => areVoicesEqual(voice, this.selectedVoice!))) {
+      this.selectedVoice = undefined;
+      this.getSpeechSynthesisVoice();
+    }
   }
 
   private onSpeechRateChange_(event: CustomEvent<{rate: number}>) {
@@ -2303,6 +2320,19 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
           lang, /* onlyInstallExactGoogleLocaleMatch=*/ true,
           /* retryIfPreviousInstallFailed= */ false);
     }
+  }
+
+  private currentVoiceIsUserChosen_(): boolean {
+    const storedVoiceName = chrome.readingMode.getStoredVoice();
+
+    // `this.selectedVoice` is not necessarily chosen by the user, it is just
+    // the voice that read aloud is using. It may be a default voice chosen by
+    // read aloud, so we check it against user preferences to see if it was
+    // user-chosen.
+    if (storedVoiceName) {
+      return this.selectedVoice?.name === storedVoiceName;
+    }
+    return false;
   }
 
   private selectPreferredVoice_() {

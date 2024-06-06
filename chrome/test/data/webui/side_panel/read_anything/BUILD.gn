@@ -24,6 +24,7 @@ build_webui_tests("build") {
     "fake_reading_mode.ts",
     "fake_tree_builder.ts",
     "language_change_test.ts",
+    "voice_selection_test.ts",
     "fake_tree_builder_test.ts",
     "prefs_test.ts",
     "highlight_toggle_test.ts",
