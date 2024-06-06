@@ -14,6 +14,7 @@
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/webapps/common/web_app_id.h"
+#include "content/public/browser/navigation_handle.h"
 
 namespace web_app {
 namespace {
@@ -57,7 +58,9 @@ WebAppLinkCapturingDelegate::~WebAppLinkCapturingDelegate() = default;
 
 bool WebAppLinkCapturingDelegate::ShouldCancelThrottleCreation(
     content::NavigationHandle* handle) {
-  return false;
+  Profile* profile = Profile::FromBrowserContext(
+      handle->GetWebContents()->GetBrowserContext());
+  return !web_app::AreWebAppsUserInstallable(profile);
 }
 
 std::optional<apps::LinkCapturingNavigationThrottle::LaunchCallback>

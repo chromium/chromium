@@ -174,9 +174,7 @@ LinkCapturingNavigationThrottle::MaybeCreate(
     return nullptr;
   }
 
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  if (!web_app::AreWebAppsUserInstallable(profile)) {
+  if (delegate->ShouldCancelThrottleCreation(handle)) {
     return nullptr;
   }
 

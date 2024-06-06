@@ -215,14 +215,15 @@ ChromeOsLinkCapturingDelegate::CreateLinkCaptureLaunchClosure(
     return std::nullopt;
   }
 
-  // Don't capture if already inside a window for the target app. If the
+  // Don't capture if already inside a Web App window for the target app. If the
   // previous early return didn't trigger, this means we are in an app window
   // but out of scope of the original app, and navigating will put us back in
   // scope.
-  if (base::ValuesEquivalent(web_app::WebAppProvider::GetForWebApps(profile)
-                                 ->ui_manager()
-                                 .GetAppIdForWindow(web_contents),
-                             &launch_app_id.value())) {
+  web_app::WebAppProvider* provider =
+      web_app::WebAppProvider::GetForWebApps(profile);
+  if (provider && base::ValuesEquivalent(
+                      provider->ui_manager().GetAppIdForWindow(web_contents),
+                      &launch_app_id.value())) {
     return std::nullopt;
   }
 
