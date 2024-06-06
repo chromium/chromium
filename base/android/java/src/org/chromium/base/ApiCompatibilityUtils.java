@@ -340,7 +340,7 @@ public class ApiCompatibilityUtils {
         } catch (Exception e) {
             // If fallback logic is ever needed, refer to:
             // https://chromium-review.googlesource.com/c/chromium/src/+/905563/1
-            throw new RuntimeException(e);
+            throw JavaUtils.throwUnchecked(e);
         }
     }
 

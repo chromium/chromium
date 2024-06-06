@@ -80,7 +80,7 @@ public abstract class PathUtils {
         try {
             return sDirPathFetchTask.get();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw JavaUtils.throwUnchecked(e);
         }
     }
 

@@ -158,7 +158,7 @@ public class ThreadUtils {
         try {
             return runOnUiThreadBlocking(c);
         } catch (ExecutionException e) {
-            throw new RuntimeException("Error occurred waiting for callable", e);
+            throw JavaUtils.throwUnchecked(e);
         }
     }
 

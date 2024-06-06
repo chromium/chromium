@@ -202,7 +202,7 @@ public class BundleUtils {
                     shouldReplaceClassLoader);
             return context;
         } catch (PackageManager.NameNotFoundException e) {
-            throw new RuntimeException(e);
+            throw JavaUtils.throwUnchecked(e);
         }
     }
 
@@ -218,7 +218,7 @@ public class BundleUtils {
             classLoaderField.setAccessible(true);
             classLoaderField.set(baseContext, classLoader);
         } catch (ReflectiveOperationException e) {
-            throw new RuntimeException("Error setting ClassLoader.", e);
+            throw JavaUtils.throwUnchecked(e);
         }
     }
 
@@ -279,7 +279,7 @@ public class BundleUtils {
         try {
             return context.getClassLoader().loadClass(className).newInstance();
         } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
+            throw JavaUtils.throwUnchecked(e);
         }
     }
 
@@ -448,7 +448,7 @@ public class BundleUtils {
             // This matches the logic LoadedApk.java uses to construct library paths.
             return apkPath + "!/lib/" + primaryCpuAbi + "/" + System.mapLibraryName(libraryName);
         } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
+            throw JavaUtils.throwUnchecked(e);
         }
     }
 

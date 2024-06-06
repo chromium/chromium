@@ -4628,12 +4628,12 @@ if (is_android) {
     ]
     deps = [
       ":library_loader_java",
+      ":log_java",
+      ":metrics_java",
+      ":resetters_java",
       ":supplier_java",
       ":tasks_java",
-      "//base:log_java",
-      "//base:metrics_java",
-      "//base:resetters_java",
-      "//base:time_utils_java",
+      ":time_utils_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
     ]
@@ -4805,7 +4805,10 @@ if (is_android) {
     ]
   }
   android_library("log_java") {
-    sources = [ "android/java/src/org/chromium/base/Log.java" ]
+    sources = [
+      "android/java/src/org/chromium/base/JavaUtils.java",
+      "android/java/src/org/chromium/base/Log.java",
+    ]
     deps = [ "//build/android:build_java" ]
   }
 

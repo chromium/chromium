@@ -28,6 +28,7 @@ import org.chromium.base.BaseSwitches;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.EarlyTraceEvent;
+import org.chromium.base.JavaUtils;
 import org.chromium.base.Log;
 import org.chromium.base.MemoryPressureLevel;
 import org.chromium.base.ThreadUtils;
@@ -332,7 +333,7 @@ public class ChildProcessService {
             } catch (RemoteException re) {
                 Log.e(TAG, "Failed to call reportExceptionInInit.", re);
             }
-            throw new RuntimeException(e);
+            JavaUtils.throwUnchecked(e);
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
