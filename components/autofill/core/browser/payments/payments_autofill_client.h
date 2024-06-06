@@ -289,6 +289,9 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // confirmation bubble. If the most recent bubble was an opt-in bubble and it
   // was accepted, this will display the re-auth opt-in confirmation bubble.
   virtual void ShowMandatoryReauthOptInConfirmation();
+
+  // Dismiss any visible offer notification on the current tab.
+  virtual void DismissOfferNotification();
 };
 
 }  // namespace payments

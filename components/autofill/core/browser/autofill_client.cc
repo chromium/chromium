@@ -155,9 +155,6 @@ void AutofillClient::UpdateOfferNotification(
     const OfferNotificationOptions& options) {
 }
 
-void AutofillClient::DismissOfferNotification() {
-}
-
 LogManager* AutofillClient::GetLogManager() const {
   return nullptr;
 }

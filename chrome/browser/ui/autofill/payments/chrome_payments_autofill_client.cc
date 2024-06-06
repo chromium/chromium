@@ -46,9 +46,11 @@
 #include "chrome/browser/ui/android/autofill/autofill_save_iban_bottom_sheet_bridge.h"
 #include "chrome/browser/ui/android/autofill/autofill_save_iban_delegate.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#include "chrome/browser/ui/autofill/payments/offer_notification_controller_android.h"
 #else  // !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/autofill/payments/desktop_payments_window_manager.h"
 #include "chrome/browser/ui/autofill/payments/manage_migration_ui_controller.h"
+#include "chrome/browser/ui/autofill/payments/offer_notification_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_manual_fallback_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/webauthn_dialog_controller_impl.h"
@@ -530,6 +532,20 @@ void ChromePaymentsAutofillClient::ShowMandatoryReauthOptInConfirmation() {
   // enforce that the confirmation bubble is shown.
   MandatoryReauthBubbleControllerImpl::FromWebContents(web_contents())
       ->ReshowBubble();
+#endif
+}
+
+void ChromePaymentsAutofillClient::DismissOfferNotification() {
+#if BUILDFLAG(IS_ANDROID)
+  OfferNotificationControllerAndroid::CreateForWebContents(web_contents());
+  OfferNotificationControllerAndroid* controller =
+      OfferNotificationControllerAndroid::FromWebContents(web_contents());
+  controller->Dismiss();
+#else
+  if (auto* controller = OfferNotificationBubbleControllerImpl::FromWebContents(
+          web_contents())) {
+    controller->DismissNotification();
+  }
 #endif
 }
 

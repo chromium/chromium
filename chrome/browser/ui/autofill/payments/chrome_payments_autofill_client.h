@@ -146,6 +146,7 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
   IbanManager* GetIbanManager() override;
   IbanAccessManager* GetIbanAccessManager() override;
   void ShowMandatoryReauthOptInConfirmation() override;
+  void DismissOfferNotification() override;
 
   AutofillProgressDialogControllerImpl*
   AutofillProgressDialogControllerForTesting() {

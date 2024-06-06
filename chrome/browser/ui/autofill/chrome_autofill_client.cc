@@ -858,22 +858,6 @@ void ChromeAutofillClient::UpdateOfferNotification(
 #endif
 }
 
-void ChromeAutofillClient::DismissOfferNotification() {
-#if BUILDFLAG(IS_ANDROID)
-  OfferNotificationControllerAndroid::CreateForWebContents(web_contents());
-  OfferNotificationControllerAndroid* controller =
-      OfferNotificationControllerAndroid::FromWebContents(web_contents());
-  controller->Dismiss();
-#else
-  OfferNotificationBubbleControllerImpl* controller =
-      OfferNotificationBubbleControllerImpl::FromWebContents(web_contents());
-  if (!controller)
-    return;
-
-  controller->DismissNotification();
-#endif
-}
-
 void ChromeAutofillClient::TriggerUserPerceptionOfAutofillSurvey(
     FillingProduct filling_product,
     const std::map<std::string, std::string>& field_filling_stats_data) {

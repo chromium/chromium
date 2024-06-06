@@ -630,9 +630,6 @@ class AutofillClient {
   virtual void UpdateOfferNotification(const AutofillOfferData* offer,
                                        const OfferNotificationOptions& options);
 
-  // Dismiss any visible offer notification on the current tab.
-  virtual void DismissOfferNotification();
-
   // Maybe triggers a hats survey that measures the user's perception of
   // Autofill. When triggering happens, the survey dialog will be displayed with
   // a 5s delay. Note:  This survey should be triggered after form submissions.

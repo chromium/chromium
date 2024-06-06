@@ -186,7 +186,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
   void UpdateOfferNotification(
       const AutofillOfferData* offer,
       const OfferNotificationOptions& options) override;
-  void DismissOfferNotification() override;
   void TriggerUserPerceptionOfAutofillSurvey(
       FillingProduct filling_product,
       const std::map<std::string, std::string>& field_filling_stats_data)
