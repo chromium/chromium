@@ -7,6 +7,7 @@
 #include "base/json/json_writer.h"
 #include "base/scoped_observation.h"
 #include "base/test/gtest_tags.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_base_test.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
@@ -22,6 +23,7 @@
 #include "components/policy/core/common/remote_commands/test_support/testing_remote_commands_server.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/common/extension_features.h"
 #include "third_party/cros_system_api/dbus/power_manager/dbus-constants.h"
 
 namespace ash {
@@ -101,6 +103,10 @@ class KioskRemoteCommandTest : public KioskBaseTest {
     settings_helper_.SetString(kDeviceOwner,
                                test_owner_account_id_.GetUserEmail());
     login_manager_.AppendRegularUsers(1);
+    // TODO(crbug.com/325314721): Remove this feature override once test-only
+    // handling for the item snippets API is complete.
+    scoped_feature_list_.InitAndDisableFeature(
+        extensions_features::kUseItemSnippetsAPI);
   }
 
   void SetUpOnMainThread() override {
@@ -139,6 +145,7 @@ class KioskRemoteCommandTest : public KioskBaseTest {
   ash::EmbeddedPolicyTestServerMixin policy_test_server_mixin_{&mixin_host_};
   policy::RemoteCommandsServiceMixin remote_commands_service_mixin_{
       mixin_host_, policy_test_server_mixin_};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(KioskRemoteCommandTest, SetVolumeWithRemoteCommand) {

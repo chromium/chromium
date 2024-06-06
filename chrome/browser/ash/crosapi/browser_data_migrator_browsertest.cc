@@ -38,6 +38,7 @@
 #include "components/user_manager/user_manager_pref_names.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
+#include "extensions/common/extension_features.h"
 
 namespace ash {
 
@@ -423,8 +424,11 @@ class BrowserDataMigratorForKiosk : public KioskBaseTest {
   ~BrowserDataMigratorForKiosk() override = default;
 
   void SetUp() override {
+    // TODO(crbug.com/325314721): Remove the kUseItemSnippetsAPI feature
+    // override once test-only handling for the item snippets API is complete.
     feature_list_.InitWithFeatures(
-        {ash::standalone_browser::features::kLacrosOnly}, {});
+        {ash::standalone_browser::features::kLacrosOnly},
+        {extensions_features::kUseItemSnippetsAPI});
     KioskBaseTest::SetUp();
   }
 

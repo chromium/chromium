@@ -13,6 +13,7 @@
 #include "base/run_loop.h"
 #include "base/test/gtest_tags.h"
 #include "base/test/scoped_chromeos_version_info.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/test_kiosk_extension_builder.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_base_test.h"
@@ -29,6 +30,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "extensions/test/result_catcher.h"
@@ -165,7 +167,12 @@ class KioskFakeDiskMountManager : public disks::FakeDiskMountManager {
 
 class KioskUpdateTest : public KioskBaseTest {
  public:
-  KioskUpdateTest() = default;
+  KioskUpdateTest() {
+    // TODO(crbug.com/325314721): Remove this feature override once test-only
+    // handling for the item snippets API is complete.
+    scoped_feature_list_.InitAndDisableFeature(
+        extensions_features::kUseItemSnippetsAPI);
+  }
 
   KioskUpdateTest(const KioskUpdateTest&) = delete;
   KioskUpdateTest& operator=(const KioskUpdateTest&) = delete;
@@ -464,6 +471,7 @@ class KioskUpdateTest : public KioskBaseTest {
   // Owned by DiskMountManager.
   raw_ptr<KioskFakeDiskMountManager, DanglingUntriaged>
       fake_disk_mount_manager_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(KioskUpdateTest, PRE_LaunchOfflineEnabledAppNoNetwork) {
