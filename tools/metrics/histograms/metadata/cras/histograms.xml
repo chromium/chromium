@@ -505,6 +505,17 @@ This collects each top-level device metric type. For example,
   </summary>
 </histogram>
 
+<histogram name="Cras.HfpTelephonyEvent" enum="CrasHfpTelephonyEvent"
+    expires_after="2025-06-01">
+  <owner>whalechang@google.com</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    Record the Bluetooth hfp telephony event when CRAS receives the event from
+    Floss. This is for tracking how users interact with the Bluetooth telephony
+    feature.
+  </summary>
+</histogram>
+
 <histogram name="Cras.HfpWidebandSpeechPacketLoss" units="units"
     expires_after="2024-09-22">
   <owner>enshuo@chromium.org</owner>

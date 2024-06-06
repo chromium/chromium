@@ -979,6 +979,18 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="SKT_POLL_ERR_HUP"/>
 </enum>
 
+<enum name="CrasHfpTelephonyEvent">
+  <summary>
+    List of Bluetooth hfp telephony events from Floss sent to CRAS. CRAS side
+    definition in
+    https://chromium.googlesource.com/chromiumos/third_party/adhd/+/main/cras/src/server/cras_server_metrics.h
+  </summary>
+  <int value="0" label="HFP_TELEPHONY_UHID_OPEN">
+    uhid device is opened. This event usually happens when the user enables a
+    Bluetooth telephony HID device from WebHID to start using call control.
+  </int>
+</enum>
+
 <enum name="CrasNoiseCancellationStatus">
   <summary>
     List of status types of Noise Cancellation for the supported audio device.
