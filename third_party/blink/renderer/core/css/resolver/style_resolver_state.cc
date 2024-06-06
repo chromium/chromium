@@ -280,9 +280,9 @@ void StyleResolverState::SetTextSizeAdjust(
     return;
   }
   StyleBuilder().SetTextSizeAdjust(new_text_size_adjust);
-  // When `NewTextSizeAdjust` is enabled, text-size-adjust affects font-size
-  // during style building.
-  if (RuntimeEnabledFeatures::NewTextSizeAdjustEnabled()) {
+  // When `TextSizeAdjustImprovements` is enabled, text-size-adjust affects
+  // font-size during style building.
+  if (RuntimeEnabledFeatures::TextSizeAdjustImprovementsEnabled()) {
     UpdateLengthConversionData();
     font_builder_.DidChangeTextSizeAdjust();
   }

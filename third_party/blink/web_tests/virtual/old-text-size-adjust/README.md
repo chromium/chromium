@@ -1,2 +1,2 @@
-Tests for the old implementation of text-size-adjust with "mobile"
-settings (viewport, text autosizing enabled).
+Tests for the old implementation (pre-TextSizeAdjustImprovements) of
+text-size-adjust with "mobile" settings (viewport, text autosizing enabled).

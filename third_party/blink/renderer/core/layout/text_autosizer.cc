@@ -1208,7 +1208,7 @@ void TextAutosizer::ApplyMultiplier(LayoutObject* layout_object,
   DCHECK(layout_object);
   const ComputedStyle& current_style = layout_object->StyleRef();
   if (!current_style.GetTextSizeAdjust().IsAuto()) {
-    if (RuntimeEnabledFeatures::NewTextSizeAdjustEnabled()) {
+    if (RuntimeEnabledFeatures::TextSizeAdjustImprovementsEnabled()) {
       // Non-auto values of text-size-adjust should fully disable automatic
       // text size adjustment, including the accessibility font scale factor.
       multiplier = 1;

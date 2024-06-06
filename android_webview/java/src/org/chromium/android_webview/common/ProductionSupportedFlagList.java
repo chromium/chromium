@@ -464,7 +464,7 @@ public final class ProductionSupportedFlagList {
                 "Enables establishing the GPU channel asnchronously when requesting a new "
                         + "layer tree frame sink."),
         Flag.baseFeature(
-                BlinkFeatures.NEW_TEXT_SIZE_ADJUST, "Improved text-size-adjust implementation."),
+                BlinkFeatures.TEXT_SIZE_ADJUST_IMPROVEMENTS, "Improved text-size-adjust."),
         Flag.baseFeature(
                 BaseFeatures.OPTIMIZE_DATA_URLS, "Optimizes parsing and loading of data: URLs."),
         Flag.baseFeature(

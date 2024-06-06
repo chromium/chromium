@@ -36,11 +36,11 @@ class TextAutosizerClient : public RenderingTestChromeClient {
 
 class TextAutosizerTest : public RenderingTest,
                           public testing::WithParamInterface<bool>,
-                          private ScopedNewTextSizeAdjustForTest {
+                          private ScopedTextSizeAdjustImprovementsForTest {
  public:
   TextAutosizerTest()
       : RenderingTest(MakeGarbageCollected<SingleChildLocalFrameClient>()),
-        ScopedNewTextSizeAdjustForTest(GetParam()) {}
+        ScopedTextSizeAdjustImprovementsForTest(GetParam()) {}
 
   RenderingTestChromeClient& GetChromeClient() const override {
     return GetTextAutosizerClient();
@@ -353,7 +353,7 @@ TEST_P(TextAutosizerTest, AccessibilityFontScaleFactor) {
 }
 
 TEST_P(TextAutosizerTest, AccessibilityFontScaleFactorWithTextSizeAdjustNone) {
-  if (RuntimeEnabledFeatures::NewTextSizeAdjustEnabled()) {
+  if (RuntimeEnabledFeatures::TextSizeAdjustImprovementsEnabled()) {
     // Non-auto values of text-size-adjust should disable all automatic font
     // scale adjustment.
     return;
@@ -440,7 +440,7 @@ TEST_P(TextAutosizerTest, ChangingAccessibilityFontScaleFactor) {
 }
 
 TEST_P(TextAutosizerTest, TextSizeAdjustDoesNotDisableAccessibility) {
-  if (RuntimeEnabledFeatures::NewTextSizeAdjustEnabled()) {
+  if (RuntimeEnabledFeatures::TextSizeAdjustImprovementsEnabled()) {
     // Non-auto values of text-size-adjust should disable all automatic font
     // scale adjustment.
     return;
@@ -1218,9 +1218,10 @@ TEST_P(TextAutosizerTest, UsedDeviceScaleAdjustmentUseCounterWithoutViewport) {
 
 class TextAutosizerSimTest : public SimTest,
                              public testing::WithParamInterface<bool>,
-                             private ScopedNewTextSizeAdjustForTest {
+                             private ScopedTextSizeAdjustImprovementsForTest {
  public:
-  TextAutosizerSimTest() : ScopedNewTextSizeAdjustForTest(GetParam()) {}
+  TextAutosizerSimTest()
+      : ScopedTextSizeAdjustImprovementsForTest(GetParam()) {}
 
  private:
   void SetUp() override {

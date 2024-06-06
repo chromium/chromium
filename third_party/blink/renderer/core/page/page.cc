@@ -909,7 +909,7 @@ void Page::SettingsChanged(ChangeType change_type) {
       // The new text-size-adjust implementation requires the text autosizing
       // setting but applies the adjustment in style rather than via the text
       // autosizer, so we need to invalidate style.
-      if (RuntimeEnabledFeatures::NewTextSizeAdjustEnabled()) {
+      if (RuntimeEnabledFeatures::TextSizeAdjustImprovementsEnabled()) {
         InitialStyleChanged();
       }
       break;

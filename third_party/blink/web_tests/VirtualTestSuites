@@ -2285,7 +2285,7 @@
     "bases": ["wpt_internal/css/css-size-adjust",
               "external/wpt/css/css-size-adjust"],
     "args": ["--enable-threaded-compositing",
-             "--enable-blink-features=NewTextSizeAdjust",
+             "--enable-blink-features=TextSizeAdjustImprovements",
              "--enable-viewport",
              "--blink-settings=textAutosizingEnabled=true,viewportMetaEnabled=true"],
     "expires": "Jan 1, 2026"
@@ -2297,7 +2297,7 @@
     "bases": ["wpt_internal/css/css-size-adjust",
               "external/wpt/css/css-size-adjust"],
     "args": ["--enable-threaded-compositing",
-             "--enable-blink-features=NewTextSizeAdjust",
+             "--enable-blink-features=TextSizeAdjustImprovements",
              "--enable-viewport",
              "--blink-settings=textAutosizingEnabled=true,accessibilityFontScaleFactor=2,deviceScaleAdjustment=3,viewportMetaEnabled=true"],
     "expires": "Jan 1, 2026"
@@ -2309,7 +2309,7 @@
     "bases": ["wpt_internal/css/css-size-adjust",
               "external/wpt/css/css-size-adjust"],
     "args": ["--enable-threaded-compositing",
-             "--disable-blink-features=NewTextSizeAdjust",
+             "--disable-blink-features=TextSizeAdjustImprovements",
              "--enable-viewport",
              "--blink-settings=textAutosizingEnabled=true,viewportMetaEnabled=true"],
     "expires": "Jan 1, 2026"
@@ -2321,7 +2321,7 @@
     "bases": ["wpt_internal/css/css-size-adjust",
               "external/wpt/css/css-size-adjust"],
     "args": ["--enable-threaded-compositing",
-             "--disable-blink-features=NewTextSizeAdjust",
+             "--disable-blink-features=TextSizeAdjustImprovements",
              "--enable-viewport",
              "--blink-settings=textAutosizingEnabled=true,accessibilityFontScaleFactor=2,deviceScaleAdjustment=3,viewportMetaEnabled=true"],
     "expires": "Jan 1, 2026"
