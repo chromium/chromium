@@ -277,8 +277,7 @@ void AwContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
 #endif
 
   if (base::FeatureList::IsEnabled(
-          features::kWebViewMediaIntegrityApiBlinkExtension) &&
-      !base::FeatureList::IsEnabled(features::kWebViewMediaIntegrityApi)) {
+          features::kWebViewMediaIntegrityApiBlinkExtension)) {
     map->Add<blink::mojom::WebViewMediaIntegrityService>(
         base::BindRepeating(&BindMediaIntegrityServiceReceiver));
   }

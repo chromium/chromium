@@ -829,13 +829,6 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature("WebAssemblyInlining"),
         Flag.baseFeature("WebAssemblyLiftoffCodeFlushing"),
         Flag.baseFeature(
-                AwFeatures.WEBVIEW_INJECT_PLATFORM_JS_APIS,
-                "Inject platform-specific JavaScript APIs."),
-        Flag.baseFeature(
-                AwFeatures.WEBVIEW_MEDIA_INTEGRITY_API,
-                "Enable the WebView Media Integrity API. Requires injection of platform-specific"
-                        + " JavaScript APIs to be enabled."),
-        Flag.baseFeature(
                 AwFeatures.WEBVIEW_MEDIA_INTEGRITY_API_BLINK_EXTENSION,
                 "Enable the WebView Media Integrity API as a Blink extension. Only works if"
                         + " WebViewMediaIntegrityApi is disabled."),

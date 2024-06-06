@@ -27,12 +27,10 @@ BASE_DECLARE_FEATURE(kWebViewExtraHeadersSameOriginOnly);
 BASE_DECLARE_FEATURE(kWebViewForceDarkModeMatchTheme);
 BASE_DECLARE_FEATURE(kWebViewHitTestInBlinkOnTouchStart);
 BASE_DECLARE_FEATURE(kWebViewImageDrag);
-BASE_DECLARE_FEATURE(kWebViewInjectPlatformJsApis);
 BASE_DECLARE_FEATURE(kWebViewInvokeZoomPickerOnGSU);
 // Feature parameter for `network::features::kMaskedDomainList` which is
 // defined in //services/network.
 extern const base::FeatureParam<int> kWebViewIpProtectionExclusionCriteria;
-BASE_DECLARE_FEATURE(kWebViewMediaIntegrityApi);
 BASE_DECLARE_FEATURE(kWebViewMediaIntegrityApiBlinkExtension);
 BASE_DECLARE_FEATURE(kWebViewMixedContentAutoupgrades);
 BASE_DECLARE_FEATURE(kWebViewMuteAudio);

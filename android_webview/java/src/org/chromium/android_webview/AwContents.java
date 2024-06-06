@@ -60,7 +60,6 @@ import org.chromium.android_webview.autofill.AndroidAutofillSafeModeAction;
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.AwSwitches;
 import org.chromium.android_webview.common.Lifetime;
-import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.android_webview.gfx.AwDrawFnImpl;
 import org.chromium.android_webview.gfx.AwFunctor;
 import org.chromium.android_webview.gfx.AwGLFunctor;
@@ -1428,12 +1427,6 @@ public class AwContents implements SmartClipProvider {
 
             setNewAwContents(
                     AwContentsJni.get().init(mBrowserContext.getNativeBrowserContextPointer()));
-
-            if (AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_INJECT_PLATFORM_JS_APIS)) {
-                PlatformServiceBridge.getInstance()
-                        .injectPlatformJsInterfaces(
-                                mContext, new PlatformServiceBridgeAwContentsWrapper(this));
-            }
 
             onContainerViewChanged();
         }

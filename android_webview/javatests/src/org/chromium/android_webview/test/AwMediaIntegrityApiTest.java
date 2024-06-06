@@ -58,7 +58,6 @@ import java.util.concurrent.TimeoutException;
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 @Batch(Batch.PER_CLASS)
-@CommandLineFlags.Add("disable-features=" + AwFeatures.WEBVIEW_MEDIA_INTEGRITY_API)
 public class AwMediaIntegrityApiTest extends AwParameterizedTest {
 
     private static final long CLOUD_PROJECT_NUMBER = 123;

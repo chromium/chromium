@@ -190,8 +190,7 @@ void AwContentRendererClient::
   }
 
   if (base::FeatureList::IsEnabled(
-          features::kWebViewMediaIntegrityApiBlinkExtension) &&
-      !base::FeatureList::IsEnabled(features::kWebViewMediaIntegrityApi)) {
+          features::kWebViewMediaIntegrityApiBlinkExtension)) {
     // Enable the overall android.webview namespace.
     blink::WebRuntimeFeatures::EnableBlinkExtensionWebView(true);
     // Enable the android.webview.getExperimentalMediaIntegrityProvider API.

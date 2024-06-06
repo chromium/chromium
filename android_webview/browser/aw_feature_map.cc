@@ -39,8 +39,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebViewSupervisedUserSiteDetection,
     &features::kWebViewSupervisedUserSiteBlock,
     &base::features::kCollectAndroidFrameTimelineMetrics,
-    &features::kWebViewInjectPlatformJsApis,
-    &features::kWebViewMediaIntegrityApi,
     &features::kWebViewMediaIntegrityApiBlinkExtension,
     &safe_browsing::kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck,
     &features::kWebViewMuteAudio,

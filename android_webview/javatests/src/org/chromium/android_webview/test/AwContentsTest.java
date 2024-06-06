@@ -13,7 +13,6 @@ import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.SINGLE_PRO
 
 import android.annotation.SuppressLint;
 import android.content.ComponentCallbacks2;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -28,7 +27,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.JavascriptInterface;
 
-import androidx.annotation.NonNull;
 import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
@@ -49,7 +47,6 @@ import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwRenderProcess;
 import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.common.AwFeatures;
-import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.android_webview.renderer_priority.RendererPriority;
 import org.chromium.android_webview.test.TestAwContentsClient.OnDownloadStartHelper;
 import org.chromium.android_webview.test.util.CommonResources;
@@ -1582,8 +1579,8 @@ public class AwContentsTest extends AwParameterizedTest {
             // Main frame has green color at the top half, and iframe in the bottom half.
             final String pageHtml =
                     "<html><body><div"
-                            + " style=\"width:100%;height:50%;background-color:rgb(0,255,0);\"></div><iframe"
-                            + " style=\"width:100%;height:50%;\" src=\""
+                        + " style=\"width:100%;height:50%;background-color:rgb(0,255,0);\"></div><iframe"
+                        + " style=\"width:100%;height:50%;\" src=\""
                             + iframePath
                             + "\"></iframe>"
                             + "</body></html>";
@@ -1967,69 +1964,6 @@ public class AwContentsTest extends AwParameterizedTest {
                 });
 
         Assert.assertFalse(testView.isBackedByHardwareView());
-    }
-
-    private static final class InjectingPlatformServiceBridge extends PlatformServiceBridge {
-        private static final String DEMO_JAVASCRIPT =
-                """
-            function injectionDemo() {
-              return "injected";
-            }
-            """;
-
-        @Override
-        public void injectPlatformJsInterfaces(
-                @NonNull Context context, @NonNull AwContentsWrapper receiver) {
-            receiver.addDocumentStartJavaScript(DEMO_JAVASCRIPT, new String[] {"*"});
-        }
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"AndroidWebView"})
-    @Features.EnableFeatures({AwFeatures.WEBVIEW_INJECT_PLATFORM_JS_APIS})
-    public void testPlatformJsInjectedIfEnabled() throws Exception {
-        mActivityTestRule.startBrowserProcess();
-
-        InjectingPlatformServiceBridge bridge = new InjectingPlatformServiceBridge();
-        PlatformServiceBridge.injectInstance(bridge);
-
-        AwTestContainerView testView =
-                mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
-        final AwContents awContents = testView.getAwContents();
-        AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
-        mActivityTestRule.loadUrlSync(
-                awContents, mContentsClient.getOnPageFinishedHelper(), "about:blank");
-
-        String result =
-                mActivityTestRule.executeJavaScriptAndWaitForResult(
-                        awContents, mContentsClient, "injectionDemo();");
-        Assert.assertEquals("\"injected\"", result);
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"AndroidWebView"})
-    @Features.DisableFeatures({AwFeatures.WEBVIEW_INJECT_PLATFORM_JS_APIS})
-    public void testPlatformJsNotInjectedIfDisabled() throws Exception {
-        mActivityTestRule.startBrowserProcess();
-
-        InjectingPlatformServiceBridge bridge = new InjectingPlatformServiceBridge();
-        PlatformServiceBridge.injectInstance(bridge);
-
-        AwTestContainerView testView =
-                mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
-        final AwContents awContents = testView.getAwContents();
-        AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
-        mActivityTestRule.loadUrlSync(
-                awContents, mContentsClient.getOnPageFinishedHelper(), "about:blank");
-
-        String result =
-                mActivityTestRule.executeJavaScriptAndWaitForResult(
-                        awContents,
-                        mContentsClient,
-                        "window.injectionDemo ? 'exists unexpectedly' : 'does not exist';");
-        Assert.assertEquals("\"does not exist\"", result);
     }
 
     @Test

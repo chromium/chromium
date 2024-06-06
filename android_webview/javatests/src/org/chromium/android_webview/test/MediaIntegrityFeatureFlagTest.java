@@ -86,17 +86,6 @@ public class MediaIntegrityFeatureFlagTest extends AwParameterizedTest {
     @Test
     @LargeTest
     @CommandLineFlags.Add({
-        "disable-features=" + AwFeatures.WEBVIEW_MEDIA_INTEGRITY_API,
-        "disable-features=" + AwFeatures.WEBVIEW_MEDIA_INTEGRITY_API_BLINK_EXTENSION
-    })
-    public void testNeitherFeatureEnabledHidesNativeApis() throws Throwable {
-        assertWhetherApiVisibleAndNative(false);
-    }
-
-    @Test
-    @LargeTest
-    @CommandLineFlags.Add({
-        "enable-features=" + AwFeatures.WEBVIEW_MEDIA_INTEGRITY_API,
         "disable-features=" + AwFeatures.WEBVIEW_MEDIA_INTEGRITY_API_BLINK_EXTENSION
     })
     public void testOnlyOriginalFeatureEnabledHidesNativeApis() throws Throwable {
@@ -106,20 +95,9 @@ public class MediaIntegrityFeatureFlagTest extends AwParameterizedTest {
     @Test
     @LargeTest
     @CommandLineFlags.Add({
-        "disable-features=" + AwFeatures.WEBVIEW_MEDIA_INTEGRITY_API,
         "enable-features=" + AwFeatures.WEBVIEW_MEDIA_INTEGRITY_API_BLINK_EXTENSION
     })
     public void testOnlyBlinkExtensionFeatureEnabledExposesNativeApis() throws Throwable {
         assertWhetherApiVisibleAndNative(true);
-    }
-
-    @Test
-    @LargeTest
-    @CommandLineFlags.Add({
-        "enable-features=" + AwFeatures.WEBVIEW_MEDIA_INTEGRITY_API,
-        "enable-features=" + AwFeatures.WEBVIEW_MEDIA_INTEGRITY_API_BLINK_EXTENSION
-    })
-    public void testBothFeaturesEnabledHidesNativeApis() throws Throwable {
-        assertWhetherApiVisibleAndNative(false);
     }
 }

@@ -73,12 +73,6 @@ BASE_FEATURE(kWebViewDisplayCutout,
              "WebViewDisplayCutout",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enable the WebView Media Integrity API.
-// This feature requires `kWebViewInjectPlatformJsApis` to be enabled as well.
-BASE_FEATURE(kWebViewMediaIntegrityApi,
-             "WebViewMediaIntegrityApi",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enable the WebView Media Integrity API as a Blink extension.
 // This feature requires `kWebViewMediaIntegrityApi` to be disabled.
 BASE_FEATURE(kWebViewMediaIntegrityApiBlinkExtension,
@@ -192,11 +186,6 @@ const base::FeatureParam<int> kWebViewXRequestedWithHeaderMode{
 // This enables image drage out for Webview.
 BASE_FEATURE(kWebViewImageDrag,
              "WebViewImageDrag",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables injection of platform-specific JavaScript APIs.
-BASE_FEATURE(kWebViewInjectPlatformJsApis,
-             "WebViewInjectPlatformJsApis",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled zoom picker is invoked on every kGestureScrollUpdate consumed ack,
