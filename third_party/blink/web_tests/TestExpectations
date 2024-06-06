@@ -6965,7 +6965,6 @@ crbug.com/327390559 [ Win11-arm64 ] virtual/keepalive-in-browser-migration/exter
 
 # Gardener 2023-02-28
 crbug.com/327434497 [ Mac13 ] wpt_internal/scheduler/task-signal-any-memory-abort-1.any.html [ Failure Pass ]
-crbug.com/325323464 [ Linux ] http/tests/navigation/back-to-redirect-with-frame.php [ Pass Timeout ]
 
 # Flaky test on all platforms
 crbug.com/41484244 virtual/shared-storage-fenced-frame-mparch/external/wpt/shared-storage/shared-storage-writable-service-worker-img.tentative.https.sub.html [ Failure Pass Timeout ]
@@ -7288,7 +7287,6 @@ crbug.com/626703 [ Mac ] external/wpt/pointerevents/pointerevent_after_target_ap
 [ Mac14 ] http/tests/inspector-protocol/fedcm/fedcm-open-url.js [ Failure Pass ]
 [ Mac14 ] http/tests/misc/script-no-store.html [ Timeout ]
 [ Mac14 ] http/tests/origin_trials/valid-token-window-open-header-enabled.php [ Failure Pass ]
-[ Mac14 ] http/tests/navigation/back-to-redirect-with-frame.php [ Pass Timeout ]
 [ Mac14 ] http/tests/xmlhttprequest/redirect-cross-origin-post.html [ Failure Pass ]
 [ Mac14 ] jquery/core.html [ Skip Timeout ]
 [ Mac14 ] jquery/traversing.html [ Skip Timeout ]
@@ -7518,9 +7516,6 @@ b/40270061 http/tests/inspector-protocol/tracing/runtime-stats.js [ Crash Failur
 #Loading bug triage 2024-05-16
 crbug.com/339833760 [ Win ] http/tests/preload/meta-viewport-link-headers-imagesrcset.html [ Failure Pass ]
 
-# Branch Gardener 2024-04-21
-crbug.com/331358162 [ Win ] http/tests/navigation/back-to-redirect-with-frame.php [ Failure Pass ]
-
 # Temporarily disabled to allowed crrev.com/c/5582339 to land. Re-enabled in crrev.com/c/5588517.
 crbug.com/343750870 http/tests/devtools/a11y-axe-core/sources/call-stack-a11y-test.js [ Failure Pass ]
 crbug.com/343750870 http/tests/devtools/console/console-assert.js [ Failure Pass ]
@@ -7562,7 +7557,12 @@ crbug.com/40279192 external/wpt/event-timing/mouseleave.html [ Failure Pass ]
 crbug.com/40899458 [ Linux ] virtual/gpu/fast/canvas/OffscreenCanvas-copyImage.html [ Failure Pass ]
 
 # Gardener 2024-06-05
-crbug.com/325323464 [ Mac13 ] http/tests/navigation/back-to-redirect-with-frame.php [ Pass Timeout ]
 crbug.com/345118873 external/wpt/webdriver/tests/classic/get_active_element/get.py [ Failure ]
 
 crbug.com/331836147 [ Debug Linux ] virtual/threaded/external/wpt/css/css-scroll-snap/snap-after-relayout/multiple-aligned-targets/prefer-first-in-tree-order.html [ Failure Pass ]
+
+# Gardener 2024-06-06
+crbug.com/325323464 [ Linux ] http/tests/navigation/back-to-redirect-with-frame.php [ Pass Timeout ]
+crbug.com/325323464 [ Mac13 ] http/tests/navigation/back-to-redirect-with-frame.php [ Pass Timeout ]
+crbug.com/325323464 [ Mac14 ] http/tests/navigation/back-to-redirect-with-frame.php [ Pass Timeout ]
+crbug.com/325323464 [ Win ] http/tests/navigation/back-to-redirect-with-frame.php [ Failure Pass Timeout ]
