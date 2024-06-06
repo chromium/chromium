@@ -165,14 +165,17 @@ class LoginUnlockThroughputRecorderTestBase : public LoginTestBase {
       std::string app_name = is_lacros ? app_constants::kLacrosAppId : "";
       browser_window_ids.emplace_back(n, std::move(app_name));
     }
-    for (int n : non_browser_ids) {
-      throughput_recorder()->AddScheduledRestoreWindow(
-          n, base::StringPrintf("some_app%d", n),
-          LoginUnlockThroughputRecorder::kBrowser);
-    }
     throughput_recorder()->BrowserSessionRestoreDataLoaded(
         std::move(browser_window_ids));
-    throughput_recorder()->FullSessionRestoreDataLoaded();
+
+    std::vector<LoginUnlockThroughputRecorder::RestoreWindowID>
+        non_browser_window_ids;
+    for (int n : non_browser_ids) {
+      non_browser_window_ids.emplace_back(n,
+                                          base::StringPrintf("some_app%d", n));
+    }
+    throughput_recorder()->FullSessionRestoreDataLoaded(
+        std::move(non_browser_window_ids));
   }
 
   void RestoredWindowsCreated(const std::vector<int>& ids) {
@@ -274,7 +277,7 @@ TEST_P(LoginUnlockThroughputRecorderLoginAnimationTest,
 
   // Do not expect any windows to be restored.
   throughput_recorder()->BrowserSessionRestoreDataLoaded({});
-  throughput_recorder()->FullSessionRestoreDataLoaded();
+  throughput_recorder()->FullSessionRestoreDataLoaded({});
 
   // Should not report login histogram until shelf is initialized.
   EXPECT_EQ(histogram_tester_.get()->GetTotalSum(metrics_name), 0);

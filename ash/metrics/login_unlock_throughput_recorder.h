@@ -106,11 +106,6 @@ class ASH_EXPORT LoginUnlockThroughputRecorder : public LoginState::Observer {
     std::string app_name;
   };
 
-  enum RestoreWindowType {
-    kBrowser,
-    kArc,
-  };
-
   LoginUnlockThroughputRecorder();
   LoginUnlockThroughputRecorder(const LoginUnlockThroughputRecorder&) = delete;
   LoginUnlockThroughputRecorder& operator=(
@@ -119,13 +114,6 @@ class ASH_EXPORT LoginUnlockThroughputRecorder : public LoginState::Observer {
 
   // LoginState::Observer:
   void LoggedInStateChanged() override;
-
-  // Adds "restore_window_id" to the list of potentially restored windows.
-  // See
-  // https://source.chromium.org/chromium/chromium/src/+/main:ui/views/widget/widget.h;l=404-415.
-  void AddScheduledRestoreWindow(int restore_window_id,
-                                 const std::string& app_id,
-                                 RestoreWindowType window_type);
 
   // This is called when restored window was created.
   void OnRestoredWindowCreated(int restore_window_id);
@@ -173,9 +161,8 @@ class ASH_EXPORT LoginUnlockThroughputRecorder : public LoginState::Observer {
   // multiple times, e.g. due to errors.
   void BrowserSessionRestoreDataLoaded(std::vector<RestoreWindowID> window_ids);
 
-  // This flag signals that Full Session restore has reported all the expected
-  // windows to be created.
-  void FullSessionRestoreDataLoaded();
+  // This is called when the list of full restore windows, e.g. Lacros windows.
+  void FullSessionRestoreDataLoaded(std::vector<RestoreWindowID> window_ids);
 
   // Records that ARC has finished booting.
   void ArcUiAvailableAfterLogin();

@@ -20,6 +20,7 @@
 #include "ash/shell.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/debug/stack_trace.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -429,19 +430,6 @@ void LoginUnlockThroughputRecorder::LoggedInStateChanged() {
       &LoginUnlockThroughputRecorder::OnPostLoginDeferredTaskTimerFired);
 }
 
-void LoginUnlockThroughputRecorder::AddScheduledRestoreWindow(
-    int restore_window_id,
-    const std::string& app_id,
-    RestoreWindowType window_type) {
-  switch (window_type) {
-    case RestoreWindowType::kBrowser:
-      window_restore_tracker_.AddWindow(restore_window_id, app_id);
-      break;
-    default:
-      NOTREACHED_IN_MIGRATION();
-  }
-}
-
 void LoginUnlockThroughputRecorder::OnRestoredWindowCreated(int id) {
   window_restore_tracker_.OnCreated(id);
 }
@@ -691,17 +679,21 @@ void LoginUnlockThroughputRecorder::BrowserSessionRestoreDataLoaded(
   }
 
   for (const auto& w : window_ids) {
-    AddScheduledRestoreWindow(w.session_window_id, w.app_name,
-                              LoginUnlockThroughputRecorder::kBrowser);
+    window_restore_tracker_.AddWindow(w.session_window_id, w.app_name);
   }
 
   browser_session_restore_data_loaded_ = true;
   MaybeRestoreDataLoaded();
 }
 
-void LoginUnlockThroughputRecorder::FullSessionRestoreDataLoaded() {
+void LoginUnlockThroughputRecorder::FullSessionRestoreDataLoaded(
+    std::vector<RestoreWindowID> window_ids) {
   if (login_finished_reported_) {
     return;
+  }
+
+  for (const auto& w : window_ids) {
+    window_restore_tracker_.AddWindow(w.session_window_id, w.app_name);
   }
 
   DCHECK(!full_session_restore_data_loaded_);

@@ -473,11 +473,12 @@ void FullRestoreAppLaunchHandler::LogRestoreData() {
   if (!restore_data() || restore_data()->app_id_to_launch_list().empty()) {
     VLOG(1) << "There is no restore data from " << profile()->GetPath();
     if (throughput_recorder) {
-      throughput_recorder->FullSessionRestoreDataLoaded();
+      throughput_recorder->FullSessionRestoreDataLoaded({});
     }
     return;
   }
 
+  std::vector<LoginUnlockThroughputRecorder::RestoreWindowID> app_restore_ids;
   int arc_app_count = 0;
   int other_app_count = 0;
   for (const auto& it : restore_data()->app_id_to_launch_list()) {
@@ -489,16 +490,16 @@ void FullRestoreAppLaunchHandler::LogRestoreData() {
       continue;
     }
 
-    if (throughput_recorder) {
-      for (const auto& window : it.second) {
-        throughput_recorder->AddScheduledRestoreWindow(
-            window.first, it.first, LoginUnlockThroughputRecorder::kBrowser);
-      }
+    for (const auto& window : it.second) {
+      int window_id = window.first;
+      const std::string& app_name = it.first;
+      app_restore_ids.emplace_back(window_id, app_name);
     }
     ++other_app_count;
   }
   if (throughput_recorder) {
-    throughput_recorder->FullSessionRestoreDataLoaded();
+    throughput_recorder->FullSessionRestoreDataLoaded(
+        std::move(app_restore_ids));
   }
   VLOG(1) << "There is restore data: Browser("
           << (::full_restore::HasAppTypeBrowser(profile()->GetPath())
