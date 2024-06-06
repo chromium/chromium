@@ -62,6 +62,7 @@ verify_package() {
   rpmlib(CompressedFileNames) <= 3.0.4-1, \
   rpmlib(FileDigests) <= 4.6.0-1, \
   rpmlib(PayloadFilesHavePrefix) <= 4.0-1, \
+  rpmlib(RichDependencies) <= 4.12.0-1, \
   /usr/sbin/update-alternatives"
   if [ ${IS_OFFICIAL_BUILD} -ne 0 ]; then
     ADDITIONAL_RPM_DEPENDS="${ADDITIONAL_RPM_DEPENDS}, \

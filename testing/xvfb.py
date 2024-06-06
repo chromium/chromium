@@ -276,22 +276,6 @@ def _run_with_x11(cmd, env, stdoutfile, use_openbox, use_xcompmgr, use_xorg,
     signal.signal(signal.SIGTERM, raise_x11_error)
     signal.signal(signal.SIGINT, raise_x11_error)
 
-    xvfb_help = None
-    if not use_xorg:
-      # Before [1], the maximum number of X11 clients was 256.  After, the
-      # default limit is 256 with a configurable maximum of 512.  On systems
-      # with a large number of CPUs, the old limit of 256 may be hit for certain
-      # test suites [2] [3], so we set the limit to 512 when possible.  This
-      # flag is not available on Ubuntu 16.04 or 18.04, so a feature check is
-      # required.  Xvfb does not have a '-version' option, so checking the
-      # '-help' output is required.
-      #
-      # [1] d206c240c0b85c4da44f073d6e9a692afb6b96d2
-      # [2] https://crbug.com/1187948
-      # [3] https://crbug.com/1120107
-      xvfb_help = subprocess.check_output(
-          ['Xvfb', '-help'], stderr=subprocess.STDOUT).decode('utf8')
-
     # Due to race condition for display number, Xvfb/Xorg might fail to run.
     # If it does fail, try again up to 10 times, similarly to xvfb-run.
     for _ in range(10):
@@ -304,10 +288,8 @@ def _run_with_x11(cmd, env, stdoutfile, use_openbox, use_xcompmgr, use_xorg,
       else:
         x11_cmd = [
             'Xvfb', display, '-screen', '0', xvfb_whd, '-ac', '-nolisten',
-            'tcp', '-dpi', '96', '+extension', 'RANDR'
+            'tcp', '-dpi', '96', '+extension', 'RANDR', '-maxclients', '512'
         ]
-        if '-maxclients' in xvfb_help:
-          x11_cmd += ['-maxclients', '512']
 
       # Sets SIGUSR1 to ignore for Xvfb/Xorg to signal current process
       # when it is ready. Due to race condition, USR1 signal could be sent

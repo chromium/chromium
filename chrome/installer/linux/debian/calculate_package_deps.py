@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -7,12 +7,9 @@
 are satisfiable on all supported debian-based distros.
 """
 
-from __future__ import print_function
-
 import argparse
 import json
 import os
-import re
 import subprocess
 import sys
 
@@ -84,7 +81,7 @@ if deps_str != '':
     # Bullseye, the package was renamed to libgcc-s1.  To avoid adding a dep
     # on the newer package, this hack skips the dep.  This is safe because
     # libgcc-s1 is a dependency of libc6.  This hack can be removed once
-    # support for Debian Buster and Ubuntu Bionic are dropped.
+    # support for Debian Buster is dropped.
     if interval_set.intervals[0].package == 'libgcc-s1':
       assert len(interval_set.intervals) == 1
       interval = interval_set.intervals[0]

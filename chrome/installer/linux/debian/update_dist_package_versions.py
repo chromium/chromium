@@ -27,7 +27,6 @@ SUPPORTED_DEBIAN_RELEASES = {
 }
 
 SUPPORTED_UBUNTU_RELEASES = {
-    "Ubuntu 18.04 (Bionic)": "bionic",
     "Ubuntu 20.04 (Focal)": "focal",
     "Ubuntu 22.04 (Jammy)": "jammy",
 }
@@ -46,7 +45,7 @@ PACKAGE_FILTER = {
     "libgbm1",
     # See the comment in calculate_package_deps.py about libgcc_s.
     # TODO(https://crbug.com/40549424): Add this once support for
-    # Debian Buster and Ubuntu Bionic are dropped.
+    # Debian Buster is dropped.
     # "libgcc-s1",
     "libglib2.0-0",
     "libnspr4",
