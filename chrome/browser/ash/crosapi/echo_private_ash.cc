@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/common/url_constants.h"
+#include "chromeos/ash/components/report/utils/time_utils.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
@@ -28,19 +29,6 @@
 #include "ui/base/window_open_disposition.h"
 
 namespace crosapi {
-
-namespace {
-
-// Gets the Oobe timestamp on a sequence that allows file-access.
-std::string GetOobeTimestampBackground() {
-  base::Time creation_time = ash::StartupUtils::GetTimeOfOobeFlagFileCreation();
-  return !creation_time.is_null()
-             ? base::UnlocalizedTimeFormatWithPattern(creation_time, "y-M-d",
-                                                      icu::TimeZone::getGMT())
-             : std::string();
-}
-
-}  // namespace
 
 EchoPrivateAsh::EchoPrivateAsh() = default;
 EchoPrivateAsh::~EchoPrivateAsh() = default;
@@ -83,9 +71,15 @@ void EchoPrivateAsh::CheckRedeemOffersAllowed(const std::string& window_id,
 }
 
 void EchoPrivateAsh::GetOobeTimestamp(GetOobeTimestampCallback callback) {
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&GetOobeTimestampBackground), std::move(callback));
+  std::string result;
+  if (const std::optional<base::Time> activateDate =
+          ash::report::utils::GetFirstActiveWeek()) {
+    result = base::UnlocalizedTimeFormatWithPattern(
+        activateDate.value(), "y-M-d", icu::TimeZone::getGMT());
+  }
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), result));
 }
 
 void EchoPrivateAsh::GetRegistrationCode(mojom::RegistrationCodeType type,
