@@ -65,14 +65,6 @@ void SegmentedBuffer::Iterator::Init(size_t offset) {
   value_ = base::span(segment_it_->data()).subspan(offset);
 }
 
-const char* SegmentedBuffer::FlattenIfNeededAndGetData() {
-  MergeSegmentsIntoBuffer();
-  if (segments_.empty()) {
-    return nullptr;
-  }
-  return segments_.begin()->data().data();
-}
-
 void SegmentedBuffer::Append(base::span<const char> data) {
   if (data.empty()) {
     return;
