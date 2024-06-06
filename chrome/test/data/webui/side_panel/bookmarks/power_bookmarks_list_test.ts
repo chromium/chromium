@@ -518,7 +518,8 @@ suite('SidePanelPowerBookmarksListTest', () => {
     assertFalse(!!input);
   });
 
-  test('BlursRenameInput', async () => {
+  // TODO(crbug.com/40276462): Fix flaky test.
+  test.skip('BlursRenameInput', async () => {
     const renamedBookmarkId = '4';
     powerBookmarksList.setRenamingIdForTests(renamedBookmarkId);
 

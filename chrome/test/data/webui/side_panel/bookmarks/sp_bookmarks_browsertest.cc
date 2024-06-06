@@ -36,8 +36,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelPowerBookmarksTest, EditDialog) {
           "mocha.run()");
 }
 
-// TODO(crbug.com/40276462): Flaky on multiple platforms.
-IN_PROC_BROWSER_TEST_F(SidePanelPowerBookmarksTest, DISABLED_List) {
+IN_PROC_BROWSER_TEST_F(SidePanelPowerBookmarksTest, List) {
   RunTest("side_panel/bookmarks/power_bookmarks_list_test.js", "mocha.run()");
 }
 
