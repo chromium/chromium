@@ -32,10 +32,18 @@ void SetQuicFlagByName_float(float* flag, const std::string& value) {
   }
 }
 
+void SetQuicFlagByName_uint32_t(uint32_t* flag, const std::string& value) {
+  uint32_t val;
+  if (base::StringToUint(value, &val)) {
+    *flag = val;
+  }
+}
+
 void SetQuicFlagByName_uint64_t(uint64_t* flag, const std::string& value) {
   uint64_t val;
-  if (base::StringToUint64(value, &val) && val >= 0)
+  if (base::StringToUint64(value, &val)) {
     *flag = val;
+  }
 }
 
 void SetQuicFlagByName_int32_t(int32_t* flag, const std::string& value) {
