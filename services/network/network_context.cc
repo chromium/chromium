@@ -409,6 +409,19 @@ base::RepeatingCallback<bool(const GURL&)> BuildUrlFilter(
 class NetworkContextApplicationStatusListener
     : public base::android::ApplicationStatusListener {
  public:
+  // Sets `get_callback` to be a callback that returns nullptr if the created
+  // NetworkContextApplicationStatusListener has been destroyed, and the
+  // listener itself, otherwise. It's a constructor argument to avoid needing
+  // a cast, moving this into the header, or other complexities around
+  // `app_status_listeners_` being a vector of the parent class.
+  explicit NetworkContextApplicationStatusListener(
+      disk_cache::ApplicationStatusListenerGetter& get_callback) {
+    get_callback =
+        base::BindRepeating(&NetworkContextApplicationStatusListener::
+                                ReturnAppStatusListenerIfAlive,
+                            weak_ptr_factory_.GetWeakPtr());
+  }
+
   // base::android::ApplicationStatusListener implementation:
   void SetCallback(const ApplicationStateChangeCallback& callback) override {
     DCHECK(!callback_);
@@ -422,17 +435,16 @@ class NetworkContextApplicationStatusListener
   }
 
  private:
-  ApplicationStateChangeCallback callback_;
-};
-
-base::android::ApplicationStatusListener* ReturnAppStatusListenerIfAlive(
-    base::WeakPtr<NetworkContext> network_context,
-    base::android::ApplicationStatusListener* listener) {
-  if (!network_context) {
-    return nullptr;
+  static base::android::ApplicationStatusListener*
+  ReturnAppStatusListenerIfAlive(
+      base::WeakPtr<base::android::ApplicationStatusListener> listener) {
+    return listener.get();
   }
-  return listener;
-}
+
+  ApplicationStateChangeCallback callback_;
+  base::WeakPtrFactory<base::android::ApplicationStatusListener>
+      weak_ptr_factory_{this};
+};
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -654,8 +666,10 @@ NetworkContext::NetworkContext(
         params_->file_paths->shared_dictionary_directory &&
         !params_->file_paths->shared_dictionary_directory->path().empty()) {
 #if BUILDFLAG(IS_ANDROID)
+      disk_cache::ApplicationStatusListenerGetter get_callback;
       app_status_listeners_.push_back(
-          std::make_unique<NetworkContextApplicationStatusListener>());
+          std::make_unique<NetworkContextApplicationStatusListener>(
+              get_callback));
 #endif  // BUILDFLAG(IS_ANDROID)
       // TODO(crbug.com/40255884): Set `file_operations_factory` to support
       // sandboxed network service on Android.
@@ -667,10 +681,7 @@ NetworkContext::NetworkContext(
           params_->shared_dictionary_cache_max_size,
           shared_dictionary::kDictionaryMaxCountPerNetworkContext,
 #if BUILDFLAG(IS_ANDROID)
-          base::BindRepeating(&ReturnAppStatusListenerIfAlive,
-                              weak_factory_.GetWeakPtr(),
-                              base::UnsafeDanglingUntriaged(
-                                  app_status_listeners_.rbegin()->get())),
+          std::move(get_callback),
 #endif  // BUILDFLAG(IS_ANDROID)
           /*file_operations_factory=*/nullptr);
     } else {
@@ -2573,10 +2584,8 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
 
 #if BUILDFLAG(IS_ANDROID)
     app_status_listeners_.push_back(
-        std::make_unique<NetworkContextApplicationStatusListener>());
-    cache_params.app_status_listener_getter = base::BindRepeating(
-        &ReturnAppStatusListenerIfAlive, weak_factory_.GetWeakPtr(),
-        base::UnsafeDanglingUntriaged(app_status_listeners_.rbegin()->get()));
+        std::make_unique<NetworkContextApplicationStatusListener>(
+            cache_params.app_status_listener_getter));
 #endif  // BUILDFLAG(IS_ANDROID)
     builder.EnableHttpCache(cache_params);
   }
