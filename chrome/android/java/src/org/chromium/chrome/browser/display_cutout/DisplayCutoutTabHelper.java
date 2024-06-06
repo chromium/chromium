@@ -23,6 +23,7 @@ import org.chromium.components.browser_ui.display_cutout.DisplayCutoutController
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.InsetObserver;
+import org.chromium.ui.InsetObserverSupplier;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
@@ -91,7 +92,7 @@ public class DisplayCutoutTabHelper implements UserData {
 
         @Override
         public InsetObserver getInsetObserverView() {
-            return mTab.getWindowAndroid().getInsetObserver();
+            return InsetObserverSupplier.getValueOrNullFrom(mTab.getWindowAndroid());
         }
 
         @Override

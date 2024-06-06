@@ -90,6 +90,7 @@ import org.chromium.components.omnibox.action.OmniboxActionFactoryJni;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.ui.InsetObserver;
+import org.chromium.ui.InsetObserverSupplier;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -195,7 +196,7 @@ public class AutocompleteMediatorUnitTest {
         mListModel.set(SuggestionListProperties.SUGGESTION_MODELS, mSuggestionModels);
 
         mTabWindowManagerSupplier = new ObservableSupplierImpl<>();
-        doReturn(mInsetObserver).when(mWindowAndroid).getInsetObserver();
+        InsetObserverSupplier.setInstanceForTesting(mInsetObserver);
 
         mMediator =
                 new AutocompleteMediator(

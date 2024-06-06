@@ -60,6 +60,7 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.InsetObserver;
+import org.chromium.ui.InsetObserverSupplier;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
@@ -628,7 +629,8 @@ public class ReadAloudController
                         }
                     };
 
-            InsetObserver insetObserver = mActivityWindowAndroid.getInsetObserver();
+            InsetObserver insetObserver =
+                    InsetObserverSupplier.getValueOrNullFrom(mActivityWindowAndroid);
             if (insetObserver != null) {
                 insetObserver.addObserver(this);
             }
@@ -967,7 +969,8 @@ public class ReadAloudController
         resetCurrentPlayback();
         mStateToRestoreOnBringingToForeground = null;
         ReadAloudFeatures.shutdown();
-        InsetObserver insetObserver = mActivityWindowAndroid.getInsetObserver();
+        InsetObserver insetObserver =
+                InsetObserverSupplier.getValueOrNullFrom(mActivityWindowAndroid);
         if (insetObserver != null) {
             insetObserver.removeObserver(this);
         }

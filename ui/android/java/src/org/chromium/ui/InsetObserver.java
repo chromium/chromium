@@ -21,7 +21,6 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.ui.base.ImmutableWeakReference;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +39,7 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
     private final ObserverList<WindowInsetsAnimationListener> mWindowInsetsAnimationListeners =
             new ObserverList<>();
     private final List<WindowInsetsConsumer> mInsetsConsumers = new ArrayList<>();
-    private final ImmutableWeakReference<View> mRootViewReference;
+    private final View mRootView;
     // Insets to be added to the current safe area.
     private int mBottomInsetsForEdgeToEdge;
     private final Rect mDisplayCutoutRect;
@@ -111,10 +110,10 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
     /**
      * Creates an instance of {@link InsetObserver}.
      *
-     * @param rootViewWeakRef A weak reference to the root view of the app.
+     * @param rootView The root view of the app.
      */
-    public InsetObserver(ImmutableWeakReference<View> rootViewWeakRef) {
-        mRootViewReference = rootViewWeakRef;
+    public InsetObserver(View rootView) {
+        mRootView = rootView;
         mWindowInsets = new Rect();
         mCurrentSafeArea = new Rect();
         mDisplayCutoutRect = new Rect();
@@ -168,13 +167,10 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
                     }
                 };
 
-        View rootView = getRootView();
-        if (rootView == null) return;
-
         // Populate the root window insets if available.
-        if (rootView.getRootWindowInsets() != null) {
+        if (mRootView.getRootWindowInsets() != null) {
             mLastSeenRawWindowInset =
-                    WindowInsetsCompat.toWindowInsetsCompat(rootView.getRootWindowInsets());
+                    WindowInsetsCompat.toWindowInsetsCompat(mRootView.getRootWindowInsets());
         } else if (sInitialRawWindowInsetsForTesting != null) {
             mLastSeenRawWindowInset = sInitialRawWindowInsetsForTesting;
         }
@@ -283,11 +279,7 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
     }
 
     private void updateKeyboardInset() {
-        View rootView = mRootViewReference.get();
-        if (rootView == null) return;
-
-        int keyboardInset = KeyboardUtils.calculateKeyboardHeightFromWindowInsets(rootView);
-
+        int keyboardInset = KeyboardUtils.calculateKeyboardHeightFromWindowInsets(mRootView);
         if (mKeyboardInset == keyboardInset) {
             return;
         }
@@ -300,11 +292,8 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
     }
 
     private WindowInsetsCompat forwardToInsetConsumers(WindowInsetsCompat insets) {
-        View rootView = mRootViewReference.get();
-        if (rootView == null) return insets;
-
         for (WindowInsetsConsumer consumer : mInsetsConsumers) {
-            insets = consumer.onApplyWindowInsets(rootView, insets);
+            insets = consumer.onApplyWindowInsets(mRootView, insets);
         }
         return insets;
     }
@@ -362,9 +351,5 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
     public static void setInitialRawWindowInsetsForTesting(WindowInsetsCompat windowInsets) {
         sInitialRawWindowInsetsForTesting = windowInsets;
         ResettersForTesting.register(() -> sInitialRawWindowInsetsForTesting = null);
-    }
-
-    private View getRootView() {
-        return mRootViewReference.get();
     }
 }
