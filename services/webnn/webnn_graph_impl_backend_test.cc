@@ -240,7 +240,6 @@ class WebNNGraphImplBackendTest : public dml::TestBase {
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
-  base::test::TaskEnvironment task_environment_;
   scoped_refptr<dml::Adapter> adapter_;
 };
 

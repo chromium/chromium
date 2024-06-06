@@ -53,7 +53,6 @@ class WebNNContextDMLImplTest : public TestBase {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  base::test::TaskEnvironment task_environment_;
 };
 
 TEST_F(WebNNContextDMLImplTest, CreateGraphImplTest) {

@@ -130,6 +130,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) CommandRecorder final {
       const std::optional<DML_BINDING_DESC>& persistent_resource_binding,
       const std::optional<DML_BINDING_DESC>& temporary_resource_binding);
 
+  CommandQueue* command_queue() const { return command_queue_.get(); }
+
  private:
   CommandRecorder(
       scoped_refptr<CommandQueue> command_queue,

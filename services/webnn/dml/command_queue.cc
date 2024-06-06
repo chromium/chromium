@@ -73,6 +73,8 @@ CommandQueue::CommandQueue(ComPtr<ID3D12CommandQueue> command_queue,
   fence_event_.Set(CreateEvent(nullptr, /*bManualReset=*/FALSE,
                                /*bInitialState=*/FALSE, nullptr));
   CHECK(fence_event_.is_valid());
+
+  DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
 CommandQueue::~CommandQueue() {
@@ -123,14 +125,15 @@ HRESULT CommandQueue::ExecuteCommandList(ID3D12CommandList* command_list) {
 HRESULT CommandQueue::ExecuteCommandLists(
     base::span<ID3D12CommandList*> command_lists) {
   TRACE_EVENT0("gpu", "dml::CommandQueue::ExecuteCommandLists");
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   command_queue_->ExecuteCommandLists(
       base::checked_cast<uint32_t>(command_lists.size()), command_lists.data());
   ++last_fence_value_;
   return command_queue_->Signal(fence_.Get(), last_fence_value_);
 }
 
-HRESULT CommandQueue::WaitSyncForTesting() {
-  CHECK_IS_TEST();
+HRESULT CommandQueue::WaitSync() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (fence_->GetCompletedValue() >= last_fence_value_) {
     return S_OK;
   }
@@ -147,6 +150,7 @@ HRESULT CommandQueue::WaitSyncForTesting() {
 }
 
 void CommandQueue::OnObjectSignaled(HANDLE object) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT_NESTABLE_ASYNC_END0("gpu", "dml::CommandQueue::WaitAsync",
                                   TRACE_ID_LOCAL(this));
   CHECK_EQ(object, fence_event_.get());
@@ -167,6 +171,7 @@ void CommandQueue::OnObjectSignaled(HANDLE object) {
 }
 
 void CommandQueue::WaitAsync(base::OnceCallback<void(HRESULT hr)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!object_watcher_.IsWatching()) {
     CHECK(object_watcher_.StartWatchingMultipleTimes(fence_event_.get(), this));
   }
@@ -186,10 +191,12 @@ void CommandQueue::WaitAsync(base::OnceCallback<void(HRESULT hr)> callback) {
 }
 
 void CommandQueue::ReferenceUntilCompleted(ComPtr<IUnknown> object) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   queued_objects_.push_back({last_fence_value_, std::move(object)});
 }
 
 void CommandQueue::ReleaseCompletedResources() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   uint64_t completed_value = fence_->GetCompletedValue();
   while (!queued_objects_.empty() &&
          queued_objects_.front().fence_value <= completed_value) {
@@ -202,7 +209,15 @@ uint64_t CommandQueue::GetCompletedValue() const {
 }
 
 uint64_t CommandQueue::GetLastFenceValue() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return last_fence_value_;
+}
+
+const std::deque<CommandQueue::QueuedObject>&
+CommandQueue::GetQueuedObjectsForTesting() const {
+  CHECK_IS_TEST();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return queued_objects_;
 }
 
 CommandQueue::QueuedObject::QueuedObject(uint64_t fence_value,

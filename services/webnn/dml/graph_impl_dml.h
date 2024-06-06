@@ -175,6 +175,18 @@ class GraphImplDml final : public WebNNGraphImpl {
                            IDMLCompiledOperator* compiled_operator,
                            const ComputeResourceInfo& compute_resource_info);
 
+  // `ExecuteAndWaitSyncOnBackgroundThread` accepts a `CommandRecorder` which
+  // keeps a reference to the `init_command_queue_for_npu_` in `Adapter`. The
+  // method submits the command list for execution and synchronously wait for
+  // initialization to complete. Since `ID3D12CommandQueue::ExecuteCommandLists`
+  // called in this method may take long time on some adapters e.g. NPU, this
+  // method should run on non-gpuMain threads to avoid blocking the compositor.
+  //
+  // CommandQueue is not a thread-safe object and should only be used by one
+  // task runner at a time to avoid race conditions with its member variables.
+  static HRESULT ExecuteAndWaitSyncOnBackgroundThread(
+      std::unique_ptr<CommandRecorder> init_command_recorder_for_npu);
+
   // This method mainly records the graph execution onto the command list, binds
   // all required resources and closes the command list.
   //
@@ -229,7 +241,7 @@ class GraphImplDml final : public WebNNGraphImpl {
       scoped_refptr<Adapter> adapter,
       base::WeakPtr<ContextImplDml> context,
       mojom::WebNNContext::CreateGraphCallback callback,
-      std::unique_ptr<CommandRecorder> command_recorder,
+      std::unique_ptr<CommandRecorder> inference_command_recorder,
       base::flat_map<uint64_t, mojo_base::BigBuffer> constant_id_to_buffer_map,
       std::unordered_map<uint64_t, uint32_t> constant_id_to_input_index_map,
       GraphBufferBindingInfo graph_buffer_binding_info,

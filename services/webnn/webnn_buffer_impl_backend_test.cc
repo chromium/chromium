@@ -79,7 +79,6 @@ class WebNNBufferImplBackendTest : public dml::TestBase {
       mojo::Remote<mojom::WebNNContext>& webnn_context_remote);
 
   base::test::ScopedFeatureList scoped_feature_list_;
-  base::test::TaskEnvironment task_environment_;
   scoped_refptr<dml::Adapter> adapter_;
   mojo::Remote<mojom::WebNNContextProvider> webnn_provider_remote_;
 };

@@ -303,6 +303,17 @@ base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr> Adapter::Create(
                                 "Failed to create command queue.");
   }
 
+  // Create command queue to initialize graph for NPU adapter.
+  scoped_refptr<CommandQueue> init_command_queue_for_npu;
+  if (dxcore_adapter) {
+    init_command_queue_for_npu = CommandQueue::Create(d3d12_device.Get());
+    if (!init_command_queue_for_npu) {
+      return HandleAdapterFailure(
+          mojom::Error::Code::kUnknownError,
+          "Failed to create command queue for graph initialization.");
+    }
+  }
+
   D3D12_FEATURE_DATA_ARCHITECTURE arch = {};
   if (FAILED(d3d12_device->CheckFeatureSupport(D3D12_FEATURE_ARCHITECTURE,
                                                &arch, sizeof(arch)))) {
@@ -315,6 +326,7 @@ base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr> Adapter::Create(
   return WrapRefCounted(
       new Adapter(std::move(dxgi_or_dxcore_adapter), std::move(d3d12_device),
                   std::move(dml_device), std::move(command_queue),
+                  std::move(init_command_queue_for_npu),
                   max_supported_dml_feature_level, is_uma));
 }
 
@@ -328,12 +340,14 @@ Adapter::Adapter(Microsoft::WRL::ComPtr<IUnknown> dxgi_or_dxcore_adapter,
                  Microsoft::WRL::ComPtr<ID3D12Device> d3d12_device,
                  Microsoft::WRL::ComPtr<IDMLDevice> dml_device,
                  scoped_refptr<CommandQueue> command_queue,
+                 scoped_refptr<CommandQueue> init_command_queue_for_npu,
                  DML_FEATURE_LEVEL max_supported_dml_feature_level,
                  bool is_uma)
     : dxgi_or_dxcore_adapter_(std::move(dxgi_or_dxcore_adapter)),
       d3d12_device_(std::move(d3d12_device)),
       dml_device_(std::move(dml_device)),
       command_queue_(std::move(command_queue)),
+      init_command_queue_for_npu_(std::move(init_command_queue_for_npu)),
       max_supported_dml_feature_level_(max_supported_dml_feature_level),
       is_uma_(is_uma) {
   Microsoft::WRL::ComPtr<IDXGIAdapter> dxgi_adapter;
@@ -346,6 +360,10 @@ Adapter::Adapter(Microsoft::WRL::ComPtr<IUnknown> dxgi_or_dxcore_adapter,
                  IID_PPV_ARGS(&dxcore_adapter)))) {
     CHECK_EQ(npu_instance_, nullptr);
     npu_instance_ = this;
+
+    init_task_runner_for_npu_ = base::ThreadPool::CreateSequencedTaskRunner(
+        {base::TaskPriority::USER_BLOCKING,
+         base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
   } else {
     NOTREACHED_NORETURN();
   }

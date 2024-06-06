@@ -77,6 +77,8 @@ TEST_F(WebNNAdapterTest, CheckAdapterAccessors) {
   EXPECT_NE(adapter->d3d12_device(), nullptr);
   EXPECT_NE(adapter->dml_device(), nullptr);
   EXPECT_NE(adapter->command_queue(), nullptr);
+  EXPECT_EQ(adapter->init_command_queue_for_npu(), nullptr);
+  EXPECT_EQ(adapter->init_task_runner_for_npu(), nullptr);
 }
 
 TEST_F(WebNNAdapterTest, CreateAdapterMinRequiredFeatureLevel) {

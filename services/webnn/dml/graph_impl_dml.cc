@@ -4992,11 +4992,22 @@ ComPtr<IDMLCompiledOperator> GraphImplDml::CompileOnBackgroundThread(
 }
 
 // static
+HRESULT GraphImplDml::ExecuteAndWaitSyncOnBackgroundThread(
+    std::unique_ptr<CommandRecorder> init_command_recorder_for_npu) {
+  TRACE_EVENT0("gpu",
+               "dml::GraphImplDml::ExecuteAndWaitSyncOnBackgroundThread");
+  RETURN_IF_FAILED(init_command_recorder_for_npu->Execute());
+  RETURN_IF_FAILED(init_command_recorder_for_npu->command_queue()->WaitSync());
+  init_command_recorder_for_npu->command_queue()->ReleaseCompletedResources();
+  return S_OK;
+}
+
+// static
 void GraphImplDml::OnCompilationComplete(
     scoped_refptr<Adapter> adapter,
     base::WeakPtr<ContextImplDml> context,
     mojom::WebNNContext::CreateGraphCallback callback,
-    std::unique_ptr<CommandRecorder> command_recorder,
+    std::unique_ptr<CommandRecorder> inference_command_recorder,
     base::flat_map<uint64_t, mojo_base::BigBuffer> constant_id_to_buffer_map,
     std::unordered_map<uint64_t, uint32_t> constant_id_to_input_index_map,
     GraphBufferBindingInfo graph_buffer_binding_info,
@@ -5009,7 +5020,21 @@ void GraphImplDml::OnCompilationComplete(
     return;
   }
 
-  HRESULT hr = command_recorder->Open();
+  std::unique_ptr<CommandRecorder> initialization_command_recorder;
+  if (adapter->IsNPU()) {
+    initialization_command_recorder = CommandRecorder::Create(
+        adapter->init_command_queue_for_npu(), adapter->dml_device());
+    if (!initialization_command_recorder) {
+      HandleGraphCreationFailure(
+          "Failed to create command recorder for graph initialization.",
+          std::move(callback));
+      return;
+    }
+  } else {
+    initialization_command_recorder = std::move(inference_command_recorder);
+  }
+
+  HRESULT hr = initialization_command_recorder->Open();
   if (FAILED(hr)) {
     HandleGraphCreationFailure("Failed to open the command recorder.", hr,
                                std::move(callback));
@@ -5098,7 +5123,7 @@ void GraphImplDml::OnCompilationComplete(
     }
 
     auto constant_buffer_binding = UploadAndCreateConstantBufferBinding(
-        adapter->command_queue(), command_recorder.get(),
+        adapter->command_queue(), initialization_command_recorder.get(),
         constant_id_to_buffer_map, aligned_byte_length_of_constants.value(),
         std::move(buffer_variant));
     if (!constant_buffer_binding) {
@@ -5150,27 +5175,49 @@ void GraphImplDml::OnCompilationComplete(
         persistent_resource->persistent_buffer_binding_desc;
   }
 
-  hr = command_recorder->InitializeOperator(compiled_operator.Get(),
-                                            input_buffer_binding_desc,
-                                            persistent_buffer_binding_desc);
+  hr = initialization_command_recorder->InitializeOperator(
+      compiled_operator.Get(), input_buffer_binding_desc,
+      persistent_buffer_binding_desc);
   if (FAILED(hr)) {
     HandleGraphCreationFailure("Failed to initialize the operator.", hr,
                                std::move(callback));
     return;
   }
 
-  hr = command_recorder->CloseAndExecute();
+  hr = initialization_command_recorder->Close();
   if (FAILED(hr)) {
-    HandleGraphCreationFailure("Failed to close and execute the command list.",
-                               hr, std::move(callback));
+    HandleGraphCreationFailure("Failed to close the command list.", hr,
+                               std::move(callback));
     return;
   }
 
-  scoped_refptr<CommandQueue> command_queue(adapter->command_queue());
+  // TODO(crbug.com/344921705): Move other graph initialization tasks to the
+  // background thread: records the graph initialization onto the command list,
+  // binds all required resources and closes the command list.
+  if (adapter->IsNPU()) {
+    adapter->init_task_runner_for_npu()->PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(&GraphImplDml::ExecuteAndWaitSyncOnBackgroundThread,
+                       std::move(initialization_command_recorder)),
+        base::BindOnce(
+            &GraphImplDml::OnInitializationComplete, std::move(adapter),
+            std::move(context), std::move(inference_command_recorder),
+            std::move(persistent_resource), std::move(compiled_operator),
+            std::move(compute_resource_info),
+            std::move(graph_buffer_binding_info), std::move(callback)));
+    return;
+  }
 
-  command_queue->WaitAsync(base::BindOnce(
+  hr = initialization_command_recorder->Execute();
+  if (FAILED(hr)) {
+    HandleGraphCreationFailure("Failed to execute the command list.", hr,
+                               std::move(callback));
+    return;
+  }
+
+  adapter->command_queue()->WaitAsync(base::BindOnce(
       &GraphImplDml::OnInitializationComplete, std::move(adapter),
-      std::move(context), std::move(command_recorder),
+      std::move(context), std::move(initialization_command_recorder),
       std::move(persistent_resource), std::move(compiled_operator),
       std::move(compute_resource_info), std::move(graph_buffer_binding_info),
       std::move(callback)));
@@ -5257,7 +5304,7 @@ void GraphImplDml::CreateAndBuild(
   std::unique_ptr<CommandRecorder> command_recorder =
       CommandRecorder::Create(adapter->command_queue(), adapter->dml_device());
   if (!command_recorder) {
-    HandleGraphCreationFailure("Failed to open the command recorder.",
+    HandleGraphCreationFailure("Failed to create the command recorder.",
                                std::move(callback));
     return;
   }

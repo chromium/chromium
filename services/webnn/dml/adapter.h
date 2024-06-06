@@ -8,6 +8,7 @@
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
+#include "base/task/thread_pool.h"
 #include "base/types/expected.h"
 #include "services/webnn/dml/error.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
@@ -68,6 +69,16 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) Adapter final
 
   CommandQueue* command_queue() const { return command_queue_.get(); }
 
+  CommandQueue* init_command_queue_for_npu() const {
+    return init_command_queue_for_npu_.get();
+  }
+
+  base::SequencedTaskRunner* init_task_runner_for_npu() const {
+    return init_task_runner_for_npu_.get();
+  }
+
+  bool IsNPU() const { return npu_instance_ == this; }
+
   // Enable the debug layer (requires the Graphics Tools "optional feature").
   // Must be called prior to Adapter::GetGpuInstance() since the D3D12 device
   // must be created after the debug layer is enabled.
@@ -93,6 +104,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) Adapter final
           Microsoft::WRL::ComPtr<ID3D12Device> d3d12_device,
           Microsoft::WRL::ComPtr<IDMLDevice> dml_device,
           scoped_refptr<CommandQueue> command_queue,
+          scoped_refptr<CommandQueue> init_command_queue_for_npu,
           DML_FEATURE_LEVEL max_supported_dml_feature_level,
           bool is_uma);
   ~Adapter();
@@ -114,6 +126,13 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) Adapter final
   Microsoft::WRL::ComPtr<ID3D12Device> d3d12_device_;
   Microsoft::WRL::ComPtr<IDMLDevice> dml_device_;
   scoped_refptr<CommandQueue> command_queue_;
+  // It's dedicated to initialize graph on background thread for the NPU
+  // adapter, it's nullptr for the GPU adapter.
+  scoped_refptr<CommandQueue> init_command_queue_for_npu_;
+  // It's used to post the graph initialization tasks to the background thread
+  // and guarantee the tasks are executed in order for the NPU adapter, it's
+  // nullptr for the GPU adapter.
+  scoped_refptr<base::SequencedTaskRunner> init_task_runner_for_npu_;
 
   DML_FEATURE_LEVEL max_supported_dml_feature_level_ = DML_FEATURE_LEVEL_1_0;
 
