@@ -6,6 +6,7 @@ package org.chromium.components.webapps;
 
 import android.app.Activity;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -370,6 +371,32 @@ public class AddToHomescreenDialogViewTest {
                 .get(ModalDialogProperties.CONTROLLER)
                 .onClick(shownDialogModel, ModalDialogProperties.ButtonType.POSITIVE);
         Assert.assertEquals(1, mAddCallback.getCallCount());
+    }
+
+    /** Tests whether the done editor action for shortcut name dismisses the dialog correctly. */
+    @Test
+    @Feature({"Webapp"})
+    public void testShortcutNameEditorAction() {
+        setUpDialog(/* showAddToHomeScreen= */ true);
+        initDialogView(AppType.SHORTCUT);
+
+        EditText shortcutNameInput =
+                mAddToHomescreenDialogView.getParentViewForTest().findViewById(R.id.shortcut_name);
+
+        Assert.assertEquals(0, mModalDialogManager.getDismissalCause());
+
+        // Without any text, the done action shouldn't cause the dialog to dismiss.
+        shortcutNameInput.setText("");
+        shortcutNameInput.onEditorAction(EditorInfo.IME_ACTION_DONE);
+        Assert.assertEquals(0, mModalDialogManager.getDismissalCause());
+
+        // With text, the done action should cause the dialog to dismiss as if the positive button
+        // is clicked.
+        shortcutNameInput.setText("Hello world");
+        shortcutNameInput.onEditorAction(EditorInfo.IME_ACTION_DONE);
+        Assert.assertEquals(
+                DialogDismissalCause.POSITIVE_BUTTON_CLICKED,
+                mModalDialogManager.getDismissalCause());
     }
 
     private void initDialogView(@AppType int appType) {

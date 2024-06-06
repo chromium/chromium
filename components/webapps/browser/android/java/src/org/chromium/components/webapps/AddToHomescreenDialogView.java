@@ -12,8 +12,10 @@ import android.os.Build;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -87,6 +89,16 @@ public class AddToHomescreenDialogView
         mIconView = (ImageView) mParentView.findViewById(R.id.icon);
 
         mShortcutTitleInput = mParentView.findViewById(R.id.shortcut_name);
+        mShortcutTitleInput.setOnEditorActionListener(
+                (TextView v, int actionId, KeyEvent event) -> {
+                    if (actionId == EditorInfo.IME_ACTION_DONE) {
+                        if (!mDialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_DISABLED)) {
+                            onClick(mDialogModel, ModalDialogProperties.ButtonType.POSITIVE);
+                        }
+                        return true;
+                    }
+                    return false;
+                });
 
         mAppLayout = (LinearLayout) mParentView.findViewById(R.id.app_info);
         mAppNameView = (TextView) mAppLayout.findViewById(R.id.app_name);
