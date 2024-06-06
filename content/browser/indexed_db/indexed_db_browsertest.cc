@@ -337,20 +337,27 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, KeyTypesTest) {
 IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, ObjectStoreTest) {
   base::HistogramTester tester;
 
-  tester.ExpectTotalCount("WebCore.IndexedDB.RequestDuration.Open", 0);
+  tester.ExpectTotalCount("WebCore.IndexedDB.RequestDuration2.Open", 0);
 
   // This test opens a database and does 3 adds and 3 gets in the versionchange
   // transaction (no readonly or readwrite transactions).
   SimpleTest(GetTestUrl("indexeddb", "object_store_test.html"));
   content::FetchHistogramsFromChildProcesses();
 
-  tester.ExpectTotalCount("WebCore.IndexedDB.RequestDuration.Open", 1);
-  tester.ExpectTotalCount("WebCore.IndexedDB.RequestDuration.ObjectStorePut",
+  tester.ExpectTotalCount("WebCore.IndexedDB.RequestDuration2.Open", 1);
+  tester.ExpectTotalCount("WebCore.IndexedDB.RequestDuration2.ObjectStorePut",
                           0);
-  tester.ExpectTotalCount("WebCore.IndexedDB.RequestDuration.ObjectStoreAdd",
+  tester.ExpectTotalCount("WebCore.IndexedDB.RequestDuration2.ObjectStoreAdd",
                           3);
-  tester.ExpectTotalCount("WebCore.IndexedDB.RequestDuration.ObjectStoreGet",
+  // 2 of the adds succeed and one fails (due to the key already existing).
+  tester.ExpectBucketCount(
+      "WebCore.IndexedDB.RequestDispatchOutcome.ObjectStoreAdd", 1, 2);
+  tester.ExpectBucketCount(
+      "WebCore.IndexedDB.RequestDispatchOutcome.ObjectStoreAdd", 0, 1);
+  tester.ExpectTotalCount("WebCore.IndexedDB.RequestDuration2.ObjectStoreGet",
                           3);
+  tester.ExpectBucketCount(
+      "WebCore.IndexedDB.RequestDispatchOutcome.ObjectStoreGet", 1, 3);
 
   tester.ExpectTotalCount("WebCore.IndexedDB.Transaction.ReadWrite.TimeQueued",
                           0);
@@ -370,13 +377,20 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, ObjectStoreTest) {
   SimpleTest(GetTestUrl("indexeddb", "transaction_get_test.html"));
   content::FetchHistogramsFromChildProcesses();
 
-  tester.ExpectTotalCount("WebCore.IndexedDB.RequestDuration.Open", 2);
-  tester.ExpectTotalCount("WebCore.IndexedDB.RequestDuration.ObjectStorePut",
+  tester.ExpectTotalCount("WebCore.IndexedDB.RequestDuration2.Open", 2);
+  tester.ExpectBucketCount("WebCore.IndexedDB.RequestDispatchOutcome.Open", 1,
+                           2);
+  tester.ExpectTotalCount("WebCore.IndexedDB.RequestDuration2.ObjectStorePut",
                           0);
-  tester.ExpectTotalCount("WebCore.IndexedDB.RequestDuration.ObjectStoreAdd",
+  tester.ExpectTotalCount("WebCore.IndexedDB.RequestDuration2.ObjectStoreAdd",
                           4);
-  tester.ExpectTotalCount("WebCore.IndexedDB.RequestDuration.ObjectStoreGet",
+  // One more success than before.
+  tester.ExpectBucketCount(
+      "WebCore.IndexedDB.RequestDispatchOutcome.ObjectStoreAdd", 1, 3);
+  tester.ExpectTotalCount("WebCore.IndexedDB.RequestDuration2.ObjectStoreGet",
                           5);
+  tester.ExpectBucketCount(
+      "WebCore.IndexedDB.RequestDispatchOutcome.ObjectStoreGet", 1, 5);
 
   tester.ExpectTotalCount("WebCore.IndexedDB.Transaction.ReadWrite.TimeQueued",
                           0);

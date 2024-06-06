@@ -30,7 +30,6 @@ function startTransaction()
 {
     debug("Using get in a transaction");
     transaction = db.transaction('storeName');
-    //transaction.onabort = unexpectedErrorCallback;
     store = transaction.objectStore('storeName');
     shouldBeEqualToString("store.name", "storeName");
     request = store.get('myKey');

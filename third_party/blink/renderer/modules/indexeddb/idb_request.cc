@@ -32,6 +32,8 @@
 #include <memory>
 #include <utility>
 
+#include "base/debug/stack_trace.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "third_party/blink/public/platform/web_blob_info.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
@@ -121,23 +123,32 @@ const char* RequestTypeToName(IDBRequest::TypeForMetrics type) {
 }
 
 void RecordHistogram(IDBRequest::TypeForMetrics type,
+                     bool success,
                      base::TimeDelta duration) {
   switch (type) {
     case IDBRequest::TypeForMetrics::kObjectStorePut:
-      UMA_HISTOGRAM_TIMES("WebCore.IndexedDB.RequestDuration.ObjectStorePut",
+      UMA_HISTOGRAM_TIMES("WebCore.IndexedDB.RequestDuration2.ObjectStorePut",
                           duration);
+      base::UmaHistogramBoolean(
+          "WebCore.IndexedDB.RequestDispatchOutcome.ObjectStorePut", success);
       break;
     case IDBRequest::TypeForMetrics::kObjectStoreAdd:
-      UMA_HISTOGRAM_TIMES("WebCore.IndexedDB.RequestDuration.ObjectStoreAdd",
+      UMA_HISTOGRAM_TIMES("WebCore.IndexedDB.RequestDuration2.ObjectStoreAdd",
                           duration);
+      base::UmaHistogramBoolean(
+          "WebCore.IndexedDB.RequestDispatchOutcome.ObjectStoreAdd", success);
       break;
     case IDBRequest::TypeForMetrics::kObjectStoreGet:
-      UMA_HISTOGRAM_TIMES("WebCore.IndexedDB.RequestDuration.ObjectStoreGet",
+      UMA_HISTOGRAM_TIMES("WebCore.IndexedDB.RequestDuration2.ObjectStoreGet",
                           duration);
+      base::UmaHistogramBoolean(
+          "WebCore.IndexedDB.RequestDispatchOutcome.ObjectStoreGet", success);
       break;
 
     case IDBRequest::TypeForMetrics::kFactoryOpen:
-      UMA_HISTOGRAM_TIMES("WebCore.IndexedDB.RequestDuration.Open", duration);
+      UMA_HISTOGRAM_TIMES("WebCore.IndexedDB.RequestDuration2.Open", duration);
+      base::UmaHistogramBoolean("WebCore.IndexedDB.RequestDispatchOutcome.Open",
+                                success);
       break;
 
     case IDBRequest::TypeForMetrics::kCursorAdvance:
@@ -176,11 +187,17 @@ IDBRequest::AsyncTraceState::AsyncTraceState(TypeForMetrics type)
                                     TRACE_ID_LOCAL(id_));
 }
 
+void IDBRequest::AsyncTraceState::WillDispatchResult(bool success) {
+  if (type_) {
+    RecordHistogram(*type_, success, base::TimeTicks::Now() - start_time_);
+    RecordAndReset();
+  }
+}
+
 void IDBRequest::AsyncTraceState::RecordAndReset() {
   if (type_) {
     TRACE_EVENT_NESTABLE_ASYNC_END0("IndexedDB", RequestTypeToName(*type_),
                                     TRACE_ID_LOCAL(id_));
-    RecordHistogram(*type_, base::TimeTicks::Now() - start_time_);
     type_.reset();
   }
 }
@@ -864,7 +881,8 @@ DispatchEventResult IDBRequest::DispatchEventInternal(Event& event) {
 
   // Now that the event dispatching has been triggered, record that the metric
   // has completed.
-  metrics_.RecordAndReset();
+  metrics_.WillDispatchResult(/*success=*/
+                              event.type() != event_type_names::kError);
 
   DispatchEventResult dispatch_result =
       IDBEventDispatcher::Dispatch(event, targets);

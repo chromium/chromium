@@ -176,6 +176,11 @@ class MODULES_EXPORT IDBRequest : public EventTarget,
     // instance, so the instance is cleared.
     void RecordAndReset();
 
+    // Records the trace end event and resets the instance, and also emits to
+    // histograms that are relevant to this request type. `success` is true when
+    // the dispatch result is not an error.
+    void WillDispatchResult(bool success);
+
    protected:  // For testing
     std::optional<TypeForMetrics> type() const { return type_; }
     const base::TimeTicks& start_time() const { return start_time_; }
