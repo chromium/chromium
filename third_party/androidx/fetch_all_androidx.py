@@ -18,6 +18,7 @@ import contextlib
 import json
 import logging
 import os
+import pathlib
 import re
 import shutil
 import stat
@@ -92,38 +93,6 @@ def _parse_dir_list(dir_list):
     return dependency_version_map
 
 
-def _compute_replacement(dependency_version_map, androidx_repository_url,
-                         line):
-    """Computes output line for build.gradle from build.gradle.template line.
-
-    Replaces {{android_repository_url}}, {{androidx_dependency_version}} and
-      {{version_overrides}}.
-
-    Args:
-      dependency_version_map: An "dependency_group:dependency_name"->dependency_version mapping.
-      androidx_repository_url: URL of the maven repository.
-      line: Input line from the build.gradle.template.
-    """
-    line = line.replace('{{androidx_repository_url}}', androidx_repository_url)
-
-    if line.strip() == '{{version_overrides}}':
-        lines = ['versionOverrideMap = [:]']
-        for dependency, version in sorted(dependency_version_map.items()):
-            lines.append(f"versionOverrideMap['{dependency}'] = '{version}'")
-        return '\n'.join(lines)
-
-    match = re.search(r'\'(\S+):{{androidx_dependency_version}}\'', line)
-    if not match:
-        return line
-
-    dependency = match.group(1)
-    version = dependency_version_map.get(dependency)
-    if not version:
-        raise Exception(f'Version for {dependency} not found.')
-
-    return line.replace('{{androidx_dependency_version}}', version)
-
-
 @contextlib.contextmanager
 def _build_dir():
     dirname = tempfile.mkdtemp()
@@ -176,18 +145,36 @@ def _process_build_gradle(dependency_version_map, androidx_repository_url):
       dependency_version_map: An "dependency_group:dependency_name"->dependency_version mapping.
       androidx_repository_url: URL of the maven repository.
     """
-    build_gradle_template_path = os.path.join(_ANDROIDX_PATH,
-                                              'build.gradle.template')
-    build_gradle_out_path = os.path.join(_ANDROIDX_PATH, 'build.gradle')
-    # |build_gradle_out_path| is not deleted after script has finished running. The file is in
+    version_re = re.compile(r'\s*\w+ompile\s+[\'"]([^:]+:[^:]+):(.+?)[\'"]')
+    androidx_path = pathlib.Path(_ANDROIDX_PATH)
+    template_text = (androidx_path / 'build.gradle.template').read_text()
+    deps_with_custom_versions = set()
+    sb = []
+    for line in template_text.splitlines(keepends=True):
+        line = line.replace('{{androidx_repository_url}}',
+                            androidx_repository_url)
+        if m := version_re.search(line):
+            name, version = m.groups()
+            if version == '{{androidx_dependency_version}}':
+                new_version = dependency_version_map.get(name)
+                if version is None:
+                    raise Exception(f'Version for {name} not found.')
+                line = line.replace(version, new_version)
+            else:
+                deps_with_custom_versions.add(name)
+        elif line.strip() == '{{version_overrides}}':
+            sb.append('versionOverrideMap = [:]\n')
+            for name, version in sorted(dependency_version_map.items()):
+                if name not in deps_with_custom_versions:
+                    sb.append(f"versionOverrideMap['{name}'] = '{version}'\n")
+            deps_with_custom_versions = None
+            continue
+
+        sb.append(line)
+
+    # build.gradle is not deleted after script has finished running. The file is in
     # .gitignore and thus will be excluded from uploaded CLs.
-    with open(build_gradle_template_path, 'r') as template_f, \
-        open(build_gradle_out_path, 'w') as out:
-        for template_line in template_f:
-            replacement = _compute_replacement(dependency_version_map,
-                                               androidx_repository_url,
-                                               template_line)
-            out.write(replacement)
+    (androidx_path / 'build.gradle').write_text(''.join(sb))
 
 
 def _write_cipd_yaml(libs_dir, version, cipd_yaml_path, experimental=False):

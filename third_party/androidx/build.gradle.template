@@ -70,10 +70,9 @@ dependencies {
     compile 'androidx.media:media:{{androidx_dependency_version}}'
     compile 'androidx.mediarouter:mediarouter:{{androidx_dependency_version}}'
     compile 'androidx.preference:preference:{{androidx_dependency_version}}'
-    // This library version is hard-coded as it does not match the
-    // version of the filepath in the snapshot.
-    compile 'androidx.privacysandbox.ads:ads-adservices:1.1.0-beta04'
-    compile 'androidx.privacysandbox.ads:ads-adservices-java:1.1.0-beta04'
+    // Privacy Sandbox is less stable than others. Use only release versions.
+    compile 'androidx.privacysandbox.ads:ads-adservices:1.1.0-beta07'
+    compile 'androidx.privacysandbox.ads:ads-adservices-java:1.1.0-beta07'
     compile 'androidx.recyclerview:recyclerview:{{androidx_dependency_version}}'
     compile 'androidx.room:room-guava:{{androidx_dependency_version}}'
     compile 'androidx.savedstate:savedstate:{{androidx_dependency_version}}'
@@ -113,10 +112,7 @@ dependencies {
 
     compile 'androidx.multidex:multidex:2.0.0'
     compile 'androidx.webkit:webkit:{{androidx_dependency_version}}'
-
-    // For some reason ConstraintLayout is not shipped with the rest of
-    // androidx, and not included in snapshots.
-    compile 'androidx.constraintlayout:constraintlayout:2.1.0-beta02'
+    compile 'androidx.constraintlayout:constraintlayout:{{androidx_dependency_version}}'
 
     // Used by 1p Play Services.
     compile 'androidx.legacy:legacy-support-v4:1.0.0'
@@ -137,7 +133,7 @@ dependencies {
     androidTestCompile 'androidx.test.espresso:espresso-web:3.5.1'
     androidTestCompile 'androidx.test.ext:junit:1.1.1'
     androidTestCompile 'androidx.test.services:storage:1.4.1'
-    androidTestCompile 'androidx.test.uiautomator:uiautomator:2.2.0'
+    androidTestCompile 'androidx.test.uiautomator:uiautomator:{{androidx_dependency_version}}'
 
     // accessibility-test-framework (dependancy of anroidx.espresso) somehow
     // pulls in files from these dependencies without actually depending on
