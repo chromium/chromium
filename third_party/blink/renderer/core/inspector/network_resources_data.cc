@@ -195,8 +195,8 @@ size_t NetworkResourcesData::ResourceData::DecodeDataToContent() {
   DCHECK(!HasContent());
   DCHECK(HasData());
   size_t data_length = data_buffer_->size();
-  bool success = InspectorPageAgent::SharedBufferContent(
-      data_buffer_, mime_type_, text_encoding_name_, &content_,
+  bool success = InspectorPageAgent::SegmentedBufferContent(
+      data_buffer_.get(), mime_type_, text_encoding_name_, &content_,
       &base64_encoded_);
   DCHECK(success);
   data_buffer_ = nullptr;

@@ -198,7 +198,7 @@ class InspectorFileReaderLoaderClient final
   InspectorFileReaderLoaderClient(
       scoped_refptr<BlobDataHandle> blob,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-      base::OnceCallback<void(scoped_refptr<SharedBuffer>)> callback)
+      base::OnceCallback<void(std::optional<SegmentedBuffer>)> callback)
       : blob_(std::move(blob)),
         callback_(std::move(callback)),
         loader_(MakeGarbageCollected<FileReaderLoader>(this,
@@ -213,7 +213,6 @@ class InspectorFileReaderLoaderClient final
   ~InspectorFileReaderLoaderClient() override = default;
 
   void Start() {
-    raw_data_ = SharedBuffer::Create();
     loader_->Start(blob_);
   }
 
@@ -225,13 +224,13 @@ class InspectorFileReaderLoaderClient final
                                unsigned data_length) override {
     if (!data_length)
       return FileErrorCode::kOK;
-    raw_data_->Append(data, data_length);
+    raw_data_.Append(data, data_length);
     return FileErrorCode::kOK;
   }
 
-  void DidFinishLoading() override { Done(raw_data_); }
+  void DidFinishLoading() override { Done(std::move(raw_data_)); }
 
-  void DidFail(FileErrorCode) override { Done(nullptr); }
+  void DidFail(FileErrorCode) override { Done(std::nullopt); }
 
   void Trace(Visitor* visitor) const override {
     FileReaderClient::Trace(visitor);
@@ -239,8 +238,8 @@ class InspectorFileReaderLoaderClient final
   }
 
  private:
-  void Done(scoped_refptr<SharedBuffer> output) {
-    std::move(callback_).Run(output);
+  void Done(std::optional<SegmentedBuffer> output) {
+    std::move(callback_).Run(std::move(output));
     keep_alive_.Clear();
     loader_ = nullptr;
   }
@@ -248,9 +247,9 @@ class InspectorFileReaderLoaderClient final
   scoped_refptr<BlobDataHandle> blob_;
   String mime_type_;
   String text_encoding_name_;
-  base::OnceCallback<void(scoped_refptr<SharedBuffer>)> callback_;
+  base::OnceCallback<void(std::optional<SegmentedBuffer>)> callback_;
   Member<FileReaderLoader> loader_;
-  scoped_refptr<SharedBuffer> raw_data_;
+  SegmentedBuffer raw_data_;
   SelfKeepAlive<InspectorFileReaderLoaderClient> keep_alive_;
 };
 
@@ -258,7 +257,7 @@ static void ResponseBodyFileReaderLoaderDone(
     const String& mime_type,
     const String& text_encoding_name,
     std::unique_ptr<GetResponseBodyCallback> callback,
-    scoped_refptr<SharedBuffer> raw_data) {
+    std::optional<SegmentedBuffer> raw_data) {
   if (!raw_data) {
     callback->sendFailure(
         protocol::Response::ServerError("Couldn't read BLOB"));
@@ -266,8 +265,9 @@ static void ResponseBodyFileReaderLoaderDone(
   }
   String result;
   bool base64_encoded;
-  if (InspectorPageAgent::SharedBufferContent(
-          raw_data, mime_type, text_encoding_name, &result, &base64_encoded)) {
+  if (InspectorPageAgent::SegmentedBufferContent(&*raw_data, mime_type,
+                                                 text_encoding_name, &result,
+                                                 &base64_encoded)) {
     callback->sendSuccess(result, base64_encoded);
   } else {
     callback->sendFailure(
@@ -324,10 +324,11 @@ class InspectorPostBodyParser
   }
 
   void BlobReadCallback(String* destination,
-                        scoped_refptr<SharedBuffer> raw_data) {
+                        std::optional<SegmentedBuffer> raw_data) {
     if (raw_data) {
-      *destination = String::FromUTF8WithLatin1Fallback(
-          raw_data->FlattenIfNeededAndGetData(), raw_data->size());
+      Vector<char> flattened_data = std::move(*raw_data).CopyAs<Vector<char>>();
+      *destination = String::FromUTF8WithLatin1Fallback(flattened_data.data(),
+                                                        flattened_data.size());
     } else {
       error_ = true;
     }

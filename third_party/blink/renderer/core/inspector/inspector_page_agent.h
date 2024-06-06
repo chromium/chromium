@@ -97,11 +97,11 @@ class CORE_EXPORT InspectorPageAgent final
   static bool CachedResourceContent(const Resource*,
                                     String* result,
                                     bool* base64_encoded);
-  static bool SharedBufferContent(scoped_refptr<const SharedBuffer>,
-                                  const String& mime_type,
-                                  const String& text_encoding_name,
-                                  String* result,
-                                  bool* base64_encoded);
+  static bool SegmentedBufferContent(const SegmentedBuffer*,
+                                     const String& mime_type,
+                                     const String& text_encoding_name,
+                                     String* result,
+                                     bool* base64_encoded);
 
   static String ResourceTypeJson(ResourceType);
   static ResourceType ToResourceType(const blink::ResourceType);

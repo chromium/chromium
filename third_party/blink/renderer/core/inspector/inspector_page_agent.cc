@@ -328,8 +328,8 @@ KURL InspectorPageAgent::UrlWithoutFragment(const KURL& url) {
 }
 
 // static
-bool InspectorPageAgent::SharedBufferContent(
-    scoped_refptr<const SharedBuffer> buffer,
+bool InspectorPageAgent::SegmentedBufferContent(
+    const SegmentedBuffer* buffer,
     const String& mime_type,
     const String& text_encoding_name,
     String* result,
@@ -342,7 +342,7 @@ bool InspectorPageAgent::SharedBufferContent(
       CreateResourceTextDecoder(mime_type, text_encoding_name);
   WTF::TextEncoding encoding(text_encoding_name);
 
-  const SegmentedBuffer::DeprecatedFlatData flat_buffer(buffer.get());
+  const SegmentedBuffer::DeprecatedFlatData flat_buffer(buffer);
   if (decoder) {
     text_content = decoder->Decode(flat_buffer.Data(), flat_buffer.size());
     text_content = text_content + decoder->Flush();
@@ -404,8 +404,8 @@ bool InspectorPageAgent::CachedResourceContent(const Resource* cached_resource,
       if (text_encoding_name.empty() &&
           cached_resource->GetType() != blink::ResourceType::kRaw)
         text_encoding_name = "WinLatin1";
-      return InspectorPageAgent::SharedBufferContent(
-          cached_resource->ResourceBuffer(),
+      return InspectorPageAgent::SegmentedBufferContent(
+          cached_resource->ResourceBuffer().get(),
           cached_resource->GetResponse().MimeType(), text_encoding_name, result,
           base64_encoded);
   }
