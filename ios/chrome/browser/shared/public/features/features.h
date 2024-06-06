@@ -324,10 +324,6 @@ BASE_DECLARE_FEATURE(kIOSSaveToPhotos);
 // Feature flag enabling a fix for the Download manager mediator.
 BASE_DECLARE_FEATURE(kIOSDownloadNoUIUpdateInBackground);
 
-// Causes the restore shorty and re-signin flows to offer a history opt-in
-// screen.
-BASE_DECLARE_FEATURE(kHistoryOptInForRestoreShortyAndReSignin);
-
 // Enables batch upload entry point from the Bookmarks Manager.
 BASE_DECLARE_FEATURE(kEnableBatchUploadFromBookmarksManager);
 
