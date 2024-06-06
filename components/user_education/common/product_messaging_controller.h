@@ -110,6 +110,10 @@ class ProductMessagingController final {
       RequiredNoticeShowCallback ready_to_start_callback,
       std::initializer_list<RequiredNoticeId> always_show_after = {});
 
+  // Removes `notice_id` from the queue, if it is queued.
+  // Has no effect if the notice has already started to show.
+  void UnqueueRequiredNotice(RequiredNoticeId notice_id);
+
   RequiredNoticeId current_notice_for_testing() const {
     return current_notice_;
   }

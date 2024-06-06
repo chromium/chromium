@@ -103,6 +103,11 @@ void ProductMessagingController::QueueRequiredNotice(
   MaybeShowNextRequiredNotice();
 }
 
+void ProductMessagingController::UnqueueRequiredNotice(
+    RequiredNoticeId notice_id) {
+  data_.erase(notice_id);
+}
+
 void ProductMessagingController::ReleaseHandle(RequiredNoticeId notice_id) {
   CHECK_EQ(current_notice_, notice_id);
   current_notice_ = RequiredNoticeId();
