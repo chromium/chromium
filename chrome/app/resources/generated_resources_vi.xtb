@@ -345,7 +345,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="124116460088058876">Ngôn ngữ khác</translation>
 <translation id="1241381048229838873">Hiển thị tất cả dấu trang</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" /> muốn đặt lại cài đặt của bạn.</translation>
-<translation id="1243002225871118300">Thay đổi kích thước văn bản và màn hình</translation>
+<translation id="1243002225871118300">Thay đổi kích thước hiển thị và văn bản</translation>
 <translation id="1243314992276662751">Tải lên</translation>
 <translation id="1243436884219965846">Xem lại mật khẩu</translation>
 <translation id="1244265436519979884">Hiện đang khôi phục Linux</translation>
@@ -4012,7 +4012,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="3923494859158167397">Bạn chưa thiết lập mạng di động nào</translation>
 <translation id="3923676227229836009">Trang này được phép xem tệp</translation>
 <translation id="3924145049010392604">Meta</translation>
-<translation id="3924259174674732591">Kích thước văn bản và kích thước hiển thị <ph name="DISPLAY_ZOOM" />%</translation>
+<translation id="3924259174674732591">Kích thước hiển thị và văn bản <ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="3924487862883651986">Gửi URL để tính năng Duyệt web an toàn kiểm tra. Ngoài ra, gửi một mẫu nhỏ hoạt động trên các trang, tệp đã tải xuống, tiện ích và thông tin hệ thống để giúp phát hiện các mối đe dọa mới. Tạm thời liên kết dữ liệu này với Tài khoản Google của bạn sau khi bạn đăng nhập để bảo vệ bạn trên các ứng dụng Google.</translation>
 <translation id="3925573269917483990">Camera:</translation>
 <translation id="3925926055063465902">Những người dùng khác trên thiết bị này cũng có thể sử dụng mạng này</translation>
@@ -7668,7 +7668,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6750757184909117990">Tắt mạng di động</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Ẩn danh)</translation>
 <translation id="6756157672127672536">Ứng dụng Files cho phép truy cập nhanh vào các tệp mà bạn đã lưu trên Google Drive, bộ nhớ ngoài hoặc thiết bị ChromeOS.</translation>
-<translation id="6756643207511618722">Công cụ chuyển văn bản thành lời nói</translation>
+<translation id="6756643207511618722">Công cụ chuyển văn bản sang lời nói</translation>
 <translation id="6757431299485455321">Giúp các thiết bị khác tìm thấy điểm phát sóng này.</translation>
 <translation id="6758056191028427665">Hãy cho chúng tôi biết ý kiến của bạn về dịch vụ của chúng tôi.</translation>
 <translation id="6759193508432371551">Khôi phục cài đặt gốc</translation>
@@ -8379,7 +8379,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7296503797589217366">Chọn thư mục <ph name="FOLDER_TITLE" /></translation>
 <translation id="7297726121602187087">Xanh lục đậm</translation>
 <translation id="7298195798382681320">Được đề xuất</translation>
-<translation id="7299337219131431707">Bật duyệt với tư cách khách</translation>
+<translation id="7299337219131431707">Bật tính năng duyệt với tư cách khách</translation>
 <translation id="7299515639584427954">Thay đổi ứng dụng mặc định cho các đường liên kết được hỗ trợ?</translation>
 <translation id="7299588179200441056"><ph name="URL" /> – <ph name="FOLDER" /></translation>
 <translation id="7301812050652048720">Khoá truy cập đã bị xoá</translation>
@@ -9827,7 +9827,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8337020675372081178">{HOURS,plural, =1{Thiết bị này sẽ được lưu trong 1 giờ và trong thời gian đó, bạn có thể kết nối mà không cần dùng mã. Chế độ này do quản trị viên của bạn thiết lập.}other{Thiết bị này sẽ được lưu trong {HOURS} giờ và trong thời gian đó, bạn có thể kết nối mà không cần dùng mã. Chế độ này do quản trị viên của bạn thiết lập.}}</translation>
 <translation id="8337399713761067085">Bạn hiện đang ngoại tuyến</translation>
 <translation id="8338952601723052325">Trang web dành cho nhà phát triển</translation>
-<translation id="8339288417038613756">Kích thước văn bản và màn hình</translation>
+<translation id="8339288417038613756">Kích thước hiển thị và văn bản</translation>
 <translation id="833986336429795709">Để mở đường liên kết này, hãy chọn một ứng dụng</translation>
 <translation id="8340547030807793004">Thao tác khác cho <ph name="DEVICE" /></translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Xem lại <ph name="BEGIN_BOLD" />1 trang web<ph name="END_BOLD" /> đã gửi nhiều thông báo gần đây}other{Xem lại <ph name="BEGIN_BOLD" />{NUM_SITES} trang web<ph name="END_BOLD" /> đã gửi nhiều thông báo gần đây}}</translation>
