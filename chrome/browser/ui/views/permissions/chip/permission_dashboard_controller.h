@@ -60,6 +60,13 @@ class PermissionDashboardController : public PermissionChipView::Observer {
     return collapse_timer_;
   }
 
+  views::View* page_info_for_testing() {
+    return page_info_bubble_tracker_.view();
+  }
+  void ShowPageInfoDialogForTesting() { ShowPageInfoDialog(); }
+
+  void DoNotCollapseForTesting() { do_no_collapse_for_testing_ = true; }
+
  private:
   void StartCollapseTimer();
   void Collapse(bool hide);
@@ -81,6 +88,7 @@ class PermissionDashboardController : public PermissionChipView::Observer {
   std::unique_ptr<ChipController> request_chip_controller_;
   // A timer used to collapse indicators after a delay.
   base::OneShotTimer collapse_timer_;
+  bool do_no_collapse_for_testing_ = false;
   // A flag that reflects a visual condition of the LHS indicator chip.
   // `true` - is used for a verbose state that includes an icon + text. Its
   // appearance is accompanied by an expand and collapse animation.

@@ -323,6 +323,10 @@ bool PermissionDashboardController::SuppressVerboseIndicator() {
 }
 
 void PermissionDashboardController::StartCollapseTimer() {
+  if (do_no_collapse_for_testing_) {
+    return;
+  }
+
   collapse_timer_.Start(FROM_HERE, kCollapseDelay,
                         base::BindOnce(&PermissionDashboardController::Collapse,
                                        weak_factory_.GetWeakPtr(),

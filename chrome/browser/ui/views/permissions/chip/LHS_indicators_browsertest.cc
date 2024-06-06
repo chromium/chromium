@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_controller.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_view.h"
@@ -141,7 +142,9 @@ class LHSIndicatorsUiBrowserTest : public UiBrowserTest {
 
     const auto* const test_info =
         testing::UnitTest::GetInstance()->current_test_info();
-    return VerifyPixelUi(location_bar, test_info->test_suite_name(),
+    views::View* view_to_verify = view_to_verify_;
+    view_to_verify_ = nullptr;
+    return VerifyPixelUi(view_to_verify, test_info->test_suite_name(),
                          test_info->name()) != ui::test::ActionResult::kFailed;
   }
 
@@ -179,6 +182,38 @@ class LHSIndicatorsUiBrowserTest : public UiBrowserTest {
     return main_rfh;
   }
 
+  void SetIndicatorsViewToCheck() {
+    LocationBarView* const location_bar = GetLocationBarView(browser());
+    PermissionDashboardController* permission_dashboard_controller =
+        location_bar->permission_dashboard_controller();
+
+    ASSERT_TRUE(permission_dashboard_controller);
+
+    // Prevernt the LHS indicator to collapse from the verbose state.
+    permission_dashboard_controller->DoNotCollapseForTesting();
+
+    view_to_verify_ =
+        permission_dashboard_controller->permission_dashboard_view();
+  }
+
+  void SetPageInfoViewToCheck() {
+    LocationBarView* const location_bar = GetLocationBarView(browser());
+    PermissionDashboardController* permission_dashboard_controller =
+        location_bar->permission_dashboard_controller();
+
+    ASSERT_TRUE(permission_dashboard_controller);
+
+    permission_dashboard_controller->ShowPageInfoDialogForTesting();
+    view_to_verify_ = permission_dashboard_controller->page_info_for_testing();
+
+    // Override origin in PageInfo to avoid flakiness due to different port.
+    auto* bubble_view = static_cast<PageInfoBubbleView*>(view_to_verify_);
+    std::u16string site_name = u"test.com";
+    bubble_view->presenter_for_testing()->SetSiteNameForTesting(site_name);
+    ASSERT_EQ(bubble_view->presenter_for_testing()->GetSubjectNameForDisplay(),
+              site_name);
+  }
+
  private:
   // Disable the permission chip animation. This happens automatically in pixel
   // test mode, but without doing this explicitly, the test will fail when run
@@ -188,6 +223,7 @@ class LHSIndicatorsUiBrowserTest : public UiBrowserTest {
           gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
   base::test::ScopedFeatureList scoped_features_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
+  raw_ptr<views::View> view_to_verify_;
 };
 
 IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest, InvokeUi_camera) {
@@ -195,6 +231,7 @@ IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest, InvokeUi_camera) {
                 ContentSetting::CONTENT_SETTING_ALLOW);
 
   content::RenderFrameHost* main_rfh = InitMainFrame();
+  SetIndicatorsViewToCheck();
   EXPECT_TRUE(content::ExecJs(main_rfh, kRequestCamera));
 
   ShowAndVerifyUi();
@@ -205,6 +242,7 @@ IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest, InvokeUi_microphone) {
                 ContentSetting::CONTENT_SETTING_ALLOW);
 
   content::RenderFrameHost* main_rfh = InitMainFrame();
+  SetIndicatorsViewToCheck();
   EXPECT_TRUE(content::ExecJs(main_rfh, kRequestMic));
 
   ShowAndVerifyUi();
@@ -224,6 +262,7 @@ IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest,
                 ContentSetting::CONTENT_SETTING_ALLOW);
 
   content::RenderFrameHost* main_rfh = InitMainFrame();
+  SetIndicatorsViewToCheck();
   EXPECT_TRUE(content::ExecJs(main_rfh, kRequestCameraAndMic));
 
   ShowAndVerifyUi();
@@ -241,6 +280,7 @@ IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest,
                 ContentSetting::CONTENT_SETTING_BLOCK);
 
   content::RenderFrameHost* main_rfh = InitMainFrame();
+  SetIndicatorsViewToCheck();
   EXPECT_TRUE(content::ExecJs(main_rfh, kRequestCamera));
 
   ShowAndVerifyUi();
@@ -252,6 +292,7 @@ IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest,
                 ContentSetting::CONTENT_SETTING_BLOCK);
 
   content::RenderFrameHost* main_rfh = InitMainFrame();
+  SetIndicatorsViewToCheck();
   EXPECT_TRUE(content::ExecJs(main_rfh, kRequestMic));
 
   ShowAndVerifyUi();
@@ -265,7 +306,82 @@ IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest,
                 ContentSetting::CONTENT_SETTING_BLOCK);
 
   content::RenderFrameHost* main_rfh = InitMainFrame();
+  SetIndicatorsViewToCheck();
   EXPECT_TRUE(content::ExecJs(main_rfh, kRequestCameraAndMic));
+
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest, InvokeUi_PageInfo_camera) {
+  SetPermission(ContentSettingsType::MEDIASTREAM_CAMERA,
+                ContentSetting::CONTENT_SETTING_ALLOW);
+
+  content::RenderFrameHost* main_rfh = InitMainFrame();
+  EXPECT_TRUE(content::ExecJs(main_rfh, kRequestCamera));
+  SetPageInfoViewToCheck();
+
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest, InvokeUi_PageInfo_mic) {
+  SetPermission(ContentSettingsType::MEDIASTREAM_MIC,
+                ContentSetting::CONTENT_SETTING_ALLOW);
+
+  content::RenderFrameHost* main_rfh = InitMainFrame();
+  EXPECT_TRUE(content::ExecJs(main_rfh, kRequestMic));
+  SetPageInfoViewToCheck();
+
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest,
+                       InvokeUi_PageInfo_camera_and_mic) {
+  SetPermission(ContentSettingsType::MEDIASTREAM_CAMERA,
+                ContentSetting::CONTENT_SETTING_ALLOW);
+  SetPermission(ContentSettingsType::MEDIASTREAM_MIC,
+                ContentSetting::CONTENT_SETTING_ALLOW);
+
+  content::RenderFrameHost* main_rfh = InitMainFrame();
+  EXPECT_TRUE(content::ExecJs(main_rfh, kRequestCameraAndMic));
+  SetPageInfoViewToCheck();
+
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest,
+                       InvokeUi_PageInfo_camera_blocked) {
+  SetPermission(ContentSettingsType::MEDIASTREAM_CAMERA,
+                ContentSetting::CONTENT_SETTING_BLOCK);
+
+  content::RenderFrameHost* main_rfh = InitMainFrame();
+  EXPECT_TRUE(content::ExecJs(main_rfh, kRequestCamera));
+  SetPageInfoViewToCheck();
+
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest,
+                       InvokeUi_PageInfo_mic_blocked) {
+  SetPermission(ContentSettingsType::MEDIASTREAM_MIC,
+                ContentSetting::CONTENT_SETTING_BLOCK);
+
+  content::RenderFrameHost* main_rfh = InitMainFrame();
+  EXPECT_TRUE(content::ExecJs(main_rfh, kRequestMic));
+  SetPageInfoViewToCheck();
+
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(LHSIndicatorsUiBrowserTest,
+                       InvokeUi_PageInfo_camera_and_mic_blocked) {
+  SetPermission(ContentSettingsType::MEDIASTREAM_CAMERA,
+                ContentSetting::CONTENT_SETTING_BLOCK);
+  SetPermission(ContentSettingsType::MEDIASTREAM_MIC,
+                ContentSetting::CONTENT_SETTING_BLOCK);
+
+  content::RenderFrameHost* main_rfh = InitMainFrame();
+  EXPECT_TRUE(content::ExecJs(main_rfh, kRequestCameraAndMic));
+  SetPageInfoViewToCheck();
 
   ShowAndVerifyUi();
 }
