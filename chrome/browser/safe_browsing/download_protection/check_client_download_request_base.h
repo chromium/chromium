@@ -144,9 +144,11 @@ class CheckClientDownloadRequestBase {
   virtual void NotifyRequestFinished(DownloadCheckResult result,
                                      DownloadCheckResultReason reason) = 0;
 
-  // Called when finishing the download, to decide whether to immediately start
-  // deep scanning or not.
-  virtual bool ShouldImmediatelyDeepScan(bool server_requests_prompt) const = 0;
+  // Called when finishing the download, to decide whether to
+  // immediately start deep scanning or not. Implementations should log
+  // metrics only when `log_metrics` is true.
+  virtual bool ShouldImmediatelyDeepScan(bool server_requests_prompt,
+                                         bool log_metrics) const = 0;
 
   // Called when finishing the download, to decide whether to prompt the user
   // for deep scanning or not.

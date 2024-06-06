@@ -112,11 +112,11 @@ void LogNoticeSeenMetrics(PrefService* prefs) {
       prefs->GetBoolean(prefs::kSafeBrowsingAutomaticDeepScanningIPHSeen);
   if (prefs->GetBoolean(prefs::kDownloadBubblePartialViewEnabled)) {
     base::UmaHistogramBoolean(
-        "SBClientDownload.AutomaticDeepScanNoticeSeen.PartialViewEnabled",
+        "SBClientDownload.AutomaticDeepScanNoticeSeen2.PartialViewEnabled",
         has_seen);
   } else {
     base::UmaHistogramBoolean(
-        "SBClientDownload.AutomaticDeepScanNoticeSeen.PartialViewSuppressed",
+        "SBClientDownload.AutomaticDeepScanNoticeSeen2.PartialViewSuppressed",
         has_seen);
   }
 }
@@ -361,7 +361,8 @@ bool CheckClientDownloadRequest::IsUnderAdvancedProtection(
 }
 
 bool CheckClientDownloadRequest::ShouldImmediatelyDeepScan(
-    bool server_requests_prompt) const {
+    bool server_requests_prompt,
+    bool log_metrics) const {
   if (!ShouldPromptForDeepScanning(server_requests_prompt)) {
     return false;
   }
@@ -379,7 +380,9 @@ bool CheckClientDownloadRequest::ShouldImmediatelyDeepScan(
     return false;
   }
 
-  LogNoticeSeenMetrics(profile->GetPrefs());
+  if (log_metrics) {
+    LogNoticeSeenMetrics(profile->GetPrefs());
+  }
   if (!profile->GetPrefs()->GetBoolean(
           prefs::kSafeBrowsingAutomaticDeepScanningIPHSeen)) {
     return false;

@@ -289,8 +289,8 @@ void CheckClientDownloadRequestBase::GetAdditionalPromptResult(
     LogDeepScanningPrompt(deep_scanning_prompt);
   }
 
-  bool immediate_deep_scan_prompt =
-      ShouldImmediatelyDeepScan(response.request_deep_scan());
+  bool immediate_deep_scan_prompt = ShouldImmediatelyDeepScan(
+      response.request_deep_scan(), /*log_metrics=*/true);
   if (immediate_deep_scan_prompt) {
     *result = DownloadCheckResult::IMMEDIATE_DEEP_SCAN;
     *reason = DownloadCheckResultReason::REASON_IMMEDIATE_DEEP_SCAN;
@@ -302,10 +302,11 @@ void CheckClientDownloadRequestBase::GetAdditionalPromptResult(
 
   // Only record the UMA metric if we're in a population that potentially
   // could prompt for deep scanning.
-  if (ShouldImmediatelyDeepScan(/*server_requests_prompt=*/true)) {
+  if (ShouldImmediatelyDeepScan(/*server_requests_prompt=*/true,
+                                /*log_metrics=*/false)) {
     base::UmaHistogramBoolean(
-        "SBClientDownload.ServerRequestsImmediateDeepScan",
-        deep_scanning_prompt);
+        "SBClientDownload.ServerRequestsImmediateDeepScan2",
+        immediate_deep_scan_prompt);
   }
 }
 

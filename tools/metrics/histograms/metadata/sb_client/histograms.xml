@@ -56,7 +56,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="SBClientDownload.AutomaticDeepScanNoticeSeen.PartialView{PartialViewSetting}"
+    name="SBClientDownload.AutomaticDeepScanNoticeSeen2.PartialView{PartialViewSetting}"
     enum="BooleanShown" expires_after="2024-10-15">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
@@ -336,7 +336,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="SBClientDownload.ServerRequestsImmediateDeepScan"
+<histogram name="SBClientDownload.ServerRequestsImmediateDeepScan2"
     enum="BooleanRequested" expires_after="2024-08-18">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>

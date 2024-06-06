@@ -119,7 +119,8 @@ void CheckFileSystemAccessWriteRequest::UploadBinary(
     enterprise_connectors::AnalysisSettings settings) {}
 
 bool CheckFileSystemAccessWriteRequest::ShouldImmediatelyDeepScan(
-    bool server_requests_prompt) const {
+    bool server_requests_prompt,
+    bool log_metrics) const {
   return false;
 }
 
