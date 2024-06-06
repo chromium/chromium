@@ -338,6 +338,17 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
   client().popup_controller(manager()).AcceptSuggestion(/*index=*/0);
 }
 
+TEST_F(AutofillKeyboardAccessoryControllerImplTest,
+       DoesNotAcceptUnacceptableSuggestions) {
+  Suggestion suggestion(u"Open the pod bay doors, HAL");
+  suggestion.is_acceptable = false;
+  ShowSuggestions(manager(), {std::move(suggestion)});
+  task_environment()->FastForwardBy(base::Milliseconds(500));
+
+  EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion).Times(0);
+  client().popup_controller(manager()).AcceptSuggestion(/*index=*/0);
+}
+
 // Tests that the `KeyboardAccessoryController` moves "clear form" suggestions
 // to the front.
 TEST_F(AutofillKeyboardAccessoryControllerImplTest, ReorderUpdatedSuggestions) {

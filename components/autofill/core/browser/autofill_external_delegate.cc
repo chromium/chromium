@@ -424,10 +424,6 @@ void AutofillExternalDelegate::OnSuggestionsHidden() {
 
 void AutofillExternalDelegate::DidSelectSuggestion(
     const Suggestion& suggestion) {
-  if (!suggestion.is_acceptable) {
-    // TODO(crbug.com/40285811): Handle this in the popup controller.
-    return;
-  }
   ClearPreviewedForm();
 
   const Suggestion::BackendId backend_id =
@@ -564,10 +560,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
 void AutofillExternalDelegate::DidAcceptSuggestion(
     const Suggestion& suggestion,
     const SuggestionPosition& position) {
-  if (!suggestion.is_acceptable) {
-    // TODO(crbug.com/40285811): Handle this in the popup controller.
-    return;
-  }
+  CHECK(suggestion.is_acceptable);
   switch (suggestion.type) {
     case SuggestionType::kAddressEntry:
     case SuggestionType::kFillFullAddress:

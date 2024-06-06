@@ -126,6 +126,26 @@ TEST_F(AutofillPopupControllerImplTest, PopupForwardsSuggestionPosition) {
   sub_controller->AcceptSuggestion(/*index=*/0);
 }
 
+TEST_F(AutofillPopupControllerImplTest, DoesNotAcceptUnacceptableSuggestions) {
+  Suggestion suggestion(u"Open the pod bay doors, HAL");
+  suggestion.is_acceptable = false;
+  ShowSuggestions(manager(), {std::move(suggestion)});
+
+  EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion).Times(0);
+  task_environment()->FastForwardBy(base::Milliseconds(1000));
+  client().popup_controller(manager()).AcceptSuggestion(/*index=*/0);
+}
+
+TEST_F(AutofillPopupControllerImplTest, DoesNotSelectUnacceptableSuggestions) {
+  Suggestion suggestion(u"I'm sorry, Dave. I'm afraid I can't do that.");
+  suggestion.is_acceptable = false;
+  ShowSuggestions(manager(), {std::move(suggestion)});
+
+  EXPECT_CALL(manager().external_delegate(), DidSelectSuggestion).Times(0);
+  task_environment()->FastForwardBy(base::Milliseconds(1000));
+  client().popup_controller(manager()).SelectSuggestion(/*index=*/0);
+}
+
 TEST_F(AutofillPopupControllerImplTest,
        ManualFallBackTriggerSource_IgnoresClickOutsideCheck) {
   ShowSuggestions(manager(), {SuggestionType::kAddressEntry},

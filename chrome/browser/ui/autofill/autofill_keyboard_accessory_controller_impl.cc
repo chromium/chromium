@@ -280,6 +280,10 @@ void AutofillKeyboardAccessoryControllerImpl::AcceptSuggestion(int index) {
   // Use a copy instead of a reference here. Under certain circumstances,
   // `DidAcceptSuggestion()` invalidate the reference.
   Suggestion suggestion = suggestions_[index];
+  if (!suggestion.is_acceptable) {
+    return;
+  }
+
   if (base::WeakPtr<ManualFillingController> manual_filling_controller =
           ManualFillingController::GetOrCreate(web_contents_.get())) {
     // Accepting a suggestion should hide all suggestions. To prevent them from

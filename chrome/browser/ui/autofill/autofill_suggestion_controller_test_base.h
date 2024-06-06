@@ -212,11 +212,10 @@ class AutofillExternalDelegateForPopupTest : public AutofillExternalDelegate {
       BrowserAutofillManager* autofill_manager);
   ~AutofillExternalDelegateForPopupTest() override;
 
-  void DidSelectSuggestion(const Suggestion& suggestion) override {}
-
   MOCK_METHOD(void, ClearPreviewedForm, (), (override));
   MOCK_METHOD(void, OnSuggestionsShown, (), (override));
   MOCK_METHOD(void, OnSuggestionsHidden, (), (override));
+  MOCK_METHOD(void, DidSelectSuggestion, (const Suggestion&), (override));
   MOCK_METHOD(void,
               DidAcceptSuggestion,
               (const Suggestion&,

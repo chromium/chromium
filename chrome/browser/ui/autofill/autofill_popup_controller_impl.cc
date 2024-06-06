@@ -376,6 +376,9 @@ void AutofillPopupControllerImpl::AcceptSuggestion(int index) {
   // `DidAcceptSuggestion()` can call `SetSuggestions()` and invalidate the
   // reference.
   Suggestion suggestion = GetSuggestions()[index];
+  if (!suggestion.is_acceptable) {
+    return;
+  }
   NotifyIphAboutAcceptedSuggestion(web_contents_->GetBrowserContext(),
                                    suggestion);
   if (suggestion.acceptance_a11y_announcement && view_) {
@@ -702,7 +705,9 @@ void AutofillPopupControllerImpl::SelectSuggestion(int index) {
     return;
   }
 
-  if (!IsAcceptableSuggestionType(GetSuggestionAt(index).type)) {
+  const autofill::Suggestion& suggestion = GetSuggestionAt(index);
+  if (!IsAcceptableSuggestionType(suggestion.type) ||
+      !suggestion.is_acceptable) {
     UnselectSuggestion();
     return;
   }

@@ -1822,37 +1822,6 @@ TEST_F(AutofillExternalDelegateUnitTest,
 }
 
 TEST_F(AutofillExternalDelegateUnitTest,
-       VirtualCreditCard_MerchantOptOut_CreditCardForm_NoPreview) {
-  IssueOnQuery();
-  CreditCard card = test::GetMaskedServerCard();
-  pdm().payments_data_manager().AddCreditCard(card);
-
-  EXPECT_CALL(manager(), FillOrPreviewCreditCardForm).Times(0);
-
-  Suggestion suggestion(SuggestionType::kVirtualCreditCardEntry);
-  suggestion.payload = Suggestion::Guid(card.guid());
-  suggestion.is_acceptable = false;
-  suggestion.apply_deactivated_style = true;
-  external_delegate().DidSelectSuggestion(suggestion);
-}
-
-TEST_F(AutofillExternalDelegateUnitTest,
-       VirtualCreditCard_MerchantOptOut_CreditCardForm_NoAccept) {
-  IssueOnQuery();
-  CreditCard card = test::GetMaskedServerCard();
-  pdm().payments_data_manager().AddCreditCard(card);
-  EXPECT_CALL(manager(), FillOrPreviewCreditCardForm).Times(0);
-  EXPECT_CALL(manager(), AuthenticateThenFillCreditCardForm).Times(0);
-  EXPECT_CALL(manager(), FillOrPreviewField).Times(0);
-  Suggestion suggestion(SuggestionType::kVirtualCreditCardEntry);
-  suggestion.payload = Suggestion::Guid(card.guid());
-  suggestion.is_acceptable = false;
-  suggestion.apply_deactivated_style = true;
-  external_delegate().DidAcceptSuggestion(suggestion,
-                                          SuggestionPosition{.row = 0});
-}
-
-TEST_F(AutofillExternalDelegateUnitTest,
        VirtualCreditCard_ManualFallback_CreditCardForm_FullFormFilling) {
   const CreditCard enrolled_card =
       test::GetMaskedServerCardEnrolledIntoVirtualCardNumber();
