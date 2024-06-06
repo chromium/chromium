@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -55,10 +56,12 @@ namespace {
 
 using PasswordFormType = autofill::AutofillClient::PasswordFormType;
 using SuggestionEvent = autofill::AutofillPlusAddressDelegate::SuggestionEvent;
+using affiliations::FacetURI;
 using autofill::AutofillSuggestionTriggerSource;
 using autofill::EqualsSuggestion;
 using autofill::Suggestion;
 using autofill::SuggestionType;
+using ::base::test::RunOnceCallback;
 using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::Field;
@@ -72,7 +75,7 @@ auto IsSingleCreatePlusAddressSuggestion() {
   return ElementsAre(EqualsSuggestion(SuggestionType::kCreateNewPlusAddress));
 }
 
-auto IsSingleFillPlusAddressSuggestion(std::string_view address) {
+auto EqualsFillPlusAddressSuggestion(std::string_view address) {
   std::vector<std::vector<Suggestion::Text>> labels;
   if constexpr (!BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)) {
     if (base::FeatureList::IsEnabled(
@@ -81,11 +84,15 @@ auto IsSingleFillPlusAddressSuggestion(std::string_view address) {
           IDS_PLUS_ADDRESS_FILL_SUGGESTION_SECONDARY_TEXT))}};
     }
   }
-  return ElementsAre(
-      AllOf(EqualsSuggestion(SuggestionType::kFillExistingPlusAddress,
-                             /*main_text=*/base::UTF8ToUTF16(address),
-                             Suggestion::Icon::kPlusAddress),
-            Field(&Suggestion::labels, labels)));
+
+  return AllOf(EqualsSuggestion(SuggestionType::kFillExistingPlusAddress,
+                                /*main_text=*/base::UTF8ToUTF16(address),
+                                Suggestion::Icon::kPlusAddress),
+               Field(&Suggestion::labels, labels));
+}
+
+auto IsSingleFillPlusAddressSuggestion(std::string_view address) {
+  return ElementsAre(EqualsFillPlusAddressSuggestion(address));
 }
 
 url::Origin OriginFromFacet(const plus_addresses::PlusProfile::facet_t& facet) {
@@ -151,6 +158,10 @@ class PlusAddressServiceTest : public ::testing::Test {
   base::test::TaskEnvironment& task_environment() { return task_environment_; }
   network::TestURLLoaderFactory& url_loader_factory() {
     return test_url_loader_factory_;
+  }
+
+  affiliations::MockAffiliationService* mock_affiliation_service() {
+    return &mock_affiliation_service_;
   }
 
   // Forces (re-)initialization of the `PlusAddressService`, which can be useful
@@ -1370,6 +1381,110 @@ TEST_F(PlusAddressSuggestionsTest,
                   l10n_util::GetStringUTF16(
                       IDS_PLUS_ADDRESS_MANAGE_PLUS_ADDRESSES_TEXT),
                   Suggestion::Icon::kGoogleMonochrome)));
+}
+
+class PlusAddressAffiliationsTest : public PlusAddressServiceTest {
+ public:
+  PlusAddressAffiliationsTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        // Enable features:
+        {base::test::FeatureRefAndParams(
+             features::kPlusAddressesEnabled,
+             {{"server-url", "https://server.example"},
+              {"oauth-scope", "scope.example"}}),
+         base::test::FeatureRefAndParams(
+             {GetSyncPlusAddressFeatureForTests(), {}}),
+         base::test::FeatureRefAndParams(
+             {features::kPlusAddressAffiliations, {}})},
+        // Disable features:
+        {});
+    identity_env().MakePrimaryAccountAvailable("plus@plus.plus",
+                                               signin::ConsentLevel::kSignin);
+    identity_env().SetAutomaticIssueOfAccessTokens(true);
+    InitService();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Verifies that affiliated PSL suggestions are returned. It also validates that
+// entries in the PSL extensions list are respected.
+TEST_F(PlusAddressAffiliationsTest, GetAffiliatedPSLSuggestions) {
+  PlusProfile profile1 = PlusProfile(
+      /*profile_id=*/"123",
+      /*facet=*/FacetURI::FromCanonicalSpec("https://one.foo.example.com"),
+      /*plus_address=*/"plus+one@plus.plus",
+      /*is_confirmed=*/true);
+  PlusProfile profile2 = PlusProfile(
+      /*profile_id=*/"234",
+      /*facet=*/FacetURI::FromCanonicalSpec("https://two.foo.example.com"),
+      /*plus_address=*/"plus+foo@plus.plus",
+      /*is_confirmed=*/true);
+  PlusProfile profile3 = PlusProfile(
+      /*profile_id=*/"345",
+      /*facet=*/FacetURI::FromCanonicalSpec("https://bar.example.com"),
+      /*plus_address=*/"plus+bar@plus.plus",
+      /*is_confirmed=*/true);
+
+  service().SavePlusProfile(profile1);
+  service().SavePlusProfile(profile2);
+  service().SavePlusProfile(profile3);
+  ASSERT_THAT(service().GetPlusProfiles(),
+              UnorderedElementsAre(profile1, profile2, profile3));
+
+  EXPECT_CALL(*mock_affiliation_service(), GetPSLExtensions)
+      .WillOnce(RunOnceCallback<0>(std::vector<std::string>{"example.com"}));
+
+  // Empty affiliation group.
+  affiliations::GroupedFacets group;
+  EXPECT_CALL(*mock_affiliation_service(), GetGroupingInfo)
+      .WillOnce(
+          RunOnceCallback<1>(std::vector<affiliations::GroupedFacets>{group}));
+
+  // Request the same URL as the `profile1.facet`.
+  const url::Origin origin = url::Origin::Create(
+      GURL(absl::get<FacetURI>(profile1.facet).canonical_spec()));
+
+  // Note that `profile3` is not a PSL match due to the PSL extensions list.
+  EXPECT_TRUE(ExpectServiceToReturnSuggestions(
+      origin, /*is_off_the_record=*/false, PasswordFormType::kNoPasswordForm,
+      /*focused_field_value=*/u"",
+      AutofillSuggestionTriggerSource::kFormControlElementClicked,
+      UnorderedElementsAre(
+          // Exact match.
+          EqualsFillPlusAddressSuggestion(profile1.plus_address),
+          // PSL match.
+          EqualsFillPlusAddressSuggestion(profile2.plus_address))));
+}
+
+// Verifies that affiliated group suggestions are returned.
+TEST_F(PlusAddressAffiliationsTest, GetAffiliatedGroupSuggestions) {
+  PlusProfile group_profile = test::CreatePlusProfileWithFacet(
+      FacetURI::FromCanonicalSpec("https://group.affiliated.com"));
+
+  // The user has the `group_profile` stored.
+  service().SavePlusProfile(group_profile);
+  ASSERT_THAT(service().GetPlusProfiles(), ElementsAre(group_profile));
+
+  EXPECT_CALL(*mock_affiliation_service(), GetPSLExtensions)
+      .WillOnce(RunOnceCallback<0>(std::vector<std::string>()));
+
+  // Prepares the `group_profile` facet to be returned as part of the
+  // affiliation group.
+  affiliations::GroupedFacets group;
+  group.facets.emplace_back(absl::get<FacetURI>(group_profile.facet));
+
+  EXPECT_CALL(*mock_affiliation_service(), GetGroupingInfo)
+      .WillOnce(
+          RunOnceCallback<1>(std::vector<affiliations::GroupedFacets>{group}));
+
+  const url::Origin origin = url::Origin::Create(GURL("https://example.com"));
+  EXPECT_TRUE(ExpectServiceToReturnSuggestions(
+      origin, /*is_off_the_record=*/false, PasswordFormType::kNoPasswordForm,
+      /*focused_field_value=*/u"",
+      AutofillSuggestionTriggerSource::kFormControlElementClicked,
+      IsSingleFillPlusAddressSuggestion(group_profile.plus_address)));
 }
 
 }  // namespace plus_addresses

@@ -115,6 +115,10 @@ class PlusAddressWebDataService : public WebDataServiceBase {
 // avoid a sync dependency in components/plus_addresses.
 bool IsSyncingPlusAddresses();
 
+// Returns the `syncer::kSyncPlusAddress` feature to be accessed from tests.
+// This only exists to avoid a sync dependency in components/plus_addresses.
+const base::Feature& GetSyncPlusAddressFeatureForTests();
+
 }  // namespace plus_addresses
 
 #endif  // COMPONENTS_PLUS_ADDRESSES_WEBDATA_PLUS_ADDRESS_WEBDATA_SERVICE_H_

@@ -149,4 +149,8 @@ bool IsSyncingPlusAddresses() {
   return base::FeatureList::IsEnabled(syncer::kSyncPlusAddress);
 }
 
+const base::Feature& GetSyncPlusAddressFeatureForTests() {
+  return syncer::kSyncPlusAddress;
+}
+
 }  // namespace plus_addresses
