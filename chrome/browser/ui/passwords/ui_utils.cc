@@ -195,8 +195,6 @@ bool IsSyncingAutosignSetting(Profile* profile) {
       SyncServiceFactory::GetForProfile(profile);
   return (
       sync_service &&
-      sync_service->GetUserSettings()->IsInitialSyncFeatureSetupComplete() &&
-      sync_service->IsSyncFeatureActive() &&
       sync_service->GetActiveDataTypes().Has(syncer::PRIORITY_PREFERENCES));
 }
 
