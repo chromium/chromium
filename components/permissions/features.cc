@@ -95,6 +95,13 @@ BASE_FEATURE(kPermissionsPromptSurvey,
              "PermissionsPromptSurvey",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, use the value of the `allowlist_urls` FeatureParam as the
+// list of origins which would be allowed to access browser permission and
+// device attribute API for a web kiosk session.
+BASE_FEATURE(kAllowMultipleOriginsForWebKioskPermissions,
+             "AllowMultipleOriginsForWebKioskPermissions",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 
 // When enabled, blocks notifications permission prompt when Chrome doesn't
@@ -325,6 +332,13 @@ const base::FeatureParam<std::string>
     kPermissionPromptSurveyOneTimePromptsDecidedBucket{
         &permissions::features::kPermissionsPromptSurvey,
         "one_time_prompts_decided_bucket", ""};
+
+// Comma separated url patterns which should be allowed for accessing web kiosk
+// browser permissions and device attributes API. If left empty no URL patterns
+// will be allowed.
+const base::FeatureParam<std::string> kWebKioskBrowserPermissionsAllowlist{
+    &permissions::features::kAllowMultipleOriginsForWebKioskPermissions,
+    "allowlist_urls", ""};
 
 }  // namespace feature_params
 }  // namespace permissions
