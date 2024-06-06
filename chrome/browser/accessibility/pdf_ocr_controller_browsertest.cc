@@ -24,6 +24,7 @@
 #include "content/public/test/browser_test.h"
 #include "pdf/pdf_features.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/accessibility/accessibility_switches.h"
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 #include <optional>
@@ -221,14 +222,13 @@ IN_PROC_BROWSER_TEST_P(PdfOcrControllerBrowserTest,
   }
 }
 
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_NotEnabledWithoutScreenReader \
-  DISABLED_NotEnabledWithoutScreenReader
-#else
-#define MAYBE_NotEnabledWithoutScreenReader NotEnabledWithoutScreenReader
-#endif
 IN_PROC_BROWSER_TEST_P(PdfOcrControllerBrowserTest,
-                       MAYBE_NotEnabledWithoutScreenReader) {
+                       NotEnabledWithoutScreenReader) {
+  // Forced accessibility contradicts with turning off the screen reader.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kForceRendererAccessibility)) {
+    GTEST_SKIP();
+  }
   EnableScreenReader(false);
 
   screen_ai::PdfOcrControllerFactory::GetForProfile(browser()->profile())
@@ -244,13 +244,14 @@ IN_PROC_BROWSER_TEST_P(PdfOcrControllerBrowserTest,
 
 // Lacros does not download the library.
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_DownloadRetry DISABLED_DownloadRetry
-#else
-#define MAYBE_DownloadRetry DownloadRetry
-#endif
 // Retry download if it fails.
-IN_PROC_BROWSER_TEST_P(PdfOcrControllerBrowserTest, MAYBE_DownloadRetry) {
+IN_PROC_BROWSER_TEST_P(PdfOcrControllerBrowserTest, DownloadRetry) {
+  // Forced accessibility affects counting.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kForceRendererAccessibility)) {
+    GTEST_SKIP();
+  }
+
   screen_ai::PdfOcrControllerFactory::GetForProfile(browser()->profile())
       ->set_initialization_retry_wait_for_testing(base::Milliseconds(1));
 
