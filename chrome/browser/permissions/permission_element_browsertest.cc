@@ -7,19 +7,24 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/media/webrtc/media_stream_device_permission_context.h"
+#include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_content_scrim_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/permissions/permission_manager.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/test/permission_request_observer.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/render_frame_host_test_support.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/features_generated.h"
+#include "third_party/blink/public/mojom/permissions/permission.mojom-shared.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/widget/any_widget_observer.h"
 
@@ -154,6 +159,81 @@ IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest,
         web_contents(), content::JsReplace("notifyWhenGranted($1);", id)));
     WaitForUpdateGrantedPermissionElement(id);
   }
+}
+
+class PermissionServiceInterceptor : public blink::mojom::PermissionObserver {
+ public:
+  explicit PermissionServiceInterceptor(
+      content::RenderFrameHost* render_frame_host)
+      : render_frame_host_(render_frame_host) {
+    OverrideBinderForTesting();
+  }
+
+  ~PermissionServiceInterceptor() override = default;
+
+  blink::mojom::PermissionService* GetForwardingInterface() {
+    return permission_service_.get();
+  }
+
+  void AddPermissionStatusObserver(blink::mojom::PermissionName permission) {
+    auto descriptor = blink::mojom::PermissionDescriptor::New();
+    descriptor->name = permission;
+    GetForwardingInterface()->AddPageEmbeddedPermissionObserver(
+        std::move(descriptor), blink::mojom::PermissionStatus::ASK,
+        GetRemote());
+  }
+
+  // Blocks until getting status granted event.
+  void WaitForPermissionGranted() { loop_.Run(); }
+
+ private:
+  mojo::PendingRemote<blink::mojom::PermissionObserver> GetRemote() {
+    mojo::PendingRemote<blink::mojom::PermissionObserver> remote;
+    observer_receiver_.Bind(remote.InitWithNewPipeAndPassReceiver());
+    return remote;
+  }
+
+  // blink::mojom::PermissionObserver implementation.
+  void OnPermissionStatusChange(
+      blink::mojom::PermissionStatus status) override {
+    if (status == blink::mojom::PermissionStatus::GRANTED) {
+      loop_.Quit();
+    }
+  }
+
+  void OverrideBinderForTesting() {
+    content::CreatePermissionService(
+        render_frame_host_, permission_service_.BindNewPipeAndPassReceiver());
+  }
+
+  base::RunLoop loop_;
+  const raw_ptr<content::RenderFrameHost> render_frame_host_;
+  mojo::Remote<blink::mojom::PermissionService> permission_service_;
+  mojo::Receiver<blink::mojom::PermissionObserver> observer_receiver_{this};
+};
+
+IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest,
+                       CombinedPermissionAndDeviceStatusesGranted) {
+  permissions::PermissionRequestManager::FromWebContents(web_contents())
+      ->set_auto_response_for_test(
+          permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
+  PermissionServiceInterceptor permission_service(
+      web_contents()->GetPrimaryMainFrame());
+  MediaStreamDevicePermissionContext* camera_permission_context =
+      static_cast<MediaStreamDevicePermissionContext*>(
+          PermissionManagerFactory::GetForProfile(browser()->profile())
+              ->GetPermissionContextForTesting(
+                  ContentSettingsType::MEDIASTREAM_CAMERA));
+  camera_permission_context->set_has_device_permission_for_test(
+      /*has_permission=*/false);
+  permission_service.AddPermissionStatusObserver(
+      blink::mojom::PermissionName::VIDEO_CAPTURE);
+  ClickElementWithId(web_contents(), "camera");
+  // Simulate that we accept the device permission request.
+  camera_permission_context->set_has_device_permission_for_test(
+      /*has_permission=*/true);
+  permission_service.WaitForPermissionGranted();
+  camera_permission_context->set_has_device_permission_for_test(std::nullopt);
 }
 
 IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest,

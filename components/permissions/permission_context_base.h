@@ -146,6 +146,10 @@ class PermissionContextBase : public content_settings::Observer {
     return content_settings_type_;
   }
 
+  void set_has_device_permission_for_test(std::optional<bool> has_permission) {
+    has_device_permission_for_test_ = has_permission;
+  }
+
  protected:
   virtual ContentSetting GetPermissionStatusInternal(
       content::RenderFrameHost* render_frame_host,
@@ -226,7 +230,8 @@ class PermissionContextBase : public content_settings::Observer {
       content::RenderFrameHost* rfh) const;
 
   // Called when a request is no longer used so it can be cleaned up.
-  void CleanUpRequest(const PermissionRequestID& id);
+  void CleanUpRequest(const PermissionRequestID& id,
+                      bool embedded_permission_element_initiated);
 
   // This is the callback for PermissionRequest and is called once the user
   // allows/blocks/dismisses a permission prompt.
@@ -250,6 +255,8 @@ class PermissionContextBase : public content_settings::Observer {
       pending_requests_;
 
   mutable std::optional<bool> last_has_device_permission_result_ = std::nullopt;
+
+  std::optional<bool> has_device_permission_for_test_;
 
   // Must be the last member, to ensure that it will be
   // destroyed first, which will invalidate weak pointers
