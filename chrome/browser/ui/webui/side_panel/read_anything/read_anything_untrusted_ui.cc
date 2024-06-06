@@ -90,6 +90,7 @@ ReadAnythingUntrustedUI::ReadAnythingUntrustedUI(content::WebUI* web_ui)
       {"nextSentenceLabel", IDS_READING_MODE_NAVIGATE_NEXT_SENTENCE},
       {"moreOptionsLabel", IDS_READING_MODE_MORE_OPTIONS},
       {"voiceSpeedLabel", IDS_READING_MODE_VOICE_SPEED},
+      {"voiceSpeedWithRateLabel", IDS_READING_MODE_VOICE_SPEED_WITH_RATE},
       {"voiceSelectionLabel", IDS_READING_MODE_VOICE_SELECTION},
       {"increaseFontSizeLabel",
        IDS_READING_MODE_INCREASE_FONT_SIZE_BUTTON_LABEL},

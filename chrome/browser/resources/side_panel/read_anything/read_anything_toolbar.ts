@@ -793,7 +793,8 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   private setRateIcon_(rate: number) {
     const button = this.$.toolbarContainer.querySelector('#rate');
     assert(button, 'no rate button');
-    button.setAttribute('iron-icon', 'voice-rate:' + rate);
+    button?.setAttribute('iron-icon', 'voice-rate:' + rate);
+    button?.setAttribute('aria-label', this.getVoiceSpeedLabel_(rate));
   }
 
   private setCheckMarkForMenu_(menu: CrActionMenuElement|null, index: number) {
@@ -1051,6 +1052,11 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     return this.isReadAloudEnabled_ ?
         this.i18n('readingModeReadAloudToolbarLabel') :
         this.i18n('readingModeToolbarLabel');
+  }
+
+  private getVoiceSpeedLabel_(rate: number = this.getCurrentSpeechRate()):
+      string {
+    return loadTimeData.getStringF('voiceSpeedWithRateLabel', rate);
   }
 }
 
