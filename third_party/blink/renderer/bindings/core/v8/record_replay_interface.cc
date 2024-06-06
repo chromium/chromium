@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_document.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_node.h"
+#include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/core/css/css_style_declaration.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/events/custom_event.h"
@@ -1578,6 +1579,24 @@ static void LayoutDom(
   }
 }
 
+static void ForTestingSerializeValueToString(
+  const v8::FunctionCallbackInfo<v8::Value>& args) {
+  v8::Isolate* isolate = args.GetIsolate();
+
+  CHECK(args.Length() == 1 &&
+        "must be called with a single value");
+
+  auto value = args[0];
+
+  scoped_refptr<SerializedScriptValue> serializedValue =
+    SerializedScriptValue::Serialize(
+      isolate, value,
+      SerializedScriptValue::SerializeOptions(), ASSERT_NO_EXCEPTION);
+  v8::Local<v8::String> s = ToV8String(isolate, serializedValue->ToWireString().Utf8().c_str());
+
+  args.GetReturnValue().Set(s);
+}
+
 static void fromJsGetArgumentsInFrame(
     const v8::FunctionCallbackInfo<v8::Value>& args) {
   CHECK(args.Length() == 1 && args[0]->IsString() &&
@@ -2650,6 +2669,11 @@ static void InitializeRecordReplayApiObjects(v8::Isolate* isolate, LocalFrame* l
                       GetRecordingFilePath);
   SetFunctionProperty(isolate, args, "getPersistentId", fromJsGetPersistentId);
   SetFunctionProperty(isolate, args, "checkPersistentId", fromJsCheckPersistentId);
+
+  // exported for tests
+  SetFunctionProperty(
+    isolate, args, "forTestingSerializeValueToString",
+    ForTestingSerializeValueToString);
 }
 
 void InitializeRecordReplay(
