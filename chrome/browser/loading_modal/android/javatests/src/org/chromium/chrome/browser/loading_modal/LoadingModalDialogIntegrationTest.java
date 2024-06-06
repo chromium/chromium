@@ -31,7 +31,6 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.loading_modal.LoadingModalDialogCoordinator.State;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
@@ -44,7 +43,6 @@ import java.util.concurrent.TimeoutException;
 /** Integration tests for LoadingModalDialog. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
-@DisabledTest(message = "Should not call Looper.prepare(), crbug.com/345257154")
 public class LoadingModalDialogIntegrationTest {
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
@@ -81,7 +79,6 @@ public class LoadingModalDialogIntegrationTest {
     public static void setupSuite() {
         sActivityTestRule.launchActivity(null);
         sActivity = runOnUiThreadBlockingNoException(() -> sActivityTestRule.getActivity());
-        Looper.prepare();
     }
 
     @Before
