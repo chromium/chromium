@@ -355,6 +355,7 @@ void GlanceablesClassroomStudentView::CreateElevatedBackground() {
   force_hide_footer_view_ = true;
   list_footer_view_->SetVisible(false);
   expand_button_->SetVisible(true);
+  expand_button_->SetExpanded(is_expanded_);
 
   if (content_scroll_view_) {
     content_scroll_view_->SetOnOverscrollCallback(

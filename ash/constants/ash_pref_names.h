@@ -2331,6 +2331,11 @@ inline constexpr char kBirchUseReleaseNotes[] = "ash.birch.use_release_notes";
 inline constexpr char kExtendedUpdatesNotificationDismissed[] =
     "ash.extended_updates.notification_dismissed";
 
+// An integer value that indicates the last expanded (opened) glanceables time
+// management UI, which could be Tasks or Classroom.
+inline constexpr char kGlanceablesTimeManagementLastExpandedBubble[] =
+    "ash.glanceables_time_management.last_expanded";
+
 //-----------------------------------------------------------------------------
 // Language related Prefs
 //-----------------------------------------------------------------------------

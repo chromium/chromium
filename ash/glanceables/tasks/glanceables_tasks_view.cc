@@ -421,6 +421,7 @@ void GlanceablesTasksView::CreateElevatedBackground() {
   SetBackground(views::CreateThemedRoundedRectBackground(
       cros_tokens::kCrosSysSystemOnBaseOpaque, 16.f));
   expand_button_->SetVisible(true);
+  expand_button_->SetExpanded(is_expanded_);
   content_scroll_view_->SetOnOverscrollCallback(
       base::BindRepeating(&GlanceablesTasksView::SetExpandState,
                           base::Unretained(this), /*is_expanded=*/false));
@@ -1042,6 +1043,7 @@ void GlanceablesTasksView::CreateComboBoxView() {
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kPreferred));
   combobox_view_observation_.Observe(task_list_combo_box_view_);
+  task_list_combo_box_view_->SetVisible(is_expanded_);
 
   // Assign a default value for tooltip and accessible text.
   task_list_combo_box_view_->SetTooltipText(l10n_util::GetStringFUTF16(

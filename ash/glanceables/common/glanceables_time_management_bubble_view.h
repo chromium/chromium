@@ -24,7 +24,9 @@ class ASH_EXPORT GlanceablesTimeManagementBubbleView
 
  public:
   // The attribute that describes what type this view is used for.
-  enum class Context { kTasks, kClassroom };
+  // Note that the enum values should not be reordered or reused as the values
+  // are used in prefs (kGlanceablesTimeManagementLastExpandedBubble).
+  enum class Context { kTasks = 0, kClassroom = 1 };
 
   class Observer : public base::CheckedObserver {
    public:

@@ -57,6 +57,7 @@ class ASH_EXPORT CounterExpandButton : public views::Button {
 
   // Changes the expanded state. The icon will change.
   void SetExpanded(bool expanded);
+  bool expanded() const { return expanded_; }
 
   // Whether the label displaying the number of children in a grouped bubble
   // needs to be displayed.
@@ -83,7 +84,6 @@ class ASH_EXPORT CounterExpandButton : public views::Button {
 
  protected:
   views::ImageView* image() { return image_; }
-  bool expanded() const { return expanded_; }
 
   // Bounds change animation happens during expand/collapse and converting from
   // single to group animation.

@@ -45,6 +45,12 @@ class ASH_EXPORT GlanceableTrayBubbleView
   METADATA_HEADER(GlanceableTrayBubbleView, TrayBubbleView)
 
  public:
+  // Registers syncable user profile prefs with the specified `registry`.
+  static void RegisterUserProfilePrefs(PrefRegistrySimple* registry);
+
+  // Clears any glanceables tray bubble related state from user `pref_services`.
+  static void ClearUserStatePrefs(PrefService* pref_service);
+
   GlanceableTrayBubbleView(const InitParams& init_params, Shelf* shelf);
   GlanceableTrayBubbleView(const GlanceableTrayBubbleView&) = delete;
   GlanceableTrayBubbleView& operator=(const GlanceableTrayBubbleView&) = delete;
@@ -81,6 +87,10 @@ class ASH_EXPORT GlanceableTrayBubbleView
   void AddTaskBubbleViewIfNeeded(
       bool fetch_success,
       const ui::ListModel<api::TaskList>* task_lists);
+
+  // Sets the initial expand states of the child bubbles, which are Tasks and
+  // Classroom.
+  void UpdateChildBubblesInitialExpandState();
 
   // Updates the cached task lists to `task_lists`.
   void UpdateTaskLists(bool fetch_success,

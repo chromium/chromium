@@ -192,6 +192,14 @@ class GlanceablesTasksAndClassroomTest : public GlanceablesBaseTest {
     AshTestBase::TearDown();
   }
 
+  void ReopenGlanceables() {
+    date_tray()->HideGlanceableBubble();
+    view_ = nullptr;
+    date_tray()->ShowGlanceableBubble(/*from_keyboard=*/false);
+    view_ = views::AsViewClass<GlanceableTrayBubbleView>(
+        date_tray()->glanceables_bubble_for_test()->GetBubbleView());
+  }
+
   // Populates `num` of tasks to the default task list.
   void PopulateTasks(size_t num) {
     for (size_t i = 0; i < num; ++i) {
@@ -292,9 +300,15 @@ TEST_F(GlanceablesTasksAndClassroomTest, TimeManagementExpandStates) {
   EXPECT_TRUE(tasks_view->IsExpanded());
   EXPECT_FALSE(classroom_view->IsExpanded());
 
-  // Expanding/Collapsing `tasks_view` will collapse/expand `classroom_view`.
+  // Verify the expand states of the buttons.
   auto* const tasks_expand_button = GetTasksExpandButtonView();
+  auto* const classroom_expand_button = GetClassroomExpandButtonView();
   ASSERT_TRUE(tasks_expand_button);
+  ASSERT_TRUE(classroom_expand_button);
+  EXPECT_TRUE(tasks_expand_button->expanded());
+  EXPECT_FALSE(classroom_expand_button->expanded());
+
+  // Expanding/Collapsing `tasks_view` will collapse/expand `classroom_view`.
   LeftClickOn(tasks_expand_button);
   EXPECT_FALSE(tasks_view->IsExpanded());
   EXPECT_TRUE(classroom_view->IsExpanded());
@@ -304,8 +318,6 @@ TEST_F(GlanceablesTasksAndClassroomTest, TimeManagementExpandStates) {
   EXPECT_FALSE(classroom_view->IsExpanded());
 
   // Same for `classroom_view`.
-  auto* const classroom_expand_button = GetClassroomExpandButtonView();
-  ASSERT_TRUE(classroom_expand_button);
   LeftClickOn(classroom_expand_button);
   EXPECT_FALSE(tasks_view->IsExpanded());
   EXPECT_TRUE(classroom_view->IsExpanded());
@@ -686,6 +698,50 @@ TEST_F(GlanceablesTasksAndClassroomTest,
   resize_animation_histograms.ExpectTotalCount(
       "Ash.Glanceables.TimeManagement.Classroom.Collapse.AnimationSmoothness",
       1);
+}
+
+TEST_F(GlanceablesTasksAndClassroomTest,
+       PrefsRememberWhatUsersExpandedLastTime) {
+  // Tasks should be expanded by default.
+  auto* tasks_view = GetTasksView();
+  auto* classroom_view = GetClassroomView();
+  EXPECT_TRUE(tasks_view->IsExpanded());
+  EXPECT_FALSE(classroom_view->IsExpanded());
+
+  view()->GetWidget()->LayoutRootViewIfNecessary();
+
+  // Expand classroom.
+  auto const* classroom_expand_button = GetClassroomExpandButtonView();
+  ASSERT_TRUE(classroom_expand_button);
+  LeftClickOn(classroom_expand_button);
+  EXPECT_FALSE(tasks_view->IsExpanded());
+  EXPECT_TRUE(classroom_view->IsExpanded());
+
+  // Reopen the glanceables again.
+  ReopenGlanceables();
+  tasks_view = GetTasksView();
+  classroom_view = GetClassroomView();
+
+  // Classroom should be expanded as this is expanded when the glanceables was
+  // closed last time.
+  EXPECT_FALSE(tasks_view->IsExpanded());
+  EXPECT_TRUE(classroom_view->IsExpanded());
+
+  // Expand Tasks.
+  auto const* tasks_expand_button = GetTasksExpandButtonView();
+  LeftClickOn(tasks_expand_button);
+  EXPECT_TRUE(tasks_view->IsExpanded());
+  EXPECT_FALSE(classroom_view->IsExpanded());
+
+  // Reopen the glanceables again.
+  ReopenGlanceables();
+  tasks_view = GetTasksView();
+  classroom_view = GetClassroomView();
+
+  // Tasks should be expanded as this is expanded when the glanceables was
+  // closed last time.
+  EXPECT_TRUE(tasks_view->IsExpanded());
+  EXPECT_FALSE(classroom_view->IsExpanded());
 }
 
 }  // namespace ash
