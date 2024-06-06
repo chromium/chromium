@@ -781,6 +781,153 @@ deps = {
       },
     ],
   },
+  'src/third_party/llvm-build/Release+Asserts': {
+    'dep_type': 'gcs',
+    'bucket': 'chromium-browser-clang',
+    'condition': 'not llvm_force_head_revision',
+    'objects': [
+      {
+        'object_name': 'Linux_x64/clang-llvmorg-19-init-10646-g084e2b53-7.tar.xz',
+        'sha256sum': 'd0464562eae265f314068f43bdd2c3f0781b13e462eebd7f5f82135cff673409',
+        'size_bytes': 50747404,
+        'generation': 1717404567139403,
+        'condition': 'host_os == "linux" and non_git_source',
+      },
+      {
+        'object_name': 'Linux_x64/clang-tidy-llvmorg-19-init-10646-g084e2b53-7.tar.xz',
+        'sha256sum': '5996cd916df018f07ba371971b7327299a4c0a66e02c8cfb1647687f201fcde3',
+        'size_bytes': 12918772,
+        'generation': 1717404567246693,
+        'condition': 'host_os == "linux" and checkout_clang_tidy and non_git_source',
+      },
+      {
+        'object_name': 'Linux_x64/clangd-llvmorg-19-init-10646-g084e2b53-7.tar.xz',
+        'sha256sum': 'aaac42bf958caa55ee954117adc1539a6416beea5a85c0ee63f0f3470479d019',
+        'size_bytes': 13290628,
+        'generation': 1717404567369813,
+        'condition': 'host_os == "linux" and checkout_clangd and non_git_source',
+      },
+      {
+        'object_name': 'Linux_x64/llvm-code-coverage-llvmorg-19-init-10646-g084e2b53-7.tar.xz',
+        'sha256sum': 'bd3d588f0863c0f6a7dc1d74a10b877c5004af58a38aadbbf701fa6d6db979b2',
+        'size_bytes': 2313872,
+        'generation': 1717404567926759,
+        'condition': 'host_os == "linux" and checkout_clang_coverage_tools and non_git_source',
+      },
+      {
+        'object_name': 'Linux_x64/llvmobjdump-llvmorg-19-init-10646-g084e2b53-7.tar.xz',
+        'sha256sum': 'c5ad39246b0366fd88bc8ac3cf09cb1438b114ee158cb2ab389a32f69cdc09d5',
+        'size_bytes': 5347640,
+        'generation': 1717404567857077,
+        'condition': '(checkout_linux or checkout_mac or checkout_android and host_os != "mac") and non_git_source',
+      },
+      {
+        'object_name': 'Mac/clang-llvmorg-19-init-10646-g084e2b53-7.tar.xz',
+        'sha256sum': '09fca3694613d6b50c2fd2eb5d4b5ea897ae80d87a8d574b39bb7833d482ef65',
+        'size_bytes': 45862036,
+        'generation': 1717404569606026,
+        'condition': 'host_os == "mac" and host_cpu == "x64"',
+      },
+      {
+        'object_name': 'Mac/clang-mac-runtime-library-llvmorg-19-init-10646-g084e2b53-7.tar.xz',
+        'sha256sum': 'f7b67b49ffe9b0f87192109a30e9fa77780035a637f1493fe1673fc3fca7cde5',
+        'size_bytes': 842392,
+        'generation': 1717404582613300,
+        'condition': 'checkout_mac and not host_os == "mac"',
+      },
+      {
+        'object_name': 'Mac/clang-tidy-llvmorg-19-init-10646-g084e2b53-7.tar.xz',
+        'sha256sum': '5413a015e9d02e566fe43a1fcc81799342518c4b2df2696fcb3ca3b87ed5c2a8',
+        'size_bytes': 12486756,
+        'generation': 1717404569776564,
+        'condition': 'host_os == "mac" and host_cpu == "x64" and checkout_clang_tidy',
+      },
+      {
+        'object_name': 'Mac/clangd-llvmorg-19-init-10646-g084e2b53-7.tar.xz',
+        'sha256sum': '2a824520bfe73e7c4fe2fe1fcaad9dbd0626270e2a14b33b48c33f7c0f669a1f',
+        'size_bytes': 12778508,
+        'generation': 1717404569948474,
+        'condition': 'host_os == "mac" and host_cpu == "x64" and checkout_clangd',
+      },
+      {
+        'object_name': 'Mac/llvm-code-coverage-llvmorg-19-init-10646-g084e2b53-7.tar.xz',
+        'sha256sum': '55b264bd1223d3987e081be8a7c9d1fd7cba14a06bacd2cbbc084762a022612e',
+        'size_bytes': 2173860,
+        'generation': 1717404570485554,
+        'condition': 'host_os == "mac" and host_cpu == "x64" and checkout_clang_coverage_tools',
+      },
+      {
+        'object_name': 'Mac_arm64/clang-llvmorg-19-init-10646-g084e2b53-7.tar.xz',
+        'sha256sum': 'c93a16a31fce180f14e145bf34c8e5b53e9f9cd8976ba78eed8c127c070908b9',
+        'size_bytes': 41503452,
+        'generation': 1717404587663069,
+        'condition': 'host_os == "mac" and host_cpu == "arm64"',
+      },
+      {
+        'object_name': 'Mac_arm64/clang-tidy-llvmorg-19-init-10646-g084e2b53-7.tar.xz',
+        'sha256sum': '33c869b322f720a7faa357779080ca930c24df163f8c50f1baa379165ee71f56',
+        'size_bytes': 11458680,
+        'generation': 1717404587804034,
+        'condition': 'host_os == "mac" and host_cpu == "arm64" and checkout_clang_tidy',
+      },
+      {
+        'object_name': 'Mac_arm64/clangd-llvmorg-19-init-10646-g084e2b53-7.tar.xz',
+        'sha256sum': 'c42a641b25235ae83c9914c43c9b9ce7239b419b7c0ea6f391cb1dcccef659f0',
+        'size_bytes': 11916936,
+        'generation': 1717404587981792,
+        'condition': 'host_os == "mac" and host_cpu == "arm64" and checkout_clangd',
+      },
+      {
+        'object_name': 'Mac_arm64/llvm-code-coverage-llvmorg-19-init-10646-g084e2b53-7.tar.xz',
+        'sha256sum': '68a6e589ea42db84f4fe010d3268d54d4c1a01f9abcaf89e8821247813a8cf1c',
+        'size_bytes': 1951488,
+        'generation': 1717404588572005,
+        'condition': 'host_os == "mac" and host_cpu == "arm64" and checkout_clang_coverage_tools',
+      },
+      {
+        'object_name': 'Win/clang-llvmorg-19-init-10646-g084e2b53-7.tar.xz',
+        'sha256sum': '48708cb7e0522139cece68cea110597ebbe53f43d69b4a03069a23ce3976bf7c',
+        'size_bytes': 40132148,
+        'generation': 1717404607156164,
+        'condition': 'host_os == "win"',
+      },
+      {
+        'object_name': 'Win/clang-tidy-llvmorg-19-init-10646-g084e2b53-7.tar.xz',
+        'sha256sum': '96146cff511f90948da2eb06b862a94929668453c863fa5c36305d4ec42e7e18',
+        'size_bytes': 12515636,
+        'generation': 1717404607350380,
+        'condition': 'host_os == "win" and checkout_clang_tidy',
+      },
+      {
+        'object_name': 'Win/clang-win-runtime-library-llvmorg-19-init-10646-g084e2b53-7.tar.xz',
+        'sha256sum': '58db40304bd5218ec7cdc28c8bcd36915ae04942ecf1c834c7f2ac327faeea35',
+        'size_bytes': 2801088,
+        'generation': 1717404624558431,
+        'condition': 'checkout_win and not host_os == "win"',
+      },
+      {
+        'object_name': 'Win/clangd-llvmorg-19-init-10646-g084e2b53-7.tar.xz',
+        'sha256sum': '0d197dd810f38da44c0ab20cc2925ec2488ded61de4a2166de16da01cf2099fa',
+        'size_bytes': 12962992,
+        'generation': 1717404607446604,
+       'condition': 'host_os == "win" and checkout_clangd',
+      },
+      {
+        'object_name': 'Win/llvm-code-coverage-llvmorg-19-init-10646-g084e2b53-7.tar.xz',
+        'sha256sum': 'c0e92d0ea5ca5a0e1adfe0f02e2235b0146f24a6c5df0b79295839e87975f3ee',
+        'size_bytes': 2288908,
+        'generation': 1717404608096641,
+        'condition': 'host_os == "win" and checkout_clang_coverage_tools',
+      },
+      {
+        'object_name': 'Win/llvmobjdump-llvmorg-19-init-10646-g084e2b53-7.tar.xz',
+        'sha256sum': '9966faa36e2cf489235492ef7f737476f21b6a295cf2d3c1a5fd8c34ab0ec489',
+        'size_bytes': 5305256,
+        'generation': 1717404607648415,
+        'condition': 'checkout_linux or checkout_mac or checkout_android and host_os == "win"',
+      },
+    ]
+  },
   # Update prebuilt Rust toolchain.
   'src/third_party/rust-toolchain': {
     'dep_type': 'gcs',
@@ -5093,14 +5240,6 @@ hooks = [
     'action': ['python3', 'src/build/mac_toolchain.py'],
   },
   {
-    # Update the prebuilt clang toolchain.
-    # Note: On Win, this should run after win_toolchain, as it may use it.
-    'name': 'clang',
-    'pattern': '.',
-    'condition': 'not llvm_force_head_revision',
-    'action': ['vpython3', 'src/tools/clang/scripts/update.py'],
-  },
-  {
     # Build the clang toolchain from tip-of-tree.
     # Note: On Win, this should run after win_toolchain, as it may use it.
     'name': 'clang_tot',
@@ -5110,42 +5249,6 @@ hooks = [
                '--llvm-force-head-revision',
                '--with-android={checkout_android}',
                '--with-fuchsia={checkout_fuchsia}'],
-  },
-  {
-    # This is supposed to support the same set of platforms as 'clang' above.
-    'name': 'clang_coverage',
-    'pattern': '.',
-    'condition': 'checkout_clang_coverage_tools',
-    'action': ['vpython3', 'src/tools/clang/scripts/update.py',
-               '--package=coverage_tools'],
-  },
-  {
-    # This is also supposed to support the same set of platforms as 'clang'
-    # above. LLVM ToT support isn't provided at the moment.
-    'name': 'clang_tidy',
-    'pattern': '.',
-    'condition': 'checkout_clang_tidy',
-    'action': ['vpython3', 'src/tools/clang/scripts/update.py',
-               '--package=clang-tidy'],
-  },
-  {
-    # This is also supposed to support the same set of platforms as 'clang'
-    # above. LLVM ToT support isn't provided at the moment.
-    'name': 'clangd',
-    'pattern': '.',
-    'condition': 'checkout_clangd',
-    'action': ['vpython3', 'src/tools/clang/scripts/update.py',
-               '--package=clangd'],
-  },
-  {
-    # Should run after the clang hook. Used on mac, as well as for orderfile
-    # generation and size tooling on Android. Used by
-    # dump-static-initializers.py on linux.
-    'name': 'objdump',
-    'pattern': '.',
-    'condition': 'checkout_linux or checkout_mac or checkout_android and host_os != "mac"',
-    'action': ['vpython3', 'src/tools/clang/scripts/update.py',
-               '--package=objdump'],
   },
   {
     # Update LASTCHANGE.
