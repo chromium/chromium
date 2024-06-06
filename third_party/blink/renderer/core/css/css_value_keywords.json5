@@ -1070,6 +1070,12 @@
     "after",
     "before",
 
+    // ruby-position
+    "inter-character",
+    // over
+    // under
+    // alternate
+
     // text-emphasis-position
     "over",
     "under",

@@ -4359,6 +4359,8 @@ enum WebFeature {
   kV8AITextSession_Destroy_Method = 4989,
   kImportMapIntegrity = 4990,
   kSelectElementAppearanceNone = 4991,
+  kRubyPositionAlternate = 4992,
+  kRubyPositionInterCharacter = 4993,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

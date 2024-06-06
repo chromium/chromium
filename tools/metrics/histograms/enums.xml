@@ -11016,6 +11016,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4989" label="V8AITextSession_Destroy_Method"/>
   <int value="4990" label="ImportMapIntegrity"/>
   <int value="4991" label="SelectElementAppearanceNone"/>
+  <int value="4992" label="RubyPositionAlternate"/>
+  <int value="4993" label="RubyPositionInterCharacter"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">
