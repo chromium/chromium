@@ -368,9 +368,24 @@ void Adapter::DeviceChanged(device::BluetoothAdapter* adapter,
 
 void Adapter::DeviceRemoved(device::BluetoothAdapter* adapter,
                             device::BluetoothDevice* device) {
+  // First abort the requests that are pending service discovery.
   ProcessPendingInsecureServiceConnectionRequest(device,
                                                  /*disconnected=*/true);
 
+  // Then abort all other requests refer to this device.
+  const std::string& address = device->GetAddress();
+  std::vector<int> request_ids;
+  for (const auto& [req_id, details] : connect_to_service_request_map_) {
+    if (address == details->address) {
+      request_ids.push_back(req_id);
+    }
+  }
+  for (int req_id : request_ids) {
+    ProcessDeviceForInsecureServiceConnection(req_id, device,
+                                              /*disconnected=*/true);
+  }
+
+  // Finally emit DeviceRemoved to the observers.
   for (auto& observer : observers_)
     observer->DeviceRemoved(Device::ConstructDeviceInfoStruct(device));
 }
