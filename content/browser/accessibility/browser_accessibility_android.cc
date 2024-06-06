@@ -567,9 +567,11 @@ bool BrowserAccessibilityAndroid::IsLeaf() const {
   if (ui::IsLink(GetRole()))
     return false;
 
-  // For Android only, tab-panels are never leaves. We do this to temporarily
-  // get around the gap for aria-labelledby in the Android API. See b/241526393.
-  if (GetRole() == ax::mojom::Role::kTabPanel) {
+  // For Android only, tab-panels and tab-lists are never leaves. We do this to
+  // temporarily get around the gap for aria-labelledby in the Android API.
+  // See b/241526393.
+  if (GetRole() == ax::mojom::Role::kTabPanel ||
+      GetRole() == ax::mojom::Role::kTabList) {
     return false;
   }
 
