@@ -34,6 +34,30 @@ using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::Values;
 
+std::string GetScreenShotNameForErrorStatus(MahiResponseStatus status) {
+  switch (status) {
+    case chromeos::MahiResponseStatus::kCantFindOutputData:
+      return "CantFindOutputData";
+    case chromeos::MahiResponseStatus::kContentExtractionError:
+      return "ContentExtractionError";
+    case chromeos::MahiResponseStatus::kInappropriate:
+      return "Inappropriate";
+    case chromeos::MahiResponseStatus::kUnknownError:
+      return "UnknownError";
+    case chromeos::MahiResponseStatus::kQuotaLimitHit:
+      return "QuotaLimitHit";
+    case chromeos::MahiResponseStatus::kResourceExhausted:
+      return "ResourceExhausted";
+    case chromeos::MahiResponseStatus::kRestrictedCountry:
+      return "RestrictedCountry";
+    case chromeos::MahiResponseStatus::kUnsupportedLanguage:
+      return "UnsupportedLanguage";
+    case chromeos::MahiResponseStatus::kLowQuota:
+    case chromeos::MahiResponseStatus::kSuccess:
+      NOTREACHED_NORETURN();
+  }
+}
+
 }  // namespace
 
 class MahiErrorStatusViewPixelTestBase : public AshTestBase {
@@ -84,6 +108,8 @@ INSTANTIATE_TEST_SUITE_P(All,
                                 MahiResponseStatus::kInappropriate,
                                 MahiResponseStatus::kQuotaLimitHit,
                                 MahiResponseStatus::kResourceExhausted,
+                                MahiResponseStatus::kRestrictedCountry,
+                                MahiResponseStatus::kUnsupportedLanguage,
                                 MahiResponseStatus::kUnknownError));
 
 // Verifies the error status view when a summary update incurs an error
@@ -100,7 +126,8 @@ TEST_P(MahiErrorStatusViewPixelTest, Basics) {
           mahi_constants::ViewId::kErrorStatusView);
   ASSERT_TRUE(error_status_view);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "basics", /*revision_number=*/4, error_status_view));
+      GetScreenShotNameForErrorStatus(GetParam()), /*revision_number=*/0,
+      error_status_view));
 }
 
 // MahiInappropriateQuestionPixelTest ------------------------------------------
@@ -132,7 +159,7 @@ TEST_F(MahiInappropriateQuestionPixelTest, InappropriateError) {
   LeftClickOn(send_button);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "basics", /*revision_number=*/1,
+      "basics", /*revision_number=*/2,
       mahi_contents_view->GetViewByID(mahi_constants::ViewId::kScrollView)));
 }
 

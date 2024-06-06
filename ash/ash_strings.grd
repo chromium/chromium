@@ -5237,7 +5237,8 @@ No devices connected.
       </message>
 
       <!-- Mahi -->
-      <!-- TODO(b/331127382): Finalize Mahi strings, move them here and mark them translateable. -->
+      <!-- TODO(b/331127382): Finalize internal Mahi strings, move them here and mark them translateable. -->
+      <!-- TODO(b/331127382): Mark the strings below translateable if they are final strings -->
       <message name="IDS_ASH_MAHI_PANEL_TITLE" translateable="false" desc="Title text shown on the header of the Mahi panel.">
         Mahi Panel
       </message>
@@ -5256,17 +5257,20 @@ No devices connected.
       <message name="IDS_ASH_MAHI_REFRESH_BANNER_LABEL_TEXT" desc="Text for the refresh banner shown above the mahi panel.">
         Refresh <ph name="CONTENT_TITLE">$1<ex>test content title</ex></ph>
       </message>
-      <message name="IDS_ASH_MAHI_RESPONSE_STATUS_INAPPROPRIATE_LABEL_TEXT" translateable="false" desc="Text of the service response that suggests the previous Mahi request is inappropriate">
-        This may violate Google's policy. Try another request.
+      <message name="IDS_ASH_MAHI_RESPONSE_STATUS_INAPPROPRIATE_LABEL_TEXT" desc="Text of the service response that suggests the previous Mahi request is inappropriate">
+        Can’t help with this. Try another request.
       </message>
-      <message name="IDS_ASH_MAHI_ERROR_STATUS_LABEL_GENERAL" translateable="false" desc="Text that indicates a general error incurred by a Mahi request">
+      <message name="IDS_ASH_MAHI_ERROR_STATUS_LABEL_GENERAL" desc="Text that indicates a general error incurred by a Mahi request">
         Something went wrong
       </message>
-      <message name="IDS_ASH_MAHI_ERROR_STATUS_LABEL_QUOTA_LIMIT_HIT" translateable="false" desc="Text that indicates service request limit reached">
-        Due to high request volume, your access is temporary limited. Try again tomorrow.
+      <message name="IDS_ASH_MAHI_ERROR_STATUS_LABEL_AT_CAPACITY" desc="Text indicates an error state that the service resource has been exhausted">
+        At capacity right now. Come back soon.
       </message>
-      <message name="IDS_ASH_MAHI_ERROR_STATUS_LABEL_RESOURCE_EXHAUSTED" translateable="false" desc="Text indicates that the service resource has been exhausted">
-        Can't use right now. Try again later.
+      <message name="IDS_ASH_MAHI_ERROR_STATUS_LABEL_RESTRICTED_COUNTRY" desc="Text indicates an error state that the current country is restricted to use this feature">
+        Your current location isn't supported at this time.
+      </message>
+      <message name="IDS_ASH_MAHI_ERROR_STATUS_LABEL_UNSUPPORTED_LANGUAGE" desc="Text indicates an error state that the language used is unsupported to use this feature">
+        This language isn't supported at this time.
       </message>
       <message name="IDS_ASH_MAHI_RETRY_LINK_LABEL_TEXT" desc="Text for the link that user can retry their previous Mahi request">
         Try again
