@@ -213,6 +213,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
 
     private Preference mGoogleActivityControls;
     private Preference mSyncEncryption;
+    private SignoutButtonPreference mSignOutPreference;
 
     private PreferenceCategory mSearchAndBrowseCategory;
     private ChromeSwitchPreference mUrlKeyedAnonymizedData;
@@ -321,12 +322,15 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                     SyncSettingsUtils.toOnClickListener(
                             this, () -> SigninUtils.openSettingsForAllAccounts(getActivity())));
 
-            SignoutButtonPreference signOutPreference =
-                    (SignoutButtonPreference) findPreference(PREF_SIGN_OUT);
+            mSignOutPreference = (SignoutButtonPreference) findPreference(PREF_SIGN_OUT);
             if (isSupervisedUser()) {
-                signOutPreference.setVisible(false);
+                mSignOutPreference.setVisible(false);
             } else {
-                signOutPreference.initialize(getProfile());
+                mSignOutPreference.initialize(
+                        requireContext(),
+                        getProfile(),
+                        getChildFragmentManager(),
+                        ((ModalDialogManagerHolder) getActivity()).getModalDialogManager());
             }
         } else {
             getActivity().setTitle(R.string.sync_category_title);
@@ -756,6 +760,9 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
 
     public void setSnackbarManager(SnackbarManager snackbarManager) {
         mSnackbarManager = snackbarManager;
+        if (shouldReplaceSyncSettingsWithAccountSettings()) {
+            mSignOutPreference.setSnackbarManager(snackbarManager);
+        }
     }
 
     private void onGoogleActivityControlsClicked(String signedInAccountName) {

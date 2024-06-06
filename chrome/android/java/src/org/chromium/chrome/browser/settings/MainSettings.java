@@ -49,6 +49,8 @@ import org.chromium.chrome.browser.sync.settings.SyncPromoPreference;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredictor;
 import org.chromium.chrome.browser.tracing.settings.DeveloperSettings;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.signin.SignOutCoordinator;
 import org.chromium.chrome.browser.ui.signin.SyncPromoController;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.components.autofill.AutofillFeatures;
@@ -121,6 +123,10 @@ public class MainSettings extends ChromeBaseSettingsFragment
         super.onCreate(savedInstanceState);
         getActivity().setTitle(R.string.settings);
         mPasswordCheck = PasswordCheckFactory.getOrCreate(new SettingsLauncherImpl());
+        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(getProfile());
+        if (signinManager.isSigninSupported(/* requireUpdatedPlayServices= */ false)) {
+            signinManager.addSignInStateObserver(this);
+        }
     }
 
     @Override
@@ -134,6 +140,10 @@ public class MainSettings extends ChromeBaseSettingsFragment
     @Override
     public void onDestroy() {
         super.onDestroy();
+        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(getProfile());
+        if (signinManager.isSigninSupported(/* requireUpdatedPlayServices= */ false)) {
+            signinManager.removeSignInStateObserver(this);
+        }
         // The component should only be destroyed when the activity has been closed by the user
         // (e.g. by pressing on the back button) and not when the activity is temporarily destroyed
         // by the system.
@@ -143,10 +153,6 @@ public class MainSettings extends ChromeBaseSettingsFragment
     @Override
     public void onStart() {
         super.onStart();
-        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(getProfile());
-        if (signinManager.isSigninSupported(/* requireUpdatedPlayServices= */ false)) {
-            signinManager.addSignInStateObserver(this);
-        }
         SyncService syncService = SyncServiceFactory.getForProfile(getProfile());
         if (syncService != null) {
             syncService.addSyncStateChangedListener(this);
@@ -156,10 +162,6 @@ public class MainSettings extends ChromeBaseSettingsFragment
     @Override
     public void onStop() {
         super.onStop();
-        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(getProfile());
-        if (signinManager.isSigninSupported(/* requireUpdatedPlayServices= */ false)) {
-            signinManager.removeSignInStateObserver(this);
-        }
         SyncService syncService = SyncServiceFactory.getForProfile(getProfile());
         if (syncService != null) {
             syncService.removeSyncStateChangedListener(this);
@@ -497,6 +499,12 @@ public class MainSettings extends ChromeBaseSettingsFragment
 
     @Override
     public void onSignedOut() {
+        // TODO(crbug.com/343933167): The snackbar should be shown from
+        // SignOutCoordinator.startSignOutFlow(), in other words SignOutCoordinator.showSnackbar()
+        // should be private method.
+        SignOutCoordinator.showSnackbar(
+                getContext(),
+                ((SnackbarManager.SnackbarManageable) getActivity()).getSnackbarManager());
         updatePreferences();
     }
 

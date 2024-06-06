@@ -92,6 +92,19 @@ public class SignOutCoordinator {
                 });
     }
 
+    // TODO: b/325654229 - This method should be private. It's temporarily made public as a work
+    // around for b/343933167.
+    /** Shows the sanckbar which is shown upon signing out. */
+    public static void showSnackbar(Context context, SnackbarManager snackbarManager) {
+        snackbarManager.showSnackbar(
+                Snackbar.make(
+                                context.getString(R.string.sign_out_snackbar_message),
+                                /* controller= */ null,
+                                Snackbar.TYPE_ACTION,
+                                Snackbar.UMA_SIGN_OUT)
+                        .setSingleLine(false));
+    }
+
     @IntDef({
         UiState.SNACK_BAR,
         UiState.UNSAVED_DATA,
@@ -214,14 +227,7 @@ public class SignOutCoordinator {
                     PostTask.runOrPostTask(
                             TaskTraits.UI_DEFAULT,
                             () -> {
-                                snackbarManager.showSnackbar(
-                                        Snackbar.make(
-                                                        context.getString(
-                                                                R.string.sign_out_snackbar_message),
-                                                        /* controller= */ null,
-                                                        Snackbar.TYPE_ACTION,
-                                                        Snackbar.UMA_SIGN_OUT)
-                                                .setSingleLine(false));
+                                showSnackbar(context, snackbarManager);
                                 onSignOut.run();
                             });
                 });
