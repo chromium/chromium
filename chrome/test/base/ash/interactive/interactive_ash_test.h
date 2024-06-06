@@ -142,6 +142,15 @@ class InteractiveAshTest
       const ui::ElementIdentifier& element_id,
       const DeepQuery& query);
 
+  // Waits for an element identified by `query` to exist in the DOM of an
+  // instrumented WebUI identified by `element_id`. This function expects the
+  // element to be a drop-down and will directly update the selected option
+  // index to match the first option matching `option`.
+  ui::test::internal::InteractiveTestPrivate::MultiStep
+  SelectDropdownElementOption(const ui::ElementIdentifier& element_id,
+                              const DeepQuery& query,
+                              const std::string& option);
+
  private:
   // Helper function that navigates to a top-level page of the Settings app.
   // This function expects the Settings app to already be open. The `path`

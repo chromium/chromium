@@ -14,9 +14,11 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ash/interactive/interactive_ash_test.h"
 #include "device/udev_linux/fake_udev_loader.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
@@ -472,7 +474,7 @@ class DeviceSettingsSwapPrimaryMouseButtonInteractiveUiTest
       "#dropdownMenu",
   };
 
-  const DeepQuery kCursorAcceleartorToggleQuery{
+  const DeepQuery kCursorAcceleratorToggleQuery{
       "os-settings-ui",
       "os-settings-main",
       "main-page-container",
@@ -493,7 +495,7 @@ IN_PROC_BROWSER_TEST_F(DeviceSettingsSwapPrimaryMouseButtonInteractiveUiTest,
       StateChange::Type::kExistsAndConditionTrue;
   cursor_acceleration_toggle_enabled.event =
       kCursorAccelerationToggleEnabledEvent;
-  cursor_acceleration_toggle_enabled.where = kCursorAcceleartorToggleQuery;
+  cursor_acceleration_toggle_enabled.where = kCursorAcceleratorToggleQuery;
   cursor_acceleration_toggle_enabled.test_function = "el => !el.disabled";
 
   RunTestSequence(
@@ -502,14 +504,13 @@ IN_PROC_BROWSER_TEST_F(DeviceSettingsSwapPrimaryMouseButtonInteractiveUiTest,
       Log("Waiting for per device mouse row to be visible"),
       WaitForElementExists(webcontents_id_, kMouseRowQuery),
       ClickElement(webcontents_id_, kMouseRowQuery),
-      Log("Waiting for swap primary mouse toggle to be visible"),
-      WaitForElementExists(webcontents_id_, kMouseSwapButtonDropdownQuery),
       Log("Selecting 'Right button' from the dropdown menu"),
-      ExecuteJsAt(webcontents_id_, kMouseSwapButtonDropdownQuery,
-                  "(el) => {el.selectedIndex = 1; el.dispatchEvent(new "
-                  "Event('change'));}"),
+      SelectDropdownElementOption(
+          webcontents_id_, kMouseSwapButtonDropdownQuery,
+          l10n_util::GetStringUTF8(
+              IDS_SETTINGS_PRIMARY_MOUSE_BUTTON_RIGHT_LABEL)),
       Log("Verifying that right clicking behavior has changed"),
-      MoveMouseTo(webcontents_id_, kCursorAcceleartorToggleQuery),
+      MoveMouseTo(webcontents_id_, kCursorAcceleratorToggleQuery),
       ClickMouse(ui_controls::RIGHT),
       WaitForStateChange(webcontents_id_, cursor_acceleration_toggle_enabled));
 }

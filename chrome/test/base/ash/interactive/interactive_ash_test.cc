@@ -29,6 +29,23 @@ namespace {
 using InteractiveMixinBasedBrowserTest =
     InteractiveBrowserTestT<MixinBasedInProcessBrowserTest>;
 
+// This JavaScript is used to select an option from a dropdown menu. This
+// JavaScript can be formatted with a single string to identify the desired
+// option. The string can be a substring of the complete option name.
+constexpr char kSelectDropdownElementOptionJs[] = R"(
+  (el) => {
+    const elements = el.querySelectorAll('option');
+    for (let i = 0; i < elements.length; i++) {
+      if (elements[i].label.indexOf('%s') == -1) {
+        continue;
+      }
+      el.selectedIndex = elements[i].index;
+      el.dispatchEvent(new Event('change'));
+      return true;
+    }
+    return false;
+  })";
+
 }  // namespace
 
 InteractiveAshTest::InteractiveAshTest() {
@@ -230,6 +247,18 @@ ui::test::internal::InteractiveTestPrivate::MultiStep
 InteractiveAshTest::ClickElement(const ui::ElementIdentifier& element_id,
                                  const DeepQuery& query) {
   return Steps(MoveMouseTo(element_id, query), ClickMouse());
+}
+
+ui::test::internal::InteractiveTestPrivate::MultiStep
+InteractiveAshTest::SelectDropdownElementOption(
+    const ui::ElementIdentifier& element_id,
+    const DeepQuery& query,
+    const std::string& option) {
+  return Steps(
+      WaitForElementExists(element_id, query),
+      CheckJsResultAt(
+          element_id, query,
+          base::StringPrintf(kSelectDropdownElementOptionJs, option.c_str())));
 }
 
 ui::test::internal::InteractiveTestPrivate::MultiStep
