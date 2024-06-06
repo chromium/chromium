@@ -252,29 +252,31 @@ suite('<settings-privacy-hub-geolocation-subpage>', () => {
           });
     }
 
-    // Test Local Weather
-    for (const localWeatherEnabled of [true, false]) {
-      setLocalWeatherEnabled(localWeatherEnabled);
-      await waitAfterNextRender(privacyHubGeolocationSubpage);
-
-      checkService(
-          systemServices[2]!, i18n('privacyHubSystemServicesLocalWeatherName'),
-          localWeatherEnabled, {
-            notConfiguredText:
-                i18n('privacyHubSystemServicesGeolocationNotConfigured'),
-            allowedText: i18n('privacyHubSystemServicesAllowedText'),
-            blockedText: 'Blocked',
-          });
-    }
-
     // Test Dark Theme
     for (const scheduleType of allScheduleTypes) {
       setDarkThemeScheduleType(scheduleType as ScheduleType);
       await waitAfterNextRender(privacyHubGeolocationSubpage);
 
       checkService(
-          systemServices[3]!, i18n('privacyHubSystemServicesDarkThemeName'),
+          systemServices[2]!, i18n('privacyHubSystemServicesDarkThemeName'),
           scheduleType === ScheduleType.SUNSET_TO_SUNRISE, {
+            notConfiguredText:
+                i18n('privacyHubSystemServicesGeolocationNotConfigured'),
+            allowedText: i18n('privacyHubSystemServicesAllowedText'),
+            blockedText:
+                'Blocked. Schedule is currently set to 7:00AM - 8:00PM' +
+                ' and can only be updated manually.',
+          });
+    }
+
+    // Test Local Weather
+    for (const localWeatherEnabled of [true, false]) {
+      setLocalWeatherEnabled(localWeatherEnabled);
+      await waitAfterNextRender(privacyHubGeolocationSubpage);
+
+      checkService(
+          systemServices[3]!, i18n('privacyHubSystemServicesLocalWeatherName'),
+          localWeatherEnabled, {
             notConfiguredText:
                 i18n('privacyHubSystemServicesGeolocationNotConfigured'),
             allowedText: i18n('privacyHubSystemServicesAllowedText'),
