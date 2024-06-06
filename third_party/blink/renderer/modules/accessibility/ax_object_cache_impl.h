@@ -1233,9 +1233,6 @@ struct DowncastTraits<AXObjectCacheImpl> {
   static bool AllowFrom(const AXObjectCache& cache) { return true; }
 };
 
-// This will let you know if aria-hidden was explicitly set to false.
-bool IsNodeAriaVisible(Node*);
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_OBJECT_CACHE_IMPL_H_

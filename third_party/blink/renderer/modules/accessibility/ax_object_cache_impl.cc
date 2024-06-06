@@ -4532,17 +4532,6 @@ bool AXObjectCacheImpl::NodeIsTextControl(const Node* node) {
   return ax_object && ax_object->IsTextField();
 }
 
-bool IsNodeAriaVisible(Node* node) {
-  auto* element = DynamicTo<Element>(node);
-  if (!element)
-    return false;
-
-  bool is_null = true;
-  bool hidden = AccessibleNode::GetPropertyOrARIAAttribute(
-      element, AOMBooleanProperty::kHidden, is_null);
-  return !is_null && !hidden;
-}
-
 WebLocalFrameClient* AXObjectCacheImpl::GetWebLocalFrameClient() const {
   DCHECK(document_);
   WebLocalFrameImpl* web_frame =
