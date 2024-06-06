@@ -13,6 +13,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/app_list/search/local_image_search/annotation_storage.h"
 #include "chrome/browser/ash/app_list/search/local_image_search/local_image_search_test_util.h"
 #include "chrome/browser/ash/app_list/search/search_features.h"
@@ -66,6 +67,8 @@ class ImageAnnotationWorkerTest : public testing::Test {
         /*use_file_watchers=*/false,
         /*use_ocr=*/false,
         /*use_ica=*/false);
+    annotation_worker_->set_image_processing_delay_for_testing(
+        base::Seconds(0));
     bar_image_path_ = test_directory_.AppendASCII("bar.jpg");
     const base::FilePath test_db = test_directory_.AppendASCII("test.db");
     storage_ =
@@ -118,6 +121,65 @@ TEST_F(ImageAnnotationWorkerTest, MustProcessTheFolderAtInitTest) {
   annotation_worker_->Initialize(storage_.get());
   task_environment_.FastForwardBy(base::Seconds(1));
   task_environment_.RunUntilIdle();
+
+  ImageInfo jpg_image({"bar"}, jpg_path, image_time, /*file_size=*/16);
+  ImageInfo jpeg_image({"bar1"}, jpeg_path, image_time, 16);
+  ImageInfo png_image({"bar2"}, png_path, image_time, 16);
+  ImageInfo JPG_image({"bar5"}, JPG_path, image_time, 16);
+  ImageInfo webp_image({"bar6"}, webp_path, image_time, 24);
+  ImageInfo WEBP_image({"bar7"}, WEBP_path, image_time, 24);
+
+  auto annotations = storage_->GetAllAnnotationsForTest();
+  EXPECT_THAT(annotations, testing::UnorderedElementsAreArray(
+                               {jpg_image, jpeg_image, png_image, JPG_image,
+                                webp_image, WEBP_image}));
+
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(ImageAnnotationWorkerTest, ImageProcessingTimeout) {
+  // Overwrite processing delay to be greater than `kMaxImageProcessingTime`. It
+  // simulate the case when the dlc processing is slow and callback is return
+  // after timeout.
+  annotation_worker_->set_image_processing_delay_for_testing(base::Minutes(3));
+
+  storage_->Initialize();
+  task_environment_.RunUntilIdle();
+
+  base::CreateDirectory(test_directory_.AppendASCII("Images"));
+  base::CreateDirectory(test_directory_.AppendASCII("TrashBin"));
+
+  auto jpg_path = test_directory_.AppendASCII("bar.jpg");
+  base::WriteFile(jpg_path, kJpeg_image);
+  auto jpeg_path =
+      test_directory_.AppendASCII("Images").AppendASCII("bar1.jpeg");
+  base::WriteFile(jpeg_path, kJpeg_image);
+  auto png_path = test_directory_.AppendASCII("bar2.png");
+  base::WriteFile(png_path, kPng_image);
+  auto jng_path = test_directory_.AppendASCII("bar3.jng");
+  base::WriteFile(jng_path, kJpeg_image);
+  auto tjng_path = test_directory_.AppendASCII("bar4.tjng");
+  base::WriteFile(tjng_path, kJpeg_image);
+  auto JPG_path = test_directory_.AppendASCII("bar5.JPG");
+  base::WriteFile(JPG_path, kJpeg_image);
+  auto webp_path = test_directory_.AppendASCII("bar6.webp");
+  base::WriteFile(webp_path, kWebp_image);
+  auto WEBP_path = test_directory_.AppendASCII("bar7.WEBP");
+  base::WriteFile(WEBP_path, kWebp_image1);
+  auto bin_path =
+      test_directory_.AppendASCII("TrashBin").AppendASCII("bar8.jpg");
+  base::WriteFile(bin_path, kJpeg_image);
+
+  auto image_time = base::Time::Now();
+  for (const auto& path : {jpg_path, jpeg_path, png_path, jng_path, tjng_path,
+                           JPG_path, webp_path, WEBP_path, bin_path}) {
+    base::TouchFile(path, image_time, image_time);
+  }
+
+  annotation_worker_->Initialize(storage_.get());
+  // We need `FastForwardUntilNoTasksRemain` here as `RunUntilIdle` excludes
+  // delayed tasks.
+  task_environment_.FastForwardUntilNoTasksRemain();
 
   ImageInfo jpg_image({"bar"}, jpg_path, image_time, /*file_size=*/16);
   ImageInfo jpeg_image({"bar1"}, jpeg_path, image_time, 16);
@@ -288,6 +350,8 @@ TEST_F(ImageAnnotationWorkerTest, ProcessDirectoryTest) {
                                                     /*error=*/false);
   }
 
+  task_environment_.RunUntilIdle();
+
   ImageInfo jpg_image({"bar"}, jpg_path, image_time, /*file_size=*/16);
   ImageInfo jpeg_image({"bar1"}, jpeg_path, image_time, 16);
   ImageInfo jpeg_image1({"bar1"}, jpeg_path1, image_time, 16);
@@ -306,6 +370,8 @@ TEST_F(ImageAnnotationWorkerTest, ProcessDirectoryTest) {
   annotation_worker_->TriggerOnFileChangeForTests(test_images1,
                                                   /*error=*/false);
 
+  task_environment_.RunUntilIdle();
+
   EXPECT_THAT(
       storage_->GetAllAnnotationsForTest(),
       testing::UnorderedElementsAreArray({jpg_image, jpeg_image1, png_image1}));
@@ -313,6 +379,8 @@ TEST_F(ImageAnnotationWorkerTest, ProcessDirectoryTest) {
   base::DeletePathRecursively(test_images1);
   annotation_worker_->TriggerOnFileChangeForTests(test_images1,
                                                   /*error=*/false);
+
+  task_environment_.RunUntilIdle();
 
   EXPECT_THAT(storage_->GetAllAnnotationsForTest(),
               testing::UnorderedElementsAreArray({jpg_image}));
@@ -333,6 +401,7 @@ TEST_F(ImageAnnotationWorkerTest, IgnoreWhenLimitReachedTest) {
       /*use_file_watchers=*/false,
       /*use_ocr=*/false,
       /*use_ica=*/false);
+  annotation_worker_->set_image_processing_delay_for_testing(base::Seconds(0));
 
   storage_->Initialize();
   annotation_worker_->Initialize(storage_.get());
