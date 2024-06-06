@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.pwd_migration;
 
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING;
 import static org.chromium.chrome.browser.password_manager.PasswordMetricsUtil.logPostPasswordMigrationOutcome;
 
 import android.content.Context;
@@ -15,8 +16,10 @@ import android.widget.RelativeLayout;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.appcompat.widget.DialogTitle;
 
 import org.chromium.base.Callback;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.PasswordManagerResourceProviderFactory;
 import org.chromium.chrome.browser.password_manager.PasswordMetricsUtil.PostPasswordMigrationSheetOutcome;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -73,9 +76,23 @@ class PostPasswordMigrationSheetView implements BottomSheetContent {
                 AppCompatResources.getDrawable(
                         context,
                         PasswordManagerResourceProviderFactory.create().getPasswordManagerIcon()));
+        String titleText;
+        String baseSubtitleText;
+        if (ChromeFeatureList.isEnabled(
+                UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)) {
+            titleText =
+                    context.getString(R.string.post_password_migration_sheet_title_about_local_pwd);
+            baseSubtitleText =
+                    context.getString(R.string.post_pwd_migration_sheet_subtitle_about_local_pwd);
+        } else {
+            titleText = context.getString(R.string.post_password_migration_sheet_title);
+            baseSubtitleText = context.getString(R.string.post_password_migration_sheet_subtitle);
+        }
+        DialogTitle titleView = mContentView.findViewById(R.id.sheet_title);
+        titleView.setText(titleText);
         String subtitleText =
-                context.getString(R.string.post_password_migration_sheet_subtitle)
-                        .replace("%1$s", PasswordMigrationWarningUtil.getChannelString(context));
+                baseSubtitleText.replace(
+                        "%1$s", PasswordMigrationWarningUtil.getChannelString(context));
         TextViewWithLeading subtitleView = mContentView.findViewById(R.id.sheet_subtitle);
         subtitleView.setText(subtitleText);
         Button acknowledgeButton = mContentView.findViewById(R.id.acknowledge_button);

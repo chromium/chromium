@@ -315,6 +315,8 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &password_manager::features::kBiometricTouchToFill,
     &password_manager::features::kSharedPasswordNotificationUI,
     &password_manager::features::
+        kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning,
+    &password_manager::features::
         kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration,
     &password_manager::features::
         kUnifiedPasswordManagerLocalPasswordsMigrationWarning,

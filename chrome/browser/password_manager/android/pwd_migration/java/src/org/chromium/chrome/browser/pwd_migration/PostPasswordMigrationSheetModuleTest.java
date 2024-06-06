@@ -10,6 +10,7 @@ import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING;
 import static org.chromium.chrome.browser.pwd_migration.PostPasswordMigrationSheetProperties.VISIBLE;
 
 import android.content.Context;
@@ -27,6 +28,7 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
@@ -53,6 +55,7 @@ public class PostPasswordMigrationSheetModuleTest {
     }
 
     @Test
+    @DisableFeatures(UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)
     public void showPostPasswordMigrationSheetCreatesTheCoordinator() {
         mPostPasswordMigrationSheetCoordinator.showSheet();
         assertTrue(mPostPasswordMigrationSheetCoordinator.getModelForTesting().get(VISIBLE));
