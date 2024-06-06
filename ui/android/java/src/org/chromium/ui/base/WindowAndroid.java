@@ -45,6 +45,7 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.base.compat.ApiHelperForOMR1;
+import org.chromium.ui.InsetObserver;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayAndroid.DisplayAndroidObserver;
@@ -75,6 +76,8 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
 
     private KeyboardVisibilityDelegate mKeyboardVisibilityDelegate =
             KeyboardVisibilityDelegate.getInstance();
+
+    private InsetObserver mInsetObserver;
 
     // Native pointer to the c++ WindowAndroid object.
     private long mNativeWindowAndroid;
@@ -699,23 +702,39 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
         mAnimationPlaceholderView = view;
     }
 
+    protected void setKeyboardDelegate(KeyboardVisibilityDelegate keyboardDelegate) {
+        mKeyboardVisibilityDelegate = keyboardDelegate;
+        // TODO(crbug.com/343936788): Remove - callers should use the window to get the delegate.
+        KeyboardVisibilityDelegate.setInstance(keyboardDelegate);
+    }
+
     /**
      * The returned {@link KeyboardVisibilityDelegate} can read and influence the soft keyboard.
+     *
      * @return a {@link KeyboardVisibilityDelegate} specific for this window.
      */
     public KeyboardVisibilityDelegate getKeyboardDelegate() {
         return mKeyboardVisibilityDelegate;
     }
 
-    /** @return A mechanism for updating and observing the bottom inset of the browser window. */
-    public ApplicationViewportInsetSupplier getApplicationBottomInsetSupplier() {
-        return mApplicationBottomInsetSupplier;
+    /** Returns the {@link InsetObserver} for the root view of the activity or null. */
+    public InsetObserver getInsetObserver() {
+        if (mInsetObserver == null) {
+            Window window = getWindow();
+            if (window == null) return null;
+
+            mInsetObserver =
+                    new InsetObserver(
+                            new ImmutableWeakReference<>(window.getDecorView().getRootView()));
+        }
+        return mInsetObserver;
     }
 
-    public void setKeyboardDelegate(KeyboardVisibilityDelegate keyboardDelegate) {
-        mKeyboardVisibilityDelegate = keyboardDelegate;
-        // TODO(crbug.com/343936788): Remove - callers should use the window to get the delegate.
-        KeyboardVisibilityDelegate.setInstance(keyboardDelegate);
+    /**
+     * @return A mechanism for updating and observing the bottom inset of the browser window.
+     */
+    public ApplicationViewportInsetSupplier getApplicationBottomInsetSupplier() {
+        return mApplicationBottomInsetSupplier;
     }
 
     /** Adds a listener that will be notified whenever a ContextMenu is closed. */

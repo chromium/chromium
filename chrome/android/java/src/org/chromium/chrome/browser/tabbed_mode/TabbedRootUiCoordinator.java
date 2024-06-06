@@ -187,7 +187,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private CommerceSubscriptionsService mCommerceSubscriptionsService;
     private UndoGroupSnackbarController mUndoGroupSnackbarController;
     private final int mControlContainerHeightResource;
-    private final Supplier<InsetObserver> mInsetObserverViewSupplier;
+    private final InsetObserver mInsetObserver;
     private final Function<Tab, Boolean> mBackButtonShouldCloseTabFn;
     private LayoutStateProvider.LayoutStateObserver mGestureNavLayoutObserver;
     private final ObservableSupplierImpl<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
@@ -278,7 +278,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
      * @param ephemeralTabCoordinatorSupplier Supplies the {@link EphemeralTabCoordinator}.
      * @param intentRequestTracker Tracks intent requests.
      * @param controlContainerHeightResource The resource for the control container.
-     * @param insetObserverViewSupplier Supplier for the {@link InsetObserver}.
+     * @param insetObserver The {@link InsetObserver}.
      * @param backButtonShouldCloseTabFn Function which supplies whether or not the back button
      *     should close the tab.
      * @param tabReparentingControllerSupplier Supplier for the {@link TabReparentingController}.
@@ -335,7 +335,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                     ObservableSupplierImpl<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
             @NonNull IntentRequestTracker intentRequestTracker,
             int controlContainerHeightResource,
-            @NonNull Supplier<InsetObserver> insetObserverViewSupplier,
+            @NonNull InsetObserver insetObserver,
             @NonNull Function<Tab, Boolean> backButtonShouldCloseTabFn,
             OneshotSupplier<TabReparentingController> tabReparentingControllerSupplier,
             boolean initializeUiWithIncognitoColors,
@@ -391,7 +391,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 overviewColorSupplier,
                 baseChromeLayout);
         mControlContainerHeightResource = controlContainerHeightResource;
-        mInsetObserverViewSupplier = insetObserverViewSupplier;
+        mInsetObserver = insetObserver;
         mBackButtonShouldCloseTabFn = backButtonShouldCloseTabFn;
         mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
         mCanAnimateBrowserControls =
@@ -543,7 +543,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mManualFillingComponentSupplier
                                 .get()
                                 .getAccessorySheetVisualStateProvider(),
-                        mInsetObserverViewSupplier.get());
+                        mInsetObserver);
     }
 
     @Override
@@ -613,7 +613,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mCallbackController.makeCancelable(
                                 () -> mLayoutManager.getActiveLayout().requestUpdate()),
                         mActivityTabProvider,
-                        mInsetObserverViewSupplier.get(),
+                        mInsetObserver,
                         mStartSurfaceSupplier,
                         new BackActionDelegate() {
                             @Override
@@ -1242,7 +1242,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mActivity,
                         mActivity.getWindow().getDecorView().getRootView(),
                         mBrowserControlsManager.getBrowserVisibilityDelegate(),
-                        mInsetObserverViewSupplier.get(),
+                        mInsetObserver,
                         mActivityLifecycleDispatcher,
                         savedInstanceState);
     }

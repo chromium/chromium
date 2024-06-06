@@ -64,7 +64,6 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.InsetObserver;
 import org.chromium.ui.InsetObserver.WindowInsetsConsumer;
-import org.chromium.ui.InsetObserverSupplier;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
@@ -126,7 +125,7 @@ public class EdgeToEdgeControllerTest {
         ChromeFeatureList.sDrawWebEdgeToEdge.setForTesting(false);
 
         MockitoAnnotations.openMocks(this);
-        InsetObserverSupplier.setInstanceForTesting(mInsetObserver);
+        when(mWindowAndroid.getInsetObserver()).thenReturn(mInsetObserver);
 
         mActivity = Robolectric.buildActivity(AppCompatActivity.class).setup().get();
         mTabProvider = new ObservableSupplierImpl<>();

@@ -39,7 +39,6 @@ import org.chromium.components.browser_ui.display_cutout.DisplayCutoutController
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.InsetObserver;
-import org.chromium.ui.InsetObserverSupplier;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.lang.ref.WeakReference;
@@ -82,8 +81,8 @@ public class DisplayCutoutControllerTest {
         when(mTab.getUserDataHost()).thenReturn(mTabDataHost);
         when(mWebContents.isFullscreenForCurrentTab()).thenReturn(true);
         when(mWindowAndroid.getActivity()).thenReturn(mActivityRef);
+        when(mWindowAndroid.getInsetObserver()).thenReturn(mInsetObserver);
 
-        InsetObserverSupplier.setInstanceForTesting(mInsetObserver);
         ActivityDisplayCutoutModeSupplier.setInstanceForTesting(0);
 
         mDisplayCutoutTabHelper = spy(new DisplayCutoutTabHelper(mTab));

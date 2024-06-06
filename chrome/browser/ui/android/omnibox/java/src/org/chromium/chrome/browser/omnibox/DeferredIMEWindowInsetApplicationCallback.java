@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.omnibox;
 
+import android.app.Activity;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -15,7 +16,6 @@ import androidx.core.view.WindowInsetsCompat;
 import org.chromium.ui.InsetObserver;
 import org.chromium.ui.InsetObserver.WindowInsetsAnimationListener;
 import org.chromium.ui.InsetObserver.WindowInsetsConsumer;
-import org.chromium.ui.InsetObserverSupplier;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.util.List;
@@ -48,10 +48,17 @@ public class DeferredIMEWindowInsetApplicationCallback
 
     /**
      * Attaches this callback to the root of the given window, activating interception of its IME
-     * window insets and listening for IME animation updates.
+     * window insets and listening for IME animation updates. Attach will be skipped if the window's
+     * activity that is already finishing.
      */
     public void attach(WindowAndroid windowAndroid) {
-        InsetObserver insetObserver = InsetObserverSupplier.getValueOrNullFrom(windowAndroid);
+        // If the activity is finishing or the window is destroyed this attach is a no-op.
+        if (windowAndroid.isDestroyed()) return;
+
+        Activity activity = windowAndroid.getActivity().get();
+        if (activity != null && activity.isFinishing()) return;
+
+        InsetObserver insetObserver = windowAndroid.getInsetObserver();
         assert insetObserver != null
                 : "DeferredIMEWindowInsetApplicationCallback can only be used in activities with an"
                         + " InsetObserverView";
@@ -62,8 +69,11 @@ public class DeferredIMEWindowInsetApplicationCallback
 
     /** Detaches this callback from the root of the given window. */
     public void detach() {
-        mInsetObserver.removeInsetsConsumer(this);
-        mInsetObserver.removeWindowInsetsAnimationListener(this);
+        // Allow for a null inset observer here if the attach was a no-op.
+        if (mInsetObserver != null) {
+            mInsetObserver.removeInsetsConsumer(this);
+            mInsetObserver.removeWindowInsetsAnimationListener(this);
+        }
         mAnimationInProgress = false;
         mDeferredKeyboardHeight = NO_DEFERRED_KEYBOARD_HEIGHT;
         mKeyboardHeight = 0;

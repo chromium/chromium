@@ -31,7 +31,6 @@ import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.browser.WebContentsObserver.ViewportFitType;
 import org.chromium.ui.InsetObserver;
 import org.chromium.ui.InsetObserver.WindowInsetsConsumer;
-import org.chromium.ui.InsetObserverSupplier;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
@@ -121,7 +120,7 @@ public class EdgeToEdgeControllerImpl
                 TotallyEdgeToEdge.isEnabled()
                         ? new TotallyEdgeToEdge(browserControlsStateProvider, this::maybeDrawToEdge)
                         : null;
-        mInsetObserver = InsetObserverSupplier.getValueOrNullFrom(mWindowAndroid);
+        mInsetObserver = mWindowAndroid.getInsetObserver();
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mBrowserControlsStateProvider.addObserver(this);
     }
