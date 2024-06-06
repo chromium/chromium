@@ -183,6 +183,24 @@ class PatchPanelClientImpl : public PatchPanelClient {
 
   void SetFeatureFlag(patchpanel::SetFeatureFlagRequest::FeatureFlag flag,
                       bool enabled) override {
+    // SetFeatureFlag is be called on Chrome starts and it's very likely that
+    // patchpanel D-Bus service is not ready at that time, so we want to use
+    // WaitForServiceToBeAvailable() to post the task here. Note that if the
+    // service is already ready, it will behave similar to a PostTask() so this
+    // won't be harmful here.
+    patchpanel_proxy_->WaitForServiceToBeAvailable(
+        base::BindOnce(&PatchPanelClientImpl::SetFeatureFlagImpl,
+                       weak_factory_.GetWeakPtr(), flag, enabled));
+  }
+
+  void SetFeatureFlagImpl(patchpanel::SetFeatureFlagRequest::FeatureFlag flag,
+                          bool enabled,
+                          bool patchpanel_service_ready) {
+    if (!patchpanel_service_ready) {
+      LOG(ERROR) << "Patchpanel service is not ready";
+      return;
+    }
+
     dbus::MethodCall method_call(patchpanel::kPatchPanelInterface,
                                  patchpanel::kSetFeatureFlagMethod);
     dbus::MessageWriter writer(&method_call);
