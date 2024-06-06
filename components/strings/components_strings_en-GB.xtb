@@ -3466,7 +3466,7 @@ Additional details:
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> of <ph name="ITEMS_TOTAL" />.</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Actions taken with data flagged as confidential (1 action since login). <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" />}other{Actions taken with data flagged as confidential (# actions since login). <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" />}}</translation>
 <translation id="7673278391011283842">Mailbox 6</translation>
-<translation id="7675325315208090829">Manage Payment Methods…</translation>
+<translation id="7675325315208090829">Manage payment methods…</translation>
 <translation id="767550629621587224">Pre-cut tabs</translation>
 <translation id="7676643023259824263">Search for clipboard text, <ph name="TEXT" /></translation>
 <translation id="7679367271685653708">View and manage your browsing history in Chrome settings</translation>
