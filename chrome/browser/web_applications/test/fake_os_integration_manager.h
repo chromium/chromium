@@ -27,9 +27,6 @@ class FakeOsIntegrationManager : public OsIntegrationManager {
 
   void SetNextCreateShortcutsResult(const webapps::AppId& app_id, bool success);
 
-  void SetFileHandlerManager(
-      std::unique_ptr<WebAppFileHandlerManager> file_handler_manager);
-
   FakeOsIntegrationManager* AsTestOsIntegrationManager() override;
 
   void SetAppExistingShortcuts(const GURL& app_url,

@@ -12,7 +12,6 @@
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_protocol_handler_manager.h"
-#include "chrome/browser/web_applications/test/fake_web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 
 namespace web_app {
@@ -28,16 +27,11 @@ FakeOsIntegrationManager::FakeOsIntegrationManager(
           std::make_unique<OsIntegrationManager::ScopedSuppressForTesting>()) {
   if (!has_file_handler_manager()) {
     set_file_handler_manager(
-        std::make_unique<FakeWebAppFileHandlerManager>(profile));
+        std::make_unique<WebAppFileHandlerManager>(profile));
   }
 }
 
 FakeOsIntegrationManager::~FakeOsIntegrationManager() = default;
-
-void FakeOsIntegrationManager::SetFileHandlerManager(
-    std::unique_ptr<WebAppFileHandlerManager> file_handler_manager) {
-  set_file_handler_manager(std::move(file_handler_manager));
-}
 
 FakeOsIntegrationManager*
 FakeOsIntegrationManager::AsTestOsIntegrationManager() {
