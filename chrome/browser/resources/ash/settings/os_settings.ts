@@ -143,6 +143,7 @@ export {BaseRowMixin} from './controls/v2/base_row_mixin.js';
 export {PrefControlMixinInternal} from './controls/v2/pref_control_mixin_internal.js';
 export {SettingsDropdownV2Element} from './controls/v2/settings_dropdown_v2.js';
 export {SettingsRowElement} from './controls/v2/settings_row.js';
+export {SettingsSliderRowElement} from './controls/v2/settings_slider_row.js';
 export {SettingsSliderV2Element} from './controls/v2/settings_slider_v2.js';
 export {SettingsToggleV2Element} from './controls/v2/settings_toggle_v2.js';
 export {DateTimeBrowserProxy, DateTimePageCallbackRouter, DateTimePageHandlerRemote, DateTimePageRemote} from './date_time_page/date_time_browser_proxy.js';

@@ -54,6 +54,7 @@ build_webui("build") {
     "controls/v2/settings_toggle_v2.ts",
     "controls/v2/settings_dropdown_v2.ts",
     "controls/v2/settings_row.ts",
+    "controls/v2/settings_slider_row.ts",
     "controls/v2/settings_slider_v2.ts",
     "crostini_page/bruschetta_subpage.ts",
     "crostini_page/crostini_arc_adb.ts",

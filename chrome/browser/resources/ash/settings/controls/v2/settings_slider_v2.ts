@@ -64,6 +64,7 @@ import 'chrome://resources/ash/common/cr_elements/cros_color_overrides.css.js';
 import {CrSliderElement, SliderTick} from 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PrefControlMixinInternal} from './pref_control_mixin_internal.js';
@@ -86,7 +87,11 @@ export class SettingsSliderV2Element extends SettingsSliderV2ElementBase {
     return getTemplate();
   }
 
-  static get properties() {
+  /**
+   * Shared properties with other elements that may encapsulate this element
+   * internally (e.g. settings-slider-row).
+   */
+  static get sharedProperties(): PolymerElementProperties {
     return {
       /**
        * The current value of the slider. It shouldn't be used or updated if
@@ -150,9 +155,19 @@ export class SettingsSliderV2Element extends SettingsSliderV2ElementBase {
       },
 
       /**
-       * A11y label for the slider.
+       * Whether or not to hide tick marks on the slider. Default to false.
+       * Only compatible with `ticks`, and not compatible with `scale`.
        */
-      ariaLabel: String,
+      hideMarkers: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
+
+  static get properties() {
+    return {
+      ...this.sharedProperties,
 
       /**
        * By default, the slider value will only be updated when the dragging
@@ -163,15 +178,6 @@ export class SettingsSliderV2Element extends SettingsSliderV2ElementBase {
         type: Boolean,
         value: false,
         observer: 'onSliderChanged_',
-      },
-
-      /**
-       * Whether or not to hide tick marks on the slider. Default to false.
-       * Only compatible with `ticks`, and not compatible with `scale`.
-       */
-      hideMarkers: {
-        type: Boolean,
-        value: false,
       },
 
       loaded_: Boolean,
@@ -284,7 +290,7 @@ export class SettingsSliderV2Element extends SettingsSliderV2ElementBase {
       return;
     }
 
-    assert(this.scale === 1);
+    assert(this.scale === 1, 'Scale has to be 1 if ticks is set.');
     // Limit the number of ticks to 10 to keep the slider from looking too busy.
     const MAX_TICKS = 10;
     this.$.slider.markerCount =

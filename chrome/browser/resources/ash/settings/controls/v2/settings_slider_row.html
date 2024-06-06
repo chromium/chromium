@@ -1,0 +1,28 @@
+<style>
+  :host {
+    box-sizing: border-box;
+    display: block;
+  }
+</style>
+
+<settings-row id="internalRow"
+    label="[[label]]"
+    sublabel="[[sublabel]]"
+    icon="[[icon]]"
+    learn-more-url="[[learnMoreUrl]]">
+  <settings-slider-v2 id="slider"
+      slot="control"
+      pref="[[pref]]"
+      value="[[value]]"
+      ticks="[[ticks]]"
+      min="[[min]]" max="[[max]]" scale="[[scale]]"
+      hide-markers="[[hideMarkers]]"
+      hide-label="[[hideLabel]]" min-label="[[minLabel]]"
+      max-label="[[maxLabel]]"
+      update-value-instantly="[[updateValueInstantly]]"
+      aria-label="[[getAriaLabel(ariaLabel, label)]]"
+      aria-description="[[getAriaDescription(ariaDescription, sublabel)]]"
+      disabled="[[disabled]]"
+      on-change="propagateChangeEvent_">
+  </settings-slider-v2>
+</settings-row>
