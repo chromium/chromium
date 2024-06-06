@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/performance_controls/test_support/battery_saver_browser_test_mixin.h"
 #include "chrome/browser/ui/performance_controls/test_support/memory_saver_interactive_test_mixin.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
@@ -46,9 +45,7 @@ class PerformanceSidePanelInteractiveTest
  public:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {features::kSidePanelPinning,
-         performance_manager::features::kPerformanceControlsSidePanel},
-        {});
+        {performance_manager::features::kPerformanceControlsSidePanel}, {});
     animation_mode_reset_ = gfx::AnimationTestApi::SetRichAnimationRenderMode(
         gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
     set_open_about_blank_on_browser_launch(true);

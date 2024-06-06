@@ -265,15 +265,6 @@ BASE_FEATURE(kSidePanelJourneysQueryless,
 BASE_FEATURE(kSidePanelCompanionDefaultPinned,
              "SidePanelCompanionDefaultPinned",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kSidePanelPinning,
-             "SidePanelPinning",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsSidePanelPinningEnabled() {
-  return (IsChromeRefresh2023() &&
-          base::FeatureList::IsEnabled(kSidePanelPinning));
-}
 #endif
 
 // Enables tabs to scroll in the tabstrip. https://crbug.com/951078
@@ -416,8 +407,7 @@ BASE_FEATURE(kToolbarPinning,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsToolbarPinningEnabled() {
-  return (IsSidePanelPinningEnabled() &&
-          base::FeatureList::IsEnabled(kToolbarPinning));
+  return base::FeatureList::IsEnabled(kToolbarPinning);
 }
 #endif
 

@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model_factory.h"
 #include "chrome/browser/ui/toolbar/toolbar_pref_names.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.h"
@@ -28,7 +27,6 @@
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/layout/animating_layout_manager_test_util.h"
@@ -36,7 +34,6 @@
 class PinnedToolbarActionsContainerTest : public TestWithBrowserView {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures({features::kSidePanelPinning}, {});
     TestWithBrowserView::SetUp();
     AddTab(browser_view()->browser(), GURL("http://foo1.com"));
     browser_view()->browser()->tab_strip_model()->ActivateTabAt(0);
@@ -174,7 +171,6 @@ class PinnedToolbarActionsContainerTest : public TestWithBrowserView {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   raw_ptr<PinnedToolbarActionsModel> model_;
 };
 

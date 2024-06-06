@@ -2383,7 +2383,6 @@ class CompanionSidePanelPinningBrowserTest : public CompanionPageBrowserTest {
 
   void SetUpFeatureList() override {
     CompanionPageBrowserTest::SetUpFeatureList();
-    pinning_feature_list_.InitWithFeatures({features::kSidePanelPinning}, {});
   }
 
   ~CompanionSidePanelPinningBrowserTest() override = default;
@@ -2393,8 +2392,6 @@ class CompanionSidePanelPinningBrowserTest : public CompanionPageBrowserTest {
         prefs::kGoogleSearchSidePanelEnabled, enable_companion_by_policy);
   }
 
- private:
-  base::test::ScopedFeatureList pinning_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(CompanionSidePanelPinningBrowserTest,

@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model_factory.h"
 #include "chrome/browser/ui/toolbar/toolbar_pref_names.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
@@ -91,9 +90,7 @@ class PinnedToolbarActionsModelBrowserTest : public InProcessBrowserTest {
  public:
   PinnedToolbarActionsModelBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kSidePanelPinning,
-         companion::features::internal::kSidePanelCompanion},
-        {});
+        {companion::features::internal::kSidePanelCompanion}, {});
   }
 
   PinnedToolbarActionsModelBrowserTest(

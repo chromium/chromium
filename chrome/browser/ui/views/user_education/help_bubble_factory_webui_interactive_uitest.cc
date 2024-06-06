@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/toolbar/bookmark_sub_menu_model.h"
 #include "chrome/browser/ui/toolbar/reading_list_sub_menu_model.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
@@ -39,7 +38,6 @@
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/widget_test.h"
 
@@ -80,7 +78,6 @@ DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ViewSizeObserver, kSidePanelSize);
 class HelpBubbleFactoryWebUIInteractiveUiTest : public InteractiveBrowserTest {
  public:
   HelpBubbleFactoryWebUIInteractiveUiTest() {
-    feature_list_.InitWithFeatures({features::kSidePanelPinning}, {});
   }
   ~HelpBubbleFactoryWebUIInteractiveUiTest() override = default;
 
@@ -179,7 +176,6 @@ class HelpBubbleFactoryWebUIInteractiveUiTest : public InteractiveBrowserTest {
   }
 
   raw_ptr<views::View> side_panel_ = nullptr;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryWebUIInteractiveUiTest,

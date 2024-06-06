@@ -5619,10 +5619,6 @@ if (!is_android) {
       deps += [ "../browser/enterprise/connectors/test:test_support" ]
     }
 
-    if (is_chrome_branded) {
-      sources += [ "../browser/ui/views/side_panel/lens/lens_side_panel_coordinator_browsertest.cc" ]
-    }
-
     if (enterprise_data_controls) {
       sources += [
         "//chrome/browser/enterprise/data_controls/data_controls_dialog_browsertests.cc",
@@ -10512,7 +10508,6 @@ test("unit_tests") {
     sources += [
       "../browser/ui/views/lens/lens_region_search_controller_unittest.cc",
       "../browser/ui/views/lens/lens_side_panel_navigation_helper_unittest.cc",
-      "../browser/ui/views/side_panel/lens/lens_side_panel_coordinator_unittest.cc",
     ]
     deps += [ "//chrome/browser/lens/region_search" ]
   }
@@ -11478,7 +11473,6 @@ if (!is_android && !is_chromeos_device) {
         "../browser/ui/views/side_panel/side_panel_interactive_uitest.cc",
         "../browser/ui/views/side_search/side_search_browsertest.cc",
         "../browser/ui/views/side_search/side_search_browsertest.h",
-        "../browser/ui/views/side_search/unified_side_search_controller_interactive_uitest.cc",
         "../browser/ui/views/site_data/page_specific_site_data_dialog_interactive_uitest.cc",
         "../browser/ui/views/ssl_client_certificate_selector_browsertest.cc",
         "../browser/ui/views/tabs/tab_drag_controller_interactive_uitest.cc",

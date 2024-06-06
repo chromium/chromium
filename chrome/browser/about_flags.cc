@@ -6614,13 +6614,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kSidePanelJourneysQueryless)},
 
 #if !BUILDFLAG(IS_ANDROID)
-    {flag_descriptions::kSidePanelPinningFlagId,
-     flag_descriptions::kSidePanelPinningName,
-     flag_descriptions::kSidePanelPinningDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kSidePanelPinning)},
-#endif  // !BUILDFLAG(IS_ANDROID)
-
-#if !BUILDFLAG(IS_ANDROID)
     {flag_descriptions::kToolbarPinningFlagId,
      flag_descriptions::kToolbarPinningName,
      flag_descriptions::kToolbarPinningDescription, kOsDesktop,

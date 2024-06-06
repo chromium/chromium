@@ -338,12 +338,11 @@ void RecentTabsSubMenuModel::Build() {
   SetCommandIcon(this, IDC_SHOW_HISTORY,
                  vector_icons::kHistoryChromeRefreshIcon);
 
-  if (features::IsSidePanelPinningEnabled()) {
-    InsertItemWithStringIdAt(1, IDC_SHOW_HISTORY_CLUSTERS_SIDE_PANEL,
-                             IDS_HISTORY_CLUSTERS_SHOW_SIDE_PANEL);
-    SetCommandIcon(this, IDC_SHOW_HISTORY_CLUSTERS_SIDE_PANEL,
-                   vector_icons::kHistoryChromeRefreshIcon);
-  }
+  InsertItemWithStringIdAt(1, IDC_SHOW_HISTORY_CLUSTERS_SIDE_PANEL,
+                           IDS_HISTORY_CLUSTERS_SHOW_SIDE_PANEL);
+  SetCommandIcon(this, IDC_SHOW_HISTORY_CLUSTERS_SIDE_PANEL,
+                 vector_icons::kHistoryChromeRefreshIcon);
+
   AddSeparator(ui::NORMAL_SEPARATOR);
   history_separator_index_ = GetItemCount() - 1;
   BuildLocalEntries();

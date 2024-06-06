@@ -819,14 +819,12 @@ void ToolsMenuModel::Build(Browser* browser) {
   AddItemWithStringIdAndVectorIcon(this, IDC_NAME_WINDOW, IDS_NAME_WINDOW,
                                    kNameWindowIcon);
 
-  if (features::IsSidePanelPinningEnabled()) {
-    AddItemWithStringIdAndVectorIcon(this, IDC_SHOW_READING_MODE_SIDE_PANEL,
-                                     IDS_SHOW_READING_MODE_SIDE_PANEL,
-                                     kMenuBookChromeRefreshIcon);
-    SetElementIdentifierAt(
-        GetIndexOfCommandId(IDC_SHOW_READING_MODE_SIDE_PANEL).value(),
-        kReadingModeMenuItem);
-  }
+  AddItemWithStringIdAndVectorIcon(this, IDC_SHOW_READING_MODE_SIDE_PANEL,
+                                   IDS_SHOW_READING_MODE_SIDE_PANEL,
+                                   kMenuBookChromeRefreshIcon);
+  SetElementIdentifierAt(
+      GetIndexOfCommandId(IDC_SHOW_READING_MODE_SIDE_PANEL).value(),
+      kReadingModeMenuItem);
 
   AddSeparator(ui::NORMAL_SEPARATOR);
   if (!features::IsExtensionMenuInRootAppMenu()) {

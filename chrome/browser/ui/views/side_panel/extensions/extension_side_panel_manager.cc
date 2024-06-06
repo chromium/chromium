@@ -125,9 +125,8 @@ void ExtensionSidePanelManager::OnExtensionLoaded(
 
 void ExtensionSidePanelManager::MaybeCreateActionItemForExtension(
     const Extension* extension) {
-  if (!browser_ || !features::IsSidePanelPinningEnabled() ||
-      !extension->permissions_data()->HasAPIPermission(
-          mojom::APIPermissionID::kSidePanel)) {
+  if (!browser_ || !extension->permissions_data()->HasAPIPermission(
+                       mojom::APIPermissionID::kSidePanel)) {
     return;
   }
 
@@ -159,7 +158,6 @@ void ExtensionSidePanelManager::MaybeCreateActionItemForExtension(
 
 actions::ActionId ExtensionSidePanelManager::GetOrCreateActionIdForExtension(
     const Extension* extension) {
-  CHECK(features::IsSidePanelPinningEnabled());
   return actions::ActionIdMap::CreateActionId(
              SidePanelEntry::Key(SidePanelEntry::Id::kExtension,
                                  extension->id())
@@ -169,9 +167,8 @@ actions::ActionId ExtensionSidePanelManager::GetOrCreateActionIdForExtension(
 
 void ExtensionSidePanelManager::MaybeRemoveActionItemForExtension(
     const Extension* extension) {
-  if (browser_ && features::IsSidePanelPinningEnabled() &&
-      extension->permissions_data()->HasAPIPermission(
-          mojom::APIPermissionID::kSidePanel)) {
+  if (browser_ && extension->permissions_data()->HasAPIPermission(
+                      mojom::APIPermissionID::kSidePanel)) {
     BrowserActions* browser_actions = browser_->browser_actions();
     std::optional<actions::ActionId> extension_action_id =
         actions::ActionIdMap::StringToActionId(

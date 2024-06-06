@@ -124,25 +124,23 @@ ExtensionsToolbarContainer::ExtensionsToolbarContainer(Browser* browser,
   }
 
   // Create close side panel button.
-  if (features::IsSidePanelPinningEnabled()) {
-    std::unique_ptr<ToolbarButton> close_side_panel_button =
-        std::make_unique<ToolbarButton>(base::BindRepeating(
-            &ExtensionsToolbarContainer::CloseSidePanelButtonPressed,
-            base::Unretained(this)));
-    close_side_panel_button->SetTooltipText(l10n_util::GetStringUTF16(
-        IDS_EXTENSIONS_SUBMENU_CLOSE_SIDE_PANEL_ITEM));
-    close_side_panel_button->SetVisible(false);
-    close_side_panel_button->SetProperty(views::kFlexBehaviorKey,
-                                         views::FlexSpecification());
-    close_side_panel_button_ = AddChildView(std::move(close_side_panel_button));
-    UpdateCloseSidePanelButtonIcon();
-    pref_change_registrar_.Init(browser_->profile()->GetPrefs());
-    pref_change_registrar_.Add(
-        prefs::kSidePanelHorizontalAlignment,
-        base::BindRepeating(
-            &ExtensionsToolbarContainer::UpdateCloseSidePanelButtonIcon,
-            base::Unretained(this)));
-  }
+  std::unique_ptr<ToolbarButton> close_side_panel_button =
+      std::make_unique<ToolbarButton>(base::BindRepeating(
+          &ExtensionsToolbarContainer::CloseSidePanelButtonPressed,
+          base::Unretained(this)));
+  close_side_panel_button->SetTooltipText(
+      l10n_util::GetStringUTF16(IDS_EXTENSIONS_SUBMENU_CLOSE_SIDE_PANEL_ITEM));
+  close_side_panel_button->SetVisible(false);
+  close_side_panel_button->SetProperty(views::kFlexBehaviorKey,
+                                       views::FlexSpecification());
+  close_side_panel_button_ = AddChildView(std::move(close_side_panel_button));
+  UpdateCloseSidePanelButtonIcon();
+  pref_change_registrar_.Init(browser_->profile()->GetPrefs());
+  pref_change_registrar_.Add(
+      prefs::kSidePanelHorizontalAlignment,
+      base::BindRepeating(
+          &ExtensionsToolbarContainer::UpdateCloseSidePanelButtonIcon,
+          base::Unretained(this)));
 
   // Layout.
   const views::FlexSpecification hide_icon_flex_specification =

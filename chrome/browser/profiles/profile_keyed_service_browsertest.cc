@@ -195,7 +195,6 @@ class ProfileKeyedServiceBrowserTest : public InProcessBrowserTest {
           features::kPdfOcr,
 #endif
           features::kPersistentOriginTrials,
-          features::kSidePanelPinning,
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
           omnibox::kOnDeviceTailModel,
           omnibox::kOnDeviceHeadProviderNonIncognito,

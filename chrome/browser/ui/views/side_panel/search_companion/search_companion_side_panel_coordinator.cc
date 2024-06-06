@@ -261,33 +261,9 @@ actions::ActionItem* SearchCompanionSidePanelCoordinator::GetActionItem() {
 void SearchCompanionSidePanelCoordinator::MaybeUpdateCompanionEnabledState() {
   bool enabled = companion::IsCompanionAvailableForCurrentActiveTab(browser_);
 
-  if (features::IsSidePanelPinningEnabled()) {
-    actions::ActionItem* action_item = GetActionItem();
-    action_item->SetEnabled(enabled);
-    action_item->SetImage(ui::ImageModel::FromVectorIcon(
-        (enabled ? icon() : disabled_icon()), ui::kColorIcon,
-        ChromeLayoutProvider::Get()->GetDistanceMetric(
-            ChromeDistanceMetric::
-                DISTANCE_SIDE_PANEL_HEADER_VECTOR_ICON_SIZE)));
-  } else {
-    MaybeUpdateEntryIcon(enabled);
-  }
-}
-
-void SearchCompanionSidePanelCoordinator::MaybeUpdateEntryIcon(bool enabled) {
-  auto* registry = SidePanelRegistry::Get(
-      browser_->tab_strip_model()->GetActiveWebContents());
-  if (!registry) {
-    return;
-  }
-
-  auto* entry = registry->GetEntryForKey(
-      SidePanelEntry::Key(SidePanelEntry::Id::kSearchCompanion));
-  if (!entry) {
-    return;
-  }
-
-  entry->ResetIcon(ui::ImageModel::FromVectorIcon(
+  actions::ActionItem* action_item = GetActionItem();
+  action_item->SetEnabled(enabled);
+  action_item->SetImage(ui::ImageModel::FromVectorIcon(
       (enabled ? icon() : disabled_icon()), ui::kColorIcon,
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           ChromeDistanceMetric::DISTANCE_SIDE_PANEL_HEADER_VECTOR_ICON_SIZE)));

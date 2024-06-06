@@ -78,10 +78,6 @@ class SearchCompanionSidePanelCoordinator
   // Update companion enabled state based on active tab's url.
   void MaybeUpdateCompanionEnabledState();
 
-  // Update the CSC side panel entry icon based on enabled state if the entry
-  // exists.
-  void MaybeUpdateEntryIcon(bool enabled);
-
   // Called if there is a change in the state of policy pref.
   void OnPolicyPrefChanged();
 

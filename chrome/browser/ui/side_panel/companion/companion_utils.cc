@@ -170,13 +170,11 @@ void UpdateCompanionDefaultPinnedToToolbarState(Profile* profile) {
       prefs::kSidePanelCompanionEntryPinnedToToolbar,
       base::Value(companion_should_be_default_pinned));
 
-  if (::features::IsSidePanelPinningEnabled()) {
-    PinnedToolbarActionsModel* const model =
-        PinnedToolbarActionsModelFactory::GetForProfile(profile);
-    CHECK(model);
-    model->MaybeUpdateSearchCompanionPinnedState(
-        companion_should_be_default_pinned);
-  }
+  PinnedToolbarActionsModel* const model =
+      PinnedToolbarActionsModelFactory::GetForProfile(profile);
+  CHECK(model);
+  model->MaybeUpdateSearchCompanionPinnedState(
+      companion_should_be_default_pinned);
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 

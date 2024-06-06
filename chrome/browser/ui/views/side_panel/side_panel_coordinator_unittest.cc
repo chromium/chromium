@@ -13,9 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/icu_test_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/extensions/api/side_panel/side_panel_api.h"
 #include "chrome/browser/extensions/api/side_panel/side_panel_service.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -27,7 +25,6 @@
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model_factory.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
@@ -52,7 +49,6 @@
 #include "extensions/test/test_extension_dir.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/views/layout/animating_layout_manager_test_util.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/views_test_utils.h"
@@ -80,7 +76,6 @@ std::unique_ptr<KeyedService> BuildSidePanelService(
 class SidePanelCoordinatorTest : public TestWithBrowserView {
  public:
   void SetUp() override {
-    feature_list_.InitWithFeatures({features::kSidePanelPinning}, {});
     TestWithBrowserView::SetUp();
 
     AddTabToBrowser(GURL("http://foo1.com"));
@@ -281,7 +276,6 @@ class SidePanelCoordinatorTest : public TestWithBrowserView {
     return extension_service_;
   }
 
-  base::test::ScopedFeatureList feature_list_;
   raw_ptr<extensions::ExtensionService> extension_service_;
   raw_ptr<extensions::TestExtensionSystem> extension_system_;
   raw_ptr<SidePanelCoordinator, DanglingUntriaged> coordinator_;
@@ -1589,8 +1583,6 @@ TEST_F(SidePanelCoordinatorTest, ExtensionSidePanelHasPinButton) {
 class SidePanelCoordinatorLoadingContentTest : public SidePanelCoordinatorTest {
  public:
   void SetUp() override {
-    feature_list_.InitWithFeatures(
-        {features::kSidePanelPinning, features::kResponsiveToolbar}, {});
     TestWithBrowserView::SetUp();
 
     AddTabToBrowser(GURL("http://foo1.com"));

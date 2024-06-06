@@ -122,8 +122,7 @@ class BrowserCommandControllerBrowserTestToolbarPinningOnly
     : public BrowserCommandControllerBrowserTestRefreshOnly {
  public:
   BrowserCommandControllerBrowserTestToolbarPinningOnly() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kSidePanelPinning, features::kToolbarPinning}, {});
+    scoped_feature_list_.InitWithFeatures({features::kToolbarPinning}, {});
   }
   BrowserCommandControllerBrowserTestToolbarPinningOnly(
       const BrowserCommandControllerBrowserTestToolbarPinningOnly&) = delete;

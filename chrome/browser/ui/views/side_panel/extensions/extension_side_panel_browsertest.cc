@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_coordinator.h"
@@ -163,9 +162,7 @@ class ExtensionSidePanelBrowserTest : public ExtensionBrowserTest {
  public:
   ExtensionSidePanelBrowserTest() {
     feature_list_.InitWithFeatures(
-        {extensions_features::kExtensionSidePanelIntegration,
-         features::kSidePanelPinning},
-        {});
+        {extensions_features::kExtensionSidePanelIntegration}, {});
   }
 
  protected:

@@ -13,7 +13,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/toolbar/toolbar_pref_names.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/prefs/pref_service.h"
@@ -27,9 +26,7 @@ class CompanionUtilsTest : public BrowserWithTestWindowTest {
  public:
   CompanionUtilsTest() {
     scoped_feature_list_.InitWithFeatures(
-        {::features::kSidePanelPinning, ::features::kResponsiveToolbar,
-         features::internal::kSidePanelCompanionChromeOS},
-        {});
+        {features::internal::kSidePanelCompanionChromeOS}, {});
   }
   ~CompanionUtilsTest() override = default;
 
