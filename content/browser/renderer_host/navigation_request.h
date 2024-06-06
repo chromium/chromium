@@ -2041,6 +2041,9 @@ class CONTENT_EXPORT NavigationRequest
   // frames have already disabled network.
   bool IsDisabledEmbedderInitiatedFencedFrameNavigation();
 
+  // Sets the expected process to the process of the current associated RFH.
+  void SetExpectedProcessIfAssociated();
+
   // Never null. The pointee node owns this navigation request instance.
   // This field is not a raw_ptr because of incompatibilities with tracing
   // (TRACE_EVENT*), perfetto::TracedDictionary::Add and gmock/EXPECT_THAT.

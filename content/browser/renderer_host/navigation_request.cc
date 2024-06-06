@@ -2831,6 +2831,9 @@ void NavigationRequest::
             ->RecordMetricsForBlockedGetFrameHostAttempt(
                 /* commit_attempt=*/true);
         return;
+      case GetFrameHostForNavigationFailed::kIntentionalDefer:
+        // We will not defer RFH creation for requests without a URL loader
+        NOTREACHED_NORETURN();
     }
   }
 
@@ -2981,17 +2984,12 @@ void NavigationRequest::StartNavigation() {
   // navigation (when navigation queueing is enabled), or it had an associated
   // RenderFrameHost when the NavigationRequest was created but another
   // navigation had committed in between that time and StartNavigation, which
-  // invalidates the `associated_rfh_type_`. It's fine to skip setting the
+  // invalidates the `associated_rfh_type_`, or it's intentionally deferred with
+  // feature flag DeferSpeculativeRFHCreation. It's fine to skip setting the
   // expected process in this case, as we'll set the expected process again from
   // ReadyToCommitNavigation(), when we know the final RenderFrameHost for the
   // navigation.
-  if (associated_rfh_type_ != AssociatedRenderFrameHostType::NONE) {
-    RenderFrameHostImpl* navigating_frame_host =
-        associated_rfh_type_ == AssociatedRenderFrameHostType::SPECULATIVE
-            ? frame_tree_node_->render_manager()->speculative_frame_host()
-            : frame_tree_node_->current_frame_host();
-    SetExpectedProcess(navigating_frame_host->GetProcess());
-  }
+  SetExpectedProcessIfAssociated();
 
   DCHECK(!IsNavigationStarted());
   SetState(WILL_START_REQUEST);
@@ -4514,6 +4512,9 @@ void NavigationRequest::SelectFrameHostForOnResponseStarted(
               ->RecordMetricsForBlockedGetFrameHostAttempt(
                   /* commit_attempt=*/true);
           return;
+        case GetFrameHostForNavigationFailed::kIntentionalDefer:
+          // We only defer RFH creation when the navigation is not started yet.
+          NOTREACHED_NORETURN();
       }
     }
 
@@ -4972,6 +4973,9 @@ void NavigationRequest::SelectFrameHostForOnRequestFailedInternal(
             ->RecordMetricsForBlockedGetFrameHostAttempt(
                 /* commit_attempt=*/true);
         return;
+      case GetFrameHostForNavigationFailed::kIntentionalDefer:
+        // We only defer RFH creation when the navigation is not started yet.
+        NOTREACHED_NORETURN();
     }
   }
 
@@ -5269,10 +5273,26 @@ void NavigationRequest::OnStartChecksComplete(
     }
   };
 
+  base::WeakPtr<NavigationRequest> this_ptr(weak_factory_.GetWeakPtr());
   loader_->Start();
-  // DO NOT ADD CODE after this. The previous call to
-  // NavigationURLLoader::Start() could cause the destruction of the
-  // NavigationRequest.
+
+  if (!this_ptr) {
+    // `this` have been deleted by NavigationURLLoader::Start
+    // DO NOT ADD CODE HERE.
+    return;
+  }
+
+  // Try to create the speculative RFH after sending the network request
+  // if DeferSpeculativeRFHCreation is enabled.
+  if (base::FeatureList::IsEnabled(features::kDeferSpeculativeRFHCreation) &&
+      GetAssociatedRFHType() == AssociatedRenderFrameHostType::NONE) {
+    auto rfh_creation_result =
+        frame_tree_node_->render_manager()->GetFrameHostForNavigation(
+            this, &browsing_context_group_swap_);
+    if (rfh_creation_result.has_value()) {
+      SetExpectedProcessIfAssociated();
+    }
+  }
 }
 
 void NavigationRequest::OnServiceWorkerAccessed(
@@ -6421,6 +6441,16 @@ void NavigationRequest::SetExpectedProcess(
   RenderProcessHostImpl::AddExpectedNavigationToSite(
       frame_tree_node()->navigator().controller().GetBrowserContext(),
       expected_process, site_info_);
+}
+
+void NavigationRequest::SetExpectedProcessIfAssociated() {
+  if (associated_rfh_type_ != AssociatedRenderFrameHostType::NONE) {
+    RenderFrameHostImpl* navigating_frame_host =
+        associated_rfh_type_ == AssociatedRenderFrameHostType::SPECULATIVE
+            ? frame_tree_node_->render_manager()->speculative_frame_host()
+            : frame_tree_node_->current_frame_host();
+    SetExpectedProcess(navigating_frame_host->GetProcess());
+  }
 }
 
 void NavigationRequest::ResetExpectedProcess() {

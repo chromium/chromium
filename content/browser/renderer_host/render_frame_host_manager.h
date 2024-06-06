@@ -80,6 +80,11 @@ enum class GetFrameHostForNavigationFailed {
   // RenderFrameHost (because the pre-existing unsuitable speculative
   // RenderFrameHost cannot be discarded).
   kBlockedByPendingCommit,
+  // Intentionally defer the creation of the RenderFrameHost to prioritize
+  // initiating the network request instead.
+  // Please refer to the comments of features:kDeferSpeculativeRFHCreation
+  // in contents/common/features.cc for more details.
+  kIntentionalDefer,
 };
 
 // Manages RenderFrameHosts for a FrameTreeNode. It maintains a

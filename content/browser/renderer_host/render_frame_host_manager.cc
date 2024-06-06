@@ -478,6 +478,37 @@ void PrepareViewTransitionForBFCacheActivation(
   rwhv_base->set_is_evicted();
 }
 
+bool NavigationRequestUsesWebUI(NavigationRequest* request,
+                                BrowserContext* browser_context) {
+  return request->HasWebUI() ||
+         (WebUIControllerFactoryRegistry::GetInstance()->UseWebUIForURL(
+              browser_context, request->common_params().url) &&
+          request->state() < NavigationRequest::CANCELING);
+}
+
+bool CanIntentionallyDeferSpeculativeRFHForRequest(
+    NavigationRequest* request,
+    BrowserContext* browser_context,
+    FrameTreeNode* frame_tree_node) {
+  return request->state() ==
+             NavigationRequest::NavigationRequest::NOT_STARTED &&
+         // We defer creation of the speculative RFH to allow the network
+         // request to be sent first. If the navigation doesn't go through the
+         // network, we shouldn't defer the creation of speculative RFH.
+         request->NeedsUrlLoader() &&
+         // If the navigation to a page with WebUI fails and the RFH
+         // creation is deferred, the browser will try to create a RFH
+         // and set a WebUI for the error page. This will cause the browser
+         // to crash since the error page does not need a WebUI.
+         !NavigationRequestUsesWebUI(request, browser_context) &&
+         // Do not defer the creation of the RFH if the previous renderer
+         // crashed or is not live (e.g. for initial RFHs), since we might need
+         // to do an early RFH swap, which requires the speculative RFH to be
+         // created before the network request is sent.
+         frame_tree_node->current_frame_host()->IsRenderFrameLive() &&
+         !frame_tree_node->current_frame_host()->must_be_replaced();
+}
+
 }  // namespace
 
 RenderFrameHostManager::IsSameSiteGetter::IsSameSiteGetter()
@@ -1649,10 +1680,21 @@ RenderFrameHostManager::GetFrameHostForNavigation(
   // navigation race should be fairly rare, so for navigation queueing, do the
   // simple thing and give up trying to assign a RenderFrameHost for the
   // navigation.
+  // TODO: crbug.com/345382623 Verify if deferring the creation for WebUI pages
+  // is safe.
   if (ShouldQueueNavigationsWhenPendingCommitRFHExists() &&
       request->ShouldQueueDueToExistingPendingCommitRFH()) {
     return base::unexpected(
         GetFrameHostForNavigationFailed::kBlockedByPendingCommit);
+  }
+
+  if (base::FeatureList::IsEnabled(features::kDeferSpeculativeRFHCreation) &&
+      !use_current_rfh &&
+      CanIntentionallyDeferSpeculativeRFHForRequest(
+          request, current_site_instance->GetBrowserContext(),
+          frame_tree_node_)) {
+    AppendReason(reason, "GetFrameHostForNavigation / intentional-defer");
+    return base::unexpected(GetFrameHostForNavigationFailed::kIntentionalDefer);
   }
 
   // We only do this if the policy allows it and are recovering a crashed frame.
@@ -1876,18 +1918,17 @@ void RenderFrameHostManager::CreateWebUIForNavigationIfNeeded(
     SiteInstanceImpl* dest_site_instance,
     bool use_current_rfh) {
   if (request->HasWebUI()) {
-    // It's possible for the navigation to already have a WebUI associated with
-    // it if this function is called from OnResponseStarted.
-    CHECK_GE(request->state(), NavigationRequest::WILL_PROCESS_RESPONSE);
+    // It's possible for the navigation to already have a WebUI
+    // associated with when it is called for the second time for the request,
+    // e.g. from OnResponseStarted or OnStartChecksComplete.
+    CHECK_GE(request->state(), NavigationRequest::WILL_START_REQUEST);
     CHECK(!request->web_ui()->HasRenderFrameHost());
     return;
   }
 
   BrowserContext* browser_context =
       render_frame_host_->GetSiteInstance()->GetBrowserContext();
-  if (!WebUIControllerFactoryRegistry::GetInstance()->UseWebUIForURL(
-          browser_context, request->common_params().url) ||
-      request->state() >= NavigationRequest::CANCELING) {
+  if (!NavigationRequestUsesWebUI(request, browser_context)) {
     return;
   }
 

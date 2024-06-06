@@ -123,6 +123,15 @@ BASE_FEATURE(kDataUrlsHaveStableNonce,
              "DataUrlsHaveStableNonce",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables deferring the creation of the speculative RFH when the navigation
+// starts. The creation of a speculative RFH consumes about 2ms and is blocking
+// the network request. With this feature the creation will be deferred until
+// the browser initializes the network request. The speculative RFH will be
+// created while the network service is sending the request in parallel.
+BASE_FEATURE(kDeferSpeculativeRFHCreation,
+             "DeferSpeculativeRFHCreation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, main frame data: URLs use the serialized nonce from the origin
 // as the site URL. Otherwise, use the entire data: URL as the site URL.
 // Note: This feature is dependent on kDataUrlsHaveStableNonce. If that flag
